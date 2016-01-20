@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+# Setting up chaiscript base,engine, hardware, bgd ...
+cd ../src
+make clean
+make -j2
+
+
+

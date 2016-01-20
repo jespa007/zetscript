@@ -1,0 +1,5 @@
+BIN2C V1.0 
+This little utility translates a binary
+file in a useful C structure that can 
+be included in a C source.
+Source included

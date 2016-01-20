@@ -1,0 +1,5 @@
+1. Add enverionment vars:
+
+C:\apps\mingw\msys\1.0\bin;${ProjDirPath}/../utils/scripts;c:/apps/mingw/opt/bin
+
+

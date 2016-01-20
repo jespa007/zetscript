@@ -1,0 +1,6 @@
+echo "Making backup of jeme ..."
+sh base_backup_src.sh "src/engine" "*CMakeFiles* *.blend* /src/engine/mmedia/image/i_res/*.c /src/engine/mmedia/audio/i_res/*.c /src/engine/mmedia/font/i_res/*.c"
+echo "Making backup of editor ..."
+sh base_backup_src.sh "src/editor" "*CMakeFiles*"
+
+

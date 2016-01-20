@@ -1,0 +1,2 @@
+EXPDEF.EXE -p -o TobiiGazeCore32.dll >TobiiGazeCore32.def
+dlltool -d TobiiGazeCore32.def -l libTobiiGazeCore32.a
