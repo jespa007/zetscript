@@ -28,5 +28,10 @@ int main(int argc, char * argv[]){
 		}
 	}
 
+
+#if defined(__DEBUG__) && defined(__MEMMANAGER__)
+  MEM_ViewStatus();
+#endif
+
 	return 0;
 }

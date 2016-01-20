@@ -158,7 +158,7 @@
 			<target name="CMake Debug With memmanager" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>bash</buildCommand>
 				<buildArguments>${ProjDirPath}/../tools/scripts/cmake_build</buildArguments>
-				<buildTarget>-DTARGET=debug -DCHAISCRIPT=yes -DMEMMANAGER=yes</buildTarget>
+				<buildTarget>-DTARGET=debug -DMEMMANAGER=yes</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

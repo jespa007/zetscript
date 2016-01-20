@@ -111,7 +111,9 @@ LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 
 set( ZG_BASE_LIB_SRCS
     
-
+    
+	#-- System --
+	system/zg_system.cpp
 	
     #-- Utils --
 	utils/zg_utils.cpp
