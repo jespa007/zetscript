@@ -1,3 +1,3 @@
-# zg_script
+# ZG Script
 	ZG script is a basic script engine for your c++ project.
 
