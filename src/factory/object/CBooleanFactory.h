@@ -16,6 +16,6 @@
 class CBooleanFactory: public CFactory<CBoolean> {
 public:
 
-
+	static void registerScriptFunctions();
 
 };

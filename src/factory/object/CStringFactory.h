@@ -6,12 +6,12 @@
  */
 #pragma once
 
-#define NEW_STRING				CStringObjectFactory::newObject
-#define GET_STRING				CStringObjectFactory::getObjectResource
+#define NEW_STRING				CStringFactory::newObject
+#define GET_STRING				CStringFactory::getObjectResource
 
-class CStringObjectFactory: public CFactory<CString> {
+class CStringFactory: public CFactory<CString> {
 public:
 
-
+	static void registerScriptFunctions();
 
 };

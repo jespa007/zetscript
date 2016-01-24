@@ -1,8 +1,10 @@
 #pragma once
 
 class CNumber: public CObject{
-	double m_value;
+
 public:
+
+	double m_value;
 
 	static CNumber * Parse(const string & );
 

@@ -47,8 +47,20 @@ public:
         m_objectType=_type;
     }
 
-    void setClassName(const string & _class) {
-        m_className=_class;
+    void setClassStr(const string & _class) {
+        m_classStr=_class;
+    }
+
+    void setPointerClassStr(const string & _class) {
+        m_pointerClassStr=_class;
+    }
+
+    const string &  getClassStr() {
+        return m_classStr;
+    }
+
+    const string &  getPointerClassStr() {
+        return m_pointerClassStr;
     }
 
     virtual void ini();
@@ -82,7 +94,7 @@ protected:
 
     bool   active;
     unsigned int m_elapsed_ticks_print;
-    string m_objectType,m_className;
+    string m_objectType,m_classStr,m_pointerClassStr;
 
     bool registered;
 

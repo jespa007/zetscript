@@ -10,11 +10,11 @@
 
 
 
-#define NEW_NUMBER				CNumberObjectFactory::newObject
-#define GET_NUMBER				CNumberObjectFactory::getObjectResource
+#define NEW_NUMBER				CNumberFactory::newObject
+#define GET_NUMBER				CNumberFactory::getObjectResource
 
-class CNumberObjectFactory: public CFactory<CNumber> {
+class CNumberFactory: public CFactory<CNumber> {
 public:
-
+	static void registerScriptFunctions();
 
 };

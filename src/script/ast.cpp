@@ -24,7 +24,7 @@ inline char * GET_END_WORD(const char *s){
 }
 //------------------------------------------------------------------------------------------------------------
 inline char * GET_CLOSED_PARENTHESIS(const char *s){
-	bool end = false;
+	//bool end = false;
 	char *aux = (char *)s;
 	
 	if(*aux != '('){
@@ -45,14 +45,14 @@ inline char * GET_CLOSED_PARENTHESIS(const char *s){
 }
 //------------------------------------------------------------------------------------------------------------
 PASTOperator generateAST(const char *s, TYPE_GROUP type_group){
-	int index=0;
+	//int index=0;
 	char *aux=(char *)s;
-	char *start_value, * end_value;
+	//char *start_value, * end_value;
 	char *start_expression,*end_expression ;
-	char value[MAX_EXPRESSION_LENGTH]={0}; // I hope this is enough...
+	//char value[MAX_EXPRESSION_LENGTH]={0}; // I hope this is enough...
 	tASTOperator *op=new tASTOperator;
-	bool theres_a_token=false;
-	bool first_start_parenthesis=false;
+	//bool theres_a_token=false;
+	//bool first_start_parenthesis=false;
 	
 	aux=IGNORE_SPACES(aux);
 	
@@ -92,7 +92,7 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group){
 			
 			printf("checkpoint2:%c\n",*aux);
 			
-			start_value=aux;
+			//start_value=aux;
 			if(*aux=='('){ // exp within ()
 			
 				printf("try find parenthesis close\n");
@@ -196,21 +196,12 @@ int generateAsmCode(PASTOperator op, int & numreg){
 	}
 	
 	if(op->expr.left==NULL && op->expr.right==NULL){ // trivial case value itself...
+
+
+
 		printf("MOV\tE[%i],%s\n",numreg,op->expr.value.c_str());
 		
-		// try parse value...
-		if(CNumber::Parse(op->expr.value)!=NULL){
-			printf("%s detected as number\n",op->expr.value.c_str());
-		}
-		else if(op->expr.value[0]=='\"' && op->expr.value[op->expr.value.size()-1]=='\"'){
-			printf("%s detected as string\n",op->expr.value.c_str());
-		}
-		else if(CBoolean::Parse(op->expr.value)!=NULL){
-			printf("%s detected as boolean\n",op->expr.value.c_str());
-		}else{
-			printf("ERROR: %s is unkown variable\n",op->expr.value.c_str());
-			return -1;
-		}
+		CZG_Script::getInstance()->insertMovInstruction(op->expr.value);
 		
 		r=numreg;	
 	}else{ 
@@ -225,7 +216,9 @@ int generateAsmCode(PASTOperator op, int & numreg){
 		}
 		
 		r=numreg;
-		printf("%c\tE[%i],E[%i],E[%i]\n",op->token,numreg,left,right);
+		printf("%s\tE[%i],E[%i],E[%i]\n",op->token.c_str(),numreg,left,right);
+
+		CZG_Script::getInstance()->insertOperatorInstruction(op->token,left,right);
 				
 	}
 	numreg++;

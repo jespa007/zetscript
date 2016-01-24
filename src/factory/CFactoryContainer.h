@@ -8,7 +8,7 @@ protected:
 	typedef struct{
 		string   m_type;
 
-		string 	 m_loadFile;
+
 
 		CObject * (* newObject)();
 		CObject * (* newObjectWithID)(const string & _id);
@@ -16,6 +16,7 @@ protected:
 		bool (* deleteObject)(CObject *obj);
 		CObject * (* getObject)(const string & _id);
 		vector<string> * (* getLocalResourceTypesToLoad)();
+		void (* registerScriptFunctions)();
 
 		void (* unloadResources)();
 		void (* destroyFactory)();
@@ -37,7 +38,7 @@ public:
 	static bool loadPropertiesFile(const string & _sFileNameResourceList, map<string,string> *map_id_prop);
 
 	static  CFactoryContainer * getInstance();
-	void registerChaiScriptFunctions();
+	void registerScriptFunctions();
 
 	CFactoryContainer();
 
@@ -48,11 +49,12 @@ public:
 			bool (* _pfDeleteObjectByID)(const string & _id),
 			CObject * (* _pfGetObject)(const string & _id),
 			vector<string> * (* getLocalResourceTypesToLoad)(),
+			void (* _registerScriptFunctions)(),
 
 			void (* unloadResources)(),
 			void (* destroyFactory)(),
-			const string & m_type,
-			const string & m_loadFile="");
+			const string & m_type
+			);
 
 	vector<string>							getFactoryTypeList();
 
@@ -81,6 +83,8 @@ public:
 
 	tInfoFactoryContainer	* typeObjectFactoryExists(const string & _type);
 	bool unRegisterFactory(const string & _type);
+
+
 
 	~CFactoryContainer();
 

@@ -1,5 +1,9 @@
 #include "script/zg_script.h"
 
+
+
+
+
 int main(int argc, char * argv[]){
 	
 
@@ -14,20 +18,12 @@ int main(int argc, char * argv[]){
 		return 0;
 	}
 	
-	PASTOperator op=generateAST(argv[1]);
-	
-	if(op==NULL){ // some error happend!
-		return -1;		
-	}
-	else{
-		int numreg=0;
-		
-		
-		if(generateAsmCode(op,numreg)<0){
-			printf("Error generating code\n");
-		}
-	}
+	CZG_Script *zg_script = CZG_Script::getInstance();
+	zg_script->init();
 
+	zg_script->eval(argv[1]);
+
+	CZG_Script::destroy();
 
 #if defined(__DEBUG__) && defined(__MEMMANAGER__)
   MEM_ViewStatus();

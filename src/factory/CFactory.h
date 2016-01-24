@@ -16,8 +16,6 @@ map<string,string>  		* 	CFactory<_C>::map_id_prop=NULL;\
 template<>\
 _C						* 	CFactory<_C>::m_defaultResource=NULL;\
 template<>\
-CBaseParser					* 	CFactory<_C>::m_parser=NULL;\
-template<>\
 unsigned int						CFactory<_C>::time_print=0;\
 template<>\
 bool						CFactory<_C>::m_factoryLoaded=false;
@@ -32,8 +30,8 @@ m_chai->add(fun(&objPtrToClassPtr),"objectPtrTo"+m_type+"Ptr");
 
 
 template<class _F>
-bool iniFactory(const string & _type, const string & file=""){
-	return _F::createFactory(_type,_F::registerChaiScriptFunctions,file);
+bool iniFactory(const string & _type){
+	return _F::createFactory(_type,_F::registerScriptFunctions);
 }
 
 template<class _FS, class _FR>
@@ -61,7 +59,7 @@ protected:
 	//static vector<_tObject *>								*m_vResourceContainerLoadable;
 
 	static _tObject										*m_defaultResource;
-	static CBaseParser										*m_parser;
+
 
 	//--------------------------------------------------------------------------------------------------------------------------------------------------------
 	static CObject	*newObjectInternal(){
@@ -86,11 +84,11 @@ public:
 
 	static void createSingletons();
 
-	static bool	createFactory(const string & _type, const string & _m_loadFile){
+	static bool	createFactory(const string & _type,void (* _registerScriptFunctions)()){
 
 		string m_nameType=_type;
 
-		m_loadFile=_m_loadFile;
+
 
 
 		if(CFactoryContainer::getInstance()->registerFactory(
@@ -101,12 +99,12 @@ public:
 				deleteObjectByID,
 				getObjectInternal,
 				getLocalResourceTypesToLoad,
-
+				_registerScriptFunctions,
 				unloadResources,
 				destroyFactory,
 
-				m_nameType,
-				_m_loadFile)){
+				m_nameType
+				)){
 
 					if(m_vResourceContainer==NULL){
 						m_vResourceContainer = new vector<CObject *>;
@@ -167,8 +165,7 @@ public:
 		//if(m_vResourceContainerLoadable != NULL)
 		//	delete m_vResourceContainerLoadable;
 
-		if(m_parser != NULL)
-					delete m_parser;
+
 
 		if(m_defaultResource!= NULL){
 			delete m_defaultResource;
@@ -186,7 +183,7 @@ public:
 		m_registeredResourcesTypes =NULL;
 		m_vResourceContainer=NULL;
 		//m_vResourceContainerLoadable=NULL;
-		m_parser = NULL;
+
 		m_defaultResource=NULL;
 	}
 
@@ -229,7 +226,17 @@ public:
 
 		char *cc = (char *) typeid(_tObject).name();
 
-		while((*cc != 0) && CStringUtils::isDigit(*cc)) cc++;
+		//while((*cc != 0) && CStringUtils::isDigit(*cc)) cc++;
+
+		return cc;
+
+	}
+
+	static const char *getPointerTypeStr(){
+
+		char *cc = (char *) typeid(_tObject *).name();
+
+		//while((*cc != 0) && CStringUtils::isDigit(*cc)) cc++;
 
 		return cc;
 
@@ -286,7 +293,8 @@ public:
 			obj = new _tObject());
 
 			obj->setType(m_type);
-			obj->setClassName(getTypeStr());
+			obj->setClassStr(getTypeStr());
+			obj->setPointerClassStr(getPointerTypeStr());
 
 			return obj;
 		}

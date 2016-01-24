@@ -4,7 +4,7 @@ class CString: public CObject{
 	
 public:
 
-	
+	string m_value;
 
 	CString();
 	CString(const string & s);

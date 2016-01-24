@@ -8,13 +8,14 @@ typedef struct _tASTExpression *PASTExpression;
 typedef struct _tASTOperator *PASTOperator;
 
 typedef struct _tASTExpression{
+	//CObject *object_value;
 	string 	value;
 	PASTOperator left,right;
 }tASTExpression;
 
 
 typedef struct _tASTOperator{
-	char token;
+	string token;
 	tASTExpression expr;	
 }tASTOperator;
 

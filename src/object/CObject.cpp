@@ -20,7 +20,8 @@ void CObject::setup() {
     // generate a uuid by default ...
     m_id = CUUID::newUUID();
     m_localId = m_id;
-    m_className="unknown";
+    m_classStr="unknown";
+    m_pointerClassStr="unknown";
 }
 //---------------------------------------------------------------------
 

@@ -9,3 +9,6 @@
 
 REGISTER_FACTORY_FUNCTIONS(CBoolean);
 
+void CBooleanFactory::registerScriptFunctions(){
+
+}

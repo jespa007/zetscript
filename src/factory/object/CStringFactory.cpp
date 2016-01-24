@@ -9,5 +9,7 @@
 
 REGISTER_FACTORY_FUNCTIONS(CString);
 
+void CStringFactory::registerScriptFunctions(){
 
+}
 

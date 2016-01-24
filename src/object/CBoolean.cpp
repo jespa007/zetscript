@@ -1,11 +1,18 @@
 #include "script/zg_script.h"
 
 CBoolean * CBoolean::Parse(const string & s){
+
+
+
 		if(CStringUtils::toLower(s)=="true"){
-			return new CBoolean(true);
+			CBoolean *b=NEW_BOOLEAN();
+			b->m_value=true;
+			return b;
 			
 		}else if(CStringUtils::toLower(s)=="false"){
-			return new CBoolean(false);
+			CBoolean *b=NEW_BOOLEAN();
+			b->m_value=false;
+			return b;
 		}
 
 		// TODO: develop exception handler.

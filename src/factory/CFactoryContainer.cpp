@@ -1,4 +1,4 @@
-#include "zg_script.h"
+#include "zg_factory.h"
 
 
 
@@ -49,17 +49,17 @@ bool CFactoryContainer::registerFactory(
 		bool (* _pfDeleteObjectByID)(const string & _id),
 		CObject * (* _pfGetObject)(const string & _id),
 		vector<string> * (* _getLocalResourceTypesToLoad)(),
-
+		void (* _registerScriptFunctions)(),
 		void (* unloadResources)(),
 		void (* destroyFactory)(),
 
-		const string & _type,
-		const string & _loadFile){
+		const string & _type
+		){
 
 	if(!typeObjectFactoryExists(_type)){ // can register...
 		tInfoFactoryContainer ifc;
 
-		ifc.m_loadFile=_loadFile;
+
 
 		ifc.m_type=_type;
 		ifc.newObject=_pfNewObject;
@@ -68,7 +68,7 @@ bool CFactoryContainer::registerFactory(
 		ifc.deleteObject=_pfDeleteObject;
 		ifc.getObject=_pfGetObject;
 		ifc.getLocalResourceTypesToLoad=_getLocalResourceTypesToLoad;
-
+		ifc.registerScriptFunctions=_registerScriptFunctions;
 		ifc.unloadResources = unloadResources;
 		ifc.destroyFactory = destroyFactory;
 
@@ -158,6 +158,15 @@ CObject *CFactoryContainer::getObject(const string & _type,const string & _id){
 }
 
 
+void CFactoryContainer::registerScriptFunctions(){
+
+	for(vector<tInfoFactoryContainer>::const_iterator it = m_vecTypeContainer->begin(); it != m_vecTypeContainer->end(); it++){
+
+		it->registerScriptFunctions();
+	}
+
+}
+
 
 void CFactoryContainer::unLoadResourcesFactories(){
 	for(vector<tInfoFactoryContainer>::iterator it=m_vecTypeContainer->begin(); it != m_vecTypeContainer->end(); it++){
@@ -186,6 +195,7 @@ bool CFactoryContainer::unRegisterFactory(const string & m_type){
 }
 
 CFactoryContainer::~CFactoryContainer(){
+	destroyFactories();
 	delete m_vecTypeContainer;
 }
 
