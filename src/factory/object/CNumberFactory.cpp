@@ -10,18 +10,20 @@
 REGISTER_FACTORY_FUNCTIONS(CNumber);
 
 
+
+
 void CNumberFactory::registerScriptFunctions(){
 
 	// Define operations for CNumber.
 
 	// registers operator + to CNumber object.
-	registerOperator("+",[](CNumber *n1,CNumber *n2){
+	registerOperator("+",[](CFakeObject2 * n1,CNumber *n2){
 
 		print_info_cr("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
 
 		CNumber *result= NEW_NUMBER();
-		result->m_value = n1->m_value + n2->m_value;
-		return result;
+		//result->m_value = n1->m_value + n2->m_value;
+		return 0;
 	});
 
 

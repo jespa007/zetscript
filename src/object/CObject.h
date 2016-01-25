@@ -103,3 +103,18 @@ protected:
 
 
 };
+
+
+class CFakeObject{
+public:
+	CFakeObject(){}
+
+	~CFakeObject(){}
+};
+
+class CFakeObject2:public CFakeObject{
+public:
+	CFakeObject2(){}
+
+	virtual ~CFakeObject2(){}
+};

@@ -53,7 +53,8 @@ bool CFactoryContainer::registerFactory(
 		void (* unloadResources)(),
 		void (* destroyFactory)(),
 
-		const string & _type
+		const string & _type,
+		const string & _typePtr
 		){
 
 	if(!typeObjectFactoryExists(_type)){ // can register...
@@ -62,6 +63,7 @@ bool CFactoryContainer::registerFactory(
 
 
 		ifc.m_type=_type;
+		ifc.m_typePtr=_typePtr;
 		ifc.newObject=_pfNewObject;
 		ifc.newObjectWithID=_pfNewObjectWithID;
 		ifc.deleteObjectByID=_pfDeleteObjectByID;
@@ -82,6 +84,17 @@ bool CFactoryContainer::registerFactory(
 
 	}else{
 		print_error_cr("* Factory %s type already registered ",_type.c_str());
+	}
+
+	return false;
+}
+
+bool CFactoryContainer::classPtrIsRegistered(const string & ptr_type){
+
+
+	for(unsigned int i = 0;i < m_vecTypeContainer->size(); i++){
+		if(m_vecTypeContainer->at(i).m_typePtr == ptr_type)
+			return true;
 	}
 
 	return false;

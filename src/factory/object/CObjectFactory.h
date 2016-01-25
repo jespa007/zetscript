@@ -22,3 +22,14 @@ public:
 
 
 };
+
+
+class CFakeObjectFactory: public CFactory<CFakeObject> {
+
+
+
+public:
+
+
+
+};

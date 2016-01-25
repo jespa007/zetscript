@@ -7,9 +7,7 @@ protected:
 
 	typedef struct{
 		string   m_type;
-
-
-
+		string   m_typePtr;
 		CObject * (* newObject)();
 		CObject * (* newObjectWithID)(const string & _id);
 		bool (* deleteObjectByID)(const string & _id);
@@ -32,10 +30,9 @@ public:
 
 
 
-
 	static void createSingletons();
 	static void destroySingletons();
-	static bool loadPropertiesFile(const string & _sFileNameResourceList, map<string,string> *map_id_prop);
+
 
 	static  CFactoryContainer * getInstance();
 	void registerScriptFunctions();
@@ -53,8 +50,11 @@ public:
 
 			void (* unloadResources)(),
 			void (* destroyFactory)(),
-			const string & m_type
+			const string & m_type,
+			const string & m_typePtr
 			);
+
+	bool classPtrIsRegistered(const string & s);
 
 	vector<string>							getFactoryTypeList();
 

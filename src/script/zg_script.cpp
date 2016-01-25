@@ -83,10 +83,10 @@ CZG_Script::tInfoObjectOperator * CZG_Script::getOperatorInfo(const string & op,
 			}
 		}
 
-		print_info_cr("No any signature matches with operator \"%s\" (%s %s)",op.c_str(),type_op1.c_str(),type_op2.c_str());
-		print_info_cr("Possibilities:");
+		print_error_cr("No any signature matches with operator \"%s\" (%s %s)",op.c_str(),type_op1.c_str(),type_op2.c_str());
+		print_error_cr("Possibilities:");
 		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator…
-			print_info_cr("%s (%s,%s)",v->at(i).result_type.c_str(), v->at(i).param_type->at(0).c_str(),v->at(i).param_type->at(1).c_str());
+			print_error_cr("%s (%s,%s)",v->at(i).result_type.c_str(), v->at(i).param_type->at(0).c_str(),v->at(i).param_type->at(1).c_str());
 		}
 
 
@@ -126,8 +126,6 @@ CZG_Script::CZG_Script(){
 	iniFactory<CNumberFactory>("CNumber");
 	iniFactory<CBooleanFactory>("CBoolean");
 	iniFactory<CStringFactory>("CString");
-
-
 
 }
 

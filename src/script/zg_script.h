@@ -37,19 +37,27 @@ struct function_traits<ReturnType(ClassType::*)(Args...) const>
 template <std::size_t...> struct index_sequence {};
 template <std::size_t N, std::size_t... Is> struct make_index_sequence : make_index_sequence<N-1, N-1, Is...> {};
 template <std::size_t... Is> struct make_index_sequence<0, Is...> : index_sequence<Is...> {};
-
+class CObject;
 template <size_t argIdx, typename R, typename... Args>
 auto getArgTypes(std::string& ref, std::vector<std::string> & params)
     -> typename std::enable_if<argIdx == 1>::type
 {
     using fun = function_traits<std::function<R(Args...)> >;
-    ref.append("parameter:"+std::to_string(argIdx)+" ");
+    ref.append(std::to_string(argIdx)+" ");
 
-    string pp=typeid(typename fun::template arg<0>::type).name();
-    ref.append(pp).append(" ");
-    params.push_back(pp);
+    typename fun::template arg<argIdx-1>::type var=NULL;
+    string parameter_type=typeid(var).name();
+
+
+
+    //cout << "is same:" << std::is_base_of<CObject ,typename fun::template arg<0>::type> << endl;
+    ref.append(parameter_type).append(" ");
+    params.insert(params.begin()+0,parameter_type);
 
     // number parameter ...
+    if(!CFactoryContainer::getInstance()->classPtrIsRegistered(parameter_type)){
+    	print_error_cr("\"%s\" is not registered",parameter_type.c_str());
+    }
 
 
 }
@@ -60,11 +68,20 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
 {
     using fun = function_traits<std::function<R(Args...)> >;
 
-    ref.append("parameter: "+std::to_string(argIdx)+" ");
+    ref.append(std::to_string(argIdx)+" ");
 
-    string pp=typeid(typename fun::template arg<argIdx-1>::type).name();
-    ref.append(pp).append(" ");
-    params.push_back(pp);
+   typename fun::template arg<argIdx-1>::type var=NULL;
+
+    //cout << "is same:" << std::is_same<CObject *,parameter_type>::value << endl;
+    string parameter_type=typeid(var).name();
+    ref.append(parameter_type).append(" ");
+    params.insert(params.begin()+0,parameter_type);
+
+    if(!CFactoryContainer::getInstance()->classPtrIsRegistered(parameter_type)){
+    	print_error_cr("\"%s\" is not registered",parameter_type.c_str());
+    }
+
+
 
     getArgTypes<argIdx - 1,R, Args...>(ref, params);
 }
@@ -74,10 +91,16 @@ template <typename F, std::size_t... Is>
 std::vector<std::string> * getParamsFunction(int i, index_sequence<Is...>)
 {
 	std::vector<std::string> *typeParams= new std::vector<std::string>();
+	std::string return_type = typeid(typename F::result_type).name();
     std::string s;
     getArgTypes<F::arity, typename F::result_type, typename F::template arg<Is>::type...>(s,*typeParams);
 
-    std::cout << s;
+    std::cout << return_type << " (" << (s) << ")";
+
+    if(!CFactoryContainer::getInstance()->classPtrIsRegistered(return_type)){
+    	print_error_cr("Return type \"%s\" is not registered",return_type.c_str());
+    }
+
 
     return typeParams;
 }

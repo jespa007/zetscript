@@ -103,7 +103,8 @@ public:
 				unloadResources,
 				destroyFactory,
 
-				m_nameType
+				m_nameType,
+				typeid(_tObject *).name()
 				)){
 
 					if(m_vResourceContainer==NULL){
