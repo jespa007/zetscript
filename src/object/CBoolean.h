@@ -2,9 +2,9 @@
 
 class CBoolean: public CObject{
 	
-	bool m_value;
-public:
 
+public:
+	bool m_value;
 	static CBoolean * Parse(const string & );
 
 	CBoolean();

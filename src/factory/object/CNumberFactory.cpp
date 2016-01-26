@@ -17,13 +17,11 @@ void CNumberFactory::registerScriptFunctions(){
 	// Define operations for CNumber.
 
 	// registers operator + to CNumber object.
-	registerOperator("+",[](CFakeObject2 * n1,CNumber *n2){
-
-		print_info_cr("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
+	registerOperator("+",[](CNumber * n1,CNumber *n2){
 
 		CNumber *result= NEW_NUMBER();
-		//result->m_value = n1->m_value + n2->m_value;
-		return 0;
+		result->m_value = n1->m_value + n2->m_value;
+		return result;
 	});
 
 
@@ -46,10 +44,48 @@ void CNumberFactory::registerScriptFunctions(){
 	// registers operator * to CNumber object.
 	registerOperator("*",[](CNumber *n1,CNumber *n2){
 
-		print_info_cr("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
-
 		CNumber *result= NEW_NUMBER();
 		result->m_value = n1->m_value * n2->m_value;
+		return result;
+	});
+
+
+	// registers operator * to CNumber object.
+	registerOperator("==",[](CNumber *n1,CNumber *n2){
+
+		CBoolean *result= NEW_BOOLEAN();
+		result->m_value = n1->m_value == n2->m_value;
+		return result;
+	});
+
+	// registers operator * to CNumber object.
+	registerOperator(">=",[](CNumber *n1,CNumber *n2){
+
+		CBoolean *result= NEW_BOOLEAN();
+		result->m_value = n1->m_value >= n2->m_value;
+		return result;
+	});
+
+	registerOperator("<=",[](CNumber *n1,CNumber *n2){
+
+		CBoolean *result= NEW_BOOLEAN();
+		result->m_value = n1->m_value <= n2->m_value;
+		return result;
+	});
+
+
+	// registers operator * to CNumber object.
+	registerOperator(">",[](CNumber *n1,CNumber *n2){
+
+		CBoolean *result= NEW_BOOLEAN();
+		result->m_value = n1->m_value > n2->m_value;
+		return result;
+	});
+
+	registerOperator("<",[](CNumber *n1,CNumber *n2){
+
+		CBoolean *result= NEW_BOOLEAN();
+		result->m_value = n1->m_value < n2->m_value;
 		return result;
 	});
 

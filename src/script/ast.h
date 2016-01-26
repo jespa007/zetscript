@@ -22,7 +22,8 @@ typedef struct _tASTOperator{
 
 enum TYPE_GROUP{
 	GROUP_0=0, // +,-,||
-	GROUP_1, // */% etc
+	GROUP_1, // *,/,==,>,<,<=,>=
+	GROUP_2, // &&
 	MAX_GROUPS
 };
 

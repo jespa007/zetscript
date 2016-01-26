@@ -175,11 +175,14 @@ class CZG_Script{
 
 	CZG_Script();
 
+	~CZG_Script();
 
 
 	map<string,vector<tInfoObjectOperator> *> m_mapContainerOperators;
 	bool existOperatorSignature(const string & op,const string & result, vector<string> * param);
 	tInfoObjectOperator * getOperatorInfo(const string & op, const string & type_op1, const string & type_op2);
+
+	void unregisterOperators();
 
 public:
 	static CZG_Script * getInstance();

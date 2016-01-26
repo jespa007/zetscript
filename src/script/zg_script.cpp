@@ -161,19 +161,19 @@ void CZG_Script::insertMovInstruction(const string & v){
 	CObject *obj;
 	// try parse value...
 	if((obj=CNumber::Parse(v))!=NULL){
-		printf("%s detected as number\n",v.c_str());
+		print_info_cr("%s detected as number\n",v.c_str());
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
 		string s=v.substr(1,v.size()-2);
 		CString *so=NEW_STRING();
 		so->m_value=s;
 		obj = so;
-		printf("%s detected as string\n",v.c_str());
+		print_info_cr("%s detected as string\n",v.c_str());
 	}
 	else if((obj=CBoolean::Parse(v))!=NULL){
-		printf("%s detected as boolean\n",v.c_str());
+		print_info_cr("%s detected as boolean\n",v.c_str());
 	}else{
-		printf("ERROR: %s is unkown variable\n",v.c_str());
+		print_error_cr("ERROR: %s is unkown variable\n",v.c_str());
 	}
 
 	if(obj != NULL){
@@ -250,15 +250,17 @@ void CZG_Script::execute(){
 				print_info_cr("mov!");
 				break;
 			case OPERATOR:{ // we will perform the operation (cross the fingers)
-				print_info_cr("operator");
+				print_info_cr("operator %p",statement_op.asm_op[i]->funOp->fun_ptr);
 				CObject *i1,*i2;
 				i1=statement_op.asm_op[statement_op.asm_op[i]->index_left]->res;
 				i2=statement_op.asm_op[statement_op.asm_op[i]->index_right]->res;
 
-				if(dynamic_cast<CNumber *>(i1) == NULL || dynamic_cast<CNumber *>(i2) == NULL){
+				print_info_cr("index:%i %i ",statement_op.asm_op[i]->index_left,statement_op.asm_op[i]->index_right);
+
+				/*if(dynamic_cast<CNumber *>(i1) == NULL || dynamic_cast<CNumber *>(i2) == NULL){
 					print_error_cr("Error casting number");
 					return;
-				}
+				}*/
 
 				int fun=(int)statement_op.asm_op[i]->funOp->fun_ptr;
 				int result=0;//(int)statement_op.asm_op[statement_op.asm_op[i]->index_left]->res;
@@ -269,7 +271,7 @@ asm(
 		"push %[p1]\n\t"
 		//"push %%esp\n\t"
 		"call %P0\n\t" // call function
-		"add $4,%%esp"       // Clean up the stack.
+		//"add $4,%%esp"       // Clean up the stack.
 		: "=a" (result) // The result code from puts.
 		: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
 #else // GNU!!!!
@@ -289,8 +291,8 @@ asm(
 					if(result!=0){
 
 
-						if(dynamic_cast<CNumber *>((CObject *)result) == NULL){
-							print_error_cr("Error casting number");
+						if(dynamic_cast<CObject *>((CObject *)result) == NULL){
+							print_error_cr("Error casting object");
 							return;
 						}
 
@@ -306,8 +308,45 @@ asm(
 			}
 		}
 
-		print_info_cr("The winner is %f",((CNumber *)statement_op.asm_op[statement_op.asm_op.size()-1]->res)->m_value);
+		CObject *obj = statement_op.asm_op[statement_op.asm_op.size()-1]->res;
+		CNumber *num;
+		CString *str;
+		CBoolean *bol;
+		if((num = dynamic_cast<CNumber *>(obj))!=NULL){
+			print_info_cr("Number with value=%f",num->m_value);
+		}else if((str = dynamic_cast<CString *>(obj))!=NULL){
+			print_info_cr("String with value=\"%s\"",str->m_value.c_str());
+		}else if((bol = dynamic_cast<CBoolean *>(obj))!=NULL){
+			print_info_cr("Boolean with value=%i",bol->m_value);
+		}
+
+
 
 	}
 
+}
+
+void CZG_Script::unregisterOperators(){
+
+	for(map<string,vector<tInfoObjectOperator> *>::iterator it=m_mapContainerOperators.begin(); it != m_mapContainerOperators.end(); it++){
+		vector< tInfoObjectOperator > * v= it->second;
+		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator…
+			delete it->second->at(i).param_type;
+		}
+		delete it->second;
+	}
+
+	m_mapContainerOperators.clear();
+
+}
+
+//-------------------------------------------------------------------------------------
+CZG_Script::~CZG_Script(){
+	// unregister operators ...
+	for(unsigned i = 0; i  <statement_op.asm_op.size(); i++){
+
+		delete statement_op.asm_op[i];
+	}
+
+	unregisterOperators();
 }
