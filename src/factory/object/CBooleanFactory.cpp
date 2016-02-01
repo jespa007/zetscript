@@ -25,4 +25,12 @@ void CBooleanFactory::registerScriptFunctions(){
 		return result;
 	});
 
+	registerOperator("!",[](CBoolean * n1){
+
+		CBoolean *result= NEW_BOOLEAN();
+		result->m_value = !n1->m_value;
+		return result;
+	});
+
+
 }

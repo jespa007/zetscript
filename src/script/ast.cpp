@@ -1,6 +1,14 @@
 #include "zg_script.h"
 
+char *prefix_token(char *c){
+	char *aux=c;
+	if(*c=='+' || *c=='-' || *c=='!'){
+		aux++;
+		return aux;
+	}
 
+	return 0;
+}
 
 char * token_group0(char *c){
 	char *aux=c;
@@ -65,6 +73,18 @@ char * token_group2(char *c){
 	return 0;
 }
 
+char * token_group3(char *c){
+	char *aux=c;
+	// try boolean operators...
+	if( (*c=='!') // ==
+	){
+		aux++;
+		return aux;
+	}
+
+	return 0;
+}
+
 char * is_token(char *c){
 	char *aux;
 	if((aux=token_group0(c))!=0){
@@ -72,6 +92,8 @@ char * is_token(char *c){
 	}else if((aux=token_group1(c))!=0) {
 		return aux;
 	}else if((aux=token_group2(c))!=0) {
+		return aux;
+	}else if((aux=token_group3(c))!=0) {
 		return aux;
 	}
 	return 0;
@@ -136,6 +158,7 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group){
 	tASTOperator *op=new tASTOperator;
 	//bool theres_a_token=false;
 	//bool first_start_parenthesis=false;
+	bool first_token=false;
 	
 	aux=IGNORE_SPACES(aux);
 	
@@ -169,8 +192,16 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group){
 			aux=IGNORE_SPACES(aux);
 			
 			if(is_token(aux)!=0){
-				print_error_cr("unexpected token %c...",*aux);
-				return NULL;
+
+				if(((end_expression=prefix_token(aux))!=0) && !first_token){
+					print_info_cr("end_expr!");
+					first_token=true;
+					//aux=end_expression;
+				}
+				else{
+					print_error_cr("unexpected token %c...",*aux);
+					return NULL;
+				}
 			}
 			
 			print_info_cr("checkpoint2:%c",*aux);
@@ -214,6 +245,7 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group){
 					case  GROUP_0:	expr_op_end = token_group0(expr_op);break;
 					case GROUP_1:	expr_op_end = token_group1(expr_op);break;
 					case GROUP_2:	expr_op_end = token_group2(expr_op);break;
+					case GROUP_3:	expr_op_end = token_group3(expr_op);break;
 					default: break;
 					}
 				}
@@ -263,7 +295,7 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group){
 			strncpy(eval_right,expr_op_end,strlen(expr_op)); // copy its right side...
 			op->expr.right=generateAST(eval_right,type_group);
 			
-			if(op->expr.right == NULL || op->expr.left == NULL){ // some wrong was happened
+			if(op->expr.right == NULL && op->expr.left == NULL){ // some wrong was happened
 				return NULL;
 			}
 			
@@ -281,7 +313,7 @@ int generateAsmCode(PASTOperator op, int & numreg){
 	
 	int r=0;
 	if(op==NULL){
-		return r;
+		return -1;
 	}
 	
 	if(op->expr.left==NULL && op->expr.right==NULL){ // trivial case value itself...
@@ -300,14 +332,49 @@ int generateAsmCode(PASTOperator op, int & numreg){
 		left=generateAsmCode(op->expr.left,numreg);
 		right=generateAsmCode(op->expr.right,numreg);
 		
-		if(left == -1 || right == -1){ // error!
+		/*if(left == -1 && right == -1){ // error!
+			print_error_cr("ERROR %i %i!",left,right);
 			return -1;
-		}
+		}*/
 		
 		r=numreg;
-		print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
 
-		CZG_Script::getInstance()->insertOperatorInstruction(op->token,left,right);
+		if(left !=-1 && right!=-1){
+			if(op->token=="-") // special op. (insert add more neg)
+			{
+				print_info_cr("%s\tE[%i],E[%i]","-",numreg,right);
+				if(!CZG_Script::getInstance()->insertOperatorInstruction("-",right)){
+					return -1;
+				}
+
+				print_info_cr("%s\tE[%i],E[%i],E[%i]","+",numreg,left,right);
+				if(!CZG_Script::getInstance()->insertOperatorInstruction("+",left,right)){
+					return -1;
+				}
+
+			}
+			else{
+				print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
+				if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left,right)){
+					return -1;
+				}
+			}
+		}else if(right!=-1){ // one op..
+			print_info_cr("%s\tE[%i],E[%i]",op->token.c_str(),numreg,right);
+			if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,right)){
+				return -1;
+			}
+
+		}else if(left!=-1){ // one op..
+			print_info_cr("%s\tE[%i],E[%i]",op->token.c_str(),numreg,left);
+			if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left)){
+				return -1;
+			}
+
+		}else{ // ERROR
+			print_error_cr("ERROR both ops ==0!");
+			return -1;
+		}
 				
 	}
 	numreg++;

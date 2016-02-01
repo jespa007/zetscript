@@ -35,8 +35,8 @@ bool CZG_Script::existOperatorSignature(const string & op,const string & result,
 
 bool CZG_Script::registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)()){
 
-	if(param_type->size()!=2){
-		print_error_cr("fatal error. We expected 2 ops for operator");
+	if(!(param_type->size()==1 || param_type->size() ==2)){
+		print_error_cr("fatal error. We expected 1 or 2 ops for operator");
 		return false;
 	}
 
@@ -62,9 +62,13 @@ bool CZG_Script::registerOperatorInternal(const string & _op_name, const string 
 
 
 
-CZG_Script::tInfoObjectOperator * CZG_Script::getOperatorInfo(const string & op, const string & type_op1, const string & type_op2){
-	string ps1=type_op1;
-	string ps2=type_op2;
+CZG_Script::tInfoObjectOperator * CZG_Script::getOperatorInfo(const string & op, string * type_op1,  string * type_op2){
+	string *ps1=type_op1;
+	string *ps2=type_op2;
+	int num_operands = 1;
+	if(ps2!=NULL){
+		num_operands = 2;
+	}
 
 	if(m_mapContainerOperators.count(op)==1){
 		vector< tInfoObjectOperator > * v= m_mapContainerOperators[op];
@@ -72,21 +76,38 @@ CZG_Script::tInfoObjectOperator * CZG_Script::getOperatorInfo(const string & op,
 
 		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator…
 
-			if(v->at(i).param_type->size()==2){
+			if(v->at(i).param_type->size()==2 && num_operands==2){
 				print_info_cr("try:%s %s",v->at(i).param_type->at(0).c_str(),v->at(i).param_type->at(1).c_str());
-				if(v->at(i).param_type->at(0)==ps1 && v->at(i).param_type->at(1)==ps2){ // we found the signature
+				if(v->at(i).param_type->at(0)==*ps1 && v->at(i).param_type->at(1)==*ps2){ // we found the signature
 
 					return &v->at(i);
 				}
+			}else if(v->at(i).param_type->size()==1 && num_operands==1){ // insert operator for 1 op.
+				print_info_cr("try:%s %s",v->at(i).param_type->at(0).c_str());
+				if(v->at(i).param_type->at(0)==*ps1){ // we found the signature
+
+					return &v->at(i);
+				}
+
 			}else{
-				print_error_cr("fatal error. We expected 2 ops for operator");
+				print_error_cr("fatal error. there's no number of op expected (internal error %i %i)",v->at(i).param_type->size(),num_operands);
 			}
 		}
 
-		print_error_cr("No any signature matches with operator \"%s\" (%s %s)",op.c_str(),type_op1.c_str(),type_op2.c_str());
+		if(num_operands==2){
+			print_error_cr("No any signature matches with operator \"%s\" (%s %s)",op.c_str(),type_op1->c_str(),type_op2->c_str());
+		}else{
+			print_error_cr("No any signature matches with operator \"%s\" (%s )",op.c_str(),type_op1->c_str());
+		}
+
 		print_error_cr("Possibilities:");
 		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator…
-			print_error_cr("%s (%s,%s)",v->at(i).result_type.c_str(), v->at(i).param_type->at(0).c_str(),v->at(i).param_type->at(1).c_str());
+			if(v->at(i).param_type->size()==2)
+				print_error_cr("%s (%s,%s)",v->at(i).result_type.c_str(), v->at(i).param_type->at(0).c_str(),v->at(i).param_type->at(1).c_str());
+
+			if(v->at(i).param_type->size()==1)
+				print_error_cr("%s (%s)",v->at(i).result_type.c_str(), v->at(i).param_type->at(0).c_str());
+
 		}
 
 
@@ -156,7 +177,7 @@ bool CZG_Script::eval(const string & s){
 
 }
 
-void CZG_Script::insertMovInstruction(const string & v){
+bool CZG_Script::insertMovInstruction(const string & v){
 
 	CObject *obj;
 	// try parse value...
@@ -174,6 +195,7 @@ void CZG_Script::insertMovInstruction(const string & v){
 		print_info_cr("%s detected as boolean\n",v.c_str());
 	}else{
 		print_error_cr("ERROR: %s is unkown variable\n",v.c_str());
+		return false;
 	}
 
 	if(obj != NULL){
@@ -187,7 +209,7 @@ void CZG_Script::insertMovInstruction(const string & v){
 
 		if(asm_op->res->getPointerClassStr()==""){
 			print_error_cr("unknown type res operand");
-			return;
+			return false;
 		}
 
 
@@ -196,18 +218,20 @@ void CZG_Script::insertMovInstruction(const string & v){
 
 		statement_op.asm_op.push_back(asm_op);
 	}
+
+	return true;
 }
 
-void CZG_Script::insertOperatorInstruction(const string & op, int left, int right){
+bool CZG_Script::insertOperatorInstruction(const string & op, int left, int right){
 	if(left <0 || (unsigned)left >= statement_op.asm_op.size()){
 		print_error_cr("ERROR: left operant is out of internal stack (%i,%i) ",left,statement_op.asm_op.size());
-		return;
+		return false;
 	}
 
-	if(right <0 || (unsigned)right >= statement_op.asm_op.size()){
+	/*if(right <0 || (unsigned)right >= statement_op.asm_op.size()){
 		print_error_cr("ERROR: right operant is out of internal stack (%i,%i)",right,statement_op.asm_op.size());
 		return;
-	}
+	}*/
 
 	/*if(statement_op.asm_op[left]->res->getPointerClassStr()==""){
 		print_error_cr("unknown type left operand");
@@ -219,21 +243,46 @@ void CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 		return;
 	}*/
 
+	if(left >=0 && right >= 0){ // insert both op...
 
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
-	asm_op->type_op=OPERATOR;
-	asm_op->index_left = left;
-	asm_op->index_right = right;
 
-	if((asm_op->funOp=getOperatorInfo(op,
-			statement_op.asm_op[left]->type_res,
-			statement_op.asm_op[right]->type_res)) != NULL){
+		tInfoAsmOp *asm_op = new tInfoAsmOp();
+		asm_op->type_op=OPERATOR;
+		asm_op->index_left = left;
+		asm_op->index_right = right;
 
-		asm_op->type_res = asm_op->funOp->result_type;
-		statement_op.asm_op.push_back(asm_op);
+		if((asm_op->funOp=getOperatorInfo(op,
+				&statement_op.asm_op[left]->type_res,
+				&statement_op.asm_op[right]->type_res)) != NULL){
+
+			asm_op->type_res = asm_op->funOp->result_type;
+			statement_op.asm_op.push_back(asm_op);
+		}else{
+			print_error_cr("cannot find dual operator \"%s\"",op.c_str());
+			return false;
+		}
+	}else if(left >=0){ // insert one operand
+		tInfoAsmOp *asm_op = new tInfoAsmOp();
+		asm_op->type_op=OPERATOR;
+		asm_op->index_left = left;
+		asm_op->index_right = -1;
+
+		if((asm_op->funOp=getOperatorInfo(op,
+				&statement_op.asm_op[left]->type_res)) != NULL){
+
+			asm_op->type_res = asm_op->funOp->result_type;
+			statement_op.asm_op.push_back(asm_op);
+		}else{
+			print_error_cr("cannot find one operator \"%s\"",op.c_str());
+			return false;
+		}
+
 	}else{
-		print_error_cr("cannot find operator \"%s\"",op.c_str());
+		print_error_cr("ERROR: both operant is out of internal stack ");
+		return false;
 	}
+
+	return true;
 
 }
 
@@ -252,39 +301,65 @@ void CZG_Script::execute(){
 			case OPERATOR:{ // we will perform the operation (cross the fingers)
 				print_info_cr("operator %p",statement_op.asm_op[i]->funOp->fun_ptr);
 				CObject *i1,*i2;
-				i1=statement_op.asm_op[statement_op.asm_op[i]->index_left]->res;
-				i2=statement_op.asm_op[statement_op.asm_op[i]->index_right]->res;
-
-				print_info_cr("index:%i %i ",statement_op.asm_op[i]->index_left,statement_op.asm_op[i]->index_right);
-
-				/*if(dynamic_cast<CNumber *>(i1) == NULL || dynamic_cast<CNumber *>(i2) == NULL){
-					print_error_cr("Error casting number");
-					return;
-				}*/
-
-				int fun=(int)statement_op.asm_op[i]->funOp->fun_ptr;
 				int result=0;//(int)statement_op.asm_op[statement_op.asm_op[i]->index_left]->res;
+				int fun=(int)statement_op.asm_op[i]->funOp->fun_ptr;
 
-#ifdef _WIN32
-asm(
-		"push %[p2]\n\t"
-		"push %[p1]\n\t"
-		//"push %%esp\n\t"
-		"call %P0\n\t" // call function
-		//"add $4,%%esp"       // Clean up the stack.
-		: "=a" (result) // The result code from puts.
-		: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
-#else // GNU!!!!
-asm(
-		"push %[p2]\n\t"
-		"push %[p1]\n\t"
-		"push %%esp\n\t"
-		"call %P0\n\t" // call function
-		"add $12,%%esp"       // Clean up the stack.
-		: "=a" (result) // The result code from puts.
-		: "r"(fun),[p1] "r"(&i1), [p2] "r"(&i2));
+				i1=statement_op.asm_op[statement_op.asm_op[i]->index_left]->res;
 
-#endif
+				if(statement_op.asm_op[i]->index_right==-1){ // one ops
+
+					print_info_cr("1-op index:%i ",statement_op.asm_op[i]->index_left);
+
+
+	#ifdef _WIN32
+	asm(
+			"push %[p1]\n\t"
+			//"push %%esp\n\t"
+			"call %P0\n\t" // call function
+			//"add $4,%%esp"       // Clean up the stack.
+			: "=a" (result) // The result code from puts.
+			: "r"(fun),[p1] "r"(i1));
+	#else // GNU!!!!
+	asm(
+			"push %[p2]\n\t"
+			"push %[p1]\n\t"
+			"push %%esp\n\t"
+			"call %P0\n\t" // call function
+			"add $12,%%esp"       // Clean up the stack.
+			: "=a" (result) // The result code from puts.
+			: "r"(fun),[p1] "r"(&i1));
+
+	#endif
+				}
+
+				else{ // two ops
+
+					i2=statement_op.asm_op[statement_op.asm_op[i]->index_right]->res;
+
+					print_info_cr("2 op:%i %i ",statement_op.asm_op[i]->index_left,statement_op.asm_op[i]->index_right);
+
+
+	#ifdef _WIN32
+	asm(
+			"push %[p2]\n\t"
+			"push %[p1]\n\t"
+			//"push %%esp\n\t"
+			"call %P0\n\t" // call function
+			//"add $4,%%esp"       // Clean up the stack.
+			: "=a" (result) // The result code from puts.
+			: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
+	#else // GNU!!!!
+	asm(
+			"push %[p2]\n\t"
+			"push %[p1]\n\t"
+			"push %%esp\n\t"
+			"call %P0\n\t" // call function
+			"add $12,%%esp"       // Clean up the stack.
+			: "=a" (result) // The result code from puts.
+			: "r"(fun),[p1] "r"(&i1), [p2] "r"(&i2));
+
+	#endif
+				}
 
 
 

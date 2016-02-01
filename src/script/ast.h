@@ -24,6 +24,7 @@ enum TYPE_GROUP{
 	GROUP_0=0, // +,-,||
 	GROUP_1, // *,/,==,>,<,<=,>=
 	GROUP_2, // &&
+	GROUP_3, // !
 	MAX_GROUPS
 };
 

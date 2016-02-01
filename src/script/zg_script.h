@@ -180,7 +180,7 @@ class CZG_Script{
 
 	map<string,vector<tInfoObjectOperator> *> m_mapContainerOperators;
 	bool existOperatorSignature(const string & op,const string & result, vector<string> * param);
-	tInfoObjectOperator * getOperatorInfo(const string & op, const string & type_op1, const string & type_op2);
+	tInfoObjectOperator * getOperatorInfo(const string & op, string * type_op1, string * type_op2=NULL);
 
 	void unregisterOperators();
 
@@ -190,8 +190,8 @@ public:
 	bool eval(const string & s);
 	bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 
-	void insertMovInstruction(const string & v);
-	void insertOperatorInstruction(const string &op, int left, int right);
+	bool insertMovInstruction(const string & v);
+	bool insertOperatorInstruction(const string &op, int left, int right=-1);
 
 	void execute();
 

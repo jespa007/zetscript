@@ -24,11 +24,26 @@ void CNumberFactory::registerScriptFunctions(){
 		return result;
 	});
 
+	// registers operator - to CNumber object.
+	registerOperator("+",[](CNumber *n1){
+		CNumber *result=NEW_NUMBER();
+		result->m_value = +n1->m_value;
+		return result;
+	});
+
+
 
 	// registers operator - to CNumber object.
 	registerOperator("-",[](CNumber *n1,CNumber *n2){
 		CNumber *result=NEW_NUMBER();
 		result->m_value = n1->m_value - n2->m_value;
+		return result;
+	});
+
+	// registers operator - to CNumber object.
+	registerOperator("-",[](CNumber *n1){
+		CNumber *result=NEW_NUMBER();
+		result->m_value = -n1->m_value;
 		return result;
 	});
 
