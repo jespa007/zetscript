@@ -9,7 +9,7 @@ bool CZG_Script::existOperatorSignature(const string & op,const string & result,
 	if(m_mapContainerOperators.count(op)==1){
 		vector< tInfoObjectOperator > * v= m_mapContainerOperators[op];
 
-		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator…
+		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operatorï¿½
 
 			if(result == v->at(i).result_type && v->at(i).param_type->size() == param->size()){ // possibli matches...
 
@@ -52,7 +52,7 @@ bool CZG_Script::registerOperatorInternal(const string & _op_name, const string 
 	info.result_type= result_type;
 	info.param_type = param_type;
 	info.fun_ptr = fun_ptr;
-	// IMPPORTANT! for each operator we can have different signatures…
+	// IMPPORTANT! for each operator we can have different signaturesï¿½
 	m_mapContainerOperators[_op_name]->push_back(info);
 
 	print_info_cr("registered operator \"%s\"",_op_name.c_str());
@@ -74,7 +74,7 @@ CZG_Script::tInfoObjectOperator * CZG_Script::getOperatorInfo(const string & op,
 		vector< tInfoObjectOperator > * v= m_mapContainerOperators[op];
 		//print_info_cr("operator \"%s\" found");
 
-		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator…
+		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operatorï¿½
 
 			if(v->at(i).param_type->size()==2 && num_operands==2){
 				print_info_cr("try:%s %s",v->at(i).param_type->at(0).c_str(),v->at(i).param_type->at(1).c_str());
@@ -83,15 +83,15 @@ CZG_Script::tInfoObjectOperator * CZG_Script::getOperatorInfo(const string & op,
 					return &v->at(i);
 				}
 			}else if(v->at(i).param_type->size()==1 && num_operands==1){ // insert operator for 1 op.
-				print_info_cr("try:%s %s",v->at(i).param_type->at(0).c_str());
+				print_info_cr("try:%s",v->at(i).param_type->at(0).c_str());
 				if(v->at(i).param_type->at(0)==*ps1){ // we found the signature
 
 					return &v->at(i);
 				}
 
-			}else{
+			}/*else{
 				print_error_cr("fatal error. there's no number of op expected (internal error %i %i)",v->at(i).param_type->size(),num_operands);
-			}
+			}*/
 		}
 
 		if(num_operands==2){
@@ -101,7 +101,7 @@ CZG_Script::tInfoObjectOperator * CZG_Script::getOperatorInfo(const string & op,
 		}
 
 		print_error_cr("Possibilities:");
-		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator…
+		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operatorï¿½
 			if(v->at(i).param_type->size()==2)
 				print_error_cr("%s (%s,%s)",v->at(i).result_type.c_str(), v->at(i).param_type->at(0).c_str(),v->at(i).param_type->at(1).c_str());
 
@@ -177,7 +177,7 @@ bool CZG_Script::eval(const string & s){
 
 }
 
-bool CZG_Script::insertMovInstruction(const string & v){
+bool CZG_Script::insertMovInstruction(const string & v, bool neg){
 
 	CObject *obj;
 	// try parse value...
@@ -315,19 +315,18 @@ void CZG_Script::execute(){
 	asm(
 			"push %[p1]\n\t"
 			//"push %%esp\n\t"
-			"call %P0\n\t" // call function
+			"call *%P0\n\t" // call function
 			//"add $4,%%esp"       // Clean up the stack.
 			: "=a" (result) // The result code from puts.
 			: "r"(fun),[p1] "r"(i1));
 	#else // GNU!!!!
 	asm(
-			"push %[p2]\n\t"
 			"push %[p1]\n\t"
 			"push %%esp\n\t"
-			"call %P0\n\t" // call function
-			"add $12,%%esp"       // Clean up the stack.
+			"call *%P0\n\t" // call function
+			"add $8,%%esp"       // Clean up the stack.
 			: "=a" (result) // The result code from puts.
-			: "r"(fun),[p1] "r"(&i1));
+			: "r"(fun),[p1] "r"(i1));
 
 	#endif
 				}
@@ -344,7 +343,7 @@ void CZG_Script::execute(){
 			"push %[p2]\n\t"
 			"push %[p1]\n\t"
 			//"push %%esp\n\t"
-			"call %P0\n\t" // call function
+			"call *%P0\n\t" // call function
 			//"add $4,%%esp"       // Clean up the stack.
 			: "=a" (result) // The result code from puts.
 			: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
@@ -353,10 +352,10 @@ void CZG_Script::execute(){
 			"push %[p2]\n\t"
 			"push %[p1]\n\t"
 			"push %%esp\n\t"
-			"call %P0\n\t" // call function
+			"call *%P0\n\t" // call function
 			"add $12,%%esp"       // Clean up the stack.
 			: "=a" (result) // The result code from puts.
-			: "r"(fun),[p1] "r"(&i1), [p2] "r"(&i2));
+			: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
 
 	#endif
 				}
@@ -405,7 +404,7 @@ void CZG_Script::unregisterOperators(){
 
 	for(map<string,vector<tInfoObjectOperator> *>::iterator it=m_mapContainerOperators.begin(); it != m_mapContainerOperators.end(); it++){
 		vector< tInfoObjectOperator > * v= it->second;
-		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator…
+		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operatorï¿½
 			delete it->second->at(i).param_type;
 		}
 		delete it->second;

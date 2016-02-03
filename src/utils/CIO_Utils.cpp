@@ -43,7 +43,22 @@ string  CIO_Utils::getFileNameWithoutExtension(const string & _path) {
 //-----------------------------------------------------------------------------------------------v
 // Normal file ops.
 
+bool CIO_Utils::isDirectory(const string & filename){
+	int status;
+	struct stat st_buf;
+	//int ret_stat;
 
+	status = stat (filename.c_str(), &st_buf);
+	    if (status != 0) {
+	        //print_error_cr ("Error, errno = %d\n", errno);
+	        return false;
+	    }
+
+
+	return S_ISDIR (st_buf.st_mode) != 0;
+
+
+}
 
 
 bool CIO_Utils::fileExists(const string & m_file) {

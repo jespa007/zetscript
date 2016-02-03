@@ -6,6 +6,8 @@
 
 int main(int argc, char * argv[]){
 	
+	int i=0;
+	i=-(--i);
 
 	if(argc < 2){
 		printf("Put expression to evaluate.\n");

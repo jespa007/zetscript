@@ -145,6 +145,6 @@ IF (MINGW)
  target_link_libraries(zg_main${POST_NAME} mingw32 zg_script${POST_NAME} "-Wl,--no-as-needed" )
   
 ELSE(MINGW)
-
-
+	target_link_libraries(zg_script${POST_NAME}  "-Wl,--no-as-needed" )
+	target_link_libraries(zg_main${POST_NAME} zg_script${POST_NAME}  uuid re2 "-Wl,--no-as-needed" )
 ENDIF(MINGW)

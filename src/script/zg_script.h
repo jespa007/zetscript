@@ -190,7 +190,7 @@ public:
 	bool eval(const string & s);
 	bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 
-	bool insertMovInstruction(const string & v);
+	bool insertMovInstruction(const string & v, bool neg=false);
 	bool insertOperatorInstruction(const string &op, int left, int right=-1);
 
 	void execute();
