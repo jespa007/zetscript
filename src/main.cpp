@@ -7,7 +7,9 @@
 int main(int argc, char * argv[]){
 	
 	int i=0;
-	i=-(--i);
+	i=10*-2;
+
+	i=i---i;
 
 	if(argc < 2){
 		printf("Put expression to evaluate.\n");

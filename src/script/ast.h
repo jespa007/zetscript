@@ -3,19 +3,19 @@
 
 #define MAX_EXPRESSION_LENGTH 8192
 
-class tASTOperator;
-typedef tASTOperator *PASTOperator;
+class tASTNode;
+typedef tASTNode *PASTNode;
 
-class tASTOperator{
+class tASTNode{
 public:
 
 
 	string token;
 	string 	value;
-	PASTOperator parent;
-	PASTOperator left,right;
+	PASTNode parent;
+	PASTNode left,right;
 
-	tASTOperator(){
+	tASTNode(){
 		token="";
 		value="";
 		parent=left=right=NULL;
@@ -32,5 +32,6 @@ enum TYPE_GROUP{
 	MAX_GROUPS
 };
 
-int generateAsmCode(PASTOperator op, int & numreg);
-PASTOperator generateAST(const char *s, TYPE_GROUP type_group=GROUP_0, PASTOperator parent=NULL);
+int generateAsmCode(PASTNode op, int & numreg);
+PASTNode generateAST(const char *s, TYPE_GROUP type_group=GROUP_0, PASTNode parent=NULL);
+bool isVarDeclarationStatment(const char *statment, bool & error);

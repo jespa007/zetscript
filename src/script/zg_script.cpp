@@ -156,7 +156,48 @@ void CZG_Script::init(){
 
 bool CZG_Script::eval(const string & s){
 
-	PASTOperator op=generateAST((const char *)s.c_str());
+	char *current=(char *)s.c_str();
+	string var_name;
+	bool error;
+	char statment[MAX_STATMENT_LENGTH];
+	char *next;
+	PASTNode expression;
+	int length;
+	do{
+
+		next=strstr(current,";");//getStatment(current);
+		if(next ==0){
+			print_error_cr("Expected ;");
+			return false;
+		}
+
+		length=next-current;
+		if(length>=MAX_STATMENT_LENGTH){
+			print_error_cr("Max statment length!");
+			return false;
+		}
+
+		strncpy(statment,current,(next-current));
+
+		print_info_cr("eval:%s",statment);
+
+		if(isVarDeclarationStatment(statment,error)){
+
+		}else{ // let's try another op...
+
+			if(error){
+				return false;
+			}
+		}
+
+		// next statment...
+		current=next;
+
+	}while(next!=0);
+
+	return true;
+
+	/*PASTNode op=generateAST((const char *)s.c_str());
 
 	if(op==NULL){ // some error happend!
 		return false;
@@ -173,7 +214,7 @@ bool CZG_Script::eval(const string & s){
 	}
 
 
-	return true;
+	return true;*/
 
 }
 

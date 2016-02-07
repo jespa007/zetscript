@@ -1,14 +1,6 @@
 #include "zg_script.h"
 
-char *prefix_token(char *c){
-	char *aux=c;
-	if(*c=='+' || *c=='-' || *c=='!'){
-		aux++;
-		return aux;
-	}
 
-	return 0;
-}
 
 char * token_group0(char *c){
 	char *aux=c;
@@ -115,6 +107,8 @@ inline char * GET_END_WORD(const char *s){
 	return aux;
 }
 
+
+
 string GET_STR_WITHOUT_SPACES(const string & s){
 	string f="";
 
@@ -148,30 +142,78 @@ inline char * GET_CLOSED_PARENTHESIS(const char *s){
 	return aux;
 }
 
-PASTOperator preOperator(string token,PASTOperator affected_op){ // can be -,+,! etc...
-	tASTOperator *op=new tASTOperator;
+
+
+char *preoperator_token( char *c){
+	char *aux=IGNORE_SPACES(c);
+
+	// detection ++ operator.
+	if(*aux=='+'){
+		aux++;
+		aux=IGNORE_SPACES(aux);
+		if(*aux=='+'){
+			aux++;
+			aux=IGNORE_SPACES(aux);
+		}
+
+		if(*aux=='+'){ // is not a valid preoperator
+			return 0;
+		}
+
+		return aux;
+	}
+
+	// detection -- operator.
+	if(*aux=='-'){
+		aux++;
+		aux=IGNORE_SPACES(aux);
+		if(*aux=='-'){
+			aux++;
+			aux=IGNORE_SPACES(aux);
+		}
+
+		if(*aux=='-'){ // is not a valid preoperator
+			return 0;
+		}
+
+		return aux;
+	}
+
+
+	if(*c=='+' || *c=='-' || *c=='!'){
+		aux++;
+		return aux;
+	}
+
+	return 0;
+}
+
+
+PASTNode preOperator(string token,PASTNode affected_op){ // can be -,+,! etc...
+	tASTNode *op=new tASTNode;
 	op->token = token;
 	op->left=affected_op;
 	return op;
 }
 
+
+
+
+
 //------------------------------------------------------------------------------------------------------------
-PASTOperator generateAST(const char *s, TYPE_GROUP type_group,PASTOperator parent){
+PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 	//int index=0;
 	char *aux=(char *)s;
 	char *s_effective_start=(char *)s;
-	//char *start_value, * end_value;
 	char *start_expression,*end_expression ;
 	string pre_token="";
+	bool eval_preoperator=true;
+	bool eval_postoperator=true;
 
-	//char value[MAX_EXPRESSION_LENGTH]={0}; // I hope this is enough...
-	tASTOperator *op=new tASTOperator;
+
+	tASTNode *op=new tASTNode;
 	op->parent=parent;
 
-
-	//bool theres_a_token=false;
-	//bool first_start_parenthesis=false;
-	bool first_token=false;
 	
 	aux=IGNORE_SPACES(aux);
 	
@@ -206,12 +248,18 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group,PASTOperator paren
 			
 			if(is_token(aux)!=0){
 
-				if((end_expression=prefix_token(aux))!=0){
-						if(!first_token){ // first token! Save the operator to apply on the result expression.
+				if((end_expression=preoperator_token(aux))!=0){
+						if(eval_preoperator || (!eval_preoperator&&(eval_postoperator))){ // first token! Save the operator to apply on the result expression.
 							char str_op[10]={0};
-							print_info_cr("end_expr!");
-							first_token=true;
+
+							if(eval_preoperator){ // It can't has preoperator and postoperator at the same time.
+								eval_postoperator=false;
+							}
+
+
 							strncpy(str_op,aux,end_expression-aux);
+
+							print_info_cr("preoperator %s!",str_op);
 							pre_token = str_op;
 							aux=end_expression; // ignore first token...
 							s_effective_start=end_expression;
@@ -219,8 +267,6 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group,PASTOperator paren
 						}else{ // just ignore it
 							aux=end_expression; // ignore first token...
 						}
-
-
 				}
 				else{
 					print_error_cr("unexpected token %c...",*aux);
@@ -276,6 +322,12 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group,PASTOperator paren
 
 				aux=adv_op; // advance operator...
 			}
+
+			if(!eval_preoperator){
+				eval_postoperator=false;
+			}
+
+			eval_preoperator = false; // set it false due is not first.
 		}
 		
 		if(expr_op_end==0) {// there's no any operators \"type_group\"...
@@ -285,6 +337,11 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group,PASTOperator paren
 					print_info_cr("trivial value %s",s_effective_start);
 					op->left=op->right=NULL;
 					op->value=GET_STR_WITHOUT_SPACES(s_effective_start); // assign its value ...
+
+
+					if(pre_token!=""){ // generate a prenode operaor..
+						op=preOperator(pre_token,op);
+					}
 					return op;
 				  }else{ // parenthesis!
 					print_info_cr("START:%c",*start_expression);
@@ -294,9 +351,9 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group,PASTOperator paren
 						return NULL;
 					}
 					
-					strncpy(subexpr,start_expression+1,end_expression-start_expression-2); // copy sub expression					
+					strncpy(subexpr,start_expression+1,end_expression-start_expression-2); // copy sub expression
 					printf("expr:%s\n",subexpr);
-					PASTOperator p_gr=generateAST(subexpr,GROUP_0,op);
+					PASTNode p_gr=generateAST(subexpr,GROUP_0,op);
 
 					if(pre_token!=""){
 						return preOperator(pre_token,p_gr);
@@ -326,13 +383,6 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group,PASTOperator paren
 				op->left=preOperator(pre_token,op->left);
 			}
 
-			/*if(!strcmp(operator_str,"-")) {// we copy the - and change operator to add.
-				strcpy(operator_str,"+");
-				strncpy(eval_right,expr_op,strlen(expr_op)); // copy its right side including the operator...
-
-			}else{
-				strncpy(eval_right,expr_op_end,strlen(expr_op)); // copy its right side...
-			}*/
 			strncpy(eval_right,expr_op_end,strlen(expr_op)); // copy its right side...
 
 			op->right=generateAST(eval_right,type_group,op);
@@ -350,13 +400,125 @@ PASTOperator generateAST(const char *s, TYPE_GROUP type_group,PASTOperator paren
 		}
 		
 	}
-
 	return op;
 }
 
+#define MAX_STATMENT_LENGTH 8192
+#define MAX_VAR_LENGTH 100
+
+bool isVarDeclarationStatment(const char *statment, bool & error){
+	// PRE: length(statment) < MAX_STATMENT_LENGTH
+	char *aux = (char *)statment;
+	//string var_name;
+	PASTNode expression;
+	char *start_var;
+	error=false;
+	char stat[MAX_STATMENT_LENGTH]={0};
+	int var_length;
+
+	IGNORE_SPACES(aux);
+
+	if(strncmp(aux,"var",3)==0){ // possible variable...
+		aux+=3;
+		IGNORE_SPACES(aux);
+
+		if(('a' <= *aux && *aux <='z') ||
+		   ('A' <= *aux && *aux <='Z')
+		){ // let's see it has right chars...
+			start_var=aux;
+			aux++;
+			while(('a' <= *aux && *aux <='z') ||
+				  ('0' <= *aux && *aux <='9') ||
+				  (*aux=='_') ||
+				  ('A' <= *aux && *aux <='Z')){
+				aux++;
+			}
+
+			IGNORE_SPACES(aux);
+
+			if(*aux == ';' || *aux == '='){
+
+				var_length=aux-start_var;
+
+				strncpy(stat,start_var,var_length);
+				print_info_cr("registered \"%s\" variable: ",stat);
+
+				if(*aux == ';'){
+					return true;
+				}else{ // is the operator =, copy expression.
+					aux++;
+					strncpy(stat,aux,strlen(statment)-(aux-statment)-1); // copy expression without ;
+
+					print_info_cr("evaluating expression \"%s\"",stat);
+
+				}
+
+
+
+			}
+			else{
+				print_error_cr("variable cannot cannot contain char '%c'",*aux);
+				error=true;
+			}
+
+		}else{
+			print_error_cr("variable cannot start with char %c",*aux);
+			error=true;
+		}
+
+	}
+
+	return false;
+}
+
+bool parseScript(const char *s){
+
+	char *current=(char *)s;
+	string var_name;
+	bool error;
+	char statment[MAX_STATMENT_LENGTH];
+	char *next;
+	PASTNode expression;
+	int length;
+	do{
+
+		next=strstr(current,";");//getStatment(current);
+		if(next ==0){
+			print_error_cr("Expected ;");
+			return false;
+		}
+
+		length=next-current;
+		if(length>=MAX_STATMENT_LENGTH){
+			print_error_cr("Max statment length!");
+			return false;
+		}
+
+		memset(statment,0,sizeof(statment));
+		strncpy(statment,current,(next-current));
+
+		print_info_cr("eval:%s",statment);
+
+		if(isVarDeclarationStatment(statment,error)){
+
+			if(!error) {
+
+			}
+		}else{ // let's try another op...
+
+		}
+
+		// next statment...
+		current=next;
+
+	}while(next!=0);
+
+	return true;
+}
+
+
 		
-		
-int generateAsmCode(PASTOperator op, int & numreg){
+int generateAsmCode(PASTNode op, int & numreg){
 	
 	int r=0;
 	if(op==NULL){
@@ -365,22 +527,10 @@ int generateAsmCode(PASTOperator op, int & numreg){
 	
 	if(op->left==NULL && op->right==NULL){ // trivial case value itself...
 
-
-
-
-		/*if(op->parent!=NULL && op->parent->token=="-"){
-			print_info_cr("MOV \tE[%i],-%s\n",numreg,op->value.c_str());
-			if(!CZG_Script::getInstance()->insertMovInstruction(op->value,true)){
-				return -1;
-			}
-		}else{*/
-			print_info_cr("MOV \tE[%i],%s\n",numreg,op->value.c_str());
-			if(!CZG_Script::getInstance()->insertMovInstruction(op->value)){
-				return -1;
-			}
-
-		//}
-		
+		print_info_cr("MOV \tE[%i],%s\n",numreg,op->value.c_str());
+		if(!CZG_Script::getInstance()->insertMovInstruction(op->value)){
+			return -1;
+		}
 
 		r=numreg;
 	}else{ 
@@ -390,33 +540,14 @@ int generateAsmCode(PASTOperator op, int & numreg){
 		left=generateAsmCode(op->left,numreg);
 		right=generateAsmCode(op->right,numreg);
 		
-		/*if(left == -1 && right == -1){ // error!
-			print_error_cr("ERROR %i %i!",left,right);
-			return -1;
-		}*/
-		
 		r=numreg;
 
 		if(left !=-1 && right!=-1){
-			/*if(op->token=="-") // special op. (insert add more neg)
-			{
-				print_info_cr("%s\tE[%i],E[%i]","-",numreg,right);
-				if(!CZG_Script::getInstance()->insertOperatorInstruction("-",right)){
-					return -1;
-				}
-
-				print_info_cr("%s\tE[%i],E[%i],E[%i]","+",numreg,left,right);
-				if(!CZG_Script::getInstance()->insertOperatorInstruction("+",left,right)){
-					return -1;
-				}
-
+			print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
+			if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left,right)){
+				return -1;
 			}
-			else{*/
-				print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
-				if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left,right)){
-					return -1;
-				}
-			//}
+
 		}else if(right!=-1){ // one op..
 			print_info_cr("%s\tE[%i],E[%i] !!!",op->token.c_str(),numreg,right);
 			if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,right)){
