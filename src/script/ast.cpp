@@ -5,7 +5,7 @@
 char * token_group0(char *c){
 	char *aux=c;
 	// try number operators...
-	if(*c=='+' || *c=='-'){
+	if(*c=='+' || *c=='-' || *c=='='){
 		aux++;
 		return aux;
 	}
@@ -410,51 +410,64 @@ bool isVarDeclarationStatment(const char *statment, bool & error){
 	// PRE: length(statment) < MAX_STATMENT_LENGTH
 	char *aux = (char *)statment;
 	//string var_name;
-	PASTNode expression;
+	//PASTNode expression;
 	char *start_var;
 	error=false;
 	char stat[MAX_STATMENT_LENGTH]={0};
+	string s_aux;
 	int var_length;
 
-	IGNORE_SPACES(aux);
+	aux=IGNORE_SPACES(aux);
 
 	if(strncmp(aux,"var",3)==0){ // possible variable...
 		aux+=3;
-		IGNORE_SPACES(aux);
 
-		if(('a' <= *aux && *aux <='z') ||
-		   ('A' <= *aux && *aux <='Z')
+		if(*aux!=' '){ // is not var word...
+			return false;
+		}
+
+		aux=IGNORE_SPACES(aux);
+
+		if(*aux!=0 && (
+		   ('a' <= *aux && *aux <='z') ||
+		   ('A' <= *aux && *aux <='Z'))
 		){ // let's see it has right chars...
 			start_var=aux;
 			aux++;
-			while(('a' <= *aux && *aux <='z') ||
+			while((*aux!=0 || *aux!= '=') && (('a' <= *aux && *aux <='z') ||
 				  ('0' <= *aux && *aux <='9') ||
 				  (*aux=='_') ||
-				  ('A' <= *aux && *aux <='Z')){
+				  ('A' <= *aux && *aux <='Z'))){
 				aux++;
 			}
 
-			IGNORE_SPACES(aux);
+			aux=IGNORE_SPACES(aux);
 
-			if(*aux == ';' || *aux == '='){
+			if((*aux == 0 || *aux == '=')){
 
 				var_length=aux-start_var;
 
 				strncpy(stat,start_var,var_length);
 				print_info_cr("registered \"%s\" variable: ",stat);
 
-				if(*aux == ';'){
-					return true;
-				}else{ // is the operator =, copy expression.
-					aux++;
-					strncpy(stat,aux,strlen(statment)-(aux-statment)-1); // copy expression without ;
+				s_aux=stat;
+				CZG_Script::getInstance()->registerVariable(s_aux);
 
-					print_info_cr("evaluating expression \"%s\"",stat);
+
+				if(*aux != 0){ // copy expression '='
+
+					aux++;
+					aux=IGNORE_SPACES(aux);
+
+					if(*aux != 0){
+						memset(stat,0,sizeof(stat));
+						strncpy(stat,aux,strlen(statment)-(aux-statment)-1); // copy expression without ;
+						print_info_cr("evaluating expression \"%s\"",stat);
+					}
 
 				}
 
-
-
+				return true;
 			}
 			else{
 				print_error_cr("variable cannot cannot contain char '%c'",*aux);
@@ -471,51 +484,6 @@ bool isVarDeclarationStatment(const char *statment, bool & error){
 	return false;
 }
 
-bool parseScript(const char *s){
-
-	char *current=(char *)s;
-	string var_name;
-	bool error;
-	char statment[MAX_STATMENT_LENGTH];
-	char *next;
-	PASTNode expression;
-	int length;
-	do{
-
-		next=strstr(current,";");//getStatment(current);
-		if(next ==0){
-			print_error_cr("Expected ;");
-			return false;
-		}
-
-		length=next-current;
-		if(length>=MAX_STATMENT_LENGTH){
-			print_error_cr("Max statment length!");
-			return false;
-		}
-
-		memset(statment,0,sizeof(statment));
-		strncpy(statment,current,(next-current));
-
-		print_info_cr("eval:%s",statment);
-
-		if(isVarDeclarationStatment(statment,error)){
-
-			if(!error) {
-
-			}
-		}else{ // let's try another op...
-
-		}
-
-		// next statment...
-		current=next;
-
-	}while(next!=0);
-
-	return true;
-}
-
 
 		
 int generateAsmCode(PASTNode op, int & numreg){
@@ -527,8 +495,8 @@ int generateAsmCode(PASTNode op, int & numreg){
 	
 	if(op->left==NULL && op->right==NULL){ // trivial case value itself...
 
-		print_info_cr("MOV \tE[%i],%s\n",numreg,op->value.c_str());
-		if(!CZG_Script::getInstance()->insertMovInstruction(op->value)){
+		print_info_cr("CONST \tE[%i],%s\n",numreg,op->value.c_str());
+		if(!CZG_Script::getInstance()->insertMovInstruction(op->value, op->type_ptr)){
 			return -1;
 		}
 
@@ -543,9 +511,59 @@ int generateAsmCode(PASTNode op, int & numreg){
 		r=numreg;
 
 		if(left !=-1 && right!=-1){
-			print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
-			if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left,right)){
-				return -1;
+
+			// particular case if operator is =
+			if(op->token == "="){
+				// the variable can only assigned if the type is the same or if the type is undefined.
+				// check if left operand is registered variable...
+				CObject * var_obj = CZG_Script::getInstance()->getRegisteredVariable(op->left->value,false);
+				if(var_obj == NULL){
+					print_error_cr("undeclared variable \"%s\"");
+				}else{ // ok is declared ... let's see if undefined variable or is the same type ...
+					bool is_undefined = dynamic_cast<CUndefined *>(var_obj) != NULL;
+					if(is_undefined ||
+							var_obj->getPointerClassStr() == op->type_ptr
+						){
+
+						if(is_undefined){ // create object ...
+							CObject *right_instruction =  CZG_Script::getInstance()->getInstructionCurrentStatment(right);
+
+							if(right_instruction==NULL){
+								return -1;
+							}
+
+							var_obj = CFactoryContainer::getInstance()->newObject(right_instruction->getClassStr());
+							if(var_obj!=NULL){
+								CZG_Script::getInstance()->defineVariable(op->left->value,var_obj);
+								print_info_cr("%s defined as %s",op->left->value.c_str(),right_instruction->getClassStr().c_str());
+							}else{
+								return -1;
+							}
+						}
+
+
+
+
+					    // set value the operator = must be defined !
+						if(!CZG_Script::getInstance()->insertMovVarInstruction(var_obj,right)){
+
+							return -1;
+						}
+
+						print_info_cr("MOV \tV(%s),E[%i]\n",op->left->value.c_str(),right);
+
+
+					}else{
+						print_error_cr("\"%s\" was instanced as \"%s\" and cannot be change type as \"%s\"",op->left->value.c_str(),var_obj->getPointerClassStr().c_str(),op->type_ptr.c_str());
+						return -1;
+					}
+				}
+			}
+			else{
+				print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
+				if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left,right)){
+					return -1;
+				}
 			}
 
 		}else if(right!=-1){ // one op..

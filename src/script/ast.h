@@ -12,6 +12,8 @@ public:
 
 	string token;
 	string 	value;
+	string type_ptr;
+	string type_class;
 	PASTNode parent;
 	PASTNode left,right;
 

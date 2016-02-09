@@ -30,8 +30,8 @@ m_chai->add(fun(&objPtrToClassPtr),"objectPtrTo"+m_type+"Ptr");
 
 
 template<class _F>
-bool iniFactory(const string & _type){
-	return _F::createFactory(_type,_F::registerScriptFunctions);
+bool iniFactory(){
+	return _F::createFactory(_F::getTypeStr(),_F::registerScriptFunctions);
 }
 
 template<class _FS, class _FR>

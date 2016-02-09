@@ -7,6 +7,7 @@
 #include "object/CBoolean.h"
 #include "object/CNumber.h"
 #include "object/CString.h"
+#include "object/CUndefined.h"
 
 
 

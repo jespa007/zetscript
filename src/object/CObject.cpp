@@ -52,7 +52,7 @@ void CObject::setObjectContainer(CObject *_origin_obj){
     m_objectContainer = _origin_obj;
 }
 
-CObject *CObject::getObjectContainer(CObject *_origin_obj){
+CObject *CObject::getObjectContainer(){
     return m_objectContainer;
 }
 

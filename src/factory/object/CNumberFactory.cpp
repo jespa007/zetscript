@@ -104,6 +104,15 @@ void CNumberFactory::registerScriptFunctions(){
 		return result;
 	});
 
+	// registers operator - to CNumber object.
+	registerOperator("=",[](CNumber *dst,CNumber *src){
+
+		dst->m_value = src->m_value;
+
+		return dst;
+
+	});
+
 
 	// registers operator % to CNumber object.
 	/*registerOperator("%",[](CNumber *n1,CNumber *n2){

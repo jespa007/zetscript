@@ -144,14 +144,57 @@ void CZG_Script::destroy(){
 }
 
 CZG_Script::CZG_Script(){
-	iniFactory<CNumberFactory>("CNumber");
-	iniFactory<CBooleanFactory>("CBoolean");
-	iniFactory<CStringFactory>("CString");
+
+	m_defaultVar = new CUndefined();
+
+	iniFactory<CNumberFactory>();
+	iniFactory<CBooleanFactory>();
+	iniFactory<CStringFactory>();
 
 }
 
+
 void CZG_Script::init(){
 	CFactoryContainer::getInstance()->registerScriptFunctions();
+}
+
+bool CZG_Script::registerVariable(const string & var_name){
+	if(!existRegisteredVariable(var_name)){
+		m_registeredVariable[var_name]=m_defaultVar;
+		return true;
+	}else{
+		print_error_cr("error var \"%s\" already registered!", var_name.c_str());
+	}
+
+	return false;
+}
+
+bool CZG_Script::defineVariable(const string & var_name, CObject *obj){
+	if(m_registeredVariable.count(var_name)==1){
+		m_registeredVariable[var_name]=obj;
+		return true;
+	}else{
+		print_error_cr("error var \"%s\" is not registered!", var_name.c_str());
+	}
+	return false;
+}
+
+bool CZG_Script::existRegisteredVariable(const string & var_name){
+	return m_registeredVariable.count(var_name)==1;
+}
+
+
+CObject *CZG_Script::getRegisteredVariable(const string & var_name, bool print_msg){
+	if(m_registeredVariable.count(var_name)==1){
+		return m_registeredVariable[var_name];
+	}else{
+		if(print_msg){
+			print_error_cr("var \"%s\" doesn't exist!", var_name.c_str());
+		}
+	}
+
+	return NULL;
+
 }
 
 bool CZG_Script::eval(const string & s){
@@ -161,9 +204,15 @@ bool CZG_Script::eval(const string & s){
 	bool error;
 	char statment[MAX_STATMENT_LENGTH];
 	char *next;
-	PASTNode expression;
+	PASTNode ast_node;
 	int length;
-	do{
+	int numreg=0;
+
+	current=IGNORE_SPACES(current);
+
+	while(*current!=0){
+
+
 
 		next=strstr(current,";");//getStatment(current);
 		if(next ==0){
@@ -177,25 +226,46 @@ bool CZG_Script::eval(const string & s){
 			return false;
 		}
 
+		memset(statment,0,sizeof(statment));
 		strncpy(statment,current,(next-current));
 
 		print_info_cr("eval:%s",statment);
 
 		if(isVarDeclarationStatment(statment,error)){
 
-		}else{ // let's try another op...
-
-			if(error){
+			if(error) {
 				return false;
 			}
+		}else{ // let's try another op...
+			tInfoStatementOp i_stat;
+
+			ast_node=generateAST(statment);
+
+			if(ast_node==NULL){ // some error happend!
+				return false;
+			}
+
+			numreg=0;
+
+			// new statment ...
+			statement_op.push_back(i_stat);
+
+			if(generateAsmCode(ast_node,numreg)<0){
+				printf("Error generating code\n");
+			}
+
 		}
 
 		// next statment...
-		current=next;
+		current=next+1; // ignore ;
+		current=IGNORE_SPACES(current);
 
-	}while(next!=0);
+	}
+
+	execute();
 
 	return true;
+
 
 	/*PASTNode op=generateAST((const char *)s.c_str());
 
@@ -218,8 +288,22 @@ bool CZG_Script::eval(const string & s){
 
 }
 
-bool CZG_Script::insertMovInstruction(const string & v, bool neg){
+CObject * CZG_Script::getInstructionCurrentStatment(unsigned instruction){
+	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
 
+	if(instruction >=0 && instruction < ptr_current_statement_op->asm_op.size()){
+		return ptr_current_statement_op->asm_op[instruction]->res; // type result..
+	}
+	else{
+		print_error_cr("index out of bounds");
+	}
+
+	return NULL;
+}
+
+bool CZG_Script::insertMovInstruction(const string & v, string & type_ptr){
+
+	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
 	CObject *obj;
 	// try parse value...
 	if((obj=CNumber::Parse(v))!=NULL){
@@ -235,18 +319,21 @@ bool CZG_Script::insertMovInstruction(const string & v, bool neg){
 	else if((obj=CBoolean::Parse(v))!=NULL){
 		print_info_cr("%s detected as boolean\n",v.c_str());
 	}else{
-		print_error_cr("ERROR: %s is unkown variable\n",v.c_str());
-		return false;
+		obj=getRegisteredVariable(v);
+		if(obj==NULL){
+
+			print_error_cr("ERROR: %s is unkown variable\n",v.c_str());
+			return false;
+		}
 	}
 
 	if(obj != NULL){
 
 		tInfoAsmOp *asm_op = new tInfoAsmOp();
 
-
-
 		asm_op->res=obj;
 		asm_op->type_res=obj->getPointerClassStr();
+		type_ptr = obj->getPointerClassStr();
 
 		if(asm_op->res->getPointerClassStr()==""){
 			print_error_cr("unknown type res operand");
@@ -254,32 +341,91 @@ bool CZG_Script::insertMovInstruction(const string & v, bool neg){
 		}
 
 
-		asm_op->type_op=MOV_VALUE;
+		asm_op->type_op=LOAD_VALUE;
 
 
-		statement_op.asm_op.push_back(asm_op);
+		ptr_current_statement_op->asm_op.push_back(asm_op);
+	}
+
+	return true;
+}
+
+bool CZG_Script::insertMovVarInstruction(CObject *left_var, int right){
+
+	string op="=";
+	string left_type_ptr = left_var->getPointerClassStr();
+
+	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
+
+	if(right <0 || (unsigned)right >= ptr_current_statement_op->asm_op.size()){
+		print_error_cr("ERROR: right operant is out of internal stack (%i,%i) ",right,ptr_current_statement_op->asm_op.size());
+		return false;
+	}
+
+	/*if(right <0 || (unsigned)right >= ptr_current_statement_op->asm_op.size()){
+		print_error_cr("ERROR: right operant is out of internal stack (%i,%i)",right,ptr_current_statement_op->asm_op.size());
+		return;
+	}*/
+
+	/*if(ptr_current_statement_op->asm_op[left]->res->getPointerClassStr()==""){
+		print_error_cr("unknown type left operand");
+		return;
+	}
+
+	if(ptr_current_statement_op->asm_op[right]->res->getPointerClassStr()==""){
+		print_error_cr("unknown type right operand");
+		return;
+	}*/
+
+	if(right >= 0){ // insert both op...
+
+
+		tInfoAsmOp *asm_op = new tInfoAsmOp();
+		asm_op->type_op=MOV_VAR;
+		asm_op->left_var_obj=left_var;
+		asm_op->index_left = -1;
+		asm_op->index_right = right;
+
+		if((asm_op->funOp=getOperatorInfo(op,
+				&left_type_ptr,
+				&ptr_current_statement_op->asm_op[right]->type_res)) != NULL){
+
+			asm_op->type_res = left_type_ptr;
+			ptr_current_statement_op->asm_op.push_back(asm_op);
+		}else{
+			print_error_cr("cannot find = operator");
+			return false;
+		}
+
+	}else{
+		print_error_cr("ERROR: right operand is out of internal stack ");
+		return false;
 	}
 
 	return true;
 }
 
 bool CZG_Script::insertOperatorInstruction(const string & op, int left, int right){
-	if(left <0 || (unsigned)left >= statement_op.asm_op.size()){
-		print_error_cr("ERROR: left operant is out of internal stack (%i,%i) ",left,statement_op.asm_op.size());
+
+
+	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
+
+	if(left <0 || (unsigned)left >= ptr_current_statement_op->asm_op.size()){
+		print_error_cr("ERROR: left operant is out of internal stack (%i,%i) ",left,ptr_current_statement_op->asm_op.size());
 		return false;
 	}
 
-	/*if(right <0 || (unsigned)right >= statement_op.asm_op.size()){
-		print_error_cr("ERROR: right operant is out of internal stack (%i,%i)",right,statement_op.asm_op.size());
+	/*if(right <0 || (unsigned)right >= ptr_current_statement_op->asm_op.size()){
+		print_error_cr("ERROR: right operant is out of internal stack (%i,%i)",right,ptr_current_statement_op->asm_op.size());
 		return;
 	}*/
 
-	/*if(statement_op.asm_op[left]->res->getPointerClassStr()==""){
+	/*if(ptr_current_statement_op->asm_op[left]->res->getPointerClassStr()==""){
 		print_error_cr("unknown type left operand");
 		return;
 	}
 
-	if(statement_op.asm_op[right]->res->getPointerClassStr()==""){
+	if(ptr_current_statement_op->asm_op[right]->res->getPointerClassStr()==""){
 		print_error_cr("unknown type right operand");
 		return;
 	}*/
@@ -293,11 +439,11 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 		asm_op->index_right = right;
 
 		if((asm_op->funOp=getOperatorInfo(op,
-				&statement_op.asm_op[left]->type_res,
-				&statement_op.asm_op[right]->type_res)) != NULL){
+				&ptr_current_statement_op->asm_op[left]->type_res,
+				&ptr_current_statement_op->asm_op[right]->type_res)) != NULL){
 
 			asm_op->type_res = asm_op->funOp->result_type;
-			statement_op.asm_op.push_back(asm_op);
+			ptr_current_statement_op->asm_op.push_back(asm_op);
 		}else{
 			print_error_cr("cannot find dual operator \"%s\"",op.c_str());
 			return false;
@@ -309,10 +455,10 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 		asm_op->index_right = -1;
 
 		if((asm_op->funOp=getOperatorInfo(op,
-				&statement_op.asm_op[left]->type_res)) != NULL){
+				&ptr_current_statement_op->asm_op[left]->type_res)) != NULL){
 
 			asm_op->type_res = asm_op->funOp->result_type;
-			statement_op.asm_op.push_back(asm_op);
+			ptr_current_statement_op->asm_op.push_back(asm_op);
 		}else{
 			print_error_cr("cannot find one operator \"%s\"",op.c_str());
 			return false;
@@ -329,114 +475,128 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 
 void CZG_Script::execute(){
 
-	if(statement_op.asm_op.size()>0){
 
-		print_info_cr("executing code...");
+	for(unsigned s = 0; s < statement_op.size(); s++){
 
-		for(unsigned i = 0; i  <statement_op.asm_op.size(); i++){
-			print_info_cr("executing instruction %i...",i);
-			switch(statement_op.asm_op[i]->type_op){
-			case MOV_VALUE: // do nothing because the value is already stored in the list.
-				print_info_cr("mov!");
-				break;
-			case OPERATOR:{ // we will perform the operation (cross the fingers)
-				print_info_cr("operator %p",statement_op.asm_op[i]->funOp->fun_ptr);
-				CObject *i1,*i2;
-				int result=0;//(int)statement_op.asm_op[statement_op.asm_op[i]->index_left]->res;
-				int fun=(int)statement_op.asm_op[i]->funOp->fun_ptr;
+		if(statement_op[s].asm_op.size()>0){
 
-				i1=statement_op.asm_op[statement_op.asm_op[i]->index_left]->res;
+			print_info_cr("executing code...");
 
-				if(statement_op.asm_op[i]->index_right==-1){ // one ops
+			for(unsigned i = 0; i  < statement_op[s].asm_op.size(); i++){
+				print_info_cr("executing instruction %i...",i);
+				switch(statement_op[s].asm_op[i]->type_op){
+				case LOAD_VALUE: // do nothing because the value is already stored in the list.
+					print_info_cr("mov!");
+					break;
+				case MOV_VAR:
+				case OPERATOR:{ // we will perform the operation (cross the fingers)
+					print_info_cr("operator %p",statement_op[s].asm_op[i]->funOp->fun_ptr);
+					CObject *i1=NULL,*i2=NULL;
+					int result=0;//(int)statement_op.asm_op[statement_op.asm_op[i]->index_left]->res;
+					int fun=(int)statement_op[s].asm_op[i]->funOp->fun_ptr;
 
-					print_info_cr("1-op index:%i ",statement_op.asm_op[i]->index_left);
+					if(statement_op[s].asm_op[i]->type_op!=MOV_VAR){
+						i1=statement_op[s].asm_op[statement_op[s].asm_op[i]->index_left]->res;
+					}else{
+						i1=statement_op[s].asm_op[i]->left_var_obj;
+					}
 
+					if(statement_op[s].asm_op[i]->index_right!=-1){
+						i2=statement_op[s].asm_op[statement_op[s].asm_op[i]->index_right]->res;
+					}
 
-	#ifdef _WIN32
-	asm(
-			"push %[p1]\n\t"
-			//"push %%esp\n\t"
-			"call *%P0\n\t" // call function
-			//"add $4,%%esp"       // Clean up the stack.
-			: "=a" (result) // The result code from puts.
-			: "r"(fun),[p1] "r"(i1));
-	#else // GNU!!!!
-	asm(
-			"push %[p1]\n\t"
-			"push %%esp\n\t"
-			"call *%P0\n\t" // call function
-			"add $8,%%esp"       // Clean up the stack.
-			: "=a" (result) // The result code from puts.
-			: "r"(fun),[p1] "r"(i1));
+					if(i2==NULL){ // one ops
 
-	#endif
-				}
-
-				else{ // two ops
-
-					i2=statement_op.asm_op[statement_op.asm_op[i]->index_right]->res;
-
-					print_info_cr("2 op:%i %i ",statement_op.asm_op[i]->index_left,statement_op.asm_op[i]->index_right);
+						print_info_cr("1-op index:%i ",statement_op[s].asm_op[i]->index_left);
 
 
-	#ifdef _WIN32
-	asm(
-			"push %[p2]\n\t"
-			"push %[p1]\n\t"
-			//"push %%esp\n\t"
-			"call *%P0\n\t" // call function
-			//"add $4,%%esp"       // Clean up the stack.
-			: "=a" (result) // The result code from puts.
-			: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
-	#else // GNU!!!!
-	asm(
-			"push %[p2]\n\t"
-			"push %[p1]\n\t"
-			"push %%esp\n\t"
-			"call *%P0\n\t" // call function
-			"add $12,%%esp"       // Clean up the stack.
-			: "=a" (result) // The result code from puts.
-			: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
+		#ifdef _WIN32
+		asm(
+				"push %[p1]\n\t"
+				//"push %%esp\n\t"
+				"call *%P0\n\t" // call function
+				//"add $4,%%esp"       // Clean up the stack.
+				: "=a" (result) // The result code from puts.
+				: "r"(fun),[p1] "r"(i1));
+		#else // GNU!!!!
+		asm(
+				"push %[p1]\n\t"
+				"push %%esp\n\t"
+				"call *%P0\n\t" // call function
+				"add $8,%%esp"       // Clean up the stack.
+				: "=a" (result) // The result code from puts.
+				: "r"(fun),[p1] "r"(i1));
 
-	#endif
-				}
+		#endif
+					}
 
-
-
-					if(result!=0){
+					else{ // two ops
 
 
-						if(dynamic_cast<CObject *>((CObject *)result) == NULL){
-							print_error_cr("Error casting object");
-							return;
+						if(statement_op[s].asm_op[i]->type_op!=MOV_VAR){
+							print_info_cr("2 op:%i %i ",statement_op[s].asm_op[i]->index_left,statement_op[s].asm_op[i]->index_right);
 						}
 
-						statement_op.asm_op[i]->res=(CObject *)result;
 
-					}else{
-						print_error_cr("Error result returning void");
-						return;
+		#ifdef _WIN32
+		asm(
+				"push %[p2]\n\t"
+				"push %[p1]\n\t"
+				//"push %%esp\n\t"
+				"call *%P0\n\t" // call function
+				//"add $4,%%esp"       // Clean up the stack.
+				: "=a" (result) // The result code from puts.
+				: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
+		#else // GNU!!!!
+		asm(
+				"push %[p2]\n\t"
+				"push %[p1]\n\t"
+				"push %%esp\n\t"
+				"call *%P0\n\t" // call function
+				"add $12,%%esp"       // Clean up the stack.
+				: "=a" (result) // The result code from puts.
+				: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
+
+		#endif
 					}
+
+
+
+						if(result!=0){
+
+
+							if(dynamic_cast<CObject *>((CObject *)result) == NULL){
+								print_error_cr("Error casting object");
+								return;
+							}
+
+							statement_op[s].asm_op[i]->res=(CObject *)result;
+
+						}else{
+							print_error_cr("Error result returning void");
+							return;
+						}
+					}
+
+					break;
 				}
-
-				break;
 			}
+
+			CObject *obj = statement_op[s].asm_op[statement_op[s].asm_op.size()-1]->res;
+			CNumber *num;
+			CString *str;
+			CBoolean *bol;
+			if((num = dynamic_cast<CNumber *>(obj))!=NULL){
+				print_info_cr("Number with value=%f",num->m_value);
+			}else if((str = dynamic_cast<CString *>(obj))!=NULL){
+				print_info_cr("String with value=\"%s\"",str->m_value.c_str());
+			}else if((bol = dynamic_cast<CBoolean *>(obj))!=NULL){
+				print_info_cr("Boolean with value=%i",bol->m_value);
+			}
+
+
+
 		}
-
-		CObject *obj = statement_op.asm_op[statement_op.asm_op.size()-1]->res;
-		CNumber *num;
-		CString *str;
-		CBoolean *bol;
-		if((num = dynamic_cast<CNumber *>(obj))!=NULL){
-			print_info_cr("Number with value=%f",num->m_value);
-		}else if((str = dynamic_cast<CString *>(obj))!=NULL){
-			print_info_cr("String with value=\"%s\"",str->m_value.c_str());
-		}else if((bol = dynamic_cast<CBoolean *>(obj))!=NULL){
-			print_info_cr("Boolean with value=%i",bol->m_value);
-		}
-
-
-
 	}
 
 }
@@ -458,10 +618,14 @@ void CZG_Script::unregisterOperators(){
 //-------------------------------------------------------------------------------------
 CZG_Script::~CZG_Script(){
 	// unregister operators ...
-	for(unsigned i = 0; i  <statement_op.asm_op.size(); i++){
+	for(unsigned s = 0; s  <statement_op.size(); s++){
+	for(unsigned i = 0; i  <statement_op[s].asm_op.size(); i++){
 
-		delete statement_op.asm_op[i];
+		delete statement_op[s].asm_op[i];
+	}
 	}
 
 	unregisterOperators();
+
+	delete m_defaultVar;
 }

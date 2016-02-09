@@ -67,7 +67,7 @@ public:
     virtual bool load(const string & m_filename);
 
     void     setObjectContainer(CObject *_origin_obj);
-    CObject *getObjectContainer(CObject *_origin_obj);
+    CObject *getObjectContainer();
 
 
 

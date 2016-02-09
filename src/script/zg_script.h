@@ -125,7 +125,8 @@ void* getcodeptr(const FunctorT& f) {
 class CZG_Script{
 
 	enum{
-		MOV_VALUE=1,
+		LOAD_VALUE=1,
+		MOV_VAR,
 		OPERATOR
 	};
 
@@ -134,6 +135,8 @@ class CZG_Script{
 		vector <string> * param_type;
 		void (* fun_ptr)();
 	}tInfoObjectOperator;
+
+	CUndefined *m_defaultVar;
 
 
 
@@ -144,6 +147,7 @@ class CZG_Script{
 
 	     int type_op;
 	     tInfoObjectOperator *funOp;
+	     CObject *left_var_obj;
 	    CObject *res;
 	    string type_res;
 	    int index_left,index_right;
@@ -151,6 +155,7 @@ class CZG_Script{
 
 		tInfoAsmOp(){
 			isconvertable=NULL;
+			left_var_obj=NULL;
 		     type_op=0;
 		     funOp=NULL;
 			res=NULL;
@@ -168,7 +173,7 @@ class CZG_Script{
 	}tInfoStatementOp;
 
 
-	tInfoStatementOp /*vector<tInfoStatementOp>*/ statement_op;
+	vector<tInfoStatementOp> statement_op;
 
 
 	static CZG_Script * m_instance;
@@ -179,10 +184,16 @@ class CZG_Script{
 
 
 	map<string,vector<tInfoObjectOperator> *> m_mapContainerOperators;
+	map<string,CObject *> m_registeredVariable;
+
 	bool existOperatorSignature(const string & op,const string & result, vector<string> * param);
+	bool existRegisteredVariable(const string & var_name);
+
+
 	tInfoObjectOperator * getOperatorInfo(const string & op, string * type_op1, string * type_op2=NULL);
 
 	void unregisterOperators();
+	void insertNewStatment();
 
 public:
 	static CZG_Script * getInstance();
@@ -190,8 +201,16 @@ public:
 	bool eval(const string & s);
 	bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 
-	bool insertMovInstruction(const string & v, bool neg=false);
+	bool insertMovInstruction(const string & v, string & type_ptr);
+	bool insertMovVarInstruction(CObject *left_var, int right);
+
 	bool insertOperatorInstruction(const string &op, int left, int right=-1);
+	CObject * getInstructionCurrentStatment(unsigned instruction);
+
+	bool registerVariable(const string & var_name);
+	bool defineVariable(const string & var_name, CObject *obj);
+
+	CObject *getRegisteredVariable(const string & v, bool print_msg=true);
 
 	void execute();
 
