@@ -34,6 +34,27 @@ enum TYPE_GROUP{
 	MAX_GROUPS
 };
 
-int generateAsmCode(PASTNode op, int & numreg);
+
+enum ASM_OPERATOR{
+	UNKNOW=0,
+	MOV=1,
+	EQU,  // ==
+	LT,  // <
+	LTE,  // <=
+	NOT, // !
+	GT,  // >
+	GTE, // >=
+	ADD, // +
+	SUB, // -
+	AND, // &&
+	OR,  // ||
+	DIV, // /
+	MOD,  // %
+	CAT  // str+str
+
+
+};
+
+int generateAsmCode(PASTNode op, int & numreg, bool & error);
 PASTNode generateAST(const char *s, TYPE_GROUP type_group=GROUP_0, PASTNode parent=NULL);
 bool isVarDeclarationStatment(const char *statment, bool & error);

@@ -147,9 +147,9 @@ CZG_Script::CZG_Script(){
 
 	m_defaultVar = new CUndefined();
 
-	iniFactory<CNumberFactory>();
-	iniFactory<CBooleanFactory>();
-	iniFactory<CStringFactory>();
+	iniFactory<CNumberFactory>("CNumber");
+	iniFactory<CBooleanFactory>("CBoolean");
+	iniFactory<CStringFactory>("CString");
 
 }
 
@@ -172,6 +172,7 @@ bool CZG_Script::registerVariable(const string & var_name){
 bool CZG_Script::defineVariable(const string & var_name, CObject *obj){
 	if(m_registeredVariable.count(var_name)==1){
 		m_registeredVariable[var_name]=obj;
+		obj->setName(var_name);
 		return true;
 	}else{
 		print_error_cr("error var \"%s\" is not registered!", var_name.c_str());
@@ -250,8 +251,14 @@ bool CZG_Script::eval(const string & s){
 			// new statment ...
 			statement_op.push_back(i_stat);
 
-			if(generateAsmCode(ast_node,numreg)<0){
-				printf("Error generating code\n");
+
+			bool error_asm=false;
+			generateAsmCode(ast_node,numreg,error_asm);
+
+			if(error_asm)
+			{
+				print_error_cr("Error generating code\n");
+				return false;
 			}
 
 		}
@@ -288,11 +295,11 @@ bool CZG_Script::eval(const string & s){
 
 }
 
-CObject * CZG_Script::getInstructionCurrentStatment(unsigned instruction){
+string * CZG_Script::getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction){
 	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
 
 	if(instruction >=0 && instruction < ptr_current_statement_op->asm_op.size()){
-		return ptr_current_statement_op->asm_op[instruction]->res; // type result..
+		return &ptr_current_statement_op->asm_op[instruction]->type_res; // type result..
 	}
 	else{
 		print_error_cr("index out of bounds");
@@ -321,10 +328,15 @@ bool CZG_Script::insertMovInstruction(const string & v, string & type_ptr){
 	}else{
 		obj=getRegisteredVariable(v);
 		if(obj==NULL){
-
-			print_error_cr("ERROR: %s is unkown variable\n",v.c_str());
+			print_error_cr("ERROR: %s is not declared",v.c_str());
 			return false;
 		}
+
+		/*bool undefined=dynamic_cast<CUndefined *>(obj);
+		if(undefined){
+			print_error_cr("ERROR: %s is undefined",v.c_str());
+			return false;
+		}*/
 	}
 
 	if(obj != NULL){
@@ -405,6 +417,52 @@ bool CZG_Script::insertMovVarInstruction(CObject *left_var, int right){
 	return true;
 }
 
+ASM_OPERATOR getNumberOperatorId(const string & op){
+
+	if(op=="+"){
+		return ADD;
+	}else if(op=="-"){
+		return SUB;
+	}else if(op=="/"){
+		return DIV;
+	}else if(op=="%"){
+		return MOD;
+	}
+
+	return UNKNOW;
+}
+
+ASM_OPERATOR getBoleanOperatorId(const string & op){
+	if(op=="&&"){
+		return ADD;
+	}else if(op=="||"){
+		return SUB;
+	}
+
+	return UNKNOW;
+}
+
+ASM_OPERATOR getStringOperatorId(const string & op){
+	if(op=="+"){
+		return CAT;
+	}
+
+	return UNKNOW;
+}
+
+CZG_Script::TYPE getTypeAsmResult(int index){
+
+	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
+
+	if(index <0 || (unsigned)index >= ptr_current_statement_op->asm_op.size()){
+		print_error_cr("ERROR: left operant is out of internal stack (%i,%i) ",index,ptr_current_statement_op->asm_op.size());
+		return CZG_Script::TYPE::UNKNOW;;
+	}
+
+	return ptr_current_statement_op->asm_op[index].result_type;
+}
+
+
 bool CZG_Script::insertOperatorInstruction(const string & op, int left, int right){
 
 
@@ -415,6 +473,36 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 		return false;
 	}
 
+	TYPE t_left = getTypeAsmResult(left);
+	TYPE t_right = getTypeAsmResult(right);
+	ASM_OPERATOR id_op;
+	TYPE result_type=UNKNOW;
+
+	if((t_left == NUMBER) && t_right == NUMBER){
+		if((id_op=getNumberOperatorId(op))==UNKNOW){
+			print_error_cr("undefined operator %s",op.c_str());
+			return false;
+		}
+
+		result_type = NUMBER;
+
+	}else if(t_left== STRING){
+
+		if((id_op=getStringOperatorId(op))==UNKNOW){
+			print_error_cr("undefined operator %s",op.c_str());
+			return false;
+		}
+
+		result_type = STRING;
+	}else if((t_left == BOOL) && t_right == BOOL){
+		if((id_op=getBoleanOperatorId(op))==UNKNOW){
+			print_error_cr("undefined operator %s",op.c_str());
+			return false;
+		}
+		result_type = BOOL;
+	}else{
+		print_error_cr("not compatible %i %i",t_left,t_right);
+	}
 	/*if(right <0 || (unsigned)right >= ptr_current_statement_op->asm_op.size()){
 		print_error_cr("ERROR: right operant is out of internal stack (%i,%i)",right,ptr_current_statement_op->asm_op.size());
 		return;
@@ -430,33 +518,51 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 		return;
 	}*/
 
+	 tInfoObjectOperator *funOp;
+
 	if(left >=0 && right >= 0){ // insert both op...
 
 
-		tInfoAsmOp *asm_op = new tInfoAsmOp();
-		asm_op->type_op=OPERATOR;
-		asm_op->index_left = left;
-		asm_op->index_right = right;
 
-		if((asm_op->funOp=getOperatorInfo(op,
+
+		if((funOp=getOperatorInfo(op,
 				&ptr_current_statement_op->asm_op[left]->type_res,
 				&ptr_current_statement_op->asm_op[right]->type_res)) != NULL){
 
+			tInfoAsmOp *asm_op = new tInfoAsmOp();
+			asm_op->type_op=OPERATOR;
+			asm_op->index_left = left;
+			asm_op->index_right = right;
+			asm_op->funOp = funOp;
 			asm_op->type_res = asm_op->funOp->result_type;
+
+
+			//-----------------------
+			asm_op->result_type = result_type;
+			asm_op->operator_type = id_op;
+
+
 			ptr_current_statement_op->asm_op.push_back(asm_op);
+
+
+
 		}else{
 			print_error_cr("cannot find dual operator \"%s\"",op.c_str());
 			return false;
 		}
 	}else if(left >=0){ // insert one operand
-		tInfoAsmOp *asm_op = new tInfoAsmOp();
-		asm_op->type_op=OPERATOR;
-		asm_op->index_left = left;
-		asm_op->index_right = -1;
 
-		if((asm_op->funOp=getOperatorInfo(op,
+
+
+
+		if((funOp=getOperatorInfo(op,
 				&ptr_current_statement_op->asm_op[left]->type_res)) != NULL){
 
+			tInfoAsmOp *asm_op = new tInfoAsmOp();
+			asm_op->type_op=OPERATOR;
+			asm_op->index_left = left;
+			asm_op->index_right = -1;
+			asm_op->funOp = funOp;
 			asm_op->type_res = asm_op->funOp->result_type;
 			ptr_current_statement_op->asm_op.push_back(asm_op);
 		}else{

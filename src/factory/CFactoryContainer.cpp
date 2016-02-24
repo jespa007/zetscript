@@ -130,7 +130,7 @@ CObject *intToObjectPtr(int str_ptr){
 
 
 
-string CFactoryContainer::getTypeFromInsensitive(const string & insensitive_type){
+string CFactoryContainer::getUserTypeFromInsensitive(const string & insensitive_type){
 	for(unsigned i = 0; i < m_vecTypeContainer->size(); i++){
 		if(CStringUtils::toLower(m_vecTypeContainer->at(i).m_type) == CStringUtils::toLower(insensitive_type)){
 			return m_vecTypeContainer->at(i).m_type;
@@ -144,6 +144,16 @@ CObject *CFactoryContainer::newObject(const string & _type){
 
 	if((ifc=getFactoryInfo(_type))!=NULL){
 		return ifc->newObject();
+	}
+
+	return NULL;
+
+}
+
+CObject *CFactoryContainer::newObjectByClassPtr(const string & ptr_type){
+	for(unsigned int i = 0;i < m_vecTypeContainer->size(); i++){
+		if(m_vecTypeContainer->at(i).m_typePtr == ptr_type)
+			return m_vecTypeContainer->at(i).newObject();
 	}
 
 	return NULL;

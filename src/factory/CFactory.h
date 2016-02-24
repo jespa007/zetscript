@@ -30,13 +30,13 @@ m_chai->add(fun(&objPtrToClassPtr),"objectPtrTo"+m_type+"Ptr");
 
 
 template<class _F>
-bool iniFactory(){
-	return _F::createFactory(_F::getTypeStr(),_F::registerScriptFunctions);
+bool iniFactory(const string & user_class){
+	return _F::createFactory(user_class,_F::registerScriptFunctions);
 }
 
 template<class _FS, class _FR>
 void REGISTER_PROPERTIES_FACTORY(){
-	_FS::addTypeAsLocalElementResourceToLoad(_FR::getType());
+	_FS::addTypeAsLocalElementResourceToLoad(_FR::getUserType());
 }
 
 class CBaseParser;
@@ -188,7 +188,7 @@ public:
 		m_defaultResource=NULL;
 	}
 
-	static string getType(){
+	static string getUserType(){
 		return m_type;
 	}
 
@@ -223,7 +223,7 @@ public:
 		return NULL;
 	}
 
-	static const char *getTypeStr(){
+	static const char *getUserTypeStr(){
 
 		char *cc = (char *) typeid(_tObject).name();
 
@@ -293,14 +293,14 @@ public:
 			m_vResourceContainer->push_back(
 			obj = new _tObject());
 
-			obj->setType(m_type);
-			obj->setClassStr(getTypeStr());
+			obj->setUserType(m_type);
+			obj->setClassStr(getUserTypeStr());
 			obj->setPointerClassStr(getPointerTypeStr());
 
 			return obj;
 		}
 		else{
-			print_error_cr("m_vResourceContainer %sFactory NULL (container not initialized on CEngine::CEngine()", getTypeStr());
+			print_error_cr("m_vResourceContainer %sFactory NULL (container not initialized on CEngine::CEngine()", getUserTypeStr());
 		}
 
 		return NULL;
@@ -311,7 +311,7 @@ public:
 
 		if((obj = newObject()) != NULL){
 			if(!setNewID(m_id, obj)){
-				print_error_cr("Error object type \"%s\". Trying to set ID \"%s\" that already exist!",getTypeStr(),m_id.c_str());
+				print_error_cr("Error object type \"%s\". Trying to set ID \"%s\" that already exist!",getUserTypeStr(),m_id.c_str());
 			}
 			obj->setName(m_id);
 		}
@@ -339,7 +339,7 @@ public:
 
 		// check if controller exist...
 		if(((exist_obj = objectExists(_sName, _vec)) == NULL) && _showErrorMessageNotFound) {
-			print_error_cr("%s \"%s\" not found ", getTypeStr(), _sName.c_str());
+			print_error_cr("%s \"%s\" not found ", getUserTypeStr(), _sName.c_str());
 		}
 
 		return exist_obj;

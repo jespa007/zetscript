@@ -3,23 +3,15 @@
 
 
 
-int CObject::n_numeredObject = 0;
-
-
-
-
 void CObject::setup() {
 
-    m_elapsed_ticks_print = 0;
-    active = false;
-    m_objectType = "unknow";
+    m_userObjectType = "unknow";
 
 
     m_objectContainer=NULL;
 
     // generate a uuid by default ...
     m_id = CUUID::newUUID();
-    m_localId = m_id;
     m_classStr="unknown";
     m_pointerClassStr="unknown";
 }
@@ -27,17 +19,10 @@ void CObject::setup() {
 
 CObject::CObject() {
     setup();
-
-
-
-    // to avoid collisions with unamed objects...
-    //m_name = CStringUtils::formatString("%s_%i",getObjectTypeStr(),n_numeredObject++);
 }
 //---------------------------------------------------------------------
 
 void CObject::ini() {
-
-
 
 }
 
@@ -46,7 +31,6 @@ bool CObject::load(const string & m_filename) {
 
     return false;
 }
-
 
 void CObject::setObjectContainer(CObject *_origin_obj){
     m_objectContainer = _origin_obj;

@@ -130,6 +130,14 @@ class CZG_Script{
 		OPERATOR
 	};
 
+	enum TYPE{
+		UNKNOW=0,
+		BOOL,
+		NUMBER,
+		STRING,
+		VAR
+	};
+
 	typedef struct{
 		string result_type;
 		vector <string> * param_type;
@@ -144,16 +152,23 @@ class CZG_Script{
 
 	public:
 
-
 	     int type_op;
 	     tInfoObjectOperator *funOp;
 	     CObject *left_var_obj;
-	    CObject *res;
-	    string type_res;
-	    int index_left,index_right;
-	    bool (* isconvertable)(int value);
+	     CObject *res;
+	     string type_res;
+
+	     //------------------
+	     TYPE result_type;
+	     ASM_OPERATOR operator_type;
+	     void *ptr_value; // can be float, bool or string.
+	     //------------------
+
+	     int index_left,index_right;
+	     bool (* isconvertable)(int value);
 
 		tInfoAsmOp(){
+			result_type=UNKNOW;
 			isconvertable=NULL;
 			left_var_obj=NULL;
 		     type_op=0;
@@ -161,6 +176,7 @@ class CZG_Script{
 			res=NULL;
 		    type_res="none";
 		    index_left=index_right=-1;
+		    ptr_value=NULL;
 		}
 
 
@@ -195,6 +211,12 @@ class CZG_Script{
 	void unregisterOperators();
 	void insertNewStatment();
 
+
+	ASM_OPERATOR getNumberOperatorId(const string & op);
+	ASM_OPERATOR getBoleanOperatorId(const string & op);
+	ASM_OPERATOR getStringOperatorId(const string & op);
+	TYPE getTypeAsmResult(int index);
+
 public:
 	static CZG_Script * getInstance();
 
@@ -205,7 +227,7 @@ public:
 	bool insertMovVarInstruction(CObject *left_var, int right);
 
 	bool insertOperatorInstruction(const string &op, int left, int right=-1);
-	CObject * getInstructionCurrentStatment(unsigned instruction);
+	string * getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
 
 	bool registerVariable(const string & var_name);
 	bool defineVariable(const string & var_name, CObject *obj);

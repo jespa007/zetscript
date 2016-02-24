@@ -13,7 +13,6 @@ class CObject{
 public:
     // define all tipe objects avaliable in our scope...
 
-    static int n_numeredObject;
 
     //------------------------------------------
     CObject();
@@ -39,12 +38,12 @@ public:
     void setRegistered();
 
     //------------------------------------------------------------------------------------
-    const string & getType() {
-        return m_objectType;
+    const string & getUserType() {
+        return m_userObjectType;
     }
 
-    void setType(const string & _type) {
-        m_objectType=_type;
+    void setUserType(const string & _type) {
+        m_userObjectType=_type;
     }
 
     void setClassStr(const string & _class) {
@@ -92,11 +91,10 @@ protected:
 
     CObject *m_objectContainer;
 
-    bool   active;
-    unsigned int m_elapsed_ticks_print;
-    string m_objectType,m_classStr,m_pointerClassStr;
 
-    bool registered;
+    string m_userObjectType,m_classStr,m_pointerClassStr;
+
+
 
 
 

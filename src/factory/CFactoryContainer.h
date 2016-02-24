@@ -60,6 +60,7 @@ public:
 
 	// GLOBAL
 	CObject *newObject(const string & _type);
+	CObject * newObjectByClassPtr(const string & _ptr_type);
 	CObject *newObject(const string & _type,const string & _id);
 	CObject *getObject(const string & _type,const string & _id);
 
@@ -69,7 +70,7 @@ public:
 	/**
 	 * Get the right type passing the insensitive one.
 	 */
-	string getTypeFromInsensitive(const string & insensitive_type);
+	string getUserTypeFromInsensitive(const string & insensitive_type);
 
 	/**
 	 * buildMapGroupTypes: returns a set of map collection that matches with specified group and object.

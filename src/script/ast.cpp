@@ -486,7 +486,7 @@ bool isVarDeclarationStatment(const char *statment, bool & error){
 
 
 		
-int generateAsmCode(PASTNode op, int & numreg){
+int generateAsmCode(PASTNode op, int & numreg, bool & error){
 	
 	int r=0;
 	if(op==NULL){
@@ -497,7 +497,9 @@ int generateAsmCode(PASTNode op, int & numreg){
 
 		print_info_cr("CONST \tE[%i],%s\n",numreg,op->value.c_str());
 		if(!CZG_Script::getInstance()->insertMovInstruction(op->value, op->type_ptr)){
+			error|=true;
 			return -1;
+
 		}
 
 		r=numreg;
@@ -505,12 +507,17 @@ int generateAsmCode(PASTNode op, int & numreg){
 
 		int right=0, left=0;
 	
-		left=generateAsmCode(op->left,numreg);
-		right=generateAsmCode(op->right,numreg);
+		left=generateAsmCode(op->left,numreg,error);
+
+		if(error) return -1;
+
+		right=generateAsmCode(op->right,numreg,error);
 		
+		if(error) return -1;
+
 		r=numreg;
 
-		if(left !=-1 && right!=-1){
+		if(left !=-1 && right!=-1){ // 2 ops
 
 			// particular case if operator is =
 			if(op->token == "="){
@@ -519,24 +526,33 @@ int generateAsmCode(PASTNode op, int & numreg){
 				CObject * var_obj = CZG_Script::getInstance()->getRegisteredVariable(op->left->value,false);
 				if(var_obj == NULL){
 					print_error_cr("undeclared variable \"%s\"");
+					error|=true;
+					return -1;
 				}else{ // ok is declared ... let's see if undefined variable or is the same type ...
 					bool is_undefined = dynamic_cast<CUndefined *>(var_obj) != NULL;
+					string *ptr_class_type =  CZG_Script::getInstance()->getUserTypeResultCurrentStatmentAtInstruction(right);
+
+					if(ptr_class_type==NULL){
+						error|=true;
+						return -1;
+					}
+
 					if(is_undefined ||
-							var_obj->getPointerClassStr() == op->type_ptr
+							var_obj->getPointerClassStr() == *ptr_class_type
 						){
 
 						if(is_undefined){ // create object ...
-							CObject *right_instruction =  CZG_Script::getInstance()->getInstructionCurrentStatment(right);
 
-							if(right_instruction==NULL){
-								return -1;
-							}
 
-							var_obj = CFactoryContainer::getInstance()->newObject(right_instruction->getClassStr());
+
+
+							var_obj = CFactoryContainer::getInstance()->newObjectByClassPtr(*ptr_class_type);
 							if(var_obj!=NULL){
 								CZG_Script::getInstance()->defineVariable(op->left->value,var_obj);
-								print_info_cr("%s defined as %s",op->left->value.c_str(),right_instruction->getClassStr().c_str());
+								print_info_cr("%s defined as %s",op->left->value.c_str(),ptr_class_type->c_str());
 							}else{
+								print_error_cr("ERRRRRRRRRROR");
+								error|=true;
 								return -1;
 							}
 						}
@@ -546,7 +562,8 @@ int generateAsmCode(PASTNode op, int & numreg){
 
 					    // set value the operator = must be defined !
 						if(!CZG_Script::getInstance()->insertMovVarInstruction(var_obj,right)){
-
+							print_error_cr("ERRRRRRRRRROR 2");
+							error|=true;
 							return -1;
 						}
 
@@ -555,6 +572,7 @@ int generateAsmCode(PASTNode op, int & numreg){
 
 					}else{
 						print_error_cr("\"%s\" was instanced as \"%s\" and cannot be change type as \"%s\"",op->left->value.c_str(),var_obj->getPointerClassStr().c_str(),op->type_ptr.c_str());
+						error|=true;
 						return -1;
 					}
 				}
@@ -562,6 +580,7 @@ int generateAsmCode(PASTNode op, int & numreg){
 			else{
 				print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
 				if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left,right)){
+					error|=true;
 					return -1;
 				}
 			}
@@ -569,17 +588,20 @@ int generateAsmCode(PASTNode op, int & numreg){
 		}else if(right!=-1){ // one op..
 			print_info_cr("%s\tE[%i],E[%i] !!!",op->token.c_str(),numreg,right);
 			if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,right)){
+				error|=true;
 				return -1;
 			}
 
 		}else if(left!=-1){ // one op..
 			print_info_cr("%s\tE[%i],E[%i] !!!",op->token.c_str(),numreg,left);
 			if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left)){
+				error|=true;
 				return -1;
 			}
 
 		}else{ // ERROR
 			print_error_cr("ERROR both ops ==0!");
+			error|=true;
 			return -1;
 		}
 				
