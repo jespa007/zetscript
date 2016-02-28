@@ -4,12 +4,13 @@ class CNumber: public CObject{
 
 public:
 
-	double m_value;
+	float m_value;
 
 	static CNumber * Parse(const string & );
+	static float * ParsePrimitive(const string & );
 
 	CNumber();
-	CNumber(double v);
+	CNumber(float v);
 
 	virtual string toString();
 	

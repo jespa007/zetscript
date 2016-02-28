@@ -19,6 +19,24 @@ CBoolean * CBoolean::Parse(const string & s){
 		return NULL;
 }
 
+bool * CBoolean::ParsePrimitive(const string & s){
+
+	if(CStringUtils::toLower(s)=="true"){
+		bool *b=new bool;
+		*b=true;
+		return b;
+
+	}else if(CStringUtils::toLower(s)=="false"){
+		bool *b=new bool;
+		*b=false;
+		return b;
+	}
+
+	// TODO: develop exception handler.
+	return NULL;
+}
+
+
 CBoolean::CBoolean(){
 	m_value = false;
 }

@@ -28,6 +28,9 @@ protected:
 
 public:
 
+	enum{
+		INVALID_REGISTERED_INDEX_TYPE=-1
+	};
 
 
 	static void createSingletons();
@@ -55,6 +58,7 @@ public:
 			);
 
 	bool classPtrIsRegistered(const string & s);
+	int getIndexType(const string &s);
 
 	vector<string>							getFactoryTypeList();
 

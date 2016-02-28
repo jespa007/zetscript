@@ -111,7 +111,7 @@ void* getcodeptr(const FunctorT& f) {
   return *(void**)&ptr;
 }
 
-
+/*
 #define registerOperator(op_name,f){\
 	auto reg_function=f;\
 	typedef function_traits<decltype(reg_function)> decl;\
@@ -119,17 +119,12 @@ void* getcodeptr(const FunctorT& f) {
 	std::string result_type=typeid(decl::result_type).name();\
 	CZG_Script::getInstance()->registerOperatorInternal(op_name,result_type,param_type, (void(*)()) getcodeptr(reg_function));\
 }
-
+*/
 
 
 class CZG_Script{
 
-	enum{
-		LOAD_VALUE=1,
-		MOV_VAR,
-		OPERATOR
-	};
-
+public:
 	enum TYPE{
 		UNKNOW=0,
 		BOOL,
@@ -137,12 +132,21 @@ class CZG_Script{
 		STRING,
 		VAR
 	};
+private:
 
-	typedef struct{
+	/*enum TYPE_{
+		LOAD_VALUE=1,
+		MOV_VAR,
+		OPERATOR
+	};*/
+
+
+
+	/*typedef struct{
 		string result_type;
 		vector <string> * param_type;
 		void (* fun_ptr)();
-	}tInfoObjectOperator;
+	}tInfoObjectOperator;*/
 
 	CUndefined *m_defaultVar;
 
@@ -152,11 +156,12 @@ class CZG_Script{
 
 	public:
 
-	     int type_op;
-	     tInfoObjectOperator *funOp;
-	     CObject *left_var_obj;
-	     CObject *res;
-	     string type_res;
+
+	     //int type_op;
+	     //tInfoObjectOperator *funOp;
+	     //CObject *left_var_obj;
+	     void *result_obj; // can be float/bool/string or variable.
+	     //string type_res;
 
 	     //------------------
 	     TYPE result_type;
@@ -165,16 +170,17 @@ class CZG_Script{
 	     //------------------
 
 	     int index_left,index_right;
-	     bool (* isconvertable)(int value);
+	    // bool (* isconvertable)(int value);
 
 		tInfoAsmOp(){
-			result_type=UNKNOW;
-			isconvertable=NULL;
-			left_var_obj=NULL;
-		     type_op=0;
-		     funOp=NULL;
-			res=NULL;
-		    type_res="none";
+			result_type=TYPE::UNKNOW;
+			operator_type=ASM_OPERATOR::UNKNOW;
+			//isconvertable=NULL;
+			//left_var_obj=NULL;
+		  //   type_op=0;
+		   //  funOp=NULL;
+			result_obj=NULL; // must be created before.
+		   // type_res="none";
 		    index_left=index_right=-1;
 		    ptr_value=NULL;
 		}
@@ -199,40 +205,52 @@ class CZG_Script{
 	~CZG_Script();
 
 
-	map<string,vector<tInfoObjectOperator> *> m_mapContainerOperators;
+	//map<string,vector<tInfoObjectOperator> *> m_mapContainerOperators;
 	map<string,CObject *> m_registeredVariable;
 
-	bool existOperatorSignature(const string & op,const string & result, vector<string> * param);
+
+	//bool existOperatorSignature(const string & op,const string & result, vector<string> * param);
 	bool existRegisteredVariable(const string & var_name);
 
 
-	tInfoObjectOperator * getOperatorInfo(const string & op, string * type_op1, string * type_op2=NULL);
+	//tInfoObjectOperator * getOperatorInfo(const string & op, string * type_op1, string * type_op2=NULL);
 
 	void unregisterOperators();
 	void insertNewStatment();
 
 
-	ASM_OPERATOR getNumberOperatorId(const string & op);
-	ASM_OPERATOR getBoleanOperatorId(const string & op);
-	ASM_OPERATOR getStringOperatorId(const string & op);
-	TYPE getTypeAsmResult(int index);
+	ASM_OPERATOR getNumberOperatorId_TwoOps(const string & op,TYPE & result_type);
+	ASM_OPERATOR getBoleanOperatorId_TwoOps(const string & op,TYPE & result_type);
+	ASM_OPERATOR getStringOperatorId_TwoOps(const string & op,TYPE & result_type);
 
+	ASM_OPERATOR getNumberOperatorId_OneOp(const string & op);
+	ASM_OPERATOR getBoleanOperatorId_OneOp(const string & op);
+	ASM_OPERATOR getStringOperatorId_OneOp(const string & op);
+
+	TYPE getTypeAsmResult(int index);
+	bool isVarDeclarationStatment(const char *statment, bool & error,char **eval_expression);
 public:
+
+	//---------------------------------
+	// Register functions
+	CObject *getRegisteredVariable(const string & v, bool print_msg=true);
+	bool registerVariable(const string & var_name);
+	bool defineVariable(const string & var_name, CObject *obj);
+	//---------------------------------
+
 	static CZG_Script * getInstance();
 
 	bool eval(const string & s);
-	bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
+	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 
-	bool insertMovInstruction(const string & v, string & type_ptr);
-	bool insertMovVarInstruction(CObject *left_var, int right);
+	bool insertLoadValueInstruction(const string & v, string & type_ptr);
+	bool insertMovVarInstruction(CObject *var, int right);
 
 	bool insertOperatorInstruction(const string &op, int left, int right=-1);
-	string * getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
+	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
 
-	bool registerVariable(const string & var_name);
-	bool defineVariable(const string & var_name, CObject *obj);
 
-	CObject *getRegisteredVariable(const string & v, bool print_msg=true);
+
 
 	void execute();
 

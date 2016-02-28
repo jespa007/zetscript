@@ -17,7 +17,7 @@ void CNumberFactory::registerScriptFunctions(){
 	// Define operations for CNumber.
 
 	// registers operator + to CNumber object.
-	registerOperator("+",[](CNumber * n1,CNumber *n2){
+	/*registerOperator("+",[](CNumber * n1,CNumber *n2){
 
 		CNumber *result= NEW_NUMBER();
 		result->m_value = n1->m_value + n2->m_value;
@@ -112,7 +112,7 @@ void CNumberFactory::registerScriptFunctions(){
 		return dst;
 
 	});
-
+*/
 
 	// registers operator % to CNumber object.
 	/*registerOperator("%",[](CNumber *n1,CNumber *n2){

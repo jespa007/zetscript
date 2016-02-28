@@ -10,7 +10,7 @@
 REGISTER_FACTORY_FUNCTIONS(CBoolean);
 
 void CBooleanFactory::registerScriptFunctions(){
-	registerOperator("&&",[](CBoolean * n1,CBoolean *n2){
+	/*registerOperator("&&",[](CBoolean * n1,CBoolean *n2){
 
 		CBoolean *result= NEW_BOOLEAN();
 		result->m_value = n1->m_value && n2->m_value;
@@ -30,7 +30,7 @@ void CBooleanFactory::registerScriptFunctions(){
 		CBoolean *result= NEW_BOOLEAN();
 		result->m_value = !n1->m_value;
 		return result;
-	});
+	});*/
 
 
 }

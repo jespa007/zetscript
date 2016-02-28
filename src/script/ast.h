@@ -37,18 +37,21 @@ enum TYPE_GROUP{
 
 enum ASM_OPERATOR{
 	UNKNOW=0,
-	MOV=1,
+	MOV=1, // mov expression to var
+	LOAD, // primitive value like number/string or boolean...
 	EQU,  // ==
 	LT,  // <
 	LTE,  // <=
 	NOT, // !
 	GT,  // >
 	GTE, // >=
+	NEG, // !
 	ADD, // +
-	SUB, // -
+	INC, // ++
 	AND, // &&
 	OR,  // ||
 	DIV, // /
+	MUL, // *
 	MOD,  // %
 	CAT  // str+str
 
@@ -57,4 +60,4 @@ enum ASM_OPERATOR{
 
 int generateAsmCode(PASTNode op, int & numreg, bool & error);
 PASTNode generateAST(const char *s, TYPE_GROUP type_group=GROUP_0, PASTNode parent=NULL);
-bool isVarDeclarationStatment(const char *statment, bool & error);
+

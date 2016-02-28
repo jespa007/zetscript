@@ -21,6 +21,7 @@ public:
 	//static bool readFile(const string & filename, char *buffer, int length);
 
 	static void writeFile(const string & filename, string & data);
+	static ByteBuffer * readFile(const string & filename);
 
 
 	static int  getLength(const  string  & file);

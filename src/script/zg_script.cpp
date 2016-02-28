@@ -1,126 +1,8 @@
 
 #include "ast.cpp"
 
-
-
-bool CZG_Script::existOperatorSignature(const string & op,const string & result, vector<string> * param){
-
-
-	if(m_mapContainerOperators.count(op)==1){
-		vector< tInfoObjectOperator > * v= m_mapContainerOperators[op];
-
-		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator�
-
-			if(result == v->at(i).result_type && v->at(i).param_type->size() == param->size()){ // possibli matches...
-
-				bool equal = true;
-
-				for(unsigned j=0; j < v->at(i).param_type->size() && equal; j++){
-						if(v->at(i).param_type->at(j)==param->at(j)){
-							equal = false;
-						}
-				}
-
-				if(equal)
-					return true;
-			}
-		}
-
-	}
-
-	return false;
-}
-
-
-
-bool CZG_Script::registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)()){
-
-	if(!(param_type->size()==1 || param_type->size() ==2)){
-		print_error_cr("fatal error. We expected 1 or 2 ops for operator");
-		return false;
-	}
-
-	if(m_mapContainerOperators.count(_op_name) == 0){ // not exist
-		m_mapContainerOperators[_op_name] = new vector<tInfoObjectOperator>();
-	}
-
-	if(existOperatorSignature(_op_name,result_type, param_type)){
-		print_error_cr("operator signature already exist");
-		return false;
-	}
-	tInfoObjectOperator info;
-	info.result_type= result_type;
-	info.param_type = param_type;
-	info.fun_ptr = fun_ptr;
-	// IMPPORTANT! for each operator we can have different signatures�
-	m_mapContainerOperators[_op_name]->push_back(info);
-
-	print_info_cr("registered operator \"%s\"",_op_name.c_str());
-	return true;
-
-}
-
-
-
-CZG_Script::tInfoObjectOperator * CZG_Script::getOperatorInfo(const string & op, string * type_op1,  string * type_op2){
-	string *ps1=type_op1;
-	string *ps2=type_op2;
-	int num_operands = 1;
-	if(ps2!=NULL){
-		num_operands = 2;
-	}
-
-	if(m_mapContainerOperators.count(op)==1){
-		vector< tInfoObjectOperator > * v= m_mapContainerOperators[op];
-		//print_info_cr("operator \"%s\" found");
-
-		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator�
-
-			if(v->at(i).param_type->size()==2 && num_operands==2){
-				print_info_cr("try:%s %s",v->at(i).param_type->at(0).c_str(),v->at(i).param_type->at(1).c_str());
-				if(v->at(i).param_type->at(0)==*ps1 && v->at(i).param_type->at(1)==*ps2){ // we found the signature
-
-					return &v->at(i);
-				}
-			}else if(v->at(i).param_type->size()==1 && num_operands==1){ // insert operator for 1 op.
-				print_info_cr("try:%s",v->at(i).param_type->at(0).c_str());
-				if(v->at(i).param_type->at(0)==*ps1){ // we found the signature
-
-					return &v->at(i);
-				}
-
-			}/*else{
-				print_error_cr("fatal error. there's no number of op expected (internal error %i %i)",v->at(i).param_type->size(),num_operands);
-			}*/
-		}
-
-		if(num_operands==2){
-			print_error_cr("No any signature matches with operator \"%s\" (%s %s)",op.c_str(),type_op1->c_str(),type_op2->c_str());
-		}else{
-			print_error_cr("No any signature matches with operator \"%s\" (%s )",op.c_str(),type_op1->c_str());
-		}
-
-		print_error_cr("Possibilities:");
-		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator�
-			if(v->at(i).param_type->size()==2)
-				print_error_cr("%s (%s,%s)",v->at(i).result_type.c_str(), v->at(i).param_type->at(0).c_str(),v->at(i).param_type->at(1).c_str());
-
-			if(v->at(i).param_type->size()==1)
-				print_error_cr("%s (%s)",v->at(i).result_type.c_str(), v->at(i).param_type->at(0).c_str());
-
-		}
-
-
-
-
-	}
-
-	return NULL;
-
-
-
-}
-
+#define MAX_STATMENT_LENGTH 8192
+#define MAX_VAR_LENGTH 100
 
 
 CZG_Script * CZG_Script::m_instance = NULL;
@@ -198,6 +80,72 @@ CObject *CZG_Script::getRegisteredVariable(const string & var_name, bool print_m
 
 }
 
+bool CZG_Script::isVarDeclarationStatment(const char *statment, bool & error, char ** eval_expression){
+	// PRE: length(statment) < MAX_STATMENT_LENGTH
+	char *aux = (char *)statment;
+
+	//string var_name;
+	//PASTNode expression;
+	char *start_var,*end_var;
+	*eval_expression=NULL;
+	error=false;
+	char stat[MAX_STATMENT_LENGTH]={0};
+	string s_aux;
+	int var_length;
+
+	aux=IGNORE_SPACES(aux);
+
+	if(strncmp(aux,"var",3)==0){ // possible variable...
+		aux+=3;
+
+		if(*aux!=' '){ // is not var word...
+			return NULL;
+		}
+
+		*eval_expression=aux;
+
+		aux=IGNORE_SPACES(aux);
+
+		if(*aux!=0 && (
+		   ('a' <= *aux && *aux <='z') ||
+		   ('A' <= *aux && *aux <='Z'))
+		){ // let's see it has right chars...
+			start_var=aux;
+			aux++;
+			while((*aux!=0 || *aux!= '=') && (('a' <= *aux && *aux <='z') ||
+				  ('0' <= *aux && *aux <='9') ||
+				  (*aux=='_') ||
+				  ('A' <= *aux && *aux <='Z'))){
+				aux++;
+			}
+			end_var=aux;
+			aux=IGNORE_SPACES(aux);
+
+			if((*aux == 0 || *aux == '=')){
+
+				var_length=end_var-start_var;
+
+				strncpy(stat,start_var,var_length);
+				print_info_cr("registered \"%s\" variable: ",stat);
+
+				s_aux=stat;
+				CZG_Script::getInstance()->registerVariable(s_aux);
+
+				return true;
+			}
+			else{
+				print_error_cr("variable cannot cannot contain char '%c'",*aux);
+				error=true;
+			}
+
+		}else{
+			print_error_cr("variable cannot start with char %c",*aux);
+			error=true;
+		}
+	}
+	return false;
+}
+
 bool CZG_Script::eval(const string & s){
 
 	char *current=(char *)s.c_str();
@@ -208,12 +156,11 @@ bool CZG_Script::eval(const string & s){
 	PASTNode ast_node;
 	int length;
 	int numreg=0;
+	char *eval_expression;
 
 	current=IGNORE_SPACES(current);
 
 	while(*current!=0){
-
-
 
 		next=strstr(current,";");//getStatment(current);
 		if(next ==0){
@@ -231,16 +178,26 @@ bool CZG_Script::eval(const string & s){
 		strncpy(statment,current,(next-current));
 
 		print_info_cr("eval:%s",statment);
+		eval_expression = NULL;
 
-		if(isVarDeclarationStatment(statment,error)){
+		if(isVarDeclarationStatment(statment,error, &eval_expression)){
+
+			if(eval_expression!=NULL){
+				print_info_cr("eval expression %s",eval_expression);
+			}
 
 			if(error) {
 				return false;
 			}
-		}else{ // let's try another op...
+		}else{
+			eval_expression = statment;
+		}
+
+		if(eval_expression!=NULL){
+
 			tInfoStatementOp i_stat;
 
-			ast_node=generateAST(statment);
+			ast_node=generateAST(eval_expression);
 
 			if(ast_node==NULL){ // some error happend!
 				return false;
@@ -251,7 +208,6 @@ bool CZG_Script::eval(const string & s){
 			// new statment ...
 			statement_op.push_back(i_stat);
 
-
 			bool error_asm=false;
 			generateAsmCode(ast_node,numreg,error_asm);
 
@@ -260,7 +216,6 @@ bool CZG_Script::eval(const string & s){
 				print_error_cr("Error generating code\n");
 				return false;
 			}
-
 		}
 
 		// next statment...
@@ -273,99 +228,107 @@ bool CZG_Script::eval(const string & s){
 
 	return true;
 
-
-	/*PASTNode op=generateAST((const char *)s.c_str());
-
-	if(op==NULL){ // some error happend!
-		return false;
-	}
-	else{
-		int numreg=0;
-
-
-		if(generateAsmCode(op,numreg)<0){
-			printf("Error generating code\n");
-		}
-
-		execute();
-	}
-
-
-	return true;*/
-
 }
 
-string * CZG_Script::getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction){
+
+string  CZG_Script::getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction){
 	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
+	string result="unknow";
 
 	if(instruction >=0 && instruction < ptr_current_statement_op->asm_op.size()){
-		return &ptr_current_statement_op->asm_op[instruction]->type_res; // type result..
+		switch(ptr_current_statement_op->asm_op[instruction]->result_type){
+		default:
+		case TYPE::UNKNOW:
+			break;
+		case TYPE::VAR:
+			result= (((CObject *)ptr_current_statement_op->asm_op[instruction]->result_obj)->getPointerClassStr()); // type result..
+			break;
+		case TYPE::NUMBER:
+			result= CNumberFactory::getPointerTypeStr();
+			break;
+		case TYPE::STRING:
+			result= CStringFactory::getPointerTypeStr();
+			break;
+		case TYPE::BOOL:
+			result= CBooleanFactory::getPointerTypeStr();
+			break;
+		}
 	}
 	else{
 		print_error_cr("index out of bounds");
 	}
-
-	return NULL;
+	return result;
 }
 
-bool CZG_Script::insertMovInstruction(const string & v, string & type_ptr){
+bool CZG_Script::insertLoadValueInstruction(const string & v, string & type_ptr){
+
+	CNumber *num_obj;
+	CString *str_obj;
+	CBoolean *bool_obj;
 
 	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
-	CObject *obj;
+	void *obj;
+	TYPE type=TYPE::UNKNOW;
 	// try parse value...
-	if((obj=CNumber::Parse(v))!=NULL){
+	if((obj=CNumber::ParsePrimitive(v))!=NULL){
+		type=TYPE::NUMBER;
 		print_info_cr("%s detected as number\n",v.c_str());
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
+		type=TYPE::STRING;
 		string s=v.substr(1,v.size()-2);
-		CString *so=NEW_STRING();
-		so->m_value=s;
+		string *so=new string();
+		(*so)=s;
 		obj = so;
 		print_info_cr("%s detected as string\n",v.c_str());
 	}
-	else if((obj=CBoolean::Parse(v))!=NULL){
+	else if((obj=CBoolean::ParsePrimitive(v))!=NULL){
+		type=TYPE::BOOL;
 		print_info_cr("%s detected as boolean\n",v.c_str());
 	}else{
-		obj=getRegisteredVariable(v);
-		if(obj==NULL){
+		CObject * var=getRegisteredVariable(v);
+		type=TYPE::VAR;
+
+		if(var==NULL){
 			print_error_cr("ERROR: %s is not declared",v.c_str());
 			return false;
 		}
 
-		/*bool undefined=dynamic_cast<CUndefined *>(obj);
-		if(undefined){
-			print_error_cr("ERROR: %s is undefined",v.c_str());
-			return false;
-		}*/
+		obj = var;
+		if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){ // else it will store the value ...
+			type = TYPE::NUMBER;
+			obj=&num_obj->m_value;
+		}else if((bool_obj=dynamic_cast<CBoolean *>(var))!=NULL){
+			type = TYPE::BOOL;
+			obj=&bool_obj->m_value;
+		}else if((str_obj=dynamic_cast<CString *>(var))!=NULL){
+			type = TYPE::STRING;
+			obj=&str_obj->m_value;
+		}
 	}
 
 	if(obj != NULL){
 
 		tInfoAsmOp *asm_op = new tInfoAsmOp();
 
-		asm_op->res=obj;
-		asm_op->type_res=obj->getPointerClassStr();
-		type_ptr = obj->getPointerClassStr();
+		asm_op->result_obj=obj;
+		asm_op->result_type = type;
 
-		if(asm_op->res->getPointerClassStr()==""){
-			print_error_cr("unknown type res operand");
-			return false;
-		}
-
-
-		asm_op->type_op=LOAD_VALUE;
+		asm_op->operator_type=ASM_OPERATOR::LOAD;
 
 
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 	}
-
 	return true;
 }
 
-bool CZG_Script::insertMovVarInstruction(CObject *left_var, int right){
+bool CZG_Script::insertMovVarInstruction(CObject *var, int right){
 
-	string op="=";
-	string left_type_ptr = left_var->getPointerClassStr();
+	//string op="=";
+	string left_type_ptr = var->getPointerClassStr();
+	CNumber *num_obj;
+	CString *str_obj;
+	CBoolean *bool_obj;
 
 	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
 
@@ -374,40 +337,28 @@ bool CZG_Script::insertMovVarInstruction(CObject *left_var, int right){
 		return false;
 	}
 
-	/*if(right <0 || (unsigned)right >= ptr_current_statement_op->asm_op.size()){
-		print_error_cr("ERROR: right operant is out of internal stack (%i,%i)",right,ptr_current_statement_op->asm_op.size());
-		return;
-	}*/
-
-	/*if(ptr_current_statement_op->asm_op[left]->res->getPointerClassStr()==""){
-		print_error_cr("unknown type left operand");
-		return;
-	}
-
-	if(ptr_current_statement_op->asm_op[right]->res->getPointerClassStr()==""){
-		print_error_cr("unknown type right operand");
-		return;
-	}*/
-
 	if(right >= 0){ // insert both op...
 
-
 		tInfoAsmOp *asm_op = new tInfoAsmOp();
-		asm_op->type_op=MOV_VAR;
-		asm_op->left_var_obj=left_var;
+		asm_op->result_type = TYPE::VAR; // this only stores pointer...
+		asm_op->result_obj=var;
+
+		if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){ // else it will store the value ...
+			asm_op->result_type = TYPE::NUMBER;
+			asm_op->result_obj=&num_obj->m_value;
+		}else if((bool_obj=dynamic_cast<CBoolean *>(var))!=NULL){
+			asm_op->result_type = TYPE::BOOL;
+			asm_op->result_obj=&bool_obj->m_value;
+		}else if((str_obj=dynamic_cast<CString *>(var))!=NULL){
+			asm_op->result_type = TYPE::STRING;
+			asm_op->result_obj=&str_obj->m_value;
+		}
+
 		asm_op->index_left = -1;
 		asm_op->index_right = right;
+		asm_op->operator_type = ASM_OPERATOR::MOV;
+		ptr_current_statement_op->asm_op.push_back(asm_op);
 
-		if((asm_op->funOp=getOperatorInfo(op,
-				&left_type_ptr,
-				&ptr_current_statement_op->asm_op[right]->type_res)) != NULL){
-
-			asm_op->type_res = left_type_ptr;
-			ptr_current_statement_op->asm_op.push_back(asm_op);
-		}else{
-			print_error_cr("cannot find = operator");
-			return false;
-		}
 
 	}else{
 		print_error_cr("ERROR: right operand is out of internal stack ");
@@ -417,54 +368,88 @@ bool CZG_Script::insertMovVarInstruction(CObject *left_var, int right){
 	return true;
 }
 
-ASM_OPERATOR getNumberOperatorId(const string & op){
+ASM_OPERATOR CZG_Script::getNumberOperatorId_TwoOps(const string & op, CZG_Script::TYPE & result_type){
+
+	result_type = TYPE::NUMBER;
 
 	if(op=="+"){
 		return ADD;
-	}else if(op=="-"){
-		return SUB;
 	}else if(op=="/"){
 		return DIV;
 	}else if(op=="%"){
 		return MOD;
+	}else if(op=="*"){
+		return MUL;
+	}else if(op==">="){
+		result_type = TYPE::BOOL;
+		return GTE;
+	}else if(op==">"){
+		result_type = TYPE::BOOL;
+		return GT;
+	}else if(op=="<"){
+		result_type = TYPE::BOOL;
+		return LT;
+	}else if(op=="<="){
+		result_type = TYPE::BOOL;
+		return LTE;
+	}else if(op=="=="){
+		result_type = TYPE::BOOL;
+		return EQU;
 	}
-
-	return UNKNOW;
+	return ASM_OPERATOR::UNKNOW;
 }
 
-ASM_OPERATOR getBoleanOperatorId(const string & op){
+ASM_OPERATOR CZG_Script::getNumberOperatorId_OneOp(const string & op){
+
+	if(op=="-"){
+		return NEG;
+	}else if(op=="++"){
+		return INC;
+	}
+
+	return ASM_OPERATOR::UNKNOW;
+}
+
+ASM_OPERATOR CZG_Script::getBoleanOperatorId_TwoOps(const string & op, CZG_Script::TYPE & result_type){
+
+	result_type = TYPE::BOOL;
+
 	if(op=="&&"){
-		return ADD;
+		return AND;
 	}else if(op=="||"){
-		return SUB;
+		return OR;
 	}
 
-	return UNKNOW;
+	return ASM_OPERATOR::UNKNOW;
 }
 
-ASM_OPERATOR getStringOperatorId(const string & op){
+ASM_OPERATOR CZG_Script::getBoleanOperatorId_OneOp(const string & op){
+	if(op=="!"){
+		return NOT;
+	}
+	return ASM_OPERATOR::UNKNOW;
+}
+
+ASM_OPERATOR CZG_Script::getStringOperatorId_TwoOps(const string & op, CZG_Script::TYPE & result_type){
+
+	result_type = TYPE::STRING;
+
 	if(op=="+"){
 		return CAT;
+	}else if(op=="=="){
+		result_type = TYPE::BOOL;
+		return EQU;
 	}
-
-	return UNKNOW;
+	return ASM_OPERATOR::UNKNOW;
 }
 
-CZG_Script::TYPE getTypeAsmResult(int index){
+ASM_OPERATOR CZG_Script::getStringOperatorId_OneOp(const string & op){
 
-	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
-
-	if(index <0 || (unsigned)index >= ptr_current_statement_op->asm_op.size()){
-		print_error_cr("ERROR: left operant is out of internal stack (%i,%i) ",index,ptr_current_statement_op->asm_op.size());
-		return CZG_Script::TYPE::UNKNOW;;
-	}
-
-	return ptr_current_statement_op->asm_op[index].result_type;
+	return ASM_OPERATOR::UNKNOW;
 }
 
 
 bool CZG_Script::insertOperatorInstruction(const string & op, int left, int right){
-
 
 	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
 
@@ -473,114 +458,123 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 		return false;
 	}
 
-	TYPE t_left = getTypeAsmResult(left);
-	TYPE t_right = getTypeAsmResult(right);
+	string t_left = getUserTypeResultCurrentStatmentAtInstruction(left);
+	string t_right = "unknow";
+	if(right>=0){
+		t_right = getUserTypeResultCurrentStatmentAtInstruction(right);
+	}
+
 	ASM_OPERATOR id_op;
 	TYPE result_type=UNKNOW;
+	void *res_obj=NULL;
 
-	if((t_left == NUMBER) && t_right == NUMBER){
-		if((id_op=getNumberOperatorId(op))==UNKNOW){
-			print_error_cr("undefined operator %s",op.c_str());
-			return false;
-		}
-
-		result_type = NUMBER;
-
-	}else if(t_left== STRING){
-
-		if((id_op=getStringOperatorId(op))==UNKNOW){
-			print_error_cr("undefined operator %s",op.c_str());
-			return false;
-		}
-
-		result_type = STRING;
-	}else if((t_left == BOOL) && t_right == BOOL){
-		if((id_op=getBoleanOperatorId(op))==UNKNOW){
-			print_error_cr("undefined operator %s",op.c_str());
-			return false;
-		}
-		result_type = BOOL;
-	}else{
-		print_error_cr("not compatible %i %i",t_left,t_right);
-	}
-	/*if(right <0 || (unsigned)right >= ptr_current_statement_op->asm_op.size()){
-		print_error_cr("ERROR: right operant is out of internal stack (%i,%i)",right,ptr_current_statement_op->asm_op.size());
-		return;
-	}*/
-
-	/*if(ptr_current_statement_op->asm_op[left]->res->getPointerClassStr()==""){
-		print_error_cr("unknown type left operand");
-		return;
-	}
-
-	if(ptr_current_statement_op->asm_op[right]->res->getPointerClassStr()==""){
-		print_error_cr("unknown type right operand");
-		return;
-	}*/
-
-	 tInfoObjectOperator *funOp;
 
 	if(left >=0 && right >= 0){ // insert both op...
 
+		if((t_left == CNumberFactory::getPointerTypeStr()) && t_right == CNumberFactory::getPointerTypeStr()){
+			if((id_op=getNumberOperatorId_TwoOps(op,result_type))==ASM_OPERATOR::UNKNOW){
+				print_error_cr("undefined operator %s",op.c_str());
+				return false;
+			}
 
+		}else if(t_left== CStringFactory::getPointerTypeStr()){
 
+			if((id_op=getStringOperatorId_TwoOps(op,result_type))==ASM_OPERATOR::UNKNOW){
+				print_error_cr("undefined operator %s",op.c_str());
+				return false;
+			}
 
-		if((funOp=getOperatorInfo(op,
-				&ptr_current_statement_op->asm_op[left]->type_res,
-				&ptr_current_statement_op->asm_op[right]->type_res)) != NULL){
-
-			tInfoAsmOp *asm_op = new tInfoAsmOp();
-			asm_op->type_op=OPERATOR;
-			asm_op->index_left = left;
-			asm_op->index_right = right;
-			asm_op->funOp = funOp;
-			asm_op->type_res = asm_op->funOp->result_type;
-
-
-			//-----------------------
-			asm_op->result_type = result_type;
-			asm_op->operator_type = id_op;
-
-
-			ptr_current_statement_op->asm_op.push_back(asm_op);
-
-
-
+		}else if((t_left == CBooleanFactory::getPointerTypeStr()) && t_right == CBooleanFactory::getPointerTypeStr()){
+			if((id_op=getBoleanOperatorId_TwoOps(op, result_type))==ASM_OPERATOR::UNKNOW){
+				print_error_cr("undefined operator %s",op.c_str());
+				return false;
+			}
 		}else{
-			print_error_cr("cannot find dual operator \"%s\"",op.c_str());
+			print_error_cr("not compatible %s %s",t_left.c_str(),t_right.c_str());
 			return false;
 		}
+
+		switch(result_type){
+		default:
+		case TYPE::UNKNOW:
+			print_error_cr("unknow result type");
+			return false;
+			break;
+		case TYPE::NUMBER:
+			res_obj = new float;
+			break;
+		case TYPE::STRING:
+			res_obj = new string;
+			break;
+		case TYPE::BOOL:
+			res_obj = new bool;
+			break;
+
+		}
+
+		tInfoAsmOp *asm_op = new tInfoAsmOp();
+		//asm_op->type_op=OPERATOR;
+		asm_op->index_left = left;
+		asm_op->index_right = right;
+
+
+		//-----------------------
+		asm_op->result_type = result_type;
+		asm_op->operator_type = id_op;
+		asm_op->result_obj = res_obj;
+
+		ptr_current_statement_op->asm_op.push_back(asm_op);
+
+
 	}else if(left >=0){ // insert one operand
 
+			if((t_left == CNumberFactory::getPointerTypeStr()) ){
+				if((id_op=getNumberOperatorId_OneOp(op))==ASM_OPERATOR::UNKNOW){
+					print_error_cr("undefined operator %s",op.c_str());
+					return false;
+				}
+				res_obj = new float;
+				result_type = NUMBER;
 
+			}else if(t_left== CStringFactory::getPointerTypeStr()){
 
-
-		if((funOp=getOperatorInfo(op,
-				&ptr_current_statement_op->asm_op[left]->type_res)) != NULL){
+				if((id_op=getStringOperatorId_OneOp(op))==ASM_OPERATOR::UNKNOW){
+					print_error_cr("undefined operator %s",op.c_str());
+					return false;
+				}
+				res_obj = new string;
+				result_type = STRING;
+			}else if((t_left == CBooleanFactory::getPointerTypeStr())){
+				if((id_op=getBoleanOperatorId_OneOp(op))==ASM_OPERATOR::UNKNOW){
+					print_error_cr("undefined operator %s",op.c_str());
+					return false;
+				}
+				res_obj = new bool;
+				result_type = BOOL;
+			}else{
+				print_error_cr("not compatible %s %s",t_left.c_str(),t_right.c_str());
+				return false;
+			}
 
 			tInfoAsmOp *asm_op = new tInfoAsmOp();
-			asm_op->type_op=OPERATOR;
+			//asm_op->type_op=OPERATOR;
+			asm_op->operator_type = id_op;
+			asm_op->result_type = result_type;
+			asm_op->result_obj = res_obj;
 			asm_op->index_left = left;
 			asm_op->index_right = -1;
-			asm_op->funOp = funOp;
-			asm_op->type_res = asm_op->funOp->result_type;
 			ptr_current_statement_op->asm_op.push_back(asm_op);
-		}else{
-			print_error_cr("cannot find one operator \"%s\"",op.c_str());
-			return false;
-		}
 
 	}else{
 		print_error_cr("ERROR: both operant is out of internal stack ");
 		return false;
 	}
-
 	return true;
-
 }
 
 void CZG_Script::execute(){
 
+	int index_right=-1,index_left=-1;
 
 	for(unsigned s = 0; s < statement_op.size(); s++){
 
@@ -588,150 +582,282 @@ void CZG_Script::execute(){
 
 			print_info_cr("executing code...");
 
+			tInfoAsmOp * instruction=NULL;
 			for(unsigned i = 0; i  < statement_op[s].asm_op.size(); i++){
 				print_info_cr("executing instruction %i...",i);
-				switch(statement_op[s].asm_op[i]->type_op){
-				case LOAD_VALUE: // do nothing because the value is already stored in the list.
-					print_info_cr("mov!");
+				index_right = statement_op[s].asm_op[i]->index_right;
+				index_left = statement_op[s].asm_op[i]->index_left;
+				tInfoAsmOp * instruction=statement_op[s].asm_op[i];
+				tInfoAsmOp * right_instruction, *left_instruction;//=statement_op[s].asm_op[i];
+				instruction=statement_op[s].asm_op[i];
+				switch(instruction->operator_type){
+					default:
+						print_error_cr("operator type(%i) not implemented",instruction->operator_type);
+						break;
+					case LOAD:
+						print_info_cr("load value...");
 					break;
-				case MOV_VAR:
-				case OPERATOR:{ // we will perform the operation (cross the fingers)
-					print_info_cr("operator %p",statement_op[s].asm_op[i]->funOp->fun_ptr);
-					CObject *i1=NULL,*i2=NULL;
-					int result=0;//(int)statement_op.asm_op[statement_op.asm_op[i]->index_left]->res;
-					int fun=(int)statement_op[s].asm_op[i]->funOp->fun_ptr;
+					case MOV:{ // only can mov vars...
 
-					if(statement_op[s].asm_op[i]->type_op!=MOV_VAR){
-						i1=statement_op[s].asm_op[statement_op[s].asm_op[i]->index_left]->res;
-					}else{
-						i1=statement_op[s].asm_op[i]->left_var_obj;
-					}
+						print_info_cr("mov var");
+						right_instruction = statement_op[s].asm_op[index_right];
 
-					if(statement_op[s].asm_op[i]->index_right!=-1){
-						i2=statement_op[s].asm_op[statement_op[s].asm_op[i]->index_right]->res;
-					}
-
-					if(i2==NULL){ // one ops
-
-						print_info_cr("1-op index:%i ",statement_op[s].asm_op[i]->index_left);
-
-
-		#ifdef _WIN32
-		asm(
-				"push %[p1]\n\t"
-				//"push %%esp\n\t"
-				"call *%P0\n\t" // call function
-				//"add $4,%%esp"       // Clean up the stack.
-				: "=a" (result) // The result code from puts.
-				: "r"(fun),[p1] "r"(i1));
-		#else // GNU!!!!
-		asm(
-				"push %[p1]\n\t"
-				"push %%esp\n\t"
-				"call *%P0\n\t" // call function
-				"add $8,%%esp"       // Clean up the stack.
-				: "=a" (result) // The result code from puts.
-				: "r"(fun),[p1] "r"(i1));
-
-		#endif
-					}
-
-					else{ // two ops
-
-
-						if(statement_op[s].asm_op[i]->type_op!=MOV_VAR){
-							print_info_cr("2 op:%i %i ",statement_op[s].asm_op[i]->index_left,statement_op[s].asm_op[i]->index_right);
-						}
-
-
-		#ifdef _WIN32
-		asm(
-				"push %[p2]\n\t"
-				"push %[p1]\n\t"
-				//"push %%esp\n\t"
-				"call *%P0\n\t" // call function
-				//"add $4,%%esp"       // Clean up the stack.
-				: "=a" (result) // The result code from puts.
-				: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
-		#else // GNU!!!!
-		asm(
-				"push %[p2]\n\t"
-				"push %[p1]\n\t"
-				"push %%esp\n\t"
-				"call *%P0\n\t" // call function
-				"add $12,%%esp"       // Clean up the stack.
-				: "=a" (result) // The result code from puts.
-				: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
-
-		#endif
-					}
-
-
-
-						if(result!=0){
-
-
-							if(dynamic_cast<CObject *>((CObject *)result) == NULL){
-								print_error_cr("Error casting object");
-								return;
+						switch(instruction->result_type){
+						default:
+						case TYPE::UNKNOW:
+							print_error_cr("result type must be var (result type:%i)");
+							break;
+						case TYPE::NUMBER:
+							if(right_instruction->result_type == TYPE::NUMBER){
+								*((float *)instruction->result_obj) = *((float *)right_instruction->result_obj);
+							}else{
+								print_error_cr("right operant is not number");
 							}
+							break;
+						case TYPE::STRING:
+							if(right_instruction->result_type == TYPE::STRING){
+								*((string *)instruction->result_obj) = *((string *)right_instruction->result_obj);
+							}else{
+								print_error_cr("right operant is not string");
+							}
+							break;
+						case TYPE::BOOL:
+							if(right_instruction->result_type == TYPE::BOOL){
+								*((bool *)instruction->result_obj) = *((bool *)right_instruction->result_obj);
+							}else{
+								print_error_cr("right operant is not bool");
+							}
+							break;
+						case TYPE::VAR:
+							if(right_instruction->result_type == TYPE::VAR){ // assign pointer ?
 
-							statement_op[s].asm_op[i]->res=(CObject *)result;
+								print_error_cr("mov var not implemented (think about!)");
+								// get registered variable...
+								//left_obj = reinterpret_cast<CObject *>(left_instruction);
+							}else{
+								print_error_cr("right operant is not var");
+							}
+							break;
 
-						}else{
-							print_error_cr("Error result returning void");
-							return;
 						}
 					}
-
 					break;
+					case INC: // for numbers...
+						//left_instruction = statement_op[s].asm_op[index_left];
+						print_info_cr("inc");
+						left_instruction = statement_op[s].asm_op[index_left];
+						// increment variable...
+						(*((float *)left_instruction->result_obj))++;
+						// set it to expression result...
+						(*((float *)instruction->result_obj)) = (*((float *)left_instruction->result_obj));
+
+						break;
+					case ADD: // for numbers...
+						print_info_cr("add");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
+							print_info_cr("%f + %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							*((float *)instruction->result_obj) = *((float *)left_instruction->result_obj) + *((float *)right_instruction->result_obj);
+						}
+						else if(left_instruction->result_type == TYPE::STRING && right_instruction->result_type == TYPE::STRING){
+							*((string *)instruction->result_obj) = *((string *)left_instruction->result_obj) + *((string *)right_instruction->result_obj);
+						}else if(left_instruction->result_type == TYPE::STRING &&  right_instruction->result_type == TYPE::NUMBER){
+							*((string *)instruction->result_obj) = *((string *)left_instruction->result_obj) + CStringUtils::doubleToString(*((float *)right_instruction->result_obj));
+						}else{
+							print_error_cr("cannot operate + with (type(%i) + type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case DIV: // for numbers...
+						print_info_cr("div");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
+							print_info_cr("%f / %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							*((float *)instruction->result_obj) = *((float *)left_instruction->result_obj) / *((float *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate + with (type(%i) + type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case MUL: // for numbers...
+						print_info_cr("mul");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
+							print_info_cr("%f * %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							*((float *)instruction->result_obj) = *((float *)left_instruction->result_obj) * *((float *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate * with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case AND: // for numbers...
+						print_info_cr("and");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::BOOL && right_instruction->result_type == TYPE::BOOL){
+							print_info_cr("%i and %i",*((bool *)left_instruction->result_obj),*((bool *)right_instruction->result_obj));
+							*((bool *)instruction->result_obj) = *((bool *)left_instruction->result_obj) && *((bool *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate && with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case OR: // for numbers...
+						print_info_cr("or");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::BOOL && right_instruction->result_type == TYPE::BOOL){
+							print_info_cr("%i or %i",*((bool *)left_instruction->result_obj),*((bool *)right_instruction->result_obj));
+							*((bool *)instruction->result_obj) = *((bool *)left_instruction->result_obj) || *((bool *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate || with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case LT: // for numbers...
+						print_info_cr("<");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
+							print_info_cr("%f < %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) < *((float *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate < with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case GT: // for numbers...
+						print_info_cr(">");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
+							print_info_cr("%f > %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) > *((float *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate > with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case LTE: // for numbers...
+						print_info_cr("<=");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
+							print_info_cr("%f <= %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) <= *((float *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate <= with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case GTE: // for numbers...
+						print_info_cr(">=");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
+							print_info_cr("%f >= %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) >= *((float *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate >= with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case EQU: // for numbers...
+						print_info_cr("==");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
+							print_info_cr("%f == %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) == *((float *)right_instruction->result_obj);
+						}
+						else if(left_instruction->result_type == TYPE::STRING && right_instruction->result_type == TYPE::STRING){
+							print_info_cr("%s == %s",((string *)left_instruction->result_obj)->c_str(),((string *)right_instruction->result_obj)->c_str());
+							*((bool *)instruction->result_obj) = *((string *)left_instruction->result_obj) == *((string *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate == with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					/*case MOD: // for numbers...
+						print_info_cr("mod");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
+							print_info_cr("%f % %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							*((float *)instruction->result_obj) = *((float *)left_instruction->result_obj) % *((float *)right_instruction->result_obj);
+						}
+						else{
+							print_error_cr("cannot operate + with (type(%i) + type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;*/
+					case NOT:
+						print_info_cr("===============================================");
+						print_info_cr("not");
+						left_instruction = statement_op[s].asm_op[index_left];
+						(*((bool *)instruction->result_obj))=!(*((bool *)left_instruction->result_obj));
+
+						break;
+					case NEG:
+						print_info_cr("===============================================");
+						print_info_cr("negative");
+						left_instruction = statement_op[s].asm_op[index_left];
+						(*((float *)instruction->result_obj))=-(*((float *)left_instruction->result_obj));
+
+						break;
+
 				}
 			}
 
-			CObject *obj = statement_op[s].asm_op[statement_op[s].asm_op.size()-1]->res;
-			CNumber *num;
-			CString *str;
-			CBoolean *bol;
-			if((num = dynamic_cast<CNumber *>(obj))!=NULL){
-				print_info_cr("Number with value=%f",num->m_value);
-			}else if((str = dynamic_cast<CString *>(obj))!=NULL){
-				print_info_cr("String with value=\"%s\"",str->m_value.c_str());
-			}else if((bol = dynamic_cast<CBoolean *>(obj))!=NULL){
-				print_info_cr("Boolean with value=%i",bol->m_value);
+			// try to get the result...
+			instruction=statement_op[s].asm_op[statement_op[s].asm_op.size()-1];
+			if(instruction!=NULL){
+				switch(instruction->result_type){
+				case TYPE::UNKNOW:
+					print_info_cr("unknow type result");
+					break;
+				case TYPE::NUMBER:
+					print_info_cr("Number with value=%f",*((float*)instruction->result_obj));
+					break;
+				case TYPE::BOOL:
+					print_info_cr("Boolean with value=%i",*((bool*)instruction->result_obj));
+					break;
+				case TYPE::STRING:
+					print_info_cr("String with value=%s",((string*)instruction->result_obj)->c_str());
+					break;
+				case TYPE::VAR: // print type var?
+					print_info_cr("print type var not implemented!");
+					break;
+
+				}
 			}
-
-
-
 		}
 	}
 
 }
-
-void CZG_Script::unregisterOperators(){
-
-	for(map<string,vector<tInfoObjectOperator> *>::iterator it=m_mapContainerOperators.begin(); it != m_mapContainerOperators.end(); it++){
-		vector< tInfoObjectOperator > * v= it->second;
-		for(unsigned i = 0;i < v->size(); i++){ // for all signatures operator�
-			delete it->second->at(i).param_type;
-		}
-		delete it->second;
-	}
-
-	m_mapContainerOperators.clear();
-
-}
-
 //-------------------------------------------------------------------------------------
 CZG_Script::~CZG_Script(){
 	// unregister operators ...
 	for(unsigned s = 0; s  <statement_op.size(); s++){
-	for(unsigned i = 0; i  <statement_op[s].asm_op.size(); i++){
+		for(unsigned i = 0; i  <statement_op[s].asm_op.size(); i++){
 
-		delete statement_op[s].asm_op[i];
-	}
+			delete statement_op[s].asm_op[i];
+		}
 	}
 
-	unregisterOperators();
+	//unregisterOperators();
 
 	delete m_defaultVar;
 }

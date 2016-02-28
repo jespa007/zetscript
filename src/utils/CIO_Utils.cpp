@@ -40,6 +40,44 @@ string  CIO_Utils::getFileNameWithoutExtension(const string & _path) {
 
 	    return fName.substr(0, pos);
 }
+
+ByteBuffer * CIO_Utils::readFile(const string & filename){
+
+
+	int  file_length, readed_elements;
+	FILE  *fp;
+
+	if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)
+	{
+		if((file_length = getLength(filename)) != -1) {
+
+
+			unsigned char *buffer = new unsigned char [file_length+1];
+			memset(buffer,0,file_length+1 );
+			readed_elements = fread(buffer, 1, file_length, fp);
+
+			if(readed_elements != file_length) {
+				print_warning_cr("number elements doesn't match with length file (%s)",filename.c_str());
+				delete  buffer;
+				return NULL;
+			}
+
+			ByteBuffer *ch = new ByteBuffer(buffer, file_length+1);
+
+			delete [] buffer;
+
+			fclose(fp);
+
+			return ch;
+		}
+		else  print_error_cr("I can't read file \"%s\"",filename.c_str());
+	}
+	else  print_error_cr("I can't open file \"%s\"",filename.c_str());
+
+
+	return NULL;
+}
+
 //-----------------------------------------------------------------------------------------------v
 // Normal file ops.
 

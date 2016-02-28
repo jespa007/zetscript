@@ -100,6 +100,19 @@ bool CFactoryContainer::classPtrIsRegistered(const string & ptr_type){
 	return false;
 }
 
+
+
+int CFactoryContainer::getIndexType(const string & ptr_type){
+
+
+	for(unsigned int i = 0;i < m_vecTypeContainer->size(); i++){
+		if(m_vecTypeContainer->at(i).m_typePtr == ptr_type)
+			return i;
+	}
+
+	return CFactoryContainer::INVALID_REGISTERED_INDEX_TYPE;
+}
+
 vector<string>		CFactoryContainer::getFactoryTypeList(){
 
 	vector<string> types;

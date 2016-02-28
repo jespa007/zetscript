@@ -5,7 +5,7 @@
 char * token_group0(char *c){
 	char *aux=c;
 	// try number operators...
-	if(*c=='+' || *c=='-' || *c=='='){
+	if(*c=='+' || *c=='-' || (*c=='=' && *(c+1)!='=')){
 		aux++;
 		return aux;
 	}
@@ -364,8 +364,10 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 				}
 			}
 			else{ // there's a token, so let's perform generating its AST
+					// reset pretoken...
+					pre_token="";
 					printf("try to generate group1 expression: %s\n",s_effective_start);
-					return generateAST(s_effective_start,(TYPE_GROUP)(((int)type_group)+1),op);
+					return generateAST(s,(TYPE_GROUP)(((int)type_group)+1),op);
 			}
 		}else{ // we found the operator respect of GROUPX so let's put the AST to the left the resulting expression...
 			char operator_str[10]={0};
@@ -403,86 +405,9 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 	return op;
 }
 
-#define MAX_STATMENT_LENGTH 8192
-#define MAX_VAR_LENGTH 100
-
-bool isVarDeclarationStatment(const char *statment, bool & error){
-	// PRE: length(statment) < MAX_STATMENT_LENGTH
-	char *aux = (char *)statment;
-	//string var_name;
-	//PASTNode expression;
-	char *start_var;
-	error=false;
-	char stat[MAX_STATMENT_LENGTH]={0};
-	string s_aux;
-	int var_length;
-
-	aux=IGNORE_SPACES(aux);
-
-	if(strncmp(aux,"var",3)==0){ // possible variable...
-		aux+=3;
-
-		if(*aux!=' '){ // is not var word...
-			return false;
-		}
-
-		aux=IGNORE_SPACES(aux);
-
-		if(*aux!=0 && (
-		   ('a' <= *aux && *aux <='z') ||
-		   ('A' <= *aux && *aux <='Z'))
-		){ // let's see it has right chars...
-			start_var=aux;
-			aux++;
-			while((*aux!=0 || *aux!= '=') && (('a' <= *aux && *aux <='z') ||
-				  ('0' <= *aux && *aux <='9') ||
-				  (*aux=='_') ||
-				  ('A' <= *aux && *aux <='Z'))){
-				aux++;
-			}
-
-			aux=IGNORE_SPACES(aux);
-
-			if((*aux == 0 || *aux == '=')){
-
-				var_length=aux-start_var;
-
-				strncpy(stat,start_var,var_length);
-				print_info_cr("registered \"%s\" variable: ",stat);
-
-				s_aux=stat;
-				CZG_Script::getInstance()->registerVariable(s_aux);
 
 
-				if(*aux != 0){ // copy expression '='
 
-					aux++;
-					aux=IGNORE_SPACES(aux);
-
-					if(*aux != 0){
-						memset(stat,0,sizeof(stat));
-						strncpy(stat,aux,strlen(statment)-(aux-statment)-1); // copy expression without ;
-						print_info_cr("evaluating expression \"%s\"",stat);
-					}
-
-				}
-
-				return true;
-			}
-			else{
-				print_error_cr("variable cannot cannot contain char '%c'",*aux);
-				error=true;
-			}
-
-		}else{
-			print_error_cr("variable cannot start with char %c",*aux);
-			error=true;
-		}
-
-	}
-
-	return false;
-}
 
 
 		
@@ -496,7 +421,7 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 	if(op->left==NULL && op->right==NULL){ // trivial case value itself...
 
 		print_info_cr("CONST \tE[%i],%s\n",numreg,op->value.c_str());
-		if(!CZG_Script::getInstance()->insertMovInstruction(op->value, op->type_ptr)){
+		if(!CZG_Script::getInstance()->insertLoadValueInstruction(op->value, op->type_ptr)){
 			error|=true;
 			return -1;
 
@@ -530,26 +455,23 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 					return -1;
 				}else{ // ok is declared ... let's see if undefined variable or is the same type ...
 					bool is_undefined = dynamic_cast<CUndefined *>(var_obj) != NULL;
-					string *ptr_class_type =  CZG_Script::getInstance()->getUserTypeResultCurrentStatmentAtInstruction(right);
+					string ptr_class_type =  CZG_Script::getInstance()->getUserTypeResultCurrentStatmentAtInstruction(right);
 
-					if(ptr_class_type==NULL){
+					if(ptr_class_type=="unknow"){
 						error|=true;
 						return -1;
 					}
 
 					if(is_undefined ||
-							var_obj->getPointerClassStr() == *ptr_class_type
+							var_obj->getPointerClassStr() == ptr_class_type
 						){
 
 						if(is_undefined){ // create object ...
 
-
-
-
-							var_obj = CFactoryContainer::getInstance()->newObjectByClassPtr(*ptr_class_type);
+							var_obj = CFactoryContainer::getInstance()->newObjectByClassPtr(ptr_class_type);
 							if(var_obj!=NULL){
 								CZG_Script::getInstance()->defineVariable(op->left->value,var_obj);
-								print_info_cr("%s defined as %s",op->left->value.c_str(),ptr_class_type->c_str());
+								print_info_cr("%s defined as %s",op->left->value.c_str(),ptr_class_type.c_str());
 							}else{
 								print_error_cr("ERRRRRRRRRROR");
 								error|=true;
