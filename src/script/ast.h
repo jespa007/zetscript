@@ -47,7 +47,10 @@ enum ASM_OPERATOR{
 	GTE, // >=
 	NEG, // !
 	ADD, // +
-	INC, // ++
+	PRE_INC, // ++
+	POST_INC, // ++
+	PRE_DEC, // ++
+	POST_DEC, // ++
 	AND, // &&
 	OR,  // ||
 	DIV, // /
@@ -59,5 +62,5 @@ enum ASM_OPERATOR{
 };
 
 int generateAsmCode(PASTNode op, int & numreg, bool & error);
-PASTNode generateAST(const char *s, TYPE_GROUP type_group=GROUP_0, PASTNode parent=NULL);
+PASTNode generateAST(const char *s, int & m_line,TYPE_GROUP type_group=GROUP_0, PASTNode parent=NULL);
 

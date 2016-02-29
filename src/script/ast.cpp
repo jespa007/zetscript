@@ -91,13 +91,13 @@ char * is_token(char *c){
 	return 0;
 }
 //------------------------------------------------------------------------------------------------------------
-inline char * IGNORE_SPACES(const char *s){
+/*inline char * CStringUtils::IGNORE_BLANKS(const char *s){
 	char *aux=(char *)s;
 	while((*aux)!=0 && ((*aux)==' ' || (*aux)=='\t' || (*aux)=='\n' || (*aux)=='\r')) {
 		aux++;
 	}
 	return aux;
-}
+}*/
 //------------------------------------------------------------------------------------------------------------
 inline char * GET_END_WORD(const char *s){
 	char *aux=(char *)s;
@@ -144,16 +144,16 @@ inline char * GET_CLOSED_PARENTHESIS(const char *s){
 
 
 
-char *preoperator_token( char *c){
-	char *aux=IGNORE_SPACES(c);
+char *preoperator_token( char *c, int & m_line){
+	char *aux=CStringUtils::IGNORE_BLANKS(c,m_line);
 
 	// detection ++ operator.
 	if(*aux=='+'){
 		aux++;
-		aux=IGNORE_SPACES(aux);
+		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
 		if(*aux=='+'){
 			aux++;
-			aux=IGNORE_SPACES(aux);
+			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
 		}
 
 		if(*aux=='+'){ // is not a valid preoperator
@@ -166,10 +166,10 @@ char *preoperator_token( char *c){
 	// detection -- operator.
 	if(*aux=='-'){
 		aux++;
-		aux=IGNORE_SPACES(aux);
+		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
 		if(*aux=='-'){
 			aux++;
-			aux=IGNORE_SPACES(aux);
+			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
 		}
 
 		if(*aux=='-'){ // is not a valid preoperator
@@ -188,6 +188,39 @@ char *preoperator_token( char *c){
 	return 0;
 }
 
+char *postoperator_token( char *c, int & m_line){
+	char *aux=CStringUtils::IGNORE_BLANKS(c,m_line);
+
+	// detection ++ operator.
+	if(*aux=='+'){
+		aux++;
+		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
+		if(*aux=='+'){
+			aux++;
+			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
+		}
+
+		return aux;
+	}
+
+	// detection -- operator.
+	if(*aux=='-'){
+		aux++;
+		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
+		if(*aux=='-'){
+			aux++;
+			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
+		}
+
+		return aux;
+	}
+
+
+
+
+	return 0;
+}
+
 
 PASTNode preOperator(string token,PASTNode affected_op){ // can be -,+,! etc...
 	tASTNode *op=new tASTNode;
@@ -197,16 +230,23 @@ PASTNode preOperator(string token,PASTNode affected_op){ // can be -,+,! etc...
 }
 
 
+PASTNode postOperator(string token,PASTNode affected_op){ // can be -,+,! etc...
+	string token1 = "post_"+token;
+
+	return preOperator(token1,affected_op);
+}
+
 
 
 
 //------------------------------------------------------------------------------------------------------------
-PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
+PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode parent ){
 	//int index=0;
 	char *aux=(char *)s;
 	char *s_effective_start=(char *)s;
 	char *start_expression,*end_expression ;
 	string pre_token="";
+	string post_token="";
 	bool eval_preoperator=true;
 	bool eval_postoperator=true;
 
@@ -215,7 +255,7 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 	op->parent=parent;
 
 	
-	aux=IGNORE_SPACES(aux);
+	aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
 	
 	if(*aux==0){
 		print_error_cr("no expression entry");
@@ -244,15 +284,15 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 	
 			printf("checkpoint1:%c\n",*aux);
 			// 1. ignore spaces...
-			aux=IGNORE_SPACES(aux);
+			aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
 			
 			if(is_token(aux)!=0){
 
-				if((end_expression=preoperator_token(aux))!=0){
+				if((end_expression=preoperator_token(aux, m_line))!=0){
 						if(eval_preoperator || (!eval_preoperator&&(eval_postoperator))){ // first token! Save the operator to apply on the result expression.
 							char str_op[10]={0};
 
-							if(eval_preoperator){ // It can't has preoperator and postoperator at the same time.
+							if(eval_preoperator){ // It can't do preoperator and postoperator at the same time.
 								eval_postoperator=false;
 							}
 
@@ -302,9 +342,28 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 			
 			print_info_cr("checkpoint3:%c\n",*aux);
 			
-			aux=IGNORE_SPACES(aux);
+			aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
 			
+			// eval post operators...
+			if(*aux != 0 && eval_postoperator){
+				char *aux2;
+				if((aux2=postoperator_token(aux, m_line))!=0){
+					char str_op[10]={0};
+					strncpy(str_op,aux,aux2-aux);
+					print_info_cr("postperator %s!",str_op);
+					post_token = str_op;
+
+					aux=aux2;
+
+				}
+				aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
+			}
+
 			if(*aux!=0){
+
+
+
+
 
 				expr_op=aux;
 				char *adv_op;
@@ -334,14 +393,20 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 			if(!theres_some_token ){ // only we have a value (trivial)
 			
 				  if( *start_expression!='('){
-					print_info_cr("trivial value %s",s_effective_start);
+					  char subexpr[MAX_EXPRESSION_LENGTH]={0}; // I hope this is enough...
+					  strncpy(subexpr,start_expression,end_expression-start_expression); // copy sub expression
+					print_info_cr("trivial value %s",subexpr);
 					op->left=op->right=NULL;
-					op->value=GET_STR_WITHOUT_SPACES(s_effective_start); // assign its value ...
+					op->value=GET_STR_WITHOUT_SPACES(subexpr); // assign its value ...
 
 
-					if(pre_token!=""){ // generate a prenode operaor..
+					if(pre_token!=""){ // generate a prenode operator..
 						op=preOperator(pre_token,op);
 					}
+					else if(post_token!=""){ // generate a post node operator..
+						op=postOperator(post_token,op);
+					}
+
 					return op;
 				  }else{ // parenthesis!
 					print_info_cr("START:%c",*start_expression);
@@ -353,7 +418,7 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 					
 					strncpy(subexpr,start_expression+1,end_expression-start_expression-2); // copy sub expression
 					printf("expr:%s\n",subexpr);
-					PASTNode p_gr=generateAST(subexpr,GROUP_0,op);
+					PASTNode p_gr=generateAST(subexpr,m_line,GROUP_0,op);
 
 					if(pre_token!=""){
 						return preOperator(pre_token,p_gr);
@@ -367,7 +432,7 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 					// reset pretoken...
 					pre_token="";
 					printf("try to generate group1 expression: %s\n",s_effective_start);
-					return generateAST(s,(TYPE_GROUP)(((int)type_group)+1),op);
+					return generateAST(s,m_line,(TYPE_GROUP)(((int)type_group)+1),op);
 			}
 		}else{ // we found the operator respect of GROUPX so let's put the AST to the left the resulting expression...
 			char operator_str[10]={0};
@@ -379,7 +444,7 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 			char eval_right[MAX_EXPRESSION_LENGTH]={0};
 
 			strncpy(eval_left,s_effective_start,expr_op-s_effective_start); // copy its left side...
-			op->left=generateAST(eval_left,type_group,op);
+			op->left=generateAST(eval_left,m_line,type_group,op);
 
 			if(pre_token!=""){
 				op->left=preOperator(pre_token,op->left);
@@ -387,7 +452,7 @@ PASTNode generateAST(const char *s, TYPE_GROUP type_group,PASTNode parent){
 
 			strncpy(eval_right,expr_op_end,strlen(expr_op)); // copy its right side...
 
-			op->right=generateAST(eval_right,type_group,op);
+			op->right=generateAST(eval_right,m_line,type_group,op);
 			if(!strcmp(operator_str,"-")) {
 				op->right=preOperator("-",op->right);
 				strcpy(operator_str,"+");

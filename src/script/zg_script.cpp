@@ -80,7 +80,7 @@ CObject *CZG_Script::getRegisteredVariable(const string & var_name, bool print_m
 
 }
 
-bool CZG_Script::isVarDeclarationStatment(const char *statment, bool & error, char ** eval_expression){
+bool CZG_Script::isVarDeclarationStatment(const char *statment, bool & error, char ** eval_expression,int & m_line){
 	// PRE: length(statment) < MAX_STATMENT_LENGTH
 	char *aux = (char *)statment;
 
@@ -93,7 +93,7 @@ bool CZG_Script::isVarDeclarationStatment(const char *statment, bool & error, ch
 	string s_aux;
 	int var_length;
 
-	aux=IGNORE_SPACES(aux);
+	aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
 
 	if(strncmp(aux,"var",3)==0){ // possible variable...
 		aux+=3;
@@ -104,7 +104,7 @@ bool CZG_Script::isVarDeclarationStatment(const char *statment, bool & error, ch
 
 		*eval_expression=aux;
 
-		aux=IGNORE_SPACES(aux);
+		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
 
 		if(*aux!=0 && (
 		   ('a' <= *aux && *aux <='z') ||
@@ -119,7 +119,7 @@ bool CZG_Script::isVarDeclarationStatment(const char *statment, bool & error, ch
 				aux++;
 			}
 			end_var=aux;
-			aux=IGNORE_SPACES(aux);
+			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
 
 			if((*aux == 0 || *aux == '=')){
 
@@ -150,6 +150,7 @@ bool CZG_Script::eval(const string & s){
 
 	char *current=(char *)s.c_str();
 	string var_name;
+	int m_line=0;
 	bool error;
 	char statment[MAX_STATMENT_LENGTH];
 	char *next;
@@ -158,7 +159,7 @@ bool CZG_Script::eval(const string & s){
 	int numreg=0;
 	char *eval_expression;
 
-	current=IGNORE_SPACES(current);
+	current=CStringUtils::IGNORE_BLANKS(current,m_line);
 
 	while(*current!=0){
 
@@ -180,7 +181,7 @@ bool CZG_Script::eval(const string & s){
 		print_info_cr("eval:%s",statment);
 		eval_expression = NULL;
 
-		if(isVarDeclarationStatment(statment,error, &eval_expression)){
+		if(isVarDeclarationStatment(statment,error, &eval_expression, m_line)){
 
 			if(eval_expression!=NULL){
 				print_info_cr("eval expression %s",eval_expression);
@@ -197,7 +198,7 @@ bool CZG_Script::eval(const string & s){
 
 			tInfoStatementOp i_stat;
 
-			ast_node=generateAST(eval_expression);
+			ast_node=generateAST(eval_expression, m_line);
 
 			if(ast_node==NULL){ // some error happend!
 				return false;
@@ -220,7 +221,7 @@ bool CZG_Script::eval(const string & s){
 
 		// next statment...
 		current=next+1; // ignore ;
-		current=IGNORE_SPACES(current);
+		current=CStringUtils::IGNORE_BLANKS(current,m_line);
 
 	}
 
@@ -404,7 +405,13 @@ ASM_OPERATOR CZG_Script::getNumberOperatorId_OneOp(const string & op){
 	if(op=="-"){
 		return NEG;
 	}else if(op=="++"){
-		return INC;
+		return PRE_INC;
+	}else if(op=="post_++"){
+		return POST_INC;
+	}else if(op=="--"){
+		return PRE_DEC;
+	}else if(op=="dec_++"){
+		return POST_DEC;
 	}
 
 	return ASM_OPERATOR::UNKNOW;
@@ -530,7 +537,7 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 
 			if((t_left == CNumberFactory::getPointerTypeStr()) ){
 				if((id_op=getNumberOperatorId_OneOp(op))==ASM_OPERATOR::UNKNOW){
-					print_error_cr("undefined operator %s",op.c_str());
+					print_error_cr("undefined operator %s for number type",op.c_str());
 					return false;
 				}
 				res_obj = new float;
@@ -539,14 +546,14 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 			}else if(t_left== CStringFactory::getPointerTypeStr()){
 
 				if((id_op=getStringOperatorId_OneOp(op))==ASM_OPERATOR::UNKNOW){
-					print_error_cr("undefined operator %s",op.c_str());
+					print_error_cr("undefined operator %s for string type",op.c_str());
 					return false;
 				}
 				res_obj = new string;
 				result_type = STRING;
 			}else if((t_left == CBooleanFactory::getPointerTypeStr())){
 				if((id_op=getBoleanOperatorId_OneOp(op))==ASM_OPERATOR::UNKNOW){
-					print_error_cr("undefined operator %s",op.c_str());
+					print_error_cr("undefined operator %s for boolean type",op.c_str());
 					return false;
 				}
 				res_obj = new bool;
@@ -642,9 +649,9 @@ void CZG_Script::execute(){
 						}
 					}
 					break;
-					case INC: // for numbers...
+					case PRE_INC: // for numbers...
 						//left_instruction = statement_op[s].asm_op[index_left];
-						print_info_cr("inc");
+						print_info_cr("pre inc");
 						left_instruction = statement_op[s].asm_op[index_left];
 						// increment variable...
 						(*((float *)left_instruction->result_obj))++;
@@ -652,6 +659,18 @@ void CZG_Script::execute(){
 						(*((float *)instruction->result_obj)) = (*((float *)left_instruction->result_obj));
 
 						break;
+					case POST_INC: // for numbers...
+						//left_instruction = statement_op[s].asm_op[index_left];
+						print_info_cr("post inc");
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						// set it to expression result...
+						(*((float *)instruction->result_obj)) = (*((float *)left_instruction->result_obj));
+						// then increment variable...
+						(*((float *)left_instruction->result_obj))++;
+
+						break;
+
 					case ADD: // for numbers...
 						print_info_cr("add");
 						right_instruction = statement_op[s].asm_op[index_right];

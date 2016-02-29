@@ -7,7 +7,9 @@
 int main(int argc, char * argv[]){
 	
 	int i=0;
-	i=10*-2;
+	i=i+++1;
+
+	printf("\nvar %i\n\n",i);
 
 	print_info_cr("sizeof(CObject)=%i sizeof(float)=%i sizeof(string)=%i",sizeof(CObject),sizeof(float),sizeof(string));
 

@@ -27,6 +27,10 @@ class CStringUtils{
 	static char m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER];
 	static unsigned char m_index_buffer;
 
+	static bool IS_SINGLE_COMMENT(char *str);
+	static bool IS_START_COMMENT(char *str);
+	static bool IS_END_COMMENT(char *str);
+
 public:
 
 	enum{
@@ -49,6 +53,12 @@ public:
 			throw std::exception(ex);
 		}
 	}
+
+
+	static char *ADVANCE_TO_CHAR(char *str,char c);
+	static char *ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line);
+	static char *IGNORE_BLANKS(char *str, int &m_line);
+	static char *ADVANCE_TO_ONE_OF_COLLECTION_CHAR(char *str,char *end_char_standard_value, int &m_line);
 
 	static string intToString(int number);
 	static string floatToString(float number);

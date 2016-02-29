@@ -228,7 +228,7 @@ private:
 	ASM_OPERATOR getStringOperatorId_OneOp(const string & op);
 
 	TYPE getTypeAsmResult(int index);
-	bool isVarDeclarationStatment(const char *statment, bool & error,char **eval_expression);
+	bool isVarDeclarationStatment(const char *statment, bool & error,char **eval_expression, int & m_line);
 public:
 
 	//---------------------------------
