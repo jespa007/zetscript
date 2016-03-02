@@ -30,6 +30,7 @@ CZG_Script::CZG_Script(){
 	m_defaultVar = new CUndefined();
 
 	iniFactory<CNumberFactory>("CNumber");
+	iniFactory<CIntegerFactory>("CInteger");
 	iniFactory<CBooleanFactory>("CBoolean");
 	iniFactory<CStringFactory>("CString");
 
@@ -247,6 +248,9 @@ string  CZG_Script::getUserTypeResultCurrentStatmentAtInstruction(unsigned instr
 		case TYPE::NUMBER:
 			result= CNumberFactory::getPointerTypeStr();
 			break;
+		case TYPE::INTEGER:
+			result= CIntegerFactory::getPointerTypeStr();
+			break;
 		case TYPE::STRING:
 			result= CStringFactory::getPointerTypeStr();
 			break;
@@ -264,6 +268,7 @@ string  CZG_Script::getUserTypeResultCurrentStatmentAtInstruction(unsigned instr
 bool CZG_Script::insertLoadValueInstruction(const string & v, string & type_ptr){
 
 	CNumber *num_obj;
+	CInteger *int_obj;
 	CString *str_obj;
 	CBoolean *bool_obj;
 
@@ -271,9 +276,13 @@ bool CZG_Script::insertLoadValueInstruction(const string & v, string & type_ptr)
 	void *obj;
 	TYPE type=TYPE::UNKNOW;
 	// try parse value...
-	if((obj=CNumber::ParsePrimitive(v))!=NULL){
+	if((obj=CInteger::ParsePrimitive(v))!=NULL){
+			type=TYPE::INTEGER;
+			print_info_cr("%s detected as int\n",v.c_str());
+	}
+	else if((obj=CNumber::ParsePrimitive(v))!=NULL){
 		type=TYPE::NUMBER;
-		print_info_cr("%s detected as number\n",v.c_str());
+		print_info_cr("%s detected as float\n",v.c_str());
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
 		type=TYPE::STRING;
@@ -296,7 +305,10 @@ bool CZG_Script::insertLoadValueInstruction(const string & v, string & type_ptr)
 		}
 
 		obj = var;
-		if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){ // else it will store the value ...
+		if((int_obj=dynamic_cast<CInteger *>(var))!=NULL){ // else it will store the value ...
+			type = TYPE::INTEGER;
+			obj=&int_obj->m_value;
+		}else if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){
 			type = TYPE::NUMBER;
 			obj=&num_obj->m_value;
 		}else if((bool_obj=dynamic_cast<CBoolean *>(var))!=NULL){
@@ -328,6 +340,7 @@ bool CZG_Script::insertMovVarInstruction(CObject *var, int right){
 	//string op="=";
 	string left_type_ptr = var->getPointerClassStr();
 	CNumber *num_obj;
+	CInteger * int_obj;
 	CString *str_obj;
 	CBoolean *bool_obj;
 
@@ -344,7 +357,10 @@ bool CZG_Script::insertMovVarInstruction(CObject *var, int right){
 		asm_op->result_type = TYPE::VAR; // this only stores pointer...
 		asm_op->result_obj=var;
 
-		if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){ // else it will store the value ...
+		if((int_obj=dynamic_cast<CInteger *>(var))!=NULL){ // else it will store the value ...
+				asm_op->result_type = TYPE::INTEGER;
+				asm_op->result_obj=&int_obj->m_value;
+		}else if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){ // else it will store the value ...
 			asm_op->result_type = TYPE::NUMBER;
 			asm_op->result_obj=&num_obj->m_value;
 		}else if((bool_obj=dynamic_cast<CBoolean *>(var))!=NULL){
@@ -367,6 +383,47 @@ bool CZG_Script::insertMovVarInstruction(CObject *var, int right){
 	}
 
 	return true;
+}
+
+ASM_OPERATOR CZG_Script::getIntegerOperatorId_TwoOps(const string & op, CZG_Script::TYPE & result_type){
+
+	result_type = TYPE::INTEGER;
+
+	if(op=="+"){
+		return ADD;
+	}else if(op=="/"){
+		return DIV;
+	}else if(op=="%"){
+		return MOD;
+	}else if(op=="*"){
+		return MUL;
+	}else if(op=="&"){
+		return AND;
+	}else if(op=="|"){
+		return OR;
+	}else if(op=="^"){
+		return XOR;
+	}else if(op=="<<"){
+		return SHL;
+	}else if(op==">>"){
+		return SHR;
+	}else if(op==">="){
+		result_type = TYPE::BOOL;
+		return GTE;
+	}else if(op==">"){
+		result_type = TYPE::BOOL;
+		return GT;
+	}else if(op=="<"){
+		result_type = TYPE::BOOL;
+		return LT;
+	}else if(op=="<="){
+		result_type = TYPE::BOOL;
+		return LTE;
+	}else if(op=="=="){
+		result_type = TYPE::BOOL;
+		return EQU;
+	}
+	return ASM_OPERATOR::UNKNOW;
 }
 
 ASM_OPERATOR CZG_Script::getNumberOperatorId_TwoOps(const string & op, CZG_Script::TYPE & result_type){
@@ -410,7 +467,7 @@ ASM_OPERATOR CZG_Script::getNumberOperatorId_OneOp(const string & op){
 		return POST_INC;
 	}else if(op=="--"){
 		return PRE_DEC;
-	}else if(op=="dec_++"){
+	}else if(op=="post_--"){
 		return POST_DEC;
 	}
 
@@ -422,9 +479,9 @@ ASM_OPERATOR CZG_Script::getBoleanOperatorId_TwoOps(const string & op, CZG_Scrip
 	result_type = TYPE::BOOL;
 
 	if(op=="&&"){
-		return AND;
+		return LOGIC_AND;
 	}else if(op=="||"){
-		return OR;
+		return LOGIC_OR;
 	}
 
 	return ASM_OPERATOR::UNKNOW;
@@ -478,7 +535,15 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 
 	if(left >=0 && right >= 0){ // insert both op...
 
-		if((t_left == CNumberFactory::getPointerTypeStr()) && t_right == CNumberFactory::getPointerTypeStr()){
+		if(((t_left == CIntegerFactory::getPointerTypeStr())) &&
+						((t_right == CIntegerFactory::getPointerTypeStr()))){
+					if((id_op=getIntegerOperatorId_TwoOps(op,result_type))==ASM_OPERATOR::UNKNOW){
+						print_error_cr("undefined operator %s",op.c_str());
+						return false;
+					}
+
+		}else if(((t_left == CNumberFactory::getPointerTypeStr()) ) &&
+				((t_right == CNumberFactory::getPointerTypeStr()) )){
 			if((id_op=getNumberOperatorId_TwoOps(op,result_type))==ASM_OPERATOR::UNKNOW){
 				print_error_cr("undefined operator %s",op.c_str());
 				return false;
@@ -510,6 +575,9 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 		case TYPE::NUMBER:
 			res_obj = new float;
 			break;
+		case TYPE::INTEGER:
+			res_obj = new int;
+			break;
 		case TYPE::STRING:
 			res_obj = new string;
 			break;
@@ -535,7 +603,15 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 
 	}else if(left >=0){ // insert one operand
 
-			if((t_left == CNumberFactory::getPointerTypeStr()) ){
+			if((t_left == CIntegerFactory::getPointerTypeStr()) ){
+						if((id_op=getNumberOperatorId_OneOp(op))==ASM_OPERATOR::UNKNOW){
+							print_error_cr("undefined operator %s for number type",op.c_str());
+							return false;
+						}
+						res_obj = new int;
+						result_type = INTEGER;
+
+			}else if((t_left == CNumberFactory::getPointerTypeStr()) ){
 				if((id_op=getNumberOperatorId_OneOp(op))==ASM_OPERATOR::UNKNOW){
 					print_error_cr("undefined operator %s for number type",op.c_str());
 					return false;
@@ -579,6 +655,28 @@ bool CZG_Script::insertOperatorInstruction(const string & op, int left, int righ
 	return true;
 }
 
+float default_value=0;
+
+#define CAST_RESULT_AS_NUMBER(asm_op)\
+ (asm_op->result_type == TYPE::NUMBER)?(*((float *)asm_op->result_obj)):\
+ (asm_op->result_type == TYPE::INTEGER)?(*((int *)asm_op->result_obj)):\
+ default_value
+
+
+#define PERFORM_NUMBER_TWO_OPS(v1,op,v2)\
+(v1->result_type == TYPE::NUMBER && v2->result_type == TYPE::NUMBER)?(*((float *)v1->result_obj)op(*((float *)v2->result_obj))):\
+(v1->result_type == TYPE::NUMBER && v2->result_type == TYPE::INTEGER)?(*((float *)v1->result_obj)op(*((int *)v2->result_obj))):\
+(v1->result_type == TYPE::INTEGER && v2->result_type == TYPE::NUMBER)?(*((int *)v1->result_obj)op(*((float *)v2->result_obj))):\
+(v1->result_type == TYPE::INTEGER && v2->result_type == TYPE::INTEGER)?(*((int *)v1->result_obj)op(*((int *)v2->result_obj))):\
+0
+
+
+#define ASSIGN_NUMBER(asm_op,v)\
+(asm_op->result_type == TYPE::NUMBER)?(*((float *)asm_op->result_obj)=(v)):\
+(asm_op->result_type == TYPE::INTEGER)?(*((int *)asm_op->result_obj)=(v)):\
+ default_value = (v)
+
+
 void CZG_Script::execute(){
 
 	int index_right=-1,index_left=-1;
@@ -614,13 +712,17 @@ void CZG_Script::execute(){
 						case TYPE::UNKNOW:
 							print_error_cr("result type must be var (result type:%i)");
 							break;
+						case TYPE::INTEGER:
 						case TYPE::NUMBER:
-							if(right_instruction->result_type == TYPE::NUMBER){
-								*((float *)instruction->result_obj) = *((float *)right_instruction->result_obj);
+							if(right_instruction->result_type == TYPE::INTEGER || right_instruction->result_type == TYPE::NUMBER){
+
+								cout << "assign:" << (CAST_RESULT_AS_NUMBER(right_instruction))<< "" << endl;
+								ASSIGN_NUMBER(instruction,CAST_RESULT_AS_NUMBER(right_instruction));
 							}else{
 								print_error_cr("right operant is not number");
 							}
 							break;
+
 						case TYPE::STRING:
 							if(right_instruction->result_type == TYPE::STRING){
 								*((string *)instruction->result_obj) = *((string *)right_instruction->result_obj);
@@ -654,9 +756,9 @@ void CZG_Script::execute(){
 						print_info_cr("pre inc");
 						left_instruction = statement_op[s].asm_op[index_left];
 						// increment variable...
-						(*((float *)left_instruction->result_obj))++;
+						ASSIGN_NUMBER(left_instruction,CAST_RESULT_AS_NUMBER(left_instruction)+1);
 						// set it to expression result...
-						(*((float *)instruction->result_obj)) = (*((float *)left_instruction->result_obj));
+						ASSIGN_NUMBER(instruction,CAST_RESULT_AS_NUMBER(left_instruction));
 
 						break;
 					case POST_INC: // for numbers...
@@ -665,9 +767,9 @@ void CZG_Script::execute(){
 						left_instruction = statement_op[s].asm_op[index_left];
 
 						// set it to expression result...
-						(*((float *)instruction->result_obj)) = (*((float *)left_instruction->result_obj));
+						ASSIGN_NUMBER(instruction,CAST_RESULT_AS_NUMBER(left_instruction));
 						// then increment variable...
-						(*((float *)left_instruction->result_obj))++;
+						ASSIGN_NUMBER(left_instruction,CAST_RESULT_AS_NUMBER(left_instruction)+1);
 
 						break;
 
@@ -676,14 +778,23 @@ void CZG_Script::execute(){
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
 
-						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
-							print_info_cr("%f + %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
-							*((float *)instruction->result_obj) = *((float *)left_instruction->result_obj) + *((float *)right_instruction->result_obj);
-						}
-						else if(left_instruction->result_type == TYPE::STRING && right_instruction->result_type == TYPE::STRING){
+						if((left_instruction->result_type == TYPE::NUMBER || left_instruction->result_type == TYPE::INTEGER)&&
+						    (right_instruction->result_type == TYPE::NUMBER || right_instruction->result_type == TYPE::INTEGER)){
+							//print_info_cr("%f + %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
+							cout << (CAST_RESULT_AS_NUMBER(left_instruction)) << " + " << (CAST_RESULT_AS_NUMBER(right_instruction)) << endl;
+							ASSIGN_NUMBER(instruction, PERFORM_NUMBER_TWO_OPS(left_instruction, +,right_instruction));
+
+							{
+								int jjj;
+								jjj=PERFORM_NUMBER_TWO_OPS(left_instruction, +,right_instruction);
+								cout << "assign2:" << jjj << "" << endl;
+							}
+							cout << "assign:" << (CAST_RESULT_AS_NUMBER(instruction))<< "" << endl;
+
+						}else if(left_instruction->result_type == TYPE::STRING && right_instruction->result_type == TYPE::STRING){
 							*((string *)instruction->result_obj) = *((string *)left_instruction->result_obj) + *((string *)right_instruction->result_obj);
 						}else if(left_instruction->result_type == TYPE::STRING &&  right_instruction->result_type == TYPE::NUMBER){
-							*((string *)instruction->result_obj) = *((string *)left_instruction->result_obj) + CStringUtils::doubleToString(*((float *)right_instruction->result_obj));
+							*((string *)instruction->result_obj) = *((string *)left_instruction->result_obj) + CStringUtils::doubleToString(CAST_RESULT_AS_NUMBER(right_instruction));
 						}else{
 							print_error_cr("cannot operate + with (type(%i) + type(%i))",left_instruction->result_type, right_instruction->result_type);
 						}
@@ -693,9 +804,10 @@ void CZG_Script::execute(){
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
 
-						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
-							print_info_cr("%f / %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
-							*((float *)instruction->result_obj) = *((float *)left_instruction->result_obj) / *((float *)right_instruction->result_obj);
+						if((left_instruction->result_type == TYPE::NUMBER || left_instruction->result_type == TYPE::INTEGER)&&
+							    (right_instruction->result_type == TYPE::NUMBER || right_instruction->result_type == TYPE::INTEGER)){
+							cout << (CAST_RESULT_AS_NUMBER(left_instruction)) << " / " << (CAST_RESULT_AS_NUMBER(right_instruction)) << endl;
+							ASSIGN_NUMBER(instruction, PERFORM_NUMBER_TWO_OPS(left_instruction, /,right_instruction));
 						}
 						else{
 							print_error_cr("cannot operate + with (type(%i) + type(%i))",left_instruction->result_type, right_instruction->result_type);
@@ -706,15 +818,16 @@ void CZG_Script::execute(){
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
 
-						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
-							print_info_cr("%f * %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
-							*((float *)instruction->result_obj) = *((float *)left_instruction->result_obj) * *((float *)right_instruction->result_obj);
+						if((left_instruction->result_type == TYPE::NUMBER || left_instruction->result_type == TYPE::INTEGER)&&
+							    (right_instruction->result_type == TYPE::NUMBER || right_instruction->result_type == TYPE::INTEGER)){
+							cout << (CAST_RESULT_AS_NUMBER(left_instruction)) << " * " << (CAST_RESULT_AS_NUMBER(right_instruction)) << endl;
+							ASSIGN_NUMBER(instruction, PERFORM_NUMBER_TWO_OPS(left_instruction, *,right_instruction));
 						}
 						else{
 							print_error_cr("cannot operate * with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
 						}
 						break;
-					case AND: // for numbers...
+					case LOGIC_AND: // for booleans...
 						print_info_cr("and");
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
@@ -727,7 +840,7 @@ void CZG_Script::execute(){
 							print_error_cr("cannot operate && with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
 						}
 						break;
-					case OR: // for numbers...
+					case LOGIC_OR: // for booleans...
 						print_info_cr("or");
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
@@ -745,9 +858,10 @@ void CZG_Script::execute(){
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
 
-						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
-							print_info_cr("%f < %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
-							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) < *((float *)right_instruction->result_obj);
+						if((left_instruction->result_type == TYPE::NUMBER || left_instruction->result_type == TYPE::INTEGER)&&
+							    (right_instruction->result_type == TYPE::NUMBER || right_instruction->result_type == TYPE::INTEGER)){
+							cout << (CAST_RESULT_AS_NUMBER(left_instruction)) << " < " << (CAST_RESULT_AS_NUMBER(right_instruction)) << endl;
+							*((bool *)instruction->result_obj) = PERFORM_NUMBER_TWO_OPS(left_instruction, <,right_instruction);
 						}
 						else{
 							print_error_cr("cannot operate < with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
@@ -758,9 +872,10 @@ void CZG_Script::execute(){
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
 
-						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
-							print_info_cr("%f > %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
-							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) > *((float *)right_instruction->result_obj);
+						if((left_instruction->result_type == TYPE::NUMBER || left_instruction->result_type == TYPE::INTEGER)&&
+							    (right_instruction->result_type == TYPE::NUMBER || right_instruction->result_type == TYPE::INTEGER)){
+							cout << (CAST_RESULT_AS_NUMBER(left_instruction)) << " > " << (CAST_RESULT_AS_NUMBER(right_instruction)) << endl;
+							*((bool *)instruction->result_obj) = PERFORM_NUMBER_TWO_OPS(left_instruction, >,right_instruction);
 						}
 						else{
 							print_error_cr("cannot operate > with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
@@ -771,9 +886,10 @@ void CZG_Script::execute(){
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
 
-						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
-							print_info_cr("%f <= %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
-							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) <= *((float *)right_instruction->result_obj);
+						if((left_instruction->result_type == TYPE::NUMBER || left_instruction->result_type == TYPE::INTEGER)&&
+							    (right_instruction->result_type == TYPE::NUMBER || right_instruction->result_type == TYPE::INTEGER)){
+							cout << (CAST_RESULT_AS_NUMBER(left_instruction)) << " <= " << (CAST_RESULT_AS_NUMBER(right_instruction)) << endl;
+							*((bool *)instruction->result_obj) = PERFORM_NUMBER_TWO_OPS(left_instruction, <=,right_instruction);
 						}
 						else{
 							print_error_cr("cannot operate <= with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
@@ -784,9 +900,10 @@ void CZG_Script::execute(){
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
 
-						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
-							print_info_cr("%f >= %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
-							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) >= *((float *)right_instruction->result_obj);
+						if((left_instruction->result_type == TYPE::NUMBER || left_instruction->result_type == TYPE::INTEGER)&&
+							    (right_instruction->result_type == TYPE::NUMBER || right_instruction->result_type == TYPE::INTEGER)){
+							cout << (CAST_RESULT_AS_NUMBER(left_instruction)) << " >= " << (CAST_RESULT_AS_NUMBER(right_instruction)) << endl;
+							*((bool *)instruction->result_obj) = PERFORM_NUMBER_TWO_OPS(left_instruction, >=,right_instruction);
 						}
 						else{
 							print_error_cr("cannot operate >= with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
@@ -797,9 +914,10 @@ void CZG_Script::execute(){
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
 
-						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
-							print_info_cr("%f == %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
-							*((bool *)instruction->result_obj) = *((float *)left_instruction->result_obj) == *((float *)right_instruction->result_obj);
+						if((left_instruction->result_type == TYPE::NUMBER || left_instruction->result_type == TYPE::INTEGER)&&
+							    (right_instruction->result_type == TYPE::NUMBER || right_instruction->result_type == TYPE::INTEGER)){
+							cout << (CAST_RESULT_AS_NUMBER(left_instruction)) << " == " << (CAST_RESULT_AS_NUMBER(right_instruction)) << endl;
+							*((bool *)instruction->result_obj) = PERFORM_NUMBER_TWO_OPS(left_instruction, ==,right_instruction);
 						}
 						else if(left_instruction->result_type == TYPE::STRING && right_instruction->result_type == TYPE::STRING){
 							print_info_cr("%s == %s",((string *)left_instruction->result_obj)->c_str(),((string *)right_instruction->result_obj)->c_str());
@@ -809,19 +927,84 @@ void CZG_Script::execute(){
 							print_error_cr("cannot operate == with (type(%i) , type(%i))",left_instruction->result_type, right_instruction->result_type);
 						}
 						break;
-					/*case MOD: // for numbers...
+					case MOD: // for integers...
 						print_info_cr("mod");
 						right_instruction = statement_op[s].asm_op[index_right];
 						left_instruction = statement_op[s].asm_op[index_left];
 
-						if(left_instruction->result_type == TYPE::NUMBER && right_instruction->result_type == TYPE::NUMBER){
-							print_info_cr("%f % %f",*((float *)left_instruction->result_obj),*((float *)right_instruction->result_obj));
-							*((float *)instruction->result_obj) = *((float *)left_instruction->result_obj) % *((float *)right_instruction->result_obj);
+						if(left_instruction->result_type == TYPE::INTEGER && right_instruction->result_type == TYPE::INTEGER){
+							print_info_cr("%i % %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
+							ASSIGN_NUMBER(instruction, *((int *)left_instruction->result_obj) % *((int *)right_instruction->result_obj));
 						}
 						else{
-							print_error_cr("cannot operate + with (type(%i) + type(%i))",left_instruction->result_type, right_instruction->result_type);
+							print_error_cr("cannot operate % with (type(%i) + type(%i))",left_instruction->result_type, right_instruction->result_type);
 						}
-						break;*/
+						break;
+					case OR: // for integers...
+						print_info_cr("or");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::INTEGER && right_instruction->result_type == TYPE::INTEGER){
+							print_info_cr("%i | %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
+							ASSIGN_NUMBER(instruction, *((int *)left_instruction->result_obj) | *((int *)right_instruction->result_obj));
+						}
+						else{
+							print_error_cr("cannot operate | with (type(%i) + type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case AND: // for integers...
+						print_info_cr("and");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::INTEGER && right_instruction->result_type == TYPE::INTEGER){
+							print_info_cr("%i & %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
+							ASSIGN_NUMBER(instruction, *((int *)left_instruction->result_obj) & *((int *)right_instruction->result_obj));
+						}
+						else{
+							print_error_cr("cannot operate & with (type(%i) + type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case XOR: // for integers...
+						print_info_cr("xor");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::INTEGER && right_instruction->result_type == TYPE::INTEGER){
+							print_info_cr("%i ^ %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
+							ASSIGN_NUMBER(instruction, *((int *)left_instruction->result_obj) ^ *((int *)right_instruction->result_obj));
+						}
+						else{
+							print_error_cr("cannot operate ^ with (type(%i)  type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case SHL: // for integers...
+						print_info_cr("<<");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::INTEGER && right_instruction->result_type == TYPE::INTEGER){
+							print_info_cr("%i << %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
+							ASSIGN_NUMBER(instruction, *((int *)left_instruction->result_obj) << *((int *)right_instruction->result_obj));
+						}
+						else{
+							print_error_cr("cannot operate << with (type(%i)  type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
+					case SHR: // for integers...
+						print_info_cr(">>");
+						right_instruction = statement_op[s].asm_op[index_right];
+						left_instruction = statement_op[s].asm_op[index_left];
+
+						if(left_instruction->result_type == TYPE::INTEGER && right_instruction->result_type == TYPE::INTEGER){
+							print_info_cr("%i >> %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
+							ASSIGN_NUMBER(instruction,*((int *)left_instruction->result_obj) >> *((int *)right_instruction->result_obj));
+						}
+						else{
+							print_error_cr("cannot operate >> with (type(%i)  type(%i))",left_instruction->result_type, right_instruction->result_type);
+						}
+						break;
 					case NOT:
 						print_info_cr("===============================================");
 						print_info_cr("not");
@@ -833,7 +1016,7 @@ void CZG_Script::execute(){
 						print_info_cr("===============================================");
 						print_info_cr("negative");
 						left_instruction = statement_op[s].asm_op[index_left];
-						(*((float *)instruction->result_obj))=-(*((float *)left_instruction->result_obj));
+						ASSIGN_NUMBER(instruction,-CAST_RESULT_AS_NUMBER(left_instruction));
 
 						break;
 
@@ -846,6 +1029,9 @@ void CZG_Script::execute(){
 				switch(instruction->result_type){
 				case TYPE::UNKNOW:
 					print_info_cr("unknow type result");
+					break;
+				case TYPE::INTEGER:
+					print_info_cr("Integer with value=%i",*((int*)instruction->result_obj));
 					break;
 				case TYPE::NUMBER:
 					print_info_cr("Number with value=%f",*((float*)instruction->result_obj));

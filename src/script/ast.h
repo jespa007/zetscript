@@ -51,13 +51,17 @@ enum ASM_OPERATOR{
 	POST_INC, // ++
 	PRE_DEC, // ++
 	POST_DEC, // ++
-	AND, // &&
-	OR,  // ||
+	LOGIC_AND, // &&
+	LOGIC_OR,  // ||
 	DIV, // /
 	MUL, // *
 	MOD,  // %
-	CAT  // str+str
-
+	CAT,  // str+str
+	AND, // bitwise logic and
+	OR, // bitwise logic or
+	XOR, // logic xor
+	SHL, // shift left
+	SHR // shift right
 
 };
 

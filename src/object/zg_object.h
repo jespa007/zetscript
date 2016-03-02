@@ -6,6 +6,7 @@
 #include "object/CObject.h"
 #include "object/CBoolean.h"
 #include "object/CNumber.h"
+#include "object/CInteger.h"
 #include "object/CString.h"
 #include "object/CUndefined.h"
 

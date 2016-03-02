@@ -5,15 +5,42 @@
 char * token_group0(char *c){
 	char *aux=c;
 	// try number operators...
-	if(*c=='+' || *c=='-' || (*c=='=' && *(c+1)!='=')){
+	if(*c=='+' || *c=='-' || *c=='^' || (*c=='=' && *(c+1)!='=') ){
 		aux++;
 		return aux;
 	}
+
+	if( (*c=='&' && *(c+1)!='&') // ==
+	){
+		aux++;
+		return aux;
+	}
+
+	if( (*c=='|' && *(c+1)!='|') // ==
+	){
+		aux++;
+		return aux;
+	}
+
 
 	// try boolean operators...
 	// try boolean operators...
 	if(
 			(*c=='|' && *(c+1)=='|') // ||
+	){
+		aux+=2;
+		return aux;
+	}
+
+	if(
+			(*c=='<' && *(c+1)=='<') // ||
+	){
+		aux+=2;
+		return aux;
+	}
+
+	if(
+			(*c=='>' && *(c+1)=='>') // ||
 	){
 		aux+=2;
 		return aux;
@@ -148,39 +175,19 @@ char *preoperator_token( char *c, int & m_line){
 	char *aux=CStringUtils::IGNORE_BLANKS(c,m_line);
 
 	// detection ++ operator.
-	if(*aux=='+'){
-		aux++;
-		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
-		if(*aux=='+'){
-			aux++;
-			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
-		}
-
-		if(*aux=='+'){ // is not a valid preoperator
-			return 0;
-		}
-
+	if(*aux=='+' && *(aux+1)=='+'){
+		aux+=2;
 		return aux;
 	}
 
 	// detection -- operator.
-	if(*aux=='-'){
-		aux++;
-		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
-		if(*aux=='-'){
-			aux++;
-			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
-		}
-
-		if(*aux=='-'){ // is not a valid preoperator
-			return 0;
-		}
-
+	if(*aux=='-' && *(aux+1)=='-'){
+		aux+=2;
 		return aux;
 	}
 
 
-	if(*c=='+' || *c=='-' || *c=='!'){
+	if(*aux=='+' || *aux=='-' || *aux=='!'){
 		aux++;
 		return aux;
 	}
@@ -192,28 +199,17 @@ char *postoperator_token( char *c, int & m_line){
 	char *aux=CStringUtils::IGNORE_BLANKS(c,m_line);
 
 	// detection ++ operator.
-	if(*aux=='+'){
-		aux++;
-		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
-		if(*aux=='+'){
-			aux++;
-			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
-		}
-
+	if(*aux=='+' && *(aux+1)=='+'){
+		aux+=2;
 		return aux;
 	}
 
 	// detection -- operator.
-	if(*aux=='-'){
-		aux++;
-		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
-		if(*aux=='-'){
-			aux++;
-			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
-		}
-
+	if(*aux=='-' && *(aux+1)=='-'){
+		aux+=2;
 		return aux;
 	}
+
 
 
 
@@ -538,7 +534,7 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 								CZG_Script::getInstance()->defineVariable(op->left->value,var_obj);
 								print_info_cr("%s defined as %s",op->left->value.c_str(),ptr_class_type.c_str());
 							}else{
-								print_error_cr("ERRRRRRRRRROR");
+								print_error_cr("ERRRRRRRRRROR %s is not registered",ptr_class_type.c_str());
 								error|=true;
 								return -1;
 							}

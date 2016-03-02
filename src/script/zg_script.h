@@ -128,10 +128,13 @@ public:
 	enum TYPE{
 		UNKNOW=0,
 		BOOL,
+		INTEGER,
 		NUMBER,
 		STRING,
 		VAR
 	};
+
+
 private:
 
 	/*enum TYPE_{
@@ -220,6 +223,7 @@ private:
 
 
 	ASM_OPERATOR getNumberOperatorId_TwoOps(const string & op,TYPE & result_type);
+	ASM_OPERATOR getIntegerOperatorId_TwoOps(const string & op,TYPE & result_type);
 	ASM_OPERATOR getBoleanOperatorId_TwoOps(const string & op,TYPE & result_type);
 	ASM_OPERATOR getStringOperatorId_TwoOps(const string & op,TYPE & result_type);
 
