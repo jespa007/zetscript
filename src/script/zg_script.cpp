@@ -1,5 +1,7 @@
 
 #include "ast.cpp"
+#include "CLocalScope.cpp"
+#include "CContext.cpp"
 
 #define MAX_STATMENT_LENGTH 8192
 #define MAX_VAR_LENGTH 100
@@ -25,6 +27,23 @@ void CZG_Script::destroy(){
 	CFactoryContainer::destroySingletons();
 }
 
+CZG_Script::tLocalScope * CZG_Script::createLocalScope(CZG_Script::tLocalScope *m_parent){
+	tLocalScope * localScope = new tLocalScope;
+
+	localScope->m_parentScope = m_parent;
+
+	return localScope;
+}
+
+CZG_Script::tContext * CZG_Script::createContext(){
+
+	tContext *aux= new tContext();
+
+	aux->base_scope = createLocalScope(NULL);
+
+	return aux;
+}
+
 CZG_Script::CZG_Script(){
 
 	m_defaultVar = new CUndefined();
@@ -33,6 +52,8 @@ CZG_Script::CZG_Script(){
 	iniFactory<CIntegerFactory>("CInteger");
 	iniFactory<CBooleanFactory>("CBoolean");
 	iniFactory<CStringFactory>("CString");
+
+	main_context = createContext();
 
 }
 
@@ -147,6 +168,13 @@ bool CZG_Script::isVarDeclarationStatment(const char *statment, bool & error, ch
 	return false;
 }
 
+bool CZG_Script::isLocalScope(const char *statment, bool & error, char ** advance_chars, int & m_line){
+
+
+
+	return false;
+}
+
 bool CZG_Script::eval(const string & s){
 
 	char *current=(char *)s.c_str();
@@ -158,7 +186,8 @@ bool CZG_Script::eval(const string & s){
 	PASTNode ast_node;
 	int length;
 	int numreg=0;
-	char *eval_expression;
+	char *advanced_expression;
+
 
 	current=CStringUtils::IGNORE_BLANKS(current,m_line);
 
@@ -180,26 +209,31 @@ bool CZG_Script::eval(const string & s){
 		strncpy(statment,current,(next-current));
 
 		print_info_cr("eval:%s",statment);
-		eval_expression = NULL;
+		advanced_expression = NULL;
 
-		if(isVarDeclarationStatment(statment,error, &eval_expression, m_line)){
+		if(isLocalScope(statment,&error,advanced_expression)){
 
-			if(eval_expression!=NULL){
-				print_info_cr("eval expression %s",eval_expression);
+		}
+		else{
+			if(isVarDeclarationStatment(statment,error, &advanced_expression, m_line)){
+
+				if(advanced_expression!=NULL){
+					print_info_cr("eval expression %s",advanced_expression);
+				}
+
+				if(error) {
+					return false;
+				}
+			}else{
+				advanced_expression = statment;
 			}
-
-			if(error) {
-				return false;
-			}
-		}else{
-			eval_expression = statment;
 		}
 
-		if(eval_expression!=NULL){
+		if(advanced_expression!=NULL){
 
 			tInfoStatementOp i_stat;
 
-			ast_node=generateAST(eval_expression, m_line);
+			ast_node=generateAST(advanced_expression, m_line);
 
 			if(ast_node==NULL){ // some error happend!
 				return false;
@@ -218,6 +252,7 @@ bool CZG_Script::eval(const string & s){
 				print_error_cr("Error generating code\n");
 				return false;
 			}
+		}
 		}
 
 		// next statment...

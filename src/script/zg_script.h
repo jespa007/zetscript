@@ -6,7 +6,8 @@
 #include "factory/zg_factory.h"
 
 #include "ast.h"
-
+#include "CLocalScope.h"
+#include "CContext.h"
 
 
 
@@ -198,7 +199,26 @@ private:
 	}tInfoStatementOp;
 
 
-	vector<tInfoStatementOp> statement_op;
+	typedef struct _tLocalScope;
+
+	typedef struct _tLocalScope{
+
+		vector<tInfoStatementOp> statement_op;
+
+		_tLocalScope *m_parentScope;
+
+
+	}tLocalScope;
+
+	typedef struct{
+
+		vector<tLocalScope *> m_localScope;
+		tLocalScope *base_scope;
+		//map<string,tLocalScope *>	m_label;
+
+	}tContext;
+
+	CContext *main_context;
 
 
 	static CZG_Script * m_instance;
@@ -231,8 +251,14 @@ private:
 	ASM_OPERATOR getBoleanOperatorId_OneOp(const string & op);
 	ASM_OPERATOR getStringOperatorId_OneOp(const string & op);
 
+
+	tLocalScope * createLocalScope(tLocalScope *m_parent);
+	tContext * createContext();
+
 	TYPE getTypeAsmResult(int index);
 	bool isVarDeclarationStatment(const char *statment, bool & error,char **eval_expression, int & m_line);
+	bool isLocalScope(const char *statment, bool & error, char ** advance_chars, int & m_line);
+
 public:
 
 	//---------------------------------
