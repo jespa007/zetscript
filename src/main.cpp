@@ -7,7 +7,7 @@
 int main(int argc, char * argv[]){
 	
 	int i=0;
-
+	CLog::setUseAnsiEscape(true);
 
 	printf("\nvar %i\n\n",i);
 
@@ -32,7 +32,7 @@ int main(int argc, char * argv[]){
 		CZG_Script *zg_script = CZG_Script::getInstance();
 		zg_script->init();
 
-		zg_script->eval((char *)buffer->data_buffer);
+		if(zg_script->eval((char *)buffer->data_buffer));
 
 		print_info_cr("sizeobject:%i",sizeof(CObject));
 		print_info_cr("sizenumber:%i",sizeof(CNumber));

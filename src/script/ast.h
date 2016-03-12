@@ -4,6 +4,7 @@
 #define MAX_EXPRESSION_LENGTH 8192
 
 class tASTNode;
+class CLocalScope;
 typedef tASTNode *PASTNode;
 
 class tASTNode{
@@ -61,10 +62,14 @@ enum ASM_OPERATOR{
 	OR, // bitwise logic or
 	XOR, // logic xor
 	SHL, // shift left
-	SHR // shift right
+	SHR, // shift right
+	PUSH_SCOPE,
+	POP_SCOPE,
+	JNT // goto if not true ... goes end to conditional.
+
 
 };
 
-int generateAsmCode(PASTNode op, int & numreg, bool & error);
+int generateAsmCode(PASTNode op, CLocalScope *lc, int & numreg, bool & error);
 PASTNode generateAST(const char *s, int & m_line,TYPE_GROUP type_group=GROUP_0, PASTNode parent=NULL);
 

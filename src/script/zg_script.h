@@ -10,7 +10,6 @@
 #include "CContext.h"
 
 
-
 template <typename T>
 struct function_traits
     : public function_traits<decltype(&T::operator())>
@@ -112,6 +111,7 @@ void* getcodeptr(const FunctorT& f) {
   return *(void**)&ptr;
 }
 
+
 /*
 #define registerOperator(op_name,f){\
 	auto reg_function=f;\
@@ -125,15 +125,7 @@ void* getcodeptr(const FunctorT& f) {
 
 class CZG_Script{
 
-public:
-	enum TYPE{
-		UNKNOW=0,
-		BOOL,
-		INTEGER,
-		NUMBER,
-		STRING,
-		VAR
-	};
+
 
 
 private:
@@ -152,71 +144,11 @@ private:
 		void (* fun_ptr)();
 	}tInfoObjectOperator;*/
 
-	CUndefined *m_defaultVar;
 
 
 
-	class tInfoAsmOp{
-
-	public:
 
 
-	     //int type_op;
-	     //tInfoObjectOperator *funOp;
-	     //CObject *left_var_obj;
-	     void *result_obj; // can be float/bool/string or variable.
-	     //string type_res;
-
-	     //------------------
-	     TYPE result_type;
-	     ASM_OPERATOR operator_type;
-	     void *ptr_value; // can be float, bool or string.
-	     //------------------
-
-	     int index_left,index_right;
-	    // bool (* isconvertable)(int value);
-
-		tInfoAsmOp(){
-			result_type=TYPE::UNKNOW;
-			operator_type=ASM_OPERATOR::UNKNOW;
-			//isconvertable=NULL;
-			//left_var_obj=NULL;
-		  //   type_op=0;
-		   //  funOp=NULL;
-			result_obj=NULL; // must be created before.
-		   // type_res="none";
-		    index_left=index_right=-1;
-		    ptr_value=NULL;
-		}
-
-
-
-	};
-
-	typedef struct{
-
-	    vector<tInfoAsmOp *> asm_op;
-	}tInfoStatementOp;
-
-
-	typedef struct _tLocalScope;
-
-	typedef struct _tLocalScope{
-
-		vector<tInfoStatementOp> statement_op;
-
-		_tLocalScope *m_parentScope;
-
-
-	}tLocalScope;
-
-	typedef struct{
-
-		vector<tLocalScope *> m_localScope;
-		tLocalScope *base_scope;
-		//map<string,tLocalScope *>	m_label;
-
-	}tContext;
 
 	CContext *main_context;
 
@@ -229,60 +161,26 @@ private:
 
 
 	//map<string,vector<tInfoObjectOperator> *> m_mapContainerOperators;
-	map<string,CObject *> m_registeredVariable;
+
 
 
 	//bool existOperatorSignature(const string & op,const string & result, vector<string> * param);
-	bool existRegisteredVariable(const string & var_name);
+
 
 
 	//tInfoObjectOperator * getOperatorInfo(const string & op, string * type_op1, string * type_op2=NULL);
 
-	void unregisterOperators();
-	void insertNewStatment();
 
-
-	ASM_OPERATOR getNumberOperatorId_TwoOps(const string & op,TYPE & result_type);
-	ASM_OPERATOR getIntegerOperatorId_TwoOps(const string & op,TYPE & result_type);
-	ASM_OPERATOR getBoleanOperatorId_TwoOps(const string & op,TYPE & result_type);
-	ASM_OPERATOR getStringOperatorId_TwoOps(const string & op,TYPE & result_type);
-
-	ASM_OPERATOR getNumberOperatorId_OneOp(const string & op);
-	ASM_OPERATOR getBoleanOperatorId_OneOp(const string & op);
-	ASM_OPERATOR getStringOperatorId_OneOp(const string & op);
-
-
-	tLocalScope * createLocalScope(tLocalScope *m_parent);
-	tContext * createContext();
-
-	TYPE getTypeAsmResult(int index);
-	bool isVarDeclarationStatment(const char *statment, bool & error,char **eval_expression, int & m_line);
-	bool isLocalScope(const char *statment, bool & error, char ** advance_chars, int & m_line);
 
 public:
 
-	//---------------------------------
-	// Register functions
-	CObject *getRegisteredVariable(const string & v, bool print_msg=true);
-	bool registerVariable(const string & var_name);
-	bool defineVariable(const string & var_name, CObject *obj);
-	//---------------------------------
 
 	static CZG_Script * getInstance();
 
 	bool eval(const string & s);
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
+	bool execute();
 
-	bool insertLoadValueInstruction(const string & v, string & type_ptr);
-	bool insertMovVarInstruction(CObject *var, int right);
-
-	bool insertOperatorInstruction(const string &op, int left, int right=-1);
-	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
-
-
-
-
-	void execute();
 
 	void init();
 

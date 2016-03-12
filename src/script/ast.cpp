@@ -466,14 +466,9 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 	return op;
 }
 
-
-
-
-
-
-		
-int generateAsmCode(PASTNode op, int & numreg, bool & error){
 	
+int generateAsmCode(PASTNode op, CLocalScope *lc, int & numreg, bool & error){
+
 	int r=0;
 	if(op==NULL){
 		return -1;
@@ -482,7 +477,7 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 	if(op->left==NULL && op->right==NULL){ // trivial case value itself...
 
 		print_info_cr("CONST \tE[%i],%s\n",numreg,op->value.c_str());
-		if(!CZG_Script::getInstance()->insertLoadValueInstruction(op->value, op->type_ptr)){
+		if(!lc->insertLoadValueInstruction(op->value, op->type_ptr)){
 			error|=true;
 			return -1;
 
@@ -493,11 +488,11 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 
 		int right=0, left=0;
 	
-		left=generateAsmCode(op->left,numreg,error);
+		left=generateAsmCode(op->left,lc,numreg,error);
 
 		if(error) return -1;
 
-		right=generateAsmCode(op->right,numreg,error);
+		right=generateAsmCode(op->right,lc,numreg,error);
 		
 		if(error) return -1;
 
@@ -509,14 +504,14 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 			if(op->token == "="){
 				// the variable can only assigned if the type is the same or if the type is undefined.
 				// check if left operand is registered variable...
-				CObject * var_obj = CZG_Script::getInstance()->getRegisteredVariable(op->left->value,false);
+				CObject * var_obj = lc->getRegisteredVariable(op->left->value,false);
 				if(var_obj == NULL){
 					print_error_cr("undeclared variable \"%s\"");
 					error|=true;
 					return -1;
 				}else{ // ok is declared ... let's see if undefined variable or is the same type ...
 					bool is_undefined = dynamic_cast<CUndefined *>(var_obj) != NULL;
-					string ptr_class_type =  CZG_Script::getInstance()->getUserTypeResultCurrentStatmentAtInstruction(right);
+					string ptr_class_type =  lc->getUserTypeResultCurrentStatmentAtInstruction(right);
 
 					if(ptr_class_type=="unknow"){
 						error|=true;
@@ -531,7 +526,7 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 
 							var_obj = CFactoryContainer::getInstance()->newObjectByClassPtr(ptr_class_type);
 							if(var_obj!=NULL){
-								CZG_Script::getInstance()->defineVariable(op->left->value,var_obj);
+								lc->defineVariable(op->left->value,var_obj);
 								print_info_cr("%s defined as %s",op->left->value.c_str(),ptr_class_type.c_str());
 							}else{
 								print_error_cr("ERRRRRRRRRROR %s is not registered",ptr_class_type.c_str());
@@ -544,7 +539,7 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 
 
 					    // set value the operator = must be defined !
-						if(!CZG_Script::getInstance()->insertMovVarInstruction(var_obj,right)){
+						if(!lc->insertMovVarInstruction(var_obj,right)){
 							print_error_cr("ERRRRRRRRRROR 2");
 							error|=true;
 							return -1;
@@ -562,7 +557,7 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 			}
 			else{
 				print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
-				if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left,right)){
+				if(!lc->insertOperatorInstruction(op->token,left,right)){
 					error|=true;
 					return -1;
 				}
@@ -570,14 +565,14 @@ int generateAsmCode(PASTNode op, int & numreg, bool & error){
 
 		}else if(right!=-1){ // one op..
 			print_info_cr("%s\tE[%i],E[%i] !!!",op->token.c_str(),numreg,right);
-			if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,right)){
+			if(!lc->insertOperatorInstruction(op->token,right)){
 				error|=true;
 				return -1;
 			}
 
 		}else if(left!=-1){ // one op..
 			print_info_cr("%s\tE[%i],E[%i] !!!",op->token.c_str(),numreg,left);
-			if(!CZG_Script::getInstance()->insertOperatorInstruction(op->token,left)){
+			if(!lc->insertOperatorInstruction(op->token,left)){
 				error|=true;
 				return -1;
 			}

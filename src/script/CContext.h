@@ -1,11 +1,14 @@
 class CContext{
 
-	CContext *m_parent;
+	CLocalScope *m_localScope;
 
 public:
 
 	CContext();
 
+	bool eval(const string & s);
+	bool execute();
 
+	~CContext();
 
 };
