@@ -1,6 +1,6 @@
 #include "zg_script.h"
 
-#define MAX_STATMENT_LENGTH 8192
+#define MAX_STATMENT_LENGTH 2096
 #define MAX_VAR_LENGTH 100
 
 
@@ -15,8 +15,19 @@ void CLocalScope::destroySingletons(){
 }
 
 
+
 CLocalScope::CLocalScope(CLocalScope * _parent){
 	m_parentScope = _parent;
+
+	if(_parent == NULL){
+		m_mainScope = this;
+	}else{
+		m_mainScope = _parent->getMainScope();
+	}
+}
+
+CLocalScope * CLocalScope::getMainScope(){
+	return m_mainScope;
 }
 
 void CLocalScope::addLocalScope(CLocalScope *_ls){
@@ -164,29 +175,191 @@ bool CLocalScope::isVarDeclarationStatment(const char *statment, bool & error, c
 
 //-----------------------------------------------------------------------------------------------------------
 
+bool CLocalScope::performExpression(const char *advanced_expression, int & m_line){
+
+	int numreg=0;
+	PASTNode ast_node;
+	tInfoStatementOp i_stat;
+
+	ast_node=generateAST(advanced_expression, m_line);
+
+	if(ast_node==NULL){ // some error happend!
+		return false;
+	}
+
+	numreg=0;
+
+	// new statment ...
+	m_listStatements.push_back(i_stat);
+
+	bool error_asm=false;
+	generateAsmCode(ast_node,this,numreg,error_asm);
+
+	if(error_asm)
+	{
+		print_error_cr("Error generating code\n");
+		return false;
+	}
 
 
+	return true;
+}
+
+enum TYPE_SPECIAL_OP{
+	NONE=0,
+	IF,
+	ELSE,
+	FOR,
+	WHILE
+};
 
 
 char * CLocalScope::evalRecursive(const char *str_to_eval, int & level_scope, int & m_line, CLocalScope * _scope){
 
-	char *current=(char *) str_to_eval;
+	char *current=(char *) str_to_eval, *begin_ptr, *end_ptr;
 	string var_name;
 	//int m_line=0;
 	bool error;
 	char statment[MAX_STATMENT_LENGTH];
+	char condition[MAX_STATMENT_LENGTH], cond_for[MAX_STATMENT_LENGTH];
+	char pre_for[MAX_STATMENT_LENGTH];
+	char post_for[MAX_STATMENT_LENGTH];
 	char *next;
-	PASTNode ast_node;
+	TYPE_SPECIAL_OP s_op;
 	int length;
-	int numreg=0;
-	char *advanced_expression;
-	CLocalScope * new_local_scope = NULL;
+	int goto_statment;
+
+
+	CLocalScope * new_local_scope = NULL,*for_scope=NULL;
 
 	current=CStringUtils::IGNORE_BLANKS(current,m_line);
 
 	while(*current!=0){
+		s_op = NONE;
+		goto_statment = -1;
 
-		advanced_expression = NULL;
+		// check if condition...
+		if(strncmp(current,"if",2)==0) {// conditional detected...
+			current+=2;
+			s_op=IF;
+		}
+		else if(strncmp(current,"for",3)==0){  // check for condition...
+			current+=3;
+			s_op=FOR;
+		}else if(strncmp(current,"while",5)==0){  // check while condition...
+			current+=5;
+			s_op=WHILE;
+		}
+
+
+		if(s_op != NONE){
+
+			current=CStringUtils::IGNORE_BLANKS(current,m_line);
+			if(*current == '('){
+				current++;
+			}else{
+				print_error_cr("Expected '(' at line %i",m_line);
+				return NULL;
+			}
+
+			// search for )
+			next = strstr(current,")");
+
+
+			if(next == NULL){
+				print_error_cr("Expected ')' at line %i",m_line);
+				return NULL;
+			}
+
+			length=next-current;
+			if(length>=MAX_STATMENT_LENGTH){
+				print_error_cr("Max statment length!");
+				return NULL;
+			}
+
+			memset(condition,0,sizeof(statment));
+			strncpy(condition,current,(next-current));
+
+			if(s_op == FOR){
+
+				_scope->m_scopeList.push_back(for_scope=new CLocalScope(_scope));
+				_scope->insertPushScopeInstruction(for_scope);
+
+
+				begin_ptr = condition;
+				end_ptr = strstr(begin_ptr,";");
+				if(end_ptr == NULL){
+					print_error_cr("Expected ';' at line %i",m_line);
+					return NULL;
+				}
+
+				length=end_ptr-begin_ptr;
+				if(length>=MAX_STATMENT_LENGTH){
+					print_error_cr("Max statment length!");
+					return NULL;
+				}
+				memset(pre_for,0,sizeof(pre_for));
+				strncpy(pre_for,begin_ptr,(end_ptr-begin_ptr));
+				strcat(pre_for,";");
+
+				if(evalRecursive(pre_for, ++level_scope, m_line, for_scope)==NULL){
+					return NULL;
+				}
+
+				end_ptr++;
+				begin_ptr = end_ptr;
+				end_ptr = strstr(begin_ptr,";");
+				if(end_ptr == NULL){
+					print_error_cr("Expected ';' at line %i",m_line);
+					return NULL;
+				}
+
+				length=end_ptr-begin_ptr;
+				if(length>=MAX_STATMENT_LENGTH){
+					print_error_cr("Max statment length!");
+					return NULL;
+				}
+
+				memset(cond_for,0,sizeof(cond_for));
+				strncpy(cond_for,begin_ptr,(end_ptr-begin_ptr));
+				if(*cond_for == 0){
+					strcpy(cond_for,"true");
+				}
+
+
+				memset(post_for,0,sizeof(post_for));
+				if(*end_ptr!=0){
+					strcpy(post_for,end_ptr+1);
+				}
+
+				strcpy(condition,cond_for);
+
+			}
+
+			current = next + 1;
+
+			switch(s_op){
+			default:
+				print_error_cr("op not recognized at line %i",m_line);
+				return NULL;
+				break;
+			case FOR:
+				if(!for_scope->performExpression(condition, m_line)){
+					return NULL;
+				}
+				break;
+			case IF: // evaluate conditional...
+			case WHILE:
+
+				if(!_scope->performExpression(condition, m_line)){
+					return NULL;
+				}
+
+				break;
+			}
+
+		}
+
 
 		if(*current == '{'){ // begin scope --> inc scope level ...
 			// add into localscope
@@ -197,7 +370,21 @@ char * CLocalScope::evalRecursive(const char *str_to_eval, int & level_scope, in
 
 			current = evalRecursive(current+1, ++level_scope, m_line, new_local_scope);
 
-			int j=0;
+			if(*(current-1) == '}'){ // closed claudator (from if/while/for ?)
+				if(s_op == FOR){ //
+					if(level_scope > 0){ // download scope level
+						_scope->insertPopScopeInstruction();//_scope->getIndexLastInsertedLocalScope());
+						--level_scope;
+					}else{
+						print_error_cr("Unclosed for at line %i ?",m_line);
+						return NULL;
+					}
+				}
+				else{
+					print_info_cr("CLOSED CLAUDATOR FROM %i",s_op);
+				}
+			}
+
 
 		}else if(*current == '}'){ // end scope...
 			if(level_scope > 0){ // download scope level
@@ -209,8 +396,9 @@ char * CLocalScope::evalRecursive(const char *str_to_eval, int & level_scope, in
 				return NULL;
 			}
 		}
-		else{ // eval expressions...
+		else{ // try normal expressions (with or not var declaration)...
 
+			char *advanced_expression=NULL;
 			next=strstr(current,";");//getStatment(current);
 			if(next ==0){
 				print_error_cr("Expected ;");
@@ -244,32 +432,13 @@ char * CLocalScope::evalRecursive(const char *str_to_eval, int & level_scope, in
 			}else{
 				advanced_expression = statment;
 			}
-		}
 
-		if(advanced_expression!=NULL){
-
-			tInfoStatementOp i_stat;
-
-			ast_node=generateAST(advanced_expression, m_line);
-
-			if(ast_node==NULL){ // some error happend!
-				return NULL;
-			}
-
-			numreg=0;
-
-			// new statment ...
-			_scope->m_listStatements.push_back(i_stat);
-
-			bool error_asm=false;
-			generateAsmCode(ast_node,_scope,numreg,error_asm);
-
-			if(error_asm)
-			{
-				print_error_cr("Error generating code\n");
+			if(!_scope->performExpression(advanced_expression, m_line)){
 				return NULL;
 			}
 		}
+
+
 
 
 		// next statment...

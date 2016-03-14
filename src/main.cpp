@@ -13,7 +13,7 @@ int main(int argc, char * argv[]){
 
 	print_info_cr("sizeof(CObject)=%i sizeof(float)=%i sizeof(string)=%i",sizeof(CObject),sizeof(float),sizeof(string));
 
-	i=i---i;
+
 
 	if(argc < 2){
 		printf("Put file to evaluate.\n");

@@ -26,7 +26,7 @@ private:
 	vector<CLocalScope *> m_scopeList;
 
 	// The a parent scope ...
-	CLocalScope *m_parentScope;
+	CLocalScope *m_parentScope,*m_mainScope;
 
 
 	class tInfoAsmOp{
@@ -119,6 +119,7 @@ private:
 		static char * evalRecursive(const char * s,int & level_scope, int & m_line,CLocalScope *local_scope);
 
 		void addLocalScope(CLocalScope *_ls);
+		bool performExpression(const char *advanced_expression, int & m_line);
 	//	vector<tInfoStatementOp> * getListStatments();
 
 public:
@@ -127,6 +128,7 @@ public:
 	static void destroySingletons();
 
 	CLocalScope(CLocalScope * m_parent=NULL);
+	CLocalScope * getMainScope();
 
 	//---------------------------------
 	// Register functions
