@@ -191,7 +191,7 @@ void CZG_Script::execute(){
 				"call *%P0\n\t" // call function
 				//"add $4,%%esp"       // Clean up the stack.
 				: "=a" (result) // The result code from puts.
-				: "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
+				: [fun] "r"(fun),[p1] "r"(i1), [p2] "r"(i2));
 		#else // GNU!!!!
 		asm(
 				"push %[p2]\n\t"

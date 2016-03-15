@@ -8,7 +8,7 @@ project(zg_base)
 #
 # COMMON PARAMS
 #
-  SET( COMMON_PARAMS " -D__STDC_CONSTANT_MACROS -std=gnu++0x -I${PROJECT_SOURCE_DIR} -pthread -Wall ")
+  SET( COMMON_PARAMS " -D__STDC_CONSTANT_MACROS -std=gnu++0x -I${PROJECT_SOURCE_DIR} -pthread -Wall")
    
 if (MINGW)
 	set(CMAKE_LEGACY_MINGW_WIN32 0)
