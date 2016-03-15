@@ -32,7 +32,6 @@ public:
 };
 
 
-// as seen on http://functionalcpp.wordpress.com/2013/08/05/function-traits/
 template<class F>
 struct function_traits;
 
@@ -40,22 +39,6 @@ struct function_traits;
 template<class R, class... Args>
 struct function_traits<R(*)(Args...)> : public function_traits<R(Args...)>
 {};
-
-template<class R, class... Args>
-struct function_traits<R(Args...)>
-{
-    using return_type = R;
-
-    static constexpr std::size_t arity = sizeof...(Args);
-
-    template <std::size_t N>
-    struct argument
-    {
-        static_assert(N < arity, "error: invalid parameter index.");
-        //using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
-        typedef typename std::tuple_element<N, std::tuple<Args...>>::type type;
-    };
-};
 
 // member function pointer
 template<class C, class R, class... Args>
@@ -71,6 +54,23 @@ struct function_traits<R(C::*)(Args...) const> : public function_traits<R(C&,Arg
 template<class C, class R>
 struct function_traits<R(C::*)> : public function_traits<R(C&)>
 {};
+
+template<class R, class... Args>
+struct function_traits<R(Args...)>
+{
+    using return_type = R;
+
+    static constexpr std::size_t arity = sizeof...(Args);
+
+    template <std::size_t N>
+    struct argument
+    {
+        static_assert(N < arity, "error: invalid parameter index.");
+        using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
+    };
+};
+
+
 
 template <std::size_t...> struct index_sequence {};
 template <std::size_t N, std::size_t... Is> struct make_index_sequence : make_index_sequence<N-1, N-1, Is...> {};
@@ -186,7 +186,7 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
     ref.append(std::to_string(argIdx)+" ");
     //ref.append(typeid(typename fun::template arg<argIdx-1>::type).name()).append(" ");
    //  typename fun::template argument<argIdx-1>::type var;
-    //typename fun::template argument<argIdx-1>::type var=NULL;
+    typename fun::template argument<0>::type var=NULL;
     string parameter_type="";//fun::arity;//typeid(Traits::argument<argIdx-1>::type).name();
 
     printf("\nArg:%i",argIdx);
@@ -213,7 +213,7 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
 
 
     ref.append(std::to_string(argIdx)+" ");
-    //std::cout << "arg0:" << typeid(fun::argument<0>::type).name() << std::endl;
+   // std::cout << "arg0:" << typeid(fun::argument<0>::type).name() << std::endl;
   // typename fun2::template arg<argIdx-1>::type var=NULL;
 
    printf("\nArg:%i ",argIdx);//,typeid(Args<argIdx-1>).name());
@@ -236,6 +236,7 @@ std::vector<std::string> * getParamsFunction(int i, index_sequence<Is...>)
 {
 	std::vector<std::string> *typeParams= new std::vector<std::string>();
 	std::string return_type = typeid(typename F::return_type).name();
+	std::cout << "arg0:" << typeid(typename F::template argument<0>::type).name() << std::endl;
     std::string s;
     getArgTypes<F::arity, typename F::return_type, typename F::template argument<Is>::type...>(s,*typeParams);
 
@@ -261,13 +262,15 @@ int main(int argc, char * argv[]){
 	CCustomObject * obj = new CCustomObject();
 	obj->member();
 
+	auto lambda = [] (int o)  { return 0; };
 	//using Traits = function_traits<decltype(CCustomObject::member2)>;
-	using Traits = function_traits<decltype(CCustomObject::member2)>;
+	using Traits = function_traits<decltype(&CCustomObject::member2)>;
 	//using Traits = function_traits<decltype(free_function)>;
 	//auto reg_function=[](int i){return 0;};
 	//typedef function_traits<decltype(reg_function)> Traits;
 
 	//typedef function_traits<decltype(reg_function)> decl;
+
 	std::vector<string> *param_type=getParamsFunction<Traits>(0,make_index_sequence<Traits::arity>{});
 	//registerFunctionMember<>(CCustomObject::member2);
 	//auto reg_function=std::bind(&CCustomObject::member2,obj,std::placeholders::_1,std::placeholders::_2);
@@ -320,7 +323,7 @@ int main(int argc, char * argv[]){
 	//void* pActualPtr = *ppVoid;
 
 	void * c_fun = (void *) &CCustomObject::member;
-#ifdef _WIN32
+	#ifdef _WIN32
 	asm(
 			 "movl %[obj],%%ecx # this pointer\n\t"
 			//"push %%esp\n\t"
