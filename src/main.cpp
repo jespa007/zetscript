@@ -32,23 +32,58 @@ public:
 };
 
 
-template<class F>
-struct function_traits;
+template <typename T>
+struct function_traits
+    : public function_traits<decltype(&T::operator())>
+{};
 
 // function pointer
 template<class R, class... Args>
 struct function_traits<R(*)(Args...)> : public function_traits<R(Args...)>
-{};
+{
+    using return_type = R;
+
+    static constexpr std::size_t arity = sizeof...(Args);
+
+    template <std::size_t N>
+    struct argument
+    {
+        static_assert(N < arity, "error: invalid parameter index.");
+        using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
+    };
+};
 
 // member function pointer
 template<class C, class R, class... Args>
 struct function_traits<R(C::*)(Args...)> : public function_traits<R(C&,Args...)>
-{};
+{
+    using return_type = R;
 
-// const member function pointer
+    static constexpr std::size_t arity = sizeof...(Args);
+
+    template <std::size_t N>
+    struct argument
+    {
+        static_assert(N < arity, "error: invalid parameter index.");
+        using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
+    };
+};
+
+// const member function pointer (lambda)
 template<class C, class R, class... Args>
 struct function_traits<R(C::*)(Args...) const> : public function_traits<R(C&,Args...)>
-{};
+{
+    using return_type = R;
+
+    static constexpr std::size_t arity = sizeof...(Args);
+
+    template <std::size_t N>
+    struct argument
+    {
+        static_assert(N < arity, "error: invalid parameter index.");
+        using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
+    };
+};
 
 // member object pointer
 template<class C, class R>
@@ -176,18 +211,22 @@ void registerFunctionMember(){
 }*/
 
 
-
-template <size_t argIdx, typename R, typename... Args>
+// template for last parameter (argIdx == 1)
+template <size_t argIdx, typename F, typename... Args>
 auto getArgTypes(std::string& ref, std::vector<std::string> & params)
     -> typename std::enable_if<argIdx == 1>::type
 {
+ // trivial case...
+    //using fun = function_traits<std::function<R(C::*)(Args...)> >;
 
-    using fun = function_traits<std::function<R(Args...)> >;
+    //typename F::template argument<0>::type var;
+
+
     ref.append(std::to_string(argIdx)+" ");
     //ref.append(typeid(typename fun::template arg<argIdx-1>::type).name()).append(" ");
-   //  typename fun::template argument<argIdx-1>::type var;
-    typename fun::template argument<0>::type var=NULL;
-    string parameter_type="";//fun::arity;//typeid(Traits::argument<argIdx-1>::type).name();
+ //    typename fun::argument<argIdx-1>::type var;
+    //typename fun::template argument<0>::type var=NULL;
+    string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
 
     printf("\nArg:%i",argIdx);
 
@@ -204,11 +243,13 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
 
 }
 
-template <size_t argIdx, typename R, typename... Args>
+// template when parameters are > 1
+template <size_t argIdx, typename F, typename... Args>
 auto getArgTypes(std::string& ref, std::vector<std::string> & params)
-    -> typename std::enable_if<argIdx != 1>::type
+    -> typename std::enable_if<(argIdx > 1)>::type
 {
-    using fun = function_traits<std::function<R(Args...)> >;
+    //using fun = function_traits<std::function<R(Args...)> >;
+	//F::argument<0>::type var=NULL;
 
 
 
@@ -218,7 +259,7 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
 
    printf("\nArg:%i ",argIdx);//,typeid(Args<argIdx-1>).name());
     //cout << "is same:" << std::is_same<CObject *,parameter_type>::value << endl;
-    string parameter_type="";//typeid(var).name();
+    string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
     ref.append(parameter_type).append(" ");
     params.insert(params.begin()+0,parameter_type);
 
@@ -228,7 +269,15 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
 
 
 
-    getArgTypes<argIdx - 1,R, Args...>(ref, params);
+    getArgTypes<argIdx - 1,F, Args...>(ref, params);
+}
+
+// trivial case when parameters are 0.
+template <size_t argIdx, typename F>
+auto getArgTypes(std::string& ref, std::vector<std::string> & params)
+
+{
+	 printf("\nNo Args!");
 }
 
 template <typename F, std::size_t... Is>
@@ -236,9 +285,12 @@ std::vector<std::string> * getParamsFunction(int i, index_sequence<Is...>)
 {
 	std::vector<std::string> *typeParams= new std::vector<std::string>();
 	std::string return_type = typeid(typename F::return_type).name();
-	std::cout << "arg0:" << typeid(typename F::template argument<0>::type).name() << std::endl;
+
+
     std::string s;
-    getArgTypes<F::arity, typename F::return_type, typename F::template argument<Is>::type...>(s,*typeParams);
+
+    getArgTypes<F::arity, F, typename F::template argument<Is>::type...>(s,*typeParams);
+
 
     std::cout << return_type << " (" << (s) << ")";
 
@@ -262,16 +314,40 @@ int main(int argc, char * argv[]){
 	CCustomObject * obj = new CCustomObject();
 	obj->member();
 
+	//auto fun = &CCustomObject::member2;
 	auto lambda = [] (int o)  { return 0; };
 	//using Traits = function_traits<decltype(CCustomObject::member2)>;
+
+	// member function...
 	using Traits = function_traits<decltype(&CCustomObject::member2)>;
+
+	auto reg_function=[](int i){return 0;};
+	// lamba function...
+	using Traits2 = function_traits<decltype(reg_function)>;
+
+	// function...
+	using Traits3 = function_traits<decltype(free_function)>;
+	//using fun = function_traits<std::function<void (CCustomObject::*)(int)> >;
+
+
+	//fun::Traits::argument::type::argv<0>;
+  	//std::cout << "arg0:" << typeid(fun::Traits::argument<0>::type).name() << std::endl;
+
+
+	//typename fun kk;
+
+//	std::cout << "arg0:" << typeid(Traits::<0>::type).name() << std::endl;
 	//using Traits = function_traits<decltype(free_function)>;
 	//auto reg_function=[](int i){return 0;};
 	//typedef function_traits<decltype(reg_function)> Traits;
 
 	//typedef function_traits<decltype(reg_function)> decl;
 
-	std::vector<string> *param_type=getParamsFunction<Traits>(0,make_index_sequence<Traits::arity>{});
+
+	getParamsFunction<Traits>(0,make_index_sequence<Traits::arity>{});
+	getParamsFunction<Traits2>(0,make_index_sequence<Traits2::arity>{});
+	getParamsFunction<Traits3>(0,make_index_sequence<Traits3::arity>{});
+
 	//registerFunctionMember<>(CCustomObject::member2);
 	//auto reg_function=std::bind(&CCustomObject::member2,obj,std::placeholders::_1,std::placeholders::_2);
 	//std::function<void (CCustomObject::*(int))> fun = &obj->member2;
