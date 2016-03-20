@@ -1,7 +1,9 @@
 
 #include "ast.cpp"
-#include "CLocalScope.cpp"
-#include "CContext.cpp"
+#include "CVirtualMachine.cpp"
+#include "CCompiler.cpp"
+#include "CScope.cpp"
+#include "CScriptFunction.cpp"
 
 
 
@@ -52,9 +54,11 @@ CZG_Script::CZG_Script(){
 	iniFactory<CBooleanFactory>("CBoolean");
 	iniFactory<CStringFactory>("CString");
 
-	CLocalScope::createSingletons();
+	CScope::createSingletons();
 
-	main_context = new CContext();
+	//main_context = new CContext();
+
+	m_mainFunction = new CScriptFunction();
 
 }
 
@@ -64,20 +68,22 @@ void CZG_Script::init(){
 }
 
 bool CZG_Script::eval(const string & s){
-	return main_context->eval(s);
+	return m_mainFunction->eval(s);
 }
 
 bool CZG_Script::execute(){
-	return main_context->execute();
+	return CVirtualMachine::getInstance()->execute(m_mainFunction);//->excute();
 }
+
 
 //-------------------------------------------------------------------------------------
 CZG_Script::~CZG_Script(){
 	// unregister operators ...
 
 
-	//unregisterOperators();
-	delete main_context;
-	CLocalScope::destroySingletons();
+
+
+	CCompiler::destroySingletons();
+	CCompiler::destroySingletons();
 
 }

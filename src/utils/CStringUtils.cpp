@@ -43,14 +43,15 @@ char *CStringUtils::ADVANCE_TO_CHAR(char *str,char c) {
 }
 
 char *CStringUtils::ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
-
+	char *pre_aux;
 	if(IS_START_COMMENT(aux_p)){
 		aux_p+=2; //advance first
 		while(!IS_END_COMMENT(aux_p) && *aux_p != 0){
+			pre_aux = aux_p;
 			aux_p = ADVANCE_TO_CHAR(aux_p,'*');
-			if(*aux_p == '\n') aux_p++; // make compatible windows format...
+			if(*aux_p == '\n') {aux_p++;m_line++;}; // make compatible windows format...
 			if(*aux_p == '\r') aux_p++;
-			if(*(aux_p+1) != '/') aux_p++; // not end comment ... advance ...
+			if(*aux_p == '*' && *(aux_p+1) != '/') aux_p++; // not end comment ... advance ...
 		}
 	}
 

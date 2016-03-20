@@ -6,8 +6,12 @@
 #include "factory/zg_factory.h"
 
 #include "ast.h"
-#include "CLocalScope.h"
-#include "CContext.h"
+#include "CVirtualMachine.h"
+#include "CCompiler.h"
+#include "CScriptFunction.h"
+#include "CScope.h"
+
+
 
 
 template <typename T>
@@ -126,8 +130,6 @@ void* getcodeptr(const FunctorT& f) {
 class CZG_Script{
 
 
-
-
 private:
 
 	/*enum TYPE_{
@@ -150,10 +152,13 @@ private:
 
 
 
-	CContext *main_context;
+
 
 
 	static CZG_Script * m_instance;
+
+	CScriptFunction *m_mainFunction;
+
 
 	CZG_Script();
 
@@ -177,8 +182,9 @@ public:
 
 	static CZG_Script * getInstance();
 
-	bool eval(const string & s);
+
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
+	bool eval(const string & s);
 	bool execute();
 
 

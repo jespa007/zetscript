@@ -1,13 +1,15 @@
+#pragma once
+
 class CContext{
 
-	CLocalScope *m_localScope;
 
+	vector<CScriptFunction *> m_function; // 0 is the main scope or main function.
 public:
 
 	CContext();
 
 	bool eval(const string & s);
-	bool execute();
+	bool executeFunction(string & function, CObject * argv[]);
 
 	~CContext();
 

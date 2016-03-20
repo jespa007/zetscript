@@ -2,18 +2,19 @@
 
 
 CContext::CContext(){
-	m_localScope = new CLocalScope();
+	m_localScope = new CScope(this);
+	m_compiler = new CCompiler();
 }
+
+
 
 bool CContext::eval(const string & s){
 	return m_localScope->eval(s);
 }
 
-bool CContext::execute(){
-	return CLocalScope::execute(m_localScope);
-}
 
 
 CContext::~CContext(){
 	delete m_localScope;
+	delete m_compiler;
 }
