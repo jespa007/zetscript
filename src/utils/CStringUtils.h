@@ -55,10 +55,12 @@ public:
 	}
 
 
-	static char *ADVANCE_TO_CHAR(char *str,char c);
+	static char *ADVANCE_TO_CHAR(char *str,char c, int & m_line);
 	static char *ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line);
-	static char *IGNORE_BLANKS(char *str, int &m_line);
+	static char *IGNORE_BLANKS(const char *str, int &m_line);
+	static char *IGNORE_BLANKS_REVERSE(const char *str_begin,const char *str_end, int &m_line);
 	static char *ADVANCE_TO_ONE_OF_COLLECTION_CHAR(char *str,char *end_char_standard_value, int &m_line);
+
 
 	static string intToString(int number);
 	static string floatToString(float number);

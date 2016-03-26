@@ -31,24 +31,25 @@ bool CStringUtils::IS_END_COMMENT(char *str){
 	return false;
 }
 
-char *CStringUtils::ADVANCE_TO_CHAR(char *str,char c) {
+char *CStringUtils::ADVANCE_TO_CHAR(char *str,char c, int & m_line) {
 	char *aux_p = str;
 	// make compatible windows format (\r)...
-	while(*aux_p!='\n' && *aux_p!='\r' && *aux_p!=0 && (*aux_p !=(c) )) aux_p++;
-
-	if(*aux_p=='\r')
+	while(*aux_p!=0 && (*aux_p !=(c) )) {
+		if(*aux_p == '\n') {m_line++;}; // make compatible windows format...
 		aux_p++;
+	}
+
 
 	return aux_p;
 }
 
 char *CStringUtils::ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
-	char *pre_aux;
+
 	if(IS_START_COMMENT(aux_p)){
 		aux_p+=2; //advance first
 		while(!IS_END_COMMENT(aux_p) && *aux_p != 0){
-			pre_aux = aux_p;
-			aux_p = ADVANCE_TO_CHAR(aux_p,'*');
+
+			aux_p = ADVANCE_TO_CHAR(aux_p,'*', m_line);
 			if(*aux_p == '\n') {aux_p++;m_line++;}; // make compatible windows format...
 			if(*aux_p == '\r') aux_p++;
 			if(*aux_p == '*' && *(aux_p+1) != '/') aux_p++; // not end comment ... advance ...
@@ -59,18 +60,15 @@ char *CStringUtils::ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
 
 }
 
-
-
-
-char *CStringUtils::IGNORE_BLANKS(char *str, int &m_line) {
-	char *aux_p = str;
+char *CStringUtils::IGNORE_BLANKS(const char *str, int &m_line) {
+	char *aux_p = (char *)str;
 	bool end = false;
 	while(!end){
 		end = true;
 		while(*aux_p!=0 && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p++;
 
 		if(IS_SINGLE_COMMENT(aux_p)) // ignore line
-			aux_p = ADVANCE_TO_CHAR(aux_p,'\n');
+			aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
 
 		else if(IS_START_COMMENT(aux_p)){
 			// ignore until get the end of the comment...
@@ -94,6 +92,25 @@ char *CStringUtils::IGNORE_BLANKS(char *str, int &m_line) {
 	return aux_p;
 }
 
+char *CStringUtils::IGNORE_BLANKS_REVERSE(const char *str_begin,const char *str_end, int &m_line) {
+	char *aux_p = (char *)str_begin;
+	bool end = false;
+	while(!end){
+		end = true;
+		while(aux_p!=str_end && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p--;
+
+		// make compatible windows format...
+		if(*aux_p == '\r')
+			aux_p--;
+
+		if(*aux_p == '\n') {
+			m_line=m_line+1;
+			end=false;
+			aux_p--;
+		}
+	}
+	return aux_p;
+}
 
 
 char *CStringUtils::ADVANCE_TO_ONE_OF_COLLECTION_CHAR(char *str,char *end_char_standard_value, int &m_line) {
@@ -110,7 +127,7 @@ char *CStringUtils::ADVANCE_TO_ONE_OF_COLLECTION_CHAR(char *str,char *end_char_s
 		}
 
 		if(IS_SINGLE_COMMENT(aux_p)) {
-			aux_p = ADVANCE_TO_CHAR(aux_p,'\n');
+			aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
 		}
 
 		while(*chk_char != 0){

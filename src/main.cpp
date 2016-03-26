@@ -1,11 +1,12 @@
 #include "script/zg_script.h"
-
+#include "SDL2/SDL.h"
 
 
 int main(int argc, char * argv[]){
 
 	printf("%s\n",(char *) typeid(CString *).name());
 	printf("%s\n",(char *) typeid(string *).name());
+
 
 	int i=0;
 	CLog::setUseAnsiEscape(true);
@@ -33,9 +34,15 @@ int main(int argc, char * argv[]){
 		CZG_Script *zg_script = CZG_Script::getInstance();
 		zg_script->init();
 
-		if(zg_script->eval((char *)buffer->data_buffer)){
-			zg_script->execute();
-		}
+
+			if(zg_script->eval((char *)buffer->data_buffer)){
+				/*for(i=0; i < 20;i++)
+				{
+					Uint32 t = SDL_GetTicks();*/
+					zg_script->execute();
+					/*print_info_cr("%i",SDL_GetTicks()-t);
+				}*/
+			}
 
 		print_info_cr("sizeobject:%i",sizeof(CObject));
 		print_info_cr("sizenumber:%i",sizeof(CNumber));

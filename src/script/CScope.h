@@ -7,13 +7,18 @@ public:
 
 
 
+	typedef struct{
+		int m_line;
+		CObject *m_obj;
+	}tInfoRegisteredVar;
+
 	static void createSingletons();
 	static void destroySingletons();
 
 
 	//---------------------------------
 	// Register functions
-	CObject *getRegisteredVariable(const string & v, bool print_msg=true);
+	tInfoRegisteredVar *getInfoRegisteredVariable(const string & v, bool print_msg=true);
 	bool registerVariable(const string & var_name, int m_line);
 	bool defineVariable(const string & var_name, CObject *obj);
 
@@ -41,10 +46,7 @@ private:
 	//--------------------------------------------------------------------
 	// Register functions
 
-	typedef struct{
-		int m_line;
-		CObject *m_obj;
-	}tInfoRegisteredVar;
+	//char * parseKeyword_Switch(const char * str,int & m_line,tInfoCase & info_case,bool & error);
 
 	map<string,tInfoRegisteredVar *> m_registeredVariable;
 
@@ -89,7 +91,7 @@ private:
 		//tContext * createContext();
 
 		static bool isVarDeclarationStatment(const char *statment, bool & error,char **eval_expression, int & m_line, CScope * _localScope);
-		static char * evalRecursive(const char * s, int & m_line,CScope *local_scope,int level_scope=0);
+		static char * evalRecursive(const char * s, int & m_line,bool & error,CScope *local_scope,int level_scope=0);
 
 		void addLocalScope(CScope *_ls);
 

@@ -24,11 +24,22 @@ public:
 	CVirtualMachine::ASM_OPERATOR getBoleanOperatorId_OneOp(const string & op);
 	CVirtualMachine::ASM_OPERATOR getStringOperatorId_OneOp(const string & op);
 
-	bool insertLoadValueInstruction(const string & v, string & type_ptr, CScope * _lc);
+	/**
+	 * Load value or symbol and insert asm operation at current statment.
+	 */
+	bool insertLoadValueInstruction(const string & value, string & type_ptr, CScope * _lc, int var_at_line);
 	bool insertMovVarInstruction(CObject *var, int right);
+	CVirtualMachine::tInfoAsmOp * insert_JMP_Instruction();
+	CVirtualMachine::tInfoAsmOp * insert_JNT_Instruction();
+	CVirtualMachine::tInfoAsmOp * insert_JT_Instruction();
+	void insert_NOP_Instruction();
 
-	bool insertOperatorInstruction(const string &op, int left, int right=-1);
+	bool insertOperatorInstruction(const string &op, string & error_str, int left, int right=-1);
 	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
+
+	bool *getObjectResultCurrentStatmentAsBoolean();
+	int getCurrentInstructionIndex();
+	int getCurrentStatmentIndex();
 
 	CVirtualMachine::VAR_TYPE getTypeAsmResult(int index);
 

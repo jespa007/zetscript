@@ -94,11 +94,11 @@ CScope::tInfoRegisteredVar * CScope::existRegisteredVariable(const string & var_
 }
 
 
-CObject *CScope::getRegisteredVariable(const string & var_name, bool print_msg){
+CScope::tInfoRegisteredVar *CScope::getInfoRegisteredVariable(const string & var_name, bool print_msg){
 	tInfoRegisteredVar * irv;
 	if((irv = existRegisteredVariable(var_name))!=NULL){ // check whether is local var registered scope ...
 
-		return irv->m_obj;
+		return irv;
 	}else{
 		if(print_msg){
 			print_error_cr("var \"%s\" doesn't exist!", var_name.c_str());
@@ -116,12 +116,14 @@ bool CScope::isVarDeclarationStatment(const char *statment, bool & error, char *
 
 	//string var_name;
 	//PASTNode expression;
+	tInfoKeyword *key_w;
 	char *start_var,*end_var;
 	*eval_expression=NULL;
 	error=false;
 	char stat[MAX_STATMENT_LENGTH]={0};
 	string s_aux;
 	int var_length;
+	int registeredVariableLine;
 
 	aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
 
@@ -132,9 +134,9 @@ bool CScope::isVarDeclarationStatment(const char *statment, bool & error, char *
 			return NULL;
 		}
 
-		*eval_expression=aux;
-
 		aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
+		*eval_expression=aux;
+		registeredVariableLine = m_line;
 
 		if(*aux!=0 && (
 		   ('a' <= *aux && *aux <='z') ||
@@ -149,24 +151,35 @@ bool CScope::isVarDeclarationStatment(const char *statment, bool & error, char *
 				aux++;
 			}
 			end_var=aux;
+
+			var_length=end_var-start_var;
+			strncpy(stat,start_var,var_length);
+
+			if((key_w = is_keyword(stat)) != NULL){
+				print_error_cr("unexpected keyword \"%s\" at line %i",stat, m_line);
+				error = true;
+				return false;
+			}
+
 			aux=CStringUtils::IGNORE_BLANKS(aux,m_line);
 
 			if((*aux == 0 || *aux == '=')){
 
-				var_length=end_var-start_var;
 
-				strncpy(stat,start_var,var_length);
 				print_info_cr("registered \"%s\" variable: ",stat);
 
 				s_aux=stat;
-				if(!_localScope->registerVariable(s_aux,m_line)){
+				if(!_localScope->registerVariable(s_aux,registeredVariableLine)){
 					error=true;
 				}
+
+				// rewind line when the variable was declared because we pass the expression "variable=expression"
+				m_line = registeredVariableLine;
 
 				return true;
 			}
 			else{
-				print_error_cr("variable cannot cannot contain char '%c'",*aux);
+				print_error_cr("variable cannot cannot contain char '%c' at line",*aux, m_line);
 				error=true;
 			}
 
@@ -180,215 +193,698 @@ bool CScope::isVarDeclarationStatment(const char *statment, bool & error, char *
 
 
 //-----------------------------------------------------------------------------------------------------------
-
-enum TYPE_SPECIAL_OP{
-	NONE=0,
-	IF,
-	ELSE,
-	FOR,
-	WHILE
-};
+typedef struct{
+	int m_line;
+	string str;
+}tInfoKeyWord;
 
 
-struct{
-	TYPE_SPECIAL_OP id;
-	const char *str;
-}str_op[]{
-		{NONE, "None"},
-		{IF,"if"},
-		{ELSE,"else"},
-		{FOR,"for"},
-		{WHILE,"while"}
-};
+typedef struct{
+	char *str_begin;
+	char *str_end;
+	int m_begin_line;
+}tInfoStartEndString;
+
+
+typedef struct {
+
+	vector<string> str_conditional_value; // values that executes the scope...
+	tInfoStartEndString str_scope;
+	CVirtualMachine::tInfoAsmOp *jt_asm=NULL;
+	CVirtualMachine::tInfoAsmOp *jmp_asm=NULL;
+}tInfoCase;
+
+typedef struct {
+
+	vector<tInfoCase> conditional_case;
+	tInfoStartEndString str_default_case_scope;
+	CVirtualMachine::tInfoAsmOp *jmp_default_asm=NULL;
+
+}tInfoSwitch;
+
+char *parseKeyword_IfElseForWhile(const char *str, tInfoKeyword **keyw, int & m_line, tInfoKeyWord & condition, tInfoKeyWord & pre_for, tInfoKeyWord & post_for, bool & error ){
+	char *current = (char *)str,*next,*next_aux, *begin_ptr, *end_ptr;
+
+	int length;
+	char expr[MAX_STATMENT_LENGTH];
+	string cond_expr;
+	error = false;
+	int m_line2;
+
+
+	*keyw=NULL;
+
+
+	condition.str = "";
+	post_for.str="";
+	pre_for.str="";
+
+	//goto_statment = -1;
+
+	// check if condition...
+	*keyw = is_keyword(str);
+
+	if(*keyw == NULL){
+		return NULL;
+	}
+
+	if((*keyw)->id == VAR){ // special case that is managed later..
+		return NULL;
+	}
+
+
+	if(*keyw != NULL){
+
+		current+=strlen((*keyw)->str);
+		current=CStringUtils::IGNORE_BLANKS(current,m_line);
+
+		if((*keyw)->id == ELSE){ // special case that is managed later..
+			return current;
+		}
+
+		if(*current == '('){
+			current++;
+
+		}else{
+			print_error_cr("Expected '(' at line %i",m_line);
+			error = true;
+			return NULL;
+		}
+
+		current = CStringUtils::IGNORE_BLANKS(current,m_line);
+		// search for )
+		next = current;
+		int n_open_parentesis = 1;
+		while(*next!=0 && *next!='{' && n_open_parentesis != 0 ){
+			next=CStringUtils::IGNORE_BLANKS(next,m_line);
+			if(*next == ')')	{n_open_parentesis--;}
+			if(*next == '(')	{n_open_parentesis++;}
+
+			if(n_open_parentesis!=0)
+				next++;
+		}
+
+		if(n_open_parentesis != 0){
+			print_error_cr("Unclosed expression at line %i",m_line);
+			error = true;
+			return NULL;
+		}
+		//next = strstr(current,")");
+
+		length=next-current;
+		if(length>=MAX_STATMENT_LENGTH){
+			print_error_cr("Max statment length!");
+			error = true;
+			return NULL;
+		}
+
+		memset(expr,0,sizeof(expr));
+
+		next_aux=CStringUtils::IGNORE_BLANKS_REVERSE(next-1,current,m_line2);
+		strncpy(expr,current,(next_aux-current+1));
+
+
+		cond_expr=expr;
+		condition.str = expr;
+		condition.m_line = m_line;
+
+		if((*keyw)->id == FOR){
+
+			/*_scope->m_scopeList.push_back(for_scope=new CScope(_scope->getScriptFunction(),_scope));
+			CCompiler::getInstance()->insertPushScopeInstruction(for_scope);*/
+
+			end_ptr = begin_ptr = (char *)cond_expr.c_str();
+			pre_for.m_line = m_line;
+			//end_ptr = CStringUtils::ADVANCE_TO_CHAR(begin_ptr,';', m_line);
+			while((*end_ptr!=0 || *end_ptr==';')){
+				current=CStringUtils::IGNORE_BLANKS(end_ptr,m_line);
+				end_ptr++;
+			}
+
+
+			if(*end_ptr != ';'){
+				print_error_cr("Expected ';' at line %i",m_line);
+				error = true;
+				return NULL;
+			}
+
+			length=end_ptr-begin_ptr;
+			if(length>=MAX_STATMENT_LENGTH){
+				print_error_cr("Max statment length!");
+				error = true;
+				return NULL;
+			}
+			memset(expr,0,sizeof(expr));
+
+			strncpy(expr,begin_ptr,(end_ptr-begin_ptr));
+			strcat(expr,";");
+			pre_for.str=expr;
+
+			// evaluating init for;
+		/*	if(evalRecursive(pre_for, m_line, for_scope, level_scope+1)==NULL){
+				return NULL;
+			}*/
+
+			end_ptr++;
+			begin_ptr = end_ptr;
+			condition.m_line = m_line;
+			//end_ptr = CStringUtils::ADVANCE_TO_CHAR(begin_ptr,';', m_line);
+			while((*end_ptr!=0 || *end_ptr==';')){
+				current=CStringUtils::IGNORE_BLANKS(end_ptr,m_line);
+				end_ptr++;
+			}
+
+
+			if(*end_ptr != ';'){
+				print_error_cr("Expected ';' at line %i",m_line);
+				error = true;
+				return NULL;
+			}
+
+			length=end_ptr-begin_ptr;
+			if(length>=MAX_STATMENT_LENGTH){
+				print_error_cr("Max statment length!");
+				error = true;
+				return NULL;
+			}
+
+			memset(expr,0,sizeof(expr));
+			strncpy(expr,begin_ptr,(end_ptr-begin_ptr));
+			if(*expr == 0){
+				strcpy(expr,"true");
+			}
+			condition.str=expr;
+
+			end_ptr=CStringUtils::IGNORE_BLANKS(end_ptr+1,m_line);
+			post_for.m_line = m_line;
+			memset(expr,0,sizeof(expr));
+			if(*end_ptr!=0){
+				strcpy(expr,end_ptr);
+				post_for.str=expr;
+			}
+			post_for.str+=";"; // add a end end semicolon
+
+			//condition = expr;
+			//strcpy(condition,cond_for);
+
+		}
+
+	}
+	else{
+		return NULL;
+	}
+	current = next + 1;
+	return current;
+}
 
 
 
-char * CScope::evalRecursive(const char *str_to_eval, int & m_line, CScope * _scope, int level_scope){
+char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error, CScope * _scope, int level_scope){
 
-	char *current=(char *) str_to_eval, *begin_ptr, *end_ptr;
+	char *current=(char *) str_to_eval;
 	string var_name;
 	//int m_line=0;
-	bool error;
-	char statment[MAX_STATMENT_LENGTH];
-	char condition[MAX_STATMENT_LENGTH], cond_for[MAX_STATMENT_LENGTH];
-	char pre_for[MAX_STATMENT_LENGTH];
-	char post_for[MAX_STATMENT_LENGTH];
-	char *next;
-	TYPE_SPECIAL_OP s_op;
-	int length;
-	//int goto_statment;
 
+	char statment[MAX_STATMENT_LENGTH];
+	tInfoKeyWord condition;
+	tInfoKeyWord pre_for;
+	tInfoKeyWord post_for;
+	tInfoSwitch info_switch;
+	int index_st_jump=-1; // not conditional jump;
+	CVirtualMachine::tInfoAsmOp *jnt_asm=NULL;;
+	CVirtualMachine::tInfoAsmOp *jmp_asm=NULL;
+
+
+	char *next;
+	tInfoKeyword * key_w=NULL, *key_w_last=NULL;
+	int length;
 
 	CScope * new_local_scope = NULL,*for_scope=NULL;
 
 	current=CStringUtils::IGNORE_BLANKS(current,m_line);
 
 	while(*current!=0){
-		s_op = NONE;
-		//goto_statment = -1;
 
-		// check if condition...
-		if(strncmp(current,"if",2)==0) {// conditional detected...
-			current+=2;
-			s_op=IF;
-		}
-		else if(strncmp(current,"for",3)==0){  // check for condition...
-			current+=3;
-			s_op=FOR;
-		}else if(strncmp(current,"while",5)==0){  // check while condition...
-			current+=5;
-			s_op=WHILE;
+
+		// reset info_switch...
+		memset(&info_switch.str_default_case_scope,0,sizeof(info_switch.str_default_case_scope));
+		info_switch.conditional_case.clear();
+
+		next = parseKeyword_IfElseForWhile(current,&key_w,m_line,condition,pre_for, post_for,error);
+
+		if(error){
+			return NULL;
 		}
 
 
-		if(s_op != NONE){
+		//------------------------------------------------------------------------------------------------------------------------------------------------
+		//
+		// CHECK SYNTAX KEYWORD
+		//
+		// recognized special op
+		if(next != NULL){
 
-			current=CStringUtils::IGNORE_BLANKS(current,m_line);
-			if(*current == '('){
-				current++;
-			}else{
-				print_error_cr("Expected '(' at line %i",m_line);
-				return NULL;
-			}
-
-			// search for )
-			next = strstr(current,")");
-
-
-			if(next == NULL){
-				print_error_cr("Expected ')' at line %i",m_line);
-				return NULL;
-			}
-
-			length=next-current;
-			if(length>=MAX_STATMENT_LENGTH){
-				print_error_cr("Max statment length!");
-				return NULL;
-			}
-
-			memset(condition,0,sizeof(statment));
-			strncpy(condition,current,(next-current));
-
-			if(s_op == FOR){
-
-				_scope->m_scopeList.push_back(for_scope=new CScope(_scope->getScriptFunction(),_scope));
-				CCompiler::getInstance()->insertPushScopeInstruction(for_scope);
-
-
-				begin_ptr = condition;
-				end_ptr = strstr(begin_ptr,";");
-				if(end_ptr == NULL){
-					print_error_cr("Expected ';' at line %i",m_line);
-					return NULL;
-				}
-
-				length=end_ptr-begin_ptr;
-				if(length>=MAX_STATMENT_LENGTH){
-					print_error_cr("Max statment length!");
-					return NULL;
-				}
-				memset(pre_for,0,sizeof(pre_for));
-				strncpy(pre_for,begin_ptr,(end_ptr-begin_ptr));
-				strcat(pre_for,";");
-
-				// evaluating init for;
-				if(evalRecursive(pre_for, m_line, for_scope, level_scope+1)==NULL){
-					return NULL;
-				}
-
-				end_ptr++;
-				begin_ptr = end_ptr;
-				end_ptr = strstr(begin_ptr,";");
-				if(end_ptr == NULL){
-					print_error_cr("Expected ';' at line %i",m_line);
-					return NULL;
-				}
-
-				length=end_ptr-begin_ptr;
-				if(length>=MAX_STATMENT_LENGTH){
-					print_error_cr("Max statment length!");
-					return NULL;
-				}
-
-				memset(cond_for,0,sizeof(cond_for));
-				strncpy(cond_for,begin_ptr,(end_ptr-begin_ptr));
-				if(*cond_for == 0){
-					strcpy(cond_for,"true");
-				}
-
-
-				memset(post_for,0,sizeof(post_for));
-				if(*end_ptr!=0){
-					strcpy(post_for,end_ptr+1);
-				}
-
-				strcpy(condition,cond_for);
-
-			}
-
-			current = next + 1;
-
-			switch(s_op){
+			switch(key_w->id){
 			default:
-				print_error_cr("op not recognized at line %i",m_line);
+				print_error_cr("op %s is not implemented at line %i",key_w->str,m_line);
+				error = true;
 				return NULL;
 				break;
-			case FOR:
-				if(!CCompiler::getInstance()->compileExpression(condition, m_line,_scope->getScriptFunction(), for_scope)){
+			case SWITCH:
+
+				if(!IS_WORD(condition.str.c_str())){
+					print_error_cr("invalid expression %s at line %i",condition.str.c_str(),condition.m_line);
+					error = true;
 					return NULL;
 				}
+
+				if(_scope->getInfoRegisteredVariable(condition.str,false)==NULL){
+					print_error("symbol %s not declared at line %i",condition.str.c_str(), condition.m_line);
+					error = true;
+					return NULL;
+				}
+				break;
+			case FOR:
+
+				// eval pre and post...
+				_scope->m_scopeList.push_back(for_scope=new CScope(_scope->getScriptFunction(),_scope));
+
+				// pre for ...
+				if(evalRecursive(pre_for.str.c_str(),pre_for.m_line, error, for_scope, level_scope+1)==NULL){
+						return NULL;
+				}
+
+				// current statment index after prefor ...
+				if(CCompiler::getInstance()->compileExpression(condition.str.c_str(), condition.m_line,_scope->getScriptFunction(), for_scope)){
+					index_st_jump =  CCompiler::getInstance()->getCurrentStatmentIndex();
+					// check whether the expression is boolean ...
+					bool * b = CCompiler::getInstance()->getObjectResultCurrentStatmentAsBoolean();
+					if(b){ // insert special goto asm instruction but put as not assigned yet ...
+						jnt_asm = CCompiler::getInstance()->insert_JNT_Instruction();
+					}
+					else{
+						print_error("Error FOR expression not boolean at line %i",m_line);
+						error = true;
+						return NULL;
+					}
+				}else{
+					return NULL;
+				}
+
+				break;
+			case ELSE: // no conditional only evaluatues its scope later...
 				break;
 			case IF: // evaluate conditional...
 			case WHILE:
 
-				if(!CCompiler::getInstance()->compileExpression(condition, m_line,_scope->getScriptFunction(), _scope)){
+				// jmp for while
+
+
+				if(CCompiler::getInstance()->compileExpression(condition.str.c_str(), condition.m_line,_scope->getScriptFunction(), _scope)){
+					index_st_jump =  CCompiler::getInstance()->getCurrentStatmentIndex();
+					if(key_w->id == IF){
+						index_st_jump = -1; // we will set it later...
+					}
+
+					// check whether the expression is boolean ...
+					bool * b = CCompiler::getInstance()->getObjectResultCurrentStatmentAsBoolean();
+					if(b){ // reserve jnt whether if not true...
+
+						jnt_asm = CCompiler::getInstance()->insert_JNT_Instruction(); // if-else
+					}
+					else{
+						print_error("Error %s expression not boolean at line %i",key_w->str,m_line);
+						error = true;
+						return NULL;
+					}
+				}else{
 					return NULL;
 				}
 
 				break;
 			}
 
-		}
+			current = next;
 
-		if(s_op!=NONE && *current != '{'){
-			print_error_cr("Expected '{' on '%s' at line %s",str_op[s_op].str,m_line);
+			if(*current != '{'){
+				print_error_cr("Expected '{' on '%s' at line %i",key_w->str,m_line);
+			}
 		}
+		//
+		// KEYWORD
+		//
+		//------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 		if(*current == '{'){ // begin scope --> inc scope level ...
-			// add into localscope
-			if(s_op == FOR) {
-				new_local_scope = for_scope;
-			}else{
-				new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
-			}
 
-			_scope->m_scopeList.push_back(new_local_scope);
-			CCompiler::getInstance()->insertPushScopeInstruction(new_local_scope);
+			//------------------------------------------------------------------------------------------------------------------------------------------------
+			//
+			// EVAL FOR SWITCH
+			//
+			if(key_w->id == SWITCH) {
 
-			if((current = evalRecursive(current+1, m_line, new_local_scope, level_scope+1)) == NULL){
-				return NULL;
-			}
+				tInfoKeyword *key_w_switch;
+				current = CStringUtils::IGNORE_BLANKS(current+1, m_line);
+				char *begin_ptr, *end_ptr, *begin_scope=NULL,*end_scope=NULL;
+				long size_value;
+				tInfoStartEndString *eval_scope=NULL;
+				char value[100]={0};
+				bool already_processed_default=false;// char case_scope[];
+				// detect tokens ...
+				while(*current!= 0 && *(current-1) != '}'){
 
-			if(*(current-1) != '}'){ // closed claudator (from if/while/for ?)
-				print_error_cr("Expected '}' at line %i",m_line);
-				return NULL;
-			}
+					current = CStringUtils::IGNORE_BLANKS(current, m_line);
+
+					if((key_w_switch=is_keyword(current))!=NULL){
 
 
-				/*if(s_op == FOR){ //
-					if(level_scope == 0){ // download scope level
-						CCompiler::getInstance()->insertPopScopeInstruction();//_scope->getIndexLastInsertedLocalScope());
-					}else{
-						print_error_cr("Unclosed for at line %i ?",m_line);
-						return NULL;
+						switch(key_w_switch->id){
+							default:
+								print_error_cr("unexpected keyword %s at line",key_w_switch->str, m_line);
+								error=true;
+								return NULL;
+								break;
+							case DEFAULT:
+							case CASE: // begin scope...
+
+								current+=strlen(key_w_switch->str);
+								current = CStringUtils::IGNORE_BLANKS(current, m_line);
+
+								if(key_w_switch->id == DEFAULT){
+									if(already_processed_default){
+										print_error_cr("repeat default at line %i", m_line);
+										error = true;
+										return NULL;
+									}
+									already_processed_default = true;
+									end_ptr=current;
+									eval_scope = &info_switch.str_default_case_scope;
+								}else{
+
+									// get value ...
+									begin_ptr=current;
+									end_ptr=GET_END_WORD(begin_ptr);
+									size_value = end_ptr-begin_ptr;
+
+									if(size_value >= (int)sizeof(value)){
+										print_error_cr("Case value to long %100s at line %i",begin_ptr, m_line);
+										error = true;
+										return NULL;
+									}
+
+									strncpy(value,begin_ptr,size_value);
+									print_info_cr("CASE with value %s",value);
+
+									tInfoCase *info_case_ptr;
+
+									if(begin_scope!=NULL){
+										print_info_cr("Added OR CASE",value);
+										info_case_ptr = &info_switch.conditional_case[info_switch.conditional_case.size()-1];
+									}else{
+										tInfoCase info_case;
+										info_switch.conditional_case.push_back(info_case);
+										info_case_ptr = &info_case;//conditional_case[info_switch.conditional_case.size()-1];
+									}
+
+									info_case_ptr->str_conditional_value.push_back(value);
+									eval_scope=&info_case_ptr->str_scope;
+								}
+
+								current = CStringUtils::IGNORE_BLANKS(end_ptr, m_line);
+
+								if(*current != ':'){
+									print_error_cr("expected : at line %i",m_line);
+									error=true;
+									return NULL;
+								}
+
+								eval_scope->m_begin_line = m_line;
+
+								// scope begins here..
+								begin_scope = current+1;
+								end_scope = NULL;
+
+								break;
+							case BREAK: // end scope ...
+
+								if(begin_scope==NULL){
+									print_error_cr("unexpected break at line %i",m_line);
+									error=true;
+									return NULL;
+								}
+								end_scope = current;
+								current+=strlen(key_w_switch->str);
+
+								int m_line2=m_line;
+								current = CStringUtils::IGNORE_BLANKS(current, m_line);
+								if(*current != ';'){
+									print_error_cr("expected ; %s at line",key_w_switch->str, m_line2);
+									error=true;
+									return NULL;
+								}
+
+								eval_scope->str_begin = begin_scope;
+								eval_scope->str_end = end_scope;
+
+								begin_scope=NULL;
+								break;
+
+						}
+
 					}
-				}
-				else{
-					print_info_cr("CLOSED CLAUDATOR FROM %i",s_op);
-				}*/
-			//}
 
+					current++;
+
+				}
+
+				if(*current != '}'){
+					print_error_cr("unexpected error");
+					error = true;
+					return NULL;
+				}
+			}
+			//
+			// SWITCH
+			//
+			//------------------------------------------------------------------------------------------------------------------------------------------------
+
+			else
+			{
+				//------------------------------------------------------------------------------------------------------------------------------------------------
+				//
+				// EVAL FOR IF-ELSE-FOR-WHILE
+				//
+
+				// add into localscope
+				if(key_w->id == FOR) {
+					new_local_scope = for_scope;
+				}else{
+					new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
+					_scope->m_scopeList.push_back(new_local_scope);
+				}
+
+				//CCompiler::getInstance()->insertPushScopeInstruction(new_local_scope);
+
+				if((current = evalRecursive(current+1, m_line,error, new_local_scope, level_scope+1)) == NULL){
+					return NULL;
+				}
+
+
+				//
+				// EVAL FOR IF-ELSE-FOR-WHILE
+				//
+				//------------------------------------------------------------------------------------------------------------------------------------------------
+			}
+
+			if(key_w->id != SWITCH){
+				//------------------------------------------------------------------------------------------------------------------------------------------------
+				//
+				// GENERATE ASM FOR SWITCH
+				//
+
+				if(*(current-1) != '}'){ // closed claudator (from if/while/for ?)
+					print_error_cr("Expected '}' at line %i",m_line);
+					error = true;
+					return NULL;
+				}
+				//
+				// GENERATE ASM FOR SWITCH
+				//
+				//------------------------------------------------------------------------------------------------------------------------------------------------
+				else
+				{
+					//------------------------------------------------------------------------------------------------------------------------------------------------
+					//
+					// GENERATE ASM FOR IF-ELSE-FOR-WHILE
+					//
+					if(key_w->id == SWITCH){ // generata code for all conditionals...
+
+						// design ...
+						// jt case 1 or case 2
+						// jt case 2
+						// jt ...
+						// jmp default
+						// scope1:
+						//...
+						// jmp end
+						// scope2:
+						//...
+						// jmp end
+						// scope3:
+						//...
+						// jmp end
+						// scope4:
+						//...
+						// jmp end
+						// default:
+						//... whatever
+						// end:
+
+						// Load symbol or value (0)...
+
+						string error_str;
+						bool ok=true;
+						string type_value_condition;
+						CCompiler::getInstance()->insertLoadValueInstruction(condition.str,type_value_condition,_scope,condition.m_line);
+						// get current index ...
+						int base_value_index  = CCompiler::getInstance()->getCurrentInstructionIndex();
+
+						for(unsigned i = 0; i< info_switch.conditional_case.size();i++){ // for all cases...
+							// 1. if not (conditional.type == info_switch.conditional_case[i].info_type) perror(not value not type case);
+
+							// 2. insert jt without statment.
+							//CCompiler::getInstance()->insertLoadValueInstruction()
+							//string or_case=condition.str+"=="+info_switch.conditional_case[i].str_conditional_value[0];
+
+							for(unsigned j=0; j < info_switch.conditional_case[i].str_conditional_value.size(); j++){
+								//or_case +=  "|| "+condition.str+"=="+info_switch.conditional_case[i].str_conditional_value[j];
+								ok&=CCompiler::getInstance()->insertLoadValueInstruction(info_switch.conditional_case[i].str_conditional_value[j],type_value_condition,_scope,condition.m_line);
+								ok&=CCompiler::getInstance()->insertOperatorInstruction("==",error_str, base_value_index,base_value_index+j+1);
+								info_switch.conditional_case[i].jt_asm = CCompiler::getInstance()->insert_JT_Instruction();
+							}
+
+						}
+
+						// insert a jmp to default st...
+						info_switch.jmp_default_asm = CCompiler::getInstance()->insert_JMP_Instruction();
+						char v_scope[1000];
+
+						// evaluate all case scope ...
+						for(unsigned i = 0; i< info_switch.conditional_case.size();i++){ // for all cases...
+
+							new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
+							_scope->m_scopeList.push_back(new_local_scope);
+							// 1. generate asm scope.
+							// link asm conditional jmp...
+							info_switch.conditional_case[i].jt_asm->result_obj=(void*)(CCompiler::getInstance()->getCurrentInstructionIndex()+1);
+
+							strncpy(v_scope,info_switch.conditional_case[i].str_scope.str_begin,info_switch.conditional_case[i].str_scope.str_end-info_switch.conditional_case[i].str_scope.str_begin);
+							if((evalRecursive(v_scope, m_line,error, new_local_scope, level_scope+1)) == NULL){
+								return NULL;
+							}
+							// 2. generate jmp without statment.
+							info_switch.conditional_case[i].jmp_asm=CCompiler::getInstance()->insert_JMP_Instruction();
+						}
+
+
+						// last, we evaluates the default scope...
+						if(info_switch.str_default_case_scope.str_begin != NULL){
+
+							new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
+							_scope->m_scopeList.push_back(new_local_scope);
+
+							strncpy(v_scope,info_switch.str_default_case_scope.str_begin,info_switch.str_default_case_scope.str_end-info_switch.str_default_case_scope.str_begin);
+							if((evalRecursive(v_scope, m_line,error, new_local_scope, level_scope+1)) == NULL){
+								return NULL;
+							}
+						}
+
+						// link jmp cases to current instruction ...
+						for(unsigned i = 0; i< info_switch.conditional_case.size();i++){
+							info_switch.conditional_case[i].jmp_asm->result_obj=(void*)(CCompiler::getInstance()->getCurrentInstructionIndex()+1);
+						}
+
+						//
+
+						// 0. if there's default then generate statment (is the last)...
+
+						//
+
+					}
+					//
+					// GENERATE ASM FOR IF-ELSE-FOR-WHILE
+					//
+					//------------------------------------------------------------------------------------------------------------------------------------------------
+					else
+					{
+					//------------------------------------------------------------------------------------------------------------------------------------------------
+					//
+					// GENERATE ASM FOR IF-ELSE-FOR-WHILE
+					//
+
+						bool if_else = false;
+						bool check = key_w->id == FOR || key_w->id == WHILE || key_w->id == IF;
+
+						if(key_w->id == ELSE){ // check whether last keyword was "if"
+							if(key_w_last!=NULL){
+								if_else=key_w_last->id==IF;
+								check=if_else;
+							}else{
+								check=false;
+							}
+						}
+
+						if(check){
+
+							if(key_w->id == FOR && post_for.str != ";"){ // eval post
+								if(evalRecursive(post_for.str.c_str(), post_for.m_line, error,for_scope, level_scope+1)==NULL){
+									return NULL;
+								}
+							}
+
+							if(key_w->id == FOR || key_w->id == WHILE || key_w->id == IF ){ // set statment jmp instrucction
+
+								jmp_asm=CCompiler::getInstance()->insert_JMP_Instruction();
+
+								if(key_w->id == IF){ // if "if" then update short jmp to next instruction...
+									jmp_asm->result_obj = (void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
+								}else{
+									jmp_asm->result_obj = (void *)(index_st_jump);
+								}
+
+								jnt_asm->result_obj=(void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1); // +1 because ww want over pass the end of last statment ...
+							}
+							else{
+								if(if_else){ // update jmp...
+									if(jmp_asm!=NULL){
+										jmp_asm->result_obj=(void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
+									}else{
+										print_error_cr("Error jmp_asm NULL");
+										error = true;
+										return NULL;
+									}
+								}
+
+
+							}
+
+
+							// set goto statment (if was if, overrides its jnt_asm...
+
+						}else{
+							print_error_cr("Unexpected keyword %s at line %i",key_w->str,m_line);
+							error = true;
+							return NULL;
+						}
+					}
+					//
+					// GENERATE ASM FOR IF-ELSE-FOR-WHILE
+					//
+					//------------------------------------------------------------------------------------------------------------------------------------------------
+				}
+
+			}
 
 		}else if(*current == '}'){ // end scope...
 			if(level_scope > 0){ // download scope level
@@ -396,21 +892,25 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, CScope * _sc
 				return (current+1);
 			}else{
 				print_error_cr("Unexpected } at line %i",m_line);
+				error = true;
 				return NULL;
 			}
 		}
 		else{ // try normal expressions (with or not var declaration)...
 
 			char *advanced_expression=NULL;
+
 			next=strstr(current,";");//getStatment(current);
 			if(next ==0){
 				print_error_cr("Expected ;");
+				error = true;
 				return NULL;
 			}
 
 			length=next-current;
 			if(length>=MAX_STATMENT_LENGTH){
 				print_error_cr("Max statment length!");
+				error = true;
 				return NULL;
 			}
 
@@ -436,17 +936,16 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, CScope * _sc
 				advanced_expression = statment;
 			}
 
+			if(error)
+				return NULL;
+
 			if(!CCompiler::getInstance()->compileExpression(advanced_expression, m_line,_scope->getScriptFunction(),_scope)){
 				return NULL;
 			}
 		}
-
-
-
-
 		// next statment...
+		key_w_last = key_w;
 		current=CStringUtils::IGNORE_BLANKS(current,m_line);
-
 	}
 
 	// the generating code has been terminated... let's execute it...
@@ -486,7 +985,8 @@ int getLineBeginScope(const string  & s, int m_scope){
 
 bool CScope::eval (const string & s){
 	int m_line = 1;
-	return evalRecursive((const char *)s.c_str(), m_line,this) != NULL;
+	bool error;
+	return evalRecursive((const char *)s.c_str(), m_line,error,this) != NULL;
 }
 
 

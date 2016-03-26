@@ -2,6 +2,26 @@
 
 
 
+
+
+
+tInfoKeyword str_op[MAX_KEYWORD]{
+		{NONE, "none"},
+		{IF,"if"},
+		{ELSE,"else"},
+		{FOR,"for"},
+		{WHILE,"while"},
+		{VAR,"var"},
+		{SWITCH,"switch"},
+		{CASE,"case"},
+		{BREAK,"break"},
+		{DEFAULT,"default"},
+		{FUNCTION,"function"},
+		{RETURN,"return"},
+		{CLASS,"class"},
+		{THIS,"this"}
+};
+
 char * token_group0(char *c){
 	char *aux=c;
 	// try number operators...
@@ -106,6 +126,15 @@ char * token_group3(char *c){
 
 char * is_token(char *c){
 	char *aux;
+
+	if(*c == ';'){ // semicolon
+		return c+1;
+	}
+
+	if(*c == ':'){ // semicolon
+		return c+1;
+	}
+
 	if((aux=token_group0(c))!=0){
 		return aux;
 	}else if((aux=token_group1(c))!=0) {
@@ -117,6 +146,32 @@ char * is_token(char *c){
 	}
 	return 0;
 }
+
+tInfoKeyword * is_keyword(const char *c){
+
+	int m_line=0;
+
+	char *str=CStringUtils::IGNORE_BLANKS(c,m_line);
+
+	for(int i = 0; i < MAX_KEYWORD; i++){
+		int size = strlen(str_op[i].str);
+		char *aux = str+size;
+		if((strncmp(str,str_op[i].str,size)==0) && (
+				*aux == 0  || // carry end
+				*aux == ' '  || // space
+				is_token(aux)!=NULL ||
+				*aux == '\n' || // carry return
+				*aux == '(' || // carry return
+				*aux == ')' || // carry return
+			   (*aux == '/' && *(aux+1) == '*')) //start block comment
+			   ){
+			return &str_op[i];
+		}
+	}
+
+	return 0;
+}
+
 //------------------------------------------------------------------------------------------------------------
 /*inline char * CStringUtils::IGNORE_BLANKS(const char *s){
 	char *aux=(char *)s;
@@ -126,7 +181,7 @@ char * is_token(char *c){
 	return aux;
 }*/
 //------------------------------------------------------------------------------------------------------------
-inline char * GET_END_WORD(const char *s){
+char * GET_END_WORD(const char *s){
 	char *aux=(char *)s;
 	while((*aux)!=0 && !((*aux)==' ' || (*aux)=='\t' || (*aux)=='\n' || (*aux)=='\r') && (is_token(aux)==0)) {
 		aux++;
@@ -134,6 +189,13 @@ inline char * GET_END_WORD(const char *s){
 	return aux;
 }
 
+bool IS_WORD(const char *s){
+	char *aux=(char *)s;
+	while((*aux)!=0 && !((*aux)==' ' || (*aux)=='\t' || (*aux)=='\n' || (*aux)=='\r') && (is_token(aux)==0)) {
+		aux++;
+	}
+	return *aux==0;
+}
 
 
 string GET_STR_WITHOUT_SPACES(const string & s){
@@ -236,7 +298,7 @@ PASTNode postOperator(string token,PASTNode affected_op){ // can be -,+,! etc...
 
 
 //------------------------------------------------------------------------------------------------------------
-PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode parent ){
+PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GROUP type_group=TYPE_GROUP::GROUP_0,PASTNode parent=NULL ){
 	//int index=0;
 	char *aux=(char *)s;
 	char *s_effective_start=(char *)s;
@@ -245,6 +307,9 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 	string post_token="";
 	bool eval_preoperator=true;
 	bool eval_postoperator=true;
+
+	int m_effective_start_line=m_line;
+	int m_define_symbol_line;
 
 
 	tASTNode *op=new tASTNode;
@@ -255,16 +320,18 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 	
 	if(*aux==0){
 		print_error_cr("no expression entry");
+		error = true;
 		return NULL;
 	}	
 	
 	if(type_group>=MAX_GROUPS) {
 		printf("max groups \n");
+		error = true;
 		return NULL;
 	}
 	
 		
-	print_info_cr("new expression eval:\"%s\" group:%i",s,type_group);
+	print_info_cr("new expression eval:\"%s\" group:%i at line %i",s,type_group, m_line);
 	
 	//if(type_group==GROUP_0) 
 	{ // search for operator +/-...
@@ -299,13 +366,15 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 							pre_token = str_op;
 							aux=end_expression; // ignore first token...
 							s_effective_start=end_expression;
+							m_effective_start_line = m_line;
 							start_expression=aux;
 						}else{ // just ignore it
 							aux=end_expression; // ignore first token...
 						}
 				}
 				else{
-					print_error_cr("unexpected token %c...",*aux);
+					print_error_cr("unexpected token %c at line %i",*aux,m_line);
+					error = true;
 					return NULL;
 				}
 			}
@@ -314,7 +383,6 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 			
 			//start_value=aux;
 			if(*aux=='('){ // exp within ()
-			
 				print_info_cr("try find parenthesis close");
 				end_expression = GET_CLOSED_PARENTHESIS(aux);
 				
@@ -326,12 +394,26 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 				
 				if(*end_expression==0){
 						print_error_cr("')' not found");
+						error = true;
 						return NULL;
 				}else{ // advance )
 					end_expression++;
 				}				
 			}else{ // value 
+
+
+				tInfoKeyword *key_w;
+				m_define_symbol_line = m_line;
 				end_expression = GET_END_WORD(aux);
+
+				// usually we have to take care about special op symbols
+				if((key_w =is_keyword(end_expression)) != NULL){
+					print_error_cr("Error expected ; before %s at line %i",key_w, m_define_symbol_line);
+					error = true;
+					return NULL;
+				}
+
+
 			}
 			
 			aux=end_expression;
@@ -357,10 +439,6 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 
 			if(*aux!=0){
 
-
-
-
-
 				expr_op=aux;
 				char *adv_op;
 				if((adv_op=is_token(expr_op))!=0){
@@ -373,9 +451,11 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 					case GROUP_3:	expr_op_end = token_group3(expr_op);break;
 					default: break;
 					}
+
+					aux=adv_op; // advance operator...
 				}
 
-				aux=adv_op; // advance operator...
+
 			}
 
 			if(!eval_preoperator){
@@ -391,15 +471,31 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 				  if( *start_expression!='('){
 					  char subexpr[MAX_EXPRESSION_LENGTH]={0}; // I hope this is enough...
 					  strncpy(subexpr,start_expression,end_expression-start_expression); // copy sub expression
-					print_info_cr("trivial value %s",subexpr);
+
+					print_info_cr("trivial value %s at line %i",subexpr, m_define_symbol_line);
 					op->left=op->right=NULL;
 					op->value=GET_STR_WITHOUT_SPACES(subexpr); // assign its value ...
+					op->definedValueline=m_define_symbol_line;
 
 
 					if(pre_token!=""){ // generate a prenode operator..
+						 if(*subexpr == 0){
+							 print_error_cr("expected symbol before %s at line %i",pre_token.c_str(),m_line);
+							 error = true;
+							 return NULL;
+						 }
+
 						op=preOperator(pre_token,op);
 					}
 					else if(post_token!=""){ // generate a post node operator..
+
+						 if(*subexpr == 0){
+							 print_error_cr("expected symbol after %s at line %i",pre_token.c_str(),m_line);
+							 error = true;
+							 return NULL;
+						 }
+
+
 						op=postOperator(post_token,op);
 					}
 
@@ -408,13 +504,18 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 					print_info_cr("START:%c",*start_expression);
 					char subexpr[MAX_EXPRESSION_LENGTH]={0}; // I hope this is enough...
 					if((end_expression-start_expression-2)> MAX_EXPRESSION_LENGTH){
-						printf("expression too long\n");
+						print_error_cr("expression too long\n");
+						error = true;
 						return NULL;
 					}
 					
 					strncpy(subexpr,start_expression+1,end_expression-start_expression-2); // copy sub expression
 					printf("expr:%s\n",subexpr);
-					PASTNode p_gr=generateAST(subexpr,m_line,GROUP_0,op);
+					PASTNode p_gr=generateAST_Recursive(subexpr,m_line,error,GROUP_0,op);
+					if(error){
+						return NULL;
+					}
+
 
 					if(pre_token!=""){
 						return preOperator(pre_token,p_gr);
@@ -428,7 +529,7 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 					// reset pretoken...
 					pre_token="";
 					printf("try to generate group1 expression: %s\n",s_effective_start);
-					return generateAST(s,m_line,(TYPE_GROUP)(((int)type_group)+1),op);
+					return generateAST_Recursive(s,m_effective_start_line,error,(TYPE_GROUP)(((int)type_group)+1),op);
 			}
 		}else{ // we found the operator respect of GROUPX so let's put the AST to the left the resulting expression...
 			char operator_str[10]={0};
@@ -440,7 +541,11 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 			char eval_right[MAX_EXPRESSION_LENGTH]={0};
 
 			strncpy(eval_left,s_effective_start,expr_op-s_effective_start); // copy its left side...
-			op->left=generateAST(eval_left,m_line,type_group,op);
+			op->left=generateAST_Recursive(eval_left,m_effective_start_line,error,type_group,op);
+
+			if(error){
+				return NULL;
+			}
 
 			if(pre_token!=""){
 				op->left=preOperator(pre_token,op->left);
@@ -448,7 +553,12 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 
 			strncpy(eval_right,expr_op_end,strlen(expr_op)); // copy its right side...
 
-			op->right=generateAST(eval_right,m_line,type_group,op);
+			op->right=generateAST_Recursive(eval_right,m_line,error,type_group,op);
+			if(error){
+				return NULL;
+			}
+
+
 			if(!strcmp(operator_str,"-")) {
 				op->right=preOperator("-",op->right);
 				strcpy(operator_str,"+");
@@ -464,6 +574,11 @@ PASTNode generateAST(const char *s, int & m_line, TYPE_GROUP type_group,PASTNode
 		
 	}
 	return op;
+}
+
+PASTNode generateAST(const char *s, int m_line ){
+	bool error=false;
+	return generateAST_Recursive(s,m_line,error);
 }
 
 		

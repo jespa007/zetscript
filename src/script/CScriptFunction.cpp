@@ -1,15 +1,17 @@
 #include "zg_script.h"
 
-CScriptFunction::CScriptFunction(CScriptFunction * _base){
-	m_scope = new CScope(this);
-	m_base = _base;
-	if(m_base == NULL){
-		m_base = this;
+CScriptFunction::CScriptFunction(CScriptFunction * _globalscope){
+
+	m_globalscope = _globalscope;
+	if(_globalscope == NULL){
+		m_globalscope = this;
 	}
+
+	m_scope = new CScope(m_globalscope);
 }
 
-CScriptFunction * CScriptFunction::getBase(){
-	return m_base;
+CScriptFunction * CScriptFunction::getGlobalScope(){
+	return m_globalscope;
 }
 
 bool CScriptFunction::eval(const string & _str){

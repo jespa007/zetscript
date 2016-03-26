@@ -11,11 +11,29 @@ public:
 		INTEGER,
 		NUMBER,
 		STRING,
-		OBJ
+		OBJ,
+
+		// function
+		FUNCTION,
+
+		// vector (to get int primitives)
+		VECTOR1D_INT,
+		VECTOR1D_BOOL,
+		VECTOR1D_FLOAT,
+		VECTOR1D_OBJ,
+		VECTOR2D_INT,
+		VECTOR2D_BOOL,
+		VECTOR2D_FLOAT,
+		VECTOR2D_OBJ,
+		VECTOR3D_INT,
+		VECTOR3D_BOOL,
+		VECTOR3D_FLOAT,
+		VECTOR3D_OBJ
 	};
 
 	enum ASM_OPERATOR{
-		UNKNOW=0,
+		INVALID_OP=-1,
+		NOP=0,
 		MOV=1, // mov expression to var
 		LOAD, // primitive value like number/string or boolean...
 		EQU,  // ==
@@ -43,7 +61,9 @@ public:
 		SHR, // shift right
 		PUSH_SCOPE,
 		POP_SCOPE,
-		JNT // goto if not true ... goes end to conditional.
+		JMP,
+		JNT, // goto if not true ... goes end to conditional.
+		JT // goto if true ... goes end to conditional.
 
 
 	};
@@ -71,7 +91,7 @@ public:
 
 		tInfoAsmOp(){
 			result_type=VAR_TYPE::NOT_DEFINED;
-			operator_type=ASM_OPERATOR::UNKNOW;
+			operator_type=ASM_OPERATOR::INVALID_OP;
 			//isconvertable=NULL;
 			//left_var_obj=NULL;
 		  //   type_op=0;

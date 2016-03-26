@@ -3,28 +3,6 @@
 
 #define MAX_EXPRESSION_LENGTH 8192
 
-class tASTNode;
-class CScope;
-typedef tASTNode *PASTNode;
-
-class tASTNode{
-public:
-
-
-	string token;
-	string 	value;
-	string type_ptr;
-	string type_class;
-	PASTNode parent;
-	PASTNode left,right;
-
-	tASTNode(){
-		token="";
-		value="";
-		parent=left=right=NULL;
-	}
-
-};
 
 
 enum TYPE_GROUP{
@@ -37,7 +15,60 @@ enum TYPE_GROUP{
 
 
 
+enum TYPE_KEYWORD{
+	NONE=0,
+	IF,
+	ELSE,
+	FOR,
+	WHILE,
+	VAR,
+	SWITCH,
+	CASE,
+	DEFAULT,
+	BREAK,
+	RETURN,
+	FUNCTION,
+	CLASS,
+	THIS,
+	MAX_KEYWORD
+};
+
+typedef struct{
+	TYPE_KEYWORD id;
+	const char *str;
+}tInfoKeyword;
+
+class tASTNode;
+class CScope;
+typedef tASTNode *PASTNode;
+
+class tASTNode{
+public:
 
 
-PASTNode generateAST(const char *s, int & m_line,TYPE_GROUP type_group=GROUP_0, PASTNode parent=NULL);
+	string token;
+	string 	value;
+	string type_ptr;
+	string type_class;
+	int definedValueline;
+	PASTNode parent;
+	PASTNode left,right;
+
+	tASTNode(){
+		definedValueline=-1;
+		token="";
+		value="";
+		parent=left=right=NULL;
+	}
+
+};
+
+
+
+extern tInfoKeyword str_op[MAX_KEYWORD];
+tInfoKeyword * is_keyword(const char *c);
+bool IS_WORD(const char *s);
+char * GET_END_WORD(const char *s);
+
+PASTNode generateAST(const char *s, int m_line);
 

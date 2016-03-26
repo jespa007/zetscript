@@ -117,7 +117,7 @@ string  CCompiler::getUserTypeResultCurrentStatmentAtInstruction(unsigned instru
 	if(instruction >=0 && instruction < ptr_current_statement_op->asm_op.size()){
 		switch(ptr_current_statement_op->asm_op[instruction]->result_type){
 		default:
-		case CVirtualMachine::UNKNOW:
+		case CVirtualMachine::NOT_DEFINED:
 			break;
 		case CVirtualMachine::OBJ:
 			result= (((CObject *)ptr_current_statement_op->asm_op[instruction]->result_obj)->getPointerClassStr()); // type result..
@@ -142,9 +142,36 @@ string  CCompiler::getUserTypeResultCurrentStatmentAtInstruction(unsigned instru
 	return result;
 }
 
+int CCompiler::getCurrentInstructionIndex(){
+	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	return ptr_current_statement_op->asm_op.size()-1;
+}
+
+int CCompiler::getCurrentStatmentIndex(){
+	return (int)(m_currentListStatements->size()-1);
+}
+
+bool *  CCompiler::getObjectResultCurrentStatmentAsBoolean(){
+
+	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	bool *result=NULL;
+	unsigned instruction = ptr_current_statement_op->asm_op.size()-1;
+
+	if(instruction >=0 && instruction < ptr_current_statement_op->asm_op.size()){
+		if(ptr_current_statement_op->asm_op[instruction]->result_type == CVirtualMachine::BOOL){
+			result= (((bool *)ptr_current_statement_op->asm_op[instruction]->result_obj)); // type result..
+		}else{
+			print_error_cr("Result type is not boolean");
+		}
+	}
+	else{
+		print_error_cr("index out of bounds");
+	}
+	return result;
+}
 
 
-bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, CScope * _lc){
+bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, CScope * _lc, int m_var_at_line){
 
 	CNumber *num_obj;
 	CInteger *int_obj;
@@ -175,14 +202,15 @@ bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, 
 		type=CVirtualMachine::BOOL;
 		print_info_cr("%s detected as boolean\n",v.c_str());
 	}else{
-		CObject * var=_lc->getRegisteredVariable(v);
+		CScope::tInfoRegisteredVar * info_var=_lc->getInfoRegisteredVariable(v,false);
 		type=CVirtualMachine::OBJ;
 
-		if(var==NULL){
-			print_error_cr("ERROR: %s is not declared",v.c_str());
+		if(info_var==NULL){
+			print_error_cr("symbol %s at line %i is not declared ", v.c_str(),m_var_at_line);
 			return false;
 		}
 
+		CObject *var = info_var->m_obj;
 		obj = var;
 		if((int_obj=dynamic_cast<CInteger *>(var))!=NULL){ // else it will store the value ...
 			type = CVirtualMachine::INTEGER;
@@ -287,6 +315,61 @@ void CCompiler::insertPopScopeInstruction(){
 
 }
 
+CVirtualMachine::tInfoAsmOp * CCompiler::insert_JMP_Instruction(){
+
+	CVirtualMachine::tInfoStatementOp op_jmp;
+	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
+	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JMP;
+	op_jmp.asm_op.push_back(asm_op);
+
+	m_currentListStatements->push_back(op_jmp);
+
+	return asm_op;
+}
+
+CVirtualMachine::tInfoAsmOp * CCompiler::insert_JNT_Instruction(){
+
+
+		CVirtualMachine::tInfoStatementOp op_jmp;
+		CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+		asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
+		asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JNT;
+		op_jmp.asm_op.push_back(asm_op);
+
+		m_currentListStatements->push_back(op_jmp);
+
+
+	return asm_op;
+}
+
+CVirtualMachine::tInfoAsmOp * CCompiler::insert_JT_Instruction(){
+
+
+		CVirtualMachine::tInfoStatementOp op_jmp;
+		CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+		asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
+		asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JT;
+		op_jmp.asm_op.push_back(asm_op);
+
+		m_currentListStatements->push_back(op_jmp);
+
+
+	return asm_op;
+}
+
+void CCompiler::insert_NOP_Instruction(){
+	CVirtualMachine::tInfoStatementOp nop_op;
+	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
+	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::NOP;
+	nop_op.asm_op.push_back(asm_op);
+
+	m_currentListStatements->push_back(nop_op);
+
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 CVirtualMachine::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(const string & op, CVirtualMachine::VAR_TYPE & result_type){
 
@@ -326,7 +409,7 @@ CVirtualMachine::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(const strin
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::EQU;
 	}
-	return CVirtualMachine::ASM_OPERATOR::UNKNOW;
+	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
 CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(const string & op, CVirtualMachine::VAR_TYPE & result_type){
@@ -357,7 +440,7 @@ CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(const string
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::EQU;
 	}
-	return CVirtualMachine::ASM_OPERATOR::UNKNOW;
+	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
 CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(const string & op){
@@ -374,7 +457,7 @@ CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(const string 
 		return CVirtualMachine::POST_DEC;
 	}
 
-	return CVirtualMachine::ASM_OPERATOR::UNKNOW;
+	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
 CVirtualMachine::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(const string & op, CVirtualMachine::VAR_TYPE & result_type){
@@ -387,14 +470,14 @@ CVirtualMachine::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(const string
 		return CVirtualMachine::LOGIC_OR;
 	}
 
-	return CVirtualMachine::ASM_OPERATOR::UNKNOW;
+	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
 CVirtualMachine::ASM_OPERATOR CCompiler::getBoleanOperatorId_OneOp(const string & op){
 	if(op=="!"){
 		return CVirtualMachine::NOT;
 	}
-	return CVirtualMachine::ASM_OPERATOR::UNKNOW;
+	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
 CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(const string & op, CVirtualMachine::VAR_TYPE & result_type){
@@ -407,21 +490,21 @@ CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(const string
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::EQU;
 	}
-	return CVirtualMachine::ASM_OPERATOR::UNKNOW;
+	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
 CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_OneOp(const string & op){
 
-	return CVirtualMachine::ASM_OPERATOR::UNKNOW;
+	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
 
-bool CCompiler::insertOperatorInstruction(const string & op, int left, int right){
+bool CCompiler::insertOperatorInstruction(const string & op, string & error_str, int left, int right){
 
 	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 
 	if(left <0 || (unsigned)left >= ptr_current_statement_op->asm_op.size()){
-		print_error_cr("ERROR: left operant is out of internal stack (%i,%i) ",left,ptr_current_statement_op->asm_op.size());
+		error_str = CStringUtils::formatString("left operant is out of internal stack (%i,%i) ",left,ptr_current_statement_op->asm_op.size());
 		return false;
 	}
 
@@ -440,39 +523,39 @@ bool CCompiler::insertOperatorInstruction(const string & op, int left, int right
 
 		if(((t_left == CIntegerFactory::getPointerTypeStr())) &&
 						((t_right == CIntegerFactory::getPointerTypeStr()))){
-					if((id_op=getIntegerOperatorId_TwoOps(op,result_type))==CVirtualMachine::ASM_OPERATOR::UNKNOW){
-						print_error_cr("undefined operator %s",op.c_str());
+					if((id_op=getIntegerOperatorId_TwoOps(op,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+						error_str = CStringUtils::formatString("undefined operator %s",op.c_str());
 						return false;
 					}
 
 		}else if(((t_left == CNumberFactory::getPointerTypeStr()) ) &&
 				((t_right == CNumberFactory::getPointerTypeStr()) )){
-			if((id_op=getNumberOperatorId_TwoOps(op,result_type))==CVirtualMachine::ASM_OPERATOR::UNKNOW){
-				print_error_cr("undefined operator %s",op.c_str());
+			if((id_op=getNumberOperatorId_TwoOps(op,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+				error_str = CStringUtils::formatString("undefined operator %s",op.c_str());
 				return false;
 			}
 
 		}else if(t_left== CStringFactory::getPointerTypeStr()){
 
-			if((id_op=getStringOperatorId_TwoOps(op,result_type))==CVirtualMachine::ASM_OPERATOR::UNKNOW){
-				print_error_cr("undefined operator %s",op.c_str());
+			if((id_op=getStringOperatorId_TwoOps(op,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+				error_str = CStringUtils::formatString("undefined operator %s",op.c_str());
 				return false;
 			}
 
 		}else if((t_left == CBooleanFactory::getPointerTypeStr()) && t_right == CBooleanFactory::getPointerTypeStr()){
-			if((id_op=getBoleanOperatorId_TwoOps(op, result_type))==CVirtualMachine::ASM_OPERATOR::UNKNOW){
-				print_error_cr("undefined operator %s",op.c_str());
+			if((id_op=getBoleanOperatorId_TwoOps(op, result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+				error_str = CStringUtils::formatString("undefined operator %s",op.c_str());
 				return false;
 			}
 		}else{
-			print_error_cr("not compatible %s %s",t_left.c_str(),t_right.c_str());
+			error_str = CStringUtils::formatString("not compatible %s %s",t_left.c_str(),t_right.c_str());
 			return false;
 		}
 
 		switch(result_type){
 		default:
-		case CVirtualMachine::UNKNOW:
-			print_error_cr("unknow result type");
+		case CVirtualMachine::NOT_DEFINED:
+			error_str = CStringUtils::formatString("unknow result type");
 			return false;
 			break;
 		case CVirtualMachine::NUMBER:
@@ -507,16 +590,16 @@ bool CCompiler::insertOperatorInstruction(const string & op, int left, int right
 	}else if(left >=0){ // insert one operand
 
 			if((t_left == CIntegerFactory::getPointerTypeStr()) ){
-						if((id_op=getNumberOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::UNKNOW){
-							print_error_cr("undefined operator %s for number type",op.c_str());
+						if((id_op=getNumberOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+							error_str = CStringUtils::formatString("undefined operator %s for number type",op.c_str());
 							return false;
 						}
 						res_obj = new int;
 						result_type = CVirtualMachine::INTEGER;
 
 			}else if((t_left == CNumberFactory::getPointerTypeStr()) ){
-				if((id_op=getNumberOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::UNKNOW){
-					print_error_cr("undefined operator %s for number type",op.c_str());
+				if((id_op=getNumberOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+					error_str = CStringUtils::formatString("undefined operator %s for number type",op.c_str());
 					return false;
 				}
 				res_obj = new float;
@@ -524,21 +607,21 @@ bool CCompiler::insertOperatorInstruction(const string & op, int left, int right
 
 			}else if(t_left== CStringFactory::getPointerTypeStr()){
 
-				if((id_op=getStringOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::UNKNOW){
-					print_error_cr("undefined operator %s for string type",op.c_str());
+				if((id_op=getStringOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+					error_str = CStringUtils::formatString("undefined operator %s for string type",op.c_str());
 					return false;
 				}
 				res_obj = new string;
 				result_type = CVirtualMachine::STRING;
 			}else if((t_left == CBooleanFactory::getPointerTypeStr())){
-				if((id_op=getBoleanOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::UNKNOW){
-					print_error_cr("undefined operator %s for boolean type",op.c_str());
+				if((id_op=getBoleanOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+					error_str = CStringUtils::formatString("undefined operator %s for boolean type",op.c_str());
 					return false;
 				}
 				res_obj = new bool;
 				result_type = CVirtualMachine::BOOL;
 			}else{
-				print_error_cr("not compatible %s %s",t_left.c_str(),t_right.c_str());
+				error_str = CStringUtils::formatString("not compatible %s %s",t_left.c_str(),t_right.c_str());
 				return false;
 			}
 
@@ -552,7 +635,7 @@ bool CCompiler::insertOperatorInstruction(const string & op, int left, int right
 			ptr_current_statement_op->asm_op.push_back(asm_op);
 
 	}else{
-		print_error_cr("ERROR: both operant is out of internal stack ");
+		error_str = CStringUtils::formatString("ERROR: both operant is out of internal stack ");
 		return false;
 	}
 	return true;
@@ -564,6 +647,7 @@ bool CCompiler::insertOperatorInstruction(const string & op, int left, int right
 int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope * _lc){
 
 	int r=0;
+	string error_str;
 	if(op==NULL){
 		return -1;
 	}
@@ -571,7 +655,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 	if(op->left==NULL && op->right==NULL){ // trivial case value itself...
 
 		print_info_cr("CONST \tE[%i],%s\n",numreg,op->value.c_str());
-		if(!insertLoadValueInstruction(op->value, op->type_ptr, _lc)){
+		if(!insertLoadValueInstruction(op->value, op->type_ptr, _lc, op->definedValueline)){
 			error|=true;
 			return -1;
 
@@ -598,12 +682,15 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 			if(op->token == "="){
 				// the variable can only assigned if the type is the same or if the type is undefined.
 				// check if left operand is registered variable...
-				CObject * var_obj = _lc->getRegisteredVariable(op->left->value,false);
-				if(var_obj == NULL){
+				CScope::tInfoRegisteredVar * info_var = _lc->getInfoRegisteredVariable(op->left->value,false);
+				if(info_var == NULL){
 					print_error_cr("undeclared variable \"%s\"");
 					error|=true;
 					return -1;
 				}else{ // ok is declared ... let's see if undefined variable or is the same type ...
+
+					CObject *var_obj = info_var->m_obj;
+
 					bool is_undefined = dynamic_cast<CUndefined *>(var_obj) != NULL;
 					string ptr_class_type =  getUserTypeResultCurrentStatmentAtInstruction(right);
 
@@ -651,7 +738,8 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 			}
 			else{
 				print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
-				if(!insertOperatorInstruction(op->token,left,right)){
+				if(!insertOperatorInstruction(op->token, error_str,left,right)){
+					print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
 					error|=true;
 					return -1;
 				}
@@ -659,14 +747,16 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 
 		}else if(right!=-1){ // one op..
 			print_info_cr("%s\tE[%i],E[%i] !!!",op->token.c_str(),numreg,right);
-			if(!insertOperatorInstruction(op->token,right)){
+			if(!insertOperatorInstruction(op->token, error_str,right)){
+				print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
 				error|=true;
 				return -1;
 			}
 
 		}else if(left!=-1){ // one op..
 			print_info_cr("%s\tE[%i],E[%i] !!!",op->token.c_str(),numreg,left);
-			if(!insertOperatorInstruction(op->token,left)){
+			if(!insertOperatorInstruction(op->token, error_str,left)){
+				print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
 				error|=true;
 				return -1;
 			}
@@ -687,16 +777,25 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 bool CCompiler::compileExpression(const char *advanced_expression, int & m_line, CScriptFunction *sf, CScope *currentEvaluatingScope){
 
 	int numreg=0;
+
 	PASTNode ast_node;
+	char *aux=(char *)advanced_expression;
+
 	CVirtualMachine::tInfoStatementOp i_stat;
 
 	this->m_currentScriptFunction = sf;
 	this->m_currentListStatements = sf->getCompiledCode();
 
-	ast_node=generateAST(advanced_expression, m_line);
+	ast_node=generateAST(advanced_expression,m_line);
 
 	if(ast_node==NULL){ // some error happend!
 		return false;
+	}
+
+	// update n lines...
+	while(*aux!=0){
+		if(*aux=='\n') m_line++;
+		aux++;
 	}
 
 	numreg=0;
