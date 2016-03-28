@@ -50,7 +50,7 @@ float default_value=0;
  default_value = (v)
 
 #ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
-//#define __VERBOSE_MESSAGE__
+#define __VERBOSE_MESSAGE__
 #endif
 
 
@@ -67,7 +67,7 @@ float default_value=0;
 bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 
 	vector<tInfoStatementOp> * m_listStatements = fs->getCompiledCode();
-	tInfoStatementOp * previous_statment=NULL;
+	tInfoAsmOp * previous_instruction=NULL;
 	int index_right=-1,index_left=-1;
 	bool conditional_jmp=false;
 
@@ -82,7 +82,7 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 
 			tInfoAsmOp * instruction=NULL;
 			tInfoStatementOp * current_statment = &(*m_listStatements)[s];
-			for(unsigned i = 0; i  <  asm_op_statment->size(); i++){
+			for(unsigned i = 0; i  <  asm_op_statment->size() && !conditional_jmp; i++){
 				print_vm_cr("executing instruction %i...",i);
 				index_right = current_statment->asm_op[i]->index_right;
 				index_left = current_statment->asm_op[i]->index_left;
@@ -501,15 +501,19 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 					//		return false;
 					//	}
 					case JMP:
-						s = (unsigned)current_statment->asm_op[current_statment->asm_op.size()-1]->result_obj;
+						s = (unsigned)instruction->result_obj;
 						conditional_jmp = true;
 						break;
+					case JT:
 					case JNT:
-						if(previous_statment != NULL){
-							if(previous_statment->asm_op[previous_statment->asm_op.size()-1]->result_type == BOOL){
-								bool *b = (bool *)previous_statment->asm_op[previous_statment->asm_op.size()-1]->result_obj;
-								if(*b == false){ // then jmp to statment if not true...
-									s = (unsigned)current_statment->asm_op[current_statment->asm_op.size()-1]->result_obj;
+						if(previous_instruction != NULL){
+							if(previous_instruction->result_type == BOOL){
+								bool *b = (bool *)previous_instruction->result_obj;
+								if(
+								   ((*b == false) && (instruction->operator_type==JNT))
+								|| ((*b == true) && (instruction->operator_type==JT))
+									){ // then jmp to statment if not true...
+									s = (unsigned)instruction->result_obj;
 									conditional_jmp = true;
 								}
 							}else{
@@ -523,6 +527,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 
 				}
+
+				previous_instruction = instruction;
 			}
 
 			// try to get the result...
@@ -554,7 +560,7 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 				}
 			}
 
-			previous_statment=&(*m_listStatements)[s];
+
 
 			// if not conditional jmp increase next statment...
 			if(!conditional_jmp){

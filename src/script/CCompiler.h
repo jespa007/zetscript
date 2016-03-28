@@ -27,6 +27,7 @@ public:
 	/**
 	 * Load value or symbol and insert asm operation at current statment.
 	 */
+	CVirtualMachine::tInfoStatementOp  *newStatment();
 	bool insertLoadValueInstruction(const string & value, string & type_ptr, CScope * _lc, int var_at_line);
 	bool insertMovVarInstruction(CObject *var, int right);
 	CVirtualMachine::tInfoAsmOp * insert_JMP_Instruction();

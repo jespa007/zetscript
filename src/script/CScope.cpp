@@ -208,7 +208,7 @@ typedef struct{
 
 typedef struct {
 
-	vector<string> str_conditional_value; // values that executes the scope...
+	string str_conditional_value; // values that executes the scope...
 	tInfoStartEndString str_scope;
 	CVirtualMachine::tInfoAsmOp *jt_asm=NULL;
 	CVirtualMachine::tInfoAsmOp *jmp_asm=NULL;
@@ -397,6 +397,17 @@ char *parseKeyword_IfElseForWhile(const char *str, tInfoKeyword **keyw, int & m_
 	return current;
 }
 
+char *getKeywordHeader(const char *str, string & header, bool & error, CScope * _scope){
+	return NULL;
+}
+
+char *processKeywordHeader(const char *str, string & header, bool & error, CScope * _scope){
+	return NULL;
+}
+
+char *processKeywordBody(const char *str, string & header, bool & error, CScope * _scope){
+	return NULL;
+}
 
 
 char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error, CScope * _scope, int level_scope){
@@ -594,20 +605,23 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 									}
 
 									strncpy(value,begin_ptr,size_value);
+
+									for(unsigned j=0; j < info_switch.conditional_case.size(); j++){
+										if(info_switch.conditional_case[j].str_conditional_value == value){
+											print_error_cr("duplicated switch-value %s at line %i",value,m_line);
+											return NULL;
+										}
+									}
+
 									print_info_cr("CASE with value %s",value);
 
 									tInfoCase *info_case_ptr;
 
-									if(begin_scope!=NULL){
-										print_info_cr("Added OR CASE",value);
-										info_case_ptr = &info_switch.conditional_case[info_switch.conditional_case.size()-1];
-									}else{
-										tInfoCase info_case;
-										info_switch.conditional_case.push_back(info_case);
-										info_case_ptr = &info_case;//conditional_case[info_switch.conditional_case.size()-1];
-									}
+									tInfoCase info_case;
+									info_switch.conditional_case.push_back(info_case);
+									info_case_ptr = &info_switch.conditional_case[info_switch.conditional_case.size()-1];
+									info_case_ptr->str_conditional_value=value;
 
-									info_case_ptr->str_conditional_value.push_back(value);
 									eval_scope=&info_case_ptr->str_scope;
 								}
 
@@ -658,23 +672,19 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 
 				}
 
-				if(*current != '}'){
-					print_error_cr("unexpected error");
-					error = true;
-					return NULL;
-				}
+
 			}
 			//
 			// SWITCH
 			//
 			//------------------------------------------------------------------------------------------------------------------------------------------------
-
 			else
+			//------------------------------------------------------------------------------------------------------------------------------------------------
+			//
+			// EVAL FOR IF-ELSE-FOR-WHILE
+			//
 			{
-				//------------------------------------------------------------------------------------------------------------------------------------------------
-				//
-				// EVAL FOR IF-ELSE-FOR-WHILE
-				//
+
 
 				// add into localscope
 				if(key_w->id == FOR) {
@@ -689,202 +699,230 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 				if((current = evalRecursive(current+1, m_line,error, new_local_scope, level_scope+1)) == NULL){
 					return NULL;
 				}
+			}
+			//
+			// EVAL FOR IF-ELSE-FOR-WHILE
+			//
+			//------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-				//
-				// EVAL FOR IF-ELSE-FOR-WHILE
-				//
-				//------------------------------------------------------------------------------------------------------------------------------------------------
+			// check whether the eval str ends with } or not.
+			if(*(current-1) != '}'){ // closed claudator (from if/while/for ?)
+				print_error_cr("Expected '}' at line %i",m_line);
+				error = true;
+				return NULL;
 			}
 
-			if(key_w->id != SWITCH){
-				//------------------------------------------------------------------------------------------------------------------------------------------------
-				//
-				// GENERATE ASM FOR SWITCH
-				//
+			//------------------------------------------------------------------------------------------------------------------------------------------------
+			//
+			// GENERATE ASM FOR SWITCH
+			//
+			if(key_w->id == SWITCH)
+			{ // generata code for all conditionals...
 
-				if(*(current-1) != '}'){ // closed claudator (from if/while/for ?)
-					print_error_cr("Expected '}' at line %i",m_line);
-					error = true;
-					return NULL;
-				}
-				//
-				// GENERATE ASM FOR SWITCH
-				//
-				//------------------------------------------------------------------------------------------------------------------------------------------------
-				else
-				{
-					//------------------------------------------------------------------------------------------------------------------------------------------------
-					//
-					// GENERATE ASM FOR IF-ELSE-FOR-WHILE
-					//
-					if(key_w->id == SWITCH){ // generata code for all conditionals...
+				// design ...
+				// jt case 1 or case 2
+				// jt case 2
+				// jt ...
+				// jmp default
+				// scope1:
+				//...
+				// jmp end
+				// scope2:
+				//...
+				// jmp end
+				// scope3:
+				//...
+				// jmp end
+				// scope4:
+				//...
+				// jmp end
+				// default:
+				//... whatever
+				// end:
 
-						// design ...
-						// jt case 1 or case 2
-						// jt case 2
-						// jt ...
-						// jmp default
-						// scope1:
-						//...
-						// jmp end
-						// scope2:
-						//...
-						// jmp end
-						// scope3:
-						//...
-						// jmp end
-						// scope4:
-						//...
-						// jmp end
-						// default:
-						//... whatever
-						// end:
+				// Load symbol or value (0)...
 
-						// Load symbol or value (0)...
+				string error_str;
+				bool ok=true;
+				string type_value_condition;
+				//CCompiler::getInstance()->insertLoadValueInstruction(condition.str,type_value_condition,_scope,condition.m_line);
+				// get current index ...
 
-						string error_str;
-						bool ok=true;
-						string type_value_condition;
-						CCompiler::getInstance()->insertLoadValueInstruction(condition.str,type_value_condition,_scope,condition.m_line);
-						// get current index ...
-						int base_value_index  = CCompiler::getInstance()->getCurrentInstructionIndex();
+				// create new statment...
+				CCompiler::getInstance()->newStatment();
 
-						for(unsigned i = 0; i< info_switch.conditional_case.size();i++){ // for all cases...
-							// 1. if not (conditional.type == info_switch.conditional_case[i].info_type) perror(not value not type case);
+				print_info_cr("st:%i",CCompiler::getInstance()->getCurrentStatmentIndex());
 
-							// 2. insert jt without statment.
-							//CCompiler::getInstance()->insertLoadValueInstruction()
-							//string or_case=condition.str+"=="+info_switch.conditional_case[i].str_conditional_value[0];
+				ok&=CCompiler::getInstance()->insertLoadValueInstruction(condition.str,type_value_condition,_scope,condition.m_line);
 
-							for(unsigned j=0; j < info_switch.conditional_case[i].str_conditional_value.size(); j++){
-								//or_case +=  "|| "+condition.str+"=="+info_switch.conditional_case[i].str_conditional_value[j];
-								ok&=CCompiler::getInstance()->insertLoadValueInstruction(info_switch.conditional_case[i].str_conditional_value[j],type_value_condition,_scope,condition.m_line);
-								ok&=CCompiler::getInstance()->insertOperatorInstruction("==",error_str, base_value_index,base_value_index+j+1);
-								info_switch.conditional_case[i].jt_asm = CCompiler::getInstance()->insert_JT_Instruction();
-							}
-
-						}
-
-						// insert a jmp to default st...
-						info_switch.jmp_default_asm = CCompiler::getInstance()->insert_JMP_Instruction();
-						char v_scope[1000];
-
-						// evaluate all case scope ...
-						for(unsigned i = 0; i< info_switch.conditional_case.size();i++){ // for all cases...
-
-							new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
-							_scope->m_scopeList.push_back(new_local_scope);
-							// 1. generate asm scope.
-							// link asm conditional jmp...
-							info_switch.conditional_case[i].jt_asm->result_obj=(void*)(CCompiler::getInstance()->getCurrentInstructionIndex()+1);
-
-							strncpy(v_scope,info_switch.conditional_case[i].str_scope.str_begin,info_switch.conditional_case[i].str_scope.str_end-info_switch.conditional_case[i].str_scope.str_begin);
-							if((evalRecursive(v_scope, m_line,error, new_local_scope, level_scope+1)) == NULL){
-								return NULL;
-							}
-							// 2. generate jmp without statment.
-							info_switch.conditional_case[i].jmp_asm=CCompiler::getInstance()->insert_JMP_Instruction();
-						}
+				// 0
+				int condition_index  = CCompiler::getInstance()->getCurrentInstructionIndex();
 
 
-						// last, we evaluates the default scope...
-						if(info_switch.str_default_case_scope.str_begin != NULL){
+				for(unsigned i = 0; i< info_switch.conditional_case.size();i++){ // for all cases...
+					// 1...
+					int case_index=CCompiler::getInstance()->getCurrentInstructionIndex();
+					int last_compare_index=0;
 
-							new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
-							_scope->m_scopeList.push_back(new_local_scope);
+					// other cases...
 
-							strncpy(v_scope,info_switch.str_default_case_scope.str_begin,info_switch.str_default_case_scope.str_end-info_switch.str_default_case_scope.str_begin);
-							if((evalRecursive(v_scope, m_line,error, new_local_scope, level_scope+1)) == NULL){
-								return NULL;
-							}
-						}
+					// load case value ...
+					ok&=CCompiler::getInstance()->insertLoadValueInstruction(info_switch.conditional_case[i].str_conditional_value,type_value_condition,_scope,condition.m_line);
+					case_index++;
 
-						// link jmp cases to current instruction ...
-						for(unsigned i = 0; i< info_switch.conditional_case.size();i++){
-							info_switch.conditional_case[i].jmp_asm->result_obj=(void*)(CCompiler::getInstance()->getCurrentInstructionIndex()+1);
-						}
+					// is equal ? == j+(4)
+					ok&=CCompiler::getInstance()->insertOperatorInstruction("==",error_str, condition_index ,case_index);
+					case_index++;
 
-						//
 
-						// 0. if there's default then generate statment (is the last)...
 
-						//
-
+					if(!ok){
+						print_error_cr("%s",error_str.c_str());
+						error =true;
+						return NULL;
 					}
-					//
-					// GENERATE ASM FOR IF-ELSE-FOR-WHILE
-					//
-					//------------------------------------------------------------------------------------------------------------------------------------------------
-					else
-					{
-					//------------------------------------------------------------------------------------------------------------------------------------------------
-					//
-					// GENERATE ASM FOR IF-ELSE-FOR-WHILE
-					//
+					info_switch.conditional_case[i].jt_asm = CCompiler::getInstance()->insert_JT_Instruction();
+				}
 
-						bool if_else = false;
-						bool check = key_w->id == FOR || key_w->id == WHILE || key_w->id == IF;
+				// insert a jmp to default st...
+				info_switch.jmp_default_asm = CCompiler::getInstance()->insert_JMP_Instruction();
+				char v_scope[1000];
 
-						if(key_w->id == ELSE){ // check whether last keyword was "if"
-							if(key_w_last!=NULL){
-								if_else=key_w_last->id==IF;
-								check=if_else;
-							}else{
-								check=false;
-							}
+				print_info_cr("st:%i",CCompiler::getInstance()->getCurrentStatmentIndex());
+
+				// evaluate all case scope ...
+				for(unsigned i = 0; i< info_switch.conditional_case.size();i++){ // for all cases...
+
+					new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
+					_scope->m_scopeList.push_back(new_local_scope);
+					// 1. generate asm scope.
+					// link asm conditional jmp...
+					info_switch.conditional_case[i].jt_asm->result_obj=(void*)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
+
+					int size = info_switch.conditional_case[i].str_scope.str_end-info_switch.conditional_case[i].str_scope.str_begin;
+
+					if(size >= (int)sizeof(v_scope)){
+						error = true;
+						print_error_cr("switch-case at line %i to long",info_switch.conditional_case[i].str_scope.m_begin_line);
+						return NULL;
+					}
+
+					strncpy(v_scope,info_switch.conditional_case[i].str_scope.str_begin,size);
+					if((evalRecursive(v_scope, m_line,error, new_local_scope, level_scope+1)) == NULL){
+						return NULL;
+					}
+
+					// 2. generate jmp without statment.
+					info_switch.conditional_case[i].jmp_asm=CCompiler::getInstance()->insert_JMP_Instruction();
+					print_info_cr("st:%i",CCompiler::getInstance()->getCurrentStatmentIndex());
+
+				}
+
+				print_info_cr("st:%i",CCompiler::getInstance()->getCurrentStatmentIndex());
+
+				info_switch.jmp_default_asm->result_obj=(void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
+
+				// last, we evaluates the default scope...
+				if(info_switch.str_default_case_scope.str_begin != NULL){
+
+					new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
+					_scope->m_scopeList.push_back(new_local_scope);
+
+					int size = info_switch.str_default_case_scope.str_end-info_switch.str_default_case_scope.str_begin;
+
+						if(size >= (int)sizeof(v_scope)){
+							error = true;
+							print_error_cr("switch-defualt at line %i to long",info_switch.str_default_case_scope.m_begin_line);
+							return NULL;
 						}
 
-						if(check){
+					strncpy(v_scope,info_switch.str_default_case_scope.str_begin,size);
+					if((evalRecursive(v_scope, m_line,error, new_local_scope, level_scope+1)) == NULL){
+						return NULL;
+					}
+				}
 
-							if(key_w->id == FOR && post_for.str != ";"){ // eval post
-								if(evalRecursive(post_for.str.c_str(), post_for.m_line, error,for_scope, level_scope+1)==NULL){
-									return NULL;
-								}
-							}
+				// link jmp cases to current instruction ...
+				for(unsigned i = 0; i< info_switch.conditional_case.size();i++){
+					info_switch.conditional_case[i].jmp_asm->result_obj=(void*)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
+				}
 
-							if(key_w->id == FOR || key_w->id == WHILE || key_w->id == IF ){ // set statment jmp instrucction
+				//
 
-								jmp_asm=CCompiler::getInstance()->insert_JMP_Instruction();
+				// 0. if there's default then generate statment (is the last)...
 
-								if(key_w->id == IF){ // if "if" then update short jmp to next instruction...
-									jmp_asm->result_obj = (void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
-								}else{
-									jmp_asm->result_obj = (void *)(index_st_jump);
-								}
+				//
 
-								jnt_asm->result_obj=(void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1); // +1 because ww want over pass the end of last statment ...
-							}
-							else{
-								if(if_else){ // update jmp...
-									if(jmp_asm!=NULL){
-										jmp_asm->result_obj=(void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
-									}else{
-										print_error_cr("Error jmp_asm NULL");
-										error = true;
-										return NULL;
-									}
-								}
+			}
+			//
+			// GENERATE ASM FOR SWITCH
+			//
+			//------------------------------------------------------------------------------------------------------------------------------------------------
+			else
+			//------------------------------------------------------------------------------------------------------------------------------------------------
+			//
+			// GENERATE ASM FOR IF-ELSE-FOR-WHILE
+			//
+			{
+				bool if_else = false;
+				bool check = key_w->id == FOR || key_w->id == WHILE || key_w->id == IF;
 
+				if(key_w->id == ELSE){ // check whether last keyword was "if"
+					if(key_w_last!=NULL){
+						if_else=key_w_last->id==IF;
+						check=if_else;
+					}else{
+						check=false;
+					}
+				}
 
-							}
+				if(check){
 
-
-							// set goto statment (if was if, overrides its jnt_asm...
-
-						}else{
-							print_error_cr("Unexpected keyword %s at line %i",key_w->str,m_line);
-							error = true;
+					if(key_w->id == FOR && post_for.str != ";"){ // eval post
+						if(evalRecursive(post_for.str.c_str(), post_for.m_line, error,for_scope, level_scope+1)==NULL){
 							return NULL;
 						}
 					}
-					//
-					// GENERATE ASM FOR IF-ELSE-FOR-WHILE
-					//
-					//------------------------------------------------------------------------------------------------------------------------------------------------
-				}
 
+					if(key_w->id == FOR || key_w->id == WHILE || key_w->id == IF ){ // set statment jmp instrucction
+
+						jmp_asm=CCompiler::getInstance()->insert_JMP_Instruction();
+
+						if(key_w->id == IF){ // if "if" then update short jmp to next instruction...
+							jmp_asm->result_obj = (void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
+						}else{
+							jmp_asm->result_obj = (void *)(index_st_jump);
+						}
+
+						jnt_asm->result_obj=(void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1); // +1 because ww want over pass the end of last statment ...
+					}
+					else{
+						if(if_else){ // update jmp...
+							if(jmp_asm!=NULL){
+								jmp_asm->result_obj=(void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
+							}else{
+								print_error_cr("Error jmp_asm NULL");
+								error = true;
+								return NULL;
+							}
+						}
+
+
+					}
+
+
+					// set goto statment (if was if, overrides its jnt_asm...
+
+				}else{
+					print_error_cr("Unexpected keyword %s at line %i",key_w->str,m_line);
+					error = true;
+					return NULL;
+				}
 			}
+			//
+			// GENERATE ASM FOR IF-ELSE-FOR-WHILE
+			//
+			//------------------------------------------------------------------------------------------------------------------------------------------------
 
 		}else if(*current == '}'){ // end scope...
 			if(level_scope > 0){ // download scope level

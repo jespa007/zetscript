@@ -151,6 +151,14 @@ int CCompiler::getCurrentStatmentIndex(){
 	return (int)(m_currentListStatements->size()-1);
 }
 
+CVirtualMachine::tInfoStatementOp * CCompiler::newStatment(){
+	CVirtualMachine::tInfoStatementOp st;
+
+	m_currentListStatements->push_back(st);
+
+	return  &(*m_currentListStatements)[m_currentListStatements->size()-1];
+}
+
 bool *  CCompiler::getObjectResultCurrentStatmentAsBoolean(){
 
 	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
@@ -317,55 +325,41 @@ void CCompiler::insertPopScopeInstruction(){
 
 CVirtualMachine::tInfoAsmOp * CCompiler::insert_JMP_Instruction(){
 
-	CVirtualMachine::tInfoStatementOp op_jmp;
+	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JMP;
-	op_jmp.asm_op.push_back(asm_op);
-
-	m_currentListStatements->push_back(op_jmp);
-
+	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return asm_op;
 }
 
 CVirtualMachine::tInfoAsmOp * CCompiler::insert_JNT_Instruction(){
 
-
-		CVirtualMachine::tInfoStatementOp op_jmp;
-		CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
-		asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
-		asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JNT;
-		op_jmp.asm_op.push_back(asm_op);
-
-		m_currentListStatements->push_back(op_jmp);
-
+	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
+	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JNT;
+	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 	return asm_op;
 }
 
 CVirtualMachine::tInfoAsmOp * CCompiler::insert_JT_Instruction(){
 
-
-		CVirtualMachine::tInfoStatementOp op_jmp;
-		CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
-		asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
-		asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JT;
-		op_jmp.asm_op.push_back(asm_op);
-
-		m_currentListStatements->push_back(op_jmp);
-
-
+	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
+	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JT;
+	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return asm_op;
 }
 
 void CCompiler::insert_NOP_Instruction(){
-	CVirtualMachine::tInfoStatementOp nop_op;
+	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::NOP;
-	nop_op.asm_op.push_back(asm_op);
-
-	m_currentListStatements->push_back(nop_op);
+	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 }
 
