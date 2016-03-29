@@ -63,7 +63,6 @@ float default_value=0;
 #endif
 
 
-
 bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 
 	vector<tInfoStatementOp> * m_listStatements = fs->getCompiledCode();
