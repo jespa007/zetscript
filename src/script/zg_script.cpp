@@ -65,6 +65,7 @@ CZG_Script::CZG_Script(){
 
 void CZG_Script::init(){
 	CFactoryContainer::getInstance()->registerScriptFunctions();
+	CVirtualMachine::getInstance();
 }
 
 bool CZG_Script::eval(const string & s){

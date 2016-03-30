@@ -1,7 +1,18 @@
 #include "zg_script.h"
 
 
+#ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
+//#define __VERBOSE_MESSAGE__
+#endif
 
+
+
+#ifdef  __VERBOSE_MESSAGE__
+
+#define print_ast_cr print_ast_cr
+#else
+#define print_ast_cr(s,...)
+#endif
 
 
 
@@ -325,13 +336,13 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 	}	
 	
 	if(type_group>=MAX_GROUPS) {
-		printf("max groups \n");
+		print_error_cr("max groups");
 		error = true;
 		return NULL;
 	}
 	
 		
-	print_info_cr("new expression eval:\"%s\" group:%i at line %i",s,type_group, m_line);
+	print_ast_cr("new expression eval:\"%s\" group:%i at line %i",s,type_group, m_line);
 	
 	//if(type_group==GROUP_0) 
 	{ // search for operator +/-...
@@ -341,11 +352,11 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 		char *expr_op=0;
 		
 		// searching for operator!
-		print_info_cr("searching for operator type %i...",type_group);
+		print_ast_cr("searching for operator type %i...",type_group);
 	
 		while(*aux!=0 && (expr_op_end==0)){
 	
-			printf("checkpoint1:%c\n",*aux);
+			print_ast_cr("checkpoint1:%c\n",*aux);
 			// 1. ignore spaces...
 			aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
 			
@@ -362,7 +373,7 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 
 							strncpy(str_op,aux,end_expression-aux);
 
-							print_info_cr("preoperator %s!",str_op);
+							print_ast_cr("preoperator %s!",str_op);
 							pre_token = str_op;
 							aux=end_expression; // ignore first token...
 							s_effective_start=end_expression;
@@ -379,18 +390,18 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 				}
 			}
 			
-			print_info_cr("checkpoint2:%c",*aux);
+			print_ast_cr("checkpoint2:%c",*aux);
 			
 			//start_value=aux;
 			if(*aux=='('){ // exp within ()
-				print_info_cr("try find parenthesis close");
+				print_ast_cr("try find parenthesis close");
 				end_expression = GET_CLOSED_PARENTHESIS(aux);
 				
 				if(end_expression==0){
 					return NULL;
 				}
 				
-				print_info_cr("checkpoint4:%c",*end_expression);
+				print_ast_cr("checkpoint4:%c",*end_expression);
 				
 				if(*end_expression==0){
 						print_error_cr("')' not found");
@@ -418,7 +429,7 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 			
 			aux=end_expression;
 			
-			print_info_cr("checkpoint3:%c\n",*aux);
+			print_ast_cr("checkpoint3:%c\n",*aux);
 			
 			aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
 			
@@ -428,7 +439,7 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 				if((aux2=postoperator_token(aux, m_line))!=0){
 					char str_op[10]={0};
 					strncpy(str_op,aux,aux2-aux);
-					print_info_cr("postperator %s!",str_op);
+					print_ast_cr("postperator %s!",str_op);
 					post_token = str_op;
 
 					aux=aux2;
@@ -472,7 +483,7 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 					  char subexpr[MAX_EXPRESSION_LENGTH]={0}; // I hope this is enough...
 					  strncpy(subexpr,start_expression,end_expression-start_expression); // copy sub expression
 
-					print_info_cr("trivial value %s at line %i",subexpr, m_define_symbol_line);
+					print_ast_cr("trivial value %s at line %i",subexpr, m_define_symbol_line);
 					op->left=op->right=NULL;
 					op->value=GET_STR_WITHOUT_SPACES(subexpr); // assign its value ...
 					op->definedValueline=m_define_symbol_line;
@@ -501,7 +512,7 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 
 					return op;
 				  }else{ // parenthesis!
-					print_info_cr("START:%c",*start_expression);
+					print_ast_cr("START:%c",*start_expression);
 					char subexpr[MAX_EXPRESSION_LENGTH]={0}; // I hope this is enough...
 					if((end_expression-start_expression-2)> MAX_EXPRESSION_LENGTH){
 						print_error_cr("expression too long\n");
@@ -510,7 +521,7 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 					}
 					
 					strncpy(subexpr,start_expression+1,end_expression-start_expression-2); // copy sub expression
-					printf("expr:%s\n",subexpr);
+					print_ast_cr("expr:%s\n",subexpr);
 					PASTNode p_gr=generateAST_Recursive(subexpr,m_line,error,GROUP_0,op);
 					if(error){
 						return NULL;
@@ -528,7 +539,7 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 			else{ // there's a token, so let's perform generating its AST
 					// reset pretoken...
 					pre_token="";
-					printf("try to generate group1 expression: %s\n",s_effective_start);
+					print_ast_cr("try to generate group1 expression: %s\n",s_effective_start);
 					return generateAST_Recursive(s,m_effective_start_line,error,(TYPE_GROUP)(((int)type_group)+1),op);
 			}
 		}else{ // we found the operator respect of GROUPX so let's put the AST to the left the resulting expression...
@@ -536,7 +547,7 @@ PASTNode generateAST_Recursive(const char *s, int m_line, bool & error, TYPE_GRO
 			strncpy(operator_str,expr_op,expr_op_end-expr_op);
 
 
-			print_info_cr("operator \"%s\" found we can evaluate left and right branches!!\n",operator_str);
+			print_ast_cr("operator \"%s\" found we can evaluate left and right branches!!\n",operator_str);
 			char eval_left[MAX_EXPRESSION_LENGTH]={0};
 			char eval_right[MAX_EXPRESSION_LENGTH]={0};
 

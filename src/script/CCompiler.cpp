@@ -1,5 +1,20 @@
 #include "zg_script.h"
 
+#ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
+//#define __VERBOSE_MESSAGE__
+#endif
+
+
+
+#ifdef  __VERBOSE_MESSAGE__
+
+#define print_com_cr print_ast_cr
+#else
+#define print_com_cr(s,...)
+#endif
+
+
+
 
 CCompiler *CCompiler::m_compiler = NULL;
 
@@ -185,6 +200,7 @@ bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, 
 	CInteger *int_obj;
 	CString *str_obj;
 	CBoolean *bool_obj;
+	string type_value="CONST";
 
 	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	void *obj;
@@ -192,11 +208,11 @@ bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, 
 	// try parse value...
 	if((obj=CInteger::ParsePrimitive(v))!=NULL){
 			type=CVirtualMachine::INTEGER;
-			print_info_cr("%s detected as int\n",v.c_str());
+			print_com_cr("%s detected as int\n",v.c_str());
 	}
 	else if((obj=CNumber::ParsePrimitive(v))!=NULL){
 		type=CVirtualMachine::NUMBER;
-		print_info_cr("%s detected as float\n",v.c_str());
+		print_com_cr("%s detected as float\n",v.c_str());
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
 		type=CVirtualMachine::STRING;
@@ -204,11 +220,11 @@ bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, 
 		string *so=new string();
 		(*so)=s;
 		obj = so;
-		print_info_cr("%s detected as string\n",v.c_str());
+		print_com_cr("%s detected as string\n",v.c_str());
 	}
 	else if((obj=CBoolean::ParsePrimitive(v))!=NULL){
 		type=CVirtualMachine::BOOL;
-		print_info_cr("%s detected as boolean\n",v.c_str());
+		print_com_cr("%s detected as boolean\n",v.c_str());
 	}else{
 		CScope::tInfoRegisteredVar * info_var=_lc->getInfoRegisteredVariable(v,false);
 		type=CVirtualMachine::OBJ;
@@ -220,16 +236,21 @@ bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, 
 
 		CObject *var = info_var->m_obj;
 		obj = var;
+		type_value="OBJ";
 		if((int_obj=dynamic_cast<CInteger *>(var))!=NULL){ // else it will store the value ...
+			type_value="INT";
 			type = CVirtualMachine::INTEGER;
 			obj=&int_obj->m_value;
 		}else if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){
+			type_value="FLOAT";
 			type = CVirtualMachine::NUMBER;
 			obj=&num_obj->m_value;
 		}else if((bool_obj=dynamic_cast<CBoolean *>(var))!=NULL){
+			type_value="BOOL";
 			type = CVirtualMachine::BOOL;
 			obj=&bool_obj->m_value;
 		}else if((str_obj=dynamic_cast<CString *>(var))!=NULL){
+			type_value="STRING";
 			type = CVirtualMachine::STRING;
 			obj=&str_obj->m_value;
 		}
@@ -245,7 +266,9 @@ bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, 
 		asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::LOAD;
 
 
+		printf("[%02i:%02i] %s \t%s\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),type_value.c_str(),v.c_str());
 		ptr_current_statement_op->asm_op.push_back(asm_op);
+
 	}
 	return true;
 }
@@ -289,6 +312,9 @@ bool CCompiler::insertMovVarInstruction(CObject *var, int right){
 		asm_op->index_left = -1;
 		asm_op->index_right = right;
 		asm_op->operator_type = CVirtualMachine::ASM_OPERATOR::MOV;
+
+		printf("[%02i:%02i] MOV \tV(%s),[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),var->getName().c_str(),m_currentListStatements->size(),right);
+
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
 
@@ -330,6 +356,7 @@ CVirtualMachine::tInfoAsmOp * CCompiler::insert_JMP_Instruction(){
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JMP;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
+	printf("[%02i:%02i]\tJMP\t[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 	return asm_op;
 }
 
@@ -339,7 +366,11 @@ CVirtualMachine::tInfoAsmOp * CCompiler::insert_JNT_Instruction(){
 	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JNT;
+
+	printf("[%02i:%02i]\tJNT\t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
+
+
 
 	return asm_op;
 }
@@ -350,6 +381,7 @@ CVirtualMachine::tInfoAsmOp * CCompiler::insert_JT_Instruction(){
 	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JT;
+	printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return asm_op;
 }
@@ -359,6 +391,7 @@ void CCompiler::insert_NOP_Instruction(){
 	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::NOP;
+	printf("[%02i:%02i]\tNOP\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 }
@@ -578,6 +611,8 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 		asm_op->operator_type = id_op;
 		asm_op->result_obj = res_obj;
 
+		printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CVirtualMachine::def_operator[id_op].op_str,m_currentListStatements->size(),left,m_currentListStatements->size(),right);
+
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
 
@@ -626,6 +661,9 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 			asm_op->result_obj = res_obj;
 			asm_op->index_left = left;
 			asm_op->index_right = -1;
+
+			printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CVirtualMachine::def_operator[id_op].op_str,m_currentListStatements->size(),left);
+
 			ptr_current_statement_op->asm_op.push_back(asm_op);
 
 	}else{
@@ -648,7 +686,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 
 	if(op->left==NULL && op->right==NULL){ // trivial case value itself...
 
-		print_info_cr("CONST \tE[%i],%s\n",numreg,op->value.c_str());
+		//printf("CONST \tE[%i],%s\n",numreg,op->value.c_str());
 		if(!insertLoadValueInstruction(op->value, op->type_ptr, _lc, op->definedValueline)){
 			error|=true;
 			return -1;
@@ -702,7 +740,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 							var_obj = CFactoryContainer::getInstance()->newObjectByClassPtr(ptr_class_type);
 							if(var_obj!=NULL){
 								_lc->defineVariable(op->left->value,var_obj);
-								print_info_cr("%s defined as %s",op->left->value.c_str(),ptr_class_type.c_str());
+								print_com_cr("%s defined as %s",op->left->value.c_str(),ptr_class_type.c_str());
 							}else{
 								print_error_cr("ERRRRRRRRRROR %s is not registered",ptr_class_type.c_str());
 								error|=true;
@@ -720,7 +758,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 							return -1;
 						}
 
-						print_info_cr("MOV \tV(%s),E[%i]\n",op->left->value.c_str(),right);
+						//printf("MOV \tV(%s),E[%i]\n",op->left->value.c_str(),right);
 
 
 					}else{
@@ -731,7 +769,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 				}
 			}
 			else{
-				print_info_cr("%s\tE[%i],E[%i],E[%i]",op->token.c_str(),numreg,left,right);
+				//printf("%s\tE[%i],E[%i],E[%i]\n",op->token.c_str(),numreg,left,right);
 				if(!insertOperatorInstruction(op->token, error_str,left,right)){
 					print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
 					error|=true;
@@ -740,7 +778,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 			}
 
 		}else if(right!=-1){ // one op..
-			print_info_cr("%s\tE[%i],E[%i] !!!",op->token.c_str(),numreg,right);
+			//printf("%s\tE[%i],E[%i]\n",op->token.c_str(),numreg,right);
 			if(!insertOperatorInstruction(op->token, error_str,right)){
 				print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
 				error|=true;
@@ -748,7 +786,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 			}
 
 		}else if(left!=-1){ // one op..
-			print_info_cr("%s\tE[%i],E[%i] !!!",op->token.c_str(),numreg,left);
+		//	printf("%s\tE[%i],E[%i]\n",op->token.c_str(),numreg,left);
 			if(!insertOperatorInstruction(op->token, error_str,left)){
 				print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
 				error|=true;
@@ -768,19 +806,22 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 }
 
 
-bool CCompiler::compileExpression(const char *advanced_expression, int & m_line, CScriptFunction *sf, CScope *currentEvaluatingScope){
+bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScriptFunction *sf, CScope *currentEvaluatingScope){
 
 	int numreg=0;
 
 	PASTNode ast_node;
-	char *aux=(char *)advanced_expression;
+	char *aux=(char *)expression_str;
 
 	CVirtualMachine::tInfoStatementOp i_stat;
 
 	this->m_currentScriptFunction = sf;
 	this->m_currentListStatements = sf->getCompiledCode();
 
-	ast_node=generateAST(advanced_expression,m_line);
+	printf("%s:%i %s\n","file.zs",m_line,expression_str);
+
+
+	ast_node=generateAST(expression_str,m_line);
 
 	if(ast_node==NULL){ // some error happend!
 		return false;
@@ -799,6 +840,7 @@ bool CCompiler::compileExpression(const char *advanced_expression, int & m_line,
 
 	bool error_asm=false;
 	generateAsmCode(ast_node,numreg,error_asm,currentEvaluatingScope);
+
 
 	if(error_asm)
 	{

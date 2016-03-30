@@ -2,6 +2,8 @@
 
 CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
 
+CVirtualMachine::tDefOperator CVirtualMachine::def_operator[MAX_OPERATORS];
+
 CVirtualMachine * CVirtualMachine::getInstance(){
 	if(m_virtualMachine == NULL){
 		m_virtualMachine = new CVirtualMachine();
@@ -20,6 +22,38 @@ void CVirtualMachine::destroySingletons(){
 }
 
 CVirtualMachine::CVirtualMachine(){
+
+	def_operator[NOP].op_str         ="NOP";
+	def_operator[MOV].op_str         ="MOV"; // mov expression to var
+	def_operator[LOAD].op_str        ="LOAD"; // primitive value like number/string or boolean...
+	def_operator[EQU].op_str         ="EQU";  // ==
+	def_operator[LT].op_str          ="LT";  // <
+	def_operator[LTE].op_str         ="LTE";  // <=
+	def_operator[NOT].op_str         ="NOT"; // !
+	def_operator[GT].op_str          ="GT";  // >
+	def_operator[GTE].op_str         ="GTE"; // >=
+	def_operator[NEG].op_str         ="NEG"; // !
+	def_operator[ADD].op_str         ="ADD"; // +
+	def_operator[PRE_INC].op_str     ="PRE_INC";// ++
+	def_operator[POST_INC].op_str    ="POST_INC"; // ++
+	def_operator[PRE_DEC].op_str     ="PRE_DEC"; // ++
+	def_operator[POST_DEC].op_str    ="POST_DEC"; // ++
+	def_operator[LOGIC_AND].op_str   ="LOGIC_AND"; // &&
+	def_operator[LOGIC_OR].op_str    ="LOGIC_OR";  // ||
+	def_operator[DIV].op_str         ="DIV"; // /
+	def_operator[MUL].op_str         ="MUL"; // *
+	def_operator[MOD].op_str         ="NOP";  // %
+	def_operator[CAT].op_str         ="CAT";  // str+str
+	def_operator[AND].op_str         ="AND"; // bitwise logic and
+	def_operator[OR].op_str          ="OR"; // bitwise logic or
+	def_operator[XOR].op_str         ="XOR"; // logic xor
+	def_operator[SHL].op_str         ="SHL"; // shift left
+	def_operator[SHR].op_str         ="SHR"; // shift right
+	def_operator[PUSH_SCOPE].op_str  ="PUSH_SCOPE";
+	def_operator[POP_SCOPE].op_str   ="POP_SCOPE";
+	def_operator[JMP].op_str         ="JMP";
+	def_operator[JNT].op_str         ="JNT"; // goto if not true ... goes end to conditional.
+	def_operator[JT].op_str          ="JT"; // goto if true ... goes end to conditional.
 
 }
 
@@ -50,7 +84,7 @@ float default_value=0;
  default_value = (v)
 
 #ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
-#define __VERBOSE_MESSAGE__
+//#define __VERBOSE_MESSAGE__
 #endif
 
 

@@ -10,7 +10,7 @@ public:
 	static void destroySingletons();
 
 
-	bool compileExpression(const char *advanced_expression, int & m_line,CScriptFunction * sf, CScope *currentEvaluatingScope);
+	bool compileExpression(const char *expression_str, int & m_line,CScriptFunction * sf, CScope *currentEvaluatingScope);
 
 	int generateAsmCode(PASTNode op, int & numreg, bool & error, CScope * _lc);
 

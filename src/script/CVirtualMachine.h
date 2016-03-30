@@ -34,7 +34,7 @@ public:
 	enum ASM_OPERATOR{
 		INVALID_OP=-1,
 		NOP=0,
-		MOV=1, // mov expression to var
+		MOV, // mov expression to var
 		LOAD, // primitive value like number/string or boolean...
 		EQU,  // ==
 		LT,  // <
@@ -63,10 +63,19 @@ public:
 		POP_SCOPE,
 		JMP,
 		JNT, // goto if not true ... goes end to conditional.
-		JT // goto if true ... goes end to conditional.
+		JT, // goto if true ... goes end to conditional.
+		MAX_OPERATORS
 
 
 	};
+
+	typedef struct{
+		ASM_OPERATOR op_id;
+		const char *op_str;
+
+	}tDefOperator;
+
+	static tDefOperator def_operator[MAX_OPERATORS];
 
 
 	class tInfoAsmOp{
