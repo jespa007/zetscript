@@ -579,6 +579,14 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 							case DEFAULT:
 							case CASE: // begin scope...
 
+								if(eval_scope!=NULL){
+										if(begin_scope != NULL){ // last case had no break;
+											eval_scope->str_begin = begin_scope;
+											eval_scope->str_end = current;
+											begin_scope=NULL;
+										}
+								}
+
 								current+=strlen(key_w_switch->str);
 								current = CStringUtils::IGNORE_BLANKS(current, m_line);
 
@@ -807,6 +815,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 						return NULL;
 					}
 
+					memset(v_scope,0,sizeof(v_scope));
 					strncpy(v_scope,info_switch.conditional_case[i].str_scope.str_begin,size);
 					if((evalRecursive(v_scope, m_line,error, new_local_scope, level_scope+1)) == NULL){
 						return NULL;

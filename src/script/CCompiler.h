@@ -51,6 +51,23 @@ private:
 	static CCompiler *m_compiler;
 
 
+	//---------------------------------------------------------------------------------------------------------------------------------------
+	// DEBUG TOOLS
+
+	typedef struct{
+		string src;
+		int asm_statment_idx;
+	}tDebugInformation;
+
+	vector<tDebugInformation>	m_debugInfo;
+
+	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
+	void printDebugInformation();
+
+	// DEBUG TOOLS
+	//---------------------------------------------------------------------------------------------------------------------------------------
+
+
 	vector<CVirtualMachine::tInfoStatementOp > 	*m_currentListStatements;
 	CScriptFunction 							*m_currentScriptFunction;
 

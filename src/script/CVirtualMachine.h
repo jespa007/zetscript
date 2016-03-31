@@ -70,13 +70,12 @@ public:
 	};
 
 	typedef struct{
-		ASM_OPERATOR op_id;
 		const char *op_str;
-
+		ASM_OPERATOR op_id;
+		int n_ops;
 	}tDefOperator;
 
 	static tDefOperator def_operator[MAX_OPERATORS];
-
 
 	class tInfoAsmOp{
 
@@ -87,15 +86,18 @@ public:
 	     //tInfoObjectOperator *funOp;
 	     //CObject *left_var_obj;
 	     void *result_obj; // can be float/bool/string or variable.
+	     string result_str;
+	     VAR_TYPE result_type;
 	     //string type_res;
 
 	     //------------------
-	     VAR_TYPE result_type;
+
 	     ASM_OPERATOR operator_type;
 	     void *ptr_value; // can be float, bool or string.
 	     //------------------
 
 	     int index_left,index_right;
+
 	    // bool (* isconvertable)(int value);
 
 		tInfoAsmOp(){
@@ -117,11 +119,15 @@ public:
 	typedef struct{
 
 	    vector<tInfoAsmOp *> asm_op;
+	    string expression_str;
+	    int m_line;
 	}tInfoStatementOp;
 
 
 	static CVirtualMachine * getInstance();
 	static void destroySingletons();
+
+	void printGeneratedCode(CScriptFunction *fs);
 
 	bool execute(CScriptFunction *fs, vector<CObject *> * argv=NULL);
 

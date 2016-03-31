@@ -121,6 +121,9 @@ bool CCompiler::defineVariable(const string & var_name, CObject *obj){
 	return false;
 }
 */
+
+
+
 //------------------------------------------------------------------------------------------------------------------
 //
 // COMPILE COMPILER MANAGEMENT
@@ -264,9 +267,10 @@ bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, 
 		asm_op->result_type = type;
 
 		asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::LOAD;
+		asm_op->result_str = v;
 
 
-		printf("[%02i:%02i] %s \t%s\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),type_value.c_str(),v.c_str());
+		//printf("[%02i:%02i] %s \t%s\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),type_value.c_str(),v.c_str());
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
 	}
@@ -312,8 +316,9 @@ bool CCompiler::insertMovVarInstruction(CObject *var, int right){
 		asm_op->index_left = -1;
 		asm_op->index_right = right;
 		asm_op->operator_type = CVirtualMachine::ASM_OPERATOR::MOV;
+		asm_op->result_str =var->getName();
 
-		printf("[%02i:%02i] MOV \tV(%s),[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),var->getName().c_str(),m_currentListStatements->size(),right);
+		//printf("[%02i:%02i] MOV \tV(%s),[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),var->getName().c_str(),m_currentListStatements->size(),right);
 
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -356,7 +361,8 @@ CVirtualMachine::tInfoAsmOp * CCompiler::insert_JMP_Instruction(){
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JMP;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
-	printf("[%02i:%02i]\tJMP\t[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
+	//printf("[%02i:%02i]\tJMP\t[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
+
 	return asm_op;
 }
 
@@ -367,7 +373,7 @@ CVirtualMachine::tInfoAsmOp * CCompiler::insert_JNT_Instruction(){
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JNT;
 
-	printf("[%02i:%02i]\tJNT\t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
+	//printf("[%02i:%02i]\tJNT\t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 
@@ -381,7 +387,7 @@ CVirtualMachine::tInfoAsmOp * CCompiler::insert_JT_Instruction(){
 	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JT;
-	printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
+	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return asm_op;
 }
@@ -391,7 +397,7 @@ void CCompiler::insert_NOP_Instruction(){
 	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::NOP;
-	printf("[%02i:%02i]\tNOP\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
+	//printf("[%02i:%02i]\tNOP\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 }
@@ -611,7 +617,7 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 		asm_op->operator_type = id_op;
 		asm_op->result_obj = res_obj;
 
-		printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CVirtualMachine::def_operator[id_op].op_str,m_currentListStatements->size(),left,m_currentListStatements->size(),right);
+	//	printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CVirtualMachine::def_operator[id_op].op_str,m_currentListStatements->size(),left,m_currentListStatements->size(),right);
 
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -662,7 +668,7 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 			asm_op->index_left = left;
 			asm_op->index_right = -1;
 
-			printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CVirtualMachine::def_operator[id_op].op_str,m_currentListStatements->size(),left);
+		//	printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CVirtualMachine::def_operator[id_op].op_str,m_currentListStatements->size(),left);
 
 			ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -818,8 +824,10 @@ bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScr
 	this->m_currentScriptFunction = sf;
 	this->m_currentListStatements = sf->getCompiledCode();
 
-	printf("%s:%i %s\n","file.zs",m_line,expression_str);
-
+	//printf("%s:%i %s\n","file.zs",m_line,expression_str);
+	//insertDebugInformation(expression_str);
+	i_stat.m_line = m_line;
+	i_stat.expression_str = expression_str;
 
 	ast_node=generateAST(expression_str,m_line);
 
@@ -834,6 +842,8 @@ bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScr
 	}
 
 	numreg=0;
+
+
 
 	// new statment ...
 	(*m_currentListStatements).push_back(i_stat);

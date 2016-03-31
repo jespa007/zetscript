@@ -21,39 +21,41 @@ void CVirtualMachine::destroySingletons(){
 
 }
 
+
+
 CVirtualMachine::CVirtualMachine(){
 
-	def_operator[NOP].op_str         ="NOP";
-	def_operator[MOV].op_str         ="MOV"; // mov expression to var
-	def_operator[LOAD].op_str        ="LOAD"; // primitive value like number/string or boolean...
-	def_operator[EQU].op_str         ="EQU";  // ==
-	def_operator[LT].op_str          ="LT";  // <
-	def_operator[LTE].op_str         ="LTE";  // <=
-	def_operator[NOT].op_str         ="NOT"; // !
-	def_operator[GT].op_str          ="GT";  // >
-	def_operator[GTE].op_str         ="GTE"; // >=
-	def_operator[NEG].op_str         ="NEG"; // !
-	def_operator[ADD].op_str         ="ADD"; // +
-	def_operator[PRE_INC].op_str     ="PRE_INC";// ++
-	def_operator[POST_INC].op_str    ="POST_INC"; // ++
-	def_operator[PRE_DEC].op_str     ="PRE_DEC"; // ++
-	def_operator[POST_DEC].op_str    ="POST_DEC"; // ++
-	def_operator[LOGIC_AND].op_str   ="LOGIC_AND"; // &&
-	def_operator[LOGIC_OR].op_str    ="LOGIC_OR";  // ||
-	def_operator[DIV].op_str         ="DIV"; // /
-	def_operator[MUL].op_str         ="MUL"; // *
-	def_operator[MOD].op_str         ="NOP";  // %
-	def_operator[CAT].op_str         ="CAT";  // str+str
-	def_operator[AND].op_str         ="AND"; // bitwise logic and
-	def_operator[OR].op_str          ="OR"; // bitwise logic or
-	def_operator[XOR].op_str         ="XOR"; // logic xor
-	def_operator[SHL].op_str         ="SHL"; // shift left
-	def_operator[SHR].op_str         ="SHR"; // shift right
-	def_operator[PUSH_SCOPE].op_str  ="PUSH_SCOPE";
-	def_operator[POP_SCOPE].op_str   ="POP_SCOPE";
-	def_operator[JMP].op_str         ="JMP";
-	def_operator[JNT].op_str         ="JNT"; // goto if not true ... goes end to conditional.
-	def_operator[JT].op_str          ="JT"; // goto if true ... goes end to conditional.
+	def_operator[NOP]         ={"NOP",NOP,0};
+	def_operator[MOV]         ={"MOV",MOV,2}; // mov expression to var
+	def_operator[LOAD]        ={"LOAD",LOAD,1}; // primitive value like number/string or boolean...
+	def_operator[EQU]         ={"EQU",EQU,2};  // ==
+	def_operator[LT]          ={"LT",LT,2};  // <
+	def_operator[LTE]         ={"LTE",LTE,2};  // <=
+	def_operator[NOT]         ={"NOT",NOT,1}; // !
+	def_operator[GT]          ={"GT",GT,2};  // >
+	def_operator[GTE]         ={"GTE",GTE,2}; // >=
+	def_operator[NEG]         ={"NEG",NEG,1}; // !
+	def_operator[ADD]         ={"ADD",ADD,2}; // +
+	def_operator[PRE_INC]     ={"PRE_INC",PRE_INC,1};// ++
+	def_operator[POST_INC]    ={"POST_INC",POST_INC,1}; // ++
+	def_operator[PRE_DEC]     ={"PRE_DEC",PRE_DEC,1}; // ++
+	def_operator[POST_DEC]    ={"POST_DEC",POST_DEC,1}; // ++
+	def_operator[LOGIC_AND]   ={"LOGIC_AND",LOGIC_AND,2}; // &&
+	def_operator[LOGIC_OR]    ={"LOGIC_OR",LOGIC_OR,2};  // ||
+	def_operator[DIV]         ={"DIV",DIV,2}; // /
+	def_operator[MUL]         ={"MUL",MUL,2}; // *
+	def_operator[MOD]         ={"MOD",MOD,2};  // %
+	def_operator[CAT]         ={"CAT",CAT,2};  // str+str
+	def_operator[AND]         ={"AND",AND,2}; // bitwise logic and
+	def_operator[OR]          ={"OR",OR,2}; // bitwise logic or
+	def_operator[XOR]         ={"XOR",XOR,2}; // logic xor
+	def_operator[SHL]         ={"SHL",SHL,2}; // shift left
+	def_operator[SHR]         ={"SHR",SHR,2}; // shift right
+	def_operator[PUSH_SCOPE]  ={"PUSH_SCOPE",PUSH_SCOPE,0};
+	def_operator[POP_SCOPE]   ={"POP_SCOPE",POP_SCOPE,0};
+	def_operator[JMP]         ={"JMP",JMP,1};
+	def_operator[JNT]         ={"JNT",JNT,1}; // goto if not true ... goes end to conditional.
+	def_operator[JT]          ={"JT",JT,1}; // goto if true ... goes end to conditional.
 
 }
 
@@ -95,6 +97,51 @@ float default_value=0;
 #else
 #define print_vm_cr(s,...)
 #endif
+
+void CVirtualMachine::printGeneratedCode(CScriptFunction *fs){
+
+	vector<tInfoStatementOp> * m_listStatements = fs->getCompiledCode();
+
+	for(unsigned s = 0; s < (*m_listStatements).size();s++){
+		vector<tInfoAsmOp *> * asm_op_statment = &(*m_listStatements)[s].asm_op;
+
+		printf("\n[%s:%i]\t%s\n\n","file.zs",(*m_listStatements)[s].m_line,(*m_listStatements)[s].expression_str.c_str());
+
+		for(unsigned i = 0; i  <  asm_op_statment->size(); i++){
+
+			int n_ops=1;
+			int left = (*asm_op_statment)[i]->index_left;
+			int right = (*asm_op_statment)[i]->index_right;
+
+			if(left != -1 && right != -1)
+				n_ops=2;
+
+
+
+			switch((*asm_op_statment)[i]->operator_type){
+			case  LOAD:
+				printf("[%02i:%02i]\t%s\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,(*asm_op_statment)[i]->result_str.c_str());
+				break;
+			case  MOV:
+				printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,(*asm_op_statment)[i]->result_str.c_str(),s,right);
+				break;
+			case JNT:
+			case JT:
+			case JMP:
+				printf("[%02i:%02i]\t%s\t[%04i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,(int)(*asm_op_statment)[i]->result_obj);
+				break;
+			default:
+
+				if(n_ops==1){
+					printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,s,left);
+				}else{
+					printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,s,left,s,right);
+				}
+				break;
+			}
+		}
+	}
+}
 
 
 bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
