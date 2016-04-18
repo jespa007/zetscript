@@ -248,7 +248,7 @@ char *parseKeyword_IfElseForWhile(const char *str, tInfoKeyword **keyw, int & m_
 		return NULL;
 	}
 
-	if((*keyw)->id == VAR){ // special case that is managed later..
+	if((*keyw)->id == VAR_KEYWORD){ // special case that is managed later..
 		return NULL;
 	}
 
@@ -258,7 +258,7 @@ char *parseKeyword_IfElseForWhile(const char *str, tInfoKeyword **keyw, int & m_
 		current+=strlen((*keyw)->str);
 		current=CStringUtils::IGNORE_BLANKS(current,m_line);
 
-		if((*keyw)->id == ELSE){ // special case that is managed later..
+		if((*keyw)->id == ELSE_KEYWORD){ // special case that is managed later..
 			return current;
 		}
 
@@ -308,7 +308,7 @@ char *parseKeyword_IfElseForWhile(const char *str, tInfoKeyword **keyw, int & m_
 		condition.str = expr;
 		condition.m_line = m_line;
 
-		if((*keyw)->id == FOR){
+		if((*keyw)->id == FOR_KEYWORD){
 
 			/*_scope->m_scopeList.push_back(for_scope=new CScope(_scope->getScriptFunction(),_scope));
 			CCompiler::getInstance()->insertPushScopeInstruction(for_scope);*/
@@ -461,7 +461,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 				error = true;
 				return NULL;
 				break;
-			case SWITCH:
+			case SWITCH_KEYWORD:
 
 				if(!IS_WORD(condition.str.c_str())){
 					print_error_cr("invalid expression %s at line %i",condition.str.c_str(),condition.m_line);
@@ -475,7 +475,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 					return NULL;
 				}
 				break;
-			case FOR:
+			case FOR_KEYWORD:
 
 				// eval pre and post...
 				_scope->m_scopeList.push_back(for_scope=new CScope(_scope->getScriptFunction(),_scope));
@@ -503,17 +503,17 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 				}
 
 				break;
-			case ELSE: // no conditional only evaluatues its scope later...
+			case ELSE_KEYWORD: // no conditional only evaluatues its scope later...
 				break;
-			case IF: // evaluate conditional...
-			case WHILE:
+			case IF_KEYWORD: // evaluate conditional...
+			case WHILE_KEYWORD:
 
 				// jmp for while
 
 
 				if(CCompiler::getInstance()->compileExpression(condition.str.c_str(), condition.m_line,_scope->getScriptFunction(), _scope)){
 					index_st_jump =  CCompiler::getInstance()->getCurrentStatmentIndex();
-					if(key_w->id == IF){
+					if(key_w->id == IF_KEYWORD){
 						index_st_jump = -1; // we will set it later...
 					}
 
@@ -553,7 +553,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 			//
 			// EVAL FOR SWITCH
 			//
-			if(key_w->id == SWITCH) {
+			if(key_w->id == SWITCH_KEYWORD) {
 
 				tInfoKeyword *key_w_switch;
 				current = CStringUtils::IGNORE_BLANKS(current+1, m_line);
@@ -576,8 +576,8 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 								error=true;
 								return NULL;
 								break;
-							case DEFAULT:
-							case CASE: // begin scope...
+							case DEFAULT_KEYWORD:
+							case CASE_KEYWORD: // begin scope...
 
 								if(eval_scope!=NULL){
 										if(begin_scope != NULL){ // last case had no break;
@@ -590,7 +590,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 								current+=strlen(key_w_switch->str);
 								current = CStringUtils::IGNORE_BLANKS(current, m_line);
 
-								if(key_w_switch->id == DEFAULT){
+								if(key_w_switch->id == DEFAULT_KEYWORD){
 									if(already_processed_default){
 										print_error_cr("repeat default at line %i", m_line);
 										error = true;
@@ -648,7 +648,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 								end_scope = NULL;
 
 								break;
-							case BREAK: // end scope ...
+							case BREAK_KEYWORD: // end scope ...
 
 								if(begin_scope==NULL){
 									print_error_cr("unexpected break at line %i",m_line);
@@ -695,7 +695,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 
 
 				// add into localscope
-				if(key_w->id == FOR) {
+				if(key_w->id == FOR_KEYWORD) {
 					new_local_scope = for_scope;
 				}else{
 					new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
@@ -724,7 +724,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 			//
 			// GENERATE ASM FOR SWITCH
 			//
-			if(key_w->id == SWITCH)
+			if(key_w->id == SWITCH_KEYWORD)
 			{ // generata code for all conditionals...
 
 				// design ...
@@ -874,11 +874,11 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 			//
 			{
 				bool if_else = false;
-				bool check = key_w->id == FOR || key_w->id == WHILE || key_w->id == IF;
+				bool check = key_w->id == FOR_KEYWORD || key_w->id == WHILE_KEYWORD || key_w->id == IF_KEYWORD;
 
-				if(key_w->id == ELSE){ // check whether last keyword was "if"
+				if(key_w->id == ELSE_KEYWORD){ // check whether last keyword was "if"
 					if(key_w_last!=NULL){
-						if_else=key_w_last->id==IF;
+						if_else=key_w_last->id==IF_KEYWORD;
 						check=if_else;
 					}else{
 						check=false;
@@ -887,17 +887,17 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 
 				if(check){
 
-					if(key_w->id == FOR && post_for.str != ";"){ // eval post
+					if(key_w->id == FOR_KEYWORD && post_for.str != ";"){ // eval post
 						if(evalRecursive(post_for.str.c_str(), post_for.m_line, error,for_scope, level_scope+1)==NULL){
 							return NULL;
 						}
 					}
 
-					if(key_w->id == FOR || key_w->id == WHILE || key_w->id == IF ){ // set statment jmp instrucction
+					if(key_w->id == FOR_KEYWORD || key_w->id == WHILE_KEYWORD || key_w->id == IF_KEYWORD ){ // set statment jmp instrucction
 
 						jmp_asm=CCompiler::getInstance()->insert_JMP_Instruction();
 
-						if(key_w->id == IF){ // if "if" then update short jmp to next instruction...
+						if(key_w->id == IF_KEYWORD){ // if "if" then update short jmp to next instruction...
 							jmp_asm->result_obj = (void *)(CCompiler::getInstance()->getCurrentStatmentIndex()+1);
 						}else{
 							jmp_asm->result_obj = (void *)(index_st_jump);

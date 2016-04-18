@@ -17,20 +17,20 @@
 
 
 tInfoKeyword str_op[MAX_KEYWORD]{
-		{NONE, "none"},
-		{IF,"if"},
-		{ELSE,"else"},
-		{FOR,"for"},
-		{WHILE,"while"},
-		{VAR,"var"},
-		{SWITCH,"switch"},
-		{CASE,"case"},
-		{BREAK,"break"},
-		{DEFAULT,"default"},
-		{FUNCTION,"function"},
-		{RETURN,"return"},
-		{CLASS,"class"},
-		{THIS,"this"}
+		{NONE_KEYWORD, "none"},
+		{IF_KEYWORD,"if"},
+		{ELSE_KEYWORD,"else"},
+		{FOR_KEYWORD,"for"},
+		{WHILE_KEYWORD,"while"},
+		{VAR_KEYWORD,"var"},
+		{SWITCH_KEYWORD,"switch"},
+		{CASE_KEYWORD,"case"},
+		{BREAK_KEYWORD,"break"},
+		{DEFAULT_KEYWORD,"default"},
+		{FUNCTION_KEYWORD,"function"},
+		{RETURN_KEYWORD,"return"},
+		{CLASS_KEYWORD,"class"},
+		{THIS_KEYWORD,"this"}
 };
 
 char * token_group0(char *c){
