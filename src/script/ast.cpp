@@ -17,6 +17,24 @@
 #endif
 
 
+
+tInfoKeyword str_op[MAX_KEYWORD]{
+		{NONE_KEYWORD, "none"},
+		{IF_KEYWORD,"if"},
+		{ELSE_KEYWORD,"else"},
+		{FOR_KEYWORD,"for"},
+		{WHILE_KEYWORD,"while"},
+		{VAR_KEYWORD,"var"},
+		{SWITCH_KEYWORD,"switch"},
+		{CASE_KEYWORD,"case"},
+		{BREAK_KEYWORD,"break"},
+		{DEFAULT_KEYWORD,"default"},
+		{FUNCTION_KEYWORD,"function"},
+		{RETURN_KEYWORD,"return"},
+		{CLASS_KEYWORD,"class"},
+		{THIS_KEYWORD,"this"}
+};
+
 char * token_group0(char *c){
 	char *aux=c;
 	// try number operators...
@@ -174,22 +192,21 @@ bool IS_WORD(const char *s){
 tInfoKeyword CAst::str_op[MAX_KEYWORD];
 
 void CAst::createSingletons(){
-	str_op[KEYWORD_TYPE::NONE] = {KEYWORD_TYPE::NONE, "none"};
-	str_op[KEYWORD_TYPE::VAR] = {VAR,"var"};
-	str_op[KEYWORD_TYPE::BLOCK] = {BLOCK,"{"};
-	str_op[KEYWORD_TYPE::IF] = {IF,"if"},
-	str_op[KEYWORD_TYPE::ELSE] = {ELSE,"else"};
-	str_op[KEYWORD_TYPE::FOR] = {FOR,"for"};
-	str_op[KEYWORD_TYPE::WHILE] = {WHILE,"while"};
+	str_op[KEYWORD_TYPE::NONE_KEYWORD] = {NONE_KEYWORD, "none"};
+	str_op[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var"};
+	str_op[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if"},
+	str_op[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else"};
+	str_op[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for"};
+	str_op[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while"};
 
-	str_op[KEYWORD_TYPE::SWITCH] = {SWITCH,"switch"};
-	str_op[KEYWORD_TYPE::CASE] = {CASE,"case"};
-	str_op[KEYWORD_TYPE::BREAK] = {BREAK,"break"};
-	str_op[KEYWORD_TYPE::DEFAULT] = {DEFAULT,"default"};
-	str_op[KEYWORD_TYPE::FUNCTION] = {FUNCTION,"function"};
-	str_op[KEYWORD_TYPE::RETURN] = {RETURN,"return"};
-	str_op[KEYWORD_TYPE::CLASS] = {CLASS,"class"};
-	str_op[KEYWORD_TYPE::THIS] = {THIS,"this"};
+	str_op[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch"};
+	str_op[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case"};
+	str_op[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break"};
+	str_op[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default"};
+	str_op[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function"};
+	str_op[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return"};
+	str_op[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class"};
+	str_op[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this"};
 }
 
 void CAst::destroySingletons(){
@@ -625,7 +642,7 @@ char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 	// check for keyword ...
 	key_w = is_keyword(aux_p);
 
-	if(key_w->id != KEYWORD_TYPE::FOR){
+	if(key_w->id != KEYWORD_TYPE::FOR_KEYWORD){
 		aux_p += strlen(key_w->str);
 	}
 
@@ -652,7 +669,7 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 	// check for keyword ...
 	key_w = is_keyword(aux_p);
 
-	if(key_w->id != KEYWORD_TYPE::SWITCH){
+	if(key_w->id != KEYWORD_TYPE::SWITCH_KEYWORD){
 		aux_p += strlen(key_w->str);
 
 		aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
@@ -665,7 +682,7 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 				*ast_node_to_be_evaluated = new tASTNode;
 
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
-				(*ast_node_to_be_evaluated)->keyword_type = SWITCH;
+				(*ast_node_to_be_evaluated)->keyword_type = SWITCH_KEYWORD;
 				(*ast_node_to_be_evaluated)->value = value_to_eval;
 
 				aux_p = end_expr+1;
@@ -682,7 +699,7 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 						key_w = is_keyword(aux_p);
 						if(key_w){
 							switch(key_w->id){
-							case CASE:
+							case CASE_KEYWORD:
 								aux_p += strlen(key_w->str);
 
 								// get the symbol...
@@ -703,7 +720,7 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 
 
 								break;
-							case DEFAULT:
+							case DEFAULT_KEYWORD:
 								aux_p += strlen(key_w->str);
 								aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
 								if(*aux_p == ':'){
@@ -728,7 +745,7 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 							}
 
 							key_w2 = is_keyword(aux_p);
-							if(key_w2->id == BREAK){
+							if(key_w2->id == BREAK_KEYWORD){
 								aux_p += strlen(key_w->str);
 								CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
 
@@ -810,7 +827,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 
 	key_w = is_keyword(aux_p);
 
-	if(key_w->id == KEYWORD_TYPE::VAR){ // possible variable...
+	if(key_w->id == KEYWORD_TYPE::VAR_KEYWORD){ // possible variable...
 
 		aux_p += strlen(key_w->str);
 
@@ -864,7 +881,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 
 				(*ast_node_to_be_evaluated) = new tASTNode;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
-				(*ast_node_to_be_evaluated)->keyword_type = VAR;
+				(*ast_node_to_be_evaluated)->keyword_type = VAR_KEYWORD;
 
 
 				if(expression_node != NULL){
@@ -957,30 +974,30 @@ char *CAst::parseKeyWord(const char *s, int & m_start_line, CScriptFunction *sf,
 		default:
 			return NULL;
 
-		case KEYWORD_TYPE::VAR:
+		case KEYWORD_TYPE::VAR_KEYWORD:
 
 			if((aux_p = parseVar(s,m_line,sf, ast_node_to_be_evaluated)) != NULL){
 				return aux_p;
 			}
 
 			break;
-		case KEYWORD_TYPE::FUNCTION:
+		case KEYWORD_TYPE::FUNCTION_KEYWORD:
 			break;
-		case KEYWORD_TYPE::FOR:
+		case KEYWORD_TYPE::FOR_KEYWORD:
 			break;
-		case KEYWORD_TYPE::WHILE:
+		case KEYWORD_TYPE::WHILE_KEYWORD:
 			break;
-		case KEYWORD_TYPE::SWITCH:
+		case KEYWORD_TYPE::SWITCH_KEYWORD:
 
 			if((aux_p = parseSwitch(s,m_line,sf, ast_node_to_be_evaluated)) != NULL){
 				return aux_p;
 			}
 			break;
-		case KEYWORD_TYPE::IF:
+		case KEYWORD_TYPE::IF_KEYWORD:
 			break;
-		case KEYWORD_TYPE::ELSE:
+		case KEYWORD_TYPE::ELSE_KEYWORD:
 			break;
-		case KEYWORD_TYPE::CASE:
+		case KEYWORD_TYPE::CASE_KEYWORD:
 			break;
 
 		}
@@ -1042,7 +1059,7 @@ char * CAst::generateAST_Recursive(const char *s, int m_line, CScriptFunction *s
 		keyw = is_keyword(aux);
 
 		if(keyw != NULL){
-			if(keyw->id == BREAK){
+			if(keyw->id == BREAK_KEYWORD){
 				char *aux2 = aux + strlen(keyw->str);
 				aux2=CStringUtils::IGNORE_BLANKS(aux2, m_line);
 				if(*aux2==';'){

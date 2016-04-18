@@ -23,22 +23,22 @@ enum NODE_TYPE{
 	MAX_NODE_TYPE
 };
 
+
 enum KEYWORD_TYPE{
-	NONE=0,
-	VAR, // var xx = yy
-	BLOCK, // {...}
-	IF, // if(cc) BLOCK | if(cc) BLOCK else BLOCK
-	ELSE, // else BLOCK
-	FOR, // for(xx;yy;zz) BLOCK
-	WHILE, // while (yy) BLOCK
-	SWITCH, // switch (xxx){...}
-	CASE, // case xxx:
-	DEFAULT, // default:
-	BREAK, // break;
-	RETURN, // return xxx;
-	FUNCTION, // function (a,b,c,...), function xxxx(a,b,c,...)
-	CLASS, // class xxx{...}
-	THIS, // this.
+	NONE_KEYWORD=0,
+	IF_KEYWORD,
+	ELSE_KEYWORD,
+	FOR_KEYWORD,
+	WHILE_KEYWORD,
+	VAR_KEYWORD,
+	SWITCH_KEYWORD,
+	CASE_KEYWORD,
+	DEFAULT_KEYWORD,
+	BREAK_KEYWORD,
+	RETURN_KEYWORD,
+	FUNCTION_KEYWORD,
+	CLASS_KEYWORD,
+	THIS_KEYWORD,
 	MAX_KEYWORD
 };
 
@@ -79,7 +79,7 @@ public:
 
 	tASTNode(int preallocate_num_nodes=0){
 		node_type = UNKNOWN_NODE;
-		keyword_type = NONE;
+		keyword_type = KEYWORD_TYPE::NONE_KEYWORD;
 		definedValueline=-1;
 		token="";
 		value="";
