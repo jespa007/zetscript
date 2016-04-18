@@ -25,16 +25,21 @@ public:
 	CScope(CScriptFunction *_comtext,CScope * m_parent=NULL);
 
 	CScope * getMainScope();
+
 	CScriptFunction * getScriptFunction();
 
 	CScope * getParent();
+	CScope * getCurrentScope();
 	CScope * getRootScope();
+
+	CScope * pushScope();
+	CScope * popScope();
 
 	//---------------------------------
 
 
 
-	bool eval(const string & s);
+	//bool eval(const string & s);
 
 	// execute instructions at local scope ...
 	static bool execute(CScope *lc);
@@ -59,7 +64,7 @@ private:
 	vector<CScope *> m_scopeList;
 
 	// The a parent scope ...
-	CScope *m_parentScope,*m_mainScope;
+	CScope *m_parentScope,*m_mainScope, *m_currentScope;
 	CScriptFunction * m_scriptFunction;
 
 

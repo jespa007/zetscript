@@ -22,9 +22,11 @@ va_end(ap);}
 class CStringUtils{
 	enum{
 		MAX_STRING_BUFFERS=256,
-		MAX_LENGTH_BUFFER=512
+		MAX_LENGTH_BUFFER=512,
+		MAX_BUFFER_COPY_FROM_INTERVAL=4096
 	};
 	static char m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER];
+	static char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL];
 	static unsigned char m_index_buffer;
 
 	static bool IS_SINGLE_COMMENT(char *str);
@@ -86,5 +88,12 @@ public:
 	static string remove(string & str_old, char ch_to_remove);
 
 	static int count(const string & s,char c);
+
+	/**
+	 * Given two pointers within that points within a string, this function copies string between its interval.
+	 * @p1:start pointer
+	 * @p2:end pointer
+	 */
+	static char * copyStringFromInterval(const char *p1, const char *p2);
 
 };

@@ -2,6 +2,7 @@
 
 
 char CStringUtils::m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER]={{0}};
+char CStringUtils::aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
 unsigned char CStringUtils::m_index_buffer=0;
 
 using std::string;
@@ -35,12 +36,21 @@ char *CStringUtils::ADVANCE_TO_CHAR(char *str,char c, int & m_line) {
 	char *aux_p = str;
 	// make compatible windows format (\r)...
 	while(*aux_p!=0 && (*aux_p !=(c) )) {
+		if(*aux_p == '\"') { // go to end..
+			aux_p++;
+			while (*aux_p!=0 && *aux_p !='\"' && *aux_p != '\n') {aux_p++;}
+
+			if(*aux_p != '\"'){
+				print_error_cr("string is not closed at line %i",m_line);
+				return NULL;
+			}
+		}
 		if(*aux_p == '\n') {m_line++;}; // make compatible windows format...
 		aux_p++;
 	}
 
-
 	return aux_p;
+
 }
 
 char *CStringUtils::ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
@@ -154,6 +164,28 @@ const char * CStringUtils::formatString(const char *str, ...) {
 	return (const char *)CStringUtils::m_buffer[m_current];
 
 };
+
+
+
+char * CStringUtils::copyStringFromInterval(const char *p1, const char *p2){
+
+	if(p1 == NULL || p2 == NULL){
+		print_error_cr("NULL entry (%p %p)",p1,p2);
+		return NULL;
+	}
+
+	int var_length=p2-p1;
+
+	if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
+		print_error_cr("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length);
+		return NULL;
+	}
+
+	memset(aux_str_copy,0,sizeof(aux_str_copy));
+	strncpy(aux_str_copy,p1,var_length);
+
+	return aux_str_copy;
+}
 
 
 string CStringUtils::intToString(int number){

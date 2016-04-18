@@ -1,26 +1,15 @@
 #include "zg_script.h"
 
-CScriptFunction::CScriptFunction(CScriptFunction * _globalscope){
+CScriptFunction::CScriptFunction(CScope * _globalscope){
 
-	m_globalscope = _globalscope;
-	if(_globalscope == NULL){
-		m_globalscope = this;
-	}
+	m_scope = new CScope(this,_globalscope);
 
-	m_scope = new CScope(m_globalscope);
 }
 
-CScriptFunction * CScriptFunction::getGlobalScope(){
-	return m_globalscope;
+CScope *CScriptFunction::getScope(){
+	return m_scope;
 }
 
-bool CScriptFunction::eval(const string & _str){
-
-	bool ok = m_scope->eval(_str);
-
-
-	return ok;
-}
 
 vector<CVirtualMachine::tInfoStatementOp> * CScriptFunction::getCompiledCode(){
 	return &m_listStatements;

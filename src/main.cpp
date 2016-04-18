@@ -8,6 +8,7 @@ int main(int argc, char * argv[]){
 	printf("%s\n",(char *) typeid(string *).name());
 
 
+
 	int i=0;
 	CLog::setUseAnsiEscape(true);
 

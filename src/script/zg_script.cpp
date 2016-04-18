@@ -55,6 +55,7 @@ CZG_Script::CZG_Script(){
 	iniFactory<CStringFactory>("CString");
 
 	CScope::createSingletons();
+	CAst::createSingletons();
 
 	//main_context = new CContext();
 
@@ -69,7 +70,7 @@ void CZG_Script::init(){
 }
 
 bool CZG_Script::eval(const string & s){
-	return m_mainFunction->eval(s);
+	return CCompiler::getInstance()->compile(s, m_mainFunction);
 }
 
 bool CZG_Script::execute(){
@@ -89,5 +90,6 @@ CZG_Script::~CZG_Script(){
 
 	CCompiler::destroySingletons();
 	CCompiler::destroySingletons();
+	CAst::destroySingletons();
 
 }

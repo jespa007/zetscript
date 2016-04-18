@@ -1,5 +1,7 @@
 #pragma once
 
+class CScriptFunction;
+
 #include "system/zg_system.h"
 #include "utils/zg_utils.h"
 #include "object/zg_object.h"

@@ -1,5 +1,6 @@
 #pragma once
 class CContext;
+class CScope;
 class CScriptFunction;
 class CCompiler{
 
@@ -11,6 +12,7 @@ public:
 
 
 	bool compileExpression(const char *expression_str, int & m_line,CScriptFunction * sf, CScope *currentEvaluatingScope);
+	bool compile(const string & s, CScriptFunction * pr);
 
 	int generateAsmCode(PASTNode op, int & numreg, bool & error, CScope * _lc);
 

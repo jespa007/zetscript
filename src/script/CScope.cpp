@@ -26,6 +26,8 @@ CScope::CScope(CScriptFunction * _fs, CScope * _parent){
 	}else{
 		m_mainScope = _parent->getMainScope();
 	}
+
+	m_currentScope=this;
 }
 
 CScriptFunction * CScope::getScriptFunction(){
@@ -44,6 +46,30 @@ void CScope::addLocalScope(CScope *_ls){
 CScope * CScope::getParent(){
 	return m_parentScope;
 }
+
+CScope * CScope::getCurrentScope(){
+	return m_currentScope;
+}
+
+CScope * CScope::pushScope(){
+
+	CScope *new_scope = new CScope(m_currentScope->getScriptFunction(),m_currentScope);
+	m_currentScope->m_scopeList.push_back(new_scope);
+	m_currentScope = new_scope;
+	return m_currentScope;
+
+}
+
+CScope * CScope::popScope(){
+
+	if(m_currentScope->m_parentScope != NULL){
+		m_currentScope = m_currentScope->m_parentScope;
+		return m_currentScope;
+	}
+
+	return NULL;
+}
+
 
 //-----------------------------------------------------------------------------------------------------------
 //
@@ -109,7 +135,7 @@ CScope::tInfoRegisteredVar *CScope::getInfoRegisteredVariable(const string & var
 
 }
 //-----------------------------------------------------------------------------------------------------------
-
+/*
 bool CScope::isVarDeclarationStatment(const char *statment, bool & error, char ** eval_expression,int & m_line, CScope * _localScope){
 	// PRE: length(statment) < MAX_STATMENT_LENGTH
 	char *aux = (char *)statment;
@@ -190,7 +216,7 @@ bool CScope::isVarDeclarationStatment(const char *statment, bool & error, char *
 	}
 	return false;
 }
-
+*/
 
 //-----------------------------------------------------------------------------------------------------------
 typedef struct{
@@ -242,7 +268,7 @@ char *parseKeyword_IfElseForWhile(const char *str, tInfoKeyword **keyw, int & m_
 	//goto_statment = -1;
 
 	// check if condition...
-	*keyw = is_keyword(str);
+	*keyw = CAst::is_keyword(str);
 
 	if(*keyw == NULL){
 		return NULL;
@@ -409,7 +435,7 @@ char *processKeywordBody(const char *str, string & header, bool & error, CScope 
 	return NULL;
 }
 
-
+/*
 char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error, CScope * _scope, int level_scope){
 
 	char *current=(char *) str_to_eval;
@@ -999,7 +1025,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 	//
 	return current;
 
-}
+}*/
 
 int getLineBeginScope(const string  & s, int m_scope){
 	// PRE s: expression to be evaluated.
@@ -1029,13 +1055,13 @@ int getLineBeginScope(const string  & s, int m_scope){
 	return 0;
 
 }
-
+/*
 bool CScope::eval (const string & s){
 	int m_line = 1;
 	bool error;
 	return evalRecursive((const char *)s.c_str(), m_line,error,this) != NULL;
 }
-
+*/
 
 
 

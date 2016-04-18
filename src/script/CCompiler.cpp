@@ -690,7 +690,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 		return -1;
 	}
 
-	if(op->left==NULL && op->right==NULL){ // trivial case value itself...
+	if(op->children[LEFT_NODE]==NULL && op->children[RIGHT_NODE]==NULL){ // trivial case value itself...
 
 		//printf("CONST \tE[%i],%s\n",numreg,op->value.c_str());
 		if(!insertLoadValueInstruction(op->value, op->type_ptr, _lc, op->definedValueline)){
@@ -704,11 +704,11 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 
 		int right=0, left=0;
 
-		left=generateAsmCode(op->left,numreg,error,_lc);
+		left=generateAsmCode(op->children[LEFT_NODE],numreg,error,_lc);
 
 		if(error) return -1;
 
-		right=generateAsmCode(op->right,numreg,error,_lc);
+		right=generateAsmCode(op->children[RIGHT_NODE],numreg,error,_lc);
 
 		if(error) return -1;
 
@@ -720,7 +720,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 			if(op->token == "="){
 				// the variable can only assigned if the type is the same or if the type is undefined.
 				// check if left operand is registered variable...
-				CScope::tInfoRegisteredVar * info_var = _lc->getInfoRegisteredVariable(op->left->value,false);
+				CScope::tInfoRegisteredVar * info_var = _lc->getInfoRegisteredVariable(op->children[LEFT_NODE]->value,false);
 				if(info_var == NULL){
 					print_error_cr("undeclared variable \"%s\"");
 					error|=true;
@@ -745,8 +745,8 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 
 							var_obj = CFactoryContainer::getInstance()->newObjectByClassPtr(ptr_class_type);
 							if(var_obj!=NULL){
-								_lc->defineVariable(op->left->value,var_obj);
-								print_com_cr("%s defined as %s",op->left->value.c_str(),ptr_class_type.c_str());
+								_lc->defineVariable(op->children[LEFT_NODE]->value,var_obj);
+								print_com_cr("%s defined as %s",op->children[LEFT_NODE]->value.c_str(),ptr_class_type.c_str());
 							}else{
 								print_error_cr("ERRRRRRRRRROR %s is not registered",ptr_class_type.c_str());
 								error|=true;
@@ -768,7 +768,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 
 
 					}else{
-						print_error_cr("\"%s\" was instanced as \"%s\" and cannot be change type as \"%s\"",op->left->value.c_str(),var_obj->getPointerClassStr().c_str(),op->type_ptr.c_str());
+						print_error_cr("\"%s\" was instanced as \"%s\" and cannot be change type as \"%s\"",op->children[LEFT_NODE]->value.c_str(),var_obj->getPointerClassStr().c_str(),op->type_ptr.c_str());
 						error|=true;
 						return -1;
 					}
@@ -814,7 +814,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 
 bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScriptFunction *sf, CScope *currentEvaluatingScope){
 
-	int numreg=0;
+	/*int numreg=0;
 
 	PASTNode ast_node;
 	char *aux=(char *)expression_str;
@@ -829,7 +829,7 @@ bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScr
 	i_stat.m_line = m_line;
 	i_stat.expression_str = expression_str;
 
-	ast_node=generateAST(expression_str,m_line);
+	ast_node=generateBinaryAST(expression_str,m_line);
 
 	if(ast_node==NULL){ // some error happend!
 		return false;
@@ -856,10 +856,21 @@ bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScr
 	{
 		print_error_cr("Error generating code\n");
 		return false;
-	}
+	}*/
 
 
 	return true;
+}
+
+bool CCompiler::compile(const string & s, CScriptFunction * pr){
+
+	// generate whole AST
+	PASTNode root = CAst::generateAST(s.c_str(),pr);
+
+	// then you have all information -> compile into asm!
+
+
+	return false;
 }
 
 
