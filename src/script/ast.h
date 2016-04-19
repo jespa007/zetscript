@@ -20,6 +20,13 @@ enum NODE_TYPE{
 	BLOCK_NODE,
 	ARGUMENTS_NODE,
 	SYMBOL_NODE,
+	IF_NODE,
+	CASE_NODE,
+	ELSE_NODE,
+	FOR_NODE,
+	CONDITIONAL_NODE,
+	FOR_PRE_NODE,
+	FOR_POST_NODE,
 	MAX_NODE_TYPE
 };
 
@@ -123,6 +130,7 @@ private:
 	static char * parseExpression(const char *s, int m_line, bool & error, PASTNode * node  );
 	static PASTNode parseExpression_Recursive(const char *s, int m_line, bool & error, GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL );
 
+	static char * parseIf(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated);

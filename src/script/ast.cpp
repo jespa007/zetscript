@@ -227,6 +227,7 @@ tInfoKeyword * CAst::is_keyword(const char *c){
 		if((strncmp(str,str_op[i].str,size)==0) && (
 				*aux == 0  || // carry end
 				*aux == ' '  || // space
+				*aux == ';'  || // semicolon
 				*aux == '\t'  || // tab
 				is_token(aux)!=NULL ||
 				*aux == '\n' || // carry return
@@ -630,11 +631,18 @@ char * CAst::parseExpression(const char *s, int m_line, bool & error, PASTNode *
 // PARSE KEYWORDS
 
 
-char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseIf(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
 	char *aux_p = (char *)s;
-	CScope *_localScope =  sf->getScope()->getCurrentScope(); // gets current evaluating scope...
+	char *end_expr,*start_symbol;
 	tInfoKeyword *key_w;
 	int m_startLine = m_line;
+	PASTNode conditional=NULL, if_node=NULL, else_node=NULL;
+	string conditional_str;
+	bool error = false;
+
+
+
+
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
 
@@ -642,10 +650,237 @@ char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 	// check for keyword ...
 	key_w = is_keyword(aux_p);
 
-	if(key_w->id != KEYWORD_TYPE::FOR_KEYWORD){
+	if(key_w->id == KEYWORD_TYPE::IF_KEYWORD){
+
+		*ast_node_to_be_evaluated = new tASTNode;
+		(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
+		(*ast_node_to_be_evaluated)->keyword_type = IF_KEYWORD;
+
 		aux_p += strlen(key_w->str);
+
+		// evaluate conditional line ...
+
+		aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+		if(*aux_p == '('){
+			if((end_expr = CStringUtils::ADVANCE_TO_CHAR(aux_p+1,')',m_startLine)) != NULL){
+
+				if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
+					return NULL;
+				}
+
+				conditional_str=start_symbol;
+
+				parseExpression((const char *)conditional_str.c_str(),m_startLine,error,&conditional);
+
+				if(error){
+					return NULL;
+				}
+
+				conditional->node_type = CONDITIONAL_NODE;
+				(*ast_node_to_be_evaluated)->children.push_back(conditional);
+
+				aux_p=end_expr+1;
+
+				aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+
+				if(*aux_p == '{'){ // eval block...
+					if((aux_p=parseBlock(aux_p,m_startLine,sf,error,&if_node))!= NULL){
+						if(!error){
+
+							if_node->node_type = IF_NODE;
+							(*ast_node_to_be_evaluated)->children.push_back(if_node);
+
+							aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_startLine);
+
+							bool else_key = false;
+							if((key_w = is_keyword(aux_p)) != NULL){
+								else_key = (key_w->id == KEYWORD_TYPE::ELSE_KEYWORD);
+							}
+
+							if(else_key){
+								aux_p += strlen(key_w->str);
+
+								// evaluate conditional line ...
+
+								aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+
+								if(*aux_p == '{'){ // eval block...
+										if((aux_p=parseBlock(aux_p,m_startLine,sf,error,&else_node))!= NULL){
+												if(!error){
+
+													else_node->node_type = ELSE_NODE;
+													(*ast_node_to_be_evaluated)->children.push_back(else_node);
+													m_startLine = m_line;
+													return aux_p;
+												}
+												else{
+
+												}
+										}
+								}
+								else{
+									print_error_cr("Expected else-block open block ('{') %i",m_startLine);
+								}
+							}else{
+								m_startLine = m_line;
+								return aux_p;
+							}
+
+						}
+					}
+				}
+				else{
+					print_error_cr("Expected if-block open block ('{') %i",m_startLine);
+				}
+
+
+			}else{
+				print_error_cr("Expected ')' switch %i",m_startLine);
+				return NULL;
+			}
+
+		}else{
+			print_error_cr("Expected '(' switch %i",m_startLine);
+			return NULL;
+		}
+
+
 	}
 
+
+	return NULL;
+}
+
+char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+	char *aux_p = (char *)s;
+	char *aux_p2;
+	CScope *_localScope =  sf->getScope()->getCurrentScope(); // gets current evaluating scope...
+	tInfoKeyword *key_w;
+	char *start_expr,*end_expr,*start_symbol;
+	int m_startLine = m_line;
+	int aux_line;
+	bool error=false;
+	PASTNode conditional=NULL, pre_for=NULL, post_for=NULL, block_for = NULL;
+	string eval_for;
+
+	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+
+	// check for keyword ...
+	key_w = is_keyword(aux_p);
+
+	if(key_w->id == KEYWORD_TYPE::FOR_KEYWORD){
+
+		*ast_node_to_be_evaluated = new tASTNode;
+		(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
+		(*ast_node_to_be_evaluated)->keyword_type = IF_KEYWORD;
+
+		aux_p += strlen(key_w->str);
+
+		aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+		if(*aux_p == '('){
+			if((end_expr = CStringUtils::ADVANCE_TO_CHAR(aux_p+1,';',m_startLine)) != NULL){
+
+				if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
+					return NULL;
+				}
+
+				eval_for = start_symbol;
+
+				aux_p2=CStringUtils::IGNORE_BLANKS(eval_for.c_str(),m_startLine);
+
+				if(*aux_p2 != 0){
+					parseExpression((const char *)aux_p2,m_startLine,error,&pre_for);
+
+					if(error){
+						return NULL;
+					}
+
+					(*ast_node_to_be_evaluated)->children.push_back(pre_for);
+				}
+
+				aux_p2=end_expr+1;
+
+				if((end_expr = CStringUtils::ADVANCE_TO_CHAR(aux_p2,';',m_startLine)) != NULL){
+
+					if((start_symbol = CStringUtils::copyStringFromInterval(aux_p2, end_expr))==NULL){
+						return NULL;
+					}
+
+					eval_for = start_symbol;
+
+					aux_p2=CStringUtils::IGNORE_BLANKS(eval_for.c_str(),m_startLine);
+
+					if(*aux_p2 != 0){
+						parseExpression((const char *)aux_p2,m_startLine,error,&conditional);
+
+						if(error){
+							return NULL;
+						}
+
+						(*ast_node_to_be_evaluated)->children.push_back(conditional);
+					}
+
+					aux_p2=end_expr+1;
+
+					if((end_expr = CStringUtils::ADVANCE_TO_CHAR(aux_p2,')',m_startLine)) != NULL){
+
+						if((start_symbol = CStringUtils::copyStringFromInterval(aux_p2, end_expr))==NULL){
+							return NULL;
+						}
+
+						eval_for = start_symbol;
+
+						aux_p2=CStringUtils::IGNORE_BLANKS(eval_for.c_str(),m_startLine);
+
+						if(*aux_p != 0){
+							parseExpression((const char *)aux_p2,m_startLine,error,&post_for);
+
+							if(error){
+								return NULL;
+							}
+
+							(*ast_node_to_be_evaluated)->children.push_back(post_for);
+						}
+
+						aux_p=end_expr+1;
+
+						if((aux_p=parseBlock(aux_p,m_startLine,sf,error,&block_for))!= NULL){
+								if(!error){
+
+									block_for->node_type = FOR_NODE;
+									(*ast_node_to_be_evaluated)->children.push_back(block_for);
+									m_startLine = m_line;
+									return aux_p;
+								}
+								else{
+
+								}
+						}
+
+					}else{
+						print_error_cr("Expected ')' after for-post %i ",m_startLine);
+						return NULL;
+					}
+
+				}else{
+					print_error_cr("Expected ';' for-conditional %i ",m_startLine);
+					return NULL;
+				}
+
+				aux_p = end_expr+1;
+
+				if((end_expr = CStringUtils::ADVANCE_TO_CHAR(aux_p+1,';',m_startLine)) != NULL){
+				}
+
+			}else{
+				print_error_cr("Expected ';' for-pre %i",m_startLine);
+				return NULL;
+			}
+		}else{
+			print_error_cr("Expected '(' for %i",m_startLine);
+			return NULL;
+		}
+	}
 
 	return NULL;
 
@@ -662,31 +897,52 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 	tInfoKeyword *key_w2;
 	int m_startLine = m_line;
 	bool error=false;
+	int n_cases;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+
 
 
 	// check for keyword ...
 	key_w = is_keyword(aux_p);
 
-	if(key_w->id != KEYWORD_TYPE::SWITCH_KEYWORD){
+	if(key_w->id == KEYWORD_TYPE::SWITCH_KEYWORD){
+
+		*ast_node_to_be_evaluated = new tASTNode;
+		(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
+		(*ast_node_to_be_evaluated)->keyword_type = SWITCH_KEYWORD;
+
 		aux_p += strlen(key_w->str);
 
 		aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
 
 		if(*aux_p == '('){
-			if((end_expr = CStringUtils::ADVANCE_TO_CHAR(aux_p,')',m_startLine)) != NULL){
-				value_to_eval = CStringUtils::copyStringFromInterval(aux_p+1, end_expr-1);
+			//if((end_expr = CStringUtils::ADVANCE_TO_CHAR(aux_p,')',m_startLine)) != NULL){
+
+				aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_startLine);
+
+				end_expr = GET_END_WORD(aux_p);
+
+				value_to_eval = CStringUtils::copyStringFromInterval(aux_p, end_expr);
 
 				//--- create node
-				*ast_node_to_be_evaluated = new tASTNode;
 
-				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
-				(*ast_node_to_be_evaluated)->keyword_type = SWITCH_KEYWORD;
+
 				(*ast_node_to_be_evaluated)->value = value_to_eval;
 
-				aux_p = end_expr+1;
-				aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+				//---
+
+				aux_p=CStringUtils::IGNORE_BLANKS(end_expr,m_startLine);
+
+				if(*aux_p != ')'){
+					print_error_cr("Expected ')' switch %i",m_startLine);
+					error = true;
+					return NULL;
+				}
+
+				aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_startLine);
+
+
 
 				if(*aux_p == '{'){
 
@@ -696,45 +952,58 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 
 					while(*aux_p!='}' && *aux_p!=0){
 
-						key_w = is_keyword(aux_p);
-						if(key_w){
-							switch(key_w->id){
-							case CASE_KEYWORD:
-								aux_p += strlen(key_w->str);
+							n_cases = 0;
+							while((key_w = is_keyword(aux_p)) != NULL){ // acumulative cases /defaults...
 
-								// get the symbol...
+								switch(key_w->id){
+								case CASE_KEYWORD:
+									aux_p += strlen(key_w->str);
+
+									// get the symbol...
+									aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+									start_symbol=aux_p;
+									end_symbol = GET_END_WORD(start_symbol);
+									aux_p=end_symbol;
+
+									aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+
+									if(*aux_p == ':'){
+										value_to_eval = CStringUtils::copyStringFromInterval(start_symbol, end_symbol);
+										aux_p++;
+										n_cases++;
+									}
+									else{
+										print_error_cr("Expected  : case at %i",m_startLine);
+										return NULL;
+									}
+
+
+									break;
+								case DEFAULT_KEYWORD:
+									aux_p += strlen(key_w->str);
+									aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+									if(*aux_p == ':'){
+										n_cases++;
+										aux_p++;
+									}
+									else{
+										print_error_cr("Expected  : default at %i",m_startLine);
+										return NULL;
+									}
+
+									break;
+								default:
+									print_error_cr("Expected case or default in switch %i",m_startLine);
+									return NULL;
+									break;
+								}
+
 								aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
-								start_symbol=aux_p;
-								end_symbol = GET_END_WORD(start_symbol);
-								aux_p=end_symbol;
+							}
 
-								aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
-
-								if(*aux_p == ':'){
-									value_to_eval = CStringUtils::copyStringFromInterval(aux_p+1, end_expr-1);
-									aux_p++;
-								}
-								else{
-									print_error_cr("Expected  : case at %i",m_startLine);
-								}
-
-
-								break;
-							case DEFAULT_KEYWORD:
-								aux_p += strlen(key_w->str);
-								aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
-								if(*aux_p == ':'){
-									aux_p++;
-								}
-								else{
-									print_error_cr("Expected  : default at %i",m_startLine);
-								}
-
-								break;
-							default:
+							if(n_cases == 0){
 								print_error_cr("Expected case or default in switch %i",m_startLine);
 								return NULL;
-								break;
 							}
 
 							_localScope->pushScope();
@@ -746,12 +1015,11 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 
 							key_w2 = is_keyword(aux_p);
 							if(key_w2->id == BREAK_KEYWORD){
-								aux_p += strlen(key_w->str);
+								aux_p += strlen(key_w2->str);
 								CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
 
 								if(*aux_p == ';'){ // the new scope ...
-									case_default_node->node_type = KEYWORD_NODE;
-									case_default_node->keyword_type=key_w->id;
+									case_default_node->node_type = CASE_NODE;
 									case_default_node->value=value_to_eval;
 								}
 								else{
@@ -768,14 +1036,13 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 
 							_localScope->popScope();
 
-						}
-						else{
-							print_error_cr("Expected case or default in switch %i",m_startLine);
-							return NULL;
+							aux_p =CStringUtils::IGNORE_BLANKS(aux_p+1,m_startLine);
+
 						}
 
-						aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
-					}
+
+
+
 
 					if(*aux_p == '}'){
 
@@ -791,10 +1058,6 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 					print_error_cr("Expected '{' switch %i",m_startLine);
 				}
 
-			}
-			else{
-				print_error_cr("Expected ')' switch %i",m_startLine);
-			}
 		}
 		else{
 			print_error_cr("Expected '(' switch %i",m_startLine);
@@ -911,7 +1174,7 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool &
 	char *aux_p = (char *)s;
 
 	CScope *_localScope =  sf->getScope(); // gets current evaluating scope...
-	CScope *_ant, *_post;
+	//CScope *_ant, *_post;
 	int m_startLine = m_line;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
@@ -922,9 +1185,11 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool &
 		aux_p++;
 
 		// up scope ...
-		_ant = _localScope->getCurrentScope();
-		_localScope = _localScope->pushScope();
-		_post = _localScope->getCurrentScope();
+		//_ant = _localScope->getCurrentScope();
+		_localScope->pushScope();
+		//_post = _localScope->getCurrentScope();
+
+		//print_info_cr("%p %p",_ant,_post);
 
 		if((aux_p = generateAST_Recursive(aux_p, m_startLine,sf,error,ast_node_to_be_evaluated)) != NULL){
 			if(error){
@@ -936,8 +1201,11 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool &
 				print_error_cr("Expected } ");
 				return NULL;
 			}
-
+			//_ant = _localScope->getCurrentScope();
 			_localScope->popScope();
+			//_post = _localScope->getCurrentScope();
+
+			//print_info_cr("%p %p",_ant,_post);
 
 			(*ast_node_to_be_evaluated)->node_type = BLOCK_NODE;
 
@@ -984,6 +1252,9 @@ char *CAst::parseKeyWord(const char *s, int & m_start_line, CScriptFunction *sf,
 		case KEYWORD_TYPE::FUNCTION_KEYWORD:
 			break;
 		case KEYWORD_TYPE::FOR_KEYWORD:
+			if((aux_p = parseFor(s,m_line,sf, ast_node_to_be_evaluated)) != NULL){
+				return aux_p;
+			}
 			break;
 		case KEYWORD_TYPE::WHILE_KEYWORD:
 			break;
@@ -994,12 +1265,10 @@ char *CAst::parseKeyWord(const char *s, int & m_start_line, CScriptFunction *sf,
 			}
 			break;
 		case KEYWORD_TYPE::IF_KEYWORD:
+			if((aux_p = parseIf(s,m_line,sf, ast_node_to_be_evaluated)) != NULL){
+				return aux_p;
+			}
 			break;
-		case KEYWORD_TYPE::ELSE_KEYWORD:
-			break;
-		case KEYWORD_TYPE::CASE_KEYWORD:
-			break;
-
 		}
 
 		// something wrong was happen..

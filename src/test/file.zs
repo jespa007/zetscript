@@ -17,6 +17,8 @@ var j;
 j=1;
 
 i=2;
+
+
 }
 
 {
@@ -25,15 +27,8 @@ var kk=3;
 
 }
 
-
-
-
-
-
-
 var j = 0;
 var i=3;
-
 
 
 switch( i ){
@@ -54,12 +49,15 @@ case 4:
 	break;
 }
 
+
+
+
 /*
 
 // var if else for;
 
 */
-/*
+
 
 if(j==2){
 	var k=	
@@ -73,19 +71,19 @@ if(j==2){
 
 
 var ok=true;
-
+/*
 while( ((((((i < 10)  && !ok)))))){
 	i++;
 	ok;ok;ok;ok;ok;ok;
 	
 }
 
-
+*/
 
 
 i;
 ok;
-*/
+
 /*
 while(false){
 }
@@ -116,8 +114,8 @@ if(kk=1){
 	
 	}
 */
-/*
-var j=0;
+
+//var j=0;
 
 for(var 
 kk1 
@@ -170,4 +168,4 @@ kk1
 }
 
 var gg = 9;
-*/
+
