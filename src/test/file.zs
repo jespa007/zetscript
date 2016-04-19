@@ -84,11 +84,11 @@ while( ((((((i < 10)  && !ok)))))){
 i;
 ok;
 
-/*
+
 while(false){
 }
 
-*/
+
 /*
 var 
 
@@ -169,3 +169,7 @@ kk1
 
 var gg = 9;
 
+
+function hola1(i,j,k){
+	var g=0;
+}

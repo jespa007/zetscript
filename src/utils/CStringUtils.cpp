@@ -181,6 +181,11 @@ char * CStringUtils::copyStringFromInterval(const char *p1, const char *p2){
 		return NULL;
 	}
 
+	if(p1 == p2){
+		print_error_cr("Nothing to copy");
+		return NULL;
+	}
+
 	memset(aux_str_copy,0,sizeof(aux_str_copy));
 	strncpy(aux_str_copy,p1,var_length);
 

@@ -17,16 +17,17 @@ enum NODE_TYPE{
 	MAIN_NODE=1,
 	EXPRESSION_NODE,
 	KEYWORD_NODE,
-	BLOCK_NODE,
-	ARGUMENTS_NODE,
+	ARGS_NODE,
 	SYMBOL_NODE,
 	IF_NODE,
-	CASE_NODE,
+	BODY_NODE,
 	ELSE_NODE,
 	FOR_NODE,
+	FUNCTION_NODE,
+	WHILE_NODE,
 	CONDITIONAL_NODE,
-	FOR_PRE_NODE,
-	FOR_POST_NODE,
+	PRE_FOR_NODE,
+	POST_FOR_NODE,
 	MAX_NODE_TYPE
 };
 
@@ -52,9 +53,13 @@ enum KEYWORD_TYPE{
 enum PUNCTUATOR_TYPE{
 };
 
+class tASTNode;
+typedef tASTNode *PASTNode;
+
 typedef struct{
 	KEYWORD_TYPE id;
 	const char *str;
+	char * (* parse_fun )(const char *,int & ,  CScriptFunction *, PASTNode *);
 }tInfoKeyword;
 
 
@@ -68,8 +73,7 @@ char * GET_END_WORD(const char *s);
 
 
 
-class tASTNode;
-typedef tASTNode *PASTNode;
+
 
 class tASTNode{
 public:
@@ -109,10 +113,7 @@ public:
 	static void createSingletons();
 	static void destroySingletons();
 
-
-
 	static tInfoKeyword * is_keyword(const char *c);
-
 
 	/**
 	 * Given starting char, try find an expression ended with ; and return new char pointer.
@@ -130,12 +131,20 @@ private:
 	static char * parseExpression(const char *s, int m_line, bool & error, PASTNode * node  );
 	static PASTNode parseExpression_Recursive(const char *s, int m_line, bool & error, GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL );
 
+	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated);
+
+	// keyword...
+
+	static char * parseKeyWord(const char *s, int & m_start_line, CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated);
+
 	static char * parseIf(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
+	static char * parseWhile(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
-	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated);
 	static char * parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
-	static char * parseKeyWord(const char *s, int & m_start_line, CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated);
+	static char * parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
+
+
 	static char * generateAST_Recursive(const char *s, int m_line, CScriptFunction *sf, bool & error, PASTNode *node_to_be_evaluated);
 
 };
