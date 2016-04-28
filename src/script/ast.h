@@ -128,8 +128,8 @@ private:
 
 	static PASTNode preOperator(string token,PASTNode affected_op);
 	static PASTNode postOperator(string token,PASTNode affected_op);
-	static char * parseExpression(const char *s, int m_line, bool & error, PASTNode * node  );
-	static PASTNode parseExpression_Recursive(const char *s, int m_line, bool & error, GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL );
+	static char * parseExpression(const char *s, int m_line, bool & error, CScriptFunction *sf, PASTNode * node  );
+	static char * parseExpression_Recursive(const char *s, int m_line, bool & error, CScriptFunction *sf, PASTNode *node,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL );
 
 	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated);
 
@@ -142,8 +142,11 @@ private:
 	static char * parseWhile(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
+	static char * parseReturn(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 
+
+	static char * parseArgs(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, char c1, char c2);
 
 	static char * generateAST_Recursive(const char *s, int m_line, CScriptFunction *sf, bool & error, PASTNode *node_to_be_evaluated);
 

@@ -24,9 +24,6 @@ CScriptFunction::~CScriptFunction(){
 		}
 	}
 
-	//destroy registered functions ..
-	for(unsigned i = 0; i < m_function.size(); i++){
-		delete m_function[i];
-	}
+
 	delete m_scope;
 }

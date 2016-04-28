@@ -18,9 +18,9 @@ public:
 
 	//---------------------------------
 	// Register functions
-	tInfoRegisteredVar *getInfoRegisteredVariable(const string & v, bool print_msg=true);
-	bool registerVariable(const string & var_name, int m_line);
-	bool defineVariable(const string & var_name, CObject *obj);
+	tInfoRegisteredVar *getInfoRegisteredSymbol(const string & v, bool print_msg=true);
+	bool registerSymbol(const string & var_name, int m_line);
+	bool defineSymbol(const string & var_name, CObject *obj);
 
 	CScope(CScriptFunction *_comtext,CScope * m_parent=NULL);
 
@@ -53,14 +53,15 @@ private:
 
 	//char * parseKeyword_Switch(const char * str,int & m_line,tInfoCase & info_case,bool & error);
 
-	map<string,tInfoRegisteredVar *> m_registeredVariable;
+	map<string,tInfoRegisteredVar *> m_registeredSymbol;
 
-	//static CUndefined *m_defaultVar;
+	//static CUndefined *m_defaultSymbol;
 
 	// each scope has its registered vars.... if the compiler tries to find a var and this is not found goes through parent scopes until
 	// it finds it.
 
-	static CUndefined *m_defaultVar;
+	static CUndefined *m_undefinedSymbol;
+	static CVoid *m_voidSymbol;
 	vector<CScope *> m_scopeList;
 
 	// The a parent scope ...
@@ -68,7 +69,7 @@ private:
 	CScriptFunction * m_scriptFunction;
 
 
-	tInfoRegisteredVar * existRegisteredVariable(const string & var_name);
+	tInfoRegisteredVar * existRegisteredSymbol(const string & var_name);
 
 	//typedef struct _tLocalScope;
 

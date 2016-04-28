@@ -1,175 +1,30 @@
 
-var ii="hola que hace";
-var jj=2+3;
 
+var vv= 1+function(){
+return 1;
+}();
 
+var kk=1+[1,2][0];
 
-{
-
-
-
-var i = 0x1 << 1;  //( 0 == 1);
-
-i=4+1;
-
-{
-var j;
-j=1;
-
-i=2;
-
-
-}
-
-{
-var kk=3;
-}
-
-}
-
-var j = 0;
-var i=3;
-
-
-switch( i ){
-
-default:
-j=-1;
-	break;
-case 1:
-	j=4;
-	break;
-case 2:
-	j=1;
-	break;
-case 3:
+var fun = function (l,j,k){
+	var b=0;
 	
-case 4:
-	j=5;
-	break;
-}
-
-
-
-
-/*
-
-// var if else for;
-
-*/
-
-
-if(j==2){
-	var k=	
-	i	
-	+	j	;
-} else {
-	
-	i=4;
-	
+	function hola2(k,l){
+		var ff=0;
 	}
-
-
-var ok=true;
-/*
-while( ((((((i < 10)  && !ok)))))){
-	i++;
-	ok;ok;ok;ok;ok;ok;
 	
-}
-
-*/
-
-
-i;
-ok;
-
-
-while(false){
-}
-
-
-/*
-var 
-
-
-
-kk
-
-
-=
-
-
-
-0;
-
-kk++;
-*/
-/*kk;
-++;
-
-
-if(kk=1){
+	hola2(1+1,2+2,3+3); // invalid: hola2 only takes 2 parameters
 	
-	
-	}
-*/
+	return b;
+};
 
-//var j=0;
+var i=3+fun(1+2+3*7)+2; // val but j & k are not defined.
 
-for(var 
-kk1 
+var array=[0,1,1];
 
-
-= 
+array[0]++;
 
 
-
-1 ; 
-
+print("Hola:"+array[0]);
 
 
- kk1
-
-
-
-
-
-<
-
-
-
- 
- 1000000
- 
- ; kk1++ ){
-	j
-	
-	=
-	
-	kk1
-	
-	+
-	
-	1
-	
-	;
-	
-		
-	j=kk1
-	+
-	1;
-	j=kk1+1;
-	j=kk1+1;
-	
-	if(j>2){
-		l=9;
-	}
-}
-
-var gg = 9;
-
-
-function hola1(i,j,k){
-	var g=0;
-}

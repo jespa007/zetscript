@@ -52,24 +52,24 @@ CCompiler::CCompiler(){
 // VARIABLE
 //
 /*
-CCompiler::tInfoRegisteredVar * CCompiler::existRegisteredVariableRecursive(const string & var_name){
-	if(m_registeredVariable.count(var_name)==0){ // not exit but we will deepth through parents ...
+CCompiler::tInfoRegisteredVar * CCompiler::existRegisteredSymbolRecursive(const string & var_name){
+	if(m_registeredSymbol.count(var_name)==0){ // not exit but we will deepth through parents ...
 		CScope * parent = lc->getParent();
 		if(parent != NULL){
-			return existRegisteredVariableRecursive(var_name, parent);
+			return existRegisteredSymbolRecursive(var_name, parent);
 		}
 		return NULL;
 	}else{
-		return m_registeredVariable[var_name];
-		//print_error_cr("variable %s already registered at line %i",var_name.c_str(),lc->m_registeredVariable[var_name]->m_line);
+		return m_registeredSymbol[var_name];
+		//print_error_cr("variable %s already registered at line %i",var_name.c_str(),lc->m_registeredSymbol[var_name]->m_line);
 	}
 
 	return NULL;
 }
 
-CCompiler::tInfoRegisteredVar * CCompiler::existRegisteredVariable(const string & var_name){
-	if(m_registeredVariable.count(var_name)==1){
-		return m_registeredVariable[var_name];
+CCompiler::tInfoRegisteredVar * CCompiler::existRegisteredSymbol(const string & var_name){
+	if(m_registeredSymbol.count(var_name)==1){
+		return m_registeredSymbol[var_name];
 	}
 
 	return NULL;
@@ -79,7 +79,7 @@ CCompiler::tInfoRegisteredVar * CCompiler::existRegisteredVariable(const string 
 
 CObject *CCompiler::getRegisteredVariable(const string & var_name, bool print_msg){
 	tInfoRegisteredVar * irv;
-	if((irv = existRegisteredVariable(var_name))!=NULL){ // check whether is local var registered scope ...
+	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
 
 		return irv->m_obj;
 	}else{
@@ -93,13 +93,13 @@ CObject *CCompiler::getRegisteredVariable(const string & var_name, bool print_ms
 }
 
 
-bool CCompiler::registerVariable(const string & var_name, int m_line){
+bool CCompiler::registerSymbol(const string & var_name, int m_line){
 	tInfoRegisteredVar * irv;
-	if((irv = existRegisteredVariable(var_name))==NULL){ // check whether is local var registered scope ...
+	if((irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
 		irv = new tInfoRegisteredVar;
 		irv->m_line = m_line;
 		irv->m_obj = m_defaultVar;
-		m_registeredVariable[var_name]=irv;
+		m_registeredSymbol[var_name]=irv;
 		return true;
 	}else{
 		print_error_cr("error var \"%s\" already registered at line %i!", var_name.c_str(), irv->m_line);
@@ -108,10 +108,10 @@ bool CCompiler::registerVariable(const string & var_name, int m_line){
 	return false;
 }
 
-bool CCompiler::defineVariable(const string & var_name, CObject *obj){
+bool CCompiler::defineSymbol(const string & var_name, CObject *obj){
 
 	tInfoRegisteredVar * irv;
-	if((irv = existRegisteredVariable(var_name))!=NULL){ // check whether is local var registered scope ...
+	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
 		irv->m_obj=obj;
 		irv->m_obj->setName(var_name);
 		return true;
@@ -229,7 +229,7 @@ bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, 
 		type=CVirtualMachine::BOOL;
 		print_com_cr("%s detected as boolean\n",v.c_str());
 	}else{
-		CScope::tInfoRegisteredVar * info_var=_lc->getInfoRegisteredVariable(v,false);
+		CScope::tInfoRegisteredVar * info_var=_lc->getInfoRegisteredSymbol(v,false);
 		type=CVirtualMachine::OBJ;
 
 		if(info_var==NULL){
@@ -720,7 +720,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 			if(op->token == "="){
 				// the variable can only assigned if the type is the same or if the type is undefined.
 				// check if left operand is registered variable...
-				CScope::tInfoRegisteredVar * info_var = _lc->getInfoRegisteredVariable(op->children[LEFT_NODE]->value,false);
+				CScope::tInfoRegisteredVar * info_var = _lc->getInfoRegisteredSymbol(op->children[LEFT_NODE]->value,false);
 				if(info_var == NULL){
 					print_error_cr("undeclared variable \"%s\"");
 					error|=true;
@@ -745,7 +745,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 
 							var_obj = CFactoryContainer::getInstance()->newObjectByClassPtr(ptr_class_type);
 							if(var_obj!=NULL){
-								_lc->defineVariable(op->children[LEFT_NODE]->value,var_obj);
+								_lc->defineSymbol(op->children[LEFT_NODE]->value,var_obj);
 								print_com_cr("%s defined as %s",op->children[LEFT_NODE]->value.c_str(),ptr_class_type.c_str());
 							}else{
 								print_error_cr("ERRRRRRRRRROR %s is not registered",ptr_class_type.c_str());

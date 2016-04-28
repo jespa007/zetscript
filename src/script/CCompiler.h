@@ -75,10 +75,10 @@ private:
 
 
 /*
-	//tInfoRegisteredVar * existRegisteredVariableRecursive(const string & var_name);
-	tInfoRegisteredVar * existRegisteredVariable(const string & var_name);
+	//tInfoRegisteredVar * existRegisteredSymbolRecursive(const string & var_name);
+	tInfoRegisteredVar * existRegisteredSymbol(const string & var_name);
 	CObject *getRegisteredVariable(const string & v, bool print_msg=true);
-	bool defineVariable(const string & var_name, CObject *obj);*/
+	bool defineSymbol(const string & var_name, CObject *obj);*/
 	//---------------------------------------------------------------
 
 

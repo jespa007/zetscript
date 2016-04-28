@@ -6,3 +6,4 @@
 #include "CInteger.cpp"
 #include "CString.cpp"
 #include "CUndefined.cpp"
+#include "CVoid.cpp"

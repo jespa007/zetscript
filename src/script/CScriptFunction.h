@@ -6,6 +6,8 @@ public:
 	CScriptFunction(CScope *_globalscope=NULL);
 	vector<CVirtualMachine::tInfoStatementOp> * getCompiledCode();
 
+
+
 	CScope *getScope();
 	/*
 	 * eval: Evaluates its body.
@@ -18,7 +20,13 @@ public:
 private:
 
 	vector<CVirtualMachine::tInfoStatementOp>  m_listStatements;
-	vector<CScriptFunction *> m_function; // 0 has the scope base.
+	/**
+	 * Return variable is assigned at the begin as undefined and when return keyword occurs,
+	 * returnVariable is assigned as the result of expression after return. By default return variable is type void.
+	 */
+	CObject *returnVariable;
+
+
 	CScope	*m_scope; // base scope...
 
 

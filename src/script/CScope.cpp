@@ -3,15 +3,18 @@
 #define MAX_STATMENT_LENGTH 2096
 #define MAX_VAR_LENGTH 100
 
-CUndefined *CScope::m_defaultVar=NULL;
+CUndefined *CScope::m_undefinedSymbol=NULL;
+CVoid *CScope::m_voidSymbol=NULL;
 
 void CScope::createSingletons(){
-	m_defaultVar = new CUndefined();
+	m_undefinedSymbol = new CUndefined();
+	m_voidSymbol = new CVoid();
 }
 
 
 void CScope::destroySingletons(){
-	delete m_defaultVar;
+	delete m_undefinedSymbol;
+	delete m_voidSymbol;
 }
 
 
@@ -75,13 +78,13 @@ CScope * CScope::popScope(){
 //
 // SCOPE VARIABLE MANAGEMENT
 //
-bool CScope::registerVariable(const string & var_name, int m_line){
+bool CScope::registerSymbol(const string & var_name, int m_line){
 	tInfoRegisteredVar * irv;
-	if((irv = existRegisteredVariable(var_name))==NULL){ // check whether is local var registered scope ...
+	if((irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
 		irv = new tInfoRegisteredVar;
 		irv->m_line = m_line;
-		irv->m_obj = m_defaultVar;
-		m_registeredVariable[var_name]=irv;
+		irv->m_obj = m_undefinedSymbol;
+		m_registeredSymbol[var_name]=irv;
 		return true;
 	}else{
 		print_error_cr("error var \"%s\" already registered at line %i!", var_name.c_str(), irv->m_line);
@@ -90,10 +93,10 @@ bool CScope::registerVariable(const string & var_name, int m_line){
 	return false;
 }
 
-bool CScope::defineVariable(const string & var_name, CObject *obj){
+bool CScope::defineSymbol(const string & var_name, CObject *obj){
 
 	tInfoRegisteredVar * irv;
-	if((irv = existRegisteredVariable(var_name))!=NULL){ // check whether is local var registered scope ...
+	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
 		irv->m_obj=obj;
 		irv->m_obj->setName(var_name);
 		return true;
@@ -103,16 +106,16 @@ bool CScope::defineVariable(const string & var_name, CObject *obj){
 	return false;
 }
 
-CScope::tInfoRegisteredVar * CScope::existRegisteredVariable(const string & var_name){
-	if(m_registeredVariable.count(var_name)==0){ // not exit but we will deepth through parents ...
+CScope::tInfoRegisteredVar * CScope::existRegisteredSymbol(const string & var_name){
+	if(m_registeredSymbol.count(var_name)==0){ // not exit but we will deepth through parents ...
 		CScope * parent =  getParent();
 		if(parent != NULL){
-			return parent->existRegisteredVariable(var_name);
+			return parent->existRegisteredSymbol(var_name);
 		}
 		return NULL;
 	}else{
-		return m_registeredVariable[var_name];
-		//print_error_cr("variable %s already registered at line %i",var_name.c_str(),lc->m_registeredVariable[var_name]->m_line);
+		return m_registeredSymbol[var_name];
+		//print_error_cr("variable %s already registered at line %i",var_name.c_str(),lc->m_registeredSymbol[var_name]->m_line);
 	}
 
 	return NULL;
@@ -120,9 +123,9 @@ CScope::tInfoRegisteredVar * CScope::existRegisteredVariable(const string & var_
 }
 
 
-CScope::tInfoRegisteredVar *CScope::getInfoRegisteredVariable(const string & var_name, bool print_msg){
+CScope::tInfoRegisteredVar *CScope::getInfoRegisteredSymbol(const string & var_name, bool print_msg){
 	tInfoRegisteredVar * irv;
-	if((irv = existRegisteredVariable(var_name))!=NULL){ // check whether is local var registered scope ...
+	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
 
 		return irv;
 	}else{
@@ -195,7 +198,7 @@ bool CScope::isVarDeclarationStatment(const char *statment, bool & error, char *
 				print_info_cr("registered \"%s\" variable: ",stat);
 
 				s_aux=stat;
-				if(!_localScope->registerVariable(s_aux,registeredVariableLine)){
+				if(!_localScope->registerSymbol(s_aux,registeredVariableLine)){
 					error=true;
 				}
 
@@ -495,7 +498,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 					return NULL;
 				}
 
-				if(_scope->getInfoRegisteredVariable(condition.str,false)==NULL){
+				if(_scope->getInfoRegisteredSymbol(condition.str,false)==NULL){
 					print_error("symbol %s not declared at line %i",condition.str.c_str(), condition.m_line);
 					error = true;
 					return NULL;
