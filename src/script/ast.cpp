@@ -15,125 +15,368 @@
 #endif
 
 
-char * token_group0(char *c){
-	char *aux=c;
-	// try number operators...
-	if(*c=='+' || *c=='-' || *c=='^' || (*c=='=' && *(c+1)!='=') ){
-		aux++;
-		return aux;
+
+
+
+bool CAst::parsePlusPunctuator(const char *s){
+	char *aux=(*s);
+
+	if(*aux=='+'){
+
+		if(*(aux+1) == '+') {// inc op
+			return false;
+		}
+
+		return true;
 	}
 
-	if( (*c=='&' && *(c+1)!='&') // ==
-	){
-		aux++;
-		return aux;
+	return false;
+}
+
+bool CAst::parseMinusPunctuator(const char *s){
+	char *aux=(*s);
+
+	char *aux=(*s);
+
+	if(*aux=='-'){
+
+		if(*(aux+1) == '-') {// dec op
+			return false;
+		}
+
+		return true;
 	}
 
-	if( (*c=='|' && *(c+1)!='|') // ==
-	){
-		aux++;
-		return aux;
+	return false;
+
+}
+
+bool CAst::parseMulPunctuator(const char *s){
+	char *aux=(*s);
+
+	if(*aux=='*'){
+		return true;
 	}
 
-	// try boolean operators...
-	if(
-			(*c=='|' && *(c+1)=='|') // ||
-	){
-		aux+=2;
-		return aux;
+	return false;
+
+}
+
+bool CAst::parseDivPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='/'){
+		return true;
+	}
+	return false;
+}
+
+bool CAst::parseModPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='%'){
+		return true;
 	}
 
-	if(
-			(*c=='<' && *(c+1)=='<') // ||
-	){
-		aux+=2;
-		return aux;
+	return false;
+}
+
+bool CAst::parseAssignPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='='){
+		return true;
 	}
 
-	if(
-			(*c=='>' && *(c+1)=='>') // ||
-	){
-		aux+=2;
-		return aux;
+	return false;
+}
+
+bool CAst::parseBinaryXorPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='^'){
+		return true;
 	}
+	return false;
+}
+
+bool CAst::parseBinaryAndPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='&'){
+		if(*(aux+1) == '&') {// logical op
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+bool CAst::parseBinaryOrPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='|'){
+		if(*(aux+1) == '|') {// logical op
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+bool CAst::parseShiftLeftPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='<'){
+		if(*(aux+1) == '<') {// shift left op
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CAst::parseShiftRightPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='>'){
+		if(*(aux+1) == '>') {// shift right op
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CAst::parseLogicAndPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='&'){
+		if(*(aux+1) == '&') {// logical op ok
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CAst::parseLogicOrPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='|'){
+		if(*(aux+1) == '|') {// logical op ok
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CAst::parseLogicEqualPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='='){
+		if(*(aux+1) == '=') {// logical op ok
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CAst::parseLogicGreatherThanPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='>'){
+		if(*(aux+1) == '=') {// get op
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+bool CAst::parseLogicLessThanPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='<'){
+		if(*(aux+1) == '=') {// let op
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+bool CAst::parseLogicGreatherEqualThanPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='>'){
+		if(*(aux+1) == '=') {// get op ok!
+			return true;
+		}
+	}
+	return false;
+
+}
+
+bool CAst::parseLessEqualThanPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='<'){
+		if(*(aux+1) == '=') {// let op ok!
+			return false;
+		}
+		return true;
+	}
+	return false;
+
+}
+
+bool CAst::parseNotPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='!'){
+		if(*(aux+1) == '=') {// logical op
+			return false;
+		}
+		return true;
+	}
+	return false;
+
+}
+
+bool CAst::parseNotEqualPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='!'){
+		if(*(aux+1) == '=') {// logical op
+			return true;
+		}
+	}
+	return false;
+
+}
+
+bool CAst::parseIncPunctuator(const char *s){
+	char *aux=(*s);
+
+	if(*aux=='+'){
+		if(*(aux+1) == '+') {// logical op
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CAst::parseDecPunctuator(const char *s){
+	char *aux=(*s);
+	if(*aux=='-'){
+		if(*(aux+1) == '-') {// logical op
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+#define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
+
+tInfoPunctuator  * CAst::parsePunctuatorGroup0(const char *s){
+
+	OPERATOR_PUNCTUATOR_TYPE index_to_evaluate[]={
+			PLUS_PUNCTUATOR,
+			MINUS_PUNCTUATOR,
+			BINARY_XOR_PUNCTUATOR,
+			BINARY_AND_PUNCTUATOR,
+			BINARY_OR_PUNCTUATOR,
+			SHIFT_LEFT_PUNCTUATOR,
+			SHIFT_RIGHT_PUNCTUATOR,
+			ASSIGN_PUNCTUATOR
+	};
+
+	for(int i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			return &defined_operator_punctuator[index_to_evaluate[i]];
+		}
+	}
+
+	return NULL;
+}
+
+tInfoPunctuator  * CAst::parsePunctuatorGroup1(const char *s){
+
+	OPERATOR_PUNCTUATOR_TYPE index_to_evaluate[]={
+			LOGIC_AND_PUNCTUATOR,
+			MUL_PUNCTUATOR,
+			DIV_PUNCTUATOR,
+			MOD_PUNCTUATOR
+	};
+
+	for(int i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			return &defined_operator_punctuator[index_to_evaluate[i]];
+		}
+	}
+
 	return 0;
 }
 
-char * token_group1(char *c){
-	char *aux=c;
+tInfoPunctuator  * CAst::parsePunctuatorGroup2(const char *s){
 
-	// try boolean operators...
-	if( (*c=='&' && *(c+1)=='&') // ==
-	){
-		aux+=2;
-		return aux;
+
+	OPERATOR_PUNCTUATOR_TYPE index_to_evaluate[]={
+			LOGIC_EQUAL_PUNCTUATOR,
+			LOGIC_NOT_EQUAL_PUNCTUATOR,
+			LOGIC_LET_PUNCTUATOR,
+			LOGIC_GET_PUNCTUATOR,
+			LOGIC_GT_PUNCTUATOR,
+			LOGIC_LT_PUNCTUATOR
+	};
+
+	for(int i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			return &defined_operator_punctuator[index_to_evaluate[i]];
+		}
 	}
 
-	// try number operators...
-	if(*c=='*' || *c=='/' || *c=='%' ){
-		aux++;
-		return aux;
-	}
 	return 0;
 }
 
-char * token_group2(char *c){
-	char *aux=c;
+tInfoPunctuator  * CAst::parsePunctuatorGroup3(const char *s){
 
-	// try boolean operators...
-	if( (*c=='=' && *(c+1)=='=') // ==
-	 || (*c=='<' && *(c+1)=='=') // <=
-	 || (*c=='>' && *(c+1)=='=') // >=
 
-	){
-		aux+=2;
-		return aux;
+	OPERATOR_PUNCTUATOR_TYPE index_to_evaluate[]={
+			LOGIC_NOT_PUNCTUATOR,
+	};
+
+	for(int i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			return &defined_operator_punctuator[index_to_evaluate[i]];
+		}
 	}
 
-	// try number operators...
-	if( *c=='>' || *c=='<'){
-		aux++;
-		return aux;
-	}
 	return 0;
 }
 
-char * token_group3(char *c){
-	char *aux=c;
-	// try boolean operators...
-	if( (*c=='!') // ==
-	){
-		aux++;
-		return aux;
+tInfoPunctuator *  CAst::isOperatorPunctuator(const char *s){
+
+	for(int i = 0; i < ARRAY_LENGTH(defined_operator_punctuator); i++){
+		if(defined_operator_punctuator[i].parse_fun(s)){
+			return &defined_operator_punctuator[i];
+		}
 	}
+
 	return 0;
 }
 
-char * is_token(char *c){
-	char *aux;
 
-	if(*c == ';'){ // semicolon
-		return c+1;
+tInfoPunctuator *  CAst::isSpecialPunctuator(const char *s){
+
+	for(int i = 0; i < ARRAY_LENGTH(defined_special_punctuator); i++){
+		if(*defined_special_punctuator[i].str == *s){
+			return &defined_special_punctuator[i];
+		}
 	}
 
-	if(*c == ':'){ // semicolon
-		return c+1;
-	}
-
-	if((aux=token_group0(c))!=0){
-		return aux;
-	}else if((aux=token_group1(c))!=0) {
-		return aux;
-	}else if((aux=token_group2(c))!=0) {
-		return aux;
-	}else if((aux=token_group3(c))!=0) {
-		return aux;
-	}
 	return 0;
 }
+
+
+tInfoPunctuator *  CAst::isPunctuator(const char *s){
+
+	tInfoPunctuator * ip = isOperatorPunctuator(s);
+
+	if(ip!=NULL){
+		return ip;
+	}
+
+	return isSpecialPunctuator(s);
+}
+
+
 
 // to string utils ...
-char * GET_END_WORD(const char *s){
+char * CAst::getEndWord(const char *s){
 
 	char *aux=(char *)s;
 
@@ -150,22 +393,31 @@ char * GET_END_WORD(const char *s){
 		aux++;
 
 	}else{
-		while((*aux)!=0 && !((*aux)==' ' || (*aux)=='\t' || (*aux)=='\n' || (*aux)=='\r') && (is_token(aux)==0)) {
+		while((*aux)!=0 && !(
+				(*aux)==' ' ||
+				(*aux)=='\t' ||
+				(*aux)=='\n' ||
+
+				isSpecialPunctuator(aux)==NULL ||
+
+				(*aux)=='\r'
+						) &&
+				(isOperatorPunctuator(aux)==NULL)
+		) {
 			aux++;
 		}
 	}
 	return aux;
 }
 
-char *GET_SYMBOL_NAME(const char *s,int & m_startLine){
+char *CAst::getSymbolName(const char *s,int & m_startLine){
 
 	char *aux_p=(char *)s;
-	char *end_token=is_token((char *)s);
-	char *token;
+	tInfoPunctuator *end_punctuator=isPunctuator(s);
+	char *Punctuator;
 
-	if(end_token != NULL){
-		token = CStringUtils::copyStringFromInterval(aux_p,end_token);
-		print_error_cr("Unexpected token '%s' at line",token,m_startLine);
+	if(end_punctuator != NULL){
+		print_error_cr("Unexpected '%s' at line",end_punctuator->str,m_startLine);
 		return NULL;
 	}
 
@@ -190,60 +442,107 @@ char *GET_SYMBOL_NAME(const char *s,int & m_startLine){
 }
 
 
-bool IS_WORD(const char *s){
-	char *aux=(char *)s;
-	while((*aux)!=0 && !((*aux)==' ' || (*aux)=='\t' || (*aux)=='\n' || (*aux)=='\r') && (is_token(aux)==0)) {
-		aux++;
-	}
-	return *aux==0;
-}
 
-tInfoKeyword CAst::str_op[MAX_KEYWORD];
+tInfoKeyword CAst::defined_keyword[MAX_KEYWORD];
+tInfoPunctuator CAst::defined_operator_punctuator[MAX_OPERATOR_PUNCTUATORS];
+tInfoPunctuator CAst::defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
+
 
 void CAst::createSingletons(){
-	str_op[KEYWORD_TYPE::NONE_KEYWORD] = {NONE_KEYWORD, "none",NULL};
-	str_op[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",parseVar};
-	str_op[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",parseIf},
-	str_op[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else",NULL};
-	str_op[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",parseFor};
-	str_op[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",parseWhile};
 
-	str_op[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",parseSwitch};
-	str_op[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
-	str_op[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
-	str_op[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
-	str_op[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunction};
-	str_op[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
-	str_op[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
-	str_op[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this",NULL};
+	// init operator punctuators...
+	defined_operator_punctuator[UNKNOWN_OPERATOR_PUNCTUATOR]={UNKNOWN_OPERATOR_PUNCTUATOR, "none",NULL};
+	defined_operator_punctuator[PLUS_PUNCTUATOR]={PLUS_PUNCTUATOR, "+",parsePlusPunctuator};
+	defined_operator_punctuator[MINUS_PUNCTUATOR]={MINUS_PUNCTUATOR, "-",parseMinusPunctuator};
+	defined_operator_punctuator[MUL_PUNCTUATOR]={MUL_PUNCTUATOR, "*",parseMulPunctuator};
+	defined_operator_punctuator[DIV_PUNCTUATOR]={DIV_PUNCTUATOR, "/",parseDivPunctuator};
+	defined_operator_punctuator[MOD_PUNCTUATOR]={MOD_PUNCTUATOR, "%",parseModPunctuator};
+
+	defined_operator_punctuator[ASSIGN_PUNCTUATOR]={ASSIGN_PUNCTUATOR, "=",parseAssignPunctuator};
+
+	defined_operator_punctuator[BINARY_XOR_PUNCTUATOR]={BINARY_XOR_PUNCTUATOR, "^",parseBinaryXorPunctuator};
+	defined_operator_punctuator[BINARY_AND_PUNCTUATOR]={BINARY_AND_PUNCTUATOR, "&",parseBinaryAndPunctuator};
+	defined_operator_punctuator[BINARY_OR_PUNCTUATOR]={BINARY_OR_PUNCTUATOR, "|",parseBinaryOrPunctuator};
+	defined_operator_punctuator[SHIFT_LEFT_PUNCTUATOR]={SHIFT_LEFT_PUNCTUATOR, "<<",parseShiftLeftPunctuator};
+	defined_operator_punctuator[SHIFT_RIGHT_PUNCTUATOR]={SHIFT_RIGHT_PUNCTUATOR, ">>",parseShiftRightPunctuator};
+
+
+	defined_operator_punctuator[LOGIC_AND_PUNCTUATOR]={LOGIC_AND_PUNCTUATOR, "&&",parseLogicAndPunctuator};
+	defined_operator_punctuator[LOGIC_OR_PUNCTUATOR]={LOGIC_OR_PUNCTUATOR, "||",parseLogicOrPunctuator};
+	defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR]={LOGIC_EQUAL_PUNCTUATOR, "==",parseLogicEqualPunctuator};
+	defined_operator_punctuator[LOGIC_NOT_EQUAL_PUNCTUATOR]={LOGIC_NOT_EQUAL_PUNCTUATOR, "!=",parseLogicNotEqualPunctuator};
+	defined_operator_punctuator[LOGIC_GT_PUNCTUATOR]={LOGIC_GT_PUNCTUATOR, ">",parseLogicGreatherThanPunctuator};
+	defined_operator_punctuator[LOGIC_LT_PUNCTUATOR]={LOGIC_LT_PUNCTUATOR, "<",parseLogicLessThanPunctuator};
+	defined_operator_punctuator[LOGIC_GET_PUNCTUATOR]={LOGIC_GET_PUNCTUATOR, ">=",parseLogicGreatherEqualThanPunctuator};
+	defined_operator_punctuator[LOGIC_LET_PUNCTUATOR]={LOGIC_LET_PUNCTUATOR, "<=",parseLessEqualThanPunctuator};
+	defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR]={LOGIC_NOT_PUNCTUATOR, "!",parseNotPunctuator};
+
+	defined_operator_punctuator[INC_PUNCTUATOR]={INC_PUNCTUATOR, "++",parseIncPunctuator};
+	defined_operator_punctuator[DEC_PUNCTUATOR]={DEC_PUNCTUATOR, "--",parseDecPunctuator};
+
+	// special punctuators...
+	defined_special_punctuator[UNKNOWN_SPECIAL_PUNCTUATOR]={UNKNOWN_SPECIAL_PUNCTUATOR, "",NULL};
+	defined_special_punctuator[COMA_PUNCTUATOR]={COMA_PUNCTUATOR, ",",NULL};
+	defined_special_punctuator[SEMICOLON_PUNCTUATOR]={SEMICOLON_PUNCTUATOR, ";",NULL};
+	defined_special_punctuator[OPEN_PARENTHESIS_PUNCTUATOR]={OPEN_PARENTHESIS_PUNCTUATOR, "(",NULL};
+	defined_special_punctuator[CLOSE_PARENTHESIS_PUNCTUATOR]={CLOSE_PARENTHESIS_PUNCTUATOR, ")",NULL};
+	defined_special_punctuator[OPEN_BRAKET_PUNCTUATOR]={OPEN_BRAKET_PUNCTUATOR, "{",NULL};
+	defined_special_punctuator[CLOSE_BRAKET_PUNCTUATOR]={CLOSE_BRAKET_PUNCTUATOR, "}",NULL};
+	defined_special_punctuator[OPEN_SQUARE_BRAKET_PUNCTUATOR]={OPEN_SQUARE_BRAKET_PUNCTUATOR, "[",NULL};
+	defined_special_punctuator[CLOSE_SQUARE_BRAKET_PUNCTUATOR]={CLOSE_SQUARE_BRAKET_PUNCTUATOR, "]",NULL};
+	defined_special_punctuator[FIELD_PUNCTUATOR]={FIELD_PUNCTUATOR, "]",NULL};
+
+
+	// init special punctuators...
+
+
+	// init keywords...
+	defined_keyword[KEYWORD_TYPE::NONE_KEYWORD] = {UNKNOWN_KEYWORD, "none",NULL};
+	defined_keyword[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",parseVar};
+	defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",parseIf},
+	defined_keyword[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else",NULL};
+	defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",parseFor};
+	defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",parseWhile};
+
+	defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",parseSwitch};
+	defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
+	defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
+	defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
+	defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunction};
+	defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
+	defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
+	defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this",NULL};
+
 }
+
 
 void CAst::destroySingletons(){
 
 }
 
 
-tInfoKeyword * CAst::is_keyword(const char *c){
+tInfoKeyword * CAst::isKeyword(const char *c){
 
 	int m_line=0;
 
 	char *str=CStringUtils::IGNORE_BLANKS(c,m_line);
 
 	for(int i = 0; i < MAX_KEYWORD; i++){
-		int size = strlen(str_op[i].str);
+		int size = strlen(defined_keyword[i].str);
 		char *aux = str+size;
-		if((strncmp(str,str_op[i].str,size)==0) && (
+		if((strncmp(str,defined_keyword[i].str,size)==0) && (
 				*aux == 0  || // carry end
 				*aux == ' '  || // space
-				*aux == ';'  || // semicolon
+
 				*aux == '\t'  || // tab
-				is_token(aux)!=NULL ||
+				isOperatorPunctuator(aux)!=NULL ||
+				isSpecialPunctuator(aux)!=NULL ||
 				*aux == '\n' || // carry return
-				*aux == '(' || // open parenthesis
-				*aux == ')' || // close parenthesis
+
+
 			   (*aux == '/' && *(aux+1) == '*')) //start block comment
 			   ){
-			return &str_op[i];
+			return &defined_keyword[i];
 		}
 	}
 
@@ -262,7 +561,7 @@ string GET_STR_WITHOUT_SPACES(const string & s){
 }
 
 //------------------------------------------------------------------------------------------------------------
-inline char * GET_CLOSED_PARENTHESIS(const char *s){
+/*inline char * GET_CLOSED_PARENTHESIS(const char *s){
 	//bool end = false;
 	char *aux = (char *)s;
 	
@@ -281,33 +580,29 @@ inline char * GET_CLOSED_PARENTHESIS(const char *s){
 	}while((*aux) != 0 && num_levels>0);
 		
 	return aux;
-}
+}*/
 
 
-char *preoperator_token( char *c, int & m_line){
-	char *aux=CStringUtils::IGNORE_BLANKS(c,m_line);
+tInfoPunctuator *CAst::checkPreOperatorPunctuator(const char *s){
 
-	// detection ++ operator.
-	if(*aux=='+' && *(aux+1)=='+'){
-		aux+=2;
-		return aux;
-	}
-
-	// detection -- operator.
-	if(*aux=='-' && *(aux+1)=='-'){
-		aux+=2;
-		return aux;
-	}
-
-	if(*aux=='+' || *aux=='-' || *aux=='!'){
-		aux++;
-		return aux;
-	}
+	if(parseIncPunctuator(s)) 	return defined_operator_punctuator[INC_PUNCTUATOR];
+	if(parseDecPunctuator(s))	return defined_operator_punctuator[DEC_PUNCTUATOR];
+	if(parsePlusPunctuator(s)) 	return defined_operator_punctuator[PLUS_PUNCTUATOR];
+	if(parseMinusPunctuator(s)) return defined_operator_punctuator[MINUS_PUNCTUATOR];
+	if(parseNotPunctuator(s))   return defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR];
 
 	return 0;
 }
 
-char *postoperator_token( char *c, int & m_line){
+tInfoPunctuator *CAst::checkPostOperatorPunctuator(const char *s){
+
+	if(parseIncPunctuator(s)) 	return defined_operator_punctuator[INC_PUNCTUATOR];
+	if(parseDecPunctuator(s))	return defined_operator_punctuator[DEC_PUNCTUATOR];
+
+	return 0;
+}
+
+/*char *postoperator_Punctuator( char *c, int & m_line){
 	char *aux=CStringUtils::IGNORE_BLANKS(c,m_line);
 
 	// detection ++ operator.
@@ -323,106 +618,113 @@ char *postoperator_token( char *c, int & m_line){
 	}
 
 	return 0;
-}
-
-PASTNode CAst::preOperator(string token,PASTNode affected_op){ // can be -,+,! etc...
+}*/
+/*
+PASTNode CAst::preOperator(OPERATOR_PUNCTUATOR_TYPE operator_id,PASTNode affected_op){ // can be -,+,! etc...
 	PASTNode op=new tASTNode(2);
-	op->token = token;
+	op->operator_id = operator_id;
 	op->children[LEFT_NODE]=affected_op;
 	return op;
 }
 
-PASTNode CAst::postOperator(string token,PASTNode affected_op){ // can be -,+,! etc...
-	string token1 = "post_"+token;
+PASTNode CAst::postOperator(string Punctuator,PASTNode affected_op){ // can be -,+,! etc...
+	string Punctuator1 = "post_"+Punctuator;
 
-	return preOperator(token1,affected_op);
-}
+	return preOperator(Punctuator1,affected_op);
+}*/
 //------------------------------------------------------------------------------------------------------------
 char * CAst::parseExpression_Recursive(const char *s, int m_line, bool & error, CScriptFunction *sf, PASTNode *op, GROUP_TYPE type_group,PASTNode parent ){
 	//int index=0;
 	char *aux=(char *)s;
 	char *s_effective_start=(char *)s;
 	char *start_expression=NULL,*end_expression=(char *)s ; // by default end expression isequal to
-	string pre_token="";
-	string post_token="";
+	string pre_Punctuator="";
+	string post_Punctuator="";
+	PASTNode symbol_node=NULL; // can be a function or array.
+	PASTNode args_node=NULL;
+	string symbol_name;
 	bool eval_preoperator=true;
 	bool eval_postoperator=true;
+	string operator_str="";
+	tInfoPunctuator *pre_operator,*post_operator;
 
-	*op=new tASTNode(2); // always preallocate 2 nodes (left and right)
-	(*op)->parent=parent;
+	*op=NULL; // always preallocate 2 nodes (left and right)
+
 
 	int m_effective_start_line=m_line;
 	int m_define_symbol_line;
 
 
-	
 	aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
 	
 	if(*aux==0){
 		return NULL;
-	}	
-	
+	}
+
 	if(type_group>=MAX_GROUPS) {
 		print_error_cr("max groups");
 		error = true;
 		return NULL;
 	}
 
-	print_ast_cr("new expression eval:\"%s\" group:%i at line %i",s,type_group, m_line);
+	print_ast_cr("new expression eval:\"%.30s ...\" group:%i at line %i",aux,type_group, m_line);
 	
 	//if(type_group==GROUP_0) 
 	 // search for operator +/-...
 		start_expression=aux;
-		bool theres_some_token=false;
-		char * expr_op_end = 0;
+		bool theres_some_Punctuator=false;
+		char * find_operator_group = 0;
 		char *expr_op=0;
 		
 		// searching for operator!
 		print_ast_cr("searching for operator type %i...",type_group);
+
 	
-		while(*aux!=0 && *aux!=';' && *aux!=','  && *aux!=')'  && *aux!=']' && (expr_op_end==0)){
+		while(*aux!=0 && *aux!=';' && *aux!=','  && *aux!=')'  && *aux!=']' && (find_operator_group==0)){
 	
 			print_ast_cr("checkpoint1:%c\n",*aux);
 			// 1. ignore spaces...
 			aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
 			
-			if(is_token(aux)!=0){
+			/*if(isOperatorPunctuator(aux)!=0){
 
-				if((end_expression=preoperator_token(aux, m_line))!=0){
-						if(eval_preoperator || (!eval_preoperator&&(eval_postoperator))){ // first token! Save the operator to apply on the result expression.
-							char str_op[10]={0};
+				if((end_expression=preoperatorPunctuator(aux, m_line))!=0){
+						if(eval_preoperator || (!eval_preoperator&&(eval_postoperator))){ // first Punctuator! Save the operator to apply on the result expression.
+							char defined_keyword[10]={0};
 
 							if(eval_preoperator){ // It can't do preoperator and postoperator at the same time.
 								eval_postoperator=false;
 							}
 
-							strncpy(str_op,aux,end_expression-aux);
+							strncpy(defined_keyword,aux,end_expression-aux);
 
-							print_ast_cr("preoperator %s!",str_op);
-							pre_token = str_op;
-							aux=end_expression; // ignore first token...
+							print_ast_cr("preoperator %s!",defined_keyword);
+							pre_Punctuator = defined_keyword;
+							aux=end_expression; // ignore first Punctuator...
 							s_effective_start=end_expression;
 							m_effective_start_line = m_line;
 							start_expression=aux;
 						}else{ // just ignore it
-							aux=end_expression; // ignore first token...
+							aux=end_expression; // ignore first Punctuator...
 						}
 				}
 				else{
-					print_error_cr("unexpected token %c at line %i",*aux,m_line);
+					print_error_cr("unexpected Punctuator %c at line %i",*aux,m_line);
 					error = true;
 					return NULL;
 				}
-			}
+			}*/
 			
-			print_ast_cr("checkpoint2:%c",*aux);
+			//print_ast_cr("checkpoint2:%c",*aux);
 			
 			//start_value=aux;
-			if(*aux=='('){ // exp within ()
+		/*	if(*aux=='('){ // exp within ()
 				print_ast_cr("try find parenthesis close");
 				end_expression = GET_CLOSED_PARENTHESIS(aux);
 				
 				if(end_expression==0){
+					error = true;
+					print_error_cr("Parenthesis not closed at line %i",m_line);
 					return NULL;
 				}
 				
@@ -435,81 +737,113 @@ char * CAst::parseExpression_Recursive(const char *s, int m_line, bool & error, 
 				}else{ // advance )
 					end_expression++;
 				}				
-			}else{ // value 
+			}
+			else{*/ // value
+
+			if((pre_operator=checkPreOperatorPunctuator(aux))!=NULL){
+				aux+=strlen(pre_operator->str);
+				aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
+			}
+
+
+			if(*aux=='('){
+				aux = parseExpression_Recursive(s, m_line, error, sf, op, type_group,parent);
+
+				if(*aux != ')'){
+					print_error_cr("Not closed parenthesis at line %i", m_line);
+					return NULL;
+				}
+
+			}else{
 
 				tInfoKeyword *key_w;
 				m_define_symbol_line = m_line;
 
-
 				// usually we have to take care about special op symbols
-				if((key_w =is_keyword(aux)) != NULL){
+				if((key_w =isKeyword(aux)) != NULL){
 
 					if(key_w->id == KEYWORD_TYPE::FUNCTION_KEYWORD){ // function object ...
 
-						PASTNode function_node=NULL;
-						PASTNode function_args=NULL;
-
-						aux = parseFunction(aux,m_define_symbol_line,sf,&function_node);
-						if(aux == NULL){
-							return NULL;
-						}
-
-						end_expression = CStringUtils::IGNORE_BLANKS(aux, m_line);
-
-						if(*end_expression == '('){ // parse args within '(' ')'...
-							end_expression = parseArgs(end_expression,m_define_symbol_line,sf,&function_args, '(', ')');
-
-							if(end_expression == NULL){
-								return NULL;
-							}
-
-							end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
-
-						}
-
-					}
-					else{
-						print_error_cr("Error expected ; before %s at line %i",key_w, m_define_symbol_line);
-						error = true;
-						return NULL;
-					}
-				}else{
-
-					PASTNode vector_obj=NULL;
-					PASTNode index_access=NULL;
-
-					if(*aux == '['){ // vector object ...
-						end_expression = parseArgs(aux,m_define_symbol_line,sf,&vector_obj, '[', ']');
-
+						end_expression = parseFunction(aux,m_define_symbol_line,sf,&symbol_node);
 						if(end_expression == NULL){
 							return NULL;
 						}
 
-						end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
+						symbol_node->node_type = NODE_TYPE::KEYWORD_NODE;
+						symbol_node->keyword_type = KEYWORD_TYPE::FUNCTION_KEYWORD;
 
+					}else{
+						print_error_cr("Unexpected keyword %s at line %i",key_w->str,m_define_symbol_line);
+						return NULL;
+					}
 
-						if(*end_expression == '['){ // parse args within '(' ')'...
-							aux = parseArgs(end_expression,m_define_symbol_line,sf,&index_access, '[', ']');
+				}else{
 
-							if(end_expression == NULL){
-								return NULL;
-							}
+					if(*aux == '['){ // vector object ...
+						end_expression = parseArgs(aux,m_define_symbol_line,sf,&symbol_node, '[', ']');
 
-							end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
-
-						}
-
-
-
-						if(aux == NULL){
+						if(end_expression == NULL){
+							error = true;
 							return NULL;
 						}
+
+						symbol_node->node_type = NODE_TYPE::ARRAY_NODE;
+
 					}
 					else{
+						char *gg;
+						end_expression = getEndWord(aux);
 
-						end_expression = GET_END_WORD(aux);
+						 gg=CStringUtils::copyStringFromInterval(aux,end_expression);
+
+						 if(gg != NULL){
+						 	 symbol_name = gg;
+						 }
+						 else return NULL;
+
+
+						 end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
+						 if((post_operator = checkPreOperatorPunctuator(end_expression)) != NULL){
+							 end_expression+=strlen(post_operator->str);
+						 }
+
+
 					}
 				}
+
+				// if there's function or array access after symbol or object created ...
+				end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
+
+				if(*end_expression == '('){ // parse args within '(' ')'...
+
+					end_expression = parseArgs(end_expression,m_define_symbol_line,sf,&args_node, '(', ')');
+
+					if(end_expression == NULL){
+						error = true;
+						return NULL;
+					}
+
+					args_node->node_type = NODE_TYPE::FUNCTION_ARGS_DECL_NODE;
+
+					end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
+
+				}
+				else if(*end_expression == '['){ // parse args within '(' ')'...
+
+
+					end_expression = parseArgs(end_expression,m_define_symbol_line,sf,&args_node, '[', ']');
+
+					if(end_expression == NULL){
+						error = true;
+						return NULL;
+					}
+
+					args_node->node_type = NODE_TYPE::ARRAY_INDEX_NODE;
+
+					end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
+
+				}
+
 			}
 			
 			aux=end_expression;
@@ -519,80 +853,100 @@ char * CAst::parseExpression_Recursive(const char *s, int m_line, bool & error, 
 			aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
 			
 			// eval post operators...
-			if(*aux != 0  && *aux!=';' && *aux!=','  && *aux!=')'  && *aux!=']' && eval_postoperator){
+			/*if(*aux != 0  && *aux!=';' && *aux!=','  && *aux!=')'  && *aux!=']' && eval_postoperator){
 				char *aux2;
-				if((aux2=postoperator_token(aux, m_line))!=0){
-					char str_op[10]={0};
-					strncpy(str_op,aux,aux2-aux);
-					print_ast_cr("postperator %s!",str_op);
-					post_token = str_op;
+				if((aux2=postoperator_Punctuator(aux, m_line))!=0){
+					char defined_keyword[10]={0};
+					strncpy(defined_keyword,aux,aux2-aux);
+					print_ast_cr("postperator %s!",defined_keyword);
+					post_Punctuator = defined_keyword;
 
 					aux=aux2;
 				}
 				aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
-			}
+			}*/
 
 			if(*aux!=0 && *aux!=';'  && *aux!=','  && *aux!=')'  && *aux!=']' ){ // is not end expression
 
 				expr_op=aux;
-				char *adv_op;
-				if((adv_op=is_token(expr_op))!=0){
-					theres_some_token|=true;
+				tInfoPunctuator *adv_op;
+				if((adv_op=isOperatorPunctuator(expr_op))!=0){
+					theres_some_Punctuator|=true;
 					
 					switch(type_group){
-					case  GROUP_0:	expr_op_end = token_group0(expr_op);break;
-					case GROUP_1:	expr_op_end = token_group1(expr_op);break;
-					case GROUP_2:	expr_op_end = token_group2(expr_op);break;
-					case GROUP_3:	expr_op_end = token_group3(expr_op);break;
+					case  GROUP_0:	find_operator_group = parsePunctuatorGroup0(expr_op);break;
+					case GROUP_1:	find_operator_group = parsePunctuatorGroup1(expr_op);break;
+					case GROUP_2:	find_operator_group = parsePunctuatorGroup2(expr_op);break;
+					case GROUP_3:	find_operator_group = parsePunctuatorGroup3(expr_op);break;
 					default: break;
+					}
+
+					if(find_operator_group != NULL){
+						char *gg=CStringUtils::copyStringFromInterval();
+						if(gg==NULL){
+							return NULL;
+						}
+						operator_str
 					}
 
 					aux=adv_op; // advance operator...
 				}
 			}
 
-			if(!eval_preoperator){
+			/*if(!eval_preoperator){
 				eval_postoperator=false;
 			}
 
-			eval_preoperator = false; // set it false due is not first.
+			eval_preoperator = false; // set it false due is not first.*/
 		}
 		
-		if(expr_op_end==0) {// there's no any operators \"type_group\"...
-			if(!theres_some_token && end_expression!= NULL){ // only we have a value (trivial)
+		if(find_operator_group==0) {// there's no any operators \"type_group\"...
+			if(!theres_some_Punctuator){ // only we have a value (trivial)
 
 				  if( *start_expression!='('){
 					  char subexpr[MAX_EXPRESSION_LENGTH]={0}; // I hope this is enough...
 					  strncpy(subexpr,start_expression,end_expression-start_expression); // copy sub expression
 
 					print_ast_cr("trivial value %s at line %i",subexpr, m_define_symbol_line);
-					(*op)->children[LEFT_NODE]=(*op)->children[RIGHT_NODE]=NULL;
-					(*op)->value=GET_STR_WITHOUT_SPACES(subexpr); // assign its value ...
+
+					if(symbol_node != NULL){
+						*op = symbol_node;
+					}else{
+						(*op)=new tASTNode;
+						(*op)->value=symbol_name; // assign its value ...
+
+					}
+
+
+					(*op)->parent=parent;
 					(*op)->definedValueline=m_define_symbol_line;
 
+					if(args_node != NULL){ // put args whether the symbol or object are function/array.
+						(*op)->children.push_back(args_node);
+					}
 
-					if(pre_token!=""){ // generate a prenode operator..
+					if(pre_Punctuator!=""){ // generate a prenode operator..
 						 if(*subexpr == 0){
-							 print_error_cr("expected symbol before %s at line %i",pre_token.c_str(),m_line);
+							 print_error_cr("expected symbol before %s at line %i",pre_Punctuator.c_str(),m_line);
 							 error = true;
 							 return NULL;
 						 }
 
-						 (*op)=preOperator(pre_token,*op);
+						 (*op)=preOperator(pre_Punctuator,*op);
 					}
-					else if(post_token!=""){ // generate a post node operator..
+					else if(post_Punctuator!=""){ // generate a post node operator..
 
 						 if(*subexpr == 0){
-							 print_error_cr("expected symbol after %s at line %i",pre_token.c_str(),m_line);
+							 print_error_cr("expected symbol after %s at line %i",pre_Punctuator.c_str(),m_line);
 							 error = true;
 							 return NULL;
 						 }
 
 
-						 (*op)=postOperator(post_token,*op);
+						 (*op)=postOperator(post_Punctuator,*op);
 					}
 
-					return end_expression;
+
 				  }else{ // parenthesis!
 
 					print_ast_cr("START:%c",*start_expression);
@@ -607,30 +961,31 @@ char * CAst::parseExpression_Recursive(const char *s, int m_line, bool & error, 
 					}
 
 
-					if(pre_token!=""){
-						p_gr = preOperator(pre_token,p_gr);
+					if(pre_Punctuator!=""){
+						p_gr = preOperator(pre_Punctuator,p_gr);
 					}
 
 					// set node ...
 					*op = p_gr;
 
-					return end_expression;
+
 				}
 			}
 			else{
 
 				if(end_expression!= NULL){
-				// there's a token, so let's perform generate its AST
-					// reset pretoken...
-					pre_token="";
+				// there's a Punctuator, so let's perform generate its AST
+					// reset prePunctuator...
+					pre_Punctuator="";
 					print_ast_cr("try to generate group1 expression: %s\n",s_effective_start);
 					return parseExpression_Recursive(s,m_effective_start_line,error,sf,op,(GROUP_TYPE)(((int)type_group)+1),parent);
 				}
-				else{ // void token
-					return end_expression;
-				}
+
 			}
 		}else{ // we found the operator respect of GROUPX so let's put the AST to the left the resulting expression...
+
+			*op=new tASTNode(2); // always preallocate 2 nodes (left and right)
+			(*op)->parent=parent;
 
 			char operator_str[10]={0};
 			strncpy(operator_str,expr_op,expr_op_end-expr_op);
@@ -645,13 +1000,13 @@ char * CAst::parseExpression_Recursive(const char *s, int m_line, bool & error, 
 				return NULL;
 			}
 
-			if(pre_token!=""){
-				(*op)->children[LEFT_NODE]=preOperator(pre_token,(*op)->children[LEFT_NODE]);
+			if(pre_Punctuator!=""){
+				(*op)->children[LEFT_NODE]=preOperator(pre_Punctuator,(*op)->children[LEFT_NODE]);
 			}
 
 
 
-			end_expression = parseExpression_Recursive(expr_op_end,m_line,error,sf,&(*op)->children[RIGHT_NODE],type_group,(*op));
+			aux = parseExpression_Recursive(expr_op_end,m_line,error,sf,&(*op)->children[RIGHT_NODE],type_group,(*op));
 			if(error){
 				return NULL;
 			}
@@ -665,12 +1020,12 @@ char * CAst::parseExpression_Recursive(const char *s, int m_line, bool & error, 
 				return NULL;
 			}
 			
-			(*op)->token = operator_str;
+			(*op)->Punctuator = operator_str;
 
 		}
 		
 
-	return end_expression;
+	return aux;
 }
 
 char * CAst::parseExpression(const char *s, int m_line, bool & error, CScriptFunction *sf , PASTNode * ast_node_to_be_evaluated ){
@@ -699,21 +1054,36 @@ char * CAst::parseArgs(const char *s,int & m_line,  CScriptFunction *sf, PASTNod
 
 	if(*aux_p == c1){
 		aux_p++;
+
+		(*ast_node_to_be_evaluated) = new tASTNode;
+
+
 		do{
 			aux_p = parseExpression(aux_p,m_startLine,error,sf,&node_arg_expression);
 			if(aux_p == NULL || error == true){
 				return NULL;
 			}
+			else{
+				if(*aux_p == ',' ){
+					aux_p++;
+					aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+				}else{
+					if(*aux_p != c2 ){
+						print_error_cr("Expected %c",c2);
+						return NULL;
+					}
+				}
 
-		}while(*aux_p != ',' && *aux_p != c2 && *aux_p != 0);
+			}
 
-		if(*aux_p != c2){
-			return NULL;
-		}
+		}while(*aux_p != c2 && *aux_p != 0);
+
+
 		return aux_p+1;
 	}
 	return NULL;
 }
+
 
 char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
 
@@ -742,14 +1112,16 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 		(*ast_node_to_be_evaluated)->children.push_back(args_node = new tASTNode);
 		(*ast_node_to_be_evaluated)->children.push_back(body_node = new tASTNode);
 
-		args_node->node_type = ARGS_NODE;
+
+
+		args_node->node_type = NODE_TYPE::FUNCTION_ARGS_DECL_NODE;
 		body_node->node_type = BODY_NODE;
 
 		aux_p += strlen(key_w->str);
 
 		// evaluate conditional line ...
 
-		end_var=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
+		aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
 		(*ast_node_to_be_evaluated)->definedValueline = m_startLine;
 
 		if(*aux_p!='('){ // is named function..
@@ -771,12 +1143,14 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 				}
 
 				(*ast_node_to_be_evaluated)->value = value_symbol;
+
+				// define value symbol...
+				sf->getScope()->registerSymbol((*ast_node_to_be_evaluated)->value,m_startLine);
 			}else{
 				return NULL;
 			}
 
 			aux_p=end_var;
-
 			aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_startLine);
 		}
 
@@ -862,7 +1236,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 
 				if(!error){
 
-					sf->getScope()->registerSymbol((*ast_node_to_be_evaluated)->value,(*ast_node_to_be_evaluated)->definedValueline);
+
 
 					m_line = m_startLine;
 					return aux_p;
@@ -1580,16 +1954,16 @@ char *CAst::parseKeyWord(const char *s, int & m_start_line, CScriptFunction *sf,
 			return NULL;
 		}
 
-		if(str_op[keyw->id].parse_fun != NULL){
+		if(defined_keyword[keyw->id].parse_fun != NULL){
 
-			if((aux_p = str_op[keyw->id].parse_fun(s,m_line,sf, ast_node_to_be_evaluated)) != NULL){
+			if((aux_p = defined_keyword[keyw->id].parse_fun(s,m_line,sf, ast_node_to_be_evaluated)) != NULL){
 				return aux_p;
 			}
 
 			error = true;
 
 		}else{
-			print_error_cr("%s has no parse function implemented yet!",str_op[keyw->id].str);
+			print_error_cr("%s has no parse function implemented yet!",defined_keyword[keyw->id].str);
 		}
 
     	// something wrong was happen..
@@ -1610,9 +1984,6 @@ char * CAst::generateAST_Recursive(const char *s, int m_line, CScriptFunction *s
 	*node_to_be_evaluated = new tASTNode;
 
 	aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
-
-
-
 
 	while(*aux != 0 ){
 		PASTNode child_node = NULL;
@@ -1648,6 +2019,15 @@ char * CAst::generateAST_Recursive(const char *s, int m_line, CScriptFunction *s
 				if((end_expr = parseExpression(aux,m_line,error, sf, &child_node)) == NULL){ // something wrong was happen.
 					return NULL;
 				}
+
+				if(*end_expr != ';'){
+					error = true;
+					print_error_cr("Expected ';' at line %i",m_line);
+					return NULL;
+				}
+
+				end_expr++;
+
 			}
 
 		}
@@ -1655,23 +2035,6 @@ char * CAst::generateAST_Recursive(const char *s, int m_line, CScriptFunction *s
 		(*node_to_be_evaluated)->children.push_back(child_node);
 		aux=end_expr;
 		aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
-
-		/*keyw = is_keyword(aux);
-
-		if(keyw != NULL){
-			if(keyw->id == BREAK_KEYWORD){
-				char *aux2 = aux + strlen(keyw->str);
-				aux2=CStringUtils::IGNORE_BLANKS(aux2, m_line);
-				if(*aux2==';'){
-					return aux; // return break;
-				}
-			}
-		}else{
-			if(*aux=='}'){
-				return aux;
-			}
-		}*/
-
 	}
 
 	return NULL;

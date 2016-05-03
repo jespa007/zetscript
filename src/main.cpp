@@ -10,6 +10,8 @@ int main(int argc, char * argv[]){
 
 
 	int i=0;
+
+	bool j=++--++--++i++++++--++--++--++==0;
 	CLog::setUseAnsiEscape(true);
 
 	printf("\nvar %i\n\n",i);
