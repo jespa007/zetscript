@@ -685,7 +685,7 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope * _lc){
 
 	int r=0;
-	string error_str;
+	/*string error_str;
 	if(op==NULL){
 		return -1;
 	}
@@ -806,7 +806,7 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 		}
 
 	}
-	numreg++;
+	numreg++;*/
 
 	return r;
 }

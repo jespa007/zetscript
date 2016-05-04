@@ -15,6 +15,7 @@ enum GROUP_TYPE{
 enum NODE_TYPE{
 	UNKNOWN_NODE=0,
 	MAIN_NODE=1,
+	PUNCTUATOR_NODE,
 	EXPRESSION_NODE,
 	KEYWORD_NODE,
 	FUNCTION_ARGS_DECL_NODE,
@@ -55,8 +56,12 @@ enum KEYWORD_TYPE{
 
 enum PUNCTUATOR_TYPE{
 
-	UNKNOWN_OPERATOR_PUNCTUATOR=0,
-	PLUS_PUNCTUATOR,
+	UNKNOWN_PUNCTUATOR=0,
+
+	//--------------------------------
+	// OPERATORS
+
+	PLUS_PUNCTUATOR=1,
 	MINUS_PUNCTUATOR,
 	MUL_PUNCTUATOR,
 	DIV_PUNCTUATOR,
@@ -83,16 +88,20 @@ enum PUNCTUATOR_TYPE{
 	LOGIC_NOT_PUNCTUATOR,
 
 
-	INC_PUNCTUATOR,
-	DEC_PUNCTUATOR,
+	PRE_INC_PUNCTUATOR,
+	PRE_DEC_PUNCTUATOR,
+
+	POST_INC_PUNCTUATOR,
+	POST_DEC_PUNCTUATOR,
+
 
 	MAX_OPERATOR_PUNCTUATORS,
 
 
 	//---------------------------
+	// SPECIAL CHARACTERS
 
-	UNKNOWN_SPECIAL_PUNCTUATOR=0,
-	COMA_PUNCTUATOR,
+	COMA_PUNCTUATOR=1,
 	SEMICOLON_PUNCTUATOR,
 	FIELD_PUNCTUATOR,
 	OPEN_PARENTHESIS_PUNCTUATOR,
@@ -145,9 +154,9 @@ class tASTNode{
 public:
 
 	NODE_TYPE node_type;
-	KEYWORD_TYPE keyword_type;
-	OPERATOR_PUNCTUATOR_TYPE operator_id;
-	string 	value;
+	tInfoKeyword *keyword_info;
+	tInfoPunctuator *operator_info;
+	string 	value_symbol;
 	string type_ptr;
 	string type_class;
 	int definedValueline;
@@ -156,10 +165,10 @@ public:
 
 	tASTNode(int preallocate_num_nodes=0){
 		node_type = UNKNOWN_NODE;
-		keyword_type = KEYWORD_TYPE::UNKNOWN_KEYWORD;
+		keyword_info = NULL;
 		definedValueline=-1;
-		operator_id=UNKNOWN_OPERATOR_PUNCTUATOR;
-		value="";
+		operator_info=NULL;
+		value_symbol="";
 		parent=NULL;
 
 		if(preallocate_num_nodes > 0){
@@ -197,14 +206,14 @@ private:
 
 
 	// string generic utils...
-	char *getSymbolName(const char *s,int & m_startLine);
-	char * getEndWord(const char *s);
+	static char *getSymbolName(const char *s,int & m_startLine);
+	static char * getEndWord(const char *s);
 
 
-	static PASTNode preOperator(string Punctuator,PASTNode affected_op);
-	static PASTNode postOperator(string Punctuator,PASTNode affected_op);
-	static char * parseExpression(const char *s, int m_line, bool & error, CScriptFunction *sf, PASTNode * node  );
-	static char * parseExpression_Recursive(const char *s, int m_line, bool & error, CScriptFunction *sf, PASTNode *node,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL );
+	static PASTNode preNode(tInfoPunctuator * punctuator,PASTNode affected_op);
+	//static PASTNode postOperator(tInfoPunctuator * punctuator,PASTNode affected_op);
+	static char * parseExpression(const char *s, int m_line, CScriptFunction *sf, PASTNode * node  );
+	static char * parseExpression_Recursive(const char *s, int m_line, CScriptFunction *sf, PASTNode *node,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL );
 
 	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated);
 
@@ -236,8 +245,8 @@ private:
 	static bool parseNotPunctuator(const char *s);
 	static bool parseNotEqualPunctuator(const char *s);
 
-	tInfoPunctuator *checkPreOperatorPunctuator(const char *s);
-	tInfoPunctuator *checkPostOperatorPunctuator(const char *s);
+	static tInfoPunctuator *checkPreOperatorPunctuator(const char *s);
+	static tInfoPunctuator *checkPostOperatorPunctuator(const char *s);
 
 	static bool parseIncPunctuator(const char *s);
 	static bool parseDecPunctuator(const char *s);
@@ -251,7 +260,7 @@ private:
 
 	static tInfoPunctuator *  isOperatorPunctuator(const char *s);
 	static tInfoPunctuator *  isSpecialPunctuator(const char *s);
-	static bool isPunctuator(const char *s);
+	static tInfoPunctuator * isPunctuator(const char *s);
 
 
 	// keyword...

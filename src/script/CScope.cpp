@@ -271,7 +271,7 @@ char *parseKeyword_IfElseForWhile(const char *str, tInfoKeyword **keyw, int & m_
 	//goto_statment = -1;
 
 	// check if condition...
-	*keyw = CAst::is_keyword(str);
+	*keyw = CAst::isKeyword(str);
 
 	if(*keyw == NULL){
 		return NULL;
