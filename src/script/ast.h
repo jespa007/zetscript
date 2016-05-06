@@ -32,6 +32,9 @@ enum NODE_TYPE{
 	CONDITIONAL_NODE,
 	PRE_FOR_NODE,
 	POST_FOR_NODE,
+	CLASS_NODE,
+	CLASS_VAR_COLLECTION_NODE,
+	CLASS_FUNCTION_COLLECTION_NODE,
 	MAX_NODE_TYPE
 };
 
@@ -274,6 +277,8 @@ private:
 	static char * parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseReturn(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 	static char * parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
+
+	static char * parseClass(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
 
 
 	static char * parseArgs(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, char c1, char c2);

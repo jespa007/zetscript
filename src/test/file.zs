@@ -29,17 +29,17 @@ print("Hola:"+array[0]);
 
 class my_class{
 
-	var i;
-	var j;
+	var hh;
+	var jj;
 	
 	function myclass(){
-		this.j=0;
+		this.jj=0;
 		
 		i=0;
 	}
 	
 	function hola3(){
-		this.i=0;
+		this.hh=0;
 	}
 	
 	
