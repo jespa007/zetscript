@@ -93,6 +93,8 @@ bool CScope::registerSymbol(const string & var_name, int m_line){
 	return false;
 }
 
+
+
 bool CScope::defineSymbol(const string & var_name, CObject *obj){
 
 	tInfoRegisteredVar * irv;
@@ -123,6 +125,7 @@ CScope::tInfoRegisteredVar * CScope::existRegisteredSymbol(const string & var_na
 }
 
 
+
 CScope::tInfoRegisteredVar *CScope::getInfoRegisteredSymbol(const string & var_name, bool print_msg){
 	tInfoRegisteredVar * irv;
 	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
@@ -137,6 +140,8 @@ CScope::tInfoRegisteredVar *CScope::getInfoRegisteredSymbol(const string & var_n
 	return NULL;
 
 }
+
+
 //-----------------------------------------------------------------------------------------------------------
 /*
 bool CScope::isVarDeclarationStatment(const char *statment, bool & error, char ** eval_expression,int & m_line, CScope * _localScope){
@@ -1072,5 +1077,12 @@ bool CScope::eval (const string & s){
 
 
 CScope::~CScope(){
+	for(map<string,tInfoRegisteredVar *>::iterator it = m_registeredSymbol.begin();it!= m_registeredSymbol.end();it++){
+			delete it->second;
+	}
+
+	for(unsigned i = 0; i < m_scopeList.size(); i++){
+		delete m_scopeList[i];
+	}
 
 }

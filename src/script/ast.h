@@ -19,20 +19,14 @@ enum NODE_TYPE{
 	EXPRESSION_NODE,
 	KEYWORD_NODE,
 	FUNCTION_ARGS_DECL_NODE,
-	FUNCTION_ARGS_CALL_NODE,
+	FUNCTION_OR_CLASS_ARGS_CALL_NODE,
 	ARRAY_INDEX_NODE,
 	ARRAY_NODE,
 	SYMBOL_NODE,
-	IF_NODE,
 	BODY_NODE,
-	ELSE_NODE,
-	FOR_NODE,
-	FUNCTION_NODE,
-	WHILE_NODE,
 	CONDITIONAL_NODE,
 	PRE_FOR_NODE,
 	POST_FOR_NODE,
-	CLASS_NODE,
 	CLASS_VAR_COLLECTION_NODE,
 	CLASS_FUNCTION_COLLECTION_NODE,
 	MAX_NODE_TYPE
@@ -54,6 +48,8 @@ enum KEYWORD_TYPE{
 	FUNCTION_KEYWORD,
 	CLASS_KEYWORD,
 	THIS_KEYWORD,
+	NEW_KEYWORD,
+	DELETE_KEYWORD,
 	MAX_KEYWORD
 };
 
@@ -69,6 +65,8 @@ enum PUNCTUATOR_TYPE{
 	MUL_PUNCTUATOR,
 	DIV_PUNCTUATOR,
 	MOD_PUNCTUATOR,
+
+	FIELD_PUNCTUATOR,
 
 	ASSIGN_PUNCTUATOR,
 
@@ -98,6 +96,7 @@ enum PUNCTUATOR_TYPE{
 	POST_DEC_PUNCTUATOR,
 
 
+
 	MAX_OPERATOR_PUNCTUATORS,
 
 
@@ -106,7 +105,7 @@ enum PUNCTUATOR_TYPE{
 
 	COMA_PUNCTUATOR=1,
 	SEMICOLON_PUNCTUATOR,
-	FIELD_PUNCTUATOR,
+
 	OPEN_PARENTHESIS_PUNCTUATOR,
 	CLOSE_PARENTHESIS_PUNCTUATOR,
 
@@ -154,6 +153,33 @@ enum{
 
 
 class tASTNode{
+
+	void destroyChildren_Recursive(PASTNode _node){
+		for(unsigned i = 0; i < _node->children.size(); i++){
+			destroyChildren_Recursive(_node->children[i]);
+		}
+
+		if(_node->keyword_info!=NULL){
+			print_info_cr("deallocating %s ",_node->keyword_info->str);
+		}else if(_node->operator_info!=NULL){
+			print_info_cr("deallocating %s ",_node->operator_info->str);
+		}
+		else{
+			print_info_cr("deallocating %s ",_node->value_symbol.c_str());
+		}
+
+		_node->children.clear();
+		delete _node;
+
+	}
+
+	void destroyChildren(){
+		for(unsigned i = 0; i < children.size(); i++){
+			destroyChildren_Recursive(children[i]);
+		}
+		children.clear();
+	}
+
 public:
 
 	NODE_TYPE node_type;
@@ -176,9 +202,13 @@ public:
 
 		if(preallocate_num_nodes > 0){
 			for(int i = 0; i < preallocate_num_nodes; i++){
-				children.push_back(new tASTNode());
+				children.push_back(NULL);
 			}
 		}
+	}
+
+	~tASTNode(){
+		destroyChildren();
 	}
 
 };
@@ -202,8 +232,9 @@ public:
 	 * @m_line: current line
 	 * @node: nodes
 	 */
-	static char * generateAST_Recursive(const char *s, int m_line, CScriptFunction *sf, PASTNode *node);
-	static PASTNode generateAST(const char *s, CScriptFunction *sf);
+	static bool generateAST(const char *s, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
+
+
 
 private:
 
@@ -215,10 +246,6 @@ private:
 
 	static PASTNode preNode(tInfoPunctuator * punctuator,PASTNode affected_op);
 	//static PASTNode postOperator(tInfoPunctuator * punctuator,PASTNode affected_op);
-	static char * parseExpression(const char *s, int m_line, CScriptFunction *sf, PASTNode * node  );
-	static char * parseExpression_Recursive(const char *s, int m_line, CScriptFunction *sf, PASTNode *node,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL );
-
-	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated);
 
 
 
@@ -226,6 +253,7 @@ private:
 	static bool parsePlusPunctuator(const char *s);
 	static bool parseMinusPunctuator(const char *s);
 	static bool parseMulPunctuator(const char *s);
+	static bool parseFieldPunctuator(const char *s);
 	static bool parseDivPunctuator(const char *s);
 	static bool parseModPunctuator(const char *s);
 
@@ -246,7 +274,7 @@ private:
 	static bool parseLogicGreatherEqualThanPunctuator(const char *s);
 	static bool parseLessEqualThanPunctuator(const char *s);
 	static bool parseNotPunctuator(const char *s);
-	static bool parseNotEqualPunctuator(const char *s);
+
 
 	static tInfoPunctuator *checkPreOperatorPunctuator(const char *s);
 	static tInfoPunctuator *checkPostOperatorPunctuator(const char *s);
@@ -266,24 +294,34 @@ private:
 	static tInfoPunctuator * isPunctuator(const char *s);
 
 
+	// AST core functions ...
+	static char * generateAST_Recursive(const char *s, int & m_line, CScriptFunction *sf, bool & error, PASTNode *node_to_be_evaluated=NULL);
+	static char * parseExpression(const char *s, int & m_line, CScriptFunction *sf, PASTNode * ast_node_to_be_evaluated=NULL);
+	static char * parseExpression_Recursive(const char *s, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
+
+
+	// parse block { }
+	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated=NULL);
+
+
 	// keyword...
 
-	static char * parseKeyWord(const char *s, int & m_start_line, CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated);
+	static char * parseKeyWord(const char *s, int & m_start_line, CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated=NULL);
 
-	static char * parseIf(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
-	static char * parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
-	static char * parseWhile(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
-	static char * parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
-	static char * parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
-	static char * parseReturn(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
-	static char * parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
+	static char * parseIf(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseWhile(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseReturn(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
 
-	static char * parseClass(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated);
+	static char * parseClass(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
 
 
-	static char * parseArgs(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, char c1, char c2);
+	static char * parseArgs(char c1, char c2,const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
 
-	static char * generateAST_Recursive(const char *s, int m_line, CScriptFunction *sf, bool & error, PASTNode *node_to_be_evaluated);
+
 
 };
 

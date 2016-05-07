@@ -85,11 +85,12 @@ bool CZG_Script::execute(){
 CZG_Script::~CZG_Script(){
 	// unregister operators ...
 
-
+	delete m_mainFunction;
 
 
 	CCompiler::destroySingletons();
-	CCompiler::destroySingletons();
+	CVirtualMachine::destroySingletons();
 	CAst::destroySingletons();
+	CScope::destroySingletons();
 
 }

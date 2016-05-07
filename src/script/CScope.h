@@ -19,7 +19,11 @@ public:
 	//---------------------------------
 	// Register functions
 	tInfoRegisteredVar *getInfoRegisteredSymbol(const string & v, bool print_msg=true);
+
+
 	bool registerSymbol(const string & var_name, int m_line);
+
+
 	bool defineSymbol(const string & var_name, CObject *obj);
 
 	CScope(CScriptFunction *_comtext,CScope * m_parent=NULL);
@@ -55,6 +59,7 @@ private:
 
 	map<string,tInfoRegisteredVar *> m_registeredSymbol;
 
+
 	//static CUndefined *m_defaultSymbol;
 
 	// each scope has its registered vars.... if the compiler tries to find a var and this is not found goes through parent scopes until
@@ -70,6 +75,7 @@ private:
 
 
 	tInfoRegisteredVar * existRegisteredSymbol(const string & var_name);
+
 
 	//typedef struct _tLocalScope;
 

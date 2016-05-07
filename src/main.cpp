@@ -2,7 +2,20 @@
 #include "SDL2/SDL.h"
 
 
+class a{
+public:
+	int b;
+
+	a(){b=0;}
+};
+
 int main(int argc, char * argv[]){
+
+	a a;
+
+	a .
+
+	b = 1;
 
 	printf("%s\n",(char *) typeid(CString *).name());
 	printf("%s\n",(char *) typeid(string *).name());

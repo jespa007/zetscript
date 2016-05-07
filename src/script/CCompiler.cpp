@@ -864,10 +864,14 @@ bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScr
 
 bool CCompiler::compile(const string & s, CScriptFunction * pr){
 
+	PASTNode root=NULL;
 	// generate whole AST
-	PASTNode root = CAst::generateAST(s.c_str(),pr);
 
-	// then you have all information -> compile into asm!
+	if(CAst::generateAST(s.c_str(),pr, &root)){
+
+		// then you have all information -> compile into asm!
+		delete root;
+	}
 
 
 	return false;
