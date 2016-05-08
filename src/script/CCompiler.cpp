@@ -870,8 +870,10 @@ bool CCompiler::compile(const string & s, CScriptFunction * pr){
 	if(CAst::generateAST(s.c_str(),pr, &root)){
 
 		// then you have all information -> compile into asm!
-		delete root;
+
 	}
+
+	delete root;
 
 
 	return false;

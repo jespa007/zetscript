@@ -21,8 +21,10 @@ int main(int argc, char * argv[]){
 	printf("%s\n",(char *) typeid(string *).name());
 
 
+	int i=1+0==1?2:3*2+10 ? 0 : 1;
 
-	int i=0;
+
+
 
 
 	CLog::setUseAnsiEscape(true);

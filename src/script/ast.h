@@ -29,6 +29,7 @@ enum NODE_TYPE{
 	POST_FOR_NODE,
 	CLASS_VAR_COLLECTION_NODE,
 	CLASS_FUNCTION_COLLECTION_NODE,
+	BASE_CLASS_NODE,
 	MAX_NODE_TYPE
 };
 
@@ -95,6 +96,8 @@ enum PUNCTUATOR_TYPE{
 	POST_INC_PUNCTUATOR,
 	POST_DEC_PUNCTUATOR,
 
+	INLINE_IF_PUNCTUATOR,
+	INLINE_ELSE_PUNCTUATOR,
 
 
 	MAX_OPERATOR_PUNCTUATORS,
@@ -147,16 +150,13 @@ enum{
 
 
 
-
-
-
-
-
 class tASTNode{
 
 	void destroyChildren_Recursive(PASTNode _node){
 		for(unsigned i = 0; i < _node->children.size(); i++){
-			destroyChildren_Recursive(_node->children[i]);
+			if(_node->children[i]!= NULL){
+				destroyChildren_Recursive(_node->children[i]);
+			}
 		}
 
 		if(_node->keyword_info!=NULL){
@@ -241,7 +241,7 @@ private:
 
 	// string generic utils...
 	static char *getSymbolName(const char *s,int & m_startLine);
-	static char * getEndWord(const char *s);
+	static char * getEndWord(const char *s, int m_line);
 
 
 	static PASTNode preNode(tInfoPunctuator * punctuator,PASTNode affected_op);
@@ -253,9 +253,12 @@ private:
 	static bool parsePlusPunctuator(const char *s);
 	static bool parseMinusPunctuator(const char *s);
 	static bool parseMulPunctuator(const char *s);
-	static bool parseFieldPunctuator(const char *s);
 	static bool parseDivPunctuator(const char *s);
 	static bool parseModPunctuator(const char *s);
+
+	static bool parseFieldPunctuator(const char *s);
+	static bool parseInlineIfPunctuator(const char *s);
+	static bool parseInlineElsePunctuator(const char *s);
 
 	static bool parseAssignPunctuator(const char *s);
 
