@@ -21,7 +21,7 @@ enum NODE_TYPE{
 	FUNCTION_ARGS_DECL_NODE,
 	FUNCTION_OR_CLASS_ARGS_CALL_NODE,
 	ARRAY_INDEX_NODE,
-	ARRAY_NODE,
+	ARRAY_OBJECT_NODE,
 	SYMBOL_NODE,
 	BODY_NODE,
 	CONDITIONAL_NODE,
@@ -30,6 +30,7 @@ enum NODE_TYPE{
 	CLASS_VAR_COLLECTION_NODE,
 	CLASS_FUNCTION_COLLECTION_NODE,
 	BASE_CLASS_NODE,
+	CALLING_OBJECT_NODE,
 	MAX_NODE_TYPE
 };
 
@@ -153,23 +154,28 @@ enum{
 class tASTNode{
 
 	void destroyChildren_Recursive(PASTNode _node){
-		for(unsigned i = 0; i < _node->children.size(); i++){
-			if(_node->children[i]!= NULL){
-				destroyChildren_Recursive(_node->children[i]);
+
+		if(_node != NULL){
+
+			for(unsigned i = 0; i < _node->children.size(); i++){
+				if(_node->children[i]!= NULL){
+					destroyChildren_Recursive(_node->children[i]);
+				}
 			}
-		}
 
-		if(_node->keyword_info!=NULL){
-			print_info_cr("deallocating %s ",_node->keyword_info->str);
-		}else if(_node->operator_info!=NULL){
-			print_info_cr("deallocating %s ",_node->operator_info->str);
-		}
-		else{
-			print_info_cr("deallocating %s ",_node->value_symbol.c_str());
-		}
+			if(_node->keyword_info!=NULL){
+				print_info_cr("deallocating %s ",_node->keyword_info->str);
+			}else if(_node->operator_info!=NULL){
+				print_info_cr("deallocating %s ",_node->operator_info->str);
+			}
+			else{
+				print_info_cr("deallocating %s ",_node->value_symbol.c_str());
+			}
 
-		_node->children.clear();
-		delete _node;
+			_node->children.clear();
+			delete _node;
+			_node = NULL;
+		}
 
 	}
 
@@ -244,7 +250,7 @@ private:
 	static char * getEndWord(const char *s, int m_line);
 
 
-	static PASTNode preNode(tInfoPunctuator * punctuator,PASTNode affected_op);
+	static PASTNode preNodePunctuator(tInfoPunctuator * punctuator,PASTNode affected_op);
 	//static PASTNode postOperator(tInfoPunctuator * punctuator,PASTNode affected_op);
 
 
@@ -302,6 +308,12 @@ private:
 	static char * parseExpression(const char *s, int & m_line, CScriptFunction *sf, PASTNode * ast_node_to_be_evaluated=NULL);
 	static char * parseExpression_Recursive(const char *s, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
 
+	/**
+	 * this functions tries to evaluate expression that was get from getSymbolValue and didn't know as trivial expression like (), function(), etc.
+	 * Must be evaluated later with this function.
+	 */
+	static bool   parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent);
+
 
 	// parse block { }
 	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated=NULL);
@@ -318,13 +330,28 @@ private:
 	static char * parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseReturn(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseNew(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseDelete(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
 
 	static char * parseClass(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
 
 
 	static char * parseArgs(char c1, char c2,const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static bool isMarkEndExpression(char c);
 
-
+	/**
+	 * Try to get symbol. It can be trivial (i.e values or names) or not trivial ( inline functions, if-else, etc). At the end, the parse will perform to
+	 * parse non-trivial symbols with a special function.
+	 */
+	static char * getSymbolValue(
+			string & symbol_name,
+			int & m_definedSymbolLine,
+			tInfoPunctuator *pre_operator,
+			tInfoPunctuator *post_operator,
+			bool & is_symbol_trivial,
+			const char *current_string_ptr,
+			int & m_line,
+			CScriptFunction *sf);
 
 };
 
