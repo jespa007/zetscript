@@ -70,6 +70,13 @@ private:
 	//---------------------------------------------------------------------------------------------------------------------------------------
 
 
+	int  gacExpression(PASTNode op, int & numreg, bool & error, CScope * _lc);
+	bool gacFor(PASTNode _node);
+	bool gacWhile(PASTNode _node);
+	bool gacIfElse(PASTNode _node);
+	bool gacIf(PASTNode _node);
+	bool generateAsmCode_Recursive(PASTNode _node);
+
 	vector<CVirtualMachine::tInfoStatementOp > 	*m_currentListStatements;
 	CScriptFunction 							*m_currentScriptFunction;
 

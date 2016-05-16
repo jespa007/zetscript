@@ -22,6 +22,7 @@ enum NODE_TYPE{
 	FUNCTION_OR_CLASS_ARGS_CALL_NODE,
 	ARRAY_INDEX_NODE,
 	ARRAY_OBJECT_NODE,
+	FUNCTION_OBJECT_NODE,
 	SYMBOL_NODE,
 	BODY_NODE,
 	CONDITIONAL_NODE,
@@ -89,7 +90,6 @@ enum PUNCTUATOR_TYPE{
 	LOGIC_LET_PUNCTUATOR,
 
 	LOGIC_NOT_PUNCTUATOR,
-
 
 	PRE_INC_PUNCTUATOR,
 	PRE_DEC_PUNCTUATOR,
@@ -312,7 +312,7 @@ private:
 	 * this functions tries to evaluate expression that was get from getSymbolValue and didn't know as trivial expression like (), function(), etc.
 	 * Must be evaluated later with this function.
 	 */
-	static bool   parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent);
+	static bool   parseNonTrivialSymbol(const char *str, int m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent);
 
 
 	// parse block { }

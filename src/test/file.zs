@@ -11,7 +11,7 @@ return 1;
 
 }();
 
-var kk=1+[1,2][0];
+var kk=1+[[1,2], [0,1] ][0][0];
 
 var fun = function (l,j,k){
 	
@@ -28,7 +28,15 @@ var fun = function (l,j,k){
 
 
 
-var i=3+( fun(1+2+3*7)+2  * 5 + ( 7+6)); // val but j & k are not defined.
+var i=3+( fun(1
++
+2
++
+3
+*7
+)+2  * 5 + ( 7
++
+6)); // val but j & k are not defined.
 
 
 

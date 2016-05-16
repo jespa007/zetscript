@@ -861,6 +861,15 @@ bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScr
 
 	return true;
 }
+/*
+bool CCompiler::generateAsmCode_Recursive(root){
+
+}
+
+
+bool CCompiler::generateAsmCode(root){
+
+}*/
 
 bool CCompiler::compile(const string & s, CScriptFunction * pr){
 
@@ -870,6 +879,7 @@ bool CCompiler::compile(const string & s, CScriptFunction * pr){
 	if(CAst::generateAST(s.c_str(),pr, &root)){
 
 		// then you have all information -> compile into asm!
+		//generateAsmCode(root);
 
 	}
 
