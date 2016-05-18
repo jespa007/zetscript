@@ -811,6 +811,71 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 	return r;
 }
 
+bool CCompiler::ast2asm_Recursive(PASTNode _node, CScriptFunction *sf){
+
+
+	for(unsigned i = 0; i < _node->children.size(); i++){
+
+		if(_node->children[i] != NULL){
+			if(!ast2asm_Recursive(_node->children[i],sf)){
+				print_error_cr("Error 2!");
+				return false;
+			}else{ // perform its generation...
+				switch(_node->children[i]->node_type){
+				default:
+					break;
+				case UNKNOWN_NODE:print_info_cr("UNKNOWN_NODE");break;
+				case MAIN_NODE:print_info_cr("MAIN_NODE");break;
+				case PUNCTUATOR_NODE:print_info_cr("PUNCTUATOR_NODE");break;
+				case EXPRESSION_NODE:print_info_cr("EXPRESSION_NODE");break;
+				case KEYWORD_NODE:print_info_cr("KEYWORD_NODE");break;
+				case FUNCTION_ARGS_DECL_NODE:print_info_cr("FUNCTION_ARGS_DECL_NODE");break;
+				case FUNCTION_OR_CLASS_ARGS_CALL_NODE:print_info_cr("FUNCTION_OR_CLASS_ARGS_CALL_NODE");break;
+				case ARRAY_INDEX_NODE:print_info_cr("ARRAY_INDEX_NODE");break;
+				case ARRAY_OBJECT_NODE:print_info_cr("ARRAY_OBJECT_NODE");break;
+				case FUNCTION_OBJECT_NODE:print_info_cr("FUNCTION_OBJECT_NODE");break;
+				case SYMBOL_NODE:print_info_cr("SYMBOL_NODE");break;
+				case BODY_NODE:print_info_cr("BODY_NODE");break;
+				case CONDITIONAL_NODE:print_info_cr("CONDITIONAL_NODE");break;
+				case PRE_FOR_NODE:print_info_cr("PRE_FOR_NODE");break;
+				case POST_FOR_NODE:print_info_cr("POST_FOR_NODE");break;
+				case CLASS_VAR_COLLECTION_NODE:print_info_cr("CLASS_VAR_COLLECTION_NODE");break;
+				case CLASS_FUNCTION_COLLECTION_NODE:print_info_cr("CLASS_FUNCTION_COLLECTION_NODE");break;
+				case BASE_CLASS_NODE:print_info_cr("BASE_CLASS_NODE");break;
+				case CALLING_OBJECT_NODE:print_info_cr("CALLING_OBJECT_NODE");break;
+				}
+
+			}
+		}
+	}
+
+	return true;
+}
+
+bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
+
+	if(_node == NULL){
+		print_error_cr("NULL node!");
+		return false;
+	}
+
+	if(_node->node_type == NODE_TYPE::MAIN_NODE){
+
+		for(unsigned i = 0; i < _node->children.size(); i++){
+			if(!ast2asm_Recursive(_node->children[i],sf)){
+				print_error_cr("Error 1!");
+				return false;
+			}
+		}
+
+		return true;
+	}
+	else{
+		print_error_cr("Main node expected");
+	}
+
+	return false;
+}
 
 bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScriptFunction *sf, CScope *currentEvaluatingScope){
 
@@ -877,6 +942,9 @@ bool CCompiler::compile(const string & s, CScriptFunction * pr){
 	// generate whole AST
 
 	if(CAst::generateAST(s.c_str(),pr, &root)){
+
+		ast2asm(root,pr);
+
 
 		// then you have all information -> compile into asm!
 		//generateAsmCode(root);

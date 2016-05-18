@@ -76,6 +76,8 @@ private:
 	bool gacIfElse(PASTNode _node);
 	bool gacIf(PASTNode _node);
 	bool generateAsmCode_Recursive(PASTNode _node);
+	bool ast2asm(PASTNode _node, CScriptFunction *sf);
+	bool ast2asm_Recursive(PASTNode _node, CScriptFunction *sf);
 
 	vector<CVirtualMachine::tInfoStatementOp > 	*m_currentListStatements;
 	CScriptFunction 							*m_currentScriptFunction;
