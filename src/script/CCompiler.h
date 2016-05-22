@@ -68,7 +68,7 @@ private:
 
 	// DEBUG TOOLS
 	//---------------------------------------------------------------------------------------------------------------------------------------
-
+	// COMPILE ASSEMBLE CODE (GAC)
 
 	int  gacExpression(PASTNode op, int & numreg, bool & error, CScope * _lc);
 	bool gacFor(PASTNode _node);

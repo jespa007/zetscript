@@ -1,4 +1,8 @@
 
+var j="hola que hace"+0+0+1;
+
+/*
+
 // conditional if...
 var hh = 1 + 0==1 ? 2: 3*2 + 10 ? 0 : 1;
 
@@ -124,3 +128,4 @@ class my_class_derivated:my_class{
 
 
 
+*/

@@ -813,10 +813,14 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 
 bool CCompiler::ast2asm_Recursive(PASTNode _node, CScriptFunction *sf){
 
+	PASTNode currentNode;
+	int j = 0;
 
 	for(unsigned i = 0; i < _node->children.size(); i++){
 
-		if(_node->children[i] != NULL){
+		currentNode = _node->children[i];
+
+		if(currentNode != NULL){
 			if(!ast2asm_Recursive(_node->children[i],sf)){
 				print_error_cr("Error 2!");
 				return false;
@@ -824,10 +828,16 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScriptFunction *sf){
 				switch(_node->children[i]->node_type){
 				default:
 					break;
-				case UNKNOWN_NODE:print_info_cr("UNKNOWN_NODE");break;
-				case MAIN_NODE:print_info_cr("MAIN_NODE");break;
+				case UNKNOWN_NODE:print_info_cr("UNKNOWN_NODE");
+				j++;
+				break;
+				break;
+				case MAIN_NODE:print_info_cr("MAIN_NODE");
+				break;
 				case PUNCTUATOR_NODE:print_info_cr("PUNCTUATOR_NODE");break;
-				case EXPRESSION_NODE:print_info_cr("EXPRESSION_NODE");break;
+				case EXPRESSION_NODE:print_info_cr("EXPRESSION_NODE");
+
+					break;
 				case KEYWORD_NODE:print_info_cr("KEYWORD_NODE");break;
 				case FUNCTION_ARGS_DECL_NODE:print_info_cr("FUNCTION_ARGS_DECL_NODE");break;
 				case FUNCTION_OR_CLASS_ARGS_CALL_NODE:print_info_cr("FUNCTION_OR_CLASS_ARGS_CALL_NODE");break;

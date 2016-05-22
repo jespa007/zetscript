@@ -1238,9 +1238,7 @@ char * CAst::parseClass(const char *s,int & m_line,  CScriptFunction *sf, PASTNo
 			}
 
 
-
 			// try to register class...
-
 			class_line = m_line;
 			class_name = CStringUtils::copyStringFromInterval(aux_p, end_p);
 
@@ -2204,6 +2202,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 					if(ast_node_to_be_evaluated != NULL){
 						(*ast_node_to_be_evaluated)->children.push_back(var_declaration = new tASTNode);
 						var_declaration->value_symbol = symbol_name;
+						var_declaration->node_type = SYMBOL_NODE;
 					}
 
 					if(*aux_p == '='){
