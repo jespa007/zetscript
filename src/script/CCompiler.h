@@ -14,17 +14,17 @@ public:
 	bool compileExpression(const char *expression_str, int & m_line,CScriptFunction * sf, CScope *currentEvaluatingScope);
 	bool compile(const string & s, CScriptFunction * pr);
 
-	int generateAsmCode(PASTNode op, int & numreg, bool & error, CScope * _lc);
+	//int generateAsmCode(PASTNode op, int & numreg, bool & error, CScope * _lc);
 
 
-	CVirtualMachine::ASM_OPERATOR getNumberOperatorId_TwoOps(const string & op,CVirtualMachine::VAR_TYPE & result_type);
-	CVirtualMachine::ASM_OPERATOR getIntegerOperatorId_TwoOps(const string & op,CVirtualMachine::VAR_TYPE & result_type);
-	CVirtualMachine::ASM_OPERATOR getBoleanOperatorId_TwoOps(const string & op,CVirtualMachine::VAR_TYPE & result_type);
-	CVirtualMachine::ASM_OPERATOR getStringOperatorId_TwoOps(const string & op,CVirtualMachine::VAR_TYPE & result_type);
+	CVirtualMachine::ASM_OPERATOR getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVirtualMachine::VAR_TYPE & result_type);
+	CVirtualMachine::ASM_OPERATOR getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVirtualMachine::VAR_TYPE & result_type);
+	CVirtualMachine::ASM_OPERATOR getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVirtualMachine::VAR_TYPE & result_type);
+	CVirtualMachine::ASM_OPERATOR getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVirtualMachine::VAR_TYPE & result_type);
 
-	CVirtualMachine::ASM_OPERATOR getNumberOperatorId_OneOp(const string & op);
-	CVirtualMachine::ASM_OPERATOR getBoleanOperatorId_OneOp(const string & op);
-	CVirtualMachine::ASM_OPERATOR getStringOperatorId_OneOp(const string & op);
+	CVirtualMachine::ASM_OPERATOR getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op);
+	CVirtualMachine::ASM_OPERATOR getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op);
+	CVirtualMachine::ASM_OPERATOR getStringOperatorId_OneOp(PUNCTUATOR_TYPE op);
 
 	/**
 	 * Load value or symbol and insert asm operation at current statment.
@@ -37,7 +37,7 @@ public:
 	CVirtualMachine::tInfoAsmOp * insert_JT_Instruction();
 	void insert_NOP_Instruction();
 
-	bool insertOperatorInstruction(const string &op, string & error_str, int left, int right=-1);
+	bool insertOperatorInstruction(tInfoPunctuator *  op, string & error_str, int left, int right=-1);
 	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
 
 	bool *getObjectResultCurrentStatmentAsBoolean();
@@ -70,7 +70,9 @@ private:
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE ASSEMBLE CODE (GAC)
 
-	int  gacExpression(PASTNode op, int & numreg, bool & error, CScope * _lc);
+	int  gacExpression_Recursive(PASTNode op, int & numreg, bool & error, CScriptFunction *sf);
+	bool  gacExpression(PASTNode op, CScriptFunction *sf);
+
 	bool gacFor(PASTNode _node);
 	bool gacWhile(PASTNode _node);
 	bool gacIfElse(PASTNode _node);

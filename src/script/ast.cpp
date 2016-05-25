@@ -207,8 +207,8 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup2(const char *s){
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			LOGIC_EQUAL_PUNCTUATOR,
 			LOGIC_NOT_EQUAL_PUNCTUATOR,
-			LOGIC_LET_PUNCTUATOR,
-			LOGIC_GET_PUNCTUATOR,
+			LOGIC_LTE_PUNCTUATOR,
+			LOGIC_GTE_PUNCTUATOR,
 			LOGIC_GT_PUNCTUATOR,
 			LOGIC_LT_PUNCTUATOR
 	};
@@ -390,8 +390,8 @@ void CAst::createSingletons(){
 	defined_operator_punctuator[LOGIC_NOT_EQUAL_PUNCTUATOR]={LOGIC_NOT_EQUAL_PUNCTUATOR, "!=",parseLogicNotEqualPunctuator};
 	defined_operator_punctuator[LOGIC_GT_PUNCTUATOR]={LOGIC_GT_PUNCTUATOR, ">",parseLogicGreatherThanPunctuator};
 	defined_operator_punctuator[LOGIC_LT_PUNCTUATOR]={LOGIC_LT_PUNCTUATOR, "<",parseLogicLessThanPunctuator};
-	defined_operator_punctuator[LOGIC_GET_PUNCTUATOR]={LOGIC_GET_PUNCTUATOR, ">=",parseLogicGreatherEqualThanPunctuator};
-	defined_operator_punctuator[LOGIC_LET_PUNCTUATOR]={LOGIC_LET_PUNCTUATOR, "<=",parseLessEqualThanPunctuator};
+	defined_operator_punctuator[LOGIC_GTE_PUNCTUATOR]={LOGIC_GTE_PUNCTUATOR, ">=",parseLogicGreatherEqualThanPunctuator};
+	defined_operator_punctuator[LOGIC_LTE_PUNCTUATOR]={LOGIC_LTE_PUNCTUATOR, "<=",parseLessEqualThanPunctuator};
 	defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR]={LOGIC_NOT_PUNCTUATOR, "!",parseNotPunctuator};
 
 	defined_operator_punctuator[PRE_INC_PUNCTUATOR]={PRE_INC_PUNCTUATOR, "++",parseIncPunctuator};

@@ -404,135 +404,154 @@ void CCompiler::insert_NOP_Instruction(){
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(const string & op, CVirtualMachine::VAR_TYPE & result_type){
+CVirtualMachine::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVirtualMachine::VAR_TYPE & result_type){
 
 	result_type = CVirtualMachine::INTEGER;
 
-	if(op=="+"){
+	switch(op){
+	default:
+		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	case PUNCTUATOR_TYPE::PLUS_PUNCTUATOR:
 		return CVirtualMachine::ADD;
-	}else if(op=="/"){
+	case PUNCTUATOR_TYPE::DIV_PUNCTUATOR:
 		return CVirtualMachine::DIV;
-	}else if(op=="%"){
+	case PUNCTUATOR_TYPE::MOD_PUNCTUATOR:
 		return CVirtualMachine::MOD;
-	}else if(op=="*"){
+	case PUNCTUATOR_TYPE::MUL_PUNCTUATOR:
 		return CVirtualMachine::MUL;
-	}else if(op=="&"){
+	case PUNCTUATOR_TYPE::BINARY_AND_PUNCTUATOR:
 		return CVirtualMachine::AND;
-	}else if(op=="|"){
+	case PUNCTUATOR_TYPE::BINARY_OR_PUNCTUATOR:
 		return CVirtualMachine::OR;
-	}else if(op=="^"){
+	case PUNCTUATOR_TYPE::BINARY_XOR_PUNCTUATOR:
 		return CVirtualMachine::XOR;
-	}else if(op=="<<"){
+	case PUNCTUATOR_TYPE::SHIFT_LEFT_PUNCTUATOR:
 		return CVirtualMachine::SHL;
-	}else if(op==">>"){
+	case PUNCTUATOR_TYPE::SHIFT_RIGHT_PUNCTUATOR:
 		return CVirtualMachine::SHR;
-	}else if(op==">="){
+	case PUNCTUATOR_TYPE::LOGIC_GTE_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::GTE;
-	}else if(op==">"){
+	case PUNCTUATOR_TYPE::LOGIC_GT_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::GT;
-	}else if(op=="<"){
+	case PUNCTUATOR_TYPE::LOGIC_LT_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::LT;
-	}else if(op=="<="){
+	case PUNCTUATOR_TYPE::LOGIC_LTE_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::LTE;
-	}else if(op=="=="){
+	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::EQU;
+
 	}
 	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(const string & op, CVirtualMachine::VAR_TYPE & result_type){
+CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVirtualMachine::VAR_TYPE & result_type){
 
 	result_type = CVirtualMachine::NUMBER;
 
-	if(op=="+"){
+	switch(op){
+	default:
+		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	case PUNCTUATOR_TYPE::PLUS_PUNCTUATOR:
 		return CVirtualMachine::ADD;
-	}else if(op=="/"){
+	case PUNCTUATOR_TYPE::DIV_PUNCTUATOR:
 		return CVirtualMachine::DIV;
-	}else if(op=="%"){
+	case PUNCTUATOR_TYPE::MOD_PUNCTUATOR:
 		return CVirtualMachine::MOD;
-	}else if(op=="*"){
+	case PUNCTUATOR_TYPE::MUL_PUNCTUATOR:
 		return CVirtualMachine::MUL;
-	}else if(op==">="){
+	case PUNCTUATOR_TYPE::LOGIC_GTE_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::GTE;
-	}else if(op==">"){
+	case PUNCTUATOR_TYPE::LOGIC_GT_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::GT;
-	}else if(op=="<"){
+	case PUNCTUATOR_TYPE::LOGIC_LT_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::LT;
-	}else if(op=="<="){
+	case PUNCTUATOR_TYPE::LOGIC_LTE_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::LTE;
-	}else if(op=="=="){
+	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::EQU;
 	}
 	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(const string & op){
+CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op){
 
-	if(op=="-"){
+	switch(op){
+	default:
+		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	case PUNCTUATOR_TYPE::MINUS_PUNCTUATOR:
 		return CVirtualMachine::NEG;
-	}else if(op=="++"){
+	case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
 		return CVirtualMachine::PRE_INC;
-	}else if(op=="post_++"){
+	case PUNCTUATOR_TYPE::POST_INC_PUNCTUATOR:
 		return CVirtualMachine::POST_INC;
-	}else if(op=="--"){
+	case PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR:
 		return CVirtualMachine::PRE_DEC;
-	}else if(op=="post_--"){
+	case PUNCTUATOR_TYPE::POST_DEC_PUNCTUATOR:
 		return CVirtualMachine::POST_DEC;
 	}
 
 	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(const string & op, CVirtualMachine::VAR_TYPE & result_type){
+CVirtualMachine::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVirtualMachine::VAR_TYPE & result_type){
 
 	result_type = CVirtualMachine::BOOL;
 
-	if(op=="&&"){
+	switch(op){
+	default:
+		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	case PUNCTUATOR_TYPE::LOGIC_AND_PUNCTUATOR:
 		return CVirtualMachine::LOGIC_AND;
-	}else if(op=="||"){
+	case PUNCTUATOR_TYPE::LOGIC_OR_PUNCTUATOR:
 		return CVirtualMachine::LOGIC_OR;
 	}
 
 	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getBoleanOperatorId_OneOp(const string & op){
-	if(op=="!"){
+CVirtualMachine::ASM_OPERATOR CCompiler::getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op){
+	switch(op){
+	default:
+		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	case PUNCTUATOR_TYPE::LOGIC_NOT_PUNCTUATOR:
 		return CVirtualMachine::NOT;
 	}
 	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(const string & op, CVirtualMachine::VAR_TYPE & result_type){
+CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVirtualMachine::VAR_TYPE & result_type){
 
 	result_type = CVirtualMachine::STRING;
 
-	if(op=="+"){
+	switch(op){
+	default:
+		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	case PUNCTUATOR_TYPE::PLUS_PUNCTUATOR:
 		return CVirtualMachine::CAT;
-	}else if(op=="=="){
+	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
 		return CVirtualMachine::EQU;
 	}
 	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_OneOp(const string & op){
+CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_OneOp(PUNCTUATOR_TYPE op){
 
 	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
 }
 
 
-bool CCompiler::insertOperatorInstruction(const string & op, string & error_str, int left, int right){
+bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_str, int left, int right){
 
 	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 
@@ -556,28 +575,28 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 
 		if(((t_left == CIntegerFactory::getPointerTypeStr())) &&
 						((t_right == CIntegerFactory::getPointerTypeStr()))){
-					if((id_op=getIntegerOperatorId_TwoOps(op,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
-						error_str = CStringUtils::formatString("undefined operator %s",op.c_str());
+					if((id_op=getIntegerOperatorId_TwoOps(op->id,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+						error_str = CStringUtils::formatString("undefined operator %s",op->str);
 						return false;
 					}
 
 		}else if(((t_left == CNumberFactory::getPointerTypeStr()) ) &&
 				((t_right == CNumberFactory::getPointerTypeStr()) )){
-			if((id_op=getNumberOperatorId_TwoOps(op,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
-				error_str = CStringUtils::formatString("undefined operator %s",op.c_str());
+			if((id_op=getNumberOperatorId_TwoOps(op->id,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+				error_str = CStringUtils::formatString("undefined operator %s",op->str);
 				return false;
 			}
 
 		}else if(t_left== CStringFactory::getPointerTypeStr()){
 
-			if((id_op=getStringOperatorId_TwoOps(op,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
-				error_str = CStringUtils::formatString("undefined operator %s",op.c_str());
+			if((id_op=getStringOperatorId_TwoOps(op->id,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+				error_str = CStringUtils::formatString("undefined operator %s",op->str);
 				return false;
 			}
 
 		}else if((t_left == CBooleanFactory::getPointerTypeStr()) && t_right == CBooleanFactory::getPointerTypeStr()){
-			if((id_op=getBoleanOperatorId_TwoOps(op, result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
-				error_str = CStringUtils::formatString("undefined operator %s",op.c_str());
+			if((id_op=getBoleanOperatorId_TwoOps(op->id, result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+				error_str = CStringUtils::formatString("undefined operator %s",op->str);
 				return false;
 			}
 		}else{
@@ -625,16 +644,16 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 	}else if(left >=0){ // insert one operand
 
 			if((t_left == CIntegerFactory::getPointerTypeStr()) ){
-						if((id_op=getNumberOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
-							error_str = CStringUtils::formatString("undefined operator %s for number type",op.c_str());
+						if((id_op=getNumberOperatorId_OneOp(op->id))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+							error_str = CStringUtils::formatString("undefined operator %s for number type",op->str);
 							return false;
 						}
 						res_obj = new int;
 						result_type = CVirtualMachine::INTEGER;
 
 			}else if((t_left == CNumberFactory::getPointerTypeStr()) ){
-				if((id_op=getNumberOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
-					error_str = CStringUtils::formatString("undefined operator %s for number type",op.c_str());
+				if((id_op=getNumberOperatorId_OneOp(op->id))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+					error_str = CStringUtils::formatString("undefined operator %s for number type",op->str);
 					return false;
 				}
 				res_obj = new float;
@@ -642,15 +661,15 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 
 			}else if(t_left== CStringFactory::getPointerTypeStr()){
 
-				if((id_op=getStringOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
-					error_str = CStringUtils::formatString("undefined operator %s for string type",op.c_str());
+				if((id_op=getStringOperatorId_OneOp(op->id))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+					error_str = CStringUtils::formatString("undefined operator %s for string type",op->str);
 					return false;
 				}
 				res_obj = new string;
 				result_type = CVirtualMachine::STRING;
 			}else if((t_left == CBooleanFactory::getPointerTypeStr())){
-				if((id_op=getBoleanOperatorId_OneOp(op))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
-					error_str = CStringUtils::formatString("undefined operator %s for boolean type",op.c_str());
+				if((id_op=getBoleanOperatorId_OneOp(op->id))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+					error_str = CStringUtils::formatString("undefined operator %s for boolean type",op->str);
 					return false;
 				}
 				res_obj = new bool;
@@ -682,8 +701,9 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 //
 // COMPILE EXPRESSIONS AND GENERATE ITS ASM
 //
-int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, CScope * _lc){
+int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, CScriptFunction *sf){
 
+	CScope * _lc = sf->getScope();
 	int r=0;
 	string error_str;
 	if(op==NULL){
@@ -693,7 +713,7 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 	if(op->children[LEFT_NODE]==NULL && op->children[RIGHT_NODE]==NULL){ // trivial case value itself...
 
 		//printf("CONST \tE[%i],%s\n",numreg,op->value.c_str());
-		if(!insertLoadValueInstruction(op->value, op->type_ptr, _lc, op->definedValueline)){
+		if(!insertLoadValueInstruction(op->value_symbol, op->type_ptr, _lc, op->definedValueline)){
 			error|=true;
 			return -1;
 
@@ -704,11 +724,11 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 
 		int right=0, left=0;
 
-		left=generateAsmCode(op->children[LEFT_NODE],numreg,error,_lc);
+		left=gacExpression_Recursive(op->children[LEFT_NODE],numreg,error,sf);
 
 		if(error) return -1;
 
-		right=generateAsmCode(op->children[RIGHT_NODE],numreg,error,_lc);
+		right=gacExpression_Recursive(op->children[RIGHT_NODE],numreg,error,sf);
 
 		if(error) return -1;
 
@@ -717,10 +737,10 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 		if(left !=-1 && right!=-1){ // 2 ops
 
 			// particular case if operator is =
-			if(op->token == "="){
+			if(op->operator_info->id == PUNCTUATOR_TYPE::ASSIGN_PUNCTUATOR){
 				// the variable can only assigned if the type is the same or if the type is undefined.
 				// check if left operand is registered variable...
-				CScope::tInfoRegisteredVar * info_var = _lc->getInfoRegisteredSymbol(op->children[LEFT_NODE]->value,false);
+				CScope::tInfoRegisteredVar * info_var = _lc->getInfoRegisteredSymbol(op->children[LEFT_NODE]->value_symbol,false);
 				if(info_var == NULL){
 					print_error_cr("undeclared variable \"%s\"");
 					error|=true;
@@ -745,8 +765,8 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 
 							var_obj = CFactoryContainer::getInstance()->newObjectByClassPtr(ptr_class_type);
 							if(var_obj!=NULL){
-								_lc->defineSymbol(op->children[LEFT_NODE]->value,var_obj);
-								print_com_cr("%s defined as %s",op->children[LEFT_NODE]->value.c_str(),ptr_class_type.c_str());
+								_lc->defineSymbol(op->children[LEFT_NODE]->value_symbol,var_obj);
+								print_com_cr("%s defined as %s",op->children[LEFT_NODE]->value_symbol.c_str(),ptr_class_type.c_str());
 							}else{
 								print_error_cr("ERRRRRRRRRROR %s is not registered",ptr_class_type.c_str());
 								error|=true;
@@ -768,7 +788,7 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 
 
 					}else{
-						print_error_cr("\"%s\" was instanced as \"%s\" and cannot be change type as \"%s\"",op->children[LEFT_NODE]->value.c_str(),var_obj->getPointerClassStr().c_str(),op->type_ptr.c_str());
+						print_error_cr("\"%s\" was instanced as \"%s\" and cannot be change type as \"%s\"",op->children[LEFT_NODE]->value_symbol.c_str(),var_obj->getPointerClassStr().c_str(),op->type_ptr.c_str());
 						error|=true;
 						return -1;
 					}
@@ -776,7 +796,7 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 			}
 			else{
 				//printf("%s\tE[%i],E[%i],E[%i]\n",op->token.c_str(),numreg,left,right);
-				if(!insertOperatorInstruction(op->token, error_str,left,right)){
+				if(!insertOperatorInstruction(op->operator_info, error_str,left,right)){
 					print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
 					error|=true;
 					return -1;
@@ -785,7 +805,7 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 
 		}else if(right!=-1){ // one op..
 			//printf("%s\tE[%i],E[%i]\n",op->token.c_str(),numreg,right);
-			if(!insertOperatorInstruction(op->token, error_str,right)){
+			if(!insertOperatorInstruction(op->operator_info, error_str,right)){
 				print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
 				error|=true;
 				return -1;
@@ -793,7 +813,7 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 
 		}else if(left!=-1){ // one op..
 		//	printf("%s\tE[%i],E[%i]\n",op->token.c_str(),numreg,left);
-			if(!insertOperatorInstruction(op->token, error_str,left)){
+			if(!insertOperatorInstruction(op->operator_info, error_str,left)){
 				print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
 				error|=true;
 				return -1;
@@ -811,54 +831,20 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 	return r;
 }
 
-bool CCompiler::gacExpression(const char *expression_str, int & m_line, CScriptFunction *sf, CScope *currentEvaluatingScope){
+bool CCompiler::gacExpression(PASTNode _node, CScriptFunction *sf){
 
 	int numreg=0;
-
-	PASTNode ast_node;
-	char *aux=(char *)expression_str;
-
 	CVirtualMachine::tInfoStatementOp i_stat;
-
-	this->m_currentScriptFunction = sf;
-	this->m_currentListStatements = sf->getCompiledCode();
-
-	//printf("%s:%i %s\n","file.zs",m_line,expression_str);
-	//insertDebugInformation(expression_str);
-	i_stat.m_line = m_line;
-	i_stat.expression_str = expression_str;
-
-	ast_node=generateBinaryAST(expression_str,m_line);
-
-	if(ast_node==NULL){ // some error happend!
-		return false;
-	}
-
-	// update n lines...
-	while(*aux!=0){
-		if(*aux=='\n') m_line++;
-		aux++;
-	}
-
-	numreg=0;
-
 
 
 	// new statment ...
 	(*m_currentListStatements).push_back(i_stat);
 
 	bool error_asm=false;
-	generateAsmCode_Recursive(ast_node,numreg,error_asm,currentEvaluatingScope);
+	gacExpression_Recursive(_node,numreg,error_asm,sf);
 
+	return !error_asm;
 
-	if(error_asm)
-	{
-		print_error_cr("Error generating code\n");
-		return false;
-	}
-
-
-	return true;
 }
 
 bool CCompiler::ast2asm_Recursive(PASTNode _node, CScriptFunction *sf){
@@ -886,7 +872,9 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScriptFunction *sf){
 				break;
 				case PUNCTUATOR_NODE:print_info_cr("PUNCTUATOR_NODE");break;
 				case EXPRESSION_NODE:print_info_cr("EXPRESSION_NODE");
-
+					if(!gacExpression(_node->children[i]->children[0],sf)){
+						return false;
+					}
 					break;
 				case KEYWORD_NODE:print_info_cr("KEYWORD_NODE");break;
 				case FUNCTION_ARGS_DECL_NODE:print_info_cr("FUNCTION_ARGS_DECL_NODE");break;
@@ -948,14 +936,17 @@ bool CCompiler::generateAsmCode(root){
 
 }*/
 
-bool CCompiler::compile(const string & s, CScriptFunction * pr){
+bool CCompiler::compile(const string & s, CScriptFunction * sf){
 
 	PASTNode root=NULL;
+	this->m_currentScriptFunction = sf;
+	this->m_currentListStatements = sf->getCompiledCode();
+
 	// generate whole AST
 
-	if(CAst::generateAST(s.c_str(),pr, &root)){
+	if(CAst::generateAST(s.c_str(),sf, &root)){
 
-		ast2asm(root,pr);
+		ast2asm(root,sf);
 
 
 		// then you have all information -> compile into asm!
