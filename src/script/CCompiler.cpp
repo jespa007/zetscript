@@ -682,10 +682,10 @@ bool CCompiler::insertOperatorInstruction(const string & op, string & error_str,
 //
 // COMPILE EXPRESSIONS AND GENERATE ITS ASM
 //
-int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope * _lc){
+int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, CScope * _lc){
 
 	int r=0;
-	/*string error_str;
+	string error_str;
 	if(op==NULL){
 		return -1;
 	}
@@ -806,9 +806,59 @@ int CCompiler::generateAsmCode(PASTNode op, int & numreg, bool & error, CScope *
 		}
 
 	}
-	numreg++;*/
+	numreg++;
 
 	return r;
+}
+
+bool CCompiler::gacExpression(const char *expression_str, int & m_line, CScriptFunction *sf, CScope *currentEvaluatingScope){
+
+	int numreg=0;
+
+	PASTNode ast_node;
+	char *aux=(char *)expression_str;
+
+	CVirtualMachine::tInfoStatementOp i_stat;
+
+	this->m_currentScriptFunction = sf;
+	this->m_currentListStatements = sf->getCompiledCode();
+
+	//printf("%s:%i %s\n","file.zs",m_line,expression_str);
+	//insertDebugInformation(expression_str);
+	i_stat.m_line = m_line;
+	i_stat.expression_str = expression_str;
+
+	ast_node=generateBinaryAST(expression_str,m_line);
+
+	if(ast_node==NULL){ // some error happend!
+		return false;
+	}
+
+	// update n lines...
+	while(*aux!=0){
+		if(*aux=='\n') m_line++;
+		aux++;
+	}
+
+	numreg=0;
+
+
+
+	// new statment ...
+	(*m_currentListStatements).push_back(i_stat);
+
+	bool error_asm=false;
+	generateAsmCode_Recursive(ast_node,numreg,error_asm,currentEvaluatingScope);
+
+
+	if(error_asm)
+	{
+		print_error_cr("Error generating code\n");
+		return false;
+	}
+
+
+	return true;
 }
 
 bool CCompiler::ast2asm_Recursive(PASTNode _node, CScriptFunction *sf){
@@ -887,55 +937,7 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 	return false;
 }
 
-bool CCompiler::compileExpression(const char *expression_str, int & m_line, CScriptFunction *sf, CScope *currentEvaluatingScope){
 
-	/*int numreg=0;
-
-	PASTNode ast_node;
-	char *aux=(char *)expression_str;
-
-	CVirtualMachine::tInfoStatementOp i_stat;
-
-	this->m_currentScriptFunction = sf;
-	this->m_currentListStatements = sf->getCompiledCode();
-
-	//printf("%s:%i %s\n","file.zs",m_line,expression_str);
-	//insertDebugInformation(expression_str);
-	i_stat.m_line = m_line;
-	i_stat.expression_str = expression_str;
-
-	ast_node=generateBinaryAST(expression_str,m_line);
-
-	if(ast_node==NULL){ // some error happend!
-		return false;
-	}
-
-	// update n lines...
-	while(*aux!=0){
-		if(*aux=='\n') m_line++;
-		aux++;
-	}
-
-	numreg=0;
-
-
-
-	// new statment ...
-	(*m_currentListStatements).push_back(i_stat);
-
-	bool error_asm=false;
-	generateAsmCode(ast_node,numreg,error_asm,currentEvaluatingScope);
-
-
-	if(error_asm)
-	{
-		print_error_cr("Error generating code\n");
-		return false;
-	}*/
-
-
-	return true;
-}
 /*
 bool CCompiler::generateAsmCode_Recursive(root){
 
