@@ -33,11 +33,13 @@ public:
 	CScriptFunction * getScriptFunction();
 
 	CScope * getParent();
-	CScope * getCurrentScope();
+	CScope * getCurrentScopePointer();
 	CScope * getRootScope();
 
 	CScope * pushScope();
 	CScope * popScope();
+
+	void resetScopePointer();
 
 	//---------------------------------
 
@@ -70,7 +72,7 @@ private:
 	vector<CScope *> m_scopeList;
 
 	// The a parent scope ...
-	CScope *m_parentScope,*m_mainScope, *m_currentScope;
+	CScope *m_parentScope,*m_mainScope, *m_currentScopePointer;
 	CScriptFunction * m_scriptFunction;
 
 

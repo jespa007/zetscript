@@ -127,7 +127,7 @@ public:
 	static CVirtualMachine * getInstance();
 	static void destroySingletons();
 
-	void printGeneratedCode(CScriptFunction *fs);
+	static void printGeneratedCode(CScriptFunction *fs);
 
 	bool execute(CScriptFunction *fs, vector<CObject *> * argv=NULL);
 

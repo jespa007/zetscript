@@ -30,10 +30,22 @@ public:
 	 * Load value or symbol and insert asm operation at current statment.
 	 */
 	CVirtualMachine::tInfoStatementOp  *newStatment();
-	bool insertLoadValueInstruction(const string & value, string & type_ptr, CScope * _lc, int var_at_line);
+	bool insertLoadValueInstruction(const string & value, CScope * _lc, int var_at_line);
 	bool insertMovVarInstruction(CObject *var, int right);
+
+	/**
+	 * Unconditional Jump instruction
+	 */
 	CVirtualMachine::tInfoAsmOp * insert_JMP_Instruction();
+
+	/**
+	 * Jump Not True (JNT) instruction
+	 */
 	CVirtualMachine::tInfoAsmOp * insert_JNT_Instruction();
+
+	/**
+	 * Jump if True (JT) instruction
+	 */
 	CVirtualMachine::tInfoAsmOp * insert_JT_Instruction();
 	void insert_NOP_Instruction();
 
@@ -70,18 +82,25 @@ private:
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE ASSEMBLE CODE (GAC)
 
-	int  gacExpression_Recursive(PASTNode op, int & numreg, bool & error, CScriptFunction *sf);
-	bool  gacExpression(PASTNode op, CScriptFunction *sf);
+	int  gacExpression_Recursive(PASTNode op, int & numreg, bool & error);
+	bool  gacExpression(PASTNode op);
 
+	bool gacKeyword(PASTNode _node);
 	bool gacFor(PASTNode _node);
+	bool gacVar(PASTNode _node);
 	bool gacWhile(PASTNode _node);
 	bool gacIfElse(PASTNode _node);
 	bool gacIf(PASTNode _node);
+	bool gacSwitch(PASTNode _node);
+	bool gacBody(PASTNode _node);
+
+
 	bool generateAsmCode_Recursive(PASTNode _node);
 	bool ast2asm(PASTNode _node, CScriptFunction *sf);
-	bool ast2asm_Recursive(PASTNode _node, CScriptFunction *sf);
+	bool ast2asm_Recursive(PASTNode _node);
 
 	vector<CVirtualMachine::tInfoStatementOp > 	*m_currentListStatements;
+	CScope										*m_treescope;
 	CScriptFunction 							*m_currentScriptFunction;
 
 

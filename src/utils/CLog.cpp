@@ -25,6 +25,8 @@ CLog * CLog::getInstance()
 //--------------------------------------------------------------------------------
 CLog::CLog()
 {
+	//setbuf(stdout, NULL);
+	fp = NULL;
 }
 //--------------------------------------------------------------------------------
 
@@ -49,7 +51,7 @@ void  CLog::print(const  char  *file,  int  line, int level, bool with_cr, const
         {
         	case CLog::LOG_WARNING:
           case CLog::LOG_ERROR:
-          	std_type=stderr;
+          	//std_type=stderr;
       	break;
           default:
       	break;
@@ -109,6 +111,7 @@ void  CLog::print(const  char  *file,  int  line, int level, bool with_cr, const
   		//fprintf(stderr,"[ %30s:%04i - %3s]=%s",filename.c_str(),line,VAR_LOG(level),text);
 	}
 
+
  if(!ansi_escape){
 #ifdef _WIN32
   	// restore ...
@@ -118,11 +121,15 @@ void  CLog::print(const  char  *file,  int  line, int level, bool with_cr, const
   CColorTerm::setColor(std_type,CColorTerm::BRIGHT, CColorTerm::GREEN, CColorTerm::BLACK);
  }
 
-  if(with_cr)
+ if(with_cr)
 	  fprintf(std_type,"\n");
 
+
   // to ensure all data has been write...
-  fflush(std_type);
+  //fflush(std_type);
+  //fflush(stdout);
+ //fflush(NULL);
+
 
 
 

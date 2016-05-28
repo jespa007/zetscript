@@ -25,6 +25,7 @@ enum NODE_TYPE{
 	FUNCTION_OBJECT_NODE,
 	SYMBOL_NODE,
 	BODY_NODE,
+	GROUP_CASES_NODE,
 	CONDITIONAL_NODE,
 	PRE_FOR_NODE,
 	POST_FOR_NODE,
@@ -63,8 +64,8 @@ enum PUNCTUATOR_TYPE{
 	//--------------------------------
 	// OPERATORS
 
-	PLUS_PUNCTUATOR=1,
-	MINUS_PUNCTUATOR,
+	ADD_PUNCTUATOR=1,
+	SUB_PUNCTUATOR,
 	MUL_PUNCTUATOR,
 	DIV_PUNCTUATOR,
 	MOD_PUNCTUATOR,
@@ -197,6 +198,7 @@ public:
 	int definedValueline;
 	PASTNode parent;
 	vector<PASTNode> children; //left,right;
+	void *aux_value;
 
 	tASTNode(int preallocate_num_nodes=0){
 		node_type = UNKNOWN_NODE;
@@ -205,6 +207,7 @@ public:
 		operator_info=NULL;
 		value_symbol="";
 		parent=NULL;
+		aux_value = NULL;
 
 		if(preallocate_num_nodes > 0){
 			for(int i = 0; i < preallocate_num_nodes; i++){

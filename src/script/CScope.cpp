@@ -30,7 +30,7 @@ CScope::CScope(CScriptFunction * _fs, CScope * _parent){
 		m_mainScope = _parent->getMainScope();
 	}
 
-	m_currentScope=this;
+	m_currentScopePointer=this;
 }
 
 CScriptFunction * CScope::getScriptFunction(){
@@ -50,24 +50,28 @@ CScope * CScope::getParent(){
 	return m_parentScope;
 }
 
-CScope * CScope::getCurrentScope(){
-	return m_currentScope;
+CScope * CScope::getCurrentScopePointer(){
+	return m_currentScopePointer;
+}
+
+void CScope::resetScopePointer(){
+	m_currentScopePointer = m_mainScope;
 }
 
 CScope * CScope::pushScope(){
 
-	CScope *new_scope = new CScope(m_currentScope->getScriptFunction(),m_currentScope);
-	m_currentScope->m_scopeList.push_back(new_scope);
-	m_currentScope = new_scope;
-	return m_currentScope;
+	CScope *new_scope = new CScope(m_currentScopePointer->getScriptFunction(),m_currentScopePointer);
+	m_currentScopePointer->m_scopeList.push_back(new_scope);
+	m_currentScopePointer = new_scope;
+	return m_currentScopePointer;
 
 }
 
 CScope * CScope::popScope(){
 
-	if(m_currentScope->m_parentScope != NULL){
-		m_currentScope = m_currentScope->m_parentScope;
-		return m_currentScope;
+	if(m_currentScopePointer->m_parentScope != NULL){
+		m_currentScopePointer = m_currentScopePointer->m_parentScope;
+		return m_currentScopePointer;
 	}
 
 	return NULL;

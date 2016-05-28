@@ -197,7 +197,7 @@ bool *  CCompiler::getObjectResultCurrentStatmentAsBoolean(){
 }
 
 
-bool CCompiler::insertLoadValueInstruction(const string & v, string & type_ptr, CScope * _lc, int m_var_at_line){
+bool CCompiler::insertLoadValueInstruction(const string & v, CScope * _lc, int m_var_at_line){
 
 	CNumber *num_obj;
 	CInteger *int_obj;
@@ -411,7 +411,7 @@ CVirtualMachine::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(PUNCTUATOR_
 	switch(op){
 	default:
 		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
-	case PUNCTUATOR_TYPE::PLUS_PUNCTUATOR:
+	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
 		return CVirtualMachine::ADD;
 	case PUNCTUATOR_TYPE::DIV_PUNCTUATOR:
 		return CVirtualMachine::DIV;
@@ -456,7 +456,7 @@ CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(PUNCTUATOR_T
 	switch(op){
 	default:
 		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
-	case PUNCTUATOR_TYPE::PLUS_PUNCTUATOR:
+	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
 		return CVirtualMachine::ADD;
 	case PUNCTUATOR_TYPE::DIV_PUNCTUATOR:
 		return CVirtualMachine::DIV;
@@ -488,7 +488,7 @@ CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(PUNCTUATOR_TY
 	switch(op){
 	default:
 		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
-	case PUNCTUATOR_TYPE::MINUS_PUNCTUATOR:
+	case PUNCTUATOR_TYPE::SUB_PUNCTUATOR:
 		return CVirtualMachine::NEG;
 	case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
 		return CVirtualMachine::PRE_INC;
@@ -536,7 +536,7 @@ CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(PUNCTUATOR_T
 	switch(op){
 	default:
 		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
-	case PUNCTUATOR_TYPE::PLUS_PUNCTUATOR:
+	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
 		return CVirtualMachine::CAT;
 	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
 		result_type = CVirtualMachine::BOOL;
@@ -600,7 +600,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_s
 				return false;
 			}
 		}else{
-			error_str = CStringUtils::formatString("not compatible %s %s",t_left.c_str(),t_right.c_str());
+			error_str = CStringUtils::formatString("Operator %s: not compatible left value as %s with right value as %s",op->str,t_left.c_str(),t_right.c_str());
 			return false;
 		}
 
@@ -701,19 +701,19 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_s
 //
 // COMPILE EXPRESSIONS AND GENERATE ITS ASM
 //
-int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, CScriptFunction *sf){
+int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error){
 
-	CScope * _lc = sf->getScope();
+	CScope * _lc = m_currentScriptFunction->getScope();
 	int r=0;
 	string error_str;
 	if(op==NULL){
 		return -1;
 	}
 
-	if(op->children[LEFT_NODE]==NULL && op->children[RIGHT_NODE]==NULL){ // trivial case value itself...
+	if(op->children.size()==0){//[LEFT_NODE]==NULL && op->children[RIGHT_NODE]==NULL){ // trivial case value itself...
 
 		//printf("CONST \tE[%i],%s\n",numreg,op->value.c_str());
-		if(!insertLoadValueInstruction(op->value_symbol, op->type_ptr, _lc, op->definedValueline)){
+		if(!insertLoadValueInstruction(op->value_symbol, _lc, op->definedValueline)){
 			error|=true;
 			return -1;
 
@@ -724,11 +724,16 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 
 		int right=0, left=0;
 
-		left=gacExpression_Recursive(op->children[LEFT_NODE],numreg,error,sf);
+		left=gacExpression_Recursive(op->children[LEFT_NODE],numreg,error);
 
 		if(error) return -1;
 
-		right=gacExpression_Recursive(op->children[RIGHT_NODE],numreg,error,sf);
+		if(op->children.size()==2){
+			right=gacExpression_Recursive(op->children[RIGHT_NODE],numreg,error);
+		}
+		else {
+			right = -1;
+		}
 
 		if(error) return -1;
 
@@ -831,73 +836,300 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 	return r;
 }
 
-bool CCompiler::gacExpression(PASTNode _node, CScriptFunction *sf){
-
-	int numreg=0;
-	CVirtualMachine::tInfoStatementOp i_stat;
 
 
-	// new statment ...
-	(*m_currentListStatements).push_back(i_stat);
+bool CCompiler::gacFor(PASTNode _node){
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
+	if(_node->keyword_info->id != KEYWORD_TYPE::FOR_KEYWORD){print_error_cr("node is not FOR keyword type");return false;}
 
-	bool error_asm=false;
-	gacExpression_Recursive(_node,numreg,error_asm,sf);
 
-	return !error_asm;
+	return true;
+}
+bool CCompiler::gacWhile(PASTNode _node){
 
+	return true;
 }
 
-bool CCompiler::ast2asm_Recursive(PASTNode _node, CScriptFunction *sf){
 
-	PASTNode currentNode;
-	int j = 0;
 
-	for(unsigned i = 0; i < _node->children.size(); i++){
+bool CCompiler::gacIf(PASTNode _node){
 
-		currentNode = _node->children[i];
+	return true;
+}
 
-		if(currentNode != NULL){
-			if(!ast2asm_Recursive(_node->children[i],sf)){
-				print_error_cr("Error 2!");
-				return false;
-			}else{ // perform its generation...
-				switch(_node->children[i]->node_type){
-				default:
-					break;
-				case UNKNOWN_NODE:print_info_cr("UNKNOWN_NODE");
-				j++;
-				break;
-				break;
-				case MAIN_NODE:print_info_cr("MAIN_NODE");
-				break;
-				case PUNCTUATOR_NODE:print_info_cr("PUNCTUATOR_NODE");break;
-				case EXPRESSION_NODE:print_info_cr("EXPRESSION_NODE");
-					if(!gacExpression(_node->children[i]->children[0],sf)){
+bool CCompiler::gacSwitch(PASTNode _node){
+
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
+	if(_node->keyword_info->id != SWITCH_KEYWORD){print_error_cr("node is not SWITCH keyword type");return false;}
+	bool has_default = false;
+	PASTNode switch_node;
+	PASTNode group_cases;
+	PASTNode case_value;
+	PASTNode case_body;
+
+	string error_str;
+	string detected_type_str;
+	CScope *_scope = this->m_currentScriptFunction->getScope()->getCurrentScopePointer();
+
+	// create new statment ...
+	CCompiler::getInstance()->newStatment();
+
+
+	if(insertLoadValueInstruction(_node->value_symbol,_scope,_node->definedValueline)){ // insert condition value ...
+
+		// get current instruction value to take as ref for compare within value cases...
+		int switch_value_index  = getCurrentInstructionIndex();
+
+		// the stratege is first evaluate all cases and then their bodies...
+		for(unsigned s=0; s < 2; s++){
+			for(unsigned i = 0; i < _node->children.size(); i++){ // expect node type group cases ...
+
+				switch_node = _node->children[i];
+
+				if(switch_node != NULL){ // the rules are the following children[0]:group_cases and children[1]:body_case
+
+					if(switch_node->children.size() == 2){
+						group_cases = switch_node->children[0];
+						case_body = switch_node->children[1];
+
+						switch(s){
+
+						case 0: // CASES
+
+							if(group_cases->node_type == GROUP_CASES_NODE){
+
+								//int condition_index  = getCurrentInstructionIndex();
+
+								for(unsigned j = 0; j < group_cases->children.size(); j++){ // generate condition case ...
+									case_value = group_cases->children[j];
+
+									if(case_value->node_type == KEYWORD_NODE && case_value->keyword_info != NULL){
+
+										switch(case_value->keyword_info->id){
+										default:
+											print_error_cr("Unexpected %s keyword node in SWITCH node",case_value->keyword_info->str);
+											break;
+										case DEFAULT_KEYWORD:
+
+											if(!has_default){
+												has_default = true;
+												case_value->aux_value = insert_JMP_Instruction();
+											}else{
+												print_error_cr("case already defined!");
+												return false;
+											}
+											break;
+										case CASE_KEYWORD:
+
+											// load case X:
+											insertLoadValueInstruction(case_value->value_symbol,_scope,case_value->definedValueline);
+
+											// is equal ? ==
+											if(!insertOperatorInstruction(&CAst::defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR],error_str, switch_value_index ,getCurrentInstructionIndex())){
+													print_error_cr("%s",error_str.c_str());
+													return false;
+											}
+
+											// save jmp instrucction ..
+											case_value->aux_value = insert_JT_Instruction();
+
+											break;
+
+										}
+
+									}else{
+										print_error_cr("Not SWITCH case or NULL keyword info");
+										return false;
+									}
+								}
+
+							}else{
+								print_error_cr("Expected group cases type node in SWITCH node");
+								return false;
+							}
+							break;
+
+						case 1: // BODY
+
+							if(gacBody(case_body)){
+								case_value->aux_value = insert_JMP_Instruction();
+							}else{
+								return false;
+							}
+							break;
+						}
+					}
+					else{
+						print_error_cr("SWITCH node has not 2 nodes");
 						return false;
 					}
-					break;
-				case KEYWORD_NODE:print_info_cr("KEYWORD_NODE");break;
-				case FUNCTION_ARGS_DECL_NODE:print_info_cr("FUNCTION_ARGS_DECL_NODE");break;
-				case FUNCTION_OR_CLASS_ARGS_CALL_NODE:print_info_cr("FUNCTION_OR_CLASS_ARGS_CALL_NODE");break;
-				case ARRAY_INDEX_NODE:print_info_cr("ARRAY_INDEX_NODE");break;
-				case ARRAY_OBJECT_NODE:print_info_cr("ARRAY_OBJECT_NODE");break;
-				case FUNCTION_OBJECT_NODE:print_info_cr("FUNCTION_OBJECT_NODE");break;
-				case SYMBOL_NODE:print_info_cr("SYMBOL_NODE");break;
-				case BODY_NODE:print_info_cr("BODY_NODE");break;
-				case CONDITIONAL_NODE:print_info_cr("CONDITIONAL_NODE");break;
-				case PRE_FOR_NODE:print_info_cr("PRE_FOR_NODE");break;
-				case POST_FOR_NODE:print_info_cr("POST_FOR_NODE");break;
-				case CLASS_VAR_COLLECTION_NODE:print_info_cr("CLASS_VAR_COLLECTION_NODE");break;
-				case CLASS_FUNCTION_COLLECTION_NODE:print_info_cr("CLASS_FUNCTION_COLLECTION_NODE");break;
-				case BASE_CLASS_NODE:print_info_cr("BASE_CLASS_NODE");break;
-				case CALLING_OBJECT_NODE:print_info_cr("CALLING_OBJECT_NODE");break;
 				}
-
+				else{
+					print_error_cr("SWITCH node NULL");
+					return false;
+				}
 			}
 		}
 	}
 
+
+		/*switch(_node->children[i]->node_type){
+		default:
+			print_error_cr("Unexpected node type %i",_node->children[i]->node_type);
+			break;
+		case NODE_TYPE::KEYWORD_NODE:
+			if(_node->children[i]->keyword_info == NULL) { print_error_cr("keyword info null");return false;}
+			switch(_node->children[i]->keyword_info->id){
+			case KEYWORD_TYPE::CASE_KEYWORD:
+				if(_node->children[i]->children[0] == NULL) { print_error_cr("body case info null");return false;}
+				if(_node->children[i]->children[0]->node_type == NODE_TYPE::BODY_NODE){
+					print_info_cr("Case node ok");
+				}
+				break;
+			case KEYWORD_TYPE::DEFAULT_KEYWORD:
+				if(_node->children[i]->children[0] == NULL) { print_error_cr("body default info null");return false;}
+
+				print_info_cr("default node ok");
+				break;
+			case KEYWORD_TYPE::BREAK_KEYWORD:
+				break;
+			default:
+				print_error_cr("Switch:Unexpected keyword %s",_node->children[i]->keyword_info->str);
+				break;
+			}
+
+			break;
+		}
+
+		print_info_cr("%s");
+	}*/
+
 	return true;
+}
+
+bool CCompiler::gacVar(PASTNode _node){
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
+	if(_node->keyword_info->id != VAR_KEYWORD){print_error_cr("node is not VAR keyword type");return false;}
+
+	if(_node->children.size() == 1){ // an expression is expected ...
+		return gacExpression(_node->children[0]);
+	}
+
+	return false;
+
+}
+
+bool CCompiler::gacKeyword(PASTNode _node){
+
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
+
+	switch(_node->keyword_info->id){
+	default:
+		print_error_cr("Not implemented!");
+		break;
+	case KEYWORD_TYPE::SWITCH_KEYWORD:
+		return gacSwitch(_node);
+		break;
+	case KEYWORD_TYPE::VAR_KEYWORD:
+		return gacVar(_node);
+		break;
+
+	}
+
+	return false;
+}
+
+bool CCompiler::gacBody(PASTNode _node){
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != BODY_NODE ){print_error_cr("node is not BODY type or null");return false;}
+
+	if(_node->children.size() == 1){ // body has code ...
+		m_treescope->pushScope();
+		bool ok = ast2asm_Recursive(_node->children[0]);
+		m_treescope->popScope();
+		return ok;
+	}
+
+	return true;
+}
+
+bool CCompiler::gacExpression(PASTNode _node){
+
+	int numreg=0;
+	CVirtualMachine::tInfoStatementOp i_stat;
+
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != EXPRESSION_NODE){print_error_cr("node is not Expression");return false;}
+
+	if(_node->children.size() == 1){
+
+
+		// new statment ...
+		(*m_currentListStatements).push_back(i_stat);
+
+		bool error_asm=false;
+		gacExpression_Recursive(_node->children[0],numreg,error_asm);
+
+		return !error_asm;
+	}
+	else{
+		print_error_cr("Expression node has no expressions ");
+	}
+
+	return false;
+
+}
+
+bool CCompiler::ast2asm_Recursive(PASTNode _node){
+
+
+
+	if(_node != NULL){
+		switch(_node->node_type){
+			default:
+			case UNKNOWN_NODE:
+				print_info_cr("UNKNOWN_NODE (%i)",_node->node_type);
+				return false;
+				break;
+			break;
+			break;
+			case MAIN_NODE:print_info_cr("MAIN_NODE");
+			break;
+			case PUNCTUATOR_NODE:print_info_cr("PUNCTUATOR_NODE");break;
+			case EXPRESSION_NODE:
+				print_info_cr("EXPRESSION_NODE");
+				return gacExpression(_node);
+				break;
+			case GROUP_CASES_NODE:
+				print_info_cr("GROUP_CASES_NODE");
+				break;
+			case KEYWORD_NODE:
+				print_info_cr("KEYWORD_NODE");
+				return gacKeyword(_node);
+				break;
+			case FUNCTION_ARGS_DECL_NODE:print_info_cr("FUNCTION_ARGS_DECL_NODE");break;
+			case FUNCTION_OR_CLASS_ARGS_CALL_NODE:print_info_cr("FUNCTION_OR_CLASS_ARGS_CALL_NODE");break;
+			case ARRAY_INDEX_NODE:print_info_cr("ARRAY_INDEX_NODE");break;
+			case ARRAY_OBJECT_NODE:print_info_cr("ARRAY_OBJECT_NODE");break;
+			case FUNCTION_OBJECT_NODE:print_info_cr("FUNCTION_OBJECT_NODE");break;
+			case SYMBOL_NODE:print_info_cr("SYMBOL_NODE");break;
+			case BODY_NODE:print_info_cr("BODY_NODE");break;
+			case CONDITIONAL_NODE:print_info_cr("CONDITIONAL_NODE");break;
+			case PRE_FOR_NODE:print_info_cr("PRE_FOR_NODE");break;
+			case POST_FOR_NODE:print_info_cr("POST_FOR_NODE");break;
+			case CLASS_VAR_COLLECTION_NODE:print_info_cr("CLASS_VAR_COLLECTION_NODE");break;
+			case CLASS_FUNCTION_COLLECTION_NODE:print_info_cr("CLASS_FUNCTION_COLLECTION_NODE");break;
+			case BASE_CLASS_NODE:print_info_cr("BASE_CLASS_NODE");break;
+			case CALLING_OBJECT_NODE:print_info_cr("CALLING_OBJECT_NODE");break;
+		}
+	}
+
+
+	return false;
 }
 
 bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
@@ -907,10 +1139,15 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 		return false;
 	}
 
+	m_currentScriptFunction = sf;
+
+	// reset current pointer ...
+	m_treescope->resetScopePointer();
+
 	if(_node->node_type == NODE_TYPE::MAIN_NODE){
 
 		for(unsigned i = 0; i < _node->children.size(); i++){
-			if(!ast2asm_Recursive(_node->children[i],sf)){
+			if(!ast2asm_Recursive(_node->children[i])){
 				print_error_cr("Error 1!");
 				return false;
 			}
@@ -941,14 +1178,18 @@ bool CCompiler::compile(const string & s, CScriptFunction * sf){
 	PASTNode root=NULL;
 	this->m_currentScriptFunction = sf;
 	this->m_currentListStatements = sf->getCompiledCode();
+	this->m_treescope = sf->getScope();
 
 	// generate whole AST
 
 	if(CAst::generateAST(s.c_str(),sf, &root)){
 
-		ast2asm(root,sf);
 
+		if(ast2asm(root,sf)){
 
+			// print generated asm ...
+			CVirtualMachine::printGeneratedCode(sf);
+		}
 		// then you have all information -> compile into asm!
 		//generateAsmCode(root);
 

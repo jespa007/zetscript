@@ -1,5 +1,25 @@
+var kk=0+1;
 
-var j="hola que hace"+0+0+1;
+
+switch(0){
+case -1:
+break;
+case 0:
+ kk=9;
+ break;
+case 1:
+kk=10;
+break;
+case 111:
+case 200:
+default:
+kk=11;
+break;
+
+}
+
+
+// var j="hola que hace"+0+0+1;
 
 /*
 
@@ -91,18 +111,7 @@ for(var j=0; j < 10 ; j++){
 	ll = ll + j;
 }
 
-switch(kk){
-case 0:
- kk=9;
- break;
-case 1:
-kk=10;
-break;
-default:
-kk=11;
-break;
 
-}
 
 var f=0;
 
