@@ -16,7 +16,7 @@ public:
 
 
 	CScriptFunction(CScriptFunction *_parentFunction=NULL);
-	vector<CVirtualMachine::tInfoStatementOp> * getCompiledCode();
+	vector<CCompiler::tInfoStatementOp> * getCompiledCode();
 
 	CScriptFunction *getParent();
 
@@ -33,7 +33,7 @@ public:
 private:
 
 
-	vector<CVirtualMachine::tInfoStatementOp>  m_listStatements;
+	vector<CCompiler::tInfoStatementOp>  m_listStatements;
 	map<string,tInfoRegisteredClass *>  	 m_registeredClass;
 	/**
 	 * Return variable is assigned at the begin as undefined and when return keyword occurs,

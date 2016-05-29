@@ -248,15 +248,15 @@ typedef struct {
 
 	string str_conditional_value; // values that executes the scope...
 	tInfoStartEndString str_scope;
-	CVirtualMachine::tInfoAsmOp *jt_asm=NULL;
-	CVirtualMachine::tInfoAsmOp *jmp_asm=NULL;
+	CCompiler::tInfoAsmOp *jt_asm=NULL;
+	CCompiler::tInfoAsmOp *jmp_asm=NULL;
 }tInfoCase;
 
 typedef struct {
 
 	vector<tInfoCase> conditional_case;
 	tInfoStartEndString str_default_case_scope;
-	CVirtualMachine::tInfoAsmOp *jmp_default_asm=NULL;
+	CCompiler::tInfoAsmOp *jmp_default_asm=NULL;
 
 }tInfoSwitch;
 

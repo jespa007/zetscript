@@ -71,7 +71,7 @@ CScriptFunction::tInfoRegisteredClass *CScriptFunction::getRegisteredClass(const
 
 
 
-vector<CVirtualMachine::tInfoStatementOp> * CScriptFunction::getCompiledCode(){
+vector<CCompiler::tInfoStatementOp> * CScriptFunction::getCompiledCode(){
 	return &m_listStatements;
 }
 

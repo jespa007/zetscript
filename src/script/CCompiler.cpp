@@ -14,7 +14,7 @@
 #endif
 
 
-
+CCompiler::tDefOperator CCompiler::def_operator[MAX_OPERATORS];
 
 CCompiler *CCompiler::m_compiler = NULL;
 
@@ -35,6 +35,54 @@ void CCompiler::destroySingletons(){
 	}
 
 }
+
+
+
+void CCompiler::printGeneratedCode(CScriptFunction *fs){
+
+	vector<tInfoStatementOp> * m_listStatements = fs->getCompiledCode();
+
+	for(unsigned s = 0; s < (*m_listStatements).size();s++){
+		vector<tInfoAsmOp *> * asm_op_statment = &(*m_listStatements)[s].asm_op;
+
+		printf("\n[%s:%i]\t%s\n\n","file.zs",(*m_listStatements)[s].m_line,(*m_listStatements)[s].expression_str.c_str());
+
+		for(unsigned i = 0; i  <  asm_op_statment->size(); i++){
+
+			int n_ops=1;
+			int left = (*asm_op_statment)[i]->index_left;
+			int right = (*asm_op_statment)[i]->index_right;
+
+			if(left != -1 && right != -1)
+				n_ops=2;
+
+
+
+			switch((*asm_op_statment)[i]->operator_type){
+			case  LOAD:
+				printf("[%02i:%02i]\t%s\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,(*asm_op_statment)[i]->result_str.c_str());
+				break;
+			case  MOV:
+				printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,(*asm_op_statment)[i]->result_str.c_str(),s,right);
+				break;
+			case JNT:
+			case JT:
+			case JMP:
+				printf("[%02i:%02i]\t%s\t[%04i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,(int)(*asm_op_statment)[i]->result_obj);
+				break;
+			default:
+
+				if(n_ops==1){
+					printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,s,left);
+				}else{
+					printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,s,left,s,right);
+				}
+				break;
+			}
+		}
+	}
+}
+
 //------------------------------------------------------------------------------------------------------------------
 //
 // CONSTRUCTOR
@@ -43,6 +91,39 @@ void CCompiler::destroySingletons(){
 CCompiler::CCompiler(){
 	m_currentListStatements = NULL;
 	m_currentScriptFunction = NULL;
+	m_treescope = NULL;
+
+	def_operator[NOP]         ={"NOP",NOP,0};
+	def_operator[MOV]         ={"MOV",MOV,2}; // mov expression to var
+	def_operator[LOAD]        ={"LOAD",LOAD,1}; // primitive value like number/string or boolean...
+	def_operator[EQU]         ={"EQU",EQU,2};  // ==
+	def_operator[LT]          ={"LT",LT,2};  // <
+	def_operator[LTE]         ={"LTE",LTE,2};  // <=
+	def_operator[NOT]         ={"NOT",NOT,1}; // !
+	def_operator[GT]          ={"GT",GT,2};  // >
+	def_operator[GTE]         ={"GTE",GTE,2}; // >=
+	def_operator[NEG]         ={"NEG",NEG,1}; // !
+	def_operator[ADD]         ={"ADD",ADD,2}; // +
+	def_operator[PRE_INC]     ={"PRE_INC",PRE_INC,1};// ++
+	def_operator[POST_INC]    ={"POST_INC",POST_INC,1}; // ++
+	def_operator[PRE_DEC]     ={"PRE_DEC",PRE_DEC,1}; // ++
+	def_operator[POST_DEC]    ={"POST_DEC",POST_DEC,1}; // ++
+	def_operator[LOGIC_AND]   ={"LOGIC_AND",LOGIC_AND,2}; // &&
+	def_operator[LOGIC_OR]    ={"LOGIC_OR",LOGIC_OR,2};  // ||
+	def_operator[DIV]         ={"DIV",DIV,2}; // /
+	def_operator[MUL]         ={"MUL",MUL,2}; // *
+	def_operator[MOD]         ={"MOD",MOD,2};  // %
+	def_operator[CAT]         ={"CAT",CAT,2};  // str+str
+	def_operator[AND]         ={"AND",AND,2}; // bitwise logic and
+	def_operator[OR]          ={"OR",OR,2}; // bitwise logic or
+	def_operator[XOR]         ={"XOR",XOR,2}; // logic xor
+	def_operator[SHL]         ={"SHL",SHL,2}; // shift left
+	def_operator[SHR]         ={"SHR",SHR,2}; // shift right
+	def_operator[PUSH_SCOPE]  ={"PUSH_SCOPE",PUSH_SCOPE,0};
+	def_operator[POP_SCOPE]   ={"POP_SCOPE",POP_SCOPE,0};
+	def_operator[JMP]         ={"JMP",JMP,1};
+	def_operator[JNT]         ={"JNT",JNT,1}; // goto if not true ... goes end to conditional.
+	def_operator[JT]          ={"JT",JT,1}; // goto if true ... goes end to conditional.
 }
 
 
@@ -129,27 +210,27 @@ bool CCompiler::defineSymbol(const string & var_name, CObject *obj){
 // COMPILE COMPILER MANAGEMENT
 //
 string  CCompiler::getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction){
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	string result="unknow";
 
 	if(instruction >=0 && instruction < ptr_current_statement_op->asm_op.size()){
 		switch(ptr_current_statement_op->asm_op[instruction]->result_type){
 		default:
-		case CVirtualMachine::NOT_DEFINED:
+		case CCompiler::NOT_DEFINED:
 			break;
-		case CVirtualMachine::OBJ:
+		case CCompiler::OBJ:
 			result= (((CObject *)ptr_current_statement_op->asm_op[instruction]->result_obj)->getPointerClassStr()); // type result..
 			break;
-		case CVirtualMachine::NUMBER:
+		case CCompiler::NUMBER:
 			result= CNumberFactory::getPointerTypeStr();
 			break;
-		case CVirtualMachine::INTEGER:
+		case CCompiler::INTEGER:
 			result= CIntegerFactory::getPointerTypeStr();
 			break;
-		case CVirtualMachine::STRING:
+		case CCompiler::STRING:
 			result= CStringFactory::getPointerTypeStr();
 			break;
-		case CVirtualMachine::BOOL:
+		case CCompiler::BOOL:
 			result= CBooleanFactory::getPointerTypeStr();
 			break;
 		}
@@ -161,7 +242,7 @@ string  CCompiler::getUserTypeResultCurrentStatmentAtInstruction(unsigned instru
 }
 
 int CCompiler::getCurrentInstructionIndex(){
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	return ptr_current_statement_op->asm_op.size()-1;
 }
 
@@ -169,8 +250,8 @@ int CCompiler::getCurrentStatmentIndex(){
 	return (int)(m_currentListStatements->size()-1);
 }
 
-CVirtualMachine::tInfoStatementOp * CCompiler::newStatment(){
-	CVirtualMachine::tInfoStatementOp st;
+CCompiler::tInfoStatementOp * CCompiler::newStatment(){
+	CCompiler::tInfoStatementOp st;
 
 	m_currentListStatements->push_back(st);
 
@@ -179,12 +260,12 @@ CVirtualMachine::tInfoStatementOp * CCompiler::newStatment(){
 
 bool *  CCompiler::getObjectResultCurrentStatmentAsBoolean(){
 
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	bool *result=NULL;
 	unsigned instruction = ptr_current_statement_op->asm_op.size()-1;
 
 	if(instruction >=0 && instruction < ptr_current_statement_op->asm_op.size()){
-		if(ptr_current_statement_op->asm_op[instruction]->result_type == CVirtualMachine::BOOL){
+		if(ptr_current_statement_op->asm_op[instruction]->result_type == CCompiler::BOOL){
 			result= (((bool *)ptr_current_statement_op->asm_op[instruction]->result_obj)); // type result..
 		}else{
 			print_error_cr("Result type is not boolean");
@@ -205,20 +286,20 @@ bool CCompiler::insertLoadValueInstruction(const string & v, CScope * _lc, int m
 	CBoolean *bool_obj;
 	string type_value="CONST";
 
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	void *obj;
-	CVirtualMachine::VAR_TYPE type=CVirtualMachine::NOT_DEFINED;
+	CCompiler::VAR_TYPE type=CCompiler::NOT_DEFINED;
 	// try parse value...
 	if((obj=CInteger::ParsePrimitive(v))!=NULL){
-			type=CVirtualMachine::INTEGER;
+			type=CCompiler::INTEGER;
 			print_com_cr("%s detected as int\n",v.c_str());
 	}
 	else if((obj=CNumber::ParsePrimitive(v))!=NULL){
-		type=CVirtualMachine::NUMBER;
+		type=CCompiler::NUMBER;
 		print_com_cr("%s detected as float\n",v.c_str());
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
-		type=CVirtualMachine::STRING;
+		type=CCompiler::STRING;
 		string s=v.substr(1,v.size()-2);
 		string *so=new string();
 		(*so)=s;
@@ -226,11 +307,11 @@ bool CCompiler::insertLoadValueInstruction(const string & v, CScope * _lc, int m
 		print_com_cr("%s detected as string\n",v.c_str());
 	}
 	else if((obj=CBoolean::ParsePrimitive(v))!=NULL){
-		type=CVirtualMachine::BOOL;
+		type=CCompiler::BOOL;
 		print_com_cr("%s detected as boolean\n",v.c_str());
 	}else{
 		CScope::tInfoRegisteredVar * info_var=_lc->getInfoRegisteredSymbol(v,false);
-		type=CVirtualMachine::OBJ;
+		type=CCompiler::OBJ;
 
 		if(info_var==NULL){
 			print_error_cr("symbol %s at line %i is not declared ", v.c_str(),m_var_at_line);
@@ -242,31 +323,31 @@ bool CCompiler::insertLoadValueInstruction(const string & v, CScope * _lc, int m
 		type_value="OBJ";
 		if((int_obj=dynamic_cast<CInteger *>(var))!=NULL){ // else it will store the value ...
 			type_value="INT";
-			type = CVirtualMachine::INTEGER;
+			type = CCompiler::INTEGER;
 			obj=&int_obj->m_value;
 		}else if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){
 			type_value="FLOAT";
-			type = CVirtualMachine::NUMBER;
+			type = CCompiler::NUMBER;
 			obj=&num_obj->m_value;
 		}else if((bool_obj=dynamic_cast<CBoolean *>(var))!=NULL){
 			type_value="BOOL";
-			type = CVirtualMachine::BOOL;
+			type = CCompiler::BOOL;
 			obj=&bool_obj->m_value;
 		}else if((str_obj=dynamic_cast<CString *>(var))!=NULL){
 			type_value="STRING";
-			type = CVirtualMachine::STRING;
+			type = CCompiler::STRING;
 			obj=&str_obj->m_value;
 		}
 	}
 
 	if(obj != NULL){
 
-		CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+		CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 
 		asm_op->result_obj=obj;
 		asm_op->result_type = type;
 
-		asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::LOAD;
+		asm_op->operator_type=CCompiler::ASM_OPERATOR::LOAD;
 		asm_op->result_str = v;
 
 
@@ -286,7 +367,7 @@ bool CCompiler::insertMovVarInstruction(CObject *var, int right){
 	CString *str_obj;
 	CBoolean *bool_obj;
 
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 
 	if(right <0 || (unsigned)right >= ptr_current_statement_op->asm_op.size()){
 		print_error_cr("ERROR: right operant is out of internal stack (%i,%i) ",right,ptr_current_statement_op->asm_op.size());
@@ -295,27 +376,27 @@ bool CCompiler::insertMovVarInstruction(CObject *var, int right){
 
 	if(right >= 0){ // insert both op...
 
-		CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
-		asm_op->result_type = CVirtualMachine::OBJ; // this only stores pointer...
+		CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+		asm_op->result_type = CCompiler::OBJ; // this only stores pointer...
 		asm_op->result_obj=var;
 
 		if((int_obj=dynamic_cast<CInteger *>(var))!=NULL){ // else it will store the value ...
-				asm_op->result_type = CVirtualMachine::INTEGER;
+				asm_op->result_type = CCompiler::INTEGER;
 				asm_op->result_obj=&int_obj->m_value;
 		}else if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){ // else it will store the value ...
-			asm_op->result_type = CVirtualMachine::NUMBER;
+			asm_op->result_type = CCompiler::NUMBER;
 			asm_op->result_obj=&num_obj->m_value;
 		}else if((bool_obj=dynamic_cast<CBoolean *>(var))!=NULL){
-			asm_op->result_type = CVirtualMachine::BOOL;
+			asm_op->result_type = CCompiler::BOOL;
 			asm_op->result_obj=&bool_obj->m_value;
 		}else if((str_obj=dynamic_cast<CString *>(var))!=NULL){
-			asm_op->result_type = CVirtualMachine::STRING;
+			asm_op->result_type = CCompiler::STRING;
 			asm_op->result_obj=&str_obj->m_value;
 		}
 
 		asm_op->index_left = -1;
 		asm_op->index_right = right;
-		asm_op->operator_type = CVirtualMachine::ASM_OPERATOR::MOV;
+		asm_op->operator_type = CCompiler::ASM_OPERATOR::MOV;
 		asm_op->result_str =var->getName();
 
 		//printf("[%02i:%02i] MOV \tV(%s),[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),var->getName().c_str(),m_currentListStatements->size(),right);
@@ -332,10 +413,10 @@ bool CCompiler::insertMovVarInstruction(CObject *var, int right){
 }
 
 void CCompiler::insertPushScopeInstruction(CScope * _goto_scope){
-	/*CVirtualMachine::tInfoStatementOp op_push_scope;
-	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+	/*CCompiler::tInfoStatementOp op_push_scope;
+	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 	asm_op->result_obj = _goto_scope;
-	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::PUSH_SCOPE;
+	asm_op->operator_type=CCompiler::ASM_OPERATOR::PUSH_SCOPE;
 	op_push_scope.asm_op.push_back(asm_op);
 
 	m_listStatements.push_back(op_push_scope);*/
@@ -344,34 +425,34 @@ void CCompiler::insertPushScopeInstruction(CScope * _goto_scope){
 
 void CCompiler::insertPopScopeInstruction(){
 /*
-	CVirtualMachine::tInfoStatementOp op_pop_scope;
-	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+	CCompiler::tInfoStatementOp op_pop_scope;
+	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 	asm_op->result_obj = this->m_parentScope;
-	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::POP_SCOPE;
+	asm_op->operator_type=CCompiler::ASM_OPERATOR::POP_SCOPE;
 	op_pop_scope.asm_op.push_back(asm_op);
 
 	m_listStatements.push_back(op_pop_scope);*/
 
 }
 
-CVirtualMachine::tInfoAsmOp * CCompiler::insert_JMP_Instruction(){
+CCompiler::tInfoAsmOp * CCompiler::insert_JMP_Instruction(int jmp_statement){
 
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
-	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JMP;
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	asm_op->result_obj = (void *)jmp_statement;//&((*m_currentListStatements)[dest_statment]);
+	asm_op->operator_type=CCompiler::ASM_OPERATOR::JMP;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	//printf("[%02i:%02i]\tJMP\t[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 
 	return asm_op;
 }
 
-CVirtualMachine::tInfoAsmOp * CCompiler::insert_JNT_Instruction(){
+CCompiler::tInfoAsmOp * CCompiler::insert_JNT_Instruction(int jmp_statement){
 
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
-	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JNT;
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	asm_op->result_obj = (void *)jmp_statement;//&((*m_currentListStatements)[dest_statment]);
+	asm_op->operator_type=CCompiler::ASM_OPERATOR::JNT;
 
 	//printf("[%02i:%02i]\tJNT\t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -381,22 +462,22 @@ CVirtualMachine::tInfoAsmOp * CCompiler::insert_JNT_Instruction(){
 	return asm_op;
 }
 
-CVirtualMachine::tInfoAsmOp * CCompiler::insert_JT_Instruction(){
+CCompiler::tInfoAsmOp * CCompiler::insert_JT_Instruction(int jmp_statement){
 
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
-	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::JT;
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	asm_op->result_obj = (void *)jmp_statement;//&((*m_currentListStatements)[dest_statment]);
+	asm_op->operator_type=CCompiler::ASM_OPERATOR::JT;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return asm_op;
 }
 
 void CCompiler::insert_NOP_Instruction(){
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 	asm_op->result_obj = NULL;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CVirtualMachine::ASM_OPERATOR::NOP;
+	asm_op->operator_type=CCompiler::ASM_OPERATOR::NOP;
 	//printf("[%02i:%02i]\tNOP\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -404,156 +485,156 @@ void CCompiler::insert_NOP_Instruction(){
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVirtualMachine::VAR_TYPE & result_type){
+CCompiler::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op, CCompiler::VAR_TYPE & result_type){
 
-	result_type = CVirtualMachine::INTEGER;
+	result_type = CCompiler::INTEGER;
 
 	switch(op){
 	default:
-		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+		return CCompiler::ASM_OPERATOR::INVALID_OP;
 	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
-		return CVirtualMachine::ADD;
+		return CCompiler::ADD;
 	case PUNCTUATOR_TYPE::DIV_PUNCTUATOR:
-		return CVirtualMachine::DIV;
+		return CCompiler::DIV;
 	case PUNCTUATOR_TYPE::MOD_PUNCTUATOR:
-		return CVirtualMachine::MOD;
+		return CCompiler::MOD;
 	case PUNCTUATOR_TYPE::MUL_PUNCTUATOR:
-		return CVirtualMachine::MUL;
+		return CCompiler::MUL;
 	case PUNCTUATOR_TYPE::BINARY_AND_PUNCTUATOR:
-		return CVirtualMachine::AND;
+		return CCompiler::AND;
 	case PUNCTUATOR_TYPE::BINARY_OR_PUNCTUATOR:
-		return CVirtualMachine::OR;
+		return CCompiler::OR;
 	case PUNCTUATOR_TYPE::BINARY_XOR_PUNCTUATOR:
-		return CVirtualMachine::XOR;
+		return CCompiler::XOR;
 	case PUNCTUATOR_TYPE::SHIFT_LEFT_PUNCTUATOR:
-		return CVirtualMachine::SHL;
+		return CCompiler::SHL;
 	case PUNCTUATOR_TYPE::SHIFT_RIGHT_PUNCTUATOR:
-		return CVirtualMachine::SHR;
+		return CCompiler::SHR;
 	case PUNCTUATOR_TYPE::LOGIC_GTE_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::GTE;
+		result_type = CCompiler::BOOL;
+		return CCompiler::GTE;
 	case PUNCTUATOR_TYPE::LOGIC_GT_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::GT;
+		result_type = CCompiler::BOOL;
+		return CCompiler::GT;
 	case PUNCTUATOR_TYPE::LOGIC_LT_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::LT;
+		result_type = CCompiler::BOOL;
+		return CCompiler::LT;
 	case PUNCTUATOR_TYPE::LOGIC_LTE_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::LTE;
+		result_type = CCompiler::BOOL;
+		return CCompiler::LTE;
 	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::EQU;
+		result_type = CCompiler::BOOL;
+		return CCompiler::EQU;
 
 	}
-	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVirtualMachine::VAR_TYPE & result_type){
+CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op, CCompiler::VAR_TYPE & result_type){
 
-	result_type = CVirtualMachine::NUMBER;
+	result_type = CCompiler::NUMBER;
 
 	switch(op){
 	default:
-		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+		return CCompiler::ASM_OPERATOR::INVALID_OP;
 	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
-		return CVirtualMachine::ADD;
+		return CCompiler::ADD;
 	case PUNCTUATOR_TYPE::DIV_PUNCTUATOR:
-		return CVirtualMachine::DIV;
+		return CCompiler::DIV;
 	case PUNCTUATOR_TYPE::MOD_PUNCTUATOR:
-		return CVirtualMachine::MOD;
+		return CCompiler::MOD;
 	case PUNCTUATOR_TYPE::MUL_PUNCTUATOR:
-		return CVirtualMachine::MUL;
+		return CCompiler::MUL;
 	case PUNCTUATOR_TYPE::LOGIC_GTE_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::GTE;
+		result_type = CCompiler::BOOL;
+		return CCompiler::GTE;
 	case PUNCTUATOR_TYPE::LOGIC_GT_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::GT;
+		result_type = CCompiler::BOOL;
+		return CCompiler::GT;
 	case PUNCTUATOR_TYPE::LOGIC_LT_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::LT;
+		result_type = CCompiler::BOOL;
+		return CCompiler::LT;
 	case PUNCTUATOR_TYPE::LOGIC_LTE_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::LTE;
+		result_type = CCompiler::BOOL;
+		return CCompiler::LTE;
 	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::EQU;
+		result_type = CCompiler::BOOL;
+		return CCompiler::EQU;
 	}
-	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op){
+CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op){
 
 	switch(op){
 	default:
-		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+		return CCompiler::ASM_OPERATOR::INVALID_OP;
 	case PUNCTUATOR_TYPE::SUB_PUNCTUATOR:
-		return CVirtualMachine::NEG;
+		return CCompiler::NEG;
 	case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
-		return CVirtualMachine::PRE_INC;
+		return CCompiler::PRE_INC;
 	case PUNCTUATOR_TYPE::POST_INC_PUNCTUATOR:
-		return CVirtualMachine::POST_INC;
+		return CCompiler::POST_INC;
 	case PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR:
-		return CVirtualMachine::PRE_DEC;
+		return CCompiler::PRE_DEC;
 	case PUNCTUATOR_TYPE::POST_DEC_PUNCTUATOR:
-		return CVirtualMachine::POST_DEC;
+		return CCompiler::POST_DEC;
 	}
 
-	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVirtualMachine::VAR_TYPE & result_type){
+CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op, CCompiler::VAR_TYPE & result_type){
 
-	result_type = CVirtualMachine::BOOL;
+	result_type = CCompiler::BOOL;
 
 	switch(op){
 	default:
-		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+		return CCompiler::ASM_OPERATOR::INVALID_OP;
 	case PUNCTUATOR_TYPE::LOGIC_AND_PUNCTUATOR:
-		return CVirtualMachine::LOGIC_AND;
+		return CCompiler::LOGIC_AND;
 	case PUNCTUATOR_TYPE::LOGIC_OR_PUNCTUATOR:
-		return CVirtualMachine::LOGIC_OR;
+		return CCompiler::LOGIC_OR;
 	}
 
-	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op){
+CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op){
 	switch(op){
 	default:
-		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+		return CCompiler::ASM_OPERATOR::INVALID_OP;
 	case PUNCTUATOR_TYPE::LOGIC_NOT_PUNCTUATOR:
-		return CVirtualMachine::NOT;
+		return CCompiler::NOT;
 	}
-	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVirtualMachine::VAR_TYPE & result_type){
+CCompiler::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op, CCompiler::VAR_TYPE & result_type){
 
-	result_type = CVirtualMachine::STRING;
+	result_type = CCompiler::STRING;
 
 	switch(op){
 	default:
-		return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+		return CCompiler::ASM_OPERATOR::INVALID_OP;
 	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
-		return CVirtualMachine::CAT;
+		return CCompiler::CAT;
 	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
-		result_type = CVirtualMachine::BOOL;
-		return CVirtualMachine::EQU;
+		result_type = CCompiler::BOOL;
+		return CCompiler::EQU;
 	}
-	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CVirtualMachine::ASM_OPERATOR CCompiler::getStringOperatorId_OneOp(PUNCTUATOR_TYPE op){
+CCompiler::ASM_OPERATOR CCompiler::getStringOperatorId_OneOp(PUNCTUATOR_TYPE op){
 
-	return CVirtualMachine::ASM_OPERATOR::INVALID_OP;
+	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
 
 bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_str, int left, int right){
 
-	CVirtualMachine::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 
 	if(left <0 || (unsigned)left >= ptr_current_statement_op->asm_op.size()){
 		error_str = CStringUtils::formatString("left operant is out of internal stack (%i,%i) ",left,ptr_current_statement_op->asm_op.size());
@@ -566,8 +647,8 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_s
 		t_right = getUserTypeResultCurrentStatmentAtInstruction(right);
 	}
 
-	CVirtualMachine::ASM_OPERATOR id_op;
-	CVirtualMachine::VAR_TYPE result_type=CVirtualMachine::NOT_DEFINED;
+	CCompiler::ASM_OPERATOR id_op;
+	CCompiler::VAR_TYPE result_type=CCompiler::NOT_DEFINED;
 	void *res_obj=NULL;
 
 
@@ -575,27 +656,27 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_s
 
 		if(((t_left == CIntegerFactory::getPointerTypeStr())) &&
 						((t_right == CIntegerFactory::getPointerTypeStr()))){
-					if((id_op=getIntegerOperatorId_TwoOps(op->id,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+					if((id_op=getIntegerOperatorId_TwoOps(op->id,result_type))==CCompiler::ASM_OPERATOR::INVALID_OP){
 						error_str = CStringUtils::formatString("undefined operator %s",op->str);
 						return false;
 					}
 
 		}else if(((t_left == CNumberFactory::getPointerTypeStr()) ) &&
 				((t_right == CNumberFactory::getPointerTypeStr()) )){
-			if((id_op=getNumberOperatorId_TwoOps(op->id,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+			if((id_op=getNumberOperatorId_TwoOps(op->id,result_type))==CCompiler::ASM_OPERATOR::INVALID_OP){
 				error_str = CStringUtils::formatString("undefined operator %s",op->str);
 				return false;
 			}
 
 		}else if(t_left== CStringFactory::getPointerTypeStr()){
 
-			if((id_op=getStringOperatorId_TwoOps(op->id,result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+			if((id_op=getStringOperatorId_TwoOps(op->id,result_type))==CCompiler::ASM_OPERATOR::INVALID_OP){
 				error_str = CStringUtils::formatString("undefined operator %s",op->str);
 				return false;
 			}
 
 		}else if((t_left == CBooleanFactory::getPointerTypeStr()) && t_right == CBooleanFactory::getPointerTypeStr()){
-			if((id_op=getBoleanOperatorId_TwoOps(op->id, result_type))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+			if((id_op=getBoleanOperatorId_TwoOps(op->id, result_type))==CCompiler::ASM_OPERATOR::INVALID_OP){
 				error_str = CStringUtils::formatString("undefined operator %s",op->str);
 				return false;
 			}
@@ -606,26 +687,26 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_s
 
 		switch(result_type){
 		default:
-		case CVirtualMachine::NOT_DEFINED:
+		case CCompiler::NOT_DEFINED:
 			error_str = CStringUtils::formatString("unknow result type");
 			return false;
 			break;
-		case CVirtualMachine::NUMBER:
+		case CCompiler::NUMBER:
 			res_obj = new float;
 			break;
-		case CVirtualMachine::INTEGER:
+		case CCompiler::INTEGER:
 			res_obj = new int;
 			break;
-		case CVirtualMachine::STRING:
+		case CCompiler::STRING:
 			res_obj = new string;
 			break;
-		case CVirtualMachine::BOOL:
+		case CCompiler::BOOL:
 			res_obj = new bool;
 			break;
 
 		}
 
-		CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+		CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 		//asm_op->type_op=OPERATOR;
 		asm_op->index_left = left;
 		asm_op->index_right = right;
@@ -636,7 +717,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_s
 		asm_op->operator_type = id_op;
 		asm_op->result_obj = res_obj;
 
-	//	printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CVirtualMachine::def_operator[id_op].op_str,m_currentListStatements->size(),left,m_currentListStatements->size(),right);
+	//	printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CCompiler::def_operator[id_op].op_str,m_currentListStatements->size(),left,m_currentListStatements->size(),right);
 
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -644,42 +725,42 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_s
 	}else if(left >=0){ // insert one operand
 
 			if((t_left == CIntegerFactory::getPointerTypeStr()) ){
-						if((id_op=getNumberOperatorId_OneOp(op->id))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+						if((id_op=getNumberOperatorId_OneOp(op->id))==CCompiler::ASM_OPERATOR::INVALID_OP){
 							error_str = CStringUtils::formatString("undefined operator %s for number type",op->str);
 							return false;
 						}
 						res_obj = new int;
-						result_type = CVirtualMachine::INTEGER;
+						result_type = CCompiler::INTEGER;
 
 			}else if((t_left == CNumberFactory::getPointerTypeStr()) ){
-				if((id_op=getNumberOperatorId_OneOp(op->id))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+				if((id_op=getNumberOperatorId_OneOp(op->id))==CCompiler::ASM_OPERATOR::INVALID_OP){
 					error_str = CStringUtils::formatString("undefined operator %s for number type",op->str);
 					return false;
 				}
 				res_obj = new float;
-				result_type = CVirtualMachine::NUMBER;
+				result_type = CCompiler::NUMBER;
 
 			}else if(t_left== CStringFactory::getPointerTypeStr()){
 
-				if((id_op=getStringOperatorId_OneOp(op->id))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+				if((id_op=getStringOperatorId_OneOp(op->id))==CCompiler::ASM_OPERATOR::INVALID_OP){
 					error_str = CStringUtils::formatString("undefined operator %s for string type",op->str);
 					return false;
 				}
 				res_obj = new string;
-				result_type = CVirtualMachine::STRING;
+				result_type = CCompiler::STRING;
 			}else if((t_left == CBooleanFactory::getPointerTypeStr())){
-				if((id_op=getBoleanOperatorId_OneOp(op->id))==CVirtualMachine::ASM_OPERATOR::INVALID_OP){
+				if((id_op=getBoleanOperatorId_OneOp(op->id))==CCompiler::ASM_OPERATOR::INVALID_OP){
 					error_str = CStringUtils::formatString("undefined operator %s for boolean type",op->str);
 					return false;
 				}
 				res_obj = new bool;
-				result_type = CVirtualMachine::BOOL;
+				result_type = CCompiler::BOOL;
 			}else{
 				error_str = CStringUtils::formatString("not compatible %s %s",t_left.c_str(),t_right.c_str());
 				return false;
 			}
 
-			CVirtualMachine::tInfoAsmOp *asm_op = new CVirtualMachine::tInfoAsmOp();
+			CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 			//asm_op->type_op=OPERATOR;
 			asm_op->operator_type = id_op;
 			asm_op->result_type = result_type;
@@ -687,7 +768,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_s
 			asm_op->index_left = left;
 			asm_op->index_right = -1;
 
-		//	printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CVirtualMachine::def_operator[id_op].op_str,m_currentListStatements->size(),left);
+		//	printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CCompiler::def_operator[id_op].op_str,m_currentListStatements->size(),left);
 
 			ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -701,14 +782,17 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_s
 //
 // COMPILE EXPRESSIONS AND GENERATE ITS ASM
 //
-int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error){
+int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, CScope *_lc){
 
-	CScope * _lc = m_currentScriptFunction->getScope();
+	//CScope * _lc = m_currentScriptFunction->getScope();
 	int r=0;
+	bool inline_if_else=false;
 	string error_str;
 	if(op==NULL){
 		return -1;
 	}
+
+
 
 	if(op->children.size()==0){//[LEFT_NODE]==NULL && op->children[RIGHT_NODE]==NULL){ // trivial case value itself...
 
@@ -722,14 +806,26 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error){
 		r=numreg;
 	}else{
 
+		if(op->children.size()==3){
+
+			if(op->operator_info->id == INLINE_IF_PUNCTUATOR && op->children[2]->operator_info->id == INLINE_ELSE_PUNCTUATOR){
+				// node children[0]: conditional.
+				// node children[1]: body-if
+				// node children[2]: body-else
+				inline_if_else = true;
+			}
+
+		}
+
+		// check if there's inline-if-else
 		int right=0, left=0;
 
-		left=gacExpression_Recursive(op->children[LEFT_NODE],numreg,error);
+		left=gacExpression_Recursive(op->children[LEFT_NODE],numreg,error, _lc);
 
 		if(error) return -1;
 
 		if(op->children.size()==2){
-			right=gacExpression_Recursive(op->children[RIGHT_NODE],numreg,error);
+			right=gacExpression_Recursive(op->children[RIGHT_NODE],numreg,error,_lc);
 		}
 		else {
 			right = -1;
@@ -838,27 +934,99 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error){
 
 
 
-bool CCompiler::gacFor(PASTNode _node){
+bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 	if(_node->keyword_info->id != KEYWORD_TYPE::FOR_KEYWORD){print_error_cr("node is not FOR keyword type");return false;}
+	if(_node->children.size()!=4) {print_error_cr("node FOR has not valid number of nodes");return false;}
+	if(!(_node->children[0]->node_type==PRE_FOR_NODE && _node->children[1]->node_type==CONDITIONAL_NODE &&
+	_node->children[2]->node_type==POST_FOR_NODE && _node->children[3]->node_type==BODY_NODE)) {print_error_cr("node FOR has not valid TYPE nodes");return false;}
+	CCompiler::tInfoAsmOp *asm_op;
+	//CScope * _currentScope = _node ->scope_ptr;
+
+	// 1. compile var init ...
+	if(!ast2asm_Recursive(_node->children[0],_node->scope_ptr)){ return false;}
+
+	// 2. compile conditional
+
+	if(!ast2asm_Recursive(_node->children[1],_node->scope_ptr)){ return false;}
+	// get current index statment in order to jmp from end body for.
+	int index_statment_conditional_for_= getCurrentStatmentIndex();
+
+	// insert conditional jmp (if not true go to the end)
+	asm_op = insert_JNT_Instruction();
+
+
+	// 3. compile body
+	if(!gacBody(_node->children[3],_node->scope_ptr)){ return false;}
+
+
+	// 4. compile post oper
+	if(!ast2asm_Recursive(_node->children[2],_node->scope_ptr)){ return false;}
+
+	// 5. jmp to the conditional index ...
+	insert_JMP_Instruction(index_statment_conditional_for_);
+
+	asm_op->result_obj=(void *)(getCurrentStatmentIndex()+1);
+
+	return true;
+}
+bool CCompiler::gacWhile(PASTNode _node, CScope * _lc){
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
+	if(_node->keyword_info->id != KEYWORD_TYPE::WHILE_KEYWORD){print_error_cr("node is not WHILE keyword type");return false;}
+	if(_node->children.size()!=2) {print_error_cr("node WHILE has not valid number of nodes");return false;}
+	if(!(_node->children[0]->node_type==CONDITIONAL_NODE && _node->children[1]->node_type==BODY_NODE )) {print_error_cr("node WHILE has not valid TYPE nodes");return false;}
+	CCompiler::tInfoAsmOp *asm_op_jmp_end;
+	int index_ini_while;
+
+
+	// compile conditional expression...
+	if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
+	index_ini_while = getCurrentStatmentIndex();
+	asm_op_jmp_end = insert_JNT_Instruction(); // goto end  ...
+
+	// compile if-body ...
+	if(!gacBody(_node->children[1],_lc)){ return false;}
+	insert_JMP_Instruction(index_ini_while); // goto end  ...
+	asm_op_jmp_end->result_obj = (void *)(getCurrentStatmentIndex()+1);
+	return true;
+}
+
+bool CCompiler::gacIf(PASTNode _node, CScope * _lc){
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
+	if(_node->keyword_info->id != KEYWORD_TYPE::IF_KEYWORD){print_error_cr("node is not IF keyword type");return false;}
+	if(_node->children.size()<2) {print_error_cr("node IF has not valid number of nodes");return false;}
+	if(!(_node->children[0]->node_type==CONDITIONAL_NODE && _node->children[1]->node_type==BODY_NODE )) {print_error_cr("node IF has not valid TYPE nodes");return false;}
+	CCompiler::tInfoAsmOp *asm_op_jmp_else_if,*asm_op_jmp_end;
+
+	// compile conditional expression...
+	if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
+	asm_op_jmp_else_if = insert_JNT_Instruction(); // goto else body ...
+
+	// compile if-body ...
+	if(!gacBody(_node->children[1],_lc)){ return false;}
+
+
+	// if there's else body, compile-it
+	if(_node->children.size()==3){
+		asm_op_jmp_end = insert_JMP_Instruction(); // goto end
+		asm_op_jmp_else_if->result_obj = (void *)(getCurrentStatmentIndex()+1);
+		if(!gacBody(_node->children[2],_lc)){ return false;}
+
+		asm_op_jmp_end->result_obj = (void *)(getCurrentStatmentIndex()+1);
+
+	}
+	else{
+		asm_op_jmp_else_if->result_obj = (void *)(getCurrentStatmentIndex()+1);
+	}
 
 
 	return true;
 }
-bool CCompiler::gacWhile(PASTNode _node){
 
-	return true;
-}
-
-
-
-bool CCompiler::gacIf(PASTNode _node){
-
-	return true;
-}
-
-bool CCompiler::gacSwitch(PASTNode _node){
+bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
@@ -868,6 +1036,8 @@ bool CCompiler::gacSwitch(PASTNode _node){
 	PASTNode group_cases;
 	PASTNode case_value;
 	PASTNode case_body;
+
+	CCompiler::tInfoAsmOp * asm_op;
 
 	string error_str;
 	string detected_type_str;
@@ -883,7 +1053,7 @@ bool CCompiler::gacSwitch(PASTNode _node){
 		int switch_value_index  = getCurrentInstructionIndex();
 
 		// the stratege is first evaluate all cases and then their bodies...
-		for(unsigned s=0; s < 2; s++){
+		for(unsigned s=0; s < 3; s++){
 			for(unsigned i = 0; i < _node->children.size(); i++){ // expect node type group cases ...
 
 				switch_node = _node->children[i];
@@ -896,7 +1066,7 @@ bool CCompiler::gacSwitch(PASTNode _node){
 
 						switch(s){
 
-						case 0: // CASES
+						case 0: // GENERATE ASM FOR CONDITIONAL CASES ...
 
 							if(group_cases->node_type == GROUP_CASES_NODE){
 
@@ -915,6 +1085,7 @@ bool CCompiler::gacSwitch(PASTNode _node){
 
 											if(!has_default){
 												has_default = true;
+												// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases + body...
 												case_value->aux_value = insert_JMP_Instruction();
 											}else{
 												print_error_cr("case already defined!");
@@ -932,7 +1103,7 @@ bool CCompiler::gacSwitch(PASTNode _node){
 													return false;
 											}
 
-											// save jmp instrucction ..
+											// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases...
 											case_value->aux_value = insert_JT_Instruction();
 
 											break;
@@ -951,12 +1122,26 @@ bool CCompiler::gacSwitch(PASTNode _node){
 							}
 							break;
 
-						case 1: // BODY
+						case 1: // GENERATE ASM FOR BODY AND WRITE initial JMP
 
-							if(gacBody(case_body)){
-								case_value->aux_value = insert_JMP_Instruction();
+							if(gacBody(case_body,_lc)){
+								for(unsigned i = 0; i < group_cases->children.size(); i++){
+									case_value = group_cases->children[i];
+									asm_op = (CCompiler::tInfoAsmOp *)case_value->aux_value; // load jt instruction and set current instruction before write asm code.
+									asm_op->result_obj = (void *)getCurrentStatmentIndex();
+								}
+
+								if(i < (_node->children.size()-1))
+									case_body->aux_value = insert_JMP_Instruction();
 							}else{
 								return false;
+							}
+							break;
+
+						case 2: // FINALLY, WRITE JMP's to end statment
+
+							if((asm_op = (CCompiler::tInfoAsmOp *)case_body->aux_value) != NULL){
+								asm_op->result_obj = (void *)(getCurrentStatmentIndex()+1);
 							}
 							break;
 						}
@@ -974,68 +1159,45 @@ bool CCompiler::gacSwitch(PASTNode _node){
 		}
 	}
 
-
-		/*switch(_node->children[i]->node_type){
-		default:
-			print_error_cr("Unexpected node type %i",_node->children[i]->node_type);
-			break;
-		case NODE_TYPE::KEYWORD_NODE:
-			if(_node->children[i]->keyword_info == NULL) { print_error_cr("keyword info null");return false;}
-			switch(_node->children[i]->keyword_info->id){
-			case KEYWORD_TYPE::CASE_KEYWORD:
-				if(_node->children[i]->children[0] == NULL) { print_error_cr("body case info null");return false;}
-				if(_node->children[i]->children[0]->node_type == NODE_TYPE::BODY_NODE){
-					print_info_cr("Case node ok");
-				}
-				break;
-			case KEYWORD_TYPE::DEFAULT_KEYWORD:
-				if(_node->children[i]->children[0] == NULL) { print_error_cr("body default info null");return false;}
-
-				print_info_cr("default node ok");
-				break;
-			case KEYWORD_TYPE::BREAK_KEYWORD:
-				break;
-			default:
-				print_error_cr("Switch:Unexpected keyword %s",_node->children[i]->keyword_info->str);
-				break;
-			}
-
-			break;
-		}
-
-		print_info_cr("%s");
-	}*/
-
 	return true;
 }
 
-bool CCompiler::gacVar(PASTNode _node){
+bool CCompiler::gacVar(PASTNode _node, CScope * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 	if(_node->keyword_info->id != VAR_KEYWORD){print_error_cr("node is not VAR keyword type");return false;}
 
 	if(_node->children.size() == 1){ // an expression is expected ...
-		return gacExpression(_node->children[0]);
+		return gacExpression(_node->children[0], _lc);
 	}
 
 	return false;
 
 }
 
-bool CCompiler::gacKeyword(PASTNode _node){
+bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 
 	switch(_node->keyword_info->id){
 	default:
-		print_error_cr("Not implemented!");
+		print_error_cr("Keyword [ %s ] not implemented yet!",_node->keyword_info->str);
 		break;
 	case KEYWORD_TYPE::SWITCH_KEYWORD:
-		return gacSwitch(_node);
+		return gacSwitch(_node, _lc);
+		break;
+	case KEYWORD_TYPE::FOR_KEYWORD:
+		return gacFor(_node, _lc);
+		break;
+	case KEYWORD_TYPE::WHILE_KEYWORD:
+		return gacWhile(_node, _lc);
+		break;
+	case KEYWORD_TYPE::IF_KEYWORD:
+		return gacIf(_node, _lc);
 		break;
 	case KEYWORD_TYPE::VAR_KEYWORD:
-		return gacVar(_node);
+		return gacVar(_node, _lc);
 		break;
 
 	}
@@ -1043,24 +1205,26 @@ bool CCompiler::gacKeyword(PASTNode _node){
 	return false;
 }
 
-bool CCompiler::gacBody(PASTNode _node){
+bool CCompiler::gacBody(PASTNode _node, CScope * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != BODY_NODE ){print_error_cr("node is not BODY type or null");return false;}
 
 	if(_node->children.size() == 1){ // body has code ...
-		m_treescope->pushScope();
-		bool ok = ast2asm_Recursive(_node->children[0]);
-		m_treescope->popScope();
+
+		bool ok = ast2asm_Recursive(_node->children[0], _lc);
+
 		return ok;
+	}else{ // insert one statment at least ..
+		newStatment();
 	}
 
 	return true;
 }
 
-bool CCompiler::gacExpression(PASTNode _node){
+bool CCompiler::gacExpression(PASTNode _node, CScope *_lc){
 
 	int numreg=0;
-	CVirtualMachine::tInfoStatementOp i_stat;
+	CCompiler::tInfoStatementOp i_stat;
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != EXPRESSION_NODE){print_error_cr("node is not Expression");return false;}
@@ -1072,7 +1236,7 @@ bool CCompiler::gacExpression(PASTNode _node){
 		(*m_currentListStatements).push_back(i_stat);
 
 		bool error_asm=false;
-		gacExpression_Recursive(_node->children[0],numreg,error_asm);
+		gacExpression_Recursive(_node->children[0],numreg,error_asm, _lc);
 
 		return !error_asm;
 	}
@@ -1084,7 +1248,7 @@ bool CCompiler::gacExpression(PASTNode _node){
 
 }
 
-bool CCompiler::ast2asm_Recursive(PASTNode _node){
+bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 
 
 
@@ -1102,14 +1266,14 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node){
 			case PUNCTUATOR_NODE:print_info_cr("PUNCTUATOR_NODE");break;
 			case EXPRESSION_NODE:
 				print_info_cr("EXPRESSION_NODE");
-				return gacExpression(_node);
+				return gacExpression(_node, _lc);
 				break;
 			case GROUP_CASES_NODE:
 				print_info_cr("GROUP_CASES_NODE");
 				break;
 			case KEYWORD_NODE:
 				print_info_cr("KEYWORD_NODE");
-				return gacKeyword(_node);
+				return gacKeyword(_node, _lc);
 				break;
 			case FUNCTION_ARGS_DECL_NODE:print_info_cr("FUNCTION_ARGS_DECL_NODE");break;
 			case FUNCTION_OR_CLASS_ARGS_CALL_NODE:print_info_cr("FUNCTION_OR_CLASS_ARGS_CALL_NODE");break;
@@ -1117,10 +1281,30 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node){
 			case ARRAY_OBJECT_NODE:print_info_cr("ARRAY_OBJECT_NODE");break;
 			case FUNCTION_OBJECT_NODE:print_info_cr("FUNCTION_OBJECT_NODE");break;
 			case SYMBOL_NODE:print_info_cr("SYMBOL_NODE");break;
-			case BODY_NODE:print_info_cr("BODY_NODE");break;
-			case CONDITIONAL_NODE:print_info_cr("CONDITIONAL_NODE");break;
-			case PRE_FOR_NODE:print_info_cr("PRE_FOR_NODE");break;
-			case POST_FOR_NODE:print_info_cr("POST_FOR_NODE");break;
+			case BODY_NODE:
+				print_info_cr("BODY_NODE");
+				return gacBody(_node, _lc);
+				break;
+			case POST_FOR_NODE:
+			case CONDITIONAL_NODE:
+				print_info_cr("%s",_node->node_type == CONDITIONAL_NODE ? "CONDITIONAL_NODE":"POST_FOR_NODE");
+				if(_node->children.size() == 1){
+					return gacExpression(_node->children[0], _lc);
+				}else{
+					print_error_cr("Expected nodes for %i",_node->node_type);
+				}
+
+				break;
+			case PRE_FOR_NODE:
+
+
+				if(_node->children.size() == 1){
+					return ast2asm_Recursive(_node->children[0], _lc);
+				}else{
+					print_error_cr("Expected nodes for %i",_node->node_type);
+				}
+
+				break;
 			case CLASS_VAR_COLLECTION_NODE:print_info_cr("CLASS_VAR_COLLECTION_NODE");break;
 			case CLASS_FUNCTION_COLLECTION_NODE:print_info_cr("CLASS_FUNCTION_COLLECTION_NODE");break;
 			case BASE_CLASS_NODE:print_info_cr("BASE_CLASS_NODE");break;
@@ -1144,10 +1328,11 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 	// reset current pointer ...
 	m_treescope->resetScopePointer();
 
+
 	if(_node->node_type == NODE_TYPE::MAIN_NODE){
 
 		for(unsigned i = 0; i < _node->children.size(); i++){
-			if(!ast2asm_Recursive(_node->children[i])){
+			if(!ast2asm_Recursive(_node->children[i], m_treescope->getCurrentScopePointer())){
 				print_error_cr("Error 1!");
 				return false;
 			}
@@ -1188,7 +1373,7 @@ bool CCompiler::compile(const string & s, CScriptFunction * sf){
 		if(ast2asm(root,sf)){
 
 			// print generated asm ...
-			CVirtualMachine::printGeneratedCode(sf);
+			CCompiler::printGeneratedCode(sf);
 		}
 		// then you have all information -> compile into asm!
 		//generateAsmCode(root);

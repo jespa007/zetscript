@@ -130,6 +130,7 @@ enum PUNCTUATOR_TYPE{
 
 
 class tASTNode;
+class CScope;
 typedef tASTNode *PASTNode;
 
 typedef struct{
@@ -194,6 +195,7 @@ public:
 	tInfoPunctuator *operator_info;
 	string 	value_symbol;
 	string type_ptr;
+	CScope *scope_ptr; // saves scope info ptr (only for global vars).
 	string type_class;
 	int definedValueline;
 	PASTNode parent;
@@ -208,6 +210,7 @@ public:
 		value_symbol="";
 		parent=NULL;
 		aux_value = NULL;
+		scope_ptr = NULL;
 
 		if(preallocate_num_nodes > 0){
 			for(int i = 0; i < preallocate_num_nodes; i++){
@@ -347,14 +350,15 @@ private:
 	 * parse non-trivial symbols with a special function.
 	 */
 	static char * getSymbolValue(
+			const char *current_string_ptr,
+			int & m_line,
+			CScriptFunction *sf,
 			string & symbol_name,
 			int & m_definedSymbolLine,
 			tInfoPunctuator *pre_operator,
-			tInfoPunctuator *post_operator,
-			bool & is_symbol_trivial,
-			const char *current_string_ptr,
-			int & m_line,
-			CScriptFunction *sf);
+			tInfoPunctuator **post_operator,
+			bool & is_symbol_trivial
+	);
 
 };
 

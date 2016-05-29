@@ -1,22 +1,48 @@
-var kk=0+1;
+var j=0;
 
+//((j+1)==0)?1+1:0+1;
+
+if( (0+1) == (0+1) ){
+}
+
+
+/*while(j < 10){
+	j*4;
+	
+	
+}*/
+
+
+
+
+/*var kk=0+1;
 
 switch(0){
-case -1:
-break;
-case 0:
- kk=9;
- break;
-case 1:
-kk=10;
-break;
 case 111:
 case 200:
 default:
 kk=11;
 break;
+case -1:
+break;
+case 0:
+case 4:
+ kk=9;
+ break;
+case 1:
+kk=10;
+break;
 
-}
+
+}*/
+/*
+for(var i = 0; i < 10; i++){
+	if(i==0){
+		2*i;
+	}else{
+		3*i;
+	}
+}*/
 
 
 // var j="hola que hace"+0+0+1;

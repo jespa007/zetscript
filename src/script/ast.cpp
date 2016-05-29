@@ -109,11 +109,11 @@ bool CAst::parseLogicNotEqualPunctuator(const char *s){
 }
 
 bool CAst::parseLogicGreatherThanPunctuator(const char *s){
-	return (*(s+1) == '>');
+	return *s == '>';
 }
 
 bool CAst::parseLogicLessThanPunctuator(const char *s){
-	return (*(s+1) == '<');
+	return *s == '<';
 }
 
 bool CAst::parseLogicGreatherEqualThanPunctuator(const char *s){
@@ -163,7 +163,7 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup0(const char *s){
 			SHIFT_RIGHT_PUNCTUATOR,
 			ASSIGN_PUNCTUATOR,
 			INLINE_IF_PUNCTUATOR,
-			INLINE_ELSE_PUNCTUATOR,
+			INLINE_ELSE_PUNCTUATOR
 
 	};
 
@@ -555,19 +555,18 @@ bool CAst::parseNonTrivialSymbol(const char *str, int m_line, CScriptFunction *s
 
 
 	}else {
-
+		bool word_ok = false;
 		// try to get function/array object ...
 		end_expression = getEndWord(aux, m_line);
 
-		 if(end_expression == NULL || end_expression == aux){
-			 print_error_cr("Expected symbol at line %i",m_line);
-			 return false;
+		 if(!(end_expression == NULL || end_expression == aux)){ // word ok.
+
+			 symbol_value = CStringUtils::copyStringFromInterval(aux,end_expression);
+			 aux = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
+			 word_ok =true;
 		 }
 
-		 symbol_value = CStringUtils::copyStringFromInterval(aux,end_expression);
-		 aux = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
-
-		 if(*aux == '(' || *aux == '[') {// try expression...
+		 if((*aux == '(' || *aux == '[') && word_ok) {// try expression...
 			 *ast_node_to_be_evaluated = new tASTNode();
 			 (*ast_node_to_be_evaluated)->value_symbol = symbol_value; // is array or function ...
 			 (*ast_node_to_be_evaluated)->node_type  = ARRAY_OBJECT_NODE;
@@ -663,14 +662,15 @@ bool CAst::parseNonTrivialSymbol(const char *str, int m_line, CScriptFunction *s
 }
 
 char *CAst::getSymbolValue(
+		const char *current_string_ptr,
+		int & m_line,
+		CScriptFunction *sf,
+
 		string & symbol_name,
 		int & m_definedSymbolLine,
 		tInfoPunctuator *pre_operator,
-		tInfoPunctuator *post_operator,
-		bool & is_symbol_trivial,
-		const char *current_string_ptr,
-		int & m_line,
-		CScriptFunction *sf
+		tInfoPunctuator **post_operator,
+		bool & is_symbol_trivial
 		){
 
 	char *aux = (char *)current_string_ptr;
@@ -797,8 +797,8 @@ char *CAst::getSymbolValue(
 
 				 // check for post opertator...
 				 end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
-				 if((post_operator = checkPostOperatorPunctuator(end_expression)) != NULL){
-					 end_expression+=strlen(post_operator->str);
+				 if((*post_operator = checkPostOperatorPunctuator(end_expression)) != NULL){
+					 end_expression+=strlen((*post_operator)->str);
 				 }
 
 				 aux = start_expression;
@@ -852,8 +852,8 @@ char *CAst::getSymbolValue(
 
 
 			// check for post opertator...
-			if((post_operator = checkPostOperatorPunctuator(end_expression)) != NULL){
-			 end_expression+=strlen(post_operator->str);
+			if(((*post_operator) = checkPostOperatorPunctuator(end_expression)) != NULL){
+			 end_expression+=strlen((*post_operator)->str);
 			}
 
 			end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
@@ -917,7 +917,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 		}
 
 		// try get symbol string
-		aux=getSymbolValue(symbol_value, m_definedSymbolLine,pre_operator,post_operator,is_symbol_trivial_value, aux, m_line, sf);
+		aux=getSymbolValue(aux, m_line, sf,symbol_value, m_definedSymbolLine,pre_operator,&post_operator,is_symbol_trivial_value);
 
 		print_ast_cr("checkpoint3:%c\n",*aux);
 
@@ -1043,7 +1043,10 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 
 
 		// check for inline-else
-		if(operator_group->id == INLINE_IF_PUNCTUATOR){ // left- node is conditional node ... let's get if and else nodes...
+		if(operator_group->id == INLINE_IF_PUNCTUATOR){
+			// 0-node is conditional node
+			// 1-node is if-node...
+			// 2-node is else-node
 
 			if(*aux == ':'){
 
@@ -1669,8 +1672,10 @@ char * CAst::parseWhile(const char *s,int & m_line,  CScriptFunction *sf, PASTNo
 					}
 
 					if( ast_node_to_be_evaluated != NULL){
-						conditional->node_type = CONDITIONAL_NODE;
-						(*ast_node_to_be_evaluated)->children.push_back(conditional);
+						PASTNode aux = new tASTNode;
+						aux->node_type = CONDITIONAL_NODE;
+						aux->children.push_back(conditional);
+						(*ast_node_to_be_evaluated)->children.push_back(aux);
 					}
 
 					aux_p=CStringUtils::IGNORE_BLANKS(end_expr+1,m_line);
@@ -1748,8 +1753,12 @@ char * CAst::parseIf(const char *s,int & m_line,  CScriptFunction *sf, PASTNode 
 						return NULL;
 					}
 
-					conditional->node_type = CONDITIONAL_NODE;
-					(*ast_node_to_be_evaluated)->children.push_back(conditional);
+					if(ast_node_to_be_evaluated!=NULL){
+						PASTNode aux = new tASTNode;
+						aux->children.push_back(conditional);
+						aux->node_type = CONDITIONAL_NODE;
+						(*ast_node_to_be_evaluated)->children.push_back(aux);
+					}
 
 					aux_p=CStringUtils::IGNORE_BLANKS(end_expr+1,m_line);
 					if(*aux_p != '{'){
@@ -1818,8 +1827,10 @@ char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 	char *aux_p = (char *)s;
 	tInfoKeyword *key_w;
 	bool error=false;
-	PASTNode block_for = NULL;
+	PASTNode block_for = NULL,node_for_expression=NULL;
 	string eval_for;
+	CScope *_localScope =  sf->getScope(); // gets scope...
+	CScope *_currentScope;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
@@ -1840,7 +1851,11 @@ char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 			aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 			if(*aux_p == '('){ // ready ...
 
-
+				// save scope pointer ...
+				_currentScope =_localScope->pushScope(); // push current scope
+				if(ast_node_to_be_evaluated != NULL){
+					(*ast_node_to_be_evaluated)->scope_ptr =_currentScope;
+				}
 
 				aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
 
@@ -1861,7 +1876,7 @@ char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 						tInfoKeyword *key_w = isKeyword(aux_p);
 						if(key_w != NULL){
 							if(key_w->id == VAR_KEYWORD){
-								if((aux_p = parseVar(aux_p,m_line, sf, ast_node_to_be_evaluated != NULL ? &(*ast_node_to_be_evaluated)->children[0]: NULL))==NULL){
+								if((aux_p = parseVar(aux_p,m_line, sf, ast_node_to_be_evaluated != NULL ? &node_for_expression: NULL))==NULL){
 									return NULL;
 								}
 								else{
@@ -1873,14 +1888,17 @@ char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 					}
 
 					if(!parse_var){
-						if((aux_p = parseExpression((const char *)aux_p,m_line,sf, ast_node_to_be_evaluated != NULL ? &(*ast_node_to_be_evaluated)->children[i]: NULL)) == NULL){
+						if((aux_p = parseExpression((const char *)aux_p,m_line,sf, ast_node_to_be_evaluated != NULL ? &node_for_expression: NULL)) == NULL){
 							return NULL;
 						}
 					}
 
 					if(*aux_p == info_for[i].next_char){
-						if(ast_node_to_be_evaluated != NULL){
-							(*ast_node_to_be_evaluated)->children[i]->node_type = info_for[i].node_type;
+						if(ast_node_to_be_evaluated != NULL){ // add node as for node type and its expression below.
+							PASTNode aux = new tASTNode();
+							aux->node_type = info_for[i].node_type;
+							aux->children.push_back(node_for_expression);
+							(*ast_node_to_be_evaluated)->children[i]=aux;
 						}
 					}
 					else{
@@ -1904,6 +1922,9 @@ char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 						if(ast_node_to_be_evaluated != NULL) {
 							(*ast_node_to_be_evaluated)->children.push_back(block_for);
 						}
+
+						_localScope->popScope(); // push current scope
+
 						return aux_p;
 					}
 					else{
@@ -1925,10 +1946,11 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	char *end_expr, *end_symbol,*start_symbol;
-	PASTNode switch_node,
-			 	 group_cases,
-				 case_value_node;
-
+	PASTNode switch_node=NULL,
+			 	 group_cases=NULL,
+				 case_value_node=NULL,
+				 default_switch_node=NULL;
+	CScope *m_currentScope;
 	tInfoPunctuator * ip;
 
 
@@ -2060,12 +2082,20 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 													}
 												}
 
+
+
 												case_value_node = new tASTNode;
 												case_value_node->node_type = KEYWORD_NODE;
 												case_value_node->keyword_info = key_w;
 												case_value_node->value_symbol = val;
 												case_value_node->definedValueline=m_line;
 												group_cases->children.push_back(case_value_node);
+
+												if(key_w->id==DEFAULT_KEYWORD){ // save switch node ...
+													default_switch_node=switch_node;
+												}
+
+
 											}
 
 											aux_p++;
@@ -2109,22 +2139,27 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 								}
 
 								// print warning ignored cases in case there's a default in there...
-								if(group_cases->children.size() > 1 && theres_a_default){
+								if(ast_node_to_be_evaluated!= NULL){
+									if(group_cases->children.size() > 1 && theres_a_default){
 
-									for(vector<PASTNode>::iterator it = group_cases->children.begin(); it != group_cases->children.end(); ){ //erase cases and print warning !
-										if((*it)->keyword_info->id == CASE_KEYWORD){
-											print_warning_cr("Ignored case %s defined at line %i because is joined by default keyword",(*it)->value_symbol.c_str(),(*it)->definedValueline);
-											delete *it;
-											group_cases->children.erase(it);
+										for(vector<PASTNode>::iterator it = group_cases->children.begin(); it != group_cases->children.end(); ){ //erase cases and print warning !
+											if((*it)->keyword_info->id == CASE_KEYWORD){
+												print_warning_cr("Ignored case %s defined at line %i because is joined by default keyword",(*it)->value_symbol.c_str(),(*it)->definedValueline);
+												delete *it;
+												group_cases->children.erase(it);
 
-										}else{
-											it++;
+											}else{
+												it++;
+											}
 										}
 									}
 								}
 
-								_localScope->pushScope();
-
+								// save scope pointer ...
+								m_currentScope = _localScope->pushScope();
+								if(ast_node_to_be_evaluated != NULL){
+									switch_node->scope_ptr =m_currentScope;
+								}
 
 
 								// eval block...
@@ -2143,18 +2178,10 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 
 									if(*aux_p == ';'){ // the new scope ...
 										if(ast_node_to_be_evaluated != NULL){
-											//case_default_keyword_node->node_type = GROUP_CASES_NODE;
-											//case_default_keyword_node->keyword_type = key_w->id; // think about
-											//case_default_keyword_node->value_symbol=value_to_eval;
 
 											if(switch_node->children[1] != NULL){
 												switch_node->children[1]->node_type = BODY_NODE;
 											}
-											// stack body ...
-											//case_default_keyword_node->children.push_back(case_body_node);
-
-											// stack cases/default with body...
-											//(*ast_node_to_be_evaluated)->children.push_back(case_default_keyword_node);
 										}
 									}
 									else{
@@ -2173,6 +2200,26 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 							}
 
 						if(*aux_p == '}'){
+
+							// check default node to put to the end of the list ...
+								if(default_switch_node!= NULL){
+									bool end=false;
+									for(vector<PASTNode>::iterator it = (*ast_node_to_be_evaluated)->children.begin(); it != (*ast_node_to_be_evaluated)->children.end() && !end; ){ //erase cases and print warning !
+
+										if((*it)->children[0]->children[0]->keyword_info->id == DEFAULT_KEYWORD){ // group cases-case node access
+											(*ast_node_to_be_evaluated)->children.erase(it);
+											end=true;
+										}else{
+											it++;
+										}
+									}
+
+									(*ast_node_to_be_evaluated)->children.push_back(default_switch_node);
+								}
+
+
+
+
 							return aux_p + 1;
 						}
 						else{
@@ -2300,7 +2347,8 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool &
 
 	char *aux_p = (char *)s;
 
-	CScope *_localScope =  sf->getScope(); // gets current evaluating scope...
+	CScope *_localScope =  sf->getScope(); // gets scope...
+	CScope *currentScope;
 	//CScope *_ant, *_post;
 
 
@@ -2311,11 +2359,16 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool &
 	if(*aux_p == '{'){
 		aux_p++;
 
-		_localScope->pushScope();
+		currentScope = _localScope->pushScope();
+
 
 		if((aux_p = generateAST_Recursive(aux_p, m_line,sf,error,ast_node_to_be_evaluated)) != NULL){
 			if(error){
 				return NULL;
+			}
+
+			if(ast_node_to_be_evaluated != NULL){
+				(*ast_node_to_be_evaluated)->scope_ptr =  currentScope;
 			}
 
 			if(*aux_p != '}'){
