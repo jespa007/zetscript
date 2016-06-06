@@ -209,6 +209,8 @@ private:
 	bool gacVar(PASTNode _node, CScope * _lc);
 	bool gacWhile(PASTNode _node, CScope * _lc);
 	bool gacIfElse(PASTNode _node, CScope * _lc);
+	bool gacFunction(PASTNode _node, CScope * _lc);
+	bool gacReturn(PASTNode _node, CScope * _lc);
 	bool gacIf(PASTNode _node, CScope * _lc);
 	bool gacSwitch(PASTNode _node, CScope * _lc);
 	bool gacBody(PASTNode _node, CScope * _lc);
@@ -221,6 +223,7 @@ private:
 	vector<tInfoStatementOp > 	*m_currentListStatements;
 	CScope										*m_treescope;
 	CScriptFunction 							*m_currentScriptFunction;
+	vector <CScriptFunction *>  		 stk_scriptFunction;
 
 
 /*

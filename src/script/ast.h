@@ -259,7 +259,7 @@ private:
 	static PASTNode preNodePunctuator(tInfoPunctuator * punctuator,PASTNode affected_op);
 	//static PASTNode postOperator(tInfoPunctuator * punctuator,PASTNode affected_op);
 
-
+	static bool printErrorUnexpectedKeywordOrPunctuator(const char *current_string_ptr, int m_line);
 
 	// Punctuators...
 	static bool parsePlusPunctuator(const char *s);
@@ -318,7 +318,7 @@ private:
 	 * this functions tries to evaluate expression that was get from getSymbolValue and didn't know as trivial expression like (), function(), etc.
 	 * Must be evaluated later with this function.
 	 */
-	static bool   parseNonTrivialSymbol(const char *str, int m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent);
+	static char *   parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent);
 
 
 	// parse block { }

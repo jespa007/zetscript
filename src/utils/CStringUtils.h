@@ -57,7 +57,7 @@ public:
 	}
 
 
-	static char *ADVANCE_TO_CHAR(char *str,char c, int & m_line);
+	//static char *ADVANCE_TO_CHAR(char *str,char c, int & m_line);
 	static char *ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line);
 	static char *IGNORE_BLANKS(const char *str, int &m_line);
 	static char *IGNORE_BLANKS_REVERSE(const char *str_begin,const char *str_end, int &m_line);

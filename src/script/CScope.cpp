@@ -82,19 +82,19 @@ CScope * CScope::popScope(){
 //
 // SCOPE VARIABLE MANAGEMENT
 //
-bool CScope::registerSymbol(const string & var_name, int m_line){
+CScope::tInfoRegisteredVar * CScope::registerSymbol(const string & var_name, int m_line){
 	tInfoRegisteredVar * irv;
 	if((irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
 		irv = new tInfoRegisteredVar;
 		irv->m_line = m_line;
 		irv->m_obj = m_undefinedSymbol;
 		m_registeredSymbol[var_name]=irv;
-		return true;
+		return irv;
 	}else{
-		print_error_cr("error var \"%s\" already registered at line %i!", var_name.c_str(), irv->m_line);
+		print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), irv->m_line);
 	}
 
-	return false;
+	return NULL;
 }
 
 

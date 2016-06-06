@@ -17,6 +17,8 @@ int main(int argc, char * argv[]){
 
 	b = 1;
 
+
+
 	printf("%s\n",(char *) typeid(CString *).name());
 	printf("%s\n",(char *) typeid(string *).name());
 

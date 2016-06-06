@@ -21,7 +21,7 @@ public:
 	tInfoRegisteredVar *getInfoRegisteredSymbol(const string & v, bool print_msg=true);
 
 
-	bool registerSymbol(const string & var_name, int m_line);
+	tInfoRegisteredVar * registerSymbol(const string & var_name, int m_line);
 
 
 	bool defineSymbol(const string & var_name, CObject *obj);

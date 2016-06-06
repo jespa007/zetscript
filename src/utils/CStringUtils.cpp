@@ -32,7 +32,7 @@ bool CStringUtils::IS_END_COMMENT(char *str){
 	return false;
 }
 
-char *CStringUtils::ADVANCE_TO_CHAR(char *str,char c, int & m_line) {
+char *ADVANCE_TO_CHAR(char *str,char c, int & m_line) {
 	char *aux_p = str;
 	// make compatible windows format (\r)...
 	while(*aux_p!=0 && (*aux_p !=(c) )) {

@@ -792,8 +792,6 @@ int CCompiler::gacExpression_Recursive(PASTNode op, int & numreg, bool & error, 
 		return -1;
 	}
 
-
-
 	if(op->children.size()==0){//[LEFT_NODE]==NULL && op->children[RIGHT_NODE]==NULL){ // trivial case value itself...
 
 		//printf("CONST \tE[%i],%s\n",numreg,op->value.c_str());
@@ -991,6 +989,44 @@ bool CCompiler::gacWhile(PASTNode _node, CScope * _lc){
 	insert_JMP_Instruction(index_ini_while); // goto end  ...
 	asm_op_jmp_end->result_obj = (void *)(getCurrentStatmentIndex()+1);
 	return true;
+}
+
+bool CCompiler::gacReturn(PASTNode _node, CScope * _lc){
+
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
+	if(_node->keyword_info->id != KEYWORD_TYPE::RETURN_KEYWORD){print_error_cr("node is not RETURN keyword type");return false;}
+	if(_node->children.size() != 1){print_error_cr("node RETURN has not 1 child");return false;}
+
+	gacExpression(_node->children[0], _lc);
+	return true;
+}
+
+bool CCompiler::gacFunction(PASTNode _node, CScope * _lc){
+
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
+	if(_node->keyword_info->id != KEYWORD_TYPE::FUNCTION_KEYWORD){print_error_cr("node is not FUNCTION keyword type");return false;}
+	if(_node->children.size() != 2){print_error_cr("node FUNCTION has not 2 child");return false;}
+	if(_node->children[0]->node_type != NODE_TYPE::FUNCTION_ARGS_DECL_NODE){print_error_cr("node FUNCTION has not ARGS node");return false;}
+	if(_node->children[1]->node_type != NODE_TYPE::BODY_NODE){print_error_cr("node FUNCTION has not BODY node");return false;}
+
+
+	// 1. Get the registered symbol.
+	CScope::tInfoRegisteredVar * irv=_lc->getInfoRegisteredSymbol(_node->value_symbol,false);
+	if(irv == NULL){
+		print_error_cr("Cannot get registered function %s",_node->value_symbol.c_str());
+		return false;
+	}
+
+	// 2. Processing args ...
+
+
+
+	// 3. Processing body ...
+
+	// 2. Compiles the function ...
+	return ast2asm(_node->children[1], (CScriptFunction *)irv->m_obj);
 }
 
 bool CCompiler::gacIf(PASTNode _node, CScope * _lc){
@@ -1199,6 +1235,12 @@ bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 	case KEYWORD_TYPE::VAR_KEYWORD:
 		return gacVar(_node, _lc);
 		break;
+	case KEYWORD_TYPE::FUNCTION_KEYWORD:
+		return gacFunction(_node, _lc);
+		break;
+	case KEYWORD_TYPE::RETURN_KEYWORD:
+		return gacReturn(_node, _lc);
+		break;
 
 	}
 
@@ -1229,22 +1271,19 @@ bool CCompiler::gacExpression(PASTNode _node, CScope *_lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != EXPRESSION_NODE){print_error_cr("node is not Expression");return false;}
 
-	if(_node->children.size() == 1){
 
 
-		// new statment ...
-		(*m_currentListStatements).push_back(i_stat);
+	// new statment ...
+	(*m_currentListStatements).push_back(i_stat);
 
-		bool error_asm=false;
-		gacExpression_Recursive(_node->children[0],numreg,error_asm, _lc);
+	bool error_asm=false;
+	gacExpression_Recursive(_node->children[0],numreg,error_asm, _lc);
 
-		return !error_asm;
-	}
-	else{
-		print_error_cr("Expression node has no expressions ");
-	}
+	return !error_asm;
 
-	return false;
+
+
+
 
 }
 
@@ -1263,8 +1302,7 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 			break;
 			case MAIN_NODE:print_info_cr("MAIN_NODE");
 			break;
-			case PUNCTUATOR_NODE:print_info_cr("PUNCTUATOR_NODE");break;
-			case EXPRESSION_NODE:
+			case EXPRESSION_NODE: // in fact is EXPRESSION NODE
 				print_info_cr("EXPRESSION_NODE");
 				return gacExpression(_node, _lc);
 				break;
@@ -1323,19 +1361,32 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 		return false;
 	}
 
-	m_currentScriptFunction = sf;
 
-	// reset current pointer ...
-	m_treescope->resetScopePointer();
+	if(_node->node_type == NODE_TYPE::BODY_NODE){
+		CScriptFunction *aux_sf = m_currentScriptFunction;
+		stk_scriptFunction.push_back(m_currentScriptFunction);
 
+		this->m_currentScriptFunction = sf;
+		this->m_currentListStatements = sf->getCompiledCode();
+		this->m_treescope = sf->getScope();
 
-	if(_node->node_type == NODE_TYPE::MAIN_NODE){
+		// reset current pointer ...
+		m_treescope->resetScopePointer();
+
 
 		for(unsigned i = 0; i < _node->children.size(); i++){
 			if(!ast2asm_Recursive(_node->children[i], m_treescope->getCurrentScopePointer())){
 				print_error_cr("Error 1!");
 				return false;
 			}
+		}
+
+		stk_scriptFunction.pop_back();
+		m_currentScriptFunction = aux_sf;
+
+		if(m_currentScriptFunction != NULL){
+			this->m_currentListStatements = m_currentScriptFunction->getCompiledCode();
+			this->m_treescope = m_currentScriptFunction->getScope();
 		}
 
 		return true;
@@ -1361,9 +1412,6 @@ bool CCompiler::generateAsmCode(root){
 bool CCompiler::compile(const string & s, CScriptFunction * sf){
 
 	PASTNode root=NULL;
-	this->m_currentScriptFunction = sf;
-	this->m_currentListStatements = sf->getCompiledCode();
-	this->m_treescope = sf->getScope();
 
 	// generate whole AST
 

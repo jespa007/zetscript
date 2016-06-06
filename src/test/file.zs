@@ -1,21 +1,34 @@
 var j=0;
 
-//((j+1)==0)?1+1:0+1;
+function my_function(a,b){
 
-if( (0+1) == (0+1) ){
+	return a+b;
+
 }
 
 
-/*while(j < 10){
+//print("result:"+my_function(1+0, 2*5*10));
+//print("result:"+my_function("1+0", 2*5*10));
+
+
+/*
+//((j+1)==0)?1+1:0+1;
+
+if( (0+1) == (0+1) )
+ {
+}
+
+
+while(j < 10){
 	j*4;
 	
 	
-}*/
+}
 
 
 
 
-/*var kk=0+1;
+var kk=0+1;
 
 switch(0){
 case 111:
@@ -34,20 +47,20 @@ kk=10;
 break;
 
 
-}*/
-/*
+}
+
 for(var i = 0; i < 10; i++){
 	if(i==0){
 		2*i;
 	}else{
 		3*i;
 	}
-}*/
+}
 
 
 // var j="hola que hace"+0+0+1;
 
-/*
+
 
 // conditional if...
 var hh = 1 + 0==1 ? 2: 3*2 + 10 ? 0 : 1;
@@ -61,9 +74,9 @@ return 1;
 
 }();
 
-var kk=1+[[1,2], [0,1] ][0][0];
+var jj=1+[[1,2], [0,1] ][0][0];
 
-var fun = function (l,j,k){
+var fun = function (l,d,k){
 	
 	var b=0;
 	
@@ -107,6 +120,7 @@ class my_class{
 	
 	function myclass(){
 		this.jj=0;
+		this;
 		
 		i=0;
 	}
@@ -131,10 +145,10 @@ class my_class{
 new my_class();
 
 
-for(var j=0; j < 10 ; j++){
+for(var j2=0; j2 < 10 ; j2++){
 	var ll=0;
 	
-	ll = ll + j;
+	ll = ll + j2;
 }
 
 
@@ -161,6 +175,5 @@ class my_class_derivated:my_class{
 	}
 };
 
-
-
 */
+
