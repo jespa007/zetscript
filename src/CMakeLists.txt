@@ -14,6 +14,8 @@ if (MINGW)
 	set(CMAKE_LEGACY_MINGW_WIN32 0)
 	set(CMAKE_PREFIX_PATH "c:/apps/mingw/local32/lib")
 
+	find_library(SDL2_LIB  NAMES SDL2  )
+	find_library(SDL2_MAIN_LIB  NAMES SDL2main  )
 	
 	MESSAGE ("include" ${include_directories})
  
@@ -141,8 +143,8 @@ add_library( zg_script${POST_NAME} SHARED ${ZG_BASE_LIB_SRCS} )
 
 IF (MINGW)
 
- target_link_libraries(zg_script${POST_NAME} SDL2main SDL2 ${UUID_LIB} re2 Rpcrt4 kernel32 "-Wl,--no-as-needed" )
- target_link_libraries(zg_main${POST_NAME} mingw32 zg_script${POST_NAME} "-Wl,--no-as-needed" )
+ target_link_libraries(zg_script${POST_NAME} ${SDL2_MAIN_LIB} ${SDL2_LIB}  ${UUID_LIB} re2 Rpcrt4 kernel32 "-Wl,--no-as-needed" )
+ target_link_libraries(zg_main${POST_NAME} mingw32  zg_script${POST_NAME} "-Wl,--no-as-needed" )
   
 ELSE(MINGW)
 	target_link_libraries(zg_script${POST_NAME}  "-Wl,--no-as-needed" )

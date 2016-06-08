@@ -88,6 +88,7 @@ public:
 	     //tInfoObjectOperator *funOp;
 	     //CObject *left_var_obj;
 	     void *result_obj; // can be float/bool/string or variable.
+
 	     string result_str;
 	     VAR_TYPE result_type;
 	     //string type_res;
@@ -98,7 +99,7 @@ public:
 	     void *ptr_value; // can be float, bool or string.
 	     //------------------
 
-	     int index_left,index_right;
+	     int index_op1,index_op2; // left and right respectively
 
 	    // bool (* isconvertable)(int value);
 
@@ -112,7 +113,7 @@ public:
 			result_obj=NULL; // must be created before.
 
 		   // type_res="none";
-		    index_left=index_right=-1;
+			index_op1=index_op2=-1;
 		    ptr_value=NULL;
 		}
 
@@ -133,7 +134,7 @@ public:
 	// CONSTANT TOOLS
 
 	static CObject *getConstant(const string & const_name);
-	static bool addConstant(const string & const_name, CObject *obj);
+	static void addConstantIfNotExist(const string & const_name, CObject *obj);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMMON COMPILE FUNCTIONS
@@ -158,7 +159,7 @@ public:
 	 */
 	tInfoStatementOp  *newStatment();
 	bool insertLoadValueInstruction(const string & value, CScope * _lc, int var_at_line);
-	bool insertMovVarInstruction(CObject *var, int right);
+	void insertMovVarInstruction(CObject *var, int right);
 
 	/**
 	 * Unconditional Jump instruction
@@ -210,6 +211,8 @@ private:
 	// DEBUG TOOLS
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE ASSEMBLE CODE (GAC)
+
+	ASM_OPERATOR puntuator2asmop(tInfoPunctuator * op);
 
 	int  gacExpression_Recursive(PASTNode op, int & numreg, bool & error, CScope * _lc);
 	bool  gacExpression(PASTNode op, CScope * _lc);

@@ -75,7 +75,7 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 
 	vector<CCompiler::tInfoStatementOp> * m_listStatements = fs->getCompiledCode();
 	CCompiler::tInfoAsmOp * previous_instruction=NULL;
-	int index_right=-1,index_left=-1;
+	int index_op2=-1,index_op1=-1;
 	bool conditional_jmp=false;
 
 
@@ -91,8 +91,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 			CCompiler::tInfoStatementOp * current_statment = &(*m_listStatements)[s];
 			for(unsigned i = 0; i  <  asm_op_statment->size() && !conditional_jmp; i++){
 				print_vm_cr("executing instruction %i...",i);
-				index_right = current_statment->asm_op[i]->index_right;
-				index_left = current_statment->asm_op[i]->index_left;
+				index_op2 = current_statment->asm_op[i]->index_op2;
+				index_op1 = current_statment->asm_op[i]->index_op1;
 				CCompiler::tInfoAsmOp * instruction=current_statment->asm_op[i];
 				CCompiler::tInfoAsmOp * right_instruction, *left_instruction;//=current_statment->asm_op[i];
 				instruction=current_statment->asm_op[i];
@@ -108,7 +108,7 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 					case CCompiler::MOV:{ // only can mov vars...
 
 						print_vm_cr("mov var");
-						right_instruction = current_statment->asm_op[index_right];
+						right_instruction = current_statment->asm_op[index_op2];
 
 						switch(instruction->result_type){
 						default:
@@ -157,9 +157,9 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 					}
 					break;
 					case CCompiler::PRE_INC: // for numbers...
-						//left_instruction = current_statment->asm_op[index_left];
+						//left_instruction = current_statment->asm_op[index_op1];
 						print_vm_cr("pre inc");
-						left_instruction = current_statment->asm_op[index_left];
+						left_instruction = current_statment->asm_op[index_op1];
 
 
 						// increment
@@ -178,9 +178,9 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 
 						break;
 					case CCompiler::POST_INC: // for numbers...
-						//left_instruction = current_statment->asm_op[index_left];
+						//left_instruction = current_statment->asm_op[index_op1];
 						print_vm_cr("post inc");
-						left_instruction = current_statment->asm_op[index_left];
+						left_instruction = current_statment->asm_op[index_op1];
 
 
 						// set it to expression result...
@@ -199,9 +199,9 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 
 					case CCompiler::PRE_DEC: // for numbers...
-						//left_instruction = current_statment->asm_op[index_left];
+						//left_instruction = current_statment->asm_op[index_op1];
 						print_vm_cr("pre inc");
-						left_instruction = current_statment->asm_op[index_left];
+						left_instruction = current_statment->asm_op[index_op1];
 
 
 						// increment
@@ -220,9 +220,9 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 
 						break;
 					case CCompiler::POST_DEC: // for numbers...
-						//left_instruction = current_statment->asm_op[index_left];
+						//left_instruction = current_statment->asm_op[index_op1];
 						print_vm_cr("post inc");
-						left_instruction = current_statment->asm_op[index_left];
+						left_instruction = current_statment->asm_op[index_op1];
 
 
 						// set it to expression result...
@@ -242,8 +242,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 
 					case CCompiler::ADD: // for numbers...
 						print_vm_cr("add");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if((left_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)&&
 						    (right_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)){
@@ -267,8 +267,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::DIV: // for numbers...
 						print_vm_cr("div");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if((left_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)&&
 							    (right_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)){
@@ -283,8 +283,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::MUL: // for numbers...
 						print_vm_cr("mul");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if((left_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)&&
 							    (right_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)){
@@ -299,8 +299,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::LOGIC_AND: // for booleans...
 						print_vm_cr("and");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if(left_instruction->result_type == CCompiler::VAR_TYPE::BOOL && right_instruction->result_type == CCompiler::VAR_TYPE::BOOL){
 							print_vm_cr("%i and %i",*((bool *)left_instruction->result_obj),*((bool *)right_instruction->result_obj));
@@ -312,8 +312,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::LOGIC_OR: // for booleans...
 						print_vm_cr("or");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if(left_instruction->result_type == CCompiler::VAR_TYPE::BOOL && right_instruction->result_type == CCompiler::VAR_TYPE::BOOL){
 							print_vm_cr("%i or %i",*((bool *)left_instruction->result_obj),*((bool *)right_instruction->result_obj));
@@ -325,8 +325,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::LT: // for numbers...
 						print_vm_cr("<");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if((left_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)&&
 							    (right_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)){
@@ -341,8 +341,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::GT: // for numbers...
 						print_vm_cr(">");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if((left_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)&&
 							    (right_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)){
@@ -357,8 +357,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::LTE: // for numbers...
 						print_vm_cr("<=");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if((left_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)&&
 							    (right_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)){
@@ -373,8 +373,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::GTE: // for numbers...
 						print_vm_cr(">=");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if((left_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)&&
 							    (right_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)){
@@ -389,8 +389,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::EQU: // for numbers...
 						print_vm_cr("==");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if((left_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)&&
 							    (right_instruction->result_type == CCompiler::VAR_TYPE::NUMBER || right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER)){
@@ -409,8 +409,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::MOD: // for integers...
 						print_vm_cr("mod");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if(left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER && right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER){
 							print_vm_cr("%i % %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
@@ -422,8 +422,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::OR: // for integers...
 						print_vm_cr("or");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if(left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER && right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER){
 							print_vm_cr("%i | %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
@@ -435,8 +435,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::AND: // for integers...
 						print_vm_cr("and");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if(left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER && right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER){
 							print_vm_cr("%i & %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
@@ -448,8 +448,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::XOR: // for integers...
 						print_vm_cr("xor");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if(left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER && right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER){
 							print_vm_cr("%i ^ %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
@@ -461,8 +461,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::SHL: // for integers...
 						print_vm_cr("<<");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if(left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER && right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER){
 							print_vm_cr("%i << %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
@@ -474,8 +474,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						break;
 					case CCompiler::SHR: // for integers...
 						print_vm_cr(">>");
-						right_instruction = current_statment->asm_op[index_right];
-						left_instruction = current_statment->asm_op[index_left];
+						right_instruction = current_statment->asm_op[index_op2];
+						left_instruction = current_statment->asm_op[index_op1];
 
 						if(left_instruction->result_type == CCompiler::VAR_TYPE::INTEGER && right_instruction->result_type == CCompiler::VAR_TYPE::INTEGER){
 							print_vm_cr("%i >> %i",*((int *)left_instruction->result_obj),*((int *)right_instruction->result_obj));
@@ -488,14 +488,14 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 					case CCompiler::NOT:
 						print_vm_cr("===============================================");
 						print_vm_cr("not");
-						left_instruction = current_statment->asm_op[index_left];
+						left_instruction = current_statment->asm_op[index_op1];
 						(*((bool *)instruction->result_obj))=!(*((bool *)left_instruction->result_obj));
 
 						break;
 					case CCompiler::NEG:
 						print_vm_cr("===============================================");
 						print_vm_cr("negative");
-						left_instruction = current_statment->asm_op[index_left];
+						left_instruction = current_statment->asm_op[index_op1];
 						ASSIGN_NUMBER(instruction,-CAST_RESULT_AS_NUMBER(left_instruction));
 						break;
 					case CCompiler::POP_SCOPE: // trivial
