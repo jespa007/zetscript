@@ -48,11 +48,13 @@ void CCompiler::destroySingletons(){
 		delete m_compiler;
 		m_compiler=NULL;
 
-		for(map<string,CObject *>::iterator it=constant_pool->begin(); it != constant_pool->end(); it++){
-			if(it->second != NULL)
+		/*for(map<string,CObject *>::iterator it=constant_pool->begin(); it != constant_pool->end(); it++){
+			if(it->second != NULL){
 				delete it->second;
-		}
+			}
+		}*/
 
+		constant_pool->clear();
 		delete constant_pool;
 		constant_pool = NULL;
 	}
