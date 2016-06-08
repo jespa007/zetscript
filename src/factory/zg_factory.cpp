@@ -4,3 +4,4 @@
 #include "object/CNumberFactory.cpp"
 #include "object/CIntegerFactory.cpp"
 #include "object/CStringFactory.cpp"
+#include "object/CUndefinedFactory.cpp"

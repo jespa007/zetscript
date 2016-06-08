@@ -10,7 +10,19 @@ CScriptFunction::CScriptFunction(CScriptFunction * _parentFunction){
 }
 
 
+void 	 CScriptFunction::addArg(const string & var_name){
+	CScope::tInfoRegisteredVar *irv=getScope()->registerSymbol(var_name,-1);
+	m_arg.push_back(irv->m_obj);
+}
 
+CObject *CScriptFunction::getArg(const string & var_name){
+	for(unsigned i = 0; i < m_arg.size(); i++){
+		if(m_arg[i]->getName() == var_name){
+			return m_arg[i];
+		}
+	}
+	return NULL;
+}
 
 CScope *CScriptFunction::getScope(){
 	return m_scope;

@@ -1611,7 +1611,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 						}
 
 						// ok register symbol into the object function ...
-						irv=object_function->getScope()->registerSymbol(value_symbol,m_line);
+						object_function->addArg(value_symbol);//getScope()->registerSymbol(value_symbol,m_line);
 					}
 					aux_p=end_var;
 					aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);

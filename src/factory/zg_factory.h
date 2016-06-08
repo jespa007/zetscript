@@ -12,3 +12,4 @@
 #include "object/CNumberFactory.h"
 #include "object/CIntegerFactory.h"
 #include "object/CStringFactory.h"
+#include "object/CUndefinedFactory.h"

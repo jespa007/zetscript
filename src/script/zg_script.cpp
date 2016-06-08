@@ -53,6 +53,7 @@ CZG_Script::CZG_Script(){
 	iniFactory<CIntegerFactory>("CInteger");
 	iniFactory<CBooleanFactory>("CBoolean");
 	iniFactory<CStringFactory>("CString");
+	iniFactory<CUndefinedFactory>("CUndefined");
 
 	CScope::createSingletons();
 	CAst::createSingletons();
