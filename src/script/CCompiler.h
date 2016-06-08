@@ -78,6 +78,7 @@ public:
 
 	static tDefOperator def_operator[MAX_OPERATORS];
 
+
 	class tInfoAsmOp{
 
 	public:
@@ -128,6 +129,14 @@ public:
 
 	static void destroySingletons();
 
+	//---------------------------------------------------------------------------------------------------------------------------------------
+	// CONSTANT TOOLS
+
+	static CObject *getConstant(const string & const_name);
+	static bool addConstant(const string & const_name, CObject *obj);
+
+	//---------------------------------------------------------------------------------------------------------------------------------------
+	// COMMON COMPILE FUNCTIONS
 
 	bool compileExpression(const char *expression_str, int & m_line,CScriptFunction * sf, CScope *currentEvaluatingScope);
 	bool compile(const string & s, CScriptFunction * pr);
@@ -181,6 +190,7 @@ public:
 
 private:
 	static CCompiler *m_compiler;
+	static map<string,CObject *> *constant_pool;
 
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
