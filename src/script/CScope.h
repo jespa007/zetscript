@@ -5,7 +5,7 @@ class CScriptFunction;
 class CScope: public CObject{
 public:
 
-
+	static CUndefined *m_undefinedSymbol;
 
 	typedef struct{
 		int m_line;
@@ -67,7 +67,7 @@ private:
 	// each scope has its registered vars.... if the compiler tries to find a var and this is not found goes through parent scopes until
 	// it finds it.
 
-	static CUndefined *m_undefinedSymbol;
+
 	static CVoid *m_voidSymbol;
 	vector<CScope *> m_scopeList;
 

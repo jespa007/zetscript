@@ -96,7 +96,7 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 				CCompiler::tInfoAsmOp * instruction=current_statment->asm_op[i];
 				CCompiler::tInfoAsmOp * right_instruction, *left_instruction;//=current_statment->asm_op[i];
 				instruction=current_statment->asm_op[i];
-				switch(instruction->operator_type){
+				/*switch(instruction->operator_type){
 					default:
 						print_error_cr("operator type(%i) not implemented",instruction->operator_type);
 						break;
@@ -533,13 +533,13 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 						}
 						break;
 
-				}
+				}*/
 
 				previous_instruction = instruction;
 			}
 
 			// try to get the result...
-			instruction=current_statment->asm_op[current_statment->asm_op.size()-1];
+			/*instruction=current_statment->asm_op[current_statment->asm_op.size()-1];
 			if(instruction!=NULL){
 				switch(instruction->result_type){
 				default:
@@ -565,7 +565,7 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 					break;
 
 				}
-			}
+			}*/
 
 
 

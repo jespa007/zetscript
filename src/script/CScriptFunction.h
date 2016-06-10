@@ -22,7 +22,14 @@ public:
 	vector<CCompiler::tInfoStatementOp> * getCompiledCode();
 
 	void 	 addArg(const string & var_name);
+	void 	 addFunction(CScriptFunction *sf);
+	vector<CScriptFunction *> *	 getVectorFunction();
+
 	CObject *getArg(const string & var_name);
+
+	CObject *getReturnValue();
+	void setReturnValue(CObject *);
+
 
 	CScriptFunction *getParent();
 
@@ -112,6 +119,7 @@ private:
 
 
 	vector<CObject *> m_arg;
+	vector<CScriptFunction *> m_function;
 
 
 	vector<CCompiler::tInfoStatementOp>  	m_listStatements;

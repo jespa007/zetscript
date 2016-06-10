@@ -10,7 +10,7 @@ CBoolean * CBoolean::Parse(const string & s){
 			return b;
 			
 		}else if(CStringUtils::toLower(s)=="false"){
-			CBoolean *b=NEW_BOOLEAN();
+			CBoolean *b=new CBoolean();
 			b->m_value=false;
 			return b;
 		}

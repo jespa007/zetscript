@@ -14,7 +14,7 @@ CInteger * CInteger::Parse(const string & val){
 	}
 
 
-   	n=NEW_INTEGER();
+   	n=new CInteger();
    	n->m_value = numberValue;
 
 	// TODO: develop exception handler.

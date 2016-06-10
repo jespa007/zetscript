@@ -500,7 +500,7 @@ PASTNode CAst::preNodePunctuator(tInfoPunctuator * operator_info,PASTNode affect
 
 
 
-char * CAst::parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
+char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux = (char *)str;
 	char *end_expression;
@@ -530,7 +530,7 @@ char * CAst::parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunctio
 			}
 
 			break;
-		case KEYWORD_TYPE::NEW_KEYWORD:
+		/*case KEYWORD_TYPE::NEW_KEYWORD:
 			if((aux = parseNew(str,m_startLine,sf,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 				return NULL;
 			}
@@ -539,12 +539,12 @@ char * CAst::parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunctio
 			if((aux=parseDelete(str,m_startLine,sf,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 				return NULL;
 			}
-			break;
+			break;*/
 		case KEYWORD_TYPE::THIS_KEYWORD:
 			return parseExpression_Recursive(str,  m_line, sf, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
 			break;
 		default:
-			print_error_cr("\"%s\" cannot be evaluated in expression",key_w->str);
+			print_error_cr("Invalid using of \"%s\" at line %i",key_w->str, m_startLine);
 			break;
 
 		}
@@ -584,12 +584,12 @@ char * CAst::parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunctio
 			 if(ast_node_to_be_evaluated != NULL) {// save node
 				 *ast_node_to_be_evaluated = new tASTNode();
 				 (*ast_node_to_be_evaluated)->value_symbol = symbol_value; // is array or function ...
-				 (*ast_node_to_be_evaluated)->node_type  = ARRAY_OBJECT_NODE;
+				 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
 			 }
 
 			 if(*word_str == '('){
 				 if(ast_node_to_be_evaluated != NULL){
-					 (*ast_node_to_be_evaluated)->node_type  = FUNCTION_OBJECT_NODE;
+					 (*ast_node_to_be_evaluated)->node_type  = FUNCTION_REF_NODE;
 				 }
 			 }
 
@@ -609,7 +609,7 @@ char * CAst::parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunctio
 
 			vector_args_node.push_back(NULL);
 
-			if((*ast_node_to_be_evaluated)->node_type != FUNCTION_OBJECT_NODE){
+			if((*ast_node_to_be_evaluated)->node_type != FUNCTION_REF_NODE){
 				print_error_cr("Expected function object before '(' at line %i",m_startLine);
 				return NULL;
 			}
@@ -628,7 +628,7 @@ char * CAst::parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunctio
 			PASTNode args_node=NULL;
 
 
-			if((*ast_node_to_be_evaluated)->node_type != ARRAY_OBJECT_NODE){
+			if((*ast_node_to_be_evaluated)->node_type != ARRAY_REF_NODE){
 				print_error_cr("Expected array object before '[' at line %i",m_startLine);
 				return NULL;
 			}
@@ -680,7 +680,7 @@ char * CAst::parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunctio
 
 			if((ip=checkPostOperatorPunctuator(aux)) != NULL){
 
-				if(obj->node_type != ARRAY_OBJECT_NODE){
+				if(obj->node_type != ARRAY_REF_NODE){
 					print_error_cr("line:%i, function doesn't allow post operators ",m_startLine);
 					return NULL;
 				}
@@ -963,11 +963,6 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 		return NULL;
 	}
 
-	if(strncmp(aux,"10))",4)==0){
-		int jjjj=0;
-		jjjj++;
-	}
-
 
 	print_ast_cr("new expression eval:\"%.30s ...\" group:%i at line %i",aux,type_group, m_line);
 
@@ -1031,7 +1026,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 					(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
 					(*ast_node_to_be_evaluated)->value_symbol=symbol_value; // assign its value ...
 				}else{
-					if(parseNonTrivialSymbol(symbol_value.c_str(),m_definedSymbolLine,sf, ast_node_to_be_evaluated, parent) == NULL){
+					if(deduceExpression(symbol_value.c_str(),m_definedSymbolLine,sf, ast_node_to_be_evaluated, parent) == NULL){
 						return NULL;
 					}
 
@@ -1166,17 +1161,17 @@ char * CAst::parseExpression(const char *s, int & m_line, CScriptFunction *sf , 
 	// If this functions finds ';' then the function will generate ast.
 
 	// last character is in charge of who is calling parseExpression because there's many ending cases ): [ ';' ',' ')' , ']' ]
-	//char *aux = parseExpression_Recursive(s,m_line,sf,ast_node_to_be_evaluated);
-	char *aux = parseNonTrivialSymbol(s, m_line, sf, ast_node_to_be_evaluated, NULL);
+	char *aux = parseExpression_Recursive(s,m_line,sf,ast_node_to_be_evaluated);
+	//char *aux = parseExpression_Recursive(s, m_line, sf, ast_node_to_be_evaluated, NULL);
 
 	if(aux != NULL && ast_node_to_be_evaluated != NULL){ // can save the node and tells that is an starting of expression node...
 
-		if((*ast_node_to_be_evaluated)->node_type == NODE_TYPE::PUNCTUATOR_NODE){
+		//if((*ast_node_to_be_evaluated)->node_type == NODE_TYPE::PUNCTUATOR_NODE){
 			PASTNode ast_node=new tASTNode;
 			ast_node->node_type = EXPRESSION_NODE;
 			ast_node->children.push_back(*ast_node_to_be_evaluated);
 			*ast_node_to_be_evaluated=ast_node;
-		}
+		//}
 
 	}
 

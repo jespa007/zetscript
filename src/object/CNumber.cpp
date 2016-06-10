@@ -12,7 +12,7 @@ CNumber * CNumber::Parse(const string & s){
 	}
 
     if(ok){
-		n=NEW_NUMBER();
+		n=new CNumber();
 		n->m_value = numberValue;
 	}
 

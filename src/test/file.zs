@@ -1,4 +1,11 @@
-var j=0;
+function bb(a,b){
+	return a+b;
+}
+
+bb(0,0)+bb(0,1);
+
+
+/*var j=0;
 
 function my_function(a,b){
 
@@ -6,7 +13,7 @@ function my_function(a,b){
 
 }
 
-
+*/
 //print("result:"+my_function(1+0, 2*5*10));
 //print("result:"+my_function("1+0", 2*5*10));
 

@@ -32,6 +32,15 @@ public:
 		VECTOR3D_OBJ
 	};
 
+	enum LOAD_TYPE{
+
+		LOAD_TYPE_NOT_DEFINED=0,
+		LOAD_TYPE_CONSTANT,
+		LOAD_TYPE_VARIABLE,
+		LOAD_TYPE_ARGUMENT
+	};
+
+
 	enum ASM_OPERATOR{
 		INVALID_OP=-1,
 		NOP=0,
@@ -87,16 +96,16 @@ public:
 	     //int type_op;
 	     //tInfoObjectOperator *funOp;
 	     //CObject *left_var_obj;
-	     void *result_obj; // can be float/bool/string or variable.
+	    // void *result_obj; // can be float/bool/string or variable.
 
-	     string result_str;
-	     VAR_TYPE result_type;
+	     string aux_str;
+	     VAR_TYPE variable_type;
 	     //string type_res;
 
 	     //------------------
 
 	     ASM_OPERATOR operator_type;
-	     void *ptr_value; // can be float, bool or string.
+	     //void *ptr_value; // can be float, bool or string.
 	     //------------------
 
 	     int index_op1,index_op2; // left and right respectively
@@ -104,17 +113,18 @@ public:
 	    // bool (* isconvertable)(int value);
 
 		tInfoAsmOp(){
-			result_type=VAR_TYPE::NOT_DEFINED;
+			variable_type=VAR_TYPE::NOT_DEFINED;
 			operator_type=ASM_OPERATOR::INVALID_OP;
+			aux_str = "na";
 			//isconvertable=NULL;
 			//left_var_obj=NULL;
 		  //   type_op=0;
 		   //  funOp=NULL;
-			result_obj=NULL; // must be created before.
+			//result_obj=NULL; // oject type...
 
 		   // type_res="none";
 			index_op1=index_op2=-1;
-		    ptr_value=NULL;
+		   // ptr_value=NULL;
 		}
 
 	};
@@ -159,7 +169,7 @@ public:
 	 */
 	tInfoStatementOp  *newStatment();
 	bool insertLoadValueInstruction(const string & value, CScope * _lc, int var_at_line);
-	void insertMovVarInstruction(CObject *var, int right);
+	bool insertMovVarInstruction(const string & value, CScope * _lc, int right);
 
 	/**
 	 * Unconditional Jump instruction
@@ -204,8 +214,14 @@ private:
 
 	vector<tDebugInformation>	m_debugInfo;
 
+	static char print_aux_load_value[512];
+
 	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
 	void printDebugInformation();
+	static const char * getStrTypeLoadValue(tInfoAsmOp * iao);
+	static const char * getStrMovVar(CCompiler::tInfoAsmOp * iao);
+
+	static void printGeneratedCode_Recursive(CScriptFunction *fs);
 	static void printGeneratedCode(CScriptFunction *fs);
 
 	// DEBUG TOOLS

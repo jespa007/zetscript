@@ -33,6 +33,8 @@ enum NODE_TYPE{
 	CLASS_FUNCTION_COLLECTION_NODE,
 	BASE_CLASS_NODE,
 	CALLING_OBJECT_NODE,
+	ARRAY_REF_NODE,
+	FUNCTION_REF_NODE,
 	MAX_NODE_TYPE
 };
 
@@ -318,7 +320,7 @@ private:
 	 * this functions tries to evaluate expression that was get from getSymbolValue and didn't know as trivial expression like (), function(), etc.
 	 * Must be evaluated later with this function.
 	 */
-	static char *   parseNonTrivialSymbol(const char *str, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent);
+	static char *   deduceExpression(const char *str, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL, PASTNode parent=NULL);
 
 
 	// parse block { }

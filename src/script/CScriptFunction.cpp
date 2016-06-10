@@ -5,7 +5,11 @@ CScriptFunction::CScriptFunction(CScriptFunction * _parentFunction){
 	m_parentFunction = _parentFunction;
 	m_scope = new CScope(this,NULL);
 
-	returnVariable = NULL;
+	returnVariable = CScope::m_undefinedSymbol;
+
+	if(_parentFunction != NULL){
+		_parentFunction->addFunction(this);
+	}
 
 }
 
@@ -14,6 +18,29 @@ void 	 CScriptFunction::addArg(const string & var_name){
 	CScope::tInfoRegisteredVar *irv=getScope()->registerSymbol(var_name,-1);
 	m_arg.push_back(irv->m_obj);
 }
+
+void 	 CScriptFunction::addFunction(CScriptFunction *sf){
+
+	m_function.push_back(sf);
+}
+
+vector<CScriptFunction *> *	 CScriptFunction::getVectorFunction(){
+
+	return &m_function;
+}
+
+
+CObject *	 CScriptFunction::getReturnValue(){
+
+	return returnVariable;
+}
+
+void CScriptFunction::setReturnValue(CObject *obj){
+
+	returnVariable = obj;
+}
+
+
 
 CObject *CScriptFunction::getArg(const string & var_name){
 	for(unsigned i = 0; i < m_arg.size(); i++){
