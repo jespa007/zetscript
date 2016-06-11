@@ -5,5 +5,6 @@
 #include "CNumber.cpp"
 #include "CInteger.cpp"
 #include "CString.cpp"
+#include "CVector.cpp"
 #include "CUndefined.cpp"
 #include "CVoid.cpp"

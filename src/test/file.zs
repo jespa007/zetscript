@@ -1,8 +1,16 @@
-function bb(a,b){
+/*function bb(a,b){
 	return a+b;
-}
+}*/
 
-bb(0,0)+bb(0,1);
+var bb=function(a,b){ return 5+6;};
+
+var cc=[2+3,2+5+6];
+
+cc[0+12+3+4+5+6]+4+5;
+
+
+
+//1*bb(0+1,0)+bb(0,1)+0;
 
 
 /*var j=0;

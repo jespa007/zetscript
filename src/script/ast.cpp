@@ -560,10 +560,18 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 
 		if(ast_node_to_be_evaluated != NULL){
 			(*ast_node_to_be_evaluated)->node_type = ARRAY_OBJECT_NODE;
+			CVector *vec = NEW_VECTOR();
+			(*ast_node_to_be_evaluated)->value_symbol = vec->getID();
+			vec->setName((*ast_node_to_be_evaluated)->value_symbol);
+
+			CScope::tInfoRegisteredVar *irv=sf->getScope()->registerSymbol((*ast_node_to_be_evaluated)->value_symbol,m_line);
+			 irv->m_obj=vec;
+
+
 		}
 
 
-	}else {
+	}else { // try if symbol, function or array access
 		char *word_str=NULL;
 		// try to get function/array object ...
 		end_expression = getEndWord(aux, m_startLine);
@@ -602,46 +610,70 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 		}
 	}
 
-	if(ast_node_to_be_evaluated != NULL){
+	//if(ast_node_to_be_evaluated != NULL){
 		aux = CStringUtils::IGNORE_BLANKS(aux, m_startLine);
+		PASTNode args_obj=NULL;
 
-		if(*aux == '(' ){
+		if(*aux == '(' ){ // function access
 
-			vector_args_node.push_back(NULL);
+			if( ast_node_to_be_evaluated != NULL){
 
-			if((*ast_node_to_be_evaluated)->node_type != FUNCTION_REF_NODE){
-				print_error_cr("Expected function object before '(' at line %i",m_startLine);
+
+				if((*ast_node_to_be_evaluated)->node_type != FUNCTION_REF_NODE){
+					print_error_cr("Expected function object before '(' at line %i",m_startLine);
+					return NULL;
+				}
+			}
+
+			if((aux=parseArgs('(', ')',aux,m_startLine,sf,ast_node_to_be_evaluated != NULL? &args_obj : NULL)) == NULL){
 				return NULL;
 			}
 
-			if((aux=parseArgs('(', ')',aux,m_startLine,sf,&vector_args_node[0])) == NULL){
-				return NULL;
+			if(ast_node_to_be_evaluated != NULL){
+				args_obj->node_type = NODE_TYPE::ARGS_PASS_NODE;
+				//vector_args_node.push_back(args_node);//[0]->node_type = NODE_TYPE::ARGS_PASS_NODE;
 			}
 
-			vector_args_node[0]->node_type = NODE_TYPE::FUNCTION_OR_CLASS_ARGS_CALL_NODE;
 
-
-		}else if (*aux == '['){
+		}else if (*aux == '['){ // array acces multi dimensional like this : array[i][j][z] ...
 
 			int i = 0;
 			bool end = false;
-			PASTNode args_node=NULL;
 
 
-			if((*ast_node_to_be_evaluated)->node_type != ARRAY_REF_NODE){
-				print_error_cr("Expected array object before '[' at line %i",m_startLine);
-				return NULL;
+			if( ast_node_to_be_evaluated != NULL){
+				if((*ast_node_to_be_evaluated)->node_type != ARRAY_REF_NODE){
+					print_error_cr("Expected array object before '[' at line %i",m_startLine);
+					return NULL;
+				}
+			}
+
+
+
+			if( ast_node_to_be_evaluated != NULL){
+				args_obj = new tASTNode();
+				args_obj->node_type = ARRAY_ACCESS_NODE;
 			}
 
 			do{
-				args_node=NULL;
+
+
+
+				PASTNode args_node=NULL;
 				char *aux_ptr;
 
+				if((aux_ptr=parseArgs('[', ']',aux,m_startLine,sf,ast_node_to_be_evaluated != NULL ? &args_node: NULL)) != NULL){
+					if( ast_node_to_be_evaluated != NULL){
+						if(args_node->children.size() != 1){
+							print_error_cr("Invalid array access %i",m_startLine);
+							return NULL;
+						}
+						args_obj->children.push_back(args_node);
+						args_node->node_type = NODE_TYPE::ARRAY_INDEX_NODE;
+					}
 
-				if((aux_ptr=parseArgs('[', ']',aux,m_startLine,sf,&args_node)) != NULL){
-					vector_args_node.push_back(args_node);
-					args_node->node_type = NODE_TYPE::FUNCTION_OR_CLASS_ARGS_CALL_NODE;
 					aux =  CStringUtils::IGNORE_BLANKS(aux_ptr,m_startLine);
+
 				}else{
 					if(i == 0){
 						return NULL;
@@ -656,45 +688,49 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 
 
 
+
 		}
 
-		// the deepth node is the object and the parent will the access node (function or array) ...
-		if(vector_args_node.size() > 0){
-			PASTNode obj =  *ast_node_to_be_evaluated;
-			PASTNode calling_object = new tASTNode();
-			tInfoPunctuator *ip=NULL;
+		if(ast_node_to_be_evaluated != NULL){
+			// the deepth node is the object and the parent will the access node (function or array) ...
+			if(args_obj != NULL){ // there's arguments to be pushed ...
+				PASTNode obj =  *ast_node_to_be_evaluated;
+				PASTNode calling_object = new tASTNode();
+				tInfoPunctuator *ip=NULL;
 
-			calling_object->node_type = CALLING_OBJECT_NODE;
+				calling_object->node_type = CALLING_OBJECT_NODE;
 
-			calling_object->children.push_back(obj); // the object itself...
+				calling_object->children.push_back(obj); // the object itself...
+				calling_object->children.push_back(args_obj); // the args itself...
 
-			for(unsigned i=0; i < vector_args_node.size(); i++){
-				calling_object->children.push_back(vector_args_node[i]); // the args ...
-			}
+				/*for(unsigned i=0; i < vector_args_node.size(); i++){
+					calling_object->children.push_back(vector_args_node[i]); // the args ...
+				}*/
 
-			calling_object->parent=parent;
+				calling_object->parent=parent;
 
-			// finally save ast node...
+				// finally save ast node...
 
-			*ast_node_to_be_evaluated = calling_object;
+				*ast_node_to_be_evaluated = calling_object;
 
-			if((ip=checkPostOperatorPunctuator(aux)) != NULL){
+				if((ip=checkPostOperatorPunctuator(aux)) != NULL){
 
-				if(obj->node_type != ARRAY_REF_NODE){
-					print_error_cr("line:%i, function doesn't allow post operators ",m_startLine);
-					return NULL;
-				}
+					if(obj->node_type != ARRAY_REF_NODE){
+						print_error_cr("line:%i, function doesn't allow post operators ",m_startLine);
+						return NULL;
+					}
 
-				aux+=strlen(ip->str);
+					aux+=strlen(ip->str);
 
-				if( parent == NULL){
+					if( parent == NULL){
 
-					*ast_node_to_be_evaluated = preNodePunctuator(ip,*ast_node_to_be_evaluated);
+						*ast_node_to_be_evaluated = preNodePunctuator(ip,*ast_node_to_be_evaluated);
+					}
 				}
 			}
 		}
 
-	}
+	//}
 
 	if(ast_node_to_be_evaluated != NULL) { // save line ...
 		m_line = m_startLine;
@@ -1222,7 +1258,7 @@ char * CAst::parseNew(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 				 return NULL;
 			 }
 
-			args_node->node_type = FUNCTION_OR_CLASS_ARGS_CALL_NODE;
+			args_node->node_type = ARGS_PASS_NODE;
 
 
 
@@ -1496,7 +1532,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 	string conditional_str;
 	bool error=false;
 	CScope::tInfoRegisteredVar * irv=NULL;
-	CScriptFunction *object_function;
+	CScriptFunction *object_function=NULL;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
@@ -1521,14 +1557,16 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 
 
 
-				args_node->node_type = NODE_TYPE::FUNCTION_ARGS_DECL_NODE;
+				args_node->node_type = NODE_TYPE::ARGS_DECL_NODE;
 
 				// start line ...
 				(*ast_node_to_be_evaluated)->definedValueline = m_line;
 
 			}
 
-			if(*aux_p!='('){ // is named function..
+			bool named_function = *aux_p!='(';
+
+			if(named_function){ // is named function..
 
 				// check whwther the function is anonymous or not.
 				end_var=getSymbolName(aux_p,m_line);
@@ -1544,15 +1582,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 						return NULL;
 					}
 
-					if(ast_node_to_be_evaluated!=NULL){
-						(*ast_node_to_be_evaluated)->value_symbol = value_symbol;
-						// define value symbol...
-						irv=sf->getScope()->registerSymbol((*ast_node_to_be_evaluated)->value_symbol,m_line);
 
-						// create object function ...
-						object_function =new CScriptFunction(sf);
-						 irv->m_obj=object_function;
-					}
 
 				}else{
 					return NULL;
@@ -1565,6 +1595,24 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 				if(ast_node_to_be_evaluated!=NULL){ // save as function object...
 					(*ast_node_to_be_evaluated)->node_type = FUNCTION_OBJECT_NODE;
 				}
+			}
+
+
+			if(ast_node_to_be_evaluated!=NULL){
+
+				// create object function ...
+				object_function =new CScriptFunction(sf);
+
+				string function_name = object_function->getID();
+				if(named_function){
+					function_name=value_symbol;
+				}
+
+				object_function->setName(function_name);
+				(*ast_node_to_be_evaluated)->value_symbol = function_name;
+				// define value symbol...
+				irv=sf->getScope()->registerSymbol((*ast_node_to_be_evaluated)->value_symbol,m_line);
+				 irv->m_obj=object_function;
 			}
 
 			// parse function args...

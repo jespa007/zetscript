@@ -69,11 +69,20 @@ public:
 		XOR, // logic xor
 		SHL, // shift left
 		SHR, // shift right
-		PUSH_SCOPE,
-		POP_SCOPE,
+		// special internal ops...
 		JMP,
 		JNT, // goto if not true ... goes end to conditional.
 		JT, // goto if true ... goes end to conditional.
+		CALL, // calling function after all of args are processed...
+		PUSH, // push arg
+		CLR, // clear args
+		VA, // vector access after each index is processed...
+
+		VPUSH, // Value push for vector
+		VPOP, // Value pop for vector
+
+		VEC, // Vector object
+		FUN, // Function object
 		MAX_OPERATORS
 
 
@@ -98,7 +107,7 @@ public:
 	     //CObject *left_var_obj;
 	    // void *result_obj; // can be float/bool/string or variable.
 
-	     string aux_str;
+	     string symbol_name;
 	     VAR_TYPE variable_type;
 	     //string type_res;
 
@@ -115,7 +124,7 @@ public:
 		tInfoAsmOp(){
 			variable_type=VAR_TYPE::NOT_DEFINED;
 			operator_type=ASM_OPERATOR::INVALID_OP;
-			aux_str = "na";
+			symbol_name = "unknow";
 			//isconvertable=NULL;
 			//left_var_obj=NULL;
 		  //   type_op=0;
@@ -187,6 +196,25 @@ public:
 	tInfoAsmOp * insert_JT_Instruction(int jmp_statement =0);
 	void insert_NOP_Instruction();
 
+	/**
+	 * IndexAccess
+	 */
+
+	void insert_LoadArrayObject_Instruction(CObject *obj);
+	void insert_ArrayObject_PushValueInstruction(CObject *obj);
+
+	void insert_ArrayAccess_Instruction(CObject *obj, int index_instrucction, const string & var_name);
+
+
+	/**
+	 * Function instructions
+	 */
+	void insert_LoadFunctionObject_Instruction(CObject *obj);
+	void insert_ClearArgumentStack_Instruction();
+	void insert_PushArgument_Instruction();
+	void insert_CallFunction_Instruction(CObject *obj);
+
+
 	bool insertOperatorInstruction(tInfoPunctuator *  op, string & error_str, int left, int right=-1);
 	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
 
@@ -230,8 +258,12 @@ private:
 
 	ASM_OPERATOR puntuator2asmop(tInfoPunctuator * op);
 
-	int  gacExpression_Recursive(PASTNode op, int & numreg, bool & error, CScope * _lc);
-	bool  gacExpression(PASTNode op, CScope * _lc);
+	int gacExpression_ArrayObject(PASTNode op, CScope *_lc);
+	int gacExpression_FunctionObject(PASTNode op, CScope *_lc);
+	int gacExpression_FunctionAccess(PASTNode op, CScope *_lc);
+	int gacExpression_ArrayAccess(PASTNode op, CScope *_lc);
+	int  gacExpression_Recursive(PASTNode op, CScope * _lc, int & numreg);
+	bool  gacExpression(PASTNode op, CScope * _lc,int index_instruction=-1);
 
 	bool gacKeyword(PASTNode _node, CScope * _lc);
 	bool gacFor(PASTNode _node, CScope * _lc);

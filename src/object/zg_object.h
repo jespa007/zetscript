@@ -8,6 +8,7 @@
 #include "object/CNumber.h"
 #include "object/CInteger.h"
 #include "object/CString.h"
+#include "object/CVector.h"
 #include "object/CUndefined.h"
 #include "CVoid.h"
 
