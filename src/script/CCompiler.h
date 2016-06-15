@@ -76,7 +76,7 @@ public:
 		CALL, // calling function after all of args are processed...
 		PUSH, // push arg
 		CLR, // clear args
-		VA, // vector access after each index is processed...
+		VGET, // vector access after each index is processed...
 
 		VPUSH, // Value push for vector
 		VPOP, // Value pop for vector
@@ -113,7 +113,7 @@ public:
 
 	     //------------------
 
-	     ASM_OPERATOR operator_type;
+	     ASM_OPERATOR operator_type,pre_post_operator_type;
 	     //void *ptr_value; // can be float, bool or string.
 	     //------------------
 
@@ -124,6 +124,7 @@ public:
 		tInfoAsmOp(){
 			variable_type=VAR_TYPE::NOT_DEFINED;
 			operator_type=ASM_OPERATOR::INVALID_OP;
+			pre_post_operator_type =ASM_OPERATOR::INVALID_OP;
 			symbol_name = "unknow";
 			//isconvertable=NULL;
 			//left_var_obj=NULL;
@@ -177,8 +178,8 @@ public:
 	 * Load value or symbol and insert asm operation at current statment.
 	 */
 	tInfoStatementOp  *newStatment();
-	bool insertLoadValueInstruction(const string & value, CScope * _lc, int var_at_line);
-	bool insertMovVarInstruction(const string & value, CScope * _lc, int right);
+	bool insertLoadValueInstruction(PASTNode _node, CScope * _lc);
+	bool insertMovVarInstruction(PASTNode _node, CScope * _lc, int left_index, int right_index);
 
 	/**
 	 * Unconditional Jump instruction
@@ -200,10 +201,11 @@ public:
 	 * IndexAccess
 	 */
 
-	void insert_LoadArrayObject_Instruction(CObject *obj);
-	void insert_ArrayObject_PushValueInstruction(CObject *obj);
+	void insert_CreateArrayObject_Instruction();
+	//void insert_LoadArrayObject_Instruction(CObject *obj);
+	void insert_ArrayObject_PushValueInstruction(int ref_vec_object_index, int index_instruction_to_push=-1);
 
-	void insert_ArrayAccess_Instruction(CObject *obj, int index_instrucction, const string & var_name);
+	void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction);
 
 
 	/**
@@ -212,7 +214,7 @@ public:
 	void insert_LoadFunctionObject_Instruction(CObject *obj);
 	void insert_ClearArgumentStack_Instruction();
 	void insert_PushArgument_Instruction();
-	void insert_CallFunction_Instruction(CObject *obj);
+	void insert_CallFunction_Instruction(int index_call);
 
 
 	bool insertOperatorInstruction(tInfoPunctuator *  op, string & error_str, int left, int right=-1);
@@ -258,6 +260,7 @@ private:
 
 	ASM_OPERATOR puntuator2asmop(tInfoPunctuator * op);
 
+	int gacExpression_ArrayObject_Recursive(PASTNode _node, CScope *_lc);
 	int gacExpression_ArrayObject(PASTNode op, CScope *_lc);
 	int gacExpression_FunctionObject(PASTNode op, CScope *_lc);
 	int gacExpression_FunctionAccess(PASTNode op, CScope *_lc);

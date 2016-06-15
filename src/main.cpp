@@ -11,6 +11,10 @@ public:
 
 int main(int argc, char * argv[]){
 
+	int yy[] = {0,1,2,3,4};
+
+	--yy[0]+yy[0]++;
+
 	a a;
 
 	a .
@@ -24,6 +28,8 @@ int main(int argc, char * argv[]){
 
 
 	int i=1+0==1?2:3*2+10 ? 0 : 1;
+
+	i=+--i;
 
 
 

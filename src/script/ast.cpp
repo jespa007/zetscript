@@ -489,6 +489,18 @@ tInfoPunctuator *CAst::checkPostOperatorPunctuator(const char *s){
 }
 
 PASTNode CAst::preNodePunctuator(tInfoPunctuator * operator_info,PASTNode affected_op){ // can be -,+,! etc...
+
+	// check whether pre/post inc/dec
+	bool is_varaible_modifier = operator_info->id == POST_INC_PUNCTUATOR || operator_info->id == POST_DEC_PUNCTUATOR ||
+								operator_info->id == PRE_INC_PUNCTUATOR || operator_info->id == PRE_DEC_PUNCTUATOR;
+
+	if(is_varaible_modifier){ // return the same.
+		affected_op->pre_post_operator_info = operator_info;
+		return affected_op;
+	}
+
+
+	// create node to perform modifier...
 	PASTNode op=new tASTNode;
 	op->operator_info = operator_info;
 	op->definedValueline = affected_op->definedValueline;
@@ -560,14 +572,6 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 
 		if(ast_node_to_be_evaluated != NULL){
 			(*ast_node_to_be_evaluated)->node_type = ARRAY_OBJECT_NODE;
-			CVector *vec = NEW_VECTOR();
-			(*ast_node_to_be_evaluated)->value_symbol = vec->getID();
-			vec->setName((*ast_node_to_be_evaluated)->value_symbol);
-
-			CScope::tInfoRegisteredVar *irv=sf->getScope()->registerSymbol((*ast_node_to_be_evaluated)->value_symbol,m_line);
-			 irv->m_obj=vec;
-
-
 		}
 
 
@@ -685,10 +689,6 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 				i++;
 
 			}while(!end);
-
-
-
-
 		}
 
 		if(ast_node_to_be_evaluated != NULL){
@@ -1080,10 +1080,11 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 
 				if(pre_operator!= NULL || post_operator != NULL){ // create pre operator node ...
 
+					if(post_operator!=NULL)
+						*ast_node_to_be_evaluated = preNodePunctuator(post_operator,*ast_node_to_be_evaluated);
+
 					if(pre_operator!=NULL)
 						*ast_node_to_be_evaluated = preNodePunctuator(pre_operator,*ast_node_to_be_evaluated);
-					else
-						*ast_node_to_be_evaluated = preNodePunctuator(post_operator,*ast_node_to_be_evaluated);
 				}
 
 			}

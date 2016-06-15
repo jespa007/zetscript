@@ -168,14 +168,14 @@ class tASTNode{
 				}
 			}
 
-			if(_node->keyword_info!=NULL){
+			/*if(_node->keyword_info!=NULL){
 				print_info_cr("deallocating %s ",_node->keyword_info->str);
 			}else if(_node->operator_info!=NULL){
 				print_info_cr("deallocating %s ",_node->operator_info->str);
 			}
 			else{
 				print_info_cr("deallocating %s ",_node->value_symbol.c_str());
-			}
+			}*/
 
 			_node->children.clear();
 			delete _node;
@@ -195,7 +195,7 @@ public:
 
 	NODE_TYPE node_type;
 	tInfoKeyword *keyword_info;
-	tInfoPunctuator *operator_info;
+	tInfoPunctuator *operator_info,*pre_post_operator_info;
 	string 	value_symbol;
 	string type_ptr;
 	CScope *scope_ptr; // saves scope info ptr (only for global vars).
@@ -208,6 +208,7 @@ public:
 	tASTNode(int preallocate_num_nodes=0){
 		node_type = UNKNOWN_NODE;
 		keyword_info = NULL;
+		pre_post_operator_info = NULL;
 		definedValueline=-1;
 		operator_info=NULL;
 		value_symbol="";
