@@ -109,6 +109,7 @@ public:
 
 	     string symbol_name;
 	     VAR_TYPE variable_type;
+	     int definedLine;
 	     //string type_res;
 
 	     //------------------
@@ -125,6 +126,7 @@ public:
 			variable_type=VAR_TYPE::NOT_DEFINED;
 			operator_type=ASM_OPERATOR::INVALID_OP;
 			pre_post_operator_type =ASM_OPERATOR::INVALID_OP;
+			definedLine=-1;
 			symbol_name = "unknow";
 			//isconvertable=NULL;
 			//left_var_obj=NULL;
@@ -154,7 +156,7 @@ public:
 	// CONSTANT TOOLS
 
 	static CObject *getConstant(const string & const_name);
-	static void addConstantIfNotExist(const string & const_name, CObject *obj);
+	static void addConstant(const string & const_name, CObject *obj);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMMON COMPILE FUNCTIONS
@@ -179,7 +181,7 @@ public:
 	 */
 	tInfoStatementOp  *newStatment();
 	bool insertLoadValueInstruction(PASTNode _node, CScope * _lc);
-	bool insertMovVarInstruction(PASTNode _node, CScope * _lc, int left_index, int right_index);
+	bool insertMovVarInstruction( int left_index, int right_index);
 
 	/**
 	 * Unconditional Jump instruction
@@ -217,7 +219,7 @@ public:
 	void insert_CallFunction_Instruction(int index_call);
 
 
-	bool insertOperatorInstruction(tInfoPunctuator *  op, string & error_str, int left, int right=-1);
+	bool insertOperatorInstruction(tInfoPunctuator *  op, int definedLine, string & error_str, int left, int right=-1);
 	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
 
 	bool *getObjectResultCurrentStatmentAsBoolean();

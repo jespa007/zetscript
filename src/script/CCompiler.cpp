@@ -30,9 +30,11 @@ CObject *CCompiler::getConstant(const string & const_name){
 	return NULL;
 }
 
-void CCompiler::addConstantIfNotExist(const string & const_name, CObject *obj){
+void CCompiler::addConstant(const string & const_name, CObject *obj){
 	if(getConstant(const_name) == NULL){
 		(*constant_pool)[const_name]=obj;
+	}else{
+		print_error_cr("constant %s already exist",const_name.c_str());
 	}
 }
 
@@ -424,36 +426,66 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 	string type_value="CONST";*/
 
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CObject *obj;
+	CObject *obj, *get_obj;
 	CCompiler::VAR_TYPE type=CCompiler::NOT_DEFINED;
 	CCompiler::LOAD_TYPE load_type=CCompiler::LOAD_TYPE_NOT_DEFINED;
+
+	if(_node->pre_post_operator_info != NULL){
+
+		pre_post_operator_type=getNumberOperatorId_OneOp(_node->pre_post_operator_info->id);
+	}
 	// try parse value...
 	if((obj=CInteger::Parse(v))!=NULL){
 			type=CCompiler::INTEGER;
 			load_type=LOAD_TYPE_CONSTANT;
 			print_com_cr("%s detected as int\n",v.c_str());
-
-			addConstantIfNotExist(v,obj);
+			if((get_obj = getConstant(v))==NULL){
+				delete obj;
+				obj = get_obj;
+			}else{
+				addConstant(v,obj);
+			}
 	}
 	else if((obj=CNumber::Parse(v))!=NULL){
 		type=CCompiler::NUMBER;
 		load_type=LOAD_TYPE_CONSTANT;
-		addConstantIfNotExist(v,obj);
 		print_com_cr("%s detected as float\n",v.c_str());
+
+		if((get_obj = getConstant(v))!=NULL){
+			delete obj;
+			obj = get_obj;
+		}else{
+			addConstant(v,obj);
+		}
+
+
+
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
 		type=CCompiler::STRING;
 		load_type=LOAD_TYPE_CONSTANT;
-		string s=v.substr(1,v.size()-2);
-		obj=new CString(s);
-		addConstantIfNotExist(v,obj);
 		print_com_cr("%s detected as string\n",v.c_str());
+
+		if((get_obj = getConstant(v))!=NULL){
+			obj = get_obj;
+		}else{
+			string s=v.substr(1,v.size()-2);
+			obj=new CString(s);
+			addConstant(v,obj);
+		}
+
 	}
 	else if((obj=CBoolean::Parse(v))!=NULL){
 		type=CCompiler::BOOL;
 		load_type=LOAD_TYPE_CONSTANT;
-		addConstantIfNotExist(v,obj);
 		print_com_cr("%s detected as boolean\n",v.c_str());
+
+		if((get_obj = getConstant(v))!=NULL){
+			delete obj;
+			obj = get_obj;
+		}else{
+			addConstant(v,obj);
+		}
 	}else{
 		CScope::tInfoRegisteredVar * info_var=_lc->getInfoRegisteredSymbol(v,false);
 		type=CCompiler::OBJ;
@@ -469,9 +501,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 		obj = info_var->m_obj;
 
-		if(_node->pre_post_operator_info != NULL){
-			pre_post_operator_type=getNumberOperatorId_OneOp(_node->pre_post_operator_info->id);
-		}
+
 
 
 
@@ -499,6 +529,13 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		}*/
 	}
 
+
+	if(pre_post_operator_type !=ASM_OPERATOR::INVALID_OP && type!=CCompiler::OBJ){
+		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->definedValueline,_node->pre_post_operator_info->str);
+		return false;
+
+	}
+
 	//if(obj != NULL){
 
 		CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
@@ -521,9 +558,17 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::insertMovVarInstruction(PASTNode _node,CScope * _lc,  int left_index, int right_index){
+bool CCompiler::insertMovVarInstruction(int left_index, int right_index){
 
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+
+	CCompiler::tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[left_index];
+
+	// check whether left operant is object...
+	if(left_asm_op->variable_type != VAR_TYPE::OBJ){
+		print_error_cr("line %i. left operand must be l-value for '=' operator",left_asm_op->definedLine);
+		return false;
+	}
 
 	/*string var_name = _node->value_symbol;
 	int index_object = 0;
@@ -692,6 +737,7 @@ void CCompiler::insert_CreateArrayObject_Instruction(){
 	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 
 	asm_op->operator_type=CCompiler::ASM_OPERATOR::VEC;
+	asm_op->variable_type = VAR_TYPE::OBJ;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -703,6 +749,7 @@ void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instruc
 	asm_op->index_op1 = vec_object;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 = index_instrucction;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CCompiler::ASM_OPERATOR::VGET;
+	asm_op->variable_type = VAR_TYPE::OBJ;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -1003,17 +1050,26 @@ CCompiler::ASM_OPERATOR CCompiler::puntuator2asmop(tInfoPunctuator * op){
 	return INVALID_OP;
 }
 
-bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, string & error_str, int op_index_left, int op_index_right){
-
+bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, int definedLine, string & error_str, int op_index_left, int op_index_right){
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
+
+	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->variable_type != VAR_TYPE::OBJ){
+			error_str = "left operand must be l-value for '=' operator";
+			return false;
+	}
+
 
 	ASM_OPERATOR asm_op;
 	if((asm_op= puntuator2asmop(op))!=INVALID_OP){
+
+
 		CCompiler::tInfoAsmOp *iao = new CCompiler::tInfoAsmOp();
 		//asm_op->type_op=OPERATOR;
 		iao->operator_type = asm_op;
 		iao->index_op1 = op_index_left;
 		iao->index_op2 = op_index_right;
+		iao->definedLine = definedLine;
 
 
 		ptr_current_statement_op->asm_op.push_back(iao);
@@ -1221,6 +1277,8 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 	}
 
 	if(_node->pre_post_operator_info != NULL){ // there's pre/post increment...
+
+
 		// get post/inc
 		CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 		CCompiler::tInfoAsmOp *asm_op = ptr_current_statement_op->asm_op[ptr_current_statement_op->asm_op.size()-1];
@@ -1341,32 +1399,32 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 
 
 
-int CCompiler::gacExpression_Recursive(PASTNode op, CScope *_lc, int & index_instruction){
+int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_instruction){
 
 	//CScope * _lc = m_currentScriptFunction->getScope();
 	int r=index_instruction;
 	bool inline_if_else=false;
 	string error_str;
-	if(op==NULL){
+	if(_node==NULL){
 		return -1;
 	}
 
 
 
-	bool special_node =	 op->node_type == ARRAY_OBJECT_NODE ||
-						 op->node_type == FUNCTION_OBJECT_NODE ||
-						 op->node_type == CALLING_OBJECT_NODE;
+	bool special_node =	 _node->node_type == ARRAY_OBJECT_NODE ||
+						_node->node_type == FUNCTION_OBJECT_NODE ||
+						_node->node_type == CALLING_OBJECT_NODE;
 
 	// TERMINAL SYMBOLS
-	if(op->children.size()==0 ||
+	if(_node->children.size()==0 ||
 			special_node
 		)
 	{
 
-		PASTNode eval_node_sp = op;
-		if(op->node_type == CALLING_OBJECT_NODE ){
-			if(op->children.size() > 0){
-				eval_node_sp = op->children[0];
+		PASTNode eval_node_sp = _node;
+		if(_node->node_type == CALLING_OBJECT_NODE ){
+			if(_node->children.size() > 0){
+				eval_node_sp = _node->children[0];
 			}else {
 				print_error_cr("Calling object should have at least 1 children");
 				return -1;
@@ -1377,18 +1435,18 @@ int CCompiler::gacExpression_Recursive(PASTNode op, CScope *_lc, int & index_ins
 
 				switch(eval_node_sp->node_type){
 				case FUNCTION_REF_NODE: // can have arguments or not...
-					if((r=gacExpression_FunctionAccess(op, _lc)) == -1){
+					if((r=gacExpression_FunctionAccess(_node, _lc)) == -1){
 						return -1;
 					}
 
 					break;
 				case ARRAY_REF_NODE: // should have 1 children
-					if((r=gacExpression_ArrayAccess(op, _lc)) == -1){
+					if((r=gacExpression_ArrayAccess(_node, _lc)) == -1){
 						return -1;
 					}
 					break;
 				case ARRAY_OBJECT_NODE: // should have 1 children
-					if((r=gacExpression_ArrayObject(op, _lc)) == -1){
+					if((r=gacExpression_ArrayObject(_node, _lc)) == -1){
 						return -1;
 					}
 
@@ -1397,7 +1455,7 @@ int CCompiler::gacExpression_Recursive(PASTNode op, CScope *_lc, int & index_ins
 					break;
 
 				case FUNCTION_OBJECT_NODE: // should have 1 children
-					if((r=gacExpression_FunctionObject(op, _lc)) == -1){
+					if((r=gacExpression_FunctionObject(_node, _lc)) == -1){
 						return -1;
 					}
 					break;
@@ -1415,9 +1473,9 @@ int CCompiler::gacExpression_Recursive(PASTNode op, CScope *_lc, int & index_ins
 		else{
 
 			bool var_assign=false;
-			if(op->parent != NULL){
-				if(op->parent->node_type == PUNCTUATOR_NODE){
-					if(op->parent->operator_info->id == ASSIGN_PUNCTUATOR && op->parent->children[0] == op){
+			if(_node->parent != NULL){
+				if(_node->parent->node_type == PUNCTUATOR_NODE){
+					if(_node->parent->operator_info->id == ASSIGN_PUNCTUATOR && _node->parent->children[0] == _node){
 						var_assign=true;
 					}
 				}
@@ -1425,7 +1483,7 @@ int CCompiler::gacExpression_Recursive(PASTNode op, CScope *_lc, int & index_ins
 
 			//printf("CONST \tE[%i],%s\n",index_instruction,op->value.c_str());
 			//if(!var_assign){
-				if(!insertLoadValueInstruction(op, _lc)){
+				if(!insertLoadValueInstruction(_node, _lc)){
 					return -1;
 
 				}
@@ -1439,9 +1497,9 @@ int CCompiler::gacExpression_Recursive(PASTNode op, CScope *_lc, int & index_ins
 
 	}else{
 
-		if(op->children.size()==3){
+		if(_node->children.size()==3){
 
-			if(op->operator_info->id == INLINE_IF_PUNCTUATOR && op->children[2]->operator_info->id == INLINE_ELSE_PUNCTUATOR){
+			if(_node->operator_info->id == INLINE_IF_PUNCTUATOR && _node->children[2]->operator_info->id == INLINE_ELSE_PUNCTUATOR){
 				// node children[0]: conditional.
 				// node children[1]: body-if
 				// node children[2]: body-else
@@ -1453,12 +1511,12 @@ int CCompiler::gacExpression_Recursive(PASTNode op, CScope *_lc, int & index_ins
 		// check if there's inline-if-else
 		int right=0, left=0;
 
-		if((left=gacExpression_Recursive(op->children[LEFT_NODE], _lc,index_instruction)) == -1){
+		if((left=gacExpression_Recursive(_node->children[LEFT_NODE], _lc,index_instruction)) == -1){
 			return -1;
 		}
 
-		if(op->children.size()==2){
-			if((right=gacExpression_Recursive(op->children[RIGHT_NODE],_lc,index_instruction)) == -1){
+		if(_node->children.size()==2){
+			if((right=gacExpression_Recursive(_node->children[RIGHT_NODE],_lc,index_instruction)) == -1){
 				return -1;
 			}
 		}
@@ -1471,13 +1529,14 @@ int CCompiler::gacExpression_Recursive(PASTNode op, CScope *_lc, int & index_ins
 		if(left !=-1 && right!=-1){ // 2 ops
 
 			// particular case if operator is =
-			if(op->operator_info->id == PUNCTUATOR_TYPE::ASSIGN_PUNCTUATOR){
+			/*if(_node->operator_info->id == PUNCTUATOR_TYPE::ASSIGN_PUNCTUATOR){
 				// the variable can only assigned if the type is the same or if the type is undefined.
 				// check if left operand is registered variable...
-					if(!CCompiler::getInstance()->insertMovVarInstruction(op->children[LEFT_NODE],_lc, left, right)){
+					if(!CCompiler::getInstance()->insertMovVarInstruction(error_str,left, right)){
+
 						return -1;
 					}
-
+*/
 					/*bool is_undefined = dynamic_cast<CUndefined *>(var_obj) != NULL;
 					string ptr_class_type =  getUserTypeResultCurrentStatmentAtInstruction(right);
 
@@ -1518,26 +1577,26 @@ int CCompiler::gacExpression_Recursive(PASTNode op, CScope *_lc, int & index_ins
 						return -1;
 					}*/
 				//}
-			}
-			else{
+			/*}
+			else{*/
 				//printf("%s\tE[%i],E[%i],E[%i]\n",op->token.c_str(),index_instruction,left,right);
-				if(!insertOperatorInstruction(op->operator_info, error_str,left,right)){
-					print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
+				if(!insertOperatorInstruction(_node->operator_info,_node->definedValueline,error_str,left,right)){
+					print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
 					return -1;
 				}
-			}
+			//}
 
 		}else if(right!=-1){ // one op..
 			//printf("%s\tE[%i],E[%i]\n",op->token.c_str(),index_instruction,right);
-			if(!insertOperatorInstruction(op->operator_info, error_str,right)){
-				print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
+			if(!insertOperatorInstruction(_node->operator_info,_node->definedValueline,  error_str,right)){
+				print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
 				return -1;
 			}
 
 		}else if(left!=-1){ // one op..
 		//	printf("%s\tE[%i],E[%i]\n",op->token.c_str(),index_instruction,left);
-			if(!insertOperatorInstruction(op->operator_info, error_str,left)){
-				print_error_cr("%s at line %i",error_str.c_str(),op->definedValueline);
+			if(!insertOperatorInstruction(_node->operator_info,_node->definedValueline,error_str,left)){
+				print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
 				return -1;
 			}
 
@@ -1759,7 +1818,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 											insertLoadValueInstruction(case_value,_scope);
 
 											// is equal ? ==
-											if(!insertOperatorInstruction(&CAst::defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR],error_str, switch_value_index ,getCurrentInstructionIndex())){
+											if(!insertOperatorInstruction(&CAst::defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR],0, error_str, switch_value_index ,getCurrentInstructionIndex())){
 													print_error_cr("%s",error_str.c_str());
 													return false;
 											}

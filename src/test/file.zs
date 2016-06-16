@@ -4,9 +4,36 @@
 
 /*var bb=*/
 
-var c=[0,1];
+//-----------------------------------------------------------------------------
+
+0++;
+
+var c=0;
+
+++c;
+
+c=[0,1];
 c[0]=0;
-c[0] = c[0]++ - --c[0];
+
+c[0] = c[0]++ - --c[0]; // l-value dec/inc not allowed. 
+
+
+//function(a,b){ return c+d;}(1,2) + function(n,m){ return 0;}(0,0); // ok functions, error c+d not declared.
+
+/*
+function aaa(a,b){
+	a=1; // incorrect not ref
+	b=2; // correct (pass by ref)
+}
+
+aaa(0); // warning (2nd parameter is not declared)
+//aaa(0,1); // error. 2nd parameter must be a variable (ref)
+aaa(0,c); // error. 2nd parameter doesn't match vector with integer.
+*/
+//-----------------------------------------------------------------------------
+
+
+
 
 /*var a1 = function(a,b){ 
 	return 5+6;

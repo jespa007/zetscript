@@ -23,6 +23,9 @@ int main(int argc, char * argv[]){
 
 
 
+
+
+
 	printf("%s\n",(char *) typeid(CString *).name());
 	printf("%s\n",(char *) typeid(string *).name());
 
@@ -30,6 +33,8 @@ int main(int argc, char * argv[]){
 	int i=1+0==1?2:3*2+10 ? 0 : 1;
 
 	i=+--i;
+
+	++i=0;
 
 
 

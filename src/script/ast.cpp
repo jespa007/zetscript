@@ -1083,8 +1083,18 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 					if(post_operator!=NULL)
 						*ast_node_to_be_evaluated = preNodePunctuator(post_operator,*ast_node_to_be_evaluated);
 
-					if(pre_operator!=NULL)
+					if(pre_operator!=NULL){
+						if(post_operator!=NULL){
+							if(     (pre_operator->id == PRE_INC_PUNCTUATOR  || pre_operator->id  == PRE_DEC_PUNCTUATOR) &&
+									(post_operator->id== POST_INC_PUNCTUATOR || post_operator->id == POST_DEC_PUNCTUATOR)){
+								print_error_cr("object \"%s\" has left \"%s\" and right \"%s\" is ambiguous",(*ast_node_to_be_evaluated)->value_symbol.c_str(),pre_operator->str, post_operator->str);
+								return NULL;
+							}
+
+						}
+
 						*ast_node_to_be_evaluated = preNodePunctuator(pre_operator,*ast_node_to_be_evaluated);
+					}
 				}
 
 			}
