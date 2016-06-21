@@ -8,28 +8,15 @@ public:
 
 	enum VAR_TYPE{
 		NOT_DEFINED=0,
+		OBJ, // general object not defined
 		BOOL,
 		INTEGER,
-		NUMBER,
+		NUMBER, // real
 		STRING,
-		OBJ,
 
 		// function
 		FUNCTION,
-
-		// vector (to get int primitives)
-		VECTOR1D_INT,
-		VECTOR1D_BOOL,
-		VECTOR1D_FLOAT,
-		VECTOR1D_OBJ,
-		VECTOR2D_INT,
-		VECTOR2D_BOOL,
-		VECTOR2D_FLOAT,
-		VECTOR2D_OBJ,
-		VECTOR3D_INT,
-		VECTOR3D_BOOL,
-		VECTOR3D_FLOAT,
-		VECTOR3D_OBJ
+		VECTOR,
 	};
 
 	enum LOAD_TYPE{

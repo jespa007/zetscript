@@ -9,8 +9,18 @@ public:
 	a(){b=0;}
 };
 
+int pass_string ( int s_int){
+
+	string s = *((string *)&s_int);
+	print_info_cr("HHHHHH: %s", s.c_str());
+}
+
 int main(int argc, char * argv[]){
 
+	string s = "hola!";
+	int s_int= *((int *)& s);
+
+	pass_string(s_int);
 	int yy[] = {0,1,2,3,4};
 
 	--yy[0]+yy[0]++;

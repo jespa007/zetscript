@@ -5,22 +5,23 @@
 /*var bb=*/
 
 //-----------------------------------------------------------------------------
+/*
 
-0++;
 
 var c=0;
 
-++c;
+c++;
 
 c=[0,1];
 c[0]=0;
 
-c[0] = c[0]++ - --c[0]; // l-value dec/inc not allowed. 
+c[0] = c[0]++ - --c[0]; // l-value dec/inc not allowed.
+
+var d = ++[0,1,2,3][1] + ++[[0,4]][0][1]; // a= 2+5= 7
+
+function(a,b){ return c+d;}(1,2) + function(n,m){ return 0;}(0,0); // ok functions, error c+d not declared.
 
 
-//function(a,b){ return c+d;}(1,2) + function(n,m){ return 0;}(0,0); // ok functions, error c+d not declared.
-
-/*
 function aaa(a,b){
 	a=1; // incorrect not ref
 	b=2; // correct (pass by ref)
@@ -29,39 +30,39 @@ function aaa(a,b){
 aaa(0); // warning (2nd parameter is not declared)
 //aaa(0,1); // error. 2nd parameter must be a variable (ref)
 aaa(0,c); // error. 2nd parameter doesn't match vector with integer.
-*/
+
 //-----------------------------------------------------------------------------
 
 
 
 
-/*var a1 = function(a,b){ 
+var a1 = function(a,b){ 
 	return 5+6;
 };
 
 a1(0,1, ++c[0]);
-*/
-/*var g1 = 0;
+
+var g1 = 0;
 
 var d1=++g1;
-*/
+
 //var d1=0+1+2+3;
 //d1=-(--d1);
 
 
 
-/*var cc=[ [2+3,2+5+6], [0+1] ];
+var cc=[ [2+3,2+5+6], [0+1] ];
 
 cc[0+12+3+4+5+6][0]+4+5;
 
 cc[0][0][0]++;
-*/
+
 
 
 //1*bb(0+1,0)+bb(0,1)+0;
 
 
-/*var j=0;
+var j=0;
 
 function my_function(a,b){
 
@@ -69,12 +70,12 @@ function my_function(a,b){
 
 }
 
-*/
+
 //print("result:"+my_function(1+0, 2*5*10));
 //print("result:"+my_function("1+0", 2*5*10));
 
 
-/*
+
 //((j+1)==0)?1+1:0+1;
 
 if( (0+1) == (0+1) )
@@ -125,8 +126,6 @@ for(var i = 0; i < 10; i++){
 
 
 
-// conditional if...
-var hh = 1 + 0==1 ? 2: 3*2 + 10 ? 0 : 1;
 
 var h,r,g,e=0,q,tt,t=1; // multivar declaration
 
@@ -139,7 +138,7 @@ return 1;
 
 var jj=1+[[1,2], [0,1] ][0][0];
 
-var fun = function (l,d,k){
+var fun = function (l,d5,k){
 	
 	var b=0;
 	
@@ -171,9 +170,38 @@ var array=[0,1,1];
 array[0]++;
 
 
+var f=0;
 
-print("Hola:"+array[0]+++);
+while(f < 10){
 
+f++;
+}
+
+if(f == 10 ) {
+	f++;
+}else{
+	f--;
+}
+
+
+print("Hola:"+array[0]++);
+
+for(var j2=0; j2 < 10 ; j2++){
+	var ll=0;
+	
+	ll = ll + j2;
+}
+
+*/
+
+
+/*
+ 
+
+// NOT IMPLEMENTED YET!
+
+// conditional if...
+var hh = 1 + 0==1 ? 2: 3*2 + 10 ? 0 : 1;
 
 
 class my_class{
@@ -208,26 +236,7 @@ class my_class{
 new my_class();
 
 
-for(var j2=0; j2 < 10 ; j2++){
-	var ll=0;
-	
-	ll = ll + j2;
-}
 
-
-
-var f=0;
-
-while(f < 10){
-
-f++;
-}
-
-if(f == 10 ) {
-	f++;
-}else{
-	f--;
-}
 
 
 // my derivated class gets all elements from my_class
@@ -239,4 +248,3 @@ class my_class_derivated:my_class{
 };
 
 */
-

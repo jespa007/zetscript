@@ -501,6 +501,13 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 		obj = info_var->m_obj;
 
+		/*if(dynamic_cast<CScriptFunction *>(obj)!= NULL){
+			type=CCompiler::FUNCTION;
+		}
+		else
+		if(dynamic_cast<CVector *>(obj)!= NULL){
+			type=CCompiler::VECTOR;
+		}*/
 
 
 
@@ -997,7 +1004,7 @@ CCompiler::ASM_OPERATOR CCompiler::puntuator2asmop(tInfoPunctuator * op){
 
 	switch(op->id){
 	default:
-		print_error_cr("Not implemented");
+		print_error_cr("%s Not implemented", op->str);
 		break;
 	case ADD_PUNCTUATOR:
 		return ASM_OPERATOR::ADD;
@@ -1235,19 +1242,25 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return -1;}
 	if(_node->children.size()!=2) {print_error_cr("Array access should have 2 children");return -1;}
-	if(_node->children[0]->node_type != ARRAY_REF_NODE ){print_error_cr("Node is not ARRAY_REF_NODE type"); return -1;}
+	if(_node->children[0]->node_type != ARRAY_REF_NODE && _node->children[0]->node_type != ARRAY_OBJECT_NODE ){print_error_cr("Node is not ARRAY_OBJECT type"); return -1;}
 	if(_node->children[1]->node_type != ARRAY_ACCESS_NODE || _node->children[1]->children.size() == 0){print_error_cr("Array has no index nodes "); return -1;}
 
-	int r=0;
+	int vec=0;
+
+	if(_node->children[0]->node_type == ARRAY_OBJECT_NODE){ // must first create the object ...
+		if((vec=gacExpression_ArrayObject(_node->children[0],_lc))==-1){
+			return -1;
+		}
+	}else{
 
 
+		if(!insertLoadValueInstruction(_node->children[0],  _lc)){
+			return -1;
+		}
 
-	if(!insertLoadValueInstruction(_node->children[0],  _lc)){
-		return -1;
+
+		vec = CCompiler::getCurrentInstructionIndex();
 	}
-
-
-	int vec = CCompiler::getCurrentInstructionIndex();
 
 
 	PASTNode array_acces = _node->children[1];
@@ -1257,7 +1270,7 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 		if(array_acces->children [k]->node_type == ARRAY_INDEX_NODE){
 			if(array_acces->children [k]->children.size() == 1){
 				// check whether is expression node...
-				if((r=gacExpression(array_acces->children [k]->children[0], _lc,CCompiler::getCurrentInstructionIndex())) == -1){
+				if((gacExpression(array_acces->children [k]->children[0], _lc,CCompiler::getCurrentInstructionIndex())) == -1){
 					return -1;
 				}
 
@@ -1364,10 +1377,16 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return -1;}
 	if(_node->children.size()!=2) {print_error_cr("Array access should have 2 children");return -1;}
-	if(_node->children[0]->node_type != FUNCTION_REF_NODE ){print_error_cr("Node is not FUNCTION_REF_NODE type"); return -1;}
+	if(_node->children[0]->node_type != FUNCTION_REF_NODE && _node->children[0]->node_type != FUNCTION_OBJECT_NODE){print_error_cr("Node is not FUNCTION_OBJECT_NODE type"); return -1;}
 	if(_node->children[1]->node_type != ARGS_PASS_NODE){print_error_cr("Function has no index nodes "); return -1;}
 	int r=0;
 
+
+	/*if(_node->children[0]->node_type == FUNCTION_OBJECT_NODE){ // must first create the object ...
+		if((r=gacExpression_FunctionObject(_node->children[0],_lc))==-1){
+			return -1;
+		}
+	}*/
 
 	insertLoadValueInstruction(_node->children[0],_lc);
 	int call_index = getCurrentInstructionIndex();
@@ -1420,11 +1439,18 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 			special_node
 		)
 	{
+		bool function_access = false;
+		bool array_access = false;
 
 		PASTNode eval_node_sp = _node;
 		if(_node->node_type == CALLING_OBJECT_NODE ){
 			if(_node->children.size() > 0){
 				eval_node_sp = _node->children[0];
+
+				function_access = eval_node_sp->node_type == FUNCTION_OBJECT_NODE || eval_node_sp->node_type == FUNCTION_REF_NODE;
+				array_access = eval_node_sp->node_type == ARRAY_OBJECT_NODE || eval_node_sp->node_type == ARRAY_REF_NODE;
+
+
 			}else {
 				print_error_cr("Calling object should have at least 1 children");
 				return -1;
@@ -1433,38 +1459,51 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 
 		if(special_node ){
 
-				switch(eval_node_sp->node_type){
-				case FUNCTION_REF_NODE: // can have arguments or not...
+				if(array_access){
+					if((r=gacExpression_ArrayAccess(_node, _lc)) == -1){
+												return -1;
+											}
+				}else if(function_access){
 					if((r=gacExpression_FunctionAccess(_node, _lc)) == -1){
 						return -1;
 					}
+				}
+				else{
 
-					break;
-				case ARRAY_REF_NODE: // should have 1 children
-					if((r=gacExpression_ArrayAccess(_node, _lc)) == -1){
+
+					switch(eval_node_sp->node_type){
+					/*case FUNCTION_REF_NODE: // can have arguments or not...
+						if((r=gacExpression_FunctionAccess(_node, _lc)) == -1){
+							return -1;
+						}
+
+						break;*/
+					/*case ARRAY_REF_NODE:
+						if((r=gacExpression_ArrayAccess(_node, _lc)) == -1){
+							return -1;
+						}
+						break;*/
+					case ARRAY_OBJECT_NODE: // should have 1 children
+						if((r=gacExpression_ArrayObject(_node, _lc)) == -1){
+							return -1;
+						}
+
+						index_instruction = r;
+						return r;
+						break;
+
+					case FUNCTION_OBJECT_NODE: // should have 1 children
+						if((r=gacExpression_FunctionObject(_node, _lc)) == -1){
+							return -1;
+						}
+						break;
+
+					default:
+						print_error_cr("Unexpected node type %i",eval_node_sp->node_type);
 						return -1;
+						break;
+
 					}
-					break;
-				case ARRAY_OBJECT_NODE: // should have 1 children
-					if((r=gacExpression_ArrayObject(_node, _lc)) == -1){
-						return -1;
-					}
-
-					index_instruction = r;
-					return r;
-					break;
-
-				case FUNCTION_OBJECT_NODE: // should have 1 children
-					if((r=gacExpression_FunctionObject(_node, _lc)) == -1){
-						return -1;
-					}
-					break;
-
-				default:
-					print_error_cr("Unexpected node type %i",eval_node_sp->node_type);
-					return -1;
-					break;
-
 				}
 
 
@@ -1887,12 +1926,12 @@ bool CCompiler::gacVar(PASTNode _node, CScope * _lc){
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 	if(_node->keyword_info->id != VAR_KEYWORD){print_error_cr("node is not VAR keyword type");return false;}
 
-	if(_node->children.size() == 1){ // an expression is expected ...
-
-		return gacExpression(_node->children[0], _lc);
+	for(unsigned i = 0 ; i < _node->children.size(); i++){ // init all requested vars...
+		if(!gacExpression(_node->children[i], _lc))
+			return false;
 	}
 
-	return false;
+	return true;
 
 }
 
@@ -2019,6 +2058,8 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 			case BASE_CLASS_NODE:print_info_cr("BASE_CLASS_NODE");break;
 			case CALLING_OBJECT_NODE:print_info_cr("CALLING_OBJECT_NODE");break;
 		}
+	}else{
+		print_error_cr("Node is null!");
 	}
 
 
