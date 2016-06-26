@@ -1,10 +1,9 @@
 #pragma once
 
-class CNumber: public CObject{
+class CNumber: public CVariable<float>{
 
 public:
 
-	float m_value;
 
 	static CNumber * Parse(const string & );
 	static float * ParsePrimitive(const string & );

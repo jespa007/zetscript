@@ -326,7 +326,7 @@ private:
 
 
 	// parse block { }
-	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated=NULL, bool push_scope=true);
 
 
 	// keyword...

@@ -1,11 +1,41 @@
+var b=0;
+
+
+var fun = function (l,d5,k){
+	
+	var b=0;
+	
+	function hola2(k1,l1){
+		var ff=0;
+	}
+	
+	// hola2(1+1,2+2,3+3); // invalid: hola2 only takes 2 parameters
+	
+	return b;
+};
+
+var fun2 = function (l,d5,k){
+	
+	var b=0;
+	
+	function hola2(k1,l1){
+		var ff=0;
+	}
+	
+	// hola2(1+1,2+2,3+3); // invalid: hola2 only takes 2 parameters
+	
+	return b;
+};
+
+
 /*function bb(a,b){
 	return a+b;
-}*/
+}
 
-/*var bb=*/
+
 
 //-----------------------------------------------------------------------------
-/*
+
 
 
 var c=0;
@@ -192,8 +222,8 @@ for(var j2=0; j2 < 10 ; j2++){
 	ll = ll + j2;
 }
 
-*/
 
+*/
 
 /*
  

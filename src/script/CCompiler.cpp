@@ -71,22 +71,26 @@ const char * CCompiler::getStrTypeLoadValue(CCompiler::tInfoAsmOp * iao){
 		return "ERROR";
 	}
 
-	CObject *obj;
+
+	string value_symbol="Unknown";
+
+	if(iao->ast_node != NULL){
+		value_symbol = iao->ast_node->value_symbol;
+	}
 
 
 	sprintf(print_aux_load_value,"UNDEFINED");
 	switch(iao->index_op1){
 	case LOAD_TYPE::LOAD_TYPE_CONSTANT:
-		obj = (CObject *)iao->index_op2;
-		sprintf(print_aux_load_value,"CONST(%s)",iao->symbol_name.c_str());
+
+		sprintf(print_aux_load_value,"CONST(%s)",value_symbol.c_str());
 		break;
 	case LOAD_TYPE::LOAD_TYPE_VARIABLE:
 
-		sprintf(print_aux_load_value,"VAR(%s)",iao->symbol_name.c_str());
+		sprintf(print_aux_load_value,"VAR(%s)",value_symbol.c_str());
 		break;
 	case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
-		obj = (CObject *)iao->index_op2;
-		sprintf(print_aux_load_value,"ARG(%s)",iao->symbol_name.c_str());
+		sprintf(print_aux_load_value,"ARG(%s)",value_symbol.c_str());
 		break;
 	default:
 		break;
@@ -102,7 +106,14 @@ const char * CCompiler::getStrMovVar(CCompiler::tInfoAsmOp * iao){
 		return "ERROR";
 	}
 
-	sprintf(print_aux_load_value,"VAR(%s)",iao->symbol_name.c_str());
+	string value_symbol="Unknown";
+
+	if(iao->ast_node != NULL){
+		value_symbol = iao->ast_node->value_symbol;
+	}
+
+
+	sprintf(print_aux_load_value,"VAR(%s)",value_symbol.c_str());
 
 	return print_aux_load_value;
 }
@@ -116,7 +127,7 @@ void CCompiler::printGeneratedCode_Recursive(CScriptFunction *fs){
 	for(unsigned s = 0; s < (*m_listStatements).size();s++){
 		vector<tInfoAsmOp *> * asm_op_statment = &(*m_listStatements)[s].asm_op;
 
-		printf("\n[%s:%i]\t%s\n\n","file.zs",(*m_listStatements)[s].m_line,(*m_listStatements)[s].expression_str.c_str());
+		printf("\n[%s]\n\n","file.zs");
 
 		for(unsigned i = 0; i  <  asm_op_statment->size(); i++){
 
@@ -194,11 +205,15 @@ void CCompiler::printGeneratedCode_Recursive(CScriptFunction *fs){
 	vector<CScriptFunction *> * m_vf = fs->getVectorFunction();
 
 	for(unsigned j =0; j < m_vf->size(); j++){
-		print_info_cr("-------------------------------------------------------");
-		print_info_cr("");
-		print_info_cr("Code for %s",(*m_vf)[j]->getName().c_str());
-		print_info_cr("");
-		printGeneratedCode_Recursive((*m_vf)[j]);
+
+		if(m_vf->at(j)->getType() == CScriptFunction::TYPE::SCRIPT_FUNCTION_TYPE){
+
+			print_info_cr("-------------------------------------------------------");
+			print_info_cr("");
+			print_info_cr("Code for %s",(*m_vf)[j]->getName().c_str());
+			print_info_cr("");
+			printGeneratedCode_Recursive((*m_vf)[j]);
+		}
 	}
 
 }
@@ -550,7 +565,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		asm_op->variable_type=type;
 		asm_op->index_op1=load_type;
 		asm_op->index_op2=(int)obj;
-		asm_op->symbol_name=v;
+		asm_op->ast_node=_node;
 		asm_op->pre_post_operator_type=pre_post_operator_type;
 
 		asm_op->operator_type=CCompiler::ASM_OPERATOR::LOAD;
@@ -573,7 +588,11 @@ bool CCompiler::insertMovVarInstruction(int left_index, int right_index){
 
 	// check whether left operant is object...
 	if(left_asm_op->variable_type != VAR_TYPE::OBJ){
-		print_error_cr("line %i. left operand must be l-value for '=' operator",left_asm_op->definedLine);
+		int line = -1;
+
+		if(left_asm_op->ast_node!=NULL)
+			line=left_asm_op->ast_node->definedValueline;
+		print_error_cr("line %i. left operand must be l-value for '=' operator",line);
 		return false;
 	}
 
@@ -1057,11 +1076,12 @@ CCompiler::ASM_OPERATOR CCompiler::puntuator2asmop(tInfoPunctuator * op){
 	return INVALID_OP;
 }
 
-bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, int definedLine, string & error_str, int op_index_left, int op_index_right){
+bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, string & error_str, int op_index_left, int op_index_right){
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	CCompiler::tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
 
 	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->variable_type != VAR_TYPE::OBJ){
+
 			error_str = "left operand must be l-value for '=' operator";
 			return false;
 	}
@@ -1076,7 +1096,8 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, int definedLine,
 		iao->operator_type = asm_op;
 		iao->index_op1 = op_index_left;
 		iao->index_op2 = op_index_right;
-		iao->definedLine = definedLine;
+
+		iao->ast_node=_node;
 
 
 		ptr_current_statement_op->asm_op.push_back(iao);
@@ -1619,7 +1640,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 			/*}
 			else{*/
 				//printf("%s\tE[%i],E[%i],E[%i]\n",op->token.c_str(),index_instruction,left,right);
-				if(!insertOperatorInstruction(_node->operator_info,_node->definedValueline,error_str,left,right)){
+				if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left,right)){
 					print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
 					return -1;
 				}
@@ -1627,14 +1648,14 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 
 		}else if(right!=-1){ // one op..
 			//printf("%s\tE[%i],E[%i]\n",op->token.c_str(),index_instruction,right);
-			if(!insertOperatorInstruction(_node->operator_info,_node->definedValueline,  error_str,right)){
+			if(!insertOperatorInstruction(_node->operator_info,_node,  error_str,right)){
 				print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
 				return -1;
 			}
 
 		}else if(left!=-1){ // one op..
 		//	printf("%s\tE[%i],E[%i]\n",op->token.c_str(),index_instruction,left);
-			if(!insertOperatorInstruction(_node->operator_info,_node->definedValueline,error_str,left)){
+			if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left)){
 				print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
 				return -1;
 			}
@@ -1728,8 +1749,19 @@ bool CCompiler::gacReturn(PASTNode _node, CScope * _lc){
 bool CCompiler::gacFunction(PASTNode _node, CScope * _lc){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
-	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
-	if(_node->keyword_info->id != KEYWORD_TYPE::FUNCTION_KEYWORD){print_error_cr("node is not FUNCTION keyword type");return false;}
+	//if(!(_node->node_type == KEYWORD_NODE && _node->keyword_info != NULL) && !(_node->node_type != FUNCTION_OBJECT_NODE))>{print_error_cr("node is not keyword type or null");return false;}
+
+	if((_node->keyword_info != NULL)){
+		if(_node->keyword_info->id != KEYWORD_TYPE::FUNCTION_KEYWORD) {print_error_cr("node is not FUNCTION keyword type");return false;}
+	}else{
+		if((_node->node_type != FUNCTION_OBJECT_NODE))
+		{
+			print_error_cr("node is not FUNCTION OBJECT NODE type or null");
+			return false;
+		}
+	}
+
+	//if(!(_node->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD) && !(_node->node_type != FUNCTION_OBJECT_NODE)){print_error_cr("node is not FUNCTION keyword type");return false;}
 	if(_node->children.size() != 2){print_error_cr("node FUNCTION has not 2 child");return false;}
 	if(_node->children[0]->node_type != NODE_TYPE::ARGS_DECL_NODE){print_error_cr("node FUNCTION has not ARGS node");return false;}
 	if(_node->children[1]->node_type != NODE_TYPE::BODY_NODE){print_error_cr("node FUNCTION has not BODY node");return false;}
@@ -1959,8 +1991,9 @@ bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 	case KEYWORD_TYPE::VAR_KEYWORD:
 		return gacVar(_node, _lc);
 		break;
-	case KEYWORD_TYPE::FUNCTION_KEYWORD:
-		return gacFunction(_node, _lc);
+	case KEYWORD_TYPE::FUNCTION_KEYWORD: // don't compile function. It will compiled later, after main body
+	//	return gacFunction(_node, _lc);
+		return true;
 		break;
 	case KEYWORD_TYPE::RETURN_KEYWORD:
 		return gacReturn(_node, _lc);
@@ -2003,8 +2036,6 @@ bool CCompiler::gacExpression(PASTNode _node, CScope *_lc,int index_instruction)
 }
 
 bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
-
-
 
 	if(_node != NULL){
 		switch(_node->node_type){
@@ -2053,6 +2084,9 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 				}
 
 				break;
+			case FUNCTION_OBJECT_NODE:
+				print_info_cr("FUNCTION_OBJECT");break;
+				break;
 			case CLASS_VAR_COLLECTION_NODE:print_info_cr("CLASS_VAR_COLLECTION_NODE");break;
 			case CLASS_FUNCTION_COLLECTION_NODE:print_info_cr("CLASS_FUNCTION_COLLECTION_NODE");break;
 			case BASE_CLASS_NODE:print_info_cr("BASE_CLASS_NODE");break;
@@ -2074,7 +2108,7 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 	}
 
 
-	if(_node->node_type == NODE_TYPE::BODY_NODE){
+	if(_node->node_type == NODE_TYPE::BODY_NODE ){
 		CScriptFunction *aux_sf = m_currentScriptFunction;
 		stk_scriptFunction.push_back(m_currentScriptFunction);
 
@@ -2085,11 +2119,13 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 		// reset current pointer ...
 		m_treescope->resetScopePointer();
 
+		{ // main node ?
+			for(unsigned i = 0; i < _node->children.size(); i++){
 
-		for(unsigned i = 0; i < _node->children.size(); i++){
-			if(!ast2asm_Recursive(_node->children[i], m_treescope->getCurrentScopePointer())){
-				print_error_cr("Error 1!");
-				return false;
+				if(!ast2asm_Recursive(_node->children[i], m_treescope->getCurrentScopePointer())){
+					print_error_cr("Error 1!");
+					return false;
+				}
 			}
 		}
 
@@ -2099,6 +2135,34 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 		if(m_currentScriptFunction != NULL){
 			this->m_currentListStatements = m_currentScriptFunction->getCompiledCode();
 			this->m_treescope = m_currentScriptFunction->getScope();
+		}
+
+		// ok parse all function
+		// and then print its functions ...
+		vector<CScriptFunction *> * m_vf = sf->getVectorFunction();
+
+		for(unsigned j =0; j < m_vf->size(); j++){
+
+			if(m_vf->at(j)->getType() == CScriptFunction::TYPE::SCRIPT_FUNCTION_TYPE){
+
+				if(!gacFunction(m_vf->at(j)->getRootAst(),sf->getScope())){
+					print_error_cr("Error 2!");
+					return false;
+				}
+
+				/*PASTNode _node = m_vf->at(j)->getRootAst(); // we must compile function ...
+
+				if(_node != NULL){
+
+				}*/
+
+				//ast2asm(m_vf->at(j,m_vf->at(j));
+				/*print_info_cr("-------------------------------------------------------");
+				print_info_cr("");
+				print_info_cr("Code for %s",(*m_vf)[j]->getName().c_str());
+				print_info_cr("");
+				printGeneratedCode_Recursive((*m_vf)[j]);*/
+			}
 		}
 
 		return true;
@@ -2123,24 +2187,23 @@ bool CCompiler::generateAsmCode(root){
 
 bool CCompiler::compile(const string & s, CScriptFunction * sf){
 
-	PASTNode root=NULL;
+
 
 	// generate whole AST
 
-	if(CAst::generateAST(s.c_str(),sf, &root)){
+	if(CAst::generateAST(s.c_str(),sf, sf->getRootAstPtr())){
 
 
-		if(ast2asm(root,sf)){
+		if(ast2asm(sf->getRootAst(),sf)){
 
 			// print generated asm ...
 			CCompiler::printGeneratedCode(sf);
+			return true;
 		}
 		// then you have all information -> compile into asm!
 		//generateAsmCode(root);
-
 	}
 
-	delete root;
 
 
 	return false;

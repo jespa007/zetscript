@@ -1,10 +1,10 @@
 #pragma once
 
-class CInteger: public CObject{
+class CInteger: public CVariable<int>{
 
 public:
 
-	int m_value;
+
 
 	static CInteger * Parse(const string & );
 	static int * ParsePrimitive(const string & );

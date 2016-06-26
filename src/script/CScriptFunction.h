@@ -3,6 +3,10 @@
 
 #define MAX_OPERANDS 32
 
+#include "CScope.h"
+
+
+
 /*
 
 template <typename T>
@@ -296,17 +300,18 @@ class CScriptFunction: public CObject{
 public:
 
 	enum TYPE{
-		UNKNOW_TYPE=0,
-		SCRIPT_FUNCTION_TYPE=1, // function with args...
+		SCRIPT_FUNCTION_TYPE=0, // function with args (default)...
 		C_FUNCTION_TYPE, // C Function with defined symbols ...
 		CLASS_TYPE // complex script function. Includes args available for constructor and a set of functions
 	};
+
+	TYPE m_type;
 
 
 	typedef struct{
 		int m_line;
 		CScriptFunction *m_scriptFunction;
-	}tInfoRegisteredClass;
+	}tInfoRegisteredScriptFunction,tInfoRegisteredClass;
 
 
 	tInfoRegisteredClass *getRegisteredClass(const string & v, bool print_msg=true);
@@ -316,19 +321,24 @@ public:
 	CScriptFunction(CScriptFunction *_parentFunction=NULL);
 	vector<CCompiler::tInfoStatementOp> * getCompiledCode();
 
-	void 	 addArg(const string & var_name);
+	CScope::tInfoRegisteredVar * registerSymbolAsFunctionArgument(const string & var_name);
 	void 	 addFunction(CScriptFunction *sf);
 	vector<CScriptFunction *> *	 getVectorFunction();
 
 	CObject *getArg(const string & var_name);
 
-	CObject *getReturnValue();
-	void setReturnValue(CObject *);
+	CObject *getReturnObject();
+	void setReturnObject(CObject *);
+	void setupAsFunctionPointer(void * _pointer_function);
+
+	TYPE getType();
 
 
 	CScriptFunction *getParent();
-
 	CScope *getScope();
+
+	PASTNode getRootAst();
+	PASTNode * getRootAstPtr();
 
 	/*
 	 * eval: Evaluates its body.
@@ -411,7 +421,15 @@ private:
 
 	};
 
+	/**
+	 * AST root
+	 */
+	PASTNode m_rootAst;
 
+	/**
+	 * This variable tells whether is pointer function or not.
+	 */
+	void * pointer_function;
 
 	vector<CObject *> m_arg;
 	vector<CScriptFunction *> m_function;
@@ -426,10 +444,7 @@ private:
 	CObject *returnVariable;
 	tInfoRegisteredClass * existRegisteredClass(const string & class_name);
 
-
 	CScope	*m_scope; // base scope...
 	CScriptFunction *m_parentFunction;
-
-
 
 };

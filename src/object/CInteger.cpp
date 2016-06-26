@@ -42,8 +42,7 @@ int *  CInteger::ParsePrimitive(const string & val){
 	return n;
 }
 
-
-CInteger::CInteger(){ m_value=0;}
+CInteger::CInteger(){ m_value=0; }
 CInteger::CInteger(float v){m_value=v;}
 
 string CInteger::toString(){string s; return s;}

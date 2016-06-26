@@ -25,6 +25,7 @@ protected:
 	static CFactoryContainer * m_registerFactory;
 
 	tInfoFactoryContainer * getFactoryInfo(const string & _type);
+	tInfoFactoryContainer	* typeObjectFactoryExists(const string & _type);
 
 public:
 
@@ -58,6 +59,7 @@ public:
 			);
 
 	bool classPtrIsRegistered(const string & s);
+	bool classIsRegistered(const string & s);
 	int getIndexType(const string &s);
 
 	vector<string>							getFactoryTypeList();
@@ -86,7 +88,7 @@ public:
 	void unLoadResourcesFactories();
 	void destroyFactories();
 
-	tInfoFactoryContainer	* typeObjectFactoryExists(const string & _type);
+
 	bool unRegisterFactory(const string & _type);
 
 

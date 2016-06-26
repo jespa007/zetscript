@@ -6,6 +6,7 @@ class CScope: public CObject{
 public:
 
 	static CUndefined *m_undefinedSymbol;
+	static CVoid *m_voidSymbol;
 
 	typedef struct{
 		int m_line;
@@ -68,11 +69,11 @@ private:
 	// it finds it.
 
 
-	static CVoid *m_voidSymbol;
+
 	vector<CScope *> m_scopeList;
 
 	// The a parent scope ...
-	CScope *m_parentScope,*m_mainScope, *m_currentScopePointer;
+	CScope *m_parentScope,*m_mainScope, *m_currentScopePointer, *m_baseScope;
 	CScriptFunction * m_scriptFunction;
 
 

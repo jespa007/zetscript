@@ -12,22 +12,22 @@ CZG_Script * CZG_Script::m_instance = NULL;
 
 void CZG_Script::registerPrimitiveTypes(){
 
-	primitiveType[VOID_TYPE]={typeid(void).name(),VOID_TYPE};
-	primitiveType[INT_TYPE]={typeid(int).name(),INT_TYPE};
-	primitiveType[INT_PTR_TYPE]={typeid(int *).name(),INT_PTR_TYPE};
-	primitiveType[FLOAT_TYPE]={typeid(float).name(),FLOAT_TYPE};
-	primitiveType[FLOAT_PTR_TYPE]={typeid(float *).name(),FLOAT_PTR_TYPE};
-	primitiveType[STRING_TYPE]={typeid(string).name(),STRING_TYPE};
-	primitiveType[STRING_PTR_TYPE]={typeid(string *).name(),STRING_PTR_TYPE};
-	primitiveType[BOOL_TYPE]={typeid(bool).name(),BOOL_TYPE};
-	primitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),BOOL_PTR_TYPE};
+	primitiveType[VOID_TYPE]={typeid(void).name(),"void",VOID_TYPE};
+	primitiveType[INT_TYPE]={typeid(int).name(),"int",INT_TYPE};
+	primitiveType[INT_PTR_TYPE]={typeid(int *).name(),"int *",INT_PTR_TYPE};
+	primitiveType[FLOAT_TYPE]={typeid(float).name(),"float",FLOAT_TYPE};
+	primitiveType[FLOAT_PTR_TYPE]={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
+	primitiveType[STRING_TYPE]={typeid(string).name(),"string",STRING_TYPE};
+	primitiveType[STRING_PTR_TYPE]={typeid(string *).name(),"string *",STRING_PTR_TYPE};
+	primitiveType[BOOL_TYPE]={typeid(bool).name(),"bool",BOOL_TYPE};
+	primitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
 }
 
 
-CZG_Script::tPrimitiveType *CZG_Script::getPrimitiveType(const string & str){
+CZG_Script::tPrimitiveType *CZG_Script::getPrimitiveTypeFromStr(const string & str){
 
 	for(unsigned i=0; i < MAX_VAR_C_TYPES; i++){
-		if(primitiveType[i].str == str){
+		if(primitiveType[i].type_str == str){
 			return &primitiveType[i];
 		}
 	}
@@ -40,6 +40,7 @@ CZG_Script::tPrimitiveType *CZG_Script::getPrimitiveType(const string & str){
 CZG_Script * CZG_Script::getInstance(){
 	if(m_instance==NULL){
 		m_instance = new CZG_Script();
+		m_instance->init();
 	}
 
 	return m_instance;
@@ -93,24 +94,103 @@ public:
 };
 
 
+bool CZG_Script::object2float(CObject *obj, float & v){
+
+	// only float ...
+	CNumber *n=dynamic_cast<CNumber *>(obj);
+	if(n!=NULL){
+		v=n->m_value;
+		return true;
+	}
+
+	return false;
+}
+
+bool CZG_Script::object2int(CObject *obj, int & v){
+	// only float ...
+	CInteger *n=dynamic_cast<CInteger *>(obj);
+	if(n!=NULL){
+		v=n->m_value;
+		return true;
+	}
+
+	return false;
+}
+
+bool CZG_Script::object2bool(CObject *obj, bool & v){
+	// only float ...
+	CBoolean *n=dynamic_cast<CBoolean *>(obj);
+	if(n!=NULL){
+		v=n->m_value;
+		return true;
+	}
+
+	return false;
+}
+
+bool CZG_Script::object2string(CObject *obj, string & v){
+	// only float ...
+	CString *n=dynamic_cast<CString *>(obj);
+	if(n!=NULL){
+		v=n->m_value;
+		return true;
+	}
+
+	return false;
+}
 
 
+CObject * CZG_Script::createObjectFromPrimitiveType(CZG_Script::tPrimitiveType *pt){
 
-void print(float * caca){
+	if(pt != NULL){
+		switch(pt->id){
+		case C_TYPE_VAR::VOID_TYPE:
+			return CScope::m_voidSymbol;
+			break;
+		case C_TYPE_VAR::STRING_TYPE:
+			return NEW_STRING();
+			break;
+		case C_TYPE_VAR::FLOAT_TYPE:
+			return NEW_NUMBER();
+			break;
+		case C_TYPE_VAR::INT_TYPE:
+			return NEW_INTEGER();
+			break;
+		case C_TYPE_VAR::BOOL_TYPE:
+			return NEW_BOOLEAN();
+			break;
+		default:
+			print_error_cr("Not found");
+			break;
+
+		}
+	}
+	return NULL;
+}
+
+
+void  print(float caca){
 	print_info_cr("Hola!");
 }
 
 CZG_Script::CZG_Script(){
-
 	registerPrimitiveTypes();
+	//registerFunction(&CCustomObject::member2);
+	// call_function("print");
+}
 
+int interface_variable;
+
+
+
+void CZG_Script::init(){
 
 	iniFactory<CNumberFactory>("CNumber");
 	iniFactory<CIntegerFactory>("CInteger");
 	iniFactory<CBooleanFactory>("CBoolean");
 	iniFactory<CStringFactory>("CString");
 	iniFactory<CUndefinedFactory>("CUndefined");
-	iniFactory<CVectorFactory>("Vector");
+	iniFactory<CVectorFactory>("CVector");
 
 	CScope::createSingletons();
 	CAst::createSingletons();
@@ -121,12 +201,13 @@ CZG_Script::CZG_Script(){
 
 	// register c function's
 	registerFunction(print);
-	//registerFunction(&CCustomObject::member2);
 
-}
+	// register var
+	registerVariable(&interface_variable);
+
+	//typeid(interface_variable).name();
 
 
-void CZG_Script::init(){
 	CFactoryContainer::getInstance()->registerScriptFunctions();
 	CVirtualMachine::getInstance();
 }

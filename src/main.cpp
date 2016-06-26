@@ -9,10 +9,18 @@ public:
 	a(){b=0;}
 };
 
+
+
 int pass_string ( int s_int){
 
 	string s = *((string *)&s_int);
 	print_info_cr("HHHHHH: %s", s.c_str());
+
+
+	s=STR(hola);
+
+	print_info_cr("HHHHHH2: %s", s.c_str());
+
 }
 
 int main(int argc, char * argv[]){
@@ -73,14 +81,12 @@ int main(int argc, char * argv[]){
 	if(buffer != NULL){
 
 		CZG_Script *zg_script = CZG_Script::getInstance();
-		zg_script->init();
-
 
 			if(zg_script->eval((char *)buffer->data_buffer)){
 				/*for(i=0; i < 20;i++)
 				{
 					Uint32 t = SDL_GetTicks();*/
-					zg_script->execute();
+					//zg_script->execute();
 					/*print_info_cr("%i",SDL_GetTicks()-t);
 				}*/
 			}

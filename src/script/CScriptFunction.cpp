@@ -2,8 +2,11 @@
 
 CScriptFunction::CScriptFunction(CScriptFunction * _parentFunction){
 
+	m_type = TYPE::SCRIPT_FUNCTION_TYPE;
+	pointer_function = NULL;
+
 	m_parentFunction = _parentFunction;
-	m_scope = new CScope(this,NULL);
+	m_scope = new CScope(this,m_parentFunction!=NULL?m_parentFunction->getScope():NULL);
 
 	returnVariable = CScope::m_undefinedSymbol;
 
@@ -17,9 +20,14 @@ CScriptFunction::CScriptFunction(CScriptFunction * _parentFunction){
 }
 
 
-void 	 CScriptFunction::addArg(const string & var_name){
-	CScope::tInfoRegisteredVar *irv=getScope()->registerSymbol(var_name,-1);
-	m_arg.push_back(irv->m_obj);
+CScope::tInfoRegisteredVar *	 CScriptFunction::registerSymbolAsFunctionArgument(const string & var_name){
+	CScope::tInfoRegisteredVar *irv=NULL;
+
+	if((irv=getScope()->registerSymbol(var_name,-1))!=NULL){
+		m_arg.push_back(irv->m_obj);
+	}
+
+	return irv;
 }
 
 void 	 CScriptFunction::addFunction(CScriptFunction *sf){
@@ -33,17 +41,28 @@ vector<CScriptFunction *> *	 CScriptFunction::getVectorFunction(){
 }
 
 
-CObject *	 CScriptFunction::getReturnValue(){
+CObject *	 CScriptFunction::getReturnObject(){
 
 	return returnVariable;
 }
 
-void CScriptFunction::setReturnValue(CObject *obj){
+void CScriptFunction::setReturnObject(CObject *obj){
 
 	returnVariable = obj;
 }
 
 
+void CScriptFunction::setupAsFunctionPointer(void * _pointer_function){
+
+	m_type= TYPE::C_FUNCTION_TYPE;
+
+	pointer_function = _pointer_function;
+}
+
+
+CScriptFunction::TYPE CScriptFunction::getType(){
+	return m_type;
+}
 
 CObject *CScriptFunction::getArg(const string & var_name){
 	for(unsigned i = 0; i < m_arg.size(); i++){
@@ -56,6 +75,14 @@ CObject *CScriptFunction::getArg(const string & var_name){
 
 CScope *CScriptFunction::getScope(){
 	return m_scope;
+}
+
+PASTNode CScriptFunction::getRootAst(){
+	return m_rootAst;
+}
+
+PASTNode * CScriptFunction::getRootAstPtr(){
+	return &m_rootAst;
 }
 
 CScriptFunction *CScriptFunction::getParent(){
@@ -133,4 +160,5 @@ CScriptFunction::~CScriptFunction(){
 
 
 	delete m_scope;
+	delete m_rootAst;
 }

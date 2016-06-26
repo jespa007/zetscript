@@ -94,9 +94,10 @@ public:
 	     //CObject *left_var_obj;
 	    // void *result_obj; // can be float/bool/string or variable.
 
-	     string symbol_name;
+	    // string symbol_name;
 	     VAR_TYPE variable_type;
-	     int definedLine;
+	     PASTNode ast_node; // define ast node for give some information at run time
+	    // int definedLine;
 	     //string type_res;
 
 	     //------------------
@@ -113,8 +114,7 @@ public:
 			variable_type=VAR_TYPE::NOT_DEFINED;
 			operator_type=ASM_OPERATOR::INVALID_OP;
 			pre_post_operator_type =ASM_OPERATOR::INVALID_OP;
-			definedLine=-1;
-			symbol_name = "unknow";
+			ast_node = NULL;
 			//isconvertable=NULL;
 			//left_var_obj=NULL;
 		  //   type_op=0;
@@ -131,8 +131,6 @@ public:
 	typedef struct{
 
 	    vector<tInfoAsmOp *> asm_op;
-	    string expression_str;
-	    int m_line;
 	}tInfoStatementOp;
 
 	static CCompiler * getInstance();
@@ -206,7 +204,7 @@ public:
 	void insert_CallFunction_Instruction(int index_call);
 
 
-	bool insertOperatorInstruction(tInfoPunctuator *  op, int definedLine, string & error_str, int left, int right=-1);
+	bool insertOperatorInstruction(tInfoPunctuator *  op, PASTNode _node, string & error_str, int left, int right=-1);
 	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
 
 	bool *getObjectResultCurrentStatmentAsBoolean();

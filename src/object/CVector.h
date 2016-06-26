@@ -1,6 +1,6 @@
 #pragma once
 
-class CVector:public CObject{
+class CVector: public CVariable<vector<CObject *>>{
 
 public:
 	CVector();

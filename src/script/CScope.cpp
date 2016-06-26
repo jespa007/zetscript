@@ -22,6 +22,7 @@ void CScope::destroySingletons(){
 CScope::CScope(CScriptFunction * _fs, CScope * _parent){
 	m_parentScope = _parent;
 
+	m_baseScope = this;
 	m_scriptFunction = _fs;
 
 	if(_parent == NULL){
@@ -30,7 +31,7 @@ CScope::CScope(CScriptFunction * _fs, CScope * _parent){
 		m_mainScope = _parent->getMainScope();
 	}
 
-	m_currentScopePointer=this;
+	m_currentScopePointer=m_baseScope;
 }
 
 CScriptFunction * CScope::getScriptFunction(){
@@ -55,7 +56,7 @@ CScope * CScope::getCurrentScopePointer(){
 }
 
 void CScope::resetScopePointer(){
-	m_currentScopePointer = m_mainScope;
+	m_currentScopePointer = m_baseScope;
 }
 
 CScope * CScope::pushScope(){

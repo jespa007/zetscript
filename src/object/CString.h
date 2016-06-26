@@ -1,10 +1,9 @@
 #pragma once
 
-class CString: public CObject{
+class CString: public CVariable<string>{
 	
 public:
 
-	string m_value;
 
 	CString();
 	CString(const string & s);

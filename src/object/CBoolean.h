@@ -1,10 +1,10 @@
 #pragma once
 
-class CBoolean: public CObject{
+class CBoolean: public CVariable<bool>{
 	
 
 public:
-	bool m_value;
+
 	static CBoolean * Parse(const string & );
 	static bool * ParsePrimitive(const string & );
 
