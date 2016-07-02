@@ -1,14 +1,46 @@
+/*
+
+ *
+ *  Created on: Jun 27, 2016
+ *      Author: jespada
+ */
+
 #pragma once
 
-template<typename _T>
-class CVariable:public CObject{
+
+class CVariable: public CObject{
+
 public:
 
-	_T m_value;
-	_T *m_ptr;
+	enum VAR_TYPE{
+		OBJECT=0,
+		BOOLEAN,
+		INTEGER,
+		NUMBER, // real
+		STRING,
+
+		// function
+		FUNCTION,
+		VECTOR,
+		MAX_VAR_TYPES
+	};
 
 
-	CVariable(){
-		m_ptr = &m_value;
-	}
+	CVariable();
+
+	void setPtr(void *ptr);
+
+	VAR_TYPE getVariableType();
+
+
+
+protected:
+
+
+	void *m_ptr;
+	VAR_TYPE m_varType;
+
 };
+
+
+

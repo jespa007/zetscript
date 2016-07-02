@@ -2,6 +2,8 @@
 
 CScriptFunction::CScriptFunction(CScriptFunction * _parentFunction){
 
+
+
 	m_type = TYPE::SCRIPT_FUNCTION_TYPE;
 	pointer_function = NULL;
 

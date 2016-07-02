@@ -6,18 +6,7 @@ class CCompiler{
 
 public:
 
-	enum VAR_TYPE{
-		NOT_DEFINED=0,
-		OBJ, // general object not defined
-		BOOL,
-		INTEGER,
-		NUMBER, // real
-		STRING,
 
-		// function
-		FUNCTION,
-		VECTOR,
-	};
 
 	enum LOAD_TYPE{
 
@@ -95,7 +84,7 @@ public:
 	    // void *result_obj; // can be float/bool/string or variable.
 
 	    // string symbol_name;
-	     VAR_TYPE variable_type;
+		CVariable::VAR_TYPE variable_type;
 	     PASTNode ast_node; // define ast node for give some information at run time
 	    // int definedLine;
 	     //string type_res;
@@ -111,7 +100,7 @@ public:
 	    // bool (* isconvertable)(int value);
 
 		tInfoAsmOp(){
-			variable_type=VAR_TYPE::NOT_DEFINED;
+			//variable_type=VAR_TYPE::NOT_DEFINED;
 			operator_type=ASM_OPERATOR::INVALID_OP;
 			pre_post_operator_type =ASM_OPERATOR::INVALID_OP;
 			ast_node = NULL;
@@ -152,10 +141,10 @@ public:
 	//int generateAsmCode(PASTNode op, int & numreg, bool & error, CScope * _lc);
 
 
-	ASM_OPERATOR getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op,VAR_TYPE & result_type);
-	ASM_OPERATOR getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op,VAR_TYPE & result_type);
-	ASM_OPERATOR getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op,VAR_TYPE & result_type);
-	ASM_OPERATOR getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op,VAR_TYPE & result_type);
+	ASM_OPERATOR getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
+	ASM_OPERATOR getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
+	ASM_OPERATOR getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
+	ASM_OPERATOR getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
 
 	ASM_OPERATOR getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op);
 	ASM_OPERATOR getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op);
@@ -211,7 +200,7 @@ public:
 	int getCurrentInstructionIndex();
 	int getCurrentStatmentIndex();
 
-	VAR_TYPE getTypeAsmResult(int index);
+	CVariable::VAR_TYPE getTypeAsmResult(int index);
 
 	void insertPushScopeInstruction(CScope * _goto_scope);
 	void insertPopScopeInstruction();

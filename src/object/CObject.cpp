@@ -2,7 +2,6 @@
 
 
 
-
 void CObject::setup() {
 
     m_userObjectType = "unknow";
@@ -39,7 +38,11 @@ void CObject::setObjectContainer(CObject *_origin_obj){
 CObject *CObject::getObjectContainer(){
     return m_objectContainer;
 }
+//---------------------------------------------------------------------
 
+CObject::OBJECT_TYPE CObject::getObjectType(){
+	return m_type;
+}
 
 //---------------------------------------------------------------------
 void CObject::setID(const string & _p_m_id) {

@@ -42,7 +42,11 @@ float *  CNumber::ParsePrimitive(const string & s){
 }
 
 
-CNumber::CNumber(){ m_value=0;}
-CNumber::CNumber(float v){m_value=v;}
+CNumber::CNumber(){
+	m_varType = CVariable::VAR_TYPE::NUMBER;
+	m_value=0;
+	m_ptr=&m_value;
+}
+
 
 string CNumber::toString(){string s; return s;}

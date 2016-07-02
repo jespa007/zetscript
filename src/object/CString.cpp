@@ -1,6 +1,11 @@
 #include "script/zg_script.h"
 
 
-CString::CString(){}
-CString::CString(const string & s){}
+CString::CString(){
+
+	m_varType = CVariable::VAR_TYPE::STRING;
+	m_value="unknow";
+	m_ptr=&m_value;
+}
+
 string CString::toString(){string s; return s;}

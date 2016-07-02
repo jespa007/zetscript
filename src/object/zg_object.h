@@ -1,16 +1,18 @@
 #pragma once
 
+
 #include "system/zg_system.h"
 #include "utils/zg_utils.h"
 
-#include "object/CObject.h"
-#include "object/CVariable.h"
-#include "object/CBoolean.h"
-#include "object/CNumber.h"
-#include "object/CInteger.h"
-#include "object/CString.h"
-#include "object/CVector.h"
-#include "object/CUndefined.h"
+#include "CObject.h"
+#include "CVariable.h"
+#include "CBoolean.h"
+#include "CNumber.h"
+#include "CInteger.h"
+#include "CString.h"
+#include "CVector.h"
+#include "CFunctor.h"
+#include "CUndefined.h"
 #include "CVoid.h"
 
 

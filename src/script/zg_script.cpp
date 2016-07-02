@@ -148,16 +148,16 @@ CObject * CZG_Script::createObjectFromPrimitiveType(CZG_Script::tPrimitiveType *
 			return CScope::m_voidSymbol;
 			break;
 		case C_TYPE_VAR::STRING_TYPE:
-			return NEW_STRING();
+			return (CObject *)NEW_STRING();
 			break;
 		case C_TYPE_VAR::FLOAT_TYPE:
-			return NEW_NUMBER();
+			return (CObject *)NEW_NUMBER();
 			break;
 		case C_TYPE_VAR::INT_TYPE:
-			return NEW_INTEGER();
+			return (CObject *)NEW_INTEGER();
 			break;
 		case C_TYPE_VAR::BOOL_TYPE:
-			return NEW_BOOLEAN();
+			return (CObject *)NEW_BOOLEAN();
 			break;
 		default:
 			print_error_cr("Not found");

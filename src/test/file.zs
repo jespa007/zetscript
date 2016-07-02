@@ -1,34 +1,8 @@
-var b=0;
+2+2;
 
+/*
 
-var fun = function (l,d5,k){
-	
-	var b=0;
-	
-	function hola2(k1,l1){
-		var ff=0;
-	}
-	
-	// hola2(1+1,2+2,3+3); // invalid: hola2 only takes 2 parameters
-	
-	return b;
-};
-
-var fun2 = function (l,d5,k){
-	
-	var b=0;
-	
-	function hola2(k1,l1){
-		var ff=0;
-	}
-	
-	// hola2(1+1,2+2,3+3); // invalid: hola2 only takes 2 parameters
-	
-	return b;
-};
-
-
-/*function bb(a,b){
+function bb(a,b){
 	return a+b;
 }
 
@@ -172,7 +146,7 @@ var fun = function (l,d5,k){
 	
 	var b=0;
 	
-	function hola2(k,l){
+	function hola2(k1,l1){
 		var ff=0;
 	}
 	

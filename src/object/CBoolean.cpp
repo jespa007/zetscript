@@ -38,10 +38,10 @@ bool * CBoolean::ParsePrimitive(const string & s){
 
 
 CBoolean::CBoolean(){
+	m_varType = CVariable::VAR_TYPE::BOOLEAN;
 	m_value = false;
+	m_ptr=&m_value;
 }
-CBoolean::CBoolean(bool b){
-	m_value = b;
-}
+
 
 string CBoolean::toString(){string s; return s;}

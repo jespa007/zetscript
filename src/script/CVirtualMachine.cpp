@@ -1,7 +1,7 @@
 #include "zg_script.h"
 
 CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
-
+//vector<CVirtualMachine::CALE> CVirtualMachine::ALE;
 
 
 CVirtualMachine * CVirtualMachine::getInstance(){
@@ -71,12 +71,15 @@ float default_value=0;
 
 
 
+
 bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 
 	vector<CCompiler::tInfoStatementOp> * m_listStatements = fs->getCompiledCode();
 	CCompiler::tInfoAsmOp * previous_instruction=NULL;
 	int index_op2=-1,index_op1=-1;
 	bool conditional_jmp=false;
+
+	CALE ALE;
 
 
 	for(unsigned s = 0; s < (*m_listStatements).size();){
@@ -96,6 +99,34 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 				CCompiler::tInfoAsmOp * instruction=current_statment->asm_op[i];
 				CCompiler::tInfoAsmOp * right_instruction, *left_instruction;//=current_statment->asm_op[i];
 				instruction=current_statment->asm_op[i];
+
+				ALE.performInstruction(instruction);
+
+				/*switch(instruction->operator_type){
+				default:
+					print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+					break;
+				case CCompiler::NOP: // ignore ...
+					break;
+				case CCompiler::LOAD: // load value in function of value/constant ...
+
+					m_stkAle.loadValue(instruction);
+
+					break;
+
+				case CCompiler::ADD: // check both operants type number / integer.
+
+					//index_op2
+
+					//checkOperation(CCompiler::ADD, index_op1, index_op2);
+
+
+
+					break;
+
+
+				}*/
+
 				/*switch(instruction->operator_type){
 					default:
 						print_error_cr("operator type(%i) not implemented",instruction->operator_type);
@@ -142,7 +173,7 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 								print_error_cr("right operant is not bool");
 							}
 							break;
-						case CCompiler::OBJ:
+						case CVariable::OBJECT:
 							if(right_instruction->result_type == CCompiler::VAR_TYPE::OBJ){ // assign pointer ?
 
 								print_error_cr("mov var not implemented (think about!)");

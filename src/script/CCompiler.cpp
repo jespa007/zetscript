@@ -368,7 +368,7 @@ string  CCompiler::getUserTypeResultCurrentStatmentAtInstruction(unsigned instru
 		default:
 		case CCompiler::NOT_DEFINED:
 			break;
-		case CCompiler::OBJ:
+		case CVariable::OBJECT:
 			result= (((CObject *)ptr_current_statement_op->asm_op[instruction]->result_obj)->getPointerClassStr()); // type result..
 			break;
 		case CCompiler::NUMBER:
@@ -442,7 +442,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	CObject *obj, *get_obj;
-	CCompiler::VAR_TYPE type=CCompiler::NOT_DEFINED;
+	CVariable::VAR_TYPE type=CVariable::OBJECT;
 	CCompiler::LOAD_TYPE load_type=CCompiler::LOAD_TYPE_NOT_DEFINED;
 
 	if(_node->pre_post_operator_info != NULL){
@@ -451,10 +451,10 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 	}
 	// try parse value...
 	if((obj=CInteger::Parse(v))!=NULL){
-			type=CCompiler::INTEGER;
+			type=CVariable::INTEGER;
 			load_type=LOAD_TYPE_CONSTANT;
 			print_com_cr("%s detected as int\n",v.c_str());
-			if((get_obj = getConstant(v))==NULL){
+			if((get_obj = getConstant(v))!=NULL){
 				delete obj;
 				obj = get_obj;
 			}else{
@@ -462,7 +462,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 			}
 	}
 	else if((obj=CNumber::Parse(v))!=NULL){
-		type=CCompiler::NUMBER;
+		type=CVariable::NUMBER;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as float\n",v.c_str());
 
@@ -477,7 +477,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
-		type=CCompiler::STRING;
+		type=CVariable::STRING;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as string\n",v.c_str());
 
@@ -485,13 +485,15 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 			obj = get_obj;
 		}else{
 			string s=v.substr(1,v.size()-2);
-			obj=new CString(s);
+			CString *os=new CString();
+			os->m_value = s;
+			obj = os;
 			addConstant(v,obj);
 		}
 
 	}
 	else if((obj=CBoolean::Parse(v))!=NULL){
-		type=CCompiler::BOOL;
+		type=CVariable::BOOLEAN;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as boolean\n",v.c_str());
 
@@ -503,7 +505,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		}
 	}else{
 		CScope::tInfoRegisteredVar * info_var=_lc->getInfoRegisteredSymbol(v,false);
-		type=CCompiler::OBJ;
+		type=CVariable::OBJECT;
 		load_type=LOAD_TYPE_VARIABLE;
 
 
@@ -552,7 +554,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 	}
 
 
-	if(pre_post_operator_type !=ASM_OPERATOR::INVALID_OP && type!=CCompiler::OBJ){
+	if(pre_post_operator_type !=ASM_OPERATOR::INVALID_OP && type!=CVariable::OBJECT){
 		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->definedValueline,_node->pre_post_operator_info->str);
 		return false;
 
@@ -587,7 +589,7 @@ bool CCompiler::insertMovVarInstruction(int left_index, int right_index){
 	CCompiler::tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[left_index];
 
 	// check whether left operant is object...
-	if(left_asm_op->variable_type != VAR_TYPE::OBJ){
+	if(left_asm_op->variable_type != CVariable::OBJECT){
 		int line = -1;
 
 		if(left_asm_op->ast_node!=NULL)
@@ -652,7 +654,7 @@ bool CCompiler::insertMovVarInstruction(int left_index, int right_index){
 	if(right >= 0){ // insert both op...
 
 		CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
-		asm_op->variable_type = CCompiler::OBJ; // this only stores pointer...
+		asm_op->variable_type = CVariable::OBJECT; // this only stores pointer...
 		asm_op->result_obj=var;
 
 		if((int_obj=dynamic_cast<CInteger *>(var))!=NULL){ // else it will store the value ...
@@ -763,7 +765,7 @@ void CCompiler::insert_CreateArrayObject_Instruction(){
 	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 
 	asm_op->operator_type=CCompiler::ASM_OPERATOR::VEC;
-	asm_op->variable_type = VAR_TYPE::OBJ;
+	asm_op->variable_type = CVariable::OBJECT;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -775,7 +777,7 @@ void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instruc
 	asm_op->index_op1 = vec_object;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 = index_instrucction;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CCompiler::ASM_OPERATOR::VGET;
-	asm_op->variable_type = VAR_TYPE::OBJ;
+	asm_op->variable_type = CVariable::OBJECT;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -837,9 +839,9 @@ void CCompiler::insert_ArrayObject_PushValueInstruction(int ref_vec_object_index
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-CCompiler::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op, CCompiler::VAR_TYPE & variable_type){
+CCompiler::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
 
-	variable_type = CCompiler::INTEGER;
+	variable_type = CVariable::INTEGER;
 
 	switch(op){
 	default:
@@ -863,28 +865,28 @@ CCompiler::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE o
 	case PUNCTUATOR_TYPE::SHIFT_RIGHT_PUNCTUATOR:
 		return CCompiler::SHR;
 	case PUNCTUATOR_TYPE::LOGIC_GTE_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::GTE;
 	case PUNCTUATOR_TYPE::LOGIC_GT_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::GT;
 	case PUNCTUATOR_TYPE::LOGIC_LT_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::LT;
 	case PUNCTUATOR_TYPE::LOGIC_LTE_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::LTE;
 	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::EQU;
 
 	}
 	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op, CCompiler::VAR_TYPE & variable_type){
+CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
 
-	variable_type = CCompiler::NUMBER;
+	variable_type = CVariable::NUMBER;
 
 	switch(op){
 	default:
@@ -898,19 +900,19 @@ CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op
 	case PUNCTUATOR_TYPE::MUL_PUNCTUATOR:
 		return CCompiler::MUL;
 	case PUNCTUATOR_TYPE::LOGIC_GTE_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::GTE;
 	case PUNCTUATOR_TYPE::LOGIC_GT_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::GT;
 	case PUNCTUATOR_TYPE::LOGIC_LT_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::LT;
 	case PUNCTUATOR_TYPE::LOGIC_LTE_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::LTE;
 	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::EQU;
 	}
 	return CCompiler::ASM_OPERATOR::INVALID_OP;
@@ -936,9 +938,9 @@ CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op)
 	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op, CCompiler::VAR_TYPE & variable_type){
+CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
 
-	variable_type = CCompiler::BOOL;
+	variable_type = CVariable::BOOLEAN;
 
 	switch(op){
 	default:
@@ -962,9 +964,9 @@ CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op)
 	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CCompiler::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op, CCompiler::VAR_TYPE & variable_type){
+CCompiler::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
 
-	variable_type = CCompiler::STRING;
+	variable_type = CVariable::STRING;
 
 	switch(op){
 	default:
@@ -972,7 +974,7 @@ CCompiler::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op
 	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
 		return CCompiler::CAT;
 	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
-		variable_type = CCompiler::BOOL;
+		variable_type = CVariable::BOOLEAN;
 		return CCompiler::EQU;
 	}
 	return CCompiler::ASM_OPERATOR::INVALID_OP;
@@ -1080,7 +1082,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	CCompiler::tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
 
-	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->variable_type != VAR_TYPE::OBJ){
+	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->variable_type != CVariable::OBJECT){
 
 			error_str = "left operand must be l-value for '=' operator";
 			return false;

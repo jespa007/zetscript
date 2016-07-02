@@ -11,11 +11,21 @@ class CObject{
 
     void setup();
 public:
+
+	enum OBJECT_TYPE{
+		NOT_DEFINED=0,
+		OBJECT, // general object not defined
+		VARIABLE,
+		MAX_OBJECT_TYPES
+	};
+
     // define all tipe objects avaliable in our scope...
 
 
     //------------------------------------------
     CObject();
+
+
 
 
     //JEMEObjectType _sType
@@ -69,6 +79,7 @@ public:
     CObject *getObjectContainer();
 
 
+    OBJECT_TYPE getObjectType();
 
     virtual void update();
     /**
@@ -94,7 +105,7 @@ protected:
 
     string m_userObjectType,m_classStr,m_pointerClassStr;
 
-
+    OBJECT_TYPE m_type;
 
 
 

@@ -175,19 +175,19 @@ public:
 						break;
 					case INT_PTR_TYPE:
 						irv->m_obj=NEW_INTEGER();
-						((CInteger *)irv->m_obj)->m_ptr = (int *)var_ptr;
+						((CVariable *)irv->m_obj)->setPtr(var_ptr);
 						break;
 					case FLOAT_PTR_TYPE:
 						irv->m_obj=NEW_NUMBER();
-						((CNumber *)irv->m_obj)->m_ptr = (float *)var_ptr;
+						((CVariable *)irv->m_obj)->setPtr(var_ptr);
 						break;
 					case STRING_PTR_TYPE:
 						irv->m_obj=NEW_STRING();
-						((CString *)irv->m_obj)->m_ptr = (string *)var_ptr;
+						((CVariable *)irv->m_obj)->setPtr(var_ptr);
 						break;
 					case BOOL_PTR_TYPE:
 						irv->m_obj=NEW_BOOLEAN();
-						((CBoolean *)irv->m_obj)->m_ptr = (bool *)var_ptr;
+						((CVariable *)irv->m_obj)->setPtr(var_ptr);
 						break;
 
 					}

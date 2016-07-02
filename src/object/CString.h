@@ -1,12 +1,13 @@
 #pragma once
 
-class CString: public CVariable<string>{
+class CString: public CVariable{
 	
 public:
 
+	string m_value;
 
 	CString();
-	CString(const string & s);
+
 	virtual string toString();
 	
 };

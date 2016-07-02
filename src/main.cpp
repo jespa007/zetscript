@@ -83,6 +83,8 @@ int main(int argc, char * argv[]){
 		CZG_Script *zg_script = CZG_Script::getInstance();
 
 			if(zg_script->eval((char *)buffer->data_buffer)){
+
+				zg_script->execute();
 				/*for(i=0; i < 20;i++)
 				{
 					Uint32 t = SDL_GetTicks();*/

@@ -1,7 +1,7 @@
 #pragma once
 
 
-#define MAX_OPERANDS 32
+
 
 #include "CScope.h"
 
@@ -295,7 +295,7 @@ void getParamsFunction(int i,string & returnType, std::vector<std::string> & typ
 
 
 
-class CScriptFunction: public CObject{
+class CScriptFunction: public CFunctor{
 
 public:
 
@@ -350,76 +350,7 @@ public:
 
 private:
 
-	enum ALU_TYPE{
-		UNKNOW_ALU_TYPE=0,
-		INTEGER_ALU_TYPE,
-		NUMBER_ALU_TYPE,
-		STRING_ALU_TYPE,
-		BOOLEAN_ALU_TYPE,
-		MAX_ALU_TYPES
 
-	};
-
-	class CAlu{
-
-	public:
-
-		CInteger *popInteger(){
-			if(n_current_integer ==MAX_OPERANDS){
-				print_error_cr("Max int operands");
-				return NULL;
-			}
-			return &integer[n_current_integer++];
-		}
-
-		CBoolean *popBoolean(){
-			if(n_current_boolean ==MAX_OPERANDS){
-				print_error_cr("Max int operands");
-				return NULL;
-			}
-			return &boolean[n_current_boolean++];
-		}
-
-		CNumber *popNumber(){
-			if(n_current_number ==MAX_OPERANDS){
-				print_error_cr("Max number operands");
-				return NULL;
-			}
-			return &number[n_current_number++];
-		}
-		CString *popString(){
-			if(n_current_string ==MAX_OPERANDS){
-				print_error_cr("Max string operands");
-				return NULL;
-			}
-			return &string[n_current_string++];
-
-		}
-
-		void resetALU(){
-			n_current_integer =n_current_number=n_current_boolean=n_current_string=current_asm_instruction;
-		}
-
-
-	private:
-
-		CInteger integer[MAX_OPERANDS];
-		CNumber	 number[MAX_OPERANDS];
-		CBoolean boolean[MAX_OPERANDS];
-		CString  string[MAX_OPERANDS];
-		//CVector	 * vector[MAX_OPERANDS];
-
-		int n_current_integer;
-		int n_current_number;
-		int n_current_boolean;
-		int n_current_string;
-
-
-		int asm_instruction[MAX_ALU_TYPES*MAX_OPERANDS];
-		int current_asm_instruction;
-
-
-	};
 
 	/**
 	 * AST root
