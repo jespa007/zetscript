@@ -28,18 +28,13 @@ public:
 		NOT, // !
 		GT,  // >
 		GTE, // >=
-		NEG, // !
+
 		ADD, // +
-		PRE_INC, // ++
-		POST_INC, // ++
-		PRE_DEC, // ++
-		POST_DEC, // ++
 		LOGIC_AND, // &&
 		LOGIC_OR,  // ||
 		DIV, // /
 		MUL, // *
 		MOD,  // %
-		CAT,  // str+str
 		AND, // bitwise logic and
 		OR, // bitwise logic or
 		XOR, // logic xor
@@ -58,9 +53,18 @@ public:
 		VPOP, // Value pop for vector
 
 		VEC, // Vector object
-		FUN, // Function object
 		MAX_OPERATORS
 
+
+	};
+
+	enum ASM_PRE_POST_OPERATORS{
+		UNKNOW_PRE_POST_OPERATOR=0,
+		NEG, // -a
+		PRE_INC, // ++
+		POST_INC, // ++
+		PRE_DEC, // --
+		POST_DEC // --
 
 	};
 
@@ -91,7 +95,8 @@ public:
 
 	     //------------------
 
-	     ASM_OPERATOR operator_type,pre_post_operator_type;
+	     ASM_OPERATOR operator_type;
+	     ASM_PRE_POST_OPERATORS pre_post_operator_type;
 	     //void *ptr_value; // can be float, bool or string.
 	     //------------------
 
@@ -102,7 +107,7 @@ public:
 		tInfoAsmOp(){
 			//variable_type=VAR_TYPE::NOT_DEFINED;
 			operator_type=ASM_OPERATOR::INVALID_OP;
-			pre_post_operator_type =ASM_OPERATOR::INVALID_OP;
+			pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 			ast_node = NULL;
 			//isconvertable=NULL;
 			//left_var_obj=NULL;
@@ -146,7 +151,7 @@ public:
 	ASM_OPERATOR getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
 	ASM_OPERATOR getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
 
-	ASM_OPERATOR getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op);
+	ASM_PRE_POST_OPERATORS getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op);
 	ASM_OPERATOR getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op);
 	ASM_OPERATOR getStringOperatorId_OneOp(PUNCTUATOR_TYPE op);
 

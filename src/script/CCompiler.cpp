@@ -145,16 +145,16 @@ void CCompiler::printGeneratedCode_Recursive(CScriptFunction *fs){
 			 post="";
 
 				switch((*asm_op_statment)[i]->pre_post_operator_type){
-				case ASM_OPERATOR::PRE_INC:
+				case ASM_PRE_POST_OPERATORS::PRE_INC:
 					pre="++";
 					break;
-				case ASM_OPERATOR::PRE_DEC:
+				case ASM_PRE_POST_OPERATORS::PRE_DEC:
 					pre="--";
 					break;
-				case ASM_OPERATOR::POST_INC:
+				case ASM_PRE_POST_OPERATORS::POST_INC:
 					post="++";
 					break;
-				case ASM_OPERATOR::POST_DEC:
+				case ASM_PRE_POST_OPERATORS::POST_DEC:
 					post="--";
 					break;
 				default:
@@ -175,14 +175,12 @@ void CCompiler::printGeneratedCode_Recursive(CScriptFunction *fs){
 			case JMP:
 				printf("[%02i:%02i]\t%s\t[%04i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,(*asm_op_statment)[i]->index_op1);
 				break;
-			case FUN:
-				break;
-			case PRE_INC:
+			/*case PRE_INC:
 			case POST_INC:
 			case PRE_DEC:
 			case POST_DEC:
 				printf("[%02i:%02i]\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str);
-				break;
+				break;*/
 			case VGET:
 			case VPUSH:
 				printf("[%02i:%02i]\t%s\t%s[%02i:%02i]%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,pre.c_str(),s,index_op1,post.c_str(),s,index_op2);
@@ -241,18 +239,17 @@ CCompiler::CCompiler(){
 	def_operator[NOT]         ={"NOT",NOT,1}; // !
 	def_operator[GT]          ={"GT",GT,2};  // >
 	def_operator[GTE]         ={"GTE",GTE,2}; // >=
-	def_operator[NEG]         ={"NEG",NEG,1}; // !
+	//def_operator[NEG]         ={"NEG",NEG,1}; // !
 	def_operator[ADD]         ={"ADD",ADD,2}; // +
-	def_operator[PRE_INC]     ={"PRE_INC",PRE_INC,1};// ++
-	def_operator[POST_INC]    ={"POST_INC",POST_INC,1}; // ++
-	def_operator[PRE_DEC]     ={"PRE_DEC",PRE_DEC,1}; // ++
-	def_operator[POST_DEC]    ={"POST_DEC",POST_DEC,1}; // ++
+	//def_operator[PRE_INC]     ={"PRE_INC",PRE_INC,1};// ++
+	//def_operator[POST_INC]    ={"POST_INC",POST_INC,1}; // ++
+	//def_operator[PRE_DEC]     ={"PRE_DEC",PRE_DEC,1}; // ++
+	//def_operator[POST_DEC]    ={"POST_DEC",POST_DEC,1}; // ++
 	def_operator[LOGIC_AND]   ={"LOGIC_AND",LOGIC_AND,2}; // &&
 	def_operator[LOGIC_OR]    ={"LOGIC_OR",LOGIC_OR,2};  // ||
 	def_operator[DIV]         ={"DIV",DIV,2}; // /
 	def_operator[MUL]         ={"MUL",MUL,2}; // *
 	def_operator[MOD]         ={"MOD",MOD,2};  // %
-	def_operator[CAT]         ={"CAT",CAT,2};  // str+str
 	def_operator[AND]         ={"AND",AND,2}; // bitwise logic and
 	def_operator[OR]          ={"OR",OR,2}; // bitwise logic or
 	def_operator[XOR]         ={"XOR",XOR,2}; // logic xor
@@ -268,7 +265,6 @@ CCompiler::CCompiler(){
 	def_operator[VGET]={"VGET",VGET,1}; // vector access after each index is processed...
 
 	def_operator[VEC]={"VEC",VEC,1}; // Vector object (CREATE)
-	def_operator[FUN]={"FUN",FUN,1}; // Vector object (CREATE)
 
 	def_operator[VPUSH]={"VPUSH",VPUSH,1}; // Value push for vector
 	def_operator[VPOP]={"VPOP",VPOP,1}; // Value pop for vector
@@ -433,7 +429,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 	string v = _node->value_symbol;
 	int m_var_at_line = _node->definedValueline;
-	ASM_OPERATOR pre_post_operator_type =ASM_OPERATOR::INVALID_OP;
+	ASM_PRE_POST_OPERATORS pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 	/*CNumber *num_obj;
 	CInteger *int_obj;
 	CString *str_obj;
@@ -554,7 +550,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 	}
 
 
-	if(pre_post_operator_type !=ASM_OPERATOR::INVALID_OP && type!=CVariable::OBJECT){
+	if(pre_post_operator_type !=ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR && type!=CVariable::OBJECT){
 		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->definedValueline,_node->pre_post_operator_info->str);
 		return false;
 
@@ -792,6 +788,7 @@ void CCompiler::insert_ClearArgumentStack_Instruction(){
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
+/*
 void CCompiler::insert_LoadFunctionObject_Instruction(CObject *obj){
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
@@ -800,7 +797,7 @@ void CCompiler::insert_LoadFunctionObject_Instruction(CObject *obj){
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
-}
+}*/
 
 void CCompiler::insert_PushArgument_Instruction(){
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
@@ -918,11 +915,11 @@ CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op
 	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
 
-CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op){
+CCompiler::ASM_PRE_POST_OPERATORS CCompiler::getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op){
 
 	switch(op){
 	default:
-		return CCompiler::ASM_OPERATOR::INVALID_OP;
+		return CCompiler::ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 	case PUNCTUATOR_TYPE::SUB_PUNCTUATOR:
 		return CCompiler::NEG;
 	case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
@@ -935,7 +932,7 @@ CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op)
 		return CCompiler::POST_DEC;
 	}
 
-	return CCompiler::ASM_OPERATOR::INVALID_OP;
+	return CCompiler::ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 }
 
 CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
@@ -963,7 +960,7 @@ CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op)
 	}
 	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
-
+/*
 CCompiler::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
 
 	variable_type = CVariable::STRING;
@@ -984,7 +981,7 @@ CCompiler::ASM_OPERATOR CCompiler::getStringOperatorId_OneOp(PUNCTUATOR_TYPE op)
 
 	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
-
+*/
 
 CCompiler::ASM_OPERATOR CCompiler::puntuator2asmop(tInfoPunctuator * op){
 	/*
@@ -1029,8 +1026,6 @@ CCompiler::ASM_OPERATOR CCompiler::puntuator2asmop(tInfoPunctuator * op){
 		break;
 	case ADD_PUNCTUATOR:
 		return ASM_OPERATOR::ADD;
-	case SUB_PUNCTUATOR:
-		return ASM_OPERATOR::NEG;
 	case MUL_PUNCTUATOR:
 		return ASM_OPERATOR::MUL;
 	case DIV_PUNCTUATOR:
@@ -1065,14 +1060,6 @@ CCompiler::ASM_OPERATOR CCompiler::puntuator2asmop(tInfoPunctuator * op){
 		return ASM_OPERATOR::LTE;
 	case LOGIC_NOT_PUNCTUATOR:
 		return ASM_OPERATOR::NOT;
-	case PRE_INC_PUNCTUATOR:
-		return ASM_OPERATOR::PRE_INC;
-	case PRE_DEC_PUNCTUATOR:
-		return ASM_OPERATOR::PRE_DEC;
-	case POST_INC_PUNCTUATOR:
-		return ASM_OPERATOR::POST_INC;
-	case POST_DEC_PUNCTUATOR:
-		return ASM_OPERATOR::POST_DEC;
 	}
 
 	return INVALID_OP;
@@ -1384,7 +1371,7 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
 
 
 	// 1. insert load reference created object ...
-	//insert_LoadFunctionObject_Instruction(fun);
+
 	if(!insertLoadValueInstruction(_node, _lc)){
 		return -1;
 	}

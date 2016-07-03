@@ -1,6 +1,3 @@
-2+2;
-
-/*
 
 function bb(a,b){
 	return a+b;
@@ -197,7 +194,7 @@ for(var j2=0; j2 < 10 ; j2++){
 }
 
 
-*/
+
 
 /*
  

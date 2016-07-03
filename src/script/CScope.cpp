@@ -3,18 +3,18 @@
 #define MAX_STATMENT_LENGTH 2096
 #define MAX_VAR_LENGTH 100
 
-CUndefined *CScope::m_undefinedSymbol=NULL;
-CVoid *CScope::m_voidSymbol=NULL;
+CUndefined *CScope::UndefinedSymbol=NULL;
+CVoid *CScope::VoidSymbol=NULL;
 
 void CScope::createSingletons(){
-	m_undefinedSymbol = new CUndefined();
-	m_voidSymbol = new CVoid();
+	UndefinedSymbol = new CUndefined();
+	VoidSymbol = new CVoid();
 }
 
 
 void CScope::destroySingletons(){
-	delete m_undefinedSymbol;
-	delete m_voidSymbol;
+	delete UndefinedSymbol;
+	delete VoidSymbol;
 }
 
 
@@ -88,7 +88,7 @@ CScope::tInfoRegisteredVar * CScope::registerSymbol(const string & var_name, int
 	if((irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
 		irv = new tInfoRegisteredVar;
 		irv->m_line = m_line;
-		irv->m_obj = m_undefinedSymbol;
+		irv->m_obj = UndefinedSymbol;
 		m_registeredSymbol[var_name]=irv;
 		return irv;
 	}else{

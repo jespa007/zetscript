@@ -5,8 +5,8 @@ class CScriptFunction;
 class CScope: public CObject{
 public:
 
-	static CUndefined *m_undefinedSymbol;
-	static CVoid *m_voidSymbol;
+	static CUndefined *UndefinedSymbol;
+	static CVoid *VoidSymbol;
 
 	typedef struct{
 		int m_line;

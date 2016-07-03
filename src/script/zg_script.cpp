@@ -145,7 +145,7 @@ CObject * CZG_Script::createObjectFromPrimitiveType(CZG_Script::tPrimitiveType *
 	if(pt != NULL){
 		switch(pt->id){
 		case C_TYPE_VAR::VOID_TYPE:
-			return CScope::m_voidSymbol;
+			return CScope::VoidSymbol;
 			break;
 		case C_TYPE_VAR::STRING_TYPE:
 			return (CObject *)NEW_STRING();

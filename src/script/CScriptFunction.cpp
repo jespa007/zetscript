@@ -10,7 +10,7 @@ CScriptFunction::CScriptFunction(CScriptFunction * _parentFunction){
 	m_parentFunction = _parentFunction;
 	m_scope = new CScope(this,m_parentFunction!=NULL?m_parentFunction->getScope():NULL);
 
-	returnVariable = CScope::m_undefinedSymbol;
+	returnVariable = CScope::UndefinedSymbol;
 
 	if(_parentFunction == NULL){ // this is the main function ...
 		setName("Main");
