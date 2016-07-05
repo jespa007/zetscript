@@ -139,6 +139,9 @@ return 1;
 
 var jj=1+[[1,2], [0,1] ][0][0];
 
+
+var a = fun(1,2);
+
 var fun = function (l,d5,k){
 	
 	var b=0;
@@ -191,6 +194,7 @@ for(var j2=0; j2 < 10 ; j2++){
 	var ll=0;
 	
 	ll = ll + j2;
+	
 }
 
 

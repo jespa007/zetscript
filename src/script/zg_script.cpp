@@ -218,6 +218,7 @@ bool CZG_Script::eval(const string & s){
 
 bool CZG_Script::execute(){
 
+
 	//CCompiler::getInstance()->printGeneratedCode(m_mainFunction);
 
 	return CVirtualMachine::getInstance()->execute(m_mainFunction);//->excute();
