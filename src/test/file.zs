@@ -1,4 +1,6 @@
 
+
+
 function bb(a,b){
 	return a+b;
 }
@@ -10,7 +12,8 @@ function bb(a,b){
 
 
 var c=0;
-
+c=c+1;
+/*
 c++;
 
 c=[0,1];
@@ -179,6 +182,7 @@ var f=0;
 while(f < 10){
 
 f++;
+
 }
 
 if(f == 10 ) {
@@ -194,12 +198,13 @@ for(var j2=0; j2 < 10 ; j2++){
 	var ll=0;
 	
 	ll = ll + j2;
+		
 	
 }
 
 
 
-
+*/
 /*
  
 

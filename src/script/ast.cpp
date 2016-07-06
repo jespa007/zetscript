@@ -985,6 +985,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 	char *expr_start_op;
 	int start_line = m_line; // set another start line because left node or reparse to try another group was already parsed before.
 	int m_lineOperator=-2;
+	CScope *_localScope =  sf != NULL?sf->getScope():NULL; // gets scope...
 
 	char *end_expression=(char *)s ; // by default end expression isequal to
 	//PASTNode symbol_node=NULL; // can be a function or array.
@@ -1070,6 +1071,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 					(*ast_node_to_be_evaluated)=new tASTNode;
 					(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
 					(*ast_node_to_be_evaluated)->value_symbol=symbol_value; // assign its value ...
+					(*ast_node_to_be_evaluated)->scope_ptr = _localScope;
 				}else{
 					if(deduceExpression(symbol_value.c_str(),m_definedSymbolLine,sf, ast_node_to_be_evaluated, parent) == NULL){
 						return NULL;
@@ -1220,6 +1222,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 
 			(*ast_node_to_be_evaluated)->node_type = PUNCTUATOR_NODE;
 			(*ast_node_to_be_evaluated)->operator_info = operator_group;
+			(*ast_node_to_be_evaluated)->scope_ptr = _localScope;
 			(*ast_node_to_be_evaluated)->definedValueline = m_lineOperator;
 		}
 	}
@@ -2346,7 +2349,7 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 
 
 								// eval block...
-								if((aux_p=generateAST_Recursive(aux_p, m_line, sf, error, ast_node_to_be_evaluated != NULL ? &switch_node->children[1] : NULL))==NULL){
+								if((aux_p=generateAST_Recursive(aux_p, m_line, sf, error, ast_node_to_be_evaluated != NULL ? &switch_node->children[1] : NULL,true))==NULL){
 									return NULL;
 								}
 
@@ -2489,6 +2492,8 @@ char * CAst::parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 
 						// save symbol in the node ...
 						(*ast_node_to_be_evaluated)->value_symbol = symbol_name;
+						(*ast_node_to_be_evaluated)->scope_ptr = _currentScope;
+						(*ast_node_to_be_evaluated)->definedValueline = m_line;
 
 					}
 
@@ -2630,7 +2635,7 @@ char *CAst::parseKeyWord(const char *s, int & m_line, CScriptFunction *sf, bool 
 	return NULL;
 }
 
-char * CAst::generateAST_Recursive(const char *s, int & m_line, CScriptFunction *sf, bool & error, PASTNode *node_to_be_evaluated){
+char * CAst::generateAST_Recursive(const char *s, int & m_line, CScriptFunction *sf, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks){
 
 	// PRE: **node must be created and is i/o ast pointer variable where to write changes.
 
@@ -2651,8 +2656,17 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScriptFunction 
 		}else{
 			keyw = isKeyword(aux);
 			if(keyw!= NULL){
+
 				if(keyw->id == KEYWORD_TYPE::BREAK_KEYWORD){
-					return aux;
+					if(allow_breaks){
+
+						return aux;
+					}
+					else{
+						print_error_cr("unexpected \"break\" at line %i",m_line);
+						error=true;
+						return NULL;
+					}
 				}
 			}
 		}

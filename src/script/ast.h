@@ -314,7 +314,7 @@ private:
 
 
 	// AST core functions ...
-	static char * generateAST_Recursive(const char *s, int & m_line, CScriptFunction *sf, bool & error, PASTNode *node_to_be_evaluated=NULL);
+	static char * generateAST_Recursive(const char *s, int & m_line, CScriptFunction *sf, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false);
 	static char * parseExpression(const char *s, int & m_line, CScriptFunction *sf, PASTNode * ast_node_to_be_evaluated=NULL);
 	static char * parseExpression_Recursive(const char *s, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
 

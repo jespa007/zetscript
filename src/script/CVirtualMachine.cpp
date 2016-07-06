@@ -24,8 +24,22 @@ if(!(asm_instruction_expression[idx].type == CVariable::VAR_TYPE::INTEGER || \
 	 asm_instruction_expression[idx].type == CVariable::VAR_TYPE::BOOLEAN)) \*/
 
 #define LOAD_NUM_OP(idx) \
-		(asm_instruction_expression[idx].type == CVariable::VAR_TYPE::INTEGER)? stkInteger[asm_instruction_expression[idx].index].m_value:\
-		stkNumber[asm_instruction_expression[idx].index].m_value
+		(asm_instruction_expression[idx].type == CVariable::VAR_TYPE::INTEGER)? ((CInteger *)(*asm_instruction_expression[idx].stkObject))->m_value:\
+		(asm_instruction_expression[idx].type == CVariable::VAR_TYPE::NUMBER)?	((CNumber *)(*asm_instruction_expression[idx].stkObject))->m_value:\
+				(-1)
+
+#define LOAD_INT_OP(idx) \
+		(((CInteger *)(*asm_instruction_expression[idx].stkObject))->m_value)
+
+
+
+
+#define LOAD_BOOL_OP(idx) \
+		(asm_instruction_expression[idx].type == CVariable::VAR_TYPE::BOOLEAN)? ((CBoolean *)(*asm_instruction_expression[idx].stkObject))->m_value:\
+		(false)
+
+#define LOAD_STRING_OP(idx) \
+		(((CString *)(*asm_instruction_expression[idx].stkObject))->m_value)
 
 
 
@@ -77,49 +91,60 @@ public:
 
 	}
 
-	CInteger *pushInteger(int  init_value){
+	bool pushInteger(int  init_value){
 		if(n_stkInteger ==MAX_PER_TYPE_OPERATIONS){
 			print_error_cr("Max int operands");
-			return NULL;
+			return true;
 		}
-		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::INTEGER,n_stkInteger};
-		stkInteger[n_stkInteger].m_value=init_value;
+		stkInteger[n_stkInteger] = new CInteger();
+		stkInteger[n_stkInteger]->m_value=init_value;
+		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::INTEGER,(CObject **)&stkInteger[n_stkInteger]};
 
 
-		return &stkInteger[n_stkInteger++];
+		n_stkInteger++;
+		return false;
 	}
 
-	CBoolean *pushBoolean(bool init_value){
+	bool pushBoolean(bool init_value){
 		if(n_stkBoolean ==MAX_PER_TYPE_OPERATIONS){
 			print_error_cr("Reached max bool operations");
-			return NULL;
+			return false;
 		}
-		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::BOOLEAN,n_stkBoolean};
-		stkBoolean[n_stkBoolean].m_value=init_value;
 
-		return &stkBoolean[n_stkBoolean++];
+		stkBoolean[n_stkBoolean] = new CBoolean();
+		stkBoolean[n_stkBoolean]->m_value=init_value;
+		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::BOOLEAN,(CObject **)&stkBoolean[n_stkBoolean]};
+		n_stkBoolean++;
+
+		return true;
 	}
 
-	CNumber *pushNumber(float init_value){
+	bool pushNumber(float init_value){
 		if(n_stkNumber ==MAX_PER_TYPE_OPERATIONS){
 			print_error_cr("Reached max number operations");
-			return NULL;
+			return false;
 		}
-		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::NUMBER,n_stkNumber};
-		stkNumber[n_stkNumber].m_value=init_value;
+		stkNumber[n_stkNumber] = new CNumber();
+		stkNumber[n_stkNumber]->m_value=init_value;
+		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::NUMBER,(CObject **)&stkNumber[n_stkNumber]};
 
-		return &stkNumber[n_stkNumber++];
+		n_stkNumber++;
+
+		return true;
 	}
 
-	CString *pushString(const string & init_value){
+	bool pushString(const string & init_value){
 		if(n_stkString ==MAX_PER_TYPE_OPERATIONS){
 			print_error_cr("Reached max string operations");
-			return NULL;
+			return false;
 		}
-		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::STRING,n_stkString};
-		stkString[n_stkString].m_value=init_value;
 
-		return &stkString[n_stkString++];
+		stkString[n_stkString] = new CString();
+		stkString[n_stkString]->m_value=init_value;
+		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::STRING,(CObject **)&stkString[n_stkString]};
+		n_stkString++;
+
+		return true;
 
 	}
 
@@ -128,36 +153,31 @@ public:
 			print_error_cr("Reached max object operations");
 			return false;
 		}
-		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::OBJECT,n_stkObject};
-		stkObject[n_stkObject]=init_value;
 
-
-		n_stkObject++;
+		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::OBJECT,init_value};
 
 		return true;
 
 	}
 
-	CVector **pushVector(CVector * init_value){
+	bool pushVector(CObject ** init_value){
 		if(n_stkVector ==MAX_PER_TYPE_OPERATIONS){
 			print_error_cr("Reached max vector operations");
 			return NULL;
 		}
-		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::VECTOR,n_stkVector};
-		stkVector[n_stkVector]=init_value;
-
-		return &stkVector[n_stkVector++];
+		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::VECTOR,init_value};
+		return true;
 	}
 
-	CScriptFunction **pushFunction(CScriptFunction * init_value){
+	bool pushFunction(CObject ** init_value){
 		if(n_stkFunction ==MAX_PER_TYPE_OPERATIONS){
 			print_error_cr("Reached max function operations");
 			return NULL;
 		}
-		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::FUNCTION,n_stkFunction};
-		stkFunction[n_stkFunction]=init_value;
 
-		return &stkFunction[n_stkFunction++];
+		asm_instruction_expression[current_asm_instruction++]={CVariable::VAR_TYPE::FUNCTION,init_value};
+
+		return true;
 	}
 
 
@@ -188,10 +208,10 @@ public:
 					pushNumber(((CNumber *)var)->m_value);
 					break;
 				case CVariable::VAR_TYPE::VECTOR:
-					pushVector((CVector *)var);
+					pushVector(obj);
 					break;
 				case CVariable::VAR_TYPE::FUNCTION:
-					pushFunction((CScriptFunction *)var);
+					pushFunction(obj);
 					break;
 
 
@@ -209,25 +229,25 @@ public:
 		if(index >= 0 && index < this->current_asm_instruction){
 			switch(asm_instruction_expression[index].type){
 			case CVariable::VAR_TYPE::INTEGER:
-				obj= &stkInteger[asm_instruction_expression[index].index];
+				obj= (CInteger *)(*asm_instruction_expression[index].stkObject);
 				break;
 			case CVariable::VAR_TYPE::NUMBER:
-				obj = &stkNumber[asm_instruction_expression[index].index];
+				obj = (CNumber *)(*asm_instruction_expression[index].stkObject);
 				break;
 			case CVariable::VAR_TYPE::STRING:
-				obj = &stkString[asm_instruction_expression[index].index];
+				obj = (CString *)(*asm_instruction_expression[index].stkObject);
 				break;
 			case CVariable::VAR_TYPE::BOOLEAN:
-				obj = &stkBoolean[asm_instruction_expression[index].index];
+				obj = (CBoolean *)(*asm_instruction_expression[index].stkObject);
 				break;
 			case CVariable::VAR_TYPE::FUNCTION: // function object
-				obj = stkFunction[asm_instruction_expression[index].index];
+				obj = (CScriptFunction *)(*asm_instruction_expression[index].stkObject);
 				break;
 			case CVariable::VAR_TYPE::VECTOR: // vector object ...
-				obj = stkVector[asm_instruction_expression[index].index];
+				obj = (CVector *)(*asm_instruction_expression[index].stkObject);
 				break;
 			case CVariable::VAR_TYPE::OBJECT: // generic object
-				obj = *stkObject[asm_instruction_expression[index].index];
+				obj = (*asm_instruction_expression[index].stkObject);
 				break;
 			default:
 				print_error_cr("Unknown create object from!");
@@ -248,28 +268,28 @@ public:
 		switch(asm_instruction_expression[index].type){
 		case CVariable::VAR_TYPE::INTEGER:
 			obj=NEW_INTEGER();
-			((CInteger *)obj)->m_value = stkInteger[asm_instruction_expression[index].index].m_value;
+			((CInteger *)obj)->m_value = ((CInteger *)(*asm_instruction_expression[index].stkObject))->m_value;
 			break;
 		case CVariable::VAR_TYPE::NUMBER:
 			obj = NEW_NUMBER();
-			((CNumber *)obj)->m_value = stkNumber[asm_instruction_expression[index].index].m_value;
+			((CNumber *)obj)->m_value = ((CNumber *)(*asm_instruction_expression[index].stkObject))->m_value;
 			break;
 		case CVariable::VAR_TYPE::STRING:
 			obj = NEW_STRING();
-			((CString *)obj)->m_value = stkString[asm_instruction_expression[index].index].m_value;
+			((CString *)obj)->m_value = ((CString *)(*asm_instruction_expression[index].stkObject))->m_value;
 			break;
 		case CVariable::VAR_TYPE::BOOLEAN:
 			obj = NEW_BOOLEAN();
-			((CBoolean *)obj)->m_value = stkBoolean[asm_instruction_expression[index].index].m_value;
+			((CBoolean *)obj)->m_value = ((CBoolean *)(*asm_instruction_expression[index].stkObject))->m_value;
 			break;
 		case CVariable::VAR_TYPE::FUNCTION: // function object
-			obj = stkFunction[asm_instruction_expression[index].index];
+			obj = ((CScriptFunction *)(*asm_instruction_expression[index].stkObject));
 			break;
 		case CVariable::VAR_TYPE::VECTOR: // vector object ...
-			obj = stkVector[asm_instruction_expression[index].index];
+			obj = ((CVector *)(*asm_instruction_expression[index].stkObject));
 			break;
 		case CVariable::VAR_TYPE::OBJECT: // generic object
-			obj = *stkObject[asm_instruction_expression[index].index];
+			obj = *asm_instruction_expression[index].stkObject;
 			break;
 		default:
 			print_error_cr("Unknow create object from!");
@@ -333,7 +353,8 @@ public:
 			}
 
 			// generic object pushed ...
-			stkObject[n_stkObject++]=&irv->m_obj;
+			pushObject(&irv->m_obj);
+			//stkObject[n_stkObject++]=
 			//loadObject(obj);
 
 			//sprintf(print_aux_load_value,"VAR(%s)",value_symbol.c_str());
@@ -389,7 +410,7 @@ public:
 				if(asm_instruction_expression[index_op1].type == CVariable::VAR_TYPE::OBJECT){
 
 					// get pointer object (can be assigned)
-					CObject **obj = stkObject[asm_instruction_expression[index_op1].index];
+					CObject **obj = asm_instruction_expression[index_op1].stkObject;
 					aux_var = NULL;
 
 
@@ -411,9 +432,9 @@ public:
 						case CVariable::VAR_TYPE::INTEGER:
 							if(aux_var == NULL) {print_error_cr("Expected variable type!");return false;}
 							if(aux_var->getVariableType() == CVariable::VAR_TYPE::INTEGER){
-								((CInteger *)aux_var)->m_value=stkInteger[asm_instruction_expression[index_op2].index].m_value;
+								((CInteger *)aux_var)->m_value=((CInteger *)(*asm_instruction_expression[index_op2].stkObject))->m_value;
 							}else if(aux_var->getVariableType() == CVariable::VAR_TYPE::NUMBER){
-								((CNumber *)aux_var)->m_value=stkInteger[asm_instruction_expression[index_op2].index].m_value;
+								((CNumber *)aux_var)->m_value=((CInteger *)(*asm_instruction_expression[index_op2].stkObject))->m_value;
 							}else
 							{
 								print_error_cr("var is not type integer!");
@@ -423,9 +444,9 @@ public:
 						case CVariable::VAR_TYPE::NUMBER:
 							if(aux_var == NULL) {print_error_cr("Expected variable type!");return false;}
 							if(aux_var->getVariableType() == CVariable::VAR_TYPE::INTEGER){
-								((CInteger *)aux_var)->m_value=stkNumber[asm_instruction_expression[index_op2].index].m_value;
+								((CInteger *)aux_var)->m_value=((CNumber *)(*asm_instruction_expression[index_op2].stkObject))->m_value;
 							}else if(aux_var->getVariableType() == CVariable::VAR_TYPE::NUMBER){
-								((CNumber *)aux_var)->m_value=stkNumber[asm_instruction_expression[index_op2].index].m_value;
+								((CNumber *)aux_var)->m_value=((CNumber *)(*asm_instruction_expression[index_op2].stkObject))->m_value;
 							}else
 							{
 								print_error_cr("var is not type number!");
@@ -435,7 +456,7 @@ public:
 						case CVariable::VAR_TYPE::STRING:
 							if(aux_var == NULL) {print_error_cr("Expected variable type!");return false;}
 							if(aux_var->getVariableType() == CVariable::VAR_TYPE::STRING){
-								((CString  *)aux_var)->m_value= stkString[asm_instruction_expression[index_op2].index].m_value;
+								((CString  *)aux_var)->m_value= ((CString *)(*asm_instruction_expression[index_op2].stkObject))->m_value;
 							}else
 							{
 								print_error_cr("var is not type string!");
@@ -446,7 +467,7 @@ public:
 						case CVariable::VAR_TYPE::BOOLEAN:
 							if(aux_var == NULL) {print_error_cr("Expected variable type!");return false;}
 							if(aux_var->getVariableType() == CVariable::VAR_TYPE::BOOLEAN){
-								((CBoolean  *)aux_var)->m_value= stkBoolean[asm_instruction_expression[index_op2].index].m_value;
+								((CBoolean  *)aux_var)->m_value= ((CBoolean *)(*asm_instruction_expression[index_op2].stkObject))->m_value;
 							}else
 							{
 								print_error_cr("var is not type boolean!");
@@ -456,14 +477,15 @@ public:
 
 						// pointer assigment ...
 						case CVariable::VAR_TYPE::VECTOR: // vector object ...
-							*obj = stkVector[asm_instruction_expression[index_op2].index];
-							break;
-						case CVariable::VAR_TYPE::OBJECT: // generic object
-							*obj = *stkObject[asm_instruction_expression[index_op2].index];
+							*obj = ((CVector *)(*asm_instruction_expression[index_op2].stkObject));
 							break;
 						case CVariable::VAR_TYPE::FUNCTION: // function object
-							*obj = stkFunction[asm_instruction_expression[index_op2].index];
+							*obj = ((CScriptFunction *)(*asm_instruction_expression[index_op2].stkObject));
 							break;
+						case CVariable::VAR_TYPE::OBJECT: // generic object
+							*obj = (*asm_instruction_expression[index_op2].stkObject);
+							break;
+
 						default:
 								print_error_cr("Unknow assignment 2!");
 								return false;
@@ -555,9 +577,9 @@ public:
 			case CCompiler::EQU:  // == --> boolean && boolean or string && string or number && number
 
 				if(OP1_AND_OP2_ARE_BOOLEANS) {
-					pushBoolean(stkBoolean[asm_instruction_expression[index_op1].index].m_value == stkBoolean[asm_instruction_expression[index_op2].index].m_value);
+					pushBoolean(LOAD_BOOL_OP(index_op1) == LOAD_BOOL_OP(index_op2));
 				}else if(OP1_AND_OP2_ARE_STRINGS){
-					pushBoolean(stkString[asm_instruction_expression[index_op1].index].m_value == stkString[asm_instruction_expression[index_op2].index].m_value);
+					pushBoolean(LOAD_STRING_OP(index_op1) == LOAD_STRING_OP(index_op2));
 				}else if (OP1_AND_OP2_ARE_NUMBERS){
 					pushBoolean(LOAD_NUM_OP(index_op1) == LOAD_NUM_OP(index_op2));
 				}else{
@@ -585,7 +607,7 @@ public:
 				break;
 			case CCompiler::NOT: // !
 				if (asm_instruction_expression[index_op1].type == CVariable::VAR_TYPE::BOOLEAN){
-					pushBoolean(!stkBoolean[asm_instruction_expression[index_op1].index].m_value);
+					pushBoolean(!LOAD_BOOL_OP(index_op1));
 				}else{
 					print_error_cr("Expected operands 1 as boolean!");
 					return false;
@@ -631,18 +653,18 @@ public:
 					}
 				}else if(OP1_IS_STRING_AND_OP2_IS_NUMBER){ // concatenate string + number
 
-					aux_string =  stkString[asm_instruction_expression[index_op1].index].m_value;
+					aux_string =  LOAD_STRING_OP(index_op1);
 
 					if(asm_instruction_expression[index_op2].type == CVariable::VAR_TYPE::INTEGER)
-						aux_string = aux_string + CStringUtils::intToString(stkInteger[this->asm_instruction_expression[index_op2].index].m_value);
+						aux_string = aux_string + CStringUtils::intToString(LOAD_NUM_OP(index_op2));
 					else
-						aux_string = aux_string + CStringUtils::intToString(stkNumber[this->asm_instruction_expression[index_op2].index].m_value);
+						aux_string = aux_string + CStringUtils::intToString(LOAD_NUM_OP(index_op2));
 
 					pushString(aux_string);
 				}else if(OP1_IS_STRING_AND_OP2_IS_BOOLEAN){ // concatenate string + boolean
 
-					aux_string =  stkString[asm_instruction_expression[index_op1].index].m_value;
-					aux_boolean =  stkBoolean[asm_instruction_expression[index_op2].index].m_value;
+					aux_string =  LOAD_STRING_OP(index_op1);
+					aux_boolean =  LOAD_BOOL_OP(index_op2);
 
 					if(aux_boolean)
 						aux_string = aux_string + "true";
@@ -653,7 +675,7 @@ public:
 
 				}else if(OP1_AND_OP2_ARE_STRINGS){ // concatenate string + boolean
 
-					pushString(stkString[asm_instruction_expression[index_op1].index].m_value+stkString[asm_instruction_expression[index_op2].index].m_value);
+					pushString(LOAD_STRING_OP(index_op1)+LOAD_STRING_OP(index_op2));
 
 				}else{
 					print_error_cr("Expected operands as number+number, string+string, string+number or string + boolean!");
@@ -680,7 +702,7 @@ public:
 				break;*/
 			case CCompiler::LOGIC_AND: // &&
 				if(OP1_AND_OP2_ARE_BOOLEANS) {
-					pushBoolean(stkBoolean[asm_instruction_expression[index_op1].index].m_value && stkBoolean[asm_instruction_expression[index_op2].index].m_value);
+					pushBoolean(LOAD_BOOL_OP(index_op1) && LOAD_BOOL_OP(index_op2));
 				}else{
 					print_error_cr("Expected both operands boolean!");
 					return false;
@@ -688,7 +710,7 @@ public:
 				break;
 			case CCompiler::LOGIC_OR:  // ||
 				if(OP1_AND_OP2_ARE_BOOLEANS) {
-					pushBoolean(stkBoolean[asm_instruction_expression[index_op1].index].m_value || stkBoolean[asm_instruction_expression[index_op2].index].m_value);
+					pushBoolean(LOAD_BOOL_OP(index_op1) || LOAD_BOOL_OP(index_op2));
 				}else{
 					print_error_cr("Expected both operands boolean!");
 					return false;
@@ -696,7 +718,7 @@ public:
 				break;
 			case CCompiler::DIV: // /
 				if(OP1_AND_OP2_ARE_NUMBERS) {
-					if(asm_instruction_expression[index_op1].index == CVariable::NUMBER)
+					if(asm_instruction_expression[index_op1].type == CVariable::NUMBER)
 						pushNumber(LOAD_NUM_OP(index_op1) / LOAD_NUM_OP(index_op2));
 					else
 						pushInteger(LOAD_NUM_OP(index_op1) / LOAD_NUM_OP(index_op2));
@@ -708,7 +730,7 @@ public:
 				break;
 			case CCompiler::MUL: // *
 				if(OP1_AND_OP2_ARE_NUMBERS) {
-					if(asm_instruction_expression[index_op1].index == CVariable::NUMBER)
+					if(asm_instruction_expression[index_op1].type == CVariable::NUMBER)
 						pushNumber(LOAD_NUM_OP(index_op1) * LOAD_NUM_OP(index_op2));
 					else
 						pushInteger(LOAD_NUM_OP(index_op1) * LOAD_NUM_OP(index_op2));
@@ -719,7 +741,7 @@ public:
 				break;
 			case CCompiler::MOD:  // %
 				if(OP1_AND_OP2_ARE_NUMBERS) {
-					if(asm_instruction_expression[index_op1].index == CVariable::NUMBER){
+					if(asm_instruction_expression[index_op1].type == CVariable::NUMBER){
 						pushNumber(fmod(LOAD_NUM_OP(index_op1),LOAD_NUM_OP(index_op2)));
 					}else{
 						pushInteger(fmod(LOAD_NUM_OP(index_op1), LOAD_NUM_OP(index_op2)));
@@ -731,16 +753,16 @@ public:
 
 				break;
 			case CCompiler::AND: // bitwise logic and
-				if((asm_instruction_expression[index_op1].index == CVariable::INTEGER) && (asm_instruction_expression[index_op2].index == CVariable::INTEGER)){
-					pushInteger(stkInteger[asm_instruction_expression[index_op1].index].m_value & stkInteger[asm_instruction_expression[index_op2].index].m_value);
+				if((asm_instruction_expression[index_op1].type == CVariable::INTEGER) && (asm_instruction_expression[index_op2].type == CVariable::INTEGER)){
+					pushInteger(LOAD_INT_OP(index_op1) & LOAD_INT_OP(index_op2));
 				}else{
 					print_error_cr("Expected both operands as integer types!");
 					return false;
 				}
 				break;
 			case CCompiler::OR: // bitwise logic or
-				if((asm_instruction_expression[index_op1].index == CVariable::INTEGER) && (asm_instruction_expression[index_op2].index == CVariable::INTEGER)){
-					pushInteger(stkInteger[asm_instruction_expression[index_op1].index].m_value | stkInteger[asm_instruction_expression[index_op2].index].m_value);
+				if((asm_instruction_expression[index_op1].type == CVariable::INTEGER) && (asm_instruction_expression[index_op2].type == CVariable::INTEGER)){
+					pushInteger(LOAD_INT_OP(index_op1) | LOAD_INT_OP(index_op2));
 				}else{
 					print_error_cr("Expected both operands as integer types!");
 					return false;
@@ -748,24 +770,24 @@ public:
 
 				break;
 			case CCompiler::XOR: // logic xor
-				if((asm_instruction_expression[index_op1].index == CVariable::INTEGER) && (asm_instruction_expression[index_op2].index == CVariable::INTEGER)){
-					pushInteger(stkInteger[asm_instruction_expression[index_op1].index].m_value ^ stkInteger[asm_instruction_expression[index_op2].index].m_value);
+				if((asm_instruction_expression[index_op1].type == CVariable::INTEGER) && (asm_instruction_expression[index_op2].type == CVariable::INTEGER)){
+					pushInteger(LOAD_INT_OP(index_op1) ^ LOAD_INT_OP(index_op2));
 				}else{
 					print_error_cr("Expected both operands as integer types!");
 					return false;
 				}
 				break;
 			case CCompiler::SHL: // shift left
-				if((asm_instruction_expression[index_op1].index == CVariable::INTEGER) && (asm_instruction_expression[index_op2].index == CVariable::INTEGER)){
-					pushInteger(stkInteger[asm_instruction_expression[index_op1].index].m_value << stkInteger[asm_instruction_expression[index_op2].index].m_value);
+				if((asm_instruction_expression[index_op1].type == CVariable::INTEGER) && (asm_instruction_expression[index_op2].type == CVariable::INTEGER)){
+					pushInteger(LOAD_INT_OP(index_op1) << LOAD_INT_OP(index_op2));
 				}else{
 					print_error_cr("Expected both operands as integer types!");
 					return false;
 				}
 				break;
 			case CCompiler::SHR: // shift right
-				if((asm_instruction_expression[index_op1].index == CVariable::INTEGER) && (asm_instruction_expression[index_op2].index == CVariable::INTEGER)){
-					pushInteger(stkInteger[asm_instruction_expression[index_op1].index].m_value >> stkInteger[asm_instruction_expression[index_op2].index].m_value);
+				if((asm_instruction_expression[index_op1].type == CVariable::INTEGER) && (asm_instruction_expression[index_op2].type == CVariable::INTEGER)){
+					pushInteger(LOAD_INT_OP(index_op1) >> LOAD_INT_OP(index_op2));
 				}else{
 					print_error_cr("Expected both operands as integer types!");
 					return false;
@@ -782,7 +804,7 @@ public:
 				break;
 			case CCompiler::JT: // goto if true ... goes end to conditional.
 				if(n_stkBoolean > 0){
-					if(stkBoolean[n_stkBoolean-1].m_value){
+					if(LOAD_BOOL_OP(n_stkBoolean-1)){
 						jmp_to_statment = index_op1;
 					}
 				}else{
@@ -794,8 +816,8 @@ public:
 
 				// check whether signatures matches or not ...
 				// 1. get function object ...
-				if(asm_instruction_expression[index_op1].index == CVariable::FUNCTION){
-					CScriptFunction * fun = stkFunction[asm_instruction_expression[index_op1].index];//[stkInteger[asm_instruction_expression[index_op2].index]];
+				if(asm_instruction_expression[index_op1].type == CVariable::FUNCTION){
+					CScriptFunction * fun = (CScriptFunction *)(*asm_instruction_expression[index_op1].stkObject);//stkFunction[asm_instruction_expression[index_op1].index];//[stkInteger[asm_instruction_expression[index_op2].index]];
 
 					CVirtualMachine::getInstance()->execute(fun, &m_functionArgs);
 				}
@@ -808,11 +830,11 @@ public:
 				break;
 			case CCompiler::VGET: // vector access after each index is processed...
 				// index_op1 is vector, index op2 is index...
-				if(asm_instruction_expression[index_op1].index == CVariable::VECTOR){
-					if(asm_instruction_expression[index_op2].index == CVariable::INTEGER){
+				if(asm_instruction_expression[index_op1].type == CVariable::VECTOR){
+					if(asm_instruction_expression[index_op2].type == CVariable::INTEGER){
 						// determine object ...
-						CVector * vec = stkVector[asm_instruction_expression[index_op1].index];//[stkInteger[asm_instruction_expression[index_op2].index]];
-						int index = stkInteger[asm_instruction_expression[index_op2].index].m_value;
+						CVector * vec = (CVector *)(*asm_instruction_expression[index_op1].stkObject);//[stkInteger[asm_instruction_expression[index_op2].index]];
+						int index = LOAD_NUM_OP(index_op2);
 
 						// check indexes ...
 						if(index < 0 || index >= (int)vec->m_value.size()){
@@ -836,8 +858,8 @@ public:
 
 				break;
 			case CCompiler::VPUSH: // Value push for vector
-				if(asm_instruction_expression[index_op1].index == CVariable::VECTOR){
-					CVector * vec = stkVector[asm_instruction_expression[index_op1].index];
+				if(asm_instruction_expression[index_op1].type == CVariable::VECTOR){
+					CVector * vec = (CVector *)(*asm_instruction_expression[index_op1].stkObject);
 					vec->m_value.push_back(createObjectFromIndex(index_op2));
 				}else{
 					print_error_cr("Expected operand 1 as vector");
@@ -875,13 +897,14 @@ private:
 		MAX_OPERATIONS_PER_EXPRESSION=(MAX_PER_TYPE_OPERATIONS+1)*CVariable::MAX_VAR_TYPES // +1 because
 	};
 
-	CInteger 	stkInteger[MAX_PER_TYPE_OPERATIONS];
-	CNumber		stkNumber[MAX_PER_TYPE_OPERATIONS];
-	CBoolean 	stkBoolean[MAX_PER_TYPE_OPERATIONS];
-	CString  stkString[MAX_PER_TYPE_OPERATIONS];
+	// some stack vars to have fast push
+	CInteger 	*stkInteger[MAX_PER_TYPE_OPERATIONS];
+	CNumber		*stkNumber[MAX_PER_TYPE_OPERATIONS];
+	CBoolean 	*stkBoolean[MAX_PER_TYPE_OPERATIONS];
+	CString  *stkString[MAX_PER_TYPE_OPERATIONS];
 	CVector  *stkVector[MAX_PER_TYPE_OPERATIONS];
 	CScriptFunction *stkFunction[MAX_PER_TYPE_OPERATIONS];
-	CObject  **stkObject[MAX_PER_TYPE_OPERATIONS];
+	//CObject  **stkObject[MAX_PER_TYPE_OPERATIONS]; // all variables references to this ...
 	//CVector	 * vector[MAX_OPERANDS];
 
 	int n_stkInteger;
@@ -893,8 +916,8 @@ private:
 	int n_stkFunction;
 
 	typedef struct{
-		CVariable::VAR_TYPE type;
-		int index;
+		CVariable::VAR_TYPE type; // tells what kind of variable is. By default is object.
+		CObject  **stkObject; // pointer to pointer ables to modify its pointer when is needed
 	}tAleInstructionInfo;
 
 	tAleInstructionInfo asm_instruction_expression[MAX_OPERATIONS_PER_EXPRESSION];
@@ -982,8 +1005,8 @@ bool CVirtualMachine::execute(CScriptFunction *fs, vector<CObject *> * argv){
 
 	CALE ALE; // new ale ?
 
-	print_info_cr("size ALE: %i", sizeof(CALE));
-	return true;
+	//print_info_cr("size ALE: %i", sizeof(CALE));
+	//return true;
 
 
 	for(unsigned s = 0; s < (*m_listStatements).size();){
