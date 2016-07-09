@@ -260,7 +260,7 @@ private:
 	static char * getEndWord(const char *s, int m_line);
 
 
-	static PASTNode preNodePunctuator(tInfoPunctuator * punctuator,PASTNode affected_op);
+	//static PASTNode preNodePunctuator(tInfoPunctuator * punctuator,PASTNode affected_op);
 	//static PASTNode postOperator(tInfoPunctuator * punctuator,PASTNode affected_op);
 
 	static bool printErrorUnexpectedKeywordOrPunctuator(const char *current_string_ptr, int m_line);

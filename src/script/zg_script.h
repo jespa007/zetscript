@@ -8,6 +8,7 @@ class CScriptFunction;
 #include "factory/zg_factory.h"
 
 #include "ast.h"
+#include "CALE.h"
 #include "CVirtualMachine.h"
 #include "CCompiler.h"
 #include "CScriptFunction.h"

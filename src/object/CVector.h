@@ -7,4 +7,6 @@ public:
 	vector<CObject *> m_value;
 
 	CVector();
+
+	~CVector();
 };

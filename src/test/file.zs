@@ -1,19 +1,19 @@
 
 
-
+/*
 function bb(a,b){
 	return a+b;
 }
 
-
+*/
 
 //-----------------------------------------------------------------------------
 
 
 
 var c=0;
-c=c+1;
-/*
+c=c-1;
+
 c++;
 
 c=[0,1];
@@ -21,9 +21,13 @@ c[0]=0;
 
 c[0] = c[0]++ - --c[0]; // l-value dec/inc not allowed.
 
+
 var d = ++[0,1,2,3][1] + ++[[0,4]][0][1]; // a= 2+5= 7
 
+
 function(a,b){ return c+d;}(1,2) + function(n,m){ return 0;}(0,0); // ok functions, error c+d not declared.
+
+/*
 
 
 function aaa(a,b){

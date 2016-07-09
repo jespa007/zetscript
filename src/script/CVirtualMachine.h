@@ -3,7 +3,7 @@
 
 #include "CCompiler.h"
 
-#define MAX_PER_TYPE_OPERATIONS 32
+
 
 
 
@@ -20,7 +20,7 @@ public:
 
 
 
-	bool execute(CScriptFunction *fs, vector<CObject *> * argv=NULL);
+	static bool execute(CScriptFunction *fs, vector<CObject *> * argv=NULL);
 
 private:
 

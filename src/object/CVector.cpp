@@ -5,3 +5,9 @@ CVector::CVector(){
 
 	m_ptr = &m_value;
 }
+
+CVector::~CVector(){
+	/*for(int i = 0; i < m_value.size(); i++){
+		delete m_value[i];
+	}*/
+}

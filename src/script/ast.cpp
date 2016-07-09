@@ -487,7 +487,7 @@ tInfoPunctuator *CAst::checkPostOperatorPunctuator(const char *s){
 
 	return 0;
 }
-
+/*
 PASTNode CAst::preNodePunctuator(tInfoPunctuator * operator_info,PASTNode affected_op){ // can be -,+,! etc...
 
 	// check whether pre/post inc/dec
@@ -509,7 +509,7 @@ PASTNode CAst::preNodePunctuator(tInfoPunctuator * operator_info,PASTNode affect
 	affected_op->parent = op;
 	return op;
 }
-
+*/
 
 
 char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
@@ -521,6 +521,7 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 	int m_startLine = m_line;
 	tInfoKeyword *key_w  = NULL;
 	vector<PASTNode> vector_args_node;
+	CScope *_localScope =  sf != NULL?sf->getScope():NULL; // gets scope...
 
 
 	string symbol_value="";
@@ -606,11 +607,13 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 				 *ast_node_to_be_evaluated = new tASTNode();
 				 (*ast_node_to_be_evaluated)->value_symbol = symbol_value; // is array or function ...
 				 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
+				 (*ast_node_to_be_evaluated)->scope_ptr =_localScope;
 			 }
 
 			 if(*word_str == '('){
 				 if(ast_node_to_be_evaluated != NULL){
 					 (*ast_node_to_be_evaluated)->node_type  = FUNCTION_REF_NODE;
+					 (*ast_node_to_be_evaluated)->scope_ptr =_localScope;
 				 }
 			 }
 
@@ -1092,7 +1095,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 				if(pre_operator!= NULL || post_operator != NULL){ // create pre operator node ...
 
 					if(post_operator!=NULL)
-						*ast_node_to_be_evaluated = preNodePunctuator(post_operator,*ast_node_to_be_evaluated);
+						(*ast_node_to_be_evaluated)->pre_post_operator_info = post_operator; // preNodePunctuator(post_operator,*ast_node_to_be_evaluated);
 
 					if(pre_operator!=NULL){
 						if(post_operator!=NULL){
@@ -1104,7 +1107,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 
 						}
 
-						*ast_node_to_be_evaluated = preNodePunctuator(pre_operator,*ast_node_to_be_evaluated);
+						(*ast_node_to_be_evaluated)->pre_post_operator_info = pre_operator; //preNodePunctuator(pre_operator,*ast_node_to_be_evaluated);
 					}
 				}
 
@@ -1157,9 +1160,10 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 
 
 		if(	ast_node_to_be_evaluated != NULL ){
-			if(pre_operator!=NULL ){
+			(*ast_node_to_be_evaluated)->children[LEFT_NODE]->pre_post_operator_info = pre_operator;
+			/*if(pre_operator!=NULL ){
 				(*ast_node_to_be_evaluated)->children[LEFT_NODE]=preNodePunctuator(pre_operator,(*ast_node_to_be_evaluated)->children[LEFT_NODE]);
-			}
+			}*/
 		}
 
 		if((aux=parseExpression_Recursive(
@@ -1214,10 +1218,11 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 		if(ast_node_to_be_evaluated != NULL){
 			// minus operators has special management because two negatives can be + but sums of negatives works
 			if(operator_group->id == SUB_PUNCTUATOR) {
-				(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=preNodePunctuator(operator_group,(*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
+				//(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=preNodePunctuator(operator_group,(*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
 
 				// override the operator by +
 				operator_group=&defined_operator_punctuator[ADD_PUNCTUATOR];
+				(*ast_node_to_be_evaluated)->children[RIGHT_NODE]->pre_post_operator_info = &defined_operator_punctuator[SUB_PUNCTUATOR];
 			}
 
 			(*ast_node_to_be_evaluated)->node_type = PUNCTUATOR_NODE;
@@ -1571,6 +1576,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 	bool error=false;
 	CScope::tInfoRegisteredVar * irv=NULL;
 	CScriptFunction *object_function=NULL;
+	CScope *_localScope =  sf != NULL?sf->getScope():NULL; // gets scope...
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
@@ -1634,6 +1640,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 			else{ //function node
 				if(ast_node_to_be_evaluated!=NULL){ // save as function object...
 					(*ast_node_to_be_evaluated)->node_type = FUNCTION_OBJECT_NODE;
+					(*ast_node_to_be_evaluated)->scope_ptr = _localScope;
 				}
 			}
 

@@ -1,5 +1,6 @@
 
 #include "ast.cpp"
+#include "CALE.cpp"
 #include "CVirtualMachine.cpp"
 #include "CCompiler.cpp"
 #include "CScope.cpp"

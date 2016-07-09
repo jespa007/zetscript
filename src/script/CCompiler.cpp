@@ -550,7 +550,11 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 	}
 
 
-	if(pre_post_operator_type !=ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR && type!=CVariable::OBJECT){
+	if((pre_post_operator_type ==ASM_PRE_POST_OPERATORS::POST_DEC ||
+		pre_post_operator_type ==ASM_PRE_POST_OPERATORS::POST_INC ||
+		pre_post_operator_type ==ASM_PRE_POST_OPERATORS::PRE_DEC ||
+		pre_post_operator_type ==ASM_PRE_POST_OPERATORS::PRE_INC
+		) && type!=CVariable::OBJECT){
 		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->definedValueline,_node->pre_post_operator_info->str);
 		return false;
 
