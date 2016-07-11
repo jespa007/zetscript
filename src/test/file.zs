@@ -10,7 +10,7 @@ function bb(a,b){
 //-----------------------------------------------------------------------------
 
 
-
+/*
 var c=0;
 c=c-1;
 
@@ -25,9 +25,9 @@ c[0] = c[0]++ - --c[0]; // l-value dec/inc not allowed.
 var d = ++[0,1,2,3][1] + ++[[0,4]][0][1]; // a= 2+5= 7
 
 
-function(a,b){ return c+d;}(1,2) + function(n,m){ return 0;}(0,0); // ok functions, error c+d not declared.
+function(a,b){ return a+b;}(1,2) + function(n,m){ return 0;}(0,0); // ok functions, error c+d not declared.
 
-/*
+
 
 
 function aaa(a,b){
@@ -35,9 +35,9 @@ function aaa(a,b){
 	b=2; // correct (pass by ref)
 }
 
-aaa(0); // warning (2nd parameter is not declared)
+//aaa(0); // warning (2nd parameter is not declared)
 //aaa(0,1); // error. 2nd parameter must be a variable (ref)
-aaa(0,c); // error. 2nd parameter doesn't match vector with integer.
+//aaa(0,c); // error. 2nd parameter doesn't match vector with integer.
 
 //-----------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ var a1 = function(a,b){
 	return 5+6;
 };
 
-a1(0,1, ++c[0]);
+a1(0, ++c[0]);
 
 var g1 = 0;
 
@@ -57,13 +57,15 @@ var d1=++g1;
 //var d1=0+1+2+3;
 //d1=-(--d1);
 
-
+*/
 
 var cc=[ [2+3,2+5+6], [0+1] ];
 
-cc[0+12+3+4+5+6][0]+4+5;
+var i = 0+12+3+4+5+6;
 
-cc[0][0][0]++;
+cc[ 0][0]+4+5;
+
+cc[0][0]++;
 
 
 
@@ -71,7 +73,7 @@ cc[0][0][0]++;
 
 
 var j=0;
-
+/*
 function my_function(a,b){
 
 	return a+b;

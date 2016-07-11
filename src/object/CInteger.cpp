@@ -43,6 +43,10 @@ int *  CInteger::ParsePrimitive(const string & val){
 }
 
 CInteger::CInteger(){
+
+    m_classStr="int";
+    m_pointerClassStr="int";
+
 	m_varType = CVariable::VAR_TYPE::INTEGER;
 	m_value=0;
 	m_ptr=&m_value;

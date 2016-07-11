@@ -2,4 +2,6 @@
 
 CUndefined::CUndefined(){
 
+    m_classStr="undefined";
+    m_pointerClassStr="undefined";
 }

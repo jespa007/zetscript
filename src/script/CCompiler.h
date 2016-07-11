@@ -53,6 +53,7 @@ public:
 		VPOP, // Value pop for vector
 
 		VEC, // Vector object
+		RET, // ret instruction ..
 		MAX_OPERATORS
 
 
@@ -186,7 +187,7 @@ public:
 	//void insert_LoadArrayObject_Instruction(CObject *obj);
 	void insert_ArrayObject_PushValueInstruction(int ref_vec_object_index, int index_instruction_to_push=-1);
 
-	void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction);
+	void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction, tASTNode *_ast);
 
 
 	/**
@@ -196,6 +197,7 @@ public:
 	void insert_ClearArgumentStack_Instruction();
 	void insert_PushArgument_Instruction();
 	void insert_CallFunction_Instruction(int index_call);
+	void insertRet(int index);
 
 
 	bool insertOperatorInstruction(tInfoPunctuator *  op, PASTNode _node, string & error_str, int left, int right=-1);
@@ -209,6 +211,7 @@ public:
 
 	void insertPushScopeInstruction(CScope * _goto_scope);
 	void insertPopScopeInstruction();
+
 
 private:
 	static CCompiler *m_compiler;

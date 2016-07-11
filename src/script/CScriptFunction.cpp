@@ -22,11 +22,12 @@ CScriptFunction::CScriptFunction(CScriptFunction * _parentFunction){
 }
 
 
-CScope::tInfoRegisteredVar *	 CScriptFunction::registerSymbolAsFunctionArgument(const string & var_name){
-	CScope::tInfoRegisteredVar *irv=NULL;
+CScope::tInfoRegisteredVar * CScriptFunction::registerArgument(const string & var_name){
+	CScope::tInfoRegisteredVar * irv;
 
 	if((irv=getScope()->registerSymbol(var_name,-1))!=NULL){
-		m_arg.push_back(irv->m_obj);
+
+		m_arg.push_back(var_name);
 	}
 
 	return irv;
@@ -42,11 +43,20 @@ vector<CScriptFunction *> *	 CScriptFunction::getVectorFunction(){
 	return &m_function;
 }
 
+vector<string> *	 CScriptFunction::getArgVector(){
+
+	return &m_arg;
+}
 
 CObject *	 CScriptFunction::getReturnObject(){
 
 	return returnVariable;
 }
+
+CObject ** CScriptFunction::getReturnObjectPtr(){
+	return &returnVariable;
+}
+
 
 void CScriptFunction::setReturnObject(CObject *obj){
 
@@ -66,14 +76,27 @@ CScriptFunction::TYPE CScriptFunction::getType(){
 	return m_type;
 }
 
-CObject *CScriptFunction::getArg(const string & var_name){
-	for(unsigned i = 0; i < m_arg.size(); i++){
+CObject **CScriptFunction::getArg(const string & var_name){
+	CScope::tInfoRegisteredVar *irv = m_scope->getInfoRegisteredSymbol(var_name);
+
+	if(irv != NULL){
+		return &irv->m_obj;
+	}
+	/*for(unsigned i = 0; i < m_arg.size(); i++){
 		if(m_arg[i]->getName() == var_name){
 			return m_arg[i];
 		}
-	}
+	}*/
 	return NULL;
 }
+
+CObject **CScriptFunction::getArg(unsigned index){
+
+	if(index < 0 || index > m_arg.size()){ print_error_cr("out of bounds"); return NULL;}
+
+	return getArg(m_arg[index]);
+}
+
 
 CScope *CScriptFunction::getScope(){
 	return m_scope;
@@ -86,6 +109,7 @@ PASTNode CScriptFunction::getRootAst(){
 PASTNode * CScriptFunction::getRootAstPtr(){
 	return &m_rootAst;
 }
+
 
 CScriptFunction *CScriptFunction::getParent(){
 	return m_parentFunction;

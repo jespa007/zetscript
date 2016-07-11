@@ -321,13 +321,17 @@ public:
 	CScriptFunction(CScriptFunction *_parentFunction=NULL);
 	vector<CCompiler::tInfoStatementOp> * getCompiledCode();
 
-	CScope::tInfoRegisteredVar * registerSymbolAsFunctionArgument(const string & var_name);
+	CScope::tInfoRegisteredVar * registerArgument(const string & var_name);
 	void 	 addFunction(CScriptFunction *sf);
 	vector<CScriptFunction *> *	 getVectorFunction();
+	vector<string> *	 getArgVector();
 
-	CObject *getArg(const string & var_name);
+	CObject **getArg(const string & var_name);
+	CObject **getArg(unsigned index);
 
-	CObject *getReturnObject();
+	CObject 	*getReturnObject();
+	CObject ** 	 getReturnObjectPtr();
+
 	void setReturnObject(CObject *);
 	void setupAsFunctionPointer(void * _pointer_function);
 
@@ -339,6 +343,7 @@ public:
 
 	PASTNode getRootAst();
 	PASTNode * getRootAstPtr();
+
 
 	/*
 	 * eval: Evaluates its body.
@@ -362,7 +367,7 @@ private:
 	 */
 	void * pointer_function;
 
-	vector<CObject *> m_arg;
+	vector<string> m_arg;
 	vector<CScriptFunction *> m_function;
 
 

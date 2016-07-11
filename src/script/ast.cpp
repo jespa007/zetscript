@@ -677,6 +677,7 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 
 				PASTNode args_node=NULL;
 				char *aux_ptr;
+				int ini_line_access=m_startLine;
 
 				if((aux_ptr=parseArgs('[', ']',aux,m_startLine,sf,ast_node_to_be_evaluated != NULL ? &args_node: NULL)) != NULL){
 					if( ast_node_to_be_evaluated != NULL){
@@ -686,6 +687,7 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 						}
 						args_obj->children.push_back(args_node);
 						args_node->node_type = NODE_TYPE::ARRAY_INDEX_NODE;
+						args_node->definedValueline =ini_line_access;
 					}
 
 					aux =  CStringUtils::IGNORE_BLANKS(aux_ptr,m_startLine);
@@ -1701,7 +1703,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 						}
 
 						// ok register symbol into the object function ...
-						object_function->registerSymbolAsFunctionArgument(value_symbol);//getScope()->registerSymbol(value_symbol,m_line);
+						object_function->registerArgument(value_symbol);//getScope()->registerSymbol(value_symbol,m_line);
 					}
 					aux_p=end_var;
 					aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);

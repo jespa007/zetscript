@@ -18,7 +18,7 @@ public:
 
 
 
-	bool performInstruction(int idx_instruction, CCompiler::tInfoAsmOp * instruction,int & jmp_to_statment);
+	bool performInstruction(int idx_instruction, CCompiler::tInfoAsmOp * instruction,CScriptFunction *sf, int & jmp_to_statment);
 
 	void reset();
 
@@ -62,7 +62,7 @@ private:
 		bool isAssignable;
 	}tAleInstructionInfo;
 
-	tAleInstructionInfo asm_instruction_expression[MAX_OPERATIONS_PER_EXPRESSION];
+	tAleInstructionInfo result_object_instruction[MAX_OPERATIONS_PER_EXPRESSION];
 	int current_asm_instruction;
 
 	vector<CObject *> m_functionArgs;
@@ -75,6 +75,7 @@ private:
 	bool pushObject(CObject ** , bool isAssignable=false);
 	bool pushVector(CObject * init_value);
 	bool pushFunction(CObject ** init_value);
+	bool assignObjectFromIndex(CObject **obj, int index);
 
 	CObject * getObjectFromIndex(int index);
 	CObject * createObjectFromIndex(int index);

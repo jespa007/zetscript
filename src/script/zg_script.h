@@ -123,7 +123,7 @@ public:
 
 
 			// register symbol ...
-			if((rs=sf->registerSymbolAsFunctionArgument(param_name))==NULL)
+			if((rs=sf->registerArgument(param_name))==NULL)
 				return;
 
 			// set explicit ...

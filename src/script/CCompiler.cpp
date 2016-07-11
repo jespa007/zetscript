@@ -51,18 +51,10 @@ void CCompiler::destroySingletons(){
 	if(m_compiler != NULL){
 		delete m_compiler;
 		m_compiler=NULL;
-
-	/*	for(map<string,CObject *>::iterator it=constant_pool->begin(); it != constant_pool->end(); it++){
-			if(it->second != NULL){
-				delete it->second;
-			}
-		}*/
-
 		constant_pool->clear();
 		delete constant_pool;
 		constant_pool = NULL;
 	}
-
 }
 
 const char * CCompiler::getStrTypeLoadValue(CCompiler::tInfoAsmOp * iao){
@@ -112,7 +104,6 @@ const char * CCompiler::getStrMovVar(CCompiler::tInfoAsmOp * iao){
 		value_symbol = iao->ast_node->value_symbol;
 	}
 
-
 	sprintf(print_aux_load_value,"VAR(%s)",value_symbol.c_str());
 
 	return print_aux_load_value;
@@ -161,8 +152,6 @@ void CCompiler::printGeneratedCode_Recursive(CScriptFunction *fs){
 					break;
 
 				}
-
-
 			switch((*asm_op_statment)[i]->operator_type){
 			case  LOAD:
 				printf("[%02i:%02i]\t%s\t%s%s%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,pre.c_str(),getStrTypeLoadValue((*asm_op_statment)[i]),post.c_str());
@@ -198,7 +187,6 @@ void CCompiler::printGeneratedCode_Recursive(CScriptFunction *fs){
 			}
 		}
 	}
-
 	// and then print its functions ...
 	vector<CScriptFunction *> * m_vf = fs->getVectorFunction();
 
@@ -213,7 +201,6 @@ void CCompiler::printGeneratedCode_Recursive(CScriptFunction *fs){
 			printGeneratedCode_Recursive((*m_vf)[j]);
 		}
 	}
-
 }
 
 void CCompiler::printGeneratedCode(CScriptFunction *fs){
@@ -230,17 +217,19 @@ CCompiler::CCompiler(){
 	m_currentScriptFunction = NULL;
 	m_treescope = NULL;
 
-	def_operator[NOP]         ={"NOP",NOP,0};
-	def_operator[MOV]         ={"MOV",MOV,2}; // mov expression to var
-	def_operator[LOAD]        ={"LOAD",LOAD,1}; // primitive value like number/string or boolean...
-	def_operator[EQU]         ={"EQU",EQU,2};  // ==
-	def_operator[LT]          ={"LT",LT,2};  // <
-	def_operator[LTE]         ={"LTE",LTE,2};  // <=
-	def_operator[NOT]         ={"NOT",NOT,1}; // !
-	def_operator[GT]          ={"GT",GT,2};  // >
-	def_operator[GTE]         ={"GTE",GTE,2}; // >=
+	//		VAR  			|	STR   | ID | NUM OP
+	//----------------------+---------+----+-------
+	def_operator[NOP]         ={"NOP" ,NOP ,0      };
+	def_operator[MOV]         ={"MOV" ,MOV ,2}; // mov expression to var
+	def_operator[LOAD]        ={"LOAD",LOAD ,1}; // primitive value like number/string or boolean...
+	def_operator[EQU]         ={"EQU" ,EQU ,2};  // ==
+	def_operator[LT]          ={"LT"  ,LT ,2};  // <
+	def_operator[LTE]         ={"LTE" ,LTE ,2};  // <=
+	def_operator[NOT]         ={"NOT" ,NOT,1}; // !
+	def_operator[GT]          ={"GT"  ,GT,2};  // >
+	def_operator[GTE]         ={"GTE" ,GTE,2}; // >=
 	//def_operator[NEG]         ={"NEG",NEG,1}; // !
-	def_operator[ADD]         ={"ADD",ADD,2}; // +
+	def_operator[ADD]         ={"ADD" ,ADD,2}; // +
 	//def_operator[PRE_INC]     ={"PRE_INC",PRE_INC,1};// ++
 	//def_operator[POST_INC]    ={"POST_INC",POST_INC,1}; // ++
 	//def_operator[PRE_DEC]     ={"PRE_DEC",PRE_DEC,1}; // ++
@@ -268,125 +257,14 @@ CCompiler::CCompiler(){
 
 	def_operator[VPUSH]={"VPUSH",VPUSH,1}; // Value push for vector
 	def_operator[VPOP]={"VPOP",VPOP,1}; // Value pop for vector
+	def_operator[RET]={"RET",RET,1}; // Value pop for vector
 
 }
-
-
-
-//------------------------------------------------------------------------------------------------------------------
-//
-// VARIABLE
-//
-/*
-CCompiler::tInfoRegisteredVar * CCompiler::existRegisteredSymbolRecursive(const string & var_name){
-	if(m_registeredSymbol.count(var_name)==0){ // not exit but we will deepth through parents ...
-		CScope * parent = lc->getParent();
-		if(parent != NULL){
-			return existRegisteredSymbolRecursive(var_name, parent);
-		}
-		return NULL;
-	}else{
-		return m_registeredSymbol[var_name];
-		//print_error_cr("variable %s already registered at line %i",var_name.c_str(),lc->m_registeredSymbol[var_name]->m_line);
-	}
-
-	return NULL;
-}
-
-CCompiler::tInfoRegisteredVar * CCompiler::existRegisteredSymbol(const string & var_name){
-	if(m_registeredSymbol.count(var_name)==1){
-		return m_registeredSymbol[var_name];
-	}
-
-	return NULL;
-
-}
-
-
-CObject *CCompiler::getRegisteredVariable(const string & var_name, bool print_msg){
-	tInfoRegisteredVar * irv;
-	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
-
-		return irv->m_obj;
-	}else{
-		if(print_msg){
-			print_error_cr("var \"%s\" doesn't exist!", var_name.c_str());
-		}
-	}
-
-	return NULL;
-
-}
-
-
-bool CCompiler::registerSymbol(const string & var_name, int m_line){
-	tInfoRegisteredVar * irv;
-	if((irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
-		irv = new tInfoRegisteredVar;
-		irv->m_line = m_line;
-		irv->m_obj = m_defaultVar;
-		m_registeredSymbol[var_name]=irv;
-		return true;
-	}else{
-		print_error_cr("error var \"%s\" already registered at line %i!", var_name.c_str(), irv->m_line);
-	}
-
-	return false;
-}
-
-bool CCompiler::defineSymbol(const string & var_name, CObject *obj){
-
-	tInfoRegisteredVar * irv;
-	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
-		irv->m_obj=obj;
-		irv->m_obj->setName(var_name);
-		return true;
-	}else{
-		print_error_cr("error var \"%s\" is not registered!", var_name.c_str());
-	}
-	return false;
-}
-*/
-
-
 
 //------------------------------------------------------------------------------------------------------------------
 //
 // COMPILE COMPILER MANAGEMENT
 //
-/*
-string  CCompiler::getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	string result="unknow";
-
-	if(instruction >=0 && instruction < ptr_current_statement_op->asm_op.size()){
-		switch(ptr_current_statement_op->asm_op[instruction]->variable_type){
-		default:
-		case CCompiler::NOT_DEFINED:
-			break;
-		case CVariable::OBJECT:
-			result= (((CObject *)ptr_current_statement_op->asm_op[instruction]->result_obj)->getPointerClassStr()); // type result..
-			break;
-		case CCompiler::NUMBER:
-			result= CNumberFactory::getPointerTypeStr();
-			break;
-		case CCompiler::INTEGER:
-			result= CIntegerFactory::getPointerTypeStr();
-			break;
-		case CCompiler::STRING:
-			result= CStringFactory::getPointerTypeStr();
-			break;
-		case CCompiler::BOOL:
-			result= CBooleanFactory::getPointerTypeStr();
-			break;
-		}
-	}
-	else{
-		print_error_cr("index out of bounds");
-	}
-	return result;
-}*/
-
 int CCompiler::getCurrentInstructionIndex(){
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	return ptr_current_statement_op->asm_op.size()-1;
@@ -403,38 +281,12 @@ CCompiler::tInfoStatementOp * CCompiler::newStatment(){
 
 	return  &(*m_currentListStatements)[m_currentListStatements->size()-1];
 }
-/*
-bool *  CCompiler::getObjectResultCurrentStatmentAsBoolean(){
-
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	bool *result=NULL;
-	unsigned instruction = ptr_current_statement_op->asm_op.size()-1;
-
-	if(instruction >=0 && instruction < ptr_current_statement_op->asm_op.size()){
-		if(ptr_current_statement_op->asm_op[instruction]->variable_type == CCompiler::BOOL){
-			result= (((bool *)ptr_current_statement_op->asm_op[instruction]->result_obj)); // type result..
-		}else{
-			print_error_cr("Result type is not boolean");
-		}
-	}
-	else{
-		print_error_cr("index out of bounds");
-	}
-	return result;
-}
-*/
 
 bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
-
 
 	string v = _node->value_symbol;
 	int m_var_at_line = _node->definedValueline;
 	ASM_PRE_POST_OPERATORS pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
-	/*CNumber *num_obj;
-	CInteger *int_obj;
-	CString *str_obj;
-	CBoolean *bool_obj;
-	string type_value="CONST";*/
 
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	CObject *obj, *get_obj;
@@ -468,9 +320,6 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		}else{
 			addConstant(v,obj);
 		}
-
-
-
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
 		type=CVariable::STRING;
@@ -513,42 +362,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		// if object check whether has pre/post inc/dec
 
 		obj = info_var->m_obj;
-
-		/*if(dynamic_cast<CScriptFunction *>(obj)!= NULL){
-			type=CCompiler::FUNCTION;
-		}
-		else
-		if(dynamic_cast<CVector *>(obj)!= NULL){
-			type=CCompiler::VECTOR;
-		}*/
-
-
-
-
-		/*addConstantIfNotExist(v,info_var->m_obj);
-
-		CObject *var = info_var->m_obj;
-		obj = var;
-		type_value="OBJ";
-		if((int_obj=dynamic_cast<CInteger *>(var))!=NULL){ // else it will store the value ...
-			type_value="INT";
-			type = CCompiler::INTEGER;
-			obj=&int_obj->m_value;
-		}else if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){
-			type_value="FLOAT";
-			type = CCompiler::NUMBER;
-			obj=&num_obj->m_value;
-		}else if((bool_obj=dynamic_cast<CBoolean *>(var))!=NULL){
-			type_value="BOOL";
-			type = CCompiler::BOOL;
-			obj=&bool_obj->m_value;
-		}else if((str_obj=dynamic_cast<CString *>(var))!=NULL){
-			type_value="STRING";
-			type = CCompiler::STRING;
-			obj=&str_obj->m_value;
-		}*/
 	}
-
 
 	if((pre_post_operator_type ==ASM_PRE_POST_OPERATORS::POST_DEC ||
 		pre_post_operator_type ==ASM_PRE_POST_OPERATORS::POST_INC ||
@@ -560,25 +374,17 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 	}
 
-	//if(obj != NULL){
+	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 
-		CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	asm_op->variable_type=type;
+	asm_op->index_op1=load_type;
+	asm_op->index_op2=(int)obj;
+	asm_op->ast_node=_node;
+	asm_op->pre_post_operator_type=pre_post_operator_type;
 
-		asm_op->variable_type=type;
-		asm_op->index_op1=load_type;
-		asm_op->index_op2=(int)obj;
-		asm_op->ast_node=_node;
-		asm_op->pre_post_operator_type=pre_post_operator_type;
+	asm_op->operator_type=CCompiler::ASM_OPERATOR::LOAD;
+	ptr_current_statement_op->asm_op.push_back(asm_op);
 
-		asm_op->operator_type=CCompiler::ASM_OPERATOR::LOAD;
-		//asm_op->result_str = v;
-		//asm_op->op1 =
-
-
-		//printf("[%02i:%02i] %s \t%s\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),type_value.c_str(),v.c_str());
-		ptr_current_statement_op->asm_op.push_back(asm_op);
-
-	//}*/
 	return true;
 }
 
@@ -598,118 +404,15 @@ bool CCompiler::insertMovVarInstruction(int left_index, int right_index){
 		return false;
 	}
 
-	/*string var_name = _node->value_symbol;
-	int index_object = 0;
-
-	if(_node->node_type == CALLING_OBJECT_NODE){
-
-
-		int kkk=0;
-		//index_object=gacExpression_ArrayAccess(_node, _lc);
-
-		//var_name = _node->children[0]->value_symbol;
-
-
-	}
-	else{*/
-
-	/*	CScope::tInfoRegisteredVar * info_var = _lc->getInfoRegisteredSymbol(var_name,false);
-		if(info_var == NULL){
-			print_error_cr("undeclared variable \"%s\"");
-			return false;
-		}
-
-
-		index_object = (int)info_var->m_obj;*/
-	//}
-
-
-
 	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 	asm_op->index_op1 = left_index;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 =  right_index;
 	//asm_op->symbol_name="";
 	asm_op->operator_type=CCompiler::ASM_OPERATOR::MOV;
 
-
-
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 	return true;
-
-	//string op="=";
-	/*string left_type_ptr = var->getPointerClassStr();
-	CNumber *num_obj;
-	CInteger * int_obj;
-	CString *str_obj;
-	CBoolean *bool_obj;
-
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-
-	if(right <0 || (unsigned)right >= ptr_current_statement_op->asm_op.size()){
-		print_error_cr("ERROR: right operant is out of internal stack (%i,%i) ",right,ptr_current_statement_op->asm_op.size());
-		return false;
-	}
-
-	if(right >= 0){ // insert both op...
-
-		CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
-		asm_op->variable_type = CVariable::OBJECT; // this only stores pointer...
-		asm_op->result_obj=var;
-
-		if((int_obj=dynamic_cast<CInteger *>(var))!=NULL){ // else it will store the value ...
-				asm_op->variable_type = CCompiler::INTEGER;
-				asm_op->result_obj=&int_obj->m_value;
-		}else if((num_obj=dynamic_cast<CNumber *>(var))!=NULL){ // else it will store the value ...
-			asm_op->variable_type = CCompiler::NUMBER;
-			asm_op->result_obj=&num_obj->m_value;
-		}else if((bool_obj=dynamic_cast<CBoolean *>(var))!=NULL){
-			asm_op->variable_type = CCompiler::BOOL;
-			asm_op->result_obj=&bool_obj->m_value;
-		}else if((str_obj=dynamic_cast<CString *>(var))!=NULL){
-			asm_op->variable_type = CCompiler::STRING;
-			asm_op->result_obj=&str_obj->m_value;
-		}
-
-		asm_op->index_left = -1;
-		asm_op->index_right = right;
-		asm_op->operator_type = CCompiler::ASM_OPERATOR::MOV;
-		asm_op->result_str =var->getName();
-
-		//printf("[%02i:%02i] MOV \tV(%s),[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),var->getName().c_str(),m_currentListStatements->size(),right);
-
-		ptr_current_statement_op->asm_op.push_back(asm_op);
-
-
-	}else{
-		print_error_cr("ERROR: right operand is out of internal stack ");
-		return false;
-	}
-
-	return true;*/
-}
-
-void CCompiler::insertPushScopeInstruction(CScope * _goto_scope){
-	/*CCompiler::tInfoStatementOp op_push_scope;
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
-	asm_op->result_obj = _goto_scope;
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::PUSH_SCOPE;
-	op_push_scope.asm_op.push_back(asm_op);
-
-	m_listStatements.push_back(op_push_scope);*/
-}
-
-
-void CCompiler::insertPopScopeInstruction(){
-/*
-	CCompiler::tInfoStatementOp op_pop_scope;
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
-	asm_op->result_obj = this->m_parentScope;
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::POP_SCOPE;
-	op_pop_scope.asm_op.push_back(asm_op);
-
-	m_listStatements.push_back(op_pop_scope);*/
-
 }
 
 CCompiler::tInfoAsmOp * CCompiler::insert_JMP_Instruction(int jmp_statement){
@@ -733,8 +436,6 @@ CCompiler::tInfoAsmOp * CCompiler::insert_JNT_Instruction(int jmp_statement){
 
 	//printf("[%02i:%02i]\tJNT\t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
-
-
 
 	return asm_op;
 }
@@ -771,12 +472,13 @@ void CCompiler::insert_CreateArrayObject_Instruction(){
 
 }
 
-void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instrucction){
+void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instrucction, tASTNode *_ast){
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
 	asm_op->index_op1 = vec_object;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 = index_instrucction;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=CCompiler::ASM_OPERATOR::VGET;
+	asm_op->ast_node = _ast;
 	asm_op->variable_type = CVariable::OBJECT;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -792,16 +494,6 @@ void CCompiler::insert_ClearArgumentStack_Instruction(){
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
-/*
-void CCompiler::insert_LoadFunctionObject_Instruction(CObject *obj){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
-	asm_op->index_op1 = (int)obj;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::FUN;
-	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
-	ptr_current_statement_op->asm_op.push_back(asm_op);
-
-}*/
 
 void CCompiler::insert_PushArgument_Instruction(){
 	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
@@ -822,7 +514,15 @@ void CCompiler::insert_CallFunction_Instruction(int  index_call){
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
+void CCompiler::insertRet(int index){
+	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	asm_op->index_op1 = index;//&((*m_currentListStatements)[dest_statment]);
+	//asm_op->symbol_name="";
+	asm_op->operator_type=CCompiler::ASM_OPERATOR::RET;
 
+	ptr_current_statement_op->asm_op.push_back(asm_op);
+}
 
 
 void CCompiler::insert_ArrayObject_PushValueInstruction(int ref_vec_object_index, int index_instruciont_to_push){
@@ -836,8 +536,6 @@ void CCompiler::insert_ArrayObject_PushValueInstruction(int ref_vec_object_index
 	asm_op->operator_type=CCompiler::ASM_OPERATOR::VPUSH;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
-
-
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 CCompiler::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
@@ -964,65 +662,8 @@ CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op)
 	}
 	return CCompiler::ASM_OPERATOR::INVALID_OP;
 }
-/*
-CCompiler::ASM_OPERATOR CCompiler::getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
-
-	variable_type = CVariable::STRING;
-
-	switch(op){
-	default:
-		return CCompiler::ASM_OPERATOR::INVALID_OP;
-	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
-		return CCompiler::CAT;
-	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::EQU;
-	}
-	return CCompiler::ASM_OPERATOR::INVALID_OP;
-}
-
-CCompiler::ASM_OPERATOR CCompiler::getStringOperatorId_OneOp(PUNCTUATOR_TYPE op){
-
-	return CCompiler::ASM_OPERATOR::INVALID_OP;
-}
-*/
 
 CCompiler::ASM_OPERATOR CCompiler::puntuator2asmop(tInfoPunctuator * op){
-	/*
-	INVALID_OP=-1,
-	NOP=0,
-	MOV, // mov expression to var
-	LOAD, // primitive value like number/string or boolean...
-	EQU,  // ==
-	LT,  // <
-	LTE,  // <=
-	NOT, // !
-	GT,  // >
-	GTE, // >=
-	NEG, // !
-	ADD, // +
-	PRE_INC, // ++
-	POST_INC, // ++
-	PRE_DEC, // ++
-	POST_DEC, // ++
-	LOGIC_AND, // &&
-	LOGIC_OR,  // ||
-	DIV, // /
-	MUL, // *
-	MOD,  // %
-	CAT,  // str+str
-	AND, // bitwise logic and
-	OR, // bitwise logic or
-	XOR, // logic xor
-	SHL, // shift left
-	SHR, // shift right
-	PUSH_SCOPE,
-	POP_SCOPE,
-	JMP,
-	JNT, // goto if not true ... goes end to conditional.
-	JT, // goto if true ... goes end to conditional.
-	MAX_OPERATORS
-*/
 
 	switch(op->id){
 	default:
@@ -1097,160 +738,13 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 
 		return true;
 	}
-
-
-	/*if(left <0 || (unsigned)left >= ptr_current_statement_op->asm_op.size()){
-		error_str = CStringUtils::formatString("left operant is out of internal stack (%i,%i) ",left,ptr_current_statement_op->asm_op.size());
-		return false;
-	}
-
-	string t_left = getUserTypeResultCurrentStatmentAtInstruction(left);
-	string t_right = "unknow";
-	if(right>=0){
-		t_right = getUserTypeResultCurrentStatmentAtInstruction(right);
-	}
-
-	CCompiler::ASM_OPERATOR id_op;
-	CCompiler::VAR_TYPE variable_type=CCompiler::NOT_DEFINED;
-	void *res_obj=NULL;
-
-
-	if(left >=0 && right >= 0){ // insert both op...
-
-		if(((t_left == CIntegerFactory::getPointerTypeStr())) &&
-						((t_right == CIntegerFactory::getPointerTypeStr()))){
-					if((id_op=getIntegerOperatorId_TwoOps(op->id,variable_type))==CCompiler::ASM_OPERATOR::INVALID_OP){
-						error_str = CStringUtils::formatString("undefined operator %s",op->str);
-						return false;
-					}
-
-		}else if(((t_left == CNumberFactory::getPointerTypeStr()) ) &&
-				((t_right == CNumberFactory::getPointerTypeStr()) )){
-			if((id_op=getNumberOperatorId_TwoOps(op->id,variable_type))==CCompiler::ASM_OPERATOR::INVALID_OP){
-				error_str = CStringUtils::formatString("undefined operator %s",op->str);
-				return false;
-			}
-
-		}else if(t_left== CStringFactory::getPointerTypeStr()){
-
-			if((id_op=getStringOperatorId_TwoOps(op->id,variable_type))==CCompiler::ASM_OPERATOR::INVALID_OP){
-				error_str = CStringUtils::formatString("undefined operator %s",op->str);
-				return false;
-			}
-
-		}else if((t_left == CBooleanFactory::getPointerTypeStr()) && t_right == CBooleanFactory::getPointerTypeStr()){
-			if((id_op=getBoleanOperatorId_TwoOps(op->id, variable_type))==CCompiler::ASM_OPERATOR::INVALID_OP){
-				error_str = CStringUtils::formatString("undefined operator %s",op->str);
-				return false;
-			}
-		}else{
-			error_str = CStringUtils::formatString("Operator %s: not compatible left value as %s with right value as %s",op->str,t_left.c_str(),t_right.c_str());
-			return false;
-		}
-
-		switch(variable_type){
-		default:
-		case CCompiler::NOT_DEFINED:
-			error_str = CStringUtils::formatString("unknow result type");
-			return false;
-			break;
-		case CCompiler::NUMBER:
-			res_obj = new float;
-			break;
-		case CCompiler::INTEGER:
-			res_obj = new int;
-			break;
-		case CCompiler::STRING:
-			res_obj = new string;
-			break;
-		case CCompiler::BOOL:
-			res_obj = new bool;
-			break;
-
-		}
-
-		CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
-		//asm_op->type_op=OPERATOR;
-		asm_op->index_left = left;
-		asm_op->index_right = right;
-
-
-		//-----------------------
-		asm_op->variable_type = variable_type;
-		asm_op->operator_type = id_op;
-		asm_op->result_obj = res_obj;
-
-	//	printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CCompiler::def_operator[id_op].op_str,m_currentListStatements->size(),left,m_currentListStatements->size(),right);
-
-		ptr_current_statement_op->asm_op.push_back(asm_op);
-
-
-	}else if(left >=0){ // insert one operand
-
-			if((t_left == CIntegerFactory::getPointerTypeStr()) ){
-						if((id_op=getNumberOperatorId_OneOp(op->id))==CCompiler::ASM_OPERATOR::INVALID_OP){
-							error_str = CStringUtils::formatString("undefined operator %s for number type",op->str);
-							return false;
-						}
-						res_obj = new int;
-						variable_type = CCompiler::INTEGER;
-
-			}else if((t_left == CNumberFactory::getPointerTypeStr()) ){
-				if((id_op=getNumberOperatorId_OneOp(op->id))==CCompiler::ASM_OPERATOR::INVALID_OP){
-					error_str = CStringUtils::formatString("undefined operator %s for number type",op->str);
-					return false;
-				}
-				res_obj = new float;
-				variable_type = CCompiler::NUMBER;
-
-			}else if(t_left== CStringFactory::getPointerTypeStr()){
-
-				if((id_op=getStringOperatorId_OneOp(op->id))==CCompiler::ASM_OPERATOR::INVALID_OP){
-					error_str = CStringUtils::formatString("undefined operator %s for string type",op->str);
-					return false;
-				}
-				res_obj = new string;
-				variable_type = CCompiler::STRING;
-			}else if((t_left == CBooleanFactory::getPointerTypeStr())){
-				if((id_op=getBoleanOperatorId_OneOp(op->id))==CCompiler::ASM_OPERATOR::INVALID_OP){
-					error_str = CStringUtils::formatString("undefined operator %s for boolean type",op->str);
-					return false;
-				}
-				res_obj = new bool;
-				variable_type = CCompiler::BOOL;
-			}else{
-				error_str = CStringUtils::formatString("not compatible %s %s",t_left.c_str(),t_right.c_str());
-				return false;
-			}
-
-			CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
-			//asm_op->type_op=OPERATOR;
-			asm_op->operator_type = id_op;
-			asm_op->variable_type = variable_type;
-			asm_op->result_obj = res_obj;
-			asm_op->index_left = left;
-			asm_op->index_right = -1;
-
-		//	printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),CCompiler::def_operator[id_op].op_str,m_currentListStatements->size(),left);
-
-			ptr_current_statement_op->asm_op.push_back(asm_op);
-
-	}else{
-		error_str = CStringUtils::formatString("ERROR: both operant is out of internal stack ");
-		return false;
-	}*/
 	return true;
 }
-
-
 
 //------------------------------------------------------------------------------------------------------------------
 //
 // COMPILE EXPRESSIONS AND GENERATE ITS ASM
 //
-
-
-
 int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 {
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
@@ -1284,12 +778,12 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 		if(array_acces->children [k]->node_type == ARRAY_INDEX_NODE){
 			if(array_acces->children [k]->children.size() == 1){
 				// check whether is expression node...
-				if((gacExpression(array_acces->children [k]->children[0], _lc,CCompiler::getCurrentInstructionIndex())) == -1){
+				if((gacExpression(array_acces->children [k]->children[0], _lc,CCompiler::getCurrentInstructionIndex()+1)) == -1){
 					return -1;
 				}
 
 				// insert vector access instruction ...
-				insert_ArrayAccess_Instruction(vec,CCompiler::getCurrentInstructionIndex());
+				insert_ArrayAccess_Instruction(vec,CCompiler::getCurrentInstructionIndex(),array_acces->children [k]);
 				vec = CCompiler::getCurrentInstructionIndex();
 
 			}else{
@@ -1315,9 +809,7 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 
 	// return last instruction where was modified
 	return CCompiler::getCurrentInstructionIndex();
-
 }
-
 
 int CCompiler::gacExpression_ArrayObject_Recursive(PASTNode _node, CScope *_lc){
 
@@ -1362,8 +854,6 @@ int CCompiler::gacExpression_ArrayObject(PASTNode _node, CScope *_lc)
 
 		insert_ArrayObject_PushValueInstruction(index_created_vec,ini_instruction);
 	}
-
-
 	return index_created_vec;//CCompiler::getCurrentInstructionIndex();
 }
 
@@ -1380,11 +870,8 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
 		return -1;
 	}
 
-
 	return CCompiler::getCurrentInstructionIndex();
 }
-
-
 
 int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 {
@@ -1394,13 +881,6 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 	if(_node->children[0]->node_type != FUNCTION_REF_NODE && _node->children[0]->node_type != FUNCTION_OBJECT_NODE){print_error_cr("Node is not FUNCTION_OBJECT_NODE type"); return -1;}
 	if(_node->children[1]->node_type != ARGS_PASS_NODE){print_error_cr("Function has no index nodes "); return -1;}
 	int r=0;
-
-
-	/*if(_node->children[0]->node_type == FUNCTION_OBJECT_NODE){ // must first create the object ...
-		if((r=gacExpression_FunctionObject(_node->children[0],_lc))==-1){
-			return -1;
-		}
-	}*/
 
 	insertLoadValueInstruction(_node->children[0],_lc);
 	int call_index = getCurrentInstructionIndex();
@@ -1427,10 +907,6 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 
 	return CCompiler::getCurrentInstructionIndex();
 }
-
-
-
-
 
 int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_instruction){
 
@@ -1484,19 +960,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 				}
 				else{
 
-
 					switch(eval_node_sp->node_type){
-					/*case FUNCTION_REF_NODE: // can have arguments or not...
-						if((r=gacExpression_FunctionAccess(_node, _lc)) == -1){
-							return -1;
-						}
-
-						break;*/
-					/*case ARRAY_REF_NODE:
-						if((r=gacExpression_ArrayAccess(_node, _lc)) == -1){
-							return -1;
-						}
-						break;*/
 					case ARRAY_OBJECT_NODE: // should have 1 children
 						if((r=gacExpression_ArrayObject(_node, _lc)) == -1){
 							return -1;
@@ -1519,9 +983,6 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 
 					}
 				}
-
-
-
 		}
 		else{
 
@@ -1541,10 +1002,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 
 				}
 			//}
-
-
 		}
-
 		index_instruction=r;
 		//r=index_instruction;
 
@@ -1582,56 +1040,6 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 		if(left !=-1 && right!=-1){ // 2 ops
 
 			// particular case if operator is =
-			/*if(_node->operator_info->id == PUNCTUATOR_TYPE::ASSIGN_PUNCTUATOR){
-				// the variable can only assigned if the type is the same or if the type is undefined.
-				// check if left operand is registered variable...
-					if(!CCompiler::getInstance()->insertMovVarInstruction(error_str,left, right)){
-
-						return -1;
-					}
-*/
-					/*bool is_undefined = dynamic_cast<CUndefined *>(var_obj) != NULL;
-					string ptr_class_type =  getUserTypeResultCurrentStatmentAtInstruction(right);
-
-					if(ptr_class_type=="unknow"){
-						error|=true;
-						return -1;
-					}
-
-					if(is_undefined ||
-							var_obj->getPointerClassStr() == ptr_class_type
-						){
-
-						if(is_undefined){ // create object ...
-
-							var_obj = CFactoryContainer::getInstance()->newObjectByClassPtr(ptr_class_type);
-							if(var_obj!=NULL){
-								_lc->defineSymbol(op->children[LEFT_NODE]->value_symbol,var_obj);
-								print_com_cr("%s defined as %s",op->children[LEFT_NODE]->value_symbol.c_str(),ptr_class_type.c_str());
-							}else{
-								print_error_cr("ERRRRRRRRRROR %s is not registered",ptr_class_type.c_str());
-								error|=true;
-								return -1;
-							}
-						}
-
-
-
-
-					    // set value the operator = must be defined !
-
-
-						//printf("MOV \tV(%s),E[%i]\n",op->left->value.c_str(),right);
-
-
-					}else{
-						print_error_cr("\"%s\" was instanced as \"%s\" and cannot be change type as \"%s\"",op->children[LEFT_NODE]->value_symbol.c_str(),var_obj->getPointerClassStr().c_str(),op->type_ptr.c_str());
-						error|=true;
-						return -1;
-					}*/
-				//}
-			/*}
-			else{*/
 				//printf("%s\tE[%i],E[%i],E[%i]\n",op->token.c_str(),index_instruction,left,right);
 				if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left,right)){
 					print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
@@ -1663,8 +1071,6 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 
 	return r;
 }
-
-
 
 bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
@@ -1704,6 +1110,7 @@ bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
 
 	return true;
 }
+
 bool CCompiler::gacWhile(PASTNode _node, CScope * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
@@ -1735,7 +1142,15 @@ bool CCompiler::gacReturn(PASTNode _node, CScope * _lc){
 	if(_node->keyword_info->id != KEYWORD_TYPE::RETURN_KEYWORD){print_error_cr("node is not RETURN keyword type");return false;}
 	if(_node->children.size() != 1){print_error_cr("node RETURN has not 1 child");return false;}
 
-	gacExpression(_node->children[0], _lc);
+	if(gacExpression(_node->children[0], _lc)){
+
+		// finally we put mov to Value ...
+		insertRet(getCurrentInstructionIndex());
+	}
+	else {
+		return false;
+	}
+
 	return true;
 }
 
@@ -1768,8 +1183,6 @@ bool CCompiler::gacFunction(PASTNode _node, CScope * _lc){
 	}
 
 	// 2. Processing args ...
-
-
 
 	// 3. Processing body ...
 
@@ -1805,8 +1218,6 @@ bool CCompiler::gacIf(PASTNode _node, CScope * _lc){
 	else{
 		asm_op_jmp_else_if->index_op1 = getCurrentStatmentIndex()+1;
 	}
-
-
 	return true;
 }
 
@@ -1957,7 +1368,6 @@ bool CCompiler::gacVar(PASTNode _node, CScope * _lc){
 	}
 
 	return true;
-
 }
 
 bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
@@ -2116,7 +1526,6 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 			for(unsigned i = 0; i < _node->children.size(); i++){
 
 				if(!ast2asm_Recursive(_node->children[i], m_treescope->getCurrentScopePointer())){
-					print_error_cr("Error 1!");
 					return false;
 				}
 			}
@@ -2139,22 +1548,8 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 			if(m_vf->at(j)->getType() == CScriptFunction::TYPE::SCRIPT_FUNCTION_TYPE){
 
 				if(!gacFunction(m_vf->at(j)->getRootAst(),sf->getScope())){
-					print_error_cr("Error 2!");
 					return false;
 				}
-
-				/*PASTNode _node = m_vf->at(j)->getRootAst(); // we must compile function ...
-
-				if(_node != NULL){
-
-				}*/
-
-				//ast2asm(m_vf->at(j,m_vf->at(j));
-				/*print_info_cr("-------------------------------------------------------");
-				print_info_cr("");
-				print_info_cr("Code for %s",(*m_vf)[j]->getName().c_str());
-				print_info_cr("");
-				printGeneratedCode_Recursive((*m_vf)[j]);*/
 			}
 		}
 
@@ -2167,28 +1562,13 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 	return false;
 }
 
-
-/*
-bool CCompiler::generateAsmCode_Recursive(root){
-
-}
-
-
-bool CCompiler::generateAsmCode(root){
-
-}*/
-
 bool CCompiler::compile(const string & s, CScriptFunction * sf){
-
-
 
 	// generate whole AST
 
 	if(CAst::generateAST(s.c_str(),sf, sf->getRootAstPtr())){
 
-
 		if(ast2asm(sf->getRootAst(),sf)){
-
 			// print generated asm ...
 			CCompiler::printGeneratedCode(sf);
 			return true;
@@ -2197,11 +1577,8 @@ bool CCompiler::compile(const string & s, CScriptFunction * sf){
 		//generateAsmCode(root);
 	}
 
-
-
 	return false;
 }
-
 
 CCompiler::~CCompiler(){
 
