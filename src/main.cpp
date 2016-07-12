@@ -28,8 +28,14 @@ int main(int argc, char * argv[]){
 	string s = "hola!";
 	int s_int= *((int *)& s);
 
+	int j =0;
+
+	++j=0;
+
 	pass_string(s_int);
 	int yy[] = {0,1,2,3,4};
+
+
 
 	--yy[0]+yy[0]++;
 
@@ -38,6 +44,8 @@ int main(int argc, char * argv[]){
 	a .
 
 	b = 1;
+
+
 
 
 

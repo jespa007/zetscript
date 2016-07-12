@@ -23,6 +23,7 @@ public:
 		MOV, // mov expression to var
 		LOAD, // primitive value like number/string or boolean...
 		EQU,  // ==
+		NOT_EQU,  // !=
 		LT,  // <
 		LTE,  // <=
 		NOT, // !
@@ -30,6 +31,7 @@ public:
 		GTE, // >=
 
 		ADD, // +
+		NEG, // -a
 		LOGIC_AND, // &&
 		LOGIC_OR,  // ||
 		DIV, // /
@@ -61,7 +63,6 @@ public:
 
 	enum ASM_PRE_POST_OPERATORS{
 		UNKNOW_PRE_POST_OPERATOR=0,
-		NEG, // -a
 		PRE_INC, // ++
 		POST_INC, // ++
 		PRE_DEC, // --
@@ -144,17 +145,9 @@ public:
 	bool compileExpression(const char *expression_str, int & m_line,CScriptFunction * sf, CScope *currentEvaluatingScope);
 	bool compile(const string & s, CScriptFunction * pr);
 
-	//int generateAsmCode(PASTNode op, int & numreg, bool & error, CScope * _lc);
 
 
-	ASM_OPERATOR getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
-	ASM_OPERATOR getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
-	ASM_OPERATOR getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
-	ASM_OPERATOR getStringOperatorId_TwoOps(PUNCTUATOR_TYPE op,CVariable::VAR_TYPE & result_type);
 
-	ASM_PRE_POST_OPERATORS getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op);
-	ASM_OPERATOR getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op);
-	ASM_OPERATOR getStringOperatorId_OneOp(PUNCTUATOR_TYPE op);
 
 	/**
 	 * Load value or symbol and insert asm operation at current statment.
@@ -242,7 +235,8 @@ private:
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE ASSEMBLE CODE (GAC)
 
-	ASM_OPERATOR puntuator2asmop(tInfoPunctuator * op);
+	ASM_OPERATOR puntuator2instruction(tInfoPunctuator * op);
+	ASM_PRE_POST_OPERATORS preoperator2instruction(PUNCTUATOR_TYPE op);
 
 	int gacExpression_ArrayObject_Recursive(PASTNode _node, CScope *_lc);
 	int gacExpression_ArrayObject(PASTNode op, CScope *_lc);

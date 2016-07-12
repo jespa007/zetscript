@@ -47,6 +47,7 @@ bool CVirtualMachine::execute(CScriptFunction *sf, vector<CObject *> * argv){
 
 	vector<CCompiler::tInfoStatementOp> * m_listStatements = sf->getCompiledCode();
 	bool conditional_jmp=false;
+	int jmp_to_statment = -1;
 
 	if(argv != NULL){
 
@@ -68,6 +69,7 @@ bool CVirtualMachine::execute(CScriptFunction *sf, vector<CObject *> * argv){
 	for(unsigned s = 0; s < (*m_listStatements).size();){
 
 		conditional_jmp = false;
+		jmp_to_statment = -1;
 		if((*m_listStatements)[s].asm_op.size()>0){
 
 			// clear previous ALE information stack..
@@ -79,24 +81,29 @@ bool CVirtualMachine::execute(CScriptFunction *sf, vector<CObject *> * argv){
 
 			//CCompiler::tInfoAsmOp * instruction=NULL;
 			CCompiler::tInfoStatementOp * current_statment = &(*m_listStatements)[s];
-			for(unsigned i = 0; i  <  asm_op_statment->size() && !conditional_jmp; i++){ // for each code-instruction execute it.
+
+			for(unsigned i = 0; i  <  asm_op_statment->size() && (jmp_to_statment==-1); i++){ // for each code-instruction execute it.
 				print_vm_cr("executing instruction %s [%02i:%02i]...",sf->getName().c_str(), s,i);
 
-				if( s==2 && i==3){
+				if( s==1 && i==0){
 					int hhh=0;
 					hhh++;
 				}
 
-				int jmp_to_statment = -1;
 
-				ALE.performInstruction(i,current_statment->asm_op[i],sf,jmp_to_statment);
+
+				if(!ALE.performInstruction(i,current_statment->asm_op[i],sf,jmp_to_statment)){
+					return false;
+				}
 
 
 				//previous_instruction = instruction;
 			}
 
-			// if not conditional jmp increase next statment...
-			if(!conditional_jmp){
+			if(jmp_to_statment != -1){
+				s=jmp_to_statment;
+			}
+			else{ // next statment ...
 				s++;
 			}
 

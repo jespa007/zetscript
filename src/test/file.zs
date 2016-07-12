@@ -9,8 +9,8 @@ function bb(a,b){
 
 //-----------------------------------------------------------------------------
 
-
 /*
+
 var c=0;
 c=c-1;
 
@@ -57,7 +57,7 @@ var d1=++g1;
 //var d1=0+1+2+3;
 //d1=-(--d1);
 
-*/
+
 
 var cc=[ [2+3,2+5+6], [0+1] ];
 
@@ -73,7 +73,7 @@ cc[0][0]++;
 
 
 var j=0;
-/*
+
 function my_function(a,b){
 
 	return a+b;
@@ -88,19 +88,24 @@ function my_function(a,b){
 
 //((j+1)==0)?1+1:0+1;
 
-if( (0+1) == (0+1) )
+if( (0+1) != (0+0) )
  {
+	j=1;
 }
 
+*/
 
+var j=0;
 while(j < 10){
 	j*4;
 	
+	j++;
+	
 	
 }
 
 
-
+/*
 
 var kk=0+1;
 
@@ -123,6 +128,9 @@ break;
 
 }
 
+
+
+
 for(var i = 0; i < 10; i++){
 	if(i==0){
 		2*i;
@@ -130,6 +138,7 @@ for(var i = 0; i < 10; i++){
 		3*i;
 	}
 }
+
 
 
 // var j="hola que hace"+0+0+1;
@@ -146,10 +155,15 @@ return 1;
 
 }();
 
+
+
 var jj=1+[[1,2], [0,1] ][0][0];
 
 
-var a = fun(1,2);
+
+//var a = fun(1,2);
+
+
 
 var fun = function (l,d5,k){
 	
@@ -172,9 +186,9 @@ var i=3+( fun(1
 +
 3
 *7
-)+2  * 5 + ( 7
+,0,0)+2  * 5 + ( 7
 +
-6)); // val but j & k are not defined.
+6)); // ok but j & k are not defined.
 
 
 
@@ -187,7 +201,7 @@ var f=0;
 
 while(f < 10){
 
-f++;
+++f;
 
 }
 
@@ -198,9 +212,11 @@ if(f == 10 ) {
 }
 
 
-print("Hola:"+array[0]++);
 
-for(var j2=0; j2 < 10 ; j2++){
+
+//print("Hola:"+array[0]++);
+
+for(var j2=0; j2 < 10 ; j2=j2+1){
 	var ll=0;
 	
 	ll = ll + j2;
@@ -209,10 +225,13 @@ for(var j2=0; j2 < 10 ; j2++){
 }
 
 
-
 */
+
 /*
  
+ var m,n;
+ 
+ m=n=0; // multi var assigment.
 
 // NOT IMPLEMENTED YET!
 

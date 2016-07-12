@@ -223,12 +223,13 @@ CCompiler::CCompiler(){
 	def_operator[MOV]         ={"MOV" ,MOV ,2}; // mov expression to var
 	def_operator[LOAD]        ={"LOAD",LOAD ,1}; // primitive value like number/string or boolean...
 	def_operator[EQU]         ={"EQU" ,EQU ,2};  // ==
+	def_operator[NOT_EQU]     ={"NOT_EQU" ,NOT_EQU ,2};  // !=
 	def_operator[LT]          ={"LT"  ,LT ,2};  // <
 	def_operator[LTE]         ={"LTE" ,LTE ,2};  // <=
 	def_operator[NOT]         ={"NOT" ,NOT,1}; // !
 	def_operator[GT]          ={"GT"  ,GT,2};  // >
 	def_operator[GTE]         ={"GTE" ,GTE,2}; // >=
-	//def_operator[NEG]         ={"NEG",NEG,1}; // !
+	def_operator[NEG]         ={"NEG",NEG,1}; // !
 	def_operator[ADD]         ={"ADD" ,ADD,2}; // +
 	//def_operator[PRE_INC]     ={"PRE_INC",PRE_INC,1};// ++
 	//def_operator[POST_INC]    ={"POST_INC",POST_INC,1}; // ++
@@ -295,7 +296,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 	if(_node->pre_post_operator_info != NULL){
 
-		pre_post_operator_type=getNumberOperatorId_OneOp(_node->pre_post_operator_info->id);
+		pre_post_operator_type=preoperator2instruction(_node->pre_post_operator_info->id);
 	}
 	// try parse value...
 	if((obj=CInteger::Parse(v))!=NULL){
@@ -364,11 +365,8 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		obj = info_var->m_obj;
 	}
 
-	if((pre_post_operator_type ==ASM_PRE_POST_OPERATORS::POST_DEC ||
-		pre_post_operator_type ==ASM_PRE_POST_OPERATORS::POST_INC ||
-		pre_post_operator_type ==ASM_PRE_POST_OPERATORS::PRE_DEC ||
-		pre_post_operator_type ==ASM_PRE_POST_OPERATORS::PRE_INC
-		) && type!=CVariable::OBJECT){
+	if((pre_post_operator_type !=ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR) &&
+		type!=CVariable::OBJECT){
 		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->definedValueline,_node->pre_post_operator_info->str);
 		return false;
 
@@ -537,93 +535,11 @@ void CCompiler::insert_ArrayObject_PushValueInstruction(int ref_vec_object_index
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-CCompiler::ASM_OPERATOR CCompiler::getIntegerOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
-
-	variable_type = CVariable::INTEGER;
-
-	switch(op){
-	default:
-		return CCompiler::ASM_OPERATOR::INVALID_OP;
-	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
-		return CCompiler::ADD;
-	case PUNCTUATOR_TYPE::DIV_PUNCTUATOR:
-		return CCompiler::DIV;
-	case PUNCTUATOR_TYPE::MOD_PUNCTUATOR:
-		return CCompiler::MOD;
-	case PUNCTUATOR_TYPE::MUL_PUNCTUATOR:
-		return CCompiler::MUL;
-	case PUNCTUATOR_TYPE::BINARY_AND_PUNCTUATOR:
-		return CCompiler::AND;
-	case PUNCTUATOR_TYPE::BINARY_OR_PUNCTUATOR:
-		return CCompiler::OR;
-	case PUNCTUATOR_TYPE::BINARY_XOR_PUNCTUATOR:
-		return CCompiler::XOR;
-	case PUNCTUATOR_TYPE::SHIFT_LEFT_PUNCTUATOR:
-		return CCompiler::SHL;
-	case PUNCTUATOR_TYPE::SHIFT_RIGHT_PUNCTUATOR:
-		return CCompiler::SHR;
-	case PUNCTUATOR_TYPE::LOGIC_GTE_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::GTE;
-	case PUNCTUATOR_TYPE::LOGIC_GT_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::GT;
-	case PUNCTUATOR_TYPE::LOGIC_LT_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::LT;
-	case PUNCTUATOR_TYPE::LOGIC_LTE_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::LTE;
-	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::EQU;
-
-	}
-	return CCompiler::ASM_OPERATOR::INVALID_OP;
-}
-
-CCompiler::ASM_OPERATOR CCompiler::getNumberOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
-
-	variable_type = CVariable::NUMBER;
-
-	switch(op){
-	default:
-		return CCompiler::ASM_OPERATOR::INVALID_OP;
-	case PUNCTUATOR_TYPE::ADD_PUNCTUATOR:
-		return CCompiler::ADD;
-	case PUNCTUATOR_TYPE::DIV_PUNCTUATOR:
-		return CCompiler::DIV;
-	case PUNCTUATOR_TYPE::MOD_PUNCTUATOR:
-		return CCompiler::MOD;
-	case PUNCTUATOR_TYPE::MUL_PUNCTUATOR:
-		return CCompiler::MUL;
-	case PUNCTUATOR_TYPE::LOGIC_GTE_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::GTE;
-	case PUNCTUATOR_TYPE::LOGIC_GT_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::GT;
-	case PUNCTUATOR_TYPE::LOGIC_LT_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::LT;
-	case PUNCTUATOR_TYPE::LOGIC_LTE_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::LTE;
-	case PUNCTUATOR_TYPE::LOGIC_EQUAL_PUNCTUATOR:
-		variable_type = CVariable::BOOLEAN;
-		return CCompiler::EQU;
-	}
-	return CCompiler::ASM_OPERATOR::INVALID_OP;
-}
-
-CCompiler::ASM_PRE_POST_OPERATORS CCompiler::getNumberOperatorId_OneOp(PUNCTUATOR_TYPE op){
+CCompiler::ASM_PRE_POST_OPERATORS CCompiler::preoperator2instruction(PUNCTUATOR_TYPE op){
 
 	switch(op){
 	default:
 		return CCompiler::ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
-	case PUNCTUATOR_TYPE::SUB_PUNCTUATOR:
-		return CCompiler::NEG;
 	case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
 		return CCompiler::PRE_INC;
 	case PUNCTUATOR_TYPE::POST_INC_PUNCTUATOR:
@@ -637,38 +553,14 @@ CCompiler::ASM_PRE_POST_OPERATORS CCompiler::getNumberOperatorId_OneOp(PUNCTUATO
 	return CCompiler::ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 }
 
-CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_TwoOps(PUNCTUATOR_TYPE op, CVariable::VAR_TYPE & variable_type){
-
-	variable_type = CVariable::BOOLEAN;
-
-	switch(op){
-	default:
-		return CCompiler::ASM_OPERATOR::INVALID_OP;
-	case PUNCTUATOR_TYPE::LOGIC_AND_PUNCTUATOR:
-		return CCompiler::LOGIC_AND;
-	case PUNCTUATOR_TYPE::LOGIC_OR_PUNCTUATOR:
-		return CCompiler::LOGIC_OR;
-	}
-
-	return CCompiler::ASM_OPERATOR::INVALID_OP;
-}
-
-CCompiler::ASM_OPERATOR CCompiler::getBoleanOperatorId_OneOp(PUNCTUATOR_TYPE op){
-	switch(op){
-	default:
-		return CCompiler::ASM_OPERATOR::INVALID_OP;
-	case PUNCTUATOR_TYPE::LOGIC_NOT_PUNCTUATOR:
-		return CCompiler::NOT;
-	}
-	return CCompiler::ASM_OPERATOR::INVALID_OP;
-}
-
-CCompiler::ASM_OPERATOR CCompiler::puntuator2asmop(tInfoPunctuator * op){
+CCompiler::ASM_OPERATOR CCompiler::puntuator2instruction(tInfoPunctuator * op){
 
 	switch(op->id){
 	default:
 		print_error_cr("%s Not implemented", op->str);
 		break;
+	case SUB_PUNCTUATOR:
+		return ASM_OPERATOR::NEG;
 	case ADD_PUNCTUATOR:
 		return ASM_OPERATOR::ADD;
 	case MUL_PUNCTUATOR:
@@ -695,6 +587,8 @@ CCompiler::ASM_OPERATOR CCompiler::puntuator2asmop(tInfoPunctuator * op){
 		return ASM_OPERATOR::LOGIC_OR;
 	case LOGIC_EQUAL_PUNCTUATOR:
 		return ASM_OPERATOR::EQU;
+	case LOGIC_NOT_EQUAL_PUNCTUATOR:
+		return ASM_OPERATOR::NOT_EQU;
 	case LOGIC_GT_PUNCTUATOR:
 		return ASM_OPERATOR::GT;
 	case LOGIC_LT_PUNCTUATOR:
@@ -722,7 +616,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 
 
 	ASM_OPERATOR asm_op;
-	if((asm_op= puntuator2asmop(op))!=INVALID_OP){
+	if((asm_op= puntuator2instruction(op))!=INVALID_OP){
 
 
 		CCompiler::tInfoAsmOp *iao = new CCompiler::tInfoAsmOp();
@@ -738,7 +632,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 
 		return true;
 	}
-	return true;
+	return false;
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -803,7 +697,7 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 		// get post/inc
 		CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 		CCompiler::tInfoAsmOp *asm_op = ptr_current_statement_op->asm_op[ptr_current_statement_op->asm_op.size()-1];
-		asm_op->pre_post_operator_type=getNumberOperatorId_OneOp(_node->pre_post_operator_info->id);
+		asm_op->pre_post_operator_type=preoperator2instruction(_node->pre_post_operator_info->id);
 
 	}
 
@@ -882,7 +776,9 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 	if(_node->children[1]->node_type != ARGS_PASS_NODE){print_error_cr("Function has no index nodes "); return -1;}
 	int r=0;
 
-	insertLoadValueInstruction(_node->children[0],_lc);
+	if(!insertLoadValueInstruction(_node->children[0],_lc)) {
+		return -1;
+	}
 	int call_index = getCurrentInstructionIndex();
 
 	// 1. insert push to pass values to all args ...
@@ -1096,7 +992,7 @@ bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
 
 
 	// 3. compile body
-	if(!gacBody(_node->children[3],_node->scope_ptr)){ return false;}
+	if(!gacBody(_node->children[3],_node->children[3]->scope_ptr)){ return false;}
 
 
 	// 4. compile post oper
@@ -1411,11 +1307,14 @@ bool CCompiler::gacBody(PASTNode _node, CScope * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != BODY_NODE ){print_error_cr("node is not BODY type or null");return false;}
 
-	if(_node->children.size() == 1){ // body has code ...
+	if(_node->children.size() > 0){ // body has code ...
 
-		bool ok = ast2asm_Recursive(_node->children[0], _lc);
+		for(unsigned i = 0; i < _node->children.size(); i++){
+			if(!ast2asm_Recursive(_node->children[i], _lc))
+				return false;
+		}
 
-		return ok;
+		return true;
 	}else{ // insert one statment at least ..
 		newStatment();
 	}
@@ -1465,7 +1364,7 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 
 			case BODY_NODE:
 				print_info_cr("BODY_NODE");
-				return gacBody(_node, _lc);
+				return gacBody(_node, _node->scope_ptr); // we pass scope node
 				break;
 			case POST_FOR_NODE:
 			case CONDITIONAL_NODE:

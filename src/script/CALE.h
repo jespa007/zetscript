@@ -80,7 +80,10 @@ private:
 	CObject * getObjectFromIndex(int index);
 	CObject * createObjectFromIndex(int index);
 
+	bool performPreOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
+	bool performPostOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
 	bool loadValue(CCompiler::tInfoAsmOp *iao);
+	bool loadConstantValue(CObject *bj);
 
 
 };

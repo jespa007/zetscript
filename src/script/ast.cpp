@@ -990,7 +990,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 	char *expr_start_op;
 	int start_line = m_line; // set another start line because left node or reparse to try another group was already parsed before.
 	int m_lineOperator=-2;
-	CScope *_localScope =  sf != NULL?sf->getScope():NULL; // gets scope...
+	CScope *_localScope =  sf != NULL?sf->getScope()->getCurrentScopePointer():NULL; // gets scope...
 
 	char *end_expression=(char *)s ; // by default end expression isequal to
 	//PASTNode symbol_node=NULL; // can be a function or array.
@@ -1077,6 +1077,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 					(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
 					(*ast_node_to_be_evaluated)->value_symbol=symbol_value; // assign its value ...
 					(*ast_node_to_be_evaluated)->scope_ptr = _localScope;
+
 				}else{
 					if(deduceExpression(symbol_value.c_str(),m_definedSymbolLine,sf, ast_node_to_be_evaluated, parent) == NULL){
 						return NULL;
@@ -1162,7 +1163,9 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 
 
 		if(	ast_node_to_be_evaluated != NULL ){
-			(*ast_node_to_be_evaluated)->children[LEFT_NODE]->pre_post_operator_info = pre_operator;
+			if((*ast_node_to_be_evaluated)->children[LEFT_NODE]->pre_post_operator_info == NULL){ // may subnode found post operator...
+				(*ast_node_to_be_evaluated)->children[LEFT_NODE]->pre_post_operator_info = pre_operator;
+			}
 			/*if(pre_operator!=NULL ){
 				(*ast_node_to_be_evaluated)->children[LEFT_NODE]=preNodePunctuator(pre_operator,(*ast_node_to_be_evaluated)->children[LEFT_NODE]);
 			}*/
@@ -1219,12 +1222,22 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 
 		if(ast_node_to_be_evaluated != NULL){
 			// minus operators has special management because two negatives can be + but sums of negatives works
-			if(operator_group->id == SUB_PUNCTUATOR) {
-				//(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=preNodePunctuator(operator_group,(*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
+			if(operator_group->id == SUB_PUNCTUATOR) { // supose a-b
 
-				// override the operator by +
+				// 1. change - by +
 				operator_group=&defined_operator_punctuator[ADD_PUNCTUATOR];
-				(*ast_node_to_be_evaluated)->children[RIGHT_NODE]->pre_post_operator_info = &defined_operator_punctuator[SUB_PUNCTUATOR];
+
+				// 2. create neg node.
+				PASTNode ast_neg_node = new tASTNode();
+				ast_neg_node->node_type = NODE_TYPE::PUNCTUATOR_NODE;
+				ast_neg_node->operator_info = &defined_operator_punctuator[SUB_PUNCTUATOR];
+
+				// 3. insert node between rigth node and ast_node
+				ast_neg_node->parent = (*ast_node_to_be_evaluated);
+				ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
+				(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=ast_neg_node;
+
+
 			}
 
 			(*ast_node_to_be_evaluated)->node_type = PUNCTUATOR_NODE;
