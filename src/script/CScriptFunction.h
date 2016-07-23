@@ -334,6 +334,9 @@ public:
 
 	void setReturnObject(CObject *);
 	void setupAsFunctionPointer(void * _pointer_function);
+	void add_C_function_argument(string arg_type);
+
+	bool call_C_function(vector<CObject *> * argv);
 
 	TYPE getType();
 
@@ -368,6 +371,7 @@ private:
 	void * pointer_function;
 
 	vector<string> m_arg;
+	vector<string> m_c_arg; // for c function
 	vector<CScriptFunction *> m_function;
 
 
@@ -379,6 +383,11 @@ private:
 	 */
 	CObject *returnVariable;
 	tInfoRegisteredClass * existRegisteredClass(const string & class_name);
+
+
+	// calling function...
+	CObject * call_print_1p( CObject *arg);
+	CObject * call_print_0p();
 
 	CScope	*m_scope; // base scope...
 	CScriptFunction *m_parentFunction;

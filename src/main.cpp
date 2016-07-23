@@ -2,12 +2,6 @@
 #include "SDL2/SDL.h"
 
 
-class a{
-public:
-	int b;
-
-	a(){b=0;}
-};
 
 
 
@@ -23,27 +17,151 @@ int pass_string ( int s_int){
 
 }
 
+bool isprime(int n)
+{
+  for (int i = 2; i < n; ++i)
+  {
+    if ((n % i) == 0) {return false;}
+  }
+
+  return true;
+}
+
+
+int primes(int n)
+{
+  int count = 0;
+  for (int i = 2; i <= n; ++i)
+  {
+    if (isprime(i)) {++count;}
+  }
+
+  return count;
+}
+
+
+
+
+
+
+
+
+void print1(string s){
+	print_info_cr(s.c_str());
+}
+
+bool print2(float *f){
+	string hola;
+
+	printf("holaaaa: %f",*f);
+	//print_info_cr(s.c_str());
+	return false;
+}
+
+void print3(string * s){
+	print_info_cr(s->c_str());
+}
+
+/*
+void call_print_1p(CObject *obj){
+
+	fntConversionType fun=getConversionType(obj->getPointerClassStr(),CZG_Script::primitiveType[CZG_Script::FLOAT_PTR_TYPE].type_str);
+
+	if(fun != NULL){
+		// Normalize argument ...
+		int arg1 = fun(obj);
+		float arg2=1.2f;
+		int result;
+
+		asm(
+					"push %[p1]\n\t"
+					"push %%esp\n\t"
+					"call *%P0\n\t" // call function
+					"add $8,%%esp"       // Clean up the stack.
+					: "=a" (result) // The result code intgers and pointers from eax.
+					: "r"(print2),[p1] "r"(arg2));
+
+		//float h = (float)result;
+
+		print_info_cr("hh:%i",result);
+
+
+	}
+
+
+}*/
+
+
 int main(int argc, char * argv[]){
 
-	string s = "hola!";
-	int s_int= *((int *)& s);
+	CZG_Script *zg_script = CZG_Script::getInstance();
+	CLog::setUseAnsiEscape(true);
+	//string s = "hola!";
+	//int s_int= *((int *)& s);
 
-	int j =0;
+
+
+/*
+
+
+	CString *s=NEW_STRING();
+	s->m_value="hola2";
+
+
+	call_print_1p(s);
+
+*/
+
+
+
+	/*map<string, fntConversionType> typeConversion;
+
+	typeConversion[typeid(float ).name()]=[] (CObject *obj){return (int)((CNumber *)obj)->m_value;};
+	typeConversion[typeid(string).name()]=[] (CObject *obj){obj->toString();return *((int *)&obj->m_strValue);};
+
+	// ... add more conversion file ...
+	mapTypeConversion[typeid(CNumber *).name()]=typeConversion;
+
+
+	for(map<string,map<string,fntConversionType>>::iterator i = mapTypeConversion.begin(); i!=mapTypeConversion.end(); i++){
+		print_info_cr("type: %s has %i conversion functions",i->first.c_str(),i->second.size());
+		for(map<string, fntConversionType>::iterator j =i->second.begin() ; j != i->second.end();j++){
+			print_info_cr("type conversion \"%s\"", j->first.c_str());
+		}
+	}
+
+
+	// try converstion ...
+	CNumber n;
+	n.m_value=2;
+
+	int jj= mapTypeConversion["P7CNumber"]["Ss"](&n);
+	int ff2= mapTypeConversion["P7CNumber"]["f"](&n);
+
+	//string sl = *((string *)&jj);
+
+	print_info_cr("caca1 %s",((string *)&jj)->c_str());
+	print_info_cr("caca2 %f",((float)ff2));*/
+
+
+
+
+	/*int j =0;
 
 	++j=0;
 
 	pass_string(s_int);
 	int yy[] = {0,1,2,3,4};
+*/
+	auto vv=[](int i){return i;};
+
+	vv(0);
+
+	// addConverstionFunction(lamba)
+
+	//--yy[0]+yy[0]++;
 
 
-
-	--yy[0]+yy[0]++;
-
-	a a;
-
-	a .
-
-	b = 1;
 
 
 
@@ -88,17 +206,39 @@ int main(int argc, char * argv[]){
 
 	if(buffer != NULL){
 
-		CZG_Script *zg_script = CZG_Script::getInstance();
+
 
 			if(zg_script->eval((char *)buffer->data_buffer)){
 
-				zg_script->execute();
-				/*for(i=0; i < 20;i++)
+
+				//zg_script->execute();
+				//for(i=0; i < 20;i++)
 				{
-					Uint32 t = SDL_GetTicks();*/
-					//zg_script->execute();
-					/*print_info_cr("%i",SDL_GetTicks()-t);
-				}*/
+					Uint32 t = SDL_GetTicks();
+					zg_script->execute();
+					print_info_cr("time:%i",SDL_GetTicks()-t);
+
+
+					//t = SDL_GetTicks();
+					/*time_t start = time(NULL);
+
+					float m=0;
+
+					//primes(1000000000);
+					for(int j = 0; j < 1000000;j++){
+						for(int kk = 0; kk < 1000000;kk++){
+							for(int tt = 0; tt < 1000000;tt++){
+								for(int gg = 0; gg < 100000;gg++){
+									m=(j/(kk+1))*tt%(gg+1);
+								}
+							}
+						}
+
+					}
+				//	for(int j=0; j < 10000000; ++j){j*2;}
+
+					print_info_cr("time2:%i %f",time(NULL)-start,m);*/
+				}
 			}
 
 		print_info_cr("sizeobject:%i",sizeof(CObject));

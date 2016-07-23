@@ -43,7 +43,13 @@ CVirtualMachine::CVirtualMachine(){
 
 
 
-bool CVirtualMachine::execute(CScriptFunction *sf, vector<CObject *> * argv){
+bool CVirtualMachine::execute(CScriptFunction *sf, int stk,vector<CObject *> * argv){
+
+	if(sf->getType() == CScriptFunction::C_FUNCTION_TYPE){ // C-Call
+
+			return sf->call_C_function(argv);
+	}
+
 
 	vector<CCompiler::tInfoStatementOp> * m_listStatements = sf->getCompiledCode();
 	bool conditional_jmp=false;
@@ -56,45 +62,71 @@ bool CVirtualMachine::execute(CScriptFunction *sf, vector<CObject *> * argv){
 			return false;
 		}
 
-		print_info_cr("assign local symbol the passing args...");
+		//print_info_cr("assign local symbol the passing args...");
 		for(unsigned i = 0; i < (*argv).size(); i++){
-			print_info_cr("%s=%s <cr>",sf->getArgVector()->at(i).c_str(),(*argv).at(i)->getPointerClassStr().c_str());
+			//print_info_cr("%s=%s <cr>",sf->getArgVector()->at(i).c_str(),(*argv).at(i)->getPointerClassStr().c_str());
 			(*sf->getArg(i))=(*argv).at(i);
 		}
 	}
 
 
+
 	CALE ALE; // new ale ?
 
-	for(unsigned s = 0; s < (*m_listStatements).size();){
+	unsigned n_stats=(*m_listStatements).size();
+
+
+	for(unsigned s = 0; s < n_stats;){
 
 		conditional_jmp = false;
 		jmp_to_statment = -1;
-		if((*m_listStatements)[s].asm_op.size()>0){
+		CCompiler::tInfoStatementOp * current_statment = &(*m_listStatements)[s];
+		vector<CCompiler::tInfoAsmOp *> * asm_op_statment = &current_statment->asm_op;
+		unsigned n_asm_op= asm_op_statment->size();
+
+		//if(stk==2){
+		//	s++;
+		//	continue;
+		//}
+
+		if(n_asm_op>0){
 
 			// clear previous ALE information stack..
+			//if(stk!=2){
 			ALE.reset();
+			//}
 
-			vector<CCompiler::tInfoAsmOp *> * asm_op_statment = &(*m_listStatements)[s].asm_op;
-			print_vm_cr("executing code...");
+			//vector<CCompiler::tInfoAsmOp *> * asm_op_statment = &(*m_listStatements)[s].asm_op;
+			//print_vm_cr("executing code...");
 
 
 			//CCompiler::tInfoAsmOp * instruction=NULL;
-			CCompiler::tInfoStatementOp * current_statment = &(*m_listStatements)[s];
 
-			for(unsigned i = 0; i  <  asm_op_statment->size() && (jmp_to_statment==-1); i++){ // for each code-instruction execute it.
-				print_vm_cr("executing instruction %s [%02i:%02i]...",sf->getName().c_str(), s,i);
 
-				if( s==1 && i==0){
+			for(unsigned i = 0; i  <  n_asm_op && (jmp_to_statment==-1); i++){ // for each code-instruction execute it.
+				//print_vm_cr("executing instruction %s [%02i:%02i]...",sf->getName().c_str(), s,i);
+
+			/*	if( s==1 && i==0){
 					int hhh=0;
 					hhh++;
 				}
+*/
 
 
+				//if(stk!=2){
 
-				if(!ALE.performInstruction(i,current_statment->asm_op[i],sf,jmp_to_statment)){
-					return false;
-				}
+					//return true;
+
+
+					if(!ALE.performInstruction(i,asm_op_statment->at(i),sf,jmp_to_statment,stk)){
+						return false;
+					}
+
+					if(asm_op_statment->at(i)->operator_type == CCompiler::ASM_OPERATOR::RET){ // return...
+						return true;
+					}
+
+				//}
 
 
 				//previous_instruction = instruction;
@@ -106,6 +138,7 @@ bool CVirtualMachine::execute(CScriptFunction *sf, vector<CObject *> * argv){
 			else{ // next statment ...
 				s++;
 			}
+
 
 		}
 	}

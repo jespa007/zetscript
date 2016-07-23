@@ -19,7 +19,7 @@ class CScriptFunction;
 #define registerFunction(s) CZG_Script::getInstance()->registerFunctionInternal(STR(s),s)
 #define registerVariable(s) CZG_Script::getInstance()->registerVariableInternal(STR(s),s,typeid(s).name())
 
-
+typedef int (*fntConversionType)(CObject *obj);
 
 class CZG_Script{
 
@@ -67,11 +67,14 @@ public:
 
 	CObject * createObjectFromPrimitiveType(CZG_Script::tPrimitiveType *pt);
 
+	static fntConversionType getConversionType(string objectType, string conversionType);
+
+
 	/**
 	 * Register C function
 	 */
 	template <typename F>
-	void registerFunctionInternal(const char *function_str,F function_type)
+	void registerFunctionInternal(const char *function_str,F function_ptr)
 	{
 		string return_type;
 		vector<string> params;
@@ -85,7 +88,7 @@ public:
 
 
 		// 1. check all parameters ok.
-		using Traits3 = function_traits<decltype(function_type)>;
+		using Traits3 = function_traits<decltype(function_ptr)>;
 		getParamsFunction<Traits3>(0,return_type, params, make_index_sequence<Traits3::arity>{});
 
 		// check whether function is ok or not.
@@ -97,6 +100,7 @@ public:
 			}
 
 			pt.push_back(rt);
+
 		}
 
 		// 2. create script function ...
@@ -113,22 +117,14 @@ public:
 		sf->setName(function_str);
 
 		// set function pointer...
-		sf->setupAsFunctionPointer(&function_type);
+		sf->setupAsFunctionPointer((void *)function_ptr);
+
+		// assign object;
+		rs->m_obj = sf;
 
 		// register all args...
-		for(unsigned int i=0; i < pt.size(); i++){
-
-			char param_name[100]={0};
-			sprintf(param_name,"%s_arg_%02i",function_str,i);
-
-
-			// register symbol ...
-			if((rs=sf->registerArgument(param_name))==NULL)
-				return;
-
-			// set explicit ...
-			if((rs->m_obj = createObjectFromPrimitiveType(pt[i]))==NULL)
-				return;
+		for(unsigned int i=0; i < params.size(); i++){
+			sf->add_C_function_argument(params[i]);
 		}
 
 		print_info_cr("Registered function name: %s",function_str);

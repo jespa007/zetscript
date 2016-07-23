@@ -39,8 +39,8 @@ bool * CBoolean::ParsePrimitive(const string & s){
 
 CBoolean::CBoolean(){
 
-    m_classStr="bool";
-    m_pointerClassStr="bool";
+    m_classStr=typeid(CBoolean).name();
+    m_pointerClassStr=typeid(CBoolean *).name();
 
 	m_varType = CVariable::VAR_TYPE::BOOLEAN;
 	m_value = false;

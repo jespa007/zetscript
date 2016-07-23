@@ -20,7 +20,7 @@ public:
 
 
 
-	static bool execute(CScriptFunction *fs, vector<CObject *> * argv=NULL);
+	static bool execute(CScriptFunction *fs, int stk, vector<CObject *> * argv=NULL);
 
 private:
 

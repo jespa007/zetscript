@@ -18,7 +18,7 @@ public:
 
 
 
-	bool performInstruction(int idx_instruction, CCompiler::tInfoAsmOp * instruction,CScriptFunction *sf, int & jmp_to_statment);
+	bool performInstruction(int idx_instruction, CCompiler::tInfoAsmOp * instruction,CScriptFunction *sf, int & jmp_to_statment, int n_stk);
 
 	void reset();
 
@@ -69,7 +69,7 @@ private:
 
 
 	bool pushInteger(int  init_value);
-	bool pushBoolean(bool init_value);
+	bool pushBoolean(bool init_value, int n_stk=0);
 	bool pushNumber(float init_value);
 	bool pushString(const string & init_value);
 	bool pushObject(CObject ** , bool isAssignable=false);
@@ -82,8 +82,8 @@ private:
 
 	bool performPreOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
 	bool performPostOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
-	bool loadValue(CCompiler::tInfoAsmOp *iao);
-	bool loadConstantValue(CObject *bj);
+	bool loadValue(CCompiler::tInfoAsmOp *iao, int stk);
+	bool loadConstantValue(CObject *bj, int n_stk);
 
 
 };

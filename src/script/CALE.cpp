@@ -128,11 +128,13 @@ bool CALE::pushInteger(int  init_value){
 	return true;
 }
 
-bool CALE::pushBoolean(bool init_value){
+bool CALE::pushBoolean(bool init_value, int n_stk){
 	if(n_stkBoolean ==MAX_PER_TYPE_OPERATIONS){
 		print_error_cr("Reached max bool operations");
 		return false;
 	}
+
+
 
 
 	if(n_stkBoolean >= n_totalBooleanPointers){
@@ -338,7 +340,7 @@ bool CALE::performPostOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operat
 
 }
 
-bool CALE::loadConstantValue(CObject *obj){
+bool CALE::loadConstantValue(CObject *obj, int n_stk){
 
 	if(obj != NULL){
 
@@ -347,7 +349,11 @@ bool CALE::loadConstantValue(CObject *obj){
 			return false;
 		}
 
+
+
+
 		CVariable *var = (CVariable *)obj;
+
 
 		switch(var->getVariableType()){
 			default:
@@ -358,7 +364,11 @@ bool CALE::loadConstantValue(CObject *obj){
 				if(!pushInteger(((CInteger *)var)->m_value)) return false;
 				break;
 			case CVariable::VAR_TYPE::BOOLEAN:
-				if(!pushBoolean(((CBoolean *)var)->m_value)) return false;
+
+
+
+
+				if(!pushBoolean(((CBoolean *)var)->m_value,n_stk)) return false;
 				break;
 			case CVariable::VAR_TYPE::STRING:
 				if(!pushString(((CString *)var)->m_value)) return false;
@@ -377,19 +387,23 @@ bool CALE::loadConstantValue(CObject *obj){
 
 }
 
-bool CALE::loadValue(CCompiler::tInfoAsmOp *iao){
+bool CALE::loadValue(CCompiler::tInfoAsmOp *iao, int n_stk){
 
 	CObject *obj = ((CObject *)iao->index_op2);
 	CVariable *var=NULL;
 	CScope *_lc = iao->ast_node->scope_ptr;
 	CScope::tInfoRegisteredVar *irv=NULL;
 
+
+
 	//sprintf(print_aux_load_value,"UNDEFINED");
 	switch(iao->index_op1){
 	case CCompiler::LOAD_TYPE::LOAD_TYPE_CONSTANT:
 
 
-		if(!loadConstantValue(obj)){
+
+
+		if(!loadConstantValue(obj, n_stk)){
 			return false;
 		}
 
@@ -416,7 +430,7 @@ bool CALE::loadValue(CCompiler::tInfoAsmOp *iao){
 
 		if(iao->pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::POST_DEC || iao->pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::POST_INC){
 			// 1. Load value as constant value
-			if(!loadConstantValue(irv->m_obj)){
+			if(!loadConstantValue(irv->m_obj,n_stk)){
 				return false;
 			}
 
@@ -534,7 +548,8 @@ bool CALE::assignObjectFromIndex(CObject **obj, int index){
 	return true;
 }
 
-bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instruction,CScriptFunction *sf,int & jmp_to_statment){
+bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instruction,CScriptFunction *sf,int & jmp_to_statment, int n_stk){
+
 
 	string 	aux_string;
 	bool	aux_boolean;
@@ -554,6 +569,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 
 
 
+
 	switch(instruction->operator_type){
 	default:
 		print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
@@ -562,7 +578,9 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 		break;
 	case CCompiler::LOAD: // load value in function of value/constant ...
 
-		if(!loadValue(instruction)){
+
+
+		if(!loadValue(instruction, n_stk)){
 			return false;
 		}
 
@@ -909,10 +927,13 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 		case CCompiler::JNT: // goto if not true ... goes end to conditional.
 
 			// load boolean var and jmp if true...
-			if(n_stkBoolean > 0){
+			if(current_asm_instruction > 0){
 
-				if(!stkBoolean[n_stkBoolean-1]->m_value){
-					jmp_to_statment = index_op1;
+				if(result_object_instruction[current_asm_instruction-1].type == CVariable::VAR_TYPE::BOOLEAN){
+
+					if(!(*((CBoolean **)result_object_instruction[current_asm_instruction-1].stkObject))->m_value){
+						jmp_to_statment = index_op1;
+					}
 				}
 			}else{
 				print_error_cr("No boolean elements");
@@ -920,9 +941,13 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 			break;
 		case CCompiler::JT: // goto if true ... goes end to conditional.
-			if(n_stkBoolean > 0){
-				if(stkBoolean[n_stkBoolean-1]->m_value){
-					jmp_to_statment = index_op1;
+			if(current_asm_instruction > 0){
+
+				if(result_object_instruction[current_asm_instruction-1].type == CVariable::VAR_TYPE::BOOLEAN){
+
+					if((*((CBoolean **)result_object_instruction[current_asm_instruction-1].stkObject))->m_value){
+						jmp_to_statment = index_op1;
+					}
 				}
 			}else{
 				print_error_cr("No boolean elements");
@@ -936,7 +961,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			if(result_object_instruction[index_op1].type == CVariable::FUNCTION){
 				CScriptFunction * fun = (CScriptFunction *)(*result_object_instruction[index_op1].stkObject);//stkFunction[result_object_instruction[index_op1].index];//[stkInteger[result_object_instruction[index_op2].index]];
 
-				if(!CVirtualMachine::execute(fun, &m_functionArgs)){
+				if(!CVirtualMachine::execute(fun, n_stk+1,&m_functionArgs)){
 					return false;
 				}
 
@@ -944,6 +969,9 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				if(!pushObject(fun->getReturnObjectPtr())){
 					return false;
 				}
+			}
+			else{
+				print_error_cr("object not type function");
 			}
 			break;
 		case CCompiler::PUSH: // push arg instruction...
@@ -1024,7 +1052,7 @@ void CALE::reset(){
 	n_stkFunction=
 	current_asm_instruction=0;
 
-	memset(result_object_instruction,0,sizeof(result_object_instruction));
+	//memset(result_object_instruction,0,sizeof(result_object_instruction));
 	m_functionArgs.clear();
 
 }

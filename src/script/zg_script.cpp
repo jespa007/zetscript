@@ -11,6 +11,68 @@ CZG_Script::tPrimitiveType CZG_Script::primitiveType[MAX_VAR_C_TYPES];
 CZG_Script * CZG_Script::m_instance = NULL;
 
 
+//--obj , type convert, ---
+map<string,map<string,fntConversionType>> mapTypeConversion;
+
+template<typename _S, typename _D, typename _F>
+bool addTypeConversion(_F f){
+
+	bool valid_type = false;
+
+	// check if any entry is int, *float, *bool , *string, *int or any from factory. Anyelese will be no allowed!
+	valid_type|=CZG_Script::primitiveType[CZG_Script::VOID_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",VOID_TYPE};
+	valid_type|=CZG_Script::primitiveType[CZG_Script::INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
+	valid_type|=CZG_Script::primitiveType[CZG_Script::INT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",INT_PTR_TYPE};
+	valid_type|=CZG_Script::primitiveType[CZG_Script::FLOAT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
+	valid_type|=CZG_Script::primitiveType[CZG_Script::STRING_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
+	valid_type|=CZG_Script::primitiveType[CZG_Script::BOOL_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
+
+	if(!valid_type){
+		print_error_cr("Conversion type \"%s\" not valid",typeid(_D).name());
+		return false;
+	}
+
+
+
+	if(mapTypeConversion.count(typeid(_S).name()) == 1){ // create new map...
+		if(mapTypeConversion[typeid(_S).name()].count(typeid(_D).name())==1){
+			print_error_cr("type conversion \"%s\" to \"%s\" already inserted",typeid(_S).name(),typeid(_D).name());
+			return false;
+		}
+	}
+
+	mapTypeConversion[typeid(_S).name()][typeid(_D).name()]=f;
+
+	return true;
+	//typeConversion["P7CNumber"]["Ss"](&n);
+}
+
+fntConversionType CZG_Script::getConversionType(string objectType, string conversionType){
+
+	if(mapTypeConversion.count(objectType) == 0){
+		print_error_cr("There's no type conversion \"%s\". Add conversion types through \"addTypeConversion\" function",objectType.c_str());
+		return NULL;
+	}
+
+	if(mapTypeConversion[objectType].count(conversionType) == 0){
+		print_error("There's no CONVERSION from type \"%s\" to type \"%s\"",objectType.c_str(),conversionType.c_str());
+		printf("\n\tAvailable types are:");
+		for(map<string, fntConversionType>::iterator j =mapTypeConversion[objectType].begin() ; j != mapTypeConversion[objectType].end();j++){
+			printf("\n\t\t* \"%s\"", j->first.c_str());
+		}
+
+		return NULL;
+	}
+
+	return mapTypeConversion[objectType][conversionType];
+
+
+}
+
+
+
+
+
 void CZG_Script::registerPrimitiveTypes(){
 
 	primitiveType[VOID_TYPE]={typeid(void).name(),"void",VOID_TYPE};
@@ -161,7 +223,7 @@ CObject * CZG_Script::createObjectFromPrimitiveType(CZG_Script::tPrimitiveType *
 			return (CObject *)NEW_BOOLEAN();
 			break;
 		default:
-			print_error_cr("Not found");
+			print_error_cr("Not found. Must add object type into factory");
 			break;
 
 		}
@@ -170,8 +232,8 @@ CObject * CZG_Script::createObjectFromPrimitiveType(CZG_Script::tPrimitiveType *
 }
 
 
-void  print(float caca){
-	print_info_cr("Hola!");
+void  print(string * s){
+	print_info_cr("dada:%s",s->c_str());
 }
 
 CZG_Script::CZG_Script(){
@@ -195,6 +257,19 @@ void CZG_Script::init(){
 
 	CScope::createSingletons();
 	CAst::createSingletons();
+
+	addTypeConversion<CInteger *,int>( [] (CObject *obj){return ((CInteger *)obj)->m_value;});
+	addTypeConversion<CInteger *,int *>( [] (CObject *obj){return (int)&((CInteger *)obj)->m_value;});
+	addTypeConversion<CInteger *,string *>( [] (CObject *obj){obj->toString();return (int)&obj->m_strValue;});
+
+	addTypeConversion<CNumber *,float *>( [] (CObject *obj){return (int)(&((CNumber *)obj)->m_value);});
+	addTypeConversion<CNumber *,int>( [] (CObject *obj){return (int)((CNumber *)obj)->m_value;});
+	addTypeConversion<CNumber *,string *>( [] (CObject *obj){obj->toString();return (int)&obj->m_strValue;});
+
+	addTypeConversion<CBoolean *,bool *>( [] (CObject *obj){return (int)&((CBoolean *)obj)->m_value;});
+	addTypeConversion<CBoolean *,string *>( [] (CObject *obj){obj->toString();return (int)&obj->m_strValue;});
+
+	addTypeConversion<CString *,string *>( [] (CObject *obj){return (int)&(((CString *)obj)->m_value);});
 
 	//main_context = new CContext();
 
@@ -222,7 +297,7 @@ bool CZG_Script::execute(){
 
 	//CCompiler::getInstance()->printGeneratedCode(m_mainFunction);
 
-	return CVirtualMachine::getInstance()->execute(m_mainFunction);//->excute();
+	return CVirtualMachine::getInstance()->execute(m_mainFunction,0);//->excute();
 }
 
 

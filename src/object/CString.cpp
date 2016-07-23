@@ -3,8 +3,8 @@
 
 CString::CString(){
 
-    m_classStr="string";
-    m_pointerClassStr="string";
+    m_classStr=typeid(CString).name();
+    m_pointerClassStr=typeid(CString *).name();
 
 	m_varType = CVariable::VAR_TYPE::STRING;
 	m_value="unknow";

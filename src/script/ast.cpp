@@ -181,12 +181,14 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup0(const char *s){
 
 tInfoPunctuator  * CAst::parsePunctuatorGroup1(const char *s){
 
+
 	PUNCTUATOR_TYPE index_to_evaluate[]={
-			LOGIC_AND_PUNCTUATOR,
-			MUL_PUNCTUATOR,
-			DIV_PUNCTUATOR,
-			MOD_PUNCTUATOR,
-			FIELD_PUNCTUATOR
+			LOGIC_EQUAL_PUNCTUATOR,
+			LOGIC_NOT_EQUAL_PUNCTUATOR,
+			LOGIC_LTE_PUNCTUATOR,
+			LOGIC_GTE_PUNCTUATOR,
+			LOGIC_GT_PUNCTUATOR,
+			LOGIC_LT_PUNCTUATOR
 	};
 
 	for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
@@ -203,14 +205,12 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup1(const char *s){
 
 tInfoPunctuator  * CAst::parsePunctuatorGroup2(const char *s){
 
-
 	PUNCTUATOR_TYPE index_to_evaluate[]={
-			LOGIC_EQUAL_PUNCTUATOR,
-			LOGIC_NOT_EQUAL_PUNCTUATOR,
-			LOGIC_LTE_PUNCTUATOR,
-			LOGIC_GTE_PUNCTUATOR,
-			LOGIC_GT_PUNCTUATOR,
-			LOGIC_LT_PUNCTUATOR
+			LOGIC_AND_PUNCTUATOR,
+			MUL_PUNCTUATOR,
+			DIV_PUNCTUATOR,
+			MOD_PUNCTUATOR,
+			FIELD_PUNCTUATOR
 	};
 
 	for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
@@ -310,11 +310,11 @@ char * CAst::getEndWord(const char *s, int m_line){
 				(*aux)=='\n' ||
 				(*aux)=='\r'
 						) &&
-				(isOperatorPunctuator(aux)==NULL)
+				(isSpecialPunctuator(aux)==NULL)
 
 		) {
 			// check for special punctuator ( the field '.' separator is processed within the word )
-			if((sp = isSpecialPunctuator(aux))!=NULL){
+			if((sp = isOperatorPunctuator(aux))!=NULL){
 				if(sp->id != FIELD_PUNCTUATOR)
 					return aux;
 			}

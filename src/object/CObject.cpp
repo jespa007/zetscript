@@ -5,7 +5,7 @@
 void CObject::setup() {
 
     m_userObjectType = "unknow";
-
+    m_strValue = "";
 
     m_objectContainer=NULL;
 
@@ -62,7 +62,7 @@ void CObject::setName(const string & _name) {
 }
 //---------------------------------------------------------------------
 string CObject::toString() {
-    string m_strValue = "";
+
 
     return m_strValue;
 }

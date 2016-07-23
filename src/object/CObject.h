@@ -25,7 +25,7 @@ public:
     //------------------------------------------
     CObject();
 
-
+    string m_strValue;
 
 
     //JEMEObjectType _sType

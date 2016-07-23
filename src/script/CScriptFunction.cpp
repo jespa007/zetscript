@@ -63,6 +63,10 @@ void CScriptFunction::setReturnObject(CObject *obj){
 	returnVariable = obj;
 }
 
+void CScriptFunction::add_C_function_argument(string arg_type){
+	m_c_arg.push_back(arg_type);
+}
+
 
 void CScriptFunction::setupAsFunctionPointer(void * _pointer_function){
 
@@ -71,6 +75,85 @@ void CScriptFunction::setupAsFunctionPointer(void * _pointer_function){
 	pointer_function = _pointer_function;
 }
 
+CObject * CScriptFunction::call_print_1p(CObject *obj_arg){
+
+
+	int fp = (int)this->pointer_function;
+
+	if(fp==0){
+		print_error_cr("Null function");
+		return NULL;
+	}
+
+	if(this->m_c_arg.size() != 1){
+		print_error_cr("Argument doestn't match");
+		return NULL;
+	}
+
+	//
+	fntConversionType fun1=CZG_Script::getConversionType(obj_arg->getPointerClassStr(),m_c_arg[0]);
+	int result=0;
+
+	if(fun1 != NULL){
+		// Normalize argument ...
+		int ptr_arg = fun1(obj_arg);
+
+		((int (*)(int))fp)(ptr_arg);
+
+		/*asm(
+				"push %[p1]\n\t"
+				"call *%P0\n\t" // call function
+				"add $4,%%esp"  // Clean up the stack (you must multiply 4*n_arguments here).
+				: "=a" (result) // The result code from puts.
+				: "r"(fun1),[p1] "r"(ptr_arg)
+		);*/
+
+		//float h = (float)result;
+
+		print_info_cr("hh:%i",result);
+
+
+	}
+	return NULL;
+
+}
+
+CObject * CScriptFunction::call_print_0p(){
+
+	int fp = (int)this->pointer_function;
+	if(fp==0){
+		print_error_cr("Null function");
+		return NULL;
+	}
+	// Normalize argument ...
+
+	int result=0;
+
+	((int (*)())fp)();
+
+	// convert result to object ...
+
+
+	return (CObject *)result;
+
+
+}
+
+bool CScriptFunction::call_C_function(vector<CObject *> * argv){
+		switch(argv->size()){
+		case 0:
+			call_print_0p();
+			print_info_cr("0 call!");
+			break;
+		case 1:
+			call_print_1p(argv->at(0));
+			print_info_cr("1 call!");
+			break;
+
+		}
+		print_error_cr("cannot call !");
+		return false;
+}
 
 CScriptFunction::TYPE CScriptFunction::getType(){
 	return m_type;

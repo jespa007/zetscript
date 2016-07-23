@@ -1,5 +1,8 @@
 
 
+print("hola2_merda"+0);
+
+
 /*
 function bb(a,b){
 	return a+b;
@@ -94,17 +97,80 @@ if( (0+1) != (0+0) )
 }
 
 */
+/*
+function isprime(n)
+{
 
-var j=0;
-while(j < 10){
-	j*4;
 	
-	j++;
+	  for (var j = 2; (j < n); ++j)
+	  {
+	    if (n % j == 0) {return false;}
+	  }	
+
 	
-	
+ //var gg=0;
+ 
+ //gg++;
+
+ return true;
 }
 
 
+function primes(n)
+{
+  var count = 0;
+  for (var i = 2; i <= n; ++i)
+  {
+	 // isprime(i);
+	  if (isprime(i)) {++count;}
+	  //if(true) {++count;}
+	  var found = true;
+	  for (var j = 2; (j < i) && !found; ++j)
+	  {
+	    if (i % j == 0) {found=true;}
+	  }
+	  
+	  if(found){
+		  count++;
+	  }
+  }
+
+  return count;
+}
+
+
+var N = 5000;
+
+primes(N);*/
+//print("primes: " + primes(N).to_string())
+
+
+
+
+
+/*
+var sum = 0.0;
+for (var i = 1; i <= 100000; ++i) {
+    if (i % 2 == 0) {
+        sum = 1.0 / i;
+    }
+    else {
+        sum = sum + (1.0 / ((i) * i));
+    }
+}
+*/
+/*
+function fact(n){
+	if( n == 0) {
+		return 1;
+	}
+	else{
+		return n * fact(n-1);
+	}
+}
+
+fact(1000);
+*/
 /*
 
 var kk=0+1;
