@@ -18,7 +18,7 @@ public:
 
 
 
-	bool performInstruction(int idx_instruction, CCompiler::tInfoAsmOp * instruction,CScriptFunction *sf, int & jmp_to_statment, int n_stk);
+	bool performInstruction(int idx_instruction, tInfoAsmOp * instruction,CScriptFunction *sf, int & jmp_to_statment, int n_stk);
 
 	void reset();
 
@@ -80,9 +80,9 @@ private:
 	CObject * getObjectFromIndex(int index);
 	CObject * createObjectFromIndex(int index);
 
-	bool performPreOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
-	bool performPostOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
-	bool loadValue(CCompiler::tInfoAsmOp *iao, int stk);
+	bool performPreOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
+	bool performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
+	bool loadValue(tInfoAsmOp *iao, int stk);
 	bool loadConstantValue(CObject *bj, int n_stk);
 
 

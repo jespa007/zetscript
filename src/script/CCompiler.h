@@ -1,133 +1,22 @@
 #pragma once
 class CContext;
 class CScope;
+
 class CScriptFunction;
+
+/**
+ * The compiler does:
+ * -Generates byte code instruction through AST and ScriptFunction object given.
+ * -Registers classes.
+ * -Registers symbols.
+ */
 class CCompiler{
 
 public:
 
 
 
-	enum LOAD_TYPE{
 
-		LOAD_TYPE_NOT_DEFINED=0,
-		LOAD_TYPE_CONSTANT,
-		LOAD_TYPE_VARIABLE,
-		LOAD_TYPE_ARGUMENT
-	};
-
-
-	enum ASM_OPERATOR{
-		INVALID_OP=-1,
-		NOP=0,
-		MOV, // mov expression to var
-		LOAD, // primitive value like number/string or boolean...
-		EQU,  // ==
-		NOT_EQU,  // !=
-		LT,  // <
-		LTE,  // <=
-		NOT, // !
-		GT,  // >
-		GTE, // >=
-
-		ADD, // +
-		NEG, // -a
-		LOGIC_AND, // &&
-		LOGIC_OR,  // ||
-		DIV, // /
-		MUL, // *
-		MOD,  // %
-		AND, // bitwise logic and
-		OR, // bitwise logic or
-		XOR, // logic xor
-		SHL, // shift left
-		SHR, // shift right
-		// special internal ops...
-		JMP,
-		JNT, // goto if not true ... goes end to conditional.
-		JT, // goto if true ... goes end to conditional.
-		CALL, // calling function after all of args are processed...
-		PUSH, // push arg
-		CLR, // clear args
-		VGET, // vector access after each index is processed...
-
-		VPUSH, // Value push for vector
-		VPOP, // Value pop for vector
-
-		VEC, // Vector object
-		RET, // ret instruction ..
-		MAX_OPERATORS
-
-
-	};
-
-	enum ASM_PRE_POST_OPERATORS{
-		UNKNOW_PRE_POST_OPERATOR=0,
-		PRE_INC, // ++
-		POST_INC, // ++
-		PRE_DEC, // --
-		POST_DEC // --
-
-	};
-
-	typedef struct{
-		const char *op_str;
-		ASM_OPERATOR op_id;
-		int n_ops;
-	}tDefOperator;
-
-	static tDefOperator def_operator[MAX_OPERATORS];
-
-
-	class tInfoAsmOp{
-
-	public:
-
-
-	     //int type_op;
-	     //tInfoObjectOperator *funOp;
-	     //CObject *left_var_obj;
-	    // void *result_obj; // can be float/bool/string or variable.
-
-	    // string symbol_name;
-		CVariable::VAR_TYPE variable_type;
-	     PASTNode ast_node; // define ast node for give some information at run time
-	    // int definedLine;
-	     //string type_res;
-
-	     //------------------
-
-	     ASM_OPERATOR operator_type;
-	     ASM_PRE_POST_OPERATORS pre_post_operator_type;
-	     //void *ptr_value; // can be float, bool or string.
-	     //------------------
-
-	     int index_op1,index_op2; // left and right respectively
-
-	    // bool (* isconvertable)(int value);
-
-		tInfoAsmOp(){
-			//variable_type=VAR_TYPE::NOT_DEFINED;
-			operator_type=ASM_OPERATOR::INVALID_OP;
-			pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
-			ast_node = NULL;
-			//isconvertable=NULL;
-			//left_var_obj=NULL;
-		  //   type_op=0;
-		   //  funOp=NULL;
-			//result_obj=NULL; // oject type...
-
-		   // type_res="none";
-			index_op1=index_op2=-1;
-		   // ptr_value=NULL;
-		}
-
-	};
-
-	typedef struct{
-
-	    vector<tInfoAsmOp *> asm_op;
-	}tInfoStatementOp;
 
 	static CCompiler * getInstance();
 
@@ -226,7 +115,7 @@ private:
 	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
 	void printDebugInformation();
 	static const char * getStrTypeLoadValue(tInfoAsmOp * iao);
-	static const char * getStrMovVar(CCompiler::tInfoAsmOp * iao);
+	static const char * getStrMovVar(tInfoAsmOp * iao);
 
 	static void printGeneratedCode_Recursive(CScriptFunction *fs);
 	static void printGeneratedCode(CScriptFunction *fs);
@@ -269,8 +158,8 @@ private:
 
 
 /*
-	//tInfoRegisteredVar * existRegisteredSymbolRecursive(const string & var_name);
-	tInfoRegisteredVar * existRegisteredSymbol(const string & var_name);
+	//tInfoScopeVar * existRegisteredSymbolRecursive(const string & var_name);
+	tInfoScopeVar * existRegisteredSymbol(const string & var_name);
 	CObject *getRegisteredVariable(const string & v, bool print_msg=true);
 	bool defineSymbol(const string & var_name, CObject *obj);*/
 	//---------------------------------------------------------------

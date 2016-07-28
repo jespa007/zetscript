@@ -1,17 +1,19 @@
 #pragma once
 
+//#include "script/ast/ast.h"
+
+
+
 class CContext;
-class CScriptFunction;
+
+
 class CScope: public CObject{
 public:
 
 	static CUndefined *UndefinedSymbol;
 	static CVoid *VoidSymbol;
 
-	typedef struct{
-		int m_line;
-		CObject *m_obj;
-	}tInfoRegisteredVar;
+
 
 	static void createSingletons();
 	static void destroySingletons();
@@ -19,19 +21,19 @@ public:
 
 	//---------------------------------
 	// Register functions
-	tInfoRegisteredVar *getInfoRegisteredSymbol(const string & v, bool print_msg=true);
+	tInfoScopeVar *getInfoRegisteredSymbol(const string & v, bool print_msg=true);
 
 
-	tInfoRegisteredVar * registerSymbol(const string & var_name, int m_line);
+	tInfoScopeVar * registerSymbol(const string & var_name);
 
 
-	bool defineSymbol(const string & var_name, CObject *obj);
+	//bool defineSymbol(const string & var_name, CObject *obj);
 
-	CScope(CScriptFunction *_comtext,CScope * m_parent=NULL);
+	CScope(CScope * m_parent=NULL);
 
 	CScope * getMainScope();
 
-	CScriptFunction * getScriptFunction();
+
 
 	CScope * getParent();
 	CScope * getCurrentScopePointer();
@@ -60,7 +62,7 @@ private:
 
 	//char * parseKeyword_Switch(const char * str,int & m_line,tInfoCase & info_case,bool & error);
 
-	map<string,tInfoRegisteredVar *> m_registeredSymbol;
+	map<string,tInfoScopeVar *> m_registeredSymbol;
 
 
 	//static CUndefined *m_defaultSymbol;
@@ -74,10 +76,10 @@ private:
 
 	// The a parent scope ...
 	CScope *m_parentScope,*m_mainScope, *m_currentScopePointer, *m_baseScope;
-	CScriptFunction * m_scriptFunction;
 
 
-	tInfoRegisteredVar * existRegisteredSymbol(const string & var_name);
+
+	tInfoScopeVar * existRegisteredSymbol(const string & var_name);
 
 
 	//typedef struct _tLocalScope;

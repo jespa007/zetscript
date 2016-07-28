@@ -1,104 +1,19 @@
 
-#include "ast.cpp"
+#include "ast/CScope.cpp"
+#include "ast/ast.cpp"
 #include "CALE.cpp"
 #include "CVirtualMachine.cpp"
 #include "CCompiler.cpp"
-#include "CScope.cpp"
+#include "CScriptClassFactory.cpp"
+
 #include "CScriptFunction.cpp"
 
 
-CZG_Script::tPrimitiveType CZG_Script::primitiveType[MAX_VAR_C_TYPES];
+
 CZG_Script * CZG_Script::m_instance = NULL;
 
 
-//--obj , type convert, ---
-map<string,map<string,fntConversionType>> mapTypeConversion;
 
-template<typename _S, typename _D, typename _F>
-bool addTypeConversion(_F f){
-
-	bool valid_type = false;
-
-	// check if any entry is int, *float, *bool , *string, *int or any from factory. Anyelese will be no allowed!
-	valid_type|=CZG_Script::primitiveType[CZG_Script::VOID_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",VOID_TYPE};
-	valid_type|=CZG_Script::primitiveType[CZG_Script::INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
-	valid_type|=CZG_Script::primitiveType[CZG_Script::INT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",INT_PTR_TYPE};
-	valid_type|=CZG_Script::primitiveType[CZG_Script::FLOAT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
-	valid_type|=CZG_Script::primitiveType[CZG_Script::STRING_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
-	valid_type|=CZG_Script::primitiveType[CZG_Script::BOOL_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
-
-	if(!valid_type){
-		print_error_cr("Conversion type \"%s\" not valid",typeid(_D).name());
-		return false;
-	}
-
-
-
-	if(mapTypeConversion.count(typeid(_S).name()) == 1){ // create new map...
-		if(mapTypeConversion[typeid(_S).name()].count(typeid(_D).name())==1){
-			print_error_cr("type conversion \"%s\" to \"%s\" already inserted",typeid(_S).name(),typeid(_D).name());
-			return false;
-		}
-	}
-
-	mapTypeConversion[typeid(_S).name()][typeid(_D).name()]=f;
-
-	return true;
-	//typeConversion["P7CNumber"]["Ss"](&n);
-}
-
-fntConversionType CZG_Script::getConversionType(string objectType, string conversionType){
-
-	if(mapTypeConversion.count(objectType) == 0){
-		print_error_cr("There's no type conversion \"%s\". Add conversion types through \"addTypeConversion\" function",objectType.c_str());
-		return NULL;
-	}
-
-	if(mapTypeConversion[objectType].count(conversionType) == 0){
-		print_error("There's no CONVERSION from type \"%s\" to type \"%s\"",objectType.c_str(),conversionType.c_str());
-		printf("\n\tAvailable types are:");
-		for(map<string, fntConversionType>::iterator j =mapTypeConversion[objectType].begin() ; j != mapTypeConversion[objectType].end();j++){
-			printf("\n\t\t* \"%s\"", j->first.c_str());
-		}
-
-		return NULL;
-	}
-
-	return mapTypeConversion[objectType][conversionType];
-
-
-}
-
-
-
-
-
-void CZG_Script::registerPrimitiveTypes(){
-
-	primitiveType[VOID_TYPE]={typeid(void).name(),"void",VOID_TYPE};
-	primitiveType[INT_TYPE]={typeid(int).name(),"int",INT_TYPE};
-	primitiveType[INT_PTR_TYPE]={typeid(int *).name(),"int *",INT_PTR_TYPE};
-	primitiveType[FLOAT_TYPE]={typeid(float).name(),"float",FLOAT_TYPE};
-	primitiveType[FLOAT_PTR_TYPE]={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
-	primitiveType[STRING_TYPE]={typeid(string).name(),"string",STRING_TYPE};
-	primitiveType[STRING_PTR_TYPE]={typeid(string *).name(),"string *",STRING_PTR_TYPE};
-	primitiveType[BOOL_TYPE]={typeid(bool).name(),"bool",BOOL_TYPE};
-	primitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
-}
-
-
-CZG_Script::tPrimitiveType *CZG_Script::getPrimitiveTypeFromStr(const string & str){
-
-	for(unsigned i=0; i < MAX_VAR_C_TYPES; i++){
-		if(primitiveType[i].type_str == str){
-			return &primitiveType[i];
-		}
-	}
-
-	print_error_cr("type \"%s\" is not registered",str.c_str());
-
-	return NULL;
-}
 
 CZG_Script * CZG_Script::getInstance(){
 	if(m_instance==NULL){
@@ -116,6 +31,70 @@ void CZG_Script::destroy(){
 	}
 
 	CFactoryContainer::destroySingletons();
+
+}
+
+CObject * CZG_Script::call_C_1p(int fp,CObject *obj_arg){
+
+
+
+
+	if(fp==0){
+		print_error_cr("Null function");
+		return NULL;
+	}
+
+	if(this->m_c_arg.size() != 1){
+		print_error_cr("Argument doestn't match");
+		return NULL;
+	}
+
+	//
+	fntConversionType fun1=getConversionType(obj_arg->getPointerClassStr(),m_c_arg[0]);
+	int result=0;
+
+	if(fun1 != NULL){
+		// Normalize argument ...
+		int ptr_arg = fun1(obj_arg);
+
+		((int (*)(int))fp)(ptr_arg);
+
+		/*asm(
+				"push %[p1]\n\t"
+				"call *%P0\n\t" // call function
+				"add $4,%%esp"  // Clean up the stack (you must multiply 4*n_arguments here).
+				: "=a" (result) // The result code from puts.
+				: "r"(fun1),[p1] "r"(ptr_arg)
+		);*/
+
+		//float h = (float)result;
+
+		print_info_cr("hh:%i",result);
+
+
+	}
+	return NULL;
+
+}
+
+CObject * CZG_Script::call_C_0p(int fp){
+
+
+	if(fp==0){
+		print_error_cr("Null function");
+		return NULL;
+	}
+	// Normalize argument ...
+
+	int result=0;
+
+	((int (*)())fp)();
+
+	// convert result to object ...
+
+
+	return (CObject *)result;
+
 
 }
 /*
@@ -258,6 +237,8 @@ void CZG_Script::init(){
 	CScope::createSingletons();
 	CAst::createSingletons();
 
+	//-----------------------
+	// move into factory ...
 	addTypeConversion<CInteger *,int>( [] (CObject *obj){return ((CInteger *)obj)->m_value;});
 	addTypeConversion<CInteger *,int *>( [] (CObject *obj){return (int)&((CInteger *)obj)->m_value;});
 	addTypeConversion<CInteger *,string *>( [] (CObject *obj){obj->toString();return (int)&obj->m_strValue;});
@@ -271,15 +252,20 @@ void CZG_Script::init(){
 
 	addTypeConversion<CString *,string *>( [] (CObject *obj){return (int)&(((CString *)obj)->m_value);});
 
+	// move into factory ...
+	//-----------------------
+
 	//main_context = new CContext();
 
-	m_mainFunction = new CScriptFunction();
+	// register Main Class function
+
+	//CScriptClassFactory::registerClass("Main");
 
 	// register c function's
-	registerFunction(print);
+	registerGlobal_C_Function(print);
 
 	// register var
-	registerVariable(&interface_variable);
+	registerGlobal_C_Variable(&interface_variable);
 
 	//typeid(interface_variable).name();
 
@@ -289,7 +275,14 @@ void CZG_Script::init(){
 }
 
 bool CZG_Script::eval(const string & s){
-	return CCompiler::getInstance()->compile(s, m_mainFunction);
+
+
+
+	// create main scope ...
+	irfs.symbol_info.scope = new CScope();
+
+
+	return CCompiler::getInstance()->compile(s, &m_mainFunction);
 }
 
 bool CZG_Script::execute(){

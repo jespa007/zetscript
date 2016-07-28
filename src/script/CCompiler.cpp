@@ -92,7 +92,7 @@ const char * CCompiler::getStrTypeLoadValue(CCompiler::tInfoAsmOp * iao){
 	return print_aux_load_value;
 }
 
-const char * CCompiler::getStrMovVar(CCompiler::tInfoAsmOp * iao){
+const char * CCompiler::getStrMovVar(tInfoAsmOp * iao){
 
 	if(iao->operator_type != MOV){
 		return "ERROR";
@@ -350,7 +350,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 			addConstant(v,obj);
 		}
 	}else{
-		CScope::tInfoRegisteredVar * info_var=_lc->getInfoRegisteredSymbol(v,false);
+		CScope::tInfoScopeVar * info_var=_lc->getInfoRegisteredSymbol(v,false);
 		type=CVariable::OBJECT;
 		load_type=LOAD_TYPE_VARIABLE;
 
@@ -1072,7 +1072,7 @@ bool CCompiler::gacFunction(PASTNode _node, CScope * _lc){
 
 
 	// 1. Get the registered symbol.
-	CScope::tInfoRegisteredVar * irv=_lc->getInfoRegisteredSymbol(_node->value_symbol,false);
+	CScope::tInfoScopeVar * irv=_lc->getInfoRegisteredSymbol(_node->value_symbol,false);
 	if(irv == NULL){
 		print_error_cr("Cannot get registered function %s",_node->value_symbol.c_str());
 		return false;

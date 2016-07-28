@@ -272,20 +272,20 @@ CObject * CALE::createObjectFromIndex(int index){
 	return obj;
 }
 
-bool CALE::performPreOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj){
+bool CALE::performPreOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj){
 	// ok from here, let's check preoperator ...
 
 		if(obj->getObjectType() == CObject::OBJECT_TYPE::VARIABLE){
 			CVariable *var = (CVariable *)obj;
 			switch(var->getVariableType()){
 			case CVariable::INTEGER:
-				if(pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::PRE_INC)
+				if(pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
 					((CInteger *)var)->m_value++;
 				else //dec
 					((CInteger *)var)->m_value--;
 				break;
 			case CVariable::NUMBER:
-				if(pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::PRE_INC)
+				if(pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
 					((CNumber *)var)->m_value++;
 				else // dec
 					((CNumber *)var)->m_value--;
@@ -306,20 +306,20 @@ bool CALE::performPreOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operato
 
 }
 
-bool CALE::performPostOperator(CCompiler::ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj){
+bool CALE::performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj){
 	// ok from here, let's check preoperator ...
 
 		if(obj->getObjectType() == CObject::OBJECT_TYPE::VARIABLE){
 			CVariable *var = (CVariable *)obj;
 			switch(var->getVariableType()){
 			case CVariable::INTEGER:
-				if(pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::POST_INC)
+				if(pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
 					((CInteger *)var)->m_value++;
 				else //dec
 					((CInteger *)var)->m_value--;
 				break;
 			case CVariable::NUMBER:
-				if(pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::POST_INC)
+				if(pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
 					((CNumber *)var)->m_value++;
 				else // dec
 					((CNumber *)var)->m_value--;
@@ -387,18 +387,18 @@ bool CALE::loadConstantValue(CObject *obj, int n_stk){
 
 }
 
-bool CALE::loadValue(CCompiler::tInfoAsmOp *iao, int n_stk){
+bool CALE::loadValue(tInfoAsmOp *iao, int n_stk){
 
 	CObject *obj = ((CObject *)iao->index_op2);
 	CVariable *var=NULL;
 	CScope *_lc = iao->ast_node->scope_ptr;
-	CScope::tInfoRegisteredVar *irv=NULL;
+	tInfoScopeVar *irv=NULL;
 
 
 
 	//sprintf(print_aux_load_value,"UNDEFINED");
 	switch(iao->index_op1){
-	case CCompiler::LOAD_TYPE::LOAD_TYPE_CONSTANT:
+	case LOAD_TYPE::LOAD_TYPE_CONSTANT:
 
 
 
@@ -409,7 +409,7 @@ bool CALE::loadValue(CCompiler::tInfoAsmOp *iao, int n_stk){
 
 		//sprintf(print_aux_load_value,"CONST(%s)",value_symbol.c_str());
 		break;
-	case CCompiler::LOAD_TYPE::LOAD_TYPE_VARIABLE:
+	case LOAD_TYPE::LOAD_TYPE_VARIABLE:
 
 		if(_lc == NULL){
 			print_error_cr("Local scope null");
@@ -421,14 +421,14 @@ bool CALE::loadValue(CCompiler::tInfoAsmOp *iao, int n_stk){
 			return false;
 		}
 
-		if(iao->pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::PRE_DEC || iao->pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::PRE_INC){
+		if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC){
 
 			if(!performPreOperator(iao->pre_post_operator_type, irv->m_obj)){
 				return false;
 			}
 		}
 
-		if(iao->pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::POST_DEC || iao->pre_post_operator_type == CCompiler::ASM_PRE_POST_OPERATORS::POST_INC){
+		if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC){
 			// 1. Load value as constant value
 			if(!loadConstantValue(irv->m_obj,n_stk)){
 				return false;
@@ -447,7 +447,7 @@ bool CALE::loadValue(CCompiler::tInfoAsmOp *iao, int n_stk){
 			}
 		}
 		break;
-	case CCompiler::LOAD_TYPE::LOAD_TYPE_ARGUMENT:
+	case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
 		//sprintf(print_aux_load_value,"ARG(%s)",value_symbol.c_str());
 		break;
 	default:
@@ -548,7 +548,7 @@ bool CALE::assignObjectFromIndex(CObject **obj, int index){
 	return true;
 }
 
-bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instruction,CScriptFunction *sf,int & jmp_to_statment, int n_stk){
+bool CALE::performInstruction(int idx_instruction,tInfoAsmOp * instruction,CScriptFunction *sf,int & jmp_to_statment, int n_stk){
 
 
 	string 	aux_string;
@@ -572,11 +572,11 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 
 	switch(instruction->operator_type){
 	default:
-		print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+		print_error_cr("operator type(%s) not implemented",def_operator[instruction->operator_type].op_str);
 		break;
-	case CCompiler::NOP: // ignore ...
+	case NOP: // ignore ...
 		break;
-	case CCompiler::LOAD: // load value in function of value/constant ...
+	case LOAD: // load value in function of value/constant ...
 
 
 
@@ -585,7 +585,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 		}
 
 		break;
-		case CCompiler::MOV: // mov value expression to var
+		case MOV: // mov value expression to var
 
 			// ok load object pointer ...
 			if(result_object_instruction[index_op1].isAssignable) {// == CVariable::VAR_TYPE::OBJECT){
@@ -604,7 +604,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 
 			break;
-		case CCompiler::EQU:  // == --> boolean && boolean or string && string or number && number
+		case EQU:  // == --> boolean && boolean or string && string or number && number
 
 			if(OP1_AND_OP2_ARE_BOOLEANS) {
 				if(!pushBoolean(LOAD_BOOL_OP(index_op1) == LOAD_BOOL_OP(index_op2))) return false;
@@ -625,7 +625,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 
 			break;
 
-		case CCompiler::NOT_EQU:  // == --> boolean && boolean or string && string or number && number
+		case NOT_EQU:  // == --> boolean && boolean or string && string or number && number
 
 			if(OP1_AND_OP2_ARE_BOOLEANS) {
 				if(!pushBoolean(LOAD_BOOL_OP(index_op1) != LOAD_BOOL_OP(index_op2))) return false;
@@ -645,7 +645,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 
 			break;
-		case CCompiler::LT:  // <
+		case LT:  // <
 			if (IS_INT(index_op1) && IS_INT(index_op2)){
 				if(!pushBoolean(LOAD_INT_OP(index_op1) < LOAD_INT_OP(index_op2))) return false;
 			}else if (IS_INT(index_op1) && IS_NUMBER(index_op2)){
@@ -659,7 +659,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::LTE:  // <=
+		case LTE:  // <=
 
 			if (IS_INT(index_op1) && IS_INT(index_op2)){
 				if(!pushBoolean(LOAD_INT_OP(index_op1) <= LOAD_INT_OP(index_op2))) return false;
@@ -675,7 +675,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 
 			break;
-		case CCompiler::NOT: // !
+		case NOT: // !
 			if (result_object_instruction[index_op1].type == CVariable::VAR_TYPE::BOOLEAN){
 				if(!pushBoolean(!LOAD_BOOL_OP(index_op1))) return false;
 			}else{
@@ -683,7 +683,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::NEG: // !
+		case NEG: // !
 			if (IS_GENERIC_NUMBER(index_op1)){
 				if(result_object_instruction[index_op1].type == CVariable::VAR_TYPE::INTEGER){ // operation will result as integer.
 					if(!pushInteger(-LOAD_INT_OP(index_op1))) {
@@ -702,7 +702,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 			break;
 
-		case CCompiler::GT:  // >
+		case GT:  // >
 			if (IS_INT(index_op1) && IS_INT(index_op2)){
 				if(!pushBoolean(LOAD_INT_OP(index_op1) > LOAD_INT_OP(index_op2))) return false;
 			}else if (IS_INT(index_op1) && IS_NUMBER(index_op2)){
@@ -716,7 +716,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::GTE: // >=
+		case GTE: // >=
 			if (IS_INT(index_op1) && IS_INT(index_op2)){
 				if(!pushBoolean(LOAD_INT_OP(index_op1) >= LOAD_INT_OP(index_op2))) return false;
 			}else if (IS_INT(index_op1) && IS_NUMBER(index_op2)){
@@ -731,7 +731,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 			break;
 
-		case CCompiler::ADD: // +
+		case ADD: // +
 
 			// get indexes and check whether is possible or not its calculation.
 			// check indexes
@@ -792,7 +792,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 
 			break;
 
-		case CCompiler::LOGIC_AND: // &&
+		case LOGIC_AND: // &&
 			if(OP1_AND_OP2_ARE_BOOLEANS) {
 				if(!pushBoolean(LOAD_BOOL_OP(index_op1) && LOAD_BOOL_OP(index_op2))) return false;
 			}else{
@@ -800,7 +800,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::LOGIC_OR:  // ||
+		case LOGIC_OR:  // ||
 			if(OP1_AND_OP2_ARE_BOOLEANS) {
 				if(!pushBoolean(LOAD_BOOL_OP(index_op1) || LOAD_BOOL_OP(index_op2))) return false;
 			}else{
@@ -808,7 +808,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::DIV: // /
+		case DIV: // /
 			if(OP1_AND_OP2_ARE_NUMBERS) {
 
 				if(IS_INT(index_op2)){
@@ -830,7 +830,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 
 			break;
-		case CCompiler::MUL: // *
+		case MUL: // *
 			if(OP1_AND_OP2_ARE_NUMBERS) {
 					PROCESS_NUM_OPERATION(*);
 
@@ -839,7 +839,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::MOD:  // %
+		case MOD:  // %
 			if(OP1_AND_OP2_ARE_NUMBERS) {
 
 				if(IS_INT(index_op2)){
@@ -879,7 +879,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 
 			break;
-		case CCompiler::AND: // bitwise logic and
+		case AND: // bitwise logic and
 			if((result_object_instruction[index_op1].type == CVariable::INTEGER) && (result_object_instruction[index_op2].type == CVariable::INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(index_op1) & LOAD_INT_OP(index_op2))) return false;
 			}else{
@@ -887,7 +887,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::OR: // bitwise logic or
+		case OR: // bitwise logic or
 			if((result_object_instruction[index_op1].type == CVariable::INTEGER) && (result_object_instruction[index_op2].type == CVariable::INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(index_op1) | LOAD_INT_OP(index_op2))) return false;
 			}else{
@@ -896,7 +896,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 
 			break;
-		case CCompiler::XOR: // logic xor
+		case XOR: // logic xor
 			if((result_object_instruction[index_op1].type == CVariable::INTEGER) && (result_object_instruction[index_op2].type == CVariable::INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(index_op1) ^ LOAD_INT_OP(index_op2))) return false;
 			}else{
@@ -904,7 +904,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::SHL: // shift left
+		case SHL: // shift left
 			if((result_object_instruction[index_op1].type == CVariable::INTEGER) && (result_object_instruction[index_op2].type == CVariable::INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(index_op1) << LOAD_INT_OP(index_op2))) return false;
 			}else{
@@ -912,7 +912,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::SHR: // shift right
+		case SHR: // shift right
 			if((result_object_instruction[index_op1].type == CVariable::INTEGER) && (result_object_instruction[index_op2].type == CVariable::INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(index_op1) >> LOAD_INT_OP(index_op2))) return false;
 			}else{
@@ -921,10 +921,10 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 			break;
 		// special internal ops...
-		case CCompiler::JMP:
+		case JMP:
 			jmp_to_statment = index_op1;
 			break;
-		case CCompiler::JNT: // goto if not true ... goes end to conditional.
+		case JNT: // goto if not true ... goes end to conditional.
 
 			// load boolean var and jmp if true...
 			if(current_asm_instruction > 0){
@@ -940,7 +940,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::JT: // goto if true ... goes end to conditional.
+		case JT: // goto if true ... goes end to conditional.
 			if(current_asm_instruction > 0){
 
 				if(result_object_instruction[current_asm_instruction-1].type == CVariable::VAR_TYPE::BOOLEAN){
@@ -954,7 +954,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::CALL: // calling function after all of args are processed...
+		case CALL: // calling function after all of args are processed...
 
 			// check whether signatures matches or not ...
 			// 1. get function object ...
@@ -974,13 +974,13 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				print_error_cr("object not type function");
 			}
 			break;
-		case CCompiler::PUSH: // push arg instruction...
+		case PUSH: // push arg instruction...
 			m_functionArgs.push_back(getObjectFromIndex(index_op1));
 			break;
-		case CCompiler::CLR: // clear args
+		case CLR: // clear args
 			m_functionArgs.clear();
 			break;
-		case CCompiler::VGET: // vector access after each index is processed...
+		case VGET: // vector access after each index is processed...
 			// index_op1 is vector, index op2 is index...
 			if(result_object_instruction[index_op1].type == CVariable::VECTOR){
 				if(result_object_instruction[index_op2].type == CVariable::INTEGER){
@@ -1011,7 +1011,7 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 			}
 
 			break;
-		case CCompiler::VPUSH: // Value push for vector
+		case VPUSH: // Value push for vector
 			if(result_object_instruction[index_op1].type == CVariable::VECTOR){
 				CVector * vec = (CVector *)(*result_object_instruction[index_op1].stkObject);
 				vec->m_value.push_back(createObjectFromIndex(index_op2));
@@ -1020,13 +1020,13 @@ bool CALE::performInstruction(int idx_instruction,CCompiler::tInfoAsmOp * instru
 				return false;
 			}
 			break;
-		case CCompiler::VEC: // Create new vector object...
+		case VEC: // Create new vector object...
 
 			pushVector(NEW_VECTOR());
 
 			break;
 
-		case CCompiler::RET:
+		case RET:
 
 			if(!assignObjectFromIndex(sf->getReturnObjectPtr(),instruction->index_op1)){
 				return false;

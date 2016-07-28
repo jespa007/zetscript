@@ -1,206 +1,44 @@
 #pragma once
 
 class CScriptFunction;
+class CScope;
 
 #include "system/zg_system.h"
 #include "utils/zg_utils.h"
 #include "object/zg_object.h"
 #include "factory/zg_factory.h"
 
-#include "ast.h"
+
+#include "ScriptDefinesStructs.h"
+#include "ast/ast.h"
+#include "ast/CScope.h"
+#include "CCompiler.h"
+#include "CScriptClassFactory.h"
 #include "CALE.h"
 #include "CVirtualMachine.h"
-#include "CCompiler.h"
+
+
 #include "CScriptFunction.h"
-#include "CScope.h"
 
 
 
-#define registerFunction(s) CZG_Script::getInstance()->registerFunctionInternal(STR(s),s)
-#define registerVariable(s) CZG_Script::getInstance()->registerVariableInternal(STR(s),s,typeid(s).name())
 
-typedef int (*fntConversionType)(CObject *obj);
+
+
+
 
 class CZG_Script{
 
 public:
 
-	enum C_TYPE_VAR{
-		VOID_TYPE,
-		INT_TYPE,
-		INT_PTR_TYPE,
-		FLOAT_TYPE,
-		FLOAT_PTR_TYPE,
-		STRING_TYPE,
-		STRING_PTR_TYPE,
-		BOOL_TYPE,
-		BOOL_PTR_TYPE,
-		MAX_VAR_C_TYPES
-	};
-
-
-	typedef struct{
-		string 	    type_str;
-		string      human_description_str;
-		C_TYPE_VAR  id;
-	}tPrimitiveType;
-
-	typedef struct{
-		tPrimitiveType 				*return_type;
-		vector<tPrimitiveType*>		params;
-	}tRegisterFunction;
-
-
-	static tPrimitiveType primitiveType[MAX_VAR_C_TYPES];
-
-	static void registerPrimitiveTypes();
-	static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
-
-
-	/**
-	 * Runtime Object to primitive conversion
-	 */
-	bool object2float(CObject *obj, float & v);
-	bool object2int(CObject *obj, int & v);
-	bool object2bool(CObject *obj, bool & v);
-	bool object2string(CObject *obj, string & v);
-
-	CObject * createObjectFromPrimitiveType(CZG_Script::tPrimitiveType *pt);
-
-	static fntConversionType getConversionType(string objectType, string conversionType);
-
-
-	/**
-	 * Register C function
-	 */
-	template <typename F>
-	void registerFunctionInternal(const char *function_str,F function_ptr)
-	{
-		string return_type;
-		vector<string> params;
-
-		tPrimitiveType *rt;
-		vector<tPrimitiveType *> pt;
-		CScope::tInfoRegisteredVar  *rs;
-
-		CScriptFunction *sf=NULL;
 
 
 
-		// 1. check all parameters ok.
-		using Traits3 = function_traits<decltype(function_ptr)>;
-		getParamsFunction<Traits3>(0,return_type, params, make_index_sequence<Traits3::arity>{});
 
-		// check whether function is ok or not.
-		if((rt=getPrimitiveTypeFromStr(return_type)) == NULL){return;}
-
-		for(unsigned int i=0; i < params.size(); i++){
-			if((rt=getPrimitiveTypeFromStr(params[i])) == NULL){
-				return;
-			}
-
-			pt.push_back(rt);
-
-		}
-
-		// 2. create script function ...
-		if((rs = this->m_mainFunction->getScope()->registerSymbol(function_str,0)) == NULL) // already registered
-			return;
-
-		// 3. all test ok. Time to create script function ..
-
-		sf=new CScriptFunction(m_mainFunction);
-
-		// register return type ...
-		sf->setReturnObject(createObjectFromPrimitiveType(rt));
-
-		sf->setName(function_str);
-
-		// set function pointer...
-		sf->setupAsFunctionPointer((void *)function_ptr);
-
-		// assign object;
-		rs->m_obj = sf;
-
-		// register all args...
-		for(unsigned int i=0; i < params.size(); i++){
-			sf->add_C_function_argument(params[i]);
-		}
-
-		print_info_cr("Registered function name: %s",function_str);
-
-	 /* int temp=0;
-	  f(temp);
-	  std::cout << "Result is " << temp << std::endl;*/
-	}
-
-
-
-	/**
-	 * Register C variable
-	 */
-	void registerVariableInternal(const char *var_str,void * var_ptr, const string & var_type)
-	{
-		if(var_ptr==NULL){
-			print_error_cr("cannot register var \"%s\" with NULL reference value", var_str);
-			return;
-		}
-
-
-		CZG_Script::tPrimitiveType *type;
-		CScope::tInfoRegisteredVar *irv;
-		string human_str;
-
-		if((irv=m_mainFunction->getScope()->registerSymbol(var_str,-1))!= NULL){ // registered symbol var...
-
-
-				if(CFactoryContainer::getInstance()->classPtrIsRegistered(var_type)){ // type exists ...
-					irv->m_obj = (CObject *)var_ptr;
-
-					human_str = var_type;
-				}else{
-					type = getPrimitiveTypeFromStr(var_type);
-					if(type != NULL){
-
-						human_str = type->human_description_str;
-
-					switch(type->id){
-					// 1. first try primitives ...
-					default:
-						print_error_cr("Cannot know how to set \"%s\" as \"%s\" type variable.",var_str,type->human_description_str.c_str());
-						return;
-						break;
-					case INT_PTR_TYPE:
-						irv->m_obj=NEW_INTEGER();
-						((CVariable *)irv->m_obj)->setPtr(var_ptr);
-						break;
-					case FLOAT_PTR_TYPE:
-						irv->m_obj=NEW_NUMBER();
-						((CVariable *)irv->m_obj)->setPtr(var_ptr);
-						break;
-					case STRING_PTR_TYPE:
-						irv->m_obj=NEW_STRING();
-						((CVariable *)irv->m_obj)->setPtr(var_ptr);
-						break;
-					case BOOL_PTR_TYPE:
-						irv->m_obj=NEW_BOOLEAN();
-						((CVariable *)irv->m_obj)->setPtr(var_ptr);
-						break;
-
-					}
-					}
-
-				}
-
-
-
-			if(irv->m_obj != NULL){
-				print_info_cr("Registered \"%s\" as \"%s\"",var_str, human_str.c_str());
-			}
-		}
-	}
 
 private:
+
+	tInfoRegisteredFunctionSymbol main_function;
 
 	/*enum TYPE_{
 		LOAD_VALUE=1,
@@ -234,6 +72,14 @@ private:
 public:
 
 	static CZG_Script * getInstance();
+
+	// calling C function with differnt parameters...
+	CObject * call_C_6p(int f, CObject *arg1,CObject *arg2,CObject *arg3,CObject *arg4,CObject *arg5);
+	CObject * call_C_5p(int f, CObject *arg1,CObject *arg2,CObject *arg3,CObject *arg4);
+	CObject * call_C_3p(int f, CObject *arg1,CObject *arg2,CObject *arg3);
+	CObject * call_C_2p(int f, CObject *arg1,CObject *arg2);
+	CObject * call_C_1p(int f, CObject *arg);
+	CObject * call_C_0p(int f);
 
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 	bool eval(const string & s);

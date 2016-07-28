@@ -1,4 +1,4 @@
-#include "zg_script.h"
+#include "script/zg_script.h"
 
 #define MAX_EXPRESSION_LENGHT 2096
 
@@ -13,6 +13,8 @@
 #else
 #define print_ast_cr(s,...)
 #endif
+
+int n_anonymouse_func=0;
 
 bool CAst::parsePlusPunctuator(const char *s){
 	if(*s=='+')
@@ -428,10 +430,10 @@ void CAst::createSingletons(){
 	defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
 	defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
 	defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
-	defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunction};
+	defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",NULL};
 	defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
 	defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
-	defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",parseClass};
+	defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
 	defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
 	defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
 
@@ -512,7 +514,7 @@ PASTNode CAst::preNodePunctuator(tInfoPunctuator * operator_info,PASTNode affect
 */
 
 
-char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
+char * CAst::deduceExpression(const char *str, int & m_line, tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux = (char *)str;
 	char *end_expression;
@@ -521,7 +523,7 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 	int m_startLine = m_line;
 	tInfoKeyword *key_w  = NULL;
 	vector<PASTNode> vector_args_node;
-	CScope *_localScope =  sf != NULL?sf->getScope():NULL; // gets scope...
+	CScope *_localScope =  sf != NULL?sf->symbol_info.scope:NULL; // gets scope...
 
 
 	string symbol_value="";
@@ -541,6 +543,7 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScriptFunction *sf
 		switch(key_w->id){
 		// sould be function object ...
 		case KEYWORD_TYPE::FUNCTION_KEYWORD:
+			// function objects are stored in MainClass or global scope.
 			if((aux=parseFunction(str,m_startLine,sf,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 				return NULL;
 			}
@@ -773,7 +776,7 @@ bool CAst::printErrorUnexpectedKeywordOrPunctuator(const char *current_string_pt
 char *CAst::getSymbolValue(
 		const char *current_string_ptr,
 		int & m_line,
-		CScriptFunction *sf,
+		tInfoRegisteredFunctionSymbol *sf,
 
 		string & symbol_name,
 		int & m_definedSymbolLine,
@@ -983,14 +986,14 @@ bool CAst::isMarkEndExpression(char c){
 }
 
 //-----------------------------------------------------------------------------------------------------------
-char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated, GROUP_TYPE type_group,PASTNode parent ){
+char * CAst::parseExpression_Recursive(const char *s, int & m_line,tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated, GROUP_TYPE type_group,PASTNode parent ){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux=(char *)s;
 	char *s_effective_start=(char *)s;
 	char *expr_start_op;
 	int start_line = m_line; // set another start line because left node or reparse to try another group was already parsed before.
 	int m_lineOperator=-2;
-	CScope *_localScope =  sf != NULL?sf->getScope()->getCurrentScopePointer():NULL; // gets scope...
+	CScope *_localScope =  sf != NULL?sf->symbol_info.scope->getCurrentScopePointer():NULL; // gets scope...
 
 	char *end_expression=(char *)s ; // by default end expression isequal to
 	//PASTNode symbol_node=NULL; // can be a function or array.
@@ -1249,7 +1252,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line, CScriptFunct
 	return aux;
 }
 
-char * CAst::parseExpression(const char *s, int & m_line, CScriptFunction *sf , PASTNode * ast_node_to_be_evaluated ){
+char * CAst::parseExpression(const char *s, int & m_line, tInfoRegisteredFunctionSymbol *sf, PASTNode * ast_node_to_be_evaluated ){
 
 	// PRE: s is current string to parse. This function tries to parse an expression like i+1; and generates binary ast.
 	// If this functions finds ';' then the function will generate ast.
@@ -1275,7 +1278,7 @@ char * CAst::parseExpression(const char *s, int & m_line, CScriptFunction *sf , 
 //---------------------------------------------------------------------------------------------------------------
 // PARSE KEYWORDS
 
-char * CAst::parseNew(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseNew(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	char *end_p;
@@ -1337,7 +1340,7 @@ char * CAst::parseNew(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 }
 
 
-char * CAst::parseDelete(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseDelete(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	char *end_p;
@@ -1378,14 +1381,16 @@ char * CAst::parseDelete(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 	return NULL;
 }
 
-char * CAst::parseClass(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseClass(const char *s,int & m_line, tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	char *end_p;
 
+	tInfoRegisteredClass *class_info=NULL;
 	int class_line;
 	string class_name;
-	CScriptFunction *class_object=NULL;
+	//tInfoRegisteredFunctionSymbol *class_object=NULL;
+
 	tInfoKeyword *key_w;
 	PASTNode function_collection_node=NULL,vars_collection_node=NULL,child_node=NULL, base_class_node = NULL;
 
@@ -1412,26 +1417,30 @@ char * CAst::parseClass(const char *s,int & m_line,  CScriptFunction *sf, PASTNo
 			class_line = m_line;
 			class_name = CStringUtils::copyStringFromInterval(aux_p, end_p);
 
-			if((class_object = sf->registerClass(class_name, class_line)) == NULL){
+			if((class_info = CScriptClassFactory::registerClass(class_name)) == NULL){
 				return NULL;
 			}
 
+
 			print_info_cr("registered class \"%s\" line %i ",class_name.c_str(), class_line);
-
-			sf = class_object; // override the new function ...
-
 
 			aux_p=CStringUtils::IGNORE_BLANKS(end_p,m_line);
 
-
 			if(*aux_p == ':' ){
-
+				string ext_name;
 				aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
 
 				end_p = getEndWord(aux_p, m_line);
 
 				if(end_p == NULL || end_p == aux_p){
-					print_error_cr("Expected name class at line %i ",m_line);
+					print_error_cr("Expected class name at line %i ",m_line);
+					return NULL;
+				}
+
+				ext_name=CStringUtils::copyStringFromInterval(aux_p, end_p);
+
+				if((CScriptClassFactory::registeredClassExists(ext_name)) == NULL){
+					print_error_cr("extended class \"%s\" not exist");
 					return NULL;
 				}
 
@@ -1451,19 +1460,24 @@ char * CAst::parseClass(const char *s,int & m_line,  CScriptFunction *sf, PASTNo
 				aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
 
 				// it seem's we have a good built class...
-				if(ast_node_to_be_evaluated != NULL){
-					*ast_node_to_be_evaluated = new tASTNode;
-					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
-					(*ast_node_to_be_evaluated)->keyword_info = key_w;
+				//if(ast_node_to_be_evaluated != NULL){
+				*ast_node_to_be_evaluated = new tASTNode;
+				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
+				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 
-					// create var & functions collection...
-					(*ast_node_to_be_evaluated)->children.push_back(vars_collection_node = new tASTNode);
-					(*ast_node_to_be_evaluated)->children.push_back(function_collection_node = new tASTNode);
+				// create var & functions collection...
+				(*ast_node_to_be_evaluated)->children.push_back(vars_collection_node = new tASTNode);
+				(*ast_node_to_be_evaluated)->children.push_back(function_collection_node = new tASTNode);
 
-					if(base_class_node != NULL) {
-						(*ast_node_to_be_evaluated)->children.push_back(	base_class_node );
-					}
+				if(base_class_node != NULL) {
+					(*ast_node_to_be_evaluated)->children.push_back(	base_class_node );
 				}
+				//}
+
+				// register info class ...
+				class_info->ast = (*ast_node_to_be_evaluated);
+
+				//sf = ; // override the new function ...
 
 				// check for named functions or vars...
 
@@ -1530,7 +1544,7 @@ char * CAst::parseClass(const char *s,int & m_line,  CScriptFunction *sf, PASTNo
 	return NULL;
 }
 
-char * CAst::parseArgs(char c1,char c2,const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseArgs(char c1,char c2,const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 
@@ -1579,7 +1593,7 @@ char * CAst::parseArgs(char c1,char c2,const char *s,int & m_line,  CScriptFunct
 	return NULL;
 }
 
-char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseFunction(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
@@ -1589,9 +1603,9 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 	PASTNode args_node=NULL, body_node=NULL, arg_node=NULL;
 	string conditional_str;
 	bool error=false;
-	CScope::tInfoRegisteredVar * irv=NULL;
-	CScriptFunction *object_function=NULL;
-	CScope *_localScope =  sf != NULL?sf->getScope():NULL; // gets scope...
+	tInfoScopeVar * irv=NULL;
+	tInfoRegisteredFunctionSymbol object_function;
+	CScope *_localScope =  sf != NULL?sf->symbol_info.scope:NULL; // gets scope...
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
@@ -1637,8 +1651,8 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 
 					// check whether parameter name's matches with some global variable...
 					if(sf != NULL){
-						if((irv=sf->getScope()->getCurrentScopePointer()->getInfoRegisteredSymbol(value_symbol,false)) != NULL){
-							print_error_cr("Function name \"%s\" defined at line %i is ambiguos with symbol defined at %i", value_symbol, m_line,irv->m_line);
+						if((irv=_localScope->getCurrentScopePointer()->getInfoRegisteredSymbol(value_symbol,false)) != NULL){
+							print_error_cr("Function name \"%s\" defined at line %i is ambiguos with symbol defined at %i", value_symbol, m_line,-1);
 							return NULL;
 						}
 					}
@@ -1662,19 +1676,22 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 
 			if(ast_node_to_be_evaluated!=NULL){
 
-				// create object function ...
-				object_function =new CScriptFunction(sf);
+				//print_error_cr("Must create function object!");
+				//return NULL;
 
-				string function_name = object_function->getID();
+				// create object function ...
+				/*object_function =new tInfoRegisteredFunctionSymbol(sf);*/
+
+				string function_name = "__afun_"+(n_anonymouse_func++);///object_function->getID();
 				if(named_function){
 					function_name=value_symbol;
 				}
 
-				object_function->setName(function_name);
+				//object_function->setName(function_name);
 				(*ast_node_to_be_evaluated)->value_symbol = function_name;
 				// define value symbol...
-				irv=sf->getScope()->registerSymbol((*ast_node_to_be_evaluated)->value_symbol,m_line);
-				 irv->m_obj=object_function;
+				irv=sf->symbol_info.scope->registerSymbol((*ast_node_to_be_evaluated)->value_symbol);
+				 //irv->m_obj=object_function;
 			}
 
 			// parse function args...
@@ -1709,14 +1726,14 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 						}
 
 						// check whether parameter name's matches with some global variable...
-						if((irv=object_function->getScope()->getCurrentScopePointer()->getInfoRegisteredSymbol(value_symbol,false)) != NULL){
-							print_error_cr("Ambiguos symbol argument \"%s\" at line %i name with var defined at %i", value_symbol, m_line,irv->m_line);
+						if((irv=object_function.symbol_info.scope->getCurrentScopePointer()->getInfoRegisteredSymbol(value_symbol,false)) != NULL){
+							print_error_cr("Ambiguos symbol argument \"%s\" at line %i name with var defined at %i", value_symbol, m_line,-1);
 							return NULL;
 
 						}
 
 						// ok register symbol into the object function ...
-						object_function->registerArgument(value_symbol);//getScope()->registerSymbol(value_symbol,m_line);
+						object_function.m_arg.push_back(value_symbol);//getScope()->registerSymbol(value_symbol,m_line);
 					}
 					aux_p=end_var;
 					aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
@@ -1752,7 +1769,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 				}
 
 				// ok let's go to body..
-				if((aux_p = parseBlock(aux_p,m_line,ast_node_to_be_evaluated != NULL ? object_function:NULL ,error,ast_node_to_be_evaluated != NULL ? &body_node : NULL,false)) != NULL){
+				if((aux_p = parseBlock(aux_p,m_line,ast_node_to_be_evaluated != NULL ? &object_function:NULL ,error,ast_node_to_be_evaluated != NULL ? &body_node : NULL,false)) != NULL){
 
 					if(!error){
 
@@ -1761,7 +1778,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 							body_node->node_type = BODY_NODE;
 
 							// save root node to object function ...
-							*object_function->getRootAstPtr() = (*ast_node_to_be_evaluated);
+							object_function.symbol_info.ast =(*ast_node_to_be_evaluated);
 
 						}
 
@@ -1779,7 +1796,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScriptFunction *sf, PAS
 	return NULL;
 }
 
-char *  CAst::parseReturn(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char *  CAst::parseReturn(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
 	char *aux_p = (char *)s;
@@ -1818,7 +1835,7 @@ char *  CAst::parseReturn(const char *s,int & m_line,  CScriptFunction *sf, PAST
 	return NULL;
 }
 
-char * CAst::parseWhile(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseWhile(const char *s,int & m_line, tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
@@ -1911,7 +1928,7 @@ char * CAst::parseWhile(const char *s,int & m_line,  CScriptFunction *sf, PASTNo
 
 
 
-char * CAst::parseIf(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseIf(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
@@ -2026,7 +2043,7 @@ char * CAst::parseIf(const char *s,int & m_line,  CScriptFunction *sf, PASTNode 
 	return NULL;
 }
 
-char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseFor(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
@@ -2035,7 +2052,7 @@ char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 	bool error=false;
 	PASTNode block_for = NULL,node_for_expression=NULL;
 	string eval_for;
-	CScope *_localScope =  sf != NULL?sf->getScope():NULL; // gets scope...
+	CScope *_localScope =  sf != NULL?sf->symbol_info.scope:NULL; // gets scope...
 	CScope *_currentScope;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
@@ -2149,7 +2166,7 @@ char * CAst::parseFor(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 	return NULL;
 }
 
-char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseSwitch(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
@@ -2164,7 +2181,7 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 
 	char *value_to_eval;
 	string val;
-	CScope *_localScope = sf!=NULL?sf->getScope():NULL; // gets current evaluating scope...
+	CScope *_localScope = sf!=NULL?sf->symbol_info.scope:NULL; // gets current evaluating scope...
 	tInfoKeyword *key_w,*key_w2;
 
 	bool error=false;
@@ -2448,7 +2465,7 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScriptFunction *sf, PASTN
 	return NULL;
 }
 
-char * CAst::parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseVar(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
@@ -2476,7 +2493,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 
 			//
 			if(ast_node_to_be_evaluated != NULL){
-				_currentScope=sf->getScope()->getCurrentScopePointer(); // gets current evaluating scope...
+				_currentScope=sf->symbol_info.scope->getCurrentScopePointer(); // gets current evaluating scope...
 				(*ast_node_to_be_evaluated) = new tASTNode;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
@@ -2508,7 +2525,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 
 					if(ast_node_to_be_evaluated!=NULL){
 
-						if(!_currentScope->registerSymbol(symbol_name,m_line)){
+						if(!_currentScope->registerSymbol(symbol_name)){
 							return NULL;
 						}
 
@@ -2560,12 +2577,12 @@ char * CAst::parseVar(const char *s,int & m_line,  CScriptFunction *sf, PASTNode
 	return NULL;
 }
 
-char * CAst::parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool & error,PASTNode *ast_node_to_be_evaluated, bool push_scope){
+char * CAst::parseBlock(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, bool & error,PASTNode *ast_node_to_be_evaluated, bool push_scope){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
 	char *aux_p = (char *)s;
 
-	CScope *_localScope =  sf != NULL ? sf->getScope(): NULL;
+	CScope *_localScope =  sf != NULL ? sf->symbol_info.scope: NULL;
 	CScope *currentScope=  _localScope;
 	//CScope *_ant, *_post;
 
@@ -2610,7 +2627,7 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScriptFunction *sf, bool &
 	return NULL;
 }
 
-char *CAst::parseKeyWord(const char *s, int & m_line, CScriptFunction *sf, bool & error, PASTNode *ast_node_to_be_evaluated){
+char *CAst::parseKeyWord(const char *s, int & m_line, tInfoRegisteredFunctionSymbol *sf, bool & error, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p= (char *)s;
@@ -2635,7 +2652,23 @@ char *CAst::parseKeyWord(const char *s, int & m_line, CScriptFunction *sf, bool 
 			return NULL;
 		}
 
-		// check if another kwyword is put ...
+		// check if class and is not main class (scope )...
+		if(keyw->id == KEYWORD_TYPE::CLASS_KEYWORD){
+			/*if(!sf->isMainFunction()){
+				print_error_cr("%i. unexpected \"class\" keyword. Must be defined at top bottom of level.",m_line);
+				return NULL;
+			}
+			else{*/
+				if((aux_p = parseClass(s,m_line,sf,ast_node_to_be_evaluated)) == NULL){
+					return aux_p;
+				}
+
+				error = true;
+				return NULL;
+		//	}
+		}
+
+		// check if another kwyword is defined ...
 		if((keyw2nd = isKeyword(aux_p))!= NULL){
 			print_error_cr("unexpected keyword \"%s\" at line %i",keyw2nd->str, m_line);
 			error = true;
@@ -2657,7 +2690,7 @@ char *CAst::parseKeyWord(const char *s, int & m_line, CScriptFunction *sf, bool 
 	return NULL;
 }
 
-char * CAst::generateAST_Recursive(const char *s, int & m_line, CScriptFunction *sf, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks){
+char * CAst::generateAST_Recursive(const char *s, int & m_line, tInfoRegisteredFunctionSymbol *sf, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks){
 
 	// PRE: **node must be created and is i/o ast pointer variable where to write changes.
 
@@ -2736,10 +2769,11 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScriptFunction 
 	return aux;
 }
 
-bool CAst::generateAST(const char *s, CScriptFunction *sf, PASTNode * ast_node_to_be_evaluated){
+bool CAst::generateAST(const char *s, tInfoRegisteredFunctionSymbol *sf, PASTNode * ast_node_to_be_evaluated){
 
 	int m_line = 1;
 	bool error=false;
+	//m_parentFunction!=NULL?m_parentFunction->getScope():NULL);
 
 	if(generateAST_Recursive(s, m_line,sf,error,ast_node_to_be_evaluated) != NULL){
 

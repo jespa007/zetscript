@@ -1,4 +1,4 @@
-#include "zg_script.h"
+#include "script/zg_script.h"
 
 #define MAX_STATMENT_LENGTH 2096
 #define MAX_VAR_LENGTH 100
@@ -19,11 +19,11 @@ void CScope::destroySingletons(){
 
 
 
-CScope::CScope(CScriptFunction * _fs, CScope * _parent){
+CScope::CScope(CScope * _parent){
 	m_parentScope = _parent;
 
 	m_baseScope = this;
-	m_scriptFunction = _fs;
+
 
 	if(_parent == NULL){
 		m_mainScope = this;
@@ -32,10 +32,6 @@ CScope::CScope(CScriptFunction * _fs, CScope * _parent){
 	}
 
 	m_currentScopePointer=m_baseScope;
-}
-
-CScriptFunction * CScope::getScriptFunction(){
-	return m_scriptFunction;
 }
 
 
@@ -61,7 +57,7 @@ void CScope::resetScopePointer(){
 
 CScope * CScope::pushScope(){
 
-	CScope *new_scope = new CScope(m_currentScopePointer->getScriptFunction(),m_currentScopePointer);
+	CScope *new_scope = new CScope(m_currentScopePointer);
 	m_currentScopePointer->m_scopeList.push_back(new_scope);
 	m_currentScopePointer = new_scope;
 	return m_currentScopePointer;
@@ -83,26 +79,29 @@ CScope * CScope::popScope(){
 //
 // SCOPE VARIABLE MANAGEMENT
 //
-CScope::tInfoRegisteredVar * CScope::registerSymbol(const string & var_name, int m_line){
-	tInfoRegisteredVar * irv;
+tInfoScopeVar * CScope::registerSymbol(const string & var_name){
+	tInfoScopeVar * irv;
 	if((irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
-		irv = new tInfoRegisteredVar;
-		irv->m_line = m_line;
-		irv->m_obj = UndefinedSymbol;
+		irv = new tInfoScopeVar;
+		//irv->ast = ast;
 		m_registeredSymbol[var_name]=irv;
 		return irv;
 	}else{
-		print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), irv->m_line);
+		int m_line=-1;
+		/*if(irv->ast != NULL) {
+			m_line = irv->ast->definedValueline;
+		}*/
+		print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), m_line);
 	}
 
 	return NULL;
 }
 
 
-
+/*
 bool CScope::defineSymbol(const string & var_name, CObject *obj){
 
-	tInfoRegisteredVar * irv;
+	tInfoScopeVar * irv;
 	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
 		irv->m_obj=obj;
 		irv->m_obj->setName(var_name);
@@ -111,9 +110,9 @@ bool CScope::defineSymbol(const string & var_name, CObject *obj){
 		print_error_cr("error var \"%s\" is not registered!", var_name.c_str());
 	}
 	return false;
-}
+}*/
 
-CScope::tInfoRegisteredVar * CScope::existRegisteredSymbol(const string & var_name){
+tInfoScopeVar * CScope::existRegisteredSymbol(const string & var_name){
 	if(m_registeredSymbol.count(var_name)==0){ // not exit but we will deepth through parents ...
 		CScope * parent =  getParent();
 		if(parent != NULL){
@@ -131,8 +130,8 @@ CScope::tInfoRegisteredVar * CScope::existRegisteredSymbol(const string & var_na
 
 
 
-CScope::tInfoRegisteredVar *CScope::getInfoRegisteredSymbol(const string & var_name, bool print_msg){
-	tInfoRegisteredVar * irv;
+tInfoScopeVar *CScope::getInfoRegisteredSymbol(const string & var_name, bool print_msg){
+	tInfoScopeVar * irv;
 	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
 
 		return irv;
@@ -249,15 +248,15 @@ typedef struct {
 
 	string str_conditional_value; // values that executes the scope...
 	tInfoStartEndString str_scope;
-	CCompiler::tInfoAsmOp *jt_asm=NULL;
-	CCompiler::tInfoAsmOp *jmp_asm=NULL;
+	tInfoAsmOp *jt_asm=NULL;
+	tInfoAsmOp *jmp_asm=NULL;
 }tInfoCase;
 
 typedef struct {
 
 	vector<tInfoCase> conditional_case;
 	tInfoStartEndString str_default_case_scope;
-	CCompiler::tInfoAsmOp *jmp_default_asm=NULL;
+	tInfoAsmOp *jmp_default_asm=NULL;
 
 }tInfoSwitch;
 
@@ -1082,7 +1081,7 @@ bool CScope::eval (const string & s){
 
 
 CScope::~CScope(){
-	for(map<string,tInfoRegisteredVar *>::iterator it = m_registeredSymbol.begin();it!= m_registeredSymbol.end();it++){
+	for(map<string,tInfoScopeVar *>::iterator it = m_registeredSymbol.begin();it!= m_registeredSymbol.end();it++){
 			delete it->second;
 	}
 
