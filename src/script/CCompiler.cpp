@@ -14,7 +14,7 @@
 #endif
 
 
-CCompiler::tDefOperator CCompiler::def_operator[MAX_OPERATORS];
+tDefOperator CCompiler::def_operator[MAX_OPERATORS];
 map<string, CObject *> * CCompiler::constant_pool=NULL;
 char CCompiler::print_aux_load_value[512];
 
@@ -57,7 +57,7 @@ void CCompiler::destroySingletons(){
 	}
 }
 
-const char * CCompiler::getStrTypeLoadValue(CCompiler::tInfoAsmOp * iao){
+const char * CCompiler::getStrTypeLoadValue(tInfoAsmOp * iao){
 
 	if(iao->operator_type != LOAD){
 		return "ERROR";
@@ -109,9 +109,9 @@ const char * CCompiler::getStrMovVar(tInfoAsmOp * iao){
 	return print_aux_load_value;
 }
 
-void CCompiler::printGeneratedCode_Recursive(CScriptFunction *fs){
+void CCompiler::printGeneratedCode_Recursive(tBaseObjectInfo *fs){
 
-	vector<tInfoStatementOp> * m_listStatements = fs->getCompiledCode();
+	vector<tInfoStatementOp> * m_listStatements = &fs->statment_op;
 	string pre="";
 	string post="";
 
@@ -188,22 +188,22 @@ void CCompiler::printGeneratedCode_Recursive(CScriptFunction *fs){
 		}
 	}
 	// and then print its functions ...
-	vector<CScriptFunction *> * m_vf = fs->getVectorFunction();
+	vector<tInfoRegisteredFunctionSymbol> * m_vf = &fs->member_data.m_registeredFunction;
 
 	for(unsigned j =0; j < m_vf->size(); j++){
 
-		if(m_vf->at(j)->getType() == CScriptFunction::TYPE::SCRIPT_FUNCTION_TYPE){
+		if(((*m_vf)[j].object_info.symbol_info.properties & C_OBJECT_REF) == C_OBJECT_REF){
 
 			print_info_cr("-------------------------------------------------------");
 			print_info_cr("");
-			print_info_cr("Code for %s",(*m_vf)[j]->getName().c_str());
+			print_info_cr("Code for %s",(*m_vf)[j].object_info.symbol_info.ast->value_symbol.c_str());
 			print_info_cr("");
-			printGeneratedCode_Recursive((*m_vf)[j]);
+			printGeneratedCode_Recursive(&m_vf->at(j).object_info);
 		}
 	}
 }
 
-void CCompiler::printGeneratedCode(CScriptFunction *fs){
+void CCompiler::printGeneratedCode(tBaseObjectInfo *fs){
 	printGeneratedCode_Recursive(fs);
 }
 
@@ -267,7 +267,7 @@ CCompiler::CCompiler(){
 // COMPILE COMPILER MANAGEMENT
 //
 int CCompiler::getCurrentInstructionIndex(){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	return ptr_current_statement_op->asm_op.size()-1;
 }
 
@@ -275,24 +275,24 @@ int CCompiler::getCurrentStatmentIndex(){
 	return (int)(m_currentListStatements->size()-1);
 }
 
-CCompiler::tInfoStatementOp * CCompiler::newStatment(){
-	CCompiler::tInfoStatementOp st;
+tInfoStatementOp * CCompiler::newStatment(){
+	tInfoStatementOp st;
 
 	m_currentListStatements->push_back(st);
 
 	return  &(*m_currentListStatements)[m_currentListStatements->size()-1];
 }
 
-bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
+bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 	string v = _node->value_symbol;
 	int m_var_at_line = _node->definedValueline;
 	ASM_PRE_POST_OPERATORS pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	CObject *obj, *get_obj;
 	CVariable::VAR_TYPE type=CVariable::OBJECT;
-	CCompiler::LOAD_TYPE load_type=CCompiler::LOAD_TYPE_NOT_DEFINED;
+	LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
 
 	if(_node->pre_post_operator_info != NULL){
 
@@ -350,7 +350,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 			addConstant(v,obj);
 		}
 	}else{
-		CScope::tInfoScopeVar * info_var=_lc->getInfoRegisteredSymbol(v,false);
+		tInfoScopeVar * info_var=_lc->getInfoRegisteredSymbol(v,false);
 		type=CVariable::OBJECT;
 		load_type=LOAD_TYPE_VARIABLE;
 
@@ -362,7 +362,8 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 		// if object check whether has pre/post inc/dec
 
-		obj = info_var->m_obj;
+
+		obj = (CObject *)info_var->index_var;
 	}
 
 	if((pre_post_operator_type !=ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR) &&
@@ -372,7 +373,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 	}
 
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 
 	asm_op->variable_type=type;
 	asm_op->index_op1=load_type;
@@ -380,7 +381,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 	asm_op->ast_node=_node;
 	asm_op->pre_post_operator_type=pre_post_operator_type;
 
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::LOAD;
+	asm_op->operator_type=ASM_OPERATOR::LOAD;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 	return true;
@@ -388,9 +389,8 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 bool CCompiler::insertMovVarInstruction(int left_index, int right_index){
 
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-
-	CCompiler::tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[left_index];
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[left_index];
 
 	// check whether left operant is object...
 	if(left_asm_op->variable_type != CVariable::OBJECT){
@@ -402,35 +402,35 @@ bool CCompiler::insertMovVarInstruction(int left_index, int right_index){
 		return false;
 	}
 
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = left_index;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 =  right_index;
 	//asm_op->symbol_name="";
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::MOV;
+	asm_op->operator_type=ASM_OPERATOR::MOV;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 	return true;
 }
 
-CCompiler::tInfoAsmOp * CCompiler::insert_JMP_Instruction(int jmp_statement){
+tInfoAsmOp * CCompiler::insert_JMP_Instruction(int jmp_statement){
 
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = jmp_statement;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::JMP;
+	asm_op->operator_type=ASM_OPERATOR::JMP;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	//printf("[%02i:%02i]\tJMP\t[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 
 	return asm_op;
 }
 
-CCompiler::tInfoAsmOp * CCompiler::insert_JNT_Instruction(int jmp_statement){
+tInfoAsmOp * CCompiler::insert_JNT_Instruction(int jmp_statement){
 
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = jmp_statement;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::JNT;
+	asm_op->operator_type=ASM_OPERATOR::JNT;
 
 	//printf("[%02i:%02i]\tJNT\t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -438,32 +438,32 @@ CCompiler::tInfoAsmOp * CCompiler::insert_JNT_Instruction(int jmp_statement){
 	return asm_op;
 }
 
-CCompiler::tInfoAsmOp * CCompiler::insert_JT_Instruction(int jmp_statement){
+tInfoAsmOp * CCompiler::insert_JT_Instruction(int jmp_statement){
 
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = jmp_statement;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::JT;
+	asm_op->operator_type=ASM_OPERATOR::JT;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return asm_op;
 }
 
 void CCompiler::insert_NOP_Instruction(){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = 0;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::NOP;
+	asm_op->operator_type=ASM_OPERATOR::NOP;
 	//printf("[%02i:%02i]\tNOP\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 }
 
 void CCompiler::insert_CreateArrayObject_Instruction(){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::VEC;
+	asm_op->operator_type=ASM_OPERATOR::VEC;
 	asm_op->variable_type = CVariable::OBJECT;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -471,11 +471,11 @@ void CCompiler::insert_CreateArrayObject_Instruction(){
 }
 
 void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instrucction, tASTNode *_ast){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = vec_object;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 = index_instrucction;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::VGET;
+	asm_op->operator_type=ASM_OPERATOR::VGET;
 	asm_op->ast_node = _ast;
 	asm_op->variable_type = CVariable::OBJECT;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
@@ -485,75 +485,75 @@ void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instruc
 
 
 void CCompiler::insert_ClearArgumentStack_Instruction(){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::CLR;
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	asm_op->operator_type=ASM_OPERATOR::CLR;
 	//printf("[%02i:%02i]\tNOP\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
 
 void CCompiler::insert_PushArgument_Instruction(){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
-	asm_op->index_op1 = CCompiler::getCurrentInstructionIndex();//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::PUSH;
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	asm_op->index_op1 = getCurrentInstructionIndex();//&((*m_currentListStatements)[dest_statment]);
+	asm_op->operator_type=ASM_OPERATOR::PUSH;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 }
 
 void CCompiler::insert_CallFunction_Instruction(int  index_call){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = index_call;//&((*m_currentListStatements)[dest_statment]);
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::CALL;
+	asm_op->operator_type=ASM_OPERATOR::CALL;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
 void CCompiler::insertRet(int index){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = index;//&((*m_currentListStatements)[dest_statment]);
 	//asm_op->symbol_name="";
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::RET;
+	asm_op->operator_type=ASM_OPERATOR::RET;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
 
 void CCompiler::insert_ArrayObject_PushValueInstruction(int ref_vec_object_index, int index_instruciont_to_push){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp *asm_op = new CCompiler::tInfoAsmOp();
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1=ref_vec_object_index;
 	asm_op->index_op2=index_instruciont_to_push;
 	if(index_instruciont_to_push == -1){
 		asm_op->index_op2=CCompiler::getCurrentInstructionIndex();
 	}
-	asm_op->operator_type=CCompiler::ASM_OPERATOR::VPUSH;
+	asm_op->operator_type=ASM_OPERATOR::VPUSH;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CCompiler::ASM_PRE_POST_OPERATORS CCompiler::preoperator2instruction(PUNCTUATOR_TYPE op){
+ASM_PRE_POST_OPERATORS CCompiler::preoperator2instruction(PUNCTUATOR_TYPE op){
 
 	switch(op){
 	default:
-		return CCompiler::ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
+		return ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 	case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
-		return CCompiler::PRE_INC;
+		return PRE_INC;
 	case PUNCTUATOR_TYPE::POST_INC_PUNCTUATOR:
-		return CCompiler::POST_INC;
+		return POST_INC;
 	case PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR:
-		return CCompiler::PRE_DEC;
+		return PRE_DEC;
 	case PUNCTUATOR_TYPE::POST_DEC_PUNCTUATOR:
-		return CCompiler::POST_DEC;
+		return POST_DEC;
 	}
 
-	return CCompiler::ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
+	return ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 }
 
-CCompiler::ASM_OPERATOR CCompiler::puntuator2instruction(tInfoPunctuator * op){
+ASM_OPERATOR CCompiler::puntuator2instruction(tInfoPunctuator * op){
 
 	switch(op->id){
 	default:
@@ -605,8 +605,8 @@ CCompiler::ASM_OPERATOR CCompiler::puntuator2instruction(tInfoPunctuator * op){
 }
 
 bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, string & error_str, int op_index_left, int op_index_right){
-	CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CCompiler::tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
 
 	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->variable_type != CVariable::OBJECT){
 
@@ -619,7 +619,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 	if((asm_op= puntuator2instruction(op))!=INVALID_OP){
 
 
-		CCompiler::tInfoAsmOp *iao = new CCompiler::tInfoAsmOp();
+		tInfoAsmOp *iao = new tInfoAsmOp();
 		//asm_op->type_op=OPERATOR;
 		iao->operator_type = asm_op;
 		iao->index_op1 = op_index_left;
@@ -639,7 +639,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 //
 // COMPILE EXPRESSIONS AND GENERATE ITS ASM
 //
-int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
+int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScopeInfo *_lc)
 {
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return -1;}
@@ -672,13 +672,13 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 		if(array_acces->children [k]->node_type == ARRAY_INDEX_NODE){
 			if(array_acces->children [k]->children.size() == 1){
 				// check whether is expression node...
-				if((gacExpression(array_acces->children [k]->children[0], _lc,CCompiler::getCurrentInstructionIndex()+1)) == -1){
+				if((gacExpression(array_acces->children [k]->children[0], _lc,getCurrentInstructionIndex()+1)) == -1){
 					return -1;
 				}
 
 				// insert vector access instruction ...
 				insert_ArrayAccess_Instruction(vec,CCompiler::getCurrentInstructionIndex(),array_acces->children [k]);
-				vec = CCompiler::getCurrentInstructionIndex();
+				vec = getCurrentInstructionIndex();
 
 			}else{
 				print_error_cr("Expected 1 children");
@@ -695,22 +695,22 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 
 
 		// get post/inc
-		CCompiler::tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-		CCompiler::tInfoAsmOp *asm_op = ptr_current_statement_op->asm_op[ptr_current_statement_op->asm_op.size()-1];
+		tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+		tInfoAsmOp *asm_op = ptr_current_statement_op->asm_op[ptr_current_statement_op->asm_op.size()-1];
 		asm_op->pre_post_operator_type=preoperator2instruction(_node->pre_post_operator_info->id);
 
 	}
 
 	// return last instruction where was modified
-	return CCompiler::getCurrentInstructionIndex();
+	return getCurrentInstructionIndex();
 }
 
-int CCompiler::gacExpression_ArrayObject_Recursive(PASTNode _node, CScope *_lc){
+int CCompiler::gacExpression_ArrayObject_Recursive(PASTNode _node, CScopeInfo *_lc){
 
 	return 0;
 }
 
-int CCompiler::gacExpression_ArrayObject(PASTNode _node, CScope *_lc)
+int CCompiler::gacExpression_ArrayObject(PASTNode _node, CScopeInfo *_lc)
 {
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != ARRAY_OBJECT_NODE ){print_error_cr("node is not ARRAY_OBJECT_NODE type or null");return -1;}
@@ -751,7 +751,7 @@ int CCompiler::gacExpression_ArrayObject(PASTNode _node, CScope *_lc)
 	return index_created_vec;//CCompiler::getCurrentInstructionIndex();
 }
 
-int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
+int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScopeInfo *_lc)
 {
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != FUNCTION_OBJECT_NODE ){print_error_cr("node is not FUNCTION_OBJECT_NODE type or null");return -1;}
@@ -767,7 +767,7 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
 	return CCompiler::getCurrentInstructionIndex();
 }
 
-int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
+int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScopeInfo *_lc)
 {
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return -1;}
@@ -804,9 +804,9 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 	return CCompiler::getCurrentInstructionIndex();
 }
 
-int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_instruction){
+int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & index_instruction){
 
-	//CScope * _lc = m_currentScriptFunction->getScope();
+	//CScopeInfo * _lc = m_currentScriptFunction->getScope();
 	int r=index_instruction;
 	bool inline_if_else=false;
 	string error_str;
@@ -968,22 +968,22 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 	return r;
 }
 
-bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
+bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 	if(_node->keyword_info->id != KEYWORD_TYPE::FOR_KEYWORD){print_error_cr("node is not FOR keyword type");return false;}
 	if(_node->children.size()!=4) {print_error_cr("node FOR has not valid number of nodes");return false;}
 	if(!(_node->children[0]->node_type==PRE_FOR_NODE && _node->children[1]->node_type==CONDITIONAL_NODE &&
 	_node->children[2]->node_type==POST_FOR_NODE && _node->children[3]->node_type==BODY_NODE)) {print_error_cr("node FOR has not valid TYPE nodes");return false;}
-	CCompiler::tInfoAsmOp *asm_op;
-	//CScope * _currentScope = _node ->scope_ptr;
+	tInfoAsmOp *asm_op;
+	//CScopeInfo * _currentScope = _node ->scope_info_ptr;
 
 	// 1. compile var init ...
-	if(!ast2asm_Recursive(_node->children[0],_node->scope_ptr)){ return false;}
+	if(!ast2asm_Recursive(_node->children[0],_node->scope_info_ptr)){ return false;}
 
 	// 2. compile conditional
 
-	if(!ast2asm_Recursive(_node->children[1],_node->scope_ptr)){ return false;}
+	if(!ast2asm_Recursive(_node->children[1],_node->scope_info_ptr)){ return false;}
 	// get current index statment in order to jmp from end body for.
 	int index_statment_conditional_for_= getCurrentStatmentIndex();
 
@@ -992,11 +992,11 @@ bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
 
 
 	// 3. compile body
-	if(!gacBody(_node->children[3],_node->children[3]->scope_ptr)){ return false;}
+	if(!gacBody(_node->children[3],_node->children[3]->scope_info_ptr)){ return false;}
 
 
 	// 4. compile post oper
-	if(!ast2asm_Recursive(_node->children[2],_node->scope_ptr)){ return false;}
+	if(!ast2asm_Recursive(_node->children[2],_node->scope_info_ptr)){ return false;}
 
 	// 5. jmp to the conditional index ...
 	insert_JMP_Instruction(index_statment_conditional_for_);
@@ -1007,13 +1007,13 @@ bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::gacWhile(PASTNode _node, CScope * _lc){
+bool CCompiler::gacWhile(PASTNode _node, CScopeInfo * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 	if(_node->keyword_info->id != KEYWORD_TYPE::WHILE_KEYWORD){print_error_cr("node is not WHILE keyword type");return false;}
 	if(_node->children.size()!=2) {print_error_cr("node WHILE has not valid number of nodes");return false;}
 	if(!(_node->children[0]->node_type==CONDITIONAL_NODE && _node->children[1]->node_type==BODY_NODE )) {print_error_cr("node WHILE has not valid TYPE nodes");return false;}
-	CCompiler::tInfoAsmOp *asm_op_jmp_end;
+	tInfoAsmOp *asm_op_jmp_end;
 	int index_ini_while;
 
 
@@ -1031,7 +1031,7 @@ bool CCompiler::gacWhile(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::gacReturn(PASTNode _node, CScope * _lc){
+bool CCompiler::gacReturn(PASTNode _node, CScopeInfo * _lc){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
@@ -1050,7 +1050,7 @@ bool CCompiler::gacReturn(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::gacFunction(PASTNode _node, CScope * _lc){
+bool CCompiler::gacFunction(PASTNode _node, CScopeInfo * _lc){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	//if(!(_node->node_type == KEYWORD_NODE && _node->keyword_info != NULL) && !(_node->node_type != FUNCTION_OBJECT_NODE))>{print_error_cr("node is not keyword type or null");return false;}
@@ -1072,7 +1072,7 @@ bool CCompiler::gacFunction(PASTNode _node, CScope * _lc){
 
 
 	// 1. Get the registered symbol.
-	CScope::tInfoScopeVar * irv=_lc->getInfoRegisteredSymbol(_node->value_symbol,false);
+	tInfoScopeVar * irv=_lc->getInfoRegisteredSymbol(_node->value_symbol,false);
 	if(irv == NULL){
 		print_error_cr("Cannot get registered function %s",_node->value_symbol.c_str());
 		return false;
@@ -1083,16 +1083,18 @@ bool CCompiler::gacFunction(PASTNode _node, CScope * _lc){
 	// 3. Processing body ...
 
 	// 2. Compiles the function ...
-	return ast2asm(_node->children[1], (CScriptFunction *)irv->m_obj);
+
+
+	return ast2asm(_node->children[1], (tInfoRegisteredFunctionSymbol *)irv->m_obj);
 }
 
-bool CCompiler::gacIf(PASTNode _node, CScope * _lc){
+bool CCompiler::gacIf(PASTNode _node, CScopeInfo * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 	if(_node->keyword_info->id != KEYWORD_TYPE::IF_KEYWORD){print_error_cr("node is not IF keyword type");return false;}
 	if(_node->children.size()<2) {print_error_cr("node IF has not valid number of nodes");return false;}
 	if(!(_node->children[0]->node_type==CONDITIONAL_NODE && _node->children[1]->node_type==BODY_NODE )) {print_error_cr("node IF has not valid TYPE nodes");return false;}
-	CCompiler::tInfoAsmOp *asm_op_jmp_else_if,*asm_op_jmp_end;
+	tInfoAsmOp *asm_op_jmp_else_if,*asm_op_jmp_end;
 
 	// compile conditional expression...
 	if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
@@ -1117,7 +1119,7 @@ bool CCompiler::gacIf(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
+bool CCompiler::gacSwitch(PASTNode _node, CScopeInfo * _lc){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
@@ -1128,11 +1130,11 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 	PASTNode case_value;
 	PASTNode case_body;
 
-	CCompiler::tInfoAsmOp * asm_op;
+	tInfoAsmOp * asm_op;
 
 	string error_str;
 	string detected_type_str;
-	CScope *_scope = this->m_currentScriptFunction->getScope()->getCurrentScopePointer();
+	CScopeInfo *_scope = this->m_currentScriptFunction->symbol_info.ast->scope_info_ptr->getCurrentScopePointer();
 
 	// create new statment ...
 	CCompiler::getInstance()->newStatment();
@@ -1218,7 +1220,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 							if(gacBody(case_body,_lc)){
 								for(unsigned i = 0; i < group_cases->children.size(); i++){
 									case_value = group_cases->children[i];
-									asm_op = (CCompiler::tInfoAsmOp *)case_value->aux_value; // load jt instruction and set current instruction before write asm code.
+									asm_op = (tInfoAsmOp *)case_value->aux_value; // load jt instruction and set current instruction before write asm code.
 									asm_op->index_op1 = getCurrentStatmentIndex();
 								}
 
@@ -1231,7 +1233,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 
 						case 2: // FINALLY, WRITE JMP's to end statment
 
-							if((asm_op = (CCompiler::tInfoAsmOp *)case_body->aux_value) != NULL){
+							if((asm_op = (tInfoAsmOp *)case_body->aux_value) != NULL){
 								asm_op->index_op1 = getCurrentStatmentIndex()+1;
 							}
 							break;
@@ -1253,7 +1255,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::gacVar(PASTNode _node, CScope * _lc){
+bool CCompiler::gacVar(PASTNode _node, CScopeInfo * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 	if(_node->keyword_info->id != VAR_KEYWORD){print_error_cr("node is not VAR keyword type");return false;}
@@ -1266,7 +1268,7 @@ bool CCompiler::gacVar(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
+bool CCompiler::gacKeyword(PASTNode _node, CScopeInfo * _lc){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
@@ -1303,7 +1305,7 @@ bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 	return false;
 }
 
-bool CCompiler::gacBody(PASTNode _node, CScope * _lc){
+bool CCompiler::gacBody(PASTNode _node, CScopeInfo * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != BODY_NODE ){print_error_cr("node is not BODY type or null");return false;}
 
@@ -1322,11 +1324,11 @@ bool CCompiler::gacBody(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::gacExpression(PASTNode _node, CScope *_lc,int index_instruction){
+bool CCompiler::gacExpression(PASTNode _node, CScopeInfo *_lc,int index_instruction){
 
 	if(index_instruction == -1){ // create new statment
 		//int index_instruction=0;
-		CCompiler::tInfoStatementOp i_stat;
+		tInfoStatementOp i_stat;
 		(*m_currentListStatements).push_back(i_stat);
 		index_instruction = 0; // set as 0
 	}
@@ -1337,7 +1339,7 @@ bool CCompiler::gacExpression(PASTNode _node, CScope *_lc,int index_instruction)
 	return gacExpression_Recursive(_node->children[0], _lc,index_instruction) != -1;
 }
 
-bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
+bool CCompiler::ast2asm_Recursive(PASTNode _node, CScopeInfo *_lc){
 
 	if(_node != NULL){
 		switch(_node->node_type){
@@ -1364,7 +1366,7 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 
 			case BODY_NODE:
 				print_info_cr("BODY_NODE");
-				return gacBody(_node, _node->scope_ptr); // we pass scope node
+				return gacBody(_node, _node->scope_info_ptr); // we pass scope node
 				break;
 			case POST_FOR_NODE:
 			case CONDITIONAL_NODE:
@@ -1402,7 +1404,7 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 	return false;
 }
 
-bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
+bool CCompiler::ast2asm(PASTNode _node, tBaseObjectInfo *sf){
 
 	if(_node == NULL){
 		print_error_cr("NULL node!");
@@ -1411,12 +1413,12 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 
 
 	if(_node->node_type == NODE_TYPE::BODY_NODE ){
-		CScriptFunction *aux_sf = m_currentScriptFunction;
+		tBaseObjectInfo *aux_sf = m_currentScriptFunction;
 		stk_scriptFunction.push_back(m_currentScriptFunction);
 
 		this->m_currentScriptFunction = sf;
-		this->m_currentListStatements = sf->getCompiledCode();
-		this->m_treescope = sf->getScope();
+		this->m_currentListStatements = &sf->statment_op;
+		this->m_treescope = sf->symbol_info.ast->scope_info_ptr;
 
 		// reset current pointer ...
 		m_treescope->resetScopePointer();
@@ -1434,19 +1436,19 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 		m_currentScriptFunction = aux_sf;
 
 		if(m_currentScriptFunction != NULL){
-			this->m_currentListStatements = m_currentScriptFunction->getCompiledCode();
-			this->m_treescope = m_currentScriptFunction->getScope();
+			this->m_currentListStatements = &m_currentScriptFunction->statment_op;
+			this->m_treescope = m_currentScriptFunction->symbol_info.ast->scope_info_ptr;
 		}
 
 		// ok parse all function
 		// and then print its functions ...
-		vector<CScriptFunction *> * m_vf = sf->getVectorFunction();
+		vector<tInfoRegisteredFunctionSymbol> * m_vf = &sf->member_data.m_registeredFunction;
 
 		for(unsigned j =0; j < m_vf->size(); j++){
 
-			if(m_vf->at(j)->getType() == CScriptFunction::TYPE::SCRIPT_FUNCTION_TYPE){
+			if((m_vf->at(j).object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::C_OBJECT_REF){
 
-				if(!gacFunction(m_vf->at(j)->getRootAst(),sf->getScope())){
+				if(!gacFunction(m_vf->at(j).object_info.symbol_info.ast,sf->symbol_info.ast->scope_info_ptr)){
 					return false;
 				}
 			}
@@ -1460,14 +1462,14 @@ bool CCompiler::ast2asm(PASTNode _node, CScriptFunction *sf){
 
 	return false;
 }
-
-bool CCompiler::compile(const string & s, CScriptFunction * sf){
+/*
+bool CCompiler::compile(const string & s, tInfoRegisteredFunctionSymbol * sf){
 
 	// generate whole AST
 
-	if(CAst::generateAST(s.c_str(),sf, sf->getRootAstPtr())){
+	if(CAst::generateAST(s.c_str(),sf, &sf->)){
 
-		if(ast2asm(sf->getRootAst(),sf)){
+		if(ast2asm(sf->symbol_info.ast,sf)){
 			// print generated asm ...
 			CCompiler::printGeneratedCode(sf);
 			return true;
@@ -1478,7 +1480,7 @@ bool CCompiler::compile(const string & s, CScriptFunction * sf){
 
 	return false;
 }
-
+*/
 CCompiler::~CCompiler(){
 
 }

@@ -45,27 +45,29 @@ CVirtualMachine::CVirtualMachine(){
 
 bool CVirtualMachine::execute(CScriptFunction *sf, int stk,vector<CObject *> * argv){
 
-	if(sf->getType() == CScriptFunction::C_FUNCTION_TYPE){ // C-Call
+	tInfoRegisteredFunctionSymbol *irsf=sf->getFunctionInfo();
 
-			return sf->call_C_function(argv);
+	if((sf->getFunctionInfo()->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::C_OBJECT_REF){ // C-Call
+
+			return CZG_Script::call_C_function(sf->getFunctionInfo(),argv);
 	}
 
 
-	vector<CCompiler::tInfoStatementOp> * m_listStatements = sf->getCompiledCode();
+	vector<tInfoStatementOp> * m_listStatements = sf->getCompiledCode();
 	bool conditional_jmp=false;
 	int jmp_to_statment = -1;
 
 	if(argv != NULL){
 
-		if((*argv).size() != sf->getArgVector()->size()){
-			print_error_cr("calling function s from line . Expected %i but passed %i",sf->getArgVector()->size(),(*argv).size());
+		if((*argv).size() != irsf->m_arg.size()){
+			print_error_cr("calling function s from line . Expected %i but passed %i",irsf->m_arg.size(),(*argv).size());
 			return false;
 		}
 
 		//print_info_cr("assign local symbol the passing args...");
 		for(unsigned i = 0; i < (*argv).size(); i++){
 			//print_info_cr("%s=%s <cr>",sf->getArgVector()->at(i).c_str(),(*argv).at(i)->getPointerClassStr().c_str());
-			(*sf->getArg(i))=(*argv).at(i);
+			(*sf->getArgSymbol(i)).object=(*argv).at(i);
 		}
 	}
 
@@ -80,8 +82,8 @@ bool CVirtualMachine::execute(CScriptFunction *sf, int stk,vector<CObject *> * a
 
 		conditional_jmp = false;
 		jmp_to_statment = -1;
-		CCompiler::tInfoStatementOp * current_statment = &(*m_listStatements)[s];
-		vector<CCompiler::tInfoAsmOp *> * asm_op_statment = &current_statment->asm_op;
+		tInfoStatementOp * current_statment = &(*m_listStatements)[s];
+		vector<tInfoAsmOp *> * asm_op_statment = &current_statment->asm_op;
 		unsigned n_asm_op= asm_op_statment->size();
 
 		//if(stk==2){
@@ -122,7 +124,7 @@ bool CVirtualMachine::execute(CScriptFunction *sf, int stk,vector<CObject *> * a
 						return false;
 					}
 
-					if(asm_op_statment->at(i)->operator_type == CCompiler::ASM_OPERATOR::RET){ // return...
+					if(asm_op_statment->at(i)->operator_type == ASM_OPERATOR::RET){ // return...
 						return true;
 					}
 

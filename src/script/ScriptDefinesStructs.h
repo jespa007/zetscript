@@ -1,10 +1,19 @@
 #pragma once
 
-//#include  "script/ast/CScope.h"
+//#include  "script/ast/CScopeInfo.h"
 class tASTNode;
 typedef tASTNode *PASTNode;
-//typedef tInfoStatementOp *PInfoStatementOp;
+struct tInfoRegisteredFunctionSymbol;
 
+
+
+//typedef tInfoStatementOp *PInfoStatementOp;
+enum SYMBOL_INFO_PROPERTIES{
+	C_OBJECT_REF = 0x1 <<0
+
+};
+
+#define MAX_PARAM_C_FUNCTION 5
 
 enum NODE_TYPE{
 	UNKNOWN_NODE=0,
@@ -188,33 +197,23 @@ enum ASM_OPERATOR{
 
 	};
 
+	typedef int (*fntConversionType)(CObject *obj);
+
 
 	typedef struct{
 		int		 ref_aux; // pointer ref to C Var/Function
-		CScope   *scope;
 		PASTNode  ast;
 		unsigned int properties;
 	}tInfoRegisteredVariableSymbol;
-
-	typedef struct{
-
-		tInfoRegisteredVariableSymbol symbol_info;
-
-		// var for function ...
-		vector<string> m_arg; // tells var arg name or var type name (in of C )
-		string return_type;
-
-		// the info asm op for each function. Will be filled at compile time.
-		struct _tInfoStatementOp *asm_statment;
-
-	}tInfoRegisteredFunctionSymbol;
 
 
 	typedef struct{
 		KEYWORD_TYPE id;
 		const char *str;
-		char * (* parse_fun )(const char *,int & ,  tInfoRegisteredFunctionSymbol *, PASTNode *);
+		char * (* parse_fun )(const char *,int & ,  CScopeInfo *, PASTNode *);
 	}tInfoKeyword;
+
+
 
 	typedef struct{
 		PUNCTUATOR_TYPE id;
@@ -270,7 +269,7 @@ enum ASM_OPERATOR{
 		tInfoPunctuator *operator_info,*pre_post_operator_info;
 		string 	value_symbol;
 		string type_ptr;
-		CScope *scope_ptr; // saves scope info ptr (only for global vars).
+		CScopeInfo *scope_info_ptr; // saves scope info ptr (only for global vars).
 		string type_class;
 		int definedValueline;
 		PASTNode parent;
@@ -286,7 +285,7 @@ enum ASM_OPERATOR{
 			value_symbol="";
 			parent=NULL;
 			aux_value = NULL;
-			scope_ptr = NULL;
+			scope_info_ptr = NULL;
 
 			if(preallocate_num_nodes > 0){
 				for(int i = 0; i < preallocate_num_nodes; i++){
@@ -304,7 +303,10 @@ enum ASM_OPERATOR{
 	//-----------------------------
 
 	typedef struct{
-		//PASTNode ast;
+		string name; // var name
+		CObject *m_obj; // in case of static objects like object-functions
+		PASTNode ast; // ast node info.
+		int index_var; // idx position in
 	}tInfoScopeVar;
 
 
@@ -348,6 +350,7 @@ enum ASM_OPERATOR{
 	    // bool (* isconvertable)(int value);
 
 		tInfoAsmOp(){
+			variable_type = CVariable::VAR_TYPE::OBJECT;
 			//variable_type=VAR_TYPE::NOT_DEFINED;
 			operator_type=ASM_OPERATOR::INVALID_OP;
 			pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
@@ -365,30 +368,50 @@ enum ASM_OPERATOR{
 
 	};
 
-	typedef struct _tInfoStatementOp{
+	struct tInfoStatementOp{
 
 	    vector<tInfoAsmOp *> asm_op;
-	}tInfoStatementOp;
+	};
 
 
 
 	//-------------------------------------------------------
 
+	typedef struct {
+		vector<tInfoRegisteredVariableSymbol> 	m_registeredSymbol; // member variables to be copied in every new instance
+		vector<tInfoRegisteredFunctionSymbol> 	m_registeredFunction; // member functions
+	}tMemberDataInfo;
+
+	struct tBaseObjectInfo{
+		tInfoRegisteredVariableSymbol symbol_info;
+		tMemberDataInfo 			  member_data;
+
+		// the info asm op for each function. Will be filled at compile time.
+		vector<tInfoStatementOp> statment_op;
+	};
 
 
+	struct tInfoRegisteredFunctionSymbol{
 
+		tBaseObjectInfo	object_info;
+
+		// var for function ...
+		vector<string> m_arg; // tells var arg name or var type name (in of C )
+		string return_type;
+
+
+	};
 
 
 	/**
 	 * Stores the basic information to build a object through built AST structure
 	 */
 	typedef struct _tInfoRegisteredClass{
-		vector<tInfoRegisteredVariableSymbol> 	m_registeredSymbol; // member variables to be copied in every new instance
-		vector<tInfoRegisteredFunctionSymbol> 	m_registeredFunction; // member functions
-		PASTNode ast;
+
+		tBaseObjectInfo	object_info;
+
 		_tInfoRegisteredClass *extendClass; // in the case is and extension of class.
 
-		//CScriptFunction *m_scriptFunction;
 	}tInfoRegisteredClass;
 
 

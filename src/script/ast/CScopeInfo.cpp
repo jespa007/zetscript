@@ -3,23 +3,23 @@
 #define MAX_STATMENT_LENGTH 2096
 #define MAX_VAR_LENGTH 100
 
-CUndefined *CScope::UndefinedSymbol=NULL;
-CVoid *CScope::VoidSymbol=NULL;
+CUndefined *CScopeInfo::UndefinedSymbol=NULL;
+CVoid *CScopeInfo::VoidSymbol=NULL;
 
-void CScope::createSingletons(){
+void CScopeInfo::createSingletons(){
 	UndefinedSymbol = new CUndefined();
 	VoidSymbol = new CVoid();
 }
 
 
-void CScope::destroySingletons(){
+void CScopeInfo::destroySingletons(){
 	delete UndefinedSymbol;
 	delete VoidSymbol;
 }
 
 
 
-CScope::CScope(CScope * _parent){
+CScopeInfo::CScopeInfo(CScopeInfo * _parent){
 	m_parentScope = _parent;
 
 	m_baseScope = this;
@@ -35,36 +35,36 @@ CScope::CScope(CScope * _parent){
 }
 
 
-CScope * CScope::getMainScope(){
+CScopeInfo * CScopeInfo::getMainScope(){
 	return m_mainScope;
 }
 
-void CScope::addLocalScope(CScope *_ls){
+void CScopeInfo::addLocalScope(CScopeInfo *_ls){
 	m_scopeList.push_back(_ls);
 }
 
-CScope * CScope::getParent(){
+CScopeInfo * CScopeInfo::getParent(){
 	return m_parentScope;
 }
 
-CScope * CScope::getCurrentScopePointer(){
+CScopeInfo * CScopeInfo::getCurrentScopePointer(){
 	return m_currentScopePointer;
 }
 
-void CScope::resetScopePointer(){
+void CScopeInfo::resetScopePointer(){
 	m_currentScopePointer = m_baseScope;
 }
 
-CScope * CScope::pushScope(){
+CScopeInfo * CScopeInfo::pushScope(){
 
-	CScope *new_scope = new CScope(m_currentScopePointer);
+	CScopeInfo *new_scope = new CScopeInfo(m_currentScopePointer);
 	m_currentScopePointer->m_scopeList.push_back(new_scope);
 	m_currentScopePointer = new_scope;
 	return m_currentScopePointer;
 
 }
 
-CScope * CScope::popScope(){
+CScopeInfo * CScopeInfo::popScope(){
 
 	if(m_currentScopePointer->m_parentScope != NULL){
 		m_currentScopePointer = m_currentScopePointer->m_parentScope;
@@ -79,12 +79,17 @@ CScope * CScope::popScope(){
 //
 // SCOPE VARIABLE MANAGEMENT
 //
-tInfoScopeVar * CScope::registerSymbol(const string & var_name){
+tInfoScopeVar * CScopeInfo::registerSymbol(const string & var_name, PASTNode ast){
 	tInfoScopeVar * irv;
 	if((irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
 		irv = new tInfoScopeVar;
-		//irv->ast = ast;
+		irv->m_obj=NULL;
 		m_registeredSymbol[var_name]=irv;
+		irv->name=var_name;
+		irv->ast=ast;
+		if(!m_mainScope->addIndexedSymbol(irv)){
+			return NULL;
+		}
 		return irv;
 	}else{
 		int m_line=-1;
@@ -97,9 +102,24 @@ tInfoScopeVar * CScope::registerSymbol(const string & var_name){
 	return NULL;
 }
 
+bool CScopeInfo::addIndexedSymbol(tInfoScopeVar *isv){
+	if(m_parentScope == NULL){ // ok is the main scope...
+
+		isv->index_var=m_indexedSymbol.size();
+		m_indexedSymbol.push_back(isv);
+
+		return true;
+	}
+	else{
+		print_error_cr("You must call this function from parent scope");
+	}
+
+	return false;
+}
+
 
 /*
-bool CScope::defineSymbol(const string & var_name, CObject *obj){
+bool CScopeInfo::defineSymbol(const string & var_name, CObject *obj){
 
 	tInfoScopeVar * irv;
 	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
@@ -112,9 +132,9 @@ bool CScope::defineSymbol(const string & var_name, CObject *obj){
 	return false;
 }*/
 
-tInfoScopeVar * CScope::existRegisteredSymbol(const string & var_name){
+tInfoScopeVar * CScopeInfo::existRegisteredSymbol(const string & var_name){
 	if(m_registeredSymbol.count(var_name)==0){ // not exit but we will deepth through parents ...
-		CScope * parent =  getParent();
+		CScopeInfo * parent =  getParent();
 		if(parent != NULL){
 			return parent->existRegisteredSymbol(var_name);
 		}
@@ -130,7 +150,7 @@ tInfoScopeVar * CScope::existRegisteredSymbol(const string & var_name){
 
 
 
-tInfoScopeVar *CScope::getInfoRegisteredSymbol(const string & var_name, bool print_msg){
+tInfoScopeVar *CScopeInfo::getInfoRegisteredSymbol(const string & var_name, bool print_msg){
 	tInfoScopeVar * irv;
 	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
 
@@ -148,7 +168,7 @@ tInfoScopeVar *CScope::getInfoRegisteredSymbol(const string & var_name, bool pri
 
 //-----------------------------------------------------------------------------------------------------------
 /*
-bool CScope::isVarDeclarationStatment(const char *statment, bool & error, char ** eval_expression,int & m_line, CScope * _localScope){
+bool CScopeInfo::isVarDeclarationStatment(const char *statment, bool & error, char ** eval_expression,int & m_line, CScopeInfo * _localScope){
 	// PRE: length(statment) < MAX_STATMENT_LENGTH
 	char *aux = (char *)statment;
 
@@ -348,7 +368,7 @@ char *parseKeyword_IfElseForWhile(const char *str, tInfoKeyword **keyw, int & m_
 
 		if((*keyw)->id == FOR_KEYWORD){
 
-			/*_scope->m_scopeList.push_back(for_scope=new CScope(_scope->getScriptFunction(),_scope));
+			/*_scope->m_scopeList.push_back(for_scope=new CScopeInfo(_scope->getScriptFunction(),_scope));
 			CCompiler::getInstance()->insertPushScopeInstruction(for_scope);*/
 
 			end_ptr = begin_ptr = (char *)cond_expr.c_str();
@@ -435,20 +455,20 @@ char *parseKeyword_IfElseForWhile(const char *str, tInfoKeyword **keyw, int & m_
 	return current;
 }
 
-char *getKeywordHeader(const char *str, string & header, bool & error, CScope * _scope){
+char *getKeywordHeader(const char *str, string & header, bool & error, CScopeInfo * _scope){
 	return NULL;
 }
 
-char *processKeywordHeader(const char *str, string & header, bool & error, CScope * _scope){
+char *processKeywordHeader(const char *str, string & header, bool & error, CScopeInfo * _scope){
 	return NULL;
 }
 
-char *processKeywordBody(const char *str, string & header, bool & error, CScope * _scope){
+char *processKeywordBody(const char *str, string & header, bool & error, CScopeInfo * _scope){
 	return NULL;
 }
 
 /*
-char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error, CScope * _scope, int level_scope){
+char * CScopeInfo::evalRecursive(const char *str_to_eval, int & m_line, bool & error, CScopeInfo * _scope, int level_scope){
 
 	char *current=(char *) str_to_eval;
 	string var_name;
@@ -468,7 +488,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 	tInfoKeyword * key_w=NULL, *key_w_last=NULL;
 	int length;
 
-	CScope * new_local_scope = NULL,*for_scope=NULL;
+	CScopeInfo * new_local_scope = NULL,*for_scope=NULL;
 
 	current=CStringUtils::IGNORE_BLANKS(current,m_line);
 
@@ -516,7 +536,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 			case FOR_KEYWORD:
 
 				// eval pre and post...
-				_scope->m_scopeList.push_back(for_scope=new CScope(_scope->getScriptFunction(),_scope));
+				_scope->m_scopeList.push_back(for_scope=new CScopeInfo(_scope->getScriptFunction(),_scope));
 
 				// pre for ...
 				if(evalRecursive(pre_for.str.c_str(),pre_for.m_line, error, for_scope, level_scope+1)==NULL){
@@ -736,7 +756,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 				if(key_w->id == FOR_KEYWORD) {
 					new_local_scope = for_scope;
 				}else{
-					new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
+					new_local_scope=new CScopeInfo(_scope->getScriptFunction(),_scope);
 					_scope->m_scopeList.push_back(new_local_scope);
 				}
 
@@ -839,7 +859,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 				// evaluate all case scope ...
 				for(unsigned i = 0; i< info_switch.conditional_case.size();i++){ // for all cases...
 
-					new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
+					new_local_scope=new CScopeInfo(_scope->getScriptFunction(),_scope);
 					_scope->m_scopeList.push_back(new_local_scope);
 					// 1. generate asm scope.
 					// link asm conditional jmp...
@@ -872,7 +892,7 @@ char * CScope::evalRecursive(const char *str_to_eval, int & m_line, bool & error
 				// last, we evaluates the default scope...
 				if(info_switch.str_default_case_scope.str_begin != NULL){
 
-					new_local_scope=new CScope(_scope->getScriptFunction(),_scope);
+					new_local_scope=new CScopeInfo(_scope->getScriptFunction(),_scope);
 					_scope->m_scopeList.push_back(new_local_scope);
 
 					int size = info_switch.str_default_case_scope.str_end-info_switch.str_default_case_scope.str_begin;
@@ -1068,7 +1088,7 @@ int getLineBeginScope(const string  & s, int m_scope){
 
 }
 /*
-bool CScope::eval (const string & s){
+bool CScopeInfo::eval (const string & s){
 	int m_line = 1;
 	bool error;
 	return evalRecursive((const char *)s.c_str(), m_line,error,this) != NULL;
@@ -1080,7 +1100,7 @@ bool CScope::eval (const string & s){
 
 
 
-CScope::~CScope(){
+CScopeInfo::~CScopeInfo(){
 	for(map<string,tInfoScopeVar *>::iterator it = m_registeredSymbol.begin();it!= m_registeredSymbol.end();it++){
 			delete it->second;
 	}

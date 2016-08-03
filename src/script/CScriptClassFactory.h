@@ -9,8 +9,14 @@
 
 
 
-class CScope;
+class CScopeInfo;
 class CScriptClassFactory{
+
+
+
+
+
+public:
 
 
 	enum C_TYPE_VAR{
@@ -26,10 +32,7 @@ class CScriptClassFactory{
 		MAX_VAR_C_TYPES
 	};
 
-	enum C_FUNCTION_PROPERTIES{
-		IS_C_FUNCTION = 0x1 <<0
 
-	};
 
 	typedef struct{
 		string 	    type_str;
@@ -42,35 +45,18 @@ class CScriptClassFactory{
 		vector<tPrimitiveType*>		params;
 	}tRegisterFunction;
 
-
-
-
-
 	static tPrimitiveType primitiveType[MAX_VAR_C_TYPES];
 
-	static void registerPrimitiveTypes();
-	static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
-	CObject * createObjectFromPrimitiveType(tPrimitiveType *pt);
-	static fntConversionType getConversionType(string objectType, string conversionType);
-
-
-
-
-public:
-
-
-	static tDefOperator def_operator[MAX_OPERATORS];
-
-	static int  registerVariableSymbol(const string & class_name,PASTNode * node);
-	static int  registerFunctionSymbol(const string & class_name,PASTNode * node, unsigned int properties);
-	static tInfoRegisteredFunctionSymbol *  getRegisteredFunctionSymbol(const string & class_name,unsigned idx);
-	static bool addArgumentFunctionSymbol(const string & class_name,unsigned idxFunction,const string & arg_name);
+	static tInfoRegisteredVariableSymbol  * registerVariableSymbol(tBaseObjectInfo *object_info,PASTNode  node);
+	static tInfoRegisteredFunctionSymbol * registerFunctionSymbol(tBaseObjectInfo *object_info,PASTNode  node, unsigned int properties);
+	static tInfoRegisteredFunctionSymbol *  getRegisteredFunctionSymbol(tBaseObjectInfo *object_info,unsigned idx);
+	static bool addArgumentFunctionSymbol(tBaseObjectInfo *object_info,unsigned idxFunction,const string & arg_name);
 
 
 	static tInfoRegisteredClass * getRegisteredClass(const string & v, bool print_msg=true);
 	static tInfoRegisteredClass * registeredClassExists(const string & class_name);
 	static tInfoRegisteredClass * registerClass(const string & class_name);
-
+	static fntConversionType getConversionType(string objectType, string conversionType);
 
 	static void destroySingletons();
 
@@ -88,7 +74,7 @@ public:
 
 		tPrimitiveType *rt;
 		//vector<tPrimitiveType *> pt;
-		//CScope::tInfoScopeVar  *rs;
+		//CScopeInfo::tInfoScopeVar  *rs;
 
 		//CScriptFunction *sf=NULL;
 
@@ -99,8 +85,7 @@ public:
 		}
 
 		// init struct...
-		irs.symbol_info.properties = CScriptClassFactory::IS_C_FUNCTION;
-		irs.symbol_info.scope = NULL;
+		irs.object_info.symbol_info.properties = ::C_OBJECT_REF;
 
 
 		// 1. check all parameters ok.
@@ -162,7 +147,14 @@ public:
 
 
 private:
+
+
 	static map<string,tInfoRegisteredClass *>  	 m_registeredClass;
+
+	static void registerPrimitiveTypes();
+	static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
+	CObject * createObjectFromPrimitiveType(tPrimitiveType *pt);
+
 
 
 };

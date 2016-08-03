@@ -1,5 +1,5 @@
 
-#include "ast/CScope.cpp"
+#include "ast/CScopeInfo.cpp"
 #include "ast/ast.cpp"
 #include "CALE.cpp"
 #include "CVirtualMachine.cpp"
@@ -11,12 +11,19 @@
 
 
 CZG_Script * CZG_Script::m_instance = NULL;
+CScopeInfo *CZG_Script::m_globalScope = NULL;
+tASTNode *CZG_Script::m_mainAst = NULL;
+
 
 
 
 
 CZG_Script * CZG_Script::getInstance(){
 	if(m_instance==NULL){
+		m_globalScope=new CScopeInfo();
+		m_mainAst = new tASTNode();
+		m_mainAst->node_type = BODY_NODE;
+		m_mainAst->scope_info_ptr = m_globalScope;
 		m_instance = new CZG_Script();
 		m_instance->init();
 	}
@@ -34,30 +41,16 @@ void CZG_Script::destroy(){
 
 }
 
-CObject * CZG_Script::call_C_1p(int fp,CObject *obj_arg){
+int CZG_Script::call_C_1p(int fp,int ptr_arg){//CObject *obj_arg){
 
 
 
 
-	if(fp==0){
-		print_error_cr("Null function");
-		return NULL;
-	}
 
-	if(this->m_c_arg.size() != 1){
-		print_error_cr("Argument doestn't match");
-		return NULL;
-	}
-
-	//
-	fntConversionType fun1=getConversionType(obj_arg->getPointerClassStr(),m_c_arg[0]);
-	int result=0;
-
-	if(fun1 != NULL){
 		// Normalize argument ...
-		int ptr_arg = fun1(obj_arg);
+		//int ptr_arg = fun1(obj_arg);
 
-		((int (*)(int))fp)(ptr_arg);
+		int result = ((int (*)(int))fp)(ptr_arg);
 
 		/*asm(
 				"push %[p1]\n\t"
@@ -72,30 +65,82 @@ CObject * CZG_Script::call_C_1p(int fp,CObject *obj_arg){
 		print_info_cr("hh:%i",result);
 
 
-	}
-	return NULL;
+
+	return result;
 
 }
 
-CObject * CZG_Script::call_C_0p(int fp){
+int CZG_Script::call_C_0p(int fp){
 
 
 	if(fp==0){
 		print_error_cr("Null function");
-		return NULL;
+		return 0;
 	}
 	// Normalize argument ...
 
 	int result=0;
 
-	((int (*)())fp)();
+	result = ((int (*)())fp)();
 
 	// convert result to object ...
 
 
-	return (CObject *)result;
+	return result;
 
 
+}
+
+int CZG_Script::call_C_function(tInfoRegisteredFunctionSymbol *irfs, vector<CObject *> * argv){
+
+	int converted_param[MAX_PARAM_C_FUNCTION];
+
+	if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) {
+		print_error_cr("Function is not registered as C");
+		return 0;
+	}
+
+	int fp = irfs->object_info.symbol_info.ref_aux;
+
+	if(fp==0){
+		print_error_cr("Null function");
+		return 0;
+	}
+
+	if(irfs->m_arg.size() != argv->size()){
+		print_error_cr("C argument VS scrip argument doestn't match sizes");
+		return 0;
+	}
+
+	if(irfs->m_arg.size() >= MAX_PARAM_C_FUNCTION){
+		print_error_cr("Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_PARAM_C_FUNCTION);
+		return 0;
+	}
+
+	// convert parameters script to c...
+	for(unsigned int i = 0; i < argv->size();i++){
+		fntConversionType paramConv=CScriptClassFactory::getConversionType((argv->at(i))->getPointerClassStr(),irfs->m_arg[i]);
+
+		if(paramConv == NULL){
+			return 0;
+		}
+
+		converted_param[i] = paramConv(argv->at(i));
+	}
+
+	switch(argv->size()){
+	case 0:
+		return call_C_0p(fp);
+		print_info_cr("0 call!");
+		break;
+	case 1:
+		return call_C_1p(fp,converted_param[0]);
+		print_info_cr("1 call!");
+		break;
+
+	}
+	print_error_cr("cannot call !");
+	return 0;
 }
 /*
 CZG_Script::tLocalScope * CZG_Script::createLocalScope(CZG_Script::tLocalScope *m_parent){
@@ -135,7 +180,7 @@ public:
 	   }
 };
 
-
+/*
 bool CZG_Script::object2float(CObject *obj, float & v){
 
 	// only float ...
@@ -187,7 +232,7 @@ CObject * CZG_Script::createObjectFromPrimitiveType(CZG_Script::tPrimitiveType *
 	if(pt != NULL){
 		switch(pt->id){
 		case C_TYPE_VAR::VOID_TYPE:
-			return CScope::VoidSymbol;
+			return CScopeInfo::VoidSymbol;
 			break;
 		case C_TYPE_VAR::STRING_TYPE:
 			return (CObject *)NEW_STRING();
@@ -209,16 +254,17 @@ CObject * CZG_Script::createObjectFromPrimitiveType(CZG_Script::tPrimitiveType *
 	}
 	return NULL;
 }
-
+*/
 
 void  print(string * s){
 	print_info_cr("dada:%s",s->c_str());
 }
 
 CZG_Script::CZG_Script(){
-	registerPrimitiveTypes();
+	//registerPrimitiveTypes();
 	//registerFunction(&CCustomObject::member2);
 	// call_function("print");
+
 }
 
 int interface_variable;
@@ -234,7 +280,7 @@ void CZG_Script::init(){
 	iniFactory<CUndefinedFactory>("CUndefined");
 	iniFactory<CVectorFactory>("CVector");
 
-	CScope::createSingletons();
+	CScopeInfo::createSingletons();
 	CAst::createSingletons();
 
 	//-----------------------
@@ -265,9 +311,14 @@ void CZG_Script::init(){
 	registerGlobal_C_Function(print);
 
 	// register var
-	registerGlobal_C_Variable(&interface_variable);
+	//registerGlobal_C_Variable(&interface_variable);
 
 	//typeid(interface_variable).name();
+
+	// create main global scope ...
+	//m_mainFunctionInfo.global_scope = new CScopeInfo();
+
+	m_globalScope = new CScopeInfo();
 
 
 	CFactoryContainer::getInstance()->registerScriptFunctions();
@@ -277,16 +328,29 @@ void CZG_Script::init(){
 bool CZG_Script::eval(const string & s){
 
 
+	// generate whole AST
 
-	// create main scope ...
-	irfs.symbol_info.scope = new CScope();
+	if(CAst::generateAST(s.c_str(),m_globalScope, m_mainAst)){
 
+		if(CCompiler::getInstance()->ast2asm(m_mainAst,&m_structInfoMain.object_info)){
+			// print generated asm ...
+			CCompiler::printGeneratedCode(&m_structInfoMain.object_info);
+			return true;
+		}
+		// then you have all information -> compile into asm!
+		//generateAsmCode(root);
+	}
 
-	return CCompiler::getInstance()->compile(s, &m_mainFunction);
+	return false;
+
+	//return CCompiler::getInstance()->compile(s, &m_structInfoMain);
 }
 
-bool CZG_Script::execute(){
 
+bool CZG_Script::execute(){
+	if(m_mainFunction == NULL){
+		m_mainFunction = new CScriptFunction(&m_structInfoMain);//CScriptClassFactory::newClass("Main");
+	}
 
 	//CCompiler::getInstance()->printGeneratedCode(m_mainFunction);
 
@@ -298,12 +362,12 @@ bool CZG_Script::execute(){
 CZG_Script::~CZG_Script(){
 	// unregister operators ...
 
+	//delete m_mainFunction;
 	delete m_mainFunction;
-
 
 	CCompiler::destroySingletons();
 	CVirtualMachine::destroySingletons();
 	CAst::destroySingletons();
-	CScope::destroySingletons();
+	CScopeInfo::destroySingletons();
 
 }

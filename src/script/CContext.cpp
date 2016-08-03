@@ -2,7 +2,7 @@
 
 
 CContext::CContext(){
-	m_localScope = new CScope(this);
+	m_localScope = new CScopeInfo(this);
 	m_compiler = new CCompiler();
 }
 

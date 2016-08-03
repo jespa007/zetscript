@@ -1,6 +1,6 @@
 #include "zg_script.h"
 
- map<string,CScriptClassFactory::tInfoRegisteredClass *>  	 CScriptClassFactory::m_registeredClass;
+ map<string,tInfoRegisteredClass *>  	 CScriptClassFactory::m_registeredClass;
  CScriptClassFactory::tPrimitiveType CScriptClassFactory::primitiveType[MAX_VAR_C_TYPES];
 
 
@@ -88,7 +88,7 @@
  	return NULL;
  }
 
- CScriptClassFactory::tInfoRegisteredClass * CScriptClassFactory::registerClass(const string & class_name){
+ tInfoRegisteredClass * CScriptClassFactory::registerClass(const string & class_name){
 	tInfoRegisteredClass * irv;
 	if((irv = registeredClassExists(class_name))==NULL){ // check whether is local var registered scope ...
 
@@ -99,37 +99,23 @@
 		return irv;
 
 	}else{
-		print_error_cr("error class \"%s\" already registered at line %i!", class_name.c_str(), irv->ast->definedValueline);
+		print_error_cr("error class \"%s\" already registered at line %i!", class_name.c_str(), irv->object_info.symbol_info.ast->definedValueline);
 	}
 
 	return NULL;
 }
 
-int CScriptClassFactory::registerVariableSymbol(const string & class_name,PASTNode * ast){
 
-	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
-
-	if(rc != NULL){
-
-		tInfoRegisteredVariableSymbol irs;
-		irs.ast = ast;
-		rc->m_registeredSymbol.push_back(irs);
-
-		return rc->m_registeredSymbol.size()-1;
-	}
-
-	return -1;
-}
 
 /**
  * Register C variable
  */
 void CScriptClassFactory::register_C_Variable(const string & class_name, const string & var_str,void * var_ptr, const string & var_type)
 {
-	CScope *scope;
+	CScopeInfo *scope;
 
 	if(var_ptr==NULL){
-		print_error_cr("cannot register var \"%s\" with NULL reference value", var_str);
+		print_error_cr("cannot register var \"%s\" with NULL reference value", var_str.c_str());
 		return;
 	}
 
@@ -139,7 +125,7 @@ void CScriptClassFactory::register_C_Variable(const string & class_name, const s
 		return;
 	}
 
-	if((scope = rc->ast->scope_ptr) == NULL){
+	if((scope = rc->object_info.symbol_info.ast->scope_info_ptr) == NULL){
 		print_error_cr("scope null");
 		return;
 	}
@@ -198,60 +184,82 @@ void CScriptClassFactory::register_C_Variable(const string & class_name, const s
 	}
 }
 
-int CScriptClassFactory::registerFunctionSymbol(const string & class_name,PASTNode * ast, unsigned int properties){
+tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(tBaseObjectInfo *object_info,PASTNode  ast, unsigned int properties){
 
-	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
 
-	if(rc != NULL){
+
+	if(object_info != NULL){
 
 		tInfoRegisteredFunctionSymbol irs;
 
+		irs.object_info.symbol_info.ast = ast;
+		irs.object_info.symbol_info.properties = properties;
+		object_info->member_data.m_registeredFunction.push_back(irs);
 
-		irs.asm_statment = NULL;
-		irs.symbol_info.ast = ast;
-		irs.symbol_info.properties = properties;
-		rc->m_registeredFunction.push_back(irs);
-
-		return rc->m_registeredFunction.size()-1;
-	}
-
-	return -1;
-}
-
-
-CScriptClassFactory::tInfoRegisteredFunctionSymbol *  CScriptClassFactory::getRegisteredFunctionSymbol(const string & class_name,unsigned idx){
-	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
-
-	if(rc != NULL){
-		if(idx<rc->m_registeredFunction.size()){
-			return &rc->m_registeredFunction[idx];
-			return true;
-		}else{
-			print_error_cr("Function index out of bounds");
-		}
+		return &object_info->member_data.m_registeredFunction[object_info->member_data.m_registeredFunction.size()-1];
+	}else{
+		print_error_cr("object info NULL");
 	}
 
 	return NULL;
 }
 
-bool CScriptClassFactory::addArgumentFunctionSymbol(const string & class_name,unsigned idx, const string & var_name){
 
-	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
+tInfoRegisteredVariableSymbol * CScriptClassFactory::registerVariableSymbol(tBaseObjectInfo *object_info,PASTNode  ast){
 
-	if(rc != NULL){
+	//tInfoRegisteredClass *rc = getRegisteredClass(class_name);
 
-		if(idx<rc->m_registeredFunction.size()){
-			rc->m_registeredFunction[idx].m_arg.push_back(var_name);
+	if(object_info != NULL){
+
+		tInfoRegisteredVariableSymbol irs;
+		irs.ast = ast;
+		object_info->member_data.m_registeredSymbol.push_back(irs);
+
+		return &object_info->member_data.m_registeredSymbol[object_info->member_data.m_registeredSymbol.size()-1];
+	}else{
+		print_error_cr("object_info null!");
+		return NULL;
+	}
+
+	return NULL;
+}
+
+tInfoRegisteredFunctionSymbol *  CScriptClassFactory::getRegisteredFunctionSymbol(tBaseObjectInfo *object_info,unsigned idx){
+
+
+	if(object_info != NULL){
+		if(idx<object_info->member_data.m_registeredFunction.size()){
+			return &object_info->member_data.m_registeredFunction[idx];
+		}else{
+			print_error_cr("Function index out of bounds");
+		}
+	}else{
+		print_error_cr("object info NULL");
+	}
+
+	return NULL;
+}
+
+bool CScriptClassFactory::addArgumentFunctionSymbol(tBaseObjectInfo *object_info,unsigned idx, const string & var_name){
+
+
+
+	if(object_info != NULL){
+
+		if(idx<object_info->member_data.m_registeredFunction.size()){
+			object_info->member_data.m_registeredFunction[idx].m_arg.push_back(var_name);
 			return true;
 		}else{
 			print_error_cr("Function index out of bounds");
 		}
+	}else{
+		print_error_cr("object info NULL");
 	}
 
 	return false;
 }
 
-CScriptClassFactory::tInfoRegisteredClass * CScriptClassFactory::registeredClassExists(const string & class_name){
+tInfoRegisteredClass * CScriptClassFactory::registeredClassExists(const string & class_name){
 	if(m_registeredClass.count(class_name)==1){ // not exit but we will deepth through parents ...
 		return m_registeredClass[class_name];
 	}
@@ -259,7 +267,7 @@ CScriptClassFactory::tInfoRegisteredClass * CScriptClassFactory::registeredClass
 	return NULL;
 }
 
-CScriptClassFactory::tInfoRegisteredClass *CScriptClassFactory::getRegisteredClass(const string & class_name, bool print_msg){
+tInfoRegisteredClass *CScriptClassFactory::getRegisteredClass(const string & class_name, bool print_msg){
 	tInfoRegisteredClass * irv;
 	if((irv = registeredClassExists(class_name))!=NULL){ // check whether is local var registered scope ...
 
@@ -275,8 +283,21 @@ CScriptClassFactory::tInfoRegisteredClass *CScriptClassFactory::getRegisteredCla
 }
 
 void CScriptClassFactory::destroySingletons() {
-	/*for(map<string,tInfoRegisteredClass *>::iterator it = m_registeredClass.begin();it!= m_registeredClass.end();it++){
-			delete it->second->m_scriptFunction;
+
+	for(map<string,tInfoRegisteredClass *>::iterator it = m_registeredClass.begin();it!= m_registeredClass.end();it++){
+
+		    for(unsigned i = 0; i < it->second->object_info.member_data.m_registeredFunction.size();i++){
+		    	for(unsigned j = 0; j < it->second->object_info.member_data.m_registeredFunction[i].object_info.statment_op.size(); j++){
+		    		for(unsigned a = 0; a  <it->second->object_info.member_data.m_registeredFunction[i].object_info.statment_op[j].asm_op.size(); a++){
+
+		    			delete it->second->object_info.member_data.m_registeredFunction[i].object_info.statment_op[j].asm_op[a];
+		    		}
+
+		    	}
+		    }
+
+
+		    // delete tInfoRegisteredClass
 			delete it->second;
-	}*/
+	}
 }

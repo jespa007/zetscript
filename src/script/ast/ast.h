@@ -20,7 +20,7 @@ enum GROUP_TYPE{
 
 
 
-class CScope;
+class CScopeInfo;
 
 
 
@@ -48,13 +48,13 @@ public:
 	 * @m_line: current line
 	 * @node: nodes
 	 */
-	static bool generateAST(const char *s, tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated);
+	static bool generateAST(const char *s, CScopeInfo *scope_info, PASTNode ast_node_to_be_evaluated);
 
 
 
 private:
 
-
+	static CScopeInfo * m_globalScopeInfo;
 	// string generic utils...
 	static char *getSymbolName(const char *s,int & m_startLine);
 	static char * getEndWord(const char *s, int m_line);
@@ -114,39 +114,39 @@ private:
 
 
 	// AST core functions ...
-	static char * generateAST_Recursive(const char *s, int & m_line, tInfoRegisteredFunctionSymbol *sf, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false);
-	static char * parseExpression(const char *s, int & m_line, tInfoRegisteredFunctionSymbol *sf, PASTNode * ast_node_to_be_evaluated=NULL);
-	static char * parseExpression_Recursive(const char *s, int & m_line, tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
+	static char * generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scope_info, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false, bool is_main_node=false);
+	static char * parseExpression(const char *s, int & m_line, CScopeInfo *scope_info, PASTNode * ast_node_to_be_evaluated=NULL);
+	static char * parseExpression_Recursive(const char *s, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
 
 	/**
 	 * this functions tries to evaluate expression that was get from getSymbolValue and didn't know as trivial expression like (), function(), etc.
 	 * Must be evaluated later with this function.
 	 */
-	static char *   deduceExpression(const char *str, int & m_line, tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL, PASTNode parent=NULL);
+	static char *   deduceExpression(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL, PASTNode parent=NULL);
 
 
 	// parse block { }
-	static char * parseBlock(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, bool & error, PASTNode *ast_node_to_be_evaluated=NULL, bool push_scope=true);
+	static char * parseBlock(const char *s,int & m_line,  CScopeInfo *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated=NULL, bool push_scope=true);
 
 
 	// keyword...
 
-	static char * parseKeyWord(const char *s, int & m_start_line, tInfoRegisteredFunctionSymbol *sf, bool & error, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseKeyWord(const char *s, int & m_start_line, CScopeInfo *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated=NULL);
 
-	static char * parseIf(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseFor(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseWhile(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseSwitch(const char *s,int & m_line, tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseVar(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseReturn(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseFunction(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseNew(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseDelete(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseIf(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseFor(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseWhile(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseSwitch(const char *s,int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseReturn(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseNew(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseDelete(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 
-	static char * parseClass(const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf,PASTNode *ast_node_to_be_evaluated);
+	static char * parseClass(const char *s,int & m_line,  CScopeInfo *scope_info,PASTNode *ast_node_to_be_evaluated);
 
 
-	static char * parseArgs(char c1, char c2,const char *s,int & m_line,  tInfoRegisteredFunctionSymbol *sf, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseArgs(char c1, char c2,const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static bool isMarkEndExpression(char c);
 
 	/**
@@ -156,7 +156,7 @@ private:
 	static char * getSymbolValue(
 			const char *current_string_ptr,
 			int & m_line,
-			tInfoRegisteredFunctionSymbol *sf,
+			CScopeInfo *scope_info,
 			string & symbol_name,
 			int & m_definedSymbolLine,
 			tInfoPunctuator *pre_operator,

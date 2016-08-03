@@ -1,4 +1,4 @@
-typedef int (*fntConversionType)(CObject *obj);
+
 
 
 template <typename T>

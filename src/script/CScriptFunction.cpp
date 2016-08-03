@@ -1,24 +1,25 @@
 #include "zg_script.h"
 
-CScriptFunction::CScriptFunction(CScriptFunction * _parentFunction, CScope *scope){
+CScriptFunction::CScriptFunction(tInfoRegisteredFunctionSymbol *irv){
 
-	m_rootAst=NULL;
-	m_registeredSymbol = NULL;
-	m_type = TYPE::SCRIPT_FUNCTION_TYPE;
-	pointer_function = NULL;
-	m_scope = scope;
-	m_parentFunction = _parentFunction;
+	this->irv = irv;
+	//m_rootAst=NULL;
+	//m_registeredSymbol = NULL;
+	//m_type = TYPE::SCRIPT_FUNCTION_TYPE;
+	//pointer_function = NULL;
+	//m_scope = scope;
+	//m_parentFunction = _parentFunction;
 
 
-	returnVariable = CScope::UndefinedSymbol;
+	returnVariable = CScopeInfo::UndefinedSymbol;
 
-	if(_parentFunction == NULL){ // this is the main function ...
+	/*if(_parentFunction == NULL){ // this is the main function ...
 		setName("Main");
 		m_registeredSymbol=new vector<tRegisteredSymbolInfo>();
 	}
 	else {
 		_parentFunction->addFunction(this);
-	}
+	}*/
 
 }
 
@@ -29,12 +30,36 @@ void CScriptFunction::addSymbol(PASTNode *ast){
 	m_symbol.push_back(si);
 }
 
+void CScriptFunction::addArgSymbol(const string & arg_name){
+	tSymbolInfo si;
+	si.ast = NULL;
+	m_arg_symbol.push_back(si);
+}
+
+CScriptFunction::tSymbolInfo * CScriptFunction::getSymbol(unsigned idx){
+	if(idx >= m_symbol.size()){
+		print_error_cr("idx symbol index out of bounds");
+		return NULL;
+	}
+
+	return &m_symbol[idx];
+}
+
+CScriptFunction::tSymbolInfo * CScriptFunction::getArgSymbol(unsigned idx){
+	if(idx >= m_arg_symbol.size()){
+		print_error_cr("idx ARGUMENT SYMBOL index out of bounds");
+		return NULL;
+	}
+
+	return &m_arg_symbol[idx];
+}
+/*
 bool CScriptFunction::isMainFunction(){
 	return m_parentFunction == NULL;
 }
 
-CScope::tInfoScopeVar * CScriptFunction::registerArgument(const string & var_name){
-	CScope::tInfoScopeVar * irv;
+CScopeInfo::tInfoScopeVar * CScriptFunction::registerArgument(const string & var_name){
+	CScopeInfo::tInfoScopeVar * irv;
 
 	if((irv=getScope()->registerSymbol(var_name,-1))!=NULL){
 
@@ -58,7 +83,7 @@ vector<string> *	 CScriptFunction::getArgVector(){
 
 	return &m_arg;
 }
-
+*/
 CObject *	 CScriptFunction::getReturnObject(){
 
 	return returnVariable;
@@ -74,6 +99,7 @@ void CScriptFunction::setReturnObject(CObject *obj){
 	returnVariable = obj;
 }
 
+/*
 void CScriptFunction::add_C_function_argument(string arg_type){
 	m_c_arg.push_back(arg_type);
 }
@@ -106,23 +132,34 @@ bool CScriptFunction::call_C_function(vector<CObject *> * argv){
 
 CScriptFunction::TYPE CScriptFunction::getType(){
 	return m_type;
+}*/
+
+tInfoRegisteredFunctionSymbol * CScriptFunction::getFunctionInfo(){
+	return irv;
 }
 
+/*
 CObject **CScriptFunction::getArg(const string & var_name){
-	CScope::tInfoScopeVar *irv = m_scope->getInfoRegisteredSymbol(var_name);
+
+
+	CScopeInfo::tInfoScopeVar *irv = m_scope->getInfoRegisteredSymbol(var_name);
 
 	if(irv != NULL){
 		return &irv->m_obj;
 	}
-	/*for(unsigned i = 0; i < m_arg.size(); i++){
-		if(m_arg[i]->getName() == var_name){
-			return m_arg[i];
-		}
-	}*/
+
 	return NULL;
 }
 
-CObject **CScriptFunction::getArg(unsigned index){
+
+CObject **CScriptFunction::getArgSymbol(const string & index){
+
+	if(index < 0 || index > m_arg.size()){ print_error_cr("out of bounds"); return NULL;}
+
+	return getArg(m_arg[index]);
+}
+
+CObject **CScriptFunction::getArgSymbol(unsigned index){
 
 	if(index < 0 || index > m_arg.size()){ print_error_cr("out of bounds"); return NULL;}
 
@@ -130,7 +167,7 @@ CObject **CScriptFunction::getArg(unsigned index){
 }
 
 
-CScope *CScriptFunction::getScope(){
+CScopeInfo *CScriptFunction::getScope(){
 	return m_scope;
 }
 
@@ -147,31 +184,26 @@ CScriptFunction *CScriptFunction::getParent(){
 	return m_parentFunction;
 }
 
+*/
 
 
 
 
-
-vector<CCompiler::tInfoStatementOp> * CScriptFunction::getCompiledCode(){
-	return &m_listStatements;
+vector<tInfoStatementOp> * CScriptFunction::getCompiledCode(){
+	return &irv->object_info.statment_op;
 }
 
 CScriptFunction::~CScriptFunction(){
 
-	for(unsigned s = 0; s  <m_listStatements.size(); s++){
-		for(unsigned i = 0; i  <m_listStatements[s].asm_op.size(); i++){
-
-			delete m_listStatements[s].asm_op[i];
-		}
-	}
 
 
 
-	if(m_registeredSymbol != NULL){
+
+	/*if(m_registeredSymbol != NULL){
 		delete m_registeredSymbol;
 		m_registeredSymbol=NULL;
-	}
+	}*/
 
-	delete m_scope;
-	delete m_rootAst;
+	//delete m_scope;
+	//delete m_rootAst;
 }

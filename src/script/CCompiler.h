@@ -1,8 +1,10 @@
 #pragma once
-class CContext;
-class CScope;
 
-class CScriptFunction;
+
+class CContext;
+class CScopeInfo;
+
+//class tInfoRegisteredFunctionSymbol;
 
 /**
  * The compiler does:
@@ -15,11 +17,11 @@ class CCompiler{
 public:
 
 
-
+	static tDefOperator def_operator[MAX_OPERATORS];
 
 
 	static CCompiler * getInstance();
-
+	static void printGeneratedCode(tBaseObjectInfo *fs);
 	static void destroySingletons();
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
@@ -28,21 +30,22 @@ public:
 	static CObject *getConstant(const string & const_name);
 	static void addConstant(const string & const_name, CObject *obj);
 
+
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMMON COMPILE FUNCTIONS
 
-	bool compileExpression(const char *expression_str, int & m_line,CScriptFunction * sf, CScope *currentEvaluatingScope);
-	bool compile(const string & s, CScriptFunction * pr);
+	bool compileExpression(const char *expression_str, int & m_line,tInfoRegisteredFunctionSymbol * sf, CScopeInfo *currentEvaluatingScope);
+	//bool compile(const string & s, tInfoRegisteredFunctionSymbol * pr);
 
 
 
-
+	bool ast2asm(PASTNode _node, tBaseObjectInfo *sf);
 
 	/**
 	 * Load value or symbol and insert asm operation at current statment.
 	 */
 	tInfoStatementOp  *newStatment();
-	bool insertLoadValueInstruction(PASTNode _node, CScope * _lc);
+	bool insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc);
 	bool insertMovVarInstruction( int left_index, int right_index);
 
 	/**
@@ -91,7 +94,7 @@ public:
 
 	CVariable::VAR_TYPE getTypeAsmResult(int index);
 
-	void insertPushScopeInstruction(CScope * _goto_scope);
+	void insertPushScopeInstruction(CScopeInfo * _goto_scope);
 	void insertPopScopeInstruction();
 
 
@@ -117,8 +120,8 @@ private:
 	static const char * getStrTypeLoadValue(tInfoAsmOp * iao);
 	static const char * getStrMovVar(tInfoAsmOp * iao);
 
-	static void printGeneratedCode_Recursive(CScriptFunction *fs);
-	static void printGeneratedCode(CScriptFunction *fs);
+	static void printGeneratedCode_Recursive(tBaseObjectInfo *fs);
+
 
 	// DEBUG TOOLS
 	//---------------------------------------------------------------------------------------------------------------------------------------
@@ -127,34 +130,34 @@ private:
 	ASM_OPERATOR puntuator2instruction(tInfoPunctuator * op);
 	ASM_PRE_POST_OPERATORS preoperator2instruction(PUNCTUATOR_TYPE op);
 
-	int gacExpression_ArrayObject_Recursive(PASTNode _node, CScope *_lc);
-	int gacExpression_ArrayObject(PASTNode op, CScope *_lc);
-	int gacExpression_FunctionObject(PASTNode op, CScope *_lc);
-	int gacExpression_FunctionAccess(PASTNode op, CScope *_lc);
-	int gacExpression_ArrayAccess(PASTNode op, CScope *_lc);
-	int  gacExpression_Recursive(PASTNode op, CScope * _lc, int & numreg);
-	bool  gacExpression(PASTNode op, CScope * _lc,int index_instruction=-1);
+	int gacExpression_ArrayObject_Recursive(PASTNode _node, CScopeInfo *_lc);
+	int gacExpression_ArrayObject(PASTNode op, CScopeInfo *_lc);
+	int gacExpression_FunctionObject(PASTNode op, CScopeInfo *_lc);
+	int gacExpression_FunctionAccess(PASTNode op, CScopeInfo *_lc);
+	int gacExpression_ArrayAccess(PASTNode op, CScopeInfo *_lc);
+	int  gacExpression_Recursive(PASTNode op, CScopeInfo * _lc, int & numreg);
+	bool  gacExpression(PASTNode op, CScopeInfo * _lc,int index_instruction=-1);
 
-	bool gacKeyword(PASTNode _node, CScope * _lc);
-	bool gacFor(PASTNode _node, CScope * _lc);
-	bool gacVar(PASTNode _node, CScope * _lc);
-	bool gacWhile(PASTNode _node, CScope * _lc);
-	bool gacIfElse(PASTNode _node, CScope * _lc);
-	bool gacFunction(PASTNode _node, CScope * _lc);
-	bool gacReturn(PASTNode _node, CScope * _lc);
-	bool gacIf(PASTNode _node, CScope * _lc);
-	bool gacSwitch(PASTNode _node, CScope * _lc);
-	bool gacBody(PASTNode _node, CScope * _lc);
+	bool gacKeyword(PASTNode _node, CScopeInfo * _lc);
+	bool gacFor(PASTNode _node, CScopeInfo * _lc);
+	bool gacVar(PASTNode _node, CScopeInfo * _lc);
+	bool gacWhile(PASTNode _node, CScopeInfo * _lc);
+	bool gacIfElse(PASTNode _node, CScopeInfo * _lc);
+	bool gacFunction(PASTNode _node, CScopeInfo * _lc);
+	bool gacReturn(PASTNode _node, CScopeInfo * _lc);
+	bool gacIf(PASTNode _node, CScopeInfo * _lc);
+	bool gacSwitch(PASTNode _node, CScopeInfo * _lc);
+	bool gacBody(PASTNode _node, CScopeInfo * _lc);
 
 
 	bool generateAsmCode_Recursive(PASTNode _node);
-	bool ast2asm(PASTNode _node, CScriptFunction *sf);
-	bool ast2asm_Recursive(PASTNode _node, CScope * _lc);
+
+	bool ast2asm_Recursive(PASTNode _node, CScopeInfo * _lc);
 
 	vector<tInfoStatementOp > 	*m_currentListStatements;
-	CScope										*m_treescope;
-	CScriptFunction 							*m_currentScriptFunction;
-	vector <CScriptFunction *>  		 stk_scriptFunction;
+	CScopeInfo										*m_treescope;
+	tBaseObjectInfo 								*m_currentScriptFunction;
+	vector <tBaseObjectInfo *>  		 			stk_scriptFunction;
 
 
 /*

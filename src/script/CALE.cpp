@@ -340,6 +340,45 @@ bool CALE::performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CO
 
 }
 
+
+bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptFunction *sf, int n_stk){
+
+	CScriptFunction::tSymbolInfo *si;
+
+	if((si = sf->getSymbol(iao->index_op1))==NULL){
+		print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
+		return false;
+	}
+
+	if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC){
+
+		if(!performPreOperator(iao->pre_post_operator_type, si->object)){
+			return false;
+		}
+	}
+
+	if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC){
+		// 1. Load value as constant value
+		if(!loadConstantValue(si->object,n_stk)){
+			return false;
+		}
+
+		// 2. then perform post operation ...
+		if(!performPostOperator(iao->pre_post_operator_type, si->object)){
+			return false;
+		}
+
+	}
+	else{
+	// generic object pushed ...
+		if(!pushObject(&si->object,true)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool CALE::loadConstantValue(CObject *obj, int n_stk){
 
 	if(obj != NULL){
@@ -387,76 +426,9 @@ bool CALE::loadConstantValue(CObject *obj, int n_stk){
 
 }
 
-bool CALE::loadValue(tInfoAsmOp *iao, int n_stk){
-
-	CObject *obj = ((CObject *)iao->index_op2);
-	CVariable *var=NULL;
-	CScope *_lc = iao->ast_node->scope_ptr;
-	tInfoScopeVar *irv=NULL;
 
 
 
-	//sprintf(print_aux_load_value,"UNDEFINED");
-	switch(iao->index_op1){
-	case LOAD_TYPE::LOAD_TYPE_CONSTANT:
-
-
-
-
-		if(!loadConstantValue(obj, n_stk)){
-			return false;
-		}
-
-		//sprintf(print_aux_load_value,"CONST(%s)",value_symbol.c_str());
-		break;
-	case LOAD_TYPE::LOAD_TYPE_VARIABLE:
-
-		if(_lc == NULL){
-			print_error_cr("Local scope null");
-			return false;
-		}
-
-		if((irv = _lc->getInfoRegisteredSymbol(iao->ast_node->value_symbol))==NULL){
-			print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
-			return false;
-		}
-
-		if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC){
-
-			if(!performPreOperator(iao->pre_post_operator_type, irv->m_obj)){
-				return false;
-			}
-		}
-
-		if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC){
-			// 1. Load value as constant value
-			if(!loadConstantValue(irv->m_obj,n_stk)){
-				return false;
-			}
-
-			// 2. then perform post operation ...
-			if(!performPostOperator(iao->pre_post_operator_type, irv->m_obj)){
-				return false;
-			}
-
-		}
-		else{
-		// generic object pushed ...
-			if(!pushObject(&irv->m_obj,true)) {
-				return false;
-			}
-		}
-		break;
-	case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
-		//sprintf(print_aux_load_value,"ARG(%s)",value_symbol.c_str());
-		break;
-	default:
-		break;
-
-	}
-
-	return true;
-}
 
 bool CALE::assignObjectFromIndex(CObject **obj, int index){
 
@@ -464,7 +436,7 @@ bool CALE::assignObjectFromIndex(CObject **obj, int index){
 
 
 	// if undefined, create new by default ...
-	if(*obj == CScope::UndefinedSymbol){
+	if(*obj == CScopeInfo::UndefinedSymbol){
 
 		if((*obj = createObjectFromIndex(index)) == NULL){
 			return false;
@@ -561,7 +533,7 @@ bool CALE::performInstruction(int idx_instruction,tInfoAsmOp * instruction,CScri
 
 	current_asm_instruction = idx_instruction;
 
-	//CScope *_lc = instruction->ast_node->scope_ptr;
+	//CScopeInfo *_lc = instruction->ast_node->scope_info_ptr;
 
 	int index_op1 = instruction->index_op1;
 	int index_op2 = instruction->index_op2;
@@ -572,7 +544,7 @@ bool CALE::performInstruction(int idx_instruction,tInfoAsmOp * instruction,CScri
 
 	switch(instruction->operator_type){
 	default:
-		print_error_cr("operator type(%s) not implemented",def_operator[instruction->operator_type].op_str);
+		print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
 		break;
 	case NOP: // ignore ...
 		break;
@@ -580,8 +552,32 @@ bool CALE::performInstruction(int idx_instruction,tInfoAsmOp * instruction,CScri
 
 
 
-		if(!loadValue(instruction, n_stk)){
+		/*if(!loadValue(instruction, n_stk)){
 			return false;
+		}*/
+
+		//sprintf(print_aux_load_value,"UNDEFINED");
+		switch(instruction->index_op1){
+		case LOAD_TYPE::LOAD_TYPE_CONSTANT:
+
+			if(!loadConstantValue((CObject *)instruction->index_op2, n_stk)){
+				return false;
+			}
+
+			//sprintf(print_aux_load_value,"CONST(%s)",value_symbol.c_str());
+			break;
+		case LOAD_TYPE::LOAD_TYPE_VARIABLE:
+			if(!loadVariableValue(instruction, sf, n_stk)){
+				return false;
+			}
+
+			break;
+		case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
+			//sprintf(print_aux_load_value,"ARG(%s)",value_symbol.c_str());
+			break;
+		default:
+			break;
+
 		}
 
 		break;

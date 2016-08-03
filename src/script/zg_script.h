@@ -1,7 +1,7 @@
 #pragma once
 
 class CScriptFunction;
-class CScope;
+class CScopeInfo;
 
 #include "system/zg_system.h"
 #include "utils/zg_utils.h"
@@ -11,7 +11,7 @@ class CScope;
 
 #include "ScriptDefinesStructs.h"
 #include "ast/ast.h"
-#include "ast/CScope.h"
+#include "ast/CScopeInfo.h"
 #include "CCompiler.h"
 #include "CScriptClassFactory.h"
 #include "CALE.h"
@@ -38,7 +38,15 @@ public:
 
 private:
 
-	tInfoRegisteredFunctionSymbol main_function;
+	// calling C function with differnt parameters...
+	static int call_C_6p(int f, int arg1,int arg2,int arg3,int arg4,int arg5);
+	static int call_C_5p(int f, int arg1,int arg2,int arg3,int arg4);
+	static int call_C_3p(int f, int arg1,int arg2,int arg3);
+	static int call_C_2p(int f, int arg1,int arg2);
+	static int call_C_1p(int f, int arg1);
+	static int call_C_0p(int f);
+
+	CScriptFunction *m_mainFunction;
 
 	/*enum TYPE_{
 		LOAD_VALUE=1,
@@ -56,7 +64,7 @@ private:
 
 	static CZG_Script * m_instance;
 
-	CScriptFunction *m_mainFunction;
+	tInfoRegisteredFunctionSymbol m_structInfoMain;
 
 	void init();
 
@@ -72,14 +80,11 @@ private:
 public:
 
 	static CZG_Script * getInstance();
+	static CScopeInfo *m_globalScope;
+	static tASTNode *m_mainAst;
 
-	// calling C function with differnt parameters...
-	CObject * call_C_6p(int f, CObject *arg1,CObject *arg2,CObject *arg3,CObject *arg4,CObject *arg5);
-	CObject * call_C_5p(int f, CObject *arg1,CObject *arg2,CObject *arg3,CObject *arg4);
-	CObject * call_C_3p(int f, CObject *arg1,CObject *arg2,CObject *arg3);
-	CObject * call_C_2p(int f, CObject *arg1,CObject *arg2);
-	CObject * call_C_1p(int f, CObject *arg);
-	CObject * call_C_0p(int f);
+
+	static int call_C_function(tInfoRegisteredFunctionSymbol *irfs, vector<CObject *> * argv);
 
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 	bool eval(const string & s);

@@ -82,8 +82,9 @@ private:
 
 	bool performPreOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
 	bool performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
-	bool loadValue(tInfoAsmOp *iao, int stk);
+//	bool loadValue(tInfoAsmOp *iao, int stk);
 	bool loadConstantValue(CObject *bj, int n_stk);
+	bool loadVariableValue(tInfoAsmOp *iao,CScriptFunction *sf, int n_stk);
 
 
 };

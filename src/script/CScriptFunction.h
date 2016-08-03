@@ -3,7 +3,7 @@
 
 
 
-#include "script/ast/CScope.h"
+#include "script/ast/CScopeInfo.h"
 
 
 
@@ -129,49 +129,66 @@ class CScriptFunction: public CFunctor{
 
 public:
 
-	enum TYPE{
+	/*enum TYPE{
 		SCRIPT_FUNCTION_TYPE=0, // function with args (default)...
-		C_FUNCTION_TYPE, // C Function with defined symbols ...
+		//C_FUNCTION_TYPE, // C Function with defined symbols ...
 		CLASS_TYPE // complex script function. Includes args available for constructor and a set of functions
+	};*/
+
+	class tSymbolInfo{
+		public:
+		CObject *object; // created object. undefined by default.
+		PASTNode *ast;
+		tSymbolInfo(){
+			this->object = CScopeInfo::UndefinedSymbol;
+			this->ast = NULL;
+		}
+
 	};
 
-	TYPE m_type;
+	//TYPE m_type;
 
 	void addSymbol(PASTNode *ast);
+	void addArgSymbol(const string & arg_name);
 
-	CScriptFunction(CScriptFunction *_parentFunction=NULL);
+	tSymbolInfo * getSymbol(unsigned idx);
+	//tSymbolInfo * getArgSymbol(const string & var_name);
+	tSymbolInfo * getArgSymbol(unsigned index);
+
+
+	CScriptFunction(tInfoRegisteredFunctionSymbol *irv);
 	vector<tInfoStatementOp> * getCompiledCode();
 
-	tInfoScopeVar * registerArgument(const string & var_name);
-	void 	 addFunction(CScriptFunction *sf);
-	vector<CScriptFunction *> *	 getVectorFunction();
-	vector<string> *	 getArgVector();
+	tInfoRegisteredFunctionSymbol * getFunctionInfo();
 
-	CObject **getArg(const string & var_name);
-	CObject **getArg(unsigned index);
+
+//	tInfoScopeVar * registerArgument(const string & var_name);
+//	void 	 addFunction(CScriptFunction *sf);
+//	vector<CScriptFunction *> *	 getVectorFunction();
+//	vector<string> *	 getArgVector();
+
 
 	/**
 	 * Check whether is main function or not.
 	 */
-	bool isMainFunction();
+	//bool isMainFunction();
 
 	CObject 	*getReturnObject();
 	CObject ** 	 getReturnObjectPtr();
 
 	void setReturnObject(CObject *);
-	void setupAsFunctionPointer(void * _pointer_function);
-	void add_C_function_argument(string arg_type);
+	//void setupAsFunctionPointer(void * _pointer_function);
+	//void add_C_function_argument(string arg_type);
+	//bool call_C_function(vector<CObject *> * argv);
 
-	bool call_C_function(vector<CObject *> * argv);
-
-	TYPE getType();
+	//TYPE getType();
 
 
-	CScriptFunction *getParent();
-	CScope *getScope();
+	//CScriptFunction *getParent();
+	//CScopeInfo *getScope();
 
-	PASTNode getRootAst();
-	PASTNode * getRootAstPtr();
+	//PASTNode getRootAst();
+	//PASTNode * getRootAstPtr();
 
 
 	/*
@@ -184,35 +201,28 @@ public:
 
 private:
 
-	class tSymbolInfo{
-		public:
-		CObject *object; // created object. undefined by default.
-		PASTNode *ast;
-		tSymbolInfo(){
-			this->object = CScope::UndefinedSymbol;
-			this->ast = NULL;
-		}
 
-	};
 
 
 	/**
 	 * AST root
 	 */
-	PASTNode m_rootAst;
+	//PASTNode m_rootAst;
 
 	/**
 	 * This variable tells whether is pointer function or not.
 	 */
-	void * pointer_function;
+	//void * pointer_function;
 
-	vector<string> m_arg;
-	vector<string> m_c_arg; // for c function
-	vector<CScriptFunction *> m_function;
+	//vector<string> m_arg;
+	//vector<string> m_c_arg; // for c function
+	//vector<CScriptFunction *> m_function;
+	tInfoRegisteredFunctionSymbol *irv;
 
 
 	vector<tSymbolInfo> m_symbol;
-	vector<tInfoStatementOp>  	m_listStatements;
+	vector<tSymbolInfo> m_arg_symbol;
+	//vector<tInfoStatementOp>  	m_listStatements;
 
 
 	/**
@@ -224,7 +234,7 @@ private:
 
 
 
-	CScope	*m_scope; // base scope...
-	CScriptFunction *m_parentFunction;
+	//CScopeInfo	*m_scope; // base scope...
+	//CScriptFunction *m_parentFunction;
 
 };
