@@ -11,7 +11,7 @@ CScriptClass::CScriptClass(tInfoRegisteredFunctionSymbol *irv){
 	//m_parentFunction = _parentFunction;
 
 
-	returnVariable = CScopeInfo::UndefinedSymbol;
+
 
 	/*if(_parentFunction == NULL){ // this is the main function ...
 		setName("Main");
@@ -28,7 +28,13 @@ CScriptClass::CScriptClass(tInfoRegisteredFunctionSymbol *irv){
 
 	// create object functions ...
 	for ( unsigned i = 0; i < irv->object_info.local_symbols.m_registeredFunction.size(); i++){
-		print_info_cr("- Create function %s...",irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast->value_symbol);
+		print_info_cr("=========================================");
+		print_info_cr("- Create function %s...",irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.info_var_scope->name.c_str());
+		addFunctionSymbol(
+				irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast,
+				&irv->object_info.local_symbols.m_registeredFunction[i]
+
+				);
 		//addSymbol(irv->object_info.local_symbols.m_registeredVariable[i].ast);
 	}
 
@@ -42,19 +48,39 @@ void CScriptClass::addSymbol(tASTNode *ast){
 	m_symbol.push_back(si);
 }
 
+void CScriptClass::addFunctionSymbol(tASTNode *ast,tInfoRegisteredFunctionSymbol *irv){
+	tSymbolInfo si;
+	si.object = new CScriptFunction(this,irv);
+	si.ast = ast;
+	m_functionSymbol.push_back(si);
+}
+
+
+
 void CScriptClass::addArgSymbol(const string & arg_name){
 	tSymbolInfo si;
 	si.ast = NULL;
 	m_arg_symbol.push_back(si);
 }
 
-CScriptClass::tSymbolInfo * CScriptClass::getSymbol(unsigned idx){
+
+
+CScriptClass::tSymbolInfo * CScriptClass::getVariableObjectByIndex(unsigned idx){
 	if(idx >= m_symbol.size()){
 		print_error_cr("idx symbol index out of bounds");
 		return NULL;
 	}
 
 	return &m_symbol[idx];
+}
+
+CScriptClass::tSymbolInfo *CScriptClass::getFunctionObjectByIndex(unsigned idx){
+	if(idx >= m_functionSymbol.size()){
+		print_error_cr("idx symbol index out of bounds");
+		return NULL;
+	}
+	return &m_functionSymbol[idx];
+
 }
 
 CScriptClass::tSymbolInfo * CScriptClass::getArgSymbol(unsigned idx){
@@ -96,20 +122,7 @@ vector<string> *	 CScriptClass::getArgVector(){
 	return &m_arg;
 }
 */
-CObject *	 CScriptClass::getReturnObject(){
 
-	return returnVariable;
-}
-
-CObject ** CScriptClass::getReturnObjectPtr(){
-	return &returnVariable;
-}
-
-
-void CScriptClass::setReturnObject(CObject *obj){
-
-	returnVariable = obj;
-}
 
 /*
 void CScriptClass::add_C_function_argument(string arg_type){

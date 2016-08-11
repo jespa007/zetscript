@@ -43,13 +43,25 @@ CVirtualMachine::CVirtualMachine(){
 
 
 
-bool CVirtualMachine::execute(CScriptClass *this_object, tInfoRegisteredFunctionSymbol *function_info,vector<CObject *> * argv, int stk){
+bool CVirtualMachine::execute(CScriptFunction *function_object, vector<CObject *> * argv, int stk){
 
 	//tInfoRegisteredFunctionSymbol *irsf=sf->getFunctionInfo();
 
+	tInfoRegisteredFunctionSymbol *function_info =function_object->getFunctionInfo();
+
 	if((function_info->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::C_OBJECT_REF){ // C-Call
 
-			return CZG_Script::call_C_function(function_info,argv);
+			int result=0;
+
+			if(!CZG_Script::call_C_function(function_info,result,argv)){
+				 return false;
+			}
+
+			//TODO: create primitive object if needed ...
+			function_object->setReturnObject(CScopeInfo::VoidSymbol);
+
+
+			return true;
 	}
 
 
@@ -101,20 +113,20 @@ bool CVirtualMachine::execute(CScriptClass *this_object, tInfoRegisteredFunction
 			//}
 
 			//vector<CCompiler::tInfoAsmOp *> * asm_op_statment = &(*m_listStatements)[s].asm_op;
-			//print_vm_cr("executing code...");
+
 
 
 			//CCompiler::tInfoAsmOp * instruction=NULL;
 
 
 			for(unsigned i = 0; i  <  n_asm_op && (jmp_to_statment==-1); i++){ // for each code-instruction execute it.
-				//print_vm_cr("executing instruction %s [%02i:%02i]...",sf->getName().c_str(), s,i);
-
-			/*	if( s==1 && i==0){
+				print_vm_cr("executing instruction  [%02i:%02i]...", s,i);
+				//print_vm_cr("executing code...%i/%i",s,i);
+				if( s==2 && i==12){
 					int hhh=0;
 					hhh++;
 				}
-*/
+
 
 
 				//if(stk!=2){
@@ -122,7 +134,7 @@ bool CVirtualMachine::execute(CScriptClass *this_object, tInfoRegisteredFunction
 					//return true;
 
 
-					if(!ALE.performInstruction(i,asm_op_statment->at(i),jmp_to_statment,this_object,argv,stk)){
+					if(!ALE.performInstruction(i,asm_op_statment->at(i),jmp_to_statment,function_object,argv,stk)){
 						return false;
 					}
 

@@ -489,23 +489,25 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 
 
-		if(isFunctionNode(_node)){
+		//if(isFunctionNode(_node))
+		// try function ....
+		{
 			load_type=LOAD_TYPE_FUNCTION;
 
-			if((idx_local_var =getIdxLocalFunctionSymbol(_node,_lc))==-1){
-				return false;
-			}
+			idx_local_var =getIdxLocalFunctionSymbol(_node,_lc);
+
 			// Local Functions are already inserted during "gacFunction" process, so we don't have
 			// to register again...
 		}
-		else{ // is var or arg node
+
+		if(idx_local_var==-1) { // if not function then is var or arg node ?
 
 
 			// first we find the list of argments
 			if((idx_local_var = getIdxArgument(_node->value_symbol))!=-1){
 				load_type=LOAD_TYPE_ARGUMENT;
 			}
-			else{ // ... finally, we deduce that the value is a local symbol...
+			else{ // ... if not argument finally, we deduce that the value is a local symbol...
 
 				load_type=LOAD_TYPE_VARIABLE;
 				if((idx_local_var=getIdxLocalVarSymbol(_node,_lc, false)) == -1){

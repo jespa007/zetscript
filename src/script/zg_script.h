@@ -20,6 +20,7 @@ class CScopeInfo;
 
 
 #include "CScriptClass.h"
+#include "CScriptFunction.h"
 
 
 
@@ -40,6 +41,7 @@ class CZG_Script{
 	static int call_C_0p(int f);
 
 	CScriptClass *m_mainClass;
+	CScriptFunction *m_mainFunction;
 
 	/*enum TYPE_{
 		LOAD_VALUE=1,
@@ -78,8 +80,9 @@ public:
 	tInfoRegisteredFunctionSymbol *getMainStructInfo(){return &m_structInfoMain;}
 	tScriptFunctionInfo *getMainObjectInfo(){return &m_structInfoMain.object_info;}
 	CScriptClass *getMainObject(){return m_mainClass;}
+	CScriptFunction *getMainFunction(){return m_mainFunction;}
 
-	static int call_C_function(tInfoRegisteredFunctionSymbol *irfs, vector<CObject *> * argv);
+	static bool call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CObject *> * argv);
 
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 	bool eval(const string & s);

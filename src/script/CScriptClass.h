@@ -125,7 +125,7 @@ void* getcodeptr(const FunctorT& f) {
 
 
 
-class CScriptClass: public CFunctor{
+class CScriptClass: public CObject{
 
 public:
 
@@ -149,9 +149,13 @@ public:
 	//TYPE m_type;
 
 	void addSymbol(tASTNode *ast);
+
+	void addFunctionSymbol(tASTNode *ast,tInfoRegisteredFunctionSymbol *irv);
+	tSymbolInfo * getFunctionObjectByIndex(unsigned idx);
+
 	void addArgSymbol(const string & arg_name);
 
-	tSymbolInfo * getSymbol(unsigned idx);
+	tSymbolInfo * getVariableObjectByIndex(unsigned idx);
 	//tSymbolInfo * getArgSymbol(const string & var_name);
 	tSymbolInfo * getArgSymbol(unsigned index);
 
@@ -173,10 +177,7 @@ public:
 	 */
 	//bool isMainFunction();
 
-	CObject 	*getReturnObject();
-	CObject ** 	 getReturnObjectPtr();
 
-	void setReturnObject(CObject *);
 	//void setupAsFunctionPointer(void * _pointer_function);
 	//void add_C_function_argument(string arg_type);
 	//bool call_C_function(vector<CObject *> * argv);
@@ -221,15 +222,11 @@ private:
 
 
 	vector<tSymbolInfo> m_symbol;
+	vector<tSymbolInfo> m_functionSymbol;
 	vector<tSymbolInfo> m_arg_symbol;
 	//vector<tInfoStatementOp>  	m_listStatements;
 
 
-	/**
-	 * Return variable is assigned at the begin as undefined and when return keyword occurs,
-	 * returnVariable is assigned as the result of expression after return. By default return variable is type void.
-	 */
-	CObject *returnVariable;
 
 
 

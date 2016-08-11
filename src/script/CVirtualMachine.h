@@ -7,7 +7,7 @@
 
 
 
-class CScriptClass;
+class CScriptFunction;
 class CVirtualMachine{
 
 public:
@@ -20,7 +20,7 @@ public:
 
 
 
-	static bool execute(CScriptClass *this_object, tInfoRegisteredFunctionSymbol *function_info, vector<CObject *> * argv=NULL,int stk=0);
+	static bool execute(CScriptFunction *function_object, vector<CObject *> * argv=NULL,int stk=0);
 
 private:
 

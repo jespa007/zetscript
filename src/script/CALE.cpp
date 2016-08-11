@@ -193,6 +193,11 @@ bool CALE::pushObject(CObject ** init_value, bool isAssignable){
 		return false;
 	}
 
+	if(*init_value == NULL){
+		print_error_cr("NULL value");
+		return false;
+	}
+
 	// try to deduce object type ...
 	CVariable::VAR_TYPE var_type = CVariable::VAR_TYPE::OBJECT;
 
@@ -341,16 +346,17 @@ bool CALE::performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CO
 }
 
 
-bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_stk){
+bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptFunction *function_object, int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_VARIABLE){
 		print_error_cr("expected load type variable.");
 		return false;
 	}
 
+	CScriptClass *this_object = function_object->getThisObject();
 	CScriptClass::tSymbolInfo *si;
 
-	if((si = this_object->getSymbol(iao->index_op2))==NULL){
+	if((si = this_object->getVariableObjectByIndex(iao->index_op2))==NULL){
 		print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
 		return false;
 	}
@@ -384,25 +390,27 @@ bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_s
 	return true;
 }
 
-bool CALE::loadFunctionValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_stk){
+bool CALE::loadFunctionValue(tInfoAsmOp *iao, CScriptFunction *function_object, int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_FUNCTION){
 		print_error_cr("expected load type function.");
 		return false;
 	}
 
-	tInfoRegisteredFunctionSymbol *si;
+	CScriptClass::tSymbolInfo *si;
+	CScriptClass *this_object = function_object->getThisObject();
+	//tInfoRegisteredFunctionSymbol *si;
 
-	if((si = this_object->getFunctionInfo(iao->index_op2))==NULL){
+	if((si = this_object->getFunctionObjectByIndex(iao->index_op2))==NULL){
 		print_error_cr("cannot find function info \"%s\"",iao->ast_node->value_symbol.c_str());
 		return false;
 	}
 
 	// generic object pushed ...
-	//if(!pushObject((CObject **)si,false)) {
-	//	return false;
-	//}
-	result_object_instruction[current_asm_instruction]={CVariable::FUNCTION,(CObject **)si, false};
+	if(!pushObject(&si->object,false)) {
+		return false;
+	}
+	//result_object_instruction[current_asm_instruction]={CVariable::FUNCTION,(CObject **)si, false};
 
 
 	return true;
@@ -546,7 +554,7 @@ bool CALE::assignObjectFromIndex(CObject **obj, int index){
 	return true;
 }
 
-bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptClass *this_object,vector<CObject *> * argv, int n_stk){
+bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptFunction *function_object,vector<CObject *> * argv, int n_stk){
 
 
 	string 	aux_string;
@@ -593,13 +601,14 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 			//sprintf(print_aux_load_value,"CONST(%s)",value_symbol.c_str());
 			break;
 		case LOAD_TYPE::LOAD_TYPE_VARIABLE:
-			if(!loadVariableValue(instruction, this_object, n_stk)){
+
+			if(!loadVariableValue(instruction, function_object, n_stk)){
 				return false;
 			}
 
 			break;
 		case LOAD_TYPE::LOAD_TYPE_FUNCTION:
-			if(!loadFunctionValue(instruction, this_object, n_stk)){
+			if(!loadFunctionValue(instruction, function_object, n_stk)){
 				return false;
 			}
 
@@ -1003,23 +1012,22 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 			// check whether signatures matches or not ...
 			// 1. get function object ...
 			if(result_object_instruction[index_op1].type == CVariable::FUNCTION){
-				// tInfoRegisteredFunction * is passed as CObject ** so we have to do the right cast.
-				tInfoRegisteredFunctionSymbol * function_info = (tInfoRegisteredFunctionSymbol *)(result_object_instruction[index_op1].stkObject);
-				CScriptClass * fun =CZG_Script::getInstance()->getMainObject();
 
+				CScriptFunction * function_info = (CScriptFunction *)(*result_object_instruction[index_op1].stkObject);
 
 				// by default virtual machine gets main object class in order to run functions ...
-				if(!CVirtualMachine::execute(fun,function_info,&m_functionArgs, n_stk+1)){
+				if(!CVirtualMachine::execute(function_info,&m_functionArgs, n_stk+1)){
 					return false;
 				}
 
 				// finally set result value into stkObject...
-				if(!pushObject(fun->getReturnObjectPtr())){
+				if(!pushObject(function_info->getReturnObjectPtr())){
 					return false;
 				}
 			}
 			else{
 				print_error_cr("object not type function");
+				return false;
 			}
 			break;
 		case PUSH: // push arg instruction...
@@ -1076,7 +1084,7 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 
 		case RET:
 
-			if(!assignObjectFromIndex(this_object->getReturnObjectPtr(),instruction->index_op1)){
+			if(!assignObjectFromIndex(function_object->getReturnObjectPtr(),instruction->index_op1)){
 				return false;
 			}
 

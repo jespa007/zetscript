@@ -16,6 +16,8 @@ var b=aaa;
 b(1);
 c();
 
+print("hola2_merda 3:"+b(0));
+
 
 /*
 function bb(a,b){

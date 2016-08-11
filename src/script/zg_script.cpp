@@ -7,6 +7,7 @@
 #include "CScriptClassFactory.cpp"
 
 #include "CScriptClass.cpp"
+#include "CScriptFunction.cpp"
 
 
 
@@ -86,30 +87,30 @@ int CZG_Script::call_C_0p(int fp){
 
 }
 
-int CZG_Script::call_C_function(tInfoRegisteredFunctionSymbol *irfs, vector<CObject *> * argv){
+bool CZG_Script::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CObject *> * argv){
 
 	int converted_param[MAX_PARAM_C_FUNCTION];
 
 	if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) {
 		print_error_cr("Function is not registered as C");
-		return 0;
+		return false;
 	}
 
 	int fp = irfs->object_info.symbol_info.ref_aux;
 
 	if(fp==0){
 		print_error_cr("Null function");
-		return 0;
+		return false;
 	}
 
 	if(irfs->m_arg.size() != argv->size()){
 		print_error_cr("C argument VS scrip argument doestn't match sizes");
-		return 0;
+		return false;
 	}
 
 	if(irfs->m_arg.size() >= MAX_PARAM_C_FUNCTION){
 		print_error_cr("Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_PARAM_C_FUNCTION);
-		return 0;
+		return false;
 	}
 
 	// convert parameters script to c...
@@ -117,25 +118,29 @@ int CZG_Script::call_C_function(tInfoRegisteredFunctionSymbol *irfs, vector<CObj
 		fntConversionType paramConv=CScriptClassFactory::getConversionType((argv->at(i))->getPointerClassStr(),irfs->m_arg[i]);
 
 		if(paramConv == NULL){
-			return 0;
+			return false;
 		}
 
 		converted_param[i] = paramConv(argv->at(i));
 	}
 
 	switch(argv->size()){
+	default:
+		print_error_cr("cannot call !");
+		return false;
 	case 0:
-		return call_C_0p(fp);
+		result=call_C_0p(fp);
 		print_info_cr("0 call!");
 		break;
 	case 1:
-		return call_C_1p(fp,converted_param[0]);
+		result=call_C_1p(fp,converted_param[0]);
 		print_info_cr("1 call!");
 		break;
 
 	}
-	print_error_cr("cannot call !");
-	return 0;
+
+	return true;
+
 }
 /*
 CZG_Script::tLocalScope * CZG_Script::createLocalScope(CZG_Script::tLocalScope *m_parent){
@@ -354,12 +359,13 @@ bool CZG_Script::execute(){
 		// creates the main entry function with compiled code. On every executing code, within "execute" function
 		// virtual machine is un charge of allocating space for all local variables...
 		m_mainClass = new CScriptClass(&m_structInfoMain);//CScriptClassFactory::newClass("Main");
+		m_mainFunction = new CScriptFunction(m_mainClass,&m_structInfoMain);
 	}
 
 	//CCompiler::getInstance()->printGeneratedCode(m_mainClass);
 
 	// the first code to execute is the main function that in fact is a special member function inside our main class
-	return CVirtualMachine::getInstance()->execute(m_mainClass,&m_structInfoMain, NULL,0);//->excute();
+	return CVirtualMachine::getInstance()->execute(m_mainFunction, NULL,0);//->excute();
 }
 
 
@@ -369,6 +375,7 @@ CZG_Script::~CZG_Script(){
 
 	//delete m_mainClass;
 	delete m_mainClass;
+	delete m_mainFunction;
 
 	CCompiler::destroySingletons();
 	CVirtualMachine::destroySingletons();
