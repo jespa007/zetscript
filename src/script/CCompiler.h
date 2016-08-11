@@ -7,11 +7,9 @@ class CScopeInfo;
 //class tInfoRegisteredFunctionSymbol;
 
 /**
- * The compiler does:
- * -Generates byte code instruction through AST and ScriptFunction object given.
- * -Registers classes.
- * -Registers symbols.
- */
+ * The compiler compiles function structs and generates its asm instruction. The compile must know
+ * the class structure in order to link symbols of its scope.
+  */
 class CCompiler{
 
 public:
@@ -21,26 +19,90 @@ public:
 
 
 	static CCompiler * getInstance();
-	static void printGeneratedCode(tBaseObjectInfo *fs);
+	static void printGeneratedCode(tScriptFunctionInfo *fs);
 	static void destroySingletons();
 
+
+	//---------------------------------------------------------------------------------------------------------------------------------------
+	// COMMON COMPILE FUNCTIONS
+
+
+	//bool compile(const string & s, tInfoRegisteredFunctionSymbol * pr);
+
+
+	/**
+	 * Clears all compilation information...
+	 */
+	void clear();
+
+	/**
+	 * Compiles main ast node with base object info to store instruction related with function information.
+	 */
+
+	bool compile(PASTNode _ast_main_node, tInfoRegisteredFunctionSymbol *sf);
+
+
+private:
+	static CCompiler *m_compiler;
+	static map<string,CObject *> *constant_pool;
+
+
+	//---------------------------------------------------------------------------------------------------------------------------------------
+	// DEBUG TOOLS
+
+	typedef struct{
+		string src;
+		int asm_statment_idx;
+	}tDebugInformation;
+
+	vector<tDebugInformation>	m_debugInfo;
+
+	static char print_aux_load_value[512];
+
+	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
+	void printDebugInformation();
+	static const char * getStrTypeLoadValue(tInfoAsmOp * iao);
+	static const char * getStrMovVar(tInfoAsmOp * iao);
+
+	static void printGeneratedCode_Recursive(tScriptFunctionInfo *fs);
+
+
+	// DEBUG TOOLS
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// CONSTANT TOOLS
 
 	static CObject *getConstant(const string & const_name);
 	static void addConstant(const string & const_name, CObject *obj);
 
+	//---------------------------------------------------------------------------------------------------------------------------------------
+	// LINK UTILS
+
+	bool isFunctionNode(PASTNode node);
+
+	/*
+	 * gets idx argument by its name.
+	 */
+	int getIdxArgument(const string & var);
+
+	int  addLocalVarSymbol(tASTNode *ast, CScopeInfo *currentEvaluatingScope);
+	bool localVarSymbolExists(tASTNode *ast,CScopeInfo *currentEvaluatingScope);
+	int  getIdxLocalVarSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope, bool print_msg=true);
+
+	int  addLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope);
+	bool localFunctionSymbolExists(tASTNode *ast,CScopeInfo *currentEvaluatingScope);
+	int  getIdxLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope, bool print_msg=true);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
-	// COMMON COMPILE FUNCTIONS
-
-	bool compileExpression(const char *expression_str, int & m_line,tInfoRegisteredFunctionSymbol * sf, CScopeInfo *currentEvaluatingScope);
-	//bool compile(const string & s, tInfoRegisteredFunctionSymbol * pr);
+	// COMPILE UTLS
 
 
+	/**
+	 * Compile class struct main ast node with class base object info to store instruction related with function information.
+	 */
+	bool compile_class(PASTNode _ast_class_node, tScriptFunctionInfo *sf);
 
-	bool ast2asm(PASTNode _node, tBaseObjectInfo *sf);
 
+	bool parseExpression(const char *expression_str, int & m_line,tInfoRegisteredFunctionSymbol * sf, CScopeInfo *currentEvaluatingScope);
 	/**
 	 * Load value or symbol and insert asm operation at current statment.
 	 */
@@ -81,6 +143,7 @@ public:
 	void insert_LoadFunctionObject_Instruction(CObject *obj);
 	void insert_ClearArgumentStack_Instruction();
 	void insert_PushArgument_Instruction();
+	void insert_ClearArgumentStack_And_PushFirstArgument_Instructions();
 	void insert_CallFunction_Instruction(int index_call);
 	void insertRet(int index);
 
@@ -96,34 +159,6 @@ public:
 
 	void insertPushScopeInstruction(CScopeInfo * _goto_scope);
 	void insertPopScopeInstruction();
-
-
-private:
-	static CCompiler *m_compiler;
-	static map<string,CObject *> *constant_pool;
-
-
-	//---------------------------------------------------------------------------------------------------------------------------------------
-	// DEBUG TOOLS
-
-	typedef struct{
-		string src;
-		int asm_statment_idx;
-	}tDebugInformation;
-
-	vector<tDebugInformation>	m_debugInfo;
-
-	static char print_aux_load_value[512];
-
-	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
-	void printDebugInformation();
-	static const char * getStrTypeLoadValue(tInfoAsmOp * iao);
-	static const char * getStrMovVar(tInfoAsmOp * iao);
-
-	static void printGeneratedCode_Recursive(tBaseObjectInfo *fs);
-
-
-	// DEBUG TOOLS
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE ASSEMBLE CODE (GAC)
 
@@ -155,9 +190,9 @@ private:
 	bool ast2asm_Recursive(PASTNode _node, CScopeInfo * _lc);
 
 	vector<tInfoStatementOp > 	*m_currentListStatements;
-	CScopeInfo										*m_treescope;
-	tBaseObjectInfo 								*m_currentScriptFunction;
-	vector <tBaseObjectInfo *>  		 			stk_scriptFunction;
+	CScopeInfo											*m_treescope;
+	tInfoRegisteredFunctionSymbol						*m_currentFunctionInfo;
+	vector <tInfoRegisteredFunctionSymbol *>  		 			stk_scriptFunction;
 
 
 /*

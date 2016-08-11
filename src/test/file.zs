@@ -1,6 +1,20 @@
 
+var i=1+2;
 
-print("hola2_merda"+0);
+function aaa(j,k){
+	return j;
+}
+
+var c=function(){
+	return 0;
+};
+
+
+print("hola2_merda:"+aaa(1,2));
+
+var b=aaa;
+b(1);
+c();
 
 
 /*

@@ -1,15 +1,18 @@
 #pragma once
 
+
+
 #include "ScriptDefinesStructs.h"
 #include "RegisterFunctionHelper.h"
+#include "ast/ast.h"
 
-
-#define registerGlobal_C_Function(s) CScriptClassFactory::register_C_Function("Main",STR(s),s)
-#define registerGlobal_C_Variable(s) CScriptClassFactory::register_C_Variable("Main",STR(s),s,typeid(s).name())
+#define registerGlobal_C_Function(s) CScriptClassFactory::register_C_Function(CZG_Script::getMainObjectInfo(),STR(s),s)
+#define registerGlobal_C_Variable(s) CScriptClassFactory::register_C_Variable(CZG_Script::getMainObjectInfo(),STR(s),s,typeid(s).name())
 
 
 
 class CScopeInfo;
+
 class CScriptClassFactory{
 
 
@@ -46,11 +49,12 @@ public:
 	}tRegisterFunction;
 
 	static tPrimitiveType primitiveType[MAX_VAR_C_TYPES];
+	static void registerPrimitiveTypes();
 
-	static tInfoRegisteredVariableSymbol  * registerVariableSymbol(tBaseObjectInfo *object_info,PASTNode  node);
-	static tInfoRegisteredFunctionSymbol * registerFunctionSymbol(tBaseObjectInfo *object_info,PASTNode  node, unsigned int properties);
-	static tInfoRegisteredFunctionSymbol *  getRegisteredFunctionSymbol(tBaseObjectInfo *object_info,unsigned idx);
-	static bool addArgumentFunctionSymbol(tBaseObjectInfo *object_info,unsigned idxFunction,const string & arg_name);
+	static tInfoRegisteredVariableSymbol  * registerVariableSymbol(tScriptFunctionInfo *object_info,PASTNode  node);
+	static tInfoRegisteredFunctionSymbol * registerFunctionSymbol(tScriptFunctionInfo *object_info,PASTNode  node, unsigned int properties);
+	static tInfoRegisteredFunctionSymbol *  getRegisteredFunctionSymbol(tScriptFunctionInfo *object_info,unsigned idx);
+	static bool addArgumentFunctionSymbol(tScriptFunctionInfo *object_info,unsigned idxFunction,const string & arg_name);
 
 
 	static tInfoRegisteredClass * getRegisteredClass(const string & v, bool print_msg=true);
@@ -60,37 +64,49 @@ public:
 
 	static void destroySingletons();
 
-	static CScriptFunction *newClass(const string & class_name);
+	static CScriptClass *newClass(const string & class_name);
 
 	/**
 	 * Register C function
 	 */
 	template <typename F>
-	static void register_C_Function(const string & class_name, const char *function_str,F function_ptr)
+	static void register_C_Function(tScriptFunctionInfo * base_info, const char *function_name,F function_ptr)
 	{
 		string return_type;
 		vector<string> params;
 		tInfoRegisteredFunctionSymbol irs;
 
-		tPrimitiveType *rt;
+		//tPrimitiveType *rt;
 		//vector<tPrimitiveType *> pt;
 		//CScopeInfo::tInfoScopeVar  *rs;
 
-		//CScriptFunction *sf=NULL;
+		//CScriptClass *sf=NULL;
 
-		tInfoRegisteredClass *rc = getRegisteredClass(class_name);
+		//tInfoRegisteredClass *rc = getRegisteredClass(class_name);
 
-		if(rc != NULL){
+		/*if(rc != NULL){
+			return;
+		}*/
+
+		// init struct...
+		irs.object_info.symbol_info.ast = NULL;
+		irs.object_info.symbol_info.info_var_scope = NULL;
+
+		irs.object_info.symbol_info.properties = ::C_OBJECT_REF;
+		irs.object_info.symbol_info.ref_aux=(int)function_ptr;
+
+
+		if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
 			return;
 		}
 
-		// init struct...
-		irs.object_info.symbol_info.properties = ::C_OBJECT_REF;
 
 
 		// 1. check all parameters ok.
 		using Traits3 = function_traits<decltype(function_ptr)>;
 		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
+
+		base_info->local_symbols.m_registeredFunction.push_back(irs);
 
 		// check whether function is ok or not.
 		/*if((rt=getPrimitiveTypeFromStr(return_type)) == NULL){return;}
@@ -107,12 +123,12 @@ public:
 		}*/
 
 		// 2. create script function ...
-		/*if((rs = this->m_mainFunction->getScope()->registerSymbol(function_str,0)) == NULL) // already registered
+		/*if((rs = this->m_mainClass->getScope()->registerSymbol(function_str,0)) == NULL) // already registered
 			return;
 
 		// 3. all test ok. Time to create script function ..
 
-		sf=new CScriptFunction(m_mainFunction);
+		sf=new CScriptClass(m_mainClass);
 
 		// register return type ...
 		sf->setReturnObject(createObjectFromPrimitiveType(rt));
@@ -130,7 +146,7 @@ public:
 			sf->add_C_function_argument(params[i]);
 		}*/
 
-		print_info_cr("Registered function name: %s",function_str);
+		print_info_cr("Registered function name: %s",function_name);
 
 	 /* int temp=0;
 	  f(temp);
@@ -151,7 +167,7 @@ private:
 
 	static map<string,tInfoRegisteredClass *>  	 m_registeredClass;
 
-	static void registerPrimitiveTypes();
+
 	static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
 	CObject * createObjectFromPrimitiveType(tPrimitiveType *pt);
 

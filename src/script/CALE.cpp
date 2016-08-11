@@ -341,11 +341,16 @@ bool CALE::performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CO
 }
 
 
-bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptFunction *sf, int n_stk){
+bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_stk){
 
-	CScriptFunction::tSymbolInfo *si;
+	if(iao->index_op1 != LOAD_TYPE_VARIABLE){
+		print_error_cr("expected load type variable.");
+		return false;
+	}
 
-	if((si = sf->getSymbol(iao->index_op1))==NULL){
+	CScriptClass::tSymbolInfo *si;
+
+	if((si = this_object->getSymbol(iao->index_op2))==NULL){
 		print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
 		return false;
 	}
@@ -379,6 +384,30 @@ bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptFunction *sf, int n_stk){
 	return true;
 }
 
+bool CALE::loadFunctionValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_stk){
+
+	if(iao->index_op1 != LOAD_TYPE_FUNCTION){
+		print_error_cr("expected load type function.");
+		return false;
+	}
+
+	tInfoRegisteredFunctionSymbol *si;
+
+	if((si = this_object->getFunctionInfo(iao->index_op2))==NULL){
+		print_error_cr("cannot find function info \"%s\"",iao->ast_node->value_symbol.c_str());
+		return false;
+	}
+
+	// generic object pushed ...
+	//if(!pushObject((CObject **)si,false)) {
+	//	return false;
+	//}
+	result_object_instruction[current_asm_instruction]={CVariable::FUNCTION,(CObject **)si, false};
+
+
+	return true;
+}
+
 bool CALE::loadConstantValue(CObject *obj, int n_stk){
 
 	if(obj != NULL){
@@ -387,9 +416,6 @@ bool CALE::loadConstantValue(CObject *obj, int n_stk){
 			print_error_cr("Load type %i is not variable type",obj->getObjectType() );
 			return false;
 		}
-
-
-
 
 		CVariable *var = (CVariable *)obj;
 
@@ -504,7 +530,7 @@ bool CALE::assignObjectFromIndex(CObject **obj, int index){
 			*obj = ((CVector *)(*result_object_instruction[index].stkObject));
 			break;
 		case CVariable::VAR_TYPE::FUNCTION: // function object
-			*obj = ((CScriptFunction *)(*result_object_instruction[index].stkObject));
+			*obj = ((CScriptClass *)(*result_object_instruction[index].stkObject));
 			break;
 		case CVariable::VAR_TYPE::OBJECT: // generic object
 			*obj = (*result_object_instruction[index].stkObject);
@@ -520,13 +546,13 @@ bool CALE::assignObjectFromIndex(CObject **obj, int index){
 	return true;
 }
 
-bool CALE::performInstruction(int idx_instruction,tInfoAsmOp * instruction,CScriptFunction *sf,int & jmp_to_statment, int n_stk){
+bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptClass *this_object,vector<CObject *> * argv, int n_stk){
 
 
 	string 	aux_string;
 	bool	aux_boolean;
 	string symbol;
-	CObject **obj;
+	CObject **obj=NULL;
 
 
 	jmp_to_statment=-1;
@@ -567,12 +593,34 @@ bool CALE::performInstruction(int idx_instruction,tInfoAsmOp * instruction,CScri
 			//sprintf(print_aux_load_value,"CONST(%s)",value_symbol.c_str());
 			break;
 		case LOAD_TYPE::LOAD_TYPE_VARIABLE:
-			if(!loadVariableValue(instruction, sf, n_stk)){
+			if(!loadVariableValue(instruction, this_object, n_stk)){
+				return false;
+			}
+
+			break;
+		case LOAD_TYPE::LOAD_TYPE_FUNCTION:
+			if(!loadFunctionValue(instruction, this_object, n_stk)){
 				return false;
 			}
 
 			break;
 		case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
+
+			if(argv!=NULL){
+				if(index_op2<(int)argv->size()){
+					obj=&(*argv)[index_op2];
+
+					pushObject(obj,false);
+				}else{
+					print_error_cr("index out of bounds");
+					return false;
+				}
+			}
+			else{
+				print_error_cr("argv null");
+				return false;
+			}
+
 			//sprintf(print_aux_load_value,"ARG(%s)",value_symbol.c_str());
 			break;
 		default:
@@ -955,9 +1003,13 @@ bool CALE::performInstruction(int idx_instruction,tInfoAsmOp * instruction,CScri
 			// check whether signatures matches or not ...
 			// 1. get function object ...
 			if(result_object_instruction[index_op1].type == CVariable::FUNCTION){
-				CScriptFunction * fun = (CScriptFunction *)(*result_object_instruction[index_op1].stkObject);//stkFunction[result_object_instruction[index_op1].index];//[stkInteger[result_object_instruction[index_op2].index]];
+				// tInfoRegisteredFunction * is passed as CObject ** so we have to do the right cast.
+				tInfoRegisteredFunctionSymbol * function_info = (tInfoRegisteredFunctionSymbol *)(result_object_instruction[index_op1].stkObject);
+				CScriptClass * fun =CZG_Script::getInstance()->getMainObject();
 
-				if(!CVirtualMachine::execute(fun, n_stk+1,&m_functionArgs)){
+
+				// by default virtual machine gets main object class in order to run functions ...
+				if(!CVirtualMachine::execute(fun,function_info,&m_functionArgs, n_stk+1)){
 					return false;
 				}
 
@@ -1024,7 +1076,7 @@ bool CALE::performInstruction(int idx_instruction,tInfoAsmOp * instruction,CScri
 
 		case RET:
 
-			if(!assignObjectFromIndex(sf->getReturnObjectPtr(),instruction->index_op1)){
+			if(!assignObjectFromIndex(this_object->getReturnObjectPtr(),instruction->index_op1)){
 				return false;
 			}
 

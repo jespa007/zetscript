@@ -24,12 +24,13 @@ public:
 	tInfoScopeVar *getInfoRegisteredSymbol(const string & v, bool print_msg=true);
 
 
+	tInfoScopeVar * registerAnonymouseFunction(PASTNode ast);
 	tInfoScopeVar * registerSymbol(const string & var_name, PASTNode ast=NULL);
 
 	/**
 	 * Adds indexed symbol only for parent scope.
 	 */
-	bool addIndexedSymbol(tInfoScopeVar *);
+	//bool addIndexedSymbol(tInfoScopeVar *);
 
 
 	//bool defineSymbol(const string & var_name, CObject *obj);
@@ -66,8 +67,9 @@ private:
 
 	//char * parseKeyword_Switch(const char * str,int & m_line,tInfoCase & info_case,bool & error);
 
-	map<string,tInfoScopeVar *> m_registeredSymbol;
-	vector<tInfoScopeVar *> m_indexedSymbol;
+	map<string,tInfoScopeVar *> m_registeredVariable;
+	vector<tInfoScopeVar *> m_registeredAnoymouseFunction;
+
 
 
 

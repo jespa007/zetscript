@@ -184,7 +184,7 @@ void CScriptClassFactory::register_C_Variable(const string & class_name, const s
 	}
 }
 
-tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(tBaseObjectInfo *object_info,PASTNode  ast, unsigned int properties){
+tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(tScriptFunctionInfo *object_info,PASTNode  ast, unsigned int properties){
 
 
 
@@ -194,9 +194,9 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(tBas
 
 		irs.object_info.symbol_info.ast = ast;
 		irs.object_info.symbol_info.properties = properties;
-		object_info->member_data.m_registeredFunction.push_back(irs);
+		object_info->local_symbols.m_registeredFunction.push_back(irs);
 
-		return &object_info->member_data.m_registeredFunction[object_info->member_data.m_registeredFunction.size()-1];
+		return &object_info->local_symbols.m_registeredFunction[object_info->local_symbols.m_registeredFunction.size()-1];
 	}else{
 		print_error_cr("object info NULL");
 	}
@@ -205,17 +205,17 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(tBas
 }
 
 
-tInfoRegisteredVariableSymbol * CScriptClassFactory::registerVariableSymbol(tBaseObjectInfo *object_info,PASTNode  ast){
+tInfoRegisteredVariableSymbol * CScriptClassFactory::registerVariableSymbol(tScriptFunctionInfo *object_info,PASTNode  ast){
 
 	//tInfoRegisteredClass *rc = getRegisteredClass(class_name);
 
 	if(object_info != NULL){
 
-		tInfoRegisteredVariableSymbol irs;
-		irs.ast = ast;
-		object_info->member_data.m_registeredSymbol.push_back(irs);
+		tInfoRegisteredVariableSymbol info_var;
+		info_var.ast = ast;
+		object_info->local_symbols.m_registeredVariable.push_back(info_var);
 
-		return &object_info->member_data.m_registeredSymbol[object_info->member_data.m_registeredSymbol.size()-1];
+		return &object_info->local_symbols.m_registeredVariable[object_info->local_symbols.m_registeredVariable.size()-1];
 	}else{
 		print_error_cr("object_info null!");
 		return NULL;
@@ -224,12 +224,12 @@ tInfoRegisteredVariableSymbol * CScriptClassFactory::registerVariableSymbol(tBas
 	return NULL;
 }
 
-tInfoRegisteredFunctionSymbol *  CScriptClassFactory::getRegisteredFunctionSymbol(tBaseObjectInfo *object_info,unsigned idx){
+tInfoRegisteredFunctionSymbol *  CScriptClassFactory::getRegisteredFunctionSymbol(tScriptFunctionInfo *object_info,unsigned idx){
 
 
 	if(object_info != NULL){
-		if(idx<object_info->member_data.m_registeredFunction.size()){
-			return &object_info->member_data.m_registeredFunction[idx];
+		if(idx<object_info->local_symbols.m_registeredFunction.size()){
+			return &object_info->local_symbols.m_registeredFunction[idx];
 		}else{
 			print_error_cr("Function index out of bounds");
 		}
@@ -240,14 +240,14 @@ tInfoRegisteredFunctionSymbol *  CScriptClassFactory::getRegisteredFunctionSymbo
 	return NULL;
 }
 
-bool CScriptClassFactory::addArgumentFunctionSymbol(tBaseObjectInfo *object_info,unsigned idx, const string & var_name){
+bool CScriptClassFactory::addArgumentFunctionSymbol(tScriptFunctionInfo *object_info,unsigned idx, const string & var_name){
 
 
 
 	if(object_info != NULL){
 
-		if(idx<object_info->member_data.m_registeredFunction.size()){
-			object_info->member_data.m_registeredFunction[idx].m_arg.push_back(var_name);
+		if(idx<object_info->local_symbols.m_registeredFunction.size()){
+			object_info->local_symbols.m_registeredFunction[idx].m_arg.push_back(var_name);
 			return true;
 		}else{
 			print_error_cr("Function index out of bounds");
@@ -286,11 +286,11 @@ void CScriptClassFactory::destroySingletons() {
 
 	for(map<string,tInfoRegisteredClass *>::iterator it = m_registeredClass.begin();it!= m_registeredClass.end();it++){
 
-		    for(unsigned i = 0; i < it->second->object_info.member_data.m_registeredFunction.size();i++){
-		    	for(unsigned j = 0; j < it->second->object_info.member_data.m_registeredFunction[i].object_info.statment_op.size(); j++){
-		    		for(unsigned a = 0; a  <it->second->object_info.member_data.m_registeredFunction[i].object_info.statment_op[j].asm_op.size(); a++){
+		    for(unsigned i = 0; i < it->second->object_info.local_symbols.m_registeredFunction.size();i++){
+		    	for(unsigned j = 0; j < it->second->object_info.local_symbols.m_registeredFunction[i].object_info.statment_op.size(); j++){
+		    		for(unsigned a = 0; a  <it->second->object_info.local_symbols.m_registeredFunction[i].object_info.statment_op[j].asm_op.size(); a++){
 
-		    			delete it->second->object_info.member_data.m_registeredFunction[i].object_info.statment_op[j].asm_op[a];
+		    			delete it->second->object_info.local_symbols.m_registeredFunction[i].object_info.statment_op[j].asm_op[a];
 		    		}
 
 		    	}

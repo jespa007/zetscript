@@ -5,6 +5,7 @@
 
 CUndefined *CScopeInfo::UndefinedSymbol=NULL;
 CVoid *CScopeInfo::VoidSymbol=NULL;
+int n_anonymouse_func=0;
 
 void CScopeInfo::createSingletons(){
 	UndefinedSymbol = new CUndefined();
@@ -79,17 +80,38 @@ CScopeInfo * CScopeInfo::popScope(){
 //
 // SCOPE VARIABLE MANAGEMENT
 //
+tInfoScopeVar * CScopeInfo::registerAnonymouseFunction(PASTNode ast){ // register anonymous function in the top of scope ...
+
+	tInfoScopeVar * irv = new tInfoScopeVar;
+
+
+	string var_name = "_afun_"+CStringUtils::intToString(n_anonymouse_func++);
+	string symbol_ref = "_"+var_name;
+
+	irv->name=var_name;
+	irv->ast=ast;
+	m_baseScope->m_registeredVariable[symbol_ref]=irv;
+
+	return irv;
+}
+
+
 tInfoScopeVar * CScopeInfo::registerSymbol(const string & var_name, PASTNode ast){
 	tInfoScopeVar * irv;
+
+
 	if((irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
+
+		string symbol_ref = var_name;
+		symbol_ref = "_"+symbol_ref;
 		irv = new tInfoScopeVar;
-		irv->m_obj=NULL;
-		m_registeredSymbol[var_name]=irv;
+		//irv->m_obj=NULL;
+		m_registeredVariable[symbol_ref]=irv;
 		irv->name=var_name;
 		irv->ast=ast;
-		if(!m_mainScope->addIndexedSymbol(irv)){
+		/*if(!m_mainScope->addIndexedSymbol(irv)){
 			return NULL;
-		}
+		}*/
 		return irv;
 	}else{
 		int m_line=-1;
@@ -101,7 +123,7 @@ tInfoScopeVar * CScopeInfo::registerSymbol(const string & var_name, PASTNode ast
 
 	return NULL;
 }
-
+/*
 bool CScopeInfo::addIndexedSymbol(tInfoScopeVar *isv){
 	if(m_parentScope == NULL){ // ok is the main scope...
 
@@ -116,7 +138,7 @@ bool CScopeInfo::addIndexedSymbol(tInfoScopeVar *isv){
 
 	return false;
 }
-
+*/
 
 /*
 bool CScopeInfo::defineSymbol(const string & var_name, CObject *obj){
@@ -133,15 +155,19 @@ bool CScopeInfo::defineSymbol(const string & var_name, CObject *obj){
 }*/
 
 tInfoScopeVar * CScopeInfo::existRegisteredSymbol(const string & var_name){
-	if(m_registeredSymbol.count(var_name)==0){ // not exit but we will deepth through parents ...
+
+	string symbol_ref = var_name;
+	symbol_ref = "_"+symbol_ref;
+
+	if(m_registeredVariable.count(symbol_ref)==0){ // not exit but we will deepth through parents ...
 		CScopeInfo * parent =  getParent();
 		if(parent != NULL){
 			return parent->existRegisteredSymbol(var_name);
 		}
 		return NULL;
 	}else{
-		return m_registeredSymbol[var_name];
-		//print_error_cr("variable %s already registered at line %i",var_name.c_str(),lc->m_registeredSymbol[var_name]->m_line);
+		return m_registeredVariable[symbol_ref];
+		//print_error_cr("variable %s already registered at line %i",var_name.c_str(),lc->m_registeredVariable[var_name]->m_line);
 	}
 
 	return NULL;
@@ -152,6 +178,7 @@ tInfoScopeVar * CScopeInfo::existRegisteredSymbol(const string & var_name){
 
 tInfoScopeVar *CScopeInfo::getInfoRegisteredSymbol(const string & var_name, bool print_msg){
 	tInfoScopeVar * irv;
+
 	if((irv = existRegisteredSymbol(var_name))!=NULL){ // check whether is local var registered scope ...
 
 		return irv;
@@ -1101,7 +1128,7 @@ bool CScopeInfo::eval (const string & s){
 
 
 CScopeInfo::~CScopeInfo(){
-	for(map<string,tInfoScopeVar *>::iterator it = m_registeredSymbol.begin();it!= m_registeredSymbol.end();it++){
+	for(map<string,tInfoScopeVar *>::iterator it = m_registeredVariable.begin();it!= m_registeredVariable.end();it++){
 			delete it->second;
 	}
 

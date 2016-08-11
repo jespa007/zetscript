@@ -1,7 +1,5 @@
 #pragma once
 
-#include "script/CScriptClassFactory.h"
-
 #define MAX_EXPRESSION_LENGTH 8192
 
 enum GROUP_TYPE{
@@ -14,21 +12,7 @@ enum GROUP_TYPE{
 
 
 
-
-
-
-
-
-
 class CScopeInfo;
-
-
-
-
-
-
-
-
 class CAst{
 public:
 
@@ -36,25 +20,54 @@ public:
 	static tInfoPunctuator defined_operator_punctuator[MAX_OPERATOR_PUNCTUATORS];
 	static tInfoPunctuator defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
-	static void createSingletons();
-	static void destroySingletons();
+
 
 	static tInfoKeyword * isKeyword(const char *c);
 
 
+	static CAst * getInstance();
+	static void destroySingletons();
+
+
+	CScopeInfo * getRootScopeInfo();
+	tASTNode   * getMainAstNode();
+
+
+
 	/**
-	 * Given starting char, try find an expression ended with ; and return new char pointer.
-	 * @s: current char
-	 * @m_line: current line
-	 * @node: nodes
+	 * Given string as parameter.
+	 * @s: current string
 	 */
-	static bool generateAST(const char *s, CScopeInfo *scope_info, PASTNode ast_node_to_be_evaluated);
+	bool parse(const char * s);
+
+	/**
+	 * Given filename as parameter.
+	 * @s: current string
+	 */
+	bool parse_file(const char * s);
 
 
 
 private:
 
-	static CScopeInfo * m_globalScopeInfo;
+	static CAst 		* m_ast;
+
+	typedef struct {
+		string filename;
+		unsigned char *data;
+	}tInfoParsedSource;
+
+	vector<tInfoParsedSource> m_parsedSource;
+
+	bool isFilenameAlreadyParsed(const char *filename);
+
+
+	CScopeInfo 	* m_rootScopeInfo;
+	tASTNode 	* m_rootAstNode;
+
+	CAst();
+	~CAst();
+
 	// string generic utils...
 	static char *getSymbolName(const char *s,int & m_startLine);
 	static char * getEndWord(const char *s, int m_line);

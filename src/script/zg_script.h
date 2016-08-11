@@ -1,6 +1,6 @@
 #pragma once
 
-class CScriptFunction;
+class CScriptClass;
 class CScopeInfo;
 
 #include "system/zg_system.h"
@@ -10,6 +10,7 @@ class CScopeInfo;
 
 
 #include "ScriptDefinesStructs.h"
+#include "CSharedPointerManagement.h"
 #include "ast/ast.h"
 #include "ast/CScopeInfo.h"
 #include "CCompiler.h"
@@ -18,7 +19,7 @@ class CScopeInfo;
 #include "CVirtualMachine.h"
 
 
-#include "CScriptFunction.h"
+#include "CScriptClass.h"
 
 
 
@@ -29,14 +30,6 @@ class CScopeInfo;
 
 class CZG_Script{
 
-public:
-
-
-
-
-
-
-private:
 
 	// calling C function with differnt parameters...
 	static int call_C_6p(int f, int arg1,int arg2,int arg3,int arg4,int arg5);
@@ -46,7 +39,7 @@ private:
 	static int call_C_1p(int f, int arg1);
 	static int call_C_0p(int f);
 
-	CScriptFunction *m_mainFunction;
+	CScriptClass *m_mainClass;
 
 	/*enum TYPE_{
 		LOAD_VALUE=1,
@@ -80,9 +73,11 @@ private:
 public:
 
 	static CZG_Script * getInstance();
-	static CScopeInfo *m_globalScope;
-	static tASTNode *m_mainAst;
+	static CAst       * m_ast;
 
+	tInfoRegisteredFunctionSymbol *getMainStructInfo(){return &m_structInfoMain;}
+	tScriptFunctionInfo *getMainObjectInfo(){return &m_structInfoMain.object_info;}
+	CScriptClass *getMainObject(){return m_mainClass;}
 
 	static int call_C_function(tInfoRegisteredFunctionSymbol *irfs, vector<CObject *> * argv);
 

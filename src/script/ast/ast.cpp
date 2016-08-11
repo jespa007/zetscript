@@ -14,10 +14,9 @@
 #define print_ast_cr(s,...)
 #endif
 
+CAst *CAst::m_ast=NULL;
 
-CScopeInfo *CAst::m_globalScopeInfo=NULL;
 
-int n_anonymouse_func=0;
 
 bool CAst::parsePlusPunctuator(const char *s){
 	if(*s=='+')
@@ -365,91 +364,6 @@ tInfoPunctuator CAst::defined_operator_punctuator[MAX_OPERATOR_PUNCTUATORS];
 tInfoPunctuator CAst::defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
 
-void CAst::createSingletons(){
-
-	// init operator punctuators...
-	defined_operator_punctuator[UNKNOWN_PUNCTUATOR]={UNKNOWN_PUNCTUATOR, "none",NULL};
-
-	defined_operator_punctuator[ADD_PUNCTUATOR]={ADD_PUNCTUATOR, "+",parsePlusPunctuator};
-	defined_operator_punctuator[SUB_PUNCTUATOR]={SUB_PUNCTUATOR, "-",parseMinusPunctuator};
-	defined_operator_punctuator[MUL_PUNCTUATOR]={MUL_PUNCTUATOR, "*",parseMulPunctuator};
-	defined_operator_punctuator[DIV_PUNCTUATOR]={DIV_PUNCTUATOR, "/",parseDivPunctuator};
-	defined_operator_punctuator[MOD_PUNCTUATOR]={MOD_PUNCTUATOR, "%",parseModPunctuator};
-
-	defined_operator_punctuator[FIELD_PUNCTUATOR]={FIELD_PUNCTUATOR, ".",parseFieldPunctuator};
-	defined_operator_punctuator[INLINE_IF_PUNCTUATOR]={INLINE_IF_PUNCTUATOR, "?",parseInlineIfPunctuator};
-	defined_operator_punctuator[INLINE_ELSE_PUNCTUATOR]={INLINE_ELSE_PUNCTUATOR, ":",parseInlineElsePunctuator};
-
-	defined_operator_punctuator[ASSIGN_PUNCTUATOR]={ASSIGN_PUNCTUATOR, "=",parseAssignPunctuator};
-
-	defined_operator_punctuator[BINARY_XOR_PUNCTUATOR]={BINARY_XOR_PUNCTUATOR, "^",parseBinaryXorPunctuator};
-	defined_operator_punctuator[BINARY_AND_PUNCTUATOR]={BINARY_AND_PUNCTUATOR, "&",parseBinaryAndPunctuator};
-	defined_operator_punctuator[BINARY_OR_PUNCTUATOR]={BINARY_OR_PUNCTUATOR, "|",parseBinaryOrPunctuator};
-	defined_operator_punctuator[SHIFT_LEFT_PUNCTUATOR]={SHIFT_LEFT_PUNCTUATOR, "<<",parseShiftLeftPunctuator};
-	defined_operator_punctuator[SHIFT_RIGHT_PUNCTUATOR]={SHIFT_RIGHT_PUNCTUATOR, ">>",parseShiftRightPunctuator};
-
-
-	defined_operator_punctuator[LOGIC_AND_PUNCTUATOR]={LOGIC_AND_PUNCTUATOR, "&&",parseLogicAndPunctuator};
-	defined_operator_punctuator[LOGIC_OR_PUNCTUATOR]={LOGIC_OR_PUNCTUATOR, "||",parseLogicOrPunctuator};
-	defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR]={LOGIC_EQUAL_PUNCTUATOR, "==",parseLogicEqualPunctuator};
-	defined_operator_punctuator[LOGIC_NOT_EQUAL_PUNCTUATOR]={LOGIC_NOT_EQUAL_PUNCTUATOR, "!=",parseLogicNotEqualPunctuator};
-	defined_operator_punctuator[LOGIC_GT_PUNCTUATOR]={LOGIC_GT_PUNCTUATOR, ">",parseLogicGreatherThanPunctuator};
-	defined_operator_punctuator[LOGIC_LT_PUNCTUATOR]={LOGIC_LT_PUNCTUATOR, "<",parseLogicLessThanPunctuator};
-	defined_operator_punctuator[LOGIC_GTE_PUNCTUATOR]={LOGIC_GTE_PUNCTUATOR, ">=",parseLogicGreatherEqualThanPunctuator};
-	defined_operator_punctuator[LOGIC_LTE_PUNCTUATOR]={LOGIC_LTE_PUNCTUATOR, "<=",parseLessEqualThanPunctuator};
-	defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR]={LOGIC_NOT_PUNCTUATOR, "!",parseNotPunctuator};
-
-	defined_operator_punctuator[PRE_INC_PUNCTUATOR]={PRE_INC_PUNCTUATOR, "++",parseIncPunctuator};
-	defined_operator_punctuator[PRE_DEC_PUNCTUATOR]={PRE_DEC_PUNCTUATOR, "--",parseDecPunctuator};
-
-	defined_operator_punctuator[POST_INC_PUNCTUATOR]={POST_INC_PUNCTUATOR, "++",parseIncPunctuator};
-	defined_operator_punctuator[POST_DEC_PUNCTUATOR]={POST_DEC_PUNCTUATOR, "--",parseDecPunctuator};
-
-
-	// special punctuators...
-	defined_special_punctuator[UNKNOWN_PUNCTUATOR]={UNKNOWN_PUNCTUATOR, "",NULL};
-	defined_special_punctuator[COMA_PUNCTUATOR]={COMA_PUNCTUATOR, ",",NULL};
-	defined_special_punctuator[SEMICOLON_PUNCTUATOR]={SEMICOLON_PUNCTUATOR, ";",NULL};
-	defined_special_punctuator[OPEN_PARENTHESIS_PUNCTUATOR]={OPEN_PARENTHESIS_PUNCTUATOR, "(",NULL};
-	defined_special_punctuator[CLOSE_PARENTHESIS_PUNCTUATOR]={CLOSE_PARENTHESIS_PUNCTUATOR, ")",NULL};
-	defined_special_punctuator[OPEN_BRAKET_PUNCTUATOR]={OPEN_BRAKET_PUNCTUATOR, "{",NULL};
-	defined_special_punctuator[CLOSE_BRAKET_PUNCTUATOR]={CLOSE_BRAKET_PUNCTUATOR, "}",NULL};
-	defined_special_punctuator[OPEN_SQUARE_BRAKET_PUNCTUATOR]={OPEN_SQUARE_BRAKET_PUNCTUATOR, "[",NULL};
-	defined_special_punctuator[CLOSE_SQUARE_BRAKET_PUNCTUATOR]={CLOSE_SQUARE_BRAKET_PUNCTUATOR, "]",NULL};
-
-
-	// init special punctuators...
-
-
-	// init keywords...
-	defined_keyword[KEYWORD_TYPE::UNKNOWN_KEYWORD] = {UNKNOWN_KEYWORD, "none",NULL};
-	defined_keyword[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",parseVar};
-	defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",parseIf};
-	defined_keyword[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else",NULL};
-	defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",parseFor};
-	defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",parseWhile};
-
-	defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",parseSwitch};
-	defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
-	defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
-	defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
-	defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",NULL};
-	defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
-	defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
-	defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
-	defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
-	defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
-
-	m_globalScopeInfo = new CScopeInfo();
-
-}
-
-
-void CAst::destroySingletons(){
-
-	delete m_globalScopeInfo;
-}
-
 tInfoKeyword * CAst::isKeyword(const char *c){
 
 	int m_line=0;
@@ -524,7 +438,7 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux = (char *)str;
 	char *end_expression;
-	bool object_function=false;
+	//bool object_function=false;
 	bool array_object = false;
 	int m_startLine = m_line;
 	tInfoKeyword *key_w  = NULL;
@@ -553,9 +467,9 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 				return NULL;
 			}
 
-			if(ast_node_to_be_evaluated!=NULL){
+			/*if(ast_node_to_be_evaluated!=NULL){
 				object_function = (*ast_node_to_be_evaluated)->node_type == FUNCTION_OBJECT_NODE;
-			}
+			}*/
 
 			break;
 		/*case KEYWORD_TYPE::NEW_KEYWORD:
@@ -1391,7 +1305,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 	char *aux_p = (char *)s;
 	char *end_p;
 
-	tInfoRegisteredClass *class_info=NULL;
+	//tInfoRegisteredClass *class_info=NULL;
 	int class_line;
 	string class_name;
 	//tInfoRegisteredFunctionSymbol * class_object=NULL;
@@ -1422,9 +1336,9 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 			class_line = m_line;
 			class_name = CStringUtils::copyStringFromInterval(aux_p, end_p);
 
-			if((class_info = CScriptClassFactory::registerClass(class_name)) == NULL){
+			/*if((class_info = CScriptClassFactory::registerClass(class_name)) == NULL){
 				return NULL;
-			}
+			}*/
 
 
 			print_info_cr("registered class \"%s\" line %i ",class_name.c_str(), class_line);
@@ -1480,7 +1394,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 				//}
 
 				// register info class ...
-				class_info->object_info.symbol_info.ast = (*ast_node_to_be_evaluated);
+				//class_info->object_info.symbol_info.ast = (*ast_node_to_be_evaluated);
 
 				//scope_info = ; // override the new function ...
 
@@ -1674,7 +1588,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 			else{ //function node
 				if(ast_node_to_be_evaluated!=NULL){ // save as function object...
 					(*ast_node_to_be_evaluated)->node_type = FUNCTION_OBJECT_NODE;
-					(*ast_node_to_be_evaluated)->scope_info_ptr = scope_info;
+					//(*ast_node_to_be_evaluated)->scope_info_ptr = scope_info;
 				}
 			}
 
@@ -1687,15 +1601,30 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 				// create object function ...
 				/*object_function =new tInfoRegisteredFunctionSymbol(scope_info);*/
 
-				string function_name = "__afun_"+(n_anonymouse_func++);///object_function->getID();
+//				string function_name = "__afun_"+CStringUtils::intToString(n_anonymouse_func++);///object_function->getID();
 				if(named_function){
-					function_name=value_symbol;
+
+					irv=scope_info->registerSymbol(value_symbol,(*ast_node_to_be_evaluated));
+					irv->ast->value_symbol = value_symbol;
+				}
+				else{
+					irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
+					irv->ast->value_symbol = irv->name;
+
 				}
 
 				//object_function->setName(function_name);
-				(*ast_node_to_be_evaluated)->value_symbol = function_name;
+
 				// define value symbol...
-				irv=scope_info->registerSymbol((*ast_node_to_be_evaluated)->value_symbol);
+
+
+				if(irv == NULL){
+					return NULL;
+				}
+
+				//irv->ast=(*ast_node_to_be_evaluated);
+
+				irv->ast->scope_info_ptr = scope_info;
 
 				// set function object...
 				// irv->m_obj=object_function;
@@ -1783,6 +1712,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 						if(ast_node_to_be_evaluated != NULL){
 							(*ast_node_to_be_evaluated)->children.push_back(body_node);
 							body_node->node_type = BODY_NODE;
+							body_node->scope_info_ptr = scope_info;
 
 							// save root node to object function ...
 							//object_function.symbol_info.ast =(*ast_node_to_be_evaluated);
@@ -2782,15 +2712,181 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scop
 	return aux;
 }
 
-bool CAst::generateAST(const char *s, CScopeInfo *scope_info, PASTNode ast_node_to_be_evaluated){
+//------------------------------------------------------------------------------------------------------------
+//
+// PUBLIC
+//
+
+
+CAst *  CAst::getInstance(){
+	if(m_ast == NULL){
+
+		// init operator punctuators...
+		defined_operator_punctuator[UNKNOWN_PUNCTUATOR]={UNKNOWN_PUNCTUATOR, "none",NULL};
+
+		defined_operator_punctuator[ADD_PUNCTUATOR]={ADD_PUNCTUATOR, "+",parsePlusPunctuator};
+		defined_operator_punctuator[SUB_PUNCTUATOR]={SUB_PUNCTUATOR, "-",parseMinusPunctuator};
+		defined_operator_punctuator[MUL_PUNCTUATOR]={MUL_PUNCTUATOR, "*",parseMulPunctuator};
+		defined_operator_punctuator[DIV_PUNCTUATOR]={DIV_PUNCTUATOR, "/",parseDivPunctuator};
+		defined_operator_punctuator[MOD_PUNCTUATOR]={MOD_PUNCTUATOR, "%",parseModPunctuator};
+
+		defined_operator_punctuator[FIELD_PUNCTUATOR]={FIELD_PUNCTUATOR, ".",parseFieldPunctuator};
+		defined_operator_punctuator[INLINE_IF_PUNCTUATOR]={INLINE_IF_PUNCTUATOR, "?",parseInlineIfPunctuator};
+		defined_operator_punctuator[INLINE_ELSE_PUNCTUATOR]={INLINE_ELSE_PUNCTUATOR, ":",parseInlineElsePunctuator};
+
+		defined_operator_punctuator[ASSIGN_PUNCTUATOR]={ASSIGN_PUNCTUATOR, "=",parseAssignPunctuator};
+
+		defined_operator_punctuator[BINARY_XOR_PUNCTUATOR]={BINARY_XOR_PUNCTUATOR, "^",parseBinaryXorPunctuator};
+		defined_operator_punctuator[BINARY_AND_PUNCTUATOR]={BINARY_AND_PUNCTUATOR, "&",parseBinaryAndPunctuator};
+		defined_operator_punctuator[BINARY_OR_PUNCTUATOR]={BINARY_OR_PUNCTUATOR, "|",parseBinaryOrPunctuator};
+		defined_operator_punctuator[SHIFT_LEFT_PUNCTUATOR]={SHIFT_LEFT_PUNCTUATOR, "<<",parseShiftLeftPunctuator};
+		defined_operator_punctuator[SHIFT_RIGHT_PUNCTUATOR]={SHIFT_RIGHT_PUNCTUATOR, ">>",parseShiftRightPunctuator};
+
+
+		defined_operator_punctuator[LOGIC_AND_PUNCTUATOR]={LOGIC_AND_PUNCTUATOR, "&&",parseLogicAndPunctuator};
+		defined_operator_punctuator[LOGIC_OR_PUNCTUATOR]={LOGIC_OR_PUNCTUATOR, "||",parseLogicOrPunctuator};
+		defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR]={LOGIC_EQUAL_PUNCTUATOR, "==",parseLogicEqualPunctuator};
+		defined_operator_punctuator[LOGIC_NOT_EQUAL_PUNCTUATOR]={LOGIC_NOT_EQUAL_PUNCTUATOR, "!=",parseLogicNotEqualPunctuator};
+		defined_operator_punctuator[LOGIC_GT_PUNCTUATOR]={LOGIC_GT_PUNCTUATOR, ">",parseLogicGreatherThanPunctuator};
+		defined_operator_punctuator[LOGIC_LT_PUNCTUATOR]={LOGIC_LT_PUNCTUATOR, "<",parseLogicLessThanPunctuator};
+		defined_operator_punctuator[LOGIC_GTE_PUNCTUATOR]={LOGIC_GTE_PUNCTUATOR, ">=",parseLogicGreatherEqualThanPunctuator};
+		defined_operator_punctuator[LOGIC_LTE_PUNCTUATOR]={LOGIC_LTE_PUNCTUATOR, "<=",parseLessEqualThanPunctuator};
+		defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR]={LOGIC_NOT_PUNCTUATOR, "!",parseNotPunctuator};
+
+		defined_operator_punctuator[PRE_INC_PUNCTUATOR]={PRE_INC_PUNCTUATOR, "++",parseIncPunctuator};
+		defined_operator_punctuator[PRE_DEC_PUNCTUATOR]={PRE_DEC_PUNCTUATOR, "--",parseDecPunctuator};
+
+		defined_operator_punctuator[POST_INC_PUNCTUATOR]={POST_INC_PUNCTUATOR, "++",parseIncPunctuator};
+		defined_operator_punctuator[POST_DEC_PUNCTUATOR]={POST_DEC_PUNCTUATOR, "--",parseDecPunctuator};
+
+
+		// special punctuators...
+		defined_special_punctuator[UNKNOWN_PUNCTUATOR]={UNKNOWN_PUNCTUATOR, "",NULL};
+		defined_special_punctuator[COMA_PUNCTUATOR]={COMA_PUNCTUATOR, ",",NULL};
+		defined_special_punctuator[SEMICOLON_PUNCTUATOR]={SEMICOLON_PUNCTUATOR, ";",NULL};
+		defined_special_punctuator[OPEN_PARENTHESIS_PUNCTUATOR]={OPEN_PARENTHESIS_PUNCTUATOR, "(",NULL};
+		defined_special_punctuator[CLOSE_PARENTHESIS_PUNCTUATOR]={CLOSE_PARENTHESIS_PUNCTUATOR, ")",NULL};
+		defined_special_punctuator[OPEN_BRAKET_PUNCTUATOR]={OPEN_BRAKET_PUNCTUATOR, "{",NULL};
+		defined_special_punctuator[CLOSE_BRAKET_PUNCTUATOR]={CLOSE_BRAKET_PUNCTUATOR, "}",NULL};
+		defined_special_punctuator[OPEN_SQUARE_BRAKET_PUNCTUATOR]={OPEN_SQUARE_BRAKET_PUNCTUATOR, "[",NULL};
+		defined_special_punctuator[CLOSE_SQUARE_BRAKET_PUNCTUATOR]={CLOSE_SQUARE_BRAKET_PUNCTUATOR, "]",NULL};
+
+
+		// init special punctuators...
+
+
+		// init keywords...
+		defined_keyword[KEYWORD_TYPE::UNKNOWN_KEYWORD] = {UNKNOWN_KEYWORD, "none",NULL};
+		defined_keyword[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",parseVar};
+		defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",parseIf};
+		defined_keyword[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else",NULL};
+		defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",parseFor};
+		defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",parseWhile};
+
+		defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",parseSwitch};
+		defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
+		defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
+		defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
+		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunction};
+		defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
+		defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
+		defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
+		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
+		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
+
+		CScopeInfo::createSingletons();
+
+		// create main ast management
+		m_ast = new CAst();
+	}
+
+	return m_ast;
+}
+
+void CAst::destroySingletons(){
+	if(m_ast != NULL){
+		delete m_ast;
+	}
+
+	m_ast = NULL;
+}
+
+CAst::CAst(){
+
+	m_rootScopeInfo = new CScopeInfo();
+	m_rootAstNode = new tASTNode();
+
+	m_rootAstNode->node_type = BODY_NODE;
+	m_rootAstNode->scope_info_ptr = m_rootScopeInfo;
+
+
+}
+
+
+CAst::~CAst(){
+
+	for(unsigned i =0; i < m_parsedSource.size(); i++){
+		delete m_parsedSource[i].data;
+	}
+
+	delete m_rootScopeInfo;
+	delete m_rootAstNode;
+}
+
+
+CScopeInfo *  CAst::getRootScopeInfo(){
+	return m_rootScopeInfo;
+}
+
+tASTNode   * CAst::getMainAstNode(){
+	return m_rootAstNode;
+}
+
+bool CAst::parse(const char   * s){
 
 	int m_line = 1;
 	bool error=false;
-	//m_parentFunction!=NULL?m_parentFunction->getScope():NULL);
 
-	if(generateAST_Recursive(s, m_line,scope_info,error,&ast_node_to_be_evaluated, false, true) != NULL){
+
+	if(generateAST_Recursive(s, m_line,m_rootScopeInfo,error,&m_rootAstNode, false, true) != NULL){
 
 		return true;
 	}
 	return false;
 }
+
+bool CAst::isFilenameAlreadyParsed(const char * filename){
+	for(unsigned i = 0; i < m_parsedSource.size(); i++){
+		if(m_parsedSource[i].filename==filename){
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CAst::parse_file(const char * filename){
+
+	if(isFilenameAlreadyParsed(filename)){
+		print_error_cr("Filename already parsed");
+		return false;
+	}
+
+
+
+	ByteBuffer *buffer = CIO_Utils::readFile(filename);
+	bool status= false;
+
+	if(buffer){
+
+		tInfoParsedSource ps;
+		ps.filename = filename;
+		ps.data = buffer->data_buffer;
+
+		status =  parse((char *)buffer->data_buffer);
+
+	}
+
+	return status;
+}
+

@@ -94,8 +94,9 @@ void call_print_1p(CObject *obj){
 
 int main(int argc, char * argv[]){
 
-	CZG_Script *zg_script = CZG_Script::getInstance();
 	CLog::setUseAnsiEscape(true);
+	CZG_Script *zg_script = CZG_Script::getInstance();
+
 	//string s = "hola!";
 	//int s_int= *((int *)& s);
 
@@ -179,10 +180,6 @@ int main(int argc, char * argv[]){
 	i=+--i;
 
 	++i=0;
-
-
-
-
 
 	CLog::setUseAnsiEscape(true);
 

@@ -1,4 +1,4 @@
-
+#include "CSharedPointerManagement.cpp"
 #include "ast/CScopeInfo.cpp"
 #include "ast/ast.cpp"
 #include "CALE.cpp"
@@ -6,13 +6,12 @@
 #include "CCompiler.cpp"
 #include "CScriptClassFactory.cpp"
 
-#include "CScriptFunction.cpp"
+#include "CScriptClass.cpp"
 
 
 
 CZG_Script * CZG_Script::m_instance = NULL;
-CScopeInfo *CZG_Script::m_globalScope = NULL;
-tASTNode *CZG_Script::m_mainAst = NULL;
+CAst *CZG_Script::m_ast = NULL;
 
 
 
@@ -20,10 +19,6 @@ tASTNode *CZG_Script::m_mainAst = NULL;
 
 CZG_Script * CZG_Script::getInstance(){
 	if(m_instance==NULL){
-		m_globalScope=new CScopeInfo();
-		m_mainAst = new tASTNode();
-		m_mainAst->node_type = BODY_NODE;
-		m_mainAst->scope_info_ptr = m_globalScope;
 		m_instance = new CZG_Script();
 		m_instance->init();
 	}
@@ -261,7 +256,7 @@ void  print(string * s){
 }
 
 CZG_Script::CZG_Script(){
-	//registerPrimitiveTypes();
+
 	//registerFunction(&CCustomObject::member2);
 	// call_function("print");
 
@@ -273,6 +268,8 @@ int interface_variable;
 
 void CZG_Script::init(){
 
+	CScriptClassFactory::registerPrimitiveTypes();
+
 	iniFactory<CNumberFactory>("CNumber");
 	iniFactory<CIntegerFactory>("CInteger");
 	iniFactory<CBooleanFactory>("CBoolean");
@@ -280,11 +277,15 @@ void CZG_Script::init(){
 	iniFactory<CUndefinedFactory>("CUndefined");
 	iniFactory<CVectorFactory>("CVector");
 
-	CScopeInfo::createSingletons();
-	CAst::createSingletons();
+
+	m_ast = CAst::getInstance();
+
+	// setup main struct...
+	m_structInfoMain.object_info.symbol_info.ast=m_ast->getMainAstNode();
+
 
 	//-----------------------
-	// move into factory ...
+	// Conversion from object types to primitive types (move into factory) ...
 	addTypeConversion<CInteger *,int>( [] (CObject *obj){return ((CInteger *)obj)->m_value;});
 	addTypeConversion<CInteger *,int *>( [] (CObject *obj){return (int)&((CInteger *)obj)->m_value;});
 	addTypeConversion<CInteger *,string *>( [] (CObject *obj){obj->toString();return (int)&obj->m_strValue;});
@@ -318,11 +319,12 @@ void CZG_Script::init(){
 	// create main global scope ...
 	//m_mainFunctionInfo.global_scope = new CScopeInfo();
 
-	m_globalScope = new CScopeInfo();
+	//m_globalScope = new CScopeInfo();
 
 
 	CFactoryContainer::getInstance()->registerScriptFunctions();
 	CVirtualMachine::getInstance();
+
 }
 
 bool CZG_Script::eval(const string & s){
@@ -330,9 +332,9 @@ bool CZG_Script::eval(const string & s){
 
 	// generate whole AST
 
-	if(CAst::generateAST(s.c_str(),m_globalScope, m_mainAst)){
+	if(m_ast->parse(s.c_str())){
 
-		if(CCompiler::getInstance()->ast2asm(m_mainAst,&m_structInfoMain.object_info)){
+		if(CCompiler::getInstance()->compile(m_ast->getMainAstNode(),&m_structInfoMain)){
 			// print generated asm ...
 			CCompiler::printGeneratedCode(&m_structInfoMain.object_info);
 			return true;
@@ -348,13 +350,16 @@ bool CZG_Script::eval(const string & s){
 
 
 bool CZG_Script::execute(){
-	if(m_mainFunction == NULL){
-		m_mainFunction = new CScriptFunction(&m_structInfoMain);//CScriptClassFactory::newClass("Main");
+	if(m_mainClass == NULL){
+		// creates the main entry function with compiled code. On every executing code, within "execute" function
+		// virtual machine is un charge of allocating space for all local variables...
+		m_mainClass = new CScriptClass(&m_structInfoMain);//CScriptClassFactory::newClass("Main");
 	}
 
-	//CCompiler::getInstance()->printGeneratedCode(m_mainFunction);
+	//CCompiler::getInstance()->printGeneratedCode(m_mainClass);
 
-	return CVirtualMachine::getInstance()->execute(m_mainFunction,0);//->excute();
+	// the first code to execute is the main function that in fact is a special member function inside our main class
+	return CVirtualMachine::getInstance()->execute(m_mainClass,&m_structInfoMain, NULL,0);//->excute();
 }
 
 
@@ -362,8 +367,8 @@ bool CZG_Script::execute(){
 CZG_Script::~CZG_Script(){
 	// unregister operators ...
 
-	//delete m_mainFunction;
-	delete m_mainFunction;
+	//delete m_mainClass;
+	delete m_mainClass;
 
 	CCompiler::destroySingletons();
 	CVirtualMachine::destroySingletons();

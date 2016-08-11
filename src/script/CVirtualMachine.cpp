@@ -43,33 +43,35 @@ CVirtualMachine::CVirtualMachine(){
 
 
 
-bool CVirtualMachine::execute(CScriptFunction *sf, int stk,vector<CObject *> * argv){
+bool CVirtualMachine::execute(CScriptClass *this_object, tInfoRegisteredFunctionSymbol *function_info,vector<CObject *> * argv, int stk){
 
-	tInfoRegisteredFunctionSymbol *irsf=sf->getFunctionInfo();
+	//tInfoRegisteredFunctionSymbol *irsf=sf->getFunctionInfo();
 
-	if((sf->getFunctionInfo()->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::C_OBJECT_REF){ // C-Call
+	if((function_info->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::C_OBJECT_REF){ // C-Call
 
-			return CZG_Script::call_C_function(sf->getFunctionInfo(),argv);
+			return CZG_Script::call_C_function(function_info,argv);
 	}
 
 
-	vector<tInfoStatementOp> * m_listStatements = sf->getCompiledCode();
-	bool conditional_jmp=false;
+
+	vector<tInfoStatementOp> * m_listStatements = &function_info->object_info.statment_op;
+	//bool conditional_jmp=false;
 	int jmp_to_statment = -1;
 
-	if(argv != NULL){
+	/*if(argv != NULL){
 
-		if((*argv).size() != irsf->m_arg.size()){
-			print_error_cr("calling function s from line . Expected %i but passed %i",irsf->m_arg.size(),(*argv).size());
+		if((*argv).size() != function_info->m_arg.size()){
+			print_error_cr("calling function s from line . Expected %i but passed %i",function_info->m_arg.size(),(*argv).size());
 			return false;
 		}
 
 		//print_info_cr("assign local symbol the passing args...");
 		for(unsigned i = 0; i < (*argv).size(); i++){
 			//print_info_cr("%s=%s <cr>",sf->getArgVector()->at(i).c_str(),(*argv).at(i)->getPointerClassStr().c_str());
-			(*sf->getArgSymbol(i)).object=(*argv).at(i);
+			(*this_object->getArgSymbol(i)).object=(*argv).at(i);
 		}
-	}
+
+	}*/
 
 
 
@@ -80,7 +82,7 @@ bool CVirtualMachine::execute(CScriptFunction *sf, int stk,vector<CObject *> * a
 
 	for(unsigned s = 0; s < n_stats;){
 
-		conditional_jmp = false;
+		//conditional_jmp = false;
 		jmp_to_statment = -1;
 		tInfoStatementOp * current_statment = &(*m_listStatements)[s];
 		vector<tInfoAsmOp *> * asm_op_statment = &current_statment->asm_op;
@@ -120,7 +122,7 @@ bool CVirtualMachine::execute(CScriptFunction *sf, int stk,vector<CObject *> * a
 					//return true;
 
 
-					if(!ALE.performInstruction(i,asm_op_statment->at(i),sf,jmp_to_statment,stk)){
+					if(!ALE.performInstruction(i,asm_op_statment->at(i),jmp_to_statment,this_object,argv,stk)){
 						return false;
 					}
 

@@ -3,7 +3,7 @@
 class CContext{
 
 
-	vector<CScriptFunction *> m_function; // 0 is the main scope or main function.
+	vector<CScriptClass *> m_function; // 0 is the main scope or main function.
 public:
 
 	CContext();

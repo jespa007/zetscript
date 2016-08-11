@@ -18,7 +18,7 @@ public:
 
 
 
-	bool performInstruction(int idx_instruction, tInfoAsmOp * instruction,CScriptFunction *sf, int & jmp_to_statment, int n_stk);
+	bool performInstruction( int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptClass *this_object,vector<CObject *> * argv, int n_stk);
 
 	void reset();
 
@@ -38,7 +38,7 @@ private:
 	CBoolean 	*stkBoolean[MAX_PER_TYPE_OPERATIONS];
 	CString  *stkString[MAX_PER_TYPE_OPERATIONS];
 	CVector  *stkVector[MAX_PER_TYPE_OPERATIONS];
-	CScriptFunction *stkFunction[MAX_PER_TYPE_OPERATIONS];
+	CScriptClass *stkFunction[MAX_PER_TYPE_OPERATIONS];
 	//CObject  **stkObject[MAX_PER_TYPE_OPERATIONS]; // all variables references to this ...
 	//CVector	 * vector[MAX_OPERANDS];
 
@@ -84,7 +84,9 @@ private:
 	bool performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CObject *obj);
 //	bool loadValue(tInfoAsmOp *iao, int stk);
 	bool loadConstantValue(CObject *bj, int n_stk);
-	bool loadVariableValue(tInfoAsmOp *iao,CScriptFunction *sf, int n_stk);
+	bool loadVariableValue(tInfoAsmOp *iao,CScriptClass *sf, int n_stk);
+	bool loadFunctionValue(tInfoAsmOp *iao,CScriptClass *sf, int n_stk);
+
 
 
 };

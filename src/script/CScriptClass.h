@@ -125,7 +125,7 @@ void* getcodeptr(const FunctorT& f) {
 
 
 
-class CScriptFunction: public CFunctor{
+class CScriptClass: public CFunctor{
 
 public:
 
@@ -138,7 +138,7 @@ public:
 	class tSymbolInfo{
 		public:
 		CObject *object; // created object. undefined by default.
-		PASTNode *ast;
+		tASTNode *ast;
 		tSymbolInfo(){
 			this->object = CScopeInfo::UndefinedSymbol;
 			this->ast = NULL;
@@ -148,7 +148,7 @@ public:
 
 	//TYPE m_type;
 
-	void addSymbol(PASTNode *ast);
+	void addSymbol(tASTNode *ast);
 	void addArgSymbol(const string & arg_name);
 
 	tSymbolInfo * getSymbol(unsigned idx);
@@ -156,15 +156,15 @@ public:
 	tSymbolInfo * getArgSymbol(unsigned index);
 
 
-	CScriptFunction(tInfoRegisteredFunctionSymbol *irv);
+	CScriptClass(tInfoRegisteredFunctionSymbol *irv);
 	vector<tInfoStatementOp> * getCompiledCode();
 
-	tInfoRegisteredFunctionSymbol * getFunctionInfo();
+	tInfoRegisteredFunctionSymbol * getFunctionInfo(unsigned idx);
 
 
 //	tInfoScopeVar * registerArgument(const string & var_name);
-//	void 	 addFunction(CScriptFunction *sf);
-//	vector<CScriptFunction *> *	 getVectorFunction();
+//	void 	 addFunction(CScriptClass *sf);
+//	vector<CScriptClass *> *	 getVectorFunction();
 //	vector<string> *	 getArgVector();
 
 
@@ -184,7 +184,7 @@ public:
 	//TYPE getType();
 
 
-	//CScriptFunction *getParent();
+	//CScriptClass *getParent();
 	//CScopeInfo *getScope();
 
 	//PASTNode getRootAst();
@@ -197,7 +197,7 @@ public:
 //	bool eval(const string & s);
 	//bool execute(vector<CObject *> *argv=NULL);
 
-	~CScriptFunction();
+	~CScriptClass();
 
 private:
 
@@ -216,7 +216,7 @@ private:
 
 	//vector<string> m_arg;
 	//vector<string> m_c_arg; // for c function
-	//vector<CScriptFunction *> m_function;
+	//vector<CScriptClass *> m_function;
 	tInfoRegisteredFunctionSymbol *irv;
 
 
@@ -235,6 +235,6 @@ private:
 
 
 	//CScopeInfo	*m_scope; // base scope...
-	//CScriptFunction *m_parentFunction;
+	//CScriptClass *m_parentFunction;
 
 };

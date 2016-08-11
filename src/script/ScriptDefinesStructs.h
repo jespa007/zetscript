@@ -1,10 +1,10 @@
 #pragma once
 
-//#include  "script/ast/CScopeInfo.h"
+
 class tASTNode;
 typedef tASTNode *PASTNode;
 struct tInfoRegisteredFunctionSymbol;
-
+struct tInfoScopeVar;
 
 
 //typedef tInfoStatementOp *PInfoStatementOp;
@@ -140,6 +140,7 @@ enum LOAD_TYPE{
 		LOAD_TYPE_NOT_DEFINED=0,
 		LOAD_TYPE_CONSTANT,
 		LOAD_TYPE_VARIABLE,
+		LOAD_TYPE_FUNCTION,
 		LOAD_TYPE_ARGUMENT
 };
 
@@ -202,7 +203,8 @@ enum ASM_OPERATOR{
 
 	typedef struct{
 		int		 ref_aux; // pointer ref to C Var/Function
-		PASTNode  ast;
+		tInfoScopeVar  *info_var_scope;
+		tASTNode		*ast;
 		unsigned int properties;
 	}tInfoRegisteredVariableSymbol;
 
@@ -302,12 +304,12 @@ enum ASM_OPERATOR{
 
 	//-----------------------------
 
-	typedef struct{
+	struct tInfoScopeVar{
 		string name; // var name
-		CObject *m_obj; // in case of static objects like object-functions
+		//CObject *m_obj; // in case of static objects like object-functions
 		PASTNode ast; // ast node info.
-		int index_var; // idx position in
-	}tInfoScopeVar;
+		//int index_var; // idx position in
+	};
 
 
 	//-----------------------------
@@ -378,13 +380,13 @@ enum ASM_OPERATOR{
 	//-------------------------------------------------------
 
 	typedef struct {
-		vector<tInfoRegisteredVariableSymbol> 	m_registeredSymbol; // member variables to be copied in every new instance
+		vector<tInfoRegisteredVariableSymbol> 	m_registeredVariable; // member variables to be copied in every new instance
 		vector<tInfoRegisteredFunctionSymbol> 	m_registeredFunction; // member functions
-	}tMemberDataInfo;
+	}tLocalSymbolInfo;
 
-	struct tBaseObjectInfo{
+	struct tScriptFunctionInfo{
 		tInfoRegisteredVariableSymbol symbol_info;
-		tMemberDataInfo 			  member_data;
+		tLocalSymbolInfo 			  local_symbols;
 
 		// the info asm op for each function. Will be filled at compile time.
 		vector<tInfoStatementOp> statment_op;
@@ -393,7 +395,7 @@ enum ASM_OPERATOR{
 
 	struct tInfoRegisteredFunctionSymbol{
 
-		tBaseObjectInfo	object_info;
+		tScriptFunctionInfo	object_info;
 
 		// var for function ...
 		vector<string> m_arg; // tells var arg name or var type name (in of C )
@@ -408,7 +410,7 @@ enum ASM_OPERATOR{
 	 */
 	typedef struct _tInfoRegisteredClass{
 
-		tBaseObjectInfo	object_info;
+		tScriptFunctionInfo	object_info;
 
 		_tInfoRegisteredClass *extendClass; // in the case is and extension of class.
 
