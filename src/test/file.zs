@@ -27,6 +27,7 @@ b(1);*/
 var b= new CInteger();
 
 print("hola2_merda 5:"+b.toString());
+print("hola2_merda what's b?:"+b);
 
 class MyClass{
 	
@@ -50,9 +51,43 @@ class MyClass{
 
 c = new MyClass();
 
-c.prova();
-c.prova2();
 
+c.prova();
+c.prova2(0);
+
+class MyClass2:MyClass{
+	
+	var hh;
+	
+	function MyClass2(){
+		this.hh=0;
+	}
+	
+	function prova(){
+		super.prova();
+		print("hola que tal new 3:"+this.hh);
+	}
+	
+	function prova2(k){
+		super.prova2(k);
+		print("hola que tal new 2:"+k);
+	}	
+	
+	function prova3(){
+		
+	}
+};
+
+
+c = new MyClass2();
+c.prova();
+c.prova2(0);
+
+function MyClass2::prova4(){
+	print("hola que tal new 4");
+}
+
+c.prova4();
 
 /*
 function bb(a,b){
