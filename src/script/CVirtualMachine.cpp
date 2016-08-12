@@ -122,7 +122,7 @@ bool CVirtualMachine::execute(CScriptFunction *function_object, vector<CObject *
 			for(unsigned i = 0; i  <  n_asm_op && (jmp_to_statment==-1); i++){ // for each code-instruction execute it.
 				print_vm_cr("executing instruction  [%02i:%02i]...", s,i);
 				//print_vm_cr("executing code...%i/%i",s,i);
-				if( s==2 && i==12){
+				if( s==7 && i==1){
 					int hhh=0;
 					hhh++;
 				}

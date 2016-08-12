@@ -42,6 +42,15 @@ if(!(index_op2 >= index_op1 )) { print_error_cr("invalid indexes"); return false
 #define IS_BOOLEAN(idx) \
 (result_object_instruction[idx].type == CVariable::VAR_TYPE::BOOLEAN)
 
+#define IS_UNDEFINED(idx) \
+(result_object_instruction[idx].type == CVariable::VAR_TYPE::UNDEFINED)
+
+#define IS_OBJECT(idx) \
+(result_object_instruction[idx].type == CVariable::VAR_TYPE::OBJECT)
+
+#define IS_VECTOR(idx) \
+(result_object_instruction[idx].type == CVariable::VAR_TYPE::VECTOR)
+
 #define IS_GENERIC_NUMBER(idx) \
 ((result_object_instruction[idx].type == CVariable::VAR_TYPE::INTEGER) ||\
 (result_object_instruction[idx].type == CVariable::VAR_TYPE::NUMBER))
@@ -433,6 +442,11 @@ bool CALE::loadConstantValue(CObject *obj, int n_stk){
 				print_error_cr("Invalid load constant value as %i",var->getVariableType());
 				return false;
 				break;
+			case CVariable::VAR_TYPE::UNDEFINED:
+
+				result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::UNDEFINED,(CObject **)&CScopeInfo::UndefinedSymbol,false};
+
+				break;
 			case CVariable::VAR_TYPE::INTEGER:
 				if(!pushInteger(((CInteger *)var)->m_value)) return false;
 				break;
@@ -484,6 +498,11 @@ bool CALE::assignObjectFromIndex(CObject **obj, int index){
 
 	// finally assign the value ...
 	switch(result_object_instruction[index].type){
+
+		case CVariable::VAR_TYPE::UNDEFINED:
+			*obj = CScopeInfo::UndefinedSymbol;
+			break;
+
 		case CVariable::VAR_TYPE::INTEGER:
 			if(aux_var == NULL) {
 				print_error_cr("Expected variable type!");
@@ -633,6 +652,8 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 			//sprintf(print_aux_load_value,"ARG(%s)",value_symbol.c_str());
 			break;
 		default:
+			print_error_cr("no load defined type");
+			return false;
 			break;
 
 		}
@@ -791,7 +812,9 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 			CHECK_VALID_INDEXES;
 
 			// check types ...
-			if (IS_INT(index_op1) && IS_INT(index_op2)){
+			if (IS_STRING(index_op1) && (IS_UNDEFINED(index_op2) || IS_VECTOR(index_op2) || IS_OBJECT(index_op2))){
+				if(!pushString(LOAD_STRING_OP(index_op1)+(*result_object_instruction[index_op2].stkObject)->getPointerClassStr())) return false;
+			}else if (IS_INT(index_op1) && IS_INT(index_op2)){
 				if(!pushInteger(LOAD_INT_OP(index_op1) + LOAD_INT_OP(index_op2))) return false;
 			}else if (IS_INT(index_op1) && IS_NUMBER(index_op2)){
 				if(!pushInteger(LOAD_INT_OP(index_op1) + LOAD_NUMBER_OP(index_op2))) return false;
@@ -1026,7 +1049,7 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 				}
 			}
 			else{
-				print_error_cr("object not type function");
+				print_error_cr("object is not function at line %i",instruction->ast_node->definedValueline);
 				return false;
 			}
 			break;

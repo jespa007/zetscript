@@ -108,7 +108,7 @@ private:
 	 */
 	tInfoStatementOp  *newStatment();
 	bool insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc);
-	bool insertMovVarInstruction( int left_index, int right_index);
+	bool insertMovVarInstruction(PASTNode _node, int left_index, int right_index);
 
 	/**
 	 * Unconditional Jump instruction
@@ -130,22 +130,34 @@ private:
 	 * IndexAccess
 	 */
 
-	void insert_CreateArrayObject_Instruction();
+	void insert_CreateArrayObject_Instruction(PASTNode _node);
 	//void insert_LoadArrayObject_Instruction(CObject *obj);
-	void insert_ArrayObject_PushValueInstruction(int ref_vec_object_index, int index_instruction_to_push=-1);
+	void insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_vec_object_index, int index_instruction_to_push=-1);
 
-	void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction, tASTNode *_ast);
+	void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction, PASTNode _ast);
 
 
 	/**
 	 * Function instructions
 	 */
-	void insert_LoadFunctionObject_Instruction(CObject *obj);
-	void insert_ClearArgumentStack_Instruction();
-	void insert_PushArgument_Instruction();
-	void insert_ClearArgumentStack_And_PushFirstArgument_Instructions();
-	void insert_CallFunction_Instruction(int index_call);
-	void insertRet(int index);
+	void insert_LoadFunctionObject_Instruction(PASTNode _node,CObject *obj);
+	void insert_ClearArgumentStack_Instruction(PASTNode _node);
+	void insert_PushArgument_Instruction(PASTNode _node);
+	void insert_ClearArgumentStack_And_PushFirstArgument_Instructions(PASTNode _node);
+
+	/**
+	 * insert call function
+	 * index_object: index to take asm reference from. (-1 refers to main object)
+	 * index_call: index where take function ref from.
+	 */
+	void insert_CallFunction_Instruction(PASTNode _node,int index_call,int index_object=-1);
+	void insertRet(PASTNode _node,int index);
+
+	/**
+	 * Class instructions.
+	 */
+
+	bool insert_NewObject_Instruction(PASTNode _node, const string & class_name);
 
 
 	bool insertOperatorInstruction(tInfoPunctuator *  op, PASTNode _node, string & error_str, int left, int right=-1);
@@ -174,6 +186,7 @@ private:
 	bool  gacExpression(PASTNode op, CScopeInfo * _lc,int index_instruction=-1);
 
 	bool gacKeyword(PASTNode _node, CScopeInfo * _lc);
+	bool gacNew(PASTNode _node, CScopeInfo * _lc);
 	bool gacFor(PASTNode _node, CScopeInfo * _lc);
 	bool gacVar(PASTNode _node, CScopeInfo * _lc);
 	bool gacWhile(PASTNode _node, CScopeInfo * _lc);

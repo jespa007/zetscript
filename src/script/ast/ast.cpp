@@ -472,12 +472,12 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 			}*/
 
 			break;
-		/*case KEYWORD_TYPE::NEW_KEYWORD:
+		case KEYWORD_TYPE::NEW_KEYWORD:
 			if((aux = parseNew(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 				return NULL;
 			}
 			break;
-		case KEYWORD_TYPE::DELETE_KEYWORD:
+		/*case KEYWORD_TYPE::DELETE_KEYWORD:
 			if((aux=parseDelete(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 				return NULL;
 			}
@@ -1245,7 +1245,7 @@ char * CAst::parseNew(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 			 // it seems everything is allright... let's create the node...
 
 			(*ast_node_to_be_evaluated) = new tASTNode();
-			(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
+			(*ast_node_to_be_evaluated)->node_type = NEW_OBJECT_NODE;
 			(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			(*ast_node_to_be_evaluated)->value_symbol = symbol_value;
 			(*ast_node_to_be_evaluated)->children.push_back(args_node);
@@ -1358,7 +1358,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 
 				ext_name=CStringUtils::copyStringFromInterval(aux_p, end_p);
 
-				if((CScriptClassFactory::registeredClassExists(ext_name)) == NULL){
+				if((CScriptClassFactory::getInstance()->registeredClassExists(ext_name)) == -1){
 					print_error_cr("extended class \"%s\" not exist");
 					return NULL;
 				}
@@ -1438,11 +1438,12 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 
 						}
 					}else{
-						print_error_cr("Expected \"var\" or \"function\" keyword at line %i");
+						print_error_cr("Expected \"var\" or \"function\" keyword at line %i",m_line);
+						return NULL;
 					}
 
 
-					aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
+					aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 
 				}
@@ -2598,7 +2599,7 @@ char *CAst::parseKeyWord(const char *s, int & m_line, CScopeInfo *scope_info, bo
 				return NULL;
 			}
 			else{*/
-				if((aux_p = parseClass(s,m_line,scope_info,ast_node_to_be_evaluated)) == NULL){
+				if((aux_p = parseClass(s,m_line,scope_info,ast_node_to_be_evaluated)) != NULL){
 					return aux_p;
 				}
 

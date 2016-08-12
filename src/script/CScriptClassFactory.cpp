@@ -1,6 +1,6 @@
 #include "zg_script.h"
 
- map<string,tInfoRegisteredClass *>  	 CScriptClassFactory::m_registeredClass;
+ CScriptClassFactory *  	 CScriptClassFactory::scriptClassFactory=NULL;
  CScriptClassFactory::tPrimitiveType CScriptClassFactory::primitiveType[MAX_VAR_C_TYPES];
 
 
@@ -75,6 +75,31 @@
  	primitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
  }
 
+
+ CScriptClassFactory*  CScriptClassFactory::getInstance(){
+
+	 if(scriptClassFactory == NULL){
+		 scriptClassFactory = new CScriptClassFactory();
+	 }
+
+	 return scriptClassFactory;
+
+ }
+
+ void CScriptClassFactory::destroySingletons() {
+	 if(scriptClassFactory != NULL){
+		 delete scriptClassFactory;
+	 }
+
+	 scriptClassFactory=NULL;
+
+ }
+
+
+ CScriptClassFactory::CScriptClassFactory(){
+
+ }
+
  CScriptClassFactory::tPrimitiveType *CScriptClassFactory::getPrimitiveTypeFromStr(const string & str){
 
  	for(unsigned i=0; i < MAX_VAR_C_TYPES; i++){
@@ -89,17 +114,18 @@
  }
 
  tInfoRegisteredClass * CScriptClassFactory::registerClass(const string & class_name){
-	tInfoRegisteredClass * irv;
-	if((irv = registeredClassExists(class_name))==NULL){ // check whether is local var registered scope ...
+	int index;
+	tInfoRegisteredClass *irv=NULL;
+	if((index = registeredClassExists(class_name))==-1){ // check whether is local var registered scope ...
 
 		irv = new tInfoRegisteredClass;
 		//irv->ast=ast;
-		m_registeredClass[class_name]=irv;
+		m_registeredClass.push_back(irv);
 
 		return irv;
 
 	}else{
-		print_error_cr("error class \"%s\" already registered at line %i!", class_name.c_str(), irv->object_info.symbol_info.ast->definedValueline);
+		print_error_cr("error class \"%s\" already registered at line %i!", class_name.c_str(), m_registeredClass[index]->object_info.symbol_info.ast->definedValueline);
 	}
 
 	return NULL;
@@ -259,19 +285,23 @@ bool CScriptClassFactory::addArgumentFunctionSymbol(tScriptFunctionInfo *object_
 	return false;
 }
 
-tInfoRegisteredClass * CScriptClassFactory::registeredClassExists(const string & class_name){
-	if(m_registeredClass.count(class_name)==1){ // not exit but we will deepth through parents ...
-		return m_registeredClass[class_name];
+int CScriptClassFactory::registeredClassExists(const string & class_name){
+
+	for(unsigned i = 0; i < m_registeredClass.size(); i++){
+		if(class_name == m_registeredClass[i]->object_info.symbol_info.ast->value_symbol){
+			return i;
+		}
 	}
 
-	return NULL;
+	return -1;
 }
 
 tInfoRegisteredClass *CScriptClassFactory::getRegisteredClass(const string & class_name, bool print_msg){
-	tInfoRegisteredClass * irv;
-	if((irv = registeredClassExists(class_name))!=NULL){ // check whether is local var registered scope ...
 
-		return irv;
+	int index;
+	if((index = registeredClassExists(class_name))!=-1){ // check whether is local var registered scope ...
+
+		return m_registeredClass[index];
 	}else{
 		if(print_msg){
 			print_error_cr("class \"%s\" doesn't exist!", class_name.c_str());
@@ -282,15 +312,26 @@ tInfoRegisteredClass *CScriptClassFactory::getRegisteredClass(const string & cla
 
 }
 
-void CScriptClassFactory::destroySingletons() {
+int CScriptClassFactory::getIdxRegisteredClass(const string & v){
+	int index= registeredClassExists(v);
 
-	for(map<string,tInfoRegisteredClass *>::iterator it = m_registeredClass.begin();it!= m_registeredClass.end();it++){
+	if(index == -1){
+		print_error_cr("class %s not registered",v.c_str());
+	}
 
-		    for(unsigned i = 0; i < it->second->object_info.local_symbols.m_registeredFunction.size();i++){
-		    	for(unsigned j = 0; j < it->second->object_info.local_symbols.m_registeredFunction[i].object_info.statment_op.size(); j++){
-		    		for(unsigned a = 0; a  <it->second->object_info.local_symbols.m_registeredFunction[i].object_info.statment_op[j].asm_op.size(); a++){
+	return index;
+}
 
-		    			delete it->second->object_info.local_symbols.m_registeredFunction[i].object_info.statment_op[j].asm_op[a];
+CScriptClassFactory::~CScriptClassFactory() {
+
+	for(unsigned i = 0;i<m_registeredClass.size();i++){
+
+			tInfoRegisteredClass *irv = m_registeredClass[i];
+		    for(unsigned i = 0; i < irv->object_info.local_symbols.m_registeredFunction.size();i++){
+		    	for(unsigned j = 0; j < irv->object_info.local_symbols.m_registeredFunction[i].object_info.statment_op.size(); j++){
+		    		for(unsigned a = 0; a  <irv->object_info.local_symbols.m_registeredFunction[i].object_info.statment_op[j].asm_op.size(); a++){
+
+		    			delete irv->object_info.local_symbols.m_registeredFunction[i].object_info.statment_op[j].asm_op[a];
 		    		}
 
 		    	}
@@ -298,6 +339,7 @@ void CScriptClassFactory::destroySingletons() {
 
 
 		    // delete tInfoRegisteredClass
-			delete it->second;
+			delete irv;
 	}
 }
+

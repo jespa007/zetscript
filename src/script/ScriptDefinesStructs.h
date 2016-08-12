@@ -9,7 +9,8 @@ struct tInfoScopeVar;
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 enum SYMBOL_INFO_PROPERTIES{
-	C_OBJECT_REF = 0x1 <<0
+	C_OBJECT_REF = 0x1 <<0,
+	C_FUNCTION_CLASS = 0x1 <<1
 
 };
 
@@ -39,6 +40,8 @@ enum NODE_TYPE{
 	CALLING_OBJECT_NODE,
 	ARRAY_REF_NODE,
 	FUNCTION_REF_NODE,
+	NEW_OBJECT_NODE,
+	REF_OBJECT_NODE,
 	MAX_NODE_TYPE
 };
 
@@ -184,6 +187,8 @@ enum ASM_OPERATOR{
 
 		VEC, // Vector object
 		RET, // ret instruction ..
+
+		NEW, // new operator...
 		MAX_OPERATORS
 
 
@@ -411,7 +416,7 @@ enum ASM_OPERATOR{
 	typedef struct _tInfoRegisteredClass{
 
 		tScriptFunctionInfo	object_info;
-
+		string c_type; // type_id().name();
 		_tInfoRegisteredClass *extendClass; // in the case is and extension of class.
 
 	}tInfoRegisteredClass;

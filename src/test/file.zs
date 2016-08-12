@@ -1,4 +1,4 @@
-
+/*
 var i=1+2;
 
 function aaa(j,k){
@@ -17,6 +17,41 @@ b(1);
 c();
 
 print("hola2_merda 3:"+b(0));
+
+b=null;
+
+print("hola2_merda 4:"+b);
+
+b(1);*/
+
+var b= new CInteger();
+
+print("hola2_merda 5:"+b.toString());
+
+class MyClass{
+	
+	var g,j;
+	
+	function MyClass(){
+		this.g=0;
+		this.j=60;
+		this.k=2;
+	}
+	
+	function prova(){
+		print("hola que tal:"+this.j);
+	}
+	
+	function prova2(k){
+		print("hola que tal 2:"+k);
+	}	
+};
+
+
+c = new MyClass();
+
+c.prova();
+c.prova2();
 
 
 /*

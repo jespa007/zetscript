@@ -115,7 +115,7 @@ bool CZG_Script::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & resu
 
 	// convert parameters script to c...
 	for(unsigned int i = 0; i < argv->size();i++){
-		fntConversionType paramConv=CScriptClassFactory::getConversionType((argv->at(i))->getPointerClassStr(),irfs->m_arg[i]);
+		fntConversionType paramConv=CScriptClassFactory::getInstance()->getConversionType((argv->at(i))->getPointerClassStr(),irfs->m_arg[i]);
 
 		if(paramConv == NULL){
 			return false;
@@ -283,6 +283,7 @@ void CZG_Script::init(){
 	iniFactory<CVectorFactory>("CVector");
 
 
+
 	m_ast = CAst::getInstance();
 
 	// setup main struct...
@@ -306,6 +307,12 @@ void CZG_Script::init(){
 
 	// move into factory ...
 	//-----------------------
+
+	// ok register CInteger through CScriptClass...
+	CScriptClassFactory::getInstance()->register_C_Class<CInteger>("CInteger");
+	CScriptClassFactory::getInstance()->register_C_FunctionMember<CInteger>("toString",&CInteger::toString);
+	//CScriptClassFactory::getInstance()->register_C_VariableMember<CInteger,CInteger::>("toString");
+
 
 	//main_context = new CContext();
 

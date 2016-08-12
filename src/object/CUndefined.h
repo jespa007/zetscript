@@ -1,6 +1,6 @@
 #pragma once
 
-class CUndefined:public CObject{
+class CUndefined:public CVariable{
 
 public:
 	CUndefined();

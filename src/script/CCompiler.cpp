@@ -433,7 +433,13 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 		pre_post_operator_type=preoperator2instruction(_node->pre_post_operator_info->id);
 	}
 	// try parse value...
-	if((obj=CInteger::Parse(v))!=NULL){
+	if(v=="null"){
+		type=CVariable::UNDEFINED;
+		load_type=LOAD_TYPE_CONSTANT;
+		obj=CScopeInfo::UndefinedSymbol;
+		print_com_cr("%s detected as null\n",v.c_str());
+
+	}else if((obj=CInteger::Parse(v))!=NULL){
 			type=CVariable::INTEGER;
 			load_type=LOAD_TYPE_CONSTANT;
 			print_com_cr("%s detected as int\n",v.c_str());
@@ -494,7 +500,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 		{
 			load_type=LOAD_TYPE_FUNCTION;
 
-			idx_local_var =getIdxLocalFunctionSymbol(_node,_lc);
+			idx_local_var =getIdxLocalFunctionSymbol(_node,_lc, false);
 
 			// Local Functions are already inserted during "gacFunction" process, so we don't have
 			// to register again...
@@ -557,7 +563,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	return true;
 }
 
-bool CCompiler::insertMovVarInstruction(int left_index, int right_index){
+bool CCompiler::insertMovVarInstruction(PASTNode _node,int left_index, int right_index){
 
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[left_index];
@@ -575,6 +581,7 @@ bool CCompiler::insertMovVarInstruction(int left_index, int right_index){
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = left_index;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 =  right_index;
+	asm_op->ast_node = _node;
 	//asm_op->symbol_name="";
 	asm_op->operator_type=ASM_OPERATOR::MOV;
 
@@ -629,18 +636,19 @@ void CCompiler::insert_NOP_Instruction(){
 
 }
 
-void CCompiler::insert_CreateArrayObject_Instruction(){
+void CCompiler::insert_CreateArrayObject_Instruction(PASTNode _node){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 
 	asm_op->operator_type=ASM_OPERATOR::VEC;
 	asm_op->variable_type = CVariable::OBJECT;
+	asm_op->ast_node = _node;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 }
 
-void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instrucction, tASTNode *_ast){
+void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instrucction, PASTNode _ast){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = vec_object;//&((*m_currentListStatements)[dest_statment]);
@@ -654,18 +662,20 @@ void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instruc
 }
 
 
-void CCompiler::insert_ClearArgumentStack_Instruction(){
+void CCompiler::insert_ClearArgumentStack_Instruction(PASTNode _node){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	asm_op->ast_node = _node;
 	asm_op->operator_type=ASM_OPERATOR::CLR;
 	//printf("[%02i:%02i]\tNOP\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
 
-void CCompiler::insert_PushArgument_Instruction(){
+void CCompiler::insert_PushArgument_Instruction(PASTNode _node){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	asm_op->ast_node = _node;
 	asm_op->index_op1 = getCurrentInstructionIndex();//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::PUSH;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
@@ -673,10 +683,11 @@ void CCompiler::insert_PushArgument_Instruction(){
 
 }
 
-void CCompiler::insert_ClearArgumentStack_And_PushFirstArgument_Instructions(){
+void CCompiler::insert_ClearArgumentStack_And_PushFirstArgument_Instructions(PASTNode _node){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->operator_type=ASM_OPERATOR::CLR;
+	asm_op->ast_node = _node;
 	//printf("[%02i:%02i]\tNOP\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -684,35 +695,42 @@ void CCompiler::insert_ClearArgumentStack_And_PushFirstArgument_Instructions(){
 	asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = getCurrentInstructionIndex()-1;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::PUSH;
+	asm_op->ast_node=_node;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 }
 
-void CCompiler::insert_CallFunction_Instruction(int  index_call){
+void CCompiler::insert_CallFunction_Instruction(PASTNode _node,int  index_call,int  index_object){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
+
 	asm_op->index_op1 = index_call;//&((*m_currentListStatements)[dest_statment]);
+	asm_op->index_op2 = index_object;//&((*m_currentListStatements)[dest_statment]);
+
+	asm_op->ast_node = _node;
 	asm_op->operator_type=ASM_OPERATOR::CALL;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
-void CCompiler::insertRet(int index){
+void CCompiler::insertRet(PASTNode _node,int index){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = index;//&((*m_currentListStatements)[dest_statment]);
 	//asm_op->symbol_name="";
 	asm_op->operator_type=ASM_OPERATOR::RET;
+	asm_op->ast_node = _node;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
 
-void CCompiler::insert_ArrayObject_PushValueInstruction(int ref_vec_object_index, int index_instruciont_to_push){
+void CCompiler::insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_vec_object_index,int index_instruciont_to_push){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1=ref_vec_object_index;
+	asm_op->ast_node = _node;
 	asm_op->index_op2=index_instruciont_to_push;
 	if(index_instruciont_to_push == -1){
 		asm_op->index_op2=CCompiler::getCurrentInstructionIndex();
@@ -720,6 +738,25 @@ void CCompiler::insert_ArrayObject_PushValueInstruction(int ref_vec_object_index
 	asm_op->operator_type=ASM_OPERATOR::VPUSH;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+bool CCompiler::insert_NewObject_Instruction(PASTNode _node, const string & class_name){
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	if((asm_op->index_op1 = CScriptClassFactory::getInstance()->getIdxRegisteredClass(class_name))==-1){//&((*m_currentListStatements)[dest_statment]);
+		return false;
+	}
+	//asm_op->symbol_name="";
+	asm_op->operator_type=ASM_OPERATOR::NEW;
+	asm_op->ast_node = _node;
+
+	ptr_current_statement_op->asm_op.push_back(asm_op);
+
+	return true;
+}
+
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ASM_PRE_POST_OPERATORS CCompiler::preoperator2instruction(PUNCTUATOR_TYPE op){
 
@@ -904,7 +941,7 @@ int CCompiler::gacExpression_ArrayObject(PASTNode _node, CScopeInfo *_lc)
 	int r=0;
 
 	// 1. create object ...
-	insert_CreateArrayObject_Instruction();
+	insert_CreateArrayObject_Instruction(_node);
 	int index_created_vec = CCompiler::getCurrentInstructionIndex();
 
 	//bool children_is_vector_object;
@@ -932,7 +969,7 @@ int CCompiler::gacExpression_ArrayObject(PASTNode _node, CScopeInfo *_lc)
 
 		}*/
 
-		insert_ArrayObject_PushValueInstruction(index_created_vec,ini_instruction);
+		insert_ArrayObject_PushValueInstruction(_node,index_created_vec,ini_instruction);
 	}
 	return index_created_vec;//CCompiler::getCurrentInstructionIndex();
 }
@@ -965,6 +1002,7 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScopeInfo *_lc)
 	if(_node->children[1]->node_type != ARGS_PASS_NODE){print_error_cr("Function has no index nodes "); return -1;}
 	//int r=0;
 
+	// load function ...
 	if(!insertLoadValueInstruction(_node->children[0],_lc)) {
 		return -1;
 	}
@@ -984,25 +1022,25 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScopeInfo *_lc)
 		if(k==0){
 
 			// insert clear push arguments stack
-			insert_ClearArgumentStack_And_PushFirstArgument_Instructions();
+			insert_ClearArgumentStack_And_PushFirstArgument_Instructions(_node);
 
 			// insert vector access instruction ...
 			//insert_PushArgument_Instruction_Less1();
 
 		}else{
 			// insert vector access instruction ...
-			insert_PushArgument_Instruction();
+			insert_PushArgument_Instruction(_node);
 		}
 
 
 	}
 	}else{
 		// clear the stack only ..
-		insert_ClearArgumentStack_Instruction();
+		insert_ClearArgumentStack_Instruction(_node);
 	}
 
 	// 2. insert call instruction itself.
-	insert_CallFunction_Instruction(call_index);
+	insert_CallFunction_Instruction(_node,0,call_index);
 
 	return CCompiler::getCurrentInstructionIndex();
 }
@@ -1021,7 +1059,9 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 	bool special_node =	 _node->node_type == ARRAY_OBJECT_NODE ||
 						_node->node_type == FUNCTION_OBJECT_NODE ||
-						_node->node_type == CALLING_OBJECT_NODE;
+						_node->node_type == CALLING_OBJECT_NODE ||
+						_node->node_type == NEW_OBJECT_NODE ||
+						_node->node_type == REF_OBJECT_NODE;
 
 	// TERMINAL SYMBOLS
 	if(_node->children.size()==0 ||
@@ -1031,8 +1071,9 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 		bool function_access = false;
 		bool array_access = false;
 
+
 		PASTNode eval_node_sp = _node;
-		if(_node->node_type == CALLING_OBJECT_NODE ){
+		if(_node->node_type == CALLING_OBJECT_NODE){
 			if(_node->children.size() > 0){
 				eval_node_sp = _node->children[0];
 
@@ -1073,6 +1114,16 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 						if((r=gacExpression_FunctionObject(_node, _lc)) == -1){
 							return -1;
 						}
+						break;
+
+					case NEW_OBJECT_NODE:
+						if((r=gacNew(_node, _lc)) == -1){
+							return -1;
+						}
+						break;
+
+					case REF_OBJECT_NODE:
+						print_error_cr("Not implemented %i",eval_node_sp->node_type);
 						break;
 
 					default:
@@ -1171,6 +1222,99 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 	return r;
 }
 
+int findConstructorIdxNode(PASTNode _node ){
+	if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {print_error_cr("children[0] is not args_pass_node");return -1;}
+	for(unsigned i = 0; i < _node->children.size(); i++){
+		if(_node->children[i]->node_type == NODE_TYPE::KEYWORD_NODE){
+			if(_node->children[i]->keyword_info != NULL){
+				if(_node->children[i]->keyword_info->id==KEYWORD_TYPE::FUNCTION_KEYWORD){
+					if(_node->children[i]->value_symbol == _node->value_symbol){
+						return i;
+					}
+				}
+			}else{
+				print_error_cr("keyword = NULL");
+				return -1;
+			}
+		}
+
+	}
+
+
+	return -1;
+}
+
+bool CCompiler::gacNew(PASTNode _node, CScopeInfo * _lc){
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != NEW_OBJECT_NODE ){print_error_cr("node is not NEW OBJECT NODE type");return false;}
+	if(_node->children.size()!=1) {print_error_cr("node NEW has not valid number of nodes");return false;}
+	if(_node->children[0]->node_type!=NODE_TYPE::ARGS_PASS_NODE) {print_error_cr("children[0] is not args_pass_node");return false;}
+
+	// create new statment ...
+	CCompiler::getInstance()->newStatment();
+
+	// 1. create object instruction ...
+	insert_NewObject_Instruction(_node,_node->value_symbol); // goto end  ...
+	int index_created_object = getCurrentStatmentIndex();
+
+
+	int idx_constructor_node = findConstructorIdxNode(_node);
+
+
+	// 2. load constructor function ...
+	if(idx_constructor_node != -1){
+		if(!insertLoadValueInstruction(_node->children[idx_constructor_node],_lc)) {
+			return -1;
+		}
+		int call_index = getCurrentInstructionIndex();
+
+
+		// 2. load constructor arguments ...
+		// 1. insert push to pass values to all args ...
+		PASTNode function_args = _node->children[0];
+
+		if(function_args->children.size() > 0){
+		for(unsigned k = 0; k < function_args->children.size(); k++){
+
+			// check whether is expression node...
+			if(!gacExpression(function_args->children[k], _lc,getCurrentInstructionIndex()+1)){
+				return -1;
+			}
+
+			if(k==0){
+
+				// insert clear push arguments stack
+				insert_ClearArgumentStack_And_PushFirstArgument_Instructions(_node);
+
+				// insert vector access instruction ...
+				//insert_PushArgument_Instruction_Less1();
+
+			}else{
+				// insert vector access instruction ...
+				insert_PushArgument_Instruction(_node);
+			}
+
+
+		}
+		}else{
+			// clear the stack only ..
+			insert_ClearArgumentStack_Instruction(_node);
+		}
+
+
+		// 2. insert call instruction itself.
+		insert_CallFunction_Instruction(_node,call_index,index_created_object);
+	}
+
+
+
+
+
+
+	return true;
+
+}
+
 bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
@@ -1244,7 +1388,7 @@ bool CCompiler::gacReturn(PASTNode _node, CScopeInfo * _lc){
 	if(gacExpression(_node->children[0], _lc)){
 
 		// finally we put mov to Value ...
-		insertRet(getCurrentInstructionIndex());
+		insertRet(_node,getCurrentInstructionIndex());
 	}
 	else {
 		return false;
@@ -1512,6 +1656,9 @@ bool CCompiler::gacKeyword(PASTNode _node, CScopeInfo * _lc){
 		break;
 	case KEYWORD_TYPE::RETURN_KEYWORD:
 		return gacReturn(_node, _lc);
+		break;
+	case KEYWORD_TYPE::NEW_KEYWORD:
+		return gacNew(_node, _lc);
 		break;
 
 	}

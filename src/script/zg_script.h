@@ -24,6 +24,9 @@ class CScopeInfo;
 
 
 
+#define ZETSCRIPT_MAJOR_VERSION 1
+#define ZETSCRIPT_MINOR_VERSION 1
+#define ZETSCRIPT_PATCH_VERSION 0
 
 
 

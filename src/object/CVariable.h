@@ -13,7 +13,8 @@ class CVariable: public CObject{
 public:
 
 	enum VAR_TYPE{
-		OBJECT=0,
+		UNDEFINED=0,
+		OBJECT,
 		BOOLEAN,
 		INTEGER,
 		NUMBER, // real
