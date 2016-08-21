@@ -1,4 +1,4 @@
-#include "script/zg_script.h"
+#include "core/zg_core.h"
 
 
 char CStringUtils::m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER]={{0}};

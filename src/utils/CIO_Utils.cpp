@@ -1,5 +1,5 @@
 
-#include "script/zg_script.h"
+#include "core/zg_core.h"
 
 
 

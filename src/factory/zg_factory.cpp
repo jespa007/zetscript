@@ -1,8 +1,0 @@
-#include "CFactoryContainer.cpp"
-#include "object/CObjectFactory.cpp"
-#include "object/CBooleanFactory.cpp"
-#include "object/CNumberFactory.cpp"
-#include "object/CIntegerFactory.cpp"
-#include "object/CStringFactory.cpp"
-#include "object/CVectorFactory.cpp"
-#include "object/CUndefinedFactory.cpp"

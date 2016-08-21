@@ -1,4 +1,4 @@
-//#include "script/zg_script.h"
+//#include "core/zg_core.h"
 
 #include <type_traits>
 #include <iostream>
@@ -231,7 +231,7 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
     printf("\nArg:%i",argIdx);
 
 
-    //cout << "is same:" << std::is_base_of<CObject ,typename fun::template arg<0>::type> << endl;
+    //cout << "is same:" << std::is_base_of<CVariable ,typename fun::template arg<0>::type> << endl;
     ref.append(parameter_type).append(" ");
     params.insert(params.begin()+0,parameter_type);
 
@@ -258,7 +258,7 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
   // typename fun2::template arg<argIdx-1>::type var=NULL;
 
    printf("\nArg:%i ",argIdx);//,typeid(Args<argIdx-1>).name());
-    //cout << "is same:" << std::is_same<CObject *,parameter_type>::value << endl;
+    //cout << "is same:" << std::is_same<CVariable *,parameter_type>::value << endl;
     string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
     ref.append(parameter_type).append(" ");
     params.insert(params.begin()+0,parameter_type);
@@ -424,7 +424,7 @@ int main(int argc, char * argv[]){
 
 	printf("\nvar %i\n\n",i);
 
-	print_info_cr("sizeof(CObject)=%i sizeof(float)=%i sizeof(string)=%i",sizeof(CObject),sizeof(float),sizeof(string));
+	print_info_cr("sizeof(CVariable)=%i sizeof(float)=%i sizeof(string)=%i",sizeof(CVariable),sizeof(float),sizeof(string));
 
 
 
@@ -442,12 +442,12 @@ int main(int argc, char * argv[]){
 
 	if(buffer != NULL){
 
-		CZG_Script *zg_script = CZG_Script::getInstance();
+		CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
 		zg_script->init();
 
 		if(zg_script->eval((char *)buffer->data_buffer));
 
-		print_info_cr("sizeobject:%i",sizeof(CObject));
+		print_info_cr("sizeobject:%i",sizeof(CVariable));
 		print_info_cr("sizenumber:%i",sizeof(CNumber));
 
 		print_info_cr("float:%s",typeid(float).name());
@@ -455,7 +455,7 @@ int main(int argc, char * argv[]){
 		print_info_cr("bool:%s",typeid(bool).name());
 
 
-		CZG_Script::destroy();
+		CZG_ScriptCore::destroy();
 		delete buffer;
 	}
 

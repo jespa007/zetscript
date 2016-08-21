@@ -1,0 +1,29 @@
+Types
+=====
+
+-Every type is defined by its letter or word (XXXX is the variable name itself):
+
+idx_XXX: Index (usually integer)
+n_XXX: Number in general (it can be integer/float/ double/ etc)
+str_XXX: string
+vec_XXX: vector
+ 
+ 
+Variable names
+==============
+
+Variable name is a description phrase starting with lower case and capital letter after spaces.
+
+Example,
+
+Function phrase,
+
+class is registered ?
+
+in C++ will be,
+
+bool classIsRegistered(){
+
+  ...
+
+}

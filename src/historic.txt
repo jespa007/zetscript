@@ -1,0 +1,17 @@
+ZetScript
+
+
+version 1.00.00
+===============
+
+* Added null value (assign as undefined internally).
+* Added shared pointer management.
+* Erased factory folder. All classes are registered through ClassFactory.
+* load/save json structure thorug C/script interfaces.
+* added "new/class/this" keyword feature (both c/script functionallity). 
+
+
+version 1.00.00
+===============
+
+Exit version

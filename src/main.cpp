@@ -1,6 +1,24 @@
-#include "script/zg_script.h"
+#include "core/zg_core.h"
 #include "SDL2/SDL.h"
 
+class CCustomObject{
+	int x;
+public:
+	CCustomObject(){
+		printf("CCustomObject constructing point @%p\n", this);
+	}
+	void member(){
+
+		printf("hola %p!\n",this);
+	}
+
+	void member2(int i1){}
+
+	   virtual ~CCustomObject()
+	   {
+	       printf("CCustomObject @%p destroyed\n", this);
+	   }
+};
 
 
 
@@ -63,9 +81,9 @@ void print3(string * s){
 }
 
 /*
-void call_print_1p(CObject *obj){
+void call_print_1p(CVariable *obj){
 
-	fntConversionType fun=getConversionType(obj->getPointerClassStr(),CZG_Script::primitiveType[CZG_Script::FLOAT_PTR_TYPE].type_str);
+	fntConversionType fun=getConversionType(obj->getPointerClassStr(),CZG_ScriptCore::primitiveType[CZG_ScriptCore::FLOAT_PTR_TYPE].type_str);
 
 	if(fun != NULL){
 		// Normalize argument ...
@@ -95,7 +113,19 @@ void call_print_1p(CObject *obj){
 int main(int argc, char * argv[]){
 
 	CLog::setUseAnsiEscape(true);
-	CZG_Script *zg_script = CZG_Script::getInstance();
+	CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
+
+	void * c_fun1 = (void *)& CCustomObject::member;
+	int c_func = (int)c_fun1;
+	CCustomObject obj;
+
+	int ptr_arg = (int )&obj;
+	printf("hola %p\n",ptr_arg);
+
+	//((int (*)(int))c_fun)(ptr_arg);
+	((int (*)(int))c_func)(ptr_arg);
+
+
 
 	//string s = "hola!";
 	//int s_int= *((int *)& s);
@@ -117,8 +147,8 @@ int main(int argc, char * argv[]){
 
 	/*map<string, fntConversionType> typeConversion;
 
-	typeConversion[typeid(float ).name()]=[] (CObject *obj){return (int)((CNumber *)obj)->m_value;};
-	typeConversion[typeid(string).name()]=[] (CObject *obj){obj->toString();return *((int *)&obj->m_strValue);};
+	typeConversion[typeid(float ).name()]=[] (CVariable *obj){return (int)((CNumber *)obj)->m_value;};
+	typeConversion[typeid(string).name()]=[] (CVariable *obj){obj->toString();return *((int *)&obj->m_strValue);};
 
 	// ... add more conversion file ...
 	mapTypeConversion[typeid(CNumber *).name()]=typeConversion;
@@ -185,7 +215,7 @@ int main(int argc, char * argv[]){
 
 	printf("\nvar %i\n\n",i);
 
-	print_info_cr("sizeof(CObject)=%i sizeof(float)=%i sizeof(string)=%i",sizeof(CObject),sizeof(float),sizeof(string));
+	print_info_cr("sizeof(CVariable)=%i sizeof(float)=%i sizeof(string)=%i",sizeof(CVariable),sizeof(float),sizeof(string));
 
 
 
@@ -212,7 +242,7 @@ int main(int argc, char * argv[]){
 				//for(i=0; i < 20;i++)
 				{
 					Uint32 t = SDL_GetTicks();
-					zg_script->execute();
+					//zg_script->execute();
 					print_info_cr("time:%i",SDL_GetTicks()-t);
 
 
@@ -238,7 +268,7 @@ int main(int argc, char * argv[]){
 				}
 			}
 
-		print_info_cr("sizeobject:%i",sizeof(CObject));
+		print_info_cr("sizeobject:%i",sizeof(CVariable));
 		print_info_cr("sizenumber:%i",sizeof(CNumber));
 
 		print_info_cr("float:%s",typeid(float).name());
@@ -246,7 +276,7 @@ int main(int argc, char * argv[]){
 		print_info_cr("bool:%s",typeid(bool).name());
 
 
-		CZG_Script::destroy();
+		CZG_ScriptCore::destroy();
 		delete buffer;
 	}
 

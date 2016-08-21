@@ -1,3 +1,14 @@
+
+/*for (var i = 2; i < 1000; i++) {
+    for (var j = 2; j < i; j++) {
+        if (i % j == 0){
+            //continue outer;
+        }
+    }
+    print (i);
+}*/
+
+
 /*
 var i=1+2;
 
@@ -26,10 +37,10 @@ b(1);*/
 
 var b= new CInteger();
 
-print("hola2_merda 5:"+b.toString());
-print("hola2_merda what's b?:"+b);
+print("hola2 5:"+b.toString());
+print("hola2 what's b?:"+b);
 
-class MyClass{
+/*class MyClass{
 	
 	var g,j;
 	
@@ -74,7 +85,7 @@ class MyClass2:MyClass{
 	}	
 	
 	function prova3(){
-		
+		print("print from prova3");
 	}
 };
 
@@ -88,6 +99,7 @@ function MyClass2::prova4(){
 }
 
 c.prova4();
+*/
 
 /*
 function bb(a,b){

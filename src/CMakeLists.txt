@@ -121,15 +121,12 @@ set( ZG_BASE_LIB_SRCS
 	utils/zg_utils.cpp
 
 	#-- Object --
-	object/zg_object.cpp
+	variable/zg_variable.cpp
     
 	
 	#-- Script Core --
-	script/zg_script.cpp	
+	core/zg_core.cpp	
 	
-	#-- Factory --
-	factory/zg_factory.cpp
-
 )
 
 
