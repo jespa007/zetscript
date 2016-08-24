@@ -39,7 +39,7 @@ enum NODE_TYPE{
 	ARRAY_REF_NODE,
 	FUNCTION_REF_NODE,
 	NEW_OBJECT_NODE,
-	REF_OBJECT_NODE,
+	ACCESS_OBJECT_MEMBER_NODE,
 	MAX_NODE_TYPE
 };
 
@@ -187,6 +187,7 @@ enum ASM_OPERATOR{
 		RET, // ret instruction ..
 
 		NEW, // new operator...
+		OBJECT_ACCESS, // object access .
 		MAX_OPERATORS
 
 
@@ -341,8 +342,8 @@ public:
 	CVariable::VAR_TYPE variable_type;
 	 PASTNode ast_node; // define ast node for give some information at run time
 	// int definedLine;
-	 //string type_res;
 
+	 bool node_access;
 	 //------------------
 
 	 ASM_OPERATOR operator_type;
@@ -365,7 +366,7 @@ public:
 	  //   type_op=0;
 	   //  funOp=NULL;
 		//result_obj=NULL; // oject type...
-
+		bool node_access=false;
 	   // type_res="none";
 		index_op1=index_op2=-1;
 	   // ptr_value=NULL;

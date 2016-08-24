@@ -7,6 +7,7 @@ enum GROUP_TYPE{
 	GROUP_1, // *,/,==,>,<,<=,>=
 	GROUP_2, // &&
 	GROUP_3, // !
+	GROUP_4, // .
 	MAX_GROUPS
 };
 
@@ -120,6 +121,7 @@ private:
 	static tInfoPunctuator * parsePunctuatorGroup1(const char *s);
 	static tInfoPunctuator * parsePunctuatorGroup2(const char *s);
 	static tInfoPunctuator * parsePunctuatorGroup3(const char *s);
+	static tInfoPunctuator * parsePunctuatorGroup4(const char *s);
 
 	static tInfoPunctuator *  isOperatorPunctuator(const char *s);
 	static tInfoPunctuator *  isSpecialPunctuator(const char *s);

@@ -213,8 +213,8 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup2(const char *s){
 			LOGIC_AND_PUNCTUATOR,
 			MUL_PUNCTUATOR,
 			DIV_PUNCTUATOR,
-			MOD_PUNCTUATOR,
-			FIELD_PUNCTUATOR
+			MOD_PUNCTUATOR
+
 	};
 
 	for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
@@ -232,7 +232,25 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup2(const char *s){
 tInfoPunctuator  * CAst::parsePunctuatorGroup3(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
-			LOGIC_NOT_PUNCTUATOR,
+			LOGIC_NOT_PUNCTUATOR
+
+	};
+
+	for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){ print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);return NULL;}
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			return &defined_operator_punctuator[index_to_evaluate[i]];
+		}
+	}
+
+	return 0;
+}
+
+tInfoPunctuator  * CAst::parsePunctuatorGroup4(const char *s){
+
+	PUNCTUATOR_TYPE index_to_evaluate[]={
+			FIELD_PUNCTUATOR
+
 	};
 
 	for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
@@ -314,14 +332,15 @@ char * CAst::getEndWord(const char *s, int m_line){
 				(*aux)=='\n' ||
 				(*aux)=='\r'
 						) &&
-				(isSpecialPunctuator(aux)==NULL)
+				(isSpecialPunctuator(aux)==NULL) &&
+				(isOperatorPunctuator(aux)==NULL)
 
 		) {
 			// check for special punctuator ( the field '.' separator is processed within the word )
-			if((sp = isOperatorPunctuator(aux))!=NULL){
-				if(sp->id != FIELD_PUNCTUATOR)
+			/*if((sp = isOperatorPunctuator(aux))!=NULL){
+				//if(sp->id != FIELD_PUNCTUATOR)
 					return aux;
-			}
+			}*/
 			aux++;
 		}
 	}
@@ -635,6 +654,9 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 				//tInfoPunctuator *ip=NULL;
 
 				calling_object->node_type = CALLING_OBJECT_NODE;
+
+				obj->parent = calling_object;
+				args_obj->parent = calling_object;
 
 				calling_object->children.push_back(obj); // the object itself...
 				calling_object->children.push_back(args_obj); // the args itself...
@@ -975,6 +997,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 				case GROUP_1:	operator_group = parsePunctuatorGroup1(expr_start_op);break;
 				case GROUP_2:	operator_group = parsePunctuatorGroup2(expr_start_op);break;
 				case GROUP_3:	operator_group = parsePunctuatorGroup3(expr_start_op);break;
+				case GROUP_4:	operator_group = parsePunctuatorGroup4(expr_start_op);break;
 				default: break;
 				}
 			}

@@ -35,9 +35,11 @@ print("hola2_merda 4:"+b);
 
 b(1);*/
 
-var b= new CInteger();
+var b=new CInteger();
 
-print("hola2 5:"+b.toString());
+b().a[0].c[0].d.toString();
+
+print("hola2 5:"+0);
 print("hola2 what's b?:"+b);
 
 /*class MyClass{

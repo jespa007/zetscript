@@ -40,6 +40,9 @@ void CCompiler::addConstant(const string & const_name, CVariable *obj){
 
 int CCompiler::addLocalVarSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope){
 	string  var_name = ast->value_symbol;
+
+
+
 	if(!localVarSymbolExists(ast,currentEvaluatingScope)){
 		tInfoScopeVar *irv=currentEvaluatingScope->getInfoRegisteredSymbol(ast->value_symbol,true);
 
@@ -185,7 +188,7 @@ const char * CCompiler::getStrTypeLoadValue(tInfoAsmOp * iao){
 		break;
 	case LOAD_TYPE::LOAD_TYPE_VARIABLE:
 
-		sprintf(print_aux_load_value,"VAR(%s)",value_symbol.c_str());
+		sprintf(print_aux_load_value,"[%s.VAR(%s)]",iao->node_access?"obj":"this",value_symbol.c_str());
 		break;
 	case LOAD_TYPE::LOAD_TYPE_FUNCTION:
 
@@ -268,7 +271,11 @@ void CCompiler::printGeneratedCode_Recursive(tScriptFunctionInfo *fs){
 				printf("[%02i:%02i]\t%s\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,CScriptClassFactory::getInstance()->getNameRegisteredClassByIdx((*asm_op_statment)[i]->index_op1));
 				break;
 			case  LOAD:
-				printf("[%02i:%02i]\t%s\t%s%s%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,pre.c_str(),getStrTypeLoadValue((*asm_op_statment)[i]),post.c_str());
+				printf("[%02i:%02i]\t%s\t%s%s%s\n",s,i,
+						def_operator[(*asm_op_statment)[i]->operator_type].op_str,
+						pre.c_str(),
+						getStrTypeLoadValue((*asm_op_statment)[i]),
+						post.c_str());
 				break;
 			//case  MOV:
 			//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
@@ -375,6 +382,7 @@ CCompiler::CCompiler(){
 	def_operator[RET]={"RET",RET,1}; // Value pop for vector
 
 	def_operator[NEW]={"NEW",NEW,1}; // New object (CREATE)
+	def_operator[OBJECT_ACCESS]={"OBJECT_ACCESS",OBJECT_ACCESS,2}; // New object (CREATE)
 
 }
 
@@ -424,7 +432,9 @@ int CCompiler::getIdxArgument(const string & var){
 
 bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
+
 	string v = _node->value_symbol;
+	bool node_access = false;
 	//int m_var_at_line = _node->definedValueline;
 	ASM_PRE_POST_OPERATORS pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 
@@ -496,8 +506,33 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 		}
 	}else{
 
+
 		int idx_local_var=-1;
 
+
+
+		node_access = _node->parent!=NULL &&
+				_node->parent->parent!=NULL &&
+				_node->parent->parent->operator_info != NULL &&
+				_node->parent->parent->operator_info->id==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR;
+
+		if(node_access){
+			int jjj=0;
+
+
+		}
+
+		/*if(node_access){ // check whether first access...
+			node_access &= (_node->parent->parent->parent!=NULL &&
+					_node->parent->parent->parent->parent!=NULL &&
+					_node->parent->parent->parent->parent->operator_info != NULL &&
+					_node->parent->parent->parent->parent->operator_info->id==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR) &&
+							_node->parent->parent->children[1] == _node->parent
+					;
+
+
+
+		}*/
 
 
 		//if(isFunctionNode(_node))
@@ -521,11 +556,19 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 			else{ // ... if not argument finally, we deduce that the value is a local symbol...
 
 				load_type=LOAD_TYPE_VARIABLE;
-				if((idx_local_var=getIdxLocalVarSymbol(_node,_lc, false)) == -1){
-					if((idx_local_var = addLocalVarSymbol(_node,_lc)) == -1){
-						return false;
+
+				//PASTNode aa = _node->parent;
+
+				//if(!access_node){
+					if((idx_local_var=getIdxLocalVarSymbol(_node,_lc, false)) == -1){
+						if((idx_local_var = addLocalVarSymbol(_node,_lc)) == -1){
+							//return false;
+							print_warning_cr("load %s run-time",_node->value_symbol.c_str());
+						}
 					}
-				}
+				//}else{
+					//print_warning_cr("load %s run-time",_node->value_symbol.c_str());
+				//}
 			}
 		}
 
@@ -559,6 +602,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	asm_op->variable_type=type;
 	asm_op->index_op1=load_type;
 	asm_op->index_op2=(int)obj;
+	asm_op->node_access=node_access;
 	asm_op->ast_node=_node;
 	asm_op->pre_post_operator_type=pre_post_operator_type;
 
@@ -762,6 +806,20 @@ bool CCompiler::insert_NewObject_Instruction(PASTNode _node, const string & clas
 	return true;
 }
 
+bool CCompiler::insertObjectMemberAccessFrom(PASTNode _node, int ref_node_index){
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	asm_op->index_op1 = ref_node_index;
+	asm_op->index_op2 = -1; // index from object cached node ?
+	//asm_op->symbol_name="";
+	asm_op->operator_type=ASM_OPERATOR::OBJECT_ACCESS;
+	asm_op->ast_node = _node;
+
+	ptr_current_statement_op->asm_op.push_back(asm_op);
+
+	return true;
+}
+
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ASM_PRE_POST_OPERATORS CCompiler::preoperator2instruction(PUNCTUATOR_TYPE op){
@@ -828,6 +886,9 @@ ASM_OPERATOR CCompiler::puntuator2instruction(tInfoPunctuator * op){
 		return ASM_OPERATOR::LTE;
 	case LOGIC_NOT_PUNCTUATOR:
 		return ASM_OPERATOR::NOT;
+	case FIELD_PUNCTUATOR:
+		return ASM_OPERATOR::OBJECT_ACCESS;
+
 	}
 
 	return INVALID_OP;
@@ -841,6 +902,10 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 
 			error_str = "left operand must be l-value for '=' operator";
 			return false;
+	}
+
+	if(op->id == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR){ // trivial access...
+		return true;
 	}
 
 
@@ -1063,11 +1128,16 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 
 
+
 	bool special_node =	 _node->node_type == ARRAY_OBJECT_NODE ||
 						_node->node_type == FUNCTION_OBJECT_NODE ||
 						_node->node_type == CALLING_OBJECT_NODE ||
-						_node->node_type == NEW_OBJECT_NODE ||
-						_node->node_type == REF_OBJECT_NODE;
+						_node->node_type == NEW_OBJECT_NODE;
+
+
+
+
+
 
 	// TERMINAL SYMBOLS
 	if(_node->children.size()==0 ||
@@ -1128,9 +1198,6 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 						}
 						break;
 
-					case REF_OBJECT_NODE:
-						print_error_cr("Not implemented %i",eval_node_sp->node_type);
-						break;
 
 					default:
 						print_error_cr("Unexpected node type %i",eval_node_sp->node_type);
@@ -1175,9 +1242,10 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 		}
 
+		//bool access_node =  _node->operator_info->id == FIELD_PUNCTUATOR;
+
 		// check if there's inline-if-else
 		int right=0, left=0;
-
 		if((left=gacExpression_Recursive(_node->children[LEFT_NODE], _lc,index_instruction)) == -1){
 			return -1;
 		}

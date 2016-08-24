@@ -110,6 +110,7 @@ private:
 	bool insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc);
 	bool insertMovVarInstruction(PASTNode _node, int left_index, int right_index);
 
+
 	/**
 	 * Unconditional Jump instruction
 	 */
@@ -158,6 +159,7 @@ private:
 	 */
 
 	bool insert_NewObject_Instruction(PASTNode _node, const string & class_name);
+	bool insertObjectMemberAccessFrom(PASTNode _node, int ref_node_index);
 
 
 	bool insertOperatorInstruction(tInfoPunctuator *  op, PASTNode _node, string & error_str, int left, int right=-1);
@@ -181,6 +183,7 @@ private:
 	int gacExpression_ArrayObject(PASTNode op, CScopeInfo *_lc);
 	int gacExpression_FunctionObject(PASTNode op, CScopeInfo *_lc);
 	int gacExpression_FunctionAccess(PASTNode op, CScopeInfo *_lc);
+
 	int gacExpression_ArrayAccess(PASTNode op, CScopeInfo *_lc);
 	int  gacExpression_Recursive(PASTNode op, CScopeInfo * _lc, int & numreg);
 	bool  gacExpression(PASTNode op, CScopeInfo * _lc,int index_instruction=-1);
