@@ -37,7 +37,7 @@ b(1);*/
 
 var b=new CInteger();
 
-b().a[0].c[0].d.toString();
+b().a[0].c[0][0][0].d.e.toString();
 
 print("hola2 5:"+0);
 print("hola2 what's b?:"+b);

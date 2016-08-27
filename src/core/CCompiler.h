@@ -61,7 +61,7 @@ private:
 
 	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
 	void printDebugInformation();
-	static const char * getStrTypeLoadValue(tInfoAsmOp * iao);
+	static const char * getStrTypeLoadValue(vector<tInfoStatementOp> * m_listStatements,int current_statment, int current_instruction);
 	static const char * getStrMovVar(tInfoAsmOp * iao);
 
 	static void printGeneratedCode_Recursive(tScriptFunctionInfo *fs);

@@ -166,7 +166,12 @@ void CCompiler::destroySingletons(){
 	}
 }
 
-const char * CCompiler::getStrTypeLoadValue(tInfoAsmOp * iao){
+const char * CCompiler::getStrTypeLoadValue(vector<tInfoStatementOp> * m_listStatements,int current_statment, int current_instruction){
+
+
+	tInfoAsmOp * iao =(*m_listStatements)[current_statment].asm_op[current_instruction];
+
+
 
 	if(iao->operator_type != LOAD){
 		return "ERROR";
@@ -179,6 +184,7 @@ const char * CCompiler::getStrTypeLoadValue(tInfoAsmOp * iao){
 		value_symbol = iao->ast_node->value_symbol;
 	}
 
+	char object_access[512] = "this";
 
 	sprintf(print_aux_load_value,"UNDEFINED");
 	switch(iao->index_op1){
@@ -188,7 +194,11 @@ const char * CCompiler::getStrTypeLoadValue(tInfoAsmOp * iao){
 		break;
 	case LOAD_TYPE::LOAD_TYPE_VARIABLE:
 
-		sprintf(print_aux_load_value,"[%s.VAR(%s)]",iao->node_access?"obj":"this",value_symbol.c_str());
+		if(iao->node_access){
+			sprintf(object_access,"[%02i:%02i]",current_statment,current_instruction-1);
+		}
+
+		sprintf(print_aux_load_value,"%s.VAR(%s)",object_access,value_symbol.c_str());
 		break;
 	case LOAD_TYPE::LOAD_TYPE_FUNCTION:
 
@@ -274,7 +284,7 @@ void CCompiler::printGeneratedCode_Recursive(tScriptFunctionInfo *fs){
 				printf("[%02i:%02i]\t%s\t%s%s%s\n",s,i,
 						def_operator[(*asm_op_statment)[i]->operator_type].op_str,
 						pre.c_str(),
-						getStrTypeLoadValue((*asm_op_statment)[i]),
+						getStrTypeLoadValue(m_listStatements,s,i),
 						post.c_str());
 				break;
 			//case  MOV:
@@ -430,6 +440,45 @@ int CCompiler::getIdxArgument(const string & var){
 
 }
 
+bool checkAccessObjectMember(PASTNode _node){
+
+	bool node_access=false;
+	if(_node == NULL) return false;
+
+	PASTNode check_node = _node->parent;
+
+
+	if(check_node != NULL){
+		if(check_node->node_type==NODE_TYPE::CALLING_OBJECT_NODE) {// function / array access.
+			check_node=check_node->parent;
+		}
+
+		if(check_node != NULL){
+			node_access =check_node->operator_info != NULL &&
+						check_node->operator_info->id==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR; // trivial case...
+		}
+
+		if(node_access){
+
+			// check first ...
+			if(check_node->parent != NULL){
+
+				if(!checkAccessObjectMember(check_node->parent)){
+					node_access = (check_node->parent->children[0] != check_node); // parent not access left is first...
+				}
+
+
+
+			}
+
+		}
+
+	}
+
+
+	return node_access;
+}
+
 bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 
@@ -509,18 +558,8 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 		int idx_local_var=-1;
 
+		node_access = checkAccessObjectMember(_node);
 
-
-		node_access = _node->parent!=NULL &&
-				_node->parent->parent!=NULL &&
-				_node->parent->parent->operator_info != NULL &&
-				_node->parent->parent->operator_info->id==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR;
-
-		if(node_access){
-			int jjj=0;
-
-
-		}
 
 		/*if(node_access){ // check whether first access...
 			node_access &= (_node->parent->parent->parent!=NULL &&
@@ -559,13 +598,18 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 				//PASTNode aa = _node->parent;
 
+				if(node_access){
+					print_warning_cr("load \"%s\" at run-time",_node->value_symbol.c_str());
+				}
+				else{
 				//if(!access_node){
 					if((idx_local_var=getIdxLocalVarSymbol(_node,_lc, false)) == -1){
 						if((idx_local_var = addLocalVarSymbol(_node,_lc)) == -1){
-							//return false;
-							print_warning_cr("load %s run-time",_node->value_symbol.c_str());
+							return false;
+
 						}
 					}
+				}
 				//}else{
 					//print_warning_cr("load %s run-time",_node->value_symbol.c_str());
 				//}

@@ -1209,7 +1209,9 @@ char * CAst::parseExpression(const char *s, int & m_line, CScopeInfo *scope_info
 			PASTNode ast_node=new tASTNode;
 			ast_node->node_type = EXPRESSION_NODE;
 			ast_node->children.push_back(*ast_node_to_be_evaluated);
+			(*ast_node_to_be_evaluated)->parent = ast_node; // save parent ..
 			*ast_node_to_be_evaluated=ast_node;
+
 		//}
 
 	}
