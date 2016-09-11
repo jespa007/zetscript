@@ -145,6 +145,11 @@ enum LOAD_TYPE{
 		LOAD_TYPE_ARGUMENT
 };
 
+enum IDX_OBJ_SPECIAL_VALUE{
+	IDX_INVALID = -1,
+	IDX_THIS=-10
+};
+
 
 enum ASM_OPERATOR{
 		INVALID_OP=-1,
@@ -207,6 +212,7 @@ typedef int (*fntConversionType)(CVariable *obj);
 
 typedef struct{
 	int		 ref_aux; // pointer ref to C Var/Function
+	string 	 symbol_name;
 	tInfoScopeVar  *info_var_scope;
 	tASTNode		*ast;
 	unsigned int properties;
@@ -366,7 +372,7 @@ public:
 	  //   type_op=0;
 	   //  funOp=NULL;
 		//result_obj=NULL; // oject type...
-		bool node_access=false;
+		node_access=false;
 	   // type_res="none";
 		index_op1=index_op2=-1;
 	   // ptr_value=NULL;
@@ -401,6 +407,8 @@ struct tInfoRegisteredFunctionSymbol{
 
 	tScriptFunctionInfo	object_info;
 
+	string symbol_name;
+
 	// var for function ...
 	vector<string> m_arg; // tells var arg name or var type name (in of C )
 	string return_type;
@@ -416,7 +424,7 @@ typedef struct _tInfoRegisteredClass{
 
 	tScriptFunctionInfo	object_info;
 	string classPtrType; // type_id().name();
-	_tInfoRegisteredClass *extendClass; // in the case is and extension of class.
+	_tInfoRegisteredClass *baseClass; // in the case is and extension of class.
 
 }tInfoRegisteredClass;
 

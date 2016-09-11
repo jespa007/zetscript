@@ -10,20 +10,20 @@ if(!(index_op2 >= index_op1 )) { print_error_cr("invalid indexes"); return false
 
 
 #define LOAD_NUMBER_OP(idx) \
-		(((CNumber *)(*result_object_instruction[idx].stkObject))->m_value)
+		(((CNumber *)(result_object_instruction[idx].stkObject))->m_value)
 
 #define LOAD_INT_OP(idx) \
-		(((CInteger *)(*result_object_instruction[idx].stkObject))->m_value)
+		(((CInteger *)(result_object_instruction[idx].stkObject))->m_value)
 
 
 
 
 #define LOAD_BOOL_OP(idx) \
-		(((CBoolean *)(*result_object_instruction[(idx)].stkObject))->m_value)
+		(((CBoolean *)(result_object_instruction[(idx)].stkObject))->m_value)
 
 
 #define LOAD_STRING_OP(idx) \
-		(((CString *)(*result_object_instruction[idx].stkObject))->m_value)
+		(((CString *)(result_object_instruction[idx].stkObject))->m_value)
 
 
 
@@ -131,7 +131,7 @@ bool CALE::pushInteger(int  init_value){
 	}
 
 	stkInteger[n_stkInteger]->m_value=init_value;
-	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::INTEGER,(CVariable **)&stkInteger[n_stkInteger],false};
+	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::INTEGER,stkInteger[n_stkInteger],NULL};
 	n_stkInteger++;
 
 	return true;
@@ -152,7 +152,7 @@ bool CALE::pushBoolean(bool init_value, int n_stk){
 	}
 
 	stkBoolean[n_stkBoolean]->m_value=init_value;
-	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::BOOLEAN,(CVariable **)&stkBoolean[n_stkBoolean],false};
+	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::BOOLEAN,stkBoolean[n_stkBoolean],NULL};
 	n_stkBoolean++;
 
 	return true;
@@ -171,7 +171,7 @@ bool CALE::pushNumber(float init_value){
 	}
 
 	stkNumber[n_stkNumber]->m_value=init_value;
-	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::NUMBER,(CVariable **)&stkNumber[n_stkNumber],false};
+	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::NUMBER,stkNumber[n_stkNumber],NULL};
 	n_stkNumber++;
 
 	return true;
@@ -189,29 +189,29 @@ bool CALE::pushString(const string & init_value){
 	}
 
 	stkString[n_stkString]->m_value=init_value;
-	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::STRING,(CVariable **)&stkString[n_stkString],false};
+	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::STRING,stkString[n_stkString],NULL};
 	n_stkString++;
 
 	return true;
 
 }
 
-bool CALE::pushObject(CVariable ** init_value, bool isAssignable){
+bool CALE::pushObject(CVariable * init_value, CVariable ** ptrAssignableVar=NULL){
 	if(n_stkObject ==MAX_PER_TYPE_OPERATIONS){
 		print_error_cr("Reached max object operations");
 		return false;
 	}
 
-	if(*init_value == NULL){
+	if(init_value == NULL){
 		print_error_cr("NULL value");
 		return false;
 	}
 
 	// try to deduce object type ...
-	CVariable::VAR_TYPE	var_type = (*init_value)->getVariableType();
+	CVariable::VAR_TYPE	var_type = (init_value)->getVariableType();
 
 
-	result_object_instruction[current_asm_instruction]={var_type,init_value, isAssignable};
+	result_object_instruction[current_asm_instruction]={var_type,init_value, ptrAssignableVar};
 
 	return true;
 }
@@ -225,18 +225,18 @@ bool CALE::pushVector(CVariable * init_value){
 	// this vector will be revised to deallocate vectors which wasn't moved to variables
 	stkVector[n_stkVector]=((CVector *)init_value);
 
-	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::VECTOR,(CVariable **)&stkVector[n_stkVector],false};
+	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::VECTOR,stkVector[n_stkVector],NULL};
 	n_stkVector++;
 	return true;
 }
 
-bool CALE::pushFunction(CVariable ** init_value){
+bool CALE::pushFunction(tInfoRegisteredFunctionSymbol * init_value){
 	if(n_stkFunction ==MAX_PER_TYPE_OPERATIONS){
 		print_error_cr("Reached max function operations");
 		return false;
 	}
 
-	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::FUNCTION,init_value,false};
+	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::FUNCTION,(CVariable *)&init_value,NULL};
 
 	return true;
 }
@@ -245,7 +245,7 @@ CVariable * CALE::getObjectFromIndex(int index){
 	CVariable *obj=NULL;
 
 	if(index >= 0 && index < this->current_asm_instruction){
-		return (*result_object_instruction[index].stkObject);
+		return result_object_instruction[index].stkObject;
 	}else{
 		print_error_cr("index out of bounds!");
 	}
@@ -261,22 +261,22 @@ CVariable * CALE::createObjectFromIndex(int index){
 	switch(result_object_instruction[index].type){
 	case CVariable::VAR_TYPE::INTEGER:
 		obj=new CInteger();
-		((CInteger *)obj)->m_value = ((CInteger *)(*result_object_instruction[index].stkObject))->m_value;
+		((CInteger *)obj)->m_value = ((CInteger *)(result_object_instruction[index].stkObject))->m_value;
 		break;
 	case CVariable::VAR_TYPE::NUMBER:
 		obj = new CNumber();
-		((CNumber *)obj)->m_value = ((CNumber *)(*result_object_instruction[index].stkObject))->m_value;
+		((CNumber *)obj)->m_value = ((CNumber *)(result_object_instruction[index].stkObject))->m_value;
 		break;
 	case CVariable::VAR_TYPE::STRING:
 		obj = new CString();
-		((CString *)obj)->m_value = ((CString *)(*result_object_instruction[index].stkObject))->m_value;
+		((CString *)obj)->m_value = ((CString *)(result_object_instruction[index].stkObject))->m_value;
 		break;
 	case CVariable::VAR_TYPE::BOOLEAN:
 		obj = new CBoolean();
-		((CBoolean *)obj)->m_value = ((CBoolean *)(*result_object_instruction[index].stkObject))->m_value;
+		((CBoolean *)obj)->m_value = ((CBoolean *)(result_object_instruction[index].stkObject))->m_value;
 		break;
 	default:
-		obj = *result_object_instruction[index].stkObject;
+		obj = result_object_instruction[index].stkObject;
 		break;
 	}
 
@@ -340,43 +340,44 @@ bool CALE::performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CV
 }
 
 
-bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptFunction *function_object, int n_stk){
+bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_VARIABLE){
 		print_error_cr("expected load type variable.");
 		return false;
 	}
 
-	CScriptClass *this_object = function_object->getThisObject();
+	//CScriptClass *this_object = function_object->getThisObject();
 	CScriptClass::tSymbolInfo *si;
 
-	if((si = this_object->getVariableObjectByIndex(iao->index_op2))==NULL){
+	if((si = this_object->getVariableSymbolByIndex(iao->index_op2))==NULL){
 		print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
 		return false;
 	}
-
+	CVariable **ptr_var_object = (CVariable **)(&si->object);
+	CVariable *var_object = (CVariable *)(si->object);
 	if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC){
 
-		if(!performPreOperator(iao->pre_post_operator_type, si->object)){
+		if(!performPreOperator(iao->pre_post_operator_type, var_object)){
 			return false;
 		}
 	}
 
 	if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC){
 		// 1. Load value as constant value
-		if(!loadConstantValue(si->object,n_stk)){
+		if(!loadConstantValue(var_object,n_stk)){
 			return false;
 		}
 
 		// 2. then perform post operation ...
-		if(!performPostOperator(iao->pre_post_operator_type, si->object)){
+		if(!performPostOperator(iao->pre_post_operator_type, var_object)){
 			return false;
 		}
 
 	}
 	else{
 	// generic object pushed ...
-		if(!pushObject(&si->object,true)) {
+		if(!pushObject(var_object,ptr_var_object)) {
 			return false;
 		}
 	}
@@ -384,7 +385,7 @@ bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptFunction *function_object, 
 	return true;
 }
 
-bool CALE::loadFunctionValue(tInfoAsmOp *iao, CScriptFunction *function_object, int n_stk){
+bool CALE::loadFunctionValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_FUNCTION){
 		print_error_cr("expected load type function.");
@@ -392,16 +393,17 @@ bool CALE::loadFunctionValue(tInfoAsmOp *iao, CScriptFunction *function_object, 
 	}
 
 	CScriptClass::tSymbolInfo *si;
-	CScriptClass *this_object = function_object->getThisObject();
+	tInfoRegisteredFunctionSymbol *info_function = (tInfoRegisteredFunctionSymbol *)(si->object);
+	//CScriptClass *this_object = function_object->getThisObject();
 	//tInfoRegisteredFunctionSymbol *si;
 
-	if((si = this_object->getFunctionObjectByIndex(iao->index_op2))==NULL){
+	/*if((si = this_object->getFunctionSymbol(iao->index_op2))==NULL){
 		print_error_cr("cannot find function info \"%s\"",iao->ast_node->value_symbol.c_str());
 		return false;
-	}
+	}*/
 
 	// generic object pushed ...
-	if(!pushObject(&si->object,false)) {
+	if(!pushFunction(info_function)) {
 		return false;
 	}
 	//result_object_instruction[current_asm_instruction]={CVariable::FUNCTION,(CVariable **)si, false};
@@ -421,7 +423,7 @@ bool CALE::loadConstantValue(CVariable *var, int n_stk){
 				break;
 			case CVariable::VAR_TYPE::UNDEFINED:
 
-				result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::UNDEFINED,(CVariable **)&CScopeInfo::UndefinedSymbol,false};
+				result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::UNDEFINED,CScopeInfo::UndefinedSymbol,NULL};
 
 				break;
 			case CVariable::VAR_TYPE::INTEGER:
@@ -482,9 +484,9 @@ bool CALE::assignObjectFromIndex(CVariable **var, int index){
 				return false;
 			}
 			if((*var)->getVariableType() == CVariable::VAR_TYPE::INTEGER){
-				((CInteger *)(*var))->m_value=((CInteger *)(*result_object_instruction[index].stkObject))->m_value;
+				((CInteger *)(*var))->m_value=((CInteger *)(result_object_instruction[index].stkObject))->m_value;
 			}else if((*var)->getVariableType() == CVariable::VAR_TYPE::NUMBER){
-				((CNumber *)(*var))->m_value=((CInteger *)(*result_object_instruction[index].stkObject))->m_value;
+				((CNumber *)(*var))->m_value=((CInteger *)(result_object_instruction[index].stkObject))->m_value;
 			}else
 			{
 				print_error_cr("var is not type integer!");
@@ -494,9 +496,9 @@ bool CALE::assignObjectFromIndex(CVariable **var, int index){
 		case CVariable::VAR_TYPE::NUMBER:
 			if((*var) == NULL) {print_error_cr("Expected variable type!");return false;}
 			if((*var)->getVariableType() == CVariable::VAR_TYPE::INTEGER){
-				((CInteger *)aux_var)->m_value=((CNumber *)(*result_object_instruction[index].stkObject))->m_value;
+				((CInteger *)aux_var)->m_value=((CNumber *)(result_object_instruction[index].stkObject))->m_value;
 			}else if((*var)->getVariableType() == CVariable::VAR_TYPE::NUMBER){
-				((CNumber *)(*var))->m_value=((CNumber *)(*result_object_instruction[index].stkObject))->m_value;
+				((CNumber *)(*var))->m_value=((CNumber *)(result_object_instruction[index].stkObject))->m_value;
 			}else
 			{
 				print_error_cr("var is not type number!");
@@ -506,7 +508,7 @@ bool CALE::assignObjectFromIndex(CVariable **var, int index){
 		case CVariable::VAR_TYPE::STRING:
 			if((*var) == NULL) {print_error_cr("Expected variable type!");return false;}
 			if((*var)->getVariableType() == CVariable::VAR_TYPE::STRING){
-				((CString  *)(*var))->m_value= ((CString *)(*result_object_instruction[index].stkObject))->m_value;
+				((CString  *)(*var))->m_value= ((CString *)(result_object_instruction[index].stkObject))->m_value;
 			}else
 			{
 				print_error_cr("var is not type string!");
@@ -517,7 +519,7 @@ bool CALE::assignObjectFromIndex(CVariable **var, int index){
 		case CVariable::VAR_TYPE::BOOLEAN:
 			if((*var) == NULL) {print_error_cr("Expected variable type!");return false;}
 			if((*var)->getVariableType() == CVariable::VAR_TYPE::BOOLEAN){
-				((CBoolean  *)aux_var)->m_value= ((CBoolean *)(*result_object_instruction[index].stkObject))->m_value;
+				((CBoolean  *)aux_var)->m_value= ((CBoolean *)(result_object_instruction[index].stkObject))->m_value;
 			}else
 			{
 				print_error_cr("var is not type boolean!");
@@ -527,13 +529,13 @@ bool CALE::assignObjectFromIndex(CVariable **var, int index){
 
 		// pointer assigment ...
 		case CVariable::VAR_TYPE::VECTOR: // vector object ...
-			*var = ((CVector *)(*result_object_instruction[index].stkObject));
+			*var = ((CVector *)(result_object_instruction[index].stkObject));
 			break;
 		case CVariable::VAR_TYPE::FUNCTION: // function object
-			*var = ((CScriptClass *)(*result_object_instruction[index].stkObject));
+			*var = ((CScriptClass *)(result_object_instruction[index].stkObject));
 			break;
 		case CVariable::VAR_TYPE::OBJECT: // generic object
-			*var = (*result_object_instruction[index].stkObject);
+			*var = (result_object_instruction[index].stkObject);
 			break;
 
 		default:
@@ -546,7 +548,7 @@ bool CALE::assignObjectFromIndex(CVariable **var, int index){
 	return true;
 }
 
-bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptFunction *function_object,vector<CVariable *> * argv, int n_stk){
+bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptClass *this_object,vector<CVariable *> * argv, int n_stk){
 
 
 	string 	aux_string;
@@ -594,13 +596,13 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 			break;
 		case LOAD_TYPE::LOAD_TYPE_VARIABLE:
 
-			if(!loadVariableValue(instruction, function_object, n_stk)){
+			if(!loadVariableValue(instruction, this_object, n_stk)){
 				return false;
 			}
 
 			break;
 		case LOAD_TYPE::LOAD_TYPE_FUNCTION:
-			if(!loadFunctionValue(instruction, function_object, n_stk)){
+			if(!loadFunctionValue(instruction, this_object, n_stk)){
 				return false;
 			}
 
@@ -609,9 +611,9 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 
 			if(argv!=NULL){
 				if(index_op2<(int)argv->size()){
-					obj=&(*argv)[index_op2];
+					CVariable *var=(*argv)[index_op2];
 
-					pushObject(obj,false);
+					pushObject(var,NULL);
 				}else{
 					print_error_cr("index out of bounds");
 					return false;
@@ -635,10 +637,10 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 		case MOV: // mov value expression to var
 
 			// ok load object pointer ...
-			if(result_object_instruction[index_op1].isAssignable) {// == CVariable::VAR_TYPE::OBJECT){
+			if((obj = result_object_instruction[index_op1].ptrAssignableVar) != NULL) {// == CVariable::VAR_TYPE::OBJECT){
 
 				// get pointer object (can be assigned)
-				obj = result_object_instruction[index_op1].stkObject;
+				//obj = result_object_instruction[index_op1].stkObject;
 
 
 
@@ -786,7 +788,7 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 
 			// check types ...
 			if (IS_STRING(index_op1) && (IS_UNDEFINED(index_op2) || IS_VECTOR(index_op2) || IS_OBJECT(index_op2))){
-				if(!pushString(LOAD_STRING_OP(index_op1)+(*result_object_instruction[index_op2].stkObject)->getPointerClassStr())) return false;
+				if(!pushString(LOAD_STRING_OP(index_op1)+(result_object_instruction[index_op2].stkObject)->getPointerClassStr())) return false;
 			}else if (IS_INT(index_op1) && IS_INT(index_op2)){
 				if(!pushInteger(LOAD_INT_OP(index_op1) + LOAD_INT_OP(index_op2))) return false;
 			}else if (IS_INT(index_op1) && IS_NUMBER(index_op2)){
@@ -825,8 +827,8 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 
 				// full error description ...
 
-				string var_type1=(*result_object_instruction[index_op1].stkObject)->getClassStr(),
-					   var_type2=(*result_object_instruction[index_op2].stkObject)->getClassStr();
+				string var_type1=(result_object_instruction[index_op1].stkObject)->getClassStr(),
+					   var_type2=(result_object_instruction[index_op2].stkObject)->getClassStr();
 
 
 				//print_error_cr("Expected operands as number+number, string+string, string+number or string + boolean!");
@@ -1008,16 +1010,16 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 			// check whether signatures matches or not ...
 			// 1. get function object ...
 			if(result_object_instruction[index_op1].type == CVariable::FUNCTION){
-
-				CScriptFunction * function_info = (CScriptFunction *)(*result_object_instruction[index_op1].stkObject);
+				CVariable *ret_obj;
+				tInfoRegisteredFunctionSymbol * function_info = (tInfoRegisteredFunctionSymbol *)result_object_instruction[index_op1].stkObject;
 
 				// by default virtual machine gets main object class in order to run functions ...
-				if(!CVirtualMachine::execute(function_info,&m_functionArgs, n_stk+1)){
+				if((ret_obj=CVirtualMachine::execute(function_info,this_object,&m_functionArgs, n_stk+1))==NULL){
 					return false;
 				}
 
 				// finally set result value into stkObject...
-				if(!pushObject(function_info->getReturnObjectPtr())){
+				if(!pushObject(ret_obj)){
 					return false;
 				}
 			}
@@ -1037,7 +1039,7 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 			if(result_object_instruction[index_op1].type == CVariable::VECTOR){
 				if(result_object_instruction[index_op2].type == CVariable::INTEGER){
 					// determine object ...
-					CVector * vec = (CVector *)(*result_object_instruction[index_op1].stkObject);//[stkInteger[result_object_instruction[index_op2].index]];
+					CVector * vec = (CVector *)(result_object_instruction[index_op1].stkObject);//[stkInteger[result_object_instruction[index_op2].index]];
 					int v_index = LOAD_INT_OP(index_op2);
 
 					print_info_cr("%i",v_index);
@@ -1048,7 +1050,7 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 						return false;
 					}
 
-					if(!pushObject(&vec->m_value[v_index],true)){
+					if(!pushObject(vec->m_value[v_index],&vec->m_value[v_index])){
 						return false;
 					}
 
@@ -1065,7 +1067,7 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 			break;
 		case VPUSH: // Value push for vector
 			if(result_object_instruction[index_op1].type == CVariable::VECTOR){
-				CVector * vec = (CVector *)(*result_object_instruction[index_op1].stkObject);
+				CVector * vec = (CVector *)(result_object_instruction[index_op1].stkObject);
 				vec->m_value.push_back(createObjectFromIndex(index_op2));
 			}else{
 				print_error_cr("Expected operand 1 as vector");
@@ -1080,9 +1082,9 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 
 		case RET:
 
-			if(!assignObjectFromIndex(function_object->getReturnObjectPtr(),instruction->index_op1)){
+			/*if(!assignObjectFromIndex(function_object->getReturnObjectPtr(),instruction->index_op1)){
 				return false;
-			}
+			}*/
 
 			break;
 

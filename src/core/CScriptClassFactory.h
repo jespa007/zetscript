@@ -6,8 +6,8 @@
 #include "RegisterFunctionHelper.h"
 #include "ast/ast.h"
 
-#define registerGlobal_C_Function(s) CScriptClassFactory::register_C_Function(CZG_ScriptCore::getMainObjectInfo(),STR(s),s)
-#define registerGlobal_C_Variable(s) CScriptClassFactory::register_C_Variable(CZG_ScriptCore::getMainObjectInfo(),STR(s),s,typeid(s).name())
+#define registerGlobal_C_Function(s) CScriptClassFactory::register_C_Function(MAIN_SCRIPT_CLASS_NAME,STR(s),s)
+#define registerGlobal_C_Variable(s) CScriptClassFactory::register_C_Variable(MAIN_SCRIPT_CLASS_NAME,STR(s),s,typeid(s).name())
 
 
 
@@ -53,28 +53,49 @@ public:
 	static CScriptClassFactory*  getInstance();
 	static void destroySingletons();
 
-	tInfoRegisteredVariableSymbol  * registerVariableSymbol(tScriptFunctionInfo *object_info,PASTNode  node);
-	tInfoRegisteredFunctionSymbol * registerFunctionSymbol(tScriptFunctionInfo *object_info,PASTNode  node, unsigned int properties);
-	tInfoRegisteredFunctionSymbol *  getRegisteredFunctionSymbol(tScriptFunctionInfo *object_info,unsigned idx);
-	bool addArgumentFunctionSymbol(tScriptFunctionInfo *object_info,unsigned idxFunction,const string & arg_name);
+	/**
+	 * This function registers a script class into factory.
+	 */
+	tInfoRegisteredClass * registerScriptClass(const string & class_name);
+
+	/**
+	 * Class name given this function creates the object and initializes all variables.
+	 */
+	CScriptClass 		 * newClass(const string & class_name);
 
 
-	tInfoRegisteredClass * getRegisteredClass(const string & v, bool print_msg=true);
-	int getIdxRegisteredClass(const string & v);
-	int registeredClassExists(const string & class_name);
-	tInfoRegisteredClass * registerClass(const string & class_name);
+
+
+	tInfoRegisteredVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,PASTNode  node);
+	tInfoRegisteredVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
+	//int 							 getIdxRegisteredVariableSymbol(const string & class_name,const string & varname);
+
+
+	tInfoRegisteredFunctionSymbol *  registerFunctionSymbol(const string & class_name, const string & name);
+	tInfoRegisteredFunctionSymbol *  registerFunctionSymbol(const string & class_name, const string & name,PASTNode  node);
+
+	tInfoRegisteredFunctionSymbol *  getRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors=true);
+	//int 							 getIdxRegisteredFunctionSymbol(const string & class_name,const string & function_name);
+
+
+	bool addArgumentFunctionSymbol(const string & class_name,const string & function_name,const string & arg_name);
+
+
+	tInfoRegisteredClass * 	getRegisteredClass(const string & v, bool print_msg=true);
+	int 					getIdxRegisteredClass(const string & v);
+	bool isClassRegistered(const string & v);
 	fntConversionType getConversionType(string objectType, string conversionType);
 
 	const char * getNameRegisteredClassByIdx(int idx);
 
 
-	CScriptClass *newClass(const string & class_name);
+
 
 	/**
 	 * Register C function
 	 */
 	template <typename F>
-	static bool register_C_Function(tScriptFunctionInfo * base_info, const char *function_name,F function_ptr)
+	static bool register_C_Function(const string & class_name, const string & function_name,F function_ptr)
 	{
 		string return_type;
 		vector<string> params;
@@ -86,11 +107,11 @@ public:
 
 		//CScriptClass *sf=NULL;
 
-		//tInfoRegisteredClass *rc = getRegisteredClass(class_name);
+		tInfoRegisteredClass *rc = CScriptClassFactory::getInstance()->getRegisteredClass(class_name);
 
-		/*if(rc != NULL){
-			return;
-		}*/
+		if(rc == NULL){
+			return false;
+		}
 
 		// init struct...
 		irs.object_info.symbol_info.ast = NULL;
@@ -110,53 +131,11 @@ public:
 		using Traits3 = function_traits<decltype(function_ptr)>;
 		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
 
-		base_info->local_symbols.m_registeredFunction.push_back(irs);
-
-		// check whether function is ok or not.
-		/*if((rt=getPrimitiveTypeFromStr(return_type)) == NULL){return;}
-
-		for(unsigned int i=0; i < params.size(); i++){
-			if((rt=getPrimitiveTypeFromStr(params[i])) == NULL){
-				return;
-			}
-			irs.m_arg.push_back();
-
-
-			//pt.push_back(rt);
-
-		}*/
-
-		// 2. create script function ...
-		/*if((rs = this->m_mainClass->getScope()->registerSymbol(function_str,0)) == NULL) // already registered
-			return;
-
-		// 3. all test ok. Time to create script function ..
-
-		sf=new CScriptClass(m_mainClass);
-
-		// register return type ...
-		sf->setReturnObject(createObjectFromPrimitiveType(rt));
-
-		sf->setName(function_str);
-
-		// set function pointer...
-		sf->setupAsFunctionPointer((void *)function_ptr);
-
-		// assign object;
-		rs->m_obj = sf;
-
-		// register all args...
-		for(unsigned int i=0; i < params.size(); i++){
-			sf->add_C_function_argument(params[i]);
-		}*/
+		rc->object_info.local_symbols.m_registeredFunction.push_back(irs);
 
 		print_info_cr("Registered function name: %s",function_name);
 
 		return true;
-
-	 /* int temp=0;
-	  f(temp);
-	  std::cout << "Result is " << temp << std::endl;*/
 	}
 
 
@@ -209,11 +188,11 @@ public:
 
 
 	/**
-	 * Register C Class
+	 * Register C Class. Return index registered class
 	 */
 	template<class _T>
 	bool register_C_Class(const string & class_name){
-		if(registeredClassExists(class_name)==-1){
+		if(!isClassRegistered(class_name)){
 
 			string str_classPtr = typeid( _T *).name();
 
@@ -225,14 +204,16 @@ public:
 			tInfoRegisteredClass *irc = new tInfoRegisteredClass;
 
 			irc->object_info.symbol_info.ast = new tASTNode;
-			irc->object_info.symbol_info.ast->value_symbol = class_name;
 			irc->object_info.symbol_info.info_var_scope=NULL;
+			irc->object_info.symbol_info.symbol_name = class_name;
 
 			irc->classPtrType=str_classPtr;
 			irc->object_info.symbol_info.properties=C_OBJECT_REF;
 			m_registeredClass.push_back(irc);
 
 			print_info_cr("* class \"%10s\" registered (C ref: \"%s\").",class_name.c_str(),str_classPtr.c_str());
+
+			return true;
 		}
 		else{
 			print_error_cr("%s already exist", class_name);
@@ -258,22 +239,6 @@ public:
 			return false;
 		}
 
-		// ok now find if function already registered ...
-
-
-
-		//tPrimitiveType *rt;
-		//vector<tPrimitiveType *> pt;
-		//CScopeInfo::tInfoScopeVar  *rs;
-
-		//CScriptClass *sf=NULL;
-
-		//tInfoRegisteredClass *rc = getRegisteredClass(class_name);
-
-		/*if(rc != NULL){
-			return;
-		}*/
-
 		// init struct...
 		irs.object_info.symbol_info.ast = new tASTNode;
 		irs.object_info.symbol_info.ast->value_symbol=function_name;
@@ -285,8 +250,6 @@ public:
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
 		irs.object_info.symbol_info.ref_aux=(int)((void *)function_ptr);
 #pragma GCC diagnostic warning "-Wpmf-conversions"
-
-
 
 		if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
 			return false;
@@ -308,6 +271,10 @@ private:
 
 	static CScriptClassFactory *scriptClassFactory;
 	static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
+
+	int getIdxRegisteredClass_Internal(const string & class_name);
+	//int getIdxRegisteredFunctionSymbol_Internal(const string & class_name,const string & function_name);
+	//int getIdxRegisteredVariableSymbol_Internal(const string & class_name,const string & var_name);
 
 	vector<tInfoRegisteredClass *>  	 m_registeredClass;
 	CVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);

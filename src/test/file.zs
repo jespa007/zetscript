@@ -9,6 +9,9 @@
 }*/
 
 
+var ff = function(){ return 0;};
+
+
 /*
 var i=1+2;
 
@@ -35,34 +38,39 @@ print("hola2_merda 4:"+b);
 
 b(1);*/
 
+/*
+var c=0;
+
+c();
+*/
 var b=new CInteger();
 
-b().a[0].c[0][0][0].d.e.toString();
+b.m().a[0].c[0][0][0].d.e.toString();
 
-print("hola2 5:"+0);
-print("hola2 what's b?:"+b);
+/*print("hola2 5:"+0);
+print("hola2 what's b?:"+b);*/
 
-/*class MyClass{
+class MyClass{
 	
-	var g,j;
+	var g,j,k;
 	
 	function MyClass(){
-		this.g=0;
-		this.j=60;
-		this.k=2;
+		g=0;
+		j=60;
+		k=2;
 	}
 	
 	function prova(){
-		print("hola que tal:"+this.j);
+		print("hola que tal:"+j);
 	}
 	
-	function prova2(k){
-		print("hola que tal 2:"+k);
+	function prova2(k1){
+		print("hola que tal 2:"+k1);
 	}	
 };
 
 
-c = new MyClass();
+var c = new MyClass();
 
 
 c.prova();
@@ -96,12 +104,13 @@ c = new MyClass2();
 c.prova();
 c.prova2(0);
 
-function MyClass2::prova4(){
+/*function MyClass2::prova4(){
 	print("hola que tal new 4");
-}
+}*/
 
 c.prova4();
-*/
+
+
 
 /*
 function bb(a,b){

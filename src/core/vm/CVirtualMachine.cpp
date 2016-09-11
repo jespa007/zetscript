@@ -43,30 +43,28 @@ CVirtualMachine::CVirtualMachine(){
 
 
 
-bool CVirtualMachine::execute(CScriptFunction *function_object, vector<CVariable *> * argv, int stk){
+CVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_function, CScriptClass *this_object, vector<CVariable *> * argv, int stk){
 
 	//tInfoRegisteredFunctionSymbol *irsf=sf->getFunctionInfo();
 
-	tInfoRegisteredFunctionSymbol *function_info =function_object->getFunctionInfo();
+	//tInfoRegisteredFunctionSymbol *function_info =function_object->getFunctionInfo();
 
-	if((function_info->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::C_OBJECT_REF){ // C-Call
+	if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::C_OBJECT_REF){ // C-Call
 
 			int result=0;
 
-			if(!CZG_ScriptCore::call_C_function(function_info,result,argv)){
-				 return false;
+			if(!CZG_ScriptCore::call_C_function(info_function,result,argv)){
+				 return NULL;
 			}
 
 			//TODO: create primitive object if needed ...
-			function_object->setReturnObject(CScopeInfo::VoidSymbol);
-
-
-			return true;
+			return CScopeInfo::VoidSymbol;
+			//function_object->setReturnObject(CScopeInfo::VoidSymbol);
 	}
 
 
 
-	vector<tInfoStatementOp> * m_listStatements = &function_info->object_info.statment_op;
+	vector<tInfoStatementOp> * m_listStatements = &info_function->object_info.statment_op;
 	//bool conditional_jmp=false;
 	int jmp_to_statment = -1;
 
@@ -134,12 +132,12 @@ bool CVirtualMachine::execute(CScriptFunction *function_object, vector<CVariable
 					//return true;
 
 
-					if(!ALE.performInstruction(i,asm_op_statment->at(i),jmp_to_statment,function_object,argv,stk)){
-						return false;
+					if(!ALE.performInstruction(i,asm_op_statment->at(i),jmp_to_statment,this_object,argv,stk)){
+						return NULL;
 					}
 
 					if(asm_op_statment->at(i)->operator_type == ASM_OPERATOR::RET){ // return...
-						return true;
+						return ALE.getObjectFromIndex(i); // return last ALE value
 					}
 
 				//}
@@ -159,7 +157,7 @@ bool CVirtualMachine::execute(CScriptFunction *function_object, vector<CVariable
 		}
 	}
 
-	return true;
+	return CScopeInfo::VoidSymbol;
 
 }
 

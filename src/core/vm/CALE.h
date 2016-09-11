@@ -18,9 +18,10 @@ public:
 
 
 
-	bool performInstruction( int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptFunction *function_object,vector<CVariable *> * argv, int n_stk);
+	bool performInstruction( int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptClass *function_object,vector<CVariable *> * argv, int n_stk);
 
 	void reset();
+	CVariable * getObjectFromIndex(int index);
 
 
 	~CALE();
@@ -58,8 +59,8 @@ private:
 
 	typedef struct{
 		CVariable::VAR_TYPE type; // tells what kind of variable is. By default is object.
-		CVariable  **stkObject; // pointer to pointer ables to modify its pointer when is needed
-		bool isAssignable;
+		CVariable   * stkObject; // pointer to pointer ables to modify its pointer when is needed
+		CVariable  ** ptrAssignableVar; // pointer to pointer in case of replace var
 	}tAleInstructionInfo;
 
 	tAleInstructionInfo result_object_instruction[MAX_OPERATIONS_PER_EXPRESSION];
@@ -72,20 +73,20 @@ private:
 	bool pushBoolean(bool init_value, int n_stk=0);
 	bool pushNumber(float init_value);
 	bool pushString(const string & init_value);
-	bool pushObject(CVariable ** , bool isAssignable=false);
+	bool pushObject(CVariable * , CVariable ** ptrAssignableVar);
 	bool pushVector(CVariable * init_value);
-	bool pushFunction(CVariable ** init_value);
+	bool pushFunction(tInfoRegisteredFunctionSymbol * init_value);
 	bool assignObjectFromIndex(CVariable **obj, int index);
 
-	CVariable * getObjectFromIndex(int index);
+
 	CVariable * createObjectFromIndex(int index);
 
 	bool performPreOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CVariable *obj);
 	bool performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CVariable *obj);
 //	bool loadValue(tInfoAsmOp *iao, int stk);
 	bool loadConstantValue(CVariable *bj, int n_stk);
-	bool loadVariableValue(tInfoAsmOp *iao,CScriptFunction *sf, int n_stk);
-	bool loadFunctionValue(tInfoAsmOp *iao,CScriptFunction *sf, int n_stk);
+	bool loadVariableValue(tInfoAsmOp *iao,CScriptClass *this_object, int n_stk);
+	bool loadFunctionValue(tInfoAsmOp *iao,CScriptClass *this_object, int n_stk);
 
 
 

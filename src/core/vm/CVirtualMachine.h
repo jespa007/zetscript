@@ -20,7 +20,7 @@ public:
 
 
 
-	static bool execute(CScriptFunction *function_object, vector<CVariable *> * argv=NULL,int stk=0);
+	static CVariable * execute(tInfoRegisteredFunctionSymbol *info_function, CScriptClass *this_object, vector<CVariable *> * argv=NULL,int stk=0);
 
 private:
 

@@ -7,7 +7,7 @@
 #include "CScriptClassFactory.cpp"
 
 #include "CScriptClass.cpp"
-#include "CScriptFunction.cpp"
+#include "CScriptFunction.cpp.old"
 
 
 
@@ -21,7 +21,9 @@ CAst *CZG_ScriptCore::m_ast = NULL;
 CZG_ScriptCore * CZG_ScriptCore::getInstance(){
 	if(m_instance==NULL){
 		m_instance = new CZG_ScriptCore();
-		m_instance->init();
+		if(!m_instance->init()){
+			exit(-1);
+		}
 	}
 
 	return m_instance;
@@ -218,7 +220,7 @@ int interface_variable;
 
 
 
-void CZG_ScriptCore::init(){
+bool CZG_ScriptCore::init(){
 
 	CScriptClassFactory::registerPrimitiveTypes();
 
@@ -228,6 +230,9 @@ void CZG_ScriptCore::init(){
 
 	// setup main struct...
 	m_structInfoMain.object_info.symbol_info.ast=m_ast->getMainAstNode();
+
+
+
 
 
 	//-----------------------
@@ -249,8 +254,12 @@ void CZG_ScriptCore::init(){
 	//-----------------------
 
 	// ok register CInteger through CScriptClass...
-	CScriptClassFactory::getInstance()->register_C_Class<CInteger>("CInteger");
-	CScriptClassFactory::getInstance()->register_C_FunctionMember<CInteger>("toString",&CInteger::toString);
+	if((m_infoClass = CScriptClassFactory::getInstance()->registerScriptClass(MAIN_SCRIPT_CLASS_NAME)) == NULL) return false;
+	if((m_infoMainFunction = CScriptClassFactory::getInstance()->registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME,NULL)) == NULL) return false;
+
+	// register various C functions ...
+	if(!CScriptClassFactory::getInstance()->register_C_Class<CInteger>("CInteger")) return false;
+	if(!CScriptClassFactory::getInstance()->register_C_FunctionMember<CInteger>("toString",&CInteger::toString)) return false;
 	//CScriptClassFactory::getInstance()->register_C_VariableMember<CInteger,CInteger::>("toString");
 
 
@@ -261,7 +270,7 @@ void CZG_ScriptCore::init(){
 	//CScriptClassFactory::registerClass("Main");
 
 	// register c function's
-	registerGlobal_C_Function(print);
+	if(!registerGlobal_C_Function(print)) return false;
 
 	// register var
 	//registerGlobal_C_Variable(&interface_variable);
@@ -274,6 +283,8 @@ void CZG_ScriptCore::init(){
 	//m_globalScope = new CScopeInfo();
 
 	CVirtualMachine::getInstance();
+
+	return true;
 
 }
 
@@ -303,14 +314,16 @@ bool CZG_ScriptCore::execute(){
 	if(m_mainClass == NULL){
 		// creates the main entry function with compiled code. On every executing code, within "execute" function
 		// virtual machine is un charge of allocating space for all local variables...
-		m_mainClass = new CScriptClass(&m_structInfoMain);//CScriptClassFactory::newClass("Main");
-		m_mainFunction = new CScriptFunction(m_mainClass,&m_structInfoMain);
+
+		m_mainClass = CScriptClassFactory::getInstance()->newClass(MAIN_SCRIPT_CLASS_NAME);//new CScriptClass(&m_structInfoMain);//CScriptClassFactory::newClass("Main");
+
+		//m_mainFunction = new CScriptFunction(m_mainClass,&m_structInfoMain);
 	}
 
 	//CCompiler::getInstance()->printGeneratedCode(m_mainClass);
 
 	// the first code to execute is the main function that in fact is a special member function inside our main class
-	return CVirtualMachine::getInstance()->execute(m_mainFunction, NULL,0);//->excute();
+	return CVirtualMachine::getInstance()->execute(m_infoMainFunction,  m_mainClass, NULL,0);//->excute();
 }
 
 
@@ -320,7 +333,7 @@ CZG_ScriptCore::~CZG_ScriptCore(){
 
 	//delete m_mainClass;
 	delete m_mainClass;
-	delete m_mainFunction;
+	//delete m_mainFunction;
 
 	CCompiler::destroySingletons();
 	CVirtualMachine::destroySingletons();

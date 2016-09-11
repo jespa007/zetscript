@@ -189,6 +189,12 @@ private:
 	bool  gacExpression(PASTNode op, CScopeInfo * _lc,int index_instruction=-1);
 
 	bool gacKeyword(PASTNode _node, CScopeInfo * _lc);
+
+	/**
+	 * Adds class info into factory
+	 */
+	bool gacClass(PASTNode _node, CScopeInfo * _lc);
+
 	bool gacNew(PASTNode _node, CScopeInfo * _lc);
 	bool gacFor(PASTNode _node, CScopeInfo * _lc);
 	bool gacVar(PASTNode _node, CScopeInfo * _lc);

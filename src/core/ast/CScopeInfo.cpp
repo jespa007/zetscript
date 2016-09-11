@@ -114,11 +114,12 @@ tInfoScopeVar * CScopeInfo::registerSymbol(const string & var_name, PASTNode ast
 		}*/
 		return irv;
 	}else{
+
 		int m_line=-1;
-		/*if(irv->ast != NULL) {
-			m_line = irv->ast->definedValueline;
-		}*/
-		print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), m_line);
+		if(ast != NULL) {
+			m_line = ast->definedValueline;
+		}
+		print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), irv->ast->definedValueline);
 	}
 
 	return NULL;

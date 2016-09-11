@@ -41,8 +41,6 @@ void CCompiler::addConstant(const string & const_name, CVariable *obj){
 int CCompiler::addLocalVarSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope){
 	string  var_name = ast->value_symbol;
 
-
-
 	if(!localVarSymbolExists(ast,currentEvaluatingScope)){
 		tInfoScopeVar *irv=currentEvaluatingScope->getInfoRegisteredSymbol(ast->value_symbol,true);
 
@@ -446,11 +444,14 @@ bool checkAccessObjectMember(PASTNode _node){
 	if(_node == NULL) return false;
 
 	PASTNode check_node = _node->parent;
+	PASTNode child_compare=_node;
 
 
 	if(check_node != NULL){
 		if(check_node->node_type==NODE_TYPE::CALLING_OBJECT_NODE) {// function / array access.
+			child_compare=check_node;
 			check_node=check_node->parent;
+
 		}
 
 		if(check_node != NULL){
@@ -464,10 +465,12 @@ bool checkAccessObjectMember(PASTNode _node){
 			if(check_node->parent != NULL){
 
 				if(!checkAccessObjectMember(check_node->parent)){
-					node_access = (check_node->parent->children[0] != check_node); // parent not access left is first...
+
+					// if c.b is trivial but c.b.a must check that parent it has another punctuator.
+					node_access = (check_node->children[0] != child_compare) || (
+									check_node->parent->operator_info != NULL &&
+									check_node->parent->operator_info->id==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR); // parent not access left is first...
 				}
-
-
 
 			}
 
@@ -484,6 +487,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 	string v = _node->value_symbol;
 	bool node_access = false;
+	//this_instruction=false;
 	//int m_var_at_line = _node->definedValueline;
 	ASM_PRE_POST_OPERATORS pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 
@@ -559,19 +563,30 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 		int idx_local_var=-1;
 
 		node_access = checkAccessObjectMember(_node);
+		//bool this_object=false;
 
-
-		/*if(node_access){ // check whether first access...
-			node_access &= (_node->parent->parent->parent!=NULL &&
-					_node->parent->parent->parent->parent!=NULL &&
-					_node->parent->parent->parent->parent->operator_info != NULL &&
-					_node->parent->parent->parent->parent->operator_info->id==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR) &&
-							_node->parent->parent->children[1] == _node->parent
-					;
-
-
-
+		/*if(_node->value_symbol == "this"){
+			if(!node_access){ // check "this"
+				this_instruction = true;
+				return true;
+			}
+			else{
+				print_error_cr("bad using \"this\" at line %i",-1);
+				return false;
+			}
 		}*/
+
+
+		if(_node->value_symbol == "this"){ //
+			/*if(!node_access){
+				load_type=LOAD_TYPE_VARIABLE;
+				idx_local_var = IDX_THIS; // it tells THIS OBJECT INDEX
+			}else{*/
+				print_error_cr("the word \"this\" is not allowed (line %i)",_node->definedValueline);
+				return false;
+			//}
+		}
+		else{
 
 
 		//if(isFunctionNode(_node))
@@ -599,14 +614,24 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 				//PASTNode aa = _node->parent;
 
 				if(node_access){
+
+
+
 					print_warning_cr("load \"%s\" at run-time",_node->value_symbol.c_str());
+					checkAccessObjectMember(_node);
 				}
 				else{
 				//if(!access_node){
-					if((idx_local_var=getIdxLocalVarSymbol(_node,_lc, false)) == -1){
-						if((idx_local_var = addLocalVarSymbol(_node,_lc)) == -1){
-							return false;
 
+
+					if(idx_local_var != IDX_THIS){
+
+						if((idx_local_var=getIdxLocalVarSymbol(_node,_lc, false)) == -1){
+							if((idx_local_var = addLocalVarSymbol(_node,_lc)) == -1){
+								checkAccessObjectMember(_node);
+								return false;
+
+							}
 						}
 					}
 				}
@@ -614,6 +639,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 					//print_warning_cr("load %s run-time",_node->value_symbol.c_str());
 				//}
 			}
+		}
 		}
 
 
@@ -1164,6 +1190,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 	//CScopeInfo * _lc = m_currentFunctionInfo->getScope();
 	int r=index_instruction;
+	bool this_object = false;
 	bool inline_if_else=false;
 	string error_str;
 	if(_node==NULL){
@@ -1173,10 +1200,10 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 
 
-	bool special_node =	 _node->node_type == ARRAY_OBJECT_NODE ||
-						_node->node_type == FUNCTION_OBJECT_NODE ||
-						_node->node_type == CALLING_OBJECT_NODE ||
-						_node->node_type == NEW_OBJECT_NODE;
+	bool special_node =	 _node->node_type == ARRAY_OBJECT_NODE || // =[]
+						_node->node_type == FUNCTION_OBJECT_NODE || // =function()
+						_node->node_type == CALLING_OBJECT_NODE ||  // pool[] or pool()
+						_node->node_type == NEW_OBJECT_NODE;  // new
 
 
 
@@ -1264,10 +1291,23 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 			//printf("CONST \tE[%i],%s\n",index_instruction,op->value.c_str());
 			//if(!var_assign){
-				if(!insertLoadValueInstruction(_node, _lc)){
-					return -1;
+				/*bool this_object = checkAccessObjectMember(_node);
+				//bool this_object=false;
 
+				if(_node->value_symbol == "this"){
+					if(node_access){ // check "this"
+						print_error_cr("bad using \"this\" at line %i",-1);
+						return -1;
+					}
 				}
+
+				if(!this_object){*/
+					if(!insertLoadValueInstruction(_node, _lc)){
+						return -1;
+
+					}
+				//}
+
 			//}
 		}
 		index_instruction=r;
@@ -1360,6 +1400,56 @@ int findConstructorIdxNode(PASTNode _node ){
 
 
 	return -1;
+}
+
+bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
+	if(_node == NULL) {print_error_cr("NULL node");return false;}
+	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
+	if(_node->keyword_info->id != KEYWORD_TYPE::CLASS_KEYWORD){print_error_cr("node is not CLASS keyword type");return false;}
+
+	// children[0]==var_collection && children[1]=function_collection
+	if(_node->children.size()!=2) {print_error_cr("node CLASS has not valid number of nodes");return false;}
+
+	// verify class is not already registered...
+	if(!CScriptClassFactory::getInstance()->registerScriptClass(_node->value_symbol)){
+		return false;
+	}
+
+	tInfoRegisteredFunctionSymbol *irfs;
+
+
+	// register all vars...
+	for(unsigned i = 0; i < _node->children[0]->children.size(); i++){
+		if(CScriptClassFactory::getInstance()->registerVariableSymbol(
+				_node->value_symbol,
+				_node->children[0]->children[i]->value_symbol,
+				_node->children[0]->children[i]
+			) == NULL){
+			return false;
+		}
+	}
+
+	// register all  functions...
+	for(unsigned i = 0; i < _node->children[1]->children.size(); i++){
+
+		PASTNode node_fun = _node->children[1]->children[i];
+
+		if((irfs=CScriptClassFactory::getInstance()->registerFunctionSymbol(
+				_node->value_symbol,
+				node_fun->value_symbol,
+				node_fun
+		)) == NULL){
+			return false;
+		}
+
+		// compile function (with scope class)...
+		if(!gacFunction(node_fun, _node->scope_info_ptr)){
+			return false;
+		}
+	}
+
+
+	return true;
 }
 
 bool CCompiler::gacNew(PASTNode _node, CScopeInfo * _lc){
@@ -1757,6 +1847,9 @@ bool CCompiler::gacKeyword(PASTNode _node, CScopeInfo * _lc){
 	switch(_node->keyword_info->id){
 	default:
 		print_error_cr("Keyword [ %s ] not implemented yet!",_node->keyword_info->str);
+		break;
+	case KEYWORD_TYPE::CLASS_KEYWORD:
+		return gacClass(_node, _lc);
 		break;
 	case KEYWORD_TYPE::SWITCH_KEYWORD:
 		return gacSwitch(_node, _lc);

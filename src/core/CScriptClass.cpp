@@ -1,8 +1,30 @@
 #include "zg_core.h"
 
-CScriptClass::CScriptClass(tInfoRegisteredFunctionSymbol *irv){
+void CScriptClass::createSymbols(tInfoRegisteredClass *irv){
+	for ( unsigned i = 0; i < irv->object_info.local_symbols.m_registeredVariable.size(); i++){
+		addVariableSymbol(irv->object_info.local_symbols.m_registeredVariable[i].ast);
+	}
 
-	this->irv = irv;
+	for ( unsigned i = 0; i < irv->object_info.local_symbols.m_registeredFunction.size(); i++){
+		print_info_cr("=========================================");
+		print_info_cr("- Create function %s...",irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.info_var_scope->name.c_str());
+		addFunctionSymbol(
+				irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast,
+				&irv->object_info.local_symbols.m_registeredFunction[i]
+
+				);
+		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
+	}
+
+	if(irv->baseClass != NULL){
+		CScriptClass::createSymbols(irv->baseClass);
+	}
+
+}
+
+CScriptClass::CScriptClass(tInfoRegisteredClass *irv){
+
+	this->m_infoRegisteredClass = irv;
 	//m_rootAst=NULL;
 	//m_registeredVariable = NULL;
 	//m_type = TYPE::SCRIPT_FUNCTION_TYPE;
@@ -12,7 +34,7 @@ CScriptClass::CScriptClass(tInfoRegisteredFunctionSymbol *irv){
 
 
 
-
+	createSymbols(irv);
 	/*if(_parentFunction == NULL){ // this is the main function ...
 		setName("Main");
 		m_registeredVariable=new vector<tRegisteredSymbolInfo>();
@@ -21,60 +43,76 @@ CScriptClass::CScriptClass(tInfoRegisteredFunctionSymbol *irv){
 		_parentFunction->addFunction(this);
 	}*/
 
-	// reserve symbols...
-	for ( unsigned i = 0; i < irv->object_info.local_symbols.m_registeredVariable.size(); i++){
-		addSymbol(irv->object_info.local_symbols.m_registeredVariable[i].ast);
-	}
+	// reserve symbolsand its extended classes...
 
 	// create object functions ...
-	for ( unsigned i = 0; i < irv->object_info.local_symbols.m_registeredFunction.size(); i++){
+	/*for ( unsigned i = 0; i < m_infoRegisteredClass->object_info.local_symbols.m_registeredFunction.size(); i++){
 		print_info_cr("=========================================");
-		print_info_cr("- Create function %s...",irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.info_var_scope->name.c_str());
+		print_info_cr("- Create function %s...",m_infoRegisteredClass->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.info_var_scope->name.c_str());
 		addFunctionSymbol(
-				irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast,
-				&irv->object_info.local_symbols.m_registeredFunction[i]
+				m_infoRegisteredClass->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast,
+				&m_infoRegisteredClass->object_info.local_symbols.m_registeredFunction[i]
 
 				);
-		//addSymbol(irv->object_info.local_symbols.m_registeredVariable[i].ast);
-	}
+		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
+	}*/
 
 }
 
 
-void CScriptClass::addSymbol(tASTNode *ast){
+void CScriptClass::addVariableSymbol(tASTNode *ast){
 	tSymbolInfo si;
 	si.object = CScopeInfo::UndefinedSymbol;
 	si.ast = ast;
-	m_symbol.push_back(si);
+	m_variableSymbol.push_back(si);
 }
 
 void CScriptClass::addFunctionSymbol(tASTNode *ast,tInfoRegisteredFunctionSymbol *irv){
 	tSymbolInfo si;
-	si.object = new CScriptFunction(this,irv);
+	si.object = irv;
 	si.ast = ast;
 	m_functionSymbol.push_back(si);
 }
 
 
-
+/*
 void CScriptClass::addArgSymbol(const string & arg_name){
 	tSymbolInfo si;
 	si.ast = NULL;
 	m_arg_symbol.push_back(si);
 }
+*/
+CScriptClass::tSymbolInfo * CScriptClass::getVariableSymbol(const string & varname){
+	for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
+		if(varname == this->m_variableSymbol[i].ast->value_symbol){
+			return &m_variableSymbol[i];
+		}
+	}
+
+	return NULL;
+}
 
 
-
-CScriptClass::tSymbolInfo * CScriptClass::getVariableObjectByIndex(unsigned idx){
-	if(idx >= m_symbol.size()){
+CScriptClass::tSymbolInfo * CScriptClass::getVariableSymbolByIndex(unsigned idx){
+	if(idx >= m_variableSymbol.size()){
 		print_error_cr("idx symbol index out of bounds");
 		return NULL;
 	}
 
-	return &m_symbol[idx];
+	return &m_variableSymbol[idx];
 }
 
-CScriptClass::tSymbolInfo *CScriptClass::getFunctionObjectByIndex(unsigned idx){
+CScriptClass::tSymbolInfo * CScriptClass::getFunctionSymbol(const string & varname){
+	for(unsigned int i = 0; i < this->m_functionSymbol.size(); i++){
+		if(varname == this->m_functionSymbol[i].ast->value_symbol){
+			return &m_functionSymbol[i];
+		}
+	}
+
+	return NULL;
+}
+
+CScriptClass::tSymbolInfo *CScriptClass::getFunctionSymbolByIndex(unsigned idx){
 	if(idx >= m_functionSymbol.size()){
 		print_error_cr("idx symbol index out of bounds");
 		return NULL;
@@ -83,6 +121,7 @@ CScriptClass::tSymbolInfo *CScriptClass::getFunctionObjectByIndex(unsigned idx){
 
 }
 
+/*
 CScriptClass::tSymbolInfo * CScriptClass::getArgSymbol(unsigned idx){
 	if(idx >= m_arg_symbol.size()){
 		print_error_cr("idx ARGUMENT SYMBOL index out of bounds");
@@ -90,7 +129,7 @@ CScriptClass::tSymbolInfo * CScriptClass::getArgSymbol(unsigned idx){
 	}
 
 	return &m_arg_symbol[idx];
-}
+}*/
 /*
 bool CScriptClass::isMainFunction(){
 	return m_parentFunction == NULL;
@@ -158,17 +197,17 @@ bool CScriptClass::call_C_function(vector<CVariable *> * argv){
 CScriptClass::TYPE CScriptClass::getType(){
 	return m_type;
 }*/
-
+/*
 tInfoRegisteredFunctionSymbol * CScriptClass::getFunctionInfo(unsigned idx){
-	if(idx >= irv->object_info.local_symbols.m_registeredFunction.size()){
+	if(idx >= m_infoRegisteredClass->object_info.local_symbols.m_registeredFunction.size()){
 		print_error_cr("idx function index out of bounds");
 		return NULL;
 	}
 
-	return &irv->object_info.local_symbols.m_registeredFunction[idx];
+	return &m_infoRegisteredClass->object_info.local_symbols.m_registeredFunction[idx];
 
 }
-
+*/
 /*
 CVariable **CScriptClass::getArg(const string & var_name){
 
@@ -176,7 +215,7 @@ CVariable **CScriptClass::getArg(const string & var_name){
 	CScopeInfo::tInfoScopeVar *irv = m_scope->getInfoRegisteredSymbol(var_name);
 
 	if(irv != NULL){
-		return &irv->m_obj;
+		return &m_infoRegisteredClass->m_obj;
 	}
 
 	return NULL;
@@ -220,8 +259,14 @@ CScriptClass *CScriptClass::getParent(){
 
 
 
-vector<tInfoStatementOp> * CScriptClass::getCompiledCode(){
-	return &irv->object_info.statment_op;
+vector<tInfoStatementOp> * CScriptClass::getCompiledCode(int idx_function){
+	tSymbolInfo *si=CScriptClass::getFunctionSymbolByIndex(idx_function);
+	if(si){
+		return &((tInfoRegisteredFunctionSymbol *)si->object)->object_info.statment_op;
+	}
+
+	return NULL;
+//	return &m_infoRegisteredClass->object_info.statment_op;
 }
 
 CScriptClass::~CScriptClass(){

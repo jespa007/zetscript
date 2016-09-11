@@ -302,7 +302,7 @@ tInfoPunctuator *  CAst::isPunctuator(const char *s){
 char * CAst::getEndWord(const char *s, int m_line){
 
 	char *aux=(char *)s;
-	 tInfoPunctuator * sp;
+	// tInfoPunctuator * sp;
 	 tInfoKeyword *key_w;
 
 	if(*aux == '\"'){
@@ -321,7 +321,7 @@ char * CAst::getEndWord(const char *s, int m_line){
 
 		if((key_w = isKeyword(s))!= NULL){
 			if(key_w->id != KEYWORD_TYPE::THIS_KEYWORD){ // unexpected token ?
-				print_error_cr("Unexpected keyword \"%s\" at line %i",key_w->str, m_line);
+				print_error_cr("Unexpected keyword \"%s\" at line %i. Forgot \";\" ?",key_w->str, m_line);
 				return NULL;
 			}
 		}
@@ -547,6 +547,7 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 			 if(ast_node_to_be_evaluated != NULL) {// save node
 				 *ast_node_to_be_evaluated = new tASTNode();
 				 (*ast_node_to_be_evaluated)->value_symbol = symbol_value; // is array or function ...
+				 (*ast_node_to_be_evaluated)->definedValueline = m_startLine;
 				 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
 				 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
 			 }
@@ -554,6 +555,7 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 			 if(*word_str == '('){
 				 if(ast_node_to_be_evaluated != NULL){
 					 (*ast_node_to_be_evaluated)->node_type  = FUNCTION_REF_NODE;
+					 (*ast_node_to_be_evaluated)->definedValueline = m_startLine;
 					 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
 				 }
 			 }
@@ -845,9 +847,12 @@ char *CAst::getSymbolValue(
 				 if(end_expression == NULL || end_expression == aux){
 
 					 // check if punctuator or keyword..
-					if(!printErrorUnexpectedKeywordOrPunctuator(aux, m_line)){
-						print_error_cr("Expected symbol at line %i",m_line);
-					}
+
+					 if(end_expression != NULL){
+						 if(!printErrorUnexpectedKeywordOrPunctuator(aux, m_line)){
+							 print_error_cr("Expected symbol at line %i",m_line);
+						 }
+					 }
 					 return NULL;
 				 }
 
@@ -1330,6 +1335,8 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 	char *aux_p = (char *)s;
 	char *end_p;
 
+
+	CScopeInfo *class_scope_info=NULL;
 	//tInfoRegisteredClass *class_info=NULL;
 	int class_line;
 	string class_name;
@@ -1383,7 +1390,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 
 				ext_name=CStringUtils::copyStringFromInterval(aux_p, end_p);
 
-				if((CScriptClassFactory::getInstance()->registeredClassExists(ext_name)) == -1){
+				if(CScriptClassFactory::getInstance()->isClassRegistered(ext_name)){
 					print_error_cr("extended class \"%s\" not exist");
 					return NULL;
 				}
@@ -1408,6 +1415,10 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 				*ast_node_to_be_evaluated = new tASTNode;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
+				(*ast_node_to_be_evaluated)->value_symbol = class_name;
+
+				(*ast_node_to_be_evaluated)->scope_info_ptr = new CScopeInfo(scope_info);
+				class_scope_info =(*ast_node_to_be_evaluated)->scope_info_ptr;
 
 				// create var & functions collection...
 				(*ast_node_to_be_evaluated)->children.push_back(vars_collection_node = new tASTNode);
@@ -1435,7 +1446,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 							print_error_cr("Expected \"var\" or \"function\" keyword at line %i");
 							break;
 						case KEYWORD_TYPE::FUNCTION_KEYWORD:
-							if((aux_p = parseFunction(aux_p, m_line,scope_info, &child_node)) != NULL){
+							if((aux_p = parseFunction(aux_p, m_line,class_scope_info, &child_node)) != NULL){
 								if(child_node->value_symbol != ""){
 									if(ast_node_to_be_evaluated != NULL){
 										function_collection_node->children.push_back(child_node);
@@ -1450,7 +1461,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 							}
 							break;
 						case KEYWORD_TYPE::VAR_KEYWORD:
-							if((aux_p = parseVar(aux_p, m_line,scope_info, &child_node)) != NULL){
+							if((aux_p = parseVar(aux_p, m_line,class_scope_info, &child_node)) != NULL){
 
 								if(ast_node_to_be_evaluated != NULL){
 									vars_collection_node->children.push_back(child_node);
@@ -1477,6 +1488,11 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 					print_error_cr("class \"%s\" declared line %i is not closed ",class_name.c_str(),class_line);
 				}
 
+				aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
+
+				if(*aux_p != ';'){
+					print_error_cr("class \"%s\" declared line %i not end with ;",class_name.c_str(),class_line);
+				}
 
 				return aux_p+1;
 
@@ -1689,7 +1705,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 
 						// check whether parameter name's matches with some global variable...
 						if((irv=scope_info->getInfoRegisteredSymbol(value_symbol,false)) != NULL){
-							print_error_cr("Ambiguos symbol argument \"%s\" at line %i name with var defined at %i", value_symbol, m_line,-1);
+							print_error_cr("Ambiguos symbol argument \"%s\" at line %i name with var defined at %i", value_symbol, m_line,irv->ast->definedValueline);
 							return NULL;
 
 						}
@@ -2494,7 +2510,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 						(*ast_node_to_be_evaluated)->definedValueline = m_line;
 
 
-						if(!_currentScope->registerSymbol((*ast_node_to_be_evaluated)->value_symbol)){
+						if(!_currentScope->registerSymbol((*ast_node_to_be_evaluated)->value_symbol,(*ast_node_to_be_evaluated))){
 							return NULL;
 						}
 

@@ -137,7 +137,7 @@ public:
 
 	class tSymbolInfo{
 		public:
-		CVariable *object; // created object. undefined by default.
+		void *object; // created object. undefined by default.
 		tASTNode *ast;
 		tSymbolInfo(){
 			this->object = CScopeInfo::UndefinedSymbol;
@@ -146,24 +146,31 @@ public:
 
 	};
 
+	CScriptClass(tInfoRegisteredClass *info_registered_class);
+
 	//TYPE m_type;
 
-	void addSymbol(tASTNode *ast);
+	void addVariableSymbol(tASTNode *ast);
+	tSymbolInfo * getVariableSymbol(const string & varname);
+	tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 
 	void addFunctionSymbol(tASTNode *ast,tInfoRegisteredFunctionSymbol *irv);
-	tSymbolInfo * getFunctionObjectByIndex(unsigned idx);
+	tSymbolInfo * getFunctionSymbol(const string & funname);
+	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 
-	void addArgSymbol(const string & arg_name);
+	vector<tInfoStatementOp> * getCompiledCode(int idx_function);
 
-	tSymbolInfo * getVariableObjectByIndex(unsigned idx);
+	//void addArgSymbol(const string & arg_name);
+
+
 	//tSymbolInfo * getArgSymbol(const string & var_name);
-	tSymbolInfo * getArgSymbol(unsigned index);
+	//tSymbolInfo * getArgSymbol(unsigned index);
 
 
-	CScriptClass(tInfoRegisteredFunctionSymbol *irv);
-	vector<tInfoStatementOp> * getCompiledCode();
+	//CScriptClass(tInfoRegisteredFunctionSymbol *irv);
+	//vector<tInfoStatementOp> * getCompiledCode();
 
-	tInfoRegisteredFunctionSymbol * getFunctionInfo(unsigned idx);
+	//tInfoRegisteredFunctionSymbol * getFunctionInfo(unsigned idx);
 
 
 //	tInfoScopeVar * registerArgument(const string & var_name);
@@ -218,12 +225,15 @@ private:
 	//vector<string> m_arg;
 	//vector<string> m_c_arg; // for c function
 	//vector<CScriptClass *> m_function;
-	tInfoRegisteredFunctionSymbol *irv;
+	//tInfoRegisteredFunctionSymbol *irv;
+	tInfoRegisteredClass *m_infoRegisteredClass;
 
 
-	vector<tSymbolInfo> m_symbol;
+	void createSymbols(tInfoRegisteredClass *irv);
+
+	vector<tSymbolInfo> m_variableSymbol;
 	vector<tSymbolInfo> m_functionSymbol;
-	vector<tSymbolInfo> m_arg_symbol;
+	//vector<tSymbolInfo> m_arg_symbol;
 	//vector<tInfoStatementOp>  	m_listStatements;
 
 

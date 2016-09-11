@@ -115,15 +115,13 @@ int main(int argc, char * argv[]){
 	CLog::setUseAnsiEscape(true);
 	CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
 
-	void * c_fun1 = (void *)& CCustomObject::member;
+	/*void * c_fun1 = (void *)& CCustomObject::member;
 	int c_func = (int)c_fun1;
 	CCustomObject obj;
-
 	int ptr_arg = (int )&obj;
-	printf("hola %p\n",ptr_arg);
-
+	printf("hola %p\n",ptr_arg);*/
 	//((int (*)(int))c_fun)(ptr_arg);
-	((int (*)(int))c_func)(ptr_arg);
+	//((int (*)(int))c_func)(ptr_arg);
 
 
 
@@ -205,15 +203,15 @@ int main(int argc, char * argv[]){
 	printf("%s\n",(char *) typeid(string *).name());
 
 
-	int i=1+0==1?2:3*2+10 ? 0 : 1;
+	//int i=1+0==1?2:3*2+10 ? 0 : 1;
 
-	i=+--i;
+	//i=+--i;
 
-	++i=0;
+	//++i=0;
 
 	CLog::setUseAnsiEscape(true);
 
-	printf("\nvar %i\n\n",i);
+	//printf("\nvar %i\n\n",i);
 
 	print_info_cr("sizeof(CVariable)=%i sizeof(float)=%i sizeof(string)=%i",sizeof(CVariable),sizeof(float),sizeof(string));
 
