@@ -8,6 +8,6 @@ public:
 
 	CString();
 
-	virtual string toString();
 	
+
 };

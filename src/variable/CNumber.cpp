@@ -53,7 +53,3 @@ CNumber::CNumber(){
 }
 
 
-string CNumber::toString(){
-	m_strValue=CStringUtils::floatToString(m_value);
-	return m_strValue;
-}

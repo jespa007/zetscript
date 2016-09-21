@@ -9,9 +9,9 @@
 }*/
 
 
-var ff = function(){ return 0;};
+var ff = function () { var i=0;return 1+2;};
 
-
+2=2;
 /*
 var i=1+2;
 
@@ -43,12 +43,16 @@ var c=0;
 
 c();
 */
-var b=new CInteger();
+
+print(3+2+ff());
+
+
+/*var b=new CInteger();
 
 b.m().a[0].c[0][0][0].d.e.toString();
 
-/*print("hola2 5:"+0);
-print("hola2 what's b?:"+b);*/
+print("hola2 5:"+0);
+print("hola2 what's b?:"+b);
 
 class MyClass{
 	
@@ -74,8 +78,9 @@ var c = new MyClass();
 
 
 c.prova();
-c.prova2(0);
+c.prova2(0);*/
 
+/*
 class MyClass2:MyClass{
 	
 	var hh;
@@ -104,12 +109,12 @@ c = new MyClass2();
 c.prova();
 c.prova2(0);
 
-/*function MyClass2::prova4(){
+function MyClass2::prova4(){
 	print("hola que tal new 4");
-}*/
+}
 
 c.prova4();
-
+*/
 
 
 /*

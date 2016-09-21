@@ -53,4 +53,4 @@ CInteger::CInteger(){
 }
 
 
-string CInteger::toString(){string s; return s;}
+

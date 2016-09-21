@@ -48,4 +48,4 @@ CBoolean::CBoolean(){
 }
 
 
-string CBoolean::toString(){string s; return s;}
+

@@ -105,6 +105,7 @@ int CCompiler::addLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvaluatin
 
 			info_symbol.object_info.symbol_info.ast = irv->ast;
 			info_symbol.object_info.symbol_info.info_var_scope = irv;
+			info_symbol.object_info.symbol_info.symbol_name = irv->ast->value_symbol;
 
 
 			info_symbol.object_info.symbol_info.properties=0;
@@ -192,7 +193,7 @@ const char * CCompiler::getStrTypeLoadValue(vector<tInfoStatementOp> * m_listSta
 		break;
 	case LOAD_TYPE::LOAD_TYPE_VARIABLE:
 
-		if(iao->node_access){
+		if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
 			sprintf(object_access,"[%02i:%02i]",current_statment,current_instruction-1);
 		}
 
@@ -486,6 +487,13 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 
 	string v = _node->value_symbol;
+
+	// ignore node this ...
+	if(_node->value_symbol == "this"){
+		print_error_cr("this cannot be processed here!");
+		return false;
+	}
+
 	bool node_access = false;
 	//this_instruction=false;
 	//int m_var_at_line = _node->definedValueline;
@@ -495,6 +503,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	CVariable *obj, *get_obj;
 	CVariable::VAR_TYPE type=CVariable::OBJECT;
 	LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
+	SCOPE_TYPE scope_type=LOCAL_SCOPE;
 
 	if(_node->pre_post_operator_info != NULL){
 
@@ -565,6 +574,11 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 		node_access = checkAccessObjectMember(_node);
 		//bool this_object=false;
 
+		/*if(_node->value_symbol == "print"){
+			int hhh=0;
+			hhh++;
+		}*/
+
 		/*if(_node->value_symbol == "this"){
 			if(!node_access){ // check "this"
 				this_instruction = true;
@@ -576,15 +590,31 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 			}
 		}*/
 
+		// determine if this or not ...
 
-		if(_node->value_symbol == "this"){ //
-			/*if(!node_access){
-				load_type=LOAD_TYPE_VARIABLE;
-				idx_local_var = IDX_THIS; // it tells THIS OBJECT INDEX
-			}else{*/
-				print_error_cr("the word \"this\" is not allowed (line %i)",_node->definedValueline);
-				return false;
-			//}
+		if(node_access){
+			if(_node->parent->children[0]->value_symbol == "this"){
+				scope_type=SCOPE_TYPE::THIS_SCOPE;
+				string class_name = m_currentFunctionInfo->object_info.symbol_info.class_info->object_info.symbol_info.symbol_name;
+
+				if(!CScriptClassFactory::getInstance()->getIdxRegisteredVariableSymbol(class_name, _node->value_symbol)){
+					return false;
+				}
+
+
+				/*vector<tInfoRegisteredVariableSymbol> *irvs = &m_currentFunctionInfo->object_info.symbol_info.class_info->object_info.local_symbols.m_registeredVariable;
+
+				for(int i = 0; i < irvs->size()&& idx_local_var==-1; i++){
+					if(irvs->at(i).symbol_name == _node->value_symbol){
+						idx_local_var=i;
+					}
+					//m_currentFunctionInfo->object_info.symbol_info.class_info
+				}
+
+				if(idx_local_var==-1){
+					print_error_cr("cannot find var %s",_node->value_symbol);
+				}*/
+			}
 		}
 		else{
 
@@ -624,16 +654,18 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 				//if(!access_node){
 
 
-					if(idx_local_var != IDX_THIS){
+					//if(idx_local_var != IDX_THIS){
 
-						if((idx_local_var=getIdxLocalVarSymbol(_node,_lc, false)) == -1){
+						if((idx_local_var=getIdxLocalVarSymbol(_node,_lc, false)) == -1){ //if not exist add symbol ...
 							if((idx_local_var = addLocalVarSymbol(_node,_lc)) == -1){
-								checkAccessObjectMember(_node);
 								return false;
 
 							}
 						}
-					}
+					//}
+					/*else{
+						print_warning("this value");
+					}*/
 				}
 				//}else{
 					//print_warning_cr("load %s run-time",_node->value_symbol.c_str());
@@ -672,7 +704,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	asm_op->variable_type=type;
 	asm_op->index_op1=load_type;
 	asm_op->index_op2=(int)obj;
-	asm_op->node_access=node_access;
+	asm_op->scope_type = scope_type;
 	asm_op->ast_node=_node;
 	asm_op->pre_post_operator_type=pre_post_operator_type;
 
@@ -1181,7 +1213,7 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScopeInfo *_lc)
 	}
 
 	// 2. insert call instruction itself.
-	insert_CallFunction_Instruction(_node,0,call_index);
+	insert_CallFunction_Instruction(_node,call_index);
 
 	return CCompiler::getCurrentInstructionIndex();
 }
@@ -1442,6 +1474,8 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 			return false;
 		}
 
+
+
 		// compile function (with scope class)...
 		if(!gacFunction(node_fun, _node->scope_info_ptr)){
 			return false;
@@ -1542,7 +1576,6 @@ bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 	if(!ast2asm_Recursive(_node->children[0],_node->scope_info_ptr)){ return false;}
 
 	// 2. compile conditional
-
 	if(!ast2asm_Recursive(_node->children[1],_node->scope_info_ptr)){ return false;}
 	// get current index statment in order to jmp from end body for.
 	int index_statment_conditional_for_= getCurrentStatmentIndex();
@@ -1868,7 +1901,6 @@ bool CCompiler::gacKeyword(PASTNode _node, CScopeInfo * _lc){
 		break;
 	case KEYWORD_TYPE::FUNCTION_KEYWORD: // don't compile function. It will compiled later, after main body
 		return gacFunction(_node, _lc);
-		return true;
 		break;
 	case KEYWORD_TYPE::RETURN_KEYWORD:
 		return gacReturn(_node, _lc);

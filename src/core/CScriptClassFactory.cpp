@@ -129,7 +129,7 @@
 		irv = new tInfoRegisteredClass;
 		irv->baseClass=NULL;
 		irv->object_info.symbol_info.symbol_name = class_name;
-		//irv->ast=ast;
+		irv->object_info.symbol_info.ast=NULL;
 		m_registeredClass.push_back(irv);
 
 		return irv;
@@ -165,31 +165,50 @@
 /**
  * Register C variable
  */
-void CScriptClassFactory::register_C_Variable(const string & class_name, const string & var_str,void * var_ptr, const string & var_type)
+bool  CScriptClassFactory::register_C_Variable(const string & var_str,void * var_ptr, const string & var_type)
 {
 	CScopeInfo *scope;
+	tInfoRegisteredVariableSymbol irs;
 
 	if(var_ptr==NULL){
 		print_error_cr("cannot register var \"%s\" with NULL reference value", var_str.c_str());
-		return;
+		return false;
 	}
 
-	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
+	tInfoRegisteredFunctionSymbol * mainFunctionInfo = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+	//tInfoRegisteredClass *rc = CScriptClassFactory::getInstance()->getRegisteredClass(class_name);
 
-	if(rc != NULL){
-		return;
+	if(mainFunctionInfo == NULL){
+		print_error_cr("main function is not created");
+		return false;
 	}
 
-	if((scope = rc->object_info.symbol_info.ast->scope_info_ptr) == NULL){
+
+
+	// init struct...
+	irs.symbol_name=var_str;
+	irs.class_info=NULL;
+
+
+	irs.properties = ::C_OBJECT_REF;
+	irs.ref_aux=(int)var_ptr;
+
+
+	if((irs.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(var_str))==NULL){
+		return false;
+	}
+
+
+	/*if((scope = rc->object_info.symbol_info.ast->scope_info_ptr) == NULL){
 		print_error_cr("scope null");
 		return;
-	}
+	}*/
 
 
 	//CZG_ScriptCore::tPrimitiveType *type;
 	//tInfoScopeVar *irv;
 	//string human_str;
-
+	return true;
 
 }
 
@@ -206,6 +225,7 @@ tInfoRegisteredVariableSymbol * CScriptClassFactory::registerVariableSymbol(cons
 		tScriptFunctionInfo *object_info=&rc->object_info;
 
 		tInfoRegisteredVariableSymbol info_var;
+		info_var.class_info = rc;
 		info_var.ast = ast;
 		info_var.symbol_name =var_name;
 		object_info->local_symbols.m_registeredVariable.push_back(info_var);
@@ -246,10 +266,27 @@ tInfoRegisteredVariableSymbol *  CScriptClassFactory::getRegisteredVariableSymbo
 	return NULL;
 }
 
+int CScriptClassFactory::getIdxRegisteredVariableSymbol(const string & class_name,const string & function_name){
+
+	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
+
+	if(rc != NULL){
+
+		tScriptFunctionInfo *object_info=&rc->object_info;
+
+		for(unsigned i = 0; i < object_info->local_symbols.m_registeredVariable.size(); i++){
+			if(object_info->local_symbols.m_registeredVariable[i].symbol_name == function_name){
+				return i;
+			}
+		}
+	}
+
+	print_error_cr("variable member %s::%s doesn't exist",class_name.c_str(),function_name.c_str());
+
+	return -1;
+}
+
 tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(const string & class_name, const string & fun_name, PASTNode  ast){
-
-
-
 
 	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
 
@@ -262,9 +299,11 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 
 			tInfoRegisteredFunctionSymbol irs;
 
+			irs.object_info.symbol_info.class_info = rc;
 			irs.object_info.symbol_info.symbol_name = fun_name;
 			irs.object_info.symbol_info.ast = ast;
 			irs.object_info.symbol_info.properties = 0;
+			irs.symbol_name=fun_name;
 			object_info->local_symbols.m_registeredFunction.push_back(irs);
 
 			return &object_info->local_symbols.m_registeredFunction[object_info->local_symbols.m_registeredFunction.size()-1];
@@ -278,8 +317,6 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 
 	return NULL;
 }
-
-
 
 
 tInfoRegisteredFunctionSymbol * CScriptClassFactory::getRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors){
@@ -374,7 +411,7 @@ bool CScriptClassFactory::isClassRegistered(const string & v){
 
 const char * CScriptClassFactory::getNameRegisteredClassByIdx(int idx){
 	if(idx != -1){
-		return m_registeredClass[idx]->object_info.symbol_info.ast->value_symbol.c_str();
+		return m_registeredClass[idx]->object_info.symbol_info.symbol_name.c_str();
 	}
 	 return "unknow";
 

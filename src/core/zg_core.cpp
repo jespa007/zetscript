@@ -229,7 +229,7 @@ bool CZG_ScriptCore::init(){
 	m_ast = CAst::getInstance();
 
 	// setup main struct...
-	m_structInfoMain.object_info.symbol_info.ast=m_ast->getMainAstNode();
+
 
 
 
@@ -239,7 +239,7 @@ bool CZG_ScriptCore::init(){
 	// Conversion from object types to primitive types (move into factory) ...
 	addTypeConversion<CInteger *,int>( [] (CVariable *obj){return ((CInteger *)obj)->m_value;});
 	addTypeConversion<CInteger *,int *>( [] (CVariable *obj){return (int)&((CInteger *)obj)->m_value;});
-	addTypeConversion<CInteger *,string *>( [] (CVariable *obj){obj->toString();return (int)&obj->m_strValue;});
+	addTypeConversion<CInteger *,string *>( [] (CVariable *obj){obj->m_strValue=CStringUtils::intToString(((CInteger*)obj)->m_value);return (int)&obj->m_strValue;});
 
 	addTypeConversion<CNumber *,float *>( [] (CVariable *obj){return (int)(&((CNumber *)obj)->m_value);});
 	addTypeConversion<CNumber *,int>( [] (CVariable *obj){return (int)((CNumber *)obj)->m_value;});
@@ -254,8 +254,9 @@ bool CZG_ScriptCore::init(){
 	//-----------------------
 
 	// ok register CInteger through CScriptClass...
-	if((m_infoClass = CScriptClassFactory::getInstance()->registerScriptClass(MAIN_SCRIPT_CLASS_NAME)) == NULL) return false;
-	if((m_infoMainFunction = CScriptClassFactory::getInstance()->registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME,NULL)) == NULL) return false;
+	if((m_mainClassInfo = CScriptClassFactory::getInstance()->registerScriptClass(MAIN_SCRIPT_CLASS_NAME)) == NULL) return false;
+	if((CScriptClassFactory::getInstance()->registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME,m_ast->getMainAstNode())) == NULL) return false;
+
 
 	// register various C functions ...
 	if(!CScriptClassFactory::getInstance()->register_C_Class<CInteger>("CInteger")) return false;
@@ -295,9 +296,11 @@ bool CZG_ScriptCore::eval(const string & s){
 
 	if(m_ast->parse(s.c_str())){
 
-		if(CCompiler::getInstance()->compile(m_ast->getMainAstNode(),&m_structInfoMain)){
+		m_mainFunctionInfo = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+
+		if(CCompiler::getInstance()->compile(m_ast->getMainAstNode(),m_mainFunctionInfo )){
 			// print generated asm ...
-			CCompiler::printGeneratedCode(&m_structInfoMain.object_info);
+			CCompiler::printGeneratedCode(&m_mainFunctionInfo->object_info);
 			return true;
 		}
 		// then you have all information -> compile into asm!
@@ -323,7 +326,7 @@ bool CZG_ScriptCore::execute(){
 	//CCompiler::getInstance()->printGeneratedCode(m_mainClass);
 
 	// the first code to execute is the main function that in fact is a special member function inside our main class
-	return CVirtualMachine::getInstance()->execute(m_infoMainFunction,  m_mainClass, NULL,0);//->excute();
+	return CVirtualMachine::getInstance()->execute(m_mainFunctionInfo,  m_mainClass, NULL,0);//->excute();
 }
 
 

@@ -14,6 +14,6 @@ public:
 	CBoolean();
 	CBoolean(bool b);
 
-	virtual string toString();
 	
+
 };

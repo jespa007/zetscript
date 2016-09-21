@@ -87,6 +87,11 @@ CVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_functio
 
 	CALE ALE; // new ale ?
 
+	// reserve vars...
+
+	CALE::allocStack(info_function->object_info.local_symbols.m_registeredVariable.size());
+
+
 	unsigned n_stats=(*m_listStatements).size();
 
 
@@ -120,7 +125,7 @@ CVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_functio
 			for(unsigned i = 0; i  <  n_asm_op && (jmp_to_statment==-1); i++){ // for each code-instruction execute it.
 				print_vm_cr("executing instruction  [%02i:%02i]...", s,i);
 				//print_vm_cr("executing code...%i/%i",s,i);
-				if( s==7 && i==1){
+				if( s==1 && i==0){
 					int hhh=0;
 					hhh++;
 				}
@@ -132,7 +137,7 @@ CVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_functio
 					//return true;
 
 
-					if(!ALE.performInstruction(i,asm_op_statment->at(i),jmp_to_statment,this_object,argv,stk)){
+					if(!ALE.performInstruction(i,asm_op_statment->at(i),jmp_to_statment,info_function,this_object,argv,stk)){
 						return NULL;
 					}
 

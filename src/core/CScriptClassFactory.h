@@ -6,16 +6,14 @@
 #include "RegisterFunctionHelper.h"
 #include "ast/ast.h"
 
-#define registerGlobal_C_Function(s) CScriptClassFactory::register_C_Function(MAIN_SCRIPT_CLASS_NAME,STR(s),s)
-#define registerGlobal_C_Variable(s) CScriptClassFactory::register_C_Variable(MAIN_SCRIPT_CLASS_NAME,STR(s),s,typeid(s).name())
+#define registerGlobal_C_Function(s) CScriptClassFactory::register_C_Function(STR(s),s)
+#define registerGlobal_C_Variable(s) CScriptClassFactory::register_C_Variable(STR(s),s,typeid(s).name())
 
 
 
 class CScopeInfo;
 
 class CScriptClassFactory{
-
-
 
 
 
@@ -68,7 +66,7 @@ public:
 
 	tInfoRegisteredVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,PASTNode  node);
 	tInfoRegisteredVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
-	//int 							 getIdxRegisteredVariableSymbol(const string & class_name,const string & varname);
+	int 							 getIdxRegisteredVariableSymbol(const string & class_name,const string & varname);
 
 
 	tInfoRegisteredFunctionSymbol *  registerFunctionSymbol(const string & class_name, const string & name);
@@ -95,7 +93,7 @@ public:
 	 * Register C function
 	 */
 	template <typename F>
-	static bool register_C_Function(const string & class_name, const string & function_name,F function_ptr)
+	static bool register_C_Function(const string & function_name,F function_ptr)
 	{
 		string return_type;
 		vector<string> params;
@@ -106,16 +104,19 @@ public:
 		//CScopeInfo::tInfoScopeVar  *rs;
 
 		//CScriptClass *sf=NULL;
+		tInfoRegisteredFunctionSymbol * mainFunctionInfo = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+		//tInfoRegisteredClass *rc = CScriptClassFactory::getInstance()->getRegisteredClass(class_name);
 
-		tInfoRegisteredClass *rc = CScriptClassFactory::getInstance()->getRegisteredClass(class_name);
-
-		if(rc == NULL){
-			return false;
+		if(mainFunctionInfo == NULL){
+			print_error_cr("main function is not created");
+			exit(EXIT_FAILURE);
 		}
 
 		// init struct...
+		irs.symbol_name=function_name;
 		irs.object_info.symbol_info.ast = NULL;
 		irs.object_info.symbol_info.info_var_scope = NULL;
+		irs.object_info.symbol_info.symbol_name = function_name;
 
 		irs.object_info.symbol_info.properties = ::C_OBJECT_REF;
 		irs.object_info.symbol_info.ref_aux=(int)function_ptr;
@@ -131,7 +132,9 @@ public:
 		using Traits3 = function_traits<decltype(function_ptr)>;
 		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
 
-		rc->object_info.local_symbols.m_registeredFunction.push_back(irs);
+
+
+		mainFunctionInfo->object_info.local_symbols.m_registeredFunction.push_back(irs);
 
 		print_info_cr("Registered function name: %s",function_name);
 
@@ -142,7 +145,7 @@ public:
 	/**
 	 * Register C variable
 	 */
-	void register_C_Variable(const string & class_name, const string & var_str,void * var_ptr, const string & var_type);
+	bool register_C_Variable(const string & var_str,void * var_ptr, const string & var_type);
 
 
 

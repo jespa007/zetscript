@@ -1,6 +1,48 @@
 #include "core/zg_core.h"
 
 
+CALE::tAleObjectInfo  CALE::stack[VM_MAX_STACK];
+CALE::tAleObjectInfo *CALE::currentBaseStack=NULL;
+int CALE::idxCurrentStack=0;
+
+
+CALE::tAleObjectInfo *CALE::allocStack(unsigned n_vars){
+
+	if((idxCurrentStack+n_vars) >=  VM_MAX_STACK){
+		print_error_cr("Error MAXIMUM stack size reached");
+		exit(EXIT_FAILURE);
+	}
+
+
+	currentBaseStack=&stack[CALE::idxCurrentStack];
+
+	// init vars ...
+	for(unsigned i = 0; i < n_vars; i++){
+		currentBaseStack[i].stkObject=CScopeInfo::UndefinedSymbol;
+		currentBaseStack[i].type = CVariable::VAR_TYPE::UNDEFINED;
+		currentBaseStack[i].ptrAssignableVar = NULL;
+	}
+
+
+	CALE::idxCurrentStack+=n_vars;
+
+	return currentBaseStack;
+}
+
+CALE::tAleObjectInfo *CALE::freeStack(unsigned n_vars){
+
+	if((idxCurrentStack-n_vars) <  0){
+		print_error_cr("Error MINIMUM stack size reached");
+		exit(EXIT_FAILURE);
+	}
+
+	CALE::idxCurrentStack-=n_vars;
+	currentBaseStack=&stack[CALE::idxCurrentStack];
+
+
+	return currentBaseStack;
+}
+
 
 // general
 #define CHECK_VALID_INDEXES \
@@ -236,8 +278,7 @@ bool CALE::pushFunction(tInfoRegisteredFunctionSymbol * init_value){
 		return false;
 	}
 
-	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::FUNCTION,(CVariable *)&init_value,NULL};
-
+	result_object_instruction[current_asm_instruction]={CVariable::VAR_TYPE::FUNCTION,(CVariable *)init_value,NULL};
 	return true;
 }
 
@@ -340,7 +381,7 @@ bool CALE::performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CV
 }
 
 
-bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_stk){
+bool CALE::loadVariableValue(tInfoAsmOp *iao, tInfoRegisteredFunctionSymbol *info_function,CScriptClass *this_object, int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_VARIABLE){
 		print_error_cr("expected load type variable.");
@@ -349,13 +390,46 @@ bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_s
 
 	//CScriptClass *this_object = function_object->getThisObject();
 	CScriptClass::tSymbolInfo *si;
+	CVariable **ptr_var_object=NULL;
+	CVariable *var_object = NULL;
 
-	if((si = this_object->getVariableSymbolByIndex(iao->index_op2))==NULL){
-		print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
-		return false;
+	switch(iao->scope_type){
+	default:
+		print_error_cr("unknow scope type");
+		break;
+	case SCOPE_TYPE::THIS_SCOPE:
+
+		// get var from object ...
+		if((si = this_object->getVariableSymbolByIndex(iao->index_op2))==NULL){
+			print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
+			return false;
+		}
+
+		ptr_var_object = (CVariable **)(&si->object);
+		var_object = (CVariable *)(si->object);
+
+		break;
+
+	case SCOPE_TYPE::LOCAL_SCOPE:
+
+		// get var from base stack ...
+		ptr_var_object = (CVariable **)(&CALE::currentBaseStack[iao->index_op2].stkObject);
+		var_object = (CVariable *)(CALE::currentBaseStack[iao->index_op2].stkObject);
+
+
+		/*if((si = this_object->getVariableSymbolByIndex(iao->index_op2))==NULL){
+			print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
+
+			return false;
+		}*/
+
+		break;
+
+
 	}
-	CVariable **ptr_var_object = (CVariable **)(&si->object);
-	CVariable *var_object = (CVariable *)(si->object);
+
+	//CVariable **ptr_var_object = (CVariable **)(&si->object);
+	//CVariable *var_object = (CVariable *)(si->object);
 	if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC){
 
 		if(!performPreOperator(iao->pre_post_operator_type, var_object)){
@@ -385,15 +459,20 @@ bool CALE::loadVariableValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_s
 	return true;
 }
 
-bool CALE::loadFunctionValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_stk){
+bool CALE::loadFunctionValue(tInfoAsmOp *iao,tInfoRegisteredFunctionSymbol *local_function, CScriptClass *this_object, int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_FUNCTION){
 		print_error_cr("expected load type function.");
 		return false;
 	}
 
+
+	tInfoRegisteredFunctionSymbol *info_function=NULL;
+
 	CScriptClass::tSymbolInfo *si;
-	tInfoRegisteredFunctionSymbol *info_function = (tInfoRegisteredFunctionSymbol *)(si->object);
+
+	//CVariable *var_object = NULL;
+	//tInfoRegisteredFunctionSymbol *info_function = (tInfoRegisteredFunctionSymbol *)(si->object);
 	//CScriptClass *this_object = function_object->getThisObject();
 	//tInfoRegisteredFunctionSymbol *si;
 
@@ -401,6 +480,29 @@ bool CALE::loadFunctionValue(tInfoAsmOp *iao, CScriptClass *this_object, int n_s
 		print_error_cr("cannot find function info \"%s\"",iao->ast_node->value_symbol.c_str());
 		return false;
 	}*/
+
+	switch(iao->scope_type){
+	default:
+		print_error_cr("unknow scope type");
+		break;
+	case SCOPE_TYPE::THIS_SCOPE:
+
+		// get var from object ...
+		if((si = this_object->getFunctionSymbolByIndex(iao->index_op2))==NULL){
+			print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
+			return false;
+		}
+
+		info_function =(tInfoRegisteredFunctionSymbol *)si->object;
+
+		break;
+
+	case SCOPE_TYPE::LOCAL_SCOPE:
+		info_function = &local_function->object_info.local_symbols.m_registeredFunction[iao->index_op2];
+		break;
+
+
+	}
 
 	// generic object pushed ...
 	if(!pushFunction(info_function)) {
@@ -430,10 +532,6 @@ bool CALE::loadConstantValue(CVariable *var, int n_stk){
 				if(!pushInteger(((CInteger *)var)->m_value)) return false;
 				break;
 			case CVariable::VAR_TYPE::BOOLEAN:
-
-
-
-
 				if(!pushBoolean(((CBoolean *)var)->m_value,n_stk)) return false;
 				break;
 			case CVariable::VAR_TYPE::STRING:
@@ -470,6 +568,7 @@ bool CALE::assignObjectFromIndex(CVariable **var, int index){
 		}
 	}
 
+	tInfoRegisteredFunctionSymbol * init_value;
 
 	// finally assign the value ...
 	switch(result_object_instruction[index].type){
@@ -532,7 +631,7 @@ bool CALE::assignObjectFromIndex(CVariable **var, int index){
 			*var = ((CVector *)(result_object_instruction[index].stkObject));
 			break;
 		case CVariable::VAR_TYPE::FUNCTION: // function object
-			*var = ((CScriptClass *)(result_object_instruction[index].stkObject));
+			*var = result_object_instruction[index].stkObject;
 			break;
 		case CVariable::VAR_TYPE::OBJECT: // generic object
 			*var = (result_object_instruction[index].stkObject);
@@ -548,7 +647,7 @@ bool CALE::assignObjectFromIndex(CVariable **var, int index){
 	return true;
 }
 
-bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptClass *this_object,vector<CVariable *> * argv, int n_stk){
+bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,tInfoRegisteredFunctionSymbol *info_function,CScriptClass *this_object,vector<CVariable *> * argv, int n_stk){
 
 
 	string 	aux_string;
@@ -577,13 +676,9 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 	case NOP: // ignore ...
 		break;
 	case LOAD: // load value in function of value/constant ...
-
-
-
 		/*if(!loadValue(instruction, n_stk)){
 			return false;
 		}*/
-
 		//sprintf(print_aux_load_value,"UNDEFINED");
 		switch(instruction->index_op1){
 		case LOAD_TYPE::LOAD_TYPE_CONSTANT:
@@ -596,13 +691,13 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 			break;
 		case LOAD_TYPE::LOAD_TYPE_VARIABLE:
 
-			if(!loadVariableValue(instruction, this_object, n_stk)){
+			if(!loadVariableValue(instruction, info_function,this_object, n_stk)){
 				return false;
 			}
 
 			break;
 		case LOAD_TYPE::LOAD_TYPE_FUNCTION:
-			if(!loadFunctionValue(instruction, this_object, n_stk)){
+			if(!loadFunctionValue(instruction,info_function, this_object, n_stk)){
 				return false;
 			}
 
@@ -1024,7 +1119,7 @@ bool CALE::performInstruction(int idx_instruction, tInfoAsmOp * instruction, int
 				}
 			}
 			else{
-				print_error_cr("object is not function at line %i",instruction->ast_node->definedValueline);
+				print_error_cr("object \"%s\" is not function at line %i",instruction->ast_node->value_symbol.c_str(), instruction->ast_node->definedValueline);
 				return false;
 			}
 			break;

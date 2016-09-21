@@ -240,7 +240,7 @@ int main(int argc, char * argv[]){
 				//for(i=0; i < 20;i++)
 				{
 					Uint32 t = SDL_GetTicks();
-					//zg_script->execute();
+					zg_script->execute();
 					print_info_cr("time:%i",SDL_GetTicks()-t);
 
 

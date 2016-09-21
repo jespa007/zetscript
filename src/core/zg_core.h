@@ -28,8 +28,7 @@ class CScopeInfo;
 #define ZETSCRIPT_MINOR_VERSION 1
 #define ZETSCRIPT_PATCH_VERSION 0
 
-#define MAIN_SCRIPT_CLASS_NAME 		"__MainClass__"
-#define MAIN_SCRIPT_FUNCTION_NAME 	"__mainFunction__"
+
 
 
 
@@ -37,8 +36,8 @@ class CZG_ScriptCore{
 
 
 	// calling C function with differnt parameters...
-	tInfoRegisteredClass *m_infoClass;
-	tInfoRegisteredFunctionSymbol *m_infoMainFunction;
+	tInfoRegisteredClass *m_mainClassInfo;
+	tInfoRegisteredFunctionSymbol *m_mainFunctionInfo;
 
 	CScriptClass *m_mainClass;
 
@@ -61,7 +60,7 @@ class CZG_ScriptCore{
 
 	static CZG_ScriptCore * m_instance;
 
-	tInfoRegisteredFunctionSymbol m_structInfoMain;
+	//tInfoRegisteredFunctionSymbol m_structInfoMain;
 
 	bool init();
 
@@ -79,8 +78,8 @@ public:
 	static CZG_ScriptCore * getInstance();
 	static CAst       * m_ast;
 
-	tInfoRegisteredFunctionSymbol *getMainStructInfo(){return &m_structInfoMain;}
-	tScriptFunctionInfo *getMainObjectInfo(){return &m_structInfoMain.object_info;}
+	tInfoRegisteredFunctionSymbol *getMainStructInfo(){return m_mainFunctionInfo;}
+	tScriptFunctionInfo *getMainObjectInfo(){return &m_mainFunctionInfo->object_info;}
 	CScriptClass *getMainObject(){return m_mainClass;}
 	//CScriptFunction *getMainFunction(){return m_mainFunction;}
 

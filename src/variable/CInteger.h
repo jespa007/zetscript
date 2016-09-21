@@ -12,6 +12,6 @@ public:
 	CInteger();
 
 
-	virtual string toString();
 	
+
 };

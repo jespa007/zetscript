@@ -11,4 +11,4 @@ CString::CString(){
 	m_ptr=&m_value;
 }
 
-string CString::toString(){string s; return s;}
+

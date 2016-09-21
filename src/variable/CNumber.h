@@ -11,6 +11,6 @@ public:
 	CNumber();
 
 
-	virtual string toString();
 	
+
 };

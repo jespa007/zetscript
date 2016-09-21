@@ -6,12 +6,10 @@
 
 
 
-
 class CScriptFunction;
 class CVirtualMachine{
 
 public:
-
 
 
 

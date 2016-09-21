@@ -5,6 +5,7 @@ class tASTNode;
 typedef tASTNode *PASTNode;
 struct tInfoRegisteredFunctionSymbol;
 struct tInfoScopeVar;
+struct _tInfoRegisteredClass;
 
 
 //typedef tInfoStatementOp *PInfoStatementOp;
@@ -145,6 +146,12 @@ enum LOAD_TYPE{
 		LOAD_TYPE_ARGUMENT
 };
 
+enum SCOPE_TYPE{
+	LOCAL_SCOPE=0,
+	THIS_SCOPE,
+	ACCESS_SCOPE
+};
+
 enum IDX_OBJ_SPECIAL_VALUE{
 	IDX_INVALID = -1,
 	IDX_THIS=-10
@@ -207,13 +214,18 @@ enum ASM_PRE_POST_OPERATORS{
 
 };
 
+
+#define MAIN_SCRIPT_CLASS_NAME 		"__MainClass__"
+#define MAIN_SCRIPT_FUNCTION_NAME 	"__mainFunction__"
+
 typedef int (*fntConversionType)(CVariable *obj);
 
 
 typedef struct{
 	int		 ref_aux; // pointer ref to C Var/Function
 	string 	 symbol_name;
-	tInfoScopeVar  *info_var_scope;
+	_tInfoRegisteredClass		 *class_info;
+	tInfoScopeVar  				*info_var_scope;
 	tASTNode		*ast;
 	unsigned int properties;
 }tInfoRegisteredVariableSymbol;
@@ -296,7 +308,8 @@ public:
 		operator_info=NULL;
 		value_symbol="";
 		parent=NULL;
-		aux_value = NULL;
+		aux_value=NULL;
+
 		scope_info_ptr = NULL;
 
 		if(preallocate_num_nodes > 0){
@@ -349,7 +362,7 @@ public:
 	 PASTNode ast_node; // define ast node for give some information at run time
 	// int definedLine;
 
-	 bool node_access;
+
 	 //------------------
 
 	 ASM_OPERATOR operator_type;
@@ -359,6 +372,8 @@ public:
 
 	 int index_op1,index_op2; // left and right respectively
 
+	 SCOPE_TYPE scope_type; // in case needed.
+
 	// bool (* isconvertable)(int value);
 
 	tInfoAsmOp(){
@@ -367,14 +382,16 @@ public:
 		operator_type=ASM_OPERATOR::INVALID_OP;
 		pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 		ast_node = NULL;
+		scope_type=LOCAL_SCOPE;
 		//isconvertable=NULL;
 		//left_var_obj=NULL;
 	  //   type_op=0;
 	   //  funOp=NULL;
 		//result_obj=NULL; // oject type...
-		node_access=false;
 	   // type_res="none";
 		index_op1=index_op2=-1;
+
+
 	   // ptr_value=NULL;
 	}
 
@@ -398,9 +415,12 @@ struct tScriptFunctionInfo{
 	tInfoRegisteredVariableSymbol symbol_info;
 	tLocalSymbolInfo 			  local_symbols;
 
+
 	// the info asm op for each function. Will be filled at compile time.
 	vector<tInfoStatementOp> statment_op;
 };
+
+
 
 
 struct tInfoRegisteredFunctionSymbol{
@@ -427,6 +447,7 @@ typedef struct _tInfoRegisteredClass{
 	_tInfoRegisteredClass *baseClass; // in the case is and extension of class.
 
 }tInfoRegisteredClass;
+
 
 
 

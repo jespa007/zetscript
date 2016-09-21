@@ -3,7 +3,7 @@
 #include "CVirtualMachine.h"
 
 #define MAX_PER_TYPE_OPERATIONS 32
-
+#define VM_MAX_STACK	5000
 
 
 /**
@@ -13,12 +13,30 @@ class CALE{
 
 public:
 
+	typedef struct{
+		CVariable::VAR_TYPE type; // tells what kind of variable is. By default is object.
+		CVariable   * stkObject; // pointer to pointer ables to modify its pointer when is needed
+		CVariable  ** ptrAssignableVar; // pointer to pointer in case of replace var
+	}tAleObjectInfo;
+
+
+	static tAleObjectInfo stack[VM_MAX_STACK];
+	static tAleObjectInfo *currentBaseStack;
+	static int idxCurrentStack;
+
+	/**
+	 * Reserve for N vars. Return base pointer.
+	 */
+	static tAleObjectInfo *allocStack(unsigned n_vars);
+	static tAleObjectInfo *freeStack(unsigned n_vars);
+
+
+
+
 	CALE();
 
 
-
-
-	bool performInstruction( int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,CScriptClass *function_object,vector<CVariable *> * argv, int n_stk);
+	bool performInstruction( int idx_instruction, tInfoAsmOp * instruction, int & jmp_to_statment,tInfoRegisteredFunctionSymbol *info_function,CScriptClass *function_object,vector<CVariable *> * argv, int n_stk);
 
 	void reset();
 	CVariable * getObjectFromIndex(int index);
@@ -57,13 +75,9 @@ private:
 
 
 
-	typedef struct{
-		CVariable::VAR_TYPE type; // tells what kind of variable is. By default is object.
-		CVariable   * stkObject; // pointer to pointer ables to modify its pointer when is needed
-		CVariable  ** ptrAssignableVar; // pointer to pointer in case of replace var
-	}tAleInstructionInfo;
 
-	tAleInstructionInfo result_object_instruction[MAX_OPERATIONS_PER_EXPRESSION];
+
+	tAleObjectInfo result_object_instruction[MAX_OPERATIONS_PER_EXPRESSION];
 	int current_asm_instruction;
 
 	vector<CVariable *> m_functionArgs;
@@ -85,8 +99,8 @@ private:
 	bool performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CVariable *obj);
 //	bool loadValue(tInfoAsmOp *iao, int stk);
 	bool loadConstantValue(CVariable *bj, int n_stk);
-	bool loadVariableValue(tInfoAsmOp *iao,CScriptClass *this_object, int n_stk);
-	bool loadFunctionValue(tInfoAsmOp *iao,CScriptClass *this_object, int n_stk);
+	bool loadVariableValue(tInfoAsmOp *iao,tInfoRegisteredFunctionSymbol *info_function,CScriptClass *this_object, int n_stk);
+	bool loadFunctionValue(tInfoAsmOp *iao,tInfoRegisteredFunctionSymbol *info_function,CScriptClass *this_object, int n_stk);
 
 
 
