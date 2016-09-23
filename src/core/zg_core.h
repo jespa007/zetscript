@@ -1,12 +1,11 @@
 #pragma once
 
-class CScriptClass;
+class CScriptVariable;
 class CScopeInfo;
 
 #include "system/zg_system.h"
 #include "utils/zg_utils.h"
-#include "variable/zg_variable.h"
-
+#include "var/zg_variable.h"
 
 
 #include "ScriptDefinesStructs.h"
@@ -19,8 +18,8 @@ class CScopeInfo;
 #include "vm/CVirtualMachine.h"
 
 
-#include "CScriptClass.h"
-#include "CScriptFunction.h.old"
+//#include "CScriptVariable.h"
+//#include "CScriptFunction.h.old"
 
 
 
@@ -39,7 +38,7 @@ class CZG_ScriptCore{
 	tInfoRegisteredClass *m_mainClassInfo;
 	tInfoRegisteredFunctionSymbol *m_mainFunctionInfo;
 
-	CScriptClass *m_mainClass;
+	CScriptVariable *m_mainClass;
 
 
 	//CScriptFunction *m_mainFunction;
@@ -56,6 +55,8 @@ class CZG_ScriptCore{
 		vector <string> * param_type;
 		void (* fun_ptr)();
 	}tInfoObjectOperator;*/
+
+
 
 
 	static CZG_ScriptCore * m_instance;
@@ -80,7 +81,7 @@ public:
 
 	tInfoRegisteredFunctionSymbol *getMainStructInfo(){return m_mainFunctionInfo;}
 	tScriptFunctionInfo *getMainObjectInfo(){return &m_mainFunctionInfo->object_info;}
-	CScriptClass *getMainObject(){return m_mainClass;}
+	CScriptVariable *getMainObject(){return m_mainClass;}
 	//CScriptFunction *getMainFunction(){return m_mainFunction;}
 
 	static bool call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CVariable *> * argv);

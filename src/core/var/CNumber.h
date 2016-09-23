@@ -1,6 +1,6 @@
 #pragma once
 
-class CNumber: public CVariable{
+class CNumber: public CScriptVariable{
 
 public:
 	float m_value;

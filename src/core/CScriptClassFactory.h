@@ -16,6 +16,7 @@ class CScopeInfo;
 class CScriptClassFactory{
 
 
+	unsigned idxClassInteger, idxClassNumber, idxClassString, idxClassBoolean, idxClassVector, idxClassFunctor;
 
 public:
 
@@ -59,7 +60,8 @@ public:
 	/**
 	 * Class name given this function creates the object and initializes all variables.
 	 */
-	CScriptClass 		 * newClass(const string & class_name);
+	CScriptVariable 		 * newClass(const string & class_name);
+	CScriptVariable 		 * newClassByIdx(unsigned idx);
 
 
 
@@ -80,12 +82,22 @@ public:
 
 
 	tInfoRegisteredClass * 	getRegisteredClass(const string & v, bool print_msg=true);
+	tInfoRegisteredClass *	getRegisteredClassByIdx(unsigned index);
+
 	int 					getIdxRegisteredClass(const string & v);
 	bool isClassRegistered(const string & v);
 	fntConversionType getConversionType(string objectType, string conversionType);
 
 	const char * getNameRegisteredClassByIdx(int idx);
 
+
+	// internal var types ...
+	unsigned getIdxClassInteger(){return idxClassInteger;}
+	unsigned getIdxClassNumber(){return idxClassNumber;}
+	unsigned getIdxClassString(){return idxClassString;}
+	unsigned getIdxClassBoolean(){return idxClassBoolean;}
+	unsigned getIdxClassVector(){return idxClassVector;}
+	unsigned getIdxClassFunctor(){return idxClassFunctor;}
 
 
 
@@ -103,7 +115,7 @@ public:
 		//vector<tPrimitiveType *> pt;
 		//CScopeInfo::tInfoScopeVar  *rs;
 
-		//CScriptClass *sf=NULL;
+		//CScriptVariable *sf=NULL;
 		tInfoRegisteredFunctionSymbol * mainFunctionInfo = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
 		//tInfoRegisteredClass *rc = CScriptClassFactory::getInstance()->getRegisteredClass(class_name);
 
@@ -209,6 +221,8 @@ public:
 			irc->object_info.symbol_info.ast = new tASTNode;
 			irc->object_info.symbol_info.info_var_scope=NULL;
 			irc->object_info.symbol_info.symbol_name = class_name;
+
+			irc->class_idx = m_registeredClass.size();
 
 			irc->classPtrType=str_classPtr;
 			irc->object_info.symbol_info.properties=C_OBJECT_REF;

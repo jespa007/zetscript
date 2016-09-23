@@ -1,6 +1,6 @@
 #pragma once
 
-class CInteger: public CVariable{
+class CInteger: public CScriptVariable{
 
 public:
 	int m_value;

@@ -66,15 +66,7 @@
 
  void CScriptClassFactory::registerPrimitiveTypes(){
 
- 	primitiveType[VOID_TYPE]={typeid(void).name(),"void",VOID_TYPE};
- 	primitiveType[INT_TYPE]={typeid(int).name(),"int",INT_TYPE};
- 	primitiveType[INT_PTR_TYPE]={typeid(int *).name(),"int *",INT_PTR_TYPE};
- 	primitiveType[FLOAT_TYPE]={typeid(float).name(),"float",FLOAT_TYPE};
- 	primitiveType[FLOAT_PTR_TYPE]={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
- 	primitiveType[STRING_TYPE]={typeid(string).name(),"string",STRING_TYPE};
- 	primitiveType[STRING_PTR_TYPE]={typeid(string *).name(),"string *",STRING_PTR_TYPE};
- 	primitiveType[BOOL_TYPE]={typeid(bool).name(),"bool",BOOL_TYPE};
- 	primitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
+
  }
 
 
@@ -100,6 +92,64 @@
 
  CScriptClassFactory::CScriptClassFactory(){
 
+	 idxClassInteger = idxClassNumber = idxClassString = idxClassBoolean = idxClassVariable = idxClassVector = idxClassFunctor = -1;
+
+ 	primitiveType[VOID_TYPE]={typeid(void).name(),"void",VOID_TYPE};
+ 	primitiveType[INT_TYPE]={typeid(int).name(),"int",INT_TYPE};
+ 	primitiveType[INT_PTR_TYPE]={typeid(int *).name(),"int *",INT_PTR_TYPE};
+ 	primitiveType[FLOAT_TYPE]={typeid(float).name(),"float",FLOAT_TYPE};
+ 	primitiveType[FLOAT_PTR_TYPE]={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
+ 	primitiveType[STRING_TYPE]={typeid(string).name(),"string",STRING_TYPE};
+ 	primitiveType[STRING_PTR_TYPE]={typeid(string *).name(),"string *",STRING_PTR_TYPE};
+ 	primitiveType[BOOL_TYPE]={typeid(bool).name(),"bool",BOOL_TYPE};
+ 	primitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
+
+
+	//===> MOVE INTO CScriptClassFactory !!!! ====================================================>
+
+	//-----------------------
+	// Conversion from object types to primitive types (move into factory) ...
+	addTypeConversion<CInteger *,int>( [] (CVariable *obj){return ((CInteger *)obj)->m_value;});
+	addTypeConversion<CInteger *,int *>( [] (CVariable *obj){return (int)&((CInteger *)obj)->m_value;});
+	addTypeConversion<CInteger *,string *>( [] (CVariable *obj){obj->m_strValue=CStringUtils::intToString(((CInteger*)obj)->m_value);return (int)&obj->m_strValue;});
+
+	addTypeConversion<CNumber *,float *>( [] (CVariable *obj){return (int)(&((CNumber *)obj)->m_value);});
+	addTypeConversion<CNumber *,int>( [] (CVariable *obj){return (int)((CNumber *)obj)->m_value;});
+	addTypeConversion<CNumber *,string *>( [] (CVariable *obj){obj->toString();return (int)&obj->m_strValue;});
+
+	addTypeConversion<CBoolean *,bool *>( [] (CVariable *obj){return (int)&((CBoolean *)obj)->m_value;});
+	addTypeConversion<CBoolean *,string *>( [] (CVariable *obj){obj->toString();return (int)&obj->m_strValue;});
+
+	addTypeConversion<CString *,string *>( [] (CVariable *obj){return (int)&(((CString *)obj)->m_value);});
+
+	bool error = false;
+
+	// register internal classes ...
+	if(!register_C_Class<CInteger>("CInteger")) error=true;
+	if(!register_C_Class<CNumber>("CNumber")) error=true;
+	if(!register_C_Class<CBoolean>("CBoolean")) error=true;
+	if(!register_C_Class<CString>("CString")) error=true;
+	if(!register_C_Class<CVector>("CVector")) error=true;
+	if(!register_C_Class<CFunctor>("CFunctor")) error=true;
+
+
+	if((idxClassInteger = getIdxRegisteredClass("CInteger"))==-1) error=true;
+	if((idxClassNumber = getIdxRegisteredClass("CNumber"))==-1) error=true;
+	if((idxClassString = getIdxRegisteredClass("CBoolean"))==-1) error=true;
+	if((idxClassBoolean = getIdxRegisteredClass("CInteger"))==-1) error=true;
+	if((idxClassVariable = getIdxRegisteredClass("CString"))==-1) error=true;
+	if((idxClassFunctor = getIdxRegisteredClass("CFunctor"))==-1) rerror=true;
+
+
+	// register custom functions ...
+	if(!register_C_FunctionMember<CInteger>("toString",&CInteger::toString)) error=true;
+	//register_C_VariableMember<CInteger,CInteger::>("toString");
+
+	//===> MOVE INTO CScriptClassFactory !!!! ====================================================>
+
+	if(error){
+		exit(EXIT_FAILURE);
+	}
  }
 
  CScriptClassFactory::tPrimitiveType *CScriptClassFactory::getPrimitiveTypeFromStr(const string & str){
@@ -127,6 +177,7 @@
 	if((index = getIdxRegisteredClass_Internal(class_name))==-1){ // check whether is local var registered scope ...
 
 		irv = new tInfoRegisteredClass;
+		irv->class_idx=m_registeredClass.size();
 		irv->baseClass=NULL;
 		irv->object_info.symbol_info.symbol_name = class_name;
 		irv->object_info.symbol_info.ast=NULL;
@@ -142,9 +193,9 @@
 }
 
 
- CScriptClass 		 * CScriptClassFactory::newClass(const string & class_name){
+ CScriptVariable 		 * CScriptClassFactory::newClass(const string & class_name){
 
-	 CScriptClass *class_object=NULL;
+	 CScriptVariable *class_object=NULL;
 
 	 // 0. Search class info ...
 	 tInfoRegisteredClass *rc = getRegisteredClass(class_name);
@@ -152,7 +203,7 @@
 	 if(rc != NULL){
 
 		 // 1. Create the object ...
-		 class_object = new CScriptClass(rc);
+		 class_object = new CScriptVariable(rc);
 
 
 	 }
@@ -161,6 +212,25 @@
 
  }
 
+
+ CScriptVariable 		 * CScriptClassFactory::newClassByIdx(unsigned idx){
+
+	 CScriptVariable *class_object=NULL;
+
+	 // 0. Search class info ...
+	 tInfoRegisteredClass *rc = getRegisteredClassByIdx(idx);
+
+	 if(rc != NULL){
+
+		 // 1. Create the object ...
+		 class_object = new CScriptVariable(rc);
+
+
+	 }
+
+	 return class_object;
+
+ }
 
 /**
  * Register C variable
@@ -175,8 +245,8 @@ bool  CScriptClassFactory::register_C_Variable(const string & var_str,void * var
 		return false;
 	}
 
-	tInfoRegisteredFunctionSymbol * mainFunctionInfo = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
-	//tInfoRegisteredClass *rc = CScriptClassFactory::getInstance()->getRegisteredClass(class_name);
+	tInfoRegisteredFunctionSymbol * mainFunctionInfo = getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+	//tInfoRegisteredClass *rc = getRegisteredClass(class_name);
 
 	if(mainFunctionInfo == NULL){
 		print_error_cr("main function is not created");
@@ -390,6 +460,17 @@ tInfoRegisteredClass *CScriptClassFactory::getRegisteredClass(const string & cla
 	}
 
 	return NULL;
+
+}
+
+
+tInfoRegisteredClass *CScriptClassFactory::getRegisteredClassByIdx(unsigned index){
+
+	if(index > m_registeredClass.size()){
+		print_error_cr("index out of bound");
+	}
+
+	return m_registeredClass[index];
 
 }
 

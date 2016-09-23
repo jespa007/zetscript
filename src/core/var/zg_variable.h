@@ -6,6 +6,7 @@
 
 
 #include "CVariable.h"
+#include "CScriptVariable.h"
 #include "CBoolean.h"
 #include "CNumber.h"
 #include "CInteger.h"

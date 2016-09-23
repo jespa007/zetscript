@@ -44,8 +44,8 @@ float *  CNumber::ParsePrimitive(const string & s){
 
 CNumber::CNumber(){
 
-    m_classStr="number";
-    m_pointerClassStr="number";
+  //  m_classStr="number";
+   // m_pointerClassStr="number";
 
 	m_varType = CVariable::VAR_TYPE::NUMBER;
 	m_value=0;

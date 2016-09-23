@@ -1,6 +1,6 @@
 #pragma once
 
-class CUndefined:public CVariable{
+class CUndefined:public CScriptVariable{
 
 public:
 	CUndefined();

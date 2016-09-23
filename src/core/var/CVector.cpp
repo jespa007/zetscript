@@ -2,8 +2,8 @@
 
 CVector::CVector(){
 	m_varType = CVariable::VAR_TYPE::VECTOR;
-    m_classStr=typeid(CVector).name();
-    m_pointerClassStr=typeid(CVector *).name();
+   // m_classStr=typeid(CVector).name();
+    //m_pointerClassStr=typeid(CVector *).name();
 
 	m_ptr = &m_value;
 }

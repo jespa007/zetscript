@@ -43,7 +43,7 @@ CVirtualMachine::CVirtualMachine(){
 
 
 
-CVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_function, CScriptClass *this_object, vector<CVariable *> * argv, int stk){
+CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_function, CScriptVariable *this_object, vector<CScriptVariable *> * argv, int stk){
 
 	//tInfoRegisteredFunctionSymbol *irsf=sf->getFunctionInfo();
 

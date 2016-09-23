@@ -1,4 +1,5 @@
 #include "CSharedPointerManagement.cpp"
+#include "var/zg_variable.cpp"
 #include "ast/CScopeInfo.cpp"
 #include "ast/ast.cpp"
 #include "vm/CALE.cpp"
@@ -6,7 +7,7 @@
 #include "CCompiler.cpp"
 #include "CScriptClassFactory.cpp"
 
-#include "CScriptClass.cpp"
+
 #include "CScriptFunction.cpp.old"
 
 
@@ -228,50 +229,19 @@ bool CZG_ScriptCore::init(){
 
 	m_ast = CAst::getInstance();
 
-	// setup main struct...
-
-
-
-
-
-
-	//-----------------------
-	// Conversion from object types to primitive types (move into factory) ...
-	addTypeConversion<CInteger *,int>( [] (CVariable *obj){return ((CInteger *)obj)->m_value;});
-	addTypeConversion<CInteger *,int *>( [] (CVariable *obj){return (int)&((CInteger *)obj)->m_value;});
-	addTypeConversion<CInteger *,string *>( [] (CVariable *obj){obj->m_strValue=CStringUtils::intToString(((CInteger*)obj)->m_value);return (int)&obj->m_strValue;});
-
-	addTypeConversion<CNumber *,float *>( [] (CVariable *obj){return (int)(&((CNumber *)obj)->m_value);});
-	addTypeConversion<CNumber *,int>( [] (CVariable *obj){return (int)((CNumber *)obj)->m_value;});
-	addTypeConversion<CNumber *,string *>( [] (CVariable *obj){obj->toString();return (int)&obj->m_strValue;});
-
-	addTypeConversion<CBoolean *,bool *>( [] (CVariable *obj){return (int)&((CBoolean *)obj)->m_value;});
-	addTypeConversion<CBoolean *,string *>( [] (CVariable *obj){obj->toString();return (int)&obj->m_strValue;});
-
-	addTypeConversion<CString *,string *>( [] (CVariable *obj){return (int)&(((CString *)obj)->m_value);});
-
-	// move into factory ...
-	//-----------------------
-
-	// ok register CInteger through CScriptClass...
+	// ok register CInteger through CScriptVariable...
 	if((m_mainClassInfo = CScriptClassFactory::getInstance()->registerScriptClass(MAIN_SCRIPT_CLASS_NAME)) == NULL) return false;
 	if((CScriptClassFactory::getInstance()->registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME,m_ast->getMainAstNode())) == NULL) return false;
 
-
-	// register various C functions ...
-	if(!CScriptClassFactory::getInstance()->register_C_Class<CInteger>("CInteger")) return false;
-	if(!CScriptClassFactory::getInstance()->register_C_FunctionMember<CInteger>("toString",&CInteger::toString)) return false;
-	//CScriptClassFactory::getInstance()->register_C_VariableMember<CInteger,CInteger::>("toString");
-
-
-	//main_context = new CContext();
-
-	// register Main Class function
-
-	//CScriptClassFactory::registerClass("Main");
-
 	// register c function's
 	if(!registerGlobal_C_Function(print)) return false;
+
+
+
+
+
+
+
 
 	// register var
 	//registerGlobal_C_Variable(&interface_variable);
@@ -318,7 +288,7 @@ bool CZG_ScriptCore::execute(){
 		// creates the main entry function with compiled code. On every executing code, within "execute" function
 		// virtual machine is un charge of allocating space for all local variables...
 
-		m_mainClass = CScriptClassFactory::getInstance()->newClass(MAIN_SCRIPT_CLASS_NAME);//new CScriptClass(&m_structInfoMain);//CScriptClassFactory::newClass("Main");
+		m_mainClass = CScriptClassFactory::getInstance()->newClass(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClassFactory::newClass("Main");
 
 		//m_mainFunction = new CScriptFunction(m_mainClass,&m_structInfoMain);
 	}

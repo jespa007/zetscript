@@ -1,6 +1,6 @@
 #pragma once
 
-class CVoid:public CVariable{
+class CVoid:public CScriptVariable{
 
 public:
 	CVoid();

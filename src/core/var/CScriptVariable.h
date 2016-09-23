@@ -125,7 +125,7 @@ void* getcodeptr(const FunctorT& f) {
 
 
 
-class CScriptClass: public CVariable{
+class CScriptVariable: public CVariable{
 
 public:
 
@@ -146,9 +146,10 @@ public:
 
 	};
 
-	CScriptClass(tInfoRegisteredClass *info_registered_class);
+	CScriptVariable(tInfoRegisteredClass *info_registered_class);
 
 	//TYPE m_type;
+	unsigned getIdxClass(){return m_infoRegisteredClass->class_idx;}
 
 	void addVariableSymbol(tASTNode *ast);
 	tSymbolInfo * getVariableSymbol(const string & varname);
@@ -162,20 +163,21 @@ public:
 
 	//void addArgSymbol(const string & arg_name);
 
+	const string & getClassName(){return m_infoRegisteredClass->object_info.symbol_info.symbol_name;}
 
 	//tSymbolInfo * getArgSymbol(const string & var_name);
 	//tSymbolInfo * getArgSymbol(unsigned index);
 
 
-	//CScriptClass(tInfoRegisteredFunctionSymbol *irv);
+	//CScriptVariable(tInfoRegisteredFunctionSymbol *irv);
 	//vector<tInfoStatementOp> * getCompiledCode();
 
 	//tInfoRegisteredFunctionSymbol * getFunctionInfo(unsigned idx);
 
 
 //	tInfoScopeVar * registerArgument(const string & var_name);
-//	void 	 addFunction(CScriptClass *sf);
-//	vector<CScriptClass *> *	 getVectorFunction();
+//	void 	 addFunction(CScriptVariable *sf);
+//	vector<CScriptVariable *> *	 getVectorFunction();
 //	vector<string> *	 getArgVector();
 
 
@@ -192,7 +194,7 @@ public:
 	//TYPE getType();
 
 
-	//CScriptClass *getParent();
+	//CScriptVariable *getParent();
 	//CScopeInfo *getScope();
 
 	//PASTNode getRootAst();
@@ -205,7 +207,7 @@ public:
 //	bool eval(const string & s);
 	//bool execute(vector<CVariable *> *argv=NULL);
 
-	~CScriptClass();
+	~CScriptVariable();
 
 private:
 
@@ -224,7 +226,7 @@ private:
 
 	//vector<string> m_arg;
 	//vector<string> m_c_arg; // for c function
-	//vector<CScriptClass *> m_function;
+	//vector<CScriptVariable *> m_function;
 	//tInfoRegisteredFunctionSymbol *irv;
 	tInfoRegisteredClass *m_infoRegisteredClass;
 
@@ -242,6 +244,6 @@ private:
 
 
 	//CScopeInfo	*m_scope; // base scope...
-	//CScriptClass *m_parentFunction;
+	//CScriptVariable *m_parentFunction;
 
 };

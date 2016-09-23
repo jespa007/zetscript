@@ -2,6 +2,7 @@
 
 
 #include "CVariable.cpp"
+#include "CScriptVariable.cpp"
 #include "CBoolean.cpp"
 #include "CNumber.cpp"
 #include "CInteger.cpp"

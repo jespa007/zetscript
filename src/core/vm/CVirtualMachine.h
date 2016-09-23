@@ -18,7 +18,7 @@ public:
 
 
 
-	static CVariable * execute(tInfoRegisteredFunctionSymbol *info_function, CScriptClass *this_object, vector<CVariable *> * argv=NULL,int stk=0);
+	static CScriptVariable * execute(tInfoRegisteredFunctionSymbol *info_function, CScriptVariable *this_object, vector<CScriptVariable *> * argv=NULL,int stk=0);
 
 private:
 

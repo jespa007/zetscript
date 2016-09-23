@@ -1,6 +1,6 @@
 #pragma once
 
-class CString: public CVariable{
+class CString: public CScriptVariable{
 	
 public:
 

@@ -1,6 +1,6 @@
 #pragma once
 
-class CVector: public CVariable{
+class CVector: public CScriptVariable{
 
 public:
 

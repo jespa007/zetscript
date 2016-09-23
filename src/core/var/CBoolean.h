@@ -1,6 +1,6 @@
 #pragma once
 
-class CBoolean: public CVariable{
+class CBoolean: public CScriptVariable{
 	
 
 public:

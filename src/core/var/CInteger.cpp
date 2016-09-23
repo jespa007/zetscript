@@ -44,8 +44,8 @@ int *  CInteger::ParsePrimitive(const string & val){
 
 CInteger::CInteger(){
 
-    m_classStr=typeid(CInteger).name();
-    m_pointerClassStr=typeid(CInteger *).name();
+ //   m_classStr=typeid(CInteger).name();
+ //   m_pointerClassStr=typeid(CInteger *).name();
 
 	m_varType = CVariable::VAR_TYPE::INTEGER;
 	m_value=0;

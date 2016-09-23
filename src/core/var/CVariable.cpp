@@ -4,16 +4,16 @@ CVariable::CVariable(){
 	m_varType = CVariable::VAR_TYPE::OBJECT;
 	m_ptr=NULL;
 	m_strValue="unknown";
-	idxClass = -1;
+	//idxClass = -1;
 }
 
 CVariable::CVariable(int idxClass, void *ptr_obj, const string & m_pointerClassStr){
 
 	m_varType = CVariable::VAR_TYPE::OBJECT;
 	m_strValue="unknown";
-	this->idxClass = idxClass;
+	//this->idxClass = idxClass;
 	this->m_ptr=ptr_obj;
-	this->m_pointerClassStr = m_pointerClassStr;
+	//this->m_pointerClassStr = m_pointerClassStr;
 
 }
 

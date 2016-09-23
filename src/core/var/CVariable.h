@@ -32,10 +32,11 @@ public:
 
 
 	CVariable();
-	CVariable(int idxClass, void *ptr_obj, const string & classNamePtr);
+	//CVariable(int idxClass, void *ptr_obj, const string & classNamePtr);
 
 	void setPtr(void *ptr);
 
+	/*
     void setClassStr(const string & _class) {
         m_classStr=_class;
     }
@@ -45,12 +46,12 @@ public:
     }
 
     const string &  getClassStr() {
-        return m_classStr;
+        return "YOU MUST ";
     }
 
     const string &  getPointerClassStr() {
         return m_pointerClassStr;
-    }
+    }*/
 
     virtual string toString(){
     	return m_strValue;
@@ -66,7 +67,7 @@ protected:
 
 
 	void *m_ptr; // object pointer
-	int idxClass;
+	//int idxClass;
 	VAR_TYPE m_varType;
     string m_classStr,m_pointerClassStr;
 

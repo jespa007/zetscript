@@ -12,7 +12,7 @@ project(zg_base)
    
 if (MINGW)
 	set(CMAKE_LEGACY_MINGW_WIN32 0)
-	set(CMAKE_PREFIX_PATH "c:/apps/mingw/local32/lib")
+	set(CMAKE_PREFIX_PATH "c:/braingaze/dev/mingw/local32/lib")
 
 	find_library(SDL2_LIB  NAMES SDL2  )
 	find_library(SDL2_MAIN_LIB  NAMES SDL2main  )
@@ -120,9 +120,6 @@ set( ZG_BASE_LIB_SRCS
     #-- Utils --
 	utils/zg_utils.cpp
 
-	#-- Object --
-	variable/zg_variable.cpp
-    
 	
 	#-- Script Core --
 	core/zg_core.cpp	

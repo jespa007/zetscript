@@ -443,6 +443,7 @@ struct tInfoRegisteredFunctionSymbol{
 typedef struct _tInfoRegisteredClass{
 
 	tScriptFunctionInfo	object_info;
+	unsigned class_idx;
 	string classPtrType; // type_id().name();
 	_tInfoRegisteredClass *baseClass; // in the case is and extension of class.
 
