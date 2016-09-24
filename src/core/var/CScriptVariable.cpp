@@ -1,13 +1,35 @@
 #include "core/zg_core.h"
 
+
+CUndefined *CScriptVariable::UndefinedSymbol=NULL;
+CVoid *CScriptVariable::VoidSymbol=NULL;
+
+
+
+void CScriptVariable::createSingletons(){
+	UndefinedSymbol = NEW_UNDEFINED_VAR;
+	VoidSymbol = NEW_VOID_VAR;
+
+}
+
+
+void CScriptVariable::destroySingletons(){
+	delete UndefinedSymbol;
+	delete VoidSymbol;
+}
+
+
+
+
+
 void CScriptVariable::createSymbols(tInfoRegisteredClass *irv){
 	for ( unsigned i = 0; i < irv->object_info.local_symbols.m_registeredVariable.size(); i++){
 		addVariableSymbol(irv->object_info.local_symbols.m_registeredVariable[i].ast);
 	}
 
 	for ( unsigned i = 0; i < irv->object_info.local_symbols.m_registeredFunction.size(); i++){
-		print_info_cr("=========================================");
-		print_info_cr("- Create function %s...",irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.info_var_scope->name.c_str());
+		//print_info_cr("=========================================");
+		//print_info_cr("- Create function %s...",irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name.c_str());
 		addFunctionSymbol(
 				irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast,
 				&irv->object_info.local_symbols.m_registeredFunction[i]
@@ -22,6 +44,8 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *irv){
 
 }
 
+
+
 CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv){
 
 
@@ -32,6 +56,7 @@ CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv){
 	//pointer_function = NULL;
 	//m_scope = scope;
 	//m_parentFunction = _parentFunction;
+	print_info_cr("creating var type %s",irv->object_info.symbol_info.symbol_name.c_str());
 
 
 
@@ -63,7 +88,7 @@ CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv){
 
 void CScriptVariable::addVariableSymbol(tASTNode *ast){
 	tSymbolInfo si;
-	si.object = CScopeInfo::UndefinedSymbol;
+	si.object = CScriptVariable::UndefinedSymbol;
 	si.ast = ast;
 	m_variableSymbol.push_back(si);
 }

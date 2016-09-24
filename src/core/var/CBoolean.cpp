@@ -1,5 +1,5 @@
 #include "core/zg_core.h"
-
+/*
 CBoolean * CBoolean::Parse(const string & s){
 
 
@@ -17,9 +17,9 @@ CBoolean * CBoolean::Parse(const string & s){
 
 		// TODO: develop exception handler.
 		return NULL;
-}
+}*/
 
-bool * CBoolean::ParsePrimitive(const string & s){
+bool * CBoolean::Parse(const string & s){
 
 	if(CStringUtils::toLower(s)=="true"){
 		bool *b=new bool;
@@ -37,14 +37,14 @@ bool * CBoolean::ParsePrimitive(const string & s){
 }
 
 
-CBoolean::CBoolean(){
+CBoolean::CBoolean(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class){
 
-    m_classStr=typeid(CBoolean).name();
-    m_pointerClassStr=typeid(CBoolean *).name();
+    //m_classStr=typeid(CBoolean).name();
+    //m_pointerClassStr=typeid(CBoolean *).name();
 
-	m_varType = CVariable::VAR_TYPE::BOOLEAN;
+	//m_varType = CVariable::VAR_TYPE::BOOLEAN;
 	m_value = false;
-	m_ptr=&m_value;
+	//m_ptr=&m_value;
 }
 
 

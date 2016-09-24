@@ -2836,7 +2836,7 @@ CAst *  CAst::getInstance(){
 		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
 		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
 
-		CScopeInfo::createSingletons();
+
 
 		// create main ast management
 		m_ast = new CAst();

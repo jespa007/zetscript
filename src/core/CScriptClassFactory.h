@@ -16,7 +16,7 @@ class CScopeInfo;
 class CScriptClassFactory{
 
 
-	unsigned idxClassInteger, idxClassNumber, idxClassString, idxClassBoolean, idxClassVector, idxClassFunctor;
+	int idxClassInteger, idxClassNumber, idxClassString, idxClassBoolean, idxClassVector, idxClassFunctor, idxClassUndefined, idxClassVoid;
 
 public:
 
@@ -55,7 +55,7 @@ public:
 	/**
 	 * This function registers a script class into factory.
 	 */
-	tInfoRegisteredClass * registerScriptClass(const string & class_name);
+	tInfoRegisteredClass * registerScriptClass(const string & class_name, const string & base_class_name="");
 
 	/**
 	 * Class name given this function creates the object and initializes all variables.
@@ -92,12 +92,14 @@ public:
 
 
 	// internal var types ...
-	unsigned getIdxClassInteger(){return idxClassInteger;}
-	unsigned getIdxClassNumber(){return idxClassNumber;}
-	unsigned getIdxClassString(){return idxClassString;}
-	unsigned getIdxClassBoolean(){return idxClassBoolean;}
-	unsigned getIdxClassVector(){return idxClassVector;}
-	unsigned getIdxClassFunctor(){return idxClassFunctor;}
+	int getIdxClassVoid(){return idxClassVoid;}
+	int getIdxClassUndefined(){return idxClassUndefined;}
+	int getIdxClassInteger(){return idxClassInteger;}
+	int getIdxClassNumber(){return idxClassNumber;}
+	int getIdxClassString(){return idxClassString;}
+	int getIdxClassBoolean(){return idxClassBoolean;}
+	int getIdxClassVector(){return idxClassVector;}
+	int getIdxClassFunctor(){return idxClassFunctor;}
 
 
 
@@ -206,14 +208,25 @@ public:
 	 * Register C Class. Return index registered class
 	 */
 	template<class _T>
-	bool register_C_Class(const string & class_name){
+	bool register_C_Class(const string & class_name, const string & base_class_name=""){
+
+		tInfoRegisteredClass *base_class = NULL;
+
+		if(base_class_name != ""){
+			if((base_class = this->getRegisteredClass(base_class_name)) == NULL){
+				return false;
+			}
+		}
+
 		if(!isClassRegistered(class_name)){
 
 			string str_classPtr = typeid( _T *).name();
 
 			if(getIdx_C_RegisteredClass(str_classPtr,false)!=-1){
 				print_error_cr("this %s is already registered");
+				return false;
 			}
+
 
 			//print_error_cr("CHECK AND TODOOOOOO!");
 			tInfoRegisteredClass *irc = new tInfoRegisteredClass;
@@ -221,10 +234,11 @@ public:
 			irc->object_info.symbol_info.ast = new tASTNode;
 			irc->object_info.symbol_info.info_var_scope=NULL;
 			irc->object_info.symbol_info.symbol_name = class_name;
-
+			irc->baseClass = base_class; // identify extend class ?!?!!?
 			irc->class_idx = m_registeredClass.size();
 
 			irc->classPtrType=str_classPtr;
+			irc->class_idx=m_registeredClass.size();
 			irc->object_info.symbol_info.properties=C_OBJECT_REF;
 			m_registeredClass.push_back(irc);
 
@@ -257,9 +271,10 @@ public:
 		}
 
 		// init struct...
-		irs.object_info.symbol_info.ast = new tASTNode;
-		irs.object_info.symbol_info.ast->value_symbol=function_name;
+		irs.object_info.symbol_info.ast = NULL;
 		irs.object_info.symbol_info.info_var_scope = NULL;
+		irs.object_info.symbol_info.symbol_name=function_name;
+
 
 		irs.object_info.symbol_info.properties = C_OBJECT_REF;
 
@@ -294,7 +309,7 @@ private:
 	//int getIdxRegisteredVariableSymbol_Internal(const string & class_name,const string & var_name);
 
 	vector<tInfoRegisteredClass *>  	 m_registeredClass;
-	CVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
+	//CScriptVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
 
 	CScriptClassFactory();
 	~CScriptClassFactory();

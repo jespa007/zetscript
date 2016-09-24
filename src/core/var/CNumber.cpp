@@ -1,5 +1,5 @@
 #include "core/zg_core.h"
-
+/*
 CNumber * CNumber::Parse(const string & s){
 	char *p;bool ok=true;
 	CNumber *n=NULL;
@@ -18,9 +18,9 @@ CNumber * CNumber::Parse(const string & s){
 
 	// TODO: develop exception handler.
 	return n;
-}
+}*/
 
-float *  CNumber::ParsePrimitive(const string & s){
+float *  CNumber::Parse(const string & s){
 	char *p;bool ok=true;
 	float *n=NULL;
 
@@ -42,14 +42,14 @@ float *  CNumber::ParsePrimitive(const string & s){
 }
 
 
-CNumber::CNumber(){
+CNumber::CNumber(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class){
 
   //  m_classStr="number";
    // m_pointerClassStr="number";
 
-	m_varType = CVariable::VAR_TYPE::NUMBER;
+	//m_varType = CVariable::VAR_TYPE::NUMBER;
 	m_value=0;
-	m_ptr=&m_value;
+	//m_ptr=&m_value;
 }
 
 

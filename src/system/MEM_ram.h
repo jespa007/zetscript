@@ -10,6 +10,7 @@
 #include          <math.h>
 
 #include          <vector>
+#include          <stack>
 #include 			<regex>
 #include                  <new>
 #include           <iostream>
@@ -30,7 +31,7 @@
 #include <string>
 #include <string>
 #include <map>
-#include <vector>
+
 #include <sstream>
 #include <cstddef>
 
@@ -87,6 +88,7 @@ using std::cerr;
 using std::endl;
 using std::string;
 using std::vector;
+using std::stack;
 using std::ostringstream;
 
 

@@ -8,7 +8,7 @@
 #include "CScriptClassFactory.cpp"
 
 
-#include "CScriptFunction.cpp.old"
+//#include "CScriptFunction.cpp.old"
 
 
 
@@ -40,7 +40,7 @@ void CZG_ScriptCore::destroy(){
 }
 
 
-bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CVariable *> * argv){
+bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CScriptVariable *> * argv){
 
 	int converted_param[MAX_PARAM_C_FUNCTION];
 
@@ -68,7 +68,7 @@ bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & 
 
 	// convert parameters script to c...
 	for(unsigned int i = 0; i < argv->size();i++){
-		fntConversionType paramConv=CScriptClassFactory::getInstance()->getConversionType((argv->at(i))->getPointerClassStr(),irfs->m_arg[i]);
+		fntConversionType paramConv=CScriptClassFactory::getInstance()->getConversionType((argv->at(i))->getPointer_C_ClassName(),irfs->m_arg[i]);
 
 		if(paramConv == NULL){
 			return false;
@@ -182,7 +182,7 @@ CVariable * CZG_ScriptCore::createObjectFromPrimitiveType(CZG_ScriptCore::tPrimi
 	if(pt != NULL){
 		switch(pt->id){
 		case C_TYPE_VAR::VOID_TYPE:
-			return CScopeInfo::VoidSymbol;
+			return CScriptVariable::VoidSymbol;
 			break;
 		case C_TYPE_VAR::STRING_TYPE:
 			return (CVariable *)NEW_STRING();
@@ -214,7 +214,12 @@ CZG_ScriptCore::CZG_ScriptCore(){
 
 	//registerFunction(&CCustomObject::member2);
 	// call_function("print");
+	__init__ = false;
+	m_mainClassInfo=NULL;
+	m_mainClass=NULL;
+	m_mainFunctionInfo=NULL;
 
+	vm=NULL;
 }
 
 int interface_variable;
@@ -223,8 +228,9 @@ int interface_variable;
 
 bool CZG_ScriptCore::init(){
 
+	vm = new CVirtualMachine();
 	CScriptClassFactory::registerPrimitiveTypes();
-
+	CScriptVariable::createSingletons();
 
 
 	m_ast = CAst::getInstance();
@@ -253,7 +259,9 @@ bool CZG_ScriptCore::init(){
 
 	//m_globalScope = new CScopeInfo();
 
-	CVirtualMachine::getInstance();
+	//CVirtualMachine::getInstance();
+
+	__init__=true;
 
 	return true;
 
@@ -261,6 +269,7 @@ bool CZG_ScriptCore::init(){
 
 bool CZG_ScriptCore::eval(const string & s){
 
+	if(!__init__) return false;
 
 	// generate whole AST
 
@@ -284,6 +293,9 @@ bool CZG_ScriptCore::eval(const string & s){
 
 
 bool CZG_ScriptCore::execute(){
+
+	if(!__init__) return false;
+
 	if(m_mainClass == NULL){
 		// creates the main entry function with compiled code. On every executing code, within "execute" function
 		// virtual machine is un charge of allocating space for all local variables...
@@ -296,7 +308,7 @@ bool CZG_ScriptCore::execute(){
 	//CCompiler::getInstance()->printGeneratedCode(m_mainClass);
 
 	// the first code to execute is the main function that in fact is a special member function inside our main class
-	return CVirtualMachine::getInstance()->execute(m_mainFunctionInfo,  m_mainClass, NULL,0);//->excute();
+	return vm->execute(m_mainFunctionInfo,  m_mainClass, NULL,0);//->excute();
 }
 
 
@@ -306,11 +318,12 @@ CZG_ScriptCore::~CZG_ScriptCore(){
 
 	//delete m_mainClass;
 	delete m_mainClass;
+	delete vm;
 	//delete m_mainFunction;
 
 	CCompiler::destroySingletons();
-	CVirtualMachine::destroySingletons();
+	//CVirtualMachine::destroySingletons();
 	CAst::destroySingletons();
-	CScopeInfo::destroySingletons();
+	CScriptVariable::destroySingletons();
 
 }

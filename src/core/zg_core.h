@@ -5,11 +5,12 @@ class CScopeInfo;
 
 #include "system/zg_system.h"
 #include "utils/zg_utils.h"
-#include "var/zg_variable.h"
+
 
 
 #include "ScriptDefinesStructs.h"
 #include "CSharedPointerManagement.h"
+#include "var/zg_variable.h"
 #include "ast/ast.h"
 #include "ast/CScopeInfo.h"
 #include "CCompiler.h"
@@ -39,6 +40,8 @@ class CZG_ScriptCore{
 	tInfoRegisteredFunctionSymbol *m_mainFunctionInfo;
 
 	CScriptVariable *m_mainClass;
+	CVirtualMachine *vm;
+	bool __init__;
 
 
 	//CScriptFunction *m_mainFunction;
@@ -84,7 +87,7 @@ public:
 	CScriptVariable *getMainObject(){return m_mainClass;}
 	//CScriptFunction *getMainFunction(){return m_mainFunction;}
 
-	static bool call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CVariable *> * argv);
+	static bool call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CScriptVariable *> * argv);
 
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 	bool eval(const string & s);

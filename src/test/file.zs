@@ -9,9 +9,9 @@
 }*/
 
 
-var ff = function () { var i=0;return 1+2;};
+var ff = function () { var j=0;return 1+2;};
 
-2=2;
+
 /*
 var i=1+2;
 
@@ -45,6 +45,10 @@ c();
 */
 
 print(3+2+ff());
+
+for(var i=0; i < 10; i++){
+	
+}
 
 
 /*var b=new CInteger();

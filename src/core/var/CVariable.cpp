@@ -7,6 +7,7 @@ CVariable::CVariable(){
 	//idxClass = -1;
 }
 
+/*
 CVariable::CVariable(int idxClass, void *ptr_obj, const string & m_pointerClassStr){
 
 	m_varType = CVariable::VAR_TYPE::OBJECT;
@@ -16,7 +17,7 @@ CVariable::CVariable(int idxClass, void *ptr_obj, const string & m_pointerClassS
 	//this->m_pointerClassStr = m_pointerClassStr;
 
 }
-
+*/
 
 CVariable::VAR_TYPE CVariable::getVariableType(){
 	return m_varType;

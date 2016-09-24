@@ -115,6 +115,18 @@ int main(int argc, char * argv[]){
 	CLog::setUseAnsiEscape(true);
 	CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
 
+
+	int ptr;
+
+	float caca=1.2f;
+
+	ptr=(int)caca;
+
+
+	float trans=(float)ptr;
+
+	printf("FLOAT:%f\n",trans);
+
 	/*void * c_fun1 = (void *)& CCustomObject::member;
 	int c_func = (int)c_fun1;
 	CCustomObject obj;
@@ -213,7 +225,7 @@ int main(int argc, char * argv[]){
 
 	//printf("\nvar %i\n\n",i);
 
-	print_info_cr("sizeof(CVariable)=%i sizeof(float)=%i sizeof(string)=%i",sizeof(CVariable),sizeof(float),sizeof(string));
+	print_info_cr("sizeof(CVirtualMachine)=%i sizeof(float)=%i sizeof(string)=%i",sizeof(CVirtualMachine),sizeof(float),sizeof(string));
 
 
 
@@ -266,7 +278,7 @@ int main(int argc, char * argv[]){
 				}
 			}
 
-		print_info_cr("sizeobject:%i",sizeof(CVariable));
+		print_info_cr("sizeobject:%i",sizeof(CScriptVariable));
 		print_info_cr("sizenumber:%i",sizeof(CNumber));
 
 		print_info_cr("float:%s",typeid(float).name());

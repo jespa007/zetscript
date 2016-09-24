@@ -215,10 +215,22 @@ enum ASM_PRE_POST_OPERATORS{
 };
 
 
+enum VALUE_INSTRUCTION_TYPE{
+	INS_TYPE_UNDEFINED=0,
+	INS_TYPE_INTEGER, // primitive int
+	INS_TYPE_NUMBER, // primitive number
+	INS_TYPE_BOOLEAN, // primitive bool
+	INS_TYPE_STRING, // primitive string
+	INS_TYPE_FUNCTION, // primitive function
+	INS_TYPE_VAR, // always is an script class...
+	INS_MAX_TYPES
+};
+
+
 #define MAIN_SCRIPT_CLASS_NAME 		"__MainClass__"
 #define MAIN_SCRIPT_FUNCTION_NAME 	"__mainFunction__"
 
-typedef int (*fntConversionType)(CVariable *obj);
+typedef int (*fntConversionType)(CScriptVariable *obj);
 
 
 typedef struct{
@@ -358,7 +370,7 @@ public:
 	// void *result_obj; // can be float/bool/string or variable.
 
 	// string symbol_name;
-	CVariable::VAR_TYPE variable_type;
+	VALUE_INSTRUCTION_TYPE variable_type;
 	 PASTNode ast_node; // define ast node for give some information at run time
 	// int definedLine;
 
@@ -377,7 +389,7 @@ public:
 	// bool (* isconvertable)(int value);
 
 	tInfoAsmOp(){
-		variable_type = CVariable::VAR_TYPE::OBJECT;
+		variable_type = VALUE_INSTRUCTION_TYPE::INS_TYPE_UNDEFINED;
 		//variable_type=VAR_TYPE::NOT_DEFINED;
 		operator_type=ASM_OPERATOR::INVALID_OP;
 		pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
@@ -443,7 +455,7 @@ struct tInfoRegisteredFunctionSymbol{
 typedef struct _tInfoRegisteredClass{
 
 	tScriptFunctionInfo	object_info;
-	unsigned class_idx;
+	int class_idx;
 	string classPtrType; // type_id().name();
 	_tInfoRegisteredClass *baseClass; // in the case is and extension of class.
 

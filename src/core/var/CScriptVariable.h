@@ -2,7 +2,7 @@
 
 
 
-
+#include "core/ScriptDefinesStructs.h"
 #include "core/ast/CScopeInfo.h"
 
 
@@ -125,9 +125,18 @@ void* getcodeptr(const FunctorT& f) {
 
 
 
-class CScriptVariable: public CVariable{
+class CScriptVariable{//: public CVariable{
 
 public:
+
+	static CUndefined *UndefinedSymbol;
+	static CVoid *VoidSymbol;
+
+
+
+
+	static void createSingletons();
+	static void destroySingletons();
 
 	/*enum TYPE{
 		SCRIPT_FUNCTION_TYPE=0, // function with args (default)...
@@ -140,16 +149,21 @@ public:
 		void *object; // created object. undefined by default.
 		tASTNode *ast;
 		tSymbolInfo(){
-			this->object = CScopeInfo::UndefinedSymbol;
+			this->object = CScriptVariable::UndefinedSymbol;
 			this->ast = NULL;
 		}
 
 	};
 
+
+	// public vars ...
+	string m_strValue;
+
+	//CScriptVariable();
 	CScriptVariable(tInfoRegisteredClass *info_registered_class);
 
 	//TYPE m_type;
-	unsigned getIdxClass(){return m_infoRegisteredClass->class_idx;}
+	int getIdxClass(){return m_infoRegisteredClass->class_idx;}
 
 	void addVariableSymbol(tASTNode *ast);
 	tSymbolInfo * getVariableSymbol(const string & varname);
@@ -164,7 +178,12 @@ public:
 	//void addArgSymbol(const string & arg_name);
 
 	const string & getClassName(){return m_infoRegisteredClass->object_info.symbol_info.symbol_name;}
+	const string & getPointer_C_ClassName(){return m_infoRegisteredClass->classPtrType;}
 
+
+    virtual string toString(){
+    	return m_strValue;
+    }
 	//tSymbolInfo * getArgSymbol(const string & var_name);
 	//tSymbolInfo * getArgSymbol(unsigned index);
 
@@ -207,7 +226,7 @@ public:
 //	bool eval(const string & s);
 	//bool execute(vector<CVariable *> *argv=NULL);
 
-	~CScriptVariable();
+	virtual ~CScriptVariable();
 
 private:
 

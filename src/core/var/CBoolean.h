@@ -1,5 +1,8 @@
 #pragma once
 
+
+#define NEW_BOOLEAN_VAR (new CBoolean(CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassBoolean())))
+
 class CBoolean: public CScriptVariable{
 	
 
@@ -8,11 +11,11 @@ public:
 	bool m_value;
 
 
-	static CBoolean * Parse(const string & );
-	static bool * ParsePrimitive(const string & );
+	//static CBoolean * Parse(const string & );
+	static bool * Parse(const string & );
 
-	CBoolean();
-	CBoolean(bool b);
+	CBoolean(tInfoRegisteredClass *info_registered_class);
+
 
 	
 

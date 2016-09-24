@@ -15,14 +15,14 @@
 
 
 tDefOperator CCompiler::def_operator[MAX_OPERATORS];
-map<string, CVariable *> * CCompiler::constant_pool=NULL;
+map<string, CCompiler::tInfoConstantValue *> * CCompiler::constant_pool=NULL;
 char CCompiler::print_aux_load_value[512];
 
 
 CCompiler *CCompiler::m_compiler = NULL;
 
 
-CVariable *CCompiler::getConstant(const string & const_name){
+CCompiler::tInfoConstantValue *CCompiler::getConstant(const string & const_name){
 
 	if((*constant_pool).count(const_name) == 1){
 		return (*constant_pool)[const_name];
@@ -30,12 +30,20 @@ CVariable *CCompiler::getConstant(const string & const_name){
 	return NULL;
 }
 
-void CCompiler::addConstant(const string & const_name, CVariable *obj){
+CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name, void *obj, VALUE_INSTRUCTION_TYPE type){
+
+	CCompiler::tInfoConstantValue * info_ptr=NULL;
+
 	if(getConstant(const_name) == NULL){
-		(*constant_pool)[const_name]=obj;
+		info_ptr=new tInfoConstantValue;
+		info_ptr->ptr=obj;
+		info_ptr->type=type;
+		(*constant_pool)[const_name]=info_ptr;
 	}else{
 		print_error_cr("constant %s already exist",const_name.c_str());
 	}
+
+	return info_ptr;
 }
 
 int CCompiler::addLocalVarSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope){
@@ -148,7 +156,7 @@ int  CCompiler::getIdxLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvalu
 
 CCompiler *CCompiler::getInstance(){
 	if(m_compiler == NULL){
-		constant_pool = new map<string,CVariable *>;
+		constant_pool = new map<string,tInfoConstantValue *>;
 		m_compiler = new CCompiler();
 	}
 
@@ -500,10 +508,13 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	ASM_PRE_POST_OPERATORS pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
-	CVariable *obj, *get_obj;
-	CVariable::VAR_TYPE type=CVariable::OBJECT;
+	void *const_obj;
+	void *obj;
+	CCompiler::tInfoConstantValue *get_obj;
+	VALUE_INSTRUCTION_TYPE type=INS_TYPE_VAR;
 	LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
 	SCOPE_TYPE scope_type=LOCAL_SCOPE;
+	bool is_constant = true;
 
 	if(_node->pre_post_operator_info != NULL){
 
@@ -511,36 +522,44 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	}
 	// try parse value...
 	if(v=="null"){
-		type=CVariable::UNDEFINED;
+		type=INS_TYPE_UNDEFINED;
 		load_type=LOAD_TYPE_CONSTANT;
-		obj=CScopeInfo::UndefinedSymbol;
+		obj=CScriptVariable::UndefinedSymbol;
 		print_com_cr("%s detected as null\n",v.c_str());
 
-	}else if((obj=CInteger::Parse(v))!=NULL){
-			type=CVariable::INTEGER;
+	}else if((const_obj=CInteger::Parse(v))!=NULL){
+			int value = *((int *)const_obj);
+			delete (int *)const_obj;
+
+			type=INS_TYPE_INTEGER;
 			load_type=LOAD_TYPE_CONSTANT;
 			print_com_cr("%s detected as int\n",v.c_str());
 			if((get_obj = getConstant(v))!=NULL){
-				delete obj;
 				obj = get_obj;
 			}else{
-				addConstant(v,obj);
+				obj=addConstant(v,new int(value),type);
 			}
 	}
-	else if((obj=CNumber::Parse(v))!=NULL){
-		type=CVariable::NUMBER;
+	else if((const_obj=CNumber::Parse(v))!=NULL){
+		float value = *((float *)const_obj);
+		delete (float *)const_obj;
+
+		type=INS_TYPE_NUMBER;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as float\n",v.c_str());
 
 		if((get_obj = getConstant(v))!=NULL){
-			delete obj;
 			obj = get_obj;
 		}else{
-			addConstant(v,obj);
+			obj=addConstant(v,new float(value),type);
 		}
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
-		type=CVariable::STRING;
+
+		//string value = ((CString *)obj)->m_value;
+		//delete obj;
+
+		type=INS_TYPE_STRING;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as string\n",v.c_str());
 
@@ -548,26 +567,30 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 			obj = get_obj;
 		}else{
 			string s=v.substr(1,v.size()-2);
-			CString *os=new CString();
-			os->m_value = s;
-			obj = os;
-			addConstant(v,obj);
+			//CString *os=new CString();
+			//os->m_value = s;
+			//obj = os;
+			obj=addConstant(v,new string(s),type);
 		}
 
 	}
-	else if((obj=CBoolean::Parse(v))!=NULL){
-		type=CVariable::BOOLEAN;
+	else if((const_obj=CBoolean::Parse(v))!=NULL){
+
+		bool value = *((bool *)const_obj);
+		delete (bool *)const_obj;
+
+		type=INS_TYPE_BOOLEAN;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as boolean\n",v.c_str());
 
 		if((get_obj = getConstant(v))!=NULL){
-			delete obj;
 			obj = get_obj;
 		}else{
-			addConstant(v,obj);
+			obj=addConstant(v,new bool(value),type);
 		}
 	}else{
 
+		is_constant = false;
 
 		int idx_local_var=-1;
 
@@ -689,11 +712,11 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 		// if object check whether has pre/post inc/dec
 
 
-		obj = (CVariable *)idx_local_var;
+		obj = (CScriptVariable *)idx_local_var;
 	}
 
 	if((pre_post_operator_type !=ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR) &&
-		type!=CVariable::OBJECT){
+		is_constant){
 		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->definedValueline,_node->pre_post_operator_info->str);
 		return false;
 
@@ -720,7 +743,7 @@ bool CCompiler::insertMovVarInstruction(PASTNode _node,int left_index, int right
 	tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[left_index];
 
 	// check whether left operant is object...
-	if(left_asm_op->variable_type != CVariable::OBJECT){
+	if(left_asm_op->variable_type != INS_TYPE_VAR){
 		int line = -1;
 
 		if(left_asm_op->ast_node!=NULL)
@@ -792,7 +815,7 @@ void CCompiler::insert_CreateArrayObject_Instruction(PASTNode _node){
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 
 	asm_op->operator_type=ASM_OPERATOR::VEC;
-	asm_op->variable_type = CVariable::OBJECT;
+	asm_op->variable_type =INS_TYPE_VAR;
 	asm_op->ast_node = _node;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -806,7 +829,7 @@ void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instruc
 	asm_op->index_op2 = index_instrucction;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::VGET;
 	asm_op->ast_node = _ast;
-	asm_op->variable_type = CVariable::OBJECT;
+	asm_op->variable_type = INS_TYPE_VAR;
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -1000,7 +1023,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
 
-	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->variable_type != CVariable::OBJECT){
+	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->variable_type != INS_TYPE_VAR){
 
 			error_str = "left operand must be l-value for '=' operator";
 			return false;
@@ -1222,7 +1245,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 	//CScopeInfo * _lc = m_currentFunctionInfo->getScope();
 	int r=index_instruction;
-	bool this_object = false;
+	//bool this_object = false;
 	bool inline_if_else=false;
 	string error_str;
 	if(_node==NULL){

@@ -7,16 +7,10 @@
 class CContext;
 
 
-class CScopeInfo: public CVariable{
+class CScopeInfo{//: public CScriptVariable{
 public:
 
-	static CUndefined *UndefinedSymbol;
-	static CVoid *VoidSymbol;
 
-
-
-	static void createSingletons();
-	static void destroySingletons();
 
 
 	//---------------------------------

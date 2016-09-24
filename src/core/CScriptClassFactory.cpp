@@ -92,7 +92,7 @@
 
  CScriptClassFactory::CScriptClassFactory(){
 
-	 idxClassInteger = idxClassNumber = idxClassString = idxClassBoolean = idxClassVariable = idxClassVector = idxClassFunctor = -1;
+	 idxClassInteger = idxClassNumber = idxClassString = idxClassBoolean = idxClassVector = idxClassFunctor = idxClassUndefined= idxClassVoid = -1;
 
  	primitiveType[VOID_TYPE]={typeid(void).name(),"void",VOID_TYPE};
  	primitiveType[INT_TYPE]={typeid(int).name(),"int",INT_TYPE};
@@ -109,22 +109,24 @@
 
 	//-----------------------
 	// Conversion from object types to primitive types (move into factory) ...
-	addTypeConversion<CInteger *,int>( [] (CVariable *obj){return ((CInteger *)obj)->m_value;});
-	addTypeConversion<CInteger *,int *>( [] (CVariable *obj){return (int)&((CInteger *)obj)->m_value;});
-	addTypeConversion<CInteger *,string *>( [] (CVariable *obj){obj->m_strValue=CStringUtils::intToString(((CInteger*)obj)->m_value);return (int)&obj->m_strValue;});
+	addTypeConversion<CInteger *,int>( [] (CScriptVariable *obj){return ((CInteger *)obj)->m_value;});
+	addTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){return (int)&((CInteger *)obj)->m_value;});
+	addTypeConversion<CInteger *,string *>( [] (CScriptVariable *obj){obj->m_strValue=CStringUtils::intToString(((CInteger*)obj)->m_value);return (int)&obj->m_strValue;});
 
-	addTypeConversion<CNumber *,float *>( [] (CVariable *obj){return (int)(&((CNumber *)obj)->m_value);});
-	addTypeConversion<CNumber *,int>( [] (CVariable *obj){return (int)((CNumber *)obj)->m_value;});
-	addTypeConversion<CNumber *,string *>( [] (CVariable *obj){obj->toString();return (int)&obj->m_strValue;});
+	addTypeConversion<CNumber *,float *>( [] (CScriptVariable *obj){return (int)(&((CNumber *)obj)->m_value);});
+	addTypeConversion<CNumber *,int>( [] (CScriptVariable *obj){return (int)((CNumber *)obj)->m_value;});
+	addTypeConversion<CNumber *,string *>( [] (CScriptVariable *obj){obj->toString();return (int)&obj->m_strValue;});
 
-	addTypeConversion<CBoolean *,bool *>( [] (CVariable *obj){return (int)&((CBoolean *)obj)->m_value;});
-	addTypeConversion<CBoolean *,string *>( [] (CVariable *obj){obj->toString();return (int)&obj->m_strValue;});
+	addTypeConversion<CBoolean *,bool *>( [] (CScriptVariable *obj){return (int)&((CBoolean *)obj)->m_value;});
+	addTypeConversion<CBoolean *,string *>( [] (CScriptVariable *obj){obj->toString();return (int)&obj->m_strValue;});
 
-	addTypeConversion<CString *,string *>( [] (CVariable *obj){return (int)&(((CString *)obj)->m_value);});
+	addTypeConversion<CString *,string *>( [] (CScriptVariable *obj){return (int)&(((CString *)obj)->m_value);});
 
 	bool error = false;
 
 	// register internal classes ...
+	if(!register_C_Class<CVoid>("CVoid")) error=true;
+	if(!register_C_Class<CUndefined>("CUndefined")) error=true;
 	if(!register_C_Class<CInteger>("CInteger")) error=true;
 	if(!register_C_Class<CNumber>("CNumber")) error=true;
 	if(!register_C_Class<CBoolean>("CBoolean")) error=true;
@@ -133,12 +135,14 @@
 	if(!register_C_Class<CFunctor>("CFunctor")) error=true;
 
 
+	if((idxClassVoid = getIdxRegisteredClass("CVoid"))==-1) error=true;
+	if((idxClassUndefined = getIdxRegisteredClass("CUndefined"))==-1) error=true;
 	if((idxClassInteger = getIdxRegisteredClass("CInteger"))==-1) error=true;
 	if((idxClassNumber = getIdxRegisteredClass("CNumber"))==-1) error=true;
 	if((idxClassString = getIdxRegisteredClass("CBoolean"))==-1) error=true;
 	if((idxClassBoolean = getIdxRegisteredClass("CInteger"))==-1) error=true;
-	if((idxClassVariable = getIdxRegisteredClass("CString"))==-1) error=true;
-	if((idxClassFunctor = getIdxRegisteredClass("CFunctor"))==-1) rerror=true;
+	if((idxClassString = getIdxRegisteredClass("CString"))==-1) error=true;
+	if((idxClassFunctor = getIdxRegisteredClass("CFunctor"))==-1) error=true;
 
 
 	// register custom functions ...
@@ -165,7 +169,7 @@
  	return NULL;
  }
 
- tInfoRegisteredClass * CScriptClassFactory::registerScriptClass(const string & class_name){
+ tInfoRegisteredClass * CScriptClassFactory::registerScriptClass(const string & class_name, const string & base_class_name){
 	int index;
 	tInfoRegisteredClass *irv=NULL;
 
@@ -174,11 +178,23 @@
 		return NULL;
 	}
 
+	tInfoRegisteredClass *base_class=NULL;
+
+	if(base_class_name != ""){
+		if((base_class = this->getRegisteredClass(base_class_name)) == NULL){
+			return NULL;
+		}
+	}
+
+
 	if((index = getIdxRegisteredClass_Internal(class_name))==-1){ // check whether is local var registered scope ...
+
+
+
 
 		irv = new tInfoRegisteredClass;
 		irv->class_idx=m_registeredClass.size();
-		irv->baseClass=NULL;
+		irv->baseClass=base_class;
 		irv->object_info.symbol_info.symbol_name = class_name;
 		irv->object_info.symbol_info.ast=NULL;
 		m_registeredClass.push_back(irv);
@@ -237,7 +253,7 @@
  */
 bool  CScriptClassFactory::register_C_Variable(const string & var_str,void * var_ptr, const string & var_type)
 {
-	CScopeInfo *scope;
+	//CScopeInfo *scope;
 	tInfoRegisteredVariableSymbol irs;
 
 	if(var_ptr==NULL){

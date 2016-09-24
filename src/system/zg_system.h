@@ -6,4 +6,3 @@
 bool isEditMode();
 void setEditMode(bool edit_mode);
 
-

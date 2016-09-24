@@ -14,6 +14,10 @@ class CCompiler{
 
 public:
 
+	typedef struct{
+		void *ptr;
+		VALUE_INSTRUCTION_TYPE type;
+	}tInfoConstantValue;
 
 	static tDefOperator def_operator[MAX_OPERATORS];
 
@@ -44,7 +48,10 @@ public:
 
 private:
 	static CCompiler *m_compiler;
-	static map<string,CVariable *> *constant_pool;
+
+
+
+	static map<string,tInfoConstantValue *> *constant_pool;
 
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
@@ -71,8 +78,8 @@ private:
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// CONSTANT TOOLS
 
-	static CVariable *getConstant(const string & const_name);
-	static void addConstant(const string & const_name, CVariable *obj);
+	static tInfoConstantValue * getConstant(const string & const_name);
+	static tInfoConstantValue * addConstant(const string & const_name, void *obj, VALUE_INSTRUCTION_TYPE type);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// LINK UTILS
@@ -141,7 +148,7 @@ private:
 	/**
 	 * Function instructions
 	 */
-	void insert_LoadFunctionObject_Instruction(PASTNode _node,CVariable *obj);
+	void insert_LoadFunctionObject_Instruction(PASTNode _node,CScriptVariable *obj);
 	void insert_ClearArgumentStack_Instruction(PASTNode _node);
 	void insert_PushArgument_Instruction(PASTNode _node);
 	void insert_ClearArgumentStack_And_PushFirstArgument_Instructions(PASTNode _node);
@@ -169,7 +176,7 @@ private:
 	int getCurrentInstructionIndex();
 	int getCurrentStatmentIndex();
 
-	CVariable::VAR_TYPE getTypeAsmResult(int index);
+	//CVariable::VAR_TYPE getTypeAsmResult(int index);
 
 	void insertPushScopeInstruction(CScopeInfo * _goto_scope);
 	void insertPopScopeInstruction();

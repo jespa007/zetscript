@@ -1,5 +1,5 @@
 #include "core/zg_core.h"
-
+/*
 CInteger * CInteger::Parse(const string & val){
 
 	CInteger *n=NULL;
@@ -20,8 +20,8 @@ CInteger * CInteger::Parse(const string & val){
 	// TODO: develop exception handler.
 	return n;
 }
-
-int *  CInteger::ParsePrimitive(const string & val){
+*/
+int *  CInteger::Parse(const string & val){
 
 	int *n=NULL;
 	int type_number = CStringUtils::isNumber(val);
@@ -42,14 +42,14 @@ int *  CInteger::ParsePrimitive(const string & val){
 	return n;
 }
 
-CInteger::CInteger(){
+CInteger::CInteger(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class){
 
  //   m_classStr=typeid(CInteger).name();
  //   m_pointerClassStr=typeid(CInteger *).name();
 
-	m_varType = CVariable::VAR_TYPE::INTEGER;
+	//m_varType = CVariable::VAR_TYPE::INTEGER;
 	m_value=0;
-	m_ptr=&m_value;
+	//m_ptr=&m_value;
 }
 
 

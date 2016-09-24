@@ -1,7 +1,7 @@
 
 
 
-#include "CVariable.cpp"
+//#include "CVariable.cpp"
 #include "CScriptVariable.cpp"
 #include "CBoolean.cpp"
 #include "CNumber.cpp"
@@ -11,3 +11,4 @@
 #include "CFunctor.cpp"
 #include "CUndefined.cpp"
 #include "CVoid.cpp"
+

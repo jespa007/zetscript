@@ -3,21 +3,7 @@
 #define MAX_STATMENT_LENGTH 2096
 #define MAX_VAR_LENGTH 100
 
-CUndefined *CScopeInfo::UndefinedSymbol=NULL;
-CVoid *CScopeInfo::VoidSymbol=NULL;
 int n_anonymouse_func=0;
-
-void CScopeInfo::createSingletons(){
-	UndefinedSymbol = new CUndefined();
-	VoidSymbol = new CVoid();
-}
-
-
-void CScopeInfo::destroySingletons(){
-	delete UndefinedSymbol;
-	delete VoidSymbol;
-}
-
 
 
 CScopeInfo::CScopeInfo(CScopeInfo * _parent){
