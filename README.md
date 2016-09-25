@@ -21,9 +21,9 @@ Generates this following asm,
 Total 9 instructions
 
 
-Is performed 10000000 times within 6,8 seconds so,
+Is performed 10000000 times within 3,4 seconds so,
 
-(9*10000000)/6,8= 13235294 => 13MIPS ~ GBA and better than 486DX 11MHz (1991) 
+(9*10000000)/3,4= 26470588 => 26MIPS ~ GBA and better than 486DX2 66MHz (1992) 
 
 
  

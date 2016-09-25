@@ -56,7 +56,7 @@ CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv){
 	//pointer_function = NULL;
 	//m_scope = scope;
 	//m_parentFunction = _parentFunction;
-	print_info_cr("creating var type %s",irv->object_info.symbol_info.symbol_name.c_str());
+	//print_info_cr("creating var type %s",irv->object_info.symbol_info.symbol_name.c_str());
 
 
 

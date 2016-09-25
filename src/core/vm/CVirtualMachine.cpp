@@ -151,9 +151,9 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 
 			for(unsigned i = 0; i  <  n_asm_op && (jmp_to_statment==-1); i++){ // for each code-instruction execute it.
-				print_vm_cr("executing instruction  [%02i:%02i]...", s,i);
+				//print_vm_cr("executing instruction  [%02i:%02i]...", s,i);
 				//print_vm_cr("executing code...%i/%i",s,i);
-				if( s==1 && i==6){
+				if( s==5 && i==0){
 					int hhh=0;
 					hhh++;
 				}
@@ -191,6 +191,8 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 			}
 
 
+		}else{ //no instructions ... pass next statment ...
+			s++;
 		}
 	}
 
@@ -243,7 +245,7 @@ CVirtualMachine::tAleObjectInfo *CVirtualMachine::pushStack(unsigned n_local_var
 		basePtrLocalVar[i].ptrAssignableVar = NULL;
 	}
 
-
+	CVirtualMachine::vecIdxLocalVar.push(n_local_vars);
 	CVirtualMachine::idxStkCurrentLocalVar+=n_local_vars;
 
 	// save current aux vars ...
@@ -268,22 +270,29 @@ CVirtualMachine::tAleObjectInfo *CVirtualMachine::popStack(unsigned n_local_vars
 		exit(EXIT_FAILURE);
 	}
 
-	CVirtualMachine::idxStkCurrentLocalVar-=n_local_vars;
-	basePtrLocalVar=&stack[CVirtualMachine::idxStkCurrentLocalVar];
 
-	// restore last current instruction...
-	idxStkCurrentResultInstruction=startIdxStkResultInstruction-1;
+	CVirtualMachine::idxStkCurrentLocalVar-=CVirtualMachine::vecIdxLocalVar.top();
+	CVirtualMachine::vecIdxLocalVar.pop();
 
-	// save current aux vars ...
-	startIdxStkNumber = vecIdxStkNumber.top();
-	startIdxStkString=vecIdxStkString.top();
-	startIdxStkResultInstruction=vecIdxStkResultInstruction.top();
+	if(!CVirtualMachine::vecIdxLocalVar.empty()){
+
+		basePtrLocalVar=&stack[CVirtualMachine::idxStkCurrentLocalVar-CVirtualMachine::vecIdxLocalVar.top()];
+
+		// restore last current instruction...
+		idxStkCurrentResultInstruction=startIdxStkResultInstruction-1;
+
+		// save current aux vars ...
+		startIdxStkNumber = vecIdxStkNumber.top();
+		startIdxStkString=vecIdxStkString.top();
+		startIdxStkResultInstruction=vecIdxStkResultInstruction.top();
 
 
 
-	vecIdxStkNumber.pop();
-	vecIdxStkString.pop();
-	vecIdxStkResultInstruction.pop();
+		vecIdxStkNumber.pop();
+		vecIdxStkString.pop();
+		vecIdxStkResultInstruction.pop();
+
+	}
 
 	return basePtrLocalVar;
 }
@@ -861,7 +870,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 
 		case INS_TYPE_INTEGER:
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassInteger()){
-				((CInteger *)(*var))->m_value=((CInteger *)(ptr_instruction->stkObject))->m_value;
+				((CInteger *)(*var))->m_value=((int)(ptr_instruction->stkObject));
 			/*}else if((*var)->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassNumber()){
 				((CNumber *)(*var))->m_value=((CInteger *)(stkResultInstruction[index].stkObject))->m_value;*/
 			}else
@@ -875,7 +884,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 				((CInteger *)aux_var)->m_value=((CNumber *)(stkResultInstruction[index].stkObject))->m_value;
 			}else*/
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassNumber()){
-				((CNumber *)(*var))->m_value=((CNumber *)(ptr_instruction->stkObject))->m_value;
+				((CNumber *)(*var))->m_value = *((float *)(ptr_instruction->stkObject));
 			}else
 			{
 				create_from_index=true;
@@ -884,7 +893,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 		case INS_TYPE_STRING:
 
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassString()){
-				((CString  *)(*var))->m_value= ((CString *)(ptr_instruction->stkObject))->m_value;
+				((CString  *)(*var))->m_value= *((string *)(ptr_instruction->stkObject));
 			}else
 			{
 				create_from_index=true;
@@ -893,7 +902,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 			break;
 		case INS_TYPE_BOOLEAN:
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassBoolean()){
-				((CBoolean  *)aux_var)->m_value= ((CBoolean *)(ptr_instruction->stkObject))->m_value;
+				((CBoolean  *)aux_var)->m_value= ((bool)(ptr_instruction->stkObject));
 			}else
 			{
 				create_from_index=true;
@@ -902,7 +911,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 		case INS_TYPE_FUNCTION: // function object
 
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
-				((CFunctor  *)aux_var)->m_value= ((CFunctor *)(ptr_instruction->stkObject))->m_value;
+				((CFunctor  *)aux_var)->m_value= ((tInfoRegisteredFunctionSymbol *)(ptr_instruction->stkObject));
 			}else{
 				create_from_index=true;
 			}
@@ -949,7 +958,7 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 	int index_op2 = instruction->index_op2;
 	tAleObjectInfo *ptrResultInstructionOp1=&stkResultInstruction[index_op1+startIdxStkResultInstruction];
 	tAleObjectInfo *ptrResultInstructionOp2=&stkResultInstruction[index_op2+startIdxStkResultInstruction];
-	tAleObjectInfo *ptrResultLastInstruction=&stkResultInstruction[idxStkCurrentResultInstruction+startIdxStkResultInstruction-1];
+	tAleObjectInfo *ptrResultLastInstruction=&stkResultInstruction[idxStkCurrentResultInstruction-1];
 
 
 
@@ -1026,7 +1035,7 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 
 
 
-				if(!assignVarFromResultInstruction(obj,ptrResultInstructionOp2))
+				if(!assignVarFromResultInstruction(ptrResultInstructionOp1->ptrAssignableVar,ptrResultInstructionOp2))
 						return false;
 
 			}else{
@@ -1370,7 +1379,7 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 
 				if(ptrResultLastInstruction->type == INS_TYPE_BOOLEAN){
 
-					if(!(*((CBoolean **)ptrResultLastInstruction->stkObject))->m_value){
+					if(!((bool)(ptrResultLastInstruction->stkObject))){
 						jmp_to_statment = index_op1;
 					}
 				}
@@ -1384,7 +1393,7 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 
 				if(ptrResultLastInstruction->type == INS_TYPE_BOOLEAN){
 
-					if((*((CBoolean **)ptrResultLastInstruction->stkObject))->m_value){
+					if(((bool)(ptrResultLastInstruction->stkObject))){
 						jmp_to_statment = index_op1;
 					}
 				}

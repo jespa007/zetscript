@@ -9,7 +9,7 @@
 }*/
 
 
-var ff = function () { var j=0;return 1+2;};
+var ff = function () { var jj=0;return 1+2;};
 
 
 /*
@@ -44,11 +44,16 @@ var c=0;
 c();
 */
 
-print(3+2+ff());
+//print(3+2+ff());
+var j=0;
 
-for(var i=0; i < 10; i++){
-	
+for(var i=0; i < 10000000; ++i)
+{
+	i*2;
+	//print(i*2);
 }
+
+
 
 
 /*var b=new CInteger();

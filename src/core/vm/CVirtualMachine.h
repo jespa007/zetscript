@@ -59,6 +59,7 @@ private:
 	 tAleObjectInfo stack[VM_LOCAL_VAR_MAX_STACK];
 	 tAleObjectInfo *basePtrLocalVar;
 	 int idxStkCurrentLocalVar;
+	 std::stack<int>	vecIdxLocalVar;
 
 	/**
 	 * Reserve for N vars. Return base pointer.

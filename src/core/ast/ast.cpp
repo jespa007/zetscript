@@ -936,7 +936,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux=(char *)s;
 	char *s_effective_start=(char *)s;
-	char *expr_start_op;
+	char *expr_start_op=NULL;
 	int start_line = m_line; // set another start line because left node or reparse to try another group was already parsed before.
 	int m_lineOperator=-2;
 	//CScopeInfo *_localScope =  scope_info != NULL?scope_info->object_info.symbol_info.ast->scope_info_ptr->getCurrentScopePointer():NULL; // gets scope...
