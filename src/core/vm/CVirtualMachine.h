@@ -64,8 +64,8 @@ private:
 	/**
 	 * Reserve for N vars. Return base pointer.
 	 */
-	 tAleObjectInfo *pushStack(unsigned n_local_vars);
-	 tAleObjectInfo *popStack(unsigned n_local_vars);
+	 tAleObjectInfo *pushStack(tInfoRegisteredFunctionSymbol *info_function,vector<CScriptVariable *> * argv);
+	 void popStack();
 
 	/*enum{
 		MAX_OPERATIONS_PER_EXPRESSION=(MAX_PER_TYPE_OPERATIONS+1)*CScriptVariable::MAX_VAR_TYPES // +1 because

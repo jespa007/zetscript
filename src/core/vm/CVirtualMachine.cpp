@@ -48,7 +48,7 @@ void CVirtualMachine::reset(){
 	idxStkCurrentString=startIdxStkString;
 	idxStkCurrentResultInstruction=startIdxStkResultInstruction;
 	//memset(stkResultInstruction,0,sizeof(stkResultInstruction));
-	m_functionArgs.clear();
+	//m_functionArgs.clear();
 }
 
 
@@ -70,7 +70,7 @@ void CVirtualMachine::reset(){
 
 CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_function, CScriptVariable *this_object, vector<CScriptVariable *> * argv, int stk){
 
-	print_info_cr("Executing function %s ...",info_function->symbol_name.c_str());
+	print_info_cr("Executing function %s ...",info_function->object_info.symbol_info.symbol_name.c_str());
 	//tInfoRegisteredFunctionSymbol *irsf=sf->getFunctionInfo();
 
 	//tInfoRegisteredFunctionSymbol *function_info =function_object->getFunctionInfo();
@@ -115,9 +115,8 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 	//CVirtualMachine ALE; // new ale ?
 
-	// reserve vars...
-
-	pushStack(info_function->object_info.local_symbols.m_registeredVariable.size());
+	// reserve vars and assign argv vars ...
+	pushStack(info_function, argv);
 
 
 	unsigned n_stats=(*m_listStatements).size();
@@ -151,7 +150,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 
 			for(unsigned i = 0; i  <  n_asm_op && (jmp_to_statment==-1); i++){ // for each code-instruction execute it.
-				//print_vm_cr("executing instruction  [%02i:%02i]...", s,i);
+				print_vm_cr("executing instruction  [%02i:%02i]...", s,i);
 				//print_vm_cr("executing code...%i/%i",s,i);
 				if( s==5 && i==0){
 					int hhh=0;
@@ -196,7 +195,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 		}
 	}
 
-	popStack(info_function->object_info.local_symbols.m_registeredVariable.size());
+	popStack();
 	return ret;
 
 }
@@ -228,9 +227,16 @@ CVirtualMachine::tAleObjectInfo *CVirtualMachine::basePtrLocalVar=NULL;
 int CVirtualMachine::idxStkCurrentLocalVar=0;
 */
 
-CVirtualMachine::tAleObjectInfo *CVirtualMachine::pushStack(unsigned n_local_vars){
+CVirtualMachine::tAleObjectInfo *CVirtualMachine::pushStack(tInfoRegisteredFunctionSymbol *info_function, vector<CScriptVariable *> * argv){
 
-	if((idxStkCurrentLocalVar+n_local_vars) >=  VM_LOCAL_VAR_MAX_STACK){
+
+
+	unsigned n_arg_size = info_function->m_arg.size();
+	unsigned n_local_vars = info_function->object_info.local_symbols.m_registeredVariable.size();
+
+	unsigned n_total_vars = n_arg_size+n_local_vars;
+
+	if((idxStkCurrentLocalVar+n_total_vars) >=  VM_LOCAL_VAR_MAX_STACK){
 		print_error_cr("Error MAXIMUM stack size reached");
 		exit(EXIT_FAILURE);
 	}
@@ -238,15 +244,30 @@ CVirtualMachine::tAleObjectInfo *CVirtualMachine::pushStack(unsigned n_local_var
 
 	basePtrLocalVar=&stack[CVirtualMachine::idxStkCurrentLocalVar];
 
-	// init vars ...
-	for(unsigned i = 0; i < n_local_vars; i++){
-		basePtrLocalVar[i].stkObject=CScriptVariable::UndefinedSymbol;
-		basePtrLocalVar[i].type = INS_TYPE_UNDEFINED;
+
+	// init argv vars ...
+	for(unsigned i = 0; i < n_arg_size; i++){
+
 		basePtrLocalVar[i].ptrAssignableVar = NULL;
+		basePtrLocalVar[i].type = INS_TYPE_UNDEFINED;
+		basePtrLocalVar[i].stkObject=CScriptVariable::UndefinedSymbol;
+
+		if(i < argv->size()){
+			basePtrLocalVar[i].stkObject=argv->at(i);
+			basePtrLocalVar[i].type = INS_TYPE_UNDEFINED;
+			basePtrLocalVar[i].ptrAssignableVar = NULL;
+		}
 	}
 
-	CVirtualMachine::vecIdxLocalVar.push(n_local_vars);
-	CVirtualMachine::idxStkCurrentLocalVar+=n_local_vars;
+	// init local vars ...
+	for(unsigned i = 0; i < n_local_vars; i++){
+		basePtrLocalVar[n_arg_size+i].stkObject=CScriptVariable::UndefinedSymbol;
+		basePtrLocalVar[n_arg_size+i].type = INS_TYPE_UNDEFINED;
+		basePtrLocalVar[n_arg_size+i].ptrAssignableVar = NULL;
+	}
+
+	CVirtualMachine::vecIdxLocalVar.push(n_total_vars);
+	CVirtualMachine::idxStkCurrentLocalVar+=n_total_vars;
 
 	// save current aux vars ...
 	vecIdxStkNumber.push(startIdxStkNumber);
@@ -263,13 +284,7 @@ CVirtualMachine::tAleObjectInfo *CVirtualMachine::pushStack(unsigned n_local_var
 	return basePtrLocalVar;
 }
 
-CVirtualMachine::tAleObjectInfo *CVirtualMachine::popStack(unsigned n_local_vars){
-
-	if((idxStkCurrentLocalVar-n_local_vars) <  0){
-		print_error_cr("Error MINIMUM stack size reached");
-		exit(EXIT_FAILURE);
-	}
-
+void CVirtualMachine::popStack(){
 
 	CVirtualMachine::idxStkCurrentLocalVar-=CVirtualMachine::vecIdxLocalVar.top();
 	CVirtualMachine::vecIdxLocalVar.pop();
@@ -292,9 +307,11 @@ CVirtualMachine::tAleObjectInfo *CVirtualMachine::popStack(unsigned n_local_vars
 		vecIdxStkString.pop();
 		vecIdxStkResultInstruction.pop();
 
+	}else{
+		print_error_cr("stack is already empty");
 	}
 
-	return basePtrLocalVar;
+
 }
 
 
@@ -620,6 +637,8 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao, tInfoRegisteredFunction
 	CScriptVariable **ptr_var_object=NULL;
 	CScriptVariable *var_object = NULL;
 
+	int start_index_local_var = info_function->m_arg.size();
+
 	bool push_object=false;
 	bool is_valid_variable = true;
 	//bool function_struct_type = false;
@@ -651,8 +670,8 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao, tInfoRegisteredFunction
 		}
 
 		// get var from base stack ...
-		ptr_var_object = (CScriptVariable **)(&CVirtualMachine::basePtrLocalVar[iao->index_op2].stkObject);
-		var_object = (CScriptVariable *)(CVirtualMachine::basePtrLocalVar[iao->index_op2].stkObject);
+		ptr_var_object = (CScriptVariable **)(&CVirtualMachine::basePtrLocalVar[start_index_local_var+iao->index_op2].stkObject);
+		var_object = (CScriptVariable *)(CVirtualMachine::basePtrLocalVar[start_index_local_var+iao->index_op2].stkObject);
 
 
 		/*if((si = this_object->getVariableSymbolByIndex(iao->index_op2))==NULL){
@@ -756,6 +775,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,tInfoRegisteredFunctionS
 
 
 	tInfoRegisteredFunctionSymbol *info_function=NULL;
+	vector<tInfoRegisteredFunctionSymbol> *vec_global_functions;
 
 	CScriptVariable::tSymbolInfo *si;
 
@@ -784,7 +804,21 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,tInfoRegisteredFunctionS
 		info_function =(tInfoRegisteredFunctionSymbol *)si->object;
 
 		break;
+	case SCOPE_TYPE::GLOBAL_SCOPE:
+		vec_global_functions = &CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
 
+		if((iao->index_op2<(int)vec_global_functions->size()))
+		{
+			info_function =&(*vec_global_functions)[iao->index_op2];
+		}
+		else{
+			print_error_cr("cannot find symbol global \"%s\"",iao->ast_node->value_symbol.c_str());
+			return false;
+
+		}
+
+
+		break;
 	case SCOPE_TYPE::LOCAL_SCOPE:
 		info_function = &local_function->object_info.local_symbols.m_registeredFunction[iao->index_op2];
 		break;
@@ -1000,20 +1034,22 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 			break;
 		case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
 
-			if(argv!=NULL){
-				if(index_op2<(int)argv->size()){
-					CScriptVariable *var=(*argv)[index_op2];
-
-					pushVar(var,NULL);
-				}else{
-					print_error_cr("index out of bounds");
-					return false;
-				}
-			}
-			else{
-				print_error_cr("argv null");
-				return false;
-			}
+			//if(argv!=NULL){
+				//if(index_op2<(int)argv->size())
+				//{
+					//CScriptVariable *var=basePtrLocalVar[index_op2].stkObject;//(*argv)[index_op2];
+					if(!pushVar((CScriptVariable *)basePtrLocalVar[index_op2].stkObject,NULL)){
+						return false;
+					}
+				//}else{
+				//	print_error_cr("index out of bounds");
+				//	return false;
+				//}
+			//}
+			//else{
+			//	print_error_cr("argv null");
+			//	return false;
+			//}
 
 			//sprintf(print_aux_load_value,"ARG(%s)",value_symbol.c_str());
 			break;

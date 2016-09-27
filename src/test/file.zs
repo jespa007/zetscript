@@ -9,8 +9,44 @@
 }*/
 
 
-var ff = function () { var jj=0;return 1+2;};
 
+/*
+function gg(){
+	return 1;
+}
+*/
+
+;;;;;;;;;
+
+// GLOBAL SCOPE
+
+var hh=[];
+
+var gg=function(){
+	return 0;
+};
+
+function ff() {
+	
+	//hh=2;
+	print(2);
+	//gg();
+	/*hh=2;
+	//print("hola:"+hh+i);
+	return i+hh+gg();*/
+	//a b c;
+	//return1 1+i;
+}
+
+
+for(var t=0; t < 10; t++){
+	print(t);
+}
+
+
+ff(0);
+//print("this is a future:"+ff(1)+3);
+//print(ff(1));
 
 /*
 var i=1+2;
@@ -46,13 +82,13 @@ c();
 
 //print(3+2+ff());
 var j=0;
-
+/*
 for(var i=0; i < 10000000; ++i)
 {
-	i*2;
+	ff(i*2);
 	//print(i*2);
 }
-
+*/
 
 
 

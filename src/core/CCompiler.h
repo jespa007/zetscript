@@ -91,13 +91,13 @@ private:
 	 */
 	int getIdxArgument(const string & var);
 
-	int  addLocalVarSymbol(tASTNode *ast, CScopeInfo *currentEvaluatingScope);
-	bool localVarSymbolExists(tASTNode *ast,CScopeInfo *currentEvaluatingScope);
-	int  getIdxLocalVarSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope, bool print_msg=true);
+	int  addLocalVarSymbol(const string & name,tASTNode *ast);
+	bool localVarSymbolExists(const string & name,tASTNode *ast);
+	int  getIdxLocalVarSymbol(const string & name,tASTNode *ast, bool print_msg=true);
 
-	int  addLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope);
-	bool localFunctionSymbolExists(tASTNode *ast,CScopeInfo *currentEvaluatingScope);
-	int  getIdxLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope, bool print_msg=true);
+	int  addLocalFunctionSymbol(const string & name,tASTNode *ast);
+	bool functionSymbolExists(const string & name,tASTNode *ast);
+	int  getIdxFunctionSymbol(const string & name,tASTNode *ast,SCOPE_TYPE & scope_type, bool print_msg=true);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE UTLS

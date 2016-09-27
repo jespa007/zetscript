@@ -283,9 +283,9 @@ public:
 		irs.object_info.symbol_info.ref_aux=(int)((void *)function_ptr);
 #pragma GCC diagnostic warning "-Wpmf-conversions"
 
-		if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
+		/*if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
 			return false;
-		}
+		}*/
 
 		// 1. check all parameters ok.
 		using Traits3 = function_traits<decltype(function_ptr)>;

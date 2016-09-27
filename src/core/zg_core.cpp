@@ -243,12 +243,6 @@ bool CZG_ScriptCore::init(){
 	if(!registerGlobal_C_Function(print)) return false;
 
 
-
-
-
-
-
-
 	// register var
 	//registerGlobal_C_Variable(&interface_variable);
 

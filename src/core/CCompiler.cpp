@@ -46,17 +46,18 @@ CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name
 	return info_ptr;
 }
 
-int CCompiler::addLocalVarSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope){
-	string  var_name = ast->value_symbol;
+int CCompiler::addLocalVarSymbol(const string & var_name,tASTNode *ast){
 
-	if(!localVarSymbolExists(ast,currentEvaluatingScope)){
-		tInfoScopeVar *irv=currentEvaluatingScope->getInfoRegisteredSymbol(ast->value_symbol,true);
+
+	if(!localVarSymbolExists(var_name,ast)){
+		tInfoScopeVar *irv=ast->scope_info_ptr->getInfoRegisteredSymbol(var_name,true);
 
 		if(irv != NULL){
 
 			tInfoRegisteredVariableSymbol info_symbol;
 
 			info_symbol.ast = ast;
+			info_symbol.symbol_name = var_name;
 			info_symbol.info_var_scope = irv;
 			info_symbol.properties=0;
 			info_symbol.ref_aux=0;
@@ -75,18 +76,18 @@ int CCompiler::addLocalVarSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScop
 	return -1;
 }
 
-bool CCompiler::localVarSymbolExists(tASTNode *ast, CScopeInfo *currentEvaluatingScope){
+bool CCompiler::localVarSymbolExists(const string & name,tASTNode *ast){
 
 
-	return getIdxLocalVarSymbol(ast,currentEvaluatingScope, false) != -1;
+	return getIdxLocalVarSymbol(name,ast, false) != -1;
 }
 
 
 
-int  CCompiler::getIdxLocalVarSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope, bool print_msg){
+int  CCompiler::getIdxLocalVarSymbol(const string & name,tASTNode *ast, bool print_msg){
 
 	string  var_name = ast->value_symbol;
-	tInfoScopeVar *irv=currentEvaluatingScope->getInfoRegisteredSymbol(var_name,print_msg);
+	tInfoScopeVar *irv=ast->scope_info_ptr->getInfoRegisteredSymbol(var_name,print_msg);
 
 	if(irv != NULL){
 		for(unsigned i = 0; i < this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.size(); i++){
@@ -100,12 +101,12 @@ int  CCompiler::getIdxLocalVarSymbol(tASTNode *ast,CScopeInfo *currentEvaluating
 }
 
 
-int CCompiler::addLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope){
+int CCompiler::addLocalFunctionSymbol(const string & name,tASTNode *ast){
 
-	string  function_name = ast->value_symbol;
+	string  function_name = name;
 
-	if(!localFunctionSymbolExists(ast,currentEvaluatingScope)){
-		tInfoScopeVar *irv=currentEvaluatingScope->getInfoRegisteredSymbol(function_name,true);
+	if(!functionSymbolExists(name,ast)){
+		tInfoScopeVar *irv=ast->scope_info_ptr->getInfoRegisteredSymbol(function_name,true);
 
 		if(irv != NULL){
 
@@ -113,7 +114,7 @@ int CCompiler::addLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvaluatin
 
 			info_symbol.object_info.symbol_info.ast = irv->ast;
 			info_symbol.object_info.symbol_info.info_var_scope = irv;
-			info_symbol.object_info.symbol_info.symbol_name = irv->ast->value_symbol;
+			info_symbol.object_info.symbol_info.symbol_name = name;
 
 
 			info_symbol.object_info.symbol_info.properties=0;
@@ -131,21 +132,40 @@ int CCompiler::addLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvaluatin
 	return -1;
 }
 
-bool CCompiler::localFunctionSymbolExists(tASTNode *ast, CScopeInfo *currentEvaluatingScope){
+bool CCompiler::functionSymbolExists(const string & name, tASTNode *ast){
 
-	return getIdxLocalFunctionSymbol(ast,currentEvaluatingScope, false) != -1;
+	SCOPE_TYPE scope_type;
+	return getIdxFunctionSymbol(name,ast,scope_type,false) != -1;
 }
 
 
 
-int  CCompiler::getIdxLocalFunctionSymbol(tASTNode *ast,CScopeInfo *currentEvaluatingScope, bool print_msg){
-	tInfoScopeVar *irv=currentEvaluatingScope->getInfoRegisteredSymbol(ast->value_symbol,print_msg);
-
+int  CCompiler::getIdxFunctionSymbol(const string & name,tASTNode *ast, SCOPE_TYPE & scope_type, bool print_msg){
+	tInfoScopeVar *irv=ast->scope_info_ptr->getInfoRegisteredSymbol(name);
+	scope_type = SCOPE_TYPE::LOCAL_SCOPE;
 	if(irv != NULL){
-		for(unsigned i = 0; i < this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction.size(); i++){
-			if(this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.info_var_scope == irv ){
-				return i;
+
+
+
+		if((irv->ast != NULL) && (irv->ast->scope_info_ptr == ast->scope_info_ptr)){
+			for(unsigned i = 0; i < this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction.size(); i++){
+				if(this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == name ){
+					return i;
+				}
 			}
+		}
+		else{ //global
+
+			scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
+
+			for(unsigned i = 0; i < CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction.size(); i++){
+				if(CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == name ){
+					return i;
+				}
+			}
+
+
+
 		}
 	}
 
@@ -646,8 +666,15 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 		// try function ....
 		{
 			load_type=LOAD_TYPE_FUNCTION;
+			SCOPE_TYPE scope_type_aux;
 
-			idx_local_var =getIdxLocalFunctionSymbol(_node,_lc, false);
+			idx_local_var =getIdxFunctionSymbol(_node->value_symbol,_node,scope_type_aux,false);
+
+			if(idx_local_var != -1){
+				scope_type=scope_type_aux;
+			}
+
+
 
 			// Local Functions are already inserted during "gacFunction" process, so we don't have
 			// to register again...
@@ -679,8 +706,8 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 					//if(idx_local_var != IDX_THIS){
 
-						if((idx_local_var=getIdxLocalVarSymbol(_node,_lc, false)) == -1){ //if not exist add symbol ...
-							if((idx_local_var = addLocalVarSymbol(_node,_lc)) == -1){
+						if((idx_local_var=getIdxLocalVarSymbol(_node->value_symbol,_node,false)) == -1){ //if not exist add symbol ...
+							if((idx_local_var = addLocalVarSymbol(_node->value_symbol, _node)) == -1){
 								return false;
 
 							}
@@ -1687,6 +1714,8 @@ bool CCompiler::gacFunction(PASTNode _node, CScopeInfo * _lc){
 	if(_node->children[1]->node_type != NODE_TYPE::BODY_NODE){print_error_cr("node FUNCTION has not BODY node");return false;}
 
 
+	//CScopeInfo * scope_body = ast_body_node->scope_info_ptr;
+
 	int local_function_idx=-1;
 	// 1. Get the registered symbol.
 	/*tInfoScopeVar * irv=_lc->getInfoRegisteredSymbol(_node->value_symbol,false);
@@ -1694,12 +1723,12 @@ bool CCompiler::gacFunction(PASTNode _node, CScopeInfo * _lc){
 		print_error_cr("Cannot get registered function %s",_node->value_symbol.c_str());
 		return false;
 	}*/
-	if(localFunctionSymbolExists(_node, _lc)){
+	if(functionSymbolExists(_node->value_symbol, _node)){
 		print_error_cr("Function \"%s\" already defined !",_node->value_symbol.c_str());
 		return false;
 	}
 
-	if((local_function_idx=addLocalFunctionSymbol(_node, _lc)) == -1){
+	if((local_function_idx=addLocalFunctionSymbol(_node->value_symbol,_node)) == -1){
 		return false;
 	}
 
@@ -2050,15 +2079,15 @@ bool CCompiler::compile(PASTNode _node, tInfoRegisteredFunctionSymbol *sf){
 
 		this->m_currentFunctionInfo = sf;
 		this->m_currentListStatements = &sf->object_info.statment_op;
-		this->m_treescope = sf->object_info.symbol_info.ast->scope_info_ptr;
+		this->m_treescope = _node->scope_info_ptr;
 
 		// reset current pointer ...
-		m_treescope->resetScopePointer();
+		//m_treescope->resetScopePointer();
 
 		{ // main node ?
 			for(unsigned i = 0; i < _node->children.size(); i++){
 
-				if(!ast2asm_Recursive(_node->children[i], m_treescope->getCurrentScopePointer())){
+				if(!ast2asm_Recursive(_node->children[i], m_treescope)){
 					return false;
 				}
 			}
