@@ -153,6 +153,7 @@ private:
 	static char * parseWhile(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseSwitch(const char *s,int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseReturn(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseNew(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);

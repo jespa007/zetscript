@@ -1204,16 +1204,19 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 
 char * CAst::parseExpression(const char *s, int & m_line, CScopeInfo *scope_info, PASTNode * ast_node_to_be_evaluated ){
 
-
-
 	// PRE: s is current string to parse. This function tries to parse an expression like i+1; and generates binary ast.
 	// If this functions finds ';' then the function will generate ast.
+
+	if(*s==0) {
+		print_error_cr("End string");
+		return NULL;
+	}
 
 	// last character is in charge of who is calling parseExpression because there's many ending cases ): [ ';' ',' ')' , ']' ]
 	char * aux = parseExpression_Recursive(s,m_line,scope_info,ast_node_to_be_evaluated);
 	//char *aux = parseExpression_Recursive(s, m_line, scope_info, ast_node_to_be_evaluated, NULL);
 
-	if(aux != NULL && ast_node_to_be_evaluated != NULL){ // can save the node and tells that is an starting of expression node...
+	if(aux != NULL && ast_node_to_be_evaluated != NULL ){ // can save the node and tells that is an starting of expression node...
 
 		//if((*ast_node_to_be_evaluated)->node_type == NODE_TYPE::PUNCTUATOR_NODE){
 			PASTNode ast_node=new tASTNode;
@@ -1341,6 +1344,8 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 	char *end_p;
 
 
+
+
 	CScopeInfo *class_scope_info=NULL;
 	//tInfoRegisteredClass *class_info=NULL;
 	int class_line;
@@ -1358,6 +1363,11 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 	if(key_w != NULL){
 
 		if(key_w->id == KEYWORD_TYPE::CLASS_KEYWORD){
+
+			if(scope_info->getParent()!=NULL){
+				print_error_cr("line %i:class keyword is not allowed",m_line);
+				return NULL;
+			}
 
 			aux_p=CStringUtils::IGNORE_BLANKS(aux_p+strlen(key_w->str),m_line);
 
@@ -1422,7 +1432,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 				(*ast_node_to_be_evaluated)->value_symbol = class_name;
 
-				(*ast_node_to_be_evaluated)->scope_info_ptr = new CScopeInfo(scope_info);
+				(*ast_node_to_be_evaluated)->scope_info_ptr = new CScopeInfo(NULL); // scope function without base ...
 				class_scope_info =(*ast_node_to_be_evaluated)->scope_info_ptr;
 
 				// create var & functions collection...
@@ -1448,7 +1458,8 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 					if(key_w != NULL){
 						switch(key_w->id){
 						default:
-							print_error_cr("Expected \"var\" or \"function\" keyword at line %i");
+							print_error_cr("Expected \"var\" or \"function\" keyword at line %i", m_line);
+							return NULL;
 							break;
 						case KEYWORD_TYPE::FUNCTION_KEYWORD:
 							if((aux_p = parseFunction(aux_p, m_line,class_scope_info, &child_node)) != NULL){
@@ -1466,7 +1477,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 							}
 							break;
 						case KEYWORD_TYPE::VAR_KEYWORD:
-							if((aux_p = parseVar(aux_p, m_line,class_scope_info, &child_node)) != NULL){
+							if((aux_p = parseMemberVar(aux_p, m_line,class_scope_info, &child_node)) != NULL){
 
 								if(ast_node_to_be_evaluated != NULL){
 									vars_collection_node->children.push_back(child_node);
@@ -1619,7 +1630,12 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 					// check whether parameter name's matches with some global variable...
 					if(scope_info != NULL){
 						if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(value_symbol,false)) != NULL){
-							print_error_cr("Function name \"%s\" defined at line %i is ambiguos with symbol defined at %i", value_symbol, m_line,-1);
+							if(irv->ast!=NULL){
+								print_error_cr("Function name \"%s\" defined at line %i is already defined at %i", value_symbol, m_line,irv->ast->definedValueline);
+							}else{
+								print_error_cr("Function name \"%s\" at line %i is no allowed it has conflict with name of already registered function in C/C++", value_symbol, m_line);
+							}
+
 							return NULL;
 						}
 					}
@@ -2467,6 +2483,108 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScopeInfo *scope_info, PA
 	return NULL;
 }
 
+char * CAst::parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+
+	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+
+	char *aux_p = (char *)s;
+	CScopeInfo *_currentScope = NULL;
+	tInfoKeyword *key_w;
+	char *start_var,*end_var, *symbol_name;
+	//int m_startLine=0;
+	//PASTNode symbol_node = NULL;
+
+	string s_aux;
+
+
+	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
+
+	key_w = isKeyword(aux_p);
+
+	if(key_w != NULL){
+		if(key_w->id == KEYWORD_TYPE::VAR_KEYWORD){ // possible variable...
+
+			aux_p += strlen(key_w->str);
+
+			aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
+
+
+			//
+			if(ast_node_to_be_evaluated != NULL){
+				_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
+				(*ast_node_to_be_evaluated) = new tASTNode;
+				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
+				(*ast_node_to_be_evaluated)->keyword_info = key_w;
+			}
+
+			while(*aux_p != ';' && *aux_p != 0 ){ // JE: added multivar feature.
+
+
+				start_var=aux_p;
+				//m_startLine = m_line;
+
+				if((end_var=getSymbolName(aux_p,m_line))==NULL){
+					return NULL;
+				}
+
+
+				if((symbol_name=CStringUtils::copyStringFromInterval(start_var,end_var)) == NULL){
+					return NULL;
+				}
+
+				aux_p=end_var;
+
+				aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
+
+
+				if((*aux_p == ';' || *aux_p == ',' )){ // JE: added multivar feature (',)).
+
+
+					print_info_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
+
+					if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
+
+						PASTNode var_new=new tASTNode;
+						// save symbol in the node ...
+						var_new->value_symbol = symbol_name;
+						var_new->scope_info_ptr = _currentScope;
+						var_new->definedValueline = m_line;
+
+
+						if(!_currentScope->registerSymbol(var_new->value_symbol,var_new)){
+							return NULL;
+						}
+
+						(*ast_node_to_be_evaluated)->children.push_back(var_new);
+
+					}
+
+
+				}
+				else{
+					print_error_cr("line %i: unexpected '%c'", m_line,*aux_p);
+					return NULL;
+				}
+
+				// ignores ';' or ','
+				if(*aux_p == ',')
+					aux_p++;
+			}
+
+			if(*aux_p == ';'){
+				aux_p++;
+			}
+			else{
+				print_error_cr("Expected ';' at line %i", m_line);
+				return NULL;
+			}
+
+			return aux_p;
+		}
+	}
+	return NULL;
+}
+
 char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
@@ -2519,6 +2637,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 				aux_p=end_var;
 
 				aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
+
 
 				if((*aux_p == ';' || *aux_p == '=' || *aux_p == ',' )){ // JE: added multivar feature (',)).
 
@@ -2735,13 +2854,22 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scop
 			}
 		}
 
-		if(node_to_be_evaluated != NULL){
-			(*node_to_be_evaluated)->children.push_back(NULL);
-		}
+
+
+
 
 		// ignore all ;
 		while(*aux==';' && *aux != 0){
 			aux =CStringUtils::IGNORE_BLANKS(aux+1, m_line);
+		}
+
+		if(*aux==0){ // custom case exit..
+			return aux;
+		}
+
+		// new expression ready to be evaluated...
+		if(node_to_be_evaluated != NULL){
+			(*node_to_be_evaluated)->children.push_back(NULL);
 		}
 
 		// 1st. check whether parse a keyword...

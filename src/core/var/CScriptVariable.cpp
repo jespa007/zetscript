@@ -23,16 +23,16 @@ void CScriptVariable::destroySingletons(){
 
 
 void CScriptVariable::createSymbols(tInfoRegisteredClass *irv){
-	for ( unsigned i = 0; i < irv->object_info.local_symbols.m_registeredVariable.size(); i++){
-		addVariableSymbol(irv->object_info.local_symbols.m_registeredVariable[i].ast);
+	for ( unsigned i = 0; i < irv->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
+		addVariableSymbol(irv->metadata_info.object_info.local_symbols.m_registeredVariable[i].ast);
 	}
 
-	for ( unsigned i = 0; i < irv->object_info.local_symbols.m_registeredFunction.size(); i++){
+	for ( unsigned i = 0; i < irv->metadata_info.object_info.local_symbols.m_registeredFunction.size(); i++){
 		//print_info_cr("=========================================");
 		//print_info_cr("- Create function %s...",irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name.c_str());
 		addFunctionSymbol(
-				irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast,
-				&irv->object_info.local_symbols.m_registeredFunction[i]
+				irv->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast,
+				&irv->metadata_info.object_info.local_symbols.m_registeredFunction[i]
 
 				);
 		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
@@ -61,6 +61,7 @@ CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv){
 
 
 	createSymbols(irv);
+
 	/*if(_parentFunction == NULL){ // this is the main function ...
 		setName("Main");
 		m_registeredVariable=new vector<tRegisteredSymbolInfo>();
@@ -83,6 +84,16 @@ CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv){
 		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
 	}*/
 
+}
+
+
+tInfoRegisteredFunctionSymbol *CScriptVariable::getConstructorFunction(){
+
+	if(m_infoRegisteredClass->idx_constructor_function != -1){
+		return &m_infoRegisteredClass->metadata_info.object_info.local_symbols.m_registeredFunction[m_infoRegisteredClass->idx_constructor_function];
+	}
+
+	return NULL;
 }
 
 
@@ -121,7 +132,7 @@ CScriptVariable::tSymbolInfo * CScriptVariable::getVariableSymbol(const string &
 
 CScriptVariable::tSymbolInfo * CScriptVariable::getVariableSymbolByIndex(unsigned idx){
 	if(idx >= m_variableSymbol.size()){
-		print_error_cr("idx symbol index out of bounds");
+		print_error_cr("idx symbol index out of bounds (%i)",idx);
 		return NULL;
 	}
 

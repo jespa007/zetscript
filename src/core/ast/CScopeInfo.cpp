@@ -104,8 +104,15 @@ tInfoScopeVar * CScopeInfo::registerSymbol(const string & var_name, PASTNode ast
 		int m_line=-1;
 		if(ast != NULL) {
 			m_line = ast->definedValueline;
+
 		}
-		print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), irv->ast->definedValueline);
+
+		if(irv->ast != NULL) { // if not null is defined in script scope, else is C++ var
+			print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), irv->ast->definedValueline);
+		}else{
+			print_error_cr("(line %i): error var \"%s\" already registered as C++!", m_line,var_name.c_str());
+		}
+
 	}
 
 	return NULL;

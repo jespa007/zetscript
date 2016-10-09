@@ -6,10 +6,13 @@
 #include "RegisterFunctionHelper.h"
 #include "ast/ast.h"
 
-#define registerGlobal_C_Function(s) CScriptClassFactory::register_C_Function(STR(s),s)
-#define registerGlobal_C_Variable(s) CScriptClassFactory::register_C_Variable(STR(s),s,typeid(s).name())
+#define register_C_Function(s) CScriptClassFactory::register_C_FunctionInt(STR(s),s)
+#define register_C_Variable(s) CScriptClassFactory::register_C_VariableInt(STR(s),&s,typeid(s).name())
 
+#define getIdxGlobalVariable(s)  CScriptClassFactory::register_C_FunctionInt(STR(s),s)
+#define getIdxGlobalFunction(s)
 
+#define NEW_CLASS_VAR_BY_IDX(idx) (CScriptClassFactory::getInstance()->newClassByIdx(idx))
 
 class CScopeInfo;
 
@@ -55,7 +58,7 @@ public:
 	/**
 	 * This function registers a script class into factory.
 	 */
-	tInfoRegisteredClass * registerScriptClass(const string & class_name, const string & base_class_name="");
+	tInfoRegisteredClass * registerScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast);
 
 	/**
 	 * Class name given this function creates the object and initializes all variables.
@@ -65,17 +68,21 @@ public:
 
 
 
+	bool updateReferenceSymbols();
+
+
 
 	tInfoRegisteredVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,PASTNode  node);
 	tInfoRegisteredVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
-	int 							 getIdxRegisteredVariableSymbol(const string & class_name,const string & varname);
+	int 							 getIdxRegisteredVariableSymbol(const string & class_name,const string & varname, bool show_msg=true);
+	int 							 getIdxRegisteredVariableSymbol(tScriptFunctionInfo *irf,const string & var_name, bool show_msg=true);
 
 
-	tInfoRegisteredFunctionSymbol *  registerFunctionSymbol(const string & class_name, const string & name);
 	tInfoRegisteredFunctionSymbol *  registerFunctionSymbol(const string & class_name, const string & name,PASTNode  node);
-
 	tInfoRegisteredFunctionSymbol *  getRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors=true);
-	//int 							 getIdxRegisteredFunctionSymbol(const string & class_name,const string & function_name);
+	int 							 getIdxRegisteredFunctionSymbol(tScriptFunctionInfo *irf,const string & function_name, bool show_msg=true);
+
+
 
 
 	bool addArgumentFunctionSymbol(const string & class_name,const string & function_name,const string & arg_name);
@@ -102,12 +109,12 @@ public:
 	int getIdxClassFunctor(){return idxClassFunctor;}
 
 
-
+	void printGeneratedCodeAllClasses();
 	/**
 	 * Register C function
 	 */
 	template <typename F>
-	static bool register_C_Function(const string & function_name,F function_ptr)
+	bool register_C_FunctionInt(const string & function_name,F function_ptr)
 	{
 		string return_type;
 		vector<string> params;
@@ -118,7 +125,7 @@ public:
 		//CScopeInfo::tInfoScopeVar  *rs;
 
 		//CScriptVariable *sf=NULL;
-		tInfoRegisteredFunctionSymbol * mainFunctionInfo = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+		tInfoRegisteredFunctionSymbol * mainFunctionInfo = getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
 		//tInfoRegisteredClass *rc = CScriptClassFactory::getInstance()->getRegisteredClass(class_name);
 
 		if(mainFunctionInfo == NULL){
@@ -127,13 +134,13 @@ public:
 		}
 
 		// init struct...
-		irs.symbol_name=function_name;
+
 		irs.object_info.symbol_info.ast = NULL;
 		irs.object_info.symbol_info.info_var_scope = NULL;
 		irs.object_info.symbol_info.symbol_name = function_name;
 
-		irs.object_info.symbol_info.properties = ::C_OBJECT_REF;
-		irs.object_info.symbol_info.ref_aux=(int)function_ptr;
+		irs.object_info.symbol_info.properties = ::PROPERTY_C_OBJECT_REF;
+		irs.object_info.symbol_info.ref_ptr=(int)function_ptr;
 
 
 		if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
@@ -159,7 +166,7 @@ public:
 	/**
 	 * Register C variable
 	 */
-	bool register_C_Variable(const string & var_str,void * var_ptr, const string & var_type);
+	bool register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
 
 
 
@@ -187,7 +194,7 @@ public:
 			}
 
 
-			vector<tInfoRegisteredFunctionSymbol> * vec_irfs = &m_registeredClass[index_class]->object_info.local_symbols.m_registeredFunction;
+			vector<tInfoRegisteredFunctionSymbol> * vec_irfs = &m_registeredClass[index_class]->metadata_info.object_info.local_symbols.m_registeredFunction;
 
 			// ok check c_type
 			for(unsigned i = 0; i < vec_irfs->size(); i++){
@@ -231,15 +238,15 @@ public:
 			//print_error_cr("CHECK AND TODOOOOOO!");
 			tInfoRegisteredClass *irc = new tInfoRegisteredClass;
 
-			irc->object_info.symbol_info.ast = new tASTNode;
-			irc->object_info.symbol_info.info_var_scope=NULL;
-			irc->object_info.symbol_info.symbol_name = class_name;
+			irc->metadata_info.object_info.symbol_info.ast = new tASTNode;
+			irc->metadata_info.object_info.symbol_info.info_var_scope=NULL;
+			irc->metadata_info.object_info.symbol_info.symbol_name = class_name;
 			irc->baseClass = base_class; // identify extend class ?!?!!?
 			irc->class_idx = m_registeredClass.size();
 
 			irc->classPtrType=str_classPtr;
 			irc->class_idx=m_registeredClass.size();
-			irc->object_info.symbol_info.properties=C_OBJECT_REF;
+			irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
 			m_registeredClass.push_back(irc);
 
 			print_info_cr("* class \"%10s\" registered (C ref: \"%s\").",class_name.c_str(),str_classPtr.c_str());
@@ -276,11 +283,11 @@ public:
 		irs.object_info.symbol_info.symbol_name=function_name;
 
 
-		irs.object_info.symbol_info.properties = C_OBJECT_REF;
+		irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
 
 		// ignores special type cast C++ member to ptr function
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-		irs.object_info.symbol_info.ref_aux=(int)((void *)function_ptr);
+		irs.object_info.symbol_info.ref_ptr=(int)((void *)function_ptr);
 #pragma GCC diagnostic warning "-Wpmf-conversions"
 
 		/*if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
@@ -292,7 +299,7 @@ public:
 		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
 
 
-		m_registeredClass[idxRegisterdClass]->object_info.local_symbols.m_registeredFunction.push_back(irs);
+		m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredFunction.push_back(irs);
 		//base_info->local_symbols.m_registeredFunction.push_back(irs);
 
 		return true;
@@ -310,6 +317,19 @@ private:
 
 	vector<tInfoRegisteredClass *>  	 m_registeredClass;
 	//CScriptVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
+
+	bool searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao);
+	bool registerBase();
+
+	//---------------
+	// PRINT ASM INFO
+	char print_aux_load_value[1024*8];
+	const char * getStrMovVar(tInfoAsmOp * iao);
+	const char * getStrTypeLoadValue(vector<tInfoStatementOp> * m_listStatements,int current_statment, int current_instruction);
+	void printGeneratedCode_Recursive(tScriptFunctionInfo *fs);
+	void printGeneratedCode(tScriptFunctionInfo *fs);
+	// PRINT ASM INFO
+	//---------------
 
 	CScriptClassFactory();
 	~CScriptClassFactory();

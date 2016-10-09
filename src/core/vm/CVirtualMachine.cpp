@@ -75,7 +75,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 	//tInfoRegisteredFunctionSymbol *function_info =function_object->getFunctionInfo();
 
-	if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::C_OBJECT_REF){ // C-Call
+	if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
 
 			int result=0;
 
@@ -164,7 +164,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 					//return true;
 
 
-					if(!performInstruction(asm_op_statment->at(i),jmp_to_statment,info_function,this_object,argv,stk)){
+					if(!performInstruction(asm_op_statment->at(i),jmp_to_statment,info_function,this_object,argv,asm_op_statment,stk)){
 						return NULL;
 					}
 
@@ -323,6 +323,18 @@ if(!(index_op2 >= 0 && index_op2 <=idxStkCurrentResultInstruction)) { print_erro
 if(!(index_op2 >= index_op1 )) { print_error_cr("invalid indexes"); return false;}
 */
 
+#define PRINT_DUAL_ERROR_OP(c)\
+string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
+	   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
+\
+print_error_cr("Error at line %i cannot perform operator \"%s\" %c  \"%s\"",\
+		instruction->ast_node->definedValueline,\
+		var_type1.c_str(),\
+		c,\
+		var_type2.c_str());
+
+
+
 #define LOAD_NUMBER_OP(ptr_result_instruction) \
 		*(((float *)(ptr_result_instruction->stkObject)))
 
@@ -380,6 +392,10 @@ if(!(index_op2 >= index_op1 )) { print_error_cr("invalid indexes"); return false
 #define OP1_IS_STRING_AND_OP2_IS_NUMBER \
 (ptrResultInstructionOp1->type == INS_TYPE_STRING) && \
 IS_GENERIC_NUMBER(ptrResultInstructionOp2)
+
+#define OP1_IS_NUMBER_AND_OP2_IS_STRING \
+(ptrResultInstructionOp2->type == INS_TYPE_STRING) && \
+IS_GENERIC_NUMBER(ptrResultInstructionOp1)
 
 #define OP1_IS_STRING_AND_OP2_IS_BOOLEAN \
 (ptrResultInstructionOp1->type == INS_TYPE_STRING) && \
@@ -501,6 +517,9 @@ bool CVirtualMachine::pushFunction(tInfoRegisteredFunctionSymbol * init_value, C
 
 bool CVirtualMachine::pushVar(CScriptVariable * init_value, CScriptVariable ** ptrAssignableVar){
 
+	if(init_value == NULL){
+		return false;
+	}
 
 	int idxClass = init_value->getIdxClass();
 
@@ -625,7 +644,12 @@ bool CVirtualMachine::performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operat
 }
 */
 
-bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao, tInfoRegisteredFunctionSymbol *info_function,CScriptVariable *this_object, int n_stk){
+
+bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
+		tInfoRegisteredFunctionSymbol *info_function,
+		CScriptVariable *this_object,
+		vector<tInfoAsmOp *> *asm_op,
+		int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_VARIABLE){
 		print_error_cr("expected load type variable.");
@@ -647,19 +671,43 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao, tInfoRegisteredFunction
 
 	switch(iao->scope_type){
 	default:
-		print_error_cr("unknow scope type");
+		print_error_cr("unknow scope type %i",iao->scope_type);
+		return false;
 		break;
-	case SCOPE_TYPE::THIS_SCOPE:
 
-		// get var from object ...
-		if((si = this_object->getVariableSymbolByIndex(iao->index_op2))==NULL){
-			print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
-			return false;
+
+		break;
+	case SCOPE_TYPE::ACCESS_SCOPE: // needs load previous object...
+	case SCOPE_TYPE::THIS_SCOPE: // fast
+
+
+		if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
+
+
+			CScriptVariable * base_var = ((CScriptVariable *)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].stkObject);
+
+			if((si = base_var->getVariableSymbol(iao->ast_node->value_symbol))==NULL){
+				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not symbol \"%s\"",iao->ast_node->definedValueline,asm_op->at(iao->index_op2)->ast_node->value_symbol.c_str(),base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str());
+				return false;
+			}
+		}
+		else{
+			// get var from object ...
+			if((si = this_object->getVariableSymbolByIndex(iao->index_op2))==NULL){
+				print_error_cr("cannot find symbol \"this.%s\"",iao->ast_node->value_symbol.c_str());
+				return false;
+			}
 		}
 
 		ptr_var_object = (CScriptVariable **)(&si->object);
 		var_object = (CScriptVariable *)(si->object);
 
+		break;
+
+	case SCOPE_TYPE::GLOBAL_SCOPE:
+
+		ptr_var_object = (CScriptVariable **)(&CVirtualMachine::stack[iao->index_op2].stkObject);
+		var_object = (CScriptVariable *)(CVirtualMachine::stack[iao->index_op2].stkObject);
 		break;
 
 	case SCOPE_TYPE::LOCAL_SCOPE:
@@ -766,7 +814,11 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao, tInfoRegisteredFunction
 	return true;
 }
 
-bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,tInfoRegisteredFunctionSymbol *local_function, CScriptVariable *this_object, int n_stk){
+bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
+		tInfoRegisteredFunctionSymbol *local_function,
+		CScriptVariable *this_object,
+		vector<tInfoAsmOp *> *asm_op,
+		int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_FUNCTION){
 		print_error_cr("expected load type function.");
@@ -792,13 +844,28 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,tInfoRegisteredFunctionS
 	switch(iao->scope_type){
 	default:
 		print_error_cr("unknow scope type");
+		return false;
 		break;
+	case SCOPE_TYPE::ACCESS_SCOPE:
 	case SCOPE_TYPE::THIS_SCOPE:
 
+
 		// get var from object ...
-		if((si = this_object->getFunctionSymbolByIndex(iao->index_op2))==NULL){
-			print_error_cr("cannot find symbol \"%s\"",iao->ast_node->value_symbol.c_str());
-			return false;
+		if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
+
+			CScriptVariable * base_var = ((CScriptVariable *)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].stkObject);
+
+			if((si = base_var->getFunctionSymbol(iao->ast_node->value_symbol))==NULL){
+				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not function \"%s\"",iao->ast_node->definedValueline,asm_op->at(iao->index_op2)->ast_node->value_symbol.c_str(),base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str());
+				//print_error_cr("cannot find function \"%s\"",iao->ast_node->value_symbol.c_str());
+				return false;
+			}
+
+		}else{
+			if((si = this_object->getFunctionSymbolByIndex(iao->index_op2))==NULL){
+				print_error_cr("cannot find function \"this.%s\"",iao->ast_node->value_symbol.c_str());
+				return false;
+			}
 		}
 
 		info_function =(tInfoRegisteredFunctionSymbol *)si->object;
@@ -970,15 +1037,23 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 	return true;
 }
 
-bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to_statment,tInfoRegisteredFunctionSymbol *info_function,CScriptVariable *this_object,vector<CScriptVariable *> * argv, int n_stk){
+bool CVirtualMachine::performInstruction(
+		tInfoAsmOp * instruction,
+		int & jmp_to_statment,
+		tInfoRegisteredFunctionSymbol *info_function,
+		CScriptVariable *this_object,vector<CScriptVariable *> * argv,
+		vector<tInfoAsmOp *> *asm_op,
+		int n_stk){
 
 
 	string 	aux_string;
 	bool	aux_boolean;
-	string symbol;
+	//string symbol;
 	CScriptVariable **obj=NULL;
 	tInfoRegisteredFunctionSymbol * aux_function_info=NULL;
-	CScriptVariable *ret_obj;
+	CScriptVariable *ret_obj, *svar;
+	tInfoRegisteredFunctionSymbol *constructor_function;
+	CScriptVariable *calling_object = this_object;
 
 
 
@@ -1021,13 +1096,13 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 			break;
 		case LOAD_TYPE::LOAD_TYPE_VARIABLE:
 
-			if(!loadVariableValue(instruction, info_function,this_object, n_stk)){
+			if(!loadVariableValue(instruction, info_function,this_object,asm_op, n_stk)){
 				return false;
 			}
 
 			break;
 		case LOAD_TYPE::LOAD_TYPE_FUNCTION:
-			if(!loadFunctionValue(instruction,info_function, this_object, n_stk)){
+			if(!loadFunctionValue(instruction,info_function, this_object,asm_op, n_stk)){
 				return false;
 			}
 
@@ -1240,6 +1315,16 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 					aux_string = aux_string + CStringUtils::intToString(LOAD_NUMBER_OP(ptrResultInstructionOp2));
 
 				if(!pushString(aux_string)) return false;
+			}else if(OP1_IS_NUMBER_AND_OP2_IS_STRING){ // concatenate string + number
+
+				aux_string =  LOAD_STRING_OP(ptrResultInstructionOp2);
+
+				if(ptrResultInstructionOp1->type == INS_TYPE_INTEGER)
+					aux_string = aux_string + CStringUtils::intToString(LOAD_INT_OP(ptrResultInstructionOp1));
+				else
+					aux_string = aux_string + CStringUtils::intToString(LOAD_NUMBER_OP(ptrResultInstructionOp1));
+
+				if(!pushString(aux_string)) return false;
 			}else if(OP1_IS_STRING_AND_OP2_IS_BOOLEAN){ // concatenate string + boolean
 
 				aux_string =  LOAD_STRING_OP(ptrResultInstructionOp1);
@@ -1259,18 +1344,7 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 			}else{
 
 				// full error description ...
-
-				string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),
-					   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);
-
-
-				//print_error_cr("Expected operands as number+number, string+string, string+number or string + boolean!");
-
-
-				print_error_cr("Error at line %i cannot perform operator \"%s\" +  \"%s\"",
-						instruction->ast_node->definedValueline,
-						var_type1.c_str(),
-						var_type2.c_str());
+				PRINT_DUAL_ERROR_OP('+');
 				return false;
 			}
 
@@ -1309,7 +1383,7 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 
 				PROCESS_NUM_OPERATION(/);
 			}else{
-				print_error_cr("Expected both operands as number!");
+				PRINT_DUAL_ERROR_OP('/');
 				return false;
 			}
 
@@ -1319,7 +1393,7 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 					PROCESS_NUM_OPERATION(*);
 
 			}else{
-				print_error_cr("Expected both operands as number!");
+				PRINT_DUAL_ERROR_OP('*');
 				return false;
 			}
 			break;
@@ -1443,18 +1517,31 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 			// check whether signatures matches or not ...
 			// 1. get function object ...
 			aux_function_info=(tInfoRegisteredFunctionSymbol *)ptrResultInstructionOp1->stkObject;
+
+
+
 			if(ptrResultInstructionOp1->type != INS_TYPE_FUNCTION){
 				if(ptrResultInstructionOp1->type == INS_TYPE_VAR && ((CScriptVariable *)ptrResultInstructionOp1->stkObject)->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
 					aux_function_info = ((CFunctor *)ptrResultInstructionOp1->stkObject)->m_value;
+
+
+
 				}else {
 					print_error_cr("object \"%s\" is not function at line %i",instruction->ast_node->value_symbol.c_str(), instruction->ast_node->definedValueline);
 					return false;
 				}
 			}
 
+			calling_object = this_object;
+			if((instruction->asm_properties & ASM_PROPERTY_CALLING_OBJECT) != 0){
+				calling_object= (CScriptVariable *)stkResultInstruction[index_op1+startIdxStkResultInstruction-1].stkObject;
+						//((CFunctor *)ptrResultInstructionOp1->stkObject)->getThisObject();
+			}
+
+
 
 			// by default virtual machine gets main object class in order to run functions ...
-			if((ret_obj=CVirtualMachine::execute(aux_function_info,this_object,&m_functionArgs, n_stk+1))==NULL){
+			if((ret_obj=CVirtualMachine::execute(aux_function_info,calling_object,&m_functionArgs, n_stk+1))==NULL){
 				return false;
 			}
 
@@ -1495,7 +1582,12 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 				}
 			}
 			else{
-				print_error_cr("Expected operand 1 as vector");
+				print_error_cr("Line %i: Variable \"%s\" is not type vector",
+						instruction->ast_node->definedValueline,
+						asm_op->at(instruction->index_op1)->ast_node->value_symbol.c_str(),
+						instruction->ast_node->value_symbol.c_str()
+						//base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str()
+						);
 				return false;
 			}
 
@@ -1510,7 +1602,9 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 			}
 			break;
 		case VEC: // Create new vector object...
-			pushVar(CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassVector()));
+			if(!pushVar(NEW_VECTOR_VAR)){ //CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassVector()));
+				return false;
+			}
 			break;
 
 		case RET:
@@ -1518,6 +1612,15 @@ bool CVirtualMachine::performInstruction( tInfoAsmOp * instruction, int & jmp_to
 			/*if(!assignObjectFromIndex(function_object->getReturnObjectPtr(),instruction->index_op1)){
 				return false;
 			}*/
+		case NEW:
+			if(!pushVar(svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1))){
+				return false;
+			}
+
+			// execute its constructor ...
+			if((constructor_function = svar->getConstructorFunction()) != NULL){
+				execute(constructor_function,svar);
+			}
 
 			break;
 

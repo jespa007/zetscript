@@ -162,6 +162,7 @@ public:
 	//CScriptVariable();
 	CScriptVariable(tInfoRegisteredClass *info_registered_class);
 
+
 	//TYPE m_type;
 	int getIdxClass(){return m_infoRegisteredClass->class_idx;}
 
@@ -175,10 +176,17 @@ public:
 
 	vector<tInfoStatementOp> * getCompiledCode(int idx_function);
 
+	tInfoRegisteredFunctionSymbol *getConstructorFunction();
+
 	//void addArgSymbol(const string & arg_name);
 
-	const string & getClassName(){return m_infoRegisteredClass->object_info.symbol_info.symbol_name;}
-	const string & getPointer_C_ClassName(){return m_infoRegisteredClass->classPtrType;}
+	const string & getClassName(){
+		return m_infoRegisteredClass->metadata_info.object_info.symbol_info.symbol_name;
+	}
+
+	const string & getPointer_C_ClassName(){
+		return m_infoRegisteredClass->classPtrType;
+	}
 
 
     virtual string toString(){

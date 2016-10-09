@@ -16,8 +16,6 @@
 
 tDefOperator CCompiler::def_operator[MAX_OPERATORS];
 map<string, CCompiler::tInfoConstantValue *> * CCompiler::constant_pool=NULL;
-char CCompiler::print_aux_load_value[512];
-
 
 CCompiler *CCompiler::m_compiler = NULL;
 
@@ -60,7 +58,7 @@ int CCompiler::addLocalVarSymbol(const string & var_name,tASTNode *ast){
 			info_symbol.symbol_name = var_name;
 			info_symbol.info_var_scope = irv;
 			info_symbol.properties=0;
-			info_symbol.ref_aux=0;
+			info_symbol.ref_ptr=0;
 
 			this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
 
@@ -118,7 +116,7 @@ int CCompiler::addLocalFunctionSymbol(const string & name,tASTNode *ast){
 
 
 			info_symbol.object_info.symbol_info.properties=0;
-			info_symbol.object_info.symbol_info.ref_aux=0;
+			info_symbol.object_info.symbol_info.ref_ptr=0;
 
 			this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction.push_back(info_symbol);
 
@@ -137,7 +135,6 @@ bool CCompiler::functionSymbolExists(const string & name, tASTNode *ast){
 	SCOPE_TYPE scope_type;
 	return getIdxFunctionSymbol(name,ast,scope_type,false) != -1;
 }
-
 
 
 int  CCompiler::getIdxFunctionSymbol(const string & name,tASTNode *ast, SCOPE_TYPE & scope_type, bool print_msg){
@@ -193,177 +190,11 @@ void CCompiler::destroySingletons(){
 	}
 }
 
-const char * CCompiler::getStrTypeLoadValue(vector<tInfoStatementOp> * m_listStatements,int current_statment, int current_instruction){
-
-
-	tInfoAsmOp * iao =(*m_listStatements)[current_statment].asm_op[current_instruction];
 
 
 
-	if(iao->operator_type != LOAD){
-		return "ERROR";
-	}
 
 
-	string value_symbol="Unknown";
-
-	if(iao->ast_node != NULL){
-		value_symbol = iao->ast_node->value_symbol;
-	}
-
-	char object_access[512] = "this";
-
-	sprintf(print_aux_load_value,"UNDEFINED");
-	switch(iao->index_op1){
-	case LOAD_TYPE::LOAD_TYPE_CONSTANT:
-
-		sprintf(print_aux_load_value,"CONST(%s)",value_symbol.c_str());
-		break;
-	case LOAD_TYPE::LOAD_TYPE_VARIABLE:
-
-		if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
-			sprintf(object_access,"[%02i:%02i]",current_statment,current_instruction-1);
-		}
-
-		sprintf(print_aux_load_value,"%s.VAR(%s)",object_access,value_symbol.c_str());
-		break;
-	case LOAD_TYPE::LOAD_TYPE_FUNCTION:
-
-		sprintf(print_aux_load_value,"FUN(%s)",value_symbol.c_str());
-		break;
-
-	case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
-		sprintf(print_aux_load_value,"ARG(%s)",value_symbol.c_str());
-		break;
-	default:
-		break;
-
-	}
-
-	return print_aux_load_value;
-}
-
-const char * CCompiler::getStrMovVar(tInfoAsmOp * iao){
-
-	if(iao->operator_type != MOV){
-		return "ERROR";
-	}
-
-	string value_symbol="Unknown";
-
-	if(iao->ast_node != NULL){
-		value_symbol = iao->ast_node->value_symbol;
-	}
-
-	sprintf(print_aux_load_value,"VAR(%s)",value_symbol.c_str());
-
-	return print_aux_load_value;
-}
-
-void CCompiler::printGeneratedCode_Recursive(tScriptFunctionInfo *fs){
-
-	vector<tInfoStatementOp> * m_listStatements = &fs->statment_op;
-	string pre="";
-	string post="";
-
-	for(unsigned s = 0; s < (*m_listStatements).size();s++){
-		vector<tInfoAsmOp *> * asm_op_statment = &(*m_listStatements)[s].asm_op;
-
-		printf("\n[%s]\n\n","file.zs");
-
-		for(unsigned i = 0; i  <  asm_op_statment->size(); i++){
-
-			int n_ops=0;
-			int index_op1 = (*asm_op_statment)[i]->index_op1;
-			int index_op2 = (*asm_op_statment)[i]->index_op2;
-
-			if(index_op1 != -1)
-				n_ops++;
-
-			 if(index_op2 != -1)
-				 n_ops++;
-
-			 pre="";
-			 post="";
-
-				switch((*asm_op_statment)[i]->pre_post_operator_type){
-				case ASM_PRE_POST_OPERATORS::PRE_INC:
-					pre="++";
-					break;
-				case ASM_PRE_POST_OPERATORS::PRE_DEC:
-					pre="--";
-					break;
-				case ASM_PRE_POST_OPERATORS::POST_INC:
-					post="++";
-					break;
-				case ASM_PRE_POST_OPERATORS::POST_DEC:
-					post="--";
-					break;
-				default:
-					break;
-
-				}
-			switch((*asm_op_statment)[i]->operator_type){
-			case  NEW:
-				printf("[%02i:%02i]\t%s\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,CScriptClassFactory::getInstance()->getNameRegisteredClassByIdx((*asm_op_statment)[i]->index_op1));
-				break;
-			case  LOAD:
-				printf("[%02i:%02i]\t%s\t%s%s%s\n",s,i,
-						def_operator[(*asm_op_statment)[i]->operator_type].op_str,
-						pre.c_str(),
-						getStrTypeLoadValue(m_listStatements,s,i),
-						post.c_str());
-				break;
-			//case  MOV:
-			//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
-			//	break;
-			case JNT:
-			case JT:
-			case JMP:
-				printf("[%02i:%02i]\t%s\t[%04i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,(*asm_op_statment)[i]->index_op1);
-				break;
-			/*case PRE_INC:
-			case POST_INC:
-			case PRE_DEC:
-			case POST_DEC:
-				printf("[%02i:%02i]\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str);
-				break;*/
-			case VGET:
-			case VPUSH:
-				printf("[%02i:%02i]\t%s\t%s[%02i:%02i]%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,pre.c_str(),s,index_op1,post.c_str(),s,index_op2);
-				break;
-			default:
-
-				if(n_ops==0){
-					printf("[%02i:%02i]\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str);
-				}else if(n_ops==1){
-					printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,s,index_op1);
-				}else{
-					printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,s,index_op1,s,index_op2);
-				}
-				break;
-			}
-		}
-	}
-	// and then print its functions ...
-	vector<tInfoRegisteredFunctionSymbol> * m_vf = &fs->local_symbols.m_registeredFunction;
-
-	for(unsigned j =0; j < m_vf->size(); j++){
-
-		if(((*m_vf)[j].object_info.symbol_info.properties & C_OBJECT_REF) != C_OBJECT_REF){
-
-			print_info_cr("-------------------------------------------------------");
-			print_info_cr("");
-			print_info_cr("Code for function %s",(*m_vf)[j].object_info.symbol_info.ast->value_symbol.c_str());
-			print_info_cr("");
-			printGeneratedCode_Recursive(&m_vf->at(j).object_info);
-		}
-	}
-}
-
-void CCompiler::printGeneratedCode(tScriptFunctionInfo *fs){
-	printGeneratedCode_Recursive(fs);
-}
 
 //------------------------------------------------------------------------------------------------------------------
 //
@@ -533,8 +364,9 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	CCompiler::tInfoConstantValue *get_obj;
 	VALUE_INSTRUCTION_TYPE type=INS_TYPE_VAR;
 	LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
-	SCOPE_TYPE scope_type=LOCAL_SCOPE;
+	SCOPE_TYPE scope_type=SCOPE_TYPE::UNKNOWN_SCOPE;
 	bool is_constant = true;
+	unsigned properties=0;
 
 	if(_node->pre_post_operator_info != NULL){
 
@@ -614,129 +446,76 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 		int idx_local_var=-1;
 
-		node_access = checkAccessObjectMember(_node);
-		//bool this_object=false;
-
-		/*if(_node->value_symbol == "print"){
-			int hhh=0;
-			hhh++;
+		/*if(_node->value_symbol == "gg"){
+			int kkkk=0;
 		}*/
 
-		/*if(_node->value_symbol == "this"){
-			if(!node_access){ // check "this"
-				this_instruction = true;
-				return true;
-			}
-			else{
-				print_error_cr("bad using \"this\" at line %i",-1);
-				return false;
-			}
-		}*/
 
-		// determine if this or not ...
+		if(checkAccessObjectMember(_node)){
+			scope_type = SCOPE_TYPE::ACCESS_SCOPE;
 
-		if(node_access){
-			if(_node->parent->children[0]->value_symbol == "this"){
+
+			if((_node->parent != NULL &&_node->parent->children[0]->value_symbol == "this") || // single access ?
+			   (_node->parent->node_type == NODE_TYPE::CALLING_OBJECT_NODE && _node->parent->parent != NULL && _node->parent->parent->children[0]->value_symbol == "this"  ) // calling object needs +1 step more to check whether is valid this scope...
+			){
+
 				scope_type=SCOPE_TYPE::THIS_SCOPE;
-				string class_name = m_currentFunctionInfo->object_info.symbol_info.class_info->object_info.symbol_info.symbol_name;
+				//scope_type=SCOPE_TYPE::THIS_SCOPE;
+				//string class_name = m_currentFunctionInfo->object_info.symbol_info.symbol_name;
 
-				if(!CScriptClassFactory::getInstance()->getIdxRegisteredVariableSymbol(class_name, _node->value_symbol)){
-					return false;
-				}
-
-
-				/*vector<tInfoRegisteredVariableSymbol> *irvs = &m_currentFunctionInfo->object_info.symbol_info.class_info->object_info.local_symbols.m_registeredVariable;
-
-				for(int i = 0; i < irvs->size()&& idx_local_var==-1; i++){
-					if(irvs->at(i).symbol_name == _node->value_symbol){
-						idx_local_var=i;
-					}
-					//m_currentFunctionInfo->object_info.symbol_info.class_info
-				}
-
-				if(idx_local_var==-1){
-					print_error_cr("cannot find var %s",_node->value_symbol);
-				}*/
+				//if(!CScriptClassFactory::getInstance()->getIdxRegisteredVariableSymbol(class_name, _node->value_symbol)){
+				//	return false;
+				//}
 			}
+
 		}
 		else{
 
 
-		//if(isFunctionNode(_node))
-		// try function ....
-		{
-			load_type=LOAD_TYPE_FUNCTION;
-			SCOPE_TYPE scope_type_aux;
-
-			idx_local_var =getIdxFunctionSymbol(_node->value_symbol,_node,scope_type_aux,false);
-
-			if(idx_local_var != -1){
-				scope_type=scope_type_aux;
-			}
-
+			//if(isFunctionNode(_node))
+			// try function ....
 
 
 			// Local Functions are already inserted during "gacFunction" process, so we don't have
 			// to register again...
-		}
-
-		if(idx_local_var==-1) { // if not function then is var or arg node ?
 
 
-			// first we find the list of argments
-			if((idx_local_var = getIdxArgument(_node->value_symbol))!=-1){
-				load_type=LOAD_TYPE_ARGUMENT;
-			}
-			else{ // ... if not argument finally, we deduce that the value is a local symbol...
-
-				load_type=LOAD_TYPE_VARIABLE;
-
-				//PASTNode aa = _node->parent;
-
-				if(node_access){
+			//if(idx_local_var==-1)
+			{ // if not function then is var or arg node ?
 
 
-
-					print_warning_cr("load \"%s\" at run-time",_node->value_symbol.c_str());
-					checkAccessObjectMember(_node);
+				// first we find the list of argments
+				if((idx_local_var = getIdxArgument(_node->value_symbol))!=-1){
+					load_type=LOAD_TYPE_ARGUMENT;
 				}
-				else{
-				//if(!access_node){
+				else{ // ... if not argument finally, we deduce that the value is a local symbol...
+
+					//PASTNode aa = _node->parent;
+
+					/*if(node_access){
+
+						print_warning_cr("load \"%s\" at run-time",_node->value_symbol.c_str());
+						checkAccessObjectMember(_node);
+					}
+					else{*/
+
+						/*if((idx_local_var=getIdxLocalVarSymbol(_node->value_symbol,_node)) != -1){ //if not exist add symbol ...
+							load_type=LOAD_TYPE_VARIABLE;
+							//print_error_cr("local variable %s not found",_node->value_symbol.c_str());
+							//return false;
+							if((idx_local_var = addLocalVarSymbol(_node->value_symbol, _node)) != -1){
+								load_type=LOAD_TYPE_VARIABLE;
 
 
-					//if(idx_local_var != IDX_THIS){
-
-						if((idx_local_var=getIdxLocalVarSymbol(_node->value_symbol,_node,false)) == -1){ //if not exist add symbol ...
-							if((idx_local_var = addLocalVarSymbol(_node->value_symbol, _node)) == -1){
+							}else{
 								return false;
-
 							}
-						}
-					//}
-					/*else{
-						print_warning("this value");
-					}*/
+						}*/
+					}
+
 				}
-				//}else{
-					//print_warning_cr("load %s run-time",_node->value_symbol.c_str());
-				//}
-			}
-		}
 		}
 
-
-
-		/*tInfoScopeVar * info_var=_lc->getInfoRegisteredSymbol(v,false);
-		type=CVariable::OBJECT;
-
-
-
-		if(info_var==NULL){
-			print_error_cr("symbol %s at line %i is not declared ", v.c_str(),m_var_at_line);
-			return false;
-		}*/
-
-		// if object check whether has pre/post inc/dec
 
 
 		obj = (CScriptVariable *)idx_local_var;
@@ -911,6 +690,7 @@ void CCompiler::insert_CallFunction_Instruction(PASTNode _node,int  index_call,i
 
 	asm_op->ast_node = _node;
 	asm_op->operator_type=ASM_OPERATOR::CALL;
+
 	//printf("[%02i:%02i]\tJT \t[%02i:%02i],[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size(),m_currentListStatements->size(),ptr_current_statement_op->asm_op.size()-1);
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
@@ -1203,12 +983,20 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScopeInfo *_lc)
 	if(_node->node_type != FUNCTION_OBJECT_NODE ){print_error_cr("node is not FUNCTION_OBJECT_NODE type or null");return -1;}
 	if(_node->children.size()!=2) {print_error_cr("Array access should have 2 children");return -1;}
 
+	int idx=0;
 
 	// 1. insert load reference created object ...
+	if(functionSymbolExists(_node->value_symbol, _node)){
+			print_error_cr("Function \"%s\" already defined !",_node->value_symbol.c_str());
+			return false;
+	}
 
+	if((idx=addLocalFunctionSymbol(_node->value_symbol,_node)) == -1){
+		return false;
+	}
 
 	// compiles anonymous function ...
-	if(!gacFunction(_node,_lc)){
+	if(!gacFunction(_node,_lc, &this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction[idx])){
 		return -1;
 	}
 
@@ -1268,6 +1056,18 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScopeInfo *_lc)
 	return CCompiler::getCurrentInstructionIndex();
 }
 
+bool CCompiler::isThisScope(PASTNode _node){
+	if(_node == NULL){
+		return false;
+	}
+
+	return ((_node->node_type == PUNCTUATOR_NODE) &&
+			   //(_node->parent != NULL && _node->parent->node_type != PUNCTUATOR_NODE) &&
+			   (_node->children.size()==2 && _node->children[0]->value_symbol=="this")
+			   );
+
+}
+
 int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & index_instruction){
 
 	//CScopeInfo * _lc = m_currentFunctionInfo->getScope();
@@ -1275,11 +1075,17 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 	//bool this_object = false;
 	bool inline_if_else=false;
 	string error_str;
+	bool access_node = false;
+
 	if(_node==NULL){
 		return -1;
 	}
 
 
+
+	if(isThisScope(_node)){ // only take care left children...
+		_node = _node->children[1];
+	}
 
 
 	bool special_node =	 _node->node_type == ARRAY_OBJECT_NODE || // =[]
@@ -1290,9 +1096,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 
 
-
-
-	// TERMINAL SYMBOLS
+	// TERMINAL SYMBOLS OR SPECIAL NODE
 	if(_node->children.size()==0 ||
 			special_node
 		)
@@ -1340,6 +1144,9 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 						break;
 
 					case FUNCTION_OBJECT_NODE: // should have 1 children
+
+
+
 						if((r=gacExpression_FunctionObject(_node, _lc)) == -1){
 							return -1;
 						}
@@ -1360,16 +1167,10 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 					}
 				}
 		}
-		else{
+		else{ // TERMINAL NODE
 
-			//bool var_assign=false;
-			if(_node->parent != NULL){
-				if(_node->parent->node_type == PUNCTUATOR_NODE){
-					if(_node->parent->operator_info->id == ASSIGN_PUNCTUATOR && _node->parent->children[0] == _node){
-						//var_assign=true;
-					}
-				}
-			}
+
+
 
 			//printf("CONST \tE[%i],%s\n",index_instruction,op->value.c_str());
 			//if(!var_assign){
@@ -1384,10 +1185,13 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 				}
 
 				if(!this_object){*/
-					if(!insertLoadValueInstruction(_node, _lc)){
-						return -1;
 
-					}
+				if(!insertLoadValueInstruction(_node, _lc)){
+					return -1;
+
+				}
+
+
 				//}
 
 			//}
@@ -1408,13 +1212,24 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 		}
 
+		// only inserts terminal symbols...
+
+		if(_node!=NULL && _node->operator_info != NULL){
+			access_node = _node->operator_info->id == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR;
+		}
+
+
+
 		//bool access_node =  _node->operator_info->id == FIELD_PUNCTUATOR;
 
 		// check if there's inline-if-else
-		int right=0, left=0;
-		if((left=gacExpression_Recursive(_node->children[LEFT_NODE], _lc,index_instruction)) == -1){
-			return -1;
-		}
+		int right=-1, left=-1;
+
+
+			if((left=gacExpression_Recursive(_node->children[LEFT_NODE], _lc,index_instruction)) == -1){
+				return -1;
+			}
+
 
 		if(_node->children.size()==2){
 			if((right=gacExpression_Recursive(_node->children[RIGHT_NODE],_lc,index_instruction)) == -1){
@@ -1427,7 +1242,17 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 		r=index_instruction;
 
+		// get last load symbol ..
+		if(access_node){
+			r=index_instruction-1;
+		}
+
+
+
 		if(left !=-1 && right!=-1){ // 2 ops
+
+			// Ignore punctuator node. Only take cares about terminal symbols...
+			if(!access_node){
 
 			// particular case if operator is =
 				//printf("%s\tE[%i],E[%i],E[%i]\n",op->token.c_str(),index_instruction,left,right);
@@ -1436,6 +1261,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 					return -1;
 				}
 			//}
+			}
 
 		}else if(right!=-1){ // one op..
 			//printf("%s\tE[%i],E[%i]\n",op->token.c_str(),index_instruction,right);
@@ -1457,7 +1283,12 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 		}
 
 	}
-	index_instruction++;
+
+	// we ignore field node instruction ...
+	if(!access_node){
+		index_instruction++;
+	}
+
 
 	return r;
 }
@@ -1488,32 +1319,50 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 	if(_node->keyword_info->id != KEYWORD_TYPE::CLASS_KEYWORD){print_error_cr("node is not CLASS keyword type");return false;}
+	if(_node->children.size()==3 && _node->children[2]->node_type != BASE_CLASS_NODE){print_error_cr("expected BASE CLASS keyword type");return false;}
+
+	string base_class= "";
+	if(_node->children.size()==3){
+		base_class=	_node->children[2]->value_symbol;
+	}
+
+
+
+
+	tInfoRegisteredClass *irc;
 
 	// children[0]==var_collection && children[1]=function_collection
 	if(_node->children.size()!=2) {print_error_cr("node CLASS has not valid number of nodes");return false;}
 
 	// verify class is not already registered...
-	if(!CScriptClassFactory::getInstance()->registerScriptClass(_node->value_symbol)){
+	if((irc=CScriptClassFactory::getInstance()->registerScriptClass(_node->value_symbol,base_class,_node)) == NULL){
 		return false;
 	}
 
-	tInfoRegisteredFunctionSymbol *irfs;
+	// we push class symbol ref as function, then all registered symbols will take account with this scope...
+	pushFunction(_node,&irc->metadata_info);
+
+
 
 
 	// register all vars...
-	for(unsigned i = 0; i < _node->children[0]->children.size(); i++){
-		if(CScriptClassFactory::getInstance()->registerVariableSymbol(
-				_node->value_symbol,
-				_node->children[0]->children[i]->value_symbol,
-				_node->children[0]->children[i]
-			) == NULL){
-			return false;
+	for(unsigned i = 0; i < _node->children[0]->children.size(); i++){ // foreach declared var.
+
+
+		for(unsigned j = 0; j < _node->children[0]->children[i]->children.size(); j++){ // foreach element declared within ','
+			if(CScriptClassFactory::getInstance()->registerVariableSymbol(
+					_node->value_symbol,
+					_node->children[0]->children[i]->children[j]->value_symbol,
+					_node->children[0]->children[i]->children[j]
+				) == NULL){
+				return false;
+			}
 		}
 	}
 
 	// register all  functions...
 	for(unsigned i = 0; i < _node->children[1]->children.size(); i++){
-
+		tInfoRegisteredFunctionSymbol *irfs;
 		PASTNode node_fun = _node->children[1]->children[i];
 
 		if((irfs=CScriptClassFactory::getInstance()->registerFunctionSymbol(
@@ -1525,13 +1374,17 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 		}
 
 
-
-		// compile function (with scope class)...
-		if(!gacFunction(node_fun, _node->scope_info_ptr)){
+		// compile function (within scope class)...
+		if(!gacFunction(node_fun, _node->scope_info_ptr,irfs)){
 			return false;
 		}
+
+
+
 	}
 
+	// pop class ref so we go back to main scope...
+	popFunction();
 
 	return true;
 }
@@ -1693,7 +1546,7 @@ bool CCompiler::gacReturn(PASTNode _node, CScopeInfo * _lc){
 	return true;
 }
 
-bool CCompiler::gacFunction(PASTNode _node, CScopeInfo * _lc){
+bool CCompiler::gacFunction(PASTNode _node, CScopeInfo * _lc, tInfoRegisteredFunctionSymbol *irfs){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	//if(!(_node->node_type == KEYWORD_NODE && _node->keyword_info != NULL) && !(_node->node_type != FUNCTION_OBJECT_NODE))>{print_error_cr("node is not keyword type or null");return false;}
@@ -1716,24 +1569,17 @@ bool CCompiler::gacFunction(PASTNode _node, CScopeInfo * _lc){
 
 	//CScopeInfo * scope_body = ast_body_node->scope_info_ptr;
 
-	int local_function_idx=-1;
+	//int local_function_idx=-1;
 	// 1. Get the registered symbol.
 	/*tInfoScopeVar * irv=_lc->getInfoRegisteredSymbol(_node->value_symbol,false);
 	if(irv == NULL){
 		print_error_cr("Cannot get registered function %s",_node->value_symbol.c_str());
 		return false;
 	}*/
-	if(functionSymbolExists(_node->value_symbol, _node)){
-		print_error_cr("Function \"%s\" already defined !",_node->value_symbol.c_str());
-		return false;
-	}
 
-	if((local_function_idx=addLocalFunctionSymbol(_node->value_symbol,_node)) == -1){
-		return false;
-	}
 
 	// 2. Processing args ...
-	tInfoRegisteredFunctionSymbol *irfs = &this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction[local_function_idx];
+
 	for(unsigned i = 0; i < _node->children[0]->children.size(); i++){
 		irfs->m_arg.push_back(_node->children[0]->children[i]->value_symbol);
 	}
@@ -1741,7 +1587,7 @@ bool CCompiler::gacFunction(PASTNode _node, CScopeInfo * _lc){
 	// 2. Compiles the function ...
 
 
-	return compile(_node->children[1], &this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction[local_function_idx]);
+	return compile(_node->children[1], irfs);
 }
 
 bool CCompiler::gacIf(PASTNode _node, CScopeInfo * _lc){
@@ -1916,6 +1762,17 @@ bool CCompiler::gacVar(PASTNode _node, CScopeInfo * _lc){
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 	if(_node->keyword_info->id != VAR_KEYWORD){print_error_cr("node is not VAR keyword type");return false;}
 
+	int local_variable_idx;
+
+	if(localVarSymbolExists(_node->value_symbol, _node)){
+		print_error_cr("Variable \"%s\" already defined !",_node->value_symbol.c_str());
+		return false;
+	}
+
+	if((local_variable_idx=addLocalVarSymbol(_node->value_symbol,_node)) == -1){
+		return false;
+	}
+
 	for(unsigned i = 0 ; i < _node->children.size(); i++){ // init all requested vars...
 		if(!gacExpression(_node->children[i], _lc))
 			return false;
@@ -1926,6 +1783,7 @@ bool CCompiler::gacVar(PASTNode _node, CScopeInfo * _lc){
 
 bool CCompiler::gacKeyword(PASTNode _node, CScopeInfo * _lc){
 
+	int idx=0;
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 
@@ -1952,7 +1810,18 @@ bool CCompiler::gacKeyword(PASTNode _node, CScopeInfo * _lc){
 		return gacVar(_node, _lc);
 		break;
 	case KEYWORD_TYPE::FUNCTION_KEYWORD: // don't compile function. It will compiled later, after main body
-		return gacFunction(_node, _lc);
+
+		if(functionSymbolExists(_node->value_symbol, _node)){
+				print_error_cr("Function \"%s\" already defined !",_node->value_symbol.c_str());
+				return false;
+		}
+
+		if((idx=addLocalFunctionSymbol(_node->value_symbol,_node)) == -1){
+			return false;
+		}
+
+		return gacFunction(_node, _lc,&this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction[idx]);
+
 		break;
 	case KEYWORD_TYPE::RETURN_KEYWORD:
 		return gacReturn(_node, _lc);
@@ -2065,6 +1934,28 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScopeInfo *_lc){
 	return false;
 }
 
+void CCompiler::pushFunction(PASTNode _node,tInfoRegisteredFunctionSymbol *sf){
+	stk_scriptFunction.push_back(m_currentFunctionInfo);
+
+	this->m_currentFunctionInfo = sf;
+	this->m_currentListStatements = &sf->object_info.statment_op;
+	this->m_treescope = _node->scope_info_ptr;
+
+}
+
+void CCompiler::popFunction(){
+
+	tInfoRegisteredFunctionSymbol *aux_sf = stk_scriptFunction[stk_scriptFunction.size()-1];
+	stk_scriptFunction.pop_back();
+	m_currentFunctionInfo = aux_sf;
+
+
+	if(m_currentFunctionInfo != NULL){
+		this->m_currentListStatements = &m_currentFunctionInfo->object_info.statment_op;
+		this->m_treescope = m_currentFunctionInfo->object_info.symbol_info.ast->scope_info_ptr;
+	}
+}
+
 bool CCompiler::compile(PASTNode _node, tInfoRegisteredFunctionSymbol *sf){
 
 	if(_node == NULL){
@@ -2074,12 +1965,8 @@ bool CCompiler::compile(PASTNode _node, tInfoRegisteredFunctionSymbol *sf){
 
 
 	if(_node->node_type == NODE_TYPE::BODY_NODE ){
-		tInfoRegisteredFunctionSymbol *aux_sf = m_currentFunctionInfo;
-		stk_scriptFunction.push_back(m_currentFunctionInfo);
+		pushFunction(_node,sf);
 
-		this->m_currentFunctionInfo = sf;
-		this->m_currentListStatements = &sf->object_info.statment_op;
-		this->m_treescope = _node->scope_info_ptr;
 
 		// reset current pointer ...
 		//m_treescope->resetScopePointer();
@@ -2093,27 +1980,8 @@ bool CCompiler::compile(PASTNode _node, tInfoRegisteredFunctionSymbol *sf){
 			}
 		}
 
-		stk_scriptFunction.pop_back();
-		m_currentFunctionInfo = aux_sf;
+		popFunction();
 
-		if(m_currentFunctionInfo != NULL){
-			this->m_currentListStatements = &m_currentFunctionInfo->object_info.statment_op;
-			this->m_treescope = m_currentFunctionInfo->object_info.symbol_info.ast->scope_info_ptr;
-		}
-
-		// ok parse all function
-		// and then print its functions ...
-		/*vector<tInfoRegisteredFunctionSymbol> * m_vf = &sf->local_symbols.m_registeredFunction;
-
-		for(unsigned j =0; j < m_vf->size(); j++){
-
-			if((m_vf->at(j).object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::C_OBJECT_REF){
-
-				if(!gacFunction(m_vf->at(j).object_info.symbol_info.ast,sf->symbol_info.ast->scope_info_ptr)){
-					return false;
-				}
-			}
-		}*/
 
 		return true;
 	}

@@ -8,10 +8,7 @@ struct tInfoScopeVar;
 struct _tInfoRegisteredClass;
 
 
-//typedef tInfoStatementOp *PInfoStatementOp;
-enum SYMBOL_INFO_PROPERTIES{
-	C_OBJECT_REF = 0x1 <<0
-};
+
 
 #define MAX_PARAM_C_FUNCTION 5
 
@@ -147,7 +144,8 @@ enum LOAD_TYPE{
 };
 
 enum SCOPE_TYPE{
-	GLOBAL_SCOPE=0,
+	UNKNOWN_SCOPE=0,
+	GLOBAL_SCOPE,
 	LOCAL_SCOPE,
 	THIS_SCOPE,
 	ACCESS_SCOPE
@@ -233,14 +231,20 @@ enum VALUE_INSTRUCTION_TYPE{
 
 typedef int (*fntConversionType)(CScriptVariable *obj);
 
+//typedef tInfoStatementOp *PInfoStatementOp;
+enum SYMBOL_INFO_PROPERTIES{
+	PROPERTY_C_OBJECT_REF = 0x1 <<0,
+	PROPERTY_VARIABLE = 0x1 << 1,
+	PROPERTY_FUNCTION = 0x1 << 2
+};
 
 typedef struct{
-	int		 ref_aux; // pointer ref to C Var/Function
+	int		 ref_ptr; // pointer ref to C Var/Function
 	string 	 symbol_name;
 	_tInfoRegisteredClass		 *class_info;
 	tInfoScopeVar  				*info_var_scope;
 	tASTNode		*ast;
-	unsigned int properties;
+	unsigned int properties; // SYMBOL_INFO_PROPERTIES
 }tInfoRegisteredVariableSymbol;
 
 
@@ -358,6 +362,10 @@ typedef struct{
 }tDefOperator;
 
 
+enum ASM_PROPERTIES{
+	ASM_PROPERTY_CALLING_OBJECT = 0x1<<0
+};
+
 
 
 class tInfoAsmOp{
@@ -384,7 +392,7 @@ public:
 	 //------------------
 
 	 int index_op1,index_op2; // left and right respectively
-
+	 int asm_properties;
 	 SCOPE_TYPE scope_type; // in case needed.
 
 	// bool (* isconvertable)(int value);
@@ -396,6 +404,7 @@ public:
 		pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 		ast_node = NULL;
 		scope_type=LOCAL_SCOPE;
+		asm_properties=0;
 		//isconvertable=NULL;
 		//left_var_obj=NULL;
 	  //   type_op=0;
@@ -424,9 +433,10 @@ typedef struct {
 	vector<tInfoRegisteredFunctionSymbol> 	m_registeredFunction; // member functions
 }tLocalSymbolInfo;
 
-struct tScriptFunctionInfo{
-	tInfoRegisteredVariableSymbol symbol_info;
-	tLocalSymbolInfo 			  local_symbols;
+struct tScriptFunctionInfo{ // script function is shared by class and function ...
+	tInfoRegisteredVariableSymbol 	symbol_info;
+	tLocalSymbolInfo 		local_symbols;
+
 
 
 	// the info asm op for each function. Will be filled at compile time.
@@ -439,8 +449,6 @@ struct tScriptFunctionInfo{
 struct tInfoRegisteredFunctionSymbol{
 
 	tScriptFunctionInfo	object_info;
-
-	string symbol_name;
 
 	// var for function ...
 	vector<string> m_arg; // tells var arg name or var type name (in of C )
@@ -455,7 +463,8 @@ struct tInfoRegisteredFunctionSymbol{
  */
 typedef struct _tInfoRegisteredClass{
 
-	tScriptFunctionInfo	object_info;
+	tInfoRegisteredFunctionSymbol	metadata_info;
+	int idx_constructor_function;
 	int class_idx;
 	string classPtrType; // type_id().name();
 	_tInfoRegisteredClass *baseClass; // in the case is and extension of class.

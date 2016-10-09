@@ -57,12 +57,26 @@ char *CStringUtils::ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
 
 	if(IS_START_COMMENT(aux_p)){
 		aux_p+=2; //advance first
-		while(!IS_END_COMMENT(aux_p) && *aux_p != 0){
+		bool end = false;
+		while(*aux_p != 0  && !end){//!IS_END_COMMENT(aux_p) && *aux_p != 0){
 
-			aux_p = ADVANCE_TO_CHAR(aux_p,'*', m_line);
-			if(*aux_p == '\n') {aux_p++;m_line++;}; // make compatible windows format...
-			if(*aux_p == '\r') aux_p++;
-			if(*aux_p == '*' && *(aux_p+1) != '/') aux_p++; // not end comment ... advance ...
+			//while(*aux_p!=0 && *aux_p!='*') {
+
+
+
+			//}
+			//if(*aux_p == '\n') {aux_p++;m_line++;}; // make compatible windows format...
+			//if(*aux_p == '\r') aux_p++;
+			if(*aux_p == '*' && *(aux_p+1) == '/') {
+				end=true;
+				//aux_p+=2;
+			} // not end comment ... advance ...
+			else {
+				if(*aux_p=='\n'){
+					m_line++;
+				}
+				aux_p++;
+			}
 		}
 	}
 
@@ -78,7 +92,8 @@ char *CStringUtils::IGNORE_BLANKS(const char *str, int &m_line) {
 		while(*aux_p!=0 && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p++;
 
 		if(IS_SINGLE_COMMENT(aux_p)) // ignore line
-			aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
+			while(*aux_p!=0 && *aux_p!='\n') aux_p++;
+			//aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
 
 		else if(IS_START_COMMENT(aux_p)){
 			// ignore until get the end of the comment...

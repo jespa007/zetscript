@@ -42,7 +42,13 @@ public:
 //	CALE();
 
 
-	bool performInstruction( tInfoAsmOp * instruction, int & jmp_to_statment,tInfoRegisteredFunctionSymbol *info_function,CScriptVariable *function_object,vector<CScriptVariable *> * argv, int n_stk);
+	bool performInstruction( tInfoAsmOp * instruction,
+			int & jmp_to_statment,
+			tInfoRegisteredFunctionSymbol *info_function,
+			CScriptVariable *function_object,
+			vector<CScriptVariable *> * argv,
+			vector<tInfoAsmOp *> *asm_op,
+			int n_stk);
 
 	void reset();
 
@@ -117,8 +123,17 @@ private:
 	//bool performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *obj);
 //	bool loadValue(tInfoAsmOp *iao, int stk);
 	bool loadConstantValue(CCompiler::tInfoConstantValue *info_constant, int n_stk);
-	bool loadVariableValue(tInfoAsmOp *iao,tInfoRegisteredFunctionSymbol *info_function,CScriptVariable *this_object, int n_stk);
-	bool loadFunctionValue(tInfoAsmOp *iao,tInfoRegisteredFunctionSymbol *info_function,CScriptVariable *this_object, int n_stk);
+	bool loadVariableValue(tInfoAsmOp *iao,
+			tInfoRegisteredFunctionSymbol *info_function,
+			CScriptVariable *this_object,
+			vector<tInfoAsmOp *> *asm_op,
+			int n_stk);
+
+	bool loadFunctionValue(tInfoAsmOp *iao,
+			tInfoRegisteredFunctionSymbol *info_function,
+			CScriptVariable *this_object,
+			vector<tInfoAsmOp *> *asm_op,
+			int n_stk);
 
 
 

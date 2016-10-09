@@ -44,12 +44,12 @@ bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & 
 
 	int converted_param[MAX_PARAM_C_FUNCTION];
 
-	if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::C_OBJECT_REF) {
+	if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) {
 		print_error_cr("Function is not registered as C");
 		return false;
 	}
 
-	int fp = irfs->object_info.symbol_info.ref_aux;
+	int fp = irfs->object_info.symbol_info.ref_ptr;
 
 	if(fp==0){
 		print_error_cr("Null function");
@@ -206,9 +206,7 @@ CVariable * CZG_ScriptCore::createObjectFromPrimitiveType(CZG_ScriptCore::tPrimi
 }
 */
 
-void  print(string * s){
-	print_info_cr("dada:%s",s->c_str());
-}
+
 
 CZG_ScriptCore::CZG_ScriptCore(){
 
@@ -236,24 +234,9 @@ bool CZG_ScriptCore::init(){
 	m_ast = CAst::getInstance();
 
 	// ok register CInteger through CScriptVariable...
-	if((m_mainClassInfo = CScriptClassFactory::getInstance()->registerScriptClass(MAIN_SCRIPT_CLASS_NAME)) == NULL) return false;
-	if((CScriptClassFactory::getInstance()->registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME,m_ast->getMainAstNode())) == NULL) return false;
+	if((m_mainClassInfo = CScriptClassFactory::getInstance()->getRegisteredClass(MAIN_SCRIPT_CLASS_NAME)) == NULL) return false;
+	if((CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME)) == NULL) return false;
 
-	// register c function's
-	if(!registerGlobal_C_Function(print)) return false;
-
-
-	// register var
-	//registerGlobal_C_Variable(&interface_variable);
-
-	//typeid(interface_variable).name();
-
-	// create main global scope ...
-	//m_mainFunctionInfo.global_scope = new CScopeInfo();
-
-	//m_globalScope = new CScopeInfo();
-
-	//CVirtualMachine::getInstance();
 
 	__init__=true;
 
@@ -273,7 +256,12 @@ bool CZG_ScriptCore::eval(const string & s){
 
 		if(CCompiler::getInstance()->compile(m_ast->getMainAstNode(),m_mainFunctionInfo )){
 			// print generated asm ...
-			CCompiler::printGeneratedCode(&m_mainFunctionInfo->object_info);
+
+			if(!CScriptClassFactory::getInstance()->updateReferenceSymbols()){
+				return false;
+			}
+
+			CScriptClassFactory::getInstance()->printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
 			return true;
 		}
 		// then you have all information -> compile into asm!

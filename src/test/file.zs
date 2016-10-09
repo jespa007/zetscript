@@ -9,6 +9,31 @@
 }*/
 
 
+class MyClass2{
+	
+	var h;
+	
+	function MyClass2(){
+		this.h=[0,1,2,3,4];
+	}
+};
+
+class MyClass{
+	
+	var k;
+	
+	function MyClass(){
+		this.k=new MyClass2();
+	}
+	
+};
+
+var l=new MyClass();
+
+
+l.k.h[0]; // crash!
+
+print("hola que tal "+l.k.h[20]);
 
 /*
 function gg(){
@@ -20,8 +45,57 @@ function gg(){
 
 // GLOBAL SCOPE
 
-var hh=[];
+//var i;
+/*
+function ff(){
+	gg();
+}
+*/
+/*
+  
 
+function gg(){
+	var t=0;
+	
+}
+
+c_var=0;
+
+
+class CustomClass{
+	
+	var i;
+	
+
+	
+	function CustomClass(){
+	
+		i=0;
+		this.h=1;
+		this.print("-custom_class created "+" "+this.h);
+	}
+	
+	function print(s){
+		h.l=1;
+		print("CACA DE VACA"+s);
+		c_var = this.h*20 ;
+		print("CACA DE VACA 2 "+c_var);
+	}
+	
+	var h,j;
+	
+
+	
+	
+};
+
+var i = new CustomClass();
+
+i.print("hola1");*/
+
+
+
+/*
 var gg=function(){
 	return 0;
 };
@@ -31,9 +105,9 @@ function ff() {
 	//hh=2;
 	print(2);
 	//gg();
-	/*hh=2;
+	hh=2;
 	//print("hola:"+hh+i);
-	return i+hh+gg();*/
+	return i+hh+gg();
 	//a b c;
 	//return1 1+i;
 }
@@ -44,7 +118,7 @@ for(var t=0; t < 10; t++){
 }
 
 
-ff(0);
+ff(0);*/
 //print("this is a future:"+ff(1)+3);
 //print(ff(1));
 
@@ -81,7 +155,7 @@ c();
 */
 
 //print(3+2+ff());
-var j=0;
+//var j=0;
 /*
 for(var i=0; i < 10000000; ++i)
 {

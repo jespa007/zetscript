@@ -23,7 +23,7 @@ public:
 
 
 	static CCompiler * getInstance();
-	static void printGeneratedCode(tScriptFunctionInfo *fs);
+
 	static void destroySingletons();
 
 
@@ -64,15 +64,11 @@ private:
 
 	vector<tDebugInformation>	m_debugInfo;
 
-	static char print_aux_load_value[512];
+
 
 	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
 	void printDebugInformation();
-	static const char * getStrTypeLoadValue(vector<tInfoStatementOp> * m_listStatements,int current_statment, int current_instruction);
-	static const char * getStrMovVar(tInfoAsmOp * iao);
-
-	static void printGeneratedCode_Recursive(tScriptFunctionInfo *fs);
-
+	static bool isThisScope(PASTNode _node);
 
 	// DEBUG TOOLS
 	//---------------------------------------------------------------------------------------------------------------------------------------
@@ -207,12 +203,15 @@ private:
 	bool gacVar(PASTNode _node, CScopeInfo * _lc);
 	bool gacWhile(PASTNode _node, CScopeInfo * _lc);
 	bool gacIfElse(PASTNode _node, CScopeInfo * _lc);
-	bool gacFunction(PASTNode _node, CScopeInfo * _lc);
+	bool gacFunction(PASTNode _node, CScopeInfo * _lc, tInfoRegisteredFunctionSymbol *irfs);
 	bool gacReturn(PASTNode _node, CScopeInfo * _lc);
 	bool gacIf(PASTNode _node, CScopeInfo * _lc);
 	bool gacSwitch(PASTNode _node, CScopeInfo * _lc);
 	bool gacBody(PASTNode _node, CScopeInfo * _lc);
 
+
+	void pushFunction(PASTNode _node,tInfoRegisteredFunctionSymbol *sf);
+	void popFunction();
 
 	bool generateAsmCode_Recursive(PASTNode _node);
 
