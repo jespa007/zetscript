@@ -24,16 +24,32 @@ class MyClass{
 	
 	function MyClass(){
 		this.k=new MyClass2();
+		this.kk=2;
+		//l=0;
+		
+
 	}
 	
 };
 
+var MyClass::kk;
+
+
+
+
 var l=new MyClass();
+
+function MyClass::pp(){
+	print("pp");
+}
+//l=0; 
 
 
 l.k.h[0]; // crash!
 
-print("hola que tal "+l.k.h[20]);
+print("hola que tal "+l.kk);
+
+l.pp();
 
 /*
 function gg(){

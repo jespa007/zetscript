@@ -69,6 +69,11 @@ private:
 	CAst();
 	~CAst();
 
+	static PASTNode  findAstRecursive(const string & _name_to_find, NODE_TYPE _node_type, KEYWORD_TYPE _keyword_type, PASTNode _node);
+	static PASTNode  findAst(const string & _name_to_find, NODE_TYPE _node_type_to_find, KEYWORD_TYPE _keyword_type_to_find);
+	static char * 	 isClassMember(const char *s,int & m_line, string & _class_name, string & var_name, PASTNode & _class_node, bool & error);
+
+
 	// string generic utils...
 	static char *getSymbolName(const char *s,int & m_startLine);
 	static char * getEndWord(const char *s, int m_line);

@@ -1570,6 +1570,36 @@ char * CAst::parseArgs(char c1,char c2,const char *s,int & m_line,  CScopeInfo *
 	return NULL;
 }
 
+PASTNode  CAst::findAst(const string & _symbol_name_to_find, NODE_TYPE _node_type, KEYWORD_TYPE _keyword_type){
+	return findAstRecursive(_symbol_name_to_find, _node_type, _keyword_type, CAst::getInstance()->getMainAstNode());
+}
+
+
+PASTNode  CAst::findAstRecursive(const string & _symbol_name_to_find, NODE_TYPE _node_type,KEYWORD_TYPE _keyword_type, PASTNode _node){
+	if(_node->value_symbol == _symbol_name_to_find && _node->node_type == _node_type){
+		if(_node_type==NODE_TYPE::KEYWORD_NODE){
+			if(_keyword_type== _node->keyword_info->id){
+				return _node;
+			}
+		}
+		else{
+			return _node;
+
+
+		}
+	}
+
+	for(unsigned i = 0; i < _node->children.size(); i++){
+		PASTNode ch;
+		if((ch=findAstRecursive(_symbol_name_to_find,_node_type,_keyword_type,_node->children[i]))!=NULL){
+			return ch;
+		}
+	}
+
+	return NULL;
+}
+
+
 char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
@@ -1582,6 +1612,10 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 	bool error=false;
 	CScopeInfo *_currentScope=NULL;
 	tInfoScopeVar * irv=NULL;
+	string str_name;
+	string class_member,class_name;
+	PASTNode class_node;
+
 	//tInfoRegisteredFunctionSymbol object_function;
 	//CScopeInfo *_localScope =  scope_info != NULL?scope_info->object_info.symbol_info.ast->scope_info_ptr:NULL; // gets scope...
 
@@ -1597,6 +1631,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 			// advance keyword...
 			aux_p += strlen(key_w->str);
 			aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
+
 
 			if(ast_node_to_be_evaluated!=NULL){ // we save node...
 
@@ -1619,35 +1654,54 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 
 			if(named_function){ // is named function..
 
-				// check whwther the function is anonymous or not.
-				end_var=getSymbolName(aux_p,m_line);
 
-				if(end_var != NULL){
+				if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error))!=NULL){ // check if particular case extension attribute class
 
-					if((value_symbol = CStringUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+
+					scope_info = class_node->scope_info_ptr; // override scope info
+					value_symbol = (char *)class_member.c_str();
+
+				}
+				else{
+					if(error){
 						return NULL;
+					}
+					else{ // get normal name...
 
-					// check whether parameter name's matches with some global variable...
-					if(scope_info != NULL){
-						if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(value_symbol,false)) != NULL){
-							if(irv->ast!=NULL){
-								print_error_cr("Function name \"%s\" defined at line %i is already defined at %i", value_symbol, m_line,irv->ast->definedValueline);
-							}else{
-								print_error_cr("Function name \"%s\" at line %i is no allowed it has conflict with name of already registered function in C/C++", value_symbol, m_line);
+						// check whwther the function is anonymous or not.
+						end_var=getSymbolName(aux_p,m_line);
+
+						if(end_var != NULL){
+
+							if((value_symbol = CStringUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+								return NULL;
+
+							// check whether parameter name's matches with some global variable...
+							if(scope_info != NULL){
+								if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(value_symbol,false)) != NULL){
+									if(irv->ast!=NULL){
+										print_error_cr("Function name \"%s\" defined at line %i is already defined at %i", value_symbol, m_line,irv->ast->definedValueline);
+									}else{
+										print_error_cr("Function name \"%s\" at line %i is no allowed it has conflict with name of already registered function in C/C++", value_symbol, m_line);
+									}
+
+									return NULL;
+								}
 							}
 
+
+
+						}else{
 							return NULL;
 						}
 					}
-
-
-
-				}else{
-					return NULL;
 				}
+
 
 				aux_p=end_var;
 				aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
+
+
 			}
 			else{ //function node
 				if(ast_node_to_be_evaluated!=NULL){ // save as function object...
@@ -1693,6 +1747,9 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 				// set function object...
 				// irv->m_obj=object_function;
 			}
+
+
+
 
 			// parse function args...
 			if(*aux_p == '('){ // push arguments...
@@ -2491,10 +2548,14 @@ char * CAst::parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info,
 	CScopeInfo *_currentScope = NULL;
 	tInfoKeyword *key_w;
 	char *start_var,*end_var, *symbol_name;
+	string class_name, class_member;
+	PASTNode class_node;
+	bool error=false;
 	//int m_startLine=0;
 	//PASTNode symbol_node = NULL;
 
 	string s_aux;
+	bool extension_prop=false;
 
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
@@ -2505,6 +2566,9 @@ char * CAst::parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info,
 		if(key_w->id == KEYWORD_TYPE::VAR_KEYWORD){ // possible variable...
 
 			aux_p += strlen(key_w->str);
+
+
+
 
 			aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
@@ -2517,7 +2581,48 @@ char * CAst::parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info,
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
 
-			while(*aux_p != ';' && *aux_p != 0 ){ // JE: added multivar feature.
+			if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error))!=NULL){ // particular case extension attribute class
+
+
+
+				if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
+
+					PASTNode var_new=new tASTNode;
+					// save symbol in the node ...
+					var_new->value_symbol = class_member;
+					var_new->scope_info_ptr = _currentScope;
+					var_new->definedValueline = m_line;
+
+
+					if(!_currentScope->registerSymbol(var_new->value_symbol,var_new)){
+						return NULL;
+					}
+
+					(*ast_node_to_be_evaluated)->children.push_back(var_new);
+
+				}
+
+				aux_p=CStringUtils::IGNORE_BLANKS(end_var,m_line);
+
+				if(*aux_p == ';'){
+					aux_p++;
+				}
+				else{
+					print_error_cr("line %i; expected ';' after extension class attribute", m_line,*aux_p);
+					return NULL;
+				}
+
+				print_info_cr("registered symbol \"%s::%s\" line %i ",class_name.c_str(),class_member.c_str(), m_line);
+
+				return aux_p;
+			}
+			else{
+				if(error){
+					return NULL;
+				}
+			}
+
+			while(*aux_p != ';' && *aux_p != 0){ // JE: added multivar feature.
 
 
 				start_var=aux_p;
@@ -2537,7 +2642,7 @@ char * CAst::parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info,
 				aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 
-				if((*aux_p == ';' || *aux_p == ',' )){ // JE: added multivar feature (',)).
+				if((*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
 
 
 					print_info_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
@@ -2750,6 +2855,66 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScopeInfo *scope_info, boo
 	return NULL;
 }
 
+char * CAst::isClassMember(const char *s,int & m_line, string & _class_name, string & var_name, PASTNode & _class_node, bool & error){
+
+ char *aux_p = (char *)s;
+ char *end_var;
+ char *value_symbol;
+ //PASTNode class_node;
+ error = true;
+
+ aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
+
+		// check whwther the function is anonymous or not.
+		end_var=getSymbolName(aux_p,m_line);
+
+		if(end_var != NULL){
+
+			if((value_symbol = CStringUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+				return NULL;
+		}else{
+			return NULL;
+		}
+
+		aux_p=end_var;
+		aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
+
+		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
+			_class_name = value_symbol;
+			_class_node = findAst(_class_name,NODE_TYPE::KEYWORD_NODE, KEYWORD_TYPE::CLASS_KEYWORD);
+
+			if(_class_node == NULL){
+				print_error_cr("Class \"%s\" at line %i is no defined", value_symbol, m_line);
+				return NULL;
+			}
+
+			aux_p=CStringUtils::IGNORE_BLANKS(aux_p+2,m_line); // ignore ::
+			end_var=getSymbolName(aux_p,m_line);
+
+			if(end_var != NULL){
+
+				if((value_symbol = CStringUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+					return NULL;
+			}else{
+				return NULL;
+			}
+
+			var_name = value_symbol;
+
+			aux_p=CStringUtils::IGNORE_BLANKS(end_var,m_line);
+
+			error = false;
+			return aux_p;
+
+		}else {
+			error = false;
+			return NULL;
+		}
+
+	return NULL;
+}
+
+
 char *CAst::parseKeyWord(const char *s, int & m_line, CScopeInfo *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
@@ -2770,9 +2935,12 @@ char *CAst::parseKeyWord(const char *s, int & m_line, CScopeInfo *scope_info, bo
 		aux_p=CStringUtils::IGNORE_BLANKS(aux_p, m_line);
 
 		// check if non named function...
-		if(keyw->id == KEYWORD_TYPE::FUNCTION_KEYWORD && *aux_p == '('){
-			// Is no named. No named function is an object and should be processed within parseExpression ...
-			return NULL;
+		if(keyw->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
+			if( *aux_p == '('){
+				// Is no named. No named function is an object and should be processed within parseExpression ...
+				return NULL;
+			}
+
 		}
 
 		// check if class and is not main class (scope )...
@@ -2820,6 +2988,7 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scop
 	tInfoKeyword *keyw=NULL;
 	char *aux = (char *)s;
 	char *end_expr;
+	PASTNode children,_class_node;
 
 	if(node_to_be_evaluated!= NULL){
 		if(!is_main_node){
@@ -2833,6 +3002,21 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scop
 
 
 	while(*aux != 0 ){
+
+		children = NULL;
+
+
+
+
+
+		// ignore all ;
+		while(*aux==';' && *aux != 0){
+			aux =CStringUtils::IGNORE_BLANKS(aux+1, m_line);
+		}
+
+		if(*aux==0){ // custom case exit..
+			return aux;
+		}
 
 		if(*aux == '}'){ // trivial cases...
 			return aux;
@@ -2850,57 +3034,85 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scop
 						error=true;
 						return NULL;
 					}
+				}else if(keyw->id == KEYWORD_TYPE::FUNCTION_KEYWORD||keyw->id == KEYWORD_TYPE::VAR_KEYWORD){
+
+					int startLine = m_line;
+					string _class_name, _member_name;
+					bool error=false;
+					if(isClassMember(aux+strlen(keyw->str),startLine, _class_name, _member_name, _class_node,error) != NULL){
+
+
+						if(keyw->id == KEYWORD_TYPE::VAR_KEYWORD){
+							if((end_expr=parseMemberVar(aux,m_line,_class_node->scope_info_ptr,&children))==NULL){
+								return NULL;
+							}
+							// push into var collection ...
+							_class_node->children[0]->children.push_back(children);
+
+						}else{
+							startLine = m_line;
+							end_expr=parseFunction(aux,m_line,_class_node->scope_info_ptr,&children);
+							if(end_expr==NULL){
+								return NULL;
+							}
+							// push into function collection...
+							_class_node->children[1]->children.push_back(children);
+
+						}
+
+					}else{
+						if(error){
+							return NULL;
+						}
+
+					}
+
 				}
 			}
 		}
 
 
+		// 0st special case member class extension ...
 
 
+		if(children==NULL){ // not processed yet ...
 
-		// ignore all ;
-		while(*aux==';' && *aux != 0){
-			aux =CStringUtils::IGNORE_BLANKS(aux+1, m_line);
-		}
 
-		if(*aux==0){ // custom case exit..
-			return aux;
-		}
-
-		// new expression ready to be evaluated...
-		if(node_to_be_evaluated != NULL){
-			(*node_to_be_evaluated)->children.push_back(NULL);
-		}
-
-		// 1st. check whether parse a keyword...
-		if((end_expr = parseKeyWord(aux, m_line, scope_info, error, node_to_be_evaluated != NULL ? &(*node_to_be_evaluated)->children[(*node_to_be_evaluated)->children.size()-1] : NULL)) == NULL){
-
-			// If was unsuccessful then try to parse expression.
-			if(error){
-				return NULL;
-			}
-
-			// 2nd. check whether parse a block
-			if((end_expr = parseBlock(aux,m_line, scope_info, error,node_to_be_evaluated != NULL ? &(*node_to_be_evaluated)->children[(*node_to_be_evaluated)->children.size()-1]:NULL))==NULL){
+			// 1st. check whether parse a keyword...
+			if((end_expr = parseKeyWord(aux, m_line, scope_info, error, node_to_be_evaluated != NULL ? &children : NULL)) == NULL){
 
 				// If was unsuccessful then try to parse expression.
 				if(error){
 					return NULL;
 				}
 
-				// 2nd. try expression
-				int starting_expression=m_line;
+				// 2nd. check whether parse a block
+				if((end_expr = parseBlock(aux,m_line, scope_info, error,node_to_be_evaluated != NULL ? &children:NULL))==NULL){
 
-				if((end_expr = parseExpression(aux,m_line, scope_info,node_to_be_evaluated != NULL ? &(*node_to_be_evaluated)->children[(*node_to_be_evaluated)->children.size()-1]:NULL)) == NULL){ // something wrong was happen.
-					return NULL;
-				}
+					// If was unsuccessful then try to parse expression.
+					if(error){
+						return NULL;
+					}
 
-				if(*end_expr != ';'){
-					error = true;
-					print_error_cr("Expected ';' at expression starting at line %i",starting_expression);
-					return NULL;
+					// 2nd. try expression
+					int starting_expression=m_line;
+
+					if((end_expr = parseExpression(aux,m_line, scope_info,node_to_be_evaluated != NULL ? &children:NULL)) == NULL){ // something wrong was happen.
+						return NULL;
+					}
+
+					if(*end_expr != ';'){
+						error = true;
+						print_error_cr("Expected ';' at expression starting at line %i",starting_expression);
+						return NULL;
+					}
+					end_expr++;
 				}
-				end_expr++;
+			}
+
+			// new expression ready to be evaluated...
+			if(node_to_be_evaluated != NULL && children != NULL){
+				(*node_to_be_evaluated)->children.push_back(children);
 			}
 		}
 
