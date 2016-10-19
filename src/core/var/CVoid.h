@@ -5,5 +5,6 @@
 class CVoid:public CScriptVariable{
 
 public:
+	CVoid(){}
 	CVoid(tInfoRegisteredClass *info_registered_class);
 };

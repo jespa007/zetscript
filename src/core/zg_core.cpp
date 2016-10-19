@@ -181,19 +181,19 @@ CVariable * CZG_ScriptCore::createObjectFromPrimitiveType(CZG_ScriptCore::tPrimi
 
 	if(pt != NULL){
 		switch(pt->id){
-		case C_TYPE_VAR::VOID_TYPE:
+		case C_TYPE_VALID_PRIMITIVE_VAR::VOID_TYPE:
 			return CScriptVariable::VoidSymbol;
 			break;
-		case C_TYPE_VAR::STRING_TYPE:
+		case C_TYPE_VALID_PRIMITIVE_VAR::STRING_TYPE:
 			return (CVariable *)NEW_STRING();
 			break;
-		case C_TYPE_VAR::FLOAT_TYPE:
+		case C_TYPE_VALID_PRIMITIVE_VAR::FLOAT_TYPE:
 			return (CVariable *)NEW_NUMBER();
 			break;
-		case C_TYPE_VAR::INT_TYPE:
+		case C_TYPE_VALID_PRIMITIVE_VAR::INT_TYPE:
 			return (CVariable *)NEW_INTEGER();
 			break;
-		case C_TYPE_VAR::BOOL_TYPE:
+		case C_TYPE_VALID_PRIMITIVE_VAR::BOOL_TYPE:
 			return (CVariable *)NEW_BOOLEAN();
 			break;
 		default:

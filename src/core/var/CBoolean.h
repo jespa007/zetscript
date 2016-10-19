@@ -14,6 +14,7 @@ public:
 	//static CBoolean * Parse(const string & );
 	static bool * Parse(const string & );
 
+	CBoolean(){}
 	CBoolean(tInfoRegisteredClass *info_registered_class);
 
 

@@ -12,6 +12,12 @@
 #define getIdxGlobalVariable(s)  CScriptClassFactory::register_C_FunctionInt(STR(s),s)
 #define getIdxGlobalFunction(s)
 
+
+
+#define register_C_VariableMember(o,s) 		register_C_VariableMemberInt<o>(STR(s),typeid(decltype(o::s)*).name(),offsetOf(&o::s))
+#define register_C_FunctionMember(o,s)		register_C_FunctionMemberInt<o>(STR(s),&o::s)
+
+
 #define NEW_CLASS_VAR_BY_IDX(idx) (CScriptClassFactory::getInstance()->newClassByIdx(idx))
 
 class CScopeInfo;
@@ -24,17 +30,14 @@ class CScriptClassFactory{
 public:
 
 
-	enum C_TYPE_VAR{
+	enum C_TYPE_VALID_PRIMITIVE_VAR{
 		VOID_TYPE,
 		INT_TYPE,
 		INT_PTR_TYPE,
-		FLOAT_TYPE,
 		FLOAT_PTR_TYPE,
-		STRING_TYPE,
 		STRING_PTR_TYPE,
-		BOOL_TYPE,
 		BOOL_PTR_TYPE,
-		MAX_VAR_C_TYPES
+		MAX_C_TYPE_VALID_PRIMITIVE_VAR
 	};
 
 
@@ -42,7 +45,7 @@ public:
 	typedef struct{
 		string 	    type_str;
 		string      human_description_str;
-		C_TYPE_VAR  id;
+		C_TYPE_VALID_PRIMITIVE_VAR  id;
 	}tPrimitiveType;
 
 	typedef struct{
@@ -50,8 +53,9 @@ public:
 		vector<tPrimitiveType*>		params;
 	}tRegisterFunction;
 
-	static tPrimitiveType primitiveType[MAX_VAR_C_TYPES];
+	static tPrimitiveType valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 	static void registerPrimitiveTypes();
+	bool isTypeStrValid(const string & type_str);
 	static CScriptClassFactory*  getInstance();
 	static void destroySingletons();
 
@@ -133,6 +137,28 @@ public:
 			exit(EXIT_FAILURE);
 		}
 
+
+
+
+		// 1. check all parameters ok.
+		using Traits3 = function_traits<decltype(function_ptr)>;
+		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
+
+
+		// check valid parameters ...
+		if(!isTypeStrValid(irs.return_type)){
+			print_info_cr("Return type \"%s\" for function \"%s\" is not valid",irs.return_type.c_str(),function_name.c_str());
+			return false;
+		}
+
+		for(unsigned int i = 0; i < irs.m_arg.size(); i++){
+			if(!isTypeStrValid(irs.m_arg[i])){
+				print_info_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,irs.m_arg[i].c_str(),function_name.c_str());
+				return false;
+			}
+
+		}
+
 		// init struct...
 
 		irs.object_info.symbol_info.ast = NULL;
@@ -146,12 +172,6 @@ public:
 		if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
 			return false;
 		}
-
-
-
-		// 1. check all parameters ok.
-		using Traits3 = function_traits<decltype(function_ptr)>;
-		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
 
 
 
@@ -242,6 +262,10 @@ public:
 			irc->metadata_info.object_info.symbol_info.info_var_scope=NULL;
 			irc->metadata_info.object_info.symbol_info.symbol_name = class_name;
 			irc->baseClass = base_class; // identify extend class ?!?!!?
+
+			irc->c_constructor = new std::function<void *()>([](){return new _T();});
+			irc->c_destructor = new std::function<void (void *)>([](void *p){delete (_T *)p;});
+
 			irc->class_idx = m_registeredClass.size();
 
 			irc->classPtrType=str_classPtr;
@@ -264,7 +288,7 @@ public:
 	 * Register C Member function Class
 	 */
 	template <class _T, typename F>
-	bool register_C_FunctionMember(const char *function_name,F function_ptr)
+	bool register_C_FunctionMemberInt(const char *function_name,F function_ptr)
 	{
 		string return_type;
 		vector<string> params;
@@ -277,6 +301,25 @@ public:
 			return false;
 		}
 
+		// 1. check all parameters ok.
+		using Traits3 = function_traits<decltype(function_ptr)>;
+		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
+
+
+		// check valid parameters ...
+		if(!isTypeStrValid(irs.return_type)){
+			print_info_cr("Return type \"%s\" for function \"%s\" is not valid",irs.return_type.c_str(),function_name);
+			return false;
+		}
+
+		for(unsigned int i = 0; i < irs.m_arg.size(); i++){
+			if(!isTypeStrValid(irs.m_arg[i])){
+				print_info_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,irs.m_arg[i].c_str(),function_name);
+				return false;
+			}
+
+		}
+
 		// init struct...
 		irs.object_info.symbol_info.ast = NULL;
 		irs.object_info.symbol_info.info_var_scope = NULL;
@@ -287,16 +330,14 @@ public:
 
 		// ignores special type cast C++ member to ptr function
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-		irs.object_info.symbol_info.ref_ptr=(int)((void *)function_ptr);
+		irs.object_info.symbol_info.ref_ptr=(unsigned int)((void *)function_ptr);
 #pragma GCC diagnostic warning "-Wpmf-conversions"
 
 		/*if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
 			return false;
 		}*/
 
-		// 1. check all parameters ok.
-		using Traits3 = function_traits<decltype(function_ptr)>;
-		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
+
 
 
 		m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredFunction.push_back(irs);
@@ -305,11 +346,76 @@ public:
 		return true;
 	}
 
+	/**
+	 * Register C Member var
+	 */
+
+
+	template<typename T, typename U> constexpr size_t offsetOf(U T::*member)
+	{
+	    return (char*)&((T*)nullptr->*member) - (char*)nullptr;
+	}
+
+	template <class _T>
+	bool register_C_VariableMemberInt(const char *var_name, const string & var_type, unsigned int offset)
+	{
+		//decltype(var_type) var;
+		//print_info_cr("%s",typeid(var).name());
+		//string str_type = typeid(decltype(var_type)).name();
+
+		//unsigned int offset = offsetOf(var_type);
+
+
+		string return_type;
+		vector<string> params;
+		tInfoRegisteredVariableSymbol irs;
+		string str_classPtr = typeid( _T *).name();
+
+
+
+
+
+		int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
+
+		if(idxRegisterdClass == -1){
+			return false;
+		}
+
+		// 1. check all parameters ok.
+
+		// check valid parameters ...
+		if(!isTypeStrValid(var_type)){
+			print_info_cr("%s::%s has not valid type (%s)",m_registeredClass[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str(),var_name,var_type.c_str());
+			return false;
+		}
+
+
+
+		// init struct...
+		irs.class_info = m_registeredClass[idxRegisterdClass];
+		irs.ref_ptr=offset;
+		//irs.
+		irs.symbol_name=var_name;
+
+
+		irs.properties = PROPERTY_C_OBJECT_REF;
+
+
+
+		m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
+		//base_info->local_symbols.m_registeredFunction.push_back(irs);
+
+		return true;
+
+
+	}
+
 
 private:
 
 	static CScriptClassFactory *scriptClassFactory;
 	static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
+
 
 	int getIdxRegisteredClass_Internal(const string & class_name);
 	//int getIdxRegisteredFunctionSymbol_Internal(const string & class_name,const string & function_name);

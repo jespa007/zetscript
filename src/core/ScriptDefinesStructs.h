@@ -239,7 +239,7 @@ enum SYMBOL_INFO_PROPERTIES{
 };
 
 typedef struct{
-	int		 ref_ptr; // pointer ref to C Var/Function
+	unsigned int	 ref_ptr; // pointer ref to C Var/Function
 	string 	 symbol_name;
 	_tInfoRegisteredClass		 *class_info;
 	tInfoScopeVar  				*info_var_scope;
@@ -466,6 +466,8 @@ typedef struct _tInfoRegisteredClass{
 	tInfoRegisteredFunctionSymbol	metadata_info;
 	int idx_constructor_function;
 	int class_idx;
+	std::function<void (void *p)> *c_destructor;
+	std::function<void *()> *c_constructor;
 	string classPtrType; // type_id().name();
 	_tInfoRegisteredClass *baseClass; // in the case is and extension of class.
 

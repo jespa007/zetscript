@@ -1,6 +1,6 @@
 #include "core/zg_core.h"
 #include "SDL2/SDL.h"
-
+/*
 class CCustomObject{
 	int x;
 public:
@@ -79,11 +79,11 @@ bool print2(float *f){
 void print3(string * s){
 	print_info_cr(s->c_str());
 }
-
+*/
 /*
 void call_print_1p(CVariable *obj){
 
-	fntConversionType fun=getConversionType(obj->getPointerClassStr(),CZG_ScriptCore::primitiveType[CZG_ScriptCore::FLOAT_PTR_TYPE].type_str);
+	fntConversionType fun=getConversionType(obj->getPointerClassStr(),CZG_ScriptCore::valid_C_PrimitiveType[CZG_ScriptCore::FLOAT_PTR_TYPE].type_str);
 
 	if(fun != NULL){
 		// Normalize argument ...
@@ -110,7 +110,140 @@ void call_print_1p(CVariable *obj){
 }*/
 
 
+
+class CBase{
+
+public:
+	int jj;
+	int ii;
+	CBase(){
+		ii=0;
+		jj=0;
+		print_info_cr("Created object!!!");
+
+	}
+
+	void print2(){
+		//print_info_cr("v:%i",i);
+	}
+
+	~CBase(){
+		//print_info_cr("Object destroyed!!!");
+	}
+
+
+};
+
+class CObject: public CBase{
+
+public:
+	int j;
+	int i;
+	CObject(){
+		i=0;
+		j=0;
+		print_info_cr("Created object!!!");
+		i=0;
+	}
+
+	void print(){
+		print_info_cr("v:%i",i);
+	}
+
+	~CObject(){
+		print_info_cr("Object destroyed!!!");
+	}
+
+
+};
+
+/*
+template<class _tObject>
+class CBaseFactory{
+
+public:
+	void *newObject(){
+
+	}
+
+};
+
+
+
+
+
+template<class _tObject>
+class CFactory{
+
+public:
+
+	_tObject *[](){ return new _tObject();}
+
+};
+*/
+
+template <class T, class M> M get_member_type(M T:: *);
+#define GET_TYPE_OF(mem) decltype(get_member_type(mem))
+
+//const string & var_name,void * var_ptr, const string & var_type
+
+//"hola",typeid(o::s).name())
+
+template<typename _T>
+void register_c(const string & s, const string & var_type, unsigned int offset){
+
+
+	print_info_cr("offset \"%s\" offset:%i type:%s",s.c_str(),offset,var_type.c_str());
+
+}
+
+
+
+
 int main(int argc, char * argv[]){
+
+
+	//CBaseFactory *bf = new CFactory<CObject>();
+
+	// generate generic function create object ...
+	std::function<void *()> createObject=[](){return new CObject();};
+	std::function<void (void *)> deleteObject=[](void *_p){delete (CObject *)(_p);};
+
+
+	// construct/destruct ok!!!
+	void *pp= createObject();
+
+
+	// set/get
+	//print_info_cr("%i %i",sizeof(unsigned long long), offsetof(CObject,i));
+	//1. Objective
+	// set(0)
+	//std::function<int ()> getPointerOffsetI=[](){return ;};
+	typeid(&CObject::i).name();
+
+
+	//register_C_VariableMember(CObject,i);
+	print_info_cr("%s %s",typeid(int *).name(),typeid(decltype(CObject::i)).name());
+
+	//GET_TYPE_OF(&CObject::i);
+
+
+	int *int_ptr = (int*) ((unsigned long long) pp + offsetof(CObject,i));
+
+	*int_ptr = 10;
+
+	((CObject *)pp)->print();
+
+
+	// ()pp
+	//2. and sets 0 to i.
+
+	deleteObject(pp);
+
+
+	//return 0;
+	//bf->newObject();
+
 
 	CLog::setUseAnsiEscape(true);
 	CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();

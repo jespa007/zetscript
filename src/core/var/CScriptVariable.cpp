@@ -44,7 +44,9 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *irv){
 
 }
 
-
+CScriptVariable::CScriptVariable(){
+	this->m_infoRegisteredClass = NULL;
+}
 
 CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv){
 

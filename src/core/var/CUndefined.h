@@ -5,5 +5,6 @@
 class CUndefined:public CScriptVariable{
 
 public:
+	CUndefined(){}
 	CUndefined(tInfoRegisteredClass *info_registered_class);
 };

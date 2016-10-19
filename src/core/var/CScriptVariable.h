@@ -160,6 +160,7 @@ public:
 	string m_strValue;
 
 	//CScriptVariable();
+	CScriptVariable();
 	CScriptVariable(tInfoRegisteredClass *info_registered_class);
 
 
@@ -189,8 +190,8 @@ public:
 	}
 
 
-    virtual string toString(){
-    	return m_strValue;
+    virtual string * toString(){
+    	return &m_strValue;
     }
 	//tSymbolInfo * getArgSymbol(const string & var_name);
 	//tSymbolInfo * getArgSymbol(unsigned index);

@@ -12,6 +12,7 @@ public:
 	//static CInteger * Parse(const string & );
 	static int * Parse(const string & );
 
+	CInteger(){}
 	CInteger(tInfoRegisteredClass *info_registered_class);
 
 

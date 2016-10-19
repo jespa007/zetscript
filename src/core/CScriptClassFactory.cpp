@@ -1,7 +1,7 @@
 #include "zg_core.h"
 
  CScriptClassFactory *  	 CScriptClassFactory::scriptClassFactory=NULL;
- CScriptClassFactory::tPrimitiveType CScriptClassFactory::primitiveType[MAX_VAR_C_TYPES];
+ CScriptClassFactory::tPrimitiveType CScriptClassFactory::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 
 
  //--obj , type convert, ---
@@ -13,12 +13,12 @@
  	bool valid_type = false;
 
  	// check if any entry is int, *float, *bool , *string, *int or any from factory. Anyelese will be no allowed!
- 	valid_type|=CScriptClassFactory::primitiveType[CScriptClassFactory::VOID_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",VOID_TYPE};
- 	valid_type|=CScriptClassFactory::primitiveType[CScriptClassFactory::INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
- 	valid_type|=CScriptClassFactory::primitiveType[CScriptClassFactory::INT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",INT_PTR_TYPE};
- 	valid_type|=CScriptClassFactory::primitiveType[CScriptClassFactory::FLOAT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
- 	valid_type|=CScriptClassFactory::primitiveType[CScriptClassFactory::STRING_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
- 	valid_type|=CScriptClassFactory::primitiveType[CScriptClassFactory::BOOL_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
+ 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::VOID_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",VOID_TYPE};
+ 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
+ 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",INT_PTR_TYPE};
+ 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::FLOAT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
+ 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::STRING_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
+ 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::BOOL_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
 
  	if(!valid_type){
  		print_error_cr("Conversion type \"%s\" not valid",typeid(_D).name());
@@ -38,6 +38,29 @@
 
  	return true;
  	//typeConversion["P7CNumber"]["Ss"](&n);
+ }
+
+
+ bool CScriptClassFactory::isTypeStrValid(const string & type_str){
+
+	 // 1. check primitives ...
+	 for(unsigned i = 0; i < MAX_C_TYPE_VALID_PRIMITIVE_VAR;i++){
+		 if(CScriptClassFactory::valid_C_PrimitiveType[i].type_str==type_str){
+			 return true;
+		 }
+	 }
+
+	 // for all registered C classes...
+	 for(unsigned i = 0; i < m_registeredClass.size(); i++){
+		 if(m_registeredClass[i]->classPtrType==type_str)
+		 {
+			 return true;
+		 }
+	 }
+
+
+	 return false;
+
  }
 
 
@@ -90,7 +113,7 @@
  }
 
 
- void  print(string * s){
+ void  print(string  *s){
  	print_info_cr("ADADADADADADADA:%s",s->c_str());
  }
 
@@ -101,15 +124,12 @@
  bool CScriptClassFactory::registerBase(){
 
 
-	 	primitiveType[VOID_TYPE]={typeid(void).name(),"void",VOID_TYPE};
-	 	primitiveType[INT_TYPE]={typeid(int).name(),"int",INT_TYPE};
-	 	primitiveType[INT_PTR_TYPE]={typeid(int *).name(),"int *",INT_PTR_TYPE};
-	 	primitiveType[FLOAT_TYPE]={typeid(float).name(),"float",FLOAT_TYPE};
-	 	primitiveType[FLOAT_PTR_TYPE]={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
-	 	primitiveType[STRING_TYPE]={typeid(string).name(),"string",STRING_TYPE};
-	 	primitiveType[STRING_PTR_TYPE]={typeid(string *).name(),"string *",STRING_PTR_TYPE};
-	 	primitiveType[BOOL_TYPE]={typeid(bool).name(),"bool",BOOL_TYPE};
-	 	primitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
+	 	valid_C_PrimitiveType[VOID_TYPE]={typeid(void).name(),"void",VOID_TYPE};
+	 	valid_C_PrimitiveType[INT_TYPE]={typeid(int).name(),"int",INT_TYPE};
+	 	valid_C_PrimitiveType[INT_PTR_TYPE]={typeid(int *).name(),"int *",INT_PTR_TYPE};
+	 	valid_C_PrimitiveType[FLOAT_PTR_TYPE]={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
+	 	valid_C_PrimitiveType[STRING_PTR_TYPE]={typeid(string *).name(),"string *",STRING_PTR_TYPE};
+	 	valid_C_PrimitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
 
 
 		//===> MOVE INTO CScriptClassFactory !!!! ====================================================>
@@ -164,8 +184,9 @@
 
 
 		// register custom functions ...
-		if(!register_C_FunctionMember<CInteger>("toString",&CInteger::toString)) return false;
-		//register_C_VariableMember<CInteger,CInteger::>("toString");
+		if(!register_C_FunctionMember(CInteger,toString)) return false;
+		if(!register_C_VariableMember(CInteger,m_value)) return false;
+
 
 		return true;
  }
@@ -185,9 +206,9 @@
 
  CScriptClassFactory::tPrimitiveType *CScriptClassFactory::getPrimitiveTypeFromStr(const string & str){
 
- 	for(unsigned i=0; i < MAX_VAR_C_TYPES; i++){
- 		if(primitiveType[i].type_str == str){
- 			return &primitiveType[i];
+ 	for(unsigned i=0; i < MAX_C_TYPE_VALID_PRIMITIVE_VAR; i++){
+ 		if(valid_C_PrimitiveType[i].type_str == str){
+ 			return &valid_C_PrimitiveType[i];
  		}
  	}
 
@@ -583,6 +604,9 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 		irv->idx_constructor_function=-1;
 		irv->metadata_info.object_info.symbol_info.symbol_name = class_name;
 		irv->metadata_info.object_info.symbol_info.ast=_ast;
+		irv->c_constructor=NULL;
+		irv->c_destructor = NULL;
+		irv->metadata_info.object_info.symbol_info.properties=0;
 		m_registeredClass.push_back(irv);
 
 		return irv;
@@ -655,7 +679,10 @@ bool  CScriptClassFactory::register_C_VariableInt(const string & var_name,void *
 		return false;
 	}
 
-
+	if(!isTypeStrValid(var_type)){
+		print_info_cr("%s has not valid type (%s)",var_name,var_type.c_str());
+		return false;
+	}
 
 	// init struct...
 	irs.ast = NULL;
@@ -950,6 +977,13 @@ CScriptClassFactory::~CScriptClassFactory() {
 		    	}
 		    }
 
+		    if(irv->c_constructor != NULL){
+		    	delete irv->c_constructor;
+		    }
+
+		    if(irv->c_destructor != NULL){
+		    	delete irv->c_destructor;
+		    }
 
 		    // delete tInfoRegisteredClass
 			delete irv;

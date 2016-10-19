@@ -8,6 +8,7 @@ public:
 
 	vector<CScriptVariable *> m_value;
 
+	CVector(){}
 	CVector(tInfoRegisteredClass *info_registered_class);
 
 	~CVector();

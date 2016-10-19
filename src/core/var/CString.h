@@ -8,6 +8,7 @@ public:
 
 	string m_value;
 
+	CString(){}
 	CString(tInfoRegisteredClass *info_registered_class);
 
 	

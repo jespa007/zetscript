@@ -11,6 +11,7 @@ public:
 	//static CNumber * Parse(const string & );
 	static float * Parse(const string & );
 
+	CNumber(){}
 	CNumber(tInfoRegisteredClass *info_registered_class);
 
 
