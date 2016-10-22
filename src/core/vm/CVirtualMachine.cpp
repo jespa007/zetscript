@@ -78,8 +78,12 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 	if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
 
 			int result=0;
+			int c_object = 0;
+			if(this_object!= NULL){
+				c_object = this_object->get_C_ObjectPtr();
+			}
 
-			if(!CZG_ScriptCore::call_C_function(info_function,result,argv)){
+			if(!CZG_ScriptCore::call_C_function(info_function,result,argv,c_object)){
 				 return NULL;
 			}
 
@@ -684,7 +688,7 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 		if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
 
 
-			CScriptVariable * base_var = ((CScriptVariable *)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].stkObject);
+			CScriptVariable * base_var = *((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].ptrAssignableVar);
 
 			if((si = base_var->getVariableSymbol(iao->ast_node->value_symbol))==NULL){
 				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not symbol \"%s\"",iao->ast_node->definedValueline,asm_op->at(iao->index_op2)->ast_node->value_symbol.c_str(),base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str());
@@ -830,6 +834,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 	vector<tInfoRegisteredFunctionSymbol> *vec_global_functions;
 
 	CScriptVariable::tSymbolInfo *si;
+	CScriptVariable ** calling_object = NULL;
 
 	//CScriptVariable *var_object = NULL;
 	//tInfoRegisteredFunctionSymbol *info_function = (tInfoRegisteredFunctionSymbol *)(si->object);
@@ -853,13 +858,16 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 		// get var from object ...
 		if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
 
-			CScriptVariable * base_var = *((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].ptrAssignableVar);
+			calling_object = ((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].ptrAssignableVar);
+			CScriptVariable * base_var = *calling_object;
 
 			if((si = base_var->getFunctionSymbol(iao->ast_node->value_symbol))==NULL){
 				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not function \"%s\"",iao->ast_node->definedValueline,asm_op->at(iao->index_op2)->ast_node->value_symbol.c_str(),base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str());
 				//print_error_cr("cannot find function \"%s\"",iao->ast_node->value_symbol.c_str());
 				return false;
 			}
+
+
 
 		}else{
 			if((si = this_object->getFunctionSymbolByIndex(iao->index_op2))==NULL){
@@ -894,7 +902,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 	}
 
 	// generic object pushed ...
-	if(!pushFunction(info_function)) {
+	if(!pushFunction(info_function,calling_object != NULL? calling_object:NULL)) {
 		return false;
 	}
 	//stkResultInstruction[idxStkCurrentResultInstruction]={CScriptVariable::FUNCTION,(CScriptVariable **)si, false};
@@ -1537,6 +1545,10 @@ bool CVirtualMachine::performInstruction(
 				calling_object= (CScriptVariable *)stkResultInstruction[index_op1+startIdxStkResultInstruction-1].stkObject;
 						//((CFunctor *)ptrResultInstructionOp1->stkObject)->getThisObject();
 			}
+			else if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+				int kkk=0;
+			}
+
 
 
 

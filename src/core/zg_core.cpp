@@ -40,7 +40,7 @@ void CZG_ScriptCore::destroy(){
 }
 
 
-bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CScriptVariable *> * argv){
+bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CScriptVariable *> * argv, int base_obj){
 
 	int converted_param[MAX_PARAM_C_FUNCTION];
 
@@ -66,6 +66,12 @@ bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & 
 		return false;
 	}
 
+	int extra = 0;
+	if(base_obj!=0){
+		extra = 1;
+		converted_param[0] = base_obj;
+	}
+
 	// convert parameters script to c...
 	for(unsigned int i = 0; i < argv->size();i++){
 		fntConversionType paramConv=CScriptClassFactory::getInstance()->getConversionType((argv->at(i))->getPointer_C_ClassName(),irfs->m_arg[i]);
@@ -74,10 +80,12 @@ bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & 
 			return false;
 		}
 
-		converted_param[i] = paramConv(argv->at(i));
+		converted_param[i+extra] = paramConv(argv->at(i));
 	}
 
-	switch(argv->size()){
+
+
+	switch(argv->size()+extra){
 	default:
 		print_error_cr("cannot call !");
 		return false;

@@ -114,17 +114,15 @@ void call_print_1p(CVariable *obj){
 class CBase{
 
 public:
-	int jj;
-	int ii;
+	int i;
 	CBase(){
-		ii=0;
-		jj=0;
+		i=0;
 		print_info_cr("Created object!!!");
 
 	}
 
-	void print2(){
-		//print_info_cr("v:%i",i);
+	virtual void print(){
+		print_info_cr("1",i);
 	}
 
 	~CBase(){
@@ -137,20 +135,18 @@ public:
 class CObject: public CBase{
 
 public:
-	int j;
-	int i;
+
 	CObject(){
 		i=0;
-		j=0;
 		print_info_cr("Created object!!!");
-		i=0;
 	}
 
-	void print(){
+	virtual void print(){
+		CBase::print();
 		print_info_cr("v:%i",i);
 	}
 
-	~CObject(){
+	virtual ~CObject(){
 		print_info_cr("Object destroyed!!!");
 	}
 
@@ -209,8 +205,18 @@ bool register_C_FunctionMemberInt2(const char *function_name,F function_ptr, uns
 
 int main(int argc, char * argv[]){
 
+	CBase base;
 	CObject obj;
 	obj.i = 100;
+
+	unsigned int ptr1 = (unsigned int)((void *)(&CBase::print));
+	unsigned int ptr2 = (unsigned int)((void *)(&CObject::print));
+
+	((void (*)(void * ))ptr1)(&obj);
+	((void (*)(void * ))ptr2)(&obj);
+
+
+	//return 0;
 
 	register_C_FunctionMemberInt2<CInteger>("hola",&CInteger::toString,(unsigned int)((void *)(&CInteger::toString)));
 	//return 0;

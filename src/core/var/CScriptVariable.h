@@ -195,6 +195,10 @@ public:
     virtual string * toString(){
     	return &m_strValue;
     }
+
+	int get_C_ObjectPtr(){
+		return (int)c_object;
+	}
 	//tSymbolInfo * getArgSymbol(const string & var_name);
 	//tSymbolInfo * getArgSymbol(unsigned index);
 
@@ -246,6 +250,8 @@ private:
 
 	void *created_object;
 	void *c_object;
+
+
 
 
 

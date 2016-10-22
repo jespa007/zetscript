@@ -18,6 +18,7 @@
 #define register_C_FunctionMember(o,s)		register_C_FunctionMemberInt<o>(STR(s),&o::s,(unsigned int)((void *)(&o::s)))
 
 
+
 #define NEW_CLASS_VAR_BY_IDX(idx) (CScriptClassFactory::getInstance()->newClassByIdx(idx))
 
 class CScopeInfo;
@@ -360,6 +361,7 @@ public:
 
 		m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredFunction.push_back(irs);
 		//base_info->local_symbols.m_registeredFunction.push_back(irs);
+		print_info_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
 		return true;
 	}
