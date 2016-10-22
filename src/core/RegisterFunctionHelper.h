@@ -97,7 +97,7 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
     //typename fun::template argument<0>::type var=NULL;
     string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
 
-    printf("\nArg:%i",argIdx);
+    //printf("\nArg:%i",argIdx);
 
 
     //cout << "is same:" << std::is_base_of<CVariable ,typename fun::template arg<0>::type> << endl;
@@ -121,7 +121,7 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
    // std::cout << "arg0:" << typeid(fun::argument<0>::type).name() << std::endl;
   // typename fun2::template arg<argIdx-1>::type var=NULL;
 
-   printf("\nArg:%i ",argIdx);//,typeid(Args<argIdx-1>).name());
+  // printf("\nArg:%i ",argIdx);//,typeid(Args<argIdx-1>).name());
     //cout << "is same:" << std::is_same<CVariable *,parameter_type>::value << endl;
     string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
     ref.append(parameter_type).append(" ");
@@ -137,7 +137,7 @@ template <size_t argIdx, typename F>
 auto getArgTypes(std::string& ref, std::vector<std::string> & params)
 
 {
-	 printf("\nNo Args!");
+	 //printf("\nNo Args!");
 }
 
 template <typename F, std::size_t... Is>
@@ -152,6 +152,6 @@ void getParamsFunction(int i,string & returnType, std::vector<std::string> & typ
     getArgTypes<F::arity, F, typename F::template argument<Is>::type...>(s,typeParams);
 
 
-    std::cout << returnType << " (" << (s) << ")";
+    //std::cout << returnType << " (" << (s) << ")";
 
 }

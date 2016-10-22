@@ -14,8 +14,8 @@
 
 
 
-#define register_C_VariableMember(o,s) 		register_C_VariableMemberInt<o>(STR(s),typeid(decltype(o::s)*).name(),offsetOf(&o::s))
-#define register_C_FunctionMember(o,s)		register_C_FunctionMemberInt<o>(STR(s),&o::s)
+#define register_C_VariableMember(o,s) 		register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetOf(&o::s))
+#define register_C_FunctionMember(o,s)		register_C_FunctionMemberInt<o>(STR(s),&o::s,(unsigned int)((void *)(&o::s)))
 
 
 #define NEW_CLASS_VAR_BY_IDX(idx) (CScriptClassFactory::getInstance()->newClassByIdx(idx))
@@ -44,7 +44,6 @@ public:
 
 	typedef struct{
 		string 	    type_str;
-		string      human_description_str;
 		C_TYPE_VALID_PRIMITIVE_VAR  id;
 	}tPrimitiveType;
 
@@ -56,6 +55,7 @@ public:
 	static tPrimitiveType valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 	static void registerPrimitiveTypes();
 	bool isTypeStrValid(const string & type_str);
+
 	static CScriptClassFactory*  getInstance();
 	static void destroySingletons();
 
@@ -94,6 +94,7 @@ public:
 
 	tInfoRegisteredClass * 	getRegisteredClass(const string & v, bool print_msg=true);
 	tInfoRegisteredClass *	getRegisteredClassByIdx(unsigned index);
+	tInfoRegisteredClass *  getRegisteredClassBy_C_ClassPtr(const string & v, bool print_msg=true);
 
 	int 					getIdxRegisteredClass(const string & v);
 	bool isClassRegistered(const string & v);
@@ -104,13 +105,28 @@ public:
 
 	// internal var types ...
 	int getIdxClassVoid(){return idxClassVoid;}
+	tInfoRegisteredClass *  getRegisteredClassVoid(){return m_registeredClass[idxClassVoid];}
+
 	int getIdxClassUndefined(){return idxClassUndefined;}
+	tInfoRegisteredClass *  getRegisteredClassUndefined(){return m_registeredClass[idxClassUndefined];}
+
 	int getIdxClassInteger(){return idxClassInteger;}
+	tInfoRegisteredClass *  getRegisteredClassInteger(){return m_registeredClass[idxClassInteger];}
+
 	int getIdxClassNumber(){return idxClassNumber;}
+	tInfoRegisteredClass *  getRegisteredClassNumber(){return m_registeredClass[idxClassNumber];}
+
 	int getIdxClassString(){return idxClassString;}
+	tInfoRegisteredClass *  getRegisteredClassString(){return m_registeredClass[idxClassString];}
+
 	int getIdxClassBoolean(){return idxClassBoolean;}
+	tInfoRegisteredClass *  getRegisteredClassBoolean(){return m_registeredClass[idxClassBoolean];}
+
 	int getIdxClassVector(){return idxClassVector;}
+	tInfoRegisteredClass *  getRegisteredClassVector(){return m_registeredClass[idxClassVector];}
+
 	int getIdxClassFunctor(){return idxClassFunctor;}
+	tInfoRegisteredClass *  getRegisteredClassFunctor(){return m_registeredClass[idxClassFunctor];}
 
 
 	void printGeneratedCodeAllClasses();
@@ -147,13 +163,13 @@ public:
 
 		// check valid parameters ...
 		if(!isTypeStrValid(irs.return_type)){
-			print_info_cr("Return type \"%s\" for function \"%s\" is not valid",irs.return_type.c_str(),function_name.c_str());
+			print_error_cr("Return type \"%s\" for function \"%s\" is not valid",demangle(irs.return_type).c_str(),function_name.c_str());
 			return false;
 		}
 
 		for(unsigned int i = 0; i < irs.m_arg.size(); i++){
 			if(!isTypeStrValid(irs.m_arg[i])){
-				print_info_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,irs.m_arg[i].c_str(),function_name.c_str());
+				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,demangle(irs.m_arg[i]).c_str(),function_name.c_str());
 				return false;
 			}
 
@@ -177,7 +193,7 @@ public:
 
 		mainFunctionInfo->object_info.local_symbols.m_registeredFunction.push_back(irs);
 
-		print_info_cr("Registered function name: %s",function_name);
+		print_info_cr("Registered function name: %s",function_name.c_str());
 
 		return true;
 	}
@@ -263,6 +279,8 @@ public:
 			irc->metadata_info.object_info.symbol_info.symbol_name = class_name;
 			irc->baseClass = base_class; // identify extend class ?!?!!?
 
+			// in C there's no script constructor ...
+			irc->idx_function_script_constructor=-1;
 			irc->c_constructor = new std::function<void *()>([](){return new _T();});
 			irc->c_destructor = new std::function<void (void *)>([](void *p){delete (_T *)p;});
 
@@ -273,7 +291,7 @@ public:
 			irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
 			m_registeredClass.push_back(irc);
 
-			print_info_cr("* class \"%10s\" registered (C ref: \"%s\").",class_name.c_str(),str_classPtr.c_str());
+			print_info_cr("* class \"%10s\" registered as (%s).",class_name.c_str(),demangle(str_classPtr).c_str());
 
 			return true;
 		}
@@ -288,7 +306,7 @@ public:
 	 * Register C Member function Class
 	 */
 	template <class _T, typename F>
-	bool register_C_FunctionMemberInt(const char *function_name,F function_ptr)
+	bool register_C_FunctionMemberInt(const char *function_name,F function__type, int fun_ptr)
 	{
 		string return_type;
 		vector<string> params;
@@ -302,19 +320,19 @@ public:
 		}
 
 		// 1. check all parameters ok.
-		using Traits3 = function_traits<decltype(function_ptr)>;
+		using Traits3 = function_traits<decltype(function__type)>;
 		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
 
 
 		// check valid parameters ...
 		if(!isTypeStrValid(irs.return_type)){
-			print_info_cr("Return type \"%s\" for function \"%s\" is not valid",irs.return_type.c_str(),function_name);
+			print_error_cr("Return type \"%s\" for function \"%s\" is not valid",demangle(irs.return_type).c_str(),function_name);
 			return false;
 		}
 
 		for(unsigned int i = 0; i < irs.m_arg.size(); i++){
 			if(!isTypeStrValid(irs.m_arg[i])){
-				print_info_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,irs.m_arg[i].c_str(),function_name);
+				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,demangle(irs.m_arg[i]).c_str(),function_name);
 				return false;
 			}
 
@@ -330,7 +348,7 @@ public:
 
 		// ignores special type cast C++ member to ptr function
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-		irs.object_info.symbol_info.ref_ptr=(unsigned int)((void *)function_ptr);
+		irs.object_info.symbol_info.ref_ptr=fun_ptr;
 #pragma GCC diagnostic warning "-Wpmf-conversions"
 
 		/*if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
@@ -356,9 +374,10 @@ public:
 	    return (char*)&((T*)nullptr->*member) - (char*)nullptr;
 	}
 
-	template <class _T>
-	bool register_C_VariableMemberInt(const char *var_name, const string & var_type, unsigned int offset)
+	template <class _T, typename _V>
+	bool register_C_VariableMemberInt(const char *var_name, unsigned int offset)
 	{
+		string var_type = typeid(_V *).name(); // we need the pointer type ...
 		//decltype(var_type) var;
 		//print_info_cr("%s",typeid(var).name());
 		//string str_type = typeid(decltype(var_type)).name();
@@ -385,7 +404,7 @@ public:
 
 		// check valid parameters ...
 		if(!isTypeStrValid(var_type)){
-			print_info_cr("%s::%s has not valid type (%s)",m_registeredClass[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str(),var_name,var_type.c_str());
+			print_error_cr("%s::%s has not valid type (%s)",m_registeredClass[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str(),var_name,demangle(typeid(_V).name()).c_str());
 			return false;
 		}
 
@@ -394,6 +413,7 @@ public:
 		// init struct...
 		irs.class_info = m_registeredClass[idxRegisterdClass];
 		irs.ref_ptr=offset;
+		irs.c_type = var_type;
 		//irs.
 		irs.symbol_name=var_name;
 

@@ -41,15 +41,24 @@ float *  CNumber::Parse(const string & s){
 	return n;
 }
 
-
-CNumber::CNumber(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class){
-
-  //  m_classStr="number";
-   // m_pointerClassStr="number";
-
-	//m_varType = CVariable::VAR_TYPE::NUMBER;
-	m_value=0;
-	//m_ptr=&m_value;
+void CNumber::setup(){
+	m_floatValue = 0;
+	m_value = &m_floatValue;
 }
 
 
+
+CNumber::CNumber(){
+	setup();
+}
+
+
+CNumber::CNumber(tInfoRegisteredClass *info_registered_class,void *_value):CScriptVariable(info_registered_class,NULL){
+
+	setup();
+
+	if( _value != NULL){
+	m_value = _value;
+	}
+
+}

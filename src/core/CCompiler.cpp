@@ -1147,15 +1147,18 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 
 
-						if((r=gacExpression_FunctionObject(_node, _lc)) == -1){
+						if((!gacExpression_FunctionObject(_node, _lc))){
 							return -1;
 						}
+						r=CCompiler::getCurrentInstructionIndex();
 						break;
 
 					case NEW_OBJECT_NODE:
-						if((r=gacNew(_node, _lc)) == -1){
+						if((!gacNew(_node, _lc))){
 							return -1;
 						}
+
+						r=CCompiler::getCurrentInstructionIndex();
 						break;
 
 

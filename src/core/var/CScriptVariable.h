@@ -5,7 +5,7 @@
 #include "core/ScriptDefinesStructs.h"
 #include "core/ast/CScopeInfo.h"
 
-
+#define IS_CLASS_C ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF)
 
 /*
 
@@ -147,7 +147,8 @@ public:
 	class tSymbolInfo{
 		public:
 		void *object; // created object. undefined by default.
-		tASTNode *ast;
+		string value_symbol;
+		tASTNode *ast; // in case there's ast node...
 		tSymbolInfo(){
 			this->object = CScriptVariable::UndefinedSymbol;
 			this->ast = NULL;
@@ -158,20 +159,21 @@ public:
 
 	// public vars ...
 	string m_strValue;
+	void *m_value;
 
 	//CScriptVariable();
 	CScriptVariable();
-	CScriptVariable(tInfoRegisteredClass *info_registered_class);
+	CScriptVariable(tInfoRegisteredClass *info_registered_class, void * _object_by_user);
 
 
 	//TYPE m_type;
 	int getIdxClass(){return m_infoRegisteredClass->class_idx;}
 
-	void addVariableSymbol(tASTNode *ast);
+	tSymbolInfo *  addVariableSymbol(const string & value_symbol,tASTNode *ast);
 	tSymbolInfo * getVariableSymbol(const string & varname);
 	tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 
-	void addFunctionSymbol(tASTNode *ast,tInfoRegisteredFunctionSymbol *irv);
+	void addFunctionSymbol(const string & value_symbol,tASTNode *ast,tInfoRegisteredFunctionSymbol *irv);
 	tSymbolInfo * getFunctionSymbol(const string & funname);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 
@@ -237,8 +239,13 @@ public:
 
 	virtual ~CScriptVariable();
 
+protected:
+	virtual void setup(){};
 private:
 
+
+	void *created_object;
+	void *c_object;
 
 
 

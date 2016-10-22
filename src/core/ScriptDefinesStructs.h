@@ -245,6 +245,7 @@ typedef struct{
 	tInfoScopeVar  				*info_var_scope;
 	tASTNode		*ast;
 	unsigned int properties; // SYMBOL_INFO_PROPERTIES
+	string c_type; // In case is C, we need to know its type ...
 }tInfoRegisteredVariableSymbol;
 
 
@@ -464,7 +465,7 @@ struct tInfoRegisteredFunctionSymbol{
 typedef struct _tInfoRegisteredClass{
 
 	tInfoRegisteredFunctionSymbol	metadata_info;
-	int idx_constructor_function;
+	int idx_function_script_constructor;
 	int class_idx;
 	std::function<void (void *p)> *c_destructor;
 	std::function<void *()> *c_constructor;

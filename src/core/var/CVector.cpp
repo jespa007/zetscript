@@ -1,6 +1,6 @@
 #include "core/zg_core.h"
 
-CVector::CVector(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class){
+CVector::CVector(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class, NULL){
 	//m_varType = CVariable::VAR_TYPE::VECTOR;
    // m_classStr=typeid(CVector).name();
     //m_pointerClassStr=typeid(CVector *).name();

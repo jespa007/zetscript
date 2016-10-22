@@ -42,15 +42,21 @@ int *  CInteger::Parse(const string & val){
 	return n;
 }
 
-CInteger::CInteger(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class){
 
- //   m_classStr=typeid(CInteger).name();
- //   m_pointerClassStr=typeid(CInteger *).name();
+void CInteger::setup(){
+	m_intValue = 0;
+	m_value = &m_intValue;
+}
 
-	//m_varType = CVariable::VAR_TYPE::INTEGER;
-	m_value=0;
-	//m_ptr=&m_value;
+CInteger::CInteger(){
+	setup();
 }
 
 
+CInteger::CInteger(tInfoRegisteredClass *info_registered_class,void *_value):CScriptVariable(info_registered_class,NULL){
+	setup();
 
+	if(_value != NULL){
+		m_value = _value;
+	}
+}

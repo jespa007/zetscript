@@ -198,9 +198,27 @@ void register_c(const string & s, const string & var_type, unsigned int offset){
 }
 
 
+template <class _T, typename F>
+bool register_C_FunctionMemberInt2(const char *function_name,F function_ptr, unsigned int fun_ptr)
+{
+	unsigned int ff=(unsigned int)((void *)(fun_ptr));
+	//void *ptr_fun=(void *)(&CObject::print);
 
+	printf("ff %i\n",ff);
+}
 
 int main(int argc, char * argv[]){
+
+	CObject obj;
+	obj.i = 100;
+
+	register_C_FunctionMemberInt2<CInteger>("hola",&CInteger::toString,(unsigned int)((void *)(&CInteger::toString)));
+	//return 0;
+
+	unsigned int ff=(unsigned int)((void *)(&CObject::print));
+	void *ptr_fun=(void *)(&CObject::print);
+
+	((void (*)(void * ))ptr_fun)(&obj);
 
 
 	//CBaseFactory *bf = new CFactory<CObject>();
@@ -223,7 +241,7 @@ int main(int argc, char * argv[]){
 
 
 	//register_C_VariableMember(CObject,i);
-	print_info_cr("%s %s",typeid(int *).name(),typeid(decltype(CObject::i)).name());
+	print_info_cr("var: %s %s size:%i size:%i",typeid(unsigned int).name(),typeid( long).name(), sizeof(unsigned int), sizeof(unsigned long));
 
 	//GET_TYPE_OF(&CObject::i);
 

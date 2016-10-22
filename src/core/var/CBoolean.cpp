@@ -37,15 +37,31 @@ bool * CBoolean::Parse(const string & s){
 }
 
 
-CBoolean::CBoolean(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class){
+
+void CBoolean::setup(){
+	m_boolValue = false;
+	m_value = &m_boolValue;
+
+}
+
+
+CBoolean::CBoolean(){
+	setup();
+
+}
+
+CBoolean::CBoolean(tInfoRegisteredClass *info_registered_class, bool *_value):CScriptVariable(info_registered_class,NULL){
 
     //m_classStr=typeid(CBoolean).name();
     //m_pointerClassStr=typeid(CBoolean *).name();
 
 	//m_varType = CVariable::VAR_TYPE::BOOLEAN;
-	m_value = false;
+	setup();
+
+	if( _value != NULL){
+	m_value = _value;
+	}
 	//m_ptr=&m_value;
 }
-
 
 

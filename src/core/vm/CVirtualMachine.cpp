@@ -526,15 +526,15 @@ bool CVirtualMachine::pushVar(CScriptVariable * init_value, CScriptVariable ** p
 
 	// finally assign the value ...
 	if(idxClass == CScriptClassFactory::getInstance()->getIdxClassInteger()){
-		return pushInteger(((CInteger *)init_value)->m_value,ptrAssignableVar);
+		return pushInteger(*((int *)((CInteger *)init_value)->m_value),ptrAssignableVar);
 	}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassNumber()){
-		return pushNumber(((CNumber *)init_value)->m_value,ptrAssignableVar);
+		return pushNumber(*((float *)((CNumber *)init_value)->m_value),ptrAssignableVar);
 	}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassString()){
-		return pushString(((CString *)init_value)->m_value,ptrAssignableVar);
+		return pushString(*((string *)((CString *)init_value)->m_value),ptrAssignableVar);
 	}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassBoolean()){
-		return pushBoolean(((CBoolean *)init_value)->m_value,ptrAssignableVar);
+		return pushBoolean(*((bool *)((CBoolean *)init_value)->m_value),ptrAssignableVar);
 	}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
-		return pushFunction(((CFunctor *)init_value)->m_value,ptrAssignableVar);
+		return pushFunction(((CFunctor *)init_value)->m_functorValue,ptrAssignableVar);
 	}else{
 		if(idxStkCurrentLocalVar ==VM_ALE_OPERATIONS_MAX_STACK){
 			print_error_cr("Reached max object operations");
@@ -566,19 +566,19 @@ CScriptVariable * CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_INTEGER:
 		obj= NEW_INTEGER_VAR;//CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassInteger());
-		((CInteger *)obj)->m_value = ((int)(ptr_instruction->stkObject));
+		*((int *)(((CScriptVariable *)obj)->m_value)) = ((int)(ptr_instruction->stkObject));
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_NUMBER:
 		obj= NEW_NUMBER_VAR;//CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassNumber());
-		((CNumber *)obj)->m_value = *((float *)(ptr_instruction->stkObject));
+		*((float *)(((CScriptVariable *)obj)->m_value)) = *((float *)(ptr_instruction->stkObject));
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_STRING:
 		obj= NEW_STRING_VAR;//=CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassString());
-		((CString *)obj)->m_value = *((string *)(ptr_instruction->stkObject));
+		*((string *)(((CScriptVariable *)obj)->m_value)) = *((string *)(ptr_instruction->stkObject));
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_BOOLEAN:
 		obj= NEW_BOOLEAN_VAR;//=CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassBoolean());
-		((CBoolean *)obj)->m_value = ((bool)(ptr_instruction->stkObject));
+		*((bool *)(((CScriptVariable *)obj)->m_value)) = ((bool)(ptr_instruction->stkObject));
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_FUNCTION:
 		obj = NEW_FUNCTOR_VAR(((tInfoRegisteredFunctionSymbol *)ptr_instruction->stkObject));
@@ -752,15 +752,15 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 			}*/
 			if(idx_class==CScriptClassFactory::getInstance()->getIdxClassInteger()){
 				if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
-					((CInteger *)var_object)->m_value++;
+					(*((int *)((CInteger *)var_object)->m_value))++;
 				else //dec
-					((CInteger *)var_object)->m_value--;
+					(*((int *)((CInteger *)var_object)->m_value))--;
 
 			}else if(idx_class == CScriptClassFactory::getInstance()->getIdxClassNumber()){
 				if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
-					((CNumber *)var_object)->m_value++;
+					(*((float *)((CNumber *)var_object)->m_value))++;
 				else // dec
-					((CNumber *)var_object)->m_value--;
+					(*((float *)((CNumber *)var_object)->m_value))--;
 
 			}else{
 
@@ -776,20 +776,20 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 			//if(!loadConstantValue(var_object,n_stk)){
 			if(CScriptClassFactory::getInstance()->getIdxClassInteger() == idx_class){
 				// 1. first load ...
-				pushInteger(((CInteger *)var_object)->m_value);
+				pushInteger(*((int *)((CInteger *)var_object)->m_value));
 				// 2. increment ...
 				if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
-					((CInteger *)var_object)->m_value++;
+					(*((int *)((CInteger *)var_object)->m_value))++;
 				else
-					((CInteger *)var_object)->m_value--;
+					(*((int *)((CInteger *)var_object)->m_value))--;
 			}else if(CScriptClassFactory::getInstance()->getIdxClassNumber() == var_object->getIdxClass()){
 				// 1. first load ...
-				pushNumber(((CNumber *)var_object)->m_value);
+				pushNumber(*((float *)((CNumber *)var_object)->m_value));
 				// 2. increment ...
 				if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
-					((CNumber *)var_object)->m_value++;
+					(*((float *)((CNumber *)var_object)->m_value))++;
 				else
-					((CNumber *)var_object)->m_value--;
+					(*((float *)((CNumber *)var_object)->m_value))--;
 			}else{
 				print_error_cr("internal error:cannot postoperator ?? because is not number");
 				return false;
@@ -853,7 +853,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 		// get var from object ...
 		if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
 
-			CScriptVariable * base_var = ((CScriptVariable *)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].stkObject);
+			CScriptVariable * base_var = *((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].ptrAssignableVar);
 
 			if((si = base_var->getFunctionSymbol(iao->ast_node->value_symbol))==NULL){
 				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not function \"%s\"",iao->ast_node->definedValueline,asm_op->at(iao->index_op2)->ast_node->value_symbol.c_str(),base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str());
@@ -971,7 +971,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 
 		case INS_TYPE_INTEGER:
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassInteger()){
-				((CInteger *)(*var))->m_value=((int)(ptr_instruction->stkObject));
+				*((int *)((CInteger *)(*var))->m_value)=((int)(ptr_instruction->stkObject));
 			/*}else if((*var)->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassNumber()){
 				((CNumber *)(*var))->m_value=((CInteger *)(stkResultInstruction[index].stkObject))->m_value;*/
 			}else
@@ -985,7 +985,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 				((CInteger *)aux_var)->m_value=((CNumber *)(stkResultInstruction[index].stkObject))->m_value;
 			}else*/
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassNumber()){
-				((CNumber *)(*var))->m_value = *((float *)(ptr_instruction->stkObject));
+				*((float *)((CNumber *)(*var))->m_value) = *((float *)(ptr_instruction->stkObject));
 			}else
 			{
 				create_from_index=true;
@@ -994,7 +994,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 		case INS_TYPE_STRING:
 
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassString()){
-				((CString  *)(*var))->m_value= *((string *)(ptr_instruction->stkObject));
+				*((string *)((CString  *)(*var))->m_value)= *((string *)(ptr_instruction->stkObject));
 			}else
 			{
 				create_from_index=true;
@@ -1003,7 +1003,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 			break;
 		case INS_TYPE_BOOLEAN:
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassBoolean()){
-				((CBoolean  *)aux_var)->m_value= ((bool)(ptr_instruction->stkObject));
+				*((bool *)((CBoolean  *)aux_var)->m_value)= ((bool)(ptr_instruction->stkObject));
 			}else
 			{
 				create_from_index=true;
@@ -1522,7 +1522,7 @@ bool CVirtualMachine::performInstruction(
 
 			if(ptrResultInstructionOp1->type != INS_TYPE_FUNCTION){
 				if(ptrResultInstructionOp1->type == INS_TYPE_VAR && ((CScriptVariable *)ptrResultInstructionOp1->stkObject)->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
-					aux_function_info = ((CFunctor *)ptrResultInstructionOp1->stkObject)->m_value;
+					aux_function_info = ((CFunctor *)ptrResultInstructionOp1->stkObject)->m_functorValue;
 
 
 

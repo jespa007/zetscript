@@ -1,14 +1,31 @@
 #include "core/zg_core.h"
 
 
-CString::CString(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class){
+
+void CString::setup(){
+	m_value = &m_stringValue;
+	m_stringValue = "";
+}
+
+
+CString::CString(){
+
+	setup();
+}
+
+
+CString::CString(tInfoRegisteredClass *info_registered_class, string * _value):CScriptVariable(info_registered_class, NULL){
 
    // m_classStr=typeid(CString).name();
    // m_pointerClassStr=typeid(CString *).name();
 
 	//m_varType = CVariable::VAR_TYPE::STRING;
-	m_value="unknow";
+
+	setup();
+
+	if( _value != NULL){
+	m_value = _value;
+	}
+
 	//m_ptr=&m_value;
 }
-
-

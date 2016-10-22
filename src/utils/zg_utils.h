@@ -8,4 +8,6 @@
 
 
 
+std::string demangle(const string & name);
+
 

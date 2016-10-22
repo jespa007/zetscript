@@ -7,7 +7,7 @@
     }
     print (i);
 }*/
-
+/*
 
 class MyClass2{
 	
@@ -49,7 +49,19 @@ l.k.h[0]; // crash!
 
 print("hola que tal "+l.kk);
 
-l.pp();
+l.pp();*/
+
+var tt=new CInteger();
+tt=0;
+//tt.toString();
+//tt=100;
+
+print("hola:"+tt.toString());
+
+var vv=new MyObject();
+vv.i=100;
+vv.print();
+
 
 /*
 function gg(){
