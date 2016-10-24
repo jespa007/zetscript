@@ -40,7 +40,7 @@ void CZG_ScriptCore::destroy(){
 }
 
 
-bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CScriptVariable *> * argv, int base_obj){
+bool CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CScriptVariable *> * argv){
 
 	int converted_param[MAX_PARAM_C_FUNCTION];
 
@@ -49,9 +49,8 @@ bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & 
 		return false;
 	}
 
-	int fp = irfs->object_info.symbol_info.ref_ptr;
 
-	if(fp==0){
+	if(fun_ptr==0){
 		print_error_cr("Null function");
 		return false;
 	}
@@ -66,11 +65,6 @@ bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & 
 		return false;
 	}
 
-	int extra = 0;
-	if(base_obj!=0){
-		extra = 1;
-		converted_param[0] = base_obj;
-	}
 
 	// convert parameters script to c...
 	for(unsigned int i = 0; i < argv->size();i++){
@@ -80,20 +74,20 @@ bool CZG_ScriptCore::call_C_function(tInfoRegisteredFunctionSymbol *irfs, int & 
 			return false;
 		}
 
-		converted_param[i+extra] = paramConv(argv->at(i));
+		converted_param[i] = paramConv(argv->at(i));
 	}
 
 
 
-	switch(argv->size()+extra){
+	switch(argv->size()){
 	default:
 		print_error_cr("cannot call !");
 		return false;
 	case 0:
-		result=((int (*)())fp)();
+		result=(*((std::function<int ()> *)fun_ptr))();
 		break;
 	case 1:
-		result=((int (*)(int))fp)(converted_param[0]);
+		result=(*((std::function<int (int)> *)fun_ptr))(converted_param[0]);
 		break;
 	}
 

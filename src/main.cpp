@@ -141,9 +141,9 @@ public:
 		print_info_cr("Created object!!!");
 	}
 
-	virtual void print(){
+	virtual void print(float * caca){
 		CBase::print();
-		print_info_cr("v:%i",i);
+		print_info_cr("v:%i %f",i,*caca);
 	}
 
 	virtual ~CObject(){
@@ -203,47 +203,52 @@ bool register_C_FunctionMemberInt2(const char *function_name,F function_ptr, uns
 	printf("ff %i\n",ff);
 }
 
+
+template <class _T, typename F>
+void * fun_creator(F fun_obj)
+{
+	using namespace std::placeholders;
+	return (void *)(new std::function<void *(void *)> ([fun_obj](void *obj){
+		print_info_cr("HHHHH %s", typeid(decltype(fun_obj)).name());
+		return (void *)(new std::function<int (int)>(std::bind((int (_T::*)(int))(fun_obj), (_T *)obj, _1)));
+	}));
+}
+
+
 int main(int argc, char * argv[]){
+
+	using namespace std::placeholders;
 
 	CBase base;
 	CObject obj;
 	obj.i = 100;
 
-	unsigned int ptr1 = (unsigned int)((void *)(&CBase::print));
-	unsigned int ptr2 = (unsigned int)((void *)(&CObject::print));
+	void *ptr = &obj;
+	float ff=1.2f;
 
-	((void (*)(void * ))ptr1)(&obj);
-	((void (*)(void * ))ptr2)(&obj);
+	int i = sizeof(void (CObject::*)());
 
+	Uint32 _start = SDL_GetTicks();
+
+	print_info_cr("HHHHH %s", typeid(decltype(&CObject::print)).name());
+	void * fc = fun_creator<CObject>(&CObject::print);
+	/*void * fc = (void *)(new std::function<void *(void *)> ([&](void *obj){
+			print_info_cr("HHHHH %s", typeid(decltype(&CObject::print)).name());
+			return (void *)(new std::function<int (int)>(std::bind((int (CObject::*)(int))(&CObject::print), (CObject *)obj, _1)));
+		}));*/
+
+	// create function pointer for each object time...
+	//std::function<int (int)> *f = new std::function<int (int)>(std::bind((int (CObject::*)(int))&CObject::print, &obj, _1));
+	//(*((std::function<int (int)> *)fc))();
+
+	//void *f = (*((std::function<void *(void *)> *)fc))(ptr);
+	void *f = (*(((std::function<void *(void *)> *)fc)))(ptr);//(void *)(new std::function<int (int)>(std::bind((int (CObject::*)(int))(&CObject::print), (CObject *)ptr, _1)));
+
+	(*((std::function<void (int)> *)f))((int)&ff);
+
+	print_info_cr("time %i",SDL_GetTicks()-_start);
 
 	//return 0;
-
-	register_C_FunctionMemberInt2<CInteger>("hola",&CInteger::toString,(unsigned int)((void *)(&CInteger::toString)));
-	//return 0;
-
-	unsigned int ff=(unsigned int)((void *)(&CObject::print));
-	void *ptr_fun=(void *)(&CObject::print);
-
-	((void (*)(void * ))ptr_fun)(&obj);
-
-
-	//CBaseFactory *bf = new CFactory<CObject>();
-
-	// generate generic function create object ...
-	std::function<void *()> createObject=[](){return new CObject();};
-	std::function<void (void *)> deleteObject=[](void *_p){delete (CObject *)(_p);};
-
-
-	// construct/destruct ok!!!
-	void *pp= createObject();
-
-
-	// set/get
-	//print_info_cr("%i %i",sizeof(unsigned long long), offsetof(CObject,i));
-	//1. Objective
-	// set(0)
-	//std::function<int ()> getPointerOffsetI=[](){return ;};
-	typeid(&CObject::i).name();
 
 
 	//register_C_VariableMember(CObject,i);
@@ -252,17 +257,15 @@ int main(int argc, char * argv[]){
 	//GET_TYPE_OF(&CObject::i);
 
 
-	int *int_ptr = (int*) ((unsigned long long) pp + offsetof(CObject,i));
+	//int *int_ptr = (int*) ((unsigned long long) pp + offsetof(CObject,i));
 
-	*int_ptr = 10;
+	//*int_ptr = 10;
 
-	((CObject *)pp)->print();
-
+	//((CObject *)pp)->print();
 
 	// ()pp
 	//2. and sets 0 to i.
-
-	deleteObject(pp);
+	//deleteObject(pp);
 
 
 	//return 0;
@@ -273,16 +276,16 @@ int main(int argc, char * argv[]){
 	CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
 
 
-	int ptr;
+	//int ptr;
 
 	float caca=1.2f;
 
-	ptr=(int)caca;
+	//ptr=(int)caca;
 
 
-	float trans=(float)ptr;
+	//float trans=(float)ptr;
 
-	printf("FLOAT:%f\n",trans);
+	//printf("FLOAT:%f\n",trans);
 
 	/*void * c_fun1 = (void *)& CCustomObject::member;
 	int c_func = (int)c_fun1;

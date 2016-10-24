@@ -634,6 +634,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 		irv->c_constructor=NULL;
 		irv->c_destructor = NULL;
 		irv->metadata_info.object_info.symbol_info.properties=0;
+		irv->metadata_info.object_info.symbol_info.index = m_registeredClass.size();
 		m_registeredClass.push_back(irv);
 
 		return irv;
@@ -728,7 +729,7 @@ bool  CScriptClassFactory::register_C_VariableInt(const string & var_name,void *
 	}
 
 
-
+	irs.index = mainFunctionInfo->object_info.local_symbols.m_registeredVariable.size();
 	mainFunctionInfo->object_info.local_symbols.m_registeredVariable.push_back(irs);
 
 	print_info_cr("Registered function name: %s",var_name.c_str());
@@ -753,6 +754,7 @@ tInfoRegisteredVariableSymbol * CScriptClassFactory::registerVariableSymbol(cons
 		info_var.class_info = rc;
 		info_var.ast = ast;
 		info_var.symbol_name =var_name;
+		info_var.index = object_info->local_symbols.m_registeredVariable.size();
 		object_info->local_symbols.m_registeredVariable.push_back(info_var);
 
 		return &object_info->local_symbols.m_registeredVariable[object_info->local_symbols.m_registeredVariable.size()-1];
@@ -842,7 +844,7 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 			}
 
 
-
+			irs.object_info.symbol_info.index = object_info->local_symbols.m_registeredFunction.size();
 			object_info->local_symbols.m_registeredFunction.push_back(irs);
 
 			return &object_info->local_symbols.m_registeredFunction[object_info->local_symbols.m_registeredFunction.size()-1];

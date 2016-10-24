@@ -23,9 +23,10 @@ void CScriptVariable::destroySingletons(){
 
 
 void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
+	tSymbolInfo *si;
 	for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
 
-		tSymbolInfo *si;
+
 		tInfoRegisteredVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
 
 		si = addVariableSymbol(ir_var->symbol_name,ir_var->ast);
@@ -60,14 +61,18 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 
 
 	for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredFunction.size(); i++){
+		tInfoRegisteredFunctionSymbol * ir_fun  = &ir_class->metadata_info.object_info.local_symbols.m_registeredFunction[i];
 		//print_info_cr("=========================================");
 		//print_info_cr("- Create function %s...",irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name.c_str());
-		addFunctionSymbol(
+		 si =addFunctionSymbol(
 				ir_class->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name,
 				ir_class->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast,
-				&ir_class->metadata_info.object_info.local_symbols.m_registeredFunction[i]
+				ir_fun
 
 				);
+		if(IS_CLASS_C){ // create proxy function ...
+			si->proxy_ptr = (*((std::function<void *(void *)> *)ir_fun->object_info.symbol_info.ref_ptr))(c_object);
+		}
 		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
 	}
 
@@ -156,6 +161,7 @@ tInfoRegisteredFunctionSymbol *CScriptVariable::getConstructorFunction(){
 
 CScriptVariable::tSymbolInfo * CScriptVariable::addVariableSymbol(const string & value_symbol, tASTNode *ast){
 	tSymbolInfo si;
+	si.proxy_ptr=0;
 	si.object = CScriptVariable::UndefinedSymbol;
 	si.ast = ast;
 	si.value_symbol = value_symbol;
@@ -164,12 +170,16 @@ CScriptVariable::tSymbolInfo * CScriptVariable::addVariableSymbol(const string &
 	return &m_variableSymbol[m_variableSymbol.size()-1];
 }
 
-void CScriptVariable::addFunctionSymbol(const string & value_symbol,tASTNode *ast,tInfoRegisteredFunctionSymbol *irv){
+CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & value_symbol,tASTNode *ast,tInfoRegisteredFunctionSymbol *irv){
 	tSymbolInfo si;
+	si.proxy_ptr=0;
 	si.object = irv;
 	si.value_symbol = value_symbol;
 	si.ast = ast;
 	m_functionSymbol.push_back(si);
+
+
+	return &m_functionSymbol[m_functionSymbol.size()-1];
 }
 
 

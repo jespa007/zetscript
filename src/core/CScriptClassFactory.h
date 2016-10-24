@@ -15,7 +15,7 @@
 
 
 #define register_C_VariableMember(o,s) 		register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetOf(&o::s))
-#define register_C_FunctionMember(o,s)		register_C_FunctionMemberInt<o>(STR(s),&o::s,(unsigned int)((void *)(&o::s)))
+#define register_C_FunctionMember(o,s)		register_C_FunctionMemberInt<o>(STR(s),&o::s)
 
 
 
@@ -131,6 +131,43 @@ public:
 
 
 	void printGeneratedCodeAllClasses();
+
+	template <typename _F>
+	void * new_proxy_function(unsigned int n_args, _F fun_obj){
+		using namespace std::placeholders;
+		void *proxy_function=NULL;
+
+		switch(n_args){
+		case 0:
+			proxy_function=(void *)(new std::function<int ()>(std::bind((int (*)())fun_obj)));
+			break;
+		case 1:
+			proxy_function=(void *)( new std::function<int (int)>(std::bind((int (*)(int))fun_obj, _1)));
+			break;
+		case 2:
+			proxy_function=(void *)( new std::function<int (int,int)>(std::bind((int (*)(int,int))fun_obj, 1,_2)));
+			break;
+		case 3:
+			proxy_function= (void *)(new std::function<int (int,int,int)>(std::bind((int (*)(int,int,int))fun_obj, 1,_2,_3)));
+			break;
+		case 4:
+			proxy_function=(void *)( new std::function<int (int,int,int,int)>(std::bind((int (*)(int,int,int,int))fun_obj, 1,_2,_3,_4)));
+			break;
+		case 5:
+			proxy_function=(void *)( new std::function<int (int,int,int,int,int)>(std::bind((int (*)(int,int,int,int,int))fun_obj, 1,_2,_3,_4,_5)));
+			break;
+		case 6:
+			proxy_function=(void *)( new std::function<int (int,int,int,int,int,int)>(std::bind((int (*)(int,int,int,int,int,int))fun_obj, 1,_2, _3, _4, _5, _6)));
+			break;
+		default:
+			print_error_cr("Max argyments reached!");
+
+		}
+
+		return proxy_function;
+	}
+
+
 	/**
 	 * Register C function
 	 */
@@ -183,7 +220,9 @@ public:
 		irs.object_info.symbol_info.symbol_name = function_name;
 
 		irs.object_info.symbol_info.properties = ::PROPERTY_C_OBJECT_REF;
-		irs.object_info.symbol_info.ref_ptr=(int)function_ptr;
+		if((irs.object_info.symbol_info.ref_ptr=(int)new_proxy_function(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
+			return false;
+		}
 
 
 		if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
@@ -192,6 +231,7 @@ public:
 
 
 
+		irs.object_info.symbol_info.index = mainFunctionInfo->object_info.local_symbols.m_registeredFunction.size();
 		mainFunctionInfo->object_info.local_symbols.m_registeredFunction.push_back(irs);
 
 		print_info_cr("Registered function name: %s",function_name.c_str());
@@ -290,6 +330,8 @@ public:
 			irc->classPtrType=str_classPtr;
 			irc->class_idx=m_registeredClass.size();
 			irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
+
+			irc->metadata_info.object_info.symbol_info.index=m_registeredClass.size();
 			m_registeredClass.push_back(irc);
 
 			print_info_cr("* class \"%10s\" registered as (%s).",class_name.c_str(),demangle(str_classPtr).c_str());
@@ -303,11 +345,62 @@ public:
 		return false;
 	}
 
+	template <class _T,typename _F>
+	void * c_member_class_function_proxy(unsigned int n_args, _F fun_obj){
+		using namespace std::placeholders;
+		std::function<void *(void *)> *c_function_builder=NULL;
+		switch(n_args){
+		case 0:
+			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+				return (void *)(new std::function<int ()>(std::bind((int (_T::*)())(fun_obj), (_T *)obj)));
+			});
+			break;
+		case 1:
+			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+				return (void *)(new std::function<int (int)>(std::bind((int (_T::*)(int))(fun_obj), (_T *)obj, _1)));
+			});
+			break;
+		case 2:
+			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+				return (void *)(new std::function<int (int,int)>(std::bind((int (_T::*)(int,int))(fun_obj), (_T *)obj, _1,_2)));
+			});
+			break;
+		case 3:
+			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+				return (void *)(new std::function<int (int,int,int)>(std::bind((int (_T::*)(int,int,int))(fun_obj), (_T *)obj, _1,_2,_3)));
+			});
+			break;
+		case 4:
+			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+				return (void *)(new std::function<int (int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
+			});
+
+			break;
+		case 5:
+			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+				return (void *)(new std::function<int (int,int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
+			});
+
+			break;
+		case 6:
+			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+				return (void *)(new std::function<int (int,int,int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
+			});
+			break;
+		default:
+			print_error_cr("Max argyments reached!");
+
+		}
+
+		return c_function_builder;
+	}
+
+
 	/**
 	 * Register C Member function Class
 	 */
 	template <class _T, typename F>
-	bool register_C_FunctionMemberInt(const char *function_name,F function__type, int fun_ptr)
+	bool register_C_FunctionMemberInt(const char *function_name,F function_type)
 	{
 		string return_type;
 		vector<string> params;
@@ -321,7 +414,7 @@ public:
 		}
 
 		// 1. check all parameters ok.
-		using Traits3 = function_traits<decltype(function__type)>;
+		using Traits3 = function_traits<decltype(function_type)>;
 		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
 
 
@@ -348,9 +441,11 @@ public:
 		irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
 
 		// ignores special type cast C++ member to ptr function
-#pragma GCC diagnostic ignored "-Wpmf-conversions"
-		irs.object_info.symbol_info.ref_ptr=fun_ptr;
-#pragma GCC diagnostic warning "-Wpmf-conversions"
+		// create binding function class
+		if((irs.object_info.symbol_info.ref_ptr=((int)c_member_class_function_proxy<_T>(irs.m_arg.size(),function_type)))==0){
+			return false;
+		}
+
 
 		/*if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
 			return false;
@@ -358,7 +453,7 @@ public:
 
 
 
-
+		irs.object_info.symbol_info.index = m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredFunction.size();
 		m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredFunction.push_back(irs);
 		//base_info->local_symbols.m_registeredFunction.push_back(irs);
 		print_info_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
@@ -423,7 +518,7 @@ public:
 		irs.properties = PROPERTY_C_OBJECT_REF;
 
 
-
+		irs.index = m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.size();
 		m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
 		//base_info->local_symbols.m_registeredFunction.push_back(irs);
 

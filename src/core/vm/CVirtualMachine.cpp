@@ -78,12 +78,14 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 	if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
 
 			int result=0;
-			int c_object = 0;
-			if(this_object!= NULL){
-				c_object = this_object->get_C_ObjectPtr();
+			void * fun_ptr = (void *)info_function->object_info.symbol_info.ref_ptr;
+			if(this_object!= NULL && this_object != CZG_ScriptCore::getInstance()->getMainObject()){
+				fun_ptr = this_object->getFunctionSymbolByIndex(info_function->object_info.symbol_info.index)->proxy_ptr;
 			}
 
-			if(!CZG_ScriptCore::call_C_function(info_function,result,argv,c_object)){
+
+
+			if(!CZG_ScriptCore::call_C_function(fun_ptr,info_function,result,argv)){
 				 return NULL;
 			}
 

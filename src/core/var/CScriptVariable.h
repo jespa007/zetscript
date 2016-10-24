@@ -147,9 +147,11 @@ public:
 	class tSymbolInfo{
 		public:
 		void *object; // created object. undefined by default.
+		void * proxy_ptr; // for proxy functions...
 		string value_symbol;
 		tASTNode *ast; // in case there's ast node...
 		tSymbolInfo(){
+			proxy_ptr=NULL;
 			this->object = CScriptVariable::UndefinedSymbol;
 			this->ast = NULL;
 		}
@@ -173,7 +175,7 @@ public:
 	tSymbolInfo * getVariableSymbol(const string & varname);
 	tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 
-	void addFunctionSymbol(const string & value_symbol,tASTNode *ast,tInfoRegisteredFunctionSymbol *irv);
+	tSymbolInfo * addFunctionSymbol(const string & value_symbol,tASTNode *ast,tInfoRegisteredFunctionSymbol *irv);
 	tSymbolInfo * getFunctionSymbol(const string & funname);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 

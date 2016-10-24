@@ -246,6 +246,7 @@ typedef struct{
 	tASTNode		*ast;
 	unsigned int properties; // SYMBOL_INFO_PROPERTIES
 	string c_type; // In case is C, we need to know its type ...
+	int index;
 }tInfoRegisteredVariableSymbol;
 
 
