@@ -7,7 +7,7 @@
 #include "ast/ast.h"
 
 #define register_C_Function(s) CScriptClassFactory::register_C_FunctionInt(STR(s),s)
-#define register_C_Variable(s) CScriptClassFactory::register_C_VariableInt(STR(s),&s,typeid(s).name())
+#define register_C_Variable(s) CScriptClassFactory::register_C_VariableInt(STR(s),&s,typeid(decltype(s) *).name())
 
 #define getIdxGlobalVariable(s)  CScriptClassFactory::register_C_FunctionInt(STR(s),s)
 #define getIdxGlobalFunction(s)
@@ -55,7 +55,7 @@ public:
 
 	static tPrimitiveType valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 	static void registerPrimitiveTypes();
-	bool isTypeStrValid(const string & type_str);
+	int getIdxClassFromIts_C_Type(const string & c_type_str);
 
 	static CScriptClassFactory*  getInstance();
 	static void destroySingletons();
@@ -69,7 +69,7 @@ public:
 	 * Class name given this function creates the object and initializes all variables.
 	 */
 	CScriptVariable 		 * newClass(const string & class_name);
-	CScriptVariable 		 * newClassByIdx(unsigned idx);
+	CScriptVariable 		 * newClassByIdx(unsigned idx, void * value_object = NULL);
 
 
 
@@ -196,17 +196,17 @@ public:
 
 		// 1. check all parameters ok.
 		using Traits3 = function_traits<decltype(function_ptr)>;
-		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
+		getParamsFunction<Traits3>(0,return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
 
 
 		// check valid parameters ...
-		if(!isTypeStrValid(irs.return_type)){
-			print_error_cr("Return type \"%s\" for function \"%s\" is not valid",demangle(irs.return_type).c_str(),function_name.c_str());
+		if((irs.idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
+			print_error_cr("Return type \"%s\" for function \"%s\" is not valid",demangle(return_type).c_str(),function_name.c_str());
 			return false;
 		}
 
 		for(unsigned int i = 0; i < irs.m_arg.size(); i++){
-			if(!isTypeStrValid(irs.m_arg[i])){
+			if(getIdxClassFromIts_C_Type(irs.m_arg[i])==-1){
 				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,demangle(irs.m_arg[i]).c_str(),function_name.c_str());
 				return false;
 			}
@@ -322,7 +322,7 @@ public:
 
 			// in C there's no script constructor ...
 			irc->idx_function_script_constructor=-1;
-			irc->c_constructor = new std::function<void *()>([](){return new _T();});
+			irc->c_constructor = new std::function<void *()>([](){return new _T;});
 			irc->c_destructor = new std::function<void (void *)>([](void *p){delete (_T *)p;});
 
 			irc->class_idx = m_registeredClass.size();
@@ -339,7 +339,7 @@ public:
 			return true;
 		}
 		else{
-			print_error_cr("%s already exist", class_name);
+			print_error_cr("%s already exist", class_name.c_str());
 		}
 
 		return false;
@@ -415,17 +415,17 @@ public:
 
 		// 1. check all parameters ok.
 		using Traits3 = function_traits<decltype(function_type)>;
-		getParamsFunction<Traits3>(0,irs.return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
+		getParamsFunction<Traits3>(0,return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
 
 
 		// check valid parameters ...
-		if(!isTypeStrValid(irs.return_type)){
-			print_error_cr("Return type \"%s\" for function \"%s\" is not valid",demangle(irs.return_type).c_str(),function_name);
+		if((irs.idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
+			print_error_cr("Return type \"%s\" for function \"%s\" is not valid",demangle(return_type).c_str(),function_name);
 			return false;
 		}
 
 		for(unsigned int i = 0; i < irs.m_arg.size(); i++){
-			if(!isTypeStrValid(irs.m_arg[i])){
+			if(getIdxClassFromIts_C_Type(irs.m_arg[i])==-1){
 				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,demangle(irs.m_arg[i]).c_str(),function_name);
 				return false;
 			}
@@ -500,7 +500,7 @@ public:
 		// 1. check all parameters ok.
 
 		// check valid parameters ...
-		if(!isTypeStrValid(var_type)){
+		if(getIdxClassFromIts_C_Type(var_type) == -1){
 			print_error_cr("%s::%s has not valid type (%s)",m_registeredClass[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str(),var_name,demangle(typeid(_V).name()).c_str());
 			return false;
 		}

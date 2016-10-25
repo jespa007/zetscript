@@ -40,29 +40,31 @@ void CZG_ScriptCore::destroy(){
 }
 
 
-bool CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegisteredFunctionSymbol *irfs, int & result, vector<CScriptVariable *> * argv){
+CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegisteredFunctionSymbol *irfs, vector<CScriptVariable *> * argv){
 
 	int converted_param[MAX_PARAM_C_FUNCTION];
+	CScriptVariable *var_result;
+	int result;
 
 	if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) {
 		print_error_cr("Function is not registered as C");
-		return false;
+		return CScriptVariable::UndefinedSymbol;
 	}
 
 
 	if(fun_ptr==0){
 		print_error_cr("Null function");
-		return false;
+		return CScriptVariable::UndefinedSymbol;
 	}
 
 	if(irfs->m_arg.size() != argv->size()){
 		print_error_cr("C argument VS scrip argument doestn't match sizes");
-		return false;
+		return CScriptVariable::UndefinedSymbol;
 	}
 
 	if(irfs->m_arg.size() >= MAX_PARAM_C_FUNCTION){
 		print_error_cr("Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_PARAM_C_FUNCTION);
-		return false;
+		return CScriptVariable::UndefinedSymbol;
 	}
 
 
@@ -71,7 +73,7 @@ bool CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegisteredFunctionSymbo
 		fntConversionType paramConv=CScriptClassFactory::getInstance()->getConversionType((argv->at(i))->getPointer_C_ClassName(),irfs->m_arg[i]);
 
 		if(paramConv == NULL){
-			return false;
+			return CScriptVariable::UndefinedSymbol;
 		}
 
 		converted_param[i] = paramConv(argv->at(i));
@@ -82,7 +84,7 @@ bool CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegisteredFunctionSymbo
 	switch(argv->size()){
 	default:
 		print_error_cr("cannot call !");
-		return false;
+		return CScriptVariable::UndefinedSymbol;
 	case 0:
 		result=(*((std::function<int ()> *)fun_ptr))();
 		break;
@@ -91,7 +93,9 @@ bool CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegisteredFunctionSymbo
 		break;
 	}
 
-	return true;
+	var_result = CScriptClassFactory::getInstance()->newClassByIdx(irfs->idx_return_type,(void *)result);
+
+	return var_result;
 
 }
 /*

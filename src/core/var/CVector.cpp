@@ -13,3 +13,9 @@ CVector::~CVector(){
 		delete m_value[i];
 	}*/
 }
+
+
+int * CVector::size(){
+	_i_size = m_objVector.size();
+	return &_i_size;
+}

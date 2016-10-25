@@ -41,25 +41,43 @@
  }
 
 
- bool CScriptClassFactory::isTypeStrValid(const string & type_str){
+ int CScriptClassFactory::getIdxClassFromIts_C_Type(const string & c_type_str){
 
 	 // 1. check primitives ...
-	 for(unsigned i = 0; i < MAX_C_TYPE_VALID_PRIMITIVE_VAR;i++){
+	 /*for(unsigned i = 0; i < MAX_C_TYPE_VALID_PRIMITIVE_VAR;i++){
 		 if(CScriptClassFactory::valid_C_PrimitiveType[i].type_str==type_str){
 			 return true;
 		 }
-	 }
+	 }*/
+	 /*
+	 if(CScriptClassFactory::valid_C_PrimitiveType[i].type_str==type_str){
+			 return true;
+	 }*/
+	 //int , , , , idxClassVector, idxClassFunctor, idxClassUndefined, ;
+		if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::VOID_TYPE].type_str==c_type_str){
+			return idxClassVoid;
+		}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_PTR_TYPE].type_str== c_type_str){
+			return idxClassInteger;
+		}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::FLOAT_PTR_TYPE].type_str==c_type_str){
+			return idxClassNumber;
+		}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::STRING_PTR_TYPE].type_str==c_type_str){
+			return idxClassString;
+		}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::BOOL_PTR_TYPE].type_str==c_type_str){
+			return idxClassBoolean;
+		}
+
+
 
 	 // for all registered C classes...
 	 for(unsigned i = 0; i < m_registeredClass.size(); i++){
-		 if(m_registeredClass[i]->classPtrType==type_str)
+		 if(m_registeredClass[i]->classPtrType==c_type_str)
 		 {
-			 return true;
+			 return i;
 		 }
 	 }
 
 
-	 return false;
+	 return -1;
 
  }
 
@@ -152,6 +170,29 @@ public:
 	 	valid_C_PrimitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),BOOL_PTR_TYPE};
 
 
+		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+		// register internal classes ...
+		if(!register_C_Class<CVoid>("CVoid")) return false;
+		if(!register_C_Class<CUndefined>("CUndefined")) return false;
+		if(!register_C_Class<CInteger>("CInteger")) return false;
+		if(!register_C_Class<CNumber>("CNumber")) return false;
+		if(!register_C_Class<CBoolean>("CBoolean")) return false;
+		if(!register_C_Class<CString>("CString")) return false;
+		if(!register_C_Class<CVector>("CVector")) return false;
+		if(!register_C_Class<CFunctor>("CFunctor")) return false;
+
+		// register primitive classes first ...
+		if((idxClassVoid = getIdxRegisteredClass("CVoid"))==-1) return false;
+		if((idxClassUndefined = getIdxRegisteredClass("CUndefined"))==-1) return false;
+		if((idxClassInteger = getIdxRegisteredClass("CInteger"))==-1) return false;
+		if((idxClassNumber = getIdxRegisteredClass("CNumber"))==-1) return false;
+		if((idxClassBoolean = getIdxRegisteredClass("CBoolean"))==-1) return false;
+		if((idxClassVector = getIdxRegisteredClass("CVector"))==-1) return false;
+		if((idxClassString = getIdxRegisteredClass("CString"))==-1) return false;
+		if((idxClassFunctor = getIdxRegisteredClass("CFunctor"))==-1) return false;
+
 		//===> MOVE INTO CScriptClassFactory !!!! ====================================================>
 
 		//-----------------------
@@ -179,29 +220,11 @@ public:
 		if(!register_C_Function(print)) return false;
 		if(!register_C_Variable(c_var)) return false;
 
-		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-		// register internal classes ...
-		if(!register_C_Class<CVoid>("CVoid")) return false;
-		if(!register_C_Class<CUndefined>("CUndefined")) return false;
-		if(!register_C_Class<CInteger>("CInteger")) return false;
-		if(!register_C_Class<CNumber>("CNumber")) return false;
-		if(!register_C_Class<CBoolean>("CBoolean")) return false;
-		if(!register_C_Class<CString>("CString")) return false;
-		if(!register_C_Class<CVector>("CVector")) return false;
-		if(!register_C_Class<CFunctor>("CFunctor")) return false;
 
 
-		if((idxClassVoid = getIdxRegisteredClass("CVoid"))==-1) return false;
-		if((idxClassUndefined = getIdxRegisteredClass("CUndefined"))==-1) return false;
-		if((idxClassInteger = getIdxRegisteredClass("CInteger"))==-1) return false;
-		if((idxClassNumber = getIdxRegisteredClass("CNumber"))==-1) return false;
-		if((idxClassBoolean = getIdxRegisteredClass("CBoolean"))==-1) return false;
-		if((idxClassVector = getIdxRegisteredClass("CVector"))==-1) return false;
-		if((idxClassString = getIdxRegisteredClass("CString"))==-1) return false;
-		if((idxClassFunctor = getIdxRegisteredClass("CFunctor"))==-1) return false;
-
+		if(!register_C_FunctionMember(CVector,size)) return false;
 
 		// register custom functions ...
 		if(!register_C_FunctionMember(CInteger,toString)) return false;
@@ -662,7 +685,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
  }
 
 
- CScriptVariable 		 * CScriptClassFactory::newClassByIdx(unsigned idx){
+ CScriptVariable 		 * CScriptClassFactory::newClassByIdx(unsigned idx, void * value_object){
 
 	 CScriptVariable *class_object=NULL;
 
@@ -674,14 +697,26 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 		 // Is a primitive ?
 		 if(rc->class_idx == idxClassInteger){
 			 class_object = NEW_INTEGER_VAR;
+			 if(value_object!=NULL){
+				 ((CInteger *)class_object)->m_intValue = *((int *)value_object);
+			 }
 		 }else if(rc->class_idx == idxClassNumber){
 			 class_object = NEW_NUMBER_VAR;
+			 if(value_object!=NULL){
+				 ((CNumber *)class_object)->m_floatValue = *((float *)value_object);
+			 }
 		 }else if(rc->class_idx ==idxClassBoolean){
 			 class_object = NEW_BOOLEAN_VAR;
+			 if(value_object!=NULL){
+				 ((CBoolean *)class_object)->m_boolValue = *((bool *)value_object);
+			 }
 	 	 }else if(rc->class_idx ==idxClassString){
 			 class_object = NEW_STRING_VAR;
+			 if(value_object!=NULL){
+				 ((CString *)class_object)->m_stringValue = *((string *)value_object);
+			 }
  	 	 }else{ // create script variable by default ..
-			 class_object = new CScriptVariable(rc, NULL);
+			 class_object = new CScriptVariable(rc, value_object);
 		 }
 
 
@@ -712,8 +747,8 @@ bool  CScriptClassFactory::register_C_VariableInt(const string & var_name,void *
 		return false;
 	}
 
-	if(!isTypeStrValid(var_type)){
-		print_info_cr("%s has not valid type (%s)",var_name,var_type.c_str());
+	if(getIdxClassFromIts_C_Type(var_type) == -1){
+		print_error_cr("%s has not valid type (%s)",var_name.c_str(),var_type.c_str());
 		return false;
 	}
 

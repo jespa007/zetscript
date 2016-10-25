@@ -218,7 +218,6 @@ void * fun_creator(F fun_obj)
 int main(int argc, char * argv[]){
 
 	using namespace std::placeholders;
-
 	CBase base;
 	CObject obj;
 	obj.i = 100;

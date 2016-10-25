@@ -454,7 +454,7 @@ struct tInfoRegisteredFunctionSymbol{
 
 	// var for function ...
 	vector<string> m_arg; // tells var arg name or var type name (in of C )
-	string return_type;
+	int idx_return_type;
 
 
 };

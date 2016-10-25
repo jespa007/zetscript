@@ -77,21 +77,13 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 	if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
 
-			int result=0;
 			void * fun_ptr = (void *)info_function->object_info.symbol_info.ref_ptr;
 			if(this_object!= NULL && this_object != CZG_ScriptCore::getInstance()->getMainObject()){
 				fun_ptr = this_object->getFunctionSymbolByIndex(info_function->object_info.symbol_info.index)->proxy_ptr;
 			}
 
+			return CZG_ScriptCore::call_C_function(fun_ptr,info_function,argv);
 
-
-			if(!CZG_ScriptCore::call_C_function(fun_ptr,info_function,result,argv)){
-				 return NULL;
-			}
-
-			//TODO: create primitive object if needed ...
-			return CScriptVariable::VoidSymbol;
-			//function_object->setReturnObject(CScriptVariable::VoidSymbol);
 	}
 
 
@@ -1581,12 +1573,12 @@ bool CVirtualMachine::performInstruction(
 					print_info_cr("%i",v_index);
 
 					// check indexes ...
-					if(v_index < 0 || v_index >= (int)vec->m_value.size()){
+					if(v_index < 0 || v_index >= (int)vec->m_objVector.size()){
 						print_error_cr("Line %i. Index vector out of bounds!",instruction->ast_node->definedValueline);
 						return false;
 					}
 
-					if(!pushVar(vec->m_value[v_index],&vec->m_value[v_index])){
+					if(!pushVar(vec->m_objVector[v_index],&vec->m_objVector[v_index])){
 						return false;
 					}
 
@@ -1609,7 +1601,7 @@ bool CVirtualMachine::performInstruction(
 		case VPUSH: // Value push for vector
 			if(IS_VECTOR(ptrResultInstructionOp1)){
 				CVector * vec = (CVector *)(ptrResultInstructionOp1->stkObject);
-				vec->m_value.push_back(createVarFromResultInstruction(ptrResultInstructionOp2));
+				vec->m_objVector.push_back(createVarFromResultInstruction(ptrResultInstructionOp2));
 			}else{
 				print_error_cr("Expected operand 1 as vector");
 				return false;

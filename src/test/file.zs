@@ -62,6 +62,10 @@ var vv=new MyObject();
 vv.i=100;
 vv.print();
 
+var gg=[];
+
+print(gg.size());
+
 
 /*
 function gg(){
