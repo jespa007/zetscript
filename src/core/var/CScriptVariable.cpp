@@ -30,6 +30,8 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 		tInfoRegisteredVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
 
 		si = addVariableSymbol(ir_var->symbol_name,ir_var->ast);
+
+		// Warning if you put any var for primitives (i.e CInteger, CNumber, etc will crash in recursive manner)
 		if(IS_CLASS_C){ // we know the type object so we allocate new var symbol ...
 			// check if primitive type (only 4 no more no else)...
 			void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
@@ -60,6 +62,7 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 	}
 
 
+	// Register even for primitives (if appropiate)
 	for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredFunction.size(); i++){
 		tInfoRegisteredFunctionSymbol * ir_fun  = &ir_class->metadata_info.object_info.local_symbols.m_registeredFunction[i];
 		//print_info_cr("=========================================");
@@ -70,7 +73,7 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 				ir_fun
 
 				);
-		if(IS_CLASS_C){ // create proxy function ...
+		 if(IS_CLASS_C){ // create proxy function ...
 			si->proxy_ptr = (*((std::function<void *(void *)> *)ir_fun->object_info.symbol_info.ref_ptr))(c_object);
 		}
 		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
@@ -118,6 +121,8 @@ CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv, void *_object_by_use
 		}else{
 			c_object = _object_by_user;
 		}
+	}else{
+		c_object = this;
 	}
 
 

@@ -1,7 +1,7 @@
 #include "core/zg_core.h"
 
 
-CFunctor::CFunctor(tInfoRegisteredClass *info_registered_class,tInfoRegisteredFunctionSymbol *_irfs):CScriptVariable(info_registered_class, NULL){
+CFunctor::CFunctor(tInfoRegisteredClass *info_registered_class,tInfoRegisteredFunctionSymbol *_irfs):CScriptVariable(info_registered_class, this){
 
   //  m_classStr=typeid(CFunctor).name();
   //  m_pointerClassStr=typeid(CFunctor *).name();

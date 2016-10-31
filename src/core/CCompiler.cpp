@@ -348,8 +348,10 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	string v = _node->value_symbol;
 
 	// ignore node this ...
-	if(_node->value_symbol == "this"){
-		print_error_cr("this cannot be processed here!");
+	if(_node->value_symbol == "this"
+	   ||_node->value_symbol == "super"
+			){
+		print_error_cr("\"%s\" cannot be processed here!",_node->value_symbol.c_str());
 		return false;
 	}
 
@@ -466,6 +468,10 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 				//if(!CScriptClassFactory::getInstance()->getIdxRegisteredVariableSymbol(class_name, _node->value_symbol)){
 				//	return false;
 				//}
+			}else if((_node->parent != NULL &&_node->parent->children[0]->value_symbol == "super") || // single access ?
+					   (_node->parent->node_type == NODE_TYPE::CALLING_OBJECT_NODE && _node->parent->parent != NULL && _node->parent->parent->children[0]->value_symbol == "super"  ) // calling object needs +1 step more to check whether is valid this scope...
+					){
+				scope_type=SCOPE_TYPE::SUPER_SCOPE;
 			}
 
 		}
@@ -1068,6 +1074,18 @@ bool CCompiler::isThisScope(PASTNode _node){
 
 }
 
+bool CCompiler::isSuperScope(PASTNode _node){
+	if(_node == NULL){
+		return false;
+	}
+
+	return ((_node->node_type == PUNCTUATOR_NODE) &&
+			   //(_node->parent != NULL && _node->parent->node_type != PUNCTUATOR_NODE) &&
+			   (_node->children.size()==2 && _node->children[0]->value_symbol=="super")
+			   );
+
+}
+
 int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & index_instruction){
 
 	//CScopeInfo * _lc = m_currentFunctionInfo->getScope();
@@ -1083,7 +1101,8 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 
 
-	if(isThisScope(_node)){ // only take care left children...
+	if( isThisScope(_node)
+	 || isSuperScope(_node)){ // only take care left children...
 		_node = _node->children[1];
 	}
 
@@ -1318,6 +1337,42 @@ int findConstructorIdxNode(PASTNode _node ){
 	return -1;
 }
 
+
+
+
+bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoRegisteredClass *current_class){
+
+
+	if(current_class->baseClass !=NULL){
+		if(!CCompiler::doRegisterVariableSymbolsClass(class_name,current_class->baseClass)){
+			return false;
+		}
+	}
+
+
+	PASTNode node_class = current_class->metadata_info.object_info.symbol_info.ast;
+
+
+	// register all vars...
+	for(unsigned i = 0; i < node_class->children[0]->children.size(); i++){ // foreach declared var.
+
+
+		for(unsigned j = 0; j < node_class->children[0]->children[i]->children.size(); j++){ // foreach element declared within ','
+			if(CScriptClassFactory::getInstance()->registerVariableSymbol(
+					class_name,
+					node_class->children[0]->children[i]->children[j]->value_symbol,
+					node_class->children[0]->children[i]->children[j]
+				) == NULL){
+				return false;
+			}
+		}
+	}
+
+
+
+	return true;
+}
+
 bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
@@ -1335,7 +1390,12 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 	tInfoRegisteredClass *irc;
 
 	// children[0]==var_collection && children[1]=function_collection
-	if(_node->children.size()!=2) {print_error_cr("node CLASS has not valid number of nodes");return false;}
+	if(_node->children.size()!=2 && _node->children.size()!=3) {print_error_cr("node CLASS has not valid number of nodes");return false;}
+
+
+	if(_node->children.size() == 3){
+		_node->children[2]->value_symbol = base_class;
+	}
 
 	// verify class is not already registered...
 	if((irc=CScriptClassFactory::getInstance()->registerScriptClass(_node->value_symbol,base_class,_node)) == NULL){
@@ -1346,21 +1406,8 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 	pushFunction(_node,&irc->metadata_info);
 
 
-
-
-	// register all vars...
-	for(unsigned i = 0; i < _node->children[0]->children.size(); i++){ // foreach declared var.
-
-
-		for(unsigned j = 0; j < _node->children[0]->children[i]->children.size(); j++){ // foreach element declared within ','
-			if(CScriptClassFactory::getInstance()->registerVariableSymbol(
-					_node->value_symbol,
-					_node->children[0]->children[i]->children[j]->value_symbol,
-					_node->children[0]->children[i]->children[j]
-				) == NULL){
-				return false;
-			}
-		}
+	if(!doRegisterVariableSymbolsClass(_node->value_symbol,irc)){
+		return false;
 	}
 
 	// register all  functions...
@@ -1376,15 +1423,13 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 			return false;
 		}
 
-
 		// compile function (within scope class)...
 		if(!gacFunction(node_fun, _node->scope_info_ptr,irfs)){
 			return false;
 		}
 
-
-
 	}
+
 
 	// pop class ref so we go back to main scope...
 	popFunction();

@@ -86,6 +86,7 @@
 
  fntConversionType CScriptClassFactory::getConversionType(string objectType, string conversionType){
 
+
  	if(mapTypeConversion.count(objectType) == 0){
  		print_error_cr("There's no type conversion \"%s\". Add conversion types through \"addTypeConversion\" function",demangle(objectType).c_str());
  		return NULL;
@@ -171,6 +172,11 @@ public:
 
 
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		// MAIN CLASS! Is the first entry before any other one   (this order is important!...
+		if((registerScriptClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false;
+		if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME,CAst::getInstance()->getMainAstNode())) == NULL) return false;
+
+		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 		// register internal classes ...
@@ -211,20 +217,17 @@ public:
 		addTypeConversion<CString *,string *>( [] (CScriptVariable *obj){return (int)(((CString *)obj)->m_value);});
 
 
-		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
-		// MAIN CLASS! Is the first entry before anyother
-		if((registerScriptClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false;
-		if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME,CAst::getInstance()->getMainAstNode())) == NULL) return false;
+
+		//------------------------------------------------------------------------------------------------------------
+		// Let's register functions,...
 
 		// register c function's
 		if(!register_C_Function(print)) return false;
 		if(!register_C_Variable(c_var)) return false;
 
 
-
-
-
 		if(!register_C_FunctionMember(CVector,size)) return false;
+		if(!register_C_FunctionMember(CVector,add)) return false;
 
 		// register custom functions ...
 		if(!register_C_FunctionMember(CInteger,toString)) return false;
@@ -287,13 +290,17 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 		 iao->scope_type = scope_type;
 		 iao->index_op1 = LOAD_TYPE_FUNCTION;
 		 iao->index_op2 = idx;
+		 iao->script_info = script_info;
 		 return true;
 	 }else if((idx=getIdxRegisteredVariableSymbol(script_info,symbol_to_find, false))!=-1){
 		 iao->scope_type = scope_type;
 		 iao->index_op1 = LOAD_TYPE_VARIABLE;
 		 iao->index_op2 = idx;
+		 iao->script_info = script_info;
 		 return true;
 	 }
+
+
 
 	 return false;
 }
@@ -310,6 +317,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 	 tInfoRegisteredFunctionSymbol  *main_function = &m_registeredClass[0]->metadata_info.object_info.local_symbols.m_registeredFunction[0];
 	 print_info_cr("DEFINED CLASSES");
 	 vector<tInfoRegisteredFunctionSymbol *>  mrf;
+
 	 // For each class...
 	 for(unsigned i = 0; i < m_registeredClass.size(); i++){
 
@@ -357,6 +365,12 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 							 if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE ){
 
 								 sfi = &m_registeredClass[i]->metadata_info.object_info;
+							 }else if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE ){ // search symbol through its hiearchy ...
+
+								 if((sfi = getSuperClass(m_registeredClass[i]->baseClass,iao->ast_node->value_symbol))==NULL){
+									 print_error_cr("Error at line %i with \"super.%s\" (has no overrider)",iao->ast_node->definedValueline, iao->ast_node->value_symbol.c_str());
+									 return false;
+								 }
 							 }
 
 
@@ -651,12 +665,8 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 		irv = new tInfoRegisteredClass;
 		irv->class_idx=m_registeredClass.size();
 		irv->baseClass=base_class;
-		irv->idx_function_script_constructor=-1;
 		irv->metadata_info.object_info.symbol_info.symbol_name = class_name;
 		irv->metadata_info.object_info.symbol_info.ast=_ast;
-		irv->c_constructor=NULL;
-		irv->c_destructor = NULL;
-		irv->metadata_info.object_info.symbol_info.properties=0;
 		irv->metadata_info.object_info.symbol_info.index = m_registeredClass.size();
 		m_registeredClass.push_back(irv);
 
@@ -753,8 +763,6 @@ bool  CScriptClassFactory::register_C_VariableInt(const string & var_name,void *
 	}
 
 	// init struct...
-	irs.ast = NULL;
-	irs.class_info=NULL;
 	irs.properties = ::PROPERTY_C_OBJECT_REF;
 	irs.symbol_name = var_name;
 	irs.ref_ptr=(int)var_ptr;
@@ -846,6 +854,25 @@ int CScriptClassFactory::getIdxRegisteredVariableSymbol(tScriptFunctionInfo *scr
 
 
 
+tScriptFunctionInfo *  CScriptClassFactory::getSuperClass(tInfoRegisteredClass *irc, const string & fun_name){
+
+
+	if(irc == NULL){ // trivial case ...
+		return NULL;
+	}
+
+	for(unsigned i = 0; i < irc->metadata_info.object_info.local_symbols.m_registeredFunction.size(); i++){
+		if(irc->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == fun_name){
+			return &irc->metadata_info.object_info;
+		}
+	}
+
+
+
+	return getSuperClass(irc->baseClass,fun_name);
+}
+
+
 //-------
 
 tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(const string & class_name, const string & fun_name, PASTNode  ast){
@@ -854,7 +881,9 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 
 
 	if(rc != NULL){
-		if(getRegisteredFunctionSymbol(class_name,fun_name, false)==NULL){
+
+		// get last registered function it will point super class...
+		if(getRegisteredFunctionSymbol(class_name,fun_name, false) == NULL){
 
 
 			tScriptFunctionInfo *object_info=&rc->metadata_info.object_info;
@@ -864,7 +893,7 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 			irs.object_info.symbol_info.class_info = rc;
 			irs.object_info.symbol_info.symbol_name = fun_name;
 			irs.object_info.symbol_info.ast = ast;
-			irs.object_info.symbol_info.properties = 0;
+			//irs.virtual_function = getVirtualFunction(rc->baseClass,fun_name);
 
 			//rc->idx_function_script_constructor =-1; // by default has no constructor...
 
@@ -885,10 +914,36 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 			return &object_info->local_symbols.m_registeredFunction[object_info->local_symbols.m_registeredFunction.size()-1];
 		}
 		else{
+
 			print_error_cr("function member %s::%s already registered",class_name.c_str(),fun_name.c_str());
 		}
 	}else{
 		//print_error_cr("object info NULL");
+	}
+
+	return NULL;
+}
+
+tInfoRegisteredFunctionSymbol * CScriptClassFactory::getLastRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors){
+
+	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
+
+	if(rc != NULL){
+
+		tScriptFunctionInfo *object_info=&rc->metadata_info.object_info;
+
+		if(object_info->local_symbols.m_registeredFunction.size() > 0){
+
+			for(int i = (int)object_info->local_symbols.m_registeredFunction.size()-1; i >= 0; i--){
+				if(object_info->local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == function_name){
+					return &object_info->local_symbols.m_registeredFunction[i];
+				}
+			}
+		}
+	}
+
+	if(show_errors){
+		print_error_cr("function member %s::%s doesn't exist",class_name.c_str(),function_name.c_str());
 	}
 
 	return NULL;
@@ -908,13 +963,6 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::getRegisteredFunctionSymbol
 				return &object_info->local_symbols.m_registeredFunction[i];
 			}
 		}
-	/*if((index = getIdxRegisteredFunctionSymbol_Internal(class_name))!=-1){ // check whether is local var registered scope ...
-
-		return m_registeredClass[index];
-	}else{
-		if(print_msg){
-			print_error_cr("class \"%s\" doesn't exist!", class_name.c_str());
-		}*/
 	}
 
 	if(show_errors){

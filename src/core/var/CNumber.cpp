@@ -53,7 +53,7 @@ CNumber::CNumber(){
 }
 
 
-CNumber::CNumber(tInfoRegisteredClass *info_registered_class,void *_value):CScriptVariable(info_registered_class,NULL){
+CNumber::CNumber(tInfoRegisteredClass *info_registered_class,void *_value):CScriptVariable(info_registered_class,this){
 
 	setup();
 

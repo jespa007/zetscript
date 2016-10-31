@@ -1,6 +1,6 @@
 #pragma once
 
-#define NEW_VECTOR_VAR (new CVector(CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassVector())))
+#define NEW_VECTOR_VAR (new CVector(CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassVector())))//,(void *)(new CVector())))
 
 class CVector: public CScriptVariable{
 
@@ -12,6 +12,7 @@ public:
 	CVector(){}
 	CVector(tInfoRegisteredClass *info_registered_class);
 
+	void add(CInteger *v);
 	int *size();
 
 	~CVector();

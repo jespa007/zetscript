@@ -69,6 +69,7 @@ private:
 	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
 	void printDebugInformation();
 	static bool isThisScope(PASTNode _node);
+	static bool isSuperScope(PASTNode _node);
 
 	// DEBUG TOOLS
 	//---------------------------------------------------------------------------------------------------------------------------------------
@@ -196,6 +197,7 @@ private:
 	/**
 	 * Adds class info into factory
 	 */
+	bool doRegisterVariableSymbolsClass(const string & class_name, tInfoRegisteredClass *current_class);
 	bool gacClass(PASTNode _node, CScopeInfo * _lc);
 
 	bool gacNew(PASTNode _node, CScopeInfo * _lc);

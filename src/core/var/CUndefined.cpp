@@ -1,6 +1,6 @@
 #include "core/zg_core.h"
 
-CUndefined::CUndefined(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class, NULL){
+CUndefined::CUndefined(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class, this){
 
     //m_classStr="undefined";
    // m_pointerClassStr="undefined";

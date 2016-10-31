@@ -85,9 +85,11 @@ public:
 
 	tInfoRegisteredFunctionSymbol *  registerFunctionSymbol(const string & class_name, const string & name,PASTNode  node);
 	tInfoRegisteredFunctionSymbol *  getRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors=true);
+	tInfoRegisteredFunctionSymbol *  getLastRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors=true);
 	int 							 getIdxRegisteredFunctionSymbol(tScriptFunctionInfo *irf,const string & function_name, bool show_msg=true);
 
 
+	tScriptFunctionInfo *  getSuperClass(tInfoRegisteredClass *irc, const string & fun_name);
 
 
 	bool addArgumentFunctionSymbol(const string & class_name,const string & function_name,const string & arg_name);
@@ -201,13 +203,13 @@ public:
 
 		// check valid parameters ...
 		if((irs.idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
-			print_error_cr("Return type \"%s\" for function \"%s\" is not valid",demangle(return_type).c_str(),function_name.c_str());
+			print_error_cr("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name.c_str());
 			return false;
 		}
 
 		for(unsigned int i = 0; i < irs.m_arg.size(); i++){
 			if(getIdxClassFromIts_C_Type(irs.m_arg[i])==-1){
-				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,demangle(irs.m_arg[i]).c_str(),function_name.c_str());
+				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(irs.m_arg[i]).c_str(),function_name.c_str());
 				return false;
 			}
 
@@ -296,6 +298,7 @@ public:
 
 		tInfoRegisteredClass *base_class = NULL;
 
+		// get base class
 		if(base_class_name != ""){
 			if((base_class = this->getRegisteredClass(base_class_name)) == NULL){
 				return false;
@@ -420,13 +423,13 @@ public:
 
 		// check valid parameters ...
 		if((irs.idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
-			print_error_cr("Return type \"%s\" for function \"%s\" is not valid",demangle(return_type).c_str(),function_name);
+			print_error_cr("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name);
 			return false;
 		}
 
 		for(unsigned int i = 0; i < irs.m_arg.size(); i++){
 			if(getIdxClassFromIts_C_Type(irs.m_arg[i])==-1){
-				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not valid",i,demangle(irs.m_arg[i]).c_str(),function_name);
+				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(irs.m_arg[i]).c_str(),function_name);
 				return false;
 			}
 

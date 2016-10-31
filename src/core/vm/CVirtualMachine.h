@@ -14,8 +14,8 @@ class CVirtualMachine{
 
 	typedef struct{
 		VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
-		void			 		* 	stkObject; // pointer to pointer ables to modify its pointer when is needed
-		CScriptVariable  		** 	ptrAssignableVar; // pointer to pointer in case of replace var
+		void			 		* 	stkResultObject; // pointer to pointer ables to modify its pointer when is needed
+		CScriptVariable  		** 	ptrObjectRef; // pointer to pointer in case of replace var
 	}tAleObjectInfo;
 
 public:
@@ -81,7 +81,7 @@ private:
 	float 				stkNumber[VM_ALE_OPERATIONS_MAX_STACK];
 	string 				stkString[VM_ALE_OPERATIONS_MAX_STACK];
 	tAleObjectInfo 		stkResultInstruction[VM_ALE_OPERATIONS_MAX_STACK];
-	//CScriptVariable  **stkObject[MAX_PER_TYPE_OPERATIONS]; // all variables references to this ...
+	//CScriptVariable  **stkResultObject[MAX_PER_TYPE_OPERATIONS]; // all variables references to this ...
 	//CVector	 * vector[MAX_OPERANDS];
 
 	int
@@ -113,7 +113,7 @@ private:
 	bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL);
 	bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL);
 	bool pushFunction(tInfoRegisteredFunctionSymbol * init_value, CScriptVariable ** ptrAssignable=NULL);
-	bool pushVar(CScriptVariable * , CScriptVariable ** ptrAssignableVar=NULL);
+	bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL);
 	bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
 
 

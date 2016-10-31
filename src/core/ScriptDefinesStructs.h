@@ -5,8 +5,8 @@ class tASTNode;
 typedef tASTNode *PASTNode;
 struct tInfoRegisteredFunctionSymbol;
 struct tInfoScopeVar;
-struct _tInfoRegisteredClass;
-
+struct tInfoRegisteredClass;
+class tScriptFunctionInfo;
 
 
 
@@ -57,6 +57,7 @@ enum KEYWORD_TYPE{
 	FUNCTION_KEYWORD,
 	CLASS_KEYWORD,
 	THIS_KEYWORD,
+	SUPER_KEYWORD,
 	NEW_KEYWORD,
 	DELETE_KEYWORD,
 	MAX_KEYWORD
@@ -148,6 +149,7 @@ enum SCOPE_TYPE{
 	GLOBAL_SCOPE,
 	LOCAL_SCOPE,
 	THIS_SCOPE,
+	SUPER_SCOPE,
 	ACCESS_SCOPE
 };
 
@@ -238,16 +240,28 @@ enum SYMBOL_INFO_PROPERTIES{
 	PROPERTY_FUNCTION = 0x1 << 2
 };
 
-typedef struct{
+struct tInfoRegisteredVariableSymbol{
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function
 	string 	 symbol_name;
-	_tInfoRegisteredClass		 *class_info;
+	tInfoRegisteredClass		 *class_info;
 	tInfoScopeVar  				*info_var_scope;
 	tASTNode		*ast;
 	unsigned int properties; // SYMBOL_INFO_PROPERTIES
 	string c_type; // In case is C, we need to know its type ...
 	int index;
-}tInfoRegisteredVariableSymbol;
+
+	tInfoRegisteredVariableSymbol(){
+		properties=0;
+		c_type="";
+		ast=NULL;
+		symbol_name = "";
+		ref_ptr=0;
+		class_info=NULL;
+		info_var_scope=NULL;
+		index=-1;
+
+	}
+};
 
 
 typedef struct{
@@ -370,9 +384,9 @@ enum ASM_PROPERTIES{
 
 
 
-class tInfoAsmOp{
+struct tInfoAsmOp{
 
-public:
+
 
 
 	 //int type_op;
@@ -396,6 +410,7 @@ public:
 	 int index_op1,index_op2; // left and right respectively
 	 int asm_properties;
 	 SCOPE_TYPE scope_type; // in case needed.
+	 tScriptFunctionInfo *script_info;
 
 	// bool (* isconvertable)(int value);
 
@@ -414,6 +429,7 @@ public:
 		//result_obj=NULL; // oject type...
 	   // type_res="none";
 		index_op1=index_op2=-1;
+		script_info=NULL;
 
 
 	   // ptr_value=NULL;
@@ -430,10 +446,10 @@ struct tInfoStatementOp{
 
 //-------------------------------------------------------
 
-typedef struct {
+struct tLocalSymbolInfo{
 	vector<tInfoRegisteredVariableSymbol> 	m_registeredVariable; // member variables to be copied in every new instance
 	vector<tInfoRegisteredFunctionSymbol> 	m_registeredFunction; // member functions
-}tLocalSymbolInfo;
+};
 
 struct tScriptFunctionInfo{ // script function is shared by class and function ...
 	tInfoRegisteredVariableSymbol 	symbol_info;
@@ -452,9 +468,16 @@ struct tInfoRegisteredFunctionSymbol{
 
 	tScriptFunctionInfo	object_info;
 
+	//tInfoRegisteredFunctionSymbol *virtual_function;
+
 	// var for function ...
 	vector<string> m_arg; // tells var arg name or var type name (in of C )
-	int idx_return_type;
+	int idx_return_type; // -1 not inicialized type return.
+
+	tInfoRegisteredFunctionSymbol(){
+		//virtual_function = NULL;
+		idx_return_type = -1;
+	}
 
 
 };
@@ -463,7 +486,7 @@ struct tInfoRegisteredFunctionSymbol{
 /**
  * Stores the basic information to build a object through built AST structure
  */
-typedef struct _tInfoRegisteredClass{
+struct tInfoRegisteredClass{
 
 	tInfoRegisteredFunctionSymbol	metadata_info;
 	int idx_function_script_constructor;
@@ -471,9 +494,18 @@ typedef struct _tInfoRegisteredClass{
 	std::function<void (void *p)> *c_destructor;
 	std::function<void *()> *c_constructor;
 	string classPtrType; // type_id().name();
-	_tInfoRegisteredClass *baseClass; // in the case is and extension of class.
+	tInfoRegisteredClass *baseClass; // in the case is and extension of class.
 
-}tInfoRegisteredClass;
+	tInfoRegisteredClass(){
+		baseClass = NULL;
+		class_idx=-1;
+		classPtrType="";
+		c_destructor = NULL;
+		c_constructor=NULL;
+		idx_function_script_constructor=-1;
+	}
+
+};
 
 
 

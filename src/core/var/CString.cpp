@@ -14,7 +14,7 @@ CString::CString(){
 }
 
 
-CString::CString(tInfoRegisteredClass *info_registered_class, string * _value):CScriptVariable(info_registered_class, NULL){
+CString::CString(tInfoRegisteredClass *info_registered_class, string * _value):CScriptVariable(info_registered_class, this){
 
    // m_classStr=typeid(CString).name();
    // m_pointerClassStr=typeid(CString *).name();

@@ -7,15 +7,39 @@
     }
     print (i);
 }*/
-/*
 
-class MyClass2{
+
+class MyClassBase{
+	var g;
+	
+	function MyClassBase(){
+		print("constructor1");
+		
+	}
+	
+	function overridable123(){
+		print("HOLA123");
+	}
+	
+	function overridable(){
+		print("HOLA1");
+	}
+};
+
+class MyClass2:MyClassBase{
 	
 	var h;
 	
 	function MyClass2(){
-		this.h=[0,1,2,3,4];
+		print("constructor2");
+		this.g=[0,1,2,3,4];
 	}
+	
+	function overridable(){
+		super.overridable();
+		print("HOLA1");
+	}
+	
 };
 
 class MyClass{
@@ -26,7 +50,6 @@ class MyClass{
 		this.k=new MyClass2();
 		this.kk=2;
 		//l=0;
-		
 
 	}
 	
@@ -36,36 +59,46 @@ var MyClass::kk;
 
 
 
-
+var v=new MyClass2();
 var l=new MyClass();
+
+v.overridable123();
 
 function MyClass::pp(){
 	print("pp");
 }
+
 //l=0; 
 
 
-l.k.h[0]; // crash!
+l.k.g[0]; // crash!
 
 print("hola que tal "+l.kk);
 
-l.pp();*/
+l.pp();
 
 var tt=new CInteger();
 tt=0;
 //tt.toString();
 //tt=100;
 
-print("hola:"+tt.toString());
+//print("hola:"+tt.toString());
 
 var vv=new MyObject();
 vv.i=100;
 vv.print();
 
-var gg=[];
+var gg=[1,2,3,4];
 
-print(gg.size());
+gg.add(5);
 
+
+print("hh:"+gg.size());
+/*
+for(var i=0; i < 4; i++){
+	print("t:"+gg[i]+" s:"+gg.size());
+}
+*/
 
 /*
 function gg(){
