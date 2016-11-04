@@ -85,7 +85,6 @@ public:
 
 	tInfoRegisteredFunctionSymbol *  registerFunctionSymbol(const string & class_name, const string & name,PASTNode  node);
 	tInfoRegisteredFunctionSymbol *  getRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors=true);
-	tInfoRegisteredFunctionSymbol *  getLastRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors=true);
 	int 							 getIdxRegisteredFunctionSymbol(tScriptFunctionInfo *irf,const string & function_name, bool show_msg=true);
 
 
@@ -221,7 +220,7 @@ public:
 		irs.object_info.symbol_info.info_var_scope = NULL;
 		irs.object_info.symbol_info.symbol_name = function_name;
 
-		irs.object_info.symbol_info.properties = ::PROPERTY_C_OBJECT_REF;
+		irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 		if((irs.object_info.symbol_info.ref_ptr=(int)new_proxy_function(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
 			return false;
 		}

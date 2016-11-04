@@ -22,8 +22,15 @@ class MyClassBase{
 	}
 	
 	function overridable(){
+		//super.overridable();
 		print("HOLA1");
 	}
+	
+	function over(){
+		print("over1");
+		this.overridable();
+	}
+
 };
 
 class MyClass2:MyClassBase{
@@ -35,14 +42,24 @@ class MyClass2:MyClassBase{
 		this.g=[0,1,2,3,4];
 	}
 	
-	function overridable(){
-		super.overridable();
-		print("HOLA1");
+	function over(){
+		//super.over();
+		print("over2");
+		
 	}
+	
+	function overridable(){
+		//super.overridable();
+		print("HOLA1");
+		//this.over();
+	}
+	
+	
+
 	
 };
 
-class MyClass{
+/*class MyClass{
 	
 	var k;
 	
@@ -53,17 +70,16 @@ class MyClass{
 
 	}
 	
-};
-
+}
 var MyClass::kk;
 
-
+*/
 
 var v=new MyClass2();
-var l=new MyClass();
+//var l=new MyClass();
 
-v.overridable123();
-
+v.over();
+/*
 function MyClass::pp(){
 	print("pp");
 }
@@ -93,7 +109,7 @@ var gg=[1,2,3,4];
 gg.add(5);
 
 
-print("hh:"+gg.size());
+print("hh:"+gg.size());*/
 /*
 for(var i=0; i < 4; i++){
 	print("t:"+gg[i]+" s:"+gg.size());

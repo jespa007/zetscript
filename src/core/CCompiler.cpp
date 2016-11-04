@@ -57,8 +57,7 @@ int CCompiler::addLocalVarSymbol(const string & var_name,tASTNode *ast){
 			info_symbol.ast = ast;
 			info_symbol.symbol_name = var_name;
 			info_symbol.info_var_scope = irv;
-			info_symbol.properties=0;
-			info_symbol.ref_ptr=0;
+
 
 			this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
 
@@ -114,9 +113,6 @@ int CCompiler::addLocalFunctionSymbol(const string & name,tASTNode *ast){
 			info_symbol.object_info.symbol_info.info_var_scope = irv;
 			info_symbol.object_info.symbol_info.symbol_name = name;
 
-
-			info_symbol.object_info.symbol_info.properties=0;
-			info_symbol.object_info.symbol_info.ref_ptr=0;
 
 			this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction.push_back(info_symbol);
 
@@ -1368,6 +1364,26 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoR
 		}
 	}
 
+	// register all functions ...
+	for(unsigned i = 0; i < node_class->children[1]->children.size(); i++){
+		tInfoRegisteredFunctionSymbol *irfs;
+		PASTNode node_fun = node_class->children[1]->children[i];
+
+		if((irfs=CScriptClassFactory::getInstance()->registerFunctionSymbol(
+				class_name,
+				node_fun->value_symbol,
+				node_fun
+		)) == NULL){
+			return false;
+		}
+
+		// compile function (within scope class)...
+		if(!gacFunction(node_fun, node_class->scope_info_ptr,irfs)){
+			return false;
+		}
+
+	}
+
 
 
 	return true;
@@ -1406,12 +1422,13 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 	pushFunction(_node,&irc->metadata_info);
 
 
+	// register all symbols ...
 	if(!doRegisterVariableSymbolsClass(_node->value_symbol,irc)){
 		return false;
 	}
 
-	// register all  functions...
-	for(unsigned i = 0; i < _node->children[1]->children.size(); i++){
+	// register class functions...
+	/*for(unsigned i = 0; i < _node->children[1]->children.size(); i++){
 		tInfoRegisteredFunctionSymbol *irfs;
 		PASTNode node_fun = _node->children[1]->children[i];
 
@@ -1428,7 +1445,7 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 			return false;
 		}
 
-	}
+	}*/
 
 
 	// pop class ref so we go back to main scope...

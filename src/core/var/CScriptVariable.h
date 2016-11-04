@@ -148,12 +148,14 @@ public:
 		public:
 		void *object; // created object. undefined by default.
 		void * proxy_ptr; // for proxy functions...
+		tSymbolInfo *super_function; // only for functions ...
 		string value_symbol;
 		tASTNode *ast; // in case there's ast node...
 		tSymbolInfo(){
 			proxy_ptr=NULL;
 			this->object = CScriptVariable::UndefinedSymbol;
 			this->ast = NULL;
+			super_function=NULL;
 		}
 
 	};

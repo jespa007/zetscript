@@ -376,6 +376,8 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 							 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
 
+
+
 										 string symbol_to_find =iao->ast_node->value_symbol;
 
 										 if(iao->scope_type ==SCOPE_TYPE::ACCESS_SCOPE){
@@ -763,7 +765,7 @@ bool  CScriptClassFactory::register_C_VariableInt(const string & var_name,void *
 	}
 
 	// init struct...
-	irs.properties = ::PROPERTY_C_OBJECT_REF;
+	irs.properties = ::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 	irs.symbol_name = var_name;
 	irs.ref_ptr=(int)var_ptr;
 
@@ -883,7 +885,8 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 	if(rc != NULL){
 
 		// get last registered function it will point super class...
-		if(getRegisteredFunctionSymbol(class_name,fun_name, false) == NULL){
+		//if(getRegisteredFunctionSymbol(class_name,fun_name, false) == NULL)
+		{
 
 
 			tScriptFunctionInfo *object_info=&rc->metadata_info.object_info;
@@ -899,11 +902,11 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 
 
 			if(fun_name == class_name){
-				if(rc->idx_function_script_constructor == -1){
+				if(rc->idx_function_script_constructor == -1){ // constructor not defined yet
 					rc->idx_function_script_constructor = object_info->local_symbols.m_registeredFunction.size();
 				}else{
-					print_error_cr("Constructor \"%s:%s\" already defined",fun_name.c_str(),fun_name.c_str());
-					return NULL;
+					print_warning_cr("Must define virtual constructor \"%s:%s\" !",fun_name.c_str(),fun_name.c_str());
+					//return NULL;
 				}
 			}
 
@@ -913,42 +916,16 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 
 			return &object_info->local_symbols.m_registeredFunction[object_info->local_symbols.m_registeredFunction.size()-1];
 		}
-		else{
+		//else{
 
-			print_error_cr("function member %s::%s already registered",class_name.c_str(),fun_name.c_str());
-		}
+		//print_error_cr("function member %s::%s already registered",class_name.c_str(),fun_name.c_str());
+		//}
 	}else{
 		//print_error_cr("object info NULL");
 	}
 
 	return NULL;
 }
-
-tInfoRegisteredFunctionSymbol * CScriptClassFactory::getLastRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors){
-
-	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
-
-	if(rc != NULL){
-
-		tScriptFunctionInfo *object_info=&rc->metadata_info.object_info;
-
-		if(object_info->local_symbols.m_registeredFunction.size() > 0){
-
-			for(int i = (int)object_info->local_symbols.m_registeredFunction.size()-1; i >= 0; i--){
-				if(object_info->local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == function_name){
-					return &object_info->local_symbols.m_registeredFunction[i];
-				}
-			}
-		}
-	}
-
-	if(show_errors){
-		print_error_cr("function member %s::%s doesn't exist",class_name.c_str(),function_name.c_str());
-	}
-
-	return NULL;
-}
-
 
 tInfoRegisteredFunctionSymbol * CScriptClassFactory::getRegisteredFunctionSymbol(const string & class_name,const string & function_name, bool show_errors){
 
@@ -958,7 +935,8 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::getRegisteredFunctionSymbol
 
 		tScriptFunctionInfo *object_info=&rc->metadata_info.object_info;
 
-		for(unsigned i = 0; i < object_info->local_symbols.m_registeredFunction.size(); i++){
+		// from lat value to first to get last override function...
+		for(int i = object_info->local_symbols.m_registeredFunction.size()-1; i >= 0 ; i--){
 			if(object_info->local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == function_name){
 				return &object_info->local_symbols.m_registeredFunction[i];
 			}
@@ -975,19 +953,12 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::getRegisteredFunctionSymbol
 
 int CScriptClassFactory::getIdxRegisteredFunctionSymbol(tScriptFunctionInfo *script_info,const string & function_name, bool show_msg){
 
-	//tInfoRegisteredClass *rc = getRegisteredClass(class_name);
-
-	//if(rc != NULL)
-	//{
-
-		//tScriptFunctionInfo *script_info=&rc->metadata_info.object_info;
-
-		for(unsigned i = 0; i < script_info->local_symbols.m_registeredFunction.size(); i++){
-			if(script_info->local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == function_name){
-				return i;
-			}
+	// from lat value to first to get last override function...
+	for(int i = script_info->local_symbols.m_registeredFunction.size()-1; i >= 0 ; i--){
+		if(script_info->local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == function_name){
+			return i;
 		}
-	//}
+	}
 
 	if(show_msg){
 		print_error_cr("function member %s::%s doesn't exist",script_info->symbol_info.symbol_name.c_str(),function_name.c_str());

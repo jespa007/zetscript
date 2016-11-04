@@ -24,39 +24,45 @@ void CScriptVariable::destroySingletons(){
 
 void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 	tSymbolInfo *si;
-	for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
+
+	//if(ir_class == this->m_infoRegisteredClass)
+	{ // only register vars from higher class because the heredited symbols were created at CCompiler::gacClass
+
+		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
 
 
-		tInfoRegisteredVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
+			tInfoRegisteredVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
 
-		si = addVariableSymbol(ir_var->symbol_name,ir_var->ast);
+			si = addVariableSymbol(ir_var->symbol_name,ir_var->ast);
 
-		// Warning if you put any var for primitives (i.e CInteger, CNumber, etc will crash in recursive manner)
-		if(IS_CLASS_C){ // we know the type object so we allocate new var symbol ...
-			// check if primitive type (only 4 no more no else)...
-			void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
+			// Warning if you put any var for primitives (i.e CInteger, CNumber, etc will crash in recursive manner)
+			if(IS_CLASS_C){ // we know the type object so we allocate new var symbol ...
+				// check if primitive type (only 4 no more no else)...
+				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
-		 	if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(int *).name(),"int *",INT_PTR_TYPE};
-		 		si->object = new CInteger(CScriptClassFactory::getInstance()->getRegisteredClassInteger(),(int *)ptr_variable);
-		 	}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::FLOAT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
-		 		si->object = new CNumber(CScriptClassFactory::getInstance()->getRegisteredClassNumber(),(float *)ptr_variable);
-		 	}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::STRING_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
-		 		si->object = new CString(CScriptClassFactory::getInstance()->getRegisteredClassString(),(string *)ptr_variable);
-		 	}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::BOOL_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
-		 		si->object = new CBoolean(CScriptClassFactory::getInstance()->getRegisteredClassString(),(bool *)ptr_variable);
-		 	}else{
-		 		tInfoRegisteredClass *info_registered_class = CScriptClassFactory::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+				if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(int *).name(),"int *",INT_PTR_TYPE};
+					si->object = new CInteger(CScriptClassFactory::getInstance()->getRegisteredClassInteger(),(int *)ptr_variable);
+				}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::FLOAT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
+					si->object = new CNumber(CScriptClassFactory::getInstance()->getRegisteredClassNumber(),(float *)ptr_variable);
+				}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::STRING_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
+					si->object = new CString(CScriptClassFactory::getInstance()->getRegisteredClassString(),(string *)ptr_variable);
+				}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::BOOL_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
+					si->object = new CBoolean(CScriptClassFactory::getInstance()->getRegisteredClassString(),(bool *)ptr_variable);
+				}else{
+					tInfoRegisteredClass *info_registered_class = CScriptClassFactory::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
-		 		if(info_registered_class){
-		 			si->object = new CScriptVariable(info_registered_class,ptr_variable);
-		 		}
+					if(info_registered_class){
+						si->object = new CScriptVariable(info_registered_class,ptr_variable);
+					}
 
-		 		/*if(idx_registered_class != -1){
+					/*if(idx_registered_class != -1){
 
-		 		}*/
-		 	}
-			//si->
-			//si->object = CScriptClassFactory::getInstance()->get(ir_var->c_type);
+					}*/
+				}
+				//si->
+				//si->object = CScriptClassFactory::getInstance()->get(ir_var->c_type);
+			}
+
 		}
 
 	}
@@ -73,16 +79,16 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 				ir_fun
 
 				);
-		 if(IS_CLASS_C){ // create proxy function ...
+		 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // create proxy function ...
 			si->proxy_ptr = (*((std::function<void *(void *)> *)ir_fun->object_info.symbol_info.ref_ptr))(c_object);
 		}
 		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
 	}
 
 
-	if(ir_class->baseClass != NULL){
+	/*if(ir_class->baseClass != NULL){
 		CScriptVariable::createSymbols(ir_class->baseClass);
-	}
+	}*/
 
 }
 
@@ -175,10 +181,15 @@ CScriptVariable::tSymbolInfo * CScriptVariable::addVariableSymbol(const string &
 	return &m_variableSymbol[m_variableSymbol.size()-1];
 }
 
+
 CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & value_symbol,tASTNode *ast,tInfoRegisteredFunctionSymbol *irv){
 	tSymbolInfo si;
 	si.proxy_ptr=0;
 	si.object = irv;
+
+	// get super function ...
+	si.super_function = getFunctionSymbol(value_symbol);
+
 	si.value_symbol = value_symbol;
 	si.ast = ast;
 	m_functionSymbol.push_back(si);
@@ -215,8 +226,15 @@ CScriptVariable::tSymbolInfo * CScriptVariable::getVariableSymbolByIndex(unsigne
 	return &m_variableSymbol[idx];
 }
 
+
+CScriptVariable::tSymbolInfo *getFunctionSymbolRecursive(const string & varname){
+
+}
+
 CScriptVariable::tSymbolInfo * CScriptVariable::getFunctionSymbol(const string & varname){
-	for(unsigned int i = 0; i < this->m_functionSymbol.size(); i++){
+
+	// from lat value to first to get last override function...
+	for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){
 		if(varname == this->m_functionSymbol[i].value_symbol){
 			return &m_functionSymbol[i];
 		}

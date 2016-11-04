@@ -77,12 +77,16 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 	if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
 
-			void * fun_ptr = (void *)info_function->object_info.symbol_info.ref_ptr;
+		void * fun_ptr = (void *)info_function->object_info.symbol_info.ref_ptr;
+
+		if((info_function->object_info.symbol_info.properties &  SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
+
 			if(this_object!= NULL && this_object != CZG_ScriptCore::getInstance()->getMainObject()){
 				fun_ptr = this_object->getFunctionSymbolByIndex(info_function->object_info.symbol_info.index)->proxy_ptr;
 			}
+		}
 
-			return CZG_ScriptCore::call_C_function(fun_ptr,info_function,argv);
+		return CZG_ScriptCore::call_C_function(fun_ptr,info_function,argv);
 
 	}
 
@@ -847,7 +851,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 		break;
 	case SCOPE_TYPE::ACCESS_SCOPE:
 	case SCOPE_TYPE::THIS_SCOPE:
-
+	case SCOPE_TYPE::SUPER_SCOPE:
 
 		// get var from object ...
 		if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
@@ -863,11 +867,13 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 
 
 
-		}else{
+		}else if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE){
 			if((si = this_object->getFunctionSymbolByIndex(iao->index_op2))==NULL){
 				print_error_cr("cannot find function \"this.%s\"",iao->ast_node->value_symbol.c_str());
 				return false;
 			}
+		}else{ // super scope ?
+			print_error_cr(" \"super.%s\" not implemented",iao->ast_node->value_symbol.c_str());
 		}
 
 		info_function =(tInfoRegisteredFunctionSymbol *)si->object;
