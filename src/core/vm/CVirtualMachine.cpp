@@ -873,7 +873,10 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 				return false;
 			}
 		}else{ // super scope ?
-			print_error_cr(" \"super.%s\" not implemented",iao->ast_node->value_symbol.c_str());
+			if((si = this_object->getFunctionSymbolByIndex(iao->index_op2))==NULL){
+				print_error_cr("cannot find function \"super.%s\"",iao->ast_node->value_symbol.c_str());
+				return false;
+			}
 		}
 
 		info_function =(tInfoRegisteredFunctionSymbol *)si->object;
@@ -882,14 +885,19 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 	case SCOPE_TYPE::GLOBAL_SCOPE:
 		vec_global_functions = &CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
 
-		if((iao->index_op2<(int)vec_global_functions->size()))
-		{
-			info_function =&(*vec_global_functions)[iao->index_op2];
-		}
-		else{
-			print_error_cr("cannot find symbol global \"%s\"",iao->ast_node->value_symbol.c_str());
-			return false;
+		if(iao->index_op2 == -1){ // will be processed after ...
+			info_function= NULL;
+		}else{
 
+			if((iao->index_op2<(int)vec_global_functions->size()))
+			{
+				info_function =&(*vec_global_functions)[iao->index_op2];
+			}
+			else{
+				print_error_cr("cannot find symbol global \"%s\"",iao->ast_node->value_symbol.c_str());
+				return false;
+
+			}
 		}
 
 
@@ -1525,6 +1533,74 @@ bool CVirtualMachine::performInstruction(
 			// check whether signatures matches or not ...
 			// 1. get function object ...
 			aux_function_info=(tInfoRegisteredFunctionSymbol *)ptrResultInstructionOp1->stkResultObject;
+
+			if(aux_function_info == NULL){ // we must find function ...
+				tInfoAsmOp *iao = asm_op->at(instruction->index_op1);
+				if(iao->index_op2 == -1){
+
+
+					vector<tInfoRegisteredFunctionSymbol> *vec_global_functions=&CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
+					bool all_check=true;
+					bool found = false;
+					vector<CScriptVariable *> *argv = &m_functionArgs;
+
+
+					switch(iao->scope_type){
+					default:
+						print_error_cr("unknow scope type");
+						return false;
+					case SCOPE_TYPE::GLOBAL_SCOPE: // only for function (first time)
+
+
+
+						// for all symbols from calling object ...
+						for(int i = 0; i < (int)vec_global_functions->size() && !found; i++){
+
+							tInfoRegisteredFunctionSymbol *irfs = &vec_global_functions->at(i);
+
+							if(irfs->object_info.symbol_info.symbol_name == iao->ast_node->value_symbol && (irfs->m_arg.size() == argv->size())){
+
+
+								all_check=true;
+								// convert parameters script to c...
+								for( int k = 0; k < (int)argv->size() && all_check;k++){
+									//converted_param[i]= (int)(argv->at(i));
+									if((argv->at(k))->getPointer_C_ClassName()!=irfs->m_arg[k]){
+										if(CScriptClassFactory::getInstance()->getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)==NULL){
+											all_check = false;
+										}
+									}
+								}
+
+								if(all_check){ // we found the right function ...
+									iao->index_op2 = i;
+									found=true;
+								}
+							}
+						}
+
+						// update structure ...
+						if(found){
+							aux_function_info = &(*vec_global_functions)[iao->index_op2];
+						}else{
+							print_error_cr("Cannot find right C symbol for \"%s\"",iao->ast_node->value_symbol.c_str());
+						}
+						break;
+
+					}
+
+
+				}
+				else{
+					print_error_cr("Unexpected C calling exception");
+				}
+
+
+			}
+
+
+
+
 
 
 

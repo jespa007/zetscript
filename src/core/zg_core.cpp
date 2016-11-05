@@ -75,7 +75,8 @@ CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegistered
 			fntConversionType paramConv=CScriptClassFactory::getInstance()->getConversionType((argv->at(i))->getPointer_C_ClassName(),irfs->m_arg[i]);
 
 			if(paramConv == NULL){
-				return CScriptVariable::UndefinedSymbol;
+				return NULL;
+				//return CScriptVariable::UndefinedSymbol;
 			}
 
 			converted_param[i] = paramConv(argv->at(i));

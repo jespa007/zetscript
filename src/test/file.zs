@@ -8,8 +8,18 @@
     print (i);
 }*/
 
+/*
+class MyClassBaseOfBase{
+	var ghf;
+	
+	function overridable(){
+		//super.overridable();
+		print("SUPER SUPER SUPER HOLA1");
+	}
+	
+};
 
-class MyClassBase{
+class MyClassBase:MyClassBaseOfBase{
 	var g;
 	
 	function MyClassBase(){
@@ -22,8 +32,8 @@ class MyClassBase{
 	}
 	
 	function overridable(){
-		//super.overridable();
-		print("HOLA1");
+		super.overridable();
+		print("SUPER HOLA1");
 	}
 	
 	function over(){
@@ -49,7 +59,7 @@ class MyClass2:MyClassBase{
 	}
 	
 	function overridable(){
-		//super.overridable();
+		super.overridable();
 		print("HOLA1");
 		//this.over();
 	}
@@ -59,7 +69,7 @@ class MyClass2:MyClassBase{
 	
 };
 
-/*class MyClass{
+class MyClass{
 	
 	var k;
 	
@@ -73,12 +83,17 @@ class MyClass2:MyClassBase{
 }
 var MyClass::kk;
 
-*/
+
 
 var v=new MyClass2();
 //var l=new MyClass();
 
-v.over();
+v.overridable();
+*/
+//print("HOLA");
+//custom_function(true);
+custom_function(1);
+custom_function("hello");
 /*
 function MyClass::pp(){
 	print("pp");

@@ -226,11 +226,11 @@ CScriptVariable::tSymbolInfo * CScriptVariable::getVariableSymbolByIndex(unsigne
 	return &m_variableSymbol[idx];
 }
 
-
+/*
 CScriptVariable::tSymbolInfo *getFunctionSymbolRecursive(const string & varname){
 
 }
-
+*/
 CScriptVariable::tSymbolInfo * CScriptVariable::getFunctionSymbol(const string & varname){
 
 	// from lat value to first to get last override function...

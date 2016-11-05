@@ -100,7 +100,7 @@ public:
 
 	int 					getIdxRegisteredClass(const string & v);
 	bool isClassRegistered(const string & v);
-	fntConversionType getConversionType(string objectType, string conversionType);
+	fntConversionType getConversionType(string objectType, string conversionType, bool show_errors=true);
 
 	const char * getNameRegisteredClassByIdx(int idx);
 
@@ -226,9 +226,9 @@ public:
 		}
 
 
-		if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
+		/*if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
 			return false;
-		}
+		}*/
 
 
 
@@ -543,7 +543,7 @@ private:
 	vector<tInfoRegisteredClass *>  	 m_registeredClass;
 	//CScriptVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
 
-	bool searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao);
+	bool searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao, int current_idx_function);
 	bool registerBase();
 
 	//---------------

@@ -84,7 +84,7 @@
 
 
 
- fntConversionType CScriptClassFactory::getConversionType(string objectType, string conversionType){
+ fntConversionType CScriptClassFactory::getConversionType(string objectType, string conversionType, bool show_errors){
 
 
  	if(mapTypeConversion.count(objectType) == 0){
@@ -92,11 +92,14 @@
  		return NULL;
  	}
 
+
  	if(mapTypeConversion[objectType].count(conversionType) == 0){
- 		print_error("There's no CONVERSION from type \"%s\" to type \"%s\"",objectType.c_str(),conversionType.c_str());
- 		printf("\n\tAvailable types are:");
- 		for(map<string, fntConversionType>::iterator j =mapTypeConversion[objectType].begin() ; j != mapTypeConversion[objectType].end();j++){
- 			printf("\n\t\t* \"%s\"", j->first.c_str());
+ 		if(show_errors){
+			print_error("There's no CONVERSION from type \"%s\" to type \"%s\"",objectType.c_str(),conversionType.c_str());
+			printf("\n\tAvailable types are:\n");
+			for(map<string, fntConversionType>::iterator j =mapTypeConversion[objectType].begin() ; j != mapTypeConversion[objectType].end();j++){
+				printf("\t\t* \"%s\"\n", demangle(j->first).c_str());
+			}
  		}
 
  		return NULL;
@@ -134,7 +137,20 @@
 
 
  void  print(string  *s){
- 	print_info_cr("ADADADADADADADA:%s",s->c_str());
+ 	print_info_cr("PRINT:%s",s->c_str());
+ }
+
+
+ void  custom_function(bool  *b){
+ 	print_info_cr("CUSTOM_FUNCTION B:%s",*b?"true":"false");
+ }
+
+ void  custom_function(int  *i){
+ 	print_info_cr("CUSTOM_FUNCTION I:%i",*i);
+ }
+
+ void  custom_function(string  *s){
+ 	print_info_cr("CUSTOM_FUNCTION :%s",s->c_str());
  }
 
 
@@ -203,12 +219,11 @@ public:
 
 		//-----------------------
 		// Conversion from object types to primitive types (move into factory) ...
-		addTypeConversion<CInteger *,int>( [] (CScriptVariable *obj){return *((int *)((CInteger *)obj)->m_value);});
+		//addTypeConversion<CInteger *,int>( [] (CScriptVariable *obj){return *((int *)((CInteger *)obj)->m_value);});
 		addTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){return (int)((CInteger *)obj)->m_value;});
 		addTypeConversion<CInteger *,string *>( [] (CScriptVariable *obj){obj->m_strValue=CStringUtils::intToString(*((int *)((CInteger*)obj)->m_value));return (int)&obj->m_strValue;});
 
 		addTypeConversion<CNumber *,float *>( [] (CScriptVariable *obj){return (int)(((CNumber *)obj)->m_value);});
-		addTypeConversion<CNumber *,int>( [] (CScriptVariable *obj){return *((int *)((CNumber *)obj)->m_value);});
 		addTypeConversion<CNumber *,string *>( [] (CScriptVariable *obj){obj->toString();return (int)&obj->m_strValue;});
 
 		addTypeConversion<CBoolean *,bool *>( [] (CScriptVariable *obj){return (int)((CBoolean *)obj)->m_value;});
@@ -222,7 +237,16 @@ public:
 		// Let's register functions,...
 
 		// register c function's
+		//m_chai->add(static_cast<void (*)(string * )>(&print),"print");
+		//m_chai->add(static_cast<void (*)(int * )>(&print),"print");
 		if(!register_C_Function(print)) return false;
+		//if(!register_C_Function(print)) return false;
+		//if(!register_C_Function(print)) return false;
+		//CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(string * )>(&custom_function));
+		//CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(bool * )>(&custom_function));
+		//CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(int * )>(&custom_function));
+		CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(string * )>(&custom_function));
+
 		if(!register_C_Variable(c_var)) return false;
 
 
@@ -271,15 +295,49 @@ public:
  }
 
 
-bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao){
+bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao, int current_function){
 
 	int idx=0;
 	string symbol_to_find = iao->ast_node->value_symbol;
 
 	SCOPE_TYPE scope_type = iao->scope_type;
 
+	if(scope_type == SCOPE_TYPE::SUPER_SCOPE){ // try deduce local/global
 
-	if(scope_type == SCOPE_TYPE::UNKNOWN_SCOPE){ // try deduce local/global
+		if(current_function > 0){ // minimum have to have a 1
+
+
+			int idx_super=-1;
+
+			for(int i = current_function-1; i >= 0 && idx_super==-1; i--){
+
+				if(script_info->local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == symbol_to_find){
+					idx_super=i;
+				}
+			}
+
+
+			if(idx_super!= -1){
+
+				 iao->scope_type = scope_type;
+				 iao->index_op1 = LOAD_TYPE_FUNCTION;
+				 iao->index_op2 = idx_super;
+				 iao->script_info = script_info;
+				 return true;
+
+			}
+			else{ // symbol not found ...
+				return false;
+			}
+
+		}
+		else{
+			return false;
+		}
+
+	}
+	else{
+		if(scope_type == SCOPE_TYPE::UNKNOWN_SCOPE){ // try deduce local/global
 
 		if(script_info == &m_registeredClass[0]->metadata_info.object_info.local_symbols.m_registeredFunction[0].object_info){
 			scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
@@ -290,6 +348,10 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 		 iao->scope_type = scope_type;
 		 iao->index_op1 = LOAD_TYPE_FUNCTION;
 		 iao->index_op2 = idx;
+		 if((script_info->local_symbols.m_registeredFunction[idx].object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
+			 iao->index_op2 = -1;
+		 }
+
 		 iao->script_info = script_info;
 		 return true;
 	 }else if((idx=getIdxRegisteredVariableSymbol(script_info,symbol_to_find, false))!=-1){
@@ -299,6 +361,8 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 		 iao->script_info = script_info;
 		 return true;
 	 }
+	}
+
 
 
 
@@ -333,7 +397,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 			 }
 		 }
 
-		 // For each function ...
+		 // For each function on the class ...
 		 for(unsigned k=0; k < mrf.size();k++){
 
 			 if(i==0){
@@ -362,16 +426,16 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 						 }
 						 else {
 
-							 if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE ){
+							 if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE || iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
 
 								 sfi = &m_registeredClass[i]->metadata_info.object_info;
-							 }else if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE ){ // search symbol through its hiearchy ...
+							 }/*else if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE ){ // search symbol through its hiearchy ...
 
 								 if((sfi = getSuperClass(m_registeredClass[i]->baseClass,iao->ast_node->value_symbol))==NULL){
 									 print_error_cr("Error at line %i with \"super.%s\" (has no overrider)",iao->ast_node->definedValueline, iao->ast_node->value_symbol.c_str());
 									 return false;
 								 }
-							 }
+							 }*/
 
 
 							 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
@@ -386,20 +450,28 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 										 }
 										 else{
 
-											// this required ...
+											// this/super required ...
 											 if(sfi != NULL){
 												 // search global...
-												 if(!searchVarFunctionSymbol(sfi,iao)){
-													 print_error_cr("Symbol defined at line %i \"%s::%s\"not found",iao->ast_node->definedValueline, base_class.c_str(),symbol_to_find.c_str());
+
+
+
+												 if(!searchVarFunctionSymbol(sfi,iao,k)){
+													 if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
+														 print_error_cr("line %i: Cannot find ancestor function for \"super.%s()\"",iao->ast_node->definedValueline, symbol_to_find.c_str());
+													 }
+													 else{
+														 print_error_cr("Symbol defined at line %i \"%s::%s\"not found",iao->ast_node->definedValueline, base_class.c_str(),symbol_to_find.c_str());
+													 }
 													 return false;
 												 }
 											 }
-											 else{
+											 else{ //normal symbol...
 												 // search local...
-												 if(!searchVarFunctionSymbol(&mrf[k]->object_info,iao)){
+												 if(!searchVarFunctionSymbol(&mrf[k]->object_info,iao,k)){
 
 													 // search global...
-													 if(!searchVarFunctionSymbol(&main_function->object_info,iao)){
+													 if(!searchVarFunctionSymbol(&main_function->object_info,iao,k)){
 														 print_error_cr("Symbol defined at line %i \"%s\"not found",iao->ast_node->definedValueline, symbol_to_find.c_str());
 														 return false;
 													 }
