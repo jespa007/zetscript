@@ -167,6 +167,10 @@ public:
 
 	//CScriptVariable();
 	CScriptVariable();
+
+	void fun1(int *);
+	void fun1(string *);
+
 	CScriptVariable(tInfoRegisteredClass *info_registered_class, void * _object_by_user);
 
 
@@ -179,6 +183,7 @@ public:
 
 	tSymbolInfo * addFunctionSymbol(const string & value_symbol,tASTNode *ast,tInfoRegisteredFunctionSymbol *irv);
 	tSymbolInfo * getFunctionSymbol(const string & funname);
+	int getIdxFunctionSymbolWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature=false);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 
 	vector<tInfoStatementOp> * getCompiledCode(int idx_function);
@@ -237,7 +242,6 @@ public:
 
 	//PASTNode getRootAst();
 	//PASTNode * getRootAstPtr();
-
 
 	/*
 	 * eval: Evaluates its body.

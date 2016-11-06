@@ -35,7 +35,7 @@
 #include <sstream>
 #include <cstddef>
 #include <cxxabi.h>
-
+#include <type_traits>
 
 
 #include <mutex>

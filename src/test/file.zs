@@ -90,10 +90,25 @@ var v=new MyClass2();
 
 v.overridable();
 */
+
+var v=[];
+v.add(10);
+
+var j=new CInteger();
+
+j.toString();
+
+j.fun1("hola1");
+j.fun1(1);
+
+for(var i=0; i < v.size(); i++){
+	print(v[i]);
+}
+
 //print("HOLA");
 //custom_function(true);
-custom_function(1);
-custom_function("hello");
+//custom_function(1);
+//custom_function("hello");
 /*
 function MyClass::pp(){
 	print("pp");

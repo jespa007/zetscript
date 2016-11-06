@@ -28,6 +28,7 @@ class CScriptClassFactory{
 
 	int idxClassInteger, idxClassNumber, idxClassString, idxClassBoolean, idxClassVector, idxClassFunctor, idxClassUndefined, idxClassVoid;
 
+
 public:
 
 
@@ -293,23 +294,23 @@ public:
 	 * Register C Class. Return index registered class
 	 */
 	template<class _T>
-	bool register_C_Class(const string & class_name, const string & base_class_name=""){
+	bool register_C_Class(const string & class_name){//, const string & base_class_name=""){
 
-		tInfoRegisteredClass *base_class = NULL;
+		/*tInfoRegisteredClass *base_class = NULL;
 
 		// get base class
 		if(base_class_name != ""){
 			if((base_class = this->getRegisteredClass(base_class_name)) == NULL){
 				return false;
 			}
-		}
+		}*/
 
 		if(!isClassRegistered(class_name)){
 
 			string str_classPtr = typeid( _T *).name();
 
 			if(getIdx_C_RegisteredClass(str_classPtr,false)!=-1){
-				print_error_cr("this %s is already registered");
+				print_error_cr("this %s is already registered",demangle(typeid( _T).name()).c_str());
 				return false;
 			}
 
@@ -320,7 +321,7 @@ public:
 			irc->metadata_info.object_info.symbol_info.ast = new tASTNode;
 			irc->metadata_info.object_info.symbol_info.info_var_scope=NULL;
 			irc->metadata_info.object_info.symbol_info.symbol_name = class_name;
-			irc->baseClass = base_class; // identify extend class ?!?!!?
+			//irc->baseClass = base_class; // identify extend class ?!?!!?
 
 			// in C there's no script constructor ...
 			irc->idx_function_script_constructor=-1;
@@ -345,6 +346,102 @@ public:
 		}
 
 		return false;
+	}
+
+	template<class _T, class _B>
+	bool class_C_baseof(){
+
+		string base_class_name=typeid(_B).name();
+		string base_class_name_ptr=typeid(_B *).name();
+		string class_name=typeid(_T).name();
+		string class_name_ptr=typeid(_T *).name();
+
+		int base_class = this->getIdxClassFromIts_C_Type(typeid(_B *).name());
+		if(base_class == -1) return false;
+
+
+		int register_class = this->getIdxClassFromIts_C_Type(typeid(_T *).name());
+		if(register_class == -1) return false;
+
+
+		// check whether is in fact base of ...
+		if(!std::is_base_of<_B,_T>::value){
+			print_error_cr("class \"%s\" is not base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+			return false;
+		}
+
+
+		for(unsigned i = 0; i < m_registeredClass[register_class]->baseClass.size(); i++){
+			if(m_registeredClass[register_class]->baseClass[i]->classPtrType ==base_class_name_ptr){
+				print_error_cr("class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+				return false;
+			}
+		}
+
+
+		/*if(!addPrimitiveTypeConversion<_T *,_B *>( [] (CScriptVariable *obj){return (int)reinterpret_cast<_B *>(obj);})){
+			return false;
+		}*/
+	 	if(mapTypeConversion.count(class_name_ptr) == 1){ // create new map...
+	 		if(mapTypeConversion[class_name_ptr].count(base_class_name_ptr)==1){
+	 			print_error_cr("Conversion type \"%s\" -> \"%s\" already inserted",demangle(class_name).c_str(),demangle(base_class_name).c_str());
+	 			return false;
+	 		}
+	 	}
+
+	 	mapTypeConversion[class_name_ptr][base_class_name_ptr]=[](CScriptVariable *s){ return (int)reinterpret_cast<_B *>(s);};
+
+	 	tInfoRegisteredClass *irc_base = m_registeredClass[base_class];
+	 	tInfoRegisteredClass *irc_class = m_registeredClass[register_class];
+	 	irc_class->baseClass.push_back(irc_base);
+
+		// register all symbols function from base ...
+		// vars ...
+		for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
+
+			tInfoRegisteredVariableSymbol *irs_source = &irc_base->metadata_info.object_info.local_symbols.m_registeredVariable[i];
+
+			tInfoRegisteredVariableSymbol irs;
+			// init struct...
+			irs.class_info = m_registeredClass[base_class];
+			irs.ref_ptr=irs_source->ref_ptr;
+			irs.c_type = irs_source->c_type;
+			//irs.
+			irs.symbol_name=irs_source->symbol_name;
+			irs.properties = PROPERTY_C_OBJECT_REF;
+			irs.index = irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.size();
+			irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
+
+		}
+
+		// functions ...
+		for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.m_registeredFunction.size(); i++){
+
+			tInfoRegisteredFunctionSymbol *irs_source = &irc_base->metadata_info.object_info.local_symbols.m_registeredFunction[i];
+
+			tInfoRegisteredFunctionSymbol irs;
+			// init struct...
+			irs.object_info.symbol_info.ast = NULL;
+			irs.object_info.symbol_info.info_var_scope = NULL;
+			irs.object_info.symbol_info.symbol_name=irs_source->object_info.symbol_info.symbol_name;
+
+
+			irs.m_arg = irs_source->m_arg;
+			irs.idx_return_type = irs_source->idx_return_type;
+
+			irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
+
+			// ignores special type cast C++ member to ptr function
+			// create binding function class
+			irs.object_info.symbol_info.ref_ptr= irs_source->object_info.symbol_info.ref_ptr;
+
+			irs.object_info.symbol_info.index = irc_class->metadata_info.object_info.local_symbols.m_registeredFunction.size();
+			irc_class->metadata_info.object_info.local_symbols.m_registeredFunction.push_back(irs);
+
+
+		}
+		return true;
+
 	}
 
 	template <class _T,typename _F>
@@ -491,8 +588,6 @@ public:
 
 
 
-
-
 		int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
 
 		if(idxRegisterdClass == -1){
@@ -534,7 +629,40 @@ private:
 
 	static CScriptClassFactory *scriptClassFactory;
 	static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
+	static map<string,map<string,fntConversionType>> mapTypeConversion;
 
+	 template<typename _S, typename _D, typename _F>
+	 static bool addPrimitiveTypeConversion(_F f){
+
+	 	bool valid_type = false;
+
+	 	// check if any entry is int, *float, *bool , *string, *int or any from factory. Anyelese will be no allowed!
+	 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::VOID_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",VOID_TYPE};
+	 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
+	 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",INT_PTR_TYPE};
+	 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::FLOAT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
+	 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::STRING_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
+	 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::BOOL_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
+
+	 	if(!valid_type){
+	 		print_error_cr("Conversion type \"%s\" not valid",typeid(_D).name());
+	 		return false;
+	 	}
+
+
+
+	 	if(mapTypeConversion.count(typeid(_S).name()) == 1){ // create new map...
+	 		if(mapTypeConversion[typeid(_S).name()].count(typeid(_D).name())==1){
+	 			print_error_cr("type conversion \"%s\" to \"%s\" already inserted",typeid(_S).name(),typeid(_D).name());
+	 			return false;
+	 		}
+	 	}
+
+	 	mapTypeConversion[typeid(_S).name()][typeid(_D).name()]=f;
+
+	 	return true;
+	 	//typeConversion["P7CNumber"]["Ss"](&n);
+	 }
 
 	int getIdxRegisteredClass_Internal(const string & class_name);
 	//int getIdxRegisteredFunctionSymbol_Internal(const string & class_name,const string & function_name);

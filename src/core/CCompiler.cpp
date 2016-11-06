@@ -351,7 +351,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 		return false;
 	}
 
-	bool node_access = false;
+
 	//this_instruction=false;
 	//int m_var_at_line = _node->definedValueline;
 	ASM_PRE_POST_OPERATORS pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
@@ -364,7 +364,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
 	SCOPE_TYPE scope_type=SCOPE_TYPE::UNKNOWN_SCOPE;
 	bool is_constant = true;
-	unsigned properties=0;
+
 
 	if(_node->pre_post_operator_info != NULL){
 
@@ -1339,9 +1339,11 @@ int findConstructorIdxNode(PASTNode _node ){
 bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoRegisteredClass *current_class){
 
 
-	if(current_class->baseClass !=NULL){
-		if(!CCompiler::doRegisterVariableSymbolsClass(class_name,current_class->baseClass)){
-			return false;
+	if(current_class->baseClass.size() !=0){
+		for(int i = 0; i < (int)current_class->baseClass.size() ; i++){
+			if(!CCompiler::doRegisterVariableSymbolsClass(class_name,current_class->baseClass.at(i))){
+				return false;
+			}
 		}
 	}
 

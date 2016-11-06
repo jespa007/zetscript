@@ -12,7 +12,7 @@ public:
 	CVector(){}
 	CVector(tInfoRegisteredClass *info_registered_class);
 
-	void add(CInteger *v);
+	void add(CScriptVariable *v);
 	int *size();
 
 	~CVector();

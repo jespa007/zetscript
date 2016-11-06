@@ -495,10 +495,10 @@ struct tInfoRegisteredClass{
 	std::function<void (void *p)> *c_destructor;
 	std::function<void *()> *c_constructor;
 	string classPtrType; // type_id().name();
-	tInfoRegisteredClass *baseClass; // in the case is and extension of class.
+	vector<tInfoRegisteredClass *> baseClass; // in the case is and extension of class.
 
 	tInfoRegisteredClass(){
-		baseClass = NULL;
+
 		class_idx=-1;
 		classPtrType="";
 		c_destructor = NULL;

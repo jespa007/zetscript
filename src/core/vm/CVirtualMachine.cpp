@@ -855,17 +855,8 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 
 		// get var from object ...
 		if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
-
 			calling_object = ((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].ptrObjectRef);
-			CScriptVariable * base_var = *calling_object;
-
-			if((si = base_var->getFunctionSymbol(iao->ast_node->value_symbol))==NULL){
-				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not function \"%s\"",iao->ast_node->definedValueline,asm_op->at(iao->index_op2)->ast_node->value_symbol.c_str(),base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str());
-				//print_error_cr("cannot find function \"%s\"",iao->ast_node->value_symbol.c_str());
-				return false;
-			}
-
-
+			info_function = NULL; // TODO: always get symbol in CALL op. Make a way to do it optimized!
 
 		}else if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE){
 			if((si = this_object->getFunctionSymbolByIndex(iao->index_op2))==NULL){
@@ -879,13 +870,15 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 			}
 		}
 
-		info_function =(tInfoRegisteredFunctionSymbol *)si->object;
+		if(iao->scope_type != SCOPE_TYPE::ACCESS_SCOPE){
+			info_function =(tInfoRegisteredFunctionSymbol *)si->object;
+		}
 
 		break;
 	case SCOPE_TYPE::GLOBAL_SCOPE:
 		vec_global_functions = &CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
 
-		if(iao->index_op2 == -1){ // will be processed after ...
+		if(iao->index_op2 == -1){ // is will be processed after in CALL instruction ...
 			info_function= NULL;
 		}else{
 
@@ -1536,12 +1529,17 @@ bool CVirtualMachine::performInstruction(
 
 			if(aux_function_info == NULL){ // we must find function ...
 				tInfoAsmOp *iao = asm_op->at(instruction->index_op1);
-				if(iao->index_op2 == -1){
+				CScriptVariable::tSymbolInfo * si;
+				CScriptVariable **script_var;
+
+				if(iao->index_op2 == -1 || iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
 
 
 					vector<tInfoRegisteredFunctionSymbol> *vec_global_functions=&CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
 					bool all_check=true;
 					bool found = false;
+					CScriptVariable * base_var=NULL;
+
 					vector<CScriptVariable *> *argv = &m_functionArgs;
 
 
@@ -1549,32 +1547,69 @@ bool CVirtualMachine::performInstruction(
 					default:
 						print_error_cr("unknow scope type");
 						return false;
+
+					case SCOPE_TYPE::ACCESS_SCOPE:
+
+						script_var = (CScriptVariable **)ptrResultInstructionOp1->ptrObjectRef;////((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].ptrObjectRef);
+						base_var = *script_var;
+						for(int h=0; h < 2 && !found; h++){
+							int idx_function;
+							if(h==0){
+								idx_function=base_var->getIdxFunctionSymbolWithMatchArgs(iao->ast_node->value_symbol,argv, true);
+							}else{
+								idx_function=base_var->getIdxFunctionSymbolWithMatchArgs(iao->ast_node->value_symbol,argv, false);
+							}
+
+							if(idx_function != -1){
+								si = base_var->getFunctionSymbolByIndex(idx_function);
+								found = true;
+							}
+
+						}
+						// get appropiate function  ...
+						/*if((si = base_var->getFunctionSymbol(iao->ast_node->value_symbol))==NULL){
+							print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not function \"%s\"",iao->ast_node->definedValueline,asm_op->at(iao->index_op2)->ast_node->value_symbol.c_str(),base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str());
+							//print_error_cr("cannot find function \"%s\"",iao->ast_node->value_symbol.c_str());
+							return false;
+						}*/
+
+						if(si != NULL){
+							aux_function_info = (tInfoRegisteredFunctionSymbol *)si->object;
+						}
+
+						break;
 					case SCOPE_TYPE::GLOBAL_SCOPE: // only for function (first time)
 
-
+						// try first all function with no conversion and then try the same with conversions ...
 
 						// for all symbols from calling object ...
-						for(int i = 0; i < (int)vec_global_functions->size() && !found; i++){
+						for(int h=0; h < 2 && !found; h++){
 
-							tInfoRegisteredFunctionSymbol *irfs = &vec_global_functions->at(i);
+							for(int i = 0; i < (int)vec_global_functions->size() && !found; i++){
 
-							if(irfs->object_info.symbol_info.symbol_name == iao->ast_node->value_symbol && (irfs->m_arg.size() == argv->size())){
+								tInfoRegisteredFunctionSymbol *irfs = &vec_global_functions->at(i);
+
+								if(irfs->object_info.symbol_info.symbol_name == iao->ast_node->value_symbol && (irfs->m_arg.size() == argv->size())){
 
 
-								all_check=true;
-								// convert parameters script to c...
-								for( int k = 0; k < (int)argv->size() && all_check;k++){
-									//converted_param[i]= (int)(argv->at(i));
-									if((argv->at(k))->getPointer_C_ClassName()!=irfs->m_arg[k]){
-										if(CScriptClassFactory::getInstance()->getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)==NULL){
-											all_check = false;
+									all_check=true;
+									// convert parameters script to c...
+									for( int k = 0; k < (int)argv->size() && all_check;k++){
+										//converted_param[i]= (int)(argv->at(i));
+										if(h==0){
+											all_check = argv->at(k)->getPointer_C_ClassName()==irfs->m_arg[k];
+										}
+										else{
+											if((argv->at(k))->getPointer_C_ClassName()!=irfs->m_arg[k]){
+												all_check =CScriptClassFactory::getInstance()->getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)!=NULL;
+											}
 										}
 									}
-								}
 
-								if(all_check){ // we found the right function ...
-									iao->index_op2 = i;
-									found=true;
+									if(all_check){ // we found the right function ...
+										iao->index_op2 = i;
+										found=true;
+									}
 								}
 							}
 						}
@@ -1622,7 +1657,7 @@ bool CVirtualMachine::performInstruction(
 						//((CFunctor *)ptrResultInstructionOp1->stkResultObject)->getThisObject();
 			}
 			else if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
-				int kkk=0;
+
 			}
 
 

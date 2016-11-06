@@ -16,10 +16,10 @@ CVector::~CVector(){
 	}*/
 }
 
-
-void CVector::add(CInteger *v){
+void CVector::add(CScriptVariable *v){
 	m_objVector.push_back(v);
 }
+
 
 int * CVector::size(){
 

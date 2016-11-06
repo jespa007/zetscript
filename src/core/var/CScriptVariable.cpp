@@ -92,6 +92,16 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 
 }
 
+
+void CScriptVariable::fun1(int *i){
+	print_info_cr("FUN1 (I): %i",*i);
+}
+
+void CScriptVariable::fun1(string *s){
+	print_info_cr("FUN1 (S): %s",s->c_str());
+}
+
+
 CScriptVariable::CScriptVariable(){
 
 	setup();
@@ -242,6 +252,55 @@ CScriptVariable::tSymbolInfo * CScriptVariable::getFunctionSymbol(const string &
 
 	return NULL;
 }
+
+
+int CScriptVariable::getIdxFunctionSymbolWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature){
+
+	// from lat value to first to get last override function...
+	/*for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){
+		if(varname == this->m_functionSymbol[i].value_symbol){
+			return &m_functionSymbol[i];
+		}
+	}*/
+
+	bool all_check=false;
+	//bool found = false;
+
+	//for(int h=0; h < 2 && !found; h++){
+
+	for(int i = this->m_functionSymbol.size()-1; i>=0; i--){
+
+		tInfoRegisteredFunctionSymbol *irfs = (tInfoRegisteredFunctionSymbol *)m_functionSymbol[i].object;
+
+		if(irfs->object_info.symbol_info.symbol_name == varname && (irfs->m_arg.size() == argv->size())){
+
+
+			all_check=true;
+			// convert parameters script to c...
+			for( int k = 0; k < (int)argv->size() && all_check;k++){
+				//converted_param[i]= (int)(argv->at(i));
+				if(match_signature){
+					all_check = argv->at(k)->getPointer_C_ClassName()==irfs->m_arg[k];
+				}
+				else{
+					if((argv->at(k))->getPointer_C_ClassName()!=irfs->m_arg[k]){
+						all_check =CScriptClassFactory::getInstance()->getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)!=NULL;
+					}
+				}
+			}
+
+			if(all_check){ // we found the right function ...
+				return i;
+			}
+		}
+	}
+	//}
+
+
+
+	return -1;
+}
+
 
 CScriptVariable::tSymbolInfo *CScriptVariable::getFunctionSymbolByIndex(unsigned idx){
 	if(idx >= m_functionSymbol.size()){

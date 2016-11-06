@@ -22,6 +22,6 @@ protected:
 
 	virtual void setup();
 
-	
+	virtual string * toString(){ print_info_cr("OLAAAAAA!"); return &this->m_strValue;}
 
 };

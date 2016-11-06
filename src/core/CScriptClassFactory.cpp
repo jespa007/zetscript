@@ -5,40 +5,9 @@
 
 
  //--obj , type convert, ---
- map<string,map<string,fntConversionType>> mapTypeConversion;
-
- template<typename _S, typename _D, typename _F>
- bool addTypeConversion(_F f){
-
- 	bool valid_type = false;
-
- 	// check if any entry is int, *float, *bool , *string, *int or any from factory. Anyelese will be no allowed!
- 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::VOID_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",VOID_TYPE};
- 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
- 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",INT_PTR_TYPE};
- 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::FLOAT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
- 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::STRING_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
- 	valid_type|=CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::BOOL_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
-
- 	if(!valid_type){
- 		print_error_cr("Conversion type \"%s\" not valid",typeid(_D).name());
- 		return false;
- 	}
+ map<string,map<string,fntConversionType>> CScriptClassFactory::mapTypeConversion;
 
 
-
- 	if(mapTypeConversion.count(typeid(_S).name()) == 1){ // create new map...
- 		if(mapTypeConversion[typeid(_S).name()].count(typeid(_D).name())==1){
- 			print_error_cr("type conversion \"%s\" to \"%s\" already inserted",typeid(_S).name(),typeid(_D).name());
- 			return false;
- 		}
- 	}
-
- 	mapTypeConversion[typeid(_S).name()][typeid(_D).name()]=f;
-
- 	return true;
- 	//typeConversion["P7CNumber"]["Ss"](&n);
- }
 
 
  int CScriptClassFactory::getIdxClassFromIts_C_Type(const string & c_type_str){
@@ -88,14 +57,14 @@
 
 
  	if(mapTypeConversion.count(objectType) == 0){
- 		print_error_cr("There's no type conversion \"%s\". Add conversion types through \"addTypeConversion\" function",demangle(objectType).c_str());
+ 		print_error_cr("There's no type conversion \"%s\". Add conversion types through \"addPrimitiveTypeConversion\" function",demangle(objectType).c_str());
  		return NULL;
  	}
 
 
  	if(mapTypeConversion[objectType].count(conversionType) == 0){
  		if(show_errors){
-			print_error("There's no CONVERSION from type \"%s\" to type \"%s\"",objectType.c_str(),conversionType.c_str());
+			print_error("There's no CONVERSION from type \"%s\" to type \"%s\"",demangle(objectType).c_str(),demangle(conversionType).c_str());
 			printf("\n\tAvailable types are:\n");
 			for(map<string, fntConversionType>::iterator j =mapTypeConversion[objectType].begin() ; j != mapTypeConversion[objectType].end();j++){
 				printf("\t\t* \"%s\"\n", demangle(j->first).c_str());
@@ -145,13 +114,15 @@
  	print_info_cr("CUSTOM_FUNCTION B:%s",*b?"true":"false");
  }
 
- void  custom_function(int  *i){
- 	print_info_cr("CUSTOM_FUNCTION I:%i",*i);
+ void  custom_function(CString  *s){
+ 	print_info_cr("CUSTOM_FUNCTION S:%s",s->m_stringValue.c_str());
  }
 
- void  custom_function(string  *s){
- 	print_info_cr("CUSTOM_FUNCTION :%s",s->c_str());
+ void  custom_function(CInteger  *i){
+ 	print_info_cr("CUSTOM_FUNCTION I:%i",i->m_intValue);
  }
+
+
 
 
  int c_var=0;
@@ -196,6 +167,7 @@ public:
 
 
 		// register internal classes ...
+		if(!register_C_Class<CScriptVariable>("CScriptVariable")) return false;
 		if(!register_C_Class<CVoid>("CVoid")) return false;
 		if(!register_C_Class<CUndefined>("CUndefined")) return false;
 		if(!register_C_Class<CInteger>("CInteger")) return false;
@@ -204,6 +176,7 @@ public:
 		if(!register_C_Class<CString>("CString")) return false;
 		if(!register_C_Class<CVector>("CVector")) return false;
 		if(!register_C_Class<CFunctor>("CFunctor")) return false;
+
 
 		// register primitive classes first ...
 		if((idxClassVoid = getIdxRegisteredClass("CVoid"))==-1) return false;
@@ -219,18 +192,36 @@ public:
 
 		//-----------------------
 		// Conversion from object types to primitive types (move into factory) ...
-		//addTypeConversion<CInteger *,int>( [] (CScriptVariable *obj){return *((int *)((CInteger *)obj)->m_value);});
-		addTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){return (int)((CInteger *)obj)->m_value;});
-		addTypeConversion<CInteger *,string *>( [] (CScriptVariable *obj){obj->m_strValue=CStringUtils::intToString(*((int *)((CInteger*)obj)->m_value));return (int)&obj->m_strValue;});
+		//addPrimitiveTypeConversion<CInteger *,int>( [] (CScriptVariable *obj){return *((int *)((CInteger *)obj)->m_value);});
+		if(!addPrimitiveTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){return (int)((CInteger *)obj)->m_value;})) return false;
+		if(!addPrimitiveTypeConversion<CInteger *,string *>( [] (CScriptVariable *obj){obj->m_strValue=CStringUtils::intToString(*((int *)((CInteger*)obj)->m_value));return (int)&obj->m_strValue;})) return false;
 
-		addTypeConversion<CNumber *,float *>( [] (CScriptVariable *obj){return (int)(((CNumber *)obj)->m_value);});
-		addTypeConversion<CNumber *,string *>( [] (CScriptVariable *obj){obj->toString();return (int)&obj->m_strValue;});
+		if(!addPrimitiveTypeConversion<CNumber *,float *>( [] (CScriptVariable *obj){return (int)(((CNumber *)obj)->m_value);})) return false;
+		if(!addPrimitiveTypeConversion<CNumber *,string *>( [] (CScriptVariable *obj){obj->toString();return (int)&obj->m_strValue;})) return false;
 
-		addTypeConversion<CBoolean *,bool *>( [] (CScriptVariable *obj){return (int)((CBoolean *)obj)->m_value;});
-		addTypeConversion<CBoolean *,string *>( [] (CScriptVariable *obj){obj->toString();return (int)&obj->m_strValue;});
+		if(!addPrimitiveTypeConversion<CBoolean *,bool *>( [] (CScriptVariable *obj){return (int)((CBoolean *)obj)->m_value;})) return false;
+		if(!addPrimitiveTypeConversion<CBoolean *,string *>( [] (CScriptVariable *obj){obj->toString();return (int)&obj->m_strValue;})) return false;
 
-		addTypeConversion<CString *,string *>( [] (CScriptVariable *obj){return (int)(((CString *)obj)->m_value);});
+		if(!addPrimitiveTypeConversion<CString *,string *>( [] (CScriptVariable *obj){return (int)(((CString *)obj)->m_value);})) return false;
 
+
+		//----------------------------------------------------------------------
+		// From here you defined all basic, start define hierarchy
+
+		// register custom functions ...
+		if(!register_C_FunctionMember(CScriptVariable,toString)) return false;
+		if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CVector::*)(string * )>(&CScriptVariable::fun1))) return false;
+		if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CVector::*)(int * )>(&CScriptVariable::fun1))) return false;
+
+
+		if(!class_C_baseof<CVoid,CScriptVariable>()) return false;
+		if(!class_C_baseof<CUndefined,CScriptVariable>()) return false;
+		if(!class_C_baseof<CInteger,CScriptVariable>()) return false;
+		if(!class_C_baseof<CNumber,CScriptVariable>()) return false;
+		if(!class_C_baseof<CBoolean,CScriptVariable>()) return false;
+		if(!class_C_baseof<CString,CScriptVariable>()) return false;
+		if(!class_C_baseof<CVector,CScriptVariable>()) return false;
+		if(!class_C_baseof<CFunctor,CScriptVariable>()) return false;
 
 
 		//------------------------------------------------------------------------------------------------------------
@@ -244,17 +235,18 @@ public:
 		//if(!register_C_Function(print)) return false;
 		//CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(string * )>(&custom_function));
 		//CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(bool * )>(&custom_function));
-		//CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(int * )>(&custom_function));
-		CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(string * )>(&custom_function));
+
+		if(!CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(CString * )>(&custom_function))) return false;
+		if(!CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(CInteger * )>(&custom_function))) return false;
 
 		if(!register_C_Variable(c_var)) return false;
 
 
 		if(!register_C_FunctionMember(CVector,size)) return false;
-		if(!register_C_FunctionMember(CVector,add)) return false;
+		//if(!register_C_FunctionMember(CVector,add)) return false;
 
-		// register custom functions ...
-		if(!register_C_FunctionMember(CInteger,toString)) return false;
+		if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(CScriptVariable * )>(&CVector::add))) return false;
+
 
 
 
@@ -527,7 +519,6 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 
  	tInfoAsmOp * iao =(*m_listStatements)[current_statment].asm_op[current_instruction];
- 	int dddsi=0;
 
 
  	if(iao->operator_type != LOAD){
@@ -738,7 +729,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 		irv = new tInfoRegisteredClass;
 		irv->class_idx=m_registeredClass.size();
-		irv->baseClass=base_class;
+		irv->baseClass.push_back(base_class);
 		irv->metadata_info.object_info.symbol_info.symbol_name = class_name;
 		irv->metadata_info.object_info.symbol_info.ast=_ast;
 		irv->metadata_info.object_info.symbol_info.index = m_registeredClass.size();
@@ -941,9 +932,12 @@ tScriptFunctionInfo *  CScriptClassFactory::getSuperClass(tInfoRegisteredClass *
 		}
 	}
 
+	tInfoRegisteredClass *base = NULL;
+	if(irc->baseClass.size() > 0){
+		base = irc->baseClass[0];
+	}
 
-
-	return getSuperClass(irc->baseClass,fun_name);
+	return getSuperClass(base,fun_name);
 }
 
 
