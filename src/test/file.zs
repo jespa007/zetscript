@@ -7,10 +7,14 @@
     }
     print (i);
 }*/
-/*
+
 
 class MyClassBaseOfBase{
 	var ghf;
+	
+	function MyClassBaseOfBase(){
+		print("constructor0");
+	}
 	
 	function overridable(){
 		//super.overridable();
@@ -23,6 +27,9 @@ class MyClassBase:MyClassBaseOfBase{
 	var g;
 	
 	function MyClassBase(){
+		
+		super.MyClassBaseOfBase(); //super constructor ?!
+		
 		print("constructor1");
 		
 	}
@@ -48,6 +55,7 @@ class MyClass2:MyClassBase{
 	var h;
 	
 	function MyClass2(){
+		super.MyClassBase();
 		print("constructor2");
 		this.g=[0,1,2,3,4];
 	}
@@ -102,13 +110,16 @@ case 6:
 default:
 	print("hola10");
 	break;
-}*/
+}
 
-var g=0;
+var gg=0;
+gg=null;
+gg=undefined;
 
-var t=g<1+2?(g>10?0:1):"hola";
-
-print(t);
+//var t=g<1+2?(g>10?0:1):"hola";
+if(gg==null){
+	print("HHHHH");
+}
 
 /*var v=[];
 v.add(10);

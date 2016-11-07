@@ -412,6 +412,27 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1)
 (ptrResultInstructionOp1->type == INS_TYPE_STRING) && \
 (ptrResultInstructionOp2->type == INS_TYPE_STRING)
 
+#define OP1_AND_OP2_ARE_UNDEFINED \
+		(ptrResultInstructionOp1->stkResultObject == CScriptVariable::UndefinedSymbol) && \
+		(ptrResultInstructionOp2->stkResultObject == CScriptVariable::UndefinedSymbol)
+
+#define OP1_AND_OP2_ARE_NULL \
+		(ptrResultInstructionOp1->stkResultObject == CScriptVariable::NullSymbol) && \
+		(ptrResultInstructionOp2->stkResultObject == CScriptVariable::NullSymbol)
+
+
+
+#define OP1_OR_OP2_IS_UNDEFINED \
+		(ptrResultInstructionOp1->stkResultObject == CScriptVariable::UndefinedSymbol) || \
+		(ptrResultInstructionOp2->stkResultObject == CScriptVariable::UndefinedSymbol)
+
+#define OP1_OR_OP2_ARE_NULL \
+		(ptrResultInstructionOp1->stkResultObject == CScriptVariable::NullSymbol) || \
+		(ptrResultInstructionOp2->stkResultObject == CScriptVariable::NullSymbol)
+
+
+
+
 #define PROCESS_NUM_OPERATION(__OVERR_OP__)\
 					if (IS_INT(ptrResultInstructionOp1) && IS_INT(ptrResultInstructionOp2)){\
 						if(!pushInteger(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2))){\
@@ -921,11 +942,6 @@ bool CVirtualMachine::loadConstantValue(CCompiler::tInfoConstantValue *info_cons
 			print_error_cr("Invalid load constant value as %i",info_constant->type);
 			return false;
 			break;
-		case INS_TYPE_UNDEFINED:
-
-			stkResultInstruction[idxStkCurrentResultInstruction]={INS_TYPE_UNDEFINED,NULL,NULL};
-
-			break;
 		case INS_TYPE_INTEGER:
 			if(!pushInteger(*((int *)info_constant->ptr))) return false;
 			break;
@@ -974,6 +990,9 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 	// finally assign the value ...
 	switch(ptr_instruction->type){
 
+		case INS_TYPE_NULL:
+			*var = CScriptVariable::NullSymbol;
+			break;
 		case INS_TYPE_UNDEFINED:
 			*var = CScriptVariable::UndefinedSymbol;
 			break;
@@ -1095,6 +1114,16 @@ bool CVirtualMachine::performInstruction(
 		}*/
 		//sprintf(print_aux_load_value,"UNDEFINED");
 		switch(instruction->index_op1){
+		case LOAD_TYPE::LOAD_TYPE_NULL:
+			if(!pushVar(CScriptVariable::NullSymbol)) return false;
+
+			break;
+
+		case LOAD_TYPE::LOAD_TYPE_UNDEFINED:
+			if(!pushVar(CScriptVariable::UndefinedSymbol)) return false;
+
+			break;
+
 		case LOAD_TYPE::LOAD_TYPE_CONSTANT:
 
 			if(!loadConstantValue((CCompiler::tInfoConstantValue *)instruction->index_op2, n_stk)){
@@ -1178,6 +1207,15 @@ bool CVirtualMachine::performInstruction(
 				if(!pushBoolean(LOAD_NUMBER_OP(ptrResultInstructionOp1) == LOAD_INT_OP(ptrResultInstructionOp2))) return false;
 			}else if (IS_NUMBER(ptrResultInstructionOp1) && IS_NUMBER(ptrResultInstructionOp2)){
 				if(!pushBoolean(LOAD_NUMBER_OP(ptrResultInstructionOp1) == LOAD_NUMBER_OP(ptrResultInstructionOp2))) return false;
+			}else if(OP1_AND_OP2_ARE_UNDEFINED){
+				if(!pushBoolean(true)) return false;
+			}else if(OP1_AND_OP2_ARE_NULL){
+				if(!pushBoolean(true)) return false;
+			}else if(OP1_OR_OP2_IS_UNDEFINED){
+				if(!pushBoolean(false)) return false;
+			}else if(OP1_OR_OP2_IS_UNDEFINED){
+				if(!pushBoolean(false)) return false;
+
 			}else{
 				print_error_cr("Expected both operands as string, number or boolean!");
 				return false;

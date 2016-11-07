@@ -131,6 +131,7 @@ public:
 
 	static CUndefined *UndefinedSymbol;
 	static CVoid *VoidSymbol;
+	static CNull *NullSymbol;
 
 
 

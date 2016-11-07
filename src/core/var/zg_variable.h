@@ -3,6 +3,7 @@
 
 class CUndefined;
 class CVoid;
+class CNull;
 
 #include "system/zg_system.h"
 #include "utils/zg_utils.h"
@@ -16,6 +17,7 @@ class CVoid;
 #include "CString.h"
 #include "CVector.h"
 #include "CFunctor.h"
+#include "CNull.h"
 #include "CUndefined.h"
 #include "CVoid.h"
 

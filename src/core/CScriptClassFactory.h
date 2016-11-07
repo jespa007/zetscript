@@ -26,7 +26,7 @@ class CScopeInfo;
 class CScriptClassFactory{
 
 
-	int idxClassInteger, idxClassNumber, idxClassString, idxClassBoolean, idxClassVector, idxClassFunctor, idxClassUndefined, idxClassVoid;
+	int idxClassInteger, idxClassNumber, idxClassString, idxClassBoolean, idxClassVector, idxClassFunctor, idxClassUndefined, idxClassVoid, idxClassNull;
 
 
 public:
@@ -131,6 +131,8 @@ public:
 	int getIdxClassFunctor(){return idxClassFunctor;}
 	tInfoRegisteredClass *  getRegisteredClassFunctor(){return m_registeredClass[idxClassFunctor];}
 
+	int getIdxClassNull(){return idxClassNull;}
+	tInfoRegisteredClass *  getRegisteredClassNull(){return m_registeredClass[idxClassNull];}
 
 	void printGeneratedCodeAllClasses();
 

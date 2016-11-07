@@ -169,6 +169,7 @@ public:
 		// register internal classes ...
 		if(!register_C_Class<CScriptVariable>("CScriptVariable")) return false;
 		if(!register_C_Class<CVoid>("CVoid")) return false;
+		if(!register_C_Class<CNull>("CNull")) return false;
 		if(!register_C_Class<CUndefined>("CUndefined")) return false;
 		if(!register_C_Class<CInteger>("CInteger")) return false;
 		if(!register_C_Class<CNumber>("CNumber")) return false;
@@ -181,6 +182,7 @@ public:
 		// register primitive classes first ...
 		if((idxClassVoid = getIdxRegisteredClass("CVoid"))==-1) return false;
 		if((idxClassUndefined = getIdxRegisteredClass("CUndefined"))==-1) return false;
+		if((idxClassNull = getIdxRegisteredClass("CNull"))==-1) return false;
 		if((idxClassInteger = getIdxRegisteredClass("CInteger"))==-1) return false;
 		if((idxClassNumber = getIdxRegisteredClass("CNumber"))==-1) return false;
 		if((idxClassBoolean = getIdxRegisteredClass("CBoolean"))==-1) return false;

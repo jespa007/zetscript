@@ -372,23 +372,28 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	}
 	// try parse value...
 	if(v=="null"){
-		type=INS_TYPE_UNDEFINED;
-		load_type=LOAD_TYPE_CONSTANT;
-		obj=CScriptVariable::UndefinedSymbol;
+		type=INS_TYPE_NULL;
+		load_type=LOAD_TYPE_NULL;
+		obj=CScriptVariable::NullSymbol;
 		print_com_cr("%s detected as null\n",v.c_str());
+	}else if(v=="undefined"){
+			type=INS_TYPE_UNDEFINED;
+			load_type=LOAD_TYPE_UNDEFINED;
+			obj=CScriptVariable::UndefinedSymbol;
+			print_com_cr("%s detected as undefined\n",v.c_str());
 
 	}else if((const_obj=CInteger::Parse(v))!=NULL){
-			int value = *((int *)const_obj);
-			delete (int *)const_obj;
+		int value = *((int *)const_obj);
+		delete (int *)const_obj;
 
-			type=INS_TYPE_INTEGER;
-			load_type=LOAD_TYPE_CONSTANT;
-			print_com_cr("%s detected as int\n",v.c_str());
-			if((get_obj = getConstant(v))!=NULL){
-				obj = get_obj;
-			}else{
-				obj=addConstant(v,new int(value),type);
-			}
+		type=INS_TYPE_INTEGER;
+		load_type=LOAD_TYPE_CONSTANT;
+		print_com_cr("%s detected as int\n",v.c_str());
+		if((get_obj = getConstant(v))!=NULL){
+			obj = get_obj;
+		}else{
+			obj=addConstant(v,new int(value),type);
+		}
 	}
 	else if((const_obj=CNumber::Parse(v))!=NULL){
 		float value = *((float *)const_obj);
