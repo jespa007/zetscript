@@ -158,16 +158,7 @@ bool CAst::parseDecPunctuator(const char *s){
 tInfoPunctuator  * CAst::parsePunctuatorGroup0(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
-			ADD_PUNCTUATOR,
-			SUB_PUNCTUATOR,
-			BINARY_XOR_PUNCTUATOR,
-			BINARY_AND_PUNCTUATOR,
-			BINARY_OR_PUNCTUATOR,
-			SHIFT_LEFT_PUNCTUATOR,
-			SHIFT_RIGHT_PUNCTUATOR,
-			ASSIGN_PUNCTUATOR,
-			INLINE_IF_PUNCTUATOR,
-			INLINE_ELSE_PUNCTUATOR
+			ASSIGN_PUNCTUATOR
 
 	};
 
@@ -185,10 +176,30 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup0(const char *s){
 
 tInfoPunctuator  * CAst::parsePunctuatorGroup1(const char *s){
 
+	PUNCTUATOR_TYPE index_to_evaluate[]={
+			INLINE_IF_PUNCTUATOR,
+			INLINE_ELSE_PUNCTUATOR
+
+
+	};
+
+	for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);return NULL;}
+
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			return &defined_operator_punctuator[index_to_evaluate[i]];
+		}
+	}
+
+	return NULL;
+}
+
+tInfoPunctuator  * CAst::parsePunctuatorGroup2(const char *s){
+
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			LOGIC_EQUAL_PUNCTUATOR,
-			LOGIC_NOT_EQUAL_PUNCTUATOR,
 			LOGIC_LTE_PUNCTUATOR,
 			LOGIC_GTE_PUNCTUATOR,
 			LOGIC_GT_PUNCTUATOR,
@@ -207,7 +218,53 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup1(const char *s){
 	return 0;
 }
 
-tInfoPunctuator  * CAst::parsePunctuatorGroup2(const char *s){
+
+tInfoPunctuator  * CAst::parsePunctuatorGroup3(const char *s){
+
+	PUNCTUATOR_TYPE index_to_evaluate[]={
+			ADD_PUNCTUATOR,
+			SUB_PUNCTUATOR,
+			BINARY_XOR_PUNCTUATOR,
+			BINARY_AND_PUNCTUATOR,
+			BINARY_OR_PUNCTUATOR,
+			SHIFT_LEFT_PUNCTUATOR,
+			SHIFT_RIGHT_PUNCTUATOR
+
+
+	};
+
+	for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);return NULL;}
+
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			return &defined_operator_punctuator[index_to_evaluate[i]];
+		}
+	}
+
+	return NULL;
+}
+
+tInfoPunctuator  * CAst::parsePunctuatorGroup4(const char *s){
+
+
+	PUNCTUATOR_TYPE index_to_evaluate[]={
+			LOGIC_NOT_EQUAL_PUNCTUATOR
+	};
+
+	for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){ print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);return NULL;}
+
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			return &defined_operator_punctuator[index_to_evaluate[i]];
+		}
+	}
+
+	return 0;
+}
+
+tInfoPunctuator  * CAst::parsePunctuatorGroup5(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			LOGIC_AND_PUNCTUATOR,
@@ -229,7 +286,7 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup2(const char *s){
 	return 0;
 }
 
-tInfoPunctuator  * CAst::parsePunctuatorGroup3(const char *s){
+tInfoPunctuator  * CAst::parsePunctuatorGroup6(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			LOGIC_NOT_PUNCTUATOR
@@ -246,7 +303,7 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup3(const char *s){
 	return 0;
 }
 
-tInfoPunctuator  * CAst::parsePunctuatorGroup4(const char *s){
+tInfoPunctuator  * CAst::parsePunctuatorGroup7(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			FIELD_PUNCTUATOR
@@ -930,7 +987,7 @@ char *CAst::getSymbolValue(
 }
 
 bool CAst::isMarkEndExpression(char c){
-	return (c==0 || c==';' || c==',' ||  c==')'  || c==']' || c==':');
+	return (c==0 || c==';' || c==',' ||  c==')'  || c==']' );//|| c==':');
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -985,6 +1042,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 		// try get symbol string
 		aux=getSymbolValue(aux, m_line, scope_info,symbol_value, m_definedSymbolLine,pre_operator,&post_operator,is_symbol_trivial_value);
 
+
 		print_ast_cr("checkpoint3:%c\n",*aux);
 
 		aux=CStringUtils::IGNORE_BLANKS(aux, m_line);
@@ -1005,6 +1063,9 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 				case GROUP_2:	operator_group = parsePunctuatorGroup2(expr_start_op);break;
 				case GROUP_3:	operator_group = parsePunctuatorGroup3(expr_start_op);break;
 				case GROUP_4:	operator_group = parsePunctuatorGroup4(expr_start_op);break;
+				case GROUP_5:	operator_group = parsePunctuatorGroup5(expr_start_op);break;
+				case GROUP_6:	operator_group = parsePunctuatorGroup6(expr_start_op);break;
+				case GROUP_7:	operator_group = parsePunctuatorGroup7(expr_start_op);break;
 				default: break;
 				}
 			}else{
@@ -1143,7 +1204,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 			}
 		}
 
-
+/*
 		// check for inline-else
 		if(operator_group->id == INLINE_IF_PUNCTUATOR){
 			// 0-node is conditional node
@@ -1169,10 +1230,11 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 					}
 				}
 			}else{
-				print_error_cr("inline-if has not ':' at line %i",m_line);
+				print_error_cr("Malformed inline-if-else at line %i",m_line);
+				return NULL;
 			}
 		}
-
+*/
 
 
 		if(ast_node_to_be_evaluated != NULL){

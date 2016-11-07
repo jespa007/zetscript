@@ -208,6 +208,7 @@ private:
 	bool gacFunction(PASTNode _node, CScopeInfo * _lc, tInfoRegisteredFunctionSymbol *irfs);
 	bool gacReturn(PASTNode _node, CScopeInfo * _lc);
 	bool gacIf(PASTNode _node, CScopeInfo * _lc);
+	int gacInlineIf(PASTNode _node, CScopeInfo * _lc, int instruction);
 	bool gacSwitch(PASTNode _node, CScopeInfo * _lc);
 	bool gacBody(PASTNode _node, CScopeInfo * _lc);
 

@@ -7,8 +7,8 @@
     }
     print (i);
 }*/
-
 /*
+
 class MyClassBaseOfBase{
 	var ghf;
 	
@@ -80,7 +80,7 @@ class MyClass{
 
 	}
 	
-}
+};
 var MyClass::kk;
 
 
@@ -89,9 +89,28 @@ var v=new MyClass2();
 //var l=new MyClass();
 
 v.overridable();
-*/
 
-var v=[];
+
+var g=-10;
+
+switch(10){
+case 0:
+case 1:
+	break;
+case 6:
+	break;
+default:
+	print("hola10");
+	break;
+}*/
+
+var g=0;
+
+var t=g<1+2?(g>10?0:1):"hola";
+
+print(t);
+
+/*var v=[];
 v.add(10);
 
 var j=new CInteger();
@@ -103,7 +122,7 @@ j.fun1(1);
 
 for(var i=0; i < v.size(); i++){
 	print(v[i]);
-}
+}*/
 
 //print("HOLA");
 //custom_function(true);

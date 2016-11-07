@@ -1219,85 +1219,94 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 	}else{
 
-		if(_node->children.size()==3){
+		if(_node->operator_info->id == INLINE_IF_PUNCTUATOR){
 
-			if(_node->operator_info->id == INLINE_IF_PUNCTUATOR && _node->children[2]->operator_info->id == INLINE_ELSE_PUNCTUATOR){
+
+			if(_node->children[1]->operator_info->id == INLINE_ELSE_PUNCTUATOR){
 				// node children[0]: conditional.
 				// node children[1]: body-if
 				// node children[2]: body-else
-				inline_if_else = true;
-			}
-
-		}
-
-		// only inserts terminal symbols...
-
-		if(_node!=NULL && _node->operator_info != NULL){
-			access_node = _node->operator_info->id == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR;
-		}
+				//inline_if_else = true;
+				return gacInlineIf(_node,_lc,index_instruction);
 
 
-
-		//bool access_node =  _node->operator_info->id == FIELD_PUNCTUATOR;
-
-		// check if there's inline-if-else
-		int right=-1, left=-1;
-
-
-			if((left=gacExpression_Recursive(_node->children[LEFT_NODE], _lc,index_instruction)) == -1){
+			}else{
+				print_error_cr("Malformed inline if-else");
 				return -1;
 			}
 
 
-		if(_node->children.size()==2){
-			if((right=gacExpression_Recursive(_node->children[RIGHT_NODE],_lc,index_instruction)) == -1){
-				return -1;
+		}else{
+
+			// only inserts terminal symbols...
+
+			if(_node!=NULL && _node->operator_info != NULL){
+				access_node = _node->operator_info->id == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR;
 			}
-		}
-		else {
-			right = -1;
-		}
-
-		r=index_instruction;
-
-		// get last load symbol ..
-		if(access_node){
-			r=index_instruction-1;
-		}
 
 
 
-		if(left !=-1 && right!=-1){ // 2 ops
+			//bool access_node =  _node->operator_info->id == FIELD_PUNCTUATOR;
 
-			// Ignore punctuator node. Only take cares about terminal symbols...
-			if(!access_node){
+			// check if there's inline-if-else
+			int right=-1, left=-1;
 
-			// particular case if operator is =
-				//printf("%s\tE[%i],E[%i],E[%i]\n",op->token.c_str(),index_instruction,left,right);
-				if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left,right)){
+
+				if((left=gacExpression_Recursive(_node->children[LEFT_NODE], _lc,index_instruction)) == -1){
+					return -1;
+				}
+
+
+			if(_node->children.size()==2){
+				if((right=gacExpression_Recursive(_node->children[RIGHT_NODE],_lc,index_instruction)) == -1){
+					return -1;
+				}
+			}
+			else {
+				right = -1;
+			}
+
+			r=index_instruction;
+
+			// get last load symbol ..
+			if(access_node){
+				r=index_instruction-1;
+			}
+
+
+
+			if(left !=-1 && right!=-1){ // 2 ops
+
+				// Ignore punctuator node. Only take cares about terminal symbols...
+				if(!access_node){
+
+				// particular case if operator is =
+					//printf("%s\tE[%i],E[%i],E[%i]\n",op->token.c_str(),index_instruction,left,right);
+					if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left,right)){
+						print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
+						return -1;
+					}
+				//}
+				}
+
+			}else if(right!=-1){ // one op..
+				//printf("%s\tE[%i],E[%i]\n",op->token.c_str(),index_instruction,right);
+				if(!insertOperatorInstruction(_node->operator_info,_node,  error_str,right)){
 					print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
 					return -1;
 				}
-			//}
-			}
 
-		}else if(right!=-1){ // one op..
-			//printf("%s\tE[%i],E[%i]\n",op->token.c_str(),index_instruction,right);
-			if(!insertOperatorInstruction(_node->operator_info,_node,  error_str,right)){
-				print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
+			}else if(left!=-1){ // one op..
+			//	printf("%s\tE[%i],E[%i]\n",op->token.c_str(),index_instruction,left);
+				if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left)){
+					print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
+					return -1;
+				}
+
+			}else{ // ERROR
+				print_error_cr("ERROR both ops ==0!");
 				return -1;
 			}
-
-		}else if(left!=-1){ // one op..
-		//	printf("%s\tE[%i],E[%i]\n",op->token.c_str(),index_instruction,left);
-			if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left)){
-				print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
-				return -1;
-			}
-
-		}else{ // ERROR
-			print_error_cr("ERROR both ops ==0!");
-			return -1;
 		}
 
 	}
@@ -1338,6 +1347,10 @@ int findConstructorIdxNode(PASTNode _node ){
 
 bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoRegisteredClass *current_class){
 
+
+	if(current_class == NULL){
+		return true;
+	}
 
 	if(current_class->baseClass.size() !=0){
 		for(int i = 0; i < (int)current_class->baseClass.size() ; i++){
@@ -1686,6 +1699,36 @@ bool CCompiler::gacIf(PASTNode _node, CScopeInfo * _lc){
 		asm_op_jmp_else_if->index_op1 = getCurrentStatmentIndex()+1;
 	}
 	return true;
+}
+
+int CCompiler::gacInlineIf(PASTNode _node, CScopeInfo * _lc, int instruction){
+	if(_node == NULL) {print_error_cr("NULL node");return -1;}
+	if(_node->node_type != PUNCTUATOR_NODE || _node->operator_info == NULL){print_error_cr("node is not punctuator type or null");return -1;}
+	if(_node->operator_info->id != INLINE_IF_PUNCTUATOR){print_error_cr("node is not INLINE-IF PUNCTUATOR type");return -1;}
+	if(_node->children.size()!=2) {print_error_cr("node INLINE-IF has not 2 nodes");return -1;}
+	if(!(_node->children[1]->node_type==PUNCTUATOR_NODE && _node->children[1]->operator_info->id==INLINE_ELSE_PUNCTUATOR )) {print_error_cr("node INLINE-ELSE has not found");return -1;}
+	if(_node->children[1]->children.size() != 2) {print_error_cr("node INLINE-ELSE has not 2 nodes");return -1;}
+	tInfoAsmOp *asm_op_jmp_else_if,*asm_op_jmp_end;
+
+	int r=instruction;
+
+	// compile conditional expression...
+	if((r=gacExpression_Recursive(_node->children[0],_lc,r))==-1){ return -1;}
+	asm_op_jmp_else_if = insert_JNT_Instruction(); // goto else body ...
+
+	// compile if-body ...
+	if((r=gacExpression_Recursive(_node->children[1]->children[0],_lc,r))==-1){ return -1;}
+
+	// compile else-body ...
+	asm_op_jmp_end = insert_JMP_Instruction(); // goto end
+
+	asm_op_jmp_else_if->index_op1 = getCurrentStatmentIndex()+1;
+	if((r=gacExpression_Recursive(_node->children[1]->children[1],_lc,r))==-1){ return -1;}
+
+	asm_op_jmp_end->index_op1 = getCurrentStatmentIndex()+1;
+
+
+	return r;
 }
 
 bool CCompiler::gacSwitch(PASTNode _node, CScopeInfo * _lc){
