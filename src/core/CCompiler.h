@@ -97,8 +97,9 @@ private:
 	int  getIdxFunctionSymbol(const string & name,tASTNode *ast,SCOPE_TYPE & scope_type, bool print_msg=true);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
-	// COMPILE UTLS
-
+	//
+	// INSTRUCTION UTILS
+	//
 
 	/**
 	 * Compile class struct main ast node with class base object info to store instruction related with function information.
@@ -118,18 +119,20 @@ private:
 	/**
 	 * Unconditional Jump instruction
 	 */
-	tInfoAsmOp * insert_JMP_Instruction(int jmp_statement =0);
+	tInfoAsmOp * insert_JMP_Instruction(int jmp_statement =-1, int instruction_index = 0);
 
 	/**
 	 * Jump Not True (JNT) instruction
 	 */
-	tInfoAsmOp * insert_JNT_Instruction(int jmp_statement =0);
+	tInfoAsmOp * insert_JNT_Instruction(int jmp_statement =-1, int instruction_index = 0);
 
 	/**
 	 * Jump if True (JT) instruction
 	 */
-	tInfoAsmOp * insert_JT_Instruction(int jmp_statement =0);
+	tInfoAsmOp * insert_JT_Instruction(int jmp_statement =-1, int instruction_index = 0);
 	void insert_NOP_Instruction();
+
+	tInfoAsmOp * insert_Push_CurrentInstruction();
 
 	/**
 	 * IndexAccess
@@ -166,12 +169,18 @@ private:
 	bool insertObjectMemberAccessFrom(PASTNode _node, int ref_node_index);
 
 
+
+
 	bool insertOperatorInstruction(tInfoPunctuator *  op, PASTNode _node, string & error_str, int left, int right=-1);
+
+
 	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
 
 	bool *getObjectResultCurrentStatmentAsBoolean();
 	int getCurrentInstructionIndex();
 	int getCurrentStatmentIndex();
+
+
 
 	//CVariable::VAR_TYPE getTypeAsmResult(int index);
 

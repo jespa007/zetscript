@@ -8,11 +8,14 @@
     print (i);
 }*/
 
+//super();
+
 
 class MyClassBaseOfBase{
 	var ghf;
 	
 	function MyClassBaseOfBase(){
+		
 		print("constructor0");
 	}
 	
@@ -28,7 +31,7 @@ class MyClassBase:MyClassBaseOfBase{
 	
 	function MyClassBase(){
 		
-		super.MyClassBaseOfBase(); //super constructor ?!
+		super(); //super constructor ?!
 		
 		print("constructor1");
 		
@@ -39,8 +42,11 @@ class MyClassBase:MyClassBaseOfBase{
 	}
 	
 	function overridable(){
-		super.overridable();
-		print("SUPER HOLA1");
+		
+		var a=0,b=0;
+		
+		super();
+		print("SUPER HOLA1 a:"+a+" b:"+b);
 	}
 	
 	function over(){
@@ -55,7 +61,7 @@ class MyClass2:MyClassBase{
 	var h;
 	
 	function MyClass2(){
-		super.MyClassBase();
+		super();
 		print("constructor2");
 		this.g=[0,1,2,3,4];
 	}
@@ -67,7 +73,7 @@ class MyClass2:MyClassBase{
 	}
 	
 	function overridable(){
-		super.overridable();
+		super();
 		print("HOLA1");
 		//this.over();
 	}

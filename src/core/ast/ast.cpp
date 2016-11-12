@@ -377,8 +377,8 @@ char * CAst::getEndWord(const char *s, int m_line){
 	}else{
 
 		if((key_w = isKeyword(s))!= NULL){
-			if( key_w->id != KEYWORD_TYPE::THIS_KEYWORD
-			 && key_w->id != KEYWORD_TYPE::SUPER_KEYWORD ){ // unexpected token ?
+			if( key_w->id != KEYWORD_TYPE::THIS_KEYWORD){
+			 //&& key_w->id != KEYWORD_TYPE::SUPER_KEYWORD ){ // unexpected token ?
 				print_error_cr("Unexpected keyword \"%s\" at line %i. Forgot \";\" ?",key_w->str, m_line);
 				return NULL;
 			}
@@ -532,7 +532,23 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 
 	key_w = isKeyword(aux);
 
+
+	//bool valid_keyword = false;
+
+	/*if(key_w != NULL){
+		char *k_aux = CStringUtils::IGNORE_BLANKS(aux+strlen(key_w->str), m_auxline);
+		if(k_aux != NULL){
+			if(!((key_w->id==KEYWORD_TYPE::SUPER_KEYWORD) && (*k_aux== '('))){ // is a super constructor --> treated as function ...
+
+				m_startLine = m_auxline;
+				aux = k_aux;
+				valid_keyword = true;
+			}
+		}
+	}*/
+
 	if(key_w != NULL){ // can be new,delete or function...
+
 
 		aux = CStringUtils::IGNORE_BLANKS(aux+strlen(key_w->str), m_startLine);
 
@@ -560,7 +576,9 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 			}
 			break;*/
 		case KEYWORD_TYPE::THIS_KEYWORD:
-		case KEYWORD_TYPE::SUPER_KEYWORD:
+		//case KEYWORD_TYPE::SUPER_KEYWORD:
+
+
 			return parseExpression_Recursive(str,  m_line, scope_info, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
 			break;
 		default:
@@ -3265,7 +3283,7 @@ CAst *  CAst::getInstance(){
 		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunction};
 		defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
 		defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
-		defined_keyword[KEYWORD_TYPE::SUPER_KEYWORD] = {SUPER_KEYWORD,"super", NULL};
+	//	defined_keyword[KEYWORD_TYPE::SUPER_KEYWORD] = {SUPER_KEYWORD,"super", NULL};
 		defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
 		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
 		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};

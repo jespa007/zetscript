@@ -855,6 +855,10 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 	CScriptVariable::tSymbolInfo *si;
 	CScriptVariable ** calling_object = NULL;
 
+	if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
+		int hhhh=0;
+	}
+
 	//CScriptVariable *var_object = NULL;
 	//tInfoRegisteredFunctionSymbol *info_function = (tInfoRegisteredFunctionSymbol *)(si->object);
 	//CScriptVariable *this_object = function_object->getThisObject();

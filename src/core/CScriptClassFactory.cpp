@@ -300,6 +300,12 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 		if(current_function > 0){ // minimum have to have a 1
 
+			tScriptFunctionInfo *irfs =  &script_info->local_symbols.m_registeredFunction[current_function].object_info;
+
+
+
+			symbol_to_find = irfs->symbol_info.symbol_name;
+
 
 			int idx_super=-1;
 
@@ -368,8 +374,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 
 
- bool CScriptClassFactory::updateReferenceSymbols(){
-
+bool CScriptClassFactory::updateReferenceSymbols(){
 
 
 	 tInfoRegisteredFunctionSymbol  *main_function = &m_registeredClass[0]->metadata_info.object_info.local_symbols.m_registeredFunction[0];
@@ -408,6 +413,12 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 			 for(unsigned h=0; h < stat->size();h++){
 				 for(unsigned idx_op=0; idx_op < stat->at(h).asm_op.size();idx_op++){
 					 tInfoAsmOp *iao=stat->at(h).asm_op[idx_op];
+
+					 if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
+						 int uuuu = 0;
+					 }
+
+
 					 if(iao->operator_type==ASM_OPERATOR::LOAD){
 
 						 string base_class = m_registeredClass[i]->metadata_info.object_info.symbol_info.symbol_name;
@@ -423,6 +434,9 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 							 if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE || iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
 
 								 sfi = &m_registeredClass[i]->metadata_info.object_info;
+
+
+
 							 }/*else if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE ){ // search symbol through its hiearchy ...
 
 								 if((sfi = getSuperClass(m_registeredClass[i]->baseClass,iao->ast_node->value_symbol))==NULL){
@@ -447,12 +461,14 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 											// this/super required ...
 											 if(sfi != NULL){
 												 // search global...
-
+												 if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
+													 symbol_to_find = sfi->local_symbols.m_registeredFunction[k].object_info.symbol_info.symbol_name;
+												 }
 
 
 												 if(!searchVarFunctionSymbol(sfi,iao,k)){
 													 if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
-														 print_error_cr("line %i: Cannot find ancestor function for \"super.%s()\"",iao->ast_node->definedValueline, symbol_to_find.c_str());
+														 print_error_cr("line %i: Cannot find ancestor function for \"%s()\"",iao->ast_node->definedValueline, symbol_to_find.c_str());
 													 }
 													 else{
 														 print_error_cr("Symbol defined at line %i \"%s::%s\"not found",iao->ast_node->definedValueline, base_class.c_str(),symbol_to_find.c_str());
@@ -544,6 +560,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 	else if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE){
 		sprintf(object_access,"this.");
 	}
+
 
  	/*if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE) {
  		sprintf(print_aux_load_value,"[%02i:%02i].%s (solved at run-time)",current_statment,current_instruction-1,value_symbol.c_str());
@@ -970,12 +987,12 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 
 
 			if(fun_name == class_name){
-				if(rc->idx_function_script_constructor == -1){ // constructor not defined yet
+				//if(rc->idx_function_script_constructor == -1){ // constructor not defined yet
 					rc->idx_function_script_constructor = object_info->local_symbols.m_registeredFunction.size();
-				}else{
-					print_warning_cr("Must define virtual constructor \"%s:%s\" !",fun_name.c_str(),fun_name.c_str());
+				//}else{
+				//	print_warning_cr("Must define virtual constructor \"%s:%s\" !",fun_name.c_str(),fun_name.c_str());
 					//return NULL;
-				}
+				//}
 			}
 
 

@@ -57,7 +57,7 @@ enum KEYWORD_TYPE{
 	FUNCTION_KEYWORD,
 	CLASS_KEYWORD,
 	THIS_KEYWORD,
-	SUPER_KEYWORD,
+//	SUPER_KEYWORD,
 	NEW_KEYWORD,
 	DELETE_KEYWORD,
 	MAX_KEYWORD
@@ -203,6 +203,7 @@ enum ASM_OPERATOR{
 
 		NEW, // new operator...
 		OBJECT_ACCESS, // object access .
+		PUSH_I, // push current instruction...
 		MAX_OPERATORS
 
 
@@ -241,7 +242,9 @@ enum SYMBOL_INFO_PROPERTIES{
 	PROPERTY_C_OBJECT_REF = 0x1 <<0,
 	PROPERTY_VARIABLE = 0x1 << 1,
 	PROPERTY_FUNCTION = 0x1 << 2,
-	PROPERTY_STATIC_REF = 0x1 << 3
+	PROPERTY_STATIC_REF = 0x1 << 3,
+	PROPERTY_CONSTRUCTOR = 0x1 << 4
+
 };
 
 struct tInfoRegisteredVariableSymbol{
