@@ -10,6 +10,13 @@
 
 //super();
 
+//var jjj=0;
+var a=1,b=0;
+
+print(a);
+
+/*a=1;
+b=1;*/
 
 class MyClassBaseOfBase{
 	var ghf;
@@ -43,7 +50,8 @@ class MyClassBase:MyClassBaseOfBase{
 	
 	function overridable(){
 		
-		var a=0,b=0;
+		var a=1,b=1;
+		
 		
 		super();
 		print("SUPER HOLA1 a:"+a+" b:"+b);

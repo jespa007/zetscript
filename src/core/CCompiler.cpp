@@ -1909,19 +1909,29 @@ bool CCompiler::gacVar(PASTNode _node, CScopeInfo * _lc){
 
 	int local_variable_idx;
 
-	if(localVarSymbolExists(_node->value_symbol, _node)){
-		print_error_cr("Variable \"%s\" already defined !",_node->value_symbol.c_str());
-		return false;
-	}
+	for(unsigned i = 0; i < _node->children.size(); i++){ // for all vars ...
 
-	if((local_variable_idx=addLocalVarSymbol(_node->value_symbol,_node)) == -1){
-		return false;
-	}
-
-	for(unsigned i = 0 ; i < _node->children.size(); i++){ // init all requested vars...
-		if(!gacExpression(_node->children[i], _lc))
+		if(localVarSymbolExists(_node->children[i]->value_symbol, _node)){
+			print_error_cr("Variable \"%s\" already defined !",_node->value_symbol.c_str());
 			return false;
+		}
+
+		if((local_variable_idx=addLocalVarSymbol(_node->children[i]->value_symbol,_node->children[i])) == -1){
+			return false;
+		}
+
+		//for(unsigned i = 0 ; i < _node->children.size(); i++){ // init all requested vars...
+		if(_node->children[i]->children.size()==1){
+			if(!gacExpression(_node->children[i]->children[0], _lc)){
+				return false;
+			}
+		}
+		//}
+
+
 	}
+
+
 
 	return true;
 }

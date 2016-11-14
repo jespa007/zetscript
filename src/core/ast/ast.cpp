@@ -2778,6 +2778,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 
 	char *aux_p = (char *)s;
 	CScopeInfo *_currentScope = NULL;
+	PASTNode var_node;
 	tInfoKeyword *key_w;
 	char *start_var,*end_var, *symbol_name;
 	int m_startLine=0;
@@ -2804,6 +2805,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 				(*ast_node_to_be_evaluated) = new tASTNode;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
+				(*ast_node_to_be_evaluated)->scope_info_ptr = _currentScope;
 			}
 
 			while(*aux_p != ';' && *aux_p != 0 ){ // JE: added multivar feature.
@@ -2830,16 +2832,21 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 
 
 					print_info_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
+					var_node = NULL;
 
 					if(ast_node_to_be_evaluated!=NULL){
 
+						var_node = new tASTNode;
+
 						// save symbol in the node ...
-						(*ast_node_to_be_evaluated)->value_symbol = symbol_name;
-						(*ast_node_to_be_evaluated)->scope_info_ptr = _currentScope;
-						(*ast_node_to_be_evaluated)->definedValueline = m_line;
+						(var_node)->value_symbol = symbol_name;
+						(var_node)->scope_info_ptr = _currentScope;
+						(var_node)->definedValueline = m_line;
+
+						(*ast_node_to_be_evaluated)->children.push_back(var_node);
 
 
-						if(!_currentScope->registerSymbol((*ast_node_to_be_evaluated)->value_symbol,(*ast_node_to_be_evaluated))){
+						if(!_currentScope->registerSymbol(symbol_name,var_node)){
 							return NULL;
 						}
 
@@ -2849,14 +2856,14 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 
 					if(*aux_p == '='){
 
-						if(ast_node_to_be_evaluated != NULL){
-							(*ast_node_to_be_evaluated)->children.push_back(NULL);
+						if(var_node != NULL){
+							var_node->children.push_back(NULL);
 						}
 
 						// try to evaluate expression...
 						aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
-						if((aux_p = parseExpression(start_var,m_startLine,scope_info,ast_node_to_be_evaluated != NULL ? &(*ast_node_to_be_evaluated)->children[(*ast_node_to_be_evaluated)->children.size()-1] : NULL)) == NULL){
+						if((aux_p = parseExpression(start_var,m_startLine,scope_info,var_node != NULL ? &var_node->children[var_node->children.size()-1] : NULL)) == NULL){
 							return NULL;
 						}
 

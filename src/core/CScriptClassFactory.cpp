@@ -296,6 +296,8 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 	SCOPE_TYPE scope_type = iao->scope_type;
 
+
+
 	if(scope_type == SCOPE_TYPE::SUPER_SCOPE){ // try deduce local/global
 
 		if(current_function > 0){ // minimum have to have a 1
@@ -339,10 +341,12 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 	else{
 		if(scope_type == SCOPE_TYPE::UNKNOWN_SCOPE){ // try deduce local/global
 
-		if(script_info == &m_registeredClass[0]->metadata_info.object_info.local_symbols.m_registeredFunction[0].object_info){
-			scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
+			if(script_info == &m_registeredClass[0]->metadata_info.object_info.local_symbols.m_registeredFunction[0].object_info){
+				scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
+			}else{
+				scope_type = SCOPE_TYPE::LOCAL_SCOPE;
+			}
 		}
-	}
 
 	 if((idx=getIdxRegisteredFunctionSymbol(script_info,symbol_to_find,false))!=-1){
 		 iao->scope_type = scope_type;
@@ -354,12 +358,14 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 		 iao->script_info = script_info;
 		 return true;
-	 }else if((idx=getIdxRegisteredVariableSymbol(script_info,symbol_to_find, false))!=-1){
-		 iao->scope_type = scope_type;
-		 iao->index_op1 = LOAD_TYPE_VARIABLE;
-		 iao->index_op2 = idx;
-		 iao->script_info = script_info;
-		 return true;
+	 }else {
+		 if((idx=getIdxRegisteredVariableSymbol(script_info,symbol_to_find, false))!=-1){
+			 iao->scope_type = scope_type;
+			 iao->index_op1 = LOAD_TYPE_VARIABLE;
+			 iao->index_op2 = idx;
+			 iao->script_info = script_info;
+			 return true;
+		 }
 	 }
 	}
 
@@ -413,10 +419,6 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 			 for(unsigned h=0; h < stat->size();h++){
 				 for(unsigned idx_op=0; idx_op < stat->at(h).asm_op.size();idx_op++){
 					 tInfoAsmOp *iao=stat->at(h).asm_op[idx_op];
-
-					 if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
-						 int uuuu = 0;
-					 }
 
 
 					 if(iao->operator_type==ASM_OPERATOR::LOAD){
