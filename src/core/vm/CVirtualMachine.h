@@ -44,6 +44,7 @@ public:
 
 	bool performInstruction( tInfoAsmOp * instruction,
 			int & jmp_to_statment,
+			int & jmp_to_instruction,
 			tInfoRegisteredFunctionSymbol *info_function,
 			CScriptVariable *function_object,
 			vector<CScriptVariable *> * argv,

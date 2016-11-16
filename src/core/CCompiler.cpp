@@ -230,11 +230,11 @@ CCompiler::CCompiler(){
 	def_operator[XOR]         ={"XOR",XOR,2}; // logic xor
 	def_operator[SHL]         ={"SHL",SHL,2}; // shift left
 	def_operator[SHR]         ={"SHR",SHR,2}; // shift right
-	def_operator[JMP]         ={"JMP",JMP,1};
-	def_operator[JNT]         ={"JNT",JNT,1}; // goto if not true ... goes end to conditional.
-	def_operator[JT]          ={"JT",JT,1}; // goto if true ... goes end to conditional.
+	def_operator[JMP]         ={"JMP",JMP,2}; // Unconditional jump.
+	def_operator[JNT]         ={"JNT",JNT,2}; // goto if not true ... goes end to conditional.
+	def_operator[JT]          ={"JT",JT,2}; // goto if true ... goes end to conditional.
 
-	def_operator[CALL]={"CALL",CALL,1}; // calling function after all of args are processed...
+	def_operator[CALL]={"CALL",CALL,1}; // calling function after all of arguments are processed...
 	def_operator[PUSH]={"PUSH",PUSH,1};
 	def_operator[CLR]={"CLR",CLR,0};
 	def_operator[VGET]={"VGET",VGET,1}; // vector access after each index is processed...
@@ -247,6 +247,9 @@ CCompiler::CCompiler(){
 
 	def_operator[NEW]={"NEW",NEW,1}; // New object (CREATE)
 	def_operator[OBJECT_ACCESS]={"OBJECT_ACCESS",OBJECT_ACCESS,2}; // New object (CREATE)
+	def_operator[SAVE_I]={"SAVE_I",SAVE_I,0}; // New object (CREATE)
+	def_operator[LOAD_I]={"LOAD_I",LOAD_I,0}; // New object (CREATE)
+
 
 }
 
@@ -875,11 +878,22 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 
 
 
-tInfoAsmOp * CCompiler::insert_Push_CurrentInstruction(){
+tInfoAsmOp * CCompiler::insert_Save_CurrentInstruction(){
 
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
-	asm_op->operator_type=ASM_OPERATOR::PUSH_I;
+	asm_op->operator_type=ASM_OPERATOR::SAVE_I;
+	ptr_current_statement_op->asm_op.push_back(asm_op);
+	//printf("[%02i:%02i]\tJMP\t[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
+
+	return asm_op;
+}
+
+tInfoAsmOp * CCompiler::insert_Load_CurrentInstruction(){
+
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	asm_op->operator_type=ASM_OPERATOR::LOAD_I;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	//printf("[%02i:%02i]\tJMP\t[??]\n",m_currentListStatements->size(),ptr_current_statement_op->asm_op.size());
 
@@ -1242,10 +1256,10 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 	}else{
 
-		if(_node->operator_info->id == INLINE_IF_PUNCTUATOR){
+		if(_node->operator_info->id == TERNARY_IF_PUNCTUATOR){
 
 
-			if(_node->children[1]->operator_info->id == INLINE_ELSE_PUNCTUATOR){
+			if(_node->children[1]->operator_info->id == TERNARY_ELSE_PUNCTUATOR){
 				// node children[0]: conditional.
 				// node children[1]: body-if
 				// node children[2]: body-else
@@ -1254,7 +1268,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 
 			}else{
-				print_error_cr("Malformed inline if-else");
+				print_error_cr("line %i: Put parenthesis on the inner ternary conditional",_node->definedValueline);
 				return -1;
 			}
 
@@ -1735,9 +1749,9 @@ int CCompiler::gacInlineIf(PASTNode _node, CScopeInfo * _lc, int instruction){
 
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != PUNCTUATOR_NODE || _node->operator_info == NULL){print_error_cr("node is not punctuator type or null");return -1;}
-	if(_node->operator_info->id != INLINE_IF_PUNCTUATOR){print_error_cr("node is not INLINE-IF PUNCTUATOR type");return -1;}
+	if(_node->operator_info->id != TERNARY_IF_PUNCTUATOR){print_error_cr("node is not INLINE-IF PUNCTUATOR type");return -1;}
 	if(_node->children.size()!=2) {print_error_cr("node INLINE-IF has not 2 nodes");return -1;}
-	if(!(_node->children[1]->node_type==PUNCTUATOR_NODE && _node->children[1]->operator_info->id==INLINE_ELSE_PUNCTUATOR )) {print_error_cr("node INLINE-ELSE has not found");return -1;}
+	if(!(_node->children[1]->node_type==PUNCTUATOR_NODE && _node->children[1]->operator_info->id==TERNARY_ELSE_PUNCTUATOR )) {print_error_cr("node INLINE-ELSE has not found");return -1;}
 	if(_node->children[1]->children.size() != 2) {print_error_cr("node INLINE-ELSE has not 2 nodes");return -1;}
 	tInfoAsmOp *asm_op_jmp_else_if,*asm_op_jmp_end;
 
@@ -1749,18 +1763,30 @@ int CCompiler::gacInlineIf(PASTNode _node, CScopeInfo * _lc, int instruction){
 	asm_op_jmp_else_if = insert_JNT_Instruction(); // goto else body ...
 
 	// compile if-body ...
+	r+=2; // in order to execute recursive expression we have to advance r pointer jnt (+2)
 	if((r=gacExpression_Recursive(_node->children[1]->children[0],_lc,r))==-1){ return -1;}
 
-	insert_Push_CurrentInstruction();
+	insert_Save_CurrentInstruction();
 
 
 	// compile else-body ...
 	asm_op_jmp_end = insert_JMP_Instruction(); // goto end+
 
-	asm_op_jmp_else_if->index_op1 = getCurrentStatmentIndex()+1;
+
+	asm_op_jmp_else_if->index_op1 = getCurrentStatmentIndex();
+	asm_op_jmp_else_if->index_op2 = getCurrentInstructionIndex()+1;
+
+	r+=3;
+
 	if((r=gacExpression_Recursive(_node->children[1]->children[1],_lc,r))==-1){ return -1;}
 
-	asm_op_jmp_end->index_op1 = getCurrentStatmentIndex()+1;
+	insert_Save_CurrentInstruction();
+
+	insert_Load_CurrentInstruction();
+
+	asm_op_jmp_end->index_op1 = getCurrentStatmentIndex();
+	asm_op_jmp_end->index_op2 = getCurrentInstructionIndex();
+
 
 
 	return r;

@@ -96,7 +96,9 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 	vector<tInfoStatementOp> * m_listStatements = &info_function->object_info.statment_op;
 	//bool conditional_jmp=false;
 	int jmp_to_statment = -1;
+	int instruction_to_statment = -1;
 	bool end=false;
+	bool break_jmp = false;
 
 	/*if(argv != NULL){
 
@@ -121,16 +123,18 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 	pushStack(info_function, argv);
 
 
-	unsigned n_stats=(*m_listStatements).size();
+	int n_stats=(*m_listStatements).size();
 
 
-	for(unsigned s = 0; s < n_stats && !end;){
+	for(int s = 0; s < n_stats && !end;){
 
 		//conditional_jmp = false;
 		jmp_to_statment = -1;
+		break_jmp=false;
+		instruction_to_statment = -1;
 		tInfoStatementOp * current_statment = &(*m_listStatements)[s];
 		vector<tInfoAsmOp *> * asm_op_statment = &current_statment->asm_op;
-		unsigned n_asm_op= asm_op_statment->size();
+		int n_asm_op= asm_op_statment->size();
 
 		//if(stk==2){
 		//	s++;
@@ -149,45 +153,53 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 
 			//CCompiler::tInfoAsmOp * instruction=NULL;
+			int ins = 0;
 
-
-			for(unsigned i = 0; i  <  n_asm_op && (jmp_to_statment==-1); i++){ // for each code-instruction execute it.
-				print_vm_cr("executing instruction  [%02i:%02i]...", s,i);
+			while(ins  <  n_asm_op && !break_jmp){ // for each code-instruction execute it.
+				print_vm_cr("executing instruction  [%02i:%02i]...", s,ins);
 				//print_vm_cr("executing code...%i/%i",s,i);
-				if( s==5 && i==0){
-					int hhh=0;
-					hhh++;
-				}
-
-
 
 				//if(stk!=2){
 
 					//return true;
 
 
-					if(!performInstruction(asm_op_statment->at(i),jmp_to_statment,info_function,this_object,argv,asm_op_statment,stk)){
+					if(!performInstruction(asm_op_statment->at(ins),jmp_to_statment,instruction_to_statment,info_function,this_object,argv,asm_op_statment,stk)){
 						return NULL;
 					}
 
-					if(asm_op_statment->at(i)->operator_type == ASM_OPERATOR::RET){ // return...
+					if(asm_op_statment->at(ins)->operator_type == ASM_OPERATOR::RET){ // return...
 
 
 
-						ret=createVarFromResultInstruction(&stkResultInstruction[asm_op_statment->at(i)->index_op1+startIdxStkResultInstruction]); // return last ALE value
+						ret=createVarFromResultInstruction(&stkResultInstruction[asm_op_statment->at(ins)->index_op1+startIdxStkResultInstruction]); // return last ALE value
 						end=true;
 					}
 
 				//}
 
 
+					if(jmp_to_statment != -1){
+						s=jmp_to_statment;
+
+						if(instruction_to_statment != -1){
+							ins=instruction_to_statment;
+							idxStkCurrentResultInstruction=ins+1;
+						}
+
+						if(s!=jmp_to_statment){
+							break_jmp = true;
+						}
+
+					}else{
+						ins++;
+					}
+
 				//previous_instruction = instruction;
 			}
 
-			if(jmp_to_statment != -1){
-				s=jmp_to_statment;
-			}
-			else{ // next statment ...
+
+			if(!break_jmp){// next statment ...
 				s++;
 			}
 
@@ -1068,6 +1080,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 bool CVirtualMachine::performInstruction(
 		tInfoAsmOp * instruction,
 		int & jmp_to_statment,
+		int & jmp_to_instruction,
 		tInfoRegisteredFunctionSymbol *info_function,
 		CScriptVariable *this_object,vector<CScriptVariable *> * argv,
 		vector<tInfoAsmOp *> *asm_op,
@@ -1105,6 +1118,7 @@ bool CVirtualMachine::performInstruction(
 	switch(instruction->operator_type){
 	default:
 		print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+		return false;
 		break;
 	case NOP: // ignore ...
 		break;
@@ -1295,7 +1309,7 @@ bool CVirtualMachine::performInstruction(
 				}
 
 			}else{
-					print_error_cr("Expected operands 1 as number or integer!");
+					print_error_cr("Line %i:Expected operands 1 as number or integer!",instruction->ast_node->definedValueline);
 					return false;
 			}
 			break;
@@ -1310,7 +1324,7 @@ bool CVirtualMachine::performInstruction(
 			}else if (IS_NUMBER(ptrResultInstructionOp1) && IS_NUMBER(ptrResultInstructionOp2)){
 				if(!pushBoolean(LOAD_NUMBER_OP(ptrResultInstructionOp1) > LOAD_NUMBER_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as number!");
+				print_error_cr("Line %i:Expected both operands as number!",instruction->ast_node->definedValueline);
 				return false;
 			}
 			break;
@@ -1324,7 +1338,7 @@ bool CVirtualMachine::performInstruction(
 			}else if (IS_NUMBER(ptrResultInstructionOp1) && IS_NUMBER(ptrResultInstructionOp2)){
 				if(!pushBoolean(LOAD_NUMBER_OP(ptrResultInstructionOp1) >= LOAD_NUMBER_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as number!");
+				print_error_cr("Line %i:Expected both operands as number!",instruction->ast_node->definedValueline);
 				return false;
 			}
 			break;
@@ -1367,9 +1381,9 @@ bool CVirtualMachine::performInstruction(
 				aux_string =  LOAD_STRING_OP(ptrResultInstructionOp2);
 
 				if(ptrResultInstructionOp1->type == INS_TYPE_INTEGER)
-					aux_string = aux_string + CStringUtils::intToString(LOAD_INT_OP(ptrResultInstructionOp1));
+					aux_string = CStringUtils::intToString(LOAD_INT_OP(ptrResultInstructionOp1))+ aux_string;
 				else
-					aux_string = aux_string + CStringUtils::intToString(LOAD_NUMBER_OP(ptrResultInstructionOp1));
+					aux_string = CStringUtils::intToString(LOAD_NUMBER_OP(ptrResultInstructionOp1))+aux_string;
 
 				if(!pushString(aux_string)) return false;
 			}else if(OP1_IS_STRING_AND_OP2_IS_BOOLEAN){ // concatenate string + boolean
@@ -1528,6 +1542,7 @@ bool CVirtualMachine::performInstruction(
 		// special internal ops...
 		case JMP:
 			jmp_to_statment = index_op1;
+			jmp_to_instruction = index_op2;
 			break;
 		case JNT: // goto if not true ... goes end to conditional.
 
@@ -1538,6 +1553,7 @@ bool CVirtualMachine::performInstruction(
 
 					if(!((bool)(ptrResultLastInstruction->stkResultObject))){
 						jmp_to_statment = index_op1;
+						jmp_to_instruction = index_op2;
 					}
 				}
 			}else{

@@ -177,8 +177,8 @@ tInfoPunctuator  * CAst::parsePunctuatorGroup0(const char *s){
 tInfoPunctuator  * CAst::parsePunctuatorGroup1(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
-			INLINE_IF_PUNCTUATOR,
-			INLINE_ELSE_PUNCTUATOR
+			TERNARY_IF_PUNCTUATOR,
+			TERNARY_ELSE_PUNCTUATOR
 
 
 	};
@@ -1224,7 +1224,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 
 /*
 		// check for inline-else
-		if(operator_group->id == INLINE_IF_PUNCTUATOR){
+		if(operator_group->id == TERNARY_IF_PUNCTUATOR){
 			// 0-node is conditional node
 			// 1-node is if-node...
 			// 2-node is else-node
@@ -1243,7 +1243,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 				}
 				else{
 					if(ast_node_to_be_evaluated != NULL){ // inline-else
-						//else_node->operator_info = defined_punctuator[INLINE_ELSE_PUNCTUATOR];
+						//else_node->operator_info = defined_punctuator[TERNARY_ELSE_PUNCTUATOR];
 						(*ast_node_to_be_evaluated)->children.push_back(else_node);
 					}
 				}
@@ -3231,8 +3231,8 @@ CAst *  CAst::getInstance(){
 		defined_operator_punctuator[MOD_PUNCTUATOR]={MOD_PUNCTUATOR, "%",parseModPunctuator};
 
 		defined_operator_punctuator[FIELD_PUNCTUATOR]={FIELD_PUNCTUATOR, ".",parseFieldPunctuator};
-		defined_operator_punctuator[INLINE_IF_PUNCTUATOR]={INLINE_IF_PUNCTUATOR, "?",parseInlineIfPunctuator};
-		defined_operator_punctuator[INLINE_ELSE_PUNCTUATOR]={INLINE_ELSE_PUNCTUATOR, ":",parseInlineElsePunctuator};
+		defined_operator_punctuator[TERNARY_IF_PUNCTUATOR]={TERNARY_IF_PUNCTUATOR, "?",parseInlineIfPunctuator};
+		defined_operator_punctuator[TERNARY_ELSE_PUNCTUATOR]={TERNARY_ELSE_PUNCTUATOR, ":",parseInlineElsePunctuator};
 
 		defined_operator_punctuator[ASSIGN_PUNCTUATOR]={ASSIGN_PUNCTUATOR, "=",parseAssignPunctuator};
 

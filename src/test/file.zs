@@ -11,13 +11,15 @@
 //super();
 
 //var jjj=0;
-var a=1,b=0;
+//var a=1,b=0;
 
-print(a);
+//print("s"+2+"s"+3);
+
+0>1?(2+4):(3+4*5);
 
 /*a=1;
 b=1;*/
-
+/*
 class MyClassBaseOfBase{
 	var ghf;
 	
@@ -133,7 +135,7 @@ gg=undefined;
 //var t=g<1+2?(g>10?0:1):"hola";
 if(gg==null){
 	print("HHHHH");
-}
+}*/
 
 /*var v=[];
 v.add(10);

@@ -107,8 +107,8 @@ enum PUNCTUATOR_TYPE{
 	LOGIC_LT_PUNCTUATOR, // <
 	LOGIC_NOT_PUNCTUATOR, // !
 
-	INLINE_IF_PUNCTUATOR, // ?
-	INLINE_ELSE_PUNCTUATOR, // :
+	TERNARY_IF_PUNCTUATOR, // ?
+	TERNARY_ELSE_PUNCTUATOR, // :
 
 
 	MAX_OPERATOR_PUNCTUATORS,
@@ -203,7 +203,8 @@ enum ASM_OPERATOR{
 
 		NEW, // new operator...
 		OBJECT_ACCESS, // object access .
-		PUSH_I, // push current instruction...
+		SAVE_I, // save current instruction...
+		LOAD_I, // load value that points saved instruction...
 		MAX_OPERATORS
 
 

@@ -229,6 +229,8 @@ int main(int argc, char * argv[]){
 
 	Uint32 _start = SDL_GetTicks();
 
+	0>0?0:1;
+
 	print_info_cr("HHHHH %s", typeid(decltype(&CObject::print)).name());
 	void * fc = fun_creator<CObject>(&CObject::print);
 	/*void * fc = (void *)(new std::function<void *(void *)> ([&](void *obj){

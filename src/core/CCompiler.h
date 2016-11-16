@@ -119,20 +119,21 @@ private:
 	/**
 	 * Unconditional Jump instruction
 	 */
-	tInfoAsmOp * insert_JMP_Instruction(int jmp_statement =-1, int instruction_index = 0);
+	tInfoAsmOp * insert_JMP_Instruction(int jmp_statement =-1, int instruction_index = -1);
 
 	/**
 	 * Jump Not True (JNT) instruction
 	 */
-	tInfoAsmOp * insert_JNT_Instruction(int jmp_statement =-1, int instruction_index = 0);
+	tInfoAsmOp * insert_JNT_Instruction(int jmp_statement =-1, int instruction_index = -1);
 
 	/**
 	 * Jump if True (JT) instruction
 	 */
-	tInfoAsmOp * insert_JT_Instruction(int jmp_statement =-1, int instruction_index = 0);
+	tInfoAsmOp * insert_JT_Instruction(int jmp_statement =-1, int instruction_index = -1);
 	void insert_NOP_Instruction();
 
-	tInfoAsmOp * insert_Push_CurrentInstruction();
+	tInfoAsmOp * insert_Save_CurrentInstruction();
+	tInfoAsmOp * insert_Load_CurrentInstruction();
 
 	/**
 	 * IndexAccess
