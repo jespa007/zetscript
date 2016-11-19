@@ -156,7 +156,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 			int ins = 0;
 
 			while(ins  <  n_asm_op && !break_jmp){ // for each code-instruction execute it.
-				print_vm_cr("executing instruction  [%02i:%02i]...", s,ins);
+				//print_vm_cr("executing instruction  [%02i:%02i]...", s,ins);
 				//print_vm_cr("executing code...%i/%i",s,i);
 
 				//if(stk!=2){

@@ -6,7 +6,7 @@ typedef tASTNode *PASTNode;
 struct tInfoRegisteredFunctionSymbol;
 struct tInfoScopeVar;
 struct tInfoRegisteredClass;
-class tScriptFunctionInfo;
+struct tScriptFunctionInfo;
 
 
 

@@ -1,6 +1,10 @@
 ZetScript
 
 
+emmscripten example:
+
+arguments:['var j=0;for(var i=0; i < 10000000; ++i){i*2;}'],
+
 version 1.01.00
 ===============
 
@@ -92,8 +96,6 @@ instruction_stack[current_instruction]={&stack_int[starting_index+1],INTEGER};
 object.toString()+2 = LOAD OBJECT, CALL toString, ADD [],[]
 2+2
 fun()+2
-
-
 
 
 

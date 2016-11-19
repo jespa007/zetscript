@@ -200,7 +200,7 @@ private:
 
 	int gacExpression_ArrayAccess(PASTNode op, CScopeInfo *_lc);
 	int  gacExpression_Recursive(PASTNode op, CScopeInfo * _lc, int & numreg);
-	bool  gacExpression(PASTNode op, CScopeInfo * _lc,int index_instruction=-1);
+	int  gacExpression(PASTNode op, CScopeInfo * _lc,int index_instruction=-1);
 
 	bool gacKeyword(PASTNode _node, CScopeInfo * _lc);
 
