@@ -336,6 +336,7 @@ int CStringUtils::isNumber(const string & test_str_number){
 	bool isHexa=false;
 	char *str = (char *)test_str_number.c_str();
 
+
 	switch(*str){
 	case '-': str++; // negative numbers ...
 	           break;
@@ -359,7 +360,24 @@ int CStringUtils::isNumber(const string & test_str_number){
 	}else{
 		str = ADVANCE_DIGITS(str);
 		if(*str=='.') { // is candidate to double
+
 			str++;
+			str = ADVANCE_DIGITS(str);
+
+			if(*str != 'e'){
+				if(*str == ' ' || *str == 0)
+					return STRING_IS_DOUBLE;
+			}
+		}
+
+		if(*str == 'e'){  // is candidate to double
+
+			str++;
+
+			if(*str == '+' ||*str == '-'){
+				str++;
+			}
+
 			str = ADVANCE_DIGITS(str);
 			if(*str == ' ' || *str == 0)
 				return STRING_IS_DOUBLE;

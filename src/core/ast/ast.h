@@ -99,6 +99,12 @@ private:
 	static bool parseInlineElsePunctuator(const char *s);
 
 	static bool parseAssignPunctuator(const char *s);
+	static bool parseAddAssignPunctuator(const char *s);
+	static bool parseSubAssignPunctuator(const char *s);
+	static bool parseMulAssignPunctuator(const char *s);
+	static bool parseDivAssignPunctuator(const char *s);
+	static bool parseModAssignPunctuator(const char *s);
+
 
 	static bool parseBinaryXorPunctuator(const char *s);
 	static bool parseBinaryAndPunctuator(const char *s);

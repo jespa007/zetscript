@@ -149,7 +149,7 @@
 		<buildTargets>
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>bash</buildCommand>
-				<buildArguments>${ProjDirPath}/../tools/scripts/cmake_build</buildArguments>
+				<buildArguments>cmake_build</buildArguments>
 				<buildTarget>-DTARGET=debug</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
@@ -157,7 +157,7 @@
 			</target>
 			<target name="CMake Debug With memmanager" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>bash</buildCommand>
-				<buildArguments>${ProjDirPath}/../tools/scripts/cmake_build</buildArguments>
+				<buildArguments>cmake_build</buildArguments>
 				<buildTarget>-DTARGET=debug -DMEMMANAGER=yes</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
@@ -165,16 +165,16 @@
 			</target>
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>bash</buildCommand>
-				<buildArguments>${ProjDirPath}/../tools/scripts/cmake_build</buildArguments>
+				<buildArguments>cmake_build</buildArguments>
 				<buildTarget>-DTARGET=release</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="Copy of CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+			<target name="CMake Release (EMMScripten)" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>bash</buildCommand>
-				<buildArguments>${ProjDirPath}/../tools/scripts/cmake_build</buildArguments>
-				<buildTarget/>
+				<buildArguments>cmake_build</buildArguments>
+				<buildTarget>-DTARGET=release -DEMMSCRIPTEN=yes</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

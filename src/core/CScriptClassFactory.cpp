@@ -120,6 +120,9 @@
  			 post="";
 
  				switch((*asm_op_statment)[i]->pre_post_operator_type){
+ 				case ASM_PRE_POST_OPERATORS::PRE_NEG:
+ 					pre="-";
+ 					break;
  				case ASM_PRE_POST_OPERATORS::PRE_INC:
  					pre="++";
  					break;
@@ -406,16 +409,36 @@ public:
 		//-----------------------
 		// Conversion from object types to primitive types (move into factory) ...
 		//addPrimitiveTypeConversion<CInteger *,int>( [] (CScriptVariable *obj){return *((int *)((CInteger *)obj)->m_value);});
-		if(!addPrimitiveTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){return (int)((CInteger *)obj)->m_value;})) return false;
-		if(!addPrimitiveTypeConversion<CInteger *,string *>( [] (CScriptVariable *obj){obj->m_strValue=CStringUtils::intToString(*((int *)((CInteger*)obj)->m_value));return (int)&obj->m_strValue;})) return false;
+		if(!addPrimitiveTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){
+			return (int)((CInteger *)obj)->m_value;
+		})) return false;
 
-		if(!addPrimitiveTypeConversion<CNumber *,float *>( [] (CScriptVariable *obj){return (int)(((CNumber *)obj)->m_value);})) return false;
-		if(!addPrimitiveTypeConversion<CNumber *,string *>( [] (CScriptVariable *obj){obj->toString();return (int)&obj->m_strValue;})) return false;
+		if(!addPrimitiveTypeConversion<CInteger *,string *>( [] (CScriptVariable *obj){
+			obj->m_strValue=CStringUtils::intToString(*((int *)((CInteger*)obj)->m_value));
+			return (int)&obj->m_strValue;
+		})) return false;
 
-		if(!addPrimitiveTypeConversion<CBoolean *,bool *>( [] (CScriptVariable *obj){return (int)((CBoolean *)obj)->m_value;})) return false;
-		if(!addPrimitiveTypeConversion<CBoolean *,string *>( [] (CScriptVariable *obj){obj->toString();return (int)&obj->m_strValue;})) return false;
+		if(!addPrimitiveTypeConversion<CNumber *,float *>( [] (CScriptVariable *obj){
+			return (int)(((CNumber *)obj)->m_value);
+		})) return false;
 
-		if(!addPrimitiveTypeConversion<CString *,string *>( [] (CScriptVariable *obj){return (int)(((CString *)obj)->m_value);})) return false;
+		if(!addPrimitiveTypeConversion<CNumber *,string *>( [] (CScriptVariable *obj){
+			obj->m_strValue=CStringUtils::floatToString(*((float *)((CNumber*)obj)->m_value));
+			return (int)&obj->m_strValue;
+		})) return false;
+
+		if(!addPrimitiveTypeConversion<CBoolean *,bool *>( [] (CScriptVariable *obj){
+			return (int)((CBoolean *)obj)->m_value;
+		})) return false;
+
+		if(!addPrimitiveTypeConversion<CBoolean *,string *>( [] (CScriptVariable *obj){
+			obj->toString();
+			return (int)&obj->m_strValue;
+		})) return false;
+
+		if(!addPrimitiveTypeConversion<CString *,string *>( [] (CScriptVariable *obj){
+			return (int)(((CString *)obj)->m_value);
+		})) return false;
 
 
 		//----------------------------------------------------------------------

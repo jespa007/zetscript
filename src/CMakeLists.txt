@@ -14,23 +14,20 @@ if (MINGW)
 	set(CMAKE_LEGACY_MINGW_WIN32 0)
 	set(CMAKE_PREFIX_PATH "c:/braingaze/dev/mingw/local32/lib")
 
-	find_library(SDL2_LIB  NAMES SDL2  )
-	find_library(SDL2_MAIN_LIB  NAMES SDL2main  )
-	
 	MESSAGE ("include" ${include_directories})
  
 	#find_package(GLU REQUIRED)
 	SET( COMMON_PARAMS " ${COMMON_PARAMS} -I/local32/include -I/usr/local/include ")
 	
-	  
-else()
-  option(MULTITHREAD_SUPPORT_ENABLED "Multithreaded Support Enabled" TRUE)
-endif()  
+ 
   
+endif()
+
+
+ 
 
 
 include_directories (
-	/usr/local/include/freetype2
 	/usr/local/include
 	${OPENGL_INCLUDE_DIRS}  
 	${GLU_INCLUDE_DIRS}
@@ -75,10 +72,17 @@ if ( "${MEMMANAGER}" STREQUAL "yes" )
 	set(TARGET_FLAGS " ${TARGET_FLAGS} -D__MEMMANAGER__ ")
 endif()
 
-if ( "${FFMPEG}" STREQUAL "yes" )
-	MESSAGE ("-FFMPEG Enabled" )
-	set(TARGET_FLAGS " ${TARGET_FLAGS} -D__WITH_FFMPEG__ ")
+
+if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
+
+
+	MESSAGE ("********* ¡¡ EMMSCRIPTEN RELEASE !!! ************" )
+	set(CMAKE_C_COMPILER "/opt/emscripten/emcc")
+	set(CMAKE_CXX_COMPILER "/opt/emscripten/em++")
+
+	SET( COMMON_PARAMS " ${COMMON_PARAMS} -I/opt/emscripten/system/lib/libcxxabi/include/ ")
 endif()
+
 
 
 
@@ -109,6 +113,7 @@ LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 #
 
 
+
 # Library
 
 set( ZG_BASE_LIB_SRCS
@@ -127,20 +132,33 @@ set( ZG_BASE_LIB_SRCS
 )
 
 
-add_executable(zg_main${POST_NAME}
-	${PROJECT_SOURCE_DIR}/main.cpp
-)
-
-add_library( zg_script${POST_NAME} SHARED ${ZG_BASE_LIB_SRCS} )
  
+if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
+
+	add_executable(zg_main${POST_NAME}.html
+		${ZG_BASE_LIB_SRCS}
+		${PROJECT_SOURCE_DIR}/main.cpp
+	)
+
+ 	#target_link_libraries(zg_main${POST_NAME}.html "-Wl,--no-as-needed" )
+ 	
+else()
 
 
-IF (MINGW)
+	add_library( zg_script${POST_NAME} SHARED ${ZG_BASE_LIB_SRCS} )
+	
+	add_executable(zg_main${POST_NAME}
+		${PROJECT_SOURCE_DIR}/main.cpp
+	)
 
- target_link_libraries(zg_script${POST_NAME} ${SDL2_MAIN_LIB} ${SDL2_LIB}  ${UUID_LIB} re2 Rpcrt4 kernel32 "-Wl,--no-as-needed" )
- target_link_libraries(zg_main${POST_NAME} mingw32  zg_script${POST_NAME} "-Wl,--no-as-needed" )
-  
-ELSE(MINGW)
-	target_link_libraries(zg_script${POST_NAME}  "-Wl,--no-as-needed" )
-	target_link_libraries(zg_main${POST_NAME} zg_script${POST_NAME} SDL2 uuid re2 "-Wl,--no-as-needed" )
-ENDIF(MINGW)
+	IF (MINGW)
+	
+	 target_link_libraries(zg_script${POST_NAME} ${SDL2_MAIN_LIB} ${SDL2_LIB} Rpcrt4 kernel32 "-Wl,--no-as-needed" )
+	 target_link_libraries(zg_main${POST_NAME} mingw32  zg_script${POST_NAME} "-Wl,--no-as-needed" )
+	  
+	ELSE(MINGW)
+		target_link_libraries(zg_script${POST_NAME}  "-Wl,--no-as-needed" )
+		target_link_libraries(zg_main${POST_NAME} zg_script${POST_NAME} "-Wl,--no-as-needed" )
+	ENDIF(MINGW)
+
+endif()

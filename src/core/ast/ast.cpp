@@ -60,6 +60,37 @@ bool CAst::parseAssignPunctuator(const char *s){
 	return false;
 }
 
+bool CAst::parseAddAssignPunctuator(const char *s){
+	if(*s=='+')
+		return (*(s+1) == '=');
+	return false;
+}
+
+bool CAst::parseSubAssignPunctuator(const char *s){
+	if(*s=='-')
+		return (*(s+1) == '=');
+	return false;
+}
+
+bool CAst::parseMulAssignPunctuator(const char *s){
+	if(*s=='*')
+		return (*(s+1) == '=');
+	return false;
+}
+
+bool CAst::parseDivAssignPunctuator(const char *s){
+	if(*s=='/')
+		return (*(s+1) == '=');
+	return false;
+}
+
+bool CAst::parseModAssignPunctuator(const char *s){
+	if(*s=='%')
+		return (*(s+1) == '=');
+	return false;
+}
+
+
 bool CAst::parseBinaryXorPunctuator(const char *s){
 	return *s == '^';
 }
@@ -158,7 +189,12 @@ bool CAst::parseDecPunctuator(const char *s){
 tInfoPunctuator  * CAst::parsePunctuatorGroup0(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
-			ASSIGN_PUNCTUATOR
+			ASSIGN_PUNCTUATOR,
+			ADD_ASSIGN_PUNCTUATOR,
+			SUB_ASSIGN_PUNCTUATOR,
+			MUL_ASSIGN_PUNCTUATOR,
+			DIV_ASSIGN_PUNCTUATOR,
+			MOD_ASSIGN_PUNCTUATOR
 
 	};
 
@@ -358,9 +394,13 @@ tInfoPunctuator *  CAst::isPunctuator(const char *s){
 // to string utils ...
 char * CAst::getEndWord(const char *s, int m_line){
 
+	char *start_str=(char *)s;
 	char *aux=(char *)s;
-	// tInfoPunctuator * sp;
+	 tInfoPunctuator * sp;
 	 tInfoKeyword *key_w;
+	 bool is_possible_number=false;
+	 int i=0;
+	 bool start_digit = false;
 
 	if(*aux == '\"'){
 		aux++;
@@ -390,16 +430,41 @@ char * CAst::getEndWord(const char *s, int m_line){
 				(*aux)=='\n' ||
 				(*aux)=='\r'
 						) &&
-				(isSpecialPunctuator(aux)==NULL) &&
-				(isOperatorPunctuator(aux)==NULL)
+				(isSpecialPunctuator(aux)==NULL)
+				//(isOperatorPunctuator(aux)==NULL && !is_possible_number)
 
 		) {
 			// check for special punctuator ( the field '.' separator is processed within the word )
-			/*if((sp = isOperatorPunctuator(aux))!=NULL){
-				//if(sp->id != FIELD_PUNCTUATOR)
-					return aux;
-			}*/
+			if(i==0 && !start_digit){ // possible digit ...
+
+				is_possible_number = CStringUtils::isDigit(*aux);
+				start_digit = true;
+
+			}
+
+
+			if((sp = isOperatorPunctuator(aux))!=NULL){
+				if(sp->id == FIELD_PUNCTUATOR  || *aux=='-' ||  *aux=='+'){
+					if(!is_possible_number){
+						return aux;
+					}
+				}
+				else{
+						return aux;
+					}
+			}
+
 			aux++;
+			i++;
+		}
+
+
+		if(is_possible_number){
+			string num = CStringUtils::copyStringFromInterval(start_str,aux);
+			if(!CStringUtils::isNumber(num)){
+				print_error_cr("line %i: Invalid number format",m_line);
+				return NULL;
+			}
 		}
 	}
 	return aux;
@@ -1058,8 +1123,9 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 		}
 
 		// try get symbol string
-		aux=getSymbolValue(aux, m_line, scope_info,symbol_value, m_definedSymbolLine,pre_operator,&post_operator,is_symbol_trivial_value);
-
+		if((aux=getSymbolValue(aux, m_line, scope_info,symbol_value, m_definedSymbolLine,pre_operator,&post_operator,is_symbol_trivial_value)) == NULL){
+			return NULL;
+		}
 
 		print_ast_cr("checkpoint3:%c\n",*aux);
 
@@ -3235,6 +3301,11 @@ CAst *  CAst::getInstance(){
 		defined_operator_punctuator[TERNARY_ELSE_PUNCTUATOR]={TERNARY_ELSE_PUNCTUATOR, ":",parseInlineElsePunctuator};
 
 		defined_operator_punctuator[ASSIGN_PUNCTUATOR]={ASSIGN_PUNCTUATOR, "=",parseAssignPunctuator};
+		defined_operator_punctuator[ADD_ASSIGN_PUNCTUATOR]={ADD_ASSIGN_PUNCTUATOR, "+=",parseAddAssignPunctuator};
+		defined_operator_punctuator[SUB_ASSIGN_PUNCTUATOR]={SUB_ASSIGN_PUNCTUATOR, "-=",parseSubAssignPunctuator};
+		defined_operator_punctuator[MUL_ASSIGN_PUNCTUATOR]={MUL_ASSIGN_PUNCTUATOR, "*=",parseMulAssignPunctuator};
+		defined_operator_punctuator[DIV_ASSIGN_PUNCTUATOR]={DIV_ASSIGN_PUNCTUATOR, "/=",parseDivAssignPunctuator};
+		defined_operator_punctuator[MOD_ASSIGN_PUNCTUATOR]={MOD_ASSIGN_PUNCTUATOR, "%=",parseModAssignPunctuator};
 
 		defined_operator_punctuator[BINARY_XOR_PUNCTUATOR]={BINARY_XOR_PUNCTUATOR, "^",parseBinaryXorPunctuator};
 		defined_operator_punctuator[BINARY_AND_PUNCTUATOR]={BINARY_AND_PUNCTUATOR, "&",parseBinaryAndPunctuator};

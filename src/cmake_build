@@ -1,0 +1,21 @@
+#!/bin/bash
+rm CMakeCache.txt
+
+param=""
+
+for var in "$@"
+do
+    param=$param" "$(echo "$var")
+done
+
+
+
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    cmake CMakeLists.txt $param
+elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+    cmake CMakeLists.txt $param -DCMAKE_COLOR_MAKEFILE=0xFF -G "MSYS Makefiles"
+else
+	echo cannot support `uname -s`
+fi
+
+

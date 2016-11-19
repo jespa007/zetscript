@@ -533,7 +533,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 		obj = (CScriptVariable *)idx_local_var;
 	}
 
-	if((pre_post_operator_type !=ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR) &&
+	if((pre_post_operator_type !=ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR && pre_post_operator_type !=ASM_PRE_POST_OPERATORS::PRE_NEG) &&
 		is_constant){
 		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->definedValueline,_node->pre_post_operator_info->str);
 		return false;
@@ -782,6 +782,9 @@ ASM_PRE_POST_OPERATORS CCompiler::preoperator2instruction(PUNCTUATOR_TYPE op){
 		return PRE_DEC;
 	case PUNCTUATOR_TYPE::POST_DEC_PUNCTUATOR:
 		return POST_DEC;
+	case PUNCTUATOR_TYPE::SUB_PUNCTUATOR:
+		return PRE_NEG;
+
 	}
 
 	return ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
@@ -844,6 +847,87 @@ ASM_OPERATOR CCompiler::puntuator2instruction(tInfoPunctuator * op){
 bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, string & error_str, int op_index_left, int op_index_right){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
+	tInfoAsmOp *iao;
+
+	// special cases ...
+	switch(op->id){
+		case ADD_ASSIGN_PUNCTUATOR: // a+b
+
+			iao = new tInfoAsmOp();
+			//asm_op->type_op=OPERATOR;
+			iao->operator_type = ASM_OPERATOR::ADD;
+			iao->index_op1 = op_index_left;
+			iao->index_op2 = op_index_right;
+			iao->ast_node=_node;
+
+			ptr_current_statement_op->asm_op.push_back(iao);
+
+			op_index_right+=1;
+			op->id = ASSIGN_PUNCTUATOR;
+			break;
+		case SUB_ASSIGN_PUNCTUATOR: // a + (-b)
+
+			iao = new tInfoAsmOp();
+			//asm_op->type_op=OPERATOR;
+			iao->operator_type = ASM_OPERATOR::NEG;
+			iao->index_op1 = op_index_right;
+			iao->ast_node=_node;
+			ptr_current_statement_op->asm_op.push_back(iao);
+
+			iao = new tInfoAsmOp();
+			//asm_op->type_op=OPERATOR;
+			iao->operator_type = ASM_OPERATOR::ADD;
+			iao->index_op1 = op_index_left;
+			iao->index_op2 = op_index_right+1;
+			iao->ast_node=_node;
+			ptr_current_statement_op->asm_op.push_back(iao);
+
+			op_index_right+=2;
+			op->id = ASSIGN_PUNCTUATOR;
+			break;
+		case MUL_ASSIGN_PUNCTUATOR: // a*b
+
+			iao = new tInfoAsmOp();
+			//asm_op->type_op=OPERATOR;
+			iao->operator_type = ASM_OPERATOR::MUL;
+			iao->index_op1 = op_index_left;
+			iao->index_op2 = op_index_right;
+			iao->ast_node=_node;
+			ptr_current_statement_op->asm_op.push_back(iao);
+
+			op_index_right+=1;
+			op->id = ASSIGN_PUNCTUATOR;
+			break;
+		case DIV_ASSIGN_PUNCTUATOR: // a/b
+
+			iao = new tInfoAsmOp();
+			//asm_op->type_op=OPERATOR;
+			iao->operator_type = ASM_OPERATOR::DIV;
+			iao->index_op1 = op_index_left;
+			iao->index_op2 = op_index_right;
+			iao->ast_node=_node;
+			ptr_current_statement_op->asm_op.push_back(iao);
+
+			op_index_right+=1;
+			op->id = ASSIGN_PUNCTUATOR;
+			break;
+		case MOD_ASSIGN_PUNCTUATOR: // a % b
+
+			iao = new tInfoAsmOp();
+			//asm_op->type_op=OPERATOR;
+			iao->operator_type = ASM_OPERATOR::MOD;
+			iao->index_op1 = op_index_left;
+			iao->index_op2 = op_index_right;
+			iao->ast_node=_node;
+			ptr_current_statement_op->asm_op.push_back(iao);
+
+			op_index_right+=1;
+			op->id = ASSIGN_PUNCTUATOR;
+			break;
+		default:
+			break;
+	}
+
 
 	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->variable_type != INS_TYPE_VAR){
 
@@ -860,7 +944,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 	if((asm_op= puntuator2instruction(op))!=INVALID_OP){
 
 
-		tInfoAsmOp *iao = new tInfoAsmOp();
+		iao = new tInfoAsmOp();
 		//asm_op->type_op=OPERATOR;
 		iao->operator_type = asm_op;
 		iao->index_op1 = op_index_left;

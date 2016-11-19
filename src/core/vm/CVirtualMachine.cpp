@@ -631,58 +631,6 @@ CScriptVariable * CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo
 
 	return obj;
 }
-/*
-bool CVirtualMachine::performPreOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *var){
-	// ok from here, let's check preoperator ...
-
-	unsigned idx_class=var->getIdxClass();
-
-	if(idx_class==CScriptClassFactory::getInstance()->getIdxClassInteger()){
-		if(pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
-			((CInteger *)var)->m_value++;
-		else //dec
-			((CInteger *)var)->m_value--;
-
-	}else if(idx_class == CScriptClassFactory::getInstance()->getIdxClassNumber()){
-		if(pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
-			((CNumber *)var)->m_value++;
-		else // dec
-			((CNumber *)var)->m_value--;
-
-	}else{
-
-		print_error_cr("Cannot perform preoperator ?? because is not number");
-		return false;
-	}
-
-	return true;
-
-
-}
-
-bool CVirtualMachine::performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *var){
-	// ok from here, let's check preoperator ...
-
-	unsigned idx_class=var->getIdxClass();
-
-	if(idx_class==CScriptClassFactory::getInstance()->getIdxClassInteger()){
-		if(pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
-			((CInteger *)var)->m_value++;
-		else //dec
-			((CInteger *)var)->m_value--;
-	}else if(idx_class == CScriptClassFactory::getInstance()->getIdxClassNumber()){
-		if(pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
-			((CNumber *)var)->m_value++;
-		else // dec
-			((CNumber *)var)->m_value--;
-	}else{
-		print_error_cr("Cannot perform postoperator ?? because is not number");
-		return false;
-	}
-
-	return true;
-}
-*/
 
 
 bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
@@ -846,8 +794,20 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 
 	// generic object pushed ...
 	if(push_object){
-		if(!pushVar(var_object,ptr_var_object)) {
+
+		if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_NEG){
+
+			int idx_class = var_object->getIdxClass();
+			if(idx_class==CScriptClassFactory::getInstance()->getIdxClassInteger()){
+				return pushInteger(-(*((int *)((CInteger *)var_object)->m_value)));
+			}else if(idx_class==CScriptClassFactory::getInstance()->getIdxClassNumber()){
+				return pushNumber(-(*((float *)((CNumber *)var_object)->m_value)));
+			}else{
+				print_error_cr("internal error:cannot perform pre operator - because is not number");
 				return false;
+			}
+		}else{
+			return pushVar(var_object,ptr_var_object);
 		}
 	}
 
