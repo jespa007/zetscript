@@ -15,7 +15,6 @@ class CScopeInfo;
 #include "ast/CScopeInfo.h"
 #include "CCompiler.h"
 #include "CScriptClassFactory.h"
-#include "vm/CALE.h"
 #include "vm/CVirtualMachine.h"
 
 

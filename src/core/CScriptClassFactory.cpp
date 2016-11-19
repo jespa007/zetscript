@@ -321,7 +321,7 @@
 
  void  print(string  *s){
 
- 	//print_info_cr("PRINT");//:%s",s->c_str());
+ 	print_info_cr("PRINT:%s",s->c_str());
  }
 
 

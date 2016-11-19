@@ -58,7 +58,7 @@ IF ( "${TARGET}" STREQUAL "")
    SET ( TARGET "release" )
 ENDIF () 
 
-set(TARGET_FLAGS " -O3 ")
+set(TARGET_FLAGS " -O2 ")
 set( POST_NAME "")
 
 IF ( "${TARGET}" STREQUAL "debug")

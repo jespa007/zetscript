@@ -58,7 +58,7 @@ ByteBuffer * CIO_Utils::readFile(const string & filename){
 
 			if(readed_elements != file_length) {
 				print_warning_cr("number elements doesn't match with length file (%s)",filename.c_str());
-				delete  buffer;
+				delete [] buffer;
 				return NULL;
 			}
 

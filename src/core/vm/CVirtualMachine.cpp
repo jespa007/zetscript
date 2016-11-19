@@ -5,24 +5,7 @@
 
 
 // static: only defined in this module...
-/*
-CVirtualMachine * CVirtualMachine::getInstance(){
-	if(m_virtualMachine == NULL){
-		m_virtualMachine = new CVirtualMachine();
-	}
 
-	return m_virtualMachine;
-}
-
-void CVirtualMachine::destroySingletons(){
-	if(m_virtualMachine != NULL){
-		delete m_virtualMachine;
-		m_virtualMachine = NULL;
-	}
-
-
-}
-*/
 CVirtualMachine::CVirtualMachine(){
 
 	basePtrLocalVar=NULL;

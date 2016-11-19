@@ -19,6 +19,9 @@ for (var i = 2; i < 1000; i++) {
 
 var t= -2e-2;
 
+t=5.3 % 2;
+
+print(t);
 t=t%2;
 print(t);
 

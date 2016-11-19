@@ -6,8 +6,10 @@ int main(int argc, char * argv[]){
 
 
 
-	CLog::setUseAnsiEscape(false);
+	CLog::setUseAnsiEscape(true);
 	CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
+
+	print_info_cr("sizeof(int *):%i sizeof(string *):%i sizeof(int):%i",sizeof(int *),sizeof(string *),sizeof(int));
 
 
 	if(argc < 2){
@@ -20,7 +22,6 @@ int main(int argc, char * argv[]){
 		printf("\n");
 		return 0;
 	}
-
 
 	char *data_buffer = argv[1];
 	ByteBuffer *buffer = NULL;

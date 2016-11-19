@@ -2,7 +2,6 @@
 #include "var/zg_variable.cpp"
 #include "ast/CScopeInfo.cpp"
 #include "ast/ast.cpp"
-#include "vm/CALE.cpp"
 #include "vm/CVirtualMachine.cpp"
 #include "CCompiler.cpp"
 #include "CScriptClassFactory.cpp"
@@ -67,6 +66,8 @@ CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegistered
 			converted_param[i] = paramConv(argv->at(i));
 		}
 	}
+
+	print_info_cr("pre_call %i",argv->size());
 
 	switch(argv->size()){
 	default:
