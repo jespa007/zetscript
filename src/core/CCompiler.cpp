@@ -1264,7 +1264,9 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 				// node children[1]: body-if
 				// node children[2]: body-else
 				//inline_if_else = true;
-				return gacInlineIf(_node,_lc,index_instruction);
+				int t1= gacInlineIf(_node,_lc,index_instruction);
+
+				return t1;
 
 
 			}else{
@@ -1745,7 +1747,7 @@ bool CCompiler::gacIf(PASTNode _node, CScopeInfo * _lc){
 	return true;
 }
 
-int CCompiler::gacInlineIf(PASTNode _node, CScopeInfo * _lc, int instruction){
+int CCompiler::gacInlineIf(PASTNode _node, CScopeInfo * _lc, int & instruction){
 
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != PUNCTUATOR_NODE || _node->operator_info == NULL){print_error_cr("node is not punctuator type or null");return -1;}
@@ -1781,13 +1783,14 @@ int CCompiler::gacInlineIf(PASTNode _node, CScopeInfo * _lc, int instruction){
 	if((r=gacExpression_Recursive(_node->children[1]->children[1],_lc,r))==-1){ return -1;}
 
 	insert_Save_CurrentInstruction();
-
 	insert_Load_CurrentInstruction();
+
+	r+=2; // add +2 load +save ...
 
 	asm_op_jmp_end->index_op1 = getCurrentStatmentIndex();
 	asm_op_jmp_end->index_op2 = getCurrentInstructionIndex();
 
-
+	instruction = r+1;
 
 	return r;
 }

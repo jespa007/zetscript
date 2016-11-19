@@ -1,13 +1,13 @@
-
-/*for (var i = 2; i < 1000; i++) {
+/*
+for (var i = 2; i < 1000; i++) {
     for (var j = 2; j < i; j++) {
         if (i % j == 0){
             //continue outer;
         }
     }
-    print (i);
+   print (i);
 }*/
-
+//var j=0;for(var i=0; i < 10000000; ++i){i*2;}
 //super();
 
 //var jjj=0;
@@ -15,7 +15,14 @@
 
 //print("s"+2+"s"+3);
 
-0>1?(2+4):(3+4*5);
+var t= "KAKA" + ( 1<2? (4+4<5?6:3+7):8+9*10);
+
+print(t);
+
+
+//print(t);
+
+
 
 /*a=1;
 b=1;*/

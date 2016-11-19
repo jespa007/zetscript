@@ -27,7 +27,7 @@ CVirtualMachine::CVirtualMachine(){
 
 	basePtrLocalVar=NULL;
 	idxStkCurrentLocalVar=0;
-
+	idxSavedInstruction = 0;
 
 	startIdxStkNumber=
 
@@ -180,16 +180,21 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 
 					if(jmp_to_statment != -1){
+
+						if(s!=jmp_to_statment){
+							break_jmp = true;
+						}
+
 						s=jmp_to_statment;
 
 						if(instruction_to_statment != -1){
 							ins=instruction_to_statment;
 							idxStkCurrentResultInstruction=ins+1;
+						}else{
+
 						}
 
-						if(s!=jmp_to_statment){
-							break_jmp = true;
-						}
+
 
 					}else{
 						ins++;
@@ -1800,6 +1805,49 @@ bool CVirtualMachine::performInstruction(
 			}
 
 			break;
+
+		case SAVE_I:
+			idxSavedInstruction=idxStkCurrentResultInstruction-1;
+			break;
+		case LOAD_I:
+
+			switch(stkResultInstruction[idxSavedInstruction].type){
+			default:
+				print_error_cr("unexpected type");
+				break;
+			case INS_TYPE_INTEGER:
+				if(!pushInteger((int)stkResultInstruction[idxSavedInstruction].stkResultObject)){
+					return false;
+				}
+				break;
+			case INS_TYPE_BOOLEAN:
+				if(!pushBoolean((bool)stkResultInstruction[idxSavedInstruction].stkResultObject)){
+					return false;
+				}
+				break;
+			case INS_TYPE_NUMBER:
+				if(!pushNumber(*((float *)stkResultInstruction[idxSavedInstruction].stkResultObject))){
+					return false;
+				}
+				break;
+
+
+			case INS_TYPE_STRING:
+				if(!pushString(*((string *)stkResultInstruction[idxSavedInstruction].stkResultObject))){
+					return false;
+				}
+				break;
+			case INS_TYPE_VAR:
+				if(!pushVar(((CScriptVariable *)stkResultInstruction[idxSavedInstruction].stkResultObject))){
+					return false;
+				}
+				break;
+
+			}
+
+			break;
+
+
 
 	}
 

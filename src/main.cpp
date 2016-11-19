@@ -229,7 +229,8 @@ int main(int argc, char * argv[]){
 
 	Uint32 _start = SDL_GetTicks();
 
-	0>0?0:1;
+	//0>0?0:1;
+	i=1<2 ? 4+4 < 5 ? 6 : 3+7 : 8+9*10;
 
 	print_info_cr("HHHHH %s", typeid(decltype(&CObject::print)).name());
 	void * fc = fun_creator<CObject>(&CObject::print);

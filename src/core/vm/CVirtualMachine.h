@@ -82,6 +82,7 @@ private:
 	float 				stkNumber[VM_ALE_OPERATIONS_MAX_STACK];
 	string 				stkString[VM_ALE_OPERATIONS_MAX_STACK];
 	tAleObjectInfo 		stkResultInstruction[VM_ALE_OPERATIONS_MAX_STACK];
+	int					idxSavedInstruction;
 	//CScriptVariable  **stkResultObject[MAX_PER_TYPE_OPERATIONS]; // all variables references to this ...
 	//CVector	 * vector[MAX_OPERANDS];
 
