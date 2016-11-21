@@ -2,7 +2,30 @@
 #include "SDL2/SDL.h"
 
 
+void print(const string * s){
+	printf("\njjjj %s",s->c_str());
+}
+
+
 int main(int argc, char * argv[]){
+
+	//int result;
+	//void *fun_ptr = CScriptClassFactory::new_proxy_function(1,print);
+
+	void *fun_ptr =(void *)( new std::function<int (int)>(std::bind((int (*)(int))print,std::placeholders::_1)));
+	string ss="prova";
+
+	printf("prova1 %i %i",sizeof(string *), sizeof(int));
+
+	//auto vv = new std::function<void (string *)>(print);
+
+	//fun_ptr=(void *)vv;
+
+
+	//vv(&ss);
+	(*((std::function<void (string *)> *)fun_ptr))(&ss);
+
+	return 0;
 
 
 

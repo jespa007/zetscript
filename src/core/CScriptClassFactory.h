@@ -137,7 +137,7 @@ public:
 	void printGeneratedCodeAllClasses();
 
 	template <typename _F>
-	void * new_proxy_function(unsigned int n_args, _F fun_obj){
+	static void * new_proxy_function(unsigned int n_args, _F fun_obj){
 		using namespace std::placeholders;
 		void *proxy_function=NULL;
 
