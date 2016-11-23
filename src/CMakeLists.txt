@@ -77,13 +77,15 @@ if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
 
 
 	MESSAGE ("********* ¡¡ EMMSCRIPTEN RELEASE !!! ************" )
-	set(CMAKE_C_COMPILER "/opt/emscripten/emcc")
-	set(CMAKE_CXX_COMPILER "/opt/emscripten/em++")
+	set(CMAKE_C_COMPILER "/opt/emsdk_portable/emscripten/1.35.0/emcc")
+	set(CMAKE_CXX_COMPILER "/opt/emsdk_portable/emscripten/1.35.0/em++")
 
-	SET( COMMON_PARAMS " ${COMMON_PARAMS} -I/opt/emscripten/system/lib/libcxxabi/include/ ")
+	SET( COMMON_PARAMS " ${COMMON_PARAMS} -I/opt/emsdk_portable/emscripten/1.35.0/system/lib/libcxxabi/include/ ")
+	
 endif()
 
-
+SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
+SET(CMAKE_C_FLAGS " -I/local32/include ")
 
 
 #
@@ -93,8 +95,7 @@ endif()
 
 
 # Select flags.
-SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
-SET(CMAKE_C_FLAGS " -I/local32/include ")
+
 
 
 MESSAGE ("Target : " ${TARGET})
@@ -153,12 +154,12 @@ else()
 
 	IF (MINGW)
 	
-	 target_link_libraries(zg_script${POST_NAME} ${SDL2_MAIN_LIB} ${SDL2_LIB} Rpcrt4 kernel32 "-Wl,--no-as-needed" )
+	 target_link_libraries(zg_script${POST_NAME} Rpcrt4 kernel32 "-Wl,--no-as-needed" )
 	 target_link_libraries(zg_main${POST_NAME} mingw32  zg_script${POST_NAME} "-Wl,--no-as-needed" )
 	  
 	ELSE(MINGW)
 		target_link_libraries(zg_script${POST_NAME}  "-Wl,--no-as-needed" )
-		target_link_libraries(zg_main${POST_NAME} zg_script${POST_NAME} SDL2main SDL2 "-Wl,--no-as-needed" )
+		target_link_libraries(zg_main${POST_NAME} zg_script${POST_NAME} "-Wl,--no-as-needed" )
 	ENDIF(MINGW)
 
 endif()

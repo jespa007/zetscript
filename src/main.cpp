@@ -1,5 +1,11 @@
 #include "core/zg_core.h"
-#include "SDL2/SDL.h"
+
+
+#ifdef _WIN32
+#ifdef main
+#undef main
+#endif
+#endif
 
 
 void print(const string * s){
@@ -12,8 +18,11 @@ int main(int argc, char * argv[]){
 	//int result;
 	//void *fun_ptr = CScriptClassFactory::new_proxy_function(1,print);
 
-	void *fun_ptr =(void *)( new std::function<int (int)>(std::bind((int (*)(int))print,std::placeholders::_1)));
-	string ss="prova";
+	//void *fun_ptr =(void *)(new std::function<void(string *)>(print));
+
+	// this doesn' work
+	/*void *fun_ptr =(void *)( new std::function<void (string *)>(print,std::placeholders::_1));*/
+	//string ss="prova";
 
 	printf("prova1 %i %i",sizeof(string *), sizeof(int));
 
@@ -23,7 +32,7 @@ int main(int argc, char * argv[]){
 
 
 	//vv(&ss);
-	(*((std::function<void (string *)> *)fun_ptr))(&ss);
+	//(*((std::function<void (string *)> *)fun_ptr))(&ss);
 
 	return 0;
 
@@ -56,11 +65,7 @@ int main(int argc, char * argv[]){
 	}
 
 	if(zg_script->eval(data_buffer)){
-
-		Uint32 t = SDL_GetTicks();
 		zg_script->execute();
-		print_info_cr("time:%i",SDL_GetTicks()-t);
-
 	}
 
 	CZG_ScriptCore::destroy();
