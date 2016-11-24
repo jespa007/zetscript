@@ -10,7 +10,7 @@ struct tScriptFunctionInfo;
 
 
 
-#define MAX_PARAM_C_FUNCTION 5
+#define MAX_PARAM_C_FUNCTION 6
 
 enum NODE_TYPE{
 	UNKNOWN_NODE=0,

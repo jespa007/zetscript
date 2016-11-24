@@ -137,35 +137,67 @@ public:
 	void printGeneratedCodeAllClasses();
 
 	template <typename _F>
-	static void * new_proxy_function(unsigned int n_args, _F fun_obj){
+	static void * new_proxy_function(unsigned int n_args, _F fun_obj, bool it_has_return_void){
 		using namespace std::placeholders;
 		void *proxy_function=NULL;
 
-		switch(n_args){
-		case 0:
-			proxy_function=(void *)(new std::function<int ()>(std::bind((int (*)())fun_obj)));
-			break;
-		case 1:
-			proxy_function=(void *)( new std::function<int (int)>(std::bind((int (*)(int))fun_obj, _1)));
-			break;
-		case 2:
-			proxy_function=(void *)( new std::function<int (int,int)>(std::bind((int (*)(int,int))fun_obj, 1,_2)));
-			break;
-		case 3:
-			proxy_function= (void *)(new std::function<int (int,int,int)>(std::bind((int (*)(int,int,int))fun_obj, 1,_2,_3)));
-			break;
-		case 4:
-			proxy_function=(void *)( new std::function<int (int,int,int,int)>(std::bind((int (*)(int,int,int,int))fun_obj, 1,_2,_3,_4)));
-			break;
-		case 5:
-			proxy_function=(void *)( new std::function<int (int,int,int,int,int)>(std::bind((int (*)(int,int,int,int,int))fun_obj, 1,_2,_3,_4,_5)));
-			break;
-		case 6:
-			proxy_function=(void *)( new std::function<int (int,int,int,int,int,int)>(std::bind((int (*)(int,int,int,int,int,int))fun_obj, 1,_2, _3, _4, _5, _6)));
-			break;
-		default:
-			print_error_cr("Max argyments reached!");
+		if(!it_has_return_void){
 
+			switch(n_args){
+			case 0:
+				proxy_function=(void *)(new std::function<int ()>(std::bind((int (*)())fun_obj)));
+				break;
+			case 1:
+				proxy_function=(void *)( new std::function<int (int)>(std::bind((int (*)(int))fun_obj, _1)));
+				break;
+			case 2:
+				proxy_function=(void *)( new std::function<int (int,int)>(std::bind((int (*)(int,int))fun_obj, 1,_2)));
+				break;
+			case 3:
+				proxy_function= (void *)(new std::function<int (int,int,int)>(std::bind((int (*)(int,int,int))fun_obj, 1,_2,_3)));
+				break;
+			case 4:
+				proxy_function=(void *)( new std::function<int (int,int,int,int)>(std::bind((int (*)(int,int,int,int))fun_obj, 1,_2,_3,_4)));
+				break;
+			case 5:
+				proxy_function=(void *)( new std::function<int (int,int,int,int,int)>(std::bind((int (*)(int,int,int,int,int))fun_obj, 1,_2,_3,_4,_5)));
+				break;
+			case 6:
+				proxy_function=(void *)( new std::function<int (int,int,int,int,int,int)>(std::bind((int (*)(int,int,int,int,int,int))fun_obj, 1,_2, _3, _4, _5, _6)));
+				break;
+			default:
+				print_error_cr("Max argyments reached!");
+
+			}
+		}
+		else{
+
+			switch(n_args){
+			case 0:
+				proxy_function=(void *)(new std::function<void ()>(std::bind((void (*)())fun_obj)));
+				break;
+			case 1:
+				proxy_function=(void *)( new std::function<void (int)>(std::bind((void (*)(int))fun_obj, _1)));
+				break;
+			case 2:
+				proxy_function=(void *)( new std::function<void (int,int)>(std::bind((void (*)(int,int))fun_obj, 1,_2)));
+				break;
+			case 3:
+				proxy_function= (void *)(new std::function<void (int,int,int)>(std::bind((void (*)(int,int,int))fun_obj, 1,_2,_3)));
+				break;
+			case 4:
+				proxy_function=(void *)( new std::function<void (int,int,int,int)>(std::bind((void (*)(int,int,int,int))fun_obj, 1,_2,_3,_4)));
+				break;
+			case 5:
+				proxy_function=(void *)( new std::function<void (int,int,int,int,int)>(std::bind((void (*)(int,int,int,int,int))fun_obj, 1,_2,_3,_4,_5)));
+				break;
+			case 6:
+				proxy_function=(void *)( new std::function<void (int,int,int,int,int,int)>(std::bind((void (*)(int,int,int,int,int,int))fun_obj, 1,_2, _3, _4, _5, _6)));
+				break;
+			default:
+				print_error_cr("Max argyments reached!");
+
+			}
 		}
 
 		return proxy_function;
@@ -224,7 +256,7 @@ public:
 		irs.object_info.symbol_info.symbol_name = function_name;
 
 		irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-		if((irs.object_info.symbol_info.ref_ptr=(int)new_proxy_function(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
+		if((irs.object_info.symbol_info.ref_ptr=(int)new_proxy_function(irs.m_arg.size(),function_ptr,irs.idx_return_type == getIdxClassVoid()))==0){//(int)function_ptr;
 			return false;
 		}
 
@@ -447,49 +479,97 @@ public:
 	}
 
 	template <class _T,typename _F>
-	void * c_member_class_function_proxy(unsigned int n_args, _F fun_obj){
+	void * c_member_class_function_proxy(unsigned int n_args, _F fun_obj, bool is_has_return_void){
 		using namespace std::placeholders;
 		std::function<void *(void *)> *c_function_builder=NULL;
-		switch(n_args){
-		case 0:
-			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-				return (void *)(new std::function<int ()>(std::bind((int (_T::*)())(fun_obj), (_T *)obj)));
-			});
-			break;
-		case 1:
-			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-				return (void *)(new std::function<int (int)>(std::bind((int (_T::*)(int))(fun_obj), (_T *)obj, _1)));
-			});
-			break;
-		case 2:
-			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-				return (void *)(new std::function<int (int,int)>(std::bind((int (_T::*)(int,int))(fun_obj), (_T *)obj, _1,_2)));
-			});
-			break;
-		case 3:
-			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-				return (void *)(new std::function<int (int,int,int)>(std::bind((int (_T::*)(int,int,int))(fun_obj), (_T *)obj, _1,_2,_3)));
-			});
-			break;
-		case 4:
-			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-				return (void *)(new std::function<int (int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
-			});
 
-			break;
-		case 5:
-			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-				return (void *)(new std::function<int (int,int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
-			});
+		if(!is_has_return_void){
 
-			break;
-		case 6:
-			c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-				return (void *)(new std::function<int (int,int,int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
-			});
-			break;
-		default:
-			print_error_cr("Max argyments reached!");
+			switch(n_args){
+			case 0:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<int ()>(std::bind((int (_T::*)())(fun_obj), (_T *)obj)));
+				});
+				break;
+			case 1:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<int (int)>(std::bind((int (_T::*)(int))(fun_obj), (_T *)obj, _1)));
+				});
+				break;
+			case 2:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<int (int,int)>(std::bind((int (_T::*)(int,int))(fun_obj), (_T *)obj, _1,_2)));
+				});
+				break;
+			case 3:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<int (int,int,int)>(std::bind((int (_T::*)(int,int,int))(fun_obj), (_T *)obj, _1,_2,_3)));
+				});
+				break;
+			case 4:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<int (int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
+				});
+
+				break;
+			case 5:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<int (int,int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
+				});
+
+				break;
+			case 6:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<int (int,int,int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
+				});
+				break;
+			default:
+				print_error_cr("Max argyments reached!");
+
+			}
+		}else{
+			switch(n_args){
+			case 0:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<void ()>(std::bind((void (_T::*)())(fun_obj), (_T *)obj)));
+				});
+				break;
+			case 1:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<void (int)>(std::bind((void (_T::*)(int))(fun_obj), (_T *)obj, _1)));
+				});
+				break;
+			case 2:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<void (int,int)>(std::bind((void (_T::*)(int,int))(fun_obj), (_T *)obj, _1,_2)));
+				});
+				break;
+			case 3:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<void (int,int,int)>(std::bind((void (_T::*)(int,int,int))(fun_obj), (_T *)obj, _1,_2,_3)));
+				});
+				break;
+			case 4:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<void (int,int,int,int)>(std::bind((void (_T::*)(int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
+				});
+
+				break;
+			case 5:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<void (int,int,int,int,int)>(std::bind((void (_T::*)(int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
+				});
+
+				break;
+			case 6:
+				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new std::function<void (int,int,int,int,int,int)>(std::bind((void (_T::*)(int,int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
+				});
+				break;
+			default:
+				print_error_cr("Max argyments reached!");
+
+			}
 
 		}
 
@@ -543,7 +623,7 @@ public:
 
 		// ignores special type cast C++ member to ptr function
 		// create binding function class
-		if((irs.object_info.symbol_info.ref_ptr=((int)c_member_class_function_proxy<_T>(irs.m_arg.size(),function_type)))==0){
+		if((irs.object_info.symbol_info.ref_ptr=((int)c_member_class_function_proxy<_T>(irs.m_arg.size(),function_type, irs.idx_return_type == getIdxClassVoid())))==0){
 			return false;
 		}
 

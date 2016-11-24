@@ -8,7 +8,7 @@
 #endif
 
 
-void print(const string * s){
+void print(const  string * s){
 	printf("\njjjj %s",s->c_str());
 }
 
@@ -16,13 +16,15 @@ void print(const string * s){
 int main(int argc, char * argv[]){
 
 	//int result;
-	//void *fun_ptr = CScriptClassFactory::new_proxy_function(1,print);
+	/*void *fun_ptr = CScriptClassFactory::new_proxy_function(1,print,true);
 
+
+	//fun_ptr=(void *)( new std::function<int (int)>((int (*)(int))print));
 	//void *fun_ptr =(void *)(new std::function<void(string *)>(print));
 
 	// this doesn' work
-	/*void *fun_ptr =(void *)( new std::function<void (string *)>(print,std::placeholders::_1));*/
-	//string ss="prova";
+	//void *fun_ptr =(void *)( new std::function<void (void *)>((void (*)(void *))print));
+	string ss="prova";
 
 	printf("prova1 %i %i",sizeof(string *), sizeof(int));
 
@@ -32,13 +34,13 @@ int main(int argc, char * argv[]){
 
 
 	//vv(&ss);
-	//(*((std::function<void (string *)> *)fun_ptr))(&ss);
+	(*((std::function<void (int)> *)fun_ptr))((int)&ss);
 
-	return 0;
+	return 0;*/
 
 
 
-	CLog::setUseAnsiEscape(true);
+	CLog::setUseAnsiEscape(false);
 	CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
 
 	print_info_cr("sizeof(int *):%i sizeof(string *):%i sizeof(int):%i",sizeof(int *),sizeof(string *),sizeof(int));

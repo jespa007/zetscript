@@ -69,19 +69,120 @@ CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegistered
 
 	print_info_cr("pre_call %i",argv->size());
 
-	switch(argv->size()){
-	default:
-		print_error_cr("cannot call !");
-		return CScriptVariable::UndefinedSymbol;
-	case 0:
-		result=(*((std::function<int ()> *)fun_ptr))();
-		break;
-	case 1:
-		result=(*((std::function<int (int)> *)fun_ptr))(converted_param[0]);
-		break;
+	if(irfs->idx_return_type != CScriptClassFactory::getInstance()->getIdxClassVoid()){
+
+		switch(argv->size()){
+		default:
+			print_error_cr("Max run-time args! (Max:%i Provided:%i)",6,argv->size());
+			return CScriptVariable::UndefinedSymbol;
+		case 0:
+			result=(*((std::function<int ()> *)fun_ptr))();
+			break;
+		case 1:
+			result=(*((std::function<int (int)> *)fun_ptr))(converted_param[0]);
+			break;
+		case 2:
+			result=(*((std::function<int (int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1]
+									);
+			break;
+		case 3:
+			result=(*((std::function<int (int,int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1],
+					converted_param[2]
+									);
+			break;
+		case 4:
+			result=(*((std::function<int (int,int,int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1],
+					converted_param[2],
+					converted_param[3]
+									);
+			break;
+		case 5:
+			result=(*((std::function<int (int,int,int,int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1],
+					converted_param[2],
+					converted_param[3],
+					converted_param[4]
+   				);
+			break;
+		case 6:
+			result=(*((std::function<int (int,int,int,int,int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1],
+					converted_param[2],
+					converted_param[3],
+					converted_param[4],
+					converted_param[5]
+									);
+			break;
+
+		}
+
+		var_result = CScriptClassFactory::getInstance()->newClassByIdx(irfs->idx_return_type,(void *)result);
+	}else{
+		switch(argv->size()){
+		default:
+			print_error_cr("Max run-time args! (Max:%i Provided:%i)",6,argv->size());
+			return CScriptVariable::UndefinedSymbol;
+		case 0:
+			(*((std::function<void ()> *)fun_ptr))();
+			break;
+		case 1:
+			(*((std::function<void (int)> *)fun_ptr))(converted_param[0]);
+			break;
+		case 2:
+			(*((std::function<void (int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1]
+									);
+			break;
+		case 3:
+			(*((std::function<void (int,int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1],
+					converted_param[2]
+									);
+			break;
+		case 4:
+			(*((std::function<void (int,int,int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1],
+					converted_param[2],
+					converted_param[3]
+									);
+			break;
+		case 5:
+			(*((std::function<void (int,int,int,int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1],
+					converted_param[2],
+					converted_param[3],
+					converted_param[4]
+   				);
+			break;
+		case 6:
+			(*((std::function<void (int,int,int,int,int,int)> *)fun_ptr))(
+					converted_param[0],
+					converted_param[1],
+					converted_param[2],
+					converted_param[3],
+					converted_param[4],
+					converted_param[5]
+									);
+			break;
+
+		}
+
+		var_result = CScriptVariable::VoidSymbol;
 	}
 
-	var_result = CScriptClassFactory::getInstance()->newClassByIdx(irfs->idx_return_type,(void *)result);
+
 
 	return var_result;
 

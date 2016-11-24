@@ -58,13 +58,13 @@ IF ( "${TARGET}" STREQUAL "")
    SET ( TARGET "release" )
 ENDIF () 
 
-set(TARGET_FLAGS " -O2 ")
+set(TARGET_FLAGS " -O2 -m32 ")
 set( POST_NAME "")
 
 IF ( "${TARGET}" STREQUAL "debug")
 	set( POST_NAME "_d")
 	set(TARGET_FLAGS " -O0 ")
-	set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__DEBUG__ ")
+	set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__DEBUG__ -m32 ")
 ENDIF ()
 
 if ( "${MEMMANAGER}" STREQUAL "yes" )
@@ -75,12 +75,13 @@ endif()
 
 if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
 
+	SET( EMMSCRIPTEN_DIR "/opt/emsdk_portable/emscripten/master")
 
 	MESSAGE ("********* ¡¡ EMMSCRIPTEN RELEASE !!! ************" )
-	set(CMAKE_C_COMPILER "/opt/emsdk_portable/emscripten/1.35.0/emcc")
-	set(CMAKE_CXX_COMPILER "/opt/emsdk_portable/emscripten/1.35.0/em++")
+	set(CMAKE_C_COMPILER "${EMMSCRIPTEN_DIR}/emcc")
+	set(CMAKE_CXX_COMPILER "${EMMSCRIPTEN_DIR}/em++")
 
-	SET( COMMON_PARAMS " ${COMMON_PARAMS} -I/opt/emsdk_portable/emscripten/1.35.0/system/lib/libcxxabi/include/ ")
+	SET( COMMON_PARAMS " ${COMMON_PARAMS} -I${EMMSCRIPTEN_DIR}/system/lib/libcxxabi/include/ ")
 	
 endif()
 
