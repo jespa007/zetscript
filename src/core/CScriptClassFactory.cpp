@@ -618,6 +618,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 bool CScriptClassFactory::updateReferenceSymbols(){
 
 
+
 	 tInfoRegisteredFunctionSymbol  *main_function = &m_registeredClass[0]->metadata_info.object_info.local_symbols.m_registeredFunction[0];
 	 print_info_cr("DEFINED CLASSES");
 	 vector<tInfoRegisteredFunctionSymbol *>  mrf;
@@ -1181,27 +1182,75 @@ CScriptClassFactory::~CScriptClassFactory() {
 
 	for(unsigned i = 0;i<m_registeredClass.size();i++){
 
-			tInfoRegisteredClass *irv = m_registeredClass[i];
-		    for(unsigned i = 0; i < irv->metadata_info.object_info.local_symbols.m_registeredFunction.size();i++){
-		    	for(unsigned j = 0; j < irv->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.statment_op.size(); j++){
-		    		for(unsigned a = 0; a  <irv->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.statment_op[j].asm_op.size(); a++){
+		tInfoRegisteredClass *irv = m_registeredClass[i];
+		for(unsigned j = 0; j < irv->metadata_info.object_info.local_symbols.m_registeredFunction.size();j++){
 
-		    			delete irv->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.statment_op[j].asm_op[a];
-		    		}
+			tInfoRegisteredFunctionSymbol * info_function = &irv->metadata_info.object_info.local_symbols.m_registeredFunction[j];
 
-		    	}
-		    }
+			if(i==0 && j==0){ // MAIN FUNCTION (C functions)
 
-		    if(irv->c_constructor != NULL){
-		    	delete irv->c_constructor;
-		    }
+				// functions inside main function ...
+				for(unsigned f=0; f < info_function->object_info.local_symbols.m_registeredFunction.size();f++){
 
-		    if(irv->c_destructor != NULL){
-		    	delete irv->c_destructor;
-		    }
+					tInfoRegisteredFunctionSymbol * irv_main_function =  &info_function->object_info.local_symbols.m_registeredFunction[f];
 
-		    // delete tInfoRegisteredClass
-			delete irv;
+					if((irv_main_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+
+						if(irv_main_function->idx_return_type == getIdxClassVoid()){
+							delete_proxy_function<void>(irv_main_function->m_arg.size(),(void *)irv_main_function->object_info.symbol_info.ref_ptr);//=(int)new_proxy_function<void>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
+
+						}
+						else{
+							delete_proxy_function<int>(irv_main_function->m_arg.size(),(void *)irv_main_function->object_info.symbol_info.ref_ptr);
+						}
+					}
+				}
+			}
+			else{ // normal function member ...
+				if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+
+					delete ((std::function<void *(void *,PROXY_CREATOR)> *)	info_function->object_info.symbol_info.ref_ptr);
+
+				}
+			}
+
+
+			for(unsigned k = 0; k < info_function->object_info.statment_op.size(); k++){
+
+				for(unsigned a = 0; a  <info_function->object_info.statment_op[k].asm_op.size(); a++){
+
+					delete info_function->object_info.statment_op[k].asm_op[a];
+				}
+
+			}
+		}
+
+		if(irv->c_constructor != NULL){
+			delete irv->c_constructor;
+		}
+
+		if(irv->c_destructor != NULL){
+			delete irv->c_destructor;
+		}
+
+		if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+
+			delete irv->metadata_info.object_info.symbol_info.ast;
+		}
+
+		if(i==0){ // MAIN CLASS...
+
+
+			//delete_proxy_function
+
+		}else{ // generic class ...
+
+
+		}
+
+
+		// delete tInfoRegisteredClass
+		delete irv;
 	}
 }
 

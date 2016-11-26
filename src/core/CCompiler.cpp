@@ -163,11 +163,37 @@ CCompiler *CCompiler::getInstance(){
 
 void CCompiler::destroySingletons(){
 	if(m_compiler != NULL){
-		delete m_compiler;
-		m_compiler=NULL;
+
+
+		for(map<string, CCompiler::tInfoConstantValue *>::iterator it=constant_pool->begin();it!=constant_pool->end();it++){
+			tInfoConstantValue *icv=it->second;
+			switch(icv->type){
+			default:
+				break;
+			case VALUE_INSTRUCTION_TYPE::INS_TYPE_INTEGER:
+				delete (int *)icv->ptr;
+				break;
+			case VALUE_INSTRUCTION_TYPE::INS_TYPE_BOOLEAN:
+				delete (bool *)icv->ptr;
+				break;
+			case VALUE_INSTRUCTION_TYPE::INS_TYPE_NUMBER:
+				delete (float *)icv->ptr;
+				break;
+			case VALUE_INSTRUCTION_TYPE::INS_TYPE_STRING:
+				delete (string *)icv->ptr;
+				break;
+
+			}
+
+			delete icv;
+		}
+
 		constant_pool->clear();
+
 		delete constant_pool;
 		constant_pool = NULL;
+		delete m_compiler;
+		m_compiler=NULL;
 	}
 }
 //------------------------------------------------------------------------------------------------------------------

@@ -161,6 +161,7 @@ public:
 
 	};
 
+	bool deallocatable;
 
 	// public vars ...
 	string m_strValue;

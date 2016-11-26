@@ -12,9 +12,21 @@ void print(const  string * s){
 	printf("\njjjj %s",s->c_str());
 }
 
+/*
+template<class v1,class v2, typename f>
+int function(_f F){
+
+	print("type:%s",typeid(v1).name);
+}
+*/
 
 int main(int argc, char * argv[]){
 
+
+	//function<void,int>(print);
+
+
+	//-2e-10;
 	//int result;
 	/*void *fun_ptr = CScriptClassFactory::new_proxy_function(1,print,true);
 
@@ -40,7 +52,7 @@ int main(int argc, char * argv[]){
 
 
 
-	CLog::setUseAnsiEscape(false);
+	CLog::setUseAnsiEscape(true);
 	CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
 
 	print_info_cr("sizeof(int *):%i sizeof(string *):%i sizeof(int):%i",sizeof(int *),sizeof(string *),sizeof(int));
@@ -74,7 +86,7 @@ int main(int argc, char * argv[]){
 
 	if(buffer != NULL){
 		delete buffer;
-}
+	}
 
 
 #if defined(__DEBUG__) && defined(__MEMMANAGER__)

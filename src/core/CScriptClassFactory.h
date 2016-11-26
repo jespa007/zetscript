@@ -136,71 +136,75 @@ public:
 
 	void printGeneratedCodeAllClasses();
 
-	template <typename _F>
-	static void * new_proxy_function(unsigned int n_args, _F fun_obj, bool it_has_return_void){
+	template <class _R, typename _F>
+	static void * new_proxy_function(unsigned int n_args, _F fun_obj){
 		using namespace std::placeholders;
 		void *proxy_function=NULL;
 
-		if(!it_has_return_void){
+		switch(n_args){
+		case 0:
+			proxy_function=(void *)(new std::function<_R ()>(std::bind((_R (*)())fun_obj)));
+			break;
+		case 1:
+			proxy_function=(void *)( new std::function<_R (int)>(std::bind((_R (*)(int))fun_obj, _1)));
+			break;
+		case 2:
+			proxy_function=(void *)( new std::function<_R (int,int)>(std::bind((_R (*)(int,int))fun_obj, 1,_2)));
+			break;
+		case 3:
+			proxy_function= (void *)(new std::function<_R (int,int,int)>(std::bind((_R (*)(int,int,int))fun_obj, 1,_2,_3)));
+			break;
+		case 4:
+			proxy_function=(void *)( new std::function<_R (int,int,int,int)>(std::bind((_R (*)(int,int,int,int))fun_obj, 1,_2,_3,_4)));
+			break;
+		case 5:
+			proxy_function=(void *)( new std::function<_R (int,int,int,int,int)>(std::bind((_R (*)(int,int,int,int,int))fun_obj, 1,_2,_3,_4,_5)));
+			break;
+		case 6:
+			proxy_function=(void *)( new std::function<_R (int,int,int,int,int,int)>(std::bind((_R (*)(int,int,int,int,int,int))fun_obj, 1,_2, _3, _4, _5, _6)));
+			break;
+		default:
+			print_error_cr("Max argyments reached!");
+			break;
 
-			switch(n_args){
-			case 0:
-				proxy_function=(void *)(new std::function<int ()>(std::bind((int (*)())fun_obj)));
-				break;
-			case 1:
-				proxy_function=(void *)( new std::function<int (int)>(std::bind((int (*)(int))fun_obj, _1)));
-				break;
-			case 2:
-				proxy_function=(void *)( new std::function<int (int,int)>(std::bind((int (*)(int,int))fun_obj, 1,_2)));
-				break;
-			case 3:
-				proxy_function= (void *)(new std::function<int (int,int,int)>(std::bind((int (*)(int,int,int))fun_obj, 1,_2,_3)));
-				break;
-			case 4:
-				proxy_function=(void *)( new std::function<int (int,int,int,int)>(std::bind((int (*)(int,int,int,int))fun_obj, 1,_2,_3,_4)));
-				break;
-			case 5:
-				proxy_function=(void *)( new std::function<int (int,int,int,int,int)>(std::bind((int (*)(int,int,int,int,int))fun_obj, 1,_2,_3,_4,_5)));
-				break;
-			case 6:
-				proxy_function=(void *)( new std::function<int (int,int,int,int,int,int)>(std::bind((int (*)(int,int,int,int,int,int))fun_obj, 1,_2, _3, _4, _5, _6)));
-				break;
-			default:
-				print_error_cr("Max argyments reached!");
-
-			}
-		}
-		else{
-
-			switch(n_args){
-			case 0:
-				proxy_function=(void *)(new std::function<void ()>(std::bind((void (*)())fun_obj)));
-				break;
-			case 1:
-				proxy_function=(void *)( new std::function<void (int)>(std::bind((void (*)(int))fun_obj, _1)));
-				break;
-			case 2:
-				proxy_function=(void *)( new std::function<void (int,int)>(std::bind((void (*)(int,int))fun_obj, 1,_2)));
-				break;
-			case 3:
-				proxy_function= (void *)(new std::function<void (int,int,int)>(std::bind((void (*)(int,int,int))fun_obj, 1,_2,_3)));
-				break;
-			case 4:
-				proxy_function=(void *)( new std::function<void (int,int,int,int)>(std::bind((void (*)(int,int,int,int))fun_obj, 1,_2,_3,_4)));
-				break;
-			case 5:
-				proxy_function=(void *)( new std::function<void (int,int,int,int,int)>(std::bind((void (*)(int,int,int,int,int))fun_obj, 1,_2,_3,_4,_5)));
-				break;
-			case 6:
-				proxy_function=(void *)( new std::function<void (int,int,int,int,int,int)>(std::bind((void (*)(int,int,int,int,int,int))fun_obj, 1,_2, _3, _4, _5, _6)));
-				break;
-			default:
-				print_error_cr("Max argyments reached!");
-
-			}
 		}
 
 		return proxy_function;
+	}
+
+	template <class _R>
+	static bool delete_proxy_function(unsigned int n_args, void *obj){
+		using namespace std::placeholders;
+
+
+		switch(n_args){
+		case 0:
+			delete (std::function<_R ()>*)obj;
+			break;
+		case 1:
+			delete (std::function<_R (int)>*)obj;
+			break;
+		case 2:
+			delete (std::function<_R (int,int)>*)obj;
+			break;
+		case 3:
+			delete (std::function<_R (int,int,int)>*)obj;
+			break;
+		case 4:
+			delete (std::function<_R (int,int,int,int)>*)obj;
+			break;
+		case 5:
+			delete (std::function<_R (int,int,int,int,int)>*)obj;
+			break;
+		case 6:
+			delete (std::function<_R (int,int,int,int,int,int)>*)obj;
+			break;
+		default:
+			print_error_cr("Max argyments reached!");
+			return false;
+		}
+
+		return true;
 	}
 
 
@@ -256,9 +260,17 @@ public:
 		irs.object_info.symbol_info.symbol_name = function_name;
 
 		irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-		if((irs.object_info.symbol_info.ref_ptr=(int)new_proxy_function(irs.m_arg.size(),function_ptr,irs.idx_return_type == getIdxClassVoid()))==0){//(int)function_ptr;
-			return false;
+		if(irs.idx_return_type == getIdxClassVoid()){
+			if((irs.object_info.symbol_info.ref_ptr=(int)new_proxy_function<void>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
+				return false;
+			}
 		}
+		else{
+			if((irs.object_info.symbol_info.ref_ptr=(int)new_proxy_function<int>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
+				return false;
+			}
+		}
+
 
 
 		/*if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
@@ -478,100 +490,121 @@ public:
 
 	}
 
-	template <class _T,typename _F>
-	void * c_member_class_function_proxy(unsigned int n_args, _F fun_obj, bool is_has_return_void){
+
+	template <class _T, class _R,typename _F>
+	void * c_member_class_function_proxy(unsigned int n_args, _F fun_obj){
 		using namespace std::placeholders;
-		std::function<void *(void *)> *c_function_builder=NULL;
+		std::function<void *(void *,PROXY_CREATOR)> *c_function_builder=NULL;
 
-		if(!is_has_return_void){
 
-			switch(n_args){
-			case 0:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<int ()>(std::bind((int (_T::*)())(fun_obj), (_T *)obj)));
-				});
-				break;
-			case 1:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<int (int)>(std::bind((int (_T::*)(int))(fun_obj), (_T *)obj, _1)));
-				});
-				break;
-			case 2:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<int (int,int)>(std::bind((int (_T::*)(int,int))(fun_obj), (_T *)obj, _1,_2)));
-				});
-				break;
-			case 3:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<int (int,int,int)>(std::bind((int (_T::*)(int,int,int))(fun_obj), (_T *)obj, _1,_2,_3)));
-				});
-				break;
-			case 4:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<int (int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
-				});
 
-				break;
-			case 5:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<int (int,int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
-				});
+		switch(n_args){
+		case 0:
+			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
 
-				break;
-			case 6:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<int (int,int,int,int,int,int)>(std::bind((int (_T::*)(int,int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
-				});
-				break;
-			default:
-				print_error_cr("Max argyments reached!");
+				void *return_val=NULL;
 
-			}
-		}else{
-			switch(n_args){
-			case 0:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<void ()>(std::bind((void (_T::*)())(fun_obj), (_T *)obj)));
-				});
-				break;
-			case 1:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<void (int)>(std::bind((void (_T::*)(int))(fun_obj), (_T *)obj, _1)));
-				});
-				break;
-			case 2:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<void (int,int)>(std::bind((void (_T::*)(int,int))(fun_obj), (_T *)obj, _1,_2)));
-				});
-				break;
-			case 3:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<void (int,int,int)>(std::bind((void (_T::*)(int,int,int))(fun_obj), (_T *)obj, _1,_2,_3)));
-				});
-				break;
-			case 4:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<void (int,int,int,int)>(std::bind((void (_T::*)(int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
-				});
+				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
+					return_val= (void *)(new std::function<_R ()>(std::bind((_R (_T::*)())(fun_obj), (_T *)obj)));
+				}
+				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
+					delete (std::function<_R ()> *)obj;
+				}
+				return return_val;
+			});
+			break;
+		case 1:
+			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
 
-				break;
-			case 5:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<void (int,int,int,int,int)>(std::bind((void (_T::*)(int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
-				});
+				void *return_val=NULL;
 
-				break;
-			case 6:
-				c_function_builder = new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new std::function<void (int,int,int,int,int,int)>(std::bind((void (_T::*)(int,int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
-				});
-				break;
-			default:
-				print_error_cr("Max argyments reached!");
+				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
+					return_val=  (void *)(new std::function<_R (int)>(std::bind((_R (_T::*)(int))(fun_obj), (_T *)obj, _1)));
+				}
+				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
+					delete (std::function<_R (int)> *)obj;
+				}
+				return return_val;
+			});
+			break;
+		case 2:
+			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
 
-			}
+				void *return_val=NULL;
+
+				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
+					return_val=  (void *)(new std::function<_R (int,int)>(std::bind((_R (_T::*)(int,int))(fun_obj), (_T *)obj, _1,_2)));
+				}
+				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
+					delete (std::function<_R (int,int)> *)obj;
+				}
+				return return_val;
+			});
+			break;
+		case 3:
+			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
+
+				void *return_val=NULL;
+
+				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
+					return_val=  (void *)(new std::function<_R (int,int,int)>(std::bind((_R (_T::*)(int,int,int))(fun_obj), (_T *)obj, _1,_2,_3)));
+				}
+				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
+					delete (std::function<_R (int,int,int)> *)obj;
+				}
+				return return_val;
+			});
+			break;
+		case 4:
+			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
+
+				void *return_val=NULL;
+
+				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
+					return_val=  (void *)(new std::function<_R (int,int,int,int)>(std::bind((_R (_T::*)(int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
+				}
+				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
+					delete (std::function<_R (int,int,int,int)> *)obj;
+				}
+				return return_val;
+			});
+
+			break;
+		case 5:
+			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
+
+				void *return_val=NULL;
+
+				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
+					return_val=  (void *)(new std::function<_R (int,int,int,int,int)>(std::bind((_R (_T::*)(int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
+				}
+				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
+					delete (std::function<_R (int,int,int,int,int)> *)obj;
+				}
+				return return_val;
+			});
+
+			break;
+		case 6:
+			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
+
+				void *return_val=NULL;
+
+				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
+					return_val= (void *)(new std::function<_R (int,int,int,int,int,int)>(std::bind((_R (_T::*)(int,int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
+				}
+				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
+					delete (std::function<int (int,int,int,int,int,int)> *)obj;
+				}
+				return return_val;
+			});
+			break;
+		default:
+			print_error_cr("Max argyments reached!");
 
 		}
+
+
 
 		return c_function_builder;
 	}
@@ -623,8 +656,14 @@ public:
 
 		// ignores special type cast C++ member to ptr function
 		// create binding function class
-		if((irs.object_info.symbol_info.ref_ptr=((int)c_member_class_function_proxy<_T>(irs.m_arg.size(),function_type, irs.idx_return_type == getIdxClassVoid())))==0){
-			return false;
+		if(irs.idx_return_type == getIdxClassVoid()){
+			if((irs.object_info.symbol_info.ref_ptr=((int)c_member_class_function_proxy<_T, void>(irs.m_arg.size(),function_type)))==0){
+				return false;
+			}
+		}else{
+			if((irs.object_info.symbol_info.ref_ptr=((int)c_member_class_function_proxy<_T, int>(irs.m_arg.size(),function_type)))==0){
+				return false;
+			}
 		}
 
 

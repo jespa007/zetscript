@@ -401,6 +401,7 @@ char * CAst::getEndWord(const char *s, int m_line){
 	 int i=0;
 	 bool start_digit = false;
 
+
 	if(*aux == '\"'){
 		aux++;
 		while((*aux)!=0 && !((*aux)=='\n') && !((*aux)=='\"')) {
@@ -443,7 +444,7 @@ char * CAst::getEndWord(const char *s, int m_line){
 
 
 			if((sp = isOperatorPunctuator(aux))!=NULL){
-				if(sp->id == FIELD_PUNCTUATOR  || *aux=='-' ||  *aux=='+'){
+				if(sp->id == FIELD_PUNCTUATOR  || ((*aux=='-' ||  *aux=='+') && ((i>0 && (*(aux-1)=='e'))))){
 					if(!is_possible_number){
 						return aux;
 					}

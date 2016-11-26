@@ -17,6 +17,10 @@ for (var i = 2; i < 1000; i++) {
 
 //var t= "KAKA" + ( 1<2? (4+4<5?6:3+7):8+9*10);
 
+class MyClass{
+	
+};
+
 var t= -2e-2;
 var j=0+1;
 
@@ -24,7 +28,16 @@ t=5.3 % 2;
 
 print(t);
 t=t%2;
-print(t);
+print(t+(0+1));
+
+for(var i=0; i < 1000; i++){
+	//new MyObject();
+	var v=new MyClass();
+	
+	print("hola"+v);
+	
+	v=null;
+}
 
 //t=((t=true)==true);
 

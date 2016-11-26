@@ -590,21 +590,26 @@ CScriptVariable * CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_INTEGER:
 		obj= NEW_INTEGER_VAR;//CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassInteger());
 		*((int *)(((CScriptVariable *)obj)->m_value)) = ((int)(ptr_instruction->stkResultObject));
+		obj->deallocatable = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_NUMBER:
 		obj= NEW_NUMBER_VAR;//CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassNumber());
 		*((float *)(((CScriptVariable *)obj)->m_value)) = *((float *)(ptr_instruction->stkResultObject));
+		obj->deallocatable = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_STRING:
 		obj= NEW_STRING_VAR;//=CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassString());
 		*((string *)(((CScriptVariable *)obj)->m_value)) = *((string *)(ptr_instruction->stkResultObject));
+		obj->deallocatable = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_BOOLEAN:
 		obj= NEW_BOOLEAN_VAR;//=CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassBoolean());
 		*((bool *)(((CScriptVariable *)obj)->m_value)) = ((bool)(ptr_instruction->stkResultObject));
+		obj->deallocatable = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_FUNCTION:
 		obj = NEW_FUNCTOR_VAR(((tInfoRegisteredFunctionSymbol *)ptr_instruction->stkResultObject));
+		obj->deallocatable = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR:
 		obj = (CScriptVariable *)ptr_instruction->stkResultObject;
@@ -1637,10 +1642,6 @@ bool CVirtualMachine::performInstruction(
 
 
 
-
-
-
-
 			if(ptrResultInstructionOp1->type != INS_TYPE_FUNCTION){
 				if(ptrResultInstructionOp1->type == INS_TYPE_VAR && ((CScriptVariable *)ptrResultInstructionOp1->stkResultObject)->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
 					aux_function_info = ((CFunctor *)ptrResultInstructionOp1->stkResultObject)->m_functorValue;
@@ -1669,6 +1670,16 @@ bool CVirtualMachine::performInstruction(
 			if((ret_obj=CVirtualMachine::execute(aux_function_info,calling_object,&m_functionArgs, n_stk+1))==NULL){
 				return false;
 			}
+
+			// deallocates stack...
+			for(unsigned j=0; j < m_functionArgs.size(); j++){
+
+				if(m_functionArgs[j]->deallocatable){
+					delete m_functionArgs[j];
+				}
+			}
+
+			m_functionArgs.clear();
 
 			// finally set result value into stkResultObject...
 			if(!pushVar(ret_obj)){

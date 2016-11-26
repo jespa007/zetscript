@@ -24,9 +24,6 @@ if (MINGW)
 endif()
 
 
- 
-
-
 include_directories (
 	/usr/local/include
 	${OPENGL_INCLUDE_DIRS}  

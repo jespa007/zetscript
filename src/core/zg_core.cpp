@@ -22,6 +22,14 @@ CZG_ScriptCore * CZG_ScriptCore::getInstance(){
 
 void CZG_ScriptCore::destroy(){
 
+
+
+	CScriptClassFactory::destroySingletons();
+	CCompiler::destroySingletons();
+	CAst::destroySingletons();
+	CScriptVariable::destroySingletons();
+
+
 	if(m_instance!=NULL){
 		delete m_instance;
 	}
@@ -261,10 +269,4 @@ CZG_ScriptCore::~CZG_ScriptCore(){
 	// unregister operators ...
 	delete m_mainClass;
 	delete vm;
-
-
-	CCompiler::destroySingletons();
-	CAst::destroySingletons();
-	CScriptVariable::destroySingletons();
-
 }
