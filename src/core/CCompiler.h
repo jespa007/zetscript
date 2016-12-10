@@ -1,7 +1,6 @@
 #pragma once
 
 
-class CContext;
 class CScopeInfo;
 
 //class tInfoRegisteredFunctionSymbol;

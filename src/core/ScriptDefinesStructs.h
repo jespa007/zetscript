@@ -313,17 +313,7 @@ class tASTNode{
 					destroyChildren_Recursive(_node->children[i]);
 				}
 			}
-
-			/*if(_node->keyword_info!=NULL){
-				print_info_cr("deallocating %s ",_node->keyword_info->str);
-			}else if(_node->operator_info!=NULL){
-				print_info_cr("deallocating %s ",_node->operator_info->str);
-			}
-			else{
-				print_info_cr("deallocating %s ",_node->value_symbol.c_str());
-			}*/
-
-			_node->children.clear();
+    		_node->children.clear();
 			delete _node;
 			_node = NULL;
 		}
@@ -379,6 +369,7 @@ public:
 //-----------------------------
 
 struct tInfoScopeVar{
+	string symbol_ref;
 	string name; // var name
 	//CVariable *m_obj; // in case of static objects like object-functions
 	PASTNode ast; // ast node info.

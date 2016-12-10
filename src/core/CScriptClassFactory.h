@@ -231,9 +231,6 @@ public:
 			exit(EXIT_FAILURE);
 		}
 
-
-
-
 		// 1. check all parameters ok.
 		using Traits3 = function_traits<decltype(function_ptr)>;
 		getParamsFunction<Traits3>(0,return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
@@ -250,7 +247,6 @@ public:
 				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(irs.m_arg[i]).c_str(),function_name.c_str());
 				return false;
 			}
-
 		}
 
 		// init struct...
@@ -270,14 +266,6 @@ public:
 				return false;
 			}
 		}
-
-
-
-		/*if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
-			return false;
-		}*/
-
-
 
 		irs.object_info.symbol_info.index = mainFunctionInfo->object_info.local_symbols.m_registeredFunction.size();
 		mainFunctionInfo->object_info.local_symbols.m_registeredFunction.push_back(irs);

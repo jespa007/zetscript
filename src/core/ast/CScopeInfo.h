@@ -1,56 +1,34 @@
 #pragma once
 
-//#include "script/ast/ast.h"
-
 
 
 class CContext;
 
 
-class CScopeInfo{//: public CScriptVariable{
+class CScopeInfo{
 public:
-
-
 
 
 	//---------------------------------
 	// Register functions
-	tInfoScopeVar *getInfoRegisteredSymbol(const string & v, bool print_msg=true);
-
-
+	tInfoScopeVar * getInfoRegisteredSymbol(const string & v, bool print_msg=true);
 	tInfoScopeVar * registerAnonymouseFunction(PASTNode ast);
 	tInfoScopeVar * registerSymbol(const string & var_name, PASTNode ast=NULL);
+	tInfoScopeVar * existRegisteredSymbol(const string & var_name);
+	vector<tInfoScopeVar *> * getRegisteredSymbolsList();
 
-	/**
-	 * Adds indexed symbol only for parent scope.
-	 */
-	//bool addIndexedSymbol(tInfoScopeVar *);
-
-
-	//bool defineSymbol(const string & var_name, CVariable *obj);
-	CScopeInfo(CScopeInfo * m_parent=NULL);
+	CScopeInfo(CScopeInfo * m_parent);
 
 	CScopeInfo * getMainScope();
-
-
-
 	CScopeInfo * getParent();
 	CScopeInfo * getCurrentScopePointer();
-	CScopeInfo * getRootScope();
+	void         generateScopeList(vector<CScopeInfo *> & vector);
+	vector<CScopeInfo *> * getScopeList();
 
 	CScopeInfo * pushScope();
 	CScopeInfo * popScope();
 
 	void resetScopePointer();
-
-	//---------------------------------
-
-
-
-	//bool eval(const string & s);
-
-	// execute instructions at local scope ...
-	static bool execute(CScopeInfo *lc);
 
 	~CScopeInfo();
 
@@ -58,64 +36,14 @@ private:
 
 	//--------------------------------------------------------------------
 	// Register functions
-
-	//char * parseKeyword_Switch(const char * str,int & m_line,tInfoCase & info_case,bool & error);
-
-	map<string,tInfoScopeVar *> m_registeredVariable;
-	vector<tInfoScopeVar *> m_registeredAnoymouseFunction;
-
-
-
-
-	//static CUndefined *m_defaultSymbol;
-
-	// each scope has its registered vars.... if the compiler tries to find a var and this is not found goes through parent scopes until
-	// it finds it.
-
-
+	vector<tInfoScopeVar *> m_registeredVariable; // vars registered from base.
+	vector<tInfoScopeVar *> m_registeredAnoymouseFunction; // anonymous functions registered from base.
+	void generateScopeListRecursive(CScopeInfo * scope, vector<CScopeInfo *> & vector);
 
 	vector<CScopeInfo *> m_scopeList;
 
 	// The a parent scope ...
 	CScopeInfo *m_parentScope,*m_mainScope, *m_currentScopePointer, *m_baseScope;
-
-
-
-	tInfoScopeVar * existRegisteredSymbol(const string & var_name);
-
-
-	//typedef struct _tLocalScope;
-
-	//typedef struct _tLocalScope{
-
-		/*vector<tinfostatementop> tinfostatementop *m_currentstatement;*/
-
-	//_tLocalScope *m_parentScope;
-
-
-	//}tLocalScope;
-
-	//typedef struct{
-
-		//vector<tLocalScope *> m_localScope;
-		//tLocalScope *base_scope;
-		//map<string,tLocalScope *>	m_label;
-
-	//}tContext;
-
-
-		void unregisterOperators();
-		void insertNewStatment();
-		//tLocalScope * createLocalScope(tLocalScope *m_parent);
-		//tContext * createContext();
-
-		static bool isVarDeclarationStatment(const char *statment, bool & error,char **eval_expression, int & m_line, CScopeInfo * _localScope);
-		static char * evalRecursive(const char * s, int & m_line,bool & error,CScopeInfo *local_scope,int level_scope=0);
-
-		void addLocalScope(CScopeInfo *_ls);
-
-	//	vector<tInfoStatementOp> * getListStatments();
-
 
 
 

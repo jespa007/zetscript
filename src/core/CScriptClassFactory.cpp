@@ -528,6 +528,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 	int idx=0;
 	string symbol_to_find = iao->ast_node->value_symbol;
+	CScopeInfo * scope_node = iao->ast_node->scope_info_ptr;
 
 	SCOPE_TYPE scope_type = iao->scope_type;
 
@@ -576,7 +577,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 	else{
 		if(scope_type == SCOPE_TYPE::UNKNOWN_SCOPE){ // try deduce local/global
 
-			if(script_info == &m_registeredClass[0]->metadata_info.object_info.local_symbols.m_registeredFunction[0].object_info){
+			if(scope_node == CAst::getInstance()->getRootScopeInfo()){// m_registeredClass[0]->metadata_info.object_info.symbol_info.ast->scope_info_ptr->getMainScope()){
 				scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
 			}else{
 				scope_type = SCOPE_TYPE::LOCAL_SCOPE;
@@ -641,6 +642,37 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 		 // For each function on the class ...
 		 for(unsigned k=0; k < mrf.size();k++){
 
+
+			 print_info_cr("======================");
+			 print_info_cr("scopes for function %s",mrf[k]->object_info.symbol_info.symbol_name.c_str());
+			 print_info_cr("======================");
+			 if(mrf[k]->object_info.symbol_info.ast!=NULL){
+
+				 CScopeInfo *scp=mrf[k]->object_info.symbol_info.ast->scope_info_ptr;
+				 if(k!=0 && scp != NULL) {// is not main function
+
+					 if(mrf[k]->object_info.symbol_info.ast->node_type == NODE_TYPE::KEYWORD_NODE){
+						 if(mrf[k]->object_info.symbol_info.ast->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
+							 scp = mrf[k]->object_info.symbol_info.ast->children[1]->scope_info_ptr; // pass scope block ...
+						 }
+					 }
+				 }
+
+				 if(scp != NULL){
+					 vector<CScopeInfo *> list;// = mrf[k]->object_info.symbol_info.ast->scope_info_ptr->getScopeList();
+					 scp->generateScopeList(list);
+
+					 for(unsigned b = 0; b < list.size(); b++){
+						 print_info_cr("scope info %i. List symbols: ",b);
+						 vector<tInfoScopeVar *> *list_symbols = list.at(b)->getRegisteredSymbolsList();
+						 for(unsigned s = 0; s < list_symbols->size(); s++){
+							 print_info_cr("* ref:%s name:%s",list_symbols->at(s)->symbol_ref.c_str(),list_symbols->at(s)->name.c_str());
+						 }
+					 }
+				 }
+			 }
+
+
 			 if(i==0){
 
 				 if(k==0){
@@ -673,16 +705,7 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 
 								 sfi = &m_registeredClass[i]->metadata_info.object_info;
 
-
-
-							 }/*else if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE ){ // search symbol through its hiearchy ...
-
-								 if((sfi = getSuperClass(m_registeredClass[i]->baseClass,iao->ast_node->value_symbol))==NULL){
-									 print_error_cr("Error at line %i with \"super.%s\" (has no overrider)",iao->ast_node->definedValueline, iao->ast_node->value_symbol.c_str());
-									 return false;
-								 }
-							 }*/
-
+							 }
 
 							 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
 
@@ -747,8 +770,6 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 	 }
 
 	 return true;
-
-
 }
 
 
@@ -996,44 +1017,24 @@ tInfoRegisteredFunctionSymbol * CScriptClassFactory::registerFunctionSymbol(cons
 
 	if(rc != NULL){
 
-		// get last registered function it will point super class...
-		//if(getRegisteredFunctionSymbol(class_name,fun_name, false) == NULL)
-		{
+		tScriptFunctionInfo *object_info=&rc->metadata_info.object_info;
+
+		tInfoRegisteredFunctionSymbol irs;
+
+		irs.object_info.symbol_info.class_info = rc;
+		irs.object_info.symbol_info.symbol_name = fun_name;
+		irs.object_info.symbol_info.ast = ast;
 
 
-			tScriptFunctionInfo *object_info=&rc->metadata_info.object_info;
-
-			tInfoRegisteredFunctionSymbol irs;
-
-			irs.object_info.symbol_info.class_info = rc;
-			irs.object_info.symbol_info.symbol_name = fun_name;
-			irs.object_info.symbol_info.ast = ast;
-			//irs.virtual_function = getVirtualFunction(rc->baseClass,fun_name);
-
-			//rc->idx_function_script_constructor =-1; // by default has no constructor...
-
-
-			if(fun_name == class_name){
-				//if(rc->idx_function_script_constructor == -1){ // constructor not defined yet
-					rc->idx_function_script_constructor = object_info->local_symbols.m_registeredFunction.size();
-				//}else{
-				//	print_warning_cr("Must define virtual constructor \"%s:%s\" !",fun_name.c_str(),fun_name.c_str());
-					//return NULL;
-				//}
-			}
-
-
-			irs.object_info.symbol_info.index = object_info->local_symbols.m_registeredFunction.size();
-			object_info->local_symbols.m_registeredFunction.push_back(irs);
-
-			return &object_info->local_symbols.m_registeredFunction[object_info->local_symbols.m_registeredFunction.size()-1];
+		if(fun_name == class_name){
+			rc->idx_function_script_constructor = object_info->local_symbols.m_registeredFunction.size();
 		}
-		//else{
 
-		//print_error_cr("function member %s::%s already registered",class_name.c_str(),fun_name.c_str());
-		//}
-	}else{
-		//print_error_cr("object info NULL");
+
+		irs.object_info.symbol_info.index = object_info->local_symbols.m_registeredFunction.size();
+		object_info->local_symbols.m_registeredFunction.push_back(irs);
+
+		return &object_info->local_symbols.m_registeredFunction[object_info->local_symbols.m_registeredFunction.size()-1];
 	}
 
 	return NULL;

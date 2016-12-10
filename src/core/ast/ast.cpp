@@ -1697,7 +1697,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 
 						// check whether parameter name's matches with some global variable...
 						if((irv=_currentScope->getInfoRegisteredSymbol(value_symbol,false)) != NULL){
-							print_error_cr("Ambiguos symbol argument \"%s\" at line %i name with var defined at %i", value_symbol, m_line,irv->ast->definedValueline);
+							print_error_cr("Ambiguous symbol argument \"%s\" at line %i name with var defined at %i", value_symbol, m_line,irv->ast->definedValueline);
 							return NULL;
 
 						}
@@ -2969,7 +2969,7 @@ void CAst::destroySingletons(){
 }
 
 CAst::CAst(){
-	m_rootScopeInfo = new CScopeInfo();
+	m_rootScopeInfo = new CScopeInfo(NULL);
 	m_rootAstNode = new tASTNode();
 
 	m_rootAstNode->node_type = BODY_NODE;
