@@ -9,7 +9,7 @@ class CScopeInfo;
 
 
 #include "ScriptDefinesStructs.h"
-#include "CSharedPointerManagement.h"
+#include "CSharedPointerManager.h"
 #include "var/zg_variable.h"
 #include "ast/ast.h"
 #include "ast/CScopeInfo.h"

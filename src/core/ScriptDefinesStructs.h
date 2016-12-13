@@ -464,10 +464,9 @@ struct tScriptFunctionInfo{ // script function is shared by class and function .
 	tInfoRegisteredVariableSymbol 	symbol_info;
 	tLocalSymbolInfo 		local_symbols;
 
-
-
 	// the info asm op for each function. Will be filled at compile time.
 	vector<tInfoStatementOp> statment_op;
+	int **scope_var_list; // list var per scope in any function ...
 };
 
 

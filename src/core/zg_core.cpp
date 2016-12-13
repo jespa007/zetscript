@@ -1,4 +1,4 @@
-#include "CSharedPointerManagement.cpp"
+#include "CSharedPointerManager.cpp"
 #include "var/zg_variable.cpp"
 #include "ast/CScopeInfo.cpp"
 #include "ast/ast.cpp"
