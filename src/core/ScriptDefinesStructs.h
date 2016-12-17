@@ -7,7 +7,7 @@ struct tInfoRegisteredFunctionSymbol;
 struct tInfoScopeVar;
 struct tInfoRegisteredClass;
 struct tScriptFunctionInfo;
-
+struct tInfoVarScopeBlock;
 
 
 #define MAX_PARAM_C_FUNCTION 6
@@ -215,6 +215,8 @@ enum ASM_OPERATOR{
 		OBJECT_ACCESS, // object access .
 		SAVE_I, // save current instruction...
 		LOAD_I, // load value that points saved instruction...
+
+		POP_SCOPE,
 		MAX_OPERATORS
 
 
@@ -466,7 +468,7 @@ struct tScriptFunctionInfo{ // script function is shared by class and function .
 
 	// the info asm op for each function. Will be filled at compile time.
 	vector<tInfoStatementOp> statment_op;
-	int **scope_var_list; // list var per scope in any function ...
+	vector<tInfoVarScopeBlock> info_var_scope; // list var per scope in any function ...
 };
 
 
@@ -513,6 +515,14 @@ struct tInfoRegisteredClass{
 		idx_function_script_constructor=-1;
 	}
 
+};
+
+/**
+ * Scope register
+ */
+struct tInfoVarScopeBlock{
+	vector<int> var_index;
+	CScopeInfo *scope_ptr;
 };
 
 

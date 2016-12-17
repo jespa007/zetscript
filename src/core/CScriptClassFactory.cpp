@@ -577,7 +577,7 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 	else{
 		if(scope_type == SCOPE_TYPE::UNKNOWN_SCOPE){ // try deduce local/global
 
-			if(scope_node == CAst::getInstance()->getRootScopeInfo()){// m_registeredClass[0]->metadata_info.object_info.symbol_info.ast->scope_info_ptr->getMainScope()){
+			if(scope_node == CAst::getInstance()->getRootScopeInfo()){
 				scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
 			}else{
 				scope_type = SCOPE_TYPE::LOCAL_SCOPE;
@@ -613,7 +613,47 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 
 
+void CScriptClassFactory::buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSymbol *irfs ){
 
+
+	 print_info_cr("======================");
+	 print_info_cr("scopes for function %s",irfs->object_info.symbol_info.symbol_name.c_str());
+	 print_info_cr("======================");
+
+	 bool main_function = CZG_ScriptCore::getInstance()->getMainStructInfo() == irfs;
+
+	 if(irfs->object_info.symbol_info.ast!=NULL){
+
+		 CScopeInfo *scp=irfs->object_info.symbol_info.ast->scope_info_ptr;
+		 if(!main_function) {// is not main function
+
+			 if(irfs->object_info.symbol_info.ast->node_type == NODE_TYPE::KEYWORD_NODE){
+				 if(irfs->object_info.symbol_info.ast->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
+					 scp = irfs->object_info.symbol_info.ast->children[1]->scope_info_ptr; // pass scope block ...
+				 }
+			 }
+		 }
+
+		 if(scp != NULL){
+			 vector<CScopeInfo *> list;// = mrf[k]->object_info.symbol_info.ast->scope_info_ptr->getScopeList();
+			 scp->generateScopeList(list);
+			 vector<tInfoRegisteredVariableSymbol> *vs = &irfs->object_info.local_symbols.m_registeredVariable;
+			 for(unsigned i = 0;i < list.size(); i++){ // register index var per scope ...
+				 tInfoVarScopeBlock ivsb;
+
+				 ivsb.scope_ptr = list[i];
+
+				 for(unsigned v = 0;v < vs->size(); v++){ // register index var per scope ...
+					if(vs->at(v).ast->scope_info_ptr == ivsb.scope_ptr){
+						ivsb.var_index.push_back(v);
+					}
+				 }
+
+				 irfs->object_info.info_var_scope.push_back(ivsb);
+			 }
+		 }
+	 }
+}
 
 
 bool CScriptClassFactory::updateReferenceSymbols(){
@@ -643,35 +683,8 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 		 for(unsigned k=0; k < mrf.size();k++){
 
 
-			 print_info_cr("======================");
-			 print_info_cr("scopes for function %s",mrf[k]->object_info.symbol_info.symbol_name.c_str());
-			 print_info_cr("======================");
-			 if(mrf[k]->object_info.symbol_info.ast!=NULL){
 
-				 CScopeInfo *scp=mrf[k]->object_info.symbol_info.ast->scope_info_ptr;
-				 if(k!=0 && scp != NULL) {// is not main function
-
-					 if(mrf[k]->object_info.symbol_info.ast->node_type == NODE_TYPE::KEYWORD_NODE){
-						 if(mrf[k]->object_info.symbol_info.ast->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
-							 scp = mrf[k]->object_info.symbol_info.ast->children[1]->scope_info_ptr; // pass scope block ...
-						 }
-					 }
-				 }
-
-				 if(scp != NULL){
-					 vector<CScopeInfo *> list;// = mrf[k]->object_info.symbol_info.ast->scope_info_ptr->getScopeList();
-					 scp->generateScopeList(list);
-
-					 for(unsigned b = 0; b < list.size(); b++){
-						 print_info_cr("scope info %i. List symbols: ",b);
-						 vector<tInfoScopeVar *> *list_symbols = list.at(b)->getRegisteredSymbolsList();
-						 for(unsigned s = 0; s < list_symbols->size(); s++){
-							 print_info_cr("* ref:%s name:%s",list_symbols->at(s)->symbol_ref.c_str(),list_symbols->at(s)->name.c_str());
-						 }
-					 }
-				 }
-			 }
-
+			 buildInfoScopeVariablesBlock(mrf[k]);
 
 			 if(i==0){
 

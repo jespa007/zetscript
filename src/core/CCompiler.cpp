@@ -664,6 +664,20 @@ bool CCompiler::insertObjectMemberAccessFrom(PASTNode _node, int ref_node_index)
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return true;
 }
+
+
+void CCompiler::insertPopScopeInstruction(PASTNode _node,int scope_idx){
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	asm_op->index_op1 = scope_idx;
+	asm_op->index_op2 = -1; // index from object cached node ?
+	asm_op->operator_type=ASM_OPERATOR::POP_SCOPE;
+	asm_op->ast_node = _node;
+
+	ptr_current_statement_op->asm_op.push_back(asm_op);
+
+}
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ASM_PRE_POST_OPERATORS CCompiler::preoperator2instruction(PUNCTUATOR_TYPE op){
 
@@ -1770,6 +1784,8 @@ bool CCompiler::gacKeyword(PASTNode _node, CScopeInfo * _lc){
 	return false;
 }
 
+
+
 bool CCompiler::gacBody(PASTNode _node, CScopeInfo * _lc){
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != BODY_NODE ){print_error_cr("node is not BODY type or null");return false;}
@@ -1782,8 +1798,17 @@ bool CCompiler::gacBody(PASTNode _node, CScopeInfo * _lc){
 		}
 
 		return true;
-	}else{ // insert one statment at least ..
+	}else{ // no block. Insert one statment at least ..
 		newStatment();
+	}
+
+	int index=CScopeInfo::getScopeIndex(_lc);
+
+	if(index != -1){
+		insertPopScopeInstruction(_node,index);
+	}else{
+		print_error_cr("Cannot find scope_info!");
+		return false;
 	}
 
 	return true;

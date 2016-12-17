@@ -71,7 +71,7 @@ private:
 	/**
 	 * Reserve for N vars. Return base pointer.
 	 */
-	 tAleObjectInfo *pushStack(tInfoRegisteredFunctionSymbol *info_function,vector<CScriptVariable *> * argv);
+	 void pushStack(tInfoRegisteredFunctionSymbol *info_function,vector<CScriptVariable *> * argv);
 	 void popStack();
 
 	/*enum{

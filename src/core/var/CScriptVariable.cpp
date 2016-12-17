@@ -113,6 +113,7 @@ CScriptVariable::CScriptVariable(){
 
 	setup();
 
+	idx_shared_ptr=-1;
 	this->m_infoRegisteredClass = NULL;
 	c_object = NULL;
 	created_object = NULL;

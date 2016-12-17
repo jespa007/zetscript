@@ -782,6 +782,7 @@ private:
 
 	bool searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao, int current_idx_function);
 	bool registerBase();
+	void buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSymbol *irfs );
 
 	//---------------
 	// PRINT ASM INFO

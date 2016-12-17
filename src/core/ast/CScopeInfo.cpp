@@ -9,20 +9,20 @@ int n_anonymouse_func=0;
 CScopeInfo::CScopeInfo(CScopeInfo * _parent){
 	m_parentScope = _parent;
 
-	m_baseScope = this;
+	//m_baseScope = this;
 
 
 	if(_parent == NULL){
-		m_mainScope = this;
+		m_baseScope = this;
 	}else{
-		m_mainScope = _parent->getMainScope();
+		m_baseScope = _parent->getBaseScope();
 	}
 
 	m_currentScopePointer=m_baseScope;
 }
 
-CScopeInfo * CScopeInfo::getMainScope(){
-	return m_mainScope;
+CScopeInfo * CScopeInfo::getBaseScope(){
+	return m_baseScope;
 }
 
 
@@ -66,7 +66,7 @@ void CScopeInfo::generateScopeListRecursive(CScopeInfo * scope, vector<CScopeInf
 	for(unsigned i = 0; i < scope_list->size(); i++){
 		generateScopeListRecursive(scope_list->at(i), lstScope);
 	}
-	//return &m_baseScope->m_scopeList;
+
 }
 
 void CScopeInfo::generateScopeList(vector<CScopeInfo *> & lstScope){
@@ -83,6 +83,30 @@ vector<CScopeInfo *> * CScopeInfo::getScopeList(){
 
 vector<tInfoScopeVar *> * CScopeInfo::getRegisteredSymbolsList(){
 	return &m_baseScope->m_registeredVariable;
+}
+//-----------------------------------------------------------------------------------------------------------
+int CScopeInfo::getScopeIndex(CScopeInfo * scope_to_find){
+	int index=0;
+	return CScopeInfo::getScopeIndexRecursive(scope_to_find->getBaseScope(),scope_to_find, index);
+}
+//-----------------------------------------------------------------------------------------------------------
+int CScopeInfo::getScopeIndexRecursive(CScopeInfo * current_scope, CScopeInfo * scope_to_find, int & _index){
+
+	int r=0;
+	if(current_scope == scope_to_find){
+		return _index;
+	}
+	vector<CScopeInfo *> * scope_list = current_scope->getScopeList();
+
+	for(unsigned i = 0; i < scope_list->size(); i++){
+		_index++;
+		if((r=getScopeIndexRecursive(scope_list->at(i), scope_to_find,_index))!=-1){
+			return r;
+		}
+
+	}
+
+	return -1;
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -173,6 +197,7 @@ tInfoScopeVar *CScopeInfo::getInfoRegisteredSymbol(const string & var_name, bool
 	}
 	return NULL;
 }
+
 //-----------------------------------------------------------------------------------------------------------
 CScopeInfo::~CScopeInfo(){
 

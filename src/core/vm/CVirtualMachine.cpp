@@ -191,6 +191,9 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 				s++;
 			}
 
+			// to deallocate not used poiners...
+			 CSharedPointerManager::getInstance()->gc();
+
 
 		}else{ //no instructions ... pass next statment ...
 			s++;
@@ -229,7 +232,7 @@ CVirtualMachine::tAleObjectInfo *CVirtualMachine::basePtrLocalVar=NULL;
 int CVirtualMachine::idxStkCurrentLocalVar=0;
 */
 
-CVirtualMachine::tAleObjectInfo *CVirtualMachine::pushStack(tInfoRegisteredFunctionSymbol *info_function, vector<CScriptVariable *> * argv){
+void CVirtualMachine::pushStack(tInfoRegisteredFunctionSymbol *info_function, vector<CScriptVariable *> * argv){
 
 
 
@@ -247,25 +250,28 @@ CVirtualMachine::tAleObjectInfo *CVirtualMachine::pushStack(tInfoRegisteredFunct
 	basePtrLocalVar=&stack[CVirtualMachine::idxStkCurrentLocalVar];
 
 
-	// init argv vars ...
-	for(unsigned i = 0; i < n_arg_size; i++){
 
-		basePtrLocalVar[i].ptrObjectRef = NULL;
-		basePtrLocalVar[i].type = INS_TYPE_UNDEFINED;
-		basePtrLocalVar[i].stkResultObject=CScriptVariable::UndefinedSymbol;
-
-		if(i < argv->size()){
-			basePtrLocalVar[i].stkResultObject=argv->at(i);
-			basePtrLocalVar[i].type = INS_TYPE_UNDEFINED;
-			basePtrLocalVar[i].ptrObjectRef = NULL;
-		}
-	}
 
 	// init local vars ...
 	for(unsigned i = 0; i < n_local_vars; i++){
-		basePtrLocalVar[n_arg_size+i].stkResultObject=CScriptVariable::UndefinedSymbol;
-		basePtrLocalVar[n_arg_size+i].type = INS_TYPE_UNDEFINED;
-		basePtrLocalVar[n_arg_size+i].ptrObjectRef = NULL;
+		basePtrLocalVar[i].stkResultObject=CScriptVariable::UndefinedSymbol;
+		basePtrLocalVar[i].type = INS_TYPE_UNDEFINED;
+		basePtrLocalVar[i].ptrObjectRef = NULL;
+	}
+
+
+	// init argv vars ...
+	for(unsigned i = 0; i < n_arg_size; i++){
+
+		basePtrLocalVar[n_local_vars+i].ptrObjectRef = NULL;
+		basePtrLocalVar[n_local_vars+i].type = INS_TYPE_UNDEFINED;
+		basePtrLocalVar[n_local_vars+i].stkResultObject=CScriptVariable::UndefinedSymbol;
+
+		if(i < argv->size()){
+			basePtrLocalVar[n_local_vars+i].stkResultObject=argv->at(i);
+			basePtrLocalVar[n_local_vars+i].type = INS_TYPE_UNDEFINED;
+			basePtrLocalVar[n_local_vars+i].ptrObjectRef = NULL;
+		}
 	}
 
 	CVirtualMachine::vecIdxLocalVar.push(n_total_vars);
@@ -283,7 +289,7 @@ CVirtualMachine::tAleObjectInfo *CVirtualMachine::pushStack(tInfoRegisteredFunct
 	startIdxStkResultInstruction=idxStkCurrentResultInstruction+1;
 
 
-	return basePtrLocalVar;
+
 }
 
 void CVirtualMachine::popStack(){
@@ -292,6 +298,7 @@ void CVirtualMachine::popStack(){
 	CVirtualMachine::vecIdxLocalVar.pop();
 
 	if(!CVirtualMachine::vecIdxLocalVar.empty()){
+
 
 		basePtrLocalVar=&stack[CVirtualMachine::idxStkCurrentLocalVar-CVirtualMachine::vecIdxLocalVar.top()];
 
@@ -308,6 +315,7 @@ void CVirtualMachine::popStack(){
 		vecIdxStkNumber.pop();
 		vecIdxStkString.pop();
 		vecIdxStkResultInstruction.pop();
+
 
 	}else{
 		print_error_cr("stack is already empty");
@@ -637,7 +645,7 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 	CScriptVariable **ptr_var_object=NULL;
 	CScriptVariable *var_object = NULL;
 
-	int start_index_local_var = info_function->m_arg.size();
+	int start_index_local_var = 0;//info_function->m_arg.size();
 
 	bool push_object=false;
 	bool is_valid_variable = true;
@@ -1012,6 +1020,9 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 			break;
 		case INS_TYPE_VAR: // generic object, assign pointer ...
 			*var = (CScriptVariable *)(ptr_instruction->stkResultObject);
+
+			CSharedPointerManager::getInstance()->sharePointer((*var)->idx_shared_ptr);
+
 			break;
 
 		default:
@@ -1048,7 +1059,7 @@ bool CVirtualMachine::performInstruction(
 	CScriptVariable *ret_obj, *svar;
 	tInfoRegisteredFunctionSymbol *constructor_function;
 	CScriptVariable *calling_object = this_object;
-
+	int n_local_vars =  info_function->object_info.local_symbols.m_registeredVariable.size();
 
 
 	jmp_to_statment=-1;
@@ -1118,7 +1129,7 @@ bool CVirtualMachine::performInstruction(
 				//if(index_op2<(int)argv->size())
 				//{
 					//CScriptVariable *var=basePtrLocalVar[index_op2].stkResultObject;//(*argv)[index_op2];
-					if(!pushVar((CScriptVariable *)basePtrLocalVar[index_op2].stkResultObject,NULL)){
+					if(!pushVar((CScriptVariable *)basePtrLocalVar[index_op2+n_local_vars].stkResultObject,NULL)){
 						return false;
 					}
 				//}else{
@@ -1738,9 +1749,10 @@ bool CVirtualMachine::performInstruction(
 			}
 			break;
 		case VEC: // Create new vector object...
-			if(!pushVar(NEW_VECTOR_VAR)){ //CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassVector()));
+			if(!pushVar(svar=NEW_VECTOR_VAR)){ //CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassVector()));
 				return false;
 			}
+			svar->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(svar);
 			break;
 
 		case RET:
@@ -1753,6 +1765,8 @@ bool CVirtualMachine::performInstruction(
 				return false;
 			}
 
+			svar->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(svar);
+
 			// execute its constructor ...
 			if((constructor_function = svar->getConstructorFunction()) != NULL){
 				execute(constructor_function,svar);
@@ -1760,10 +1774,10 @@ bool CVirtualMachine::performInstruction(
 
 			break;
 
-		case SAVE_I:
+		case SAVE_I: // For ternary condition ...
 			idxSavedInstruction=idxStkCurrentResultInstruction-1;
 			break;
-		case LOAD_I:
+		case LOAD_I: // For ternary condition ...
 
 			switch(stkResultInstruction[idxSavedInstruction].type){
 			default:
@@ -1801,7 +1815,17 @@ bool CVirtualMachine::performInstruction(
 
 			break;
 
+		case POP_SCOPE:
 
+			for(unsigned i = 0; i < info_function->object_info.info_var_scope[instruction->index_op1].var_index.size(); i++){
+				int idx_local_var = info_function->object_info.info_var_scope[instruction->index_op1].var_index[i];
+
+				CScriptVariable *var = *basePtrLocalVar[idx_local_var].ptrObjectRef;
+
+				CSharedPointerManager::getInstance()->unrefSharedPointer(var->idx_shared_ptr);
+			}
+
+			break;
 
 	}
 

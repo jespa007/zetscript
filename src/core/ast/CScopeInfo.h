@@ -19,11 +19,12 @@ public:
 
 	CScopeInfo(CScopeInfo * m_parent);
 
-	CScopeInfo * getMainScope();
+	CScopeInfo * getBaseScope();
 	CScopeInfo * getParent();
 	CScopeInfo * getCurrentScopePointer();
 	void         generateScopeList(vector<CScopeInfo *> & vector);
 	vector<CScopeInfo *> * getScopeList();
+	static int getScopeIndex(CScopeInfo * scope);
 
 	CScopeInfo * pushScope();
 	CScopeInfo * popScope();
@@ -34,16 +35,19 @@ public:
 
 private:
 
+
 	//--------------------------------------------------------------------
 	// Register functions
 	vector<tInfoScopeVar *> m_registeredVariable; // vars registered from base.
 	vector<tInfoScopeVar *> m_registeredAnoymouseFunction; // anonymous functions registered from base.
 	void generateScopeListRecursive(CScopeInfo * scope, vector<CScopeInfo *> & vector);
+	static int getScopeIndexRecursive(CScopeInfo * current_scope, CScopeInfo *scope_to_find,int & _index);
 
 	vector<CScopeInfo *> m_scopeList;
 
 	// The a parent scope ...
-	CScopeInfo *m_parentScope,*m_mainScope, *m_currentScopePointer, *m_baseScope;
+	CScopeInfo *m_parentScope, *m_currentScopePointer, *m_baseScope;
+
 
 
 

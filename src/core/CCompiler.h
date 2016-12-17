@@ -100,6 +100,9 @@ private:
 	// INSTRUCTION UTILS
 	//
 
+
+
+
 	/**
 	 * Compile class struct main ast node with class base object info to store instruction related with function information.
 	 */
@@ -185,7 +188,7 @@ private:
 	//CVariable::VAR_TYPE getTypeAsmResult(int index);
 
 	void insertPushScopeInstruction(CScopeInfo * _goto_scope);
-	void insertPopScopeInstruction();
+	void insertPopScopeInstruction(PASTNode _node,int scope_idx);
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE ASSEMBLE CODE (GAC)
 

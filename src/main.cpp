@@ -23,6 +23,10 @@ int function(_f F){
 int main(int argc, char * argv[]){
 
 
+	string str_hola_merda;
+
+
+	str_hola_merda = "caca";
 	//function<void,int>(print);
 
 

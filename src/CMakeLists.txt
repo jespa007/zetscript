@@ -55,14 +55,18 @@ IF ( "${TARGET}" STREQUAL "")
    SET ( TARGET "release" )
 ENDIF () 
 
-set(TARGET_FLAGS " -O2 -m32 ")
+set(TARGET_FLAGS " -O2 ")
 set( POST_NAME "")
+
+# -D_GLIBCXX_DEBUG
 
 IF ( "${TARGET}" STREQUAL "debug")
 	set( POST_NAME "_d")
 	set(TARGET_FLAGS " -O0 ")
-	set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__DEBUG__ -m32 ")
+	set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__DEBUG__ ")
 ENDIF ()
+
+set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
 
 if ( "${MEMMANAGER}" STREQUAL "yes" )
 	MESSAGE ("********* ¡¡ Warning memmanager enabled. Be care about performance !!! ************" )

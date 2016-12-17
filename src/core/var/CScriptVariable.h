@@ -161,7 +161,11 @@ public:
 
 	};
 
+	//----------------------
+	// MEM MANNAGER RELATED
 	bool deallocatable;
+	int idx_shared_ptr;
+	//----------------------
 
 	// public vars ...
 	string m_strValue;
