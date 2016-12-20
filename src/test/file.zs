@@ -1,6 +1,6 @@
 var g=0;
 
-{
+/*{
    var j=0;
 
    {
@@ -20,4 +20,4 @@ function bb(){
 	var j=0;
 	
 	return j;
-}
+}*/

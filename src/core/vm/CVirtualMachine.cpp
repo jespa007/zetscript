@@ -139,7 +139,17 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 			int ins = 0;
 
 			while(ins  <  n_asm_op && !break_jmp){ // for each code-instruction execute it.
-				//print_vm_cr("executing instruction  [%02i:%02i]...", s,ins);
+				print_vm_cr("executing instruction  [%02i:%02i]...", s,ins);
+
+				if(s==2 &&  ins == 0){
+					int hh=0;
+					hh=1;
+				}
+
+				if(s==2 &&  ins == 2){
+					int hh=0;
+					hh=1;
+				}
 				//print_vm_cr("executing code...%i/%i",s,i);
 
 				//if(stk!=2){
@@ -155,7 +165,10 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 
 
-						ret=createVarFromResultInstruction(&stkResultInstruction[asm_op_statment->at(ins)->index_op1+startIdxStkResultInstruction]); // return last ALE value
+						if((ret=createVarFromResultInstruction(&stkResultInstruction[asm_op_statment->at(ins)->index_op1+startIdxStkResultInstruction])) == NULL){ // return last ALE value
+							return NULL;
+						}
+
 						end=true;
 					}
 
@@ -254,9 +267,10 @@ void CVirtualMachine::pushStack(tInfoRegisteredFunctionSymbol *info_function, ve
 
 	// init local vars ...
 	for(unsigned i = 0; i < n_local_vars; i++){
-		basePtrLocalVar[i].stkResultObject=CScriptVariable::UndefinedSymbol;
-		basePtrLocalVar[i].type = INS_TYPE_UNDEFINED;
 		basePtrLocalVar[i].ptrObjectRef = NULL;
+		basePtrLocalVar[i].type = INS_TYPE_UNDEFINED;
+		basePtrLocalVar[i].stkResultObject=CScriptVariable::UndefinedSymbol;
+
 	}
 
 
@@ -267,11 +281,11 @@ void CVirtualMachine::pushStack(tInfoRegisteredFunctionSymbol *info_function, ve
 		basePtrLocalVar[n_local_vars+i].type = INS_TYPE_UNDEFINED;
 		basePtrLocalVar[n_local_vars+i].stkResultObject=CScriptVariable::UndefinedSymbol;
 
-		if(i < argv->size()){
+		/*if(i < argv->size()){
 			basePtrLocalVar[n_local_vars+i].stkResultObject=argv->at(i);
 			basePtrLocalVar[n_local_vars+i].type = INS_TYPE_UNDEFINED;
 			basePtrLocalVar[n_local_vars+i].ptrObjectRef = NULL;
-		}
+		}*/
 	}
 
 	CVirtualMachine::vecIdxLocalVar.push(n_total_vars);
@@ -584,7 +598,7 @@ bool CVirtualMachine::pushVar(CScriptVariable * init_value, CScriptVariable ** p
 
 CScriptVariable * CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo * ptr_instruction){
 	CScriptVariable *obj = NULL;
-
+bool created_pointer = false;
 
 	// check second operand valid object..
 	switch(ptr_instruction->type){
@@ -598,31 +612,37 @@ CScriptVariable * CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_INTEGER:
 		obj= NEW_INTEGER_VAR;//CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassInteger());
 		*((int *)(((CScriptVariable *)obj)->m_value)) = ((int)(ptr_instruction->stkResultObject));
-		obj->deallocatable = true;
+		created_pointer = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_NUMBER:
 		obj= NEW_NUMBER_VAR;//CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassNumber());
 		*((float *)(((CScriptVariable *)obj)->m_value)) = *((float *)(ptr_instruction->stkResultObject));
-		obj->deallocatable = true;
+		created_pointer = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_STRING:
 		obj= NEW_STRING_VAR;//=CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassString());
 		*((string *)(((CScriptVariable *)obj)->m_value)) = *((string *)(ptr_instruction->stkResultObject));
-		obj->deallocatable = true;
+		created_pointer = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_BOOLEAN:
 		obj= NEW_BOOLEAN_VAR;//=CScriptClassFactory::getInstance()->newClassByIdx(CScriptClassFactory::getInstance()->getIdxClassBoolean());
 		*((bool *)(((CScriptVariable *)obj)->m_value)) = ((bool)(ptr_instruction->stkResultObject));
-		obj->deallocatable = true;
+		created_pointer = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_FUNCTION:
 		obj = NEW_FUNCTOR_VAR(((tInfoRegisteredFunctionSymbol *)ptr_instruction->stkResultObject));
-		obj->deallocatable = true;
+		created_pointer = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR:
 		obj = (CScriptVariable *)ptr_instruction->stkResultObject;
 		break;
 
+	}
+
+	if(created_pointer){
+		if((obj->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(obj)) == -1){
+			return NULL;
+		}
 	}
 
 	return obj;
@@ -1547,8 +1567,8 @@ bool CVirtualMachine::performInstruction(
 
 			if(aux_function_info == NULL){ // we must find function ...
 				tInfoAsmOp *iao = asm_op->at(instruction->index_op1);
-				CScriptVariable::tSymbolInfo * si;
-				CScriptVariable **script_var;
+				CScriptVariable::tSymbolInfo * si=NULL;
+				CScriptVariable **script_var=NULL;
 
 				if(iao->index_op2 == -1 || iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
 
@@ -1683,12 +1703,12 @@ bool CVirtualMachine::performInstruction(
 			}
 
 			// deallocates stack...
-			for(unsigned j=0; j < m_functionArgs.size(); j++){
+			/*for(unsigned j=0; j < m_functionArgs.size(); j++){
 
 				if(m_functionArgs[j]->deallocatable){
 					delete m_functionArgs[j];
 				}
-			}
+			}*/
 
 			m_functionArgs.clear();
 
@@ -1698,7 +1718,12 @@ bool CVirtualMachine::performInstruction(
 			}
 			break;
 		case PUSH: // push arg instruction will creating object ensures not to have e/s...
-			m_functionArgs.push_back(createVarFromResultInstruction(ptrResultInstructionOp1));
+
+			if((svar = createVarFromResultInstruction(ptrResultInstructionOp1)) == NULL){
+				return false;
+			}
+
+			m_functionArgs.push_back(svar);
 			break;
 		case CLR: // clear args
 			m_functionArgs.clear();
@@ -1742,7 +1767,10 @@ bool CVirtualMachine::performInstruction(
 		case VPUSH: // Value push for vector
 			if(IS_VECTOR(ptrResultInstructionOp1)){
 				CVector * vec = (CVector *)(ptrResultInstructionOp1->stkResultObject);
-				vec->m_objVector.push_back(createVarFromResultInstruction(ptrResultInstructionOp2));
+				if((svar = createVarFromResultInstruction(ptrResultInstructionOp2)) == NULL){
+					return false;
+				}
+				vec->m_objVector.push_back(svar);
 			}else{
 				print_error_cr("Expected operand 1 as vector");
 				return false;
@@ -1820,7 +1848,7 @@ bool CVirtualMachine::performInstruction(
 			for(unsigned i = 0; i < info_function->object_info.info_var_scope[instruction->index_op1].var_index.size(); i++){
 				int idx_local_var = info_function->object_info.info_var_scope[instruction->index_op1].var_index[i];
 
-				CScriptVariable *var = *basePtrLocalVar[idx_local_var].ptrObjectRef;
+				CScriptVariable *var =((CScriptVariable *)(basePtrLocalVar[idx_local_var].stkResultObject));
 
 				CSharedPointerManager::getInstance()->unrefSharedPointer(var->idx_shared_ptr);
 			}

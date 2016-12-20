@@ -253,10 +253,11 @@ typedef int (*fntConversionType)(CScriptVariable *obj);
 //typedef tInfoStatementOp *PInfoStatementOp;
 enum SYMBOL_INFO_PROPERTIES{
 	PROPERTY_C_OBJECT_REF = 0x1 <<0,
-	PROPERTY_VARIABLE = 0x1 << 1,
-	PROPERTY_FUNCTION = 0x1 << 2,
-	PROPERTY_STATIC_REF = 0x1 << 3,
-	PROPERTY_CONSTRUCTOR = 0x1 << 4
+	PROPERTY_IS_DERIVATED = 0x1 <<1,
+	PROPERTY_VARIABLE = 0x1 << 2,
+	PROPERTY_FUNCTION = 0x1 << 3,
+	PROPERTY_STATIC_REF = 0x1 << 4,
+	PROPERTY_CONSTRUCTOR = 0x1 << 5
 
 };
 

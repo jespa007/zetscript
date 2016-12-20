@@ -153,6 +153,9 @@
  			//case  MOV:
  			//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
  			//	break;
+ 			case POP_SCOPE:
+ 				printf("[%02i:%02i]\t%s(%i)\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,(*asm_op_statment)[i]->index_op1);
+ 				break;
  			case JNT:
  			case JT:
  			case JMP:
@@ -616,16 +619,16 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 void CScriptClassFactory::buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSymbol *irfs ){
 
 
-	 print_info_cr("======================");
+	/* print_info_cr("======================");
 	 print_info_cr("scopes for function %s",irfs->object_info.symbol_info.symbol_name.c_str());
 	 print_info_cr("======================");
-
-	 bool main_function = CZG_ScriptCore::getInstance()->getMainStructInfo() == irfs;
+*/
+	 bool is_main_function = CZG_ScriptCore::getInstance()->getMainStructInfo() == irfs;
 
 	 if(irfs->object_info.symbol_info.ast!=NULL){
 
 		 CScopeInfo *scp=irfs->object_info.symbol_info.ast->scope_info_ptr;
-		 if(!main_function) {// is not main function
+		 if(!is_main_function) {// is not main function
 
 			 if(irfs->object_info.symbol_info.ast->node_type == NODE_TYPE::KEYWORD_NODE){
 				 if(irfs->object_info.symbol_info.ast->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
@@ -635,7 +638,7 @@ void CScriptClassFactory::buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSy
 		 }
 
 		 if(scp != NULL){
-			 vector<CScopeInfo *> list;// = mrf[k]->object_info.symbol_info.ast->scope_info_ptr->getScopeList();
+			 vector<CScopeInfo *> list;
 			 scp->generateScopeList(list);
 			 vector<tInfoRegisteredVariableSymbol> *vs = &irfs->object_info.local_symbols.m_registeredVariable;
 			 for(unsigned i = 0;i < list.size(); i++){ // register index var per scope ...
@@ -644,9 +647,11 @@ void CScriptClassFactory::buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSy
 				 ivsb.scope_ptr = list[i];
 
 				 for(unsigned v = 0;v < vs->size(); v++){ // register index var per scope ...
-					if(vs->at(v).ast->scope_info_ptr == ivsb.scope_ptr){
-						ivsb.var_index.push_back(v);
-					}
+					 if(vs->at(v).ast !=NULL){
+						if(vs->at(v).ast->scope_info_ptr == ivsb.scope_ptr){
+							ivsb.var_index.push_back(v);
+						}
+					 }
 				 }
 
 				 irfs->object_info.info_var_scope.push_back(ivsb);
@@ -1221,9 +1226,21 @@ CScriptClassFactory::~CScriptClassFactory() {
 				}
 			}
 			else{ // normal function member ...
-				if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+				if(((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF)
+				 &&((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_IS_DERIVATED)
+						){
 
-					delete ((std::function<void *(void *,PROXY_CREATOR)> *)	info_function->object_info.symbol_info.ref_ptr);
+					if(info_function->object_info.symbol_info.symbol_name == "toString"){
+						int yy=0;
+						yy=1;
+					}
+
+					//delete ((std::function<void *(void *,PROXY_CREATOR)> *)irs.object_info.symbol_info.ref_ptr);
+					if(!info_function->object_info.symbol_info.derivated){
+						delete ((std::function<void *(void *,PROXY_CREATOR)> *)	info_function->object_info.symbol_info.ref_ptr);
+					}
+
+					info_function->object_info.symbol_info.ref_ptr = 0;
 
 				}
 			}

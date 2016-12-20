@@ -163,7 +163,7 @@ public:
 
 	//----------------------
 	// MEM MANNAGER RELATED
-	bool deallocatable;
+	//bool deallocatable;
 	int idx_shared_ptr;
 	//----------------------
 
@@ -258,7 +258,7 @@ public:
 	virtual ~CScriptVariable();
 
 protected:
-	virtual void setup(){};
+	virtual void setup();
 private:
 
 

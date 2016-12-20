@@ -249,6 +249,7 @@ CCompiler::CCompiler(){
 	def_operator[OBJECT_ACCESS]={"OBJECT_ACCESS",OBJECT_ACCESS,2}; // New object (CREATE)
 	def_operator[SAVE_I]={"SAVE_I",SAVE_I,0}; // New object (CREATE)
 	def_operator[LOAD_I]={"LOAD_I",LOAD_I,0}; // New object (CREATE)
+	def_operator[POP_SCOPE]={"POP_SCOPE",POP_SCOPE,1}; // New object (CREATE)
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -1797,7 +1798,6 @@ bool CCompiler::gacBody(PASTNode _node, CScopeInfo * _lc){
 				return false;
 		}
 
-		return true;
 	}else{ // no block. Insert one statment at least ..
 		newStatment();
 	}

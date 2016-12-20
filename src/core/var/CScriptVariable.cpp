@@ -108,10 +108,7 @@ void CScriptVariable::fun1(string *s){
 	print_info_cr("FUN1 (S): %s",s->c_str());
 }
 
-
-CScriptVariable::CScriptVariable(){
-
-	setup();
+void CScriptVariable::setup(){
 
 	idx_shared_ptr=-1;
 	this->m_infoRegisteredClass = NULL;
@@ -121,15 +118,20 @@ CScriptVariable::CScriptVariable(){
 
 }
 
+CScriptVariable::CScriptVariable(){
+
+	setup();
+
+
+
+}
+
 CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv, void *_object_by_user){
 
 	setup();
 
-	deallocatable = false;
 
-	created_object = NULL;
-	c_object = NULL;
-	m_value = NULL;
+
 
 	this->m_infoRegisteredClass = irv;
 	//m_rootAst=NULL;

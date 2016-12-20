@@ -78,7 +78,7 @@ void CScopeInfo::generateScopeList(vector<CScopeInfo *> & lstScope){
 
 vector<CScopeInfo *> * CScopeInfo::getScopeList(){
 
-	return &m_baseScope->m_scopeList;
+	return &m_scopeList;
 }
 
 vector<tInfoScopeVar *> * CScopeInfo::getRegisteredSymbolsList(){

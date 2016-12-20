@@ -442,7 +442,7 @@ public:
 			irs.c_type = irs_source->c_type;
 			//irs.
 			irs.symbol_name=irs_source->symbol_name;
-			irs.properties = PROPERTY_C_OBJECT_REF;
+			irs.properties = PROPERTY_C_OBJECT_REF| PROPERTY_IS_DERIVATED;
 			irs.index = irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.size();
 			irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
 
@@ -463,11 +463,11 @@ public:
 			irs.m_arg = irs_source->m_arg;
 			irs.idx_return_type = irs_source->idx_return_type;
 
-			irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
+			irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_IS_DERIVATED;
 
 			// ignores special type cast C++ member to ptr function
 			// create binding function class
-			irs.object_info.symbol_info.ref_ptr= irs_source->object_info.symbol_info.ref_ptr;
+			irs.object_info.symbol_info.ref_ptr= irs_source->object_info.symbol_info.ref_ptr; // this is not correct due the pointer
 
 			irs.object_info.symbol_info.index = irc_class->metadata_info.object_info.local_symbols.m_registeredFunction.size();
 			irc_class->metadata_info.object_info.local_symbols.m_registeredFunction.push_back(irs);
@@ -652,6 +652,17 @@ public:
 			if((irs.object_info.symbol_info.ref_ptr=((int)c_member_class_function_proxy<_T, int>(irs.m_arg.size(),function_type)))==0){
 				return false;
 			}
+		}
+
+		if(irs.object_info.symbol_info.symbol_name == "toString"){
+			int yy=0;
+			yy=1;
+
+
+//			delete ((std::function<void *(void *,PROXY_CREATOR)> *)irs.object_info.symbol_info.ref_ptr);
+
+
+
 		}
 
 

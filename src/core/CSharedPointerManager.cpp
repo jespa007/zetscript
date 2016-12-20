@@ -12,6 +12,7 @@ CSharedPointerManager * CSharedPointerManager::getInstance(){
 }
 
 CSharedPointerManager::CSharedPointerManager(){
+	n_pointers_with_0_shares=0;
 	memset(shared_pointer,0,sizeof(shared_pointer));
 
 	n_freeCell=MAX_UNIQUE_OBJECTS_POINTERS-1;
@@ -92,6 +93,8 @@ int CSharedPointerManager::newSharedPointer(CScriptVariable *var_ptr){
 		shared_pointer[index].shared_ptr=var_ptr;
 
 		shared_pointer[index].idx_0_shares=insert0Shares(index);
+
+		return index;
 	}
 
 	return -1;
@@ -134,7 +137,7 @@ void CSharedPointerManager::unrefSharedPointer( int index){
 			shared_pointer[index].n_shares--;
 		}
 
-		if(shared_pointer[index].shared_ptr==0){
+		if(shared_pointer[index].n_shares==0){
 			delete shared_pointer[index].shared_ptr;
 			shared_pointer[index].shared_ptr = NULL;
 			setFreeCell(index);
