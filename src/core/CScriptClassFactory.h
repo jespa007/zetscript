@@ -654,24 +654,6 @@ public:
 			}
 		}
 
-		if(irs.object_info.symbol_info.symbol_name == "toString"){
-			int yy=0;
-			yy=1;
-
-
-//			delete ((std::function<void *(void *,PROXY_CREATOR)> *)irs.object_info.symbol_info.ref_ptr);
-
-
-
-		}
-
-
-		/*if((irs.object_info.symbol_info.info_var_scope=CAst::getInstance()->getRootScopeInfo()->registerSymbol(function_name))==NULL){
-			return false;
-		}*/
-
-
-
 		irs.object_info.symbol_info.index = m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredFunction.size();
 		m_registeredClass[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredFunction.push_back(irs);
 		//base_info->local_symbols.m_registeredFunction.push_back(irs);

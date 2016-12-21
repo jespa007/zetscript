@@ -2093,7 +2093,7 @@ char * CAst::parseFor(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 				}
 
 				// parse block ...
-				if((aux_p=parseBlock(aux_p,m_line,_currentScope,error,ast_node_to_be_evaluated != NULL ? &block_for : NULL,false))!= NULL){
+				if((aux_p=parseBlock(aux_p,m_line,_currentScope,error,ast_node_to_be_evaluated != NULL ? &block_for : NULL,true))!= NULL){ // true: We treat declared variables into for as another scope.
 					if(!error){
 
 						if(ast_node_to_be_evaluated != NULL) {

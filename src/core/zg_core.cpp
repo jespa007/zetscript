@@ -24,11 +24,11 @@ void CZG_ScriptCore::destroy(){
 
 
 
+	CScriptVariable::destroySingletons();
 	CScriptClassFactory::destroySingletons();
 	CCompiler::destroySingletons();
 	CAst::destroySingletons();
-	CScriptVariable::destroySingletons();
-
+	CSharedPointerManager::destroySingletons();
 
 	if(m_instance!=NULL){
 		delete m_instance;
@@ -210,6 +210,7 @@ int interface_variable;
 
 bool CZG_ScriptCore::init(){
 
+	CScriptClassFactory::getInstance();
 	vm = new CVirtualMachine();
 	CScriptClassFactory::registerPrimitiveTypes();
 	CScriptVariable::createSingletons();

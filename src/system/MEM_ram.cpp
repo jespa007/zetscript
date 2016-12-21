@@ -1082,6 +1082,39 @@ void  operator  delete[](void  *p) throw()//,  const  char  *file,  const  unsig
 
 
 //--------------------------------------------------------------------------------------------
+void        MEM_PrintAllocatedPointers(const char *_file, int line){
+	tMem_PreHeapInfo    *preheap_allocat;
+	int  i;
+
+	//        if(!JGT_Memory_Mannager_Active)  return;
+
+	//unsigned int sizeFromOtherLibs = 0;
+	//unsigned int allocatedFromOtherLibs = 0;
+
+	for(i  =  0;  i  <  MAX_MEMPOINTERS;  i++)
+	{
+		if((preheap_allocat  =  (tMem_PreHeapInfo    *)Pointer[i]))
+		{
+			if(preheap_allocat->NumberFile>0 && (strcmp("??",preheap_allocat->FileName)!=0)&&!strcmp(preheap_allocat->FileName,_file) && preheap_allocat->NumberFile==line) // leak from others libs
+			{
+				CLog::print(0,0,CLog::LOG_ERROR	,true,"%s:%i:Allocated  pointer  NOT  DEALLOCATED (%p).",preheap_allocat->FileName,  preheap_allocat->NumberFile,Pointer[preheap_allocat->offset_mempointer_table]);
+			}
+			/*else
+			{
+				sizeFromOtherLibs += preheap_allocat->size;
+				allocatedFromOtherLibs++;
+			}*/
+		}
+
+		/*if(PreAllocatedPointer[i].ptr  !=  NULL)
+		{
+			//CLog::print(0,0,CLog::LOG_ERROR	,"Allocated  pointer  at  filename  \"%s\"  in  row  %i  NOT  DEALLOCATED.",PreAllocatedPointer[i].filename,  PreAllocatedPointer[i].line);
+			CLog::print(0,0,CLog::LOG_ERROR	,true,"%s:%s:%i: PreAllocated pointer NOT  DEALLOCATED.",PreAllocatedPointer[i].filename, PreAllocatedPointer[i].function, PreAllocatedPointer[i].line);
+		}*/
+	}
+}
+
+
 void  MEM_ViewStatus(void)
 {
 	tMem_PreHeapInfo    *preheap_allocat;

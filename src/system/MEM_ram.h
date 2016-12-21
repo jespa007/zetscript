@@ -125,6 +125,7 @@ typedef  void  (*  void_function_void_pointer)(const  char  *module,const  char 
 
 void        MEM_setEnableRegisterMemoryLeaks(int enable);
 void        MEM_ViewStatus();
+void        MEM_PrintAllocatedPointers(const char *_file, int line);
 void        MEM_Init();
 void        MEM_FreeAllAllocatedPointers( );
 void        MEM_ListAllocatedPointers();

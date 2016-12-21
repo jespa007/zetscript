@@ -1227,23 +1227,14 @@ CScriptClassFactory::~CScriptClassFactory() {
 			}
 			else{ // normal function member ...
 				if(((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF)
-				 &&((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_IS_DERIVATED)
-						){
+				 &&((info_function->object_info.symbol_info.properties & PROPERTY_IS_DERIVATED) != PROPERTY_IS_DERIVATED)
+				 ){
 
-					if(info_function->object_info.symbol_info.symbol_name == "toString"){
-						int yy=0;
-						yy=1;
-					}
-
-					//delete ((std::function<void *(void *,PROXY_CREATOR)> *)irs.object_info.symbol_info.ref_ptr);
-					if(!info_function->object_info.symbol_info.derivated){
-						delete ((std::function<void *(void *,PROXY_CREATOR)> *)	info_function->object_info.symbol_info.ref_ptr);
-					}
-
-					info_function->object_info.symbol_info.ref_ptr = 0;
-
+					delete ((std::function<void *(void *,PROXY_CREATOR)> *)	info_function->object_info.symbol_info.ref_ptr);
 				}
 			}
+
+			info_function->object_info.symbol_info.ref_ptr = 0;
 
 
 			for(unsigned k = 0; k < info_function->object_info.statment_op.size(); k++){

@@ -86,11 +86,13 @@ int main(int argc, char * argv[]){
 		zg_script->execute();
 	}
 
-	CZG_ScriptCore::destroy();
-
 	if(buffer != NULL){
 		delete buffer;
 	}
+
+
+	CZG_ScriptCore::destroy();
+
 
 
 #if defined(__DEBUG__) && defined(__MEMMANAGER__)

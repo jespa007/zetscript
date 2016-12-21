@@ -137,7 +137,7 @@ private:
 			vector<tInfoAsmOp *> *asm_op,
 			int n_stk);
 
-
+	void popScope(tInfoRegisteredFunctionSymbol *info_function,int index);
 
 
 //private:

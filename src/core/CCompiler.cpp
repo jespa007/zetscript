@@ -1424,6 +1424,13 @@ bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 	// 5. jmp to the conditional index ...
 	insert_JMP_Instruction(index_statment_conditional_for_);
 
+	// 6. insert pop scope...
+	newStatment();
+	int index=CScopeInfo::getScopeIndex(_node->scope_info_ptr);
+	if(index != -1){
+			insertPopScopeInstruction(_node,index);
+	}
+
 	// save jmp value...
 	asm_op->index_op1=getCurrentStatmentIndex()+1;
 	return true;
@@ -1802,7 +1809,7 @@ bool CCompiler::gacBody(PASTNode _node, CScopeInfo * _lc){
 		newStatment();
 	}
 
-	int index=CScopeInfo::getScopeIndex(_lc);
+	int index=CScopeInfo::getScopeIndex(_node->scope_info_ptr);
 
 	if(index != -1){
 		insertPopScopeInstruction(_node,index);

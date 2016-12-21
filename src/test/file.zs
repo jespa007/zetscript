@@ -1,10 +1,21 @@
-var g=0;
+var g=new CVector();
 
-/*{
+var t=g;
+
+for(var i=0; i < 10; i++)
+{
+	var h=new CVector();
+	
+}
+
+var f=1;
+/*new CInteger();
+
+{
    var j=0;
 
    {
-     var i=0;
+     var i=j;
      
      {
     	 
@@ -12,10 +23,10 @@ var g=0;
 
    }
 
-   i=2; // incorrent out scope ...
+   //i=2; // incorrent out scope ...
 }
-
-
+*/
+/*
 function bb(){
 	var j=0;
 	

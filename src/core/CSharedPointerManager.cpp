@@ -141,7 +141,6 @@ void CSharedPointerManager::unrefSharedPointer( int index){
 			delete shared_pointer[index].shared_ptr;
 			shared_pointer[index].shared_ptr = NULL;
 			setFreeCell(index);
-
 		}
 	}
 
