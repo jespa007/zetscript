@@ -616,9 +616,17 @@ void CCompiler::insert_CallFunction_Instruction(PASTNode _node,int  index_call,i
 }
 
 void CCompiler::insertRet(PASTNode _node,int index){
+
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
-	asm_op->index_op1 = index;//&((*m_currentListStatements)[dest_statment]);
+
+	if(ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::VEC){
+		asm_op->index_op1 = 0; // we need the object
+	}
+	else{
+		asm_op->index_op1 = index;//&((*m_currentListStatements)[dest_statment]);
+	}
+
 	asm_op->operator_type=ASM_OPERATOR::RET;
 	asm_op->ast_node = _node;
 
