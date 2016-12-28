@@ -11,9 +11,12 @@ CVector::CVector(tInfoRegisteredClass *info_registered_class):CScriptVariable(in
 }
 
 CVector::~CVector(){
-	/*for(int i = 0; i < m_value.size(); i++){
-		delete m_value[i];
-	}*/
+	for(unsigned i = 0; i < m_objVector.size(); i++){ // unref values ...
+		CScriptVariable *var = m_objVector[i];
+		CSharedPointerManager::getInstance()->unrefSharedPointer(var->idx_shared_ptr);
+
+		//delete m_value[i];
+	}
 }
 
 void CVector::add(CScriptVariable *v){

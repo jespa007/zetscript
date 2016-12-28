@@ -115,7 +115,7 @@ private:
 	bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL);
 	bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL);
 	bool pushFunction(tInfoRegisteredFunctionSymbol * init_value, CScriptVariable ** ptrAssignable=NULL);
-	bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL);
+	bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL, bool is_new_var=false);
 	bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
 
 

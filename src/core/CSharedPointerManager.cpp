@@ -104,6 +104,7 @@ void CSharedPointerManager::sharePointer(int index){
 
 	if(index < 0){
 		print_error_cr("index -1");
+		return;
 	}
 
 	if(index >= MAX_UNIQUE_OBJECTS_POINTERS){
@@ -124,6 +125,7 @@ void CSharedPointerManager::unrefSharedPointer( int index){
 
 	if(index < 0){
 		print_error_cr("index -1");
+		return;
 	}
 
 	if(index >= MAX_UNIQUE_OBJECTS_POINTERS){
@@ -150,7 +152,7 @@ void CSharedPointerManager::gc(){
 
 	for(int i = 0; i < n_pointers_with_0_shares; i++){
 
-		int index = pointers_with_0_shares[n_pointers_with_0_shares];
+		int index = pointers_with_0_shares[i];
 
 		unrefSharedPointer(index);
 	}

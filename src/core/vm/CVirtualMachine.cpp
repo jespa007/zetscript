@@ -54,6 +54,8 @@ void CVirtualMachine::reset(){
 CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_function, CScriptVariable *this_object, vector<CScriptVariable *> * argv, int stk){
 
 	print_info_cr("Executing function %s ...",info_function->object_info.symbol_info.symbol_name.c_str());
+
+
 	//tInfoRegisteredFunctionSymbol *irsf=sf->getFunctionInfo();
 
 	//tInfoRegisteredFunctionSymbol *function_info =function_object->getFunctionInfo();
@@ -74,13 +76,21 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 	}
 
 
+	int scope_index =  info_function->object_info.symbol_info.ast->scope_info_ptr->getIndex();
 
-	CScriptVariable *ret=CScriptVariable::VoidSymbol;
+	if(info_function->object_info.symbol_info.ast->keyword_info!=NULL){
+		if(info_function->object_info.symbol_info.ast->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
+			scope_index=info_function->object_info.symbol_info.ast->children[1]->scope_info_ptr->getIndex();
+		}
+	}
+
+
+	CScriptVariable *ret=CScriptVariable::UndefinedSymbol;
 	vector<tInfoStatementOp> * m_listStatements = &info_function->object_info.statment_op;
 	//bool conditional_jmp=false;
 	int jmp_to_statment = -1;
 	int instruction_to_statment = -1;
-	bool end=false;
+	bool end_by_ret=false;
 	bool break_jmp = false;
 
 	/*if(argv != NULL){
@@ -109,7 +119,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 	int n_stats=(*m_listStatements).size();
 
 
-	for(int s = 0; s < n_stats && !end;){
+	for(int s = 0; s < n_stats && !end_by_ret;){
 
 		//conditional_jmp = false;
 		jmp_to_statment = -1;
@@ -159,9 +169,13 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 						if((ret=createVarFromResultInstruction(&stkResultInstruction[asm_op_statment->at(ins)->index_op1+startIdxStkResultInstruction])) == NULL){ // return last ALE value
 							return NULL;
-						}
+						}/*else{
+							if(ret != CScriptVariable::UndefinedSymbol || ret != CScriptVariable::NullSymbol){
+								CSharedPointerManager::getInstance()->newSharedPointer(ret);
+							}
+  						}*/
 
-						end=true;
+						end_by_ret=true;
 					}
 
 				//}
@@ -197,7 +211,9 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 			}
 
 			// to deallocate not used poiners...
+			if(!end_by_ret){
 			 CSharedPointerManager::getInstance()->gc();
+			}
 
 
 		}else{ //no instructions ... pass next statment ...
@@ -205,13 +221,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 		}
 	}
 
-	print_info_cr("HOLA! 1");
-	MEM_PrintAllocatedPointers("CScriptClassFactory.cpp",859);
-	print_info_cr("HOLA! 2");
-	popScope(info_function,0);
-	print_info_cr("HOLA! 3");
-	MEM_PrintAllocatedPointers("CScriptClassFactory.cpp",859);
-	print_info_cr("HOLA! 4");
+	popScope(info_function,scope_index);
 	popStack();
 	return ret;
 
@@ -333,9 +343,9 @@ void CVirtualMachine::popStack(){
 		vecIdxStkResultInstruction.pop();
 
 
-	}else{
+	}/*else{
 		print_error_cr("stack is already empty");
-	}
+	}*/
 
 
 }
@@ -562,7 +572,7 @@ bool CVirtualMachine::pushFunction(tInfoRegisteredFunctionSymbol * init_value, C
 
 
 
-bool CVirtualMachine::pushVar(CScriptVariable * init_value, CScriptVariable ** ptrObjectRef){
+bool CVirtualMachine::pushVar(CScriptVariable * init_value, CScriptVariable ** ptrObjectRef, bool is_new_var){
 
 	if(init_value == NULL){
 		return false;
@@ -572,26 +582,33 @@ bool CVirtualMachine::pushVar(CScriptVariable * init_value, CScriptVariable ** p
 
 
 	// finally assign the value ...
-	if(idxClass == CScriptClassFactory::getInstance()->getIdxClassInteger()){
-		return pushInteger(*((int *)((CInteger *)init_value)->m_value),ptrObjectRef);
-	}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassNumber()){
-		return pushNumber(*((float *)((CNumber *)init_value)->m_value),ptrObjectRef);
-	}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassString()){
-		return pushString(*((string *)((CString *)init_value)->m_value),ptrObjectRef);
-	}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassBoolean()){
-		return pushBoolean(*((bool *)((CBoolean *)init_value)->m_value),ptrObjectRef);
-	}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
-		return pushFunction(((CFunctor *)init_value)->m_functorValue,ptrObjectRef);
-	}else{
+	if(!is_new_var){
+		if(idxClass == CScriptClassFactory::getInstance()->getIdxClassInteger()){
+			return pushInteger(*((int *)((CInteger *)init_value)->m_value),ptrObjectRef);
+		}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassNumber()){
+			return pushNumber(*((float *)((CNumber *)init_value)->m_value),ptrObjectRef);
+		}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassString()){
+			return pushString(*((string *)((CString *)init_value)->m_value),ptrObjectRef);
+		}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassBoolean()){
+			return pushBoolean(*((bool *)((CBoolean *)init_value)->m_value),ptrObjectRef);
+		}else if(idxClass == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
+			return pushFunction((tInfoRegisteredFunctionSymbol *)(((CFunctor *)init_value)->m_value),ptrObjectRef);
+		}else{
+			is_new_var=true;
+		}
+	}
+
+	if(is_new_var){
 		if(idxStkCurrentLocalVar ==VM_ALE_OPERATIONS_MAX_STACK){
 			print_error_cr("Reached max object operations");
 			return false;
 		}
 
 		stkResultInstruction[idxStkCurrentResultInstruction]={INS_TYPE_VAR,init_value, ptrObjectRef};
-
-
 	}
+
+
+
 
 	return true;
 
@@ -973,17 +990,24 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 		}
 	}
 
-	int idxClass=-1;
+	//int idxClass=-1;
 
-	if(*var!=CScriptVariable::UndefinedSymbol){
-		idxClass = (*var)->getIdxClass();
-	}
+	//if(*var!=CScriptVariable::UndefinedSymbol){
+	int idxClass = (*var)->getIdxClass();
+	//}
 
 	//tInfoRegisteredFunctionSymbol * init_value;
 	bool create_from_index=false;
 
 	// finally assign the value ...
+
+	/*if(idxClass == CScriptClassFactory::getInstance()->getIdxClassInteger()){
+
+	}*/
+
+
 	switch(ptr_instruction->type){
+
 
 		case INS_TYPE_NULL:
 			*var = CScriptVariable::NullSymbol;
@@ -995,8 +1019,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 		case INS_TYPE_INTEGER:
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassInteger()){
 				*((int *)((CInteger *)(*var))->m_value)=((int)(ptr_instruction->stkResultObject));
-			/*}else if((*var)->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassNumber()){
-				((CNumber *)(*var))->m_value=((CInteger *)(stkResultInstruction[index].stkResultObject))->m_value;*/
+
 			}else
 			{
 				create_from_index=true;
@@ -1004,9 +1027,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 			break;
 		case INS_TYPE_NUMBER:
 
-			/*if(idxClass == CScriptClassFactory::getInstance()->getIdxClassInteger()){
-				((CInteger *)aux_var)->m_value=((CNumber *)(stkResultInstruction[index].stkResultObject))->m_value;
-			}else*/
+
 			if(idxClass == CScriptClassFactory::getInstance()->getIdxClassNumber()){
 				*((float *)((CNumber *)(*var))->m_value) = *((float *)(ptr_instruction->stkResultObject));
 			}else
@@ -1041,9 +1062,19 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 			}
 			break;
 		case INS_TYPE_VAR: // generic object, assign pointer ...
+
+
+			// unref pointer ...
+			if((*var)->idx_shared_ptr != -1){
+				CSharedPointerManager::getInstance()->unrefSharedPointer((*var)->idx_shared_ptr);
+			}
+
 			*var = (CScriptVariable *)(ptr_instruction->stkResultObject);
 
-			CSharedPointerManager::getInstance()->sharePointer((*var)->idx_shared_ptr);
+			if(*var != CScriptVariable::NullSymbol && *var != CScriptVariable::UndefinedSymbol){
+				// ref the new pointer ...
+				CSharedPointerManager::getInstance()->sharePointer((*var)->idx_shared_ptr);
+			}
 
 			break;
 
@@ -1054,9 +1085,19 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 		}
 
 	if(create_from_index){
+		// unref pointer ...
+		if((*var)->idx_shared_ptr != -1){
+			CSharedPointerManager::getInstance()->unrefSharedPointer((*var)->idx_shared_ptr);
+		}
+
+
 		if((*var = createVarFromResultInstruction(ptr_instruction)) == NULL){
 			return false;
 		}
+
+		CSharedPointerManager::getInstance()->sharePointer((*var)->idx_shared_ptr);
+
+
 	}
 
 
@@ -1081,7 +1122,10 @@ void CVirtualMachine::popScope(tInfoRegisteredFunctionSymbol *info_function,int 
 
 		CScriptVariable *var =((CScriptVariable *)(basePtrLocalVar[idx_local_var].stkResultObject));
 
-		CSharedPointerManager::getInstance()->unrefSharedPointer(var->idx_shared_ptr);
+		if(var != CScriptVariable::UndefinedSymbol && var !=  CScriptVariable::NullSymbol){
+
+			CSharedPointerManager::getInstance()->unrefSharedPointer(var->idx_shared_ptr);
+		}
 
 		basePtrLocalVar[idx_local_var].stkResultObject = CScriptVariable::UndefinedSymbol;
 	}
@@ -1701,7 +1745,7 @@ bool CVirtualMachine::performInstruction(
 
 			if(ptrResultInstructionOp1->type != INS_TYPE_FUNCTION){
 				if(ptrResultInstructionOp1->type == INS_TYPE_VAR && ((CScriptVariable *)ptrResultInstructionOp1->stkResultObject)->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
-					aux_function_info = ((CFunctor *)ptrResultInstructionOp1->stkResultObject)->m_functorValue;
+					aux_function_info = (tInfoRegisteredFunctionSymbol *)(((CFunctor *)ptrResultInstructionOp1->stkResultObject)->m_value);
 
 
 
@@ -1729,13 +1773,6 @@ bool CVirtualMachine::performInstruction(
 			}
 
 			// deallocates stack...
-			/*for(unsigned j=0; j < m_functionArgs.size(); j++){
-
-				if(m_functionArgs[j]->deallocatable){
-					delete m_functionArgs[j];
-				}
-			}*/
-
 			m_functionArgs.clear();
 
 			// finally set result value into stkResultObject...
@@ -1797,6 +1834,13 @@ bool CVirtualMachine::performInstruction(
 					return false;
 				}
 				vec->m_objVector.push_back(svar);
+
+
+				if(svar != CScriptVariable::NullSymbol && svar != CScriptVariable::UndefinedSymbol){
+					// add share + 1
+					CSharedPointerManager::getInstance()->sharePointer(svar->idx_shared_ptr);
+				}
+
 			}else{
 				print_error_cr("Expected operand 1 as vector");
 				return false;
@@ -1814,15 +1858,13 @@ bool CVirtualMachine::performInstruction(
 			/*if(!assignObjectFromIndex(function_object->getReturnObjectPtr(),instruction->index_op1)){
 				return false;
 			}*/
+			break;
 		case NEW:
-			if(!pushVar(svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1))){
+			if(!pushVar(svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1), NULL, true)){
 				return false;
 			}
 
-
 			svar->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(svar);
-
-			MEM_PrintAllocatedPointers("CScriptClassFactory.cpp",859);
 
 			// execute its constructor ...
 			if((constructor_function = svar->getConstructorFunction()) != NULL){

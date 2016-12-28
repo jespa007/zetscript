@@ -527,17 +527,19 @@ public:
  }
 
 
-bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao, int current_function){
+bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao, int current_function, SCOPE_TYPE scope_type){
 
 	int idx=0;
 	string symbol_to_find = iao->ast_node->value_symbol;
-	CScopeInfo * scope_node = iao->ast_node->scope_info_ptr;
+	//CScopeInfo * scope_node = iao->ast_node->scope_info_ptr;
 
-	SCOPE_TYPE scope_type = iao->scope_type;
+	//scope_type = iao->scope_type;
 
 
 
-	if(scope_type == SCOPE_TYPE::SUPER_SCOPE){ // try deduce local/global
+
+
+	if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){ // try deduce local/global
 
 		if(current_function > 0){ // minimum have to have a 1
 
@@ -578,34 +580,40 @@ bool CScriptClassFactory::searchVarFunctionSymbol(tScriptFunctionInfo *script_in
 
 	}
 	else{
-		if(scope_type == SCOPE_TYPE::UNKNOWN_SCOPE){ // try deduce local/global
+
+		if(scope_type == SCOPE_TYPE::UNKNOWN_SCOPE){
+			print_error_cr("scope type not defined");
+			return false;
+		}
+		/*if(scope_type == SCOPE_TYPE::UNKNOWN_SCOPE){ // try deduce local/global
 
 			if(scope_node == CAst::getInstance()->getRootScopeInfo()){
 				scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
 			}else{
 				scope_type = SCOPE_TYPE::LOCAL_SCOPE;
 			}
-		}
+		}*/
 
-	 if((idx=getIdxRegisteredFunctionSymbol(script_info,symbol_to_find,false))!=-1){
-		 iao->scope_type = scope_type;
-		 iao->index_op1 = LOAD_TYPE_FUNCTION;
-		 iao->index_op2 = idx;
-		 if((script_info->local_symbols.m_registeredFunction[idx].object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
-			 iao->index_op2 = -1;
-		 }
-
-		 iao->script_info = script_info;
-		 return true;
-	 }else {
-		 if((idx=getIdxRegisteredVariableSymbol(script_info,symbol_to_find, false))!=-1){
+		 if((idx=getIdxRegisteredFunctionSymbol(script_info,symbol_to_find,false))!=-1){
 			 iao->scope_type = scope_type;
-			 iao->index_op1 = LOAD_TYPE_VARIABLE;
+			 iao->index_op1 = LOAD_TYPE_FUNCTION;
 			 iao->index_op2 = idx;
+			 if((script_info->local_symbols.m_registeredFunction[idx].object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
+				 iao->index_op2 = -1;
+				 iao->scope_type = SCOPE_TYPE::GLOBAL_SCOPE; // all C functions are globals !
+			 }
+
 			 iao->script_info = script_info;
 			 return true;
+		 }else {
+			 if((idx=getIdxRegisteredVariableSymbol(script_info,symbol_to_find, false))!=-1){
+				 iao->scope_type = scope_type;
+				 iao->index_op1 = LOAD_TYPE_VARIABLE;
+				 iao->index_op2 = idx;
+				 iao->script_info = script_info;
+				 return true;
+			 }
 		 }
-	 }
 	}
 
 
@@ -661,6 +669,83 @@ void CScriptClassFactory::buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSy
 }
 
 
+bool CScriptClassFactory::updateFunctionSymbols(tInfoRegisteredFunctionSymbol * info_function, const string & parent_symbol, int n_function){
+
+	print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->object_info.symbol_info.symbol_name.c_str());
+
+	buildInfoScopeVariablesBlock(info_function);
+
+	 vector<tInfoStatementOp> *stat = &info_function->object_info.statment_op;
+	 for(unsigned h=0; h < stat->size();h++){
+		 for(unsigned idx_op=0; idx_op < stat->at(h).asm_op.size();idx_op++){
+			 tInfoAsmOp *iao=stat->at(h).asm_op[idx_op];
+
+			 if(iao->operator_type==ASM_OPERATOR::LOAD){
+
+				 if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE ){
+					 iao->index_op1 = LOAD_TYPE_VARIABLE;
+					 iao->index_op2 = idx_op-1;
+				 }
+				 else {
+
+					 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
+
+								 string symbol_to_find =iao->ast_node->value_symbol;
+
+								 if(iao->scope_type ==SCOPE_TYPE::ACCESS_SCOPE){
+
+									 print_info_cr("Symbol defined at line %i \"%s\" will solved at run-time",iao->ast_node->definedValueline, iao->ast_node->value_symbol.c_str());
+								 }
+								 else{
+
+
+									 // search local...
+									 if(!searchVarFunctionSymbol(&info_function->object_info,iao,n_function,SCOPE_TYPE::LOCAL_SCOPE)){
+
+										 // search global...
+										 tInfoRegisteredFunctionSymbol * mainFunctionInfo = getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+										 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,n_function,SCOPE_TYPE::GLOBAL_SCOPE)){
+											 print_error_cr("Symbol defined at line %i \"%s\"not found",iao->ast_node->definedValueline, symbol_to_find.c_str());
+											 return false;
+										 }
+
+									 }
+
+							 }
+					 }
+			 	 }
+
+			 }else  if(iao->operator_type==ASM_OPERATOR::CALL){ // overrides variable type as function ...
+				 // check whether access scope ...
+				 if(stat->at(h).asm_op[iao->index_op1]->operator_type ==ASM_OPERATOR::LOAD  && // e
+				    stat->at(h).asm_op[iao->index_op1]->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
+
+					 stat->at(h).asm_op[iao->index_op1]->index_op1 = LOAD_TYPE_FUNCTION;
+					 stat->at(h).asm_op[iao->index_op1]->index_op2 = iao->index_op1-1;
+					 iao->asm_properties = ASM_PROPERTY_CALLING_OBJECT;
+				 }
+
+			 }
+		 }
+
+	 }
+
+
+
+	 vector<tInfoRegisteredFunctionSymbol> *mrf = &info_function->object_info.local_symbols.m_registeredFunction;
+
+	 for(unsigned k=0; k < mrf->size();k++){
+
+		 if(!updateFunctionSymbols(&mrf->at(k), info_function->object_info.symbol_info.symbol_name, k)){
+			 return false;
+		 }
+
+
+	 }
+
+	return true;
+}
+
 bool CScriptClassFactory::updateReferenceSymbols(){
 
 
@@ -688,20 +773,37 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 		 for(unsigned k=0; k < mrf.size();k++){
 
 
+			 tInfoRegisteredFunctionSymbol * info_function = mrf[k];
+			 bool is_main_class = i == 0;
+			 bool is_main_function = is_main_class && k==0;
+			 tInfoRegisteredClass * _belonging_class = m_registeredClass[i];
 
-			 buildInfoScopeVariablesBlock(mrf[k]);
+			 buildInfoScopeVariablesBlock(info_function);
 
-			 if(i==0){
+			 if(is_main_class){
+				 if(is_main_function){
+					 print_info_cr("Main Function");
+				 }
+				 else{
+					 print_info_cr("Global function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
+				 }
+			 }else{
+				 print_info_cr("Function %s::%s...",_belonging_class->metadata_info.object_info.symbol_info.symbol_name.c_str(),info_function->object_info.symbol_info.symbol_name.c_str());
+			 }
+
+
+
+			 /*if(i==0){
 
 				 if(k==0){
-					 print_info_cr("Main Function");
+
 				 }else{
-					 print_info_cr("Global function %s...",mrf[k]->object_info.symbol_info.symbol_name.c_str());
+
 				 }
 			 }else{
 				 print_info_cr("Function %s::%s...",m_registeredClass[i]->metadata_info.object_info.symbol_info.symbol_name.c_str(),mrf[k]->object_info.symbol_info.symbol_name.c_str());
-			 }
-			 vector<tInfoStatementOp> *stat = &mrf[k]->object_info.statment_op;
+			 }*/
+			 vector<tInfoStatementOp> *stat = &info_function->object_info.statment_op;
 			 for(unsigned h=0; h < stat->size();h++){
 				 for(unsigned idx_op=0; idx_op < stat->at(h).asm_op.size();idx_op++){
 					 tInfoAsmOp *iao=stat->at(h).asm_op[idx_op];
@@ -709,7 +811,7 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 
 					 if(iao->operator_type==ASM_OPERATOR::LOAD){
 
-						 string base_class = m_registeredClass[i]->metadata_info.object_info.symbol_info.symbol_name;
+						 string base_class = _belonging_class->metadata_info.object_info.symbol_info.symbol_name;
 
 						 tScriptFunctionInfo *sfi=NULL;
 
@@ -721,7 +823,7 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 
 							 if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE || iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
 
-								 sfi = &m_registeredClass[i]->metadata_info.object_info;
+								 sfi = &_belonging_class->metadata_info.object_info;
 
 							 }
 
@@ -757,10 +859,11 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 											 }
 											 else{ //normal symbol...
 												 // search local...
-												 if(!searchVarFunctionSymbol(&mrf[k]->object_info,iao,k)){
+												 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,SCOPE_TYPE::LOCAL_SCOPE)){
 
 													 // search global...
-													 if(!searchVarFunctionSymbol(&main_function->object_info,iao,k)){
+													 tInfoRegisteredFunctionSymbol * mainFunctionInfo = getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+													 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,SCOPE_TYPE::GLOBAL_SCOPE)){
 														 print_error_cr("Symbol defined at line %i \"%s\"not found",iao->ast_node->definedValueline, symbol_to_find.c_str());
 														 return false;
 													 }
@@ -784,6 +887,29 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 				 }
 
 			 }
+
+
+
+			 /*vector<tInfoRegisteredFunctionSymbol> *mrf = &info_function->object_info.local_symbols.m_registeredFunction;
+
+			 for(unsigned k=0; k < mrf->size();k++){
+
+				 if(!updateFunctionSymbols(&mrf->at(k), info_function->object_info.symbol_info.symbol_name, n_class,k)){
+					 return false;
+				 }
+
+
+			 }	*/
+
+			 if(!is_main_function){ // process all function symbols ...
+				 for(unsigned m=0; m < info_function->object_info.local_symbols.m_registeredFunction.size(); m++){
+					 if(!updateFunctionSymbols(&info_function->object_info.local_symbols.m_registeredFunction[m], info_function->object_info.symbol_info.symbol_name,m)){
+						 return false;
+					 }
+				 }
+			 }
+
+
 		 }
 	 }
 
@@ -1197,6 +1323,30 @@ const char * CScriptClassFactory::getNameRegisteredClassByIdx(int idx){
 
 }
 
+void CScriptClassFactory::unloadRecursiveFunctions(tInfoRegisteredFunctionSymbol * info_function){
+
+
+	if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+		return;
+	}
+
+	print_info_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
+	for(unsigned k = 0; k < info_function->object_info.statment_op.size(); k++){
+
+		for(unsigned a = 0; a  <info_function->object_info.statment_op[k].asm_op.size(); a++){
+
+			delete info_function->object_info.statment_op[k].asm_op[a];
+		}
+
+
+
+	}
+
+	for(unsigned f = 0; f < info_function->object_info.local_symbols.m_registeredFunction.size(); f++){
+		unloadRecursiveFunctions(&info_function->object_info.local_symbols.m_registeredFunction[f]);
+	}
+}
+
 CScriptClassFactory::~CScriptClassFactory() {
 
 	for(unsigned i = 0;i<m_registeredClass.size();i++){
@@ -1206,9 +1356,12 @@ CScriptClassFactory::~CScriptClassFactory() {
 
 			tInfoRegisteredFunctionSymbol * info_function = &irv->metadata_info.object_info.local_symbols.m_registeredFunction[j];
 
+			print_info_cr("unloading %s::%s...",m_registeredClass[i]->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
+
+			// C related functions ...
 			if(i==0 && j==0){ // MAIN FUNCTION (C functions)
 
-				// functions inside main function ...
+				// check external C functions defined inside main function ...
 				for(unsigned f=0; f < info_function->object_info.local_symbols.m_registeredFunction.size();f++){
 
 					tInfoRegisteredFunctionSymbol * irv_main_function =  &info_function->object_info.local_symbols.m_registeredFunction[f];
@@ -1225,7 +1378,7 @@ CScriptClassFactory::~CScriptClassFactory() {
 					}
 				}
 			}
-			else{ // normal function member ...
+			else{ // normal class function member ...
 				if(((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF)
 				 &&((info_function->object_info.symbol_info.properties & PROPERTY_IS_DERIVATED) != PROPERTY_IS_DERIVATED)
 				 ){
@@ -1237,15 +1390,18 @@ CScriptClassFactory::~CScriptClassFactory() {
 			info_function->object_info.symbol_info.ref_ptr = 0;
 
 
-			for(unsigned k = 0; k < info_function->object_info.statment_op.size(); k++){
+			unloadRecursiveFunctions(info_function);//->object_info.local_symbols.m_registeredFunction[f]);
 
-				for(unsigned a = 0; a  <info_function->object_info.statment_op[k].asm_op.size(); a++){
 
-					delete info_function->object_info.statment_op[k].asm_op[a];
-				}
+			//bool is_main_function = i==0&&j==0;
 
-			}
+			//if(!is_main_function){
+
+			//}
+
 		}
+
+
 
 		if(irv->c_constructor != NULL){
 			delete irv->c_constructor;
@@ -1255,7 +1411,7 @@ CScriptClassFactory::~CScriptClassFactory() {
 			delete irv->c_destructor;
 		}
 
-		if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+		if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){ //ast created for compatibility reasons, we need to deallocate
 
 			delete irv->metadata_info.object_info.symbol_info.ast;
 		}

@@ -1052,6 +1052,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 				if(is_symbol_trivial_value){
 
 					(*ast_node_to_be_evaluated)=new tASTNode;
+					print_info_cr("%p",(*ast_node_to_be_evaluated));
 					(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
 					(*ast_node_to_be_evaluated)->value_symbol=symbol_value; // assign its value ...
 					(*ast_node_to_be_evaluated)->scope_info_ptr = scope_info;
@@ -1206,6 +1207,7 @@ char * CAst::parseExpression(const char *s, int & m_line, CScopeInfo *scope_info
 	if(aux != NULL && ast_node_to_be_evaluated != NULL ){ // can save the node and tells that is an starting of expression node...
 
 		PASTNode ast_node=new tASTNode;
+		print_info_cr("%p",ast_node);
 		ast_node->node_type = EXPRESSION_NODE;
 		ast_node->children.push_back(*ast_node_to_be_evaluated);
 		(*ast_node_to_be_evaluated)->parent = ast_node; // save parent ..
@@ -1392,7 +1394,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 				(*ast_node_to_be_evaluated)->value_symbol = class_name;
 
-				(*ast_node_to_be_evaluated)->scope_info_ptr = new CScopeInfo(NULL); // scope function without base ...
+				(*ast_node_to_be_evaluated)->scope_info_ptr = new CScopeInfo(NULL,0); // scope function without base ...
 				class_scope_info =(*ast_node_to_be_evaluated)->scope_info_ptr;
 
 				// create var & functions collection...
@@ -1747,7 +1749,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 				if((aux_p = parseBlock(
 						aux_p,
 						m_line,
-						ast_node_to_be_evaluated != NULL ? _currentScope:NULL ,
+						ast_node_to_be_evaluated != NULL ? scope_info:NULL ,
 						error,
 						ast_node_to_be_evaluated != NULL ? &body_node : NULL
 
@@ -2535,7 +2537,7 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 			aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 			if(ast_node_to_be_evaluated != NULL){
-				_currentScope=scope_info; // gets current evaluating scope...
+				_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
 				(*ast_node_to_be_evaluated) = new tASTNode;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
@@ -2615,7 +2617,7 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScopeInfo *scope_info, boo
 	char *aux_p = (char *)s;
 
 	//CScopeInfo *_localScope =  scope_info != NULL ? scope_info->symbol_info.ast->scope_info_ptr: NULL;
-	CScopeInfo *currentScope=  scope_info;
+	CScopeInfo *currentScope=  scope_info->getCurrentScopePointer();
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 	// check for keyword ...
@@ -2629,7 +2631,7 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScopeInfo *scope_info, boo
 
 		//	print_info_cr("scope info 2 %i",CScopeInfo::getScopeIndex(currentScope));
 		}
-		if((aux_p = generateAST_Recursive(aux_p, m_line,currentScope,error,ast_node_to_be_evaluated)) != NULL){
+		if((aux_p = generateAST_Recursive(aux_p, m_line,scope_info,error,ast_node_to_be_evaluated)) != NULL){
 			if(error){
 				return NULL;
 			}
@@ -2978,7 +2980,7 @@ void CAst::destroySingletons(){
 }
 
 CAst::CAst(){
-	m_rootScopeInfo = new CScopeInfo(NULL);
+	m_rootScopeInfo = new CScopeInfo(NULL,0);
 	m_rootAstNode = new tASTNode();
 
 	m_rootAstNode->node_type = BODY_NODE;
@@ -2989,7 +2991,12 @@ CAst::~CAst(){
 	for(unsigned i =0; i < m_parsedSource.size(); i++){
 		delete m_parsedSource[i].data;
 	}
+
+	// Destroy scope ...
+	m_rootScopeInfo->destroyScopes();
 	delete m_rootScopeInfo;
+	// End destroy scope ...
+
 	delete m_rootAstNode;
 }
 

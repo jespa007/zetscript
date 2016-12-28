@@ -90,7 +90,7 @@ public:
 
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 	bool eval(const string & s);
-	bool execute();
+	CScriptVariable * execute();
 
 
 

@@ -890,11 +890,19 @@ void*  operator  new(size_t  size)//,  const  char  *file,  const  unsigned  int
 									sourceFile,
 									sourceLine);
 
+
+
 			if(p)
 			{
 				tMem_PreHeapInfo  *pre_head  =  GET_PREHEADER(p);
 
 				pre_head->type_allocator  =  NEW_ALLOCATOR;
+
+
+				if((int)pre_head==0x80574f8){
+					int h=0;
+					h++;
+				}
 
 			}
 	}

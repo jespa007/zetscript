@@ -5,7 +5,7 @@
 class CFunctor:public CScriptVariable{
 
 public:
-	tInfoRegisteredFunctionSymbol *m_functorValue;
+	//tInfoRegisteredFunctionSymbol *m_functorValue;
 
 	CFunctor(){}
 	CFunctor(tInfoRegisteredClass *info_registered_class,tInfoRegisteredFunctionSymbol *_irfs);

@@ -773,9 +773,12 @@ private:
 	vector<tInfoRegisteredClass *>  	 m_registeredClass;
 	//CScriptVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
 
-	bool searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao, int current_idx_function);
+	bool searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao, int current_idx_function,SCOPE_TYPE scope_type=SCOPE_TYPE::UNKNOWN_SCOPE);
 	bool registerBase();
 	void buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSymbol *irfs );
+	void unloadRecursiveFunctions(tInfoRegisteredFunctionSymbol * info_function);
+
+	bool updateFunctionSymbols(tInfoRegisteredFunctionSymbol * info_function, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);
 
 	//---------------
 	// PRINT ASM INFO

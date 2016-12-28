@@ -17,17 +17,21 @@ public:
 	tInfoScopeVar * existRegisteredSymbol(const string & var_name);
 	vector<tInfoScopeVar *> * getRegisteredSymbolsList();
 
-	CScopeInfo(CScopeInfo * m_parent);
+	CScopeInfo(CScopeInfo * m_parent, int _index);
 
 	CScopeInfo * getBaseScope();
 	CScopeInfo * getParent();
 	CScopeInfo * getCurrentScopePointer();
 	void         generateScopeList(vector<CScopeInfo *> & vector);
+	int          getIndex();
 	vector<CScopeInfo *> * getScopeList();
+	vector<tInfoScopeVar *> * getRegisteredVariableList();
 	static int getScopeIndex(CScopeInfo * scope);
 
 	CScopeInfo * pushScope();
 	CScopeInfo * popScope();
+
+	void destroyScopes();
 
 	void resetScopePointer();
 
@@ -35,6 +39,7 @@ public:
 
 private:
 
+	void deleteScopeRecursive(CScopeInfo *scope_info);
 
 	//--------------------------------------------------------------------
 	// Register functions
@@ -47,6 +52,7 @@ private:
 
 	// The a parent scope ...
 	CScopeInfo *m_parentScope, *m_currentScopePointer, *m_baseScope;
+	int m_index;
 
 
 

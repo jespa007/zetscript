@@ -130,7 +130,7 @@ class CScriptVariable{//: public CVariable{
 public:
 
 	static CUndefined *UndefinedSymbol;
-	static CVoid *VoidSymbol;
+	//static CVoid *VoidSymbol;
 	static CNull *NullSymbol;
 
 

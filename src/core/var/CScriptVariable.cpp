@@ -2,7 +2,7 @@
 
 
 CUndefined *CScriptVariable::UndefinedSymbol=NULL;
-CVoid *CScriptVariable::VoidSymbol=NULL;
+//CVoid *CScriptVariable::VoidSymbol=NULL;
 CNull *CScriptVariable::NullSymbol=NULL;
 
 
@@ -10,14 +10,14 @@ CNull *CScriptVariable::NullSymbol=NULL;
 void CScriptVariable::createSingletons(){
 	NullSymbol = NEW_NULL_VAR;
 	UndefinedSymbol = NEW_UNDEFINED_VAR;
-	VoidSymbol = NEW_VOID_VAR;
+	//VoidSymbol = NEW_VOID_VAR;
 
 }
 
 
 void CScriptVariable::destroySingletons(){
 	delete UndefinedSymbol;
-	delete VoidSymbol;
+	//delete VoidSymbol;
 	delete NullSymbol;
 }
 

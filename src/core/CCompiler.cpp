@@ -1159,6 +1159,12 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 		}
 		index_instruction=r;
 	}else{
+
+		if(_node->operator_info == NULL){
+			print_error_cr("Malformed expression at line %i",_node->definedValueline);
+			return -1;
+		}
+
 		if(_node->operator_info->id == TERNARY_IF_PUNCTUATOR){
 			if(_node->children[1]->operator_info->id == TERNARY_ELSE_PUNCTUATOR){
 				// node children[0]: conditional.

@@ -23,6 +23,9 @@ CZG_ScriptCore * CZG_ScriptCore::getInstance(){
 void CZG_ScriptCore::destroy(){
 
 
+	if(m_instance!=NULL){
+		delete m_instance;
+	}
 
 	CScriptVariable::destroySingletons();
 	CScriptClassFactory::destroySingletons();
@@ -30,9 +33,7 @@ void CZG_ScriptCore::destroy(){
 	CAst::destroySingletons();
 	CSharedPointerManager::destroySingletons();
 
-	if(m_instance!=NULL){
-		delete m_instance;
-	}
+
 }
 
 CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegisteredFunctionSymbol *irfs, vector<CScriptVariable *> * argv){
@@ -133,6 +134,17 @@ CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegistered
 		}
 
 		var_result = CScriptClassFactory::getInstance()->newClassByIdx(irfs->idx_return_type,(void *)result);
+
+
+		if(var_result != CScriptVariable::UndefinedSymbol && var_result != CScriptVariable::NullSymbol){
+
+			if((var_result->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(var_result)) == -1){
+				return NULL;
+			}
+		}
+
+
+
 	}else{
 		switch(argv->size()){
 		default:
@@ -187,7 +199,7 @@ CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegistered
 
 		}
 
-		var_result = CScriptVariable::VoidSymbol;
+		var_result = CScriptVariable::UndefinedSymbol;
 	}
 
 
@@ -252,9 +264,9 @@ bool CZG_ScriptCore::eval(const string & s){
 	return false;
 }
 
-bool CZG_ScriptCore::execute(){
+CScriptVariable * CZG_ScriptCore::execute(){
 
-	if(!__init__) return false;
+	if(!__init__) return NULL;
 
 	if(m_mainClass == NULL){
 		// creates the main entry function with compiled code. On every executing code, within "execute" function

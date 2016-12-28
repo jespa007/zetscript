@@ -6,19 +6,23 @@
 int n_anonymouse_func=0;
 
 
-CScopeInfo::CScopeInfo(CScopeInfo * _parent){
+CScopeInfo::CScopeInfo(CScopeInfo * _parent, int _index){
 	m_parentScope = _parent;
-
+	m_index = _index;
+	m_currentScopePointer=NULL;
 	//m_baseScope = this;
 
 
 	if(_parent == NULL){
 		m_baseScope = this;
+		m_currentScopePointer=this;
+		m_index = 0;
 	}else{
+
 		m_baseScope = _parent->getBaseScope();
 	}
 
-	m_currentScopePointer=m_baseScope;
+
 }
 
 CScopeInfo * CScopeInfo::getBaseScope(){
@@ -32,27 +36,27 @@ CScopeInfo * CScopeInfo::getParent(){
 }
 
 CScopeInfo * CScopeInfo::getCurrentScopePointer(){
-	return m_currentScopePointer;
+	return m_baseScope->m_currentScopePointer;
 }
 
 void CScopeInfo::resetScopePointer(){
-	m_currentScopePointer = m_baseScope;
+	m_baseScope->m_currentScopePointer = m_baseScope;
 }
 
 CScopeInfo * CScopeInfo::pushScope(){
 
-	CScopeInfo *new_scope = new CScopeInfo(m_currentScopePointer);
-	m_currentScopePointer->m_scopeList.push_back(new_scope);
-	m_currentScopePointer = new_scope;
-	return m_currentScopePointer;
+	CScopeInfo *new_scope = new CScopeInfo(m_baseScope->m_currentScopePointer, m_baseScope->m_currentScopePointer->getIndex()+1);
+	m_baseScope->m_currentScopePointer->m_scopeList.push_back(new_scope);
+	m_baseScope->m_currentScopePointer = new_scope;
+	return m_baseScope->m_currentScopePointer;
 
 }
 
 CScopeInfo * CScopeInfo::popScope(){
 
-	if(m_currentScopePointer->m_parentScope != NULL){
-		m_currentScopePointer = m_currentScopePointer->m_parentScope;
-		return m_currentScopePointer;
+	if(m_baseScope->m_currentScopePointer->m_parentScope != NULL){
+		m_currentScopePointer = m_baseScope->m_currentScopePointer->m_parentScope;
+		return m_baseScope->m_currentScopePointer;
 	}
 
 	return NULL;
@@ -76,9 +80,17 @@ void CScopeInfo::generateScopeList(vector<CScopeInfo *> & lstScope){
 	generateScopeListRecursive(m_baseScope,lstScope);
 }
 
+int          CScopeInfo::getIndex(){
+	return m_index;
+}
+
 vector<CScopeInfo *> * CScopeInfo::getScopeList(){
 
 	return &m_scopeList;
+}
+
+vector<tInfoScopeVar *> * CScopeInfo::getRegisteredVariableList(){
+	return &m_registeredVariable;
 }
 
 vector<tInfoScopeVar *> * CScopeInfo::getRegisteredSymbolsList(){
@@ -198,13 +210,29 @@ tInfoScopeVar *CScopeInfo::getInfoRegisteredSymbol(const string & var_name, bool
 	return NULL;
 }
 
+void CScopeInfo::deleteScopeRecursive(CScopeInfo *scope_info){
+
+	for(unsigned i = 0; i < scope_info->getRegisteredVariableList()->size(); i++){
+		delete scope_info->getRegisteredVariableList()->at(i);
+	}
+
+
+	for(unsigned i = 0; i < scope_info->getScopeList()->size(); i++){
+
+		deleteScopeRecursive(scope_info->getScopeList()->at(i));
+		delete scope_info->getScopeList()->at(i);
+	}
+
+}
+
+void CScopeInfo::destroyScopes(){
+	deleteScopeRecursive(this);
+}
+
 //-----------------------------------------------------------------------------------------------------------
 CScopeInfo::~CScopeInfo(){
 
-	for(unsigned i = 0; i < m_registeredVariable.size(); i++){
-		delete m_registeredVariable[i];
-	}
-
+	//deleteScope(this);
 	/*for(unsigned i = 0; i < m_scopeList.size(); i++){
 		delete m_scopeList[i];
 	}*/
