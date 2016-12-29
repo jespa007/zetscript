@@ -1052,7 +1052,6 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 				if(is_symbol_trivial_value){
 
 					(*ast_node_to_be_evaluated)=new tASTNode;
-					print_info_cr("%p",(*ast_node_to_be_evaluated));
 					(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
 					(*ast_node_to_be_evaluated)->value_symbol=symbol_value; // assign its value ...
 					(*ast_node_to_be_evaluated)->scope_info_ptr = scope_info;
@@ -1204,10 +1203,9 @@ char * CAst::parseExpression(const char *s, int & m_line, CScopeInfo *scope_info
 	char * aux = parseExpression_Recursive(s,m_line,scope_info,ast_node_to_be_evaluated);
 	//char *aux = parseExpression_Recursive(s, m_line, scope_info, ast_node_to_be_evaluated, NULL);
 
-	if(aux != NULL && ast_node_to_be_evaluated != NULL ){ // can save the node and tells that is an starting of expression node...
+	if(aux != NULL && ast_node_to_be_evaluated != NULL && *ast_node_to_be_evaluated!=NULL){ // can save the node and tells that is an starting of expression node...
 
 		PASTNode ast_node=new tASTNode;
-		print_info_cr("%p",ast_node);
 		ast_node->node_type = EXPRESSION_NODE;
 		ast_node->children.push_back(*ast_node_to_be_evaluated);
 		(*ast_node_to_be_evaluated)->parent = ast_node; // save parent ..
@@ -1817,7 +1815,7 @@ char * CAst::parseWhile(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 	char *end_expr,*start_symbol;
 	tInfoKeyword *key_w;
 
-	PASTNode conditional=NULL, while_node=NULL;
+	PASTNode conditional_expression=NULL, while_node=NULL;
 	string conditional_str;
 	bool error = false;
 
@@ -1841,7 +1839,7 @@ char * CAst::parseWhile(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 			aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 			if(*aux_p == '('){
 
-				if((end_expr = parseExpression(aux_p+1,m_line,scope_info,&conditional)) != NULL){
+				if((end_expr = parseExpression(aux_p+1,m_line,scope_info,&conditional_expression)) != NULL){
 
 					if(*end_expr != ')'){
 						print_error_cr("Expected ')' at line %i",m_line);
@@ -1850,15 +1848,11 @@ char * CAst::parseWhile(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 					if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
 						return NULL;
 					}
-					conditional_str=start_symbol;
 
-					if(parseExpression((const char *)conditional_str.c_str(),m_line,scope_info,ast_node_to_be_evaluated != NULL ? &conditional : NULL) == NULL){
-						return NULL;
-					}
 					if( ast_node_to_be_evaluated != NULL){
 						PASTNode aux = new tASTNode;
 						aux->node_type = CONDITIONAL_NODE;
-						aux->children.push_back(conditional);
+						aux->children.push_back(conditional_expression);
 						(*ast_node_to_be_evaluated)->children.push_back(aux);
 					}
 					aux_p=CStringUtils::IGNORE_BLANKS(end_expr+1,m_line);
@@ -2085,6 +2079,8 @@ char * CAst::parseFor(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 						return NULL;
 					}
 
+
+					node_for_expression=NULL;
 					aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
 				}
 

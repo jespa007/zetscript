@@ -10,8 +10,24 @@ for(var i=0; i < 10; i++){
 }*/
 //var i=0;
 //var j=1<0;
+class MyClass{
+	var j,k,l,o,p;
+	
+	function MyClass(){
+		print("HOLA!");
+	}
+	
+	function kk(){
+		this.k=0;
+	}
+	
+};
 
-while(false){}
+var g=new MyClass();
+
+//g.kk();
+
+for(var i=0;i<10;){i++;}
 
 //for(var i=0; i < 0; i++){}
 

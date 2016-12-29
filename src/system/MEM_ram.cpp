@@ -899,10 +899,10 @@ void*  operator  new(size_t  size)//,  const  char  *file,  const  unsigned  int
 				pre_head->type_allocator  =  NEW_ALLOCATOR;
 
 
-				if((int)pre_head==0x80574f8){
+				/*if((int)pre_head==0x80574f8 || (int)pre_head==0x8057a38){
 					int h=0;
 					h++;
-				}
+				}*/
 
 			}
 	}

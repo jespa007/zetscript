@@ -1419,7 +1419,9 @@ bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 	_node->children[2]->node_type==POST_FOR_NODE && _node->children[3]->node_type==BODY_NODE)) {print_error_cr("node FOR has not valid TYPE nodes");return false;}
 	tInfoAsmOp *asm_op;
 	// 1. compile var init ...
-	if(!ast2asm_Recursive(_node->children[0],_node->scope_info_ptr)){ return false;}
+	if(_node->children[0]->children.size()>0){
+		if(!ast2asm_Recursive(_node->children[0],_node->scope_info_ptr)){ return false;}
+	}
 
 	// 2. compile conditional
 	if(!ast2asm_Recursive(_node->children[1],_node->scope_info_ptr)){ return false;}
@@ -1433,7 +1435,9 @@ bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 	if(!gacBody(_node->children[3],_node->children[3]->scope_info_ptr)){ return false;}
 
 	// 4. compile post oper
-	if(!ast2asm_Recursive(_node->children[2],_node->scope_info_ptr)){ return false;}
+	if(_node->children[2]->children.size()>0 && _node->children[2]->children[0] != NULL){
+		if(!ast2asm_Recursive(_node->children[2],_node->scope_info_ptr)){ return false;}
+	}
 
 	// 5. jmp to the conditional index ...
 	insert_JMP_Instruction(index_statment_conditional_for_);
@@ -1446,7 +1450,7 @@ bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 	}
 
 	// save jmp value...
-	asm_op->index_op1=getCurrentStatmentIndex()+1;
+	asm_op->index_op1=getCurrentStatmentIndex();
 	return true;
 }
 
