@@ -899,10 +899,10 @@ void*  operator  new(size_t  size)//,  const  char  *file,  const  unsigned  int
 				pre_head->type_allocator  =  NEW_ALLOCATOR;
 
 
-				/*if((int)pre_head==0x80574f8 || (int)pre_head==0x8057a38){
+				if((int)p==0x805c15c){// || (int)pre_head==0x8057a38){
 					int h=0;
 					h++;
-				}*/
+				}
 
 			}
 	}
@@ -988,6 +988,11 @@ void  operator  delete(void  *p) throw()//,  const  char  *file,  const  unsigne
 
 				tMem_PreHeapInfo   *pre_head   =  GET_PREHEADER(p);
 				tMem_PostHeapInfo  *post_head  =  GET_POSTHEADER(p);
+
+				if((int)p==0x805c15c){// || (int)pre_head==0x8057a38){
+					int h=0;
+					h++;
+				}
 
 				if(pre_head->pre_crc  ==  post_head->post_crc)
 				{

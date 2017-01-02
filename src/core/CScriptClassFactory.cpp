@@ -847,7 +847,7 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 												 }
 
 
-												 if(!searchVarFunctionSymbol(sfi,iao,k)){
+												 if(!searchVarFunctionSymbol(sfi,iao,k,iao->scope_type)){
 													 if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
 														 print_error_cr("line %i: Cannot find ancestor function for \"%s()\"",iao->ast_node->definedValueline, symbol_to_find.c_str());
 													 }
@@ -1415,15 +1415,19 @@ CScriptClassFactory::~CScriptClassFactory() {
 
 			delete irv->metadata_info.object_info.symbol_info.ast;
 		}
+		else{
 
-		if(i==0){ // MAIN CLASS...
-
-
-			//delete_proxy_function
-
-		}else{ // generic class ...
+			if(i==0){ // MAIN CLASS...
 
 
+				//delete_proxy_function
+
+
+			}else{ // generic class ...
+				irv->metadata_info.object_info.symbol_info.ast->scope_info_ptr->destroyScopes();
+				delete irv->metadata_info.object_info.symbol_info.ast->scope_info_ptr;
+				//delete irv->metadata_info.object_info.symbol_info.ast;
+			}
 		}
 
 

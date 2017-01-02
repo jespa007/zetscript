@@ -994,7 +994,15 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 	print_ast_cr("new expression eval:\"%.30s ...\" group:%i at line %i",aux,type_group, m_line);
 
 	// searching for operator!
+
+
+	if(*aux == '{'){ //json expression...
+		print_ast_cr("detected json expression");
+		return parseJson(aux,m_line,scope_info,ast_node_to_be_evaluated);
+	}
+
 	print_ast_cr("searching for operator type %i...",type_group);
+
 
 	while(!isMarkEndExpression(*aux) && (operator_group==0)){
 
@@ -1200,10 +1208,10 @@ char * CAst::parseExpression(const char *s, int & m_line, CScopeInfo *scope_info
 	}
 
 	// last character is in charge of who is calling parseExpression because there's many ending cases ): [ ';' ',' ')' , ']' ]
-	char * aux = parseExpression_Recursive(s,m_line,scope_info,ast_node_to_be_evaluated);
+	char *aux_p = parseExpression_Recursive(s,m_line,scope_info,ast_node_to_be_evaluated);
 	//char *aux = parseExpression_Recursive(s, m_line, scope_info, ast_node_to_be_evaluated, NULL);
 
-	if(aux != NULL && ast_node_to_be_evaluated != NULL && *ast_node_to_be_evaluated!=NULL){ // can save the node and tells that is an starting of expression node...
+	if(aux_p != NULL && ast_node_to_be_evaluated != NULL && *ast_node_to_be_evaluated!=NULL){ // can save the node and tells that is an starting of expression node...
 
 		PASTNode ast_node=new tASTNode;
 		ast_node->node_type = EXPRESSION_NODE;
@@ -1212,7 +1220,109 @@ char * CAst::parseExpression(const char *s, int & m_line, CScopeInfo *scope_info
 		*ast_node_to_be_evaluated=ast_node;
 	}
 
-	return aux;
+	return aux_p;
+}
+//---------------------------------------------------------------------------------------------------------------
+// PARSE JSON
+
+char * CAst::parseJson_Recursive(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+	char *aux_p = (char *)s;
+	string symbol_value,variable_value;
+	char *end_p;
+	if(*aux_p == '{'){ // go for final ...
+
+
+
+		while (*aux_p != '}' && *aux_p != 0){
+
+			aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
+
+			// expect word...
+			end_p = getEndWord(aux_p, m_line);
+
+			 if(end_p == NULL || end_p == aux_p){
+				 print_error_cr("Expected symbol at line %i",m_line);
+				 return NULL;
+			 }
+
+
+			 symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
+			 aux_p=CStringUtils::IGNORE_BLANKS(end_p,m_line);
+
+			 if(*aux_p != ':'){ // expected : ...
+				 print_error_cr("Expected ':'");
+				 return NULL;
+			 }
+
+			 // go to variable...
+			 aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
+
+			 if(*aux_p == '{'){ // recursive json ...
+				 if((aux_p=parseJson_Recursive(aux_p,m_line,scope_info))==NULL){
+					 return NULL;
+				 }
+			 }
+
+			 if(*aux_p == '['){ // list recursive json ...
+				 print_error_cr("'[' not suported yet!");
+				 return NULL;
+			 }
+
+			 // get symbol ..
+				// expect word...
+				end_p = getEndWord(aux_p, m_line);
+
+				 if(end_p == NULL || end_p == aux_p){
+					 print_error_cr("Expected symbol at line %i",m_line);
+					 return NULL;
+				 }
+
+
+				 variable_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
+				 aux_p=CStringUtils::IGNORE_BLANKS(end_p,m_line);
+
+
+				 // expect a comma or ...
+
+
+
+
+					 aux_p=CStringUtils::IGNORE_BLANKS(end_p,m_line);
+
+					 if(*aux_p != ',' && *aux_p != '}' ){
+						 print_error_cr("expected '}' or ','");
+						 return NULL;
+					 }
+
+		}
+
+
+
+	}
+	else{
+		print_error_cr("Expected '{'");
+	}
+
+	return NULL;
+
+}
+
+
+char * CAst::parseJson(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+	char *end=parseJson_Recursive(s,m_line,  scope_info, ast_node_to_be_evaluated);
+
+	if(end == NULL){
+		return NULL;
+	}
+
+	if(*end != '}'){
+		print_error_cr("Expected '{'");
+		return NULL;
+	}
+
+	return (end+1);
 }
 
 //---------------------------------------------------------------------------------------------------------------

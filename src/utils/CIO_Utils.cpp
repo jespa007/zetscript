@@ -17,9 +17,10 @@ string  CIO_Utils::getFolder(const string & _filename) {
 }
 
 string  CIO_Utils::getFileName(const string & _path) {
-  size_t found;
+  size_t found=0;
+  string aux=_path;
   string ss=_path;
-  found=_path.find_last_of("/\\");
+  found=aux.find_last_of("/\\");
   if((int)found != -1)
 	  ss= _path.substr(found+1);
   return ss;

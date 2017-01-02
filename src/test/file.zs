@@ -11,23 +11,46 @@ for(var i=0; i < 10; i++){
 //var i=0;
 //var j=1<0;
 class MyClass{
-	var j,k,l,o,p;
+	var k;
 	
 	function MyClass(){
-		print("HOLA!");
+		print("CONSTRUCTOR 1"+this.k);
 	}
 	
 	function kk(){
-		this.k=0;
+		print("HOLA4");
 	}
 	
 };
 
-var g=new MyClass();
+class MyClass2:MyClass{
+	var k;
+	
+	function MyClass2(){
+		super();
+		print("CONSTRUCTOR 2");
+	}
+	
+	function kk(){
+		print("HOLA5");
+		super.kk(); // it crashes!
+	}
+	
+};
+
+var g=new MyClass2();
+g.k=0;
+g.k=0;
+
+print(g.k);
+
+//g.kk(); ite crashes!!!
+
+var i = { a: "hola", l:["peta","koko",0],v:[{h:"hh",k:true},{h:true,k:"jj"}]}
 
 //g.kk();
 
-for(var i=0;i<10;){i++;}
+//for(var i=0;i<10;){i++;}
 
 //for(var i=0; i < 0; i++){}
 

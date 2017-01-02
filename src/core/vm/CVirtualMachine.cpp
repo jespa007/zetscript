@@ -1765,12 +1765,14 @@ bool CVirtualMachine::performInstruction(
 			}
 
 
-
+			CSharedPointerManager::getInstance()->push();
 
 			// by default virtual machine gets main object class in order to run functions ...
 			if((ret_obj=CVirtualMachine::execute(aux_function_info,calling_object,&m_functionArgs, n_stk+1))==NULL){
 				return false;
 			}
+
+			CSharedPointerManager::getInstance()->pop();
 
 			// deallocates stack...
 			m_functionArgs.clear();
@@ -1867,9 +1869,14 @@ bool CVirtualMachine::performInstruction(
 			svar->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(svar);
 
 			// execute its constructor ...
+			CSharedPointerManager::getInstance()->push();
+
+
 			if((constructor_function = svar->getConstructorFunction()) != NULL){
 				execute(constructor_function,svar);
 			}
+
+			CSharedPointerManager::getInstance()->pop();
 
 			break;
 

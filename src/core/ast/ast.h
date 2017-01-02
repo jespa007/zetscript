@@ -165,6 +165,8 @@ private:
 
 	static char * parseKeyWord(const char *s, int & m_start_line, CScopeInfo *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated=NULL);
 
+	static char * parseJson_Recursive(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseJson(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseIf(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseFor(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static char * parseWhile(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
