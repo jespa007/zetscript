@@ -8,8 +8,6 @@ class CNull;
 #include "system/zg_system.h"
 #include "utils/zg_utils.h"
 
-
-//#include "CVariable.h"
 #include "CScriptVariable.h"
 #include "CBoolean.h"
 #include "CNumber.h"
@@ -20,6 +18,7 @@ class CNull;
 #include "CNull.h"
 #include "CUndefined.h"
 #include "CVoid.h"
+#include "CStruct.h"
 
 
 

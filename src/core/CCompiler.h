@@ -109,11 +109,12 @@ private:
 	bool compile_class(PASTNode _ast_class_node, tScriptFunctionInfo *sf);
 
 
-	bool parseExpression(const char *expression_str, int & m_line,tInfoRegisteredFunctionSymbol * sf, CScopeInfo *currentEvaluatingScope);
+	//bool parseExpression(const char *expression_str, int & m_line,tInfoRegisteredFunctionSymbol * sf, CScopeInfo *currentEvaluatingScope);
 	/**
 	 * Load value or symbol and insert asm operation at current statment.
 	 */
 	tInfoStatementOp  *newStatment();
+	void insertStringConstantValueInstruction(PASTNode _node, const string & v);
 	bool insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc);
 	bool insertMovVarInstruction(PASTNode _node, int left_index, int right_index);
 
@@ -142,7 +143,6 @@ private:
 	 */
 
 	void insert_CreateArrayObject_Instruction(PASTNode _node);
-	//void insert_LoadArrayObject_Instruction(CVariable *obj);
 	void insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_vec_object_index, int index_instruction_to_push=-1);
 
 	void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction, PASTNode _ast);
@@ -184,11 +184,12 @@ private:
 	int getCurrentStatmentIndex();
 
 
-
-	//CVariable::VAR_TYPE getTypeAsmResult(int index);
-
 	void insertPushScopeInstruction(CScopeInfo * _goto_scope);
 	void insertPopScopeInstruction(PASTNode _node,int scope_idx);
+
+
+	void insert_DeclStruct_Instruction(PASTNode _node);
+	void insert_PushAttribute_Instruction(PASTNode _node,int ref_object,int ref_result_expression);
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE ASSEMBLE CODE (GAC)
 
@@ -200,9 +201,13 @@ private:
 	int gacExpression_FunctionObject(PASTNode op, CScopeInfo *_lc);
 	int gacExpression_FunctionAccess(PASTNode op, CScopeInfo *_lc);
 
+	int gacExpression_Struct(PASTNode _node, CScopeInfo *_lc);
+	int gacExpression_StructAttribute(PASTNode _node, CScopeInfo *_lc, int index_calling_object);
+
+
 	int gacExpression_ArrayAccess(PASTNode op, CScopeInfo *_lc);
 	int  gacExpression_Recursive(PASTNode op, CScopeInfo * _lc, int & numreg);
-	int  gacExpression(PASTNode op, CScopeInfo * _lc,int index_instruction=-1);
+	bool  gacExpression(PASTNode op, CScopeInfo * _lc,int index_instruction=-1);
 
 	bool gacKeyword(PASTNode _node, CScopeInfo * _lc);
 
@@ -212,7 +217,7 @@ private:
 	bool doRegisterVariableSymbolsClass(const string & class_name, tInfoRegisteredClass *current_class);
 	bool gacClass(PASTNode _node, CScopeInfo * _lc);
 
-	bool gacNew(PASTNode _node, CScopeInfo * _lc);
+	int gacNew(PASTNode _node, CScopeInfo * _lc);
 	bool gacFor(PASTNode _node, CScopeInfo * _lc);
 	bool gacVar(PASTNode _node, CScopeInfo * _lc);
 	bool gacWhile(PASTNode _node, CScopeInfo * _lc);
@@ -237,12 +242,6 @@ private:
 	tInfoRegisteredFunctionSymbol						*m_currentFunctionInfo;
 	vector <tInfoRegisteredFunctionSymbol *>  		 			stk_scriptFunction;
 
-
-/*
-	//tInfoScopeVar * existRegisteredSymbolRecursive(const string & var_name);
-	tInfoScopeVar * existRegisteredSymbol(const string & var_name);
-	CVariable *getRegisteredVariable(const string & v, bool print_msg=true);
-	bool defineSymbol(const string & var_name, CVariable *obj);*/
 	//---------------------------------------------------------------
 
 

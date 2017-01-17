@@ -122,7 +122,6 @@ auto getArgTypes(std::string& ref, std::vector<std::string> & params)
   // typename fun2::template arg<argIdx-1>::type var=NULL;
 
    printf("\nArg:%i ",argIdx);//,typeid(Args<argIdx-1>).name());
-    //cout << "is same:" << std::is_same<CVariable *,parameter_type>::value << endl;
     string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
     ref.append(parameter_type).append(" ");
     params.insert(params.begin()+0,parameter_type);

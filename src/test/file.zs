@@ -10,7 +10,7 @@ for(var i=0; i < 10; i++){
 }*/
 //var i=0;
 //var j=1<0;
-class MyClass{
+/*class MyClass{
 	var k;
 	
 	function MyClass(){
@@ -38,15 +38,35 @@ class MyClass2:MyClass{
 	
 };
 
+
 var g=new MyClass2();
 g.k=0;
 g.k=0;
 
-print(g.k);
+print(g.k);*/
 
 //g.kk(); ite crashes!!!
 
-var i = { a: "hola", l:["peta","koko",0],v:[{h:"hh",k:true},{h:true,k:"jj"}]}
+var i = { 
+		/*a: "a",
+		l:["peta","koko",0], 
+		n:function(){return 2+2;},*/
+		m:[{k:"kk1"}]//,{k:"kk2"}]
+	};
+
+//v:[{h:"hh",k:true},{h:true,k:"jj"}, n : "hola" ]}
+
+
+//i.a = "hope tu!!";
+
+print(i.m[0].k);
+
+//i.m[0].k;
+
+
+//var j456=0;
+
+//new MyObject();
 
 //g.kk();
 

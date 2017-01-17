@@ -332,35 +332,6 @@ CScriptVariable::~CScriptVariable(){
 	for ( unsigned i = 0; i < m_variableSymbol.size(); i++){
 
 
-		/*tInfoRegisteredVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
-
-		si = addVariableSymbol(ir_var->symbol_name,ir_var->ast);
-
-		// Warning if you put any var for primitives (i.e CInteger, CNumber, etc will crash in recursive manner)
-		if(IS_CLASS_C){ // we know the type object so we allocate new var symbol ...
-			// check if primitive type (only 4 no more no else)...
-			void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
-
-			if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(int *).name(),"int *",INT_PTR_TYPE};
-				si->object = new CInteger(CScriptClassFactory::getInstance()->getRegisteredClassInteger(),(int *)ptr_variable);
-			}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::FLOAT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
-				si->object = new CNumber(CScriptClassFactory::getInstance()->getRegisteredClassNumber(),(float *)ptr_variable);
-			}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::STRING_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
-				si->object = new CString(CScriptClassFactory::getInstance()->getRegisteredClassString(),(string *)ptr_variable);
-			}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::BOOL_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
-				si->object = new CBoolean(CScriptClassFactory::getInstance()->getRegisteredClassString(),(bool *)ptr_variable);
-			}else{
-				tInfoRegisteredClass *info_registered_class = CScriptClassFactory::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
-
-				if(info_registered_class){
-					si->object = new CScriptVariable(info_registered_class,ptr_variable);
-				}
-
-			}
-			//si->
-			//si->object = CScriptClassFactory::getInstance()->get(ir_var->c_type);
-		}*/
-
 	}
 
 

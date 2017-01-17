@@ -477,7 +477,7 @@ char *CAst::getSymbolName(const char *s,int & m_line){
 
 
 	if(end_punctuator != NULL){
-		print_error_cr("Unexpected '%s' at line",end_punctuator->str,m_line);
+		print_error_cr("Unexpected '%s' at line %i",end_punctuator->str,m_line);
 		return NULL;
 	}
 
@@ -955,7 +955,7 @@ char *CAst::getSymbolValue(
 }
 
 bool CAst::isMarkEndExpression(char c){
-	return (c==0 || c==';' || c==',' ||  c==')'  || c==']' );//|| c==':');
+	return (c==0 || c==';' || c==',' ||  c==')'  || c==']' || c=='}');//|| c==':');
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -998,7 +998,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 
 	if(*aux == '{'){ //json expression...
 		print_ast_cr("detected json expression");
-		return parseJson(aux,m_line,scope_info,ast_node_to_be_evaluated);
+		return parseStruct(aux,m_line,scope_info,ast_node_to_be_evaluated);
 	}
 
 	print_ast_cr("searching for operator type %i...",type_group);
@@ -1222,27 +1222,40 @@ char * CAst::parseExpression(const char *s, int & m_line, CScopeInfo *scope_info
 
 	return aux_p;
 }
-//---------------------------------------------------------------------------------------------------------------
-// PARSE JSON
 
-char * CAst::parseJson_Recursive(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+//---------------------------------------------------------------------------------------------------------------
+// PARSE OBJECT FUNCTIONS
+
+char * CAst::parseStruct_Recursive(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
-	string symbol_value,variable_value;
+	string symbol_value;
 	char *end_p;
+	PASTNode attr_node = NULL;
+	int m_lineSymbol;
+
+
 	if(*aux_p == '{'){ // go for final ...
 
-
+		if(ast_node_to_be_evaluated!=NULL){
+			(*ast_node_to_be_evaluated)=new tASTNode;
+			(*ast_node_to_be_evaluated)->definedValueline = m_line;
+			(*ast_node_to_be_evaluated)->node_type = STRUCT_NODE;
+			(*ast_node_to_be_evaluated)->scope_info_ptr = scope_info;
+		}
 
 		while (*aux_p != '}' && *aux_p != 0){
 
+			m_lineSymbol = m_line;
 			aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
+
+
 
 			// expect word...
 			end_p = getEndWord(aux_p, m_line);
 
 			 if(end_p == NULL || end_p == aux_p){
-				 print_error_cr("Expected symbol at line %i",m_line);
+				 print_error_cr("Expected symbol at line %i after ','",m_lineSymbol);
 				 return NULL;
 			 }
 
@@ -1251,27 +1264,39 @@ char * CAst::parseJson_Recursive(const char *s,int & m_line,  CScopeInfo *scope_
 			 aux_p=CStringUtils::IGNORE_BLANKS(end_p,m_line);
 
 			 if(*aux_p != ':'){ // expected : ...
-				 print_error_cr("Expected ':'");
+				 print_error_cr("Expected ':' at line %i",m_line);
 				 return NULL;
 			 }
 
-			 // go to variable...
-			 aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
+			 aux_p++;
 
-			 if(*aux_p == '{'){ // recursive json ...
+			 // go to variable...
+			 if((aux_p=parseExpression(aux_p,m_line,scope_info,ast_node_to_be_evaluated!=NULL?&attr_node:NULL)) == NULL){  //CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
+				 return NULL;
+			 }
+
+			 // for each attribute we stack to items SYMBOL_NODE and EXPRESSION_NODE ...
+			 if(ast_node_to_be_evaluated!=NULL){
+				 attr_node->value_symbol = symbol_value;
+				 attr_node->definedValueline = m_lineSymbol;
+ 			 	(*ast_node_to_be_evaluated)->children.push_back(attr_node);
+ 			 	attr_node->parent =(*ast_node_to_be_evaluated);
+			 }
+
+			 /*if(*aux_p == '{'){ // recursive json ...
 				 if((aux_p=parseJson_Recursive(aux_p,m_line,scope_info))==NULL){
 					 return NULL;
 				 }
 			 }
 
-			 if(*aux_p == '['){ // list recursive json ...
+			 if(*aux_p == '['){ // list recursive json array ...
 				 print_error_cr("'[' not suported yet!");
 				 return NULL;
-			 }
+			 }*/
 
 			 // get symbol ..
 				// expect word...
-				end_p = getEndWord(aux_p, m_line);
+			/*	end_p = getEndWord(aux_p, m_line);
 
 				 if(end_p == NULL || end_p == aux_p){
 					 print_error_cr("Expected symbol at line %i",m_line);
@@ -1284,34 +1309,31 @@ char * CAst::parseJson_Recursive(const char *s,int & m_line,  CScopeInfo *scope_
 
 
 				 // expect a comma or ...
+*/
 
 
 
-
-					 aux_p=CStringUtils::IGNORE_BLANKS(end_p,m_line);
+					 aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 					 if(*aux_p != ',' && *aux_p != '}' ){
 						 print_error_cr("expected '}' or ','");
 						 return NULL;
 					 }
-
 		}
-
-
 
 	}
 	else{
 		print_error_cr("Expected '{'");
 	}
 
-	return NULL;
+	return aux_p;
 
 }
 
 
-char * CAst::parseJson(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseStruct(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-	char *end=parseJson_Recursive(s,m_line,  scope_info, ast_node_to_be_evaluated);
+	char *end=parseStruct_Recursive(s,m_line,  scope_info, ast_node_to_be_evaluated);
 
 	if(end == NULL){
 		return NULL;
@@ -1324,6 +1346,7 @@ char * CAst::parseJson(const char *s,int & m_line,  CScopeInfo *scope_info, PAST
 
 	return (end+1);
 }
+
 
 //---------------------------------------------------------------------------------------------------------------
 // PARSE KEYWORDS
@@ -1372,7 +1395,7 @@ char * CAst::parseNew(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 
 			(*ast_node_to_be_evaluated) = new tASTNode();
 			(*ast_node_to_be_evaluated)->node_type = NEW_OBJECT_NODE;
-			(*ast_node_to_be_evaluated)->keyword_info = key_w;
+			(*ast_node_to_be_evaluated)->keyword_info = NULL;
 			(*ast_node_to_be_evaluated)->value_symbol = symbol_value;
 			(*ast_node_to_be_evaluated)->children.push_back(args_node);
 
@@ -2693,6 +2716,11 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 							return NULL;
 						}
 						m_line = m_startLine;
+
+						if(!(*aux_p == ';' || *aux_p == '=' || *aux_p == ',' )){
+							print_error_cr("line %i: expected ',',';' or '=' but it was '%c'", m_line,*aux_p);
+							return NULL;
+						}
 					}
 				}
 				else{
@@ -2723,20 +2751,20 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScopeInfo *scope_info, boo
 	char *aux_p = (char *)s;
 
 	//CScopeInfo *_localScope =  scope_info != NULL ? scope_info->symbol_info.ast->scope_info_ptr: NULL;
-	CScopeInfo *currentScope=  scope_info->getCurrentScopePointer();
+	CScopeInfo *currentScope=  NULL;
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 	// check for keyword ...
 	if(*aux_p == '{'){
 		aux_p++;
 
-		if(scope_info != NULL && push_scope){
-		//	print_info_cr("scope info 1 %i",CScopeInfo::getScopeIndex(scope_info));
-
-			currentScope = scope_info->pushScope();
-
-		//	print_info_cr("scope info 2 %i",CScopeInfo::getScopeIndex(currentScope));
+		if(scope_info != NULL){
+			currentScope =scope_info->getCurrentScopePointer();
+			if(push_scope){
+				currentScope = scope_info->pushScope();
+			}
 		}
+
 		if((aux_p = generateAST_Recursive(aux_p, m_line,scope_info,error,ast_node_to_be_evaluated)) != NULL){
 			if(error){
 				return NULL;

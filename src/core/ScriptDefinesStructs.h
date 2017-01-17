@@ -38,6 +38,7 @@ enum NODE_TYPE{
 	FUNCTION_REF_NODE,
 	NEW_OBJECT_NODE,
 	ACCESS_OBJECT_MEMBER_NODE,
+	STRUCT_NODE,
 	MAX_NODE_TYPE
 };
 
@@ -217,6 +218,8 @@ enum ASM_OPERATOR{
 		LOAD_I, // load value that points saved instruction...
 
 		POP_SCOPE,
+		DECL_STRUCT,
+		PUSH_ATTR,
 		MAX_OPERATORS
 
 
@@ -374,9 +377,7 @@ public:
 struct tInfoScopeVar{
 	string symbol_ref;
 	string name; // var name
-	//CVariable *m_obj; // in case of static objects like object-functions
 	PASTNode ast; // ast node info.
-	//int index_var; // idx position in
 };
 
 
@@ -398,20 +399,9 @@ enum ASM_PROPERTIES{
 
 struct tInfoAsmOp{
 
-
-
-
-	 //int type_op;
-	 //tInfoObjectOperator *funOp;
-	 //CVariable *left_var_obj;
-	// void *result_obj; // can be float/bool/string or variable.
-
 	// string symbol_name;
 	VALUE_INSTRUCTION_TYPE variable_type;
 	 PASTNode ast_node; // define ast node for give some information at run time
-	// int definedLine;
-
-
 	 //------------------
 
 	 ASM_OPERATOR operator_type;
@@ -423,6 +413,7 @@ struct tInfoAsmOp{
 	 int asm_properties;
 	 SCOPE_TYPE scope_type; // in case needed.
 	 tScriptFunctionInfo *script_info;
+	 //string aux_name;
 
 	// bool (* isconvertable)(int value);
 
@@ -434,17 +425,8 @@ struct tInfoAsmOp{
 		ast_node = NULL;
 		scope_type=LOCAL_SCOPE;
 		asm_properties=0;
-		//isconvertable=NULL;
-		//left_var_obj=NULL;
-	  //   type_op=0;
-	   //  funOp=NULL;
-		//result_obj=NULL; // oject type...
-	   // type_res="none";
 		index_op1=index_op2=-1;
 		script_info=NULL;
-
-
-	   // ptr_value=NULL;
 	}
 
 };
@@ -453,8 +435,6 @@ struct tInfoStatementOp{
 
 	vector<tInfoAsmOp *> asm_op;
 };
-
-
 
 //-------------------------------------------------------
 
@@ -472,9 +452,6 @@ struct tScriptFunctionInfo{ // script function is shared by class and function .
 	vector<tInfoVarScopeBlock> info_var_scope; // list var per scope in any function ...
 };
 
-
-
-
 struct tInfoRegisteredFunctionSymbol{
 
 	tScriptFunctionInfo	object_info;
@@ -489,10 +466,7 @@ struct tInfoRegisteredFunctionSymbol{
 		//virtual_function = NULL;
 		idx_return_type = -1;
 	}
-
-
 };
-
 
 /**
  * Stores the basic information to build a object through built AST structure
@@ -502,8 +476,9 @@ struct tInfoRegisteredClass{
 	tInfoRegisteredFunctionSymbol	metadata_info;
 	int idx_function_script_constructor;
 	int class_idx;
+
+	std::function<void *()> * c_constructor;
 	std::function<void (void *p)> *c_destructor;
-	std::function<void *()> *c_constructor;
 	string classPtrType; // type_id().name();
 	vector<tInfoRegisteredClass *> baseClass; // in the case is and extension of class.
 

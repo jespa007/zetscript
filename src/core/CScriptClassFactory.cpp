@@ -140,6 +140,16 @@
 
  				}
  			switch((*asm_op_statment)[i]->operator_type){
+ 			case  PUSH_ATTR:
+ 				printf("[%02i:%02i]\t%s\tSTRUCT[%02i:%02i],[%02i:%02i],[%02i:%02i]\n",
+ 						s,i,
+						CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,
+
+						s,(*asm_op_statment)[i]->index_op1,
+						s,i-1, // lat operand must be a string constant ...
+						s,(*asm_op_statment)[i]->index_op2);
+ 				break;
+
  			case  NEW:
  				printf("[%02i:%02i]\t%s\t%s\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,CScriptClassFactory::getInstance()->getNameRegisteredClassByIdx((*asm_op_statment)[i]->index_op1));
  				break;
@@ -169,7 +179,7 @@
  				break;*/
  			case VGET:
  			case VPUSH:
- 				printf("[%02i:%02i]\t%s\t%s[%02i:%02i]%s,[%02i:%02i]\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,pre.c_str(),s,index_op1,post.c_str(),s,index_op2);
+ 				printf("[%02i:%02i]\t%s\t%sVEC[%02i:%02i]%s,[%02i:%02i]\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,pre.c_str(),s,index_op1,post.c_str(),s,index_op2);
  				break;
  			default:
 
@@ -341,7 +351,20 @@
  }
 
 
+ class MyObject2{
 
+	 int gg;
+ public:
+	 MyObject2(){
+		 print_info_cr("MyObject2 HHHHHHHHHHHH!!!");
+		 gg=10;
+	 }
+
+	 void print2(){
+		 printf("GG:%i\n",gg);
+	 }
+
+ };
 
  int c_var=0;
 class MyObject{
@@ -351,6 +374,11 @@ public:
 	MyObject(){
 		i=0;
 		print_info_cr("MyObject built!!!");
+	}
+
+	MyObject(MyObject2 *pp){
+		i=0;
+		print_info_cr("MyObject built2!!!");
 	}
 
 	void print(){
@@ -395,6 +423,7 @@ public:
 		if(!register_C_Class<CString>("CString")) return false;
 		if(!register_C_Class<CVector>("CVector")) return false;
 		if(!register_C_Class<CFunctor>("CFunctor")) return false;
+		if(!register_C_Class<CStruct>("CStruct")) return false;
 
 
 		// register primitive classes first ...
@@ -407,6 +436,7 @@ public:
 		if((idxClassVector = getIdxRegisteredClass("CVector"))==-1) return false;
 		if((idxClassString = getIdxRegisteredClass("CString"))==-1) return false;
 		if((idxClassFunctor = getIdxRegisteredClass("CFunctor"))==-1) return false;
+		if((idxClassStruct = getIdxRegisteredClass("CStruct"))==-1) return false;
 
 		//===> MOVE INTO CScriptClassFactory !!!! ====================================================>
 
@@ -491,6 +521,9 @@ public:
 
 
 		// test user custom object
+		if(!register_C_Class<MyObject2>("MyObject2")) return false;
+
+
 		if(!register_C_Class<MyObject>("MyObject")) return false;
 		if(!register_C_FunctionMember(MyObject,print)) return false;
 		if(!register_C_VariableMember(MyObject,i)) return false;
@@ -503,7 +536,7 @@ public:
 
  CScriptClassFactory::CScriptClassFactory(){
 
-	 idxClassInteger = idxClassNumber = idxClassString = idxClassBoolean = idxClassVector = idxClassFunctor = idxClassUndefined= idxClassVoid = -1;
+	 idxClassInteger = idxClassNumber = idxClassString = idxClassBoolean = idxClassVector = idxClassFunctor = idxClassUndefined= idxClassVoid = idxClassStruct = -1;
 
 	 if(!registerBase()){
 			exit(EXIT_FAILURE);

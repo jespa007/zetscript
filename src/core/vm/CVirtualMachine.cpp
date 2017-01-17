@@ -1609,6 +1609,8 @@ bool CVirtualMachine::performInstruction(
 						jmp_to_statment = index_op1;
 						jmp_to_instruction = index_op2;
 					}
+				}else{
+					print_error_cr("No boolean elements");
 				}
 			}else{
 				print_error_cr("No boolean elements");
@@ -1623,6 +1625,8 @@ bool CVirtualMachine::performInstruction(
 					if(((bool)(ptrResultLastInstruction->stkResultObject))){
 						jmp_to_statment = index_op1;
 					}
+				}else{
+					print_error_cr("No boolean elements");
 				}
 			}else{
 				print_error_cr("No boolean elements");
@@ -1641,8 +1645,6 @@ bool CVirtualMachine::performInstruction(
 				CScriptVariable **script_var=NULL;
 
 				if(iao->index_op2 == -1 || iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
-
-
 					vector<tInfoRegisteredFunctionSymbol> *vec_global_functions=&CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
 					bool all_check=true;
 					bool found = false;
@@ -1660,7 +1662,7 @@ bool CVirtualMachine::performInstruction(
 
 						script_var = (CScriptVariable **)ptrResultInstructionOp1->ptrObjectRef;////((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].ptrObjectRef);
 						base_var = *script_var;
-						for(int h=0; h < 2 && !found; h++){
+						for(int h=0; h < 2 && !found; h++){ // h=0 -> match signature, 1=doesn't match signature
 							int idx_function;
 							if(h==0){
 								idx_function=base_var->getIdxFunctionSymbolWithMatchArgs(iao->ast_node->value_symbol,argv, true);
@@ -1729,26 +1731,16 @@ bool CVirtualMachine::performInstruction(
 							print_error_cr("Cannot find right C symbol for \"%s\"",iao->ast_node->value_symbol.c_str());
 						}
 						break;
-
 					}
-
-
 				}
 				else{
 					print_error_cr("Unexpected C calling exception");
 				}
-
-
 			}
-
-
 
 			if(ptrResultInstructionOp1->type != INS_TYPE_FUNCTION){
 				if(ptrResultInstructionOp1->type == INS_TYPE_VAR && ((CScriptVariable *)ptrResultInstructionOp1->stkResultObject)->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
 					aux_function_info = (tInfoRegisteredFunctionSymbol *)(((CFunctor *)ptrResultInstructionOp1->stkResultObject)->m_value);
-
-
-
 				}else {
 					print_error_cr("object \"%s\" is not function at line %i",instruction->ast_node->value_symbol.c_str(), instruction->ast_node->definedValueline);
 					return false;
@@ -1763,7 +1755,6 @@ bool CVirtualMachine::performInstruction(
 			else if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 
 			}
-
 
 			CSharedPointerManager::getInstance()->push();
 
@@ -1916,27 +1907,71 @@ bool CVirtualMachine::performInstruction(
 					return false;
 				}
 				break;
-
 			}
-
 			break;
-
 		case POP_SCOPE:
-
-
 			popScope(info_function,instruction->index_op1);
-
-
 			break;
 
+		case DECL_STRUCT: // symply creates a variable ...
+			if(!pushVar(svar=NEW_STRUCT)){
+				return false;
+			}
+			svar->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(svar);
+			break;
+		case PUSH_ATTR:
+			// get symbol ... (current instruction -1)
+			if(idxStkCurrentResultInstruction > 0){
+
+				if(ptrResultLastInstruction->type == INS_TYPE_STRING){
+
+					CScriptVariable::tSymbolInfo *si;
+					string *variable_name = (string *)ptrResultLastInstruction->stkResultObject;
+					if(ptrResultInstructionOp1->type ==VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR){
+						CScriptVariable *var1=(CScriptVariable *)ptrResultInstructionOp1->stkResultObject;
+						if(var1->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassStruct()){
+
+							// get variable or whatever ... ?
+							//if(ptrResultInstructionOp2->type ==VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR){
+
+								si=var1->addVariableSymbol(*variable_name, instruction->ast_node);
+
+								if(!assignVarFromResultInstruction((CScriptVariable **)&si->object ,ptrResultInstructionOp2))
+										return false;
+
+								si->value_symbol=*variable_name;
+								//si->object = create ptrResultInstructionOp2->stkResultObject;
+							//}
+							//else{
+							//	print_error_cr("Struct: Expected operant 2 as variable at line %i",instruction->ast_node->definedValueline);
+							//	return false;
+							//}
+
+						}else{
+							print_error_cr("Struct: Expected operant 1 as struct at line %i",instruction->ast_node->definedValueline);
+							return false;
+						}
+
+					}
+					else{
+						print_error_cr("Struct: Op1 is not a var");
+					}
+
+				}
+				else{
+					print_error_cr("Struct: Expected symbol at line %i",instruction->ast_node->definedValueline);
+					return false;
+				}
+			}else{
+				print_error_cr("Struct: Internal error");
+				return false;
+			}
+			break;
 	}
 
 	idxStkCurrentResultInstruction++;
-
 	return true;
 }
-
-
 
 
 

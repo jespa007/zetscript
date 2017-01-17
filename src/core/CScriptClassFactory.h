@@ -26,7 +26,7 @@ class CScopeInfo;
 class CScriptClassFactory{
 
 
-	int idxClassInteger, idxClassNumber, idxClassString, idxClassBoolean, idxClassVector, idxClassFunctor, idxClassUndefined, idxClassVoid, idxClassNull;
+	int idxClassInteger, idxClassNumber, idxClassString, idxClassBoolean, idxClassVector, idxClassFunctor, idxClassUndefined, idxClassVoid, idxClassNull, idxClassStruct;
 
 
 public:
@@ -118,6 +118,9 @@ public:
 
 	int getIdxClassNumber(){return idxClassNumber;}
 	tInfoRegisteredClass *  getRegisteredClassNumber(){return m_registeredClass[idxClassNumber];}
+
+	int getIdxClassStruct(){return idxClassStruct;}
+	tInfoRegisteredClass *  getRegisteredClassStruct(){return m_registeredClass[idxClassStruct];}
 
 	int getIdxClassString(){return idxClassString;}
 	tInfoRegisteredClass *  getRegisteredClassString(){return m_registeredClass[idxClassString];}
@@ -359,6 +362,8 @@ public:
 
 			// in C there's no script constructor ...
 			irc->idx_function_script_constructor=-1;
+
+			// allow dynamic constructor in function its parameters ...
 			irc->c_constructor = new std::function<void *()>([](){return new _T;});
 			irc->c_destructor = new std::function<void (void *)>([](void *p){delete (_T *)p;});
 

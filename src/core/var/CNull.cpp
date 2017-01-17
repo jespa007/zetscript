@@ -5,5 +5,5 @@ CNull::CNull(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_r
     //m_classStr="undefined";
    // m_pointerClassStr="undefined";
 
-	//m_varType = CVariable::VAR_TYPE::UNDEFINED;
+
 }

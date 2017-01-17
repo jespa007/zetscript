@@ -55,7 +55,7 @@ CBoolean::CBoolean(tInfoRegisteredClass *info_registered_class, bool *_value):CS
     //m_classStr=typeid(CBoolean).name();
     //m_pointerClassStr=typeid(CBoolean *).name();
 
-	//m_varType = CVariable::VAR_TYPE::BOOLEAN;
+
 	setup();
 
 	if( _value != NULL){
