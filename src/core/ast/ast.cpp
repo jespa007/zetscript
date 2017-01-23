@@ -779,6 +779,11 @@ char *CAst::getSymbolValue(
 	is_symbol_trivial = false;
 	m_definedSymbolLine = m_line;
 
+	if(symbol_name == "super"){
+		print_error_cr("Invalid using \"super\" keyword at line %i",m_line);
+		return NULL;
+	}
+
 
 	//----------------------------------------------------------
 	// GETTING TRIVIAL SYMBOLS
@@ -846,7 +851,9 @@ char *CAst::getSymbolValue(
 
 			//symbol_node->node_type = NODE_TYPE::KEYWORD_NODE;
 			//symbol_node->keyword_info = &defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD];
-		}else{
+		}
+		else // array object ...
+		{
 
 			if(*aux == '['){ // vector object ...
 				// parse function but do not create ast node (we will create in trivial case value
@@ -912,7 +919,9 @@ char *CAst::getSymbolValue(
 			//(*args_node)->node_type = NODE_TYPE::FUNCTION_OR_CLASS_ARGS_CALL_NODE;
 			end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
 		}
-		else if(*end_expression == '['){ // parse args within '(' ')'...
+
+
+		if(*end_expression == '['){ // parse args within '(' ')'...
 			is_symbol_trivial = false;
 			char *aux_ptr;
 			int i=0;

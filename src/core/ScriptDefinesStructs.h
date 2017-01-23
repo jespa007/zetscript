@@ -262,7 +262,10 @@ enum SYMBOL_INFO_PROPERTIES{
 	PROPERTY_STATIC_REF = 0x1 << 4,
 	PROPERTY_CONSTRUCTOR = 0x1 << 5
 
+
 };
+
+
 
 struct tInfoRegisteredVariableSymbol{
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function
@@ -392,7 +395,8 @@ typedef struct{
 
 
 enum ASM_PROPERTIES{
-	ASM_PROPERTY_CALLING_OBJECT = 0x1<<0
+	ASM_PROPERTY_CALLING_OBJECT = 0x1<<0,
+	ASM_PROPERTY_DIRECT_CALL_RETURN = 0x1 << 1
 };
 
 

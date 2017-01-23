@@ -10,7 +10,8 @@ for(var i=0; i < 10; i++){
 }*/
 //var i=0;
 //var j=1<0;
-/*class MyClass{
+/*
+class MyClass{
 	var k;
 	
 	function MyClass(){
@@ -33,33 +34,125 @@ class MyClass2:MyClass{
 	
 	function kk(){
 		print("HOLA5");
-		super.kk(); // it crashes!
+		super(); // it crashes!
 	}
 	
 };
 
 
 var g=new MyClass2();
-g.k=0;
-g.k=0;
+g.k=10;
 
-print(g.k);*/
+function ret_vec(v){
+	var h=[];
+	for(var i = 0; i < v.k; i++){
+		h.add(i);
+	}
+	
+	return h;
+}*/
 
-//g.kk(); ite crashes!!!
+class MyClass2{
+	var tt;
+	
+	function MyClass2(){
+		this.tt=0;
+	}
+	
+};
 
+function ret_vec(cc){
+	cc.tt=2;  
+	var v=[1]; 
+	return v;
+}
+
+var t=new MyClass2();
+var vv = ret_vec(t); // que petada ...
+
+print(vv.size());
+
+//ret_vec()[0];
+//g.k=1;
+//g.k=2;
+
+//g.k="string";
+/*g.k=0;
+
+print(g.k);
+*/
+//g.kk(); //ite crashes!!!
+
+
+/*var vec = [1,2];
+
+print("Hey!"+vec.size()+" ii:"+ii);
+for(var ii=0; ii < vec.size(); ii++){
+	print("Hey! k "+vec[ii]);
+}
+*/
+/*
 var i = { 
-		/*a: "a",
+		a: "a",
 		l:["peta","koko",0], 
-		n:function(){return 2+2;},*/
-		m:[{k:"kk1"}]//,{k:"kk2"}]
+		n:function(){return 2+2;}/*,
+		//m:[{k:"kk1"}]//,{k:"kk2"}]
 	};
-
+*/
 //v:[{h:"hh",k:true},{h:true,k:"jj"}, n : "hola" ]}
 
 
 //i.a = "hope tu!!";
 
-print(i.m[0].k);
+//print(i.n());
+//i.toString();
+
+//var v=my_new_random_vector(10);
+//print("size:"+v.size());
+/*
+function rec1() {
+	return 1234;
+}
+
+
+function rec(i){
+	
+	var b1=(0==1)&&(1==2);
+	var b2=(0==1)&&(1==2);
+	var b3=(0==1)&&(1==2);
+	var b4=(0==1)&&(1==2);
+	var b5=(0==1)&&(1==2);
+	var b6=(0==1)&&(1==2);
+	var b7=(0==1)&&(1==2);
+	var b8=(0==1)&&(1==2);
+	var b9=(0==1)&&(1==2);
+	var b10=(0==1)&&(1==2);
+	//var b11=(0==1)&&(1==2);
+	//return rec1();
+	//return my_new_random_vector(10);
+	
+	
+	
+	/*for(var j=0; j < v.size(); j++){
+		print("value["+j+"]:"+v[j]);
+	}
+	
+	return v;
+	if(i > 0){
+		print("i:"+i);
+		return rec(i-1);
+	}
+	
+	//return 0;
+	
+}
+*/
+//print("hola");
+//rec(10+9+8+7+6+5+4+3+2+1);
+ 
+/*for(var j=0; j < v.size(); j++){
+	print("v["+j+"]="+v[j]);
+}*/
 
 //i.m[0].k;
 

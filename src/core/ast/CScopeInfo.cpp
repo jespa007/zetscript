@@ -16,6 +16,7 @@ CScopeInfo::CScopeInfo(CScopeInfo * _parent, int _index){
 	if(_parent == NULL){
 		m_baseScope = this;
 		m_currentScopePointer=this;
+		totalScopes = 0;
 		m_index = 0;
 	}else{
 
@@ -23,6 +24,11 @@ CScopeInfo::CScopeInfo(CScopeInfo * _parent, int _index){
 	}
 
 
+}
+
+int CScopeInfo::incTotalScopes(){
+	totalScopes++;
+	return totalScopes;
 }
 
 CScopeInfo * CScopeInfo::getBaseScope(){
@@ -45,7 +51,9 @@ void CScopeInfo::resetScopePointer(){
 
 CScopeInfo * CScopeInfo::pushScope(){
 
-	CScopeInfo *new_scope = new CScopeInfo(m_baseScope->m_currentScopePointer, m_baseScope->m_currentScopePointer->getIndex()+1);
+
+
+	CScopeInfo *new_scope = new CScopeInfo(m_baseScope->m_currentScopePointer, m_baseScope->incTotalScopes());
 	m_baseScope->m_currentScopePointer->m_scopeList.push_back(new_scope);
 	m_baseScope->m_currentScopePointer = new_scope;
 	return m_baseScope->m_currentScopePointer;

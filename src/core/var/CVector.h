@@ -1,6 +1,6 @@
 #pragma once
 
-#define NEW_VECTOR_VAR (new CVector(CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassVector())))//,(void *)(new CVector())))
+#define NEW_VECTOR_VAR (new CVector()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassVector())))//,(void *)(new CVector())))
 
 class CVector: public CScriptVariable{
 
@@ -9,11 +9,13 @@ public:
 
 	vector<CScriptVariable *> m_objVector;
 
-	CVector(){}
-	CVector(tInfoRegisteredClass *info_registered_class);
-
+	CVector();
+	//CVector(tInfoRegisteredClass *info_registered_class);
+	virtual void unrefSharedPtr();
 	void add(CScriptVariable *v);
 	int *size();
 
 	~CVector();
+
+
 };

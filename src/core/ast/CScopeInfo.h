@@ -6,6 +6,7 @@ class CContext;
 
 
 class CScopeInfo{
+	int totalScopes;
 public:
 
 
@@ -27,6 +28,7 @@ public:
 	vector<CScopeInfo *> * getScopeList();
 	vector<tInfoScopeVar *> * getRegisteredVariableList();
 	static int getScopeIndex(CScopeInfo * scope);
+	int incTotalScopes();
 
 	CScopeInfo * pushScope();
 	CScopeInfo * popScope();

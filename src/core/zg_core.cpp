@@ -135,16 +135,6 @@ CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegistered
 
 		var_result = CScriptClassFactory::getInstance()->newClassByIdx(irfs->idx_return_type,(void *)result);
 
-
-		if(var_result != CScriptVariable::UndefinedSymbol && var_result != CScriptVariable::NullSymbol){
-
-			if((var_result->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(var_result)) == -1){
-				return NULL;
-			}
-		}
-
-
-
 	}else{
 		switch(argv->size()){
 		default:
@@ -223,6 +213,12 @@ int interface_variable;
 bool CZG_ScriptCore::init(){
 
 	CScriptClassFactory::getInstance();
+
+	 if(!CScriptClassFactory::getInstance()->registerBase()){
+			exit(EXIT_FAILURE);
+	 }
+
+
 	vm = new CVirtualMachine();
 	CScriptClassFactory::registerPrimitiveTypes();
 	CScriptVariable::createSingletons();
@@ -262,6 +258,26 @@ bool CZG_ScriptCore::eval(const string & s){
 	}
 
 	return false;
+}
+
+std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * CZG_ScriptCore::script_call(const string &script_function_name){
+
+	//tInfoRegisteredFunctionSymbol *irfs = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,function);
+
+	//if(irfs != NULL){
+		for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.m_registeredFunction.size(); i++){
+			if(m_mainFunctionInfo->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == script_function_name){
+				return new std::function<CScriptVariable * (std::vector<CScriptVariable *> args)>([&,i](std::vector<CScriptVariable *> args){
+						return vm->execute(&m_mainFunctionInfo->object_info.local_symbols.m_registeredFunction[i],  m_mainClass, &args,0);//->excute();
+				});
+			}
+		}
+	//}
+
+	print_error_cr("function %s don't exist",script_function_name.c_str());
+
+
+	return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
 }
 
 CScriptVariable * CZG_ScriptCore::execute(){

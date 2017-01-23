@@ -56,18 +56,34 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
 				if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::INT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(int *).name(),"int *",INT_PTR_TYPE};
-					si->object = new CInteger(CScriptClassFactory::getInstance()->getRegisteredClassInteger(),(int *)ptr_variable);
+					//si->object = new CInteger(CScriptClassFactory::getInstance()->getRegisteredClassInteger(),(int *)ptr_variable);
+					CInteger *i= new CInteger();
+					i->m_intValue=*((int *)ptr_variable);
+					si->object =i;
+
 				}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::FLOAT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
-					si->object = new CNumber(CScriptClassFactory::getInstance()->getRegisteredClassNumber(),(float *)ptr_variable);
+					//si->object = new CNumber(CScriptClassFactory::getInstance()->getRegisteredClassNumber(),(float *)ptr_variable);
+					CNumber *n= new CNumber();
+					n->m_floatValue=*((float *)ptr_variable);
+					si->object =n;
+
 				}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::STRING_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
-					si->object = new CString(CScriptClassFactory::getInstance()->getRegisteredClassString(),(string *)ptr_variable);
+					//si->object = new CString(CScriptClassFactory::getInstance()->getRegisteredClassString(),(string *)ptr_variable);
+					CString *s= new CString();
+					s->m_strValue=*((string *)ptr_variable);
+					si->object =s;
+
 				}else if(CScriptClassFactory::valid_C_PrimitiveType[CScriptClassFactory::BOOL_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
-					si->object = new CBoolean(CScriptClassFactory::getInstance()->getRegisteredClassString(),(bool *)ptr_variable);
+					CBoolean *b= new CBoolean();
+					b->m_boolValue=*((bool *)ptr_variable);
+					si->object =b;
 				}else{
 					tInfoRegisteredClass *info_registered_class = CScriptClassFactory::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 					if(info_registered_class){
-						si->object = new CScriptVariable(info_registered_class,ptr_variable);
+						CScriptVariable *var = new CScriptVariable();
+						var->init(info_registered_class,ptr_variable);
+						si->object = var;
 					}
 
 				}
@@ -111,7 +127,7 @@ void CScriptVariable::fun1(string *s){
 void CScriptVariable::setup(){
 
 	idx_shared_ptr=-1;
-	this->m_infoRegisteredClass = NULL;
+	m_infoRegisteredClass = NULL;
 	c_object = NULL;
 	created_object = NULL;
 	m_value = NULL;
@@ -125,9 +141,14 @@ CScriptVariable::CScriptVariable(){
 
 
 }
+/*
+CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv, void *_c_object){
 
-CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv, void *_object_by_user){
+	init(irv,_c_object);
 
+}*/
+
+void CScriptVariable::init(tInfoRegisteredClass *irv, void *_c_object){
 	setup();
 
 
@@ -143,11 +164,11 @@ CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv, void *_object_by_use
 	//print_info_cr("creating var type %s",irv->object_info.symbol_info.symbol_name.c_str());
 
 	if(IS_CLASS_C){
-		if(_object_by_user == NULL){
+		if(_c_object == NULL){
 			created_object = (*m_infoRegisteredClass->c_constructor)();
 			c_object = created_object;
 		}else{
-			c_object = _object_by_user;
+			c_object = _c_object;
 		}
 	}else{
 		c_object = this;
@@ -178,9 +199,7 @@ CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv, void *_object_by_use
 		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
 	}*/
 
-
 }
-
 
 tInfoRegisteredFunctionSymbol *CScriptVariable::getConstructorFunction(){
 
@@ -189,6 +208,21 @@ tInfoRegisteredFunctionSymbol *CScriptVariable::getConstructorFunction(){
 	}
 
 	return NULL;
+}
+
+int CScriptVariable::getIdxClass(){
+	return m_infoRegisteredClass->class_idx;
+}
+
+bool CScriptVariable::setIdxClass(int idx){
+	tInfoRegisteredClass *_info_registered_class = CScriptClassFactory::getInstance()->getRegisteredClassByIdx(idx);
+
+	if(_info_registered_class == NULL){
+		return false;
+	}
+
+	m_infoRegisteredClass = _info_registered_class;
+	return true;
 }
 
 
@@ -270,7 +304,7 @@ int CScriptVariable::getIdxFunctionSymbolWithMatchArgs(const string & varname, v
 
 		tInfoRegisteredFunctionSymbol *irfs = (tInfoRegisteredFunctionSymbol *)m_functionSymbol[i].object;
 
-		if(irfs->object_info.symbol_info.symbol_name == varname && (irfs->m_arg.size() == argv->size())){
+		if(this->m_functionSymbol[i].value_symbol == varname && (irfs->m_arg.size() == argv->size())){
 
 
 			all_check=true;
@@ -299,6 +333,27 @@ int CScriptVariable::getIdxFunctionSymbolWithMatchArgs(const string & varname, v
 	return -1;
 }
 
+const string & CScriptVariable::getClassName(){
+		return m_infoRegisteredClass->metadata_info.object_info.symbol_info.symbol_name;
+	}
+
+	const string & CScriptVariable::getPointer_C_ClassName(){
+		return m_infoRegisteredClass->classPtrType;
+	}
+
+
+    string * CScriptVariable::toString(){
+    	return &m_strValue;
+    }
+
+    void CScriptVariable::unrefSharedPtr(){
+    	idx_shared_ptr = -1;
+    }
+
+	int CScriptVariable::get_C_StructPtr(){
+		return (int)c_object;
+	}
+
 
 CScriptVariable::tSymbolInfo *CScriptVariable::getFunctionSymbolByIndex(unsigned idx){
 	if(idx >= m_functionSymbol.size()){
@@ -309,6 +364,9 @@ CScriptVariable::tSymbolInfo *CScriptVariable::getFunctionSymbolByIndex(unsigned
 
 }
 
+void * CScriptVariable::get_C_Object(){
+	return c_object;
+}
 
 vector<tInfoStatementOp> * CScriptVariable::getCompiledCode(int idx_function){
 	tSymbolInfo *si=CScriptVariable::getFunctionSymbolByIndex(idx_function);
@@ -329,11 +387,16 @@ CScriptVariable::~CScriptVariable(){
 	// remove vars & fundtions if class is C...
 	tSymbolInfo *si;
 
-	for ( unsigned i = 0; i < m_variableSymbol.size(); i++){
+	if((this->m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == 0){ // script class
+		for ( unsigned i = 0; i < m_variableSymbol.size(); i++){
+			si = &m_variableSymbol[i];
+			CScriptVariable * sc  = (CScriptVariable *)(m_variableSymbol[i].object);
 
-
+			if(sc!=CScriptVariable::UndefinedSymbol && sc!=CScriptVariable::NullSymbol){
+				delete sc;
+			}
+		}
 	}
-
 
 
 	// Register even for primitives (if appropiate)

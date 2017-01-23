@@ -39,17 +39,29 @@ bool * CBoolean::Parse(const string & s){
 
 
 void CBoolean::setup(){
+
+	CScriptVariable::setup();
+
 	m_boolValue = false;
 	m_value = &m_boolValue;
+
+
+
 
 }
 
 
 CBoolean::CBoolean(){
-	setup();
+	m_boolValue = false;
+	this->init(CScriptClassFactory::getInstance()->getRegisteredClassBoolean(), (void *)this);
 
 }
 
+CBoolean::CBoolean(bool _value){
+	m_boolValue = _value;
+	this->init(CScriptClassFactory::getInstance()->getRegisteredClassBoolean(), (void *)this);
+}
+/*
 CBoolean::CBoolean(tInfoRegisteredClass *info_registered_class, bool *_value):CScriptVariable(info_registered_class,this){
 
     //m_classStr=typeid(CBoolean).name();
@@ -62,6 +74,6 @@ CBoolean::CBoolean(tInfoRegisteredClass *info_registered_class, bool *_value):CS
 	m_value = _value;
 	}
 	//m_ptr=&m_value;
-}
+}*/
 
 

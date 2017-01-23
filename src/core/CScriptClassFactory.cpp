@@ -343,12 +343,27 @@
  }
 
  void  custom_function(CString  *s){
- 	print_info_cr("CUSTOM_FUNCTION S:%s",s->m_stringValue.c_str());
+ 	print_info_cr("CUSTOM_FUNCTION S:%s",s->m_strValue.c_str());
  }
 
  void  custom_function(CInteger  *i){
  	print_info_cr("CUSTOM_FUNCTION I:%i",i->m_intValue);
  }
+
+
+ CVector *  my_new_random_vector(int * n){
+ 	CVector *v = new CVector();
+
+ 	/*for(int i = 0; i < *n; i++){
+ 		v->add(new CInteger(random()%10000));
+ 	}
+
+ 	v->add(CZG_ScriptCore::getInstance()->script_call("rec1",{}));*/
+
+ 	return v;
+
+ }
+
 
 
  class MyObject2{
@@ -413,17 +428,17 @@ public:
 
 
 		// register internal classes ...
-		if(!register_C_Class<CScriptVariable>("CScriptVariable")) return false;
-		if(!register_C_Class<CVoid>("CVoid")) return false;
-		if(!register_C_Class<CNull>("CNull")) return false;
-		if(!register_C_Class<CUndefined>("CUndefined")) return false;
-		if(!register_C_Class<CInteger>("CInteger")) return false;
-		if(!register_C_Class<CNumber>("CNumber")) return false;
-		if(!register_C_Class<CBoolean>("CBoolean")) return false;
-		if(!register_C_Class<CString>("CString")) return false;
-		if(!register_C_Class<CVector>("CVector")) return false;
-		if(!register_C_Class<CFunctor>("CFunctor")) return false;
-		if(!register_C_Class<CStruct>("CStruct")) return false;
+		if(!register_C_Class<CScriptVariable>("CScriptVariable")) return false; // 0
+		if(!register_C_Class<CVoid>("CVoid")) return false; // 1
+		if(!register_C_Class<CNull>("CNull")) return false; // 2
+		if(!register_C_Class<CUndefined>("CUndefined")) return false; // 3
+		if(!register_C_Class<CInteger>("CInteger")) return false; // 4
+		if(!register_C_Class<CNumber>("CNumber")) return false; // 5
+		if(!register_C_Class<CBoolean>("CBoolean")) return false; // 6
+		if(!register_C_Class<CString>("CString")) return false; // 7
+		if(!register_C_Class<CVector>("CVector")) return false; // 8
+		if(!register_C_Class<CFunctor>("CFunctor")) return false; // 9
+		if(!register_C_Class<CStruct>("CStruct")) return false; // 10
 
 
 		// register primitive classes first ...
@@ -492,6 +507,7 @@ public:
 		if(!class_C_baseof<CString,CScriptVariable>()) return false;
 		if(!class_C_baseof<CVector,CScriptVariable>()) return false;
 		if(!class_C_baseof<CFunctor,CScriptVariable>()) return false;
+		if(!class_C_baseof<CStruct,CScriptVariable>()) return false;
 
 
 		//------------------------------------------------------------------------------------------------------------
@@ -529,6 +545,9 @@ public:
 		if(!register_C_VariableMember(MyObject,i)) return false;
 
 
+		if(!CScriptClassFactory::register_C_Function(my_new_random_vector)) return false;
+
+
 
 		return true;
  }
@@ -536,11 +555,8 @@ public:
 
  CScriptClassFactory::CScriptClassFactory(){
 
-	 idxClassInteger = idxClassNumber = idxClassString = idxClassBoolean = idxClassVector = idxClassFunctor = idxClassUndefined= idxClassVoid = idxClassStruct = -1;
+	 idxClassNull = idxClassInteger = idxClassNumber = idxClassString = idxClassBoolean = idxClassVector = idxClassFunctor = idxClassUndefined= idxClassVoid = idxClassStruct = -1;
 
-	 if(!registerBase()){
-			exit(EXIT_FAILURE);
-	 }
 
  }
 
@@ -689,7 +705,9 @@ void CScriptClassFactory::buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSy
 
 				 for(unsigned v = 0;v < vs->size(); v++){ // register index var per scope ...
 					 if(vs->at(v).ast !=NULL){
+
 						if(vs->at(v).ast->scope_info_ptr == ivsb.scope_ptr){
+							//print_info_cr("Scope[%i] Symbol %s",ivsb.scope_ptr->getIndex(),vs->at(v).symbol_name.c_str());
 							ivsb.var_index.push_back(v);
 						}
 					 }
@@ -1032,10 +1050,19 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 	 	 }else if(rc->class_idx ==idxClassString){
 			 class_object = NEW_STRING_VAR;
 			 if(value_object!=NULL){
-				 ((CString *)class_object)->m_stringValue = *((string *)value_object);
+				 ((CString *)class_object)->m_strValue = *((string *)value_object);
 			 }
+	 	 }else if( // check internal class type
+	 			   rc->class_idx ==idxClassVector
+	 			|| rc->class_idx ==idxClassStruct
+				|| rc->class_idx ==idxClassUndefined
+				|| rc->class_idx ==idxClassNull
+				|| rc->class_idx ==idxClassVoid
+	 			 ){
+			 class_object = (CScriptVariable *)value_object;
  	 	 }else{ // create script variable by default ..
-			 class_object = new CScriptVariable(rc, value_object);
+			 class_object = new CScriptVariable();
+			 class_object->init(rc, value_object);
 		 }
 
 

@@ -53,7 +53,7 @@ public:
 
 	void reset();
 
-	CScriptVariable * createVarFromResultInstruction(tAleObjectInfo * ptr_result_instruction);
+	CScriptVariable * createVarFromResultInstruction(tAleObjectInfo * ptr_result_instruction, bool share_ptr = true);
 
 //	~CALE();
 
@@ -137,7 +137,7 @@ private:
 			vector<tInfoAsmOp *> *asm_op,
 			int n_stk);
 
-	void popScope(tInfoRegisteredFunctionSymbol *info_function,int index);
+	void popScope(tInfoRegisteredFunctionSymbol *info_function,int index, CScriptVariable *ret = NULL);
 
 
 //private:

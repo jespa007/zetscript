@@ -21,6 +21,15 @@ CInteger * CInteger::Parse(const string & val){
 	return n;
 }
 */
+
+void CInteger::setup(){
+
+	CScriptVariable::setup();
+
+	m_intValue = 0;
+	m_value = &m_intValue;
+}
+
 int *  CInteger::Parse(const string & val){
 
 	int *n=NULL;
@@ -42,21 +51,19 @@ int *  CInteger::Parse(const string & val){
 	return n;
 }
 
-
-void CInteger::setup(){
-	m_intValue = 0;
-	m_value = &m_intValue;
+std::string * CInteger::toString(){
+	return &this->m_strValue;
 }
+
 
 CInteger::CInteger(){
-	setup();
+	m_intValue = 0;
+	this->init(CScriptClassFactory::getInstance()->getRegisteredClassInteger(), (void *)this);
+}
+
+CInteger::CInteger(int i){
+	this->init(CScriptClassFactory::getInstance()->getRegisteredClassInteger(), (void *)this);
+	m_intValue = i;
 }
 
 
-CInteger::CInteger(tInfoRegisteredClass *info_registered_class,void *_value):CScriptVariable(info_registered_class,this){
-	setup();
-
-	if(_value != NULL){
-		m_value = _value;
-	}
-}

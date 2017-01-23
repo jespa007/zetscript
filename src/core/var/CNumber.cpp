@@ -42,6 +42,9 @@ float *  CNumber::Parse(const string & s){
 }
 
 void CNumber::setup(){
+
+	CScriptVariable::setup();
+
 	m_floatValue = 0;
 	m_value = &m_floatValue;
 }
@@ -49,16 +52,8 @@ void CNumber::setup(){
 
 
 CNumber::CNumber(){
-	setup();
+	m_floatValue = 0;
+	this->init(CScriptClassFactory::getInstance()->getRegisteredClassNumber(), (void *)this);
 }
 
 
-CNumber::CNumber(tInfoRegisteredClass *info_registered_class,void *_value):CScriptVariable(info_registered_class,this){
-
-	setup();
-
-	if( _value != NULL){
-	m_value = _value;
-	}
-
-}

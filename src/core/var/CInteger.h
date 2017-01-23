@@ -1,27 +1,24 @@
 #pragma once
 
 
-#define NEW_INTEGER_VAR (new CInteger(CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassInteger()),NULL))
+#define NEW_INTEGER_VAR (new CInteger()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassInteger()),NULL))
 
 class CInteger: public CScriptVariable{
 
 public:
 	int m_intValue;
-	int i;
+
 
 	//static CInteger * Parse(const string & );
 	static int * Parse(const string & );
 
 	CInteger();
 
-
-	// assign from external pointer ...
-	CInteger(tInfoRegisteredClass *info_registered_class,void *_value);
+	CInteger(int i);
 
 protected:
 
 	virtual void setup();
-
-	virtual string * toString(){ print_info_cr("OLAAAAAA!"); return &this->m_strValue;}
+	virtual string * toString();//{ return &this->m_strValue;}
 
 };

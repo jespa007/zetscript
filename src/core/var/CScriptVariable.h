@@ -49,17 +49,19 @@ public:
 	string m_strValue;
 	void *m_value;
 
-	//CScriptVariable();
+	// Construct ...
 	CScriptVariable();
+	void init(tInfoRegisteredClass *info_registered_class, void * _c_object);
 
 	void fun1(int *);
 	void fun1(string *);
 
-	CScriptVariable(tInfoRegisteredClass *info_registered_class, void * _object_by_user);
+	//CScriptVariable();//tInfoRegisteredClass *info_registered_class, void * _c_object);
 
 
 	//TYPE m_type;
-	int getIdxClass(){return m_infoRegisteredClass->class_idx;}
+	int getIdxClass();
+	bool setIdxClass(int idx);
 
 	tSymbolInfo *  addVariableSymbol(const string & value_symbol,tASTNode *ast);
 	tSymbolInfo * getVariableSymbol(const string & varname);
@@ -70,32 +72,34 @@ public:
 	int getIdxFunctionSymbolWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature=false);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 
+	void * get_C_Object();
+
 	vector<tInfoStatementOp> * getCompiledCode(int idx_function);
 
 	tInfoRegisteredFunctionSymbol *getConstructorFunction();
 
 	//void addArgSymbol(const string & arg_name);
 
-	const string & getClassName(){
-		return m_infoRegisteredClass->metadata_info.object_info.symbol_info.symbol_name;
-	}
+	const string & getClassName();
 
-	const string & getPointer_C_ClassName(){
-		return m_infoRegisteredClass->classPtrType;
-	}
+	const string & getPointer_C_ClassName();
 
 
-    virtual string * toString(){
-    	return &m_strValue;
-    }
+    virtual string * toString();
+    virtual void unrefSharedPtr();
 
-	int get_C_StructPtr(){
-		return (int)c_object;
-	}
+	int get_C_StructPtr();
 
 	virtual ~CScriptVariable();
 
 protected:
+
+	/**
+	 * This variable tells whether is pointer function or not.
+	 */
+	tInfoRegisteredClass *m_infoRegisteredClass;
+
+
 	virtual void setup();
 private:
 
@@ -103,10 +107,6 @@ private:
 	void *created_object;
 	void *c_object;
 
-	/**
-	 * This variable tells whether is pointer function or not.
-	 */
-	tInfoRegisteredClass *m_infoRegisteredClass;
 
 
 	void createSymbols(tInfoRegisteredClass *irv);

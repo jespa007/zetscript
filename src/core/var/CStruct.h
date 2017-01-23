@@ -1,9 +1,10 @@
 
-#define NEW_STRUCT (new CStruct(CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassStruct())))
+#define NEW_STRUCT (new CStruct()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassStruct())))
 
 class CStruct:public CScriptVariable{
 
 public:
-	CStruct(){}
-	CStruct(tInfoRegisteredClass *info_registered_class);
+	CStruct();
+
+
 };

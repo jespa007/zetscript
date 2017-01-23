@@ -3,24 +3,21 @@
 
 
 void CString::setup(){
-	m_value = &m_stringValue;
-	m_stringValue = "";
-}
+	m_value = &m_strValue;
+	m_strValue = "";
 
+
+}
 
 CString::CString(){
-
-	setup();
+	m_strValue = "";
+	this->init(CScriptClassFactory::getInstance()->getRegisteredClassString(), (void *)this);
 }
 
+CString::CString(const string & s){
 
-CString::CString(tInfoRegisteredClass *info_registered_class, string * _value):CScriptVariable(info_registered_class, this){
 
-	setup();
-
-	if( _value != NULL){
-	m_value = _value;
-	}
-
-	//m_ptr=&m_value;
+	this->init(CScriptClassFactory::getInstance()->getRegisteredClassString(), (void *)this);
+	m_strValue = s;
 }
+

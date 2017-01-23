@@ -167,7 +167,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 
 
-						if((ret=createVarFromResultInstruction(&stkResultInstruction[asm_op_statment->at(ins)->index_op1+startIdxStkResultInstruction])) == NULL){ // return last ALE value
+						if((ret=createVarFromResultInstruction(&stkResultInstruction[asm_op_statment->at(ins)->index_op1+startIdxStkResultInstruction], false)) == NULL){ // share pointer but not add as shared!
 							return NULL;
 						}/*else{
 							if(ret != CScriptVariable::UndefinedSymbol || ret != CScriptVariable::NullSymbol){
@@ -211,9 +211,9 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 			}
 
 			// to deallocate not used poiners...
-			if(!end_by_ret){
+			//if(!end_by_ret){
 			 CSharedPointerManager::getInstance()->gc();
-			}
+			//}
 
 
 		}else{ //no instructions ... pass next statment ...
@@ -221,7 +221,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 		}
 	}
 
-	popScope(info_function,scope_index);
+	popScope(info_function,scope_index,ret);
 	popStack();
 	return ret;
 
@@ -286,9 +286,29 @@ void CVirtualMachine::pushStack(tInfoRegisteredFunctionSymbol *info_function, ve
 	// init argv vars ...
 	for(unsigned i = 0; i < n_arg_size; i++){
 
-		basePtrLocalVar[n_local_vars+i].ptrObjectRef = NULL;
-		basePtrLocalVar[n_local_vars+i].type = INS_TYPE_UNDEFINED;
-		basePtrLocalVar[n_local_vars+i].stkResultObject=CScriptVariable::UndefinedSymbol;
+		basePtrLocalVar[n_local_vars+i].ptrObjectRef = NULL;//argv->at(i);
+		//basePtrLocalVar[n_local_vars+i].type = INS_TYPE_UNDEFINED;
+		CScriptVariable *var = argv->at(i);//CScriptVariable::UndefinedSymbol;
+		basePtrLocalVar[n_local_vars+i].stkResultObject = var;
+
+
+		if(var == CScriptVariable::UndefinedSymbol){
+			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_UNDEFINED;
+		} else if(var == CScriptVariable::NullSymbol){
+			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_NULL;
+		} else if(var->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassInteger()){
+			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_INTEGER;
+		} else if(var->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassNumber()){
+			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_NUMBER;
+		} else if(var->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassString()){
+			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_STRING;
+		} else if(var->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
+			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_FUNCTION;
+		} else if(var->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassBoolean()){
+			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_BOOLEAN;
+		}
+
+
 
 		/*if(i < argv->size()){
 			basePtrLocalVar[n_local_vars+i].stkResultObject=argv->at(i);
@@ -363,7 +383,7 @@ if(!(index_op2 >= index_op1 )) { print_error_cr("invalid indexes"); return false
 string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
 	   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
 \
-print_error_cr("Error at line %i cannot perform operator \"%s\" %c  \"%s\"",\
+print_error_cr("Error at line %i cannot perform operator \"%s\" %s  \"%s\"",\
 		instruction->ast_node->definedValueline,\
 		var_type1.c_str(),\
 		c,\
@@ -615,7 +635,7 @@ bool CVirtualMachine::pushVar(CScriptVariable * init_value, CScriptVariable ** p
 }
 
 
-CScriptVariable * CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo * ptr_instruction){
+CScriptVariable * CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo * ptr_instruction, bool share_ptr){
 	CScriptVariable *obj = NULL;
 bool created_pointer = false;
 
@@ -649,7 +669,8 @@ bool created_pointer = false;
 		created_pointer = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_FUNCTION:
-		obj = NEW_FUNCTOR_VAR(((tInfoRegisteredFunctionSymbol *)ptr_instruction->stkResultObject));
+		obj = NEW_FUNCTOR_VAR;//((tInfoRegisteredFunctionSymbol *)ptr_instruction->stkResultObject));
+		((CFunctor *)obj)->setRegisteredFunctionSymbol((tInfoRegisteredFunctionSymbol *)ptr_instruction->stkResultObject);
 		created_pointer = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR:
@@ -658,7 +679,7 @@ bool created_pointer = false;
 
 	}
 
-	if(created_pointer){
+	if(created_pointer && share_ptr){
 		if((obj->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(obj)) == -1){
 			return NULL;
 		}
@@ -1105,7 +1126,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 }
 
 
-void CVirtualMachine::popScope(tInfoRegisteredFunctionSymbol *info_function,int index)
+void CVirtualMachine::popScope(tInfoRegisteredFunctionSymbol *info_function,int index, CScriptVariable *ret)
 {
 	if(index < 0){
 		print_error_cr("index < 0");
@@ -1124,7 +1145,15 @@ void CVirtualMachine::popScope(tInfoRegisteredFunctionSymbol *info_function,int 
 
 		if(var != CScriptVariable::UndefinedSymbol && var !=  CScriptVariable::NullSymbol){
 
-			CSharedPointerManager::getInstance()->unrefSharedPointer(var->idx_shared_ptr);
+			if(ret != var){ // is not ret variable ...
+				CSharedPointerManager::getInstance()->unrefSharedPointer(var->idx_shared_ptr);
+			}else{
+				// set as not shared ...
+
+				//if(var->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassVector()){ // unref all pointers
+					var->unrefSharedPtr();
+				//}
+			}
 		}
 
 		basePtrLocalVar[idx_local_var].stkResultObject = CScriptVariable::UndefinedSymbol;
@@ -1136,7 +1165,8 @@ bool CVirtualMachine::performInstruction(
 		int & jmp_to_statment,
 		int & jmp_to_instruction,
 		tInfoRegisteredFunctionSymbol *info_function,
-		CScriptVariable *this_object,vector<CScriptVariable *> * argv,
+		CScriptVariable *this_object,
+		vector<CScriptVariable *> * fun_argv,
 		vector<tInfoAsmOp *> *asm_op,
 		int n_stk){
 
@@ -1246,11 +1276,8 @@ bool CVirtualMachine::performInstruction(
 
 			// ok load object pointer ...
 			if((obj = ptrResultInstructionOp1->ptrObjectRef) != NULL) {// == CScriptVariable::VAR_TYPE::OBJECT){
-
 				// get pointer object (can be assigned)
 				//obj = stkResultInstruction[index_op1].stkResultObject;
-
-
 
 				if(!assignVarFromResultInstruction(ptrResultInstructionOp1->ptrObjectRef,ptrResultInstructionOp2))
 						return false;
@@ -1285,7 +1312,7 @@ bool CVirtualMachine::performInstruction(
 				if(!pushBoolean(false)) return false;
 
 			}else{
-				print_error_cr("Expected both operands as string, number or boolean!");
+				PRINT_DUAL_ERROR_OP("==");
 				return false;
 			}
 
@@ -1306,7 +1333,7 @@ bool CVirtualMachine::performInstruction(
 			}else if (IS_NUMBER(ptrResultInstructionOp1) && IS_NUMBER(ptrResultInstructionOp2)){
 				if(!pushBoolean(LOAD_NUMBER_OP(ptrResultInstructionOp1) != LOAD_NUMBER_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as string, number or boolean!");
+				PRINT_DUAL_ERROR_OP("!=");
 				return false;
 			}
 
@@ -1321,7 +1348,7 @@ bool CVirtualMachine::performInstruction(
 			}else if (IS_NUMBER(ptrResultInstructionOp1) && IS_NUMBER(ptrResultInstructionOp2)){
 				if(!pushBoolean(LOAD_NUMBER_OP(ptrResultInstructionOp1) < LOAD_NUMBER_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as number!");
+				PRINT_DUAL_ERROR_OP("<");
 				return false;
 			}
 			break;
@@ -1336,7 +1363,7 @@ bool CVirtualMachine::performInstruction(
 			}else if (IS_NUMBER(ptrResultInstructionOp1) && IS_NUMBER(ptrResultInstructionOp2)){
 				if(!pushBoolean(LOAD_NUMBER_OP(ptrResultInstructionOp1) <= LOAD_NUMBER_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as number!");
+				PRINT_DUAL_ERROR_OP("<=");
 				return false;
 			}
 
@@ -1378,7 +1405,7 @@ bool CVirtualMachine::performInstruction(
 			}else if (IS_NUMBER(ptrResultInstructionOp1) && IS_NUMBER(ptrResultInstructionOp2)){
 				if(!pushBoolean(LOAD_NUMBER_OP(ptrResultInstructionOp1) > LOAD_NUMBER_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Line %i:Expected both operands as number!",instruction->ast_node->definedValueline);
+				PRINT_DUAL_ERROR_OP(">");
 				return false;
 			}
 			break;
@@ -1392,7 +1419,7 @@ bool CVirtualMachine::performInstruction(
 			}else if (IS_NUMBER(ptrResultInstructionOp1) && IS_NUMBER(ptrResultInstructionOp2)){
 				if(!pushBoolean(LOAD_NUMBER_OP(ptrResultInstructionOp1) >= LOAD_NUMBER_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Line %i:Expected both operands as number!",instruction->ast_node->definedValueline);
+				PRINT_DUAL_ERROR_OP(">=");
 				return false;
 			}
 			break;
@@ -1459,7 +1486,7 @@ bool CVirtualMachine::performInstruction(
 			}else{
 
 				// full error description ...
-				PRINT_DUAL_ERROR_OP('+');
+				PRINT_DUAL_ERROR_OP("+");
 				return false;
 			}
 
@@ -1469,7 +1496,7 @@ bool CVirtualMachine::performInstruction(
 			if(OP1_AND_OP2_ARE_BOOLEANS) {
 				if(!pushBoolean(LOAD_BOOL_OP(ptrResultInstructionOp1) && LOAD_BOOL_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands boolean!");
+				PRINT_DUAL_ERROR_OP("&&");
 				return false;
 			}
 			break;
@@ -1477,7 +1504,7 @@ bool CVirtualMachine::performInstruction(
 			if(OP1_AND_OP2_ARE_BOOLEANS) {
 				if(!pushBoolean(LOAD_BOOL_OP(ptrResultInstructionOp1) || LOAD_BOOL_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands boolean!");
+				PRINT_DUAL_ERROR_OP("||");
 				return false;
 			}
 			break;
@@ -1498,7 +1525,7 @@ bool CVirtualMachine::performInstruction(
 
 				PROCESS_NUM_OPERATION(/);
 			}else{
-				PRINT_DUAL_ERROR_OP('/');
+				PRINT_DUAL_ERROR_OP("/");
 				return false;
 			}
 
@@ -1508,7 +1535,7 @@ bool CVirtualMachine::performInstruction(
 					PROCESS_NUM_OPERATION(*);
 
 			}else{
-				PRINT_DUAL_ERROR_OP('*');
+				PRINT_DUAL_ERROR_OP("*");
 				return false;
 			}
 			break;
@@ -1547,7 +1574,7 @@ bool CVirtualMachine::performInstruction(
 				}
 
 			}else{
-				print_error_cr("Expected both operands as number!");
+				PRINT_DUAL_ERROR_OP("%");
 				return false;
 			}
 
@@ -1556,7 +1583,7 @@ bool CVirtualMachine::performInstruction(
 			if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(ptrResultInstructionOp1) & LOAD_INT_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as integer types!");
+				PRINT_DUAL_ERROR_OP("&");
 				return false;
 			}
 			break;
@@ -1564,7 +1591,7 @@ bool CVirtualMachine::performInstruction(
 			if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(ptrResultInstructionOp1) | LOAD_INT_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as integer types!");
+				PRINT_DUAL_ERROR_OP("|");
 				return false;
 			}
 
@@ -1573,7 +1600,7 @@ bool CVirtualMachine::performInstruction(
 			if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(ptrResultInstructionOp1) ^ LOAD_INT_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as integer types!");
+				PRINT_DUAL_ERROR_OP("^");
 				return false;
 			}
 			break;
@@ -1581,7 +1608,7 @@ bool CVirtualMachine::performInstruction(
 			if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(ptrResultInstructionOp1) << LOAD_INT_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as integer types!");
+				PRINT_DUAL_ERROR_OP(">>");
 				return false;
 			}
 			break;
@@ -1589,7 +1616,7 @@ bool CVirtualMachine::performInstruction(
 			if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
 				if(!pushInteger(LOAD_INT_OP(ptrResultInstructionOp1) >> LOAD_INT_OP(ptrResultInstructionOp2))) return false;
 			}else{
-				print_error_cr("Expected both operands as integer types!");
+				PRINT_DUAL_ERROR_OP("<<");
 				return false;
 			}
 			break;
@@ -1687,6 +1714,11 @@ bool CVirtualMachine::performInstruction(
 							aux_function_info = (tInfoRegisteredFunctionSymbol *)si->object;
 						}
 
+						if(aux_function_info == NULL){
+							print_error_cr("cannot find function \"%s\" at line %i",iao->ast_node->value_symbol.c_str(),iao->ast_node->definedValueline);
+							return false;
+						}
+
 						break;
 					case SCOPE_TYPE::GLOBAL_SCOPE: // only for function (first time)
 
@@ -1765,6 +1797,20 @@ bool CVirtualMachine::performInstruction(
 
 			CSharedPointerManager::getInstance()->pop();
 
+			// if function is C must register pointer !
+
+			//if((aux_function_info->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
+			if((instruction->asm_properties & ASM_PROPERTY_DIRECT_CALL_RETURN) == 0){ // share pointer
+				if(ret_obj != CScriptVariable::UndefinedSymbol && ret_obj != CScriptVariable::NullSymbol){
+
+					if((ret_obj->idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(ret_obj)) == -1){
+						return NULL;
+					}
+				}
+			}
+
+
+
 			// deallocates stack...
 			m_functionArgs.clear();
 
@@ -1772,6 +1818,10 @@ bool CVirtualMachine::performInstruction(
 			if(!pushVar(ret_obj)){
 				return false;
 			}
+
+
+
+
 			break;
 		case PUSH: // push arg instruction will creating object ensures not to have e/s...
 
@@ -1934,12 +1984,20 @@ bool CVirtualMachine::performInstruction(
 							// get variable or whatever ... ?
 							//if(ptrResultInstructionOp2->type ==VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR){
 
-								si=var1->addVariableSymbol(*variable_name, instruction->ast_node);
+								if(ptrResultInstructionOp2->type == VALUE_INSTRUCTION_TYPE::INS_TYPE_FUNCTION){
+									si=var1->addFunctionSymbol(*variable_name, instruction->ast_node,(tInfoRegisteredFunctionSymbol *)ptrResultInstructionOp2->stkResultObject);
+								}else{
+									si=var1->addVariableSymbol(*variable_name, instruction->ast_node);
 
-								if(!assignVarFromResultInstruction((CScriptVariable **)&si->object ,ptrResultInstructionOp2))
-										return false;
+									if(!assignVarFromResultInstruction((CScriptVariable **)&si->object ,ptrResultInstructionOp2))
+											return false;
 
-								si->value_symbol=*variable_name;
+								}
+
+
+
+
+								//si->value_symbol=*variable_name;
 								//si->object = create ptrResultInstructionOp2->stkResultObject;
 							//}
 							//else{

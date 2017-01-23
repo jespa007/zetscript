@@ -26,7 +26,16 @@ class CScopeInfo;
 class CScriptClassFactory{
 
 
-	int idxClassInteger, idxClassNumber, idxClassString, idxClassBoolean, idxClassVector, idxClassFunctor, idxClassUndefined, idxClassVoid, idxClassNull, idxClassStruct;
+	int idxClassInteger,
+		idxClassNumber,
+		idxClassString,
+		idxClassBoolean,
+		idxClassVector,
+		idxClassFunctor,
+		idxClassUndefined,
+		idxClassVoid,
+		idxClassNull,
+		idxClassStruct;
 
 
 public:
@@ -731,6 +740,8 @@ public:
 
 	}
 
+	bool registerBase();
+
 
 private:
 
@@ -779,7 +790,7 @@ private:
 	//CScriptVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
 
 	bool searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao, int current_idx_function,SCOPE_TYPE scope_type=SCOPE_TYPE::UNKNOWN_SCOPE);
-	bool registerBase();
+
 	void buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSymbol *irfs );
 	void unloadRecursiveFunctions(tInfoRegisteredFunctionSymbol * info_function);
 

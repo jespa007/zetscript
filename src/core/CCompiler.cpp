@@ -365,8 +365,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 	// ignore node this ...
 	if(_node->value_symbol == "this"){
-	  // ||(_node->value_symbol == "super")
-		//	){
+
 		print_error_cr("\"%s\" cannot be processed here!",_node->value_symbol.c_str());
 		return false;
 	}
@@ -461,14 +460,12 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 
 			if((_node->parent != NULL &&_node->parent->children[0]->value_symbol == "this") //|| // single access ?
-			   //(_node->value_symbol == "super")//_node->parent->node_type == NODE_TYPE::CALLING_OBJECT_NODE && _node->parent->parent != NULL && _node->parent->parent->children[0]->value_symbol == "this"  ) // calling object needs +1 step more to check whether is valid this scope...
 			){
 				scope_type=SCOPE_TYPE::THIS_SCOPE;
 			}
 		}
 		else if(
 			(_node->value_symbol == "super")
-	          // (_node->parent->node_type == NODE_TYPE::CALLING_OBJECT_NODE && _node->parent->parent != NULL && _node->parent->parent->children[0]->value_symbol == "super"  ) // calling object needs +1 step more to check whether is valid this scope...
 			){
 				scope_type=SCOPE_TYPE::SUPER_SCOPE;
 			}else{
@@ -645,13 +642,31 @@ void CCompiler::insert_CallFunction_Instruction(PASTNode _node,int  index_call,i
 void CCompiler::insertRet(PASTNode _node,int index){
 
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+
+
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 
-	if(ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::VEC){
+	// if type return is object return first index
+	if(ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::VEC ||
+	   ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::NEW ||
+	   ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::DECL_STRUCT
+	   ){
 		asm_op->index_op1 = 0; // we need the object
 	}
-	else{
+	else{ // else return expression result index
 		asm_op->index_op1 = index;//&((*m_currentListStatements)[dest_statment]);
+
+		if(ptr_current_statement_op->asm_op.size() > 1){
+			tInfoAsmOp *last_asm = ptr_current_statement_op->asm_op[ptr_current_statement_op->asm_op.size()-1]; // get last operator
+
+			if((last_asm->operator_type == ASM_OPERATOR::CALL) && ((unsigned)index == ptr_current_statement_op->asm_op.size()-1)){
+				last_asm->asm_properties =ASM_PROPERTY_DIRECT_CALL_RETURN;
+			}
+
+
+
+		}
+
 	}
 
 	asm_op->operator_type=ASM_OPERATOR::RET;
@@ -1101,16 +1116,30 @@ int CCompiler::gacExpression_StructAttribute(PASTNode _node, CScopeInfo *_lc, in
 	if(_node->node_type != EXPRESSION_NODE ){print_error_cr("node is not EXPRESSION_NODE type or null");return -1;}
 
 
+	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
+	int index_attr = getCurrentInstructionIndex()+1;
+
+
 	// 1st evalualte expression...
 	if(!gacExpression(_node, _lc,getCurrentInstructionIndex()+1)){
 		return -1;
 	}
 
+
 	// 2nd insert strign constant ...
 	insertStringConstantValueInstruction(_node,_node->value_symbol);
 
+
+	if(!(
+		  ptr_current_statement_op->asm_op[index_attr]->operator_type == ASM_OPERATOR::VEC
+	  || ptr_current_statement_op->asm_op[index_attr]->operator_type == ASM_OPERATOR::NEW
+	)){
+		index_attr = getCurrentInstructionIndex()-1;
+	}
+
+
 	// 3rd insert push attribute...
-	insert_PushAttribute_Instruction(_node,index_ref_object,getCurrentInstructionIndex()-1);
+	insert_PushAttribute_Instruction(_node,index_ref_object,index_attr);
 
 	return CCompiler::getCurrentInstructionIndex();
 
@@ -1990,7 +2019,9 @@ bool CCompiler::gacExpression(PASTNode _node, CScopeInfo *_lc,int index_instruct
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != EXPRESSION_NODE){print_error_cr("node is not Expression");return false;}
 
-	return gacExpression_Recursive(_node->children[0], _lc,index_instruction) != -1;
+	int r = gacExpression_Recursive(_node->children[0], _lc,index_instruction);
+
+	return r!= -1;
 }
 
 bool CCompiler::ast2asm_Recursive(PASTNode _node, CScopeInfo *_lc){

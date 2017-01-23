@@ -1,9 +1,10 @@
 #include "core/zg_core.h"
 
-CNull::CNull(tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class, this){
+
+CNull::CNull(){
 
     //m_classStr="undefined";
    // m_pointerClassStr="undefined";
-
+	this->init(CScriptClassFactory::getInstance()->getRegisteredClassNull(), (void *)this);
 
 }

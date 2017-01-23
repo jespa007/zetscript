@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define MAX_UNIQUE_OBJECTS_POINTERS 512
-#define MAX_STACK 10
+#define MAX_UNIQUE_OBJECTS_POINTERS 10
+#define MAX_STACK 512
 
 class CSharedPointerManager{
 

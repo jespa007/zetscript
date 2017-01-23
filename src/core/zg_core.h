@@ -66,7 +66,6 @@ class CZG_ScriptCore{
 	//tInfoRegisteredFunctionSymbol m_structInfoMain;
 
 	bool init();
-
 	CZG_ScriptCore();
 
 
@@ -90,6 +89,7 @@ public:
 
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 	bool eval(const string & s);
+	std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * script_call(const string &script_function_name);
 	CScriptVariable * execute();
 
 

@@ -28,12 +28,13 @@ CSharedPointerManager::CSharedPointerManager(){
 }
 
 int CSharedPointerManager::getFreeCell(){
-	if(n_freeCell[idxCurrentStack] > 0){
-		int index= indexFreeCell[idxCurrentStack][n_freeCell[idxCurrentStack]-1];
+	if(n_freeCell[idxCurrentStack] >= 0){
+		int index= indexFreeCell[idxCurrentStack][n_freeCell[idxCurrentStack]];
+		indexFreeCell[idxCurrentStack][n_freeCell[idxCurrentStack]] = -1;
 		n_freeCell[idxCurrentStack]--;
 		return index;
 	}else{
-		print_error_cr("Reached max unique pointers");
+		print_error_cr("Reached max assigment pointers (MAX: %i)",MAX_UNIQUE_OBJECTS_POINTERS);
 	}
 
 	return -1;
@@ -41,9 +42,13 @@ int CSharedPointerManager::getFreeCell(){
 }
 
 void CSharedPointerManager::setFreeCell(int index_to_free){
-	if(n_freeCell[idxCurrentStack] < MAX_UNIQUE_OBJECTS_POINTERS){
+	if(n_freeCell[idxCurrentStack] < (MAX_UNIQUE_OBJECTS_POINTERS-1)){
+
 		n_freeCell[idxCurrentStack]++;
 		indexFreeCell[idxCurrentStack][n_freeCell[idxCurrentStack]]=index_to_free;
+
+	}else{
+		print_error_cr("Reached min unique pointers (internal error)");
 	}
 }
 
