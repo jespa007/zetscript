@@ -65,14 +65,19 @@ CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegistered
 
 	// convert parameters script to c...
 	for(unsigned int i = 0; i < argv->size();i++){
-		converted_param[i]= (int)(argv->at(i));
-		if((argv->at(i))->getPointer_C_ClassName()!=irfs->m_arg[i]){
-			fntConversionType paramConv=CScriptClassFactory::getInstance()->getConversionType((argv->at(i))->getPointer_C_ClassName(),irfs->m_arg[i]);
 
-			if(paramConv == NULL){
-				return NULL;
+		converted_param[i]= (int)(argv->at(i));
+
+		if(!(argv->at(i)->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE && irfs->m_arg[i]==typeid(CScriptVariable *).name())){ //not script, then it can pass through ...
+
+			if((argv->at(i))->getPointer_C_ClassName()!=irfs->m_arg[i]){
+				fntConversionType paramConv=CScriptClassFactory::getInstance()->getConversionType((argv->at(i))->getPointer_C_ClassName(),irfs->m_arg[i]);
+
+				if(paramConv == NULL){
+					return NULL;
+				}
+				converted_param[i] = paramConv(argv->at(i));
 			}
-			converted_param[i] = paramConv(argv->at(i));
 		}
 	}
 

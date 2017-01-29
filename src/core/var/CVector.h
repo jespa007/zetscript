@@ -11,7 +11,8 @@ public:
 
 	CVector();
 	//CVector(tInfoRegisteredClass *info_registered_class);
-	virtual void unrefSharedPtr();
+	virtual bool unrefSharedPtr();
+	virtual bool refSharedPtr();
 	void add(CScriptVariable *v);
 	int *size();
 

@@ -266,6 +266,13 @@ enum SYMBOL_INFO_PROPERTIES{
 };
 
 
+//typedef tInfoStatementOp *PInfoStatementOp;
+enum ALE_INFO_PROPERTIES{
+	PROPERTY_IS_ARG = 0x1 <<0,
+
+
+};
+
 
 struct tInfoRegisteredVariableSymbol{
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function

@@ -52,6 +52,67 @@ function ret_vec(v){
 	return h;
 }*/
 
+function gg(jj){
+	print("hola:"+jj.tt);
+}
+
+class MyClass2{
+	var tt;
+	
+	function MyClass2(){
+		this.tt=0;
+	}
+	
+};
+
+var b=new MyClass2();
+var a=b;
+var c=a;
+
+c.tt=3;
+
+b=2;
+
+gg(a);
+
+/*var v=[0,1,2];
+
+function fun(){
+	//var v = [0,1];
+	return function(p){ return p;};
+}*/
+
+//print("gg:"+fun()(v)[2]);
+
+
+//print("i:"+(1+fun(0+1+2,1+2+3)[0+0]));
+
+/*var vv=[
+	function(i){return 0+i;},
+	function(i){return 1+i;},
+	function(i){return 2+i;}
+	
+];
+
+print("i:"+vv[1](1));*/
+
+/*
+class MyClass2{
+	var tt;
+	
+	function MyClass2(){
+		this.tt=0;
+	}
+	
+};
+
+var vv=[];
+for(var i = 0; i < 100; i++){
+	print(i);
+	vv.add(new MyClass2()); //peta!
+}
+*/
+/*
 class MyClass2{
 	var tt;
 	
@@ -71,7 +132,7 @@ var t=new MyClass2();
 var vv = ret_vec(t); // que petada ...
 
 print(vv.size());
-
+*/
 //ret_vec()[0];
 //g.k=1;
 //g.k=2;

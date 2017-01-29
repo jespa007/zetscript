@@ -951,11 +951,44 @@ tInfoAsmOp * CCompiler::insert_Load_CurrentInstruction(){
 //
 // COMPILE EXPRESSIONS AND GENERATE ITS ASM
 //
+
+int CCompiler::gacExpression_FunctionOrArrayAccess(PASTNode _node_access, CScopeInfo *_lc){
+
+	bool  function_access = false;
+	bool array_access = false;
+
+	PASTNode eval_node_sp = _node_access;
+	if(_node_access->node_type == CALLING_OBJECT_NODE){
+		if(_node_access->children.size() > 0){
+			eval_node_sp = _node_access->children[0];
+
+			function_access = eval_node_sp->node_type == FUNCTION_OBJECT_NODE || eval_node_sp->node_type == FUNCTION_REF_NODE;
+			array_access = eval_node_sp->node_type == ARRAY_OBJECT_NODE || eval_node_sp->node_type == ARRAY_REF_NODE;
+
+
+		}else {
+			print_error_cr("Calling object should have at least 1 children");
+			return -1;
+		}
+	}
+
+	if(array_access){
+		return gacExpression_ArrayAccess(_node_access, _lc);
+	}else if(function_access){
+		return gacExpression_FunctionAccess(_node_access, _lc);
+	}
+
+	print_error_cr("Expected function or array access");
+	return -1;
+
+}
+
+
 int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScopeInfo *_lc)
 {
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return -1;}
-	if(_node->children.size()!=2) {print_error_cr("Array access should have 2 children");return -1;}
+	if(!(_node->children.size()==2 || _node->children.size()==3)) {print_error_cr("Array access should have 2 children");return -1;}
 	if(_node->children[0]->node_type != ARRAY_REF_NODE && _node->children[0]->node_type != ARRAY_OBJECT_NODE ){print_error_cr("Node is not ARRAY_OBJECT type"); return -1;}
 	if(_node->children[1]->node_type != ARRAY_ACCESS_NODE || _node->children[1]->children.size() == 0){print_error_cr("Array has no index nodes "); return -1;}
 
@@ -966,8 +999,10 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScopeInfo *_lc)
 			return -1;
 		}
 	}else{
-		if(!insertLoadValueInstruction(_node->children[0],  _lc)){
-			return -1;
+		if(_node->children[0]->value_symbol != "--"){ // starts with symbol ...
+			if(!insertLoadValueInstruction(_node->children[0],  _lc)){
+				return -1;
+			}
 		}
 		vec = CCompiler::getCurrentInstructionIndex();
 	}
@@ -1003,6 +1038,13 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScopeInfo *_lc)
 		asm_op->pre_post_operator_type=preoperator2instruction(_node->pre_post_operator_info->id);
 
 	}
+
+	if(_node->children.size()==3){ // array or function access ...
+
+		return gacExpression_FunctionOrArrayAccess(_node->children[2], _lc);
+	}
+
+
 	// return last instruction where was modified
 	return getCurrentInstructionIndex();
 }
@@ -1070,14 +1112,17 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScopeInfo *_lc)
 {
 	if(_node == NULL) {print_error_cr("NULL node");return -1;}
 	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return -1;}
-	if(_node->children.size()!=2) {print_error_cr("Array access should have 2 children");return -1;}
+	if(!(_node->children.size()==2 || _node->children.size()==3)) {print_error_cr("Array access should have 2 or 3 children");return -1;}
 	if(_node->children[0]->node_type != FUNCTION_REF_NODE && _node->children[0]->node_type != FUNCTION_OBJECT_NODE){print_error_cr("Node is not FUNCTION_OBJECT_NODE type"); return -1;}
 	if(_node->children[1]->node_type != ARGS_PASS_NODE){print_error_cr("Function has no index nodes "); return -1;}
 
 	// load function ...
-	if(!insertLoadValueInstruction(_node->children[0],_lc)) {
-		return -1;
+	if(_node->children[0]->value_symbol != "--"){ // starts with symbol ...
+		if(!insertLoadValueInstruction(_node->children[0],_lc)) {
+			return -1;
+		}
 	}
+
 	int call_index = getCurrentInstructionIndex();
 
 	// 1. insert push to pass values to all args ...
@@ -1106,6 +1151,11 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScopeInfo *_lc)
 
 	// 2. insert call instruction itself.
 	insert_CallFunction_Instruction(_node,call_index);
+
+	if(_node->children.size()==3){ // array or function access ...
+
+		return gacExpression_FunctionOrArrayAccess(_node->children[2], _lc);
+	}
 
 	return CCompiler::getCurrentInstructionIndex();
 }

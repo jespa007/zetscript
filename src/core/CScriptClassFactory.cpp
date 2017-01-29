@@ -560,6 +560,20 @@ public:
 
  }
 
+ int CScriptClassFactory::saveState(){
+	 // 1. For all current registered classes:
+	 // 1.1. Clone its ast...
+	 // 1.2. Clone its scopeinfo...
+	 // 1.3. Clone registered classes...
+	 //m_registeredClass
+	 return -1;
+ }
+
+
+ bool CScriptClassFactory::restoreState(int index){
+ 	 //m_registeredClass
+	 return false;
+  }
 
 
  CScriptClassFactory::tPrimitiveType *CScriptClassFactory::getPrimitiveTypeFromStr(const string & str){
@@ -991,6 +1005,7 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 
 		irv = new tInfoRegisteredClass;
 		irv->class_idx=m_registeredClass.size();
+		irv->classPtrType = TYPE_SCRIPT_VARIABLE;
 		irv->baseClass.push_back(base_class);
 		irv->metadata_info.object_info.symbol_info.symbol_name = class_name;
 		irv->metadata_info.object_info.symbol_info.ast=_ast;
@@ -1060,7 +1075,7 @@ bool CScriptClassFactory::updateReferenceSymbols(){
 				|| rc->class_idx ==idxClassVoid
 	 			 ){
 			 class_object = (CScriptVariable *)value_object;
- 	 	 }else{ // create script variable by default ..
+ 	 	 }else{ // create C++ class ...
 			 class_object = new CScriptVariable();
 			 class_object->init(rc, value_object);
 		 }

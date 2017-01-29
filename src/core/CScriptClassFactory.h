@@ -742,6 +742,18 @@ public:
 
 	bool registerBase();
 
+	/**
+	 * Save current state and giving the index to restore whenever the programmer wants...
+	 * @return: >=0 save state index, -1 error
+	 */
+	int saveState();
+
+	/**
+	 * Restore the state. Warning: All current changes will be losed!
+	 * @return: success or not
+	 */
+	bool restoreState(int state);
+
 
 private:
 

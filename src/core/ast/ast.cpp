@@ -552,15 +552,195 @@ tInfoPunctuator *CAst::checkPostOperatorPunctuator(const char *s){
 	return 0;
 }
 
+char *CAst::functionArrayAccess_Recursive(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
+	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+	char *aux = (char *)str;
+
+	aux = CStringUtils::IGNORE_BLANKS(aux, m_line);
+
+	if((*aux == '(' || *aux == '[')){
+
+		 if(ast_node_to_be_evaluated != NULL) {// save node
+			 *ast_node_to_be_evaluated = new tASTNode();
+			 //(*ast_node_to_be_evaluated)->value_symbol = symbol_value; // is array or function ...
+			 (*ast_node_to_be_evaluated)->definedValueline = m_line;
+			 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
+			 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
+		 }
+
+		 if(*aux == '('){
+			 if(ast_node_to_be_evaluated != NULL){
+				 (*ast_node_to_be_evaluated)->node_type  = FUNCTION_REF_NODE;
+				 (*ast_node_to_be_evaluated)->definedValueline = m_line;
+				 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
+			 }
+		 }
+
+
+
+		PASTNode args_obj=NULL;
+
+		if(*aux == '('){ // function access
+
+			if( ast_node_to_be_evaluated != NULL){
+				if((*ast_node_to_be_evaluated)->node_type != FUNCTION_REF_NODE && (*ast_node_to_be_evaluated)->node_type != FUNCTION_OBJECT_NODE){
+					print_error_cr("Expected function object before '(' at line %i",m_line);
+					return NULL;
+				}
+			}
+
+			if((aux=parseArgs('(', ')',aux,m_line,scope_info,ast_node_to_be_evaluated != NULL? &args_obj : NULL)) == NULL){
+				return NULL;
+			}
+
+			if(ast_node_to_be_evaluated != NULL){
+				args_obj->node_type = NODE_TYPE::ARGS_PASS_NODE;
+				//vector_args_node.push_back(args_node);//[0]->node_type = NODE_TYPE::ARGS_PASS_NODE;
+			}
+		}else if (*aux == '['){ // array acces multi dimensional like this : array[i][j][z] ...
+
+			int i = 0;
+			bool end = false;
+
+			if( ast_node_to_be_evaluated != NULL){
+				if((*ast_node_to_be_evaluated)->node_type != ARRAY_REF_NODE){
+					print_error_cr("Expected array object before '[' at line %i",m_line);
+					return NULL;
+				}
+			}
+
+			if( ast_node_to_be_evaluated != NULL){
+				args_obj = new tASTNode();
+				args_obj->node_type = ARRAY_ACCESS_NODE;
+			}
+
+			do{
+				PASTNode args_node=NULL;
+				char *aux_ptr;
+				int ini_line_access=m_line;
+
+				if((aux_ptr=parseArgs('[', ']',aux,m_line,scope_info,ast_node_to_be_evaluated != NULL ? &args_node: NULL)) != NULL){
+					if( ast_node_to_be_evaluated != NULL){
+						if(args_node->children.size() != 1){
+							print_error_cr("Invalid array access %i",m_line);
+							return NULL;
+						}
+						args_obj->children.push_back(args_node);
+						args_node->node_type = NODE_TYPE::ARRAY_INDEX_NODE;
+						args_node->definedValueline =ini_line_access;
+					}
+					aux =  CStringUtils::IGNORE_BLANKS(aux_ptr,m_line);
+				}else{
+					if(i == 0){
+						return NULL;
+					}else{
+						end=true;
+					}
+				}
+				i++;
+
+			}while(!end);
+		}
+
+		if(ast_node_to_be_evaluated != NULL){
+			// the deepth node is the object and the parent will the access node (function or array) ...
+			if(args_obj != NULL){ // there's arguments to be pushed ...
+				PASTNode obj =  *ast_node_to_be_evaluated;
+				PASTNode calling_object = new tASTNode();
+				//tInfoPunctuator *ip=NULL;
+
+				calling_object->node_type = CALLING_OBJECT_NODE;
+
+				obj->parent = calling_object;
+				obj->value_symbol = "--";
+				args_obj->parent = calling_object;
+
+				calling_object->children.push_back(obj); // the object itself...
+				calling_object->children.push_back(args_obj); // the args itself...
+				calling_object->parent=parent;
+
+				// finally save ast node...
+
+				*ast_node_to_be_evaluated = calling_object;
+			}
+		}
+
+		PASTNode another_access=NULL;
+		aux = functionArrayAccess_Recursive(aux,m_line,scope_info,ast_node_to_be_evaluated!=NULL?&another_access:NULL,ast_node_to_be_evaluated!=NULL?*ast_node_to_be_evaluated:NULL);
+
+		if(another_access != NULL){
+			(*ast_node_to_be_evaluated)->children.push_back(another_access);
+		}
+
+
+	}
+
+
+	return aux;
+}
+
+
+char *CAst::functionArrayAccess(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
+	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+
+
+	return functionArrayAccess_Recursive(str,m_line,scope_info,ast_node_to_be_evaluated,parent);
+	/*char *word_str=NULL;
+	// try to get function/array object ...
+	end_expression = getEndWord(aux, m_startLine);
+	bool function_or_array = false;
+
+
+	 if(!(end_expression == NULL || end_expression == aux)){ // is not word ok.
+
+		 symbol_value = CStringUtils::copyStringFromInterval(aux,end_expression);
+		 word_str = CStringUtils::IGNORE_BLANKS(end_expression, m_startLine);
+		 function_or_array = (*word_str == '(' || *word_str == '[');
+	 }
+
+	 if(function_or_array) {// try expression...
+
+		 aux = word_str; // we will evaluate later ...
+
+		 if(ast_node_to_be_evaluated != NULL) {// save node
+			 *ast_node_to_be_evaluated = new tASTNode();
+			 (*ast_node_to_be_evaluated)->value_symbol = symbol_value; // is array or function ...
+			 (*ast_node_to_be_evaluated)->definedValueline = m_startLine;
+			 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
+			 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
+		 }
+
+		 if(*word_str == '('){
+			 if(ast_node_to_be_evaluated != NULL){
+				 (*ast_node_to_be_evaluated)->node_type  = FUNCTION_REF_NODE;
+				 (*ast_node_to_be_evaluated)->definedValueline = m_startLine;
+				 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
+			 }
+		 }
+
+
+
+		if(ast_node_to_be_evaluated != NULL) { // save line ...
+			m_line = m_startLine;
+		}
+
+	 }*/
+
+}
+
 char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux = (char *)str;
 	char *end_expression;
 	//bool object_function=false;
-	bool array_object = false;
+	//bool array_object = false;
 	int m_startLine = m_line;
 	tInfoKeyword *key_w  = NULL;
 	vector<PASTNode> vector_args_node;
+	bool try_array_or_function_access = false;
+	bool should_be_access=false;
+
+	//PASTNode array_function_access=NULL;
 
 
 	string symbol_value="";
@@ -585,6 +765,7 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 			if((aux=parseFunction(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 				return NULL;
 			}
+			try_array_or_function_access = true;
 			break;
 		case KEYWORD_TYPE::NEW_KEYWORD:
 			if((aux = parseNew(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
@@ -605,144 +786,72 @@ char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_i
 		}
 
 		aux = CStringUtils::IGNORE_BLANKS(aux, m_startLine);
-		array_object = true;
+		try_array_or_function_access = true;
 
 		if(ast_node_to_be_evaluated != NULL){
 			(*ast_node_to_be_evaluated)->node_type = ARRAY_OBJECT_NODE;
 
 		}
-	}else { // try if symbol, object,function or array access
+	}
+	else{ // symbol or expression...
 		char *word_str=NULL;
 		// try to get function/array object ...
 		end_expression = getEndWord(aux, m_startLine);
-		bool function_or_array = false;
+		//bool function_or_array = false;
 
 
-		 if(!(end_expression == NULL || end_expression == aux)){ // is not word ok.
+		 if(!(end_expression == NULL || end_expression == aux)){ // is valid word...
 
 			 symbol_value = CStringUtils::copyStringFromInterval(aux,end_expression);
 			 word_str = CStringUtils::IGNORE_BLANKS(end_expression, m_startLine);
-			 function_or_array = (*word_str == '(' || *word_str == '[');
-		 }
 
-		 if(function_or_array) {// try expression...
+			 try_array_or_function_access = true;
 
-			 aux = word_str; // we will evaluate later ...
+			 should_be_access = (*word_str == '(' || *word_str == '[');
 
-			 if(ast_node_to_be_evaluated != NULL) {// save node
-				 *ast_node_to_be_evaluated = new tASTNode();
-				 (*ast_node_to_be_evaluated)->value_symbol = symbol_value; // is array or function ...
-				 (*ast_node_to_be_evaluated)->definedValueline = m_startLine;
-				 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
-				 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
+			 if(!should_be_access){
+				 return parseExpression_Recursive(aux,  m_line, scope_info, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
+			 }
+			 else{
+				 aux = word_str;
 			 }
 
-			 if(*word_str == '('){
-				 if(ast_node_to_be_evaluated != NULL){
-					 (*ast_node_to_be_evaluated)->node_type  = FUNCTION_REF_NODE;
-					 (*ast_node_to_be_evaluated)->definedValueline = m_startLine;
-					 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
-				 }
-			 }
 
-		 }
-		 else{
-			 // try function or array access evaluate expression...
-			return parseExpression_Recursive(aux,  m_line, scope_info, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
+		 }else{
+			 print_error_cr("Cannot parse ");
+			 return NULL;
+		 }/*else{
+			 return parseExpression_Recursive(aux,  m_line, scope_info, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
+		 }*/
 
-		}
 	}
 
-	aux = CStringUtils::IGNORE_BLANKS(aux, m_startLine);
-	PASTNode args_obj=NULL;
+	if(try_array_or_function_access){// try array/function access
 
-	if(*aux == '('){ // function access
 
-		if( ast_node_to_be_evaluated != NULL){
-			if((*ast_node_to_be_evaluated)->node_type != FUNCTION_REF_NODE && (*ast_node_to_be_evaluated)->node_type != FUNCTION_OBJECT_NODE){
-				print_error_cr("Expected function object before '(' at line %i",m_startLine);
-				return NULL;
-			}
-		}
-
-		if((aux=parseArgs('(', ')',aux,m_startLine,scope_info,ast_node_to_be_evaluated != NULL? &args_obj : NULL)) == NULL){
+		if((aux = functionArrayAccess(aux, m_line,scope_info,ast_node_to_be_evaluated,parent)) == NULL){
+			 print_error_cr("Cannot parse 2");
 			return NULL;
 		}
 
 		if(ast_node_to_be_evaluated != NULL){
-			args_obj->node_type = NODE_TYPE::ARGS_PASS_NODE;
-			//vector_args_node.push_back(args_node);//[0]->node_type = NODE_TYPE::ARGS_PASS_NODE;
-		}
-	}else if (*aux == '['){ // array acces multi dimensional like this : array[i][j][z] ...
-
-		int i = 0;
-		bool end = false;
-
-		if( ast_node_to_be_evaluated != NULL){
-			if(((*ast_node_to_be_evaluated)->node_type != ARRAY_REF_NODE) &&  !array_object){
-				print_error_cr("Expected array object before '[' at line %i",m_startLine);
+			if(*ast_node_to_be_evaluated == NULL && should_be_access){
+				print_error_cr("Cannot parse 3");
 				return NULL;
 			}
-		}
 
-		if( ast_node_to_be_evaluated != NULL){
-			args_obj = new tASTNode();
-			args_obj->node_type = ARRAY_ACCESS_NODE;
-		}
-
-		do{
-			PASTNode args_node=NULL;
-			char *aux_ptr;
-			int ini_line_access=m_startLine;
-
-			if((aux_ptr=parseArgs('[', ']',aux,m_startLine,scope_info,ast_node_to_be_evaluated != NULL ? &args_node: NULL)) != NULL){
-				if( ast_node_to_be_evaluated != NULL){
-					if(args_node->children.size() != 1){
-						print_error_cr("Invalid array access %i",m_startLine);
-						return NULL;
-					}
-					args_obj->children.push_back(args_node);
-					args_node->node_type = NODE_TYPE::ARRAY_INDEX_NODE;
-					args_node->definedValueline =ini_line_access;
-				}
-				aux =  CStringUtils::IGNORE_BLANKS(aux_ptr,m_startLine);
-			}else{
-				if(i == 0){
-					return NULL;
-				}else{
-					end=true;
-				}
+			if((*ast_node_to_be_evaluated)->children.size() > 0){
+				(*ast_node_to_be_evaluated)->children[0]->value_symbol = symbol_value;
 			}
-			i++;
 
-		}while(!end);
-	}
-
-	if(ast_node_to_be_evaluated != NULL){
-		// the deepth node is the object and the parent will the access node (function or array) ...
-		if(args_obj != NULL){ // there's arguments to be pushed ...
-			PASTNode obj =  *ast_node_to_be_evaluated;
-			PASTNode calling_object = new tASTNode();
-			//tInfoPunctuator *ip=NULL;
-
-			calling_object->node_type = CALLING_OBJECT_NODE;
-
-			obj->parent = calling_object;
-			args_obj->parent = calling_object;
-
-			calling_object->children.push_back(obj); // the object itself...
-			calling_object->children.push_back(args_obj); // the args itself...
-			calling_object->parent=parent;
-
-			// finally save ast node...
-
-			*ast_node_to_be_evaluated = calling_object;
+			/*if(array_function_access != NULL){
+				(*ast_node_to_be_evaluated)->children.push_back(array_function_access);
+			}*/
 		}
 	}
 
-	if(ast_node_to_be_evaluated != NULL) { // save line ...
-		m_line = m_startLine;
-	}
+
+
 
 	return aux;
 }
@@ -905,7 +1014,7 @@ char *CAst::getSymbolValue(
 		// if there's function or array access after symbol or object created ...
 		end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
 
-		if(*end_expression == '('){ // parse args within '(' ')'...
+		/*if(*end_expression == '('){ // parse args within '(' ')'...
 			is_symbol_trivial = false;
 
 			end_expression = parseArgs('(', ')',end_expression,m_line,scope_info);
@@ -918,10 +1027,31 @@ char *CAst::getSymbolValue(
 
 			//(*args_node)->node_type = NODE_TYPE::FUNCTION_OR_CLASS_ARGS_CALL_NODE;
 			end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
+		}*/
+
+
+		if(*end_expression == '[' || *end_expression == '('){ // function or array access --> process its ast but not save ...
+			is_symbol_trivial = false;
+			end_expression = functionArrayAccess(end_expression,m_line,scope_info);
+
+			if(end_expression == NULL){
+				return NULL;
+			}
+
+			end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
+
+
+			// check for post opertator...
+			if(((*post_operator) = checkPostOperatorPunctuator(end_expression)) != NULL){
+			 end_expression+=strlen((*post_operator)->str);
+			 end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
+			}
+
+			symbol_name = CStringUtils::copyStringFromInterval(aux, end_expression);
+
 		}
 
-
-		if(*end_expression == '['){ // parse args within '(' ')'...
+		/*if(*end_expression == '['){ // parse args within '(' ')'...
 			is_symbol_trivial = false;
 			char *aux_ptr;
 			int i=0;
@@ -956,7 +1086,7 @@ char *CAst::getSymbolValue(
 			}
 
 			end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
-		}
+		}*/
 	}
 	// GETTING TRIVIAL SYMBOLS
 	//----------------------------------------------------------
@@ -1935,6 +2065,9 @@ char *  CAst::parseReturn(const char *s,int & m_line,  CScopeInfo *scope_info, P
 				(*ast_node_to_be_evaluated)->node_type = NODE_TYPE::KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
+
+			aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
+
 			if((aux_p = parseExpression(aux_p, m_line, scope_info, ast_node_to_be_evaluated != NULL ? &(*ast_node_to_be_evaluated)->children[0] : NULL))!= NULL){
 
 				if(*aux_p!=';'){
@@ -2895,9 +3028,15 @@ char *CAst::parseKeyWord(const char *s, int & m_line, CScopeInfo *scope_info, bo
 
 		// check if another kwyword is defined ...
 		if((keyw2nd = isKeyword(aux_p))!= NULL){
-			print_error_cr("unexpected keyword \"%s\" at line %i",keyw2nd->str, m_line);
-			error = true;
-			return NULL;
+
+			if(
+					keyw2nd->id != KEYWORD_TYPE::FUNCTION_KEYWORD  // list of exceptional keywords...
+			  ){
+
+				print_error_cr("unexpected keyword \"%s\" at line %i",keyw2nd->str, m_line);
+				error = true;
+				return NULL;
+			}
 		}
 
 		if(defined_keyword[keyw->id].parse_fun != NULL){

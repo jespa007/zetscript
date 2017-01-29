@@ -196,6 +196,7 @@ private:
 	ASM_OPERATOR puntuator2instruction(tInfoPunctuator * op);
 	ASM_PRE_POST_OPERATORS preoperator2instruction(PUNCTUATOR_TYPE op);
 
+	int gacExpression_FunctionOrArrayAccess(PASTNode _node_access, CScopeInfo *_lc);
 	int gacExpression_ArrayObject_Recursive(PASTNode _node, CScopeInfo *_lc);
 	int gacExpression_ArrayObject(PASTNode op, CScopeInfo *_lc);
 	int gacExpression_FunctionObject(PASTNode op, CScopeInfo *_lc);

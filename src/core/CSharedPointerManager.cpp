@@ -52,12 +52,42 @@ void CSharedPointerManager::setFreeCell(int index_to_free){
 	}
 }
 
+int CSharedPointerManager::getIdx0Shares(int index){
+
+	if(index < 0){
+		print_error_cr("index -1");
+		return -1;
+	}
+
+	if(index >= MAX_UNIQUE_OBJECTS_POINTERS){
+		print_error_cr("bad reference shared pointers");
+		return -1;
+	}
+
+	return shared_pointer[idxCurrentStack][index].idx_0_shares;
+}
+
+int CSharedPointerManager::getNumShares(int index){
+
+	if(index < 0){
+		print_error_cr("index -1");
+		return -1;
+	}
+
+	if(index >= MAX_UNIQUE_OBJECTS_POINTERS){
+		print_error_cr("bad reference shared pointers");
+		return -1;
+	}
+
+	return shared_pointer[idxCurrentStack][index].n_shares;
+}
+
 
 void CSharedPointerManager::remove0Shares(int index_0_share_idx){
 
 	if(index_0_share_idx >=n_pointers_with_0_shares[idxCurrentStack]){
 		print_error_cr("index_0_share_idx >=n_pointers_with_0_shares");
-		return;
+		return ;
 	}
 
 	if(n_pointers_with_0_shares[idxCurrentStack] > 0){
@@ -70,10 +100,12 @@ void CSharedPointerManager::remove0Shares(int index_0_share_idx){
 
 
 		n_pointers_with_0_shares[idxCurrentStack]--;
+
 	}
 	else{
 		print_error_cr("n_pointers_with_0_shares <= 0");
 	}
+
 }
 
 int CSharedPointerManager::insert0Shares(int shared_pointer_idx)

@@ -22,13 +22,36 @@ CVector::~CVector(){
 	}
 }
 
-void CVector::unrefSharedPtr(){
+bool CVector::unrefSharedPtr(){
 
-	CScriptVariable::unrefSharedPtr();
+	if(CScriptVariable::unrefSharedPtr()){
 
-	for(unsigned i = 0; i < m_objVector.size(); i++){
-		m_objVector[i]->unrefSharedPtr();
+		for(unsigned i = 0; i < m_objVector.size(); i++){
+			if(!m_objVector[i]->unrefSharedPtr()){
+				return false;
+			}
+		}
+
+		return true;
 	}
+
+	return false;
+}
+
+bool CVector::refSharedPtr(){
+
+	if(CScriptVariable::refSharedPtr()){
+
+		for(unsigned i = 0; i < m_objVector.size(); i++){
+			if(!m_objVector[i]->refSharedPtr()){
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 

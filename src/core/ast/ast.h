@@ -150,6 +150,9 @@ private:
 	static char * parseExpression(const char *s, int & m_line, CScopeInfo *scope_info, PASTNode * ast_node_to_be_evaluated=NULL);
 	static char * parseExpression_Recursive(const char *s, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
 
+
+	static char *   functionArrayAccess_Recursive(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent);
+	static char *   functionArrayAccess(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL, PASTNode parent=NULL);
 	/**
 	 * this functions tries to evaluate expression that was get from getSymbolValue and didn't know as trivial expression like (), function(), etc.
 	 * Must be evaluated later with this function.

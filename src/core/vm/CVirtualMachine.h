@@ -9,6 +9,8 @@
 #define VM_ALE_OPERATIONS_MAX_STACK			4096	 // max operations ...
 
 
+
+
 class CScriptFunction;
 class CVirtualMachine{
 
@@ -16,6 +18,7 @@ class CVirtualMachine{
 		VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
 		void			 		* 	stkResultObject; // pointer to pointer ables to modify its pointer when is needed
 		CScriptVariable  		** 	ptrObjectRef; // pointer to pointer in case of replace var
+		int							properties;
 	}tAleObjectInfo;
 
 public:
@@ -110,12 +113,13 @@ private:
 
 	string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tAleObjectInfo * index);
 
-	bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL);
-	bool pushBoolean(bool init_value, CScriptVariable ** ptrAssignable=NULL, int n_stk=0);
-	bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL);
-	bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL);
-	bool pushFunction(tInfoRegisteredFunctionSymbol * init_value, CScriptVariable ** ptrAssignable=NULL);
-	bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL, bool is_new_var=false);
+	bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	bool pushBoolean(bool init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	bool pushFunction(tInfoRegisteredFunctionSymbol * init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL, int properties=0,bool is_new_var=false);
+
 	bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
 
 
@@ -137,7 +141,7 @@ private:
 			vector<tInfoAsmOp *> *asm_op,
 			int n_stk);
 
-	void popScope(tInfoRegisteredFunctionSymbol *info_function,int index, CScriptVariable *ret = NULL);
+	void popScope(tInfoRegisteredFunctionSymbol *info_function,int index);//, CScriptVariable *ret = NULL);
 
 
 //private:

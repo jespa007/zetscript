@@ -6,5 +6,8 @@ class CStruct:public CScriptVariable{
 public:
 	CStruct();
 
+	virtual bool unrefSharedPtr();
+	virtual bool refSharedPtr();
+
 
 };

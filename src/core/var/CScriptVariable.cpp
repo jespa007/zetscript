@@ -311,12 +311,13 @@ int CScriptVariable::getIdxFunctionSymbolWithMatchArgs(const string & varname, v
 			// convert parameters script to c...
 			for( int k = 0; k < (int)argv->size() && all_check;k++){
 				//converted_param[i]= (int)(argv->at(i));
+				bool is_script_var = argv->at(k)->getPointer_C_ClassName() == TYPE_SCRIPT_VARIABLE; // if C_ClassName is void means that is a ScriptClass...
 				if(match_signature){
-					all_check = argv->at(k)->getPointer_C_ClassName()==irfs->m_arg[k];
+					all_check = (argv->at(k)->getPointer_C_ClassName()==irfs->m_arg[k]) || (is_script_var);
 				}
 				else{
-					if((argv->at(k))->getPointer_C_ClassName()!=irfs->m_arg[k]){
-						all_check =CScriptClassFactory::getInstance()->getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)!=NULL;
+					if((argv->at(k))->getPointer_C_ClassName()!=irfs->m_arg[k] && !(is_script_var)){
+						all_check =(CScriptClassFactory::getInstance()->getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)!=NULL);
 					}
 				}
 			}
@@ -346,8 +347,36 @@ const string & CScriptVariable::getClassName(){
     	return &m_strValue;
     }
 
-    void CScriptVariable::unrefSharedPtr(){
-    	idx_shared_ptr = -1;
+    bool CScriptVariable::refSharedPtr(){
+
+    	if(idx_shared_ptr == -1){
+
+			if((idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(this)) != -1){
+				return true;
+			}
+    	}
+    	else{
+    		print_error_cr("idx shared ptr alrady registered");
+    	}
+
+		return false;
+    }
+
+    bool CScriptVariable::unrefSharedPtr(){
+    	if(idx_shared_ptr!=-1){
+    		if(CSharedPointerManager::getInstance()->getNumShares(idx_shared_ptr) > 1){
+    			print_error_cr("shared pointer more than once");
+    			return false;
+    		}
+
+    		int index_0_share_idx = CSharedPointerManager::getInstance()->getIdx0Shares(idx_shared_ptr);
+    		if(index_0_share_idx!=-1){
+    			CSharedPointerManager::getInstance()->remove0Shares(index_0_share_idx);
+    		}
+    		idx_shared_ptr = -1;
+    	}
+
+    	return true;
     }
 
 	int CScriptVariable::get_C_StructPtr(){

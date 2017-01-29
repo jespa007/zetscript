@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define MAX_UNIQUE_OBJECTS_POINTERS 10
-#define MAX_STACK 512
+#define MAX_UNIQUE_OBJECTS_POINTERS 2048
+#define MAX_STACK 256
 
 class CSharedPointerManager{
 
@@ -29,7 +29,7 @@ class CSharedPointerManager{
 	int getFreeCell();
 	void setFreeCell(int index_to_free);
 
-	void remove0Shares(int index_0_share_idx);
+
 	int insert0Shares(int shared_pointer_idx);
 
 
@@ -41,6 +41,9 @@ public:
 	int newSharedPointer(CScriptVariable *var_ptr);
 	void removeUnSharedPointers();
 	void gc();
+	int getIdx0Shares(int index);
+	int getNumShares(int index);
+	void remove0Shares(int index_0_share_idx);
 
 	bool push(); // push current stack
 	bool pop(); // pop stack.

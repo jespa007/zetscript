@@ -290,7 +290,8 @@ int main(int argc, char * argv[]){
 	(*((std::function<void (int)> *)fun_ptr))((int)&ss);
 
 	return 0;*/
-
+	//print_info_cr("CSharedPointerManager: %i %iMB sizeof(int): %i",sizeof(CSharedPointerManager),sizeof(CSharedPointerManager)/(1024*1024),sizeof(int));
+	//return 0;
 
 
 	CLog::setUseAnsiEscape(true);

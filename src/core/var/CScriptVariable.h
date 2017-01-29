@@ -5,6 +5,8 @@
 #include "core/ScriptDefinesStructs.h"
 #include "core/ast/CScopeInfo.h"
 
+#define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
+
 #define IS_CLASS_C ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF)
 
 
@@ -86,7 +88,8 @@ public:
 
 
     virtual string * toString();
-    virtual void unrefSharedPtr();
+    virtual bool refSharedPtr();
+    virtual bool unrefSharedPtr();
 
 	int get_C_StructPtr();
 
@@ -101,6 +104,9 @@ protected:
 
 
 	virtual void setup();
+
+	vector<tSymbolInfo> m_variableSymbol;
+
 private:
 
 
@@ -111,7 +117,6 @@ private:
 
 	void createSymbols(tInfoRegisteredClass *irv);
 
-	vector<tSymbolInfo> m_variableSymbol;
 	vector<tSymbolInfo> m_functionSymbol;
 
 };
