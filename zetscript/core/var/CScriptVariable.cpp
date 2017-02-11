@@ -1,4 +1,4 @@
-#include "core/zg_core.h"
+#include "../../CZetScript.h"
 
 
 CUndefined *CScriptVariable::UndefinedSymbol=NULL;
@@ -21,16 +21,16 @@ void CScriptVariable::destroySingletons(){
 	delete NullSymbol;
 }
 
-CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & value_symbol,tASTNode *ast,tInfoRegisteredFunctionSymbol *irv){
+CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,tInfoRegisteredFunctionSymbol *irv){
 	tSymbolInfo si;
 	si.proxy_ptr=0;
 	si.object = irv;
 
 	// get super function ...
-	si.super_function = getFunctionSymbol(value_symbol);
+	si.super_function = getFunctionSymbol(symbol_value);
 
-	si.value_symbol = value_symbol;
-	si.ast = ast;
+	si.symbol_value = symbol_value;
+	si.idxAstNode = _idxAstNode;
 	m_functionSymbol.push_back(si);
 
 
@@ -48,7 +48,7 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 
 			tInfoRegisteredVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
 
-			si = addVariableSymbol(ir_var->symbol_name,ir_var->ast);
+			si = addVariableSymbol(ir_var->symbol_name,ir_var->idxAstNode);
 
 			// Warning if you put any var for primitives (i.e CInteger, CNumber, etc will crash in recursive manner)
 			if(IS_CLASS_C){ // we know the type object so we allocate new var symbol ...
@@ -103,7 +103,7 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 		//print_info_cr("- Create function %s...",irv->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name.c_str());
 		 si =addFunctionSymbol(
 				ir_class->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name,
-				ir_class->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.ast,
+				ir_class->metadata_info.object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.idxAstNode,
 				ir_fun
 
 				);
@@ -226,12 +226,12 @@ bool CScriptVariable::setIdxClass(int idx){
 }
 
 
-CScriptVariable::tSymbolInfo * CScriptVariable::addVariableSymbol(const string & value_symbol, tASTNode *ast){
+CScriptVariable::tSymbolInfo * CScriptVariable::addVariableSymbol(const string & symbol_value, int _idxAstNode){
 	tSymbolInfo si;
 	si.proxy_ptr=0;
 	si.object = CScriptVariable::UndefinedSymbol;
-	si.ast = ast;
-	si.value_symbol = value_symbol;
+	si.idxAstNode = _idxAstNode;
+	si.symbol_value = symbol_value;
 	m_variableSymbol.push_back(si);
 
 	return &m_variableSymbol[m_variableSymbol.size()-1];
@@ -250,7 +250,7 @@ void CScriptVariable::addArgSymbol(const string & arg_name){
 */
 CScriptVariable::tSymbolInfo * CScriptVariable::getVariableSymbol(const string & varname){
 	for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
-		if(varname == this->m_variableSymbol[i].value_symbol){
+		if(varname == this->m_variableSymbol[i].symbol_value){
 			return &m_variableSymbol[i];
 		}
 	}
@@ -277,7 +277,7 @@ CScriptVariable::tSymbolInfo * CScriptVariable::getFunctionSymbol(const string &
 
 	// from lat value to first to get last override function...
 	for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){
-		if(varname == this->m_functionSymbol[i].value_symbol){
+		if(varname == this->m_functionSymbol[i].symbol_value){
 			return &m_functionSymbol[i];
 		}
 	}
@@ -290,7 +290,7 @@ int CScriptVariable::getIdxFunctionSymbolWithMatchArgs(const string & varname, v
 
 	// from lat value to first to get last override function...
 	/*for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){
-		if(varname == this->m_functionSymbol[i].value_symbol){
+		if(varname == this->m_functionSymbol[i].symbol_value){
 			return &m_functionSymbol[i];
 		}
 	}*/
@@ -304,7 +304,7 @@ int CScriptVariable::getIdxFunctionSymbolWithMatchArgs(const string & varname, v
 
 		tInfoRegisteredFunctionSymbol *irfs = (tInfoRegisteredFunctionSymbol *)m_functionSymbol[i].object;
 
-		if(this->m_functionSymbol[i].value_symbol == varname && (irfs->m_arg.size() == argv->size())){
+		if(this->m_functionSymbol[i].symbol_value == varname && (irfs->m_arg.size() == argv->size())){
 
 
 			all_check=true;

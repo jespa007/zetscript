@@ -1,18 +1,12 @@
-#include "CSharedPointerManager.cpp"
-#include "var/zg_variable.cpp"
-#include "ast/CScopeInfo.cpp"
-#include "ast/ast.cpp"
-#include "vm/CVirtualMachine.cpp"
-#include "CCompiler.cpp"
-#include "CScriptClassFactory.cpp"
+#include "CZetScript.h"
 
-CZG_ScriptCore * CZG_ScriptCore::m_instance = NULL;
-CAst *CZG_ScriptCore::m_ast = NULL;
+CZetScript * CZetScript::m_instance = NULL;
+CAst *CZetScript::m_ast = NULL;
 
 
-CZG_ScriptCore * CZG_ScriptCore::getInstance(){
+CZetScript * CZetScript::getInstance(){
 	if(m_instance==NULL){
-		m_instance = new CZG_ScriptCore();
+		m_instance = new CZetScript();
 		if(!m_instance->init()){
 			exit(-1);
 		}
@@ -20,7 +14,7 @@ CZG_ScriptCore * CZG_ScriptCore::getInstance(){
 	return m_instance;
 }
 
-void CZG_ScriptCore::destroy(){
+void CZetScript::destroy(){
 
 
 	if(m_instance!=NULL){
@@ -32,11 +26,12 @@ void CZG_ScriptCore::destroy(){
 	CCompiler::destroySingletons();
 	CAst::destroySingletons();
 	CSharedPointerManager::destroySingletons();
+	C_VariableFunctionFactory::destroySingletons();
 
 
 }
 
-CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegisteredFunctionSymbol *irfs, vector<CScriptVariable *> * argv){
+CScriptVariable * CZetScript::call_C_function(void *fun_ptr, tInfoRegisteredFunctionSymbol *irfs, vector<CScriptVariable *> * argv){
 
 	int converted_param[MAX_PARAM_C_FUNCTION];
 	CScriptVariable *var_result;
@@ -203,7 +198,7 @@ CScriptVariable * CZG_ScriptCore::call_C_function(void *fun_ptr, tInfoRegistered
 
 }
 
-CZG_ScriptCore::CZG_ScriptCore(){
+CZetScript::CZetScript(){
 
 	__init__ = false;
 	m_mainClassInfo=NULL;
@@ -215,7 +210,8 @@ CZG_ScriptCore::CZG_ScriptCore(){
 
 int interface_variable;
 
-bool CZG_ScriptCore::init(){
+bool CZetScript::init(){
+
 
 	CScriptClassFactory::getInstance();
 
@@ -240,7 +236,7 @@ bool CZG_ScriptCore::init(){
 
 }
 
-bool CZG_ScriptCore::eval(const string & s){
+bool CZetScript::eval(const string & s){
 
 	if(!__init__) return false;
 
@@ -265,7 +261,7 @@ bool CZG_ScriptCore::eval(const string & s){
 	return false;
 }
 
-std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * CZG_ScriptCore::script_call(const string &script_function_name){
+std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * CZetScript::script_call(const string &script_function_name){
 
 	//tInfoRegisteredFunctionSymbol *irfs = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,function);
 
@@ -285,7 +281,7 @@ std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * CZG_Scr
 	return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
 }
 
-CScriptVariable * CZG_ScriptCore::execute(){
+CScriptVariable * CZetScript::execute(){
 
 	if(!__init__) return NULL;
 
@@ -299,7 +295,7 @@ CScriptVariable * CZG_ScriptCore::execute(){
 	return vm->execute(m_mainFunctionInfo,  m_mainClass, NULL,0);//->excute();
 }
 //-------------------------------------------------------------------------------------
-CZG_ScriptCore::~CZG_ScriptCore(){
+CZetScript::~CZetScript(){
 	// unregister operators ...
 	delete m_mainClass;
 	delete vm;

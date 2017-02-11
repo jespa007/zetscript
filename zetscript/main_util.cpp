@@ -1,4 +1,4 @@
-//#include "core/zg_core.h"
+//#include "core/zs_core.h"
 
 #include <type_traits>
 #include <iostream>
@@ -442,7 +442,7 @@ int main(int argc, char * argv[]){
 
 	if(buffer != NULL){
 
-		CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
+		CZetScript *zg_script = CZetScript::getInstance();
 		zg_script->init();
 
 		if(zg_script->eval((char *)buffer->data_buffer));
@@ -455,7 +455,7 @@ int main(int argc, char * argv[]){
 		print_info_cr("bool:%s",typeid(bool).name());
 
 
-		CZG_ScriptCore::destroy();
+		CZetScript::destroy();
 		delete buffer;
 	}
 

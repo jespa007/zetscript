@@ -5,8 +5,8 @@ class CUndefined;
 class CVoid;
 class CNull;
 
-#include "system/zg_system.h"
-#include "utils/zg_utils.h"
+#include "system/zs_system.h"
+#include "utils/zs_utils.h"
 
 #include "CScriptVariable.h"
 #include "CBoolean.h"

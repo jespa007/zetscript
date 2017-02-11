@@ -5,9 +5,12 @@ emmscripten example:
 
 arguments:['var j=0;for(var i=0; i < 10000000; ++i){i*2;}'],
 
-version 1.01.00
+version 1.00.00
 ===============
 
+-emmscriptem port.
+-set/save state.
+-memory manager
 -fusion CALE + CALE.h into CVirtualMachine!
 -CVirtualMachine can be an object (in a future).
 -Solve Bug: Create function object and embedd tInfoRegisteredFunction into it. 

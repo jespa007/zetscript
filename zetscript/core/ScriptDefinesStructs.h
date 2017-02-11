@@ -4,10 +4,14 @@
 class tASTNode;
 typedef tASTNode *PASTNode;
 struct tInfoRegisteredFunctionSymbol;
-struct tInfoScopeVar;
+class tInfoScopeVar;
 struct tInfoRegisteredClass;
 struct tScriptFunctionInfo;
 struct tInfoVarScopeBlock;
+
+int insertAstNode(tASTNode * ast_node);
+int insertInfoScopeVar(tInfoScopeVar * ast_node);
+
 
 
 #define MAX_PARAM_C_FUNCTION 6
@@ -277,9 +281,9 @@ enum ALE_INFO_PROPERTIES{
 struct tInfoRegisteredVariableSymbol{
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function
 	string 	 symbol_name;
-	tInfoRegisteredClass		 *class_info;
-	tInfoScopeVar  				*info_var_scope;
-	tASTNode		*ast;
+	int idxClassInfo;//tInfoRegisteredClass		 *class_info;
+	int idxInfoScopeVar;//tInfoScopeVar  				*info_var_scope;
+	int idxAstNode;
 	unsigned int properties; // SYMBOL_INFO_PROPERTIES
 	string c_type; // In case is C, we need to know its type ...
 	int index;
@@ -287,11 +291,13 @@ struct tInfoRegisteredVariableSymbol{
 	tInfoRegisteredVariableSymbol(){
 		properties=0;
 		c_type="";
-		ast=NULL;
+		idxAstNode=-1;
 		symbol_name = "";
 		ref_ptr=0;
-		class_info=NULL;
-		info_var_scope=NULL;
+		//class_info=NULL;
+		//info_var_scope=NULL;
+		idxClassInfo=-1;
+		idxInfoScopeVar=-1;
 		index=-1;
 
 	}
@@ -348,26 +354,28 @@ public:
 	NODE_TYPE node_type;
 	tInfoKeyword *keyword_info;
 	tInfoPunctuator *operator_info,*pre_post_operator_info;
-	string 	value_symbol;
+	string 	symbol_value;
 	string type_ptr;
-	CScopeInfo *scope_info_ptr; // saves scope info ptr (only for global vars).
+	int idxScopeInfo; // saves scope info ptr (only for global vars).
 	string type_class;
-	int definedValueline;
+	int line_value;
 	PASTNode parent;
 	vector<PASTNode> children; //left,right;
 	void *aux_value;
+	int idxAstNode;
 
 	tASTNode(int preallocate_num_nodes=0){
 		node_type = UNKNOWN_NODE;
 		keyword_info = NULL;
 		pre_post_operator_info = NULL;
-		definedValueline=-1;
+		line_value=-1;
 		operator_info=NULL;
-		value_symbol="";
+		symbol_value="";
 		parent=NULL;
 		aux_value=NULL;
 
-		scope_info_ptr = NULL;
+		idxAstNode = insertAstNode(this);
+		idxScopeInfo = -1;
 
 		if(preallocate_num_nodes > 0){
 			for(int i = 0; i < preallocate_num_nodes; i++){
@@ -384,10 +392,18 @@ public:
 
 //-----------------------------
 
-struct tInfoScopeVar{
+class tInfoScopeVar{
+public:
 	string symbol_ref;
 	string name; // var name
-	PASTNode ast; // ast node info.
+	int idxInfoScopeVar;
+	int idxAstNode; // ast node info.
+
+	tInfoScopeVar(){
+		symbol_ref="";
+		name="";
+		idxInfoScopeVar = insertInfoScopeVar(this);
+	}
 };
 
 
@@ -412,7 +428,7 @@ struct tInfoAsmOp{
 
 	// string symbol_name;
 	VALUE_INSTRUCTION_TYPE variable_type;
-	 PASTNode ast_node; // define ast node for give some information at run time
+	int idxAstNode; // define ast node for give some information at run time
 	 //------------------
 
 	 ASM_OPERATOR operator_type;
@@ -433,10 +449,11 @@ struct tInfoAsmOp{
 		//variable_type=VAR_TYPE::NOT_DEFINED;
 		operator_type=ASM_OPERATOR::INVALID_OP;
 		pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
-		ast_node = NULL;
+		idxAstNode = -1;
 		scope_type=LOCAL_SCOPE;
 		asm_properties=0;
 		index_op1=index_op2=-1;
+		//script_info=NULL;
 		script_info=NULL;
 	}
 
@@ -488,8 +505,8 @@ struct tInfoRegisteredClass{
 	int idx_function_script_constructor;
 	int class_idx;
 
-	std::function<void *()> * c_constructor;
-	std::function<void (void *p)> *c_destructor;
+	std::function<void *()> 		* 	c_constructor;
+	std::function<void (void *p)> 	*	c_destructor;
 	string classPtrType; // type_id().name();
 	vector<tInfoRegisteredClass *> baseClass; // in the case is and extension of class.
 
@@ -509,7 +526,7 @@ struct tInfoRegisteredClass{
  */
 struct tInfoVarScopeBlock{
 	vector<int> var_index;
-	CScopeInfo *scope_ptr;
+	int idxScopeInfo;
 };
 
 

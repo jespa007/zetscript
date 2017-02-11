@@ -1,7 +1,7 @@
 #pragma once
 
 
-
+#include "C_VariableFunctionFactory.h"
 #include "ScriptDefinesStructs.h"
 #include "RegisterFunctionHelper.h"
 #include "ast/ast.h"
@@ -108,7 +108,7 @@ public:
 	tInfoRegisteredClass *	getRegisteredClassByIdx(unsigned index);
 	tInfoRegisteredClass *  getRegisteredClassBy_C_ClassPtr(const string & v, bool print_msg=true);
 
-	int 					getIdxRegisteredClass(const string & v);
+	int 					getIdxRegisteredClass(const string & v, bool print_msg=true);
 	bool isClassRegistered(const string & v);
 	fntConversionType getConversionType(string objectType, string conversionType, bool show_errors=true);
 
@@ -148,76 +148,7 @@ public:
 
 	void printGeneratedCodeAllClasses();
 
-	template <class _R, typename _F>
-	static void * new_proxy_function(unsigned int n_args, _F fun_obj){
-		using namespace std::placeholders;
-		void *proxy_function=NULL;
 
-		switch(n_args){
-		case 0:
-			proxy_function=(void *)(new std::function<_R ()>(std::bind((_R (*)())fun_obj)));
-			break;
-		case 1:
-			proxy_function=(void *)( new std::function<_R (int)>(std::bind((_R (*)(int))fun_obj, _1)));
-			break;
-		case 2:
-			proxy_function=(void *)( new std::function<_R (int,int)>(std::bind((_R (*)(int,int))fun_obj, 1,_2)));
-			break;
-		case 3:
-			proxy_function= (void *)(new std::function<_R (int,int,int)>(std::bind((_R (*)(int,int,int))fun_obj, 1,_2,_3)));
-			break;
-		case 4:
-			proxy_function=(void *)( new std::function<_R (int,int,int,int)>(std::bind((_R (*)(int,int,int,int))fun_obj, 1,_2,_3,_4)));
-			break;
-		case 5:
-			proxy_function=(void *)( new std::function<_R (int,int,int,int,int)>(std::bind((_R (*)(int,int,int,int,int))fun_obj, 1,_2,_3,_4,_5)));
-			break;
-		case 6:
-			proxy_function=(void *)( new std::function<_R (int,int,int,int,int,int)>(std::bind((_R (*)(int,int,int,int,int,int))fun_obj, 1,_2, _3, _4, _5, _6)));
-			break;
-		default:
-			print_error_cr("Max argyments reached!");
-			break;
-
-		}
-
-		return proxy_function;
-	}
-
-	template <class _R>
-	static bool delete_proxy_function(unsigned int n_args, void *obj){
-		using namespace std::placeholders;
-
-
-		switch(n_args){
-		case 0:
-			delete (std::function<_R ()>*)obj;
-			break;
-		case 1:
-			delete (std::function<_R (int)>*)obj;
-			break;
-		case 2:
-			delete (std::function<_R (int,int)>*)obj;
-			break;
-		case 3:
-			delete (std::function<_R (int,int,int)>*)obj;
-			break;
-		case 4:
-			delete (std::function<_R (int,int,int,int)>*)obj;
-			break;
-		case 5:
-			delete (std::function<_R (int,int,int,int,int)>*)obj;
-			break;
-		case 6:
-			delete (std::function<_R (int,int,int,int,int,int)>*)obj;
-			break;
-		default:
-			print_error_cr("Max argyments reached!");
-			return false;
-		}
-
-		return true;
-	}
 
 
 	/**
@@ -263,18 +194,18 @@ public:
 
 		// init struct...
 
-		irs.object_info.symbol_info.ast = NULL;
-		irs.object_info.symbol_info.info_var_scope = NULL;
+		irs.object_info.symbol_info.idxAstNode = -1;
+		irs.object_info.symbol_info.idxInfoScopeVar=-1;//info_var_scope = NULL;
 		irs.object_info.symbol_info.symbol_name = function_name;
 
 		irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 		if(irs.idx_return_type == getIdxClassVoid()){
-			if((irs.object_info.symbol_info.ref_ptr=(int)new_proxy_function<void>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
+			if((irs.object_info.symbol_info.ref_ptr=(int)C_VariableFunctionFactory::getInstance()->new_proxy_function<void>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
 				return false;
 			}
 		}
 		else{
-			if((irs.object_info.symbol_info.ref_ptr=(int)new_proxy_function<int>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
+			if((irs.object_info.symbol_info.ref_ptr=(int)C_VariableFunctionFactory::getInstance()->new_proxy_function<int>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
 				return false;
 			}
 		}
@@ -323,7 +254,7 @@ public:
 
 			// ok check c_type
 			for(unsigned i = 0; i < vec_irfs->size(); i++){
-				if(vec_irfs->at(i).object_info.symbol_info.ast->value_symbol == str_classPtr){
+				if(AST_SYMBOL_VALUE(vec_irfs->at(i).object_info.symbol_info.idxAstNode) == str_classPtr){
 					return i;
 				}
 			}
@@ -364,8 +295,9 @@ public:
 			//print_error_cr("CHECK AND TODOOOOOO!");
 			tInfoRegisteredClass *irc = new tInfoRegisteredClass;
 
-			irc->metadata_info.object_info.symbol_info.ast = new tASTNode;
-			irc->metadata_info.object_info.symbol_info.info_var_scope=NULL;
+			tASTNode *ast =new tASTNode;
+			irc->metadata_info.object_info.symbol_info.idxAstNode = ast->idxAstNode;
+			irc->metadata_info.object_info.symbol_info.idxInfoScopeVar=-1;
 			irc->metadata_info.object_info.symbol_info.symbol_name = class_name;
 			//irc->baseClass = base_class; // identify extend class ?!?!!?
 
@@ -404,8 +336,8 @@ public:
 		string class_name=typeid(_T).name();
 		string class_name_ptr=typeid(_T *).name();
 
-		int base_class = this->getIdxClassFromIts_C_Type(typeid(_B *).name());
-		if(base_class == -1) return false;
+		int idxBaseClass = this->getIdxClassFromIts_C_Type(typeid(_B *).name());
+		if(idxBaseClass == -1) return false;
 
 
 		int register_class = this->getIdxClassFromIts_C_Type(typeid(_T *).name());
@@ -439,7 +371,7 @@ public:
 
 	 	mapTypeConversion[class_name_ptr][base_class_name_ptr]=[](CScriptVariable *s){ return (int)reinterpret_cast<_B *>(s);};
 
-	 	tInfoRegisteredClass *irc_base = m_registeredClass[base_class];
+	 	tInfoRegisteredClass *irc_base = m_registeredClass[idxBaseClass];
 	 	tInfoRegisteredClass *irc_class = m_registeredClass[register_class];
 	 	irc_class->baseClass.push_back(irc_base);
 
@@ -451,7 +383,7 @@ public:
 
 			tInfoRegisteredVariableSymbol irs;
 			// init struct...
-			irs.class_info = m_registeredClass[base_class];
+			irs.idxClassInfo = idxBaseClass;//.class_info = m_registeredClass[base_class];
 			irs.ref_ptr=irs_source->ref_ptr;
 			irs.c_type = irs_source->c_type;
 			//irs.
@@ -469,8 +401,8 @@ public:
 
 			tInfoRegisteredFunctionSymbol irs;
 			// init struct...
-			irs.object_info.symbol_info.ast = NULL;
-			irs.object_info.symbol_info.info_var_scope = NULL;
+			irs.object_info.symbol_info.idxAstNode = -1;
+			irs.object_info.symbol_info.idxInfoScopeVar = -1;
 			irs.object_info.symbol_info.symbol_name=irs_source->object_info.symbol_info.symbol_name;
 
 
@@ -493,123 +425,6 @@ public:
 	}
 
 
-	template <class _T, class _R,typename _F>
-	void * c_member_class_function_proxy(unsigned int n_args, _F fun_obj){
-		using namespace std::placeholders;
-		std::function<void *(void *,PROXY_CREATOR)> *c_function_builder=NULL;
-
-
-
-		switch(n_args){
-		case 0:
-			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-				void *return_val=NULL;
-
-				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val= (void *)(new std::function<_R ()>(std::bind((_R (_T::*)())(fun_obj), (_T *)obj)));
-				}
-				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R ()> *)obj;
-				}
-				return return_val;
-			});
-			break;
-		case 1:
-			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-				void *return_val=NULL;
-
-				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int)>(std::bind((_R (_T::*)(int))(fun_obj), (_T *)obj, _1)));
-				}
-				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int)> *)obj;
-				}
-				return return_val;
-			});
-			break;
-		case 2:
-			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-				void *return_val=NULL;
-
-				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int,int)>(std::bind((_R (_T::*)(int,int))(fun_obj), (_T *)obj, _1,_2)));
-				}
-				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int,int)> *)obj;
-				}
-				return return_val;
-			});
-			break;
-		case 3:
-			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-				void *return_val=NULL;
-
-				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int,int,int)>(std::bind((_R (_T::*)(int,int,int))(fun_obj), (_T *)obj, _1,_2,_3)));
-				}
-				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int,int,int)> *)obj;
-				}
-				return return_val;
-			});
-			break;
-		case 4:
-			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-				void *return_val=NULL;
-
-				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int,int,int,int)>(std::bind((_R (_T::*)(int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
-				}
-				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int,int,int,int)> *)obj;
-				}
-				return return_val;
-			});
-
-			break;
-		case 5:
-			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-				void *return_val=NULL;
-
-				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int,int,int,int,int)>(std::bind((_R (_T::*)(int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
-				}
-				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int,int,int,int,int)> *)obj;
-				}
-				return return_val;
-			});
-
-			break;
-		case 6:
-			c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-				void *return_val=NULL;
-
-				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val= (void *)(new std::function<_R (int,int,int,int,int,int)>(std::bind((_R (_T::*)(int,int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
-				}
-				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<int (int,int,int,int,int,int)> *)obj;
-				}
-				return return_val;
-			});
-			break;
-		default:
-			print_error_cr("Max argyments reached!");
-
-		}
-
-
-
-		return c_function_builder;
-	}
 
 
 	/**
@@ -649,8 +464,8 @@ public:
 		}
 
 		// init struct...
-		irs.object_info.symbol_info.ast = NULL;
-		irs.object_info.symbol_info.info_var_scope = NULL;
+		irs.object_info.symbol_info.idxAstNode = -1;
+		irs.object_info.symbol_info.idxInfoScopeVar = -1;
 		irs.object_info.symbol_info.symbol_name=function_name;
 
 
@@ -659,11 +474,11 @@ public:
 		// ignores special type cast C++ member to ptr function
 		// create binding function class
 		if(irs.idx_return_type == getIdxClassVoid()){
-			if((irs.object_info.symbol_info.ref_ptr=((int)c_member_class_function_proxy<_T, void>(irs.m_arg.size(),function_type)))==0){
+			if((irs.object_info.symbol_info.ref_ptr=((int)C_VariableFunctionFactory::getInstance()->c_member_class_function_proxy<_T, void>(irs.m_arg.size(),function_type)))==0){
 				return false;
 			}
 		}else{
-			if((irs.object_info.symbol_info.ref_ptr=((int)c_member_class_function_proxy<_T, int>(irs.m_arg.size(),function_type)))==0){
+			if((irs.object_info.symbol_info.ref_ptr=((int)C_VariableFunctionFactory::getInstance()->c_member_class_function_proxy<_T, int>(irs.m_arg.size(),function_type)))==0){
 				return false;
 			}
 		}
@@ -721,7 +536,7 @@ public:
 
 
 		// init struct...
-		irs.class_info = m_registeredClass[idxRegisterdClass];
+		irs.idxClassInfo = idxRegisterdClass;//m_registeredClass[idxRegisterdClass];
 		irs.ref_ptr=offset;
 		irs.c_type = var_type;
 		//irs.
@@ -803,7 +618,7 @@ private:
 
 	bool searchVarFunctionSymbol(tScriptFunctionInfo *script_info, tInfoAsmOp *iao, int current_idx_function,SCOPE_TYPE scope_type=SCOPE_TYPE::UNKNOWN_SCOPE);
 
-	void buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSymbol *irfs );
+	bool buildInfoScopeVariablesBlock(tInfoRegisteredFunctionSymbol *root_class_irfs );
 	void unloadRecursiveFunctions(tInfoRegisteredFunctionSymbol * info_function);
 
 	bool updateFunctionSymbols(tInfoRegisteredFunctionSymbol * info_function, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);

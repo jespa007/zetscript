@@ -1,4 +1,4 @@
-#include "zg_core.h"
+#include "CZetScript.h"
 
 CSharedPointerManager *CSharedPointerManager::sharedPointerManager=NULL;
 

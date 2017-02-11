@@ -1,5 +1,5 @@
 /*
-bool CZG_ScriptCore::existOperatorSignature(const string & op,const string & result, vector<string> * param){
+bool CZetScript::existOperatorSignature(const string & op,const string & result, vector<string> * param){
 
 
 	if(m_mapContainerOperators.count(op)==1){
@@ -29,7 +29,7 @@ bool CZG_ScriptCore::existOperatorSignature(const string & op,const string & res
 
 
 
-bool CZG_ScriptCore::registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)()){
+bool CZetScript::registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)()){
 
 	if(!(param_type->size()==1 || param_type->size() ==2)){
 		print_error_cr("fatal error. We expected 1 or 2 ops for operator");
@@ -58,7 +58,7 @@ bool CZG_ScriptCore::registerOperatorInternal(const string & _op_name, const str
 
 
 
-CZG_ScriptCore::tInfoObjectOperator * CZG_ScriptCore::getOperatorInfo(const string & op, string * type_op1,  string * type_op2){
+CZetScript::tInfoObjectOperator * CZetScript::getOperatorInfo(const string & op, string * type_op1,  string * type_op2){
 	string *ps1=type_op1;
 	string *ps2=type_op2;
 	int num_operands = 1;
@@ -118,7 +118,7 @@ CZG_ScriptCore::tInfoObjectOperator * CZG_ScriptCore::getOperatorInfo(const stri
 
 
 #if 0
-void CZG_ScriptCore::execute(){
+void CZetScript::execute(){
 
 
 	for(unsigned s = 0; s < statement_op.size(); s++){
@@ -247,7 +247,7 @@ void CZG_ScriptCore::execute(){
 }
 #endif
 
-bool CZG_ScriptCore::insertLoadValueInstruction(const string & v, string & type_ptr){
+bool CZetScript::insertLoadValueInstruction(const string & v, string & type_ptr){
 
 	CNumber *num_obj;
 	CString *str_obj;
@@ -329,7 +329,7 @@ bool CZG_ScriptCore::insertLoadValueInstruction(const string & v, string & type_
 	return true;
 }
 
-bool CZG_ScriptCore::insertMovVarInstruction(CVariable *var, int right){
+bool CZetScript::insertMovVarInstruction(CVariable *var, int right){
 
 	//string op="=";
 	string left_type_ptr = var->getPointerClassStr();
@@ -394,7 +394,7 @@ bool CZG_ScriptCore::insertMovVarInstruction(CVariable *var, int right){
 	return true;
 }
 
-bool CZG_ScriptCore::insertMovVarInstruction(CVariable *var, int right){
+bool CZetScript::insertMovVarInstruction(CVariable *var, int right){
 
 	//string op="=";
 	string left_type_ptr = var->getPointerClassStr();
@@ -471,7 +471,7 @@ bool CZG_ScriptCore::insertMovVarInstruction(CVariable *var, int right){
 
 
 /*
-string CZG_ScriptCore::getTypeAsmResult(int index){
+string CZetScript::getTypeAsmResult(int index){
 
 	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
 	string result="unknow";
@@ -485,7 +485,7 @@ string CZG_ScriptCore::getTypeAsmResult(int index){
 }
 */
 
-bool CZG_ScriptCore::insertOperatorInstruction(const string & op, int left, int right){
+bool CZetScript::insertOperatorInstruction(const string & op, int left, int right){
 
 
 	tInfoStatementOp *ptr_current_statement_op = &statement_op[statement_op.size()-1];
@@ -657,7 +657,7 @@ bool CZG_ScriptCore::insertOperatorInstruction(const string & op, int left, int 
 
 
 /*
-void CZG_ScriptCore::unregisterOperators(){
+void CZetScript::unregisterOperators(){
 
 	for(map<string,vector<tInfoObjectOperator> *>::iterator it=m_mapContainerOperators.begin(); it != m_mapContainerOperators.end(); it++){
 		vector< tInfoObjectOperator > * v= it->second;

@@ -2,6 +2,12 @@
 
 #define MAX_EXPRESSION_LENGTH 8192
 
+#define AST_NODE(idx) CAst::getNodeByIdx(idx)
+#define AST_SCOPE_INFO(idx) CAst::getInstance()->getScopeInfoByIdx(idx)
+#define AST_LINE_VALUE(idx) CAst::getInstance()->getLineValueByIdx(idx)
+#define AST_SYMBOL_VALUE(idx) CAst::getInstance()->getSymbolValueByIdx(idx)
+#define AST_SYMBOL_VALUE_CONST_CHAR(idx) CAst::getInstance()->getSymbolValueConstCharByIdx(idx)
+
 enum GROUP_TYPE{
 	GROUP_0=0, // +,-,||
 	GROUP_1, // *,/,==,>,<,<=,>=
@@ -15,6 +21,7 @@ enum GROUP_TYPE{
 };
 
 
+int insertAstNode(tASTNode * ast_node);
 
 class CScopeInfo;
 class CAst{
@@ -25,12 +32,19 @@ public:
 	static tInfoPunctuator defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
 
-
 	static tInfoKeyword * isKeyword(const char *c);
 
+	static int insertAstNode(tASTNode *ast_node);
+	static string *aux_str;
 
 	static CAst * getInstance();
 	static void destroySingletons();
+	static tASTNode * getNodeByIdx(int idx);
+	static CScopeInfo * getScopeInfoByIdx(int idx);
+	static int getLineValueByIdx(int idx);
+	static const string & getSymbolValueByIdx(int idx);
+	static const char * getSymbolValueConstCharByIdx(int idx);
+
 
 
 	CScopeInfo * getRootScopeInfo();
@@ -52,25 +66,18 @@ public:
 
 
 
+	/**
+	 *
+	 */
+	CAst *clone(CAst *src);
+	CAst * cloneRecursevely(CAst *_ast);
+
+
 private:
 
-	static CAst 		* m_ast;
+	//-----------------------------------------------
+	//
 
-	typedef struct {
-		string filename;
-		unsigned char *data;
-	}tInfoParsedSource;
-
-	vector<tInfoParsedSource> m_parsedSource;
-
-	bool isFilenameAlreadyParsed(const char *filename);
-
-
-	CScopeInfo 	* m_rootScopeInfo;
-	tASTNode 	* m_rootAstNode;
-
-	CAst();
-	~CAst();
 
 	static PASTNode  findAstRecursive(const string & _name_to_find, NODE_TYPE _node_type, KEYWORD_TYPE _keyword_type, PASTNode _node);
 	static PASTNode  findAst(const string & _name_to_find, NODE_TYPE _node_type_to_find, KEYWORD_TYPE _keyword_type_to_find);
@@ -201,6 +208,34 @@ private:
 			tInfoPunctuator **post_operator,
 			bool & is_symbol_trivial
 	);
+
+
+	//-----------------------------------------------
+
+	// main ast class
+	static CAst 		* m_ast;
+	static vector<tASTNode *> * vec_index_ast_node; // ast collection register...
+
+
+
+	typedef struct {
+		string filename;
+		unsigned char *data;
+	}tInfoParsedSource;
+
+
+	vector<tInfoParsedSource> m_parsedSource;
+
+
+	bool isFilenameAlreadyParsed(const char *filename);
+
+
+
+	//CScopeInfo 	* m_rootScopeInfo;
+	tASTNode 	* m_rootAstNode;
+
+	CAst();
+	~CAst();
 
 };
 

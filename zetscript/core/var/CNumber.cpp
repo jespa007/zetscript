@@ -1,4 +1,4 @@
-#include "core/zg_core.h"
+#include "../../CZetScript.h"
 /*
 CNumber * CNumber::Parse(const string & s){
 	char *p;bool ok=true;

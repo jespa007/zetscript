@@ -30,12 +30,12 @@ public:
 		void *object; // created object. undefined by default.
 		void * proxy_ptr; // for proxy functions...
 		tSymbolInfo *super_function; // only for functions ...
-		string value_symbol;
-		tASTNode *ast; // in case there's ast node...
+		string symbol_value;
+		int idxAstNode; // in case there's ast node...
 		tSymbolInfo(){
 			proxy_ptr=NULL;
 			this->object = CScriptVariable::UndefinedSymbol;
-			this->ast = NULL;
+			idxAstNode =-1;
 			super_function=NULL;
 		}
 
@@ -65,11 +65,11 @@ public:
 	int getIdxClass();
 	bool setIdxClass(int idx);
 
-	tSymbolInfo *  addVariableSymbol(const string & value_symbol,tASTNode *ast);
+	tSymbolInfo *  addVariableSymbol(const string & symbol_value,int _idxAstNode);
 	tSymbolInfo * getVariableSymbol(const string & varname);
 	tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 
-	tSymbolInfo * addFunctionSymbol(const string & value_symbol,tASTNode *ast,tInfoRegisteredFunctionSymbol *irv);
+	tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,tInfoRegisteredFunctionSymbol *irv);
 	tSymbolInfo * getFunctionSymbol(const string & funname);
 	int getIdxFunctionSymbolWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature=false);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);

@@ -1,4 +1,4 @@
-#include "core/zg_core.h"
+#include "CZetScript.h"
 
 
 #ifdef _WIN32
@@ -194,7 +194,7 @@ Ret callfunc (std::function<Ret(Arg0, Args...)> func)//, std::vector<std::string
     return callfunc (lambda);//, anyargs);
 }*/
 /*
-CScriptVariable * CZG_ScriptCore::script_call(const string &script_function_name, std::vector<CScriptVariable *> args){
+CScriptVariable * CZetScript::script_call(const string &script_function_name, std::vector<CScriptVariable *> args){
 
 	//tInfoRegisteredFunctionSymbol *irfs = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,function);
 
@@ -295,7 +295,7 @@ int main(int argc, char * argv[]){
 
 
 	CLog::setUseAnsiEscape(true);
-	CZG_ScriptCore *zg_script = CZG_ScriptCore::getInstance();
+	CZetScript *zet_script = CZetScript::getInstance();
 
 	print_info_cr("sizeof(int *):%i sizeof(string *):%i sizeof(int):%i sizeof(tInfoStruct)",sizeof(int *),sizeof(string *),sizeof(int),sizeof(tInfoAsmOp));
 
@@ -320,11 +320,11 @@ int main(int argc, char * argv[]){
 		data_buffer=(char *)buffer->data_buffer;
 	}
 
-	if(zg_script->eval(data_buffer)){
-		zg_script->execute();
+	if(zet_script->eval(data_buffer)){
+		zet_script->execute();
 
 
-		auto f=zg_script->script_call("rec");
+		auto f=zet_script->script_call("rec");
 
 		if(f != NULL){
 			CScriptVariable *r;
@@ -345,7 +345,7 @@ int main(int argc, char * argv[]){
 	}
 
 
-	CZG_ScriptCore::destroy();
+	CZetScript::destroy();
 
 
 

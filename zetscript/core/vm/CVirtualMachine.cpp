@@ -1,4 +1,4 @@
-#include "core/zg_core.h"
+#include "../../CZetScript.h"
 
 //CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
 //vector<CVirtualMachine::CVirtualMachine> CVirtualMachine::ALE;
@@ -67,21 +67,22 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 
 		if((info_function->object_info.symbol_info.properties &  SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
 
-			if(this_object!= NULL && this_object != CZG_ScriptCore::getInstance()->getMainObject()){
+			if(this_object!= NULL && this_object != CZetScript::getInstance()->getMainObject()){
 				fun_ptr = this_object->getFunctionSymbolByIndex(info_function->object_info.symbol_info.index)->proxy_ptr;
 			}
 		}
 
-		return CZG_ScriptCore::call_C_function(fun_ptr,info_function,argv);
+		return CZetScript::call_C_function(fun_ptr,info_function,argv);
 
 	}
 
+	PASTNode ast = AST_NODE(info_function->object_info.symbol_info.idxAstNode);
 
-	int scope_index =  info_function->object_info.symbol_info.ast->scope_info_ptr->getIndex();
+	int scope_index =  ast->idxScopeInfo;
 
-	if(info_function->object_info.symbol_info.ast->keyword_info!=NULL){
-		if(info_function->object_info.symbol_info.ast->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
-			scope_index=info_function->object_info.symbol_info.ast->children[1]->scope_info_ptr->getIndex();
+	if(ast->keyword_info!=NULL){
+		if(ast->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
+			scope_index=ast->children[1]->idxScopeInfo;
 		}
 	}
 
@@ -206,7 +207,7 @@ CScriptVariable * CVirtualMachine::execute(tInfoRegisteredFunctionSymbol *info_f
 }
 
 
-#include "core/zg_core.h"
+
 
 void CVirtualMachine::pushStack(tInfoRegisteredFunctionSymbol *info_function, vector<CScriptVariable *> * argv){
 
@@ -308,7 +309,7 @@ string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
 	   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
 \
 print_error_cr("Error at line %i cannot perform operator \"%s\" %s  \"%s\"",\
-		instruction->ast_node->definedValueline,\
+		AST_LINE_VALUE(instruction->idxAstNode),\
 		var_type1.c_str(),\
 		c,\
 		var_type2.c_str());
@@ -629,7 +630,7 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 	bool push_object=false;
 	bool is_valid_variable = true;
 	//bool function_struct_type = false;
-
+	PASTNode ast = AST_NODE(iao->idxAstNode);//>ast_node->symbol_value)
 
 
 	switch(iao->scope_type){
@@ -649,15 +650,16 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 
 			CScriptVariable * base_var = *((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].ptrObjectRef);
 
-			if((si = base_var->getVariableSymbol(iao->ast_node->value_symbol))==NULL){
-				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not symbol \"%s\"",iao->ast_node->definedValueline,asm_op->at(iao->index_op2)->ast_node->value_symbol.c_str(),base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str());
+
+			if((si = base_var->getVariableSymbol(ast->symbol_value))==NULL){
+				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not symbol \"%s\"",ast->line_value,AST_SYMBOL_VALUE_CONST_CHAR(asm_op->at(iao->index_op2)->idxAstNode),base_var->getClassName().c_str(), ast->symbol_value.c_str());
 				return false;
 			}
 		}
 		else{
 			// get var from object ...
 			if((si = this_object->getVariableSymbolByIndex(iao->index_op2))==NULL){
-				print_error_cr("cannot find symbol \"this.%s\"",iao->ast_node->value_symbol.c_str());
+				print_error_cr("cannot find symbol \"this.%s\"",ast->symbol_value.c_str());
 				return false;
 			}
 		}
@@ -782,6 +784,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 
 	CScriptVariable::tSymbolInfo *si;
 	CScriptVariable ** calling_object = NULL;
+	PASTNode iao_ast = AST_NODE(iao->idxAstNode);//>ast_node->symbol_value)
 
 	//CScriptVariable *var_object = NULL;
 	//tInfoRegisteredFunctionSymbol *info_function = (tInfoRegisteredFunctionSymbol *)(si->object);
@@ -804,12 +807,12 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 
 		}else if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE){
 			if((si = this_object->getFunctionSymbolByIndex(iao->index_op2))==NULL){
-				print_error_cr("cannot find function \"this.%s\"",iao->ast_node->value_symbol.c_str());
+				print_error_cr("cannot find function \"this.%s\"",iao_ast->symbol_value.c_str());
 				return false;
 			}
 		}else{ // super scope ?
 			if((si = this_object->getFunctionSymbolByIndex(iao->index_op2))==NULL){
-				print_error_cr("cannot find function \"super.%s\"",iao->ast_node->value_symbol.c_str());
+				print_error_cr("cannot find function \"super.%s\"",iao_ast->symbol_value.c_str());
 				return false;
 			}
 		}
@@ -820,7 +823,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 
 		break;
 	case SCOPE_TYPE::GLOBAL_SCOPE:
-		vec_global_functions = &CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
+		vec_global_functions = &CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
 
 		if(iao->index_op2 == -1){ // is will be processed after in CALL instruction ...
 			info_function= NULL;
@@ -831,7 +834,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 				info_function =&(*vec_global_functions)[iao->index_op2];
 			}
 			else{
-				print_error_cr("cannot find symbol global \"%s\"",iao->ast_node->value_symbol.c_str());
+				print_error_cr("cannot find symbol global \"%s\"",iao_ast->symbol_value.c_str());
 				return false;
 
 			}
@@ -1085,7 +1088,7 @@ bool CVirtualMachine::performInstruction(
 				return false;
 			}
 
-			//sprintf(print_aux_load_value,"CONST(%s)",value_symbol.c_str());
+			//sprintf(print_aux_load_value,"CONST(%s)",symbol_value.c_str());
 			break;
 		case LOAD_TYPE::LOAD_TYPE_VARIABLE:
 
@@ -1230,7 +1233,7 @@ bool CVirtualMachine::performInstruction(
 				}
 
 			}else{
-					print_error_cr("Line %i:Expected operands 1 as number or integer!",instruction->ast_node->definedValueline);
+					print_error_cr("Line %i:Expected operands 1 as number or integer!",AST_LINE_VALUE(instruction->idxAstNode));
 					return false;
 			}
 			break;
@@ -1353,12 +1356,12 @@ bool CVirtualMachine::performInstruction(
 
 				if(IS_INT(ptrResultInstructionOp2)){
 					if(LOAD_INT_OP(ptrResultInstructionOp2) == 0) {
-						print_error_cr("Divide by 0 at line %i.",instruction->ast_node->definedValueline);
+						print_error_cr("Divide by 0 at line %i.",AST_LINE_VALUE(instruction->idxAstNode));
 						return false;
 					}
 				}else{
 					if(LOAD_NUMBER_OP(ptrResultInstructionOp2) == 0) {
-						print_error_cr("Divide by 0 at line %i.",instruction->ast_node->definedValueline);
+						print_error_cr("Divide by 0 at line %i.",AST_LINE_VALUE(instruction->idxAstNode));
 						return false;
 					}
 				}
@@ -1384,12 +1387,12 @@ bool CVirtualMachine::performInstruction(
 
 				if(IS_INT(ptrResultInstructionOp2)){
 					if(LOAD_INT_OP(ptrResultInstructionOp2) == 0) {
-						print_error_cr("Divide by 0 at line %i.",instruction->ast_node->definedValueline);
+						print_error_cr("Divide by 0 at line %i.",AST_LINE_VALUE(instruction->idxAstNode));
 						return false;
 					}
 				}else{
 					if(LOAD_NUMBER_OP(ptrResultInstructionOp2) == 0) {
-						print_error_cr("Divide by 0 at line %i.",instruction->ast_node->definedValueline);
+						print_error_cr("Divide by 0 at line %i.",AST_LINE_VALUE(instruction->idxAstNode));
 						return false;
 					}
 				}
@@ -1512,7 +1515,7 @@ bool CVirtualMachine::performInstruction(
 				CScriptVariable **script_var=NULL;
 
 				if(iao->index_op2 == -1 || iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
-					vector<tInfoRegisteredFunctionSymbol> *vec_global_functions=&CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
+					vector<tInfoRegisteredFunctionSymbol> *vec_global_functions=&CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction;
 					bool all_check=true;
 					bool found = false;
 					CScriptVariable * base_var=NULL;
@@ -1532,9 +1535,9 @@ bool CVirtualMachine::performInstruction(
 						for(int h=0; h < 2 && !found; h++){ // h=0 -> match signature, 1=doesn't match signature
 							int idx_function;
 							if(h==0){
-								idx_function=base_var->getIdxFunctionSymbolWithMatchArgs(iao->ast_node->value_symbol,argv, true);
+								idx_function=base_var->getIdxFunctionSymbolWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),argv, true);
 							}else{
-								idx_function=base_var->getIdxFunctionSymbolWithMatchArgs(iao->ast_node->value_symbol,argv, false);
+								idx_function=base_var->getIdxFunctionSymbolWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),argv, false);
 							}
 
 							if(idx_function != -1){
@@ -1549,7 +1552,7 @@ bool CVirtualMachine::performInstruction(
 						}
 
 						if(aux_function_info == NULL){
-							print_error_cr("cannot find function \"%s\" at line %i",iao->ast_node->value_symbol.c_str(),iao->ast_node->definedValueline);
+							print_error_cr("cannot find function \"%s\" at line %i",AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),AST_LINE_VALUE(iao->idxAstNode));
 							return false;
 						}
 
@@ -1565,7 +1568,7 @@ bool CVirtualMachine::performInstruction(
 
 								tInfoRegisteredFunctionSymbol *irfs = &vec_global_functions->at(i);
 
-								if(irfs->object_info.symbol_info.symbol_name == iao->ast_node->value_symbol && (irfs->m_arg.size() == argv->size())){
+								if(irfs->object_info.symbol_info.symbol_name == AST_SYMBOL_VALUE(iao->idxAstNode) && (irfs->m_arg.size() == argv->size())){
 
 
 									all_check=true;
@@ -1594,7 +1597,7 @@ bool CVirtualMachine::performInstruction(
 						if(found){
 							aux_function_info = &(*vec_global_functions)[iao->index_op2];
 						}else{
-							print_error_cr("Cannot find right C symbol for \"%s\"",iao->ast_node->value_symbol.c_str());
+							print_error_cr("Cannot find right C symbol for \"%s\"",AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
 						}
 						break;
 					}
@@ -1608,7 +1611,7 @@ bool CVirtualMachine::performInstruction(
 				if(ptrResultInstructionOp1->type == INS_TYPE_VAR && ((CScriptVariable *)ptrResultInstructionOp1->stkResultObject)->getIdxClass() == CScriptClassFactory::getInstance()->getIdxClassFunctor()){
 					aux_function_info = (tInfoRegisteredFunctionSymbol *)(((CFunctor *)ptrResultInstructionOp1->stkResultObject)->m_value);
 				}else {
-					print_error_cr("object \"%s\" is not function at line %i",instruction->ast_node->value_symbol.c_str(), instruction->ast_node->definedValueline);
+					print_error_cr("object \"%s\" is not function at line %i",AST_SYMBOL_VALUE_CONST_CHAR(instruction->idxAstNode), AST_LINE_VALUE(instruction->idxAstNode));
 					return false;
 				}
 			}
@@ -1674,7 +1677,7 @@ bool CVirtualMachine::performInstruction(
 
 					// check indexes ...
 					if(v_index < 0 || v_index >= (int)(vec->m_objVector.size())){
-						print_error_cr("Line %i. Index vector out of bounds!",instruction->ast_node->definedValueline);
+						print_error_cr("Line %i. Index vector out of bounds!",AST_LINE_VALUE(instruction->idxAstNode));
 						return false;
 					}
 
@@ -1689,10 +1692,10 @@ bool CVirtualMachine::performInstruction(
 			}
 			else{
 				print_error_cr("Line %i: Variable \"%s\" is not type vector",
-						instruction->ast_node->definedValueline,
-						asm_op->at(instruction->index_op1)->ast_node->value_symbol.c_str(),
-						instruction->ast_node->value_symbol.c_str()
-						//base_var->getClassName().c_str(), iao->ast_node->value_symbol.c_str()
+						AST_LINE_VALUE(instruction->idxAstNode),
+						AST_SYMBOL_VALUE_CONST_CHAR(asm_op->at(instruction->index_op1)->idxAstNode),
+						AST_SYMBOL_VALUE_CONST_CHAR(instruction->idxAstNode)
+						//base_var->getClassName().c_str(), iao->ast_node->symbol_value.c_str()
 						);
 				return false;
 			}
@@ -1816,9 +1819,9 @@ bool CVirtualMachine::performInstruction(
 							//if(ptrResultInstructionOp2->type ==VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR){
 
 								if(ptrResultInstructionOp2->type == VALUE_INSTRUCTION_TYPE::INS_TYPE_FUNCTION){
-									si=var1->addFunctionSymbol(*variable_name, instruction->ast_node,(tInfoRegisteredFunctionSymbol *)ptrResultInstructionOp2->stkResultObject);
+									si=var1->addFunctionSymbol(*variable_name, instruction->idxAstNode,(tInfoRegisteredFunctionSymbol *)ptrResultInstructionOp2->stkResultObject);
 								}else{
-									si=var1->addVariableSymbol(*variable_name, instruction->ast_node);
+									si=var1->addVariableSymbol(*variable_name, instruction->idxAstNode);
 
 									if(!assignVarFromResultInstruction((CScriptVariable **)&si->object ,ptrResultInstructionOp2))
 											return false;
@@ -1826,7 +1829,7 @@ bool CVirtualMachine::performInstruction(
 								}
 
 						}else{
-							print_error_cr("Struct: Expected operant 1 as struct at line %i",instruction->ast_node->definedValueline);
+							print_error_cr("Struct: Expected operant 1 as struct at line %i",AST_LINE_VALUE(instruction->idxAstNode));
 							return false;
 						}
 
@@ -1837,7 +1840,7 @@ bool CVirtualMachine::performInstruction(
 
 				}
 				else{
-					print_error_cr("Struct: Expected symbol at line %i",instruction->ast_node->definedValueline);
+					print_error_cr("Struct: Expected symbol at line %i",AST_LINE_VALUE(instruction->idxAstNode));
 					return false;
 				}
 			}else{

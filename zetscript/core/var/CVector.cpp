@@ -1,4 +1,4 @@
-#include "core/zg_core.h"
+#include "../../CZetScript.h"
 
 
 CVector::CVector(){

@@ -123,14 +123,18 @@ set( ZG_BASE_LIB_SRCS
     
     
 	#-- System --
-	system/zg_system.cpp
+	system/zs_system.cpp
 	
     #-- Utils --
-	utils/zg_utils.cpp
+	utils/zs_utils.cpp
 
 	
 	#-- Script Core --
-	core/zg_core.cpp	
+	core/zs_core.cpp	
+
+	#-- Script Core --
+	CZetScript.cpp	
+
 	
 )
 

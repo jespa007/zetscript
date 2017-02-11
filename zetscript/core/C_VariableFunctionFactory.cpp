@@ -1,4 +1,4 @@
-#include "zg_core.h"
+#include "CZetScript.h"
 
 C_VariableFunctionFactory * C_VariableFunctionFactory::m_instance=NULL;
 

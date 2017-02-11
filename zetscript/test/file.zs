@@ -56,6 +56,10 @@ function gg(jj){
 	print("hola:"+jj.tt);
 }
 
+operator gg::+(){
+	
+}
+
 class MyClass2{
 	var tt;
 	

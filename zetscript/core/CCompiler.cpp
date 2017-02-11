@@ -1,4 +1,4 @@
-#include "zg_core.h"
+#include "CZetScript.h"
 
 #ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
 //#define __VERBOSE_MESSAGE__
@@ -48,22 +48,22 @@ int CCompiler::addLocalVarSymbol(const string & var_name,tASTNode *ast){
 
 
 	if(!localVarSymbolExists(var_name,ast)){
-		tInfoScopeVar *irv=ast->scope_info_ptr->getInfoRegisteredSymbol(var_name,true);
+		int idxInfoScopeVar=SCOPE_INFO_NODE(ast->idxScopeInfo)->getInfoRegisteredSymbol(var_name,true);
 
-		if(irv != NULL){
+		if(idxInfoScopeVar != -1){
 
 			tInfoRegisteredVariableSymbol info_symbol;
 
-			info_symbol.ast = ast;
+			info_symbol.idxAstNode = ast->idxAstNode;
 			info_symbol.symbol_name = var_name;
-			info_symbol.info_var_scope = irv;
+			info_symbol.idxInfoScopeVar = idxInfoScopeVar;//info_var_scope = irv;
 
 
 			this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
 
 			return this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.size()-1;
 		}else{
-			print_error_cr("variable symbol \"%s\" at line %i not defined!",var_name.c_str(), ast->definedValueline);
+			print_error_cr("variable symbol \"%s\" at line %i not defined!",var_name.c_str(), ast->line_value);
 		}
 
 	}else{
@@ -81,12 +81,12 @@ bool CCompiler::localVarSymbolExists(const string & name,tASTNode *ast){
 
 int  CCompiler::getIdxLocalVarSymbol(const string & name,tASTNode *ast, bool print_msg){
 
-	string  var_name = ast->value_symbol;
-	tInfoScopeVar *irv=ast->scope_info_ptr->getInfoRegisteredSymbol(var_name,print_msg);
+	string  var_name = ast->symbol_value;
+	int idxInfoScopeVar=SCOPE_INFO_NODE(ast->idxScopeInfo)->getInfoRegisteredSymbol(var_name,print_msg);
 
-	if(irv != NULL){
+	if(idxInfoScopeVar != -1){
 		for(unsigned i = 0; i < this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.size(); i++){
-			if(this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable[i].info_var_scope == irv ){
+			if(this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable[i].idxInfoScopeVar == idxInfoScopeVar ){
 				return i;
 			}
 		}
@@ -99,14 +99,14 @@ int CCompiler::addLocalFunctionSymbol(const string & name,tASTNode *ast){
 	string  function_name = name;
 
 	if(!functionSymbolExists(name,ast)){
-		tInfoScopeVar *irv=ast->scope_info_ptr->getInfoRegisteredSymbol(function_name,true);
+		tInfoScopeVar *irv=INFO_SCOPE_VAR_NODE(SCOPE_INFO_NODE(ast->idxScopeInfo)->getInfoRegisteredSymbol(function_name,true));
 
 		if(irv != NULL){
 
 			tInfoRegisteredFunctionSymbol info_symbol;
 
-			info_symbol.object_info.symbol_info.ast = irv->ast;
-			info_symbol.object_info.symbol_info.info_var_scope = irv;
+			info_symbol.object_info.symbol_info.idxAstNode = irv->idxAstNode;
+			info_symbol.object_info.symbol_info.idxInfoScopeVar = irv->idxInfoScopeVar;
 			info_symbol.object_info.symbol_info.symbol_name = name;
 
 			this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction.push_back(info_symbol);
@@ -115,7 +115,7 @@ int CCompiler::addLocalFunctionSymbol(const string & name,tASTNode *ast){
 		}
 
 	}else{
-		print_error_cr("function symbol \"%s\" defined at line %i not defined!",function_name.c_str(), ast->definedValueline);
+		print_error_cr("function symbol \"%s\" defined at line %i not defined!",function_name.c_str(), ast->line_value);
 	}
 	return -1;
 }
@@ -126,12 +126,14 @@ bool CCompiler::functionSymbolExists(const string & name, tASTNode *ast){
 	return getIdxFunctionSymbol(name,ast,scope_type,false) != -1;
 }
 
-int  CCompiler::getIdxFunctionSymbol(const string & name,tASTNode *ast, SCOPE_TYPE & scope_type, bool print_msg){
-	tInfoScopeVar *irv=ast->scope_info_ptr->getInfoRegisteredSymbol(name);
+int  CCompiler::getIdxFunctionSymbol(const string & name,tASTNode *param_ast, SCOPE_TYPE & scope_type, bool print_msg){
+	tInfoScopeVar *irv=INFO_SCOPE_VAR_NODE(SCOPE_INFO_NODE(param_ast->idxScopeInfo)->getInfoRegisteredSymbol(name));
 	scope_type = SCOPE_TYPE::LOCAL_SCOPE;
 	if(irv != NULL){
 
-		if((irv->ast != NULL) && (irv->ast->scope_info_ptr == ast->scope_info_ptr)){
+		PASTNode ast = AST_NODE(irv->idxAstNode);
+
+		if((ast != NULL) && (param_ast->idxScopeInfo == ast->idxScopeInfo)){
 			for(unsigned i = 0; i < this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction.size(); i++){
 				if(this->m_currentFunctionInfo->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == name ){
 					return i;
@@ -142,8 +144,8 @@ int  CCompiler::getIdxFunctionSymbol(const string & name,tASTNode *ast, SCOPE_TY
 
 			scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
 
-			for(unsigned i = 0; i < CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction.size(); i++){
-				if(CZG_ScriptCore::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == name ){
+			for(unsigned i = 0; i < CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction.size(); i++){
+				if(CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == name ){
 					return i;
 				}
 			}
@@ -354,19 +356,19 @@ void CCompiler::insertStringConstantValueInstruction(PASTNode _node, const strin
 	asm_op->variable_type=type;
 	asm_op->index_op1=LOAD_TYPE_CONSTANT;
 	asm_op->index_op2=(int)obj;
-	asm_op->ast_node=_node;
+	asm_op->idxAstNode=_node->idxAstNode;
 	asm_op->operator_type=ASM_OPERATOR::LOAD;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
 bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
-	string v = _node->value_symbol;
+	string v = _node->symbol_value;
 
 	// ignore node this ...
-	if(_node->value_symbol == "this"){
+	if(_node->symbol_value == "this"){
 
-		print_error_cr("\"%s\" cannot be processed here!",_node->value_symbol.c_str());
+		print_error_cr("\"%s\" cannot be processed here!",_node->symbol_value.c_str());
 		return false;
 	}
 
@@ -459,20 +461,20 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 			scope_type = SCOPE_TYPE::ACCESS_SCOPE;
 
 
-			if((_node->parent != NULL &&_node->parent->children[0]->value_symbol == "this") //|| // single access ?
+			if((_node->parent != NULL &&_node->parent->children[0]->symbol_value == "this") //|| // single access ?
 			){
 				scope_type=SCOPE_TYPE::THIS_SCOPE;
 			}
 		}
 		else if(
-			(_node->value_symbol == "super")
+			(_node->symbol_value == "super")
 			){
 				scope_type=SCOPE_TYPE::SUPER_SCOPE;
 			}else{
 
 				// if not function then is var or arg node ?
 				// first we find the list of argments
-				if((idx_local_var = getIdxArgument(_node->value_symbol))!=-1){
+				if((idx_local_var = getIdxArgument(_node->symbol_value))!=-1){
 					load_type=LOAD_TYPE_ARGUMENT;
 				}
 				else{ // ... if not argument finally, we deduce that the value is a local symbol...
@@ -484,7 +486,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 
 	if((pre_post_operator_type !=ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR && pre_post_operator_type !=ASM_PRE_POST_OPERATORS::PRE_NEG) &&
 		is_constant){
-		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->definedValueline,_node->pre_post_operator_info->str);
+		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->line_value,_node->pre_post_operator_info->str);
 		return false;
 	}
 
@@ -494,7 +496,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScopeInfo * _lc){
 	asm_op->index_op1=load_type;
 	asm_op->index_op2=(int)obj;
 	asm_op->scope_type = scope_type;
-	asm_op->ast_node=_node;
+	asm_op->idxAstNode=_node->idxAstNode;
 	asm_op->pre_post_operator_type=pre_post_operator_type;
 
 	asm_op->operator_type=ASM_OPERATOR::LOAD;
@@ -512,8 +514,8 @@ bool CCompiler::insertMovVarInstruction(PASTNode _node,int left_index, int right
 	if(left_asm_op->variable_type != INS_TYPE_VAR){
 		int line = -1;
 
-		if(left_asm_op->ast_node!=NULL)
-			line=left_asm_op->ast_node->definedValueline;
+		if(left_asm_op->idxAstNode!=-1)
+			line=AST_LINE_VALUE(left_asm_op->idxAstNode);
 		print_error_cr("line %i. left operand must be l-value for '=' operator",line);
 		return false;
 	}
@@ -521,7 +523,7 @@ bool CCompiler::insertMovVarInstruction(PASTNode _node,int left_index, int right
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = left_index;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 =  right_index;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 	//asm_op->symbol_name="";
 	asm_op->operator_type=ASM_OPERATOR::MOV;
 
@@ -577,7 +579,7 @@ void CCompiler::insert_CreateArrayObject_Instruction(PASTNode _node){
 
 	asm_op->operator_type=ASM_OPERATOR::VEC;
 	asm_op->variable_type =INS_TYPE_VAR;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
@@ -587,7 +589,7 @@ void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instruc
 	asm_op->index_op1 = vec_object;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 = index_instrucction;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::VGET;
-	asm_op->ast_node = _ast;
+	asm_op->idxAstNode = _ast->idxAstNode;
 	asm_op->variable_type = INS_TYPE_VAR;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
@@ -596,7 +598,7 @@ void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instruc
 void CCompiler::insert_ClearArgumentStack_Instruction(PASTNode _node){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 	asm_op->operator_type=ASM_OPERATOR::CLR;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
@@ -605,7 +607,7 @@ void CCompiler::insert_ClearArgumentStack_Instruction(PASTNode _node){
 void CCompiler::insert_PushArgument_Instruction(PASTNode _node){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 	asm_op->index_op1 = getCurrentInstructionIndex();//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::PUSH;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -615,14 +617,14 @@ void CCompiler::insert_ClearArgumentStack_And_PushFirstArgument_Instructions(PAS
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->operator_type=ASM_OPERATOR::CLR;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 	// push one less instruction to get the value
 	asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = getCurrentInstructionIndex()-1;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::PUSH;
-	asm_op->ast_node=_node;
+	asm_op->idxAstNode=_node->idxAstNode;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
@@ -633,7 +635,7 @@ void CCompiler::insert_CallFunction_Instruction(PASTNode _node,int  index_call,i
 	asm_op->index_op1 = index_call;//&((*m_currentListStatements)[dest_statment]);
 	asm_op->index_op2 = index_object;//&((*m_currentListStatements)[dest_statment]);
 
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 	asm_op->operator_type=ASM_OPERATOR::CALL;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -670,7 +672,7 @@ void CCompiler::insertRet(PASTNode _node,int index){
 	}
 
 	asm_op->operator_type=ASM_OPERATOR::RET;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
@@ -679,7 +681,7 @@ void CCompiler::insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_v
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1=ref_vec_object_index;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 	asm_op->index_op2=index_instruciont_to_push;
 	if(index_instruciont_to_push == -1){
 		asm_op->index_op2=CCompiler::getCurrentInstructionIndex();
@@ -698,7 +700,7 @@ bool CCompiler::insert_NewObject_Instruction(PASTNode _node, const string & clas
 		return false;
 	}
 	asm_op->operator_type=ASM_OPERATOR::NEW;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return true;
@@ -710,7 +712,7 @@ bool CCompiler::insertObjectMemberAccessFrom(PASTNode _node, int ref_node_index)
 	asm_op->index_op1 = ref_node_index;
 	asm_op->index_op2 = -1; // index from object cached node ?
 	asm_op->operator_type=ASM_OPERATOR::OBJECT_ACCESS;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return true;
@@ -723,7 +725,7 @@ void CCompiler::insertPopScopeInstruction(PASTNode _node,int scope_idx){
 	asm_op->index_op1 = scope_idx;
 	asm_op->index_op2 = -1; // index from object cached node ?
 	asm_op->operator_type=ASM_OPERATOR::POP_SCOPE;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -736,7 +738,7 @@ void CCompiler::insert_DeclStruct_Instruction(PASTNode _node){
 	asm_op->index_op1 = -1;
 	asm_op->index_op2 = -1; // index from object cached node ?
 	asm_op->operator_type=ASM_OPERATOR::DECL_STRUCT;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
@@ -747,7 +749,7 @@ void CCompiler::insert_PushAttribute_Instruction(PASTNode _node,int ref_object,i
 	asm_op->index_op1 = ref_object; // struct ref
 	asm_op->index_op2 = ref_result_expression; // ref result expression
 	asm_op->operator_type=ASM_OPERATOR::PUSH_ATTR;
-	asm_op->ast_node = _node;
+	asm_op->idxAstNode = _node->idxAstNode;
 	//asm_op->aux_name = attr_name;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -841,7 +843,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 			iao->operator_type = ASM_OPERATOR::ADD;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
-			iao->ast_node=_node;
+			iao->idxAstNode=_node->idxAstNode;
 
 			ptr_current_statement_op->asm_op.push_back(iao);
 
@@ -853,14 +855,14 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 			iao = new tInfoAsmOp();
 			iao->operator_type = ASM_OPERATOR::NEG;
 			iao->index_op1 = op_index_right;
-			iao->ast_node=_node;
+			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
 			iao = new tInfoAsmOp();
 			iao->operator_type = ASM_OPERATOR::ADD;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right+1;
-			iao->ast_node=_node;
+			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
 			op_index_right+=2;
@@ -872,7 +874,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 			iao->operator_type = ASM_OPERATOR::MUL;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
-			iao->ast_node=_node;
+			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
 			op_index_right+=1;
@@ -884,7 +886,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 			iao->operator_type = ASM_OPERATOR::DIV;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
-			iao->ast_node=_node;
+			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
 			op_index_right+=1;
@@ -896,7 +898,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 			iao->operator_type = ASM_OPERATOR::MOD;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
-			iao->ast_node=_node;
+			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
 			op_index_right+=1;
@@ -922,7 +924,7 @@ bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, 
 		iao->index_op1 = op_index_left;
 		iao->index_op2 = op_index_right;
 
-		iao->ast_node=_node;
+		iao->idxAstNode=_node->idxAstNode;
 		ptr_current_statement_op->asm_op.push_back(iao);
 		return true;
 	}
@@ -999,7 +1001,7 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScopeInfo *_lc)
 			return -1;
 		}
 	}else{
-		if(_node->children[0]->value_symbol != "--"){ // starts with symbol ...
+		if(_node->children[0]->symbol_value != "--"){ // starts with symbol ...
 			if(!insertLoadValueInstruction(_node->children[0],  _lc)){
 				return -1;
 			}
@@ -1091,12 +1093,12 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScopeInfo *_lc)
 	int idx=0;
 
 	// 1. insert load reference created object ...
-	if(functionSymbolExists(_node->value_symbol, _node)){
-			print_error_cr("Function \"%s\" already defined !",_node->value_symbol.c_str());
+	if(functionSymbolExists(_node->symbol_value, _node)){
+			print_error_cr("Function \"%s\" already defined !",_node->symbol_value.c_str());
 			return false;
 	}
 
-	if((idx=addLocalFunctionSymbol(_node->value_symbol,_node)) == -1){
+	if((idx=addLocalFunctionSymbol(_node->symbol_value,_node)) == -1){
 		return false;
 	}
 
@@ -1117,7 +1119,7 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScopeInfo *_lc)
 	if(_node->children[1]->node_type != ARGS_PASS_NODE){print_error_cr("Function has no index nodes "); return -1;}
 
 	// load function ...
-	if(_node->children[0]->value_symbol != "--"){ // starts with symbol ...
+	if(_node->children[0]->symbol_value != "--"){ // starts with symbol ...
 		if(!insertLoadValueInstruction(_node->children[0],_lc)) {
 			return -1;
 		}
@@ -1177,7 +1179,7 @@ int CCompiler::gacExpression_StructAttribute(PASTNode _node, CScopeInfo *_lc, in
 
 
 	// 2nd insert strign constant ...
-	insertStringConstantValueInstruction(_node,_node->value_symbol);
+	insertStringConstantValueInstruction(_node,_node->symbol_value);
 
 
 	if(!(
@@ -1223,7 +1225,7 @@ bool CCompiler::isThisScope(PASTNode _node){
 
 	return ((_node->node_type == PUNCTUATOR_NODE) &&
 			   //(_node->parent != NULL && _node->parent->node_type != PUNCTUATOR_NODE) &&
-			   (_node->children.size()==2 && _node->children[0]->value_symbol=="this")
+			   (_node->children.size()==2 && _node->children[0]->symbol_value=="this")
 			   );
 }
 
@@ -1234,7 +1236,7 @@ bool CCompiler::isSuperScope(PASTNode _node){
 
 	return ((_node->node_type == PUNCTUATOR_NODE) &&
 			   //(_node->parent != NULL && _node->parent->node_type != PUNCTUATOR_NODE) &&
-			   (_node->children.size()==2 && _node->children[0]->value_symbol=="super")
+			   (_node->children.size()==2 && _node->children[0]->symbol_value=="super")
 			   );
 }
 
@@ -1340,7 +1342,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 	}else{
 
 		if(_node->operator_info == NULL){
-			print_error_cr("Malformed expression at line %i",_node->definedValueline);
+			print_error_cr("Malformed expression at line %i",_node->line_value);
 			return -1;
 		}
 
@@ -1355,7 +1357,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 				return t1;
 
 			}else{
-				print_error_cr("line %i: Put parenthesis on the inner ternary conditional",_node->definedValueline);
+				print_error_cr("line %i: Put parenthesis on the inner ternary conditional",_node->line_value);
 				return -1;
 			}
 
@@ -1394,20 +1396,20 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScopeInfo *_lc, int & in
 
 					// particular case if operator is =
 					if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left,right)){
-						print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
+						print_error_cr("%s at line %i",error_str.c_str(),_node->line_value);
 						return -1;
 					}
 				}
 
 			}else if(right!=-1){ // one op..
 				if(!insertOperatorInstruction(_node->operator_info,_node,  error_str,right)){
-					print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
+					print_error_cr("%s at line %i",error_str.c_str(),_node->line_value);
 					return -1;
 				}
 
 			}else if(left!=-1){ // one op..
 				if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left)){
-					print_error_cr("%s at line %i",error_str.c_str(),_node->definedValueline);
+					print_error_cr("%s at line %i",error_str.c_str(),_node->line_value);
 					return -1;
 				}
 			}else{ // ERROR
@@ -1432,7 +1434,7 @@ int findConstructorIdxNode(PASTNode _node ){
 		if(_node->children[i]->node_type == NODE_TYPE::KEYWORD_NODE){
 			if(_node->children[i]->keyword_info != NULL){
 				if(_node->children[i]->keyword_info->id==KEYWORD_TYPE::FUNCTION_KEYWORD){
-					if(_node->children[i]->value_symbol == _node->value_symbol){
+					if(_node->children[i]->symbol_value == _node->symbol_value){
 						return i;
 					}
 				}
@@ -1459,7 +1461,7 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoR
 		}
 	}
 
-	PASTNode node_class = current_class->metadata_info.object_info.symbol_info.ast;
+	PASTNode node_class = AST_NODE(current_class->metadata_info.object_info.symbol_info.idxAstNode);
 	string current_class_name = current_class->metadata_info.object_info.symbol_info.symbol_name;
 
 	// register all vars...
@@ -1467,7 +1469,7 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoR
 		for(unsigned j = 0; j < node_class->children[0]->children[i]->children.size(); j++){ // foreach element declared within ','
 			if(CScriptClassFactory::getInstance()->registerVariableSymbol(
 					class_name,
-					node_class->children[0]->children[i]->children[j]->value_symbol,
+					node_class->children[0]->children[i]->children[j]->symbol_value,
 					node_class->children[0]->children[i]->children[j]
 				) == NULL){
 				return false;
@@ -1479,22 +1481,22 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoR
 	for(unsigned i = 0; i < node_class->children[1]->children.size(); i++){
 		tInfoRegisteredFunctionSymbol *irfs;
 		PASTNode node_fun = node_class->children[1]->children[i];
-		string value_symbol = node_fun->value_symbol;
+		string symbol_value = node_fun->symbol_value;
 
-		if(current_class_name == value_symbol){ // constructor symbol...
-			value_symbol = class_name; // rename to be base constructor later ...
+		if(current_class_name == symbol_value){ // constructor symbol...
+			symbol_value = class_name; // rename to be base constructor later ...
 		}
 
 		if((irfs=CScriptClassFactory::getInstance()->registerFunctionSymbol(
 				class_name,
-				value_symbol,
+				symbol_value,
 				node_fun
 		)) == NULL){
 			return false;
 		}
 
 		// compile function (within scope class)...
-		if(!gacFunction(node_fun, node_class->scope_info_ptr,irfs)){
+		if(!gacFunction(node_fun, SCOPE_INFO_NODE(node_class->idxScopeInfo),irfs)){
 			return false;
 		}
 	}
@@ -1509,7 +1511,7 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 
 	string base_class= "";
 	if(_node->children.size()==3){
-		base_class=	_node->children[2]->value_symbol;
+		base_class=	_node->children[2]->symbol_value;
 	}
 
 	tInfoRegisteredClass *irc;
@@ -1518,18 +1520,18 @@ bool CCompiler::gacClass(PASTNode _node, CScopeInfo * _lc){
 	if(_node->children.size()!=2 && _node->children.size()!=3) {print_error_cr("node CLASS has not valid number of nodes");return false;}
 
 	if(_node->children.size() == 3){
-		_node->children[2]->value_symbol = base_class;
+		_node->children[2]->symbol_value = base_class;
 	}
 
 	// verify class is not already registered...
-	if((irc=CScriptClassFactory::getInstance()->registerScriptClass(_node->value_symbol,base_class,_node)) == NULL){
+	if((irc=CScriptClassFactory::getInstance()->registerScriptClass(_node->symbol_value,base_class,_node)) == NULL){
 		return false;
 	}
 	// we push class symbol ref as function, then all registered symbols will take account with this scope...
 	pushFunction(_node,&irc->metadata_info);
 
 	// register all symbols ...
-	if(!doRegisterVariableSymbolsClass(_node->value_symbol,irc)){
+	if(!doRegisterVariableSymbolsClass(_node->symbol_value,irc)){
 		return false;
 	}
 	// pop class ref so we go back to main scope...
@@ -1581,7 +1583,7 @@ int CCompiler::gacNew(PASTNode _node, CScopeInfo * _lc){
 
 	// create new statment ...
 	// 1. create object instruction ...
-	if(!insert_NewObject_Instruction(_node,_node->value_symbol)) // goto end  ...
+	if(!insert_NewObject_Instruction(_node,_node->symbol_value)) // goto end  ...
 	{
 		return -1;
 	}
@@ -1637,11 +1639,11 @@ bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 	tInfoAsmOp *asm_op;
 	// 1. compile var init ...
 	if(_node->children[0]->children.size()>0){
-		if(!ast2asm_Recursive(_node->children[0],_node->scope_info_ptr)){ return false;}
+		if(!ast2asm_Recursive(_node->children[0],SCOPE_INFO_NODE(_node->idxScopeInfo))){ return false;}
 	}
 
 	// 2. compile conditional
-	if(!ast2asm_Recursive(_node->children[1],_node->scope_info_ptr)){ return false;}
+	if(!ast2asm_Recursive(_node->children[1],SCOPE_INFO_NODE(_node->idxScopeInfo))){ return false;}
 	// get current index statment in order to jmp from end body for.
 	int index_statment_conditional_for_= getCurrentStatmentIndex();
 
@@ -1649,11 +1651,11 @@ bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 	asm_op = insert_JNT_Instruction();
 
 	// 3. compile body
-	if(!gacBody(_node->children[3],_node->children[3]->scope_info_ptr)){ return false;}
+	if(!gacBody(_node->children[3],SCOPE_INFO_NODE(_node->children[3]->idxScopeInfo))){ return false;}
 
 	// 4. compile post oper
 	if(_node->children[2]->children.size()>0 && _node->children[2]->children[0] != NULL){
-		if(!ast2asm_Recursive(_node->children[2],_node->scope_info_ptr)){ return false;}
+		if(!ast2asm_Recursive(_node->children[2],SCOPE_INFO_NODE(_node->idxScopeInfo))){ return false;}
 	}
 
 	// 5. jmp to the conditional index ...
@@ -1661,7 +1663,7 @@ bool CCompiler::gacFor(PASTNode _node, CScopeInfo * _lc){
 
 	// 6. insert pop scope...
 	newStatment();
-	int index=CScopeInfo::getScopeIndex(_node->scope_info_ptr);
+	int index=_node->idxScopeInfo;
 	if(index != -1){
 			insertPopScopeInstruction(_node,index);
 	}
@@ -1734,7 +1736,7 @@ bool CCompiler::gacFunction(PASTNode _node, CScopeInfo * _lc, tInfoRegisteredFun
 	// 2. Processing args ...
 
 	for(unsigned i = 0; i < _node->children[0]->children.size(); i++){
-		irfs->m_arg.push_back(_node->children[0]->children[i]->value_symbol);
+		irfs->m_arg.push_back(_node->children[0]->children[i]->symbol_value);
 	}
 	// 2. Compiles the function ...
 	return compile(_node->children[1], irfs);
@@ -1830,7 +1832,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScopeInfo * _lc){
 
 	string error_str;
 	string detected_type_str;
-	CScopeInfo *_scope = this->m_currentFunctionInfo->object_info.symbol_info.ast->scope_info_ptr->getCurrentScopePointer();
+	CScopeInfo *_scope = AST_SCOPE_INFO(this->m_currentFunctionInfo->object_info.symbol_info.idxAstNode)->getCurrentScopePointer();
 
 	// create new statment ...
 	CCompiler::getInstance()->newStatment();
@@ -1955,12 +1957,12 @@ bool CCompiler::gacVar(PASTNode _node, CScopeInfo * _lc){
 
 	for(unsigned i = 0; i < _node->children.size(); i++){ // for all vars ...
 
-		if(localVarSymbolExists(_node->children[i]->value_symbol, _node)){
-			print_error_cr("Variable \"%s\" already defined !",_node->value_symbol.c_str());
+		if(localVarSymbolExists(_node->children[i]->symbol_value, _node)){
+			print_error_cr("Variable \"%s\" already defined !",_node->symbol_value.c_str());
 			return false;
 		}
 
-		if((local_variable_idx=addLocalVarSymbol(_node->children[i]->value_symbol,_node->children[i])) == -1){
+		if((local_variable_idx=addLocalVarSymbol(_node->children[i]->symbol_value,_node->children[i])) == -1){
 			return false;
 		}
 
@@ -2004,12 +2006,12 @@ bool CCompiler::gacKeyword(PASTNode _node, CScopeInfo * _lc){
 		break;
 	case KEYWORD_TYPE::FUNCTION_KEYWORD: // don't compile function. It will compiled later, after main body
 
-		if(functionSymbolExists(_node->value_symbol, _node)){
-				print_error_cr("Function \"%s\" already defined !",_node->value_symbol.c_str());
+		if(functionSymbolExists(_node->symbol_value, _node)){
+				print_error_cr("Function \"%s\" already defined !",_node->symbol_value.c_str());
 				return false;
 		}
 
-		if((idx=addLocalFunctionSymbol(_node->value_symbol,_node)) == -1){
+		if((idx=addLocalFunctionSymbol(_node->symbol_value,_node)) == -1){
 			return false;
 		}
 
@@ -2045,7 +2047,7 @@ bool CCompiler::gacBody(PASTNode _node, CScopeInfo * _lc){
 		newStatment();
 	}
 
-	int index=CScopeInfo::getScopeIndex(_node->scope_info_ptr);
+	int index=_node->idxScopeInfo;//_node->scope_info_ptr);
 
 	if(index != -1){
 		insertPopScopeInstruction(_node,index);
@@ -2100,7 +2102,7 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScopeInfo *_lc){
 				break;
 			case BODY_NODE:
 				print_info_cr("BODY_NODE");
-				return gacBody(_node, _node->scope_info_ptr); // we pass scope node
+				return gacBody(_node, SCOPE_INFO_NODE(_node->idxScopeInfo)); // we pass scope node
 				break;
 			case POST_FOR_NODE:
 			case CONDITIONAL_NODE:
@@ -2138,7 +2140,7 @@ void CCompiler::pushFunction(PASTNode _node,tInfoRegisteredFunctionSymbol *sf){
 
 	this->m_currentFunctionInfo = sf;
 	this->m_currentListStatements = &sf->object_info.statment_op;
-	this->m_treescope = _node->scope_info_ptr;
+	this->m_treescope = SCOPE_INFO_NODE(_node->idxScopeInfo);
 }
 
 void CCompiler::popFunction(){
@@ -2149,7 +2151,7 @@ void CCompiler::popFunction(){
 
 	if(m_currentFunctionInfo != NULL){
 		this->m_currentListStatements = &m_currentFunctionInfo->object_info.statment_op;
-		this->m_treescope = m_currentFunctionInfo->object_info.symbol_info.ast->scope_info_ptr;
+		this->m_treescope = AST_SCOPE_INFO(m_currentFunctionInfo->object_info.symbol_info.idxAstNode);
 	}
 }
 

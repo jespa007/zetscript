@@ -3,19 +3,7 @@
 class CScriptVariable;
 class CScopeInfo;
 
-#include "system/zg_system.h"
-#include "utils/zg_utils.h"
-
-
-
-#include "ScriptDefinesStructs.h"
-#include "CSharedPointerManager.h"
-#include "var/zg_variable.h"
-#include "ast/ast.h"
-#include "ast/CScopeInfo.h"
-#include "CCompiler.h"
-#include "CScriptClassFactory.h"
-#include "vm/CVirtualMachine.h"
+#include "core/zs_core.h"
 
 
 //#include "CScriptVariable.h"
@@ -31,7 +19,7 @@ class CScopeInfo;
 
 
 
-class CZG_ScriptCore{
+class CZetScript{
 
 
 	// calling C function with differnt parameters...
@@ -61,15 +49,15 @@ class CZG_ScriptCore{
 
 
 
-	static CZG_ScriptCore * m_instance;
+	static CZetScript * m_instance;
 
 	//tInfoRegisteredFunctionSymbol m_structInfoMain;
 
 	bool init();
-	CZG_ScriptCore();
+	CZetScript();
 
 
-	~CZG_ScriptCore();
+	~CZetScript();
 
 	//map<string,vector<tInfoObjectOperator> *> m_mapContainerOperators;
 	//bool existOperatorSignature(const string & op,const string & result, vector<string> * param);
@@ -77,7 +65,7 @@ class CZG_ScriptCore{
 
 public:
 
-	static CZG_ScriptCore * getInstance();
+	static CZetScript * getInstance();
 	static CAst       * m_ast;
 
 	tInfoRegisteredFunctionSymbol *getMainStructInfo(){return m_mainFunctionInfo;}

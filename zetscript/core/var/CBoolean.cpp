@@ -1,4 +1,4 @@
-#include "core/zg_core.h"
+#include "../../CZetScript.h"
 /*
 CBoolean * CBoolean::Parse(const string & s){
 
