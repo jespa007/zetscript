@@ -1,0 +1,8 @@
+#include "C_VariableFunctionFactory.cpp"
+#include "CSharedPointerManager.cpp"
+#include "var/zg_variable.cpp"
+#include "ast/CScopeInfo.cpp"
+#include "ast/ast.cpp"
+#include "vm/CVirtualMachine.cpp"
+#include "CCompiler.cpp"
+#include "CScriptClassFactory.cpp"
