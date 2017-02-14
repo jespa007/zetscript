@@ -1,7 +1,7 @@
 #pragma once
 
 
-#define NEW_BOOLEAN_VAR (new CBoolean()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassBoolean()),NULL))
+#define NEW_BOOLEAN_VAR (new CBoolean()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassBoolean()),NULL))
 
 class CBoolean: public CScriptVariable{
 	

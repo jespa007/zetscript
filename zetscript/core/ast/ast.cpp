@@ -15,8 +15,8 @@
 #endif
 
 CAst *CAst::m_ast=NULL;
-vector<tASTNode *> * CAst::vec_index_ast_node = NULL;
-string * CAst::aux_str= NULL;//"1234_unknow_1234";
+
+
 
 CAst * CAst::cloneRecursevely(CAst *_ast)
 {
@@ -563,7 +563,7 @@ tInfoPunctuator *CAst::checkPostOperatorPunctuator(const char *s){
 	return 0;
 }
 
-char *CAst::functionArrayAccess_Recursive(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
+char *CAst::functionArrayAccess_Recursive(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux = (char *)str;
 
@@ -576,14 +576,14 @@ char *CAst::functionArrayAccess_Recursive(const char *str, int & m_line, CScopeI
 			 //(*ast_node_to_be_evaluated)->symbol_value = symbol_value; // is array or function ...
 			 (*ast_node_to_be_evaluated)->line_value = m_line;
 			 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
-			 (*ast_node_to_be_evaluated)->idxScopeInfo =scope_info->getIndex();
+			 (*ast_node_to_be_evaluated)->idxScope =scope_info->getIndex();
 		 }
 
 		 if(*aux == '('){
 			 if(ast_node_to_be_evaluated != NULL){
 				 (*ast_node_to_be_evaluated)->node_type  = FUNCTION_REF_NODE;
 				 (*ast_node_to_be_evaluated)->line_value = m_line;
-				 (*ast_node_to_be_evaluated)->idxScopeInfo =scope_info->getIndex();
+				 (*ast_node_to_be_evaluated)->idxScope =scope_info->getIndex();
 			 }
 		 }
 
@@ -691,7 +691,7 @@ char *CAst::functionArrayAccess_Recursive(const char *str, int & m_line, CScopeI
 }
 
 
-char *CAst::functionArrayAccess(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
+char *CAst::functionArrayAccess(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
 
@@ -739,7 +739,7 @@ char *CAst::functionArrayAccess(const char *str, int & m_line, CScopeInfo *scope
 
 }
 
-char * CAst::deduceExpression(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
+char * CAst::deduceExpression(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux = (char *)str;
 	char *end_expression;
@@ -885,7 +885,7 @@ bool CAst::printErrorUnexpectedKeywordOrPunctuator(const char *current_string_pt
 char *CAst::getSymbolValue(
 		const char *current_string_ptr,
 		int & m_line,
-		CScopeInfo *scope_info,
+		CScope *scope_info,
 
 		string & symbol_name,
 		int & m_definedSymbolLine,
@@ -1109,7 +1109,7 @@ bool CAst::isMarkEndExpression(char c){
 }
 
 //-----------------------------------------------------------------------------------------------------------
-char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated, GROUP_TYPE type_group,PASTNode parent ){
+char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScope *scope_info, PASTNode *ast_node_to_be_evaluated, GROUP_TYPE type_group,PASTNode parent ){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux=(char *)s;
 	char *s_effective_start=(char *)s;
@@ -1212,7 +1212,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 					(*ast_node_to_be_evaluated)=new tASTNode;
 					(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
 					(*ast_node_to_be_evaluated)->symbol_value=symbol_value; // assign its value ...
-					(*ast_node_to_be_evaluated)->idxScopeInfo = scope_info->getIndex();
+					(*ast_node_to_be_evaluated)->idxScope = scope_info->getIndex();
 
 				}else{
 					if(deduceExpression(symbol_value.c_str(),m_definedSymbolLine,scope_info, ast_node_to_be_evaluated, parent) == NULL){
@@ -1342,9 +1342,9 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 			(*ast_node_to_be_evaluated)->node_type = PUNCTUATOR_NODE;
 			(*ast_node_to_be_evaluated)->operator_info = operator_group;
 
-			(*ast_node_to_be_evaluated)->idxScopeInfo = -1;
+			(*ast_node_to_be_evaluated)->idxScope = -1;
 			if(scope_info != NULL){
-				(*ast_node_to_be_evaluated)->idxScopeInfo = scope_info->getIndex();
+				(*ast_node_to_be_evaluated)->idxScope = scope_info->getIndex();
 			}
 			(*ast_node_to_be_evaluated)->line_value = m_lineOperator;
 		}
@@ -1352,7 +1352,7 @@ char * CAst::parseExpression_Recursive(const char *s, int & m_line,CScopeInfo *s
 	return aux;
 }
 
-char * CAst::parseExpression(const char *s, int & m_line, CScopeInfo *scope_info, PASTNode * ast_node_to_be_evaluated ){
+char * CAst::parseExpression(const char *s, int & m_line, CScope *scope_info, PASTNode * ast_node_to_be_evaluated ){
 
 	// PRE: s is current string to parse. This function tries to parse an expression like i+1; and generates binary ast.
 	// If this functions finds ';' then the function will generate ast.
@@ -1380,7 +1380,7 @@ char * CAst::parseExpression(const char *s, int & m_line, CScopeInfo *scope_info
 //---------------------------------------------------------------------------------------------------------------
 // PARSE OBJECT FUNCTIONS
 
-char * CAst::parseStruct_Recursive(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseStruct_Recursive(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	string symbol_value;
@@ -1395,9 +1395,9 @@ char * CAst::parseStruct_Recursive(const char *s,int & m_line,  CScopeInfo *scop
 			(*ast_node_to_be_evaluated)=new tASTNode;
 			(*ast_node_to_be_evaluated)->line_value = m_line;
 			(*ast_node_to_be_evaluated)->node_type = STRUCT_NODE;
-			(*ast_node_to_be_evaluated)->idxScopeInfo = -1;
+			(*ast_node_to_be_evaluated)->idxScope = -1;
 			if(scope_info != NULL){
-				(*ast_node_to_be_evaluated)->idxScopeInfo = scope_info->getIndex();
+				(*ast_node_to_be_evaluated)->idxScope = scope_info->getIndex();
 			}
 		}
 
@@ -1488,7 +1488,7 @@ char * CAst::parseStruct_Recursive(const char *s,int & m_line,  CScopeInfo *scop
 }
 
 
-char * CAst::parseStruct(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseStruct(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *end=parseStruct_Recursive(s,m_line,  scope_info, ast_node_to_be_evaluated);
 
@@ -1508,7 +1508,7 @@ char * CAst::parseStruct(const char *s,int & m_line,  CScopeInfo *scope_info, PA
 //---------------------------------------------------------------------------------------------------------------
 // PARSE KEYWORDS
 
-char * CAst::parseNew(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseNew(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	char *end_p;
@@ -1563,7 +1563,7 @@ char * CAst::parseNew(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 	return NULL;
 }
 
-char * CAst::parseDelete(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseDelete(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	char *end_p;
@@ -1601,16 +1601,16 @@ char * CAst::parseDelete(const char *s,int & m_line,  CScopeInfo *scope_info, PA
 	return NULL;
 }
 
-char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseClass(const char *s,int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	char *end_p;
 
-	CScopeInfo *class_scope_info=NULL;
+	CScope *class_scope_info=NULL;
 	//tInfoRegisteredClass *class_info=NULL;
 	int class_line;
 	string class_name;
-	//tInfoRegisteredFunctionSymbol * class_object=NULL;
+	//tScriptFunctionObject * class_object=NULL;
 
 	tInfoKeyword *key_w;
 	PASTNode function_collection_node=NULL,vars_collection_node=NULL,child_node=NULL, base_class_node = NULL;
@@ -1658,7 +1658,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 
 				ext_name=CStringUtils::copyStringFromInterval(aux_p, end_p);
 
-				if(CScriptClassFactory::getInstance()->isClassRegistered(ext_name)){
+				if(CScriptClass::getInstance()->isClassRegistered(ext_name)){
 					print_error_cr("extended class \"%s\" not exist");
 					return NULL;
 				}
@@ -1682,8 +1682,8 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 				(*ast_node_to_be_evaluated)->symbol_value = class_name;
 
-				CScopeInfo *scp = new CScopeInfo(NULL);
-				(*ast_node_to_be_evaluated)->idxScopeInfo =scp->getIndex();// new CScopeInfo(NULL); // scope function without base ...
+				CScope *scp = new CScope(NULL);
+				(*ast_node_to_be_evaluated)->idxScope =scp->getIndex();// new CScope(NULL); // scope function without base ...
 				class_scope_info =scp; //(*ast_node_to_be_evaluated)->scope_info_ptr;
 
 				// create var & functions collection...
@@ -1767,7 +1767,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 	return NULL;
 }
 
-char * CAst::parseArgs(char c1,char c2,const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseArgs(char c1,char c2,const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 
@@ -1842,7 +1842,7 @@ PASTNode  CAst::findAstRecursive(const string & _symbol_name_to_find, NODE_TYPE 
 }
 
 
-char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseFunction(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
@@ -1852,15 +1852,15 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 	PASTNode args_node=NULL, body_node=NULL, arg_node=NULL;
 	string conditional_str;
 	bool error=false;
-	CScopeInfo *_currentScope=NULL;
-	tInfoScopeVar * irv=NULL;
+	CScope *_currentScope=NULL;
+	tScopeVar * irv=NULL;
 	string str_name;
 	string class_member,class_name;
 	PASTNode class_node=NULL;
-	int idxScopeInfo=-1;
+	int idxScope=-1;
 
 	if(scope_info != NULL){
-		idxScopeInfo=scope_info->getIndex();
+		idxScope=scope_info->getIndex();
 	}
 
 
@@ -1897,7 +1897,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 			if(named_function){ // is named function..
 
 				if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error))!=NULL){ // check if particular case extension attribute class
-					idxScopeInfo = class_node->idxScopeInfo; // override scope info
+					idxScope = class_node->idxScope; // override scope info
 					symbol_value = (char *)class_member.c_str();
 				}
 				else{
@@ -1962,7 +1962,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 				if(irv == NULL){
 					return NULL;
 				}
-				ast_node->idxScopeInfo = idxScopeInfo;
+				ast_node->idxScope = idxScope;
 			}
 			// parse function args...
 			if(*aux_p == '('){ // push arguments...
@@ -2075,7 +2075,7 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, 
 	return NULL;
 }
 
-char *  CAst::parseReturn(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char *  CAst::parseReturn(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	tInfoKeyword *key_w;
@@ -2113,7 +2113,7 @@ char *  CAst::parseReturn(const char *s,int & m_line,  CScopeInfo *scope_info, P
 	return NULL;
 }
 
-char * CAst::parseWhile(const char *s,int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseWhile(const char *s,int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
@@ -2190,7 +2190,7 @@ char * CAst::parseWhile(const char *s,int & m_line, CScopeInfo *scope_info, PAST
 	return NULL;
 }
 
-char * CAst::parseIf(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
@@ -2301,7 +2301,7 @@ char * CAst::parseIf(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNo
 	return NULL;
 }
 
-char * CAst::parseFor(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseFor(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
@@ -2309,8 +2309,8 @@ char * CAst::parseFor(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 	bool error=false;
 	PASTNode block_for = NULL,node_for_expression=NULL;
 	string eval_for;
-	//CScopeInfo *_localScope =  scope_info != NULL?scope_info->symbol_info.ast->scope_info_ptr:NULL; // gets scope...
-	CScopeInfo *_currentScope=NULL;
+	//CScope *_localScope =  scope_info != NULL?scope_info->symbol_info.ast->scope_info_ptr:NULL; // gets scope...
+	CScope *_currentScope=NULL;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
@@ -2334,9 +2334,9 @@ char * CAst::parseFor(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 				// save scope pointer ...
 				if(ast_node_to_be_evaluated != NULL){
 					_currentScope =scope_info->pushScope(); // push current scope
-					(*ast_node_to_be_evaluated)->idxScopeInfo = -1;
+					(*ast_node_to_be_evaluated)->idxScope = -1;
 					if(_currentScope!=NULL){
-						(*ast_node_to_be_evaluated)->idxScopeInfo=_currentScope->getIndex();
+						(*ast_node_to_be_evaluated)->idxScope=_currentScope->getIndex();
 					}
 				}
 
@@ -2424,7 +2424,7 @@ char * CAst::parseFor(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 	return NULL;
 }
 
-char * CAst::parseSwitch(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
@@ -2433,11 +2433,11 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScopeInfo *scope_info, PA
 			 	 group_cases=NULL,
 				 case_value_node=NULL,
 				 default_switch_node=NULL;
-	CScopeInfo *m_currentScope;
+	CScope *m_currentScope;
 	tInfoPunctuator * ip;
 	char *value_to_eval;
 	string val;
-	//CScopeInfo *_localScope = scope_info!=NULL?scope_info->symbol_info.ast->scope_info_ptr:NULL; // gets current evaluating scope...
+	//CScope *_localScope = scope_info!=NULL?scope_info->symbol_info.ast->scope_info_ptr:NULL; // gets current evaluating scope...
 	tInfoKeyword *key_w,*key_w2;
 
 	bool error=false;
@@ -2623,7 +2623,7 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScopeInfo *scope_info, PA
 								// save scope pointer ...
 								if(ast_node_to_be_evaluated != NULL){
 									m_currentScope = scope_info->pushScope();
-									switch_node->idxScopeInfo =m_currentScope->getIndex();
+									switch_node->idxScope =m_currentScope->getIndex();
 								}
 
 								// eval block...
@@ -2700,12 +2700,12 @@ char * CAst::parseSwitch(const char *s,int & m_line,  CScopeInfo *scope_info, PA
 	return NULL;
 }
 
-char * CAst::parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseMemberVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
 	char *aux_p = (char *)s;
-	CScopeInfo *_currentScope = NULL;
+	CScope *_currentScope = NULL;
 	tInfoKeyword *key_w;
 	char *start_var,*end_var, *symbol_name;
 	string class_name, class_member;
@@ -2737,9 +2737,9 @@ char * CAst::parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info,
 					PASTNode var_new=new tASTNode;
 					// save symbol in the node ...
 					var_new->symbol_value = class_member;
-					var_new->idxScopeInfo = -1;
+					var_new->idxScope = -1;
 					if(_currentScope != NULL){
-						var_new->idxScopeInfo =_currentScope->getIndex();
+						var_new->idxScope =_currentScope->getIndex();
 					}
 					var_new->line_value = m_line;
 
@@ -2792,9 +2792,9 @@ char * CAst::parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info,
 						PASTNode var_new=new tASTNode;
 						// save symbol in the node ...
 						var_new->symbol_value = symbol_name;
-						var_new->idxScopeInfo = -1;
+						var_new->idxScope = -1;
 						if(_currentScope != NULL){
-							var_new->idxScopeInfo = _currentScope->getIndex();
+							var_new->idxScope = _currentScope->getIndex();
 						}
 						var_new->line_value = m_line;
 						if(!_currentScope->registerSymbol(var_new->symbol_value,var_new)){
@@ -2827,11 +2827,11 @@ char * CAst::parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info,
 	return NULL;
 }
 
-char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CAst::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
-	CScopeInfo *_currentScope = NULL;
+	CScope *_currentScope = NULL;
 	PASTNode var_node;
 	tInfoKeyword *key_w;
 	char *start_var,*end_var, *symbol_name;
@@ -2852,9 +2852,9 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 				(*ast_node_to_be_evaluated) = new tASTNode;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
-				(*ast_node_to_be_evaluated)->idxScopeInfo = -1;
+				(*ast_node_to_be_evaluated)->idxScope = -1;
 				if(_currentScope != NULL){
-					(*ast_node_to_be_evaluated)->idxScopeInfo = _currentScope->getIndex();
+					(*ast_node_to_be_evaluated)->idxScope = _currentScope->getIndex();
 				}
 			}
 			while(*aux_p != ';' && *aux_p != 0 ){ // JE: added multivar feature.
@@ -2878,10 +2878,10 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 						var_node = new tASTNode;
 						// save symbol in the node ...
 						(var_node)->symbol_value = symbol_name;
-						(var_node)->idxScopeInfo = -1;
+						(var_node)->idxScope = -1;
 
 						if(_currentScope != NULL){
-							(var_node)->idxScopeInfo = _currentScope->getIndex();
+							(var_node)->idxScope = _currentScope->getIndex();
 						}
 
 						(var_node)->line_value = m_line;
@@ -2936,12 +2936,12 @@ char * CAst::parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTN
 	return NULL;
 }
 
-char * CAst::parseBlock(const char *s,int & m_line,  CScopeInfo *scope_info, bool & error,PASTNode *ast_node_to_be_evaluated, bool push_scope){
+char * CAst::parseBlock(const char *s,int & m_line,  CScope *scope_info, bool & error,PASTNode *ast_node_to_be_evaluated, bool push_scope){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 
-	//CScopeInfo *_localScope =  scope_info != NULL ? scope_info->symbol_info.ast->scope_info_ptr: NULL;
-	CScopeInfo *currentScope=  NULL;
+	//CScope *_localScope =  scope_info != NULL ? scope_info->symbol_info.ast->scope_info_ptr: NULL;
+	CScope *currentScope=  NULL;
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 	// check for keyword ...
@@ -2961,9 +2961,9 @@ char * CAst::parseBlock(const char *s,int & m_line,  CScopeInfo *scope_info, boo
 			}
 
 			if(ast_node_to_be_evaluated != NULL){
-				(*ast_node_to_be_evaluated)->idxScopeInfo = -1;
+				(*ast_node_to_be_evaluated)->idxScope = -1;
 				if(currentScope != NULL){
-					(*ast_node_to_be_evaluated)->idxScopeInfo = currentScope->getIndex();
+					(*ast_node_to_be_evaluated)->idxScope = currentScope->getIndex();
 				}
 			}
 
@@ -3040,7 +3040,7 @@ char * CAst::isClassMember(const char *s,int & m_line, string & _class_name, str
 	return NULL;
 }
 
-char *CAst::parseKeyWord(const char *s, int & m_line, CScopeInfo *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated){
+char *CAst::parseKeyWord(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p= (char *)s;
@@ -3105,7 +3105,7 @@ char *CAst::parseKeyWord(const char *s, int & m_line, CScopeInfo *scope_info, bo
 	return NULL;
 }
 
-char * CAst::generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scope_info, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks, bool is_main_node){
+char * CAst::generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks, bool is_main_node){
 
 	// PRE: **node must be created and is i/o ast pointer variable where to write changes.
 	tInfoKeyword *keyw=NULL;
@@ -3116,9 +3116,9 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scop
 	if(node_to_be_evaluated!= NULL){
 		if(!is_main_node){
 			*node_to_be_evaluated = new tASTNode;
-			(*node_to_be_evaluated)->idxScopeInfo = -1;
+			(*node_to_be_evaluated)->idxScope = -1;
 			if(scope_info != NULL){ // by default put global scope.
-				(*node_to_be_evaluated)->idxScopeInfo = scope_info->getIndex();
+				(*node_to_be_evaluated)->idxScope = scope_info->getIndex();
 			}
 		}
 
@@ -3162,7 +3162,7 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scop
 
 
 						if(keyw->id == KEYWORD_TYPE::VAR_KEYWORD){
-							if((end_expr=parseMemberVar(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScopeInfo),&children))==NULL){
+							if((end_expr=parseMemberVar(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children))==NULL){
 								return NULL;
 							}
 							// push into var collection ...
@@ -3170,7 +3170,7 @@ char * CAst::generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scop
 
 						}else{
 							startLine = m_line;
-							end_expr=parseFunction(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScopeInfo),&children);
+							end_expr=parseFunction(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children);
 							if(end_expr==NULL){
 								return NULL;
 							}
@@ -3302,7 +3302,7 @@ CAst *  CAst::getInstance(){
 		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
 		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
 		// create main ast management
-		CScopeInfo::createSingletons();
+		CScope::createSingletons();
 		m_ast = new CAst();
 		aux_str= new string();//"1234_unknow_1234";
 		*aux_str="1234_unknow_1234";
@@ -3311,8 +3311,8 @@ CAst *  CAst::getInstance(){
 		// build rootAstNode by default ...
 		m_ast->m_rootAstNode = new tASTNode();
 		m_ast->m_rootAstNode->node_type = BODY_NODE;
-		CScopeInfo * scope = new CScopeInfo(NULL);
-		m_ast->m_rootAstNode->idxScopeInfo = scope->getIndex();
+		CScope * scope = new CScope(NULL);
+		m_ast->m_rootAstNode->idxScope = scope->getIndex();
 
 	}
 
@@ -3324,23 +3324,23 @@ void CAst::destroySingletons(){
 		delete m_ast;
 		delete vec_index_ast_node;
 		delete aux_str;
-		CScopeInfo::destroySingletons();
+		CScope::destroySingletons();
 	}
 	m_ast = NULL;
 }
 
 CAst::CAst(){
-	//m_rootScopeInfo = NULL;
+	//m_rootScope = NULL;
 	m_rootAstNode=NULL;
 
 }
 
 
-/*m_rootScopeInfo = new CScopeInfo(NULL,0);
+/*m_rootScope = new CScope(NULL,0);
 m_rootAstNode = new tASTNode();
 
 m_rootAstNode->node_type = BODY_NODE;
-m_rootAstNode->scope_info_ptr = m_rootScopeInfo;*/
+m_rootAstNode->scope_info_ptr = m_rootScope;*/
 
 CAst::~CAst(){
 	for(unsigned i =0; i < m_parsedSource.size(); i++){
@@ -3349,18 +3349,18 @@ CAst::~CAst(){
 
 	// Destroy scope ...
 	//m_rootAstNode->scope_info_ptr->destroyScopes();
-	//delete m_rootAstNode->scope_info_ptr;//m_rootScopeInfo;
+	//delete m_rootAstNode->scope_info_ptr;//m_rootScope;
 	// End destroy scope ...
 
 	delete m_rootAstNode;
 
-	//m_rootScopeInfo=NULL;
+	//m_rootScope=NULL;
 	m_rootAstNode=NULL;
 
 }
 
-CScopeInfo *  CAst::getRootScopeInfo(){
-	return SCOPE_INFO_NODE(m_rootAstNode->idxScopeInfo);
+CScope *  CAst::getRootScope(){
+	return SCOPE_INFO_NODE(m_rootAstNode->idxScope);
 }
 
 tASTNode   * CAst::getMainAstNode(){
@@ -3371,7 +3371,7 @@ bool CAst::parse(const char   * s){
 	int m_line = 1;
 	bool error=false;
 
-	if(generateAST_Recursive(s, m_line,SCOPE_INFO_NODE(m_rootAstNode->idxScopeInfo),error,&m_rootAstNode, false, true) != NULL){
+	if(generateAST_Recursive(s, m_line,SCOPE_INFO_NODE(m_rootAstNode->idxScope),error,&m_rootAstNode, false, true) != NULL){
 		return true;
 	}
 	return false;
@@ -3386,87 +3386,7 @@ bool CAst::isFilenameAlreadyParsed(const char * filename){
 	return false;
 }
 
-int insertAstNode(tASTNode * ast_node){
 
-
-
-	return CAst::insertAstNode(ast_node);
-}
-
-int CAst::insertAstNode(tASTNode *ast_node){
-
-	vec_index_ast_node->push_back(ast_node);
-	return vec_index_ast_node->size()-1;
-}
-
-tASTNode * CAst::getNodeByIdx(int idx){
-
-	if(idx==-1){
-		return NULL;
-	}
-
-	if(idx < 0 || (unsigned)idx >= vec_index_ast_node->size()){
-		print_error_cr("Ast node out of bound");
-		return NULL;
-	}
-	 return vec_index_ast_node->at(idx);
-}
-
-CScopeInfo * CAst::getScopeInfoByIdx(int idx){
-
-	if(idx==-1){
-		return NULL;
-	}
-
-	if(idx < 0 || (unsigned)idx >= vec_index_ast_node->size()){
-		print_error_cr("Ast node out of bound");
-		return NULL;
-	}
-
-	return SCOPE_INFO_NODE(vec_index_ast_node->at(idx)->idxScopeInfo);
-}
-
-int CAst::getLineValueByIdx(int idx){
-
-	if(idx==-1){
-		return -1;
-	}
-
-	if(idx < 0 || (unsigned)idx >= vec_index_ast_node->size()){
-		print_error_cr("Ast node out of bound");
-		return -1;
-	}
-
-	return vec_index_ast_node->at(idx)->line_value;
-}
-
-const string & CAst::getSymbolValueByIdx(int idx){
-
-	if(idx==-1){
-		return *aux_str;
-	}
-
-	if(idx < 0 || (unsigned)idx >= vec_index_ast_node->size()){
-		print_error_cr("Ast node out of bound");
-		return *aux_str;
-	}
-
-	return vec_index_ast_node->at(idx)->symbol_value;
-}
-
-const char * CAst::getSymbolValueConstCharByIdx(int idx){
-
-	if(idx==-1){
-		return aux_str->c_str();
-	}
-
-	if(idx < 0 || (unsigned)idx >= vec_index_ast_node->size()){
-		print_error_cr("Ast node out of bound");
-		return NULL;
-	}
-
-	return vec_index_ast_node->at(idx)->symbol_value.c_str();
-}
 
 bool CAst::parse_file(const char * filename){
 	if(isFilenameAlreadyParsed(filename)){

@@ -5,6 +5,6 @@ CNull::CNull(){
 
     //m_classStr="undefined";
    // m_pointerClassStr="undefined";
-	this->init(CScriptClassFactory::getInstance()->getRegisteredClassNull(), (void *)this);
+	this->init(CScriptClass::getInstance()->getRegisteredClassNull(), (void *)this);
 
 }

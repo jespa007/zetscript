@@ -2,7 +2,7 @@
 
 
 CVector::CVector(){
-	this->init(CScriptClassFactory::getInstance()->getRegisteredClassVector(), (void *)this);
+	this->init(CScriptClass::getInstance()->getRegisteredClassVector(), (void *)this);
 	_i_size = 0;
 }
 

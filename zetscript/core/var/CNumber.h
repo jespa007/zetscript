@@ -1,7 +1,7 @@
 #pragma once
 
 
-#define NEW_NUMBER_VAR (new CNumber()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassNumber()),NULL))
+#define NEW_NUMBER_VAR (new CNumber()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassNumber()),NULL))
 
 class CNumber: public CScriptVariable{
 

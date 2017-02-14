@@ -1,7 +1,7 @@
 #pragma once
 
 
-#define NEW_INTEGER_VAR (new CInteger()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassInteger()),NULL))
+#define NEW_INTEGER_VAR (new CInteger()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassInteger()),NULL))
 
 class CInteger: public CScriptVariable{
 

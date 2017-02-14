@@ -53,13 +53,13 @@ void CBoolean::setup(){
 
 CBoolean::CBoolean(){
 	m_boolValue = false;
-	this->init(CScriptClassFactory::getInstance()->getRegisteredClassBoolean(), (void *)this);
+	this->init(CScriptClass::getInstance()->getRegisteredClassBoolean(), (void *)this);
 
 }
 
 CBoolean::CBoolean(bool _value){
 	m_boolValue = _value;
-	this->init(CScriptClassFactory::getInstance()->getRegisteredClassBoolean(), (void *)this);
+	this->init(CScriptClass::getInstance()->getRegisteredClassBoolean(), (void *)this);
 }
 /*
 CBoolean::CBoolean(tInfoRegisteredClass *info_registered_class, bool *_value):CScriptVariable(info_registered_class,this){

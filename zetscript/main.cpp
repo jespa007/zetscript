@@ -138,7 +138,7 @@ F script_function(const char *function_name)
 {
 	string return_type;
 	vector<string> params;
-	tInfoRegisteredFunctionSymbol irs;
+	tScriptFunctionObject irs;
 	F function_type;
 	///string str_classPtr = typeid( _T *).name();
 
@@ -196,12 +196,12 @@ Ret callfunc (std::function<Ret(Arg0, Args...)> func)//, std::vector<std::string
 /*
 CScriptVariable * CZetScript::script_call(const string &script_function_name, std::vector<CScriptVariable *> args){
 
-	//tInfoRegisteredFunctionSymbol *irfs = CScriptClassFactory::getInstance()->getRegisteredFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,function);
+	//tScriptFunctionObject *irfs = CScriptClass::getInstance()->getFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,function);
 
 	//if(irfs != NULL){
-		for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.m_registeredFunction.size(); i++){
-			if(m_mainFunctionInfo->object_info.local_symbols.m_registeredFunction[i].object_info.symbol_info.symbol_name == script_function_name){
-				return vm->execute(&m_mainFunctionInfo->object_info.local_symbols.m_registeredFunction[i],  m_mainClass, &args,0);//->excute();
+		for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+			if(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name == script_function_name){
+				return vm->execute(&m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i],  m_mainClass, &args,0);//->excute();
 			}
 		}
 	//}
@@ -269,7 +269,7 @@ int main(int argc, char * argv[]){
 
 	//-2e-10;
 	//int result;
-	/*void *fun_ptr = CScriptClassFactory::new_proxy_function(1,print,true);
+	/*void *fun_ptr = CScriptClass::new_proxy_function(1,print,true);
 
 
 	//fun_ptr=(void *)( new std::function<int (int)>((int (*)(int))print));

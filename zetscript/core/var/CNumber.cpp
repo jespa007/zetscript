@@ -53,7 +53,7 @@ void CNumber::setup(){
 
 CNumber::CNumber(){
 	m_floatValue = 0;
-	this->init(CScriptClassFactory::getInstance()->getRegisteredClassNumber(), (void *)this);
+	this->init(CScriptClass::getInstance()->getRegisteredClassNumber(), (void *)this);
 }
 
 

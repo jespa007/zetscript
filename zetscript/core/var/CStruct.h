@@ -1,5 +1,5 @@
 
-#define NEW_STRUCT (new CStruct()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassStruct())))
+#define NEW_STRUCT (new CStruct()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassStruct())))
 
 class CStruct:public CScriptVariable{
 

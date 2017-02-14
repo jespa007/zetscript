@@ -1,6 +1,6 @@
 #pragma once
 
-#define NEW_NULL_VAR (new CNull()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassNull())))
+#define NEW_NULL_VAR (new CNull()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassNull())))
 
 class CNull:public CScriptVariable{
 

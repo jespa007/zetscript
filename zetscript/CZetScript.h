@@ -1,7 +1,7 @@
 #pragma once
 
 class CScriptVariable;
-class CScopeInfo;
+class CScope;
 
 #include "core/zs_core.h"
 
@@ -24,7 +24,7 @@ class CZetScript{
 
 	// calling C function with differnt parameters...
 	tInfoRegisteredClass *m_mainClassInfo;
-	tInfoRegisteredFunctionSymbol *m_mainFunctionInfo;
+	tScriptFunctionObject *m_mainFunctionInfo;
 
 	CScriptVariable *m_mainClass;
 	CVirtualMachine *vm;
@@ -51,7 +51,7 @@ class CZetScript{
 
 	static CZetScript * m_instance;
 
-	//tInfoRegisteredFunctionSymbol m_structInfoMain;
+	//tScriptFunctionObject m_structInfoMain;
 
 	bool init();
 	CZetScript();
@@ -68,12 +68,23 @@ public:
 	static CZetScript * getInstance();
 	static CAst       * m_ast;
 
-	tInfoRegisteredFunctionSymbol *getMainStructInfo(){return m_mainFunctionInfo;}
-	tScriptFunctionInfo *getMainObjectInfo(){return &m_mainFunctionInfo->object_info;}
+	//---------------
+	// PRINT ASM INFO
+	char print_aux_load_value[1024*8];
+	const char * getStrMovVar(tInfoAsmOp * iao);
+	const char * getStrTypeLoadValue(vector<tInfoStatementOp> * m_listStatements,int current_statment, int current_instruction);
+	void printGeneratedCode_Recursive(tFunctionInfo *fs);
+	void printGeneratedCode(tFunctionInfo *fs);
+	void printGeneratedCodeAllClasses();
+	// PRINT ASM INFO
+	//---------------
+
+	tScriptFunctionObject *getMainStructInfo(){return m_mainFunctionInfo;}
+	tFunctionInfo *getMainObjectInfo(){return &m_mainFunctionInfo->object_info;}
 	CScriptVariable *getMainObject(){return m_mainClass;}
 	//CScriptFunction *getMainFunction(){return m_mainFunction;}
 
-	static CScriptVariable * call_C_function(void *fun_ptr,tInfoRegisteredFunctionSymbol *irfs, vector<CScriptVariable *> * argv);
+	static CScriptVariable * call_C_function(void *fun_ptr,tScriptFunctionObject *irfs, vector<CScriptVariable *> * argv);
 
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 	bool eval(const string & s);

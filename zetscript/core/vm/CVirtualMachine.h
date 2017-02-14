@@ -30,7 +30,7 @@ public:
 
 
 
-	CScriptVariable * execute(tInfoRegisteredFunctionSymbol *info_function, CScriptVariable *this_object, vector<CScriptVariable *> * argv=NULL,int stk=0);
+	CScriptVariable * execute(tScriptFunctionObject *info_function, CScriptVariable *this_object, vector<CScriptVariable *> * argv=NULL,int stk=0);
 
 public:
 
@@ -48,7 +48,7 @@ public:
 	bool performInstruction( tInfoAsmOp * instruction,
 			int & jmp_to_statment,
 			int & jmp_to_instruction,
-			tInfoRegisteredFunctionSymbol *info_function,
+			tScriptFunctionObject *info_function,
 			CScriptVariable *function_object,
 			vector<CScriptVariable *> * argv,
 			vector<tInfoAsmOp *> *asm_op,
@@ -74,7 +74,7 @@ private:
 	/**
 	 * Reserve for N vars. Return base pointer.
 	 */
-	 void pushStack(tInfoRegisteredFunctionSymbol *info_function,vector<CScriptVariable *> * argv);
+	 void pushStack(tScriptFunctionObject *info_function,vector<CScriptVariable *> * argv);
 	 void popStack();
 
 	/*enum{
@@ -117,7 +117,7 @@ private:
 	bool pushBoolean(bool init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 	bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 	bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
-	bool pushFunction(tInfoRegisteredFunctionSymbol * init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	bool pushFunction(tScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 	bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL, int properties=0,bool is_new_var=false);
 
 	bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
@@ -130,18 +130,18 @@ private:
 //	bool loadValue(tInfoAsmOp *iao, int stk);
 	bool loadConstantValue(CCompiler::tInfoConstantValue *info_constant, int n_stk);
 	bool loadVariableValue(tInfoAsmOp *iao,
-			tInfoRegisteredFunctionSymbol *info_function,
+			tScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
 			vector<tInfoAsmOp *> *asm_op,
 			int n_stk);
 
 	bool loadFunctionValue(tInfoAsmOp *iao,
-			tInfoRegisteredFunctionSymbol *info_function,
+			tScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
 			vector<tInfoAsmOp *> *asm_op,
 			int n_stk);
 
-	void popScope(tInfoRegisteredFunctionSymbol *info_function,int index);//, CScriptVariable *ret = NULL);
+	void popScope(tScriptFunctionObject *info_function,int index);//, CScriptVariable *ret = NULL);
 
 
 //private:

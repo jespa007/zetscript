@@ -3,7 +3,7 @@
 
 
 #include "core/ScriptDefinesStructs.h"
-#include "core/ast/CScopeInfo.h"
+#include "core/ast/CScope.h"
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
 
@@ -69,7 +69,7 @@ public:
 	tSymbolInfo * getVariableSymbol(const string & varname);
 	tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 
-	tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,tInfoRegisteredFunctionSymbol *irv);
+	tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,tScriptFunctionObject *irv);
 	tSymbolInfo * getFunctionSymbol(const string & funname);
 	int getIdxFunctionSymbolWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature=false);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
@@ -78,7 +78,7 @@ public:
 
 	vector<tInfoStatementOp> * getCompiledCode(int idx_function);
 
-	tInfoRegisteredFunctionSymbol *getConstructorFunction();
+	tScriptFunctionObject *getConstructorFunction();
 
 	//void addArgSymbol(const string & arg_name);
 

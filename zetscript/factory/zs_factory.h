@@ -9,4 +9,4 @@
 #include "CASTNodeFactory.h"
 #include "CScopeFactory.h"
 #include "CScriptClassFactory.h"
-#include "CScriptFunctionFactory.h"
+#include "CScriptFunctionObjectFactory.h"

@@ -2,11 +2,7 @@
 
 #define MAX_EXPRESSION_LENGTH 8192
 
-#define AST_NODE(idx) CAst::getNodeByIdx(idx)
-#define AST_SCOPE_INFO(idx) CAst::getInstance()->getScopeInfoByIdx(idx)
-#define AST_LINE_VALUE(idx) CAst::getInstance()->getLineValueByIdx(idx)
-#define AST_SYMBOL_VALUE(idx) CAst::getInstance()->getSymbolValueByIdx(idx)
-#define AST_SYMBOL_VALUE_CONST_CHAR(idx) CAst::getInstance()->getSymbolValueConstCharByIdx(idx)
+
 
 enum GROUP_TYPE{
 	GROUP_0=0, // +,-,||
@@ -23,7 +19,7 @@ enum GROUP_TYPE{
 
 int insertAstNode(tASTNode * ast_node);
 
-class CScopeInfo;
+class CScope;
 class CAst{
 public:
 
@@ -40,14 +36,14 @@ public:
 	static CAst * getInstance();
 	static void destroySingletons();
 	static tASTNode * getNodeByIdx(int idx);
-	static CScopeInfo * getScopeInfoByIdx(int idx);
+	static CScope * getScopeByIdx(int idx);
 	static int getLineValueByIdx(int idx);
 	static const string & getSymbolValueByIdx(int idx);
 	static const char * getSymbolValueConstCharByIdx(int idx);
 
 
 
-	CScopeInfo * getRootScopeInfo();
+	CScope * getRootScope();
 	tASTNode   * getMainAstNode();
 
 
@@ -153,45 +149,45 @@ private:
 
 
 	// AST core functions ...
-	static char * generateAST_Recursive(const char *s, int & m_line, CScopeInfo *scope_info, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false, bool is_main_node=false);
-	static char * parseExpression(const char *s, int & m_line, CScopeInfo *scope_info, PASTNode * ast_node_to_be_evaluated=NULL);
-	static char * parseExpression_Recursive(const char *s, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
+	static char * generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false, bool is_main_node=false);
+	static char * parseExpression(const char *s, int & m_line, CScope *scope_info, PASTNode * ast_node_to_be_evaluated=NULL);
+	static char * parseExpression_Recursive(const char *s, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
 
 
-	static char *   functionArrayAccess_Recursive(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent);
-	static char *   functionArrayAccess(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL, PASTNode parent=NULL);
+	static char *   functionArrayAccess_Recursive(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent);
+	static char *   functionArrayAccess(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL, PASTNode parent=NULL);
 	/**
 	 * this functions tries to evaluate expression that was get from getSymbolValue and didn't know as trivial expression like (), function(), etc.
 	 * Must be evaluated later with this function.
 	 */
-	static char *   deduceExpression(const char *str, int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL, PASTNode parent=NULL);
+	static char *   deduceExpression(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL, PASTNode parent=NULL);
 
 
 	// parse block { }
-	static char * parseBlock(const char *s,int & m_line,  CScopeInfo *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated=NULL, bool push_scope=true);
+	static char * parseBlock(const char *s,int & m_line,  CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated=NULL, bool push_scope=true);
 
 
 	// keyword...
 
-	static char * parseKeyWord(const char *s, int & m_start_line, CScopeInfo *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseKeyWord(const char *s, int & m_start_line, CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated=NULL);
 
-	static char * parseStruct_Recursive(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseStruct(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseIf(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseFor(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseWhile(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseSwitch(const char *s,int & m_line, CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseMemberVar(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseReturn(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseFunction(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseNew(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
-	static char * parseDelete(const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseStruct_Recursive(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseStruct(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseFor(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseWhile(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseSwitch(const char *s,int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseMemberVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseReturn(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseFunction(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseNew(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseDelete(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 
-	static char * parseClass(const char *s,int & m_line,  CScopeInfo *scope_info,PASTNode *ast_node_to_be_evaluated);
+	static char * parseClass(const char *s,int & m_line,  CScope *scope_info,PASTNode *ast_node_to_be_evaluated);
 
 
-	static char * parseArgs(char c1, char c2,const char *s,int & m_line,  CScopeInfo *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+	static char * parseArgs(char c1, char c2,const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 	static bool isMarkEndExpression(char c);
 
 	/**
@@ -201,7 +197,7 @@ private:
 	static char * getSymbolValue(
 			const char *current_string_ptr,
 			int & m_line,
-			CScopeInfo *scope_info,
+			CScope *scope_info,
 			string & symbol_name,
 			int & m_definedSymbolLine,
 			tInfoPunctuator *pre_operator,
@@ -214,7 +210,7 @@ private:
 
 	// main ast class
 	static CAst 		* m_ast;
-	static vector<tASTNode *> * vec_index_ast_node; // ast collection register...
+
 
 
 
@@ -231,7 +227,7 @@ private:
 
 
 
-	//CScopeInfo 	* m_rootScopeInfo;
+	//CScope 	* m_rootScope;
 	tASTNode 	* m_rootAstNode;
 
 	CAst();

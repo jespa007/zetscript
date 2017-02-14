@@ -1,6 +1,6 @@
 #pragma once
 
-#define NEW_UNDEFINED_VAR (new CUndefined()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassUndefined())))
+#define NEW_UNDEFINED_VAR (new CUndefined()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassUndefined())))
 
 class CUndefined:public CScriptVariable{
 

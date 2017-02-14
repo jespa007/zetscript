@@ -1,6 +1,6 @@
 #pragma once
 
-#define NEW_STRING_VAR (new CString()) //CScriptClassFactory::getInstance()->getRegisteredClassByIdx(CScriptClassFactory::getInstance()->getIdxClassString()),NULL))
+#define NEW_STRING_VAR (new CString()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassString()),NULL))
 
 class CString: public CScriptVariable{
 	

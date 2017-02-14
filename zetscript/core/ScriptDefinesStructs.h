@@ -3,14 +3,14 @@
 
 class tASTNode;
 typedef tASTNode *PASTNode;
-struct tInfoRegisteredFunctionSymbol;
-class tInfoScopeVar;
+struct tScriptFunctionObject;
+class tScopeVar;
 struct tInfoRegisteredClass;
-struct tScriptFunctionInfo;
+struct tFunctionInfo;
 struct tInfoVarScopeBlock;
 
 int insertAstNode(tASTNode * ast_node);
-int insertInfoScopeVar(tInfoScopeVar * ast_node);
+int insertScopeVar(tScopeVar * ast_node);
 
 
 
@@ -282,7 +282,7 @@ struct tInfoRegisteredVariableSymbol{
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function
 	string 	 symbol_name;
 	int idxClassInfo;//tInfoRegisteredClass		 *class_info;
-	int idxInfoScopeVar;//tInfoScopeVar  				*info_var_scope;
+	//int idxScopeVar;//tScopeVar  				*info_var_scope;
 	int idxAstNode;
 	unsigned int properties; // SYMBOL_INFO_PROPERTIES
 	string c_type; // In case is C, we need to know its type ...
@@ -297,7 +297,7 @@ struct tInfoRegisteredVariableSymbol{
 		//class_info=NULL;
 		//info_var_scope=NULL;
 		idxClassInfo=-1;
-		idxInfoScopeVar=-1;
+		//idxScopeVar=-1;
 		index=-1;
 
 	}
@@ -307,7 +307,7 @@ struct tInfoRegisteredVariableSymbol{
 typedef struct{
 	KEYWORD_TYPE id;
 	const char *str;
-	char * (* parse_fun )(const char *,int & ,  CScopeInfo *, PASTNode *);
+	char * (* parse_fun )(const char *,int & ,  CScope *, PASTNode *);
 }tInfoKeyword;
 
 
@@ -356,7 +356,7 @@ public:
 	tInfoPunctuator *operator_info,*pre_post_operator_info;
 	string 	symbol_value;
 	string type_ptr;
-	int idxScopeInfo; // saves scope info ptr (only for global vars).
+	int idxScope; // saves scope info ptr (only for global vars).
 	string type_class;
 	int line_value;
 	PASTNode parent;
@@ -375,7 +375,7 @@ public:
 		aux_value=NULL;
 
 		idxAstNode = insertAstNode(this);
-		idxScopeInfo = -1;
+		idxScope = -1;
 
 		if(preallocate_num_nodes > 0){
 			for(int i = 0; i < preallocate_num_nodes; i++){
@@ -392,20 +392,13 @@ public:
 
 //-----------------------------
 
-class tInfoScopeVar{
-public:
+struct tScopeVar{
+//public:
 	string symbol_ref;
 	string name; // var name
-	int idxInfoScopeVar;
+	//int idxScopeVar;
 	int idxAstNode; // ast node info.
-
-	tInfoScopeVar(){
-		symbol_ref="";
-		name="";
-		idxInfoScopeVar = insertInfoScopeVar(this);
-	}
 };
-
 
 //-----------------------------
 
@@ -439,7 +432,7 @@ struct tInfoAsmOp{
 	 int index_op1,index_op2; // left and right respectively
 	 int asm_properties;
 	 SCOPE_TYPE scope_type; // in case needed.
-	 tScriptFunctionInfo *script_info;
+	 int idxFunction;
 	 //string aux_name;
 
 	// bool (* isconvertable)(int value);
@@ -453,8 +446,8 @@ struct tInfoAsmOp{
 		scope_type=LOCAL_SCOPE;
 		asm_properties=0;
 		index_op1=index_op2=-1;
-		//script_info=NULL;
-		script_info=NULL;
+		//idxFunction=NULL;
+		idxFunction=-1;
 	}
 
 };
@@ -468,31 +461,36 @@ struct tInfoStatementOp{
 
 struct tLocalSymbolInfo{
 	vector<tInfoRegisteredVariableSymbol> 	m_registeredVariable; // member variables to be copied in every new instance
-	vector<tInfoRegisteredFunctionSymbol> 	m_registeredFunction; // member functions
+	vector<int> 							vec_idx_registeredFunction; // member functions
 };
 
-struct tScriptFunctionInfo{ // script function is shared by class and function ...
+struct tFunctionInfo{ // script function is shared by class and function ...
+
 	tInfoRegisteredVariableSymbol 	symbol_info;
 	tLocalSymbolInfo 		local_symbols;
 
 	// the info asm op for each function. Will be filled at compile time.
 	vector<tInfoStatementOp> statment_op;
 	vector<tInfoVarScopeBlock> info_var_scope; // list var per scope in any function ...
+
+	int idxFunctionSymbol;
+
 };
 
-struct tInfoRegisteredFunctionSymbol{
+struct tScriptFunctionObject{
 
-	tScriptFunctionInfo	object_info;
+	tFunctionInfo	object_info;
 
-	//tInfoRegisteredFunctionSymbol *virtual_function;
+	//tScriptFunctionObject *virtual_function;
 
 	// var for function ...
 	vector<string> m_arg; // tells var arg name or var type name (in of C )
 	int idx_return_type; // -1 not inicialized type return.
 
-	tInfoRegisteredFunctionSymbol(){
+	tScriptFunctionObject(){
 		//virtual_function = NULL;
 		idx_return_type = -1;
+		object_info.idxFunctionSymbol = -1;
 	}
 };
 
@@ -501,9 +499,9 @@ struct tInfoRegisteredFunctionSymbol{
  */
 struct tInfoRegisteredClass{
 
-	tInfoRegisteredFunctionSymbol	metadata_info;
+	tScriptFunctionObject	metadata_info;
 	int idx_function_script_constructor;
-	int class_idx;
+	int idxClass;
 
 	std::function<void *()> 		* 	c_constructor;
 	std::function<void (void *p)> 	*	c_destructor;
@@ -512,7 +510,7 @@ struct tInfoRegisteredClass{
 
 	tInfoRegisteredClass(){
 
-		class_idx=-1;
+		idxClass=-1;
 		classPtrType="";
 		c_destructor = NULL;
 		c_constructor=NULL;
@@ -526,7 +524,7 @@ struct tInfoRegisteredClass{
  */
 struct tInfoVarScopeBlock{
 	vector<int> var_index;
-	int idxScopeInfo;
+	int idxScope;
 };
 
 

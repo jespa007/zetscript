@@ -6,72 +6,70 @@
 class CContext;
 
 
-#define SCOPE_INFO_NODE(idx) CScopeInfo::getScopeInfoByIdx(idx)
-#define INFO_SCOPE_VAR_NODE(idx) CScopeInfo::getInfoScopeVarByIdx(idx)
 
-class CScopeInfo{
+
+class CScope{
 	//int totalScopes;
 public:
 
-	static void createSingletons();
-	static int insertScopeInfoNode(CScopeInfo *scp);
-	static int insertInfoScopeVar(tInfoScopeVar *isv);
-	static CScopeInfo * getScopeInfoByIdx(int index);
-	static tInfoScopeVar * getInfoScopeVarByIdx(int index);
-	static vector<CScopeInfo *> * getVecIndexScopeNode();
-	static void destroySingletons();
+	//static void createSingletons();
+	//static int insertScopeNode(CScope *scp);
+	//static int insertScopeVar(tScopeVar *isv);
+	//static CScope * getScopeByIdx(int index);
+	//static tScopeVar * getScopeVarByIdx(int index);
+	//static vector<CScope *> * getVecIndexScopeNode();
+	//static void destroySingletons();
 
 	//int getScopeIndex();
 
+	int idxScope;
 
 	//---------------------------------
 	// Register functions
 	int getInfoRegisteredSymbol(const string & v, bool print_msg=true);
-	tInfoScopeVar * registerAnonymouseFunction(PASTNode ast);
+	tScopeVar * registerAnonymouseFunction(PASTNode ast);
 	int registerSymbol(const string & var_name, PASTNode ast=NULL);
 	int existRegisteredSymbol(const string & var_name);
-	vector<tInfoScopeVar *> * getRegisteredSymbolsList();
+	vector<tScopeVar *> * getRegisteredSymbolsList();
 
-	CScopeInfo(CScopeInfo * m_parent);//, int _index);
+	CScope(CScope * m_parent);//, int _index);
 
-	CScopeInfo * getBaseScope();
-	CScopeInfo * getParent();
-	CScopeInfo * getCurrentScopePointer();
-	//void         generateScopeList(vector<CScopeInfo *> & vector);
+	CScope * getBaseScope();
+	CScope * getParent();
+	CScope * getCurrentScopePointer();
+	//void         generateScopeList(vector<CScope *> & vector);
 	int          getIndex();
-	vector<CScopeInfo *> * getScopeList();
+	vector<CScope *> * getScopeList();
 
-	vector<tInfoScopeVar *> * getRegisteredVariableList();
+	vector<tScopeVar *> * getRegisteredVariableList();
 
 	//int incTotalScopes();
 
-	CScopeInfo * pushScope();
-	CScopeInfo * popScope();
+	CScope * pushScope();
+	CScope * popScope();
 
-	void destroyScopes();
+	//void destroyScopes();
 
 	void resetScopePointer();
 
-	~CScopeInfo();
+	~CScope();
 
 private:
 
-	void deleteScopeRecursive(CScopeInfo *scope_info);
+	//void deleteScopeRecursive(CScope *scope_info);
 
 	//--------------------------------------------------------------------
 	// Register functions
-	vector<tInfoScopeVar *> m_registeredVariable; // vars registered from base.
-	vector<tInfoScopeVar *> m_registeredAnoymouseFunction; // anonymous functions registered from base.
-	//void generateScopeListRecursive(CScopeInfo * scope, vector<CScopeInfo *> & vector);
-	//static int getScopeIndexRecursive(CScopeInfo * current_scope, CScopeInfo *scope_to_find,int & _index);
+	vector<tScopeVar *> m_registeredVariable; // vars registered from base.
+	vector<tScopeVar *> m_registeredAnoymouseFunction; // anonymous functions registered from base.
+	//void generateScopeListRecursive(CScope * scope, vector<CScope *> & vector);
+	//static int getScopeIndexRecursive(CScope * current_scope, CScope *scope_to_find,int & _index);
 
-	vector<CScopeInfo *> m_scopeList;
-	static vector<CScopeInfo *> 	* vec_index_scope_node;
-	static vector<tInfoScopeVar *> 	* vec_index_registered_var;
+	vector<CScope *> m_scopeList;
 
 	// The a parent scope ...
-	CScopeInfo *m_parentScope, *m_currentScopePointer, *m_baseScope;
-	int m_index;
+	CScope *m_parentScope, *m_currentScopePointer, *m_baseScope;
+	//int m_index;
 
 
 
