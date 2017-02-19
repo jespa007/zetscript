@@ -17,18 +17,37 @@ vector<tScriptFunctionObject *> 	* vec_script_function_object_node=NULL;
 */
 
 
-vector<tScriptFunctionObject *> 	*CScriptFunctionObjectFactory::getCurrentVecInfoRegisteredFunctionFunctionNode(){
+void CScriptFunctionObjectFactory::createSingletons(){
+	if(vec_script_function_object_node==NULL){
+		vec_script_function_object_node = new vector<tScriptFunctionObject *>();
+	}
+}
+
+void CScriptFunctionObjectFactory::destroySingletons(){
+	if(vec_script_function_object_node!=NULL){
+		delete vec_script_function_object_node;
+		vec_script_function_object_node=NULL;
+	}
+}
+
+
+void CScriptFunctionObjectFactory::set(vector<tScriptFunctionObject *> 	& set_vec){
+	*vec_script_function_object_node = set_vec;
+}
+
+vector<tScriptFunctionObject *> 	*CScriptFunctionObjectFactory::getVecScriptFunctionObjectNode(){
 	return vec_script_function_object_node;
 }
 
 
-int 		 CScriptFunctionObjectFactory::newFunctionSymbol(tScriptFunctionObject *script_function){
+tScriptFunctionObject *		 CScriptFunctionObjectFactory::newFunctionSymbol(){
+	tScriptFunctionObject *script_function = new tScriptFunctionObject;
 	vec_script_function_object_node->push_back(script_function);
 	script_function->object_info.idxFunctionSymbol = vec_script_function_object_node->size()-1;
-	return script_function->object_info.idxFunctionSymbol;
+	return script_function;
 }
 
-tScriptFunctionObject 	* CScriptFunctionObjectFactory::getFunctionSymbolNodeByIdx(int idx){
+tScriptFunctionObject 	* CScriptFunctionObjectFactory::getScriptFunctionObject(int idx){
 	if(idx < 0 || (unsigned)idx >= vec_script_function_object_node->size()){
 		print_error_cr("tScriptFunctionObject node out of bound");
 		return NULL;
@@ -37,7 +56,7 @@ tScriptFunctionObject 	* CScriptFunctionObjectFactory::getFunctionSymbolNodeById
 	return vec_script_function_object_node->at(idx);
 }
 
-tFunctionInfo 	* CScriptFunctionObjectFactory::getScriptFunctionNodeByIdx(int idx){
+tFunctionInfo 	* CScriptFunctionObjectFactory::getFunctionInfo(int idx){
 	if(idx < 0 || (unsigned)idx >= vec_script_function_object_node->size()){
 		print_error_cr("tScriptFunctionObject node out of bound");
 		return NULL;

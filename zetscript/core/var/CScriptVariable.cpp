@@ -78,7 +78,7 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 					b->m_boolValue=*((bool *)ptr_variable);
 					si->object =b;
 				}else{
-					tInfoRegisteredClass *info_registered_class = CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+					tInfoRegisteredClass *info_registered_class = GET_CLASS_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 					if(info_registered_class){
 						CScriptVariable *var = new CScriptVariable();
@@ -98,12 +98,12 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 
 	// Register even for primitives (if appropiate)
 	for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-		tScriptFunctionObject * ir_fun  = &ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i];
+		tScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
 		//print_info_cr("=========================================");
 		//print_info_cr("- Create function %s...",irv->object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name.c_str());
 		 si =addFunctionSymbol(
-				ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name,
-				ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.idxAstNode,
+				 ir_fun->object_info.symbol_info.symbol_name,
+				 ir_fun->object_info.symbol_info.idxAstNode,
 				ir_fun
 
 				);
@@ -204,7 +204,7 @@ void CScriptVariable::init(tInfoRegisteredClass *irv, void *_c_object){
 tScriptFunctionObject *CScriptVariable::getConstructorFunction(){
 
 	if(m_infoRegisteredClass->idx_function_script_constructor != -1){
-		return &m_infoRegisteredClass->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[m_infoRegisteredClass->idx_function_script_constructor];
+		return GET_SCRIPT_FUNCTION_OBJECT(m_infoRegisteredClass->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[m_infoRegisteredClass->idx_function_script_constructor]);
 	}
 
 	return NULL;
@@ -215,7 +215,7 @@ int CScriptVariable::getIdxClass(){
 }
 
 bool CScriptVariable::setIdxClass(int idx){
-	tInfoRegisteredClass *_info_registered_class = CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
+	tInfoRegisteredClass *_info_registered_class =  GET_CLASS(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
 
 	if(_info_registered_class == NULL){
 		return false;

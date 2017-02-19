@@ -920,9 +920,13 @@ bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_pt
 	irs.symbol_name = var_name;
 	irs.ref_ptr=(int)var_ptr;
 
-	if((irs.idxScopeVar=CAst::getInstance()->getRootScope()->registerSymbol(var_name))==-1){
+	if(!MAIN_AST_ROOT->registerSymbol(var_name)){
 		return false;
 	}
+
+	//if((irs.idxScopeVar=CAst::getInstance()->getRootScope()->registerSymbol(var_name))==-1){
+	//	return false;
+	//}
 
 
 	irs.index = mainFunctionInfo->object_info.local_symbols.m_registeredVariable.size();
@@ -940,17 +944,18 @@ bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_pt
 tInfoRegisteredVariableSymbol * CScriptClass::registerVariableSymbol(const string & class_name,const string & var_name,PASTNode  ast){
 
 	//tInfoRegisteredClass *rc = getRegisteredClass(class_name);
-	int idxClass =getIdxRegisteredClass(class_name);
+	//int idxClass
+	tInfoRegisteredClass *rc = GET_CLASS_BY_NAME(class_name);// getIdxRegisteredClass(class_name);
 
 
-	if(idxClass != -1){
+	if(rc != NULL){//idxClass != -1){
 
 
-		tInfoRegisteredClass *rc = getRegisteredClassByIdx(idxClass);
+		//tInfoRegisteredClass *rc = getRegisteredClassByIdx(idxClass);
 		tFunctionInfo *object_info=&rc->metadata_info.object_info;
 
 		tInfoRegisteredVariableSymbol info_var;
-		info_var.idxClassInfo = idxClass;
+		info_var.idxClassInfo = rc->idxClass;
 		info_var.idxAstNode = ast->idxAstNode;
 		info_var.symbol_name =var_name;
 		info_var.index = object_info->local_symbols.m_registeredVariable.size();
@@ -958,7 +963,7 @@ tInfoRegisteredVariableSymbol * CScriptClass::registerVariableSymbol(const strin
 
 		return &object_info->local_symbols.m_registeredVariable[object_info->local_symbols.m_registeredVariable.size()-1];
 	}else{
-		print_error_cr("object_info null!");
+		print_error_cr("class \"%s\" not exist!",class_name.c_str());
 		return NULL;
 	}
 
@@ -967,7 +972,7 @@ tInfoRegisteredVariableSymbol * CScriptClass::registerVariableSymbol(const strin
 
 tInfoRegisteredVariableSymbol *  CScriptClass::getRegisteredVariableSymbol(const string & class_name,const string & function_name){
 
-	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
+	tInfoRegisteredClass *rc = GET_CLASS_BY_NAME(class_name);
 
 	if(rc != NULL){
 
@@ -1018,7 +1023,8 @@ tFunctionInfo *  CScriptClass::getSuperClass(tInfoRegisteredClass *irc, const st
 	}
 
 	for(unsigned i = 0; i < irc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-		if(irc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name == fun_name){
+		tScriptFunctionObject *sfo = GET_SCRIPT_FUNCTION_OBJECT(irc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
+		if(sfo->object_info.symbol_info.symbol_name == fun_name){
 			return &irc->metadata_info.object_info;
 		}
 	}
@@ -1036,24 +1042,25 @@ tFunctionInfo *  CScriptClass::getSuperClass(tInfoRegisteredClass *irc, const st
 
 tScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & class_name, const string & fun_name, PASTNode  ast){
 
-	int idxClass =getIdxRegisteredClass(class_name);
+	//int idxClass =getIdxRegisteredClass(class_name);
+	tInfoRegisteredClass *rc = GET_CLASS_BY_NAME(class_name);
+
+	//if(idxClass != -1){
+	if(rc != NULL){
 
 
-	if(idxClass != -1){
-
-
-		tInfoRegisteredClass *rc = getRegisteredClassByIdx(idxClass);
+		//tInfoRegisteredClass *rc = getRegisteredClassByIdx(idxClass);
 
 		tFunctionInfo *object_info=&rc->metadata_info.object_info;
 
-		tScriptFunctionObject irs;
+		tScriptFunctionObject *irs = CScriptFunctionObjectFactory::newFunctionSymbol();
 
-		irs.object_info.symbol_info.idxClassInfo = idxClass;
-		irs.object_info.symbol_info.symbol_name = fun_name;
+		irs->object_info.symbol_info.idxClassInfo = rc->idxClass;
+		irs->object_info.symbol_info.symbol_name = fun_name;
 
-		irs.object_info.symbol_info.idxAstNode = -1;
+		irs->object_info.symbol_info.idxAstNode = -1;
 		if(ast != NULL){
-			irs.object_info.symbol_info.idxAstNode = ast->idxAstNode;
+			irs->object_info.symbol_info.idxAstNode = ast->idxAstNode;
 		}
 
 
@@ -1062,10 +1069,11 @@ tScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & clas
 		}
 
 
-		irs.object_info.symbol_info.index = object_info->local_symbols.vec_idx_registeredFunction.size();
-		object_info->local_symbols.vec_idx_registeredFunction.push_back(irs);
+		irs->object_info.symbol_info.index = object_info->local_symbols.vec_idx_registeredFunction.size();
+		object_info->local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxFunctionSymbol);
 
-		return &object_info->local_symbols.vec_idx_registeredFunction[object_info->local_symbols.vec_idx_registeredFunction.size()-1];
+		return irs;
+		//return &object_info->local_symbols.vec_idx_registeredFunction[object_info->local_symbols.vec_idx_registeredFunction.size()-1];
 	}
 
 	return NULL;

@@ -7,6 +7,12 @@ CAst *CZetScript::m_ast = NULL;
 CZetScript * CZetScript::getInstance(){
 	if(m_instance==NULL){
 		m_instance = new CZetScript();
+
+		CASTNodeFactory::createSingletons();
+		CScopeFactory::createSingletons();
+		CScriptClassFactory::createSingletons();
+		CScriptFunctionObjectFactory::createSingletons();
+
 		if(!m_instance->init()){
 			exit(-1);
 		}
@@ -21,14 +27,17 @@ void CZetScript::destroy(){
 		delete m_instance;
 	}
 
+	CASTNodeFactory::destroySingletons();
+	CScopeFactory::destroySingletons();
+	CScriptClassFactory::destroySingletons();
+	CScriptFunctionObjectFactory::destroySingletons();
+
 	CScriptVariable::destroySingletons();
-	CScriptClass::destroySingletons();
+	//CScriptClass::destroySingletons();
 	CCompiler::destroySingletons();
-	CAst::destroySingletons();
+	//CAst::destroySingletons();
 	CSharedPointerManager::destroySingletons();
 	C_VariableFunctionFactory::destroySingletons();
-
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -241,7 +250,7 @@ void CZetScript::destroy(){
 
  			printf("-------------------------------------------------------\n");
  			printf("Code for function \"%s\"\n",symbol_ref);
- 			printGeneratedCode_Recursive(SCRIPT_FUNCTION_NODE(m_vf->at(j)));
+ 			printGeneratedCode_Recursive(GET_FUNCTION_INFO(m_vf->at(j)));
  		}
  	}
  }
@@ -256,7 +265,7 @@ void CZetScript::destroy(){
 
 	 // for all classes print code...
 	 for(unsigned i = 0; i < registeredClass->size(); i++){
-		 printGeneratedCode(SCRIPT_FUNCTION_NODE(registeredClass->at(i)->metadata_info.object_info.idxFunctionSymbol));
+		 printGeneratedCode(GET_FUNCTION_INFO(registeredClass->at(i)->metadata_info.object_info.idxFunctionSymbol));
 	 }
 
  }
@@ -500,7 +509,7 @@ std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * CZetScr
 
 	//if(irfs != NULL){
 		for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-			if(FUNCTION_SYMBOL_NODE(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == script_function_name){
+			if(GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == script_function_name){
 				return new std::function<CScriptVariable * (std::vector<CScriptVariable *> args)>([&,i](std::vector<CScriptVariable *> args){
 						return vm->execute(&m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i],  m_mainClass, &args,0);//->excute();
 				});

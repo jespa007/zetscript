@@ -26,10 +26,10 @@ public:
 
 	//---------------------------------
 	// Register functions
-	int getInfoRegisteredSymbol(const string & v, bool print_msg=true);
+	//int getInfoRegisteredSymbol(const string & v, bool print_msg=true);
 	tScopeVar * registerAnonymouseFunction(PASTNode ast);
-	int registerSymbol(const string & var_name, PASTNode ast=NULL);
-	int existRegisteredSymbol(const string & var_name);
+	bool registerSymbol(const string & var_name, PASTNode ast=NULL);
+	bool existRegisteredSymbol(const string & var_name);
 	vector<tScopeVar *> * getRegisteredSymbolsList();
 
 	CScope(CScope * m_parent);//, int _index);
@@ -38,7 +38,7 @@ public:
 	CScope * getParent();
 	CScope * getCurrentScopePointer();
 	//void         generateScopeList(vector<CScope *> & vector);
-	int          getIndex();
+	//int          getIndex();
 	vector<CScope *> * getScopeList();
 
 	vector<tScopeVar *> * getRegisteredVariableList();
@@ -60,8 +60,8 @@ private:
 
 	//--------------------------------------------------------------------
 	// Register functions
-	vector<tScopeVar *> m_registeredVariable; // vars registered from base.
-	vector<tScopeVar *> m_registeredAnoymouseFunction; // anonymous functions registered from base.
+	vector<tScopeVar> m_registeredVariable; // vars registered from base.
+	vector<tScopeVar> m_registeredAnoymouseFunction; // anonymous functions registered from base.
 	//void generateScopeListRecursive(CScope * scope, vector<CScope *> & vector);
 	//static int getScopeIndexRecursive(CScope * current_scope, CScope *scope_to_find,int & _index);
 

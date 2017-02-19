@@ -1682,7 +1682,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScope *scope_info, PASTNode
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 				(*ast_node_to_be_evaluated)->symbol_value = class_name;
 
-				CScope *scp = new CScope(NULL);
+				CScope *scp = CScopeFactory::newScope(NULL);// new CScope(NULL);
 				(*ast_node_to_be_evaluated)->idxScope =scp->getIndex();// new CScope(NULL); // scope function without base ...
 				class_scope_info =scp; //(*ast_node_to_be_evaluated)->scope_info_ptr;
 
@@ -1947,10 +1947,17 @@ char * CAst::parseFunction(const char *s,int & m_line,  CScope *scope_info, PAST
 				// create object function ...
 				if(named_function){
 
-					irv = INFO_SCOPE_VAR_NODE(scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated)));
+					if(!scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated))){
+						return NULL;
+					}
 
-					ast_node=AST_NODE(irv->idxAstNode);
-					ast_node->symbol_value = symbol_value;
+					if((*ast_node_to_be_evaluated) != NULL){
+						(*ast_node_to_be_evaluated)->symbol_value=symbol_value;
+					}
+					//irv = INFO_SCOPE_VAR_NODE(scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated)));
+
+					//ast_node=AST_NODE(irv->idxAstNode);
+					//ast_node->symbol_value = symbol_value;
 				}
 				else{
 					irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
@@ -3302,16 +3309,15 @@ CAst *  CAst::getInstance(){
 		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
 		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
 		// create main ast management
-		CScope::createSingletons();
 		m_ast = new CAst();
 		aux_str= new string();//"1234_unknow_1234";
 		*aux_str="1234_unknow_1234";
-		vec_index_ast_node = new vector<tASTNode *>();
+		//vec_index_ast_node = new vector<tASTNode *>();
 
 		// build rootAstNode by default ...
 		m_ast->m_rootAstNode = new tASTNode();
 		m_ast->m_rootAstNode->node_type = BODY_NODE;
-		CScope * scope = new CScope(NULL);
+		CScope * scope = CScopeFactory::newScope(NULL); //new CScope(NULL);
 		m_ast->m_rootAstNode->idxScope = scope->getIndex();
 
 	}
@@ -3322,9 +3328,10 @@ CAst *  CAst::getInstance(){
 void CAst::destroySingletons(){
 	if(m_ast != NULL){
 		delete m_ast;
-		delete vec_index_ast_node;
-		delete aux_str;
-		CScope::destroySingletons();
+		//delete vec_index_ast_node;
+		//delete aux_str;
+		//CScope::destroySingletons();
+
 	}
 	m_ast = NULL;
 }

@@ -47,31 +47,36 @@ int   CState::saveState(){
 
 	CState * state = new CState();
 
+	(*state->getVecAstNode()) = (*CASTNodeFactory::getVecAstNode());
+	(*state->getVecScopeNode()) = (*CScopeFactory::getVecScopeNode());
+	(*state->getVecClassNode()) = (*CScriptClassFactory::getVecScriptClassNode());
+	(*state->getVecScriptFunctionObjectNode()) = (*CScriptFunctionObjectFactory::getVecScriptFunctionObjectNode());
+
 	// 1- Copy current state...
 	// 1.1-Copy AST...
-	for(unsigned int i = 0; i < current_vec_ast_node->size(); i++){
+	/*for(unsigned int i = 0; i < current_vec_ast_node->size(); i++){
 
-	}
+	}*/
 
 	// 1.2-Copy Scope...
-	for(unsigned int i = 0; i < current_vec_scope_node->size(); i++){
+	/*for(unsigned int i = 0; i < current_vec_scope_node->size(); i++){
 
-	}
+	}*/
 
 	// 1.3-Copy InfoVar...
-	for(unsigned int i = 0; i < current_vec_info_scope_var_node->size(); i++){
+	/*for(unsigned int i = 0; i < current_vec_info_scope_var_node->size(); i++){
 
-	}
+	}*/
 
 	// 1.4-Copy Class...
-	for(unsigned int i = 0; i < current_vec_registered_class_node->size(); i++){
+	/*for(unsigned int i = 0; i < current_vec_registered_class_node->size(); i++){
 
-	}
+	}*/
 
 	// 1.5-Copy FunctionInfo...
-	for(unsigned int i = 0; i < current_vec_info_registered_function_symbol_node->size(); i++){
+	/*for(unsigned int i = 0; i < current_vec_info_registered_function_symbol_node->size(); i++){
 
-	}
+	}*/
 
 
 	vec_saved_state->push_back(state);
@@ -147,7 +152,7 @@ vector<tInfoRegisteredClass *> 	*CState::getVecClassNode(){
 	return &vec_registered_class_node;
 }
 
-vector<tScriptFunctionObject *> 	*CState::getVecInfoFunctionSymbolNode(){
+vector<tScriptFunctionObject *> 	*CState::getVecScriptFunctionObjectNode(){
 	return &vec_scipt_function_object_node;
 }
 

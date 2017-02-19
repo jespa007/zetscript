@@ -16,15 +16,35 @@ vector<tInfoRegisteredClass *> 				* vec_registered_class_node=NULL;
 //  __________________________________
 */
 
-vector<tInfoRegisteredClass *> 		*	CScriptClassFactory::getVecRegisteredClassNode(){
+
+void CScriptClassFactory::createSingletons(){
+	if(vec_registered_class_node==NULL){
+		vec_registered_class_node = new vector<tInfoRegisteredClass *>();
+	}
+}
+
+void CScriptClassFactory::destroySingletons(){
+	if(vec_registered_class_node!=NULL){
+		delete vec_registered_class_node;
+		vec_registered_class_node=NULL;
+	}
+}
+
+void CScriptClassFactory::set(vector<tInfoRegisteredClass *> 	& set_vec){
+	*vec_registered_class_node = set_vec;
+}
+
+
+vector<tInfoRegisteredClass *> 		*	CScriptClassFactory::getVecScriptClassNode(){
 	return vec_registered_class_node;
 }
 
 
-int 	CScriptClassFactory::newScriptClass(tInfoRegisteredClass 	*registered_class){
+tInfoRegisteredClass *	CScriptClassFactory::newScriptClass(){
+	tInfoRegisteredClass 	*registered_class=new tInfoRegisteredClass;
 	vec_registered_class_node->push_back(registered_class);
 	registered_class->idxClass = vec_registered_class_node->size()-1;
-	return registered_class->idxClass;
+	return registered_class;
 }
 
 

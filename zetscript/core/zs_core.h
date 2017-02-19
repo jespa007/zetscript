@@ -14,3 +14,4 @@
 #include "CScriptClass.h"
 #include "vm/CVirtualMachine.h"
 #include "CState.h"
+#include "factory/zs_factory.h"

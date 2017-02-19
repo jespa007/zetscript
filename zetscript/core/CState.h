@@ -1,21 +1,10 @@
 
 #pragma once
 
-#define AST_NODE(idx) 						CState::getAstNodeByIdx(idx)
-#define AST_SCOPE_INFO_IDX(idx) 			CState::getAstScopeIndexByIdx(idx)
-#define AST_LINE_VALUE(idx) 				CState::getAstLineByIdx(idx)
-#define AST_SYMBOL_VALUE(idx) 				CState::getAstSymbolNameByIdx(idx)
-#define AST_SYMBOL_VALUE_CONST_CHAR(idx) 	CState::getAstSymbolNameConstCharByIdx(idx)
-
-#define SCOPE_INFO_NODE(idx) 				CState::getScopeNodeByIdx(idx)
-#define INFO_SCOPE_VAR_NODE(idx) 			CState::getScopeVarNodeByIdx(idx)
 
 
-#define REGISTERED_CLASS_NODE(idx) 				CState::getRegisteredClassNodeByIdx(idx)
-#define MAIN_CLASS_NODE							(CState::getRegisteredClassNodeByIdx(0))    // 0 is the main class
 
-#define SCRIPT_FUNCTION_NODE(idx) 					CState::getScriptFunctionNodeByIdx(idx)
-#define FUNCTION_SYMBOL_NODE(idx) 					CState::getFunctionSymbolNodeByIdx(idx)
+
 
 
 class CState{
@@ -74,7 +63,7 @@ public:
 	vector<CScope *> 					*	getVecScopeNode();
 	vector<tScopeVar *> 				*	getVecScopeVarNode();
 	vector<tInfoRegisteredClass *> 		*	getVecClassNode();
-	vector<tScriptFunctionObject *> 	*	getVecInfoFunctionSymbolNode();
+	vector<tScriptFunctionObject *> 	*	getVecScriptFunctionObjectNode();
 
 	~CState();
 

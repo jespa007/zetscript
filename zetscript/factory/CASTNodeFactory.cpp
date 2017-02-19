@@ -1,7 +1,9 @@
 #include "zs_factory.h"
 
 
-vector<tASTNode *> 							* CASTNodeFactory::vec_ast_node=NULL;
+vector<tASTNode *> 			* CASTNodeFactory::vec_ast_node=NULL;
+string 						* CASTNodeFactory::aux_str=NULL;
+
 
 /*
 //		  ___   _____ _____   _   _           _
@@ -17,18 +19,35 @@ vector<tASTNode *> 							* CASTNodeFactory::vec_ast_node=NULL;
 void CASTNodeFactory::createSingletons(){
 	if(vec_ast_node==NULL){
 		vec_ast_node = new vector<tASTNode *>();
+		aux_str = new string;
 	}
+}
+
+void CASTNodeFactory::destroySingletons(){
+	if(vec_ast_node!=NULL){
+		delete vec_ast_node;
+		vec_ast_node = NULL;
+	}
+
+	if(aux_str!=NULL){
+		delete aux_str;
+		aux_str = NULL;
+	}
+}
+
+void CASTNodeFactory::set(vector<tASTNode *> 	& set_vec_ast_node){
+	*vec_ast_node = set_vec_ast_node;
 }
 
 vector<tASTNode *> 		*		CASTNodeFactory::getVecAstNode(){
 	return &vec_ast_node;
 }
 
-int	CASTNodeFactory::newAstNode(tASTNode *ast_node){
-
+tASTNode	*CASTNodeFactory::newAstNode(){
+	tASTNode	*ast_node = new tASTNode;
 	vec_ast_node->push_back(ast_node);
 	ast_node->idxAstNode = vec_ast_node->size()-1;
-	return ast_node->idxAstNode;
+	return ast_node;
 }
 
 

@@ -1,7 +1,7 @@
 
 #include "zs_factory.h"
 
-vector<CScope *> 						* current_vec_scope_node=NULL;
+vector<CScope *> 						* CScopeFactory::vec_scope_node=NULL;
 
 /*
 //	 _____                        _____       __
@@ -18,30 +18,41 @@ vector<CScope *> 						* current_vec_scope_node=NULL;
 
 void CScopeFactory::createSingletons(){
 	if(vec_scope_node==NULL){
-		vec_scope_node = new vector<tASTNode *>();
+		vec_scope_node = new vector<CScope *>();
 	}
 }
 
-vector<CScope *> 	*		CScopeFactory::getVecScopeNode(){
-	return &vec_scope_node;
-
-
-vector<CScope *> 	*	CScopeFactory::getCurrentVecScopeNode(){
-	return current_vec_scope_node;
+void CScopeFactory::destroySingletons(){
+	if(vec_scope_node!=NULL){
+		delete vec_scope_node;
+		vec_scope_node = NULL;
+	}
 }
 
-int	 CScopeFactory::newScope(CScope *scope_node){
-	current_vec_scope_node->push_back(scope_node);
-	scope_node->idxScope = current_vec_scope_node->size()-1;
-	return scope_node->idxScope;
+void CScopeFactory::set(vector<CScope *> 	& set_vec){
+	*vec_scope_node = set_vec;
+}
+
+
+vector<CScope *> 	*		CScopeFactory::getVecScopeNode(){
+	return &vec_scope_node;
+}
+
+
+
+CScope *	 CScopeFactory::newScope(CScope *parent_scope){
+	CScope * scope_node = new CScope(parent_scope);
+	vec_scope_node->push_back(scope_node);
+	scope_node->idxScope = vec_scope_node->size()-1;
+	return scope_node;
 }
 
 
 CScope 		* CScopeFactory::getScopeNodeByIdx(int idx){
-	if(idx < 0 || (unsigned)idx >= current_vec_scope_node->size()){
+	if(idx < 0 || (unsigned)idx >= vec_scope_node->size()){
 		print_error_cr("CScope node out of bound");
 		return NULL;
 	}
 
-	return current_vec_scope_node->at(idx);
+	return vec_scope_node->at(idx);
 }
