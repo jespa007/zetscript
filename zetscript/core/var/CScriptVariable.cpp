@@ -37,7 +37,7 @@ CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & 
 	return &m_functionSymbol[m_functionSymbol.size()-1];
 }
 
-void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
+void CScriptVariable::createSymbols(tInfoScriptClass *ir_class){
 	tSymbolInfo *si;
 
 	//if(ir_class == this->m_infoRegisteredClass)
@@ -78,7 +78,7 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 					b->m_boolValue=*((bool *)ptr_variable);
 					si->object =b;
 				}else{
-					tInfoRegisteredClass *info_registered_class = GET_CLASS_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+					tInfoScriptClass *info_registered_class = GET_CLASS_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 					if(info_registered_class){
 						CScriptVariable *var = new CScriptVariable();
@@ -142,13 +142,13 @@ CScriptVariable::CScriptVariable(){
 
 }
 /*
-CScriptVariable::CScriptVariable(tInfoRegisteredClass *irv, void *_c_object){
+CScriptVariable::CScriptVariable(tInfoScriptClass *irv, void *_c_object){
 
 	init(irv,_c_object);
 
 }*/
 
-void CScriptVariable::init(tInfoRegisteredClass *irv, void *_c_object){
+void CScriptVariable::init(tInfoScriptClass *irv, void *_c_object){
 	setup();
 
 
@@ -215,7 +215,7 @@ int CScriptVariable::getIdxClass(){
 }
 
 bool CScriptVariable::setIdxClass(int idx){
-	tInfoRegisteredClass *_info_registered_class =  GET_CLASS(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
+	tInfoScriptClass *_info_registered_class =  GET_CLASS(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
 
 	if(_info_registered_class == NULL){
 		return false;

@@ -1,28 +1,28 @@
 #include "CZetScript.h"
 
-C_VariableFunctionFactory * C_VariableFunctionFactory::m_instance=NULL;
+CFunction_C_TypeFactory * CFunction_C_TypeFactory::m_instance=NULL;
 
-C_VariableFunctionFactory::C_VariableFunctionFactory(){
+CFunction_C_TypeFactory::CFunction_C_TypeFactory(){
 	/*c_void_function = new map<string,void *>();
 	c_int_function = new map<string,void *>();
 	class_function_member = new map<string,void *>();*/
 }
 
-C_VariableFunctionFactory * C_VariableFunctionFactory::getInstance(){
+CFunction_C_TypeFactory * CFunction_C_TypeFactory::getInstance(){
 
 	if(m_instance== NULL){
-		m_instance = new C_VariableFunctionFactory();
+		m_instance = new CFunction_C_TypeFactory();
 	}
 
 	return m_instance;
 }
 
-void  C_VariableFunctionFactory::destroySingletons(){
+void  CFunction_C_TypeFactory::destroySingletons(){
 	delete m_instance;
 }
 
 
-C_VariableFunctionFactory::~C_VariableFunctionFactory(){
+CFunction_C_TypeFactory::~CFunction_C_TypeFactory(){
 
 
 

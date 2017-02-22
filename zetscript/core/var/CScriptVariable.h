@@ -2,7 +2,7 @@
 
 
 
-#include "core/ScriptDefinesStructs.h"
+#include "../Common.h"
 #include "core/ast/CScope.h"
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
@@ -53,12 +53,12 @@ public:
 
 	// Construct ...
 	CScriptVariable();
-	void init(tInfoRegisteredClass *info_registered_class, void * _c_object);
+	void init(tInfoScriptClass *info_registered_class, void * _c_object);
 
 	void fun1(int *);
 	void fun1(string *);
 
-	//CScriptVariable();//tInfoRegisteredClass *info_registered_class, void * _c_object);
+	//CScriptVariable();//tInfoScriptClass *info_registered_class, void * _c_object);
 
 
 	//TYPE m_type;
@@ -100,7 +100,7 @@ protected:
 	/**
 	 * This variable tells whether is pointer function or not.
 	 */
-	tInfoRegisteredClass *m_infoRegisteredClass;
+	tInfoScriptClass *m_infoRegisteredClass;
 
 
 	virtual void setup();
@@ -115,7 +115,7 @@ private:
 
 
 
-	void createSymbols(tInfoRegisteredClass *irv);
+	void createSymbols(tInfoScriptClass *irv);
 
 	vector<tSymbolInfo> m_functionSymbol;
 

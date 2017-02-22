@@ -37,7 +37,7 @@ void CZetScript::destroy(){
 	CCompiler::destroySingletons();
 	//CAst::destroySingletons();
 	CSharedPointerManager::destroySingletons();
-	C_VariableFunctionFactory::destroySingletons();
+	CFunction_C_TypeFactory::destroySingletons();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ void CZetScript::destroy(){
 
  void CZetScript::printGeneratedCodeAllClasses(){
 
-	 vector<tInfoRegisteredClass *> * registeredClass = CState::getCurrentVecRegisteredClassNode();
+	 vector<tInfoScriptClass *> * registeredClass = CState::getCurrentVecInfoScriptClass();
 
 	 // for all classes print code...
 	 for(unsigned i = 0; i < registeredClass->size(); i++){
@@ -375,7 +375,7 @@ CScriptVariable * CZetScript::call_C_function(void *fun_ptr, tScriptFunctionObje
 
 		}
 
-		var_result = CScriptClass::getInstance()->newClassByIdx(irfs->idx_return_type,(void *)result);
+		var_result = CScriptClass::getInstance()->newScriptVariableByIdx(irfs->idx_return_type,(void *)result);
 
 	}else{
 		switch(argv->size()){
@@ -531,7 +531,7 @@ CScriptVariable * CZetScript::execute(){
 		// creates the main entry function with compiled code. On every executing code, within "execute" function
 		// virtual machine is un charge of allocating space for all local variables...
 
-		m_mainClass = CScriptClass::getInstance()->newClass(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::newClass("Main");
+		m_mainClass = CScriptClass::getInstance()->newScriptVariableByName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::newScriptVariableByName("Main");
 	}
 	// the first code to execute is the main function that in fact is a special member function inside our main class
 	return vm->execute(m_mainFunctionInfo,  m_mainClass, NULL,0);//->excute();

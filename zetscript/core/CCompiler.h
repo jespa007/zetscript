@@ -215,7 +215,7 @@ private:
 	/**
 	 * Adds class info into factory
 	 */
-	bool doRegisterVariableSymbolsClass(const string & class_name, tInfoRegisteredClass *current_class);
+	bool doRegisterVariableSymbolsClass(const string & class_name, tInfoScriptClass *current_class);
 	bool gacClass(PASTNode _node, CScope * _lc);
 
 	int gacNew(PASTNode _node, CScope * _lc);

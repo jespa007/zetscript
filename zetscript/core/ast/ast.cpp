@@ -1607,7 +1607,7 @@ char * CAst::parseClass(const char *s,int & m_line, CScope *scope_info, PASTNode
 	char *end_p;
 
 	CScope *class_scope_info=NULL;
-	//tInfoRegisteredClass *class_info=NULL;
+	//tInfoScriptClass *class_info=NULL;
 	int class_line;
 	string class_name;
 	//tScriptFunctionObject * class_object=NULL;

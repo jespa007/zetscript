@@ -62,7 +62,7 @@ CBoolean::CBoolean(bool _value){
 	this->init(CScriptClass::getInstance()->getRegisteredClassBoolean(), (void *)this);
 }
 /*
-CBoolean::CBoolean(tInfoRegisteredClass *info_registered_class, bool *_value):CScriptVariable(info_registered_class,this){
+CBoolean::CBoolean(tInfoScriptClass *info_registered_class, bool *_value):CScriptVariable(info_registered_class,this){
 
     //m_classStr=typeid(CBoolean).name();
     //m_pointerClassStr=typeid(CBoolean *).name();

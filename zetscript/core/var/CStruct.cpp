@@ -2,7 +2,7 @@
 
 
 
-CStruct::CStruct(){//tInfoRegisteredClass *info_registered_class):CScriptVariable(info_registered_class, this){
+CStruct::CStruct(){//tInfoScriptClass *info_registered_class):CScriptVariable(info_registered_class, this){
 	this->init(CScriptClass::getInstance()->getRegisteredClassStruct(), (void *)this);
 }
 

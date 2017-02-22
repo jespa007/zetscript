@@ -14,7 +14,7 @@ public:
 	static void createSingletons();
 	static void set(vector<tScriptFunctionObject *> 	& set_vec);
 	/**
-	 * Get tInfoRegisteredClass Node by its idx, regarding current state.
+	 * Get tInfoScriptClass Node by its idx, regarding current state.
 	 */
 	static vector<tScriptFunctionObject *> 		*	getVecScriptFunctionObjectNode();
 	static tScriptFunctionObject 			*	newScriptFunctionObject();

@@ -1,11 +1,11 @@
-class C_VariableFunctionFactory{
+class CFunction_C_TypeFactory{
 
 public:
 
-	C_VariableFunctionFactory();
-	~C_VariableFunctionFactory();
+	CFunction_C_TypeFactory();
+	~CFunction_C_TypeFactory();
 
-	static C_VariableFunctionFactory * getInstance();
+	static CFunction_C_TypeFactory * getInstance();
 	static void destroySingletons();
 
 
@@ -228,7 +228,7 @@ private:
 		void *fun_ptr;
 	}tInfoProxyFunction;
 
-	static C_VariableFunctionFactory *m_instance;
+	static CFunction_C_TypeFactory *m_instance;
 
 	vector<tInfoProxyFunction>	c_int_function;
 	vector<tInfoProxyFunction>	 c_void_function;

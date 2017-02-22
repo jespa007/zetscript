@@ -35,7 +35,7 @@ bool  CState::setState(int idx){
 	/*current_vec_ast_node = current_state->getVecAstNode();
 	current_vec_scope_node = current_state->getVecScopeNode();
 	current_vec_info_scope_var_node = current_state->getVecScopeVarNode();
-	current_vec_registered_class_node= current_state->getVecRegisteredClassNode();
+	current_vec_registered_class_node= current_state->getVecInfoScriptClass();
 	current_vec_info_registered_function_symbol_node = current_state->getVecInfoRegisteredFunctionFunctionNode();*/
 
 	// TODO:maybe is better to re-run vm to optimize vec acceses
@@ -49,7 +49,7 @@ int   CState::saveState(){
 
 	(*state->getVecAstNode()) = (*CASTNodeFactory::getVecAstNode());
 	(*state->getVecScopeNode()) = (*CScopeFactory::getVecScopeNode());
-	(*state->getVecClassNode()) = (*CScriptClassFactory::getVecScriptClassNode());
+	(*state->getVecClassNode()) = (*CScriptClassFactory::getVectorInfoScriptClassList());
 	(*state->getVecScriptFunctionObjectNode()) = (*CScriptFunctionObjectFactory::getVecScriptFunctionObjectNode());
 
 	// 1- Copy current state...
@@ -148,7 +148,7 @@ vector<tScopeVar *> 	*	CState::getVecScopeVarNode(){
 	return &vec_scope_var_node;
 }*/
 
-vector<tInfoRegisteredClass *> 	*CState::getVecClassNode(){
+vector<tInfoScriptClass *> 	*CState::getVecClassNode(){
 	return &vec_registered_class_node;
 }
 

@@ -1449,7 +1449,7 @@ int findConstructorIdxNode(PASTNode _node ){
 	return -1;
 }
 
-bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoRegisteredClass *current_class){
+bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoScriptClass *current_class){
 
 	if(current_class == NULL){
 		return true;
@@ -1516,7 +1516,7 @@ bool CCompiler::gacClass(PASTNode _node, CScope * _lc){
 		base_class=	_node->children[2]->symbol_value;
 	}
 
-	tInfoRegisteredClass *irc;
+	tInfoScriptClass *irc;
 
 	// children[0]==var_collection && children[1]=function_collection
 	if(_node->children.size()!=2 && _node->children.size()!=3) {print_error_cr("node CLASS has not valid number of nodes");return false;}

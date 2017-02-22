@@ -23,7 +23,7 @@ class CZetScript{
 
 
 	// calling C function with differnt parameters...
-	tInfoRegisteredClass *m_mainClassInfo;
+	tInfoScriptClass *m_mainClassInfo;
 	tScriptFunctionObject *m_mainFunctionInfo;
 
 	CScriptVariable *m_mainClass;

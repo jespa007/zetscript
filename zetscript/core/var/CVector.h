@@ -10,7 +10,7 @@ public:
 	vector<CScriptVariable *> m_objVector;
 
 	CVector();
-	//CVector(tInfoRegisteredClass *info_registered_class);
+	//CVector(tInfoScriptClass *info_registered_class);
 	virtual bool unrefSharedPtr();
 	virtual bool refSharedPtr();
 	void add(CScriptVariable *v);

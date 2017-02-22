@@ -5,7 +5,7 @@ class tASTNode;
 typedef tASTNode *PASTNode;
 struct tScriptFunctionObject;
 class tScopeVar;
-struct tInfoRegisteredClass;
+struct tInfoScriptClass;
 struct tFunctionInfo;
 struct tInfoVarScopeBlock;
 
@@ -281,7 +281,7 @@ enum ALE_INFO_PROPERTIES{
 struct tInfoVariableSymbol{
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function
 	string 	 symbol_name;
-	int idxClassInfo;//tInfoRegisteredClass		 *class_info;
+	int idxClassInfo;//tInfoScriptClass		 *class_info;
 	//int idxScopeVar;//tScopeVar  				*info_var_scope;
 	int idxAstNode;
 	unsigned int properties; // SYMBOL_INFO_PROPERTIES
@@ -497,7 +497,7 @@ struct tScriptFunctionObject{
 /**
  * Stores the basic information to build a object through built AST structure
  */
-struct tInfoRegisteredClass{
+struct tInfoScriptClass{
 
 	tScriptFunctionObject	metadata_info;
 	int idx_function_script_constructor;
@@ -506,9 +506,9 @@ struct tInfoRegisteredClass{
 	std::function<void *()> 		* 	c_constructor;
 	std::function<void (void *p)> 	*	c_destructor;
 	string classPtrType; // type_id().name();
-	vector<tInfoRegisteredClass *> baseClass; // in the case is and extension of class.
+	vector<tInfoScriptClass *> baseClass; // in the case is and extension of class.
 
-	tInfoRegisteredClass(){
+	tInfoScriptClass(){
 
 		idxClass=-1;
 		classPtrType="";

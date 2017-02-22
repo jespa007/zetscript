@@ -23,7 +23,7 @@ class CState{
 	vector<tASTNode *> 							vec_ast_node; // ast collection register...
 	vector<CScope *> 							vec_scope_node;
 	vector<tScopeVar *> 						vec_scope_var_node;
-	vector<tInfoRegisteredClass *> 				vec_registered_class_node;
+	vector<tInfoScriptClass *> 				vec_registered_class_node;
 	vector<tScriptFunctionObject *> 			vec_scipt_function_object_node;
 
 public:
@@ -62,7 +62,7 @@ public:
 	vector<tASTNode *> 					*	getVecAstNode(); // ast collection register...
 	vector<CScope *> 					*	getVecScopeNode();
 	vector<tScopeVar *> 				*	getVecScopeVarNode();
-	vector<tInfoRegisteredClass *> 		*	getVecClassNode();
+	vector<tInfoScriptClass *> 		*	getVecClassNode();
 	vector<tScriptFunctionObject *> 	*	getVecScriptFunctionObjectNode();
 
 	~CState();
