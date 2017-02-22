@@ -3,7 +3,7 @@
 
 #define GET_FUNCTION_INFO(idx) 					CScriptFunctionObjectFactory::getFunctionInfo(idx)
 #define GET_SCRIPT_FUNCTION_OBJECT(idx) 		CScriptFunctionObjectFactory::getScriptFunctionObject(idx)
-
+#define FUNCTION_NEW_VARIABLE_SYMBOL(idx_class)		(CScriptFunctionObjectFactory::newVariableSymbol(idx_class))    // 0 is the main class
 
 class CScriptFunctionObjectFactory{
 
@@ -17,9 +17,12 @@ public:
 	 * Get tInfoRegisteredClass Node by its idx, regarding current state.
 	 */
 	static vector<tScriptFunctionObject *> 		*	getVecScriptFunctionObjectNode();
-	static tScriptFunctionObject 			*	newFunctionSymbol();
+	static tScriptFunctionObject 			*	newScriptFunctionObject();
+	static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
 	static tFunctionInfo					* 	getFunctionInfo(int idx);
 	static tScriptFunctionObject 			* 	getScriptFunctionObject(int idx);
+	static int						 			getIdxFunctionObject(int idxFunction,const string & function_name, bool show_msg=true);
+	static int						 			getIdxVariableSymbol(int idxFunction,const string & function_name, bool show_msg=true);
 
 	static void destroySingletons();
 

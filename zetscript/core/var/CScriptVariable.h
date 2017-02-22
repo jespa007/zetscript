@@ -70,7 +70,7 @@ public:
 	tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 
 	tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,tScriptFunctionObject *irv);
-	tSymbolInfo * getFunctionSymbol(const string & funname);
+	tSymbolInfo * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
 	int getIdxFunctionSymbolWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature=false);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 

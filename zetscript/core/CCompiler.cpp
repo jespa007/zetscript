@@ -52,7 +52,7 @@ int CCompiler::addLocalVarSymbol(const string & var_name,tASTNode *ast){
 
 		//if(idxScopeVar != -1){
 
-			tInfoRegisteredVariableSymbol info_symbol;
+			tInfoVariableSymbol info_symbol;
 
 			info_symbol.idxAstNode = ast->idxAstNode;
 			info_symbol.symbol_name = var_name;
@@ -125,10 +125,10 @@ int CCompiler::addLocalFunctionSymbol(const string & name,tASTNode *ast){
 bool CCompiler::functionSymbolExists(const string & name, tASTNode *ast){
 
 	SCOPE_TYPE scope_type;
-	return getIdxFunctionSymbol(name,ast,scope_type,false) != -1;
+	return getIdxFunctionObject(name,ast,scope_type,false) != -1;
 }
 
-int  CCompiler::getIdxFunctionSymbol(const string & name,tASTNode *param_ast, SCOPE_TYPE & scope_type, bool print_msg){
+int  CCompiler::getIdxFunctionObject(const string & name,tASTNode *param_ast, SCOPE_TYPE & scope_type, bool print_msg){
 	tScopeVar *irv=INFO_SCOPE_VAR_NODE(SCOPE_INFO_NODE(param_ast->idxScope)->getInfoRegisteredSymbol(name));
 	scope_type = SCOPE_TYPE::LOCAL_SCOPE;
 	if(irv != NULL){

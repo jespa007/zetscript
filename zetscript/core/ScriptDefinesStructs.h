@@ -278,7 +278,7 @@ enum ALE_INFO_PROPERTIES{
 };
 
 
-struct tInfoRegisteredVariableSymbol{
+struct tInfoVariableSymbol{
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function
 	string 	 symbol_name;
 	int idxClassInfo;//tInfoRegisteredClass		 *class_info;
@@ -288,7 +288,7 @@ struct tInfoRegisteredVariableSymbol{
 	string c_type; // In case is C, we need to know its type ...
 	int index;
 
-	tInfoRegisteredVariableSymbol(){
+	tInfoVariableSymbol(){
 		properties=0;
 		c_type="";
 		idxAstNode=-1;
@@ -460,13 +460,13 @@ struct tInfoStatementOp{
 //-------------------------------------------------------
 
 struct tLocalSymbolInfo{
-	vector<tInfoRegisteredVariableSymbol> 	m_registeredVariable; // member variables to be copied in every new instance
+	vector<tInfoVariableSymbol> 	m_registeredVariable; // member variables to be copied in every new instance
 	vector<int> 							vec_idx_registeredFunction; // member functions
 };
 
 struct tFunctionInfo{ // script function is shared by class and function ...
 
-	tInfoRegisteredVariableSymbol 	symbol_info;
+	tInfoVariableSymbol 	symbol_info;
 	tLocalSymbolInfo 		local_symbols;
 
 	// the info asm op for each function. Will be filled at compile time.

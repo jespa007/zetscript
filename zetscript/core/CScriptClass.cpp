@@ -1,61 +1,20 @@
 #include "CZetScript.h"
 
- CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
- CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
+ //CScriptClassFactory *  	 CScriptClassFactory::scriptClassFactory=NULL;
+ CScriptClassFactory::tPrimitiveType CScriptClassFactory::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 
 
  //--obj , type convert, ---
- map<string,map<string,fntConversionType>> CScriptClass::mapTypeConversion;
+ map<string,map<string,fntConversionType>> CScriptClassFactory::mapTypeConversion;
 
 
 
 
 
 
- int CScriptClass::getIdxClassFromIts_C_Type(const string & c_type_str){
-
-	 // 1. check primitives ...
-	 /*for(unsigned i = 0; i < MAX_C_TYPE_VALID_PRIMITIVE_VAR;i++){
-		 if(CScriptClass::valid_C_PrimitiveType[i].type_str==type_str){
-			 return true;
-		 }
-	 }*/
-	 /*
-	 if(CScriptClass::valid_C_PrimitiveType[i].type_str==type_str){
-			 return true;
-	 }*/
-	 //int , , , , idxClassVector, idxClassFunctor, idxClassUndefined, ;
-		if(CScriptClass::valid_C_PrimitiveType[CScriptClass::VOID_TYPE].type_str==c_type_str){
-			return idxClassVoid;
-		}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::INT_PTR_TYPE].type_str== c_type_str){
-			return idxClassInteger;
-		}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::FLOAT_PTR_TYPE].type_str==c_type_str){
-			return idxClassNumber;
-		}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::STRING_PTR_TYPE].type_str==c_type_str){
-			return idxClassString;
-		}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::BOOL_PTR_TYPE].type_str==c_type_str){
-			return idxClassBoolean;
-		}
 
 
-
-	 // for all registered C classes...
-	 for(unsigned i = 0; i < m_registeredClass.size(); i++){
-		 if(m_registeredClass[i]->classPtrType==c_type_str)
-		 {
-			 return i;
-		 }
-	 }
-
-
-	 return -1;
-
- }
-
-
-
-
- fntConversionType CScriptClass::getConversionType(string objectType, string conversionType, bool show_errors){
+ fntConversionType CScriptClassFactory::getConversionType(string objectType, string conversionType, bool show_errors){
 
 
  	if(mapTypeConversion.count(objectType) == 0){
@@ -81,23 +40,23 @@
 
  }
 
- void CScriptClass::registerPrimitiveTypes(){
+ void CScriptClassFactory::registerPrimitiveTypes(){
 
 
  }
 
 
- CScriptClass*  CScriptClass::getInstance(){
+ CScriptClassFactory*  CScriptClassFactory::getInstance(){
 
 	 if(scriptClassFactory == NULL){
-		 scriptClassFactory = new CScriptClass();
+		 scriptClassFactory = new CScriptClassFactory();
 	 }
 
 	 return scriptClassFactory;
 
  }
 
- void CScriptClass::destroySingletons() {
+ void CScriptClassFactory::destroySingletons() {
 	 if(scriptClassFactory != NULL){
 		 delete scriptClassFactory;
 	 }
@@ -183,7 +142,7 @@ public:
 };
 
 
- bool CScriptClass::registerBase(){
+ bool CScriptClassFactory::registerBase(){
 
 
 	 	valid_C_PrimitiveType[VOID_TYPE]={typeid(void).name(),VOID_TYPE};
@@ -228,7 +187,7 @@ public:
 		if((idxClassFunctor = getIdxRegisteredClass("CFunctor"))==-1) return false;
 		if((idxClassStruct = getIdxRegisteredClass("CStruct"))==-1) return false;
 
-		//===> MOVE INTO CScriptClass !!!! ====================================================>
+		//===> MOVE INTO CScriptClassFactory !!!! ====================================================>
 
 		//-----------------------
 		// Conversion from object types to primitive types (move into factory) ...
@@ -294,11 +253,11 @@ public:
 		if(!register_C_Function(print)) return false;
 		//if(!register_C_Function(print)) return false;
 		//if(!register_C_Function(print)) return false;
-		//CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(string * )>(&custom_function));
-		//CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(bool * )>(&custom_function));
+		//CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(string * )>(&custom_function));
+		//CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(bool * )>(&custom_function));
 
-		if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CString * )>(&custom_function))) return false;
-		if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CInteger * )>(&custom_function))) return false;
+		if(!CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(CString * )>(&custom_function))) return false;
+		if(!CScriptClassFactory::register_C_FunctionInt("custom_function",static_cast<void (*)(CInteger * )>(&custom_function))) return false;
 
 		if(!register_C_Variable(c_var)) return false;
 
@@ -320,7 +279,7 @@ public:
 		if(!register_C_VariableMember(MyObject,i)) return false;
 
 
-		if(!CScriptClass::register_C_Function(my_new_random_vector)) return false;
+		if(!CScriptClassFactory::register_C_Function(my_new_random_vector)) return false;
 
 
 
@@ -328,14 +287,14 @@ public:
  }
 
 
- CScriptClass::CScriptClass(){
+ CScriptClassFactory::CScriptClassFactory(){
 
 	 idxClassNull = idxClassInteger = idxClassNumber = idxClassString = idxClassBoolean = idxClassVector = idxClassFunctor = idxClassUndefined= idxClassVoid = idxClassStruct = -1;
 
 
  }
 
- int CScriptClass::saveState(){
+ int CScriptClassFactory::saveState(){
 	 // 1. For all current registered classes:
 	 // 1.1. Clone its ast...
 	 // 1.2. Clone its scopeinfo...
@@ -345,13 +304,13 @@ public:
  }
 
 
- bool CScriptClass::restoreState(int index){
+ bool CScriptClassFactory::restoreState(int index){
  	 //m_registeredClass
 	 return false;
   }
 
 
- CScriptClass::tPrimitiveType *CScriptClass::getPrimitiveTypeFromStr(const string & str){
+ CScriptClassFactory::tPrimitiveType *CScriptClassFactory::getPrimitiveTypeFromStr(const string & str){
 
  	for(unsigned i=0; i < MAX_C_TYPE_VALID_PRIMITIVE_VAR; i++){
  		if(valid_C_PrimitiveType[i].type_str == str){
@@ -365,7 +324,7 @@ public:
  }
 
 
-bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo *idxFunction, tInfoAsmOp *iao, int current_function, SCOPE_TYPE scope_type){
+bool CScriptClassFactory::searchVarFunctionSymbol(int idxFunction, tInfoAsmOp *iao, int current_function, SCOPE_TYPE scope_type){
 
 	int idx=0;
 	string symbol_to_find = AST_SYMBOL_VALUE(iao->idxAstNode);
@@ -374,14 +333,14 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo *idxFunction, tInfoAsmO
 	//scope_type = iao->scope_type;
 
 
-
+	tFunctionInfo * info_function= GET_FUNCTION_INFO(idxFunction);
 
 
 	if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){ // try deduce local/global
 
 		if(current_function > 0){ // minimum have to have a 1
 
-			tFunctionInfo *irfs =  &idxFunction->local_symbols.vec_idx_registeredFunction[current_function].object_info;
+			tFunctionInfo *irfs =  GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[current_function]);//.object_info;
 
 
 
@@ -392,7 +351,7 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo *idxFunction, tInfoAsmO
 
 			for(int i = current_function-1; i >= 0 && idx_super==-1; i--){
 
-				if(idxFunction->local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name == symbol_to_find){
+				if(GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[i])->symbol_info.symbol_name == symbol_to_find){
 					idx_super=i;
 				}
 			}
@@ -432,11 +391,11 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo *idxFunction, tInfoAsmO
 			}
 		}*/
 
-		 if((idx=getIdxFunctionSymbol(idxFunction,symbol_to_find,false))!=-1){
+		 if((idx=CScriptFunctionObjectFactory::getIdxFunctionObject(idxFunction,symbol_to_find,false))!=-1){
 			 iao->scope_type = scope_type;
 			 iao->index_op1 = LOAD_TYPE_FUNCTION;
 			 iao->index_op2 = idx;
-			 if((idxFunction->local_symbols.vec_idx_registeredFunction[idx].object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
+			 if((GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[idx])->symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
 				 iao->index_op2 = -1;
 				 iao->scope_type = SCOPE_TYPE::GLOBAL_SCOPE; // all C functions are globals !
 			 }
@@ -444,7 +403,7 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo *idxFunction, tInfoAsmO
 			 iao->idxFunction = idxFunction;
 			 return true;
 		 }else {
-			 if((idx=getIdxRegisteredVariableSymbol(idxFunction,symbol_to_find, false))!=-1){
+			 if((idx=CScriptFunctionObjectFactory::getIdxVariableSymbol(idxFunction,symbol_to_find, false))!=-1){
 				 iao->scope_type = scope_type;
 				 iao->index_op1 = LOAD_TYPE_VARIABLE;
 				 iao->index_op2 = idx;
@@ -462,7 +421,7 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo *idxFunction, tInfoAsmO
 
 
 
-bool CScriptClass::buildScopeVariablesBlock(tScriptFunctionObject *root_class_irfs ){
+bool CScriptClassFactory::buildScopeVariablesBlock(tScriptFunctionObject *root_class_irfs ){
 
 	/// PRE: base_class_irfs must be info of root class.
 
@@ -500,7 +459,7 @@ bool CScriptClass::buildScopeVariablesBlock(tScriptFunctionObject *root_class_ir
 
 			 vector<CScope *> *list = scp->getVecIndexScopeNode();
 			 //scp->generateScopeList(list);
-			 vector<tInfoRegisteredVariableSymbol> *vs = &root_class_irfs->object_info.local_symbols.m_registeredVariable;
+			 vector<tInfoVariableSymbol> *vs = &root_class_irfs->object_info.local_symbols.m_registeredVariable;
 			 for(unsigned i = 0;i < list->size(); i++){ // register index var per scope ...
 				 tInfoVarScopeBlock ivsb;
 
@@ -528,15 +487,18 @@ bool CScriptClass::buildScopeVariablesBlock(tScriptFunctionObject *root_class_ir
 }
 
 
-bool CScriptClass::updateFunctionSymbols(tScriptFunctionObject * info_function, const string & parent_symbol, int n_function){
+bool CScriptClassFactory::updateFunctionSymbols(int idxScriptFunctionObject, const string & parent_symbol, int n_function){
 
-	print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->object_info.symbol_info.symbol_name.c_str());
+
+	tFunctionInfo * info_function = GET_FUNCTION_INFO(idxScriptFunctionObject);
+
+	print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->symbol_info.symbol_name.c_str());
 
 	if(buildScopeVariablesBlock(info_function)){
 		return false;
 	}
 
-	 vector<tInfoStatementOp> *stat = &info_function->object_info.statment_op;
+	 vector<tInfoStatementOp> *stat = &info_function->statment_op;
 	 for(unsigned h=0; h < stat->size();h++){
 		 for(unsigned idx_op=0; idx_op < stat->at(h).asm_op.size();idx_op++){
 			 tInfoAsmOp *iao=stat->at(h).asm_op[idx_op];
@@ -561,10 +523,10 @@ bool CScriptClass::updateFunctionSymbols(tScriptFunctionObject * info_function, 
 
 
 									 // search local...
-									 if(!searchVarFunctionSymbol(&info_function->object_info,iao,n_function,SCOPE_TYPE::LOCAL_SCOPE)){
+									 if(!searchVarFunctionSymbol(&info_function->iao,n_function,SCOPE_TYPE::LOCAL_SCOPE)){
 
 										 // search global...
-										 tScriptFunctionObject * mainFunctionInfo = getFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+										 tScriptFunctionObject * mainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
 										 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,n_function,SCOPE_TYPE::GLOBAL_SCOPE)){
 											 print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
 											 return false;
@@ -593,11 +555,11 @@ bool CScriptClass::updateFunctionSymbols(tScriptFunctionObject * info_function, 
 
 
 
-	 vector<tScriptFunctionObject> *mrf = &info_function->object_info.local_symbols.vec_idx_registeredFunction;
+	 vector<int> *mrf = &info_function->local_symbols.vec_idx_registeredFunction;
 
 	 for(unsigned k=0; k < mrf->size();k++){
 
-		 if(!updateFunctionSymbols(&mrf->at(k), info_function->object_info.symbol_info.symbol_name, k)){
+		 if(!updateFunctionSymbols(mrf->at(k), info_function->symbol_info.symbol_name, k)){
 			 return false;
 		 }
 
@@ -607,11 +569,11 @@ bool CScriptClass::updateFunctionSymbols(tScriptFunctionObject * info_function, 
 	return true;
 }
 
-bool CScriptClass::updateReferenceSymbols(){
+bool CScriptClassFactory::updateReferenceSymbols(){
 
 
 
-	 tScriptFunctionObject  *main_function = &m_registeredClass[0]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0];
+	 tScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(m_registeredClass[0]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 	 print_info_cr("DEFINED CLASSES");
 	 vector<tScriptFunctionObject *>  mrf;
 
@@ -725,7 +687,7 @@ bool CScriptClass::updateReferenceSymbols(){
 												 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,SCOPE_TYPE::LOCAL_SCOPE)){
 
 													 // search global...
-													 tScriptFunctionObject * mainFunctionInfo = getFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+													 tScriptFunctionObject * mainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
 													 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,SCOPE_TYPE::GLOBAL_SCOPE)){
 														 print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
 														 return false;
@@ -780,7 +742,7 @@ bool CScriptClass::updateReferenceSymbols(){
 }
 
 
- tInfoRegisteredClass * CScriptClass::registerScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast){
+ tInfoRegisteredClass * CScriptClassFactory::registerScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast){
 	int index;
 	tInfoRegisteredClass *irv=NULL;
 
@@ -825,7 +787,7 @@ bool CScriptClass::updateReferenceSymbols(){
 }
 
 
- CScriptVariable 		 * CScriptClass::newClass(const string & class_name){
+ CScriptVariable 		 * CScriptClassFactory::newClass(const string & class_name){
 
 	 // 0. Search class info ...
 	 tInfoRegisteredClass *rc = getRegisteredClass(class_name);
@@ -840,7 +802,7 @@ bool CScriptClass::updateReferenceSymbols(){
  }
 
 
- CScriptVariable 		 * CScriptClass::newClassByIdx(unsigned idx, void * value_object){
+ CScriptVariable 		 * CScriptClassFactory::newClassByIdx(unsigned idx, void * value_object){
 
 	 CScriptVariable *class_object=NULL;
 
@@ -893,19 +855,19 @@ bool CScriptClass::updateReferenceSymbols(){
 /**
  * Register C variable
  */
-bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_ptr, const string & var_type)
+bool  CScriptClassFactory::register_C_VariableInt(const string & var_name,void * var_ptr, const string & var_type)
 {
 	//CScope *scope;
-	tInfoRegisteredVariableSymbol irs;
+	tInfoVariableSymbol *irs;
 
 	if(var_ptr==NULL){
 		print_error_cr("cannot register var \"%s\" with NULL reference value", var_name.c_str());
 		return false;
 	}
 
-	tScriptFunctionObject * mainFunctionInfo = getFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+	int idxMainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
 
-	if(mainFunctionInfo == NULL){
+	if(idxMainFunctionInfo == -1){
 		print_error_cr("main function is not created");
 		return false;
 	}
@@ -915,10 +877,7 @@ bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_pt
 		return false;
 	}
 
-	// init struct...
-	irs.properties = ::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-	irs.symbol_name = var_name;
-	irs.ref_ptr=(int)var_ptr;
+
 
 	if(!MAIN_AST_ROOT->registerSymbol(var_name)){
 		return false;
@@ -928,20 +887,27 @@ bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_pt
 	//	return false;
 	//}
 
+	if((irs = FUNCTION_NEW_VARIABLE_SYMBOL(idxMainFunctionInfo)) != NULL){
 
-	irs.index = mainFunctionInfo->object_info.local_symbols.m_registeredVariable.size();
-	mainFunctionInfo->object_info.local_symbols.m_registeredVariable.push_back(irs);
+		// init struct...
+		irs->properties = ::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
+		irs->symbol_name = var_name;
+		irs->ref_ptr=(int)var_ptr;
 
-	print_info_cr("Registered function name: %s",var_name.c_str());
+		print_info_cr("Registered function name: %s",var_name.c_str());
 
-	return true;
+
+		return true;
+	}
+
+	return false;
 
 }
 
 
 
 
-tInfoRegisteredVariableSymbol * CScriptClass::registerVariableSymbol(const string & class_name,const string & var_name,PASTNode  ast){
+tInfoVariableSymbol * CScriptClassFactory::registerVariableSymbol(const string & class_name,const string & var_name,PASTNode  ast){
 
 	//tInfoRegisteredClass *rc = getRegisteredClass(class_name);
 	//int idxClass
@@ -954,7 +920,7 @@ tInfoRegisteredVariableSymbol * CScriptClass::registerVariableSymbol(const strin
 		//tInfoRegisteredClass *rc = getRegisteredClassByIdx(idxClass);
 		tFunctionInfo *object_info=&rc->metadata_info.object_info;
 
-		tInfoRegisteredVariableSymbol info_var;
+		tInfoVariableSymbol info_var;
 		info_var.idxClassInfo = rc->idxClass;
 		info_var.idxAstNode = ast->idxAstNode;
 		info_var.symbol_name =var_name;
@@ -970,7 +936,7 @@ tInfoRegisteredVariableSymbol * CScriptClass::registerVariableSymbol(const strin
 	return NULL;
 }
 
-tInfoRegisteredVariableSymbol *  CScriptClass::getRegisteredVariableSymbol(const string & class_name,const string & function_name){
+tInfoVariableSymbol *  CScriptClassFactory::getRegisteredVariableSymbol(const string & class_name,const string & function_name){
 
 	tInfoRegisteredClass *rc = GET_CLASS_BY_NAME(class_name);
 
@@ -997,7 +963,7 @@ tInfoRegisteredVariableSymbol *  CScriptClass::getRegisteredVariableSymbol(const
 	return NULL;
 }
 
-int CScriptClass::getIdxRegisteredVariableSymbol(tFunctionInfo *idxFunction ,const string & function_name, bool show_msg){
+int CScriptClassFactory::getIdxRegisteredVariableSymbol(tFunctionInfo *idxFunction ,const string & function_name, bool show_msg){
 
 	for(unsigned i = 0; i < idxFunction->local_symbols.m_registeredVariable.size(); i++){
 		if(idxFunction->local_symbols.m_registeredVariable[i].symbol_name == function_name){
@@ -1015,7 +981,7 @@ int CScriptClass::getIdxRegisteredVariableSymbol(tFunctionInfo *idxFunction ,con
 
 
 
-tFunctionInfo *  CScriptClass::getSuperClass(tInfoRegisteredClass *irc, const string & fun_name){
+tFunctionInfo *  CScriptClassFactory::getSuperClass(tInfoRegisteredClass *irc, const string & fun_name){
 
 
 	if(irc == NULL){ // trivial case ...
@@ -1040,7 +1006,7 @@ tFunctionInfo *  CScriptClass::getSuperClass(tInfoRegisteredClass *irc, const st
 
 //-------
 
-tScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & class_name, const string & fun_name, PASTNode  ast){
+tScriptFunctionObject * CScriptClassFactory::registerFunctionSymbol(const string & class_name, const string & fun_name, PASTNode  ast){
 
 	//int idxClass =getIdxRegisteredClass(class_name);
 	tInfoRegisteredClass *rc = GET_CLASS_BY_NAME(class_name);
@@ -1053,7 +1019,7 @@ tScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & clas
 
 		tFunctionInfo *object_info=&rc->metadata_info.object_info;
 
-		tScriptFunctionObject *irs = CScriptFunctionObjectFactory::newFunctionSymbol();
+		tScriptFunctionObject *irs = CScriptFunctionObjectFactory::newScriptFunctionObject();
 
 		irs->object_info.symbol_info.idxClassInfo = rc->idxClass;
 		irs->object_info.symbol_info.symbol_name = fun_name;
@@ -1079,9 +1045,9 @@ tScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & clas
 	return NULL;
 }
 
-tScriptFunctionObject * CScriptClass::getFunctionSymbol(const string & class_name,const string & function_name, bool show_errors){
+int CScriptClassFactory::getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors){
 
-	tInfoRegisteredClass *rc = getRegisteredClass(class_name);
+	tInfoRegisteredClass *rc =GET_CLASS_BY_NAME(class_name);
 
 	if(rc != NULL){
 
@@ -1089,8 +1055,9 @@ tScriptFunctionObject * CScriptClass::getFunctionSymbol(const string & class_nam
 
 		// from lat value to first to get last override function...
 		for(int i = object_info->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-			if(object_info->local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name == function_name){
-				return &object_info->local_symbols.vec_idx_registeredFunction[i];
+			tFunctionInfo * object_info = GET_FUNCTION_INFO(object_info->local_symbols.vec_idx_registeredFunction[i]);
+			if(object_info->symbol_info.symbol_name == function_name){
+				return object_info->local_symbols.vec_idx_registeredFunction[i];
 			}
 		}
 	}
@@ -1099,39 +1066,23 @@ tScriptFunctionObject * CScriptClass::getFunctionSymbol(const string & class_nam
 		print_error_cr("function member %s::%s doesn't exist",class_name.c_str(),function_name.c_str());
 	}
 
-	return NULL;
-}
-
-
-int CScriptClass::getIdxFunctionSymbol(tFunctionInfo *idxFunction,const string & function_name, bool show_msg){
-
-	// from lat value to first to get last override function...
-	for(int i = idxFunction->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-		if(idxFunction->local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name == function_name){
-			return i;
-		}
-	}
-
-	if(show_msg){
-		print_error_cr("function member %s::%s doesn't exist",idxFunction->symbol_info.symbol_name.c_str(),function_name.c_str());
-	}
-
 	return -1;
 }
 
 
 
+
 //-----
 
-bool CScriptClass::addArgumentFunctionSymbol(const string & class_name,const string & function_name, const string & arg_name){
+bool CScriptClassFactory::addArgumentFunctionSymbol(const string & class_name,const string & function_name, const string & arg_name){
 
 
-	tScriptFunctionObject *object_info = getFunctionSymbol(class_name,function_name);
+	int idxScriptFunctionObject = getIdxScriptFunctionObjectByClassFunctionName(class_name,function_name);
 
 
-	if(object_info!=NULL){
+	if(idxScriptFunctionObject!=-1){
 
-		object_info->m_arg.push_back(arg_name);
+		GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject)->m_arg.push_back(arg_name);
 
 	}else{
 		//print_error_cr("object info NULL");
@@ -1142,7 +1093,7 @@ bool CScriptClass::addArgumentFunctionSymbol(const string & class_name,const str
 
 
 
-const char * CScriptClass::getNameRegisteredClassByIdx(int idx){
+const char * CScriptClassFactory::getNameRegisteredClassByIdx(int idx){
 	if(idx != -1){
 		return m_registeredClass[idx]->metadata_info.object_info.symbol_info.symbol_name.c_str();
 	}
@@ -1150,7 +1101,7 @@ const char * CScriptClass::getNameRegisteredClassByIdx(int idx){
 
 }
 
-void CScriptClass::unloadRecursiveFunctions(tScriptFunctionObject * info_function){
+void CScriptClassFactory::unloadRecursiveFunctions(tScriptFunctionObject * info_function){
 
 
 	if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
@@ -1174,7 +1125,7 @@ void CScriptClass::unloadRecursiveFunctions(tScriptFunctionObject * info_functio
 	}
 }
 
-CScriptClass::~CScriptClass() {
+CScriptClassFactory::~CScriptClassFactory() {
 
 	for(unsigned i = 0;i<m_registeredClass.size();i++){
 

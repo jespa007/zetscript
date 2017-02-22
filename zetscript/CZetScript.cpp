@@ -470,7 +470,7 @@ bool CZetScript::init(){
 
 	// ok register CInteger through CScriptVariable...
 	if((m_mainClassInfo = CScriptClass::getInstance()->getRegisteredClass(MAIN_SCRIPT_CLASS_NAME)) == NULL) return false;
-	if((CScriptClass::getInstance()->getFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME)) == NULL) return false;
+	if((CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME)) == NULL) return false;
 
 	__init__=true;
 
@@ -486,7 +486,7 @@ bool CZetScript::eval(const string & s){
 
 	if(m_ast->parse(s.c_str())){
 
-		m_mainFunctionInfo = CScriptClass::getInstance()->getFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+		m_mainFunctionInfo = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
 
 		if(CCompiler::getInstance()->compile(m_ast->getMainAstNode(),m_mainFunctionInfo )){
 			// print generated asm ...
@@ -505,7 +505,7 @@ bool CZetScript::eval(const string & s){
 
 std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * CZetScript::script_call(const string &script_function_name){
 
-	//tScriptFunctionObject *irfs = CScriptClass::getInstance()->getFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,function);
+	//tScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
 
 	//if(irfs != NULL){
 		for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){

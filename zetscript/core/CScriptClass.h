@@ -23,10 +23,10 @@
 
 class CScope;
 
-class CScriptClass{
+class CScriptClassFactory{
 
 
-	int idxClassInteger,
+	static int idxClassInteger,
 		idxClassNumber,
 		idxClassString,
 		idxClassBoolean,
@@ -65,86 +65,86 @@ public:
 
 	static tPrimitiveType valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 	static void registerPrimitiveTypes();
-	int getIdxClassFromIts_C_Type(const string & c_type_str);
+	static int getIdxClassFromIts_C_Type(const string & c_type_str);
 
-	static CScriptClass*  getInstance();
+	//static CScriptClass*  getInstance();
 	static void destroySingletons();
 
 	/**
 	 * This function registers a script class into factory.
 	 */
-	tInfoRegisteredClass * registerScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast);
+	static tInfoRegisteredClass * registerScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast);
 
 	/**
 	 * Class name given this function creates the object and initializes all variables.
 	 */
-	CScriptVariable 		 * newClass(const string & class_name);
-	CScriptVariable 		 * newClassByIdx(unsigned idx, void * value_object = NULL);
+	static CScriptVariable 		 * newClass(const string & class_name);
+	static CScriptVariable 		 * newClassByIdx(unsigned idx, void * value_object = NULL);
 
 
 
-	bool updateReferenceSymbols();
+	static bool updateReferenceSymbols();
 
 
 
-	tInfoRegisteredVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,PASTNode  node);
-	tInfoRegisteredVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
-	int 							 getIdxRegisteredVariableSymbol(const string & class_name,const string & varname, bool show_msg=true);
-	int 							 getIdxRegisteredVariableSymbol(tFunctionInfo *irf,const string & var_name, bool show_msg=true);
+	static tInfoVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,PASTNode  node);
+	static tInfoVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
+	static int 							 getIdxRegisteredVariableSymbol(const string & class_name,const string & varname, bool show_msg=true);
+	static int 							 getIdxRegisteredVariableSymbol(tFunctionInfo *irf,const string & var_name, bool show_msg=true);
 
 
-	tScriptFunctionObject *  registerFunctionSymbol(const string & class_name, const string & name,PASTNode  node);
-	tScriptFunctionObject *  getFunctionSymbol(const string & class_name,const string & function_name, bool show_errors=true);
-	int 							 getIdxFunctionSymbol(tFunctionInfo *irf,const string & function_name, bool show_msg=true);
+	static tScriptFunctionObject *  registerFunctionSymbol(const string & class_name, const string & name,PASTNode  node);
+	static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
 
 
-	tFunctionInfo *  getSuperClass(tInfoRegisteredClass *irc, const string & fun_name);
+
+	static tFunctionInfo *  getSuperClass(tInfoRegisteredClass *irc, const string & fun_name);
 
 
-	bool addArgumentFunctionSymbol(const string & class_name,const string & function_name,const string & arg_name);
+	static bool addArgumentFunctionSymbol(const string & class_name,const string & function_name,const string & arg_name);
 
 
 	//tInfoRegisteredClass * 	getRegisteredClass(const string & v, bool print_msg=true);
 	//tInfoRegisteredClass *	getRegisteredClassByIdx(unsigned index);
 	//tInfoRegisteredClass *  getRegisteredClassBy_C_ClassPtr(const string & v, bool print_msg=true);
 
-	int 					getIdxRegisteredClass(const string & v, bool print_msg=true);
-	bool isClassRegistered(const string & v);
-	fntConversionType getConversionType(string objectType, string conversionType, bool show_errors=true);
+	static int 					getIdxRegisteredClass(const string & v, bool print_msg=true);
+	static bool isClassRegistered(const string & v);
+	static fntConversionType getConversionType(string objectType, string conversionType, bool show_errors=true);
 
-	const char * getNameRegisteredClassByIdx(int idx);
+	static const char * getNameRegisteredClassByIdx(int idx);
 
 
 	// internal var types ...
-	int getIdxClassVoid(){return idxClassVoid;}
-	tInfoRegisteredClass *  getRegisteredClassVoid(){return m_registeredClass[idxClassVoid];}
+	static int getIdxClassVoid(){return idxClassVoid;}
+	static tInfoRegisteredClass *  getRegisteredClassVoid(){return m_registeredClass[idxClassVoid];}
 
-	int getIdxClassUndefined(){return idxClassUndefined;}
-	tInfoRegisteredClass *  getRegisteredClassUndefined(){return m_registeredClass[idxClassUndefined];}
+	static int getIdxClassUndefined(){return idxClassUndefined;}
+	static tInfoRegisteredClass *  getRegisteredClassUndefined(){return m_registeredClass[idxClassUndefined];}
 
-	int getIdxClassInteger(){return idxClassInteger;}
-	tInfoRegisteredClass *  getRegisteredClassInteger(){return m_registeredClass[idxClassInteger];}
+	static int getIdxClassInteger(){return idxClassInteger;}
+	static tInfoRegisteredClass *  getRegisteredClassInteger(){return m_registeredClass[idxClassInteger];}
 
-	int getIdxClassNumber(){return idxClassNumber;}
-	tInfoRegisteredClass *  getRegisteredClassNumber(){return m_registeredClass[idxClassNumber];}
+	static int getIdxClassNumber(){return idxClassNumber;}
+	static tInfoRegisteredClass *  getRegisteredClassNumber(){return m_registeredClass[idxClassNumber];}
 
-	int getIdxClassStruct(){return idxClassStruct;}
-	tInfoRegisteredClass *  getRegisteredClassStruct(){return m_registeredClass[idxClassStruct];}
+	static int getIdxClassStruct(){return idxClassStruct;}
+	static tInfoRegisteredClass *  getRegisteredClassStruct(){return m_registeredClass[idxClassStruct];}
 
-	int getIdxClassString(){return idxClassString;}
-	tInfoRegisteredClass *  getRegisteredClassString(){return m_registeredClass[idxClassString];}
+	static int getIdxClassString(){return idxClassString;}
+	static tInfoRegisteredClass *  getRegisteredClassString(){return m_registeredClass[idxClassString];}
 
-	int getIdxClassBoolean(){return idxClassBoolean;}
-	tInfoRegisteredClass *  getRegisteredClassBoolean(){return m_registeredClass[idxClassBoolean];}
+	static int getIdxClassBoolean(){return idxClassBoolean;}
+	static tInfoRegisteredClass *  getRegisteredClassBoolean(){return m_registeredClass[idxClassBoolean];}
 
-	int getIdxClassVector(){return idxClassVector;}
-	tInfoRegisteredClass *  getRegisteredClassVector(){return m_registeredClass[idxClassVector];}
+	static int getIdxClassVector(){return idxClassVector;}
+	static tInfoRegisteredClass *  getRegisteredClassVector(){return m_registeredClass[idxClassVector];}
 
-	int getIdxClassFunctor(){return idxClassFunctor;}
-	tInfoRegisteredClass *  getRegisteredClassFunctor(){return m_registeredClass[idxClassFunctor];}
+	static int getIdxClassFunctor(){return idxClassFunctor;}
+	static tInfoRegisteredClass *  getRegisteredClassFunctor(){return m_registeredClass[idxClassFunctor];}
 
-	int getIdxClassNull(){return idxClassNull;}
-	tInfoRegisteredClass *  getRegisteredClassNull(){return m_registeredClass[idxClassNull];}
+	static int getIdxClassNull(){return idxClassNull;}
+	static tInfoRegisteredClass *  getRegisteredClassNull(){return m_registeredClass[idxClassNull];}
 
 
 
@@ -155,7 +155,7 @@ public:
 	 * Register C function
 	 */
 	template <typename F>
-	bool register_C_FunctionInt(const string & function_name,F function_ptr)
+	static bool register_C_FunctionInt(const string & function_name,F function_ptr)
 	{
 		string return_type;
 		vector<string> params;
@@ -166,7 +166,7 @@ public:
 		//CScope::tScopeVar  *rs;
 
 		//CScriptVariable *sf=NULL;
-		tScriptFunctionObject * mainFunctionInfo = getFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+		tScriptFunctionObject * mainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
 		//tInfoRegisteredClass *rc = CScriptClass::getInstance()->getRegisteredClass(class_name);
 
 		if(mainFunctionInfo == NULL){
@@ -222,11 +222,11 @@ public:
 	/**
 	 * Register C variable
 	 */
-	bool register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
+	static bool register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
 
 
 
-	int getIdx_C_RegisteredClass(const string & str_classPtr, bool print_msg=true){
+	static int getIdx_C_RegisteredClass(const string & str_classPtr, bool print_msg=true){
 			// ok check c_type
 			for(unsigned i = 0; i < m_registeredClass.size(); i++){
 				if(m_registeredClass[i]->classPtrType == str_classPtr){
@@ -241,7 +241,7 @@ public:
 			return -1;
 	}
 
-	int getIdx_C_RegisteredFunctionMemberClass(const string & str_classPtr, const string & str_functionName, bool print_msg=true){
+	static int getIdx_C_RegisteredFunctionMemberClass(const string & str_classPtr, const string & str_functionName, bool print_msg=true){
 
 			int index_class = getIdx_C_RegisteredClass(str_classPtr,print_msg);
 
@@ -271,7 +271,7 @@ public:
 	 * Register C Class. Return index registered class
 	 */
 	template<class _T>
-	bool register_C_Class(const string & class_name){//, const string & base_class_name=""){
+	static bool register_C_Class(const string & class_name){//, const string & base_class_name=""){
 
 		/*tInfoRegisteredClass *base_class = NULL;
 
@@ -329,7 +329,7 @@ public:
 	}
 
 	template<class _T, class _B>
-	bool class_C_baseof(){
+	static bool class_C_baseof(){
 
 		string base_class_name=typeid(_B).name();
 		string base_class_name_ptr=typeid(_B *).name();
@@ -379,9 +379,9 @@ public:
 		// vars ...
 		for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
 
-			tInfoRegisteredVariableSymbol *irs_source = &irc_base->metadata_info.object_info.local_symbols.m_registeredVariable[i];
+			tInfoVariableSymbol *irs_source = &irc_base->metadata_info.object_info.local_symbols.m_registeredVariable[i];
 
-			tInfoRegisteredVariableSymbol irs;
+			tInfoVariableSymbol irs;
 			// init struct...
 			irs.idxClassInfo = idxBaseClass;//.class_info = m_registeredClass[base_class];
 			irs.ref_ptr=irs_source->ref_ptr;
@@ -431,7 +431,7 @@ public:
 	 * Register C Member function Class
 	 */
 	template <class _T, typename F>
-	bool register_C_FunctionMemberInt(const char *function_name,F function_type)
+	static bool register_C_FunctionMemberInt(const char *function_name,F function_type)
 	{
 		string return_type;
 		vector<string> params;
@@ -502,7 +502,7 @@ public:
 	}
 
 	template <class _T, typename _V>
-	bool register_C_VariableMemberInt(const char *var_name, unsigned int offset)
+	static bool register_C_VariableMemberInt(const char *var_name, unsigned int offset)
 	{
 		string var_type = typeid(_V *).name(); // we need the pointer type ...
 		//decltype(var_type) var;
@@ -514,7 +514,7 @@ public:
 
 		string return_type;
 		vector<string> params;
-		tInfoRegisteredVariableSymbol irs;
+		tInfoVariableSymbol irs;
 		string str_classPtr = typeid( _T *).name();
 
 
@@ -616,17 +616,17 @@ private:
 	//vector<tInfoRegisteredClass *>  	 m_registeredClass;
 	//CScriptVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
 
-	bool searchVarFunctionSymbol(tFunctionInfo *idxFunction, tInfoAsmOp *iao, int current_idx_function,SCOPE_TYPE scope_type=SCOPE_TYPE::UNKNOWN_SCOPE);
+	 static bool searchVarFunctionSymbol(int idxFunction, tInfoAsmOp *iao, int current_idx_function,SCOPE_TYPE scope_type=SCOPE_TYPE::UNKNOWN_SCOPE);
 
-	bool buildScopeVariablesBlock(tScriptFunctionObject *root_class_irfs );
-	void unloadRecursiveFunctions(tScriptFunctionObject * info_function);
+	 static bool buildScopeVariablesBlock(tScriptFunctionObject *root_class_irfs );
+	 static void unloadRecursiveFunctions(tScriptFunctionObject * info_function);
 
-	bool updateFunctionSymbols(tScriptFunctionObject * info_function, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);
+	 static bool updateFunctionSymbols(int idxSxriptFunctionObject, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);
 
 
 
-	CScriptClass();
-	~CScriptClass();
+	//CScriptClass();
+	//~CScriptClass();
 
 
 

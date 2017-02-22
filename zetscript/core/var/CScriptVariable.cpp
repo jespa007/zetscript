@@ -27,7 +27,7 @@ CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & 
 	si.object = irv;
 
 	// get super function ...
-	si.super_function = getFunctionSymbol(symbol_value);
+	si.super_function = getIdxScriptFunctionObjectByClassFunctionName(symbol_value);
 
 	si.symbol_value = symbol_value;
 	si.idxAstNode = _idxAstNode;
@@ -46,7 +46,7 @@ void CScriptVariable::createSymbols(tInfoRegisteredClass *ir_class){
 		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
 
 
-			tInfoRegisteredVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
+			tInfoVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
 
 			si = addVariableSymbol(ir_var->symbol_name,ir_var->idxAstNode);
 
@@ -273,7 +273,7 @@ CScriptVariable::tSymbolInfo *getFunctionSymbolRecursive(const string & varname)
 
 }
 */
-CScriptVariable::tSymbolInfo * CScriptVariable::getFunctionSymbol(const string & varname){
+CScriptVariable::tSymbolInfo * CScriptVariable::getIdxScriptFunctionObjectByClassFunctionName(const string & varname){
 
 	// from lat value to first to get last override function...
 	for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){

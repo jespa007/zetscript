@@ -23,6 +23,46 @@ void CScriptClassFactory::createSingletons(){
 	}
 }
 
+int CScriptClassFactory::getIdxClassFromIts_C_Type(const string & c_type_str){
+
+	 // 1. check primitives ...
+	 /*for(unsigned i = 0; i < MAX_C_TYPE_VALID_PRIMITIVE_VAR;i++){
+		 if(CScriptClass::valid_C_PrimitiveType[i].type_str==type_str){
+			 return true;
+		 }
+	 }*/
+	 /*
+	 if(CScriptClass::valid_C_PrimitiveType[i].type_str==type_str){
+			 return true;
+	 }*/
+	 //int , , , , idxClassVector, idxClassFunctor, idxClassUndefined, ;
+		/*if(CScriptClass::valid_C_PrimitiveType[CScriptClass::VOID_TYPE].type_str==c_type_str){
+			return idxClassVoid;
+		}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::INT_PTR_TYPE].type_str== c_type_str){
+			return idxClassInteger;
+		}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::FLOAT_PTR_TYPE].type_str==c_type_str){
+			return idxClassNumber;
+		}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::STRING_PTR_TYPE].type_str==c_type_str){
+			return idxClassString;
+		}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::BOOL_PTR_TYPE].type_str==c_type_str){
+			return idxClassBoolean;
+		}*/
+
+
+
+	 // for all registered C classes...
+	 for(unsigned i = 0; i < vec_registered_class_node->size(); i++){
+		 if(vec_registered_class_node->at(i)->classPtrType==c_type_str)
+		 {
+			 return i;
+		 }
+	 }
+
+
+	 return -1;
+
+ }
+
 void CScriptClassFactory::destroySingletons(){
 	if(vec_registered_class_node!=NULL){
 		delete vec_registered_class_node;
@@ -71,6 +111,7 @@ tInfoRegisteredClass 	* CScriptClassFactory::getRegisteredClassNodeByName(const 
 
 	return NULL;
 }
+
 
 
 

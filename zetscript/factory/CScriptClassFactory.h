@@ -9,6 +9,7 @@
 #define GET_CLASS_C_PTR_NAME(s)					(CScriptClassFactory::getRegisteredClassNodeBy_C_ClassPtr(s))    // 0 is the main class
 
 
+
 class CScriptClassFactory{
 
 	static vector<tInfoRegisteredClass *> 			* vec_registered_class_node;
@@ -28,6 +29,7 @@ public:
 	static tInfoRegisteredClass 				* 	getRegisteredClassNodeBy_C_ClassPtr(const string & class_type, bool print_msg=true);
 	static int 										getIdxRegisteredClassNode_Internal(const string & class_name);
 	static int 										getIdxRegisteredClassNode(const string & v, bool print_msg=true);
+	static int 										getIdxClassFromIts_C_Type(const string & c_type_str);
 	static bool 									isClassRegistered(const string & v);
 
 	static void destroySingletons();

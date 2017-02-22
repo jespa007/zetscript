@@ -93,7 +93,7 @@ private:
 
 	int  addLocalFunctionSymbol(const string & name,tASTNode *ast);
 	bool functionSymbolExists(const string & name,tASTNode *ast);
-	int  getIdxFunctionSymbol(const string & name,tASTNode *param_ast,SCOPE_TYPE & scope_type, bool print_msg=true);
+	int  getIdxFunctionObject(const string & name,tASTNode *param_ast,SCOPE_TYPE & scope_type, bool print_msg=true);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	//
