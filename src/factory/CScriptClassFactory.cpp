@@ -1,12 +1,14 @@
 #include "zs_factory.h"
 
+vector<tInfoScriptClass *> 				* vec_registered_class_node=NULL;
+
  //CScriptClassFactory *  	 CScriptClassFactory::scriptClassFactory=NULL;
  CScriptClassFactory::tPrimitiveType CScriptClassFactory::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 
 
  //--obj , type convert, ---
  map<string,map<string,fntConversionType>> CScriptClassFactory::mapTypeConversion;
-vector<tInfoScriptClass *> 				* vec_registered_class_node=NULL;
+
 
 /*
 //	______           _     _                    _   _____ _

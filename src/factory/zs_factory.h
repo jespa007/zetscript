@@ -5,5 +5,6 @@
 #include "core/zs_core.h"
 #include "CASTNodeFactory.h"
 #include "CScopeFactory.h"
-#include "CScriptClassFactory.h"
 #include "CScriptFunctionObjectFactory.h"
+#include "CScriptClassFactory.h"
+

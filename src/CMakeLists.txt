@@ -12,7 +12,7 @@ project(zg_base)
    
 if (MINGW)
 	set(CMAKE_LEGACY_MINGW_WIN32 0)
-	set(CMAKE_PREFIX_PATH "c:/braingaze/dev/mingw/local32/lib")
+	set(CMAKE_PREFIX_PATH "$ENV{MINGWDIR}/local32/lib")
 
 	MESSAGE ("include" ${include_directories})
  

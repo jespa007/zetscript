@@ -278,15 +278,17 @@ enum ALE_INFO_PROPERTIES{
 };
 
 
-struct tInfoVariableSymbol{
+struct tInfoVariableSymbol{ // it can be a variable or function
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function
-	string 	 symbol_name;
+	string 	 symbol_name; // symbol name
 	int idxClassInfo;//tInfoScriptClass		 *class_info;
-	//int idxScopeVar;//tScopeVar  				*info_var_scope;
+	int idxSymbol; // idx of class function/variable symbol that keeps.
 	int idxAstNode;
+
+	//int idxScopeVar;//tScopeVar  				*info_var_scope;
+
 	unsigned int properties; // SYMBOL_INFO_PROPERTIES
 	string c_type; // In case is C, we need to know its type ...
-	int index;
 
 	tInfoVariableSymbol(){
 		properties=0;
@@ -298,7 +300,7 @@ struct tInfoVariableSymbol{
 		//info_var_scope=NULL;
 		idxClassInfo=-1;
 		//idxScopeVar=-1;
-		index=-1;
+		idxSymbol=-1;
 
 	}
 };
