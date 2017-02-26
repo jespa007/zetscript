@@ -16,42 +16,29 @@ class CScope;
 #define ZETSCRIPT_PATCH_VERSION 0
 
 
-
-
-
 class CZetScript{
 
 
 	// calling C function with differnt parameters...
-	tInfoScriptClass *m_mainClassInfo;
-	tScriptFunctionObject *m_mainFunctionInfo;
+	CScriptVariable		*		m_mainObject;
+	int						 	idxMainScriptFunctionObject;
 
-	CScriptVariable *m_mainClass;
 	CVirtualMachine *vm;
 	bool __init__;
 
 
-	//CScriptFunction *m_mainFunction;
 
-	/*enum TYPE_{
-		LOAD_VALUE=1,
-		MOV_VAR,
-		OPERATOR
-	};*/
+	static vector<tInfoParsedSource> * m_parsedSource;
 
 
-	/*typedef struct{
-		string result_type;
-		vector <string> * param_type;
-		void (* fun_ptr)();
-	}tInfoObjectOperator;*/
 
-
+	bool isFilenameAlreadyParsed(const char *filename);
+	bool parse_ast(const char *str);
 
 
 	static CZetScript * m_instance;
 
-	//tScriptFunctionObject m_structInfoMain;
+	//CScriptFunctionObject m_structInfoMain;
 
 	bool init();
 	CZetScript();
@@ -59,14 +46,10 @@ class CZetScript{
 
 	~CZetScript();
 
-	//map<string,vector<tInfoObjectOperator> *> m_mapContainerOperators;
-	//bool existOperatorSignature(const string & op,const string & result, vector<string> * param);
-	//tInfoObjectOperator * getOperatorInfo(const string & op, string * type_op1, string * type_op2=NULL);
-
 public:
 
 	static CZetScript * getInstance();
-	static CAst       * m_ast;
+	static void setVectorParsedFiles(vector<tInfoParsedSource> * parsedFiles);
 
 	//---------------
 	// PRINT ASM INFO
@@ -79,18 +62,20 @@ public:
 	// PRINT ASM INFO
 	//---------------
 
-	tScriptFunctionObject *getMainStructInfo(){return m_mainFunctionInfo;}
+	/*CScriptFunctionObject *getMainStructInfo(){return m_mainFunctionInfo;}
 	tFunctionInfo *getMainObjectInfo(){return &m_mainFunctionInfo->object_info;}
-	CScriptVariable *getMainObject(){return m_mainClass;}
+	CScriptVariable *getMainObject(){return m_mainClass;}*/
 	//CScriptFunction *getMainFunction(){return m_mainFunction;}
 
-	static CScriptVariable * call_C_function(void *fun_ptr,tScriptFunctionObject *irfs, vector<CScriptVariable *> * argv);
+	static CScriptVariable * call_C_function(void *fun_ptr,CScriptFunctionObject *irfs, vector<CScriptVariable *> * argv);
 
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
-	bool eval(const string & s);
+
 	std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * script_call(const string &script_function_name);
 	CScriptVariable * execute();
 
+	bool eval(const string & string);
+	bool eval_file(const char * filename);
 
 
 	static void destroy();

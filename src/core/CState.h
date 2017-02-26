@@ -20,11 +20,15 @@ class CState{
 
 	static string * aux_str;
 
-	vector<tASTNode *> 							vec_ast_node; // ast collection register...
+	void unloadRecursiveFunctions(CScriptFunctionObject * info_function);
+	void destroyScriptClassNodes();
+
+	vector<CASTNode *> 							vec_ast_node; // ast collection register...
 	vector<CScope *> 							vec_scope_node;
 	vector<tScopeVar *> 						vec_scope_var_node;
-	vector<tInfoScriptClass *> 				vec_registered_class_node;
-	vector<tScriptFunctionObject *> 			vec_scipt_function_object_node;
+	vector<CScriptClass *> 						vec_script_class_node;
+	vector<CScriptFunctionObject *> 			vec_scipt_function_object_node;
+	vector<tInfoParsedSource> 				vec_info_parsed_source_node;
 
 public:
 
@@ -59,11 +63,12 @@ public:
 
 	CState();
 
-	vector<tASTNode *> 					*	getVecAstNode(); // ast collection register...
+	vector<CASTNode *> 					*	getVecAstNode(); // ast collection register...
 	vector<CScope *> 					*	getVecScopeNode();
 	vector<tScopeVar *> 				*	getVecScopeVarNode();
-	vector<tInfoScriptClass *> 		*	getVecClassNode();
-	vector<tScriptFunctionObject *> 	*	getVecScriptFunctionObjectNode();
+	vector<CScriptClass *> 				*	getScriptClassNode();
+	vector<CScriptFunctionObject *> 	*	getVecScriptFunctionObjectNode();
+	vector<tInfoParsedSource> 		*	getVectorInfoParsedSourceNode();
 
 	~CState();
 

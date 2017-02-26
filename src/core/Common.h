@@ -1,19 +1,20 @@
 #pragma once
 
 
-class tASTNode;
-typedef tASTNode *PASTNode;
-struct tScriptFunctionObject;
+class CASTNode;
+typedef CASTNode *PASTNode;
+struct CScriptFunctionObject;
 class tScopeVar;
-struct tInfoScriptClass;
+class CScriptClass;
 struct tFunctionInfo;
 struct tInfoVarScopeBlock;
 
-int insertAstNode(tASTNode * ast_node);
-int insertScopeVar(tScopeVar * ast_node);
+//int insertAstNode(CASTNode * ast_node);
+//int insertScopeVar(tScopeVar * ast_node);
 
 
-
+#define ZS_ERROR			-1
+#define ZS_UNDEFINED_IDX 	-1
 #define MAX_PARAM_C_FUNCTION 6
 
 enum NODE_TYPE{
@@ -281,7 +282,7 @@ enum ALE_INFO_PROPERTIES{
 struct tInfoVariableSymbol{ // it can be a variable or function
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function
 	string 	 symbol_name; // symbol name
-	int idxClassInfo;//tInfoScriptClass		 *class_info;
+	int idxScriptClass;//CScriptClass		 *class_info;
 	int idxSymbol; // idx of class function/variable symbol that keeps.
 	int idxAstNode;
 
@@ -298,7 +299,7 @@ struct tInfoVariableSymbol{ // it can be a variable or function
 		ref_ptr=0;
 		//class_info=NULL;
 		//info_var_scope=NULL;
-		idxClassInfo=-1;
+		idxScriptClass=-1;
 		//idxScopeVar=-1;
 		idxSymbol=-1;
 
@@ -326,71 +327,6 @@ enum{
 	RIGHT_NODE
 };
 
-class tASTNode{
-
-	void destroyChildren_Recursive(PASTNode _node){
-
-		if(_node != NULL){
-
-			for(unsigned i = 0; i < _node->children.size(); i++){
-				if(_node->children[i]!= NULL){
-					destroyChildren_Recursive(_node->children[i]);
-				}
-			}
-    		_node->children.clear();
-			delete _node;
-			_node = NULL;
-		}
-
-	}
-
-	void destroyChildren(){
-		for(unsigned i = 0; i < children.size(); i++){
-			destroyChildren_Recursive(children[i]);
-		}
-		children.clear();
-	}
-
-public:
-
-	NODE_TYPE node_type;
-	tInfoKeyword *keyword_info;
-	tInfoPunctuator *operator_info,*pre_post_operator_info;
-	string 	symbol_value;
-	string type_ptr;
-	int idxScope; // saves scope info ptr (only for global vars).
-	string type_class;
-	int line_value;
-	PASTNode parent;
-	vector<PASTNode> children; //left,right;
-	void *aux_value;
-	int idxAstNode;
-
-	tASTNode(int preallocate_num_nodes=0){
-		node_type = UNKNOWN_NODE;
-		keyword_info = NULL;
-		pre_post_operator_info = NULL;
-		line_value=-1;
-		operator_info=NULL;
-		symbol_value="";
-		parent=NULL;
-		aux_value=NULL;
-
-		idxAstNode = insertAstNode(this);
-		idxScope = -1;
-
-		if(preallocate_num_nodes > 0){
-			for(int i = 0; i < preallocate_num_nodes; i++){
-				children.push_back(NULL);
-			}
-		}
-	}
-
-	~tASTNode(){
-		destroyChildren();
-	}
-
-};
 
 //-----------------------------
 
@@ -475,51 +411,17 @@ struct tFunctionInfo{ // script function is shared by class and function ...
 	vector<tInfoStatementOp> statment_op;
 	vector<tInfoVarScopeBlock> info_var_scope; // list var per scope in any function ...
 
-	int idxFunctionSymbol;
+	int idxScriptFunctionObject;
 
 };
 
-struct tScriptFunctionObject{
+typedef struct {
+	string filename;
+	unsigned char *data;
+}tInfoParsedSource;
 
-	tFunctionInfo	object_info;
 
-	//tScriptFunctionObject *virtual_function;
 
-	// var for function ...
-	vector<string> m_arg; // tells var arg name or var type name (in of C )
-	int idx_return_type; // -1 not inicialized type return.
-
-	tScriptFunctionObject(){
-		//virtual_function = NULL;
-		idx_return_type = -1;
-		object_info.idxFunctionSymbol = -1;
-	}
-};
-
-/**
- * Stores the basic information to build a object through built AST structure
- */
-struct tInfoScriptClass{
-
-	tScriptFunctionObject	metadata_info;
-	int idx_function_script_constructor;
-	int idxClass;
-
-	std::function<void *()> 		* 	c_constructor;
-	std::function<void (void *p)> 	*	c_destructor;
-	string classPtrType; // type_id().name();
-	vector<tInfoScriptClass *> baseClass; // in the case is and extension of class.
-
-	tInfoScriptClass(){
-
-		idxClass=-1;
-		classPtrType="";
-		c_destructor = NULL;
-		c_constructor=NULL;
-		idx_function_script_constructor=-1;
-	}
-
-};
 
 /**
  * Scope register

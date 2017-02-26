@@ -10,10 +10,10 @@ CFunctor::CFunctor(){
 
 	//m_varType =VAR_TYPE::FUNCTION;
 	//m_value=_irfs;
-	this->init(CScriptClass::getInstance()->getRegisteredClassFunctor(), (void *)this);
+	this->init(CScriptClass::getRegisteredClassFunctor(), (void *)this);
 }
 
-void CFunctor::setFunctionSymbol(tScriptFunctionObject *_irfs){
+void CFunctor::setFunctionSymbol(CScriptFunctionObject *_irfs){
 	m_value=_irfs;
 }
 

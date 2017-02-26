@@ -1,11 +1,15 @@
 #pragma once
 
 #define NEW_UNDEFINED_VAR (new CUndefined()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassUndefined())))
+#define UNDEFINED_SYMBOL (CUndefined::getInstance())
+
 
 class CUndefined:public CScriptVariable{
-
-public:
+	static CUndefined *undefined_symbol;
 	CUndefined();
-	//CUndefined(tInfoScriptClass *info_registered_class);
+public:
+	static CUndefined *getInstance();
+	static void destroySingletons();
+	//CUndefined(CScriptClass *info_registered_class);
 
 };

@@ -3,7 +3,7 @@
 
 class CScope;
 
-//class tScriptFunctionObject;
+//class CScriptFunctionObject;
 
 /**
  * The compiler compiles function structs and generates its asm instruction. The compile must know
@@ -30,7 +30,7 @@ public:
 	// COMMON COMPILE FUNCTIONS
 
 
-	//bool compile(const string & s, tScriptFunctionObject * pr);
+	//bool compile(const string & s, CScriptFunctionObject * pr);
 
 
 	/**
@@ -42,7 +42,7 @@ public:
 	 * Compiles main ast node with base object info to store instruction related with function information.
 	 */
 
-	bool compile(PASTNode _ast_main_node, tScriptFunctionObject *sf);
+	bool compile(PASTNode _ast_main_node, CScriptFunctionObject *sf);
 
 
 private:
@@ -87,13 +87,13 @@ private:
 	 */
 	int getIdxArgument(const string & var);
 
-	int  addLocalVarSymbol(const string & name,tASTNode *ast);
-	bool localVarSymbolExists(const string & name,tASTNode *ast);
-	int  getIdxLocalVarSymbol(const string & name,tASTNode *ast, bool print_msg=true);
+	int  addLocalVarSymbol(const string & name,CASTNode *ast);
+	bool localVarSymbolExists(const string & name,CASTNode *ast);
+	int  getIdxLocalVarSymbol(const string & name,CASTNode *ast, bool print_msg=true);
 
-	int  addLocalFunctionSymbol(const string & name,tASTNode *ast);
-	bool functionSymbolExists(const string & name,tASTNode *ast);
-	int  getIdxFunctionObject(const string & name,tASTNode *param_ast,SCOPE_TYPE & scope_type, bool print_msg=true);
+	int  addLocalFunctionSymbol(const string & name,CASTNode *ast);
+	bool functionSymbolExists(const string & name,CASTNode *ast);
+	int  getIdxFunctionObject(const string & name,CASTNode *param_ast,SCOPE_TYPE & scope_type, bool print_msg=true);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	//
@@ -109,7 +109,7 @@ private:
 	bool compile_class(PASTNode _ast_class_node, tFunctionInfo *sf);
 
 
-	//bool parseExpression(const char *expression_str, int & m_line,tScriptFunctionObject * sf, CScope *currentEvaluatingScope);
+	//bool parseExpression(const char *expression_str, int & m_line,CScriptFunctionObject * sf, CScope *currentEvaluatingScope);
 	/**
 	 * Load value or symbol and insert asm operation at current statment.
 	 */
@@ -122,17 +122,17 @@ private:
 	/**
 	 * Unconditional Jump instruction
 	 */
-	tInfoAsmOp * insert_JMP_Instruction(int jmp_statement =-1, int instruction_index = -1);
+	tInfoAsmOp * insert_JMP_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
 
 	/**
 	 * Jump Not True (JNT) instruction
 	 */
-	tInfoAsmOp * insert_JNT_Instruction(int jmp_statement =-1, int instruction_index = -1);
+	tInfoAsmOp * insert_JNT_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
 
 	/**
 	 * Jump if True (JT) instruction
 	 */
-	tInfoAsmOp * insert_JT_Instruction(int jmp_statement =-1, int instruction_index = -1);
+	tInfoAsmOp * insert_JT_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
 	void insert_NOP_Instruction();
 
 	tInfoAsmOp * insert_Save_CurrentInstruction();
@@ -143,7 +143,7 @@ private:
 	 */
 
 	void insert_CreateArrayObject_Instruction(PASTNode _node);
-	void insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_vec_object_index, int index_instruction_to_push=-1);
+	void insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_vec_object_index, int index_instruction_to_push=ZS_UNDEFINED_IDX);
 
 	void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction, PASTNode _ast);
 
@@ -161,7 +161,7 @@ private:
 	 * index_object: index to take asm reference from. (-1 refers to main object)
 	 * index_call: index where take function ref from.
 	 */
-	void insert_CallFunction_Instruction(PASTNode _node,int index_call,int index_object=-1);
+	void insert_CallFunction_Instruction(PASTNode _node,int index_call,int index_object=ZS_UNDEFINED_IDX);
 	void insertRet(PASTNode _node,int index);
 
 	/**
@@ -174,7 +174,7 @@ private:
 
 
 
-	bool insertOperatorInstruction(tInfoPunctuator *  op, PASTNode _node, string & error_str, int left, int right=-1);
+	bool insertOperatorInstruction(tInfoPunctuator *  op, PASTNode _node, string & error_str, int left, int right=ZS_UNDEFINED_IDX);
 
 
 	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
@@ -208,14 +208,14 @@ private:
 
 	int gacExpression_ArrayAccess(PASTNode op, CScope *_lc);
 	int  gacExpression_Recursive(PASTNode op, CScope * _lc, int & numreg);
-	bool  gacExpression(PASTNode op, CScope * _lc,int index_instruction=-1);
+	bool  gacExpression(PASTNode op, CScope * _lc,int index_instruction=ZS_UNDEFINED_IDX);
 
 	bool gacKeyword(PASTNode _node, CScope * _lc);
 
 	/**
 	 * Adds class info into factory
 	 */
-	bool doRegisterVariableSymbolsClass(const string & class_name, tInfoScriptClass *current_class);
+	bool doRegisterVariableSymbolsClass(const string & class_name, CScriptClass *current_class);
 	bool gacClass(PASTNode _node, CScope * _lc);
 
 	int gacNew(PASTNode _node, CScope * _lc);
@@ -223,7 +223,7 @@ private:
 	bool gacVar(PASTNode _node, CScope * _lc);
 	bool gacWhile(PASTNode _node, CScope * _lc);
 	bool gacIfElse(PASTNode _node, CScope * _lc);
-	bool gacFunction(PASTNode _node, CScope * _lc, tScriptFunctionObject *irfs);
+	bool gacFunction(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs);
 	bool gacReturn(PASTNode _node, CScope * _lc);
 	bool gacIf(PASTNode _node, CScope * _lc);
 	int gacInlineIf(PASTNode _node, CScope * _lc, int & instruction);
@@ -231,7 +231,7 @@ private:
 	bool gacBody(PASTNode _node, CScope * _lc);
 
 
-	void pushFunction(PASTNode _node,tScriptFunctionObject *sf);
+	void pushFunction(PASTNode _node,CScriptFunctionObject *sf);
 	void popFunction();
 
 	bool generateAsmCode_Recursive(PASTNode _node);
@@ -240,8 +240,8 @@ private:
 
 	vector<tInfoStatementOp > 	*m_currentListStatements;
 	CScope											*m_treescope;
-	tScriptFunctionObject						*m_currentFunctionInfo;
-	vector <tScriptFunctionObject *>  		 			stk_scriptFunction;
+	CScriptFunctionObject						*m_currentFunctionInfo;
+	vector <CScriptFunctionObject *>  		 			stk_scriptFunction;
 
 	//---------------------------------------------------------------
 

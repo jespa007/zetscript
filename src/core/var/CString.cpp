@@ -11,13 +11,13 @@ void CString::setup(){
 
 CString::CString(){
 	m_strValue = "";
-	this->init(CScriptClass::getInstance()->getRegisteredClassString(), (void *)this);
+	init(CScriptClass::getRegisteredClassString(), (void *)this);
 }
 
 CString::CString(const string & s){
 
 
-	this->init(CScriptClass::getInstance()->getRegisteredClassString(), (void *)this);
+	init(CScriptClass::getRegisteredClassString(), (void *)this);
 	m_strValue = s;
 }
 

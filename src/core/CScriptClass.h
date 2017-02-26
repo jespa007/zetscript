@@ -14,26 +14,48 @@
 
 
 
-#define register_C_VariableMember(o,s) 		register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetOf(&o::s))
-#define register_C_FunctionMember(o,s)		register_C_FunctionMemberInt<o>(STR(s),&o::s)
+#define register_C_VariableMember(o,s) 			register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetOf(&o::s))
+#define register_C_FunctionMember(o,s)			register_C_FunctionMemberInt<o>(STR(s),&o::s)
+
+#define GET_MAIN_VARIABLE(idx_var)				CScriptClass::getVariableClass(0,idx_var)
+
+#define NEW_CLASS_VAR_BY_IDX(idx) 				(CScriptClass::newScriptVariableByIdx(idx))
+
+#define REGISTERED_CLASS_NODE(idx) 				(CScriptClass::getScriptClassByIdx(idx))
+#define MAIN_CLASS_NODE							(CScriptClass::getScriptClassByIdx(0))    // 0 is the main class
+#define GET_SCRIPT_CLASS_INFO(idx)				(CScriptClass::getScriptClassByIdx(idx))    // 0 is the main class
+#define GET_SCRIPT_CLASS_INFO_BY_NAME(s)		(CScriptClass::getScriptClassByName(s))    // 0 is the main class
+#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(CScriptClass::getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
 
 
+/**
+ * Stores the basic information to build a object through built AST structure
+ */
 
-#define NEW_CLASS_VAR_BY_IDX(idx) (CScriptClass::getInstance()->newScriptVariableByIdx(idx))
-
-
-#define REGISTERED_CLASS_NODE(idx) 				CScriptClassFactory::getInfoScriptClassByIdx(idx)
-#define MAIN_CLASS_NODE							(CScriptClassFactory::getInfoScriptClassByIdx(0))    // 0 is the main class
-#define GET_CLASS(idx)							(CScriptClassFactory::getInfoScriptClassByIdx(idx))    // 0 is the main class
-#define GET_CLASS_BY_NAME(s)					(CScriptClassFactory::getInfoScriptClassByName(s))    // 0 is the main class
-#define GET_CLASS_C_PTR_NAME(s)					(CScriptClassFactory::getInfoScriptClassBy_C_ClassPtr(s))    // 0 is the main class
+class CScriptClass{
 
 
-
-class CScriptClassFactory{
-
-	static vector<tInfoScriptClass *> 			* vec_registered_class_node;
+	//------------- VARIABLES STRUCT ---------------
 public:
+	CScriptFunctionObject	metadata_info;
+	int idx_function_script_constructor;
+	//int idxScriptClass;
+
+	std::function<void *()> 		* 	c_constructor;
+	std::function<void (void *p)> 	*	c_destructor;
+	string classPtrType; // type_id().name();
+	vector<CScriptClass *> baseClass; // in the case is and extension of class.
+
+	CScriptClass();
+
+
+	//------------- STATIC METHODS ---------------
+
+private:
+	static vector<CScriptClass *> 			* vec_script_class_node;
+public:
+
+	// DEFINES
 
 	enum C_TYPE_VALID_PRIMITIVE_VAR{
 		VOID_TYPE,
@@ -45,47 +67,27 @@ public:
 		MAX_C_TYPE_VALID_PRIMITIVE_VAR
 	};
 
-	static void createSingletons();
-	static void destroySingletons();
-	static void set(vector<tInfoScriptClass *> 	& set_vec);
-
-	/**
-	 * Class Manager
-	 */
-	static tInfoScriptClass 				*	newInfoScriptClass();
-	static vector<tInfoScriptClass *> 		*	getVectorInfoScriptClassList();
-
-	static tInfoScriptClass 				* 	getInfoScriptClassByIdx(int idx);
-	static tInfoScriptClass 				* 	getInfoScriptClassByName(const string & name, bool print_msg=true);
-	static tInfoScriptClass 				* 	getInfoScriptClassBy_C_ClassPtr(const string & class_type, bool print_msg=true);
-	static int 										getIdxInfoScriptClass_Internal(const string & class_name);
-	static int 										getIdxInfoScriptClass(const string & v, bool print_msg=true);
-	static int 										getIdxClassFromIts_C_Type(const string & c_type_str);
-	static bool 									isClassRegistered(const string & v);
-
-
 	enum BASIC_CLASS_TYPE{
 
-		IDX_CLASS_MAIN=0, // First class ...
-		IDX_CLASS_INTEGER,
-		IDX_CLASS_NUMBER,
-		IDX_CLASS_STRING,
-		IDX_CLASS_BOOLEAN,
-		IDX_CLASS_VECTOR,
-		IDX_CLASS_FUNCTOR,
-		IDX_CLASS_UNDEFINED,
-		IDX_CLASS_VOID,
-		IDX_CLASS_NULL,
-		IDX_CLASS_STRUCT,
+		IDX_CLASS_MAIN=0, 	// Main class ...
+		IDX_CLASS_UNDEFINED,	// 8
+		IDX_CLASS_VOID,			// 9
+		IDX_CLASS_NULL,			// 10
+		IDX_CLASS_SCRIPT_VAR, 	// 1 script base that all object derive from it...
+		IDX_CLASS_INTEGER, 	  	// 2 then our basics types ...
+		IDX_CLASS_NUMBER,     	// 3
+		IDX_CLASS_STRING,     	// 4
+		IDX_CLASS_BOOLEAN,		// 5
+		IDX_CLASS_VECTOR,		// 6
+		IDX_CLASS_FUNCTOR,		// 7
+		IDX_CLASS_STRUCT,		// 11
 		MAX_BASIC_CLASS_TYPES
 	};
 
-
-
-
+	// STRUCTS
 
 	typedef struct{
-		string 	    type_str;
+		const char *   type_str;
 		C_TYPE_VALID_PRIMITIVE_VAR  id;
 	}tPrimitiveType;
 
@@ -94,28 +96,41 @@ public:
 		vector<tPrimitiveType*>		params;
 	}tRegisterFunction;
 
-	static tPrimitiveType valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
-	static void registerPrimitiveTypes();
 
+	// FUNCTIONS
+	static void set(vector<CScriptClass *> 	* set_vec);
 
-
-
+	/**
+	 * Class Manager
+	 */
 	/**
 	 * This function registers a script class into factory.
 	 */
-	static tInfoScriptClass * registerScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast);
+	static CScriptClass 				* 		newScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast);
+	static vector<CScriptClass *> 		*		getVectorScriptClassList();
+
+	static CScriptClass 				* 		getScriptClassByIdx(int idx);
+	static CScriptClass 				* 		getScriptClassByName(const string & name, bool print_msg=true);
+	static CScriptClass 				* 		getScriptClassBy_C_ClassPtr(const string & class_type, bool print_msg=true);
+	static int 										getIdxScriptClass_Internal(const string & class_name);
+	static int 										getIdxScriptClass(const string & v, bool print_msg=true);
+	static int 										getIdxClassFromIts_C_Type(const string & c_type_str);
+	static bool 									isClassRegistered(const string & v);
+
+
+
+	static tPrimitiveType valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
+	static void registerPrimitiveTypes();
+
 
 	/**
 	 * Class name given this function creates the object and initializes all variables.
 	 */
 	static CScriptVariable 		 * newScriptVariableByName(const string & class_name);
-	static CScriptVariable 		 * newScriptVariableByIdx(unsigned idx, void * value_object = NULL);
-
-
+	static CScriptVariable 		 * newScriptVariableByIdx(int idx_class, void * value_object = NULL);
+	static CScriptVariable 		 * getScriptVariableByIdx(int idx_class, int idx_var);
 
 	static bool updateReferenceSymbols();
-
-
 
 	static tInfoVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,PASTNode  node);
 	static tInfoVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
@@ -123,61 +138,36 @@ public:
 	static int 							 getIdxRegisteredVariableSymbol(tFunctionInfo *irf,const string & var_name, bool show_msg=true);
 
 
-	static tScriptFunctionObject *  registerFunctionSymbol(const string & class_name, const string & name,PASTNode  node);
+	static CScriptFunctionObject *  registerFunctionSymbol(const string & class_name, const string & name,PASTNode  node);
 	static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
+	static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
 
-
-
-	static tFunctionInfo *  getSuperClass(tInfoScriptClass *irc, const string & fun_name);
+	static tFunctionInfo *  getSuperClass(CScriptClass *irc, const string & fun_name);
 
 
 	static bool addArgumentFunctionSymbol(const string & class_name,const string & function_name,const string & arg_name);
 
 
-	//tInfoScriptClass * 	getRegisteredClass(const string & v, bool print_msg=true);
-	//tInfoScriptClass *	getRegisteredClassByIdx(unsigned index);
-	//tInfoScriptClass *  getRegisteredClassBy_C_ClassPtr(const string & v, bool print_msg=true);
+	//CScriptClass * 	getRegisteredClass(const string & v, bool print_msg=true);
+	//CScriptClass *	getRegisteredClassByIdx(unsigned index);
+	//CScriptClass *  getRegisteredClassBy_C_ClassPtr(const string & v, bool print_msg=true);
 
 	static int 					getIdxRegisteredClass(const string & v, bool print_msg=true);
 	static fntConversionType getConversionType(string objectType, string conversionType, bool show_errors=true);
 
 	static const char * getNameRegisteredClassByIdx(int idx);
 
-
 	// internal var types ...
-	/*static int getIdxClassVoid(){return IDX_CLASS_VOID;}
-	static tInfoScriptClass *  getRegisteredClassVoid(){return (*vec_registered_class_node)[IDX_CLASS_VOID];}
-
-	static int getIdxClassUndefined(){return IDX_CLASS_UNDEFINED;}
-	static tInfoScriptClass *  getRegisteredClassUndefined(){return (*vec_registered_class_node)[IDX_CLASS_UNDEFINED];}
-
-	static int getIdxClassInteger(){return IDX_CLASS_INTEGER;}
-	static tInfoScriptClass *  getRegisteredClassInteger(){return (*vec_registered_class_node)[IDX_CLASS_INTEGER];}
-
-	static int getIdxClassNumber(){return IDX_CLASS_NUMBER;}
-	static tInfoScriptClass *  getRegisteredClassNumber(){return (*vec_registered_class_node)[IDX_CLASS_NUMBER];}
-
-	static int getIdxClassStruct(){return IDX_CLASS_STRUCT;}
-	static tInfoScriptClass *  getRegisteredClassStruct(){return (*vec_registered_class_node)[IDX_CLASS_STRUCT];}
-
-	static int getIdxClassString(){return IDX_CLASS_STRING;}
-	static tInfoScriptClass *  getRegisteredClassString(){return (*vec_registered_class_node)[IDX_CLASS_STRING];}
-
-	static int getIdxClassBoolean(){return IDX_CLASS_BOOLEAN;}
-	static tInfoScriptClass *  getRegisteredClassBoolean(){return (*vec_registered_class_node)[IDX_CLASS_BOOLEAN];}
-
-	static int getIdxClassVector(){return IDX_CLASS_VECTOR;}
-	static tInfoScriptClass *  getRegisteredClassVector(){return (*vec_registered_class_node)[IDX_CLASS_VECTOR];}
-
-	static int getIdxClassFunctor(){return IDX_CLASS_FUNCTOR;}
-	static tInfoScriptClass *  getRegisteredClassFunctor(){return (*vec_registered_class_node)[IDX_CLASS_FUNCTOR];}
-
-	static int getIdxClassNull(){return IDX_CLASS_NULL;}
-	static tInfoScriptClass *  getRegisteredClassNull(){return (*vec_registered_class_node)[IDX_CLASS_NULL];}
-
-*/
-
-
+	static CScriptClass *  getRegisteredClassVoid();
+	static CScriptClass *  getRegisteredClassUndefined();
+	static CScriptClass *  getRegisteredClassInteger();
+	static CScriptClass *  getRegisteredClassNumber();
+	static CScriptClass *  getRegisteredClassStruct();
+	static CScriptClass *  getRegisteredClassString();
+	static CScriptClass *  getRegisteredClassBoolean();
+	static CScriptClass *  getRegisteredClassVector();
+	static CScriptClass *  getRegisteredClassFunctor();
+	static CScriptClass *  getRegisteredClassNull();
 
 
 	/**
@@ -186,17 +176,19 @@ public:
 	template <typename F>
 	static bool register_C_FunctionInt(const string & function_name,F function_ptr)
 	{
+		int idx_return_type=-1;
 		string return_type;
-		vector<string> params;
-		tScriptFunctionObject irs;
+		vector<string> m_arg;
+		unsigned int ref_ptr=-1;
+		CScriptFunctionObject *irs=NULL;
 
 		//tPrimitiveType *rt;
 		//vector<tPrimitiveType *> pt;
 		//CScope::tScopeVar  *rs;
 
 		//CScriptVariable *sf=NULL;
-		tScriptFunctionObject * mainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
-		//tInfoScriptClass *rc = CScriptClass::getInstance()->getRegisteredClass(class_name);
+		CScriptFunctionObject * mainFunctionInfo = getScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+		//CScriptClass *rc = CScriptClass::getInstance()->getRegisteredClass(class_name);
 
 		if(mainFunctionInfo == NULL){
 			print_error_cr("main function is not created");
@@ -205,60 +197,62 @@ public:
 
 		// 1. check all parameters ok.
 		using Traits3 = function_traits<decltype(function_ptr)>;
-		getParamsFunction<Traits3>(0,return_type, irs.m_arg, make_index_sequence<Traits3::arity>{});
+		getParamsFunction<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
 
 
 		// check valid parameters ...
-		if((irs.idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
+		if((idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
 			print_error_cr("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name.c_str());
 			return false;
 		}
 
-		for(unsigned int i = 0; i < irs.m_arg.size(); i++){
-			if(getIdxClassFromIts_C_Type(irs.m_arg[i])==-1){
-				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(irs.m_arg[i]).c_str(),function_name.c_str());
+		for(unsigned int i = 0; i < m_arg.size(); i++){
+			if(getIdxClassFromIts_C_Type(m_arg[i])==-1){
+				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name.c_str());
 				return false;
 			}
 		}
 
-		// init struct...
-
-		irs.object_info.symbol_info.idxAstNode = -1;
-		irs.object_info.symbol_info.idxScopeVar=-1;//info_var_scope = NULL;
-		irs.object_info.symbol_info.symbol_name = function_name;
-
-		irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-		if(irs.idx_return_type == IDX_CLASS_VOID){
-			if((irs.object_info.symbol_info.ref_ptr=(int)CFunction_C_TypeFactory::getInstance()->new_proxy_function<void>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
+		if(idx_return_type == IDX_CLASS_VOID){
+			if((ref_ptr=(int)CFunction_C_TypeFactory::getInstance()->new_proxy_function<void>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
 				return false;
 			}
 		}
 		else{
-			if((irs.object_info.symbol_info.ref_ptr=(int)CFunction_C_TypeFactory::getInstance()->new_proxy_function<int>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
+			if((ref_ptr=(int)CFunction_C_TypeFactory::getInstance()->new_proxy_function<int>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
 				return false;
 			}
 		}
 
-		irs.object_info.symbol_info.index = mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size();
-		mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.push_back(irs);
+
+		// init struct...
+		irs = NEW_SCRIPT_FUNCTION_OBJECT;
+
+		irs->m_arg = m_arg;
+		irs->idx_return_type = idx_return_type;
+		irs->object_info.symbol_info.ref_ptr = ref_ptr;
+
+		irs->object_info.symbol_info.idxAstNode = -1;
+		//irs->object_info.symbol_info.idxScopeVar=-1;//info_var_scope = NULL;
+		irs->object_info.symbol_info.symbol_name = function_name;
+		irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
+
+		irs->object_info.symbol_info.idxSymbol = mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size();
+		mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 
 		print_info_cr("Registered function name: %s",function_name.c_str());
-
 		return true;
 	}
-
 
 	/**
 	 * Register C variable
 	 */
 	static bool register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
 
-
-
 	static int getIdx_C_RegisteredClass(const string & str_classPtr, bool print_msg=true){
 			// ok check c_type
-			for(unsigned i = 0; i < (*vec_registered_class_node).size(); i++){
-				if((*vec_registered_class_node)[i]->classPtrType == str_classPtr){
+			for(unsigned i = 0; i < (*vec_script_class_node).size(); i++){
+				if((*vec_script_class_node)[i]->classPtrType == str_classPtr){
 					return i;
 				}
 			}
@@ -278,13 +272,12 @@ public:
 				return -1;
 			}
 
-
-			vector<int> * vec_irfs = &(*vec_registered_class_node)[index_class]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
+			vector<int> * vec_irfs = &(*vec_script_class_node)[index_class]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
 
 			// ok check c_type
 			for(unsigned i = 0; i < vec_irfs->size(); i++){
-				tScriptFunctionObject *sfo = GET_SCRIPT_FUNCTION_OBJECT(vec_irfs->at(i));
-				if(AST_SYMBOL_VALUE(vec_irfs->at(i).object_info.symbol_info.idxAstNode) == str_classPtr){
+				CScriptFunctionObject *sfo = GET_SCRIPT_FUNCTION_OBJECT(vec_irfs->at(i));
+				if(AST_SYMBOL_VALUE(sfo->object_info.symbol_info.idxAstNode) == str_classPtr){
 					return i;
 				}
 			}
@@ -303,7 +296,7 @@ public:
 	template<class _T>
 	static bool register_C_Class(const string & class_name){//, const string & base_class_name=""){
 
-		/*tInfoScriptClass *base_class = NULL;
+		/*CScriptClass *base_class = NULL;
 
 		// get base class
 		if(base_class_name != ""){
@@ -323,31 +316,25 @@ public:
 
 
 			//print_error_cr("CHECK AND TODOOOOOO!");
-			tInfoScriptClass *irc = new tInfoScriptClass;
+			CScriptClass *irc = new CScriptClass;
 
-			tASTNode *ast =new tASTNode;
+			CASTNode *ast =new CASTNode;
 			irc->metadata_info.object_info.symbol_info.idxAstNode = ast->idxAstNode;
-			irc->metadata_info.object_info.symbol_info.idxScopeVar=-1;
+			//irc->metadata_info.object_info.symbol_info.idxScopeVar=-1;
 			irc->metadata_info.object_info.symbol_info.symbol_name = class_name;
 			//irc->baseClass = base_class; // identify extend class ?!?!!?
-
 			// in C there's no script constructor ...
 			irc->idx_function_script_constructor=-1;
-
 			// allow dynamic constructor in function its parameters ...
 			irc->c_constructor = new std::function<void *()>([](){return new _T;});
 			irc->c_destructor = new std::function<void (void *)>([](void *p){delete (_T *)p;});
-
-			irc->idxClass = (*vec_registered_class_node).size();
-
+			irc->metadata_info.object_info.symbol_info.idxScriptClass = (*vec_script_class_node).size();
 			irc->classPtrType=str_classPtr;
-			irc->idxClass=(*vec_registered_class_node).size();
 			irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
-			irc->metadata_info.object_info.symbol_info.index=(*vec_registered_class_node).size();
-			(*vec_registered_class_node).push_back(irc);
+			(*vec_script_class_node).push_back(irc);
 
-			print_info_cr("* class \"%10s\" registered as (%s).",class_name.c_str(),demangle(str_classPtr).c_str());
+			print_info_cr("* C++ class \"%10s\" registered as (%s).",class_name.c_str(),demangle(str_classPtr).c_str());
 
 			return true;
 		}
@@ -376,14 +363,14 @@ public:
 
 		// check whether is in fact base of ...
 		if(!std::is_base_of<_B,_T>::value){
-			print_error_cr("class \"%s\" is not base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+			print_error_cr("C++ class \"%s\" is not base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
 			return false;
 		}
 
 
-		for(unsigned i = 0; i < (*vec_registered_class_node)[register_class]->baseClass.size(); i++){
-			if((*vec_registered_class_node)[register_class]->baseClass[i]->classPtrType ==base_class_name_ptr){
-				print_error_cr("class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+		for(unsigned i = 0; i < (*vec_script_class_node)[register_class]->baseClass.size(); i++){
+			if((*vec_script_class_node)[register_class]->baseClass[i]->classPtrType ==base_class_name_ptr){
+				print_error_cr("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
 				return false;
 			}
 		}
@@ -401,8 +388,8 @@ public:
 
 	 	mapTypeConversion[class_name_ptr][base_class_name_ptr]=[](CScriptVariable *s){ return (int)reinterpret_cast<_B *>(s);};
 
-	 	tInfoScriptClass *irc_base = (*vec_registered_class_node)[idxBaseClass];
-	 	tInfoScriptClass *irc_class = (*vec_registered_class_node)[register_class];
+	 	CScriptClass *irc_base = (*vec_script_class_node)[idxBaseClass];
+	 	CScriptClass *irc_class = (*vec_script_class_node)[register_class];
 	 	irc_class->baseClass.push_back(irc_base);
 
 		// register all symbols function from base ...
@@ -413,13 +400,13 @@ public:
 
 			tInfoVariableSymbol irs;
 			// init struct...
-			irs.idxClassInfo = idxBaseClass;//.class_info = (*vec_registered_class_node)[base_class];
+			irs.idxScriptClass = idxBaseClass;//.class_info = (*vec_script_class_node)[base_class];
 			irs.ref_ptr=irs_source->ref_ptr;
 			irs.c_type = irs_source->c_type;
 			//irs.
 			irs.symbol_name=irs_source->symbol_name;
 			irs.properties = PROPERTY_C_OBJECT_REF| PROPERTY_IS_DERIVATED;
-			irs.index = irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.size();
+			irs.idxSymbol = irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.size();
 			irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
 
 		}
@@ -427,26 +414,26 @@ public:
 		// functions ...
 		for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 
-			tScriptFunctionObject *irs_source = &irc_base->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i];
+			CScriptFunctionObject *irs_source = GET_SCRIPT_FUNCTION_OBJECT(irc_base->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
 
-			tScriptFunctionObject irs;
+			CScriptFunctionObject *irs=NEW_SCRIPT_FUNCTION_OBJECT;
 			// init struct...
-			irs.object_info.symbol_info.idxAstNode = -1;
+			irs->object_info.symbol_info.idxAstNode = -1;
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs.object_info.symbol_info.symbol_name=irs_source->object_info.symbol_info.symbol_name;
+			irs->object_info.symbol_info.symbol_name=irs_source->object_info.symbol_info.symbol_name;
 
 
-			irs.m_arg = irs_source->m_arg;
-			irs.idx_return_type = irs_source->idx_return_type;
+			irs->m_arg = irs_source->m_arg;
+			irs->idx_return_type = irs_source->idx_return_type;
 
-			irs.object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_IS_DERIVATED;
+			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_IS_DERIVATED;
 
 			// ignores special type cast C++ member to ptr function
 			// create binding function class
-			irs.object_info.symbol_info.ref_ptr= irs_source->object_info.symbol_info.ref_ptr; // this is not correct due the pointer
+			irs->object_info.symbol_info.ref_ptr= irs_source->object_info.symbol_info.ref_ptr; // this is not correct due the pointer
 
-			irs.object_info.symbol_info.index = irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();
-			irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs);
+			irs->object_info.symbol_info.idxSymbol = irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();
+			irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 
 
 		}
@@ -465,10 +452,10 @@ public:
 	{
 		string return_type;
 		vector<string> params;
-		tScriptFunctionObject *irs=NULL;
+		CScriptFunctionObject *irs=NULL;
 		vector<string> m_arg;
-		int idx_return_type=-1;
-		void *ref_ptr=NULL;
+		unsigned int idx_return_type=-1;
+		unsigned int ref_ptr=-1;
 		string str_classPtr = typeid( _T *).name();
 
 		int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
@@ -509,7 +496,7 @@ public:
 		}
 
 		// ok, function candidate to be added into class...
-		irs = CScriptFunctionObjectFactory::newScriptFunctionObject();
+		irs = NEW_SCRIPT_FUNCTION_OBJECT;//CScriptFunctionObject::newScriptFunctionObject();
 
 		// init struct...
 		irs->object_info.symbol_info.idxAstNode = -1;
@@ -521,8 +508,8 @@ public:
 		irs->m_arg = m_arg;
 		irs->idx_return_type = idx_return_type;
 
-		irs->object_info.symbol_info.index = (*vec_registered_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();
-		(*vec_registered_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxFunctionSymbol);
+		irs->object_info.symbol_info.idxSymbol = (*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();
+		(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 		print_info_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
 		return true;
@@ -566,14 +553,14 @@ public:
 
 		// check valid parameters ...
 		if(getIdxClassFromIts_C_Type(var_type) == -1){
-			print_error_cr("%s::%s has not valid type (%s)",(*vec_registered_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str(),var_name,demangle(typeid(_V).name()).c_str());
+			print_error_cr("%s::%s has not valid type (%s)",(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str(),var_name,demangle(typeid(_V).name()).c_str());
 			return false;
 		}
 
 
 
 		// init struct...
-		irs.idxClassInfo = idxRegisterdClass;//(*vec_registered_class_node)[idxRegisterdClass];
+		irs.idxScriptClass = idxRegisterdClass;//(*vec_script_class_node)[idxRegisterdClass];
 		irs.ref_ptr=offset;
 		irs.c_type = var_type;
 		//irs.
@@ -583,8 +570,8 @@ public:
 		irs.properties = PROPERTY_C_OBJECT_REF;
 
 
-		irs.index = (*vec_registered_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.size();
-		(*vec_registered_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
+		irs.idxSymbol = (*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.size();
+		(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
 		//base_info->local_symbols.vec_idx_registeredFunction.push_back(irs);
 
 		return true;
@@ -592,19 +579,7 @@ public:
 
 	}
 
-	bool registerBase();
-
-	/**
-	 * Save current state and giving the index to restore whenever the programmer wants...
-	 * @return: >=0 save state index, -1 error
-	 */
-	int saveState();
-
-	/**
-	 * Restore the state. Warning: All current changes will be losed!
-	 * @return: success or not
-	 */
-	bool restoreState(int state);
+	static bool registerBase();
 
 
 private:
@@ -647,16 +622,16 @@ private:
 	 }
 
 	//int getIdxRegisteredClass_Internal(const string & class_name);
-	//int getIdxFunctionSymbol_Internal(const string & class_name,const string & function_name);
+	//int getidxScriptFunctionObject_Internal(const string & class_name,const string & function_name);
 	//int getIdxRegisteredVariableSymbol_Internal(const string & class_name,const string & var_name);
 
-	//vector<tInfoScriptClass *>  	 (*vec_registered_class_node);
+	//vector<CScriptClass *>  	 (*vec_script_class_node);
 	//CScriptVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
 
 	 static bool searchVarFunctionSymbol(int idxFunction, tInfoAsmOp *iao, int current_idx_function,SCOPE_TYPE scope_type=SCOPE_TYPE::UNKNOWN_SCOPE);
 
-	 static bool buildScopeVariablesBlock(tScriptFunctionObject *root_class_irfs );
-	 static void unloadRecursiveFunctions(tScriptFunctionObject * info_function);
+	 static bool buildScopeVariablesBlock(CScriptFunctionObject *root_class_irfs );
+	 static void unloadRecursiveFunctions(CScriptFunctionObject * info_function);
 
 	 static bool updateFunctionSymbols(int idxSxriptFunctionObject, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);
 
@@ -664,8 +639,6 @@ private:
 
 	//CScriptClass();
 	//~CScriptClass();
-
-
 
 
 

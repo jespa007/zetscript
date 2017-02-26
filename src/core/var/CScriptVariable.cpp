@@ -1,27 +1,19 @@
 #include "../../CZetScript.h"
 
 
-CUndefined *CScriptVariable::UndefinedSymbol=NULL;
+//CUndefined *CScriptVariable::UndefinedSymbol=NULL;
 //CVoid *CScriptVariable::VoidSymbol=NULL;
-CNull *CScriptVariable::NullSymbol=NULL;
-
-
-
-void CScriptVariable::createSingletons(){
-	NullSymbol = NEW_NULL_VAR;
-	UndefinedSymbol = NEW_UNDEFINED_VAR;
-	//VoidSymbol = NEW_VOID_VAR;
-
+//CNull *CScriptVariable::NullSymbol=NULL;
+CScriptVariable::tSymbolInfo::tSymbolInfo(){
+	proxy_ptr=NULL;
+	object = UNDEFINED_SYMBOL;
+	idxAstNode =ZS_UNDEFINED_IDX;
+	super_function=NULL;
 }
 
 
-void CScriptVariable::destroySingletons(){
-	delete UndefinedSymbol;
-	//delete VoidSymbol;
-	delete NullSymbol;
-}
 
-CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,tScriptFunctionObject *irv){
+CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv){
 	tSymbolInfo si;
 	si.proxy_ptr=0;
 	si.object = irv;
@@ -37,7 +29,7 @@ CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & 
 	return &m_functionSymbol[m_functionSymbol.size()-1];
 }
 
-void CScriptVariable::createSymbols(tInfoScriptClass *ir_class){
+void CScriptVariable::createSymbols(CScriptClass *ir_class){
 	tSymbolInfo *si;
 
 	//if(ir_class == this->m_infoRegisteredClass)
@@ -78,7 +70,7 @@ void CScriptVariable::createSymbols(tInfoScriptClass *ir_class){
 					b->m_boolValue=*((bool *)ptr_variable);
 					si->object =b;
 				}else{
-					tInfoScriptClass *info_registered_class = GET_CLASS_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+					CScriptClass *info_registered_class = GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 					if(info_registered_class){
 						CScriptVariable *var = new CScriptVariable();
@@ -98,7 +90,7 @@ void CScriptVariable::createSymbols(tInfoScriptClass *ir_class){
 
 	// Register even for primitives (if appropiate)
 	for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-		tScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
+		CScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
 		//print_info_cr("=========================================");
 		//print_info_cr("- Create function %s...",irv->object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name.c_str());
 		 si =addFunctionSymbol(
@@ -126,7 +118,7 @@ void CScriptVariable::fun1(string *s){
 
 void CScriptVariable::setup(){
 
-	idx_shared_ptr=-1;
+	idx_shared_ptr=ZS_UNDEFINED_IDX;
 	m_infoRegisteredClass = NULL;
 	c_object = NULL;
 	created_object = NULL;
@@ -142,13 +134,13 @@ CScriptVariable::CScriptVariable(){
 
 }
 /*
-CScriptVariable::CScriptVariable(tInfoScriptClass *irv, void *_c_object){
+CScriptVariable::CScriptVariable(CScriptClass *irv, void *_c_object){
 
 	init(irv,_c_object);
 
 }*/
 
-void CScriptVariable::init(tInfoScriptClass *irv, void *_c_object){
+void CScriptVariable::init(CScriptClass *irv, void *_c_object){
 	setup();
 
 
@@ -201,9 +193,9 @@ void CScriptVariable::init(tInfoScriptClass *irv, void *_c_object){
 
 }
 
-tScriptFunctionObject *CScriptVariable::getConstructorFunction(){
+CScriptFunctionObject *CScriptVariable::getConstructorFunction(){
 
-	if(m_infoRegisteredClass->idx_function_script_constructor != -1){
+	if(m_infoRegisteredClass->idx_function_script_constructor != ZS_UNDEFINED_IDX){
 		return GET_SCRIPT_FUNCTION_OBJECT(m_infoRegisteredClass->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[m_infoRegisteredClass->idx_function_script_constructor]);
 	}
 
@@ -211,11 +203,11 @@ tScriptFunctionObject *CScriptVariable::getConstructorFunction(){
 }
 
 int CScriptVariable::getIdxClass(){
-	return m_infoRegisteredClass->idxClass;
+	return m_infoRegisteredClass->metadata_info.object_info.symbol_info.idxScriptClass;
 }
 
 bool CScriptVariable::setIdxClass(int idx){
-	tInfoScriptClass *_info_registered_class =  GET_CLASS(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
+	CScriptClass *_info_registered_class =  GET_SCRIPT_CLASS_INFO(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
 
 	if(_info_registered_class == NULL){
 		return false;
@@ -229,7 +221,7 @@ bool CScriptVariable::setIdxClass(int idx){
 CScriptVariable::tSymbolInfo * CScriptVariable::addVariableSymbol(const string & symbol_value, int _idxAstNode){
 	tSymbolInfo si;
 	si.proxy_ptr=0;
-	si.object = CScriptVariable::UndefinedSymbol;
+	si.object = UNDEFINED_SYMBOL;
 	si.idxAstNode = _idxAstNode;
 	si.symbol_value = symbol_value;
 	m_variableSymbol.push_back(si);
@@ -286,27 +278,16 @@ CScriptVariable::tSymbolInfo * CScriptVariable::getIdxScriptFunctionObjectByClas
 }
 
 
-int CScriptVariable::getIdxFunctionSymbolWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature){
+int CScriptVariable::getidxScriptFunctionObjectWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature){
 
 	// from lat value to first to get last override function...
-	/*for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){
-		if(varname == this->m_functionSymbol[i].symbol_value){
-			return &m_functionSymbol[i];
-		}
-	}*/
-
 	bool all_check=false;
-	//bool found = false;
-
-	//for(int h=0; h < 2 && !found; h++){
 
 	for(int i = this->m_functionSymbol.size()-1; i>=0; i--){
 
-		tScriptFunctionObject *irfs = (tScriptFunctionObject *)m_functionSymbol[i].object;
+		CScriptFunctionObject *irfs = (CScriptFunctionObject *)m_functionSymbol[i].object;
 
 		if(this->m_functionSymbol[i].symbol_value == varname && (irfs->m_arg.size() == argv->size())){
-
-
 			all_check=true;
 			// convert parameters script to c...
 			for( int k = 0; k < (int)argv->size() && all_check;k++){
@@ -317,7 +298,7 @@ int CScriptVariable::getIdxFunctionSymbolWithMatchArgs(const string & varname, v
 				}
 				else{
 					if((argv->at(k))->getPointer_C_ClassName()!=irfs->m_arg[k] && !(is_script_var)){
-						all_check =(CScriptClass::getInstance()->getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)!=NULL);
+						all_check =(CScriptClass::getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)!=NULL);
 					}
 				}
 			}
@@ -327,11 +308,7 @@ int CScriptVariable::getIdxFunctionSymbolWithMatchArgs(const string & varname, v
 			}
 		}
 	}
-	//}
-
-
-
-	return -1;
+	return ZS_UNDEFINED_IDX;
 }
 
 const string & CScriptVariable::getClassName(){
@@ -349,9 +326,9 @@ const string & CScriptVariable::getClassName(){
 
     bool CScriptVariable::refSharedPtr(){
 
-    	if(idx_shared_ptr == -1){
+    	if(idx_shared_ptr == ZS_UNDEFINED_IDX){
 
-			if((idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(this)) != -1){
+			if((idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(this)) != ZS_UNDEFINED_IDX){
 				return true;
 			}
     	}
@@ -363,17 +340,17 @@ const string & CScriptVariable::getClassName(){
     }
 
     bool CScriptVariable::unrefSharedPtr(){
-    	if(idx_shared_ptr!=-1){
+    	if(idx_shared_ptr!=ZS_UNDEFINED_IDX){
     		if(CSharedPointerManager::getInstance()->getNumShares(idx_shared_ptr) > 1){
     			print_error_cr("shared pointer more than once");
     			return false;
     		}
 
     		int index_0_share_idx = CSharedPointerManager::getInstance()->getIdx0Shares(idx_shared_ptr);
-    		if(index_0_share_idx!=-1){
+    		if(index_0_share_idx!=ZS_UNDEFINED_IDX){
     			CSharedPointerManager::getInstance()->remove0Shares(index_0_share_idx);
     		}
-    		idx_shared_ptr = -1;
+    		idx_shared_ptr = ZS_UNDEFINED_IDX;
     	}
 
     	return true;
@@ -400,7 +377,7 @@ void * CScriptVariable::get_C_Object(){
 vector<tInfoStatementOp> * CScriptVariable::getCompiledCode(int idx_function){
 	tSymbolInfo *si=CScriptVariable::getFunctionSymbolByIndex(idx_function);
 	if(si){
-		return &((tScriptFunctionObject *)si->object)->object_info.statment_op;
+		return &((CScriptFunctionObject *)si->object)->object_info.statment_op;
 	}
 
 	return NULL;
@@ -421,7 +398,7 @@ CScriptVariable::~CScriptVariable(){
 			si = &m_variableSymbol[i];
 			CScriptVariable * sc  = (CScriptVariable *)(m_variableSymbol[i].object);
 
-			if(sc!=CScriptVariable::UndefinedSymbol && sc!=CScriptVariable::NullSymbol){
+			if(sc!=UNDEFINED_SYMBOL && sc!=NULL_SYMBOL){
 				delete sc;
 			}
 		}
@@ -431,7 +408,7 @@ CScriptVariable::~CScriptVariable(){
 	// Register even for primitives (if appropiate)
 	for ( unsigned i = 0; i < m_functionSymbol.size(); i++){
 		si = &m_functionSymbol[i];
-		tScriptFunctionObject * ir_fun  = (tScriptFunctionObject *)(m_functionSymbol[i].object);
+		CScriptFunctionObject * ir_fun  = (CScriptFunctionObject *)(m_functionSymbol[i].object);
 		 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // create proxy function ...
 			 (*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->object_info.symbol_info.ref_ptr))(si->proxy_ptr,PROXY_CREATOR::DESTROY_FUNCTION);
 

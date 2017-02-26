@@ -13,7 +13,7 @@ public:
 
 	CBoolean();
 	CBoolean(bool _value);
-	//CBoolean(tInfoScriptClass *info_registered_class, bool *_value);
+	//CBoolean(CScriptClass *info_registered_class, bool *_value);
 
 protected:
 

@@ -3,7 +3,7 @@
 
 
 #include "../Common.h"
-#include "core/ast/CScope.h"
+#include "core/CScope.h"
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
 
@@ -15,15 +15,6 @@ class CScriptVariable{//: public CVariable{
 
 public:
 
-	static CUndefined *UndefinedSymbol;
-	//static CVoid *VoidSymbol;
-	static CNull *NullSymbol;
-
-
-
-
-	static void createSingletons();
-	static void destroySingletons();
 
 	class tSymbolInfo{
 		public:
@@ -32,13 +23,8 @@ public:
 		tSymbolInfo *super_function; // only for functions ...
 		string symbol_value;
 		int idxAstNode; // in case there's ast node...
-		tSymbolInfo(){
-			proxy_ptr=NULL;
-			this->object = CScriptVariable::UndefinedSymbol;
-			idxAstNode =-1;
-			super_function=NULL;
-		}
 
+		tSymbolInfo();
 	};
 
 	//----------------------
@@ -53,12 +39,12 @@ public:
 
 	// Construct ...
 	CScriptVariable();
-	void init(tInfoScriptClass *info_registered_class, void * _c_object);
+	void init(CScriptClass *info_registered_class, void * _c_object);
 
 	void fun1(int *);
 	void fun1(string *);
 
-	//CScriptVariable();//tInfoScriptClass *info_registered_class, void * _c_object);
+	//CScriptVariable();//CScriptClass *info_registered_class, void * _c_object);
 
 
 	//TYPE m_type;
@@ -69,16 +55,16 @@ public:
 	tSymbolInfo * getVariableSymbol(const string & varname);
 	tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 
-	tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,tScriptFunctionObject *irv);
+	tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv);
 	tSymbolInfo * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
-	int getIdxFunctionSymbolWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature=false);
+	int getidxScriptFunctionObjectWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature=false);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 
 	void * get_C_Object();
 
 	vector<tInfoStatementOp> * getCompiledCode(int idx_function);
 
-	tScriptFunctionObject *getConstructorFunction();
+	CScriptFunctionObject *getConstructorFunction();
 
 	//void addArgSymbol(const string & arg_name);
 
@@ -100,7 +86,7 @@ protected:
 	/**
 	 * This variable tells whether is pointer function or not.
 	 */
-	tInfoScriptClass *m_infoRegisteredClass;
+	CScriptClass *m_infoRegisteredClass;
 
 
 	virtual void setup();
@@ -115,7 +101,7 @@ private:
 
 
 
-	void createSymbols(tInfoScriptClass *irv);
+	void createSymbols(CScriptClass *irv);
 
 	vector<tSymbolInfo> m_functionSymbol;
 

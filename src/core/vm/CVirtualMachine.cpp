@@ -52,14 +52,14 @@ void CVirtualMachine::reset(){
 
 
 
-CScriptVariable * CVirtualMachine::execute(tScriptFunctionObject *info_function, CScriptVariable *this_object, vector<CScriptVariable *> * argv, int stk){
+CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function, CScriptVariable *this_object, vector<CScriptVariable *> * argv, int stk){
 
 	print_info_cr("Executing function %s ...",info_function->object_info.symbol_info.symbol_name.c_str());
 
 
-	//tScriptFunctionObject *irsf=sf->getFunctionInfo();
+	//CScriptFunctionObject *irsf=sf->getFunctionInfo();
 
-	//tScriptFunctionObject *function_info =function_object->getFunctionInfo();
+	//CScriptFunctionObject *function_info =function_object->getFunctionInfo();
 
 	if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
 
@@ -68,7 +68,7 @@ CScriptVariable * CVirtualMachine::execute(tScriptFunctionObject *info_function,
 		if((info_function->object_info.symbol_info.properties &  SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
 
 			if(this_object!= NULL && this_object != CZetScript::getInstance()->getMainObject()){
-				fun_ptr = this_object->getFunctionSymbolByIndex(info_function->object_info.symbol_info.index)->proxy_ptr;
+				fun_ptr = this_object->getFunctionSymbolByIndex(info_function->object_info.symbol_info.idxSymbol)->proxy_ptr;
 			}
 		}
 
@@ -87,11 +87,11 @@ CScriptVariable * CVirtualMachine::execute(tScriptFunctionObject *info_function,
 	}
 
 
-	CScriptVariable *ret=CScriptVariable::UndefinedSymbol;
+	CScriptVariable *ret=UNDEFINED_SYMBOL;
 	vector<tInfoStatementOp> * m_listStatements = &info_function->object_info.statment_op;
 	//bool conditional_jmp=false;
-	int jmp_to_statment = -1;
-	int instruction_to_statment = -1;
+	int jmp_to_statment =ZS_UNDEFINED_IDX;
+	int instruction_to_statment = ZS_UNDEFINED_IDX;
 	bool end_by_ret=false;
 	bool break_jmp = false;
 
@@ -124,9 +124,9 @@ CScriptVariable * CVirtualMachine::execute(tScriptFunctionObject *info_function,
 	for(int s = 0; s < n_stats && !end_by_ret;){
 
 		//conditional_jmp = false;
-		jmp_to_statment = -1;
+		jmp_to_statment = ZS_UNDEFINED_IDX;
 		break_jmp=false;
-		instruction_to_statment = -1;
+		instruction_to_statment = ZS_UNDEFINED_IDX;
 		tInfoStatementOp * current_statment = &(*m_listStatements)[s];
 		vector<tInfoAsmOp *> * asm_op_statment = &current_statment->asm_op;
 		int n_asm_op= asm_op_statment->size();
@@ -166,7 +166,7 @@ CScriptVariable * CVirtualMachine::execute(tScriptFunctionObject *info_function,
 					}
 
 
-					if(jmp_to_statment != -1){
+					if(jmp_to_statment != ZS_UNDEFINED_IDX){
 
 						if(s!=jmp_to_statment){
 							break_jmp = true;
@@ -174,7 +174,7 @@ CScriptVariable * CVirtualMachine::execute(tScriptFunctionObject *info_function,
 
 						s=jmp_to_statment;
 
-						if(instruction_to_statment != -1){
+						if(instruction_to_statment != ZS_UNDEFINED_IDX){
 							ins=instruction_to_statment;
 							idxStkCurrentResultInstruction=ins+1;
 						}else{
@@ -209,7 +209,7 @@ CScriptVariable * CVirtualMachine::execute(tScriptFunctionObject *info_function,
 
 
 
-void CVirtualMachine::pushStack(tScriptFunctionObject *info_function, vector<CScriptVariable *> * argv){
+void CVirtualMachine::pushStack(CScriptFunctionObject *info_function, vector<CScriptVariable *> * argv){
 
 
 
@@ -230,7 +230,7 @@ void CVirtualMachine::pushStack(tScriptFunctionObject *info_function, vector<CSc
 	for(unsigned i = 0; i < n_local_vars; i++){
 		basePtrLocalVar[i].ptrObjectRef = NULL;
 		basePtrLocalVar[i].type = INS_TYPE_UNDEFINED;
-		basePtrLocalVar[i].stkResultObject=CScriptVariable::UndefinedSymbol;
+		basePtrLocalVar[i].stkResultObject=UNDEFINED_SYMBOL;
 	}
 
 	// init argv vars ...
@@ -242,23 +242,33 @@ void CVirtualMachine::pushStack(tScriptFunctionObject *info_function, vector<CSc
 		basePtrLocalVar[n_local_vars+i].stkResultObject = var;
 
 
-		if(var == CScriptVariable::UndefinedSymbol){
+		switch(var->getIdxClass()){ // check bsic types...
+		case CScriptClass::IDX_CLASS_UNDEFINED:
 			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_UNDEFINED;
-		} else if(var == CScriptVariable::NullSymbol){
+			break;
+		case CScriptClass::IDX_CLASS_NULL:
 			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_NULL;
-		} else if(var->getIdxClass() == CScriptClass::getInstance()->getIdxClassInteger()){
+			break;
+		case CScriptClass::IDX_CLASS_INTEGER:
 			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_INTEGER;
-		} else if(var->getIdxClass() == CScriptClass::getInstance()->getIdxClassNumber()){
+			break;
+		case CScriptClass::IDX_CLASS_NUMBER:
 			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_NUMBER;
-		} else if(var->getIdxClass() == CScriptClass::getInstance()->getIdxClassString()){
+			break;
+		case CScriptClass::IDX_CLASS_STRING:
 			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_STRING;
-		} else if(var->getIdxClass() == CScriptClass::getInstance()->getIdxClassFunctor()){
+			break;
+		case CScriptClass::IDX_CLASS_FUNCTOR:
 			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_FUNCTION;
-		} else if(var->getIdxClass() == CScriptClass::getInstance()->getIdxClassBoolean()){
+			break;
+		case CScriptClass::IDX_CLASS_BOOLEAN:
 			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_BOOLEAN;
-		}else {
+			break;
+		default: // any default VAR
 			basePtrLocalVar[n_local_vars+i].type =INS_TYPE_VAR;
+			break;
 		}
+
 
 	}
 
@@ -360,7 +370,7 @@ print_error_cr("Error at line %i cannot perform operator \"%s\" %s  \"%s\"",\
 
 #define IS_VECTOR(ptr_result_instruction) \
 (( ptr_result_instruction->type == INS_TYPE_VAR) &&\
- (((CScriptVariable *)(ptr_result_instruction->stkResultObject))->getIdxClass()==CScriptClass::getInstance()->getIdxClassVector()))
+ (((CScriptVariable *)(ptr_result_instruction->stkResultObject))->getIdxClass()==CScriptClass::IDX_CLASS_VECTOR))
 
 #define IS_GENERIC_NUMBER(ptr_result_instruction) \
 ((ptr_result_instruction->type == INS_TYPE_INTEGER) ||\
@@ -392,22 +402,22 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1)
 (ptrResultInstructionOp2->type == INS_TYPE_STRING)
 
 #define OP1_AND_OP2_ARE_UNDEFINED \
-		(ptrResultInstructionOp1->stkResultObject == CScriptVariable::UndefinedSymbol) && \
-		(ptrResultInstructionOp2->stkResultObject == CScriptVariable::UndefinedSymbol)
+		(ptrResultInstructionOp1->stkResultObject == UNDEFINED_SYMBOL) && \
+		(ptrResultInstructionOp2->stkResultObject == UNDEFINED_SYMBOL)
 
 #define OP1_AND_OP2_ARE_NULL \
-		(ptrResultInstructionOp1->stkResultObject == CScriptVariable::NullSymbol) && \
-		(ptrResultInstructionOp2->stkResultObject == CScriptVariable::NullSymbol)
+		(ptrResultInstructionOp1->stkResultObject == NULL_SYMBOL) && \
+		(ptrResultInstructionOp2->stkResultObject == NULL_SYMBOL)
 
 
 
 #define OP1_OR_OP2_IS_UNDEFINED \
-		(ptrResultInstructionOp1->stkResultObject == CScriptVariable::UndefinedSymbol) || \
-		(ptrResultInstructionOp2->stkResultObject == CScriptVariable::UndefinedSymbol)
+		(ptrResultInstructionOp1->stkResultObject == UNDEFINED_SYMBOL) || \
+		(ptrResultInstructionOp2->stkResultObject == UNDEFINED_SYMBOL)
 
 #define OP1_OR_OP2_ARE_NULL \
-		(ptrResultInstructionOp1->stkResultObject == CScriptVariable::NullSymbol) || \
-		(ptrResultInstructionOp2->stkResultObject == CScriptVariable::NullSymbol)
+		(ptrResultInstructionOp1->stkResultObject == NULL_SYMBOL) || \
+		(ptrResultInstructionOp2->stkResultObject == NULL_SYMBOL)
 
 
 
@@ -505,7 +515,7 @@ bool CVirtualMachine::pushString(const string & init_value, CScriptVariable ** p
 
 }
 
-bool CVirtualMachine::pushFunction(tScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable, int properties){
+bool CVirtualMachine::pushFunction(CScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable, int properties){
 
 	stkResultInstruction[idxStkCurrentResultInstruction]={INS_TYPE_FUNCTION,init_value,ptrAssignable, properties};
 	return true;
@@ -517,21 +527,29 @@ bool CVirtualMachine::pushVar(CScriptVariable * init_value, CScriptVariable ** p
 		return false;
 	}
 
-	int idxClass = init_value->getIdxClass();
+	int idxScriptClass = init_value->getIdxClass();
 	// finally assign the value ...
 	if(!is_new_var){
-		if(idxClass == CScriptClass::getInstance()->getIdxClassInteger()){
-			return pushInteger(*((int *)((CInteger *)init_value)->m_value),ptrObjectRef,properties);
-		}else if(idxClass == CScriptClass::getInstance()->getIdxClassNumber()){
-			return pushNumber(*((float *)((CNumber *)init_value)->m_value),ptrObjectRef,properties);
-		}else if(idxClass == CScriptClass::getInstance()->getIdxClassString()){
-			return pushString(*((string *)((CString *)init_value)->m_value),ptrObjectRef,properties);
-		}else if(idxClass == CScriptClass::getInstance()->getIdxClassBoolean()){
-			return pushBoolean(*((bool *)((CBoolean *)init_value)->m_value),ptrObjectRef,properties);
-		}else if(idxClass == CScriptClass::getInstance()->getIdxClassFunctor()){
-			return pushFunction((tScriptFunctionObject *)(((CFunctor *)init_value)->m_value),ptrObjectRef,properties);
-		}else{
-			is_new_var=true;
+
+		switch(idxScriptClass){
+
+			case CScriptClass::IDX_CLASS_INTEGER:
+				return pushInteger(*((int *)((CInteger *)init_value)->m_value),ptrObjectRef,properties);
+				break;
+			case CScriptClass::IDX_CLASS_NUMBER:
+				return pushNumber(*((float *)((CNumber *)init_value)->m_value),ptrObjectRef,properties);
+				break;
+			case CScriptClass::IDX_CLASS_STRING:
+				return pushString(*((string *)((CString *)init_value)->m_value),ptrObjectRef,properties);
+				break;
+			case CScriptClass::IDX_CLASS_BOOLEAN:
+				return pushBoolean(*((bool *)((CBoolean *)init_value)->m_value),ptrObjectRef,properties);
+				break;
+			case CScriptClass::IDX_CLASS_FUNCTOR:
+				return pushFunction((CScriptFunctionObject *)(((CFunctor *)init_value)->m_value),ptrObjectRef,properties);
+				break;
+			default:
+				is_new_var=true;
 		}
 	}
 
@@ -560,7 +578,7 @@ bool created_pointer = false;
 		return NULL;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_UNDEFINED:
-		obj=CScriptVariable::UndefinedSymbol;
+		obj=UNDEFINED_SYMBOL;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_INTEGER:
 		obj= NEW_INTEGER_VAR;
@@ -583,8 +601,8 @@ bool created_pointer = false;
 		created_pointer = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_FUNCTION:
-		obj = NEW_FUNCTOR_VAR;//((tScriptFunctionObject *)ptr_instruction->stkResultObject));
-		((CFunctor *)obj)->setFunctionSymbol((tScriptFunctionObject *)ptr_instruction->stkResultObject);
+		obj = NEW_FUNCTOR_VAR;//((CScriptFunctionObject *)ptr_instruction->stkResultObject));
+		((CFunctor *)obj)->setFunctionSymbol((CScriptFunctionObject *)ptr_instruction->stkResultObject);
 		created_pointer = true;
 		break;
 	case VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR:
@@ -610,7 +628,7 @@ bool created_pointer = false;
 
 
 bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
-		tScriptFunctionObject *info_function,
+		CScriptFunctionObject *info_function,
 		CScriptVariable *this_object,
 		vector<tInfoAsmOp *> *asm_op,
 		int n_stk){
@@ -689,7 +707,7 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 	}
 
 
-	is_valid_variable = (var_object != CScriptVariable::UndefinedSymbol);// && (!function_struct_type);
+	is_valid_variable = (var_object != UNDEFINED_SYMBOL);// && (!function_struct_type);
 
 	push_object = true;
 
@@ -699,22 +717,23 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 		int idx_class =  var_object->getIdxClass();
 		if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_DEC || iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC){
 
-			if(idx_class==CScriptClass::getInstance()->getIdxClassInteger()){
-				if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
-					(*((int *)((CInteger *)var_object)->m_value))++;
-				else //dec
-					(*((int *)((CInteger *)var_object)->m_value))--;
-
-			}else if(idx_class == CScriptClass::getInstance()->getIdxClassNumber()){
-				if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
-					(*((float *)((CNumber *)var_object)->m_value))++;
-				else // dec
-					(*((float *)((CNumber *)var_object)->m_value))--;
-
-			}else{
-
-				print_error_cr("internal error:Cannot perform preoperator ?? because is not number");
-				return false;
+			switch(idx_class){
+				case CScriptClass::IDX_CLASS_INTEGER:
+					if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
+						(*((int *)((CInteger *)var_object)->m_value))++;
+					else //dec
+						(*((int *)((CInteger *)var_object)->m_value))--;
+					break;
+				case CScriptClass::IDX_CLASS_NUMBER:
+					if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_INC)
+						(*((float *)((CNumber *)var_object)->m_value))++;
+					else // dec
+						(*((float *)((CNumber *)var_object)->m_value))--;
+					break;
+				default:
+					print_error_cr("internal error:Cannot perform preoperator ?? because is not number");
+					return false;
+					break;
 			}
 		}
 
@@ -723,25 +742,29 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 			push_object = false; // first will push the value and after will increment ...
 			// 1. Load value as constant value
 			//if(!loadConstantValue(var_object,n_stk)){
-			if(CScriptClass::getInstance()->getIdxClassInteger() == idx_class){
-				// 1. first load ...
-				pushInteger(*((int *)((CInteger *)var_object)->m_value));
-				// 2. increment ...
-				if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
-					(*((int *)((CInteger *)var_object)->m_value))++;
-				else
-					(*((int *)((CInteger *)var_object)->m_value))--;
-			}else if(CScriptClass::getInstance()->getIdxClassNumber() == var_object->getIdxClass()){
-				// 1. first load ...
-				pushNumber(*((float *)((CNumber *)var_object)->m_value));
-				// 2. increment ...
-				if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
-					(*((float *)((CNumber *)var_object)->m_value))++;
-				else
-					(*((float *)((CNumber *)var_object)->m_value))--;
-			}else{
-				print_error_cr("internal error:cannot postoperator ?? because is not number");
-				return false;
+			switch(idx_class){
+				case CScriptClass::IDX_CLASS_INTEGER:
+					// 1. first load ...
+					pushInteger(*((int *)((CInteger *)var_object)->m_value));
+					// 2. increment ...
+					if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
+						(*((int *)((CInteger *)var_object)->m_value))++;
+					else
+						(*((int *)((CInteger *)var_object)->m_value))--;
+					break;
+				case CScriptClass::IDX_CLASS_NUMBER:
+					// 1. first load ...
+					pushNumber(*((float *)((CNumber *)var_object)->m_value));
+					// 2. increment ...
+					if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::POST_INC)
+						(*((float *)((CNumber *)var_object)->m_value))++;
+					else
+						(*((float *)((CNumber *)var_object)->m_value))--;
+					break;
+				default:
+					print_error_cr("internal error:cannot postoperator ?? because is not number");
+					return false;
+					break;
 			}
 		}
 	}
@@ -752,9 +775,9 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 		if(iao->pre_post_operator_type == ASM_PRE_POST_OPERATORS::PRE_NEG){
 
 			int idx_class = var_object->getIdxClass();
-			if(idx_class==CScriptClass::getInstance()->getIdxClassInteger()){
+			if(idx_class==CScriptClass::IDX_CLASS_INTEGER){//::getInstance()->getIdxClassInteger()){
 				return pushInteger(-(*((int *)((CInteger *)var_object)->m_value)));
-			}else if(idx_class==CScriptClass::getInstance()->getIdxClassNumber()){
+			}else if(idx_class==CScriptClass::IDX_CLASS_NUMBER){// =CScriptClass::getInstance()->getIdxClassNumber()){
 				return pushNumber(-(*((float *)((CNumber *)var_object)->m_value)));
 			}else{
 				print_error_cr("internal error:cannot perform pre operator - because is not number");
@@ -769,7 +792,7 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 }
 
 bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
-		tScriptFunctionObject *local_function,
+		CScriptFunctionObject *local_function,
 		CScriptVariable *this_object,
 		vector<tInfoAsmOp *> *asm_op,
 		int n_stk){
@@ -779,17 +802,17 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 		return false;
 	}
 
-	tScriptFunctionObject *info_function=NULL;
-	vector<tScriptFunctionObject> *vec_global_functions;
+	CScriptFunctionObject *info_function=NULL;
+	vector<int> *vec_global_functions;
 
 	CScriptVariable::tSymbolInfo *si;
 	CScriptVariable ** calling_object = NULL;
 	PASTNode iao_ast = AST_NODE(iao->idxAstNode);//>ast_node->symbol_value)
 
 	//CScriptVariable *var_object = NULL;
-	//tScriptFunctionObject *info_function = (tScriptFunctionObject *)(si->object);
+	//CScriptFunctionObject *info_function = (CScriptFunctionObject *)(si->object);
 	//CScriptVariable *this_object = function_object->getThisObject();
-	//tScriptFunctionObject *si;
+	//CScriptFunctionObject *si;
 
 	switch(iao->scope_type){
 	default:
@@ -818,20 +841,20 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 		}
 
 		if(iao->scope_type != SCOPE_TYPE::ACCESS_SCOPE){
-			info_function =(tScriptFunctionObject *)si->object;
+			info_function =(CScriptFunctionObject *)si->object;
 		}
 
 		break;
 	case SCOPE_TYPE::GLOBAL_SCOPE:
 		vec_global_functions = &CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction;
 
-		if(iao->index_op2 == -1){ // is will be processed after in CALL instruction ...
+		if(iao->index_op2 == ZS_UNDEFINED_IDX){ // is will be processed after in CALL instruction ...
 			info_function= NULL;
 		}else{
 
 			if((iao->index_op2<(int)vec_global_functions->size()))
 			{
-				info_function =&(*vec_global_functions)[iao->index_op2];
+				info_function =GET_SCRIPT_FUNCTION_OBJECT((*vec_global_functions)[iao->index_op2]);
 			}
 			else{
 				print_error_cr("cannot find symbol global \"%s\"",iao_ast->symbol_value.c_str());
@@ -843,7 +866,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 
 		break;
 	case SCOPE_TYPE::LOCAL_SCOPE:
-		info_function = &local_function->object_info.local_symbols.vec_idx_registeredFunction[iao->index_op2];
+		info_function = GET_SCRIPT_FUNCTION_OBJECT(local_function->object_info.local_symbols.vec_idx_registeredFunction[iao->index_op2]);
 		break;
 	}
 
@@ -892,28 +915,20 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 		}
 	}
 
-	//int idxClass=-1;
-
-	//if(*var!=CScriptVariable::UndefinedSymbol){
-	int idxClass = (*var)->getIdxClass();
-	//}
-
-	//tScriptFunctionObject * init_value;
+	int idxScriptClass = (*var)->getIdxClass();
 	bool create_from_index=false;
 
 	// finally assign the value ...
 	switch(ptr_instruction->type){
-
-
 		case INS_TYPE_NULL:
-			*var = CScriptVariable::NullSymbol;
+			*var = NULL_SYMBOL;//CScriptVariable::NullSymbol;
 			break;
 		case INS_TYPE_UNDEFINED:
-			*var = CScriptVariable::UndefinedSymbol;
+			*var = UNDEFINED_SYMBOL;//CScriptVariable::UndefinedSymbol;
 			break;
 
 		case INS_TYPE_INTEGER:
-			if(idxClass == CScriptClass::getInstance()->getIdxClassInteger()){
+			if(idxScriptClass == CScriptClass::IDX_CLASS_INTEGER){
 				*((int *)((CInteger *)(*var))->m_value)=((int)(ptr_instruction->stkResultObject));
 
 			}else
@@ -924,7 +939,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 		case INS_TYPE_NUMBER:
 
 
-			if(idxClass == CScriptClass::getInstance()->getIdxClassNumber()){
+			if(idxScriptClass == CScriptClass::IDX_CLASS_NUMBER){//::getInstance()->getIdxClassNumber()){
 				*((float *)((CNumber *)(*var))->m_value) = *((float *)(ptr_instruction->stkResultObject));
 			}else
 			{
@@ -933,7 +948,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 			break;
 		case INS_TYPE_STRING:
 
-			if(idxClass == CScriptClass::getInstance()->getIdxClassString()){
+			if(idxScriptClass == CScriptClass::IDX_CLASS_STRING){//::getInstance()->getIdxClassString()){
 				*((string *)((CString  *)(*var))->m_value)= *((string *)(ptr_instruction->stkResultObject));
 			}else
 			{
@@ -942,7 +957,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 
 			break;
 		case INS_TYPE_BOOLEAN:
-			if(idxClass == CScriptClass::getInstance()->getIdxClassBoolean()){
+			if(idxScriptClass == CScriptClass::IDX_CLASS_BOOLEAN){//::getInstance()->getIdxClassBoolean()){
 				*((bool *)((CBoolean  *)aux_var)->m_value)= ((bool)(ptr_instruction->stkResultObject));
 			}else
 			{
@@ -951,29 +966,25 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 			break;
 		case INS_TYPE_FUNCTION: // function object
 
-			if(idxClass == CScriptClass::getInstance()->getIdxClassFunctor()){
-				((CFunctor  *)aux_var)->m_value= ((tScriptFunctionObject *)(ptr_instruction->stkResultObject));
+			if(idxScriptClass == CScriptClass::IDX_CLASS_FUNCTOR){//::getInstance()->getIdxClassFunctor()){
+				((CFunctor  *)aux_var)->m_value= ((CScriptFunctionObject *)(ptr_instruction->stkResultObject));
 			}else{
 				create_from_index=true;
 			}
 			break;
 		case INS_TYPE_VAR: // generic object, assign pointer ...
-
-
 			// unref pointer ...
-			if((*var)->idx_shared_ptr != -1){
+			if((*var)->idx_shared_ptr != ZS_UNDEFINED_IDX){
 				CSharedPointerManager::getInstance()->unrefSharedPointer((*var)->idx_shared_ptr);
 			}
 
 			*var = (CScriptVariable *)(ptr_instruction->stkResultObject);
 
-			if(*var != CScriptVariable::NullSymbol && *var != CScriptVariable::UndefinedSymbol){
+			if(*var != NULL_SYMBOL && *var != UNDEFINED_SYMBOL){//CScriptVariable::UndefinedSymbol){
 				// ref the new pointer ...
 				CSharedPointerManager::getInstance()->sharePointer((*var)->idx_shared_ptr);
 			}
-
 			break;
-
 		default:
 				print_error_cr("internal error: unknow assignment %i!",ptr_instruction->type);
 				return false;
@@ -982,10 +993,9 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 
 	if(create_from_index){
 		// unref pointer ...
-		if((*var)->idx_shared_ptr != -1){
+		if((*var)->idx_shared_ptr != ZS_UNDEFINED_IDX){
 			CSharedPointerManager::getInstance()->unrefSharedPointer((*var)->idx_shared_ptr);
 		}
-
 
 		if((*var = createVarFromResultInstruction(ptr_instruction)) == NULL){
 			return false;
@@ -996,8 +1006,7 @@ bool CVirtualMachine::assignVarFromResultInstruction(CScriptVariable **var, tAle
 	return true;
 }
 
-
-void CVirtualMachine::popScope(tScriptFunctionObject *info_function,int index)//, CScriptVariable *ret)
+void CVirtualMachine::popScope(CScriptFunctionObject *info_function,int index)//, CScriptVariable *ret)
 {
 	if(index < 0){
 		print_error_cr("index < 0");
@@ -1014,15 +1023,15 @@ void CVirtualMachine::popScope(tScriptFunctionObject *info_function,int index)//
 
 		CScriptVariable *var =((CScriptVariable *)(basePtrLocalVar[idx_local_var].stkResultObject));
 
-		if(var != CScriptVariable::UndefinedSymbol && var !=  CScriptVariable::NullSymbol){
+		if(var != NULL_SYMBOL && var !=  UNDEFINED_SYMBOL){
 
 			//if(ret != var){ // is not ret variable ...
-			if(var->idx_shared_ptr != -1){
+			if(var->idx_shared_ptr != ZS_UNDEFINED_IDX){
 				CSharedPointerManager::getInstance()->unrefSharedPointer(var->idx_shared_ptr);
 			}
 		}
 
-		basePtrLocalVar[idx_local_var].stkResultObject = CScriptVariable::UndefinedSymbol;
+		basePtrLocalVar[idx_local_var].stkResultObject = UNDEFINED_SYMBOL;
 	}
 }
 
@@ -1030,7 +1039,7 @@ bool CVirtualMachine::performInstruction(
 		tInfoAsmOp * instruction,
 		int & jmp_to_statment,
 		int & jmp_to_instruction,
-		tScriptFunctionObject *info_function,
+		CScriptFunctionObject *info_function,
 		CScriptVariable *this_object,
 		vector<CScriptVariable *> * fun_argv,
 		vector<tInfoAsmOp *> *asm_op,
@@ -1041,13 +1050,13 @@ bool CVirtualMachine::performInstruction(
 	bool	aux_boolean;
 	//string symbol;
 	CScriptVariable **obj=NULL;
-	tScriptFunctionObject * aux_function_info=NULL;
+	CScriptFunctionObject * aux_function_info=NULL;
 	CScriptVariable *ret_obj, *svar;
-	tScriptFunctionObject *constructor_function;
+	CScriptFunctionObject *constructor_function;
 	CScriptVariable *calling_object = this_object;
 	int n_local_vars =  info_function->object_info.local_symbols.m_registeredVariable.size();
 
-	jmp_to_statment=-1;
+	jmp_to_statment=ZS_UNDEFINED_IDX;
 
 	//idxStkCurrentResultInstruction = idx_instruction;
 
@@ -1073,12 +1082,12 @@ bool CVirtualMachine::performInstruction(
 		//sprintf(print_aux_load_value,"UNDEFINED");
 		switch(instruction->index_op1){
 		case LOAD_TYPE::LOAD_TYPE_NULL:
-			if(!pushVar(CScriptVariable::NullSymbol)) return false;
+			if(!pushVar(NULL_SYMBOL)) return false;
 
 			break;
 
 		case LOAD_TYPE::LOAD_TYPE_UNDEFINED:
-			if(!pushVar(CScriptVariable::UndefinedSymbol)) return false;
+			if(!pushVar(UNDEFINED_SYMBOL)) return false;
 
 			break;
 
@@ -1507,15 +1516,15 @@ bool CVirtualMachine::performInstruction(
 
 			// check whether signatures matches or not ...
 			// 1. get function object ...
-			aux_function_info=(tScriptFunctionObject *)ptrResultInstructionOp1->stkResultObject;
+			aux_function_info=(CScriptFunctionObject *)ptrResultInstructionOp1->stkResultObject;
 
 			if(aux_function_info == NULL){ // we must find function ...
 				tInfoAsmOp *iao = asm_op->at(instruction->index_op1);
 				CScriptVariable::tSymbolInfo * si=NULL;
 				CScriptVariable **script_var=NULL;
 
-				if(iao->index_op2 == -1 || iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
-					vector<tScriptFunctionObject> *vec_global_functions=&CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction;
+				if(iao->index_op2 == ZS_UNDEFINED_IDX || iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
+					vector<int> *vec_global_functions=&CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction;
 					bool all_check=true;
 					bool found = false;
 					CScriptVariable * base_var=NULL;
@@ -1535,12 +1544,12 @@ bool CVirtualMachine::performInstruction(
 						for(int h=0; h < 2 && !found; h++){ // h=0 -> match signature, 1=doesn't match signature
 							int idx_function;
 							if(h==0){
-								idx_function=base_var->getIdxFunctionSymbolWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),argv, true);
+								idx_function=base_var->getidxScriptFunctionObjectWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),argv, true);
 							}else{
-								idx_function=base_var->getIdxFunctionSymbolWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),argv, false);
+								idx_function=base_var->getidxScriptFunctionObjectWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),argv, false);
 							}
 
-							if(idx_function != -1){
+							if(idx_function != ZS_UNDEFINED_IDX){
 								si = base_var->getFunctionSymbolByIndex(idx_function);
 								found = true;
 							}
@@ -1548,7 +1557,7 @@ bool CVirtualMachine::performInstruction(
 						}
 
 						if(si != NULL){
-							aux_function_info = (tScriptFunctionObject *)si->object;
+							aux_function_info = (CScriptFunctionObject *)si->object;
 						}
 
 						if(aux_function_info == NULL){
@@ -1566,7 +1575,7 @@ bool CVirtualMachine::performInstruction(
 
 							for(int i = 0; i < (int)vec_global_functions->size() && !found; i++){
 
-								tScriptFunctionObject *irfs = &vec_global_functions->at(i);
+								CScriptFunctionObject *irfs = GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
 
 								if(irfs->object_info.symbol_info.symbol_name == AST_SYMBOL_VALUE(iao->idxAstNode) && (irfs->m_arg.size() == argv->size())){
 
@@ -1580,7 +1589,7 @@ bool CVirtualMachine::performInstruction(
 										}
 										else{
 											if((argv->at(k))->getPointer_C_ClassName()!=irfs->m_arg[k]){
-												all_check =CScriptClass::getInstance()->getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)!=NULL;
+												all_check =CScriptClass::getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)!=NULL;
 											}
 										}
 									}
@@ -1595,7 +1604,7 @@ bool CVirtualMachine::performInstruction(
 
 						// update structure ...
 						if(found){
-							aux_function_info = &(*vec_global_functions)[iao->index_op2];
+							aux_function_info = GET_SCRIPT_FUNCTION_OBJECT((*vec_global_functions)[iao->index_op2]);
 						}else{
 							print_error_cr("Cannot find right C symbol for \"%s\"",AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
 						}
@@ -1608,8 +1617,8 @@ bool CVirtualMachine::performInstruction(
 			}
 
 			if(ptrResultInstructionOp1->type != INS_TYPE_FUNCTION){
-				if(ptrResultInstructionOp1->type == INS_TYPE_VAR && ((CScriptVariable *)ptrResultInstructionOp1->stkResultObject)->getIdxClass() == CScriptClass::getInstance()->getIdxClassFunctor()){
-					aux_function_info = (tScriptFunctionObject *)(((CFunctor *)ptrResultInstructionOp1->stkResultObject)->m_value);
+				if(ptrResultInstructionOp1->type == INS_TYPE_VAR && ((CScriptVariable *)ptrResultInstructionOp1->stkResultObject)->getIdxClass() == CScriptClass::IDX_CLASS_FUNCTOR){//::getInstance()->getIdxClassFunctor()){
+					aux_function_info = (CScriptFunctionObject *)(((CFunctor *)ptrResultInstructionOp1->stkResultObject)->m_value);
 				}else {
 					print_error_cr("object \"%s\" is not function at line %i",AST_SYMBOL_VALUE_CONST_CHAR(instruction->idxAstNode), AST_LINE_VALUE(instruction->idxAstNode));
 					return false;
@@ -1618,8 +1627,7 @@ bool CVirtualMachine::performInstruction(
 
 			calling_object = this_object;
 			if((instruction->asm_properties & ASM_PROPERTY_CALLING_OBJECT) != 0){
-				calling_object= ptrResultInstructionOp1->ptrObjectRef!=NULL?*ptrResultInstructionOp1->ptrObjectRef:NULL;//(CScriptVariable *)stkResultInstruction[index_op1+startIdxStkResultInstruction-1].stkResultObject;
-						//((CFunctor *)ptrResultInstructionOp1->stkResultObject)->getThisObject();
+				calling_object= ptrResultInstructionOp1->ptrObjectRef!=NULL?*ptrResultInstructionOp1->ptrObjectRef:NULL;
 			}
 			else if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 
@@ -1638,7 +1646,7 @@ bool CVirtualMachine::performInstruction(
 
 			//if((aux_function_info->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
 			if((instruction->asm_properties & ASM_PROPERTY_DIRECT_CALL_RETURN) == 0){ // share pointer
-				if(ret_obj != CScriptVariable::UndefinedSymbol && ret_obj != CScriptVariable::NullSymbol){
+				if(ret_obj != UNDEFINED_SYMBOL && ret_obj != NULL_SYMBOL){
 
 					if(!ret_obj->refSharedPtr()){
 						return NULL;
@@ -1710,7 +1718,7 @@ bool CVirtualMachine::performInstruction(
 				vec->m_objVector.push_back(svar);
 
 
-				if(svar != CScriptVariable::NullSymbol && svar != CScriptVariable::UndefinedSymbol){
+				if(svar != NULL_SYMBOL && svar != UNDEFINED_SYMBOL){
 					// add share + 1
 					CSharedPointerManager::getInstance()->sharePointer(svar->idx_shared_ptr);
 				}
@@ -1813,13 +1821,13 @@ bool CVirtualMachine::performInstruction(
 					string *variable_name = (string *)ptrResultLastInstruction->stkResultObject;
 					if(ptrResultInstructionOp1->type ==VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR){
 						CScriptVariable *var1=(CScriptVariable *)ptrResultInstructionOp1->stkResultObject;
-						if(var1->getIdxClass() == CScriptClass::getInstance()->getIdxClassStruct()){
+						if(var1->getIdxClass() == CScriptClass::IDX_CLASS_STRUCT){//::getInstance()->getIdxClassStruct()){
 
 							// get variable or whatever ... ?
 							//if(ptrResultInstructionOp2->type ==VALUE_INSTRUCTION_TYPE::INS_TYPE_VAR){
 
 								if(ptrResultInstructionOp2->type == VALUE_INSTRUCTION_TYPE::INS_TYPE_FUNCTION){
-									si=var1->addFunctionSymbol(*variable_name, instruction->idxAstNode,(tScriptFunctionObject *)ptrResultInstructionOp2->stkResultObject);
+									si=var1->addFunctionSymbol(*variable_name, instruction->idxAstNode,(CScriptFunctionObject *)ptrResultInstructionOp2->stkResultObject);
 								}else{
 									si=var1->addVariableSymbol(*variable_name, instruction->idxAstNode);
 

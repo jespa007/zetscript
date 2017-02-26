@@ -44,57 +44,44 @@ CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name
 	return info_ptr;
 }
 
-int CCompiler::addLocalVarSymbol(const string & var_name,tASTNode *ast){
-
+int CCompiler::addLocalVarSymbol(const string & var_name,CASTNode *ast){
 
 	if(!localVarSymbolExists(var_name,ast)){
-		//int idxScopeVar=SCOPE_INFO_NODE(ast->idxScope)->getInfoRegisteredSymbol(var_name,true);
+		tInfoVariableSymbol info_symbol;
 
-		//if(idxScopeVar != -1){
-
-			tInfoVariableSymbol info_symbol;
-
-			info_symbol.idxAstNode = ast->idxAstNode;
-			info_symbol.symbol_name = var_name;
-			//info_symbol.idxScopeVar = idxScopeVar;//info_var_scope = irv;
+		info_symbol.idxAstNode = ast->idxAstNode;
+		info_symbol.symbol_name = var_name;
+		//info_symbol.idxScopeVar = idxScopeVar;//info_var_scope = irv;
 
 
-			this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
+		this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
 
-			return this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.size()-1;
-		//}else{
-		//	print_error_cr("variable symbol \"%s\" at line %i not defined!",var_name.c_str(), ast->line_value);
-		//}
-
+		return this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.size()-1;
 	}else{
 		print_error_cr("(Internal error) variable symbol \"%s\" already defined!",var_name.c_str());
 	}
-
-	return -1;
+	return ZS_UNDEFINED_IDX;
 }
 
-bool CCompiler::localVarSymbolExists(const string & name,tASTNode *ast){
+bool CCompiler::localVarSymbolExists(const string & name,CASTNode *ast){
 
 
-	return getIdxLocalVarSymbol(name,ast, false) != -1;
+	return getIdxLocalVarSymbol(name,ast, false) != ZS_UNDEFINED_IDX;
 }
 
-int  CCompiler::getIdxLocalVarSymbol(const string & name,tASTNode *ast, bool print_msg){
+int  CCompiler::getIdxLocalVarSymbol(const string & name,CASTNode *ast, bool print_msg){
 
 	string  var_name = ast->symbol_value;
-	//int idxScopeVar=SCOPE_INFO_NODE(ast->idxScope)->getInfoRegisteredSymbol(var_name,print_msg);
 
-	//if(idxScopeVar != -1){
-		for(unsigned i = 0; i < this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.size(); i++){
-			if(this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable[i].symbol_name == var_name ){
-				return i;
-			}
+	for(unsigned i = 0; i < this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable.size(); i++){
+		if(this->m_currentFunctionInfo->object_info.local_symbols.m_registeredVariable[i].symbol_name == var_name ){
+			return i;
 		}
-	//}
-	return -1;
+	}
+	return ZS_UNDEFINED_IDX;
 }
 
-int CCompiler::addLocalFunctionSymbol(const string & name,tASTNode *ast){
+int CCompiler::addLocalFunctionSymbol(const string & name,CASTNode *ast){
 
 	string  function_name = name;
 
@@ -103,7 +90,7 @@ int CCompiler::addLocalFunctionSymbol(const string & name,tASTNode *ast){
 
 		if(irv != NULL){
 
-			tScriptFunctionObject *info_symbol = new tScriptFunctionObject();
+			CScriptFunctionObject *info_symbol = new CScriptFunctionObject();
 			info_symbol = CState::registerFunctionSymbol();
 
 
@@ -113,22 +100,22 @@ int CCompiler::addLocalFunctionSymbol(const string & name,tASTNode *ast){
 
 			this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.push_back(info_symbol);
 
-			return this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size()-1;//&this->m_currentFunctionInfo->local_symbols.vec_idx_registeredFunction[this->m_currentFunctionInfo->local_symbols.vec_idx_registeredFunction.size()-1];
+			return this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size()-1;
 		}
 
 	}else{
 		print_error_cr("function symbol \"%s\" defined at line %i not defined!",function_name.c_str(), ast->line_value);
 	}
-	return -1;
+	return ZS_UNDEFINED_IDX;
 }
 
-bool CCompiler::functionSymbolExists(const string & name, tASTNode *ast){
+bool CCompiler::functionSymbolExists(const string & name, CASTNode *ast){
 
 	SCOPE_TYPE scope_type;
-	return getIdxFunctionObject(name,ast,scope_type,false) != -1;
+	return getIdxFunctionObject(name,ast,scope_type,false) != ZS_UNDEFINED_IDX;
 }
 
-int  CCompiler::getIdxFunctionObject(const string & name,tASTNode *param_ast, SCOPE_TYPE & scope_type, bool print_msg){
+int  CCompiler::getIdxFunctionObject(const string & name,CASTNode *param_ast, SCOPE_TYPE & scope_type, bool print_msg){
 	tScopeVar *irv=INFO_SCOPE_VAR_NODE(SCOPE_INFO_NODE(param_ast->idxScope)->getInfoRegisteredSymbol(name));
 	scope_type = SCOPE_TYPE::LOCAL_SCOPE;
 	if(irv != NULL){
@@ -137,7 +124,7 @@ int  CCompiler::getIdxFunctionObject(const string & name,tASTNode *param_ast, SC
 
 		if((ast != NULL) && (param_ast->idxScope == ast->idxScope)){
 			for(unsigned i = 0; i < this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-				if(this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name == name ){
+				if(GET_SCRIPT_FUNCTION_OBJECT(m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == name ){
 					return i;
 				}
 			}
@@ -147,13 +134,13 @@ int  CCompiler::getIdxFunctionObject(const string & name,tASTNode *param_ast, SC
 			scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
 
 			for(unsigned i = 0; i < CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-				if(CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name == name ){
+				if(GET_SCRIPT_FUNCTION_OBJECT(CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == name ){
 					return i;
 				}
 			}
 		}
 	}
-	return -1;
+	return ZS_UNDEFINED_IDX;
 }
 
 CCompiler *CCompiler::getInstance(){
@@ -297,7 +284,7 @@ int CCompiler::getIdxArgument(const string & var){
 			return i;
 		}
 	}
-	return -1;
+	return ZS_UNDEFINED_IDX;
 }
 
 bool checkAccessObjectMember(PASTNode _node){
@@ -392,12 +379,12 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 	if(v=="null"){
 		type=INS_TYPE_NULL;
 		load_type=LOAD_TYPE_NULL;
-		obj=CScriptVariable::NullSymbol;
+		obj=NULL_SYMBOL;//CScriptVariable::NullSymbol;
 		print_com_cr("%s detected as null\n",v.c_str());
 	}else if(v=="undefined"){
 			type=INS_TYPE_UNDEFINED;
 			load_type=LOAD_TYPE_UNDEFINED;
-			obj=CScriptVariable::UndefinedSymbol;
+			obj=UNDEFINED_SYMBOL;// CScriptVariable::UndefinedSymbol;
 			print_com_cr("%s detected as undefined\n",v.c_str());
 
 	}else if((const_obj=CInteger::Parse(v))!=NULL){
@@ -457,7 +444,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 		is_constant = false;
 
-		int idx_local_var=-1;
+		int idx_local_var=ZS_UNDEFINED_IDX;
 
 		if(checkAccessObjectMember(_node)){
 			scope_type = SCOPE_TYPE::ACCESS_SCOPE;
@@ -476,7 +463,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 
 				// if not function then is var or arg node ?
 				// first we find the list of argments
-				if((idx_local_var = getIdxArgument(_node->symbol_value))!=-1){
+				if((idx_local_var = getIdxArgument(_node->symbol_value))!=ZS_UNDEFINED_IDX){
 					load_type=LOAD_TYPE_ARGUMENT;
 				}
 				else{ // ... if not argument finally, we deduce that the value is a local symbol...
@@ -516,7 +503,7 @@ bool CCompiler::insertMovVarInstruction(PASTNode _node,int left_index, int right
 	if(left_asm_op->variable_type != INS_TYPE_VAR){
 		int line = -1;
 
-		if(left_asm_op->idxAstNode!=-1)
+		if(left_asm_op->idxAstNode!=ZS_UNDEFINED_IDX)
 			line=AST_LINE_VALUE(left_asm_op->idxAstNode);
 		print_error_cr("line %i. left operand must be l-value for '=' operator",line);
 		return false;
@@ -685,7 +672,7 @@ void CCompiler::insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_v
 	asm_op->index_op1=ref_vec_object_index;
 	asm_op->idxAstNode = _node->idxAstNode;
 	asm_op->index_op2=index_instruciont_to_push;
-	if(index_instruciont_to_push == -1){
+	if(index_instruciont_to_push == ZS_UNDEFINED_IDX){
 		asm_op->index_op2=CCompiler::getCurrentInstructionIndex();
 	}
 	asm_op->operator_type=ASM_OPERATOR::VPUSH;
@@ -697,7 +684,7 @@ void CCompiler::insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_v
 bool CCompiler::insert_NewObject_Instruction(PASTNode _node, const string & class_name){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
-	if((asm_op->index_op1 = CScriptClass::getInstance()->getIdxRegisteredClass(class_name))==-1){//&((*m_currentListStatements)[dest_statment]);
+	if((asm_op->index_op1 = CScriptClass::getIdxRegisteredClass(class_name))==ZS_UNDEFINED_IDX){//&((*m_currentListStatements)[dest_statment]);
 		print_error_cr("class \"%s\" is not registered", class_name.c_str());
 		return false;
 	}
@@ -712,7 +699,7 @@ bool CCompiler::insertObjectMemberAccessFrom(PASTNode _node, int ref_node_index)
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = ref_node_index;
-	asm_op->index_op2 = -1; // index from object cached node ?
+	asm_op->index_op2 = ZS_UNDEFINED_IDX; // index from object cached node ?
 	asm_op->operator_type=ASM_OPERATOR::OBJECT_ACCESS;
 	asm_op->idxAstNode = _node->idxAstNode;
 
@@ -725,7 +712,7 @@ void CCompiler::insertPopScopeInstruction(PASTNode _node,int scope_idx){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
 	asm_op->index_op1 = scope_idx;
-	asm_op->index_op2 = -1; // index from object cached node ?
+	asm_op->index_op2 = ZS_UNDEFINED_IDX; // index from object cached node ?
 	asm_op->operator_type=ASM_OPERATOR::POP_SCOPE;
 	asm_op->idxAstNode = _node->idxAstNode;
 
@@ -737,8 +724,8 @@ void CCompiler::insertPopScopeInstruction(PASTNode _node,int scope_idx){
 void CCompiler::insert_DeclStruct_Instruction(PASTNode _node){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
-	asm_op->index_op1 = -1;
-	asm_op->index_op2 = -1; // index from object cached node ?
+	asm_op->index_op1 = ZS_UNDEFINED_IDX;
+	asm_op->index_op2 = ZS_UNDEFINED_IDX; // index from object cached node ?
 	asm_op->operator_type=ASM_OPERATOR::DECL_STRUCT;
 	asm_op->idxAstNode = _node->idxAstNode;
 
@@ -972,7 +959,7 @@ int CCompiler::gacExpression_FunctionOrArrayAccess(PASTNode _node_access, CScope
 
 		}else {
 			print_error_cr("Calling object should have at least 1 children");
-			return -1;
+			return ZS_UNDEFINED_IDX;
 		}
 	}
 
@@ -983,29 +970,29 @@ int CCompiler::gacExpression_FunctionOrArrayAccess(PASTNode _node_access, CScope
 	}
 
 	print_error_cr("Expected function or array access");
-	return -1;
+	return ZS_UNDEFINED_IDX;
 
 }
 
 
 int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 {
-	if(_node == NULL) {print_error_cr("NULL node");return -1;}
-	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return -1;}
-	if(!(_node->children.size()==2 || _node->children.size()==3)) {print_error_cr("Array access should have 2 children");return -1;}
-	if(_node->children[0]->node_type != ARRAY_REF_NODE && _node->children[0]->node_type != ARRAY_OBJECT_NODE ){print_error_cr("Node is not ARRAY_OBJECT type"); return -1;}
-	if(_node->children[1]->node_type != ARRAY_ACCESS_NODE || _node->children[1]->children.size() == 0){print_error_cr("Array has no index nodes "); return -1;}
+	if(_node == NULL) {print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
+	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
+	if(!(_node->children.size()==2 || _node->children.size()==3)) {print_error_cr("Array access should have 2 children");return ZS_UNDEFINED_IDX;}
+	if(_node->children[0]->node_type != ARRAY_REF_NODE && _node->children[0]->node_type != ARRAY_OBJECT_NODE ){print_error_cr("Node is not ARRAY_OBJECT type"); return ZS_UNDEFINED_IDX;}
+	if(_node->children[1]->node_type != ARRAY_ACCESS_NODE || _node->children[1]->children.size() == 0){print_error_cr("Array has no index nodes "); return ZS_UNDEFINED_IDX;}
 
 	int vec=0;
 
 	if(_node->children[0]->node_type == ARRAY_OBJECT_NODE){ // must first create the object ...
-		if((vec=gacExpression_ArrayObject(_node->children[0],_lc))==-1){
-			return -1;
+		if((vec=gacExpression_ArrayObject(_node->children[0],_lc))==ZS_UNDEFINED_IDX){
+			return ZS_UNDEFINED_IDX;
 		}
 	}else{
 		if(_node->children[0]->symbol_value != "--"){ // starts with symbol ...
 			if(!insertLoadValueInstruction(_node->children[0],  _lc)){
-				return -1;
+				return ZS_UNDEFINED_IDX;
 			}
 		}
 		vec = CCompiler::getCurrentInstructionIndex();
@@ -1019,7 +1006,7 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 			if(array_acces->children [k]->children.size() == 1){
 				// check whether is expression node...
 				if(!(gacExpression(array_acces->children [k]->children[0], _lc,getCurrentInstructionIndex()+1))){
-					return -1;
+					return ZS_UNDEFINED_IDX;
 				}
 				// insert vector access instruction ...
 				insert_ArrayAccess_Instruction(vec,CCompiler::getCurrentInstructionIndex(),array_acces->children [k]);
@@ -1027,11 +1014,11 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 
 			}else{
 				print_error_cr("Expected 1 children");
-				return -1;
+				return ZS_UNDEFINED_IDX;
 			}
 		}else{
 			print_error_cr("Node not ARRAY_INDEX_NODE");
-			return -1;
+			return ZS_UNDEFINED_IDX;
 		}
 	}
 
@@ -1060,8 +1047,8 @@ int CCompiler::gacExpression_ArrayObject_Recursive(PASTNode _node, CScope *_lc){
 
 int CCompiler::gacExpression_ArrayObject(PASTNode _node, CScope *_lc)
 {
-	if(_node == NULL) {print_error_cr("NULL node");return -1;}
-	if(_node->node_type != ARRAY_OBJECT_NODE ){print_error_cr("node is not ARRAY_OBJECT_NODE type or null");return -1;}
+	if(_node == NULL) {print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
+	if(_node->node_type != ARRAY_OBJECT_NODE ){print_error_cr("node is not ARRAY_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
 	int r=0;
 
 	// 1. create object ...
@@ -1071,15 +1058,15 @@ int CCompiler::gacExpression_ArrayObject(PASTNode _node, CScope *_lc)
 	// 2. evaluate expressions if any
 	for(unsigned j=0; j < _node->children.size(); j++){
 
-		int ini_instruction = -1;
+		int ini_instruction = ZS_UNDEFINED_IDX;
 
 		if(_node->children[j]->node_type == EXPRESSION_NODE){
 			/*children_is_vector_object = _node->children[j]->children[0]->node_type == ARRAY_OBJECT_NODE;*/
 			ini_instruction = getCurrentInstructionIndex()+1;
 		}
 		// check whether is expression node...
-		if((r=gacExpression(_node->children[j], _lc,ini_instruction)) == -1){
-			return -1;
+		if((r=gacExpression(_node->children[j], _lc,ini_instruction)) == ZS_UNDEFINED_IDX){
+			return ZS_UNDEFINED_IDX;
 		}
 		insert_ArrayObject_PushValueInstruction(_node,index_created_vec,ini_instruction);
 	}
@@ -1088,9 +1075,9 @@ int CCompiler::gacExpression_ArrayObject(PASTNode _node, CScope *_lc)
 
 int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
 {
-	if(_node == NULL) {print_error_cr("NULL node");return -1;}
-	if(_node->node_type != FUNCTION_OBJECT_NODE ){print_error_cr("node is not FUNCTION_OBJECT_NODE type or null");return -1;}
-	if(_node->children.size()!=2) {print_error_cr("Array access should have 2 children");return -1;}
+	if(_node == NULL) {print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
+	if(_node->node_type != FUNCTION_OBJECT_NODE ){print_error_cr("node is not FUNCTION_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
+	if(_node->children.size()!=2) {print_error_cr("Array access should have 2 children");return ZS_UNDEFINED_IDX;}
 
 	int idx=0;
 
@@ -1100,13 +1087,13 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
 			return false;
 	}
 
-	if((idx=addLocalFunctionSymbol(_node->symbol_value,_node)) == -1){
+	if((idx=addLocalFunctionSymbol(_node->symbol_value,_node)) == ZS_UNDEFINED_IDX){
 		return false;
 	}
 
 	// compiles anonymous function ...
-	if(!gacFunction(_node,_lc, &this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[idx])){
-		return -1;
+	if(!gacFunction(_node,_lc, GET_SCRIPT_FUNCTION_OBJECT(this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[idx]))){
+		return ZS_UNDEFINED_IDX;
 	}
 
 	return insertLoadValueInstruction(_node, _lc);
@@ -1114,16 +1101,16 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
 
 int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 {
-	if(_node == NULL) {print_error_cr("NULL node");return -1;}
-	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return -1;}
-	if(!(_node->children.size()==2 || _node->children.size()==3)) {print_error_cr("Array access should have 2 or 3 children");return -1;}
-	if(_node->children[0]->node_type != FUNCTION_REF_NODE && _node->children[0]->node_type != FUNCTION_OBJECT_NODE){print_error_cr("Node is not FUNCTION_OBJECT_NODE type"); return -1;}
-	if(_node->children[1]->node_type != ARGS_PASS_NODE){print_error_cr("Function has no index nodes "); return -1;}
+	if(_node == NULL) {print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
+	if(_node->node_type != CALLING_OBJECT_NODE ){print_error_cr("node is not CALLING_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
+	if(!(_node->children.size()==2 || _node->children.size()==3)) {print_error_cr("Array access should have 2 or 3 children");return ZS_UNDEFINED_IDX;}
+	if(_node->children[0]->node_type != FUNCTION_REF_NODE && _node->children[0]->node_type != FUNCTION_OBJECT_NODE){print_error_cr("Node is not FUNCTION_OBJECT_NODE type"); return ZS_UNDEFINED_IDX;}
+	if(_node->children[1]->node_type != ARGS_PASS_NODE){print_error_cr("Function has no index nodes "); return ZS_UNDEFINED_IDX;}
 
 	// load function ...
 	if(_node->children[0]->symbol_value != "--"){ // starts with symbol ...
 		if(!insertLoadValueInstruction(_node->children[0],_lc)) {
-			return -1;
+			return ZS_UNDEFINED_IDX;
 		}
 	}
 
@@ -1137,7 +1124,7 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 
 		// check whether is expression node...
 		if(!gacExpression(function_args->children[k], _lc,getCurrentInstructionIndex()+1)){
-			return -1;
+			return ZS_UNDEFINED_IDX;
 		}
 
 		if(k==0){
@@ -1166,8 +1153,8 @@ int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc)
 
 int CCompiler::gacExpression_StructAttribute(PASTNode _node, CScope *_lc, int index_ref_object)
 {
-	if(_node == NULL) {print_error_cr("NULL node");return -1;}
-	if(_node->node_type != EXPRESSION_NODE ){print_error_cr("node is not EXPRESSION_NODE type or null");return -1;}
+	if(_node == NULL) {print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
+	if(_node->node_type != EXPRESSION_NODE ){print_error_cr("node is not EXPRESSION_NODE type or null");return ZS_UNDEFINED_IDX;}
 
 
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
@@ -1176,7 +1163,7 @@ int CCompiler::gacExpression_StructAttribute(PASTNode _node, CScope *_lc, int in
 
 	// 1st evalualte expression...
 	if(!gacExpression(_node, _lc,getCurrentInstructionIndex()+1)){
-		return -1;
+		return ZS_UNDEFINED_IDX;
 	}
 
 
@@ -1201,16 +1188,16 @@ int CCompiler::gacExpression_StructAttribute(PASTNode _node, CScope *_lc, int in
 
 int CCompiler::gacExpression_Struct(PASTNode _node, CScope *_lc)
 {
-	if(_node == NULL) {print_error_cr("NULL node");return -1;}
-	if(_node->node_type != STRUCT_NODE ){print_error_cr("node is not STRUCT_NODE type or null");return -1;}
+	if(_node == NULL) {print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
+	if(_node->node_type != STRUCT_NODE ){print_error_cr("node is not STRUCT_NODE type or null");return ZS_UNDEFINED_IDX;}
 
 	insert_DeclStruct_Instruction(_node);
 	int ref_obj = getCurrentInstructionIndex();
 
 	for(unsigned i = 0; i < _node->children.size(); i++){
 		// evaluate attribute
-		if(gacExpression_StructAttribute(_node->children[i], _lc,ref_obj) == -1){
-			return -1;
+		if(gacExpression_StructAttribute(_node->children[i], _lc,ref_obj) == ZS_UNDEFINED_IDX){
+			return ZS_UNDEFINED_IDX;
 		}
 	}
 
@@ -1249,7 +1236,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 	bool access_node = false;
 
 	if(_node==NULL){
-		return -1;
+		return ZS_UNDEFINED_IDX;
 	}
 
 	if( isThisScope(_node)
@@ -1282,25 +1269,25 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 
 			}else {
 				print_error_cr("Calling object should have at least 1 children");
-				return -1;
+				return ZS_UNDEFINED_IDX;
 			}
 		}
 
 		if(special_node ){
 				if(array_access){
-					if((r=gacExpression_ArrayAccess(_node, _lc)) == -1){
-												return -1;
+					if((r=gacExpression_ArrayAccess(_node, _lc)) == ZS_UNDEFINED_IDX){
+												return ZS_UNDEFINED_IDX;
 											}
 				}else if(function_access){
-					if((r=gacExpression_FunctionAccess(_node, _lc)) == -1){
-						return -1;
+					if((r=gacExpression_FunctionAccess(_node, _lc)) == ZS_UNDEFINED_IDX){
+						return ZS_UNDEFINED_IDX;
 					}
 				}
 				else{
 					switch(eval_node_sp->node_type){
 					case ARRAY_OBJECT_NODE: // should have 1 children
-						if((r=gacExpression_ArrayObject(_node, _lc)) == -1){
-							return -1;
+						if((r=gacExpression_ArrayObject(_node, _lc)) == ZS_UNDEFINED_IDX){
+							return ZS_UNDEFINED_IDX;
 						}
 
 						index_instruction = r;
@@ -1309,27 +1296,27 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 
 					case FUNCTION_OBJECT_NODE: // should have 1 children
 						if((!gacExpression_FunctionObject(_node, _lc))){
-							return -1;
+							return ZS_UNDEFINED_IDX;
 						}
 						r=CCompiler::getCurrentInstructionIndex();
 						break;
 
 					case NEW_OBJECT_NODE:
 						if((!gacNew(_node, _lc))){
-							return -1;
+							return ZS_UNDEFINED_IDX;
 						}
 
 						r=CCompiler::getCurrentInstructionIndex();
 						break;
 					case STRUCT_NODE:
-						if((r=gacExpression_Struct(_node, _lc))==-1){
-							return -1;
+						if((r=gacExpression_Struct(_node, _lc))==ZS_UNDEFINED_IDX){
+							return ZS_UNDEFINED_IDX;
 						}
 						//r=CCompiler::getCurrentInstructionIndex();
 						break;
 					default:
 						print_error_cr("Unexpected node type %i",eval_node_sp->node_type);
-						return -1;
+						return ZS_UNDEFINED_IDX;
 						break;
 					}
 				}
@@ -1337,7 +1324,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 		else{ // TERMINAL NODE
 
 			if(!insertLoadValueInstruction(_node, _lc)){
-				return -1;
+				return ZS_UNDEFINED_IDX;
 			}
 		}
 		index_instruction=r;
@@ -1345,7 +1332,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 
 		if(_node->operator_info == NULL){
 			print_error_cr("Malformed expression at line %i",_node->line_value);
-			return -1;
+			return ZS_UNDEFINED_IDX;
 		}
 
 		if(_node->operator_info->id == TERNARY_IF_PUNCTUATOR){
@@ -1360,28 +1347,26 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 
 			}else{
 				print_error_cr("line %i: Put parenthesis on the inner ternary conditional",_node->line_value);
-				return -1;
+				return ZS_UNDEFINED_IDX;
 			}
-
-
 		}else{
 			// only inserts terminal symbols...
 			if(_node!=NULL && _node->operator_info != NULL){
 				access_node = _node->operator_info->id == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR;
 			}
 			// check if there's inline-if-else
-			int right=-1, left=-1;
-			if((left=gacExpression_Recursive(_node->children[LEFT_NODE], _lc,index_instruction)) == -1){
-				return -1;
+			int right=ZS_UNDEFINED_IDX, left=ZS_UNDEFINED_IDX;
+			if((left=gacExpression_Recursive(_node->children[LEFT_NODE], _lc,index_instruction)) == ZS_UNDEFINED_IDX){
+				return ZS_UNDEFINED_IDX;
 			}
 
 			if(_node->children.size()==2){
-				if((right=gacExpression_Recursive(_node->children[RIGHT_NODE],_lc,index_instruction)) == -1){
-					return -1;
+				if((right=gacExpression_Recursive(_node->children[RIGHT_NODE],_lc,index_instruction)) == ZS_UNDEFINED_IDX){
+					return ZS_UNDEFINED_IDX;
 				}
 			}
 			else {
-				right = -1;
+				right = ZS_UNDEFINED_IDX;
 			}
 
 			r=index_instruction;
@@ -1391,7 +1376,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 				r=index_instruction-1;
 			}
 
-			if(left !=-1 && right!=-1){ // 2 ops
+			if(left !=ZS_UNDEFINED_IDX && right!=ZS_UNDEFINED_IDX){ // 2 ops
 
 				// Ignore punctuator node. Only take cares about terminal symbols...
 				if(!access_node){
@@ -1399,24 +1384,24 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 					// particular case if operator is =
 					if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left,right)){
 						print_error_cr("%s at line %i",error_str.c_str(),_node->line_value);
-						return -1;
+						return ZS_UNDEFINED_IDX;
 					}
 				}
 
-			}else if(right!=-1){ // one op..
+			}else if(right!=ZS_UNDEFINED_IDX){ // one op..
 				if(!insertOperatorInstruction(_node->operator_info,_node,  error_str,right)){
 					print_error_cr("%s at line %i",error_str.c_str(),_node->line_value);
-					return -1;
+					return ZS_UNDEFINED_IDX;
 				}
 
-			}else if(left!=-1){ // one op..
+			}else if(left!=ZS_UNDEFINED_IDX){ // one op..
 				if(!insertOperatorInstruction(_node->operator_info,_node,error_str,left)){
 					print_error_cr("%s at line %i",error_str.c_str(),_node->line_value);
-					return -1;
+					return ZS_UNDEFINED_IDX;
 				}
 			}else{ // ERROR
 				print_error_cr("ERROR both ops ==0!");
-				return -1;
+				return ZS_UNDEFINED_IDX;
 			}
 		}
 	}
@@ -1431,7 +1416,7 @@ int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_
 }
 
 int findConstructorIdxNode(PASTNode _node ){
-	if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {print_error_cr("children[0] is not args_pass_node");return -1;}
+	if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {print_error_cr("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
 	for(unsigned i = 0; i < _node->children.size(); i++){
 		if(_node->children[i]->node_type == NODE_TYPE::KEYWORD_NODE){
 			if(_node->children[i]->keyword_info != NULL){
@@ -1442,14 +1427,14 @@ int findConstructorIdxNode(PASTNode _node ){
 				}
 			}else{
 				print_error_cr("keyword = NULL");
-				return -1;
+				return ZS_UNDEFINED_IDX;
 			}
 		}
 	}
-	return -1;
+	return ZS_UNDEFINED_IDX;
 }
 
-bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoScriptClass *current_class){
+bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScriptClass *current_class){
 
 	if(current_class == NULL){
 		return true;
@@ -1469,7 +1454,7 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoS
 	// register all vars...
 	for(unsigned i = 0; i < node_class->children[0]->children.size(); i++){ // foreach declared var.
 		for(unsigned j = 0; j < node_class->children[0]->children[i]->children.size(); j++){ // foreach element declared within ','
-			if(CScriptClass::getInstance()->registerVariableSymbol(
+			if(CScriptClass::registerVariableSymbol(
 					class_name,
 					node_class->children[0]->children[i]->children[j]->symbol_value,
 					node_class->children[0]->children[i]->children[j]
@@ -1481,7 +1466,7 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoS
 
 	// register all functions ...
 	for(unsigned i = 0; i < node_class->children[1]->children.size(); i++){
-		tScriptFunctionObject *irfs;
+		CScriptFunctionObject *irfs;
 		PASTNode node_fun = node_class->children[1]->children[i];
 		string symbol_value = node_fun->symbol_value;
 
@@ -1489,7 +1474,7 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, tInfoS
 			symbol_value = class_name; // rename to be base constructor later ...
 		}
 
-		if((irfs=CScriptClass::getInstance()->registerFunctionSymbol(
+		if((irfs=CScriptClass::registerFunctionSymbol(
 				class_name,
 				symbol_value,
 				node_fun
@@ -1516,7 +1501,7 @@ bool CCompiler::gacClass(PASTNode _node, CScope * _lc){
 		base_class=	_node->children[2]->symbol_value;
 	}
 
-	tInfoScriptClass *irc;
+	CScriptClass *irc;
 
 	// children[0]==var_collection && children[1]=function_collection
 	if(_node->children.size()!=2 && _node->children.size()!=3) {print_error_cr("node CLASS has not valid number of nodes");return false;}
@@ -1526,7 +1511,7 @@ bool CCompiler::gacClass(PASTNode _node, CScope * _lc){
 	}
 
 	// verify class is not already registered...
-	if((irc=CScriptClass::getInstance()->registerScriptClass(_node->symbol_value,base_class,_node)) == NULL){
+	if((irc=CScriptClass::newScriptClass(_node->symbol_value,base_class,_node)) == NULL){
 		return false;
 	}
 	// we push class symbol ref as function, then all registered symbols will take account with this scope...
@@ -1542,17 +1527,13 @@ bool CCompiler::gacClass(PASTNode _node, CScope * _lc){
 }
 
 int CCompiler::gacNew(PASTNode _node, CScope * _lc){
-	if(_node == NULL) {print_error_cr("NULL node");return false;}
-	if(_node->node_type != NEW_OBJECT_NODE ){print_error_cr("node is not NEW OBJECT NODE type");return false;}
-	if(_node->children.size()!=1) {print_error_cr("node NEW has not valid number of nodes");return false;}
-	if(_node->children[0]->node_type!=NODE_TYPE::ARGS_PASS_NODE) {print_error_cr("children[0] is not args_pass_node");return false;}
+	if(_node == NULL) {print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
+	if(_node->node_type != NEW_OBJECT_NODE ){print_error_cr("node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
+	if(_node->children.size()!=1) {print_error_cr("node NEW has not valid number of nodes");return ZS_UNDEFINED_IDX;}
+	if(_node->children[0]->node_type!=NODE_TYPE::ARGS_PASS_NODE) {print_error_cr("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
 
 
 	// load function ...
-	/*if(!insertLoadValueInstruction(_node->children[0],_lc)) {
-		return -1;
-	}
-	int call_index = getCurrentInstructionIndex();*/
 
 	// 1. insert push to pass values to all args ...
 	PASTNode constructor_args = _node->children[0];
@@ -1562,7 +1543,7 @@ int CCompiler::gacNew(PASTNode _node, CScope * _lc){
 
 		// check whether is expression node...
 		if(!gacExpression(constructor_args->children[k], _lc,getCurrentInstructionIndex()+1)){
-			return -1;
+			return ZS_UNDEFINED_IDX;
 		}
 
 		if(k==0){
@@ -1578,57 +1559,13 @@ int CCompiler::gacNew(PASTNode _node, CScope * _lc){
 		insert_ClearArgumentStack_Instruction(_node);
 	}
 
-	// 2. insert call instruction itself.
-	//insert_CallFunction_Instruction(_node,call_index);
-
-
-
-	// create new statment ...
 	// 1. create object instruction ...
 	if(!insert_NewObject_Instruction(_node,_node->symbol_value)) // goto end  ...
 	{
-		return -1;
+		return ZS_UNDEFINED_IDX;
 	}
 
 	return CCompiler::getCurrentInstructionIndex();
-
-/*	int index_created_object = getCurrentStatmentIndex();
-	int idx_constructor_node = findConstructorIdxNode(_node->children[0]);
-
-	// 2. load constructor function ...
-	if(idx_constructor_node != -1){
-		if(!insertLoadValueInstruction(_node->children[idx_constructor_node],_lc)) {
-			return false;
-		}
-		int call_index = getCurrentInstructionIndex();
-		// 2. load constructor arguments ...
-		// 1. insert push to pass values to all args ...
-		PASTNode function_args = _node->children[0];
-
-		if(function_args->children.size() > 0){
-		for(unsigned k = 0; k < function_args->children.size(); k++){
-
-			// check whether is expression node...
-			if(!gacExpression(function_args->children[k], _lc,getCurrentInstructionIndex()+1)){
-				return false;
-			}
-
-			if(k==0){
-				// insert clear push arguments stack
-				insert_ClearArgumentStack_And_PushFirstArgument_Instructions(_node);
-			}else{
-				// insert vector access instruction ...
-				insert_PushArgument_Instruction(_node);
-			}
-		}
-		}else{
-			// clear the stack only ..
-			insert_ClearArgumentStack_Instruction(_node);
-		}
-		// 2. insert call instruction itself.
-		insert_CallFunction_Instruction(_node,call_index,index_created_object);
-	}
-	return true;*/
 }
 
 bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
@@ -1666,7 +1603,7 @@ bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
 	// 6. insert pop scope...
 	newStatment();
 	int index=_node->idxScope;
-	if(index != -1){
+	if(index != ZS_UNDEFINED_IDX){
 			insertPopScopeInstruction(_node,index);
 	}
 
@@ -1715,7 +1652,7 @@ bool CCompiler::gacReturn(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::gacFunction(PASTNode _node, CScope * _lc, tScriptFunctionObject *irfs){
+bool CCompiler::gacFunction(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	//if(!(_node->node_type == KEYWORD_NODE && _node->keyword_info != NULL) && !(_node->node_type != FUNCTION_OBJECT_NODE))>{print_error_cr("node is not keyword type or null");return false;}
@@ -1776,23 +1713,23 @@ bool CCompiler::gacIf(PASTNode _node, CScope * _lc){
 
 int CCompiler::gacInlineIf(PASTNode _node, CScope * _lc, int & instruction){
 
-	if(_node == NULL) {print_error_cr("NULL node");return -1;}
-	if(_node->node_type != PUNCTUATOR_NODE || _node->operator_info == NULL){print_error_cr("node is not punctuator type or null");return -1;}
-	if(_node->operator_info->id != TERNARY_IF_PUNCTUATOR){print_error_cr("node is not INLINE-IF PUNCTUATOR type");return -1;}
-	if(_node->children.size()!=2) {print_error_cr("node INLINE-IF has not 2 nodes");return -1;}
-	if(!(_node->children[1]->node_type==PUNCTUATOR_NODE && _node->children[1]->operator_info->id==TERNARY_ELSE_PUNCTUATOR )) {print_error_cr("node INLINE-ELSE has not found");return -1;}
-	if(_node->children[1]->children.size() != 2) {print_error_cr("node INLINE-ELSE has not 2 nodes");return -1;}
+	if(_node == NULL) {print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
+	if(_node->node_type != PUNCTUATOR_NODE || _node->operator_info == NULL){print_error_cr("node is not punctuator type or null");return ZS_UNDEFINED_IDX;}
+	if(_node->operator_info->id != TERNARY_IF_PUNCTUATOR){print_error_cr("node is not INLINE-IF PUNCTUATOR type");return ZS_UNDEFINED_IDX;}
+	if(_node->children.size()!=2) {print_error_cr("node INLINE-IF has not 2 nodes");return ZS_UNDEFINED_IDX;}
+	if(!(_node->children[1]->node_type==PUNCTUATOR_NODE && _node->children[1]->operator_info->id==TERNARY_ELSE_PUNCTUATOR )) {print_error_cr("node INLINE-ELSE has not found");return ZS_UNDEFINED_IDX;}
+	if(_node->children[1]->children.size() != 2) {print_error_cr("node INLINE-ELSE has not 2 nodes");return ZS_UNDEFINED_IDX;}
 	tInfoAsmOp *asm_op_jmp_else_if,*asm_op_jmp_end;
 
 	int r=instruction;
 
 	// compile conditional expression...
-	if((r=gacExpression_Recursive(_node->children[0],_lc,r))==-1){ return -1;}
+	if((r=gacExpression_Recursive(_node->children[0],_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
 	asm_op_jmp_else_if = insert_JNT_Instruction(); // goto else body ...
 
 	// compile if-body ...
 	r+=2; // in order to execute recursive expression we have to advance r pointer jnt (+2)
-	if((r=gacExpression_Recursive(_node->children[1]->children[0],_lc,r))==-1){ return -1;}
+	if((r=gacExpression_Recursive(_node->children[1]->children[0],_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
 
 	insert_Save_CurrentInstruction();
 
@@ -1804,7 +1741,7 @@ int CCompiler::gacInlineIf(PASTNode _node, CScope * _lc, int & instruction){
 
 	r+=3;
 
-	if((r=gacExpression_Recursive(_node->children[1]->children[1],_lc,r))==-1){ return -1;}
+	if((r=gacExpression_Recursive(_node->children[1]->children[1],_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
 
 	insert_Save_CurrentInstruction();
 	insert_Load_CurrentInstruction();
@@ -1834,7 +1771,8 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 
 	string error_str;
 	string detected_type_str;
-	CScope *_scope = AST_SCOPE_INFO(this->m_currentFunctionInfo->object_info.symbol_info.idxAstNode)->getCurrentScopePointer();
+	int idxScope=AST_SCOPE_INFO_IDX(this->m_currentFunctionInfo->object_info.symbol_info.idxAstNode);
+	 CScope *_scope = SCOPE_INFO_NODE(idxScope)->getCurrentScopePointer();
 
 	// create new statment ...
 	CCompiler::getInstance()->newStatment();
@@ -1888,7 +1826,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 											insertLoadValueInstruction(case_value,_scope);
 
 											// is equal ? ==
-											if(!insertOperatorInstruction(&CAst::defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR],0, error_str, switch_value_index ,getCurrentInstructionIndex())){
+											if(!insertOperatorInstruction(&CASTNode::defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR],0, error_str, switch_value_index ,getCurrentInstructionIndex())){
 													print_error_cr("%s",error_str.c_str());
 													return false;
 											}
@@ -1964,7 +1902,7 @@ bool CCompiler::gacVar(PASTNode _node, CScope * _lc){
 			return false;
 		}
 
-		if((local_variable_idx=addLocalVarSymbol(_node->children[i]->symbol_value,_node->children[i])) == -1){
+		if((local_variable_idx=addLocalVarSymbol(_node->children[i]->symbol_value,_node->children[i])) == ZS_UNDEFINED_IDX){
 			return false;
 		}
 
@@ -2013,7 +1951,7 @@ bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 				return false;
 		}
 
-		if((idx=addLocalFunctionSymbol(_node->symbol_value,_node)) == -1){
+		if((idx=addLocalFunctionSymbol(_node->symbol_value,_node)) == ZS_UNDEFINED_IDX){
 			return false;
 		}
 
@@ -2022,11 +1960,6 @@ bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 	case KEYWORD_TYPE::RETURN_KEYWORD:
 		return gacReturn(_node, _lc);
 		break;
-
-	/*case KEYWORD_TYPE::NEW_KEYWORD:
-		return gacNew(_node, _lc);
-		break;*/
-
 	}
 
 	return false;
@@ -2051,7 +1984,7 @@ bool CCompiler::gacBody(PASTNode _node, CScope * _lc){
 
 	int index=_node->idxScope;//_node->scope_info_ptr);
 
-	if(index != -1){
+	if(index != ZS_UNDEFINED_IDX){
 		insertPopScopeInstruction(_node,index);
 	}else{
 		print_error_cr("Cannot find scope_info!");
@@ -2063,7 +1996,7 @@ bool CCompiler::gacBody(PASTNode _node, CScope * _lc){
 
 bool CCompiler::gacExpression(PASTNode _node, CScope *_lc,int index_instruction){
 
-	if(index_instruction == -1){ // create new statment
+	if(index_instruction == ZS_UNDEFINED_IDX){ // create new statment
 		//int index_instruction=0;
 		tInfoStatementOp i_stat;
 		(*m_currentListStatements).push_back(i_stat);
@@ -2075,7 +2008,7 @@ bool CCompiler::gacExpression(PASTNode _node, CScope *_lc,int index_instruction)
 
 	int r = gacExpression_Recursive(_node->children[0], _lc,index_instruction);
 
-	return r!= -1;
+	return r!= ZS_UNDEFINED_IDX;
 }
 
 bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
@@ -2137,7 +2070,7 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 	return false;
 }
 
-void CCompiler::pushFunction(PASTNode _node,tScriptFunctionObject *sf){
+void CCompiler::pushFunction(PASTNode _node,CScriptFunctionObject *sf){
 	stk_scriptFunction.push_back(m_currentFunctionInfo);
 
 	this->m_currentFunctionInfo = sf;
@@ -2147,17 +2080,17 @@ void CCompiler::pushFunction(PASTNode _node,tScriptFunctionObject *sf){
 
 void CCompiler::popFunction(){
 
-	tScriptFunctionObject *aux_sf = stk_scriptFunction[stk_scriptFunction.size()-1];
+	CScriptFunctionObject *aux_sf = stk_scriptFunction[stk_scriptFunction.size()-1];
 	stk_scriptFunction.pop_back();
 	m_currentFunctionInfo = aux_sf;
 
 	if(m_currentFunctionInfo != NULL){
 		this->m_currentListStatements = &m_currentFunctionInfo->object_info.statment_op;
-		this->m_treescope = AST_SCOPE_INFO(m_currentFunctionInfo->object_info.symbol_info.idxAstNode);
+		this->m_treescope =AST_SCOPE_INFO(m_currentFunctionInfo->object_info.symbol_info.idxAstNode);
 	}
 }
 
-bool CCompiler::compile(PASTNode _node, tScriptFunctionObject *sf){
+bool CCompiler::compile(PASTNode _node, CScriptFunctionObject *sf){
 
 	if(_node == NULL){
 		print_error_cr("NULL node!");

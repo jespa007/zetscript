@@ -138,7 +138,7 @@ F script_function(const char *function_name)
 {
 	string return_type;
 	vector<string> params;
-	tScriptFunctionObject irs;
+	CScriptFunctionObject irs;
 	F function_type;
 	///string str_classPtr = typeid( _T *).name();
 
@@ -196,7 +196,7 @@ Ret callfunc (std::function<Ret(Arg0, Args...)> func)//, std::vector<std::string
 /*
 CScriptVariable * CZetScript::script_call(const string &script_function_name, std::vector<CScriptVariable *> args){
 
-	//tScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
+	//CScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
 
 	//if(irfs != NULL){
 		for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){

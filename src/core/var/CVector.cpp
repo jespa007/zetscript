@@ -2,7 +2,7 @@
 
 
 CVector::CVector(){
-	this->init(CScriptClass::getInstance()->getRegisteredClassVector(), (void *)this);
+	this->init(CScriptClass::getRegisteredClassVector(), (void *)this);
 	_i_size = 0;
 }
 
@@ -11,7 +11,7 @@ CVector::~CVector(){
 	for(unsigned i = 0; i < m_objVector.size(); i++){ // unref values ...
 		CScriptVariable *var = m_objVector[i];
 
-		if(var->idx_shared_ptr == -1){ // not referenced so we can remove safetely ...
+		if(var->idx_shared_ptr == ZS_UNDEFINED_IDX){ // not referenced so we can remove safetely ...
 			delete var;
 		}
 		else{

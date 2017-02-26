@@ -58,11 +58,11 @@ std::string * CInteger::toString(){
 
 CInteger::CInteger(){
 	m_intValue = 0;
-	this->init(CScriptClass::getInstance()->getRegisteredClassInteger(), (void *)this);
+	init(CScriptClass::getRegisteredClassInteger(), (void *)this);
 }
 
 CInteger::CInteger(int i){
-	this->init(CScriptClass::getInstance()->getRegisteredClassInteger(), (void *)this);
+	init(CScriptClass::getRegisteredClassInteger(), (void *)this);
 	m_intValue = i;
 }
 

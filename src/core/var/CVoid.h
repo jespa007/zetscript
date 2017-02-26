@@ -4,8 +4,11 @@
 
 class CVoid:public CScriptVariable{
 
-public:
+	static CVoid *void_symbol;
 	CVoid();
+public:
+	static CVoid *getInstance();
+	static void destroySingletons();
 
 
 };
