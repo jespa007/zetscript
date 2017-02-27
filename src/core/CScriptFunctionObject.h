@@ -25,11 +25,12 @@ public:
 		object_info.idxScriptFunctionObject = -1;
 	}
 
-	static void set(vector<CScriptFunctionObject *> 	* set_vec);
 	/**
-	 * Get CScriptClass Node by its idx, regarding current state.
+	 * Set/Get CScriptClass Node by its idx, regarding current state.
 	 */
-	static vector<CScriptFunctionObject *> 	*	getVecScriptFunctionObjectNode();
+	static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunctionObject *> 	* set_vec);
+	static vector<CScriptFunctionObject *> 	*	getVectorScriptFunctionObjectNode();
+
 	static CScriptFunctionObject 			*	newScriptFunctionObject();
 	static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
 	static tFunctionInfo					* 	getFunctionInfo(int idx);

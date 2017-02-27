@@ -18,6 +18,8 @@
 #define register_C_FunctionMember(o,s)			register_C_FunctionMemberInt<o>(STR(s),&o::s)
 
 #define GET_MAIN_VARIABLE(idx_var)				CScriptClass::getVariableClass(0,idx_var)
+#define GET_MAIN_SCRIPT_FUNCTION_IDX			CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
+#define GET_MAIN_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX)
 
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(CScriptClass::newScriptVariableByIdx(idx))
 
@@ -98,7 +100,8 @@ public:
 
 
 	// FUNCTIONS
-	static void set(vector<CScriptClass *> 	* set_vec);
+	static void 								setVectorScriptClassNode(vector<CScriptClass *> 	* set_vec);
+	static vector<CScriptClass *> 		*		getVectorScriptClassNode();
 
 	/**
 	 * Class Manager
@@ -107,7 +110,7 @@ public:
 	 * This function registers a script class into factory.
 	 */
 	static CScriptClass 				* 		newScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast);
-	static vector<CScriptClass *> 		*		getVectorScriptClassList();
+
 
 	static CScriptClass 				* 		getScriptClassByIdx(int idx);
 	static CScriptClass 				* 		getScriptClassByName(const string & name, bool print_msg=true);
@@ -187,7 +190,7 @@ public:
 		//CScope::tScopeVar  *rs;
 
 		//CScriptVariable *sf=NULL;
-		CScriptFunctionObject * mainFunctionInfo = getScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+		CScriptFunctionObject * mainFunctionInfo = getScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 		//CScriptClass *rc = CScriptClass::getInstance()->getRegisteredClass(class_name);
 
 		if(mainFunctionInfo == NULL){
@@ -454,7 +457,7 @@ public:
 		vector<string> params;
 		CScriptFunctionObject *irs=NULL;
 		vector<string> m_arg;
-		unsigned int idx_return_type=-1;
+		int idx_return_type=-1;
 		unsigned int ref_ptr=-1;
 		string str_classPtr = typeid( _T *).name();
 

@@ -17,16 +17,16 @@ void CState::createSingletons(){
 		vec_saved_state = new vector<CState *> ();
 		vec_saved_state->push_back(st=new CState()); // create first state 0.
 
-		CASTNode::setVectorASTNode(st->getVecAstNode());
-		CScope::set(st->getVecScopeNode());
-		CScriptFunctionObject::set(st->getVecScriptFunctionObjectNode());
-		CScriptClass::set(st->getScriptClassNode());
+		CASTNode::setVectorASTNode(st->getVectorASTNodeNode());
+		CScope::setVectorScopeNode(st->getVectorScopeNode());
+		CScriptFunctionObject::setVectorScriptFunctionObjectNode(st->getVectorScriptFunctionObjectNode());
+		CScriptClass::setVectorScriptClassNode(st->getVectorScriptClassNode());
 		CZetScript::setVectorParsedFiles(st->getVectorInfoParsedSourceNode());
 
 		// create state by default ...
 		//current_state = new CState();
-		//current_vec_ast_node = current_state->getVecAstNode();
-		//current_vec_scope_node = current_state->getVecScopeNode();
+		//current_vec_ast_node = current_state->getVectorASTNodeNode();
+		//current_vec_scope_node = current_state->getVectorScopeNode();
 		//current_vec_info_scope_var_node = current_state->getVecScopeVarNode();
 		//current_vec_registered_class_node= current_state->getScriptClassNode();
 		//current_vec_info_registered_function_symbol_node = current_state->getVecInfoFunctionSymbolNode();
@@ -41,8 +41,8 @@ bool  CState::setState(int idx){
 
 	current_state = vec_saved_state->at(idx);
 
-	/*current_vec_ast_node = current_state->getVecAstNode();
-	current_vec_scope_node = current_state->getVecScopeNode();
+	/*current_vec_ast_node = current_state->getVectorASTNodeNode();
+	current_vec_scope_node = current_state->getVectorScopeNode();
 	current_vec_info_scope_var_node = current_state->getVecScopeVarNode();
 	current_vec_registered_class_node= current_state->getVecScriptClass();
 	current_vec_info_registered_function_symbol_node = current_state->getVecInfoRegisteredFunctionFunctionNode();*/
@@ -56,10 +56,10 @@ int   CState::saveState(){
 
 	CState * state = new CState();
 
-	/*(*state->getVecAstNode()) 	= (*CASTNode::getVecAstNode());
-	(*state->getVecScopeNode()) = (*CScope::getVecScopeNode());
-	(*state->getScriptClassNode()) = (*CScriptClass::getVectorScriptClassList());
-	(*state->getVecScriptFunctionObjectNode()) = (*CScriptFunctionObject::getVecScriptFunctionObjectNode());
+	/*(*state->getVectorASTNodeNode()) 	= (*CASTNode::getVectorASTNodeNode());
+	(*state->getVectorScopeNode()) = (*CScope::getVectorScopeNode());
+	(*state->getScriptClassNode()) = (*CScriptClass::getVectorScriptClassNode());
+	(*state->getVectorScriptFunctionObjectNode()) = (*CScriptFunctionObject::getVectorScriptFunctionObjectNode());
 */
 	// 1- Copy current state...
 	// 1.1-Copy AST...
@@ -145,10 +145,10 @@ CState::CState(){
 }
 
 
-vector<CASTNode *> 		*		CState::getVecAstNode(){
+vector<CASTNode *> 		*		CState::getVectorASTNodeNode(){
 	return &vec_ast_node;
 }
-vector<CScope *> 	*		CState::getVecScopeNode(){
+vector<CScope *> 	*		CState::getVectorScopeNode(){
 	return &vec_scope_node;
 }
 
@@ -157,44 +157,53 @@ vector<tScopeVar *> 	*	CState::getVecScopeVarNode(){
 	return &vec_scope_var_node;
 }*/
 
-vector<CScriptClass *> 	*CState::getScriptClassNode(){
+vector<CScriptClass *> 	*CState::getVectorScriptClassNode(){
 	return &vec_script_class_node;
 }
 
-vector<CScriptFunctionObject *> 	*CState::getVecScriptFunctionObjectNode(){
-	return &vec_scipt_function_object_node;
+vector<CScriptFunctionObject *> 	*CState::getVectorScriptFunctionObjectNode(){
+	return &vec_script_function_object_node;
 }
 
-// TODO: This should be into script function object!!!!
-void CState::unloadRecursiveFunctions(CScriptFunctionObject * info_function){
-	// TODO: This should be into script function object!!!!
-	// TODO: This should be into script function object!!!!
-	// TODO: This should be into script function object!!!!
-	// TODO: This should be into script function object!!!!
-	// TODO: This should be into script function object!!!!
-	// TODO: This should be into script function object!!!!
-	// TODO: This should be into script function object!!!!
-	// TODO: This should be into script function object!!!!
-	// TODO: This should be into script function object!!!!s
 
-	if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
-		return;
+void CState::destroyASTNodes(){
+	for(unsigned i = 0; i < vec_ast_node.size(); i++){
+		delete vec_ast_node [i];
 	}
 
-	print_info_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
-	for(unsigned k = 0; k < info_function->object_info.statment_op.size(); k++){
+}
+void CState::destroyScopeNodes(){
+	for(unsigned i = 0; i < vec_scope_node.size(); i++){
+		delete vec_scope_node [i];
+	}
+}
 
-		for(unsigned a = 0; a  <info_function->object_info.statment_op[k].asm_op.size(); a++){
 
-			delete info_function->object_info.statment_op[k].asm_op[a];
+
+void CState::destroyScriptFunctionObjectNodes(){
+
+	for(unsigned i = 0; i < vec_script_function_object_node.size(); i++){
+
+		CScriptFunctionObject * info_function = vec_script_function_object_node[i];
+
+		if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+			return;
 		}
 
+		print_info_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
+		for(unsigned k = 0; k < info_function->object_info.statment_op.size(); k++){
+
+			for(unsigned a = 0; a  <info_function->object_info.statment_op[k].asm_op.size(); a++){
+
+				delete info_function->object_info.statment_op[k].asm_op[a];
+			}
 
 
-	}
 
-	for(unsigned f = 0; f < info_function->object_info.local_symbols.vec_idx_registeredFunction.size(); f++){
-		unloadRecursiveFunctions(&info_function->object_info.local_symbols.vec_idx_registeredFunction[f]);
+		}
+
+		delete info_function;
+
 	}
 }
 
@@ -241,20 +250,6 @@ void CState::destroyScriptClassNodes() {
 
 			info_function->object_info.symbol_info.ref_ptr = 0;
 
-
-			// this is not valid!!! -> must be in script function object.
-			// this is not valid!!! -> must be in script function object.
-			// this is not valid!!! -> must be in script function object.
-			// this is not valid!!! -> must be in script function object.
-			unloadRecursiveFunctions(info_function);//->object_info.local_symbols.vec_idx_registeredFunction[f]);
-
-
-			//bool is_main_function = i==0&&j==0;
-
-			//if(!is_main_function){
-
-			//}
-
 		}
 
 
@@ -300,7 +295,11 @@ void CState::destroyScriptClassNodes() {
 
 CState::~CState(){
 
+
+	destroyScriptFunctionObjectNodes();
 	destroyScriptClassNodes();
+	destroyScopeNodes();
+	destroyASTNodes();
 
 	for(unsigned i =0; i < vec_info_parsed_source_node.size(); i++){
 		delete vec_info_parsed_source_node[i].data;

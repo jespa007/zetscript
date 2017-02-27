@@ -846,7 +846,7 @@ bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 
 		break;
 	case SCOPE_TYPE::GLOBAL_SCOPE:
-		vec_global_functions = &CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction;
+		vec_global_functions = &(GET_MAIN_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
 
 		if(iao->index_op2 == ZS_UNDEFINED_IDX){ // is will be processed after in CALL instruction ...
 			info_function= NULL;
@@ -1524,7 +1524,7 @@ bool CVirtualMachine::performInstruction(
 				CScriptVariable **script_var=NULL;
 
 				if(iao->index_op2 == ZS_UNDEFINED_IDX || iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
-					vector<int> *vec_global_functions=&CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction;
+					vector<int> *vec_global_functions=&(GET_MAIN_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
 					bool all_check=true;
 					bool found = false;
 					CScriptVariable * base_var=NULL;

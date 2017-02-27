@@ -20,19 +20,13 @@ vector<CScriptFunctionObject *> 	* vec_script_function_object_node=NULL;
 
 
 
-void CScriptFunctionObject::destroySingletons(){
-	if(vec_script_function_object_node!=NULL){
-		delete vec_script_function_object_node;
-		vec_script_function_object_node=NULL;
-	}
+
+
+void CScriptFunctionObject::setVectorScriptFunctionObjectNode(vector<CScriptFunctionObject *> 	* set_vec){
+	vec_script_function_object_node = set_vec;
 }
 
-
-void CScriptFunctionObject::set(vector<CScriptFunctionObject *> 	& set_vec){
-	*vec_script_function_object_node = set_vec;
-}
-
-vector<CScriptFunctionObject *> 	*CScriptFunctionObject::getVecScriptFunctionObjectNode(){
+vector<CScriptFunctionObject *> 	*CScriptFunctionObject::getVectorScriptFunctionObjectNode(){
 	return vec_script_function_object_node;
 }
 
@@ -52,7 +46,7 @@ tInfoVariableSymbol * CScriptFunctionObject::newVariableSymbol(int idxFunction){
 		tInfoVariableSymbol irs;
 		CScriptFunctionObject *irc = vec_script_function_object_node->at(idxFunction);
 
-		irs.index = irc->object_info.local_symbols.m_registeredVariable.size();
+		irs.idxSymbol = irc->object_info.local_symbols.m_registeredVariable.size();
 		irc->object_info.local_symbols.m_registeredVariable.push_back(irs);
 		return &irc->object_info.local_symbols.m_registeredVariable[irc->object_info.local_symbols.m_registeredVariable.size()-1];
 	}
@@ -60,7 +54,7 @@ tInfoVariableSymbol * CScriptFunctionObject::newVariableSymbol(int idxFunction){
 		print_error("idxScriptClass -1");
 	}
 
-	return false;
+	return NULL;
 
 }
 

@@ -91,7 +91,7 @@ private:
 	bool localVarSymbolExists(const string & name,CASTNode *ast);
 	int  getIdxLocalVarSymbol(const string & name,CASTNode *ast, bool print_msg=true);
 
-	int  addLocalFunctionSymbol(const string & name,CASTNode *ast);
+	CScriptFunctionObject *  addLocalFunctionSymbol(const string & name,CASTNode *ast);
 	bool functionSymbolExists(const string & name,CASTNode *ast);
 	int  getIdxFunctionObject(const string & name,CASTNode *param_ast,SCOPE_TYPE & scope_type, bool print_msg=true);
 

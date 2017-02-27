@@ -51,12 +51,12 @@ int CScriptClass::getIdxClassFromIts_C_Type(const string & c_type_str){
  }
 
 
-void CScriptClass::set(vector<CScriptClass *> 	* set_vec){
+void CScriptClass::setVectorScriptClassNode(vector<CScriptClass *> 	* set_vec){
 	vec_script_class_node = set_vec;
 }
 
 
-vector<CScriptClass *> 		*	CScriptClass::getVectorScriptClassList(){
+vector<CScriptClass *> 		*	CScriptClass::getVectorScriptClassNode(){
 	return vec_script_class_node;
 }
 
@@ -302,7 +302,7 @@ public:
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		// MAIN CLASS (IDX==0)! Is the first entry before any other one   (this order is important!...
 		if((newScriptClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 0
-		if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME,MAIN_AST_ROOT)) == NULL) return false;
+		if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME,MAIN_AST_ROOT)) == NULL) return false;
 
 
 		if((newScriptClass("CUndefined","",NULL)) == NULL) return false;		// 1
@@ -435,20 +435,6 @@ public:
 		idx_function_script_constructor=-1;
 }
 
- int CScriptClass::saveState(){
-	 // 1. For all current registered classes:
-	 // 1.1. Clone its ast...
-	 // 1.2. Clone its scopeinfo...
-	 // 1.3. Clone registered classes...
-	 //(*vec_script_class_node)
-	 return -1;
- }
-
-
- bool CScriptClass::restoreState(int index){
- 	 //(*vec_script_class_node)
-	 return false;
-  }
 
 
  CScriptClass::tPrimitiveType *CScriptClass::getPrimitiveTypeFromStr(const string & str){
@@ -574,7 +560,7 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 
 
 
-	 bool is_main_function = CZetScript::getInstance()->getMainStructInfo() == root_class_irfs;
+	 bool is_main_function = GET_MAIN_FUNCTION_OBJECT == root_class_irfs;
 	 PASTNode ast = AST_NODE(root_class_irfs->object_info.symbol_info.idxAstNode);
 
 	 if(ast!=NULL){
@@ -591,7 +577,7 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 
 		 if(idxScope != -1){
 
-			 vector<CScope *> *list = CScope::getVecScopeNode();
+			 vector<CScope *> *list = CScope::getVectorScopeNode();
 			 //scp->generateScopeList(list);
 			 vector<tInfoVariableSymbol> *vs = &root_class_irfs->object_info.local_symbols.m_registeredVariable;
 			 for(unsigned i = 0;i < list->size(); i++){ // register index var per scope ...
@@ -624,11 +610,12 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const string & parent_symbol, int n_function){
 
 
-	tFunctionInfo * info_function = GET_FUNCTION_INFO(idxScriptFunctionObject);
+	CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject);
+	tFunctionInfo * info_function = &sfo->object_info;
 
 	print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->symbol_info.symbol_name.c_str());
 
-	if(buildScopeVariablesBlock(info_function)){
+	if(buildScopeVariablesBlock(sfo)){
 		return false;
 	}
 
@@ -657,11 +644,11 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 
 
 									 // search local...
-									 if(!searchVarFunctionSymbol(&info_function->iao,n_function,SCOPE_TYPE::LOCAL_SCOPE)){
+									 if(!searchVarFunctionSymbol(info_function->idxScriptFunctionObject,iao,n_function,SCOPE_TYPE::LOCAL_SCOPE)){
 
 										 // search global...
-										 CScriptFunctionObject * mainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
-										 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,n_function,SCOPE_TYPE::GLOBAL_SCOPE)){
+										 //CScriptFunctionObject * mainFunctionInfo = GET_MAIN_FUNCTION_OBJECT;//getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
+										 if(!searchVarFunctionSymbol(GET_MAIN_SCRIPT_FUNCTION_IDX,iao,n_function,SCOPE_TYPE::GLOBAL_SCOPE)){
 											 print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
 											 return false;
 										 }
@@ -706,23 +693,23 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 bool CScriptClass::updateReferenceSymbols(){
 
 
-
+	 int idx_main_function = ((*vec_script_class_node)[0]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 	 CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[0]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 	 print_info_cr("DEFINED CLASSES");
-	 vector<CScriptFunctionObject *>  mrf;
+	 vector<int>  mrf;
 
 	 // For each class...
 	 for(unsigned i = 0; i < (*vec_script_class_node).size(); i++){
 
 		 mrf.clear();
 		 if(i==0){ // First entry (MAIN_CLASS), load global functions....
-			 mrf.push_back(main_function);//->object_info.local_symbols.vec_idx_registeredFunction;
+			 mrf.push_back(idx_main_function);//->object_info.local_symbols.vec_idx_registeredFunction;
 			 for(unsigned h=0; h<  main_function->object_info.local_symbols.vec_idx_registeredFunction.size(); h++){
-				 mrf.push_back(&main_function->object_info.local_symbols.vec_idx_registeredFunction[h]);
+				 mrf.push_back(main_function->object_info.local_symbols.vec_idx_registeredFunction[h]);
 			 }
 		 }else{ // any other class
 			 for(unsigned h=0; h<  (*vec_script_class_node)[i]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); h++){
-				 mrf.push_back(&(*vec_script_class_node)[i]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[h]);
+				 mrf.push_back((*vec_script_class_node)[i]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[h]);
 			 }
 		 }
 
@@ -730,7 +717,7 @@ bool CScriptClass::updateReferenceSymbols(){
 		 for(unsigned k=0; k < mrf.size();k++){
 
 
-			 CScriptFunctionObject * info_function = mrf[k];
+			 CScriptFunctionObject * info_function = GET_SCRIPT_FUNCTION_OBJECT(mrf[k]);
 			 bool is_main_class = i == 0;
 			 bool is_main_function = is_main_class && k==0;
 			 CScriptClass * _belonging_class = (*vec_script_class_node)[i];
@@ -802,11 +789,11 @@ bool CScriptClass::updateReferenceSymbols(){
 											 if(sfi != NULL){
 												 // search global...
 												 if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
-													 symbol_to_find = sfi->local_symbols.vec_idx_registeredFunction[k].object_info.symbol_info.symbol_name;
+													 symbol_to_find = GET_SCRIPT_FUNCTION_OBJECT(sfi->local_symbols.vec_idx_registeredFunction[k])->object_info.symbol_info.symbol_name;
 												 }
 
 
-												 if(!searchVarFunctionSymbol(sfi,iao,k,iao->scope_type)){
+												 if(!searchVarFunctionSymbol(sfi->idxScriptFunctionObject,iao,k,iao->scope_type)){
 													 if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
 														 print_error_cr("line %i: Cannot find ancestor function for \"%s()\"",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
 													 }
@@ -818,11 +805,11 @@ bool CScriptClass::updateReferenceSymbols(){
 											 }
 											 else{ //normal symbol...
 												 // search local...
-												 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,SCOPE_TYPE::LOCAL_SCOPE)){
+												 if(!searchVarFunctionSymbol(info_function->object_info.idxScriptFunctionObject,iao,k,SCOPE_TYPE::LOCAL_SCOPE)){
 
 													 // search global...
-													 CScriptFunctionObject * mainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
-													 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,SCOPE_TYPE::GLOBAL_SCOPE)){
+													 CScriptFunctionObject * mainFunctionInfo = GET_MAIN_FUNCTION_OBJECT;// getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
+													 if(!searchVarFunctionSymbol(mainFunctionInfo->object_info.idxScriptFunctionObject,iao,k,SCOPE_TYPE::GLOBAL_SCOPE)){
 														 print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
 														 return false;
 													 }
@@ -862,7 +849,9 @@ bool CScriptClass::updateReferenceSymbols(){
 
 			 if(!is_main_function){ // process all function symbols ...
 				 for(unsigned m=0; m < info_function->object_info.local_symbols.vec_idx_registeredFunction.size(); m++){
-					 if(!updateFunctionSymbols(&info_function->object_info.local_symbols.vec_idx_registeredFunction[m], info_function->object_info.symbol_info.symbol_name,m)){
+					 if(!updateFunctionSymbols(
+							 info_function->object_info.local_symbols.vec_idx_registeredFunction[m],
+							 info_function->object_info.symbol_info.symbol_name,m)){
 						 return false;
 					 }
 				 }
@@ -990,7 +979,7 @@ bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_pt
 		return false;
 	}
 
-	int idxMainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+	int idxMainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 
 	if(idxMainFunctionInfo == -1){
 		print_error_cr("main function is not created");
@@ -1146,7 +1135,7 @@ CScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & clas
 
 		CScriptFunctionObject *irs = CScriptFunctionObject::newScriptFunctionObject();
 
-		irs->object_info.symbol_info.idxClassInfo = rc->idxScriptClass;
+		irs->object_info.symbol_info.idxScriptClass = object_info->symbol_info.idxScriptClass;
 		irs->object_info.symbol_info.symbol_name = fun_name;
 
 		irs->object_info.symbol_info.idxAstNode = -1;
@@ -1160,7 +1149,7 @@ CScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & clas
 		}
 
 
-		irs->object_info.symbol_info.index = object_info->local_symbols.vec_idx_registeredFunction.size();
+		irs->object_info.symbol_info.idxSymbol = object_info->local_symbols.vec_idx_registeredFunction.size();
 		object_info->local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 
 		return irs;

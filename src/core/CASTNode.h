@@ -32,6 +32,11 @@ class CASTNode{
 
 public:
 
+	static tInfoKeyword defined_keyword[MAX_KEYWORD];
+	static tInfoPunctuator defined_operator_punctuator[MAX_OPERATOR_PUNCTUATORS];
+	static tInfoPunctuator defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
+
+
 	static void setVectorASTNode(vector<CASTNode *> 	* set_vec_ast_node);
 
 
@@ -42,7 +47,7 @@ public:
 
 	static void 					registerOperatorsPunctuators();
 	static CASTNode				*  	newAstNode();
-	static vector<CASTNode *>	*	getVecAstNode(); // ast collection register...
+	static vector<CASTNode *>	*	getVectorASTNodeNode(); // ast collection register...
 
 	static PASTNode 			* 	getAstNodePtr(int ast_idx);
 	static CASTNode 			* 	getAstNode(int ast_idx);
@@ -80,9 +85,6 @@ private:
 
 	// main ast class
 	static vector<CASTNode *> 						* vec_ast_node; // ast collection register...
-	static tInfoKeyword defined_keyword[MAX_KEYWORD];
-	static tInfoPunctuator defined_operator_punctuator[MAX_OPERATOR_PUNCTUATORS];
-	static tInfoPunctuator defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
 
 
@@ -228,8 +230,8 @@ private:
 	//-----------------------------------------------
 	// OWN FUNCTIONS...
 
-	void destroyChildren_Recursive(PASTNode _node);
-	void destroyChildren();
+	//void destroyChildren_Recursive(PASTNode _node);
+	//void destroyChildren();
 
 
 

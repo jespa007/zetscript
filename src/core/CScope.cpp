@@ -20,12 +20,12 @@ vector<CScope *> 						* CScope::vec_scope_node=NULL;
 int n_anonymouse_func=0;
 
 
-void CScope::set(vector<CScope *> 	* set_vec){
+void 						CScope::setVectorScopeNode(vector<CScope *> 	* set_vec){
 	vec_scope_node = set_vec;
 }
 
 
-vector<CScope *> 	*		CScope::getVecScopeNode(){
+vector<CScope *> 	*		CScope::getVectorScopeNode(){
 	return vec_scope_node;
 }
 
@@ -83,7 +83,7 @@ void CScope::resetScopePointer(){
 CScope * CScope::pushScope(){
 
 	CScope *new_scope = CScope::newScope(m_baseScope->m_currentScopePointer);//, m_baseScope->incTotalScopes());
-	m_baseScope->m_currentScopePointer->m_scopeList.push_back(new_scope);
+	m_baseScope->m_currentScopePointer->m_localScopeList.push_back(new_scope->idxScope);
 	m_baseScope->m_currentScopePointer = new_scope;
 	return m_baseScope->m_currentScopePointer;
 
@@ -99,9 +99,9 @@ CScope * CScope::popScope(){
 	return NULL;
 }
 
-vector<CScope *> * CScope::getScopeList(){
+vector<int> * CScope::getLocalScopeList(){
 
-	return &m_scopeList;
+	return &m_localScopeList;
 }
 
 
@@ -128,11 +128,11 @@ tScopeVar * CScope::registerAnonymouseFunction(PASTNode ast){ // register anonym
 	return &m_baseScope->m_registeredVariable[m_baseScope->m_registeredVariable.size()-1];
 }
 
-bool CScope::registerSymbol(const string & var_name, PASTNode ast){
-	int idxAstNode=-1;// * irv;
+tScopeVar * CScope::registerSymbol(const string & var_name, PASTNode ast){
+	tScopeVar *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
-	if((idxAstNode = existRegisteredSymbol(var_name))==-1){ // check whether is local var registered scope ...
+	if((p_irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
 
 		string symbol_ref = var_name;
 		symbol_ref = "_"+symbol_ref;
@@ -146,32 +146,31 @@ bool CScope::registerSymbol(const string & var_name, PASTNode ast){
 			irv.idxAstNode=ast->idxAstNode;
 		}
 		m_registeredVariable.push_back(irv);
-		return true;//irv->idxScopeVar;
+		return &m_registeredVariable[m_registeredVariable.size()-1];// irv->idxScopeVar;
 	}else{
 
 		int m_line=-1;
 		if(ast != NULL) {
 			m_line = ast->line_value;
-
 		}
 
-		if(idxAstNode != -1) { // if not null is defined in script scope, else is C++ var
-			print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), AST_LINE_VALUE(idxAstNode));
+		if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
+			print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), AST_LINE_VALUE(p_irv->idxAstNode));
 		}else{
 			print_error_cr("(line %i): error var \"%s\" already registered as C++!", m_line,var_name.c_str());
 		}
 	}
-	return false;//-1;
+	return NULL;//false;//-1;
 }
 
-bool CScope::existRegisteredSymbol(const string & var_name){
+tScopeVar * CScope::existRegisteredSymbol(const string & var_name){
 
 	string symbol_ref = var_name;
 	symbol_ref = "_"+symbol_ref;
 
 	for(unsigned i = 0; i < m_registeredVariable.size(); i++){
 		if(m_registeredVariable[i].symbol_ref==symbol_ref){
-			return true;//m_registeredVariable[i].idxScopeVar; // ptr scope ?
+			return &m_registeredVariable[i];//.idxScopeVar; // ptr scope ?
 		}
 	}
 
@@ -180,10 +179,19 @@ bool CScope::existRegisteredSymbol(const string & var_name){
 		return parent->existRegisteredSymbol(var_name);
 	}
 
-	return false;//-1;
+	return NULL;//false;//-1;
 
 }
 
+
+tScopeVar * CScope::getInfoRegisteredSymbol(const string & v, bool print_msg){
+	tScopeVar *irv = existRegisteredSymbol(v);
+	if(irv == NULL && print_msg){
+		print_error_cr("%s not exist",v.c_str());
+	}
+
+	return irv;
+}
 
 //-----------------------------------------------------------------------------------------------------------
 CScope::~CScope(){

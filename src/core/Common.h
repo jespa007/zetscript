@@ -253,8 +253,8 @@ enum VALUE_INSTRUCTION_TYPE{
 };
 
 
-#define MAIN_SCRIPT_CLASS_NAME 		"__MainClass__"
-#define MAIN_SCRIPT_FUNCTION_NAME 	"__mainFunction__"
+#define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"
+#define MAIN_SCRIPT_FUNCTION_OBJECT_NAME 	"__mainFunction__"
 
 typedef int (*fntConversionType)(CScriptVariable *obj);
 

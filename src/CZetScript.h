@@ -64,8 +64,10 @@ public:
 
 	/*CScriptFunctionObject *getMainStructInfo(){return m_mainFunctionInfo;}
 	tFunctionInfo *getMainObjectInfo(){return &m_mainFunctionInfo->object_info;}
-	CScriptVariable *getMainObject(){return m_mainClass;}*/
-	//CScriptFunction *getMainFunction(){return m_mainFunction;}
+
+	//CScriptFunction *getMainFunction(){return m_mainFunction;}*/
+
+	CScriptVariable *getMainObject(){return m_mainObject;}
 
 	static CScriptVariable * call_C_function(void *fun_ptr,CScriptFunctionObject *irfs, vector<CScriptVariable *> * argv);
 

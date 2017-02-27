@@ -33,7 +33,7 @@ void CASTNode::setVectorASTNode(vector<CASTNode *> 	* set_vec_ast_node){
 	vec_ast_node = set_vec_ast_node;
 }
 
-vector<CASTNode *> 		*		CASTNode::getVecAstNode(){
+vector<CASTNode *> 		*		CASTNode::getVectorASTNodeNode(){
 	return vec_ast_node;
 }
 
@@ -2026,7 +2026,7 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 
 							// check whether parameter name's matches with some global variable...
 							if(scope_info != NULL){
-								if((irv=INFO_SCOPE_VAR_NODE(scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(symbol_value,false))) != NULL){
+								if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(symbol_value,false)) != NULL){
 
 									if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
 										print_error_cr("Function name \"%s\" defined at line %i is already defined at %i", symbol_value, m_line,AST_LINE_VALUE(irv->idxAstNode));
@@ -2117,7 +2117,7 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 						}
 
 						// check whether parameter name's matches with some global variable...
-						if((irv=INFO_SCOPE_VAR_NODE(_currentScope->getInfoRegisteredSymbol(symbol_value,false))) != NULL){
+						if((irv=_currentScope->getInfoRegisteredSymbol(symbol_value,false)) != NULL){
 							print_error_cr("Ambiguous symbol argument \"%s\" at line %i name with var defined at %i", symbol_value, m_line, AST_LINE_VALUE(irv->idxAstNode));
 							return NULL;
 
@@ -2125,7 +2125,7 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 
 						// ok register arg symbol...
 
-						if((INFO_SCOPE_VAR_NODE(_currentScope->registerSymbol(symbol_value,args_node))) == NULL){
+						if((_currentScope->registerSymbol(symbol_value,args_node)) == NULL){
 							return NULL;
 						}
 						// ok register symbol into the object function ...
@@ -3448,7 +3448,7 @@ m_rootAstNode = new CASTNode();
 m_rootAstNode->node_type = BODY_NODE;
 m_rootAstNode->scope_info_ptr = m_rootScope;*/
 
-
+/*
 void CASTNode::destroyChildren_Recursive(PASTNode _node){
 
 	if(_node != NULL){
@@ -3470,12 +3470,12 @@ void CASTNode::destroyChildren(){
 		destroyChildren_Recursive(children[i]);
 	}
 	children.clear();
-}
+}*/
 
 CASTNode::~CASTNode(){
 
 
-	destroyChildren();
+	//destroyChildren();
 
 
 

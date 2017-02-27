@@ -14,21 +14,19 @@ class CState{
 
 
 	//static vector<tScopeVar *> 					* current_vec_scope_var_node;
-
-
-
-
 	static string * aux_str;
 
-	void unloadRecursiveFunctions(CScriptFunctionObject * info_function);
+	void destroyASTNodes();
+	void destroyScopeNodes();
+	void destroyScriptFunctionObjectNodes();
 	void destroyScriptClassNodes();
 
 	vector<CASTNode *> 							vec_ast_node; // ast collection register...
 	vector<CScope *> 							vec_scope_node;
-	vector<tScopeVar *> 						vec_scope_var_node;
+	//vector<tScopeVar *> 						vec_scope_var_node;
 	vector<CScriptClass *> 						vec_script_class_node;
-	vector<CScriptFunctionObject *> 			vec_scipt_function_object_node;
-	vector<tInfoParsedSource> 				vec_info_parsed_source_node;
+	vector<CScriptFunctionObject *> 			vec_script_function_object_node;
+	vector<tInfoParsedSource> 					vec_info_parsed_source_node;
 
 public:
 
@@ -63,12 +61,12 @@ public:
 
 	CState();
 
-	vector<CASTNode *> 					*	getVecAstNode(); // ast collection register...
-	vector<CScope *> 					*	getVecScopeNode();
-	vector<tScopeVar *> 				*	getVecScopeVarNode();
-	vector<CScriptClass *> 				*	getScriptClassNode();
-	vector<CScriptFunctionObject *> 	*	getVecScriptFunctionObjectNode();
-	vector<tInfoParsedSource> 		*	getVectorInfoParsedSourceNode();
+	vector<CASTNode *> 					*	getVectorASTNodeNode(); // ast collection register...
+	vector<CScope *> 					*	getVectorScopeNode();
+	//vector<tScopeVar *> 				*	getVecScopeVarNode();
+	vector<CScriptClass *> 				*	getVectorScriptClassNode();
+	vector<CScriptFunctionObject *> 	*	getVectorScriptFunctionObjectNode();
+	vector<tInfoParsedSource> 			*	getVectorInfoParsedSourceNode();
 
 	~CState();
 

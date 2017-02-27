@@ -81,32 +81,29 @@ int  CCompiler::getIdxLocalVarSymbol(const string & name,CASTNode *ast, bool pri
 	return ZS_UNDEFINED_IDX;
 }
 
-int CCompiler::addLocalFunctionSymbol(const string & name,CASTNode *ast){
+CScriptFunctionObject * CCompiler::addLocalFunctionSymbol(const string & name,CASTNode *ast){
 
 	string  function_name = name;
 
 	if(!functionSymbolExists(name,ast)){
-		tScopeVar *irv=INFO_SCOPE_VAR_NODE(SCOPE_INFO_NODE(ast->idxScope)->getInfoRegisteredSymbol(function_name,true));
-
+		tScopeVar *irv = SCOPE_INFO_NODE(ast->idxScope)->getInfoRegisteredSymbol(function_name,true);
 		if(irv != NULL){
 
-			CScriptFunctionObject *info_symbol = new CScriptFunctionObject();
-			info_symbol = CState::registerFunctionSymbol();
-
+			CScriptFunctionObject *info_symbol = CScriptFunctionObject::newScriptFunctionObject();
 
 			info_symbol->object_info.symbol_info.idxAstNode = irv->idxAstNode;
 			//info_symbol.object_info.symbol_info.idxScopeVar = irv->idxScopeVar;
 			info_symbol->object_info.symbol_info.symbol_name = name;
 
-			this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.push_back(info_symbol);
+			this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.push_back(info_symbol->object_info.idxScriptFunctionObject);
 
-			return this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size()-1;
+			return info_symbol;
 		}
 
 	}else{
 		print_error_cr("function symbol \"%s\" defined at line %i not defined!",function_name.c_str(), ast->line_value);
 	}
-	return ZS_UNDEFINED_IDX;
+	return NULL;
 }
 
 bool CCompiler::functionSymbolExists(const string & name, CASTNode *ast){
@@ -116,7 +113,7 @@ bool CCompiler::functionSymbolExists(const string & name, CASTNode *ast){
 }
 
 int  CCompiler::getIdxFunctionObject(const string & name,CASTNode *param_ast, SCOPE_TYPE & scope_type, bool print_msg){
-	tScopeVar *irv=INFO_SCOPE_VAR_NODE(SCOPE_INFO_NODE(param_ast->idxScope)->getInfoRegisteredSymbol(name));
+	tScopeVar *irv=SCOPE_INFO_NODE(param_ast->idxScope)->getInfoRegisteredSymbol(name);
 	scope_type = SCOPE_TYPE::LOCAL_SCOPE;
 	if(irv != NULL){
 
@@ -132,9 +129,11 @@ int  CCompiler::getIdxFunctionObject(const string & name,CASTNode *param_ast, SC
 		else{ //global
 
 			scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
+			CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX);
 
-			for(unsigned i = 0; i < CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-				if(GET_SCRIPT_FUNCTION_OBJECT(CZetScript::getInstance()->getMainStructInfo()->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == name ){
+
+			for(unsigned i = 0; i < main_function->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+				if(GET_SCRIPT_FUNCTION_OBJECT(main_function->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == name ){
 					return i;
 				}
 			}
@@ -1079,7 +1078,7 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
 	if(_node->node_type != FUNCTION_OBJECT_NODE ){print_error_cr("node is not FUNCTION_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
 	if(_node->children.size()!=2) {print_error_cr("Array access should have 2 children");return ZS_UNDEFINED_IDX;}
 
-	int idx=0;
+	CScriptFunctionObject * script_function=NULL;
 
 	// 1. insert load reference created object ...
 	if(functionSymbolExists(_node->symbol_value, _node)){
@@ -1087,12 +1086,12 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
 			return false;
 	}
 
-	if((idx=addLocalFunctionSymbol(_node->symbol_value,_node)) == ZS_UNDEFINED_IDX){
+	if((script_function=addLocalFunctionSymbol(_node->symbol_value,_node)) == NULL){
 		return false;
 	}
 
 	// compiles anonymous function ...
-	if(!gacFunction(_node,_lc, GET_SCRIPT_FUNCTION_OBJECT(this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[idx]))){
+	if(!gacFunction(_node,_lc, script_function)){
 		return ZS_UNDEFINED_IDX;
 	}
 
@@ -1918,7 +1917,7 @@ bool CCompiler::gacVar(PASTNode _node, CScope * _lc){
 
 bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 
-	int idx=0;
+	CScriptFunctionObject *function_object=NULL;
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	if(_node->node_type != KEYWORD_NODE || _node->keyword_info == NULL){print_error_cr("node is not keyword type or null");return false;}
 
@@ -1951,11 +1950,11 @@ bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 				return false;
 		}
 
-		if((idx=addLocalFunctionSymbol(_node->symbol_value,_node)) == ZS_UNDEFINED_IDX){
+		if((function_object=addLocalFunctionSymbol(_node->symbol_value,_node)) == NULL){
 			return false;
 		}
 
-		return gacFunction(_node, _lc,&this->m_currentFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[idx]);
+		return gacFunction(_node, _lc,function_object);
 		break;
 	case KEYWORD_TYPE::RETURN_KEYWORD:
 		return gacReturn(_node, _lc);

@@ -233,7 +233,7 @@ void CZetScript::destroy(){
 
  	for(unsigned j =0; j < m_vf->size(); j++){
 
- 		CScriptFunctionObject *local_irfs = REGISTERED_FUNCTION_SYMBOL_NODE((*m_vf)[j]);
+ 		CScriptFunctionObject *local_irfs = GET_SCRIPT_FUNCTION_OBJECT((*m_vf)[j]);
 
  		if(( local_irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
  			char symbol_ref[1024*8]={0};
@@ -260,7 +260,7 @@ void CZetScript::destroy(){
 
  void CZetScript::printGeneratedCodeAllClasses(){
 
-	 vector<CScriptClass *> * registeredClass = CScriptClass::getVectorScriptClassList();
+	 vector<CScriptClass *> * registeredClass = CScriptClass::getVectorScriptClassNode();
 
 	 // for all classes print code...
 	 for(unsigned i = 0; i < registeredClass->size(); i++){
@@ -467,7 +467,7 @@ bool CZetScript::init(){
 
 	// ok register CInteger through CScriptVariable...
 	//if((m_mainClassInfo = CScriptClass::getScriptClassByName(MAIN_SCRIPT_CLASS_NAME)) == NULL) return false;
-	if((CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME)) == ZS_UNDEFINED_IDX) return false;
+	if((CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)) == ZS_UNDEFINED_IDX) return false;
 
 	__init__=true;
 
@@ -531,7 +531,7 @@ bool CZetScript::eval(const string & s){
 
 	if(parse_ast(s.c_str())){
 
-		idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_NAME);
+		idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 
 		if(CCompiler::getInstance()->compile(MAIN_AST_ROOT,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
 			// print generated asm ...
