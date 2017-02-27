@@ -112,22 +112,22 @@ int 		CASTNode::getAstLine(int idx){
 	return vec_ast_node->at(idx)->line_value;
 }
 
-const string & CASTNode::getAstSymbolName(int idx){
+const char * CASTNode::getAstSymbolName(int idx){
 	if(idx==ZS_UNDEFINED_IDX){
-		return *aux_str;
+		return "undefined symbol";
 	}
 
 	if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
 		print_error_cr("Ast node out of bound");
-		return *aux_str;
+		return "";
 	}
 
-	return vec_ast_node->at(idx)->symbol_value;
+	return vec_ast_node->at(idx)->symbol_value.c_str();
 }
 
 const char 		* CASTNode::getAstSymbolNameConstChar(int idx){
 	if(idx==ZS_UNDEFINED_IDX){
-		return aux_str->c_str();
+		return "undefined symbol";
 	}
 
 	if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
@@ -3431,7 +3431,7 @@ CASTNode::CASTNode(int preallocate_num_nodes){
 	parent=NULL;
 	aux_value=NULL;
 
-	idxAstNode = insertAstNode(this);
+	idxAstNode = ZS_UNDEFINED_IDX;//newAstNode();
 	idxScope = ZS_UNDEFINED_IDX;
 
 	if(preallocate_num_nodes > 0){

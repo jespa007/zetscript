@@ -14,7 +14,7 @@
 
 
 
-#define register_C_VariableMember(o,s) 			register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetOf(&o::s))
+#define register_C_VariableMember(o,s) 			register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetof(o,s))
 #define register_C_FunctionMember(o,s)			register_C_FunctionMemberInt<o>(STR(s),&o::s)
 
 #define GET_MAIN_VARIABLE(idx_var)				CScriptClass::getVariableClass(0,idx_var)

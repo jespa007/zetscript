@@ -54,7 +54,7 @@ public:
 	static int 				  		getScopeIdx(int ast_idx);
 	static CScope 				*	getScope(int ast_idx);
 	static int 				  		getAstLine(int ast_idx);
-	static const string     	& 	getAstSymbolName(int ast_idx);
+	static const char 			* 	getAstSymbolName(int ast_idx);
 	static const char 			*	getAstSymbolNameConstChar(int ast_idx);
 
 	static CASTNode * getNodeByIdx(int idx);
@@ -90,8 +90,8 @@ private:
 
 	static tInfoKeyword * isKeyword(const char *c);
 
-	static int insertAstNode(CASTNode *ast_node);
-	static string *aux_str;
+	//static int insertAstNode(CASTNode *ast_node);
+	//static string *aux_str;
 
 	//-----------------------------------------------
 	//

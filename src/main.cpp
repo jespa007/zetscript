@@ -330,7 +330,7 @@ int main(int argc, char * argv[]){
 			CScriptVariable *r;
 			CInteger *iu = new CInteger(10);
 			r = (*f)({iu});
-			if(r != CScriptVariable::UndefinedSymbol){
+			if(r != UNDEFINED_SYMBOL){//CScriptVariable::UndefinedSymbol){
 				delete r;
 			}
 

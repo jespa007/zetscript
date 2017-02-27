@@ -1,6 +1,6 @@
 #include "zs_core.h"
 
-vector<CScriptClass *> 				* vec_script_class_node=NULL;
+vector<CScriptClass *> 				* CScriptClass::vec_script_class_node=NULL;
 
  //CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
  CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
@@ -416,6 +416,7 @@ public:
 		if(!register_C_Class<MyObject>("MyObject")) return false;
 		if(!register_C_FunctionMember(MyObject,print)) return false;
 		if(!register_C_VariableMember(MyObject,i)) return false;
+		//offsetof(MyObject,i);
 
 
 		if(!CScriptClass::register_C_Function(my_new_random_vector)) return false;

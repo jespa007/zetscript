@@ -49,7 +49,7 @@ class CZetScript{
 public:
 
 	static CZetScript * getInstance();
-	static void setVectorParsedFiles(vector<tInfoParsedSource> * parsedFiles);
+	static void setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles);
 
 	//---------------
 	// PRINT ASM INFO

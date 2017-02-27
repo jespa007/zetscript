@@ -21,7 +21,7 @@ void CState::createSingletons(){
 		CScope::setVectorScopeNode(st->getVectorScopeNode());
 		CScriptFunctionObject::setVectorScriptFunctionObjectNode(st->getVectorScriptFunctionObjectNode());
 		CScriptClass::setVectorScriptClassNode(st->getVectorScriptClassNode());
-		CZetScript::setVectorParsedFiles(st->getVectorInfoParsedSourceNode());
+		CZetScript::setVectorInfoParsedFiles(st->getVectorInfoParsedSourceNode());
 
 		// create state by default ...
 		//current_state = new CState();
@@ -159,6 +159,10 @@ vector<tScopeVar *> 	*	CState::getVecScopeVarNode(){
 
 vector<CScriptClass *> 	*CState::getVectorScriptClassNode(){
 	return &vec_script_class_node;
+}
+
+vector<tInfoParsedSource> 	*CState::getVectorInfoParsedSourceNode(){
+	return &vec_info_parsed_source_node;
 }
 
 vector<CScriptFunctionObject *> 	*CState::getVectorScriptFunctionObjectNode(){

@@ -6,7 +6,7 @@ vector<tInfoParsedSource> * CZetScript::m_parsedSource = NULL;
 
 
 
-void CZetScript::setVectorParsedFiles(vector<tInfoParsedSource> * parsedFiles){
+void CZetScript::setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles){
 	m_parsedSource = parsedFiles;
 }
 

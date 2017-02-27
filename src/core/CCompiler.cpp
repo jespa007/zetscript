@@ -683,7 +683,7 @@ void CCompiler::insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_v
 bool CCompiler::insert_NewObject_Instruction(PASTNode _node, const string & class_name){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp *asm_op = new tInfoAsmOp();
-	if((asm_op->index_op1 = CScriptClass::getIdxRegisteredClass(class_name))==ZS_UNDEFINED_IDX){//&((*m_currentListStatements)[dest_statment]);
+	if((asm_op->index_op1 = CScriptClass::getIdxScriptClass(class_name))==ZS_UNDEFINED_IDX){//&((*m_currentListStatements)[dest_statment]);
 		print_error_cr("class \"%s\" is not registered", class_name.c_str());
 		return false;
 	}
