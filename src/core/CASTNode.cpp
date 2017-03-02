@@ -37,7 +37,7 @@ vector<CASTNode *> 		*		CASTNode::getVectorASTNodeNode(){
 	return vec_ast_node;
 }
 
-CASTNode	*CASTNode::newAstNode(){
+CASTNode	*CASTNode::newASTNode(){
 	CASTNode	*ast_node = new CASTNode;
 	vec_ast_node->push_back(ast_node);
 	ast_node->idxAstNode = vec_ast_node->size()-1;
@@ -3349,7 +3349,7 @@ char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scop
 //
 // PUBLIC
 //
-void CASTNode::registerOperatorsPunctuators(){
+void CASTNode::init(){
 
 		// init operator punctuators...
 		defined_operator_punctuator[UNKNOWN_PUNCTUATOR]={UNKNOWN_PUNCTUATOR, "none",NULL};
@@ -3419,6 +3419,11 @@ void CASTNode::registerOperatorsPunctuators(){
 		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
 		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
 		// create main ast management
+
+		if(vec_ast_node->size()==0){
+			CASTNode *ast=newASTNode();
+
+		}
 }
 
 CASTNode::CASTNode(int preallocate_num_nodes){
@@ -3431,7 +3436,7 @@ CASTNode::CASTNode(int preallocate_num_nodes){
 	parent=NULL;
 	aux_value=NULL;
 
-	idxAstNode = ZS_UNDEFINED_IDX;//newAstNode();
+	idxAstNode = ZS_UNDEFINED_IDX;//newASTNode();
 	idxScope = ZS_UNDEFINED_IDX;
 
 	if(preallocate_num_nodes > 0){

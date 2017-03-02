@@ -18,6 +18,7 @@ va_end(ap);}
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 
+#define STRCMP(a, R, b) (strcmp(a,b) R 0)
 
 class CStringUtils{
 	enum{

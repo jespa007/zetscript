@@ -61,7 +61,6 @@ public:
 
 	enum C_TYPE_VALID_PRIMITIVE_VAR{
 		VOID_TYPE,
-		INT_TYPE,
 		INT_PTR_TYPE,
 		FLOAT_PTR_TYPE,
 		STRING_PTR_TYPE,
@@ -582,7 +581,7 @@ public:
 
 	}
 
-	static bool registerBase();
+	static bool init();
 
 
 private:
@@ -598,7 +597,7 @@ private:
 
 	 	// check if any entry is int, *float, *bool , *string, *int or any from factory. Anyelese will be no allowed!
 	 	valid_type|=valid_C_PrimitiveType[VOID_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",VOID_TYPE};
-	 	valid_type|=valid_C_PrimitiveType[INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
+	 	//valid_type|=valid_C_PrimitiveType[INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
 	 	valid_type|=valid_C_PrimitiveType[INT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",INT_PTR_TYPE};
 	 	valid_type|=valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
 	 	valid_type|=valid_C_PrimitiveType[STRING_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",STRING_PTR_TYPE};

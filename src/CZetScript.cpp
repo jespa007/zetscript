@@ -454,11 +454,11 @@ int interface_variable;
 
 bool CZetScript::init(){
 
-	CState::createSingletons();
-	CASTNode::registerOperatorsPunctuators();
+	CState::init();
+	CASTNode::init();
 
 
-	 if(!CScriptClass::registerBase()){
+	 if(!CScriptClass::init()){
 			exit(EXIT_FAILURE);
 	 }
 

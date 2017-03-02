@@ -30,7 +30,7 @@ class CState{
 
 public:
 
-	static void createSingletons();
+	static void init();
 	static bool  setState(int idx);
 
 	/**

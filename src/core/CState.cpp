@@ -11,7 +11,7 @@ CState * CState::current_state=NULL;
 
 string * CState::aux_str= NULL;//"1234_unknow_1234";
 
-void CState::createSingletons(){
+void CState::init(){
 	if(vec_saved_state == NULL){
 		CState *st;
 		vec_saved_state = new vector<CState *> ();

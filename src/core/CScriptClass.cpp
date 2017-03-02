@@ -27,15 +27,15 @@ vector<CScriptClass *> 				* CScriptClass::vec_script_class_node=NULL;
 int CScriptClass::getIdxClassFromIts_C_Type(const string & c_type_str){
 
 	// 1. we have to handle primitives like void, (int *), (bool *),(float *) and (string *).
-	if(valid_C_PrimitiveType[VOID_TYPE].type_str==c_type_str.c_str()){
+	if(STRCMP(valid_C_PrimitiveType[VOID_TYPE].type_str,==,c_type_str.c_str())){
 		return IDX_CLASS_VOID;
-	}else if(valid_C_PrimitiveType[INT_PTR_TYPE].type_str== c_type_str.c_str()){
+	}else if(STRCMP(valid_C_PrimitiveType[INT_PTR_TYPE].type_str,==, c_type_str.c_str())){
 		return IDX_CLASS_INTEGER;
-	}else if(valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str==c_type_str.c_str()){
+	}else if(STRCMP(valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str,==,c_type_str.c_str())){
 		return IDX_CLASS_NUMBER;
-	}else if(valid_C_PrimitiveType[STRING_PTR_TYPE].type_str==c_type_str.c_str()){
+	}else if(STRCMP(valid_C_PrimitiveType[STRING_PTR_TYPE].type_str,==,c_type_str.c_str())){
 		return IDX_CLASS_STRING;
-	}else if(valid_C_PrimitiveType[BOOL_PTR_TYPE].type_str==c_type_str.c_str()){
+	}else if(STRCMP(valid_C_PrimitiveType[BOOL_PTR_TYPE].type_str,==,c_type_str.c_str())){
 		return IDX_CLASS_BOOLEAN;
 	}
 
@@ -84,10 +84,14 @@ CScriptClass * CScriptClass::newScriptClass(const string & class_name, const str
 		//CScriptClass 	*registered_class=new CScriptClass;
 
 		sci = new CScriptClass;
-		vec_script_class_node->push_back(sci);
+
 		sci->metadata_info.object_info.symbol_info.idxScriptClass = vec_script_class_node->size();
 		sci->classPtrType = TYPE_SCRIPT_VARIABLE;
-		sci->baseClass.push_back(base_class);
+
+		if(base_class != NULL){
+			sci->baseClass.push_back(base_class);
+		}
+
 		sci->metadata_info.object_info.symbol_info.symbol_name = class_name;
 		sci->metadata_info.object_info.symbol_info.idxAstNode=-1;
 
@@ -280,7 +284,7 @@ public:
 
 
 
- bool CScriptClass::registerBase(){
+ bool CScriptClass::init(){
 
 	    if(vec_script_class_node == NULL){
 	    	print_error_cr("vector class factory not set");
@@ -293,7 +297,7 @@ public:
 	    }
 
 	 	valid_C_PrimitiveType[VOID_TYPE]={typeid(void).name(),VOID_TYPE};
-	 	valid_C_PrimitiveType[INT_TYPE]={typeid(int).name(),INT_TYPE};
+	 	//valid_C_PrimitiveType[INT_TYPE]={typeid(int).name(),INT_TYPE};
 	 	valid_C_PrimitiveType[INT_PTR_TYPE]={typeid(int *).name(),INT_PTR_TYPE};
 	 	valid_C_PrimitiveType[FLOAT_PTR_TYPE]={typeid(float *).name(),FLOAT_PTR_TYPE};
 	 	valid_C_PrimitiveType[STRING_PTR_TYPE]={typeid(string *).name(),STRING_PTR_TYPE};
@@ -306,13 +310,13 @@ public:
 
 
 		if((newScriptClass("CUndefined","",NULL)) == NULL) return false;		// 1
-		vec_script_class_node->at(IDX_CLASS_UNDEFINED)->classPtrType=typeid(CUndefined).name();
+		vec_script_class_node->at(IDX_CLASS_UNDEFINED)->classPtrType=typeid(CUndefined *).name();
 
 		if((newScriptClass("CVoid","",NULL)) == NULL) return false;				// 2
-		vec_script_class_node->at(IDX_CLASS_VOID)->classPtrType=typeid(CUndefined).name();
+		vec_script_class_node->at(IDX_CLASS_VOID)->classPtrType=typeid(CVoid *).name();
 
 		if((newScriptClass("CNull","",NULL)) == NULL) return false;				// 3
-		vec_script_class_node->at(IDX_CLASS_NULL)->classPtrType=typeid(CUndefined).name();
+		vec_script_class_node->at(IDX_CLASS_NULL)->classPtrType=typeid(CNull *).name();
 
 
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1170,9 +1174,10 @@ int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(const string & c
 
 		// from lat value to first to get last override function...
 		for(int i = object_info->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-			tFunctionInfo * object_info = GET_FUNCTION_INFO(object_info->local_symbols.vec_idx_registeredFunction[i]);
+			int idx = object_info->local_symbols.vec_idx_registeredFunction[i];
+			tFunctionInfo * object_info = GET_FUNCTION_INFO(idx);
 			if(object_info->symbol_info.symbol_name == function_name){
-				return object_info->local_symbols.vec_idx_registeredFunction[i];
+				return idx;
 			}
 		}
 	}

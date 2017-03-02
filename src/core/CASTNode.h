@@ -45,8 +45,8 @@ public:
 	 * Get CASTNode Node by its idx, regarding current state.
 	 */
 
-	static void 					registerOperatorsPunctuators();
-	static CASTNode				*  	newAstNode();
+	static void 					init();
+	static CASTNode				*  	newASTNode();
 	static vector<CASTNode *>	*	getVectorASTNodeNode(); // ast collection register...
 
 	static PASTNode 			* 	getAstNodePtr(int ast_idx);
