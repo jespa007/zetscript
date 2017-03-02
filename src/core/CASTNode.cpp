@@ -3421,7 +3421,10 @@ void CASTNode::init(){
 		// create main ast management
 
 		if(vec_ast_node->size()==0){
+			// create main ast/scope...
 			CASTNode *ast=newASTNode();
+			CScope *scp = CScope::newScope(NULL);
+			ast->idxScope = scp->idxScope;
 
 		}
 }

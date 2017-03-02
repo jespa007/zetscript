@@ -1174,10 +1174,9 @@ int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(const string & c
 
 		// from lat value to first to get last override function...
 		for(int i = object_info->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-			int idx = object_info->local_symbols.vec_idx_registeredFunction[i];
-			tFunctionInfo * object_info = GET_FUNCTION_INFO(idx);
-			if(object_info->symbol_info.symbol_name == function_name){
-				return idx;
+			tFunctionInfo * function_info = GET_FUNCTION_INFO(object_info->local_symbols.vec_idx_registeredFunction[i]);
+			if(function_info->symbol_info.symbol_name == function_name){
+				return object_info->local_symbols.vec_idx_registeredFunction[i];
 			}
 		}
 	}
