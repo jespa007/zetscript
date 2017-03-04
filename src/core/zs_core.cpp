@@ -3,7 +3,7 @@
 #include "var/zg_variable.cpp"
 #include "CScope.cpp"
 #include "CASTNode.cpp"
-#include "CFunction_C_TypeFactory.cpp"
+#include "CNativeFunction.cpp"
 #include "CScriptClass.cpp"
 #include "CScriptFunctionObject.cpp"
 

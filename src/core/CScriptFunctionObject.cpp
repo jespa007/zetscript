@@ -2,19 +2,7 @@
 
 vector<CScriptFunctionObject *> 	* vec_script_function_object_node=NULL;
 
-/*
-//	 _____           _       _    ______                _   _
-//	/  ___|         (_)     | |   |  ___|              | | (_)
-//	\ `--.  ___ _ __ _ _ __ | |_  | |_ _   _ _ __   ___| |_ _  ___  _ __
-//	 `--. \/ __| '__| | '_ \| __| |  _| | | | '_ \ / __| __| |/ _ \| '_ \
-//	/\__/ / (__| |  | | |_) | |_  | | | |_| | | | | (__| |_| | (_) | | | |
-//	\____/ \___|_|  |_| .__/ \__| \_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|
-//                    | |
-//                    |_|
-// 	_________________________________________________
-//  	__________________________________
-//
-*/
+
 
 
 
@@ -59,36 +47,40 @@ tInfoVariableSymbol * CScriptFunctionObject::newVariableSymbol(int idxFunction){
 }
 
 
-int CScriptFunctionObject::getIdxFunctionObject(int idxFunction,const string & function_name, bool show_msg){
+int CScriptFunctionObject::getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name, bool show_msg){
 
 	// from lat value to first to get last override function...
+	/*if(idxFunction == -1){
+		print_error_cr("-1 given");
+		return -1;
+	}*/
 
-	tFunctionInfo *fi=&vec_script_function_object_node->at(idxFunction)->object_info;
-	for(int i = fi->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-		if(GET_FUNCTION_INFO(fi->local_symbols.vec_idx_registeredFunction[i])->symbol_info.symbol_name == function_name){
+	//tFunctionInfo *fi=&vec_script_function_object_node->at(idxFunction)->object_info;
+	for(int i = info_function->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
+		if(GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[i])->symbol_info.symbol_name == function_name){
 			return i;
 		}
 	}
 
 	if(show_msg){
-		print_error_cr("function member %s::%s doesn't exist",fi->symbol_info.symbol_name.c_str(),function_name.c_str());
+		print_error_cr("function member %s::%s doesn't exist",info_function->symbol_info.symbol_name.c_str(),function_name.c_str());
 	}
 
 	return -1;
 }
 
-int				CScriptFunctionObject::getIdxVariableSymbol(int idxFunction,const string & function_name, bool show_msg){
+int				CScriptFunctionObject::getIdxVariableSymbol(tFunctionInfo * info_function,const string & function_name, bool show_msg){
 	// from lat value to first to get last override function...
 
-	tFunctionInfo *fi=&vec_script_function_object_node->at(idxFunction)->object_info;
-	for(int i = fi->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-		if(fi->local_symbols.m_registeredVariable[i].symbol_name == function_name){
+
+	for(int i = info_function->local_symbols.m_registeredVariable.size()-1; i >= 0 ; i--){
+		if(info_function->local_symbols.m_registeredVariable[i].symbol_name == function_name){
 			return i;
 		}
 	}
 
 	if(show_msg){
-		print_error_cr("variable member %s::%s doesn't exist",fi->symbol_info.symbol_name.c_str(),function_name.c_str());
+		print_error_cr("variable member %s::%s doesn't exist",info_function->symbol_info.symbol_name.c_str(),function_name.c_str());
 	}
 
 	return -1;

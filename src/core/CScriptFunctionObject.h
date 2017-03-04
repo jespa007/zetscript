@@ -1,5 +1,19 @@
 #pragma once
 
+/*
+//	 _____           _       _    ______                _   _
+//	/  ___|         (_)     | |   |  ___|              | | (_)
+//	\ `--.  ___ _ __ _ _ __ | |_  | |_ _   _ _ __   ___| |_ _  ___  _ __
+//	 `--. \/ __| '__| | '_ \| __| |  _| | | | '_ \ / __| __| |/ _ \| '_ \
+//	/\__/ / (__| |  | | |_) | |_  | | | |_| | | | | (__| |_| | (_) | | | |
+//	\____/ \___|_|  |_| .__/ \__| \_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|
+//                    | |
+//                    |_|
+// 	_________________________________________________
+//  	__________________________________
+//
+*/
+
 #define NEW_SCRIPT_FUNCTION_OBJECT				CScriptFunctionObject::newScriptFunctionObject()
 #define GET_FUNCTION_INFO(idx) 					CScriptFunctionObject::getFunctionInfo(idx)
 #define GET_SCRIPT_FUNCTION_OBJECT(idx) 		CScriptFunctionObject::getScriptFunctionObject(idx)
@@ -35,8 +49,8 @@ public:
 	static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
 	static tFunctionInfo					* 	getFunctionInfo(int idx);
 	static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);
-	static int						 			getIdxFunctionObject(int idxFunction,const string & function_name, bool show_msg=true);
-	static int						 			getIdxVariableSymbol(int idxFunction,const string & function_name, bool show_msg=true);
+	static int						 			getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name, bool show_msg=true);
+	static int						 			getIdxVariableSymbol(tFunctionInfo * info_function,const string & function_name, bool show_msg=true);
 
 private:
 	static vector<CScriptFunctionObject *> 	* current_vec_script_function_object_node;

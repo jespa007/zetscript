@@ -5,12 +5,11 @@
 //CVoid *CScriptVariable::VoidSymbol=NULL;
 //CNull *CScriptVariable::NullSymbol=NULL;
 CScriptVariable::tSymbolInfo::tSymbolInfo(){
-	proxy_ptr=NULL;
-	object = UNDEFINED_SYMBOL;
-	idxAstNode =ZS_UNDEFINED_IDX;
-	super_function=NULL;
+			proxy_ptr=NULL;
+			object = UNDEFINED_SYMBOL;
+			idxAstNode =ZS_UNDEFINED_IDX;
+			super_function=NULL;
 }
-
 
 
 CScriptVariable::tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv){
@@ -91,8 +90,6 @@ void CScriptVariable::createSymbols(CScriptClass *ir_class){
 	// Register even for primitives (if appropiate)
 	for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 		CScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
-		//print_info_cr("=========================================");
-		//print_info_cr("- Create function %s...",irv->object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.symbol_name.c_str());
 		 si =addFunctionSymbol(
 				 ir_fun->object_info.symbol_info.symbol_name,
 				 ir_fun->object_info.symbol_info.idxAstNode,
@@ -153,7 +150,6 @@ void CScriptVariable::init(CScriptClass *irv, void *_c_object){
 	//pointer_function = NULL;
 	//m_scope = scope;
 	//m_parentFunction = _parentFunction;
-	//print_info_cr("creating var type %s",irv->object_info.symbol_info.symbol_name.c_str());
 
 	if(IS_CLASS_C){
 		if(_c_object == NULL){
@@ -168,29 +164,6 @@ void CScriptVariable::init(CScriptClass *irv, void *_c_object){
 
 
 	createSymbols(irv);
-
-	/*if(_parentFunction == NULL){ // this is the main function ...
-		setName("Main");
-		m_registeredVariable=new vector<tRegisteredSymbolInfo>();
-	}
-	else {
-		_parentFunction->addFunction(this);
-	}*/
-
-	// reserve symbolsand its extended classes...
-
-	// create object functions ...
-	/*for ( unsigned i = 0; i < m_infoRegisteredClass->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-		print_info_cr("=========================================");
-		print_info_cr("- Create function %s...",m_infoRegisteredClass->object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.info_var_scope->name.c_str());
-		addFunctionSymbol(
-				m_infoRegisteredClass->object_info.local_symbols.vec_idx_registeredFunction[i].object_info.symbol_info.ast,
-				&m_infoRegisteredClass->object_info.local_symbols.vec_idx_registeredFunction[i]
-
-				);
-		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
-	}*/
-
 }
 
 CScriptFunctionObject *CScriptVariable::getConstructorFunction(){

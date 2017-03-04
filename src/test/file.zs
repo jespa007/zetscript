@@ -1,4 +1,4 @@
-
+var j=0;for(var i=0; i < 10000000; ++i){i*2;}
 
 //var tt=0;
 
@@ -52,13 +52,11 @@ function ret_vec(v){
 	return h;
 }*/
 
-function gg(jj){
+/*function gg(){
 	print("hola:"+jj.tt);
-}
+}*/
 
-operator gg::+(){
-	
-}
+/*
 
 class MyClass2{
 	var tt;
@@ -69,6 +67,11 @@ class MyClass2{
 	
 };
 
+
+operator MyClass2::+(){
+	
+}*/
+/*
 var b=new MyClass2();
 var a=b;
 var c=a;
@@ -76,8 +79,8 @@ var c=a;
 c.tt=3;
 
 b=2;
-
-gg(a);
+*/
+//gg();
 
 /*var v=[0,1,2];
 

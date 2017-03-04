@@ -1,28 +1,28 @@
 #include "CZetScript.h"
 
-CFunction_C_TypeFactory * CFunction_C_TypeFactory::m_instance=NULL;
+CNativeFunction * CNativeFunction::m_instance=NULL;
 
-CFunction_C_TypeFactory::CFunction_C_TypeFactory(){
+CNativeFunction::CNativeFunction(){
 	/*c_void_function = new map<string,void *>();
 	c_int_function = new map<string,void *>();
 	class_function_member = new map<string,void *>();*/
 }
 
-CFunction_C_TypeFactory * CFunction_C_TypeFactory::getInstance(){
+CNativeFunction * CNativeFunction::getInstance(){
 
 	if(m_instance== NULL){
-		m_instance = new CFunction_C_TypeFactory();
+		m_instance = new CNativeFunction();
 	}
 
 	return m_instance;
 }
 
-void  CFunction_C_TypeFactory::destroySingletons(){
+void  CNativeFunction::destroySingletons(){
 	delete m_instance;
 }
 
 
-CFunction_C_TypeFactory::~CFunction_C_TypeFactory(){
+CNativeFunction::~CNativeFunction(){
 
 
 

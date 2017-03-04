@@ -174,7 +174,7 @@ private:
 
 
 
-	bool insertOperatorInstruction(tInfoPunctuator *  op, PASTNode _node, string & error_str, int left, int right=ZS_UNDEFINED_IDX);
+	bool insertOperatorInstruction(tPunctuatorInfo *  op, PASTNode _node, string & error_str, int left, int right=ZS_UNDEFINED_IDX);
 
 
 	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
@@ -193,7 +193,7 @@ private:
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE ASSEMBLE CODE (GAC)
 
-	ASM_OPERATOR puntuator2instruction(tInfoPunctuator * op);
+	ASM_OPERATOR puntuator2instruction(tPunctuatorInfo * op);
 	ASM_PRE_POST_OPERATORS preoperator2instruction(PUNCTUATOR_TYPE op);
 
 	int gacExpression_FunctionOrArrayAccess(PASTNode _node_access, CScope *_lc);
@@ -223,7 +223,7 @@ private:
 	bool gacVar(PASTNode _node, CScope * _lc);
 	bool gacWhile(PASTNode _node, CScope * _lc);
 	bool gacIfElse(PASTNode _node, CScope * _lc);
-	bool gacFunction(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs);
+	bool gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs);
 	bool gacReturn(PASTNode _node, CScope * _lc);
 	bool gacIf(PASTNode _node, CScope * _lc);
 	int gacInlineIf(PASTNode _node, CScope * _lc, int & instruction);

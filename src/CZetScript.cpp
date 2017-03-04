@@ -33,10 +33,11 @@ void CZetScript::destroy(){
 		delete m_instance;
 	}
 
-
-	CCompiler::destroySingletons();
+	/*CCompiler::destroySingletons();
 	CSharedPointerManager::destroySingletons();
-	CFunction_C_TypeFactory::destroySingletons();
+	CNativeFunction::destroySingletons();
+	CState::destroySingletons();
+*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -264,7 +265,7 @@ void CZetScript::destroy(){
 
 	 // for all classes print code...
 	 for(unsigned i = 0; i < registeredClass->size(); i++){
-		 printGeneratedCode(GET_FUNCTION_INFO(registeredClass->at(i)->metadata_info.object_info.idxScriptFunctionObject));
+		 printGeneratedCode(&GET_SCRIPT_CLASS_INFO(registeredClass->at(i)->metadata_info.object_info.symbol_info.idxScriptClass)->metadata_info.object_info);
 	 }
 
  }
@@ -273,6 +274,9 @@ void CZetScript::destroy(){
  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 CScriptVariable * CZetScript::call_C_function(void *fun_ptr, CScriptFunctionObject *irfs, vector<CScriptVariable *> * argv){
+
+
+	auto v = argv->at(0)->getPointer_C_ClassName();
 
 	int converted_param[MAX_PARAM_C_FUNCTION];
 	CScriptVariable *var_result= UNDEFINED_SYMBOL;
@@ -317,7 +321,7 @@ CScriptVariable * CZetScript::call_C_function(void *fun_ptr, CScriptFunctionObje
 		}
 	}
 
-	print_info_cr("pre_call %i",argv->size());
+	print_debug_cr("pre_call %i",argv->size());
 
 	if(irfs->idx_return_type != CScriptClass::IDX_CLASS_VOID){ // getInstance()->getIdxClassVoid()){
 
@@ -478,13 +482,14 @@ bool CZetScript::init(){
 bool CZetScript::parse_ast(const char   * s){
 	int m_line = 1;
 	bool error=false;
+	PASTNode main_node = MAIN_AST_NODE;
 
 	if(CASTNode::generateAST_Recursive(
 			s,
 			m_line,
 			MAIN_SCOPE_ROOT,
 			error,
-			MAIN_AST_ROOT_PTR,
+			&main_node,
 			false,
 			true) != NULL){
 		return true;
@@ -533,7 +538,7 @@ bool CZetScript::eval(const string & s){
 
 		idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 
-		if(CCompiler::getInstance()->compile(MAIN_AST_ROOT,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
+		if(CCompiler::getInstance()->compile(MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
 			// print generated asm ...
 
 			if(!CScriptClass::updateReferenceSymbols()){

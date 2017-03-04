@@ -765,7 +765,7 @@ ASM_PRE_POST_OPERATORS CCompiler::preoperator2instruction(PUNCTUATOR_TYPE op){
 	return ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 }
 
-ASM_OPERATOR CCompiler::puntuator2instruction(tInfoPunctuator * op){
+ASM_OPERATOR CCompiler::puntuator2instruction(tPunctuatorInfo * op){
 
 	switch(op->id){
 	default:
@@ -818,7 +818,7 @@ ASM_OPERATOR CCompiler::puntuator2instruction(tInfoPunctuator * op){
 	return INVALID_OP;
 }
 
-bool CCompiler::insertOperatorInstruction(tInfoPunctuator * op, PASTNode _node, string & error_str, int op_index_left, int op_index_right){
+bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, string & error_str, int op_index_left, int op_index_right){
 	tInfoStatementOp *ptr_current_statement_op = &(*m_currentListStatements)[m_currentListStatements->size()-1];
 	tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
 	tInfoAsmOp *iao;
@@ -1091,7 +1091,7 @@ int CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc)
 	}
 
 	// compiles anonymous function ...
-	if(!gacFunction(_node,_lc, script_function)){
+	if(!gacFunctionOrOperator(_node,_lc, script_function)){
 		return ZS_UNDEFINED_IDX;
 	}
 
@@ -1419,7 +1419,7 @@ int findConstructorIdxNode(PASTNode _node ){
 	for(unsigned i = 0; i < _node->children.size(); i++){
 		if(_node->children[i]->node_type == NODE_TYPE::KEYWORD_NODE){
 			if(_node->children[i]->keyword_info != NULL){
-				if(_node->children[i]->keyword_info->id==KEYWORD_TYPE::FUNCTION_KEYWORD){
+				if(_node->children[i]->keyword_info->id==KEYWORD_TYPE::FUNCTION_KEYWORD || _node->children[i]->keyword_info->id==KEYWORD_TYPE::OPERATOR_KEYWORD){
 					if(_node->children[i]->symbol_value == _node->symbol_value){
 						return i;
 					}
@@ -1482,7 +1482,7 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScrip
 		}
 
 		// compile function (within scope class)...
-		if(!gacFunction(node_fun, SCOPE_INFO_NODE(node_class->idxScope),irfs)){
+		if(!gacFunctionOrOperator(node_fun, SCOPE_INFO_NODE(node_class->idxScope),irfs)){
 			return false;
 		}
 	}
@@ -1651,13 +1651,13 @@ bool CCompiler::gacReturn(PASTNode _node, CScope * _lc){
 	return true;
 }
 
-bool CCompiler::gacFunction(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs){
+bool CCompiler::gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs){
 
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	//if(!(_node->node_type == KEYWORD_NODE && _node->keyword_info != NULL) && !(_node->node_type != FUNCTION_OBJECT_NODE))>{print_error_cr("node is not keyword type or null");return false;}
 
 	if((_node->keyword_info != NULL)){
-		if(_node->keyword_info->id != KEYWORD_TYPE::FUNCTION_KEYWORD) {print_error_cr("node is not FUNCTION keyword type");return false;}
+		if(_node->keyword_info->id != KEYWORD_TYPE::FUNCTION_KEYWORD && _node->keyword_info->id != KEYWORD_TYPE::OPERATOR_KEYWORD) {print_error_cr("node is not FUNCTION or OPERATOR keyword type");return false;}
 	}else{
 		if((_node->node_type != FUNCTION_OBJECT_NODE))
 		{
@@ -1944,6 +1944,12 @@ bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 		return gacVar(_node, _lc);
 		break;
 	case KEYWORD_TYPE::FUNCTION_KEYWORD: // don't compile function. It will compiled later, after main body
+	case KEYWORD_TYPE::OPERATOR_KEYWORD:
+
+		if(_node->keyword_info->id == KEYWORD_TYPE::OPERATOR_KEYWORD){
+			print_error_cr("operator keyword not implemented");
+			return false;
+		}
 
 		if(functionSymbolExists(_node->symbol_value, _node)){
 				print_error_cr("Function \"%s\" already defined !",_node->symbol_value.c_str());
@@ -1954,7 +1960,7 @@ bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 			return false;
 		}
 
-		return gacFunction(_node, _lc,function_object);
+		return gacFunctionOrOperator(_node, _lc,function_object);
 		break;
 	case KEYWORD_TYPE::RETURN_KEYWORD:
 		return gacReturn(_node, _lc);
@@ -2016,31 +2022,27 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 		switch(_node->node_type){
 			default:
 			case UNKNOWN_NODE:
-				print_info_cr("UNKNOWN_NODE (%i)",_node->node_type);
+				print_debug_cr("UNKNOWN_NODE (%i)",_node->node_type);
 				return false;
 				break;
-			break;
-			break;
-			case MAIN_NODE:print_info_cr("MAIN_NODE");
-			break;
 			case EXPRESSION_NODE: // in fact is EXPRESSION NODE
-				print_info_cr("EXPRESSION_NODE");
+				print_debug_cr("EXPRESSION_NODE");
 				return gacExpression(_node, _lc);
 				break;
 			case GROUP_CASES_NODE:
-				print_info_cr("GROUP_CASES_NODE");
+				print_debug_cr("GROUP_CASES_NODE");
 				break;
 			case KEYWORD_NODE:
-				print_info_cr("KEYWORD_NODE %s",_node->keyword_info->str);
+				print_debug_cr("KEYWORD_NODE %s",_node->keyword_info->str);
 				return gacKeyword(_node, _lc);
 				break;
 			case BODY_NODE:
-				print_info_cr("BODY_NODE");
+				print_debug_cr("BODY_NODE");
 				return gacBody(_node, SCOPE_INFO_NODE(_node->idxScope)); // we pass scope node
 				break;
 			case POST_FOR_NODE:
 			case CONDITIONAL_NODE:
-				print_info_cr("%s",_node->node_type == CONDITIONAL_NODE ? "CONDITIONAL_NODE":"POST_FOR_NODE");
+				print_debug_cr("%s",_node->node_type == CONDITIONAL_NODE ? "CONDITIONAL_NODE":"POST_FOR_NODE");
 				if(_node->children.size() == 1){
 					return gacExpression(_node->children[0], _lc);
 				}else{
@@ -2056,12 +2058,12 @@ bool CCompiler::ast2asm_Recursive(PASTNode _node, CScope *_lc){
 				}
 				break;
 			case FUNCTION_OBJECT_NODE:
-				print_info_cr("FUNCTION_OBJECT");break;
+				print_debug_cr("FUNCTION_OBJECT");break;
 				break;
-			case CLASS_VAR_COLLECTION_NODE:print_info_cr("CLASS_VAR_COLLECTION_NODE");break;
-			case CLASS_FUNCTION_COLLECTION_NODE:print_info_cr("CLASS_FUNCTION_COLLECTION_NODE");break;
-			case BASE_CLASS_NODE:print_info_cr("BASE_CLASS_NODE");break;
-			case CALLING_OBJECT_NODE:print_info_cr("CALLING_OBJECT_NODE");break;
+			case CLASS_VAR_COLLECTION_NODE:print_debug_cr("CLASS_VAR_COLLECTION_NODE");break;
+			case CLASS_FUNCTION_COLLECTION_NODE:print_debug_cr("CLASS_FUNCTION_COLLECTION_NODE");break;
+			case BASE_CLASS_NODE:print_debug_cr("BASE_CLASS_NODE");break;
+			case CALLING_OBJECT_NODE:print_debug_cr("CALLING_OBJECT_NODE");break;
 		}
 	}else{
 		print_error_cr("Node is null!");
@@ -2111,7 +2113,7 @@ bool CCompiler::compile(PASTNode _node, CScriptFunctionObject *sf){
 		return true;
 	}
 	else{
-		print_error_cr("Main node expected");
+		print_error_cr("Body node expected");
 	}
 
 	return false;

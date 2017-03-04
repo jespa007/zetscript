@@ -54,7 +54,7 @@ void CVirtualMachine::reset(){
 
 CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function, CScriptVariable *this_object, vector<CScriptVariable *> * argv, int stk){
 
-	print_info_cr("Executing function %s ...",info_function->object_info.symbol_info.symbol_name.c_str());
+	print_debug_cr("Executing function %s ...",info_function->object_info.symbol_info.symbol_name.c_str());
 
 
 	//CScriptFunctionObject *irsf=sf->getFunctionInfo();
@@ -94,23 +94,6 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 	int instruction_to_statment = ZS_UNDEFINED_IDX;
 	bool end_by_ret=false;
 	bool break_jmp = false;
-
-	/*if(argv != NULL){
-
-		if((*argv).size() != function_info->m_arg.size()){
-			print_error_cr("calling function s from line . Expected %i but passed %i",function_info->m_arg.size(),(*argv).size());
-			return false;
-		}
-
-		//print_info_cr("assign local symbol the passing args...");
-		for(unsigned i = 0; i < (*argv).size(); i++){
-			//print_info_cr("%s=%s <cr>",sf->getArgVector()->at(i).c_str(),(*argv).at(i)->getPointerClassStr().c_str());
-			(*this_object->getArgSymbol(i)).object=(*argv).at(i);
-		}
-
-	}*/
-
-
 
 	//CVirtualMachine ALE; // new ale ?
 

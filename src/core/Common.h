@@ -19,7 +19,6 @@ struct tInfoVarScopeBlock;
 
 enum NODE_TYPE{
 	UNKNOWN_NODE=0,
-	MAIN_NODE=1,
 	PUNCTUATOR_NODE,
 	EXPRESSION_NODE,
 	KEYWORD_NODE,
@@ -61,6 +60,7 @@ enum KEYWORD_TYPE{
 	BREAK_KEYWORD,
 	RETURN_KEYWORD,
 	FUNCTION_KEYWORD,
+	OPERATOR_KEYWORD,
 	CLASS_KEYWORD,
 	THIS_KEYWORD,
 //	SUPER_KEYWORD,
@@ -311,7 +311,7 @@ typedef struct{
 	KEYWORD_TYPE id;
 	const char *str;
 	char * (* parse_fun )(const char *,int & ,  CScope *, PASTNode *);
-}tInfoKeyword;
+}tKeywordInfo;
 
 
 
@@ -319,7 +319,7 @@ typedef struct{
 	PUNCTUATOR_TYPE id;
 	const char *str;
 	bool (* parse_fun )(const char *);
-}tInfoPunctuator;
+}tPunctuatorInfo;
 
 
 enum{
@@ -370,7 +370,7 @@ struct tInfoAsmOp{
 	 int index_op1,index_op2; // left and right respectively
 	 int asm_properties;
 	 SCOPE_TYPE scope_type; // in case needed.
-	 int idxFunction;
+	 //int idxFunction;
 	 //string aux_name;
 
 	// bool (* isconvertable)(int value);
@@ -385,7 +385,7 @@ struct tInfoAsmOp{
 		asm_properties=0;
 		index_op1=index_op2=-1;
 		//idxFunction=NULL;
-		idxFunction=-1;
+		//idxFunction=-1;
 	}
 
 };

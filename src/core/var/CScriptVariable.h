@@ -25,6 +25,7 @@ public:
 		int idxAstNode; // in case there's ast node...
 
 		tSymbolInfo();
+
 	};
 
 	//----------------------

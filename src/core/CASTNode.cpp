@@ -17,16 +17,6 @@
 
 vector<CASTNode *> 			* CASTNode::vec_ast_node=NULL;
 
-/*
-//		  ___   _____ _____   _   _           _
-//		 / _ \ /  ___|_   _| | \ | |         | |
-//		/ /_\ \\ `--.  | |   |  \| | ___   __| | ___
-//		|  _  | `--. \ | |   | . ` |/ _ \ / _` |/ _ \
-//		| | | |/\__/ / | |   | |\  | (_) | (_| |  __/
-//		\_| |_/\____/  \_/   \_| \_/\___/ \__,_|\___|
-// _________________________________________________
-//  __________________________________
-*/
 
 
 void CASTNode::setVectorASTNode(vector<CASTNode *> 	* set_vec_ast_node){
@@ -37,8 +27,8 @@ vector<CASTNode *> 		*		CASTNode::getVectorASTNodeNode(){
 	return vec_ast_node;
 }
 
-CASTNode	*CASTNode::newASTNode(){
-	CASTNode	*ast_node = new CASTNode;
+CASTNode	*CASTNode::newASTNode(int preallocated_nodes){
+	CASTNode	*ast_node = new CASTNode(preallocated_nodes);
 	vec_ast_node->push_back(ast_node);
 	ast_node->idxAstNode = vec_ast_node->size()-1;
 	return ast_node;
@@ -59,19 +49,6 @@ CASTNode 		* CASTNode::getAstNode(int idx){
 	}
 	 return vec_ast_node->at(idx);
 }
-
-PASTNode 		* CASTNode::getAstNodePtr(int idx){
-	if(idx==ZS_UNDEFINED_IDX){
-		return NULL;
-	}
-
-	if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-		print_error_cr("Ast node out of bound");
-		return NULL;
-	}
-	 return &vec_ast_node->at(idx);
-}
-
 
 int 	CASTNode::getScopeIdx(int idx){
 	if(idx==ZS_UNDEFINED_IDX){
@@ -307,7 +284,7 @@ bool CASTNode::parseDecPunctuator(const char *s){
 
 #define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
 
-tInfoPunctuator  * CASTNode::parsePunctuatorGroup0(const char *s){
+tPunctuatorInfo  * CASTNode::parsePunctuatorGroup0(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			ASSIGN_PUNCTUATOR,
@@ -330,7 +307,7 @@ tInfoPunctuator  * CASTNode::parsePunctuatorGroup0(const char *s){
 	return NULL;
 }
 
-tInfoPunctuator  * CASTNode::parsePunctuatorGroup1(const char *s){
+tPunctuatorInfo  * CASTNode::parsePunctuatorGroup1(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			TERNARY_IF_PUNCTUATOR,
@@ -351,7 +328,7 @@ tInfoPunctuator  * CASTNode::parsePunctuatorGroup1(const char *s){
 	return NULL;
 }
 
-tInfoPunctuator  * CASTNode::parsePunctuatorGroup2(const char *s){
+tPunctuatorInfo  * CASTNode::parsePunctuatorGroup2(const char *s){
 
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
@@ -374,8 +351,7 @@ tInfoPunctuator  * CASTNode::parsePunctuatorGroup2(const char *s){
 	return 0;
 }
 
-
-tInfoPunctuator  * CASTNode::parsePunctuatorGroup3(const char *s){
+tPunctuatorInfo  * CASTNode::parsePunctuatorGroup3(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			ADD_PUNCTUATOR,
@@ -401,7 +377,7 @@ tInfoPunctuator  * CASTNode::parsePunctuatorGroup3(const char *s){
 	return NULL;
 }
 
-tInfoPunctuator  * CASTNode::parsePunctuatorGroup4(const char *s){
+tPunctuatorInfo  * CASTNode::parsePunctuatorGroup4(const char *s){
 
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
@@ -420,7 +396,7 @@ tInfoPunctuator  * CASTNode::parsePunctuatorGroup4(const char *s){
 	return 0;
 }
 
-tInfoPunctuator  * CASTNode::parsePunctuatorGroup5(const char *s){
+tPunctuatorInfo  * CASTNode::parsePunctuatorGroup5(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			LOGIC_AND_PUNCTUATOR,
@@ -442,7 +418,7 @@ tInfoPunctuator  * CASTNode::parsePunctuatorGroup5(const char *s){
 	return 0;
 }
 
-tInfoPunctuator  * CASTNode::parsePunctuatorGroup6(const char *s){
+tPunctuatorInfo  * CASTNode::parsePunctuatorGroup6(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			LOGIC_NOT_PUNCTUATOR
@@ -459,7 +435,7 @@ tInfoPunctuator  * CASTNode::parsePunctuatorGroup6(const char *s){
 	return 0;
 }
 
-tInfoPunctuator  * CASTNode::parsePunctuatorGroup7(const char *s){
+tPunctuatorInfo  * CASTNode::parsePunctuatorGroup7(const char *s){
 
 	PUNCTUATOR_TYPE index_to_evaluate[]={
 			FIELD_PUNCTUATOR
@@ -476,7 +452,7 @@ tInfoPunctuator  * CASTNode::parsePunctuatorGroup7(const char *s){
 	return 0;
 }
 
-tInfoPunctuator *  CASTNode::isOperatorPunctuator(const char *s){
+tPunctuatorInfo *  CASTNode::isOperatorPunctuator(const char *s){
 
 	for(unsigned i = 0; i < MAX_OPERATOR_PUNCTUATORS; i++){
 		if(defined_operator_punctuator[i].parse_fun != NULL){
@@ -488,7 +464,7 @@ tInfoPunctuator *  CASTNode::isOperatorPunctuator(const char *s){
 	return 0;
 }
 
-tInfoPunctuator *  CASTNode::isSpecialPunctuator(const char *s){
+tPunctuatorInfo *  CASTNode::isSpecialPunctuator(const char *s){
 
 	for(unsigned i = 0; i < MAX_SPECIAL_PUNCTUATORS; i++){
 
@@ -500,9 +476,58 @@ tInfoPunctuator *  CASTNode::isSpecialPunctuator(const char *s){
 	return 0;
 }
 
-tInfoPunctuator *  CASTNode::isPunctuator(const char *s){
+tPunctuatorInfo  * CASTNode::parseArithmeticPunctuator(const char *s){
 
-	tInfoPunctuator * ip = isOperatorPunctuator(s);
+	PUNCTUATOR_TYPE index_to_evaluate[]={
+			SHIFT_LEFT_PUNCTUATOR, // <<
+			SHIFT_RIGHT_PUNCTUATOR, // >>
+
+			LOGIC_AND_PUNCTUATOR, // &&
+			LOGIC_OR_PUNCTUATOR, // ||
+			LOGIC_EQUAL_PUNCTUATOR, // =
+			LOGIC_NOT_EQUAL_PUNCTUATOR, // !=
+			LOGIC_GTE_PUNCTUATOR, // >=
+			LOGIC_LTE_PUNCTUATOR, // <=
+
+			// Then OPERATORS 1 char size
+			ADD_PUNCTUATOR, // +
+			SUB_PUNCTUATOR, // -
+			MUL_PUNCTUATOR, // *
+			DIV_PUNCTUATOR, // /
+			MOD_PUNCTUATOR, // %
+
+
+			ASSIGN_PUNCTUATOR, // =
+			ADD_ASSIGN_PUNCTUATOR, // +=
+			SUB_ASSIGN_PUNCTUATOR, // -=
+			MUL_ASSIGN_PUNCTUATOR, // *=
+			DIV_ASSIGN_PUNCTUATOR, // /=
+			MOD_ASSIGN_PUNCTUATOR, // %=
+
+			BINARY_XOR_PUNCTUATOR, // ^
+			BINARY_AND_PUNCTUATOR, // &
+			BINARY_OR_PUNCTUATOR, // |
+
+			LOGIC_GT_PUNCTUATOR, // >
+			LOGIC_LT_PUNCTUATOR, // <
+			LOGIC_NOT_PUNCTUATOR // !
+	};
+
+	for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);return NULL;}
+
+		if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			return &defined_operator_punctuator[index_to_evaluate[i]];
+		}
+	}
+
+	return NULL;
+}
+
+tPunctuatorInfo *  CASTNode::isPunctuator(const char *s){
+
+	tPunctuatorInfo * ip = isOperatorPunctuator(s);
 
 	if(ip!=NULL){
 		return ip;
@@ -516,8 +541,8 @@ char * CASTNode::getEndWord(const char *s, int m_line){
 
 	char *start_str=(char *)s;
 	char *aux=(char *)s;
-	 tInfoPunctuator * sp;
-	 tInfoKeyword *key_w;
+	 tPunctuatorInfo * sp;
+	 tKeywordInfo *key_w;
 	 bool is_possible_number=false;
 	 int i=0;
 	 bool start_digit = false;
@@ -594,7 +619,7 @@ char * CASTNode::getEndWord(const char *s, int m_line){
 char *CASTNode::getSymbolName(const char *s,int & m_line){
 
 	char *aux_p=(char *)s;
-	tInfoPunctuator *end_punctuator=isPunctuator(s);
+	tPunctuatorInfo *end_punctuator=isPunctuator(s);
 
 
 	if(end_punctuator != NULL){
@@ -622,12 +647,12 @@ char *CASTNode::getSymbolName(const char *s,int & m_line){
 	return aux_p;
 }
 
-tInfoKeyword CASTNode::defined_keyword[MAX_KEYWORD];
-tInfoPunctuator CASTNode::defined_operator_punctuator[MAX_OPERATOR_PUNCTUATORS];
-tInfoPunctuator CASTNode::defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
+tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
+tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_OPERATOR_PUNCTUATORS];
+tPunctuatorInfo CASTNode::defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
 
-tInfoKeyword * CASTNode::isKeyword(const char *c){
+tKeywordInfo * CASTNode::isKeyword(const char *c){
 
 	int m_line=0;
 
@@ -654,7 +679,7 @@ tInfoKeyword * CASTNode::isKeyword(const char *c){
 	return 0;
 }
 //------------------------------------------------------------------------------------------------------------
-tInfoPunctuator *CASTNode::checkPreOperatorPunctuator(const char *s){
+tPunctuatorInfo *CASTNode::checkPreOperatorPunctuator(const char *s){
 
 	if(parseIncPunctuator(s)) 	return &defined_operator_punctuator[PRE_INC_PUNCTUATOR];
 	if(parseDecPunctuator(s))	return &defined_operator_punctuator[PRE_DEC_PUNCTUATOR];
@@ -665,7 +690,7 @@ tInfoPunctuator *CASTNode::checkPreOperatorPunctuator(const char *s){
 	return 0;
 }
 
-tInfoPunctuator *CASTNode::checkPostOperatorPunctuator(const char *s){
+tPunctuatorInfo *CASTNode::checkPostOperatorPunctuator(const char *s){
 
 	if(parseIncPunctuator(s)) 	return &defined_operator_punctuator[POST_INC_PUNCTUATOR];
 	if(parseDecPunctuator(s))	return &defined_operator_punctuator[POST_DEC_PUNCTUATOR];
@@ -682,7 +707,7 @@ char *CASTNode::functionArrayAccess_Recursive(const char *str, int & m_line, CSc
 	if((*aux == '(' || *aux == '[')){
 
 		 if(ast_node_to_be_evaluated != NULL) {// save node
-			 *ast_node_to_be_evaluated = new CASTNode();
+			 *ast_node_to_be_evaluated = CASTNode::newASTNode();
 			 //(*ast_node_to_be_evaluated)->symbol_value = symbol_value; // is array or function ...
 			 (*ast_node_to_be_evaluated)->line_value = m_line;
 			 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
@@ -696,8 +721,6 @@ char *CASTNode::functionArrayAccess_Recursive(const char *str, int & m_line, CSc
 				 (*ast_node_to_be_evaluated)->idxScope =scope_info->idxScope;
 			 }
 		 }
-
-
 
 		PASTNode args_obj=NULL;
 
@@ -731,7 +754,7 @@ char *CASTNode::functionArrayAccess_Recursive(const char *str, int & m_line, CSc
 			}
 
 			if( ast_node_to_be_evaluated != NULL){
-				args_obj = new CASTNode();
+				args_obj = CASTNode::newASTNode();
 				args_obj->node_type = ARRAY_ACCESS_NODE;
 			}
 
@@ -767,8 +790,8 @@ char *CASTNode::functionArrayAccess_Recursive(const char *str, int & m_line, CSc
 			// the deepth node is the object and the parent will the access node (function or array) ...
 			if(args_obj != NULL){ // there's arguments to be pushed ...
 				PASTNode obj =  *ast_node_to_be_evaluated;
-				PASTNode calling_object = new CASTNode();
-				//tInfoPunctuator *ip=NULL;
+				PASTNode calling_object = CASTNode::newASTNode();
+				//tPunctuatorInfo *ip=NULL;
 
 				calling_object->node_type = CALLING_OBJECT_NODE;
 
@@ -792,77 +815,24 @@ char *CASTNode::functionArrayAccess_Recursive(const char *str, int & m_line, CSc
 		if(another_access != NULL){
 			(*ast_node_to_be_evaluated)->children.push_back(another_access);
 		}
-
-
 	}
-
-
 	return aux;
 }
 
-
 char *CASTNode::functionArrayAccess(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-
-
 	return functionArrayAccess_Recursive(str,m_line,scope_info,ast_node_to_be_evaluated,parent);
-	/*char *word_str=NULL;
-	// try to get function/array object ...
-	end_expression = getEndWord(aux, m_startLine);
-	bool function_or_array = false;
-
-
-	 if(!(end_expression == NULL || end_expression == aux)){ // is not word ok.
-
-		 symbol_value = CStringUtils::copyStringFromInterval(aux,end_expression);
-		 word_str = CStringUtils::IGNORE_BLANKS(end_expression, m_startLine);
-		 function_or_array = (*word_str == '(' || *word_str == '[');
-	 }
-
-	 if(function_or_array) {// try expression...
-
-		 aux = word_str; // we will evaluate later ...
-
-		 if(ast_node_to_be_evaluated != NULL) {// save node
-			 *ast_node_to_be_evaluated = new CASTNode();
-			 (*ast_node_to_be_evaluated)->symbol_value = symbol_value; // is array or function ...
-			 (*ast_node_to_be_evaluated)->line_value = m_startLine;
-			 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
-			 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
-		 }
-
-		 if(*word_str == '('){
-			 if(ast_node_to_be_evaluated != NULL){
-				 (*ast_node_to_be_evaluated)->node_type  = FUNCTION_REF_NODE;
-				 (*ast_node_to_be_evaluated)->line_value = m_startLine;
-				 (*ast_node_to_be_evaluated)->scope_info_ptr =scope_info;
-			 }
-		 }
-
-
-
-		if(ast_node_to_be_evaluated != NULL) { // save line ...
-			m_line = m_startLine;
-		}
-
-	 }*/
-
 }
 
 char * CASTNode::deduceExpression(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, PASTNode parent){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux = (char *)str;
 	char *end_expression;
-	//bool object_function=false;
-	//bool array_object = false;
 	int m_startLine = m_line;
-	tInfoKeyword *key_w  = NULL;
+	tKeywordInfo *key_w  = NULL;
 	vector<PASTNode> vector_args_node;
 	bool try_array_or_function_access = false;
 	bool should_be_access=false;
-
-	//PASTNode array_function_access=NULL;
-
 
 	string symbol_value="";
 
@@ -882,8 +852,9 @@ char * CASTNode::deduceExpression(const char *str, int & m_line, CScope *scope_i
 		switch(key_w->id){
 		// sould be function object ...
 		case KEYWORD_TYPE::FUNCTION_KEYWORD:
+		case KEYWORD_TYPE::OPERATOR_KEYWORD:
 			// function objects are stored in MainClass or global scope.
-			if((aux=parseFunction(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
+			if((aux=parseFunctionOrOperator(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 				return NULL;
 			}
 			try_array_or_function_access = true;
@@ -941,10 +912,7 @@ char * CASTNode::deduceExpression(const char *str, int & m_line, CScope *scope_i
 		 }else{
 			 print_error_cr("Cannot parse ");
 			 return NULL;
-		 }/*else{
-			 return parseExpression_Recursive(aux,  m_line, scope_info, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
-		 }*/
-
+		 }
 	}
 
 	if(try_array_or_function_access){// try array/function access
@@ -964,22 +932,14 @@ char * CASTNode::deduceExpression(const char *str, int & m_line, CScope *scope_i
 			if((*ast_node_to_be_evaluated)->children.size() > 0){
 				(*ast_node_to_be_evaluated)->children[0]->symbol_value = symbol_value;
 			}
-
-			/*if(array_function_access != NULL){
-				(*ast_node_to_be_evaluated)->children.push_back(array_function_access);
-			}*/
 		}
 	}
-
-
-
-
 	return aux;
 }
 
 bool CASTNode::printErrorUnexpectedKeywordOrPunctuator(const char *current_string_ptr, int m_line){
-	tInfoPunctuator *ip=CASTNode::isPunctuator(current_string_ptr);
-	tInfoKeyword *kw=CASTNode::isKeyword(current_string_ptr);
+	tPunctuatorInfo *ip=CASTNode::isPunctuator(current_string_ptr);
+	tKeywordInfo *kw=CASTNode::isKeyword(current_string_ptr);
 
 	if(kw){
 		print_error_cr("Unexpected %s at line %i",kw->str,m_line);
@@ -999,8 +959,8 @@ char *CASTNode::getSymbolValue(
 
 		string & symbol_name,
 		int & m_definedSymbolLine,
-		tInfoPunctuator *pre_operator,
-		tInfoPunctuator **post_operator,
+		tPunctuatorInfo *pre_operator,
+		tPunctuatorInfo **post_operator,
 		bool & is_symbol_trivial
 		){
 
@@ -1013,7 +973,6 @@ char *CASTNode::getSymbolValue(
 		print_error_cr("Invalid using \"super\" keyword at line %i",m_line);
 		return NULL;
 	}
-
 
 	//----------------------------------------------------------
 	// GETTING TRIVIAL SYMBOLS
@@ -1046,19 +1005,19 @@ char *CASTNode::getSymbolValue(
 		//end_expression = aux+1;
 	}else{ // check for symbols (must have a symbol at least)
 
-		tInfoKeyword *key_w;
-		bool is_function=false;
+		tKeywordInfo *key_w;
+		bool is_function_or_operator=false;
 		bool is_new=false;
 		bool is_delete=false;
 		// usually we have to take care about special op symbols
 
 		if((key_w =isKeyword(aux)) != NULL){
-			is_function = key_w->id == KEYWORD_TYPE::FUNCTION_KEYWORD;
+			is_function_or_operator = key_w->id == KEYWORD_TYPE::FUNCTION_KEYWORD || key_w->id == KEYWORD_TYPE::OPERATOR_KEYWORD;
 			is_new=key_w->id == KEYWORD_TYPE::NEW_KEYWORD;
 			is_delete=key_w->id == KEYWORD_TYPE::DELETE_KEYWORD;
 		}
 
-		if(is_function){ // function object ...
+		if(is_function_or_operator){ // function object ...
 
 			if(pre_operator!=NULL){
 				if(pre_operator->id == PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR ||
@@ -1069,9 +1028,8 @@ char *CASTNode::getSymbolValue(
 			}
 
 			// parse function but do not create ast node (we will create in trivial case value
-			end_expression = parseFunction(aux,m_line,scope_info);
+			end_expression = parseFunctionOrOperator(aux,m_line,scope_info);
 
-			//key_w->id == KEYWORD_TYPE::FUNCTION_KEYWORD
 			//symbol_node->symbol_value="anonymous_function";
 			if(end_expression == NULL){
 				return NULL;
@@ -1079,12 +1037,9 @@ char *CASTNode::getSymbolValue(
 
 			symbol_name = CStringUtils::copyStringFromInterval(aux, end_expression);
 
-			//symbol_node->node_type = NODE_TYPE::KEYWORD_NODE;
-			//symbol_node->keyword_info = &defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD];
 		}
 		else // array object ...
 		{
-
 			if(*aux == '['){ // vector object ...
 				// parse function but do not create ast node (we will create in trivial case value
 				end_expression = parseArgs('[', ']',aux,m_line,scope_info);
@@ -1135,22 +1090,6 @@ char *CASTNode::getSymbolValue(
 		// if there's function or array access after symbol or object created ...
 		end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
 
-		/*if(*end_expression == '('){ // parse args within '(' ')'...
-			is_symbol_trivial = false;
-
-			end_expression = parseArgs('(', ')',end_expression,m_line,scope_info);
-
-			if(end_expression == NULL){
-				return NULL;
-			}
-
-			symbol_name = CStringUtils::copyStringFromInterval(aux, end_expression);
-
-			//(*args_node)->node_type = NODE_TYPE::FUNCTION_OR_CLASS_ARGS_CALL_NODE;
-			end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
-		}*/
-
-
 		if(*end_expression == '[' || *end_expression == '('){ // function or array access --> process its ast but not save ...
 			is_symbol_trivial = false;
 			end_expression = functionArrayAccess(end_expression,m_line,scope_info);
@@ -1160,8 +1099,6 @@ char *CASTNode::getSymbolValue(
 			}
 
 			end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
-
-
 			// check for post opertator...
 			if(((*post_operator) = checkPostOperatorPunctuator(end_expression)) != NULL){
 			 end_expression+=strlen((*post_operator)->str);
@@ -1169,45 +1106,7 @@ char *CASTNode::getSymbolValue(
 			}
 
 			symbol_name = CStringUtils::copyStringFromInterval(aux, end_expression);
-
 		}
-
-		/*if(*end_expression == '['){ // parse args within '(' ')'...
-			is_symbol_trivial = false;
-			char *aux_ptr;
-			int i=0;
-			bool end=false;
-
-			do{
-				aux_ptr = end_expression;
-				end_expression = parseArgs('[', ']',end_expression,m_line,scope_info);
-				if(end_expression == NULL){
-					if(i==0){
-						return NULL;
-					}else{
-						end = true;
-					}
-				}
-
-				i++;
-			}while(!end);
-
-			end_expression = aux_ptr;
-
-			symbol_name = CStringUtils::copyStringFromInterval(aux, end_expression);
-
-			//(*args_node)->node_type = NODE_TYPE::ARRAY_INDEX_NODE;
-
-			end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
-
-
-			// check for post opertator...
-			if(((*post_operator) = checkPostOperatorPunctuator(end_expression)) != NULL){
-			 end_expression+=strlen((*post_operator)->str);
-			}
-
-			end_expression = CStringUtils::IGNORE_BLANKS(end_expression, m_line);
-		}*/
 	}
 	// GETTING TRIVIAL SYMBOLS
 	//----------------------------------------------------------
@@ -1234,7 +1133,7 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 	bool is_symbol_trivial_value=false;
 	string symbol_value;
 	string operator_str="";
-	tInfoPunctuator *pre_operator=NULL,
+	tPunctuatorInfo *pre_operator=NULL,
 					*post_operator=NULL,
 					*operator_group=NULL;
 	bool theres_some_operator=false;
@@ -1319,7 +1218,7 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 
 				if(is_symbol_trivial_value){
 
-					(*ast_node_to_be_evaluated)=new CASTNode;
+					(*ast_node_to_be_evaluated)=CASTNode::newASTNode();
 					(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
 					(*ast_node_to_be_evaluated)->symbol_value=symbol_value; // assign its value ...
 					(*ast_node_to_be_evaluated)->idxScope = scope_info->idxScope;
@@ -1378,7 +1277,7 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 	}else{ // we found the operator respect of GROUPX so let's put the AST to the left the resulting expression...
 
 		if(ast_node_to_be_evaluated != NULL){
-			*ast_node_to_be_evaluated=new CASTNode(2); // always preallocate 2 nodes (left and right)
+			*ast_node_to_be_evaluated=CASTNode::newASTNode(2); // always preallocate 2 nodes (left and right)
 			(*ast_node_to_be_evaluated)->parent=parent;
 			(*ast_node_to_be_evaluated)->node_type = EXPRESSION_NODE;
 
@@ -1437,7 +1336,7 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 				operator_group=&defined_operator_punctuator[ADD_PUNCTUATOR];
 
 				// 2. create neg node.
-				PASTNode ast_neg_node = new CASTNode();
+				PASTNode ast_neg_node = CASTNode::newASTNode();
 				ast_neg_node->node_type = NODE_TYPE::PUNCTUATOR_NODE;
 				ast_neg_node->operator_info = &defined_operator_punctuator[SUB_PUNCTUATOR];
 
@@ -1477,13 +1376,12 @@ char * CASTNode::parseExpression(const char *s, int & m_line, CScope *scope_info
 
 	if(aux_p != NULL && ast_node_to_be_evaluated != NULL && *ast_node_to_be_evaluated!=NULL){ // can save the node and tells that is an starting of expression node...
 
-		PASTNode ast_node=new CASTNode;
+		PASTNode ast_node=CASTNode::newASTNode();
 		ast_node->node_type = EXPRESSION_NODE;
 		ast_node->children.push_back(*ast_node_to_be_evaluated);
 		(*ast_node_to_be_evaluated)->parent = ast_node; // save parent ..
 		*ast_node_to_be_evaluated=ast_node;
 	}
-
 	return aux_p;
 }
 
@@ -1502,7 +1400,7 @@ char * CASTNode::parseStruct_Recursive(const char *s,int & m_line,  CScope *scop
 	if(*aux_p == '{'){ // go for final ...
 
 		if(ast_node_to_be_evaluated!=NULL){
-			(*ast_node_to_be_evaluated)=new CASTNode;
+			(*ast_node_to_be_evaluated)=CASTNode::newASTNode();
 			(*ast_node_to_be_evaluated)->line_value = m_line;
 			(*ast_node_to_be_evaluated)->node_type = STRUCT_NODE;
 			(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
@@ -1550,53 +1448,19 @@ char * CASTNode::parseStruct_Recursive(const char *s,int & m_line,  CScope *scop
  			 	attr_node->parent =(*ast_node_to_be_evaluated);
 			 }
 
-			 /*if(*aux_p == '{'){ // recursive json ...
-				 if((aux_p=parseJson_Recursive(aux_p,m_line,scope_info))==NULL){
-					 return NULL;
-				 }
-			 }
+			 aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
-			 if(*aux_p == '['){ // list recursive json array ...
-				 print_error_cr("'[' not suported yet!");
+			 if(*aux_p != ',' && *aux_p != '}' ){
+				 print_error_cr("expected '}' or ','");
 				 return NULL;
-			 }*/
-
-			 // get symbol ..
-				// expect word...
-			/*	end_p = getEndWord(aux_p, m_line);
-
-				 if(end_p == NULL || end_p == aux_p){
-					 print_error_cr("Expected symbol at line %i",m_line);
-					 return NULL;
-				 }
-
-
-				 variable_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
-				 aux_p=CStringUtils::IGNORE_BLANKS(end_p,m_line);
-
-
-				 // expect a comma or ...
-*/
-
-
-
-					 aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
-
-					 if(*aux_p != ',' && *aux_p != '}' ){
-						 print_error_cr("expected '}' or ','");
-						 return NULL;
-					 }
+			 }
 		}
-
 	}
 	else{
 		print_error_cr("Expected '{'");
 	}
-
 	return aux_p;
-
 }
-
 
 char * CASTNode::parseStruct(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
@@ -1613,8 +1477,6 @@ char * CASTNode::parseStruct(const char *s,int & m_line,  CScope *scope_info, PA
 
 	return (end+1);
 }
-
-
 //---------------------------------------------------------------------------------------------------------------
 // PARSE KEYWORDS
 
@@ -1624,7 +1486,7 @@ char * CASTNode::parseNew(const char *s,int & m_line,  CScope *scope_info, PASTN
 	char *end_p;
 	string symbol_value;
 
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 	PASTNode args_node=NULL;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
@@ -1660,7 +1522,7 @@ char * CASTNode::parseNew(const char *s,int & m_line,  CScope *scope_info, PASTN
 			args_node->node_type = ARGS_PASS_NODE;
 			 // it seems everything is allright... let's create the node...
 
-			(*ast_node_to_be_evaluated) = new CASTNode();
+			(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
 			(*ast_node_to_be_evaluated)->node_type = NEW_OBJECT_NODE;
 			(*ast_node_to_be_evaluated)->keyword_info = NULL;
 			(*ast_node_to_be_evaluated)->symbol_value = symbol_value;
@@ -1669,7 +1531,6 @@ char * CASTNode::parseNew(const char *s,int & m_line,  CScope *scope_info, PASTN
 			return aux_p;
 		}
 	}
-
 	return NULL;
 }
 
@@ -1678,7 +1539,7 @@ char * CASTNode::parseDelete(const char *s,int & m_line,  CScope *scope_info, PA
 	char *aux_p = (char *)s;
 	char *end_p;
 	string symbol_value;
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
@@ -1699,13 +1560,12 @@ char * CASTNode::parseDelete(const char *s,int & m_line,  CScope *scope_info, PA
 
 			 symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
 
-			(*ast_node_to_be_evaluated) = new CASTNode();
+			(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
 			(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 			(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			(*ast_node_to_be_evaluated)->symbol_value = symbol_value;
 
 			return aux_p;
-
 		}
 	}
 	return NULL;
@@ -1722,7 +1582,7 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 	string class_name;
 	//CScriptFunctionObject * class_object=NULL;
 
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 	PASTNode function_collection_node=NULL,vars_collection_node=NULL,child_node=NULL, base_class_node = NULL;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
@@ -1751,7 +1611,7 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 			class_line = m_line;
 			class_name = CStringUtils::copyStringFromInterval(aux_p, end_p);
 
-			print_info_cr("registered class \"%s\" line %i ",class_name.c_str(), class_line);
+			print_debug_cr("registered class \"%s\" line %i ",class_name.c_str(), class_line);
 
 			aux_p=CStringUtils::IGNORE_BLANKS(end_p,m_line);
 
@@ -1774,7 +1634,7 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 				}
 
 				if(ast_node_to_be_evaluated != NULL){
-					base_class_node = new CASTNode;
+					base_class_node = CASTNode::newASTNode();
 					base_class_node->symbol_value = CStringUtils::copyStringFromInterval(aux_p, end_p);
 					base_class_node->node_type = BASE_CLASS_NODE;
 				}
@@ -1787,7 +1647,7 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 
 				// it seem's we have a good built class...
 				//if(ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = new CASTNode;
+				*ast_node_to_be_evaluated = CASTNode::newASTNode();
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 				(*ast_node_to_be_evaluated)->symbol_value = class_name;
@@ -1797,8 +1657,8 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 				class_scope_info =scp; //(*ast_node_to_be_evaluated)->scope_info_ptr;
 
 				// create var & functions collection...
-				(*ast_node_to_be_evaluated)->children.push_back(vars_collection_node = new CASTNode);
-				(*ast_node_to_be_evaluated)->children.push_back(function_collection_node = new CASTNode);
+				(*ast_node_to_be_evaluated)->children.push_back(vars_collection_node = CASTNode::newASTNode());
+				(*ast_node_to_be_evaluated)->children.push_back(function_collection_node = CASTNode::newASTNode());
 
 				if(base_class_node != NULL) {
 					(*ast_node_to_be_evaluated)->children.push_back(	base_class_node );
@@ -1818,7 +1678,8 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 							return NULL;
 							break;
 						case KEYWORD_TYPE::FUNCTION_KEYWORD:
-							if((aux_p = parseFunction(aux_p, m_line,class_scope_info, &child_node)) != NULL){
+						case KEYWORD_TYPE::OPERATOR_KEYWORD:
+							if((aux_p = parseFunctionOrOperator(aux_p, m_line,class_scope_info, &child_node)) != NULL){
 								if(child_node->symbol_value != ""){
 									if(ast_node_to_be_evaluated != NULL){
 										function_collection_node->children.push_back(child_node);
@@ -1849,11 +1710,7 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 						print_error_cr("Expected \"var\" or \"function\" keyword at line %i",m_line);
 						return NULL;
 					}
-
-
 					aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
-
-
 				}
 
 				if(*aux_p != '}'){
@@ -1880,8 +1737,6 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 char * CASTNode::parseArgs(char c1,char c2,const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
-
-
 	PASTNode   node_arg_expression=NULL;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
@@ -1892,7 +1747,7 @@ char * CASTNode::parseArgs(char c1,char c2,const char *s,int & m_line,  CScope *
 		aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 		if(ast_node_to_be_evaluated!=NULL){
-			(*ast_node_to_be_evaluated) = new CASTNode;
+			(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
 		}
 
 		if(*aux_p != c2 ){
@@ -1922,12 +1777,11 @@ char * CASTNode::parseArgs(char c1,char c2,const char *s,int & m_line,  CScope *
 
 		return aux_p+1;
 	}
-
 	return NULL;
 }
 
 PASTNode  CASTNode::findAst(const string & _symbol_name_to_find, NODE_TYPE _node_type, KEYWORD_TYPE _keyword_type){
-	return findAstRecursive(_symbol_name_to_find, _node_type, _keyword_type, MAIN_AST_ROOT);
+	return findAstRecursive(_symbol_name_to_find, _node_type, _keyword_type, MAIN_AST_NODE);
 }
 
 PASTNode  CASTNode::findAstRecursive(const string & _symbol_name_to_find, NODE_TYPE _node_type,KEYWORD_TYPE _keyword_type, PASTNode _node){
@@ -1951,13 +1805,12 @@ PASTNode  CASTNode::findAstRecursive(const string & _symbol_name_to_find, NODE_T
 	return NULL;
 }
 
-
-char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	char *symbol_value,*end_var;
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 
 	PASTNode args_node=NULL, body_node=NULL, arg_node=NULL;
 	string conditional_str;
@@ -1973,8 +1826,6 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 		idxScope=scope_info->idxScope;
 	}
 
-
-
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 	// check for keyword ...
@@ -1982,7 +1833,7 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 
 	if(key_w != NULL){
 
-		if(key_w->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
+		if(key_w->id == KEYWORD_TYPE::FUNCTION_KEYWORD || key_w->id == KEYWORD_TYPE::OPERATOR_KEYWORD){
 
 			// advance keyword...
 			aux_p += strlen(key_w->str);
@@ -1990,11 +1841,11 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 
 			if(ast_node_to_be_evaluated!=NULL){ // we save node...
 
-				*ast_node_to_be_evaluated = new CASTNode;
+				*ast_node_to_be_evaluated = CASTNode::newASTNode();
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 
-				(*ast_node_to_be_evaluated)->children.push_back(args_node = new CASTNode);
+				(*ast_node_to_be_evaluated)->children.push_back(args_node = CASTNode::newASTNode());
 
 				args_node->node_type = NODE_TYPE::ARGS_DECL_NODE;
 
@@ -2006,7 +1857,7 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 
 			if(named_function){ // is named function..
 
-				if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error))!=NULL){ // check if particular case extension attribute class
+				if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // check if particular case extension attribute class
 					idxScope = class_node->idxScope; // override scope info
 					symbol_value = (char *)class_member.c_str();
 				}
@@ -2017,7 +1868,17 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 					else{ // get normal name...
 
 						// check whwther the function is anonymous or not.
-						end_var=getSymbolName(aux_p,m_line);
+						if(key_w->id == KEYWORD_TYPE::OPERATOR_KEYWORD){
+							tPunctuatorInfo *ip = parseArithmeticPunctuator(aux_p);
+							if(ip==NULL){
+								print_error_cr("operator \"%.02s\" not valid at line %i",aux_p,m_line);
+								return NULL;
+							}
+							end_var=aux_p + strlen(ip->str);//getSymbolName(aux_p,m_line);
+						}
+						else{
+							end_var=getSymbolName(aux_p,m_line);
+						}
 
 						if(end_var != NULL){
 
@@ -2057,17 +1918,15 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 				// create object function ...
 				if(named_function){
 
-					if(!scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated))){
+					if((irv=scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated)))==NULL){
 						return NULL;
 					}
 
 					if((*ast_node_to_be_evaluated) != NULL){
 						(*ast_node_to_be_evaluated)->symbol_value=symbol_value;
 					}
-					//irv = INFO_SCOPE_VAR_NODE(scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated)));
 
-					//ast_node=AST_NODE(irv->idxAstNode);
-					//ast_node->symbol_value = symbol_value;
+					ast_node=*ast_node_to_be_evaluated;
 				}
 				else{
 					irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
@@ -2120,7 +1979,6 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 						if((irv=_currentScope->getInfoRegisteredSymbol(symbol_value,false)) != NULL){
 							print_error_cr("Ambiguous symbol argument \"%s\" at line %i name with var defined at %i", symbol_value, m_line, AST_LINE_VALUE(irv->idxAstNode));
 							return NULL;
-
 						}
 
 						// ok register arg symbol...
@@ -2144,7 +2002,7 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 					}
 					// PUSH NEW ARG...
 					if(ast_node_to_be_evaluated != NULL){
-						arg_node = new CASTNode;
+						arg_node = CASTNode::newASTNode();
 						arg_node->symbol_value=symbol_value;
 						args_node->children.push_back(arg_node);
 					}
@@ -2195,7 +2053,7 @@ char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, 
 char *  CASTNode::parseReturn(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 	string s_aux;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
@@ -2209,7 +2067,7 @@ char *  CASTNode::parseReturn(const char *s,int & m_line,  CScope *scope_info, P
 			aux_p += strlen(key_w->str);
 
 			if(ast_node_to_be_evaluated != NULL){ // save
-				*ast_node_to_be_evaluated = new CASTNode(1); // reserve for expression return
+				*ast_node_to_be_evaluated = CASTNode::newASTNode(1); // reserve for expression return
 				(*ast_node_to_be_evaluated)->node_type = NODE_TYPE::KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2236,7 +2094,7 @@ char * CASTNode::parseWhile(const char *s,int & m_line, CScope *scope_info, PAST
 
 	char *aux_p = (char *)s;
 	char *end_expr,*start_symbol;
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 
 	PASTNode conditional_expression=NULL, while_node=NULL;
 	string conditional_str;
@@ -2251,7 +2109,7 @@ char * CASTNode::parseWhile(const char *s,int & m_line, CScope *scope_info, PAST
 		if(key_w->id == KEYWORD_TYPE::WHILE_KEYWORD){
 
 			if(ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = new CASTNode;
+				*ast_node_to_be_evaluated = CASTNode::newASTNode();
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2273,7 +2131,7 @@ char * CASTNode::parseWhile(const char *s,int & m_line, CScope *scope_info, PAST
 					}
 
 					if( ast_node_to_be_evaluated != NULL){
-						PASTNode aux = new CASTNode;
+						PASTNode aux = CASTNode::newASTNode();
 						aux->node_type = CONDITIONAL_NODE;
 						aux->children.push_back(conditional_expression);
 						(*ast_node_to_be_evaluated)->children.push_back(aux);
@@ -2312,7 +2170,7 @@ char * CASTNode::parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNo
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
 	char *end_expr,*start_symbol;
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 	PASTNode conditional=NULL, if_node=NULL, else_node=NULL;
 	string conditional_str;
 	bool error = false;
@@ -2326,7 +2184,7 @@ char * CASTNode::parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNo
 		if(key_w->id == KEYWORD_TYPE::IF_KEYWORD){
 
 			if(ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = new CASTNode;
+				*ast_node_to_be_evaluated = CASTNode::newASTNode();
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2350,7 +2208,7 @@ char * CASTNode::parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNo
 					conditional_str=start_symbol;
 
 					if(ast_node_to_be_evaluated!=NULL){
-						PASTNode aux = new CASTNode;
+						PASTNode aux = CASTNode::newASTNode();
 						aux->children.push_back(conditional);
 						aux->node_type = CONDITIONAL_NODE;
 						(*ast_node_to_be_evaluated)->children.push_back(aux);
@@ -2422,7 +2280,7 @@ char * CASTNode::parseFor(const char *s,int & m_line,  CScope *scope_info, PASTN
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 	bool error=false;
 	PASTNode block_for = NULL,node_for_expression=NULL;
 	string eval_for;
@@ -2438,7 +2296,7 @@ char * CASTNode::parseFor(const char *s,int & m_line,  CScope *scope_info, PASTN
 		if(key_w->id == KEYWORD_TYPE::FOR_KEYWORD){
 
 			if(ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = new CASTNode(3); // ini, conditional, post
+				*ast_node_to_be_evaluated = CASTNode::newASTNode(3); // ini, conditional, post
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2472,7 +2330,7 @@ char * CASTNode::parseFor(const char *s,int & m_line,  CScope *scope_info, PASTN
 					bool parse_var = false;
 
 					if(i==0){
-						tInfoKeyword *key_w = isKeyword(aux_p);
+						tKeywordInfo *key_w = isKeyword(aux_p);
 						if(key_w != NULL){
 							if(key_w->id == VAR_KEYWORD){
 								if((aux_p = parseVar(aux_p,m_line, _currentScope, ast_node_to_be_evaluated != NULL ? &node_for_expression: NULL))==NULL){
@@ -2494,7 +2352,7 @@ char * CASTNode::parseFor(const char *s,int & m_line,  CScope *scope_info, PASTN
 
 					if(*aux_p == info_for[i].next_char){
 						if(ast_node_to_be_evaluated != NULL){ // add node as for node type and its expression below.
-							PASTNode aux = new CASTNode();
+							PASTNode aux = CASTNode::newASTNode();
 							aux->node_type = info_for[i].node_type;
 							aux->children.push_back(node_for_expression);
 							(*ast_node_to_be_evaluated)->children[i]=aux;
@@ -2551,11 +2409,11 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 				 case_value_node=NULL,
 				 default_switch_node=NULL;
 	CScope *m_currentScope;
-	tInfoPunctuator * ip;
+	tPunctuatorInfo * ip;
 	char *value_to_eval;
 	string val;
 	//CScope *_localScope = scope_info!=NULL?scope_info->symbol_info.ast->scope_info_ptr:NULL; // gets current evaluating scope...
-	tInfoKeyword *key_w,*key_w2;
+	tKeywordInfo *key_w,*key_w2;
 
 	bool error=false;
 	int n_cases;
@@ -2569,7 +2427,7 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 		if(key_w->id == KEYWORD_TYPE::SWITCH_KEYWORD){
 
 			if( ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = new CASTNode;
+				*ast_node_to_be_evaluated = CASTNode::newASTNode();
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2615,9 +2473,9 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 								bool theres_a_default= false;
 								// init node ..
 								if(ast_node_to_be_evaluated!= NULL){
-									(*ast_node_to_be_evaluated)->children.push_back(switch_node = new CASTNode);
-									switch_node->children.push_back(group_cases = new CASTNode);
-									switch_node->children.push_back(NULL);//case_body_node = new CASTNode);
+									(*ast_node_to_be_evaluated)->children.push_back(switch_node = CASTNode::newASTNode());
+									switch_node->children.push_back(group_cases = CASTNode::newASTNode());
+									switch_node->children.push_back(NULL);//case_body_node = CASTNode::newASTNode());
 									group_cases->node_type = GROUP_CASES_NODE;
 								}
 
@@ -2673,7 +2531,7 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 														}
 													}
 												}
-												case_value_node = new CASTNode;
+												case_value_node = CASTNode::newASTNode();
 												case_value_node->node_type = KEYWORD_NODE;
 												case_value_node->keyword_info = key_w;
 												case_value_node->symbol_value = val;
@@ -2823,7 +2681,7 @@ char * CASTNode::parseMemberVar(const char *s,int & m_line,  CScope *scope_info,
 
 	char *aux_p = (char *)s;
 	CScope *_currentScope = NULL;
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 	char *start_var,*end_var, *symbol_name;
 	string class_name, class_member;
 	PASTNode class_node;
@@ -2843,15 +2701,15 @@ char * CASTNode::parseMemberVar(const char *s,int & m_line,  CScope *scope_info,
 			//
 			if(ast_node_to_be_evaluated != NULL){
 				_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
-				(*ast_node_to_be_evaluated) = new CASTNode;
+				(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
 
-			if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error))!=NULL){ // particular case extension attribute class
+			if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // particular case extension attribute class
 				if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
 
-					PASTNode var_new=new CASTNode;
+					PASTNode var_new=CASTNode::newASTNode();
 					// save symbol in the node ...
 					var_new->symbol_value = class_member;
 					var_new->idxScope = ZS_UNDEFINED_IDX;
@@ -2877,7 +2735,7 @@ char * CASTNode::parseMemberVar(const char *s,int & m_line,  CScope *scope_info,
 					return NULL;
 				}
 
-				print_info_cr("registered symbol \"%s::%s\" line %i ",class_name.c_str(),class_member.c_str(), m_line);
+				print_debug_cr("registered symbol \"%s::%s\" line %i ",class_name.c_str(),class_member.c_str(), m_line);
 				return aux_p;
 			}
 			else{
@@ -2902,11 +2760,11 @@ char * CASTNode::parseMemberVar(const char *s,int & m_line,  CScope *scope_info,
 				aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 				if((*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
-					print_info_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
+					print_debug_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
 
 					if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
 
-						PASTNode var_new=new CASTNode;
+						PASTNode var_new=CASTNode::newASTNode();
 						// save symbol in the node ...
 						var_new->symbol_value = symbol_name;
 						var_new->idxScope = ZS_UNDEFINED_IDX;
@@ -2950,7 +2808,7 @@ char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTN
 	char *aux_p = (char *)s;
 	CScope *_currentScope = NULL;
 	PASTNode var_node;
-	tInfoKeyword *key_w;
+	tKeywordInfo *key_w;
 	char *start_var,*end_var, *symbol_name;
 	int m_startLine=0;
 	string s_aux;
@@ -2966,7 +2824,7 @@ char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTN
 
 			if(ast_node_to_be_evaluated != NULL){
 				_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
-				(*ast_node_to_be_evaluated) = new CASTNode;
+				(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 				(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
@@ -2988,11 +2846,11 @@ char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTN
 				aux_p=end_var;
 				aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 				if((*aux_p == ';' || *aux_p == '=' || *aux_p == ',' )){ // JE: added multivar feature (',)).
-					print_info_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
+					print_debug_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
 					var_node = NULL;
 					if(ast_node_to_be_evaluated!=NULL){
 
-						var_node = new CASTNode;
+						var_node = CASTNode::newASTNode();
 						// save symbol in the node ...
 						(var_node)->symbol_value = symbol_name;
 						(var_node)->idxScope = ZS_UNDEFINED_IDX;
@@ -3005,7 +2863,7 @@ char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTN
 
 						(*ast_node_to_be_evaluated)->children.push_back(var_node);
 
-						print_info_cr("scope %i",_currentScope->idxScope);
+						print_debug_cr("scope %i",_currentScope->idxScope);
 
 
 						if(!_currentScope->registerSymbol(symbol_name,var_node)){
@@ -3103,7 +2961,7 @@ char * CASTNode::parseBlock(const char *s,int & m_line,  CScope *scope_info, boo
 	return NULL;
 }
 
-char * CASTNode::isClassMember(const char *s,int & m_line, string & _class_name, string & var_name, PASTNode & _class_node, bool & error){
+char * CASTNode::isClassMember(const char *s,int & m_line, string & _class_name, string & var_name, PASTNode & _class_node, bool & error, tKeywordInfo *kwi){
 
 	char *aux_p = (char *)s;
 	char *end_var;
@@ -3136,7 +2994,19 @@ char * CASTNode::isClassMember(const char *s,int & m_line, string & _class_name,
 		}
 
 		aux_p=CStringUtils::IGNORE_BLANKS(aux_p+2,m_line); // ignore ::
-		end_var=getSymbolName(aux_p,m_line);
+
+		if(kwi->id == KEYWORD_TYPE::OPERATOR_KEYWORD){
+			tPunctuatorInfo *pi = parseArithmeticPunctuator(aux_p);
+			if(pi==NULL){
+				print_error_cr("operator \"%.02s\" not valid at line %i",aux_p,m_line);
+				return NULL;
+			}
+			end_var=aux_p+strlen(pi->str);
+		}
+		else{
+			end_var=getSymbolName(aux_p,m_line);
+		}
+
 
 		if(end_var != NULL){
 
@@ -3163,7 +3033,7 @@ char *CASTNode::parseKeyWord(const char *s, int & m_line, CScope *scope_info, bo
 	char *aux_p= (char *)s;
 
 
-	tInfoKeyword *keyw=NULL,*keyw2nd=NULL;
+	tKeywordInfo *keyw=NULL,*keyw2nd=NULL;
 
 	aux_p=CStringUtils::IGNORE_BLANKS(aux_p, m_line);
 
@@ -3176,7 +3046,7 @@ char *CASTNode::parseKeyWord(const char *s, int & m_line, CScope *scope_info, bo
 		aux_p=CStringUtils::IGNORE_BLANKS(aux_p, m_line);
 
 		// check if non named function...
-		if(keyw->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
+		if(keyw->id == KEYWORD_TYPE::FUNCTION_KEYWORD || keyw->id == KEYWORD_TYPE::OPERATOR_KEYWORD){
 			if( *aux_p == '('){
 				// Is no named. No named function is an object and should be processed within parseExpression ...
 				return NULL;
@@ -3198,7 +3068,7 @@ char *CASTNode::parseKeyWord(const char *s, int & m_line, CScope *scope_info, bo
 		if((keyw2nd = isKeyword(aux_p))!= NULL){
 
 			if(
-					keyw2nd->id != KEYWORD_TYPE::FUNCTION_KEYWORD  // list of exceptional keywords...
+					keyw2nd->id != KEYWORD_TYPE::FUNCTION_KEYWORD && keyw2nd->id != KEYWORD_TYPE::OPERATOR_KEYWORD   // list of exceptional keywords...
 			  ){
 
 				print_error_cr("unexpected keyword \"%s\" at line %i",keyw2nd->str, m_line);
@@ -3225,14 +3095,14 @@ char *CASTNode::parseKeyWord(const char *s, int & m_line, CScope *scope_info, bo
 char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks, bool is_main_node){
 
 	// PRE: **node must be created and is i/o ast pointer variable where to write changes.
-	tInfoKeyword *keyw=NULL;
+	tKeywordInfo *keyw=NULL;
 	char *aux = (char *)s;
 	char *end_expr=0;
 	PASTNode children,_class_node;
 
 	if(node_to_be_evaluated!= NULL){
 		if(!is_main_node){
-			*node_to_be_evaluated = new CASTNode;
+			*node_to_be_evaluated = CASTNode::newASTNode();
 			(*node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
 			if(scope_info != NULL){ // by default put global scope.
 				(*node_to_be_evaluated)->idxScope = scope_info->idxScope;
@@ -3275,7 +3145,7 @@ char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scop
 					int startLine = m_line;
 					string _class_name, _member_name;
 					bool error=false;
-					if(isClassMember(aux+strlen(keyw->str),startLine, _class_name, _member_name, _class_node,error) != NULL){
+					if(isClassMember(aux+strlen(keyw->str),startLine, _class_name, _member_name, _class_node,error, keyw) != NULL){
 
 
 						if(keyw->id == KEYWORD_TYPE::VAR_KEYWORD){
@@ -3287,7 +3157,7 @@ char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scop
 
 						}else{
 							startLine = m_line;
-							end_expr=parseFunction(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children);
+							end_expr=parseFunctionOrOperator(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children);
 							if(end_expr==NULL){
 								return NULL;
 							}
@@ -3411,7 +3281,8 @@ void CASTNode::init(){
 		defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
 		defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
 		defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
-		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunction};
+		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunctionOrOperator};
+		defined_keyword[KEYWORD_TYPE::OPERATOR_KEYWORD] = {OPERATOR_KEYWORD,"operator",parseFunctionOrOperator};
 		defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
 		defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
 	//	defined_keyword[KEYWORD_TYPE::SUPER_KEYWORD] = {SUPER_KEYWORD,"super", NULL};
@@ -3425,7 +3296,11 @@ void CASTNode::init(){
 			CASTNode *ast=newASTNode();
 			CScope *scp = CScope::newScope(NULL);
 			ast->idxScope = scp->idxScope;
+			ast->node_type = NODE_TYPE::BODY_NODE;
 
+		}
+		else{
+			print_warning("ASTNode already initialized!");
 		}
 }
 
@@ -3450,49 +3325,7 @@ CASTNode::CASTNode(int preallocate_num_nodes){
 }
 
 
-/*m_rootScope = new CScope(NULL,0);
-m_rootAstNode = new CASTNode();
-
-m_rootAstNode->node_type = BODY_NODE;
-m_rootAstNode->scope_info_ptr = m_rootScope;*/
-
-/*
-void CASTNode::destroyChildren_Recursive(PASTNode _node){
-
-	if(_node != NULL){
-
-		for(unsigned i = 0; i < _node->children.size(); i++){
-			if(_node->children[i]!= NULL){
-				destroyChildren_Recursive(_node->children[i]);
-			}
-		}
-		_node->children.clear();
-		delete _node;
-		_node = NULL;
-	}
-
-}
-
-void CASTNode::destroyChildren(){
-	for(unsigned i = 0; i < children.size(); i++){
-		destroyChildren_Recursive(children[i]);
-	}
-	children.clear();
-}*/
-
 CASTNode::~CASTNode(){
-
-
 	//destroyChildren();
-
-
-
 }
-
-
-
-
-
-
-
 

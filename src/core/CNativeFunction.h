@@ -1,11 +1,13 @@
-class CFunction_C_TypeFactory{
+#pragma once
+
+class CNativeFunction{
 
 public:
 
-	CFunction_C_TypeFactory();
-	~CFunction_C_TypeFactory();
+	CNativeFunction();
+	~CNativeFunction();
 
-	static CFunction_C_TypeFactory * getInstance();
+	static CNativeFunction * getInstance();
 	static void destroySingletons();
 
 
@@ -228,7 +230,7 @@ private:
 		void *fun_ptr;
 	}tInfoProxyFunction;
 
-	static CFunction_C_TypeFactory *m_instance;
+	static CNativeFunction *m_instance;
 
 	vector<tInfoProxyFunction>	c_int_function;
 	vector<tInfoProxyFunction>	 c_void_function;

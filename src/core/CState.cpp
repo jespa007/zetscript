@@ -97,23 +97,19 @@ CState * CState::currentState(){
 	return current_state;
 }
 
+void CState::destroySingletons(){
+	for(unsigned i = 0; i < vec_saved_state->size(); i++){
+		delete vec_saved_state->at(i);
+	}
+
+	delete vec_saved_state;
+}
 
 
 
 
 
-/*
-//   _____       __        _____                        _   _
-//	|_   _|     / _|      /  ___|                      | | | |
-// 	  | | _ __ | |_ ___   \ `--.  ___ ___  _ __   ___  | | | | __ _ _ __
-// 	  | || '_ \|  _/ _ \   `--. \/ __/ _ \| '_ \ / _ \ | | | |/ _` | '__|
-//   _| || | | | || (_) | /\__/ / (_| (_) | |_) |  __/ \ \_/ / (_| | |
-//   \___/_| |_|_| \___/  \____/ \___\___/| .__/ \___|  \___/ \__,_|_|
-//                                        | |
-//                                        |_|
-// 	_________________________________________________
-// 	 	__________________________________
-*/
+
 /*
 vector<tScopeVar *> 				*	CState::getCurrentVecScopeVarNode(){
 	return current_vec_scope_var_node;
@@ -190,11 +186,11 @@ void CState::destroyScriptFunctionObjectNodes(){
 
 		CScriptFunctionObject * info_function = vec_script_function_object_node[i];
 
-		if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
-			return;
+		if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+			//return;
 		}
 
-		print_info_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
+		print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
 		for(unsigned k = 0; k < info_function->object_info.statment_op.size(); k++){
 
 			for(unsigned a = 0; a  <info_function->object_info.statment_op[k].asm_op.size(); a++){
@@ -221,7 +217,7 @@ void CState::destroyScriptClassNodes() {
 
 			CScriptFunctionObject * info_function = GET_SCRIPT_FUNCTION_OBJECT(irv->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[j]);
 
-			print_info_cr("unloading %s::%s...",vec_script_class_node[i]->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
+			print_debug_cr("unloading %s::%s...",vec_script_class_node[i]->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
 
 			// C related functions ...
 			if(i==0 && j==0){ // MAIN FUNCTION (C functions)
@@ -299,9 +295,9 @@ void CState::destroyScriptClassNodes() {
 
 CState::~CState(){
 
-
-	destroyScriptFunctionObjectNodes();
 	destroyScriptClassNodes();
+	destroyScriptFunctionObjectNodes();
+
 	destroyScopeNodes();
 	destroyASTNodes();
 
