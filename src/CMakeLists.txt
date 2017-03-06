@@ -55,7 +55,7 @@ IF ( "${TARGET}" STREQUAL "")
    SET ( TARGET "release" )
 ENDIF () 
 
-set(TARGET_FLAGS " -O2 ")
+set(TARGET_FLAGS " -O3 ")
 set( POST_NAME "")
 
 # -D_GLIBCXX_DEBUG
@@ -142,7 +142,7 @@ set( ZG_BASE_LIB_SRCS
  
 if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
 
-	add_executable(zg_main${POST_NAME}.html
+	add_executable(zs${POST_NAME}.html
 		${ZG_BASE_LIB_SRCS}
 		${PROJECT_SOURCE_DIR}/main.cpp
 	)
@@ -152,20 +152,20 @@ if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
 else()
 
 
-	add_library( zg_script${POST_NAME} SHARED ${ZG_BASE_LIB_SRCS} )
+	add_library( zetscript${POST_NAME} SHARED ${ZG_BASE_LIB_SRCS} )
 	
-	add_executable(zg_main${POST_NAME}
+	add_executable(zs${POST_NAME}
 		${PROJECT_SOURCE_DIR}/main.cpp
 	)
 
 	IF (MINGW)
 	
-	 target_link_libraries(zg_script${POST_NAME} Rpcrt4 kernel32 "-Wl,--no-as-needed" )
-	 target_link_libraries(zg_main${POST_NAME} mingw32  zg_script${POST_NAME} "-Wl,--no-as-needed" )
+	 target_link_libraries(zetscript${POST_NAME} Rpcrt4 kernel32 "-Wl,--no-as-needed" )
+	 target_link_libraries(zs${POST_NAME} mingw32  zg_script${POST_NAME} "-Wl,--no-as-needed" )
 	  
 	ELSE(MINGW)
-		target_link_libraries(zg_script${POST_NAME}  "-Wl,--no-as-needed" )
-		target_link_libraries(zg_main${POST_NAME} zg_script${POST_NAME} "-Wl,--no-as-needed" )
+		target_link_libraries(zetscript${POST_NAME}  "-Wl,--no-as-needed" )
+		target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} "-Wl,--no-as-needed" )
 	ENDIF(MINGW)
 
 endif()

@@ -45,7 +45,7 @@ public:
 //	CALE();
 
 
-	bool performInstruction( tInfoAsmOp * instruction,
+	inline bool performInstruction( tInfoAsmOp * instruction,
 			int & jmp_to_statment,
 			int & jmp_to_instruction,
 			CScriptFunctionObject *info_function,
@@ -54,7 +54,7 @@ public:
 			vector<tInfoAsmOp *> *asm_op,
 			int n_stk);
 
-	void reset();
+	inline void reset();
 
 	CScriptVariable * createVarFromResultInstruction(tAleObjectInfo * ptr_result_instruction, bool share_ptr = true);
 
@@ -64,7 +64,7 @@ public:
 private:
 
 
-
+	 string 	aux_string;
 
 	 tAleObjectInfo stack[VM_LOCAL_VAR_MAX_STACK];
 	 tAleObjectInfo *basePtrLocalVar;
@@ -74,8 +74,8 @@ private:
 	/**
 	 * Reserve for N vars. Return base pointer.
 	 */
-	 void pushStack(CScriptFunctionObject *info_function,vector<CScriptVariable *> * argv);
-	 void popStack();
+	 inline void pushStack(CScriptFunctionObject *info_function,vector<CScriptVariable *> * argv);
+	 inline void popStack();
 
 	/*enum{
 		MAX_OPERATIONS_PER_EXPRESSION=(MAX_PER_TYPE_OPERATIONS+1)*CScriptVariable::MAX_VAR_TYPES // +1 because
@@ -113,12 +113,12 @@ private:
 
 	string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tAleObjectInfo * index);
 
-	bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
-	bool pushBoolean(bool init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
-	bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
-	bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
-	bool pushFunction(CScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
-	bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL, int properties=0,bool is_new_var=false);
+	inline bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	inline bool pushBoolean(bool init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	inline bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	inline bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	inline bool pushFunction(CScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	inline bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL, int properties=0,bool is_new_var=false);
 
 	bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
 
@@ -128,20 +128,20 @@ private:
 	//bool performPreOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *obj);
 	//bool performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *obj);
 //	bool loadValue(tInfoAsmOp *iao, int stk);
-	bool loadConstantValue(CCompiler::tInfoConstantValue *info_constant, int n_stk);
-	bool loadVariableValue(tInfoAsmOp *iao,
+	inline bool loadConstantValue(CCompiler::tInfoConstantValue *info_constant, int n_stk);
+	inline bool loadVariableValue(tInfoAsmOp *iao,
 			CScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
 			vector<tInfoAsmOp *> *asm_op,
 			int n_stk);
 
-	bool loadFunctionValue(tInfoAsmOp *iao,
+	inline bool loadFunctionValue(tInfoAsmOp *iao,
 			CScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
 			vector<tInfoAsmOp *> *asm_op,
 			int n_stk);
 
-	void popScope(CScriptFunctionObject *info_function,int index);//, CScriptVariable *ret = NULL);
+	inline void popScope(CScriptFunctionObject *info_function,int index);//, CScriptVariable *ret = NULL);
 
 
 //private:

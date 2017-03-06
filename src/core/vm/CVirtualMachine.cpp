@@ -1029,7 +1029,7 @@ bool CVirtualMachine::performInstruction(
 		int n_stk){
 
 
-	string 	aux_string;
+	//string 	aux_string;
 	bool	aux_boolean;
 	//string symbol;
 	CScriptVariable **obj=NULL;

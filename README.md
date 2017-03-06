@@ -27,9 +27,9 @@ Generates this following asm,
 Total 10 instructions
 
 
-Is performed 10000000 times within 4,4 seconds so,
+Is performed 10000000 times within 2,2 seconds so,
 
-(10*10000000)/4,4= 22727272 => 23MIPS ~ better than 486DX2 66MHz (1992) 
+(10*10000000)/2,2= 45454545 => 45MIPS ~ better than 486DX2 66MHz (1992) 
 
 Comparison tables https://en.wikipedia.org/wiki/Instructions_per_second
 

@@ -40,7 +40,7 @@ public:
 
 	int newSharedPointer(CScriptVariable *var_ptr);
 	void removeUnSharedPointers();
-	void gc();
+	inline void gc();
 	int getIdx0Shares(int index);
 	int getNumShares(int index);
 	void remove0Shares(int index_0_share_idx);
