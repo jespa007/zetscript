@@ -41,7 +41,7 @@ Comparison tables https://en.wikipedia.org/wiki/Instructions_per_second
 
 #-------------------------------
 
-JAVASCRIPT (https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_regexp_test2)
+JAVASCRIPT (https://www.w3schools.com/jsref/tryit.asp)
 
 <b>for_test.js</b> has this code
 
@@ -54,7 +54,7 @@ var end = Date.now();
 
 console.log("time:"+(end-start)+" ms");
 
-Javascript times 0.013s => 1600/13 = x123 (faster)
+Javascript times 0.013s => 2500/15 = x166 (faster)
 
 #--------------------------------
 LUA
@@ -67,7 +67,7 @@ end
 
 
 
-Lua 5.2 times 0.112s =>  1600/113 = x14,15 (faster)
+Lua 5.2 times 0.112s =>  2500/200 = x12,5 (faster)
 
 #------------------------------
 
@@ -77,7 +77,7 @@ SQUIRREL
 
 for(local i=0;i < 10000000;++i){i=i+1;}
 
-Chaiscript times 0.163s => 1600/163 = x9.81 (faster)
+SQUIRREL times 0.163s => 2500/250 = x10 (faster)
 
 #------------------------------
 
@@ -88,7 +88,7 @@ PYTHON
 for i in xrange(10000000):
 	i=i+1
 
-Python times 0.566s => 1600/602 = x2.66 (faster)
+Python times 0.566s => 2500/1000 = x2.5 (faster)
 
 #------------------------------
 
@@ -98,7 +98,7 @@ CHAISCRIPT
 
 for(var i=0; i < 10000000; ++i){i=i+1;}
 
-Chaiscript times 20824s => so the zg is better 20824/1600 = x13,13 (slower)
+Chaiscript times 20824s => so the zg is better 20824/2500 = x8,13 (slower)
 
 
 
