@@ -12,24 +12,29 @@ var j=0;for(var i=0; i < 10000000; ++i){i*2;}
 
 Generates this following asm,
 
+
+[01:00]	LOAD	VAR(i)
+[01:01]	LOAD	CONST(10000000)
+[01:02]	LT	[01:00],[01:01]
+[01:03]	JNT	[0004:-001]
 [02:00]	LOAD	VAR(i)
-[02:01]	LOAD	CONST(10000000)
-[02:02]	LT	[02:00],[02:01]
-[02:03]	JNT	[0005:-001]
-[03:00]	LOAD	VAR(i)
-[03:01]	LOAD	CONST(2)
-[03:02]	MUL	[03:00],[03:01]
-[03:03]	POP_SCOPE(2)
-[04:00]	LOAD	++VAR(i)
-[04:01]	JMP	[0002:-001]
+[02:01]	LOAD	VAR(i)
+[02:02]	LOAD	CONST(1)
+[02:03]	ADD	[02:01],[02:02]
+[02:04]	MOV	[02:00],[02:03]
+[02:05]	POP_SCOPE(2)
+[03:00]	LOAD	++VAR(i)
+[03:01]	JMP	[0001:-001]
 
 
-Total 10 instructions
 
 
-Is performed 10000000 times within 2,2 seconds so,
+Total 12 instructions
 
-(10*10000000)/2,2= 45454545 => 45MIPS ~ better than 486DX2 66MHz (1992) 
+
+Is performed 10000000 times within 1.5 seconds so,
+
+(12*10000000)/1.6= 80000000 => 80MIPS ~ better than XXXX 
 
 Comparison tables https://en.wikipedia.org/wiki/Instructions_per_second
 
@@ -41,30 +46,28 @@ JAVASCRIPT (https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_regexp_t
 <b>for_test.js</b> has this code
 
 var start = Date.now();
-var j=0;for(var i=0; i < 10000000; ++i)
+for(var i=0; i < 10000000; ++i)
 {
-	i*2;
+	i=i+1;
 }
 var end = Date.now();
 
 console.log("time:"+(end-start)+" ms");
 
-Javascript times 0.047s => 2200/47 = x46.80 (faster)
+Javascript times 0.013s => 1600/13 = x123 (faster)
 
 #--------------------------------
 LUA
 
 <b>for_test.lua</b> has this code
 
-j=0;
-i=0;
 for i=0,10000000 do 
-  i=i*2; 
+  i=i+1; 
 end
 
 
 
-Lua 5.2 times 0.112s =>  2200/112 = x19.64 (faster)
+Lua 5.2 times 0.112s =>  1600/113 = x14,15 (faster)
 
 #------------------------------
 
@@ -72,9 +75,20 @@ SQUIRREL
 
 <b>for_test.nut</b> has this code
 
-local j=0;for(local i=0;i < 10000000;++i){j*2;}
+for(local i=0;i < 10000000;++i){i=i+1;}
 
-Chaiscript times 0.357s => 2200/357 = x6 (faster)
+Chaiscript times 0.163s => 1600/163 = x9.81 (faster)
+
+#------------------------------
+
+PYTHON
+
+<b>for_test.py</b> has this code
+
+for i in xrange(10000000):
+	i=i+1
+
+Python times 0.566s => 1600/602 = x2.66 (faster)
 
 #------------------------------
 
@@ -82,9 +96,9 @@ CHAISCRIPT
 
 <b>for_test.chai</b> has this code
 
-var j=0;for(var i=0; i < 10000000; ++i){i*2;}
+for(var i=0; i < 10000000; ++i){i=i+1;}
 
-Chaiscript times 31.092s => so the zg is better 31092/2200 = x14,13
+Chaiscript times 20824s => so the zg is better 20824/1600 = x13,13 (slower)
 
 
 
