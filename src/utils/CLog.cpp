@@ -124,7 +124,8 @@ void  CLog::print(const  char  *file,  int  line, int level, bool with_cr, const
  if(with_cr)
 	  fprintf(std_type,"\n");
 
-
+ // to ensure all data has been write...
+ fflush(std_type);
   // to ensure all data has been write...
   //fflush(std_type);
   //fflush(stdout);
