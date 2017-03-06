@@ -33,21 +33,6 @@ Is performed 10000000 times within 2,2 seconds so,
 
 Comparison tables https://en.wikipedia.org/wiki/Instructions_per_second
 
-#--------------------------------
-LUA
-
-<b>for_test.lua</b> has this code
-
-j=0;
-i=0;
-for i=0,10000000 do 
-  i=i*2; 
-end
-
-
-
-Lua 5.2 times 0.112s =>  4400/112 = x39.28 (faster)
-
 
 #-------------------------------
 
@@ -64,8 +49,32 @@ var end = Date.now();
 
 console.log("time:"+(end-start)+" ms");
 
-Javascript times 0.047 => 4400/47 = x93.61 (faster)
+Javascript times 0.047s => 2200/47 = x46.80 (faster)
 
+#--------------------------------
+LUA
+
+<b>for_test.lua</b> has this code
+
+j=0;
+i=0;
+for i=0,10000000 do 
+  i=i*2; 
+end
+
+
+
+Lua 5.2 times 0.112s =>  2200/112 = x19.64 (faster)
+
+#------------------------------
+
+SQUIRREL
+
+<b>for_test.nut</b> has this code
+
+local j=0;for(local i=0;i < 10000000;++i){j*2;}
+
+Chaiscript times 0.357s => 2200/357 = x6 (faster)
 
 #------------------------------
 
@@ -75,11 +84,8 @@ CHAISCRIPT
 
 var j=0;for(var i=0; i < 10000000; ++i){i*2;}
 
-Chaiscript times 31.092s => so the zg is better 31092/4400 = x7
+Chaiscript times 31.092s => so the zg is better 31092/2200 = x14,13
 
-#------------------------------
-
-SQUIRREL
 
 
 
