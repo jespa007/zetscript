@@ -63,7 +63,7 @@ public:
 
 	void * get_C_Object();
 
-	vector<tInfoStatementOp> * getCompiledCode(int idx_function);
+	//vector<tInfoStatementOp> * getCompiledCode(int idx_function);
 
 	CScriptFunctionObject *getConstructorFunction();
 

@@ -34,9 +34,17 @@ Total 12 instructions
 
 Is performed 10000000 times within 1.5 seconds so,
 
-(12*10000000)/1.6= 80000000 => 80MIPS ~ better than XXXX 
+(12*10000000)/2.5= 48000000 => 48MIPS ~ better than XXXX 
 
 Comparison tables https://en.wikipedia.org/wiki/Instructions_per_second
+
+TABLE OPTIMIZATION
+
+Optimization|  ms |  MIPS
+------------|------------- 
+No opt      |  2500 |  48 MIPS       
+1st         |  2265 |  53 MIPS
+
 
 
 #-------------------------------
@@ -98,7 +106,11 @@ CHAISCRIPT
 
 for(var i=0; i < 10000000; ++i){i=i+1;}
 
-Chaiscript times 20824s => so the zg is better 20824/2500 = x8,13 (slower)
+Chaiscript times 20824s => so the zg is better 2500/20824 = x0,12 (slower)
+
+
+
+#------------------------------------
 
 
 

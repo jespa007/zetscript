@@ -38,7 +38,7 @@ CASTNode	*CASTNode::newASTNode(int preallocated_nodes){
 /**
  * Get CASTNode Node by its idx, regarding current state.
  */
-CASTNode 		* CASTNode::getAstNode(int idx){
+/*CASTNode 		* CASTNode::getAstNode(int idx){
 	if(idx==ZS_UNDEFINED_IDX){
 		return NULL;
 	}
@@ -48,7 +48,7 @@ CASTNode 		* CASTNode::getAstNode(int idx){
 		return NULL;
 	}
 	 return vec_ast_node->at(idx);
-}
+}*/
 
 int 	CASTNode::getScopeIdx(int idx){
 	if(idx==ZS_UNDEFINED_IDX){

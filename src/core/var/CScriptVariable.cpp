@@ -346,7 +346,7 @@ CScriptVariable::tSymbolInfo *CScriptVariable::getFunctionSymbolByIndex(unsigned
 void * CScriptVariable::get_C_Object(){
 	return c_object;
 }
-
+/*
 vector<tInfoStatementOp> * CScriptVariable::getCompiledCode(int idx_function){
 	tSymbolInfo *si=CScriptVariable::getFunctionSymbolByIndex(idx_function);
 	if(si){
@@ -354,7 +354,7 @@ vector<tInfoStatementOp> * CScriptVariable::getCompiledCode(int idx_function){
 	}
 
 	return NULL;
-}
+}*/
 
 CScriptVariable::~CScriptVariable(){
 

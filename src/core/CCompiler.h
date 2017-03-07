@@ -47,10 +47,21 @@ public:
 
 private:
 	static CCompiler *m_compiler;
-
-
-
 	static map<string,tInfoConstantValue *> *constant_pool;
+
+	struct tInfoStatementOpCompiler{
+
+		vector<tInfoAsmOp *> asm_op;
+	};
+
+	struct tInfoFunctionCompile{
+		vector<tInfoStatementOpCompiler> 		stament;
+		CScriptFunctionObject 				*  	function_info_object;
+
+		tInfoFunctionCompile(CScriptFunctionObject	* _function_info_object){
+			function_info_object = _function_info_object;
+		}
+	};
 
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
@@ -113,7 +124,7 @@ private:
 	/**
 	 * Load value or symbol and insert asm operation at current statment.
 	 */
-	tInfoStatementOp  *newStatment();
+	tInfoStatementOpCompiler  *newStatment();
 	void insertStringConstantValueInstruction(PASTNode _node, const string & v);
 	bool insertLoadValueInstruction(PASTNode _node, CScope * _lc);
 	bool insertMovVarInstruction(PASTNode _node, int left_index, int right_index);
@@ -238,10 +249,11 @@ private:
 
 	bool ast2asm_Recursive(PASTNode _node, CScope * _lc);
 
-	vector<tInfoStatementOp > 	*m_currentListStatements;
-	CScope											*m_treescope;
-	CScriptFunctionObject						*m_currentFunctionInfo;
-	vector <CScriptFunctionObject *>  		 			stk_scriptFunction;
+	//vector<tInfoStatementOpCompiler > 			*m_currentListStatements;
+	//vector<vector<tInfoStatementOpCompiler > *>	m_functionAsmStatements;
+	CScope										*m_treescope;
+	tInfoFunctionCompile						*m_currentFunctionInfo;
+	vector <tInfoFunctionCompile *>  			stk_scriptFunction;
 
 	//---------------------------------------------------------------
 

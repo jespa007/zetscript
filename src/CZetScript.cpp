@@ -60,10 +60,10 @@ void CZetScript::destroy(){
  	return print_aux_load_value;
  }
 
- const char * CZetScript::getStrTypeLoadValue(vector<tInfoStatementOp> * m_listStatements,int current_statment, int current_instruction){
+ const char * CZetScript::getStrTypeLoadValue(tInfoStatementOp * m_listStatements,int current_statment, int current_instruction){
 
 
- 	tInfoAsmOp * iao =(*m_listStatements)[current_statment].asm_op[current_instruction];
+ 	tInfoAsmOp * iao =&m_listStatements[current_statment].asm_op[current_instruction];
 
 
  	if(iao->operator_type != LOAD){
@@ -128,20 +128,20 @@ void CZetScript::destroy(){
 
  void CZetScript::printGeneratedCode_Recursive(tFunctionInfo *fs){
 
- 	vector<tInfoStatementOp> * m_listStatements = &fs->statment_op;
+ 	tInfoStatementOp * m_listStatements = fs->statment_op;
  	string pre="";
  	string post="";
 
- 	for(unsigned s = 0; s < (*m_listStatements).size();s++){
- 		vector<tInfoAsmOp *> * asm_op_statment = &(*m_listStatements)[s].asm_op;
+ 	for(unsigned s = 0; s <  fs->n_statment_op;s++){
+ 		tInfoAsmOp * asm_op_statment = m_listStatements[s].asm_op;
 
  		//printf("\n[%s]\n\n","file.zs");
 
- 		for(unsigned i = 0; i  <  asm_op_statment->size(); i++){
+ 		for(unsigned i = 0; i  <  m_listStatements[s].n_asm_op; i++){
 
  			int n_ops=0;
- 			int index_op1 = (*asm_op_statment)[i]->index_op1;
- 			int index_op2 = (*asm_op_statment)[i]->index_op2;
+ 			int index_op1 = asm_op_statment[i].index_op1;
+ 			int index_op2 = asm_op_statment[i].index_op2;
 
  			if(index_op1 != -1)
  				n_ops++;
@@ -152,7 +152,7 @@ void CZetScript::destroy(){
  			 pre="";
  			 post="";
 
- 				switch((*asm_op_statment)[i]->pre_post_operator_type){
+ 				switch(asm_op_statment[i].pre_post_operator_type){
  				case ASM_PRE_POST_OPERATORS::PRE_NEG:
  					pre="-";
  					break;
@@ -172,23 +172,23 @@ void CZetScript::destroy(){
  					break;
 
  				}
- 			switch((*asm_op_statment)[i]->operator_type){
+ 			switch(asm_op_statment[i].operator_type){
  			case  PUSH_ATTR:
  				printf("[%02i:%02i]\t%s\tSTRUCT[%02i:%02i],[%02i:%02i],[%02i:%02i]\n",
  						s,i,
-						CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,
+						CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,
 
-						s,(*asm_op_statment)[i]->index_op1,
+						s,asm_op_statment[i].index_op1,
 						s,i-1, // lat operand must be a string constant ...
-						s,(*asm_op_statment)[i]->index_op2);
+						s,asm_op_statment[i].index_op2);
  				break;
 
  			case  NEW:
- 				printf("[%02i:%02i]\t%s\t%s\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,CScriptClass::getNameRegisteredClassByIdx((*asm_op_statment)[i]->index_op1));
+ 				printf("[%02i:%02i]\t%s\t%s\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,CScriptClass::getNameRegisteredClassByIdx(asm_op_statment[i].index_op1));
  				break;
  			case  LOAD:
  				printf("[%02i:%02i]\t%s\t%s%s%s\n",s,i,
- 						CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,
+ 						CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,
  						pre.c_str(),
  						getStrTypeLoadValue(m_listStatements,s,i),
  						post.c_str());
@@ -197,12 +197,12 @@ void CZetScript::destroy(){
  			//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
  			//	break;
  			case POP_SCOPE:
- 				printf("[%02i:%02i]\t%s(%i)\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,(*asm_op_statment)[i]->index_op1);
+ 				printf("[%02i:%02i]\t%s(%i)\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,asm_op_statment[i].index_op1);
  				break;
  			case JNT:
  			case JT:
  			case JMP:
- 				printf("[%02i:%02i]\t%s\t[%04i:%04i]\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,(*asm_op_statment)[i]->index_op1,(*asm_op_statment)[i]->index_op2);
+ 				printf("[%02i:%02i]\t%s\t[%04i:%04i]\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,asm_op_statment[i].index_op1,asm_op_statment[i].index_op2);
  				break;
  			/*case PRE_INC:
  			case POST_INC:
@@ -212,16 +212,16 @@ void CZetScript::destroy(){
  				break;*/
  			case VGET:
  			case VPUSH:
- 				printf("[%02i:%02i]\t%s\t%sVEC[%02i:%02i]%s,[%02i:%02i]\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,pre.c_str(),s,index_op1,post.c_str(),s,index_op2);
+ 				printf("[%02i:%02i]\t%s\t%sVEC[%02i:%02i]%s,[%02i:%02i]\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,pre.c_str(),s,index_op1,post.c_str(),s,index_op2);
  				break;
  			default:
 
  				if(n_ops==0){
- 					printf("[%02i:%02i]\t%s\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str);
+ 					printf("[%02i:%02i]\t%s\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str);
  				}else if(n_ops==1){
- 					printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,s,index_op1);
+ 					printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,s,index_op1);
  				}else{
- 					printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",s,i,CCompiler::def_operator[(*asm_op_statment)[i]->operator_type].op_str,s,index_op1,s,index_op2);
+ 					printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,s,index_op1,s,index_op2);
  				}
  				break;
  			}

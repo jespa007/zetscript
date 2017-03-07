@@ -51,7 +51,7 @@ public:
 			CScriptFunctionObject *info_function,
 			CScriptVariable *function_object,
 			vector<CScriptVariable *> * argv,
-			vector<tInfoAsmOp *> *asm_op,
+			tInfoAsmOp *asm_op,
 			int n_stk);
 
 	inline void reset();
@@ -132,13 +132,13 @@ private:
 	inline bool loadVariableValue(tInfoAsmOp *iao,
 			CScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
-			vector<tInfoAsmOp *> *asm_op,
+			tInfoAsmOp *asm_op,
 			int n_stk);
 
 	inline bool loadFunctionValue(tInfoAsmOp *iao,
 			CScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
-			vector<tInfoAsmOp *> *asm_op,
+			tInfoAsmOp *asm_op,
 			int n_stk);
 
 	inline void popScope(CScriptFunctionObject *info_function,int index);//, CScriptVariable *ret = NULL);

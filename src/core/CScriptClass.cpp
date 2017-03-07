@@ -621,6 +621,7 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 			 vector<CScope *> *list = CScope::getVectorScopeNode();
 			 //scp->generateScopeList(list);
 			 vector<tInfoVariableSymbol> *vs = &root_class_irfs->object_info.local_symbols.m_registeredVariable;
+			 vector<tInfoVarScopeBlock> vec_ivsb;
 			 for(unsigned i = 0;i < list->size(); i++){ // register index var per scope ...
 				 tInfoVarScopeBlock ivsb;
 
@@ -639,8 +640,12 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 					 }
 				 }
 
-				 root_class_irfs->object_info.info_var_scope.push_back(ivsb);
+				 //root_class_irfs->object_info.info_var_scope.push_back(ivsb);
+				 vec_ivsb.push_back(ivsb);
 			 }
+
+			 root_class_irfs->object_info.info_var_scope = (tInfoVarScopeBlock*)malloc(vec_ivsb.size()*sizeof(tInfoVarScopeBlock));
+			 root_class_irfs->object_info.n_info_var_scope = vec_ivsb.size();
 		 }
 	 }
 
@@ -660,10 +665,10 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 		return false;
 	}
 
-	 vector<tInfoStatementOp> *stat = &info_function->statment_op;
-	 for(unsigned h=0; h < stat->size();h++){
-		 for(unsigned idx_op=0; idx_op < stat->at(h).asm_op.size();idx_op++){
-			 tInfoAsmOp *iao=stat->at(h).asm_op[idx_op];
+	 tInfoStatementOp *stat = info_function->statment_op;
+	 for(unsigned h=0; h < info_function->n_statment_op;h++){
+		 for(unsigned idx_op=0; idx_op < stat[h].n_asm_op;idx_op++){
+			 tInfoAsmOp *iao=&stat[h].asm_op[idx_op];
 
 			 if(iao->operator_type==ASM_OPERATOR::LOAD){
 
@@ -702,11 +707,11 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 
 			 }else  if(iao->operator_type==ASM_OPERATOR::CALL){ // overrides variable type as function ...
 				 // check whether access scope ...
-				 if(stat->at(h).asm_op[iao->index_op1]->operator_type ==ASM_OPERATOR::LOAD  && // e
-				    stat->at(h).asm_op[iao->index_op1]->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
+				 if(stat[h].asm_op[iao->index_op1].operator_type ==ASM_OPERATOR::LOAD  && // e
+				    stat[h].asm_op[iao->index_op1].scope_type == SCOPE_TYPE::ACCESS_SCOPE){
 
-					 stat->at(h).asm_op[iao->index_op1]->index_op1 = LOAD_TYPE_FUNCTION;
-					 stat->at(h).asm_op[iao->index_op1]->index_op2 = iao->index_op1-1;
+					 stat[h].asm_op[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
+					 stat[h].asm_op[iao->index_op1].index_op2 = iao->index_op1-1;
 					 iao->asm_properties = ASM_PROPERTY_CALLING_OBJECT;
 				 }
 
@@ -779,10 +784,10 @@ bool CScriptClass::updateReferenceSymbols(){
 			 }
 
 
-			 vector<tInfoStatementOp> *stat = &info_function->object_info.statment_op;
-			 for(unsigned h=0; h < stat->size();h++){
-				 for(unsigned idx_op=0; idx_op < stat->at(h).asm_op.size();idx_op++){
-					 tInfoAsmOp *iao=stat->at(h).asm_op[idx_op];
+			 tInfoStatementOp *stat = info_function->object_info.statment_op;
+			 for(unsigned h=0; h < info_function->object_info.n_statment_op;h++){
+				 for(unsigned idx_op=0; idx_op < stat[h].n_asm_op;idx_op++){
+					 tInfoAsmOp *iao=&stat[h].asm_op[idx_op];
 
 
 					 if(iao->operator_type==ASM_OPERATOR::LOAD){
@@ -851,11 +856,11 @@ bool CScriptClass::updateReferenceSymbols(){
 
 					 }else  if(iao->operator_type==ASM_OPERATOR::CALL){ // overrides variable type as function ...
 						 // check whether access scope ...
-						 if(stat->at(h).asm_op[iao->index_op1]->operator_type ==ASM_OPERATOR::LOAD  && // e
-						    stat->at(h).asm_op[iao->index_op1]->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
+						 if(stat[h].asm_op[iao->index_op1].operator_type ==ASM_OPERATOR::LOAD  && // e
+						    stat[h].asm_op[iao->index_op1].scope_type == SCOPE_TYPE::ACCESS_SCOPE){
 
-							 stat->at(h).asm_op[iao->index_op1]->index_op1 = LOAD_TYPE_FUNCTION;
-							 stat->at(h).asm_op[iao->index_op1]->index_op2 = iao->index_op1-1;
+							 stat[h].asm_op[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
+							 stat[h].asm_op[iao->index_op1].index_op2 = iao->index_op1-1;
 							 iao->asm_properties = ASM_PROPERTY_CALLING_OBJECT;
 						 }
 

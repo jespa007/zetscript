@@ -191,16 +191,19 @@ void CState::destroyScriptFunctionObjectNodes(){
 		}
 
 		print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
-		for(unsigned k = 0; k < info_function->object_info.statment_op.size(); k++){
+		for(unsigned k = 0; k < info_function->object_info.n_statment_op; k++){
 
-			for(unsigned a = 0; a  <info_function->object_info.statment_op[k].asm_op.size(); a++){
+			/*for(unsigned a = 0; a  <info_function->object_info.statment_op[k].asm_op.size(); a++){
 
 				delete info_function->object_info.statment_op[k].asm_op[a];
-			}
+			}*/
+			free(info_function->object_info.statment_op[k].asm_op);
 
 
 
 		}
+
+		free(info_function->object_info.statment_op);
 
 		delete info_function;
 

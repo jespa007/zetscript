@@ -88,7 +88,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 
 	CScriptVariable *ret=UNDEFINED_SYMBOL;
-	vector<tInfoStatementOp> * m_listStatements = &info_function->object_info.statment_op;
+	tInfoStatementOp * m_listStatements = info_function->object_info.statment_op;
 	//bool conditional_jmp=false;
 	int jmp_to_statment =ZS_UNDEFINED_IDX;
 	int instruction_to_statment = ZS_UNDEFINED_IDX;
@@ -101,7 +101,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 	pushStack(info_function, argv);
 
 
-	int n_stats=(*m_listStatements).size();
+	int n_stats=info_function->object_info.n_statment_op;
 
 
 	for(int s = 0; s < n_stats && !end_by_ret;){
@@ -110,9 +110,10 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 		jmp_to_statment = ZS_UNDEFINED_IDX;
 		break_jmp=false;
 		instruction_to_statment = ZS_UNDEFINED_IDX;
-		tInfoStatementOp * current_statment = &(*m_listStatements)[s];
-		vector<tInfoAsmOp *> * asm_op_statment = &current_statment->asm_op;
-		int n_asm_op= asm_op_statment->size();
+		tInfoStatementOp * current_statment = &m_listStatements[s];
+		tInfoAsmOp *asm_op_statment = current_statment->asm_op;
+		tInfoAsmOp *current_asm_op = current_statment->asm_op;
+		int n_asm_op= current_statment->n_asm_op;
 
 		//if(stk==2){
 		//	s++;
@@ -136,13 +137,14 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 			while(ins  <  n_asm_op && !break_jmp){ // for each code-instruction execute it.
 				//print_vm_cr("executing instruction  [%02i:%02i]...", s,ins);
 
-					if(!performInstruction(asm_op_statment->at(ins),jmp_to_statment,instruction_to_statment,info_function,this_object,argv,asm_op_statment,stk)){
+
+					if(!performInstruction(current_asm_op,jmp_to_statment,instruction_to_statment,info_function,this_object,argv,asm_op_statment,stk)){
 						return NULL;
 					}
 
-					if(asm_op_statment->at(ins)->operator_type == ASM_OPERATOR::RET){ // return...
+					if(current_asm_op->operator_type == ASM_OPERATOR::RET){ // return...
 
-						if((ret=createVarFromResultInstruction(&stkResultInstruction[asm_op_statment->at(ins)->index_op1+startIdxStkResultInstruction], false)) == NULL){ // share pointer but not add as shared!
+						if((ret=createVarFromResultInstruction(&stkResultInstruction[current_asm_op->index_op1+startIdxStkResultInstruction], false)) == NULL){ // share pointer but not add as shared!
 							return NULL;
 						}
 						end_by_ret=true;
@@ -159,6 +161,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 						if(instruction_to_statment != ZS_UNDEFINED_IDX){
 							ins=instruction_to_statment;
+							current_asm_op=&asm_op_statment[ins];
 							idxStkCurrentResultInstruction=ins+1;
 						}else{
 
@@ -166,6 +169,9 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 					}else{
 						ins++;
+						if(ins  <  n_asm_op){
+							current_asm_op=&asm_op_statment[ins];
+						}
 					}
 				//previous_instruction = instruction;
 			}
@@ -613,7 +619,7 @@ bool created_pointer = false;
 bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 		CScriptFunctionObject *info_function,
 		CScriptVariable *this_object,
-		vector<tInfoAsmOp *> *asm_op,
+		tInfoAsmOp *asm_op,
 		int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_VARIABLE){
@@ -632,7 +638,7 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 	bool is_valid_variable = true;
 	//bool function_struct_type = false;
 	PASTNode ast = AST_NODE(iao->idxAstNode);//>ast_node->symbol_value)
-
+	//PASTNode ast = CASTNode::vec_ast_node->at(iao->idxAstNode);
 
 	switch(iao->scope_type){
 	default:
@@ -653,7 +659,7 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 
 
 			if((si = base_var->getVariableSymbol(ast->symbol_value))==NULL){
-				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not symbol \"%s\"",ast->line_value,AST_SYMBOL_VALUE_CONST_CHAR(asm_op->at(iao->index_op2)->idxAstNode),base_var->getClassName().c_str(), ast->symbol_value.c_str());
+				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not symbol \"%s\"",ast->line_value,AST_SYMBOL_VALUE_CONST_CHAR(asm_op[iao->index_op2].idxAstNode),base_var->getClassName().c_str(), ast->symbol_value.c_str());
 				return false;
 			}
 		}
@@ -777,7 +783,7 @@ bool CVirtualMachine::loadVariableValue(tInfoAsmOp *iao,
 bool CVirtualMachine::loadFunctionValue(tInfoAsmOp *iao,
 		CScriptFunctionObject *local_function,
 		CScriptVariable *this_object,
-		vector<tInfoAsmOp *> *asm_op,
+		tInfoAsmOp *asm_op,
 		int n_stk){
 
 	if(iao->index_op1 != LOAD_TYPE_FUNCTION){
@@ -996,7 +1002,7 @@ void CVirtualMachine::popScope(CScriptFunctionObject *info_function,int index)//
 		return;
 	}
 
-	if(index >= (int)info_function->object_info.info_var_scope.size()){
+	if(index >= (int)info_function->object_info.n_info_var_scope){
 		print_error_cr("index >= info_function->object_info.info_var_scope.size()");
 		return;
 	}
@@ -1025,12 +1031,13 @@ bool CVirtualMachine::performInstruction(
 		CScriptFunctionObject *info_function,
 		CScriptVariable *this_object,
 		vector<CScriptVariable *> * fun_argv,
-		vector<tInfoAsmOp *> *asm_op,
+		tInfoAsmOp *asm_op,
 		int n_stk){
 
 
 	//string 	aux_string;
 	bool	aux_boolean;
+	int operator_type=instruction->operator_type;
 	//string symbol;
 	CScriptVariable **obj=NULL;
 	CScriptFunctionObject * aux_function_info=NULL;
@@ -1051,9 +1058,9 @@ bool CVirtualMachine::performInstruction(
 	tAleObjectInfo *ptrResultInstructionOp2=&stkResultInstruction[index_op2+startIdxStkResultInstruction];
 	tAleObjectInfo *ptrResultLastInstruction=&stkResultInstruction[idxStkCurrentResultInstruction-1];
 
-	switch(instruction->operator_type){
+	switch(operator_type){
 	default:
-		print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+		print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[operator_type].op_str);
 		return false;
 		break;
 	case NOP: // ignore ...
@@ -1063,7 +1070,7 @@ bool CVirtualMachine::performInstruction(
 			return false;
 		}*/
 		//sprintf(print_aux_load_value,"UNDEFINED");
-		switch(instruction->index_op1){
+		switch(index_op1){
 		case LOAD_TYPE::LOAD_TYPE_NULL:
 			if(!pushVar(NULL_SYMBOL)) return false;
 
@@ -1502,7 +1509,7 @@ bool CVirtualMachine::performInstruction(
 			aux_function_info=(CScriptFunctionObject *)ptrResultInstructionOp1->stkResultObject;
 
 			if(aux_function_info == NULL){ // we must find function ...
-				tInfoAsmOp *iao = asm_op->at(instruction->index_op1);
+				tInfoAsmOp *iao = &asm_op[instruction->index_op1];
 				CScriptVariable::tSymbolInfo * si=NULL;
 				CScriptVariable **script_var=NULL;
 
@@ -1684,7 +1691,7 @@ bool CVirtualMachine::performInstruction(
 			else{
 				print_error_cr("Line %i: Variable \"%s\" is not type vector",
 						AST_LINE_VALUE(instruction->idxAstNode),
-						AST_SYMBOL_VALUE_CONST_CHAR(asm_op->at(instruction->index_op1)->idxAstNode),
+						AST_SYMBOL_VALUE_CONST_CHAR(asm_op[instruction->index_op1].idxAstNode),
 						AST_SYMBOL_VALUE_CONST_CHAR(instruction->idxAstNode)
 						//base_var->getClassName().c_str(), iao->ast_node->symbol_value.c_str()
 						);

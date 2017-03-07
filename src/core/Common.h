@@ -392,7 +392,13 @@ struct tInfoAsmOp{
 
 struct tInfoStatementOp{
 
-	vector<tInfoAsmOp *> asm_op;
+	tInfoAsmOp * asm_op;
+	unsigned          n_asm_op;
+
+	tInfoStatementOp(){
+		asm_op = NULL;
+		n_asm_op=0;
+	}
 };
 
 //-------------------------------------------------------
@@ -408,10 +414,27 @@ struct tFunctionInfo{ // script function is shared by class and function ...
 	tLocalSymbolInfo 		local_symbols;
 
 	// the info asm op for each function. Will be filled at compile time.
-	vector<tInfoStatementOp> statment_op;
-	vector<tInfoVarScopeBlock> info_var_scope; // list var per scope in any function ...
+	//vector<tInfoStatementOp> statment_op;
+	//vector<tInfoVarScopeBlock> info_var_scope; // list var per scope in any function ...
+
+
+	//--------------------------------------
+	// optimized ones...
+	tInfoStatementOp 	*statment_op;
+	unsigned					 n_statment_op;
+
+	tInfoVarScopeBlock 	*info_var_scope;
+	unsigned					n_info_var_scope;
 
 	int idxScriptFunctionObject;
+
+	tFunctionInfo(){
+		idxScriptFunctionObject=-1;
+		statment_op=NULL;
+		info_var_scope=NULL;
+		n_statment_op=0;
+		n_info_var_scope=0;
+	}
 
 };
 
