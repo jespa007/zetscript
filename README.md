@@ -1,15 +1,15 @@
-# ZG Script
+# ZetScript
 
-<h1>Description</h1>
+<h2>Description</h2>
 
 
-	ZG script is a basic script engine for your c++ project.
+ZetScript is a basic script engine for your c++ project.
 
 
 
 #--------------- 
 
-<h1>Performance</h1>
+<h2>Performance</h2>
 
 
 
@@ -20,6 +20,7 @@ var j=0;for(var i=0; i < 10000000; ++i){i*2;}
 Generates this following asm,
 
 
+<code>
 [01:00]	LOAD	VAR(i)
 [01:01]	LOAD	CONST(10000000)
 [01:02]	LT	[01:00],[01:01]
@@ -29,9 +30,10 @@ Generates this following asm,
 [02:02]	LOAD	CONST(1)
 [02:03]	ADD	[02:01],[02:02]
 [02:04]	MOV	[02:00],[02:03]
-[02:05]	POP_SCOPE(2)
+[02:05]	POP_SCOPE(2
 [03:00]	LOAD	++VAR(i)
 [03:01]	JMP	[0001:-001]
+</code>
 
 
 
