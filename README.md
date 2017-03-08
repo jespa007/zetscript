@@ -21,7 +21,7 @@ var j=0;for(var i=0; i < 10000000; ++i){i*2;}
 Generates this following asm,
 
 
-<code>
+
 [01:00]	LOAD	VAR(i)<br>
 [01:01]	LOAD	CONST(10000000)<br>
 [01:02]	LT	[01:00],[01:01]<br>
@@ -34,7 +34,7 @@ Generates this following asm,
 [02:05]	POP_SCOPE(2)<br>
 [03:00]	LOAD	++VAR(i)<br>
 [03:01]	JMP	[0001:-001]<br>
-</code>
+
 
 
 
