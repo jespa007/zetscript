@@ -40,8 +40,8 @@ Comparison tables https://en.wikipedia.org/wiki/Instructions_per_second
 
 TABLE OPTIMIZATION
 
-Optimization|  ms |  MIPS
-------------|------------- 
+Optimization|   ms  |   MIPS
+------------|-------|--------- 
 No opt      |  2500 |  48 MIPS       
 1st         |  2265 |  53 MIPS
 
