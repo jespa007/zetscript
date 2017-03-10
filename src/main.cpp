@@ -54,10 +54,13 @@ int main(int argc, char * argv[]){
 	printf("\nTime array_c:%lu",end.tv_usec-start.tv_usec);
 	return 0;*/
 
+	//print_info_cr("sizeof(short):%i sizeof(tInfoAsmOp):%i",sizeof(short),sizeof(tInfoAsmOp));
+	//return 0;
+
 	CLog::setUseAnsiEscape(true);
 	CZetScript *zet_script = CZetScript::getInstance();
 
-	//print_info_cr("sizeof(int *):%i sizeof(string *):%i sizeof(int):%i sizeof(tInfoStruct)",sizeof(int *),sizeof(string *),sizeof(int),sizeof(tInfoAsmOp));
+
 
 
 

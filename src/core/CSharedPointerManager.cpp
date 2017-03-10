@@ -190,11 +190,14 @@ void CSharedPointerManager::unrefSharedPointer( int index){
 
 void CSharedPointerManager::gc(){
 
-	for(int i = 0; i < n_pointers_with_0_shares[idxCurrentStack]; i++){
+	int np=n_pointers_with_0_shares[idxCurrentStack];
+	int *index = &pointers_with_0_shares[idxCurrentStack][0];
 
-		int index = pointers_with_0_shares[idxCurrentStack][i];
+	for(int i = 0; i < np; i++){
 
-		unrefSharedPointer(index);
+		//int index = pointers_with_0_shares[idxCurrentStack][i];
+
+		unrefSharedPointer(*(index++));
 	}
 
 	n_pointers_with_0_shares[idxCurrentStack] = 0;

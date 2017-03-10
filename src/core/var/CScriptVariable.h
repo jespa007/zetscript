@@ -10,7 +10,7 @@
 #define IS_CLASS_C ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF)
 
 
-
+class CScriptClass;
 class CScriptVariable{//: public CVariable{
 
 public:
@@ -49,7 +49,9 @@ public:
 
 
 	//TYPE m_type;
-	int getIdxClass();
+	//int getIdxClass();
+
+
 	bool setIdxClass(int idx);
 
 	tSymbolInfo *  addVariableSymbol(const string & symbol_value,int _idxAstNode);
@@ -88,6 +90,7 @@ protected:
 	 * This variable tells whether is pointer function or not.
 	 */
 	CScriptClass *m_infoRegisteredClass;
+	int idxScriptClass;
 
 
 	virtual void setup();
@@ -105,5 +108,10 @@ private:
 	void createSymbols(CScriptClass *irv);
 
 	vector<tSymbolInfo> m_functionSymbol;
+
+public:
+	inline int getIdxClass(){
+		return idxScriptClass;//m_infoRegisteredClass->metadata_info.object_info.symbol_info.idxScriptClass;
+	}
 
 };

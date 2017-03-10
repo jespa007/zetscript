@@ -74,31 +74,7 @@ public:
 
 	// DEFINES
 
-	enum C_TYPE_VALID_PRIMITIVE_VAR{
-		VOID_TYPE,
-		INT_PTR_TYPE,
-		FLOAT_PTR_TYPE,
-		STRING_PTR_TYPE,
-		BOOL_PTR_TYPE,
-		MAX_C_TYPE_VALID_PRIMITIVE_VAR
-	};
 
-	enum BASIC_CLASS_TYPE{
-
-		IDX_CLASS_MAIN=0, 	// Main class ...
-		IDX_CLASS_UNDEFINED,	// 1
-		IDX_CLASS_VOID,			// 2
-		IDX_CLASS_NULL,			// 3
-		IDX_CLASS_SCRIPT_VAR, 	// 4 script base that all object derive from it...
-		IDX_CLASS_INTEGER, 	  	// 5 then our basics types ...
-		IDX_CLASS_NUMBER,     	// 6
-		IDX_CLASS_STRING,     	// 7
-		IDX_CLASS_BOOLEAN,		// 8
-		IDX_CLASS_VECTOR,		// 9
-		IDX_CLASS_FUNCTOR,		// 10
-		IDX_CLASS_STRUCT,		// 11
-		MAX_BASIC_CLASS_TYPES
-	};
 
 	// STRUCTS
 

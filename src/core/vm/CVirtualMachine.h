@@ -11,6 +11,7 @@
 
 
 
+
 class CScriptFunction;
 class CVirtualMachine{
 
@@ -45,18 +46,18 @@ public:
 //	CALE();
 
 
-	inline bool performInstruction( tInfoAsmOp * instruction,
+	/*inline bool performInstruction( tInfoAsmOp * instruction,
 			int & jmp_to_statment,
 			int & jmp_to_instruction,
 			CScriptFunctionObject *info_function,
 			CScriptVariable *function_object,
 			vector<CScriptVariable *> * argv,
 			tInfoAsmOp *asm_op,
-			int n_stk);
+			int n_stk);*/
 
 	inline void reset();
 
-	CScriptVariable * createVarFromResultInstruction(tAleObjectInfo * ptr_result_instruction, bool share_ptr = true);
+	inline CScriptVariable * createVarFromResultInstruction(tAleObjectInfo * ptr_result_instruction, bool share_ptr = true);
 
 //	~CALE();
 
@@ -65,6 +66,9 @@ private:
 
 
 	 string 	aux_string;
+	 vector<CASTNode *> *vec_ast_node;
+	 CSharedPointerManager *instance_gc;
+	 CUndefined				*undefined_var;
 
 	 tAleObjectInfo stack[VM_LOCAL_VAR_MAX_STACK];
 	 tAleObjectInfo *basePtrLocalVar;
@@ -113,14 +117,14 @@ private:
 
 	string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tAleObjectInfo * index);
 
-	inline bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	//inline bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 	inline bool pushBoolean(bool init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 	inline bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 	inline bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 	inline bool pushFunction(CScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 	inline bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL, int properties=0,bool is_new_var=false);
 
-	bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
+	inline bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
 
 
 
@@ -128,18 +132,16 @@ private:
 	//bool performPreOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *obj);
 	//bool performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *obj);
 //	bool loadValue(tInfoAsmOp *iao, int stk);
-	inline bool loadConstantValue(CCompiler::tInfoConstantValue *info_constant, int n_stk);
+	inline bool loadConstantValue(CCompiler::tInfoConstantValue *info_constant);
 	inline bool loadVariableValue(tInfoAsmOp *iao,
 			CScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
-			tInfoAsmOp *asm_op,
-			int n_stk);
+			tInfoAsmOp *asm_op);
 
 	inline bool loadFunctionValue(tInfoAsmOp *iao,
 			CScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
-			tInfoAsmOp *asm_op,
-			int n_stk);
+			tInfoAsmOp *asm_op);
 
 	inline void popScope(CScriptFunctionObject *info_function,int index);//, CScriptVariable *ret = NULL);
 

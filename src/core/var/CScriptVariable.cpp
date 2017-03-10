@@ -46,25 +46,25 @@ void CScriptVariable::createSymbols(CScriptClass *ir_class){
 				// check if primitive type (only 4 no more no else)...
 				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
-				if(CScriptClass::valid_C_PrimitiveType[CScriptClass::INT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(int *).name(),"int *",INT_PTR_TYPE};
+				if(CScriptClass::valid_C_PrimitiveType[INT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(int *).name(),"int *",INT_PTR_TYPE};
 					//si->object = new CInteger(CScriptClass::getInstance()->getRegisteredClassInteger(),(int *)ptr_variable);
 					CInteger *i= new CInteger();
 					i->m_intValue=*((int *)ptr_variable);
 					si->object =i;
 
-				}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::FLOAT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
+				}else if(CScriptClass::valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
 					//si->object = new CNumber(CScriptClass::getInstance()->getRegisteredClassNumber(),(float *)ptr_variable);
 					CNumber *n= new CNumber();
 					n->m_floatValue=*((float *)ptr_variable);
 					si->object =n;
 
-				}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::STRING_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
+				}else if(CScriptClass::valid_C_PrimitiveType[STRING_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
 					//si->object = new CString(CScriptClass::getInstance()->getRegisteredClassString(),(string *)ptr_variable);
 					CString *s= new CString();
 					s->m_strValue=*((string *)ptr_variable);
 					si->object =s;
 
-				}else if(CScriptClass::valid_C_PrimitiveType[CScriptClass::BOOL_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
+				}else if(CScriptClass::valid_C_PrimitiveType[BOOL_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
 					CBoolean *b= new CBoolean();
 					b->m_boolValue=*((bool *)ptr_variable);
 					si->object =b;
@@ -120,6 +120,7 @@ void CScriptVariable::setup(){
 	c_object = NULL;
 	created_object = NULL;
 	m_value = NULL;
+	idxScriptClass = -1;
 
 }
 
@@ -144,6 +145,7 @@ void CScriptVariable::init(CScriptClass *irv, void *_c_object){
 
 
 	this->m_infoRegisteredClass = irv;
+	idxScriptClass = irv->metadata_info.object_info.symbol_info.idxScriptClass;
 	//m_rootAst=NULL;
 	//m_registeredVariable = NULL;
 	//m_type = TYPE::SCRIPT_FUNCTION_TYPE;
@@ -175,9 +177,10 @@ CScriptFunctionObject *CScriptVariable::getConstructorFunction(){
 	return NULL;
 }
 
+/*
 int CScriptVariable::getIdxClass(){
 	return m_infoRegisteredClass->metadata_info.object_info.symbol_info.idxScriptClass;
-}
+}*/
 
 bool CScriptVariable::setIdxClass(int idx){
 	CScriptClass *_info_registered_class =  GET_SCRIPT_CLASS_INFO(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);

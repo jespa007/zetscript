@@ -11,8 +11,6 @@ struct tInfoVarScopeBlock;
 
 //int insertAstNode(CASTNode * ast_node);
 //int insertScopeVar(tScopeVar * ast_node);
-
-
 #define ZS_ERROR			-1
 #define ZS_UNDEFINED_IDX 	-1
 #define MAX_PARAM_C_FUNCTION 6
@@ -157,7 +155,7 @@ enum LOAD_TYPE{
 		LOAD_TYPE_ARGUMENT
 };
 
-enum SCOPE_TYPE{
+enum SCOPE_TYPE:char{
 	UNKNOWN_SCOPE=0,
 	GLOBAL_SCOPE,
 	LOCAL_SCOPE,
@@ -178,7 +176,6 @@ enum PROXY_CREATOR{
 
 
 enum ASM_OPERATOR{
-		INVALID_OP=-1,
 		NOP=0,
 		MOV, // mov expression to var
 		LOAD, // primitive value like number/string or boolean...
@@ -230,7 +227,7 @@ enum ASM_OPERATOR{
 
 };
 
-enum ASM_PRE_POST_OPERATORS{
+enum ASM_PRE_POST_OPERATORS:char{
 	UNKNOW_PRE_POST_OPERATOR=0,
 	PRE_INC, // ++
 	POST_INC, // ++
@@ -240,7 +237,7 @@ enum ASM_PRE_POST_OPERATORS{
 };
 
 
-enum VALUE_INSTRUCTION_TYPE{
+enum VALUE_INSTRUCTION_TYPE:char{
 	INS_TYPE_NULL=0,
 	INS_TYPE_UNDEFINED,
 	INS_TYPE_INTEGER, // primitive int
@@ -266,18 +263,39 @@ enum SYMBOL_INFO_PROPERTIES{
 	PROPERTY_FUNCTION = 0x1 << 3,
 	PROPERTY_STATIC_REF = 0x1 << 4,
 	PROPERTY_CONSTRUCTOR = 0x1 << 5
-
-
 };
 
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 enum ALE_INFO_PROPERTIES{
 	PROPERTY_IS_ARG = 0x1 <<0,
-
-
 };
 
+enum C_TYPE_VALID_PRIMITIVE_VAR{
+	VOID_TYPE,
+	INT_PTR_TYPE,
+	FLOAT_PTR_TYPE,
+	STRING_PTR_TYPE,
+	BOOL_PTR_TYPE,
+	MAX_C_TYPE_VALID_PRIMITIVE_VAR
+};
+
+enum BASIC_CLASS_TYPE{
+
+	IDX_CLASS_MAIN=0, 	// Main class ...
+	IDX_CLASS_UNDEFINED,	// 1
+	IDX_CLASS_VOID,			// 2
+	IDX_CLASS_NULL,			// 3
+	IDX_CLASS_SCRIPT_VAR, 	// 4 script base that all object derive from it...
+	IDX_CLASS_INTEGER, 	  	// 5 then our basics types ...
+	IDX_CLASS_NUMBER,     	// 6
+	IDX_CLASS_STRING,     	// 7
+	IDX_CLASS_BOOLEAN,		// 8
+	IDX_CLASS_VECTOR,		// 9
+	IDX_CLASS_FUNCTOR,		// 10
+	IDX_CLASS_STRUCT,		// 11
+	MAX_BASIC_CLASS_TYPES
+};
 
 struct tInfoVariableSymbol{ // it can be a variable or function
 	unsigned int	 ref_ptr; // pointer ref to C Var/Function
@@ -285,9 +303,6 @@ struct tInfoVariableSymbol{ // it can be a variable or function
 	int idxScriptClass;//CScriptClass		 *class_info;
 	int idxSymbol; // idx of class function/variable symbol that keeps.
 	int idxAstNode;
-
-	//int idxScopeVar;//tScopeVar  				*info_var_scope;
-
 	unsigned int properties; // SYMBOL_INFO_PROPERTIES
 	string c_type; // In case is C, we need to know its type ...
 
@@ -302,7 +317,6 @@ struct tInfoVariableSymbol{ // it can be a variable or function
 		idxScriptClass=-1;
 		//idxScopeVar=-1;
 		idxSymbol=-1;
-
 	}
 };
 
@@ -349,7 +363,7 @@ typedef struct{
 
 
 enum ASM_PROPERTIES{
-	ASM_PROPERTY_CALLING_OBJECT = 0x1<<0,
+	ASM_PROPERTY_CALLING_OBJECT 	= 0x1 << 0,
 	ASM_PROPERTY_DIRECT_CALL_RETURN = 0x1 << 1
 };
 
@@ -358,34 +372,22 @@ enum ASM_PROPERTIES{
 struct tInfoAsmOp{
 
 	// string symbol_name;
-	VALUE_INSTRUCTION_TYPE variable_type;
+	char variable_type;
 	int idxAstNode; // define ast node for give some information at run time
-	 //------------------
-
-	 ASM_OPERATOR operator_type;
-	 ASM_PRE_POST_OPERATORS pre_post_operator_type;
-	 //void *ptr_value; // can be float, bool or string.
-	 //------------------
-
+	unsigned char operator_type;
+	 unsigned char pre_post_operator_type;
 	 int index_op1,index_op2; // left and right respectively
-	 int asm_properties;
-	 SCOPE_TYPE scope_type; // in case needed.
-	 //int idxFunction;
-	 //string aux_name;
-
-	// bool (* isconvertable)(int value);
+	unsigned char asm_properties;
+	unsigned char scope_type; // in case needed.
 
 	tInfoAsmOp(){
 		variable_type = VALUE_INSTRUCTION_TYPE::INS_TYPE_UNDEFINED;
-		//variable_type=VAR_TYPE::NOT_DEFINED;
-		operator_type=ASM_OPERATOR::INVALID_OP;
+		operator_type=ASM_OPERATOR::NOP;
 		pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
 		idxAstNode = -1;
 		scope_type=LOCAL_SCOPE;
 		asm_properties=0;
 		index_op1=index_op2=-1;
-		//idxFunction=NULL;
-		//idxFunction=-1;
 	}
 
 };
@@ -413,11 +415,6 @@ struct tFunctionInfo{ // script function is shared by class and function ...
 	tInfoVariableSymbol 	symbol_info;
 	tLocalSymbolInfo 		local_symbols;
 
-	// the info asm op for each function. Will be filled at compile time.
-	//vector<tInfoStatementOp> statment_op;
-	//vector<tInfoVarScopeBlock> info_var_scope; // list var per scope in any function ...
-
-
 	//--------------------------------------
 	// optimized ones...
 	tInfoStatementOp 	*statment_op;
@@ -435,7 +432,6 @@ struct tFunctionInfo{ // script function is shared by class and function ...
 		n_statment_op=0;
 		n_info_var_scope=0;
 	}
-
 };
 
 typedef struct {
@@ -444,13 +440,12 @@ typedef struct {
 }tInfoParsedSource;
 
 
-
-
 /**
  * Scope register
  */
 struct tInfoVarScopeBlock{
-	vector<int> var_index;
+	int *var_index;
+	unsigned  n_var_index;
 	int idxScope;
 };
 

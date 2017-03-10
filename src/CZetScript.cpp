@@ -323,7 +323,7 @@ CScriptVariable * CZetScript::call_C_function(void *fun_ptr, CScriptFunctionObje
 
 	print_debug_cr("pre_call %i",argv->size());
 
-	if(irfs->idx_return_type != CScriptClass::IDX_CLASS_VOID){ // getInstance()->getIdxClassVoid()){
+	if(irfs->idx_return_type != IDX_CLASS_VOID){ // getInstance()->getIdxClassVoid()){
 
 		switch(argv->size()){
 		default:

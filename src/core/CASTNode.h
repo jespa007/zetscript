@@ -67,15 +67,9 @@ public:
 	static vector<CASTNode *>	*	getVectorASTNodeNode(); // ast collection register...
 
 
-	inline static CASTNode		* 	getAstNode(int idx){
-		if(idx==ZS_UNDEFINED_IDX){
-			return NULL;
-		}
-
-		return vec_ast_node->at(idx);
-	}
-	inline static int		  		getScopeIdx(int ast_idx);
+	static CASTNode				* 	getAstNode(int idx);
 	static CScope 				*	getScope(int ast_idx);
+	static int						getScopeIdx(int idx);
 	static int 				  		getAstLine(int ast_idx);
 	static const char 			* 	getAstSymbolName(int ast_idx);
 	static const char 			*	getAstSymbolNameConstChar(int ast_idx);

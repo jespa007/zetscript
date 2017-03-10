@@ -815,7 +815,7 @@ ASM_OPERATOR CCompiler::puntuator2instruction(tPunctuatorInfo * op){
 		return ASM_OPERATOR::OBJECT_ACCESS;
 
 	}
-	return INVALID_OP;
+	return NOP;
 }
 
 bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, string & error_str, int op_index_left, int op_index_right){
@@ -906,7 +906,7 @@ bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, 
 		return true;
 	}
 	ASM_OPERATOR asm_op;
-	if((asm_op= puntuator2instruction(op))!=INVALID_OP){
+	if((asm_op= puntuator2instruction(op))!=NOP){
 		iao = new tInfoAsmOp();
 		iao->operator_type = asm_op;
 		iao->index_op1 = op_index_left;

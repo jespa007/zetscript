@@ -618,12 +618,17 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 
 		 if(idxScope != -1){
 
+			 struct tInfoVarScopeBlockRegister{
+				 int idxScope;
+				 vector<int> var_index;
+			 };
+
 			 vector<CScope *> *list = CScope::getVectorScopeNode();
 			 //scp->generateScopeList(list);
 			 vector<tInfoVariableSymbol> *vs = &root_class_irfs->object_info.local_symbols.m_registeredVariable;
-			 vector<tInfoVarScopeBlock> vec_ivsb;
+			 vector<tInfoVarScopeBlockRegister> vec_ivsb;
 			 for(unsigned i = 0;i < list->size(); i++){ // register index var per scope ...
-				 tInfoVarScopeBlock ivsb;
+				 tInfoVarScopeBlockRegister ivsb;
 
 				 ivsb.idxScope = list->at(i)->idxScope;
 
@@ -646,6 +651,15 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 
 			 root_class_irfs->object_info.info_var_scope = (tInfoVarScopeBlock*)malloc(vec_ivsb.size()*sizeof(tInfoVarScopeBlock));
 			 root_class_irfs->object_info.n_info_var_scope = vec_ivsb.size();
+
+			 for(unsigned i = 0; i < vec_ivsb.size(); i++){
+				 root_class_irfs->object_info.info_var_scope[i].idxScope = vec_ivsb[i].idxScope;
+				 root_class_irfs->object_info.info_var_scope[i].n_var_index = vec_ivsb[i].var_index.size();
+				 root_class_irfs->object_info.info_var_scope[i].var_index = (int *)malloc(sizeof(int)*vec_ivsb[i].var_index.size());
+				 for(unsigned j = 0; j < vec_ivsb[i].var_index.size(); j++){
+					 root_class_irfs->object_info.info_var_scope[i].var_index[j] = vec_ivsb[i].var_index[j];
+				 }
+			 }
 		 }
 	 }
 
@@ -828,7 +842,7 @@ bool CScriptClass::updateReferenceSymbols(){
 												 }
 
 
-												 if(!searchVarFunctionSymbol(sfi,iao,k,iao->scope_type)){
+												 if(!searchVarFunctionSymbol(sfi,iao,k,(SCOPE_TYPE)iao->scope_type)){
 													 if(iao->scope_type == SCOPE_TYPE::SUPER_SCOPE){
 														 print_error_cr("line %i: Cannot find ancestor function for \"%s()\"",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
 													 }
