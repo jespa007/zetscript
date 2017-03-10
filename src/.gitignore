@@ -6,3 +6,5 @@
 /.gitignore
 /CMakeLists.txt
 /.pydevproject
+/perf.data
+/perf.data.old
