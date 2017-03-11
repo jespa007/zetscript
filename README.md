@@ -42,7 +42,7 @@ Total 12 instructions
 
 Is performed 10000000 times within 1.5 seconds so,
 
-(10*10000000)/2.0=  => 50MIPS ~ better than Shit with a horse 
+(10*10000000)/1.4=  => 71MIPS ~ better than Shit with a horse 
 
 Comparison tables https://en.wikipedia.org/wiki/Instructions_per_second
 
@@ -51,7 +51,8 @@ TABLE OPTIMIZATION
 Optimization|   ms  |   MIPS   | Desc
 ------------|-------|--------------------------------------------------------
 No opt      |  2700 |  37 MIPS | N/A 
-1st         |  2000 |  50 MIPS | Get rid of function access as much as possible and enums
+1st         |  2000 |  50 MIPS | std::vector to plain C
+2st         |  1400 |  71 MIPS | Get rid of function access as much as possible
 
 
 

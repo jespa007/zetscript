@@ -40,7 +40,7 @@ public:
 
 	int newSharedPointer(CScriptVariable *var_ptr);
 	void removeUnSharedPointers();
-	inline void gc();
+	void gc();
 	int getIdx0Shares(int index);
 	int getNumShares(int index);
 	void remove0Shares(int index_0_share_idx);
@@ -50,5 +50,8 @@ public:
 
 	void sharePointer( int index);
 	void unrefSharedPointer( int index);
+
+	//int *getPtrCurrent_NumberArrayPointer_With0_Shares();
+	//int *getPtrCurrent_ArrayPointer_With0_Shares();
 
 };

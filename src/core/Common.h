@@ -237,16 +237,15 @@ enum ASM_PRE_POST_OPERATORS:char{
 };
 
 
-enum VALUE_INSTRUCTION_TYPE:char{
-	INS_TYPE_NULL=0,
-	INS_TYPE_UNDEFINED,
-	INS_TYPE_INTEGER, // primitive int
-	INS_TYPE_NUMBER, // primitive number
-	INS_TYPE_BOOLEAN, // primitive bool
-	INS_TYPE_STRING, // primitive string
-	INS_TYPE_FUNCTION, // primitive function
-	INS_TYPE_VAR, // always is an script class...
-	INS_MAX_TYPES
+enum VALUE_INSTRUCTION_TYPE:unsigned char{
+	INS_TYPE_NULL		=0x1<<0,
+	INS_TYPE_UNDEFINED	=0x1<<1,
+	INS_TYPE_INTEGER	=0x1<<2, // primitive int
+	INS_TYPE_NUMBER		=0x1<<3, // primitive number
+	INS_TYPE_BOOLEAN	=0x1<<4, // primitive bool
+	INS_TYPE_STRING		=0x1<<5, // primitive string
+	INS_TYPE_FUNCTION	=0x1<<6, // primitive function
+	INS_TYPE_VAR		=0x1<<7  // always is an script class...
 };
 
 
@@ -368,13 +367,14 @@ enum ASM_PROPERTIES{
 };
 
 
-
+#pragma pack(1)
 struct tInfoAsmOp{
 
 	// string symbol_name;
-	char variable_type;
-	int idxAstNode; // define ast node for give some information at run time
 	unsigned char operator_type;
+	VALUE_INSTRUCTION_TYPE variable_type;
+	int idxAstNode; // define ast node for give some information at run time
+
 	 unsigned char pre_post_operator_type;
 	 int index_op1,index_op2; // left and right respectively
 	unsigned char asm_properties;

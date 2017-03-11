@@ -545,7 +545,7 @@ bool CZetScript::eval(const string & s){
 				return false;
 			}
 
-			printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
+			//printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
 			return true;
 		}
 	}
