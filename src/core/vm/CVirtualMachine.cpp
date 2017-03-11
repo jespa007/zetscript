@@ -657,7 +657,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 						break;
 					case NOT: // !
-						if (ptrResultInstructionOp1->type == INS_TYPE_BOOLEAN){
+						if (ptrResultInstructionOp1->type & INS_TYPE_BOOLEAN){
 							PUSH_BOOLEAN(!LOAD_BOOL_OP(ptrResultInstructionOp1),NULL,0);
 						}else{
 							print_error_cr("Expected operands 1 as boolean!");
@@ -666,7 +666,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 						break;
 					case NEG: // !
 						if (IS_GENERIC_NUMBER(ptrResultInstructionOp1)){
-							if(ptrResultInstructionOp1->type == INS_TYPE_INTEGER){ // operation will result as integer.
+							if(ptrResultInstructionOp1->type & INS_TYPE_INTEGER){ // operation will result as integer.
 								PUSH_INTEGER(-LOAD_INT_OP(ptrResultInstructionOp1),NULL,0);
 							}
 							else{
@@ -737,7 +737,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 							aux_string =  LOAD_STRING_OP(ptrResultInstructionOp1);
 
-							if(ptrResultInstructionOp2->type == INS_TYPE_INTEGER)
+							if(ptrResultInstructionOp2->type & INS_TYPE_INTEGER)
 								aux_string = aux_string + CStringUtils::intToString(LOAD_INT_OP(ptrResultInstructionOp2));
 							else
 								aux_string = aux_string + CStringUtils::intToString(LOAD_NUMBER_OP(ptrResultInstructionOp2));
@@ -747,7 +747,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 							aux_string =  LOAD_STRING_OP(ptrResultInstructionOp2);
 
-							if(ptrResultInstructionOp1->type == INS_TYPE_INTEGER)
+							if(ptrResultInstructionOp1->type & INS_TYPE_INTEGER)
 								aux_string = CStringUtils::intToString(LOAD_INT_OP(ptrResultInstructionOp1))+ aux_string;
 							else
 								aux_string = CStringUtils::intToString(LOAD_NUMBER_OP(ptrResultInstructionOp1))+aux_string;
@@ -863,7 +863,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 						break;
 					case AND: // bitwise logic and
-						if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
+						if((ptrResultInstructionOp1->type & INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type & INS_TYPE_INTEGER)){
 							PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) & LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 						}else{
 							PRINT_DUAL_ERROR_OP("&");
@@ -871,7 +871,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 						}
 						break;
 					case OR: // bitwise logic or
-						if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
+						if((ptrResultInstructionOp1->type & INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type & INS_TYPE_INTEGER)){
 							PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) | LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 						}else{
 							PRINT_DUAL_ERROR_OP("|");
@@ -880,7 +880,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 						break;
 					case XOR: // logic xor
-						if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
+						if((ptrResultInstructionOp1->type & INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type & INS_TYPE_INTEGER)){
 							PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) ^ LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 						}else{
 							PRINT_DUAL_ERROR_OP("^");
@@ -888,7 +888,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 						}
 						break;
 					case SHL: // shift left
-						if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
+						if((ptrResultInstructionOp1->type & INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type & INS_TYPE_INTEGER)){
 							PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) << LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 						}else{
 							PRINT_DUAL_ERROR_OP(">>");
@@ -896,7 +896,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 						}
 						break;
 					case SHR: // shift right
-						if((ptrResultInstructionOp1->type == INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type == INS_TYPE_INTEGER)){
+						if((ptrResultInstructionOp1->type & INS_TYPE_INTEGER) && (ptrResultInstructionOp2->type & INS_TYPE_INTEGER)){
 							PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) >> LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 						}else{
 							PRINT_DUAL_ERROR_OP("<<");
@@ -914,7 +914,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 						//if(ptrStkCurrentResultInstruction!=&stkResultInstruction[startIdxStkResultInstruction]){
 						//{
 							//tAleObjectInfo *ptrResultLastInstruction=&stkResultInstruction[idxStkCurrentResultInstruction-1];
-							if(ptrResultLastInstruction->type == INS_TYPE_BOOLEAN){
+							if(ptrResultLastInstruction->type & INS_TYPE_BOOLEAN){
 
 								if(!((bool)(ptrResultLastInstruction->stkResultObject))){
 									jmp_to_statment = index_op1;
@@ -933,7 +933,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 						//if(idxStkCurrentResultInstruction > 0)
 						//{
 							//tAleObjectInfo *ptrResultLastInstruction=&stkResultInstruction[idxStkCurrentResultInstruction-1];
-							if(ptrResultLastInstruction->type == INS_TYPE_BOOLEAN){
+							if(ptrResultLastInstruction->type & INS_TYPE_BOOLEAN){
 
 								if(((bool)(ptrResultLastInstruction->stkResultObject))){
 									jmp_to_statment = index_op1;
@@ -1051,8 +1051,8 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 							}
 						}
 
-						if(ptrResultInstructionOp1->type != INS_TYPE_FUNCTION){
-							if(ptrResultInstructionOp1->type == INS_TYPE_VAR && ((CScriptVariable *)ptrResultInstructionOp1->stkResultObject)->getIdxClass() == IDX_CLASS_FUNCTOR){
+						if(!(ptrResultInstructionOp1->type & INS_TYPE_FUNCTION)){
+							if((ptrResultInstructionOp1->type & INS_TYPE_VAR) && ((CScriptVariable *)ptrResultInstructionOp1->stkResultObject)->getIdxClass() == IDX_CLASS_FUNCTOR){
 								aux_function_info = (CScriptFunctionObject *)(((CFunctor *)ptrResultInstructionOp1->stkResultObject)->m_value);
 							}else {
 								print_error_cr("object \"%s\" is not function at line %i",AST_SYMBOL_VALUE_CONST_CHAR(instruction->idxAstNode), AST_LINE_VALUE(instruction->idxAstNode));
@@ -1237,7 +1237,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 						// get symbol ... (current instruction -1)
 						//if(idxStkCurrentResultInstruction > 0){
 						//tAleObjectInfo *ptrResultLastInstruction=&stkResultInstruction[idxStkCurrentResultInstruction-1];
-						if(ptrResultLastInstruction->type == INS_TYPE_STRING){
+						if(ptrResultLastInstruction->type & INS_TYPE_STRING){
 
 							CScriptVariable::tSymbolInfo *si;
 							string *variable_name = (string *)ptrResultLastInstruction->stkResultObject;
