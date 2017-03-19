@@ -15,7 +15,7 @@ public:
 
 	typedef struct{
 		void *ptr;
-		VALUE_INSTRUCTION_TYPE type;
+		unsigned int type;
 	}tInfoConstantValue;
 
 	static tDefOperator def_operator[MAX_OPERATORS];
@@ -49,9 +49,33 @@ private:
 	static CCompiler *m_compiler;
 	static map<string,tInfoConstantValue *> *constant_pool;
 
+	struct tInfoAsmOpCompiler{
+		unsigned char operator_type;
+		char index_op1; // index/type/etc
+		int  index_op2; // usually a pointer or index
+		short idxAstNode;
+		unsigned int var_type;
+		unsigned int pre_post_op_type;
+		unsigned int scope_type;
+		unsigned int runtime_prop;
+
+		tInfoAsmOpCompiler(){
+			operator_type=0;
+			index_op1=-1;
+			index_op2=-1;
+			idxAstNode=-1;
+
+			var_type=0;
+			pre_post_op_type=0;
+			scope_type = 0;
+			runtime_prop = 0;
+		}
+
+	};
+
 	struct tInfoStatementOpCompiler{
 
-		vector<tInfoAsmOp *> asm_op;
+		vector<tInfoAsmOpCompiler *> asm_op;
 	};
 
 	struct tInfoFunctionCompile{
@@ -86,7 +110,7 @@ private:
 	// CONSTANT TOOLS
 
 	static tInfoConstantValue * getConstant(const string & const_name);
-	static tInfoConstantValue * addConstant(const string & const_name, void *obj, VALUE_INSTRUCTION_TYPE type);
+	static tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned int type);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// LINK UTILS
@@ -104,7 +128,7 @@ private:
 
 	CScriptFunctionObject *  addLocalFunctionSymbol(const string & name,CASTNode *ast);
 	bool functionSymbolExists(const string & name,CASTNode *ast);
-	int  getIdxFunctionObject(const string & name,CASTNode *param_ast,SCOPE_TYPE & scope_type, bool print_msg=true);
+	int  getIdxFunctionObject(const string & name,CASTNode *param_ast,unsigned int & scope_type, bool print_msg=true);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	//
@@ -133,21 +157,21 @@ private:
 	/**
 	 * Unconditional Jump instruction
 	 */
-	tInfoAsmOp * insert_JMP_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
+	tInfoAsmOpCompiler * insert_JMP_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
 
 	/**
 	 * Jump Not True (JNT) instruction
 	 */
-	tInfoAsmOp * insert_JNT_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
+	tInfoAsmOpCompiler * insert_JNT_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
 
 	/**
 	 * Jump if True (JT) instruction
 	 */
-	tInfoAsmOp * insert_JT_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
+	tInfoAsmOpCompiler * insert_JT_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
 	void insert_NOP_Instruction();
 
-	tInfoAsmOp * insert_Save_CurrentInstruction();
-	tInfoAsmOp * insert_Load_CurrentInstruction();
+	tInfoAsmOpCompiler * insert_Save_CurrentInstruction();
+	tInfoAsmOpCompiler * insert_Load_CurrentInstruction();
 
 	/**
 	 * IndexAccess
@@ -205,7 +229,7 @@ private:
 	// COMPILE ASSEMBLE CODE (GAC)
 
 	ASM_OPERATOR puntuator2instruction(tPunctuatorInfo * op);
-	ASM_PRE_POST_OPERATORS preoperator2instruction(PUNCTUATOR_TYPE op);
+	unsigned int preoperator2instruction_property(PUNCTUATOR_TYPE op);
 
 	int gacExpression_FunctionOrArrayAccess(PASTNode _node_access, CScope *_lc);
 	int gacExpression_ArrayObject_Recursive(PASTNode _node, CScope *_lc);

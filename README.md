@@ -53,6 +53,9 @@ Optimization|   ms  |   MIPS   | Desc
 No opt      |  2700 |  37 MIPS | N/A 
 1st         |  2000 |  50 MIPS | std::vector to plain C
 2st         |  1400 |  71 MIPS | Get rid of function access as much as possible
+3st         |  1321 |  75 MIPS | Integrate Memory manage
+4rt         |  1135 |  88 MIPS | Optimize main loop with continues and statments/instructions iteration ends with NULL
+5rt         |  1010 |  99 MIPS | Optimize main loop 2nd
 
 
 

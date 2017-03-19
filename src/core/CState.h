@@ -68,6 +68,8 @@ public:
 	vector<CScriptFunctionObject *> 	*	getVectorScriptFunctionObjectNode();
 	vector<tInfoParsedSource> 			*	getVectorInfoParsedSourceNode();
 
+
+	void destroy();
 	~CState();
 
 };

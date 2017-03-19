@@ -60,10 +60,10 @@ void CZetScript::destroy(){
  	return print_aux_load_value;
  }
 
- const char * CZetScript::getStrTypeLoadValue(tInfoStatementOp * m_listStatements,int current_statment, int current_instruction){
+ const char * CZetScript::getStrTypeLoadValue(PtrStatment m_listStatements,int current_statment, int current_instruction){
 
 
- 	tInfoAsmOp * iao =&m_listStatements[current_statment].asm_op[current_instruction];
+ 	tInfoAsmOp * iao =&m_listStatements[current_statment][current_instruction];
 
 
  	if(iao->operator_type != LOAD){
@@ -81,21 +81,16 @@ void CZetScript::destroy(){
 
  	sprintf(print_aux_load_value,"UNDEFINED");
 
-	if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE){
+	if(iao->instruction_properties & INS_PROPERTY_ACCESS_SCOPE){
 		sprintf(object_access,"[%02i:%02i].",current_statment,iao->index_op2);
 	}
-	else if(iao->scope_type == SCOPE_TYPE::THIS_SCOPE){
+	else if(iao->instruction_properties & INS_PROPERTY_THIS_SCOPE){
 		sprintf(object_access,"this.");
 	}
 
 
- 	/*if(iao->scope_type == SCOPE_TYPE::ACCESS_SCOPE) {
- 		sprintf(print_aux_load_value,"[%02i:%02i].%s (solved at run-time)",current_statment,current_instruction-1,symbol_value.c_str());
- 	}
- 	else*/
- 	{
 
- 		switch(iao->index_op1){
+	switch(iao->index_op1){
 
 		case LOAD_TYPE::LOAD_TYPE_CONSTANT:
 
@@ -103,9 +98,6 @@ void CZetScript::destroy(){
 			break;
 
 		case LOAD_TYPE::LOAD_TYPE_VARIABLE:
-
-
-
 			sprintf(print_aux_load_value,"%sVAR(%s)",object_access,symbol_value.c_str());
 			break;
 		case LOAD_TYPE::LOAD_TYPE_FUNCTION:
@@ -120,139 +112,146 @@ void CZetScript::destroy(){
 
 			break;
 
-		}
- 	}
+	}
+
 
  	return print_aux_load_value;
  }
 
  void CZetScript::printGeneratedCode_Recursive(tFunctionInfo *fs){
 
- 	tInfoStatementOp * m_listStatements = fs->statment_op;
+ 	//tInfoStatementOp * m_listStatements = fs->statment_op;
  	string pre="";
  	string post="";
+ 	unsigned idx_statment=0;
 
- 	for(unsigned s = 0; s <  fs->n_statment_op;s++){
- 		tInfoAsmOp * asm_op_statment = m_listStatements[s].asm_op;
+ 	if(fs->statment_op != NULL){
 
- 		//printf("\n[%s]\n\n","file.zs");
 
- 		for(unsigned i = 0; i  <  m_listStatements[s].n_asm_op; i++){
+		for(PtrStatment stat = fs->statment_op; *stat != NULL; stat++,idx_statment++){
 
- 			int n_ops=0;
- 			int index_op1 = asm_op_statment[i].index_op1;
- 			int index_op2 = asm_op_statment[i].index_op2;
 
- 			if(index_op1 != -1)
- 				n_ops++;
+			//printf("\n[%s]\n\n","file.zs");
+			unsigned idx_instruction=0;
+			for(tInfoAsmOp * asm_op_statment=*stat; asm_op_statment->operator_type!= INVALID_OP; asm_op_statment++,idx_instruction++){
 
- 			 if(index_op2 != -1)
- 				 n_ops++;
+				int n_ops=0;
+				int index_op1 = asm_op_statment->index_op1;
+				int index_op2 = asm_op_statment->index_op2;
 
- 			 pre="";
- 			 post="";
+				if(index_op1 != -1)
+					n_ops++;
 
- 				switch(asm_op_statment[i].pre_post_operator_type){
- 				case ASM_PRE_POST_OPERATORS::PRE_NEG:
- 					pre="-";
- 					break;
- 				case ASM_PRE_POST_OPERATORS::PRE_INC:
- 					pre="++";
- 					break;
- 				case ASM_PRE_POST_OPERATORS::PRE_DEC:
- 					pre="--";
- 					break;
- 				case ASM_PRE_POST_OPERATORS::POST_INC:
- 					post="++";
- 					break;
- 				case ASM_PRE_POST_OPERATORS::POST_DEC:
- 					post="--";
- 					break;
- 				default:
- 					break;
+				 if(index_op2 != -1)
+					 n_ops++;
 
- 				}
- 			switch(asm_op_statment[i].operator_type){
- 			case  PUSH_ATTR:
- 				printf("[%02i:%02i]\t%s\tSTRUCT[%02i:%02i],[%02i:%02i],[%02i:%02i]\n",
- 						s,i,
-						CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,
+				 pre="";
+				 post="";
 
-						s,asm_op_statment[i].index_op1,
-						s,i-1, // lat operand must be a string constant ...
-						s,asm_op_statment[i].index_op2);
- 				break;
+					switch(GET_INS_PROPERTY_PRE_POST_OP(asm_op_statment->instruction_properties)){
+					case INS_PROPERTY_PRE_NEG:
+						pre="-";
+						break;
+					case INS_PROPERTY_PRE_INC:
+						pre="++";
+						break;
+					case INS_PROPERTY_PRE_DEC:
+						pre="--";
+						break;
+					case INS_PROPERTY_POST_INC:
+						post="++";
+						break;
+					case INS_PROPERTY_POST_DEC:
+						post="--";
+						break;
+					default:
+						break;
 
- 			case  NEW:
- 				printf("[%02i:%02i]\t%s\t%s\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,CScriptClass::getNameRegisteredClassByIdx(asm_op_statment[i].index_op1));
- 				break;
- 			case  LOAD:
- 				printf("[%02i:%02i]\t%s\t%s%s%s\n",s,i,
- 						CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,
- 						pre.c_str(),
- 						getStrTypeLoadValue(m_listStatements,s,i),
- 						post.c_str());
- 				break;
- 			//case  MOV:
- 			//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
- 			//	break;
- 			case POP_SCOPE:
- 				printf("[%02i:%02i]\t%s(%i)\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,asm_op_statment[i].index_op1);
- 				break;
- 			case JNT:
- 			case JT:
- 			case JMP:
- 				printf("[%02i:%02i]\t%s\t[%04i:%04i]\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,asm_op_statment[i].index_op1,asm_op_statment[i].index_op2);
- 				break;
- 			/*case PRE_INC:
- 			case POST_INC:
- 			case PRE_DEC:
- 			case POST_DEC:
- 				printf("[%02i:%02i]\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str);
- 				break;*/
- 			case VGET:
- 			case VPUSH:
- 				printf("[%02i:%02i]\t%s\t%sVEC[%02i:%02i]%s,[%02i:%02i]\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,pre.c_str(),s,index_op1,post.c_str(),s,index_op2);
- 				break;
- 			default:
+					}
+				switch(asm_op_statment->operator_type){
+				case  PUSH_ATTR:
+					printf("[%02i:%02i]\t%s\tSTRUCT[%02i:%02i],[%02i:%02i],[%02i:%02i]\n",
+							idx_statment,idx_instruction,
+							CCompiler::def_operator[asm_op_statment->operator_type].op_str,
 
- 				if(n_ops==0){
- 					printf("[%02i:%02i]\t%s\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str);
- 				}else if(n_ops==1){
- 					printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,s,index_op1);
- 				}else{
- 					printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",s,i,CCompiler::def_operator[asm_op_statment[i].operator_type].op_str,s,index_op1,s,index_op2);
- 				}
- 				break;
- 			}
- 		}
+							idx_statment,asm_op_statment->index_op1,
+							idx_statment,idx_instruction-1, // lat operand must be a string constant ...
+							idx_statment,asm_op_statment->index_op2);
+					break;
+
+				case  NEW:
+					printf("[%02i:%02i]\t%s\t%s\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,CScriptClass::getNameRegisteredClassByIdx(asm_op_statment->index_op1));
+					break;
+				case  LOAD:
+					printf("[%02i:%02i]\t%s\t%s%s%s\n",idx_statment,idx_instruction,
+							CCompiler::def_operator[asm_op_statment->operator_type].op_str,
+							pre.c_str(),
+							getStrTypeLoadValue(fs->statment_op,idx_statment,idx_instruction),
+							post.c_str());
+					break;
+				//case  MOV:
+				//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
+				//	break;
+				case POP_SCOPE:
+					printf("[%02i:%02i]\t%s(%i)\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1);
+					break;
+				case JNT:
+				case JT:
+				case JMP:
+					printf("[%02i:%02i]\t%s\t[%04i:%04i]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1,asm_op_statment->index_op2);
+					break;
+				/*case PRE_INC:
+				case POST_INC:
+				case PRE_DEC:
+				case POST_DEC:
+					printf("[%02i:%02i]\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str);
+					break;*/
+				case VGET:
+				case VPUSH:
+					printf("[%02i:%02i]\t%s\t%sVEC[%02i:%02i]%s,[%02i:%02i]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,pre.c_str(),idx_statment,index_op1,post.c_str(),idx_statment,index_op2);
+					break;
+				default:
+
+					if(n_ops==0){
+						printf("[%02i:%02i]\t%s\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str);
+					}else if(n_ops==1){
+						printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,idx_statment,index_op1);
+					}else{
+						printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,idx_statment,index_op1,idx_statment,index_op2);
+					}
+					break;
+				}
+			}
+		}
  	}
- 	// and then print its functions ...
- 	vector<int> * m_vf = &fs->local_symbols.vec_idx_registeredFunction;
+
+	// and then print its functions ...
+	vector<int> * m_vf = &fs->local_symbols.vec_idx_registeredFunction;
 
 
 
- 	for(unsigned j =0; j < m_vf->size(); j++){
+	for(unsigned j =0; j < m_vf->size(); j++){
 
- 		CScriptFunctionObject *local_irfs = GET_SCRIPT_FUNCTION_OBJECT((*m_vf)[j]);
+		CScriptFunctionObject *local_irfs = GET_SCRIPT_FUNCTION_OBJECT((*m_vf)[j]);
 
- 		if(( local_irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
- 			char symbol_ref[1024*8]={0};
+		if(( local_irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+			char symbol_ref[1024*8]={0};
 
- 			strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
+			strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
 
- 			if(MAIN_CLASS_NODE->metadata_info.object_info.idxScriptFunctionObject == fs->idxScriptFunctionObject){ // main class (main entry)
- 				sprintf(symbol_ref,"MAIN_ENTRY (MainClass)");
- 			}
- 			else if(MAIN_CLASS_NODE->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]!=fs->idxScriptFunctionObject){ // main function (main entry)
- 				sprintf(symbol_ref,"%s::%s",fs->symbol_info.symbol_name.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
- 			}
+			if(MAIN_CLASS_NODE->metadata_info.object_info.idxScriptFunctionObject == fs->idxScriptFunctionObject){ // main class (main entry)
+				sprintf(symbol_ref,"MAIN_ENTRY (MainClass)");
+			}
+			else if(MAIN_CLASS_NODE->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]!=fs->idxScriptFunctionObject){ // main function (main entry)
+				sprintf(symbol_ref,"%s::%s",fs->symbol_info.symbol_name.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
+			}
 
- 			printf("-------------------------------------------------------\n");
- 			printf("Code for function \"%s\"\n",symbol_ref);
- 			printGeneratedCode_Recursive(GET_FUNCTION_INFO(m_vf->at(j)));
- 		}
- 	}
+			printf("-------------------------------------------------------\n");
+			printf("Code for function \"%s\"\n",symbol_ref);
+			printGeneratedCode_Recursive(GET_FUNCTION_INFO(m_vf->at(j)));
+		}
+	}
+
  }
 
  void CZetScript::printGeneratedCode(tFunctionInfo *fs){
@@ -545,7 +544,7 @@ bool CZetScript::eval(const string & s){
 				return false;
 			}
 
-			//printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
+			printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
 			return true;
 		}
 	}
@@ -576,6 +575,11 @@ std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * CZetScr
 
 
 	return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
+}
+
+
+CVirtualMachine * CZetScript::getVirtualMachine(){
+	return vm;
 }
 
 CScriptVariable * CZetScript::execute(){

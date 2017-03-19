@@ -304,7 +304,7 @@ const string & CScriptVariable::getClassName(){
 
     	if(idx_shared_ptr == ZS_UNDEFINED_IDX){
 
-			if((idx_shared_ptr = CSharedPointerManager::getInstance()->newSharedPointer(this)) != ZS_UNDEFINED_IDX){
+			if((idx_shared_ptr = CURRENT_VM->newSharedPointer(this)) != ZS_UNDEFINED_IDX){
 				return true;
 			}
     	}
@@ -317,14 +317,14 @@ const string & CScriptVariable::getClassName(){
 
     bool CScriptVariable::unrefSharedPtr(){
     	if(idx_shared_ptr!=ZS_UNDEFINED_IDX){
-    		if(CSharedPointerManager::getInstance()->getNumShares(idx_shared_ptr) > 1){
+    		if(CURRENT_VM->getNumShares(idx_shared_ptr) > 1){
     			print_error_cr("shared pointer more than once");
     			return false;
     		}
 
-    		int index_0_share_idx = CSharedPointerManager::getInstance()->getIdx0Shares(idx_shared_ptr);
+    		int index_0_share_idx = CURRENT_VM->getIdx0Shares(idx_shared_ptr);
     		if(index_0_share_idx!=ZS_UNDEFINED_IDX){
-    			CSharedPointerManager::getInstance()->remove0Shares(index_0_share_idx);
+    			CURRENT_VM->remove0Shares(index_0_share_idx);
     		}
     		idx_shared_ptr = ZS_UNDEFINED_IDX;
     	}
@@ -349,15 +349,6 @@ CScriptVariable::tSymbolInfo *CScriptVariable::getFunctionSymbolByIndex(unsigned
 void * CScriptVariable::get_C_Object(){
 	return c_object;
 }
-/*
-vector<tInfoStatementOp> * CScriptVariable::getCompiledCode(int idx_function){
-	tSymbolInfo *si=CScriptVariable::getFunctionSymbolByIndex(idx_function);
-	if(si){
-		return &((CScriptFunctionObject *)si->object)->object_info.statment_op;
-	}
-
-	return NULL;
-}*/
 
 CScriptVariable::~CScriptVariable(){
 

@@ -155,6 +155,7 @@ enum LOAD_TYPE{
 		LOAD_TYPE_ARGUMENT
 };
 
+/*
 enum SCOPE_TYPE:char{
 	UNKNOWN_SCOPE=0,
 	GLOBAL_SCOPE,
@@ -162,7 +163,7 @@ enum SCOPE_TYPE:char{
 	THIS_SCOPE,
 	SUPER_SCOPE,
 	ACCESS_SCOPE
-};
+};*/
 
 enum IDX_OBJ_SPECIAL_VALUE{
 	IDX_INVALID = -1,
@@ -176,7 +177,8 @@ enum PROXY_CREATOR{
 
 
 enum ASM_OPERATOR{
-		NOP=0,
+		INVALID_OP=0,
+		NOP,
 		MOV, // mov expression to var
 		LOAD, // primitive value like number/string or boolean...
 		EQU,  // ==
@@ -227,6 +229,7 @@ enum ASM_OPERATOR{
 
 };
 
+/*
 enum ASM_PRE_POST_OPERATORS:char{
 	UNKNOW_PRE_POST_OPERATOR=0,
 	PRE_INC, // ++
@@ -235,18 +238,97 @@ enum ASM_PRE_POST_OPERATORS:char{
 	POST_DEC, // --
 	PRE_NEG
 };
+*/
 
+// properties shared by compiler + VM
+enum{
 
-enum VALUE_INSTRUCTION_TYPE:unsigned char{
-	INS_TYPE_NULL		=0x1<<0,
-	INS_TYPE_UNDEFINED	=0x1<<1,
-	INS_TYPE_INTEGER	=0x1<<2, // primitive int
-	INS_TYPE_NUMBER		=0x1<<3, // primitive number
-	INS_TYPE_BOOLEAN	=0x1<<4, // primitive bool
-	INS_TYPE_STRING		=0x1<<5, // primitive string
-	INS_TYPE_FUNCTION	=0x1<<6, // primitive function
-	INS_TYPE_VAR		=0x1<<7  // always is an script class...
+	//-- COMPILER/VM TYPE VAR
+	BIT_TYPE_NULL=0,
+	BIT_TYPE_UNDEFINED,
+	BIT_TYPE_INTEGER,
+	BIT_TYPE_NUMBER,
+	BIT_TYPE_BOOLEAN,
+	BIT_TYPE_STRING,
+	BIT_TYPE_FUNCTION,
+	BIT_TYPE_SCRIPTVAR,
+	MAX_BIT_VAR_TYPE,
+
+	//-- VM RUNTIME
+	BIT_IS_ARG=MAX_BIT_VAR_TYPE
+
 };
+
+
+#define INS_PROPERTY_IS_ARG					(0x1<<BIT_IS_ARG)
+#define MASK_RUNTIME						(((0x1<<(MAX_BIT_RUNTIME-BIT_IS_ARG))-1)<<(BIT_IS_ARG))
+#define GET_INS_PROPERTY_RUNTIME(prop)		((prop)&MASK_SCOPE_TYPE)
+
+#define INS_PROPERTY_TYPE_NULL				(0x1<<BIT_TYPE_NULL)
+#define	INS_PROPERTY_TYPE_UNDEFINED			(0x1<<BIT_TYPE_UNDEFINED)
+#define INS_PROPERTY_TYPE_INTEGER			(0x1<<BIT_TYPE_INTEGER) // primitive int
+#define INS_PROPERTY_TYPE_NUMBER			(0x1<<BIT_TYPE_NUMBER) // primitive number
+#define INS_PROPERTY_TYPE_BOOLEAN			(0x1<<BIT_TYPE_BOOLEAN) // primitive bool
+#define INS_PROPERTY_TYPE_STRING			(0x1<<BIT_TYPE_STRING) // primitive string
+#define INS_PROPERTY_TYPE_FUNCTION			(0x1<<BIT_TYPE_FUNCTION) // primitive function
+#define INS_PROPERTY_TYPE_SCRIPTVAR			(0x1<<BIT_TYPE_SCRIPTVAR) // always is an script class...
+#define MASK_VAR_TYPE						((0x1<<MAX_BIT_VAR_TYPE)-1)
+#define GET_INS_PROPERTY_TYPE_VAR(prop)		((prop)&MASK_VAR_TYPE)
+
+
+
+
+
+// properties shared by compiler + instruction ..
+enum{
+	//-- PRE/POST OPERATORS
+	BIT_PRE_INC=0,
+	BIT_POST_INC,
+	BIT_PRE_DEC,
+	BIT_POST_DEC,
+	BIT_PRE_NOT,
+	MAX_BIT_PRE_POST_OP,
+
+	//-- SCOPE TYPE (By default is global scope)
+	BIT_LOCAL_SCOPE=MAX_BIT_PRE_POST_OP,
+	BIT_THIS_SCOPE,
+	BIT_SUPER_SCOPE,
+	BIT_ACCESS_SCOPE,
+	MAX_BIT_SCOPE_TYPE,
+
+	//-- CALL TYPE
+	BIT_CALLING_OBJECT=MAX_BIT_SCOPE_TYPE,
+	BIT_DIRECT_CALL_RETURN,
+	MAX_BIT_CALL_PROPERTIES,
+};
+
+// PRE/POST OP
+#define INS_PROPERTY_PRE_INC				(0x1<<BIT_PRE_INC) // ++
+#define INS_PROPERTY_POST_INC				(0x1<<BIT_POST_INC) // ++
+#define INS_PROPERTY_PRE_DEC				(0x1<<BIT_PRE_DEC) // --
+#define INS_PROPERTY_POST_DEC				(0x1<<BIT_POST_DEC) // --
+#define INS_PROPERTY_PRE_NEG				(0x1<<BIT_PRE_NOT)  // !
+#define MASK_PRE_POST_OP					(((0x1<<(MAX_BIT_PRE_POST_OP-BIT_PRE_INC))-1)<<(BIT_PRE_INC))
+#define GET_INS_PROPERTY_PRE_POST_OP(prop)	((prop)&MASK_PRE_POST_OP)
+
+
+//GLOBAL_SCOPE,   // by default
+#define	INS_PROPERTY_LOCAL_SCOPE			(0x1<<BIT_LOCAL_SCOPE)
+#define INS_PROPERTY_THIS_SCOPE				(0x1<<BIT_THIS_SCOPE)
+#define INS_PROPERTY_SUPER_SCOPE			(0x1<<BIT_SUPER_SCOPE)
+#define INS_PROPERTY_ACCESS_SCOPE			(0x1<<BIT_ACCESS_SCOPE)
+#define MASK_SCOPE_TYPE						(((0x1<<(MAX_BIT_SCOPE_TYPE-BIT_LOCAL_SCOPE))-1)<<(BIT_LOCAL_SCOPE))
+
+#define GET_INS_PROPERTY_SCOPE_TYPE(prop)	((prop)&MASK_SCOPE_TYPE)
+#define REMOVE_SCOPES(prop)					((prop)&=~MASK_SCOPE_TYPE)
+
+// CALL TYPE
+#define	INS_PROPERTY_CALLING_OBJECT			(0x1<<BIT_CALLING_OBJECT)
+#define INS_PROPERTY_DIRECT_CALL_RETURN		(0x1<<BIT_DIRECT_CALL_RETURN)
+#define MASK_CALL_TYPE						(((0x1<<(MAX_BIT_CALL_PROPERTIES-INS_PROPERTY_CALLING_OBJECT))-1)<<(INS_PROPERTY_CALLING_OBJECT))
+#define GET_INS_PROPERTY_CALL_TYPE(prop)	((prop)&MASK_CALL_TYPE)
+
+
 
 
 #define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"
@@ -256,19 +338,19 @@ typedef int (*fntConversionType)(CScriptVariable *obj);
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 enum SYMBOL_INFO_PROPERTIES{
-	PROPERTY_C_OBJECT_REF = 0x1 <<0,
-	PROPERTY_IS_DERIVATED = 0x1 <<1,
-	PROPERTY_VARIABLE = 0x1 << 2,
-	PROPERTY_FUNCTION = 0x1 << 3,
-	PROPERTY_STATIC_REF = 0x1 << 4,
-	PROPERTY_CONSTRUCTOR = 0x1 << 5
+	PROPERTY_C_OBJECT_REF 	= 0x1 << 0,
+	PROPERTY_IS_DERIVATED 	= 0x1 << 1,
+	PROPERTY_VARIABLE 		= 0x1 << 2,
+	PROPERTY_FUNCTION 		= 0x1 << 3,
+	PROPERTY_STATIC_REF 	= 0x1 << 4,
+	PROPERTY_CONSTRUCTOR 	= 0x1 << 5
 };
 
 
 //typedef tInfoStatementOp *PInfoStatementOp;
-enum ALE_INFO_PROPERTIES{
+/*enum ALE_INFO_PROPERTIES{
 	PROPERTY_IS_ARG = 0x1 <<0,
-};
+};*/
 
 enum C_TYPE_VALID_PRIMITIVE_VAR{
 	VOID_TYPE,
@@ -360,48 +442,44 @@ typedef struct{
 	int n_ops;
 }tDefOperator;
 
-
+/*
 enum ASM_PROPERTIES{
-	ASM_PROPERTY_CALLING_OBJECT 	= 0x1 << 0,
-	ASM_PROPERTY_DIRECT_CALL_RETURN = 0x1 << 1
-};
 
+};
+*/
 
 #pragma pack(1)
 struct tInfoAsmOp{
 
-	// string symbol_name;
 	unsigned char operator_type;
-	VALUE_INSTRUCTION_TYPE variable_type;
-	int idxAstNode; // define ast node for give some information at run time
-
-	 unsigned char pre_post_operator_type;
-	 int index_op1,index_op2; // left and right respectively
-	unsigned char asm_properties;
-	unsigned char scope_type; // in case needed.
+	unsigned char index_op1;	// left and right respectively
+	int  index_op2;
+	unsigned short instruction_properties;
+	short idxAstNode; // define ast node for give some information at run time
 
 	tInfoAsmOp(){
-		variable_type = VALUE_INSTRUCTION_TYPE::INS_TYPE_UNDEFINED;
-		operator_type=ASM_OPERATOR::NOP;
-		pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
+		operator_type=ASM_OPERATOR::INVALID_OP;
 		idxAstNode = -1;
-		scope_type=LOCAL_SCOPE;
-		asm_properties=0;
+		instruction_properties=0;
 		index_op1=index_op2=-1;
 	}
 
 };
 
+
+typedef   tInfoAsmOp **PtrStatment;
+
+/*
 struct tInfoStatementOp{
 
 	tInfoAsmOp * asm_op;
-	unsigned          n_asm_op;
+	//unsigned          n_asm_op;
 
 	tInfoStatementOp(){
 		asm_op = NULL;
-		n_asm_op=0;
+		//n_asm_op=0;
 	}
-};
+};*/
 
 //-------------------------------------------------------
 
@@ -417,8 +495,8 @@ struct tFunctionInfo{ // script function is shared by class and function ...
 
 	//--------------------------------------
 	// optimized ones...
-	tInfoStatementOp 	*statment_op;
-	unsigned					 n_statment_op;
+	PtrStatment 				statment_op;
+	//unsigned					 n_statment_op;
 
 	tInfoVarScopeBlock 	*info_var_scope;
 	unsigned					n_info_var_scope;
@@ -429,7 +507,7 @@ struct tFunctionInfo{ // script function is shared by class and function ...
 		idxScriptFunctionObject=-1;
 		statment_op=NULL;
 		info_var_scope=NULL;
-		n_statment_op=0;
+		//n_statment_op=0;
 		n_info_var_scope=0;
 	}
 };

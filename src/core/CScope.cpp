@@ -29,10 +29,10 @@ vector<CScope *> 	*		CScope::getVectorScopeNode(){
 	return vec_scope_node;
 }
 
-CScope *	 CScope::newScope(CScope *parent_scope){
-	CScope * scope_node = new CScope(parent_scope);
+CScope *	 CScope::newScope(int idxParentScope){
+	CScope * scope_node = new CScope(vec_scope_node->size(), idxParentScope);
 	vec_scope_node->push_back(scope_node);
-	scope_node->idxScope = vec_scope_node->size()-1;
+	//scope_node->idxScope = vec_scope_node->size()-1;
 	return scope_node;
 }
 
@@ -45,55 +45,66 @@ CScope 		* CScope::getScopeNodeByIdx(int idx){
 	return vec_scope_node->at(idx);
 }
 //------------------------------------------------------------------------------------------------
-CScope::CScope(CScope * _parent){//, int _index){
-	m_parentScope = _parent;
+CScope::CScope(){
+	idxParentScope = ZS_UNDEFINED_IDX;
+	idxCurrentScopePointer=ZS_UNDEFINED_IDX;
+	idxScope = ZS_UNDEFINED_IDX;
+	idxBaseScope =ZS_UNDEFINED_IDX;
+}
+
+CScope::CScope(int idx_this, int idx_parent){//, int _index){
+	idxParentScope = idx_parent;
 	//m_index = _index;
-	m_currentScopePointer=NULL;
+	idxCurrentScopePointer=ZS_UNDEFINED_IDX;
 	//m_baseScope = this;
 	idxScope = -1;
 
-	if(_parent == NULL){
-		m_baseScope = this;
-		m_currentScopePointer=this;
-		//totalScopes = 0;
-	//	m_index = 0;
+	if(idx_parent == ZS_UNDEFINED_IDX){
+		idxBaseScope = idx_this;
+		idxCurrentScopePointer=idx_this;
 	}else{
-		m_baseScope = _parent->getBaseScope();
-		//m_baseScope->getScopeList()->push_back(this);
-		//m_index = m_baseScope->getScopeList()->size()-1;
+		idxBaseScope = SCOPE_INFO_NODE( idx_parent)->getIdxBaseScope();
 	}
 }
 
-CScope * CScope::getBaseScope(){
-	return m_baseScope;
+int CScope::getIdxBaseScope(){
+	return idxBaseScope;
 }
 
-CScope * CScope::getParent(){
-	return m_parentScope;
+int CScope::getIdxParent(){
+	return idxParentScope;
+}
+
+int CScope::getIdxCurrentScopePointer(){
+	return SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer;
 }
 
 CScope * CScope::getCurrentScopePointer(){
-	return m_baseScope->m_currentScopePointer;
+	return SCOPE_INFO_NODE(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer);
 }
 
+
 void CScope::resetScopePointer(){
-	m_baseScope->m_currentScopePointer = m_baseScope;
+	SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer = idxBaseScope;
 }
 
 CScope * CScope::pushScope(){
 
-	CScope *new_scope = CScope::newScope(m_baseScope->m_currentScopePointer);//, m_baseScope->incTotalScopes());
-	m_baseScope->m_currentScopePointer->m_localScopeList.push_back(new_scope->idxScope);
-	m_baseScope->m_currentScopePointer = new_scope;
-	return m_baseScope->m_currentScopePointer;
+	CScope *new_scope = CScope::newScope(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
+	SCOPE_INFO_NODE(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
+	SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
+	return new_scope;
 
 }
 
 CScope * CScope::popScope(){
 
-	if(m_baseScope->m_currentScopePointer->m_parentScope != NULL){
-		m_currentScopePointer = m_baseScope->m_currentScopePointer->m_parentScope;
-		return m_baseScope->m_currentScopePointer;
+	CScope *current_scope = SCOPE_INFO_NODE(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer);
+	if(current_scope->idxParentScope != ZS_UNDEFINED_IDX){
+
+		SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer = current_scope->idxParentScope;
+		//m_baseScope->m_currentScopePointer = m_baseScope->m_currentScopePointer->m_parentScope;
+		return SCOPE_INFO_NODE(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer);
 	}
 
 	return NULL;
@@ -123,9 +134,12 @@ tScopeVar * CScope::registerAnonymouseFunction(PASTNode ast){ // register anonym
 	if(ast != NULL){
 		irv.idxAstNode=ast->idxAstNode;
 	}
-	m_baseScope->m_registeredVariable.push_back(irv);
 
-	return &m_baseScope->m_registeredVariable[m_baseScope->m_registeredVariable.size()-1];
+	CScope *base = SCOPE_INFO_NODE(idxBaseScope);
+
+	base->m_registeredVariable.push_back(irv);
+
+	return &base->m_registeredVariable[base->m_registeredVariable.size()-1];
 }
 
 tScopeVar * CScope::registerSymbol(const string & var_name, PASTNode ast){
@@ -174,9 +188,9 @@ tScopeVar * CScope::existRegisteredSymbol(const string & var_name){
 		}
 	}
 
-	CScope * parent =  getParent();
-	if(parent != NULL){
-		return parent->existRegisteredSymbol(var_name);
+	int parent =  getIdxParent();
+	if(parent != ZS_UNDEFINED_IDX){
+		return SCOPE_INFO_NODE(parent)->existRegisteredSymbol(var_name);
 	}
 
 	return NULL;//false;//-1;

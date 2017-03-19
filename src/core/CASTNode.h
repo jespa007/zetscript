@@ -26,7 +26,7 @@
 #define AST_SYMBOL_VALUE_CONST_CHAR(idx) 	CASTNode::getAstSymbolNameConstChar(idx)
 
 
-
+#define MAX_AST_NODES						8192
 
 
 enum GROUP_TYPE{
@@ -92,8 +92,8 @@ public:
 	int line_value;
 	PASTNode parent;
 	vector<PASTNode> children; //left,right;
-	void *aux_value;
-	int idxAstNode;
+	//void *aux_value;
+	short idxAstNode;
 
 
 	~CASTNode();

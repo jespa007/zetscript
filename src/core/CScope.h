@@ -15,7 +15,7 @@
 
 
 #define SCOPE_INFO_NODE(idx) 				CScope::getScopeNodeByIdx(idx)
-
+#include "Common.h"
 
 class CContext;
 
@@ -35,7 +35,7 @@ public:
 	 * Get CScope Node by its idx, regarding current state.
 	 */
 
-	static CScope	    		*	newScope(CScope *parent_scope);
+	static CScope	    		*	newScope(int idx_parent_scope=ZS_UNDEFINED_IDX);
 	static CScope 				* 	getScopeNodeByIdx(int idx);
 
 	int idxScope;
@@ -54,11 +54,13 @@ public:
 	tScopeVar * existRegisteredSymbol(const string & var_name);
 
 
-	CScope(CScope * m_parent);//, int _index);
+	CScope();
+	CScope(int idx_this, int idx_parent=ZS_UNDEFINED_IDX);//, int _index);
 
-	CScope * getBaseScope();
-	CScope * getParent();
+	int 	 getIdxBaseScope();
+	int		 getIdxParent();
 	CScope * getCurrentScopePointer();
+	int		 getIdxCurrentScopePointer();
 	//void         generateScopeList(vector<CScope *> & vector);
 	//int          getIndex();
 	vector<int> * getLocalScopeList();
@@ -86,7 +88,7 @@ private:
 	vector<int> m_localScopeList;
 
 	// The a parent scope ...
-	CScope *m_parentScope, *m_currentScopePointer, *m_baseScope;
+	int idxParentScope, idxCurrentScopePointer, idxBaseScope;
 	//int m_index;
 
 	static vector<CScope *> 					* vec_scope_node;

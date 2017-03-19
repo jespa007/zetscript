@@ -15,7 +15,7 @@ CVector::~CVector(){
 			delete var;
 		}
 		else{
-			CSharedPointerManager::getInstance()->unrefSharedPointer(var->idx_shared_ptr);
+			CURRENT_VM->unrefSharedPointer(var->idx_shared_ptr);
 		}
 
 		//delete m_value[i];

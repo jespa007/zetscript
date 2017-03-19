@@ -15,6 +15,7 @@
 #endif
 
 
+
 vector<CASTNode *> 			* CASTNode::vec_ast_node=NULL;
 
 
@@ -28,6 +29,13 @@ vector<CASTNode *> 		*		CASTNode::getVectorASTNodeNode(){
 }
 
 CASTNode	*CASTNode::newASTNode(int preallocated_nodes){
+
+
+	if(vec_ast_node->size() >= MAX_AST_NODES){
+		print_error_cr("Max AST Nodes reached (%i)",MAX_AST_NODES);
+		return NULL;
+	}
+
 	CASTNode	*ast_node = new CASTNode(preallocated_nodes);
 	vec_ast_node->push_back(ast_node);
 	ast_node->idxAstNode = vec_ast_node->size()-1;
@@ -707,7 +715,7 @@ char *CASTNode::functionArrayAccess_Recursive(const char *str, int & m_line, CSc
 	if((*aux == '(' || *aux == '[')){
 
 		 if(ast_node_to_be_evaluated != NULL) {// save node
-			 *ast_node_to_be_evaluated = CASTNode::newASTNode();
+			 if((*ast_node_to_be_evaluated = CASTNode::newASTNode())==NULL) return NULL;
 			 //(*ast_node_to_be_evaluated)->symbol_value = symbol_value; // is array or function ...
 			 (*ast_node_to_be_evaluated)->line_value = m_line;
 			 (*ast_node_to_be_evaluated)->node_type  = ARRAY_REF_NODE;
@@ -754,7 +762,7 @@ char *CASTNode::functionArrayAccess_Recursive(const char *str, int & m_line, CSc
 			}
 
 			if( ast_node_to_be_evaluated != NULL){
-				args_obj = CASTNode::newASTNode();
+				if((args_obj = CASTNode::newASTNode())){return NULL;}
 				args_obj->node_type = ARRAY_ACCESS_NODE;
 			}
 
@@ -790,7 +798,8 @@ char *CASTNode::functionArrayAccess_Recursive(const char *str, int & m_line, CSc
 			// the deepth node is the object and the parent will the access node (function or array) ...
 			if(args_obj != NULL){ // there's arguments to be pushed ...
 				PASTNode obj =  *ast_node_to_be_evaluated;
-				PASTNode calling_object = CASTNode::newASTNode();
+				PASTNode calling_object;
+				if((calling_object= CASTNode::newASTNode()) == NULL) return NULL;
 				//tPunctuatorInfo *ip=NULL;
 
 				calling_object->node_type = CALLING_OBJECT_NODE;
@@ -1218,7 +1227,7 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 
 				if(is_symbol_trivial_value){
 
-					(*ast_node_to_be_evaluated)=CASTNode::newASTNode();
+					if(((*ast_node_to_be_evaluated)=CASTNode::newASTNode()) == NULL) return NULL;
 					(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
 					(*ast_node_to_be_evaluated)->symbol_value=symbol_value; // assign its value ...
 					(*ast_node_to_be_evaluated)->idxScope = scope_info->idxScope;
@@ -1277,7 +1286,7 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 	}else{ // we found the operator respect of GROUPX so let's put the AST to the left the resulting expression...
 
 		if(ast_node_to_be_evaluated != NULL){
-			*ast_node_to_be_evaluated=CASTNode::newASTNode(2); // always preallocate 2 nodes (left and right)
+			if((*ast_node_to_be_evaluated=CASTNode::newASTNode(2))==NULL) return NULL; // always preallocate 2 nodes (left and right)
 			(*ast_node_to_be_evaluated)->parent=parent;
 			(*ast_node_to_be_evaluated)->node_type = EXPRESSION_NODE;
 
@@ -1336,7 +1345,8 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 				operator_group=&defined_operator_punctuator[ADD_PUNCTUATOR];
 
 				// 2. create neg node.
-				PASTNode ast_neg_node = CASTNode::newASTNode();
+				PASTNode ast_neg_node=NULL;
+				if((ast_neg_node = CASTNode::newASTNode())==NULL) return NULL;
 				ast_neg_node->node_type = NODE_TYPE::PUNCTUATOR_NODE;
 				ast_neg_node->operator_info = &defined_operator_punctuator[SUB_PUNCTUATOR];
 
@@ -1376,7 +1386,8 @@ char * CASTNode::parseExpression(const char *s, int & m_line, CScope *scope_info
 
 	if(aux_p != NULL && ast_node_to_be_evaluated != NULL && *ast_node_to_be_evaluated!=NULL){ // can save the node and tells that is an starting of expression node...
 
-		PASTNode ast_node=CASTNode::newASTNode();
+		PASTNode ast_node= NULL;
+		if((ast_node=CASTNode::newASTNode())==NULL) return NULL;
 		ast_node->node_type = EXPRESSION_NODE;
 		ast_node->children.push_back(*ast_node_to_be_evaluated);
 		(*ast_node_to_be_evaluated)->parent = ast_node; // save parent ..
@@ -1400,7 +1411,7 @@ char * CASTNode::parseStruct_Recursive(const char *s,int & m_line,  CScope *scop
 	if(*aux_p == '{'){ // go for final ...
 
 		if(ast_node_to_be_evaluated!=NULL){
-			(*ast_node_to_be_evaluated)=CASTNode::newASTNode();
+			if(((*ast_node_to_be_evaluated)=CASTNode::newASTNode())==NULL) return NULL;
 			(*ast_node_to_be_evaluated)->line_value = m_line;
 			(*ast_node_to_be_evaluated)->node_type = STRUCT_NODE;
 			(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
@@ -1522,7 +1533,7 @@ char * CASTNode::parseNew(const char *s,int & m_line,  CScope *scope_info, PASTN
 			args_node->node_type = ARGS_PASS_NODE;
 			 // it seems everything is allright... let's create the node...
 
-			(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
+			if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode())==NULL) return NULL;
 			(*ast_node_to_be_evaluated)->node_type = NEW_OBJECT_NODE;
 			(*ast_node_to_be_evaluated)->keyword_info = NULL;
 			(*ast_node_to_be_evaluated)->symbol_value = symbol_value;
@@ -1560,7 +1571,7 @@ char * CASTNode::parseDelete(const char *s,int & m_line,  CScope *scope_info, PA
 
 			 symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
 
-			(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
+			if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
 			(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 			(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			(*ast_node_to_be_evaluated)->symbol_value = symbol_value;
@@ -1594,7 +1605,7 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 
 		if(key_w->id == KEYWORD_TYPE::CLASS_KEYWORD){
 
-			if(scope_info->getParent()!=NULL){
+			if(scope_info->getIdxParent()!=ZS_UNDEFINED_IDX){
 				print_error_cr("line %i:class keyword is not allowed",m_line);
 				return NULL;
 			}
@@ -1634,7 +1645,7 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 				}
 
 				if(ast_node_to_be_evaluated != NULL){
-					base_class_node = CASTNode::newASTNode();
+					if((base_class_node = CASTNode::newASTNode()) == NULL) return NULL;
 					base_class_node->symbol_value = CStringUtils::copyStringFromInterval(aux_p, end_p);
 					base_class_node->node_type = BASE_CLASS_NODE;
 				}
@@ -1647,18 +1658,20 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 
 				// it seem's we have a good built class...
 				//if(ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = CASTNode::newASTNode();
+				if((*ast_node_to_be_evaluated = CASTNode::newASTNode())== NULL) return NULL;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 				(*ast_node_to_be_evaluated)->symbol_value = class_name;
 
-				CScope *scp = CScope::newScope(NULL);// new CScope(NULL);
+				CScope *scp = CScope::newScope(ZS_UNDEFINED_IDX);// new CScope(NULL);
 				(*ast_node_to_be_evaluated)->idxScope =scp->idxScope;// new CScope(NULL); // scope function without base ...
 				class_scope_info =scp; //(*ast_node_to_be_evaluated)->scope_info_ptr;
 
 				// create var & functions collection...
-				(*ast_node_to_be_evaluated)->children.push_back(vars_collection_node = CASTNode::newASTNode());
-				(*ast_node_to_be_evaluated)->children.push_back(function_collection_node = CASTNode::newASTNode());
+				if((vars_collection_node = CASTNode::newASTNode())==NULL) return NULL;
+				if((function_collection_node = CASTNode::newASTNode())==NULL) return NULL;
+				(*ast_node_to_be_evaluated)->children.push_back(vars_collection_node);
+				(*ast_node_to_be_evaluated)->children.push_back(function_collection_node);
 
 				if(base_class_node != NULL) {
 					(*ast_node_to_be_evaluated)->children.push_back(	base_class_node );
@@ -1747,7 +1760,7 @@ char * CASTNode::parseArgs(char c1,char c2,const char *s,int & m_line,  CScope *
 		aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 		if(ast_node_to_be_evaluated!=NULL){
-			(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
+			if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
 		}
 
 		if(*aux_p != c2 ){
@@ -1845,7 +1858,8 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 
-				(*ast_node_to_be_evaluated)->children.push_back(args_node = CASTNode::newASTNode());
+				if((args_node = CASTNode::newASTNode()) == NULL) return NULL;
+				(*ast_node_to_be_evaluated)->children.push_back(args_node);
 
 				args_node->node_type = NODE_TYPE::ARGS_DECL_NODE;
 
@@ -2002,7 +2016,7 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 					}
 					// PUSH NEW ARG...
 					if(ast_node_to_be_evaluated != NULL){
-						arg_node = CASTNode::newASTNode();
+						if((arg_node = CASTNode::newASTNode()) == NULL) return NULL;
 						arg_node->symbol_value=symbol_value;
 						args_node->children.push_back(arg_node);
 					}
@@ -2067,7 +2081,7 @@ char *  CASTNode::parseReturn(const char *s,int & m_line,  CScope *scope_info, P
 			aux_p += strlen(key_w->str);
 
 			if(ast_node_to_be_evaluated != NULL){ // save
-				*ast_node_to_be_evaluated = CASTNode::newASTNode(1); // reserve for expression return
+				if((*ast_node_to_be_evaluated = CASTNode::newASTNode(1)) == NULL) return NULL; // reserve for expression return
 				(*ast_node_to_be_evaluated)->node_type = NODE_TYPE::KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2109,7 +2123,7 @@ char * CASTNode::parseWhile(const char *s,int & m_line, CScope *scope_info, PAST
 		if(key_w->id == KEYWORD_TYPE::WHILE_KEYWORD){
 
 			if(ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = CASTNode::newASTNode();
+				if((*ast_node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2131,7 +2145,8 @@ char * CASTNode::parseWhile(const char *s,int & m_line, CScope *scope_info, PAST
 					}
 
 					if( ast_node_to_be_evaluated != NULL){
-						PASTNode aux = CASTNode::newASTNode();
+						PASTNode aux;
+						if((aux= CASTNode::newASTNode()) == NULL) return NULL;
 						aux->node_type = CONDITIONAL_NODE;
 						aux->children.push_back(conditional_expression);
 						(*ast_node_to_be_evaluated)->children.push_back(aux);
@@ -2184,7 +2199,7 @@ char * CASTNode::parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNo
 		if(key_w->id == KEYWORD_TYPE::IF_KEYWORD){
 
 			if(ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = CASTNode::newASTNode();
+				if((*ast_node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2208,7 +2223,8 @@ char * CASTNode::parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNo
 					conditional_str=start_symbol;
 
 					if(ast_node_to_be_evaluated!=NULL){
-						PASTNode aux = CASTNode::newASTNode();
+						PASTNode aux;
+						if((aux = CASTNode::newASTNode()) == NULL) return NULL;
 						aux->children.push_back(conditional);
 						aux->node_type = CONDITIONAL_NODE;
 						(*ast_node_to_be_evaluated)->children.push_back(aux);
@@ -2296,7 +2312,7 @@ char * CASTNode::parseFor(const char *s,int & m_line,  CScope *scope_info, PASTN
 		if(key_w->id == KEYWORD_TYPE::FOR_KEYWORD){
 
 			if(ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = CASTNode::newASTNode(3); // ini, conditional, post
+				if((*ast_node_to_be_evaluated = CASTNode::newASTNode(3)) == NULL) return NULL;; // ini, conditional, post
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2352,7 +2368,8 @@ char * CASTNode::parseFor(const char *s,int & m_line,  CScope *scope_info, PASTN
 
 					if(*aux_p == info_for[i].next_char){
 						if(ast_node_to_be_evaluated != NULL){ // add node as for node type and its expression below.
-							PASTNode aux = CASTNode::newASTNode();
+							PASTNode aux;
+							if((aux= CASTNode::newASTNode()) == NULL) return NULL;
 							aux->node_type = info_for[i].node_type;
 							aux->children.push_back(node_for_expression);
 							(*ast_node_to_be_evaluated)->children[i]=aux;
@@ -2427,7 +2444,7 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 		if(key_w->id == KEYWORD_TYPE::SWITCH_KEYWORD){
 
 			if( ast_node_to_be_evaluated != NULL){
-				*ast_node_to_be_evaluated = CASTNode::newASTNode();
+				if((*ast_node_to_be_evaluated = CASTNode::newASTNode())==NULL) return NULL;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2473,9 +2490,12 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 								bool theres_a_default= false;
 								// init node ..
 								if(ast_node_to_be_evaluated!= NULL){
-									(*ast_node_to_be_evaluated)->children.push_back(switch_node = CASTNode::newASTNode());
-									switch_node->children.push_back(group_cases = CASTNode::newASTNode());
-									switch_node->children.push_back(NULL);//case_body_node = CASTNode::newASTNode());
+									if((switch_node = CASTNode::newASTNode()) == NULL) return NULL;
+									if((group_cases = CASTNode::newASTNode()) == NULL) return NULL;
+
+									(*ast_node_to_be_evaluated)->children.push_back(switch_node);
+									switch_node->children.push_back(group_cases);
+									switch_node->children.push_back(NULL);
 									group_cases->node_type = GROUP_CASES_NODE;
 								}
 
@@ -2531,7 +2551,8 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 														}
 													}
 												}
-												case_value_node = CASTNode::newASTNode();
+
+												if((case_value_node = CASTNode::newASTNode())==NULL) return NULL;
 												case_value_node->node_type = KEYWORD_NODE;
 												case_value_node->keyword_info = key_w;
 												case_value_node->symbol_value = val;
@@ -2701,7 +2722,7 @@ char * CASTNode::parseMemberVar(const char *s,int & m_line,  CScope *scope_info,
 			//
 			if(ast_node_to_be_evaluated != NULL){
 				_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
-				(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
+				if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 			}
@@ -2709,7 +2730,8 @@ char * CASTNode::parseMemberVar(const char *s,int & m_line,  CScope *scope_info,
 			if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // particular case extension attribute class
 				if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
 
-					PASTNode var_new=CASTNode::newASTNode();
+					PASTNode var_new=NULL;
+					if((var_new=CASTNode::newASTNode()) == NULL) return NULL;
 					// save symbol in the node ...
 					var_new->symbol_value = class_member;
 					var_new->idxScope = ZS_UNDEFINED_IDX;
@@ -2764,7 +2786,8 @@ char * CASTNode::parseMemberVar(const char *s,int & m_line,  CScope *scope_info,
 
 					if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
 
-						PASTNode var_new=CASTNode::newASTNode();
+						PASTNode var_new=NULL;
+						if((var_new=CASTNode::newASTNode()) == NULL) return NULL;
 						// save symbol in the node ...
 						var_new->symbol_value = symbol_name;
 						var_new->idxScope = ZS_UNDEFINED_IDX;
@@ -2824,7 +2847,7 @@ char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTN
 
 			if(ast_node_to_be_evaluated != NULL){
 				_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
-				(*ast_node_to_be_evaluated) = CASTNode::newASTNode();
+				if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
 				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
 				(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
@@ -2850,7 +2873,7 @@ char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTN
 					var_node = NULL;
 					if(ast_node_to_be_evaluated!=NULL){
 
-						var_node = CASTNode::newASTNode();
+						if((var_node = CASTNode::newASTNode()) == NULL) return NULL;
 						// save symbol in the node ...
 						(var_node)->symbol_value = symbol_name;
 						(var_node)->idxScope = ZS_UNDEFINED_IDX;
@@ -3102,7 +3125,7 @@ char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scop
 
 	if(node_to_be_evaluated!= NULL){
 		if(!is_main_node){
-			*node_to_be_evaluated = CASTNode::newASTNode();
+			if((*node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 			(*node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
 			if(scope_info != NULL){ // by default put global scope.
 				(*node_to_be_evaluated)->idxScope = scope_info->idxScope;
@@ -3294,7 +3317,7 @@ void CASTNode::init(){
 		if(vec_ast_node->size()==0){
 			// create main ast/scope...
 			CASTNode *ast=newASTNode();
-			CScope *scp = CScope::newScope(NULL);
+			CScope *scp = CScope::newScope(ZS_UNDEFINED_IDX);
 			ast->idxScope = scp->idxScope;
 			ast->node_type = NODE_TYPE::BODY_NODE;
 
@@ -3312,9 +3335,9 @@ CASTNode::CASTNode(int preallocate_num_nodes){
 	operator_info=NULL;
 	symbol_value="";
 	parent=NULL;
-	aux_value=NULL;
+	//aux_value=NULL;
 
-	idxAstNode = ZS_UNDEFINED_IDX;//newASTNode();
+	idxAstNode = ZS_UNDEFINED_IDX;
 	idxScope = ZS_UNDEFINED_IDX;
 
 	if(preallocate_num_nodes > 0){

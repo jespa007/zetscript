@@ -28,7 +28,7 @@ CCompiler::tInfoConstantValue *CCompiler::getConstant(const string & const_name)
 	return NULL;
 }
 
-CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name, void *obj, VALUE_INSTRUCTION_TYPE type){
+CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name, void *obj, unsigned int type){
 
 	CCompiler::tInfoConstantValue * info_ptr=NULL;
 
@@ -108,13 +108,13 @@ CScriptFunctionObject * CCompiler::addLocalFunctionSymbol(const string & name,CA
 
 bool CCompiler::functionSymbolExists(const string & name, CASTNode *ast){
 
-	SCOPE_TYPE scope_type;
+	unsigned int scope_type;
 	return getIdxFunctionObject(name,ast,scope_type,false) != ZS_UNDEFINED_IDX;
 }
 
-int  CCompiler::getIdxFunctionObject(const string & name,CASTNode *param_ast, SCOPE_TYPE & scope_type, bool print_msg){
+int  CCompiler::getIdxFunctionObject(const string & name,CASTNode *param_ast, unsigned int & scope_type, bool print_msg){
 	tScopeVar *irv=SCOPE_INFO_NODE(param_ast->idxScope)->getInfoRegisteredSymbol(name);
-	scope_type = SCOPE_TYPE::LOCAL_SCOPE;
+	scope_type = INS_PROPERTY_LOCAL_SCOPE;
 	if(irv != NULL){
 
 		PASTNode ast = AST_NODE(irv->idxAstNode);
@@ -128,7 +128,7 @@ int  CCompiler::getIdxFunctionObject(const string & name,CASTNode *param_ast, SC
 		}
 		else{ //global
 
-			scope_type = SCOPE_TYPE::GLOBAL_SCOPE;
+			scope_type = 0;//INST_PROPERTY_GLOBAL_SCOPE;
 			CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX);
 
 
@@ -160,16 +160,16 @@ void CCompiler::destroySingletons(){
 			switch(icv->type){
 			default:
 				break;
-			case VALUE_INSTRUCTION_TYPE::INS_TYPE_INTEGER:
+			case INS_PROPERTY_TYPE_INTEGER:
 				delete (int *)icv->ptr;
 				break;
-			case VALUE_INSTRUCTION_TYPE::INS_TYPE_BOOLEAN:
+			case INS_PROPERTY_TYPE_BOOLEAN:
 				delete (bool *)icv->ptr;
 				break;
-			case VALUE_INSTRUCTION_TYPE::INS_TYPE_NUMBER:
+			case INS_PROPERTY_TYPE_NUMBER:
 				delete (float *)icv->ptr;
 				break;
-			case VALUE_INSTRUCTION_TYPE::INS_TYPE_STRING:
+			case INS_PROPERTY_TYPE_STRING:
 				delete (string *)icv->ptr;
 				break;
 
@@ -328,7 +328,7 @@ void CCompiler::insertStringConstantValueInstruction(PASTNode _node, const strin
 
 	tInfoStatementOpCompiler *ptr_current_statement_op = &(this->m_currentFunctionInfo->stament)[this->m_currentFunctionInfo->stament.size()-1];
 
-	VALUE_INSTRUCTION_TYPE type=INS_TYPE_STRING;
+	unsigned int type=INS_PROPERTY_TYPE_STRING;
 	CCompiler::tInfoConstantValue *get_obj;
 	void *obj;
 
@@ -339,9 +339,9 @@ void CCompiler::insertStringConstantValueInstruction(PASTNode _node, const strin
 		obj=addConstant(v,new string(v),type);
 	}
 
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
-	asm_op->variable_type=type;
+	asm_op->var_type=type;
 	asm_op->index_op1=LOAD_TYPE_CONSTANT;
 	asm_op->index_op2=(int)obj;
 	asm_op->idxAstNode=_node->idxAstNode;
@@ -360,28 +360,28 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		return false;
 	}
 
-	ASM_PRE_POST_OPERATORS pre_post_operator_type =ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
+	unsigned int pre_post_operator_type =0;//INS_PROPERTY_UNKNOW_PRE_POST_OPERATOR;
 	tInfoStatementOpCompiler *ptr_current_statement_op = &(this->m_currentFunctionInfo->stament)[this->m_currentFunctionInfo->stament.size()-1];
 	void *const_obj;
 	void *obj;
 	CCompiler::tInfoConstantValue *get_obj;
-	VALUE_INSTRUCTION_TYPE type=INS_TYPE_VAR;
+	unsigned int type=INS_PROPERTY_TYPE_SCRIPTVAR;
 	LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
-	SCOPE_TYPE scope_type=SCOPE_TYPE::UNKNOWN_SCOPE;
+	unsigned int scope_type=0;//INS_PROPERTY_UNKNOWN_SCOPE;
 	bool is_constant = true;
 
 	if(_node->pre_post_operator_info != NULL){
 
-		pre_post_operator_type=preoperator2instruction(_node->pre_post_operator_info->id);
+		pre_post_operator_type=preoperator2instruction_property(_node->pre_post_operator_info->id);
 	}
 	// try parse value...
 	if(v=="null"){
-		type=INS_TYPE_NULL;
+		type=INS_PROPERTY_TYPE_NULL;
 		load_type=LOAD_TYPE_NULL;
 		obj=NULL_SYMBOL;//CScriptVariable::NullSymbol;
 		print_com_cr("%s detected as null\n",v.c_str());
 	}else if(v=="undefined"){
-			type=INS_TYPE_UNDEFINED;
+			type=INS_PROPERTY_TYPE_UNDEFINED;
 			load_type=LOAD_TYPE_UNDEFINED;
 			obj=UNDEFINED_SYMBOL;// CScriptVariable::UndefinedSymbol;
 			print_com_cr("%s detected as undefined\n",v.c_str());
@@ -390,7 +390,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		int value = *((int *)const_obj);
 		delete (int *)const_obj;
 
-		type=INS_TYPE_INTEGER;
+		type=INS_PROPERTY_TYPE_INTEGER;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as int\n",v.c_str());
 		if((get_obj = getConstant(v))!=NULL){
@@ -403,7 +403,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		float value = *((float *)const_obj);
 		delete (float *)const_obj;
 
-		type=INS_TYPE_NUMBER;
+		type=INS_PROPERTY_TYPE_NUMBER;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as float\n",v.c_str());
 
@@ -414,7 +414,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		}
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
-		type=INS_TYPE_STRING;
+		type=INS_PROPERTY_TYPE_STRING;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as string\n",v.c_str());
 
@@ -430,7 +430,7 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		bool value = *((bool *)const_obj);
 		delete (bool *)const_obj;
 
-		type=INS_TYPE_BOOLEAN;
+		type=INS_PROPERTY_TYPE_BOOLEAN;
 		load_type=LOAD_TYPE_CONSTANT;
 		print_com_cr("%s detected as boolean\n",v.c_str());
 
@@ -446,18 +446,18 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 		int idx_local_var=ZS_UNDEFINED_IDX;
 
 		if(checkAccessObjectMember(_node)){
-			scope_type = SCOPE_TYPE::ACCESS_SCOPE;
+			scope_type = INS_PROPERTY_ACCESS_SCOPE;
 
 
 			if((_node->parent != NULL &&_node->parent->children[0]->symbol_value == "this") //|| // single access ?
 			){
-				scope_type=SCOPE_TYPE::THIS_SCOPE;
+				scope_type=INS_PROPERTY_THIS_SCOPE;
 			}
 		}
 		else if(
 			(_node->symbol_value == "super")
 			){
-				scope_type=SCOPE_TYPE::SUPER_SCOPE;
+				scope_type=INS_PROPERTY_SUPER_SCOPE;
 			}else{
 
 				// if not function then is var or arg node ?
@@ -472,20 +472,22 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 			obj = (CScriptVariable *)idx_local_var;
 	}
 
-	if((pre_post_operator_type !=ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR && pre_post_operator_type !=ASM_PRE_POST_OPERATORS::PRE_NEG) &&
+	if((pre_post_operator_type !=0 && GET_INS_PROPERTY_PRE_POST_OP(pre_post_operator_type) !=INS_PROPERTY_PRE_NEG) &&
 		is_constant){
 		print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->line_value,_node->pre_post_operator_info->str);
 		return false;
 	}
 
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
-	asm_op->variable_type=type;
+	//asm_op->variable_type=type;
 	asm_op->index_op1=load_type;
 	asm_op->index_op2=(int)obj;
-	asm_op->scope_type = scope_type;
+	//asm_op->scope_type = scope_type;
 	asm_op->idxAstNode=_node->idxAstNode;
-	asm_op->pre_post_operator_type=pre_post_operator_type;
+	asm_op->var_type=type;
+	asm_op->pre_post_op_type=pre_post_operator_type;
+	asm_op->scope_type=scope_type;
 
 	asm_op->operator_type=ASM_OPERATOR::LOAD;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -496,10 +498,10 @@ bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc){
 bool CCompiler::insertMovVarInstruction(PASTNode _node,int left_index, int right_index){
 
 	tInfoStatementOpCompiler *ptr_current_statement_op = &(this->m_currentFunctionInfo->stament)[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[left_index];
+	tInfoAsmOpCompiler * left_asm_op = ptr_current_statement_op->asm_op[left_index];
 
 	// check whether left operant is object...
-	if(left_asm_op->variable_type != INS_TYPE_VAR){
+	if(left_asm_op->var_type != INS_PROPERTY_TYPE_SCRIPTVAR){
 		int line = -1;
 
 		if(left_asm_op->idxAstNode!=ZS_UNDEFINED_IDX)
@@ -508,7 +510,7 @@ bool CCompiler::insertMovVarInstruction(PASTNode _node,int left_index, int right
 		return false;
 	}
 
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = left_index;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 	asm_op->index_op2 =  right_index;
 	asm_op->idxAstNode = _node->idxAstNode;
@@ -519,10 +521,10 @@ bool CCompiler::insertMovVarInstruction(PASTNode _node,int left_index, int right
 	return true;
 }
 
-tInfoAsmOp * CCompiler::insert_JMP_Instruction(int jmp_statement, int instruction_index){
+CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JMP_Instruction(int jmp_statement, int instruction_index){
 
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = jmp_statement;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 	asm_op->index_op2 = instruction_index;
 	asm_op->operator_type=ASM_OPERATOR::JMP;
@@ -530,10 +532,10 @@ tInfoAsmOp * CCompiler::insert_JMP_Instruction(int jmp_statement, int instructio
 	return asm_op;
 }
 
-tInfoAsmOp * CCompiler::insert_JNT_Instruction(int jmp_statement, int instruction_index){
+CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JNT_Instruction(int jmp_statement, int instruction_index){
 
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = jmp_statement;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 	asm_op->index_op2 = instruction_index;
 	asm_op->operator_type=ASM_OPERATOR::JNT;
@@ -542,10 +544,10 @@ tInfoAsmOp * CCompiler::insert_JNT_Instruction(int jmp_statement, int instructio
 	return asm_op;
 }
 
-tInfoAsmOp * CCompiler::insert_JT_Instruction(int jmp_statement, int instruction_index){
+CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JT_Instruction(int jmp_statement, int instruction_index){
 
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = jmp_statement;
 	asm_op->operator_type=ASM_OPERATOR::JT;
 	asm_op->index_op2 = instruction_index;
@@ -555,7 +557,7 @@ tInfoAsmOp * CCompiler::insert_JT_Instruction(int jmp_statement, int instruction
 
 void CCompiler::insert_NOP_Instruction(){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = 0;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::NOP;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -563,29 +565,29 @@ void CCompiler::insert_NOP_Instruction(){
 
 void CCompiler::insert_CreateArrayObject_Instruction(PASTNode _node){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
 	asm_op->operator_type=ASM_OPERATOR::VEC;
-	asm_op->variable_type =INS_TYPE_VAR;
+	asm_op->var_type=INS_PROPERTY_TYPE_SCRIPTVAR;
 	asm_op->idxAstNode = _node->idxAstNode;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
 void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instrucction, PASTNode _ast){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = vec_object;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 	asm_op->index_op2 = index_instrucction;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::VGET;
 	asm_op->idxAstNode = _ast->idxAstNode;
-	asm_op->variable_type = INS_TYPE_VAR;
+	asm_op->var_type = INS_PROPERTY_TYPE_SCRIPTVAR;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
 
 void CCompiler::insert_ClearArgumentStack_Instruction(PASTNode _node){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->idxAstNode = _node->idxAstNode;
 	asm_op->operator_type=ASM_OPERATOR::CLR;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -594,7 +596,7 @@ void CCompiler::insert_ClearArgumentStack_Instruction(PASTNode _node){
 
 void CCompiler::insert_PushArgument_Instruction(PASTNode _node){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->idxAstNode = _node->idxAstNode;
 	asm_op->index_op1 = getCurrentInstructionIndex();//&(this->m_currentFunctionInfo->stament[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::PUSH;
@@ -603,13 +605,13 @@ void CCompiler::insert_PushArgument_Instruction(PASTNode _node){
 
 void CCompiler::insert_ClearArgumentStack_And_PushFirstArgument_Instructions(PASTNode _node){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->operator_type=ASM_OPERATOR::CLR;
 	asm_op->idxAstNode = _node->idxAstNode;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
 	// push one less instruction to get the value
-	asm_op = new tInfoAsmOp();
+	asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = getCurrentInstructionIndex()-1;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 	asm_op->operator_type=ASM_OPERATOR::PUSH;
 	asm_op->idxAstNode=_node->idxAstNode;
@@ -618,7 +620,7 @@ void CCompiler::insert_ClearArgumentStack_And_PushFirstArgument_Instructions(PAS
 
 void CCompiler::insert_CallFunction_Instruction(PASTNode _node,int  index_call,int  index_object){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
 	asm_op->index_op1 = index_call;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 	asm_op->index_op2 = index_object;//&(this->m_currentFunctionInfo->stament[dest_statment]);
@@ -634,7 +636,7 @@ void CCompiler::insertRet(PASTNode _node,int index){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 
 
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
 	// if type return is object return first index
 	if(ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::VEC ||
@@ -647,10 +649,10 @@ void CCompiler::insertRet(PASTNode _node,int index){
 		asm_op->index_op1 = index;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 
 		if(ptr_current_statement_op->asm_op.size() > 1){
-			tInfoAsmOp *last_asm = ptr_current_statement_op->asm_op[ptr_current_statement_op->asm_op.size()-1]; // get last operator
+			tInfoAsmOpCompiler *last_asm = ptr_current_statement_op->asm_op[ptr_current_statement_op->asm_op.size()-1]; // get last operator
 
 			if((last_asm->operator_type == ASM_OPERATOR::CALL) && ((unsigned)index == ptr_current_statement_op->asm_op.size()-1)){
-				last_asm->asm_properties =ASM_PROPERTY_DIRECT_CALL_RETURN;
+				last_asm->runtime_prop |=INS_PROPERTY_DIRECT_CALL_RETURN;
 			}
 
 
@@ -667,7 +669,7 @@ void CCompiler::insertRet(PASTNode _node,int index){
 
 void CCompiler::insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_vec_object_index,int index_instruciont_to_push){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1=ref_vec_object_index;
 	asm_op->idxAstNode = _node->idxAstNode;
 	asm_op->index_op2=index_instruciont_to_push;
@@ -682,7 +684,7 @@ void CCompiler::insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_v
 
 bool CCompiler::insert_NewObject_Instruction(PASTNode _node, const string & class_name){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	if((asm_op->index_op1 = CScriptClass::getIdxScriptClass(class_name))==ZS_UNDEFINED_IDX){//&(this->m_currentFunctionInfo->stament[dest_statment]);
 		print_error_cr("class \"%s\" is not registered", class_name.c_str());
 		return false;
@@ -696,7 +698,7 @@ bool CCompiler::insert_NewObject_Instruction(PASTNode _node, const string & clas
 
 bool CCompiler::insertObjectMemberAccessFrom(PASTNode _node, int ref_node_index){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = ref_node_index;
 	asm_op->index_op2 = ZS_UNDEFINED_IDX; // index from object cached node ?
 	asm_op->operator_type=ASM_OPERATOR::OBJECT_ACCESS;
@@ -709,7 +711,7 @@ bool CCompiler::insertObjectMemberAccessFrom(PASTNode _node, int ref_node_index)
 
 void CCompiler::insertPopScopeInstruction(PASTNode _node,int scope_idx){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = scope_idx;
 	asm_op->index_op2 = ZS_UNDEFINED_IDX; // index from object cached node ?
 	asm_op->operator_type=ASM_OPERATOR::POP_SCOPE;
@@ -722,7 +724,7 @@ void CCompiler::insertPopScopeInstruction(PASTNode _node,int scope_idx){
 
 void CCompiler::insert_DeclStruct_Instruction(PASTNode _node){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = ZS_UNDEFINED_IDX;
 	asm_op->index_op2 = ZS_UNDEFINED_IDX; // index from object cached node ?
 	asm_op->operator_type=ASM_OPERATOR::DECL_STRUCT;
@@ -733,7 +735,7 @@ void CCompiler::insert_DeclStruct_Instruction(PASTNode _node){
 
 void CCompiler::insert_PushAttribute_Instruction(PASTNode _node,int ref_object,int ref_result_expression){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->index_op1 = ref_object; // struct ref
 	asm_op->index_op2 = ref_result_expression; // ref result expression
 	asm_op->operator_type=ASM_OPERATOR::PUSH_ATTR;
@@ -744,25 +746,26 @@ void CCompiler::insert_PushAttribute_Instruction(PASTNode _node,int ref_object,i
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ASM_PRE_POST_OPERATORS CCompiler::preoperator2instruction(PUNCTUATOR_TYPE op){
+unsigned int CCompiler::preoperator2instruction_property(PUNCTUATOR_TYPE op){
 
 	switch(op){
 	default:
-		return ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
+		print_error_cr("Cannot match pre/post operator %i!",op);
+		break;
 	case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
-		return PRE_INC;
+		return INS_PROPERTY_PRE_INC;
 	case PUNCTUATOR_TYPE::POST_INC_PUNCTUATOR:
-		return POST_INC;
+		return INS_PROPERTY_POST_INC;
 	case PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR:
-		return PRE_DEC;
+		return INS_PROPERTY_PRE_DEC;
 	case PUNCTUATOR_TYPE::POST_DEC_PUNCTUATOR:
-		return POST_DEC;
+		return INS_PROPERTY_POST_DEC;
 	case PUNCTUATOR_TYPE::SUB_PUNCTUATOR:
-		return PRE_NEG;
+		return INS_PROPERTY_PRE_NEG;
 
 	}
 
-	return ASM_PRE_POST_OPERATORS::UNKNOW_PRE_POST_OPERATOR;
+	return 0;//INS_PROPERTY_UNKNOW_PRE_POST_OPERATOR;
 }
 
 ASM_OPERATOR CCompiler::puntuator2instruction(tPunctuatorInfo * op){
@@ -820,14 +823,14 @@ ASM_OPERATOR CCompiler::puntuator2instruction(tPunctuatorInfo * op){
 
 bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, string & error_str, int op_index_left, int op_index_right){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
-	tInfoAsmOp *iao;
+	tInfoAsmOpCompiler * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
+	tInfoAsmOpCompiler *iao;
 
 	// special cases ...
 	switch(op->id){
 		case ADD_ASSIGN_PUNCTUATOR: // a+b
 
-			iao = new tInfoAsmOp();
+			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::ADD;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
@@ -840,13 +843,13 @@ bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, 
 			break;
 		case SUB_ASSIGN_PUNCTUATOR: // a + (-b)
 
-			iao = new tInfoAsmOp();
+			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::NEG;
 			iao->index_op1 = op_index_right;
 			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
-			iao = new tInfoAsmOp();
+			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::ADD;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right+1;
@@ -858,7 +861,7 @@ bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, 
 			break;
 		case MUL_ASSIGN_PUNCTUATOR: // a*b
 
-			iao = new tInfoAsmOp();
+			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::MUL;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
@@ -870,7 +873,7 @@ bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, 
 			break;
 		case DIV_ASSIGN_PUNCTUATOR: // a/b
 
-			iao = new tInfoAsmOp();
+			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::DIV;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
@@ -882,7 +885,7 @@ bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, 
 			break;
 		case MOD_ASSIGN_PUNCTUATOR: // a % b
 
-			iao = new tInfoAsmOp();
+			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::MOD;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
@@ -896,7 +899,7 @@ bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, 
 			break;
 	}
 
-	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->variable_type != INS_TYPE_VAR){
+	if(op->id == ASSIGN_PUNCTUATOR && left_asm_op->var_type != INS_PROPERTY_TYPE_SCRIPTVAR){
 
 			error_str = "left operand must be l-value for '=' operator";
 			return false;
@@ -907,7 +910,7 @@ bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, 
 	}
 	ASM_OPERATOR asm_op;
 	if((asm_op= puntuator2instruction(op))!=NOP){
-		iao = new tInfoAsmOp();
+		iao = new tInfoAsmOpCompiler();
 		iao->operator_type = asm_op;
 		iao->index_op1 = op_index_left;
 		iao->index_op2 = op_index_right;
@@ -919,19 +922,19 @@ bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, 
 	return false;
 }
 
-tInfoAsmOp * CCompiler::insert_Save_CurrentInstruction(){
+CCompiler::tInfoAsmOpCompiler * CCompiler::insert_Save_CurrentInstruction(){
 
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->operator_type=ASM_OPERATOR::SAVE_I;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return asm_op;
 }
 
-tInfoAsmOp * CCompiler::insert_Load_CurrentInstruction(){
+CCompiler::tInfoAsmOpCompiler * CCompiler::insert_Load_CurrentInstruction(){
 
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOp *asm_op = new tInfoAsmOp();
+	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 	asm_op->operator_type=ASM_OPERATOR::LOAD_I;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return asm_op;
@@ -1024,8 +1027,8 @@ int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc)
 	if(_node->pre_post_operator_info != NULL){ // there's pre/post increment...
 		// get post/inc
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-		tInfoAsmOp *asm_op = ptr_current_statement_op->asm_op[ptr_current_statement_op->asm_op.size()-1];
-		asm_op->pre_post_operator_type=preoperator2instruction(_node->pre_post_operator_info->id);
+		tInfoAsmOpCompiler *asm_op = ptr_current_statement_op->asm_op[ptr_current_statement_op->asm_op.size()-1];
+		asm_op->pre_post_op_type=preoperator2instruction_property(_node->pre_post_operator_info->id);
 
 	}
 
@@ -1574,7 +1577,7 @@ bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
 	if(_node->children.size()!=4) {print_error_cr("node FOR has not valid number of nodes");return false;}
 	if(!(_node->children[0]->node_type==PRE_FOR_NODE && _node->children[1]->node_type==CONDITIONAL_NODE &&
 	_node->children[2]->node_type==POST_FOR_NODE && _node->children[3]->node_type==BODY_NODE)) {print_error_cr("node FOR has not valid TYPE nodes");return false;}
-	tInfoAsmOp *asm_op;
+	tInfoAsmOpCompiler *asm_op;
 	// 1. compile var init ...
 	if(_node->children[0]->children.size()>0){
 		if(!ast2asm_Recursive(_node->children[0],SCOPE_INFO_NODE(_node->idxScope))){ return false;}
@@ -1617,7 +1620,7 @@ bool CCompiler::gacWhile(PASTNode _node, CScope * _lc){
 	if(_node->keyword_info->id != KEYWORD_TYPE::WHILE_KEYWORD){print_error_cr("node is not WHILE keyword type");return false;}
 	if(_node->children.size()!=2) {print_error_cr("node WHILE has not valid number of nodes");return false;}
 	if(!(_node->children[0]->node_type==CONDITIONAL_NODE && _node->children[1]->node_type==BODY_NODE )) {print_error_cr("node WHILE has not valid TYPE nodes");return false;}
-	tInfoAsmOp *asm_op_jmp_end;
+	tInfoAsmOpCompiler *asm_op_jmp_end;
 	int index_ini_while;
 
 	// compile conditional expression...
@@ -1686,7 +1689,7 @@ bool CCompiler::gacIf(PASTNode _node, CScope * _lc){
 	if(_node->keyword_info->id != KEYWORD_TYPE::IF_KEYWORD){print_error_cr("node is not IF keyword type");return false;}
 	if(_node->children.size()<2) {print_error_cr("node IF has not valid number of nodes");return false;}
 	if(!(_node->children[0]->node_type==CONDITIONAL_NODE && _node->children[1]->node_type==BODY_NODE )) {print_error_cr("node IF has not valid TYPE nodes");return false;}
-	tInfoAsmOp *asm_op_jmp_else_if,*asm_op_jmp_end;
+	tInfoAsmOpCompiler *asm_op_jmp_else_if,*asm_op_jmp_end;
 
 	// compile conditional expression...
 	if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
@@ -1718,7 +1721,7 @@ int CCompiler::gacInlineIf(PASTNode _node, CScope * _lc, int & instruction){
 	if(_node->children.size()!=2) {print_error_cr("node INLINE-IF has not 2 nodes");return ZS_UNDEFINED_IDX;}
 	if(!(_node->children[1]->node_type==PUNCTUATOR_NODE && _node->children[1]->operator_info->id==TERNARY_ELSE_PUNCTUATOR )) {print_error_cr("node INLINE-ELSE has not found");return ZS_UNDEFINED_IDX;}
 	if(_node->children[1]->children.size() != 2) {print_error_cr("node INLINE-ELSE has not 2 nodes");return ZS_UNDEFINED_IDX;}
-	tInfoAsmOp *asm_op_jmp_else_if,*asm_op_jmp_end;
+	tInfoAsmOpCompiler *asm_op_jmp_else_if,*asm_op_jmp_end;
 
 	int r=instruction;
 
@@ -1766,12 +1769,13 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 	PASTNode case_value;
 	PASTNode case_body;
 
-	tInfoAsmOp * asm_op;
+	tInfoAsmOpCompiler * asm_op;
 
 	string error_str;
 	string detected_type_str;
 	int idxScope=AST_SCOPE_INFO_IDX(this->m_currentFunctionInfo->function_info_object->object_info.symbol_info.idxAstNode);
 	 CScope *_scope = SCOPE_INFO_NODE(idxScope)->getCurrentScopePointer();
+	 CCompiler::tInfoAsmOpCompiler *jmp_instruction;
 
 	// create new statment ...
 	CCompiler::getInstance()->newStatment();
@@ -1801,6 +1805,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 
 								for(unsigned j = 0; j < group_cases->children.size(); j++){ // generate condition case ...
 									case_value = group_cases->children[j];
+									jmp_instruction=NULL;
 
 									if(case_value->node_type == KEYWORD_NODE && case_value->keyword_info != NULL){
 
@@ -1813,7 +1818,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 											if(!has_default){
 												has_default = true;
 												// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases + body...
-												case_value->aux_value = insert_JMP_Instruction();
+												jmp_instruction = insert_JMP_Instruction();
 											}else{
 												print_error_cr("case already defined!");
 												return false;
@@ -1831,7 +1836,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 											}
 
 											// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases...
-											case_value->aux_value = insert_JT_Instruction();
+											jmp_instruction = insert_JT_Instruction();
 
 											break;
 
@@ -1853,12 +1858,12 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 							if(gacBody(case_body,_lc)){
 								for(unsigned i = 0; i < group_cases->children.size(); i++){
 									case_value = group_cases->children[i];
-									asm_op = (tInfoAsmOp *)case_value->aux_value; // load jt instruction and set current instruction before write asm code.
+									asm_op = jmp_instruction; // load jt instruction and set current instruction before write asm code.
 									asm_op->index_op1 = getCurrentStatmentIndex();
 								}
 
 								if(i < (_node->children.size()-1))
-									case_body->aux_value = insert_JMP_Instruction();
+									jmp_instruction = insert_JMP_Instruction();
 							}else{
 								return false;
 							}
@@ -1866,7 +1871,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 
 						case 2: // FINALLY, WRITE JMP's to end statment
 
-							if((asm_op = (tInfoAsmOp *)case_body->aux_value) != NULL){
+							if((asm_op = (tInfoAsmOpCompiler *)jmp_instruction) != NULL){
 								asm_op->index_op1 = getCurrentStatmentIndex()+1;
 							}
 							break;
@@ -2087,17 +2092,29 @@ void CCompiler::popFunction(){
 	vector<tInfoStatementOpCompiler> *vec_comp_statment;
 	vec_comp_statment = &m_currentFunctionInfo->stament;
 
-
-	m_currentFunctionInfo->function_info_object->object_info.statment_op = (tInfoStatementOp *)malloc(vec_comp_statment->size()*sizeof(tInfoStatementOp));
-	m_currentFunctionInfo->function_info_object->object_info.n_statment_op = vec_comp_statment->size();
+	// get total size op + 1 ends with NULL
+	unsigned size=(vec_comp_statment->size()+1)*sizeof(PtrStatment);
+	m_currentFunctionInfo->function_info_object->object_info.statment_op = (PtrStatment)malloc(size);
+	memset(m_currentFunctionInfo->function_info_object->object_info.statment_op,0,size);
+	//m_currentFunctionInfo->function_info_object->object_info.n_statment_op = vec_comp_statment->size();
 
 	for(unsigned i = 0; i < vec_comp_statment->size();i++){ // foreach statment...
-		// reserve memory for n ops...
-		m_currentFunctionInfo->function_info_object->object_info.statment_op[i].asm_op = (tInfoAsmOp *)malloc(vec_comp_statment->at(i).asm_op.size()*sizeof(tInfoAsmOp));
-		m_currentFunctionInfo->function_info_object->object_info.statment_op[i].n_asm_op=vec_comp_statment->at(i).asm_op.size();
+		// reserve memory for n ops + 1 NULL end of instruction...
+		size = (vec_comp_statment->at(i).asm_op.size()+1)*sizeof(tInfoAsmOp);
+		m_currentFunctionInfo->function_info_object->object_info.statment_op[i] = (tInfoAsmOp *)malloc(size);
+
+		memset(m_currentFunctionInfo->function_info_object->object_info.statment_op[i],0,size);
+		//m_currentFunctionInfo->function_info_object->object_info.statment_op[i].n_asm_op=vec_comp_statment->at(i).asm_op.size();
 		//m_currentFunctionInfo->object_info.statment_op[i] = m_currentListStatements->at(i);
 		for(unsigned j = 0; j < vec_comp_statment->at(i).asm_op.size();j++){
-			m_currentFunctionInfo->function_info_object->object_info.statment_op[i].asm_op[j]=*vec_comp_statment->at(i).asm_op[j];
+
+			tInfoAsmOpCompiler *asm_op = vec_comp_statment->at(i).asm_op[j];
+
+			m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].idxAstNode=asm_op->idxAstNode;
+			m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].operator_type=asm_op->operator_type;
+			m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].index_op1=asm_op->index_op1;
+			m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].index_op2=asm_op->index_op2;
+			m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].instruction_properties=asm_op->pre_post_op_type | asm_op->scope_type | asm_op->runtime_prop;
 		}
 	}
 

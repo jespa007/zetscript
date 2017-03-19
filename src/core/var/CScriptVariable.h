@@ -32,6 +32,7 @@ public:
 	// MEM MANNAGER RELATED
 	//bool deallocatable;
 	int idx_shared_ptr;
+	int idxScriptClass;
 	//----------------------
 
 	// public vars ...
@@ -65,8 +66,6 @@ public:
 
 	void * get_C_Object();
 
-	//vector<tInfoStatementOp> * getCompiledCode(int idx_function);
-
 	CScriptFunctionObject *getConstructorFunction();
 
 	//void addArgSymbol(const string & arg_name);
@@ -90,7 +89,7 @@ protected:
 	 * This variable tells whether is pointer function or not.
 	 */
 	CScriptClass *m_infoRegisteredClass;
-	int idxScriptClass;
+
 
 
 	virtual void setup();
@@ -110,8 +109,8 @@ private:
 	vector<tSymbolInfo> m_functionSymbol;
 
 public:
-	inline int getIdxClass(){
-		return idxScriptClass;//m_infoRegisteredClass->metadata_info.object_info.symbol_info.idxScriptClass;
-	}
+	//inline int getIdxClass(){
+	//	return idxScriptClass;//m_infoRegisteredClass->metadata_info.object_info.symbol_info.idxScriptClass;
+	//}
 
 };

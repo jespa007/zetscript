@@ -9,18 +9,53 @@
 #define VM_ALE_OPERATIONS_MAX_STACK			4096	 // max operations ...
 
 
-
+#define MAX_UNIQUE_OBJECTS_POINTERS 2048
+#define MAX_STACK 256
 
 
 class CScriptFunction;
 class CVirtualMachine{
 
-	typedef struct{
-		VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
+#pragma pack(1)
+	struct tAleObjectInfo{
+		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
+		unsigned short				properties;
 		void			 		* 	stkResultObject; // pointer to pointer ables to modify its pointer when is needed
 		CScriptVariable  		** 	ptrObjectRef; // pointer to pointer in case of replace var
-		int							properties;
-	}tAleObjectInfo;
+
+	};
+
+//===================================================================================================
+//
+// POINTER MANAGER ...
+//
+
+#pragma pack(1)
+	struct tInfoSharedPointer{
+		CScriptVariable *shared_ptr;
+		short n_shares;
+		short idx_0_shares;
+	};
+
+
+	tInfoSharedPointer shared_pointer[MAX_STACK][MAX_UNIQUE_OBJECTS_POINTERS];
+	short pointers_with_0_shares[MAX_STACK][MAX_UNIQUE_OBJECTS_POINTERS],
+		n_pointers_with_0_shares[MAX_STACK];
+
+	short indexFreeCell[MAX_STACK][MAX_UNIQUE_OBJECTS_POINTERS],
+		n_freeCell[MAX_STACK];
+
+	int idxCurrentStack;
+
+
+
+	int getFreeCell();
+	void setFreeCell(int index_to_free);
+
+
+	int insert0Shares(int shared_pointer_idx);
+
+//===================================================================================================
 
 public:
 
@@ -35,9 +70,32 @@ public:
 
 public:
 
+//===================================================================================================
+//
+// POINTER MANAGER ...
+//
+
+	//static CSharedPointerManager * getInstance();
+	//static void destroySingletons();
+
+	int newSharedPointer(CScriptVariable *var_ptr);
+	void removeUnSharedPointers();
+	//void gc();
+	int getIdx0Shares(int index);
+	int getNumShares(int index);
+	void remove0Shares(int index_0_share_idx);
+
+	bool push(); // push current stack
+	bool pop(); // pop stack.
+
+	void sharePointer( int index);
+	void unrefSharedPointer( int index);
+
+	//static CSharedPointerManager *sharedPointerManager;
 
 
 
+//===================================================================================================
 
 	CVirtualMachine();
 	~CVirtualMachine();
@@ -55,11 +113,13 @@ public:
 			tInfoAsmOp *asm_op,
 			int n_stk);*/
 
-	inline void reset();
+	//inline void reset();
 
 	inline CScriptVariable * createVarFromResultInstruction(tAleObjectInfo * ptr_result_instruction, bool share_ptr = true);
 
 //	~CALE();
+
+
 
 
 private:
@@ -121,15 +181,27 @@ private:
 
 	//inline bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 
-	bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
-	bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
-	bool pushFunction(CScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
+	bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL,unsigned short properties=0);
+	bool pushString(const string & init_value, CScriptVariable ** ptrAssignable=NULL,unsigned short properties=0);
+	bool pushFunction(CScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable=NULL,unsigned short properties=0);
 	//bool pushVar(CScriptVariable * , CScriptVariable ** ptrObjectRef=NULL, int properties=0,bool is_new_var=false);
 
-	bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
+	//bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
 
 
-
+	/*inline bool LOAD_VARIABLE(
+			tInfoAsmOp *iao,
+			CScriptFunctionObject *local_function,
+			CScriptVariable *this_object,
+			tInfoAsmOp *asm_op);
+	//inline bool LOAD_CONSTANT();
+	inline bool LOAD_OP(
+			CScriptFunctionObject *info_function,
+			CScriptVariable *this_object,
+			tInfoAsmOp *instruction,
+			tInfoAsmOp *asm_op,
+			int index_op1,
+			int index_op2);*/
 
 	//bool performPreOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *obj);
 	//bool performPostOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *obj);

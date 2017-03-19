@@ -1,5 +1,5 @@
 
-#include "CSharedPointerManager.cpp"
+//#include "CSharedPointerManager.cpp"
 #include "var/zg_variable.cpp"
 #include "CScope.cpp"
 #include "CASTNode.cpp"

@@ -15,6 +15,8 @@ class CScope;
 #define ZETSCRIPT_MINOR_VERSION 1
 #define ZETSCRIPT_PATCH_VERSION 0
 
+#define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
+
 
 class CZetScript{
 
@@ -55,7 +57,7 @@ public:
 	// PRINT ASM INFO
 	char print_aux_load_value[1024*8];
 	const char * getStrMovVar(tInfoAsmOp * iao);
-	const char * getStrTypeLoadValue(tInfoStatementOp * m_listStatements,int current_statment, int current_instruction);
+	const char * getStrTypeLoadValue(PtrStatment m_listStatements,int current_statment, int current_instruction);
 	void printGeneratedCode_Recursive(tFunctionInfo *fs);
 	void printGeneratedCode(tFunctionInfo *fs);
 	void printGeneratedCodeAllClasses();
@@ -66,7 +68,7 @@ public:
 	tFunctionInfo *getMainObjectInfo(){return &m_mainFunctionInfo->object_info;}
 
 	//CScriptFunction *getMainFunction(){return m_mainFunction;}*/
-
+	CVirtualMachine * getVirtualMachine();
 	CScriptVariable *getMainObject(){return m_mainObject;}
 
 	static CScriptVariable * call_C_function(void *fun_ptr,CScriptFunctionObject *irfs, vector<CScriptVariable *> * argv);

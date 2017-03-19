@@ -7,7 +7,7 @@
 
 
 #include "Common.h"
-#include "CSharedPointerManager.h"
+//#include "CSharedPointerManager.h"
 #include "var/zg_variable.h"
 #include "CASTNode.h"
 #include "CScope.h"
