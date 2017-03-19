@@ -49,7 +49,7 @@ Comparison tables https://en.wikipedia.org/wiki/Instructions_per_second
 TABLE OPTIMIZATION
 
 Optimization|   ms  |   MIPS   | Desc
-------------|-------|--------------------------------------------------------
+------------|-------|----------|---------------------------------------------
 No opt      |  2700 |  37 MIPS | N/A 
 1st         |  2000 |  50 MIPS | std::vector to plain C
 2st         |  1400 |  71 MIPS | Get rid of function access as much as possible
