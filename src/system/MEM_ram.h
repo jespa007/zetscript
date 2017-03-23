@@ -23,7 +23,7 @@
 #include <float.h>
 #include <cstdarg>
 #include <assert.h>
-#include <dirent.h>
+
 #include <typeinfo>
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,7 +34,7 @@
 
 #include <sstream>
 #include <cstddef>
-#include <cxxabi.h>
+
 #include <type_traits>
 
 
@@ -42,6 +42,8 @@
 
 
 #if defined(__GNUC__)
+#include <cxxabi.h>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>

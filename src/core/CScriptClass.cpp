@@ -249,6 +249,8 @@ public:
 
  bool CScriptClass::init(){
 
+	 vector<CASTNode *> *vec_ast = CASTNode::getVectorASTNode();
+
 	    if(vec_script_class_node == NULL){
 	    	print_error_cr("vector class factory not set");
 	    	return false;
@@ -969,7 +971,7 @@ bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_pt
 		return false;
 	}
 
-
+	CScope *scp = MAIN_SCOPE_ROOT;
 
 	if(!MAIN_SCOPE_ROOT->registerSymbol(var_name)){
 		return false;

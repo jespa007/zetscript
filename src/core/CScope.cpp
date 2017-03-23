@@ -57,7 +57,7 @@ CScope::CScope(int idx_this, int idx_parent){//, int _index){
 	//m_index = _index;
 	idxCurrentScopePointer=ZS_UNDEFINED_IDX;
 	//m_baseScope = this;
-	idxScope = -1;
+	idxScope = idx_this;
 
 	if(idx_parent == ZS_UNDEFINED_IDX){
 		idxBaseScope = idx_this;

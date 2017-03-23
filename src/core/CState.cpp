@@ -210,14 +210,21 @@ tScopeVar 	* CState::getScopeVarNodeByIdx(int idx){
 
 CState::CState(){
 
+	vec_ast_node = new vector<CASTNode *>; // ast collection register...
+	vec_scope_node = new vector<CScope *>;
+	//vector<tScopeVar *> 						vec_scope_var_node;
+	vec_script_class_node = new vector<CScriptClass *> ;
+	vec_script_function_object_node = new vector<CScriptFunctionObject *>;
+	vec_info_parsed_source_node = new vector<tInfoParsedSource> ;
+
 }
 
 
 vector<CASTNode *> 		*		CState::getVectorASTNodeNode(){
-	return &vec_ast_node;
+	return vec_ast_node;
 }
 vector<CScope *> 	*		CState::getVectorScopeNode(){
-	return &vec_scope_node;
+	return vec_scope_node;
 }
 
 /*
@@ -226,27 +233,27 @@ vector<tScopeVar *> 	*	CState::getVecScopeVarNode(){
 }*/
 
 vector<CScriptClass *> 	*CState::getVectorScriptClassNode(){
-	return &vec_script_class_node;
+	return vec_script_class_node;
 }
 
 vector<tInfoParsedSource> 	*CState::getVectorInfoParsedSourceNode(){
-	return &vec_info_parsed_source_node;
+	return vec_info_parsed_source_node;
 }
 
 vector<CScriptFunctionObject *> 	*CState::getVectorScriptFunctionObjectNode(){
-	return &vec_script_function_object_node;
+	return vec_script_function_object_node;
 }
 
 
 void CState::destroyASTNodes(){
-	for(unsigned i = 0; i < vec_ast_node.size(); i++){
-		delete vec_ast_node [i];
+	for(unsigned i = 0; i < vec_ast_node->size(); i++){
+		delete vec_ast_node->at(i);
 	}
 
 }
 void CState::destroyScopeNodes(){
-	for(unsigned i = 0; i < vec_scope_node.size(); i++){
-		delete vec_scope_node [i];
+	for(unsigned i = 0; i < vec_scope_node->size(); i++){
+		delete vec_scope_node->at(i);
 	}
 }
 
@@ -254,9 +261,9 @@ void CState::destroyScopeNodes(){
 
 void CState::destroyScriptFunctionObjectNodes(){
 
-	for(unsigned i = 0; i < vec_script_function_object_node.size(); i++){
+	for(unsigned i = 0; i < vec_script_function_object_node->size(); i++){
 
-		CScriptFunctionObject * info_function = vec_script_function_object_node[i];
+		CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
 
 		if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
 			//return;
@@ -278,14 +285,14 @@ void CState::destroyScriptFunctionObjectNodes(){
 
 void CState::destroyScriptClassNodes() {
 
-	for(unsigned i = 0;i<vec_script_class_node.size();i++){
+	for(unsigned i = 0;i<vec_script_class_node->size();i++){
 
-		CScriptClass *irv = vec_script_class_node[i];
+		CScriptClass *irv = vec_script_class_node->at(i);
 		for(unsigned j = 0; j < irv->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();j++){
 
 			CScriptFunctionObject * info_function = GET_SCRIPT_FUNCTION_OBJECT(irv->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[j]);
 
-			print_debug_cr("unloading %s::%s...",vec_script_class_node[i]->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
+			print_debug_cr("unloading %s::%s...",vec_script_class_node->at(i)->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
 
 			// C related functions ...
 			if(i==0 && j==0){ // MAIN FUNCTION (C functions)
@@ -368,8 +375,8 @@ void CState::destroy(){
 	destroyScopeNodes();
 	destroyASTNodes();
 
-	for(unsigned i =0; i < vec_info_parsed_source_node.size(); i++){
-		delete vec_info_parsed_source_node[i].data;
+	for(unsigned i =0; i < vec_info_parsed_source_node->size(); i++){
+		delete vec_info_parsed_source_node->at(i).data;
 	}
 
 	// Destroy scope ...
@@ -377,7 +384,7 @@ void CState::destroy(){
 	//delete m_rootAstNode->scope_info_ptr;//m_rootScope;
 	// End destroy scope ...
 
-	delete vec_ast_node[0];
+	delete vec_ast_node->at(0);
 }
 
 CState::~CState(){

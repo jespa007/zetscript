@@ -8,7 +8,7 @@ project(zg_base)
 #
 # COMMON PARAMS
 #
-  SET( COMMON_PARAMS " -D__STDC_CONSTANT_MACROS -std=c++1y -I${PROJECT_SOURCE_DIR} -Wall  -fno-exceptions -fno-strict-aliasing")
+  SET( COMMON_PARAMS " -D__STDC_CONSTANT_MACROS -std=c++1y -I${PROJECT_SOURCE_DIR} -pthread -Wall")
    
 if (MINGW)
 	set(CMAKE_LEGACY_MINGW_WIN32 0)
@@ -161,7 +161,7 @@ else()
 	IF (MINGW)
 	
 	 target_link_libraries(zetscript${POST_NAME} Rpcrt4 kernel32 "-Wl,--no-as-needed" )
-	 target_link_libraries(zs${POST_NAME} mingw32  zg_script${POST_NAME} "-Wl,--no-as-needed" )
+	 target_link_libraries(zs${POST_NAME} mingw32  zetscript${POST_NAME} "-Wl,--no-as-needed" )
 	  
 	ELSE(MINGW)
 		target_link_libraries(zetscript${POST_NAME}  "-Wl,--no-as-needed" )

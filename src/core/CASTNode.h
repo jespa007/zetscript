@@ -64,7 +64,7 @@ public:
 
 	static void 					init();
 	static CASTNode				*  	newASTNode(int preallocated_nodes=0);
-	static vector<CASTNode *>	*	getVectorASTNodeNode(); // ast collection register...
+	static vector<CASTNode *>	*	getVectorASTNode(); // ast collection register...
 
 
 	static CASTNode				* 	getAstNode(int idx);

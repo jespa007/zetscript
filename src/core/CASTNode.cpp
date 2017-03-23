@@ -24,7 +24,7 @@ void CASTNode::setVectorASTNode(vector<CASTNode *> 	* set_vec_ast_node){
 	vec_ast_node = set_vec_ast_node;
 }
 
-vector<CASTNode *> 		*		CASTNode::getVectorASTNodeNode(){
+vector<CASTNode *> 		*		CASTNode::getVectorASTNode(){
 	return vec_ast_node;
 }
 
