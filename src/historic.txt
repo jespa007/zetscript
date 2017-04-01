@@ -5,8 +5,8 @@ emmscripten example:
 
 arguments:['var j=0;for(var i=0; i < 10000000; ++i){i*2;}'],
 
-version 1.00.00
-===============
+Zetscript (Beta version)
+========================
 
 -emmscriptem port.
 -set/save state.
