@@ -915,7 +915,9 @@ bool CCompiler::insertOperatorInstruction(tPunctuatorInfo * op, PASTNode _node, 
 		iao->index_op1 = op_index_left;
 		iao->index_op2 = op_index_right;
 
-		iao->idxAstNode=_node->idxAstNode;
+		if(_node!=NULL){
+			iao->idxAstNode=_node->idxAstNode;
+		}
 		ptr_current_statement_op->asm_op.push_back(iao);
 		return true;
 	}
@@ -1780,23 +1782,25 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 	// create new statment ...
 	CCompiler::getInstance()->newStatment();
 
-	if(insertLoadValueInstruction(_node,_scope)){ // insert condition value ...
+	if(ast2asm_Recursive(_node->children[0],_scope)){ // insert condition value ...
 
 		// get current instruction value to take as ref for compare within value cases...
 		int switch_value_index  = getCurrentInstructionIndex();
 
 		// the stratege is first evaluate all cases and then their bodies...
 		for(unsigned s=0; s < 3; s++){
-			for(unsigned i = 0; i < _node->children.size(); i++){ // expect node type group cases ...
+			// start +1 because 0 is switch value ...
+			for(unsigned i = 1; i < _node->children.size(); i++){ // expect node type group cases ...
 				switch_node = _node->children[i];
 
-				if(switch_node != NULL){ // the rules are the following children[0]:group_cases and children[1]:body_case
+				if(switch_node != NULL){ // the rules are the following: children[0]:group_cases and children[1]:body_case
 
 					if(switch_node->children.size() == 2){
 						group_cases = switch_node->children[0];
 						case_body = switch_node->children[1];
 						switch(s){
 
+						// case group
 						case 0: // GENERATE ASM FOR CONDITIONAL CASES ...
 
 							if(group_cases->node_type == GROUP_CASES_NODE){
@@ -1853,6 +1857,7 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 							}
 							break;
 
+						// Body!
 						case 1: // GENERATE ASM FOR BODY AND WRITE initial JMP
 
 							if(gacBody(case_body,_lc)){
@@ -1888,6 +1893,8 @@ bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 				}
 			}
 		}
+	}else{
+		return false;
 	}
 	return true;
 }

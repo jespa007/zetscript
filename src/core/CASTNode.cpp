@@ -2456,19 +2456,35 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 				//if((end_expr = CStringUtils::ADVANCE_TO_CHAR(aux_p,')',m_line)) != NULL){
 					aux_p=CStringUtils::IGNORE_BLANKS(aux_p+1,m_line);
 
-					end_expr = getEndWord(aux_p, m_line);
-
-					value_to_eval = CStringUtils::copyStringFromInterval(aux_p, end_expr);
-
-					if(!value_to_eval) {return NULL;}
-
-					//--- create node
-					if(ast_node_to_be_evaluated!= NULL){
-						(*ast_node_to_be_evaluated)->symbol_value = value_to_eval;
+					// evaluate switch vale expression ...
+					PASTNode base_expression_to_evaluate = NULL;
+					//static char * parseExpression_Recursive(const char *s, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
+					if((aux_p = CASTNode::parseExpression(
+							aux_p,
+							m_line,
+							scope_info,
+							ast_node_to_be_evaluated==NULL?NULL:&base_expression_to_evaluate))==NULL)
+					{// getEndWord(aux_p, m_line);
+						return NULL;
 					}
 
+					if(ast_node_to_be_evaluated != NULL){
+						base_expression_to_evaluate->parent = (*ast_node_to_be_evaluated);
+						(*ast_node_to_be_evaluated)->children.push_back(base_expression_to_evaluate);
+					}
+
+
+					//value_to_eval = CStringUtils::copyStringFromInterval(aux_p, end_expr);
+
+					//if(!value_to_eval) {return NULL;}
+
+					//--- create node
+					//if(ast_node_to_be_evaluated!= NULL){
+					//	(*ast_node_to_be_evaluated)->symbol_value = value_to_eval;
+					//}
+
 					//---
-					aux_p=CStringUtils::IGNORE_BLANKS(end_expr,m_line);
+					//aux_p=CStringUtils::IGNORE_BLANKS(end_expr,m_line);
 
 					if(*aux_p != ')'){
 						print_error_cr("Expected ')' switch %i",m_line);
@@ -2485,6 +2501,7 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 						aux_p = CStringUtils::IGNORE_BLANKS(aux_p,m_line);
 
 
+						// foreach case evaluate its body,
 						while(*aux_p!='}' && *aux_p!=0){
 								n_cases = 0;
 								bool theres_a_default= false;
@@ -2542,9 +2559,9 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 										if(*aux_p == ':'){
 
 											if(ast_node_to_be_evaluated != NULL){
-												// check if repeated...
-												for(unsigned j=0; j <(*ast_node_to_be_evaluated)->children.size(); j++ ){ // switch nodes
-													for(unsigned h=0; h <(*ast_node_to_be_evaluated)->children[j]->children[0]->children.size(); h++ ){ // groups nodes
+												// check if repeated (starts from 1 because the first is the switch expression)...
+												for(unsigned j=1; j <(*ast_node_to_be_evaluated)->children.size(); j++ ){ // switch nodes
+													for(unsigned h=1; h <(*ast_node_to_be_evaluated)->children[j]->children[0]->children.size(); h++ ){ // groups nodes
 														if((*ast_node_to_be_evaluated)->children[j]->children[0]->children[h]->symbol_value == val){
 															print_error_cr("Symbol %s repeteaded in switch at line %i",val.c_str(),m_line);
 															return NULL;
@@ -2666,7 +2683,8 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 							// check default node to put to the end of the list ...
 								if(default_switch_node!= NULL){
 									bool end=false;
-									for(vector<PASTNode>::iterator it = (*ast_node_to_be_evaluated)->children.begin(); it != (*ast_node_to_be_evaluated)->children.end() && !end; ){ //erase cases and print warning !
+									// start iterator from begin + 1 because the first is the switch value expression itself
+									for(vector<PASTNode>::iterator it = ((*ast_node_to_be_evaluated)->children.begin()+1); it != (*ast_node_to_be_evaluated)->children.end() && !end; ){ //erase cases and print warning !
 
 										if((*it)->children[0]->children[0]->keyword_info->id == DEFAULT_KEYWORD){ // group cases-case node access
 											(*ast_node_to_be_evaluated)->children.erase(it);
