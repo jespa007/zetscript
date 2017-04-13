@@ -249,7 +249,7 @@ public:
 
  bool CScriptClass::init(){
 
-	 vector<CASTNode *> *vec_ast = CASTNode::getVectorASTNode();
+	 //vector<CASTNode *> *vec_ast = CASTNode::getVectorASTNode();
 
 	    if(vec_script_class_node == NULL){
 	    	print_error_cr("vector class factory not set");
@@ -284,7 +284,7 @@ public:
 
 		// MAIN CLASS (IDX==0)! Is the first entry before any other one   (this order is important!...
 		if((newScriptClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 0
-		if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME,MAIN_AST_NODE)) == NULL) return false;
+		if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME,IDX_MAIN_AST_NODE)) == NULL) return false;
 
 
 
@@ -351,9 +351,16 @@ public:
 		// From here you defined all basic, start define hierarchy
 
 		// register custom functions ...
-		if(!register_C_FunctionMember(CScriptVariable,toString)) return false;
-		if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CVector::*)(string * )>(&CScriptVariable::fun1))) return false;
-		if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CVector::*)(int * )>(&CScriptVariable::fun1))) return false;
+		/*if(!register_C_FunctionMember(CScriptVariable,toString)) return false;
+		if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(string * ))) return false;
+		if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(int * ))) return false;
+		if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(int *,int * ))) return false;
+		//if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(string * )>(&CScriptVariable::fun1))) return false;
+		//if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(int * )>(&CScriptVariable::fun1))) return false;
+
+		// Add metamethods ...
+		if(!register_C_FunctionMemberCast(CScriptVariable,_add,CScriptVariable * (CScriptVariable::*)(CScriptVariable * ))) return false;
+		if(!register_C_FunctionMemberCast(CScriptVariable,_add,CScriptVariable * (CScriptVariable::*)(CScriptVariable *,CScriptVariable * ))) return false;*/
 
 
 		if(!class_C_baseof<CVoid,CScriptVariable>()) return false;
@@ -553,8 +560,8 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 		 if(!is_main_function) {// is not main function
 
 			 if(ast->node_type == NODE_TYPE::KEYWORD_NODE){
-				 if(ast->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD || ast->keyword_info->id == KEYWORD_TYPE::OPERATOR_KEYWORD){
-					 idxScope = ast->children[1]->idxScope; // pass scope block ...
+				 if(ast->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD || ast->keyword_info == KEYWORD_TYPE::OPERATOR_KEYWORD){
+					 idxScope = AST_NODE(ast->children[1])->idxScope; // pass scope block ...
 				 }
 			 }
 		 }
@@ -626,7 +633,7 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 
 	 for(PtrStatment stat = info_function->statment_op; *stat != NULL;stat++){
 		 int idx_op=0;
-		 for(tInfoAsmOp *iao=*stat; iao->operator_type!=INVALID_OP ; iao++,idx_op++){
+		 for(tInfoAsmOp *iao=*stat; iao->operator_type!=END_STATMENT ; iao++,idx_op++){
 
 			 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
@@ -747,7 +754,7 @@ bool CScriptClass::updateReferenceSymbols(){
 			 if(info_function->object_info.statment_op != NULL){
 				 for(PtrStatment stat = info_function->object_info.statment_op; *stat!=NULL;stat++){
 					 int idx_op = 0;
-					 for(tInfoAsmOp *iao=*stat; iao->operator_type!=INVALID_OP; iao++,idx_op++){
+					 for(tInfoAsmOp *iao=*stat; iao->operator_type!=END_STATMENT; iao++,idx_op++){
 
 						 if(iao->operator_type==ASM_OPERATOR::LOAD){
 
@@ -1041,7 +1048,7 @@ int CScriptClass::getIdx_C_RegisteredFunctionMemberClass(const string & str_clas
 
 
 
-tInfoVariableSymbol * CScriptClass::registerVariableSymbol(const string & class_name,const string & var_name,PASTNode  ast){
+tInfoVariableSymbol * CScriptClass::registerVariableSymbol(const string & class_name,const string & var_name,short  idxAstNode){
 
 	//CScriptClass *rc = getRegisteredClass(class_name);
 	//int idxScriptClass
@@ -1056,7 +1063,7 @@ tInfoVariableSymbol * CScriptClass::registerVariableSymbol(const string & class_
 
 		tInfoVariableSymbol info_var;
 		info_var.idxScriptClass = rc->metadata_info.object_info.symbol_info.idxScriptClass;
-		info_var.idxAstNode = ast->idxAstNode;
+		info_var.idxAstNode = idxAstNode;
 		info_var.symbol_name =var_name;
 		info_var.idxSymbol = object_info->local_symbols.m_registeredVariable.size();
 		object_info->local_symbols.m_registeredVariable.push_back(info_var);
@@ -1140,7 +1147,7 @@ tFunctionInfo *  CScriptClass::getSuperClass(CScriptClass *irc, const string & f
 
 //-------
 
-CScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & class_name, const string & fun_name, PASTNode  ast){
+CScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & class_name, const string & fun_name, short  idxAstNode){
 
 	CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);
 
@@ -1152,11 +1159,7 @@ CScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & clas
 
 		irs->object_info.symbol_info.idxScriptClass = object_info->symbol_info.idxScriptClass;
 		irs->object_info.symbol_info.symbol_name = fun_name;
-
-		irs->object_info.symbol_info.idxAstNode = -1;
-		if(ast != NULL){
-			irs->object_info.symbol_info.idxAstNode = ast->idxAstNode;
-		}
+		irs->object_info.symbol_info.idxAstNode = idxAstNode;
 
 
 		if(fun_name == class_name){

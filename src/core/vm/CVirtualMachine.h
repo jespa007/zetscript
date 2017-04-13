@@ -16,14 +16,7 @@
 class CScriptFunction;
 class CVirtualMachine{
 
-#pragma pack(1)
-	struct tAleObjectInfo{
-		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
-		unsigned short				properties;
-		void			 		* 	stkResultObject; // pointer to pointer ables to modify its pointer when is needed
-		CScriptVariable  		** 	ptrObjectRef; // pointer to pointer in case of replace var
 
-	};
 
 //===================================================================================================
 //
@@ -85,9 +78,6 @@ public:
 	int getNumShares(int index);
 	void remove0Shares(int index_0_share_idx);
 
-	bool push(); // push current stack
-	bool pop(); // pop stack.
-
 	void sharePointer( int index);
 	void unrefSharedPointer( int index);
 
@@ -115,7 +105,7 @@ public:
 
 	//inline void reset();
 
-	inline CScriptVariable * createVarFromResultInstruction(tAleObjectInfo * ptr_result_instruction, bool share_ptr = true);
+	//inline CScriptVariable * createVarFromResultInstruction(tAleObjectInfo * ptr_result_instruction, bool share_ptr = true);
 
 //	~CALE();
 
@@ -212,7 +202,7 @@ private:
 			CScriptVariable *this_object,
 			tInfoAsmOp *asm_op);*/
 
-	bool loadFunctionValue(const tInfoAsmOp *iao,
+	bool loadFunctionValue(const tInfoAsmOp * iao,
 			CScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
 			tInfoAsmOp *asm_op);

@@ -133,7 +133,7 @@ void CZetScript::destroy(){
 
 			//printf("\n[%s]\n\n","file.zs");
 			unsigned idx_instruction=0;
-			for(tInfoAsmOp * asm_op_statment=*stat; asm_op_statment->operator_type!= INVALID_OP; asm_op_statment++,idx_instruction++){
+			for(tInfoAsmOp * asm_op_statment=*stat; asm_op_statment->operator_type!= END_STATMENT; asm_op_statment++,idx_instruction++){
 
 				int n_ops=0;
 				int index_op1 = asm_op_statment->index_op1;
@@ -537,7 +537,7 @@ bool CZetScript::eval(const string & s){
 
 		idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 
-		if(CCompiler::getInstance()->compile(MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
+		if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
 			// print generated asm ...
 
 			if(!CScriptClass::updateReferenceSymbols()){

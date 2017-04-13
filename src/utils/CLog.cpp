@@ -1,6 +1,6 @@
 #include "../CZetScript.h"
 
-#define VAR_LOG(l) ((l) == CLog::LOG_ERROR?"ERR": (l)==CLog::LOG_WARNING?"WRN": (l) == CLog::LOG_INFO ? "INF" : "NAN" )
+#define VAR_LOG(l) ((l) == CLog::LOG_ERROR?"ERR": (l)==CLog::LOG_WARNING?"WRN": (l) == CLog::LOG_INFO ? "INF" : (l) == CLog::LOG_DEBUG ? "DBG":"NAN" )
 //      #include                  "cbingq.h"
 //#include <string>
 

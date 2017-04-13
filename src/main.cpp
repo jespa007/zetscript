@@ -52,16 +52,18 @@ int main(int argc, char * argv[]){
 	gettimeofday(&end, NULL);
 	printf("\nTime array_c:%lu",end.tv_usec-start.tv_usec);
 	return 0;*/
-/*
-	print_info_cr("sizeof(short):%i sizeof(tInfoAsmOp):%i",sizeof(short),sizeof(tInfoAsmOp));
-	print_info_cr("sizeof(short):%i sizeof(CVirtualMachine):%.04fMB",sizeof(short),float(sizeof(CVirtualMachine))/(1024*1024));
-	print_info_cr("sizeof(short):%i sizeof(CAstNode):%.04fMB",sizeof(short),float(sizeof(CASTNode))/(1024*1024));
-	print_info_cr("sizeof(short):%i sizeof(CCompiler):%.04fMB",sizeof(short),float(sizeof(CCompiler))/(1024*1024));
-	print_info_cr("sizeof(short):%i sizeof(CScope):%.04fMB",sizeof(short),float(sizeof(CScope))/(1024*1024));
-	print_info_cr("sizeof(short):%i sizeof(CScriptVariable):%.04fMB",sizeof(short),float(sizeof(CScriptVariable))/(1024*1024));
-	print_info_cr("sizeof(short):%i sizeof(CScriptClass):%.04fMB",sizeof(short),float(sizeof(CScriptClass))/(1024*1024));
-	return 0;
-*/
+
+	print_info_cr("sizeof(tInfoAsmOp):%i",sizeof(tInfoAsmOp));
+	print_info_cr("sizeof(CVirtualMachine):%.04fMB",float(sizeof(CVirtualMachine))/(1024*1024));
+	print_info_cr("sizeof(CAstNode):%i bytes",sizeof(CASTNode));
+	print_info_cr("sizeof(CCompiler):%i bytes",sizeof(CCompiler));
+	print_info_cr("sizeof(CScope):%i bytes",sizeof(CScope));
+	print_info_cr("sizeof(CScriptVariable):%i bytes",sizeof(CScriptVariable));
+	print_info_cr("sizeof(CScriptClass):%i bytes",sizeof(CScriptClass));
+	print_info_cr("sizeof(tAleObjectInfo):%i bytes",sizeof(tAleObjectInfo));
+
+	//return 0;
+
 	CLog::setUseAnsiEscape(true);
 	CZetScript *zet_script = CZetScript::getInstance();
 

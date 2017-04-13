@@ -109,8 +109,23 @@ void CScriptVariable::fun1(int *i){
 	print_info_cr("FUN1 (I): %i",*i);
 }
 
+void CScriptVariable::fun1(int *i, int *j){
+	print_info_cr("FUN1 (I): %i %j",*i,*j);
+}
+
 void CScriptVariable::fun1(string *s){
 	print_info_cr("FUN1 (S): %s",s->c_str());
+}
+
+CScriptVariable * CScriptVariable::_add(CScriptVariable *v1){
+	// 1. perform operations ...
+
+	// 2. create var variable (after the operation the VM will add pointer into MemoryManager)...
+	return new CScriptVariable;
+}
+
+CScriptVariable * CScriptVariable::_add(CScriptVariable *v1, CScriptVariable *v2){
+	return new CScriptVariable;
 }
 
 void CScriptVariable::setup(){
@@ -128,8 +143,6 @@ CScriptVariable::CScriptVariable(){
 
 	setup();
 
-
-
 }
 /*
 CScriptVariable::CScriptVariable(CScriptClass *irv, void *_c_object){
@@ -140,8 +153,6 @@ CScriptVariable::CScriptVariable(CScriptClass *irv, void *_c_object){
 
 void CScriptVariable::init(CScriptClass *irv, void *_c_object){
 	setup();
-
-
 
 
 	this->m_infoRegisteredClass = irv;

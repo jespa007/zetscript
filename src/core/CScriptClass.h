@@ -30,6 +30,8 @@
 
 #define register_C_VariableMember(o,s) 			register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetof(o,s))
 #define register_C_FunctionMember(o,s)			register_C_FunctionMemberInt<o>(STR(s),&o::s)
+#define register_C_FunctionMemberCast(o,s,f)	register_C_FunctionMemberInt<o>(STR(s),static_cast<f>(&o::s))
+
 
 #define GET_MAIN_VARIABLE(idx_var)				CScriptClass::getVariableClass(0,idx_var)
 #define GET_MAIN_SCRIPT_FUNCTION_IDX			CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
@@ -125,13 +127,13 @@ public:
 
 	static bool updateReferenceSymbols();
 
-	static tInfoVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,PASTNode  node);
+	static tInfoVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,short  idxAstNode);
 	static tInfoVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
 	static int 							 getIdxRegisteredVariableSymbol(const string & class_name,const string & varname, bool show_msg=true);
 	static int 							 getIdxRegisteredVariableSymbol(tFunctionInfo *irf,const string & var_name, bool show_msg=true);
 
 
-	static CScriptFunctionObject *  registerFunctionSymbol(const string & class_name, const string & name,PASTNode  node);
+	static CScriptFunctionObject *  registerFunctionSymbol(const string & class_name, const string & name,short idxAstNode);
 	static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
 	static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
 
@@ -469,6 +471,7 @@ public:
 
 		return true;
 	}
+
 
 	/**
 	 * Register C Member var

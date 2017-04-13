@@ -70,15 +70,15 @@ print_error_cr("Error at line %i cannot perform operator \"%s\" %s  \"%s\"",\
 
 
 #define OP1_AND_OP2_ARE_NUMBERS \
-(IS_GENERIC_NUMBER(properties_result_instruction_1) && IS_GENERIC_NUMBER(properties_result_instruction_2))
+(IS_GENERIC_NUMBER(ptrResultInstructionOp1->properties) && IS_GENERIC_NUMBER(ptrResultInstructionOp2->properties))
 
 #define OP1_IS_STRING_AND_OP2_IS_NUMBER \
-(properties_result_instruction_1 & INS_PROPERTY_TYPE_STRING) && \
-IS_GENERIC_NUMBER(properties_result_instruction_2)
+(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_STRING) && \
+IS_GENERIC_NUMBER(ptrResultInstructionOp2->properties)
 
 #define OP1_IS_NUMBER_AND_OP2_IS_STRING \
-(properties_result_instruction_2 & INS_PROPERTY_TYPE_STRING) && \
-IS_GENERIC_NUMBER(properties_result_instruction_1)
+(ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_STRING) && \
+IS_GENERIC_NUMBER(ptrResultInstructionOp1->properties)
 
 #define OP1_IS_STRING_AND_OP2_IS_BOOLEAN \
 (ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_STRING) && \
@@ -90,8 +90,8 @@ IS_GENERIC_NUMBER(properties_result_instruction_1)
 (ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_BOOLEAN)
 
 #define OP1_AND_OP2_ARE_STRINGS \
-(properties_result_instruction_1 & INS_PROPERTY_TYPE_STRING) && \
-(properties_result_instruction_2 & INS_PROPERTY_TYPE_STRING)
+(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_STRING) && \
+(ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_STRING)
 
 #define OP1_AND_OP2_ARE_UNDEFINED \
 		(ptrResultInstructionOp1->stkResultObject == VM_UNDEFINED) && \
@@ -114,61 +114,136 @@ IS_GENERIC_NUMBER(properties_result_instruction_1)
 
 
 
-#define PROCESS_NUM_OPERATION(__OVERR_OP__)\
-					if (IS_INT(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){\
-						PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);\
-					}else if (IS_INT(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){\
-						PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);\
-					}else if (IS_NUMBER(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){\
-						if(!pushNumber(LOAD_NUMBER_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2))) {\
-							return NULL;\
-						}\
-					}else {\
-						if(!pushNumber(LOAD_NUMBER_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_NUMBER_OP(ptrResultInstructionOp2))) {\
-							return NULL;\
-						}\
-					}
-
-
-#define PUSH_INTEGER(init_value,ptrAssignable,properties)\
-*ptrStkCurrentResultInstruction={INS_PROPERTY_TYPE_INTEGER|properties,(void*)((int)(init_value)),ptrAssignable};
-
-#define PUSH_BOOLEAN(init_value, ptrAssignable, properties)\
-*ptrStkCurrentResultInstruction={INS_PROPERTY_TYPE_BOOLEAN|properties,(void *)((bool)(init_value)),ptrAssignable};
-
-#define PUSH_VAR(init_value, ptrObjectRef,properties,is_new_var)\
+#define PROCESS_ARITHMETIC_OPERATION(__OVERR_OP__)\
 {\
-	bool push_var = is_new_var;\
-	if(!push_var){\
-		switch((init_value)->idxScriptClass){\
-			case IDX_CLASS_INTEGER:\
-				PUSH_INTEGER(*((int *)((CInteger *)init_value)->m_value),ptrObjectRef,properties);\
-				break;\
-			case IDX_CLASS_NUMBER:\
-				pushNumber(*((float *)((CNumber *)(init_value))->m_value),ptrObjectRef,properties);\
-				break;\
-			case IDX_CLASS_STRING:\
-				pushString(*((string *)((CString *)(init_value))->m_value),ptrObjectRef,properties);\
-				break;\
-			case IDX_CLASS_BOOLEAN:\
-				PUSH_BOOLEAN(*((bool *)((CBoolean *)(init_value))->m_value),ptrObjectRef,properties);\
-				break;\
-			case IDX_CLASS_FUNCTOR:\
-				pushFunction((CScriptFunctionObject *)(((CFunctor *)(init_value))->m_value),ptrObjectRef,properties);\
-				break;\
-			default:\
-				push_var=true;\
-		}\
+	unsigned short properties = GET_INS_PROPERTY_TYPE_VAR(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
+	if(properties==INS_PROPERTY_TYPE_INTEGER){\
+			PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);\
 	}\
-	if(push_var){\
-		if(idxStkCurrentLocalVar ==VM_ALE_OPERATIONS_MAX_STACK){\
-			print_error_cr("Reached max object operations");\
-			return NULL;\
-		}\
-		*ptrStkCurrentResultInstruction={INS_PROPERTY_TYPE_SCRIPTVAR|properties,init_value, ptrObjectRef};\
+	else if(properties==(INS_PROPERTY_TYPE_INTEGER|INS_PROPERTY_TYPE_NUMBER)){\
+			if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){\
+				pushNumber(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);\
+			}else{\
+				pushNumber(LOAD_NUMBER_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2));\
+			}\
+	}\
+	else if(properties== INS_PROPERTY_TYPE_NUMBER){\
+			pushNumber(LOAD_NUMBER_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_NUMBER_OP(ptrResultInstructionOp2));\
+	}\
+	else{\
+		PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
 	}\
 }
 
+
+#define PUSH_INTEGER(init_value,ptrAssignable,properties)\
+*ptrStkCurrentResultInstruction++={INS_PROPERTY_TYPE_INTEGER|properties,(void*)((int)(init_value)),ptrAssignable};
+
+#define PUSH_BOOLEAN(init_value, ptrAssignable, properties)\
+*ptrStkCurrentResultInstruction++={INS_PROPERTY_TYPE_BOOLEAN|properties,(void *)((bool)(init_value)),ptrAssignable};
+
+#define PUSH_VAR(init_value, ptrObjectRefParam,propertiesParam,is_new_var)\
+{\
+	bool push_var = is_new_var;\
+	if(!push_var){\
+		int idx_class=(init_value)->idxScriptClass;\
+		if(idx_class==IDX_CLASS_INTEGER){\
+				PUSH_INTEGER(*((int *)((CInteger *)init_value)->m_value),ptrObjectRefParam,propertiesParam);\
+		}\
+		else if(idx_class==IDX_CLASS_NUMBER){\
+			pushNumber(*((float *)((CNumber *)(init_value))->m_value),ptrObjectRefParam,propertiesParam);\
+		}\
+		else if(idx_class==IDX_CLASS_STRING){\
+			pushString(*((string *)((CString *)(init_value))->m_value),ptrObjectRefParam,propertiesParam);\
+		}\
+		else if(idx_class==IDX_CLASS_BOOLEAN){\
+			PUSH_BOOLEAN(*((bool *)((CBoolean *)(init_value))->m_value),ptrObjectRefParam,propertiesParam);\
+		}\
+		else if(idx_class==IDX_CLASS_FUNCTOR){\
+			pushFunction((CScriptFunctionObject *)(((CFunctor *)(init_value))->m_value),ptrObjectRefParam,propertiesParam);\
+		}\
+		else{\
+			push_var=true;\
+		}\
+	}\
+	if(push_var){\
+		*ptrStkCurrentResultInstruction++={INS_PROPERTY_TYPE_SCRIPTVAR|propertiesParam,init_value,ptrObjectRefParam};\
+	}\
+}
+
+#define PERFORM_PRE_POST_OPERATOR(__OPERATOR__) \
+		switch((var_object)->idxScriptClass){\
+			case IDX_CLASS_INTEGER:\
+				(*((int *)((CInteger *)(var_object))->m_value))__OPERATOR__;\
+				break;\
+			case IDX_CLASS_NUMBER:\
+				(*((float *)((CNumber *)(var_object))->m_value))__OPERATOR__;\
+				break;\
+			default:\
+				print_error_cr("internal error:Cannot perform pre/post operator ?? because is not number");\
+				return NULL;\
+				break;\
+		}
+
+
+
+
+//CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo * ptr_instruction, bool share_ptr, CScriptVariable * ret)
+
+#define CREATE_VAR_FROM_RESULT_INSTRUCTION(ptr_instruction,share_ptr,ret) \
+{\
+	bool created_pointer = false;\
+	unsigned short type_var=GET_INS_PROPERTY_TYPE_VAR(ptr_instruction->properties);\
+	if(type_var==INS_PROPERTY_TYPE_UNDEFINED){\
+		(ret)=VM_UNDEFINED;\
+	}\
+	else if(type_var==INS_PROPERTY_TYPE_INTEGER){\
+		(ret)= NEW_INTEGER_VAR;\
+		*((int *)(((CScriptVariable *)(ret))->m_value)) = ((int)(ptr_instruction->stkResultObject));\
+		created_pointer = true;\
+	}\
+	else if(type_var==INS_PROPERTY_TYPE_NUMBER){\
+		(ret)= NEW_NUMBER_VAR;\
+		*((float *)(((CScriptVariable *)(ret))->m_value)) = *((float *)(ptr_instruction->stkResultObject));\
+		created_pointer = true;\
+	}\
+	else if(type_var==INS_PROPERTY_TYPE_STRING){\
+		(ret)= NEW_STRING_VAR;\
+		*((string *)(((CScriptVariable *)(ret))->m_value)) = *((string *)(ptr_instruction->stkResultObject));\
+		created_pointer = true;\
+	}\
+	else if(type_var==INS_PROPERTY_TYPE_BOOLEAN){\
+		(ret)= NEW_BOOLEAN_VAR;\
+		*((bool *)(((CScriptVariable *)(ret))->m_value)) = ((bool)(ptr_instruction->stkResultObject));\
+		created_pointer = true;\
+	}\
+	else if(type_var==INS_PROPERTY_TYPE_FUNCTION){\
+		(ret) = NEW_FUNCTOR_VAR;\
+		((CFunctor *)(ret))->setFunctionSymbol((CScriptFunctionObject *)ptr_instruction->stkResultObject);\
+		created_pointer = true;\
+	}\
+	else if(type_var==INS_PROPERTY_TYPE_SCRIPTVAR){\
+		(ret) = (CScriptVariable *)ptr_instruction->stkResultObject;\
+	}\
+	else{\
+		print_error_cr("(internal) cannot determine var type");\
+		return NULL;\
+	}\
+	if(share_ptr){\
+		if(created_pointer && ((ptr_instruction->properties & INS_PROPERTY_IS_ARG)==0)){\
+			if(!(ret)->refSharedPtr()){\
+				return NULL;\
+			}\
+		}\
+	}else{\
+		if(!(ret)->unrefSharedPtr()){\
+			return NULL;\
+		}\
+	}\
+}
+
+
+/*
 
 #define LOAD_CONSTANT(info_constant)\
 	switch((info_constant)->type){\
@@ -191,239 +266,14 @@ IS_GENERIC_NUMBER(properties_result_instruction_1)
 		}
 
 
-/*bool CVirtualMachine::LOAD_VARIABLE(tInfoAsmOp *iao,
+bool CVirtualMachine::LOAD_VARIABLE(tInfoAsmOp *iao,
 		CScriptFunctionObject *local_function,
 		CScriptVariable *this_object,
 		tInfoAsmOp *asm_op)*/
-#define LOAD_VARIABLE(iao,local_function,this_object,asm_op)\
-{\
-	CScriptVariable::tSymbolInfo *si;\
-	CScriptVariable **ptr_var_object=NULL;\
-	CScriptVariable *var_object = NULL;\
-	int start_index_local_var = 0;\
-	bool push_object=false;\
-	unsigned int scope_type=GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);\
-	unsigned int pre_post_operator_type=GET_INS_PROPERTY_PRE_POST_OP(iao->instruction_properties);\
-	bool is_valid_variable = false;\
-	PASTNode ast = NULL;\
-	switch(scope_type){\
-	default:\
-		ptr_var_object = (CScriptVariable **)(&CVirtualMachine::stack[iao->index_op2].stkResultObject);\
-		var_object = (CScriptVariable *)(CVirtualMachine::stack[iao->index_op2].stkResultObject);\
-		break;\
-	case INS_PROPERTY_ACCESS_SCOPE:\
-	case INS_PROPERTY_THIS_SCOPE:\
-		if(iao->idxAstNode != -1)\
-			ast = AST_NODE(iao->idxAstNode);\
-		if(scope_type == INS_PROPERTY_ACCESS_SCOPE){\
-			CScriptVariable * base_var = *((CScriptVariable **)ptrStartStkResultInstruction[iao->index_op2].ptrObjectRef);\
-			if((si = base_var->getVariableSymbol(ast->symbol_value))==NULL){\
-				print_error_cr("Line %i: Variable \"%s\" as type \"%s\" has not symbol \"%s\"",ast->line_value,AST_SYMBOL_VALUE_CONST_CHAR(asm_op[iao->index_op2].idxAstNode),base_var->getClassName().c_str(), ast->symbol_value.c_str());\
-				return NULL;\
-			}\
-		}\
-		else{\
-			if((si = this_object->getVariableSymbolByIndex(iao->index_op2))==NULL){\
-				print_error_cr("cannot find symbol \"this.%s\"",ast->symbol_value.c_str());\
-				return NULL;\
-			}\
-		}\
-		ptr_var_object = (CScriptVariable **)(&si->object);\
-		var_object = (CScriptVariable *)(si->object);\
-		break;\
-	case INS_PROPERTY_LOCAL_SCOPE:\
-		if(iao->index_op2 >= idxStkCurrentLocalVar){\
-			print_error_cr("internal error: index out of stack");\
-			return NULL;\
-		}\
-		ptr_var_object = (CScriptVariable **)(&CVirtualMachine::basePtrLocalVar[start_index_local_var+iao->index_op2].stkResultObject);\
-		var_object = (CScriptVariable *)(CVirtualMachine::basePtrLocalVar[start_index_local_var+iao->index_op2].stkResultObject);\
-		break;\
-	}\
-	if(var_object != VM_UNDEFINED){\
-		is_valid_variable = true;\
-	}\
-	push_object = true;\
-	if(is_valid_variable){\
-		int idx_class =  var_object->idxScriptClass;\
-		if((pre_post_operator_type & INS_PROPERTY_PRE_DEC) | (pre_post_operator_type & INS_PROPERTY_PRE_INC)){\
-			switch(idx_class){\
-				case IDX_CLASS_INTEGER:\
-					if(pre_post_operator_type & INS_PROPERTY_PRE_INC)\
-						(*((int *)((CInteger *)var_object)->m_value))++;\
-					else\
-						(*((int *)((CInteger *)var_object)->m_value))--;\
-					break;\
-				case IDX_CLASS_NUMBER:\
-					if(pre_post_operator_type & INS_PROPERTY_PRE_INC)\
-						(*((float *)((CNumber *)var_object)->m_value))++;\
-					else\
-						(*((float *)((CNumber *)var_object)->m_value))--;\
-					break;\
-				default:\
-					print_error_cr("internal error:Cannot perform preoperator ?? because is not number");\
-					return NULL;\
-					break;\
-			}\
-		}\
-\
-		if((pre_post_operator_type & INS_PROPERTY_POST_DEC) | (pre_post_operator_type & INS_PROPERTY_POST_INC)){\
-			push_object = false;\
-			switch(idx_class){\
-				case IDX_CLASS_INTEGER:\
-					PUSH_INTEGER(*((int *)((CInteger *)var_object)->m_value),NULL,0);\
-					if(pre_post_operator_type & INS_PROPERTY_POST_INC)\
-						(*((int *)((CInteger *)var_object)->m_value))++;\
-					else\
-						(*((int *)((CInteger *)var_object)->m_value))--;\
-					break;\
-				case IDX_CLASS_NUMBER:\
-					pushNumber(*((float *)((CNumber *)var_object)->m_value));\
-					if(pre_post_operator_type & INS_PROPERTY_POST_INC)\
-						(*((float *)((CNumber *)var_object)->m_value))++;\
-					else\
-						(*((float *)((CNumber *)var_object)->m_value))--;\
-					break;\
-				default:\
-					print_error_cr("internal error:cannot postoperator ?? because is not number");\
-					return NULL;\
-					break;\
-			}\
-		}\
-	}\
-\
-	if(push_object){\
-		if(pre_post_operator_type & INS_PROPERTY_PRE_NEG){\
-			int idx_class = var_object->idxScriptClass;\
-			if(idx_class==IDX_CLASS_INTEGER){\
-				PUSH_INTEGER(-(*((int *)((CInteger *)var_object)->m_value)),NULL,0);\
-			}else if(idx_class==IDX_CLASS_NUMBER){\
-				if(!pushNumber(-(*((float *)((CNumber *)var_object)->m_value)))) return NULL;\
-			}else{\
-				print_error_cr("internal error:cannot perform pre operator - because is not number");\
-				return NULL;\
-			}\
-		}else{\
-			PUSH_VAR(var_object,ptr_var_object,0,false);\
-		}\
-	}\
-}
 
 
 
-#define ASSIGN_FROM_RESULT_INSTRUCTION(var, ptr_instruction){\
-	CScriptVariable *aux_var=NULL;\
-	if(*var == NULL){\
-		if((*var = createVarFromResultInstruction(ptr_instruction)) == NULL){\
-			return NULL;\
-		}\
-	}\
-	int idxScriptClass = (*var)->idxScriptClass;\
-	bool create_from_index=false;\
-	unsigned int type_var = GET_INS_PROPERTY_TYPE_VAR(ptr_instruction->properties);\
-	switch(type_var){\
-		case INS_PROPERTY_TYPE_NULL:\
-			*var = VM_NULL;\
-			break;\
-		case INS_PROPERTY_TYPE_UNDEFINED:\
-			*var = VM_UNDEFINED;\
-			break;\
-		case INS_PROPERTY_TYPE_INTEGER:\
-			if(idxScriptClass == IDX_CLASS_INTEGER){\
-				*((int *)((CInteger *)(*var))->m_value)=((int)(ptr_instruction->stkResultObject));\
-			}else\
-			{\
-				create_from_index=true;\
-			}\
-			break;\
-		case INS_PROPERTY_TYPE_NUMBER:\
-			if(idxScriptClass == IDX_CLASS_NUMBER){\
-				*((float *)((CNumber *)(*var))->m_value) = *((float *)(ptr_instruction->stkResultObject));\
-			}else\
-			{\
-				create_from_index=true;\
-			}\
-			break;\
-		case INS_PROPERTY_TYPE_STRING:\
-			if(idxScriptClass == IDX_CLASS_STRING){\
-				*((string *)((CString  *)(*var))->m_value)= *((string *)(ptr_instruction->stkResultObject));\
-			}else\
-			{\
-				create_from_index=true;\
-			}\
-			break;\
-		case INS_PROPERTY_TYPE_BOOLEAN:\
-			if(idxScriptClass == IDX_CLASS_BOOLEAN){\
-				*((bool *)((CBoolean  *)aux_var)->m_value)= ((bool)(ptr_instruction->stkResultObject));\
-			}else\
-			{\
-				create_from_index=true;\
-			}\
-			break;\
-		case INS_PROPERTY_TYPE_FUNCTION:\
-			if(idxScriptClass == IDX_CLASS_FUNCTOR){\
-				((CFunctor  *)aux_var)->m_value= ((CScriptFunctionObject *)(ptr_instruction->stkResultObject));\
-			}else{\
-				create_from_index=true;\
-			}\
-			break;\
-		case INS_PROPERTY_TYPE_SCRIPTVAR:\
-			if((*var)->idx_shared_ptr != ZS_UNDEFINED_IDX){\
-				unrefSharedPointer((*var)->idx_shared_ptr);\
-			}\
-			*var = (CScriptVariable *)(ptr_instruction->stkResultObject);\
-			if(*var != VM_NULL && *var != VM_UNDEFINED){\
-				sharePointer((*var)->idx_shared_ptr);\
-			}\
-			break;\
-		default:\
-				print_error_cr("internal error: unknow assignment %i!",type_var);\
-				return NULL;\
-				break;\
-		}\
-	if(create_from_index){\
-		\
-		if((*var)->idx_shared_ptr != ZS_UNDEFINED_IDX){\
-			unrefSharedPointer((*var)->idx_shared_ptr);\
-		}\
-		if((*var = createVarFromResultInstruction(ptr_instruction)) == NULL){\
-			return NULL;\
-		}\
-		sharePointer((*var)->idx_shared_ptr);\
-	}\
-}
 
-#define LOAD_OP()\
-switch(instruction->index_op1){\
-case LOAD_TYPE::LOAD_TYPE_NULL:\
-	PUSH_VAR(VM_NULL,NULL,0,false);\
-	break;\
-case LOAD_TYPE::LOAD_TYPE_UNDEFINED:\
-	PUSH_VAR(VM_UNDEFINED,NULL,0,false);\
-	break;\
-case LOAD_TYPE::LOAD_TYPE_CONSTANT:\
-	LOAD_CONSTANT((CCompiler::tInfoConstantValue *)instruction->index_op2);\
-	break;\
-case LOAD_TYPE::LOAD_TYPE_VARIABLE:\
-	LOAD_VARIABLE(instruction, info_function,this_object,(*current_statment));\
-	break;\
-case LOAD_TYPE::LOAD_TYPE_FUNCTION:\
-	if(!loadFunctionValue(instruction,info_function, this_object,*current_statment)){\
-		return NULL;\
-	}\
-	break;\
-case LOAD_TYPE::LOAD_TYPE_ARGUMENT:\
-	PUSH_VAR(\
-			(CScriptVariable *)basePtrLocalVar[instruction->index_op2+n_local_vars].stkResultObject,\
-			basePtrLocalVar[instruction->index_op2+n_local_vars].ptrObjectRef,\
-			INS_PROPERTY_IS_ARG,\
-			false);\
-	break;\
-default:\
-	print_error_cr("no load defined type");\
-	return NULL;\
-	break;\
-}
 
 
 #define CALL_GC\
@@ -432,13 +282,8 @@ default:\
 		do{\
 			unrefSharedPointer(*(index++));\
 		}while(--n_pointers_with_0_shares[idxCurrentStack]);\
-	}\
+	}
 
-
-#define RESET\
-	idxStkCurrentNumber=startIdxStkNumber;\
-	idxStkCurrentString=startIdxStkString;\
-	ptrStkCurrentResultInstruction=ptrStartStkResultInstruction;\
 
 
 
@@ -496,7 +341,9 @@ CVirtualMachine::CVirtualMachine(){
 
 	// push indexes ...
 
-	RESET
+	idxStkCurrentNumber=startIdxStkNumber;
+	idxStkCurrentString=startIdxStkString;
+	ptrStkCurrentResultInstruction=ptrStartStkResultInstruction;
 }
 
 #ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
@@ -671,31 +518,32 @@ void CVirtualMachine::unrefSharedPointer( int index){
 	}
 }
 
-bool CVirtualMachine::push(){ // save current stack
-	if(idxCurrentStack < MAX_STACK){
-		idxCurrentStack++;
-		return true;
-	}
-	else{
-		print_error_cr("Reached max stack");
-	}
-	return false;
+
+#define POP_TWO \
+ptrResultInstructionOp2=--ptrStkCurrentResultInstruction;\
+ptrResultInstructionOp1=--ptrStkCurrentResultInstruction;
+
+
+#define POP_ONE \
+ptrResultInstructionOp1=--ptrStkCurrentResultInstruction;
+
+#define CHK_JMP \
+if(instruction->index_op2 != ZS_UNDEFINED_IDX){\
+\
+	if(current_statment!=&m_listStatements[instruction->index_op2]){\
+		ptr_statment_iteration=&m_listStatements[instruction->index_op2];\
+		goto lbl_exit_statment;\
+	}\
+\
+	if(instruction->index_op1 != ZS_UNDEFINED_IDX){\
+		instruction=&(*current_statment)[instruction->index_op1];\
+	}\
+\
 }
 
-bool CVirtualMachine::pop(){ // restore current stack.
-	if(idxCurrentStack > 0){
-		idxCurrentStack--;
-		return true;
-	}
-	else{
-		print_error_cr("Reached min stack");
-	}
-	return false;
-}
 
-#define LDR_OP1 ptrResultInstructionOp1=&ptrStartStkResultInstruction[instruction->index_op1];properties_result_instruction_1=ptrResultInstructionOp1->properties;
-#define LDR_OP2 ptrResultInstructionOp2=&ptrStartStkResultInstruction[instruction->index_op2];properties_result_instruction_2=ptrResultInstructionOp2->properties;
-#define LAST_INSTRUCTION   (ptrStkCurrentResultInstruction-1)
+//#define LDR_OP2 ptrResultInstructionOp2=&ptrStartStkResultInstruction[instruction->index_op2];ptrResultInstructionOp2->properties=ptrResultInstructionOp2->properties;
+
 
 //============================================================================================================================================
 
@@ -721,16 +569,14 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 	int scope_index =  ast->idxScope;
 
-	if(ast->keyword_info!=NULL){
-		if(ast->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD){
-			scope_index=ast->children[1]->idxScope;
-		}
+
+	if(ast->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD){
+		scope_index=AST_NODE(ast->children[1])->idxScope;
 	}
+
 
 	CScriptVariable *ret=VM_UNDEFINED;
 	PtrStatment m_listStatements = info_function->object_info.statment_op;
-	int jmp_to_statment =ZS_UNDEFINED_IDX;
-	int jmp_to_instruction = ZS_UNDEFINED_IDX;
 	//bool end_by_ret=false;
 
 	// reserve vars and assign argv vars ...
@@ -744,20 +590,30 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 	CScriptFunctionObject *constructor_function=NULL;
 	CScriptVariable *calling_object=NULL;
 	int n_local_vars =  info_function->object_info.local_symbols.m_registeredVariable.size();
-	tAleObjectInfo *stkResultInstructionIteration = ptrStartStkResultInstruction;
+	//tAleObjectInfo *stkResultInstructionIteration = ptrStartStkResultInstruction;
 	tAleObjectInfo *ptrResultInstructionOp1=NULL;//&stkResultInstruction[index_op1+startIdxStkResultInstruction];
 	tAleObjectInfo *ptrResultInstructionOp2=NULL;//&stkResultInstruction[index_op2+startIdxStkResultInstruction];
-	unsigned short properties_result_instruction_1,properties_result_instruction_2;
+	//unsigned short ptrResultInstructionOp1->properties,ptrResultInstructionOp2->properties;
 	//tAleObjectInfo *ptrResultLastInstruction=NULL;//&stkResultInstruction[idxStkCurrentResultInstruction-1];
 	//unsigned int prop1, prop2;
+	unsigned short pre_post_properties=0;
+	unsigned short scope_properties=0;
+	unsigned short instruction_properties=0;
+	CScriptVariable::tSymbolInfo *si;
+	CScriptVariable **ptr_var_object=NULL;
+	CScriptVariable *var_object = NULL;
+	//int start_index_local_var = 0;
 
+	short int scope_type=0;//GET_INS_PROPERTY_SCOPE_TYPE(instruction->instruction_properties);
+	short int pre_post_operator_type=0;//GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties);
+	CCompiler::tInfoConstantValue * info_constant=NULL;
 	//int index_op1 = -1;//
 	//int index_op2 = -1;
-	tAleObjectInfo *ptrSavedInstruction=NULL;
+	//tAleObjectInfo *ptrSavedInstruction=NULL;
 	PtrStatment current_statment = NULL,
 				ptr_statment_iteration=m_listStatements;
 
-	tInfoAsmOp *instruction_it,*instruction;
+	tInfoAsmOp *instruction_it;
 
 	for(;;){ // foreach stament ...
 
@@ -773,7 +629,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 		//jmp_to_statment = ZS_UNDEFINED_IDX;
 		idxStkCurrentNumber=startIdxStkNumber;
 		idxStkCurrentString=startIdxStkString;
-		stkResultInstructionIteration=ptrStartStkResultInstruction;
+		ptrStkCurrentResultInstruction=ptrStartStkResultInstruction; // reset stack to start...
 
 
 		//-----------------------------------------------------------------------------------------------------------------------
@@ -783,30 +639,223 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 		 for(;;){ // foreach asm instruction ...
 
-			instruction = instruction_it++;
-			ptrStkCurrentResultInstruction=stkResultInstructionIteration++;
+			const tInfoAsmOp * instruction = instruction_it++;
+			const unsigned char operator_type=instruction->operator_type;
+			const unsigned char index_op1=instruction->index_op1;
 
 
-			switch(instruction->operator_type){
-			default:
-				print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
-				return NULL;
-				break;
-			case INVALID_OP:
+			if(operator_type==END_STATMENT){
 				goto lbl_exit_statment;
-			case NOP: // ignore ...
+			}
+			else if(operator_type==NOP){ // ignore ...
 				continue;
-			case LOAD: // load value in function of value/constant ...
-				LOAD_OP();
-				continue;
-			case MOV: // mov value expression to var
-				LDR_OP1;
-				LDR_OP2;
+			}
+			else if(operator_type==LOAD){// load value in function of value/constant ...
+				if(index_op1== LOAD_TYPE::LOAD_TYPE_NULL){
+					PUSH_VAR(VM_NULL,NULL,0,false);
+					continue;
+				}
+				else if(index_op1==  LOAD_TYPE::LOAD_TYPE_UNDEFINED){
+					PUSH_VAR(VM_UNDEFINED,NULL,0,false);
+					continue;
+				}
+				else if(index_op1== LOAD_TYPE::LOAD_TYPE_CONSTANT){
+					(*ptrStkCurrentResultInstruction++)=*(((CCompiler::tInfoConstantValue *)instruction->index_op2));
+					continue;
+				}
+				else if(index_op1== LOAD_TYPE::LOAD_TYPE_VARIABLE){
+
+					instruction_properties=instruction->instruction_properties;
+					scope_properties=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
+
+					if((scope_properties==INS_PROPERTY_ACCESS_SCOPE) || (scope_properties==INS_PROPERTY_THIS_SCOPE)){
+						if(instruction->idxAstNode != -1)
+							ast = AST_NODE(instruction->idxAstNode);
+						if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
+							CScriptVariable * base_var = *((CScriptVariable **)ptrStartStkResultInstruction[instruction->index_op2].ptrObjectRef);
+							if((si = base_var->getVariableSymbol(ast->symbol_value))==NULL){
+								print_error_cr("Line %i: Variable %s as type %s has not symbol %s",ast->line_value,AST_SYMBOL_VALUE_CONST_CHAR((*current_statment)[instruction->index_op2].idxAstNode),base_var->getClassName().c_str(), ast->symbol_value.c_str());
+								return NULL;
+							}
+						}
+						else{
+							if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
+								print_error_cr("cannot find symbol this.%s",ast->symbol_value.c_str());
+								return NULL;
+							}
+						}
+						ptr_var_object = (CScriptVariable **)(&si->object);
+						var_object = (CScriptVariable *)(si->object);
+					}
+					else if(scope_properties==INS_PROPERTY_LOCAL_SCOPE){
+						if(instruction->index_op2 >= idxStkCurrentLocalVar){
+							print_error_cr("internal error: index out of stack");
+							return NULL;
+						}
+						ptr_var_object = (CScriptVariable **)(&CVirtualMachine::basePtrLocalVar[instruction->index_op2].stkResultObject);
+						var_object = *ptr_var_object;//(CScriptVariable *)(CVirtualMachine::basePtrLocalVar[start_index_local_var+instruction->index_op2].stkResultObject);
+
+					}
+					else{
+						ptr_var_object = (CScriptVariable **)(&CVirtualMachine::stack[instruction->index_op2].stkResultObject);
+						var_object = (CScriptVariable *)(CVirtualMachine::stack[instruction->index_op2].stkResultObject);
+					}
+
+
+
+
+					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction_properties);
+
+
+					if(pre_post_properties == INS_PROPERTY_PRE_DEC){
+							PERFORM_PRE_POST_OPERATOR(--);
+							PUSH_VAR(var_object,ptr_var_object,0,false);
+					}else if(pre_post_properties ==INS_PROPERTY_PRE_INC){
+							PERFORM_PRE_POST_OPERATOR(++);
+							PUSH_VAR(var_object,ptr_var_object,0,false);
+					}else if (pre_post_properties ==INS_PROPERTY_POST_DEC){
+							PUSH_VAR(var_object,ptr_var_object,0,false);
+							PERFORM_PRE_POST_OPERATOR(--);
+					}else if(pre_post_properties ==INS_PROPERTY_POST_INC){
+							PUSH_VAR(var_object,ptr_var_object,0,false);
+							PERFORM_PRE_POST_OPERATOR(++);
+					}else if(pre_post_properties ==INS_PROPERTY_PRE_NEG){
+							switch((var_object)->idxScriptClass){
+							case IDX_CLASS_INTEGER:
+								PUSH_INTEGER(-(*((int *)((CInteger *)var_object)->m_value)),NULL,0);
+								break;
+							case IDX_CLASS_NUMBER:
+								pushNumber(-(*((float *)((CNumber *)var_object)->m_value)));
+								break;
+							default:
+								print_error_cr("internal error:cannot perform pre operator - because is not number");
+								return NULL;
+							}
+					}else{
+							PUSH_VAR(var_object,ptr_var_object,0,false);
+					}
+
+
+					continue;
+				}
+				else if(index_op1== LOAD_TYPE::LOAD_TYPE_FUNCTION){
+					if(!loadFunctionValue(instruction,info_function, this_object,*current_statment)){
+						return NULL;
+					}
+					continue;
+				}
+				else if(index_op1== LOAD_TYPE::LOAD_TYPE_ARGUMENT){
+					PUSH_VAR(
+							(CScriptVariable *)basePtrLocalVar[instruction->index_op2+n_local_vars].stkResultObject,
+							basePtrLocalVar[instruction->index_op2+n_local_vars].ptrObjectRef,
+							INS_PROPERTY_IS_ARG,
+							false);
+					continue;
+				}
+				else{
+					print_error_cr("no load defined type");
+					return NULL;
+					break;
+				}
+			}
+			else if(operator_type==MOV){ // mov value expression to var
+				POP_TWO;
 
 				// ok load object pointer ...
 				if((obj = ptrResultInstructionOp1->ptrObjectRef) != NULL) {// == CScriptVariable::VAR_TYPE::OBJECT){
 					// get pointer object (can be assigned)
-					ASSIGN_FROM_RESULT_INSTRUCTION(ptrResultInstructionOp1->ptrObjectRef,ptrResultInstructionOp2);
+					//ASSIGN_FROM_RESULT_INSTRUCTION(ptrResultInstructionOp1->ptrObjectRef,ptrResultInstructionOp2);
+					//#define ASSIGN_FROM_RESULT_INSTRUCTION(var, ptr_instruction)
+
+					CScriptVariable **var=ptrResultInstructionOp1->ptrObjectRef;
+					//tAleObjectInfo *ptr_instruction = ptrResultInstructionOp2;
+					CScriptVariable *aux_var=NULL;
+					if(*var == NULL){
+
+						CREATE_VAR_FROM_RESULT_INSTRUCTION(ptrResultInstructionOp2,true, *var);
+
+						/*if((*var = createVarFromResultInstruction(ptrResultInstructionOp2)) == NULL){
+							return NULL;
+						}*/
+					}
+					int idxScriptClass = (*var)->idxScriptClass;
+					bool create_from_index=false;
+					unsigned int type_var = GET_INS_PROPERTY_TYPE_VAR(ptrResultInstructionOp2->properties);
+
+					if(type_var==INS_PROPERTY_TYPE_NULL){
+							*var = VM_NULL;
+					}
+					else if(type_var==INS_PROPERTY_TYPE_UNDEFINED){
+							*var = VM_UNDEFINED;
+					}
+					else if(type_var==INS_PROPERTY_TYPE_INTEGER){
+							if(idxScriptClass == IDX_CLASS_INTEGER){
+								*((int *)((CInteger *)(*var))->m_value)=((int)(ptrResultInstructionOp2->stkResultObject));
+							}else
+							{
+								create_from_index=true;
+							}
+					}
+					else if(type_var==INS_PROPERTY_TYPE_NUMBER){
+							if(idxScriptClass == IDX_CLASS_NUMBER){
+								*((float *)((CNumber *)(*var))->m_value) = *((float *)(ptrResultInstructionOp2->stkResultObject));
+							}else
+							{
+								create_from_index=true;
+							}
+					}
+					else if(type_var==INS_PROPERTY_TYPE_STRING){
+							if(idxScriptClass == IDX_CLASS_STRING){
+								*((string *)((CString  *)(*var))->m_value)= *((string *)(ptrResultInstructionOp2->stkResultObject));
+							}else
+							{
+								create_from_index=true;
+							}
+					}
+					else if(type_var==INS_PROPERTY_TYPE_BOOLEAN){
+							if(idxScriptClass == IDX_CLASS_BOOLEAN){
+								*((bool *)((CBoolean  *)aux_var)->m_value)= ((bool)(ptrResultInstructionOp2->stkResultObject));
+							}else
+							{
+								create_from_index=true;
+							}
+					}
+					else if(type_var==INS_PROPERTY_TYPE_FUNCTION){
+							if(idxScriptClass == IDX_CLASS_FUNCTOR){
+								((CFunctor  *)aux_var)->m_value= ((CScriptFunctionObject *)(ptrResultInstructionOp2->stkResultObject));
+							}else{
+								create_from_index=true;
+							}
+					}
+					else if(type_var==INS_PROPERTY_TYPE_SCRIPTVAR){
+							if((*var)->idx_shared_ptr != ZS_UNDEFINED_IDX){
+								unrefSharedPointer((*var)->idx_shared_ptr);
+							}
+							*var = (CScriptVariable *)(ptrResultInstructionOp2->stkResultObject);
+							if(*var != VM_NULL && *var != VM_UNDEFINED){
+								sharePointer((*var)->idx_shared_ptr);
+							}
+					}
+					else{
+						print_error_cr("internal error: unknow assignment %i!",type_var);
+						return NULL;
+					}
+
+					if(create_from_index){
+
+						if((*var)->idx_shared_ptr != ZS_UNDEFINED_IDX){
+							unrefSharedPointer((*var)->idx_shared_ptr);
+						}
+
+
+						CREATE_VAR_FROM_RESULT_INSTRUCTION(ptrResultInstructionOp2,true,*var);
+						/*if((*var = createVarFromResultInstruction(ptrResultInstructionOp2)) == NULL){
+							return NULL;
+						}*/
+						sharePointer((*var)->idx_shared_ptr);
+					}
+
+
 
 				}else{
 					print_error_cr("Expected object l-value mov");
@@ -814,21 +863,23 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 
 				continue;
+			}
 
-			case EQU:  // == --> boolean && boolean or string && string or number && number
-				LDR_OP1;
-				LDR_OP2;
+		/*	case EQU:  // == --> boolean && boolean or string && string or number && number
+
+				POP_TWO;
+
 				if(OP1_AND_OP2_ARE_BOOLEANS) {
 					PUSH_BOOLEAN(LOAD_BOOL_OP(ptrResultInstructionOp1) == LOAD_BOOL_OP(ptrResultInstructionOp2),NULL,0);
 				}else if(OP1_AND_OP2_ARE_STRINGS){
 					PUSH_BOOLEAN(LOAD_STRING_OP(ptrResultInstructionOp1) == LOAD_STRING_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_INT(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) == LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_INT(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) == LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) == LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) == LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
 				}else if(OP1_AND_OP2_ARE_UNDEFINED){
 					PUSH_BOOLEAN(true,NULL,0);
@@ -842,53 +893,61 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				break;
 
 			case NOT_EQU:  // == --> boolean && boolean or string && string or number && number
-				LDR_OP1;
-				LDR_OP2;
+
+				POP_TWO;
+
 				if(OP1_AND_OP2_ARE_BOOLEANS) {
 					PUSH_BOOLEAN(LOAD_BOOL_OP(ptrResultInstructionOp1) != LOAD_BOOL_OP(ptrResultInstructionOp2),NULL,0);
 				}else if(OP1_AND_OP2_ARE_STRINGS){
 					PUSH_BOOLEAN(LOAD_STRING_OP(ptrResultInstructionOp1) != LOAD_STRING_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_INT(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) != LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_INT(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) != LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) != LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) != LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP("!=");
 					return NULL;
 				}
 
-				break;
-			case LT:  // <
-				LDR_OP1;
-				LDR_OP2;
+				break;*/
+			else if(operator_type==LT){  // <
 
-				if (IS_INT(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				POP_TWO;
+
+
+				if (IS_INT(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) < LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_INT(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) < LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) < LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) < LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP("<");
 					return NULL;
 				}
+
+
+
+
 				continue;
-			case LTE:  // <=
-				LDR_OP1;
-				LDR_OP2;
-				if (IS_INT(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+			}
+			/*case LTE:  // <=
+
+				POP_TWO;
+
+				if (IS_INT(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) <= LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_INT(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) <= LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) <= LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) <= LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP("<=");
@@ -897,7 +956,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 				break;
 			case NOT: // !
-				LDR_OP1;
+				POP_ONE;
 				if (ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_BOOLEAN){
 					PUSH_BOOLEAN(!LOAD_BOOL_OP(ptrResultInstructionOp1),NULL,0);
 				}else{
@@ -906,9 +965,8 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 				break;
 			case NEG: // !
-				LDR_OP1;
-				LDR_OP2;
-				if (IS_GENERIC_NUMBER(properties_result_instruction_1)){
+				POP_ONE;
+				if (IS_GENERIC_NUMBER(ptrResultInstructionOp1->properties)){
 					if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_INTEGER){ // operation will result as integer.
 						PUSH_INTEGER(-LOAD_INT_OP(ptrResultInstructionOp1),NULL,0);
 					}
@@ -925,15 +983,14 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				break;
 
 			case GT:  // >
-				LDR_OP1;
-				LDR_OP2;
-				if (IS_INT(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				POP_TWO;
+				if (IS_INT(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) > LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_INT(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) > LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) > LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) > LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP(">");
@@ -941,15 +998,14 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 				break;
 			case GTE: // >=
-				LDR_OP1;
-				LDR_OP2;
-				if (IS_INT(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				POP_TWO;
+				if (IS_INT(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) >= LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_INT(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) >= LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) >= LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_BOOLEAN(LOAD_NUMBER_OP(ptrResultInstructionOp1) >= LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP(">=");
@@ -959,23 +1015,22 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 			case ADD: // +
 
-				LDR_OP1;
-				LDR_OP2;
+				POP_TWO;
 				// get indexes and check whether is possible or not its calculation.
 				// check indexes
-				if (IS_STRING(properties_result_instruction_1) && (IS_UNDEFINED(properties_result_instruction_2) || IS_VAR(properties_result_instruction_2))){
+				if (IS_STRING(ptrResultInstructionOp1->properties) && (IS_UNDEFINED(ptrResultInstructionOp2->properties) || IS_VAR(ptrResultInstructionOp2->properties))){
 					string result = "undefined";
-					if(IS_VAR(properties_result_instruction_2)){
+					if(IS_VAR(ptrResultInstructionOp2->properties)){
 						result = ((CScriptVariable *)(ptrResultInstructionOp2->stkResultObject))->getClassName();
 					}
 					if(!pushString(LOAD_STRING_OP(ptrResultInstructionOp1)+result)) return NULL;
-				}else if (IS_INT(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) + LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_INT(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) + LOAD_NUMBER_OP(ptrResultInstructionOp2),NULL,0);
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 					if(!pushNumber(LOAD_NUMBER_OP(ptrResultInstructionOp1) + LOAD_INT_OP(ptrResultInstructionOp2))) return NULL;
-				}else if (IS_NUMBER(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+				}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 					if(!pushNumber(LOAD_NUMBER_OP(ptrResultInstructionOp1) + LOAD_NUMBER_OP(ptrResultInstructionOp2))) return NULL;
 				}else if(OP1_IS_STRING_AND_OP2_IS_NUMBER){ // concatenate string + number
 
@@ -1023,8 +1078,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				break;
 
 			case LOGIC_AND: // &&
-				LDR_OP1;
-				LDR_OP2;
+				POP_TWO;
 				if(OP1_AND_OP2_ARE_BOOLEANS) {
 					PUSH_BOOLEAN(LOAD_BOOL_OP(ptrResultInstructionOp1) && LOAD_BOOL_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
@@ -1033,8 +1087,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 				break;
 			case LOGIC_OR:  // ||
-				LDR_OP1;
-				LDR_OP2;
+				POP_TWO;
 				if(OP1_AND_OP2_ARE_BOOLEANS) {
 					PUSH_BOOLEAN(LOAD_BOOL_OP(ptrResultInstructionOp1) || LOAD_BOOL_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
@@ -1043,11 +1096,10 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 				break;
 			case DIV: // /
-				LDR_OP1;
-				LDR_OP2;
+				POP_TWO;
 				if(OP1_AND_OP2_ARE_NUMBERS) {
 
-					if(IS_INT(properties_result_instruction_2)){
+					if(IS_INT(ptrResultInstructionOp2->properties)){
 						if(LOAD_INT_OP(ptrResultInstructionOp2) == 0) {
 							print_error_cr("Divide by 0 at line %i.",AST_LINE_VALUE(instruction->idxAstNode));
 							return NULL;
@@ -1059,32 +1111,33 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 						}
 					}
 
-					PROCESS_NUM_OPERATION(/);
+					PROCESS_ARITHMETIC_OPERATION(/);
 				}else{
 					PRINT_DUAL_ERROR_OP("/");
 					return NULL;
 				}
 
-				break;
-			case MUL: // *
-				LDR_OP1;
-				LDR_OP2;
-				if(OP1_AND_OP2_ARE_NUMBERS) {
-						PROCESS_NUM_OPERATION(*);
+				break;*/
+			else if(operator_type==MUL){ // *
+				POP_TWO;
 
-				}else{
+
+				//if(OP1_AND_OP2_ARE_NUMBERS) {
+				PROCESS_ARITHMETIC_OPERATION(*);
+
+				/*}else{
 					PRINT_DUAL_ERROR_OP("*");
 					return NULL;
-				}
+				}*/
 				continue;
-			case MOD:  // %
+			}
+			/*case MOD:  // %
 
-				LDR_OP1;
-				LDR_OP2;
+				POP_TWO;
 
 				if(OP1_AND_OP2_ARE_NUMBERS) {
 
-					if(IS_INT(properties_result_instruction_2)){
+					if(IS_INT(ptrResultInstructionOp2->properties)){
 						if(LOAD_INT_OP(ptrResultInstructionOp2) == 0) {
 							print_error_cr("Divide by 0 at line %i.",AST_LINE_VALUE(instruction->idxAstNode));
 							return NULL;
@@ -1095,12 +1148,12 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 							return NULL;
 						}
 					}
-					if (IS_INT(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+					if (IS_INT(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 						PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) % LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
-					}else if (IS_INT(properties_result_instruction_1) && IS_NUMBER(properties_result_instruction_2)){
+					}else if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 						PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) % ((int) LOAD_NUMBER_OP(ptrResultInstructionOp2)),NULL,0);
 
-					}else if (IS_NUMBER(properties_result_instruction_1) && IS_INT(properties_result_instruction_2)){
+					}else if (IS_NUMBER(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 						if(!pushNumber(fmod(LOAD_NUMBER_OP(ptrResultInstructionOp1), LOAD_INT_OP(ptrResultInstructionOp2)))) {
 							return NULL;
 						}
@@ -1117,9 +1170,8 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 				break;
 			case AND: // bitwise logic and
-				LDR_OP1;
-				LDR_OP2;
-				if((properties_result_instruction_1 & INS_PROPERTY_TYPE_INTEGER) && (properties_result_instruction_2 & INS_PROPERTY_TYPE_INTEGER)){
+				POP_TWO;
+				if((ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_INTEGER) && (ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_INTEGER)){
 					PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) & LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP("&");
@@ -1127,9 +1179,8 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 				break;
 			case OR: // bitwise logic or
-				LDR_OP1;
-				LDR_OP2;
-				if((properties_result_instruction_1 & INS_PROPERTY_TYPE_INTEGER) && (properties_result_instruction_2 & INS_PROPERTY_TYPE_INTEGER)){
+				POP_TWO;
+				if((ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_INTEGER) && (ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_INTEGER)){
 					PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) | LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP("|");
@@ -1138,9 +1189,8 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 				break;
 			case XOR: // logic xor
-				LDR_OP1;
-				LDR_OP2;
-				if((properties_result_instruction_1 & INS_PROPERTY_TYPE_INTEGER) && (properties_result_instruction_2 & INS_PROPERTY_TYPE_INTEGER)){
+				POP_TWO;
+				if((ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_INTEGER) && (ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_INTEGER)){
 					PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) ^ LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP("^");
@@ -1148,9 +1198,8 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 				break;
 			case SHL: // shift left
-				LDR_OP1;
-				LDR_OP2;
-				if((properties_result_instruction_1 & INS_PROPERTY_TYPE_INTEGER) && (properties_result_instruction_2 & INS_PROPERTY_TYPE_INTEGER)){
+				POP_TWO;
+				if((ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_INTEGER) && (ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_INTEGER)){
 					PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) << LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP(">>");
@@ -1158,49 +1207,51 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 				break;
 			case SHR: // shift right
-				LDR_OP1;
-				LDR_OP2;
-				if((properties_result_instruction_1 & INS_PROPERTY_TYPE_INTEGER) && (properties_result_instruction_2 & INS_PROPERTY_TYPE_INTEGER)){
+				POP_TWO;
+				if((ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_INTEGER) && (ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_INTEGER)){
 					PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) >> LOAD_INT_OP(ptrResultInstructionOp2),NULL,0);
 				}else{
 					PRINT_DUAL_ERROR_OP("<<");
 					return NULL;
 				}
-				break;
+				break;*/
 			// special internal ops...
-			case JMP:
-				jmp_to_statment = instruction->index_op1;
-				jmp_to_instruction = instruction->index_op2;
-				break;
-			case JNT: // goto if not true ... goes end to conditional.
+			else if(operator_type==JMP){
+				CHK_JMP;
+				continue;
+			}
+			else if(operator_type==JNT){ // goto if not true ... goes end to conditional.
+				POP_ONE;
+				if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_BOOLEAN){
 
-				if(LAST_INSTRUCTION->properties & INS_PROPERTY_TYPE_BOOLEAN){
-
-					if(!((bool)(LAST_INSTRUCTION->stkResultObject))){
-						jmp_to_statment = instruction->index_op1;
-						jmp_to_instruction = instruction->index_op2;
+					if(!((bool)(ptrResultInstructionOp1->stkResultObject))){
+						CHK_JMP;
 					}
 				}else{
-					print_error_cr("No boolean elements");
+					print_error_cr("Expected boolean element");
 					return NULL;
 				}
-				break;
-			case JT: // goto if true ... goes end to conditional.
-				if(LAST_INSTRUCTION->properties & INS_PROPERTY_TYPE_BOOLEAN){
 
-					if(((bool)(LAST_INSTRUCTION->stkResultObject))){
-						jmp_to_statment = instruction->index_op1;
+				continue;
+		 	 }
+			else if(operator_type== JT){ // goto if true ... goes end to conditional.
+				POP_ONE;
+				if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_BOOLEAN){
+
+					if(((bool)(ptrResultInstructionOp1->stkResultObject))){
+						CHK_JMP;
 					}
 				}else{
-					print_error_cr("No boolean elements");
+					print_error_cr("Expected boolean element");
 					return NULL;
 				}
-				break;
-			case CALL: // calling function after all of args are processed...
+
+				continue;
+			}
+			/*case CALL: // calling function after all of args are processed...
 				// check whether signatures matches or not ...
 				// 1. get function object ...
-				LDR_OP1;
-				LDR_OP2;
+				POP_TWO;
 				aux_function_info=(CScriptFunctionObject *)ptrResultInstructionOp1->stkResultObject;
 
 				if(aux_function_info == NULL){ // we must find function ...
@@ -1311,26 +1362,26 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 
 				calling_object = this_object;
-				if((instruction->instruction_properties & INS_PROPERTY_CALLING_OBJECT) != 0){
+				if((instruction_properties & INS_PROPERTY_CALLING_OBJECT) != 0){
 					calling_object= ptrResultInstructionOp1->ptrObjectRef!=NULL?*ptrResultInstructionOp1->ptrObjectRef:NULL;
 				}
 				else if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 
 				}
 
-				push();
+				//push();
 
 				// by default virtual machine gets main object class in order to run functions ...
 				if((ret_obj=execute(aux_function_info,calling_object,&m_functionArgs))==NULL){
 					return NULL;
 				}
 
-				pop();
+				//pop();
 
 				// if function is C must register pointer !
 
 				//if((aux_function_info->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
-				if((instruction->instruction_properties & INS_PROPERTY_DIRECT_CALL_RETURN) == 0){ // share pointer
+				if((instruction_properties & INS_PROPERTY_DIRECT_CALL_RETURN) == 0){ // share pointer
 					if(ret_obj != VM_UNDEFINED && ret_obj != VM_NULL){
 
 						if(!ret_obj->refSharedPtr()){
@@ -1346,7 +1397,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				PUSH_VAR(ret_obj,NULL,0,false);
 				break;
 			case PUSH: // push arg instruction will creating object ensures not to have feature e/s...
-				LDR_OP1;
+				POP_ONE;
 				if((svar = createVarFromResultInstruction(ptrResultInstructionOp1)) == NULL){
 					return NULL;
 				}
@@ -1357,11 +1408,10 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				m_functionArgs.clear();
 				break;
 			case VGET: // vector access after each index is processed...
-				LDR_OP1;
-				LDR_OP2;
+				POP_TWO;
 				// index_op1 is vector, index op2 is index...
 				if(IS_VECTOR(ptrResultInstructionOp1)){
-					if(IS_INT(properties_result_instruction_2)){
+					if(IS_INT(ptrResultInstructionOp2->properties)){
 						// determine object ...
 						CVector * vec = (CVector *)(ptrResultInstructionOp1->stkResultObject);
 						int v_index = LOAD_INT_OP(ptrResultInstructionOp2);
@@ -1393,8 +1443,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 				break;
 			case VPUSH: // Value push for vector
-				LDR_OP1;
-				LDR_OP2;
+				POP_TWO;
 				if(IS_VECTOR(ptrResultInstructionOp1)){
 					CVector * vec = (CVector *)(ptrResultInstructionOp1->stkResultObject);
 					if((svar = createVarFromResultInstruction(ptrResultInstructionOp2)) == NULL){
@@ -1420,8 +1469,12 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				break;
 
 			case RET:
+				if((ret=createVarFromResultInstruction(&ptrStartStkResultInstruction[instruction->index_op1], false)) == NULL){ // share pointer but not add as shared!
+					return NULL;
+				}
+				//end_by_ret=true;
+				goto lbl_exit_function;
 
-				break;
 			case NEW:
 				svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1);
 				PUSH_VAR(svar, NULL,0, true);
@@ -1431,21 +1484,21 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				}
 
 				// execute its constructor ...
-				push();
+				//push();
 
 				if((constructor_function = svar->getConstructorFunction()) != NULL){
 					execute(constructor_function,svar);
 				}
 
-				pop();
+				//pop();
 
-				break;
+				break;*/
 
-			case SAVE_I: // get Last For ternary condition ...
-				ptrSavedInstruction=ptrStkCurrentResultInstruction-1;
-				break;
-			case LOAD_I: // For ternary condition ...
-
+			//case SAVE_I: // get Last For ternary condition ...
+			//	ptrSavedInstruction=ptrStkCurrentResultInstruction-1;
+			//	break;
+			//case LOAD_I: // For ternary condition ...
+/*
 				switch(GET_INS_PROPERTY_TYPE_VAR(ptrSavedInstruction->properties)){
 				default:
 					print_error_cr("unexpected type");
@@ -1472,94 +1525,54 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 					PUSH_VAR(((CScriptVariable *)ptrSavedInstruction->stkResultObject),NULL,0,false);
 					break;
 				}
-				break;
-			case POP_SCOPE:
+				break;*/
+			else if(operator_type==POP_SCOPE){
 				popScope(info_function,instruction->index_op1);
-				break;
+			}
 
-			case DECL_STRUCT: // symply creates a variable ...
+			/*case DECL_STRUCT: // symply creates a variable ...
 				svar=NEW_STRUCT;
 				PUSH_VAR(svar,NULL,0,false);
 				if(!svar->refSharedPtr())
 					return NULL;
 				break;
 			case PUSH_ATTR:
-				LDR_OP1;
-				LDR_OP2;
+				POP_TWO;
 				// get symbol ... (current instruction -1)
-				if(LAST_INSTRUCTION->properties & INS_PROPERTY_TYPE_STRING){
+				if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_STRING){
 
 					CScriptVariable::tSymbolInfo *si;
-					string *variable_name = (string *)LAST_INSTRUCTION->stkResultObject;
-					if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
-						CScriptVariable *var1=(CScriptVariable *)ptrResultInstructionOp1->stkResultObject;
-						if(var1->idxScriptClass == IDX_CLASS_STRUCT){//::getInstance()->getIdxClassStruct()){
+					string *variable_name = (string *)ptrResultInstructionOp1->stkResultObject;
 
-								if(ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_FUNCTION){
-									si=var1->addFunctionSymbol(*variable_name, instruction->idxAstNode,(CScriptFunctionObject *)ptrResultInstructionOp2->stkResultObject);
-								}else{
-									si=var1->addVariableSymbol(*variable_name, instruction->idxAstNode);
-
-									ASSIGN_FROM_RESULT_INSTRUCTION((CScriptVariable **)&si->object ,ptrResultInstructionOp2);
-
-								}
-
-						}else{
-							print_error_cr("Struct: Expected operant 1 as struct at line %i",AST_LINE_VALUE(instruction->idxAstNode));
-							return NULL;
-						}
-
-					}
-					else{
-						print_error_cr("Struct: Op1 is not a var");
-					}
+					print_error_cr("PUSH ATTRIB NOT IMPLEMENTED +++");
+					return NULL;
 
 				}
 				else{
 					print_error_cr("Struct: Expected symbol at line %i",AST_LINE_VALUE(instruction->idxAstNode));
 					return NULL;
 				}
-				break;
-			}
+				break;*/
+
+		 	 else{
+				print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+				return NULL;
+		 	 }
+
+
 
 			//
 			// END OPERATOR MANAGEMENT
 			//
 			//-----------------------------------------------------------------------------------------------------------------------
 
-			if(operator_type == ASM_OPERATOR::RET){ // return...
 
-				if((ret=createVarFromResultInstruction(&ptrStartStkResultInstruction[instruction->index_op1], false)) == NULL){ // share pointer but not add as shared!
-					return NULL;
-				}
-				//end_by_ret=true;
-				goto lbl_exit_function;
-				//break;
-			}
 
-			if(jmp_to_statment != ZS_UNDEFINED_IDX){ // jmp detected ...
-
-				if(current_statment!=&m_listStatements[jmp_to_statment]){ // assign current statment and break loop-for
-					ptr_statment_iteration=&m_listStatements[jmp_to_statment];
-					jmp_to_statment=ZS_UNDEFINED_IDX;
-					break; // break for
-				}
-
-				if(jmp_to_instruction != ZS_UNDEFINED_IDX){
-					instruction=&(*current_statment)[jmp_to_instruction];
-					ptrStkCurrentResultInstruction=&stkResultInstruction[jmp_to_instruction+1];
-					jmp_to_instruction=ZS_UNDEFINED_IDX;
-					jmp_to_statment=ZS_UNDEFINED_IDX;
-				}else{
-
-				}
-			}
 
 		}
 
-lbl_exit_statment:
-
-		CALL_GC;
+// exit statment (don't remove ;, it gives a compile error)
+lbl_exit_statment:;
 
 	}//while(ptr_statment_iteration->asm_op!=NULL && !end_by_ret);
 
@@ -1575,6 +1588,14 @@ void CVirtualMachine::pushStack(CScriptFunctionObject *info_function, vector<CSc
 	unsigned n_arg_size = info_function->m_arg.size();
 	unsigned n_local_vars = info_function->object_info.local_symbols.m_registeredVariable.size();
 	unsigned n_total_vars = n_arg_size+n_local_vars;
+
+	if(idxCurrentStack < MAX_STACK){
+		idxCurrentStack++;
+	}
+	else{
+		print_error_cr("Reached max stack");
+		exit(EXIT_FAILURE);
+	}
 
 	if((idxStkCurrentLocalVar+n_total_vars) >=  VM_LOCAL_VAR_MAX_STACK){
 		print_error_cr("Error MAXIMUM stack size reached");
@@ -1662,6 +1683,14 @@ void CVirtualMachine::popStack(){
 		vecIdxStkString.pop();
 		vecPtrCurrentStkResultInstruction.pop();
 	}
+
+	if(idxCurrentStack > 0){
+		idxCurrentStack--;
+	}
+	else{
+		print_error_cr("Reached min stack");
+	}
+
 }
 
 
@@ -1686,7 +1715,7 @@ bool CVirtualMachine::pushNumber(float init_value, CScriptVariable ** ptrAssigna
 
 
 	stkNumber[idxStkCurrentNumber]=init_value;
-	*ptrStkCurrentResultInstruction={(unsigned short)(INS_PROPERTY_TYPE_STRING|properties),&stkNumber[idxStkCurrentNumber],ptrAssignable};
+	*ptrStkCurrentResultInstruction++={(unsigned short)(INS_PROPERTY_TYPE_STRING|properties),&stkNumber[idxStkCurrentNumber],ptrAssignable};
 	idxStkCurrentNumber++;
 
 	return true;
@@ -1700,7 +1729,7 @@ bool CVirtualMachine::pushString(const string & init_value, CScriptVariable ** p
 
 
 	stkString[idxStkCurrentString]=init_value;
-	*ptrStkCurrentResultInstruction={(unsigned short)(INS_PROPERTY_TYPE_STRING|properties),&stkString[idxStkCurrentString],ptrAssignable};
+	*ptrStkCurrentResultInstruction++={(unsigned short)(INS_PROPERTY_TYPE_STRING|properties),&stkString[idxStkCurrentString],ptrAssignable};
 	idxStkCurrentString++;
 
 	return true;
@@ -1709,70 +1738,8 @@ bool CVirtualMachine::pushString(const string & init_value, CScriptVariable ** p
 
 bool CVirtualMachine::pushFunction(CScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable,unsigned short properties){
 
-	*ptrStkCurrentResultInstruction={(unsigned short)(INS_PROPERTY_TYPE_FUNCTION|properties),init_value,ptrAssignable};
+	*ptrStkCurrentResultInstruction++={(unsigned short)(INS_PROPERTY_TYPE_FUNCTION|properties),init_value,ptrAssignable};
 	return true;
-}
-
-
-CScriptVariable * CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo * ptr_instruction, bool share_ptr){
-	CScriptVariable *obj = NULL;
-bool created_pointer = false;
-
-
-
-	// check second operand valid object..
-	switch(GET_INS_PROPERTY_TYPE_VAR(ptr_instruction->properties)){
-	default:
-		print_error_cr("(internal) cannot determine var type");
-		return NULL;
-		break;
-	case INS_PROPERTY_TYPE_UNDEFINED:
-		obj=VM_UNDEFINED;
-		break;
-	case INS_PROPERTY_TYPE_INTEGER:
-		obj= NEW_INTEGER_VAR;
-		*((int *)(((CScriptVariable *)obj)->m_value)) = ((int)(ptr_instruction->stkResultObject));
-		created_pointer = true;
-		break;
-	case INS_PROPERTY_TYPE_NUMBER:
-		obj= NEW_NUMBER_VAR;
-		*((float *)(((CScriptVariable *)obj)->m_value)) = *((float *)(ptr_instruction->stkResultObject));
-		created_pointer = true;
-		break;
-	case INS_PROPERTY_TYPE_STRING:
-		obj= NEW_STRING_VAR;
-		*((string *)(((CScriptVariable *)obj)->m_value)) = *((string *)(ptr_instruction->stkResultObject));
-		created_pointer = true;
-		break;
-	case INS_PROPERTY_TYPE_BOOLEAN:
-		obj= NEW_BOOLEAN_VAR;
-		*((bool *)(((CScriptVariable *)obj)->m_value)) = ((bool)(ptr_instruction->stkResultObject));
-		created_pointer = true;
-		break;
-	case INS_PROPERTY_TYPE_FUNCTION:
-		obj = NEW_FUNCTOR_VAR;//((CScriptFunctionObject *)ptr_instruction->stkResultObject));
-		((CFunctor *)obj)->setFunctionSymbol((CScriptFunctionObject *)ptr_instruction->stkResultObject);
-		created_pointer = true;
-		break;
-	case INS_PROPERTY_TYPE_SCRIPTVAR:
-		obj = (CScriptVariable *)ptr_instruction->stkResultObject;
-		break;
-
-	}
-
-	if(share_ptr){
-		if(created_pointer && ((ptr_instruction->properties & INS_PROPERTY_IS_ARG)==0)){
-			if(!obj->refSharedPtr()){
-				return NULL;
-			}
-		}
-	}else{
-		if(!obj->unrefSharedPtr()){
-			return NULL;
-		}
-
-	}
-	return obj;
 }
 
 
@@ -1887,6 +1854,8 @@ void CVirtualMachine::popScope(CScriptFunctionObject *info_function,int index)//
 		}
 		basePtrLocalVar[idx_local_var].stkResultObject = VM_UNDEFINED;
 	}
+
+	CALL_GC;
 }
 
 

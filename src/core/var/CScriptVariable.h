@@ -44,7 +44,13 @@ public:
 	void init(CScriptClass *info_registered_class, void * _c_object);
 
 	void fun1(int *);
+	void fun1(int *, int *);
 	void fun1(string *);
+
+	// test metamethod....
+	CScriptVariable * _add(CScriptVariable *v1);
+	CScriptVariable * _add(CScriptVariable *v1, CScriptVariable *v2);
+
 
 	//CScriptVariable();//CScriptClass *info_registered_class, void * _c_object);
 

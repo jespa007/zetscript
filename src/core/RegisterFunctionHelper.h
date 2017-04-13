@@ -81,16 +81,6 @@ template <std::size_t N, std::size_t... Is> struct make_index_sequence : make_in
 template <std::size_t... Is> struct make_index_sequence<0, Is...> : index_sequence<Is...> {};
 
 
-// template when parameters argIdx > 1
-template <size_t argIdx, typename F, typename... Args>
-auto getArgTypes(std::vector<std::string> & params)
-    -> typename std::enable_if<(argIdx > 1)>::type
-{
-
-    string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
-    params.insert(params.begin()+0,parameter_type);
-    getArgTypes<argIdx - 1,F, Args...>( params);
-}
 
 
 // template for last parameter argIdx == 1
@@ -102,6 +92,16 @@ auto getArgTypes( std::vector<std::string> & params)
     params.insert(params.begin()+0,parameter_type);
 }
 
+// template when parameters argIdx > 1
+template <size_t argIdx, typename F, typename... Args>
+auto getArgTypes(std::vector<std::string> & params)
+    -> typename std::enable_if<(argIdx > 1)>::type
+{
+
+    string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
+    params.insert(params.begin()+0,parameter_type);
+    getArgTypes<argIdx - 1,F, Args...>( params);
+}
 
 
 // trivial case when parameters (argIdx == 0).

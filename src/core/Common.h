@@ -15,7 +15,7 @@ struct tInfoVarScopeBlock;
 #define ZS_UNDEFINED_IDX 	-1
 #define MAX_PARAM_C_FUNCTION 6
 
-enum NODE_TYPE{
+enum NODE_TYPE:unsigned char{
 	UNKNOWN_NODE=0,
 	PUNCTUATOR_NODE,
 	EXPRESSION_NODE,
@@ -45,7 +45,7 @@ enum NODE_TYPE{
 };
 
 
-enum KEYWORD_TYPE{
+enum KEYWORD_TYPE:unsigned char{
 	UNKNOWN_KEYWORD=0,
 	IF_KEYWORD,
 	ELSE_KEYWORD,
@@ -67,7 +67,7 @@ enum KEYWORD_TYPE{
 	MAX_KEYWORD
 };
 
-enum PUNCTUATOR_TYPE{
+enum PUNCTUATOR_TYPE:unsigned char{
 
 	UNKNOWN_PUNCTUATOR=0,
 
@@ -125,8 +125,8 @@ enum PUNCTUATOR_TYPE{
 
 	//---------------------------
 	// SPECIAL CHARACTERS
-
-	COMA_PUNCTUATOR=1,
+	START_SPECIAL_PUNCTUATORS=MAX_OPERATOR_PUNCTUATORS,
+	COMA_PUNCTUATOR=START_SPECIAL_PUNCTUATORS,
 	SEMICOLON_PUNCTUATOR,
 
 	OPEN_PARENTHESIS_PUNCTUATOR,
@@ -138,13 +138,14 @@ enum PUNCTUATOR_TYPE{
 	OPEN_SQUARE_BRAKET_PUNCTUATOR,
 	CLOSE_SQUARE_BRAKET_PUNCTUATOR,
 
-	MAX_SPECIAL_PUNCTUATORS
+	MAX_SPECIAL_PUNCTUATORS,
+	MAX_PUNCTUATORS
 
 
 };
 
 
-enum LOAD_TYPE{
+enum LOAD_TYPE:unsigned char{
 
 		LOAD_TYPE_NOT_DEFINED=0,
 		LOAD_TYPE_NULL,
@@ -176,8 +177,8 @@ enum PROXY_CREATOR{
 };
 
 
-enum ASM_OPERATOR{
-		INVALID_OP=0,
+enum ASM_OPERATOR:unsigned char{
+		END_STATMENT=0,
 		NOP,
 		MOV, // mov expression to var
 		LOAD, // primitive value like number/string or boolean...
@@ -218,8 +219,8 @@ enum ASM_OPERATOR{
 
 		NEW, // new operator...
 		OBJECT_ACCESS, // object access .
-		SAVE_I, // save current instruction...
-		LOAD_I, // load value that points saved instruction...
+		//SAVE_I, // save current instruction...
+		//LOAD_I, // load value that points saved instruction...
 
 		POP_SCOPE,
 		DECL_STRUCT,
@@ -451,18 +452,27 @@ enum ASM_PROPERTIES{
 #pragma pack(1)
 struct tInfoAsmOp{
 
-	unsigned char operator_type;
+	ASM_OPERATOR operator_type;
 	unsigned char index_op1;	// left and right respectively
 	int  index_op2;
 	unsigned short instruction_properties;
 	short idxAstNode; // define ast node for give some information at run time
 
 	tInfoAsmOp(){
-		operator_type=ASM_OPERATOR::INVALID_OP;
+		operator_type=ASM_OPERATOR::END_STATMENT;
 		idxAstNode = -1;
 		instruction_properties=0;
 		index_op1=index_op2=-1;
 	}
+
+};
+
+
+struct tAleObjectInfo{
+	//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
+	unsigned short				properties;
+	void			 		* 	stkResultObject; // pointer to pointer ables to modify its pointer when is needed
+	CScriptVariable  		** 	ptrObjectRef; // pointer to pointer in case of replace var
 
 };
 

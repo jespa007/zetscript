@@ -16,8 +16,10 @@
 
 #define MAX_EXPRESSION_LENGTH 8192
 
-#define MAIN_AST_NODE						(CASTNode::getAstNode(0))
-#define MAIN_SCOPE_ROOT						(CASTNode::getScope(0))
+#define IDX_MAIN_AST_NODE					0
+
+#define MAIN_AST_NODE						(CASTNode::getAstNode(IDX_MAIN_AST_NODE))
+#define MAIN_SCOPE_ROOT						(CASTNode::getScope(IDX_MAIN_AST_NODE))
 #define AST_NODE(idx) 						CASTNode::getAstNode(idx)
 #define AST_SCOPE_INFO_IDX(idx) 			CASTNode::getScopeIdx(idx)
 #define AST_SCOPE_INFO(idx) 				CASTNode::getScope(idx)
@@ -45,13 +47,14 @@ enum GROUP_TYPE{
 
 
 class CScope;
-class CASTNode{
+#pragma pack(1)
+struct CASTNode{
 
 public:
 
 	static tKeywordInfo defined_keyword[MAX_KEYWORD];
-	static tPunctuatorInfo defined_operator_punctuator[MAX_OPERATOR_PUNCTUATORS];
-	static tPunctuatorInfo defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
+	static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];
+	//static tPunctuatorInfo defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
 
 	static void setVectorASTNode(vector<CASTNode *> 	* set_vec_ast_node);
@@ -63,16 +66,16 @@ public:
 	 */
 
 	static void 					init();
-	static CASTNode				*  	newASTNode(int preallocated_nodes=0);
+	static CASTNode				*  	newASTNode();
 	static vector<CASTNode *>	*	getVectorASTNode(); // ast collection register...
 
 
-	static CASTNode				* 	getAstNode(int idx);
-	static CScope 				*	getScope(int ast_idx);
-	static int						getScopeIdx(int idx);
-	static int 				  		getAstLine(int ast_idx);
-	static const char 			* 	getAstSymbolName(int ast_idx);
-	static const char 			*	getAstSymbolNameConstChar(int ast_idx);
+	static CASTNode				* 	getAstNode(short idx);
+	static CScope 				*	getScope(short ast_idx);
+	static int						getScopeIdx(short idx);
+	static int 				  		getAstLine(short ast_idx);
+	static const char 			* 	getAstSymbolName(short ast_idx);
+	static const char 			*	getAstSymbolNameConstChar(short ast_idx);
 
 	static CASTNode * getNodeByIdx(int idx);
 	static CScope * getScopeByIdx(int idx);
@@ -80,18 +83,18 @@ public:
 	static const string & getSymbolValueByIdx(int idx);
 	static const char * getSymbolValueConstCharByIdx(int idx);
 
-	CASTNode(int preallocate_num_nodes=0);
+	CASTNode();
 
 	NODE_TYPE node_type;
-	tKeywordInfo *keyword_info;
-	tPunctuatorInfo *operator_info,*pre_post_operator_info;
+	KEYWORD_TYPE keyword_info;
+	PUNCTUATOR_TYPE operator_info;
+	PUNCTUATOR_TYPE pre_post_operator_info;
 	string 	symbol_value;
-	string type_ptr;
-	int idxScope; // saves scope info ptr (only for global vars).
+	short idxScope; // saves scope info ptr (only for global vars).
 	string type_class;
-	int line_value;
-	PASTNode parent;
-	vector<PASTNode> children; //left,right;
+	short line_value;
+	short parent;
+	vector<short> children; //left,right;
 	//void *aux_value;
 	short idxAstNode;
 
@@ -105,7 +108,7 @@ private:
 
 
 
-	static tKeywordInfo * isKeyword(const char *c);
+	static KEYWORD_TYPE isKeyword(const char *c);
 
 	//static int insertAstNode(CASTNode *ast_node);
 	//static string *aux_str;
@@ -116,7 +119,7 @@ private:
 
 	static PASTNode  findAstRecursive(const string & _name_to_find, NODE_TYPE _node_type, KEYWORD_TYPE _keyword_type, PASTNode _node);
 	static PASTNode  findAst(const string & _name_to_find, NODE_TYPE _node_type_to_find, KEYWORD_TYPE _keyword_type_to_find);
-	static char * 	 isClassMember(const char *s,int & m_line, string & _class_name, string & var_name, PASTNode & _class_node, bool & error, tKeywordInfo * ikw);
+	static char * 	 isClassMember(const char *s,int & m_line, string & _class_name, string & var_name, PASTNode & _class_node, bool & error, KEYWORD_TYPE ikw);
 
 
 	// string generic utils...
@@ -165,27 +168,27 @@ private:
 	static bool parseNotPunctuator(const char *s);
 
 
-	static tPunctuatorInfo *checkPreOperatorPunctuator(const char *s);
-	static tPunctuatorInfo *checkPostOperatorPunctuator(const char *s);
+	static PUNCTUATOR_TYPE checkPreOperatorPunctuator(const char *s);
+	static PUNCTUATOR_TYPE checkPostOperatorPunctuator(const char *s);
 
 	static bool parseIncPunctuator(const char *s);
 	static bool parseDecPunctuator(const char *s);
 
 
 
-	static tPunctuatorInfo * parsePunctuatorGroup0(const char *s);
-	static tPunctuatorInfo * parsePunctuatorGroup1(const char *s);
-	static tPunctuatorInfo * parsePunctuatorGroup2(const char *s);
-	static tPunctuatorInfo * parsePunctuatorGroup3(const char *s);
-	static tPunctuatorInfo * parsePunctuatorGroup4(const char *s);
-	static tPunctuatorInfo * parsePunctuatorGroup5(const char *s);
-	static tPunctuatorInfo * parsePunctuatorGroup6(const char *s);
-	static tPunctuatorInfo * parsePunctuatorGroup7(const char *s);
+	static PUNCTUATOR_TYPE  parsePunctuatorGroup0(const char *s);
+	static PUNCTUATOR_TYPE  parsePunctuatorGroup1(const char *s);
+	static PUNCTUATOR_TYPE  parsePunctuatorGroup2(const char *s);
+	static PUNCTUATOR_TYPE  parsePunctuatorGroup3(const char *s);
+	static PUNCTUATOR_TYPE  parsePunctuatorGroup4(const char *s);
+	static PUNCTUATOR_TYPE  parsePunctuatorGroup5(const char *s);
+	static PUNCTUATOR_TYPE  parsePunctuatorGroup6(const char *s);
+	static PUNCTUATOR_TYPE  parsePunctuatorGroup7(const char *s);
 
-	static tPunctuatorInfo *  parseArithmeticPunctuator(const char *s);
-	static tPunctuatorInfo *  isOperatorPunctuator(const char *s);
-	static tPunctuatorInfo *  isSpecialPunctuator(const char *s);
-	static tPunctuatorInfo * isPunctuator(const char *s);
+	static PUNCTUATOR_TYPE   parseArithmeticPunctuator(const char *s);
+	static PUNCTUATOR_TYPE   isOperatorPunctuator(const char *s);
+	static PUNCTUATOR_TYPE   isSpecialPunctuator(const char *s);
+	static PUNCTUATOR_TYPE  isPunctuator(const char *s);
 
 
 	// AST core functions ...
@@ -239,8 +242,8 @@ private:
 			CScope *scope_info,
 			string & symbol_name,
 			int & m_definedSymbolLine,
-			tPunctuatorInfo *pre_operator,
-			tPunctuatorInfo **post_operator,
+			PUNCTUATOR_TYPE pre_operator,
+			PUNCTUATOR_TYPE & post_operator,
 			bool & is_symbol_trivial
 	);
 

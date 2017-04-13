@@ -13,10 +13,12 @@ class CCompiler{
 
 public:
 
-	typedef struct{
+	/*typedef struct{
 		void *ptr;
 		unsigned int type;
-	}tInfoConstantValue;
+	}tInfoConstantValue;*/
+
+	typedef tAleObjectInfo tInfoConstantValue;
 
 	static tDefOperator def_operator[MAX_OPERATORS];
 
@@ -42,7 +44,7 @@ public:
 	 * Compiles main ast node with base object info to store instruction related with function information.
 	 */
 
-	bool compile(PASTNode _ast_main_node, CScriptFunctionObject *sf);
+	bool compile(short idxMainAstNode, CScriptFunctionObject *sf);
 
 
 private:
@@ -50,17 +52,17 @@ private:
 	static map<string,tInfoConstantValue *> *constant_pool;
 
 	struct tInfoAsmOpCompiler{
-		unsigned char operator_type;
+		ASM_OPERATOR operator_type;
 		char index_op1; // index/type/etc
 		int  index_op2; // usually a pointer or index
 		short idxAstNode;
-		unsigned int var_type;
+		unsigned short var_type;
 		unsigned int pre_post_op_type;
 		unsigned int scope_type;
 		unsigned int runtime_prop;
 
 		tInfoAsmOpCompiler(){
-			operator_type=0;
+			operator_type=ASM_OPERATOR::END_STATMENT;
 			index_op1=-1;
 			index_op2=-1;
 			idxAstNode=-1;
@@ -102,33 +104,33 @@ private:
 
 	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
 	void printDebugInformation();
-	static bool isThisScope(PASTNode _node);
-	static bool isSuperScope(PASTNode _node);
+	static bool isThisScope(short idxAstNode);
+	static bool isSuperScope(short idxAstNode);
 
 	// DEBUG TOOLS
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// CONSTANT TOOLS
 
 	static tInfoConstantValue * getConstant(const string & const_name);
-	static tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned int type);
+	static tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned short properties);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// LINK UTILS
 
-	bool isFunctionNode(PASTNode node);
+	bool isFunctionNode(short idxAstNode);
 
 	/*
 	 * gets idx argument by its name.
 	 */
 	int getIdxArgument(const string & var);
 
-	int  addLocalVarSymbol(const string & name,CASTNode *ast);
-	bool localVarSymbolExists(const string & name,CASTNode *ast);
-	int  getIdxLocalVarSymbol(const string & name,CASTNode *ast, bool print_msg=true);
+	int  addLocalVarSymbol(const string & name,short idxAstNode);
+	bool localVarSymbolExists(const string & name,short idxAstNode);
+	int  getIdxLocalVarSymbol(const string & name,short idxAstNode, bool print_msg=true);
 
-	CScriptFunctionObject *  addLocalFunctionSymbol(const string & name,CASTNode *ast);
-	bool functionSymbolExists(const string & name,CASTNode *ast);
-	int  getIdxFunctionObject(const string & name,CASTNode *param_ast,unsigned int & scope_type, bool print_msg=true);
+	CScriptFunctionObject *  addLocalFunctionSymbol(const string & name,short idxAstNode);
+	bool functionSymbolExists(const string & name,short idxAstNode);
+	int  getIdxFunctionObject(const string & name,short idxAstNode,unsigned int & scope_type, bool print_msg=true);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	//
@@ -141,7 +143,7 @@ private:
 	/**
 	 * Compile class struct main ast node with class base object info to store instruction related with function information.
 	 */
-	bool compile_class(PASTNode _ast_class_node, tFunctionInfo *sf);
+	bool compile_class(short idxAstNode, tFunctionInfo *sf);
 
 
 	//bool parseExpression(const char *expression_str, int & m_line,CScriptFunctionObject * sf, CScope *currentEvaluatingScope);
@@ -149,9 +151,9 @@ private:
 	 * Load value or symbol and insert asm operation at current statment.
 	 */
 	tInfoStatementOpCompiler  *newStatment();
-	void insertStringConstantValueInstruction(PASTNode _node, const string & v);
-	bool insertLoadValueInstruction(PASTNode _node, CScope * _lc);
-	bool insertMovVarInstruction(PASTNode _node, int left_index, int right_index);
+	void insertStringConstantValueInstruction(short idxAstNode, const string & v);
+	bool insertLoadValueInstruction(short idxAstNode, CScope * _lc);
+	bool insertMovVarInstruction(short idxAstNode, int left_index, int right_index);
 
 
 	/**
@@ -177,39 +179,39 @@ private:
 	 * IndexAccess
 	 */
 
-	void insert_CreateArrayObject_Instruction(PASTNode _node);
-	void insert_ArrayObject_PushValueInstruction(PASTNode _node,int ref_vec_object_index, int index_instruction_to_push=ZS_UNDEFINED_IDX);
+	void insert_CreateArrayObject_Instruction(short idxAstNode);
+	void insert_ArrayObject_PushValueInstruction(short idxAstNode,int ref_vec_object_index, int index_instruction_to_push=ZS_UNDEFINED_IDX);
 
-	void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction, PASTNode _ast);
+	void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction, short idxAstNode);
 
 
 	/**
 	 * Function instructions
 	 */
-	void insert_LoadFunctionObject_Instruction(PASTNode _node,CScriptVariable *obj);
-	void insert_ClearArgumentStack_Instruction(PASTNode _node);
-	void insert_PushArgument_Instruction(PASTNode _node);
-	void insert_ClearArgumentStack_And_PushFirstArgument_Instructions(PASTNode _node);
+	void insert_LoadFunctionObject_Instruction(short idxAstNode,CScriptVariable *obj);
+	void insert_ClearArgumentStack_Instruction(short idxAstNode);
+	void insert_PushArgument_Instruction(short idxAstNode);
+	void insert_ClearArgumentStack_And_PushFirstArgument_Instructions(short idxAstNode);
 
 	/**
 	 * insert call function
 	 * index_object: index to take asm reference from. (-1 refers to main object)
 	 * index_call: index where take function ref from.
 	 */
-	void insert_CallFunction_Instruction(PASTNode _node,int index_call,int index_object=ZS_UNDEFINED_IDX);
-	void insertRet(PASTNode _node,int index);
+	void insert_CallFunction_Instruction(short idxAstNode,int index_call,int index_object=ZS_UNDEFINED_IDX);
+	void insertRet(short idxAstNode,int index);
 
 	/**
 	 * Class instructions.
 	 */
 
-	bool insert_NewObject_Instruction(PASTNode _node, const string & class_name);
-	bool insertObjectMemberAccessFrom(PASTNode _node, int ref_node_index);
+	bool insert_NewObject_Instruction(short idxAstNode, const string & class_name);
+	bool insertObjectMemberAccessFrom(short idxAstNode, int ref_node_index);
 
 
 
 
-	bool insertOperatorInstruction(tPunctuatorInfo *  op, PASTNode _node, string & error_str, int left, int right=ZS_UNDEFINED_IDX);
+	bool insertOperatorInstruction(PUNCTUATOR_TYPE op, short idxAstNode, string & error_str, int left, int right=ZS_UNDEFINED_IDX);
 
 
 	string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
@@ -220,58 +222,58 @@ private:
 
 
 	void insertPushScopeInstruction(CScope * _goto_scope);
-	void insertPopScopeInstruction(PASTNode _node,int scope_idx);
+	void insertPopScopeInstruction(short idxAstNode,int scope_idx);
 
 
-	void insert_DeclStruct_Instruction(PASTNode _node);
-	void insert_PushAttribute_Instruction(PASTNode _node,int ref_object,int ref_result_expression);
+	void insert_DeclStruct_Instruction(short idxAstNode);
+	void insert_PushAttribute_Instruction(short idxAstNode,int ref_object,int ref_result_expression);
 	//---------------------------------------------------------------------------------------------------------------------------------------
 	// COMPILE ASSEMBLE CODE (GAC)
 
-	ASM_OPERATOR puntuator2instruction(tPunctuatorInfo * op);
+	ASM_OPERATOR puntuator2instruction(PUNCTUATOR_TYPE  op);
 	unsigned int preoperator2instruction_property(PUNCTUATOR_TYPE op);
 
-	int gacExpression_FunctionOrArrayAccess(PASTNode _node_access, CScope *_lc);
-	int gacExpression_ArrayObject_Recursive(PASTNode _node, CScope *_lc);
-	int gacExpression_ArrayObject(PASTNode op, CScope *_lc);
-	int gacExpression_FunctionObject(PASTNode op, CScope *_lc);
-	int gacExpression_FunctionAccess(PASTNode op, CScope *_lc);
+	int gacExpression_FunctionOrArrayAccess(short idxAstNode, CScope *_lc);
+	int gacExpression_ArrayObject_Recursive(short idxAstNode, CScope *_lc);
+	int gacExpression_ArrayObject(short idxAstNode, CScope *_lc);
+	int gacExpression_FunctionObject(short idxAstNode, CScope *_lc);
+	int gacExpression_FunctionAccess(short idxAstNode, CScope *_lc);
 
-	int gacExpression_Struct(PASTNode _node, CScope *_lc);
-	int gacExpression_StructAttribute(PASTNode _node, CScope *_lc, int index_calling_object);
+	int gacExpression_Struct(short idxAstNode, CScope *_lc);
+	int gacExpression_StructAttribute(short idxAstNode, CScope *_lc, int index_calling_object);
 
 
-	int gacExpression_ArrayAccess(PASTNode op, CScope *_lc);
-	int  gacExpression_Recursive(PASTNode op, CScope * _lc, int & numreg);
-	bool  gacExpression(PASTNode op, CScope * _lc,int index_instruction=ZS_UNDEFINED_IDX);
+	int gacExpression_ArrayAccess(short idxAstNode, CScope *_lc);
+	int  gacExpression_Recursive(short idxAstNode, CScope * _lc, int & numreg);
+	bool  gacExpression(short idxAstNode, CScope * _lc,int index_instruction=ZS_UNDEFINED_IDX);
 
-	bool gacKeyword(PASTNode _node, CScope * _lc);
+	bool gacKeyword(short idxAstNode, CScope * _lc);
 
 	/**
 	 * Adds class info into factory
 	 */
 	bool doRegisterVariableSymbolsClass(const string & class_name, CScriptClass *current_class);
-	bool gacClass(PASTNode _node, CScope * _lc);
+	bool gacClass(short idxAstNode, CScope * _lc);
 
-	int gacNew(PASTNode _node, CScope * _lc);
-	bool gacFor(PASTNode _node, CScope * _lc);
-	bool gacVar(PASTNode _node, CScope * _lc);
-	bool gacWhile(PASTNode _node, CScope * _lc);
-	bool gacIfElse(PASTNode _node, CScope * _lc);
-	bool gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs);
-	bool gacReturn(PASTNode _node, CScope * _lc);
-	bool gacIf(PASTNode _node, CScope * _lc);
-	int gacInlineIf(PASTNode _node, CScope * _lc, int & instruction);
-	bool gacSwitch(PASTNode _node, CScope * _lc);
-	bool gacBody(PASTNode _node, CScope * _lc);
+	int gacNew(short idxAstNode, CScope * _lc);
+	bool gacFor(short idxAstNode, CScope * _lc);
+	bool gacVar(short idxAstNode, CScope * _lc);
+	bool gacWhile(short idxAstNode, CScope * _lc);
+	bool gacIfElse(short idxAstNode, CScope * _lc);
+	bool gacFunctionOrOperator(short idxAstNode, CScope * _lc, CScriptFunctionObject *irfs);
+	bool gacReturn(short idxAstNode, CScope * _lc);
+	bool gacIf(short idxAstNode, CScope * _lc);
+	int gacInlineIf(short idxAstNode, CScope * _lc, int & instruction);
+	bool gacSwitch(short idxAstNode, CScope * _lc);
+	bool gacBody(short idxAstNode, CScope * _lc);
 
 
-	void pushFunction(PASTNode _node,CScriptFunctionObject *sf);
+	void pushFunction(short idxAstNode,CScriptFunctionObject *sf);
 	void popFunction();
 
-	bool generateAsmCode_Recursive(PASTNode _node);
+	bool generateAsmCode_Recursive(short idxAstNode);
 
-	bool ast2asm_Recursive(PASTNode _node, CScope * _lc);
+	bool ast2asm_Recursive(short idxAstNode, CScope * _lc);
 
 	//vector<tInfoStatementOpCompiler > 			*m_currentListStatements;
 	//vector<vector<tInfoStatementOpCompiler > *>	m_functionAsmStatements;
