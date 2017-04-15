@@ -12,7 +12,7 @@ public:
 	CVector();
 	//CVector(CScriptClass *info_registered_class);
 	virtual bool unrefSharedPtr();
-	virtual bool refSharedPtr();
+	virtual bool initSharedPtr();
 	void add(CScriptVariable *v);
 	int *size();
 

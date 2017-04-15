@@ -335,7 +335,7 @@ enum{
 #define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"
 #define MAIN_SCRIPT_FUNCTION_OBJECT_NAME 	"__mainFunction__"
 
-typedef int (*fntConversionType)(CScriptVariable *obj);
+typedef intptr_t (*fntConversionType)(CScriptVariable *obj);
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 enum SYMBOL_INFO_PROPERTIES{
@@ -380,7 +380,7 @@ enum BASIC_CLASS_TYPE{
 };
 
 struct tInfoVariableSymbol{ // it can be a variable or function
-	unsigned int	 ref_ptr; // pointer ref to C Var/Function
+	intptr_t ref_ptr; // pointer ref to C Var/Function
 	string 	 symbol_name; // symbol name
 	int idxScriptClass;//CScriptClass		 *class_info;
 	int idxSymbol; // idx of class function/variable symbol that keeps.
@@ -395,7 +395,7 @@ struct tInfoVariableSymbol{ // it can be a variable or function
 		symbol_name = "";
 		ref_ptr=0;
 		//class_info=NULL;
-		//info_var_scope=NULL;
+
 		idxScriptClass=-1;
 		//idxScopeVar=-1;
 		idxSymbol=-1;
@@ -454,7 +454,7 @@ struct tInfoAsmOp{
 
 	ASM_OPERATOR operator_type;
 	unsigned char index_op1;	// left and right respectively
-	int  index_op2;
+	intptr_t  index_op2;
 	unsigned short instruction_properties;
 	short idxAstNode; // define ast node for give some information at run time
 
@@ -538,6 +538,20 @@ struct tInfoVarScopeBlock{
 };
 
 
+typedef struct _tInfoSharedPointer *PInfoSharedPointer;
+
+typedef struct _tInfoSharedPointer{
+	CScriptVariable *shared_ptr;
+	unsigned char n_shares;
+	//short idx_0_shares;
+	//PInfoSharedPointer next;
+}tInfoSharedPointer;
+
+typedef struct _tNode * PInfoSharedPointerNode;
+typedef struct _tNode{
+	tInfoSharedPointer data;
+	PInfoSharedPointerNode previous, next;
+}tInfoSharedPointerNode;
 
 
 

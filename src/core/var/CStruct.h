@@ -7,7 +7,7 @@ public:
 	CStruct();
 
 	virtual bool unrefSharedPtr();
-	virtual bool refSharedPtr();
+	virtual bool initSharedPtr();
 
 
 };

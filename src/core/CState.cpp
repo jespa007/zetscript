@@ -250,11 +250,17 @@ void CState::destroyASTNodes(){
 		delete vec_ast_node->at(i);
 	}
 
+	delete vec_ast_node;
+	vec_ast_node = NULL;
+
 }
 void CState::destroyScopeNodes(){
 	for(unsigned i = 0; i < vec_scope_node->size(); i++){
 		delete vec_scope_node->at(i);
 	}
+
+	delete vec_scope_node;
+	vec_scope_node=NULL;
 }
 
 
@@ -270,16 +276,32 @@ void CState::destroyScriptFunctionObjectNodes(){
 		}
 
 		print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
-		for(PtrStatment stat =info_function->object_info.statment_op; *stat != NULL; stat++){
+		if(info_function->object_info.statment_op!=NULL){
+			for(PtrStatment stat =info_function->object_info.statment_op; *stat != NULL; stat++){
 
-			free(*stat);
+				free(*stat);
+			}
+
+			free(info_function->object_info.statment_op);
 		}
 
-		free(info_function->object_info.statment_op);
+		// unloading scope ...
+
+
+
+		 for(unsigned j = 0; j < info_function->object_info.n_info_var_scope; j++){
+			 free(info_function->object_info.info_var_scope[j].var_index);
+		 }
+
+		 free(info_function->object_info.info_var_scope);
+
 
 		delete info_function;
 
 	}
+
+	delete vec_script_function_object_node;
+	vec_script_function_object_node=NULL;
 }
 
 
@@ -366,6 +388,18 @@ void CState::destroyScriptClassNodes() {
 		// delete CScriptClass
 		delete irv;
 	}
+
+	delete vec_script_class_node;
+	vec_script_class_node =NULL;
+}
+
+void CState::destroyInfoParsedSourceNode(){
+	for(unsigned i =0; i < vec_info_parsed_source_node->size(); i++){
+		delete vec_info_parsed_source_node->at(i).data;
+	}
+
+	delete vec_info_parsed_source_node;
+	vec_info_parsed_source_node=NULL;
 }
 
 void CState::destroy(){
@@ -374,17 +408,17 @@ void CState::destroy(){
 
 	destroyScopeNodes();
 	destroyASTNodes();
+	destroyInfoParsedSourceNode();
 
-	for(unsigned i =0; i < vec_info_parsed_source_node->size(); i++){
-		delete vec_info_parsed_source_node->at(i).data;
-	}
+
+
 
 	// Destroy scope ...
 	//m_rootAstNode->scope_info_ptr->destroyScopes();
 	//delete m_rootAstNode->scope_info_ptr;//m_rootScope;
 	// End destroy scope ...
 
-	delete vec_ast_node->at(0);
+	//delete vec_ast_node->at(0);
 }
 
 CState::~CState(){

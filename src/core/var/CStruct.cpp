@@ -22,11 +22,11 @@ bool CStruct::unrefSharedPtr(){ // unref each element...
 	return false;
 }
 
-bool CStruct::refSharedPtr(){ // ref every element in list ...
-	if(CScriptVariable::refSharedPtr()){
+bool CStruct::initSharedPtr(){ // ref every element in list ...
+	if(CScriptVariable::initSharedPtr()){
 
 		for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-			if(!((CScriptVariable *)m_variableSymbol[i].object)->refSharedPtr()){
+			if(!((CScriptVariable *)m_variableSymbol[i].object)->initSharedPtr()){
 				return false;
 			}
 		}

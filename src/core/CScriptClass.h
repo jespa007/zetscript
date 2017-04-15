@@ -38,7 +38,7 @@
 #define GET_MAIN_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX)
 
 
-#define NEW_CLASS_VAR_BY_IDX(idx) 				(CScriptClass::newScriptVariableByIdx(idx))
+#define NEW_CLASS_VAR_BY_IDX(idx) 				(CScriptClass::instanceScriptVariableByIdx(idx))
 
 #define REGISTERED_CLASS_NODE(idx) 				(CScriptClass::getScriptClassByIdx(idx))
 #define MAIN_CLASS_NODE							(CScriptClass::getScriptClassByIdx(0))    // 0 is the main class
@@ -101,7 +101,7 @@ public:
 	/**
 	 * This function registers a script class into factory.
 	 */
-	static CScriptClass 				* 		newScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast);
+	static CScriptClass 				* 		registerClass(const string & class_name, const string & base_class_name, PASTNode _ast);
 
 
 	static CScriptClass 				* 		getScriptClassByIdx(int idx);
@@ -121,8 +121,8 @@ public:
 	/**
 	 * Class name given this function creates the object and initializes all variables.
 	 */
-	static CScriptVariable 		 * newScriptVariableByName(const string & class_name);
-	static CScriptVariable 		 * newScriptVariableByIdx(int idx_class, void * value_object = NULL);
+	static CScriptVariable 		 * instanceScriptVariableByClassName(const string & class_name);
+	static CScriptVariable 		 * instanceScriptVariableByIdx(int idx_class, void * value_object = NULL);
 	static CScriptVariable 		 * getScriptVariableByIdx(int idx_class, int idx_var);
 
 	static bool updateReferenceSymbols();
@@ -174,7 +174,7 @@ public:
 		int idx_return_type=-1;
 		string return_type;
 		vector<string> m_arg;
-		unsigned int ref_ptr=-1;
+		intptr_t ref_ptr=-1;
 		CScriptFunctionObject *irs=NULL;
 
 		//tPrimitiveType *rt;
@@ -209,12 +209,12 @@ public:
 		}
 
 		if(idx_return_type == IDX_CLASS_VOID){
-			if((ref_ptr=(int)CNativeFunction::getInstance()->new_proxy_function<void>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
+			if((ref_ptr=(intptr_t)CNativeFunction::getInstance()->new_proxy_function<void>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
 				return false;
 			}
 		}
 		else{
-			if((ref_ptr=(int)CNativeFunction::getInstance()->new_proxy_function<int>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
+			if((ref_ptr=(intptr_t)CNativeFunction::getInstance()->new_proxy_function<int>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
 				return false;
 			}
 		}
@@ -228,7 +228,6 @@ public:
 		irs->object_info.symbol_info.ref_ptr = ref_ptr;
 
 		irs->object_info.symbol_info.idxAstNode = -1;
-		//irs->object_info.symbol_info.idxScopeVar=-1;//info_var_scope = NULL;
 		irs->object_info.symbol_info.symbol_name = function_name;
 		irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
@@ -343,7 +342,7 @@ public:
 	 		}
 	 	}
 
-	 	mapTypeConversion[class_name_ptr][base_class_name_ptr]=[](CScriptVariable *s){ return (int)reinterpret_cast<_B *>(s);};
+	 	mapTypeConversion[class_name_ptr][base_class_name_ptr]=[](CScriptVariable *s){ return (intptr_t)reinterpret_cast<_B *>(s);};
 
 	 	CScriptClass *irc_base = (*vec_script_class_node)[idxBaseClass];
 	 	CScriptClass *irc_class = (*vec_script_class_node)[register_class];
@@ -443,11 +442,11 @@ public:
 		// ignores special type cast C++ member to ptr function
 		// create binding function class
 		if(idx_return_type == IDX_CLASS_VOID){
-			if((ref_ptr=((int)CNativeFunction::getInstance()->c_member_class_function_proxy<_T, void>(m_arg.size(),function_type)))==0){
+			if((ref_ptr=((intptr_t)CNativeFunction::getInstance()->c_member_class_function_proxy<_T, void>(m_arg.size(),function_type)))==0){
 				return false;
 			}
 		}else{
-			if((ref_ptr=((int)CNativeFunction::getInstance()->c_member_class_function_proxy<_T, int>(m_arg.size(),function_type)))==0){
+			if((ref_ptr=((intptr_t)CNativeFunction::getInstance()->c_member_class_function_proxy<_T, intptr_t>(m_arg.size(),function_type)))==0){
 				return false;
 			}
 		}

@@ -20,6 +20,7 @@ class CState{
 	void destroyScopeNodes();
 	void destroyScriptFunctionObjectNodes();
 	void destroyScriptClassNodes();
+	void destroyInfoParsedSourceNode();
 
 	vector<CASTNode *> 							*vec_ast_node; // ast collection register...
 	vector<CScope *> 							*vec_scope_node;

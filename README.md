@@ -15,7 +15,7 @@ ZetScript is a basic script engine for your c++ project.
 <b>for_test.zs</b> has this code,
 
 <code>
-var j=0;for(var i=0; i < 10000000; ++i){i*2;}
+var j=0;for(var i=0; i < 10000000; ++i){j=i*2;}
 </code>
 
 Generates this following asm,

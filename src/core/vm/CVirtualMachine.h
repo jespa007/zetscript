@@ -5,12 +5,14 @@
 
 
 //#define MAX_PER_TYPE_OPERATIONS 32
-#define VM_LOCAL_VAR_MAX_STACK				5000
-#define VM_ALE_OPERATIONS_MAX_STACK			4096	 // max operations ...
+#define VM_LOCAL_VAR_MAX_STACK				2048
+#define VM_ALE_OPERATIONS_MAX_STACK			2048	 // max operations ...
 
 
-#define MAX_UNIQUE_OBJECTS_POINTERS 2048
+//#define MAX_UNIQUE_OBJECTS_POINTERS 2048
 #define MAX_STACK 256
+
+#define MAX_SHARES_VARIABLE 64
 
 
 class CScriptFunction;
@@ -23,31 +25,36 @@ class CVirtualMachine{
 // POINTER MANAGER ...
 //
 
-#pragma pack(1)
-	struct tInfoSharedPointer{
-		CScriptVariable *shared_ptr;
-		short n_shares;
-		short idx_0_shares;
-	};
+
+	typedef struct {
+		PInfoSharedPointerNode first, last;
+	}tInfoSharedList;
 
 
+	tInfoSharedList zero_shares[MAX_STACK];
+	tInfoSharedList shared_var[MAX_STACK];
+
+	//PInfoSharedPointerNode InsertZeroShares(CScriptVariable *shared_ptr);
+
+/*
 	tInfoSharedPointer shared_pointer[MAX_STACK][MAX_UNIQUE_OBJECTS_POINTERS];
 	short pointers_with_0_shares[MAX_STACK][MAX_UNIQUE_OBJECTS_POINTERS],
 		n_pointers_with_0_shares[MAX_STACK];
 
 	short indexFreeCell[MAX_STACK][MAX_UNIQUE_OBJECTS_POINTERS],
 		n_freeCell[MAX_STACK];
+*/
 
 	int idxCurrentStack;
 
 
 
-	int getFreeCell();
+/*	int getFreeCell();
 	void setFreeCell(int index_to_free);
 
 
 	int insert0Shares(int shared_pointer_idx);
-
+*/
 //===================================================================================================
 
 public:
@@ -71,15 +78,15 @@ public:
 	//static CSharedPointerManager * getInstance();
 	//static void destroySingletons();
 
-	int newSharedPointer(CScriptVariable *var_ptr);
-	void removeUnSharedPointers();
+	PInfoSharedPointerNode newSharedPointer(CScriptVariable *var_ptr);
+	/*void removeUnSharedPointers();
 	//void gc();
 	int getIdx0Shares(int index);
 	int getNumShares(int index);
-	void remove0Shares(int index_0_share_idx);
+	void remove0Shares(int index_0_share_idx);*/
 
-	void sharePointer( int index);
-	void unrefSharedPointer( int index);
+	bool sharePointer( PInfoSharedPointerNode _node);
+	void unrefSharedPointer( PInfoSharedPointerNode _node);
 
 	//static CSharedPointerManager *sharedPointerManager;
 

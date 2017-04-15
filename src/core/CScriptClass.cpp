@@ -55,7 +55,7 @@ vector<CScriptClass *> 		*	CScriptClass::getVectorScriptClassNode(){
 }
 
 
-CScriptClass * CScriptClass::newScriptClass(const string & class_name, const string & base_class_name, PASTNode _ast){
+CScriptClass * CScriptClass::registerClass(const string & class_name, const string & base_class_name, PASTNode _ast){
 	int index;
 	CScriptClass *sci=NULL;
 
@@ -283,18 +283,18 @@ public:
 		//IDX_CLASS_STRUCT,		// 11
 
 		// MAIN CLASS (IDX==0)! Is the first entry before any other one   (this order is important!...
-		if((newScriptClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 0
+		if((registerClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 0
 		if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME,IDX_MAIN_AST_NODE)) == NULL) return false;
 
 
 
-		if((newScriptClass("CUndefined","",NULL)) == NULL) return false;		// 1
+		if((registerClass("CUndefined","",NULL)) == NULL) return false;		// 1
 		vec_script_class_node->at(IDX_CLASS_UNDEFINED)->classPtrType=typeid(CUndefined *).name();
 
-		if((newScriptClass("CVoid","",NULL)) == NULL) return false;				// 2
+		if((registerClass("CVoid","",NULL)) == NULL) return false;				// 2
 		vec_script_class_node->at(IDX_CLASS_VOID)->classPtrType=typeid(CVoid *).name();
 
-		if((newScriptClass("CNull","",NULL)) == NULL) return false;				// 3
+		if((registerClass("CNull","",NULL)) == NULL) return false;				// 3
 		vec_script_class_node->at(IDX_CLASS_NULL)->classPtrType=typeid(CNull *).name();
 
 
@@ -316,34 +316,34 @@ public:
 		// Conversion from object types to primitive types (move into factory) ...
 		//addPrimitiveTypeConversion<CInteger *,int>( [] (CScriptVariable *obj){return *((int *)((CInteger *)obj)->m_value);});
 		if(!addPrimitiveTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){
-			return (int)((CInteger *)obj)->m_value;
+			return (intptr_t)((CInteger *)obj)->m_value;
 		})) return false;
 
 		if(!addPrimitiveTypeConversion<CInteger *,string *>( [] (CScriptVariable *obj){
 			obj->m_strValue=CStringUtils::intToString(*((int *)((CInteger*)obj)->m_value));
-			return (int)&obj->m_strValue;
+			return (intptr_t)&obj->m_strValue;
 		})) return false;
 
 		if(!addPrimitiveTypeConversion<CNumber *,float *>( [] (CScriptVariable *obj){
-			return (int)(((CNumber *)obj)->m_value);
+			return (intptr_t)(((CNumber *)obj)->m_value);
 		})) return false;
 
 		if(!addPrimitiveTypeConversion<CNumber *,string *>( [] (CScriptVariable *obj){
 			obj->m_strValue=CStringUtils::floatToString(*((float *)((CNumber*)obj)->m_value));
-			return (int)&obj->m_strValue;
+			return (intptr_t)&obj->m_strValue;
 		})) return false;
 
 		if(!addPrimitiveTypeConversion<CBoolean *,bool *>( [] (CScriptVariable *obj){
-			return (int)((CBoolean *)obj)->m_value;
+			return (intptr_t)((CBoolean *)obj)->m_value;
 		})) return false;
 
 		if(!addPrimitiveTypeConversion<CBoolean *,string *>( [] (CScriptVariable *obj){
 			obj->toString();
-			return (int)&obj->m_strValue;
+			return (intptr_t)&obj->m_strValue;
 		})) return false;
 
 		if(!addPrimitiveTypeConversion<CString *,string *>( [] (CScriptVariable *obj){
-			return (int)(((CString *)obj)->m_value);
+			return (intptr_t)(((CString *)obj)->m_value);
 		})) return false;
 
 
@@ -351,16 +351,16 @@ public:
 		// From here you defined all basic, start define hierarchy
 
 		// register custom functions ...
-		/*if(!register_C_FunctionMember(CScriptVariable,toString)) return false;
+		if(!register_C_FunctionMember(CScriptVariable,toString)) return false;
 		if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(string * ))) return false;
 		if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(int * ))) return false;
 		if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(int *,int * ))) return false;
-		//if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(string * )>(&CScriptVariable::fun1))) return false;
-		//if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(int * )>(&CScriptVariable::fun1))) return false;
+		if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(string * )>(&CScriptVariable::fun1))) return false;
+		if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(int * )>(&CScriptVariable::fun1))) return false;
 
 		// Add metamethods ...
 		if(!register_C_FunctionMemberCast(CScriptVariable,_add,CScriptVariable * (CScriptVariable::*)(CScriptVariable * ))) return false;
-		if(!register_C_FunctionMemberCast(CScriptVariable,_add,CScriptVariable * (CScriptVariable::*)(CScriptVariable *,CScriptVariable * ))) return false;*/
+		if(!register_C_FunctionMemberCast(CScriptVariable,_add,CScriptVariable * (CScriptVariable::*)(CScriptVariable *,CScriptVariable * ))) return false;
 
 
 		if(!class_C_baseof<CVoid,CScriptVariable>()) return false;
@@ -595,7 +595,6 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 					 }
 				 }
 
-				 //root_class_irfs->object_info.info_var_scope.push_back(ivsb);
 				 vec_ivsb.push_back(ivsb);
 			 }
 
@@ -854,14 +853,14 @@ bool CScriptClass::updateReferenceSymbols(){
 
 
 
-CScriptVariable *		CScriptClass::newScriptVariableByName(const string & class_name){
+CScriptVariable *		CScriptClass::instanceScriptVariableByClassName(const string & class_name){
 
 	 // 0. Search class info ...
 	 CScriptClass * rc = getScriptClassByName(class_name);
 
 
 	 if(rc != NULL){
-		 return newScriptVariableByIdx(rc->metadata_info.object_info.symbol_info.idxScriptClass);
+		 return instanceScriptVariableByIdx(rc->metadata_info.object_info.symbol_info.idxScriptClass);
 	 }
 
 	 return NULL;
@@ -869,7 +868,7 @@ CScriptVariable *		CScriptClass::newScriptVariableByName(const string & class_na
  }
 
 
- CScriptVariable 		 * CScriptClass::newScriptVariableByIdx(int idx_class, void * value_object){
+ CScriptVariable 		 * CScriptClass::instanceScriptVariableByIdx(int idx_class, void * value_object){
 
 	 CScriptVariable *class_object=NULL;
 
@@ -993,7 +992,7 @@ bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_pt
 		// init struct...
 		irs->properties = ::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 		irs->symbol_name = var_name;
-		irs->ref_ptr=(int)var_ptr;
+		irs->ref_ptr=(intptr_t)var_ptr;
 
 		print_debug_cr("Registered function name: %s",var_name.c_str());
 

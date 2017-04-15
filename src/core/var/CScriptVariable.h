@@ -31,7 +31,8 @@ public:
 	//----------------------
 	// MEM MANNAGER RELATED
 	//bool deallocatable;
-	int idx_shared_ptr;
+	//int idx_shared_ptr;
+	PInfoSharedPointerNode ptr_shared_pointer_node;
 	int idxScriptClass;
 	//----------------------
 
@@ -82,10 +83,10 @@ public:
 
 
     virtual string * toString();
-    virtual bool refSharedPtr();
+    virtual bool initSharedPtr();
     virtual bool unrefSharedPtr();
 
-	int get_C_StructPtr();
+    intptr_t get_C_StructPtr();
 
 	virtual ~CScriptVariable();
 

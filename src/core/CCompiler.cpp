@@ -51,7 +51,7 @@ int CCompiler::addLocalVarSymbol(const string & var_name,short idxAstNode){
 
 		info_symbol.idxAstNode = idxAstNode;
 		info_symbol.symbol_name = var_name;
-		//info_symbol.idxScopeVar = idxScopeVar;//info_var_scope = irv;
+
 
 
 		this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
@@ -342,7 +342,7 @@ void CCompiler::insertStringConstantValueInstruction(short idxAstNode, const str
 
 	asm_op->var_type=type;
 	asm_op->index_op1=LOAD_TYPE_CONSTANT;
-	asm_op->index_op2=(int)obj;
+	asm_op->index_op2=(intptr_t)obj;
 	asm_op->idxAstNode=idxAstNode;
 	asm_op->operator_type=ASM_OPERATOR::LOAD;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -386,7 +386,7 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 			print_com_cr("%s detected as undefined\n",v.c_str());
 
 	}else if((const_obj=CInteger::Parse(v))!=NULL){
-		int value = *((int *)const_obj);
+		intptr_t value = *((int *)const_obj);
 		delete (int *)const_obj;
 
 		type=INS_PROPERTY_TYPE_INTEGER;
@@ -442,7 +442,7 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 
 		is_constant = false;
 
-		int idx_local_var=ZS_UNDEFINED_IDX;
+		intptr_t idx_local_var=ZS_UNDEFINED_IDX;
 
 		if(checkAccessObjectMember(_node->idxAstNode)){
 			scope_type = INS_PROPERTY_ACCESS_SCOPE;
@@ -481,7 +481,7 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 
 	//asm_op->variable_type=type;
 	asm_op->index_op1=load_type;
-	asm_op->index_op2=(int)obj;
+	asm_op->index_op2=(intptr_t)obj;
 	//asm_op->scope_type = scope_type;
 	asm_op->idxAstNode=_node->idxAstNode;
 	asm_op->var_type=type;
@@ -1572,7 +1572,7 @@ bool CCompiler::gacClass(short idxAstNode, CScope * _lc){
 	}
 
 	// verify class is not already registered...
-	if((irc=CScriptClass::newScriptClass(_node->symbol_value,base_class,_node)) == NULL){
+	if((irc=CScriptClass::registerClass(_node->symbol_value,base_class,_node)) == NULL){
 		return false;
 	}
 	// we push class symbol ref as function, then all registered symbols will take account with this scope...

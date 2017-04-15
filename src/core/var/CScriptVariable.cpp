@@ -130,7 +130,8 @@ CScriptVariable * CScriptVariable::_add(CScriptVariable *v1, CScriptVariable *v2
 
 void CScriptVariable::setup(){
 
-	idx_shared_ptr=ZS_UNDEFINED_IDX;
+	ptr_shared_pointer_node = NULL;
+
 	m_infoRegisteredClass = NULL;
 	c_object = NULL;
 	created_object = NULL;
@@ -176,7 +177,10 @@ void CScriptVariable::init(CScriptClass *irv, void *_c_object){
 	}
 
 
-	createSymbols(irv);
+	// only create symbols if not basic type ...
+	if(irv->metadata_info.object_info.symbol_info.idxScriptClass >= MAX_BASIC_CLASS_TYPES){
+		createSymbols(irv);
+	}
 }
 
 CScriptFunctionObject *CScriptVariable::getConstructorFunction(){
@@ -311,24 +315,20 @@ const string & CScriptVariable::getClassName(){
     	return &m_strValue;
     }
 
-    bool CScriptVariable::refSharedPtr(){
+    bool CScriptVariable::initSharedPtr(){
 
-    	if(idx_shared_ptr == ZS_UNDEFINED_IDX){
-
-			if((idx_shared_ptr = CURRENT_VM->newSharedPointer(this)) != ZS_UNDEFINED_IDX){
-				return true;
-			}
-    	}
-    	else{
-    		print_error_cr("idx shared ptr alrady registered");
+    	if(ptr_shared_pointer_node == NULL){
+			ptr_shared_pointer_node = CURRENT_VM->newSharedPointer(this);
+			return true;
     	}
 
-		return false;
+    	print_error_cr(" shared ptr alrady registered");
+    	return false;
     }
 
     bool CScriptVariable::unrefSharedPtr(){
-    	if(idx_shared_ptr!=ZS_UNDEFINED_IDX){
-    		if(CURRENT_VM->getNumShares(idx_shared_ptr) > 1){
+    	if(ptr_shared_pointer_node!=NULL){
+    		/*if(CURRENT_VM->getNumShares(idx_shared_ptr) > 1){
     			print_error_cr("shared pointer more than once");
     			return false;
     		}
@@ -337,14 +337,20 @@ const string & CScriptVariable::getClassName(){
     		if(index_0_share_idx!=ZS_UNDEFINED_IDX){
     			CURRENT_VM->remove0Shares(index_0_share_idx);
     		}
-    		idx_shared_ptr = ZS_UNDEFINED_IDX;
+    		idx_shared_ptr = ZS_UNDEFINED_IDX;*/
+    		CURRENT_VM->unrefSharedPointer(ptr_shared_pointer_node);
+    		return true;
+
+    	}
+    	else{
+    		print_error_cr("shared ptr not registered");
     	}
 
-    	return true;
+    	return false;
     }
 
-	int CScriptVariable::get_C_StructPtr(){
-		return (int)c_object;
+    intptr_t CScriptVariable::get_C_StructPtr(){
+		return (intptr_t)c_object;
 	}
 
 

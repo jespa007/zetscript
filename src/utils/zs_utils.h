@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "CLog.h"
 #include "CBuffer.h"
 #include "CColorTerm.h"

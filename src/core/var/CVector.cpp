@@ -11,11 +11,11 @@ CVector::~CVector(){
 	for(unsigned i = 0; i < m_objVector.size(); i++){ // unref values ...
 		CScriptVariable *var = m_objVector[i];
 
-		if(var->idx_shared_ptr == ZS_UNDEFINED_IDX){ // not referenced so we can remove safetely ...
+		if(var->ptr_shared_pointer_node == NULL){ // not referenced so we can remove safetely ...
 			delete var;
 		}
 		else{
-			CURRENT_VM->unrefSharedPointer(var->idx_shared_ptr);
+			CURRENT_VM->unrefSharedPointer(var->ptr_shared_pointer_node);
 		}
 
 		//delete m_value[i];
@@ -38,12 +38,12 @@ bool CVector::unrefSharedPtr(){
 	return false;
 }
 
-bool CVector::refSharedPtr(){
+bool CVector::initSharedPtr(){
 
-	if(CScriptVariable::refSharedPtr()){
+	if(CScriptVariable::initSharedPtr()){
 
 		for(unsigned i = 0; i < m_objVector.size(); i++){
-			if(!m_objVector[i]->refSharedPtr()){
+			if(!m_objVector[i]->initSharedPtr()){
 				return false;
 			}
 		}

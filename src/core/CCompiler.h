@@ -87,6 +87,14 @@ private:
 		tInfoFunctionCompile(CScriptFunctionObject	* _function_info_object){
 			function_info_object = _function_info_object;
 		}
+
+		~tInfoFunctionCompile(){
+			for(unsigned i = 0; i < stament.size(); i++){
+				for(unsigned j = 0;  j< stament[i].asm_op.size();j++){
+					delete stament[i].asm_op[j];
+				}
+			}
+		}
 	};
 
 

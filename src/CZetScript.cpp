@@ -33,11 +33,13 @@ void CZetScript::destroy(){
 		delete m_instance;
 	}
 
-	/*CCompiler::destroySingletons();
-	CSharedPointerManager::destroySingletons();
-	CNativeFunction::destroySingletons();
+
+	CNull::destroySingletons();
+	CUndefined::destroySingletons();
+
+	CCompiler::destroySingletons();
 	CState::destroySingletons();
-*/
+	CNativeFunction::destroySingletons();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -59,6 +61,7 @@ void CZetScript::destroy(){
 
  	return print_aux_load_value;
  }
+
 
  const char * CZetScript::getStrTypeLoadValue(PtrStatment m_listStatements,int current_statment, int current_instruction){
 
@@ -82,7 +85,14 @@ void CZetScript::destroy(){
  	sprintf(print_aux_load_value,"UNDEFINED");
 
 	if(iao->instruction_properties & INS_PROPERTY_ACCESS_SCOPE){
-		sprintf(object_access,"[%02i:%02i].",current_statment,iao->index_op2);
+
+		sprintf(object_access,"[%02i:"
+#ifdef __x86_64__
+				"%02lu"
+#else
+				"%02i"
+#endif
+				"].",current_statment,iao->index_op2);
 	}
 	else if(iao->instruction_properties & INS_PROPERTY_THIS_SCOPE){
 		sprintf(object_access,"this.");
@@ -170,7 +180,15 @@ void CZetScript::destroy(){
 					}
 				switch(asm_op_statment->operator_type){
 				case  PUSH_ATTR:
-					printf("[%02i:%02i]\t%s\tSTRUCT[%02i:%02i],[%02i:%02i],[%02i:%02i]\n",
+
+					printf("[%02i:%02i]\t%s\tSTRUCT[%02i:%02i],[%02i:%02i],[%02i:"
+#ifdef __x86_64__
+							"%02lu]"
+#else
+							"%02i]"
+#endif
+							"\n"
+							,
 							idx_statment,idx_instruction,
 							CCompiler::def_operator[asm_op_statment->operator_type].op_str,
 
@@ -198,7 +216,13 @@ void CZetScript::destroy(){
 				case JNT:
 				case JT:
 				case JMP:
-					printf("[%02i:%02i]\t%s\t[%04i:%04i]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1,asm_op_statment->index_op2);
+					printf("[%02i:%02i]\t%s\t[%04i:"
+#ifdef __x86_64__
+							"%04lu"
+#else
+							"%04i"
+#endif
+							"]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1,asm_op_statment->index_op2);
 					break;
 				/*case PRE_INC:
 				case POST_INC:
@@ -279,7 +303,7 @@ CScriptVariable * CZetScript::call_C_function(void *fun_ptr, CScriptFunctionObje
 
 	int converted_param[MAX_PARAM_C_FUNCTION];
 	CScriptVariable *var_result= UNDEFINED_SYMBOL;
-	int result;
+	intptr_t result;
 
 	if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) {
 		print_error_cr("Function is not registered as C");
@@ -305,7 +329,7 @@ CScriptVariable * CZetScript::call_C_function(void *fun_ptr, CScriptFunctionObje
 	// convert parameters script to c...
 	for(unsigned int i = 0; i < argv->size();i++){
 
-		converted_param[i]= (int)(argv->at(i));
+		converted_param[i]= (intptr_t)(argv->at(i));
 
 		if(!(argv->at(i)->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE && irfs->m_arg[i]==typeid(CScriptVariable *).name())){ //not script, then it can pass through ...
 
@@ -377,7 +401,7 @@ CScriptVariable * CZetScript::call_C_function(void *fun_ptr, CScriptFunctionObje
 
 		}
 
-		var_result = CScriptClass::newScriptVariableByIdx(irfs->idx_return_type,(void *)result);
+		var_result = CScriptClass::instanceScriptVariableByIdx(irfs->idx_return_type,(void *)result);
 
 	}else{
 		switch(argv->size()){
@@ -590,7 +614,7 @@ CScriptVariable * CZetScript::execute(){
 		// creates the main entry function with compiled code. On every executing code, within "execute" function
 		// virtual machine is un charge of allocating space for all local variables...
 
-		m_mainObject = CScriptClass::newScriptVariableByName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::newScriptVariableByName("Main");
+		m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
 
 
 	}
@@ -600,7 +624,9 @@ CScriptVariable * CZetScript::execute(){
 //-------------------------------------------------------------------------------------
 CZetScript::~CZetScript(){
 	// unregister operators ...
-
+	if( m_mainObject != NULL){
+		delete m_mainObject;
+	}
 	delete vm;
 
 

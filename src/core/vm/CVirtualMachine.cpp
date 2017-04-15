@@ -22,7 +22,7 @@ print_error_cr("Error at line %i cannot perform operator \"%s\" %s  \"%s\"",\
 		*(((float *)(ptr_result_instruction->stkResultObject)))
 
 #define LOAD_INT_OP(ptr_result_instruction) \
-		(((int)(ptr_result_instruction->stkResultObject)))
+		(((intptr_t)(ptr_result_instruction->stkResultObject)))
 
 
 
@@ -137,10 +137,10 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->properties)
 
 
 #define PUSH_INTEGER(init_value,ptrAssignable,properties)\
-*ptrStkCurrentResultInstruction++={INS_PROPERTY_TYPE_INTEGER|properties,(void*)((int)(init_value)),ptrAssignable};
+*ptrStkCurrentResultInstruction++={INS_PROPERTY_TYPE_INTEGER|properties,(void*)((intptr_t)(init_value)),ptrAssignable};
 
 #define PUSH_BOOLEAN(init_value, ptrAssignable, properties)\
-*ptrStkCurrentResultInstruction++={INS_PROPERTY_TYPE_BOOLEAN|properties,(void *)((bool)(init_value)),ptrAssignable};
+*ptrStkCurrentResultInstruction++={INS_PROPERTY_TYPE_BOOLEAN|properties,(void *)((intptr_t)(init_value)),ptrAssignable};
 
 #define PUSH_VAR(init_value, ptrObjectRefParam,propertiesParam,is_new_var)\
 {\
@@ -199,7 +199,7 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->properties)
 	}\
 	else if(type_var==INS_PROPERTY_TYPE_INTEGER){\
 		(ret)= NEW_INTEGER_VAR;\
-		*((int *)(((CScriptVariable *)(ret))->m_value)) = ((int)(ptr_instruction->stkResultObject));\
+		*((int *)(((CScriptVariable *)(ret))->m_value)) = ((intptr_t)(ptr_instruction->stkResultObject));\
 		created_pointer = true;\
 	}\
 	else if(type_var==INS_PROPERTY_TYPE_NUMBER){\
@@ -231,7 +231,7 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->properties)
 	}\
 	if(share_ptr){\
 		if(created_pointer && ((ptr_instruction->properties & INS_PROPERTY_IS_ARG)==0)){\
-			if(!(ret)->refSharedPtr()){\
+			if(!(ret)->initSharedPtr()){\
 				return NULL;\
 			}\
 		}\
@@ -241,6 +241,55 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->properties)
 		}\
 	}\
 }
+
+
+#define SHARE_LIST_INSERT(list,_node){\
+		if(list.first == NULL){\
+			_node->previous=_node->next= list.last = list.first =_node;\
+		}\
+		else{\
+			list.last->next=_node;\
+			_node->previous=list.last;\
+			list.last=_node;\
+			list.first->previous=list.last;\
+			list.last->next=list.first;\
+		}\
+	}
+
+#define SHARE_LIST_DEATTACH(list,_node) \
+{\
+		if(_node->next == _node){\
+			list.first = list.last = _node->next = _node->previous=NULL;\
+		}else{\
+			PInfoSharedPointerNode previous=_node->previous;\
+			PInfoSharedPointerNode next=_node->next;\
+			if(_node==list.first){\
+				list.first = next;\
+			}\
+			else if(_node==list.last){\
+				list.last = previous;\
+			}\
+			previous->next = next;\
+			next->previous = previous;\
+		}\
+}
+
+#define SHARED_LIST_DESTROY(list) \
+{\
+	PInfoSharedPointerNode current=(list).first;\
+	if(current != NULL){\
+		while(current->next !=current){\
+			PInfoSharedPointerNode node_to_remove=current;\
+			delete node_to_remove->data.shared_ptr;\
+			current=current->next;\
+			free(node_to_remove);\
+		}\
+		delete current->data.shared_ptr;\
+		free(current);\
+	}\
+	(list).first=(list).last=NULL;\
+}
+
 
 
 /*
@@ -276,14 +325,18 @@ bool CVirtualMachine::LOAD_VARIABLE(tInfoAsmOp *iao,
 
 
 
-#define CALL_GC\
-	if(n_pointers_with_0_shares[idxCurrentStack]>0){\
+#define CALL_GC SHARED_LIST_DESTROY(zero_shares[idxCurrentStack])
+
+
+
+/*
+if(n_pointers_with_0_shares[idxCurrentStack]>0){\
 		short *index = pointers_with_0_shares[idxCurrentStack];\
 		do{\
 			unrefSharedPointer(*(index++));\
 		}while(--n_pointers_with_0_shares[idxCurrentStack]);\
 	}
-
+*/
 
 
 
@@ -310,7 +363,7 @@ CVirtualMachine::CVirtualMachine(){
 
 	//-----------------------------------------------------------
 	// set memory manager
-	for(int s = 0; s < MAX_STACK; s++){
+/*	for(int s = 0; s < MAX_STACK; s++){
 		n_pointers_with_0_shares[s]=0;
 		memset(shared_pointer[s],0,sizeof(shared_pointer[s]));
 		n_freeCell[s]=MAX_UNIQUE_OBJECTS_POINTERS-1;
@@ -318,6 +371,11 @@ CVirtualMachine::CVirtualMachine(){
 			indexFreeCell[s][i]=i;
 		}
 	}
+*/
+
+	memset(zero_shares,0,sizeof(zero_shares));
+	memset(shared_var,0,sizeof(shared_var));
+
 
 	idxCurrentStack=0;
 
@@ -360,10 +418,12 @@ CVirtualMachine::CVirtualMachine(){
 #endif
 
 
+
+
 //============================================================================================================================================
 
 // POINTER MANANAGER
-
+/*
 int CVirtualMachine::getFreeCell(){
 	if(n_freeCell[idxCurrentStack] >= 0){
 		int index= indexFreeCell[idxCurrentStack][n_freeCell[idxCurrentStack]];
@@ -456,19 +516,6 @@ int CVirtualMachine::insert0Shares(int shared_pointer_idx)
 	return (n_pointers_with_0_shares[idxCurrentStack]-1);
 }
 
-int CVirtualMachine::newSharedPointer(CScriptVariable *var_ptr){
-	int index = CVirtualMachine::getFreeCell();
-
-	if(index != -1){
-		shared_pointer[idxCurrentStack][index].n_shares=0;
-		shared_pointer[idxCurrentStack][index].shared_ptr=var_ptr;
-
-		shared_pointer[idxCurrentStack][index].idx_0_shares=insert0Shares(index);
-
-		return index;
-	}
-	return -1;
-}
 
 void CVirtualMachine::sharePointer(int index){
 
@@ -516,6 +563,68 @@ void CVirtualMachine::unrefSharedPointer( int index){
 			setFreeCell(index);
 		}
 	}
+}*/
+/*
+PInfoSharedPointerNode CVirtualMachine::InsertZeroNode(CScriptVariable *shared_ptr){
+
+
+	zero_shares[idxCurrentStack].InsertNode(_node);
+	_node->data.n_shared=0;
+	_node->data.shared_ptr=shared_ptr;
+
+	return _node;
+
+
+}
+*/
+PInfoSharedPointerNode CVirtualMachine::newSharedPointer(CScriptVariable *_var_ptr){
+	//int index = CVirtualMachine::getFreeCell();
+	PInfoSharedPointerNode _node = (PInfoSharedPointerNode)malloc(sizeof(tInfoSharedPointerNode));
+	_node->data.n_shares=0;
+	_node->data.shared_ptr=_var_ptr;
+
+	// insert node into shared nodes ...
+
+	SHARE_LIST_INSERT(zero_shares[idxCurrentStack],_node);
+	//zero_shares[idxCurrentStack].InsertNode(_node);
+	return _node;
+}
+
+
+bool CVirtualMachine::sharePointer(PInfoSharedPointerNode _node){
+
+	unsigned char *n_shares = &_node->data.n_shares;
+
+	bool move_to_shared_list=*n_shares==0;
+
+	if(*n_shares >= MAX_SHARES_VARIABLE){
+		print_error_cr("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
+		return false;
+	}
+
+	(*n_shares)++;
+
+	if(move_to_shared_list){
+
+		// Mov to shared pointer...
+		SHARE_LIST_DEATTACH(zero_shares[idxCurrentStack],_node);
+		SHARE_LIST_INSERT(shared_var[idxCurrentStack],_node);
+	}
+
+	return true;
+
+}
+
+void CVirtualMachine::unrefSharedPointer(PInfoSharedPointerNode _node){
+
+	unsigned char *n_shares = &_node->data.n_shares;
+	if(*n_shares > 0){
+		if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
+			SHARE_LIST_DEATTACH(shared_var[idxCurrentStack],_node);
+			SHARE_LIST_INSERT(zero_shares[idxCurrentStack],_node);
+		}
+	}
+
 }
 
 
@@ -790,7 +899,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 					}
 					else if(type_var==INS_PROPERTY_TYPE_INTEGER){
 							if(idxScriptClass == IDX_CLASS_INTEGER){
-								*((int *)((CInteger *)(*var))->m_value)=((int)(ptrResultInstructionOp2->stkResultObject));
+								*((int *)((CInteger *)(*var))->m_value)=((intptr_t)(ptrResultInstructionOp2->stkResultObject));
 							}else
 							{
 								create_from_index=true;
@@ -828,12 +937,12 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 							}
 					}
 					else if(type_var==INS_PROPERTY_TYPE_SCRIPTVAR){
-							if((*var)->idx_shared_ptr != ZS_UNDEFINED_IDX){
-								unrefSharedPointer((*var)->idx_shared_ptr);
+							if((*var)->ptr_shared_pointer_node != NULL){
+								unrefSharedPointer((*var)->ptr_shared_pointer_node);
 							}
 							*var = (CScriptVariable *)(ptrResultInstructionOp2->stkResultObject);
 							if(*var != VM_NULL && *var != VM_UNDEFINED){
-								sharePointer((*var)->idx_shared_ptr);
+								sharePointer((*var)->ptr_shared_pointer_node);
 							}
 					}
 					else{
@@ -843,8 +952,8 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 
 					if(create_from_index){
 
-						if((*var)->idx_shared_ptr != ZS_UNDEFINED_IDX){
-							unrefSharedPointer((*var)->idx_shared_ptr);
+						if((*var)->ptr_shared_pointer_node != NULL){
+							unrefSharedPointer((*var)->ptr_shared_pointer_node);
 						}
 
 
@@ -852,7 +961,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 						/*if((*var = createVarFromResultInstruction(ptrResultInstructionOp2)) == NULL){
 							return NULL;
 						}*/
-						sharePointer((*var)->idx_shared_ptr);
+						sharePointer((*var)->ptr_shared_pointer_node);
 					}
 
 
@@ -1384,7 +1493,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				if((instruction_properties & INS_PROPERTY_DIRECT_CALL_RETURN) == 0){ // share pointer
 					if(ret_obj != VM_UNDEFINED && ret_obj != VM_NULL){
 
-						if(!ret_obj->refSharedPtr()){
+						if(!ret_obj->initSharedPtr()){
 							return NULL;
 						}
 					}
@@ -1463,7 +1572,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				svar=NEW_VECTOR_VAR;
 				PUSH_VAR(svar,NULL,0,false);
 
-				if(!svar->refSharedPtr()){
+				if(!svar->initSharedPtr()){
 					return NULL;
 				}
 				break;
@@ -1479,7 +1588,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 				svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1);
 				PUSH_VAR(svar, NULL,0, true);
 
-				if(!svar->refSharedPtr()){
+				if(!svar->initSharedPtr()){
 					return NULL;
 				}
 
@@ -1533,7 +1642,7 @@ CScriptVariable * CVirtualMachine::execute(CScriptFunctionObject *info_function,
 			/*case DECL_STRUCT: // symply creates a variable ...
 				svar=NEW_STRUCT;
 				PUSH_VAR(svar,NULL,0,false);
-				if(!svar->refSharedPtr())
+				if(!svar->initSharedPtr())
 					return NULL;
 				break;
 			case PUSH_ATTR:
@@ -1848,8 +1957,8 @@ void CVirtualMachine::popScope(CScriptFunctionObject *info_function,int index)//
 		if(var != VM_NULL && var !=  VM_UNDEFINED){
 
 			//if(ret != var){ // is not ret variable ...
-			if(var->idx_shared_ptr != ZS_UNDEFINED_IDX){
-				unrefSharedPointer(var->idx_shared_ptr);
+			if(var->ptr_shared_pointer_node != NULL){
+				unrefSharedPointer(var->ptr_shared_pointer_node);
 			}
 		}
 		basePtrLocalVar[idx_local_var].stkResultObject = VM_UNDEFINED;

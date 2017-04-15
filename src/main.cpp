@@ -54,7 +54,7 @@ int main(int argc, char * argv[]){
 	return 0;*/
 
 	print_info_cr("sizeof(tInfoAsmOp):%i",sizeof(tInfoAsmOp));
-	print_info_cr("sizeof(CVirtualMachine):%.04fMB",float(sizeof(CVirtualMachine))/(1024*1024));
+	print_info_cr("sizeof(CVirtualMachine):%i bytes",sizeof(CVirtualMachine));
 	print_info_cr("sizeof(CAstNode):%i bytes",sizeof(CASTNode));
 	print_info_cr("sizeof(CCompiler):%i bytes",sizeof(CCompiler));
 	print_info_cr("sizeof(CScope):%i bytes",sizeof(CScope));
@@ -63,6 +63,7 @@ int main(int argc, char * argv[]){
 	print_info_cr("sizeof(tAleObjectInfo):%i bytes",sizeof(tAleObjectInfo));
 
 	//return 0;
+
 
 	CLog::setUseAnsiEscape(true);
 	CZetScript *zet_script = CZetScript::getInstance();

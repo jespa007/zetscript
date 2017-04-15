@@ -1,7 +1,7 @@
-var j=0;
-for(var i=0; i < 10000000; i++)
+//var j=0;
+for(var i=0; i < 100; i++)
 {
-	j=i*2;
+	var j=i*2;
 }
 /*if(1==0){
 	print("hola");
