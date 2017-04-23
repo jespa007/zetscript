@@ -34,8 +34,7 @@ CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name
 
 	if(getConstant(const_name) == NULL){
 		info_ptr=new tInfoConstantValue;
-		info_ptr->stkResultObject=obj;
-		info_ptr->properties=properties;
+		*info_ptr={properties,obj,NULL};
 		(*constant_pool)[const_name]=info_ptr;
 	}else{
 		print_error_cr("constant %s already exist",const_name.c_str());
@@ -161,16 +160,16 @@ void CCompiler::destroySingletons(){
 			default:
 				break;
 			case INS_PROPERTY_TYPE_INTEGER:
-				//delete (int *)icv->ptrObjectRef;
+				//delete (int *)icv->varRef;
 				break;
 			case INS_PROPERTY_TYPE_BOOLEAN:
-				delete (bool *)icv->ptrObjectRef;
+				//delete (bool *)icv->stkValue;
 				break;
 			case INS_PROPERTY_TYPE_NUMBER:
-				delete (float *)icv->ptrObjectRef;
+				//delete (float *)icv->stkValue;
 				break;
 			case INS_PROPERTY_TYPE_STRING:
-				delete (string *)icv->ptrObjectRef;
+				delete (string *)icv->stkValue;
 				break;
 
 			}
@@ -226,7 +225,7 @@ CCompiler::CCompiler(){
 
 	def_operator[CALL]={"CALL",CALL,1}; // calling function after all of arguments are processed...
 	def_operator[PUSH]={"PUSH",PUSH,1};
-	def_operator[CLR]={"CLR",CLR,0};
+	def_operator[STR_ARG]={"STR_ARG",STR_ARG,0};
 	def_operator[VGET]={"VGET",VGET,1}; // vector access after each index is processed...
 
 	def_operator[VEC]={"VEC",VEC,1}; // Vector object (CREATE)
@@ -401,6 +400,9 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 	else if((const_obj=CNumber::Parse(v))!=NULL){
 		float value = *((float *)const_obj);
 		delete (float *)const_obj;
+		void *value_ptr;
+
+		*((float *)(&value_ptr))=value;
 
 		type=INS_PROPERTY_TYPE_NUMBER;
 		load_type=LOAD_TYPE_CONSTANT;
@@ -409,7 +411,7 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 		if((get_obj = getConstant(v))!=NULL){
 			obj = get_obj;
 		}else{
-			obj=addConstant(v,new float(value),type);
+			obj=addConstant(v,value_ptr,type);
 		}
 	}
 	else if(v[0]=='\"' && v[v.size()-1]=='\"'){
@@ -584,37 +586,15 @@ void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instruc
 }
 
 
-void CCompiler::insert_ClearArgumentStack_Instruction(short idxAstNode){
-	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-	asm_op->idxAstNode = idxAstNode;
-	asm_op->operator_type=ASM_OPERATOR::CLR;
-	ptr_current_statement_op->asm_op.push_back(asm_op);
-}
 
 
-void CCompiler::insert_PushArgument_Instruction(short idxAstNode){
+void CCompiler::insert_StartArgumentStack_Instruction(short idxAstNode){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-	asm_op->idxAstNode = idxAstNode;
-	asm_op->index_op1 = getCurrentInstructionIndex();//&(this->m_currentFunctionInfo->stament[dest_statment]);
-	asm_op->operator_type=ASM_OPERATOR::PUSH;
-	ptr_current_statement_op->asm_op.push_back(asm_op);
-}
-
-void CCompiler::insert_ClearArgumentStack_And_PushFirstArgument_Instructions(short idxAstNode){
-	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-	asm_op->operator_type=ASM_OPERATOR::CLR;
+	asm_op->operator_type=ASM_OPERATOR::STR_ARG;
 	asm_op->idxAstNode = idxAstNode;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
-	// push one less instruction to get the value
-	asm_op = new tInfoAsmOpCompiler();
-	asm_op->index_op1 = getCurrentInstructionIndex()-1;//&(this->m_currentFunctionInfo->stament[dest_statment]);
-	asm_op->operator_type=ASM_OPERATOR::PUSH;
-	asm_op->idxAstNode=idxAstNode;
-	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
 void CCompiler::insert_CallFunction_Instruction(short idxAstNode,int  index_call,int  index_object){
@@ -1155,27 +1135,28 @@ int CCompiler::gacExpression_FunctionAccess(short idxAstNode, CScope *_lc){
 
 	// 1. insert push to pass values to all args ...
 	PASTNode function_args =node_1;
-
+	insert_StartArgumentStack_Instruction(_node->idxAstNode);
 	if(function_args->children.size() > 0){
-	for(unsigned k = 0; k < function_args->children.size(); k++){
+		for(unsigned k = 0; k < function_args->children.size(); k++){
 
-		// check whether is expression node...
-		if(!gacExpression(function_args->children[k], _lc,getCurrentInstructionIndex()+1)){
-			return ZS_UNDEFINED_IDX;
-		}
+			// check whether is expression node...
+			if(!gacExpression(function_args->children[k], _lc,getCurrentInstructionIndex()+1)){
+				return ZS_UNDEFINED_IDX;
+			}
 
-		if(k==0){
-			// insert clear push arguments stack
-			insert_ClearArgumentStack_And_PushFirstArgument_Instructions(_node->idxAstNode);
-		}else{
-			// insert vector access instruction ...
-			insert_PushArgument_Instruction(_node->idxAstNode);
+			/*if(k==0){
+				// insert clear push arguments stack
+
+			}else{
+				// insert vector access instruction ...
+				insert_PushArgument_Instruction(_node->idxAstNode);
+			}*/
 		}
 	}
-	}else{
+	/*}else{
 		// clear the stack only ..
 		insert_ClearArgumentStack_Instruction(_node->idxAstNode);
-	}
+	}*/
 
 	// 2. insert call instruction itself.
 	insert_CallFunction_Instruction(_node->idxAstNode,call_index);
@@ -1604,24 +1585,27 @@ int CCompiler::gacNew(short idxAstNode, CScope * _lc){
 	PASTNode constructor_args = AST_NODE(_node->children[0]);
 
 	if(constructor_args->children.size() > 0){
-	for(unsigned k = 0; k < constructor_args->children.size(); k++){
 
-		// check whether is expression node...
-		if(!gacExpression(constructor_args->children[k], _lc,getCurrentInstructionIndex()+1)){
-			return ZS_UNDEFINED_IDX;
-		}
+		insert_StartArgumentStack_Instruction(_node->idxAstNode);
 
-		if(k==0){
-			// insert clear push arguments stack
-			insert_ClearArgumentStack_And_PushFirstArgument_Instructions(_node->idxAstNode);
-		}else{
-			// insert vector access instruction ...
-			insert_PushArgument_Instruction(_node->idxAstNode);
+		for(unsigned k = 0; k < constructor_args->children.size(); k++){
+
+			// check whether is expression node...
+			if(!gacExpression(constructor_args->children[k], _lc,getCurrentInstructionIndex()+1)){
+				return ZS_UNDEFINED_IDX;
+			}
+
+			/*if(k==0){
+				// insert clear push arguments stack
+				insert_ClearArgumentStack_And_PushFirstArgument_Instructions(_node->idxAstNode);
+			}else{
+				// insert vector access instruction ...
+				insert_PushArgument_Instruction(_node->idxAstNode);
+			}*/
 		}
-	}
 	}else{
 		// clear the stack only ..
-		insert_ClearArgumentStack_Instruction(_node->idxAstNode);
+		//insert_ClearArgumentStack_Instruction(_node->idxAstNode);
 	}
 
 	// 1. create object instruction ...

@@ -16,24 +16,13 @@ class CScriptVariable{//: public CVariable{
 public:
 
 
-	class tSymbolInfo{
-		public:
-		void *object; // created object. undefined by default.
-		void * proxy_ptr; // for proxy functions...
-		tSymbolInfo *super_function; // only for functions ...
-		string symbol_value;
-		int idxAstNode; // in case there's ast node...
-
-		tSymbolInfo();
-
-	};
 
 	//----------------------
 	// MEM MANNAGER RELATED
 	//bool deallocatable;
 	//int idx_shared_ptr;
 	PInfoSharedPointerNode ptr_shared_pointer_node;
-	int idxScriptClass;
+	short idxScriptClass;
 	//----------------------
 
 	// public vars ...

@@ -197,9 +197,7 @@ private:
 	 * Function instructions
 	 */
 	void insert_LoadFunctionObject_Instruction(short idxAstNode,CScriptVariable *obj);
-	void insert_ClearArgumentStack_Instruction(short idxAstNode);
-	void insert_PushArgument_Instruction(short idxAstNode);
-	void insert_ClearArgumentStack_And_PushFirstArgument_Instructions(short idxAstNode);
+	void insert_StartArgumentStack_Instruction(short idxAstNode);
 
 	/**
 	 * insert call function

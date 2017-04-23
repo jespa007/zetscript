@@ -296,175 +296,7 @@ void CZetScript::destroy(){
  // PRINT ASM INFO
  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-CScriptVariable * CZetScript::call_C_function(void *fun_ptr, CScriptFunctionObject *irfs, vector<CScriptVariable *> * argv){
 
-
-	auto v = argv->at(0)->getPointer_C_ClassName();
-
-	int converted_param[MAX_PARAM_C_FUNCTION];
-	CScriptVariable *var_result= UNDEFINED_SYMBOL;
-	intptr_t result;
-
-	if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) {
-		print_error_cr("Function is not registered as C");
-		return UNDEFINED_SYMBOL;//CScriptVariable::UndefinedSymbol;
-	}
-
-
-	if(fun_ptr==0){
-		print_error_cr("Null function");
-		return  UNDEFINED_SYMBOL;//CScriptVariable::UndefinedSymbol;
-	}
-
-	if(irfs->m_arg.size() != argv->size()){
-		print_error_cr("C argument VS scrip argument doestn't match sizes");
-		return  UNDEFINED_SYMBOL;//CScriptVariable::UndefinedSymbol;
-	}
-
-	if(irfs->m_arg.size() >= MAX_PARAM_C_FUNCTION){
-		print_error_cr("Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_PARAM_C_FUNCTION);
-		return  UNDEFINED_SYMBOL;//CScriptVariable::UndefinedSymbol;
-	}
-
-	// convert parameters script to c...
-	for(unsigned int i = 0; i < argv->size();i++){
-
-		converted_param[i]= (intptr_t)(argv->at(i));
-
-		if(!(argv->at(i)->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE && irfs->m_arg[i]==typeid(CScriptVariable *).name())){ //not script, then it can pass through ...
-
-			if((argv->at(i))->getPointer_C_ClassName()!=irfs->m_arg[i]){
-				fntConversionType paramConv=CScriptClass::getConversionType((argv->at(i))->getPointer_C_ClassName(),irfs->m_arg[i]);
-
-				if(paramConv == NULL){
-					return NULL;
-				}
-				converted_param[i] = paramConv(argv->at(i));
-			}
-		}
-	}
-
-	print_debug_cr("pre_call %i",argv->size());
-
-	if(irfs->idx_return_type != IDX_CLASS_VOID){ // getInstance()->getIdxClassVoid()){
-
-		switch(argv->size()){
-		default:
-			print_error_cr("Max run-time args! (Max:%i Provided:%i)",6,argv->size());
-			return UNDEFINED_SYMBOL;//CScriptVariable::UndefinedSymbol;
-		case 0:
-			result=(*((std::function<int ()> *)fun_ptr))();
-			break;
-		case 1:
-			result=(*((std::function<int (int)> *)fun_ptr))(converted_param[0]);
-			break;
-		case 2:
-			result=(*((std::function<int (int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1]
-									);
-			break;
-		case 3:
-			result=(*((std::function<int (int,int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1],
-					converted_param[2]
-									);
-			break;
-		case 4:
-			result=(*((std::function<int (int,int,int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1],
-					converted_param[2],
-					converted_param[3]
-									);
-			break;
-		case 5:
-			result=(*((std::function<int (int,int,int,int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1],
-					converted_param[2],
-					converted_param[3],
-					converted_param[4]
-   				);
-			break;
-		case 6:
-			result=(*((std::function<int (int,int,int,int,int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1],
-					converted_param[2],
-					converted_param[3],
-					converted_param[4],
-					converted_param[5]
-									);
-			break;
-
-		}
-
-		var_result = CScriptClass::instanceScriptVariableByIdx(irfs->idx_return_type,(void *)result);
-
-	}else{
-		switch(argv->size()){
-		default:
-			print_error_cr("Max run-time args! (Max:%i Provided:%i)",6,argv->size());
-			return UNDEFINED_SYMBOL;//CScriptVariable::UndefinedSymbol;
-		case 0:
-			(*((std::function<void ()> *)fun_ptr))();
-			break;
-		case 1:
-			(*((std::function<void (int)> *)fun_ptr))(converted_param[0]);
-			break;
-		case 2:
-			(*((std::function<void (int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1]
-									);
-			break;
-		case 3:
-			(*((std::function<void (int,int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1],
-					converted_param[2]
-									);
-			break;
-		case 4:
-			(*((std::function<void (int,int,int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1],
-					converted_param[2],
-					converted_param[3]
-									);
-			break;
-		case 5:
-			(*((std::function<void (int,int,int,int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1],
-					converted_param[2],
-					converted_param[3],
-					converted_param[4]
-   				);
-			break;
-		case 6:
-			(*((std::function<void (int,int,int,int,int,int)> *)fun_ptr))(
-					converted_param[0],
-					converted_param[1],
-					converted_param[2],
-					converted_param[3],
-					converted_param[4],
-					converted_param[5]
-									);
-			break;
-
-		}
-
-		var_result = UNDEFINED_SYMBOL;//CScriptVariable::UndefinedSymbol;
-	}
-
-
-
-	return var_result;
-
-}
 
 CZetScript::CZetScript(){
 
@@ -576,7 +408,7 @@ bool CZetScript::eval(const string & s){
 	return false;
 }
 
-std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * CZetScript::script_call(const string &script_function_name){
+std::function<CScriptVariable * ( std::vector<CScriptVariable *> args)> * CZetScript::script_call(const string &script_function_name){
 
 	//CScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
 	CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
@@ -586,8 +418,11 @@ std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * CZetScr
 	//if(irfs != NULL){
 		for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 			if(GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == script_function_name){
-				return new std::function<CScriptVariable * (std::vector<CScriptVariable *> args)>([&,i](std::vector<CScriptVariable *> args){
-						return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]),  m_mainObject, &args,0);//->excute();
+				return new std::function<CScriptVariable * (std::vector<CScriptVariable *> args)>([&,i]( std::vector<CScriptVariable *> _args){
+					return vm->execute(
+								GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]),
+								m_mainObject,
+								&_args);//->excute();
 				});
 			}
 		}
@@ -619,7 +454,7 @@ CScriptVariable * CZetScript::execute(){
 
 	}
 	// the first code to execute is the main function that in fact is a special member function inside our main class
-	return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject, NULL,0);//->excute();
+	return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject);//->excute();
 }
 //-------------------------------------------------------------------------------------
 CZetScript::~CZetScript(){

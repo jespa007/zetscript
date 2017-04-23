@@ -71,7 +71,7 @@ public:
 	CVirtualMachine * getVirtualMachine();
 	CScriptVariable *getMainObject(){return m_mainObject;}
 
-	static CScriptVariable * call_C_function(void *fun_ptr,CScriptFunctionObject *irfs, vector<CScriptVariable *> * argv);
+
 
 	//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 

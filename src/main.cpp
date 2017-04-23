@@ -62,8 +62,6 @@ int main(int argc, char * argv[]){
 	print_info_cr("sizeof(CScriptClass):%i bytes",sizeof(CScriptClass));
 	print_info_cr("sizeof(tAleObjectInfo):%i bytes",sizeof(tAleObjectInfo));
 
-	//return 0;
-
 
 	CLog::setUseAnsiEscape(true);
 	CZetScript *zet_script = CZetScript::getInstance();

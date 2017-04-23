@@ -208,7 +208,7 @@ enum ASM_OPERATOR:unsigned char{
 		JT, // goto if true ... goes end to conditional.
 		CALL, // calling function after all of args are processed...
 		PUSH, // push arg
-		CLR, // clear args
+		STR_ARG, // set instruction as starting args
 		VGET, // vector access after each index is processed...
 
 		VPUSH, // Value push for vector
@@ -242,11 +242,11 @@ enum ASM_PRE_POST_OPERATORS:char{
 */
 
 // properties shared by compiler + VM
-enum{
+enum:unsigned char{
 
 	//-- COMPILER/VM TYPE VAR
-	BIT_TYPE_NULL=0,
-	BIT_TYPE_UNDEFINED,
+	BIT_TYPE_UNDEFINED=0,
+	BIT_TYPE_NULL,
 	BIT_TYPE_INTEGER,
 	BIT_TYPE_NUMBER,
 	BIT_TYPE_BOOLEAN,
@@ -254,27 +254,39 @@ enum{
 	BIT_TYPE_FUNCTION,
 	BIT_TYPE_SCRIPTVAR,
 	MAX_BIT_VAR_TYPE,
-
 	//-- VM RUNTIME
-	BIT_IS_ARG=MAX_BIT_VAR_TYPE
+	BIT_IS_C_VAR=MAX_BIT_VAR_TYPE,
+	BIT_IS_STACKVAR,
+	MAX_BIT_RUNTIME
 
 };
 
 
-#define INS_PROPERTY_IS_ARG					(0x1<<BIT_IS_ARG)
-#define MASK_RUNTIME						(((0x1<<(MAX_BIT_RUNTIME-BIT_IS_ARG))-1)<<(BIT_IS_ARG))
-#define GET_INS_PROPERTY_RUNTIME(prop)		((prop)&MASK_SCOPE_TYPE)
 
-#define INS_PROPERTY_TYPE_NULL				(0x1<<BIT_TYPE_NULL)
-#define	INS_PROPERTY_TYPE_UNDEFINED			(0x1<<BIT_TYPE_UNDEFINED)
-#define INS_PROPERTY_TYPE_INTEGER			(0x1<<BIT_TYPE_INTEGER) // primitive int
-#define INS_PROPERTY_TYPE_NUMBER			(0x1<<BIT_TYPE_NUMBER) // primitive number
-#define INS_PROPERTY_TYPE_BOOLEAN			(0x1<<BIT_TYPE_BOOLEAN) // primitive bool
-#define INS_PROPERTY_TYPE_STRING			(0x1<<BIT_TYPE_STRING) // primitive string
-#define INS_PROPERTY_TYPE_FUNCTION			(0x1<<BIT_TYPE_FUNCTION) // primitive function
-#define INS_PROPERTY_TYPE_SCRIPTVAR			(0x1<<BIT_TYPE_SCRIPTVAR) // always is an script class...
+
+enum:unsigned short{
+	INS_PROPERTY_TYPE_UNDEFINED		=	(0x1<<BIT_TYPE_UNDEFINED), // is a variable not defined...
+	INS_PROPERTY_TYPE_NULL			=	(0x1<<BIT_TYPE_NULL), // null is a assigned var ..
+	INS_PROPERTY_TYPE_INTEGER		=	(0x1<<BIT_TYPE_INTEGER), // primitive int
+	INS_PROPERTY_TYPE_NUMBER		=	(0x1<<BIT_TYPE_NUMBER), // primitive number
+	INS_PROPERTY_TYPE_BOOLEAN		=	(0x1<<BIT_TYPE_BOOLEAN), // primitive bool
+	INS_PROPERTY_TYPE_STRING		=	(0x1<<BIT_TYPE_STRING), // constant / script var
+	INS_PROPERTY_TYPE_FUNCTION		=	(0x1<<BIT_TYPE_FUNCTION), // primitive function
+	INS_PROPERTY_TYPE_SCRIPTVAR		=	(0x1<<BIT_TYPE_SCRIPTVAR) // always is an script class...
+};
+
 #define MASK_VAR_TYPE						((0x1<<MAX_BIT_VAR_TYPE)-1)
 #define GET_INS_PROPERTY_TYPE_VAR(prop)		((prop)&MASK_VAR_TYPE)
+
+
+enum:unsigned short{
+	INS_PROPERTY_IS_C_VAR	=			(0x1<<BIT_IS_C_VAR),
+	INS_PROPERTY_IS_STACKVAR=			(0x1<<BIT_IS_STACKVAR)
+};
+
+#define MASK_RUNTIME						(((0x1<<(MAX_BIT_RUNTIME-BIT_IS_C_VAR))-1)<<(BIT_IS_C_VAR))
+#define GET_INS_PROPERTY_RUNTIME(prop)		((prop)&MASK_RUNTIME)
+
 
 
 
@@ -350,7 +362,7 @@ enum SYMBOL_INFO_PROPERTIES{
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 /*enum ALE_INFO_PROPERTIES{
-	PROPERTY_IS_ARG = 0x1 <<0,
+	PROPERTY_ARG_VAR = 0x1 <<0,
 };*/
 
 enum C_TYPE_VALID_PRIMITIVE_VAR{
@@ -450,6 +462,9 @@ enum ASM_PROPERTIES{
 */
 
 #pragma pack(1)
+
+
+
 struct tInfoAsmOp{
 
 	ASM_OPERATOR operator_type;
@@ -467,29 +482,41 @@ struct tInfoAsmOp{
 
 };
 
+typedef   tInfoAsmOp **PtrStatment;
+
 
 struct tAleObjectInfo{
 	//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
-	unsigned short				properties;
-	void			 		* 	stkResultObject; // pointer to pointer ables to modify its pointer when is needed
-	CScriptVariable  		** 	ptrObjectRef; // pointer to pointer in case of replace var
+	unsigned short				properties; // it tells its properties
+	void			 		* 	stkValue; // operable value
+	void			  		* 	varRef; // stack ref in case to assign new value.
 
 };
 
 
-typedef   tInfoAsmOp **PtrStatment;
 
-/*
-struct tInfoStatementOp{
+struct tSymbolInfo{
 
-	tInfoAsmOp * asm_op;
-	//unsigned          n_asm_op;
+	tAleObjectInfo object; // created object. undefined by default.
+	void * proxy_ptr; // for proxy functions...
+	tSymbolInfo *super_function; // only for functions ...
+	string symbol_value;
+	short idxAstNode; // in case there's ast node...
 
-	tInfoStatementOp(){
-		asm_op = NULL;
-		//n_asm_op=0;
+	tSymbolInfo(){
+		proxy_ptr=NULL;
+		object={
+				INS_PROPERTY_TYPE_UNDEFINED|INS_PROPERTY_IS_C_VAR, // undefined.
+				0,							 // 0 value
+				0							 // no var ref related
+		};
+
+		idxAstNode =ZS_UNDEFINED_IDX;
+		super_function=NULL;
 	}
-};*/
+
+};
+
 
 //-------------------------------------------------------
 
