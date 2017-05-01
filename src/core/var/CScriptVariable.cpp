@@ -145,6 +145,7 @@ void CScriptVariable::setup(){
 	created_object = NULL;
 	m_value = NULL;
 	idxScriptClass = -1;
+	aux_string ="";
 
 }
 
@@ -266,27 +267,56 @@ tSymbolInfo * CScriptVariable::getIdxScriptFunctionObjectByClassFunctionName(con
 }
 
 
-int CScriptVariable::getidxScriptFunctionObjectWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature){
+int CScriptVariable::getidxScriptFunctionObjectWithMatchArgs(const string & varname, tAleObjectInfo * ptrArg, unsigned char n_args, bool match_signature){
 
 	// from lat value to first to get last override function...
 	bool all_check=false;
+
 
 	for(int i = this->m_functionSymbol.size()-1; i>=0; i--){
 
 		CScriptFunctionObject *irfs = (CScriptFunctionObject *)m_functionSymbol[i].object.stkValue;
 
-		if(this->m_functionSymbol[i].symbol_value == varname && (irfs->m_arg.size() == argv->size())){
+		if(this->m_functionSymbol[i].symbol_value == varname && (irfs->m_arg.size() == n_args)){
 			all_check=true;
 			// convert parameters script to c...
-			for( int k = 0; k < (int)argv->size() && all_check;k++){
+			for( unsigned char k = 0; k < n_args && all_check;k++){
 				//converted_param[i]= (int)(argv->at(i));
-				bool is_script_var = argv->at(k)->getPointer_C_ClassName() == TYPE_SCRIPT_VARIABLE; // if C_ClassName is void means that is a ScriptClass...
+
+
+				unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(ptrArg[k].properties);
+					switch(var_type){
+					default:
+						print_error_cr("unknow variable");
+						return ZS_UNDEFINED_IDX;
+						break;
+					case INS_PROPERTY_TYPE_INTEGER:
+						aux_string=CScriptClass::valid_C_PrimitiveType[INT_PTR_TYPE].type_str;
+						break;
+					case INS_PROPERTY_TYPE_NUMBER:
+						aux_string=CScriptClass::valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str;
+						break;
+					case INS_PROPERTY_TYPE_BOOLEAN:
+						aux_string=CScriptClass::valid_C_PrimitiveType[BOOL_PTR_TYPE].type_str;
+						break;
+					case INS_PROPERTY_TYPE_STRING:
+						aux_string=CScriptClass::valid_C_PrimitiveType[STRING_PTR_TYPE].type_str;
+
+						break;
+					case INS_PROPERTY_TYPE_NULL:
+					case INS_PROPERTY_TYPE_UNDEFINED:
+					case INS_PROPERTY_TYPE_SCRIPTVAR:
+						aux_string = ((CScriptVariable *)ptrArg[k].varRef)->getPointer_C_ClassName();
+						break;
+					}
+
+				bool is_script_var = aux_string == TYPE_SCRIPT_VARIABLE; // if C_ClassName is void means that is a ScriptClass...
 				if(match_signature){
-					all_check = (argv->at(k)->getPointer_C_ClassName()==irfs->m_arg[k]) || (is_script_var);
+					all_check = (aux_string==irfs->m_arg[k]) || (is_script_var);
 				}
 				else{
-					if((argv->at(k))->getPointer_C_ClassName()!=irfs->m_arg[k] && !(is_script_var)){
-						all_check =(CScriptClass::getConversionType((argv->at(k))->getPointer_C_ClassName(),irfs->m_arg[k], false)!=NULL);
+					if(aux_string!=irfs->m_arg[k] && !(is_script_var)){
+						all_check =(CScriptClass::getConversionType(aux_string,irfs->m_arg[k], false)!=NULL);
 					}
 				}
 			}
@@ -297,6 +327,37 @@ int CScriptVariable::getidxScriptFunctionObjectWithMatchArgs(const string & varn
 		}
 	}
 	return ZS_UNDEFINED_IDX;
+}
+
+string CScriptVariable::getMessageMatchingFunctions(const string & varname){
+	int n_candidates=0;
+	string str_candidates="";
+	for(int i = this->m_functionSymbol.size()-1; i>=0; i--){
+
+		CScriptFunctionObject *irfs = (CScriptFunctionObject *)m_functionSymbol[i].object.stkValue;
+
+		if(this->m_functionSymbol[i].symbol_value == varname){
+			if(n_candidates == 0){
+				str_candidates+="\t\tPossible candidates are:\n\n";
+			}
+
+
+			str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_name+"(";
+
+			for(unsigned a = 0; a < irfs->m_arg.size(); a++){
+				if(a>0){
+					str_candidates+=",";
+				}
+				str_candidates+=demangle(irfs->m_arg[a]);
+			}
+
+			str_candidates+=");\n";
+
+
+			n_candidates++;
+		}
+	}
+	return str_candidates;
 }
 
 const string & CScriptVariable::getClassName(){
@@ -377,7 +438,7 @@ CScriptVariable::~CScriptVariable(){
 	//if((this->m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == 0){ // script class
 		for ( unsigned i = 0; i < m_variableSymbol.size(); i++){
 			si = &m_variableSymbol[i];
-			unsigned short var_type = GET_INS_PROPERTY_TYPE_VAR(m_variableSymbol[i].object.properties);
+			unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(m_variableSymbol[i].object.properties);
 
 			switch(var_type){
 

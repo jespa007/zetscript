@@ -76,7 +76,7 @@ endif()
 
 if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
 
-	SET( EMMSCRIPTEN_DIR "/opt/emsdk_portable/emscripten/master")
+	SET( EMMSCRIPTEN_DIR "/opt/emsdk/emscripten/master")
 
 	MESSAGE ("********* ¡¡ EMMSCRIPTEN RELEASE !!! ************" )
 	set(CMAKE_C_COMPILER "${EMMSCRIPTEN_DIR}/emcc")

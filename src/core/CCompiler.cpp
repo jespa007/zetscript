@@ -156,7 +156,7 @@ void CCompiler::destroySingletons(){
 
 		for(map<string, CCompiler::tInfoConstantValue *>::iterator it=constant_pool->begin();it!=constant_pool->end();it++){
 			tInfoConstantValue *icv=it->second;
-			switch(GET_INS_PROPERTY_TYPE_VAR(icv->properties)){
+			switch(GET_INS_PROPERTY_VAR_TYPE(icv->properties)){
 			default:
 				break;
 			case INS_PROPERTY_TYPE_INTEGER:
@@ -198,7 +198,7 @@ CCompiler::CCompiler(){
 	//		VAR  			|	STR   | ID | NUM OP
 	//----------------------+---------+----+-------
 	def_operator[NOP]         ={"NOP" ,NOP ,0      };
-	def_operator[MOV]         ={"MOV" ,MOV ,2}; // mov expression to var
+	def_operator[STORE]         ={"STORE" ,STORE ,2}; // mov expression to var
 	def_operator[LOAD]        ={"LOAD",LOAD ,1}; // primitive value like number/string or boolean...
 	def_operator[EQU]         ={"EQU" ,EQU ,2};  // ==
 	def_operator[NOT_EQU]     ={"NOT_EQU" ,NOT_EQU ,2};  // !=
@@ -225,7 +225,7 @@ CCompiler::CCompiler(){
 
 	def_operator[CALL]={"CALL",CALL,1}; // calling function after all of arguments are processed...
 	def_operator[PUSH]={"PUSH",PUSH,1};
-	def_operator[STR_ARG]={"STR_ARG",STR_ARG,0};
+	//def_operator[START_ARG]={"START_ARG",START_ARG,0};
 	def_operator[VGET]={"VGET",VGET,1}; // vector access after each index is processed...
 
 	def_operator[VEC]={"VEC",VEC,1}; // Vector object (CREATE)
@@ -292,14 +292,14 @@ bool checkAccessObjectMember(short idxAstNode){
 	bool node_access=false;
 	if(_node == NULL) return false;
 
-	PASTNode check_node = AST_NODE(_node->parent);
+	PASTNode check_node = AST_NODE(_node->idxAstParent);
 	short child_compare=_node->idxAstNode;
 
 
 	if(check_node != NULL){
 		if(check_node->node_type==NODE_TYPE::CALLING_OBJECT_NODE) {// function / array access.
 			child_compare=check_node->idxAstNode;
-			check_node=AST_NODE(check_node->parent);
+			check_node=AST_NODE(check_node->idxAstParent);
 		}
 
 		if(check_node != NULL){
@@ -308,11 +308,11 @@ bool checkAccessObjectMember(short idxAstNode){
 
 		if(node_access){
 			// check first ...
-			if(check_node->parent != ZS_UNDEFINED_IDX){
-				if(!checkAccessObjectMember(check_node->parent)){
+			if(check_node->idxAstParent != ZS_UNDEFINED_IDX){
+				if(!checkAccessObjectMember(check_node->idxAstParent)){
 
 					// if c.b is trivial but c.b.a must check that parent it has another punctuator.
-					node_access = (check_node->children[0] != child_compare) || (AST_NODE(check_node->parent)->operator_info==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR); // parent not access left is first...
+					node_access = (check_node->children[0] != child_compare) || (AST_NODE(check_node->idxAstParent)->operator_info==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR); // parent not access left is first...
 				}
 			}
 		}
@@ -402,7 +402,8 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 		delete (float *)const_obj;
 		void *value_ptr;
 
-		*((float *)(&value_ptr))=value;
+		memcpy(&value_ptr,&value,sizeof(float));
+
 
 		type=INS_PROPERTY_TYPE_NUMBER;
 		load_type=LOAD_TYPE_CONSTANT;
@@ -450,7 +451,7 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 			scope_type = INS_PROPERTY_ACCESS_SCOPE;
 
 
-			if((_node->parent != ZS_UNDEFINED_IDX) && (AST_NODE(AST_NODE(_node->parent)->children[0])->symbol_value == "this") //|| // single access ?
+			if((_node->idxAstParent != ZS_UNDEFINED_IDX) && (AST_NODE(AST_NODE(_node->idxAstParent)->children[0])->symbol_value == "this") //|| // single access ?
 			){
 				scope_type=INS_PROPERTY_THIS_SCOPE;
 			}
@@ -516,7 +517,7 @@ bool CCompiler::insertMovVarInstruction(short idxAstNode,int left_index, int rig
 	asm_op->index_op2 =  right_index;
 	asm_op->idxAstNode = idxAstNode;
 	//asm_op->symbol_name="";
-	asm_op->operator_type=ASM_OPERATOR::MOV;
+	asm_op->operator_type=ASM_OPERATOR::STORE;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 	return true;
@@ -587,15 +588,15 @@ void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instruc
 
 
 
-
+/*
 void CCompiler::insert_StartArgumentStack_Instruction(short idxAstNode){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-	asm_op->operator_type=ASM_OPERATOR::STR_ARG;
+	asm_op->operator_type=ASM_OPERATOR::START_ARG;
 	asm_op->idxAstNode = idxAstNode;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 
-}
+}*/
 
 void CCompiler::insert_CallFunction_Instruction(short idxAstNode,int  index_call,int  index_object){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
@@ -608,6 +609,8 @@ void CCompiler::insert_CallFunction_Instruction(short idxAstNode,int  index_call
 	asm_op->operator_type=ASM_OPERATOR::CALL;
 
 	ptr_current_statement_op->asm_op.push_back(asm_op);
+
+
 }
 
 void CCompiler::insertRet(short idxAstNode,int index){
@@ -764,7 +767,7 @@ ASM_OPERATOR CCompiler::puntuator2instruction(PUNCTUATOR_TYPE op){
 	case MOD_PUNCTUATOR:
 		return ASM_OPERATOR::MOD;
 	case ASSIGN_PUNCTUATOR:
-		return ASM_OPERATOR::MOV;
+		return ASM_OPERATOR::STORE;
 	case BINARY_XOR_PUNCTUATOR:
 		return ASM_OPERATOR::XOR;
 	case BINARY_AND_PUNCTUATOR:
@@ -1135,7 +1138,7 @@ int CCompiler::gacExpression_FunctionAccess(short idxAstNode, CScope *_lc){
 
 	// 1. insert push to pass values to all args ...
 	PASTNode function_args =node_1;
-	insert_StartArgumentStack_Instruction(_node->idxAstNode);
+	//insert_StartArgumentStack_Instruction(_node->idxAstNode);
 	if(function_args->children.size() > 0){
 		for(unsigned k = 0; k < function_args->children.size(); k++){
 
@@ -1586,7 +1589,7 @@ int CCompiler::gacNew(short idxAstNode, CScope * _lc){
 
 	if(constructor_args->children.size() > 0){
 
-		insert_StartArgumentStack_Instruction(_node->idxAstNode);
+		//insert_StartArgumentStack_Instruction(_node->idxAstNode);
 
 		for(unsigned k = 0; k < constructor_args->children.size(); k++){
 
@@ -1717,14 +1720,14 @@ bool CCompiler::gacFunctionOrOperator(short idxAstNode, CScope * _lc, CScriptFun
 	if(_node == NULL) {print_error_cr("NULL node");return false;}
 	//if(!(_node->node_type == KEYWORD_NODE && _node->keyword_info != NULL) && !(_node->node_type != FUNCTION_OBJECT_NODE))>{print_error_cr("node is not keyword type or null");return false;}
 
-	if((_node->node_type != NODE_TYPE::KEYWORD_NODE)){
-		if(_node->keyword_info != KEYWORD_TYPE::FUNCTION_KEYWORD && _node->keyword_info != KEYWORD_TYPE::OPERATOR_KEYWORD) {print_error_cr("node is not FUNCTION or OPERATOR keyword type");return false;}
-	}else{
-		if((_node->node_type != FUNCTION_OBJECT_NODE))
-		{
-			print_error_cr("node is not FUNCTION OBJECT NODE type or null");
-			return false;
-		}
+
+	if(
+	    ! ( _node->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD
+	    ||	_node->keyword_info == KEYWORD_TYPE::OPERATOR_KEYWORD
+		||  _node->node_type    == FUNCTION_OBJECT_NODE
+		)) {
+		print_error_cr("Expected FUNCTION or OPERATOR or FUNCTION_OBJECT_NODE keyword type at line %i",_node->line_value);
+		return false;
 	}
 
 	//if(!(_node->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD) && !(_node->node_type != FUNCTION_OBJECT_NODE)){print_error_cr("node is not FUNCTION keyword type");return false;}
@@ -1763,7 +1766,7 @@ bool CCompiler::gacIf(short idxAstNode, CScope * _lc){
 	// if there's else body, compile-it
 	if(_node->children.size()==3){
 		asm_op_jmp_end = insert_JMP_Instruction(); // goto end
-		asm_op_jmp_else_if->index_op1 = getCurrentStatmentIndex()+1;
+		asm_op_jmp_else_if->index_op2 = getCurrentStatmentIndex()+1;
 		if(!gacBody(_node->children[2],_lc)){ return false;}
 
 		asm_op_jmp_end->index_op2 = getCurrentStatmentIndex()+1;

@@ -1,6 +1,14 @@
+version 1.00.01b
+================
+
+- In mov instruction preserve RUNTIME MASK before assign TYPE VAR MASK.
+- Remove warning about "dereferencing type-punned pointer will break strict-aliasing rules"
+> Test function call.
 
 
-version 1.00.00
-===============
 
+Version 1.00.00b
+================
+
+Base version
 Exit version

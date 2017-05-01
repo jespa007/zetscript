@@ -197,7 +197,7 @@ private:
 	 * Function instructions
 	 */
 	void insert_LoadFunctionObject_Instruction(short idxAstNode,CScriptVariable *obj);
-	void insert_StartArgumentStack_Instruction(short idxAstNode);
+	//void insert_StartArgumentStack_Instruction(short idxAstNode);
 
 	/**
 	 * insert call function
@@ -265,7 +265,7 @@ private:
 	bool gacFor(short idxAstNode, CScope * _lc);
 	bool gacVar(short idxAstNode, CScope * _lc);
 	bool gacWhile(short idxAstNode, CScope * _lc);
-	bool gacIfElse(short idxAstNode, CScope * _lc);
+
 	bool gacFunctionOrOperator(short idxAstNode, CScope * _lc, CScriptFunctionObject *irfs);
 	bool gacReturn(short idxAstNode, CScope * _lc);
 	bool gacIf(short idxAstNode, CScope * _lc);

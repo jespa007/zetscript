@@ -47,7 +47,7 @@ void CZetScript::destroy(){
 
  const char * CZetScript::getStrMovVar(tInfoAsmOp * iao){
 
- 	if(iao->operator_type != MOV){
+ 	if(iao->operator_type != STORE){
  		return "ERROR";
  	}
 
@@ -207,7 +207,7 @@ void CZetScript::destroy(){
 							getStrTypeLoadValue(fs->statment_op,idx_statment,idx_instruction),
 							post.c_str());
 					break;
-				//case  MOV:
+				//case  STORE:
 				//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
 				//	break;
 				case POP_SCOPE:

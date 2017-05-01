@@ -13,7 +13,7 @@ struct tInfoVarScopeBlock;
 //int insertScopeVar(tScopeVar * ast_node);
 #define ZS_ERROR			-1
 #define ZS_UNDEFINED_IDX 	-1
-#define MAX_PARAM_C_FUNCTION 6
+#define MAX_N_ARGS 			 6
 
 enum NODE_TYPE:unsigned char{
 	UNKNOWN_NODE=0,
@@ -180,7 +180,7 @@ enum PROXY_CREATOR{
 enum ASM_OPERATOR:unsigned char{
 		END_STATMENT=0,
 		NOP,
-		MOV, // mov expression to var
+		STORE, // mov expression to var
 		LOAD, // primitive value like number/string or boolean...
 		EQU,  // ==
 		NOT_EQU,  // !=
@@ -208,7 +208,7 @@ enum ASM_OPERATOR:unsigned char{
 		JT, // goto if true ... goes end to conditional.
 		CALL, // calling function after all of args are processed...
 		PUSH, // push arg
-		STR_ARG, // set instruction as starting args
+//		START_ARG, // set instruction as starting args
 		VGET, // vector access after each index is processed...
 
 		VPUSH, // Value push for vector
@@ -257,6 +257,9 @@ enum:unsigned char{
 	//-- VM RUNTIME
 	BIT_IS_C_VAR=MAX_BIT_VAR_TYPE,
 	BIT_IS_STACKVAR,
+	BIT_IS_UNRESOLVED_FUNCTION,
+
+	//BIT_START_FUNCTION_ARGS,
 	MAX_BIT_RUNTIME
 
 };
@@ -273,15 +276,18 @@ enum:unsigned short{
 	INS_PROPERTY_TYPE_STRING		=	(0x1<<BIT_TYPE_STRING), // constant / script var
 	INS_PROPERTY_TYPE_FUNCTION		=	(0x1<<BIT_TYPE_FUNCTION), // primitive function
 	INS_PROPERTY_TYPE_SCRIPTVAR		=	(0x1<<BIT_TYPE_SCRIPTVAR) // always is an script class...
+
 };
 
 #define MASK_VAR_TYPE						((0x1<<MAX_BIT_VAR_TYPE)-1)
-#define GET_INS_PROPERTY_TYPE_VAR(prop)		((prop)&MASK_VAR_TYPE)
+#define GET_INS_PROPERTY_VAR_TYPE(prop)		((prop)&MASK_VAR_TYPE)
 
 
 enum:unsigned short{
 	INS_PROPERTY_IS_C_VAR	=			(0x1<<BIT_IS_C_VAR),
-	INS_PROPERTY_IS_STACKVAR=			(0x1<<BIT_IS_STACKVAR)
+	INS_PROPERTY_IS_STACKVAR=			(0x1<<BIT_IS_STACKVAR),
+	INS_PROPERTY_UNRESOLVED_FUNCTION=	(0x1<<BIT_IS_UNRESOLVED_FUNCTION) // always is an script class...
+	//INS_PROPERTY_START_FUNCTION_ARGS=	(0x1<<BIT_START_FUNCTION_ARGS)
 };
 
 #define MASK_RUNTIME						(((0x1<<(MAX_BIT_RUNTIME-BIT_IS_C_VAR))-1)<<(BIT_IS_C_VAR))
@@ -289,12 +295,9 @@ enum:unsigned short{
 
 
 
-
-
-
 // properties shared by compiler + instruction ..
 enum{
-	//-- PRE/POST OPERATORS
+	//-- PRE/POST OPERATORS (Byy default there's no operators involved)
 	BIT_PRE_INC=0,
 	BIT_POST_INC,
 	BIT_PRE_DEC,
@@ -522,7 +525,7 @@ struct tSymbolInfo{
 
 struct tLocalSymbolInfo{
 	vector<tInfoVariableSymbol> 	m_registeredVariable; // member variables to be copied in every new instance
-	vector<int> 							vec_idx_registeredFunction; // member functions
+	vector<int> 					vec_idx_registeredFunction; // idx member functions (from main vector collection)
 };
 
 struct tFunctionInfo{ // script function is shared by class and function ...

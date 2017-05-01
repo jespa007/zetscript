@@ -107,10 +107,10 @@ public:
 	static CScriptClass 				* 		getScriptClassByIdx(int idx);
 	static CScriptClass 				* 		getScriptClassByName(const string & name, bool print_msg=true);
 	static CScriptClass 				* 		getScriptClassBy_C_ClassPtr(const string & class_type, bool print_msg=true);
-	static int 										getIdxScriptClass_Internal(const string & class_name);
-	static int 										getIdxScriptClass(const string & v, bool print_msg=true);
-	static int 										getIdxClassFromIts_C_Type(const string & c_type_str);
-	static bool 									isClassRegistered(const string & v);
+	static int 									getIdxScriptClass_Internal(const string & class_name);
+	static int 									getIdxScriptClass(const string & v, bool print_msg=true);
+	static int 									getIdxClassFromIts_C_Type(const string & c_type_str);
+	static bool 								isClassRegistered(const string & v);
 
 
 

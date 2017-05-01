@@ -832,13 +832,16 @@ char *CASTNode::functionArrayAccess_Recursive(const char *str, int & m_line, CSc
 
 				calling_object->node_type = CALLING_OBJECT_NODE;
 
-				obj->parent = calling_object->idxAstNode;
+				obj->idxAstParent = calling_object->idxAstNode;
 				obj->symbol_value = "--";
-				args_obj->parent = calling_object->idxAstNode;
+				args_obj->idxAstParent = calling_object->idxAstNode;
 
 				calling_object->children.push_back(obj->idxAstNode); // the object itself...
 				calling_object->children.push_back(args_obj->idxAstNode); // the args itself...
-				calling_object->parent=parent->idxAstNode;
+				calling_object->idxAstParent=-1;
+				if(parent!=NULL){
+					calling_object->idxAstParent=parent->idxAstNode;
+				}
 
 				// finally save ast node...
 
@@ -1272,9 +1275,9 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 				print_ast_cr("---------------------");
 
 				// put values by default ...
-				(*ast_node_to_be_evaluated)->parent=ZS_UNDEFINED_IDX;
+				(*ast_node_to_be_evaluated)->idxAstParent=ZS_UNDEFINED_IDX;
 				if(parent!=NULL){
-					(*ast_node_to_be_evaluated)->parent=parent->idxAstNode;
+					(*ast_node_to_be_evaluated)->idxAstParent=parent->idxAstNode;
 				}
 				(*ast_node_to_be_evaluated)->line_value=m_definedSymbolLine;
 
@@ -1321,9 +1324,9 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 
 		if(ast_node_to_be_evaluated != NULL){
 			if((*ast_node_to_be_evaluated=CASTNode::newASTNode())==NULL) return NULL; // always preallocate 2 nodes (left and right)
-			(*ast_node_to_be_evaluated)->parent = ZS_UNDEFINED_IDX;
+			(*ast_node_to_be_evaluated)->idxAstParent = ZS_UNDEFINED_IDX;
 			if(parent!=NULL){
-				(*ast_node_to_be_evaluated)->parent=parent->idxAstNode;
+				(*ast_node_to_be_evaluated)->idxAstParent=parent->idxAstNode;
 			}
 			(*ast_node_to_be_evaluated)->node_type = EXPRESSION_NODE;
 
@@ -1386,7 +1389,7 @@ char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *s
 				ast_neg_node->operator_info = SUB_PUNCTUATOR;
 
 				// 3. insert node between rigth node and ast_node
-				ast_neg_node->parent = (*ast_node_to_be_evaluated)->idxAstNode;
+				ast_neg_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
 				ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
 				(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=ast_neg_node->idxAstNode;
 
@@ -1425,7 +1428,7 @@ char * CASTNode::parseExpression(const char *s, int & m_line, CScope *scope_info
 		if((ast_node=CASTNode::newASTNode())==NULL) return NULL;
 		ast_node->node_type = EXPRESSION_NODE;
 		ast_node->children.push_back((*ast_node_to_be_evaluated)->idxAstNode);
-		(*ast_node_to_be_evaluated)->parent = ast_node->idxAstNode; // save parent ..
+		(*ast_node_to_be_evaluated)->idxAstParent = ast_node->idxAstNode; // save parent ..
 		*ast_node_to_be_evaluated=ast_node;
 	}
 	return aux_p;
@@ -1491,7 +1494,7 @@ char * CASTNode::parseStruct_Recursive(const char *s,int & m_line,  CScope *scop
 				 attr_node->symbol_value = symbol_value;
 				 attr_node->line_value = m_lineSymbol;
  			 	(*ast_node_to_be_evaluated)->children.push_back(attr_node->idxAstNode);
- 			 	attr_node->parent =(*ast_node_to_be_evaluated)->idxAstNode;
+ 			 	attr_node->idxAstParent =(*ast_node_to_be_evaluated)->idxAstNode;
 			 }
 
 			 aux_p=CStringUtils::IGNORE_BLANKS(aux_p,m_line);
@@ -2522,7 +2525,7 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 					}
 
 					if(ast_node_to_be_evaluated != NULL){
-						base_expression_to_evaluate->parent = (*ast_node_to_be_evaluated)->idxAstNode;
+						base_expression_to_evaluate->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
 						(*ast_node_to_be_evaluated)->children.push_back(base_expression_to_evaluate->idxAstNode);
 					}
 
@@ -3425,7 +3428,7 @@ CASTNode::CASTNode(){
 	line_value=ZS_UNDEFINED_IDX;
 	operator_info=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 	symbol_value="";
-	parent=ZS_UNDEFINED_IDX;
+	idxAstParent=ZS_UNDEFINED_IDX;
 	//aux_value=NULL;
 
 	idxAstNode = ZS_UNDEFINED_IDX;

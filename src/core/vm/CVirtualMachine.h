@@ -51,8 +51,10 @@ class CVirtualMachine{
 
 	tAleObjectInfo * execute_internal(
 			CScriptFunctionObject *info_function,
-			CScriptVariable *this_object,
-			unsigned int n_args=0);//vector<CScriptVariable *> * argv=NULL,int stk=0);
+			CScriptVariable * this_object,
+			tAleObjectInfo 		  * _ptrStartOp=NULL,
+			string 		  		  * _ptrStartStr=NULL,
+			unsigned char n_args=0);//vector<CScriptVariable *> * argv=NULL,int stk=0);
 
 
 
@@ -90,8 +92,8 @@ public:
 
 
 	CScriptVariable * execute(
-				CScriptFunctionObject *info_function,
-				CScriptVariable *this_object,
+				 CScriptFunctionObject *info_function,
+				 CScriptVariable *this_object,
 				vector<CScriptVariable *> * argv=NULL);
 
 
@@ -106,6 +108,7 @@ public:
 private:
 
 	char		str_aux[8192];
+	float 		f_aux_value1,f_aux_value2;
 	 string 	aux_string;
 	// vector<CASTNode *> *vec_ast_node;
 	// CSharedPointerManager *instance_gc;
@@ -115,33 +118,38 @@ private:
 
 
 	string 				stkString[VM_LOCAL_VAR_MAX_STACK]; // aux values for string ...
-	unsigned short		idxBaseString,
-	                    idxCurrentString;
+	string              *ptrLastStr;
+	string              *ptrCurrentStr;
+	//unsigned short		idxBaseString,
+	 //                   idxCurrentString;
 
 	 tAleObjectInfo     stack[VM_LOCAL_VAR_MAX_STACK];
-	 unsigned short	 	idxBaseStk;
-
-	 tAleObjectInfo *ptrLocalVar;
-	 tAleObjectInfo *ptrArg;
-
-	 tAleObjectInfo *ptrBaseOp;
-	 tAleObjectInfo *ptrCurrentOp;
-	 int idxCurrentOp;
+	 //unsigned short	 	idxBaseStk;
 
 
-	 std::stack<int>	vecIdxLocalVar,
-	 					vecIdxStkString;
 
-	 std::stack<tAleObjectInfo *>		vecPtrCurrentStkResultInstruction;
+	// tAleObjectInfo *ptrBaseOp;
+	tAleObjectInfo *ptrCurrentOp;
+	// int idxCurrentOp;
 
 
-	 tAleObjectInfo * call_C_function(void *fun_ptr,CScriptFunctionObject *irfs, unsigned int n_args);
+	// std::stack<int>	vecIdxLocalVar,
+	// 					vecIdxStkString;
+
+	// std::stack<tAleObjectInfo *>		vecPtrCurrentStkResultInstruction;
+
+
+	 tAleObjectInfo * call_C_function(
+			 void *fun_ptr,
+			 const CScriptFunctionObject *irfs,
+			 tAleObjectInfo *ptrArg,
+			 unsigned char n_args);
 
 	/**
 	 * Reserve for N vars. Return base pointer.
 	 */
-	 inline void pushStack(CScriptFunctionObject *info_function, int n_args);//,vector<CScriptVariable *> * argv);
-	 inline void popStack();
+	// inline void pushStack(const CScriptFunctionObject *info_function, int n_args);//,vector<CScriptVariable *> * argv);
+	// inline void popStack();
 
 
 	string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tAleObjectInfo * index);
@@ -165,12 +173,12 @@ private:
 			CScriptVariable *this_object,
 			tInfoAsmOp *asm_op);*/
 
-	bool loadFunctionValue(const tInfoAsmOp * iao,
+/*	bool loadFunctionValue(const tInfoAsmOp * iao,
 			CScriptFunctionObject *info_function,
 			CScriptVariable *this_object,
-			tInfoAsmOp *asm_op);
+			tInfoAsmOp *asm_op);*/
 
-	void popScope(CScriptFunctionObject *info_function,int index);//, CScriptVariable *ret = NULL);
+	inline void popScope( CScriptFunctionObject *info_function,int index);//, CScriptVariable *ret = NULL);
 
 
 //private:

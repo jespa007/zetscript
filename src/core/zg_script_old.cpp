@@ -382,7 +382,7 @@ bool CZetScript::insertMovVarInstruction(CVariable *var, int right){
 
 		asm_op->index_left = -1;
 		asm_op->index_right = right;
-		asm_op->operator_type = ASM_OPERATOR::MOV;
+		asm_op->operator_type = ASM_OPERATOR::STORE;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
 
@@ -447,7 +447,7 @@ bool CZetScript::insertMovVarInstruction(CVariable *var, int right){
 
 		asm_op->index_left = -1;
 		asm_op->index_right = right;
-		asm_op->operator_type = ASM_OPERATOR::MOV;
+		asm_op->operator_type = ASM_OPERATOR::STORE;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
 		/*if((asm_op->funOp=getOperatorInfo(op,

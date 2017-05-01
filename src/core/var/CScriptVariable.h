@@ -57,7 +57,8 @@ public:
 
 	tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv);
 	tSymbolInfo * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
-	int getidxScriptFunctionObjectWithMatchArgs(const string & varname, vector<CScriptVariable *> *argv, bool match_signature=false);
+	int getidxScriptFunctionObjectWithMatchArgs(const string & varname, tAleObjectInfo * ptrArg, unsigned char n_args, bool match_signature=false);
+	string getMessageMatchingFunctions(const string & varname);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 
 	void * get_C_Object();
@@ -98,15 +99,11 @@ private:
 	void *created_object;
 	void *c_object;
 
-
+	string aux_string;
 
 	void createSymbols(CScriptClass *irv);
 
 	vector<tSymbolInfo> m_functionSymbol;
 
-public:
-	//inline int getIdxClass(){
-	//	return idxScriptClass;//m_infoRegisteredClass->metadata_info.object_info.symbol_info.idxScriptClass;
-	//}
 
 };

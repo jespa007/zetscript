@@ -93,7 +93,7 @@ public:
 	short idxScope; // saves scope info ptr (only for global vars).
 	string type_class;
 	short line_value;
-	short parent;
+	short idxAstParent;
 	vector<short> children; //left,right;
 	//void *aux_value;
 	short idxAstNode;
