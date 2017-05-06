@@ -2,6 +2,7 @@
 
 
 #include "core/CCompiler.h"
+//#include "core/CScriptClass.h"
 
 
 //#define MAX_PER_TYPE_OPERATIONS 32
@@ -19,6 +20,10 @@
 #define SET_BOOLEAN_RETURN(b) 	CURRENT_VM->setBooleanReturnValue(b)
 #define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
 #define SET_STRING_RETURN(s)  	CURRENT_VM->setStringReturnValue(s)
+
+
+int 									getIdxClassFromIts_C_Type(const string & c_type_str);
+BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 
 class CScriptFunction;
@@ -49,10 +54,10 @@ class CVirtualMachine{
 	float f_return_value;
 	string s_return_value;
 
-	tAleObjectInfo * execute_internal(
+	tStackElement * execute_internal(
 			CScriptFunctionObject *info_function,
 			CScriptVariable * this_object,
-			tAleObjectInfo 		  * _ptrStartOp=NULL,
+			tStackElement 		  * _ptrStartOp=NULL,
 			string 		  		  * _ptrStartStr=NULL,
 			unsigned char n_args=0);//vector<CScriptVariable *> * argv=NULL,int stk=0);
 
@@ -78,6 +83,123 @@ public:
 
 
 //===================================================================================================
+
+	string stk_C_TypeStr(const tStackElement & stk_v);
+
+	template<typename _T>
+	static bool instanceof(const tStackElement & stk_v){
+		BASIC_CLASS_TYPE primitiveid = getIdxPrimitiveFromIts_C_Type(typeid(_T).name());
+		switch(primitiveid){
+		case IDX_CLASS_INT_PTR_C:
+			if(stk_v.properties & INS_PROPERTY_TYPE_INTEGER){
+				return true;
+			}
+			break;
+		case IDX_CLASS_FLOAT_PTR_C:
+			if(stk_v.properties & INS_PROPERTY_TYPE_NUMBER){
+				return true;
+			}
+			break;
+		case IDX_CLASS_BOOL_PTR_C:
+			if(stk_v.properties & INS_PROPERTY_TYPE_BOOLEAN){
+				return true;
+			}
+			break;
+		case IDX_CLASS_STRING_PTR_C:
+			if(stk_v.properties & INS_PROPERTY_TYPE_STRING){
+				return true;
+			}
+			break;
+		default: // get class
+			if(stk_v.properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+				int idxScriptVar = getIdxClassFromIts_C_Type(typeid(_T).name());
+				return idxScriptVar==((CScriptVariable *)(stk_v.varRef))->idxScriptClass;
+			}
+			break;
+		}
+		return false;
+	}
+
+	template<typename  _T>
+	_T read(const tStackElement & stk_v){
+		if(instanceof<_T>(stk_v)){
+			BASIC_CLASS_TYPE primitiveid = getIdxPrimitiveFromIts_C_Type(typeid(_T).name());
+			switch(primitiveid){
+			case IDX_CLASS_INT_PTR_C: // copy int
+				if(stk_v.properties & INS_PROPERTY_TYPE_INTEGER){
+					return (_T)(&stk_v.stkValue);
+				}
+				break;
+			case IDX_CLASS_FLOAT_PTR_C: // copy number
+				if(stk_v.properties & INS_PROPERTY_TYPE_NUMBER){
+					return (_T)(&stk_v.stkValue);
+				}
+				break;
+			case IDX_CLASS_BOOL_PTR_C: // copy bool
+				if(stk_v.properties & INS_PROPERTY_TYPE_BOOLEAN){
+					return (_T)(&stk_v.stkValue);
+				}
+				break;
+			case IDX_CLASS_STRING_PTR_C: // copy string
+				if(stk_v.properties & INS_PROPERTY_TYPE_STRING){
+					return (_T)(stk_v.stkValue);
+				}
+				break;
+			default: // get class
+				if(stk_v.properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+					return (_T)stk_v.varRef;
+				}
+				else{
+					print_error_cr("Internal error! (%s, %s)",stk_C_TypeStr(stk_v).c_str(),demangle(typeid(_T).name()).c_str());
+				}
+				break;
+			}
+		}else{
+			print_error_cr("Cannot read stack value type \"%s\" into \"%s\"",stk_C_TypeStr(stk_v).c_str(),demangle(typeid(_T).name()).c_str());
+		}
+	}
+
+	template<typename _T>
+	bool write(tStackElement & stk_v, const _T & _v){
+		if(instanceof<_T>(stk_v)){
+			BASIC_CLASS_TYPE primitiveid = getIdxPrimitiveFromIts_C_Type(typeid(_T).name());
+			switch(primitiveid){
+			case IDX_CLASS_INT_PTR_C: // copy int
+				if(stk_v.properties & INS_PROPERTY_TYPE_INTEGER){
+					((int)stk_v.stkValue)=(*_v);
+					return true;
+				}
+				break;
+			case IDX_CLASS_FLOAT_PTR_C: // copy number
+				if(stk_v.properties & INS_PROPERTY_TYPE_NUMBER){
+					memcpy(stk_v.stkValue,_v,sizeof(float));
+					return true;
+				}
+				break;
+			case IDX_CLASS_BOOL_PTR_C: // copy bool
+				if(stk_v.properties & INS_PROPERTY_TYPE_BOOLEAN){
+					((bool)stk_v.stkValue)=(*_v);
+					return true;
+				}
+				break;
+			case IDX_CLASS_STRING_PTR_C: // copy string
+				if(stk_v.properties & INS_PROPERTY_TYPE_STRING){
+					*((string *)stk_v.stkValue)=(*_v);
+					return true;
+				}
+				break;
+			default: // get class
+				print_error_cr("You can only write int,bool,float or string types into stack elements but YOU CANNOT NOT WRITE pointers into C scope (this is not implemented yet).");
+				return false;
+				break;
+			}
+
+		}else{
+			print_error_cr("Cannot write value type \"%s\" into \"%s\"",demangle(typeid(_T).name()).c_str(),stk_C_TypeStr(stk_v).c_str());
+		}
+
+		return false;
+	}
 
 
 	inline float *setFloatReturnValue(float f){
@@ -114,7 +236,7 @@ private:
 	// CSharedPointerManager *instance_gc;
 	CUndefined				*VM_UNDEFINED; // it holds UNDEFINED_VAR.
 	CNull					*VM_NULL;  // it holds NULL_VAR.
-	tAleObjectInfo callc_result;
+	tStackElement callc_result;
 
 
 	string 				stkString[VM_LOCAL_VAR_MAX_STACK]; // aux values for string ...
@@ -123,26 +245,26 @@ private:
 	//unsigned short		idxBaseString,
 	 //                   idxCurrentString;
 
-	 tAleObjectInfo     stack[VM_LOCAL_VAR_MAX_STACK];
+	 tStackElement     stack[VM_LOCAL_VAR_MAX_STACK];
 	 //unsigned short	 	idxBaseStk;
 
 
 
-	// tAleObjectInfo *ptrBaseOp;
-	tAleObjectInfo *ptrCurrentOp;
+	// tStackElement *ptrBaseOp;
+	tStackElement *ptrCurrentOp;
 	// int idxCurrentOp;
 
 
 	// std::stack<int>	vecIdxLocalVar,
 	// 					vecIdxStkString;
 
-	// std::stack<tAleObjectInfo *>		vecPtrCurrentStkResultInstruction;
+	// std::stack<tStackElement *>		vecPtrCurrentStkResultInstruction;
 
 
-	 tAleObjectInfo * call_C_function(
+	 tStackElement * call_C_function(
 			 void *fun_ptr,
 			 const CScriptFunctionObject *irfs,
-			 tAleObjectInfo *ptrArg,
+			 tStackElement *ptrArg,
 			 unsigned char n_args);
 
 	/**
@@ -152,7 +274,7 @@ private:
 	// inline void popStack();
 
 
-	string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tAleObjectInfo * index);
+	string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
 
 	//inline bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 
@@ -161,7 +283,7 @@ private:
 	//bool pushFunction(CScriptFunctionObject * init_value, CScriptVariable ** ptrAssignable=NULL,unsigned short properties=0);
 	//bool pushVar(CScriptVariable * , CScriptVariable ** varRef=NULL, int properties=0,bool is_new_var=false);
 
-	//bool assignVarFromResultInstruction(CScriptVariable **obj, tAleObjectInfo * ptr_result_instruction);
+	//bool assignVarFromResultInstruction(CScriptVariable **obj, tStackElement * ptr_result_instruction);
 
 
 	//bool performPreOperator(ASM_PRE_POST_OPERATORS pre_post_operator_type, CScriptVariable *obj);

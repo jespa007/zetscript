@@ -22,6 +22,10 @@ std::string demangle(const string & name) {
 		return "string *";
 	}
 
+	if(name == string(typeid(string).name())){
+		return "string";
+	}
+
     int status = -4; // some arbitrary value to eliminate the compiler warning
 
     // enable c++11 by passing the flag -std=c++11 to g++

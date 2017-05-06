@@ -18,7 +18,7 @@ public:
 		unsigned int type;
 	}tInfoConstantValue;*/
 
-	typedef tAleObjectInfo tInfoConstantValue;
+	typedef tStackElement tInfoConstantValue;
 
 	static tDefOperator def_operator[MAX_OPERATORS];
 

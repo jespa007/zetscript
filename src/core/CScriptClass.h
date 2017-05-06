@@ -33,7 +33,7 @@
 #define register_C_FunctionMemberCast(o,s,f)	register_C_FunctionMemberInt<o>(STR(s),static_cast<f>(&o::s))
 
 
-#define GET_MAIN_VARIABLE(idx_var)				CScriptClass::getVariableClass(0,idx_var)
+#define GET_MAIN_VARIABLE(idx_var)				CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
 #define GET_MAIN_SCRIPT_FUNCTION_IDX			CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
 #define GET_MAIN_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX)
 
@@ -41,11 +41,13 @@
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(CScriptClass::instanceScriptVariableByIdx(idx))
 
 #define REGISTERED_CLASS_NODE(idx) 				(CScriptClass::getScriptClassByIdx(idx))
-#define MAIN_CLASS_NODE							(CScriptClass::getScriptClassByIdx(0))    // 0 is the main class
+#define MAIN_CLASS_NODE							(CScriptClass::getScriptClassByIdx(IDX_CLASS_MAIN))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO(idx)				(CScriptClass::getScriptClassByIdx(idx))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_NAME(s)		(CScriptClass::getScriptClassByName(s))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(CScriptClass::getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
 
+int 									getIdxClassFromIts_C_Type(const string & c_type_str);
+BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 /**
  * Stores the basic information to build a object through built AST structure
@@ -56,6 +58,14 @@ class CScriptClass{
 
 	//------------- VARIABLES STRUCT ---------------
 public:
+
+	static string  *VOID_TYPE_STR;// 		typeid(void).name()
+	static string  *INT_PTR_TYPE_STR;//	typeid(int *).name()
+	static string  *FLOAT_PTR_TYPE_STR;//	typeid(float *).name()
+	static string  *STRING_PTR_TYPE_STR;//	typeid(string *).name()
+	static string  *BOOL_PTR_TYPE_STR;//	typeid(bool *).name()
+
+
 	CScriptFunctionObject	metadata_info;
 	int idx_function_script_constructor;
 	//int idxScriptClass;
@@ -82,7 +92,7 @@ public:
 
 	typedef struct{
 		const char *   type_str;
-		C_TYPE_VALID_PRIMITIVE_VAR  id;
+		BASIC_CLASS_TYPE  id;
 	}tPrimitiveType;
 
 	typedef struct{
@@ -109,12 +119,13 @@ public:
 	static CScriptClass 				* 		getScriptClassBy_C_ClassPtr(const string & class_type, bool print_msg=true);
 	static int 									getIdxScriptClass_Internal(const string & class_name);
 	static int 									getIdxScriptClass(const string & v, bool print_msg=true);
-	static int 									getIdxClassFromIts_C_Type(const string & c_type_str);
+	static int 									getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
+	//static BASIC_CLASS_TYPE			getIdxPrimitiveFromIts_C_TypeInternal(const string & c_type_str);
 	static bool 								isClassRegistered(const string & v);
 
 
 
-	static tPrimitiveType valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
+	//static tPrimitiveType valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 	static void registerPrimitiveTypes();
 
 
@@ -153,13 +164,13 @@ public:
 	static const char * getNameRegisteredClassByIdx(int idx);
 
 	// internal var types ...
-	static CScriptClass *  getRegisteredClassVoid();
+	//static CScriptClass *  getRegisteredClassVoid();
 	static CScriptClass *  getRegisteredClassUndefined();
-	static CScriptClass *  getRegisteredClassInteger();
-	static CScriptClass *  getRegisteredClassNumber();
+	//static CScriptClass *  getRegisteredClassInteger();
+	//static CScriptClass *  getRegisteredClassNumber();
 	static CScriptClass *  getRegisteredClassStruct();
 	static CScriptClass *  getRegisteredClassString();
-	static CScriptClass *  getRegisteredClassBoolean();
+	//static CScriptClass *  getRegisteredClassBoolean();
 	static CScriptClass *  getRegisteredClassVector();
 	static CScriptClass *  getRegisteredClassFunctor();
 	static CScriptClass *  getRegisteredClassNull();
@@ -208,7 +219,7 @@ public:
 			}
 		}
 
-		if(idx_return_type == IDX_CLASS_VOID){
+		if(idx_return_type == IDX_CLASS_VOID_C){
 			if((ref_ptr=(intptr_t)CNativeFunction::getInstance()->new_proxy_function<void>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
 				return false;
 			}
@@ -441,7 +452,7 @@ public:
 
 		// ignores special type cast C++ member to ptr function
 		// create binding function class
-		if(idx_return_type == IDX_CLASS_VOID){
+		if(idx_return_type == IDX_CLASS_VOID_C){
 			if((ref_ptr=((intptr_t)CNativeFunction::getInstance()->c_member_class_function_proxy<_T, void>(m_arg.size(),function_type)))==0){
 				return false;
 			}
@@ -529,13 +540,13 @@ private:
 	 	bool valid_type = false;
 
 	 	// check if any entry is int, *float, *bool , *string, *int or any from factory. Anyelese will be no allowed!
-	 	valid_type|=valid_C_PrimitiveType[VOID_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",VOID_TYPE};
+	 /*	valid_type|=valid_C_PrimitiveType[IDX_CLASS_VOID_C].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",IDX_CLASS_VOID_C};
 	 	//valid_type|=valid_C_PrimitiveType[INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
-	 	valid_type|=valid_C_PrimitiveType[INT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",INT_PTR_TYPE};
-	 	valid_type|=valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
-	 	valid_type|=valid_C_PrimitiveType[STRING_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
-	 	valid_type|=valid_C_PrimitiveType[BOOL_PTR_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
-
+	 	valid_type|=valid_C_PrimitiveType[IDX_CLASS_INT_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",IDX_CLASS_INT_PTR_C};
+	 	valid_type|=valid_C_PrimitiveType[IDX_CLASS_FLOAT_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",IDX_CLASS_FLOAT_PTR_C};
+	 	valid_type|=valid_C_PrimitiveType[IDX_CLASS_STRING_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",IDX_CLASS_STRING_PTR_C};
+	 	valid_type|=valid_C_PrimitiveType[IDX_CLASS_BOOL_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",IDX_CLASS_BOOL_PTR_C};
+*/
 	 	if(!valid_type){
 	 		print_error_cr("Conversion type \"%s\" not valid",typeid(_D).name());
 	 		return false;
@@ -565,7 +576,7 @@ private:
 
 	 static bool searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_idx_function,unsigned int scope_type=0);
 
-	 static bool buildScopeVariablesBlock(CScriptFunctionObject *root_class_irfs );
+	 static void buildScopeVariablesBlock(CScriptFunctionObject *root_class_irfs );
 	 static void unloadRecursiveFunctions(CScriptFunctionObject * info_function);
 
 	 static bool updateFunctionSymbols(int idxSxriptFunctionObject, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);

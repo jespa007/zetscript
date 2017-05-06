@@ -1,13 +1,18 @@
 #pragma once
 
 
+// Prototypes & structs
+
 class CASTNode;
 typedef CASTNode *PASTNode;
 struct CScriptFunctionObject;
 class tScopeVar;
 class CScriptClass;
+class CScriptVariable;
 struct tFunctionInfo;
 struct tInfoVarScopeBlock;
+
+int getIdxClassFromIts_C_Type(const string & s);
 
 //int insertAstNode(CASTNode * ast_node);
 //int insertScopeVar(tScopeVar * ast_node);
@@ -368,54 +373,33 @@ enum SYMBOL_INFO_PROPERTIES{
 	PROPERTY_ARG_VAR = 0x1 <<0,
 };*/
 
-enum C_TYPE_VALID_PRIMITIVE_VAR{
-	VOID_TYPE,
-	INT_PTR_TYPE,
-	FLOAT_PTR_TYPE,
-	STRING_PTR_TYPE,
-	BOOL_PTR_TYPE,
-	MAX_C_TYPE_VALID_PRIMITIVE_VAR
-};
+
+
 
 enum BASIC_CLASS_TYPE{
+	// primitives...
+	IDX_CLASS_VOID_C=0,
+	IDX_CLASS_INT_PTR_C,
+	IDX_CLASS_FLOAT_PTR_C,
+	IDX_CLASS_STRING_PTR_C,
+	IDX_CLASS_BOOL_PTR_C,
+	//... add more primitives (don't forgot to configure it in CScriptVar...
+	MAX_CLASS_C_TYPES,
+	// here classes starts ...
 
-	IDX_CLASS_MAIN=0, 	// Main class ...
+	IDX_START_SCRIPTVAR=MAX_CLASS_C_TYPES, 		// Starting classes ...
+	IDX_CLASS_MAIN=MAX_CLASS_C_TYPES, 			// Main class ...
 	IDX_CLASS_UNDEFINED,	// 1
-	IDX_CLASS_VOID,			// 2
 	IDX_CLASS_NULL,			// 3
 	IDX_CLASS_SCRIPT_VAR, 	// 4 script base that all object derive from it...
-	IDX_CLASS_INTEGER, 	  	// 5 then our basics types ...
-	IDX_CLASS_NUMBER,     	// 6
-	IDX_CLASS_STRING,     	// 7
-	IDX_CLASS_BOOLEAN,		// 8
-	IDX_CLASS_VECTOR,		// 9
-	IDX_CLASS_FUNCTOR,		// 10
-	IDX_CLASS_STRUCT,		// 11
+	IDX_CLASS_STRING,     	// 8
+	IDX_CLASS_VECTOR,		// 10
+	IDX_CLASS_FUNCTOR,		// 11
+	IDX_CLASS_STRUCT,		// 12
 	MAX_BASIC_CLASS_TYPES
 };
 
-struct tInfoVariableSymbol{ // it can be a variable or function
-	intptr_t ref_ptr; // pointer ref to C Var/Function
-	string 	 symbol_name; // symbol name
-	int idxScriptClass;//CScriptClass		 *class_info;
-	int idxSymbol; // idx of class function/variable symbol that keeps.
-	int idxAstNode;
-	unsigned int properties; // SYMBOL_INFO_PROPERTIES
-	string c_type; // In case is C, we need to know its type ...
 
-	tInfoVariableSymbol(){
-		properties=0;
-		c_type="";
-		idxAstNode=-1;
-		symbol_name = "";
-		ref_ptr=0;
-		//class_info=NULL;
-
-		idxScriptClass=-1;
-		//idxScopeVar=-1;
-		idxSymbol=-1;
-	}
-};
 
 
 typedef struct{
@@ -466,15 +450,37 @@ enum ASM_PROPERTIES{
 
 #pragma pack(1)
 
+struct tInfoVariableSymbol{ // it can be a variable or function
+	intptr_t ref_ptr; // pointer ref to C Var/Function
+	string 	 symbol_name; // symbol name
+	short idxScriptClass;//CScriptClass		 *class_info;
+	short idxSymbol; // idx of class function/variable symbol that keeps.
+	short idxAstNode;
+	unsigned short properties; // SYMBOL_INFO_PROPERTIES
+	string c_type; // In case is C, we need to know its type ...
+
+	tInfoVariableSymbol(){
+		properties=0;
+		c_type="";
+		idxAstNode=-1;
+		symbol_name = "";
+		ref_ptr=0;
+		//class_info=NULL;
+
+		idxScriptClass=-1;
+		//idxScopeVar=-1;
+		idxSymbol=-1;
+	}
+};
 
 
 struct tInfoAsmOp{
 
-	ASM_OPERATOR operator_type;
-	unsigned char index_op1;	// left and right respectively
-	intptr_t  index_op2;
-	unsigned short instruction_properties;
-	short idxAstNode; // define ast node for give some information at run time
+	ASM_OPERATOR 	operator_type;
+	unsigned char 	index_op1;	// left and right respectively
+	intptr_t  		index_op2;
+	unsigned short 	instruction_properties;
+	short 			idxAstNode; // define ast node for give some information at run time
 
 	tInfoAsmOp(){
 		operator_type=ASM_OPERATOR::END_STATMENT;
@@ -488,19 +494,18 @@ struct tInfoAsmOp{
 typedef   tInfoAsmOp **PtrStatment;
 
 
-struct tAleObjectInfo{
+struct tStackElement{
 	//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
 	unsigned short				properties; // it tells its properties
 	void			 		* 	stkValue; // operable value
 	void			  		* 	varRef; // stack ref in case to assign new value.
-
 };
 
 
 
 struct tSymbolInfo{
 
-	tAleObjectInfo object; // created object. undefined by default.
+	tStackElement object; // created object. undefined by default.
 	void * proxy_ptr; // for proxy functions...
 	tSymbolInfo *super_function; // only for functions ...
 	string symbol_value;

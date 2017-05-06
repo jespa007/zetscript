@@ -10,28 +10,36 @@
 
 vector<CScriptClass *> 				* CScriptClass::vec_script_class_node=NULL;
 
+
+string  * CScriptClass::VOID_TYPE_STR=NULL;// 		typeid(void).name()
+string  * CScriptClass::INT_PTR_TYPE_STR=NULL;//	typeid(int *).name()
+string  * CScriptClass::FLOAT_PTR_TYPE_STR=NULL;//	typeid(float *).name()
+string  * CScriptClass::STRING_PTR_TYPE_STR=NULL;//	typeid(string *).name()
+string  * CScriptClass::BOOL_PTR_TYPE_STR=NULL;//	typeid(bool *).name()
+
+
  //CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
- CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
+ //CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 
 
  //--obj , type convert, ---
  map<string,map<string,fntConversionType>> CScriptClass::mapTypeConversion;
 
 
-int CScriptClass::getIdxClassFromIts_C_Type(const string & c_type_str){
+int CScriptClass::getIdxClassFromIts_C_TypeInternal(const string & c_type_str){
 
 	// 1. we have to handle primitives like void, (int *), (bool *),(float *) and (string *).
-	if(STRCMP(valid_C_PrimitiveType[VOID_TYPE].type_str,==,c_type_str.c_str())){
+	/*if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_VOID_C].type_str,==,c_type_str.c_str())){
 		return IDX_CLASS_VOID;
-	}else if(STRCMP(valid_C_PrimitiveType[INT_PTR_TYPE].type_str,==, c_type_str.c_str())){
-		return IDX_CLASS_INTEGER;
-	}else if(STRCMP(valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str,==,c_type_str.c_str())){
-		return IDX_CLASS_NUMBER;
-	}else if(STRCMP(valid_C_PrimitiveType[STRING_PTR_TYPE].type_str,==,c_type_str.c_str())){
+	}else if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_INT_PTR_C].type_str,==, c_type_str.c_str())){
+		return IDX_PRIMITIVE_INTEGER;
+	}else if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_FLOAT_PTR_C].type_str,==,c_type_str.c_str())){
+		return IDX_PRIMITIVE_FLOAT;
+	}else if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_STRING_PTR_C].type_str,==,c_type_str.c_str())){
 		return IDX_CLASS_STRING;
-	}else if(STRCMP(valid_C_PrimitiveType[BOOL_PTR_TYPE].type_str,==,c_type_str.c_str())){
+	}else if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_BOOL_PTR_C].type_str,==,c_type_str.c_str())){
 		return IDX_CLASS_BOOLEAN;
-	}
+	}*/
 
 	 // 2. Check for rest registered C classes...
 	 for(unsigned i = 0; i < vec_script_class_node->size(); i++){
@@ -43,6 +51,31 @@ int CScriptClass::getIdxClassFromIts_C_Type(const string & c_type_str){
 
 	 return -1;
  }
+/*
+BASIC_CLASS_TYPE CScriptClass::getIdxPrimitiveFromIts_C_TypeInternal(const string & c_type_str){
+
+	// 1. we have to handle primitives like void, (int *), (bool *),(float *) and (string *).
+	if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_VOID_C].type_str,==,c_type_str.c_str())){
+		return BASIC_CLASS_TYPE::IDX_CLASS_VOID_C;
+	}else if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_INT_PTR_C].type_str,==, c_type_str.c_str())){
+		return BASIC_CLASS_TYPE::IDX_CLASS_INT_PTR_C;
+	}else if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_FLOAT_PTR_C].type_str,==,c_type_str.c_str())){
+		return BASIC_CLASS_TYPE::IDX_CLASS_FLOAT_PTR_C;
+	}else if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_STRING_PTR_C].type_str,==,c_type_str.c_str())){
+		return BASIC_CLASS_TYPE::IDX_CLASS_STRING_PTR_C;
+	}else if(STRCMP(valid_C_PrimitiveType[IDX_CLASS_BOOL_PTR_C].type_str,==,c_type_str.c_str())){
+		return BASIC_CLASS_TYPE::IDX_CLASS_BOOL_PTR_C;
+	}
+
+	 return IDX_INVALID_C_VAR_TYPE;
+ }*/
+
+int 				getIdxClassFromIts_C_Type(const string & c_type_str){
+	return CScriptClass::getIdxClassFromIts_C_TypeInternal(c_type_str);
+}
+
+
+
 
 
 void CScriptClass::setVectorScriptClassNode(vector<CScriptClass *> 	* set_vec){
@@ -199,8 +232,9 @@ fntConversionType CScriptClass::getConversionType(string objectType, string conv
  	print_info_cr("CUSTOM_FUNCTION S:%s",s->m_strValue.c_str());
  }
 
- void  custom_function(CInteger  *i){
- 	print_info_cr("CUSTOM_FUNCTION I:%i",i->m_intValue);
+
+ void  custom_function(int  *i){
+ 	print_info_cr("CUSTOM_FUNCTION I:%i",*i);
  }
 
  CVector *  my_new_random_vector(int * n){
@@ -261,40 +295,67 @@ public:
 	    	return false;
 	    }
 
-	 	valid_C_PrimitiveType[VOID_TYPE]={typeid(void).name(),VOID_TYPE};
-	 	//valid_C_PrimitiveType[INT_TYPE]={typeid(int).name(),INT_TYPE};
-	 	valid_C_PrimitiveType[INT_PTR_TYPE]={typeid(int *).name(),INT_PTR_TYPE};
-	 	valid_C_PrimitiveType[FLOAT_PTR_TYPE]={typeid(float *).name(),FLOAT_PTR_TYPE};
-	 	valid_C_PrimitiveType[STRING_PTR_TYPE]={typeid(string *).name(),STRING_PTR_TYPE};
-	 	valid_C_PrimitiveType[BOOL_PTR_TYPE]={typeid(bool *).name(),BOOL_PTR_TYPE};
+	    VOID_TYPE_STR = new string(typeid(void).name());
+	    INT_PTR_TYPE_STR = new string(typeid(int *).name());
+	    FLOAT_PTR_TYPE_STR = new string(typeid(float *).name());
+	    STRING_PTR_TYPE_STR = new string(typeid(string *).name());
+	    BOOL_PTR_TYPE_STR = new string(typeid(bool *).name());
 
+
+	 	/*valid_C_PrimitiveType[IDX_CLASS_VOID_C]={typeid(void).name(),IDX_CLASS_VOID_C};
+	 	//valid_C_PrimitiveType[INT_TYPE]={typeid(int).name(),INT_TYPE};
+	 	valid_C_PrimitiveType[IDX_CLASS_INT_PTR_C]={typeid(int *).name(),IDX_CLASS_INT_PTR_C};
+	 	valid_C_PrimitiveType[IDX_CLASS_FLOAT_PTR_C]={typeid(float *).name(),IDX_CLASS_FLOAT_PTR_C};
+	 	valid_C_PrimitiveType[IDX_CLASS_STRING_PTR_C]={typeid(string *).name(),IDX_CLASS_STRING_PTR_C};
+	 	valid_C_PrimitiveType[IDX_CLASS_BOOL_PTR_C]={typeid(bool *).name(),IDX_CLASS_BOOL_PTR_C};
+*/
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		//IDX_CLASS_MAIN=0, 	// Main class ...
 		//IDX_CLASS_UNDEFINED,	// 1
 		//IDX_CLASS_VOID,			// 2
 		//IDX_CLASS_NULL,			// 3
 		//IDX_CLASS_SCRIPT_VAR, 	// 4 script base that all object derive from it...
-		//IDX_CLASS_INTEGER, 	  	// 5 then our basics types ...
-		//IDX_CLASS_NUMBER,     	// 6
+		//IDX_PRIMITIVE_INTEGER, 	  	// 5 then our basics types ...
+		//IDX_PRIMITIVE_FLOAT,     	// 6
 		//IDX_CLASS_STRING,     	// 7
 		//IDX_CLASS_BOOLEAN,		// 8
 		//IDX_CLASS_VECTOR,		// 9
 		//IDX_CLASS_FUNCTOR,		// 10
 		//IDX_CLASS_STRUCT,		// 11
 
+
+	    // register basic types...
+		if((registerClass("void","",NULL)) == NULL) return false;		// 0
+		vec_script_class_node->at(IDX_CLASS_VOID_C)->classPtrType=*VOID_TYPE_STR;
+
+		if((registerClass("int","",NULL)) == NULL) return false;		// 1
+		vec_script_class_node->at(IDX_CLASS_INT_PTR_C)->classPtrType=*INT_PTR_TYPE_STR;
+
+		if((registerClass("float","",NULL)) == NULL) return false;		// 2
+		vec_script_class_node->at(IDX_CLASS_FLOAT_PTR_C)->classPtrType=*FLOAT_PTR_TYPE_STR;
+
+		if((registerClass("string","",NULL)) == NULL) return false;		// 3
+		vec_script_class_node->at(IDX_CLASS_STRING_PTR_C)->classPtrType=*STRING_PTR_TYPE_STR;
+
+		if((registerClass("bool","",NULL)) == NULL) return false;		// 4
+		vec_script_class_node->at(IDX_CLASS_BOOL_PTR_C)->classPtrType=*BOOL_PTR_TYPE_STR;
+
+
+		// register basic classes...
+
 		// MAIN CLASS (IDX==0)! Is the first entry before any other one   (this order is important!...
-		if((registerClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 0
+		if((registerClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 5
 		if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME,IDX_MAIN_AST_NODE)) == NULL) return false;
 
 
 
-		if((registerClass("CUndefined","",NULL)) == NULL) return false;		// 1
+		if((registerClass("CUndefined","",NULL)) == NULL) return false;		// 6
 		vec_script_class_node->at(IDX_CLASS_UNDEFINED)->classPtrType=typeid(CUndefined *).name();
 
-		if((registerClass("CVoid","",NULL)) == NULL) return false;				// 2
-		vec_script_class_node->at(IDX_CLASS_VOID)->classPtrType=typeid(CVoid *).name();
+		//if((registerClass("CVoid","",NULL)) == NULL) return false;				// 7
+		//vec_script_class_node->at(IDX_CLASS_VOID)->classPtrType=typeid(CVoid *).name();
 
-		if((registerClass("CNull","",NULL)) == NULL) return false;				// 3
+		if((registerClass("CNull","",NULL)) == NULL) return false;				// 8
 		vec_script_class_node->at(IDX_CLASS_NULL)->classPtrType=typeid(CNull *).name();
 
 
@@ -302,10 +363,10 @@ public:
 
 		// rgister basic classes (Warning!!! must match idx !!! and the order is important!!!)
 		REGISTER_BASIC_TYPE(CScriptVariable,IDX_CLASS_SCRIPT_VAR);
-		REGISTER_BASIC_TYPE(CInteger,IDX_CLASS_INTEGER);
-		REGISTER_BASIC_TYPE(CNumber,IDX_CLASS_NUMBER);
+		//REGISTER_BASIC_TYPE(CInteger,IDX_PRIMITIVE_INTEGER);
+		//REGISTER_BASIC_TYPE(CNumber,IDX_PRIMITIVE_FLOAT);
 		REGISTER_BASIC_TYPE(CString,IDX_CLASS_STRING);
-		REGISTER_BASIC_TYPE(CBoolean,IDX_CLASS_BOOLEAN);
+		//REGISTER_BASIC_TYPE(CBoolean,IDX_CLASS_BOOLEAN);
 		REGISTER_BASIC_TYPE(CVector,IDX_CLASS_VECTOR);
 		REGISTER_BASIC_TYPE(CFunctor,IDX_CLASS_FUNCTOR);
 		REGISTER_BASIC_TYPE(CStruct,IDX_CLASS_STRUCT);
@@ -315,7 +376,7 @@ public:
 		//-----------------------
 		// Conversion from object types to primitive types (move into factory) ...
 		//addPrimitiveTypeConversion<CInteger *,int>( [] (CScriptVariable *obj){return *((int *)((CInteger *)obj)->m_value);});
-		if(!addPrimitiveTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){
+		/*if(!addPrimitiveTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){
 			return (intptr_t)((CInteger *)obj)->m_value;
 		})) return false;
 
@@ -344,7 +405,7 @@ public:
 
 		if(!addPrimitiveTypeConversion<CString *,string *>( [] (CScriptVariable *obj){
 			return (intptr_t)(((CString *)obj)->m_value);
-		})) return false;
+		})) return false;*/
 
 
 		//----------------------------------------------------------------------
@@ -363,12 +424,13 @@ public:
 		if(!register_C_FunctionMemberCast(CScriptVariable,_add,CScriptVariable * (CScriptVariable::*)(CScriptVariable *,CScriptVariable * ))) return false;
 
 
-		if(!class_C_baseof<CVoid,CScriptVariable>()) return false;
+		//if(!class_C_baseof<CVoid,CScriptVariable>()) return false;
+		if(!class_C_baseof<CNull,CScriptVariable>()) return false;
 		if(!class_C_baseof<CUndefined,CScriptVariable>()) return false;
-		if(!class_C_baseof<CInteger,CScriptVariable>()) return false;
-		if(!class_C_baseof<CNumber,CScriptVariable>()) return false;
-		if(!class_C_baseof<CBoolean,CScriptVariable>()) return false;
-		if(!class_C_baseof<CString,CScriptVariable>()) return false;
+		//if(!class_C_baseof<CInteger,CScriptVariable>()) return false;
+		//if(!class_C_baseof<CNumber,CScriptVariable>()) return false;
+		//if(!class_C_baseof<CBoolean,CScriptVariable>()) return false;
+		//if(!class_C_baseof<CString,CScriptVariable>()) return false;
 		if(!class_C_baseof<CVector,CScriptVariable>()) return false;
 		if(!class_C_baseof<CFunctor,CScriptVariable>()) return false;
 		if(!class_C_baseof<CStruct,CScriptVariable>()) return false;
@@ -387,7 +449,7 @@ public:
 		//CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(bool * )>(&custom_function));
 
 		if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CString * )>(&custom_function))) return false;
-		if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CInteger * )>(&custom_function))) return false;
+		//if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CInteger * )>(&custom_function))) return false;
 
 		if(!register_C_Variable(c_var)) return false;
 
@@ -395,7 +457,11 @@ public:
 		if(!register_C_FunctionMember(CVector,size)) return false;
 		//if(!register_C_FunctionMember(CVector,add)) return false;
 
-		if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(CScriptVariable * )>(&CVector::add))) return false;
+		if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(int *)>(&CVector::add))) return false;
+		if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(float *)>(&CVector::add))) return false;
+		if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(string *)>(&CVector::add))) return false;
+		if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(bool *)>(&CVector::add))) return false;
+		if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(CScriptVariable *)>(&CVector::add))) return false;
 
 
 
@@ -431,7 +497,7 @@ public:
 }
 
 
-
+/*
  CScriptClass::tPrimitiveType *CScriptClass::getPrimitiveTypeFromStr(const string & str){
 
  	for(unsigned i=0; i < MAX_C_TYPE_VALID_PRIMITIVE_VAR; i++){
@@ -443,7 +509,7 @@ public:
  	print_error_cr("type \"%s\" is not registered",str.c_str());
 
  	return NULL;
- }
+ }*/
 
 
 bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_function, unsigned int param_scope_type){
@@ -547,7 +613,7 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoA
 
 
 
-bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_irfs ){
+void CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_irfs ){
 
 	/// PRE: base_class_irfs must be info of root class.
 
@@ -612,7 +678,7 @@ bool CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 		 }
 	 }
 
-	 return true;
+	 //return true;
 }
 
 
@@ -624,9 +690,7 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 
 	print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->symbol_info.symbol_name.c_str());
 
-	if(buildScopeVariablesBlock(sfo)){
-		return false;
-	}
+	buildScopeVariablesBlock(sfo);
 
 
 
@@ -705,16 +769,16 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 bool CScriptClass::updateReferenceSymbols(){
 
 
-	 int idx_main_function = ((*vec_script_class_node)[0]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
-	 CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[0]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
+	 int idx_main_function = ((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
+	 CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 	 print_info_cr("DEFINED CLASSES");
 	 vector<int>  mrf;
 
 	 // For each class...
-	 for(unsigned i = 0; i < (*vec_script_class_node).size(); i++){
+	 for(unsigned i = IDX_START_SCRIPTVAR; i < (*vec_script_class_node).size(); i++){
 
 		 mrf.clear();
-		 if(i==0){ // First entry (MAIN_CLASS), load global functions....
+		 if(i==IDX_START_SCRIPTVAR){ // First entry (MAIN_CLASS), load global functions....
 			 mrf.push_back(idx_main_function);//->object_info.local_symbols.vec_idx_registeredFunction;
 			 for(unsigned h=0; h<  main_function->object_info.local_symbols.vec_idx_registeredFunction.size(); h++){
 				 mrf.push_back(main_function->object_info.local_symbols.vec_idx_registeredFunction[h]);
@@ -730,13 +794,11 @@ bool CScriptClass::updateReferenceSymbols(){
 
 
 			 CScriptFunctionObject * info_function = GET_SCRIPT_FUNCTION_OBJECT(mrf[k]);
-			 bool is_main_class = i == 0;
+			 bool is_main_class = i == IDX_CLASS_MAIN;
 			 bool is_main_function = is_main_class && k==0;
 			 CScriptClass * _belonging_class = (*vec_script_class_node)[i];
 
-			 if(!buildScopeVariablesBlock(info_function)){
-				 return false;
-			 }
+			 buildScopeVariablesBlock(info_function);
 
 			 if(is_main_class){
 				 if(is_main_function){
@@ -879,38 +941,20 @@ CScriptVariable *		CScriptClass::instanceScriptVariableByClassName(const string 
 
 		 // Is a primitive ?
 		 switch(rc->metadata_info.object_info.symbol_info.idxScriptClass){
-		 case IDX_CLASS_INTEGER:
-			 class_object = NEW_INTEGER_VAR;
-			 if(value_object!=NULL){
-				 ((CInteger *)class_object)->m_intValue = *((int *)value_object);
-			 }
-			 break;
-		 case IDX_CLASS_NUMBER:
-			 class_object = NEW_NUMBER_VAR;
-			 if(value_object!=NULL){
-				 ((CNumber *)class_object)->m_floatValue = *((float *)value_object);
-			 }
-			 break;
 
-		 case IDX_CLASS_BOOLEAN:
-			 class_object = NEW_BOOLEAN_VAR;
-			 if(value_object!=NULL){
-				 ((CBoolean *)class_object)->m_boolValue = *((bool *)value_object);
-			 }
-			 break;
-
-		 case IDX_CLASS_STRING:
-			 class_object = NEW_STRING_VAR;
-			 if(value_object!=NULL){
-				 ((CString *)class_object)->m_strValue = *((string *)value_object);
-			 }
+		 case IDX_CLASS_VOID_C:
+		 case IDX_CLASS_INT_PTR_C:
+		 case IDX_CLASS_FLOAT_PTR_C:
+		 case IDX_CLASS_STRING_PTR_C:
+		 case IDX_CLASS_BOOL_PTR_C:
+			 print_error_cr("Internal error!");
+			 return NULL;
 			 break;
 
 		 case IDX_CLASS_VECTOR:
 		 case IDX_CLASS_STRUCT:
 		 case IDX_CLASS_UNDEFINED:
 		 case IDX_CLASS_NULL:
-		 case IDX_CLASS_VOID:
 			 class_object = (CScriptVariable *)value_object;
 			 break;
 		 default:
@@ -1229,21 +1273,24 @@ bool CScriptClass::addArgumentFunctionSymbol(const string & class_name,const str
 }
 
 // internal var types ...
+/*
 CScriptClass *  CScriptClass::getRegisteredClassVoid(){
 	return (*vec_script_class_node)[IDX_CLASS_VOID];
-}
+}*/
 
 CScriptClass *  CScriptClass::getRegisteredClassUndefined(){
 	return (*vec_script_class_node)[IDX_CLASS_UNDEFINED];
 }
 
+/*
 CScriptClass *  CScriptClass::getRegisteredClassInteger(){
-	return (*vec_script_class_node)[IDX_CLASS_INTEGER];
+	return (*vec_script_class_node)[IDX_PRIMITIVE_INTEGER];
 }
 
 CScriptClass *  CScriptClass::getRegisteredClassNumber(){
-	return (*vec_script_class_node)[IDX_CLASS_NUMBER];
+	return (*vec_script_class_node)[IDX_PRIMITIVE_FLOAT];
 }
+*/
 
 CScriptClass *  CScriptClass::getRegisteredClassStruct(){
 	return (*vec_script_class_node)[IDX_CLASS_STRUCT];
@@ -1253,9 +1300,10 @@ CScriptClass *  CScriptClass::getRegisteredClassString(){
 	return (*vec_script_class_node)[IDX_CLASS_STRING];
 }
 
+/*
 CScriptClass *  CScriptClass::getRegisteredClassBoolean(){
 	return (*vec_script_class_node)[IDX_CLASS_BOOLEAN];
-}
+}*/
 
 CScriptClass *  CScriptClass::getRegisteredClassVector(){
 	return (*vec_script_class_node)[IDX_CLASS_VECTOR];

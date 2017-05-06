@@ -44,14 +44,14 @@ void CScriptVariable::createSymbols(CScriptClass *ir_class){
 				// check if primitive type (only 4 no more no else)...
 				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
-				if(CScriptClass::valid_C_PrimitiveType[INT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(int *).name(),"int *",INT_PTR_TYPE};
+				if(*CScriptClass::INT_PTR_TYPE_STR==ir_var->c_type){//={typeid(int *).name(),"int *",IDX_CLASS_INT_PTR_C};
 					si->object={
 							INS_PROPERTY_TYPE_INTEGER|INS_PROPERTY_IS_C_VAR,
 							ptr_variable,
 							NULL
 					};
 
-				}else if(CScriptClass::valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(float *).name(),"float *",FLOAT_PTR_TYPE};
+				}else if(*CScriptClass::FLOAT_PTR_TYPE_STR==ir_var->c_type){//={typeid(float *).name(),"float *",IDX_CLASS_FLOAT_PTR_C};
 					si->object={
 							INS_PROPERTY_TYPE_NUMBER|INS_PROPERTY_IS_C_VAR,
 							ptr_variable,
@@ -59,7 +59,7 @@ void CScriptVariable::createSymbols(CScriptClass *ir_class){
 					};
 
 
-				}else if(CScriptClass::valid_C_PrimitiveType[STRING_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(string *).name(),"string *",STRING_PTR_TYPE};
+				}else if(*CScriptClass::STRING_PTR_TYPE_STR==ir_var->c_type){//={typeid(string *).name(),"string *",IDX_CLASS_STRING_PTR_C};
 
 					si->object={
 							INS_PROPERTY_TYPE_STRING|INS_PROPERTY_IS_C_VAR,
@@ -67,7 +67,7 @@ void CScriptVariable::createSymbols(CScriptClass *ir_class){
 							NULL
 					};
 
-				}else if(CScriptClass::valid_C_PrimitiveType[BOOL_PTR_TYPE].type_str==ir_var->c_type.c_str()){//={typeid(bool *).name(),"bool *",BOOL_PTR_TYPE};
+				}else if(*CScriptClass::BOOL_PTR_TYPE_STR==ir_var->c_type){//={typeid(bool *).name(),"bool *",IDX_CLASS_BOOL_PTR_C};
 					si->object={
 							INS_PROPERTY_TYPE_BOOLEAN|INS_PROPERTY_IS_C_VAR,
 							ptr_variable,
@@ -267,7 +267,7 @@ tSymbolInfo * CScriptVariable::getIdxScriptFunctionObjectByClassFunctionName(con
 }
 
 
-int CScriptVariable::getidxScriptFunctionObjectWithMatchArgs(const string & varname, tAleObjectInfo * ptrArg, unsigned char n_args, bool match_signature){
+int CScriptVariable::getidxScriptFunctionObjectWithMatchArgs(const string & varname, tStackElement * ptrArg, unsigned char n_args, bool match_signature){
 
 	// from lat value to first to get last override function...
 	bool all_check=false;
@@ -291,16 +291,16 @@ int CScriptVariable::getidxScriptFunctionObjectWithMatchArgs(const string & varn
 						return ZS_UNDEFINED_IDX;
 						break;
 					case INS_PROPERTY_TYPE_INTEGER:
-						aux_string=CScriptClass::valid_C_PrimitiveType[INT_PTR_TYPE].type_str;
+						aux_string=*CScriptClass::INT_PTR_TYPE_STR;
 						break;
 					case INS_PROPERTY_TYPE_NUMBER:
-						aux_string=CScriptClass::valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str;
+						aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
 						break;
 					case INS_PROPERTY_TYPE_BOOLEAN:
-						aux_string=CScriptClass::valid_C_PrimitiveType[BOOL_PTR_TYPE].type_str;
+						aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
 						break;
 					case INS_PROPERTY_TYPE_STRING:
-						aux_string=CScriptClass::valid_C_PrimitiveType[STRING_PTR_TYPE].type_str;
+						aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
 
 						break;
 					case INS_PROPERTY_TYPE_NULL:

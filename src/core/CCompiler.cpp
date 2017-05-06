@@ -311,8 +311,9 @@ bool checkAccessObjectMember(short idxAstNode){
 			if(check_node->idxAstParent != ZS_UNDEFINED_IDX){
 				if(!checkAccessObjectMember(check_node->idxAstParent)){
 
-					// if c.b is trivial but c.b.a must check that parent it has another punctuator.
-					node_access = (check_node->children[0] != child_compare) || (AST_NODE(check_node->idxAstParent)->operator_info==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR); // parent not access left is first...
+					// if c.b is trivial but it has c.b.a must check that parent it has another punctuator.
+					node_access = (check_node->children[0] != child_compare)
+							   || (AST_NODE(check_node->idxAstParent)->operator_info==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR); // parent not access left is first...
 				}
 			}
 		}
@@ -384,7 +385,7 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 			obj=UNDEFINED_SYMBOL;// CScriptVariable::UndefinedSymbol;
 			print_com_cr("%s detected as undefined\n",v.c_str());
 
-	}else if((const_obj=CInteger::Parse(v))!=NULL){
+	}else if((const_obj=CStringUtils::ParseInteger(v))!=NULL){
 		intptr_t value = *((int *)const_obj);
 		delete (int *)const_obj;
 
@@ -397,7 +398,7 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 			obj=addConstant(v,(void *)value,type);
 		}
 	}
-	else if((const_obj=CNumber::Parse(v))!=NULL){
+	else if((const_obj=CStringUtils::ParseFloat(v))!=NULL){
 		float value = *((float *)const_obj);
 		delete (float *)const_obj;
 		void *value_ptr;
@@ -427,7 +428,7 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 			obj=addConstant(v,new string(s),type);
 		}
 	}
-	else if((const_obj=CBoolean::Parse(v))!=NULL){
+	else if((const_obj=CStringUtils::ParseBoolean(v))!=NULL){
 
 		bool value = *((bool *)const_obj);
 		delete (bool *)const_obj;

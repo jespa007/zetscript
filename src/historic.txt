@@ -1,9 +1,55 @@
+
+
+version 1.00.02b
+================
+
+Change tAleObjectInfo tStackElement
+
+Struct and vectors must hold stack variable instead of CScripVariable.
+
+1. Change CScriptVariable to tStackValue.
+
+1.1- CVector change,
+ vector<CScriptVariable *> m_value;
+  to
+  vector<tStackValue> m_value;
+
+1.2-CStruct
+
+ map <string, CScriptVariable *> m_property;
+
+to
+
+ map <string, tStackValue> m_property;
+
+
+
+2. In order to expose script data into C code, implement these functions.
+
+template<_T>
+bool tStackValue::instanceof(const tStackValue & stk_v);
+
+template<_T>
+_T tStackValue::read(const tStackValue & stk_v);
+
+template<_T>
+tStackValue::write(tStackValue & stk_v, const _T & _v);
+
+Warn the user that in native function wether it creates a new variable
+function and you pushes into vector or struct is not covered by the script
+engine and will crash.
+
+Or maybe in the write function cast an exception that tells is not
+possible to override pointers. In other words, write funtion is only for
+integers, floats, numbers and strings.
+
 version 1.00.01b
 ================
 
 - In mov instruction preserve RUNTIME MASK before assign TYPE VAR MASK.
 - Remove warning about "dereferencing type-punned pointer will break strict-aliasing rules"
-> Test function call.
+- Test function call.
+-
 
 
 

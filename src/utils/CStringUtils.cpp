@@ -8,161 +8,64 @@ unsigned char CStringUtils::m_index_buffer=0;
 using std::string;
 using std::vector;
 
-bool CStringUtils::IS_SINGLE_COMMENT(char *str){
 
-	if((*str!=0) && *str=='/'){
-		return *(str+1)=='/';
+
+int *  CStringUtils::ParseInteger(const string & val){
+
+	int *n=NULL;
+	int type_number = CStringUtils::isNumber(val);
+	int numberValue=0;
+	if(type_number == CStringUtils::STRING_IS_INT){
+		numberValue=strtol(val.c_str(), NULL, 10);
+	}else if(type_number == CStringUtils::STRING_IS_HEXA){
+		numberValue=strtol(val.c_str(), NULL, 16);
+	}else{
+		return NULL;
 	}
-	return false;
+
+    n=new int;
+    *n = numberValue;
+
+
+	// TODO: develop exception handler.
+	return n;
 }
 
-bool CStringUtils::IS_START_COMMENT(char *str){
+bool * CStringUtils::ParseBoolean(const string & s){
 
-	if((*str!=0) && *str=='/'){
-		return *(str+1)=='*';
+	if(CStringUtils::toLower(s)=="true"){
+		bool *b=new bool;
+		*b=true;
+		return b;
+
+	}else if(CStringUtils::toLower(s)=="false"){
+		bool *b=new bool;
+		*b=false;
+		return b;
 	}
-	return false;
+
+	// TODO: develop exception handler.
+	return NULL;
 }
 
-bool CStringUtils::IS_END_COMMENT(char *str){
+float *  CStringUtils::ParseFloat(const string & s){
+	char *p;bool ok=true;
+	float *n=NULL;
 
-	if((*str!=0) && *str=='*'){
-		return *(str+1)=='/';
-	}
-	return false;
-}
-
-char *ADVANCE_TO_CHAR(char *str,char c, int & m_line) {
-	char *aux_p = str;
-	// make compatible windows format (\r)...
-	while(*aux_p!=0 && (*aux_p !=(c) )) {
-		if(*aux_p == '\"') { // go to end..
-			aux_p++;
-			while (*aux_p!=0 && *aux_p !='\"' && *aux_p != '\n') {aux_p++;}
-
-			if(*aux_p != '\"'){
-				print_error_cr("string is not closed at line %i",m_line);
-				return NULL;
-			}
-		}
-		if(*aux_p == '\n') {m_line++;}; // make compatible windows format...
-		aux_p++;
+	float numberValue=0;
+	if(s!="0") {// trivial case
+	  numberValue=strtof((char *)s.c_str(),&p);
+	  ok = *p == '\0';
 	}
 
-	return aux_p;
+    if(ok){
+    	n=new float;
+    	*n = numberValue;
 
-}
-
-char *CStringUtils::ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
-
-	if(IS_START_COMMENT(aux_p)){
-		aux_p+=2; //advance first
-		bool end = false;
-		while(*aux_p != 0  && !end){//!IS_END_COMMENT(aux_p) && *aux_p != 0){
-
-			//while(*aux_p!=0 && *aux_p!='*') {
-
-
-
-			//}
-			//if(*aux_p == '\n') {aux_p++;m_line++;}; // make compatible windows format...
-			//if(*aux_p == '\r') aux_p++;
-			if(*aux_p == '*' && *(aux_p+1) == '/') {
-				end=true;
-				//aux_p+=2;
-			} // not end comment ... advance ...
-			else {
-				if(*aux_p=='\n'){
-					m_line++;
-				}
-				aux_p++;
-			}
-		}
 	}
 
-	return aux_p;
-
-}
-
-char *CStringUtils::IGNORE_BLANKS(const char *str, int &m_line) {
-	char *aux_p = (char *)str;
-	bool end = false;
-	while(!end){
-		end = true;
-		while(*aux_p!=0 && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p++;
-
-		if(IS_SINGLE_COMMENT(aux_p)) // ignore line
-			while(*aux_p!=0 && *aux_p!='\n') aux_p++;
-			//aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
-
-		else if(IS_START_COMMENT(aux_p)){
-			// ignore until get the end of the comment...
-			aux_p = ADVANCE_TO_END_COMMENT(aux_p, m_line);
-
-			if(IS_END_COMMENT(aux_p))
-				aux_p+=2;
-
-			end=false;
-		}
-		// make compatible windows format...
-		if(*aux_p == '\r')
-			aux_p++;
-
-		if(*aux_p == '\n') {
-			m_line=m_line+1;
-			end=false;
-			aux_p++;
-		}
-	}
-	return aux_p;
-}
-
-char *CStringUtils::IGNORE_BLANKS_REVERSE(const char *str_begin,const char *str_end, int &m_line) {
-	char *aux_p = (char *)str_begin;
-	bool end = false;
-	while(!end){
-		end = true;
-		while(aux_p!=str_end && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p--;
-
-		// make compatible windows format...
-		if(*aux_p == '\r')
-			aux_p--;
-
-		if(*aux_p == '\n') {
-			m_line=m_line+1;
-			end=false;
-			aux_p--;
-		}
-	}
-	return aux_p;
-}
-
-
-char *CStringUtils::ADVANCE_TO_ONE_OF_COLLECTION_CHAR(char *str,char *end_char_standard_value, int &m_line) {
-	char *aux_p = str;
-	char *chk_char;
-	while(*aux_p!=0){
-		chk_char = end_char_standard_value;
-
-		// comment blocks also is returned (these lines must be ignored)
-		if(IS_START_COMMENT(aux_p)) {
-			aux_p = ADVANCE_TO_END_COMMENT(aux_p, m_line);
-			if(IS_END_COMMENT(aux_p))
-				aux_p+=2;
-		}
-
-		if(IS_SINGLE_COMMENT(aux_p)) {
-			aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
-		}
-
-		while(*chk_char != 0){
-			if(*chk_char == *aux_p)
-				return aux_p;
-			chk_char++;
-		}
-		aux_p++;
-	}
-	return aux_p;
+	// TODO: develop exception handler.
+	return n;
 }
 
 

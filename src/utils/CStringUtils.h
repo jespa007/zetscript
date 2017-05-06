@@ -43,7 +43,7 @@ public:
 		STRING_IS_DOUBLE
 	};
 
-	template<typename T>
+	/*template<typename T>
 	static T fromString(const std::string& str){
 
 		try{
@@ -55,14 +55,11 @@ public:
 		catch(std::exception & ex){
 			throw std::exception(ex);
 		}
-	}
+	}*/
 
-
-	//static char *ADVANCE_TO_CHAR(char *str,char c, int & m_line);
-	static char *ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line);
-	static char *IGNORE_BLANKS(const char *str, int &m_line);
-	static char *IGNORE_BLANKS_REVERSE(const char *str_begin,const char *str_end, int &m_line);
-	static char *ADVANCE_TO_ONE_OF_COLLECTION_CHAR(char *str,char *end_char_standard_value, int &m_line);
+	static bool  * ParseBoolean(const string & );
+	static int   * ParseInteger(const string & );
+	static float * ParseFloat(const string & );
 
 
 	static string intToString(int number);

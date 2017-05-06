@@ -233,7 +233,7 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 
 
 
-//CVirtualMachine::createVarFromResultInstruction(tAleObjectInfo * ptr_instruction, bool share_ptr, CScriptVariable * ret)
+//CVirtualMachine::createVarFromResultInstruction(tStackElement * ptr_instruction, bool share_ptr, CScriptVariable * ret)
 
 
 #define ASSIGN_STACK_VAR(dst_ins, src_ins) \
@@ -364,7 +364,7 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 \
 	for(unsigned i = 0; i < info_function->object_info.info_var_scope[index].n_var_index; i++){\
 		int idx_local_var = info_function->object_info.info_var_scope[index].var_index[i];\
-		tAleObjectInfo *ptr_ale =&ptrLocalVar[idx_local_var];\
+		tStackElement *ptr_ale =&ptrLocalVar[idx_local_var];\
 		CScriptVariable *var = NULL;\
 		switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){\
 		case INS_PROPERTY_TYPE_STRING:\
@@ -435,7 +435,7 @@ if(n_pointers_with_0_shares[idxCurrentStack]>0){\
 
 
 
-string CVirtualMachine::STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tAleObjectInfo *ptr_info_ale){
+string CVirtualMachine::STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement *ptr_info_ale){
 	string result="undefined";
 	if(IS_INT(ptr_info_ale->properties))
 		result= "int";
@@ -690,6 +690,61 @@ PInfoSharedPointerNode CVirtualMachine::InsertZeroNode(CScriptVariable *shared_p
 
 }
 */
+string stk_C_TypeStr(const tStackElement & stk_v){
+	if(stk_v.properties & INS_PROPERTY_TYPE_INTEGER){
+		return demangle(typeid(int).name());
+	}else if(stk_v.properties & INS_PROPERTY_TYPE_NUMBER){
+		return demangle(typeid(float).name());
+	}else if(stk_v.properties & INS_PROPERTY_TYPE_BOOLEAN){
+		return demangle(typeid(bool).name());
+	}else if(stk_v.properties & INS_PROPERTY_TYPE_STRING){
+		return demangle(typeid(string).name());
+	}else if(stk_v.properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+
+
+		CScriptClass *c = CScriptClass::getScriptClassByIdx(((CScriptVariable *)(stk_v.varRef))->idxScriptClass);
+
+		if(c!=NULL){
+			return demangle(c->classPtrType);
+		}
+	}
+	return "unknow";
+}
+
+	template<typename _T>
+	static bool instanceof(const tStackElement & stk_v){
+		int idxScriptVar = getIdxClassFromIts_C_Type(typeid(_T).name());
+		switch(idxScriptVar){
+		case IDX_CLASS_INT_PTR_C:
+			if(stk_v.properties & INS_PROPERTY_TYPE_INTEGER){
+				return true;
+			}
+			break;
+		case IDX_CLASS_FLOAT_PTR_C:
+			if(stk_v.properties & INS_PROPERTY_TYPE_NUMBER){
+				return true;
+			}
+			break;
+		case IDX_CLASS_BOOL_PTR_C:
+			if(stk_v.properties & INS_PROPERTY_TYPE_BOOLEAN){
+				return true;
+			}
+			break;
+		case IDX_CLASS_STRING_PTR_C:
+			if(stk_v.properties & INS_PROPERTY_TYPE_STRING){
+				return true;
+			}
+			break;
+		default:
+			if(stk_v.properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+				return idxScriptVar==((CScriptVariable *)(stk_v.varRef))->idxScriptClass;
+			}
+			break;
+		}
+		return false;
+	}
+
+
 PInfoSharedPointerNode CVirtualMachine::newSharedPointer(CScriptVariable *_var_ptr){
 	//int index = CVirtualMachine::getFreeCell();
 	PInfoSharedPointerNode _node = (PInfoSharedPointerNode)malloc(sizeof(tInfoSharedPointerNode));
@@ -769,10 +824,10 @@ if(instruction->index_op2 != ZS_UNDEFINED_IDX){\
 
 
 //============================================================================================================================================
-tAleObjectInfo * CVirtualMachine::call_C_function(
+tStackElement * CVirtualMachine::call_C_function(
 		void *fun_ptr,
 		const CScriptFunctionObject *irfs,
-		tAleObjectInfo *ptrArg,
+		tStackElement *ptrArg,
 		unsigned char n_args){
 
 
@@ -845,7 +900,7 @@ tAleObjectInfo * CVirtualMachine::call_C_function(
 
 	print_debug_cr("pre_call %i",n_args);
 
-	if(irfs->idx_return_type == IDX_CLASS_VOID){ // getInstance()->getIdxClassVoid()){
+	if(irfs->idx_return_type == IDX_CLASS_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 		switch(n_args){
 		default:
@@ -960,20 +1015,20 @@ tAleObjectInfo * CVirtualMachine::call_C_function(
 
 		// save return type ...
 		switch(irfs->idx_return_type){
-		 case IDX_CLASS_INTEGER:
+		 case IDX_CLASS_INT_PTR_C:
 			 callc_result={INS_PROPERTY_TYPE_INTEGER,(void *)(*((int *)result)),NULL};
 			 break;
-		 case IDX_CLASS_NUMBER:
+		 case IDX_CLASS_FLOAT_PTR_C:
 			 callc_result.properties=INS_PROPERTY_TYPE_NUMBER;//{};
 			 COPY_NUMBER(&callc_result.stkValue,(float *)result);
 			 callc_result.varRef=NULL;
 			 break;
 
-		 case IDX_CLASS_BOOLEAN:
+		 case IDX_CLASS_BOOL_PTR_C:
 			 callc_result={INS_PROPERTY_TYPE_SCRIPTVAR,(void *)(*((bool *)result)),NULL};
 			 break;
 
-		 case IDX_CLASS_STRING:
+		 case IDX_CLASS_STRING_PTR_C:
 			 s_return_value = *((string *)result);
 			 callc_result={INS_PROPERTY_TYPE_STRING,&s_return_value,NULL};//new string(*((string *)result))};
 			 break;
@@ -996,7 +1051,7 @@ CScriptVariable * CVirtualMachine::execute(
 		vector<CScriptVariable *> * arg
 		){
 
-	tAleObjectInfo *_ptrIniCurrentOp=ptrCurrentOp;
+	tStackElement *_ptrIniCurrentOp=ptrCurrentOp;
 	string * _ptrIniCurrentString=ptrCurrentStr;
 
 
@@ -1008,13 +1063,13 @@ CScriptVariable * CVirtualMachine::execute(
 
 	if(arg!=NULL){
 
-		if(arg->size() > 0){
+		/*if(arg->size() > 0){
 			for(unsigned j=0; j < arg->size(); j++){
 				switch(arg->at(j)->idxScriptClass){
-				case IDX_CLASS_INTEGER:
+				case IDX_PRIMITIVE_INTEGER:
 					(*_ptrIniCurrentOp++)={INS_PROPERTY_TYPE_INTEGER,&((CInteger *)arg->at(j))->m_value};
 					break;
-				case IDX_CLASS_NUMBER:
+				case IDX_PRIMITIVE_FLOAT:
 					(*_ptrIniCurrentOp++)={INS_PROPERTY_TYPE_NUMBER,&((CNumber *)arg->at(j))->m_value};
 					break;
 				case IDX_CLASS_BOOLEAN:
@@ -1032,14 +1087,14 @@ CScriptVariable * CVirtualMachine::execute(
 				}
 			}
 
-		}
+		}*/
 
 		//advance idxBaseStk...
 		//idxBaseStk+=arg->size();
 		//n_arg=arg->size();
 	}
 
-	tAleObjectInfo *info=execute_internal(
+	tStackElement *info=execute_internal(
 			info_function,
 			this_object,
 			_ptrIniCurrentOp,
@@ -1050,16 +1105,16 @@ CScriptVariable * CVirtualMachine::execute(
 }
 
 
-tAleObjectInfo * CVirtualMachine::execute_internal(
+tStackElement * CVirtualMachine::execute_internal(
 		CScriptFunctionObject * info_function,
 		CScriptVariable       * this_object,
-		tAleObjectInfo 		  * _ptrStartOp,
+		tStackElement 		  * _ptrStartOp,
 		string 		  		  * _ptrStartStr,
 		unsigned char n_args){
 
 
 	string *ptrStartStr;
-	tAleObjectInfo *ptrStartOp;
+	tStackElement *ptrStartOp;
 
 	callc_result ={
 			INS_PROPERTY_TYPE_UNDEFINED,
@@ -1077,11 +1132,11 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 		ptrStartStr=stkString;
 	}
 
-	tAleObjectInfo *ptrLocalVar=NULL;
-	tAleObjectInfo *ptrArg=NULL;
+	tStackElement *ptrLocalVar=NULL;
+	tStackElement *ptrArg=NULL;
 
 	print_debug_cr("Executing function %s ...",info_function->object_info.symbol_info.symbol_name.c_str());
-	int idxBaseStk=(ptrCurrentOp-stack);//>>sizeof(tAleObjectInfo *);
+	int idxBaseStk=(ptrCurrentOp-stack);//>>sizeof(tStackElement *);
 
 	if(idxBaseStk<n_args){
 		print_error_cr("Internal error (idxBaseStk<n_args)");
@@ -1145,7 +1200,7 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 	}
 
 	// init local vars ...
-	tAleObjectInfo *ptr_aux = ptrLocalVar;
+	tStackElement *ptr_aux = ptrLocalVar;
 	for(unsigned i = 0; i < n_local_vars; i++){
 		*ptr_aux++={
 				INS_PROPERTY_TYPE_UNDEFINED, // starts undefined.
@@ -1169,33 +1224,33 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 	CScriptVariable *var_aux=NULL;
 	CScriptVariable **obj=NULL;
 	CScriptFunctionObject * aux_function_info=NULL;
-	tAleObjectInfo *ret_obj=NULL;
+	tStackElement *ret_obj=NULL;
 	CScriptVariable *svar=NULL;
 	CScriptFunctionObject *constructor_function=NULL;
 	CScriptVariable *calling_object=NULL;
 
-	//tAleObjectInfo *stkResultInstructionIteration = ptrBaseOp;
-	tAleObjectInfo *ptrResultInstructionOp1=NULL;//&stkResultInstruction[index_op1+startIdxStkResultInstruction];
-	tAleObjectInfo *ptrResultInstructionOp2=NULL;//&stkResultInstruction[index_op2+startIdxStkResultInstruction];
-	tAleObjectInfo *ldrVar;
-	//tAleObjectInfo *ldrVar;
+	//tStackElement *stkResultInstructionIteration = ptrBaseOp;
+	tStackElement *ptrResultInstructionOp1=NULL;//&stkResultInstruction[index_op1+startIdxStkResultInstruction];
+	tStackElement *ptrResultInstructionOp2=NULL;//&stkResultInstruction[index_op2+startIdxStkResultInstruction];
+	tStackElement *ldrVar;
+	//tStackElement *ldrVar;
 	//unsigned short ptrResultInstructionOp1->properties,ptrResultInstructionOp2->properties;
-	//tAleObjectInfo *ptrResultLastInstruction=NULL;//&stkResultInstruction[idxStkCurrentResultInstruction-1];
+	//tStackElement *ptrResultLastInstruction=NULL;//&stkResultInstruction[idxStkCurrentResultInstruction-1];
 	//unsigned int prop1, prop2;
 	unsigned short pre_post_properties=0;
-	unsigned short scope_properties=0;
+	//unsigned short scope_properties=0;
 	unsigned short instruction_properties=0;
 	tSymbolInfo *si;
 	CScriptVariable **ptr_var_object=NULL;
 	CScriptVariable *var_object = NULL;
 	//int start_index_local_var = 0;
 
-	short int scope_type=0;//GET_INS_PROPERTY_SCOPE_TYPE(instruction->instruction_properties);
+	unsigned short scope_type=0;//GET_INS_PROPERTY_SCOPE_TYPE(instruction->instruction_properties);
 	short int pre_post_operator_type=0;//GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties);
 	CCompiler::tInfoConstantValue * info_constant=NULL;
 	//int index_op1 = -1;//
 	//int index_op2 = -1;
-	//tAleObjectInfo *ptrSavedInstruction=NULL;
+	//tStackElement *ptrSavedInstruction=NULL;
 	PtrStatment current_statment = NULL,
 				ptr_statment_iteration=m_listStatements;
 
@@ -1233,68 +1288,110 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 			else if(operator_type==NOP){ // ignore ...
 				continue;
 			}
-			else if(operator_type==LOAD){// load value in function of value/constant ...
+			else if(operator_type==LOAD || operator_type==VGET){// load value in function of value/constant ...
 
-				if(index_op1==LOAD_TYPE::LOAD_TYPE_NULL){
-					PUSH_NULL;
-					continue;
-				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_UNDEFINED){
-					PUSH_UNDEFINED;
-					continue;
-				}if(index_op1==LOAD_TYPE::LOAD_TYPE_CONSTANT){
-					(*ptrCurrentOp++)=*(((CCompiler::tInfoConstantValue *)instruction->index_op2));
-					continue;
+				if(index_op1==LOAD_TYPE::LOAD_TYPE_VARIABLE || operator_type==VGET){
+					if(operator_type==VGET){
 
-				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_VARIABLE){
+						bool ok=false;
 
-					instruction_properties=instruction->instruction_properties;
-					scope_properties=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
+						POP_TWO;
 
-					switch(scope_properties){
-					default: // global...
-						ldrVar = &stack[instruction->index_op2];
-						break;
-					case INS_PROPERTY_ACCESS_SCOPE:
-					case INS_PROPERTY_THIS_SCOPE:
-						if(instruction->idxAstNode != -1)
-							ast = AST_NODE(instruction->idxAstNode);
-
-						if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
-							print_error_cr("TODOOOOOOO!!!!!");
-							return NULL;
-							/*CScriptVariable * base_var = ((CScriptVariable *)ptrBaseOp[instruction->index_op2].stkValue);
-							if((si = base_var->getVariableSymbol(ast->symbol_value))==NULL){
-								print_error_cr("Line %i: Variable %s as type %s has not symbol %s",ast->line_value,AST_SYMBOL_VALUE_CONST_CHAR((*current_statment)[instruction->index_op2].idxAstNode),base_var->getClassName().c_str(), ast->symbol_value.c_str());
-								return NULL;
-							}*/
+						if( (ptrResultInstructionOp1->properties & (INS_PROPERTY_TYPE_SCRIPTVAR | INS_PROPERTY_IS_STACKVAR)) == (INS_PROPERTY_TYPE_SCRIPTVAR | INS_PROPERTY_IS_STACKVAR)){
+							var_object = (CScriptVariable *)(((tStackElement *)ptrResultInstructionOp1->varRef)->varRef);
 						}
-						else{
-							if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
-								print_error_cr("cannot find symbol this.%s",ast->symbol_value.c_str());
-								return NULL;
+
+						if(var_object != NULL){
+							if(var_object->idxScriptClass == IDX_CLASS_VECTOR){
+
+								if(IS_INT(ptrResultInstructionOp2->properties)){
+									// determine object ...
+									CVector * vec = (CVector *)var_object;
+									int v_index = LOAD_INT_OP(ptrResultInstructionOp2);
+
+
+
+									// check indexes ...
+									if(v_index < 0 || v_index >= (int)(vec->m_objVector.size())){
+										print_error_cr("Line %i. Index vector out of bounds!",AST_LINE_VALUE(instruction->idxAstNode));
+										return NULL;
+									}
+																		ldrVar = &vec->m_objVector[v_index];;
+
+									ok = true;
+
+								}else{
+									print_error_cr("Expected vector-index as integer");
+									return NULL;
+								}
+
 							}
 						}
-						ldrVar=&si->object;
-						//ptr_var_object = (CScriptVariable **)(&si->object);
-						//var_object = (CScriptVariable *)(si->object);
-						break;
-					case INS_PROPERTY_LOCAL_SCOPE:
-						/*if(instruction->index_op2 >= idxCurrentOp){
-							print_error_cr("internal error: index out of stack");
+
+						if(!ok){
+							print_error_cr("Line %i: Variable \"%s\" is not type vector",
+								AST_LINE_VALUE(instruction->idxAstNode),
+								AST_SYMBOL_VALUE_CONST_CHAR((*current_statment)[instruction->index_op1].idxAstNode),
+								AST_SYMBOL_VALUE_CONST_CHAR(instruction->idxAstNode)
+								//base_var->getClassName().c_str(), iao->ast_node->symbol_value.c_str()
+								);
 							return NULL;
-						}*/
-
-						ldrVar = &ptrLocalVar[instruction->index_op2];
-						//ptr_var_object = (CScriptVariable **)(&CVirtualMachine::ptrLocalVar[instruction->index_op2].stkValue);
-						//var_object = *ptr_var_object;//(CScriptVariable *)(CVirtualMachine::ptrLocalVar[start_index_local_var+instruction->index_op2].stkValue);
-						break;
+						}
 
 
+					}else{
 
-						//ptr_var_object = (CScriptVariable **)(&CVirtualMachine::stack[instruction->index_op2].stkValue);
-						//var_object = (CScriptVariable *)(CVirtualMachine::stack[instruction->index_op2].stkValue);
+						instruction_properties=instruction->instruction_properties;
+						scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
+
+						switch(scope_type){
+						default: // global...
+							ldrVar = &stack[instruction->index_op2];
+							break;
+						case INS_PROPERTY_ACCESS_SCOPE:
+						case INS_PROPERTY_THIS_SCOPE:
+							if(instruction->idxAstNode != -1)
+								ast = AST_NODE(instruction->idxAstNode);
+
+							if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
+								print_error_cr("TODOOOOOOO!!!!!");
+								return NULL;
+								/*CScriptVariable * base_var = ((CScriptVariable *)ptrBaseOp[instruction->index_op2].stkValue);
+								if((si = base_var->getVariableSymbol(ast->symbol_value))==NULL){
+									print_error_cr("Line %i: Variable %s as type %s has not symbol %s",ast->line_value,AST_SYMBOL_VALUE_CONST_CHAR((*current_statment)[instruction->index_op2].idxAstNode),base_var->getClassName().c_str(), ast->symbol_value.c_str());
+									return NULL;
+								}*/
+							}
+							else{
+								if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
+									print_error_cr("cannot find symbol this.%s",ast->symbol_value.c_str());
+									return NULL;
+								}
+							}
+							ldrVar=&si->object;
+							//ptr_var_object = (CScriptVariable **)(&si->object);
+							//var_object = (CScriptVariable *)(si->object);
+							break;
+						case INS_PROPERTY_LOCAL_SCOPE:
+							/*if(instruction->index_op2 >= idxCurrentOp){
+								print_error_cr("internal error: index out of stack");
+								return NULL;
+							}*/
+
+							ldrVar = &ptrLocalVar[instruction->index_op2];
+							//ptr_var_object = (CScriptVariable **)(&CVirtualMachine::ptrLocalVar[instruction->index_op2].stkValue);
+							//var_object = *ptr_var_object;//(CScriptVariable *)(CVirtualMachine::ptrLocalVar[start_index_local_var+instruction->index_op2].stkValue);
+							break;
+
+
+
+							//ptr_var_object = (CScriptVariable **)(&CVirtualMachine::stack[instruction->index_op2].stkValue);
+							//var_object = (CScriptVariable *)(CVirtualMachine::stack[instruction->index_op2].stkValue);
+						}
+
+
+
 					}
-
 
 					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction_properties);
 					//bool is_c=(((ldrVar->properties)& INS_PROPERTY_IS_C_VAR)!= 0);
@@ -1357,6 +1454,15 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 
 					continue;
 
+				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_NULL){
+					PUSH_NULL;
+					continue;
+				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_UNDEFINED){
+					PUSH_UNDEFINED;
+					continue;
+				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_CONSTANT){
+					(*ptrCurrentOp++)=*(((CCompiler::tInfoConstantValue *)instruction->index_op2));
+					continue;
 				}else if(index_op1== LOAD_TYPE::LOAD_TYPE_FUNCTION){
 					/*if(!loadFunctionValue(instruction,info_function, this_object,*current_statment)){
 						return NULL;
@@ -1367,7 +1473,7 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 					CScriptVariable ** class_obj=NULL;
 					int index_op2 = (int)instruction->index_op2;
 					instruction_properties=instruction->instruction_properties;
-					scope_properties=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
+					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
 
 					switch(scope_type){
 					default: // global! It gets functions from main object ...
@@ -1449,10 +1555,10 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 					//ASSIGN_FROM_RESULT_INSTRUCTION(ptrResultInstructionOp1->ptrObjectRef,ptrResultInstructionOp2);
 					//#define ASSIGN_FROM_RESULT_INSTRUCTION(var, ptr_instruction)
 
-					tAleObjectInfo *dst_ins=(tAleObjectInfo *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
-					tAleObjectInfo old_dst_ins = *dst_ins; // save dst_var to check after assignment...
-					tAleObjectInfo *src_ins=ptrResultInstructionOp2; // store ptr instruction2 op as src_var_value
-					//tAleObjectInfo *ptr_instruction = ptrResultInstructionOp2;
+					tStackElement *dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
+					tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
+					tStackElement *src_ins=ptrResultInstructionOp2; // store ptr instruction2 op as src_var_value
+					//tStackElement *ptr_instruction = ptrResultInstructionOp2;
 
 
 					ASSIGN_STACK_VAR(dst_ins,src_ins);
@@ -1934,8 +2040,8 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 
 				aux_function_info = NULL;
 				unsigned char n_args=0;//iao->instruction_properties;
-				tAleObjectInfo *startArg=ptrCurrentOp;
-				tAleObjectInfo *callAle=NULL;
+				tStackElement *startArg=ptrCurrentOp;
+				tStackElement *callAle=NULL;
 
 				while(n_args <= MAX_N_ARGS && (((startArg-1)->properties&INS_PROPERTY_TYPE_FUNCTION)==0)){
 					startArg--;
@@ -1995,16 +2101,16 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 												aux_string="unknow";
 												break;
 											case INS_PROPERTY_TYPE_INTEGER:
-												aux_string=CScriptClass::valid_C_PrimitiveType[INT_PTR_TYPE].type_str;
+												aux_string=*CScriptClass::INT_PTR_TYPE_STR;
 												break;
 											case INS_PROPERTY_TYPE_NUMBER:
-												aux_string=CScriptClass::valid_C_PrimitiveType[FLOAT_PTR_TYPE].type_str;
+												aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
 												break;
 											case INS_PROPERTY_TYPE_BOOLEAN:
-												aux_string=CScriptClass::valid_C_PrimitiveType[BOOL_PTR_TYPE].type_str;
+												aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
 												break;
 											case INS_PROPERTY_TYPE_STRING:
-												aux_string=CScriptClass::valid_C_PrimitiveType[STRING_PTR_TYPE].type_str;
+												aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
 
 												break;
 											case INS_PROPERTY_TYPE_NULL:
@@ -2243,12 +2349,14 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 				}
 
 				break;*/
-			else if(operator_type== VPUSH){ // Push all values into vector
+			else if(operator_type== VPUSH){ // Push values into vector
+				POP_ONE;
 				CScriptVariable *vec_obj = NULL;
 				if((ptrCurrentOp-1)->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
 					vec_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
-					if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){
+					if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){ // push value ...
 
+						((CVector *)vec_obj)->add(*ptrResultInstructionOp1);
 						continue;
 					}
 				}
@@ -2258,8 +2366,8 @@ tAleObjectInfo * CVirtualMachine::execute_internal(
 
 				/*aux_function_info = NULL;
 				unsigned char n_args=0;//iao->instruction_properties;
-				tAleObjectInfo *startArg=ptrCurrentOp;
-				tAleObjectInfo *callAle=NULL;
+				tStackElement *startArg=ptrCurrentOp;
+				tStackElement *callAle=NULL;
 
 				while((((startArg-1)->properties&INS_PROPERTY_TYPE_SCRIPTVAR))){
 					startArg--;
@@ -2486,7 +2594,7 @@ void CVirtualMachine::pushStack(const CScriptFunctionObject *info_function, int 
 
 
 	// init local vars ...
-	tAleObjectInfo *ptr_aux = ptrLocalVar;
+	tStackElement *ptr_aux = ptrLocalVar;
 	for(unsigned i = 0; i < n_local_vars; i++){
 		*ptr_aux++={
 				INS_PROPERTY_TYPE_UNDEFINED, // starts undefined.
@@ -2618,7 +2726,7 @@ void CVirtualMachine::popScope( CScriptFunctionObject *info_function,int index)/
 
 	for(unsigned i = 0; i < info_function->object_info.info_var_scope[index].n_var_index; i++){
 		int idx_local_var = info_function->object_info.info_var_scope[index].var_index[i];
-		tAleObjectInfo *ptr_ale =&ptrLocalVar[idx_local_var];
+		tStackElement *ptr_ale =&ptrLocalVar[idx_local_var];
 
 		//unsigned short type_var = GET_INS_PROPERTY_VAR_TYPE(ptrLocalVar[idx_local_var].var_type);
 		CScriptVariable *var = NULL;

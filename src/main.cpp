@@ -60,7 +60,7 @@ int main(int argc, char * argv[]){
 	print_info_cr("sizeof(CScope):%i bytes",sizeof(CScope));
 	print_info_cr("sizeof(CScriptVariable):%i bytes",sizeof(CScriptVariable));
 	print_info_cr("sizeof(CScriptClass):%i bytes",sizeof(CScriptClass));
-	print_info_cr("sizeof(tAleObjectInfo):%i bytes",sizeof(tAleObjectInfo));
+	print_info_cr("sizeof(tStackElement):%i bytes",sizeof(tStackElement));
 
 
 	CLog::setUseAnsiEscape(true);
@@ -97,7 +97,7 @@ int main(int argc, char * argv[]){
 		zet_script->execute();
 
 
-		auto f=zet_script->script_call("rec");
+		/*auto f=zet_script->script_call("rec");
 
 		if(f != NULL){
 			CScriptVariable *r;
@@ -110,7 +110,7 @@ int main(int argc, char * argv[]){
 
 			delete iu;
 			delete f;
-		}
+		}*/
 	}
 
 	if(buffer != NULL){
