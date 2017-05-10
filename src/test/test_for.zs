@@ -1,5 +1,5 @@
 var j=0.2;
-for(var i=0; i < 10000000; i++)
+for(var i=0.0; i < 100000; i=i+0.01)
 {
 	var k="this is a string"+"kkk"+(i*j*2*j);
 }

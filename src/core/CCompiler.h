@@ -111,7 +111,7 @@ private:
 
 
 	void insertDebugInformation(int _asm_stament_idx, const char *src_str);
-	void printDebugInformation();
+
 	static bool isThisScope(short idxAstNode);
 	static bool isSuperScope(short idxAstNode);
 

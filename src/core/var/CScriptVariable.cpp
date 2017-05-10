@@ -186,8 +186,8 @@ void CScriptVariable::init(CScriptClass *irv, void *_c_object){
 	}
 
 
-	// only create symbols if not basic type ...
-	if(irv->metadata_info.object_info.symbol_info.idxScriptClass >= MAX_BASIC_CLASS_TYPES){
+	// only create symbols if not string type to make it fast ...
+	if(idxScriptClass >= MAX_CLASS_C_TYPES && idxScriptClass !=IDX_CLASS_STRING){
 		createSymbols(irv);
 	}
 }

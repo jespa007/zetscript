@@ -140,7 +140,7 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 
 
 
-#define PUSH_FUNCTION(fun_obj,class_obj, function_prop) \
+#define PUSH_FUNCTION(function_prop,fun_obj,class_obj) \
 *ptrCurrentOp++={(unsigned short)(INS_PROPERTY_TYPE_FUNCTION|function_prop),(void *)(fun_obj),class_obj};
 
 #define PUSH_SCRIPTVAR(var_ref) \
@@ -1468,43 +1468,39 @@ tStackElement * CVirtualMachine::execute_internal(
 						return NULL;
 					}*/
 					void *function_obj=NULL;
-					vector<int> *vec_global_functions;
+					vector<int> *vec_functions;
 					unsigned short function_properties=0;
-					CScriptVariable ** class_obj=NULL;
+					CScriptVariable * class_obj=NULL;
 					int index_op2 = (int)instruction->index_op2;
 					instruction_properties=instruction->instruction_properties;
 					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
 
-					switch(scope_type){
-					default: // global! It gets functions from main object ...
-						vec_global_functions = &(GET_MAIN_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
-						if(index_op2 == ZS_UNDEFINED_IDX){ // is will be processed after in CALL instruction ...
 
-							function_properties=INS_PROPERTY_UNRESOLVED_FUNCTION;
-							function_obj= (void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
 
-						}else{
+					//else
+					{
 
-							if((index_op2<(int)vec_global_functions->size()))
-							{
-								function_obj =GET_SCRIPT_FUNCTION_OBJECT((*vec_global_functions)[index_op2]);
+						if(scope_type==INS_PROPERTY_LOCAL_SCOPE){ // global! It gets functions from main object ...
+							vec_functions=&info_function->object_info.local_symbols.vec_idx_registeredFunction;
+						}else if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
+							POP_ONE;
+							if(ptrResultInstructionOp1->properties & INS_PROPERTY_IS_STACKVAR) {
+								tStackElement *stk_ins=((tStackElement *)ptrResultInstructionOp1->varRef);
+
+								if(stk_ins->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+									class_obj=(CScriptVariable *)(stk_ins->varRef);
+									CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxScriptClass);
+									vec_functions=&sc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
+								}
+								else{
+									print_error_cr("Expected scriptvar");
+									return NULL;
+								}
 							}
 							else{
-
-								print_error_cr("cannot find symbol global \"%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str());
+								print_error_cr("Internal error: Expected stackvar");
 								return NULL;
-
 							}
-						}
-						break;
-
-					case INS_PROPERTY_ACCESS_SCOPE:
-					case INS_PROPERTY_THIS_SCOPE:
-					case INS_PROPERTY_SUPER_SCOPE:
-						// get var from object ...
-						if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
-							print_error_cr("TODOOOOOOO!!!!!");
-							return NULL;
 							/*class_obj = ((CScriptVariable **)ptrBaseOp[index_op2].varRef);
 							function_obj = NULL; // TODO: always get symbol in CALL op. Make a way to do it optimized!*/
 						}else if(scope_type == INS_PROPERTY_THIS_SCOPE){
@@ -1512,25 +1508,36 @@ tStackElement * CVirtualMachine::execute_internal(
 								print_error_cr("cannot find function \"this.%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str());
 								return NULL;
 							}
-						}else{ // super scope ?
+
+							function_obj =(CScriptFunctionObject *)si->object.stkValue;
+
+						}else if(scope_type == INS_PROPERTY_SUPER_SCOPE){ // super scope ?
 							if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
 								print_error_cr("cannot find function \"super.%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str());
 								return NULL;
 							}
-						}
-
-
-						if(scope_type != INS_PROPERTY_ACCESS_SCOPE){ // set function obj
 							function_obj =(CScriptFunctionObject *)si->object.stkValue;
+						}else{ // global
+							vec_functions = &(GET_MAIN_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
+							//function_obj = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
 						}
 
-						break;
-					case INS_PROPERTY_LOCAL_SCOPE:
-						function_obj = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
-						break;
+
+						if(index_op2 == ZS_UNDEFINED_IDX){ // is will be processed after in CALL instruction ...
+							function_properties=INS_PROPERTY_UNRESOLVED_FUNCTION;
+							function_obj= (void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
+						}else if((index_op2<(int)vec_functions->size())) // get the function ...
+						{
+							function_obj =GET_SCRIPT_FUNCTION_OBJECT((*vec_functions)[index_op2]);
+						}
+						else{
+							print_error_cr("cannot find symbol global \"%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str());
+							return NULL;
+
+						}
 					}
 
-					PUSH_FUNCTION(function_obj,class_obj,function_properties);
+					PUSH_FUNCTION(function_properties,function_obj,class_obj);
 					continue;
 
 				}else if(index_op1== LOAD_TYPE::LOAD_TYPE_ARGUMENT){
@@ -2049,6 +2056,7 @@ tStackElement * CVirtualMachine::execute_internal(
 				}
 
 				callAle = ((startArg-1));
+				calling_object = this_object;
 
 				// load function ...
 				if(callAle->properties & INS_PROPERTY_UNRESOLVED_FUNCTION){
@@ -2056,16 +2064,17 @@ tStackElement * CVirtualMachine::execute_internal(
 					//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
 					unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 					tSymbolInfo * si=NULL;
-					CScriptVariable **script_var=NULL;
+
 
 					if(iao->index_op2 == ZS_UNDEFINED_IDX
-					|| scope_type == INS_PROPERTY_ACCESS_SCOPE){
+					//|| scope_type == INS_PROPERTY_ACCESS_SCOPE
+					){
 						vector<int> *vec_global_functions=&(GET_MAIN_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
 						bool all_check=true;
 
 						// startArgs point to first stack value ...
 						bool found = NULL;
-						CScriptVariable * base_var=NULL;
+						//CScriptVariable * base_var=NULL;
 
 
 						switch(scope_type){
@@ -2193,18 +2202,19 @@ tStackElement * CVirtualMachine::execute_internal(
 
 						case INS_PROPERTY_ACCESS_SCOPE: // check function access
 
-							script_var = (CScriptVariable **)ptrResultInstructionOp1->varRef;////((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].varRef);
-							base_var = *script_var;
+							calling_object = (CScriptVariable *)callAle->varRef;////((CScriptVariable **)stkResultInstruction[iao->index_op2+startIdxStkResultInstruction].varRef);
+
 							for(int h=0; h < 2 && !found; h++){ // h=0 -> match signature, 1=doesn't match signature
 								int idx_function;
 								if(h==0){
-									idx_function=base_var->getidxScriptFunctionObjectWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),startArg,n_args, true);
+									idx_function=calling_object->getidxScriptFunctionObjectWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),startArg,n_args, true);
 								}else{
-									idx_function=base_var->getidxScriptFunctionObjectWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),startArg,n_args);
+									idx_function=calling_object->getidxScriptFunctionObjectWithMatchArgs(AST_SYMBOL_VALUE(iao->idxAstNode),startArg,n_args);
 								}
 
 								if(idx_function != ZS_UNDEFINED_IDX){
-									si = base_var->getFunctionSymbolByIndex(idx_function);
+									iao->index_op2=idx_function; // we found the right function (set it up!) ...
+									si = calling_object->getFunctionSymbolByIndex(idx_function);
 									found = true;
 								}
 
@@ -2218,7 +2228,7 @@ tStackElement * CVirtualMachine::execute_internal(
 								print_error_cr("cannot find function \"%s\" at line %i",
 										AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
 										AST_LINE_VALUE(iao->idxAstNode),
-										base_var->getMessageMatchingFunctions(AST_SYMBOL_VALUE(iao->idxAstNode)).c_str()
+										calling_object->getMessageMatchingFunctions(AST_SYMBOL_VALUE(iao->idxAstNode)).c_str()
 										);
 								return NULL;
 							}
@@ -2251,7 +2261,7 @@ tStackElement * CVirtualMachine::execute_internal(
 				}
 
 
-				calling_object = this_object;
+
 				if((instruction_properties & INS_PROPERTY_CALLING_OBJECT) != 0){ // function depends on scriptvariable obj...
 					calling_object= (CScriptVariable *)ptrResultInstructionOp1->varRef;
 				}

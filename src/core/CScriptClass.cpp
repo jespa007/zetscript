@@ -826,7 +826,7 @@ bool CScriptClass::updateReferenceSymbols(){
 
 							 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
 								 iao->index_op1 = LOAD_TYPE_VARIABLE;
-								 iao->index_op2 = idx_op-1;
+								 iao->index_op2 = -1; // keep unknow reference for first time ..
 							 }
 							 else {
 
@@ -887,7 +887,7 @@ bool CScriptClass::updateReferenceSymbols(){
 								(GET_INS_PROPERTY_SCOPE_TYPE((*stat)[iao->index_op1].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
 
 								 (*stat)[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
-								 (*stat)[iao->index_op1].index_op2 = iao->index_op1-1;
+								 (*stat)[iao->index_op1].index_op2 = -1;
 								 iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
 							 }
 

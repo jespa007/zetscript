@@ -201,11 +201,12 @@ void CZetScript::destroy(){
 					printf("[%02i:%02i]\t%s\t%s\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,CScriptClass::getNameRegisteredClassByIdx(asm_op_statment->index_op1));
 					break;
 				case  LOAD:
-					printf("[%02i:%02i]\t%s\t%s%s%s\n",idx_statment,idx_instruction,
+					printf("[%02i:%02i]\t%s\t%s%s%s --- %i\n",idx_statment,idx_instruction,
 							CCompiler::def_operator[asm_op_statment->operator_type].op_str,
 							pre.c_str(),
 							getStrTypeLoadValue(fs->statment_op,idx_statment,idx_instruction),
-							post.c_str());
+							post.c_str(),
+							asm_op_statment->index_op2);
 					break;
 				//case  STORE:
 				//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
