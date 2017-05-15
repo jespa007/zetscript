@@ -228,7 +228,7 @@ CCompiler::CCompiler(){
 	//def_operator[START_ARG]={"START_ARG",START_ARG,0};
 	def_operator[VGET]={"VGET",VGET,1}; // vector access after each index is processed...
 
-	def_operator[VEC]={"VEC",VEC,1}; // Vector object (CREATE)
+	def_operator[DECL_VEC]={"DECL_VEC",DECL_VEC,1}; // Vector object (CREATE)
 
 	def_operator[VPUSH]={"VPUSH",VPUSH,1}; // Value push for vector
 	def_operator[VPOP]={"VPOP",VPOP,1}; // Value pop for vector
@@ -570,7 +570,7 @@ void CCompiler::insert_CreateArrayObject_Instruction(short idxAstNode){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
-	asm_op->operator_type=ASM_OPERATOR::VEC;
+	asm_op->operator_type=ASM_OPERATOR::DECL_VEC;
 	asm_op->var_type=INS_PROPERTY_TYPE_SCRIPTVAR;
 	asm_op->idxAstNode = idxAstNode;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
@@ -622,7 +622,7 @@ void CCompiler::insertRet(short idxAstNode,int index){
 	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
 	// if type return is object return first index
-	if(ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::VEC ||
+	if(ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::DECL_VEC ||
 	   ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::NEW ||
 	   ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::DECL_STRUCT
 	   ){
@@ -1196,8 +1196,9 @@ int CCompiler::gacExpression_StructAttribute(short idxAstNode, CScope *_lc, int 
 
 
 	if(!(
-		  ptr_current_statement_op->asm_op[index_attr]->operator_type == ASM_OPERATOR::VEC
+		 ptr_current_statement_op->asm_op[index_attr]->operator_type == ASM_OPERATOR::DECL_VEC
 	  || ptr_current_statement_op->asm_op[index_attr]->operator_type == ASM_OPERATOR::NEW
+	  || ptr_current_statement_op->asm_op[index_attr]->operator_type == ASM_OPERATOR::DECL_STRUCT
 	)){
 		index_attr = getCurrentInstructionIndex()-1;
 	}

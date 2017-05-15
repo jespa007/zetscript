@@ -537,7 +537,7 @@ private:
 	 template<typename _S, typename _D, typename _F>
 	 static bool addPrimitiveTypeConversion(_F f){
 
-	 	bool valid_type = false;
+	 	//bool valid_type = false;
 
 	 	// check if any entry is int, *float, *bool , *string, *int or any from factory. Anyelese will be no allowed!
 	 /*	valid_type|=valid_C_PrimitiveType[IDX_CLASS_VOID_C].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",IDX_CLASS_VOID_C};
@@ -546,11 +546,11 @@ private:
 	 	valid_type|=valid_C_PrimitiveType[IDX_CLASS_FLOAT_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",IDX_CLASS_FLOAT_PTR_C};
 	 	valid_type|=valid_C_PrimitiveType[IDX_CLASS_STRING_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",IDX_CLASS_STRING_PTR_C};
 	 	valid_type|=valid_C_PrimitiveType[IDX_CLASS_BOOL_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",IDX_CLASS_BOOL_PTR_C};
-*/
+
 	 	if(!valid_type){
 	 		print_error_cr("Conversion type \"%s\" not valid",typeid(_D).name());
 	 		return false;
-	 	}
+	 	}*/
 
 
 

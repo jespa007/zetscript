@@ -279,12 +279,12 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 					src_ins->stkValue,\
 					NULL};\
 	}else if(type_var & INS_PROPERTY_TYPE_STRING){\
-		if((dst_ins->properties & INS_PROPERTY_TYPE_STRING)==0){\
+		if(((dst_ins->properties & INS_PROPERTY_TYPE_STRING)==0) || (dst_ins->varRef==NULL)){\
 			script_var= NEW_STRING_VAR;\
 			dst_ins->varRef=script_var;\
 			dst_ins->stkValue=&(((CString *)script_var)->m_strValue);\
-			dst_ins->properties=runtime_var | INS_PROPERTY_TYPE_STRING;\
-			script_var->initSharedPtr();\
+			dst_ins->properties=runtime_var | INS_PROPERTY_TYPE_STRING | INS_PROPERTY_TYPE_SCRIPTVAR;\
+			script_var->initSharedPtr(true);\
 		}\
 		*((string *)(dst_ins->stkValue))=*((string *)(src_ins->stkValue));\
 	}else if(type_var & INS_PROPERTY_TYPE_SCRIPTVAR){\
@@ -335,9 +335,10 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 
 #define SHARED_LIST_DESTROY(list) \
 {\
-	PInfoSharedPointerNode current=(list).first;\
+	PInfoSharedPointerNode first_node,current;\
+	first_node=current=(list).first;\
 	if(current != NULL){\
-		while(current->next !=current){\
+		while(current->next !=first_node){\
 			PInfoSharedPointerNode node_to_remove=current;\
 			delete node_to_remove->data.shared_ptr;\
 			current=current->next;\
@@ -372,7 +373,7 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 			var =((CScriptVariable *)(ptr_ale->varRef));\
 			if(var != VM_NULL && var !=  VM_UNDEFINED){\
 				if(var->ptr_shared_pointer_node != NULL){\
-					unrefSharedPointer(var->ptr_shared_pointer_node);\
+					var->unrefSharedPtr();\
 				}\
 			}\
 		}\
@@ -428,7 +429,7 @@ bool CVirtualMachine::LOAD_VARIABLE(tInfoAsmOp *iao,
 if(n_pointers_with_0_shares[idxCurrentStack]>0){\
 		short *index = pointers_with_0_shares[idxCurrentStack];\
 		do{\
-			unrefSharedPointer(*(index++));\
+			unrefSharedScriptVar(*(index++));\
 		}while(--n_pointers_with_0_shares[idxCurrentStack]);\
 	}
 */
@@ -652,7 +653,7 @@ void CVirtualMachine::sharePointer(int index){
 	}
 }
 
-void CVirtualMachine::unrefSharedPointer( int index){
+void CVirtualMachine::unrefSharedScriptVar( int index){
 
 	if(index < 0){
 		print_error_cr("index -1");
@@ -783,7 +784,7 @@ bool CVirtualMachine::sharePointer(PInfoSharedPointerNode _node){
 
 }
 
-void CVirtualMachine::unrefSharedPointer(PInfoSharedPointerNode _node){
+void CVirtualMachine::unrefSharedScriptVar(PInfoSharedPointerNode _node){
 
 	unsigned char *n_shares = &_node->data.n_shares;
 	if(*n_shares > 0){
@@ -835,6 +836,7 @@ tStackElement * CVirtualMachine::call_C_function(
 	CScriptVariable *script_variable=NULL;
 	int converted_param[MAX_N_ARGS];
 	intptr_t result;
+	tStackElement *currentArg;
 
 
 
@@ -871,17 +873,27 @@ tStackElement * CVirtualMachine::call_C_function(
 	// convert parameters script to c...
 	for(unsigned char  i = 0; i < n_args;i++){
 
-		script_variable=(CScriptVariable *)ptrArg[i].stkValue;
-		converted_param[i]= (intptr_t)(script_variable);
+		currentArg=&ptrArg[i];
 
-		switch(GET_INS_PROPERTY_VAR_TYPE(ptrArg[i].properties)){
-		case INS_PROPERTY_TYPE_INTEGER:
-		case INS_PROPERTY_TYPE_NUMBER:
-		case INS_PROPERTY_TYPE_STRING:
+		// due some args are stacked in order to have in/out features it doesn't has any sense through C...
+		if(currentArg->properties & INS_PROPERTY_IS_STACKVAR){
+			currentArg=((tStackElement *)currentArg->varRef);
+		}
+
+		//converted_param[i]= (intptr_t)(script_variable);
+
+		switch(GET_INS_PROPERTY_VAR_TYPE(currentArg->properties)){
 		case INS_PROPERTY_TYPE_BOOLEAN:
+		case INS_PROPERTY_TYPE_NUMBER:
+		case INS_PROPERTY_TYPE_INTEGER:
+			converted_param[i]=(intptr_t)(&currentArg->stkValue);
+			break;
+
+		case INS_PROPERTY_TYPE_STRING:
+			converted_param[i]=(intptr_t)(currentArg->stkValue);
 			break;
 		default: // script variable by default ...
-
+			script_variable=(CScriptVariable *)currentArg->varRef;
 
 			if(!(script_variable->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE && irfs->m_arg[i]==typeid(CScriptVariable *).name())){ //not script, then it can pass through ...
 
@@ -1581,9 +1593,10 @@ tStackElement * CVirtualMachine::execute_internal(
 						break;
 					case INS_PROPERTY_TYPE_STRING:
 					case INS_PROPERTY_TYPE_SCRIPTVAR: // we are getting script vars ...
-
-						if(src_ins->varRef != dst_ins->varRef){ // unref pointer because new pointer has been attached...
-							unrefSharedPointer(((CScriptVariable  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
+						if(old_dst_ins.varRef!=NULL){ // it had a pointer (no constant)...
+							if(src_ins->varRef != dst_ins->varRef){ // unref pointer because new pointer has been attached...
+								unrefSharedScriptVar(((CScriptVariable  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
+							}
 						}
 						break;
 					}
@@ -2069,7 +2082,20 @@ tStackElement * CVirtualMachine::execute_internal(
 					if(iao->index_op2 == ZS_UNDEFINED_IDX
 					//|| scope_type == INS_PROPERTY_ACCESS_SCOPE
 					){
+						// local vars as functions ...
 						vector<int> *vec_global_functions=&(GET_MAIN_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
+
+						int size_fun_vec = (int)vec_global_functions->size()-1;
+
+						// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
+						vector<tSymbolInfo> *m_functionSymbol=NULL;
+						if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+							calling_object = (CScriptVariable *)callAle->varRef;
+							m_functionSymbol=calling_object->getVectorFunctionSymbol();
+							size_fun_vec = (int)m_functionSymbol->size()-1;
+						}
+
+
 						bool all_check=true;
 
 						// startArgs point to first stack value ...
@@ -2077,22 +2103,162 @@ tStackElement * CVirtualMachine::execute_internal(
 						//CScriptVariable * base_var=NULL;
 
 
-						switch(scope_type){
-						default: // check function parameters!
+
+
+						//switch(scope_type){
+						//default: // check function parameters!
 
 							// try first all function with no conversion and then try the same with conversions ...
 
 							// for all symbols from calling object ...
-							for(int h=0; h < 2 && !found; h++){
+							//for(int h=0; h < 2 && !found; h++){
 								// h=0: match all args.
 								// h=1: match some args...
 
 
-								for(int i = 0; i < (int)vec_global_functions->size() && !found; i++){ // search all function that match symbol ...
+								for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
+									CScriptFunctionObject *irfs = NULL;
+									if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+										irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
+										//aux_string=m_functionSymbol->at(i).symbol_value;
+									}else{
+										irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
+										//aux_string=irfs->object_info.symbol_info.symbol_name;
+									}
 
-									CScriptFunctionObject *irfs = GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
+									// we found a function is match ...
+									if(irfs->object_info.symbol_info.symbol_name == AST_NODE(iao->idxAstNode)->symbol_value){
 
-									if(
+										if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){ // C! Must match args...
+
+											if(irfs->m_arg.size() == n_args){ // let's check parameters ...
+
+												all_check=true; // check arguments types ...
+
+
+
+												// convert parameters script to c...
+												//for( int h = 0 ; h < 2; h++){
+													for( int k = 0; k < n_args && all_check;k++){
+
+
+														tStackElement *currentArg=&startArg[k];
+
+														if(currentArg->properties & INS_PROPERTY_IS_STACKVAR){
+															currentArg = (tStackElement *)currentArg->varRef;
+														}
+														unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);
+														switch(var_type){
+														default:
+															aux_string="unknow";
+															break;
+														case INS_PROPERTY_TYPE_INTEGER:
+															aux_string=*CScriptClass::INT_PTR_TYPE_STR;
+															break;
+														case INS_PROPERTY_TYPE_NUMBER:
+															aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
+															break;
+														case INS_PROPERTY_TYPE_BOOLEAN:
+															aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
+															break;
+														case INS_PROPERTY_TYPE_STRING:
+															aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
+
+															break;
+														case INS_PROPERTY_TYPE_NULL:
+														case INS_PROPERTY_TYPE_UNDEFINED:
+														case INS_PROPERTY_TYPE_SCRIPTVAR:
+														case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
+															aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
+															break;
+														}
+
+
+														//converted_param[i]= (int)(argv->at(i));
+														//if(h==0){ // match the all parameters
+														all_check = aux_string==irfs->m_arg[k];
+														//}
+
+														if(!all_check){
+															// let's see whether it can be coneverted to target signature ...
+															all_check =CScriptClass::getConversionType(aux_string,irfs->m_arg[k], NULL)!=NULL;
+														}
+													}
+
+													if(all_check){ // we found the right function (set it up!) ...
+														iao->index_op2 = i;
+														aux_function_info = irfs;//(CScriptFunctionObject *)m_functionSymbol->at(i)->object.stkValue;
+													}
+												//}
+
+											}
+
+										}else{ // type script function  ...
+
+											iao->index_op2=i;
+											//if(irfs->m_arg.size() == n_args){
+											aux_function_info = irfs;//GET_SCRIPT_FUNCTION_OBJECT((*vec_global_functions)[iao->index_op2]);
+											//found = true;
+											//}else{
+											//	print_error_cr("Error at line %i calling function \"%s\" expected to have %i parameters");
+											//}
+
+										}
+									}
+								}
+
+								if(aux_function_info == NULL){
+									int n_candidates=0;
+									string str_candidates="";
+									for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
+										CScriptFunctionObject *irfs = NULL;
+										if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+											irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
+											//aux_string=m_functionSymbol->at(i).symbol_value;
+										}else{
+											irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
+											//aux_string=irfs->object_info.symbol_info.symbol_name;
+										}
+
+												if(
+
+													 (irfs->object_info.symbol_info.symbol_name == AST_NODE(iao->idxAstNode)->symbol_value)
+												){
+
+													if(n_candidates == 0){
+														str_candidates+="\t\tPossible candidates are:\n\n";
+													}
+
+
+													str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_name+"(";
+
+													for(unsigned a = 0; a < irfs->m_arg.size(); a++){
+														if(a>0){
+															str_candidates+=",";
+														}
+														str_candidates+=demangle(irfs->m_arg[a]);
+													}
+
+													str_candidates+=");\n";
+
+
+													n_candidates++;
+
+												}
+									}
+
+
+									print_error_cr("Cannot find right C symbol for \"%s\" at line %i.\n\n%s",
+											AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
+											AST_LINE_VALUE(iao->idxAstNode),
+											str_candidates.c_str());
+
+									return NULL;
+								}
+					}
+
+
+									/*if(
 
 									   (irfs->object_info.symbol_info.symbol_name == AST_NODE(iao->idxAstNode)->symbol_value)
 									&& (irfs->m_arg.size() == n_args) // matching identical number args!
@@ -2125,6 +2291,7 @@ tStackElement * CVirtualMachine::execute_internal(
 											case INS_PROPERTY_TYPE_NULL:
 											case INS_PROPERTY_TYPE_UNDEFINED:
 											case INS_PROPERTY_TYPE_SCRIPTVAR:
+											case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
 												aux_string = ((CScriptVariable *)startArg[k].varRef)->getPointer_C_ClassName();
 												break;
 											}
@@ -2147,7 +2314,7 @@ tStackElement * CVirtualMachine::execute_internal(
 										}
 									}
 								}
-							}
+							//}
 
 							// update structure ...
 							if(found){
@@ -2198,7 +2365,7 @@ tStackElement * CVirtualMachine::execute_internal(
 
 
 							}
-							break;
+						//	break;
 
 						case INS_PROPERTY_ACCESS_SCOPE: // check function access
 
@@ -2235,11 +2402,11 @@ tStackElement * CVirtualMachine::execute_internal(
 
 							break;
 
-						}
+						//}
 					}
 					else{
 						print_error_cr("Unexpected C calling exception");
-					}
+					}*/
 				}
 				else{
 					aux_function_info=(CScriptFunctionObject *) (callAle->stkValue);
@@ -2261,15 +2428,29 @@ tStackElement * CVirtualMachine::execute_internal(
 				}
 
 
+				if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
+					if( n_args < aux_function_info->m_arg.size()){ // we must push undefined parameters ...
+						for(unsigned i = n_args; i < aux_function_info->m_arg.size(); i++){
+							*ptrCurrentOp++={
+								INS_PROPERTY_TYPE_UNDEFINED, // starts undefined.
+								0,							 // no value assigned.
+								0 						     // no varref related.
+							};
+							n_args++;
+						}
+					}
+				}
 
-				if((instruction_properties & INS_PROPERTY_CALLING_OBJECT) != 0){ // function depends on scriptvariable obj...
+
+
+				/*if((instruction_properties & INS_PROPERTY_CALLING_OBJECT) != 0){ // function depends on scriptvariable obj...
 					calling_object= (CScriptVariable *)ptrResultInstructionOp1->varRef;
 				}
 				else if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 
 				}
 
-				/*
+
 
 
 
@@ -2312,7 +2493,7 @@ tStackElement * CVirtualMachine::execute_internal(
 				// ... and push result ...
 				*ptrCurrentOp++ = *ret_obj;
 				continue;
-			}
+
 			/*case PUSH: // push arg instruction will creating object ensures not to have feature e/s...
 				POP_ONE;
 				if((svar = createVarFromResultInstruction(ptrResultInstructionOp1)) == NULL){
@@ -2359,7 +2540,18 @@ tStackElement * CVirtualMachine::execute_internal(
 				}
 
 				break;*/
-			else if(operator_type== VPUSH){ // Push values into vector
+			}else if(operator_type== DECL_VEC){ // Create new vector object...
+							svar=NEW_VECTOR_VAR;
+							//PUSH_VAR(svar,NULL,0,false);
+
+							if(!svar->initSharedPtr()){
+								return NULL;
+							}
+
+							(*ptrCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
+
+							continue;
+			}else if(operator_type== VPUSH){ // Push values into vector
 				POP_ONE;
 				CScriptVariable *vec_obj = NULL;
 				if((ptrCurrentOp-1)->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
@@ -2402,8 +2594,8 @@ tStackElement * CVirtualMachine::execute_internal(
 					return NULL;
 				}*/
 
-			}else if(operator_type== VEC){ // Create new vector object...
-				svar=NEW_VECTOR_VAR;
+			}else if(operator_type== DECL_STRUCT){ // Create new vector object...
+				svar=NEW_STRUCT_VAR;
 				//PUSH_VAR(svar,NULL,0,false);
 
 				if(!svar->initSharedPtr()){
@@ -2413,6 +2605,23 @@ tStackElement * CVirtualMachine::execute_internal(
 				(*ptrCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
 
 				continue;
+
+			/*}else if(operator_type==PUSH_ATTR){
+
+				POP_ONE;
+				CScriptVariable *struct_obj = NULL;
+				if((ptrCurrentOp-1)->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+					struct_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
+					if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
+
+						((CStruct *)struct_obj)->(*ptrResultInstructionOp1);
+						continue;
+					}
+				}
+
+				print_error_cr("Expected vector object");
+				return NULL;
+*/
 			}else if(operator_type== RET){
 
 				callc_result=*(ptrCurrentOp-1);
@@ -2539,6 +2748,7 @@ lbl_exit_statment:;
 lbl_exit_function:
 
 	POP_SCOPE(scope_index);
+
 
 	//=========================
 	// POP STACK
@@ -2749,7 +2959,7 @@ void CVirtualMachine::popScope( CScriptFunctionObject *info_function,int index)/
 
 				//if(ret != var){ // is not ret variable ...
 				if(var->ptr_shared_pointer_node != NULL){
-					unrefSharedPointer(var->ptr_shared_pointer_node);
+					unrefSharedScriptVar(var->ptr_shared_pointer_node);
 				}
 			}
 		}

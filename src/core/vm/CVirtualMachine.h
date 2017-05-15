@@ -76,7 +76,7 @@ public:
 
 	PInfoSharedPointerNode newSharedPointer(CScriptVariable *var_ptr);
 	bool sharePointer( PInfoSharedPointerNode _node);
-	void unrefSharedPointer( PInfoSharedPointerNode _node);
+	void unrefSharedScriptVar( PInfoSharedPointerNode _node);
 
 	//static CSharedPointerManager *sharedPointerManager;
 

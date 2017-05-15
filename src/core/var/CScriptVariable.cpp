@@ -218,15 +218,20 @@ bool CScriptVariable::setIdxClass(int idx){
 }
 
 
-tSymbolInfo * CScriptVariable::addVariableSymbol(const string & symbol_value, int _idxAstNode){
+tSymbolInfo * CScriptVariable::addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv){
 	tSymbolInfo si;
 	si.proxy_ptr=0;
 
-	si.object={
-			INS_PROPERTY_TYPE_UNDEFINED|INS_PROPERTY_IS_C_VAR,
-			0,
-			NULL
-	};
+	if(sv != NULL){
+		si.object = *sv;
+	}else{
+
+		si.object={
+				INS_PROPERTY_TYPE_UNDEFINED,
+				0,
+				NULL
+		};
+	}
 
 	si.idxAstNode = _idxAstNode;
 	si.symbol_value = symbol_value;
@@ -234,6 +239,9 @@ tSymbolInfo * CScriptVariable::addVariableSymbol(const string & symbol_value, in
 
 	return &m_variableSymbol[m_variableSymbol.size()-1];
 }
+
+
+
 
 tSymbolInfo * CScriptVariable::getVariableSymbol(const string & varname){
 	for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
@@ -306,6 +314,7 @@ int CScriptVariable::getidxScriptFunctionObjectWithMatchArgs(const string & varn
 					case INS_PROPERTY_TYPE_NULL:
 					case INS_PROPERTY_TYPE_UNDEFINED:
 					case INS_PROPERTY_TYPE_SCRIPTVAR:
+					case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
 						aux_string = ((CScriptVariable *)ptrArg[k].varRef)->getPointer_C_ClassName();
 						break;
 					}
@@ -373,10 +382,15 @@ const string & CScriptVariable::getClassName(){
     	return &m_strValue;
     }
 
-    bool CScriptVariable::initSharedPtr(){
+    bool CScriptVariable::initSharedPtr(bool is_assigned){
 
     	if(ptr_shared_pointer_node == NULL){
 			ptr_shared_pointer_node = CURRENT_VM->newSharedPointer(this);
+
+			if(is_assigned){ // increment number shared pointers...
+				CURRENT_VM->sharePointer(ptr_shared_pointer_node);
+			}
+
 			return true;
     	}
 
@@ -396,7 +410,7 @@ const string & CScriptVariable::getClassName(){
     			CURRENT_VM->remove0Shares(index_0_share_idx);
     		}
     		idx_shared_ptr = ZS_UNDEFINED_IDX;*/
-    		CURRENT_VM->unrefSharedPointer(ptr_shared_pointer_node);
+    		CURRENT_VM->unrefSharedScriptVar(ptr_shared_pointer_node);
     		return true;
 
     	}
@@ -419,6 +433,10 @@ tSymbolInfo *CScriptVariable::getFunctionSymbolByIndex(unsigned idx){
 	}
 	return &m_functionSymbol[idx];
 
+}
+
+vector<tSymbolInfo> * CScriptVariable::getVectorFunctionSymbol(){
+	return &m_functionSymbol;
 }
 
 void * CScriptVariable::get_C_Object(){
@@ -451,7 +469,7 @@ CScriptVariable::~CScriptVariable(){
 					break;
 
 				default: // variable ...
-					if(!(m_variableSymbol[i].object.properties == (INS_PROPERTY_TYPE_STRING | INS_PROPERTY_IS_C_VAR))){ // deallocate but not if is native string
+					if(m_variableSymbol[i].object.varRef != NULL){//(m_variableSymbol[i].object.properties == (INS_PROPERTY_TYPE_STRING | INS_PROPERTY_IS_C_VAR))){ // deallocate but not if is native string
 						delete ((CScriptVariable *)(m_variableSymbol[i].object.varRef));
 					}
 					break;

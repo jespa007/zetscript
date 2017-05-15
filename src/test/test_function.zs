@@ -2,6 +2,8 @@ function add(a,b){
 	return a+b;
 }
 
+print("t:"+add(20,20,20));
+
 /*var add_function_obj=add;
 
 

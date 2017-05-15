@@ -21,7 +21,7 @@ public:
 	void add(CScriptVariable * v);
 	int *size();
 
-	~CVector();
+
 
 
 };

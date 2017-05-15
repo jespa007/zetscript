@@ -1929,7 +1929,7 @@ char * CASTNode::parseArgs(char c1,char c2,const char *s,int & m_line,  CScope *
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 				}else{
 					if(*aux_p != c2 ){
-						print_error_cr("Expected %c",c2);
+						print_error_cr("Expected %c at line %i",c2,m_line);
 						return NULL;
 					}
 				}

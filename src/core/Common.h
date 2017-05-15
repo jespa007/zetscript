@@ -219,7 +219,7 @@ enum ASM_OPERATOR:unsigned char{
 		VPUSH, // Value push for vector
 		VPOP, // Value pop for vector
 
-		VEC, // Vector object
+		DECL_VEC, // Vector object
 		RET, // ret instruction ..
 
 		NEW, // new operator...
@@ -344,7 +344,7 @@ enum{
 #define REMOVE_SCOPES(prop)					((prop)&=~MASK_SCOPE_TYPE)
 
 // CALL TYPE
-#define	INS_PROPERTY_CALLING_OBJECT			(0x1<<BIT_CALLING_OBJECT)
+//#define	INS_PROPERTY_CALLING_OBJECT			(0x1<<BIT_CALLING_OBJECT)
 #define INS_PROPERTY_DIRECT_CALL_RETURN		(0x1<<BIT_DIRECT_CALL_RETURN)
 #define MASK_CALL_TYPE						(((0x1<<(MAX_BIT_CALL_PROPERTIES-INS_PROPERTY_CALLING_OBJECT))-1)<<(INS_PROPERTY_CALLING_OBJECT))
 #define GET_INS_PROPERTY_CALL_TYPE(prop)	((prop)&MASK_CALL_TYPE)

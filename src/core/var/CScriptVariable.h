@@ -51,7 +51,7 @@ public:
 
 	bool setIdxClass(int idx);
 
-	tSymbolInfo *  addVariableSymbol(const string & symbol_value,int _idxAstNode);
+	tSymbolInfo * addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv=NULL);
 	tSymbolInfo * getVariableSymbol(const string & varname);
 	tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 
@@ -60,6 +60,7 @@ public:
 	int getidxScriptFunctionObjectWithMatchArgs(const string & varname, tStackElement * ptrArg, unsigned char n_args, bool match_signature=false);
 	string getMessageMatchingFunctions(const string & varname);
 	tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
+	vector <tSymbolInfo> * getVectorFunctionSymbol();
 
 	void * get_C_Object();
 
@@ -73,7 +74,7 @@ public:
 
 
     virtual string * toString();
-    virtual bool initSharedPtr();
+    virtual bool initSharedPtr(bool is_assigned=false);
     virtual bool unrefSharedPtr();
 
     intptr_t get_C_StructPtr();

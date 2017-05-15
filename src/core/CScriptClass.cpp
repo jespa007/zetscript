@@ -403,11 +403,11 @@ public:
 			return (intptr_t)&obj->m_strValue;
 		})) return false;
 
+*/
+
 		if(!addPrimitiveTypeConversion<CString *,string *>( [] (CScriptVariable *obj){
 			return (intptr_t)(((CString *)obj)->m_value);
-		})) return false;*/
-
-
+		})) return false;
 		//----------------------------------------------------------------------
 		// From here you defined all basic, start define hierarchy
 
@@ -742,7 +742,7 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 
 					 (*stat)[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
 					 (*stat)[iao->index_op1].index_op2 = iao->index_op1-1;
-					 iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
+					// iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
 				 }
 
 			 }
@@ -888,7 +888,7 @@ bool CScriptClass::updateReferenceSymbols(){
 
 								 (*stat)[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
 								 (*stat)[iao->index_op1].index_op2 = -1;
-								 iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
+								// iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
 							 }
 
 						 }
