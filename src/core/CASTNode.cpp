@@ -1638,7 +1638,9 @@ char * CASTNode::parseStruct(const char *s,int & m_line,  CScope *scope_info, PA
 		return NULL;
 	}
 
-	return (end+1);
+	end=IGNORE_BLANKS(end+1,m_line);
+
+	return (end);
 }
 //---------------------------------------------------------------------------------------------------------------
 // PARSE KEYWORDS

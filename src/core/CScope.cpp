@@ -137,9 +137,9 @@ tScopeVar * CScope::registerAnonymouseFunction(PASTNode ast){ // register anonym
 
 	CScope *base = SCOPE_INFO_NODE(idxBaseScope);
 
-	base->m_registeredVariable.push_back(irv);
+	base->m_registeredVariableFromBase.push_back(irv);
 
-	return &base->m_registeredVariable[base->m_registeredVariable.size()-1];
+	return &base->m_registeredVariableFromBase[base->m_registeredVariableFromBase.size()-1];
 }
 
 tScopeVar * CScope::registerSymbol(const string & var_name, PASTNode ast){
@@ -159,8 +159,8 @@ tScopeVar * CScope::registerSymbol(const string & var_name, PASTNode ast){
 		if(ast != NULL){
 			irv.idxAstNode=ast->idxAstNode;
 		}
-		m_registeredVariable.push_back(irv);
-		return &m_registeredVariable[m_registeredVariable.size()-1];// irv->idxScopeVar;
+		m_registeredVariableFromBase.push_back(irv);
+		return &m_registeredVariableFromBase[m_registeredVariableFromBase.size()-1];// irv->idxScopeVar;
 	}else{
 
 		int m_line=-1;
@@ -182,9 +182,9 @@ tScopeVar * CScope::existRegisteredSymbol(const string & var_name){
 	string symbol_ref = var_name;
 	symbol_ref = "_"+symbol_ref;
 
-	for(unsigned i = 0; i < m_registeredVariable.size(); i++){
-		if(m_registeredVariable[i].symbol_ref==symbol_ref){
-			return &m_registeredVariable[i];//.idxScopeVar; // ptr scope ?
+	for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
+		if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
+			return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
 		}
 	}
 

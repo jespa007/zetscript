@@ -1300,7 +1300,11 @@ tStackElement * CVirtualMachine::execute_internal(
 			else if(operator_type==NOP){ // ignore ...
 				continue;
 			}
-			else if(operator_type==LOAD || operator_type==VGET){// load value in function of value/constant ...
+			else if(
+					   operator_type==LOAD
+					|| operator_type==VGET
+
+					){// load value in function of value/constant ...
 
 				if(index_op1==LOAD_TYPE::LOAD_TYPE_VARIABLE || operator_type==VGET){
 					if(operator_type==VGET){
@@ -1362,17 +1366,34 @@ tStackElement * CVirtualMachine::execute_internal(
 							break;
 						case INS_PROPERTY_ACCESS_SCOPE:
 						case INS_PROPERTY_THIS_SCOPE:
-							if(instruction->idxAstNode != -1)
+							if(instruction->idxAstNode != -1){
 								ast = AST_NODE(instruction->idxAstNode);
 
+							}
+
 							if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
-								print_error_cr("TODOOOOOOO!!!!!");
-								return NULL;
-								/*CScriptVariable * base_var = ((CScriptVariable *)ptrBaseOp[instruction->index_op2].stkValue);
+								POP_ONE; // get var op1 and symbol op2
+								CScriptVariable  * base_var = NULL;
+								if(ptrResultInstructionOp1->properties & INS_PROPERTY_IS_STACKVAR) {
+									tStackElement *stk_ins=((tStackElement *)ptrResultInstructionOp1->varRef);
+
+									if(stk_ins->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+										base_var=((CScriptVariable *)stk_ins->varRef);
+									}
+								}
+
+
+								if(base_var == NULL)
+								{
+									print_error_cr("var is not scriptvariable");
+									return NULL;
+								}
+
 								if((si = base_var->getVariableSymbol(ast->symbol_value))==NULL){
 									print_error_cr("Line %i: Variable %s as type %s has not symbol %s",ast->line_value,AST_SYMBOL_VALUE_CONST_CHAR((*current_statment)[instruction->index_op2].idxAstNode),base_var->getClassName().c_str(), ast->symbol_value.c_str());
 									return NULL;
-								}*/
+								}
+
 							}
 							else{
 								if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
@@ -1565,19 +1586,88 @@ tStackElement * CVirtualMachine::execute_internal(
 				}
 				continue;
 			}
-			else if(operator_type==STORE){ // mov value expression to var
-				POP_TWO;
+			else if(
+					   operator_type==STORE
+					|| operator_type==VPUSH
+					|| operator_type==PUSH_ATTR
+					){ // mov value expression to var
+
+
+				tStackElement *dst_ins=NULL;
+				tStackElement *src_ins=NULL;
+				bool ok=false;
+
+				if(operator_type==VPUSH){
+					POP_ONE; // only pops the value, the last is the vector variable itself
+					CScriptVariable *vec_obj = NULL;
+					if((ptrCurrentOp-1)->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+						vec_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
+						if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){ // push value ...
+							// op1 is now the src value ...
+							src_ins=ptrResultInstructionOp1;
+							dst_ins=((CVector *)vec_obj)->push();
+							ok=true;
+						}
+					}
+
+
+					if(!ok){
+						print_error_cr("Expected vector object");
+						return NULL;
+					}
+
+				}else if(operator_type==PUSH_ATTR){
+					POP_TWO; // first must be the value name and the other the variable name ...
+					CScriptVariable *struct_obj = NULL;
+					if((ptrCurrentOp-1)->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+						struct_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
+						if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
+							// op1 is now the src value ...
+							if(ptrResultInstructionOp2->properties & INS_PROPERTY_TYPE_STRING){
+								tSymbolInfo *si=NULL;
+								string *str = (string *)ptrResultInstructionOp2->stkValue;
+								src_ins=ptrResultInstructionOp1;
+								si =((CStruct *)struct_obj)->addVariableSymbol(*str, -1,src_ins );
+								dst_ins=&si->object;
+								ok=true;
+							}
+							else{
+								print_error_cr("internal error (operator2 is not string)");
+								return NULL;
+							}
+						}
+					}
+
+
+					if(!ok){
+						print_error_cr("Expected struct object");
+						return NULL;
+					}
+
+
+
+				}
+				else{ // pop two parameters nothing ...
+					POP_TWO;
+
+					if(ptrResultInstructionOp1->properties & INS_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
+						// get pointer object (can be assigned)
+						//ASSIGN_FROM_RESULT_INSTRUCTION(ptrResultInstructionOp1->ptrObjectRef,ptrResultInstructionOp2);
+						//#define ASSIGN_FROM_RESULT_INSTRUCTION(var, ptr_instruction)
+
+						dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
+						src_ins=ptrResultInstructionOp2; // store ptr instruction2 op as src_var_value
+						//tStackElement *ptr_instruction = ptrResultInstructionOp2;
+					}else{
+						print_error_cr("Expected object l-value mov");
+						return NULL;
+					}
+				}
+
+					tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
 
 					// ok load object pointer ...
-				if(ptrResultInstructionOp1->properties & INS_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
-					// get pointer object (can be assigned)
-					//ASSIGN_FROM_RESULT_INSTRUCTION(ptrResultInstructionOp1->ptrObjectRef,ptrResultInstructionOp2);
-					//#define ASSIGN_FROM_RESULT_INSTRUCTION(var, ptr_instruction)
 
-					tStackElement *dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
-					tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
-					tStackElement *src_ins=ptrResultInstructionOp2; // store ptr instruction2 op as src_var_value
-					//tStackElement *ptr_instruction = ptrResultInstructionOp2;
 
 
 					ASSIGN_STACK_VAR(dst_ins,src_ins);
@@ -1601,10 +1691,7 @@ tStackElement * CVirtualMachine::execute_internal(
 						break;
 					}
 
-				}else{
-					print_error_cr("Expected object l-value mov");
-					return NULL;
-				}
+
 				continue;
 			}
 			else if(operator_type==EQU){  // <
@@ -2551,7 +2638,7 @@ tStackElement * CVirtualMachine::execute_internal(
 							(*ptrCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
 
 							continue;
-			}else if(operator_type== VPUSH){ // Push values into vector
+			/*}else if(operator_type== VPUSH){ // Push values into vector
 				POP_ONE;
 				CScriptVariable *vec_obj = NULL;
 				if((ptrCurrentOp-1)->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
@@ -2565,7 +2652,7 @@ tStackElement * CVirtualMachine::execute_internal(
 
 				print_error_cr("Expected vector object");
 				return NULL;
-
+*/
 				/*aux_function_info = NULL;
 				unsigned char n_args=0;//iao->instruction_properties;
 				tStackElement *startArg=ptrCurrentOp;

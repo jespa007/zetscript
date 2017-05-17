@@ -18,6 +18,7 @@ public:
 	void add(bool * v);
 	void add( string * v);
 	void add(float * v);
+	tStackElement *push();
 	void add(CScriptVariable * v);
 	int *size();
 

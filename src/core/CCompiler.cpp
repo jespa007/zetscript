@@ -45,6 +45,8 @@ CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name
 
 int CCompiler::addLocalVarSymbol(const string & var_name,short idxAstNode){
 
+
+
 	if(!localVarSymbolExists(var_name,idxAstNode)){
 		tInfoVariableSymbol info_symbol;
 
@@ -57,7 +59,7 @@ int CCompiler::addLocalVarSymbol(const string & var_name,short idxAstNode){
 
 		return this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size()-1;
 	}else{
-		print_error_cr("(Internal error) variable symbol \"%s\" already defined!",var_name.c_str());
+		print_error_cr("variable \"%s\" defined at line %i already defined!",var_name.c_str(),AST_NODE(idxAstNode)->line_value);
 	}
 	return ZS_UNDEFINED_IDX;
 }
@@ -350,7 +352,13 @@ void CCompiler::insertStringConstantValueInstruction(short idxAstNode, const str
 
 bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 	PASTNode _node=AST_NODE(idxAstNode);
+	CScope *_scope = SCOPE_INFO_NODE(_node->idxScope);
 	string v = _node->symbol_value;
+
+	if(_scope == NULL){
+		print_error_cr("error scope null");
+		return false;
+	}
 
 	// ignore node this ...
 	if(_node->symbol_value == "this"){
@@ -445,6 +453,7 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 	}else{
 
 		is_constant = false;
+		string symbol_name = _node->symbol_value;
 
 		intptr_t idx_local_var=ZS_UNDEFINED_IDX;
 
@@ -468,8 +477,13 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 				if((idx_local_var = getIdxArgument(_node->symbol_value))!=ZS_UNDEFINED_IDX){
 					load_type=LOAD_TYPE_ARGUMENT;
 				}
-				else{ // ... if not argument finally, we deduce that the value is a local symbol...
-
+				else{ // ... if not argument finally, we deduce that the value is a local symbol... check whether it exist in the current scope...
+					if(_node->node_type == SYMBOL_NODE){
+						if(!_scope->existRegisteredSymbol(symbol_name)){
+							print_error_cr("line %i: variable \"%s\" not defined",_node->line_value,symbol_name.c_str());
+							return false;
+						}
+					}
 				}
 			}
 			obj = (CScriptVariable *)idx_local_var;
@@ -733,7 +747,7 @@ unsigned int CCompiler::preoperator2instruction_property(PUNCTUATOR_TYPE op){
 
 	switch(op){
 	default:
-		print_error_cr("Cannot match pre/post operator %i!",op);
+//		print_error_cr("Cannot match pre/post operator %i!",op);
 		break;
 	case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
 		return INS_PROPERTY_PRE_INC;

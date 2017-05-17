@@ -1,14 +1,17 @@
-var j;
+
+
+
 
 {
 
-var vv=["jordi"];
+	
+ var vv=["jordi"];
 //var gg1="gg";
 
 //vv[0]=vv[0]+"_hola";
 
 
-j=vv[0];
+var j=vv[0];
 
 //print(j);
 //print(vv[0]);
@@ -16,6 +19,7 @@ j=vv[0];
 }
 
 
+//j=1;
 //print(j);
 
 print(vv[0]);

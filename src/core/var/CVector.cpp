@@ -49,6 +49,11 @@ bool CVector::initSharedPtr(){
 	return false;
 }
 
+tStackElement *CVector::push(){
+	tStackElement s={INS_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
+	m_objVector.push_back(s);
+	return &m_objVector[m_objVector.size()-1];
+}
 
 void CVector::add(const tStackElement & v){
 	m_objVector.push_back(v);
