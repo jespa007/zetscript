@@ -469,8 +469,10 @@ CScriptVariable::~CScriptVariable(){
 					break;
 
 				default: // variable ...
-					if(m_variableSymbol[i].object.varRef != NULL){//(m_variableSymbol[i].object.properties == (INS_PROPERTY_TYPE_STRING | INS_PROPERTY_IS_C_VAR))){ // deallocate but not if is native string
-						delete ((CScriptVariable *)(m_variableSymbol[i].object.varRef));
+					if(m_variableSymbol[i].object.properties & INS_PROPERTY_IS_C_VAR){ // deallocate but not if is native string
+						if(m_variableSymbol[i].object.varRef != NULL){
+							delete ((CScriptVariable *)(m_variableSymbol[i].object.varRef));
+						}
 					}
 					break;
 			}

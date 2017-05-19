@@ -352,13 +352,13 @@ void CCompiler::insertStringConstantValueInstruction(short idxAstNode, const str
 
 bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 	PASTNode _node=AST_NODE(idxAstNode);
-	CScope *_scope = SCOPE_INFO_NODE(_node->idxScope);
+	//CScope *_scope = SCOPE_INFO_NODE(_node->idxScope);
 	string v = _node->symbol_value;
 
-	if(_scope == NULL){
+	/*if(_scope == NULL){
 		print_error_cr("error scope null");
 		return false;
-	}
+	}*/
 
 	// ignore node this ...
 	if(_node->symbol_value == "this"){
@@ -457,7 +457,9 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 
 		intptr_t idx_local_var=ZS_UNDEFINED_IDX;
 
-		if(checkAccessObjectMember(_node->idxAstNode)){
+		if(    checkAccessObjectMember(_node->idxAstNode)
+			|| _node->node_type==NODE_TYPE::NEW_OBJECT_NODE) // we wants to call the constructor
+		{
 			scope_type = INS_PROPERTY_ACCESS_SCOPE;
 
 
@@ -478,12 +480,20 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 					load_type=LOAD_TYPE_ARGUMENT;
 				}
 				else{ // ... if not argument finally, we deduce that the value is a local symbol... check whether it exist in the current scope...
-					if(_node->node_type == SYMBOL_NODE){
-						if(!_scope->existRegisteredSymbol(symbol_name)){
-							print_error_cr("line %i: variable \"%s\" not defined",_node->line_value,symbol_name.c_str());
-							return false;
+
+						if(_node->node_type == SYMBOL_NODE){
+							if(_lc!=NULL){
+								if(!_lc->existRegisteredSymbol(symbol_name)){
+									print_error_cr("line %i: variable \"%s\" not defined",_node->line_value,symbol_name.c_str());
+									return false;
+								}
+							}
+							else{
+								print_error_cr("scope null");
+								return false;
+							}
 						}
-					}
+
 				}
 			}
 			obj = (CScriptVariable *)idx_local_var;
@@ -1346,14 +1356,14 @@ int CCompiler::gacExpression_Recursive(short idxAstNode, CScope *_lc, int & inde
 						break;
 
 					case FUNCTION_OBJECT_NODE: // should have 1 children
-						if((!gacExpression_FunctionObject(_node->idxAstNode, _lc))){
+						if((gacExpression_FunctionObject(_node->idxAstNode, _lc))==ZS_UNDEFINED_IDX){
 							return ZS_UNDEFINED_IDX;
 						}
 						r=CCompiler::getCurrentInstructionIndex();
 						break;
 
 					case NEW_OBJECT_NODE:
-						if((!gacNew(_node->idxAstNode, _lc))){
+						if((gacNew(_node->idxAstNode, _lc))==ZS_UNDEFINED_IDX){
 							return ZS_UNDEFINED_IDX;
 						}
 
@@ -1489,7 +1499,24 @@ int findConstructorIdxNode(short idxAstNode){
 	return ZS_UNDEFINED_IDX;
 }
 
+PASTNode itHasReturnSymbol(PASTNode _node){
+
+	PASTNode _ret;
+	if(_node == NULL) return NULL;
+	if(_node->keyword_info == RETURN_KEYWORD) return _node;
+
+	for(unsigned i = 0; i < _node->children.size(); i++){
+		if((_ret = itHasReturnSymbol(AST_NODE(_node->children[i]))) != NULL){
+			return _ret;
+		}
+	}
+
+	return NULL;//itHasReturnSymbol(PASTNode _node);
+}
+
 bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScriptClass *current_class){
+
+	PASTNode _node_ret=NULL;
 
 	if(current_class == NULL){
 		return true;
@@ -1530,6 +1557,11 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScrip
 
 		if(current_class_name == symbol_value){ // constructor symbol...
 			symbol_value = class_name; // rename to be base constructor later ...
+
+			if((_node_ret=itHasReturnSymbol(node_fun))!=NULL){
+				print_error_cr("line %i:return keyword is not allowed in constructor",_node_ret->line_value);
+				return false;
+			}
 		}
 
 		if((irfs=CScriptClass::registerFunctionSymbol(
@@ -1601,6 +1633,23 @@ int CCompiler::gacNew(short idxAstNode, CScope * _lc){
 	// load function ...
 
 	// 1. insert push to pass values to all args ...
+
+
+	// 1. create object instruction ...
+	if(!insert_NewObject_Instruction(_node->idxAstNode,_node->symbol_value)) // goto end  ...
+	{
+		return ZS_UNDEFINED_IDX;
+	}
+
+	// 2. load function ...
+
+	if(!insertLoadValueInstruction(_node->idxAstNode,_lc)) {
+		return ZS_UNDEFINED_IDX;
+	}
+
+	int call_index = getCurrentInstructionIndex();
+
+	// 3. pass parameters ...
 	PASTNode constructor_args = AST_NODE(_node->children[0]);
 
 	if(constructor_args->children.size() > 0){
@@ -1627,11 +1676,11 @@ int CCompiler::gacNew(short idxAstNode, CScope * _lc){
 		//insert_ClearArgumentStack_Instruction(_node->idxAstNode);
 	}
 
-	// 1. create object instruction ...
-	if(!insert_NewObject_Instruction(_node->idxAstNode,_node->symbol_value)) // goto end  ...
-	{
-		return ZS_UNDEFINED_IDX;
-	}
+
+	// 4. call function...
+	insert_CallFunction_Instruction(_node->idxAstNode,call_index);
+
+
 
 	return CCompiler::getCurrentInstructionIndex();
 }
@@ -2242,10 +2291,13 @@ bool CCompiler::compile(short idxAstNode, CScriptFunctionObject *sf){
 
 	PASTNode _node =AST_NODE(idxAstNode);
 
+
 	if(_node == NULL){
 		print_error_cr("NULL node!");
 		return false;
 	}
+
+	CScope *_scope =AST_SCOPE_INFO(idxAstNode);
 
 	if(_node->node_type == NODE_TYPE::BODY_NODE ){
 		pushFunction(_node->idxAstNode,sf);

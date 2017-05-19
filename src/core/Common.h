@@ -284,8 +284,13 @@ enum:unsigned short{
 
 };
 
+
+#define MASK_VAR_PRIMITIVE_TYPES				((0x1<<BIT_TYPE_FUNCTION)-1)
+#define GET_INS_PROPERTY_PRIMITIVE_TYPES(prop)	((prop)&MASK_VAR_PRIMITIVE_TYPES)
+
 #define MASK_VAR_TYPE						((0x1<<MAX_BIT_VAR_TYPE)-1)
 #define GET_INS_PROPERTY_VAR_TYPE(prop)		((prop)&MASK_VAR_TYPE)
+
 
 
 enum:unsigned short{

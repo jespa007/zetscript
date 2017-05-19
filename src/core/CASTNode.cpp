@@ -2235,18 +2235,21 @@ char *  CASTNode::parseReturn(const char *s,int & m_line,  CScope *scope_info, P
 				if((*ast_node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL; // reserve for expression return
 				(*ast_node_to_be_evaluated)->node_type = NODE_TYPE::KEYWORD_NODE;
 				(*ast_node_to_be_evaluated)->keyword_info = key_w;
+				(*ast_node_to_be_evaluated)->line_value = m_line;
 			}
 
 			aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 			if((aux_p = parseExpression(aux_p, m_line, scope_info, ast_node_to_be_evaluated != NULL ? &child_node : NULL))!= NULL){
 
-				if(child_node == NULL){
-					print_error_cr("parse_return: child_node null");
-					return NULL;
-				}
+				if(ast_node_to_be_evaluated != NULL){
+					if(child_node == NULL){
+						print_error_cr("parse_return: child_node null");
+						return NULL;
+					}
 
-				(*ast_node_to_be_evaluated)->children.push_back(child_node->idxAstNode);
+					(*ast_node_to_be_evaluated)->children.push_back(child_node->idxAstNode);
+				}
 
 				if(*aux_p!=';'){
 					print_error_cr("Expected ';' at line %i", m_line);

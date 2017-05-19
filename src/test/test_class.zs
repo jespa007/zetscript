@@ -1,9 +1,22 @@
 class A{
 	var i;
 	
-	function A(){
-		this.i=0;
+	function A(j){
+		var f=j;
+		
+		print("hola"+f);
+		this.i=f;
+		
+		f=2;
+		
+		print("hola"+this.i++);
+		
+		print("hola"+this.i++);
 	}
 };
 
-var a = new A();
+var k="hola caca";
+
+var a = new A(k);
+
+//print(""+a.i);

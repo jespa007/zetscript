@@ -157,7 +157,7 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 
 #define PROCESS_ARITHMETIC_OPERATION(__OVERR_OP__)\
 {\
-	unsigned short properties = GET_INS_PROPERTY_VAR_TYPE(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
+	unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
 	if(properties==INS_PROPERTY_TYPE_INTEGER){\
 			PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2));\
 	}\
@@ -333,22 +333,6 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 		}\
 }
 
-#define SHARED_LIST_DESTROY(list) \
-{\
-	PInfoSharedPointerNode first_node,current;\
-	first_node=current=(list).first;\
-	if(current != NULL){\
-		while(current->next !=first_node){\
-			PInfoSharedPointerNode node_to_remove=current;\
-			delete node_to_remove->data.shared_ptr;\
-			current=current->next;\
-			free(node_to_remove);\
-		}\
-		delete current->data.shared_ptr;\
-		free(current);\
-	}\
-	(list).first=(list).last=NULL;\
-}
 
 
 #define POP_SCOPE(index) \
@@ -384,7 +368,20 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 		};\
 	}\
 \
-	CALL_GC;\
+	tInfoSharedList list = zero_shares[idxCurrentStack];\
+	PInfoSharedPointerNode first_node,current;\
+	first_node=current=(list).first;\
+	if(current != NULL){\
+		while(current->next !=first_node){\
+			PInfoSharedPointerNode node_to_remove=current;\
+			delete node_to_remove->data.shared_ptr;\
+			current=current->next;\
+			free(node_to_remove);\
+		}\
+		delete current->data.shared_ptr;\
+		free(current);\
+	}\
+	(list).first=(list).last=NULL;\
 }
 
 
@@ -1429,29 +1426,23 @@ tStackElement * CVirtualMachine::execute_internal(
 					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction_properties);
 					//bool is_c=(((ldrVar->properties)& INS_PROPERTY_IS_C_VAR)!= 0);
 
+					// all preoperators makes load var as constant ...
 					switch(pre_post_properties){
-							PERFORM_PRE_POST_OPERATOR(ldrVar,--);
-							PUSH_STACK_VAR(ldrVar);
-							//(*ptrCurrentOp++)={0,ldrVar};
-							//PUSH_VAR(ldrVar);//var_object,ptr_var_object,0,false);
-							continue;
 					case INS_PROPERTY_PRE_INC:
 							PERFORM_PRE_POST_OPERATOR(ldrVar,++);
-							PUSH_STACK_VAR(ldrVar);
-							//(*ptrCurrentOp++)=*ldrVar;
-							//PUSH_VAR(var_object,ptr_var_object,0,false);
+							(*ptrCurrentOp++)=*ldrVar;
+							continue;
+					case INS_PROPERTY_PRE_DEC:
+							PERFORM_PRE_POST_OPERATOR(ldrVar,--);
+							(*ptrCurrentOp++)=*ldrVar;
 							continue;
 					case INS_PROPERTY_POST_DEC:
-							//PUSH_VAR(var_object,ptr_var_object,0,false);
+							(*ptrCurrentOp++)=*ldrVar;
 							PERFORM_PRE_POST_OPERATOR(ldrVar,--);
-							//(*ptrCurrentOp++)=*ldrVar;
-							PUSH_STACK_VAR(ldrVar);
 							continue;
 					case INS_PROPERTY_POST_INC:
-							//PUSH_VAR(var_object,ptr_var_object,0,false);
+							(*ptrCurrentOp++)=*ldrVar;
 							PERFORM_PRE_POST_OPERATOR(ldrVar,++);
-							//(*ptrCurrentOp++)=*ldrVar;
-							PUSH_STACK_VAR(ldrVar);
 							continue;
 					case INS_PROPERTY_PRE_NEG:
 							switch(GET_INS_PROPERTY_VAR_TYPE(ldrVar->properties)){
@@ -1470,7 +1461,7 @@ tStackElement * CVirtualMachine::execute_internal(
 								}
 								aux_float=-aux_float;
 								COPY_NUMBER(ptrCurrentOp->stkValue,&aux_float);
-								*ptrCurrentOp++={INS_PROPERTY_TYPE_NUMBER|INS_PROPERTY_IS_STACKVAR,ptrCurrentOp->stkValue,ldrVar};
+								*ptrCurrentOp++={INS_PROPERTY_TYPE_NUMBER,ptrCurrentOp->stkValue,0};
 								break;
 							default:
 								print_error_cr("internal error:cannot perform pre operator - because is not number");
@@ -1517,23 +1508,25 @@ tStackElement * CVirtualMachine::execute_internal(
 							vec_functions=&info_function->object_info.local_symbols.vec_idx_registeredFunction;
 						}else if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 							POP_ONE;
+							tStackElement *stk_ins=NULL;
 							if(ptrResultInstructionOp1->properties & INS_PROPERTY_IS_STACKVAR) {
-								tStackElement *stk_ins=((tStackElement *)ptrResultInstructionOp1->varRef);
-
-								if(stk_ins->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
-									class_obj=(CScriptVariable *)(stk_ins->varRef);
-									CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxScriptClass);
-									vec_functions=&sc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
-								}
-								else{
-									print_error_cr("Expected scriptvar");
-									return NULL;
-								}
+								stk_ins=((tStackElement *)ptrResultInstructionOp1->varRef);
 							}
 							else{
-								print_error_cr("Internal error: Expected stackvar");
+								stk_ins=ptrResultInstructionOp1;
+							}
+
+							if(stk_ins->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+								class_obj=(CScriptVariable *)(stk_ins->varRef);
+								CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxScriptClass);
+								vec_functions=&sc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
+							}
+							else{
+								print_error_cr("Expected scriptvar");
 								return NULL;
 							}
+
+
 							/*class_obj = ((CScriptVariable **)ptrBaseOp[index_op2].varRef);
 							function_obj = NULL; // TODO: always get symbol in CALL op. Make a way to do it optimized!*/
 						}else if(scope_type == INS_PROPERTY_THIS_SCOPE){
@@ -1627,7 +1620,11 @@ tStackElement * CVirtualMachine::execute_internal(
 								tSymbolInfo *si=NULL;
 								string *str = (string *)ptrResultInstructionOp2->stkValue;
 								src_ins=ptrResultInstructionOp1;
-								si =((CStruct *)struct_obj)->addVariableSymbol(*str, -1,src_ins );
+								if(src_ins->properties&INS_PROPERTY_TYPE_FUNCTION){
+									si =((CStruct *)struct_obj)->addFunctionSymbol(*str, -1,(CScriptFunctionObject *)src_ins->stkValue );
+								}else{
+									si =((CStruct *)struct_obj)->addVariableSymbol(*str, -1,src_ins );
+								}
 								dst_ins=&si->object;
 								ok=true;
 							}
@@ -1671,6 +1668,7 @@ tStackElement * CVirtualMachine::execute_internal(
 
 
 					ASSIGN_STACK_VAR(dst_ins,src_ins);
+
 
 					// check old var structure ...
 					switch(GET_INS_PROPERTY_VAR_TYPE(old_dst_ins.properties)){
@@ -1843,7 +1841,7 @@ tStackElement * CVirtualMachine::execute_internal(
 				POP_TWO;
 
 
-				unsigned short properties = GET_INS_PROPERTY_VAR_TYPE(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
+				unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
 				if(properties==INS_PROPERTY_TYPE_INTEGER){
 						PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) + LOAD_INT_OP(ptrResultInstructionOp2));
 				}
@@ -2207,14 +2205,14 @@ tStackElement * CVirtualMachine::execute_internal(
 									CScriptFunctionObject *irfs = NULL;
 									if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
 										irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
-										//aux_string=m_functionSymbol->at(i).symbol_value;
+										aux_string=m_functionSymbol->at(i).symbol_value;
 									}else{
 										irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
-										//aux_string=irfs->object_info.symbol_info.symbol_name;
+										aux_string=irfs->object_info.symbol_info.symbol_name;
 									}
 
 									// we found a function is match ...
-									if(irfs->object_info.symbol_info.symbol_name == AST_NODE(iao->idxAstNode)->symbol_value){
+									if(aux_string == AST_NODE(iao->idxAstNode)->symbol_value){
 
 										if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){ // C! Must match args...
 
@@ -2627,17 +2625,32 @@ tStackElement * CVirtualMachine::execute_internal(
 				}
 
 				break;*/
+			}else if(operator_type== NEW){
+					svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1);
+
+					if(!svar->initSharedPtr()){
+						return NULL;
+					}
+
+
+					/*if((constructor_function = svar->getConstructorFunction()) != NULL){
+						execute(constructor_function,svar);
+					}*/
+
+					(*ptrCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
+					continue;
+
 			}else if(operator_type== DECL_VEC){ // Create new vector object...
-							svar=NEW_VECTOR_VAR;
-							//PUSH_VAR(svar,NULL,0,false);
+					svar=NEW_VECTOR_VAR;
+					//PUSH_VAR(svar,NULL,0,false);
 
-							if(!svar->initSharedPtr()){
-								return NULL;
-							}
+					if(!svar->initSharedPtr()){
+						return NULL;
+					}
 
-							(*ptrCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
+					(*ptrCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
 
-							continue;
+					continue;
 			/*}else if(operator_type== VPUSH){ // Push values into vector
 				POP_ONE;
 				CScriptVariable *vec_obj = NULL;
@@ -2835,6 +2848,7 @@ lbl_exit_statment:;
 lbl_exit_function:
 
 	POP_SCOPE(scope_index);
+
 
 
 	//=========================
