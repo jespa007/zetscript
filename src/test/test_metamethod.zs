@@ -1,20 +1,30 @@
 class CVector2{
 	var x,y;
-	
-	function CVector2(x,y){
-		this.x=x;
-		this.y=y;
+
+	function CVector2(){
+		this.x=0;
+		this.y=0;
 	}
 	
-	function _add(v){
-		this.x += v.x;		
-		this.y += v.y;
+	
+	function CVector2(_x,_y){
+		this.x=_x;
+		this.y=_y;
 	}
+	
+
 };
 
-var v1=new CVector2(0,1),v2=new CVector2(1,0);
 
-var v3=v1+v2; // add a+b and creates a new object class CVector (implicit)
+function _add(){
+	var v3=new CVector2();
+	v3.x=0 + 1;
+	v3.y=1 + 0;
+	return v3;
+}
+
+var v1=new CVector2(0,1),v2=new CVector2(1,0);
+var v3=_add(); // add a+b and 
 
 
 

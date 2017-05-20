@@ -142,14 +142,23 @@ tScopeVar * CScope::registerAnonymouseFunction(PASTNode ast){ // register anonym
 	return &base->m_registeredVariableFromBase[base->m_registeredVariableFromBase.size()-1];
 }
 
-tScopeVar * CScope::registerSymbol(const string & var_name, PASTNode ast){
+tScopeVar * CScope::registerSymbol(const string & var_name, PASTNode ast, int n_params){
 	tScopeVar *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
 	if((p_irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
 
-		string symbol_ref = var_name;
-		symbol_ref = "_"+symbol_ref;
+		string symbol_ref = "";
+
+
+		if(n_params<0){ // register var symbol
+			symbol_ref = "_";
+		}else{ // register function symbol
+			symbol_ref = "_p"+CStringUtils::intToString(n_params);
+
+		}
+		symbol_ref=symbol_ref+"_"+var_name;
+
 		tScopeVar irv;// = new tScopeVar;
 		//irv->m_obj=NULL;
 
@@ -177,10 +186,18 @@ tScopeVar * CScope::registerSymbol(const string & var_name, PASTNode ast){
 	return NULL;//false;//-1;
 }
 
-tScopeVar * CScope::existRegisteredSymbol(const string & var_name){
+tScopeVar * CScope::existRegisteredSymbol(const string & var_name, int n_params){
 
-	string symbol_ref = var_name;
-	symbol_ref = "_"+symbol_ref;
+	string symbol_ref = "";
+
+
+	if(n_params<0){ // register var symbol
+		symbol_ref = "_";
+	}else{ // register function symbol
+		symbol_ref = "_p"+CStringUtils::intToString(n_params);
+
+	}
+	symbol_ref=symbol_ref+"_"+var_name;
 
 	for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
 		if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
@@ -190,7 +207,7 @@ tScopeVar * CScope::existRegisteredSymbol(const string & var_name){
 
 	int parent =  getIdxParent();
 	if(parent != ZS_UNDEFINED_IDX){
-		return SCOPE_INFO_NODE(parent)->existRegisteredSymbol(var_name);
+		return SCOPE_INFO_NODE(parent)->existRegisteredSymbol(var_name,n_params);
 	}
 
 	return NULL;//false;//-1;
@@ -198,8 +215,8 @@ tScopeVar * CScope::existRegisteredSymbol(const string & var_name){
 }
 
 
-tScopeVar * CScope::getInfoRegisteredSymbol(const string & v, bool print_msg){
-	tScopeVar *irv = existRegisteredSymbol(v);
+tScopeVar * CScope::getInfoRegisteredSymbol(const string & v, int n_params, bool print_msg){
+	tScopeVar *irv = existRegisteredSymbol(v,n_params);
 	if(irv == NULL && print_msg){
 		print_error_cr("%s not exist",v.c_str());
 	}

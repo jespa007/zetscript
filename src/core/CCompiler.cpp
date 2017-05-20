@@ -87,7 +87,20 @@ CScriptFunctionObject * CCompiler::addLocalFunctionSymbol(const string & name,sh
 	string  function_name = name;
 
 	if(!functionSymbolExists(name,idxAstNode)){
-		tScopeVar *irv = SCOPE_INFO_NODE(AST_NODE(idxAstNode)->idxScope)->getInfoRegisteredSymbol(function_name,true);
+
+		PASTNode ast_node = AST_NODE(idxAstNode);
+
+		// get n params size in order to find right symbol (rememeber the symbol syntax _pN_symbol)...
+		PASTNode ast_args =AST_NODE(ast_node->children[0]);
+
+		if(ast_args->node_type != NODE_TYPE::ARGS_DECL_NODE){
+			print_error_cr("expected args node");
+			return NULL;
+		}
+
+		int n_params= ast_args->children.size();
+
+		tScopeVar *irv = SCOPE_INFO_NODE(ast_node->idxScope)->getInfoRegisteredSymbol(function_name,n_params,false);
 		if(irv != NULL){
 
 			CScriptFunctionObject *info_symbol = CScriptFunctionObject::newScriptFunctionObject();
@@ -100,9 +113,13 @@ CScriptFunctionObject * CCompiler::addLocalFunctionSymbol(const string & name,sh
 
 			return info_symbol;
 		}
+		else{
+			print_error_cr("line %i: No function symbol \"%s\" with %i args is defined!",AST_NODE(idxAstNode)->line_value,function_name.c_str(), n_params);
+		}
 
-	}else{
-		print_error_cr("function symbol \"%s\" defined at line %i not defined!",function_name.c_str(), AST_NODE(idxAstNode)->line_value);
+	}
+	else{
+		print_error_cr("line %i: No function symbol \"%s\" is defined!",AST_NODE(idxAstNode)->line_value,function_name.c_str());
 	}
 	return NULL;
 }
@@ -114,7 +131,17 @@ bool CCompiler::functionSymbolExists(const string & name, short idxAstNode){
 }
 
 int  CCompiler::getIdxFunctionObject(const string & name,short idxAstNode, unsigned int & scope_type, bool print_msg){
-	tScopeVar *irv=SCOPE_INFO_NODE(AST_NODE(idxAstNode)->idxScope)->getInfoRegisteredSymbol(name);
+
+	PASTNode ast_node=AST_NODE(idxAstNode);
+	PASTNode ast_args = AST_NODE(ast_node->children[1]);
+	if(ast_args->node_type != NODE_TYPE::ARGS_DECL_NODE){
+		print_error_cr("expected args node");
+		return ZS_UNDEFINED_IDX;
+	}
+
+	int n_args = ast_args->children.size();
+
+	tScopeVar *irv=SCOPE_INFO_NODE(AST_NODE(idxAstNode)->idxScope)->getInfoRegisteredSymbol(name,n_args,false);
 	scope_type = INS_PROPERTY_LOCAL_SCOPE;
 	if(irv != NULL){
 
@@ -139,6 +166,10 @@ int  CCompiler::getIdxFunctionObject(const string & name,short idxAstNode, unsig
 				}
 			}
 		}
+	}
+	else{
+		//print_error_cr("line %i:Cannot find symbol function \"%s\" matchings with %i args",ast_node->line_value,name.c_str(),n_args);
+
 	}
 	return ZS_UNDEFINED_IDX;
 }
@@ -216,6 +247,11 @@ CCompiler::CCompiler(){
 	def_operator[DIV]         ={"DIV",DIV,2}; // /
 	def_operator[MUL]         ={"MUL",MUL,2}; // *
 	def_operator[MOD]         ={"MOD",MOD,2};  // %
+
+	def_operator[ADD_ASSIGN]  ={"ADD_ASSIGN" ,ADD_ASSIGN,2}; // +
+	def_operator[DIV_ASSIGN]  ={"DIV_ASSIGN",DIV_ASSIGN,2}; // /
+	def_operator[MUL_ASSIGN]  ={"MUL_ASSIGN",MUL_ASSIGN,2}; // *
+	def_operator[MOD_ASSIGN]  ={"MOD_ASSIGN",MOD_ASSIGN,2};  // %
 	def_operator[AND]         ={"AND",AND,2}; // bitwise logic and
 	def_operator[OR]          ={"OR",OR,2}; // bitwise logic or
 	def_operator[XOR]         ={"XOR",XOR,2}; // logic xor
@@ -350,7 +386,7 @@ void CCompiler::insertStringConstantValueInstruction(short idxAstNode, const str
 	ptr_current_statement_op->asm_op.push_back(asm_op);
 }
 
-bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
+bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc, tInfoAsmOpCompiler **iao_result){
 	PASTNode _node=AST_NODE(idxAstNode);
 	//CScope *_scope = SCOPE_INFO_NODE(_node->idxScope);
 	string v = _node->symbol_value;
@@ -518,6 +554,10 @@ bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc){
 
 	asm_op->operator_type=ASM_OPERATOR::LOAD;
 	ptr_current_statement_op->asm_op.push_back(asm_op);
+
+	if(iao_result != NULL){
+		*iao_result=asm_op;
+	}
 
 	return true;
 }
@@ -841,7 +881,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 		case ADD_ASSIGN_PUNCTUATOR: // a+b
 
 			iao = new tInfoAsmOpCompiler();
-			iao->operator_type = ASM_OPERATOR::ADD;
+			iao->operator_type = ASM_OPERATOR::ADD_ASSIGN;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
 			iao->idxAstNode=_node->idxAstNode;
@@ -860,7 +900,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 			ptr_current_statement_op->asm_op.push_back(iao);
 
 			iao = new tInfoAsmOpCompiler();
-			iao->operator_type = ASM_OPERATOR::ADD;
+			iao->operator_type = ASM_OPERATOR::ADD_ASSIGN;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right+1;
 			iao->idxAstNode=_node->idxAstNode;
@@ -872,7 +912,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 		case MUL_ASSIGN_PUNCTUATOR: // a*b
 
 			iao = new tInfoAsmOpCompiler();
-			iao->operator_type = ASM_OPERATOR::MUL;
+			iao->operator_type = ASM_OPERATOR::MUL_ASSIGN;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
 			iao->idxAstNode=_node->idxAstNode;
@@ -884,7 +924,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 		case DIV_ASSIGN_PUNCTUATOR: // a/b
 
 			iao = new tInfoAsmOpCompiler();
-			iao->operator_type = ASM_OPERATOR::DIV;
+			iao->operator_type = ASM_OPERATOR::DIV_ASSIGN;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
 			iao->idxAstNode=_node->idxAstNode;
@@ -896,7 +936,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 		case MOD_ASSIGN_PUNCTUATOR: // a % b
 
 			iao = new tInfoAsmOpCompiler();
-			iao->operator_type = ASM_OPERATOR::MOD;
+			iao->operator_type = ASM_OPERATOR::MOD_ASSIGN;
 			iao->index_op1 = op_index_left;
 			iao->index_op2 = op_index_right;
 			iao->idxAstNode=_node->idxAstNode;
@@ -1488,7 +1528,7 @@ int findConstructorIdxNode(short idxAstNode){
 		PASTNode child_node = AST_NODE(_node->children[i]);
 		if(child_node->node_type == NODE_TYPE::KEYWORD_NODE){
 
-			if(child_node->keyword_info==KEYWORD_TYPE::FUNCTION_KEYWORD || child_node->keyword_info==KEYWORD_TYPE::OPERATOR_KEYWORD){
+			if(child_node->keyword_info==KEYWORD_TYPE::FUNCTION_KEYWORD){
 				if(child_node->symbol_value == _node->symbol_value){
 					return i;
 				}
@@ -1629,6 +1669,7 @@ int CCompiler::gacNew(short idxAstNode, CScope * _lc){
 	if(_node->children.size()!=1) {print_error_cr("node NEW has not valid number of nodes");return ZS_UNDEFINED_IDX;}
 	if(AST_NODE(_node->children[0])->node_type!=NODE_TYPE::ARGS_PASS_NODE) {print_error_cr("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
 
+	tInfoAsmOpCompiler *iao=NULL;
 
 	// load function ...
 
@@ -1643,9 +1684,13 @@ int CCompiler::gacNew(short idxAstNode, CScope * _lc){
 
 	// 2. load function ...
 
-	if(!insertLoadValueInstruction(_node->idxAstNode,_lc)) {
+	if(!insertLoadValueInstruction(_node->idxAstNode,_lc,&iao)) {
 		return ZS_UNDEFINED_IDX;
 	}
+
+	// set load as function constructor ...
+	(*iao).runtime_prop = INS_PROPERTY_CONSTRUCT_CALL;
+
 
 	int call_index = getCurrentInstructionIndex();
 
@@ -1788,7 +1833,6 @@ bool CCompiler::gacFunctionOrOperator(short idxAstNode, CScope * _lc, CScriptFun
 
 	if(
 	    ! ( _node->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD
-	    ||	_node->keyword_info == KEYWORD_TYPE::OPERATOR_KEYWORD
 		||  _node->node_type    == FUNCTION_OBJECT_NODE
 		)) {
 		print_error_cr("Expected FUNCTION or OPERATOR or FUNCTION_OBJECT_NODE keyword type at line %i",_node->line_value);
@@ -2094,12 +2138,7 @@ bool CCompiler::gacKeyword(short idxAstNode, CScope * _lc){
 		return gacVar(_node->idxAstNode, _lc);
 		break;
 	case KEYWORD_TYPE::FUNCTION_KEYWORD: // don't compile function. It will compiled later, after main body
-	case KEYWORD_TYPE::OPERATOR_KEYWORD:
 
-		if(_node->keyword_info == KEYWORD_TYPE::OPERATOR_KEYWORD){
-			print_error_cr("operator keyword not implemented");
-			return false;
-		}
 
 		if(functionSymbolExists(_node->symbol_value, _node->idxAstNode)){
 				print_error_cr("Function \"%s\" already defined !",_node->symbol_value.c_str());

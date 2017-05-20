@@ -63,7 +63,6 @@ enum KEYWORD_TYPE:unsigned char{
 	BREAK_KEYWORD,
 	RETURN_KEYWORD,
 	FUNCTION_KEYWORD,
-	OPERATOR_KEYWORD,
 	CLASS_KEYWORD,
 	THIS_KEYWORD,
 //	SUPER_KEYWORD,
@@ -196,12 +195,16 @@ enum ASM_OPERATOR:unsigned char{
 		GTE, // >=
 
 		ADD, // +
+		ADD_ASSIGN, // +=
 		NEG, // -a
 		LOGIC_AND, // &&
 		LOGIC_OR,  // ||
 		DIV, // /
+		DIV_ASSIGN, // /=
 		MUL, // *
+		MUL_ASSIGN, // *=
 		MOD,  // %
+		MOD_ASSIGN,  // %=
 		AND, // bitwise logic and
 		OR, // bitwise logic or
 		XOR, // logic xor
@@ -325,6 +328,7 @@ enum{
 	//-- CALL TYPE
 	BIT_CALLING_OBJECT=MAX_BIT_SCOPE_TYPE,
 	BIT_DIRECT_CALL_RETURN,
+	BIT_CONSTRUCT_CALL,
 	MAX_BIT_CALL_PROPERTIES,
 };
 
@@ -351,6 +355,7 @@ enum{
 // CALL TYPE
 //#define	INS_PROPERTY_CALLING_OBJECT			(0x1<<BIT_CALLING_OBJECT)
 #define INS_PROPERTY_DIRECT_CALL_RETURN		(0x1<<BIT_DIRECT_CALL_RETURN)
+#define INS_PROPERTY_CONSTRUCT_CALL			(0x1<<BIT_CONSTRUCT_CALL)
 #define MASK_CALL_TYPE						(((0x1<<(MAX_BIT_CALL_PROPERTIES-INS_PROPERTY_CALLING_OBJECT))-1)<<(INS_PROPERTY_CALLING_OBJECT))
 #define GET_INS_PROPERTY_CALL_TYPE(prop)	((prop)&MASK_CALL_TYPE)
 
@@ -573,7 +578,7 @@ typedef struct {
  */
 struct tInfoVarScopeBlock{
 	int *var_index;
-	unsigned  n_var_index;
+	char  n_var_index;
 	int idxScope;
 };
 

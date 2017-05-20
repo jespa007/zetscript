@@ -317,9 +317,9 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 
 #define SHARE_LIST_DEATTACH(list,_node) \
 {\
-		if(_node->next == _node){\
+		if(_node->next == _node){/*one  node: trivial ?*/\
 			list.first = list.last = _node->next = _node->previous=NULL;\
-		}else{\
+		}else{/* >1 node */\
 			PInfoSharedPointerNode previous=_node->previous;\
 			PInfoSharedPointerNode next=_node->next;\
 			if(_node==list.first){\
@@ -374,7 +374,9 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 	if(current != NULL){\
 		while(current->next !=first_node){\
 			PInfoSharedPointerNode node_to_remove=current;\
-			delete node_to_remove->data.shared_ptr;\
+			if(ret_scriptvariable_node!=node_to_remove->data.shared_ptr){\
+				delete node_to_remove->data.shared_ptr;\
+			}\
 			current=current->next;\
 			free(node_to_remove);\
 		}\
@@ -792,8 +794,21 @@ void CVirtualMachine::unrefSharedScriptVar(PInfoSharedPointerNode _node){
 	}
 
 }
+/*
+void CVirtualMachine::detachSharedScriptVarForRet(PInfoSharedPointerNode _node){
 
+	//unsigned char *n_shares = &_node->data.n_shares;
+	//if(*n_shares > 0){
+	//	if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
+	SHARE_LIST_DEATTACH(shared_var[idxCurrentStack],_node);
+			//SHARE_LIST_INSERT(zero_shares[idxCurrentStack],_node);
+	//		return true;
+	//	}
+	//}
 
+	//print_error_cr("Internal error");
+	//return false;
+}*/
 
 #define POP_TWO \
 ptrResultInstructionOp2=--ptrCurrentOp;\
@@ -1229,11 +1244,13 @@ tStackElement * CVirtualMachine::execute_internal(
 
 	bool	aux_boolean=false;
 	float aux_float=0.0;
+	CScriptVariable * ret_scriptvariable_node =NULL;
 	unsigned char operator_type=NOP;
 	CScriptVariable *var_aux=NULL;
 	CScriptVariable **obj=NULL;
 	CScriptFunctionObject * aux_function_info=NULL;
 	tStackElement *ret_obj=NULL;
+
 	CScriptVariable *svar=NULL;
 	CScriptFunctionObject *constructor_function=NULL;
 	CScriptVariable *calling_object=NULL;
@@ -1382,7 +1399,8 @@ tStackElement * CVirtualMachine::execute_internal(
 
 								if(base_var == NULL)
 								{
-									print_error_cr("var is not scriptvariable");
+
+									print_error_cr("Line %i:var is not scriptvariable",AST_NODE(instruction->idxAstNode)->line_value);
 									return NULL;
 								}
 
@@ -1507,13 +1525,20 @@ tStackElement * CVirtualMachine::execute_internal(
 						if(scope_type==INS_PROPERTY_LOCAL_SCOPE){ // global! It gets functions from main object ...
 							vec_functions=&info_function->object_info.local_symbols.vec_idx_registeredFunction;
 						}else if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
-							POP_ONE;
+							tStackElement *var=NULL;
+							if(instruction_properties & INS_PROPERTY_CONSTRUCT_CALL){
+								var=(ptrCurrentOp-1);
+							}else{
+								POP_ONE;
+								var = ptrResultInstructionOp1;
+							}
+
 							tStackElement *stk_ins=NULL;
-							if(ptrResultInstructionOp1->properties & INS_PROPERTY_IS_STACKVAR) {
-								stk_ins=((tStackElement *)ptrResultInstructionOp1->varRef);
+							if(var->properties & INS_PROPERTY_IS_STACKVAR) {
+								stk_ins=((tStackElement *)var->varRef);
 							}
 							else{
-								stk_ins=ptrResultInstructionOp1;
+								stk_ins=var;
 							}
 
 							if(stk_ins->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
@@ -1836,9 +1861,15 @@ tStackElement * CVirtualMachine::execute_internal(
 				}
 				continue;
 
-			}else if(operator_type== ADD){ // +
+			}else if(operator_type== ADD || operator_type== ADD_ASSIGN){ // +
 
-				POP_TWO;
+
+				if(operator_type== ADD_ASSIGN){
+					POP_ONE;
+					ptrResultInstructionOp2=(ptrCurrentOp-1);
+				}else{
+					POP_TWO;
+				}
 
 
 				unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
@@ -2212,11 +2243,11 @@ tStackElement * CVirtualMachine::execute_internal(
 									}
 
 									// we found a function is match ...
-									if(aux_string == AST_NODE(iao->idxAstNode)->symbol_value){
+									if(aux_string == AST_NODE(iao->idxAstNode)->symbol_value && irfs->m_arg.size() == n_args){
 
 										if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){ // C! Must match args...
 
-											if(irfs->m_arg.size() == n_args){ // let's check parameters ...
+											//if(){ // let's check parameters ...
 
 												all_check=true; // check arguments types ...
 
@@ -2276,7 +2307,7 @@ tStackElement * CVirtualMachine::execute_internal(
 													}
 												//}
 
-											}
+											//}
 
 										}else{ // type script function  ...
 
@@ -2314,7 +2345,6 @@ tStackElement * CVirtualMachine::execute_internal(
 														str_candidates+="\t\tPossible candidates are:\n\n";
 													}
 
-
 													str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_name+"(";
 
 													for(unsigned a = 0; a < irfs->m_arg.size(); a++){
@@ -2331,7 +2361,6 @@ tStackElement * CVirtualMachine::execute_internal(
 
 												}
 									}
-
 
 									print_error_cr("Cannot find right C symbol for \"%s\" at line %i.\n\n%s",
 											AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
@@ -2559,14 +2588,14 @@ tStackElement * CVirtualMachine::execute_internal(
 				// if function is C must register pointer !
 
 				//if((aux_function_info->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
-				if((instruction_properties & INS_PROPERTY_DIRECT_CALL_RETURN) == 0){ // no direct call, so make share pointer
+				//if((instruction_properties & INS_PROPERTY_DIRECT_CALL_RETURN) == 0){ // no direct call, so make share pointer
 					if(ret_obj->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
 
 						if(!((CScriptVariable *)(ret_obj->varRef))->initSharedPtr()){
 							return NULL;
 						}
 					}
-				}
+				//}
 
 				// deallocates stack...
 				//m_functionArgs.clear();
@@ -2575,8 +2604,10 @@ tStackElement * CVirtualMachine::execute_internal(
 				// reset stack ...
 				ptrCurrentOp=startArg-1;
 
-				// ... and push result ...
-				*ptrCurrentOp++ = *ret_obj;
+				// ... and push result if not function constructor...
+				if(!(instruction_properties & INS_PROPERTY_CONSTRUCT_CALL)){
+					*ptrCurrentOp++ = *ret_obj;
+				}
 				continue;
 
 			/*case PUSH: // push arg instruction will creating object ensures not to have feature e/s...
@@ -2725,6 +2756,24 @@ tStackElement * CVirtualMachine::execute_internal(
 			}else if(operator_type== RET){
 
 				callc_result=*(ptrCurrentOp-1);
+
+				// remove shared pointer if scriptvar ...
+				if(callc_result.properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+					if(callc_result.properties & INS_PROPERTY_IS_STACKVAR){
+						callc_result=*((tStackElement *)((tStackElement *)callc_result.varRef));
+
+
+					}
+
+					// unref pointer to be deallocated from gc...
+					((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node=NULL;
+					ret_scriptvariable_node=((CScriptVariable *)callc_result.varRef);
+
+					// share pointer  + 1
+					//this->sharePointer(detach_node);
+				}
+
+
 				// remove sharepointer in order to avoid deallocate value ... function parent is in charge to share pointer of resulting value ...
 
 				/*if(callc_result.properties & INS_PROPERTY_TYPE_SCRIPTVAR){
@@ -2848,6 +2897,9 @@ lbl_exit_statment:;
 lbl_exit_function:
 
 	POP_SCOPE(scope_index);
+
+
+
 
 
 

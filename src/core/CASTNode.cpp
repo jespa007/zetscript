@@ -810,7 +810,9 @@ char *CASTNode::getSymbolName(const char *s,int & m_line){
 
 	if(*aux_p!=0 && (
 	   ('a' <= *aux_p && *aux_p <='z') ||
-	   ('A' <= *aux_p && *aux_p <='Z'))
+	   ('A' <= *aux_p && *aux_p <='Z') ||
+	   *aux_p == '_'
+	 )
 	){ // let's see it has right chars...
 
 		aux_p++;
@@ -821,7 +823,7 @@ char *CASTNode::getSymbolName(const char *s,int & m_line){
 			aux_p++;
 		}
 	}else{
-		print_error_cr(" line %i: Symbol name cannot begin with number %c",m_line, *aux_p);
+		print_error_cr(" line %i: Symbol name cannot begin with %c",m_line, *aux_p);
 		return NULL;
 	}
 
@@ -1029,9 +1031,8 @@ char * CASTNode::deduceExpression(const char *str, int & m_line, CScope *scope_i
 		switch(key_w){
 		// sould be function object ...
 		case KEYWORD_TYPE::FUNCTION_KEYWORD:
-		case KEYWORD_TYPE::OPERATOR_KEYWORD:
 			// function objects are stored in MainClass or global scope.
-			if((aux=parseFunctionOrOperator(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
+			if((aux=parseFunction(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 				return NULL;
 			}
 			try_array_or_function_access = true;
@@ -1185,7 +1186,7 @@ char *CASTNode::getSymbolValue(
 		// usually we have to take care about special op symbols
 
 		if((key_w =isKeyword(aux)) != KEYWORD_TYPE::UNKNOWN_KEYWORD){
-			is_function_or_operator = key_w == KEYWORD_TYPE::FUNCTION_KEYWORD || key_w == KEYWORD_TYPE::OPERATOR_KEYWORD;
+			is_function_or_operator = key_w == KEYWORD_TYPE::FUNCTION_KEYWORD;
 			is_new=key_w == KEYWORD_TYPE::NEW_KEYWORD;
 			is_delete=key_w == KEYWORD_TYPE::DELETE_KEYWORD;
 		}
@@ -1200,7 +1201,7 @@ char *CASTNode::getSymbolValue(
 				}
 			}
 			// parse function but do not create ast node (we will create in trivial case value
-			end_expression = parseFunctionOrOperator(aux,m_line,scope_info);
+			end_expression = parseFunction(aux,m_line,scope_info);
 
 			//symbol_node->symbol_value="anonymous_function";
 			if(end_expression == NULL){
@@ -1843,8 +1844,7 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 							return NULL;
 							break;
 						case KEYWORD_TYPE::FUNCTION_KEYWORD:
-						case KEYWORD_TYPE::OPERATOR_KEYWORD:
-							if((aux_p = parseFunctionOrOperator(aux_p, m_line,class_scope_info, &child_node)) != NULL){
+							if((aux_p = parseFunction(aux_p, m_line,class_scope_info, &child_node)) != NULL){
 								if(child_node->symbol_value != ""){
 									if(ast_node_to_be_evaluated != NULL){
 										function_collection_node->children.push_back(child_node->idxAstNode);
@@ -1969,7 +1969,7 @@ PASTNode  CASTNode::findAstRecursive(const string & _symbol_name_to_find, NODE_T
 	return NULL;
 }
 
-char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
+char * CASTNode::parseFunction(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
@@ -1982,7 +1982,7 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 	CScope *_currentScope=NULL;
 	tScopeVar * irv=NULL;
 	string str_name;
-	string class_member,class_name;
+	string class_member,class_name, function_name="";
 	PASTNode class_node=NULL;
 	int idxScope=ZS_UNDEFINED_IDX;
 
@@ -1997,7 +1997,7 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 
 	if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
 
-		if(key_w == KEYWORD_TYPE::FUNCTION_KEYWORD || key_w == KEYWORD_TYPE::OPERATOR_KEYWORD){
+		if(key_w == KEYWORD_TYPE::FUNCTION_KEYWORD){
 
 			// advance keyword...
 			aux_p += strlen(defined_keyword[key_w].str);
@@ -2032,26 +2032,18 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 					}
 					else{ // get normal name...
 
-						// check whwther the function is anonymous or not.
-						if(key_w == KEYWORD_TYPE::OPERATOR_KEYWORD){
-							PUNCTUATOR_TYPE ip = parseArithmeticPunctuator(aux_p);
-							if(ip==PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-								print_error_cr("operator \"%.02s\" not valid at line %i",aux_p,m_line);
-								return NULL;
-							}
-							end_var=aux_p + strlen(defined_operator_punctuator[ip].str);//getSymbolName(aux_p,m_line);
-						}
-						else{
-							end_var=getSymbolName(aux_p,m_line);
-						}
+						// check whwther the function is anonymous with a previous arithmetic operation ....
+						end_var=getSymbolName(aux_p,m_line);
 
 						if(end_var != NULL){
 
 							if((symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_var))==NULL)
 								return NULL;
 
+							function_name = symbol_value;
+
 							// check whether parameter name's matches with some global variable...
-							if(scope_info != NULL){
+							/*if(scope_info != NULL){
 								if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(symbol_value,false)) != NULL){
 
 									if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
@@ -2062,7 +2054,7 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 
 									return NULL;
 								}
-							}
+							}*/
 						}else{
 							return NULL;
 						}
@@ -2083,13 +2075,13 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 				// create object function ...
 				if(named_function){
 
-					if((irv=scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated)))==NULL){
+					/*if((irv=scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated)))==NULL){
 						return NULL;
 					}
 
 					if((*ast_node_to_be_evaluated) != NULL){
 						(*ast_node_to_be_evaluated)->symbol_value=symbol_value;
-					}
+					}*/
 
 					ast_node=*ast_node_to_be_evaluated;
 				}
@@ -2097,12 +2089,13 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 					irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
 					ast_node=AST_NODE(irv->idxAstNode);
 					ast_node->symbol_value = irv->name;
+
 				}
 
 				// define value symbol...
-				if(irv == NULL){
+				/*if(irv == NULL){
 					return NULL;
-				}
+				}*/
 				ast_node->idxScope = idxScope;
 			}
 			// parse function args...
@@ -2141,7 +2134,7 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 						}
 
 						// check whether parameter name's matches with some global variable...
-						if((irv=_currentScope->getInfoRegisteredSymbol(symbol_value,false)) != NULL){
+						if((irv=_currentScope->getInfoRegisteredSymbol(symbol_value,-1,false)) != NULL){
 							print_error_cr("Ambiguous symbol argument \"%s\" at line %i name with var defined at %i", symbol_value, m_line, AST_LINE_VALUE(irv->idxAstNode));
 							return NULL;
 						}
@@ -2178,6 +2171,41 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 					return NULL;
 				}
 
+				// register function symbol...
+
+
+				if(ast_node_to_be_evaluated !=NULL){
+
+					int n_params=0;
+
+					if(args_node != NULL){
+						n_params=args_node->children.size();
+					}
+
+					if(function_name!=""){
+						if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
+
+							if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
+								print_error_cr("Line %i: Function name \"%s\" is already defined with same number of args at line %i", m_line, function_name.c_str(),AST_LINE_VALUE(irv->idxAstNode));
+							}else{
+								print_error_cr("Function name \"%s\" at line %i is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str(), m_line);
+							}
+
+							return NULL;
+						}
+
+						if((irv=scope_info->registerSymbol(function_name,(*ast_node_to_be_evaluated),n_params))==NULL){
+							return NULL;
+						}
+
+						if((*ast_node_to_be_evaluated) != NULL){
+							(*ast_node_to_be_evaluated)->symbol_value=function_name;
+						}
+
+					}
+
+				}
+
 				aux_p++;
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
 
@@ -2210,6 +2238,8 @@ char * CASTNode::parseFunctionOrOperator(const char *s,int & m_line,  CScope *sc
 			else{
 				print_error_cr("Unclosed function defined at line %i",m_line);
 			}
+		}else{
+			print_error_cr("Expected operator or function operator at line %i",m_line);
 		}
 	}
 	return NULL;
@@ -3206,17 +3236,8 @@ char * CASTNode::isClassMember(const char *s,int & m_line, string & _class_name,
 
 		aux_p=IGNORE_BLANKS(aux_p+2,m_line); // ignore ::
 
-		if(kwi == KEYWORD_TYPE::OPERATOR_KEYWORD){
-			PUNCTUATOR_TYPE pi = parseArithmeticPunctuator(aux_p);
-			if(pi==PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-				print_error_cr("operator \"%.02s\" not valid at line %i",aux_p,m_line);
-				return NULL;
-			}
-			end_var=aux_p+strlen(defined_operator_punctuator[pi].str);
-		}
-		else{
-			end_var=getSymbolName(aux_p,m_line);
-		}
+		end_var=getSymbolName(aux_p,m_line);
+
 
 
 		if(end_var != NULL){
@@ -3257,7 +3278,7 @@ char *CASTNode::parseKeyWord(const char *s, int & m_line, CScope *scope_info, bo
 		aux_p=IGNORE_BLANKS(aux_p, m_line);
 
 		// check if non named function...
-		if(keyw == KEYWORD_TYPE::FUNCTION_KEYWORD || keyw == KEYWORD_TYPE::OPERATOR_KEYWORD){
+		if(keyw == KEYWORD_TYPE::FUNCTION_KEYWORD){
 			if( *aux_p == '('){
 				// Is no named. No named function is an object and should be processed within parseExpression ...
 				return NULL;
@@ -3279,7 +3300,7 @@ char *CASTNode::parseKeyWord(const char *s, int & m_line, CScope *scope_info, bo
 		if((keyw2nd = isKeyword(aux_p))!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
 
 			if(
-					keyw2nd != KEYWORD_TYPE::FUNCTION_KEYWORD && keyw2nd != KEYWORD_TYPE::OPERATOR_KEYWORD   // list of exceptional keywords...
+					keyw2nd != KEYWORD_TYPE::FUNCTION_KEYWORD   // list of exceptional keywords...
 			  ){
 
 				print_error_cr("unexpected keyword \"%s\" at line %i",defined_keyword[keyw2nd].str, m_line);
@@ -3367,7 +3388,7 @@ char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scop
 
 						}else{
 							startLine = m_line;
-							end_expr=parseFunctionOrOperator(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children);
+							end_expr=parseFunction(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children);
 							if(end_expr==NULL){
 								return NULL;
 							}
@@ -3490,8 +3511,7 @@ void CASTNode::init(){
 		defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
 		defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
 		defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
-		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunctionOrOperator};
-		defined_keyword[KEYWORD_TYPE::OPERATOR_KEYWORD] = {OPERATOR_KEYWORD,"operator",parseFunctionOrOperator};
+		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunction};
 		defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
 		defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
 	//	defined_keyword[KEYWORD_TYPE::SUPER_KEYWORD] = {SUPER_KEYWORD,"super", NULL};

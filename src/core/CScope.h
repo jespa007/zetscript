@@ -48,10 +48,14 @@ public:
 	vector<tScopeVar> m_registeredVariableFromBase; // vars registered from base.
 	vector<tScopeVar> m_registeredAnoymouseFunctionFromBase; // anonymous functions registered from base.
 
-	tScopeVar * getInfoRegisteredSymbol(const string & v, bool print_msg=true);
+	/**
+	 * register/search symbol info
+	 * @n_params:
+	 */
+	tScopeVar * getInfoRegisteredSymbol(const string & v, int n_params=-1, bool print_msg=true);
 	tScopeVar * registerAnonymouseFunction(PASTNode ast);
-	tScopeVar * registerSymbol(const string & var_name, PASTNode ast=NULL);
-	tScopeVar * existRegisteredSymbol(const string & var_name);
+	tScopeVar * registerSymbol(const string & var_name, PASTNode ast=NULL, int n_params=-1);
+	tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=-1);
 
 
 	CScope();

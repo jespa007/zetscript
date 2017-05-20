@@ -47,7 +47,7 @@ tInfoVariableSymbol * CScriptFunctionObject::newVariableSymbol(int idxFunction){
 }
 
 
-int CScriptFunctionObject::getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name, bool show_msg){
+int CScriptFunctionObject::getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name,char n_args_to_find, bool show_msg){
 
 	// from lat value to first to get last override function...
 	/*if(idxFunction == -1){
@@ -57,7 +57,10 @@ int CScriptFunctionObject::getIdxFunctionObject(tFunctionInfo * info_function,co
 
 	//tFunctionInfo *fi=&vec_script_function_object_node->at(idxFunction)->object_info;
 	for(int i = info_function->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-		if(GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[i])->symbol_info.symbol_name == function_name){
+		CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(info_function->local_symbols.vec_idx_registeredFunction[i]);
+
+
+		if(sfo->object_info.symbol_info.symbol_name == function_name && (n_args_to_find==(int)sfo->m_arg.size())){
 			return i;
 		}
 	}

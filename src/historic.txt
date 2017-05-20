@@ -1,4 +1,39 @@
 
+version 1.00.04b
+================
+-Added metamethod support. Example use of methamethod add in the class,
+
+class A{
+
+  var x,y;
+  
+  ...
+  
+  function _add(var1, var2){
+  	var a = new A;
+  	a.x = var1.x + var2.x;
+  	a.y = var1.y + var2.y;
+  }
+
+};
+
+
+
+var h = new A(0,1) + new A(1,0); // h should be (1,1)
+
+version 1.00.03b
+================
+
+-Added support functions with different parameters.
+-Added symbol detection
+
+
+__symbol: variable symbol
+_pN_symbol: function symbol where N is a number that explain the number parameter entry
+
+ 
+-solved problem double unref shared pointer when rets cscriptvar
+
 
 version 1.00.02b
 ================

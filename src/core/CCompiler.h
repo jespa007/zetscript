@@ -160,7 +160,7 @@ private:
 	 */
 	tInfoStatementOpCompiler  *newStatment();
 	void insertStringConstantValueInstruction(short idxAstNode, const string & v);
-	bool insertLoadValueInstruction(short idxAstNode, CScope * _lc);
+	bool insertLoadValueInstruction(short idxAstNode, CScope * _lc, tInfoAsmOpCompiler **iao_result=NULL);
 	bool insertMovVarInstruction(short idxAstNode, int left_index, int right_index);
 
 

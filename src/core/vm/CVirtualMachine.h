@@ -53,6 +53,7 @@ class CVirtualMachine{
 
 	float f_return_value;
 	string s_return_value;
+	tStackElement stk_aux;
 
 	tStackElement * execute_internal(
 			CScriptFunctionObject *info_function,
@@ -77,6 +78,7 @@ public:
 	PInfoSharedPointerNode newSharedPointer(CScriptVariable *var_ptr);
 	bool sharePointer( PInfoSharedPointerNode _node);
 	void unrefSharedScriptVar( PInfoSharedPointerNode _node);
+	void removefSharedScriptVar( PInfoSharedPointerNode _node);
 
 	//static CSharedPointerManager *sharedPointerManager;
 

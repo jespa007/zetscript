@@ -511,11 +511,61 @@ public:
  	return NULL;
  }*/
 
+int getNumberArgsfromFunctionRefNode(PASTNode ast_node){
+	if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
+
+
+		ast_node = AST_NODE(ast_node->idxAstParent);
+
+		if(ast_node == NULL){
+			print_error_cr("internal error, parent null");
+			return false;
+		}
+
+		if(ast_node->node_type != NODE_TYPE::CALLING_OBJECT_NODE){
+			print_error_cr("internal error, expected calling object node");
+			return false;
+		}
+
+		if(ast_node->children.size()!=2){
+			print_error_cr("internal error, expected calling function 2 children");
+			return false;
+		}
+
+		ast_node = AST_NODE(ast_node->children[1]);
+
+		if(ast_node == NULL){
+			print_error_cr("internal error, expected args node");
+			return false;
+		}
+
+		if(ast_node->node_type != NODE_TYPE::ARGS_PASS_NODE){
+			print_error_cr("internal error, espected ARGS PASS NODE");
+			return false;
+		}
+
+		return ast_node->children.size();
+	}else{
+		print_error_cr("internal error, espected FUNCTION_REF_NODE");
+	}
+
+	return -1;
+
+}
+
 
 bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_function, unsigned int param_scope_type){
 
 	int idx=0;
-	string symbol_to_find = AST_SYMBOL_VALUE(iao->idxAstNode);
+	char n_args_to_find =-1;
+	PASTNode ast_node = AST_NODE(iao->idxAstNode);
+	string symbol_to_find =ast_node->symbol_value;
+
+	if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
+
+		n_args_to_find = getNumberArgsfromFunctionRefNode(ast_node);
+	}
+
 	//CScope * scope_node = iao->ast_node->scope_info_ptr;
 
 	//scope_type = iao->scope_type;
@@ -538,8 +588,8 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoA
 			int idx_super=-1;
 
 			for(int i = current_function-1; i >= 0 && idx_super==-1; i--){
-
-				if(GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[i])->symbol_info.symbol_name == symbol_to_find){
+				CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(info_function->local_symbols.vec_idx_registeredFunction[i]);
+				if((irfs->symbol_info.symbol_name == symbol_to_find) && ((int)sfo->m_arg.size() == n_args_to_find)){ // match name and args ...
 					idx_super=i;
 				}
 			}
@@ -581,7 +631,7 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoA
 			}
 		}*/
 
-		 if((idx=CScriptFunctionObject::getIdxFunctionObject(info_function,symbol_to_find,false))!=-1){
+		 if((idx=CScriptFunctionObject::getIdxFunctionObject(info_function,symbol_to_find,n_args_to_find,false))!=-1){
 			 REMOVE_SCOPES(iao->instruction_properties);
 			 iao->instruction_properties |= param_scope_type;
 			 iao->index_op1 = LOAD_TYPE_FUNCTION;
@@ -626,7 +676,7 @@ void CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 		 if(!is_main_function) {// is not main function
 
 			 if(ast->node_type == NODE_TYPE::KEYWORD_NODE){
-				 if(ast->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD || ast->keyword_info == KEYWORD_TYPE::OPERATOR_KEYWORD){
+				 if(ast->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD ){
 					 idxScope = AST_NODE(ast->children[1])->idxScope; // pass scope block ...
 				 }
 			 }
@@ -725,7 +775,16 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 										 // search global...
 										 //CScriptFunctionObject * mainFunctionInfo = GET_MAIN_FUNCTION_OBJECT;//getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 										 if(!searchVarFunctionSymbol(&GET_MAIN_FUNCTION_OBJECT->object_info,iao,n_function,0)){
-											 print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
+											    PASTNode ast_node = AST_NODE(iao->idxAstNode);
+
+												if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
+
+													print_error_cr("Line %i: Cannot match function \"%s\" with %i args",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+
+												}
+												else{
+													print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
+												}
 											 return false;
 										 }
 
@@ -872,7 +931,16 @@ bool CScriptClass::updateReferenceSymbols(){
 												 // search global...
 												 CScriptFunctionObject * mainFunctionInfo = GET_MAIN_FUNCTION_OBJECT;// getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 												 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,0)){
-													 print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
+													    PASTNode ast_node = AST_NODE(iao->idxAstNode);
+
+														if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
+
+															print_error_cr("Line %i: Cannot match function \"%s\" with %i args",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+
+														}
+														else{
+															print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
+														}
 													 return false;
 												 }
 											 }

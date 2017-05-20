@@ -398,6 +398,7 @@ const string & CScriptVariable::getClassName(){
     	return false;
     }
 
+
     bool CScriptVariable::unrefSharedPtr(){
     	if(ptr_shared_pointer_node!=NULL){
     		/*if(CURRENT_VM->getNumShares(idx_shared_ptr) > 1){
