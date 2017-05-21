@@ -347,7 +347,7 @@ IS_GENERIC_NUMBER(ptrResultInstructionOp1->type_var)
 		return NULL;\
 	}\
 \
-	for(unsigned i = 0; i < info_function->object_info.info_var_scope[index].n_var_index; i++){\
+	for(int i = 0; i < info_function->object_info.info_var_scope[index].n_var_index; i++){\
 		int idx_local_var = info_function->object_info.info_var_scope[index].var_index[i];\
 		tStackElement *ptr_ale =&ptrLocalVar[idx_local_var];\
 		CScriptVariable *var = NULL;\
@@ -447,8 +447,13 @@ string CVirtualMachine::STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement *ptr_in
 		result= "string";
 	else if(IS_FUNCTION(ptr_info_ale->properties))
 		result= "function";
+
 	else if(IS_VAR(ptr_info_ale->properties)){
-		result=((CScriptVariable *)ptr_info_ale->stkValue)->getClassName();
+		tStackElement *var=ptr_info_ale;
+		if(ptr_info_ale->properties & INS_PROPERTY_IS_STACKVAR){
+			var=(tStackElement *)var->varRef;
+		}
+		result=((CScriptVariable *)var->varRef)->getClassName();
 	}
 
 	return result;
@@ -1592,8 +1597,8 @@ tStackElement * CVirtualMachine::execute_internal(
 					continue;
 
 				}else if(index_op1== LOAD_TYPE::LOAD_TYPE_ARGUMENT){
-		 	 		ldrVar=&ptrArg[instruction->index_op2];
-					PUSH_STACK_VAR(ldrVar);
+		 	 		//ldrVar=&ptrArg[instruction->index_op2];
+					*ptrCurrentOp++=ptrArg[instruction->index_op2]; // copy arg directly ...
 					continue;
 				}
 				else{
@@ -1925,6 +1930,70 @@ tStackElement * CVirtualMachine::execute_internal(
 
 				}
 				else{
+					CScriptVariable *v1,*v2;
+
+					// 0. Check pre condition ...
+					if((ptrResultInstructionOp1->properties | ptrResultInstructionOp2->properties) == (INS_PROPERTY_TYPE_SCRIPTVAR | INS_PROPERTY_IS_STACKVAR)){
+
+						v1 = (CScriptVariable *)(((tStackElement *)(ptrResultInstructionOp1->varRef))->varRef);
+						v2 = (CScriptVariable *)(((tStackElement *)(ptrResultInstructionOp2->varRef))->varRef);
+						// 1. check whether op1/op2 is type cscriptvariable and same type...
+						if(v1->idxScriptClass == v2->idxScriptClass){
+
+
+
+
+							// 2. search for _add...
+							CScriptFunctionObject *sfo = CScriptClass::getScriptFunctionObjectByClassIdxFunctionName(v1->idxScriptClass, "_add", true);
+
+							if(sfo !=NULL){
+								// 3. Execute function...
+								char n_args=2;
+
+								tStackElement *startArg = ptrCurrentOp+2;
+
+								// by default virtual machine gets main object class in order to run functions ...
+								if((ret_obj=execute_internal(sfo,this_object,startArg,ptrCurrentStr,n_args))==NULL){
+									return NULL;
+								}
+
+								//pop();
+								// restore ptrCurretOp...
+								ptrCurrentOp=startArg-2;
+								// if function is C must register pointer !
+
+								//if((aux_function_info->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
+								//if((instruction_properties & INS_PROPERTY_DIRECT_CALL_RETURN) == 0){ // no direct call, so make share pointer
+									if(ret_obj->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+
+										if(!((CScriptVariable *)(ret_obj->varRef))->initSharedPtr()){
+											return NULL;
+										}
+									}
+								//}
+
+								// deallocates stack...
+								//m_functionArgs.clear();
+
+
+								// reset stack ...
+
+
+								// ... and push result if not function constructor...
+
+
+								*ptrCurrentOp++ = *ret_obj;
+
+								continue;
+
+								// 4. save value...
+
+							}
+
+						}
+
+					}
+
 					PRINT_DUAL_ERROR_OP(+);
 				}
 

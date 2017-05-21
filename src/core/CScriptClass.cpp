@@ -1285,9 +1285,9 @@ CScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & clas
 	return NULL;
 }
 
-int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors){
+int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name, bool show_errors){
 
-	CScriptClass *rc =GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);
+	//CScriptClass *rc =GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);
 
 	if(rc != NULL){
 
@@ -1300,13 +1300,23 @@ int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(const string & c
 				return object_info->local_symbols.vec_idx_registeredFunction[i];
 			}
 		}
+
+		if(show_errors){
+			print_error_cr("function member %s::%s doesn't exist",rc->metadata_info.object_info.symbol_info.symbol_name.c_str(),function_name.c_str());
+		}
 	}
 
-	if(show_errors){
-		print_error_cr("function member %s::%s doesn't exist",class_name.c_str(),function_name.c_str());
-	}
+
 
 	return -1;
+}
+
+
+int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors){
+
+	return getIdxScriptFunctionObjectByClassFunctionName_Internal(GET_SCRIPT_CLASS_INFO_BY_NAME(class_name),function_name,show_errors);
+
+
 }
 
 CScriptFunctionObject  * CScriptClass::getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors){
@@ -1320,6 +1330,20 @@ CScriptFunctionObject  * CScriptClass::getScriptFunctionObjectByClassFunctionNam
 	return NULL;
 }
 
+
+CScriptFunctionObject  * CScriptClass::getScriptFunctionObjectByClassIdxFunctionName(int idxClassName,const string & function_name, bool show_errors){
+
+
+	int idx=getIdxScriptFunctionObjectByClassFunctionName_Internal(GET_SCRIPT_CLASS_INFO(idxClassName),function_name, show_errors);
+
+	if(idx != ZS_UNDEFINED_IDX){
+		return GET_SCRIPT_FUNCTION_OBJECT(idx);
+	}
+
+	return NULL;
+
+
+}
 
 //-----
 
