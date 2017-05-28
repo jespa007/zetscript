@@ -1,2 +1,0 @@
-1. copy .project and .cproject, from base project folder
-2. share projects

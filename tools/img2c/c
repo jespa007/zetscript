@@ -1,1 +1,0 @@
-gcc img2c.c -o convert -lSDL_image -lSDL
