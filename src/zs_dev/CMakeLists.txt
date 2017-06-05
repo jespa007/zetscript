@@ -161,7 +161,7 @@ else()
 	IF (MINGW)
 	
 	 target_link_libraries(zetscript_dev${POST_NAME} Rpcrt4 kernel32 "-Wl,--no-as-needed" )
-	 target_link_libraries(zs${POST_NAME} mingw32  zetscript_dev${POST_NAME} "-Wl,--no-as-needed" )
+	 target_link_libraries(zs_dev${POST_NAME} mingw32  zetscript_dev${POST_NAME} "-Wl,--no-as-needed" )
 	  
 	ELSE(MINGW)
 		target_link_libraries(zetscript_dev${POST_NAME}  "-Wl,--no-as-needed" )
