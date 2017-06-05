@@ -30,6 +30,8 @@
 
 #define register_C_VariableMember(o,s) 			register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetof(o,s))
 #define register_C_FunctionMember(o,s)			register_C_FunctionMemberInt<o>(STR(s),&o::s)
+#define register_C_FunctionConstructor(o,s)		register_C_FunctionMemberInt<o>(demangle(typeid(o).name()).c_str(),&o::s)
+#define register_C_StaticFunctionMember(o,s)	register_C_StaticFunctionMemberInt<o>(STR(s),&o::s)
 #define register_C_FunctionMemberCast(o,s,f)	register_C_FunctionMemberInt<o>(STR(s),static_cast<f>(&o::s))
 
 
@@ -77,6 +79,8 @@ public:
 
 	CScriptClass();
 
+	bool is_c_class();
+
 
 	//------------- STATIC METHODS ---------------
 
@@ -122,6 +126,7 @@ public:
 	static int 									getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
 	//static BASIC_CLASS_TYPE			getIdxPrimitiveFromIts_C_TypeInternal(const string & c_type_str);
 	static bool 								isClassRegistered(const string & v);
+
 
 
 
@@ -288,6 +293,15 @@ public:
 			CScriptClass *irc = new CScriptClass;
 
 			CASTNode *ast =CASTNode::newASTNode();
+			CASTNode *ast_var_symbols =CASTNode::newASTNode();
+			CASTNode *ast_fun_symbols =CASTNode::newASTNode();
+
+			// push var & fun symbols node...
+			ast->children.push_back(ast_var_symbols->idxAstNode);
+			ast->children.push_back(ast_fun_symbols->idxAstNode);
+
+
+
 			irc->metadata_info.object_info.symbol_info.idxAstNode = ast->idxAstNode;
 			//irc->metadata_info.object_info.symbol_info.idxScopeVar=-1;
 			irc->metadata_info.object_info.symbol_info.symbol_name = class_name;
@@ -302,8 +316,7 @@ public:
 			irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
 			(*vec_script_class_node).push_back(irc);
-
-			print_debug_cr("* C++ class \"%10s\" registered as (%s).",class_name.c_str(),demangle(str_classPtr).c_str());
+			print_debug_cr("* C++ class \"%s\" registered as (%s).",class_name.c_str(),demangle(str_classPtr).c_str());
 
 			return true;
 		}
@@ -468,7 +481,14 @@ public:
 		irs = NEW_SCRIPT_FUNCTION_OBJECT;//CScriptFunctionObject::newScriptFunctionObject();
 
 		// init struct...
-		irs->object_info.symbol_info.idxAstNode = -1;
+		CASTNode *ast_symbol = CASTNode::newASTNode();
+		ast_symbol->symbol_value = function_name;
+		// get ast symbols function member node...
+		CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
+		ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
+
+
+
 		//irs.object_info.symbol_info.idxScopeVar = -1;
 		irs->object_info.symbol_info.symbol_name=function_name;
 		irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
@@ -484,6 +504,85 @@ public:
 		return true;
 	}
 
+
+	/**
+	 * Register C Member function Class
+	 */
+	template <class _T, typename F>
+	static bool register_C_StaticFunctionMemberInt(const char *function_name,F function_type)
+	{
+		string return_type;
+		vector<string> params;
+		CScriptFunctionObject *irs=NULL;
+		vector<string> m_arg;
+		int idx_return_type=-1;
+		unsigned int ref_ptr=-1;
+		string str_classPtr = typeid( _T *).name();
+
+		int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
+
+		if(idxRegisterdClass == -1){
+			return false;
+		}
+
+		// 1. check all parameters ok.
+		using Traits3 = function_traits<decltype(function_type)>;
+		getParamsFunction<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
+
+
+		// check valid parameters ...
+		if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
+			print_error_cr("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name);
+			return false;
+		}
+
+		for(unsigned int i = 0; i < m_arg.size(); i++){
+			if(getIdxClassFromIts_C_Type(m_arg[i])==-1){
+				print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
+				return false;
+			}
+
+		}
+
+		// ignores special type cast C++ member to ptr function
+		// create binding function class
+		if(idx_return_type == IDX_CLASS_VOID_C){
+			if((ref_ptr=(intptr_t)CNativeFunction::getInstance()->new_proxy_function<void>(m_arg.size(),function_type))==0){//(int)function_ptr;
+				return false;
+			}
+		}
+		else{
+			if((ref_ptr=(intptr_t)CNativeFunction::getInstance()->new_proxy_function<int>(m_arg.size(),function_type))==0){//(int)function_ptr;
+				return false;
+			}
+		}
+
+		// ok, function candidate to be added into class...
+		irs = NEW_SCRIPT_FUNCTION_OBJECT;//CScriptFunctionObject::newScriptFunctionObject();
+
+		// init struct...
+		CASTNode *ast_symbol = CASTNode::newASTNode();
+		ast_symbol->symbol_value = function_name;
+		// get ast symbols function member node...
+		CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
+		ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
+
+
+
+		//irs.object_info.symbol_info.idxScopeVar = -1;
+		irs->object_info.symbol_info.symbol_name=function_name;
+		irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
+
+		irs->object_info.symbol_info.ref_ptr = ref_ptr;
+		irs->m_arg = m_arg;
+		irs->idx_return_type = idx_return_type;
+
+		irs->object_info.symbol_info.idxSymbol = (*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();
+		(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
+		print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
+
+		return true;
+	}
 
 	/**
 	 * Register C Member var
@@ -518,6 +617,13 @@ public:
 		//irs.
 		irs.symbol_name=var_name;
 
+		// init ast
+		CASTNode *ast_symbol = CASTNode::newASTNode();
+		ast_symbol->symbol_value = var_name;
+		// get ast var symbol collection node...
+		CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[0]);
+		ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
+
 
 		irs.properties = PROPERTY_C_OBJECT_REF;
 		irs.idxSymbol = (*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.size();
@@ -528,6 +634,7 @@ public:
 	}
 
 	static bool init();
+	static void destroySingletons();
 
 
 private:

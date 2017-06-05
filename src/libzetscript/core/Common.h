@@ -75,7 +75,7 @@ using std::stack;
 using std::ostringstream;
 
 // Prototypes & structs
-#ifdef D__MEMMANAGER__
+#ifdef __MEMMANAGER__
 #include "../../zs_dev/system/zs_system.h"
 #endif
 
@@ -92,8 +92,10 @@ struct tInfoVarScopeBlock;
 
 int getIdxClassFromIts_C_Type(const string & s);
 
-#define ZS_ERROR			-1
-#define ZS_UNDEFINED_IDX 	-1
+#define ZS_ERROR						-1
+#define ZS_UNDEFINED_IDX 				-1
+#define ZS_FUNCTION_NOT_FOUND_IDX	 	-2
+
 #define MAX_N_ARGS 			 6
 
 enum NODE_TYPE
@@ -253,8 +255,11 @@ enum PROXY_CREATOR {
 
 enum ASM_OPERATOR
 	:unsigned char {
-		END_STATMENT = 0, NOP, STORE, // mov expression to var
-	LOAD, // primitive value like number/string or boolean...
+
+	// ARITMETHIC OPERATORS.
+
+	INVALID_OP=-1,
+	END_STATMENT = 0,
 	EQU,  // ==
 	NOT_EQU,  // !=
 	LT,  // <
@@ -262,23 +267,28 @@ enum ASM_OPERATOR
 	NOT, // !
 	GT,  // >
 	GTE, // >=
-
 	ADD, // +
-	ADD_ASSIGN, // +=
 	NEG, // -a
 	LOGIC_AND, // &&
 	LOGIC_OR,  // ||
 	DIV, // /
-	DIV_ASSIGN, // /=
 	MUL, // *
-	MUL_ASSIGN, // *=
 	MOD,  // %
-	MOD_ASSIGN,  // %=
 	AND, // bitwise logic and
 	OR, // bitwise logic or
 	XOR, // logic xor
 	SHL, // shift left
 	SHR, // shift right
+	MAX_ARITHMETIC_ASM_OPERATORS,
+
+	// other operators ...
+	STORE=MAX_ARITHMETIC_ASM_OPERATORS, // mov expression to var
+	LOAD, // primitive value like number/string or boolean...
+
+	ADD_ASSIGN, // +=
+	DIV_ASSIGN, // /=
+	MUL_ASSIGN, // *=
+	MOD_ASSIGN,  // %=
 	// special internal ops...
 	JMP,
 	JNT, // goto if not true ... goes end to conditional.
@@ -334,7 +344,7 @@ enum
 	//-- VM RUNTIME
 	BIT_IS_C_VAR = MAX_BIT_VAR_TYPE,
 	BIT_IS_STACKVAR,
-	BIT_IS_UNRESOLVED_FUNCTION,
+	//BIT_IS_UNRESOLVED_FUNCTION,
 
 	//BIT_START_FUNCTION_ARGS,
 	MAX_BIT_RUNTIME
@@ -364,7 +374,7 @@ enum
 	:unsigned short {
 		INS_PROPERTY_IS_C_VAR = (0x1 << BIT_IS_C_VAR),
 	INS_PROPERTY_IS_STACKVAR = (0x1 << BIT_IS_STACKVAR),
-	INS_PROPERTY_UNRESOLVED_FUNCTION = (0x1 << BIT_IS_UNRESOLVED_FUNCTION) // always is an script class...
+	//INS_PROPERTY_UNRESOLVED_FUNCTION = (0x1 << BIT_IS_UNRESOLVED_FUNCTION) // always is an script class...
 //INS_PROPERTY_START_FUNCTION_ARGS=	(0x1<<BIT_START_FUNCTION_ARGS)
 };
 
@@ -559,7 +569,7 @@ struct tSymbolInfo {
 
 	tStackElement object; // created object. undefined by default.
 	void * proxy_ptr; // for proxy functions...
-	tSymbolInfo *super_function; // only for functions ...
+	//tSymbolInfo *super_function; // only for functions ...
 	string symbol_value;
 	short idxAstNode; // in case there's ast node...
 
@@ -572,7 +582,7 @@ struct tSymbolInfo {
 		};
 
 		idxAstNode = ZS_UNDEFINED_IDX;
-		super_function = NULL;
+		//super_function = NULL;
 	}
 
 };

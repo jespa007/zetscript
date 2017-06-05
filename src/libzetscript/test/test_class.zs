@@ -1,22 +1,42 @@
-class A{
-	var i;
+
+
+class MyClass{
+	var k;
 	
-	function A(j){
-		var f=j;
-		
-		print("hola"+f);
-		this.i=f;
-		
-		f=2;
-		
-		print("hola"+this.i++);
-		
-		print("hola"+this.i++);
+	function MyClass(a,b){
+		this.k=0;
+		print("CONSTRUCTOR 1"+this.k);
 	}
+	
+	function kk(){
+		print("Hello MyClass"+this.k);
+	}
+	
 };
+/*
+class MyClass2:MyObject{
+	
+	
+	function MyClass2(){
+		//super();
+		//print("CONSTRUCTOR 2");
+	}
+	
+	function print(){
+		print("Hello MyClass 2");
+		super(); 
+	}
+	
+	function prova(g){
+		super(g);
+	}
+	
+};*/
 
-var k="hola caca";
 
-var a = new A(k);
+var yy=1;
+
+var g=new MyClass(yy,1);
+g.kk();
 
 //print(""+a.i);

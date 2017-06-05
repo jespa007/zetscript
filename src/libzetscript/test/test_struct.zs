@@ -24,7 +24,16 @@ var s={
 		
 };
 
+print(s);
+
 s.i=3;
 print(""+(s.i++));
-print(""+(s.i++));
+
+// adds property a with value 1.
+s.add("a",1);
+
+// removes property l
+s.remove("l");
+
+print(s);
 

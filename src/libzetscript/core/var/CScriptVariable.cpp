@@ -16,7 +16,7 @@ tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int 
 	};
 
 	// get super function ...
-	si.super_function = getIdxScriptFunctionObjectByClassFunctionName(symbol_value);
+	//si.super_function = getIdxScriptFunctionObjectByClassFunctionName(symbol_value);
 
 	si.symbol_value = symbol_value;
 	si.idxAstNode = _idxAstNode;
@@ -40,7 +40,8 @@ void CScriptVariable::createSymbols(CScriptClass *ir_class){
 			si = addVariableSymbol(ir_var->symbol_name,ir_var->idxAstNode);
 
 			// Warning if you put any var for primitives (i.e CInteger, CNumber, etc will crash in recursive manner)
-			if(IS_CLASS_C){ // we know the type object so we assign the pointer ...
+			if(ir_var->properties & PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
+			{ // we know the type object so we assign the pointer ...
 				// check if primitive type (only 4 no more no else)...
 				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
@@ -144,6 +145,7 @@ void CScriptVariable::setup(){
 	c_object = NULL;
 	created_object = NULL;
 	m_value = NULL;
+	c_class_create_destroy=NULL;
 	idxScriptClass = -1;
 	aux_string ="";
 
@@ -167,24 +169,30 @@ void CScriptVariable::init(CScriptClass *irv, void *_c_object){
 
 	this->m_infoRegisteredClass = irv;
 	idxScriptClass = irv->metadata_info.object_info.symbol_info.idxScriptClass;
+	c_object = _c_object;
+
+	if(c_object == NULL){
+
+		if(m_infoRegisteredClass->baseClass.size()==1){
+			CScriptClass *base = m_infoRegisteredClass->baseClass[0];
+			if(base->is_c_class()){
+				c_class_create_destroy=base;
+				created_object = (*base->c_constructor)();
+				c_object = created_object;
+			}
+		}else if(m_infoRegisteredClass->is_c_class()){
+				c_class_create_destroy=m_infoRegisteredClass;
+				created_object = (*m_infoRegisteredClass->c_constructor)();
+				c_object = created_object;
+		}
+
+	}
 	//m_rootAst=NULL;
 	//m_registeredVariable = NULL;
 	//m_type = TYPE::SCRIPT_FUNCTION_TYPE;
 	//pointer_function = NULL;
 	//m_scope = scope;
 	//m_parentFunction = _parentFunction;
-
-	if(IS_CLASS_C){
-		if(_c_object == NULL){
-			created_object = (*m_infoRegisteredClass->c_constructor)();
-			c_object = created_object;
-		}else{
-			c_object = _c_object;
-		}
-	}else{
-		c_object = this;
-	}
-
 
 	// only create symbols if not string type to make it fast ...
 	if(idxScriptClass >= MAX_CLASS_C_TYPES && idxScriptClass !=IDX_CLASS_STRING){
@@ -444,10 +452,15 @@ void * CScriptVariable::get_C_Object(){
 	return c_object;
 }
 
+bool CScriptVariable::is_c_object(){
+
+	 return ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != 0);
+}
+
 CScriptVariable::~CScriptVariable(){
 
 	if(created_object != NULL){
-		 (*m_infoRegisteredClass->c_destructor)(created_object);
+		 (*c_class_create_destroy->c_destructor)(created_object);
 	}
 
 

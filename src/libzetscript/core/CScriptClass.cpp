@@ -197,6 +197,13 @@ int CScriptClass::getIdxScriptClass(const string & v, bool print_msg){
 bool CScriptClass::isClassRegistered(const string & v){
 	return getIdxScriptClass_Internal(v) != -1;
 }
+
+bool CScriptClass::is_c_class(){
+
+	 return ((metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != 0);
+}
+
+
 //------------------------------------------------------------
 
 fntConversionType CScriptClass::getConversionType(string objectType, string conversionType, bool show_errors){
@@ -267,14 +274,23 @@ public:
 		print_info_cr("MyObject built!!!");
 	}
 
-	MyObject(MyObject2 *pp){
+	void setup(int *i1, int *i2){
 		i=0;
-		print_info_cr("MyObject built2!!!");
+		print_info_cr("MyObject built2!!! i1:%i i2:%i",*i1,*i2);
 	}
 
 	void print(){
 		print_info_cr("My object v:%i",i);
 	}
+
+	void prova(int *j){
+		print_info_cr("My object v:%i",*j);
+	}
+
+	static MyObject * _add(MyObject *v1, MyObject *v2){
+		return new MyObject();
+	}
+
 
 	~MyObject(){
 		print_info_cr("MyObject destroyed!!!");
@@ -471,8 +487,12 @@ public:
 
 
 		if(!register_C_Class<MyObject>("MyObject")) return false;
+		if(!register_C_FunctionConstructor(MyObject,setup)) return false;
+
 		if(!register_C_FunctionMember(MyObject,print)) return false;
 		if(!register_C_VariableMember(MyObject,i)) return false;
+		//if(!register_C_Function(MyObject::_add)) return false;
+		if(!register_C_StaticFunctionMember(MyObject,_add)) return false;
 		//offsetof(MyObject,i);
 
 
@@ -484,6 +504,37 @@ public:
 
 
 		return true;
+ }
+
+
+ void CScriptClass::destroySingletons(){
+	 if(VOID_TYPE_STR != NULL){
+	    delete VOID_TYPE_STR;
+	 }
+
+
+	 if(INT_PTR_TYPE_STR != NULL){
+		 delete INT_PTR_TYPE_STR;
+	 }
+
+	 if(FLOAT_PTR_TYPE_STR != NULL){
+		 delete FLOAT_PTR_TYPE_STR;
+	 }
+
+
+	 if(STRING_PTR_TYPE_STR != NULL){
+		 delete STRING_PTR_TYPE_STR;
+	 }
+
+	 if(BOOL_PTR_TYPE_STR != NULL){
+		 delete BOOL_PTR_TYPE_STR;
+	 }
+
+	 VOID_TYPE_STR=NULL;
+	 INT_PTR_TYPE_STR=NULL;
+	 FLOAT_PTR_TYPE_STR=NULL;
+	 STRING_PTR_TYPE_STR=NULL;
+	 BOOL_PTR_TYPE_STR=NULL;
  }
 
 
@@ -589,7 +640,7 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoA
 
 			for(int i = current_function-1; i >= 0 && idx_super==-1; i--){
 				CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(info_function->local_symbols.vec_idx_registeredFunction[i]);
-				if((irfs->symbol_info.symbol_name == symbol_to_find) && ((int)sfo->m_arg.size() == n_args_to_find)){ // match name and args ...
+				if((sfo->object_info.symbol_info.symbol_name == symbol_to_find) && ((int)sfo->m_arg.size() == n_args_to_find)){ // match name and args ...
 					idx_super=i;
 				}
 			}

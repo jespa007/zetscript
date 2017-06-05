@@ -230,9 +230,7 @@ CCompiler::CCompiler(){
 
 	//		VAR  			|	STR   | ID | NUM OP
 	//----------------------+---------+----+-------
-	def_operator[NOP]         ={"NOP" ,NOP ,0      };
-	def_operator[STORE]         ={"STORE" ,STORE ,2}; // mov expression to var
-	def_operator[LOAD]        ={"LOAD",LOAD ,1}; // primitive value like number/string or boolean...
+
 	def_operator[EQU]         ={"EQU" ,EQU ,2};  // ==
 	def_operator[NOT_EQU]     ={"NOT_EQU" ,NOT_EQU ,2};  // !=
 	def_operator[LT]          ={"LT"  ,LT ,2};  // <
@@ -248,15 +246,21 @@ CCompiler::CCompiler(){
 	def_operator[MUL]         ={"MUL",MUL,2}; // *
 	def_operator[MOD]         ={"MOD",MOD,2};  // %
 
-	def_operator[ADD_ASSIGN]  ={"ADD_ASSIGN" ,ADD_ASSIGN,2}; // +
-	def_operator[DIV_ASSIGN]  ={"DIV_ASSIGN",DIV_ASSIGN,2}; // /
-	def_operator[MUL_ASSIGN]  ={"MUL_ASSIGN",MUL_ASSIGN,2}; // *
-	def_operator[MOD_ASSIGN]  ={"MOD_ASSIGN",MOD_ASSIGN,2};  // %
 	def_operator[AND]         ={"AND",AND,2}; // bitwise logic and
 	def_operator[OR]          ={"OR",OR,2}; // bitwise logic or
 	def_operator[XOR]         ={"XOR",XOR,2}; // logic xor
 	def_operator[SHL]         ={"SHL",SHL,2}; // shift left
 	def_operator[SHR]         ={"SHR",SHR,2}; // shift right
+
+	def_operator[ADD_ASSIGN]  ={"ADD_ASSIGN" ,ADD_ASSIGN,2}; // +
+	def_operator[DIV_ASSIGN]  ={"DIV_ASSIGN",DIV_ASSIGN,2}; // /
+	def_operator[MUL_ASSIGN]  ={"MUL_ASSIGN",MUL_ASSIGN,2}; // *
+	def_operator[MOD_ASSIGN]  ={"MOD_ASSIGN",MOD_ASSIGN,2};  // %
+
+
+	def_operator[STORE]         ={"STORE" ,STORE ,2}; // mov expression to var
+	def_operator[LOAD]        ={"LOAD",LOAD ,1}; // primitive value like number/string or boolean...
+
 	def_operator[JMP]         ={"JMP",JMP,2}; // Unconditional jump.
 	def_operator[JNT]         ={"JNT",JNT,2}; // goto if not true ... goes end to conditional.
 	def_operator[JT]          ={"JT",JT,2}; // goto if true ... goes end to conditional.
@@ -865,7 +869,7 @@ ASM_OPERATOR CCompiler::puntuator2instruction(PUNCTUATOR_TYPE op){
 		return ASM_OPERATOR::OBJECT_ACCESS;
 
 	}
-	return NOP;
+	return INVALID_OP;
 }
 
 bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  string & error_str, int op_index_left, int op_index_right){
@@ -959,7 +963,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 		return true;
 	}
 	ASM_OPERATOR asm_op;
-	if((asm_op= puntuator2instruction(op))!=NOP){
+	if((asm_op= puntuator2instruction(op))!=INVALID_OP){
 		iao = new tInfoAsmOpCompiler();
 		iao->operator_type = asm_op;
 		iao->index_op1 = op_index_left;
@@ -1442,8 +1446,8 @@ int CCompiler::gacExpression_Recursive(short idxAstNode, CScope *_lc, int & inde
 				// node children[1]: body-if
 				// node children[2]: body-else
 				//inline_if_else = true;
-				print_error_cr("Ternary operator not implemented!!!!");
-				return ZS_UNDEFINED_IDX;
+				//print_error_cr("Ternary operator not implemented!!!!");
+				//return ZS_UNDEFINED_IDX;
 
 				int t1= gacInlineIf(_node->idxAstNode,_lc,index_instruction);
 
@@ -1557,6 +1561,8 @@ PASTNode itHasReturnSymbol(PASTNode _node){
 bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScriptClass *current_class){
 
 	PASTNode _node_ret=NULL;
+	string symbol_value;
+
 
 	if(current_class == NULL){
 		return true;
@@ -1574,20 +1580,42 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScrip
 	string current_class_name = current_class->metadata_info.object_info.symbol_info.symbol_name;
 
 	// register all vars...
+
 	for(unsigned i = 0; i < AST_NODE(node_class->children[0])->children.size(); i++){ // foreach declared var.
 
 		PASTNode child_node = AST_NODE(AST_NODE(node_class->children[0])->children[i]);
 
 		for(unsigned j = 0; j < child_node->children.size(); j++){ // foreach element declared within ','
-			if(CScriptClass::registerVariableSymbol(
+
+			tInfoVariableSymbol *irs_dest=NULL;
+			symbol_value = AST_NODE(child_node->children[j])->symbol_value;
+
+			if((irs_dest=CScriptClass::registerVariableSymbol(
 					class_name,
 					AST_NODE(child_node->children[j])->symbol_value,
 					child_node->children[j]
-				) == NULL){
+				)) == NULL){
 				return false;
+			}
+
+			if(current_class->is_c_class()){
+
+				tInfoVariableSymbol *irs_src=CScriptClass::getRegisteredVariableSymbol(current_class_name, symbol_value);
+
+				if(irs_src){
+
+					// copy c refs ...
+					irs_dest->ref_ptr=irs_src->ref_ptr;
+					irs_dest->c_type = irs_src->c_type;
+					irs_dest->idxAstNode=-1;
+					irs_dest->properties = irs_src->properties;
+				}else{
+					return false;
+				}
 			}
 		}
 	}
+
 
 	// register all functions ...
 	for(unsigned i = 0; i < AST_NODE(node_class->children[1])->children.size(); i++){
@@ -1612,11 +1640,34 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScrip
 			return false;
 		}
 
-		// compile function (within scope class)...
-		if(!gacFunctionOrOperator(node_fun->idxAstNode, SCOPE_INFO_NODE(node_class->idxScope),irfs)){
-			return false;
+		if(current_class->is_c_class()){ // set c refs ...
+
+			CScriptFunctionObject *irs_src=CScriptClass::getScriptFunctionObjectByClassFunctionName(current_class_name, symbol_value);
+
+			if(irs_src){
+
+				// copy c refs ...
+				irfs->object_info.symbol_info.symbol_name=irs_src->object_info.symbol_info.symbol_name;
+				irfs->object_info.symbol_info.properties = irs_src->object_info.symbol_info.properties;
+
+				irfs->object_info.symbol_info.ref_ptr = irs_src->object_info.symbol_info.ref_ptr;
+				irfs->m_arg = irs_src->m_arg;
+				irfs->idx_return_type = irs_src->idx_return_type;
+
+			}else{
+				return false;
+			}
+
+		}else{ // compile function ...
+			// compile function (within scope class)...
+			if(!gacFunctionOrOperator(node_fun->idxAstNode, SCOPE_INFO_NODE(node_class->idxScope),irfs)){
+				return false;
+			}
+
+
 		}
 	}
+
 	return true;
 }
 
@@ -1924,10 +1975,10 @@ int CCompiler::gacInlineIf(short idxAstNode, CScope * _lc, int & instruction){
 	//insert_Save_CurrentInstruction();
 	//insert_Load_CurrentInstruction();
 
-	r+=2; // add +2 load +save ...
+	//r+=2; // add +2 load +save ...
 
-	asm_op_jmp_end->index_op1 = getCurrentStatmentIndex();
-	asm_op_jmp_end->index_op2 = getCurrentInstructionIndex();
+	asm_op_jmp_end->index_op1 = getCurrentInstructionIndex()+1;
+	asm_op_jmp_end->index_op2 = getCurrentStatmentIndex();
 
 	instruction = r+1;
 

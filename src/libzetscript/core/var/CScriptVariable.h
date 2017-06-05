@@ -7,7 +7,7 @@
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
 
-#define IS_CLASS_C ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF)
+//#define IS_CLASS_C ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF)
 
 
 class CScriptClass;
@@ -63,6 +63,7 @@ public:
 	vector <tSymbolInfo> * getVectorFunctionSymbol();
 
 	void * get_C_Object();
+	bool is_c_object();
 
 	CScriptFunctionObject *getConstructorFunction();
 
@@ -87,6 +88,7 @@ protected:
 	 * This variable tells whether is pointer function or not.
 	 */
 	CScriptClass *m_infoRegisteredClass;
+	CScriptClass *c_class_create_destroy;
 
 
 

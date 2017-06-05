@@ -28,4 +28,8 @@ var v3=v1+v2; // add a+b and
 print("v3=("+v3.x+","+v3.y+")");
 
 
+var o1=new MyObject(),o2=new MyObject();
+
+o1+o2;
+
 

@@ -40,6 +40,7 @@ void CZetScript::destroy(){
 	CCompiler::destroySingletons();
 	CState::destroySingletons();
 	CNativeFunction::destroySingletons();
+	CScriptClass::destroySingletons();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -198,7 +198,6 @@ CASTNode	*CASTNode::newASTNode(){
 	}
 
 	CASTNode	*ast_node = new CASTNode();
-	new CASTNode();
 	vec_ast_node->push_back(ast_node);
 	ast_node->idxAstNode = vec_ast_node->size()-1;
 	return ast_node;
@@ -409,11 +408,16 @@ bool CASTNode::parseLogicNotEqualPunctuator(const char *s){
 }
 
 bool CASTNode::parseLogicGreatherThanPunctuator(const char *s){
-	return *s == '>';
+	if( *s == '>')
+		return (*(s+1) != '>');
+	return false;
 }
 
 bool CASTNode::parseLogicLessThanPunctuator(const char *s){
-	return *s == '<';
+	if(*s == '<')
+		return (*(s+1) != '<');
+
+	return false;
 }
 
 bool CASTNode::parseLogicGreatherEqualThanPunctuator(const char *s){
@@ -1086,9 +1090,9 @@ char * CASTNode::deduceExpression(const char *str, int & m_line, CScope *scope_i
 			 else{
 				 aux = word_str;
 			 }
-		 }else{
-			 print_error_cr("Cannot parse ");
-			 return NULL;
+		 }else{ // try parse expression...
+			 //print_error_cr("Cannot parse ");
+			 return parseExpression_Recursive(aux,  m_line, scope_info, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
 		 }
 	}
 
@@ -1163,6 +1167,8 @@ char *CASTNode::getSymbolValue(
 
 		// update '('
 		aux=aux+1;
+
+		// only parse no evaluate (don't save ast node)
 		end_expression = parseExpression_Recursive(aux, m_line, scope_info);//, ast_node_to_be_evaluated, type_group,parent);
 
 		if(*end_expression != ')'){
@@ -1795,10 +1801,10 @@ char * CASTNode::parseClass(const char *s,int & m_line, CScope *scope_info, PAST
 
 				ext_name=CStringUtils::copyStringFromInterval(aux_p, end_p);
 
-				if(CScriptClass::isClassRegistered(ext_name)){
+				/*if(!CScriptClass::isClassRegistered(ext_name)){
 					print_error_cr("extended class \"%s\" not exist");
 					return NULL;
-				}
+				}*/
 
 				if(ast_node_to_be_evaluated != NULL){
 					if((base_class_node = CASTNode::newASTNode()) == NULL) return NULL;

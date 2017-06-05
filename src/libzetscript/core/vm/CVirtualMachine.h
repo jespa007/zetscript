@@ -233,7 +233,7 @@ private:
 
 	char		str_aux[8192];
 	float 		f_aux_value1,f_aux_value2;
-	 string 	aux_string;
+	 string 	aux_string,symbol_to_find;
 	// vector<CASTNode *> *vec_ast_node;
 	// CSharedPointerManager *instance_gc;
 	CUndefined				*VM_UNDEFINED; // it holds UNDEFINED_VAR.
