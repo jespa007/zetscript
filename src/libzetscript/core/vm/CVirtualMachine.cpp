@@ -1101,32 +1101,6 @@ CScriptVariable * CVirtualMachine::execute(
 
 	if(arg!=NULL){
 
-		/*if(arg->size() > 0){
-			for(unsigned j=0; j < arg->size(); j++){
-				switch(arg->at(j)->idxScriptClass){
-				case IDX_PRIMITIVE_INTEGER:
-					(*_ptrIniCurrentOp++)={INS_PROPERTY_TYPE_INTEGER,&((CInteger *)arg->at(j))->m_value};
-					break;
-				case IDX_PRIMITIVE_FLOAT:
-					(*_ptrIniCurrentOp++)={INS_PROPERTY_TYPE_NUMBER,&((CNumber *)arg->at(j))->m_value};
-					break;
-				case IDX_CLASS_BOOLEAN:
-					(*_ptrIniCurrentOp++)={INS_PROPERTY_TYPE_BOOLEAN,&((CBoolean *)arg->at(j))->m_value};
-					break;
-				case IDX_CLASS_STRING:
-					(*_ptrIniCurrentOp++)={INS_PROPERTY_TYPE_STRING,&((CString *)arg->at(j))->m_value};
-					break;
-				default:
-				case IDX_CLASS_SCRIPT_VAR:
-					(*_ptrIniCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,arg->at(j)};
-					break;
-
-
-				}
-			}
-
-		}*/
-
 		//advance idxBaseStk...
 		//idxBaseStk+=arg->size();
 		//n_arg=arg->size();
@@ -1140,6 +1114,8 @@ CScriptVariable * CVirtualMachine::execute(
 			n_arg);
 
 	//idxBaseStk-=arg->size();
+
+	return UNDEFINED_SYMBOL;
 }
 
 
@@ -1256,17 +1232,17 @@ tStackElement * CVirtualMachine::execute_internal(
 
 
 
-	bool	aux_boolean=false;
+	//bool	aux_boolean=false;
 	float aux_float=0.0;
 	CScriptVariable * ret_scriptvariable_node =NULL;
-	unsigned char operator_type=NOP;
-	CScriptVariable *var_aux=NULL;
-	CScriptVariable **obj=NULL;
+
+	//CScriptVariable *var_aux=NULL;
+	//CScriptVariable **obj=NULL;
 	CScriptFunctionObject * aux_function_info=NULL;
 	tStackElement *ret_obj=NULL;
 
 	CScriptVariable *svar=NULL;
-	CScriptFunctionObject *constructor_function=NULL;
+	//CScriptFunctionObject *constructor_function=NULL;
 	CScriptVariable *calling_object=NULL;
 
 	//tStackElement *stkResultInstructionIteration = ptrBaseOp;
@@ -1281,13 +1257,13 @@ tStackElement * CVirtualMachine::execute_internal(
 	//unsigned short scope_properties=0;
 	unsigned short instruction_properties=0;
 	tSymbolInfo *si;
-	CScriptVariable **ptr_var_object=NULL;
+	//CScriptVariable **ptr_var_object=NULL;
 	CScriptVariable *var_object = NULL;
 	//int start_index_local_var = 0;
 
 	unsigned short scope_type=0;//GET_INS_PROPERTY_SCOPE_TYPE(instruction->instruction_properties);
-	short int pre_post_operator_type=0;//GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties);
-	CCompiler::tInfoConstantValue * info_constant=NULL;
+	//short int pre_post_operator_type=0;//GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties);
+	//CCompiler::tInfoConstantValue * info_constant=NULL;
 	//int index_op1 = -1;//
 	//int index_op2 = -1;
 	//tStackElement *ptrSavedInstruction=NULL;
@@ -1325,8 +1301,9 @@ tStackElement * CVirtualMachine::execute_internal(
 			if(operator_type==END_STATMENT){
 				goto lbl_exit_statment;
 			}
-			else if(operator_type==NOP){ // ignore ...
-				continue;
+			else if(operator_type<0){ // ignore ...
+				print_error_cr("unexpected INVALID_OP");
+				return NULL;
 			}
 			else if(
 					   operator_type==LOAD
@@ -1525,7 +1502,7 @@ tStackElement * CVirtualMachine::execute_internal(
 					}*/
 					void *function_obj=NULL;
 					vector<int> *vec_functions;
-					unsigned short function_properties=0;
+					//unsigned short function_properties=0;
 					CScriptVariable * class_obj=NULL;
 					int index_op2 = (int)instruction->index_op2;
 					instruction_properties=instruction->instruction_properties;
@@ -2272,7 +2249,7 @@ tStackElement * CVirtualMachine::execute_internal(
 					symbol_to_find = AST_NODE(iao->idxAstNode)->symbol_value;
 					//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
 					unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
-					tSymbolInfo * si=NULL;
+					//tSymbolInfo * si=NULL;
 
 
 					//if(
@@ -2308,7 +2285,7 @@ tStackElement * CVirtualMachine::execute_internal(
 						bool all_check=true;
 
 						// startArgs point to first stack value ...
-						bool found = NULL;
+						//bool found = NULL;
 						//CScriptVariable * base_var=NULL;
 
 

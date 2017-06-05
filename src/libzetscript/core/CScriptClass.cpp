@@ -1140,7 +1140,7 @@ bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_pt
 		return false;
 	}
 
-	CScope *scp = MAIN_SCOPE_ROOT;
+	//CScope *scp = MAIN_SCOPE_ROOT;
 
 	if(!MAIN_SCOPE_ROOT->registerSymbol(var_name)){
 		return false;

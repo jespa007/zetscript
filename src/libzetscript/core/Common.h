@@ -254,7 +254,7 @@ enum PROXY_CREATOR {
 };
 
 enum ASM_OPERATOR
-	:unsigned char {
+	:char {
 
 	// ARITMETHIC OPERATORS.
 

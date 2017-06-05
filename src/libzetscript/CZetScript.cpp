@@ -409,7 +409,7 @@ bool CZetScript::eval(const string & s){
 
 	return false;
 }
-
+/*
 std::function<CScriptVariable * ( std::vector<CScriptVariable *> args)> * CZetScript::script_call(const string &script_function_name){
 
 	//CScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
@@ -437,7 +437,7 @@ std::function<CScriptVariable * ( std::vector<CScriptVariable *> args)> * CZetSc
 
 	return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
 }
-
+*/
 
 CVirtualMachine * CZetScript::getVirtualMachine(){
 	return vm;

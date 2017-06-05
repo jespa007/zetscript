@@ -626,14 +626,6 @@ CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JT_Instruction(int jmp_stateme
 	return asm_op;
 }
 
-void CCompiler::insert_NOP_Instruction(){
-	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-	asm_op->index_op1 = 0;//&(this->m_currentFunctionInfo->stament[dest_statment]);
-	asm_op->operator_type=ASM_OPERATOR::NOP;
-	ptr_current_statement_op->asm_op.push_back(asm_op);
-}
-
 void CCompiler::insert_CreateArrayObject_Instruction(short idxAstNode){
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 	tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
@@ -2387,7 +2379,7 @@ bool CCompiler::compile(short idxAstNode, CScriptFunctionObject *sf){
 		return false;
 	}
 
-	CScope *_scope =AST_SCOPE_INFO(idxAstNode);
+	//CScope *_scope =AST_SCOPE_INFO(idxAstNode);
 
 	if(_node->node_type == NODE_TYPE::BODY_NODE ){
 		pushFunction(_node->idxAstNode,sf);

@@ -7,3 +7,13 @@
 /perf.data.old
 /bin/
 /.pydevproject
+/ALL_BUILD.vcxproj
+/ALL_BUILD.vcxproj.filters
+/libzetscript.sdf
+/libzetscript.sln
+/ZERO_CHECK.vcxproj
+/ZERO_CHECK.vcxproj.filters
+/zetscript.vcxproj
+/zetscript.vcxproj.filters
+/Win32/
+/zetscript.dir/

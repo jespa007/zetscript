@@ -2619,7 +2619,7 @@ char * CASTNode::parseSwitch(const char *s,int & m_line,  CScope *scope_info, PA
 
 	// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 	char *aux_p = (char *)s;
-	char *end_expr, *end_symbol,*start_symbol;
+	char *end_symbol,*start_symbol;
 	PASTNode switch_node=NULL,
 			 	 group_cases=NULL,
 				 case_value_node=NULL,
