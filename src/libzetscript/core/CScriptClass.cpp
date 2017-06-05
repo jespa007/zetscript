@@ -21,7 +21,28 @@ string  * CScriptClass::BOOL_PTR_TYPE_STR=NULL;//	typeid(bool *).name()
  //CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
  //CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 
+// register metamethods str ...
 
+/*"_equ",EQU_METAMETHOD,  // ==
+"_not_equ",NOT_EQU_METAMETHOD,  // !=
+"_lt",LT_METAMETHOD,  // <
+"_lte",LTE_METAMETHOD,  // <=
+"_not",NOT_METAMETHOD, // !
+"_gt",GT_METAMETHOD,  // >
+"_gte",GTE_METAMETHOD, // >=
+"_add",ADD_METAMETHOD, // +
+"_neg",NEG_METAMETHOD, // -a
+"_land",LOGIC_AND_METAMETHOD, // &&
+"_lor",LOGIC_OR_METAMETHOD,  // ||
+"_div",DIV_METAMETHOD, // /
+"_mul",MUL_METAMETHOD, // *
+"_mod",MOD_METAMETHOD,  // %
+"_and",AND_METAMETHOD, // bitwise logic and
+"_or",OR_METAMETHOD, // bitwise logic or
+"_xor",XOR_METAMETHOD, // logic xor
+"_shl",SHL_METAMETHOD, // shift left
+"_shr",SHR_METAMETHOD, // shift right
+*/
  //--obj , type convert, ---
  map<string,map<string,fntConversionType>> CScriptClass::mapTypeConversion;
 

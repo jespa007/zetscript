@@ -260,6 +260,8 @@ enum ASM_OPERATOR
 
 	INVALID_OP=-1,
 	END_STATMENT = 0,
+	STORE, // mov expression to var
+	LOAD, // primitive value like number/string or boolean...
 	EQU,  // ==
 	NOT_EQU,  // !=
 	LT,  // <
@@ -279,11 +281,6 @@ enum ASM_OPERATOR
 	XOR, // logic xor
 	SHL, // shift left
 	SHR, // shift right
-	MAX_ARITHMETIC_ASM_OPERATORS,
-
-	// other operators ...
-	STORE=MAX_ARITHMETIC_ASM_OPERATORS, // mov expression to var
-	LOAD, // primitive value like number/string or boolean...
 
 	ADD_ASSIGN, // +=
 	DIV_ASSIGN, // /=
@@ -314,6 +311,32 @@ enum ASM_OPERATOR
 	PUSH_ATTR,
 	MAX_OPERATORS
 
+};
+
+
+enum METAMETHOD_OPERATOR
+	:char {
+		EQU_METAMETHOD,  // ==
+		NOT_EQU_METAMETHOD,  // !=
+		LT_METAMETHOD,  // <
+		LTE_METAMETHOD,  // <=
+		NOT_METAMETHOD, // !
+		GT_METAMETHOD,  // >
+		GTE_METAMETHOD, // >=
+		ADD_METAMETHOD, // +
+		NEG_METAMETHOD, // -a
+		LOGIC_AND_METAMETHOD, // &&
+		LOGIC_OR_METAMETHOD,  // ||
+		DIV_METAMETHOD, // /
+		MUL_METAMETHOD, // *
+		MOD_METAMETHOD,  // %
+		AND_METAMETHOD, // bitwise logic and
+		OR_METAMETHOD, // bitwise logic or
+		XOR_METAMETHOD, // logic xor
+		SHL_METAMETHOD, // shift left
+		SHR_METAMETHOD, // shift right
+
+		MAX_METAMETHOD_OPERATORS
 };
 
 /*

@@ -77,6 +77,8 @@ public:
 	string classPtrType; // type_id().name();
 	vector<CScriptClass *> baseClass; // in the case is and extension of class.
 
+	vector<int> metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
+
 	CScriptClass();
 
 	bool is_c_class();
