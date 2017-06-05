@@ -8,7 +8,7 @@ project(zg_base)
 #
 # COMMON PARAMS
 #
-  SET( COMMON_PARAMS " -D__STDC_CONSTANT_MACROS -std=c++1y -I${PROJECT_SOURCE_DIR} -I${PROJECT_SOURCE_DIR}/../zetscript -pthread -Wall")
+  SET( COMMON_PARAMS " -D__STDC_CONSTANT_MACROS -std=c++1y -I${PROJECT_SOURCE_DIR} -I${PROJECT_SOURCE_DIR}/../libzetscript -pthread -Wall")
    
 if (MINGW)
 	set(CMAKE_LEGACY_MINGW_WIN32 0)
