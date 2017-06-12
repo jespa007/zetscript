@@ -24,22 +24,22 @@ public:
 			proxy_function=(void *)(new std::function<_R ()>(std::bind((_R (*)())fun_obj)));
 			break;
 		case 1:
-			proxy_function=(void *)( new std::function<_R (int)>(std::bind((_R (*)(int))fun_obj, _1)));
+			proxy_function=(void *)( new std::function<_R (intptr_t)>(std::bind((_R (*)(intptr_t))fun_obj, _1)));
 			break;
 		case 2:
-			proxy_function=(void *)( new std::function<_R (int,int)>(std::bind((_R (*)(int,int))fun_obj, 1,_2)));
+			proxy_function=(void *)( new std::function<_R (intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t))fun_obj, _1,_2)));
 			break;
 		case 3:
-			proxy_function= (void *)(new std::function<_R (int,int,int)>(std::bind((_R (*)(int,int,int))fun_obj, 1,_2,_3)));
+			proxy_function= (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t,intptr_t))fun_obj, _1,_2,_3)));
 			break;
 		case 4:
-			proxy_function=(void *)( new std::function<_R (int,int,int,int)>(std::bind((_R (*)(int,int,int,int))fun_obj, 1,_2,_3,_4)));
+			proxy_function=(void *)( new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t,intptr_t,intptr_t))fun_obj, _1,_2,_3,_4)));
 			break;
 		case 5:
-			proxy_function=(void *)( new std::function<_R (int,int,int,int,int)>(std::bind((_R (*)(int,int,int,int,int))fun_obj, 1,_2,_3,_4,_5)));
+			proxy_function=(void *)( new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))fun_obj, _1,_2,_3,_4,_5)));
 			break;
 		case 6:
-			proxy_function=(void *)( new std::function<_R (int,int,int,int,int,int)>(std::bind((_R (*)(int,int,int,int,int,int))fun_obj, 1,_2, _3, _4, _5, _6)));
+			proxy_function=(void *)( new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))fun_obj, _1,_2, _3, _4, _5, _6)));
 			break;
 		default:
 			print_error_cr("Max argyments reached!");
@@ -72,22 +72,22 @@ public:
 			delete (std::function<_R ()>*)obj;
 			break;
 		case 1:
-			delete (std::function<_R (int)>*)obj;
+			delete (std::function<_R (intptr_t)>*)obj;
 			break;
 		case 2:
-			delete (std::function<_R (int,int)>*)obj;
+			delete (std::function<_R (intptr_t,intptr_t)>*)obj;
 			break;
 		case 3:
-			delete (std::function<_R (int,int,int)>*)obj;
+			delete (std::function<_R (intptr_t,intptr_t,intptr_t)>*)obj;
 			break;
 		case 4:
-			delete (std::function<_R (int,int,int,int)>*)obj;
+			delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)>*)obj;
 			break;
 		case 5:
-			delete (std::function<_R (int,int,int,int,int)>*)obj;
+			delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>*)obj;
 			break;
 		case 6:
-			delete (std::function<_R (int,int,int,int,int,int)>*)obj;
+			delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>*)obj;
 			break;
 		default:
 			print_error_cr("Max argyments reached!");
@@ -128,10 +128,10 @@ public:
 				void *return_val=NULL;
 
 				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int)>(std::bind((_R (_T::*)(int))(fun_obj), (_T *)obj, _1)));
+					return_val=  (void *)(new std::function<_R (intptr_t)>(std::bind((_R (_T::*)(intptr_t))(fun_obj), (_T *)obj, _1)));
 				}
 				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int)> *)obj;
+					delete (std::function<_R (intptr_t)> *)obj;
 				}
 				return return_val;
 			});
@@ -142,10 +142,10 @@ public:
 				void *return_val=NULL;
 
 				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int,int)>(std::bind((_R (_T::*)(int,int))(fun_obj), (_T *)obj, _1,_2)));
+					return_val=  (void *)(new std::function<_R (intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2)));
 				}
 				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int,int)> *)obj;
+					delete (std::function<_R (intptr_t,intptr_t)> *)obj;
 				}
 				return return_val;
 			});
@@ -156,10 +156,10 @@ public:
 				void *return_val=NULL;
 
 				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int,int,int)>(std::bind((_R (_T::*)(int,int,int))(fun_obj), (_T *)obj, _1,_2,_3)));
+					return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3)));
 				}
 				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int,int,int)> *)obj;
+					delete (std::function<_R (intptr_t,intptr_t,intptr_t)> *)obj;
 				}
 				return return_val;
 			});
@@ -170,10 +170,10 @@ public:
 				void *return_val=NULL;
 
 				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int,int,int,int)>(std::bind((_R (_T::*)(int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
+					return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
 				}
 				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int,int,int,int)> *)obj;
+					delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)> *)obj;
 				}
 				return return_val;
 			});
@@ -185,10 +185,10 @@ public:
 				void *return_val=NULL;
 
 				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val=  (void *)(new std::function<_R (int,int,int,int,int)>(std::bind((_R (_T::*)(int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
+					return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
 				}
 				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<_R (int,int,int,int,int)> *)obj;
+					delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)obj;
 				}
 				return return_val;
 			});
@@ -200,10 +200,10 @@ public:
 				void *return_val=NULL;
 
 				if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-					return_val= (void *)(new std::function<_R (int,int,int,int,int,int)>(std::bind((_R (_T::*)(int,int,int,int,int,int))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
+					return_val= (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
 				}
 				else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-					delete (std::function<int (int,int,int,int,int,int)> *)obj;
+					delete (std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)obj;
 				}
 				return return_val;
 			});

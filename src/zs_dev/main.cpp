@@ -5,12 +5,60 @@
 int print_hello(int hh){
 	return hh+1;
 }
+/*
+class Prova{
 
 
+
+public:
+
+	int i;
+
+	Prova(){
+		i=0;
+	}
+
+	Prova(int h){
+		i=h;
+	}
+
+	static Prova * _add(Prova *v1, Prova * v2){
+
+
+		return new Prova(v1->i+ v2->i);
+	}
+
+};
+
+
+intptr_t  _add(intptr_t v1, intptr_t  v2){
+		printf("%p %p\n",v1,v2);
+
+		return (intptr_t)(new Prova(v1+ v2));
+	}
+*/
 int main(int argc, char * argv[]){
 
+	/*using namespace std::placeholders;
 
+	printf("HOLA\n");
 
+	//intptr_t fun_ptr=(intptr_t)&_add;
+	void * proxy_function=(void *)( new std::function<intptr_t (intptr_t, intptr_t )>(std::bind((intptr_t (*)(intptr_t,intptr_t))_add, _1,_2)));
+
+	Prova *v1=new Prova(5);
+	Prova *v2=new Prova(2);
+
+	printf("HOLA %p %p\n",v1,v2);
+
+	intptr_t p=(*((std::function<intptr_t (intptr_t,intptr_t )> *)proxy_function))(
+			(intptr_t)v1,
+			(intptr_t)v2
+							);
+
+	printf("result %i\n",((Prova *)p)->i);
+	return 0;
+*/
 /*	vector<char> vp1;
 	char *vp2= (char *)malloc(N_INTS);
 	struct timeval start, end;

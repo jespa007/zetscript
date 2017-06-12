@@ -5,7 +5,7 @@ CUndefined *CUndefined::undefined_symbol = NULL;
 CUndefined * UNDEFINED_SYMBOL{
 	if(undefined_symbol == NULL){
 		undefined_symbol = new CUndefined();
-		undefined_symbol->init(CScriptClass::getRegisteredClassUndefined(), (void *)undefined_symbol);
+		undefined_symbol->init(CScriptClass::getRegisteredClassUndefined(), undefined_symbol);
 	}
 
 	return undefined_symbol;

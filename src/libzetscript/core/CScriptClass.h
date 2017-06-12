@@ -66,14 +66,14 @@ public:
 	static string  *FLOAT_PTR_TYPE_STR;//	typeid(float *).name()
 	static string  *STRING_PTR_TYPE_STR;//	typeid(string *).name()
 	static string  *BOOL_PTR_TYPE_STR;//	typeid(bool *).name()
-
+	static char     registered_metamethod[MAX_METAMETHOD_OPERATORS][50];
 
 	CScriptFunctionObject	metadata_info;
 	int idx_function_script_constructor;
 	//int idxScriptClass;
 
-	std::function<void *()> 		* 	c_constructor;
-	std::function<void (void *p)> 	*	c_destructor;
+	std::function<void * ()> 		* 	c_constructor;
+	std::function<void (void *  p)> 	*	c_destructor;
 	string classPtrType; // type_id().name();
 	vector<CScriptClass *> baseClass; // in the case is and extension of class.
 
@@ -573,15 +573,34 @@ public:
 
 		//irs.object_info.symbol_info.idxScopeVar = -1;
 		irs->object_info.symbol_info.symbol_name=function_name;
-		irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
+		irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
 		irs->object_info.symbol_info.ref_ptr = ref_ptr;
 		irs->m_arg = m_arg;
 		irs->idx_return_type = idx_return_type;
-
 		irs->object_info.symbol_info.idxSymbol = (*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();
 		(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 		print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
+
+		// check whether is metamethod...
+
+		for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
+			if(STRCMP(registered_metamethod[i],==,function_name)){
+				if(return_type != str_classPtr){
+					print_error_cr("error registering metamethod %s::%s. Expected return %s but it was %s",
+							demangle(typeid(_T).name()).c_str(),
+							function_name,
+							demangle(str_classPtr.c_str()),
+							demangle(return_type.c_str()));
+					return false;
+				}
+
+				(*vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
+
+				print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
+				break;
+			}
+		}
 
 		return true;
 	}

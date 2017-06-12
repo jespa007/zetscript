@@ -17,7 +17,7 @@ string  * CScriptClass::FLOAT_PTR_TYPE_STR=NULL;//	typeid(float *).name()
 string  * CScriptClass::STRING_PTR_TYPE_STR=NULL;//	typeid(string *).name()
 string  * CScriptClass::BOOL_PTR_TYPE_STR=NULL;//	typeid(bool *).name()
 
-
+char CScriptClass::registered_metamethod[MAX_METAMETHOD_OPERATORS][50]={0};
  //CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
  //CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 
@@ -230,7 +230,9 @@ bool CScriptClass::is_c_class(){
 fntConversionType CScriptClass::getConversionType(string objectType, string conversionType, bool show_errors){
 
  	if(mapTypeConversion.count(objectType) == 0){
- 		print_error_cr("There's no type conversion \"%s\". Add conversion types through \"addPrimitiveTypeConversion\" function",demangle(objectType).c_str());
+ 		if(show_errors){
+ 			print_error_cr("There's no type conversion \"%s\". Add conversion types through \"addPrimitiveTypeConversion\" function",demangle(objectType).c_str());
+ 		}
  		return NULL;
  	}
 
@@ -295,9 +297,14 @@ public:
 		print_info_cr("MyObject built!!!");
 	}
 
-	void setup(int *i1, int *i2){
-		i=0;
-		print_info_cr("MyObject built2!!! i1:%i i2:%i",*i1,*i2);
+	MyObject(int h){
+		i=h;
+		print_info_cr("MyObject built!!!");
+	}
+
+	void ini(int *i1){
+		i=*i1;
+		print_info_cr("MyObject built2!!! i1:%i",*i1);
 	}
 
 	void print(){
@@ -309,7 +316,20 @@ public:
 	}
 
 	static MyObject * _add(MyObject *v1, MyObject *v2){
-		return new MyObject();
+
+		MyObject *o= new  MyObject(v1->i+v2->i);
+
+
+		return o;
+	}
+
+	static MyObject * _add(MyObject *v1, int *j){
+
+		printf("OLEEEEEEEEEEEEEEEEEEE!\n");
+
+		MyObject *o= new MyObject(v1->i+*j);
+
+		return o;
 	}
 
 
@@ -337,6 +357,27 @@ public:
 	    FLOAT_PTR_TYPE_STR = new string(typeid(float *).name());
 	    STRING_PTR_TYPE_STR = new string(typeid(string *).name());
 	    BOOL_PTR_TYPE_STR = new string(typeid(bool *).name());
+
+	    // register metamethods ...
+	    strcpy(registered_metamethod[EQU_METAMETHOD],"_equ");  // ,,
+	    strcpy(registered_metamethod[NOT_EQU_METAMETHOD],"_not_equ");  // !,
+	    strcpy(registered_metamethod[LT_METAMETHOD],"_lt");  // <
+	    strcpy(registered_metamethod[LTE_METAMETHOD],"_lte");  // <,
+	    strcpy(registered_metamethod[NOT_METAMETHOD],"_not"); // !
+	    strcpy(registered_metamethod[GT_METAMETHOD],"_gt");  // >
+	    strcpy(registered_metamethod[GTE_METAMETHOD],"_gte"); // >,
+	    strcpy(registered_metamethod[ADD_METAMETHOD],"_add"); // +
+	    strcpy(registered_metamethod[NEG_METAMETHOD],"_neg"); // -a
+	    strcpy(registered_metamethod[LOGIC_AND_METAMETHOD],"_land"); // &&
+	    strcpy(registered_metamethod[LOGIC_OR_METAMETHOD],"_lor");  // ||
+	    strcpy(registered_metamethod[DIV_METAMETHOD],"_div"); // /
+	    strcpy(registered_metamethod[MUL_METAMETHOD],"_mul"); // *
+	    strcpy(registered_metamethod[MOD_METAMETHOD],"_mod");  // %
+	    strcpy(registered_metamethod[AND_METAMETHOD],"_and"); // bitwise logic and
+	    strcpy(registered_metamethod[OR_METAMETHOD],"_or"); // bitwise logic or
+	    strcpy(registered_metamethod[XOR_METAMETHOD],"_xor"); // logic xor
+	    strcpy(registered_metamethod[SHL_METAMETHOD],"_shl"); // shift left
+	    strcpy(registered_metamethod[SHR_METAMETHOD],"_shr"); // shift right
 
 
 	 	/*valid_C_PrimitiveType[IDX_CLASS_VOID_C]={typeid(void).name(),IDX_CLASS_VOID_C};
@@ -508,12 +549,14 @@ public:
 
 
 		if(!register_C_Class<MyObject>("MyObject")) return false;
-		if(!register_C_FunctionConstructor(MyObject,setup)) return false;
+		if(!register_C_FunctionConstructor(MyObject,ini)) return false;
 
 		if(!register_C_FunctionMember(MyObject,print)) return false;
 		if(!register_C_VariableMember(MyObject,i)) return false;
 		//if(!register_C_Function(MyObject::_add)) return false;
-		if(!register_C_StaticFunctionMember(MyObject,_add)) return false;
+		if(!register_C_StaticFunctionMemberInt<MyObject>("_add",static_cast<MyObject * (*)(MyObject *,int *)>(&MyObject::_add))) return false;
+		if(!register_C_StaticFunctionMemberInt<MyObject>("_add",static_cast<MyObject * (*)(MyObject *,MyObject  *)>(&MyObject::_add))) return false;
+
 		//offsetof(MyObject,i);
 
 
@@ -1350,6 +1393,17 @@ CScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & clas
 		}
 		irs->object_info.symbol_info.idxSymbol = object_info->local_symbols.vec_idx_registeredFunction.size();
 		object_info->local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
+
+		// check if metamethod...
+		for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
+			if(STRCMP(registered_metamethod[i],==,fun_name.c_str())){
+
+				rc->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
+
+				print_debug_cr("Registered metamethod %s::%s",class_name.c_str(), fun_name.c_str());
+				break;
+			}
+		}
 
 		return irs;
 	}

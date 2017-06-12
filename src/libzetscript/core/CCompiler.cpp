@@ -870,7 +870,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 
 	tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 	tInfoAsmOpCompiler * left_asm_op = ptr_current_statement_op->asm_op[op_index_left];
-	tInfoAsmOpCompiler *iao;
+	tInfoAsmOpCompiler *iao=NULL;
 
 	// special cases ...
 	switch(op){
@@ -878,10 +878,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 
 			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::ADD_ASSIGN;
-			iao->index_op1 = op_index_left;
-			iao->index_op2 = op_index_right;
 			iao->idxAstNode=_node->idxAstNode;
-
 			ptr_current_statement_op->asm_op.push_back(iao);
 
 			op_index_right+=1;
@@ -891,14 +888,12 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 
 			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::NEG;
-			iao->index_op1 = op_index_right;
+
 			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
 			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::ADD_ASSIGN;
-			iao->index_op1 = op_index_left;
-			iao->index_op2 = op_index_right+1;
 			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
@@ -909,8 +904,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 
 			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::MUL_ASSIGN;
-			iao->index_op1 = op_index_left;
-			iao->index_op2 = op_index_right;
+
 			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
@@ -921,8 +915,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 
 			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::DIV_ASSIGN;
-			iao->index_op1 = op_index_left;
-			iao->index_op2 = op_index_right;
+
 			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
@@ -933,8 +926,7 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 
 			iao = new tInfoAsmOpCompiler();
 			iao->operator_type = ASM_OPERATOR::MOD_ASSIGN;
-			iao->index_op1 = op_index_left;
-			iao->index_op2 = op_index_right;
+
 			iao->idxAstNode=_node->idxAstNode;
 			ptr_current_statement_op->asm_op.push_back(iao);
 
@@ -943,6 +935,12 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 			break;
 		default:
 			break;
+
+	}
+
+	if(iao!=NULL){
+		iao->index_op1 = ZS_UNDEFINED_IDX;
+		iao->index_op2 = ZS_UNDEFINED_IDX;
 	}
 
 	if((op == ASSIGN_PUNCTUATOR) && (left_asm_op->var_type != INS_PROPERTY_TYPE_SCRIPTVAR)){
@@ -958,8 +956,8 @@ bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  
 	if((asm_op= puntuator2instruction(op))!=INVALID_OP){
 		iao = new tInfoAsmOpCompiler();
 		iao->operator_type = asm_op;
-		iao->index_op1 = op_index_left;
-		iao->index_op2 = op_index_right;
+		iao->index_op1 = ZS_UNDEFINED_IDX;
+		iao->index_op2 = ZS_UNDEFINED_IDX;
 
 		if(_node!=NULL){
 			iao->idxAstNode=_node->idxAstNode;

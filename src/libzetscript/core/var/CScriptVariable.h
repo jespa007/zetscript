@@ -31,7 +31,7 @@ public:
 
 	// Construct ...
 	CScriptVariable();
-	void init(CScriptClass *info_registered_class, void * _c_object);
+	void init(CScriptClass *info_registered_class, void *  _c_object);
 
 	void fun1(int *);
 	void fun1(int *, int *);
@@ -99,8 +99,8 @@ protected:
 private:
 
 
-	void *created_object;
-	void *c_object;
+	void * created_object;
+	void * c_object;
 
 	string aux_string;
 

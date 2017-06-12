@@ -264,7 +264,7 @@ private:
 
 
 	 tStackElement * call_C_function(
-			 void *fun_ptr,
+			 intptr_t fun_ptr,
 			 const CScriptFunctionObject *irfs,
 			 tStackElement *ptrArg,
 			 unsigned char n_args);

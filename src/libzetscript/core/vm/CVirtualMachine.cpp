@@ -847,12 +847,13 @@ if(instruction->index_op2 != ZS_UNDEFINED_IDX){\
 }
 
 
+
 //#define LDR_OP2 ptrResultInstructionOp2=&ptrBaseOp[instruction->index_op2];ptrResultInstructionOp2->properties=ptrResultInstructionOp2->properties;
 
 
 //============================================================================================================================================
 tStackElement * CVirtualMachine::call_C_function(
-		void *fun_ptr,
+		intptr_t fun_ptr,
 		const CScriptFunctionObject *irfs,
 		tStackElement *ptrArg,
 		unsigned char n_args){
@@ -860,7 +861,7 @@ tStackElement * CVirtualMachine::call_C_function(
 
 	//auto v = argv->at(0)->getPointer_C_ClassName();
 	CScriptVariable *script_variable=NULL;
-	int converted_param[MAX_N_ARGS];
+	intptr_t converted_param[MAX_N_ARGS];
 	intptr_t result;
 	tStackElement *currentArg;
 
@@ -921,7 +922,22 @@ tStackElement * CVirtualMachine::call_C_function(
 		default: // script variable by default ...
 			script_variable=(CScriptVariable *)currentArg->varRef;
 
-			if(!(script_variable->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE && irfs->m_arg[i]==typeid(CScriptVariable *).name())){ //not script, then it can pass through ...
+
+			if(script_variable->is_c_object()){
+				//print_error_cr("static function fails!!!!");
+				//return NULL;
+				converted_param[i]=(intptr_t)script_variable->get_C_Object();
+			}else{
+				if(script_variable->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE){
+					converted_param[i] = (intptr_t)script_variable;
+
+				}else{
+					print_error_cr("Internal error! No script variable!");
+										return NULL;
+				}
+			}
+
+			/*if(!(script_variable->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE && irfs->m_arg[i]==typeid(CScriptVariable *).name())){ //not script, then it can pass through ...
 
 				if((script_variable)->getPointer_C_ClassName()!=irfs->m_arg[i]){
 					fntConversionType paramConv=CScriptClass::getConversionType((script_variable)->getPointer_C_ClassName(),irfs->m_arg[i]);
@@ -931,7 +947,7 @@ tStackElement * CVirtualMachine::call_C_function(
 					}
 					converted_param[i] = paramConv(script_variable);
 				}
-			}
+			}*/
 			break;
 		}
 	}
@@ -948,23 +964,23 @@ tStackElement * CVirtualMachine::call_C_function(
 			(*((std::function<void ()> *)fun_ptr))();
 			break;
 		case 1:
-			(*((std::function<void (int)> *)fun_ptr))(converted_param[0]);
+			(*((std::function<void (intptr_t)> *)fun_ptr))(converted_param[0]);
 			break;
 		case 2:
-			(*((std::function<void (int,int)> *)fun_ptr))(
+			(*((std::function<void (intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1]
 									);
 			break;
 		case 3:
-			(*((std::function<void (int,int,int)> *)fun_ptr))(
+			(*((std::function<void (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1],
 					converted_param[2]
 									);
 			break;
 		case 4:
-			(*((std::function<void (int,int,int,int)> *)fun_ptr))(
+			(*((std::function<void (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1],
 					converted_param[2],
@@ -972,7 +988,7 @@ tStackElement * CVirtualMachine::call_C_function(
 									);
 			break;
 		case 5:
-			(*((std::function<void (int,int,int,int,int)> *)fun_ptr))(
+			(*((std::function<void (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1],
 					converted_param[2],
@@ -981,7 +997,7 @@ tStackElement * CVirtualMachine::call_C_function(
    				);
 			break;
 		case 6:
-			(*((std::function<void (int,int,int,int,int,int)> *)fun_ptr))(
+			(*((std::function<void (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1],
 					converted_param[2],
@@ -1009,20 +1025,20 @@ tStackElement * CVirtualMachine::call_C_function(
 			result=(*((std::function<int (int)> *)fun_ptr))(converted_param[0]);
 			break;
 		case 2:
-			result=(*((std::function<int (int,int)> *)fun_ptr))(
+			result=(*((std::function<intptr_t (intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1]
 									);
 			break;
 		case 3:
-			result=(*((std::function<int (int,int,int)> *)fun_ptr))(
+			result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1],
 					converted_param[2]
 									);
 			break;
 		case 4:
-			result=(*((std::function<int (int,int,int,int)> *)fun_ptr))(
+			result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1],
 					converted_param[2],
@@ -1030,7 +1046,7 @@ tStackElement * CVirtualMachine::call_C_function(
 									);
 			break;
 		case 5:
-			result=(*((std::function<int (int,int,int,int,int)> *)fun_ptr))(
+			result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1],
 					converted_param[2],
@@ -1039,7 +1055,7 @@ tStackElement * CVirtualMachine::call_C_function(
    				);
 			break;
 		case 6:
-			result=(*((std::function<int (int,int,int,int,int,int)> *)fun_ptr))(
+			result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 					converted_param[0],
 					converted_param[1],
 					converted_param[2],
@@ -1166,7 +1182,7 @@ tStackElement * CVirtualMachine::execute_internal(
 
 	if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
 
-		void * fun_ptr = (void *)info_function->object_info.symbol_info.ref_ptr;
+		intptr_t  fun_ptr = info_function->object_info.symbol_info.ref_ptr;
 
 		if((info_function->object_info.symbol_info.properties &  SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
 
@@ -1293,7 +1309,7 @@ tStackElement * CVirtualMachine::execute_internal(
 
 		 for(;;){ // foreach asm instruction ...
 
-			const tInfoAsmOp * instruction = instruction_it++;
+			tInfoAsmOp * instruction = instruction_it++;
 			const unsigned char operator_type=instruction->operator_type;
 			const unsigned char index_op1=instruction->index_op1;
 
@@ -1797,8 +1813,9 @@ tStackElement * CVirtualMachine::execute_internal(
 				}
 
 
-				unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
-				if(properties==INS_PROPERTY_TYPE_INTEGER){
+				unsigned short mask_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties&ptrResultInstructionOp2->properties);
+				unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);
+				if(mask_properties==INS_PROPERTY_TYPE_INTEGER){
 						PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) + LOAD_INT_OP(ptrResultInstructionOp2));
 				}
 				else if(properties==(INS_PROPERTY_TYPE_INTEGER|INS_PROPERTY_TYPE_NUMBER)){
@@ -1838,42 +1855,195 @@ tStackElement * CVirtualMachine::execute_internal(
 						PUSH_STRING(str_aux);
 					}
 
-				}else if (properties== INS_PROPERTY_TYPE_STRING){
+				}else if (mask_properties== INS_PROPERTY_TYPE_STRING){
 						sprintf(str_aux,"%s%s",((string *)ptrResultInstructionOp1->stkValue)->c_str(),((string *)(ptrResultInstructionOp2->stkValue))->c_str());
 						PUSH_STRING(str_aux);
 
 
-				}else if(properties== INS_PROPERTY_TYPE_NUMBER){
+				}else if(mask_properties== INS_PROPERTY_TYPE_NUMBER){
 					COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);\
 					COPY_NUMBER(&f_aux_value2,&ptrResultInstructionOp2->stkValue);\
 					PUSH_NUMBER(f_aux_value1 + f_aux_value2);\
 
 				}
-				else{
-					CScriptVariable *v1,*v2;
+				else{ // try metamethod ...
+				//	v1=NULL;
+					CScriptClass *rc=NULL;
+					vector<int> *vec_global_functions;
+					aux_function_info = NULL;
+					bool is_c = false;
 
+					// 3. Execute function...
+					char n_args=2;
+
+					tStackElement *startArg = ptrCurrentOp+2;
+
+
+					if(instruction->index_op2 ==ZS_UNDEFINED_IDX){
 					// 0. Check pre condition ...
-					if((ptrResultInstructionOp1->properties | ptrResultInstructionOp2->properties) == (INS_PROPERTY_TYPE_SCRIPTVAR | INS_PROPERTY_IS_STACKVAR)){
+					if((ptrResultInstructionOp1->properties ) == (INS_PROPERTY_TYPE_SCRIPTVAR | INS_PROPERTY_IS_STACKVAR)){
 
-						v1 = (CScriptVariable *)(((tStackElement *)(ptrResultInstructionOp1->varRef))->varRef);
-						v2 = (CScriptVariable *)(((tStackElement *)(ptrResultInstructionOp2->varRef))->varRef);
+						CScriptVariable *v1 = (CScriptVariable *)(((tStackElement *)(ptrResultInstructionOp1->varRef))->varRef);
+
+						is_c = v1->is_c_object();
+
+						rc=REGISTERED_CLASS_NODE(v1->idxScriptClass);
+						vec_global_functions=&rc->metamethod_operator[ADD_METAMETHOD];
+						int size_fun_vec = vec_global_functions->size()-1;
+
+
+						for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
+							CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
+
+							// we found a function is match ...
+							{
+								if(is_c){ // C! Must match args...
+
+										bool all_check=true; // check arguments types ...
+										// convert parameters script to c...
+										//for( int h = 0 ; h < 2; h++){
+											for( int k = 0; k < n_args && all_check;k++){
+												tStackElement *currentArg=&(startArg-2)[k];\
+												if(currentArg->properties & INS_PROPERTY_IS_STACKVAR){
+													currentArg = (tStackElement *)currentArg->varRef;
+												}
+												unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);
+												switch(var_type){
+												default:
+													aux_string="unknow";
+													break;
+												case INS_PROPERTY_TYPE_INTEGER:
+													aux_string=*CScriptClass::INT_PTR_TYPE_STR;
+													break;
+												case INS_PROPERTY_TYPE_NUMBER:
+													aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
+													break;
+												case INS_PROPERTY_TYPE_BOOLEAN:
+													aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
+													break;
+												case INS_PROPERTY_TYPE_STRING:
+													aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
+													break;
+												case INS_PROPERTY_TYPE_NULL:
+												case INS_PROPERTY_TYPE_UNDEFINED:
+												case INS_PROPERTY_TYPE_SCRIPTVAR:
+												case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
+													aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
+													break;
+												}
+												//converted_param[i]= (int)(argv->at(i);
+												//if(h==0){ // match the all parameters
+												all_check = aux_string==sfo->m_arg[k];
+												//}
+												if(!all_check){
+													// let's see whether it can be coneverted to target signature ...
+													all_check =CScriptClass::getConversionType(aux_string,sfo->m_arg[k], false)!=NULL;
+												}
+											}
+											if(all_check){ // we found the right function (set it up!) ...
+												instruction->index_op2 = i;
+												aux_function_info = sfo;
+											}
+								}else{ // type script function  ...
+									instruction->index_op2=(intptr_t)sfo;
+									aux_function_info = sfo;
+								}
+							}
+						}
+						{
+							if(aux_function_info == NULL){
+
+									int n_candidates=0;
+									string str_candidates="";
+									for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
+										CScriptFunctionObject *irfs = NULL;
+
+										irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
+
+
+											/*if(
+												 (irfs->object_info.symbol_info.symbol_name == AST_NODE(instruction->idxAstNode)->symbol_value)
+												)*/{
+
+													if(n_candidates == 0){
+														str_candidates+="\t\tPossible candidates are:\n\n";
+													}
+
+													str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_name+"(";
+
+													for(unsigned a = 0; a < irfs->m_arg.size(); a++){
+														if(a>0){
+															str_candidates+=",";
+														}
+
+														if(is_c){
+															str_candidates+=demangle(irfs->m_arg[a]);
+														}else{ // typic var ...
+															str_candidates+="arg"+CStringUtils::intToString(a+1);
+														}
+													}
+
+													str_candidates+=");\n";
+
+
+													n_candidates++;
+
+												}
+									}
+
+									print_error_cr("Cannot find metamethod \"%s\" at line %i.\n\n%s",
+											AST_SYMBOL_VALUE_CONST_CHAR(instruction->idxAstNode),
+											AST_LINE_VALUE(instruction->idxAstNode),
+											str_candidates.c_str());
+
+									return NULL;
+
+							}
+						}
+					}else{
+						aux_function_info = (CScriptFunctionObject *)instruction->index_op2;
+					}
+
+
+
+						/*if(v1->is_c_object()){ // search right metamethod...
+
+						}
+						else{
+							if((ptrResultInstructionOp2->properties ) == (INS_PROPERTY_TYPE_SCRIPTVAR | INS_PROPERTY_IS_STACKVAR)){
+								v2 = (CScriptVariable *)(((tStackElement *)(ptrResultInstructionOp2->varRef))->varRef);
+								if(v1->idxScriptClass == v2->idxScriptClass){ // valid
+
+									if(rc->metamethod_operator[ADD_METAMETHOD].size()>0){ // only one ...
+										sfo=GET_SCRIPT_FUNCTION_OBJECT(rc->metamethod_operator[ADD_METAMETHOD][0]);
+									}
+								}
+								else{
+									print_error_cr("Expected same type class (%i!=%i)",v1->idxScriptClass == v2->idxScriptClass);
+									return NULL;
+								}
+							}else{
+								print_error_cr("Expected script var + stack var");
+								return NULL;
+							}
+						}*/
+
+						//v2 = (CScriptVariable *)(((tStackElement *)(ptrResultInstructionOp2->varRef))->varRef);
 						// 1. check whether op1/op2 is type cscriptvariable and same type...
-						if(v1->idxScriptClass == v2->idxScriptClass){
+
+
 
 
 
 
 							// 2. search for _add...
-							CScriptFunctionObject *sfo = CScriptClass::getScriptFunctionObjectByClassIdxFunctionName(v1->idxScriptClass, "_add", true);
+							//CScriptFunctionObject *sfo = CScriptClass::getScriptFunctionObjectByClassIdxFunctionName(v1->idxScriptClass, "_add", true);
 
-							if(sfo !=NULL){
-								// 3. Execute function...
-								char n_args=2;
 
-								tStackElement *startArg = ptrCurrentOp+2;
+
 
 								// by default virtual machine gets main object class in order to run functions ...
-								if((ret_obj=execute_internal(sfo,this_object,startArg,ptrCurrentStr,n_args))==NULL){
+								if((ret_obj=execute_internal(aux_function_info,this_object,startArg,ptrCurrentStr,n_args))==NULL){
 									return NULL;
 								}
 
@@ -1908,9 +2078,9 @@ tStackElement * CVirtualMachine::execute_internal(
 
 								// 4. save value...
 
-							}
 
-						}
+
+
 
 					}
 
@@ -2302,164 +2472,128 @@ tStackElement * CVirtualMachine::execute_internal(
 								// h=0: match all args.
 								// h=1: match some args...
 
-
-								for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
-									CScriptFunctionObject *irfs = NULL;
-									if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
-										irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
-										aux_string=m_functionSymbol->at(i).symbol_value;
-									}else{
-										irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
-										aux_string=irfs->object_info.symbol_info.symbol_name;
-									}
-
-									// we found a function is match ...
-									if(aux_string == symbol_to_find && irfs->m_arg.size() == n_args){
-
-										if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){ // C! Must match args...
-
-											//if(){ // let's check parameters ...
-
-												all_check=true; // check arguments types ...
-
-
-
-												// convert parameters script to c...
-												//for( int h = 0 ; h < 2; h++){
-													for( int k = 0; k < n_args && all_check;k++){
-
-
-														tStackElement *currentArg=&startArg[k];
-
-														if(currentArg->properties & INS_PROPERTY_IS_STACKVAR){
-															currentArg = (tStackElement *)currentArg->varRef;
-														}
-														unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);
-														switch(var_type){
-														default:
-															aux_string="unknow";
-															break;
-														case INS_PROPERTY_TYPE_INTEGER:
-															aux_string=*CScriptClass::INT_PTR_TYPE_STR;
-															break;
-														case INS_PROPERTY_TYPE_NUMBER:
-															aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
-															break;
-														case INS_PROPERTY_TYPE_BOOLEAN:
-															aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
-															break;
-														case INS_PROPERTY_TYPE_STRING:
-															aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
-
-															break;
-														case INS_PROPERTY_TYPE_NULL:
-														case INS_PROPERTY_TYPE_UNDEFINED:
-														case INS_PROPERTY_TYPE_SCRIPTVAR:
-														case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
-															aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
-															break;
-														}
-
-
-														//converted_param[i]= (int)(argv->at(i));
-														//if(h==0){ // match the all parameters
-														all_check = aux_string==irfs->m_arg[k];
-														//}
-
-														if(!all_check){
-															// let's see whether it can be coneverted to target signature ...
-															all_check =CScriptClass::getConversionType(aux_string,irfs->m_arg[k], NULL)!=NULL;
-														}
-													}
-
-													if(all_check){ // we found the right function (set it up!) ...
-														iao->index_op2 = i;
-														aux_function_info = irfs;//(CScriptFunctionObject *)m_functionSymbol->at(i)->object.stkValue;
-													}
-												//}
-
-											//}
-
-										}else{ // type script function  ...
-
-											iao->index_op2=i;
-											//if(irfs->m_arg.size() == n_args){
-											aux_function_info = irfs;//GET_SCRIPT_FUNCTION_OBJECT((*vec_global_functions)[iao->index_op2]);
-											//found = true;
-											//}else{
-											//	print_error_cr("Error at line %i calling function \"%s\" expected to have %i parameters");
-											//}
-
-										}
-									}
+							for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
+								CScriptFunctionObject *irfs = NULL;
+								if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+									irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
+									aux_string=m_functionSymbol->at(i).symbol_value;
+								}else{\
+									irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
+									aux_string=irfs->object_info.symbol_info.symbol_name;
 								}
+								// we found a function is match ...
+								if(aux_string == symbol_to_find && irfs->m_arg.size() == n_args){
+									if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){ // C! Must match args...
 
-
-
-
-								//if((instruction_properties & INS_PROPERTY_CONSTRUCT_CALL) != INS_PROPERTY_CONSTRUCT_CALL)
-								{
-									if(aux_function_info == NULL){
-
-										if(is_constructor && n_args == 0){ // default constructor not found --> set as not found...
-											iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
-										}
-										else{
-
-
-											int n_candidates=0;
-											string str_candidates="";
-											for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
-												CScriptFunctionObject *irfs = NULL;
-												if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
-													irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
-													//aux_string=m_functionSymbol->at(i).symbol_value;
-												}else{
-													irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
-													//aux_string=irfs->object_info.symbol_info.symbol_name;
+											all_check=true; // check arguments types ...
+											// convert parameters script to c...
+											//for( int h = 0 ; h < 2; h++){
+												for( int k = 0; k < n_args && all_check;k++){
+													tStackElement *currentArg=&startArg[k];\
+													if(currentArg->properties & INS_PROPERTY_IS_STACKVAR){
+														currentArg = (tStackElement *)currentArg->varRef;
+													}
+													unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);
+													switch(var_type){
+													default:
+														aux_string="unknow";
+														break;
+													case INS_PROPERTY_TYPE_INTEGER:
+														aux_string=*CScriptClass::INT_PTR_TYPE_STR;
+														break;
+													case INS_PROPERTY_TYPE_NUMBER:
+														aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
+														break;
+													case INS_PROPERTY_TYPE_BOOLEAN:
+														aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
+														break;
+													case INS_PROPERTY_TYPE_STRING:
+														aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
+														break;
+													case INS_PROPERTY_TYPE_NULL:
+													case INS_PROPERTY_TYPE_UNDEFINED:
+													case INS_PROPERTY_TYPE_SCRIPTVAR:
+													case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
+														aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
+														break;
+													}
+													//converted_param[i]= (int)(argv->at(i);
+													//if(h==0){ // match the all parameters
+													all_check = aux_string==irfs->m_arg[k];
+													//}
+													if(!all_check){
+														// let's see whether it can be coneverted to target signature ...
+														all_check =CScriptClass::getConversionType(aux_string,irfs->m_arg[k], NULL)!=NULL;
+													}
 												}
-
-														if(
-
-															 (irfs->object_info.symbol_info.symbol_name == AST_NODE(iao->idxAstNode)->symbol_value)
-														){
-
-															if(n_candidates == 0){
-																str_candidates+="\t\tPossible candidates are:\n\n";
-															}
-
-															str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_name+"(";
-
-															for(unsigned a = 0; a < irfs->m_arg.size(); a++){
-																if(a>0){
-																	str_candidates+=",";
-																}
-
-																if(is_c){
-																	str_candidates+=demangle(irfs->m_arg[a]);
-																}else{ // typic var ...
-																	str_candidates+="arg"+CStringUtils::intToString(a+1);
-																}
-															}
-
-															str_candidates+=");\n";
-
-
-															n_candidates++;
-
-														}
-											}
-
-											print_error_cr("Cannot find %s \"%s\" at line %i.\n\n%s",
-													is_constructor ? "constructor":"function",
-													AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
-													AST_LINE_VALUE(iao->idxAstNode),
-													str_candidates.c_str());
-
-											return NULL;
-										}
+												if(all_check){ // we found the right function (set it up!) ...
+													iao->index_op2 = i;
+													aux_function_info = irfs;
+												}
+									}else{ // type script function  ...
+										iao->index_op2=i;
+										aux_function_info = irfs;
 									}
 								}
+							}
+							{
+								if(aux_function_info == NULL){
+									if(is_constructor && n_args == 0){ // default constructor not found --> set as not found...
+										iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+									}
+									else{
+										int n_candidates=0;
+										string str_candidates="";
+										for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
+											CScriptFunctionObject *irfs = NULL;
+											if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+												irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
+												//aux_string=m_functionSymbol->at(i).symbol_value;
+											}else{
+												irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
+												//aux_string=irfs->object_info.symbol_info.symbol_name;
+											}
+												if(
+													 (irfs->object_info.symbol_info.symbol_name == AST_NODE(iao->idxAstNode)->symbol_value)
+													){
+
+														if(n_candidates == 0){
+															str_candidates+="\t\tPossible candidates are:\n\n";
+														}
+
+														str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_name+"(";
+
+														for(unsigned a = 0; a < irfs->m_arg.size(); a++){
+															if(a>0){
+																str_candidates+=",";
+															}
+
+															if(is_c){
+																str_candidates+=demangle(irfs->m_arg[a]);
+															}else{ // typic var ...
+																str_candidates+="arg"+CStringUtils::intToString(a+1);
+															}
+														}
+
+														str_candidates+=");\n";
+
+
+														n_candidates++;
+
+													}
+										}
+
+										print_error_cr("Cannot find %s \"%s\" at line %i.\n\n%s",
+												is_constructor ? "constructor":"function",
+												AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
+												AST_LINE_VALUE(iao->idxAstNode),
+												str_candidates.c_str());
+
+										return NULL;
+									}
+								}
+							}
+
 						}
 					}
 

@@ -7,18 +7,61 @@ version 1.00.05b
 
 >Clean code.
 >Rename name vars like CString --> CStringSV
->-Erase utils dir.
->-Methamethods:
->0. Enumerate total metamethods and access through array + enum index.
+-Erase utils dir.
+Methamethods:
+-0. Enumerate total metamethods and access through array + enum index.
 -1. Check c++ implementation.
->2. List metamethods to override.
->3. Check correct function signature (ie. only two parameters, return expected type, etc)
->Class: 
+-2. List metamethods to override.
+-3. Check correct function signature (ie. only two parameters, return expected type, etc)
+-4. Metamethods or C++ call functions fails when it calls from function with different signatures. Example.
+    
+    From C++
+    
+    class CNumber{
+    	float n;
+    	
+    	...
+    	
+    	// Metamethods...
+    	CNumber * _add(CNumber *n1, int n2);
+    	CNumber * _add(CNumber *n1, float n2);
+    	
+    	...
+    	
+    }
+    
+    // In script.
+    
+    
+    function getSumNumber(a1, a2){
+    	return a1+a2;
+    }
+    
+    
+    var n=new CNumber(0);
+    
+    ...
+    
+    getSumNumber(n,0);
+    
+    ...
+    
+    getSumNumer(n,1.0); <-- it fails because the first time the _add with integer signature was assigned ..
+    
+    
+    Solutions:
+    
+    1. Find the right function everytime --> (performance decrases.)
+    2. Leave the first function found. It will warn the second call that (CNumber, int) was expected ... maybe we can reserve the print message
+    
+
+
+Class: 
 -1.Test super function.
->2.Class C++
- > 2.1-Class can instanciate with variable parameters. 
+-2.Class C++
+ - 2.1-Class can instanciate with variable parameters. 
        suggestion: implement matamethod function called as _constructor with n parameters to invoke in new CClass(x,x,x) with as many parameters you want.
- > 2.2-Script class heredate with c++ class. Test virtual function.(it doesn t work with params)
+ - 2.2-Script class heredate with c++ class. Test virtual function.(it doesn t work with params)
 
 
 >Test save/restore.

@@ -106,7 +106,14 @@ void CScriptVariable::createSymbols(CScriptClass *ir_class){
 
 				);
 		 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // create proxy function ...
-			si->proxy_ptr = (*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->object_info.symbol_info.ref_ptr))(c_object,PROXY_CREATOR::CREATE_FUNCTION);
+
+			 // static ref only get ref function ...
+			 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF){
+				 si->proxy_ptr = ir_fun->object_info.symbol_info.ref_ptr;
+			 }
+			 else{
+				 si->proxy_ptr = (intptr_t)(*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->object_info.symbol_info.ref_ptr))(c_object,PROXY_CREATOR::CREATE_FUNCTION);
+			 }
 		}
 		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
 	}
@@ -163,7 +170,7 @@ CScriptVariable::CScriptVariable(CScriptClass *irv, void *_c_object){
 
 }*/
 
-void CScriptVariable::init(CScriptClass *irv, void *_c_object){
+void CScriptVariable::init(CScriptClass *irv, void * _c_object){
 	setup();
 
 
@@ -459,7 +466,7 @@ bool CScriptVariable::is_c_object(){
 
 CScriptVariable::~CScriptVariable(){
 
-	if(created_object != NULL){
+	if(created_object != 0){
 		 (*c_class_create_destroy->c_destructor)(created_object);
 	}
 
@@ -500,7 +507,10 @@ CScriptVariable::~CScriptVariable(){
 		si = &m_functionSymbol[i];
 		CScriptFunctionObject * ir_fun  = (CScriptFunctionObject *)(m_functionSymbol[i].object.stkValue);
 		 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // create proxy function ...
-			 (*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->object_info.symbol_info.ref_ptr))(si->proxy_ptr,PROXY_CREATOR::DESTROY_FUNCTION);
+			 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF){
+
+				 (*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->object_info.symbol_info.ref_ptr))((void *)si->proxy_ptr,PROXY_CREATOR::DESTROY_FUNCTION);
+			 }
 
 		}
 		//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);

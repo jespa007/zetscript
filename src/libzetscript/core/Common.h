@@ -591,13 +591,13 @@ struct tStackElement {
 struct tSymbolInfo {
 
 	tStackElement object; // created object. undefined by default.
-	void * proxy_ptr; // for proxy functions...
+	intptr_t  proxy_ptr; // for proxy functions...
 	//tSymbolInfo *super_function; // only for functions ...
 	string symbol_value;
 	short idxAstNode; // in case there's ast node...
 
 	tSymbolInfo() {
-		proxy_ptr = NULL;
+		proxy_ptr = 0;
 		object= {
 			INS_PROPERTY_TYPE_UNDEFINED|INS_PROPERTY_IS_C_VAR, // undefined.
 			0,// 0 value
