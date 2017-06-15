@@ -11,11 +11,12 @@ project(libzetscript)
 
 include_directories (
 	${PROJECT_SOURCE_DIR}
+	
 )
 
 if(MSVC)
 
-
+	set(CMAKE_SUPPRESS_REGENERATION true)
 	add_definitions(/bigobj)
 	add_definitions(/std:c++latest)
 
@@ -59,13 +60,13 @@ endif()
 #
 
 
-IF ( "${TARGET}" STREQUAL "")
-   SET ( TARGET "release" )
-ENDIF () 
-
 if(MSVC)
 
 else()
+
+	IF ( "${TARGET}" STREQUAL "")
+	   SET ( TARGET "release" )
+	ENDIF () 
 
 	set(TARGET_FLAGS " -O3 ")
 	set( POST_NAME "")
@@ -97,11 +98,21 @@ else()
 
 	
 	SET(CMAKE_C_FLAGS "  -I/local32/include ")
+	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
+	
+	
+	MESSAGE ("Target : " ${TARGET})
 
+	#Redefine output dir ...
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
+	LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+	
 endif()
 
 
-SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
+
 
 #
 # RELEASE PARAMS
@@ -113,13 +124,7 @@ SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
 
 
 
-MESSAGE ("Target : " ${TARGET})
 
-#Redefine output dir ...
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
-LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 
 
 
@@ -148,9 +153,9 @@ set( ZG_BASE_LIB_SRCS
 
 
 add_library( zetscript${POST_NAME} SHARED ${ZG_BASE_LIB_SRCS} )
-
-
-
 target_link_libraries(zetscript${POST_NAME} )
+
+
+
 
 
