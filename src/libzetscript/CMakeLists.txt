@@ -16,7 +16,6 @@ include_directories (
 
 if(MSVC)
 
-	set(CMAKE_SUPPRESS_REGENERATION true)
 	add_definitions(/bigobj)
 	add_definitions(/std:c++latest)
 
