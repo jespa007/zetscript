@@ -33,7 +33,7 @@ public:
 	static std::string  getFileName(const string & _filename);
 	static std::string  getFileNameWithoutExtension(const string & _filename);
 
-	static bool	 isDirectory(const string & filename);
+	//static bool	 isDirectory(const string & filename);
 	static bool	 createDirectory(const string & filename);
 
 	static std::vector<string > searchFiles(const std::string & folder, const std::string & filter="*");

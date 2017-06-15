@@ -590,8 +590,8 @@ public:
 					print_error_cr("error registering metamethod %s::%s. Expected return %s but it was %s",
 							demangle(typeid(_T).name()).c_str(),
 							function_name,
-							demangle(str_classPtr.c_str()),
-							demangle(return_type.c_str()));
+							demangle(str_classPtr.c_str()).c_str(),
+							demangle(return_type.c_str()).c_str());
 					return false;
 				}
 

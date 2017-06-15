@@ -17,7 +17,9 @@
 
 std::string demangle(const string & name) {
 
-
+#ifdef _MSC_VER // visual studio doesn't support this.
+	return name;
+#else
 	if(name == string(typeid(string *).name())){
 		return "string *";
 	}
@@ -35,6 +37,7 @@ std::string demangle(const string & name) {
     };
 
     return (status==0) ? res.get() : name.c_str() ;
+#endif
 }
 
 

@@ -18,3 +18,5 @@
 /Win32/
 /zetscript.dir/
 /libzetscript.v12.suo
+/build/
+/x64/

@@ -1,12 +1,37 @@
 
 
-version 1.00.05b
-================
+version 1.00.06
+===============
+
+>Clean code. 
+>Rename name vars like CString --> CStringSV
+>Test save/restore.
+>Remove memory leaks.
+
+> cmake: Add install feature.
+> cmake: Add test features
+> test arithmetic file (need reimplement %)
+> test binary file
+> test ternary file
+> test if-else file
+> test for file
+> test while file
+> test switch file
+> test function file
+> test metamethod file (test all override ops. implement _toString metamethod (override for vector & struct))
+> test struct file
+> test vector file
+> test class file (it can have a toString method... like struct)
+
+
+version 1.00.05
+===============
+
+CMakeFiles: Added MSVC Comptibility (only compiles with MSVC 2017) that comes with compiler that allows constexpr (sorry)
 
 -take out memmanager.
 
->Clean code.
->Rename name vars like CString --> CStringSV
+
 -Erase utils dir.
 Methamethods:
 -0. Enumerate total metamethods and access through array + enum index.
@@ -64,26 +89,11 @@ Class:
  - 2.2-Script class heredate with c++ class. Test virtual function.(it doesn t work with params)
 
 
->Test save/restore.
->Remove memory leaks.
-
->-cmake: Added install feature.
 
 -git: create master/develop branch and push code..
 
 
-> test arithmetic file (need reimplement %)
-- test binary file
-> test ternary file
-> test if-else file
-> test for file
-> test while file
-> test switch file
-> test function file
-> test metamethod file (test all override ops. implement _toString metamethod (override for vector & struct))
-> test struct file
-> test vector file
-> test class file (it can have a toString method... like struct)
+
 
  
 

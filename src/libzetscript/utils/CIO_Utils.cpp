@@ -82,7 +82,7 @@ ByteBuffer * CIO_Utils::readFile(const string & filename){
 //-----------------------------------------------------------------------------------------------v
 // Normal file ops.
 
-bool CIO_Utils::isDirectory(const string & filename){
+/*bool CIO_Utils::isDirectory(const string & filename){
 	int status;
 	struct stat st_buf;
 	//int ret_stat;
@@ -97,7 +97,7 @@ bool CIO_Utils::isDirectory(const string & filename){
 	return S_ISDIR (st_buf.st_mode) != 0;
 
 
-}
+}*/
 
 
 bool CIO_Utils::fileExists(const string & m_file) {
