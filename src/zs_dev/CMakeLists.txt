@@ -14,18 +14,10 @@ include_directories (
 	${PROJECT_SOURCE_DIR}/../libzetscript
 )
 
-MESSAGE ("include" ${include_directories})
-
-get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-foreach(dir ${dirs})
-  message(STATUS "dir='${dir}'")
-endforeach()
-MESSAGE( "prova" ${PROJECT_SOURCE_DIR}/../libzetscript )
 
 if(MSVC)
 
 	add_definitions(/bigobj)
-	#add_definitions(/std:c++latest)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 	#disable C4103 warning because is valid. Only MSVC complains about it
