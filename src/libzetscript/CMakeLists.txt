@@ -17,7 +17,10 @@ include_directories (
 if(MSVC)
 
 	add_definitions(/bigobj)
-	add_definitions(/std:c++latest)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+
+	#disable C4103 warning because is valid. Only MSVC complains about it
+	add_definitions(/wd4103)
 
 else()
 
