@@ -199,7 +199,7 @@ CASTNode	*CASTNode::newASTNode(){
 
 	CASTNode	*ast_node = new CASTNode();
 	vec_ast_node->push_back(ast_node);
-	ast_node->idxAstNode = vec_ast_node->size()-1;
+	ast_node->idxAstNode = (short)(vec_ast_node->size()-1);
 	return ast_node;
 }
 

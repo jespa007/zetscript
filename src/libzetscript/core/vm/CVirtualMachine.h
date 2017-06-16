@@ -209,7 +209,7 @@ public:
 		return &f_return_value;
 	}
 
-	inline string *setStringFloatReturnValue(float s){
+	inline string *setStringReturnValue(string s){
 		s_return_value = s;
 		return &s_return_value;
 	}

@@ -1353,7 +1353,8 @@ tStackElement * CVirtualMachine::execute_internal(
 										print_error_cr("Line %i. Index vector out of bounds!",AST_LINE_VALUE(instruction->idxAstNode));
 										return NULL;
 									}
-																		ldrVar = &vec->m_objVector[v_index];;
+									
+									ldrVar = &vec->m_objVector[v_index];;
 
 									ok = true;
 

@@ -251,7 +251,7 @@ public:
 		irs->object_info.symbol_info.symbol_name = function_name;
 		irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
-		irs->object_info.symbol_info.idxSymbol = mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size();
+		irs->object_info.symbol_info.idxSymbol = (short)(mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size());
 		mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 
 		print_debug_cr("Registered function name: %s",function_name.c_str());
@@ -313,7 +313,7 @@ public:
 			// allow dynamic constructor in function its parameters ...
 			irc->c_constructor = new std::function<void *()>([](){return new _T;});
 			irc->c_destructor = new std::function<void (void *)>([](void *p){delete (_T *)p;});
-			irc->metadata_info.object_info.symbol_info.idxScriptClass = (*vec_script_class_node).size();
+			irc->metadata_info.object_info.symbol_info.idxScriptClass = (short)((*vec_script_class_node).size());
 			irc->classPtrType=str_classPtr;
 			irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
@@ -390,7 +390,7 @@ public:
 			//irs.
 			irs.symbol_name=irs_source->symbol_name;
 			irs.properties = PROPERTY_C_OBJECT_REF| PROPERTY_IS_DERIVATED;
-			irs.idxSymbol = irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.size();
+			irs.idxSymbol = (short)(irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.size());
 			irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
 
 		}
@@ -416,7 +416,7 @@ public:
 			// create binding function class
 			irs->object_info.symbol_info.ref_ptr= irs_source->object_info.symbol_info.ref_ptr; // this is not correct due the pointer
 
-			irs->object_info.symbol_info.idxSymbol = irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();
+			irs->object_info.symbol_info.idxSymbol = (short)(irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
 			irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 
 
@@ -499,7 +499,7 @@ public:
 		irs->m_arg = m_arg;
 		irs->idx_return_type = idx_return_type;
 
-		irs->object_info.symbol_info.idxSymbol = (*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();
+		irs->object_info.symbol_info.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
 		(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 		print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
@@ -578,7 +578,7 @@ public:
 		irs->object_info.symbol_info.ref_ptr = ref_ptr;
 		irs->m_arg = m_arg;
 		irs->idx_return_type = idx_return_type;
-		irs->object_info.symbol_info.idxSymbol = (*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();
+		irs->object_info.symbol_info.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
 		(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 		print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
@@ -647,7 +647,7 @@ public:
 
 
 		irs.properties = PROPERTY_C_OBJECT_REF;
-		irs.idxSymbol = (*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.size();
+		irs.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.size());
 		(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
 		//base_info->local_symbols.vec_idx_registeredFunction.push_back(irs);
 		return true;

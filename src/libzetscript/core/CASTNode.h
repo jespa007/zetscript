@@ -48,7 +48,7 @@ enum GROUP_TYPE{
 
 class CScope;
 #pragma pack(1)
-struct CASTNode{
+class CASTNode{
 
 public:
 

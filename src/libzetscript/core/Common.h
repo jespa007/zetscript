@@ -82,11 +82,12 @@ using std::ostringstream;
 
 class CASTNode;
 typedef CASTNode *PASTNode;
-struct CScriptFunctionObject;
-class tScopeVar;
+class CScriptFunctionObject;
 class CScope;
 class CScriptClass;
 class CScriptVariable;
+
+struct tScopeVar;
 struct tFunctionInfo;
 struct tInfoVarScopeBlock;
 
@@ -537,7 +538,7 @@ typedef struct {
  };
  */
 
-#pragma pack(1)
+#pragma pack(push, 1)
 
 struct tInfoVariableSymbol { // it can be a variable or function
 	intptr_t ref_ptr; // pointer ref to C Var/Function
@@ -670,3 +671,5 @@ typedef struct _tNode {
 	PInfoSharedPointerNode previous, next;
 } tInfoSharedPointerNode;
 
+ 
+#pragma pack(pop)

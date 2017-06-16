@@ -131,7 +131,7 @@ CScriptClass * CScriptClass::registerClass(const string & class_name, const stri
 
 		//CScriptClass 	*registered_class=new CScriptClass;
 		sci = new CScriptClass;
-		sci->metadata_info.object_info.symbol_info.idxScriptClass = vec_script_class_node->size();
+		sci->metadata_info.object_info.symbol_info.idxScriptClass = (short)vec_script_class_node->size();
 		sci->classPtrType = TYPE_SCRIPT_VARIABLE;
 
 		if(base_class != NULL){
@@ -834,7 +834,7 @@ void CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_ir
 
 			 for(unsigned i = 0; i < vec_ivsb.size(); i++){
 				 root_class_irfs->object_info.info_var_scope[i].idxScope = vec_ivsb[i].idxScope;
-				 root_class_irfs->object_info.info_var_scope[i].n_var_index = vec_ivsb[i].var_index.size();
+				 root_class_irfs->object_info.info_var_scope[i].n_var_index = (char)vec_ivsb[i].var_index.size();
 				 root_class_irfs->object_info.info_var_scope[i].var_index = (int *)malloc(sizeof(int)*vec_ivsb[i].var_index.size());
 				 for(unsigned j = 0; j < vec_ivsb[i].var_index.size(); j++){
 					 root_class_irfs->object_info.info_var_scope[i].var_index[j] = vec_ivsb[i].var_index[j];
@@ -1291,7 +1291,7 @@ tInfoVariableSymbol * CScriptClass::registerVariableSymbol(const string & class_
 		info_var.idxScriptClass = rc->metadata_info.object_info.symbol_info.idxScriptClass;
 		info_var.idxAstNode = idxAstNode;
 		info_var.symbol_name =var_name;
-		info_var.idxSymbol = object_info->local_symbols.m_registeredVariable.size();
+		info_var.idxSymbol = (short)object_info->local_symbols.m_registeredVariable.size();
 		object_info->local_symbols.m_registeredVariable.push_back(info_var);
 
 		return &object_info->local_symbols.m_registeredVariable[object_info->local_symbols.m_registeredVariable.size()-1];
@@ -1391,7 +1391,7 @@ CScriptFunctionObject * CScriptClass::registerFunctionSymbol(const string & clas
 		if(fun_name == class_name){
 			rc->idx_function_script_constructor = object_info->local_symbols.vec_idx_registeredFunction.size();
 		}
-		irs->object_info.symbol_info.idxSymbol = object_info->local_symbols.vec_idx_registeredFunction.size();
+		irs->object_info.symbol_info.idxSymbol = (short)object_info->local_symbols.vec_idx_registeredFunction.size();
 		object_info->local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 
 		// check if metamethod...
