@@ -13,7 +13,7 @@ class MyClass{
 	}
 	
 };
-/*
+
 class MyClass2:MyObject{
 	
 	
@@ -21,6 +21,11 @@ class MyClass2:MyObject{
 		//super();
 		//print("CONSTRUCTOR 2");
 	}
+	
+	function MyClass2(a){
+		super(a);
+		//print("CONSTRUCTOR 2");
+	}	
 	
 	function print(){
 		print("Hello MyClass 2");
@@ -31,12 +36,12 @@ class MyClass2:MyObject{
 		super(g);
 	}
 	
-};*/
+};
 
 
 var yy=1;
 
-var g=new MyClass(yy,1);
-g.kk();
+var g=new MyClass2(0);
+g.prova(0);
 
 //print(""+a.i);

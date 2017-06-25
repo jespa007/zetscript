@@ -97,7 +97,7 @@ ByteBuffer * CIO_Utils::readFile(const string & filename){
 	return S_ISDIR (st_buf.st_mode) != 0;
 
 
-}*/
+}
 
 
 bool CIO_Utils::fileExists(const string & m_file) {
@@ -123,7 +123,7 @@ bool CIO_Utils::fileExists(const string & m_file) {
 
 
 }
-
+*/
 
 
 
