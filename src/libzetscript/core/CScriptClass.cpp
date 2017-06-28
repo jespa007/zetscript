@@ -551,8 +551,14 @@ public:
 		if(!register_C_Class<MyObject>("MyObject")) return false;
 		if(!register_C_FunctionConstructor(MyObject,ini)) return false;
 
-		if(!register_C_FunctionMember(MyObject,print)) return false;
+
 		if(!register_C_VariableMember(MyObject,i)) return false;
+
+
+		if(!register_C_FunctionMember(MyObject,prova)) return false;
+
+
+
 		//if(!register_C_Function(MyObject::_add)) return false;
 		if(!register_C_StaticFunctionMemberInt<MyObject>("_add",static_cast<MyObject * (*)(MyObject *,int *)>(&MyObject::_add))) return false;
 		if(!register_C_StaticFunctionMemberInt<MyObject>("_add",static_cast<MyObject * (*)(MyObject *,MyObject  *)>(&MyObject::_add))) return false;
@@ -669,9 +675,10 @@ int getNumberArgsfromFunctionRefNode(PASTNode ast_node){
 }
 
 
-bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_function, unsigned int param_scope_type){
+bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
 
 	int idx=0;
+	symbol_not_found = true;
 	char n_args_to_find =-1;
 	PASTNode ast_node = AST_NODE(iao->idxAstNode);
 	string symbol_to_find =ast_node->symbol_value;
@@ -701,10 +708,12 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoA
 
 
 			int idx_super=-1;
+			bool is_c=false;
 
 			for(int i = current_function-1; i >= 0 && idx_super==-1; i--){
 				CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(info_function->local_symbols.vec_idx_registeredFunction[i]);
 				if((sfo->object_info.symbol_info.symbol_name == symbol_to_find) && ((int)sfo->m_arg.size() == n_args_to_find)){ // match name and args ...
+					is_c = (sfo->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != 0;
 					idx_super=i;
 				}
 			}
@@ -717,6 +726,7 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoA
 				 iao->instruction_properties |= param_scope_type;
 				 iao->index_op1 = LOAD_TYPE_FUNCTION;
 				 iao->index_op2 = idx_super;
+				 iao->instruction_properties |= (is_c ? INS_PROPERTY_DEDUCE_C_CALL : 0);
 				 //iao->idxFunction = idxFunction;
 				 return true;
 
@@ -772,7 +782,7 @@ bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoA
 
 
 
-
+	symbol_not_found = false;
 	 return false;
 }
 
@@ -852,6 +862,7 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 
 	CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject);
 	tFunctionInfo * info_function = &sfo->object_info;
+	bool symbol_found=false;
 
 	print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->symbol_info.symbol_name.c_str());
 
@@ -885,16 +896,21 @@ bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const stri
 
 
 									 // search local...
-									 if(!searchVarFunctionSymbol(info_function,iao,n_function,INS_PROPERTY_LOCAL_SCOPE)){
+									 if(!searchVarFunctionSymbol(info_function,iao,n_function,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
 										 // search global...
 										 //CScriptFunctionObject * mainFunctionInfo = GET_MAIN_FUNCTION_OBJECT;//getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
-										 if(!searchVarFunctionSymbol(&GET_MAIN_FUNCTION_OBJECT->object_info,iao,n_function,0)){
+										 if(!searchVarFunctionSymbol(&GET_MAIN_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
 											    PASTNode ast_node = AST_NODE(iao->idxAstNode);
 
 												if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
-													print_error_cr("Line %i: Cannot match function \"%s\" with %i args",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+													if(!symbol_found){
+														print_error_cr("Line %i: function \"%s\" not registered",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str() );
+													}
+													else{
+														print_error_cr("Line %i: Cannot match function \"%s\" with %i args",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+													}
 
 												}
 												else{
@@ -947,6 +963,7 @@ bool CScriptClass::updateReferenceSymbols(){
 	 CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 	 print_info_cr("DEFINED CLASSES");
 	 vector<int>  mrf;
+	 bool symbol_found = false;
 
 	 // For each class...
 	 for(unsigned i = IDX_START_SCRIPTVAR; i < (*vec_script_class_node).size(); i++){
@@ -1029,9 +1046,19 @@ bool CScriptClass::updateReferenceSymbols(){
 											 }
 
 
-											 if(!searchVarFunctionSymbol(sfi,iao,k,scope_type)){
+											 if(!searchVarFunctionSymbol(sfi,iao,k,symbol_found,scope_type)){
 												 if(scope_type & INS_PROPERTY_SUPER_SCOPE){
-													 print_error_cr("line %i: Cannot find ancestor function for \"%s()\"",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str());
+													 PASTNode ast_node = AST_NODE(iao->idxAstNode);
+													 int n_args_to_find = getNumberArgsfromFunctionRefNode(ast_node);
+													 string arg_str="";
+													 for(int i = 0; i < n_args_to_find; i++){
+														 if(i>0){
+															 arg_str+=",";
+														 }
+														 arg_str+="arg"+CStringUtils::intToString(i);
+													 }
+
+													 print_error_cr("line %i: Cannot find ancestor function for \"%s(%s)\". Is registered ?",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str(),arg_str.c_str());
 												 }
 												 else{
 													 print_error_cr("Symbol defined at line %i \"%s::%s\"not found",AST_LINE_VALUE(iao->idxAstNode), base_class.c_str(),symbol_to_find.c_str());
@@ -1041,16 +1068,21 @@ bool CScriptClass::updateReferenceSymbols(){
 										 }
 										 else{ //normal symbol...
 											 // search local...
-											 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,INS_PROPERTY_LOCAL_SCOPE)){
+											 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
 												 // search global...
 												 CScriptFunctionObject * mainFunctionInfo = GET_MAIN_FUNCTION_OBJECT;// getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
-												 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,0)){
+												 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,symbol_found,0)){
 													    PASTNode ast_node = AST_NODE(iao->idxAstNode);
 
 														if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
-															print_error_cr("Line %i: Cannot match function \"%s\" with %i args",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+															if(!symbol_found){
+																print_error_cr("Line %i: function \"%s\" not registered",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str() );
+															}
+															else{
+																print_error_cr("Line %i: Cannot match function \"%s\" with %i args",AST_LINE_VALUE(iao->idxAstNode), symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+															}
 
 														}
 														else{

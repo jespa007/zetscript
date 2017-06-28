@@ -275,7 +275,7 @@ void CState::destroyScriptFunctionObjectNodes(){
 			//return;
 		}
 
-		print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
+		//print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
 		if(info_function->object_info.statment_op!=NULL){
 			for(PtrStatment stat =info_function->object_info.statment_op; *stat != NULL; stat++){
 
@@ -314,7 +314,7 @@ void CState::destroyScriptClassNodes() {
 
 			CScriptFunctionObject * info_function = GET_SCRIPT_FUNCTION_OBJECT(irv->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[j]);
 
-			print_debug_cr("unloading %s::%s...",vec_script_class_node->at(i)->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
+			//print_debug_cr("unloading %s::%s...",vec_script_class_node->at(i)->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
 
 			// C related functions ...
 			if(i==0 && j==0){ // MAIN FUNCTION (C functions)

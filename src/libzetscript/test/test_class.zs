@@ -19,7 +19,7 @@ class MyClass2:MyObject{
 	
 	function MyClass2(){
 		//super();
-		//print("CONSTRUCTOR 2");
+		print("CONSTRUCTOR 2");
 	}
 	
 	function MyClass2(a){
@@ -27,10 +27,10 @@ class MyClass2:MyObject{
 		//print("CONSTRUCTOR 2");
 	}	
 	
-	function print(){
+	/*function print(){
 		print("Hello MyClass 2");
 		super(); 
-	}
+	}*/
 	
 	function prova(g){
 		super(g);
@@ -41,7 +41,11 @@ class MyClass2:MyObject{
 
 var yy=1;
 
-var g=new MyClass2(0);
+
+
+var g=new MyClass2("5");
 g.prova(0);
+
+print("ddsa");
 
 //print(""+a.i);

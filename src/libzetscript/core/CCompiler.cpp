@@ -1606,6 +1606,17 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScrip
 		}
 	}
 
+	print_debug_cr("registering base class %s",current_class_name.c_str());
+	for(unsigned i = 0; i < AST_NODE(node_class->children[1])->children.size(); i++){
+
+		PASTNode node_fun = AST_NODE(AST_NODE(node_class->children[1])->children[i]);
+		string symbol_value = node_fun->symbol_value;
+
+		print_debug_cr("* %s::%s",current_class_name.c_str(), symbol_value.c_str());
+
+	}
+
+
 
 	// register all functions ...
 	for(unsigned i = 0; i < AST_NODE(node_class->children[1])->children.size(); i++){
@@ -1632,12 +1643,14 @@ bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScrip
 
 		if(current_class->is_c_class()){ // set c refs ...
 
-			CScriptFunctionObject *irs_src=CScriptClass::getScriptFunctionObjectByClassFunctionName(current_class_name, symbol_value);
+			CScriptFunctionObject *irs_src=CScriptClass::getScriptFunctionObjectByClassFunctionName(
+					current_class_name,
+					node_fun->symbol_value);
 
 			if(irs_src){
 
 				// copy c refs ...
-				irfs->object_info.symbol_info.symbol_name=irs_src->object_info.symbol_info.symbol_name;
+				irfs->object_info.symbol_info.symbol_name= symbol_value;//irs_src->object_info.symbol_info.symbol_name;
 				irfs->object_info.symbol_info.properties = irs_src->object_info.symbol_info.properties;
 
 				irfs->object_info.symbol_info.ref_ptr = irs_src->object_info.symbol_info.ref_ptr;

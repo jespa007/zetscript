@@ -908,33 +908,91 @@ tStackElement * CVirtualMachine::call_C_function(
 		}
 
 		//converted_param[i]= (intptr_t)(script_variable);
+		//bool prall_check = false;
 
 		switch(GET_INS_PROPERTY_VAR_TYPE(currentArg->properties)){
 		case INS_PROPERTY_TYPE_BOOLEAN:
+			if(irfs->m_arg[i] != *CScriptClass::BOOL_PTR_TYPE_STR){
+				print_error_cr("Function %s, param %i: cannot convert %s into %s",
+										irfs->object_info.symbol_info.symbol_name.c_str(),
+										i,
+										demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
+										demangle(irfs->m_arg[i]).c_str()
+										);
+				return NULL;
+			}
+			converted_param[i]=(intptr_t)(&currentArg->stkValue);
+			break;
 		case INS_PROPERTY_TYPE_NUMBER:
+			if(irfs->m_arg[i] != *CScriptClass::FLOAT_PTR_TYPE_STR){
+				print_error_cr("Function %s, param %i: cannot convert %s into %s",
+										irfs->object_info.symbol_info.symbol_name.c_str(),
+										i,
+										demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
+										demangle(irfs->m_arg[i]).c_str()
+										);
+				return NULL;
+			}
+
+			converted_param[i]=(intptr_t)(&currentArg->stkValue);
+			break;
 		case INS_PROPERTY_TYPE_INTEGER:
+			if(irfs->m_arg[i] != *CScriptClass::INT_PTR_TYPE_STR){
+				print_error_cr("Function %s, param %i: cannot convert %s into %s",
+										irfs->object_info.symbol_info.symbol_name.c_str(),
+										i,
+										demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
+										demangle(irfs->m_arg[i]).c_str()
+										);
+				return NULL;
+			}
+
 			converted_param[i]=(intptr_t)(&currentArg->stkValue);
 			break;
 
 		case INS_PROPERTY_TYPE_STRING:
+			if(irfs->m_arg[i] != *CScriptClass::STRING_PTR_TYPE_STR){
+				print_error_cr("Function %s, param %i: cannot convert %s into %s",
+						irfs->object_info.symbol_info.symbol_name.c_str(),
+						i,
+						demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
+						demangle(irfs->m_arg[i]).c_str()
+						);
+				return NULL;
+			}
+
 			converted_param[i]=(intptr_t)(currentArg->stkValue);
 			break;
 		default: // script variable by default ...
 			script_variable=(CScriptVariable *)currentArg->varRef;
 
 
-			if(script_variable->is_c_object()){
-				//print_error_cr("static function fails!!!!");
-				//return NULL;
-				converted_param[i]=(intptr_t)script_variable->get_C_Object();
-			}else{
-				if(script_variable->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE){
-					converted_param[i] = (intptr_t)script_variable;
-
+			if(script_variable->is_c_object()){ // get the pointer directly ...
+				if(script_variable->getPointer_C_ClassName()==irfs->m_arg[i]){
+					converted_param[i]=(intptr_t)script_variable->get_C_Object();
 				}else{
-					print_error_cr("Internal error! No script variable!");
-										return NULL;
+					fntConversionType paramConv=CScriptClass::getConversionType((script_variable)->getPointer_C_ClassName(),irfs->m_arg[i]);
+					if(paramConv==0){
+						print_error_cr("Function %s param %i: cannot convert %s into %s",
+								irfs->object_info.symbol_info.symbol_name.c_str(),
+								i,
+								script_variable->getPointer_C_ClassName().c_str(),
+								irfs->m_arg[i].c_str()
+						);
+					}
+					converted_param[i] = paramConv(script_variable);
+					//converted_param[i]=(intptr_t)script_variable->get_C_Object();
 				}
+
+
+
+			}else{ // CScriptVariable ?
+				/*if(script_variable->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE){
+					converted_param[i] = (intptr_t)script_variable;
+				}else{*/
+					print_error_cr("Internal error, no C-object parameter! Unexpected  script variable!");
+					return NULL;
+				//}
 			}
 
 			/*if(!(script_variable->getPointer_C_ClassName()==TYPE_SCRIPT_VARIABLE && irfs->m_arg[i]==typeid(CScriptVariable *).name())){ //not script, then it can pass through ...
@@ -2413,9 +2471,17 @@ tStackElement * CVirtualMachine::execute_internal(
 				calling_object = this_object;
 				tInfoAsmOp *iao = (tInfoAsmOp *)callAle->stkValue;
 				bool is_constructor = (iao->instruction_properties & INS_PROPERTY_CONSTRUCT_CALL)!=0;
+				bool deduce_function = false; //(iao->instruction_properties & INS_PROPERTY_DEDUCE_C_CALL)!=0;
+
+				/*if(deduce_function){ // check whether the args are correct...
+					CScriptFunctionObject *sfo=(CScriptFunctionObject *)callAle->stkValue;
+					print_error_cr("Cannot call MIERDA!!!");
+					return NULL;
+				}*/
 
 				// try to find the function ...
-				if(iao->index_op2 == ZS_UNDEFINED_IDX ){
+				if(iao->index_op2 == ZS_UNDEFINED_IDX || deduce_function){
+
 
 					symbol_to_find = AST_NODE(iao->idxAstNode)->symbol_value;
 					//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
@@ -2450,6 +2516,22 @@ tStackElement * CVirtualMachine::execute_internal(
 
 							m_functionSymbol=calling_object->getVectorFunctionSymbol();
 							size_fun_vec = (int)m_functionSymbol->size()-1;
+
+						}else if (deduce_function){ // function C deduce
+							//print_error_cr("Cannot call MIERDA!!!");
+							//return NULL;
+							/*CScriptFunctionObject *sfo=(CScriptFunctionObject *)callAle->stkValue;
+							tSymbolInfo  *si;
+							m_functionSymbol=&vec_aux_function_symbol;
+							vec_aux_function_symbol.clear();
+
+							if((si = calling_object->getFunctionSymbolByIndex(sfo->object_info.))==NULL){
+								return NULL;
+							}
+
+							vec_aux_function_symbol.push_back(*si);
+							size_fun_vec = vec_aux_function_symbol.size()-1;*/
+							size_fun_vec = 0;
 						}
 
 
@@ -2478,7 +2560,9 @@ tStackElement * CVirtualMachine::execute_internal(
 								if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
 									irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
 									aux_string=m_functionSymbol->at(i).symbol_value;
-								}else{\
+								}else if(deduce_function){
+									irfs = (CScriptFunctionObject *)callAle->stkValue;
+								}else{
 									irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
 									aux_string=irfs->object_info.symbol_info.symbol_name;
 								}
@@ -2528,10 +2612,14 @@ tStackElement * CVirtualMachine::execute_internal(
 													}
 												}
 												if(all_check){ // we found the right function (set it up!) ...
-													iao->index_op2 = i;
+
+													if(!deduce_function){
+														iao->index_op2 = i;
+													}
 													aux_function_info = irfs;
 												}
 									}else{ // type script function  ...
+
 										iao->index_op2=i;
 										aux_function_info = irfs;
 									}
@@ -2547,7 +2635,9 @@ tStackElement * CVirtualMachine::execute_internal(
 										string str_candidates="";
 										for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
 											CScriptFunctionObject *irfs = NULL;
-											if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+											if(deduce_function){
+												irfs = (CScriptFunctionObject *)callAle->stkValue;
+											}else if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
 												irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
 												//aux_string=m_functionSymbol->at(i).symbol_value;
 											}else{
@@ -2569,7 +2659,7 @@ tStackElement * CVirtualMachine::execute_internal(
 																str_candidates+=",";
 															}
 
-															if(is_c){
+															if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){
 																str_candidates+=demangle(irfs->m_arg[a]);
 															}else{ // typic var ...
 																str_candidates+="arg"+CStringUtils::intToString(a+1);
@@ -2584,11 +2674,61 @@ tStackElement * CVirtualMachine::execute_internal(
 													}
 										}
 
-										print_error_cr("Cannot find %s \"%s\" at line %i.\n\n%s",
+										if(n_candidates == 0){
+											print_error_cr("Cannot find %s \"%s\" function at line %i.\n\n%s",
+													is_constructor ? "constructor":"function",
+													AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
+													AST_LINE_VALUE(iao->idxAstNode));
+
+										}
+										else{
+											string args_str = "";
+											// get arguments...
+											for( int k = 0; k < n_args;k++){
+												tStackElement *currentArg=&startArg[k];
+												if(currentArg->properties & INS_PROPERTY_IS_STACKVAR){
+													currentArg = (tStackElement *)currentArg->varRef;
+												}
+
+												if(k>0){
+													args_str+=",";
+												}
+
+												unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);
+												switch(var_type){
+												default:
+													aux_string="unknow";
+													break;
+												case INS_PROPERTY_TYPE_INTEGER:
+													aux_string=*CScriptClass::INT_PTR_TYPE_STR;
+													break;
+												case INS_PROPERTY_TYPE_NUMBER:
+													aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
+													break;
+												case INS_PROPERTY_TYPE_BOOLEAN:
+													aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
+													break;
+												case INS_PROPERTY_TYPE_STRING:
+													aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
+													break;
+												case INS_PROPERTY_TYPE_NULL:
+												case INS_PROPERTY_TYPE_UNDEFINED:
+												case INS_PROPERTY_TYPE_SCRIPTVAR:
+												case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
+													aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
+													break;
+												}
+
+												args_str+=demangle(aux_string);
+											}
+
+										print_error_cr("Cannot match %s \"%s(%s)\"  at line %i.\n\n%s",
 												is_constructor ? "constructor":"function",
 												AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
+												args_str.c_str(),
 												AST_LINE_VALUE(iao->idxAstNode),
 												str_candidates.c_str());
+										}
 
 										return NULL;
 									}

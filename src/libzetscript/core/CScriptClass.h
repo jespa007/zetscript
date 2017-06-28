@@ -704,7 +704,7 @@ private:
 	//vector<CScriptClass *>  	 (*vec_script_class_node);
 	//CScriptVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
 
-	 static bool searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_idx_function,unsigned int scope_type=0);
+	 static bool searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
 
 	 static void buildScopeVariablesBlock(CScriptFunctionObject *root_class_irfs );
 	 static void unloadRecursiveFunctions(CScriptFunctionObject * info_function);

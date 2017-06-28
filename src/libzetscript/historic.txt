@@ -1,8 +1,4 @@
 
-
-version 1.00.06
-===============
-
 >Clean code. 
 >Rename name vars like CString --> CStringSV
 >Test save/restore.
@@ -22,6 +18,11 @@ version 1.00.06
 > test struct file
 > test vector file
 > test class file (it can have a toString method... like struct)
+
+
+
+version 1.00.06
+===============
 
 
 version 1.00.05

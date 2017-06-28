@@ -24,6 +24,19 @@ std::string demangle(const string & name) {
 		return "string *";
 	}
 
+	if(name == string(typeid(int *).name())){
+			return "int *";
+		}
+
+	if(name == string(typeid(bool *).name())){
+			return "bool *";
+		}
+
+	if(name == string(typeid(float *).name())){
+			return "float *";
+		}
+
+
 	if(name == string(typeid(string).name())){
 		return "string";
 	}
