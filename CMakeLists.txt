@@ -15,7 +15,7 @@ include_directories (
 )
 
 if(MSVC)
-
+	MESSAGE ("********* MSVC ************" )
 	add_definitions(/bigobj)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DZETSCRIPT_EXPORTS)
 
@@ -27,7 +27,9 @@ else()
 	SET( COMMON_PARAMS " ${COMMON_PARAMS} -D__STDC_CONSTANT_MACROS -std=c++1y -I -pthread -Wall")
    
 	if (MINGW)
-
+		MESSAGE ("********* MINGW CONF ************" )
+		message("mingw path: $ENV{MINGWDIR} ")
+		
 		set(CMAKE_LEGACY_MINGW_WIN32 0)
 		set(CMAKE_PREFIX_PATH "$ENV{MINGWDIR}/local32/lib")
 
@@ -86,15 +88,18 @@ else()
 	set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
 
 
-	if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
+	if ( "${EMSCRIPTEN}" STREQUAL "yes" )
 
-		SET( EMMSCRIPTEN_DIR "/opt/emsdk/emscripten/master")
+		message("emscripten path: $ENV{EMSCRIPTENDIR} ")
+		
 
-		MESSAGE ("********* ¡¡ EMMSCRIPTEN RELEASE !!! ************" )
-		set(CMAKE_C_COMPILER "${EMMSCRIPTEN_DIR}/emcc")
-		set(CMAKE_CXX_COMPILER "${EMMSCRIPTEN_DIR}/em++")
+		MESSAGE ("********* EMSCRIPTEN CONF ************" )
+		set(CMAKE_C_COMPILER "$ENV{EMSCRIPTENDIR}/emcc")
+		set(CMAKE_CXX_COMPILER "$ENV{EMSCRIPTENDIR}/em++")
 
-		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I${EMMSCRIPTEN_DIR}/system/lib/libcxxabi/include/ ")
+		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I$ENV{EMSCRIPTENDIR}/system/lib/libcxxabi/include/ ")
+		
+		set( POST_NAME ${POST_NAME}.html)
 	
 	endif()
 
@@ -157,11 +162,10 @@ set( ZETSCRIPT_LIB_SRCS
 add_library( zetscript${POST_NAME} SHARED ${ZETSCRIPT_LIB_SRCS} )
 target_link_libraries(zetscript${POST_NAME} )
 
-if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
+if ( "${EMSCRIPTEN}" STREQUAL "yes" )
 
-	add_executable(zs${POST_NAME}.html
-		${ZG_BASE_LIB_SRCS}
-		${PROJECT_SOURCE_DIR}/main.cpp
+	add_executable(zs${POST_NAME}
+		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
 
  	
@@ -172,9 +176,11 @@ else()
 		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
 	
-	target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} "-Wl,--no-as-needed")
+	
 	
 endif()
+
+target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} "-Wl,--no-as-needed")
 
 
 
