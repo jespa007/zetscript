@@ -2,7 +2,7 @@
 
 #define NEW_VECTOR_VAR (new CVector()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new CVector())))
 
-class ZETSCRIPT_API CVector: public CScriptVariable{
+class  CVector: public CScriptVariable{
 
 public:
 	int _i_size;

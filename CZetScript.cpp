@@ -383,23 +383,19 @@ bool CZetScript::eval_file(const char * filename){
 		return false;
 	}
 	bool status = false;
-	FILE *fp = fopen(filename, "r");
+
+	char *buf_tmp=NULL;
+	int n_bytes;
 	
-
-	if (fp) {
-
-		char buf_tmp[65536];
-
-		fread(buf_tmp, 1, 1, fp);
+	if((buf_tmp=CIO_Utils::readFile(filename, n_bytes))!=NULL){
 
 		tInfoParsedSource ps;
 		ps.filename = filename;
 		//ps.data = buf_tmp;
 
 		status = eval((char *)buf_tmp);
-	}
-	else {
-		print_error_cr("Cannot open %s", filename);
+
+		free(buf_tmp);
 	}
 
 
@@ -424,7 +420,9 @@ bool CZetScript::eval(const string & s){
 				return false;
 			}
 
+#ifdef __DEBUG__
 			printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
+#endif
 			return true;
 		}
 	}

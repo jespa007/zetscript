@@ -1,6 +1,6 @@
 #pragma once
 
-class ZETSCRIPT_API CNativeFunction{
+class  CNativeFunction{
 
 public:
 

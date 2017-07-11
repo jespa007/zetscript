@@ -9,7 +9,7 @@ class CScope;
  * The compiler compiles function structs and generates its asm instruction. The compile must know
  * the class structure in order to link symbols of its scope.
   */
-class ZETSCRIPT_API CCompiler{
+class  CCompiler{
 
 public:
 

@@ -1,7 +1,7 @@
 
 #define NEW_STRUCT_VAR (new CStruct()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassStruct())))
 
-class ZETSCRIPT_API CStruct:public CScriptVariable{
+class  CStruct:public CScriptVariable{
 
 public:
 	CStruct();

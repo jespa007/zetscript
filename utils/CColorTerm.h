@@ -2,7 +2,7 @@
 #pragma once
 
 
-class ZETSCRIPT_API CColorTerm
+class  CColorTerm
 {
 public:
 

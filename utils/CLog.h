@@ -4,7 +4,7 @@
 //#include <assert.h>
 
 
-class ZETSCRIPT_API CLog {
+class CLog {
 
 	CLog();
 

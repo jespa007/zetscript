@@ -48,7 +48,7 @@ enum GROUP_TYPE{
 
 class CScope;
 #pragma pack(1)
-class ZETSCRIPT_API CASTNode{
+class  CASTNode{
 
 public:
 

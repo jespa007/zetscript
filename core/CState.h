@@ -7,7 +7,7 @@
 
 
 
-class ZETSCRIPT_API CState{
+class  CState{
 
 	static vector<CState *> 						* vec_saved_state;
 	static CState 									* current_state;

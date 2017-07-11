@@ -55,7 +55,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
  * Stores the basic information to build a object through built AST structure
  */
 
-class ZETSCRIPT_API CScriptClass{
+class  CScriptClass{
 
 
 	//------------- VARIABLES STRUCT ---------------

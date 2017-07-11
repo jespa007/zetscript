@@ -132,14 +132,14 @@
 		<buildTargets>
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
-				<buildArguments>-G "MinGW Makefiles" -DTARGET=debug</buildArguments>
+				<buildTarget>-G "MinGW Makefiles" -DTARGET=debug</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
-				<buildArguments>-G "MinGW Makefiles" -DTARGET=release</buildArguments>
+				<buildTarget>-G "MinGW Makefiles" -DTARGET=release</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
@@ -153,7 +153,7 @@
 			</target>
 			<target name="CMake Clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>rm</buildCommand>
-				<buildArguments>CMakeCache.txt</buildArguments>
+				<buildArguments>CMakeFiles -R</buildArguments>
 				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>

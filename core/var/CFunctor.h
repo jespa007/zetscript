@@ -2,7 +2,7 @@
 
 #define NEW_FUNCTOR_VAR (new CFunctor()) //setFunctionSymbol(CScriptFunctionObject *_irfs)fun_struct)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassFunctor()),fun_struct))
 
-class ZETSCRIPT_API CFunctor:public CScriptVariable{
+class  CFunctor:public CScriptVariable{
 
 public:
 	//CScriptFunctionObject *m_functorValue;

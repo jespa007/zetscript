@@ -1,5 +1,5 @@
 var vv=["jordi",0,true];
-print(vv);
+print(vv); // print vector...
 
 
 vv.push("kk");

@@ -1,4 +1,7 @@
 
+version 1.00.06
+===============
+
 >Clean code. 
 >Rename name vars like CString --> CStringSV
 >Test save/restore.
@@ -18,32 +21,8 @@
 > test struct file
 > test vector file
 > test class file (it can have a toString method... like struct)
-
-
-
-version 1.00.06
-===============
-
--Restructured dir/files
--Added some compatibilities MSVC
--Added zs exec file.
-
-
-version 1.00.05
-===============
-
-CMakeFiles: Added MSVC Comptibility (only compiles with MSVC 2017) that comes with compiler that allows constexpr (sorry)
-
--take out memmanager.
-
-
--Erase utils dir.
-Methamethods:
--0. Enumerate total metamethods and access through array + enum index.
--1. Check c++ implementation.
--2. List metamethods to override.
--3. Check correct function signature (ie. only two parameters, return expected type, etc)
--4. Metamethods or C++ call functions fails when it calls from function with different signatures. Example.
+> Metamethods or C++ call functions fails when it calls from function with different signatures. Example.
+  test print error
     
     From C++
     
@@ -84,6 +63,33 @@ Methamethods:
     1. Find the right function everytime --> (performance decrases.)
     2. Leave the first function found. It will warn the second call that (CNumber, int) was expected ... maybe we can reserve the print message
     
+  
+  
+   
+
+
+version 1.00.06
+===============
+
+-Restructured dir/files
+-Added some compatibilities MSVC
+-Added zs exec file.
+
+
+version 1.00.05
+===============
+
+CMakeFiles: Added MSVC Comptibility (only compiles with MSVC 2017) that comes with compiler that allows constexpr (sorry)
+
+-take out memmanager.
+
+
+-Erase utils dir.
+Methamethods:
+-0. Enumerate total metamethods and access through array + enum index.
+-1. Check c++ implementation.
+-2. List metamethods to override.
+-3. Check correct function signature (ie. only two parameters, return expected type, etc)
 
 
 Class: 

@@ -27,7 +27,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 
 class CScriptFunction;
-class ZETSCRIPT_API CVirtualMachine{
+class  CVirtualMachine{
 
 
 

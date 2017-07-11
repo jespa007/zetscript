@@ -159,7 +159,7 @@ set( ZETSCRIPT_LIB_SRCS
 )
 
 # zetscriptlib
-add_library( zetscript${POST_NAME} SHARED ${ZETSCRIPT_LIB_SRCS} )
+add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
 target_link_libraries(zetscript${POST_NAME} )
 
 if ( "${EMSCRIPTEN}" STREQUAL "yes" )

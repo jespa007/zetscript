@@ -11,7 +11,7 @@
 
 
 class CScriptClass;
-class ZETSCRIPT_API CScriptVariable{//: public CVariable{
+class  CScriptVariable{//: public CVariable{
 
 public:
 

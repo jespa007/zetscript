@@ -79,18 +79,6 @@ using std::ostringstream;
 #include "../../zs_dev/system/zs_system.h"
 #endif
 
-#ifdef _MSC_VER
-
-#ifdef ZETSCRIPT_EXPORTS
-#define ZETSCRIPT_API __declspec(dllexport)
-#else
-#define ZETSCRIPT_API __declspec(dllimport)
-#endif
-
-#else
-#define ZETSCRIPT_API
-#endif
-
 class CASTNode;
 typedef CASTNode *PASTNode;
 class CScriptFunctionObject;

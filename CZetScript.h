@@ -13,7 +13,7 @@ class CScope;
 
 #define ZETSCRIPT_MAJOR_VERSION 1
 #define ZETSCRIPT_MINOR_VERSION 0
-#define ZETSCRIPT_PATCH_VERSION 6
+#define ZETSCRIPT_PATCH_VERSION 7
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
@@ -22,7 +22,7 @@ class CScope;
 
 #define WriteError(s, ...) 		CZetScript::write_error(s, ##__VA_ARGS__)
 
-class ZETSCRIPT_API CZetScript{
+class  CZetScript{
 
 	static char str_error[MAX_BUFFER_STR_ERROR];
 				

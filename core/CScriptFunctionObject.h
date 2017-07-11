@@ -19,7 +19,7 @@
 #define GET_SCRIPT_FUNCTION_OBJECT(idx) 		CScriptFunctionObject::getScriptFunctionObject(idx)
 #define FUNCTION_NEW_VARIABLE_SYMBOL(idx_class)	(CScriptFunctionObject::newVariableSymbol(idx_class))    // 0 is the main class
 
-class ZETSCRIPT_API CScriptFunctionObject{
+class  CScriptFunctionObject{
 
 
 

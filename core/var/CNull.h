@@ -3,7 +3,7 @@
 #define NEW_NULL_VAR (new CNull()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassNull())))
 #define NULL_SYMBOL (CNull::getInstance())
 
-class ZETSCRIPT_API CNull:public CScriptVariable{
+class  CNull:public CScriptVariable{
 
 	static CNull *null_symbol;
 	CNull();

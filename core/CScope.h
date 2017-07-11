@@ -22,7 +22,7 @@ class CContext;
 
 
 
-class ZETSCRIPT_API CScope{
+class  CScope{
 
 public:
 
