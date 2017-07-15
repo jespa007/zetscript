@@ -1,16 +1,19 @@
 #pragma once
 
+namespace zetscript{
 
-class CIO_Utils
-{
+	class CIO_Utils
+	{
 
-public:
+	public:
 
 
-	static string  getFileName(const string &  _path);
-	static string  getFileNameWithoutExtension(const string & _path);
-	static bool fileExists(const string & m_file);
-	//static bool readFile(const string & filename, char *buffer, int length);
-	static char * readFile(const string & filename, int & n_readed_bytes);
-	static int  getLength(const string & filename);
-};
+		static string  getFileName(const string &  _path);
+		static string  getFileNameWithoutExtension(const string & _path);
+		static bool fileExists(const string & m_file);
+		//static bool readFile(const string & filename, char *buffer, int length);
+		static char * readFile(const string & filename, int & n_readed_bytes);
+		static int  getLength(const string & filename);
+	};
+
+}

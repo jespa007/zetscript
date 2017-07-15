@@ -2,8 +2,11 @@
 
 #include "../Common.h"
 
-class CUndefined;
-class CNull;
+
+namespace zetscript{
+	class CUndefined;
+	class CNull;
+}
 
 
 #include "utils/zs_utils.h"

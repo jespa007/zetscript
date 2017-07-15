@@ -176,7 +176,11 @@ else()
 		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
 	
+	add_executable(zs_test${POST_NAME}
+		${PROJECT_SOURCE_DIR}/zs_test.cpp
+	)	
 	
+	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME} "-Wl,--no-as-needed")	
 	
 endif()
 

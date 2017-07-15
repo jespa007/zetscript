@@ -1,13 +1,18 @@
+#pragma once
 
 #define NEW_STRUCT_VAR (new CStruct()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassStruct())))
 
-class  CStruct:public CScriptVariable{
+namespace zetscript{
 
-public:
-	CStruct();
+	class  CStruct:public CScriptVariable{
 
-	virtual bool unrefSharedPtr();
-	virtual bool initSharedPtr();
+	public:
+		CStruct();
+
+		virtual bool unrefSharedPtr();
+		virtual bool initSharedPtr();
 
 
-};
+	};
+
+}

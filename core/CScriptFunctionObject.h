@@ -19,40 +19,45 @@
 #define GET_SCRIPT_FUNCTION_OBJECT(idx) 		CScriptFunctionObject::getScriptFunctionObject(idx)
 #define FUNCTION_NEW_VARIABLE_SYMBOL(idx_class)	(CScriptFunctionObject::newVariableSymbol(idx_class))    // 0 is the main class
 
-class  CScriptFunctionObject{
+
+namespace zetscript{
+
+	class  CScriptFunctionObject{
 
 
 
-public:
+	public:
 
-	tFunctionInfo	object_info;
+		tFunctionInfo	object_info;
 
-	//CScriptFunctionObject *virtual_function;
+		//CScriptFunctionObject *virtual_function;
 
-	// var for function ...
-	vector<std::string> m_arg; // tells var arg name or var type name (in of C )
-	int idx_return_type; // -1 not inicialized type return.
+		// var for function ...
+		vector<std::string> m_arg; // tells var arg name or var type name (in of C )
+		int idx_return_type; // -1 not inicialized type return.
 
-	CScriptFunctionObject(){
-		//virtual_function = NULL;
-		idx_return_type = -1;
-		object_info.idxScriptFunctionObject = -1;
-	}
+		CScriptFunctionObject(){
+			//virtual_function = NULL;
+			idx_return_type = -1;
+			object_info.idxScriptFunctionObject = -1;
+		}
 
-	/**
-	 * Set/Get CScriptClass Node by its idx, regarding current state.
-	 */
-	static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunctionObject *> 	* set_vec);
-	static vector<CScriptFunctionObject *> 	*	getVectorScriptFunctionObjectNode();
+		/**
+		 * Set/Get CScriptClass Node by its idx, regarding current state.
+		 */
+		static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunctionObject *> 	* set_vec);
+		static vector<CScriptFunctionObject *> 	*	getVectorScriptFunctionObjectNode();
 
-	static CScriptFunctionObject 			*	newScriptFunctionObject();
-	static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
-	static tFunctionInfo					* 	getFunctionInfo(int idx);
-	static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);
-	static int						 			getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name,char n_args=-1, bool show_msg=true);
-	static int						 			getIdxVariableSymbol(tFunctionInfo * info_function,const string & function_name, bool show_msg=true);
+		static CScriptFunctionObject 			*	newScriptFunctionObject();
+		static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
+		static tFunctionInfo					* 	getFunctionInfo(int idx);
+		static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);
+		static int						 			getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name,char n_args=-1, bool show_msg=true);
+		static int						 			getIdxVariableSymbol(tFunctionInfo * info_function,const string & function_name, bool show_msg=true);
 
-private:
-	static vector<CScriptFunctionObject *> 	* current_vec_script_function_object_node;
+	private:
+		static vector<CScriptFunctionObject *> 	* current_vec_script_function_object_node;
 
-};
+	};
+
+}

@@ -1,5 +1,6 @@
 #include "CZetScript.h"
 
+using namespace zetscript;
 
 int main(int argc, char * argv[]) {
 

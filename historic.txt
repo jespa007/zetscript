@@ -1,14 +1,15 @@
+> implement vector::_toString
+> implement struct::_toString
+> implement class::_toString 
 
-version 1.00.06
-===============
 
 >Clean code. 
->Rename name vars like CString --> CStringSV
 >Test save/restore.
 >Remove memory leaks.
 
 > cmake: Add install feature.
 > cmake: Add test features
+ 
 > test arithmetic file (need reimplement %)
 > test binary file
 > test ternary file
@@ -20,7 +21,16 @@ version 1.00.06
 > test metamethod file (test all override ops. implement _toString metamethod (override for vector & struct))
 > test struct file
 > test vector file
-> test class file (it can have a toString method... like struct)
+> test class file
+> test c file
+  -test boolean op and expected result.
+  -test arithmetic op and expected result. 
+  -test calling script function from c and viceversa.
+  -test class with c binding
+  -test class operators with c binding
+  -save/restore state
+  -calling script function from C
+
 > Metamethods or C++ call functions fails when it calls from function with different signatures. Example.
   test print error
     
@@ -65,6 +75,14 @@ version 1.00.06
     
   
   
+
+
+version 1.00.07
+===============
+
+
+-Apply namespace
+
    
 
 

@@ -1,15 +1,19 @@
 #pragma once
 
-#define NEW_FUNCTOR_VAR (new CFunctor()) //setFunctionSymbol(CScriptFunctionObject *_irfs)fun_struct)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassFunctor()),fun_struct))
+namespace zetscript{
 
-class  CFunctor:public CScriptVariable{
+	#define NEW_FUNCTOR_VAR (new CFunctor()) //setFunctionSymbol(CScriptFunctionObject *_irfs)fun_struct)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassFunctor()),fun_struct))
 
-public:
-	//CScriptFunctionObject *m_functorValue;
+	class  CFunctor:public CScriptVariable{
 
-	//CFunctor(){}
-	CFunctor();
-	void setFunctionSymbol(CScriptFunctionObject *_irfs);
+	public:
+		//CScriptFunctionObject *m_functorValue;
+
+		//CFunctor(){}
+		CFunctor();
+		void setFunctionSymbol(CScriptFunctionObject *_irfs);
 
 
-};
+	};
+
+}

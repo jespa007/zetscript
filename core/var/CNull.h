@@ -1,15 +1,19 @@
 #pragma once
 
-#define NEW_NULL_VAR (new CNull()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassNull())))
-#define NULL_SYMBOL (CNull::getInstance())
+namespace zetscript{
 
-class  CNull:public CScriptVariable{
+	#define NEW_NULL_VAR (new CNull()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassNull())))
+	#define NULL_SYMBOL (CNull::getInstance())
 
-	static CNull *null_symbol;
-	CNull();
-public:
-	static CNull *getInstance();
-	static void destroySingletons();
+	class  CNull:public CScriptVariable{
+
+		static CNull *null_symbol;
+		CNull();
+	public:
+		static CNull *getInstance();
+		static void destroySingletons();
 
 
-};
+	};
+
+}
