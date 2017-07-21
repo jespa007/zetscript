@@ -65,6 +65,7 @@ namespace zetscript{
 		static _R eval(const string & str_to_eval){
 
 			_R value = _R();
+			void *ptr=NULL;
 			string typestr = typeid(_R).name();
 
 
@@ -81,6 +82,21 @@ namespace zetscript{
 						if((typestr == typeid(int).name())  && (se->properties & INS_PROPERTY_TYPE_INTEGER)){
 							value = (int)se->stkValue;
 						}
+						else if((typestr == typeid(float).name())  && (se->properties & INS_PROPERTY_TYPE_NUMBER)){
+							memcpy(&value,&se->stkValue,sizeof(float));
+						}
+						else if((typestr == typeid(string).name())  && (se->properties & INS_PROPERTY_TYPE_STRING)){
+							ptr=&value;
+							*((string *)ptr) = *((string *)se->stkValue);
+						}
+						else if((typestr == typeid(bool).name())  && (se->properties & INS_PROPERTY_TYPE_BOOLEAN)){
+							value = (bool)se->stkValue;
+						}
+						else{
+							fprintf(stderr,"eval<%s>(...) not implemented",typestr.c_str());
+							exit(-1);
+						}
+
 
 					}
 				}

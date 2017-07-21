@@ -876,8 +876,39 @@ namespace zetscript{
 
 	PUNCTUATOR_TYPE CASTNode::checkPostOperatorPunctuator(const char *s){
 
-		if(parseIncPunctuator(s)) 	return POST_INC_PUNCTUATOR;
-		if(parseDecPunctuator(s))	return POST_DEC_PUNCTUATOR;
+		PUNCTUATOR_TYPE op=UNKNOWN_PUNCTUATOR;
+
+		if(parseIncPunctuator(s)){
+			op=POST_INC_PUNCTUATOR;
+		}
+
+		if(parseDecPunctuator(s)){
+			op = POST_DEC_PUNCTUATOR;
+		}
+
+		if(op != UNKNOWN_PUNCTUATOR){ // let's check some situations whether is not allowed having post operator
+			PUNCTUATOR_TYPE pt=UNKNOWN_PUNCTUATOR;
+			int line=0;
+			char *aux=IGNORE_BLANKS(s+2,line); // advance to next char...
+
+			// if is an operator ... ok!
+			pt=isPunctuator(aux);
+
+			if(pt != UNKNOWN_PUNCTUATOR){
+				if(pt < MAX_OPERATOR_PUNCTUATORS){ // ok...
+					return op;
+				}
+
+				if(   pt == COMA_PUNCTUATOR  // ok
+				  ||  pt == SEMICOLON_PUNCTUATOR
+				  ||  pt == CLOSE_PARENTHESIS_PUNCTUATOR
+				  ||  pt == CLOSE_SQUARE_BRAKET_PUNCTUATOR
+				  ){
+					return op;
+				}
+			}
+
+		}
 
 		return UNKNOWN_PUNCTUATOR;
 	}
@@ -1315,6 +1346,9 @@ namespace zetscript{
 						operator_group=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 		bool theres_some_operator=false;
 		int m_definedSymbolLine;
+		bool advance_ptr = true;
+
+
 		aux=IGNORE_BLANKS(aux, m_line);
 
 		if(isMarkEndExpression(*aux)){ // returning because is trivial!
@@ -1361,21 +1395,42 @@ namespace zetscript{
 
 				if((operator_group=isOperatorPunctuator(aux))!=0){
 
+					bool advance_ptr = true;
+					bool check_op_group = true;
+					// particular cases... since the getSymbol alrady checks the pre operator it cannot be possible to get a pre inc or pre dec...
+					if(operator_group ==  PRE_INC_PUNCTUATOR){ // really is a + PUNCTUATOR...
+						operator_group = ADD_PUNCTUATOR;
+						check_op_group=false;
+					}
+					else if(operator_group ==  PRE_DEC_PUNCTUATOR){ // really is a - PUNCTUATOR...
+						operator_group = SUB_PUNCTUATOR;
+						check_op_group=false;
+					}else if(operator_group ==  SUB_PUNCTUATOR){ // really is a + PUNCTUATOR...
+						operator_group = ADD_PUNCTUATOR;
+						check_op_group=false;
+						advance_ptr=false;
+					}
+
 					theres_some_operator |= true;
 					expr_start_op=aux;
 					m_lineOperator = m_line;
-					aux+=strlen(defined_operator_punctuator[operator_group].str);
 
-					switch(type_group){
-					case GROUP_0:	operator_group = parsePunctuatorGroup0(expr_start_op);break;
-					case GROUP_1:	operator_group = parsePunctuatorGroup1(expr_start_op);break;
-					case GROUP_2:	operator_group = parsePunctuatorGroup2(expr_start_op);break;
-					case GROUP_3:	operator_group = parsePunctuatorGroup3(expr_start_op);break;
-					case GROUP_4:	operator_group = parsePunctuatorGroup4(expr_start_op);break;
-					case GROUP_5:	operator_group = parsePunctuatorGroup5(expr_start_op);break;
-					case GROUP_6:	operator_group = parsePunctuatorGroup6(expr_start_op);break;
-					case GROUP_7:	operator_group = parsePunctuatorGroup7(expr_start_op);break;
-					default: break;
+					if(advance_ptr) // advance ...
+						aux+=strlen(defined_operator_punctuator[operator_group].str);
+
+					if(check_op_group){ // not check because special case pre/post op...
+
+						switch(type_group){
+						case GROUP_0:	operator_group = parsePunctuatorGroup0(expr_start_op);break;
+						case GROUP_1:	operator_group = parsePunctuatorGroup1(expr_start_op);break;
+						case GROUP_2:	operator_group = parsePunctuatorGroup2(expr_start_op);break;
+						case GROUP_3:	operator_group = parsePunctuatorGroup3(expr_start_op);break;
+						case GROUP_4:	operator_group = parsePunctuatorGroup4(expr_start_op);break;
+						case GROUP_5:	operator_group = parsePunctuatorGroup5(expr_start_op);break;
+						case GROUP_6:	operator_group = parsePunctuatorGroup6(expr_start_op);break;
+						case GROUP_7:	operator_group = parsePunctuatorGroup7(expr_start_op);break;
+						default: break;
+						}
 					}
 				}else{
 					zs_print_error_cr("line %i:expected operator or punctuator after \"%s\"",m_line,symbol_value.c_str());
@@ -1462,7 +1517,10 @@ namespace zetscript{
 				}
 				(*ast_node_to_be_evaluated)->node_type = EXPRESSION_NODE;
 			}
-			char * expr_op_end = expr_start_op+strlen(defined_operator_punctuator[operator_group].str);
+			char * expr_op_end = expr_start_op;
+
+			if(!(operator_group==ADD_PUNCTUATOR && *expr_start_op=='-')) // special case (preserve the sign as preneg)...
+				expr_op_end+=strlen(defined_operator_punctuator[operator_group].str);
 
 			print_ast_cr("operator \"%s\" found we can evaluate left and right branches!!\n",CASTNode::defined_operator_punctuator[operator_group].str);
 			char eval_left[MAX_EXPRESSION_LENGTH]={0};
@@ -1507,10 +1565,13 @@ namespace zetscript{
 
 			if(ast_node_to_be_evaluated != NULL){
 				// minus operators has special management because two negatives can be + but sums of negatives works
-				if(operator_group == SUB_PUNCTUATOR) { // supose a-b
+				/*if(operator_group == SUB_PUNCTUATOR) { // supose a-b
 
 					// 1. change - by +
 					operator_group=ADD_PUNCTUATOR;
+
+					CASTNode *ln = AST_NODE((*ast_node_to_be_evaluated)->children[LEFT_NODE]),
+							 *rn =AST_NODE((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
 
 					// 2. create neg node.
 					PASTNode ast_neg_node=NULL;
@@ -1522,7 +1583,7 @@ namespace zetscript{
 					ast_neg_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
 					ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
 					(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=ast_neg_node->idxAstNode;
-				}
+				}*/
 
 				(*ast_node_to_be_evaluated)->node_type = PUNCTUATOR_NODE;
 				(*ast_node_to_be_evaluated)->operator_info = operator_group;

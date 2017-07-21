@@ -174,7 +174,15 @@ namespace zetscript{
 
 						switch(GET_INS_PROPERTY_PRE_POST_OP(asm_op_statment->instruction_properties)){
 						case INS_PROPERTY_PRE_NEG:
-							pre="-";
+
+							// put only if load is var.
+							//if(!(
+							//	  (asm_op_statment->operator_type == LOAD)
+							 //  && (asm_op_statment->index_op1 == LOAD_TYPE::LOAD_TYPE_CONSTANT)
+							  // )
+							//){/
+								pre="-";
+							//}
 							break;
 						case INS_PROPERTY_PRE_INC:
 							pre="++";

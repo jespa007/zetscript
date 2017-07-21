@@ -2,10 +2,6 @@
 
 namespace zetscript{
 
-	//CUndefined *CScriptVariable::UndefinedSymbol=NULL;
-	//CVoid *CScriptVariable::VoidSymbol=NULL;
-	//CNull *CScriptVariable::NullSymbol=NULL;
-
 
 	tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv){
 		tSymbolInfo si;
@@ -96,7 +92,6 @@ namespace zetscript{
 
 		}
 
-
 		// Register even for primitives (if appropiate)
 		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 			CScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
@@ -118,7 +113,6 @@ namespace zetscript{
 			}
 			//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
 		}
-
 	}
 
 

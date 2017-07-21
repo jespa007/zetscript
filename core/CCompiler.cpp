@@ -254,10 +254,10 @@ namespace zetscript{
 		def_operator[SHL]         ={"SHL",SHL,2}; // shift left
 		def_operator[SHR]         ={"SHR",SHR,2}; // shift right
 
-		def_operator[ADD_ASSIGN]  ={"ADD_ASSIGN" ,ADD_ASSIGN,2}; // +
-		def_operator[DIV_ASSIGN]  ={"DIV_ASSIGN",DIV_ASSIGN,2}; // /
-		def_operator[MUL_ASSIGN]  ={"MUL_ASSIGN",MUL_ASSIGN,2}; // *
-		def_operator[MOD_ASSIGN]  ={"MOD_ASSIGN",MOD_ASSIGN,2};  // %
+		//def_operator[ADD_ASSIGN]  ={"ADD_ASSIGN" ,ADD_ASSIGN,2}; // +
+		//def_operator[DIV_ASSIGN]  ={"DIV_ASSIGN",DIV_ASSIGN,2}; // /
+		//def_operator[MUL_ASSIGN]  ={"MUL_ASSIGN",MUL_ASSIGN,2}; // *
+		//def_operator[MOD_ASSIGN]  ={"MOD_ASSIGN",MOD_ASSIGN,2};  // %
 
 
 		def_operator[STORE]         ={"STORE" ,STORE ,2}; // mov expression to var
@@ -418,10 +418,14 @@ namespace zetscript{
 		LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
 		unsigned int scope_type=0;//INS_PROPERTY_UNKNOWN_SCOPE;
 		bool is_constant = true;
-
+		//bool is_neg = false;
 
 
 		pre_post_operator_type=preoperator2instruction_property(_node->pre_post_operator_info);
+
+		//is_neg = (pre_post_operator_type & INS_PROPERTY_PRE_NEG) == INS_PROPERTY_PRE_NEG;
+
+
 
 		// try parse value...
 		if(v=="null"){
@@ -437,6 +441,15 @@ namespace zetscript{
 
 		}else if((const_obj=CStringUtils::ParseInteger(v))!=NULL){
 			intptr_t value = *((int *)const_obj);
+
+			/*if(is_neg){ // because constant is detected then we can the symbol as preneg constant (is more faster!)
+				if(_node->symbol_value[0]!='-'){ // if not already assigned, put sign before...
+					_node->symbol_value = "-"+_node->symbol_value;
+				}
+				v=_node->symbol_value;
+				value = -value;
+			}*/
+
 			delete (int *)const_obj;
 
 			type=INS_PROPERTY_TYPE_INTEGER;
@@ -450,6 +463,15 @@ namespace zetscript{
 		}
 		else if((const_obj=CStringUtils::ParseFloat(v))!=NULL){
 			float value = *((float *)const_obj);
+
+			/*if(is_neg){ // because constant is detected then we can the symbol as preneg constant (is more faster!)
+				if(_node->symbol_value[0]!='-'){ // if not already assigned, put sign before...
+					_node->symbol_value = "-"+_node->symbol_value;
+				}
+				v=_node->symbol_value;
+				value = -value;
+			}*/
+
 			delete (float *)const_obj;
 			void *value_ptr;
 
@@ -490,7 +512,7 @@ namespace zetscript{
 			if((get_obj = getConstant(v))!=NULL){
 				obj = get_obj;
 			}else{
-				obj=addConstant(v,new bool(value),type);
+				obj=addConstant(v,(void *)value,type);
 			}
 		}else{
 
@@ -879,7 +901,8 @@ namespace zetscript{
 			case ADD_ASSIGN_PUNCTUATOR: // a+b
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::ADD_ASSIGN;
+				iao->operator_type = ASM_OPERATOR::ADD;
+				iao->runtime_prop |= INS_PROPERTY_IS_ASSIGN_OP;
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);
 
@@ -895,7 +918,8 @@ namespace zetscript{
 				ptr_current_statement_op->asm_op.push_back(iao);
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::ADD_ASSIGN;
+				iao->operator_type = ASM_OPERATOR::ADD;
+				iao->runtime_prop |= INS_PROPERTY_IS_ASSIGN_OP;
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);
 
@@ -905,7 +929,8 @@ namespace zetscript{
 			case MUL_ASSIGN_PUNCTUATOR: // a*b
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::MUL_ASSIGN;
+				iao->operator_type = ASM_OPERATOR::MUL;
+				iao->runtime_prop |= INS_PROPERTY_IS_ASSIGN_OP;
 
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);
@@ -916,7 +941,8 @@ namespace zetscript{
 			case DIV_ASSIGN_PUNCTUATOR: // a/b
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::DIV_ASSIGN;
+				iao->operator_type = ASM_OPERATOR::DIV;
+				iao->runtime_prop |= INS_PROPERTY_IS_ASSIGN_OP;
 
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);
@@ -927,7 +953,8 @@ namespace zetscript{
 			case MOD_ASSIGN_PUNCTUATOR: // a % b
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::MOD_ASSIGN;
+				iao->operator_type = ASM_OPERATOR::MOD;
+				iao->runtime_prop |= INS_PROPERTY_IS_ASSIGN_OP;
 
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);

@@ -166,8 +166,8 @@ enum PUNCTUATOR_TYPE
 	POST_DEC_PUNCTUATOR, // --
 
 	// Then OPERATORS 1 char size
-	ADD_PUNCTUATOR, // +
-	SUB_PUNCTUATOR, // -
+	ADD_PUNCTUATOR, // a+b
+	SUB_PUNCTUATOR, // a+(-b)
 	MUL_PUNCTUATOR, // *
 	DIV_PUNCTUATOR, // /
 	MOD_PUNCTUATOR, // %
@@ -226,16 +226,6 @@ enum LOAD_TYPE
 	LOAD_TYPE_ARGUMENT
 };
 
-/*
- enum SCOPE_TYPE:char{
- UNKNOWN_SCOPE=0,
- GLOBAL_SCOPE,
- LOCAL_SCOPE,
- THIS_SCOPE,
- SUPER_SCOPE,
- ACCESS_SCOPE
- };*/
-
 enum IDX_OBJ_SPECIAL_VALUE {
 	IDX_INVALID = -1, IDX_THIS = -10
 };
@@ -272,11 +262,6 @@ enum ASM_OPERATOR
 	XOR, // logic xor
 	SHL, // shift left
 	SHR, // shift right
-
-	ADD_ASSIGN, // +=
-	DIV_ASSIGN, // /=
-	MUL_ASSIGN, // *=
-	MOD_ASSIGN,  // %=
 	// special internal ops...
 	JMP,
 	JNT, // goto if not true ... goes end to conditional.
@@ -358,6 +343,7 @@ enum
 	//-- VM RUNTIME
 	BIT_IS_C_VAR = MAX_BIT_VAR_TYPE,
 	BIT_IS_STACKVAR,
+	BIT_IS_ASSIGN_OP,
 	//BIT_IS_UNRESOLVED_FUNCTION,
 
 	//BIT_START_FUNCTION_ARGS,
@@ -388,6 +374,7 @@ enum
 	:unsigned short {
 		INS_PROPERTY_IS_C_VAR = (0x1 << BIT_IS_C_VAR),
 	INS_PROPERTY_IS_STACKVAR = (0x1 << BIT_IS_STACKVAR),
+	INS_PROPERTY_IS_ASSIGN_OP = (0x1 << BIT_IS_ASSIGN_OP),
 	//INS_PROPERTY_UNRESOLVED_FUNCTION = (0x1 << BIT_IS_UNRESOLVED_FUNCTION) // always is an script class...
 //INS_PROPERTY_START_FUNCTION_ARGS=	(0x1<<BIT_START_FUNCTION_ARGS)
 };

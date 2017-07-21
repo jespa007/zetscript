@@ -10,7 +10,7 @@
 > cmake: Add install feature.
 > cmake: Add test features
  
-> test arithmetic file (need reimplement %)
+
 > test binary file
 > test ternary file
 > test if-else file
@@ -74,7 +74,24 @@
     2. Leave the first function found. It will warn the second call that (CNumber, int) was expected ... maybe we can reserve the print message
     
   
-  
+BUGS
+==== 
+ 
+-Fixe some rounding errors on floats. Example,
+
+((2.0+2.0*(5.0-6.1))*10.0) in C gives -2.0 but script gives -1.99998 
+
+
+version 1.00.08
+===============
+
+-Check property duplicated adding in struct.
+-Clear some code.
+-Metamethod test in macro
+-Added test assign operator with assign in property
+
+> test arithmetic int unsigned/signed, float unsigned/signed, mix int/float unsigned/signed.
+
 
 
 version 1.00.07
