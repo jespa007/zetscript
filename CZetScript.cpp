@@ -197,6 +197,28 @@ namespace zetscript{
 							post="--";
 							break;
 						default:
+							// check whether is constant and numeric
+							if(asm_op_statment->operator_type==ASM_OPERATOR::LOAD && asm_op_statment->index_op1==LOAD_TYPE_CONSTANT){
+								CCompiler::tInfoConstantValue *icv = (((CCompiler::tInfoConstantValue *)asm_op_statment->index_op2));
+								float n;
+
+								// change the sign
+								switch(icv->properties){
+								default:
+									break;
+								case INS_PROPERTY_TYPE_INTEGER:
+									if(((int)icv->stkValue)<0){
+										pre="-";
+									}
+									break;
+								case INS_PROPERTY_TYPE_NUMBER:
+									memcpy(&n,&icv->stkValue,sizeof(float));
+									if(n<0){
+										pre="-";
+									}
+									break;
+								}
+							}
 							break;
 
 						}

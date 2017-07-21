@@ -101,6 +101,8 @@ namespace zetscript{
 		//void *aux_value;
 		short idxAstNode;
 
+		bool is_packed_node; // check whether is packed or not like (a+b*c)
+
 
 		~CASTNode();
 
@@ -118,6 +120,7 @@ namespace zetscript{
 
 		//-----------------------------------------------
 		//
+		static int DUMMY_LINE;
 
 
 		static PASTNode  findAstRecursive(const string & _name_to_find, NODE_TYPE _node_type, KEYWORD_TYPE _keyword_type, PASTNode _node);

@@ -179,6 +179,7 @@ namespace zetscript{
 
 	tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
 	tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_PUNCTUATORS];
+	int CASTNode::DUMMY_LINE=0;
 
 
 	vector<CASTNode *> 			* CASTNode::vec_ast_node=NULL;
@@ -1336,6 +1337,7 @@ namespace zetscript{
 		int start_line = m_line; // set another start line because left node or reparse to try another group was already parsed before.
 		int m_lineOperator=-2;
 		char *end_expression=(char *)s ; // by default end expression isequal to
+		bool is_packed_expression=false;
 		//PASTNode symbol_node=NULL; // can be a function or array.
 
 		bool is_symbol_trivial_value=false;
@@ -1346,7 +1348,9 @@ namespace zetscript{
 						operator_group=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 		bool theres_some_operator=false;
 		int m_definedSymbolLine;
-		bool advance_ptr = true;
+		bool special_pre_post_cond = false; // in case of particular pre/post...
+		bool is_packed_node = false;
+		//bool is_preoperator = true;
 
 
 		aux=IGNORE_BLANKS(aux, m_line);
@@ -1371,7 +1375,7 @@ namespace zetscript{
 		print_ast_cr("searching for operator type %i...",type_group);
 
 		while(!isMarkEndExpression(*aux) && (operator_group==0)){
-
+			special_pre_post_cond = false;
 			print_ast_cr("checkpoint1:%c\n",*aux);
 			// 1. ignore spaces...
 			aux=IGNORE_BLANKS(aux, m_line);
@@ -1379,6 +1383,12 @@ namespace zetscript{
 			if((pre_operator=checkPreOperatorPunctuator(aux))!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
 				aux+=strlen(defined_operator_punctuator[pre_operator].str);
 				aux=IGNORE_BLANKS(aux, m_line);
+			}
+
+			if(*aux=='('){ // packed node let's said that is a packed node...
+				if(ast_node_to_be_evaluated != NULL){
+					is_packed_node = true;
+				}
 			}
 
 			// try get symbol string
@@ -1395,30 +1405,26 @@ namespace zetscript{
 
 				if((operator_group=isOperatorPunctuator(aux))!=0){
 
-					bool advance_ptr = true;
-					bool check_op_group = true;
+
+
 					// particular cases... since the getSymbol alrady checks the pre operator it cannot be possible to get a pre inc or pre dec...
-					if(operator_group ==  PRE_INC_PUNCTUATOR){ // really is a + PUNCTUATOR...
+					if(operator_group ==  PRE_INC_PUNCTUATOR){ // ++ really is a + PUNCTUATOR...
 						operator_group = ADD_PUNCTUATOR;
-						check_op_group=false;
+						special_pre_post_cond=true;
 					}
-					else if(operator_group ==  PRE_DEC_PUNCTUATOR){ // really is a - PUNCTUATOR...
+					else if(operator_group ==  PRE_DEC_PUNCTUATOR){ // -- really is a + PUNCTUATOR...
 						operator_group = SUB_PUNCTUATOR;
-						check_op_group=false;
-					}else if(operator_group ==  SUB_PUNCTUATOR){ // really is a + PUNCTUATOR...
-						operator_group = ADD_PUNCTUATOR;
-						check_op_group=false;
-						advance_ptr=false;
+						special_pre_post_cond=true;
 					}
 
 					theres_some_operator |= true;
 					expr_start_op=aux;
 					m_lineOperator = m_line;
 
-					if(advance_ptr) // advance ...
-						aux+=strlen(defined_operator_punctuator[operator_group].str);
+					//if(advance_ptr) // advance ...
+					aux+=strlen(defined_operator_punctuator[operator_group].str);
 
-					if(check_op_group){ // not check because special case pre/post op...
+					if(!special_pre_post_cond){ // not check because special case pre/post op...
 
 						switch(type_group){
 						case GROUP_0:	operator_group = parsePunctuatorGroup0(expr_start_op);break;
@@ -1454,6 +1460,12 @@ namespace zetscript{
 					}else{
 						if(deduceExpression(symbol_value.c_str(),m_definedSymbolLine,scope_info, ast_node_to_be_evaluated, parent) == NULL){
 							return NULL;
+						}
+
+						if(is_packed_node){ // packed node let's said that is a packed node...
+							if(ast_node_to_be_evaluated != NULL){
+								(*ast_node_to_be_evaluated)->is_packed_node = true;
+							}
 						}
 					}
 
@@ -1519,12 +1531,20 @@ namespace zetscript{
 			}
 			char * expr_op_end = expr_start_op;
 
-			if(!(operator_group==ADD_PUNCTUATOR && *expr_start_op=='-')) // special case (preserve the sign as preneg)...
-				expr_op_end+=strlen(defined_operator_punctuator[operator_group].str);
+
+
+			expr_op_end+=strlen(defined_operator_punctuator[operator_group].str);
+
+			//if(special_pre_post_cond){
+			//expr_op_end++;
+			//}
+			//if(!(operator_group==ADD_PUNCTUATOR && *expr_start_op=='-')) // special case (preserve the sign as preneg)...
+		//		expr_op_end+=strlen(defined_operator_punctuator[operator_group].str);
 
 			print_ast_cr("operator \"%s\" found we can evaluate left and right branches!!\n",CASTNode::defined_operator_punctuator[operator_group].str);
 			char eval_left[MAX_EXPRESSION_LENGTH]={0};
 
+			// LEFT BRANCH
 			strncpy(eval_left,s_effective_start,expr_start_op-s_effective_start); // copy its left side...
 			if(parseExpression_Recursive(eval_left,
 										start_line, // start line because was reparsed before...
@@ -1547,6 +1567,7 @@ namespace zetscript{
 				}
 			}
 
+			// RIGHT BRANCH
 			if((aux=parseExpression_Recursive(
 									expr_op_end,
 									m_line,
@@ -1565,13 +1586,10 @@ namespace zetscript{
 
 			if(ast_node_to_be_evaluated != NULL){
 				// minus operators has special management because two negatives can be + but sums of negatives works
-				/*if(operator_group == SUB_PUNCTUATOR) { // supose a-b
-
+				if(operator_group == SUB_PUNCTUATOR) { // supose a-b
 					// 1. change - by +
 					operator_group=ADD_PUNCTUATOR;
-
-					CASTNode *ln = AST_NODE((*ast_node_to_be_evaluated)->children[LEFT_NODE]),
-							 *rn =AST_NODE((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
+					CASTNode *rn =AST_NODE((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
 
 					// 2. create neg node.
 					PASTNode ast_neg_node=NULL;
@@ -1580,10 +1598,20 @@ namespace zetscript{
 					ast_neg_node->operator_info = SUB_PUNCTUATOR;
 
 					// 3. insert node between rigth node and ast_node
-					ast_neg_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
-					ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
-					(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=ast_neg_node->idxAstNode;
-				}*/
+
+					if(rn->node_type == NODE_TYPE::SYMBOL_NODE || rn->is_packed_node){ // end symbol node... let's take the right one...
+						ast_neg_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
+						ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
+						(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=ast_neg_node->idxAstNode;
+					}else{ // let's take the right-left node ...
+						CASTNode *rn_ln = AST_NODE(rn->children[LEFT_NODE]);
+						ast_neg_node->idxAstParent = rn->idxAstNode;
+						ast_neg_node->children.push_back(rn_ln->idxAstNode);
+						rn_ln->idxAstParent = ast_neg_node->idxAstNode;
+						rn->children[LEFT_NODE]=ast_neg_node->idxAstNode;
+						//(*ast_node_to_be_evaluated)->children[LEFT_NODE]=ast_neg_node->idxAstNode;
+					}
+				}
 
 				(*ast_node_to_be_evaluated)->node_type = PUNCTUATOR_NODE;
 				(*ast_node_to_be_evaluated)->operator_info = operator_group;
@@ -3616,6 +3644,8 @@ namespace zetscript{
 
 		idxAstNode = ZS_UNDEFINED_IDX;
 		idxScope = ZS_UNDEFINED_IDX;
+
+		is_packed_node = false;
 
 	}
 

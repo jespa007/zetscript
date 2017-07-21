@@ -831,7 +831,6 @@ namespace zetscript{
 			return INS_PROPERTY_PRE_NEG;
 
 		}
-
 		return 0;//INS_PROPERTY_UNKNOW_PRE_POST_OPERATOR;
 	}
 
@@ -889,7 +888,6 @@ namespace zetscript{
 	}
 
 	bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  string & error_str, int op_index_left, int op_index_right){
-
 		PASTNode _node=AST_NODE( idxAstNode);
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
@@ -898,6 +896,7 @@ namespace zetscript{
 
 		// special cases ...
 		switch(op){
+
 			case ADD_ASSIGN_PUNCTUATOR: // a+b
 
 				iao = new tInfoAsmOpCompiler();

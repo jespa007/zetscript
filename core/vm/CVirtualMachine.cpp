@@ -1399,7 +1399,29 @@ namespace zetscript{
 						PUSH_UNDEFINED;
 						continue;
 					}else if(index_op1==LOAD_TYPE::LOAD_TYPE_CONSTANT){
-						(*ptrCurrentOp++)=*(((CCompiler::tInfoConstantValue *)instruction->index_op2));
+						(*ptrCurrentOp)=*(((CCompiler::tInfoConstantValue *)instruction->index_op2));
+
+						pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties);
+
+						// all preoperators makes load var as constant ...
+						switch(pre_post_properties){
+						case INS_PROPERTY_PRE_NEG:
+								switch(GET_INS_PROPERTY_VAR_TYPE(ptrCurrentOp->properties)){
+								case INS_PROPERTY_TYPE_INTEGER:
+									ptrCurrentOp->stkValue=(void *)(-((int)ptrCurrentOp->stkValue));
+									break;
+								case INS_PROPERTY_TYPE_NUMBER:
+									COPY_NUMBER(&aux_float,&ptrCurrentOp->stkValue);
+									aux_float=-aux_float;
+									COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
+									break;
+								default:
+									zs_print_error_cr("internal error:cannot perform pre operator - constant because is not numeric");
+									return NULL;
+								}
+								break;
+						}
+						ptrCurrentOp++;
 						continue;
 					}else if(index_op1== LOAD_TYPE::LOAD_TYPE_FUNCTION){
 						void *function_obj=NULL;

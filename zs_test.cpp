@@ -254,9 +254,14 @@ int main(int argc, char * argv[]) {
 	// TEST INT OPS
 	//
 
-	TEST_ARITHMETIC_INT_OP(0,-,-10-10-10-2);
+	//TEST_ARITHMETIC_INT_OP(10,-,*10);
 
-	exit(-1);
+	//CZetScript::eval<int>("10-*10");
+
+
+	//int i= 0+ +1;
+
+	//exit(-1);
 
 
 	// unsinged
