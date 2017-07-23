@@ -74,8 +74,7 @@ namespace zetscript{
 		m_objVector.push_back({INS_PROPERTY_TYPE_STRING,&s->m_strValue,s});
 	}
 	void CVector::add(float *f){
-		tStackElement v;
-		v.properties=INS_PROPERTY_TYPE_NUMBER;
+		tStackElement v = { INS_PROPERTY_TYPE_NUMBER,0,0 };
 		memcpy(v.stkValue,f,sizeof(float));
 		v.varRef=0;
 

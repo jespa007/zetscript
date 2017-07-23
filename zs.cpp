@@ -5,7 +5,7 @@ using namespace zetscript;
 int main(int argc, char * argv[]) {
 
 
-	CZetScript *zet_script = CZetScript::getInstance();
+	CZetScript *zetscript = CZetScript::getInstance();
 
 
 	if (argc < 2) {
@@ -19,8 +19,8 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
-	if (zet_script->eval_file(argv[1])) {
-		zet_script->execute();
+	if (zetscript->eval_file(argv[1])) {
+		zetscript->execute();
 	}
 
 	CZetScript::destroy();

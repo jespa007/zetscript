@@ -16,10 +16,10 @@ include_directories (
 
 if(MSVC)
 	MESSAGE ("********* MSVC ************" )
-	add_definitions(/bigobj)
+	
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DZETSCRIPT_EXPORTS)
 
-	#disable C4103 warning because is valid. Only MSVC complains about it
+	#disable C4103 warning because is perfectly valid. Only MSVC complains about it
 	add_definitions(/wd4103)
 
 else()
@@ -65,6 +65,10 @@ endif()
 
 
 if(MSVC)
+	IF ( "${TARGET}" STREQUAL "debug")
+		add_definitions(/bigobj)
+	ENDIF()
+
 
 else()
 
@@ -180,11 +184,11 @@ else()
 		${PROJECT_SOURCE_DIR}/zs_test.cpp
 	)	
 	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME} "-Wl,--no-as-needed")	
+	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})	
 	
 endif()
 
-target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} "-Wl,--no-as-needed")
+target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
 
 
 

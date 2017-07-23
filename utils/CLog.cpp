@@ -55,28 +55,9 @@ namespace zetscript{
 		char  text[4096] = { 0 };
 
 
-
-
-
 		CAPTURE_VARIABLE_ARGS(text, string_text);
 		//  Results  Are  Stored  In  Text
-
-
-
-		if (!ansi_escape) {
-	#ifdef _WIN32
-			int colors[7];
-			/*colors[0] = FOREGROUND_RED   | FOREGROUND_INTENSITY;//FOREGROUND_BLUE  | FOREGROUND_RED   | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-			colors[1] = FOREGROUND_GREEN | FOREGROUND_RED   | FOREGROUND_INTENSITY;
-			colors[2] = FOREGROUND_BLUE  | FOREGROUND_GREEN | FOREGROUND_RED   | FOREGROUND_INTENSITY;
-			colors[3] = FOREGROUND_RED   | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-			colors[4] = FOREGROUND_BLUE  | FOREGROUND_INTENSITY;
-			colors[5] = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-			colors[6] = FOREGROUND_RED   | FOREGROUND_INTENSITY;
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colors[level]);*/
-	#endif
-		}
-		else {
+		if(ansi_escape){
 
 			switch (level)
 			{
@@ -90,10 +71,11 @@ namespace zetscript{
 				break;
 			}
 		}
+		
 
 		if (file == NULL
 #ifndef __DEBUG__
-				|| true  // because in release mode we don't need debug stuff.
+				|| true  // because in release mode we don't put (file:line) information.
 #endif
 				) {
 			fprintf(std_type, "%s", text);
@@ -103,12 +85,7 @@ namespace zetscript{
 		}
 
 
-		if (!ansi_escape) {
-	#ifdef _WIN32
-
-	#endif
-		}
-		else {
+		if (ansi_escape) {
 			CColorTerm::setColor(std_type, CColorTerm::BRIGHT, CColorTerm::GREEN, CColorTerm::BLACK);
 		}
 

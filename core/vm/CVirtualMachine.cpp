@@ -130,7 +130,7 @@ namespace zetscript{
 
 	#define PUSH_NUMBER(init_value) \
 	{\
-		float aux=init_value;\
+		float aux=(float)(init_value);\
 		COPY_NUMBER(&ptrCurrentOp->stkValue,&aux);\
 		ptrCurrentOp->properties=INS_PROPERTY_TYPE_NUMBER;\
 		ptrCurrentOp++;\
@@ -178,11 +178,12 @@ namespace zetscript{
 				PUSH_NUMBER(fmod(f_aux_value1 , f_aux_value2));\
 		}\
 		else{\
+			APPLY_METAMETHOD(MOD_METAMETHOD);\
 			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
 		}\
 	}
 
-	#define PROCESS_ARITHMETIC_OPERATION(__OVERR_OP__)\
+	#define PROCESS_ARITHMETIC_OPERATION(__OVERR_OP__, __METAMETHOD__)\
 	{\
 		unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
 		if(properties==INS_PROPERTY_TYPE_INTEGER){\
@@ -203,11 +204,12 @@ namespace zetscript{
 				PUSH_NUMBER(f_aux_value1 __OVERR_OP__ f_aux_value2);\
 		}\
 		else{\
+			APPLY_METAMETHOD(__METAMETHOD__);\
 			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
 		}\
 	}
 
-	#define PROCESS_LOGIC_OPERATION(__OVERR_OP__)\
+	#define PROCESS_COMPARE_OPERATION(__OVERR_OP__, __METAMETHOD__)\
 	{\
 		unsigned short properties = GET_INS_PROPERTY_VAR_TYPE(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
 		if(properties==INS_PROPERTY_TYPE_INTEGER){\
@@ -228,22 +230,34 @@ namespace zetscript{
 				PUSH_BOOLEAN(f_aux_value1 __OVERR_OP__ f_aux_value2);\
 		}\
 		else{\
+			APPLY_METAMETHOD(__METAMETHOD__);\
 			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
 		}\
 	}
 
 
-	#define PROCESS_BINARY_OPERATION(__OVERR_OP__)\
+
+	#define PROCESS_LOGIC_OPERATION(__OVERR_OP__, __METAMETHOD__)\
+	{\
+		unsigned short properties = GET_INS_PROPERTY_VAR_TYPE(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
+		if(properties==INS_PROPERTY_TYPE_BOOLEAN){\
+			PUSH_BOOLEAN(LOAD_BOOL_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_BOOL_OP(ptrResultInstructionOp2));\
+		}else{\
+			APPLY_METAMETHOD(__METAMETHOD__);\
+			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
+		}\
+	}
+
+	#define PROCESS_BINARY_OPERATION(__OVERR_OP__, __METAMETHOD__)\
 	{\
 		unsigned short properties = GET_INS_PROPERTY_VAR_TYPE(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
 		if(properties==INS_PROPERTY_TYPE_INTEGER){\
 			PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2));\
 		}else{\
+			APPLY_METAMETHOD(__METAMETHOD__);\
 			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
 		}\
 	}
-
-
 
 
 
@@ -434,9 +448,9 @@ namespace zetscript{
 		\
 		\
 		\
-		if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ \
+		if((ptrResultInstructionOp1->properties ) == (INS_PROPERTY_TYPE_SCRIPTVAR | INS_PROPERTY_IS_STACKVAR)){ /* check whether the first op1 is a script var ... */ \
 			/* 0. Check pre condition ...*/ \
-			if((ptrResultInstructionOp1->properties ) == (INS_PROPERTY_TYPE_SCRIPTVAR | INS_PROPERTY_IS_STACKVAR)){ \
+			if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ /* search for first time , else the function is stored in index_op2 */ \
 		\
 				CScriptVariable *v1 = (CScriptVariable *)(((tStackElement *)(ptrResultInstructionOp1->varRef))->varRef);\
 		\
@@ -1062,6 +1076,9 @@ namespace zetscript{
 				n_arg);
 
 		//idxBaseStk-=arg->size();
+		if(info==NULL){
+			return NULL;
+		}
 
 		return UNDEFINED_SYMBOL;
 	}
@@ -1201,7 +1218,9 @@ namespace zetscript{
 		PtrStatment current_statment = NULL,
 					ptr_statment_iteration=m_listStatements;
 
-
+		tStackElement *dst_ins=NULL;
+		tStackElement *src_ins=NULL;
+		bool ok=false;
 
 
 		tInfoAsmOp *instruction_it;
@@ -1230,19 +1249,14 @@ namespace zetscript{
 				const unsigned char operator_type=instruction->operator_type;
 				const unsigned char index_op1=instruction->index_op1;
 
-
-				if(operator_type==END_STATMENT){
-					goto lbl_exit_statment;
-				}
-				else if(operator_type<0){ // ignore ...
-					zs_print_error_cr("unexpected INVALID_OP");
+				switch(operator_type){
+				default:
+					zs_print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
 					return NULL;
-				}
-				else if(
-						   operator_type==LOAD
-						|| operator_type==VGET
-
-						){// load value in function of value/constant ...
+				case END_STATMENT:
+					goto lbl_exit_statment;
+				case LOAD:
+				case VGET:
 
 					if(index_op1==LOAD_TYPE::LOAD_TYPE_VARIABLE || operator_type==VGET){
 						if(operator_type==VGET){
@@ -1508,16 +1522,12 @@ namespace zetscript{
 						break;
 					}
 					continue;
-				}
-				else if(
-						   operator_type==STORE
-						|| operator_type==VPUSH
-						|| operator_type==PUSH_ATTR
-						){ // mov value expression to var
 
-					tStackElement *dst_ins=NULL;
-					tStackElement *src_ins=NULL;
-					bool ok=false;
+				case STORE:
+				case VPUSH:
+				case PUSH_ATTR:
+
+				{
 
 					if(operator_type==VPUSH){
 						POP_ONE; // only pops the value, the last is the vector variable itself
@@ -1538,6 +1548,7 @@ namespace zetscript{
 						}
 
 					}else if(operator_type==PUSH_ATTR){
+
 
 						POP_TWO; // first must be the value name and the other the variable name ...
 						CScriptVariable *struct_obj = NULL;
@@ -1605,39 +1616,44 @@ namespace zetscript{
 							}
 							break;
 						}
-
-					continue;
 				}
-				else if(operator_type==EQU){  // ==
+
+					continue;
+
+				case EQU:  // ==
 
 					POP_TWO;
-					PROCESS_LOGIC_OPERATION(==);
+					PROCESS_COMPARE_OPERATION(==, EQU_METAMETHOD);
 					continue;
-				}
-				else if(operator_type==LT){  // <
+
+				case LT:  // <
+					POP_TWO;
+					PROCESS_COMPARE_OPERATION(<, LT_METAMETHOD);
+					continue;
+				case LTE:  // <=
+					POP_TWO;
+					PROCESS_COMPARE_OPERATION(<, LTE_METAMETHOD);
+					continue;
+				case GT:  // >
 
 					POP_TWO;
-					PROCESS_LOGIC_OPERATION(<);
+					PROCESS_COMPARE_OPERATION(>,GT_METAMETHOD);
 					continue;
-				}else if(operator_type==LTE){  // <=
-
+				case GTE:  // >=
 					POP_TWO;
-					PROCESS_LOGIC_OPERATION(<);
+					PROCESS_COMPARE_OPERATION(>=,GTE_METAMETHOD);
 					continue;
-				}else if(operator_type==GT){  // >
-
+				case LOGIC_AND:  // &&
 					POP_TWO;
-					PROCESS_LOGIC_OPERATION(>);
+					PROCESS_LOGIC_OPERATION(&&, LOGIC_AND_METAMETHOD);
 					continue;
-				}else if(operator_type==GTE){  // >=
-
+				case LOGIC_OR:  // &&
 					POP_TWO;
-					PROCESS_LOGIC_OPERATION(>=);
+					PROCESS_LOGIC_OPERATION(||, LOGIC_OR_METAMETHOD);
 					continue;
-				}
-				else if(operator_type==NEG){ // !
+
+				case NEG: // !
 					POP_ONE;
-
 					if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_INTEGER){ // operation will result as integer.
 						PUSH_INTEGER((-((int)(ptrResultInstructionOp1->stkValue))));
 					}else if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_NUMBER){
@@ -1649,9 +1665,9 @@ namespace zetscript{
 					}
 					continue;
 
-				}else if(operator_type== ADD){ // +
+				case ADD: // +
 
-
+				{
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
 						POP_ONE;
 						ptrResultInstructionOp2=(ptrCurrentOp-1);
@@ -1719,9 +1735,10 @@ namespace zetscript{
 
 						PRINT_DUAL_ERROR_OP(+);
 					}
-					continue;
 				}
-				else if(operator_type==MUL){ // *
+					continue;
+
+				case MUL: // *
 
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
 						POP_ONE;
@@ -1730,10 +1747,10 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					PROCESS_ARITHMETIC_OPERATION(*);
+					PROCESS_ARITHMETIC_OPERATION(*,MUL_METAMETHOD);
 					continue;
-				}
-				else if(operator_type==DIV){ // /
+
+				case DIV: // /
 
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
 						POP_ONE;
@@ -1742,10 +1759,10 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					PROCESS_ARITHMETIC_OPERATION(/);
+					PROCESS_ARITHMETIC_OPERATION(/, DIV_METAMETHOD);
 					continue;
-				}
-				else if(operator_type==MOD){ // /
+
+			 	 case MOD: // /
 
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
 						POP_ONE;
@@ -1756,8 +1773,8 @@ namespace zetscript{
 
 					PROCESS_MOD_OPERATION;
 					continue;
-				}
-				else if(operator_type==AND){ // &
+
+			 	 case AND: // &
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
 						POP_ONE;
 						ptrResultInstructionOp2=(ptrCurrentOp-1);
@@ -1765,9 +1782,9 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					PROCESS_BINARY_OPERATION(&);
+					PROCESS_BINARY_OPERATION(&, AND_METAMETHOD);
 					continue;
-				}else if(operator_type==OR){ // *
+			 	 case OR: // *
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
 						POP_ONE;
 						ptrResultInstructionOp2=(ptrCurrentOp-1);
@@ -1775,9 +1792,9 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					PROCESS_BINARY_OPERATION(|);
+					PROCESS_BINARY_OPERATION(|, OR_METAMETHOD);
 					continue;
-				}else if(operator_type==XOR){ // ^
+			 	 case XOR: // ^
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
 						POP_ONE;
 						ptrResultInstructionOp2=(ptrCurrentOp-1);
@@ -1785,10 +1802,10 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					PROCESS_BINARY_OPERATION(^);
+					PROCESS_BINARY_OPERATION(^, XOR_METAMETHOD);
 					continue;
 
-				}else if(operator_type==SHR){ // >>
+			 	 case SHR: // >>
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
 						POP_ONE;
 						ptrResultInstructionOp2=(ptrCurrentOp-1);
@@ -1796,10 +1813,10 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					PROCESS_BINARY_OPERATION(>>);
+					PROCESS_BINARY_OPERATION(>>,SHR_METAMETHOD);
 					continue;
 
-				}else if(operator_type==SHL){ // <<
+			 	 case SHL: // <<
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
 						POP_ONE;
 						ptrResultInstructionOp2=(ptrCurrentOp-1);
@@ -1807,16 +1824,12 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					PROCESS_BINARY_OPERATION(<<);
+					PROCESS_BINARY_OPERATION(<<, SHL_METAMETHOD);
 					continue;
-				}
-
-				// special internal ops...
-				else if(operator_type==JMP){
+			 	 case JMP:
 					CHK_JMP;
 					continue;
-				}
-				else if(operator_type==JNT){ // goto if not true ... goes end to conditional.
+			 	 case JNT: // goto if not true ... goes end to conditional.
 					POP_ONE;
 					if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_BOOLEAN){
 
@@ -1829,8 +1842,7 @@ namespace zetscript{
 					}
 
 					continue;
-				 }
-				else if(operator_type== JT){ // goto if true ... goes end to conditional.
+			 	 case JT: // goto if true ... goes end to conditional.
 					POP_ONE;
 					if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_BOOLEAN){
 
@@ -1843,11 +1855,10 @@ namespace zetscript{
 					}
 
 					continue;
-				}
-				else if(operator_type== CALL){ // calling function after all of args are processed...
+			 	 case  CALL: // calling function after all of args are processed...
 					// check whether signatures matches or not ...
 					// 1. get function object ...
-
+			 	 {
 					aux_function_info = NULL;
 					unsigned char n_args=0;//iao->instruction_properties;
 
@@ -2136,55 +2147,11 @@ namespace zetscript{
 					if(!is_constructor){
 						*ptrCurrentOp++ = *ret_obj;
 					}
+			 	 }
 					continue;
 
-				/*case PUSH: // push arg instruction will creating object ensures not to have feature e/s...
-					POP_ONE;
-					if((svar = createVarFromResultInstruction(ptrResultInstructionOp1)) == NULL){
-						return NULL;
-					}
 
-					m_functionArgs.push_back(svar);
-					break;
-				case CLR: // clear args
-					m_functionArgs.clear();
-					break;
-				case VGET: // vector access after each index is processed...
-					POP_TWO;
-					// index_op1 is vector, index op2 is index...
-					if(IS_VECTOR(ptrResultInstructionOp1)){
-						if(IS_INT(ptrResultInstructionOp2->properties)){
-							// determine object ...
-							CVector * vec = (CVector *)(ptrResultInstructionOp1->stkValue);
-							int v_index = LOAD_INT_OP(ptrResultInstructionOp2);
-
-							//zs_print_info_cr("%i",v_index);
-
-							// check indexes ...
-							if(v_index < 0 || v_index >= (int)(vec->m_objVector.size())){
-								zs_print_error_cr("Line %i. Index vector out of bounds!",AST_LINE_VALUE(instruction->idxAstNode));
-								return NULL;
-							}
-
-							PUSH_VAR(vec->m_objVector[v_index],&vec->m_objVector[v_index],0,false);
-
-						}else{
-							zs_print_error_cr("Expected vector-index as integer");
-							return NULL;
-						}
-					}
-					else{
-						zs_print_error_cr("Line %i: Variable \"%s\" is not type vector",
-								AST_LINE_VALUE(instruction->idxAstNode),
-								AST_SYMBOL_VALUE_CONST_CHAR((*current_statment)[instruction->index_op1].idxAstNode),
-								AST_SYMBOL_VALUE_CONST_CHAR(instruction->idxAstNode)
-								//base_var->getClassName().c_str(), iao->ast_node->symbol_value.c_str()
-								);
-						return NULL;
-					}
-
-					break;*/
-				}else if(operator_type== NEW){
+			 	 case  NEW:
 						svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1);
 
 						if(!svar->initSharedPtr()){
@@ -2192,14 +2159,10 @@ namespace zetscript{
 						}
 
 
-						/*if((constructor_function = svar->getConstructorFunction()) != NULL){
-							execute(constructor_function,svar);
-						}*/
-
 						(*ptrCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
 						continue;
 
-				}else if(operator_type== DECL_VEC){ // Create new vector object...
+			 	 case DECL_VEC: // Create new vector object...
 						svar=NEW_VECTOR_VAR;
 						//PUSH_VAR(svar,NULL,0,false);
 
@@ -2210,50 +2173,8 @@ namespace zetscript{
 						(*ptrCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
 
 						continue;
-				/*}else if(operator_type== VPUSH){ // Push values into vector
-					POP_ONE;
-					CScriptVariable *vec_obj = NULL;
-					if((ptrCurrentOp-1)->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
-						vec_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
-						if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){ // push value ...
 
-							((CVector *)vec_obj)->add(*ptrResultInstructionOp1);
-							continue;
-						}
-					}
-
-					zs_print_error_cr("Expected vector object");
-					return NULL;
-	*/
-					/*aux_function_info = NULL;
-					unsigned char n_args=0;//iao->instruction_properties;
-					tStackElement *startArg=ptrCurrentOp;
-					tStackElement *callAle=NULL;
-
-					while((((startArg-1)->properties&INS_PROPERTY_TYPE_SCRIPTVAR))){
-						startArg--;
-						n_args++;
-					}
-
-					callAle = ((startArg-1));*/
-					//POP_TWO;
-
-					/*if(IS_VECTOR(ptrResultInstructionOp1)){
-						CVector * vec = (CVector *)(ptrResultInstructionOp1->stkValue);
-						if((svar = createVarFromResultInstruction(ptrResultInstructionOp2)) == NULL){
-							return NULL;
-						}
-						vec->m_objVector.push_back(svar);
-						if(svar != VM_NULL && svar != VM_UNDEFINED){
-							// add share + 1
-							sharePointer(svar->idx_shared_ptr);
-						}
-					}else{
-						zs_print_error_cr("Expected operand 1 as vector");
-						return NULL;
-					}*/
-
-				}else if(operator_type== DECL_STRUCT){ // Create new vector object...
+			 	 case  DECL_STRUCT: // Create new vector object...
 					svar=NEW_STRUCT_VAR;
 					//PUSH_VAR(svar,NULL,0,false);
 
@@ -2265,23 +2186,8 @@ namespace zetscript{
 
 					continue;
 
-				/*}else if(operator_type==PUSH_ATTR){
 
-					POP_ONE;
-					CScriptVariable *struct_obj = NULL;
-					if((ptrCurrentOp-1)->properties & INS_PROPERTY_TYPE_SCRIPTVAR){
-						struct_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
-						if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
-
-							((CStruct *)struct_obj)->(*ptrResultInstructionOp1);
-							continue;
-						}
-					}
-
-					zs_print_error_cr("Expected vector object");
-					return NULL;
-	*/
-				}else if(operator_type== RET){
+			 	 case  RET:
 
 					callc_result=*(ptrCurrentOp-1);
 
@@ -2301,79 +2207,13 @@ namespace zetscript{
 					}
 
 
-					// remove sharepointer in order to avoid deallocate value ... function parent is in charge to share pointer of resulting value ...
-
-					/*if(callc_result.properties & INS_PROPERTY_TYPE_SCRIPTVAR){
-
-						if(!((CScriptVariable *)(ret_obj->varRef))->removeSharedPtr()){
-							return NULL;
-						}
-					}*/
-
-
-
-					/*if((ret=createVarFromResultInstruction(&ptrBaseOp[instruction->index_op1], false)) == NULL){ // share pointer but not add as shared!
-						return NULL;
-					}*/
-					//end_by_ret=true;
-
-
 					goto lbl_exit_function;
-				}
-				/*case NEW:
-					svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1);
-					PUSH_VAR(svar, NULL,0, true);
-
-					if(!svar->initSharedPtr()){
-						return NULL;
-					}
-
-					// execute its constructor ...
-					//push();
-
-					if((constructor_function = svar->getConstructorFunction()) != NULL){
-						execute(constructor_function,svar);
-					}
-
-					//pop();
-
-					break;*/
-
-				//case SAVE_I: // get Last For ternary condition ...
-				//	ptrSavedInstruction=ptrCurrentOp-1;
-				//	break;
-				//case LOAD_I: // For ternary condition ...
-	/*
-					switch(GET_INS_PROPERTY_VAR_TYPE(ptrSavedInstruction->properties)){
-					default:
-						zs_print_error_cr("unexpected type");
-						break;
-					case INS_PROPERTY_TYPE_INTEGER:
-						PUSH_INTEGER(((int)ptrSavedInstruction->stkValue),NULL,0);
-						break;
-					case INS_PROPERTY_TYPE_BOOLEAN:
-						PUSH_BOOLEAN(ptrSavedInstruction->stkValue,NULL,0);
-						break;
-					case INS_PROPERTY_TYPE_NUMBER:
-						if(!pushNumber(*((float *)ptrSavedInstruction->stkValue))){
-							return NULL;
-						}
-						break;
 
 
-					case INS_PROPERTY_TYPE_STRING:
-						if(!pushString(*((string *)ptrSavedInstruction->stkValue))){
-							return NULL;
-						}
-						break;
-					case INS_PROPERTY_TYPE_SCRIPTVAR:
-						PUSH_VAR(((CScriptVariable *)ptrSavedInstruction->stkValue),NULL,0,false);
-						break;
-					}
-					break;*/
-				else if(operator_type==POP_SCOPE){
+			 case POP_SCOPE:
 					POP_SCOPE(instruction->index_op1);
-				}
+					break;
+
 
 				/*case DECL_STRUCT: // symply creates a variable ...
 					svar=NEW_STRUCT;
@@ -2399,10 +2239,7 @@ namespace zetscript{
 					}
 					break;*/
 
-				 else{
-					zs_print_error_cr("operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
-					return NULL;
-				 }
+
 
 
 
@@ -2413,8 +2250,10 @@ namespace zetscript{
 
 
 
+				}
+			 }
 
-			}
+
 
 	// exit statment (don't remove ;, it gives a compile error)
 	lbl_exit_statment:;

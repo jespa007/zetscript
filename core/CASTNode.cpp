@@ -584,6 +584,7 @@ namespace zetscript{
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
 				LOGIC_AND_PUNCTUATOR,
+				LOGIC_OR_PUNCTUATOR,
 				MUL_PUNCTUATOR,
 				DIV_PUNCTUATOR,
 				MOD_PUNCTUATOR
@@ -1360,7 +1361,7 @@ namespace zetscript{
 		}
 
 		if(type_group>=MAX_GROUPS) {
-			zs_print_error_cr("reached max groups");
+			zs_print_error_cr("Cannot find ast tree operator");
 			return NULL;
 		}
 

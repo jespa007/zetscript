@@ -41,13 +41,14 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 
 #define TEST_ARITHMETIC_FLOAT_OP(val1, op, val2) \
 { \
+	float expr=(float)(val1 op val2);\
 	float aux_value=0; \
 	string str= STR(val1) \
 				STR(op) \
 				STR(val2) \
 				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval<float>(str),val1 op val2)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),val1 op val2,aux_value); \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval<float>(str),expr)){ \
+		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
 		exit(-1); \
 	} \
 }
@@ -158,7 +159,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 	int aux_value=0; \
 	string str_expr= STR(expr)";"; \
 	\
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval<int>(str_expr)  , (expr))){ \
+	if((aux_value=CZetScript::eval<int>(str_expr))  != (expr)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,aux_value); \
 		exit(-1); \
 	} \
@@ -194,7 +195,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 }
 
 
-#define COMPLETE_TEST_BOOL_OP(val1,val2) \
+#define COMPLETE_TEST_COMPARE_OP(val1,val2) \
 		TEST_BOOL_EXPR(val1,<,val2); \
 		TEST_BOOL_EXPR(val1*10,<,-val2/10); \
 		TEST_BOOL_EXPR((-val1+10),<,(val2-8)); \
@@ -214,16 +215,20 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 		TEST_BOOL_EXPR(val1/10,>=,(-val2+90)); \
 		TEST_BOOL_EXPR((-val1+10),>=,val2*10/10); \
 		TEST_BOOL_EXPR((-val1-val1),>=,(-val2-val2-10)); \
-		\
-		TEST_BOOL_EXPR(val1*70,&&,val2); \
-		TEST_BOOL_EXPR(val1/10,&&,-val2+90); \
-		TEST_BOOL_EXPR(-val1+10,&&,val2*10/10); \
-		TEST_BOOL_EXPR(-val1-val1,&&,-val2-val2-10); \
-		\
-		TEST_BOOL_EXPR(val1*70,||,val2); \
-		TEST_BOOL_EXPR(val1/10,||,-val2+90); \
-		TEST_BOOL_EXPR(-val1+10,||,val2*10/10); \
-		TEST_BOOL_EXPR(-val1-val1,||,-val2-val2-10);
+
+#define COMPLETE_TEST_LOGIC_OP(val1,val2) \
+		TEST_BOOL_EXPR((val1>0),&&,(val2>0)); \
+		TEST_BOOL_EXPR((val1<0),&&,(val2<0)); \
+		TEST_BOOL_EXPR((val1>=0),&&,(val2>=0)); \
+		TEST_BOOL_EXPR((val1<=0),&&,(val2<=0)); \
+		TEST_BOOL_EXPR((val1<=0),&&,(false)); \
+		TEST_BOOL_EXPR((val1<=0),&&,(true)); \
+		TEST_BOOL_EXPR((val1>0),||,(val2>0)); \
+		TEST_BOOL_EXPR((val1<0),||,(val2<0)); \
+		TEST_BOOL_EXPR((val1>=0),||,(val2>=0)); \
+		TEST_BOOL_EXPR((val1<=0),||,(val2<=0)); \
+		TEST_BOOL_EXPR((val1<=0),||,(false)); \
+		TEST_BOOL_EXPR((val1<=0),||,(true));
 
 
 
@@ -231,7 +236,10 @@ int main(int argc, char * argv[]) {
 
 	int n_test=0;
 
-	CZetScript *zet_script = CZetScript::getInstance();
+	//CZetScript *zetscript = CZetScript::getInstance();
+
+	printf("\nnumber is %f",((2.0f+2.0f*(5.0f-6.1f))*10.0f));
+	exit(-1);
 
 
 /*	"test_arithmetic_operations.zs",
@@ -309,12 +317,17 @@ int main(int argc, char * argv[]) {
 	TEST_ARITHMETIC_INT_EXPR((((2+2*(5-9))*1000))/100);
 	TEST_ARITHMETIC_FLOAT_EXPR((((2.0+2.0*(5.0-6.1))*1000.0))/100.0);
 
-	// test if-else ...
-	printf("%i. testing bool op ...\n",++n_test);
-	COMPLETE_TEST_BOOL_OP(10,10);
-	COMPLETE_TEST_BOOL_OP(15,10);
-	COMPLETE_TEST_BOOL_OP(10,15);
+	// test bool compare ...
+	printf("%i. testing compare op ...\n",++n_test);
+	COMPLETE_TEST_COMPARE_OP(10,10);
+	COMPLETE_TEST_COMPARE_OP(15,10);
+	COMPLETE_TEST_COMPARE_OP(10,15);
 
+	// test logic and/or ...
+	printf("%i. testing logic op ...\n",++n_test);
+	COMPLETE_TEST_LOGIC_OP(10,10);
+	COMPLETE_TEST_LOGIC_OP(15,10);
+	COMPLETE_TEST_LOGIC_OP(10,15);
 
 
 

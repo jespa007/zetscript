@@ -8,7 +8,7 @@
 
 #define ZETSCRIPT_MAJOR_VERSION 1
 #define ZETSCRIPT_MINOR_VERSION 0
-#define ZETSCRIPT_PATCH_VERSION 7
+#define ZETSCRIPT_PATCH_VERSION 8
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
@@ -80,10 +80,12 @@ namespace zetscript{
 					if(se != NULL){
 
 						if((typestr == typeid(int).name())  && (se->properties & INS_PROPERTY_TYPE_INTEGER)){
-							value = (int)se->stkValue;
+							ptr = &value;
+							*((int *)ptr) = (int)se->stkValue;
 						}
 						else if((typestr == typeid(float).name())  && (se->properties & INS_PROPERTY_TYPE_NUMBER)){
-							memcpy(&value,&se->stkValue,sizeof(float));
+							ptr = &value;
+							memcpy(ptr,&se->stkValue,sizeof(float));
 						}
 						else if((typestr == typeid(string).name())  && (se->properties & INS_PROPERTY_TYPE_STRING)){
 							ptr=&value;

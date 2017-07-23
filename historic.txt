@@ -23,8 +23,6 @@
 > test vector file
 > test class file
 > test c file
-  -test boolean op and expected result.
-  -test arithmetic op and expected result. 
   -test calling script function from c and viceversa.
   -test class with c binding
   -test class operators with c binding
@@ -74,45 +72,50 @@
     2. Leave the first function found. It will warn the second call that (CNumber, int) was expected ... maybe we can reserve the print message
     
   
-BUGS
-==== 
- 
--Fixe some rounding errors on floats. Example,
-
-((2.0+2.0*(5.0-6.1))*10.0) in C gives -2.0 but script gives -1.99998 
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.9
+//
 
 
-version 1.00.08
-===============
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.8
+//
 
 -Check property duplicated adding in struct.
 -Clear some code.
 -Metamethod test in macro
 -Added test assign operator with assign in property
 
-> test arithmetic int unsigned/signed, float unsigned/signed, mix int/float unsigned/signed.
+TESTS
+
+-test arithmetic int unsigned/signed, float unsigned/signed, mix int/float unsigned/signed.
+-test boolean comparison operation.
+-test logic op operation. 
 
 
-
-version 1.00.07
-===============
-
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.7
 
 -Apply namespace
-
    
 
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.6
 
-version 1.00.06
-===============
 
 -Restructured dir/files
 -Added some compatibilities MSVC
 -Added zs exec file.
 
 
-version 1.00.05
-===============
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.5
+
 
 CMakeFiles: Added MSVC Comptibility (only compiles with MSVC 2017) that comes with compiler that allows constexpr (sorry)
 
@@ -141,11 +144,11 @@ Class:
 
 
 
- 
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.4
 
 
-version 1.00.04b
-================
 -Added metamethod support. Example use of methamethod add in the class,
 
 class A{
@@ -166,8 +169,9 @@ class A{
 
 var h = new A(0,1) + new A(1,0); // h should be (1,1)
 
-version 1.00.03b
-================
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.3
 
 -Added support functions with different parameters.
 -Added symbol detection
@@ -180,8 +184,9 @@ _pN_symbol: function symbol where N is a number that explain the number paramete
 -solved problem double unref shared pointer when rets cscriptvar
 
 
-version 1.00.02b
-================
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.2
 
 Change tAleObjectInfo tStackElement
 
@@ -223,8 +228,9 @@ Or maybe in the write function cast an exception that tells is not
 possible to override pointers. In other words, write funtion is only for
 integers, floats, numbers and strings.
 
-version 1.00.01b
-================
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.1
 
 - In mov instruction preserve RUNTIME MASK before assign TYPE VAR MASK.
 - Remove warning about "dereferencing type-punned pointer will break strict-aliasing rules"
@@ -233,8 +239,9 @@ version 1.00.01b
 
 
 
-Version 1.00.00b
-================
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.0
 
 Base version
 Exit version
