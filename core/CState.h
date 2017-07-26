@@ -2,6 +2,8 @@
 #pragma once
 
 
+
+
 namespace zetscript{
 
 	class CScope;
@@ -40,6 +42,7 @@ namespace zetscript{
 		static int   saveState();
 
 		static CState 			* currentState();
+		static void clearCurrentCompileInformation();
 
 
 
@@ -61,6 +64,7 @@ namespace zetscript{
 		static void destroySingletons();
 
 		CState();
+		void clearCompileInformation();
 
 		vector<CASTNode *> 					*	getVectorASTNodeNode(); // ast collection register...
 		vector<CScope *> 					*	getVectorScopeNode();

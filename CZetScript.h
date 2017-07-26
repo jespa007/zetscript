@@ -71,7 +71,9 @@ namespace zetscript{
 
 			CZetScript *zetscript= CZetScript::getInstance();
 
+
 			if(zetscript->eval(str_to_eval)){
+
 
 				if(zetscript->execute()){
 

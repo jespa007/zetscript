@@ -26,6 +26,8 @@ namespace zetscript{
 			CScriptClass::setVectorScriptClassNode(st->getVectorScriptClassNode());
 			CZetScript::setVectorInfoParsedFiles(st->getVectorInfoParsedSourceNode());
 
+			current_state = st;
+
 			// create state by default ...
 			//current_state = new CState();
 			//current_vec_ast_node = current_state->getVectorASTNodeNode();
@@ -170,6 +172,10 @@ namespace zetscript{
 
 	CState * CState::currentState(){
 		return current_state;
+	}
+
+	void CState::clearCurrentCompileInformation(){
+		current_state->clearCompileInformation();
 	}
 
 	void CState::destroySingletons(){
@@ -403,6 +409,11 @@ namespace zetscript{
 		*/
 		delete vec_info_parsed_source_node;
 		vec_info_parsed_source_node=NULL;
+	}
+
+	void  CState::clearCompileInformation(){
+		destroyScriptClassNodes();
+		destroyScriptFunctionObjectNodes();
 	}
 
 	void CState::destroy(){

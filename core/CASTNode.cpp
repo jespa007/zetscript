@@ -1338,7 +1338,7 @@ namespace zetscript{
 		int start_line = m_line; // set another start line because left node or reparse to try another group was already parsed before.
 		int m_lineOperator=-2;
 		char *end_expression=(char *)s ; // by default end expression isequal to
-		bool is_packed_expression=false;
+		//bool is_packed_expression=false;
 		//PASTNode symbol_node=NULL; // can be a function or array.
 
 		bool is_symbol_trivial_value=false;

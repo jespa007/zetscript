@@ -1,6 +1,8 @@
 #pragma once
 
 
+#define CLEAR_COMPILE_INFORMATION CState::clearCurrentCompileInformation()
+
 namespace zetscript{
 
 

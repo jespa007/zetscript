@@ -406,7 +406,34 @@ namespace zetscript{
 		return false;
 	}
 	
+	bool CZetScript::eval(const string & s){
 
+		if(!__init__) return false;
+
+		// generate whole AST
+
+		if(parse_ast(s.c_str())){
+
+			idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
+
+			CLEAR_COMPILE_INFORMATION;
+
+			if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
+				// print generated asm ...
+
+				if(!CScriptClass::updateReferenceSymbols()){
+					return false;
+				}
+
+	#ifdef __DEBUG__
+				printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
+	#endif
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	bool CZetScript::eval_file(const char * filename){
 		if(isFilenameAlreadyParsed(filename)){
@@ -431,34 +458,6 @@ namespace zetscript{
 
 
 		return status;
-	}
-
-
-	bool CZetScript::eval(const string & s){
-
-		if(!__init__) return false;
-
-		// generate whole AST
-
-		if(parse_ast(s.c_str())){
-
-			idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
-
-			if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
-				// print generated asm ...
-
-				if(!CScriptClass::updateReferenceSymbols()){
-					return false;
-				}
-
-	#ifdef __DEBUG__
-				printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
-	#endif
-				return true;
-			}
-		}
-
-		return false;
 	}
 	/*
 	std::function<CScriptVariable * ( std::vector<CScriptVariable *> args)> * CZetScript::script_call(const string &script_function_name){

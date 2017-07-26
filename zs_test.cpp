@@ -165,6 +165,46 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 	} \
 }
 
+#define TEST_INT_EXPR(expr, expected_value) \
+{ \
+	int aux_value=0; \
+	\
+	if((aux_value=CZetScript::eval<int>(expr))  != (expected_value)){ \
+		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
+		exit(-1); \
+	} \
+}
+
+#define TEST_BOOL_EXPR(expr, expected_value) \
+{ \
+	bool aux_value=false; \
+	\
+	if((aux_value=CZetScript::eval<bool>(expr))  != (expected_value)){ \
+		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
+		exit(-1); \
+	} \
+}
+
+#define TEST_STRING_EXPR(expr, expected_value) \
+{ \
+	string aux_value=""; \
+	\
+	if((aux_value=CZetScript::eval<string>(expr))  != (expected_value)){ \
+		fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,aux_value.c_str(),expected_value); \
+		exit(-1); \
+	} \
+}
+
+#define TEST_NUMBER_EXPR(expr, expected_value) \
+{ \
+	float aux_value=0.0f; \
+	\
+	if((aux_value=CZetScript::eval<float>(expr))  != (expected_value)){ \
+		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,aux_value,expected_value); \
+		exit(-1); \
+	} \
+}
+
 #define TEST_ARITHMETIC_FLOAT_EXPR(expr) \
 { \
 	float aux_value=0; \
@@ -181,7 +221,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 	} \
 }
 
-#define TEST_BOOL_EXPR(val1,op,val2) \
+#define TEST_ARITHMETIC_BOOL_EXPR(val1,op,val2) \
 { \
 	bool aux_value=false; \
 	string str= STR(val1) \
@@ -196,39 +236,39 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 
 
 #define COMPLETE_TEST_COMPARE_OP(val1,val2) \
-		TEST_BOOL_EXPR(val1,<,val2); \
-		TEST_BOOL_EXPR(val1*10,<,-val2/10); \
-		TEST_BOOL_EXPR((-val1+10),<,(val2-8)); \
-		TEST_BOOL_EXPR((-val1-100),<,(-val2+100)); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1,<,val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1*10,<,-val2/10); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1+10),<,(val2-8)); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1-100),<,(-val2+100)); \
 		\
-		TEST_BOOL_EXPR((val1+10),>,(val2-80)); \
-		TEST_BOOL_EXPR(val1*70,>,(-val2+300)); \
-		TEST_BOOL_EXPR(-val1*60,>,val2*90); \
-		TEST_BOOL_EXPR(-val1*90,>,-val2*60); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1+10),>,(val2-80)); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1*70,>,(-val2+300)); \
+		TEST_ARITHMETIC_BOOL_EXPR(-val1*60,>,val2*90); \
+		TEST_ARITHMETIC_BOOL_EXPR(-val1*90,>,-val2*60); \
 		\
-		TEST_BOOL_EXPR((val1+10),<=,10*val2); \
-		TEST_BOOL_EXPR(val1*10,<=,-80/val2); \
-		TEST_BOOL_EXPR(-val1/10,<=,val2*70); \
-		TEST_BOOL_EXPR((-val1-10),<=,-val2*10); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1+10),<=,10*val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1*10,<=,-80/val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(-val1/10,<=,val2*70); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1-10),<=,-val2*10); \
 		\
-		TEST_BOOL_EXPR(val1*70,>=,val2); \
-		TEST_BOOL_EXPR(val1/10,>=,(-val2+90)); \
-		TEST_BOOL_EXPR((-val1+10),>=,val2*10/10); \
-		TEST_BOOL_EXPR((-val1-val1),>=,(-val2-val2-10)); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1*70,>=,val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1/10,>=,(-val2+90)); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1+10),>=,val2*10/10); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1-val1),>=,(-val2-val2-10)); \
 
 #define COMPLETE_TEST_LOGIC_OP(val1,val2) \
-		TEST_BOOL_EXPR((val1>0),&&,(val2>0)); \
-		TEST_BOOL_EXPR((val1<0),&&,(val2<0)); \
-		TEST_BOOL_EXPR((val1>=0),&&,(val2>=0)); \
-		TEST_BOOL_EXPR((val1<=0),&&,(val2<=0)); \
-		TEST_BOOL_EXPR((val1<=0),&&,(false)); \
-		TEST_BOOL_EXPR((val1<=0),&&,(true)); \
-		TEST_BOOL_EXPR((val1>0),||,(val2>0)); \
-		TEST_BOOL_EXPR((val1<0),||,(val2<0)); \
-		TEST_BOOL_EXPR((val1>=0),||,(val2>=0)); \
-		TEST_BOOL_EXPR((val1<=0),||,(val2<=0)); \
-		TEST_BOOL_EXPR((val1<=0),||,(false)); \
-		TEST_BOOL_EXPR((val1<=0),||,(true));
+		TEST_ARITHMETIC_BOOL_EXPR((val1>0),&&,(val2>0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<0),&&,(val2<0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1>=0),&&,(val2>=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),&&,(val2<=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),&&,(false)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),&&,(true)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1>0),||,(val2>0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<0),||,(val2<0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1>=0),||,(val2>=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),||,(val2<=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),||,(false)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),||,(true));
 
 
 
@@ -238,7 +278,9 @@ int main(int argc, char * argv[]) {
 
 	//CZetScript *zetscript = CZetScript::getInstance();
 
-	printf("\nnumber is %f",((2.0f+2.0f*(5.0f-6.1f))*10.0f));
+	//printf("\nnumber is %f",((2.0f+2.0f*(5.0f-6.1f))*10.0f));
+	TEST_INT_EXPR("var i=1;i;",1);
+	TEST_INT_EXPR("i;",2);
 	exit(-1);
 
 
@@ -328,6 +370,48 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_LOGIC_OP(10,10);
 	COMPLETE_TEST_LOGIC_OP(15,10);
 	COMPLETE_TEST_LOGIC_OP(10,15);
+
+	// test declare var int/bool/string/number
+	printf("%i. testing primitive var ...\n",++n_test);
+	TEST_INT_EXPR("var i=1;i;",1);
+	TEST_INT_EXPR("i++;i;",2);
+/*	TEST_INT_EXPR("--i;i;",1);
+
+	TEST_BOOL_EXPR("var b=true;b;",true);
+	TEST_BOOL_EXPR("b=!b;",false);
+	TEST_BOOL_EXPR("b=!b;",true);
+
+	TEST_NUMBER_EXPR("var n=2.0;n;",2.0);
+	TEST_NUMBER_EXPR("n++;n;",3.0);
+	TEST_NUMBER_EXPR("--n;n;",2.0);
+
+
+	TEST_STRING_EXPR("var s=\"is_a_string\";s;","is_a_string");
+
+	printf("%i. testing vector var ...\n",++n_test);
+
+	TEST_INT_EXPR("var v=[3,true,2.0,\"is_a_string\", new MyObject()];v[0]",3);
+	TEST_BOOL_EXPR("v[1]",true);
+	TEST_NUMBER_EXPR("v[2]",2.0);
+	TEST_STRING_EXPR("v[3]","is_a_string");
+	TEST_STRING_EXPR("str(v[4])","MyObject");
+
+	// test adding ...
+
+	printf("%i. testing struct var ...\n",++n_test);
+
+	TEST_INT_EXPR("var s={i:3,n:true,n:2.0,s:\"is_a_string\",o:new MyObject()];s.i",3);
+	TEST_BOOL_EXPR("s.b;",true);
+	TEST_NUMBER_EXPR("s.n;",2.0);
+	TEST_STRING_EXPR("s.s;","is_a_string");
+	TEST_STRING_EXPR("s.o;","MyObject");
+
+	// test if-else
+
+
+*/
+
+
 
 
 

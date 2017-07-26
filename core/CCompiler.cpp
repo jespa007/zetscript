@@ -2408,6 +2408,10 @@ namespace zetscript{
 		}
 	}
 
+	void CCompiler::clear(){ // clears all compiled
+
+	}
+
 	bool CCompiler::compile(short idxAstNode, CScriptFunctionObject *sf){
 
 		PASTNode _node =AST_NODE(idxAstNode);
