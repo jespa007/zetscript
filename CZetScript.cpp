@@ -366,6 +366,11 @@ namespace zetscript{
 				exit(EXIT_FAILURE);
 		 }
 
+		 // after init, let's save/restore state...
+		 CState::saveState();
+		 CState::setState(0);
+
+
 
 		vm = new CVirtualMachine();
 
@@ -387,7 +392,7 @@ namespace zetscript{
 		if(CASTNode::generateAST_Recursive(
 				s,
 				m_line,
-				MAIN_SCOPE_ROOT,
+				MAIN_SCOPE_NODE,
 				error,
 				&main_node,
 				false,

@@ -19,7 +19,7 @@
 #define IDX_MAIN_AST_NODE					0
 
 #define MAIN_AST_NODE						(CASTNode::getAstNode(IDX_MAIN_AST_NODE))
-#define MAIN_SCOPE_ROOT						(CASTNode::getScope(IDX_MAIN_AST_NODE))
+#define MAIN_SCOPE_NODE						(CASTNode::getScope(IDX_MAIN_AST_NODE))
 #define AST_NODE(idx) 						CASTNode::getAstNode(idx)
 #define AST_SCOPE_INFO_IDX(idx) 			CASTNode::getScopeIdx(idx)
 #define AST_SCOPE_INFO(idx) 				CASTNode::getScope(idx)
@@ -57,6 +57,7 @@ namespace zetscript{
 
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
 		static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];
+
 		//static tPunctuatorInfo defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
 

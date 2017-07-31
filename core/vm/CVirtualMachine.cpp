@@ -759,6 +759,10 @@ namespace zetscript{
 	ptrResultInstructionOp2=--ptrCurrentOp;\
 	ptrResultInstructionOp1=--ptrCurrentOp;
 
+	#define POP_TWO_ASSIGN \
+	ptrResultInstructionOp2=--ptrCurrentOp;\
+	ptrResultInstructionOp1=(ptrCurrentOp-1);
+
 
 	#define POP_ONE \
 	ptrResultInstructionOp1=--ptrCurrentOp;
@@ -1385,6 +1389,14 @@ namespace zetscript{
 										*ptrCurrentOp++={INS_PROPERTY_TYPE_INTEGER|INS_PROPERTY_IS_STACKVAR,(void *)(-(((int)ldrVar->stkValue))),ldrVar};
 									}
 									break;
+								case INS_PROPERTY_TYPE_BOOLEAN:
+									if(ldrVar->properties& INS_PROPERTY_IS_C_VAR){
+										*ptrCurrentOp++={INS_PROPERTY_TYPE_BOOLEAN|INS_PROPERTY_IS_STACKVAR|INS_PROPERTY_IS_C_VAR,(void *)(!(*((bool *)ldrVar->varRef))),ldrVar};
+									}else{
+										*ptrCurrentOp++={INS_PROPERTY_TYPE_BOOLEAN|INS_PROPERTY_IS_STACKVAR,(void *)(!(((bool)ldrVar->stkValue))),ldrVar};
+									}
+									break;
+
 								case INS_PROPERTY_TYPE_NUMBER:
 									if(ldrVar->properties& INS_PROPERTY_IS_C_VAR){
 										COPY_NUMBER(&aux_float,ldrVar->stkValue);
@@ -1423,6 +1435,9 @@ namespace zetscript{
 								switch(GET_INS_PROPERTY_VAR_TYPE(ptrCurrentOp->properties)){
 								case INS_PROPERTY_TYPE_INTEGER:
 									ptrCurrentOp->stkValue=(void *)(-((int)ptrCurrentOp->stkValue));
+									break;
+								case INS_PROPERTY_TYPE_BOOLEAN:
+									ptrCurrentOp->stkValue=(void *)(!((bool)ptrCurrentOp->stkValue));
 									break;
 								case INS_PROPERTY_TYPE_NUMBER:
 									COPY_NUMBER(&aux_float,&ptrCurrentOp->stkValue);
@@ -1644,16 +1659,28 @@ namespace zetscript{
 					PROCESS_COMPARE_OPERATION(>=,GTE_METAMETHOD);
 					continue;
 				case LOGIC_AND:  // &&
-					POP_TWO;
+					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
+						POP_TWO_ASSIGN;
+					}else{
+						POP_TWO;
+					}
+
 					PROCESS_LOGIC_OPERATION(&&, LOGIC_AND_METAMETHOD);
 					continue;
-				case LOGIC_OR:  // &&
-					POP_TWO;
+				case LOGIC_OR:  // ||
+
+					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
+						POP_TWO_ASSIGN;
+					}else{
+						POP_TWO;
+					}
 					PROCESS_LOGIC_OPERATION(||, LOGIC_OR_METAMETHOD);
 					continue;
 
-				case NEG: // !
+				case NEG: // -
+
 					POP_ONE;
+
 					if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_INTEGER){ // operation will result as integer.
 						PUSH_INTEGER((-((int)(ptrResultInstructionOp1->stkValue))));
 					}else if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_NUMBER){
@@ -1669,8 +1696,7 @@ namespace zetscript{
 
 				{
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
-						POP_ONE;
-						ptrResultInstructionOp2=(ptrCurrentOp-1);
+						POP_TWO_ASSIGN;
 					}else{
 						POP_TWO;
 					}
@@ -1741,8 +1767,7 @@ namespace zetscript{
 				case MUL: // *
 
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
-						POP_ONE;
-						ptrResultInstructionOp2=(ptrCurrentOp-1);
+						POP_TWO_ASSIGN
 					}else{
 						POP_TWO;
 					}
@@ -1753,8 +1778,7 @@ namespace zetscript{
 				case DIV: // /
 
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
-						POP_ONE;
-						ptrResultInstructionOp2=(ptrCurrentOp-1);
+						POP_TWO_ASSIGN
 					}else{
 						POP_TWO;
 					}
@@ -1765,8 +1789,7 @@ namespace zetscript{
 			 	 case MOD: // /
 
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
-						POP_ONE;
-						ptrResultInstructionOp2=(ptrCurrentOp-1);
+						POP_TWO_ASSIGN
 					}else{
 						POP_TWO;
 					}
@@ -1776,8 +1799,7 @@ namespace zetscript{
 
 			 	 case AND: // &
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
-						POP_ONE;
-						ptrResultInstructionOp2=(ptrCurrentOp-1);
+						POP_TWO_ASSIGN
 					}else{
 						POP_TWO;
 					}
@@ -1786,8 +1808,7 @@ namespace zetscript{
 					continue;
 			 	 case OR: // *
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
-						POP_ONE;
-						ptrResultInstructionOp2=(ptrCurrentOp-1);
+						POP_TWO_ASSIGN
 					}else{
 						POP_TWO;
 					}
@@ -1796,8 +1817,7 @@ namespace zetscript{
 					continue;
 			 	 case XOR: // ^
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
-						POP_ONE;
-						ptrResultInstructionOp2=(ptrCurrentOp-1);
+						POP_TWO_ASSIGN
 					}else{
 						POP_TWO;
 					}
@@ -1807,8 +1827,7 @@ namespace zetscript{
 
 			 	 case SHR: // >>
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
-						POP_ONE;
-						ptrResultInstructionOp2=(ptrCurrentOp-1);
+						POP_TWO_ASSIGN
 					}else{
 						POP_TWO;
 					}
@@ -1818,8 +1837,7 @@ namespace zetscript{
 
 			 	 case SHL: // <<
 					if(instruction->instruction_properties&INS_PROPERTY_IS_ASSIGN_OP){
-						POP_ONE;
-						ptrResultInstructionOp2=(ptrCurrentOp-1);
+						POP_TWO_ASSIGN
 					}else{
 						POP_TWO;
 					}

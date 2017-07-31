@@ -2,6 +2,8 @@
 #pragma once
 
 
+#define SAVE_STATE				CState::saveState()
+#define RESTORE_LAST_STATE		CState::restoreLastState()
 
 
 namespace zetscript{
@@ -10,6 +12,8 @@ namespace zetscript{
 
 
 	class  CState{
+
+
 
 		static vector<CState *> 						* vec_saved_state;
 		static CState 									* current_state;
@@ -20,7 +24,7 @@ namespace zetscript{
 
 		void destroyASTNodes();
 		void destroyScopeNodes();
-		void destroyScriptFunctionObjectNodes();
+		//void destroyScriptFunctionObjectNodes();
 		void destroyScriptClassNodes();
 		void destroyInfoParsedSourceNode();
 
@@ -40,6 +44,8 @@ namespace zetscript{
 		 * Save current state
 		 */
 		static int   saveState();
+
+		static bool   restoreLastState();
 
 		static CState 			* currentState();
 		static void clearCurrentCompileInformation();

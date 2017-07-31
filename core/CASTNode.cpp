@@ -18,6 +18,13 @@
 namespace zetscript{
 
 
+
+	tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
+	tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_PUNCTUATORS];
+	int CASTNode::DUMMY_LINE=0;
+
+
+
 	bool IS_SINGLE_COMMENT(char *str){
 
 		if((*str!=0) && *str=='/'){
@@ -176,10 +183,6 @@ namespace zetscript{
 	}
 
 
-
-	tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
-	tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_PUNCTUATORS];
-	int CASTNode::DUMMY_LINE=0;
 
 
 	vector<CASTNode *> 			* CASTNode::vec_ast_node=NULL;
@@ -1466,6 +1469,22 @@ namespace zetscript{
 						if(is_packed_node){ // packed node let's said that is a packed node...
 							if(ast_node_to_be_evaluated != NULL){
 								(*ast_node_to_be_evaluated)->is_packed_node = true;
+
+								if((*ast_node_to_be_evaluated)->pre_post_operator_info == SUB_PUNCTUATOR){ // we must create op...
+									// 2. create neg node.
+
+									//(*ast_node_to_be_evaluated)->pre_post_operator_info = UNKNOWN_PUNCTUATOR;
+									PASTNode ast_neg_node=NULL;
+									if((ast_neg_node = CASTNode::newASTNode())==NULL) return NULL;
+									ast_neg_node->node_type = NODE_TYPE::PUNCTUATOR_NODE;
+									ast_neg_node->operator_info = SUB_PUNCTUATOR;
+
+									ast_neg_node->idxAstParent =(* ast_node_to_be_evaluated)->idxAstParent;
+									(*ast_node_to_be_evaluated)->idxAstParent = ast_neg_node->idxAstNode;
+									ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->idxAstNode);
+
+									(*ast_node_to_be_evaluated)=ast_neg_node;
+								}
 							}
 						}
 					}
@@ -3619,18 +3638,6 @@ namespace zetscript{
 			defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
 			defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
 			// create main ast management
-
-			if(vec_ast_node->size()==0){
-				// create main ast/scope...
-				CASTNode *ast=newASTNode();
-				CScope *scp = CScope::newScope(ZS_UNDEFINED_IDX);
-				ast->idxScope = scp->idxScope;
-				ast->node_type = NODE_TYPE::BODY_NODE;
-
-			}
-			else{
-				zs_print_warning("ASTNode already initialized!");
-			}
 	}
 
 	CASTNode::CASTNode(){

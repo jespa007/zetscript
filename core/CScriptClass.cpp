@@ -254,7 +254,7 @@ namespace zetscript{
 
 		zs_print_info_cr("PRINT:%s",s->c_str());
 	 }
-
+/*
 	 void  custom_function(bool  *b){
 		zs_print_info_cr("CUSTOM_FUNCTION B:%s",*b?"true":"false");
 	 }
@@ -337,7 +337,7 @@ namespace zetscript{
 		~MyObject(){
 			zs_print_info_cr("MyObject destroyed!!!");
 		}
-	};
+	};*/
 
 	 bool CScriptClass::init(){
 
@@ -527,10 +527,10 @@ namespace zetscript{
 			//CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(string * )>(&custom_function));
 			//CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(bool * )>(&custom_function));
 
-			if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CString * )>(&custom_function))) return false;
+			//if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CString * )>(&custom_function))) return false;
 			//if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CInteger * )>(&custom_function))) return false;
 
-			if(!register_C_Variable(c_var)) return false;
+			//if(!register_C_Variable(c_var)) return false;
 
 
 			if(!register_C_FunctionMember(CVector,size)) return false;
@@ -546,7 +546,7 @@ namespace zetscript{
 
 
 			// test user custom object
-			if(!register_C_Class<MyObject2>("MyObject2")) return false;
+		/*	if(!register_C_Class<MyObject2>("MyObject2")) return false;
 
 
 			if(!register_C_Class<MyObject>("MyObject")) return false;
@@ -564,10 +564,10 @@ namespace zetscript{
 			if(!register_C_StaticFunctionMemberInt<MyObject>("_add",static_cast<MyObject * (*)(MyObject *,int *)>(&MyObject::_add))) return false;
 			if(!register_C_StaticFunctionMemberInt<MyObject>("_add",static_cast<MyObject * (*)(MyObject *,MyObject  *)>(&MyObject::_add))) return false;
 
-			//offsetof(MyObject,i);
+		*/	//offsetof(MyObject,i);
 
 
-			if(!CScriptClass::register_C_Function(my_new_random_vector)) return false;
+			//if(!CScriptClass::register_C_Function(my_new_random_vector)) return false;
 
 			// init constants vars
 			UNDEFINED_SYMBOL;
@@ -1239,7 +1239,7 @@ namespace zetscript{
 
 		//CScope *scp = MAIN_SCOPE_ROOT;
 
-		if(!MAIN_SCOPE_ROOT->registerSymbol(var_name)){
+		if(!MAIN_SCOPE_NODE->registerSymbol(var_name)){
 			return false;
 		}
 

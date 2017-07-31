@@ -221,68 +221,90 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 	} \
 }
 
-#define TEST_ARITHMETIC_BOOL_EXPR(val1,op,val2) \
+#define TEST_ARITHMETIC_BOOL_EXPR(val1) \
 { \
 	bool aux_value=false; \
 	string str= STR(val1) \
-				STR(op) \
-				STR(val2) \
 				";"; \
-	if((aux_value=CZetScript::eval<bool>(str)) != ((val1) op (val2))){ \
-		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),((val1) op (val2))?"true":"false",aux_value?"true":"false"); \
+	if((aux_value=CZetScript::eval<bool>(str)) != (val1)){ \
+		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",aux_value?"true":"false"); \
 		exit(-1); \
 	} \
 }
 
 
 #define COMPLETE_TEST_COMPARE_OP(val1,val2) \
-		TEST_ARITHMETIC_BOOL_EXPR(val1,<,val2); \
-		TEST_ARITHMETIC_BOOL_EXPR(val1*10,<,-val2/10); \
-		TEST_ARITHMETIC_BOOL_EXPR((-val1+10),<,(val2-8)); \
-		TEST_ARITHMETIC_BOOL_EXPR((-val1-100),<,(-val2+100)); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1<val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1*10<-val2/10); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1+10)<(val2-8)); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1-100)<(-val2+100)); \
 		\
-		TEST_ARITHMETIC_BOOL_EXPR((val1+10),>,(val2-80)); \
-		TEST_ARITHMETIC_BOOL_EXPR(val1*70,>,(-val2+300)); \
-		TEST_ARITHMETIC_BOOL_EXPR(-val1*60,>,val2*90); \
-		TEST_ARITHMETIC_BOOL_EXPR(-val1*90,>,-val2*60); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1+10)>(val2-80)); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1*70>(-val2+300)); \
+		TEST_ARITHMETIC_BOOL_EXPR(-val1*60>val2*90); \
+		TEST_ARITHMETIC_BOOL_EXPR(-val1*90>-val2*60); \
 		\
-		TEST_ARITHMETIC_BOOL_EXPR((val1+10),<=,10*val2); \
-		TEST_ARITHMETIC_BOOL_EXPR(val1*10,<=,-80/val2); \
-		TEST_ARITHMETIC_BOOL_EXPR(-val1/10,<=,val2*70); \
-		TEST_ARITHMETIC_BOOL_EXPR((-val1-10),<=,-val2*10); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1+10)<=10*val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1*10<=-80/val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(-val1/10<=val2*70); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1-10)<=-val2*10); \
 		\
-		TEST_ARITHMETIC_BOOL_EXPR(val1*70,>=,val2); \
-		TEST_ARITHMETIC_BOOL_EXPR(val1/10,>=,(-val2+90)); \
-		TEST_ARITHMETIC_BOOL_EXPR((-val1+10),>=,val2*10/10); \
-		TEST_ARITHMETIC_BOOL_EXPR((-val1-val1),>=,(-val2-val2-10)); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1*70>=val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(val1/10>=(-val2+90)); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1+10)>=val2*10/10); \
+		TEST_ARITHMETIC_BOOL_EXPR((-val1-val1)>=(-val2-val2-10)); \
 
 #define COMPLETE_TEST_LOGIC_OP(val1,val2) \
-		TEST_ARITHMETIC_BOOL_EXPR((val1>0),&&,(val2>0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<0),&&,(val2<0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1>=0),&&,(val2>=0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),&&,(val2<=0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),&&,(false)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),&&,(true)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1>0),||,(val2>0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<0),||,(val2<0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1>=0),||,(val2>=0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),||,(val2<=0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),||,(false)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0),||,(true));
+		TEST_ARITHMETIC_BOOL_EXPR((val1>0)&&(val2>0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<0)&&(val2<0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1>=0)&&(val2>=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)&&(val2<=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)&&(false)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)&&(true)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1>0)||(val2>0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<0)||(val2<0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1>=0)||(val2>=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(val2<=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(false)); \
+		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(true));
 
+
+class MyObject{
+
+
+
+public:
+
+	int i;
+	bool b;
+
+
+
+	MyObject * _add(MyObject *op1, MyObject *op2){
+
+		MyObject *result = new MyObject();
+		result->i = op1->i + op2->i;
+		return result;
+	}
+
+
+
+};
 
 
 int main(int argc, char * argv[]) {
 
 	int n_test=0;
 
+	//TEST_ARITHMETIC_BOOL_EXPR(!(!(!false)));//  || !(true && !false));
+	TEST_ARITHMETIC_INT_EXPR(-(-(-5)));//  || !(true && !false));
+	return 0;
+
 	//CZetScript *zetscript = CZetScript::getInstance();
 
 	//printf("\nnumber is %f",((2.0f+2.0f*(5.0f-6.1f))*10.0f));
-	TEST_INT_EXPR("var i=1;i;",1);
-	TEST_INT_EXPR("i;",2);
-	exit(-1);
-
+	//TEST_BOOL_EXPR("!false && !false || false;",true);
+	//return 0;
 
 /*	"test_arithmetic_operations.zs",
 	"test_binary_operations.zs",
@@ -307,8 +329,6 @@ int main(int argc, char * argv[]) {
 	//TEST_ARITHMETIC_INT_OP(10,-,*10);
 
 	//CZetScript::eval<int>("10-*10");
-
-
 	//int i= 0+ +1;
 
 	//exit(-1);
@@ -371,22 +391,42 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_LOGIC_OP(15,10);
 	COMPLETE_TEST_LOGIC_OP(10,15);
 
+	// some basics tests
+	TEST_ARITHMETIC_BOOL_EXPR(!false && !false || false);
+	TEST_ARITHMETIC_BOOL_EXPR(!(true && !false) || false);
+	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
+
 	// test declare var int/bool/string/number
-	printf("%i. testing primitive var ...\n",++n_test);
+	printf("%i. testing primitive var\n",++n_test);
+
+
 	TEST_INT_EXPR("var i=1;i;",1);
 	TEST_INT_EXPR("i++;i;",2);
-/*	TEST_INT_EXPR("--i;i;",1);
-
-	TEST_BOOL_EXPR("var b=true;b;",true);
-	TEST_BOOL_EXPR("b=!b;",false);
-	TEST_BOOL_EXPR("b=!b;",true);
-
-	TEST_NUMBER_EXPR("var n=2.0;n;",2.0);
-	TEST_NUMBER_EXPR("n++;n;",3.0);
-	TEST_NUMBER_EXPR("--n;n;",2.0);
+	TEST_INT_EXPR("++i;",3);
+	TEST_INT_EXPR("i--;i;",2);
+	TEST_INT_EXPR("--i;",1);
 
 
-	TEST_STRING_EXPR("var s=\"is_a_string\";s;","is_a_string");
+	TEST_INT_EXPR("i=10;i*=10;i;",100);
+	TEST_INT_EXPR("i/=10;i;",10);
+	TEST_INT_EXPR("i+=10;i;",20);
+	TEST_INT_EXPR("i-=5;i;",10);
+	TEST_INT_EXPR("i%=10;i;",5);
+
+	// test reassign and float
+	TEST_NUMBER_EXPR("i=2.0;i;",2.0f);
+	TEST_NUMBER_EXPR("i++;i;",3.0f);
+	TEST_NUMBER_EXPR("--i;i;",2.0f);
+
+	TEST_BOOL_EXPR("i=true;i;",true);
+	TEST_BOOL_EXPR("i=!i;",false);
+	//TEST_BOOL_EXPR("i=!i;",true);
+
+
+
+
+
+	/*TEST_STRING_EXPR("var s=\"is_a_string\";s;","is_a_string");
 
 	printf("%i. testing vector var ...\n",++n_test);
 
@@ -404,12 +444,11 @@ int main(int argc, char * argv[]) {
 	TEST_BOOL_EXPR("s.b;",true);
 	TEST_NUMBER_EXPR("s.n;",2.0);
 	TEST_STRING_EXPR("s.s;","is_a_string");
-	TEST_STRING_EXPR("s.o;","MyObject");
+	TEST_BOOL_EXPR("s.o.instanceof(MyObject);",true);
 
 	// test if-else
 
 
-*/
 
 
 
@@ -417,7 +456,7 @@ int main(int argc, char * argv[]) {
 
 
 
-/*
+
 	printf("2. testing arithmetic hexa...\n");
 
 
