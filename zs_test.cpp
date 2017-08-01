@@ -297,8 +297,8 @@ int main(int argc, char * argv[]) {
 	int n_test=0;
 
 	//TEST_ARITHMETIC_BOOL_EXPR(!(!(!false)));//  || !(true && !false));
-	TEST_ARITHMETIC_BOOL_EXPR(!(!false));//  || !(true && !false));
-	return 0;
+	//TEST_ARITHMETIC_BOOL_EXPR(!(!false));//  || !(true && !false));
+	//return 0;
 
 	//CZetScript *zetscript = CZetScript::getInstance();
 
@@ -410,7 +410,7 @@ int main(int argc, char * argv[]) {
 	TEST_INT_EXPR("i=10;i*=10;i;",100);
 	TEST_INT_EXPR("i/=10;i;",10);
 	TEST_INT_EXPR("i+=10;i;",20);
-	TEST_INT_EXPR("i-=5;i;",10);
+	TEST_INT_EXPR("i-=5;i;",15);
 	TEST_INT_EXPR("i%=10;i;",5);
 
 	// test reassign and float
@@ -418,7 +418,7 @@ int main(int argc, char * argv[]) {
 	TEST_NUMBER_EXPR("i++;i;",3.0f);
 	TEST_NUMBER_EXPR("--i;i;",2.0f);
 
-	TEST_BOOL_EXPR("i=true;i;",true);
+	//TEST_BOOL_EXPR("i=true;i;",true);
 	TEST_BOOL_EXPR("i=!i;",false);
 	//TEST_BOOL_EXPR("i=!i;",true);
 

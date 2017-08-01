@@ -1,3 +1,6 @@
+
+
+
 > implement vector::_toString
 > implement struct::_toString
 > implement class::_toString 
@@ -77,6 +80,19 @@
 // version 1.0.9
 //
 
+Solved problem preoperator before packed symbol.
+
+Bugs found
+==========
+
+
+var i=0;
+i=!i; <-- it crashes...
+
+var i=0;
+
+i=true;
+i=!i; <-- fails!
 
 //----------------------------------------------------------------------------------------------------------------
 // Programmer: Jordi Espada
