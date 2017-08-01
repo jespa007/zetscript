@@ -1676,6 +1676,17 @@ namespace zetscript{
 					}
 					PROCESS_LOGIC_OPERATION(||, LOGIC_OR_METAMETHOD);
 					continue;
+				case NOT: // !
+
+					POP_ONE;
+
+					if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_BOOLEAN){ // operation will result as integer.
+						PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
+					}else{
+							zs_print_error_cr("Line %i:Expected operands 1 as boolean!",AST_LINE_VALUE(instruction->idxAstNode));
+							return NULL;
+					}
+					continue;
 
 				case NEG: // -
 

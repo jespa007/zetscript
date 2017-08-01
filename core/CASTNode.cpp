@@ -1349,6 +1349,7 @@ namespace zetscript{
 		string operator_str="";
 		PUNCTUATOR_TYPE pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
 						post_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
+						pre_operator_packed_node=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
 						operator_group=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 		bool theres_some_operator=false;
 		int m_definedSymbolLine;
@@ -1390,6 +1391,10 @@ namespace zetscript{
 			}
 
 			if(*aux=='('){ // packed node let's said that is a packed node...
+
+				pre_operator_packed_node=pre_operator;
+				pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+
 				if(ast_node_to_be_evaluated != NULL){
 					is_packed_node = true;
 				}
@@ -1466,18 +1471,18 @@ namespace zetscript{
 							return NULL;
 						}
 
-						if(is_packed_node){ // packed node let's said that is a packed node...
+						if(is_packed_node){ // packed node let's say that is a packed node...
 							if(ast_node_to_be_evaluated != NULL){
 								(*ast_node_to_be_evaluated)->is_packed_node = true;
 
-								if((*ast_node_to_be_evaluated)->pre_post_operator_info == SUB_PUNCTUATOR){ // we must create op...
+								if(pre_operator_packed_node != UNKNOWN_PUNCTUATOR){ // we must create op...
 									// 2. create neg node.
 
 									//(*ast_node_to_be_evaluated)->pre_post_operator_info = UNKNOWN_PUNCTUATOR;
 									PASTNode ast_neg_node=NULL;
 									if((ast_neg_node = CASTNode::newASTNode())==NULL) return NULL;
 									ast_neg_node->node_type = NODE_TYPE::PUNCTUATOR_NODE;
-									ast_neg_node->operator_info = SUB_PUNCTUATOR;
+									ast_neg_node->operator_info = pre_operator_packed_node;
 
 									ast_neg_node->idxAstParent =(* ast_node_to_be_evaluated)->idxAstParent;
 									(*ast_node_to_be_evaluated)->idxAstParent = ast_neg_node->idxAstNode;

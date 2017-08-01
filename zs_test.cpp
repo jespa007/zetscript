@@ -297,7 +297,7 @@ int main(int argc, char * argv[]) {
 	int n_test=0;
 
 	//TEST_ARITHMETIC_BOOL_EXPR(!(!(!false)));//  || !(true && !false));
-	TEST_ARITHMETIC_INT_EXPR(-(-(-5)));//  || !(true && !false));
+	TEST_ARITHMETIC_BOOL_EXPR(!(!false));//  || !(true && !false));
 	return 0;
 
 	//CZetScript *zetscript = CZetScript::getInstance();
