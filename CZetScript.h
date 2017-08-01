@@ -97,7 +97,7 @@ namespace zetscript{
 							value = (bool)se->stkValue;
 						}
 						else{
-							fprintf(stderr,"eval<%s>(...) not implemented",typestr.c_str());
+							fprintf(stderr,"eval<%s>(...): Error evaluating \"%s\". Property:0x%X",typestr.c_str(),str_to_eval.c_str(),se->properties);
 							exit(-1);
 						}
 

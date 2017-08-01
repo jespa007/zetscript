@@ -190,7 +190,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 	string aux_value=""; \
 	\
 	if((aux_value=CZetScript::eval<string>(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,aux_value.c_str(),expected_value); \
+		fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,expected_value,aux_value.c_str()); \
 		exit(-1); \
 	} \
 }
@@ -200,7 +200,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 	float aux_value=0.0f; \
 	\
 	if((aux_value=CZetScript::eval<float>(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,aux_value,expected_value); \
+		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,aux_value); \
 		exit(-1); \
 	} \
 }
@@ -296,6 +296,9 @@ int main(int argc, char * argv[]) {
 
 	int n_test=0;
 
+	//TEST_NUMBER_EXPR("var i=2.0;i=-i;i;",-2.0);
+	//TEST_BOOL_EXPR("var i=2.0;i=true;i=!i;i;",false);
+	//return 0;
 	//TEST_ARITHMETIC_BOOL_EXPR(!(!(!false)));//  || !(true && !false));
 	//TEST_ARITHMETIC_BOOL_EXPR(!(!false));//  || !(true && !false));
 	//return 0;
@@ -418,8 +421,10 @@ int main(int argc, char * argv[]) {
 	TEST_NUMBER_EXPR("i++;i;",3.0f);
 	TEST_NUMBER_EXPR("--i;i;",2.0f);
 
-	//TEST_BOOL_EXPR("i=true;i;",true);
-	TEST_BOOL_EXPR("i=!i;",false);
+	TEST_BOOL_EXPR("i=true;i;",true);
+	TEST_BOOL_EXPR("i=!i;i;",false);
+	TEST_BOOL_EXPR("i==i;",true);
+	TEST_BOOL_EXPR("i!=i;",false);
 	//TEST_BOOL_EXPR("i=!i;",true);
 
 

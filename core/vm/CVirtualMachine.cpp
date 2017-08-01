@@ -123,7 +123,7 @@ namespace zetscript{
 	*ptrCurrentOp++={INS_PROPERTY_TYPE_NULL,0,VM_NULL};
 
 	#define PUSH_BOOLEAN(init_value) \
-	*ptrCurrentOp++={INS_PROPERTY_TYPE_BOOLEAN,(void *)((bool)(init_value)),NULL};
+	*ptrCurrentOp++={INS_PROPERTY_TYPE_BOOLEAN,(void *)((int)(init_value)),NULL};
 
 	#define PUSH_INTEGER(init_value) \
 	*ptrCurrentOp++={INS_PROPERTY_TYPE_INTEGER,(void *)((int)(init_value)),NULL};
@@ -214,6 +214,9 @@ namespace zetscript{
 		unsigned short properties = GET_INS_PROPERTY_VAR_TYPE(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);\
 		if(properties==INS_PROPERTY_TYPE_INTEGER){\
 				PUSH_BOOLEAN(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2));\
+		}\
+		else if(properties==INS_PROPERTY_TYPE_BOOLEAN){\
+			PUSH_BOOLEAN(LOAD_BOOL_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_BOOL_OP(ptrResultInstructionOp2));\
 		}\
 		else if(properties==(INS_PROPERTY_TYPE_INTEGER|INS_PROPERTY_TYPE_NUMBER)){\
 				if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){\
@@ -323,7 +326,7 @@ namespace zetscript{
 			*((float *)dst_ref)=*((float *)src_ref);\
 		}else if(type_var & INS_PROPERTY_TYPE_BOOLEAN){\
 			dst_ins->properties=runtime_var | INS_PROPERTY_TYPE_BOOLEAN;\
-			*((bool *)dst_ref)=*((bool *)src_ref);\
+			*((int *)dst_ref)=*((int *)src_ref);\
 		}else if(type_var  &  INS_PROPERTY_TYPE_FUNCTION){\
 			*dst_ins={(unsigned short)(runtime_var | INS_PROPERTY_TYPE_FUNCTION),\
 						src_ins->stkValue,\
@@ -1404,8 +1407,14 @@ namespace zetscript{
 										COPY_NUMBER(&aux_float,&ldrVar->stkValue);
 									}
 									aux_float=-aux_float;
-									COPY_NUMBER(ptrCurrentOp->stkValue,&aux_float);
-									*ptrCurrentOp++={INS_PROPERTY_TYPE_NUMBER,ptrCurrentOp->stkValue,0};
+									COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
+									*ptrCurrentOp={INS_PROPERTY_TYPE_NUMBER|INS_PROPERTY_IS_STACKVAR,ptrCurrentOp->stkValue,ldrVar};
+
+									if(ldrVar->properties& INS_PROPERTY_IS_C_VAR){
+										ptrCurrentOp->properties|=INS_PROPERTY_IS_C_VAR;
+									}
+
+									ptrCurrentOp++;
 									break;
 								default:
 									zs_print_error_cr("internal error:cannot perform pre operator - because is not number");
@@ -1639,6 +1648,11 @@ namespace zetscript{
 
 					POP_TWO;
 					PROCESS_COMPARE_OPERATION(==, EQU_METAMETHOD);
+					continue;
+				case NOT_EQU:  // !=
+
+					POP_TWO;
+					PROCESS_COMPARE_OPERATION(!=, NOT_EQU_METAMETHOD);
 					continue;
 
 				case LT:  // <

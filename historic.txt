@@ -80,13 +80,15 @@
 // version 1.0.9
 //
 
+Support for binary contants.
+Implement NOT_EQU.
 Solved problem preoperator before packed symbol.
 
 Bugs found
 ==========
 
 
-var i=0;
+var i=0.0;
 i=!i; <-- it crashes...
 
 var i=0;
