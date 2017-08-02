@@ -3456,6 +3456,14 @@ namespace zetscript{
 		char *end_expr=0;
 		PASTNode children,_class_node;
 
+
+		if(is_main_node){
+			char *test = IGNORE_BLANKS(s,DUMMY_LINE);
+
+			// empty script ? return true anyways
+			if(test == 0) return NULL;
+		}
+
 		if(node_to_be_evaluated!= NULL){
 			if(!is_main_node){
 				if((*node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;

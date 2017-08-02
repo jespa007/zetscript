@@ -8,7 +8,7 @@
 
 #define ZETSCRIPT_MAJOR_VERSION 1
 #define ZETSCRIPT_MINOR_VERSION 0
-#define ZETSCRIPT_PATCH_VERSION 9
+#define ZETSCRIPT_PATCH_VERSION 10
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 

@@ -389,6 +389,8 @@ namespace zetscript{
 		bool error=false;
 		PASTNode main_node = MAIN_AST_NODE;
 
+
+
 		if(CASTNode::generateAST_Recursive(
 				s,
 				m_line,
@@ -416,6 +418,7 @@ namespace zetscript{
 		if(!__init__) return false;
 
 		// generate whole AST
+
 
 		if(parse_ast(s.c_str())){
 

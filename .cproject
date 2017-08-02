@@ -25,6 +25,7 @@
 									<listOptionValue builtIn="false" value="&quot;${MINGWDIR}\mingw32\i686-w64-mingw32\include\c++\i686-w64-mingw32&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${MINGWDIR}\mingw32\i686-w64-mingw32\include\c++&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${MINGWDIR}\mingw32\i686-w64-mingw32\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MINGWDIR}\local32\include&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.1846155099" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.990909993" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
@@ -57,7 +58,7 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.release.2042867072" moduleId="org.eclipse.cdt.core.settings" name="release">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
@@ -138,7 +139,7 @@
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-DTARGET=debug</buildTarget>
+				<buildTarget>-DTARGET=debug -G "MinGW Makefiles"</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
@@ -146,7 +147,7 @@
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-DTARGET=release</buildTarget>
+				<buildTarget>-DTARGET=release -G "MinGW Makefiles"</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
@@ -154,15 +155,7 @@
 			<target name="CMake Release (EMMScripten)" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>bash</buildCommand>
 				<buildArguments>../zs_dev/cmake_build</buildArguments>
-				<buildTarget>-DTARGET=release -DEMMSCRIPTEN=yes</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="Copy of CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>cmake</buildCommand>
-				<buildArguments/>
-				<buildTarget>-DTARGET=release</buildTarget>
+				<buildTarget>-DTARGET=release -DEMMSCRIPTEN=yes -G "MinGW Makefiles"</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

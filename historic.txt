@@ -74,6 +74,16 @@
     1. Find the right function everytime --> (performance decrases.)
     2. Leave the first function found. It will warn the second call that (CNumber, int) was expected ... maybe we can reserve the print message
     
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.10
+//
+
+> Implement binary constant
+> Implement do-while.
+
+
+
   
 //----------------------------------------------------------------------------------------------------------------
 // Programmer: Jordi Espada

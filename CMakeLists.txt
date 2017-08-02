@@ -35,18 +35,16 @@ else()
 
 		MESSAGE ("include" ${include_directories})
  
-		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I/local32/include -I/usr/local/include ")
+		SET( COMMON_PARAMS " ${COMMON_PARAMS} ")
   
 	endif()
 
 	include_directories (
-		/usr/local/include
-
+		$ENV{MINGWDIR}/local32/include
 	)
 
 	LINK_DIRECTORIES (
-		/usr/local/lib
-		/loca32/lib
+		$ENV{MINGWDIR}/local32/lib
 	)
 
 
@@ -108,7 +106,7 @@ else()
 	endif()
 
 	
-	SET(CMAKE_C_FLAGS "  -I/local32/include ")
+	SET(CMAKE_C_FLAGS " ")
 	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
 	
 	
@@ -180,11 +178,25 @@ else()
 		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
 	
+	# zs_test
 	add_executable(zs_test${POST_NAME}
 		${PROJECT_SOURCE_DIR}/zs_test.cpp
-	)	
+	)
+	
+	
+	# invader demo
+	find_library(SDL2_LIB  NAMES SDL2  )
+		
+	
+	add_executable(invader${POST_NAME}
+		${PROJECT_SOURCE_DIR}/demo/invader/invader.cpp
+	)
+	
+	configure_file(${PROJECT_SOURCE_DIR}/demo/invader/invader.zs ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/invader.zs COPYONLY)
+	
 	
 	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})	
+	target_link_libraries(invader${POST_NAME} mingw32 zetscript${POST_NAME} SDL2main SDL2)
 	
 endif()
 
