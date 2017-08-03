@@ -188,15 +188,15 @@ else()
 	find_library(SDL2_LIB  NAMES SDL2  )
 		
 	
-	add_executable(invader${POST_NAME}
-		${PROJECT_SOURCE_DIR}/demo/invader/invader.cpp
+	add_executable(engine${POST_NAME}
+		${PROJECT_SOURCE_DIR}/demo/engine/engine.cpp
 	)
 	
-	configure_file(${PROJECT_SOURCE_DIR}/demo/invader/invader.zs ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/invader.zs COPYONLY)
+	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/invader.zs ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/invader.zs COPYONLY)
 	
 	
 	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})	
-	target_link_libraries(invader${POST_NAME} mingw32 zetscript${POST_NAME} SDL2main SDL2)
+	target_link_libraries(engine${POST_NAME} mingw32 zetscript${POST_NAME} SDL2main SDL2)
 	
 endif()
 

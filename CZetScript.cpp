@@ -467,7 +467,7 @@ namespace zetscript{
 
 		return status;
 	}
-	/*
+
 	std::function<CScriptVariable * ( std::vector<CScriptVariable *> args)> * CZetScript::script_call(const string &script_function_name){
 
 		//CScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
@@ -495,7 +495,34 @@ namespace zetscript{
 
 		return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
 	}
-	*/
+
+	std::function<CScriptVariable * (void)> * CZetScript::script_call_no_params(const string &script_function_name){
+
+			//CScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
+			CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
+
+			if(m_mainFunctionInfo != NULL){
+
+			//if(irfs != NULL){
+				for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+					if(GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == script_function_name){
+						return new std::function<CScriptVariable * (void)>([&,i](){
+							return vm->execute(
+										GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]),
+										m_mainObject);//->excute();
+						});
+					}
+				}
+			//}
+				zs_print_error_cr("function %s don't exist",script_function_name.c_str());
+			}
+
+
+
+
+			return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
+		}
+
 
 	CVirtualMachine * CZetScript::getVirtualMachine(){
 		return vm;
