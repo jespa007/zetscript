@@ -207,7 +207,7 @@ namespace zetscript{
 								default:
 									break;
 								case INS_PROPERTY_TYPE_INTEGER:
-									if(((int)icv->stkValue)<0){
+									if(((intptr_t)icv->stkValue)<0){
 										pre="-";
 									}
 									break;
@@ -250,7 +250,7 @@ namespace zetscript{
 								pre.c_str(),
 								getStrTypeLoadValue(fs->statment_op,idx_statment,idx_instruction),
 								post.c_str(),
-								asm_op_statment->index_op2);
+								(int)asm_op_statment->index_op2);
 						break;
 					//case  STORE:
 					//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
@@ -468,7 +468,7 @@ namespace zetscript{
 		return status;
 	}
 
-	std::function<CScriptVariable * ( std::vector<CScriptVariable *> args)> * CZetScript::script_call(const string &script_function_name){
+	std::function<CScriptVariable * ( std::vector<CScriptVariable *> * args)> * CZetScript::script_call(const string &script_function_name){
 
 		//CScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
 		CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
@@ -478,11 +478,11 @@ namespace zetscript{
 		//if(irfs != NULL){
 			for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 				if(GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == script_function_name){
-					return new std::function<CScriptVariable * (std::vector<CScriptVariable *> args)>([&,i]( std::vector<CScriptVariable *> _args){
+					return new std::function<CScriptVariable * (std::vector<CScriptVariable *> * _args)>([&,i,m_mainFunctionInfo]( std::vector<CScriptVariable *> * _args){
 						return vm->execute(
 									GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]),
 									m_mainObject,
-									&_args);//->excute();
+									_args);//->excute();
 					});
 				}
 			}
@@ -496,7 +496,7 @@ namespace zetscript{
 		return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
 	}
 
-	std::function<CScriptVariable * (void)> * CZetScript::script_call_no_params(const string &script_function_name){
+	/*std::function<CScriptVariable * (void)> * CZetScript::script_call_no_params(const string &script_function_name){
 
 			//CScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
 			CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
@@ -505,8 +505,12 @@ namespace zetscript{
 
 			//if(irfs != NULL){
 				for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-					if(GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == script_function_name){
-						return new std::function<CScriptVariable * (void)>([&,i](){
+					CScriptFunctionObject * sof = GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
+					if(sof->object_info.symbol_info.symbol_name == script_function_name){
+						return new std::function<CScriptVariable * (void)>([&,m_mainFunctionInfo,i](){
+
+							//CScriptFunctionObject * m_mainFunctionInfo=GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
+
 							return vm->execute(
 										GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]),
 										m_mainObject);//->excute();
@@ -521,12 +525,14 @@ namespace zetscript{
 
 
 			return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
-		}
+		}*/
 
 
 	CVirtualMachine * CZetScript::getVirtualMachine(){
 		return vm;
 	}
+
+
 
 	CScriptVariable * CZetScript::execute(){
 

@@ -353,7 +353,7 @@ enum
 
 enum
 	:unsigned short {
-		INS_PROPERTY_TYPE_UNDEFINED = (0x1 << BIT_TYPE_UNDEFINED), // is a variable not defined...
+	INS_PROPERTY_TYPE_UNDEFINED = (0x1 << BIT_TYPE_UNDEFINED), // is a variable not defined...
 	INS_PROPERTY_TYPE_NULL = (0x1 << BIT_TYPE_NULL), // null is a assigned var ..
 	INS_PROPERTY_TYPE_INTEGER = (0x1 << BIT_TYPE_INTEGER), // primitive int
 	INS_PROPERTY_TYPE_NUMBER = (0x1 << BIT_TYPE_NUMBER), // primitive number
@@ -558,6 +558,8 @@ namespace zetscript{
 			//idxScopeVar=-1;
 			idxSymbol = -1;
 		}
+
+
 	};
 
 	struct tInfoAsmOp {
@@ -671,7 +673,6 @@ namespace zetscript{
 
 	#pragma pack(pop)
 
-	int getIdxClassFromIts_C_Type(const string & s);
 
 }
 

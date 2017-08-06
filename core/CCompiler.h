@@ -172,17 +172,17 @@ namespace zetscript{
 		/**
 		 * Unconditional Jump instruction
 		 */
-		tInfoAsmOpCompiler * insert_JMP_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
+		tInfoAsmOpCompiler * insert_JMP_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
 
 		/**
 		 * Jump Not True (JNT) instruction
 		 */
-		tInfoAsmOpCompiler * insert_JNT_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
+		tInfoAsmOpCompiler * insert_JNT_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
 
 		/**
 		 * Jump if True (JT) instruction
 		 */
-		tInfoAsmOpCompiler * insert_JT_Instruction(int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
+		tInfoAsmOpCompiler * insert_JT_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
 		void insert_NOP_Instruction();
 
 		tInfoAsmOpCompiler * insert_Save_CurrentInstruction();

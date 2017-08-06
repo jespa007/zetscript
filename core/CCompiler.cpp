@@ -96,7 +96,7 @@ namespace zetscript{
 			PASTNode ast_args =AST_NODE(ast_node->children[0]);
 
 			if(ast_args->node_type != NODE_TYPE::ARGS_DECL_NODE){
-				zs_print_error_cr("expected args node");
+				zs_print_error_cr("line %i:expected args node",ast_node->line_value);
 				return NULL;
 			}
 
@@ -135,9 +135,9 @@ namespace zetscript{
 	int  CCompiler::getIdxFunctionObject(const string & name,short idxAstNode, unsigned int & scope_type, bool print_msg){
 
 		PASTNode ast_node=AST_NODE(idxAstNode);
-		PASTNode ast_args = AST_NODE(ast_node->children[1]);
+		PASTNode ast_args = AST_NODE(ast_node->children[0]);
 		if(ast_args->node_type != NODE_TYPE::ARGS_DECL_NODE){
-			zs_print_error_cr("expected args node");
+			zs_print_error_cr("line %i:expected args node",ast_node->line_value);
 			return ZS_UNDEFINED_IDX;
 		}
 
@@ -616,36 +616,39 @@ namespace zetscript{
 		return true;
 	}
 
-	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JMP_Instruction(int jmp_statement, int instruction_index){
+	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JMP_Instruction(short idxAstNode,int jmp_statement, int instruction_index){
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 		asm_op->index_op1 = instruction_index;
 		asm_op->index_op2 = jmp_statement;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 		asm_op->operator_type=ASM_OPERATOR::JMP;
+		asm_op->idxAstNode = idxAstNode;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 		return asm_op;
 	}
 
-	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JNT_Instruction(int jmp_statement, int instruction_index){
+	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JNT_Instruction(short idxAstNode,int jmp_statement, int instruction_index){
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 		asm_op->index_op1 = instruction_index;
 		asm_op->index_op2 = jmp_statement;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 		asm_op->operator_type=ASM_OPERATOR::JNT;
+		asm_op->idxAstNode = idxAstNode;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
 		return asm_op;
 	}
 
-	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JT_Instruction(int jmp_statement, int instruction_index){
+	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JT_Instruction(short idxAstNode,int jmp_statement, int instruction_index){
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 		asm_op->operator_type=ASM_OPERATOR::JT;
 		asm_op->index_op1 = instruction_index;
 		asm_op->index_op2 = jmp_statement;
+		asm_op->idxAstNode = idxAstNode;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 		return asm_op;
 	}
@@ -1834,7 +1837,7 @@ namespace zetscript{
 		int index_statment_conditional_for_= getCurrentStatmentIndex();
 
 		// insert conditional jmp (if not true go to the end)
-		asm_op = insert_JNT_Instruction();
+		asm_op = insert_JNT_Instruction(_node->children[1]);
 
 		// 3. compile body
 		if(!gacBody(_node->children[3],SCOPE_INFO_NODE(AST_NODE(_node->children[3])->idxScope))){ return false;}
@@ -1874,7 +1877,7 @@ namespace zetscript{
 		// compile conditional expression...
 		if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
 		index_ini_while = getCurrentStatmentIndex();
-		asm_op_jmp_end = insert_JNT_Instruction(); // goto end  ...
+		asm_op_jmp_end = insert_JNT_Instruction(_node->children[0]); // goto end  ...
 
 		// compile if-body ...
 		if(!gacBody(_node->children[1],_lc)){ return false;}
@@ -1947,8 +1950,11 @@ namespace zetscript{
 		tInfoAsmOpCompiler *asm_op_jmp_else_if,*asm_op_jmp_end;
 
 		// compile conditional expression...
+		//PASTNode p = AST_NODE(_node->children[0]);
+
+
 		if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
-		asm_op_jmp_else_if = insert_JNT_Instruction(); // goto else body ...
+		asm_op_jmp_else_if = insert_JNT_Instruction(_node->children[0]); // goto else body ...
 
 		// compile if-body ...
 		if(!gacBody(_node->children[1],_lc)){ return false;}
@@ -1956,7 +1962,7 @@ namespace zetscript{
 
 		// if there's else body, compile-it
 		if(_node->children.size()==3){
-			asm_op_jmp_end = insert_JMP_Instruction(); // goto end
+			asm_op_jmp_end = insert_JMP_Instruction(_node->idxAstNode); // goto end
 			asm_op_jmp_else_if->index_op2 = getCurrentStatmentIndex()+1;
 			if(!gacBody(_node->children[2],_lc)){ return false;}
 
@@ -1984,7 +1990,7 @@ namespace zetscript{
 
 		// compile conditional expression...
 		if((r=gacExpression_Recursive(_node->children[0],_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
-		asm_op_jmp_else_if = insert_JNT_Instruction(); // goto else body ...
+		asm_op_jmp_else_if = insert_JNT_Instruction(_node->children[0]); // goto else body ...
 
 		// compile if-body ...
 		r+=2; // in order to execute recursive expression we have to advance r pointer jnt (+2)
@@ -1993,7 +1999,7 @@ namespace zetscript{
 		//insert_Save_CurrentInstruction();
 
 		// compile else-body ...
-		asm_op_jmp_end = insert_JMP_Instruction(); // goto end+
+		asm_op_jmp_end = insert_JMP_Instruction(_node->idxAstNode); // goto end+
 
 		asm_op_jmp_else_if->index_op1 = getCurrentInstructionIndex()+1;
 		asm_op_jmp_else_if->index_op2 = getCurrentStatmentIndex();
@@ -2080,7 +2086,7 @@ namespace zetscript{
 												if(!has_default){
 													has_default = true;
 													// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases + body...
-													jmp_instruction = insert_JMP_Instruction();
+													jmp_instruction = insert_JMP_Instruction(case_value->idxAstNode);
 												}else{
 													zs_print_error_cr("case already defined!");
 													return false;
@@ -2098,7 +2104,7 @@ namespace zetscript{
 												}
 
 												// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases...
-												jmp_instruction = insert_JT_Instruction();
+												jmp_instruction = insert_JT_Instruction(case_value->idxAstNode);
 
 												break;
 
@@ -2127,7 +2133,7 @@ namespace zetscript{
 									}
 
 									if(i < (_node->children.size()-1))
-										jmp_instruction = insert_JMP_Instruction();
+										jmp_instruction = insert_JMP_Instruction(_node->idxAstNode);
 								}else{
 									return false;
 								}

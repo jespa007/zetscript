@@ -87,7 +87,7 @@ else()
 
 
 	# Compile for x86 target by default ...
-	set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
+	set(TARGET_FLAGS " ${TARGET_FLAGS} ")
 
 
 	if ( "${EMSCRIPTEN}" STREQUAL "yes" )
@@ -184,19 +184,25 @@ else()
 	)
 	
 	
-	# invader demo
-	find_library(SDL2_LIB  NAMES SDL2  )
-		
-	
 	add_executable(engine${POST_NAME}
-		${PROJECT_SOURCE_DIR}/demo/engine/engine.cpp
+		${PROJECT_SOURCE_DIR}/demo/engine/main.cpp
+		${PROJECT_SOURCE_DIR}/demo/engine/CRender.cpp
+		${PROJECT_SOURCE_DIR}/demo/engine/CInput.cpp
+		${PROJECT_SOURCE_DIR}/demo/engine/CImage.cpp
 	)
 	
 	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/invader.zs ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/invader.zs COPYONLY)
 	
 	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})	
-	target_link_libraries(engine${POST_NAME} mingw32 zetscript${POST_NAME} SDL2main SDL2)
+	
+	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+	
+	if (MINGW)
+		find_library(SDL2_LIB  NAMES SDL2  )
+		target_link_libraries(engine${POST_NAME} mingw32 zetscript${POST_NAME} SDL2main SDL2)
+	else()
+		target_link_libraries(engine${POST_NAME} zetscript${POST_NAME} SDL2main SDL2)
+	endif()
 	
 endif()
 

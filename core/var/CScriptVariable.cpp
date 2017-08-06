@@ -42,50 +42,7 @@ namespace zetscript{
 					// check if primitive type (only 4 no more no else)...
 					void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
-					if(*CScriptClass::INT_PTR_TYPE_STR==ir_var->c_type){//={typeid(int *).name(),"int *",IDX_CLASS_INT_PTR_C};
-						si->object={
-								INS_PROPERTY_TYPE_INTEGER|INS_PROPERTY_IS_C_VAR,
-								ptr_variable,
-								NULL
-						};
-
-					}else if(*CScriptClass::FLOAT_PTR_TYPE_STR==ir_var->c_type){//={typeid(float *).name(),"float *",IDX_CLASS_FLOAT_PTR_C};
-						si->object={
-								INS_PROPERTY_TYPE_NUMBER|INS_PROPERTY_IS_C_VAR,
-								ptr_variable,
-								NULL
-						};
-
-
-					}else if(*CScriptClass::STRING_PTR_TYPE_STR==ir_var->c_type){//={typeid(string *).name(),"string *",IDX_CLASS_STRING_PTR_C};
-
-						si->object={
-								INS_PROPERTY_TYPE_STRING|INS_PROPERTY_IS_C_VAR,
-								ptr_variable,
-								NULL
-						};
-
-					}else if(*CScriptClass::BOOL_PTR_TYPE_STR==ir_var->c_type){//={typeid(bool *).name(),"bool *",IDX_CLASS_BOOL_PTR_C};
-						si->object={
-								INS_PROPERTY_TYPE_BOOLEAN|INS_PROPERTY_IS_C_VAR,
-								ptr_variable,
-								NULL
-						};
-					}else{
-						CScriptClass *info_registered_class = GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
-
-						if(info_registered_class){
-							CScriptVariable *var = new CScriptVariable();
-							var->init(info_registered_class,ptr_variable);
-
-							si->object={
-									INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_IS_C_VAR,
-									NULL,
-									var
-							};
-						}
-
-					}
+					si->object=CScriptClass::C_REF_InfoVariable_2_StackElement(ir_var,ptr_variable);
 				}
 
 			}

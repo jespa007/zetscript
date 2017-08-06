@@ -51,7 +51,6 @@ namespace zetscript{
 		if (file != NULL)
 			filename = CStringUtils::getFileName(file);
 
-		//#ifdef  __DEBUG__
 		char  text[4096] = { 0 };
 
 

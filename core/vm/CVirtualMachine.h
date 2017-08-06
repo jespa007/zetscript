@@ -88,6 +88,8 @@ namespace zetscript{
 
 	//===================================================================================================
 
+		void iniStackVar(unsigned int pos,const tStackElement & stk);
+
 		string stk_C_TypeStr(const tStackElement & stk_v);
 
 		template<typename _T>

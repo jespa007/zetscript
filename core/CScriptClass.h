@@ -21,8 +21,8 @@
 #include "RegisterFunctionHelper.h"
 
 
-#define register_C_Function(s) CScriptClass::register_C_FunctionInt(STR(s),s)
-#define register_C_Variable(s) CScriptClass::register_C_VariableInt(STR(s),&s,typeid(decltype(s) *).name())
+#define register_C_Function(text,s) CScriptClass::register_C_FunctionInt(text,s)
+#define register_C_Variable(text,s) CScriptClass::register_C_VariableInt(text,&s,typeid(decltype(&s)).name())
 
 #define getIdxGlobalVariable(s)  CScriptClass::register_C_FunctionInt(STR(s),s)
 #define getIdxGlobalFunction(s)
@@ -112,6 +112,10 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		}tRegisterFunction;
 
 
+		// HELPERS
+		static tStackElement 						C_REF_InfoVariable_2_StackElement(tInfoVariableSymbol *ir_var, void *ptr_variable);
+
+
 		// FUNCTIONS
 		static void 								setVectorScriptClassNode(vector<CScriptClass *> 	* set_vec);
 		static vector<CScriptClass *> 		*		getVectorScriptClassNode();
@@ -131,6 +135,12 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		static int 									getIdxScriptClass_Internal(const string & class_name);
 		static int 									getIdxScriptClass(const string & v, bool print_msg=true);
 		static int 									getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
+		static int 									getIdxClassFromIts_C_Type(const string & s);
+
+
+
+
+
 		//static BASIC_CLASS_TYPE			getIdxPrimitiveFromIts_C_TypeInternal(const string & c_type_str);
 		static bool 								isClassRegistered(const string & v);
 

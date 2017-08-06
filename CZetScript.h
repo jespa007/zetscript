@@ -85,7 +85,7 @@ namespace zetscript{
 
 						if((typestr == typeid(int).name())  && (se->properties & INS_PROPERTY_TYPE_INTEGER)){
 							ptr = &value;
-							*((int *)ptr) = (int)se->stkValue;
+							*((intptr_t *)ptr) = (intptr_t)se->stkValue;
 						}
 						else if((typestr == typeid(float).name())  && (se->properties & INS_PROPERTY_TYPE_NUMBER)){
 							ptr = &value;
@@ -123,6 +123,8 @@ namespace zetscript{
 		// PRINT ASM INFO
 		//---------------
 
+
+
 		/*CScriptFunctionObject *getMainStructInfo(){return m_mainFunctionInfo;}
 		tFunctionInfo *getMainObjectInfo(){return &m_mainFunctionInfo->object_info;}
 
@@ -134,8 +136,8 @@ namespace zetscript{
 
 		//bool registerOperatorInternal(const string & _op_name, const string &  result_type,vector<string> * param_type, void(*fun_ptr)());
 
-		std::function<CScriptVariable * (std::vector<CScriptVariable *> args)> * script_call(const string &script_function_name);
-		std::function<CScriptVariable * (void)> * script_call_no_params(const string &script_function_name);
+		std::function<CScriptVariable * (std::vector<CScriptVariable *> * args)> * script_call(const string &script_function_name);
+		//std::function<CScriptVariable * (void)> * script_call_no_params(const string &script_function_name);
 
 		CScriptVariable * execute();
 

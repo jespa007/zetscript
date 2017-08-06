@@ -82,6 +82,26 @@
 > Implement binary constant
 > Implement do-while.
 
+//----------------------------------------------------------------------------------------------------------------
+// Programmer: Jordi Espada
+// version 1.0.10
+//
+
+-in boolean vars is implicit
+
+if(b==true){
+}
+
+it can be the same as,
+
+if(b){
+
+}
+
+BUGS
+
+debug max stack after N calling function from C++ ?
+
 
 
   

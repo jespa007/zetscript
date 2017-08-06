@@ -2504,6 +2504,7 @@ namespace zetscript{
 		PASTNode conditional=NULL, if_node=NULL, else_node=NULL;
 		string conditional_str;
 		bool error = false;
+		int conditional_line;
 
 		aux_p=IGNORE_BLANKS(aux_p,m_line);
 
@@ -2523,6 +2524,7 @@ namespace zetscript{
 				// evaluate conditional line ...
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
 				if(*aux_p == '('){
+					conditional_line=m_line;
 					if((end_expr = parseExpression(aux_p+1,m_line,scope_info,ast_node_to_be_evaluated != NULL? &conditional: NULL)) != NULL){
 
 						if(*end_expr != ')'){
@@ -2541,6 +2543,7 @@ namespace zetscript{
 							if((aux = CASTNode::newASTNode()) == NULL) return NULL;
 							aux->children.push_back(conditional->idxAstNode);
 							aux->node_type = CONDITIONAL_NODE;
+							aux->line_value=conditional_line;
 							(*ast_node_to_be_evaluated)->children.push_back(aux->idxAstNode);
 						}
 

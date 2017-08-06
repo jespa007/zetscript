@@ -62,10 +62,10 @@ namespace zetscript{
 
 
 	void CVector::add(int  * v){
-		m_objVector.push_back({INS_PROPERTY_TYPE_INTEGER,(void *)(*v),0});
+		m_objVector.push_back({INS_PROPERTY_TYPE_INTEGER,(void *)((intptr_t)(*v)),0});
 	}
 	void CVector::add(bool * v){
-		m_objVector.push_back({INS_PROPERTY_TYPE_BOOLEAN,(void *)v,0});
+		m_objVector.push_back({INS_PROPERTY_TYPE_BOOLEAN,(void *)((intptr_t)(*v)),0});
 	}
 	void CVector::add( string * v){
 		CString *s=new CString();

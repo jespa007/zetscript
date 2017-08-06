@@ -92,12 +92,67 @@ namespace zetscript{
 		 return IDX_INVALID_C_VAR_TYPE;
 	 }*/
 
-	int 				getIdxClassFromIts_C_Type(const string & c_type_str){
+	int 			CScriptClass::getIdxClassFromIts_C_Type(const string & c_type_str){
 		return CScriptClass::getIdxClassFromIts_C_TypeInternal(c_type_str);
 	}
 
 
+	tStackElement CScriptClass::C_REF_InfoVariable_2_StackElement(tInfoVariableSymbol *ir_var, void *ptr_variable){
 
+		if(ir_var->properties & PROPERTY_C_OBJECT_REF){
+
+			if(*CScriptClass::INT_PTR_TYPE_STR==ir_var->c_type){//={typeid(int *).name(),"int *",IDX_CLASS_INT_PTR_C};
+				return {
+						INS_PROPERTY_TYPE_INTEGER|INS_PROPERTY_IS_C_VAR,
+						0,
+						ptr_variable
+				};
+
+			}else if(*CScriptClass::FLOAT_PTR_TYPE_STR==ir_var->c_type){//={typeid(float *).name(),"float *",IDX_CLASS_FLOAT_PTR_C};
+				return {
+						INS_PROPERTY_TYPE_NUMBER|INS_PROPERTY_IS_C_VAR,
+						0,
+						ptr_variable
+				};
+
+
+			}else if(*CScriptClass::STRING_PTR_TYPE_STR==ir_var->c_type){//={typeid(string *).name(),"string *",IDX_CLASS_STRING_PTR_C};
+
+				return {
+						INS_PROPERTY_TYPE_STRING|INS_PROPERTY_IS_C_VAR,
+						0,
+						ptr_variable
+				};
+
+			}else if(*CScriptClass::BOOL_PTR_TYPE_STR==ir_var->c_type){//={typeid(bool *).name(),"bool *",IDX_CLASS_BOOL_PTR_C};
+				return {
+						INS_PROPERTY_TYPE_BOOLEAN|INS_PROPERTY_IS_C_VAR,
+						0,
+						ptr_variable
+				};
+			}else{
+				CScriptClass *info_registered_class = GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+
+				if(info_registered_class){
+					CScriptVariable *var = new CScriptVariable();
+					var->init(info_registered_class,ptr_variable);
+
+					return{
+							INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_IS_C_VAR,
+							NULL,
+							var
+					};
+				}
+
+		}
+		}else{
+			zs_print_error_cr("Variable %s is not c referenced as C symbol",ir_var->symbol_name.c_str());
+		}
+
+		return{INS_PROPERTY_TYPE_UNDEFINED,
+			0,
+			NULL};
+	}
 
 
 	void CScriptClass::setVectorScriptClassNode(vector<CScriptClass *> 	* set_vec){
@@ -167,6 +222,8 @@ namespace zetscript{
 		return vec_script_class_node->at(idx);
 	}
 
+
+
 	CScriptClass 	* CScriptClass::getScriptClassByName(const string & class_name, bool print_msg){
 		int index;
 		if((index = getIdxScriptClass_Internal(class_name))!=-1){ // check whether is local var registered scope ...
@@ -226,6 +283,7 @@ namespace zetscript{
 	}
 
 
+
 	//------------------------------------------------------------
 
 	fntConversionType CScriptClass::getConversionType(string objectType, string conversionType, bool show_errors){
@@ -252,7 +310,8 @@ namespace zetscript{
 
 	 void  print(string  *s){
 
-		zs_print_info_cr("PRINT:%s",s->c_str());
+		printf("%s\n",s->c_str());
+		fflush(stdout);
 	 }
 /*
 	 void  custom_function(bool  *b){
@@ -338,6 +397,8 @@ namespace zetscript{
 			zs_print_info_cr("MyObject destroyed!!!");
 		}
 	};*/
+
+	 int c_var=0;
 
 	 bool CScriptClass::init(){
 
@@ -521,7 +582,7 @@ namespace zetscript{
 			// register c function's
 			//m_chai->add(static_cast<void (*)(string * )>(&print),"print");
 			//m_chai->add(static_cast<void (*)(int * )>(&print),"print");
-			if(!register_C_Function(print)) return false;
+			if(!register_C_Function("print",print)) return false;
 			//if(!register_C_Function(print)) return false;
 			//if(!register_C_Function(print)) return false;
 			//CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(string * )>(&custom_function));
@@ -530,7 +591,7 @@ namespace zetscript{
 			//if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CString * )>(&custom_function))) return false;
 			//if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CInteger * )>(&custom_function))) return false;
 
-			//if(!register_C_Variable(c_var)) return false;
+			if(!register_C_Variable("c_var",c_var)) return false;
 
 
 			if(!register_C_FunctionMember(CVector,size)) return false;
@@ -1125,6 +1186,19 @@ namespace zetscript{
 			 }
 		 }
 
+		 // update global variables, only C refs...
+		 for(unsigned i = 0;i < main_function->object_info.local_symbols.m_registeredVariable.size();i++){
+			 if(main_function->object_info.local_symbols.m_registeredVariable[i].properties & PROPERTY_C_OBJECT_REF){
+				 CURRENT_VM->iniStackVar(
+						 i,
+
+						 CScriptClass::C_REF_InfoVariable_2_StackElement(
+								 	&main_function->object_info.local_symbols.m_registeredVariable[i],
+									(void *)main_function->object_info.local_symbols.m_registeredVariable[i].ref_ptr
+				 ));
+			 }
+		 }
+
 		 return true;
 	}
 
@@ -1253,8 +1327,9 @@ namespace zetscript{
 			irs->properties = ::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 			irs->symbol_name = var_name;
 			irs->ref_ptr=(intptr_t)var_ptr;
+			irs->c_type=var_type;
 
-			zs_print_debug_cr("Registered function name: %s",var_name.c_str());
+			zs_print_debug_cr("Registered variable name: %s",var_name.c_str());
 
 
 			return true;
