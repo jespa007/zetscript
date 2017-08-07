@@ -4,8 +4,6 @@
 #include   <SDL2/SDL.h>
 #include   "def_keys.h"
 
-
-
 #define  T_ESC	      	CInput::getInstance()->key[KEY_ESCAPE]
 
 #define  TR_UP          CInput::getInstance()->keyR[KEY_UP]
@@ -37,11 +35,6 @@ class CInput{
 public:
 	bool            key[KEY_LAST];
 	bool            keyR[KEY_LAST];
-
-	/*static bool *zs_pressedEsc(){
-		return &T_ESC;
-	}*/
-
 
 
 	static CInput * getInstance();

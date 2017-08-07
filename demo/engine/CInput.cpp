@@ -2,7 +2,6 @@
 
 CInput *CInput::input=NULL;
 
-
 CInput * CInput::getInstance(){
 	if(input == NULL){
 		input = new CInput();
@@ -49,7 +48,6 @@ void CInput::update(){
 
 					break;
 			}
-
 
 			if(m_idxKey<KEY_LAST) {
 

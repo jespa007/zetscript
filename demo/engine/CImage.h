@@ -4,8 +4,6 @@
 #include   <SDL2/SDL.h>
 #include <CZetScript.h>
 
-
-
 class CImage{
 
 	SDL_Texture *texture;
