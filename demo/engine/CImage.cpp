@@ -3,8 +3,8 @@
 #include "CInput.h"
 
 CImage::CImage(){
-	//mWidth=	mHeight=0;
-	//texture=NULL;
+	mWidth=	mHeight=0;
+	texture=NULL;
 	createSquarePixmap(
 	vector<char>{
 			  1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1

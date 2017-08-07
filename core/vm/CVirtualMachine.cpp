@@ -1587,7 +1587,7 @@ namespace zetscript{
 
 							if(index_op2 == ZS_UNDEFINED_IDX){ // is will be processed after in CALL instruction ...
 								//function_properties=INS_PROPERTY_UNRESOLVED_FUNCTION;
-								function_obj= (void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
+								function_obj= NULL;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
 							}else if((index_op2<(int)vec_functions->size())) // get the function ...
 							{
 								function_obj =GET_SCRIPT_FUNCTION_OBJECT((*vec_functions)[index_op2]);
@@ -1597,6 +1597,7 @@ namespace zetscript{
 								return NULL;
 							}
 						}
+						*ptrCurrentOp++={INS_PROPERTY_IS_INSTRUCTIONVAR,instruction,0};
 						PUSH_FUNCTION(0,function_obj,class_obj);
 						continue;
 
@@ -1982,15 +1983,26 @@ namespace zetscript{
 
 					callAle = ((startArg-1));
 					calling_object = this_object;
-					tInfoAsmOp *iao = (tInfoAsmOp *)callAle->stkValue;
+					if(callAle->varRef!=NULL){
+						calling_object=(CScriptVariable *)callAle->varRef;
+					}
+
+
+					aux_function_info = (CScriptFunctionObject *)callAle->stkValue;
+					if(((callAle-1)->properties & INS_PROPERTY_IS_INSTRUCTIONVAR) == 0){
+							zs_print_error_cr("Call internal: expected instructionvar");
+							return NULL;
+					}
+					tInfoAsmOp *iao = (tInfoAsmOp *)(callAle-1)->stkValue;
 					bool is_constructor = (iao->instruction_properties & INS_PROPERTY_CONSTRUCT_CALL)!=0;
-					bool deduce_function = false; //(iao->instruction_properties & INS_PROPERTY_DEDUCE_C_CALL)!=0;
+					//bool deduce_function = false; //(iao->instruction_properties & INS_PROPERTY_DEDUCE_C_CALL)!=0;
 
 					// try to find the function ...
-					if(iao->index_op2 == ZS_UNDEFINED_IDX || deduce_function){
+					if(iao->index_op2 == ZS_UNDEFINED_IDX){// || deduce_function){
 
 
 						symbol_to_find = AST_NODE(iao->idxAstNode)->symbol_value;
+
 						//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
 						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
@@ -2018,8 +2030,6 @@ namespace zetscript{
 								m_functionSymbol=calling_object->getVectorFunctionSymbol();
 								size_fun_vec = (int)m_functionSymbol->size()-1;
 
-							}else if (deduce_function){ // function C deduce
-								size_fun_vec = 0;
 							}
 
 							bool all_check=true;
@@ -2032,8 +2042,6 @@ namespace zetscript{
 									if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
 										irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
 										aux_string=m_functionSymbol->at(i).symbol_value;
-									}else if(deduce_function){
-										irfs = (CScriptFunctionObject *)callAle->stkValue;
 									}else{
 										irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));
 										aux_string=irfs->object_info.symbol_info.symbol_name;
@@ -2084,19 +2092,22 @@ namespace zetscript{
 														}
 													}
 													if(all_check){ // we found the right function (set it up!) ...
-
-														if(!deduce_function){
-															iao->index_op2 = i;
-														}
+														iao->index_op2 = i;
 														aux_function_info = irfs;
+
 													}
 										}else{ // type script function  ...
 
 											iao->index_op2=i;
 											aux_function_info = irfs;
+
 										}
 									}
 								}
+
+								// saves function pointer found ...
+								callAle->stkValue=aux_function_info;
+
 								{
 									if(aux_function_info == NULL){
 										if(is_constructor && n_args == 0){ // default constructor not found --> set as not found...
@@ -2107,9 +2118,7 @@ namespace zetscript{
 											string str_candidates="";
 											for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ // search all function that match symbol ...
 												CScriptFunctionObject *irfs = NULL;
-												if(deduce_function){
-													irfs = (CScriptFunctionObject *)callAle->stkValue;
-												}else if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+												if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
 													irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
 													//aux_string=m_functionSymbol->at(i).symbol_value;
 												}else{
@@ -2249,8 +2258,8 @@ namespace zetscript{
 						}
 					}
 
-					// reset stack ...
-					ptrCurrentOp=startArg-1;
+					// reset stack (function+asm_op (-2 op less))...
+					ptrCurrentOp=startArg-2;
 
 					// ... and push result if not function constructor...
 					if(!is_constructor){

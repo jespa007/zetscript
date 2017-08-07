@@ -1,4 +1,6 @@
 
+var x;
+var y;
 //print("LEFT PRESSED..."+c_var);
 
 
@@ -9,8 +11,12 @@ var render;
 
 function init(){
 	
+	// init variables here!
 	image=new CImage();
 	render = getRender();
+	
+	x=0;
+	y=0;
 	
 	/*if(TR_LEFT){
 		
@@ -23,22 +29,23 @@ function update(){
 	
 	
 
-	if(TR_RIGHT){
-		
-		
-		
-		
-		
-		print("RIGHT PRESSED...");
-		
-	}
-	
 	if(TR_LEFT){
 		
-		print("LEFT PRESSED...");
+		x--;
+		
+		
+		
+		//print("RIGHT PRESSED...");
 		
 	}
 	
-	render.drawImage(0,0,image);
+	if(TR_RIGHT){
+		
+		x++;
+		//print("LEFT PRESSED...");
+		
+	}
+	
+	render.drawImage(x,y,image);
 }
 
