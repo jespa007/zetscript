@@ -27,6 +27,7 @@ int main(int argc, char *argv[]){
 	// 1. Make our C++ bindings for script calls
 	if(!CScriptClass::register_C_Class<CRender>("CRender")) return false;
 	if(!CScriptClass::register_C_Class<CImage>("CImage")) return false;
+	if(!CScriptClass::register_C_Class<CFont>("CFont")) return false;
 
 
 	if(!register_C_Variable("TR_UP",TR_UP)) return false;
@@ -34,9 +35,17 @@ int main(int argc, char *argv[]){
 	if(!register_C_Variable("TR_LEFT",TR_LEFT)) return false;
 	if(!register_C_Variable("TR_RIGHT",TR_RIGHT)) return false;
 
+
+	// CRender bindings...
 	if(!register_C_Function("getRender",CRender::getInstance)) return false;
 	if(!CScriptClass::register_C_FunctionMemberInt<CRender>("drawImage",static_cast<void (CRender::*)(int *,int*,CImage * )>(&CRender::drawImage))) return false;
+	if(!CScriptClass::register_C_FunctionMemberInt<CRender>("drawText",static_cast<void (CRender::*)(int *,int*,CFont *, string * )>(&CRender::drawText))) return false;
 
+	// CFont bindings...
+	if(!CScriptClass::register_C_FunctionMemberInt<CFont>("load",static_cast<void (CFont::*)(string *,int *,int* )>(&CFont::load))) return false;
+
+
+	int idxSt=CState::saveState();
 
 
 	// 2. eval the script...
@@ -62,10 +71,37 @@ int main(int argc, char *argv[]){
 		// update keyboard events...
 		input->update();
 
+
+		// if press F5 reload file...
+		if(T_F5) {
+
+			CState::setState(idxSt); // restore everithing before saveState
+
+			// 2. reeval the script...
+			if(!zetscript->eval_file(argv[1])){
+				break;
+			}
+
+			if(init){
+				(*init)(NULL);
+			}
+
+			// recreate script function
+			init=zetscript->script_call("init");
+			update=zetscript->script_call("update");
+
+			if(init){
+				(*init)(NULL);
+			}
+
+			printf("State restored");
+		}
+
 		// call update script function...
 		if(update){
 			(*update)(NULL);
 		}
+
 
 		// update screen...
 		render->update();

@@ -39,6 +39,7 @@ void CInput::update(){
 				case SDLK_LEFT: m_idxKey = KEY_LEFT; the_keyEvent.pressLeft = true;break;
 				case SDLK_RIGHT:m_idxKey = KEY_RIGHT; the_keyEvent.pressRight = true;break;
 				case SDLK_ESCAPE: the_keyEvent.pressEscape = true; break;
+				case SDLK_F5: m_idxKey = KEY_F5;the_keyEvent.pressF5 = true; break;
 				case SDLK_BACKSPACE:the_keyEvent.pressBackSpace = true;break;
 
 				default:

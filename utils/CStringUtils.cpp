@@ -20,7 +20,12 @@ namespace zetscript{
 			numberValue=strtol(val.c_str(), NULL, 10);
 		}else if(type_number == CStringUtils::STRING_IS_HEXA){
 			numberValue=strtol(val.c_str(), NULL, 16);
-		}else{
+		}else if(CStringUtils::isBinary(val)){
+			string binary = val.substr(0,val.size()-1);
+			numberValue=strtol(binary.c_str(), NULL, 2);
+		}
+		else{
+
 			return NULL;
 		}
 
@@ -225,17 +230,36 @@ namespace zetscript{
 		return aux_p;
 	}
 
+	bool IS_BINARY(char *aux_p){
+
+		char *start_p=aux_p;
+
+		while(CStringUtils::isDigit(*aux_p)){
+			if(!(*aux_p=='0' || *aux_p=='1')){
+				break;
+			}else{
+				aux_p++;
+			}
+		}
+
+		return (*aux_p=='b' || *aux_p=='B') && (aux_p > start_p);
+
+	}
+
 	char *ADVANCE_HEXADIGITS(char *aux_p){
 
 		while(CStringUtils::isHexaDigit(*aux_p))	aux_p++;
 		return aux_p;
 	}
 
-
+	bool CStringUtils::isBinary(const string & test_str_number){
+		return IS_BINARY((char *)test_str_number.c_str());
+	}
 
 	int CStringUtils::isNumber(const string & test_str_number){
 		bool isHexa=false;
 		char *str = (char *)test_str_number.c_str();
+
 
 
 		switch(*str){
@@ -259,6 +283,7 @@ namespace zetscript{
 
 			if(*str == ' ' || *str == 0) return STRING_IS_HEXA;
 		}else{
+
 			str = ADVANCE_DIGITS(str);
 			if(*str=='.') { // is candidate to double
 

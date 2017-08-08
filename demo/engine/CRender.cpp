@@ -74,8 +74,27 @@ void CRender::drawImage(int x, int y, CImage *img){
 	}
 }
 
+void CRender::drawText(int x,int y, CFont * font, const std::string & text){
+	SDL_Texture *font_text=font->getTexture();
+	if(font_text){
+
+		SDL_Rect rect={x,y,font->getCharWidth(),font->getCharHeight()};
+		for(unsigned i=0; i < text.size(); i++){
+			char c=text[i];
+			SDL_RenderCopy(pRenderer, font_text, font->getRectChar(c), &rect);
+			rect.x+=rect.w;
+		}
+
+
+	}
+}
+
 void CRender::drawImage(int *x, int *y, CImage *img){
 	drawImage(*x, *y, img);
+}
+
+void CRender::drawText(int *x, int *y, CFont *font, string * text){
+	drawText(*x, *y, font, *text);
 }
 
 void CRender::update(){

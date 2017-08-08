@@ -3,6 +3,7 @@
 #include "CZetScript.h"
 #include   <SDL2/SDL.h>
 #include "CImage.h"
+#include "CFont.h"
 
 #define RMASK32 0x000000ff
 #define GMASK32 0x0000ff00
@@ -33,8 +34,13 @@ public:
 
 	void clear(Uint8 r, Uint8 g, Uint8 b);
 
-	void drawImage(int *x, int *y, CImage *img);
 	void drawImage(int x, int y, CImage *img);
+	void drawText(int x,int y, CFont * font, const std::string & text);
+
+	// script c bindings
+	void drawImage(int *x, int *y, CImage *img);
+	void drawText(int *x, int *y, CFont *font, string *text);
+
 
 	void update();
 

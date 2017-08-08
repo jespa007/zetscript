@@ -5,6 +5,7 @@
 #include   "def_keys.h"
 
 #define  T_ESC	      	CInput::getInstance()->key[KEY_ESCAPE]
+#define  T_F5	      	CInput::getInstance()->key[KEY_F5]
 
 #define  TR_UP          CInput::getInstance()->keyR[KEY_UP]
 #define  TR_LEFT        CInput::getInstance()->keyR[KEY_LEFT]
@@ -22,6 +23,8 @@ typedef struct{
 	bool pressBackSpace;
 	bool pressHome;
 	bool pressEnd;
+
+	bool pressF5;
 }tEventKey,tEventRepeatKey;
 
 

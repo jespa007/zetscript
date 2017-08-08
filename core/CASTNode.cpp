@@ -801,9 +801,13 @@ namespace zetscript{
 
 			if(is_possible_number){
 				string num = CStringUtils::copyStringFromInterval(start_str,aux);
-				if(!CStringUtils::isNumber(num)){
-					zs_print_error_cr("line %i: Invalid number format",m_line);
-					return NULL;
+
+				if(!CStringUtils::isBinary(num)){
+
+					if(!CStringUtils::isNumber(num)){
+						zs_print_error_cr("line %i: %s is not a valid number",m_line,num.c_str());
+						return NULL;
+					}
 				}
 			}
 		}

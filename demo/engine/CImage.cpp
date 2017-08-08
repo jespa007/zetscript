@@ -2,6 +2,18 @@
 #include "CRender.h"
 #include "CInput.h"
 
+SDL_Texture *  CImage::SurfaceToTexture(SDL_Surface *srf){
+
+	SDL_Texture *text=SDL_CreateTextureFromSurface( CRender::getInstance()->getRenderer(), srf );
+
+	if(!text){
+		fprintf(stderr,"Error converting surface %s\n",SDL_GetError());
+	}
+
+	return text;
+}
+
+
 CImage::CImage(){
 	mWidth=	mHeight=0;
 	texture=NULL;
@@ -38,6 +50,8 @@ bool CImage::createSquarePixmap(zetscript::CVector * pixelmap, int *color){
 
 
 }
+
+
 
 // create image from native ...
 bool CImage::createSquarePixmap(const vector<char> & pixelmap, Uint32 color){

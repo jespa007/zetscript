@@ -61,6 +61,7 @@ namespace zetscript{
 		static bool isDigit(char c);
 		static bool isHexaDigit(char c);
 		static int isNumber(const string & test_number);
+		static bool isBinary(const string & test_str_number);
 
 		static string replace(const string & str_old, const char old_ch, char new_ch);
 		static void replace(string & str_input, const string & old_word, const string & new_word);

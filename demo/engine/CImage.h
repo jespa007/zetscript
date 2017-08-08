@@ -6,9 +6,13 @@
 
 class CImage{
 
+protected:
 	SDL_Texture *texture;
 	void destroy();
 	int mWidth,mHeight;
+
+	static SDL_Texture * SurfaceToTexture(SDL_Surface *srf);
+
 public:
 	CImage();
 	CImage(const vector<char> & pixmap, Uint32 color);
