@@ -855,7 +855,11 @@ namespace zetscript{
 
 			switch(GET_INS_PROPERTY_VAR_TYPE(currentArg->properties)){
 			case INS_PROPERTY_TYPE_BOOLEAN:
-				if(irfs->m_arg[i] != *CScriptClass::BOOL_PTR_TYPE_STR){
+				if(irfs->m_arg[i] == *CScriptClass::BOOL_TYPE_STR){
+					converted_param[i]=(intptr_t)(currentArg->stkValue);
+				}else if(irfs->m_arg[i] != *CScriptClass::BOOL_PTR_TYPE_STR){
+					converted_param[i]=(intptr_t)(&currentArg->stkValue);
+				}else{
 					zs_print_error_cr("Function %s, param %i: cannot convert %s into %s",
 											irfs->object_info.symbol_info.symbol_name.c_str(),
 											i,
@@ -864,7 +868,7 @@ namespace zetscript{
 											);
 					return NULL;
 				}
-				converted_param[i]=(intptr_t)(&currentArg->stkValue);
+
 				break;
 			case INS_PROPERTY_TYPE_NUMBER:
 				if(irfs->m_arg[i] != *CScriptClass::FLOAT_PTR_TYPE_STR){
@@ -880,7 +884,11 @@ namespace zetscript{
 				converted_param[i]=(intptr_t)(&currentArg->stkValue);
 				break;
 			case INS_PROPERTY_TYPE_INTEGER:
-				if(irfs->m_arg[i] != *CScriptClass::INT_PTR_TYPE_STR){
+				if(irfs->m_arg[i] == *CScriptClass::INT_TYPE_STR){
+					converted_param[i]=(intptr_t)(currentArg->stkValue);
+				}else if(irfs->m_arg[i] != *CScriptClass::INT_PTR_TYPE_STR){
+					converted_param[i]=(intptr_t)(&currentArg->stkValue);
+				}else{
 					zs_print_error_cr("Function %s, param %i: cannot convert %s into %s",
 											irfs->object_info.symbol_info.symbol_name.c_str(),
 											i,
@@ -889,8 +897,6 @@ namespace zetscript{
 											);
 					return NULL;
 				}
-
-				converted_param[i]=(intptr_t)(&currentArg->stkValue);
 				break;
 
 			case INS_PROPERTY_TYPE_STRING:
@@ -1052,6 +1058,9 @@ namespace zetscript{
 			 case IDX_CLASS_INT_PTR_C:
 				 callc_result={INS_PROPERTY_TYPE_INTEGER,(void *)(*((intptr_t *)result)),NULL};
 				 break;
+			 case IDX_CLASS_INT_C:
+				 callc_result={INS_PROPERTY_TYPE_INTEGER,(void *)(((intptr_t)result)),NULL};
+				 break;
 			 case IDX_CLASS_FLOAT_PTR_C:
 				 callc_result.properties=INS_PROPERTY_TYPE_NUMBER;//{};
 				 COPY_NUMBER(&callc_result.stkValue,(float *)result);
@@ -1059,9 +1068,11 @@ namespace zetscript{
 				 break;
 
 			 case IDX_CLASS_BOOL_PTR_C:
-				 callc_result={INS_PROPERTY_TYPE_SCRIPTVAR,(void *)(*((bool *)result)),NULL};
+				 callc_result={INS_PROPERTY_TYPE_BOOLEAN,(void *)(*((bool *)result)),NULL};
 				 break;
-
+			 case IDX_CLASS_BOOL_C:
+				 callc_result={INS_PROPERTY_TYPE_BOOLEAN,(void *)(((bool)result)),NULL};
+				 break;
 			 case IDX_CLASS_STRING_PTR_C:
 				 s_return_value = *((string *)result);
 				 callc_result={INS_PROPERTY_TYPE_STRING,&s_return_value,NULL};//new string(*((string *)result))};
@@ -1083,7 +1094,7 @@ namespace zetscript{
 
 
 		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);//GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
-
+		idxCurrentStack=0;
 
 		//main_function->object_info.local_symbols.m_registeredVariable.size();
 		ptrCurrentOp=&stack[main_function->object_info.local_symbols.m_registeredVariable.size()];
@@ -2062,34 +2073,45 @@ namespace zetscript{
 														switch(var_type){
 														default:
 															aux_string="unknow";
+															all_check=false;
 															break;
 														case INS_PROPERTY_TYPE_INTEGER:
 															aux_string=*CScriptClass::INT_PTR_TYPE_STR;
+															all_check=
+																	irfs->m_arg[k]==*CScriptClass::INT_PTR_TYPE_STR
+																  ||irfs->m_arg[k]==*CScriptClass::INT_TYPE_STR;
 															break;
 														case INS_PROPERTY_TYPE_NUMBER:
 															aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
+															all_check=irfs->m_arg[k]==*CScriptClass::FLOAT_PTR_TYPE_STR;
 															break;
 														case INS_PROPERTY_TYPE_BOOLEAN:
 															aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
+															all_check=
+																	irfs->m_arg[k]==*CScriptClass::BOOL_PTR_TYPE_STR
+																  ||irfs->m_arg[k]==*CScriptClass::BOOL_TYPE_STR;
+
 															break;
 														case INS_PROPERTY_TYPE_STRING:
 															aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
+															all_check=irfs->m_arg[k]==aux_string;
 															break;
 														case INS_PROPERTY_TYPE_NULL:
 														case INS_PROPERTY_TYPE_UNDEFINED:
 														case INS_PROPERTY_TYPE_SCRIPTVAR:
 														case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
-															aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
+															aux_string=((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
+															all_check= irfs->m_arg[k]==aux_string;
 															break;
 														}
 														//converted_param[i]= (int)(argv->at(i);
 														//if(h==0){ // match the all parameters
-														all_check = aux_string==irfs->m_arg[k];
+														//all_check = aux_string==irfs->m_arg[k];
 														//}
-														if(!all_check){
+														/*if(!all_check){
 															// let's see whether it can be coneverted to target signature ...
 															all_check =CScriptClass::getConversionType(aux_string,irfs->m_arg[k], NULL)!=NULL;
-														}
+														}*/
 													}
 													if(all_check){ // we found the right function (set it up!) ...
 														iao->index_op2 = i;
@@ -2133,7 +2155,7 @@ namespace zetscript{
 																str_candidates+="\t\tPossible candidates are:\n\n";
 															}
 
-															str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_name+"(";
+															str_candidates+="\t\t-"+(calling_object->idxScriptClass!=0?(calling_object->getClassName()+"::"):"")+irfs->object_info.symbol_info.symbol_name+"(";
 
 															for(unsigned a = 0; a < irfs->m_arg.size(); a++){
 																if(a>0){
@@ -2156,8 +2178,9 @@ namespace zetscript{
 											}
 
 											if(n_candidates == 0){
-												zs_print_error_cr("Cannot find %s \"%s\" function at line %i.\n\n%s",
+												zs_print_error_cr("Cannot find %s \"%s%s\" function at line %i.\n\n",
 														is_constructor ? "constructor":"function",
+														calling_object->idxScriptClass!=0?(calling_object->getClassName()+"::").c_str():"",
 														AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
 														AST_LINE_VALUE(iao->idxAstNode));
 
@@ -2203,8 +2226,9 @@ namespace zetscript{
 													args_str+=demangle(aux_string);
 												}
 
-											zs_print_error_cr("Cannot match %s \"%s(%s)\"  at line %i.\n\n%s",
+											zs_print_error_cr("Cannot match %s \"%s%s(%s)\"  at line %i.\n\n%s",
 													is_constructor ? "constructor":"function",
+													calling_object->idxScriptClass!=0?(calling_object->getClassName()+"::").c_str():"",
 													AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
 													args_str.c_str(),
 													AST_LINE_VALUE(iao->idxAstNode),

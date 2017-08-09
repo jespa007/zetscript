@@ -463,6 +463,8 @@ enum BASIC_CLASS_TYPE {
 	IDX_CLASS_FLOAT_PTR_C,
 	IDX_CLASS_STRING_PTR_C,
 	IDX_CLASS_BOOL_PTR_C,
+	IDX_CLASS_INT_C,
+	IDX_CLASS_BOOL_C,
 	//... add more primitives (don't forgot to configure it in CScriptVar...
 	MAX_CLASS_C_TYPES,
 	// here classes starts ...

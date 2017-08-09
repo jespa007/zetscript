@@ -35,11 +35,8 @@ public:
 	void clear(Uint8 r, Uint8 g, Uint8 b);
 
 	void drawImage(int x, int y, CImage *img);
-	void drawText(int x,int y, CFont * font, const std::string & text);
+	void drawText(int x,int y, CFont * font, string * text);
 
-	// script c bindings
-	void drawImage(int *x, int *y, CImage *img);
-	void drawText(int *x, int *y, CFont *font, string *text);
 
 
 	void update();

@@ -29,11 +29,11 @@
 
 
 
-#define register_C_VariableMember(o,s) 			register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetof(o,s))
-#define register_C_FunctionMember(o,s)			register_C_FunctionMemberInt<o>(STR(s),&o::s)
-#define register_C_FunctionConstructor(o,s)		register_C_FunctionMemberInt<o>(demangle(typeid(o).name()).c_str(),&o::s)
-#define register_C_StaticFunctionMember(o,s)	register_C_StaticFunctionMemberInt<o>(STR(s),&o::s)
-#define register_C_FunctionMemberCast(o,s,f)	register_C_FunctionMemberInt<o>(STR(s),static_cast<f>(&o::s))
+#define register_C_VariableMember(o,s) 			CScriptClass::register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetof(o,s))
+#define register_C_FunctionMember(o,s)			CScriptClass::register_C_FunctionMemberInt<o>(STR(s),&o::s)
+#define register_C_FunctionConstructor(o,s)		CScriptClass::register_C_FunctionMemberInt<o>(demangle(typeid(o).name()).c_str(),&o::s)
+#define register_C_StaticFunctionMember(o,s)	CScriptClass::register_C_StaticFunctionMemberInt<o>(STR(s),&o::s)
+#define register_C_FunctionMemberCast(o,s,f)	CScriptClass::register_C_FunctionMemberInt<o>(STR(s),static_cast<f>(&o::s))
 
 
 #define GET_MAIN_VARIABLE(idx_var)				CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
@@ -71,6 +71,8 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		static string  *FLOAT_PTR_TYPE_STR;//	typeid(float *).name()
 		static string  *STRING_PTR_TYPE_STR;//	typeid(string *).name()
 		static string  *BOOL_PTR_TYPE_STR;//	typeid(bool *).name()
+		static string  *INT_TYPE_STR;//	typeid(int).name()
+		static string  *BOOL_TYPE_STR;//	typeid(bool).name()
 		static char     registered_metamethod[MAX_METAMETHOD_OPERATORS][50];
 
 		CScriptFunctionObject	metadata_info;

@@ -18,6 +18,9 @@ namespace zetscript{
 	string  * CScriptClass::STRING_PTR_TYPE_STR=NULL;//	typeid(string *).name()
 	string  * CScriptClass::BOOL_PTR_TYPE_STR=NULL;//	typeid(bool *).name()
 
+	string  * CScriptClass::INT_TYPE_STR=NULL;//	typeid(int *).name()
+	string  * CScriptClass::BOOL_TYPE_STR=NULL;//	typeid(bool *).name()
+
 	char CScriptClass::registered_metamethod[MAX_METAMETHOD_OPERATORS][50]={0};
 	 //CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
 	 //CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
@@ -420,6 +423,12 @@ namespace zetscript{
 			STRING_PTR_TYPE_STR = new string(typeid(string *).name());
 			BOOL_PTR_TYPE_STR = new string(typeid(bool *).name());
 
+			// particular case for return ... for not to force user returning pointer (this is the only vars allowed, sorry!)
+			BOOL_TYPE_STR = new string(typeid(bool).name());
+			INT_TYPE_STR = new string(typeid(int).name());
+
+
+
 			// register metamethods ...
 			strcpy(registered_metamethod[EQU_METAMETHOD],"_equ");  // ,,
 			strcpy(registered_metamethod[NOT_EQU_METAMETHOD],"_not_equ");  // !,
@@ -468,34 +477,40 @@ namespace zetscript{
 			if((registerClass("void","",NULL)) == NULL) return false;		// 0
 			vec_script_class_node->at(IDX_CLASS_VOID_C)->classPtrType=*VOID_TYPE_STR;
 
-			if((registerClass("int","",NULL)) == NULL) return false;		// 1
+			if((registerClass("int *","",NULL)) == NULL) return false;		// 1
 			vec_script_class_node->at(IDX_CLASS_INT_PTR_C)->classPtrType=*INT_PTR_TYPE_STR;
 
-			if((registerClass("float","",NULL)) == NULL) return false;		// 2
+			if((registerClass("float *","",NULL)) == NULL) return false;		// 2
 			vec_script_class_node->at(IDX_CLASS_FLOAT_PTR_C)->classPtrType=*FLOAT_PTR_TYPE_STR;
 
-			if((registerClass("string","",NULL)) == NULL) return false;		// 3
+			if((registerClass("string *","",NULL)) == NULL) return false;		// 3
 			vec_script_class_node->at(IDX_CLASS_STRING_PTR_C)->classPtrType=*STRING_PTR_TYPE_STR;
 
-			if((registerClass("bool","",NULL)) == NULL) return false;		// 4
+			if((registerClass("bool *","",NULL)) == NULL) return false;		// 4
 			vec_script_class_node->at(IDX_CLASS_BOOL_PTR_C)->classPtrType=*BOOL_PTR_TYPE_STR;
+
+			if((registerClass("int","",NULL)) == NULL) return false;		// 5
+			vec_script_class_node->at(IDX_CLASS_INT_C)->classPtrType=*INT_TYPE_STR;
+
+			if((registerClass("bool","",NULL)) == NULL) return false;		// 6
+			vec_script_class_node->at(IDX_CLASS_BOOL_C)->classPtrType=*BOOL_TYPE_STR;
 
 
 			// register basic classes...
 
 			// MAIN CLASS (IDX==0)! Is the first entry before any other one   (this order is important!...
-			if((registerClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 5
+			if((registerClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 7
 			if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME,IDX_MAIN_AST_NODE)) == NULL) return false;
 
 
 
-			if((registerClass("CUndefined","",NULL)) == NULL) return false;		// 6
+			if((registerClass("CUndefined","",NULL)) == NULL) return false;		// 8
 			vec_script_class_node->at(IDX_CLASS_UNDEFINED)->classPtrType=typeid(CUndefined *).name();
 
 			//if((registerClass("CVoid","",NULL)) == NULL) return false;				// 7
 			//vec_script_class_node->at(IDX_CLASS_VOID)->classPtrType=typeid(CVoid *).name();
 
-			if((registerClass("CNull","",NULL)) == NULL) return false;				// 8
+			if((registerClass("CNull","",NULL)) == NULL) return false;				// 9
 			vec_script_class_node->at(IDX_CLASS_NULL)->classPtrType=typeid(CNull *).name();
 
 

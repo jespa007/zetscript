@@ -11,10 +11,7 @@ public:
 
 	CFont();
 
-	bool load(const char * file,int char_width,int char_height);
-
-	// script interface
-	void load(std::string * file,int *char_width,int *char_height);
+	bool load(string * file,int char_width,int char_height);
 
 	int getCharWidth();
 	int getCharHeight();

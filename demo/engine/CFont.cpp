@@ -5,9 +5,9 @@ CFont::CFont(){
 	char_width=char_height=totalchars=totalchars_x=totalchars_y=0;
 }
 
-bool CFont::load(const char * file,int char_width,int char_height){
+bool CFont::load(string * file,int char_width,int char_height){
 
-	if((texture=CImage::SurfaceToTexture(SDL_LoadBMP(file))) !=NULL){
+	if((texture=CImage::SurfaceToTexture(SDL_LoadBMP(file->c_str()))) !=NULL){
 		SDL_QueryTexture(texture,
 				NULL,
 				NULL,
@@ -25,10 +25,6 @@ bool CFont::load(const char * file,int char_width,int char_height){
 
 
 	return false;
-}
-
-void CFont::load(std::string * file,int *char_width,int *char_height){
-	CFont::load(file->c_str(),*char_width, *char_height);
 }
 
 int CFont::getCharWidth(){

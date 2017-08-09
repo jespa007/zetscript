@@ -38,11 +38,14 @@ int main(int argc, char *argv[]){
 
 	// CRender bindings...
 	if(!register_C_Function("getRender",CRender::getInstance)) return false;
-	if(!CScriptClass::register_C_FunctionMemberInt<CRender>("drawImage",static_cast<void (CRender::*)(int *,int*,CImage * )>(&CRender::drawImage))) return false;
-	if(!CScriptClass::register_C_FunctionMemberInt<CRender>("drawText",static_cast<void (CRender::*)(int *,int*,CFont *, string * )>(&CRender::drawText))) return false;
+	if(!register_C_FunctionMember(CRender,drawImage)) return false;
+	if(!register_C_FunctionMember(CRender,drawText)) return false;
+	if(!register_C_FunctionMember(CFont,load)) return false;
+	//if(!CScriptClass::register_C_FunctionMemberInt<CRender>("drawImage",static_cast<void (CRender::*)(int *,int*,CImage * )>(&CRender::drawImage))) return false;
+	//if(!CScriptClass::register_C_FunctionMemberInt<CRender>("drawText",static_cast<void (CRender::*)(int *,int*,CFont *, string * )>(&CRender::drawText))) return false;
 
 	// CFont bindings...
-	if(!CScriptClass::register_C_FunctionMemberInt<CFont>("load",static_cast<void (CFont::*)(string *,int *,int* )>(&CFont::load))) return false;
+	//if(!CScriptClass::register_C_FunctionMemberInt<CFont>("load",static_cast<void (CFont::*)(string *,int *,int* )>(&CFont::load))) return false;
 
 
 	int idxSt=CState::saveState();
@@ -61,7 +64,9 @@ int main(int argc, char *argv[]){
 	auto update=zetscript->script_call("update");
 
 	if(init){
-		(*init)(NULL);
+		if(!(*init)(NULL)){
+			return -1;
+		}
 	}
 
 	do{
