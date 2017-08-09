@@ -15,13 +15,13 @@ protected:
 
 public:
 	CImage();
-	CImage(const vector<char> & pixmap, Uint32 color);
+	CImage(const vector<int> & pixmap, Uint32 color);
 
 	SDL_Texture *getTexture();
 
 	// create image from script ...
 	bool createSquarePixmap(zetscript::CVector *vector, int *color);
-	bool createSquarePixmap(const vector<char> & pixmap, Uint32 color);
+	bool createSquarePixmap(const vector<int> & pixmap, Uint32 color);
 
 	int getWidth();
 	int getHeight();

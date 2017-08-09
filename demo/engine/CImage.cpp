@@ -19,28 +19,29 @@ CImage::CImage(){
 	texture=NULL;
 	// default pixmap..
 	createSquarePixmap(
-	vector<char>{
-			  1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1
-			 ,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-			 ,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1
-			 ,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1
+	vector<int>{
+				 0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+				,0xffff
+
 			},
 			0xffffff	);
 }
 
-CImage::CImage(const vector<char> & pixmap, Uint32 color){
+CImage::CImage(const vector<int> & pixmap, Uint32 color){
 	texture=NULL;
 	createSquarePixmap(pixmap,color);
 }
@@ -54,10 +55,10 @@ bool CImage::createSquarePixmap(zetscript::CVector * pixelmap, int *color){
 
 
 // create image from native ...
-bool CImage::createSquarePixmap(const vector<char> & pixelmap, Uint32 color){
+bool CImage::createSquarePixmap(const vector<int> & pixelmap, Uint32 color){
 	destroy();
 
-	mWidth=sqrt(pixelmap.size());
+	mWidth=pixelmap.size();
 	mHeight=mWidth;
 	texture = SDL_CreateTexture(  CRender::getInstance()->getRenderer(),SDL_GetWindowPixelFormat( CRender::getInstance()->getWindow() ),SDL_TEXTUREACCESS_TARGET,mWidth,mHeight );
 
@@ -65,9 +66,12 @@ bool CImage::createSquarePixmap(const vector<char> & pixelmap, Uint32 color){
 		SDL_SetRenderTarget(CRender::getInstance()->getRenderer(), texture);
 		SDL_SetRenderDrawColor(CRender::getInstance()->getRenderer(), 0xFF, 0xFF, 0xFF, 0x17);
 		for(int y=0; y < mHeight;y++){
+			int pm=pixelmap[y];
 			for(int x=0; x < mWidth;x++){
-				if(pixelmap[y*mWidth+x]){
+				if(pm & (0x1<<x)){
+
 					SDL_RenderDrawPoint(CRender::getInstance()->getRenderer(), x, y);
+
 				}
 			}
 		}
