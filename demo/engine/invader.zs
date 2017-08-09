@@ -17,7 +17,7 @@ function init(){ // we initialize here!
 	x=0;
 	y=0;
 	
-	img_var=0111b;
+	img_var=0111b; // binary var
 	
 	print("the value is"+img_var);
 }
