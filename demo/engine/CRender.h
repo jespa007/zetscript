@@ -3,12 +3,10 @@
 #include "CZetScript.h"
 #include   <SDL2/SDL.h>
 #include "CImage.h"
+#include "CSprite.h"
 #include "CFont.h"
 
-#define RMASK32 0x000000ff
-#define GMASK32 0x0000ff00
-#define BMASK32 0x00ff0000
-#define AMASK32 0xff000000
+
 
 
 
@@ -21,12 +19,15 @@ class CRender{
 
 	SDL_Window* pWindow = NULL;
 
+	CRender();
+	~CRender();
+
 public:
 	static CRender *getInstance();
 
 	static void destroy();
 
-	CRender();
+
 
 	void createWindow(int width, int height);
 	SDL_Renderer *getRenderer();
@@ -37,9 +38,9 @@ public:
 	void drawImage(int x, int y, CImage *img);
 	void drawText(int x,int y, CFont * font, string * text);
 
-
+	void drawSprite(CSprite *spr);
 
 	void update();
 
-	~CRender();
+
 };

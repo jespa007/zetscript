@@ -1,6 +1,8 @@
 #include "CZetScript.h"
-#include "CRender.h"
 #include "CInput.h"
+#include "CRender.h"
+#include "CSoundPlayer.h"
+
 
 using namespace zetscript;
 
@@ -19,28 +21,39 @@ int main(int argc, char *argv[]){
 	}
 
 	// here we initiate the singletons ...
+	CSoundPlayer *soundPlayer = CSoundPlayer::getInstance();
 	CRender *render = CRender::getInstance();
 	CInput *input = CInput::getInstance();
 	CZetScript *zetscript = CZetScript::getInstance();
 
 	//--------------------------------------------------
 	// 1. Make our C++ bindings for script calls
-	if(!CScriptClass::register_C_Class<CRender>("CRender")) return false;
+	if(!CScriptClass::register_C_SingletonClass<CRender>("CRender")) return false;
+	if(!CScriptClass::register_C_SingletonClass<CSoundPlayer>("CSoundPlayer")) return false;
+
 	if(!CScriptClass::register_C_Class<CImage>("CImage")) return false;
 	if(!CScriptClass::register_C_Class<CFont>("CFont")) return false;
+	if(!CScriptClass::register_C_Class<CSound>("CSound")) return false;
 
 
 	if(!register_C_Variable("TR_UP",TR_UP)) return false;
 	if(!register_C_Variable("TR_DOWN",TR_DOWN)) return false;
 	if(!register_C_Variable("TR_LEFT",TR_LEFT)) return false;
 	if(!register_C_Variable("TR_RIGHT",TR_RIGHT)) return false;
+	if(!register_C_Variable("T_SPACE",T_SPACE)) return false;
 
 
 	// CRender bindings...
 	if(!register_C_Function("getRender",CRender::getInstance)) return false;
+	if(!register_C_Function("getSoundPlayer",CSoundPlayer::getInstance)) return false;
+
 	if(!register_C_FunctionMember(CRender,drawImage)) return false;
 	if(!register_C_FunctionMember(CRender,drawText)) return false;
+
+	if(!register_C_FunctionMember(CSoundPlayer,play)) return false;
+
 	if(!register_C_FunctionMember(CFont,load)) return false;
+	if(!register_C_FunctionMember(CSound,load)) return false;
 	//if(!CScriptClass::register_C_FunctionMemberInt<CRender>("drawImage",static_cast<void (CRender::*)(int *,int*,CImage * )>(&CRender::drawImage))) return false;
 	//if(!CScriptClass::register_C_FunctionMemberInt<CRender>("drawText",static_cast<void (CRender::*)(int *,int*,CFont *, string * )>(&CRender::drawText))) return false;
 
@@ -58,6 +71,7 @@ int main(int argc, char *argv[]){
 
 	// create window 640x480
 	render->createWindow(640,480);
+	soundPlayer->setup();
 
 	// create direct call script function
 	auto init=zetscript->script_call("init");

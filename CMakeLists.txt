@@ -189,11 +189,15 @@ else()
 		${PROJECT_SOURCE_DIR}/demo/engine/CRender.cpp
 		${PROJECT_SOURCE_DIR}/demo/engine/CInput.cpp
 		${PROJECT_SOURCE_DIR}/demo/engine/CImage.cpp
+		${PROJECT_SOURCE_DIR}/demo/engine/CSprite.cpp
 		${PROJECT_SOURCE_DIR}/demo/engine/CFont.cpp
+		${PROJECT_SOURCE_DIR}/demo/engine/CSound.cpp
+		${PROJECT_SOURCE_DIR}/demo/engine/CSoundPlayer.cpp
 	)
 	
 	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/invader.zs ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/invader.zs COPYONLY)
 	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/font.bmp ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/font.bmp COPYONLY)
+	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/font.bmp ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/laser.wav COPYONLY)
 	
 	
 	

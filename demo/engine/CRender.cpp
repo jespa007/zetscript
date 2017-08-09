@@ -1,5 +1,10 @@
 #include "CRender.h"
 
+#define RMASK32 0x000000ff
+#define GMASK32 0x0000ff00
+#define BMASK32 0x00ff0000
+#define AMASK32 0xff000000
+
 CRender *CRender::render=NULL;
 
 CRender *CRender::getInstance(){

@@ -287,7 +287,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		static bool register_C_Class(const string & class_name){//, const string & base_class_name=""){
+		static bool register_C_SingletonClass(const string & class_name){//, const string & base_class_name=""){
 
 			/*CScriptClass *base_class = NULL;
 
@@ -328,8 +328,8 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 				// in C there's no script constructor ...
 				irc->idx_function_script_constructor=-1;
 				// allow dynamic constructor in function its parameters ...
-				irc->c_constructor = new std::function<void *()>([](){return new _T;});
-				irc->c_destructor = new std::function<void (void *)>([](void *p){delete (_T *)p;});
+
+
 				irc->metadata_info.object_info.symbol_info.idxScriptClass = (short)((*vec_script_class_node).size());
 				irc->classPtrType=str_classPtr;
 				irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
@@ -345,6 +345,25 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 			return false;
 		}
+
+		/**
+		 * Register C Class. Return index registered class
+		 */
+		template<class _T>
+		static bool register_C_Class(const string & class_name){//, const string & base_class_name=""){
+			if(register_C_SingletonClass<_T>(class_name)){
+				CScriptClass *irc = CScriptClass::getScriptClassByName(class_name);
+
+				//put the constructor/destructor...
+				irc->c_constructor = new std::function<void *()>([](){return new _T;});
+				irc->c_destructor = new std::function<void (void *)>([](void *p){delete (_T *)p;});
+
+				return true;
+			}
+
+			return false;
+		}
+
 
 		template<class _T, class _B>
 		static bool class_C_baseof(){

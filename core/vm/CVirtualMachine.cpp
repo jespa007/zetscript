@@ -1005,10 +1005,10 @@ namespace zetscript{
 				zs_print_error_cr("Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
 				return NULL;//CScriptVariable::UndefinedSymbol;
 			case 0:
-				result=(*((std::function<int ()> *)fun_ptr))();
+				result=(*((std::function<intptr_t ()> *)fun_ptr))();
 				break;
 			case 1:
-				result=(*((std::function<int (int)> *)fun_ptr))(converted_param[0]);
+				result=(*((std::function<intptr_t (intptr_t)> *)fun_ptr))(converted_param[0]);
 				break;
 			case 2:
 				result=(*((std::function<intptr_t (intptr_t,intptr_t)> *)fun_ptr))(
