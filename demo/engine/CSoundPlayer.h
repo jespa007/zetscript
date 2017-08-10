@@ -27,7 +27,7 @@ class CSoundPlayer{
 public:
 
 	static CSoundPlayer * getInstance();
-	static void destroySingletons();
+	static void destroy();
 
 	void setup(SDL_AudioFormat format=AUDIO_S16SYS, Uint16 Freq=22050, Uint16 samples=4096, Uint8 channels=2);
 

@@ -132,7 +132,7 @@ namespace zetscript{
 
 		if(c_object == NULL){
 
-			if(m_infoRegisteredClass->baseClass.size()==1){
+			if(m_infoRegisteredClass->baseClass.size()==1){ // is the first!
 				CScriptClass *base = m_infoRegisteredClass->baseClass[0];
 				if(base->is_c_class()){
 					c_class_create_destroy=base;
@@ -145,6 +145,8 @@ namespace zetscript{
 					c_object = created_object;
 			}
 
+		}else{ // not null initialize the class anyway...
+			//c_class_create_destroy=m_infoRegisteredClass;
 		}
 		//m_rootAst=NULL;
 		//m_registeredVariable = NULL;
@@ -410,6 +412,12 @@ namespace zetscript{
 	void * CScriptVariable::get_C_Object(){
 		return c_object;
 	}
+
+	CScriptClass * CScriptVariable::get_C_Class(){
+
+		 return c_class_create_destroy;
+	}
+
 
 	bool CScriptVariable::is_c_object(){
 

@@ -18,7 +18,7 @@ CImage::CImage(){
 	mWidth=	mHeight=0;
 	texture=NULL;
 	// default pixmap..
-	createSquarePixmap(
+	/*createSquarePixmap(
 	vector<int>{
 				 0xffff
 				,0xffff
@@ -38,24 +38,26 @@ CImage::CImage(){
 				,0xffff
 
 			},
-			0xffffff	);
-}
-
-CImage::CImage(const vector<int> & pixmap, Uint32 color){
-	texture=NULL;
-	createSquarePixmap(pixmap,color);
-}
-
-// create image from script ...
-bool CImage::createSquarePixmap(zetscript::CVector * pixelmap, int *color){
-
-
+			0xffffff	);*/
 }
 
 
+
+
+bool CImage::createSquarePixmap(zetscript::CVector * pixmap){
+	vector<int> converted_pixmap;
+
+	for(int i=0; i < pixmap->size();i++){
+
+	}
+
+	createSquarePixmap(converted_pixmap);
+	printf("calling ok\n");
+	return true;
+}
 
 // create image from native ...
-bool CImage::createSquarePixmap(const vector<int> & pixelmap, Uint32 color){
+bool CImage::createSquarePixmap(const vector<int> & pixelmap){
 	destroy();
 
 	mWidth=pixelmap.size();

@@ -64,6 +64,7 @@ namespace zetscript{
 
 		void * get_C_Object();
 		bool is_c_object();
+		CScriptClass *get_C_Class();
 
 		CScriptFunctionObject *getConstructorFunction();
 

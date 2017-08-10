@@ -5,6 +5,7 @@ CSprite::CSprite(){
 	y=0;
 	dx=0;
 	dy=0;
+	currentframe=0;
 }
 
 bool CSprite::checkCollision(CSprite *spr1, CSprite *spr2){
@@ -18,6 +19,14 @@ void CSprite::addFrame(CImage *img){
 
 void CSprite::setFrame(int index){
 
+}
+
+CImage *CSprite::getCurrentFrame(){
+	if(currentframe<frame.size()){
+		return frame[currentframe];
+	}
+
+	return NULL;
 }
 
 void CSprite::update(){

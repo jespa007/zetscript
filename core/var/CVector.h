@@ -22,7 +22,7 @@ namespace zetscript{
 		void add(float * v);
 		tStackElement *push();
 		void add(CScriptVariable * v);
-		int *size();
+		int size();
 
 
 

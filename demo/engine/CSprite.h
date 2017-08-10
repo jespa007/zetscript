@@ -3,7 +3,7 @@
 #include "CImage.h"
 
 class CSprite{
-
+	unsigned currentframe;
 public:
 	int x, y;
 	int dx, dy;
@@ -15,6 +15,7 @@ public:
 
 	void addFrame(CImage *fr);
 	void setFrame(int n);
+	CImage *getCurrentFrame();
 
 	void update();
 

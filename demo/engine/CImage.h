@@ -12,16 +12,16 @@ protected:
 	int mWidth,mHeight;
 
 	static SDL_Texture * SurfaceToTexture(SDL_Surface *srf);
-
+	bool createSquarePixmap(const vector<int> & pixmap);
 public:
 	CImage();
-	CImage(const vector<int> & pixmap, Uint32 color);
+	CImage(const vector<int> & pixmap);
 
 	SDL_Texture *getTexture();
 
 	// create image from script ...
-	bool createSquarePixmap(zetscript::CVector *vector, int *color);
-	bool createSquarePixmap(const vector<int> & pixmap, Uint32 color);
+	bool createSquarePixmap(zetscript::CVector *vector);
+
 
 	int getWidth();
 	int getHeight();

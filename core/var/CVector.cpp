@@ -85,9 +85,7 @@ namespace zetscript{
 	}
 
 
-	int * CVector::size(){
-
-		_i_size = m_objVector.size();
-		return &_i_size;
+	int CVector::size(){
+		return  m_objVector.size();
 	}
 }

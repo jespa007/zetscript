@@ -820,6 +820,7 @@ namespace zetscript{
 		intptr_t result;
 		tStackElement *currentArg;
 
+
 		if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) {
 			zs_print_error_cr("Function is not registered as C");
 			return &callc_result;//CScriptVariable::UndefinedSymbol;
@@ -914,27 +915,41 @@ namespace zetscript{
 				break;
 			default: // script variable by default ...
 				script_variable=(CScriptVariable *)currentArg->varRef;
+				CScriptClass *c_class=NULL;
 
-
-				if(script_variable->is_c_object()){ // get the pointer directly ...
-					if(script_variable->getPointer_C_ClassName()==irfs->m_arg[i]){
+				if((c_class=script_variable->get_C_Class())!=NULL){ // get the pointer directly ...
+					fntConversionType paramConv=0;
+					if(c_class->classPtrType==irfs->m_arg[i]){
 						converted_param[i]=(intptr_t)script_variable->get_C_Object();
-					}else{
-						fntConversionType paramConv=CScriptClass::getConversionType((script_variable)->getPointer_C_ClassName(),irfs->m_arg[i]);
-						if(paramConv==0){
-							zs_print_error_cr("Function %s param %i: cannot convert %s into %s",
+					}else if((paramConv=CScriptClass::getConversionType(c_class->classPtrType,irfs->m_arg[i]))!=0){
+						converted_param[i] = paramConv(script_variable);
+					}else { // try get C object ..
+
+						/*bool error=true;
+						if((c_class=script_variable->get_C_Class())!=NULL){ // check whether the base is ok...
+							if(c_class->classPtrType==irfs->m_arg[i]){
+								converted_param[i] = (intptr_t)script_variable->get_C_Object();
+								error=false;
+							}
+						}
+
+						if(error){*/
+
+						zs_print_error_cr("Function %s param %i: cannot convert %s into %s",
 									irfs->object_info.symbol_info.symbol_name.c_str(),
 									i,
 									script_variable->getPointer_C_ClassName().c_str(),
 									irfs->m_arg[i].c_str()
 							);
-						}
-						converted_param[i] = paramConv(script_variable);
-						//converted_param[i]=(intptr_t)script_variable->get_C_Object();
+						return NULL;
+
+						//}
 					}
 
+
+
 				}else{ // CScriptVariable ?
-					zs_print_error_cr("Internal error, no C-object parameter! Unexpected  script variable!");
+					zs_print_error_cr("Internal error, no C-object parameter! Unexpected  script variable (%s)!",script_variable->getClassName().c_str());
 					return NULL;
 				}
 				break;
@@ -2100,8 +2115,18 @@ namespace zetscript{
 														case INS_PROPERTY_TYPE_UNDEFINED:
 														case INS_PROPERTY_TYPE_SCRIPTVAR:
 														case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
-															aux_string=((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
-															all_check= irfs->m_arg[k]==aux_string;
+															var_object=((CScriptVariable *)currentArg->varRef);
+															aux_string=var_object->getPointer_C_ClassName();
+
+															if(!(irfs->m_arg[k]!=aux_string)){
+																CScriptClass *c_class=NULL;
+																if((c_class=var_object->get_C_Class())!=NULL){ // check whether the base is ok...
+																	all_check=irfs->m_arg[k]==c_class->classPtrType;
+																}
+															}else{
+																all_check=true;
+															}
+
 															break;
 														}
 														//converted_param[i]= (int)(argv->at(i);
@@ -2109,8 +2134,14 @@ namespace zetscript{
 														//all_check = aux_string==irfs->m_arg[k];
 														//}
 														/*if(!all_check){
+
+															printf("%s --> %i\n",aux_string.c_str(),calling_object->is_c_object());
+															if((c_class=((CScriptVariable *)currentArg->varRef)->get_C_Class())!=NULL){ // check whether the base is ok...
+																printf("%s --> %s\n",aux_string.c_str(),c_class->classPtrType.c_str());
+																all_check = aux_string==c_class->classPtrType;
+															}
 															// let's see whether it can be coneverted to target signature ...
-															all_check =CScriptClass::getConversionType(aux_string,irfs->m_arg[k], NULL)!=NULL;
+															//all_check =CScriptClass::getConversionType(aux_string,irfs->m_arg[k], NULL)!=NULL;
 														}*/
 													}
 													if(all_check){ // we found the right function (set it up!) ...

@@ -3,7 +3,6 @@
 CSoundPlayer *CSoundPlayer::singleton=NULL;
 CSoundPlayer::tSoundData CSoundPlayer::SoundData[MAX_PLAYING_SOUNDS]={0};
 
-
 void CSoundPlayer::CallbackAudio(void *userdata, Uint8* stream, int len)
 {
 	//
@@ -20,32 +19,23 @@ void CSoundPlayer::CallbackAudio(void *userdata, Uint8* stream, int len)
 	}
 }
 
-
-
 CSoundPlayer *CSoundPlayer::getInstance(){
 	if(singleton==NULL){
 		memset(SoundData,0,sizeof(SoundData));
 		singleton=new CSoundPlayer();
 	}
 	return singleton;
-
 }
 
-void CSoundPlayer::destroySingletons(){
+void CSoundPlayer::destroy(){
 	if(singleton != NULL){
 		delete singleton;
 	}
-
-	singleton = NULL;
-
-}
-
+	singleton = NULL;}
 
 CSoundPlayer::CSoundPlayer(){
 	dev=0;
 }
-
-
 
 void CSoundPlayer::setup(SDL_AudioFormat format, Uint16 Freq, Uint16 samples, Uint8 channels){
 
@@ -56,25 +46,14 @@ void CSoundPlayer::setup(SDL_AudioFormat format, Uint16 Freq, Uint16 samples, Ui
 		}
 	}
 
-	//SDL_AudioSpec have;
-
 	SDL_memset(&wav_spec, 0, sizeof(wav_spec)); /* or SDL_zero(want) */
-	//wav_spec.freq = Freq;
-	//wav_spec.format = format;
-	//wav_spec.channels = channels;
-	//wav_spec.samples = samples;
 	wav_spec.userdata=NULL;
 	wav_spec.callback = CallbackAudio; /* you wrote this function elsewhere. */
 
-	//if ((dev = SDL_OpenAudioDevice(NULL, 0, &wav_spec, &have, SDL_AUDIO_ALLOW_FORMAT_CHANGE))==0) {
 	if ( SDL_OpenAudio(&wav_spec, NULL) < 0 ){
 	    fprintf(stderr,"Failed to open audio: %s", SDL_GetError());
 	} else {
-	    /*if (have.format != wav_spec.format) {
-	        fprintf(stderr,"We didn't get audio format.");
-	    }*/
 	    SDL_PauseAudio(0); /* start audio playing. */
-
 	    printf("SoundPlayer initialized!\n");
 	}
 }

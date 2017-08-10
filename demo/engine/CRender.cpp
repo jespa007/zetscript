@@ -72,26 +72,32 @@ void CRender::clear(Uint8 r, Uint8 g, Uint8 b){
 
 void CRender::drawImage(int x, int y, CImage *img){
 	//Apply the image
-	SDL_Texture *text=img->getTexture();
-	if(text){
-		SDL_Rect rect={x,y,img->getWidth(),img->getHeight()};
-		SDL_RenderCopy(pRenderer, text, NULL, &rect);
+	if(img){
+		SDL_Texture *text=img->getTexture();
+		if(text){
+			SDL_Rect rect={x,y,img->getWidth(),img->getHeight()};
+			SDL_RenderCopy(pRenderer, text, NULL, &rect);
+		}
 	}
 }
 
 void CRender::drawText(int x,int y, CFont * font, string * text){
-	SDL_Texture *font_text=font->getTexture();
-	if(font_text){
+	if(font){
+		SDL_Texture *font_text=font->getTexture();
+		if(font_text){
 
-		SDL_Rect rect={x,y,font->getCharWidth(),font->getCharHeight()};
-		for(unsigned i=0; i < text->size(); i++){
-			char c=text->at(i);
-			SDL_RenderCopy(pRenderer, font_text, font->getRectChar(c), &rect);
-			rect.x+=rect.w;
+			SDL_Rect rect={x,y,font->getCharWidth(),font->getCharHeight()};
+			for(unsigned i=0; i < text->size(); i++){
+				char c=text->at(i);
+				SDL_RenderCopy(pRenderer, font_text, font->getRectChar(c), &rect);
+				rect.x+=rect.w;
+			}
 		}
-
-
 	}
+}
+
+void CRender::drawSprite(CSprite *spr){
+	drawImage(spr->x,spr->y, spr->getCurrentFrame());
 }
 
 void CRender::update(){
