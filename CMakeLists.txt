@@ -197,7 +197,7 @@ else()
 	
 	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/invader.zs ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/invader.zs COPYONLY)
 	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/font.bmp ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/font.bmp COPYONLY)
-	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/font.bmp ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/laser.wav COPYONLY)
+	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/laser.wav ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/laser.wav COPYONLY)
 	
 	
 	

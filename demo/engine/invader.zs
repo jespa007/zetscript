@@ -35,9 +35,33 @@ function init(){ // we initialize here!
 	spr=new CMySprite();
 	
 	// add sprite mask based usign the constructor (CImage::create from C++)
-	spr.addFrame(new CImage(
+	var i=0;
+	var g={i:0};
+	
+	/*var tt=[
+		  1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		 ,1100000000000011b
+		];	*/
+	
+	/*spr.addFrame(new CImage(
 			[
-			  1100000000000011b
+			 1100000000000011b
 			 ,1100000000000011b
 			 ,1100000000000011b
 			 ,1100000000000011b
@@ -56,7 +80,7 @@ function init(){ // we initialize here!
 			 ,1100000000000011b
 			 ,1100000000000011b
 			]
-	));
+	));*/
 	
 	x=0;
 	y=0;
@@ -87,7 +111,7 @@ function update(){
 	//render.drawImage(x,y,image);
 	
 	// it draws our customized sprite automatically according current position + current frame...
-	render.drawSprite(spr);
+	//render.drawSprite(spr);
 	
 	
 }
