@@ -45,11 +45,8 @@ CImage::CImage(){
 
 
 bool CImage::createSquarePixmap(zetscript::CVector * pixmap){
-	vector<int> converted_pixmap;
+	vector<int> converted_pixmap=zetscript::CVector::cast<int>(pixmap);
 
-	for(int i=0; i < pixmap->size();i++){
-
-	}
 
 	createSquarePixmap(converted_pixmap);
 	printf("calling ok\n");
@@ -101,6 +98,7 @@ int CImage::getHeight(){
 }
 
 void CImage::destroy(){
+	printf("Image destroyed!");
 	if(texture != NULL){
 		SDL_DestroyTexture(texture);
 	}

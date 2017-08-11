@@ -426,9 +426,9 @@ namespace zetscript{
 			};\
 		}\
 	\
-		tInfoSharedList list = zero_shares[idxCurrentStack];\
+		tInfoSharedList *list = &zero_shares[idxCurrentStack];\
 		PInfoSharedPointerNode first_node,current;\
-		first_node=current=(list).first;\
+		first_node=current=list->first;\
 		if(current != NULL){\
 			while(current->next !=first_node){\
 				PInfoSharedPointerNode node_to_remove=current;\
@@ -441,7 +441,7 @@ namespace zetscript{
 			delete current->data.shared_ptr;\
 			free(current);\
 		}\
-		(list).first=(list).last=NULL;\
+		list->first=list->last=NULL;\
 	}
 
 
@@ -2443,59 +2443,7 @@ namespace zetscript{
 	lbl_exit_function:
 
 	if(info_function->object_info.idxScriptFunctionObject != 0){ // if not main function do not do the pop action (preserve variables always!)
-
-		int index = scope_index;
-{\
-	if(index < 0){\
-		zs_print_error_cr("index < 0");\
-		return NULL;\
-	}\
-\
-	if(index >= (int)info_function->object_info.n_info_var_scope){\
-		zs_print_error_cr("index >= info_function->object_info.info_var_scope.size()");\
-		return NULL;\
-	}\
-\
-	for(int i = 0; i < info_function->object_info.info_var_scope[index].n_var_index; i++){\
-		int idx_local_var = info_function->object_info.info_var_scope[index].var_index[i];\
-		tStackElement *ptr_ale =&ptrLocalVar[idx_local_var];\
-		CScriptVariable *var = NULL;\
-		switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){\
-		case INS_PROPERTY_TYPE_STRING:\
-		case INS_PROPERTY_TYPE_SCRIPTVAR:\
-			var =((CScriptVariable *)(ptr_ale->varRef));\
-			if(var != VM_NULL && var !=  VM_UNDEFINED){\
-				if(var->ptr_shared_pointer_node != NULL){\
-					var->unrefSharedPtr();\
-				}\
-			}\
-		}\
-		*ptr_ale={\
-				INS_PROPERTY_TYPE_UNDEFINED,\
-				0,\
-				0\
-		};\
-	}\
-\
-	tInfoSharedList list = zero_shares[idxCurrentStack];\
-	PInfoSharedPointerNode first_node,current;\
-	first_node=current=(list).first;\
-	if(current != NULL){\
-		while(current->next !=first_node){\
-			PInfoSharedPointerNode node_to_remove=current;\
-			if(ret_scriptvariable_node!=node_to_remove->data.shared_ptr){\
-				delete node_to_remove->data.shared_ptr;\
-			}\
-			current=current->next;\
-			free(node_to_remove);\
-		}\
-		delete current->data.shared_ptr;\
-		free(current);\
-	}\
-	(list).first=(list).last=NULL;\
-}
-
-		//POP_SCOPE(scope_index);
+		POP_SCOPE(scope_index);
 	}
 
 

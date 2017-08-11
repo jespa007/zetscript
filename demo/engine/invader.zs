@@ -7,6 +7,7 @@ var render;
 var sound_player;
 var img_var;
 var snd;
+var img;
 
 // heradate CSprite from C++
 class CMySprite: CSprite{
@@ -32,11 +33,11 @@ function init(){ // we initialize here!
 	snd.load("laser.wav");
 	
 	// create mask based sprite 16x16 (total retro!!!)
-	spr=new CMySprite();
+	spr=new CSprite();
 	
 	// add sprite mask based usign the constructor (CImage::create from C++)
 	var i=0;
-	var g={i:0};
+	
 	
 	/*var tt=[
 		  1100000000000011b
@@ -59,7 +60,7 @@ function init(){ // we initialize here!
 		 ,1100000000000011b
 		];	*/
 	
-	/*spr.addFrame(new CImage(
+	spr.addFrame(new CImage(
 			[
 			 1100000000000011b
 			 ,1100000000000011b
@@ -77,15 +78,17 @@ function init(){ // we initialize here!
 			 ,1100000000000011b
 			 ,1100000000000011b
 			 ,1100000000000011b
-			 ,1100000000000011b
-			 ,1100000000000011b
-			]
-	));*/
+			 
+			]));
+	
+
 	
 	x=0;
 	y=0;
 	
 	img_var=0111b; // binary var
+	
+	print("hola ?");
 	
 	print("the value is"+img_var);
 }
@@ -105,13 +108,13 @@ function update(){
 		sound_player.play(snd);
 	}
 	
-	spr.update();
+	//spr.update();
 		
 	render.drawText(0,0,font,"Hello world");
 	//render.drawImage(x,y,image);
 	
 	// it draws our customized sprite automatically according current position + current frame...
-	//render.drawSprite(spr);
+	render.drawSprite(spr);
 	
 	
 }
