@@ -15,6 +15,7 @@ public:
 
 	int getCharWidth();
 	int getCharHeight();
+	int getTextWith(const string & str);
 	SDL_Rect * getRectChar(char c);
 
 	~CFont();

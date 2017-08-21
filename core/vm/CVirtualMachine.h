@@ -78,7 +78,7 @@ namespace zetscript{
 		//static void destroySingletons();
 
 		PInfoSharedPointerNode newSharedPointer(CScriptVariable *var_ptr);
-		bool sharePointer( PInfoSharedPointerNode _node);
+		void sharePointer( PInfoSharedPointerNode _node);
 		void unrefSharedScriptVar( PInfoSharedPointerNode _node);
 		void removefSharedScriptVar( PInfoSharedPointerNode _node);
 
@@ -225,7 +225,7 @@ namespace zetscript{
 					vector<CScriptVariable *> * argv=NULL);
 
 
-
+		void setCallResult(tStackElement *);
 		tStackElement *getLastStackValue();
 
 		CVirtualMachine();
@@ -235,10 +235,18 @@ namespace zetscript{
 
 	private:
 
+		struct tVM_ScopeInfo{
+			short					   index;
+			CScriptFunctionObject *ptr_info_function;
+			tStackElement 		  *ptr_local_var;
+		};
+
 		char		str_aux[8192];
 		float 		f_aux_value1,f_aux_value2;
 		 string 	aux_string,symbol_to_find;
 		 vector<tSymbolInfo> vec_aux_function_symbol;
+		 tVM_ScopeInfo		*current_scope_idx;
+		 tVM_ScopeInfo		scope_idx[VM_LOCAL_VAR_MAX_STACK];
 		// vector<CASTNode *> *vec_ast_node;
 		// CSharedPointerManager *instance_gc;
 		CUndefined				*VM_UNDEFINED; // it holds UNDEFINED_VAR.
@@ -249,6 +257,7 @@ namespace zetscript{
 		string 				stkString[VM_LOCAL_VAR_MAX_STACK]; // aux values for string ...
 		string              *ptrLastStr;
 		string              *ptrCurrentStr;
+
 		//unsigned short		idxBaseString,
 		 //                   idxCurrentString;
 
@@ -282,7 +291,7 @@ namespace zetscript{
 
 
 		string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
-
+		void 				stackDumped();
 		//inline bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 
 		//bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL,unsigned short properties=0);
@@ -305,9 +314,9 @@ namespace zetscript{
 	/*	bool loadFunctionValue(const tInfoAsmOp * iao,
 				CScriptFunctionObject *info_function,
 				CScriptVariable *this_object,
-				tInfoAsmOp *asm_op);*/
+				tInfoAsmOp *asm_op);
 
-		inline void popScope( CScriptFunctionObject *info_function,int index);//, CScriptVariable *ret = NULL);
+		inline void popScope( CScriptFunctionObject *info_function,int index);//, CScriptVariable *ret = NULL);*/
 
 
 	//private:

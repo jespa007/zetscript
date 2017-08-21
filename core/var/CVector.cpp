@@ -15,8 +15,8 @@ namespace zetscript{
 
 			for(unsigned i = 0; i < m_objVector.size(); i++){
 				CScriptVariable *var = (CScriptVariable *)m_objVector[i].varRef;
-				if(var != NULL){
-					CScriptVariable *var = (CScriptVariable *)m_objVector[i].varRef;
+				if(var != NULL && var != UNDEFINED_SYMBOL){
+
 					if(!var->unrefSharedPtr()){
 						return false;
 					}
@@ -51,17 +51,48 @@ namespace zetscript{
 	}
 
 	tStackElement *CVector::push(){
-		tStackElement s={INS_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
+		tStackElement s={INS_PROPERTY_TYPE_UNDEFINED ,NULL,UNDEFINED_SYMBOL};
 		m_objVector.push_back(s);
 		return &m_objVector[m_objVector.size()-1];
 	}
 
-	void CVector::add(const tStackElement & v){
+	/*void CVector::add(const tStackElement & v){
 		m_objVector.push_back(v);
+	}*/
+
+	void CVector::add(tStackElement  * v){
+		m_objVector.push_back(*v);
+
+		// update n_refs +1
+		if(v->properties&INS_PROPERTY_TYPE_SCRIPTVAR){
+			CURRENT_VM->sharePointer(((CScriptVariable *)(v->varRef))->ptr_shared_pointer_node);
+
+
+		}
 	}
 
+	void CVector::pop(){
+		tStackElement info={INS_PROPERTY_TYPE_UNDEFINED ,NULL,UNDEFINED_SYMBOL};
+		if(m_objVector.size()>0){
+			info=m_objVector[m_objVector.size()-1];
 
-	void CVector::add(int  * v){
+			CScriptVariable *var = (CScriptVariable *)info.varRef;
+			if(var != NULL && var != UNDEFINED_SYMBOL){
+				if(!var->unrefSharedPtr()){
+					zs_print_error("pop(): error doing unref var");
+				}
+			}
+
+			m_objVector.pop_back();
+		}else{
+			zs_print_error("pop(): error stack already empty");
+		}
+
+		// due the call is void we are doing the operations behind...
+		CURRENT_VM->setCallResult(&info);
+	}
+
+	/*void CVector::add(int  * v){
 		m_objVector.push_back({INS_PROPERTY_TYPE_INTEGER,(void *)((intptr_t)(*v)),0});
 	}
 	void CVector::add(bool * v){
@@ -82,7 +113,7 @@ namespace zetscript{
 	}
 	void CVector:: add(CScriptVariable * v){
 		m_objVector.push_back({INS_PROPERTY_TYPE_SCRIPTVAR,0,v});
-	}
+	}*/
 
 
 	int CVector::size(){

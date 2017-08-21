@@ -34,6 +34,16 @@ int CFont::getCharHeight(){
 	return char_height;
 }
 
+int CFont::getTextWith(const string & str){
+
+	int total_width=0;
+
+	for(unsigned i=0; i < str.size(); i++){
+		total_width+=char_width;
+	}
+	return total_width;
+}
+
 SDL_Rect * CFont::getRectChar(char c){
 	m_aux_rect={0,0,char_width,char_height};
 	if(c<totalchars){

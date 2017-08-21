@@ -66,7 +66,7 @@
     
     ...
     
-    getSumNumer(n,1.0); <-- it fails because the first time the _add with integer signature was assigned ..
+    getSumNumer(n,1.0); <-- it fails because the first time the _add with INTEGER signature was assigned but now is NUMBER..
     
     
     Solutions:
@@ -76,16 +76,46 @@
     
 //----------------------------------------------------------------------------------------------------------------
 // Programmer: Jordi Espada
-// version 1.0.10
+// version 1.0.0 (Beta)
 //
 
-> Implement binary constant
+
+> A lot memory leaks!
+
+- Solved problem not registering C++ variables from base.
+- Implement stack overflow process. When problem ocurrs no return NULL. In this case will make a stack overflow.
+
+  the process basically does pop in eac scope in order to unref vars.
+   
+  !!!!!Warning!!!!! stackdumped will cause some C refs not to be deallocated because aborting main executing thread ... the best thing you can do is
+  build a object factory in order to have high control about C pointers in native side not script side.
+
+
+- alow concatenate string + undefined
+- solved bug compiler matching varnames on diferent scopes. For instance,
+
+  {
+    var j=0;
+  }
+  
+  {
+    var j=0;
+  
+  }
+  
+  
+  
+  this cause a matching names in the scope of the function. The solution is take profit on the same symbol name. In compile time, the variable will be available with no conflict
+  due is in diferent scope so they have interfere each other.
+
+- solved problem not initilize the global vars.  
+- Solved problem bad initialization of aux_function that caused bad calling function.
+- Make more explicit 
+ 
+- solved bug missing C ref property when on = operator.
+- solved bug vector add new Elements
+- Implement binary constant. For instance 0111011b
 > Implement do-while.
-
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.10
-//
 
 -in boolean vars is implicit
 
@@ -104,12 +134,6 @@ debug max stack after N calling function from C++ ?
 
 
 
-  
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.9
-//
-
 Support for binary contants.
 Implement NOT_EQU.
 Solved problem preoperator before packed symbol.
@@ -126,10 +150,6 @@ var i=0;
 i=true;
 i=!i; <-- fails!
 
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.8
-//
 
 -Check property duplicated adding in struct.
 -Clear some code.
@@ -143,27 +163,13 @@ TESTS
 -test logic op operation. 
 
 
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.7
 
 -Apply namespace
    
 
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.6
-
-
 -Restructured dir/files
 -Added some compatibilities MSVC
 -Added zs exec file.
-
-
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.5
-
 
 CMakeFiles: Added MSVC Comptibility (only compiles with MSVC 2017) that comes with compiler that allows constexpr (sorry)
 
@@ -189,14 +195,6 @@ Class:
 
 -git: create master/develop branch and push code..
 
-
-
-
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.4
-
-
 -Added metamethod support. Example use of methamethod add in the class,
 
 class A{
@@ -217,10 +215,6 @@ class A{
 
 var h = new A(0,1) + new A(1,0); // h should be (1,1)
 
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.3
-
 -Added support functions with different parameters.
 -Added symbol detection
 
@@ -231,10 +225,6 @@ _pN_symbol: function symbol where N is a number that explain the number paramete
  
 -solved problem double unref shared pointer when rets cscriptvar
 
-
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.2
 
 Change tAleObjectInfo tStackElement
 
@@ -276,20 +266,11 @@ Or maybe in the write function cast an exception that tells is not
 possible to override pointers. In other words, write funtion is only for
 integers, floats, numbers and strings.
 
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.1
-
 - In mov instruction preserve RUNTIME MASK before assign TYPE VAR MASK.
 - Remove warning about "dereferencing type-punned pointer will break strict-aliasing rules"
 - Test function call.
 -
 
-
-
-//----------------------------------------------------------------------------------------------------------------
-// Programmer: Jordi Espada
-// version 1.0.0
 
 Base version
 Exit version

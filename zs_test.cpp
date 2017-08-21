@@ -403,26 +403,26 @@ int main(int argc, char * argv[]) {
 	printf("%i. testing primitive var\n",++n_test);
 
 
-	TEST_INT_EXPR("var i=1;i;",1);
-	TEST_INT_EXPR("i++;i;",2);
+	TEST_INT_EXPR("var i=1;",1);
+	TEST_INT_EXPR("i++;",2);
 	TEST_INT_EXPR("++i;",3);
-	TEST_INT_EXPR("i--;i;",2);
+	TEST_INT_EXPR("i--;",2);
 	TEST_INT_EXPR("--i;",1);
 
 
-	TEST_INT_EXPR("i=10;i*=10;i;",100);
-	TEST_INT_EXPR("i/=10;i;",10);
-	TEST_INT_EXPR("i+=10;i;",20);
-	TEST_INT_EXPR("i-=5;i;",15);
-	TEST_INT_EXPR("i%=10;i;",5);
+	TEST_INT_EXPR("i=10;i*=10;",100);
+	TEST_INT_EXPR("i/=10;",10);
+	TEST_INT_EXPR("i+=10;",20);
+	TEST_INT_EXPR("i-=5;",15);
+	TEST_INT_EXPR("i%=10;",5);
 
 	// test reassign and float
-	TEST_NUMBER_EXPR("i=2.0;i;",2.0f);
-	TEST_NUMBER_EXPR("i++;i;",3.0f);
-	TEST_NUMBER_EXPR("--i;i;",2.0f);
+	TEST_NUMBER_EXPR("i=2.0;",2.0f);
+	TEST_NUMBER_EXPR("i++;",3.0f);
+	TEST_NUMBER_EXPR("--i;",2.0f);
 
-	TEST_BOOL_EXPR("i=true;i;",true);
-	TEST_BOOL_EXPR("i=!i;i;",false);
+	TEST_BOOL_EXPR("i=true;",true);
+	TEST_BOOL_EXPR("i=!i;",false);
 	TEST_BOOL_EXPR("i==i;",true);
 	TEST_BOOL_EXPR("i!=i;",false);
 	//TEST_BOOL_EXPR("i=!i;",true);

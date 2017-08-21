@@ -217,11 +217,13 @@ namespace zetscript{
 		 */
 
 		bool insert_NewObject_Instruction(short idxAstNode, const string & class_name);
+		bool insert_DeleteObject_Instruction(short idxAstNode);
 		bool insertObjectMemberAccessFrom(short idxAstNode, int ref_node_index);
 
+		//bool insert_DeleteObject_Instruction(short idxAstNode, const string & class_name);
 
 
-
+		tInfoAsmOpCompiler * getLastInsertedInfoAsmOpCompiler();
 		bool insertOperatorInstruction(PUNCTUATOR_TYPE op, short idxAstNode, string & error_str, int left, int right=ZS_UNDEFINED_IDX);
 
 
@@ -232,8 +234,8 @@ namespace zetscript{
 		int getCurrentStatmentIndex();
 
 
-		void insertPushScopeInstruction(CScope * _goto_scope);
-		void insertPopScopeInstruction(short idxAstNode,int scope_idx);
+		bool insertPushScopeInstruction(short idxAstNode,int scope_idx);
+		void insertPopScopeInstruction(short idxAstNode);
 
 
 		void insert_DeclStruct_Instruction(short idxAstNode);
@@ -267,6 +269,8 @@ namespace zetscript{
 		bool gacClass(short idxAstNode, CScope * _lc);
 
 		int gacNew(short idxAstNode, CScope * _lc);
+		int gacDelete(short idxAstNode, CScope * _lc);
+
 		bool gacFor(short idxAstNode, CScope * _lc);
 		bool gacVar(short idxAstNode, CScope * _lc);
 		bool gacWhile(short idxAstNode, CScope * _lc);

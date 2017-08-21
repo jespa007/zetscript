@@ -6,6 +6,7 @@
 
 #define  T_ESC	      	CInput::getInstance()->key[KEY_ESCAPE]
 #define  T_F5	      	CInput::getInstance()->key[KEY_F5]
+#define  T_F9	      	CInput::getInstance()->key[KEY_F9]
 #define  T_SPACE      	CInput::getInstance()->key[KEY_SPACE]
 
 #define  TR_UP          CInput::getInstance()->keyR[KEY_UP]
@@ -26,6 +27,7 @@ typedef struct{
 	bool pressEnd;
 
 	bool pressF5;
+	bool pressF9;
 }tEventKey,tEventRepeatKey;
 
 

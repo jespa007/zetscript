@@ -100,13 +100,12 @@ namespace zetscript{
 
 		if(iao->instruction_properties & INS_PROPERTY_ACCESS_SCOPE){
 
-			sprintf(object_access,"[%02i:"
-	#ifdef __x86_64__
-					"%02lu"
-	#else
-					"%02i"
-	#endif
-					"].",current_statment,iao->index_op2);
+			sprintf(object_access,
+					"[%02i:"
+					 "%02i"
+					"]."
+					,current_statment
+					,(int)iao->index_op2);
 		}
 		else if(iao->instruction_properties & INS_PROPERTY_THIS_SCOPE){
 			sprintf(object_access,"this.");
@@ -226,11 +225,7 @@ namespace zetscript{
 					case  PUSH_ATTR:
 
 						printf("[%02i:%02i]\t%s\tSTRUCT[%02i:%02i],[%02i:%02i],[%02i:"
-	#ifdef __x86_64__
-								"%02lu]"
-	#else
 								"%02i]"
-	#endif
 								"\n"
 								,
 								idx_statment,idx_instruction,
@@ -238,14 +233,17 @@ namespace zetscript{
 
 								idx_statment,asm_op_statment->index_op1,
 								idx_statment,idx_instruction-1, // lat operand must be a string constant ...
-								idx_statment,asm_op_statment->index_op2);
+								(int)idx_statment
+								,(int)asm_op_statment->index_op2);
 						break;
 
 					case  NEW:
 						printf("[%02i:%02i]\t%s\t%s\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,CScriptClass::getNameRegisteredClassByIdx(asm_op_statment->index_op1));
 						break;
 					case  LOAD:
-						printf("[%02i:%02i]\t%s\t%s%s%s --- %i\n",idx_statment,idx_instruction,
+						printf("[%02i:%02i]\t%s\t%s%s%s --- %i\n"
+								,idx_statment
+								,idx_instruction,
 								CCompiler::def_operator[asm_op_statment->operator_type].op_str,
 								pre.c_str(),
 								getStrTypeLoadValue(fs->statment_op,idx_statment,idx_instruction),
@@ -262,12 +260,12 @@ namespace zetscript{
 					case JT:
 					case JMP:
 						printf("[%02i:%02i]\t%s\t[%04i:"
-	#ifdef __x86_64__
-								"%04lu"
-	#else
 								"%04i"
-	#endif
-								"]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1,asm_op_statment->index_op2);
+								"]\n"
+								,idx_statment
+								,idx_instruction
+								,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1
+								,(int)asm_op_statment->index_op2);
 						break;
 					/*case PRE_INC:
 					case POST_INC:
@@ -277,16 +275,37 @@ namespace zetscript{
 						break;*/
 					case VGET:
 					case VPUSH:
-						printf("[%02i:%02i]\t%s\t%sVEC[%02i:%02i]%s,[%02i:%02i]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,pre.c_str(),idx_statment,index_op1,post.c_str(),idx_statment,index_op2);
+						printf("[%02i:%02i]\t%s\t%sVEC[%02i:%02i]%s,[%02i:%02i]\n"
+								,idx_statment
+								,idx_instruction
+								,CCompiler::def_operator[asm_op_statment->operator_type].op_str,pre.c_str()
+								,idx_statment
+								,index_op1
+								,post.c_str()
+								,idx_statment
+								,index_op2);
 						break;
 					default:
 
 						if(n_ops==0){
 							printf("[%02i:%02i]\t%s\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str);
 						}else if(n_ops==1){
-							printf("[%02i:%02i]\t%s\t[%02i:%02i]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,idx_statment,index_op1);
+							printf("[%02i:%02i]\t%s%s\t[%02i:%02i]\n"
+									,idx_statment
+									,idx_instruction
+									,CCompiler::def_operator[asm_op_statment->operator_type].op_str
+									,(asm_op_statment->instruction_properties & INS_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
+									,idx_statment
+									,index_op1);
 						}else{
-							printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,idx_statment,index_op1,idx_statment,index_op2);
+							printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n"
+									,idx_statment
+									,idx_instruction
+									,CCompiler::def_operator[asm_op_statment->operator_type].op_str
+									,idx_statment
+									,index_op1
+									,idx_statment
+									,index_op2);
 						}
 						break;
 					}
@@ -308,15 +327,24 @@ namespace zetscript{
 
 				strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
 
-				if(MAIN_CLASS_NODE->metadata_info.object_info.idxScriptFunctionObject == fs->idxScriptFunctionObject){ // main class (main entry)
+
+
+				if(local_irfs->object_info.symbol_info.idxScriptClass!=ZS_UNDEFINED_IDX){
+					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->object_info.symbol_info.idxScriptClass);
+					if(sc->metadata_info.object_info.symbol_info.idxScriptClass != IDX_CLASS_MAIN){
+						sprintf(symbol_ref,"%s::%s",fs->symbol_info.symbol_name.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
+					}
+				}
+
+				/*if(MAIN_CLASS_NODE->metadata_info.object_info.idxScriptFunctionObject == fs->idxScriptFunctionObject){ // main class (main entry)
 					sprintf(symbol_ref,"MAIN_ENTRY (MainClass)");
 				}
 				else if(MAIN_CLASS_NODE->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]!=fs->idxScriptFunctionObject){ // main function (main entry)
 					sprintf(symbol_ref,"%s::%s",fs->symbol_info.symbol_name.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
-				}
+				}*/
 
 				printf("-------------------------------------------------------\n");
-				printf("Code for function \"%s\"\n",symbol_ref);
+				printf("\nCode for function \"%s\"\n\n",symbol_ref);
 				printGeneratedCode_Recursive(GET_FUNCTION_INFO(m_vf->at(j)));
 			}
 		}
@@ -413,7 +441,7 @@ namespace zetscript{
 		return false;
 	}
 	
-	bool CZetScript::eval(const string & s){
+	bool CZetScript::eval(const string & s, bool execute){
 
 		if(!__init__) return false;
 
@@ -436,9 +464,17 @@ namespace zetscript{
 	#ifdef __DEBUG__
 				printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
 	#endif
+
+				if(execute){
+					return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject);
+				}
+
 				return true;
 			}
 		}
+
+		// restore to last state...
+		CState::restoreLastState();
 
 		return false;
 	}

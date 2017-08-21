@@ -48,17 +48,29 @@ bool CImage::createSquarePixmap(zetscript::CVector * pixmap){
 	vector<int> converted_pixmap=zetscript::CVector::cast<int>(pixmap);
 
 
-	createSquarePixmap(converted_pixmap);
-	printf("calling ok\n");
-	return true;
+	return createSquarePixmap(converted_pixmap);
+
 }
 
 // create image from native ...
 bool CImage::createSquarePixmap(const vector<int> & pixelmap){
 	destroy();
 
-	mWidth=pixelmap.size();
-	mHeight=mWidth;
+	mHeight=pixelmap.size();
+	mWidth=-1;
+
+	// get max width...
+	for(int y=0; y < mHeight;y++){
+		int pm=pixelmap[y];
+		for(int x=0; x < 32;x++){
+			if(pm & (0x1<<x)){
+				mWidth=(mWidth<(x+1)?(x+1):mWidth);
+			}
+		}
+	}
+
+	printf("creating texture map of %ix%i\n",mWidth,mHeight);
+
 	texture = SDL_CreateTexture(  CRender::getInstance()->getRenderer(),SDL_GetWindowPixelFormat( CRender::getInstance()->getWindow() ),SDL_TEXTUREACCESS_TARGET,mWidth,mHeight );
 
 	if(texture!=NULL){
@@ -68,9 +80,7 @@ bool CImage::createSquarePixmap(const vector<int> & pixelmap){
 			int pm=pixelmap[y];
 			for(int x=0; x < mWidth;x++){
 				if(pm & (0x1<<x)){
-
 					SDL_RenderDrawPoint(CRender::getInstance()->getRenderer(), x, y);
-
 				}
 			}
 		}
@@ -79,7 +89,7 @@ bool CImage::createSquarePixmap(const vector<int> & pixelmap){
 		SDL_SetRenderTarget(CRender::getInstance()->getRenderer(), NULL);
 	}
 	else{
-		fprintf(stderr,"Error creating surface %s",SDL_GetError());
+		fprintf(stderr,"Error creating surface %s\n",SDL_GetError());
 		return false;
 	}
 	return true;
@@ -98,8 +108,9 @@ int CImage::getHeight(){
 }
 
 void CImage::destroy(){
-	printf("Image destroyed!");
+
 	if(texture != NULL){
+		printf("Image destroyed!\n");
 		SDL_DestroyTexture(texture);
 	}
 	texture=NULL;

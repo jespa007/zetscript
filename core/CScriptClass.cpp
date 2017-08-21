@@ -20,6 +20,7 @@ namespace zetscript{
 
 	string  * CScriptClass::INT_TYPE_STR=NULL;//	typeid(int *).name()
 	string  * CScriptClass::BOOL_TYPE_STR=NULL;//	typeid(bool *).name()
+	string  * CScriptClass::STACK_ELEMENT_PTR=NULL;//	typeid(bool *).name()
 
 	char CScriptClass::registered_metamethod[MAX_METAMETHOD_OPERATORS][50]={0};
 	 //CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
@@ -426,6 +427,7 @@ namespace zetscript{
 			// particular case for return ... for not to force user returning pointer (this is the only vars allowed, sorry!)
 			BOOL_TYPE_STR = new string(typeid(bool).name());
 			INT_TYPE_STR = new string(typeid(int).name());
+			STACK_ELEMENT_PTR= new string(typeid(tStackElement *).name());
 
 
 
@@ -503,7 +505,7 @@ namespace zetscript{
 			if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME,IDX_MAIN_AST_NODE)) == NULL) return false;
 
 
-
+			REGISTER_BASIC_TYPE(tStackElement,IDX_STACK_ELEMENT);
 			if((registerClass("CUndefined","",NULL)) == NULL) return false;		// 8
 			vec_script_class_node->at(IDX_CLASS_UNDEFINED)->classPtrType=typeid(CUndefined *).name();
 
@@ -612,11 +614,13 @@ namespace zetscript{
 			if(!register_C_FunctionMember(CVector,size)) return false;
 			//if(!register_C_FunctionMember(CVector,add)) return false;
 
-			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(int *)>(&CVector::add))) return false;
+		/*	if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(int *)>(&CVector::add))) return false;
 			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(float *)>(&CVector::add))) return false;
 			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(string *)>(&CVector::add))) return false;
 			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(bool *)>(&CVector::add))) return false;
-			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(CScriptVariable *)>(&CVector::add))) return false;
+			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(CScriptVariable *)>(&CVector::add))) return false;*/
+			if(!register_C_FunctionMember(CVector,add)) return false;
+			if(!register_C_FunctionMember(CVector,pop)) return false;
 
 
 
@@ -1213,6 +1217,9 @@ namespace zetscript{
 				 ));
 			 }
 		 }
+
+
+		 // finally update constant symbols ...
 
 		 return true;
 	}

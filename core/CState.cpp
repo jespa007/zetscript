@@ -276,7 +276,9 @@ namespace zetscript{
 			if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){ // is a compiled script ...
 #ifdef __DEBUG__
 				CScriptClass *sc = CScriptClass::getScriptClassByIdx(info_function->object_info.symbol_info.idxScriptClass);
+				if(sc){
 				zs_print_debug_cr("Clear function %s::%s...",sc->metadata_info.object_info.symbol_info.symbol_name.c_str(),info_function->object_info.symbol_info.symbol_name.c_str());
+				}
 #endif
 
 				//zs_print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());

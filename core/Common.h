@@ -114,6 +114,7 @@ enum NODE_TYPE
 	ARRAY_REF_NODE,
 	FUNCTION_REF_NODE,
 	NEW_OBJECT_NODE,
+	DELETE_OBJECT_NODE,
 	ACCESS_OBJECT_MEMBER_NODE,
 	STRUCT_NODE,
 	MAX_NODE_TYPE
@@ -278,10 +279,12 @@ enum ASM_OPERATOR
 	RET, // ret instruction ..
 
 	NEW, // new operator...
+	DELETE,
 	OBJECT_ACCESS, // object access .
 	//SAVE_I, // save current instruction...
 	//LOAD_I, // load value that points saved instruction...
 
+	PUSH_SCOPE,
 	POP_SCOPE,
 	DECL_STRUCT,
 	PUSH_ATTR,
@@ -338,13 +341,13 @@ enum
 	BIT_TYPE_BOOLEAN,		// 0x10
 	BIT_TYPE_STRING,		// 0x20
 	BIT_TYPE_FUNCTION,		// 0x40
-	BIT_TYPE_SCRIPTVAR,
+	BIT_TYPE_SCRIPTVAR,		// 0x80
 	MAX_BIT_VAR_TYPE,
 	//-- VM RUNTIME
-	BIT_IS_C_VAR = MAX_BIT_VAR_TYPE,
-	BIT_IS_STACKVAR,
-	BIT_IS_INSTRUCTIONVAR,
-	BIT_IS_ASSIGN_OP,
+	BIT_IS_C_VAR = MAX_BIT_VAR_TYPE, // 0x100
+	BIT_IS_STACKVAR,				 // 0x200
+	BIT_IS_INSTRUCTIONVAR,			 // 0x400
+	BIT_POP_ONE,				 // 0x800
 	//BIT_IS_UNRESOLVED_FUNCTION,
 
 	//BIT_START_FUNCTION_ARGS,
@@ -376,7 +379,7 @@ enum
 		INS_PROPERTY_IS_C_VAR = (0x1 << BIT_IS_C_VAR),
 	INS_PROPERTY_IS_STACKVAR = (0x1 << BIT_IS_STACKVAR),
 	INS_PROPERTY_IS_INSTRUCTIONVAR = (0x1 << BIT_IS_INSTRUCTIONVAR),
-	INS_PROPERTY_IS_ASSIGN_OP = (0x1 << BIT_IS_ASSIGN_OP),
+	INS_PROPERTY_READ_TWO_POP_ONE = (0x1 << BIT_POP_ONE),
 	//INS_PROPERTY_UNRESOLVED_FUNCTION = (0x1 << BIT_IS_UNRESOLVED_FUNCTION) // always is an script class...
 //INS_PROPERTY_START_FUNCTION_ARGS=	(0x1<<BIT_START_FUNCTION_ARGS)
 };
@@ -387,25 +390,25 @@ enum
 // properties shared by compiler + instruction ..
 enum {
 	//-- PRE/POST OPERATORS (Byy default there's no operators involved)
-	BIT_PRE_INC = 0,
-	BIT_POST_INC,
-	BIT_PRE_DEC,
-	BIT_POST_DEC,
-	BIT_PRE_NOT,
+	BIT_PRE_INC = 0,	// 0x1
+	BIT_POST_INC,		// 0x2
+	BIT_PRE_DEC,		// 0x4
+	BIT_POST_DEC,		// 0x8
+	BIT_PRE_NOT,		// 0x10
 	MAX_BIT_PRE_POST_OP,
 
 	//-- SCOPE TYPE (By default is global scope)
-	BIT_LOCAL_SCOPE = MAX_BIT_PRE_POST_OP,
-	BIT_THIS_SCOPE,
-	BIT_SUPER_SCOPE,
-	BIT_ACCESS_SCOPE,
+	BIT_LOCAL_SCOPE = MAX_BIT_PRE_POST_OP, 	// 0x20
+	BIT_THIS_SCOPE,							// 0x40
+	BIT_SUPER_SCOPE,						// 0x80
+	BIT_ACCESS_SCOPE,						// 0x100
 	MAX_BIT_SCOPE_TYPE,
 
 	//-- CALL TYPE
-	BIT_CALLING_OBJECT = MAX_BIT_SCOPE_TYPE,
-	BIT_DIRECT_CALL_RETURN,
-	BIT_DEDUCE_C_CALL,
-	BIT_CONSTRUCT_CALL,
+	BIT_CALLING_OBJECT = MAX_BIT_SCOPE_TYPE,// 0x200
+	BIT_DIRECT_CALL_RETURN,					// 0x400
+	BIT_DEDUCE_C_CALL,						// 0x800
+	BIT_CONSTRUCT_CALL,						// 0x1000
 	MAX_BIT_CALL_PROPERTIES,
 };
 
@@ -471,13 +474,14 @@ enum BASIC_CLASS_TYPE {
 
 	IDX_START_SCRIPTVAR = MAX_CLASS_C_TYPES, 		// Starting classes ...
 	IDX_CLASS_MAIN = MAX_CLASS_C_TYPES, 			// Main class ...
-	IDX_CLASS_UNDEFINED,	// 1
+	IDX_STACK_ELEMENT,		// 1
+	IDX_CLASS_UNDEFINED,	// 2
 	IDX_CLASS_NULL,			// 3
 	IDX_CLASS_SCRIPT_VAR, 	// 4 script base that all object derive from it...
-	IDX_CLASS_STRING,     	// 8
-	IDX_CLASS_VECTOR,		// 10
-	IDX_CLASS_FUNCTOR,		// 11
-	IDX_CLASS_STRUCT,		// 12
+	IDX_CLASS_STRING,     	// 5
+	IDX_CLASS_VECTOR,		// 6
+	IDX_CLASS_FUNCTOR,		// 7
+	IDX_CLASS_STRUCT,		// 8
 	MAX_BASIC_CLASS_TYPES
 };
 
@@ -664,6 +668,7 @@ namespace zetscript{
 	typedef struct _tInfoSharedPointer {
 		CScriptVariable *shared_ptr;
 		unsigned char n_shares;
+
 		//short idx_0_shares;
 		//PInfoSharedPointer next;
 	} tInfoSharedPointer;
@@ -671,6 +676,7 @@ namespace zetscript{
 	typedef struct _tNode * PInfoSharedPointerNode;
 	typedef struct _tNode {
 		tInfoSharedPointer data;
+		unsigned short currentStack;
 		PInfoSharedPointerNode previous, next;
 	} tInfoSharedPointerNode;
 
@@ -679,5 +685,4 @@ namespace zetscript{
 
 
 }
-
 

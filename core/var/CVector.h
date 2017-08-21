@@ -12,6 +12,7 @@ namespace zetscript{
 			vector<_T> v_out;
 			string typestr = typeid(_T).name();
 
+
 			if(v_in){
 				for(int i = 0; i < v_in->size(); i++){
 
@@ -31,7 +32,7 @@ namespace zetscript{
 							break;
 						case INS_PROPERTY_TYPE_INTEGER:
 							if((typestr == typeid(int).name())){
-								v_out.push_back((int)sv.stkValue);
+								v_out.push_back((intptr_t)sv.stkValue);
 							}else{
 								zetscript::zs_print_error_cr("Error trying to cast element on vector<int>");
 								return v_out;
@@ -78,13 +79,15 @@ namespace zetscript{
 		//CVector(CScriptClass *info_registered_class);
 		virtual bool unrefSharedPtr();
 		virtual bool initSharedPtr();
-		void add(const tStackElement  & v);
-		void add(int * v);
-		void add(bool * v);
-		void add( string * v);
-		void add(float * v);
+		//void add(const tStackElement  & v);
+		void add(tStackElement  * v);
+		void pop();
+	//	void add(int * v);
+	//	void add(bool * v);
+	//	void add( string * v);
+	//	void add(float * v);
 		tStackElement *push();
-		void add(CScriptVariable * v);
+	//	void add(CScriptVariable * v);
 		int size();
 
 

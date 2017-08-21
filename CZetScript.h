@@ -141,7 +141,7 @@ namespace zetscript{
 
 		CScriptVariable * execute();
 
-		bool eval(const string & string);
+		bool eval(const string & string, bool execute=true);
 		bool eval_file(const char * filename);
 
 	

@@ -68,7 +68,6 @@ namespace zetscript{
 					 si->proxy_ptr = (intptr_t)(*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->object_info.symbol_info.ref_ptr))(c_object,PROXY_CREATOR::CREATE_FUNCTION);
 				 }
 			}
-			//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
 		}
 	}
 
@@ -149,7 +148,6 @@ namespace zetscript{
 			//c_class_create_destroy=m_infoRegisteredClass;
 		}
 		//m_rootAst=NULL;
-		//m_registeredVariable = NULL;
 		//m_type = TYPE::SCRIPT_FUNCTION_TYPE;
 		//pointer_function = NULL;
 		//m_scope = scope;
@@ -424,10 +422,11 @@ namespace zetscript{
 		 return ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != 0);
 	}
 
-	CScriptVariable::~CScriptVariable(){
-
+	void CScriptVariable::destroy(bool delete_user_request){
 		if(created_object != 0){
+			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request){ // only erases pointer if vector/struct, etc ...
 			 (*c_class_create_destroy->c_destructor)(created_object);
+			}
 		}
 
 
@@ -451,9 +450,11 @@ namespace zetscript{
 
 					default: // variable ...
 						if(m_variableSymbol[i].object.properties & INS_PROPERTY_IS_C_VAR){ // deallocate but not if is native string
-							if(m_variableSymbol[i].object.varRef != NULL){
-								delete ((CScriptVariable *)(m_variableSymbol[i].object.varRef));
-							}
+
+								if(m_variableSymbol[i].object.varRef != NULL){
+									delete ((CScriptVariable *)(m_variableSymbol[i].object.varRef));
+								}
+
 						}
 						break;
 				}
@@ -473,8 +474,12 @@ namespace zetscript{
 				 }
 
 			}
-			//addSymbol(m_infoRegisteredClass->object_info.local_symbols.m_registeredVariable[i].ast);
 		}
+	}
+
+	CScriptVariable::~CScriptVariable(){
+
+		destroy();
 
 	}
 }

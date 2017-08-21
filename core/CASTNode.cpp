@@ -753,7 +753,7 @@ namespace zetscript{
 			}
 
 			if(*aux != '\"') {
-				zs_print_error_cr("Error \" not closed");
+				zs_print_error_cr("Line %i: Error \" not closed",m_line);
 				return NULL;
 			}
 			aux++;
@@ -1090,6 +1090,12 @@ namespace zetscript{
 					return NULL;
 				}
 				break;
+			case KEYWORD_TYPE::DELETE_KEYWORD:
+				if((aux = parseDelete(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
+					return NULL;
+				}
+				break;
+
 			case KEYWORD_TYPE::THIS_KEYWORD:
 				return parseExpression_Recursive(str,  m_line, scope_info, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
 				break;
@@ -1411,6 +1417,7 @@ namespace zetscript{
 
 			print_ast_cr("checkpoint3:%c\n",*aux);
 
+
 			aux=IGNORE_BLANKS(aux, m_line);
 
 			if(!isMarkEndExpression(*aux)){ // is not end expression
@@ -1452,7 +1459,7 @@ namespace zetscript{
 						}
 					}
 				}else{
-					zs_print_error_cr("line %i:expected operator or punctuator after \"%s\"",m_line,symbol_value.c_str());
+					zs_print_error_cr("line %i:expected operator or punctuator after \"%s\"",DUMMY_LINE,symbol_value.c_str());
 					return NULL;
 				}
 			}
@@ -1855,8 +1862,8 @@ namespace zetscript{
 				 symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
 
 				if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
-				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
-				(*ast_node_to_be_evaluated)->keyword_info = key_w;
+				(*ast_node_to_be_evaluated)->node_type = DELETE_OBJECT_NODE;
+				(*ast_node_to_be_evaluated)->keyword_info = KEYWORD_TYPE::UNKNOWN_KEYWORD;
 				(*ast_node_to_be_evaluated)->symbol_value = symbol_value;
 
 				return aux_p;
@@ -2043,6 +2050,10 @@ namespace zetscript{
 			}
 
 			if(*aux_p != c2 ){
+				if(*aux_p == ',' ){
+					zs_print_error_cr("line %i:Unexpected , at line %i",m_line,c2);
+					return NULL;
+				}
 
 				do{
 					if((aux_p = parseExpression(aux_p,m_line,scope_info,(ast_node_to_be_evaluated != NULL ? &node_arg_expression : NULL)))==NULL){
@@ -3179,109 +3190,114 @@ namespace zetscript{
 
 		key_w = isKeyword(aux_p);
 
-		if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
-			if(key_w == KEYWORD_TYPE::VAR_KEYWORD){ // possible variable...
-				aux_p += strlen(defined_keyword[key_w].str);
-				aux_p=IGNORE_BLANKS(aux_p,m_line);
+		//if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
+		if(key_w == KEYWORD_TYPE::VAR_KEYWORD){ // possible variable...
+			aux_p += strlen(defined_keyword[key_w].str);
+			aux_p=IGNORE_BLANKS(aux_p,m_line);
 
-				if(ast_node_to_be_evaluated != NULL){
-					_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
-					if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
-					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
-					(*ast_node_to_be_evaluated)->keyword_info = key_w;
-					(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
-					if(_currentScope != NULL){
-						(*ast_node_to_be_evaluated)->idxScope = _currentScope->idxScope;
-					}
+			if(ast_node_to_be_evaluated != NULL){
+				_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
+				if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
+				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
+				(*ast_node_to_be_evaluated)->keyword_info = key_w;
+				(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
+				if(_currentScope != NULL){
+					(*ast_node_to_be_evaluated)->idxScope = _currentScope->idxScope;
 				}
-				while(*aux_p != ';' && *aux_p != 0 ){ // JE: added multivar feature.
-					start_var=aux_p;
-					m_startLine = m_line;
+			}
+			while(*aux_p != ';' && *aux_p != 0 ){ // JE: added multivar feature.
+				start_var=aux_p;
+				m_startLine = m_line;
 
-					if((end_var=getSymbolName(aux_p,m_line))==NULL){
-						return NULL;
-					}
-					if((symbol_name=CStringUtils::copyStringFromInterval(start_var,end_var)) == NULL){
-						return NULL;
-					}
-
-					aux_p=end_var;
-					aux_p=IGNORE_BLANKS(aux_p,m_line);
-					if((*aux_p == ';' || *aux_p == '=' || *aux_p == ',' )){ // JE: added multivar feature (',)).
-						zs_print_debug_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
-						var_node = NULL;
-						if(ast_node_to_be_evaluated!=NULL){
-
-							if((var_node = CASTNode::newASTNode()) == NULL) return NULL;
-							// save symbol in the node ...
-							(var_node)->symbol_value = symbol_name;
-							(var_node)->idxScope = ZS_UNDEFINED_IDX;
-
-							if(_currentScope != NULL){
-								(var_node)->idxScope = _currentScope->idxScope;
-							}
-
-							(var_node)->line_value = m_line;
-
-							(*ast_node_to_be_evaluated)->children.push_back(var_node->idxAstNode);
-
-							zs_print_debug_cr("scope %i",_currentScope->idxScope);
-
-
-							if(!_currentScope->registerSymbol(symbol_name,var_node)){
-								return NULL;
-							}
-						}
-						if(*aux_p == '='){
-							PASTNode children_node=NULL;
-
-							// try to evaluate expression...
-							aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-							if((aux_p = parseExpression(start_var,m_startLine,scope_info,var_node != NULL ? &children_node : NULL)) == NULL){
-								return NULL;
-							}
-
-							if(var_node != NULL){
-
-								if(children_node==NULL){
-									zs_print_error_cr("children node == NULL");
-									return NULL;
-								}
-
-								var_node->children.push_back(children_node->idxAstNode);
-							}
-
-							m_line = m_startLine;
-
-							if(!(*aux_p == ';' || *aux_p == '=' || *aux_p == ',' )){
-								zs_print_error_cr("line %i: expected ',',';' or '=' but it was '%c'", m_line,*aux_p);
-								return NULL;
-							}
-						}
-					}
-					else{
-						zs_print_error_cr("line %i: expected ',',';' or '=' but it was '%c'", m_line,*aux_p);
-						return NULL;
-					}
-					// ignores ';' or ','
-					if(*aux_p == ',')
-						aux_p++;
+				if((end_var=getSymbolName(aux_p,m_line))==NULL){
+					return NULL;
 				}
-
-				if(*aux_p == ';'){
-					aux_p++;
-				}
-				else{
-					zs_print_error_cr("Expected ';' at line %i", m_line);
+				if((symbol_name=CStringUtils::copyStringFromInterval(start_var,end_var)) == NULL){
 					return NULL;
 				}
 
-				return aux_p;
+				aux_p=end_var;
+				aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+				if((*aux_p == ';' || *aux_p == '=' || (*aux_p == ',') )){ // JE: added multivar feature (',)).
+					zs_print_debug_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
+					var_node = NULL;
+					if(ast_node_to_be_evaluated!=NULL){
+
+						if((var_node = CASTNode::newASTNode()) == NULL) return NULL;
+						// save symbol in the node ...
+						(var_node)->symbol_value = symbol_name;
+						(var_node)->idxScope = ZS_UNDEFINED_IDX;
+
+						if(_currentScope != NULL){
+							(var_node)->idxScope = _currentScope->idxScope;
+						}
+
+						(var_node)->line_value = m_line;
+
+						(*ast_node_to_be_evaluated)->children.push_back(var_node->idxAstNode);
+
+						zs_print_debug_cr("scope %i",_currentScope->idxScope);
+
+
+						if(!_currentScope->registerSymbol(symbol_name,var_node)){
+							return NULL;
+						}
+					}
+					if(*aux_p == '='){
+						PASTNode children_node=NULL;
+
+						// try to evaluate expression...
+						aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+						if((aux_p = parseExpression(start_var,m_startLine,scope_info,var_node != NULL ? &children_node : NULL)) == NULL){
+							return NULL;
+						}
+
+						if(var_node != NULL){
+
+							if(children_node==NULL){
+								zs_print_error_cr("children node == NULL");
+								return NULL;
+							}
+
+							var_node->children.push_back(children_node->idxAstNode);
+						}
+
+						m_line = m_startLine;
+
+						if(!(*aux_p == ';' || *aux_p == '=' || *aux_p == ',' )){
+							zs_print_error_cr("line %i: expected ',',';' or '=' but it was '%c'", m_line,*aux_p);
+							return NULL;
+						}
+					}
+				}
+				else{
+					zs_print_error_cr("line %i: expected ',',';' or '=' but it was '%c'", m_line,*aux_p);
+					return NULL;
+				}
+				// ignores ';' or ','
+				if(*aux_p == ',')
+					aux_p++;
 			}
+
+			if(*aux_p == ';'){
+				aux_p++;
+			}
+			else{
+				zs_print_error_cr("Expected ';' at line %i", m_line);
+				return NULL;
+			}
+
+			return aux_p;
 		}
+		else{
+			zs_print_error("const or var keyword expected!");
+		}
+		//}
 		return NULL;
 	}
+
 
 	char * CASTNode::parseBlock(const char *s,int & m_line,  CScope *scope_info, bool & error,PASTNode *ast_node_to_be_evaluated, bool push_scope){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.

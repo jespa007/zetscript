@@ -3,13 +3,12 @@
 <h2>Description</h2>
 
 
-ZetScript is a basic script engine for your c++ project.
+ZetScript is a basic c++ script engine for your projects.
 
 
 
 
-<h2>Performance</h2>
-
+<h2>Testing performance</h2>
 
 
 <b>for_test.zs</b> has this code,
@@ -40,19 +39,19 @@ Generates this following asm,
 
 
 
+Total 12 instruction within loop
 
 
+Current performance,
 
-Total 15 instructions
+Is performed 10000000 times within 1.600 seconds so,
 
-
-Is performed 10000000 times within 0.777 seconds so,
-
-(15*10000000)/0.777=  => 193MIPS ~ better than Shit with a horse 
+(12*10000000)/1.500=  => 80MIPS 
 
 Comparison tables https://en.wikipedia.org/wiki/Instructions_per_second
 
-TABLE OPTIMIZATION
+
+OPTIMIZATION HISTORY
 
 Optimization|   ms  |   MIPS   | Desc
 ------------|-------|----------|---------------------------------------------
@@ -60,8 +59,8 @@ No opt      |  2700 |  37 MIPS | N/A
 1st         |  2000 |  50 MIPS | std::vector to plain C
 2st         |  1400 |  71 MIPS | Get rid of function access as much as possible
 3st         |  1321 |  75 MIPS | Integrate Memory manage
-4rt         |  1135 |  88 MIPS | Optimize main loop with continues and statments/instructions iteration ends with NULL
-5rt         |  0.777|  193 MIPS| Optimize main loop 2nd
+4rt         |  1513 |  80 MIPS | Optimize main loop with continues and statments/instructions iteration ends with NULL
+
 
 
 

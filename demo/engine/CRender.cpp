@@ -5,6 +5,8 @@
 #define BMASK32 0x00ff0000
 #define AMASK32 0xff000000
 
+
+
 CRender *CRender::render=NULL;
 
 CRender *CRender::getInstance(){
@@ -24,6 +26,9 @@ void CRender::destroy(){
 CRender::CRender(){
 	pWindow = NULL;
 	pRenderer=NULL;
+	fullscreen=false;
+	m_height=0;
+	m_width=0;
 }
 
 void CRender::createWindow(int width, int height){
@@ -43,6 +48,9 @@ void CRender::createWindow(int width, int height){
 			,height
 			,0);
 
+	this->m_width=width;
+	this->m_height=height;
+
 	if (!pWindow) {
 		fprintf(stderr,"Unable to create window: %s\n", SDL_GetError());
 		exit(EXIT_FAILURE);
@@ -55,6 +63,15 @@ void CRender::createWindow(int width, int height){
 		exit(EXIT_FAILURE);
     }
 }
+
+int CRender::getWidth(){
+	return m_width;
+}
+
+int CRender::getHeight(){
+	return m_height;
+}
+
 
 SDL_Renderer * CRender::getRenderer(){
 	return pRenderer;
@@ -70,12 +87,20 @@ void CRender::clear(Uint8 r, Uint8 g, Uint8 b){
 	SDL_RenderClear( pRenderer );
 }
 
-void CRender::drawImage(int x, int y, CImage *img){
+void CRender::drawImage(int x, int y, CImage *img, int rgb){
 	//Apply the image
 	if(img){
 		SDL_Texture *text=img->getTexture();
 		if(text){
-			SDL_Rect rect={x,y,img->getWidth(),img->getHeight()};
+			SDL_Rect rect={x-(img->getWidth()>>1),y-(img->getHeight()>>1),img->getWidth(),img->getHeight()};
+
+			//SDL_SetRenderDrawColor(CRender::getInstance()->getRenderer(), 0xFF, 0x00, 0xFF, 0x17);
+			SDL_SetTextureColorMod(text,
+			                           rgb&0xFF,
+			                           (rgb>>8)&0xFF,
+			                           (rgb>>16)&0xFF);
+
+
 			SDL_RenderCopy(pRenderer, text, NULL, &rect);
 		}
 	}
@@ -85,6 +110,10 @@ void CRender::drawText(int x,int y, CFont * font, string * text){
 	if(font){
 		SDL_Texture *font_text=font->getTexture();
 		if(font_text){
+
+			int total_width=font->getTextWith(*text);
+
+			x-=total_width>>1;
 
 			SDL_Rect rect={x,y,font->getCharWidth(),font->getCharHeight()};
 			for(unsigned i=0; i < text->size(); i++){
@@ -97,12 +126,25 @@ void CRender::drawText(int x,int y, CFont * font, string * text){
 }
 
 void CRender::drawSprite(CSprite *spr){
-	drawImage(spr->x,spr->y, spr->getCurrentFrame());
+	CSprite::tFrameInfo *fi=spr->getCurrentFrame();
+	if(fi!=NULL){
+		drawImage(spr->x,spr->y, fi->image, fi->color);
+	}
 }
 
 void CRender::update(){
 	//Update screen
 	SDL_RenderPresent( pRenderer );
+}
+
+void CRender::toggleFullscreen(){
+	if(!fullscreen){
+		SDL_SetWindowFullscreen(pWindow, SDL_WINDOW_FULLSCREEN);
+	}else{
+		SDL_SetWindowFullscreen(pWindow, 0);
+	}
+
+	fullscreen=!fullscreen;
 }
 
 CRender::~CRender(){

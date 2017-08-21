@@ -29,7 +29,7 @@
 
 
 
-#define register_C_VariableMember(o,s) 			CScriptClass::register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offsetof(o,s))
+#define register_C_VariableMember(o,s) 			CScriptClass::register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offset_of(&o::s))
 #define register_C_FunctionMember(o,s)			CScriptClass::register_C_FunctionMemberInt<o>(STR(s),&o::s)
 #define register_C_FunctionConstructor(o,s)		CScriptClass::register_C_FunctionMemberInt<o>(demangle(typeid(o).name()).c_str(),&o::s)
 #define register_C_StaticFunctionMember(o,s)	CScriptClass::register_C_StaticFunctionMemberInt<o>(STR(s),&o::s)
@@ -73,6 +73,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		static string  *BOOL_PTR_TYPE_STR;//	typeid(bool *).name()
 		static string  *INT_TYPE_STR;//	typeid(int).name()
 		static string  *BOOL_TYPE_STR;//	typeid(bool).name()
+		static string  *STACK_ELEMENT_PTR;//	typeid(bool).name()
 		static char     registered_metamethod[MAX_METAMETHOD_OPERATORS][50];
 
 		CScriptFunctionObject	metadata_info;
@@ -313,9 +314,11 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 				CASTNode *ast =CASTNode::newASTNode();
 				CASTNode *ast_var_symbols =CASTNode::newASTNode();
+				CASTNode *ast_collection_var_symbols =CASTNode::newASTNode();
 				CASTNode *ast_fun_symbols =CASTNode::newASTNode();
 
 				// push var & fun symbols node...
+				ast_var_symbols->children.push_back(ast_collection_var_symbols->idxAstNode);
 				ast->children.push_back(ast_var_symbols->idxAstNode);
 				ast->children.push_back(ast_fun_symbols->idxAstNode);
 
@@ -677,8 +680,9 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 			// init ast
 			CASTNode *ast_symbol = CASTNode::newASTNode();
 			ast_symbol->symbol_value = var_name;
-			// get ast var symbol collection node...
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[0]);
+
+			// get ast var symbol collection node ( because class has a var collection we need a children [0] )
+			CASTNode *ast_symbol_node =AST_NODE(AST_NODE(AST_NODE((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[0])->children[0]);
 			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
 
 

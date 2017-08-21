@@ -119,4 +119,14 @@ namespace zetscript{
 		getArgTypes<F::arity, F, typename F::template argument<Is>::type...>(typeParams);
 	}
 
+
+	//--------------- OFFSET OF
+
+
+	template <typename T1, typename T2>
+	inline size_t offset_of(T1 T2::*member) {
+	  static T2 obj;
+	  return size_t(&(obj.*member)) - size_t(&obj);
+	}
+
 }

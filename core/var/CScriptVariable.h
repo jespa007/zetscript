@@ -81,6 +81,7 @@ namespace zetscript{
 
 		intptr_t get_C_StructPtr();
 
+		void destroy(bool delete_user_request=false);
 		virtual ~CScriptVariable();
 
 	protected:
