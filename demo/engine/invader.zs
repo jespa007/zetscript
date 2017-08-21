@@ -1,80 +1,9 @@
-
-var prova;
-//var caca_de_vaca=0;
-var render = getRender();
-
-/*
-class MyClass:CSprite{
-	
-	var active;
-	//var width;
-	//var height;
-	//var x;
-	//var y;
-	
-	function MyClass(){
-		//this.id=_id;
-
-	}
-	
-	function update(){
-		
-
-		//print("update");
-	}
-};
-
-
-class Prova{
-	var sprite;
-	var free_index;
-	
-	function Prova(max_sprites){
-		this.sprite=[];
-		this.free_index=[];
-		
-		var spr=new MyClass();
-		//spr.addFrame(image);
-		spr.active=false;
-		this.sprite.add(spr);
-		
-		spr=this.sprite[0];
-		
-		
-		
-		for(var i=0; i < this.sprite.size(); i++)
-		{
-			this.sprite[i].update();
-			spr=this.sprite[i];
-			var x=spr.x;
-		}
-		
-		
-	
-	}
-	
-
-	
-	//function update(){}
-	
-	function update(){
-
-	}
-		
-	
-	
-};*/
-
 //global vars
 var MAX_ENEMY_BULLETS=20;
 var MAX_HERO_BULLETS=10;
 var MAX_EXPLOSIONS=20;
-
-
+var render = getRender();
 var sound_player=getSoundPlayer();
-
-//var render_width=render.getWidth();
-//var render_height=render.getHeight();
 
 var image=[];
 
@@ -87,7 +16,6 @@ var enemy_bullet=[];
 
 var font;
 var laser_snd;
-
 
 var score=0;
 var top_score=0;
@@ -138,7 +66,6 @@ class CSpriteManager{
 		this.free_index=[];
 		this.max_time_life=0;
 	}
-
 	
 	function CSpriteManager(max_sprites, image,_max_time_life){
 		this.sprite=[];
@@ -174,7 +101,6 @@ class CSpriteManager{
 			if(this.max_time_life>0){
 				this.sprite[index].time_life=currentTime()+this.max_time_life;
 			}
-			
 		}
 	}
 	
@@ -201,10 +127,9 @@ class CSpriteManager{
 				var x=spr.x;
 				
 				if(
-					
 					    ((spr.y<(-(spr.height))) || (spr.y>render.getHeight())) // <-- (spr.height must be in parenthesis)
 					 || ((spr.time_life>0) && (spr.time_life<currentTime()))
-				 	 || (((spr.x)<(-(spr.width)))   || (spr.x> render.getWidth())) // <-- something happens
+				 	 || (((spr.x)<(-(spr.width)))   || (spr.x> render.getWidth())) 
 						){
 					this.remove(i);
 					
@@ -221,7 +146,6 @@ class CEnemyManager:CSpriteManager{
 		super();
 
 		// create mask based sprite 16x16 (total retro!!!)
-
 		var x=20;
 		var start_y=20;
 		
@@ -257,7 +181,6 @@ class CEnemyManager:CSpriteManager{
 			x+=16;
 		}
 		
-		
 		// bonus sprite
 		var spr=new CMySprite(100,0x0000FF);
 		this.sprite.add(spr);
@@ -272,7 +195,6 @@ class CEnemyManager:CSpriteManager{
 			for(var i=0;i < hero_bullet.sprite.size(); i++){
 				if(hero_bullet.sprite[i].active){
 					if(checkCollision(spr,hero_bullet.sprite[i])){
-						//print("collision");
 						hero_bullet.remove(i);
 						spr.active=false;
 						score+=100;
@@ -286,16 +208,10 @@ class CEnemyManager:CSpriteManager{
 	function update(){
 		super();
 	}
-	
 };
 
 
-
-
-
 function init(){ // we initialize here!
-
-	//prova = new Prova(20);
 	
 	font=new CFont();
 	font.load("font.bmp",8,16);
@@ -432,7 +348,6 @@ function init(){ // we initialize here!
 			,1111111111b
 		])
 	];
-	
 
 	// hero sprite
 	hero=new CMySprite();//100,0x00FF00);
@@ -444,13 +359,7 @@ function init(){ // we initialize here!
 	enemy=new CEnemyManager();
 	hero_bullet=new CSpriteManager(MAX_ENEMY_BULLETS,image[9],0);
 	explosion=new CSpriteManager(MAX_EXPLOSIONS,image[8],200);
-	/*for(var i=0; i < MAX_HERO_BULLETS; i++){
-		hero_bullet
-	}*/
-
 }
-
-
 
 function update(){
 	
@@ -463,38 +372,22 @@ function update(){
 	}
 	
 	if(T_SPACE){
-		
 		sound_player.play(laser_snd);
-		
 		hero_bullet.create(hero.x, hero.y, 0, -5);
 	}
-	
 		
 	render.drawText(render.getWidth()/2,0,font,"Score:"+score+"         Top Score:"+top_score);
-	//render.drawImage(x,y,image,0x00FF00);
 	
 	hero_bullet.update();
 	enemy.update();
 	explosion.update();
+	
 	// it draws our customized sprite automatically according current position + current frame...
-	
-	render.drawSprite(hero); // <-- .x and lost!
-
-	
-	//prova.update();
-	
-
-		
+	render.drawSprite(hero);
 }
 
 function unload(){
-
-	delete image;
-	
-	//delete bullet;	
-	delete enemy;
-	delete hero;
-	
+	delete image; // delete only image...
 }
 
 
