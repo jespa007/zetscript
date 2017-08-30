@@ -286,7 +286,7 @@ namespace zetscript{
 		def_operator[RET]={"RET",RET,1}; // Value pop for vector
 
 		def_operator[NEW]={"NEW",NEW,1}; // New object (CREATE)
-		def_operator[DELETE]={"DELETE",DELETE,1};
+		def_operator[DELETE_OP]={"DELETE_OP",DELETE_OP,1};
 		def_operator[OBJECT_ACCESS]={"OBJECT_ACCESS",OBJECT_ACCESS,2}; // New object (CREATE)
 		//def_operator[SAVE_I]={"SAVE_I",SAVE_I,0}; // New object (CREATE)
 		//def_operator[LOAD_I]={"LOAD_I",LOAD_I,0}; // New object (CREATE)
@@ -849,7 +849,7 @@ namespace zetscript{
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
-		asm_op->operator_type=ASM_OPERATOR::DELETE;
+		asm_op->operator_type=ASM_OPERATOR::DELETE_OP;
 		asm_op->idxAstNode = idxAstNode;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 

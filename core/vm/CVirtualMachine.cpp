@@ -2442,7 +2442,7 @@ load_function:
 
 						(*ptrCurrentOp++)={INS_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
 						continue;
-			 	 case  DELETE:
+			 	 case  DELETE_OP:
 			 		 	POP_ONE;
 			 		 	//svar
 			 		 	//CScriptVariable *vec_obj = NULL;
