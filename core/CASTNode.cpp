@@ -1365,8 +1365,7 @@ namespace zetscript{
 		int m_definedSymbolLine;
 		bool special_pre_post_cond = false; // in case of particular pre/post...
 		bool is_packed_node = false;
-		//bool is_preoperator = true;
-
+		//bool parent_access_node=false;
 
 		aux=IGNORE_BLANKS(aux, m_line);
 
@@ -1396,6 +1395,7 @@ namespace zetscript{
 			aux=IGNORE_BLANKS(aux, m_line);
 
 			if((pre_operator=checkPreOperatorPunctuator(aux))!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+
 				aux+=strlen(defined_operator_punctuator[pre_operator].str);
 				aux=IGNORE_BLANKS(aux, m_line);
 			}
@@ -1433,7 +1433,8 @@ namespace zetscript{
 						special_pre_post_cond=true;
 					}
 					else if(operator_group ==  PRE_DEC_PUNCTUATOR){ // -- really is a + PUNCTUATOR...
-						operator_group = SUB_PUNCTUATOR;
+						operator_group = ADD_PUNCTUATOR;
+						pre_operator = SUB_PUNCTUATOR;
 						special_pre_post_cond=true;
 					}
 
@@ -1591,17 +1592,30 @@ namespace zetscript{
 				return NULL;
 			}
 
+
+
 			if(ast_node_to_be_evaluated != NULL){
 				if(left_node != NULL){
 					(*ast_node_to_be_evaluated)->children.push_back(left_node->idxAstNode);
+
+					if(operator_group == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR){
+						(*ast_node_to_be_evaluated)->pre_post_operator_info=left_node->pre_post_operator_info;
+						left_node->pre_post_operator_info=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+					}
 				}
 			}
 
-			if(	ast_node_to_be_evaluated != NULL ){
+			/*if(	ast_node_to_be_evaluated != NULL ){
+				if(operator_group == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR){
+					(*ast_node_to_be_evaluated)->pre_post_operator_info=left_node->pre_post_operator_info;
+					left_node->pre_post_operator_info=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				}
+				else
 				if(left_node->pre_post_operator_info == PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){ // may subnode found post operator...
 					left_node->pre_post_operator_info = pre_operator;
 				}
-			}
+
+			}*/
 
 			// RIGHT BRANCH
 			if((aux=parseExpression_Recursive(
@@ -1622,31 +1636,35 @@ namespace zetscript{
 
 			if(ast_node_to_be_evaluated != NULL){
 				// minus operators has special management because two negatives can be + but sums of negatives works
-				if(operator_group == SUB_PUNCTUATOR) { // supose a-b
+				if(pre_operator == SUB_PUNCTUATOR) { // check -(expr)
 					// 1. change - by +
-					operator_group=ADD_PUNCTUATOR;
+					//operator_group=ADD_PUNCTUATOR;
 					CASTNode *rn =AST_NODE((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
 
-					// 2. create neg node.
-					PASTNode ast_neg_node=NULL;
-					if((ast_neg_node = CASTNode::newASTNode())==NULL) return NULL;
-					ast_neg_node->node_type = NODE_TYPE::PUNCTUATOR_NODE;
-					ast_neg_node->operator_info = SUB_PUNCTUATOR;
+
 
 					// 3. insert node between rigth node and ast_node
 
-					if(rn->node_type == NODE_TYPE::SYMBOL_NODE || rn->is_packed_node){ // end symbol node... let's take the right one...
+					if(/*rn->node_type == NODE_TYPE::SYMBOL_NODE ||*/ rn->is_packed_node){ // end symbol node... let's take the right one...
+
+						// 2. create neg node.
+						PASTNode ast_neg_node=NULL;
+						if((ast_neg_node = CASTNode::newASTNode())==NULL) return NULL;
+						ast_neg_node->node_type = NODE_TYPE::PUNCTUATOR_NODE;
+						ast_neg_node->operator_info = SUB_PUNCTUATOR;
+
+
 						ast_neg_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
 						ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
 						(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=ast_neg_node->idxAstNode;
-					}else{ // let's take the right-left node ...
+					}/*else{ // let's take the right-left node ...
 						CASTNode *rn_ln = AST_NODE(rn->children[LEFT_NODE]);
 						ast_neg_node->idxAstParent = rn->idxAstNode;
 						ast_neg_node->children.push_back(rn_ln->idxAstNode);
 						rn_ln->idxAstParent = ast_neg_node->idxAstNode;
 						rn->children[LEFT_NODE]=ast_neg_node->idxAstNode;
 						//(*ast_node_to_be_evaluated)->children[LEFT_NODE]=ast_neg_node->idxAstNode;
-					}
+					}*/
 				}
 
 				(*ast_node_to_be_evaluated)->node_type = PUNCTUATOR_NODE;
@@ -1960,8 +1978,8 @@ namespace zetscript{
 					// create var & functions collection...
 					if((vars_collection_node = CASTNode::newASTNode())==NULL) return NULL;
 					if((function_collection_node = CASTNode::newASTNode())==NULL) return NULL;
-					(*ast_node_to_be_evaluated)->children.push_back(vars_collection_node->idxAstNode);
-					(*ast_node_to_be_evaluated)->children.push_back(function_collection_node->idxAstNode);
+					(*ast_node_to_be_evaluated)->children.push_back(vars_collection_node->idxAstNode);     // children[0] --> vars
+					(*ast_node_to_be_evaluated)->children.push_back(function_collection_node->idxAstNode); // children[1] --> functions
 
 					if(base_class_node != NULL) {
 						(*ast_node_to_be_evaluated)->children.push_back(	base_class_node ->idxAstNode);
@@ -2212,7 +2230,8 @@ namespace zetscript{
 				if(ast_node_to_be_evaluated!=NULL){
 					PASTNode ast_node = NULL;
 					// create object function ...
-					if(named_function){
+					//if(named_function)
+					//{
 
 						/*if((irv=scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated)))==NULL){
 							return NULL;
@@ -2222,14 +2241,14 @@ namespace zetscript{
 							(*ast_node_to_be_evaluated)->symbol_value=symbol_value;
 						}*/
 
-						ast_node=*ast_node_to_be_evaluated;
-					}
-					else{
+					ast_node=*ast_node_to_be_evaluated;
+					//}
+					/*else{
 						irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
 						ast_node=AST_NODE(irv->idxAstNode);
 						ast_node->symbol_value = irv->name;
 
-					}
+					}*/
 
 					// define value symbol...
 					/*if(irv == NULL){
@@ -2321,11 +2340,11 @@ namespace zetscript{
 							n_params=args_node->children.size();
 						}
 
-						if(function_name!=""){
+						if(named_function){ // register named function...
 							if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
 
 								if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
-									zs_print_error_cr("Line %i: Function name \"%s\" is already defined with same number of args at line %i", m_line, function_name.c_str(),AST_LINE_VALUE(irv->idxAstNode));
+									zs_print_error_cr("Line %i: Function name \"%s\" is already defined with same args at line %i", m_line, function_name.c_str(),AST_LINE_VALUE(irv->idxAstNode));
 								}else{
 									zs_print_error_cr("Function name \"%s\" at line %i is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str(), m_line);
 								}
@@ -2341,6 +2360,9 @@ namespace zetscript{
 								(*ast_node_to_be_evaluated)->symbol_value=function_name;
 							}
 
+						}else{ // register anonymouse function
+							irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
+							(*ast_node_to_be_evaluated)->symbol_value=irv->name;
 						}
 
 					}
@@ -3534,14 +3556,14 @@ namespace zetscript{
 						if(isClassMember(aux+strlen(defined_keyword[keyw].str),startLine, _class_name, _member_name, _class_node,error, keyw) != NULL){
 
 
-							if(keyw == KEYWORD_TYPE::VAR_KEYWORD){
+							if(keyw == KEYWORD_TYPE::VAR_KEYWORD){ // is var member...
 								if((end_expr=parseMemberVar(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children))==NULL){
 									return NULL;
 								}
 								// push into var collection ...
 								AST_NODE(_class_node->children[0])->children.push_back(children->idxAstNode);
 
-							}else{
+							}else{ // is function member...
 								startLine = m_line;
 								end_expr=parseFunction(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children);
 								if(end_expr==NULL){
@@ -3550,6 +3572,10 @@ namespace zetscript{
 								// push into function collection...
 								AST_NODE(_class_node->children[1])->children.push_back(children->idxAstNode);
 							}
+
+
+							children->symbol_value=_member_name;
+
 						}else{
 							if(error){
 								return NULL;

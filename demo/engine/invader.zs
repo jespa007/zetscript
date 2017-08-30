@@ -1,7 +1,8 @@
 
 var prova;
-//var caca_de_vaca=0;
 var render = getRender();
+//var a=gg[0](0);
+//print("caca " +(-render.getWidth()));
 
 /*
 class MyClass:CSprite{
@@ -64,6 +65,7 @@ class Prova{
 	
 	
 };*/
+var hero;
 
 //global vars
 var MAX_ENEMY_BULLETS=20;
@@ -78,7 +80,7 @@ var sound_player=getSoundPlayer();
 
 var image=[];
 
-var hero;
+//var hero;
 var hero_bullet;
 var explosion;
 
@@ -215,6 +217,11 @@ class CSpriteManager{
 	}
 };
 
+function CSpriteManager::post_def_function(){
+	print("my post def function");
+}
+
+
 class CEnemyManager:CSpriteManager{
 	function CEnemyManager(){
 		
@@ -292,10 +299,11 @@ class CEnemyManager:CSpriteManager{
 
 
 
-
 function init(){ // we initialize here!
+	
+	//hero = new CSprite();
 
-	//prova = new Prova(20);
+    //prova = new Prova(20);
 	
 	font=new CFont();
 	font.load("font.bmp",8,16);
@@ -303,6 +311,7 @@ function init(){ // we initialize here!
 	laser_snd=new CSound();
 	laser_snd.load("laser.wav");
 	
+
 	// first create images....	
 	image=[
 		
@@ -444,10 +453,7 @@ function init(){ // we initialize here!
 	enemy=new CEnemyManager();
 	hero_bullet=new CSpriteManager(MAX_ENEMY_BULLETS,image[9],0);
 	explosion=new CSpriteManager(MAX_EXPLOSIONS,image[8],200);
-	/*for(var i=0; i < MAX_HERO_BULLETS; i++){
-		hero_bullet
-	}*/
-
+	//enemy.post_def_function();
 }
 
 
@@ -455,7 +461,7 @@ function init(){ // we initialize here!
 function update(){
 	
 	if(TR_LEFT){
-		hero.x--;
+		--hero.x;
 	}
 	
 	if(TR_RIGHT){

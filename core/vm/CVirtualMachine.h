@@ -249,8 +249,8 @@ namespace zetscript{
 		 tVM_ScopeInfo		scope_idx[VM_LOCAL_VAR_MAX_STACK];
 		// vector<CASTNode *> *vec_ast_node;
 		// CSharedPointerManager *instance_gc;
-		CUndefined				*VM_UNDEFINED; // it holds UNDEFINED_VAR.
-		CNull					*VM_NULL;  // it holds NULL_VAR.
+		CUndefinedScriptVariable				*VM_UNDEFINED; // it holds UNDEFINED_VAR.
+		CNullScriptVariable					*VM_NULL;  // it holds NULL_VAR.
 		tStackElement callc_result;
 
 

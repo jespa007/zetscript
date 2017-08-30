@@ -1,9 +1,9 @@
 
+#include "CFunctorScriptVariable.cpp"
+#include "CNullScriptVariable.cpp"
 #include "CScriptVariable.cpp"
-#include "CString.cpp"
-#include "CVector.cpp"
-#include "CFunctor.cpp"
-#include "CNull.cpp"
-#include "CUndefined.cpp"
-#include "CStruct.cpp"
+#include "CStringScriptVariable.cpp"
+#include "CStructScriptVariable.cpp"
+#include "CUndefinedScriptVariable.cpp"
+#include "CVectorScriptVariable.cpp"
 

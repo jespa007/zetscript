@@ -105,6 +105,7 @@ else()
 	
 	endif()
 
+	#set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
 	
 	SET(CMAKE_C_FLAGS " ")
 	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
@@ -181,9 +182,11 @@ else()
 	# zs_test
 	add_executable(zs_test${POST_NAME}
 		${PROJECT_SOURCE_DIR}/zs_test.cpp
-	)
+	)	
 	
+	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 	
+	# ENGINE EXAMPLE
 	add_executable(engine${POST_NAME}
 		${PROJECT_SOURCE_DIR}/demo/engine/main.cpp
 		${PROJECT_SOURCE_DIR}/demo/engine/CRender.cpp
@@ -198,10 +201,7 @@ else()
 	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/invader.zs ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/invader.zs COPYONLY)
 	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/font.bmp ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/font.bmp COPYONLY)
 	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/laser.wav ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/laser.wav COPYONLY)
-	
-	
-	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+
 	
 	if (MINGW)
 		find_library(SDL2_LIB  NAMES SDL2  )
@@ -209,6 +209,8 @@ else()
 	else()
 		target_link_libraries(engine${POST_NAME} zetscript${POST_NAME} SDL2main SDL2)
 	endif()
+	
+
 	
 endif()
 

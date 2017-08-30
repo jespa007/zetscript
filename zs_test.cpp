@@ -2,7 +2,145 @@
 
 using namespace zetscript;
 
+class CNumber{
+public:
 
+	float n;
+	CNumber(){
+		n=0;
+	}
+
+	CNumber(float _n){
+		n=_n;
+	}
+
+	static CNumber * _add(CNumber *n1, CNumber *n2){
+		return new CNumber(n1->n + n2->n);
+	}
+
+	static CNumber * _add(CNumber *n1, float *n2){
+		return new CNumber(n1->n + *n2);
+	}
+
+	static CNumber * _add(CNumber *n1, int n2){
+		return new CNumber(n1->n + n2);
+	}
+
+	static CNumber * _div(CNumber *n1, CNumber *n2){
+		return new CNumber(n1->n / n2->n);
+	}
+
+	static CNumber * _div(CNumber *n1, float *n2){
+		return new CNumber(n1->n / *n2);
+	}
+
+	static CNumber * _div(CNumber *n1, int n2){
+		return new CNumber(n1->n / n2);
+	}
+
+	static CNumber * _mod(CNumber *n1, CNumber *n2){
+		return new CNumber(fmod(n1->n ,n2->n));
+	}
+
+	static CNumber * _mod(CNumber *n1, float *n2){
+		return new CNumber(fmod(n1->n, *n2));
+	}
+
+	static CNumber * _mod(CNumber *n1, int n2){
+		return new CNumber(fmod(n1->n , n2));
+	}
+
+	static CNumber * _mul(CNumber *n1, CNumber *n2){
+		return new CNumber(n1->n * n2->n);
+	}
+
+	static CNumber * _mul(CNumber *n1, float *n2){
+		return new CNumber(n1->n * *n2);
+	}
+
+	static CNumber * _mul(CNumber *n1, int n2){
+		return new CNumber(n1->n * n2);
+	}
+
+};
+
+class CInteger{
+public:
+
+	int n;
+	CInteger(){
+		n=0;
+	}
+
+	CInteger(int _n){
+		n=_n;
+	}
+
+	static CInteger * _add(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n + n2->n);
+	}
+
+	static CInteger * _add(CInteger *n1, float *n2){
+		return new CInteger(n1->n + *n2);
+	}
+
+	static CInteger * _add(CInteger *n1, int n2){
+		return new CInteger(n1->n + n2);
+	}
+
+	static CInteger * _div(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n / n2->n);
+	}
+
+	static CInteger * _div(CInteger *n1, float *n2){
+		return new CInteger(n1->n / *n2);
+	}
+
+	static CInteger * _div(CInteger *n1, int n2){
+		return new CInteger(n1->n / n2);
+	}
+
+	static CInteger * _mod(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n % n2->n);
+	}
+
+	static CInteger * _mod(CInteger *n1, float *n2){
+		return new CInteger(fmod(n1->n, *n2));
+	}
+
+	static CInteger * _mod(CInteger *n1, int n2){
+		return new CInteger(n1->n % n2);
+	}
+
+	static CInteger * _mul(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n * n2->n);
+	}
+
+	static CInteger * _mul(CInteger *n1, float *n2){
+		return new CInteger(n1->n * *n2);
+	}
+
+	static CInteger * _mul(CInteger *n1, int n2){
+		return new CInteger(n1->n * n2);
+	}
+
+	static CInteger * _shl(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n << n2->n);
+	}
+
+	static CInteger * _shl(CInteger *n1, int n2){
+		return new CInteger(n1->n << n2);
+	}
+
+	static CInteger * _shr(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n >> n2->n);
+	}
+
+	static CInteger * _shr(CInteger *n1, int n2){
+		return new CInteger(n1->n >> n2);
+	}
+
+};
 
 // Usable AlmostEqual function
 bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
@@ -269,27 +407,6 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(true));
 
 
-class MyObject{
-
-
-
-public:
-
-	int i;
-	bool b;
-
-
-
-	MyObject * _add(MyObject *op1, MyObject *op2){
-
-		MyObject *result = new MyObject();
-		result->i = op1->i + op2->i;
-		return result;
-	}
-
-
-
-};
 
 
 int main(int argc, char * argv[]) {
@@ -334,7 +451,14 @@ int main(int argc, char * argv[]) {
 	//CZetScript::eval<int>("10-*10");
 	//int i= 0+ +1;
 
-	//exit(-1);
+	TEST_BOOL_EXPR("var i=true;i=!i;",false);
+	exit(-1);
+
+	if(!CScriptClass::register_C_Class<CNumber>("CNumber")) return false;
+	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,int )>(&CNumber::_add))) return false;
+	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add))) return false;
+	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber  *)>(&CNumber::_add))) return false;
+
 
 
 	// unsinged
@@ -404,10 +528,10 @@ int main(int argc, char * argv[]) {
 
 
 	TEST_INT_EXPR("var i=1;",1);
-	TEST_INT_EXPR("i++;",2);
-	TEST_INT_EXPR("++i;",3);
-	TEST_INT_EXPR("i--;",2);
-	TEST_INT_EXPR("--i;",1);
+	TEST_INT_EXPR("i++;i;",2);
+	TEST_INT_EXPR("++i;i;",3);
+	TEST_INT_EXPR("i--;i;",2);
+	TEST_INT_EXPR("--i;i;",1);
 
 
 	TEST_INT_EXPR("i=10;i*=10;",100);
@@ -418,8 +542,8 @@ int main(int argc, char * argv[]) {
 
 	// test reassign and float
 	TEST_NUMBER_EXPR("i=2.0;",2.0f);
-	TEST_NUMBER_EXPR("i++;",3.0f);
-	TEST_NUMBER_EXPR("--i;",2.0f);
+	TEST_NUMBER_EXPR("i++;i;",3.0f);
+	TEST_NUMBER_EXPR("--i;i;",2.0f);
 
 	TEST_BOOL_EXPR("i=true;",true);
 	TEST_BOOL_EXPR("i=!i;",false);

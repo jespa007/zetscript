@@ -2,14 +2,14 @@
 
 namespace zetscript{
 
-	CVector::CVector(){
+	CVectorScriptVariable::CVectorScriptVariable(){
 		this->init(CScriptClass::getRegisteredClassVector(), (void *)this);
 		_i_size = 0;
 	}
 
 
 
-	bool CVector::unrefSharedPtr(){
+	bool CVectorScriptVariable::unrefSharedPtr(){
 
 		if(CScriptVariable::unrefSharedPtr()){
 
@@ -29,7 +29,7 @@ namespace zetscript{
 		return false;
 	}
 
-	bool CVector::initSharedPtr(){
+	bool CVectorScriptVariable::initSharedPtr(){
 
 		if(CScriptVariable::initSharedPtr()){
 
@@ -50,17 +50,17 @@ namespace zetscript{
 		return false;
 	}
 
-	tStackElement *CVector::push(){
+	tStackElement *CVectorScriptVariable::push(){
 		tStackElement s={INS_PROPERTY_TYPE_UNDEFINED ,NULL,UNDEFINED_SYMBOL};
 		m_objVector.push_back(s);
 		return &m_objVector[m_objVector.size()-1];
 	}
 
-	/*void CVector::add(const tStackElement & v){
+	/*void CVectorScriptVariable::add(const tStackElement & v){
 		m_objVector.push_back(v);
 	}*/
 
-	void CVector::add(tStackElement  * v){
+	void CVectorScriptVariable::add(tStackElement  * v){
 		m_objVector.push_back(*v);
 
 		// update n_refs +1
@@ -71,7 +71,7 @@ namespace zetscript{
 		}
 	}
 
-	void CVector::pop(){
+	void CVectorScriptVariable::pop(){
 		tStackElement info={INS_PROPERTY_TYPE_UNDEFINED ,NULL,UNDEFINED_SYMBOL};
 		if(m_objVector.size()>0){
 			info=m_objVector[m_objVector.size()-1];
@@ -92,31 +92,31 @@ namespace zetscript{
 		CURRENT_VM->setCallResult(&info);
 	}
 
-	/*void CVector::add(int  * v){
+	/*void CVectorScriptVariable::add(int  * v){
 		m_objVector.push_back({INS_PROPERTY_TYPE_INTEGER,(void *)((intptr_t)(*v)),0});
 	}
-	void CVector::add(bool * v){
+	void CVectorScriptVariable::add(bool * v){
 		m_objVector.push_back({INS_PROPERTY_TYPE_BOOLEAN,(void *)((intptr_t)(*v)),0});
 	}
-	void CVector::add( string * v){
-		CString *s=new CString();
+	void CVectorScriptVariable::add( string * v){
+		CStringScriptVariable *s=new CStringScriptVariable();
 		s->m_strValue =*v;
 		s->initSharedPtr();
 		m_objVector.push_back({INS_PROPERTY_TYPE_STRING,&s->m_strValue,s});
 	}
-	void CVector::add(float *f){
+	void CVectorScriptVariable::add(float *f){
 		tStackElement v = { INS_PROPERTY_TYPE_NUMBER,0,0 };
 		memcpy(v.stkValue,f,sizeof(float));
 		v.varRef=0;
 
 		m_objVector.push_back(v);
 	}
-	void CVector:: add(CScriptVariable * v){
+	void CVectorScriptVariable:: add(CScriptVariable * v){
 		m_objVector.push_back({INS_PROPERTY_TYPE_SCRIPTVAR,0,v});
 	}*/
 
 
-	int CVector::size(){
+	int CVectorScriptVariable::size(){
 		return  m_objVector.size();
 	}
 }

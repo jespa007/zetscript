@@ -232,12 +232,12 @@ Struct and vectors must hold stack variable instead of CScripVariable.
 
 1. Change CScriptVariable to tStackValue.
 
-1.1- CVector change,
+1.1- CVectorScriptVariable change,
  vector<CScriptVariable *> m_value;
   to
   vector<tStackValue> m_value;
 
-1.2-CStruct
+1.2-CStructScriptVariable
 
  map <string, CScriptVariable *> m_property;
 

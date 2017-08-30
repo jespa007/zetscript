@@ -340,7 +340,7 @@ namespace zetscript{
 			if(((dst_ins->properties & INS_PROPERTY_TYPE_STRING)==0) || (dst_ins->varRef==NULL)){\
 				script_var= NEW_STRING_VAR;\
 				dst_ins->varRef=script_var;\
-				dst_ins->stkValue=&(((CString *)script_var)->m_strValue);\
+				dst_ins->stkValue=&(((CStringScriptVariable *)script_var)->m_strValue);\
 				dst_ins->properties=runtime_var | INS_PROPERTY_TYPE_STRING | INS_PROPERTY_TYPE_SCRIPTVAR;\
 				script_var->initSharedPtr(true);\
 			}\
@@ -1371,6 +1371,7 @@ namespace zetscript{
 			 for(;;){ // foreach asm instruction ...
 
 				tInfoAsmOp * instruction = instruction_it++;
+
 				const unsigned char operator_type=instruction->operator_type;
 				const unsigned char index_op1=instruction->index_op1;
 
@@ -1399,12 +1400,17 @@ namespace zetscript{
 
 									if(IS_INT(ptrResultInstructionOp2->properties)){
 										// determine object ...
-										CVector * vec = (CVector *)var_object;
+										CVectorScriptVariable * vec = (CVectorScriptVariable *)var_object;
 										int v_index = LOAD_INT_OP(ptrResultInstructionOp2);
 
 										// check indexes ...
-										if(v_index < 0 || v_index >= (int)(vec->m_objVector.size())){
-											zs_print_error_cr("Line %i. Index vector out of bounds!",AST_LINE_VALUE(instruction->idxAstNode));
+										if(v_index < 0){
+											zs_print_error_cr("Line %i. Negative index vector (%i)!",AST_LINE_VALUE(instruction->idxAstNode),v_index);
+											return NULL;
+										}
+
+										if(v_index >= (int)(vec->m_objVector.size())){
+											zs_print_error_cr("Line %i. Index vector out of bounds (%i)!",AST_LINE_VALUE(instruction->idxAstNode),v_index);
 											return NULL;
 										}
 
@@ -1427,7 +1433,7 @@ namespace zetscript{
 								return NULL;
 							}
 
-						}else{
+						}else{ // load variable ...
 
 							instruction_properties=instruction->instruction_properties;
 							scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
@@ -1480,7 +1486,12 @@ namespace zetscript{
 							}
 						}
 
+						if(ldrVar->properties & (INS_PROPERTY_IS_INSTRUCTIONVAR | INS_PROPERTY_TYPE_FUNCTION)){
+							instruction = (tInfoAsmOp *)ldrVar->stkValue;
+							goto load_function;
+						}
 
+						//*ptrCurrentOp++={INS_PROPERTY_IS_INSTRUCTIONVAR,instruction,0};
 
 						pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction_properties);
 
@@ -1601,6 +1612,8 @@ namespace zetscript{
 						ptrCurrentOp++;
 						continue;
 					}else if(index_op1== LOAD_TYPE::LOAD_TYPE_FUNCTION){
+
+load_function:
 						void *function_obj=NULL;
 						vector<int> *vec_functions;
 						CScriptVariable * class_obj=NULL;
@@ -1671,8 +1684,17 @@ namespace zetscript{
 								return NULL;
 							}
 						}
-						*ptrCurrentOp++={INS_PROPERTY_IS_INSTRUCTIONVAR,instruction,0};
-						PUSH_FUNCTION(0,function_obj,class_obj);
+
+
+						*ptrCurrentOp++={INS_PROPERTY_IS_INSTRUCTIONVAR|INS_PROPERTY_TYPE_FUNCTION,instruction,0};
+
+						if((instruction_it)->operator_type!=ASM_OPERATOR::STORE
+						&& (instruction_it)->operator_type!=ASM_OPERATOR::VPUSH
+						&& (instruction_it)->operator_type!=ASM_OPERATOR::PUSH_ATTR
+						&& (instruction_it)->operator_type!=ASM_OPERATOR::RET
+						){ // is not storing or returning function object
+							PUSH_FUNCTION(0,function_obj,class_obj);
+						}
 						continue;
 
 					}else if(index_op1== LOAD_TYPE::LOAD_TYPE_ARGUMENT){
@@ -1703,7 +1725,7 @@ namespace zetscript{
 							if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								src_ins=ptrResultInstructionOp1;
-								dst_ins=((CVector *)vec_obj)->push();
+								dst_ins=((CVectorScriptVariable *)vec_obj)->push();
 								ok=true;
 							}
 						}
@@ -1729,9 +1751,9 @@ namespace zetscript{
 									string *str = (string *)ptrResultInstructionOp2->stkValue;
 									src_ins=ptrResultInstructionOp1;
 									if(src_ins->properties&INS_PROPERTY_TYPE_FUNCTION){
-										si =((CStruct *)struct_obj)->addFunctionSymbol(*str, -1,(CScriptFunctionObject *)src_ins->stkValue );
+										si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(*str, -1,(CScriptFunctionObject *)src_ins->stkValue );
 									}else{
-										si =((CStruct *)struct_obj)->addVariableSymbol(*str, -1,src_ins );
+										si =((CStructScriptVariable *)struct_obj)->addVariableSymbol(*str, -1,src_ins );
 									}
 									dst_ins=&si->object;
 									ok=true;
@@ -1756,7 +1778,7 @@ namespace zetscript{
 						if(ptrResultInstructionOp1->properties & INS_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
 							dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
 						}else{
-							zs_print_error_cr("Expected object l-value mov");
+							zs_print_error_cr("line %i:Expected object l-value mov",AST_NODE(instruction->idxAstNode)->line_value);
 							return NULL;
 						}
 

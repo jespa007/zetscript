@@ -131,7 +131,17 @@ namespace zetscript{
 
 
 		string var_name = "_afun_"+CStringUtils::intToString(n_anonymouse_func++);
-		string symbol_ref = "_"+var_name;
+		string symbol_ref = "";//"_"+var_name;
+		PASTNode args_node = AST_NODE(ast->children[0]);
+
+		//int n_params=0;
+
+		if(args_node != NULL){
+			//n_params=args_node->children.size();
+			symbol_ref = "_p"+CStringUtils::intToString(args_node->children.size());
+		}
+		symbol_ref=symbol_ref+"_"+var_name;
+
 
 		irv.symbol_ref = symbol_ref;
 		irv.name=var_name;
@@ -160,7 +170,6 @@ namespace zetscript{
 				symbol_ref = "_";
 			}else{ // register function symbol
 				symbol_ref = "_p"+CStringUtils::intToString(n_params);
-
 			}
 			symbol_ref=symbol_ref+"_"+var_name;
 
@@ -200,7 +209,6 @@ namespace zetscript{
 			symbol_ref = "_";
 		}else{ // register function symbol
 			symbol_ref = "_p"+CStringUtils::intToString(n_params);
-
 		}
 		symbol_ref=symbol_ref+"_"+var_name;
 

@@ -91,7 +91,7 @@ using std::ostringstream;
 
 enum NODE_TYPE
 	:unsigned char {
-		UNKNOWN_NODE = 0,
+	UNKNOWN_NODE = 0,
 	PUNCTUATOR_NODE,
 	EXPRESSION_NODE,
 	KEYWORD_NODE,
@@ -122,7 +122,7 @@ enum NODE_TYPE
 
 enum KEYWORD_TYPE
 	:unsigned char {
-		UNKNOWN_KEYWORD = 0,
+	UNKNOWN_KEYWORD = 0,
 	IF_KEYWORD,
 	ELSE_KEYWORD,
 	FOR_KEYWORD,
@@ -145,10 +145,10 @@ enum KEYWORD_TYPE
 enum PUNCTUATOR_TYPE
 	:unsigned char {
 
-		UNKNOWN_PUNCTUATOR = 0,
+	UNKNOWN_PUNCTUATOR = 0,
 
-		//--------------------------------
-		// First OPERATORS 2 char size
+	//--------------------------------
+	// First OPERATORS 2 char size
 
 	SHIFT_LEFT_PUNCTUATOR = 1, // <<
 	SHIFT_RIGHT_PUNCTUATOR, // >>

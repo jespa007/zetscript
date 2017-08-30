@@ -169,6 +169,7 @@ namespace zetscript{
 		bool insertMovVarInstruction(short idxAstNode, int left_index, int right_index);
 
 
+		void insertNeg(short idxAstNode);
 		/**
 		 * Unconditional Jump instruction
 		 */
@@ -244,12 +245,12 @@ namespace zetscript{
 		// COMPILE ASSEMBLE CODE (GAC)
 
 		ASM_OPERATOR puntuator2instruction(PUNCTUATOR_TYPE  op);
-		unsigned int preoperator2instruction_property(PUNCTUATOR_TYPE op);
+		unsigned int post_operator2instruction_property(PUNCTUATOR_TYPE op);
 
 		int gacExpression_FunctionOrArrayAccess(short idxAstNode, CScope *_lc);
 		int gacExpression_ArrayObject_Recursive(short idxAstNode, CScope *_lc);
-		int gacExpression_ArrayObject(short idxAstNode, CScope *_lc);
-		int gacExpression_FunctionObject(short idxAstNode, CScope *_lc);
+		bool gacExpression_ArrayObject(short idxAstNode, CScope *_lc);
+		bool gacExpression_FunctionObject(short idxAstNode, CScope *_lc);
 		int gacExpression_FunctionAccess(short idxAstNode, CScope *_lc);
 
 		int gacExpression_Struct(short idxAstNode, CScope *_lc);

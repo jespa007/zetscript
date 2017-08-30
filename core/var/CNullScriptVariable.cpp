@@ -2,11 +2,11 @@
 
 namespace zetscript{
 
-	CNull *CNull::null_symbol = NULL;
+	CNullScriptVariable *CNullScriptVariable::null_symbol = NULL;
 
-	CNull * NULL_SYMBOL{
+	CNullScriptVariable * NULL_SYMBOL{
 		if(null_symbol == NULL){
-			null_symbol = new CNull();
+			null_symbol = new CNullScriptVariable();
 			null_symbol->init(CScriptClass::getRegisteredClassNull(), (void *)null_symbol);
 		}
 
@@ -14,14 +14,14 @@ namespace zetscript{
 
 	}
 
-	void CNull::destroySingletons(){
+	void CNullScriptVariable::destroySingletons(){
 		if(null_symbol != NULL){
 			delete null_symbol;
 			null_symbol = NULL;
 		}
 	}
 
-	CNull::CNull(){
+	CNullScriptVariable::CNullScriptVariable(){
 
 		//m_classStr="undefined";
 	   // m_pointerClassStr="undefined";

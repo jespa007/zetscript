@@ -1,14 +1,14 @@
 #pragma once
 
-#define NEW_VECTOR_VAR (new CVector()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new CVector())))
+#define NEW_VECTOR_VAR (new CVectorScriptVariable()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new CVectorScriptVariable())))
 
 namespace zetscript{
 
-	class  CVector: public CScriptVariable{
+	class  CVectorScriptVariable: public CScriptVariable{
 
 	public:
 		template<typename _T>
-		static vector<_T> cast(CVector *v_in){
+		static vector<_T> cast(CVectorScriptVariable *v_in){
 			vector<_T> v_out;
 			string typestr = typeid(_T).name();
 
@@ -75,8 +75,8 @@ namespace zetscript{
 
 		vector<tStackElement> m_objVector;
 
-		CVector();
-		//CVector(CScriptClass *info_registered_class);
+		CVectorScriptVariable();
+		//CVectorScriptVariable(CScriptClass *info_registered_class);
 		virtual bool unrefSharedPtr();
 		virtual bool initSharedPtr();
 		//void add(const tStackElement  & v);

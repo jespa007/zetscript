@@ -44,8 +44,8 @@ CImage::CImage(){
 
 
 
-bool CImage::createSquarePixmap(zetscript::CVector * pixmap){
-	vector<int> converted_pixmap=zetscript::CVector::cast<int>(pixmap);
+bool CImage::createSquarePixmap(zetscript::CVectorScriptVariable * pixmap){
+	vector<int> converted_pixmap=zetscript::CVectorScriptVariable::cast<int>(pixmap);
 
 
 	return createSquarePixmap(converted_pixmap);

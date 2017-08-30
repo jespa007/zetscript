@@ -36,7 +36,6 @@ namespace zetscript{
 
 				si = addVariableSymbol(ir_var->symbol_name,ir_var->idxAstNode);
 
-				// Warning if you put any var for primitives (i.e CInteger, CNumber, etc will crash in recursive manner)
 				if(ir_var->properties & PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 				{ // we know the type object so we assign the pointer ...
 					// check if primitive type (only 4 no more no else)...

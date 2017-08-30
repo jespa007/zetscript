@@ -322,7 +322,7 @@ namespace zetscript{
 		zs_print_info_cr("CUSTOM_FUNCTION B:%s",*b?"true":"false");
 	 }
 
-	 void  custom_function(CString  *s){
+	 void  custom_function(CStringScriptVariable  *s){
 		zs_print_info_cr("CUSTOM_FUNCTION S:%s",s->m_strValue.c_str());
 	 }
 
@@ -331,8 +331,8 @@ namespace zetscript{
 		zs_print_info_cr("CUSTOM_FUNCTION I:%i",*i);
 	 }
 
-	 CVector *  my_new_random_vector(int * n){
-		CVector *v = new CVector();
+	 CVectorScriptVariable *  my_new_random_vector(int * n){
+		CVectorScriptVariable *v = new CVectorScriptVariable();
 		return v;
 	 }
 
@@ -506,64 +506,31 @@ namespace zetscript{
 
 
 			REGISTER_BASIC_TYPE(tStackElement,IDX_STACK_ELEMENT);
-			if((registerClass("CUndefined","",NULL)) == NULL) return false;		// 8
-			vec_script_class_node->at(IDX_CLASS_UNDEFINED)->classPtrType=typeid(CUndefined *).name();
+			if((registerClass("CUndefinedScriptVariable","",NULL)) == NULL) return false;		// 8
+			vec_script_class_node->at(IDX_CLASS_UNDEFINED)->classPtrType=typeid(CUndefinedScriptVariable *).name();
 
 			//if((registerClass("CVoid","",NULL)) == NULL) return false;				// 7
 			//vec_script_class_node->at(IDX_CLASS_VOID)->classPtrType=typeid(CVoid *).name();
 
-			if((registerClass("CNull","",NULL)) == NULL) return false;				// 9
-			vec_script_class_node->at(IDX_CLASS_NULL)->classPtrType=typeid(CNull *).name();
+			if((registerClass("CNullScriptVariable","",NULL)) == NULL) return false;				// 9
+			vec_script_class_node->at(IDX_CLASS_NULL)->classPtrType=typeid(CNullScriptVariable *).name();
 
 
 			//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 			// rgister basic classes (Warning!!! must match idx !!! and the order is important!!!)
 			REGISTER_BASIC_TYPE(CScriptVariable,IDX_CLASS_SCRIPT_VAR);
-			//REGISTER_BASIC_TYPE(CInteger,IDX_PRIMITIVE_INTEGER);
-			//REGISTER_BASIC_TYPE(CNumber,IDX_PRIMITIVE_FLOAT);
-			REGISTER_BASIC_TYPE(CString,IDX_CLASS_STRING);
-			//REGISTER_BASIC_TYPE(CBoolean,IDX_CLASS_BOOLEAN);
-			REGISTER_BASIC_TYPE(CVector,IDX_CLASS_VECTOR);
-			REGISTER_BASIC_TYPE(CFunctor,IDX_CLASS_FUNCTOR);
-			REGISTER_BASIC_TYPE(CStruct,IDX_CLASS_STRUCT);
+			REGISTER_BASIC_TYPE(CStringScriptVariable,IDX_CLASS_STRING);
+			REGISTER_BASIC_TYPE(CVectorScriptVariable,IDX_CLASS_VECTOR);
+			REGISTER_BASIC_TYPE(CFunctorScriptVariable,IDX_CLASS_FUNCTOR);
+			REGISTER_BASIC_TYPE(CStructScriptVariable,IDX_CLASS_STRUCT);
 
 
 
 			//-----------------------
 			// Conversion from object types to primitive types (move into factory) ...
-			//addPrimitiveTypeConversion<CInteger *,int>( [] (CScriptVariable *obj){return *((int *)((CInteger *)obj)->m_value);});
-			/*if(!addPrimitiveTypeConversion<CInteger *,int *>( [] (CScriptVariable *obj){
-				return (intptr_t)((CInteger *)obj)->m_value;
-			})) return false;
-
-			if(!addPrimitiveTypeConversion<CInteger *,string *>( [] (CScriptVariable *obj){
-				obj->m_strValue=CStringUtils::intToString(*((int *)((CInteger*)obj)->m_value));
-				return (intptr_t)&obj->m_strValue;
-			})) return false;
-
-			if(!addPrimitiveTypeConversion<CNumber *,float *>( [] (CScriptVariable *obj){
-				return (intptr_t)(((CNumber *)obj)->m_value);
-			})) return false;
-
-			if(!addPrimitiveTypeConversion<CNumber *,string *>( [] (CScriptVariable *obj){
-				obj->m_strValue=CStringUtils::floatToString(*((float *)((CNumber*)obj)->m_value));
-				return (intptr_t)&obj->m_strValue;
-			})) return false;
-
-			if(!addPrimitiveTypeConversion<CBoolean *,bool *>( [] (CScriptVariable *obj){
-				return (intptr_t)((CBoolean *)obj)->m_value;
-			})) return false;
-
-			if(!addPrimitiveTypeConversion<CBoolean *,string *>( [] (CScriptVariable *obj){
-				obj->toString();
-				return (intptr_t)&obj->m_strValue;
-			})) return false;
-
-	*/
-
-			if(!addPrimitiveTypeConversion<CString *,string *>( [] (CScriptVariable *obj){
-				return (intptr_t)(((CString *)obj)->m_value);
+			if(!addPrimitiveTypeConversion<CStringScriptVariable *,string *>( [] (CScriptVariable *obj){
+				return (intptr_t)(((CStringScriptVariable *)obj)->m_value);
 			})) return false;
 			//----------------------------------------------------------------------
 			// From here you defined all basic, start define hierarchy
@@ -582,15 +549,11 @@ namespace zetscript{
 
 
 			//if(!class_C_baseof<CVoid,CScriptVariable>()) return false;
-			if(!class_C_baseof<CNull,CScriptVariable>()) return false;
-			if(!class_C_baseof<CUndefined,CScriptVariable>()) return false;
-			//if(!class_C_baseof<CInteger,CScriptVariable>()) return false;
-			//if(!class_C_baseof<CNumber,CScriptVariable>()) return false;
-			//if(!class_C_baseof<CBoolean,CScriptVariable>()) return false;
-			//if(!class_C_baseof<CString,CScriptVariable>()) return false;
-			if(!class_C_baseof<CVector,CScriptVariable>()) return false;
-			if(!class_C_baseof<CFunctor,CScriptVariable>()) return false;
-			if(!class_C_baseof<CStruct,CScriptVariable>()) return false;
+			if(!class_C_baseof<CNullScriptVariable,CScriptVariable>()) return false;
+			if(!class_C_baseof<CUndefinedScriptVariable,CScriptVariable>()) return false;
+			if(!class_C_baseof<CVectorScriptVariable,CScriptVariable>()) return false;
+			if(!class_C_baseof<CFunctorScriptVariable,CScriptVariable>()) return false;
+			if(!class_C_baseof<CStructScriptVariable,CScriptVariable>()) return false;
 
 
 			//------------------------------------------------------------------------------------------------------------
@@ -605,22 +568,22 @@ namespace zetscript{
 			//CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(string * )>(&custom_function));
 			//CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(bool * )>(&custom_function));
 
-			//if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CString * )>(&custom_function))) return false;
+			//if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CStringScriptVariable * )>(&custom_function))) return false;
 			//if(!CScriptClass::register_C_FunctionInt("custom_function",static_cast<void (*)(CInteger * )>(&custom_function))) return false;
 
 			if(!register_C_Variable("c_var",c_var)) return false;
 
 
-			if(!register_C_FunctionMember(CVector,size)) return false;
-			//if(!register_C_FunctionMember(CVector,add)) return false;
+			if(!register_C_FunctionMember(CVectorScriptVariable,size)) return false;
+			//if(!register_C_FunctionMember(CVectorScriptVariable,add)) return false;
 
-		/*	if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(int *)>(&CVector::add))) return false;
-			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(float *)>(&CVector::add))) return false;
-			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(string *)>(&CVector::add))) return false;
-			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(bool *)>(&CVector::add))) return false;
-			if(!register_C_FunctionMemberInt<CVector>("add",static_cast<void (CVector::*)(CScriptVariable *)>(&CVector::add))) return false;*/
-			if(!register_C_FunctionMember(CVector,add)) return false;
-			if(!register_C_FunctionMember(CVector,pop)) return false;
+		/*	if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(int *)>(&CVectorScriptVariable::add))) return false;
+			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(float *)>(&CVectorScriptVariable::add))) return false;
+			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(string *)>(&CVectorScriptVariable::add))) return false;
+			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(bool *)>(&CVectorScriptVariable::add))) return false;
+			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(CScriptVariable *)>(&CVectorScriptVariable::add))) return false;*/
+			if(!register_C_FunctionMember(CVectorScriptVariable,add)) return false;
+			if(!register_C_FunctionMember(CVectorScriptVariable,pop)) return false;
 
 
 
@@ -755,6 +718,36 @@ namespace zetscript{
 
 	}
 
+	int getNumberArgsfromFunctionObjectNode(PASTNode ast_node){
+		if(ast_node->node_type == NODE_TYPE::FUNCTION_OBJECT_NODE){ // function
+
+
+			if(ast_node->children.size()!=2){
+				zs_print_error_cr("internal error, expected calling function 1 children");
+				return false;
+			}
+
+			ast_node = AST_NODE(ast_node->children[0]);
+
+			if(ast_node == NULL){
+				zs_print_error_cr("internal error, expected args node");
+				return false;
+			}
+
+			if(ast_node->node_type != NODE_TYPE::ARGS_DECL_NODE){
+				zs_print_error_cr("internal error, espected ARGS PASS NODE");
+				return false;
+			}
+
+			return ast_node->children.size();
+		}else{
+			zs_print_error_cr("internal error, espected FUNCTION_OBJECT_NODE");
+		}
+
+		return -1;
+
+	}
+
 
 	bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
 
@@ -767,7 +760,9 @@ namespace zetscript{
 		if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 			n_args_to_find = getNumberArgsfromFunctionRefNode(ast_node);
-		}
+		}/*else if(ast_node->node_type == FUNCTION_OBJECT_NODE){ // anonymouse function
+			n_args_to_find = getNumberArgsfromFunctionObjectNode(ast_node);
+		}*/
 
 		//CScope * scope_node = iao->ast_node->scope_info_ptr;
 

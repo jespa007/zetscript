@@ -4,20 +4,20 @@
 
 
 namespace zetscript{
-	class CUndefined;
-	class CNull;
+	class CUndefinedScriptVariable;
+	class CNullScriptVariable;
 }
 
 
 #include "utils/zs_utils.h"
 
 #include "CScriptVariable.h"
-#include "CString.h"
-#include "CVector.h"
-#include "CFunctor.h"
-#include "CNull.h"
-#include "CUndefined.h"
-#include "CStruct.h"
+#include "CStringScriptVariable.h"
+#include "CVectorScriptVariable.h"
+#include "CFunctorScriptVariable.h"
+#include "CNullScriptVariable.h"
+#include "CUndefinedScriptVariable.h"
+#include "CStructScriptVariable.h"
 
 
 

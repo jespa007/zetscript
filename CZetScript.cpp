@@ -36,8 +36,8 @@ namespace zetscript{
 		}
 
 
-		CNull::destroySingletons();
-		CUndefined::destroySingletons();
+		CNullScriptVariable::destroySingletons();
+		CUndefinedScriptVariable::destroySingletons();
 
 		CCompiler::destroySingletons();
 		CState::destroySingletons();

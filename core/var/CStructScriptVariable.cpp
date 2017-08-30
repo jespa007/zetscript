@@ -2,12 +2,12 @@
 
 namespace zetscript{
 
-	CStruct::CStruct(){//CScriptClass *info_registered_class):CScriptVariable(info_registered_class, this){
+	CStructScriptVariable::CStructScriptVariable(){//CScriptClass *info_registered_class):CScriptVariable(info_registered_class, this){
 		init(CScriptClass::getRegisteredClassStruct(), (void *)this);
 	}
 
 
-	bool CStruct::unrefSharedPtr(){ // unref each element...
+	bool CStructScriptVariable::unrefSharedPtr(){ // unref each element...
 		if(CScriptVariable::unrefSharedPtr()){
 
 			for(unsigned i = 0; i < m_variableSymbol.size(); i++){
@@ -25,7 +25,7 @@ namespace zetscript{
 		return false;
 	}
 
-	bool CStruct::initSharedPtr(){ // ref every element in list ...
+	bool CStructScriptVariable::initSharedPtr(){ // ref every element in list ...
 		if(CScriptVariable::initSharedPtr()){
 
 			for(unsigned i = 0; i < m_variableSymbol.size(); i++){

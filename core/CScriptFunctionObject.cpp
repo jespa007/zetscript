@@ -56,7 +56,8 @@ namespace zetscript{
 			CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(info_function->local_symbols.vec_idx_registeredFunction[i]);
 
 
-			if(sfo->object_info.symbol_info.symbol_name == function_name && (n_args_to_find==(int)sfo->m_arg.size())){
+			if(sfo->object_info.symbol_info.symbol_name == function_name && (n_args_to_find==(int)sfo->m_arg.size() || (n_args_to_find==-1)) ){
+
 				return i;
 			}
 		}

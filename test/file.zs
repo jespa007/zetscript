@@ -293,13 +293,13 @@ for(var i=0; i < 10;tt.size() i++){
 }
 */
 /*
-var g=new CVector();
+var g=new CVectorScriptVariable();
 
 var t=g;
 
 for(var i=0; i < 10; i++)
 {
-	var h=bb();//new CVector();
+	var h=bb();//new CVectorScriptVariable();
 	
 	for(var j=0; j < h.size();j++){
 		print(h[j]);

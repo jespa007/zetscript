@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
 	// Binds CImage class...
 	if(!CScriptClass::register_C_Class<CImage>("CImage")) return false;
 	// bind a custom constructor...
-	CScriptClass::register_C_FunctionMemberInt<CImage>("CImage",static_cast<bool (CImage::*)(zetscript::CVector * )>(&CImage::createSquarePixmap));
+	CScriptClass::register_C_FunctionMemberInt<CImage>("CImage",static_cast<bool (CImage::*)(zetscript::CVectorScriptVariable * )>(&CImage::createSquarePixmap));
 
 
 	// Binds CSprite class

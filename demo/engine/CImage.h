@@ -20,7 +20,7 @@ public:
 	SDL_Texture *getTexture();
 
 	// create image from script ...
-	bool createSquarePixmap(zetscript::CVector *vector);
+	bool createSquarePixmap(zetscript::CVectorScriptVariable *vector);
 
 
 	int getWidth();
