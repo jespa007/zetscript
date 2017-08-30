@@ -20,6 +20,8 @@ bool CSprite::checkCollision(CSprite *spr1, CSprite *spr2){
 	tFrameInfo *img1=spr1->getCurrentFrame();
 	tFrameInfo *img2=spr2->getCurrentFrame();
 
+
+
 	int x11=spr1->x
 	   ,x12=x11+img1->image->getWidth()
 	   ,y11=spr1->y
@@ -29,6 +31,10 @@ bool CSprite::checkCollision(CSprite *spr1, CSprite *spr2){
 	   ,x22=x21+img2->image->getWidth()
 	   ,y21=spr2->y
 	   ,y22=y21+img2->image->getHeight();
+
+	//
+
+	//printf("(%i,%i,%i,%i) <=> (%i,%i,%i,%i)\n",x11,y11,x12,y12,x21,y21,x22,y22);
 
 	if((
 		(x11 < x22 && x12 > x21)// || (x21>=x11 && x21 <  x12)

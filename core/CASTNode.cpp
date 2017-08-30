@@ -512,6 +512,31 @@ namespace zetscript{
 
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
+
+				LOGIC_AND_PUNCTUATOR,
+				LOGIC_OR_PUNCTUATOR
+		};
+
+		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
+
+			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+			}
+
+			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+				return defined_operator_punctuator[index_to_evaluate[i]].id;
+			}
+		}
+
+		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+	}
+
+	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup3(const char *s){
+
+
+		PUNCTUATOR_TYPE index_to_evaluate[]={
+
 				LOGIC_EQUAL_PUNCTUATOR,
 				LOGIC_LTE_PUNCTUATOR,
 				LOGIC_GTE_PUNCTUATOR,
@@ -534,7 +559,7 @@ namespace zetscript{
 		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup3(const char *s){
+	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup4(const char *s){
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
 				ADD_PUNCTUATOR,
@@ -561,7 +586,7 @@ namespace zetscript{
 		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup4(const char *s){
+	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup5(const char *s){
 
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
@@ -583,11 +608,10 @@ namespace zetscript{
 		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE CASTNode::parsePunctuatorGroup5(const char *s){
+	PUNCTUATOR_TYPE CASTNode::parsePunctuatorGroup6(const char *s){
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
-				LOGIC_AND_PUNCTUATOR,
-				LOGIC_OR_PUNCTUATOR,
+
 				MUL_PUNCTUATOR,
 				DIV_PUNCTUATOR,
 				MOD_PUNCTUATOR
@@ -608,7 +632,7 @@ namespace zetscript{
 		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup6(const char *s){
+	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup7(const char *s){
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
 				LOGIC_NOT_PUNCTUATOR
@@ -629,7 +653,7 @@ namespace zetscript{
 		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup7(const char *s){
+	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup8(const char *s){
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
 				FIELD_PUNCTUATOR
@@ -1456,6 +1480,7 @@ namespace zetscript{
 						case GROUP_5:	operator_group = parsePunctuatorGroup5(expr_start_op);break;
 						case GROUP_6:	operator_group = parsePunctuatorGroup6(expr_start_op);break;
 						case GROUP_7:	operator_group = parsePunctuatorGroup7(expr_start_op);break;
+						case GROUP_8:	operator_group = parsePunctuatorGroup8(expr_start_op);break;
 						default: break;
 						}
 					}

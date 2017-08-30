@@ -823,7 +823,7 @@ namespace zetscript{
 		//auto v = argv->at(0)->getPointer_C_ClassName();
 		CScriptVariable *script_variable=NULL;
 		intptr_t converted_param[MAX_N_ARGS];
-		intptr_t result;
+		intptr_t result=0;
 		tStackElement *currentArg;
 
 
@@ -1027,59 +1027,115 @@ namespace zetscript{
 			}
 
 		}else{
+			if(irfs->idx_return_type==IDX_CLASS_BOOL_C){
+				switch(n_args){
+				default:
+					zs_print_error_cr("Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
+					return NULL;//CScriptVariable::UndefinedSymbol;
+				case 0:
+					result=(*((std::function<bool ()> *)fun_ptr))();
+					break;
+				case 1:
+					result=(*((std::function<bool (intptr_t)> *)fun_ptr))(converted_param[0]);
+					break;
+				case 2:
 
+					result=(*((std::function<bool (intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1]
+											);
+					break;
+				case 3:
+					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2]
+											);
+					break;
+				case 4:
+					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3]
+											);
+					break;
+				case 5:
+					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3],
+							converted_param[4]
+						);
+					break;
+				case 6:
+					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3],
+							converted_param[4],
+							converted_param[5]
+											);
+					break;
 
-			switch(n_args){
-			default:
-				zs_print_error_cr("Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
-				return NULL;//CScriptVariable::UndefinedSymbol;
-			case 0:
-				result=(*((std::function<intptr_t ()> *)fun_ptr))();
-				break;
-			case 1:
-				result=(*((std::function<intptr_t (intptr_t)> *)fun_ptr))(converted_param[0]);
-				break;
-			case 2:
-				result=(*((std::function<intptr_t (intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1]
-										);
-				break;
-			case 3:
-				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2]
-										);
-				break;
-			case 4:
-				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3]
-										);
-				break;
-			case 5:
-				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3],
-						converted_param[4]
-					);
-				break;
-			case 6:
-				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3],
-						converted_param[4],
-						converted_param[5]
-										);
-				break;
+				}
+			}else{
 
+				switch(n_args){
+				default:
+					zs_print_error_cr("Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
+					return NULL;//CScriptVariable::UndefinedSymbol;
+				case 0:
+					result=(*((std::function<intptr_t ()> *)fun_ptr))();
+					break;
+				case 1:
+					result=(*((std::function<intptr_t (intptr_t)> *)fun_ptr))(converted_param[0]);
+					break;
+				case 2:
+
+					result=(*((std::function<intptr_t (intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1]
+											);
+					break;
+				case 3:
+					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2]
+											);
+					break;
+				case 4:
+					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3]
+											);
+					break;
+				case 5:
+					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3],
+							converted_param[4]
+						);
+					break;
+				case 6:
+					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3],
+							converted_param[4],
+							converted_param[5]
+											);
+					break;
+
+				}
 			}
 
 			// save return type ...

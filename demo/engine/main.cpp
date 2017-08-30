@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
 		return 0;
 	}
 
-	//printf("%i %i\n\n",sizeof(int), sizeof(void*));
+	//printf("%i %i %i %i %i\n\n",sizeof(void *),sizeof(intptr_t),sizeof(int), sizeof(void*),sizeof(bool));
 	//return -1;
 
 

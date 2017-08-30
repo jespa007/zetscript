@@ -127,9 +127,9 @@ class CSpriteManager{
 				var x=spr.x;
 				
 				if(
-					    ((spr.y<(-(spr.height))) || (spr.y>render.getHeight())) // <-- (spr.height must be in parenthesis)
-					 || ((spr.time_life>0) && (spr.time_life<currentTime()))
-				 	 || (((spr.x)<(-(spr.width)))   || (spr.x> render.getWidth())) 
+					    (spr.y<-spr.height || spr.y>render.getHeight()) 
+					 || (spr.time_life>0 && spr.time_life<currentTime())
+				 	 || (spr.x<-spr.width   || spr.x> render.getWidth()) 
 						){
 					this.remove(i);
 					

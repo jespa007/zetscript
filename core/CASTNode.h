@@ -42,6 +42,7 @@ namespace zetscript{
 		GROUP_5, // .
 		GROUP_6, // .
 		GROUP_7, // .
+		GROUP_8, // .
 		MAX_GROUPS
 	};
 
@@ -191,6 +192,7 @@ namespace zetscript{
 		static PUNCTUATOR_TYPE  parsePunctuatorGroup5(const char *s);
 		static PUNCTUATOR_TYPE  parsePunctuatorGroup6(const char *s);
 		static PUNCTUATOR_TYPE  parsePunctuatorGroup7(const char *s);
+		static PUNCTUATOR_TYPE  parsePunctuatorGroup8(const char *s);
 
 		static PUNCTUATOR_TYPE   parseArithmeticPunctuator(const char *s);
 		static PUNCTUATOR_TYPE   isOperatorPunctuator(const char *s);
