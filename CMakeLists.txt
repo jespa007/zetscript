@@ -203,29 +203,6 @@ else()
 	
 	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 	
-	# ENGINE EXAMPLE
-	add_executable(engine${POST_NAME}
-		${PROJECT_SOURCE_DIR}/demo/engine/main.cpp
-		${PROJECT_SOURCE_DIR}/demo/engine/CRender.cpp
-		${PROJECT_SOURCE_DIR}/demo/engine/CInput.cpp
-		${PROJECT_SOURCE_DIR}/demo/engine/CImage.cpp
-		${PROJECT_SOURCE_DIR}/demo/engine/CSprite.cpp
-		${PROJECT_SOURCE_DIR}/demo/engine/CFont.cpp
-		${PROJECT_SOURCE_DIR}/demo/engine/CSound.cpp
-		${PROJECT_SOURCE_DIR}/demo/engine/CSoundPlayer.cpp
-	)
-	
-	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/invader.zs ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/invader.zs COPYONLY)
-	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/font.bmp ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/font.bmp COPYONLY)
-	configure_file(${PROJECT_SOURCE_DIR}/demo/engine/laser.wav ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/laser.wav COPYONLY)
-
-	
-	if (MINGW)
-		find_library(SDL2_LIB  NAMES SDL2  )
-		target_link_libraries(engine${POST_NAME} mingw32 zetscript${POST_NAME} SDL2main SDL2)
-	else()
-		target_link_libraries(engine${POST_NAME} zetscript${POST_NAME} SDL2main SDL2)
-	endif()
 	
 	SET(
 		HS 
