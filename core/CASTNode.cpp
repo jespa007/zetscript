@@ -291,26 +291,33 @@ namespace zetscript{
 
 	bool CASTNode::parsePlusPunctuator(const char *s){
 		if(*s=='+')
-			return (*(s+1) != '+');
+			return ((*(s+1) != '+') && (*(s+1) != '='));
 		return false;
 	}
 
 	bool CASTNode::parseMinusPunctuator(const char *s){
 		if(*s=='-')
-			return (*(s+1) != '-');
+			return ((*(s+1) != '-') && (*(s+1) != '='));
 		return false;
 	}
 
 	bool CASTNode::parseMulPunctuator(const char *s){
-		return *s == '*';
+		if(*s == '*')
+			return ((*(s+1) != '='));
+		return false;
 	}
 
 	bool CASTNode::parseDivPunctuator(const char *s){
-		return *s == '/';
+		if(*s == '/')
+			return ((*(s+1) != '='));
+		return false;
 	}
 
 	bool CASTNode::parseModPunctuator(const char *s){
-		return *s == '%';
+		if(*s == '%')
+			return ((*(s+1) != '='));
+		return false;
+
 	}
 
 	bool CASTNode::parseFieldPunctuator(const char *s){
@@ -363,18 +370,21 @@ namespace zetscript{
 
 
 	bool CASTNode::parseBinaryXorPunctuator(const char *s){
-		return *s == '^';
+		if(*s == '^')
+			return ((*(s+1) != '='));
+		return false;
+
 	}
 
 	bool CASTNode::parseBinaryAndPunctuator(const char *s){
 		if(*s=='&')
-			return (*(s+1) != '&');
+			return ((*(s+1) != '&')  && (*(s+1) != '='));
 		return false;
 	}
 
 	bool CASTNode::parseBinaryOrPunctuator(const char *s){
 		if(*s=='|')
-			return (*(s+1) != '|');
+			return ((*(s+1) != '|') &&  (*(s+1) != '='));
 		return false;
 	}
 
@@ -1449,27 +1459,29 @@ namespace zetscript{
 
 				if((operator_group=isOperatorPunctuator(aux))!=0){
 
-
-
 					// particular cases... since the getSymbol alrady checks the pre operator it cannot be possible to get a pre inc or pre dec...
 					if(operator_group ==  PRE_INC_PUNCTUATOR){ // ++ really is a + PUNCTUATOR...
 						operator_group = ADD_PUNCTUATOR;
 						special_pre_post_cond=true;
 					}
 					else if(operator_group ==  PRE_DEC_PUNCTUATOR){ // -- really is a + PUNCTUATOR...
-						operator_group = ADD_PUNCTUATOR;
+						operator_group = SUB_PUNCTUATOR;
 						pre_operator = SUB_PUNCTUATOR;
+						//special_pre_post_cond=true;
+					}/*else if (operator_group == SUB_PUNCTUATOR){ // +(-i)
+						operator_group = ADD_PUNCTUATOR;
 						special_pre_post_cond=true;
-					}
+						advance_ptr=false;
+					}*/
 
 					theres_some_operator |= true;
 					expr_start_op=aux;
 					m_lineOperator = m_line;
 
-					//if(advance_ptr) // advance ...
-					aux+=strlen(defined_operator_punctuator[operator_group].str);
+					if(operator_group != SUB_PUNCTUATOR) // advance ...
+						aux+=strlen(defined_operator_punctuator[operator_group].str);
 
-					if(!special_pre_post_cond){ // not check because special case pre/post op...
+					if(!special_pre_post_cond && (operator_group != SUB_PUNCTUATOR)){ // not check because special case pre/post op...
 
 						switch(type_group){
 						case GROUP_0:	operator_group = parsePunctuatorGroup0(expr_start_op);break;
@@ -1594,8 +1606,9 @@ namespace zetscript{
 			char * expr_op_end = expr_start_op;
 
 
-
-			expr_op_end+=strlen(defined_operator_punctuator[operator_group].str);
+			if((operator_group != SUB_PUNCTUATOR)){ // no advance ... we'll evaluate with preoperator
+				expr_op_end+=strlen(defined_operator_punctuator[operator_group].str);
+			}
 
 			//if(special_pre_post_cond){
 			//expr_op_end++;
@@ -1692,9 +1705,12 @@ namespace zetscript{
 					}*/
 				}
 
+				if(operator_group == SUB_PUNCTUATOR){
+					operator_group=ADD_PUNCTUATOR;
+				}
+
 				(*ast_node_to_be_evaluated)->node_type = PUNCTUATOR_NODE;
 				(*ast_node_to_be_evaluated)->operator_info = operator_group;
-
 				(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
 				if(scope_info != NULL){
 					(*ast_node_to_be_evaluated)->idxScope = scope_info->idxScope;

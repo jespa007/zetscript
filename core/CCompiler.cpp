@@ -1235,7 +1235,7 @@ namespace zetscript{
 		int vec=0;
 
 		if(node_0->node_type == ARRAY_OBJECT_NODE){ // must first create the object ...
-			if((vec=gacExpression_ArrayObject(node_0->idxAstNode,_lc))==ZS_UNDEFINED_IDX){
+			if(!gacExpression_ArrayObject(node_0->idxAstNode,_lc)){
 				return ZS_UNDEFINED_IDX;
 			}
 		}else{
@@ -1244,7 +1244,7 @@ namespace zetscript{
 					return ZS_UNDEFINED_IDX;
 				}
 			}
-			vec = CCompiler::getCurrentInstructionIndex();
+			vec=CCompiler::getCurrentInstructionIndex();
 		}
 
 		PASTNode array_acces = node_1;

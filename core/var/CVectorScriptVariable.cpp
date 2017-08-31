@@ -29,9 +29,9 @@ namespace zetscript{
 		return false;
 	}
 
-	bool CVectorScriptVariable::initSharedPtr(){
+	bool CVectorScriptVariable::initSharedPtr(bool is_assigned){
 
-		if(CScriptVariable::initSharedPtr()){
+		if(CScriptVariable::initSharedPtr(is_assigned)){
 
 			for(unsigned i = 0; i < m_objVector.size(); i++){
 				zs_print_error_cr("vec symbol.size() > 0. internal error!");

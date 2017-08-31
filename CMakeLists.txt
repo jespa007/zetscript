@@ -1,8 +1,21 @@
 cmake_minimum_required(VERSION 2.8)
  
-project(libzetscript)
+project(zetscript)
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# MACRO UTILS
+#
 
 
+MACRO(INSTALL_HEADERS_WITH_DIRECTORY HEADER_LIST)
+
+    FOREACH(HEADER ${${HEADER_LIST}})
+        get_filename_component(DIR ${HEADER} DIRECTORY)
+        INSTALL(FILES ${HEADER} DESTINATION include/zetscript/${DIR})
+    ENDFOREACH(HEADER)
+
+ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -13,6 +26,8 @@ include_directories (
 	${PROJECT_SOURCE_DIR}
 	
 )
+
+message("dest dir:" ${CMAKE_INSTALL_PREFIX})
 
 if(MSVC)
 	MESSAGE ("********* MSVC ************" )
@@ -62,6 +77,11 @@ endif()
 #
 
 
+IF ( "${TARGET}" STREQUAL "")
+   SET ( TARGET "release" )
+ENDIF ()
+ 
+
 if(MSVC)
 	IF ( "${TARGET}" STREQUAL "debug")
 		add_definitions(/bigobj)
@@ -70,9 +90,6 @@ if(MSVC)
 
 else()
 
-	IF ( "${TARGET}" STREQUAL "")
-	   SET ( TARGET "release" )
-	ENDIF () 
 
 	set(TARGET_FLAGS " -O3 ")
 	set( POST_NAME "")
@@ -209,6 +226,46 @@ else()
 	else()
 		target_link_libraries(engine${POST_NAME} zetscript${POST_NAME} SDL2main SDL2)
 	endif()
+	
+	SET(
+		HS 
+		utils/CIO_Utils.h
+		utils/CColorTerm.h
+		utils/zs_utils.h
+		utils/CStringUtils.h
+		utils/CLog.h
+		core/CASTNode.h
+		core/var/CStringScriptVariable.h
+		core/var/CVectorScriptVariable.h
+		core/var/CFunctorScriptVariable.h
+		core/var/CStructScriptVariable.h
+		core/var/zg_variable.h
+		core/var/CScriptVariable.h
+		core/var/CUndefinedScriptVariable.h
+		core/var/CNullScriptVariable.h
+		core/CCompiler.h
+		core/RegisterFunctionHelper.h
+		core/Common.h
+		core/CState.h
+		core/CScope.h
+		core/CScriptClass.h
+		core/vm/CVirtualMachine.h
+		core/CNativeFunction.h
+		core/CScriptFunctionObject.h
+		core/zs_core.h
+		CZetScript.h
+	)
+	
+	
+	
+	INSTALL(TARGETS zetscript${POST_NAME} 
+			ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
+        	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
+        	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
+	)
+	
+	INSTALL_HEADERS_WITH_DIRECTORY(HS)
+		
 	
 
 	

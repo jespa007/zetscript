@@ -25,8 +25,8 @@ namespace zetscript{
 		return false;
 	}
 
-	bool CStructScriptVariable::initSharedPtr(){ // ref every element in list ...
-		if(CScriptVariable::initSharedPtr()){
+	bool CStructScriptVariable::initSharedPtr(bool is_assigned){ // ref every element in list ...
+		if(CScriptVariable::initSharedPtr(is_assigned)){
 
 			for(unsigned i = 0; i < m_variableSymbol.size(); i++){
 				zs_print_error_cr("struct symbol.size() > 0. internal error!");
@@ -44,6 +44,10 @@ namespace zetscript{
 		}
 
 		return false;
+	}
+
+	int CStructScriptVariable::size(){
+		return  this->m_variableSymbol.size();
 	}
 
 }

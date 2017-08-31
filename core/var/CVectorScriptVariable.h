@@ -78,7 +78,7 @@ namespace zetscript{
 		CVectorScriptVariable();
 		//CVectorScriptVariable(CScriptClass *info_registered_class);
 		virtual bool unrefSharedPtr();
-		virtual bool initSharedPtr();
+		virtual bool initSharedPtr(bool is_assigned=false);
 		//void add(const tStackElement  & v);
 		void add(tStackElement  * v);
 		void pop();

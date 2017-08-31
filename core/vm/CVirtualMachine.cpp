@@ -806,7 +806,7 @@ namespace zetscript{
 			goto lbl_exit_statment;\
 		}\
 	\
-		if(instruction->index_op1 != ZS_UNDEFINED_IDX){\
+		if((char)(instruction->index_op1) != ZS_UNDEFINED_IDX){\
 			instruction_it=&(*current_statment)[instruction->index_op1];\
 		}\
 	\
@@ -1952,6 +1952,8 @@ load_function:
 					}else if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_NUMBER){
 						COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);
 						PUSH_NUMBER(-f_aux_value1);
+					}else if(ptrResultInstructionOp1->properties & INS_PROPERTY_TYPE_BOOLEAN){
+						PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
 					}else{
 							zs_print_error_cr("Line %i:Expected preoperator '-' number or integer!",AST_LINE_VALUE(instruction->idxAstNode));
 							return NULL;

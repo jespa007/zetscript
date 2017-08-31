@@ -138,6 +138,7 @@
 		<buildTargets>
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
+				<buildArguments/>
 				<buildTarget>-DTARGET=debug</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
@@ -145,15 +146,16 @@
 			</target>
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
+				<buildArguments/>
 				<buildTarget>-DTARGET=release</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="CMake Release (EMMScripten)" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>bash</buildCommand>
-				<buildArguments>../zs_dev/cmake_build</buildArguments>
-				<buildTarget>-DTARGET=release -DEMMSCRIPTEN=yes -G "MinGW Makefiles"</buildTarget>
+			<target name="CMake Release (EMScripten)" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>cmake</buildCommand>
+				<buildArguments/>
+				<buildTarget>-DTARGET=release -DEMSCRIPTEN=yes</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
@@ -161,7 +163,6 @@
 			<target name="prova" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>prova</buildCommand>
 				<buildArguments>-j2</buildArguments>
-				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

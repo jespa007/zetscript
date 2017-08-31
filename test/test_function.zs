@@ -11,7 +11,8 @@ function add(a,b){
 
 print("t:"+add(20,20));
 
-/*var add_function_obj=add;
+// it gets the first function...
+var add_function_obj=add;
 
 
 
@@ -22,7 +23,7 @@ var t2=add(3,4);
 
 print("t1:"+t1+" t2:"+t2);*/
 
-if(add(30,40)<add(10,0)){
+if(add_function_obj(30,40)<add_function_obj(10,0)){
 	print("lower");
 }else{
 	print("higher");

@@ -22,7 +22,7 @@ namespace zetscript{
 	string  * CScriptClass::BOOL_TYPE_STR=NULL;//	typeid(bool *).name()
 	string  * CScriptClass::STACK_ELEMENT_PTR=NULL;//	typeid(bool *).name()
 
-	char CScriptClass::registered_metamethod[MAX_METAMETHOD_OPERATORS][50]={0};
+	char CScriptClass::registered_metamethod[MAX_METAMETHOD_OPERATORS][50]={{0}};
 	 //CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
 	 //CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 
@@ -584,6 +584,9 @@ namespace zetscript{
 			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(CScriptVariable *)>(&CVectorScriptVariable::add))) return false;*/
 			if(!register_C_FunctionMember(CVectorScriptVariable,add)) return false;
 			if(!register_C_FunctionMember(CVectorScriptVariable,pop)) return false;
+
+
+			if(!register_C_FunctionMember(CStructScriptVariable,size)) return false;
 
 
 
