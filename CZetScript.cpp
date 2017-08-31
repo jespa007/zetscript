@@ -205,12 +205,12 @@ namespace zetscript{
 								switch(icv->properties){
 								default:
 									break;
-								case INS_PROPERTY_TYPE_INTEGER:
+								case STK_PROPERTY_TYPE_INTEGER:
 									if(((intptr_t)icv->stkValue)<0){
 										pre="-";
 									}
 									break;
-								case INS_PROPERTY_TYPE_NUMBER:
+								case STK_PROPERTY_TYPE_NUMBER:
 									memcpy(&n,&icv->stkValue,sizeof(float));
 									if(n<0){
 										pre="-";
@@ -294,7 +294,7 @@ namespace zetscript{
 									,idx_statment
 									,idx_instruction
 									,CCompiler::def_operator[asm_op_statment->operator_type].op_str
-									,(asm_op_statment->instruction_properties & INS_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
+									,(asm_op_statment->instruction_properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
 									,idx_statment
 									,index_op1);
 						}else{

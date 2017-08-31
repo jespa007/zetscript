@@ -21,16 +21,16 @@ namespace zetscript{
 					switch(sv.properties & MASK_VAR_PRIMITIVE_TYPES)
 					{
 						default:
-						case INS_PROPERTY_TYPE_UNDEFINED:
-						case INS_PROPERTY_TYPE_NULL:
-						case INS_PROPERTY_TYPE_NUMBER:
-						case INS_PROPERTY_TYPE_BOOLEAN:
-						case INS_PROPERTY_TYPE_STRING:
-						case INS_PROPERTY_TYPE_FUNCTION:
+						case STK_PROPERTY_TYPE_UNDEFINED:
+						case STK_PROPERTY_TYPE_NULL:
+						case STK_PROPERTY_TYPE_NUMBER:
+						case STK_PROPERTY_TYPE_BOOLEAN:
+						case STK_PROPERTY_TYPE_STRING:
+						case STK_PROPERTY_TYPE_FUNCTION:
 							zetscript::zs_print_error_cr("type not implemented to cast. Sorry.");
 							return v_out;
 							break;
-						case INS_PROPERTY_TYPE_INTEGER:
+						case STK_PROPERTY_TYPE_INTEGER:
 							if((typestr == typeid(int).name())){
 								v_out.push_back((intptr_t)sv.stkValue);
 							}else{
@@ -41,19 +41,19 @@ namespace zetscript{
 
 					}
 
-					/*if((typestr == typeid(int).name())  && (se->properties & INS_PROPERTY_TYPE_INTEGER)){
+					/*if((typestr == typeid(int).name())  && (se->properties & STK_PROPERTY_TYPE_INTEGER)){
 						ptr = &value;
 						*((intptr_t *)ptr) = (intptr_t)se->stkValue;
 					}
-					else if((typestr == typeid(float).name())  && (se->properties & INS_PROPERTY_TYPE_NUMBER)){
+					else if((typestr == typeid(float).name())  && (se->properties & STK_PROPERTY_TYPE_NUMBER)){
 						ptr = &value;
 						memcpy(ptr,&se->stkValue,sizeof(float));
 					}
-					else if((typestr == typeid(string).name())  && (se->properties & INS_PROPERTY_TYPE_STRING)){
+					else if((typestr == typeid(string).name())  && (se->properties & STK_PROPERTY_TYPE_STRING)){
 						ptr=&value;
 						*((string *)ptr) = *((string *)se->stkValue);
 					}
-					else if((typestr == typeid(bool).name())  && (se->properties & INS_PROPERTY_TYPE_BOOLEAN)){
+					else if((typestr == typeid(bool).name())  && (se->properties & STK_PROPERTY_TYPE_BOOLEAN)){
 						value = (bool)se->stkValue;
 					}
 					else{

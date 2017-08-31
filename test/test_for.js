@@ -1,4 +1,4 @@
-var j=0.2;
+var j=0;
 for(var i=0; i < 10000000; i++){
- var k="this is a string"+"jjj"+(i*j*2*j);
+ j=i*2;
 }

@@ -7,7 +7,7 @@ namespace zetscript{
 		tSymbolInfo si;
 		si.proxy_ptr=0;
 		si.object = {
-				INS_PROPERTY_TYPE_FUNCTION, // dfine as function.
+				STK_PROPERTY_TYPE_FUNCTION, // dfine as function.
 				irv,						// function struct pointer.
 				NULL						// no var ref releated.
 		};
@@ -193,7 +193,7 @@ namespace zetscript{
 		}else{
 
 			si.object={
-					INS_PROPERTY_TYPE_UNDEFINED,
+					STK_PROPERTY_TYPE_UNDEFINED,
 					0,
 					NULL
 			};
@@ -264,23 +264,23 @@ namespace zetscript{
 							zs_print_error_cr("unknow variable");
 							return ZS_UNDEFINED_IDX;
 							break;
-						case INS_PROPERTY_TYPE_INTEGER:
+						case STK_PROPERTY_TYPE_INTEGER:
 							aux_string=*CScriptClass::INT_PTR_TYPE_STR;
 							break;
-						case INS_PROPERTY_TYPE_NUMBER:
+						case STK_PROPERTY_TYPE_NUMBER:
 							aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
 							break;
-						case INS_PROPERTY_TYPE_BOOLEAN:
+						case STK_PROPERTY_TYPE_BOOLEAN:
 							aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
 							break;
-						case INS_PROPERTY_TYPE_STRING:
+						case STK_PROPERTY_TYPE_STRING:
 							aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
 
 							break;
-						case INS_PROPERTY_TYPE_NULL:
-						case INS_PROPERTY_TYPE_UNDEFINED:
-						case INS_PROPERTY_TYPE_SCRIPTVAR:
-						case INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_TYPE_STRING:
+						case STK_PROPERTY_TYPE_NULL:
+						case STK_PROPERTY_TYPE_UNDEFINED:
+						case STK_PROPERTY_TYPE_SCRIPTVAR:
+						case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:
 							aux_string = ((CScriptVariable *)ptrArg[k].varRef)->getPointer_C_ClassName();
 							break;
 						}
@@ -439,16 +439,16 @@ namespace zetscript{
 
 				switch(var_type){
 
-					case INS_PROPERTY_TYPE_BOOLEAN:
-					case INS_PROPERTY_TYPE_INTEGER:
-					case INS_PROPERTY_TYPE_UNDEFINED:
-					case INS_PROPERTY_TYPE_NULL:
-					case INS_PROPERTY_TYPE_FUNCTION:
-					case INS_PROPERTY_TYPE_NUMBER:
+					case STK_PROPERTY_TYPE_BOOLEAN:
+					case STK_PROPERTY_TYPE_INTEGER:
+					case STK_PROPERTY_TYPE_UNDEFINED:
+					case STK_PROPERTY_TYPE_NULL:
+					case STK_PROPERTY_TYPE_FUNCTION:
+					case STK_PROPERTY_TYPE_NUMBER:
 						break;
 
 					default: // variable ...
-						if(m_variableSymbol[i].object.properties & INS_PROPERTY_IS_C_VAR){ // deallocate but not if is native string
+						if(m_variableSymbol[i].object.properties & STK_PROPERTY_IS_C_VAR){ // deallocate but not if is native string
 
 								if(m_variableSymbol[i].object.varRef != NULL){
 									delete ((CScriptVariable *)(m_variableSymbol[i].object.varRef));

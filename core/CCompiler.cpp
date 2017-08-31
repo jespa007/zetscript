@@ -148,9 +148,9 @@ namespace zetscript{
 			return ZS_UNDEFINED_IDX;
 		}
 
-		int n_args = ast_args->children.size();
+		unsigned n_args = ast_args->children.size();
 
-		tScopeVar *irv=SCOPE_INFO_NODE(AST_NODE(idxAstNode)->idxScope)->getInfoRegisteredSymbol(name,n_args,false);
+		tScopeVar *irv=SCOPE_INFO_NODE(AST_NODE(idxAstNode)->idxScope)->getInfoRegisteredSymbol(name,(int)n_args,false);
 		scope_type = INS_PROPERTY_LOCAL_SCOPE;
 		if(irv != NULL){
 
@@ -158,7 +158,8 @@ namespace zetscript{
 
 			if((ast != NULL) && (AST_NODE(idxAstNode)->idxScope == ast->idxScope)){
 				for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-					if(GET_SCRIPT_FUNCTION_OBJECT(m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == name ){
+					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction[i]);
+					if(sfo->object_info.symbol_info.symbol_name == name  && sfo->m_arg.size()==n_args){
 						return i;
 					}
 				}
@@ -170,7 +171,8 @@ namespace zetscript{
 
 
 				for(unsigned i = 0; i < main_function->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-					if(GET_SCRIPT_FUNCTION_OBJECT(main_function->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == name ){
+					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(main_function->object_info.local_symbols.vec_idx_registeredFunction[i]);
+					if(sfo->object_info.symbol_info.symbol_name == name  && sfo->m_arg.size()==n_args ){
 						return i;
 					}
 				}
@@ -201,16 +203,16 @@ namespace zetscript{
 				switch(GET_INS_PROPERTY_VAR_TYPE(icv->properties)){
 				default:
 					break;
-				case INS_PROPERTY_TYPE_INTEGER:
+				case STK_PROPERTY_TYPE_INTEGER:
 					//delete (int *)icv->varRef;
 					break;
-				case INS_PROPERTY_TYPE_BOOLEAN:
+				case STK_PROPERTY_TYPE_BOOLEAN:
 					//delete (bool *)icv->stkValue;
 					break;
-				case INS_PROPERTY_TYPE_NUMBER:
+				case STK_PROPERTY_TYPE_NUMBER:
 					//delete (float *)icv->stkValue;
 					break;
-				case INS_PROPERTY_TYPE_STRING:
+				case STK_PROPERTY_TYPE_STRING:
 					delete (string *)icv->stkValue;
 					break;
 
@@ -380,7 +382,7 @@ namespace zetscript{
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &(this->m_currentFunctionInfo->stament)[this->m_currentFunctionInfo->stament.size()-1];
 
-		unsigned int type=INS_PROPERTY_TYPE_STRING;
+		unsigned int type=STK_PROPERTY_TYPE_STRING;
 		CCompiler::tInfoConstantValue *get_obj;
 		void *obj;
 
@@ -429,7 +431,7 @@ namespace zetscript{
 		void *const_obj;
 		void *obj;
 		CCompiler::tInfoConstantValue *get_obj;
-		unsigned short type=INS_PROPERTY_TYPE_SCRIPTVAR;
+		unsigned short type=STK_PROPERTY_TYPE_SCRIPTVAR;
 		LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
 		unsigned int scope_type=0;//INS_PROPERTY_UNKNOWN_SCOPE;
 		bool is_constant = true;
@@ -444,12 +446,12 @@ namespace zetscript{
 
 		// try parse value...
 		if(v=="null"){
-			type=INS_PROPERTY_TYPE_NULL;
+			type=STK_PROPERTY_TYPE_NULL;
 			load_type=LOAD_TYPE_NULL;
 			obj=NULL_SYMBOL;//CScriptVariable::NullSymbol;
 			print_com_cr("%s detected as null\n",v.c_str());
 		}else if(v=="undefined"){
-				type=INS_PROPERTY_TYPE_UNDEFINED;
+				type=STK_PROPERTY_TYPE_UNDEFINED;
 				load_type=LOAD_TYPE_UNDEFINED;
 				obj=UNDEFINED_SYMBOL;// CScriptVariable::UndefinedSymbol;
 				print_com_cr("%s detected as undefined\n",v.c_str());
@@ -467,7 +469,7 @@ namespace zetscript{
 
 			delete (int *)const_obj;
 
-			type=INS_PROPERTY_TYPE_INTEGER;
+			type=STK_PROPERTY_TYPE_INTEGER;
 			load_type=LOAD_TYPE_CONSTANT;
 			print_com_cr("%s detected as int\n",v.c_str());
 			if((get_obj = getConstant(v))!=NULL){
@@ -493,7 +495,7 @@ namespace zetscript{
 			memcpy(&value_ptr,&value,sizeof(float));
 
 
-			type=INS_PROPERTY_TYPE_NUMBER;
+			type=STK_PROPERTY_TYPE_NUMBER;
 			load_type=LOAD_TYPE_CONSTANT;
 			print_com_cr("%s detected as float\n",v.c_str());
 
@@ -504,7 +506,7 @@ namespace zetscript{
 			}
 		}
 		else if(v[0]=='\"' && v[v.size()-1]=='\"'){
-			type=INS_PROPERTY_TYPE_STRING;
+			type=STK_PROPERTY_TYPE_STRING;
 			load_type=LOAD_TYPE_CONSTANT;
 			print_com_cr("%s detected as string\n",v.c_str());
 
@@ -520,7 +522,7 @@ namespace zetscript{
 			bool value = *((bool *)const_obj);
 			delete (bool *)const_obj;
 
-			type=INS_PROPERTY_TYPE_BOOLEAN;
+			type=STK_PROPERTY_TYPE_BOOLEAN;
 			load_type=LOAD_TYPE_CONSTANT;
 			print_com_cr("%s detected as boolean\n",v.c_str());
 
@@ -666,7 +668,7 @@ namespace zetscript{
 		tInfoAsmOpCompiler * left_asm_op = ptr_current_statement_op->asm_op[left_index];
 
 		// check whether left operant is object...
-		if(left_asm_op->var_type != INS_PROPERTY_TYPE_SCRIPTVAR){
+		if(left_asm_op->var_type != STK_PROPERTY_TYPE_SCRIPTVAR){
 			int line = -1;
 
 			if(left_asm_op->idxAstNode!=ZS_UNDEFINED_IDX)
@@ -737,7 +739,7 @@ namespace zetscript{
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
 		asm_op->operator_type=ASM_OPERATOR::DECL_VEC;
-		asm_op->var_type=INS_PROPERTY_TYPE_SCRIPTVAR;
+		asm_op->var_type=STK_PROPERTY_TYPE_SCRIPTVAR;
 		asm_op->idxAstNode = idxAstNode;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 	}
@@ -749,7 +751,7 @@ namespace zetscript{
 		asm_op->index_op2 = index_instrucction;//&(this->m_currentFunctionInfo->stament[dest_statment]);
 		asm_op->operator_type=ASM_OPERATOR::VGET;
 		asm_op->idxAstNode = idxAstNode;
-		asm_op->var_type = INS_PROPERTY_TYPE_SCRIPTVAR;
+		asm_op->var_type = STK_PROPERTY_TYPE_SCRIPTVAR;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 	}
 
@@ -1059,7 +1061,7 @@ namespace zetscript{
 
 				iao = new tInfoAsmOpCompiler();
 				iao->operator_type = ASM_OPERATOR::ADD;
-				iao->runtime_prop |= INS_PROPERTY_READ_TWO_POP_ONE;
+				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);
 
@@ -1076,7 +1078,7 @@ namespace zetscript{
 
 				iao = new tInfoAsmOpCompiler();
 				iao->operator_type = ASM_OPERATOR::ADD;
-				iao->runtime_prop |= INS_PROPERTY_READ_TWO_POP_ONE;
+				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);
 
@@ -1087,7 +1089,7 @@ namespace zetscript{
 
 				iao = new tInfoAsmOpCompiler();
 				iao->operator_type = ASM_OPERATOR::MUL;
-				iao->runtime_prop |= INS_PROPERTY_READ_TWO_POP_ONE;
+				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);
@@ -1099,7 +1101,7 @@ namespace zetscript{
 
 				iao = new tInfoAsmOpCompiler();
 				iao->operator_type = ASM_OPERATOR::DIV;
-				iao->runtime_prop |= INS_PROPERTY_READ_TWO_POP_ONE;
+				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);
@@ -1111,7 +1113,7 @@ namespace zetscript{
 
 				iao = new tInfoAsmOpCompiler();
 				iao->operator_type = ASM_OPERATOR::MOD;
-				iao->runtime_prop |= INS_PROPERTY_READ_TWO_POP_ONE;
+				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 
 				iao->idxAstNode=_node->idxAstNode;
 				ptr_current_statement_op->asm_op.push_back(iao);
@@ -1129,7 +1131,7 @@ namespace zetscript{
 			iao->index_op2 = ZS_UNDEFINED_IDX;
 		}
 
-		if((op == ASSIGN_PUNCTUATOR) && (left_asm_op->var_type != INS_PROPERTY_TYPE_SCRIPTVAR)){
+		if((op == ASSIGN_PUNCTUATOR) && (left_asm_op->var_type != STK_PROPERTY_TYPE_SCRIPTVAR)){
 
 				error_str = "left operand must be l-value for '=' operator";
 				return false;
@@ -2340,7 +2342,7 @@ namespace zetscript{
 
 												// set property as READ_TWO_AND_ONE_POP...
 												asm_op=getLastInsertedInfoAsmOpCompiler();
-												asm_op->runtime_prop|=INS_PROPERTY_READ_TWO_POP_ONE;
+												asm_op->runtime_prop|=STK_PROPERTY_READ_TWO_POP_ONE;
 
 												// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases...
 												jt_instruction[i-1].push_back(insert_JT_Instruction(case_value->idxAstNode));

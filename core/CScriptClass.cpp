@@ -107,14 +107,14 @@ namespace zetscript{
 
 			if(*CScriptClass::INT_PTR_TYPE_STR==ir_var->c_type){//={typeid(int *).name(),"int *",IDX_CLASS_INT_PTR_C};
 				return {
-						INS_PROPERTY_TYPE_INTEGER|INS_PROPERTY_IS_C_VAR,
+						STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_C_VAR,
 						0,
 						ptr_variable
 				};
 
 			}else if(*CScriptClass::FLOAT_PTR_TYPE_STR==ir_var->c_type){//={typeid(float *).name(),"float *",IDX_CLASS_FLOAT_PTR_C};
 				return {
-						INS_PROPERTY_TYPE_NUMBER|INS_PROPERTY_IS_C_VAR,
+						STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_IS_C_VAR,
 						0,
 						ptr_variable
 				};
@@ -123,14 +123,14 @@ namespace zetscript{
 			}else if(*CScriptClass::STRING_PTR_TYPE_STR==ir_var->c_type){//={typeid(string *).name(),"string *",IDX_CLASS_STRING_PTR_C};
 
 				return {
-						INS_PROPERTY_TYPE_STRING|INS_PROPERTY_IS_C_VAR,
+						STK_PROPERTY_TYPE_STRING|STK_PROPERTY_IS_C_VAR,
 						0,
 						ptr_variable
 				};
 
 			}else if(*CScriptClass::BOOL_PTR_TYPE_STR==ir_var->c_type){//={typeid(bool *).name(),"bool *",IDX_CLASS_BOOL_PTR_C};
 				return {
-						INS_PROPERTY_TYPE_BOOLEAN|INS_PROPERTY_IS_C_VAR,
+						STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_C_VAR,
 						0,
 						ptr_variable
 				};
@@ -142,7 +142,7 @@ namespace zetscript{
 					var->init(info_registered_class,ptr_variable);
 
 					return{
-							INS_PROPERTY_TYPE_SCRIPTVAR|INS_PROPERTY_IS_C_VAR,
+							STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_IS_C_VAR,
 							NULL,
 							var
 					};
@@ -153,7 +153,7 @@ namespace zetscript{
 			zs_print_error_cr("Variable %s is not c referenced as C symbol",ir_var->symbol_name.c_str());
 		}
 
-		return{INS_PROPERTY_TYPE_UNDEFINED,
+		return{STK_PROPERTY_TYPE_UNDEFINED,
 			0,
 			NULL};
 	}

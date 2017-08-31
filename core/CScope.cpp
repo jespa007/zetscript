@@ -161,7 +161,7 @@ namespace zetscript{
 		tScopeVar *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
-		if((p_irv = existRegisteredSymbol(var_name))==NULL){ // check whether is local var registered scope ...
+		if((p_irv = existRegisteredSymbol(var_name,n_params))==NULL){ // check whether is local var registered scope ...
 
 			string symbol_ref = "";
 
@@ -213,8 +213,15 @@ namespace zetscript{
 		symbol_ref=symbol_ref+"_"+var_name;
 
 		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
-			if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
-				return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
+			if(n_params<0){ // get first ocurrence...
+				string ref = "__"+m_registeredVariableFromBase[i].name;
+				if(ref==symbol_ref){
+					return &m_registeredVariableFromBase[i];
+				}
+			}else{
+				if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
+					return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
+				}
 			}
 		}
 

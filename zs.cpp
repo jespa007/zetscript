@@ -19,9 +19,12 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
-	if (zetscript->eval_file(argv[1])) {
-		zetscript->execute();
-	}
+	//if (
+			zetscript->eval_file(argv[1]);
+	 //  )
+//	{
+//		zetscript->execute();
+//	}
 
 	CZetScript::destroy();
 

@@ -113,10 +113,11 @@ else()
 		
 
 		MESSAGE ("********* EMSCRIPTEN CONF ************" )
+		set(TARGET_FLAGS " -O0 -g4 ")
 		set(CMAKE_C_COMPILER "$ENV{EMSCRIPTENDIR}/emcc")
 		set(CMAKE_CXX_COMPILER "$ENV{EMSCRIPTENDIR}/em++")
 
-		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I$ENV{EMSCRIPTENDIR}/system/lib/libcxxabi/include/ ")
+		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I$ENV{EMSCRIPTENDIR}/system/lib/libcxxabi/include/ -s DEMANGLE_SUPPORT=1 ") #-s ASSERTIONS=2 -s VERBOSE=1 ")
 		
 		set( POST_NAME ${POST_NAME}.html)
 	
@@ -182,11 +183,53 @@ set( ZETSCRIPT_LIB_SRCS
 add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
 target_link_libraries(zetscript${POST_NAME} )
 
+SET(
+	HS 
+	utils/CIO_Utils.h
+	utils/CColorTerm.h
+	utils/zs_utils.h
+	utils/CStringUtils.h
+	utils/CLog.h
+	core/CASTNode.h
+	core/var/CStringScriptVariable.h
+	core/var/CVectorScriptVariable.h
+	core/var/CFunctorScriptVariable.h
+	core/var/CStructScriptVariable.h
+	core/var/zg_variable.h
+	core/var/CScriptVariable.h
+	core/var/CUndefinedScriptVariable.h
+	core/var/CNullScriptVariable.h
+	core/CCompiler.h
+	core/RegisterFunctionHelper.h
+	core/Common.h
+	core/CState.h
+	core/CScope.h
+	core/CScriptClass.h
+	core/vm/CVirtualMachine.h
+	core/CNativeFunction.h
+	core/CScriptFunctionObject.h
+	core/zs_core.h
+	CZetScript.h
+)
+
+
+
+INSTALL(TARGETS zetscript${POST_NAME} 
+		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
+    	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
+    	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
+)
+
+INSTALL_HEADERS_WITH_DIRECTORY(HS)
+
 if ( "${EMSCRIPTEN}" STREQUAL "yes" )
 
 	add_executable(zs${POST_NAME}
 		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
+	
+	
+		set_target_properties(zs${POST_NAME} PROPERTIES LINK_FLAGS " --preload-file test")
 
  	
 else()
@@ -203,48 +246,6 @@ else()
 	
 	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 	
-	
-	SET(
-		HS 
-		utils/CIO_Utils.h
-		utils/CColorTerm.h
-		utils/zs_utils.h
-		utils/CStringUtils.h
-		utils/CLog.h
-		core/CASTNode.h
-		core/var/CStringScriptVariable.h
-		core/var/CVectorScriptVariable.h
-		core/var/CFunctorScriptVariable.h
-		core/var/CStructScriptVariable.h
-		core/var/zg_variable.h
-		core/var/CScriptVariable.h
-		core/var/CUndefinedScriptVariable.h
-		core/var/CNullScriptVariable.h
-		core/CCompiler.h
-		core/RegisterFunctionHelper.h
-		core/Common.h
-		core/CState.h
-		core/CScope.h
-		core/CScriptClass.h
-		core/vm/CVirtualMachine.h
-		core/CNativeFunction.h
-		core/CScriptFunctionObject.h
-		core/zs_core.h
-		CZetScript.h
-	)
-	
-	
-	
-	INSTALL(TARGETS zetscript${POST_NAME} 
-			ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
-        	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
-        	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
-	)
-	
-	INSTALL_HEADERS_WITH_DIRECTORY(HS)
-		
-	
-
 	
 endif()
 

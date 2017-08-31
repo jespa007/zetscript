@@ -9,10 +9,12 @@ function add(a,b){
 
 
 
-print("t:"+add(20,20));
+//print("t:"+add(20,20));
 
 // it gets the first function...
 var add_function_obj=add;
+
+
 
 
 

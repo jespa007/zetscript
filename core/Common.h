@@ -330,7 +330,7 @@ enum METAMETHOD_OPERATOR
  */
 
 // properties shared by compiler + VM
-enum
+enum STACK_ELEMENT_PROPERTY
 	:unsigned char {
 
 		//-- COMPILER/VM TYPE VAR
@@ -347,8 +347,9 @@ enum
 	BIT_IS_C_VAR = MAX_BIT_VAR_TYPE, // 0x100
 	BIT_IS_STACKVAR,				 // 0x200
 	BIT_IS_INSTRUCTIONVAR,			 // 0x400
-	BIT_POP_ONE,				 // 0x800
-	//BIT_IS_UNRESOLVED_FUNCTION,
+	BIT_POP_ONE,				 	 // 0x800
+	BIT_UNRESOLVED_FUNCTION,		 // 0x1000
+	BIT_CONSTRUCTOR_FUNCTION,     // 0x2000
 
 	//BIT_START_FUNCTION_ARGS,
 	MAX_BIT_RUNTIME
@@ -357,14 +358,14 @@ enum
 
 enum
 	:unsigned short {
-	INS_PROPERTY_TYPE_UNDEFINED = (0x1 << BIT_TYPE_UNDEFINED), // is a variable not defined...
-	INS_PROPERTY_TYPE_NULL = (0x1 << BIT_TYPE_NULL), // null is a assigned var ..
-	INS_PROPERTY_TYPE_INTEGER = (0x1 << BIT_TYPE_INTEGER), // primitive int
-	INS_PROPERTY_TYPE_NUMBER = (0x1 << BIT_TYPE_NUMBER), // primitive number
-	INS_PROPERTY_TYPE_BOOLEAN = (0x1 << BIT_TYPE_BOOLEAN), // primitive bool
-	INS_PROPERTY_TYPE_STRING = (0x1 << BIT_TYPE_STRING), // constant / script var
-	INS_PROPERTY_TYPE_FUNCTION = (0x1 << BIT_TYPE_FUNCTION), // primitive function
-	INS_PROPERTY_TYPE_SCRIPTVAR = (0x1 << BIT_TYPE_SCRIPTVAR) // always is an script class...
+	STK_PROPERTY_TYPE_UNDEFINED = (0x1 << BIT_TYPE_UNDEFINED), // is a variable not defined...
+	STK_PROPERTY_TYPE_NULL = (0x1 << BIT_TYPE_NULL), // null is a assigned var ..
+	STK_PROPERTY_TYPE_INTEGER = (0x1 << BIT_TYPE_INTEGER), // primitive int
+	STK_PROPERTY_TYPE_NUMBER = (0x1 << BIT_TYPE_NUMBER), // primitive number
+	STK_PROPERTY_TYPE_BOOLEAN = (0x1 << BIT_TYPE_BOOLEAN), // primitive bool
+	STK_PROPERTY_TYPE_STRING = (0x1 << BIT_TYPE_STRING), // constant / script var
+	STK_PROPERTY_TYPE_FUNCTION = (0x1 << BIT_TYPE_FUNCTION), // primitive function
+	STK_PROPERTY_TYPE_SCRIPTVAR = (0x1 << BIT_TYPE_SCRIPTVAR) // always is an script class...
 
 };
 
@@ -376,11 +377,12 @@ enum
 
 enum
 	:unsigned short {
-		INS_PROPERTY_IS_C_VAR = (0x1 << BIT_IS_C_VAR),
-	INS_PROPERTY_IS_STACKVAR = (0x1 << BIT_IS_STACKVAR),
-	INS_PROPERTY_IS_INSTRUCTIONVAR = (0x1 << BIT_IS_INSTRUCTIONVAR),
-	INS_PROPERTY_READ_TWO_POP_ONE = (0x1 << BIT_POP_ONE),
-	//INS_PROPERTY_UNRESOLVED_FUNCTION = (0x1 << BIT_IS_UNRESOLVED_FUNCTION) // always is an script class...
+	STK_PROPERTY_IS_C_VAR = (0x1 << BIT_IS_C_VAR),
+	STK_PROPERTY_IS_STACKVAR = (0x1 << BIT_IS_STACKVAR),
+	STK_PROPERTY_IS_INSTRUCTIONVAR = (0x1 << BIT_IS_INSTRUCTIONVAR),
+	STK_PROPERTY_READ_TWO_POP_ONE = (0x1 << BIT_POP_ONE),
+	STK_PROPERTY_UNRESOLVED_FUNCTION = (0x1 << BIT_UNRESOLVED_FUNCTION),
+	STK_PROPERTY_CONSTRUCTOR_FUNCTION = (0x1 << BIT_CONSTRUCTOR_FUNCTION)
 //INS_PROPERTY_START_FUNCTION_ARGS=	(0x1<<BIT_START_FUNCTION_ARGS)
 };
 
@@ -388,7 +390,7 @@ enum
 #define GET_INS_PROPERTY_RUNTIME(prop)		((prop)&MASK_RUNTIME)
 
 // properties shared by compiler + instruction ..
-enum {
+enum INSTRUCTION_PROPERTY{
 	//-- PRE/POST OPERATORS (Byy default there's no operators involved)
 	BIT_PRE_INC = 0,	// 0x1
 	BIT_POST_INC,		// 0x2
@@ -607,7 +609,7 @@ namespace zetscript{
 		tSymbolInfo() {
 			proxy_ptr = 0;
 			object= {
-				INS_PROPERTY_TYPE_UNDEFINED|INS_PROPERTY_IS_C_VAR, // undefined.
+				STK_PROPERTY_TYPE_UNDEFINED|STK_PROPERTY_IS_C_VAR, // undefined.
 				0,// 0 value
 				0// no var ref related
 			};

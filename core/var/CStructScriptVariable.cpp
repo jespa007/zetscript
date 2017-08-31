@@ -12,7 +12,7 @@ namespace zetscript{
 
 			for(unsigned i = 0; i < m_variableSymbol.size(); i++){
 				unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(m_variableSymbol[i].object.properties);
-				if(((var_type) == INS_PROPERTY_TYPE_SCRIPTVAR || (var_type) == INS_PROPERTY_TYPE_STRING)){
+				if(((var_type) == STK_PROPERTY_TYPE_SCRIPTVAR || (var_type) == STK_PROPERTY_TYPE_STRING)){
 					if(!((CScriptVariable *)m_variableSymbol[i].object.varRef)->unrefSharedPtr()){
 						return false;
 					}
@@ -33,7 +33,7 @@ namespace zetscript{
 				return false;
 
 				/*unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(m_variableSymbol[i].object.properties);
-				if(((var_type) == INS_PROPERTY_TYPE_SCRIPTVAR || (var_type) == INS_PROPERTY_TYPE_STRING)){
+				if(((var_type) == STK_PROPERTY_TYPE_SCRIPTVAR || (var_type) == STK_PROPERTY_TYPE_STRING)){
 					if(!((CScriptVariable *)m_variableSymbol[i].object.varRef)->initSharedPtr()){
 						return false;
 					}

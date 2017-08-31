@@ -83,19 +83,19 @@ namespace zetscript{
 
 					if(se != NULL){
 
-						if((typestr == typeid(int).name())  && (se->properties & INS_PROPERTY_TYPE_INTEGER)){
+						if((typestr == typeid(int).name())  && (se->properties & STK_PROPERTY_TYPE_INTEGER)){
 							ptr = &value;
 							*((intptr_t *)ptr) = (intptr_t)se->stkValue;
 						}
-						else if((typestr == typeid(float).name())  && (se->properties & INS_PROPERTY_TYPE_NUMBER)){
+						else if((typestr == typeid(float).name())  && (se->properties & STK_PROPERTY_TYPE_NUMBER)){
 							ptr = &value;
 							memcpy(ptr,&se->stkValue,sizeof(float));
 						}
-						else if((typestr == typeid(string).name())  && (se->properties & INS_PROPERTY_TYPE_STRING)){
+						else if((typestr == typeid(string).name())  && (se->properties & STK_PROPERTY_TYPE_STRING)){
 							ptr=&value;
 							*((string *)ptr) = *((string *)se->stkValue);
 						}
-						else if((typestr == typeid(bool).name())  && (se->properties & INS_PROPERTY_TYPE_BOOLEAN)){
+						else if((typestr == typeid(bool).name())  && (se->properties & STK_PROPERTY_TYPE_BOOLEAN)){
 							value = (bool)se->stkValue;
 						}
 						else{

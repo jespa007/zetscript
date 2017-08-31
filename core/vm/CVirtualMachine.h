@@ -97,27 +97,27 @@ namespace zetscript{
 			BASIC_CLASS_TYPE primitiveid = getIdxPrimitiveFromIts_C_Type(typeid(_T).name());
 			switch(primitiveid){
 			case IDX_CLASS_INT_PTR_C:
-				if(stk_v.properties & INS_PROPERTY_TYPE_INTEGER){
+				if(stk_v.properties & STK_PROPERTY_TYPE_INTEGER){
 					return true;
 				}
 				break;
 			case IDX_CLASS_FLOAT_PTR_C:
-				if(stk_v.properties & INS_PROPERTY_TYPE_NUMBER){
+				if(stk_v.properties & STK_PROPERTY_TYPE_NUMBER){
 					return true;
 				}
 				break;
 			case IDX_CLASS_BOOL_PTR_C:
-				if(stk_v.properties & INS_PROPERTY_TYPE_BOOLEAN){
+				if(stk_v.properties & STK_PROPERTY_TYPE_BOOLEAN){
 					return true;
 				}
 				break;
 			case IDX_CLASS_STRING_PTR_C:
-				if(stk_v.properties & INS_PROPERTY_TYPE_STRING){
+				if(stk_v.properties & STK_PROPERTY_TYPE_STRING){
 					return true;
 				}
 				break;
 			default: // get class
-				if(stk_v.properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+				if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 					int idxScriptVar = getIdxClassFromIts_C_Type(typeid(_T).name());
 					return idxScriptVar==((CScriptVariable *)(stk_v.varRef))->idxScriptClass;
 				}
@@ -132,27 +132,27 @@ namespace zetscript{
 				BASIC_CLASS_TYPE primitiveid = getIdxPrimitiveFromIts_C_Type(typeid(_T).name());
 				switch(primitiveid){
 				case IDX_CLASS_INT_PTR_C: // copy int
-					if(stk_v.properties & INS_PROPERTY_TYPE_INTEGER){
+					if(stk_v.properties & STK_PROPERTY_TYPE_INTEGER){
 						return (_T)(&stk_v.stkValue);
 					}
 					break;
 				case IDX_CLASS_FLOAT_PTR_C: // copy number
-					if(stk_v.properties & INS_PROPERTY_TYPE_NUMBER){
+					if(stk_v.properties & STK_PROPERTY_TYPE_NUMBER){
 						return (_T)(&stk_v.stkValue);
 					}
 					break;
 				case IDX_CLASS_BOOL_PTR_C: // copy bool
-					if(stk_v.properties & INS_PROPERTY_TYPE_BOOLEAN){
+					if(stk_v.properties & STK_PROPERTY_TYPE_BOOLEAN){
 						return (_T)(&stk_v.stkValue);
 					}
 					break;
 				case IDX_CLASS_STRING_PTR_C: // copy string
-					if(stk_v.properties & INS_PROPERTY_TYPE_STRING){
+					if(stk_v.properties & STK_PROPERTY_TYPE_STRING){
 						return (_T)(stk_v.stkValue);
 					}
 					break;
 				default: // get class
-					if(stk_v.properties & INS_PROPERTY_TYPE_SCRIPTVAR){
+					if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 						return (_T)stk_v.varRef;
 					}
 					else{
@@ -171,25 +171,25 @@ namespace zetscript{
 				BASIC_CLASS_TYPE primitiveid = getIdxPrimitiveFromIts_C_Type(typeid(_T).name());
 				switch(primitiveid){
 				case IDX_CLASS_INT_PTR_C: // copy int
-					if(stk_v.properties & INS_PROPERTY_TYPE_INTEGER){
+					if(stk_v.properties & STK_PROPERTY_TYPE_INTEGER){
 						((int)stk_v.stkValue)=(*_v);
 						return true;
 					}
 					break;
 				case IDX_CLASS_FLOAT_PTR_C: // copy number
-					if(stk_v.properties & INS_PROPERTY_TYPE_NUMBER){
+					if(stk_v.properties & STK_PROPERTY_TYPE_NUMBER){
 						memcpy(stk_v.stkValue,_v,sizeof(float));
 						return true;
 					}
 					break;
 				case IDX_CLASS_BOOL_PTR_C: // copy bool
-					if(stk_v.properties & INS_PROPERTY_TYPE_BOOLEAN){
+					if(stk_v.properties & STK_PROPERTY_TYPE_BOOLEAN){
 						((bool)stk_v.stkValue)=(*_v);
 						return true;
 					}
 					break;
 				case IDX_CLASS_STRING_PTR_C: // copy string
-					if(stk_v.properties & INS_PROPERTY_TYPE_STRING){
+					if(stk_v.properties & STK_PROPERTY_TYPE_STRING){
 						*((string *)stk_v.stkValue)=(*_v);
 						return true;
 					}
