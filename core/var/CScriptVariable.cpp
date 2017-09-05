@@ -219,6 +219,16 @@ namespace zetscript{
 		return NULL;
 	}
 
+	tSymbolInfo * CScriptVariable::getFunctionSymbol(const string & varname){
+		for(unsigned int i = 0; i < this->m_functionSymbol.size(); i++){
+			if(varname == this->m_functionSymbol[i].symbol_value){
+				return &m_functionSymbol[i];
+			}
+		}
+
+		return NULL;
+	}
+
 	tSymbolInfo * CScriptVariable::getVariableSymbolByIndex(unsigned idx){
 		if(idx >= m_variableSymbol.size()){
 			zs_print_error_cr("idx symbol index out of bounds (%i)",idx);

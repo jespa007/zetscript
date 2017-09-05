@@ -2,7 +2,7 @@
 #pragma once
 
 // Util to capture args by ...
-#define CAPTURE_VARIABLE_ARGS(text_out, text_in)\
+#define ZETSCRIPT_CAPTURE_VARIABLE_ARGS(text_out, text_in)\
 {va_list  ap;\
 va_start(ap,  text_in);\
 vsprintf(text_out,  text_in,  ap);\

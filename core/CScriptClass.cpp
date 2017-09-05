@@ -3,7 +3,7 @@
 namespace zetscript{
 
 	#define REGISTER_BASIC_TYPE(type_class, idx_class)\
-		if(!register_C_Class<type_class>(STR(type_class))) return false;\
+		if(!register_C_ClassInt<type_class>(STR(type_class))) return false;\
 		if(vec_script_class_node->at(idx_class)->classPtrType!=typeid(type_class *).name()){\
 			zs_print_error_cr("Error initializing basic type: %s",STR(type_class));\
 			return false;\
@@ -19,6 +19,7 @@ namespace zetscript{
 	string  * CScriptClass::BOOL_PTR_TYPE_STR=NULL;//	typeid(bool *).name()
 
 	string  * CScriptClass::INT_TYPE_STR=NULL;//	typeid(int *).name()
+	string  * CScriptClass::FLOAT_TYPE_STR=NULL;//	typeid(int *).name()
 	string  * CScriptClass::BOOL_TYPE_STR=NULL;//	typeid(bool *).name()
 	string  * CScriptClass::STACK_ELEMENT_PTR=NULL;//	typeid(bool *).name()
 
@@ -427,6 +428,7 @@ namespace zetscript{
 			// particular case for return ... for not to force user returning pointer (this is the only vars allowed, sorry!)
 			BOOL_TYPE_STR = new string(typeid(bool).name());
 			INT_TYPE_STR = new string(typeid(int).name());
+			FLOAT_TYPE_STR = new string(typeid(float).name());
 			STACK_ELEMENT_PTR= new string(typeid(tStackElement *).name());
 
 
@@ -494,6 +496,10 @@ namespace zetscript{
 			if((registerClass("int","",NULL)) == NULL) return false;		// 5
 			vec_script_class_node->at(IDX_CLASS_INT_C)->classPtrType=*INT_TYPE_STR;
 
+			if((registerClass("float","",NULL)) == NULL) return false;		// 5
+			vec_script_class_node->at(IDX_CLASS_FLOAT_C)->classPtrType=*FLOAT_TYPE_STR;
+
+
 			if((registerClass("bool","",NULL)) == NULL) return false;		// 6
 			vec_script_class_node->at(IDX_CLASS_BOOL_C)->classPtrType=*BOOL_TYPE_STR;
 
@@ -536,12 +542,12 @@ namespace zetscript{
 			// From here you defined all basic, start define hierarchy
 
 			// register custom functions ...
-			if(!register_C_FunctionMember(CScriptVariable,toString)) return false;
+			if(!register_C_FunctionMember<CScriptVariable>("toString",CScriptVariable::toString)) return false;
 			if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(string * ))) return false;
 			if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(int * ))) return false;
 			if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(int *,int * ))) return false;
-			if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(string * )>(&CScriptVariable::fun1))) return false;
-			if(!register_C_FunctionMemberInt<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(int * )>(&CScriptVariable::fun1))) return false;
+			if(!register_C_FunctionMember<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(string * )>(&CScriptVariable::fun1))) return false;
+			if(!register_C_FunctionMember<CScriptVariable>("fun1",static_cast<void (CScriptVariable::*)(int * )>(&CScriptVariable::fun1))) return false;
 
 			// Add metamethods ...
 			if(!register_C_FunctionMemberCast(CScriptVariable,_add,CScriptVariable * (CScriptVariable::*)(CScriptVariable * ))) return false;
@@ -574,7 +580,7 @@ namespace zetscript{
 			if(!register_C_Variable("c_var",c_var)) return false;
 
 
-			if(!register_C_FunctionMember(CVectorScriptVariable,size)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("size",CVectorScriptVariable::size)) return false;
 			//if(!register_C_FunctionMember(CVectorScriptVariable,add)) return false;
 
 		/*	if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(int *)>(&CVectorScriptVariable::add))) return false;
@@ -582,11 +588,11 @@ namespace zetscript{
 			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(string *)>(&CVectorScriptVariable::add))) return false;
 			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(bool *)>(&CVectorScriptVariable::add))) return false;
 			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(CScriptVariable *)>(&CVectorScriptVariable::add))) return false;*/
-			if(!register_C_FunctionMember(CVectorScriptVariable,add)) return false;
-			if(!register_C_FunctionMember(CVectorScriptVariable,pop)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("add",CVectorScriptVariable::add)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("pop",CVectorScriptVariable::pop)) return false;
 
 
-			if(!register_C_FunctionMember(CStructScriptVariable,size)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("size",CStructScriptVariable::size)) return false;
 
 
 

@@ -600,6 +600,7 @@ namespace zetscript{
 		return result;
 	}
 
+
 	void CVirtualMachine::stackDumped(){
 		// derefer all variables in all scopes (include the main )...
 		while(scope_idx!=current_scope_idx){
@@ -825,6 +826,12 @@ namespace zetscript{
 		intptr_t converted_param[MAX_N_ARGS];
 		intptr_t result=0;
 		tStackElement *currentArg;
+		float aux_float=0;
+
+		if(n_args>=MAX_N_ARGS){
+			zs_print_error_cr("Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
+			return NULL;
+		}
 
 
 		if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) {
@@ -881,7 +888,11 @@ namespace zetscript{
 
 					break;
 				case STK_PROPERTY_TYPE_NUMBER:
-					if(irfs->m_arg[i] != *CScriptClass::FLOAT_PTR_TYPE_STR){
+					if(irfs->m_arg[i] == *CScriptClass::FLOAT_TYPE_STR){
+						converted_param[i]=(intptr_t)(currentArg->stkValue);
+					}else if(irfs->m_arg[i] == *CScriptClass::FLOAT_PTR_TYPE_STR){
+						converted_param[i]=(intptr_t)(&currentArg->stkValue);
+					}else{
 						zs_print_error_cr("Function %s, param %i: cannot convert %s into %s",
 												irfs->object_info.symbol_info.symbol_name.c_str(),
 												i,
@@ -890,13 +901,11 @@ namespace zetscript{
 												);
 						return NULL;
 					}
-
-					converted_param[i]=(intptr_t)(&currentArg->stkValue);
 					break;
 				case STK_PROPERTY_TYPE_INTEGER:
 					if(irfs->m_arg[i] == *CScriptClass::INT_TYPE_STR){
 						converted_param[i]=(intptr_t)(currentArg->stkValue);
-					}else if(irfs->m_arg[i] != *CScriptClass::INT_PTR_TYPE_STR){
+					}else if(irfs->m_arg[i] == *CScriptClass::INT_PTR_TYPE_STR){
 						converted_param[i]=(intptr_t)(&currentArg->stkValue);
 					}else{
 						zs_print_error_cr("Function %s, param %i: cannot convert %s into %s",
@@ -975,9 +984,6 @@ namespace zetscript{
 		if(irfs->idx_return_type == IDX_CLASS_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){
-			default:
-				zs_print_error_cr("Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
-				return &callc_result;//CScriptVariable::UndefinedSymbol;
 			case 0:
 				(*((std::function<void ()> *)fun_ptr))();
 				break;
@@ -1026,154 +1032,216 @@ namespace zetscript{
 				break;
 			}
 
-		}else{
-			if(irfs->idx_return_type==IDX_CLASS_BOOL_C){
-				switch(n_args){
-				default:
-					zs_print_error_cr("Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
-					return NULL;//CScriptVariable::UndefinedSymbol;
-				case 0:
-					result=(*((std::function<bool ()> *)fun_ptr))();
-					break;
-				case 1:
-					result=(*((std::function<bool (intptr_t)> *)fun_ptr))(converted_param[0]);
-					break;
-				case 2:
+		}else if(irfs->idx_return_type==IDX_CLASS_BOOL_C){
+			switch(n_args){
+			case 0:
+				result=(*((std::function<bool ()> *)fun_ptr))();
+				break;
+			case 1:
+				result=(*((std::function<bool (intptr_t)> *)fun_ptr))(converted_param[0]);
+				break;
+			case 2:
 
-					result=(*((std::function<bool (intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1]
-											);
-					break;
-				case 3:
-					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2]
-											);
-					break;
-				case 4:
-					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3]
-											);
-					break;
-				case 5:
-					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3],
-							converted_param[4]
-						);
-					break;
-				case 6:
-					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3],
-							converted_param[4],
-							converted_param[5]
-											);
-					break;
+				result=(*((std::function<bool (intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1]
+										);
+				break;
+			case 3:
+				result=(*((std::function<bool (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1],
+						converted_param[2]
+										);
+				break;
+			case 4:
+				result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1],
+						converted_param[2],
+						converted_param[3]
+										);
+				break;
+			case 5:
+				result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1],
+						converted_param[2],
+						converted_param[3],
+						converted_param[4]
+					);
+				break;
+			case 6:
+				result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1],
+						converted_param[2],
+						converted_param[3],
+						converted_param[4],
+						converted_param[5]
+										);
+				break;
 
-				}
-			}else{
-
-				switch(n_args){
-				default:
-					zs_print_error_cr("Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
-					return NULL;//CScriptVariable::UndefinedSymbol;
-				case 0:
-					result=(*((std::function<intptr_t ()> *)fun_ptr))();
-					break;
-				case 1:
-					result=(*((std::function<intptr_t (intptr_t)> *)fun_ptr))(converted_param[0]);
-					break;
-				case 2:
-
-					result=(*((std::function<intptr_t (intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1]
-											);
-					break;
-				case 3:
-					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2]
-											);
-					break;
-				case 4:
-					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3]
-											);
-					break;
-				case 5:
-					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3],
-							converted_param[4]
-						);
-					break;
-				case 6:
-					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3],
-							converted_param[4],
-							converted_param[5]
-											);
-					break;
-
-				}
 			}
+		}else if(irfs->idx_return_type==IDX_CLASS_FLOAT_C){
+				switch(n_args){
+				case 0:
+					aux_float=(*((std::function<float ()> *)fun_ptr))();
+					break;
+				case 1:
+					aux_float=(*((std::function<float (intptr_t)> *)fun_ptr))(converted_param[0]);
+					break;
+				case 2:
 
-			// save return type ...
-			switch(irfs->idx_return_type){
-			 case IDX_CLASS_INT_PTR_C:
-				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(*((intptr_t *)result)),NULL};
-				 break;
-			 case IDX_CLASS_INT_C:
-				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(((intptr_t)result)),NULL};
-				 break;
-			 case IDX_CLASS_FLOAT_PTR_C:
-				 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
-				 COPY_NUMBER(&callc_result.stkValue,(float *)result);
-				 callc_result.varRef=NULL;
-				 break;
+					aux_float=(*((std::function<float (intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1]
+											);
+					break;
+				case 3:
+					aux_float=(*((std::function<float (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2]
+											);
+					break;
+				case 4:
+					aux_float=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3]
+											);
+					break;
+				case 5:
+					aux_float=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3],
+							converted_param[4]
+						);
+					break;
+				case 6:
+					aux_float=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3],
+							converted_param[4],
+							converted_param[5]
+											);
+					break;
 
-			 case IDX_CLASS_BOOL_PTR_C:
-				 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(*((bool *)result)),NULL};
-				 break;
-			 case IDX_CLASS_BOOL_C:
-				 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(((bool)result)),NULL};
-				 break;
-			 case IDX_CLASS_STRING_PTR_C:
-				 s_return_value = *((string *)result);
-				 callc_result={STK_PROPERTY_TYPE_STRING,&s_return_value,NULL};//new string(*((string *)result))};
-				 break;
-			 default:
-				 callc_result = {STK_PROPERTY_TYPE_SCRIPTVAR,NULL,CScriptClass::instanceScriptVariableByIdx(irfs->idx_return_type,(void *)result)};
-				 break;
+				}
+		}else{ // generic int
+
+			switch(n_args){
+			case 0:
+				result=(*((std::function<intptr_t ()> *)fun_ptr))();
+				break;
+			case 1:
+				result=(*((std::function<intptr_t (intptr_t)> *)fun_ptr))(converted_param[0]);
+				break;
+			case 2:
+
+				result=(*((std::function<intptr_t (intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1]
+										);
+				break;
+			case 3:
+				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1],
+						converted_param[2]
+										);
+				break;
+			case 4:
+				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1],
+						converted_param[2],
+						converted_param[3]
+										);
+				break;
+			case 5:
+				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1],
+						converted_param[2],
+						converted_param[3],
+						converted_param[4]
+					);
+				break;
+			case 6:
+				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						converted_param[0],
+						converted_param[1],
+						converted_param[2],
+						converted_param[3],
+						converted_param[4],
+						converted_param[5]
+										);
+				break;
+
 			}
 		}
+
+		// save return type ...
+		switch(irfs->idx_return_type){
+		 case IDX_CLASS_VOID_C:
+			break;
+		 case IDX_CLASS_INT_PTR_C:
+			 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(*((intptr_t *)result)),NULL};
+			 break;
+		 case IDX_CLASS_INT_C:
+			 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(((intptr_t)result)),NULL};
+			 break;
+		 case IDX_CLASS_FLOAT_C:
+			 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
+			 COPY_NUMBER(&callc_result.stkValue,&aux_float);
+			 callc_result.varRef=NULL;
+			 break;
+		 case IDX_CLASS_FLOAT_PTR_C:
+			 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
+			 COPY_NUMBER(&callc_result.stkValue,(float *)result);
+			 callc_result.varRef=NULL;
+			 break;
+
+		 case IDX_CLASS_BOOL_PTR_C:
+			 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(*((bool *)result)),NULL};
+			 break;
+		 case IDX_CLASS_BOOL_C:
+			 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(((bool)result)),NULL};
+			 break;
+		 case IDX_CLASS_STRING_PTR_C:
+			 s_return_value = *((string *)result);
+			 callc_result={STK_PROPERTY_TYPE_STRING,&s_return_value,NULL};//new string(*((string *)result))};
+			 break;
+		 default:
+			 callc_result = {STK_PROPERTY_TYPE_SCRIPTVAR,NULL,CScriptClass::instanceScriptVariableByIdx(irfs->idx_return_type,(void *)result)};
+			 break;
+		}
+
 		return &callc_result;
 	}
+
+	tStackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
+		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
+
+		if(idx_glb_element < main_function->object_info.local_symbols.m_registeredVariable.size()){
+			return &stack[idx_glb_element];
+		}
+
+		return NULL;
+	}
+
 
 	CScriptVariable * CVirtualMachine::execute(
 			 CScriptFunctionObject *info_function,
 			 CScriptVariable *this_object,
-			vector<CScriptVariable *> * arg
+			const vector<CScriptVariable *> & arg
 			){
 
 		if(info_function==NULL){
@@ -1193,7 +1261,7 @@ namespace zetscript{
 		}
 
 		int n_arg=0;
-		if(arg!=NULL){
+		if(arg.size()>0){
 
 			//advance idxBaseStk...
 			//idxBaseStk+=arg->size();
@@ -2265,7 +2333,8 @@ namespace zetscript{
 																break;
 															case STK_PROPERTY_TYPE_NUMBER:
 																aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
-																all_check=irfs->m_arg[k]==*CScriptClass::FLOAT_PTR_TYPE_STR;
+																all_check=irfs->m_arg[k]==*CScriptClass::FLOAT_PTR_TYPE_STR
+																		||irfs->m_arg[k]==*CScriptClass::FLOAT_TYPE_STR;
 																break;
 															case STK_PROPERTY_TYPE_BOOLEAN:
 																aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;

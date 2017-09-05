@@ -46,14 +46,14 @@ namespace zetscript{
 	}
 	
 	void  CZetScript::write_error(const  char  *string_text, ...) {
-	char  text[MAX_BUFFER_AUX_TMP] = { 0 };
-	CAPTURE_VARIABLE_ARGS(text, string_text);
+		char  text[MAX_BUFFER_AUX_TMP] = { 0 };
+		ZETSCRIPT_CAPTURE_VARIABLE_ARGS(text, string_text);
 
-	if (strlen(text) + strlen(str_error) > MAX_BUFFER_STR_ERROR) {
-		memset(str_error, 0,sizeof(str_error));
-	}
+		if (strlen(text) + strlen(str_error) > MAX_BUFFER_STR_ERROR) {
+			memset(str_error, 0,sizeof(str_error));
+		}
 
-	strcat(str_error, text);
+		strcat(str_error, text);
 
 	}
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -461,6 +461,15 @@ namespace zetscript{
 					return false;
 				}
 
+				if(m_mainObject == NULL){
+					// creates the main entry function with compiled code. On every executing code, within "execute" function
+					// virtual machine is un charge of allocating space for all local variables...
+
+					m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
+
+
+				}
+
 	#ifdef __DEBUG__
 				printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
 	#endif
@@ -504,84 +513,112 @@ namespace zetscript{
 		return status;
 	}
 
-	std::function<CScriptVariable * ( std::vector<CScriptVariable *> * args)> * CZetScript::script_call(const string &script_function_name){
+	std::function<CScriptVariable * (const std::vector<CScriptVariable *> & args)> * CZetScript::bind_function(const string &function_access_expression){
 
-		//CScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
+
+		vector<string> access_var = CStringUtils::split(function_access_expression,'.');
 		CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
+		CScriptVariable *calling_obj = NULL;
+		tSymbolInfo *is=NULL;
+		CScriptFunctionObject *fun_obj=NULL;
 
-		if(m_mainFunctionInfo != NULL){
 
-		//if(irfs != NULL){
-			for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-				if(GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i])->object_info.symbol_info.symbol_name == script_function_name){
-					return new std::function<CScriptVariable * (std::vector<CScriptVariable *> * _args)>([&,i,m_mainFunctionInfo]( std::vector<CScriptVariable *> * _args){
-						return vm->execute(
-									GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]),
-									m_mainObject,
-									_args);//->excute();
-					});
+		// 1. accessing var scopes...
+		if(access_var.size()>1){
+			for(unsigned i=0; i < access_var.size()-1; i++){
+
+				string symbol_to_find=access_var[i];
+				if(i==0){ // get variable through main_class.main_function (global element)
+
+					for(unsigned j = 0; j < m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable.size() && calling_obj==NULL; j++){
+						if(m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].symbol_name==symbol_to_find){
+							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].
+							if(stk!=NULL){
+								if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+									calling_obj=(CScriptVariable *)stk->varRef;
+								}
+							}
+							else{
+								zs_print_error_cr("cannot access i (%i)",j);
+								return NULL;
+							}
+						}
+					}
+				}else{ // we have got the calling_obj from last iteration ...
+					is = calling_obj->getVariableSymbol(symbol_to_find);
+
+					if(is!=NULL){
+
+						if(is->object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+							calling_obj=(CScriptVariable *)is->object.varRef;
+						}else{
+							zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access_expression.c_str(),symbol_to_find.c_str());
+							return NULL;
+						}
+					}
+					else{
+						zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access_expression.c_str(),symbol_to_find.c_str());
+						return NULL;
+					}
+
+				}
+
+			}
+
+
+
+			// search function pointer thorugh its class...
+			/*for(unsigned i = 0; i < calling_obj->m_functionSymbol.size() && fun_obj==NULL; i++){
+				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
+				if(aux_fun_obj->object_info.symbol_info.symbol_name == access_var[0]){
+					fun_obj=aux_fun_obj;
+				}
+			}*/
+
+			is=calling_obj->getFunctionSymbol(access_var[access_var.size()-1]);
+			if(is!=NULL){
+				if(is->object.properties & STK_PROPERTY_TYPE_FUNCTION){
+					fun_obj=(CScriptFunctionObject *)is->object.stkValue;
+				}
+			}else{
+				zs_print_error_cr("error evaluating \"%s\". Cannot find function \"%s\"",function_access_expression.c_str(),access_var[access_var.size()-1].c_str());
+				return NULL;
+			}
+
+
+		}else{
+			calling_obj = m_mainObject;
+			for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size() && fun_obj==NULL; i++){
+				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
+				if(aux_fun_obj->object_info.symbol_info.symbol_name == access_var[0]){
+					fun_obj=aux_fun_obj;
 				}
 			}
-		//}
-			zs_print_error_cr("function %s don't exist",script_function_name.c_str());
+		}
+
+		if(fun_obj==NULL){
+			zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access_expression.c_str(),access_var[access_var.size()-1].c_str());
+			return NULL;
 		}
 
 
 
-
-		return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
+		return new std::function<CScriptVariable * (const std::vector<CScriptVariable *> & _args)>([&,calling_obj,fun_obj](const std::vector<CScriptVariable *> & _args){
+					return vm->execute(
+								fun_obj,
+								calling_obj,
+								_args);
+				});
 	}
-
-	/*std::function<CScriptVariable * (void)> * CZetScript::script_call_no_params(const string &script_function_name){
-
-			//CScriptFunctionObject *irfs = CScriptClass::getInstance()->getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,function);
-			CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
-
-			if(m_mainFunctionInfo != NULL){
-
-			//if(irfs != NULL){
-				for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-					CScriptFunctionObject * sof = GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
-					if(sof->object_info.symbol_info.symbol_name == script_function_name){
-						return new std::function<CScriptVariable * (void)>([&,m_mainFunctionInfo,i](){
-
-							//CScriptFunctionObject * m_mainFunctionInfo=GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
-
-							return vm->execute(
-										GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]),
-										m_mainObject);//->excute();
-						});
-					}
-				}
-			//}
-				zs_print_error_cr("function %s don't exist",script_function_name.c_str());
-			}
-
-
-
-
-			return NULL;//[](std::vector<CScriptVariable *> args){};//CScriptVariable::UndefinedSymbol;
-		}*/
-
 
 	CVirtualMachine * CZetScript::getVirtualMachine(){
 		return vm;
 	}
 
-
-
 	CScriptVariable * CZetScript::execute(){
 
 		if(!__init__) return NULL;
 
-		if(m_mainObject == NULL){
-			// creates the main entry function with compiled code. On every executing code, within "execute" function
-			// virtual machine is un charge of allocating space for all local variables...
-
-			m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
-
-
-		}
 		// the first code to execute is the main function that in fact is a special member function inside our main class
 		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject);//->excute();
 	}

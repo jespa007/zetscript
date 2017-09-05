@@ -21,33 +21,38 @@
 #include "RegisterFunctionHelper.h"
 
 
-#define register_C_Function(text,s) CScriptClass::register_C_FunctionInt(text,s)
-#define register_C_Variable(text,s) CScriptClass::register_C_VariableInt(text,&s,typeid(decltype(&s)).name())
+#define register_C_Function(text,s) zetscript::CScriptClass::register_C_FunctionInt(text,s)
+#define register_C_Variable(text,s) zetscript::CScriptClass::register_C_VariableInt(text,&s,typeid(decltype(&s)).name())
 
-#define getIdxGlobalVariable(s)  CScriptClass::register_C_FunctionInt(STR(s),s)
+#define getIdxGlobalVariable(s)  zetscript::CScriptClass::register_C_FunctionInt(STR(s),s)
 #define getIdxGlobalFunction(s)
 
 
+#define register_C_Class 						zetscript::CScriptClass::register_C_ClassInt
+#define register_C_SingletonClass				zetscript::CScriptClass::register_C_SingletonClassInt
 
-#define register_C_VariableMember(o,s) 			CScriptClass::register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),offset_of(&o::s))
-#define register_C_FunctionMember(o,s)			CScriptClass::register_C_FunctionMemberInt<o>(STR(s),&o::s)
-#define register_C_FunctionConstructor(o,s)		CScriptClass::register_C_FunctionMemberInt<o>(demangle(typeid(o).name()).c_str(),&o::s)
-#define register_C_StaticFunctionMember(o,s)	CScriptClass::register_C_StaticFunctionMemberInt<o>(STR(s),&o::s)
-#define register_C_FunctionMemberCast(o,s,f)	CScriptClass::register_C_FunctionMemberInt<o>(STR(s),static_cast<f>(&o::s))
+#define register_C_VariableMember(o,s) 			zetscript::CScriptClass::register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),zetscript::offset_of(&o::s))
+#define register_C_FunctionMember				zetscript::CScriptClass::register_C_FunctionMemberInt //<o>(s,&f)
+#define class_C_baseof							zetscript::CScriptClass::class_C_baseofInt //<o>(s,&f)
 
 
-#define GET_MAIN_VARIABLE(idx_var)				CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
-#define GET_MAIN_SCRIPT_FUNCTION_IDX			CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
+
+#define register_C_StaticFunctionMember			zetscript::CScriptClass::register_C_StaticFunctionMemberInt
+#define register_C_FunctionMemberCast(o,s,f)	zetscript::CScriptClass::register_C_FunctionMemberInt<o>(STR(s),static_cast<f>(&o::s))
+
+
+#define GET_MAIN_VARIABLE(idx_var)				zetscript::CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
+#define GET_MAIN_SCRIPT_FUNCTION_IDX			zetscript::CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
 #define GET_MAIN_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX)
 
 
-#define NEW_CLASS_VAR_BY_IDX(idx) 				(CScriptClass::instanceScriptVariableByIdx(idx))
+#define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClass::instanceScriptVariableByIdx(idx))
 
-#define REGISTERED_CLASS_NODE(idx) 				(CScriptClass::getScriptClassByIdx(idx))
-#define MAIN_CLASS_NODE							(CScriptClass::getScriptClassByIdx(IDX_CLASS_MAIN))    // 0 is the main class
-#define GET_SCRIPT_CLASS_INFO(idx)				(CScriptClass::getScriptClassByIdx(idx))    // 0 is the main class
-#define GET_SCRIPT_CLASS_INFO_BY_NAME(s)		(CScriptClass::getScriptClassByName(s))    // 0 is the main class
-#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(CScriptClass::getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
+#define REGISTERED_CLASS_NODE(idx) 				(zetscript::CScriptClass::getScriptClassByIdx(idx))
+#define MAIN_CLASS_NODE							(zetscript::CScriptClass::getScriptClassByIdx(IDX_CLASS_MAIN))    // 0 is the main class
+#define GET_SCRIPT_CLASS_INFO(idx)				(zetscript::CScriptClass::getScriptClassByIdx(idx))    // 0 is the main class
+#define GET_SCRIPT_CLASS_INFO_BY_NAME(s)		(zetscript::CScriptClass::getScriptClassByName(s))    // 0 is the main class
+#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(zetscript::CScriptClass::getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
 
 namespace zetscript{
 
@@ -72,6 +77,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		static string  *STRING_PTR_TYPE_STR;//	typeid(string *).name()
 		static string  *BOOL_PTR_TYPE_STR;//	typeid(bool *).name()
 		static string  *INT_TYPE_STR;//	typeid(int).name()
+		static string  *FLOAT_TYPE_STR;//	typeid(int).name()
 		static string  *BOOL_TYPE_STR;//	typeid(bool).name()
 		static string  *STACK_ELEMENT_PTR;//	typeid(bool).name()
 		static char     registered_metamethod[MAX_METAMETHOD_OPERATORS][50];
@@ -288,7 +294,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		static bool register_C_SingletonClass(const string & class_name){//, const string & base_class_name=""){
+		static bool register_C_SingletonClassInt(const string & class_name){//, const string & base_class_name=""){
 
 			/*CScriptClass *base_class = NULL;
 
@@ -353,7 +359,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		static bool register_C_Class(const string & class_name){//, const string & base_class_name=""){
+		static bool register_C_ClassInt(const string & class_name){//, const string & base_class_name=""){
 			if(register_C_SingletonClass<_T>(class_name)){
 				CScriptClass *irc = CScriptClass::getScriptClassByName(class_name);
 
@@ -369,7 +375,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 
 		template<class _T, class _B>
-		static bool class_C_baseof(){
+		static bool class_C_baseofInt(){
 
 			string base_class_name=typeid(_B).name();
 			string base_class_name_ptr=typeid(_B *).name();

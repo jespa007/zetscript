@@ -23,6 +23,7 @@ namespace zetscript{
 	#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
 	#define SET_STRING_RETURN(s)  	CURRENT_VM->setStringReturnValue(s)
 
+	#define NO_PARAMS vector<zetscript::CScriptVariable*>{}
 
 	int 									getIdxClassFromIts_C_Type(const string & c_type_str);
 	BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
@@ -222,11 +223,12 @@ namespace zetscript{
 		CScriptVariable * execute(
 					 CScriptFunctionObject *info_function,
 					 CScriptVariable *this_object,
-					vector<CScriptVariable *> * argv=NULL);
+					const vector<CScriptVariable *> &  argv=NO_PARAMS);
 
 
 		void setCallResult(tStackElement *);
 		tStackElement *getLastStackValue();
+		tStackElement * getStackElement(unsigned int idx_glb_element);
 
 		CVirtualMachine();
 		~CVirtualMachine();
@@ -292,6 +294,7 @@ namespace zetscript{
 
 		string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
 		void 				stackDumped();
+
 		//inline bool pushInteger(int  init_value, CScriptVariable ** ptrAssignable=NULL, int properties=0);
 
 		//bool pushNumber(float init_value, CScriptVariable ** ptrAssignable=NULL,unsigned short properties=0);

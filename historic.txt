@@ -170,6 +170,7 @@ TESTS
 -Restructured dir/files
 -Added some compatibilities MSVC
 -Added zs exec file.
+-Added float type.
 
 CMakeFiles: Added MSVC Comptibility (only compiles with MSVC 2017) that comes with compiler that allows constexpr (sorry)
 

@@ -54,7 +54,7 @@ namespace zetscript{
 		char  text[4096] = { 0 };
 
 
-		CAPTURE_VARIABLE_ARGS(text, string_text);
+		ZETSCRIPT_CAPTURE_VARIABLE_ARGS(text, string_text);
 		//  Results  Are  Stored  In  Text
 		if(ansi_escape){
 

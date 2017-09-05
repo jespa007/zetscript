@@ -59,6 +59,7 @@ namespace zetscript{
 		tSymbolInfo * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
 		int getidxScriptFunctionObjectWithMatchArgs(const string & varname, tStackElement * ptrArg, unsigned char n_args, bool match_signature=false);
 		string getMessageMatchingFunctions(const string & varname);
+		tSymbolInfo * getFunctionSymbol(const string & varname);
 		tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 		vector <tSymbolInfo> * getVectorFunctionSymbol();
 
