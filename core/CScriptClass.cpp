@@ -542,7 +542,7 @@ namespace zetscript{
 			// From here you defined all basic, start define hierarchy
 
 			// register custom functions ...
-			if(!register_C_FunctionMember<CScriptVariable>("toString",CScriptVariable::toString)) return false;
+			if(!register_C_FunctionMember<CScriptVariable>("toString",&CScriptVariable::toString)) return false;
 			if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(string * ))) return false;
 			if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(int * ))) return false;
 			if(!register_C_FunctionMemberCast(CScriptVariable,fun1,void (CScriptVariable::*)(int *,int * ))) return false;
@@ -580,19 +580,14 @@ namespace zetscript{
 			if(!register_C_Variable("c_var",c_var)) return false;
 
 
-			if(!register_C_FunctionMember<CVectorScriptVariable>("size",CVectorScriptVariable::size)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("size",&CVectorScriptVariable::size)) return false;
 			//if(!register_C_FunctionMember(CVectorScriptVariable,add)) return false;
 
-		/*	if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(int *)>(&CVectorScriptVariable::add))) return false;
-			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(float *)>(&CVectorScriptVariable::add))) return false;
-			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(string *)>(&CVectorScriptVariable::add))) return false;
-			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(bool *)>(&CVectorScriptVariable::add))) return false;
-			if(!register_C_FunctionMemberInt<CVectorScriptVariable>("add",static_cast<void (CVectorScriptVariable::*)(CScriptVariable *)>(&CVectorScriptVariable::add))) return false;*/
-			if(!register_C_FunctionMember<CVectorScriptVariable>("add",CVectorScriptVariable::add)) return false;
-			if(!register_C_FunctionMember<CVectorScriptVariable>("pop",CVectorScriptVariable::pop)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("add",&CVectorScriptVariable::add)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop)) return false;
 
 
-			if(!register_C_FunctionMember<CVectorScriptVariable>("size",CStructScriptVariable::size)) return false;
+			if(!register_C_FunctionMember<CStructScriptVariable>("size",&CStructScriptVariable::size)) return false;
 
 
 

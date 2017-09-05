@@ -419,9 +419,6 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(true));
 
 
-float return_float(float _f){
-	return _f;
-}
 
 int main(int argc, char * argv[]) {
 
@@ -487,11 +484,7 @@ int main(int argc, char * argv[]) {
 	// TEST INT OPS
 	//
 
-	if(!register_C_Function("return_float",return_float)) return false;
-
-	if(!CZetScript::getInstance()->eval("print(\"hola:\"+return_float(2.123456));")){
-
-	}
+	CZetScript::getInstance()->eval("var prova=[]; prova.add(0); prova.size();");
 
 	exit(-1);
 
@@ -527,7 +520,7 @@ int main(int argc, char * argv[]) {
 	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber  *)>(&CNumber::_add))) return false;*/
 
 	if(!register_C_Class<CInteger>("CInteger")) return false;
-	if(!register_C_FunctionMember<CInteger>("CInteger",CInteger::set)) return false;
+	if(!register_C_FunctionMember<CInteger>("CInteger",&CInteger::set)) return false;
 	if(!register_C_VariableMember(CInteger,n)) return false;
 
 
