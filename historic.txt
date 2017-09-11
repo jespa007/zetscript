@@ -82,6 +82,11 @@
 
 > A lot memory leaks!
 
+- Added JSON util (not implemented yet!)
+- Implement ZS_GET_ERROR_MSG and put in usefull places 
+- Added const char *
+- flexible test jt/jnt checking only stkValue status (checking of bool, vars, etc)
+- Implemented instanceof
 - Solved problem not registering C++ variables from base.
 - Implement stack overflow process. When problem ocurrs no return NULL. In this case will make a stack overflow.
 

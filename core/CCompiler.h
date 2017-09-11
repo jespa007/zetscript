@@ -275,6 +275,7 @@ namespace zetscript{
 		bool gacFor(short idxAstNode, CScope * _lc);
 		bool gacVar(short idxAstNode, CScope * _lc);
 		bool gacWhile(short idxAstNode, CScope * _lc);
+		bool gacDoWhile(short idxAstNode, CScope * _lc);
 
 		bool gacFunctionOrOperator(short idxAstNode, CScope * _lc, CScriptFunctionObject *irfs);
 		bool gacReturn(short idxAstNode, CScope * _lc);

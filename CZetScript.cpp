@@ -35,26 +35,36 @@ namespace zetscript{
 			delete m_instance;
 		}
 
-
-		CNullScriptVariable::destroySingletons();
-		CUndefinedScriptVariable::destroySingletons();
-
 		CCompiler::destroySingletons();
 		CState::destroySingletons();
 		CNativeFunction::destroySingletons();
 		CScriptClass::destroySingletons();
 	}
 	
-	void  CZetScript::write_error(const  char  *string_text, ...) {
-		char  text[MAX_BUFFER_AUX_TMP] = { 0 };
-		ZETSCRIPT_CAPTURE_VARIABLE_ARGS(text, string_text);
+	void  CZetScript::clearErrorMsg(){
+		memset(str_error, 0,sizeof(str_error));
+	}
 
-		if (strlen(text) + strlen(str_error) > MAX_BUFFER_STR_ERROR) {
+	void  CZetScript::writeErrorMsg(const char *filename, int line, const  char  *string_text, ...) {
+		char  aux_text[MAX_BUFFER_AUX_TMP]={0};
+
+
+		ZETSCRIPT_CAPTURE_VARIABLE_ARGS(aux_text, string_text);
+
+		if (strlen(aux_text) + strlen(str_error) > MAX_BUFFER_STR_ERROR) {
 			memset(str_error, 0,sizeof(str_error));
 		}
 
-		strcat(str_error, text);
+		sprintf(str_error,"[%s:%i] %s", filename, line, aux_text);
 
+#if __DEBUG__
+		zs_print_error_cr(str_error);
+#endif
+
+	}
+
+	const char *  CZetScript::getErrorMsg() {
+		return str_error;
 	}
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
@@ -394,6 +404,10 @@ namespace zetscript{
 				exit(EXIT_FAILURE);
 		 }
 
+		 // init custom registers...
+		 CJSON::registerScript();
+
+
 		 // after init, let's save/restore state...
 		 CState::saveState();
 		 CState::setState(0);
@@ -412,11 +426,12 @@ namespace zetscript{
 
 	}
 
-	bool CZetScript::parse_ast(const char   * s){
+	bool CZetScript::parse_ast(const char   * s, const char *filename){
 		int m_line = 1;
 		bool error=false;
 		PASTNode main_node = MAIN_AST_NODE;
 
+		SET_PARSING_FILENAME(filename);
 
 
 		if(CASTNode::generateAST_Recursive(
@@ -429,6 +444,9 @@ namespace zetscript{
 				true) != NULL){
 			return true;
 		}
+
+		RESET_PARSING_FILENAME;
+
 		return false;
 	}
 
@@ -441,14 +459,24 @@ namespace zetscript{
 		return false;
 	}
 	
-	bool CZetScript::eval(const string & s, bool execute){
+	const char * CZetScript::getParsedFilenameFromIdx(unsigned idx){
+
+		if(idx >= m_parsedSource->size()){
+			zs_print_error_cr("out of bounds");
+			return "unknown";
+		}
+
+		return m_parsedSource->at(idx).filename.c_str();
+	}
+
+	bool CZetScript::eval(const string & s, bool execute, const char *filename){
 
 		if(!__init__) return false;
 
-		// generate whole AST
 
+		ZS_CLEAR_ERROR_MSG();
 
-		if(parse_ast(s.c_str())){
+		if(parse_ast(s.c_str(),filename)){
 
 			idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 
@@ -489,6 +517,9 @@ namespace zetscript{
 	}
 
 	bool CZetScript::eval_file(const char * filename){
+
+		ZS_CLEAR_ERROR_MSG();
+
 		if(isFilenameAlreadyParsed(filename)){
 			zs_print_error_cr("Filename already parsed");
 			return false;
@@ -500,11 +531,12 @@ namespace zetscript{
 
 		if((buf_tmp=CIO_Utils::readFile(filename, n_bytes))!=NULL){
 
+			string file=CIO_Utils::getFileName(filename);
 			tInfoParsedSource ps;
-			ps.filename = filename;
+			ps.filename = file;
 			//ps.data = buf_tmp;
 
-			status = eval((char *)buf_tmp);
+			status = eval((char *)buf_tmp, false, file.c_str());
 
 			free(buf_tmp);
 		}
@@ -515,6 +547,7 @@ namespace zetscript{
 
 	std::function<CScriptVariable * (const std::vector<CScriptVariable *> & args)> * CZetScript::bind_function(const string &function_access_expression){
 
+		ZS_CLEAR_ERROR_MSG();
 
 		vector<string> access_var = CStringUtils::split(function_access_expression,'.');
 		CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
@@ -564,16 +597,6 @@ namespace zetscript{
 				}
 
 			}
-
-
-
-			// search function pointer thorugh its class...
-			/*for(unsigned i = 0; i < calling_obj->m_functionSymbol.size() && fun_obj==NULL; i++){
-				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
-				if(aux_fun_obj->object_info.symbol_info.symbol_name == access_var[0]){
-					fun_obj=aux_fun_obj;
-				}
-			}*/
 
 			is=calling_obj->getFunctionSymbol(access_var[access_var.size()-1]);
 			if(is!=NULL){

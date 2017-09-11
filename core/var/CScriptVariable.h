@@ -7,15 +7,11 @@
 
 namespace zetscript{
 
-
-
 	class CScriptClass;
 
 	class  CScriptVariable{//: public CVariable{
 
 	public:
-
-
 
 		//----------------------
 		// MEM MANNAGER RELATED
@@ -33,21 +29,6 @@ namespace zetscript{
 		CScriptVariable();
 		void init(CScriptClass *info_registered_class, void *  _c_object);
 
-		void fun1(int *);
-		void fun1(int *, int *);
-		void fun1(string *);
-
-		// test metamethod....
-		CScriptVariable * _add(CScriptVariable *v1);
-		CScriptVariable * _add(CScriptVariable *v1, CScriptVariable *v2);
-
-
-		//CScriptVariable();//CScriptClass *info_registered_class, void * _c_object);
-
-
-		//TYPE m_type;
-		//int getIdxClass();
-
 
 		bool setIdxClass(int idx);
 
@@ -55,7 +36,7 @@ namespace zetscript{
 		tSymbolInfo * getVariableSymbol(const string & varname);
 		tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 
-		tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv);
+		tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates=true);
 		tSymbolInfo * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
 		int getidxScriptFunctionObjectWithMatchArgs(const string & varname, tStackElement * ptrArg, unsigned char n_args, bool match_signature=false);
 		string getMessageMatchingFunctions(const string & varname);
@@ -68,8 +49,6 @@ namespace zetscript{
 		CScriptClass *get_C_Class();
 
 		CScriptFunctionObject *getConstructorFunction();
-
-		//void addArgSymbol(const string & arg_name);
 
 		const string & getClassName();
 

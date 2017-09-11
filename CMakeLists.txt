@@ -172,7 +172,10 @@ set( ZETSCRIPT_LIB_SRCS
 
 	
 	#-- Script Core --
-	core/zs_core.cpp	
+	core/zs_core.cpp
+	
+	#-- Registered Class --
+	reg_class/zs_reg_class.cpp	
 
 	#-- Script Core --
 	CZetScript.cpp	
@@ -197,8 +200,6 @@ SET(
 	core/var/CStructScriptVariable.h
 	core/var/zg_variable.h
 	core/var/CScriptVariable.h
-	core/var/CUndefinedScriptVariable.h
-	core/var/CNullScriptVariable.h
 	core/CCompiler.h
 	core/RegisterFunctionHelper.h
 	core/Common.h
@@ -209,6 +210,8 @@ SET(
 	core/CNativeFunction.h
 	core/CScriptFunctionObject.h
 	core/zs_core.h
+	reg_class/zs_reg_class.h
+	reg_class/CJSON.h
 	CZetScript.h
 )
 

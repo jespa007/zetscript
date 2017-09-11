@@ -23,14 +23,21 @@
 #define AST_NODE(idx) 						CASTNode::getAstNode(idx)
 #define AST_SCOPE_INFO_IDX(idx) 			CASTNode::getScopeIdx(idx)
 #define AST_SCOPE_INFO(idx) 				CASTNode::getScope(idx)
-#define AST_LINE_VALUE(idx) 				CASTNode::getAstLine(idx)
+#define AST_LINE(idx)		 				CASTNode::getAstLine(idx)
+#define AST_FILENAME(idx)					CASTNode::getAstFilename(idx)
 #define AST_SYMBOL_VALUE(idx) 				CASTNode::getAstSymbolName(idx)
 #define AST_SYMBOL_VALUE_CONST_CHAR(idx) 	CASTNode::getAstSymbolNameConstChar(idx)
 
 
 #define MAX_AST_NODES						8192
 
+
 namespace zetscript{
+
+
+	#define SET_PARSING_FILENAME(str) 	CASTNode::current_parsing_filename=str;
+	#define RESET_PARSING_FILENAME 		CASTNode::current_parsing_filename="unknow";
+	#define CURRENT_PARSING_FILENAME	CASTNode::current_parsing_filename
 
 
 	enum GROUP_TYPE{
@@ -54,8 +61,10 @@ namespace zetscript{
 	#pragma pack(1)
 	class  CASTNode{
 
-	public:
 
+
+	public:
+		static const char * current_parsing_filename;
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
 		static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];
 
@@ -79,6 +88,7 @@ namespace zetscript{
 		static CScope 				*	getScope(short ast_idx);
 		static int						getScopeIdx(short idx);
 		static int 				  		getAstLine(short ast_idx);
+		static const char           *	getAstFilename(short ast_idx);
 		static const char 			* 	getAstSymbolName(short ast_idx);
 		static const char 			*	getAstSymbolNameConstChar(short ast_idx);
 
@@ -102,6 +112,7 @@ namespace zetscript{
 		vector<short> children; //left,right;
 		//void *aux_value;
 		short idxAstNode;
+		short idxFilename;
 
 		bool is_packed_node; // check whether is packed or not like (a+b*c)
 
@@ -168,6 +179,8 @@ namespace zetscript{
 		static bool parseLogicAndPunctuator(const char *s);
 		static bool parseLogicOrPunctuator(const char *s);
 		static bool parseLogicEqualPunctuator(const char *s);
+		static bool parseInstanceOfPunctuator(const char *s);
+
 		static bool parseLogicNotEqualPunctuator(const char *s);
 		static bool parseLogicGreatherThanPunctuator(const char *s);
 		static bool parseLogicLessThanPunctuator(const char *s);
@@ -227,6 +240,7 @@ namespace zetscript{
 		static char * parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseFor(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseWhile(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+		static char * parseDoWhile(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseSwitch(const char *s,int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseConst(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);

@@ -192,7 +192,7 @@ namespace zetscript{
 			}
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				zs_print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), AST_LINE_VALUE(p_irv->idxAstNode));
+				zs_print_error_cr("(line %i): error var \"%s\" already registered at line %i!", m_line,var_name.c_str(), AST_LINE(p_irv->idxAstNode));
 			}else{
 				zs_print_error_cr("(line %i): error var \"%s\" already registered as C++!", m_line,var_name.c_str());
 			}

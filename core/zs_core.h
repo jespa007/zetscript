@@ -11,6 +11,7 @@
 #include "vm/CVirtualMachine.h"
 #include "CState.h"
 #include "CScriptFunctionObject.h"
+#include "reg_class/zs_reg_class.h"
 #include "CScriptClass.h"
 
 

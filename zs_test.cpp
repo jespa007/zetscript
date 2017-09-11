@@ -14,8 +14,8 @@ public:
 		n=_n;
 	}
 
-	void set(float *_n){
-		n=*_n;
+	void set(float _n){
+		n=_n;
 	}
 
 	void set(int _n){
@@ -88,16 +88,20 @@ public:
 		n=_n;
 	}
 
-	static CInteger * _add(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n + n2->n);
+	static int _add(CInteger *n1, CInteger *n2){
+		return n1->n + n2->n;
 	}
 
-	static CInteger * _add(CInteger *n1, float *n2){
-		return new CInteger(n1->n + *n2);
+	static int _add(CInteger *n1, float n2){
+		return (int)(n1->n + n2);
 	}
 
-	static CInteger * _add(CInteger *n1, int n2){
-		return new CInteger(n1->n + n2);
+	static int _add(CInteger *n1, int n2){
+		return n1->n + n2;
+	}
+
+	static int _add(int n1, CInteger * n2){
+		return n1 + n2->n;
 	}
 
 	static CInteger * _div(CInteger *n1, CInteger *n2){
@@ -419,6 +423,17 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(true));
 
 
+const char * my_fun(const char *str){
+	printf("prova %s",str);
+
+	return str;
+}
+
+void print2(string * str){
+	printf("%s\n",str->c_str());
+	fflush(stdout);
+}
+
 
 int main(int argc, char * argv[]) {
 
@@ -452,13 +467,15 @@ int main(int argc, char * argv[]) {
 
 	CZetScript::getInstance();
 
+
+	//register_C_Function("my_fun",my_fun);
+
+
+	//CZetScript::getInstance()->eval("var s=\"caca\"; if(s instanceof gg){print(\"true\");}else{print(\"false\");}");
+
+	//exit(-1);
 	//TEST_INT_EXPR("var s={i:3,b:true,n:2.0,s:\"is_a_string\",o:new CInteger(5)};s.size();",3);
-/*	TEST_INT_EXPR("var s={i:3,b:true,n:2.0,s:\"is_a_string\",v:[0,1,2]};s.size();",5);
-	TEST_INT_EXPR("s.i;",3);
-	TEST_BOOL_EXPR("s.b;",true);
-	TEST_NUMBER_EXPR("s.n;",2.0);
-	TEST_STRING_EXPR("s.s;","is_a_string");
-	exit(-1);*/
+
 
 	//printf("\nnumber is %f",((2.0f+2.0f*(5.0f-6.1f))*10.0f));
 	//TEST_BOOL_EXPR("!false && !false || false;",true);
@@ -484,12 +501,12 @@ int main(int argc, char * argv[]) {
 	// TEST INT OPS
 	//
 
-	CZetScript::getInstance()->eval("var prova=[]; prova.add(0); prova.size();");
+	//CZetScript::getInstance()->eval("if(undefined){print(\"true\");}else{print(\"\");} }var prova=[]; prova.add(0); prova.size();");
 
-	exit(-1);
+	//exit(-1);
 
 	// test accessing script functions...
-	if(CZetScript::getInstance()->eval("class MyClass{\n"
+	/*if(CZetScript::getInstance()->eval("class MyClass{\n"
 			"\n"
 			"function fun1(){"
 			" print(\"Hello from fun!\");"
@@ -505,15 +522,14 @@ int main(int argc, char * argv[]) {
 		if(fun){
 			(*fun)(NO_PARAMS);
 		}
-	}
-	exit(-1);
+	}*/
 	//TEST_ARITHMETIC_INT_OP(10,-,*10);
 
 	//CZetScript::eval<int>("10-*10");
 	//int i= 0+ +1;
 	if(!register_C_Class<CNumber>("CNumber")) return false;
-	if(!CScriptClass::register_C_FunctionMemberInt<CNumber>("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
-	if(!CScriptClass::register_C_FunctionMemberInt<CNumber>("CNumber",static_cast<void (CNumber::*)(float * )>(&CNumber::set))) return false;
+	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
+	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(float )>(&CNumber::set))) return false;
 	if(!register_C_VariableMember(CNumber,n)) return false;
 	/*if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,int )>(&CNumber::_add))) return false;
 	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add))) return false;
@@ -523,6 +539,29 @@ int main(int argc, char * argv[]) {
 	if(!register_C_FunctionMember<CInteger>("CInteger",&CInteger::set)) return false;
 	if(!register_C_VariableMember(CInteger,n)) return false;
 
+
+
+	TEST_INT_EXPR("var v=[new CInteger(15)];v.size();",1); // <-- crash if no constructor defined new CInteger(x)!
+	TEST_INT_EXPR("v[0].n;",15);// <-- error !!!
+	//TEST_NUMBER_EXPR("v[5].n;",10.0f);
+
+	// test adding ...
+
+	printf("%i. testing struct var ...\n",++n_test);
+
+	TEST_INT_EXPR("var s={o:new CInteger(10)};s.size();",1);
+
+	exit(-1);
+	//TEST_BOOL_EXPR("s.b;",true);
+	//TEST_NUMBER_EXPR("s.n;",2.0);
+	//TEST_STRING_EXPR("s.s;","is_a_string");
+	/*TEST_INT_EXPR("var s={i:3,b:true,n:2.0,s:\"is_a_string\",v:[0,1,2],n2:new CNumber(5.0)};s.size();",6);
+	TEST_INT_EXPR("s.i;",3);
+	TEST_BOOL_EXPR("s.b;",true);
+	TEST_NUMBER_EXPR("s.n;",2.0);
+	TEST_STRING_EXPR("s.s;","is_a_string");*/
+	//TEST_NUMBER_EXPR("var n2=new CNumber(5);n2.n;",2.0);
+	//exit(-1);
 
 
 	// unsinged
@@ -623,7 +662,7 @@ int main(int argc, char * argv[]) {
 	TEST_BOOL_EXPR("v[1];",true);
 	TEST_NUMBER_EXPR("v[2];",2.0);
 	TEST_STRING_EXPR("v[3];","is_a_string");
-	//TEST_INT_EXPR("v[4].n;",5); <-- error !!!
+	//TEST_INT_EXPR("v[4].n;",5);// <-- error !!!
 	//TEST_NUMBER_EXPR("v[5].n;",10.0f);
 
 	// test adding ...

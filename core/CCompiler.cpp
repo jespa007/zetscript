@@ -39,7 +39,7 @@ namespace zetscript{
 			*info_ptr={properties,obj,NULL};
 			(*constant_pool)[const_name]=info_ptr;
 		}else{
-			zs_print_error_cr("constant %s already exist",const_name.c_str());
+			zs_print_error_cr("internal:constant %s already exist",const_name.c_str());
 		}
 
 		return info_ptr;
@@ -60,16 +60,14 @@ namespace zetscript{
 
 			this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
 
+			// init stack variable ...
+			if(this->m_currentFunctionInfo->function_info_object->object_info.symbol_info.idxScriptClass == IDX_CLASS_MAIN && this->m_currentFunctionInfo->function_info_object->object_info.idxScriptFunctionObject == 0){ // initialize new global var initialized on MainFuntion ...
+				CURRENT_VM->iniStackVar(this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size(),{STK_PROPERTY_TYPE_UNDEFINED,0,0});
+			}
+
+
 			return this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size()-1;
 		} // else already added so we refer the same var.
-
-
-		/*else{
-			zs_print_error_cr("Line %i:variable \"%s\" defined at line %i already defined!"
-					,AST_NODE(m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable[idxVar].idxAstNode)->line_value
-					,var_name.c_str()
-					,AST_NODE(idxAstNode)->line_value);
-		}*/
 		return idxVar;
 	}
 
@@ -103,7 +101,7 @@ namespace zetscript{
 			PASTNode ast_args =AST_NODE(ast_node->children[0]);
 
 			if(ast_args->node_type != NODE_TYPE::ARGS_DECL_NODE){
-				zs_print_error_cr("line %i:expected args node",ast_node->line_value);
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"expected args node");
 				return NULL;
 			}
 
@@ -123,12 +121,12 @@ namespace zetscript{
 				return info_symbol;
 			}
 			else{
-				zs_print_error_cr("line %i: No function symbol \"%s\" with %i args is defined!",AST_NODE(idxAstNode)->line_value,function_name.c_str(), n_params);
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" with %i args is defined!",function_name.c_str(), n_params);
 			}
 
 		}
 		else{
-			zs_print_error_cr("line %i: No function symbol \"%s\" is defined!",AST_NODE(idxAstNode)->line_value,function_name.c_str());
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" is defined!",function_name.c_str());
 		}
 		return NULL;
 	}
@@ -144,7 +142,7 @@ namespace zetscript{
 		PASTNode ast_node=AST_NODE(idxAstNode);
 		PASTNode ast_args = AST_NODE(ast_node->children[0]);
 		if(ast_args->node_type != NODE_TYPE::ARGS_DECL_NODE){
-			zs_print_error_cr("line %i:expected args node",ast_node->line_value);
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"expected args node");
 			return ZS_UNDEFINED_IDX;
 		}
 
@@ -179,7 +177,7 @@ namespace zetscript{
 			}
 		}
 		else{
-			//zs_print_error_cr("line %i:Cannot find symbol function \"%s\" matchings with %i args",ast_node->line_value,name.c_str(),n_args);
+
 
 		}
 		return ZS_UNDEFINED_IDX;
@@ -213,7 +211,7 @@ namespace zetscript{
 					//delete (float *)icv->stkValue;
 					break;
 				case STK_PROPERTY_TYPE_STRING:
-					delete (string *)icv->stkValue;
+					delete (CStringScriptVariable *)icv->varRef;
 					break;
 
 				}
@@ -243,6 +241,7 @@ namespace zetscript{
 		//----------------------+---------+----+-------
 
 		def_operator[EQU]         ={"EQU" ,EQU ,2};  // ==
+		def_operator[INSTANCEOF]  ={"INSTANCEOF" ,INSTANCEOF ,2};  // ==
 		def_operator[NOT_EQU]     ={"NOT_EQU" ,NOT_EQU ,2};  // !=
 		def_operator[LT]          ={"LT"  ,LT ,2};  // <
 		def_operator[LTE]         ={"LTE" ,LTE ,2};  // <=
@@ -262,12 +261,6 @@ namespace zetscript{
 		def_operator[XOR]         ={"XOR",XOR,2}; // logic xor
 		def_operator[SHL]         ={"SHL",SHL,2}; // shift left
 		def_operator[SHR]         ={"SHR",SHR,2}; // shift right
-
-		//def_operator[ADD_ASSIGN]  ={"ADD_ASSIGN" ,ADD_ASSIGN,2}; // +
-		//def_operator[DIV_ASSIGN]  ={"DIV_ASSIGN",DIV_ASSIGN,2}; // /
-		//def_operator[MUL_ASSIGN]  ={"MUL_ASSIGN",MUL_ASSIGN,2}; // *
-		//def_operator[MOD_ASSIGN]  ={"MOD_ASSIGN",MOD_ASSIGN,2};  // %
-
 
 		def_operator[STORE]         ={"STORE" ,STORE ,2}; // mov expression to var
 		def_operator[LOAD]        ={"LOAD",LOAD ,1}; // primitive value like number/string or boolean...
@@ -373,8 +366,6 @@ namespace zetscript{
 				}
 			}
 		}
-
-
 		return node_access;
 	}
 
@@ -390,7 +381,12 @@ namespace zetscript{
 			obj = get_obj;
 		}else{
 
-			obj=addConstant(v,new string(v),type);
+			CStringScriptVariable *s=new CStringScriptVariable(v);
+			obj=addConstant(v,NULL,type);
+
+			// set ptrs...
+			((tStackElement *)obj)->stkValue=(void *)(s->m_strValue.c_str());
+			((tStackElement *)obj)->varRef=s;
 		}
 
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
@@ -405,26 +401,15 @@ namespace zetscript{
 
 	bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc, tInfoAsmOpCompiler **iao_result){
 		PASTNode _node=AST_NODE(idxAstNode);
-		//CScope *_scope = SCOPE_INFO_NODE(_node->idxScope);
+		PASTNode _parent=AST_NODE(_node->idxAstParent);
 		string v = _node->symbol_value;
-
-		/*if(_scope == NULL){
-			zs_print_error_cr("error scope null");
-			return false;
-		}*/
 
 		// ignore node this ...
 		if(_node->symbol_value == "this"){
-
-			zs_print_error_cr("\"%s\" cannot be processed here!",_node->symbol_value.c_str());
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"\"%s\" cannot be processed here!",_node->symbol_value.c_str());
 			return false;
 		}
 
-		if(_node->symbol_value == "x"){
-			int hhh=0;
-
-			hhh++;
-		}
 
 		unsigned int pre_post_operator_type =0;//INS_PROPERTY_UNKNOW_PRE_POST_OPERATOR;
 		tInfoStatementOpCompiler *ptr_current_statement_op = &(this->m_currentFunctionInfo->stament)[this->m_currentFunctionInfo->stament.size()-1];
@@ -435,210 +420,217 @@ namespace zetscript{
 		LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
 		unsigned int scope_type=0;//INS_PROPERTY_UNKNOWN_SCOPE;
 		bool is_constant = true;
-		//bool is_neg = false;
+
+		if((_parent->operator_info == INSTANCEOF_PUNCTUATOR) && (_parent->children[1] == idxAstNode)){ // we search for class idx
+
+			intptr_t classidx=-1;
 
 
-		pre_post_operator_type=post_operator2instruction_property(_node->pre_post_operator_info);
-
-		//is_neg = (pre_post_operator_type & INS_PROPERTY_PRE_NEG) == INS_PROPERTY_PRE_NEG;
-
-
-
-		// try parse value...
-		if(v=="null"){
-			type=STK_PROPERTY_TYPE_NULL;
-			load_type=LOAD_TYPE_NULL;
-			obj=NULL_SYMBOL;//CScriptVariable::NullSymbol;
-			print_com_cr("%s detected as null\n",v.c_str());
-		}else if(v=="undefined"){
-				type=STK_PROPERTY_TYPE_UNDEFINED;
-				load_type=LOAD_TYPE_UNDEFINED;
-				obj=UNDEFINED_SYMBOL;// CScriptVariable::UndefinedSymbol;
-				print_com_cr("%s detected as undefined\n",v.c_str());
-
-		}else if((const_obj=CStringUtils::ParseInteger(v))!=NULL){
-			intptr_t value = *((int *)const_obj);
-
-			/*if(is_neg){ // because constant is detected then we can the symbol as preneg constant (is more faster!)
-				if(_node->symbol_value[0]!='-'){ // if not already assigned, put sign before...
-					_node->symbol_value = "-"+_node->symbol_value;
+			if(v=="bool"){
+				classidx=IDX_CLASS_BOOL_PTR_C;
+			}else if(v== "int"){
+				classidx=IDX_CLASS_INT_PTR_C;
+			}else if(v=="number"){
+					classidx=IDX_CLASS_FLOAT_PTR_C;
+			}else if(v=="string"){
+				classidx=IDX_CLASS_STRING_PTR_C;
+			}else if(v=="vector"){
+				classidx=IDX_CLASS_VECTOR;
+			}else if(v=="struct"){
+				classidx=IDX_CLASS_STRUCT;
+			}else if(v=="function"){
+				classidx=IDX_CLASS_FUNCTOR;
+			}else{ // search idx...
+				if((classidx=CScriptClass::getIdxScriptClass(v,false))==-1){
+					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode)," in instenceof operator  class \"%s\" is not registered",v.c_str());
+					return false;
 				}
-				v=_node->symbol_value;
-				value = -value;
-			}*/
-
-			delete (int *)const_obj;
+			}
 
 			type=STK_PROPERTY_TYPE_INTEGER;
 			load_type=LOAD_TYPE_CONSTANT;
-			print_com_cr("%s detected as int\n",v.c_str());
-			if((get_obj = getConstant(v))!=NULL){
+			print_com_cr("%s detected as idx class (%i)\n",v.c_str(),classidx);
+			if((get_obj = getConstant(v))!=NULL){ // if not exist ... insert!
 				obj = get_obj;
 			}else{
-				obj=addConstant(v,(void *)value,type);
+				obj=addConstant(v,(void *)classidx,type);
 			}
-		}
-		else if((const_obj=CStringUtils::ParseFloat(v))!=NULL){
-			float value = *((float *)const_obj);
 
-			/*if(is_neg){ // because constant is detected then we can the symbol as preneg constant (is more faster!)
-				if(_node->symbol_value[0]!='-'){ // if not already assigned, put sign before...
-					_node->symbol_value = "-"+_node->symbol_value;
-				}
-				v=_node->symbol_value;
-				value = -value;
-			}*/
-
-			delete (float *)const_obj;
-			void *value_ptr;
-
-			memcpy(&value_ptr,&value,sizeof(float));
-
-
-			type=STK_PROPERTY_TYPE_NUMBER;
-			load_type=LOAD_TYPE_CONSTANT;
-			print_com_cr("%s detected as float\n",v.c_str());
-
-			if((get_obj = getConstant(v))!=NULL){
-				obj = get_obj;
-			}else{
-				obj=addConstant(v,value_ptr,type);
-			}
-		}
-		else if(v[0]=='\"' && v[v.size()-1]=='\"'){
-			type=STK_PROPERTY_TYPE_STRING;
-			load_type=LOAD_TYPE_CONSTANT;
-			print_com_cr("%s detected as string\n",v.c_str());
-
-			if((get_obj = getConstant(v))!=NULL){
-				obj = get_obj;
-			}else{
-				string s=v.substr(1,v.size()-2);
-				obj=addConstant(v,new string(s),type);
-			}
-		}
-		else if((const_obj=CStringUtils::ParseBoolean(v))!=NULL){
-
-			bool value = *((bool *)const_obj);
-			delete (bool *)const_obj;
-
-			type=STK_PROPERTY_TYPE_BOOLEAN;
-			load_type=LOAD_TYPE_CONSTANT;
-			print_com_cr("%s detected as boolean\n",v.c_str());
-
-			if((get_obj = getConstant(v))!=NULL){
-				obj = get_obj;
-			}else{
-				obj=addConstant(v,(void *)value,type);
-			}
 		}else{
 
-			is_constant = false;
-			string symbol_name = _node->symbol_value;
+			pre_post_operator_type=post_operator2instruction_property(_node->pre_post_operator_info);
 
-			if(symbol_name == "update"){
-				int h=0;
-				h++;
-			}
+			// try parse value...
+			if(v=="null"){
+				type=STK_PROPERTY_TYPE_NULL;
+				load_type=LOAD_TYPE_NULL;
+				obj=NULL;//CScriptVariable::NullSymbol;
+				print_com_cr("%s detected as null\n",v.c_str());
+			}else if(v=="undefined"){
+					type=STK_PROPERTY_TYPE_UNDEFINED;
+					load_type=LOAD_TYPE_UNDEFINED;
+					obj=NULL;// CScriptVariable::UndefinedSymbol;
+					print_com_cr("%s detected as undefined\n",v.c_str());
 
-			intptr_t idx_local_var=ZS_UNDEFINED_IDX;
-			bool access;
+			}else if((const_obj=CStringUtils::ParseInteger(v))!=NULL){
+				intptr_t value = *((int *)const_obj);
 
-			if(    (access=checkAccessObjectMember(_node->idxAstNode))
-				|| _node->node_type==NODE_TYPE::NEW_OBJECT_NODE) // we wants to call the constructor
-			{
-				scope_type = INS_PROPERTY_ACCESS_SCOPE;
-				PASTNode parent = AST_NODE(_node->idxAstParent);
-				PASTNode old_parent=_node;
-				PASTNode left=NULL;
+				delete (int *)const_obj;
 
-				/* we have three types of access..
-
-				       .               .              .
-				      / \             / \            / \
-				     /   \           /   \          /   \
-				    this  var      this   ·       this  calling objec
-				                         / \
-				                        /   \
-				                      var1  var2
-				*/
-				if(access) {
-					while(parent->node_type!=NODE_TYPE::PUNCTUATOR_NODE) {// function / array access.
-							old_parent = parent;
-							parent=AST_NODE(parent->idxAstParent);
-					}
-				}
-
-
-
-
-
-				if(parent!=NULL && parent->node_type == NODE_TYPE::PUNCTUATOR_NODE){ //|| // single access ?
-
-					 left=AST_NODE(parent->children[0]);
-
-					 if(left->symbol_value == "this"){ // 1st check
-						 scope_type=INS_PROPERTY_THIS_SCOPE;
-					 }else{ // 2nd check (must be at the left)
-
-						if(old_parent->idxAstNode==parent->children[0]){// must be in the left...
-
-							 parent = AST_NODE(parent->idxAstParent);
-							left=AST_NODE(parent->children[0]);
-							//right=AST_NODE(parent->children[1]);
-
-
-							 if(parent != NULL && parent->node_type == NODE_TYPE::PUNCTUATOR_NODE){
-
-								 left=AST_NODE(parent->children[0]);
-
-								 if(left->symbol_value == "this"){
-									 scope_type=INS_PROPERTY_THIS_SCOPE;
-								 }
-
-							 }
-						 }
-					 }
+				type=STK_PROPERTY_TYPE_INTEGER;
+				load_type=LOAD_TYPE_CONSTANT;
+				print_com_cr("%s detected as int\n",v.c_str());
+				if((get_obj = getConstant(v))!=NULL){
+					obj = get_obj;
+				}else{
+					obj=addConstant(v,(void *)value,type);
 				}
 			}
-			else if(
-				(_node->symbol_value == "super")
-				){
-					scope_type=INS_PROPERTY_SUPER_SCOPE;
+			else if((const_obj=CStringUtils::ParseFloat(v))!=NULL){
+				float value = *((float *)const_obj);
+
+				delete (float *)const_obj;
+				void *value_ptr;
+
+				memcpy(&value_ptr,&value,sizeof(float));
+
+
+				type=STK_PROPERTY_TYPE_NUMBER;
+				load_type=LOAD_TYPE_CONSTANT;
+				print_com_cr("%s detected as float\n",v.c_str());
+
+				if((get_obj = getConstant(v))!=NULL){
+					obj = get_obj;
+				}else{
+					obj=addConstant(v,value_ptr,type);
+				}
+			}
+			else if((v[0]=='\"' && v[v.size()-1]=='\"')){
+				type=STK_PROPERTY_TYPE_STRING;
+				load_type=LOAD_TYPE_CONSTANT;
+				print_com_cr("%s detected as string\n",v.c_str());
+
+				if((get_obj = getConstant(v))!=NULL){
+					obj = get_obj;
 				}else{
 
-					// if not function then is var or arg node ?
-					// first we find the list of argments
-					if((idx_local_var = getIdxArgument(_node->symbol_value))!=ZS_UNDEFINED_IDX){
-						load_type=LOAD_TYPE_ARGUMENT;
+					CStringScriptVariable *s=new CStringScriptVariable(v.substr(1,v.size()-2));
+					obj=addConstant(v,NULL,type);
+					((tStackElement *)obj)->stkValue=((void *)(s->m_strValue.c_str()));
+					((tStackElement *)obj)->varRef=s;
+
+				}
+			}
+			else if((const_obj=CStringUtils::ParseBoolean(v))!=NULL){
+
+				bool value = *((bool *)const_obj);
+				delete (bool *)const_obj;
+
+				type=STK_PROPERTY_TYPE_BOOLEAN;
+				load_type=LOAD_TYPE_CONSTANT;
+				print_com_cr("%s detected as boolean\n",v.c_str());
+
+				if((get_obj = getConstant(v))!=NULL){
+					obj = get_obj;
+				}else{
+					obj=addConstant(v,(void *)value,type);
+				}
+			}else{
+
+				is_constant = false;
+				string symbol_name = _node->symbol_value;
+
+
+				intptr_t idx_local_var=ZS_UNDEFINED_IDX;
+				bool access;
+
+				if(    (access=checkAccessObjectMember(_node->idxAstNode))
+					|| _node->node_type==NODE_TYPE::NEW_OBJECT_NODE) // we wants to call the constructor
+				{
+					scope_type = INS_PROPERTY_ACCESS_SCOPE;
+					PASTNode parent = AST_NODE(_node->idxAstParent);
+					PASTNode old_parent=_node;
+					PASTNode left=NULL;
+
+					/* we have three types of access..
+
+						   .               .              .
+						  / \             / \            / \
+						 /   \           /   \          /   \
+						this  var      this   ·       this  calling objec
+											 / \
+											/   \
+										  var1  var2
+					*/
+					if(access) {
+						while(parent->node_type!=NODE_TYPE::PUNCTUATOR_NODE) {// function / array access.
+								old_parent = parent;
+								parent=AST_NODE(parent->idxAstParent);
+						}
 					}
-					else{ // ... if not argument finally, we deduce that the value is a local/global symbol... check whether it exist in the current scope...
 
-							if(_node->node_type == SYMBOL_NODE){
-								if(_lc!=NULL){
-									if(!_lc->existRegisteredSymbol(symbol_name)){ // check local
-										if(!SCOPE_INFO_NODE(0)->existRegisteredSymbol(symbol_name)){ // check global
-											zs_print_error_cr("line %i: variable \"%s\" not defined",_node->line_value,symbol_name.c_str());
-											return false;
-										}
+					if(parent!=NULL && parent->node_type == NODE_TYPE::PUNCTUATOR_NODE){ //|| // single access ?
 
-									}
-								}
-								else{
-									zs_print_error_cr("scope null");
-									return false;
-								}
-							}
+						 left=AST_NODE(parent->children[0]);
 
+						 if(left->symbol_value == "this"){ // 1st check
+							 scope_type=INS_PROPERTY_THIS_SCOPE;
+						 }else{ // 2nd check (must be at the left)
+
+							if(old_parent->idxAstNode==parent->children[0]){// must be in the left...
+
+								 parent = AST_NODE(parent->idxAstParent);
+								left=AST_NODE(parent->children[0]);
+
+								 if(parent != NULL && parent->node_type == NODE_TYPE::PUNCTUATOR_NODE){
+
+									 left=AST_NODE(parent->children[0]);
+
+									 if(left->symbol_value == "this"){
+										 scope_type=INS_PROPERTY_THIS_SCOPE;
+									 }
+								 }
+							 }
+						 }
 					}
 				}
-				obj = (CScriptVariable *)idx_local_var;
-		}
+				else if(
+					(_node->symbol_value == "super")
+					){
+						scope_type=INS_PROPERTY_SUPER_SCOPE;
+					}else{
 
-		if((pre_post_operator_type !=0 && GET_INS_PROPERTY_PRE_POST_OP(pre_post_operator_type) !=INS_PROPERTY_PRE_NEG) &&
-			is_constant){
-			zs_print_error_cr("line %i: operation \"%s\" not allowed for constants ",_node->line_value,CASTNode::defined_operator_punctuator[_node->pre_post_operator_info].str);
-			return false;
+						// if not function then is var or arg node ?
+						// first we find the list of argments
+						if((idx_local_var = getIdxArgument(_node->symbol_value))!=ZS_UNDEFINED_IDX){
+							load_type=LOAD_TYPE_ARGUMENT;
+						}
+						else{ // ... if not argument finally, we deduce that the value is a local/global symbol... check whether it exist in the current scope...
+
+								if(_node->node_type == SYMBOL_NODE){
+									if(_lc!=NULL){
+										if(!_lc->existRegisteredSymbol(symbol_name)){ // check local
+											if(!SCOPE_INFO_NODE(0)->existRegisteredSymbol(symbol_name)){ // check global
+												ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode)," variable \"%s\" not defined",symbol_name.c_str());
+												return false;
+											}
+										}
+									}
+									else{
+										zs_print_error_cr("scope null");
+										return false;
+									}
+								}
+						}
+					}
+					obj = (CScriptVariable *)idx_local_var;
+			}
+
+			if((pre_post_operator_type !=0 && GET_INS_PROPERTY_PRE_POST_OP(pre_post_operator_type) !=INS_PROPERTY_PRE_NEG) &&
+				is_constant){
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"operation \"%s\" not allowed for constants ",CASTNode::defined_operator_punctuator[_node->pre_post_operator_info].str);
+				return false;
+			}
 		}
 
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
@@ -669,11 +661,10 @@ namespace zetscript{
 
 		// check whether left operant is object...
 		if(left_asm_op->var_type != STK_PROPERTY_TYPE_SCRIPTVAR){
-			int line = -1;
-
-			if(left_asm_op->idxAstNode!=ZS_UNDEFINED_IDX)
-				line=AST_LINE_VALUE(left_asm_op->idxAstNode);
-			zs_print_error_cr("line %i. left operand must be l-value for '=' operator",line);
+			//int line = -1;
+			//if(left_asm_op->idxAstNode!=ZS_UNDEFINED_IDX)
+			//	line=AST_LINE(left_asm_op->idxAstNode);
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(left_asm_op->idxAstNode)," left operand must be l-value for '=' operator");
 			return false;
 		}
 
@@ -694,7 +685,6 @@ namespace zetscript{
 		asm_op->idxAstNode = idxAstNode;
 		asm_op->operator_type=ASM_OPERATOR::NEG;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
-
 	}
 
 	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JMP_Instruction(short idxAstNode,int jmp_statement, int instruction_index){
@@ -755,18 +745,6 @@ namespace zetscript{
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 	}
 
-
-
-	/*
-	void CCompiler::insert_StartArgumentStack_Instruction(short idxAstNode){
-		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->operator_type=ASM_OPERATOR::START_ARG;
-		asm_op->idxAstNode = idxAstNode;
-		ptr_current_statement_op->asm_op.push_back(asm_op);
-
-	}*/
-
 	void CCompiler::insert_CallFunction_Instruction(short idxAstNode,int  index_call,int  index_object){
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
@@ -779,14 +757,11 @@ namespace zetscript{
 
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
-
 	}
 
 	void CCompiler::insertRet(short idxAstNode,int index){
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-
-
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
 		// if type return is object return first index
@@ -805,11 +780,7 @@ namespace zetscript{
 				if((last_asm->operator_type == ASM_OPERATOR::CALL) && ((unsigned)index == ptr_current_statement_op->asm_op.size()-1)){
 					last_asm->runtime_prop |=INS_PROPERTY_DIRECT_CALL_RETURN;
 				}
-
-
-
 			}
-
 		}
 
 		asm_op->operator_type=ASM_OPERATOR::RET;
@@ -837,7 +808,7 @@ namespace zetscript{
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 		if((asm_op->index_op1 = CScriptClass::getIdxScriptClass(class_name))==ZS_UNDEFINED_IDX){//&(this->m_currentFunctionInfo->stament[dest_statment]);
-			zs_print_error_cr("class \"%s\" is not registered", class_name.c_str());
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" is not registered", class_name.c_str());
 			return false;
 		}
 		asm_op->operator_type=ASM_OPERATOR::NEW;
@@ -854,8 +825,6 @@ namespace zetscript{
 		asm_op->operator_type=ASM_OPERATOR::DELETE_OP;
 		asm_op->idxAstNode = idxAstNode;
 		ptr_current_statement_op->asm_op.push_back(asm_op);
-
-
 
 		return true;
 	}
@@ -891,7 +860,6 @@ namespace zetscript{
 		return true;
 	}
 
-
 	void CCompiler::insertPopScopeInstruction(short idxAstNode){
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
@@ -901,9 +869,7 @@ namespace zetscript{
 		asm_op->idxAstNode = idxAstNode;
 
 		ptr_current_statement_op->asm_op.push_back(asm_op);
-
 	}
-
 
 	void CCompiler::insert_DeclStruct_Instruction(short idxAstNode){
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
@@ -931,61 +897,17 @@ namespace zetscript{
 	//--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	unsigned int CCompiler::post_operator2instruction_property(PUNCTUATOR_TYPE op){
 
-		/*PUNCTUATOR_TYPE op = PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
-
-
-		if(     (node->pre_post_operator_info == PUNCTUATOR_TYPE::POST_DEC_PUNCTUATOR)
-			||  (node->pre_post_operator_info == PUNCTUATOR_TYPE::POST_INC_PUNCTUATOR)){
-
-			op = node->pre_post_operator_info;
-
-		}*//*else{ // PRE OPERATOR (it has particular case...)
-
-
-			// symbol terminal node ?
-			PASTNode top_access_parent = node;
-			PASTNode old_node_parent = node;
-			PASTNode parent = AST_NODE(node->idxAstParent);
-
-			// search top parent access...
-			do{
-				old_node_parent=top_access_parent;
-				top_access_parent = AST_NODE(top_access_parent->idxAstParent);
-			}while(top_access_parent->operator_info == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR);
-
-			top_access_parent = old_node_parent;
-
-			// node is terminal symbol and left to access parent ?
-			if(		   ((node->node_type==NODE_TYPE::SYMBOL_NODE) || (node->node_type==NODE_TYPE::CALLING_OBJECT_NODE))
-					&& (parent->children[1] == node->idxAstNode)
-					&& (top_access_parent->operator_info == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR)){
-
-				op=AST_NODE(top_access_parent->children[0])->pre_post_operator_info;
-
-			}
-		}*/
-
-
 		switch(op){
 		default:
-	//		zs_print_error_cr("Cannot match pre/post operator %i!",op);
+
 			break;
-		/*case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
-			return INS_PROPERTY_PRE_INC;
-		case PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR:
-			return INS_PROPERTY_PRE_DEC;*/
 		case PUNCTUATOR_TYPE::POST_INC_PUNCTUATOR:
 			return INS_PROPERTY_POST_INC;
 		case PUNCTUATOR_TYPE::POST_DEC_PUNCTUATOR:
 			return INS_PROPERTY_POST_DEC;
-		/*case PUNCTUATOR_TYPE::LOGIC_NOT_PUNCTUATOR:
-		case PUNCTUATOR_TYPE::SUB_PUNCTUATOR:
-			return INS_PROPERTY_PRE_NEG;*/
 		}
 		return 0;//INS_PROPERTY_UNKNOW_PRE_POST_OPERATOR;
 	}
-
-
 
 	ASM_OPERATOR CCompiler::puntuator2instruction(PUNCTUATOR_TYPE op){
 
@@ -1035,6 +957,9 @@ namespace zetscript{
 			return ASM_OPERATOR::NOT;
 		case FIELD_PUNCTUATOR:
 			return ASM_OPERATOR::OBJECT_ACCESS;
+		case INSTANCEOF_PUNCTUATOR:
+			return ASM_OPERATOR::INSTANCEOF;
+
 
 		}
 		return INVALID_OP;
@@ -1156,25 +1081,6 @@ namespace zetscript{
 		return false;
 	}
 
-	/*
-	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_Save_CurrentInstruction(){
-
-		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->operator_type=ASM_OPERATOR::SAVE_I;
-		ptr_current_statement_op->asm_op.push_back(asm_op);
-		return asm_op;
-	}
-
-	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_Load_CurrentInstruction(){
-
-		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->operator_type=ASM_OPERATOR::LOAD_I;
-		ptr_current_statement_op->asm_op.push_back(asm_op);
-		return asm_op;
-	}*/
-
 	//------------------------------------------------------------------------------------------------------------------
 	//
 	// COMPILE EXPRESSIONS AND GENERATE ITS ASM
@@ -1209,9 +1115,7 @@ namespace zetscript{
 
 		zs_print_error_cr("Expected function or array access");
 		return ZS_UNDEFINED_IDX;
-
 	}
-
 
 	int CCompiler::gacExpression_ArrayAccess(short idxAstNode, CScope *_lc){
 
@@ -1285,8 +1189,6 @@ namespace zetscript{
 
 			return gacExpression_FunctionOrArrayAccess(node_2->idxAstNode, _lc);
 		}
-
-
 		// return last instruction where was modified
 		return getCurrentInstructionIndex();
 	}
@@ -1338,7 +1240,7 @@ namespace zetscript{
 
 		// 1. insert load reference created object ...
 		if(functionSymbolExists(_node->symbol_value, _node->idxAstNode)){
-				zs_print_error_cr("Function \"%s\" already defined !",_node->symbol_value.c_str());
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function \"%s\" already defined !",_node->symbol_value.c_str());
 				return false;
 		}
 
@@ -1393,20 +1295,8 @@ namespace zetscript{
 				if(!gacExpression(function_args->children[k], _lc,getCurrentInstructionIndex()+1)){
 					return ZS_UNDEFINED_IDX;
 				}
-
-				/*if(k==0){
-					// insert clear push arguments stack
-
-				}else{
-					// insert vector access instruction ...
-					insert_PushArgument_Instruction(_node->idxAstNode);
-				}*/
 			}
 		}
-		/*}else{
-			// clear the stack only ..
-			insert_ClearArgumentStack_Instruction(_node->idxAstNode);
-		}*/
 
 		// 2. insert call instruction itself.
 		insert_CallFunction_Instruction(_node->idxAstNode,call_index);
@@ -1430,16 +1320,13 @@ namespace zetscript{
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		int index_attr = getCurrentInstructionIndex()+1;
 
-
 		// 1st evalualte expression...
 		if(!gacExpression(_node->idxAstNode, _lc,getCurrentInstructionIndex()+1)){
 			return ZS_UNDEFINED_IDX;
 		}
 
-
 		// 2nd insert strign constant ...
 		insertStringConstantValueInstruction(_node->idxAstNode,_node->symbol_value);
-
 
 		if(!(
 			 ptr_current_statement_op->asm_op[index_attr]->operator_type == ASM_OPERATOR::DECL_VEC
@@ -1449,12 +1336,10 @@ namespace zetscript{
 			index_attr = getCurrentInstructionIndex()-1;
 		}
 
-
 		// 3rd insert push attribute...
 		insert_PushAttribute_Instruction(_node->idxAstNode,index_ref_object,index_attr);
 
 		return CCompiler::getCurrentInstructionIndex();
-
 	}
 
 	int CCompiler::gacExpression_Struct(short idxAstNode, CScope *_lc){
@@ -1473,15 +1358,10 @@ namespace zetscript{
 				return ZS_UNDEFINED_IDX;
 			}
 		}
-
-		// 2st push create and push attribute
-
-
 		return ref_obj;
 	}
 
 	bool CCompiler::isThisScope(short idxAstNode){
-
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
@@ -1512,7 +1392,6 @@ namespace zetscript{
 	int CCompiler::gacExpression_Recursive(short idxAstNode, CScope *_lc, int & index_instruction){
 
 		PASTNode _node = AST_NODE(idxAstNode);
-
 
 		int r=index_instruction;
 		string error_str;
@@ -1631,7 +1510,7 @@ namespace zetscript{
 		}else{
 
 			if(_node->operator_info == PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-				zs_print_error_cr("Malformed expression at line %i",_node->line_value);
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"Malformed expression at line %i");
 				return ZS_UNDEFINED_IDX;
 			}
 
@@ -1641,7 +1520,6 @@ namespace zetscript{
 					// node children[1]: body-if
 					// node children[2]: body-else
 					//inline_if_else = true;
-					//zs_print_error_cr("Ternary operator not implemented!!!!");
 					//return ZS_UNDEFINED_IDX;
 
 					int t1= gacInlineIf(_node->idxAstNode,_lc,index_instruction);
@@ -1649,7 +1527,7 @@ namespace zetscript{
 					return t1;
 
 				}else{
-					zs_print_error_cr("line %i: Put parenthesis on the inner ternary conditional",_node->line_value);
+					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode)," Put parenthesis on the inner ternary conditional");
 					return ZS_UNDEFINED_IDX;
 				}
 			}else{
@@ -1686,20 +1564,20 @@ namespace zetscript{
 
 						// particular case if operator is =
 						if(!insertOperatorInstruction(_node->operator_info,_node->idxAstNode,error_str,left,right)){
-							zs_print_error_cr("%s at line %i",error_str.c_str(),_node->line_value);
+							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
 							return ZS_UNDEFINED_IDX;
 						}
 					}
 
 				}else if(right!=ZS_UNDEFINED_IDX){ // one op..
 					if(!insertOperatorInstruction(_node->operator_info,_node->idxAstNode,  error_str,right)){
-						zs_print_error_cr("%s at line %i",error_str.c_str(),_node->line_value);
+						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
 						return ZS_UNDEFINED_IDX;
 					}
 
 				}else if(left!=ZS_UNDEFINED_IDX){ // one op..
 					if(!insertOperatorInstruction(_node->operator_info,_node->idxAstNode,error_str,left)){
-						zs_print_error_cr("%s at line %i",error_str.c_str(),_node->line_value);
+						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
 						return ZS_UNDEFINED_IDX;
 					}
 				}else{ // ERROR
@@ -1735,7 +1613,6 @@ namespace zetscript{
 			break;
 		}
 
-
 		return r;
 	}
 
@@ -1753,7 +1630,6 @@ namespace zetscript{
 						return i;
 					}
 				}
-
 			}
 		}
 		return ZS_UNDEFINED_IDX;
@@ -1770,7 +1646,6 @@ namespace zetscript{
 				return _ret;
 			}
 		}
-
 		return NULL;//itHasReturnSymbol(PASTNode _node);
 	}
 
@@ -1778,7 +1653,6 @@ namespace zetscript{
 
 		PASTNode _node_ret=NULL;
 		string symbol_value;
-
 
 		if(current_class == NULL){
 			return true;
@@ -1798,8 +1672,6 @@ namespace zetscript{
 		// register all vars...
 
 		for(unsigned i = 0; i < symbol_node->children.size(); i++){ // foreach declared var.
-
-
 
 			PASTNode child_node = AST_NODE(symbol_node->children[i]);
 
@@ -1844,8 +1716,6 @@ namespace zetscript{
 
 		}
 
-
-
 		// register all functions ...
 		for(unsigned i = 0; i < AST_NODE(node_class->children[1])->children.size(); i++){
 			CScriptFunctionObject *irfs;
@@ -1856,7 +1726,7 @@ namespace zetscript{
 				symbol_value = class_name; // rename to be base constructor later ...
 
 				if((_node_ret=itHasReturnSymbol(node_fun))!=NULL){
-					zs_print_error_cr("line %i:return keyword is not allowed in constructor",_node_ret->line_value);
+					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node_ret->idxAstNode),"return keyword is not allowed in constructor");
 					return false;
 				}
 			}
@@ -1942,8 +1812,6 @@ namespace zetscript{
 	}
 
 	int CCompiler::gacNew(short idxAstNode, CScope * _lc){
-
-
 		PASTNode _node = AST_NODE(idxAstNode);
 
 		if(_node == NULL) {zs_print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
@@ -1954,10 +1822,6 @@ namespace zetscript{
 		tInfoAsmOpCompiler *iao=NULL;
 
 		// load function ...
-
-		// 1. insert push to pass values to all args ...
-
-
 		// 1. create object instruction ...
 		if(!insert_NewObject_Instruction(_node->idxAstNode,_node->symbol_value)) // goto end  ...
 		{
@@ -1990,24 +1854,14 @@ namespace zetscript{
 					return ZS_UNDEFINED_IDX;
 				}
 
-				/*if(k==0){
-					// insert clear push arguments stack
-					insert_ClearArgumentStack_And_PushFirstArgument_Instructions(_node->idxAstNode);
-				}else{
-					// insert vector access instruction ...
-					insert_PushArgument_Instruction(_node->idxAstNode);
-				}*/
 			}
 		}else{
 			// clear the stack only ..
 			//insert_ClearArgumentStack_Instruction(_node->idxAstNode);
 		}
 
-
 		// 4. call function...
 		insert_CallFunction_Instruction(_node->idxAstNode,call_index);
-
-
 
 		return CCompiler::getCurrentInstructionIndex();
 	}
@@ -2020,9 +1874,7 @@ namespace zetscript{
 		if(_node == NULL) {zs_print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
 		if(_node->node_type != DELETE_OBJECT_NODE ){zs_print_error_cr("node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
 
-
 		// load function ...
-
 		// push value  ...
 		if(!insertLoadValueInstruction(_node->idxAstNode, _lc)){
 			return ZS_UNDEFINED_IDX;
@@ -2033,11 +1885,6 @@ namespace zetscript{
 		{
 			return ZS_UNDEFINED_IDX;
 		}
-
-
-
-
-
 		return CCompiler::getCurrentInstructionIndex();
 	}
 
@@ -2058,7 +1905,6 @@ namespace zetscript{
 		if(!insertPushScopeInstruction(_node->idxAstNode,_node->idxScope)){
 			return false;
 		}
-
 
 		// 1. compile var init ...
 
@@ -2122,6 +1968,33 @@ namespace zetscript{
 		return true;
 	}
 
+	bool CCompiler::gacDoWhile(short idxAstNode, CScope * _lc){
+
+		PASTNode _node = AST_NODE(idxAstNode);
+
+		if(_node == NULL) {zs_print_error_cr("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE){zs_print_error_cr("node is not keyword type or null");return false;}
+		if(_node->keyword_info != KEYWORD_TYPE::DO_WHILE_KEYWORD){zs_print_error_cr("node is not DO_WHILE keyword type");return false;}
+		if(_node->children.size()!=2) {zs_print_error_cr("node DO-WHILE has not valid number of nodes");return false;}
+		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_NODE )) {zs_print_error_cr("node WHILE has not valid TYPE nodes");return false;}
+		int index_start_do_while;
+
+		// compile conditional expression...
+		index_start_do_while =  getCurrentStatmentIndex()+1;
+
+		// compile do-body ...
+		if(!gacBody(_node->children[1],SCOPE_INFO_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
+
+		// compile while condition...
+		if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
+
+		insert_JT_Instruction(_node->children[0],index_start_do_while); // goto end  ...
+
+		// save jmp value ...
+		//asm_op_jmp_end->index_op2= index_start_do_while;
+		return true;
+	}
+
 	bool CCompiler::gacReturn(short idxAstNode, CScope * _lc){
 
 		PASTNode _node = AST_NODE(idxAstNode);
@@ -2143,28 +2016,23 @@ namespace zetscript{
 
 	bool CCompiler::gacFunctionOrOperator(short idxAstNode, CScope * _lc, CScriptFunctionObject *irfs){
 
-
 		PASTNode _node = AST_NODE(idxAstNode);
 
 		if(_node == NULL) {zs_print_error_cr("NULL node");return false;}
-		//if(!(_node->node_type == KEYWORD_NODE && _node->keyword_info != NULL) && !(_node->node_type != FUNCTION_OBJECT_NODE))>{zs_print_error_cr("node is not keyword type or null");return false;}
-
 
 		if(
 			! ( _node->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD
 			||  _node->node_type    == FUNCTION_OBJECT_NODE
 			)) {
-			zs_print_error_cr("Expected FUNCTION or OPERATOR or FUNCTION_OBJECT_NODE keyword type at line %i",_node->line_value);
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"Expected FUNCTION or OPERATOR or FUNCTION_OBJECT_NODE keyword type");
 			return false;
 		}
 
-		//if(!(_node->keyword_info->id == KEYWORD_TYPE::FUNCTION_KEYWORD) && !(_node->node_type != FUNCTION_OBJECT_NODE)){zs_print_error_cr("node is not FUNCTION keyword type");return false;}
 		if(_node->children.size() != 2){zs_print_error_cr("node FUNCTION has not 2 child");return false;}
 		if(AST_NODE(_node->children[0])->node_type != NODE_TYPE::ARGS_DECL_NODE){zs_print_error_cr("node FUNCTION has not ARGS node");return false;}
 		if(AST_NODE(_node->children[1])->node_type != NODE_TYPE::BODY_NODE){zs_print_error_cr("node FUNCTION has not BODY node");return false;}
 
-		// 2. Processing args ...
-
+		// 1. Processing args ...
 		for(unsigned i = 0; i < AST_NODE(_node->children[0])->children.size(); i++){
 			irfs->m_arg.push_back(AST_NODE(AST_NODE(_node->children[0])->children[i])->symbol_value);
 		}
@@ -2184,15 +2052,11 @@ namespace zetscript{
 		tInfoAsmOpCompiler *asm_op_jmp_else_if,*asm_op_jmp_end;
 
 		// compile conditional expression...
-		//PASTNode p = AST_NODE(_node->children[0]);
-
-
 		if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
 		asm_op_jmp_else_if = insert_JNT_Instruction(_node->children[0]); // goto else body ...
 
 		// compile if-body ...
 		if(!gacBody(_node->children[1],SCOPE_INFO_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
-
 
 		// if there's else body, compile-it
 		if(_node->children.size()==3){
@@ -2242,11 +2106,6 @@ namespace zetscript{
 		r+=3;
 
 		if((r=gacExpression_Recursive(AST_NODE(_node->children[1])->children[1],_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
-
-		//insert_Save_CurrentInstruction();
-		//insert_Load_CurrentInstruction();
-
-		//r+=2; // add +2 load +save ...
 
 		asm_op_jmp_end->index_op1 = getCurrentInstructionIndex()+1;
 		asm_op_jmp_end->index_op2 = getCurrentStatmentIndex();
@@ -2325,7 +2184,7 @@ namespace zetscript{
 													// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases + body...
 													jt_instruction[i-1].push_back(insert_JMP_Instruction(case_value->idxAstNode));
 												}else{
-													zs_print_error_cr("case already defined!");
+													ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(case_value->idxAstNode),"case already defined!");
 													return false;
 												}
 												break;
@@ -2336,7 +2195,7 @@ namespace zetscript{
 
 												// is equal ? ==
 												if(!insertOperatorInstruction(LOGIC_EQUAL_PUNCTUATOR,0, error_str, switch_value_index ,getCurrentInstructionIndex())){
-														zs_print_error_cr("%s",error_str.c_str());
+														ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(case_value->idxAstNode),"%s",error_str.c_str());
 														return false;
 												}
 
@@ -2380,10 +2239,6 @@ namespace zetscript{
 
 
 								if(gacBody(case_body->idxAstNode,_lc)){
-
-
-
-
 
 									if(i < (_node->children.size()-1))
 										jmp_instruction.push_back(insert_JMP_Instruction(_node->idxAstNode));
@@ -2435,7 +2290,7 @@ namespace zetscript{
 		for(unsigned i = 0; i < _node->children.size(); i++){ // for all vars ...
 
 			if(localVarSymbolExists(AST_NODE(_node->children[i])->symbol_value, _node->idxAstNode)){
-				zs_print_error_cr("Variable \"%s\" already defined !",_node->symbol_value.c_str());
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"Variable \"%s\" already defined !",_node->symbol_value.c_str());
 				return false;
 			}
 
@@ -2477,6 +2332,9 @@ namespace zetscript{
 		case KEYWORD_TYPE::WHILE_KEYWORD:
 			return gacWhile(_node->idxAstNode, _lc);
 			break;
+		case KEYWORD_TYPE::DO_WHILE_KEYWORD:
+			return gacDoWhile(_node->idxAstNode, _lc);
+			break;
 		case KEYWORD_TYPE::IF_KEYWORD:
 			return gacIf(_node->idxAstNode, _lc);
 			break;
@@ -2487,7 +2345,7 @@ namespace zetscript{
 
 
 			if(functionSymbolExists(_node->symbol_value, _node->idxAstNode)){
-					zs_print_error_cr("Function \"%s\" already defined !",_node->symbol_value.c_str());
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"Function \"%s\" already defined !",_node->symbol_value.c_str());
 					return false;
 			}
 
@@ -2504,8 +2362,6 @@ namespace zetscript{
 
 		return false;
 	}
-
-
 
 	bool CCompiler::gacBody(short idxAstNode, CScope * _lc){
 
@@ -2532,15 +2388,8 @@ namespace zetscript{
 			newStatment();
 		}
 
-		//int index=_node->idxScope;//_node->scope_info_ptr);
-
-		//if(index != ZS_UNDEFINED_IDX){
 		newStatment();
 		insertPopScopeInstruction(_node->idxAstNode);//,index);
-		//}else{
-		//	zs_print_error_cr("Cannot find scope_info!");
-		//	return false;
-		//}
 
 		return true;
 	}
@@ -2624,17 +2473,11 @@ namespace zetscript{
 	void CCompiler::pushFunction(short idxAstNode,CScriptFunctionObject *sf){
 
 		PASTNode _node =AST_NODE(idxAstNode);
-
 		stk_scriptFunction.push_back(m_currentFunctionInfo=new tInfoFunctionCompile(sf));
-		//this->m_currentFunctionInfo = sf;
-		//this->m_currentListStatements = &sf->object_info.statment_op;
 		this->m_treescope = SCOPE_INFO_NODE(_node->idxScope);
 	}
 
 	void CCompiler::popFunction(){
-
-		//m_currentListStatements=m_functionAsmStatements[m_functionAsmStatements.size()-1];
-		//m_currentFunctionInfo = stk_scriptFunction[stk_scriptFunction.size()-1];
 
 		// reserve memory for statment struct...
 		vector<tInfoStatementOpCompiler> *vec_comp_statment;
@@ -2670,9 +2513,6 @@ namespace zetscript{
 		delete(m_currentFunctionInfo);
 		stk_scriptFunction.pop_back();
 
-
-
-
 		if(stk_scriptFunction.size() > 0){
 			m_currentFunctionInfo = stk_scriptFunction[stk_scriptFunction.size()-1];
 			//this->m_currentListStatements = &m_currentFunctionInfo->object_info.statment_op;
@@ -2687,7 +2527,6 @@ namespace zetscript{
 	bool CCompiler::compile(short idxAstNode, CScriptFunctionObject *sf){
 
 		PASTNode _node =AST_NODE(idxAstNode);
-
 
 		if(_node == NULL){
 			zs_print_error_cr("NULL node!");

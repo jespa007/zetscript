@@ -11,17 +11,15 @@ namespace zetscript{
 		if(CScriptVariable::unrefSharedPtr()){
 
 			for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-				unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(m_variableSymbol[i].object.properties);
-				if(((var_type) == STK_PROPERTY_TYPE_SCRIPTVAR || (var_type) == STK_PROPERTY_TYPE_STRING)){
-					if(!((CScriptVariable *)m_variableSymbol[i].object.varRef)->unrefSharedPtr()){
+				CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
+				if(var){
+					if(!var->unrefSharedPtr()){
 						return false;
 					}
 				}
 			}
-
 			return true;
 		}
-
 		return false;
 	}
 
@@ -29,20 +27,11 @@ namespace zetscript{
 		if(CScriptVariable::initSharedPtr(is_assigned)){
 
 			for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-				zs_print_error_cr("struct symbol.size() > 0. internal error!");
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"struct symbol.size() > 0. internal error!");
 				return false;
-
-				/*unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(m_variableSymbol[i].object.properties);
-				if(((var_type) == STK_PROPERTY_TYPE_SCRIPTVAR || (var_type) == STK_PROPERTY_TYPE_STRING)){
-					if(!((CScriptVariable *)m_variableSymbol[i].object.varRef)->initSharedPtr()){
-						return false;
-					}
-				}*/
 			}
-
 			return true;
 		}
-
 		return false;
 	}
 

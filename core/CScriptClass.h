@@ -75,6 +75,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		static string  *INT_PTR_TYPE_STR;//	typeid(int *).name()
 		static string  *FLOAT_PTR_TYPE_STR;//	typeid(float *).name()
 		static string  *STRING_PTR_TYPE_STR;//	typeid(string *).name()
+		static string  *CONST_CHAR_PTR_TYPE_STR;//	typeid(string *).name()
 		static string  *BOOL_PTR_TYPE_STR;//	typeid(bool *).name()
 		static string  *INT_TYPE_STR;//	typeid(int).name()
 		static string  *FLOAT_TYPE_STR;//	typeid(int).name()
@@ -89,6 +90,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		std::function<void * ()> 		* 	c_constructor;
 		std::function<void (void *  p)> 	*	c_destructor;
 		string classPtrType; // type_id().name();
+		int idxClass;
 		vector<CScriptClass *> baseClass; // in the case is and extension of class.
 
 		vector<int> metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
@@ -147,6 +149,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		static int 									getIdxClassFromIts_C_Type(const string & s);
 
 
+		static bool 								idxClassInstanceofIdxClass(int theClass,int class_idx);
 
 
 
@@ -296,15 +299,6 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		template<class _T>
 		static bool register_C_SingletonClassInt(const string & class_name){//, const string & base_class_name=""){
 
-			/*CScriptClass *base_class = NULL;
-
-			// get base class
-			if(base_class_name != ""){
-				if((base_class = this->getRegisteredClass(base_class_name)) == NULL){
-					return false;
-				}
-			}*/
-
 			if(!isClassRegistered(class_name)){
 
 				string str_classPtr = typeid( _T *).name();
@@ -313,7 +307,6 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 					zs_print_error_cr("this %s is already registered",demangle(typeid( _T).name()).c_str());
 					return false;
 				}
-
 
 				//zs_print_error_cr("CHECK AND TODOOOOOO!");
 				CScriptClass *irc = new CScriptClass;
@@ -327,8 +320,6 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 				ast_var_symbols->children.push_back(ast_collection_var_symbols->idxAstNode);
 				ast->children.push_back(ast_var_symbols->idxAstNode);
 				ast->children.push_back(ast_fun_symbols->idxAstNode);
-
-
 
 				irc->metadata_info.object_info.symbol_info.idxAstNode = ast->idxAstNode;
 				//irc->metadata_info.object_info.symbol_info.idxScopeVar=-1;
@@ -344,6 +335,8 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 				irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
 				(*vec_script_class_node).push_back(irc);
+
+				irc->idxClass=(*vec_script_class_node).size()-1;
 				zs_print_debug_cr("* C++ class \"%s\" registered as (%s).",class_name.c_str(),demangle(str_classPtr).c_str());
 
 				return true;
@@ -396,7 +389,6 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 				return false;
 			}
 
-
 			for(unsigned i = 0; i < (*vec_script_class_node)[register_class]->baseClass.size(); i++){
 				if((*vec_script_class_node)[register_class]->baseClass[i]->classPtrType ==base_class_name_ptr){
 					zs_print_error_cr("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
@@ -404,10 +396,6 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 				}
 			}
 
-
-			/*if(!addPrimitiveTypeConversion<_T *,_B *>( [] (CScriptVariable *obj){return (int)reinterpret_cast<_B *>(obj);})){
-				return false;
-			}*/
 			if(mapTypeConversion.count(class_name_ptr) == 1){ // create new map...
 				if(mapTypeConversion[class_name_ptr].count(base_class_name_ptr)==1){
 					zs_print_error_cr("Conversion type \"%s\" -> \"%s\" already inserted",demangle(class_name).c_str(),demangle(base_class_name).c_str());
@@ -469,8 +457,6 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 			return true;
 
 		}
-
-
 
 
 		/**

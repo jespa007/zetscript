@@ -22,6 +22,7 @@ namespace zetscript{
 	tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
 	tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_PUNCTUATORS];
 	int CASTNode::DUMMY_LINE=0;
+	const char * CASTNode::current_parsing_filename="unknow";
 
 
 
@@ -58,7 +59,7 @@ namespace zetscript{
 				while (*aux_p!=0 && *aux_p !='\"' && *aux_p != '\n') {aux_p++;}
 
 				if(*aux_p != '\"'){
-					zs_print_error_cr("string is not closed at line %i",m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line, "string is not closed at line %i",m_line);
 					return NULL;
 				}
 			}
@@ -263,6 +264,24 @@ namespace zetscript{
 		return vec_ast_node->at(idx)->line_value;
 	}
 
+	const char *	CASTNode::getAstFilename(short idx){
+		if(idx==ZS_UNDEFINED_IDX){
+			return "unknown";
+		}
+
+		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
+			zs_print_error_cr("unknown");
+			return "";
+		}
+
+		if(vec_ast_node->at(idx)->idxFilename != -1){
+			return CZetScript::getInstance()->getParsedFilenameFromIdx(vec_ast_node->at(idx)->idxFilename);
+		}
+
+
+		return "unknown";
+	}
+
 	const char * CASTNode::getAstSymbolName(short idx){
 		if(idx==ZS_UNDEFINED_IDX){
 			return "undefined symbol";
@@ -418,6 +437,10 @@ namespace zetscript{
 		return false;
 	}
 
+	bool CASTNode::parseInstanceOfPunctuator(const char *s){
+		return strncmp("instanceof",s,10) == 0;
+	}
+
 	bool CASTNode::parseLogicNotEqualPunctuator(const char *s){
 		if(*s=='!')
 			return (*(s+1) == '=');
@@ -551,7 +574,8 @@ namespace zetscript{
 				LOGIC_LTE_PUNCTUATOR,
 				LOGIC_GTE_PUNCTUATOR,
 				LOGIC_GT_PUNCTUATOR,
-				LOGIC_LT_PUNCTUATOR
+				LOGIC_LT_PUNCTUATOR,
+				INSTANCEOF_PUNCTUATOR
 		};
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
@@ -720,6 +744,8 @@ namespace zetscript{
 				LOGIC_GTE_PUNCTUATOR, // >=
 				LOGIC_LTE_PUNCTUATOR, // <=
 
+				INSTANCEOF_PUNCTUATOR, // instanceof
+
 				// Then OPERATORS 1 char size
 				ADD_PUNCTUATOR, // +
 				SUB_PUNCTUATOR, // -
@@ -787,7 +813,7 @@ namespace zetscript{
 			}
 
 			if(*aux != '\"') {
-				zs_print_error_cr("Line %i: Error \" not closed",m_line);
+				ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Error \" not closed");
 				return NULL;
 			}
 			aux++;
@@ -797,7 +823,7 @@ namespace zetscript{
 			if((key_w = isKeyword(s))!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
 				if( key_w != KEYWORD_TYPE::THIS_KEYWORD){
 				 //&& key_w->id != KEYWORD_TYPE::SUPER_KEYWORD ){ // unexpected token ?
-					zs_print_error_cr("Unexpected keyword \"%s\" at line %i. Forgot \";\" ?",defined_keyword[key_w].str, m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Unexpected keyword \"%s\" at line %i. Forgot \";\" ?",defined_keyword[key_w].str);
 					return NULL;
 				}
 			}
@@ -839,7 +865,7 @@ namespace zetscript{
 				if(!CStringUtils::isBinary(num)){
 
 					if(!CStringUtils::isNumber(num)){
-						zs_print_error_cr("line %i: %s is not a valid number",m_line,num.c_str());
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"%s is not a valid number",num.c_str());
 						return NULL;
 					}
 				}
@@ -855,7 +881,7 @@ namespace zetscript{
 
 
 		if(end_punctuator != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-			zs_print_error_cr("Unexpected '%s' at line %i",defined_operator_punctuator[end_punctuator].str,m_line);
+			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Unexpected '%s'",defined_operator_punctuator[end_punctuator].str);
 			return NULL;
 		}
 
@@ -874,7 +900,7 @@ namespace zetscript{
 				aux_p++;
 			}
 		}else{
-			zs_print_error_cr(" line %i: Symbol name cannot begin with %c",m_line, *aux_p);
+			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line," Symbol name cannot begin with %c", *aux_p);
 			return NULL;
 		}
 
@@ -932,7 +958,14 @@ namespace zetscript{
 		if(op != UNKNOWN_PUNCTUATOR){ // let's check some situations whether is not allowed having post operator
 			PUNCTUATOR_TYPE pt=UNKNOWN_PUNCTUATOR;
 			int line=0;
-			char *aux=IGNORE_BLANKS(s+2,line); // advance to next char...
+
+			char *aux=(char *)(s+strlen(defined_operator_punctuator[op].str));
+
+			aux=IGNORE_BLANKS(aux,line); // advance to next char...
+
+			if(*aux == 0){
+				return op;
+			}
 
 			// if is an operator ... ok!
 			pt=isPunctuator(aux);
@@ -986,7 +1019,7 @@ namespace zetscript{
 
 				if( ast_node_to_be_evaluated != NULL){
 					if((*ast_node_to_be_evaluated)->node_type != FUNCTION_REF_NODE && (*ast_node_to_be_evaluated)->node_type != FUNCTION_OBJECT_NODE){
-						zs_print_error_cr("Expected function object before '(' at line %i",m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected function object before '('");
 						return NULL;
 					}
 				}
@@ -1006,7 +1039,7 @@ namespace zetscript{
 
 				if( ast_node_to_be_evaluated != NULL){
 					if((*ast_node_to_be_evaluated)->node_type != ARRAY_REF_NODE){
-						zs_print_error_cr("Expected array object before '[' at line %i",m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected array object before '['");
 						return NULL;
 					}
 				}
@@ -1024,7 +1057,7 @@ namespace zetscript{
 					if((aux_ptr=parseArgs('[', ']',aux,m_line,scope_info,ast_node_to_be_evaluated != NULL ? &args_node: NULL)) != NULL){
 						if( ast_node_to_be_evaluated != NULL){
 							if(args_node->children.size() != 1){
-								zs_print_error_cr("Invalid array access %i",m_line);
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Invalid array access");
 								return NULL;
 							}
 							args_obj->children.push_back(args_node->idxAstNode);
@@ -1134,7 +1167,7 @@ namespace zetscript{
 				return parseExpression_Recursive(str,  m_line, scope_info, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
 				break;
 			default:
-				zs_print_error_cr("Invalid using of \"%s\" at line %i",defined_keyword[key_w].str, m_startLine);
+				ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_startLine,"Invalid using of \"%s\"",defined_keyword[key_w].str);
 				break;
 			}
 		}else if(*aux == '[') { // is an array object ...
@@ -1174,20 +1207,19 @@ namespace zetscript{
 					 aux = word_str;
 				 }
 			 }else{ // try parse expression...
-				 //zs_print_error_cr("Cannot parse ");
 				 return parseExpression_Recursive(aux,  m_line, scope_info, ast_node_to_be_evaluated,GROUP_TYPE::GROUP_0,parent);
 			 }
 		}
 
 		if(try_array_or_function_access){// try array/function access
 			if((aux = functionArrayAccess(aux, m_line,scope_info,ast_node_to_be_evaluated,parent)) == NULL){
-				 zs_print_error_cr("Cannot parse 2");
+				ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Cannot parse 2");
 				return NULL;
 			}
 
 			if(ast_node_to_be_evaluated != NULL){
 				if(*ast_node_to_be_evaluated == NULL && should_be_access){
-					zs_print_error_cr("Cannot parse 3");
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Cannot parse 3");
 					return NULL;
 				}
 
@@ -1204,11 +1236,11 @@ namespace zetscript{
 		KEYWORD_TYPE kw=CASTNode::isKeyword(current_string_ptr);
 
 		if(kw!=KEYWORD_TYPE::UNKNOWN_KEYWORD){
-			zs_print_error_cr("Unexpected %s at line %i",defined_keyword[kw].str,m_line);
+			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Unexpected %s",defined_keyword[kw].str);
 			return true;
 		}
 		else if(ip!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-			zs_print_error_cr("Unexpected %s at line %i",defined_operator_punctuator[ip].str,m_line);
+			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Unexpected %s",defined_operator_punctuator[ip].str);
 			return true;
 		}
 		return false;
@@ -1232,7 +1264,7 @@ namespace zetscript{
 		m_definedSymbolLine = m_line;
 
 		if(symbol_name == "super"){
-			zs_print_error_cr("Invalid using \"super\" keyword at line %i",m_line);
+			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Invalid using \"super\" keyword");
 			return NULL;
 		}
 
@@ -1243,7 +1275,7 @@ namespace zetscript{
 			if(pre_operator != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
 				if(pre_operator == PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR ||
 				   pre_operator == PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR){
-					zs_print_error_cr("Unexpected '%s' before ( at line %i",defined_operator_punctuator[pre_operator].str,m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Unexpected '%s' before (",defined_operator_punctuator[pre_operator].str);
 					return NULL;
 				}
 			}
@@ -1255,12 +1287,12 @@ namespace zetscript{
 			end_expression = parseExpression_Recursive(aux, m_line, scope_info);//, ast_node_to_be_evaluated, type_group,parent);
 
 			if(*end_expression != ')'){
-				zs_print_error_cr("Not closed parenthesis starting at line %i", m_definedSymbolLine);
+				ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"Not closed parenthesis starting");
 				return NULL;
 			}
 
 			 if(end_expression == NULL || end_expression == aux){
-				 zs_print_error_cr("Expected expression at line %i",m_line);
+				 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected expression");
 				 return NULL;
 			 }
 
@@ -1286,7 +1318,7 @@ namespace zetscript{
 				if(pre_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
 					if(pre_operator == PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR ||
 						pre_operator == PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR){
-						zs_print_error_cr("Unexpected '%s' before ( at line %i",defined_operator_punctuator[pre_operator].str,m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Unexpected '%s' before ( ",defined_operator_punctuator[pre_operator].str);
 						return NULL;
 					}
 				}
@@ -1329,7 +1361,7 @@ namespace zetscript{
 
 						 if(end_expression != NULL){
 							 if(!printErrorUnexpectedKeywordOrPunctuator(aux, m_line)){
-								 zs_print_error_cr("Expected symbol at line %i",m_line);
+								 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected symbol");
 							 }
 						 }
 						 return NULL;
@@ -1408,7 +1440,7 @@ namespace zetscript{
 		}
 
 		if(type_group>=MAX_GROUPS) {
-			zs_print_error_cr("Cannot find ast tree operator");
+			zs_print_error_cr("Internal:Cannot find ast tree operator");
 			return NULL;
 		}
 
@@ -1497,7 +1529,7 @@ namespace zetscript{
 						}
 					}
 				}else{
-					zs_print_error_cr("line %i:expected operator or punctuator after \"%s\"",DUMMY_LINE,symbol_value.c_str());
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,DUMMY_LINE,"expected operator or punctuator after \"%s\"",symbol_value.c_str());
 					return NULL;
 				}
 			}
@@ -1564,7 +1596,7 @@ namespace zetscript{
 							if(post_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
 								if(     (pre_operator == PRE_INC_PUNCTUATOR  || pre_operator  == PRE_DEC_PUNCTUATOR) &&
 										(post_operator== POST_INC_PUNCTUATOR || post_operator == POST_DEC_PUNCTUATOR)){
-									zs_print_error_cr("object \"%s\" has left \"%s\" and right \"%s\" is ambiguous",(*ast_node_to_be_evaluated)->symbol_value.c_str(),defined_operator_punctuator[pre_operator].str, defined_operator_punctuator[post_operator].str);
+									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"object \"%s\" has left \"%s\" and right \"%s\" is ambiguous",(*ast_node_to_be_evaluated)->symbol_value.c_str(),defined_operator_punctuator[pre_operator].str, defined_operator_punctuator[post_operator].str);
 									return NULL;
 								}
 
@@ -1726,7 +1758,7 @@ namespace zetscript{
 		// PRE: s is current string to parse. This function tries to parse an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
 		if(*s==0) {
-			zs_print_error_cr("End string");
+			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"End string");
 			return NULL;
 		}
 
@@ -1778,7 +1810,7 @@ namespace zetscript{
 				end_p = getEndWord(aux_p, m_line);
 
 				 if(end_p == NULL || end_p == aux_p){
-					 zs_print_error_cr("Expected symbol at line %i after ','",m_lineSymbol);
+					 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_lineSymbol ,"Expected symbol after ','");
 					 return NULL;
 				 }
 
@@ -1787,7 +1819,7 @@ namespace zetscript{
 				 aux_p=IGNORE_BLANKS(end_p,m_line);
 
 				 if(*aux_p != ':'){ // expected : ...
-					 zs_print_error_cr("Expected ':' at line %i",m_line);
+					 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ':'");
 					 return NULL;
 				 }
 
@@ -1809,13 +1841,13 @@ namespace zetscript{
 				 aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 				 if(*aux_p != ',' && *aux_p != '}' ){
-					 zs_print_error_cr("expected '}' or ','");
+					 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected '}' or ','");
 					 return NULL;
 				 }
 			}
 		}
 		else{
-			zs_print_error_cr("Expected '{'");
+			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '{'");
 		}
 		return aux_p;
 	}
@@ -1829,7 +1861,7 @@ namespace zetscript{
 		}
 
 		if(*end != '}'){
-			zs_print_error_cr("Expected '{'");
+			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '{'");
 			return NULL;
 		}
 
@@ -1863,14 +1895,14 @@ namespace zetscript{
 				end_p = getEndWord(aux_p, m_line);
 
 				 if(end_p == NULL || end_p == aux_p){
-					 zs_print_error_cr("Expected symbol at line %i",m_line);
+					 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected symbol");
 					 return NULL;
 				 }
 				 symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
 				 aux_p=IGNORE_BLANKS(end_p,m_line);
 
 				 if(*aux_p != '('){
-					 zs_print_error_cr("Expected '(' after \'%s\'",defined_keyword[key_w].str);
+					 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '(' after \'%s\'",defined_keyword[key_w].str);
 					 return NULL;
 				 }
 
@@ -1914,7 +1946,7 @@ namespace zetscript{
 				end_p = getEndWord(aux_p, m_line);
 
 				 if(end_p == NULL || end_p == aux_p){
-					 zs_print_error_cr("Expected symbol at line %i",m_line);
+					 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected symbol");
 					 return NULL;
 				 }
 
@@ -1955,7 +1987,7 @@ namespace zetscript{
 			if(key_w == KEYWORD_TYPE::CLASS_KEYWORD){
 
 				if(scope_info->getIdxParent()!=ZS_UNDEFINED_IDX){
-					zs_print_error_cr("line %i:class keyword is not allowed",m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"class keyword is not allowed");
 					return NULL;
 				}
 
@@ -1964,7 +1996,7 @@ namespace zetscript{
 				// check for symbol's name
 				end_p = getEndWord(aux_p, m_line);
 				if(end_p == NULL || end_p == aux_p){
-					zs_print_error_cr("Expected name class at line %i ",m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected name class");
 					return NULL;
 				}
 				// try to register class...
@@ -1982,16 +2014,11 @@ namespace zetscript{
 					end_p = getEndWord(aux_p, m_line);
 
 					if(end_p == NULL || end_p == aux_p){
-						zs_print_error_cr("Expected class name at line %i ",m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected class name");
 						return NULL;
 					}
 
 					ext_name=CStringUtils::copyStringFromInterval(aux_p, end_p);
-
-					/*if(!CScriptClass::isClassRegistered(ext_name)){
-						zs_print_error_cr("extended class \"%s\" not exist");
-						return NULL;
-					}*/
 
 					if(ast_node_to_be_evaluated != NULL){
 						if((base_class_node = CASTNode::newASTNode()) == NULL) return NULL;
@@ -2034,7 +2061,7 @@ namespace zetscript{
 						if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
 							switch(key_w){
 							default:
-								zs_print_error_cr("Expected \"var\" or \"function\" keyword at line %i", m_line);
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected \"var\" or \"function\" keyword");
 								return NULL;
 								break;
 							case KEYWORD_TYPE::FUNCTION_KEYWORD:
@@ -2045,7 +2072,7 @@ namespace zetscript{
 										}
 									}
 									else {
-										zs_print_error_cr("Expected symbol after function at line %i",m_line);
+										ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected symbol after function");
 										return NULL;
 									}
 								} else{
@@ -2065,26 +2092,26 @@ namespace zetscript{
 								break;
 							}
 						}else{
-							zs_print_error_cr("Expected \"var\" or \"function\" keyword at line %i",m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected \"var\" or \"function\" keyword");
 							return NULL;
 						}
 						aux_p=IGNORE_BLANKS(aux_p,m_line);
 					}
 
 					if(*aux_p != '}'){
-						zs_print_error_cr("class \"%s\" declared line %i is not closed ",class_name.c_str(),class_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,class_line ,"class \"%s\" declared is not closed ",class_name.c_str());
 					}
 
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
 					if(*aux_p != ';'){
-						zs_print_error_cr("class \"%s\" declared line %i not end with ;",class_name.c_str(),class_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,class_line ,"class \"%s\" declared line %i not end with ;",class_name.c_str());
 					}
 
 					return aux_p+1;
 
 				}else{
-					zs_print_error_cr("Expected '{' at line %i ",m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '{'");
 					return NULL;
 				}
 			}
@@ -2110,7 +2137,7 @@ namespace zetscript{
 
 			if(*aux_p != c2 ){
 				if(*aux_p == ',' ){
-					zs_print_error_cr("line %i:Unexpected , at line %i",m_line,c2);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Unexpected , at line %i",c2);
 					return NULL;
 				}
 
@@ -2129,7 +2156,7 @@ namespace zetscript{
 						aux_p=IGNORE_BLANKS(aux_p,m_line);
 					}else{
 						if(*aux_p != c2 ){
-							zs_print_error_cr("Expected %c at line %i",c2,m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected %c",c2);
 							return NULL;
 						}
 					}
@@ -2241,18 +2268,6 @@ namespace zetscript{
 								function_name = symbol_value;
 
 								// check whether parameter name's matches with some global variable...
-								/*if(scope_info != NULL){
-									if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(symbol_value,false)) != NULL){
-
-										if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
-											zs_print_error_cr("Function name \"%s\" defined at line %i is already defined at %i", symbol_value, m_line,AST_LINE_VALUE(irv->idxAstNode));
-										}else{
-											zs_print_error_cr("Function name \"%s\" at line %i is no allowed it has conflict with name of already registered function in C/C++", symbol_value, m_line);
-										}
-
-										return NULL;
-									}
-								}*/
 							}else{
 								return NULL;
 							}
@@ -2273,28 +2288,8 @@ namespace zetscript{
 					// create object function ...
 					//if(named_function)
 					//{
-
-						/*if((irv=scope_info->registerSymbol(symbol_value,(*ast_node_to_be_evaluated)))==NULL){
-							return NULL;
-						}
-
-						if((*ast_node_to_be_evaluated) != NULL){
-							(*ast_node_to_be_evaluated)->symbol_value=symbol_value;
-						}*/
-
 					ast_node=*ast_node_to_be_evaluated;
 					//}
-					/*else{
-						irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
-						ast_node=AST_NODE(irv->idxAstNode);
-						ast_node->symbol_value = irv->name;
-
-					}*/
-
-					// define value symbol...
-					/*if(irv == NULL){
-						return NULL;
-					}*/
 					ast_node->idxScope = idxScope;
 				}
 				// parse function args...
@@ -2314,7 +2309,7 @@ namespace zetscript{
 						aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 						if(*aux_p == ')' || *aux_p == ','){
-							zs_print_error_cr("Expected arg at line %i ",m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected arg");
 							return NULL;
 						}
 
@@ -2327,14 +2322,14 @@ namespace zetscript{
 						if(ast_node_to_be_evaluated != NULL){
 							for(unsigned k = 0; k < args_node->children.size(); k++){
 								if(AST_NODE(args_node->children[k])->symbol_value == symbol_value){
-									zs_print_error_cr("Repeated argument '%s' argument at line %i ",symbol_value,m_line);
+									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Repeated argument '%s' argument ",symbol_value);
 									return NULL;
 								}
 							}
 
 							// check whether parameter name's matches with some global variable...
 							if((irv=_currentScope->getInfoRegisteredSymbol(symbol_value,-1,false)) != NULL){
-								zs_print_error_cr("Ambiguous symbol argument \"%s\" at line %i name with var defined at %i", symbol_value, m_line, AST_LINE_VALUE(irv->idxAstNode));
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Ambiguous symbol argument \"%s\" name with var defined at %i", symbol_value, AST_LINE(irv->idxAstNode));
 								return NULL;
 							}
 
@@ -2352,7 +2347,7 @@ namespace zetscript{
 						if(*aux_p != ')'){
 
 							if(*aux_p != ','){
-								zs_print_error_cr("Expected ',' at line ",m_line);
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ',' ");
 								return NULL;
 							}
 							aux_p++;
@@ -2366,7 +2361,7 @@ namespace zetscript{
 					}
 
 					if(*aux_p != ')'){
-						zs_print_error_cr("Expected ')' at line ",m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
 						return NULL;
 					}
 
@@ -2385,9 +2380,9 @@ namespace zetscript{
 							if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
 
 								if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
-									zs_print_error_cr("Line %i: Function name \"%s\" is already defined with same args at line %i", m_line, function_name.c_str(),AST_LINE_VALUE(irv->idxAstNode));
+									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is already defined with same args at line %i", function_name.c_str(),AST_LINE(irv->idxAstNode));
 								}else{
-									zs_print_error_cr("Function name \"%s\" at line %i is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str(), m_line);
+									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
 								}
 
 								return NULL;
@@ -2412,7 +2407,7 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 					if(*aux_p != '{'){
-						zs_print_error_cr("Expected '{' at line ",m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '{'");
 						return NULL;
 					}
 
@@ -2438,10 +2433,10 @@ namespace zetscript{
 					}
 				}
 				else{
-					zs_print_error_cr("Unclosed function defined at line %i",m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Unclosed function defined");
 				}
 			}else{
-				zs_print_error_cr("Expected operator or function operator at line %i",m_line);
+				ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected operator or function operator");
 			}
 		}
 		return NULL;
@@ -2476,7 +2471,7 @@ namespace zetscript{
 
 					if(ast_node_to_be_evaluated != NULL){
 						if(child_node == NULL){
-							zs_print_error_cr("parse_return: child_node null");
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"parse_return: child_node null");
 							return NULL;
 						}
 
@@ -2484,7 +2479,7 @@ namespace zetscript{
 					}
 
 					if(*aux_p!=';'){
-						zs_print_error_cr("Expected ';' at line %i", m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ';'");
 						return NULL;
 					}
 					aux_p++;
@@ -2530,7 +2525,7 @@ namespace zetscript{
 					if((end_expr = parseExpression(aux_p+1,m_line,scope_info,&conditional_expression)) != NULL){
 
 						if(*end_expr != ')'){
-							zs_print_error_cr("Expected ')' at line %i",m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
 							return NULL;
 						}
 						if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
@@ -2546,7 +2541,7 @@ namespace zetscript{
 						}
 						aux_p=IGNORE_BLANKS(end_expr+1,m_line);
 						if(*aux_p != '{'){
-							zs_print_error_cr("Expected while-block open block ('{') %i",m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected while-block open block ('{') ");
 							return NULL;
 						}
 						if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &while_node : NULL))!= NULL){
@@ -2560,14 +2555,116 @@ namespace zetscript{
 							}
 						}
 					}else{
-						zs_print_error_cr("Expected ')' while %i",m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')' while ");
 						return NULL;
 					}
 
 				}else{
-					zs_print_error_cr("Expected '(' while %i",m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '(' while ");
 					return NULL;
 				}
+			}
+		}
+		return NULL;
+	}
+
+	char * CASTNode::parseDoWhile(const char *s,int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
+
+		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+
+		char *aux_p = (char *)s;
+		char *end_expr,*start_symbol;
+		KEYWORD_TYPE key_w;
+
+		PASTNode conditional_expression=NULL, body_node=NULL, while_node=NULL;
+		string conditional_str;
+		bool error = false;
+
+		aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+		// check for keyword ...
+		key_w = isKeyword(aux_p);
+
+		if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
+			if(key_w == KEYWORD_TYPE::DO_WHILE_KEYWORD){
+
+				if(ast_node_to_be_evaluated != NULL){
+					if((*ast_node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
+					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
+					(*ast_node_to_be_evaluated)->keyword_info = key_w;
+				}
+
+				aux_p += strlen(defined_keyword[key_w].str);
+
+				//1st evaluate body ..
+				aux_p=IGNORE_BLANKS(aux_p,m_line);
+				if(*aux_p != '{'){
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected open block ('{') in do-while expression");
+					return NULL;
+				}
+				if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &body_node : NULL))!= NULL){
+					if(!error){
+
+						// Finally evaluate conditional line ...
+						aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+						// check for keyword ...
+						key_w = isKeyword(aux_p);
+
+						if(key_w!=WHILE_KEYWORD){
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected while keyword");
+							return NULL;
+						}
+
+						aux_p += strlen(defined_keyword[key_w].str);
+
+						if(*aux_p == '('){
+
+							if((end_expr = parseExpression(aux_p+1,m_line,scope_info,&conditional_expression)) != NULL){
+
+								if(*end_expr != ')'){
+									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')' at line");
+									return NULL;
+								}
+								if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
+									return NULL;
+								}
+
+								if( ast_node_to_be_evaluated != NULL){
+
+									if((while_node= CASTNode::newASTNode()) == NULL) return NULL;
+									while_node->node_type = CONDITIONAL_NODE;
+									while_node->children.push_back(conditional_expression->idxAstNode);
+								}
+
+
+
+							}else{
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')' do-while expression");
+								return NULL;
+							}
+
+						}else{
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '(' do-while expression");
+							return NULL;
+						}
+						/*if(ast_node_to_be_evaluated != NULL){
+							(*ast_node_to_be_evaluated)->children.push_back(while_node->idxAstNode);
+						}*/
+
+						// push conditional and body nodes...
+						if(ast_node_to_be_evaluated != NULL){
+
+							(*ast_node_to_be_evaluated)->children.push_back(while_node->idxAstNode);
+							(*ast_node_to_be_evaluated)->children.push_back(body_node->idxAstNode);
+
+
+						}
+						return end_expr+1;
+					}
+				}
+
+
 			}
 		}
 		return NULL;
@@ -2606,7 +2703,7 @@ namespace zetscript{
 					if((end_expr = parseExpression(aux_p+1,m_line,scope_info,ast_node_to_be_evaluated != NULL? &conditional: NULL)) != NULL){
 
 						if(*end_expr != ')'){
-							zs_print_error_cr("Expected ')' at line %i",m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
 							return NULL;
 						}
 
@@ -2628,7 +2725,7 @@ namespace zetscript{
 						aux_p=IGNORE_BLANKS(end_expr+1,m_line);
 						if(*aux_p != '{'){
 							if(!printErrorUnexpectedKeywordOrPunctuator(aux_p, m_line)){
-								zs_print_error_cr("Expected if-block open block ('{') %i",m_line);
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected if-block open block ('{')");
 							}
 							return NULL;
 						}
@@ -2651,7 +2748,7 @@ namespace zetscript{
 
 									aux_p=IGNORE_BLANKS(aux_p,m_line);
 									if(*aux_p != '{'){
-										zs_print_error_cr("Expected else-block open block ('{') %i",m_line);
+										ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected else-block open block ('{')");
 										return NULL;
 									}
 
@@ -2674,12 +2771,12 @@ namespace zetscript{
 							}
 						}
 					}else{
-						zs_print_error_cr("Expected ')' if %i",m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')' if ");
 						return NULL;
 					}
 
 				}else{
-					zs_print_error_cr("Expected '(' if %i",m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '(' if");
 					return NULL;
 				}
 			}
@@ -2777,7 +2874,7 @@ namespace zetscript{
 							}
 						}
 						else{
-							zs_print_error_cr("Expected '%c' in for statment %i",info_for[i].next_char, m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '%c' in for statment",info_for[i].next_char);
 							return NULL;
 						}
 						node_for_expression=NULL;
@@ -2786,7 +2883,7 @@ namespace zetscript{
 
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 					if(*aux_p != '{'){
-						zs_print_error_cr("Expected '{' for-block at line %i",m_line);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '{' for-block");
 						return NULL;
 					}
 
@@ -2805,7 +2902,7 @@ namespace zetscript{
 						}
 					}
 				}else{
-					zs_print_error_cr("Expected '(' for %i",m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '(' for");
 					return NULL;
 				}
 			}
@@ -2873,7 +2970,7 @@ namespace zetscript{
 						}
 
 						if(*aux_p != ')'){
-							zs_print_error_cr("Expected ')' switch %i",m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')' switch");
 							error = true;
 							return NULL;
 						}
@@ -2923,7 +3020,7 @@ namespace zetscript{
 														aux_p+=strlen(defined_operator_punctuator[ip].str);
 													}
 													else{
-														zs_print_error_cr("unexpected token %s at line",defined_operator_punctuator[ip].str,m_line);
+														ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"unexpected token %s",defined_operator_punctuator[ip].str);
 														error = true;
 														return NULL;
 													}
@@ -2952,7 +3049,7 @@ namespace zetscript{
 
 														for(unsigned h=1; h <child_access_j_0->children.size(); h++ ){ // groups nodes
 															if(AST_NODE(child_access_j_0->children[h])->symbol_value == val){
-																zs_print_error_cr("Symbol %s repeteaded in switch at line %i",val.c_str(),m_line);
+																ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Symbol %s repeteaded in switch",val.c_str());
 																return NULL;
 															}
 														}
@@ -2973,7 +3070,7 @@ namespace zetscript{
 												n_cases++;
 											}
 											else{
-												zs_print_error_cr("Expected  : case at %i",m_line);
+												ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected  : case ");
 												return NULL;
 											}
 											break;
@@ -2985,7 +3082,7 @@ namespace zetscript{
 												aux_p++;
 											}
 											else{
-												zs_print_error_cr("Expected  : default at %i",m_line);
+												ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected  : default");
 												return NULL;
 											}
 											break;
@@ -2993,7 +3090,7 @@ namespace zetscript{
 											end=true;
 											break;
 										default:
-											zs_print_error_cr("Expected case or default in switch %i",m_line);
+											ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected case or default in switch");
 											return NULL;
 											break;
 										}
@@ -3001,7 +3098,7 @@ namespace zetscript{
 									}
 
 									if(n_cases == 0){
-										zs_print_error_cr("Expected case or default in switch %i",m_line);
+										ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected case or default in switch");
 										return NULL;
 									}
 
@@ -3057,12 +3154,12 @@ namespace zetscript{
 											}
 										}
 										else{
-											zs_print_error_cr("Expected break %i",m_line);
+											ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected break",m_line);
 											return NULL;
 										}
 
 									}else{
-										zs_print_error_cr("Expected break %i",m_line);
+										ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected break",m_line);
 										return NULL;
 									}
 
@@ -3094,15 +3191,15 @@ namespace zetscript{
 								return aux_p + 1;
 							}
 							else{
-								zs_print_error_cr("Expected '}' switch %i",m_line);
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '}' switch");
 							}
 						}
 						else{
-							zs_print_error_cr("Expected '{' switch %i",m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '{' switch");
 						}
 				}
 				else{
-					zs_print_error_cr("Expected '(' switch %i",m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '(' switch ");
 				}
 			}
 		}
@@ -3166,11 +3263,11 @@ namespace zetscript{
 						aux_p++;
 					}
 					else{
-						zs_print_error_cr("line %i; expected ';' after extension class attribute", m_line,*aux_p);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected ';' after extension class attribute", *aux_p);
 						return NULL;
 					}
 
-					zs_print_debug_cr("registered symbol \"%s::%s\" line %i ",class_name.c_str(),class_member.c_str(), m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"registered symbol \"%s::%s\"",class_name.c_str(),class_member.c_str());
 					return aux_p;
 				}
 				else{
@@ -3215,7 +3312,7 @@ namespace zetscript{
 						}
 					}
 					else{
-						zs_print_error_cr("line %i: unexpected '%c'", m_line,*aux_p);
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"unexpected '%c'", *aux_p);
 						return NULL;
 					}
 
@@ -3228,7 +3325,7 @@ namespace zetscript{
 					aux_p++;
 				}
 				else{
-					zs_print_error_cr("Expected ';' at line %i", m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ';'");
 					return NULL;
 				}
 
@@ -3320,7 +3417,7 @@ namespace zetscript{
 						if(var_node != NULL){
 
 							if(children_node==NULL){
-								zs_print_error_cr("children node == NULL");
+								zs_print_error_cr("internal:children node == NULL");
 								return NULL;
 							}
 
@@ -3330,13 +3427,13 @@ namespace zetscript{
 						m_line = m_startLine;
 
 						if(!(*aux_p == ';' || *aux_p == '=' || *aux_p == ',' )){
-							zs_print_error_cr("line %i: expected ',',';' or '=' but it was '%c'", m_line,*aux_p);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected ',',';' or '=' but it was '%c'",*aux_p);
 							return NULL;
 						}
 					}
 				}
 				else{
-					zs_print_error_cr("line %i: expected ',',';' or '=' but it was '%c'", m_line,*aux_p);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected ',',';' or '=' but it was '%c'", *aux_p);
 					return NULL;
 				}
 				// ignores ';' or ','
@@ -3348,14 +3445,14 @@ namespace zetscript{
 				aux_p++;
 			}
 			else{
-				zs_print_error_cr("Expected ';' at line %i", m_line);
+				ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ';' ");
 				return NULL;
 			}
 
 			return aux_p;
 		}
 		else{
-			zs_print_error("const or var keyword expected!");
+			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"var keyword expected!");
 		}
 		//}
 		return NULL;
@@ -3395,7 +3492,7 @@ namespace zetscript{
 
 				if(*aux_p != '}'){
 					error = true;
-					zs_print_error_cr("Expected } ");
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected } ");
 					return NULL;
 				}
 
@@ -3440,7 +3537,7 @@ namespace zetscript{
 			_class_node = findAst(_class_name,NODE_TYPE::KEYWORD_NODE, KEYWORD_TYPE::CLASS_KEYWORD);
 
 			if(_class_node == NULL){
-				zs_print_error_cr("Class \"%s\" at line %i is no defined", symbol_value, m_line);
+				ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Class \"%s\" is no defined", symbol_value);
 				return NULL;
 			}
 
@@ -3513,7 +3610,7 @@ namespace zetscript{
 						keyw2nd != KEYWORD_TYPE::FUNCTION_KEYWORD   // list of exceptional keywords...
 				  ){
 
-					zs_print_error_cr("unexpected keyword \"%s\" at line %i",defined_keyword[keyw2nd].str, m_line);
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"unexpected keyword \"%s\"",defined_keyword[keyw2nd].str);
 					error = true;
 					return NULL;
 				}
@@ -3585,7 +3682,7 @@ namespace zetscript{
 							return aux;
 						}
 						else{
-							zs_print_error_cr("unexpected \"break\" at line %i",m_line);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"unexpected \"break\"");
 							error=true;
 							return NULL;
 						}
@@ -3651,7 +3748,7 @@ namespace zetscript{
 
 						if(*end_expr != ';'){
 							error = true;
-							zs_print_error_cr("Expected ';' at expression starting at line %i",starting_expression);
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,starting_expression,"Expected ';' at expression starting ");
 							return NULL;
 						}
 						end_expr++;
@@ -3704,6 +3801,9 @@ namespace zetscript{
 			defined_operator_punctuator[LOGIC_LT_PUNCTUATOR]={LOGIC_LT_PUNCTUATOR, "<",parseLogicLessThanPunctuator};
 			defined_operator_punctuator[LOGIC_GTE_PUNCTUATOR]={LOGIC_GTE_PUNCTUATOR, ">=",parseLogicGreatherEqualThanPunctuator};
 			defined_operator_punctuator[LOGIC_LTE_PUNCTUATOR]={LOGIC_LTE_PUNCTUATOR, "<=",parseLessEqualThanPunctuator};
+			defined_operator_punctuator[INSTANCEOF_PUNCTUATOR]={INSTANCEOF_PUNCTUATOR, "instanceof",parseInstanceOfPunctuator};
+
+
 			defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR]={LOGIC_NOT_PUNCTUATOR, "!",parseNotPunctuator};
 			defined_operator_punctuator[PRE_INC_PUNCTUATOR]={PRE_INC_PUNCTUATOR, "++",parseIncPunctuator};
 			defined_operator_punctuator[PRE_DEC_PUNCTUATOR]={PRE_DEC_PUNCTUATOR, "--",parseDecPunctuator};
@@ -3728,6 +3828,7 @@ namespace zetscript{
 			defined_keyword[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else",NULL};
 			defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",parseFor};
 			defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",parseWhile};
+			defined_keyword[KEYWORD_TYPE::DO_WHILE_KEYWORD] = {DO_WHILE_KEYWORD,"do",parseDoWhile}; // while is expected in the end ...
 
 			defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",parseSwitch};
 			defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
@@ -3757,6 +3858,7 @@ namespace zetscript{
 		idxScope = ZS_UNDEFINED_IDX;
 
 		is_packed_node = false;
+		idxFilename = ZS_UNDEFINED_IDX;
 
 	}
 

@@ -27,43 +27,19 @@ namespace zetscript{
 						case STK_PROPERTY_TYPE_BOOLEAN:
 						case STK_PROPERTY_TYPE_STRING:
 						case STK_PROPERTY_TYPE_FUNCTION:
-							zetscript::zs_print_error_cr("type not implemented to cast. Sorry.");
+							zs_print_error_cr("type not implemented to cast. Sorry.");
 							return v_out;
 							break;
 						case STK_PROPERTY_TYPE_INTEGER:
 							if((typestr == typeid(int).name())){
 								v_out.push_back((intptr_t)sv.stkValue);
 							}else{
-								zetscript::zs_print_error_cr("Error trying to cast element on vector<int>");
+								zs_print_error_cr("Error trying to cast element on vector<int>");
 								return v_out;
 							}
 							break;
 
 					}
-
-					/*if((typestr == typeid(int).name())  && (se->properties & STK_PROPERTY_TYPE_INTEGER)){
-						ptr = &value;
-						*((intptr_t *)ptr) = (intptr_t)se->stkValue;
-					}
-					else if((typestr == typeid(float).name())  && (se->properties & STK_PROPERTY_TYPE_NUMBER)){
-						ptr = &value;
-						memcpy(ptr,&se->stkValue,sizeof(float));
-					}
-					else if((typestr == typeid(string).name())  && (se->properties & STK_PROPERTY_TYPE_STRING)){
-						ptr=&value;
-						*((string *)ptr) = *((string *)se->stkValue);
-					}
-					else if((typestr == typeid(bool).name())  && (se->properties & STK_PROPERTY_TYPE_BOOLEAN)){
-						value = (bool)se->stkValue;
-					}
-					else{
-						fprintf(stderr,"eval<%s>(...): Error evaluating \"%s\". Property:0x%X",typestr.c_str(),str_to_eval.c_str(),se->properties);
-						exit(-1);
-					}*/
-
-
-
-
 				}
 			}
 
@@ -76,18 +52,13 @@ namespace zetscript{
 		vector<tStackElement> m_objVector;
 
 		CVectorScriptVariable();
-		//CVectorScriptVariable(CScriptClass *info_registered_class);
+
 		virtual bool unrefSharedPtr();
 		virtual bool initSharedPtr(bool is_assigned=false);
-		//void add(const tStackElement  & v);
+
 		void add(tStackElement  * v);
 		void pop();
-	//	void add(int * v);
-	//	void add(bool * v);
-	//	void add( string * v);
-	//	void add(float * v);
 		tStackElement *push();
-	//	void add(CScriptVariable * v);
 		int size();
 
 

@@ -27,10 +27,14 @@ namespace zetscript{
 
 		if(idxFunction != -1 && idxFunction<(int)vec_script_function_object_node->size()){
 
+
 			tInfoVariableSymbol irs;
 			CScriptFunctionObject *irc = vec_script_function_object_node->at(idxFunction);
 
+
 			irs.idxSymbol = (short)irc->object_info.local_symbols.m_registeredVariable.size();
+
+
 			irc->object_info.local_symbols.m_registeredVariable.push_back(irs);
 			return &irc->object_info.local_symbols.m_registeredVariable[irc->object_info.local_symbols.m_registeredVariable.size()-1];
 		}

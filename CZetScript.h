@@ -12,10 +12,16 @@
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
+#define GET_AST_FILENAME_LINE(_idx_ast_)   AST_FILENAME(_idx_ast_),AST_LINE(_idx_ast_)
+#define ZS_WRITE_ERROR_MSG 		CZetScript::writeErrorMsg
+#define ZS_GET_ERROR_MSG		CZetScript::getErrorMsg
+#define ZS_CLEAR_ERROR_MSG		CZetScript::clearErrorMsg
+
 #define MAX_BUFFER_STR_ERROR	4096
-#define MAX_BUFFER_AUX_TMP		1024
+#define MAX_BUFFER_AUX_TMP		4096
 
 
+#define ZS_GET_ERROR "¡¡¡not implemented error handling!!"
 
 namespace zetscript{
 
@@ -42,7 +48,8 @@ namespace zetscript{
 
 
 		bool isFilenameAlreadyParsed(const char *filename);
-		bool parse_ast(const char *str);
+
+		bool parse_ast(const char *str, const char *filename=NULL);
 
 
 		static CZetScript * m_instance;
@@ -61,7 +68,11 @@ namespace zetscript{
 
 		static CZetScript * getInstance();
 		static void setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles);
-		static void write_error(const  char  *string_text, ...);
+
+		static void clearErrorMsg();
+		static void writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+		static const char * getErrorMsg();
+		const char * getParsedFilenameFromIdx(unsigned idx);
 
 		template<typename _R>
 		static _R eval(const string & str_to_eval){
@@ -77,7 +88,7 @@ namespace zetscript{
 			if(zetscript->eval(str_to_eval)){
 
 
-				if(zetscript->execute()){
+				//if(zetscript->execute()){
 
 					tStackElement *se=CURRENT_VM->getLastStackValue();
 
@@ -93,10 +104,10 @@ namespace zetscript{
 						}
 						else if((typestr == typeid(string).name())  && (se->properties & STK_PROPERTY_TYPE_STRING)){
 							ptr=&value;
-							*((string *)ptr) = *((string *)se->stkValue);
+							*((string *)ptr) = ((const char *)se->stkValue);
 						}
 						else if((typestr == typeid(bool).name())  && (se->properties & STK_PROPERTY_TYPE_BOOLEAN)){
-							value = (bool)se->stkValue;
+							memcpy(&value, &se->stkValue, sizeof(bool));
 						}
 						else{
 							fprintf(stderr,"eval<%s>(...): Error evaluating \"%s\". Property:0x%X",typestr.c_str(),str_to_eval.c_str(),se->properties);
@@ -105,7 +116,7 @@ namespace zetscript{
 
 
 					}
-				}
+				//}
 			}
 
 			return value;
@@ -141,7 +152,7 @@ namespace zetscript{
 
 		CScriptVariable * execute();
 
-		bool eval(const string & string, bool execute=true);
+		bool eval(const string & string, bool execute=true, const char *filename=NULL);
 		bool eval_file(const char * filename);
 
 	
