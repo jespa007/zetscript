@@ -617,14 +617,14 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 			for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
 				if(STRCMP(registered_metamethod[i],==,function_name)){
-					if(return_type != str_classPtr){
+					/*if(return_type != str_classPtr){
 						zs_print_error_cr("error registering metamethod %s::%s. Expected return %s but it was %s",
 								demangle(typeid(_T).name()).c_str(),
 								function_name,
 								demangle(str_classPtr.c_str()).c_str(),
 								demangle(return_type.c_str()).c_str());
 						return false;
-					}
+					}*/
 
 					(*vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
 

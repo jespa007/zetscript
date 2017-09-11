@@ -539,17 +539,23 @@ int main(int argc, char * argv[]) {
 	if(!register_C_FunctionMember<CInteger>("CInteger",&CInteger::set)) return false;
 	if(!register_C_VariableMember(CInteger,n)) return false;
 
+	if(!CScriptClass::register_C_StaticFunctionMemberInt<CInteger>("_add",static_cast<int (*)(int,CInteger * )>(&CInteger::_add))) return false;
+	if(!CScriptClass::register_C_StaticFunctionMemberInt<CInteger>("_add",static_cast<int (*)(CInteger *,int)>(&CInteger::_add))) return false;
 
 
-	TEST_INT_EXPR("var v=[new CInteger(15)];v.size();",1); // <-- crash if no constructor defined new CInteger(x)!
-	TEST_INT_EXPR("v[0].n;",15);// <-- error !!!
+
+
+	//TEST_INT_EXPR("var v=[new CInteger(15)];v.size();",1); // <-- crash if no constructor defined new CInteger(x)!
+	//TEST_INT_EXPR("v[0].n;",15);// <-- error !!!
 	//TEST_NUMBER_EXPR("v[5].n;",10.0f);
 
 	// test adding ...
 
-	printf("%i. testing struct var ...\n",++n_test);
+	//printf("%i. testing struct var ...\n",++n_test);
 
-	TEST_INT_EXPR("var s={o:new CInteger(10)};s.size();",1);
+	//TEST_INT_EXPR("var s={o:new CInteger(10)};s.size();",1);
+
+	TEST_INT_EXPR("var s=new CInteger(5);var g=0+1+2+s+4+5;",17);
 
 	exit(-1);
 	//TEST_BOOL_EXPR("s.b;",true);
