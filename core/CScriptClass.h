@@ -31,14 +31,14 @@
 #define register_C_Class 						zetscript::CScriptClass::register_C_ClassInt
 #define register_C_SingletonClass				zetscript::CScriptClass::register_C_SingletonClassInt
 
-#define register_C_VariableMember(o,s) 			zetscript::CScriptClass::register_C_VariableMemberInt<o, decltype(o::s)>(STR(s),zetscript::offset_of(&o::s))
+#define register_C_VariableMember	 			zetscript::CScriptClass::register_C_VariableMemberInt
 #define register_C_FunctionMember				zetscript::CScriptClass::register_C_FunctionMemberInt //<o>(s,&f)
 #define class_C_baseof							zetscript::CScriptClass::class_C_baseofInt //<o>(s,&f)
 
 
 
 #define register_C_StaticFunctionMember			zetscript::CScriptClass::register_C_StaticFunctionMemberInt
-#define register_C_FunctionMemberCast(o,s,f)	zetscript::CScriptClass::register_C_FunctionMemberInt<o>(STR(s),static_cast<f>(&o::s))
+
 
 
 #define GET_MAIN_VARIABLE(idx_var)				zetscript::CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
@@ -462,8 +462,8 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		/**
 		 * Register C Member function Class
 		 */
-		template <class _T, typename F>
-		static bool register_C_FunctionMemberInt(const char *function_name,F function_type)
+		template < typename _R, class _T, typename..._A>
+		static bool register_C_FunctionMemberInt(const char *function_name,_R (_T:: *function_type)(_A...) )
 		{
 			string return_type;
 			vector<string> params;
@@ -541,8 +541,8 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		/**
 		 * Register C Member function Class
 		 */
-		template <class _T, typename F>
-		static bool register_C_StaticFunctionMemberInt(const char *function_name,F function_type)
+		template < class _T, typename _F>
+		static bool register_C_StaticFunctionMemberInt(const char *function_name,_F function_type)
 		{
 			string return_type;
 			vector<string> params;
@@ -639,14 +639,16 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 		/**
 		 * Register C Member var
 		 */
-		template <class _T, typename _V>
-		static bool register_C_VariableMemberInt(const char *var_name, unsigned int offset)
+		//<o, decltype(o::s)>(STR(s),zetscript::offset_of(&o::s)) &CVar::mierda
+		template <typename _R,typename _T>
+		static bool register_C_VariableMemberInt(const char *var_name, _R _T::*var_pointer) //unsigned int offset)
 		{
-			string var_type = typeid(_V *).name(); // we need the pointer type ...
+			string var_type = typeid(_R *).name(); // we need the pointer type ...
 			string return_type;
 			vector<string> params;
 			tInfoVariableSymbol irs;
 			string str_classPtr = typeid( _T *).name();
+			unsigned int offset=zetscript::offset_of(var_pointer);
 
 			int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
 
@@ -658,7 +660,10 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 			// check valid parameters ...
 			if(getIdxClassFromIts_C_Type(var_type) == -1){
-				zs_print_error_cr("%s::%s has not valid type (%s)",(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str(),var_name,demangle(typeid(_V).name()).c_str());
+				zs_print_error_cr("%s::%s has not valid type (%s)"
+						,(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str()
+						,var_name
+						,demangle(typeid(_R).name()).c_str());
 				return false;
 			}
 
