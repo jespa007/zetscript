@@ -423,7 +423,7 @@ namespace zetscript{
 			// From here you defined all basic, start define hierarchy
 
 			// register custom functions ...
-			if(!register_C_FunctionMember<CScriptVariable>("toString",&CScriptVariable::toString)) return false;
+			if(!register_C_FunctionMember("toString",&CScriptVariable::toString)) return false;
 
 			if(!class_C_baseof<CVectorScriptVariable,CScriptVariable>()) return false;
 			if(!class_C_baseof<CFunctorScriptVariable,CScriptVariable>()) return false;
@@ -436,12 +436,12 @@ namespace zetscript{
 			if(!register_C_Function("print",print)) return false;
 
 
-			if(!register_C_FunctionMember<CVectorScriptVariable>("size",&CVectorScriptVariable::size)) return false;
-			if(!register_C_FunctionMember<CVectorScriptVariable>("add",&CVectorScriptVariable::add)) return false;
-			if(!register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop)) return false;
+			if(!register_C_FunctionMember("size",&CVectorScriptVariable::size)) return false;
+			if(!register_C_FunctionMember("add",&CVectorScriptVariable::add)) return false;
+			if(!register_C_FunctionMember("pop",&CVectorScriptVariable::pop)) return false;
 
 
-			if(!register_C_FunctionMember<CStructScriptVariable>("size",&CStructScriptVariable::size)) return false;
+			if(!register_C_FunctionMember("size",&CStructScriptVariable::size)) return false;
 			return true;
 	 }
 

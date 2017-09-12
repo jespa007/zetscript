@@ -528,19 +528,19 @@ int main(int argc, char * argv[]) {
 	//CZetScript::eval<int>("10-*10");
 	//int i= 0+ +1;
 	if(!register_C_Class<CNumber>("CNumber")) return false;
-	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
-	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(float )>(&CNumber::set))) return false;
-	if(!register_C_VariableMember(CNumber,n)) return false;
+	if(!register_C_FunctionMember("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
+	if(!register_C_FunctionMember("CNumber",static_cast<void (CNumber::*)(float )>(&CNumber::set))) return false;
+	if(!register_C_VariableMember("n",&CNumber::n)) return false;
 	/*if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,int )>(&CNumber::_add))) return false;
 	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add))) return false;
 	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber  *)>(&CNumber::_add))) return false;*/
 
 	if(!register_C_Class<CInteger>("CInteger")) return false;
-	if(!register_C_FunctionMember<CInteger>("CInteger",&CInteger::set)) return false;
-	if(!register_C_VariableMember(CInteger,n)) return false;
+	if(!register_C_FunctionMember("CInteger",&CInteger::set)) return false;
+	if(!register_C_VariableMember("n",&CInteger::n)) return false;
 
-	if(!CScriptClass::register_C_StaticFunctionMemberInt<CInteger>("_add",static_cast<int (*)(int,CInteger * )>(&CInteger::_add))) return false;
-	if(!CScriptClass::register_C_StaticFunctionMemberInt<CInteger>("_add",static_cast<int (*)(CInteger *,int)>(&CInteger::_add))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<int (*)(int,CInteger * )>(&CInteger::_add))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<int (*)(CInteger *,int)>(&CInteger::_add))) return false;
 
 
 
