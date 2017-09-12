@@ -536,7 +536,7 @@ namespace zetscript{
 			ps.filename = file;
 			//ps.data = buf_tmp;
 
-			status = eval((char *)buf_tmp, false, file.c_str());
+			status = eval((char *)buf_tmp, true, file.c_str());
 
 			free(buf_tmp);
 		}
