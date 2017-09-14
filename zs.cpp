@@ -20,7 +20,9 @@ int main(int argc, char * argv[]) {
 	}
 
 	//if (
-			zetscript->eval_file(argv[1]);
+			if(!zetscript->eval_file(argv[1])){
+				fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
+			}
 	 //  )
 //	{
 //		zetscript->execute();
