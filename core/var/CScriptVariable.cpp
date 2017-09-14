@@ -77,6 +77,7 @@ namespace zetscript{
 		c_class_create_destroy=NULL;
 		idxScriptClass = -1;
 		aux_string ="";
+		destroyable = true;
 
 	}
 
@@ -90,8 +91,10 @@ namespace zetscript{
 		this->m_infoRegisteredClass = irv;
 		idxScriptClass = irv->idxClass;
 		c_object = _c_object;
+		destroyable = true;
+		c_class_create_destroy=irv;
 
-		if(c_object == NULL){
+		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (c_class_create_destroy) to get needed info to destroy create the C++ object.
 
 			if(m_infoRegisteredClass->baseClass.size()==1){ // is the first!
 				CScriptClass *base = m_infoRegisteredClass->baseClass[0];
@@ -108,6 +111,7 @@ namespace zetscript{
 
 		}else{ // not null initialize the class anyway...
 			//c_class_create_destroy=m_infoRegisteredClass;
+			destroyable = false;
 		}
 
 		// only create symbols if not string type to make it fast ...
@@ -362,7 +366,9 @@ namespace zetscript{
 	void CScriptVariable::destroy(bool delete_user_request){
 		if(created_object != 0){
 			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request){ // only erases pointer if vector/struct, etc ...
-			 (*c_class_create_destroy->c_destructor)(created_object);
+				if(destroyable){
+					(*c_class_create_destroy->c_destructor)(created_object);
+				}
 			}
 		}
 

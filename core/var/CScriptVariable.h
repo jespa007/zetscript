@@ -71,6 +71,7 @@ namespace zetscript{
 		 */
 		CScriptClass *m_infoRegisteredClass;
 		CScriptClass *c_class_create_destroy;
+		bool destroyable;
 
 
 

@@ -1,6 +1,6 @@
 #include "../../CZetScript.h"
 
-#define MAX_METAMETHOD_ARGS 2
+#define METAMETHOD_ARGS 2
 
 namespace zetscript{
 //CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
@@ -9,7 +9,7 @@ namespace zetscript{
 
 	#define COPY_NUMBER(d,s)  memcpy((d),(s),sizeof(float))
 
-
+/*
 	// general
 	#define PRINT_DUAL_ERROR_OP(c)\
 	string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
@@ -21,7 +21,7 @@ namespace zetscript{
 			var_type2.c_str());\
 			return NULL;
 
-
+*/
 
 	#define LOAD_INT_OP(ptr_result_instruction) \
 			(((intptr_t)(ptr_result_instruction->stkValue)))
@@ -178,8 +178,7 @@ namespace zetscript{
 				PUSH_NUMBER(fmod(f_aux_value1 , f_aux_value2));\
 		}\
 		else{\
-			APPLY_METAMETHOD(MOD_METAMETHOD);\
-			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
+			APPLY_METAMETHOD(%,MOD_METAMETHOD);\
 		}\
 	}
 
@@ -204,8 +203,7 @@ namespace zetscript{
 				PUSH_NUMBER(f_aux_value1 __OVERR_OP__ f_aux_value2);\
 		}\
 		else{\
-			APPLY_METAMETHOD(__METAMETHOD__);\
-			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
+			APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__);\
 		}\
 	}
 
@@ -233,8 +231,7 @@ namespace zetscript{
 				PUSH_BOOLEAN(f_aux_value1 __OVERR_OP__ f_aux_value2);\
 		}\
 		else{\
-			APPLY_METAMETHOD(__METAMETHOD__);\
-			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
+			APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__);\
 		}\
 	}
 
@@ -246,8 +243,7 @@ namespace zetscript{
 		if(properties==STK_PROPERTY_TYPE_BOOLEAN){\
 			PUSH_BOOLEAN(LOAD_BOOL_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_BOOL_OP(ptrResultInstructionOp2));\
 		}else{\
-			APPLY_METAMETHOD(__METAMETHOD__);\
-			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
+			APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__);\
 		}\
 	}
 
@@ -257,8 +253,7 @@ namespace zetscript{
 		if(properties==STK_PROPERTY_TYPE_INTEGER){\
 			PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2));\
 		}else{\
-			APPLY_METAMETHOD(__METAMETHOD__);\
-			PRINT_DUAL_ERROR_OP(#__OVERR_OP__);\
+			APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__);\
 		}\
 	}
 
@@ -439,75 +434,118 @@ namespace zetscript{
 
 	#define CALL_GC SHARED_LIST_DESTROY(zero_shares[idxCurrentStack])
 
-	#define APPLY_METAMETHOD(DEF_METAMETHOD) \
-		script_class_aux=NULL; \
-		vec_global_functions=NULL; \
-		bool mm_test_is_c = false;\
-		tStackElement *mm_test_startArg = ptrCurrentOp+MAX_METAMETHOD_ARGS; \
-		aux_function_info = NULL; \
-		\
-		\
-		\
-		if((ptrResultInstructionOp1->properties ) == (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)){ /* check whether the first op1 is a script var ... */ \
-			/* 0. Check pre condition ...*/ \
-			if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ /* search for first time , else the function is stored in index_op2 */ \
-		\
-				CScriptVariable *v1 = (CScriptVariable *)(((tStackElement *)(ptrResultInstructionOp1->varRef))->varRef);\
+	#define APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__) \
+		tStackElement *mm_test_startArg = ptrCurrentOp+METAMETHOD_ARGS; \
+		if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ /* search for first time , else the function is stored in index_op2 */ \
+			script_class_aux=NULL; \
+			vec_global_functions=NULL; \
+			bool mm_test_is_c = false;\
+			aux_function_info = NULL; \
+			CScriptVariable *v1 = NULL;\
+			\
+			\
+			\
+			if(((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){\
+				v1 = (CScriptVariable *)(ptrResultInstructionOp1->varRef);\
+				if(((ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){\
+					v1 = (CScriptVariable *)(((tStackElement *)v1))->varRef;\
+				}\
+			}else if(((ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){\
+				v1 = (CScriptVariable *)(ptrResultInstructionOp2->varRef);\
+				if(((ptrResultInstructionOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){\
+					v1 = (CScriptVariable *)(((tStackElement *)v1))->varRef;\
+				}\
+			}else{\
+				string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
+						   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
+				\
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\"",\
+						var_type1.c_str(),\
+						"+",\
+						var_type2.c_str());\
+				return NULL;\
+			}\
 		\
 				mm_test_is_c = v1->is_c_object();\
 		\
 				script_class_aux=REGISTERED_CLASS_NODE(v1->idxScriptClass);\
-				vec_global_functions=&script_class_aux->metamethod_operator[DEF_METAMETHOD];\
+				vec_global_functions=&script_class_aux->metamethod_operator[ADD_METAMETHOD];\
 				int size_fun_vec = vec_global_functions->size()-1;\
 		\
 				for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ /* search all function that match symbol ... */ \
-					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i)); \
+					CScriptFunctionObject *irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i)); \
 					/* we found a function is match ... */ \
 					if(mm_test_is_c){ /* C! Must match args... */ \
 							bool all_check=true; /* check arguments types ...*/ \
 							/* convert parameters script to c...*/ \
-								for( int k = 0; k < MAX_METAMETHOD_ARGS && all_check;k++){ \
-									tStackElement *currentArg=&(mm_test_startArg-MAX_METAMETHOD_ARGS)[k]; \
-									if(currentArg->properties & STK_PROPERTY_IS_STACKVAR){ \
-										currentArg = (tStackElement *)currentArg->varRef; \
-									} \
+								for( int k = 0; k < METAMETHOD_ARGS && all_check;k++){ \
+									tStackElement *currentArg=&(mm_test_startArg-METAMETHOD_ARGS)[k]; \
+									if(irfs->m_arg[k]==*CScriptClass::STACK_ELEMENT_PTR){ /* // do nothing because is already trivial !*/\
+									}else{\
+										if(currentArg->properties & STK_PROPERTY_IS_STACKVAR){ \
+											currentArg = (tStackElement *)currentArg->varRef; \
+										} \
+									}\
 									unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties); \
-									switch(var_type){ \
-									default: \
-										aux_string="unknow"; \
-										break; \
-									case STK_PROPERTY_TYPE_INTEGER: \
-										aux_string=*CScriptClass::INT_PTR_TYPE_STR; \
-										break; \
-									case STK_PROPERTY_TYPE_NUMBER: \
-										aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR; \
-										break; \
-									case STK_PROPERTY_TYPE_BOOLEAN: \
-										aux_string=*CScriptClass::BOOL_PTR_TYPE_STR; \
-										break; \
-									case STK_PROPERTY_TYPE_STRING: \
-										aux_string=*CScriptClass::STRING_PTR_TYPE_STR; \
-										break; \
-									case STK_PROPERTY_TYPE_NULL: \
-									case STK_PROPERTY_TYPE_UNDEFINED: \
-									case STK_PROPERTY_TYPE_SCRIPTVAR: \
-									case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING: \
-										aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName(); \
-										break; \
-									} \
-									all_check = aux_string==sfo->m_arg[k]; \
-									if(!all_check){ \
-										/* let's see whether it can be coneverted to target signature ... */ \
-										all_check =CScriptClass::getConversionType(aux_string,sfo->m_arg[k], false)!=NULL; \
-									} \
+									switch(var_type){\
+									default:\
+										aux_string="unknow";\
+										all_check=false;\
+										break;\
+									case STK_PROPERTY_TYPE_INTEGER:\
+										aux_string=*CScriptClass::INT_PTR_TYPE_STR;\
+										all_check=\
+												irfs->m_arg[k]==*CScriptClass::INT_PTR_TYPE_STR\
+											  ||irfs->m_arg[k]==*CScriptClass::INT_TYPE_STR;\
+										break;\
+									case STK_PROPERTY_TYPE_NUMBER:\
+										aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;\
+										all_check=irfs->m_arg[k]==*CScriptClass::FLOAT_PTR_TYPE_STR\
+												||irfs->m_arg[k]==*CScriptClass::FLOAT_TYPE_STR;\
+										break;\
+									case STK_PROPERTY_TYPE_BOOLEAN:\
+										aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;\
+										all_check=\
+												irfs->m_arg[k]==*CScriptClass::BOOL_PTR_TYPE_STR\
+											  ||irfs->m_arg[k]==*CScriptClass::BOOL_TYPE_STR;\
+										break;\
+									case STK_PROPERTY_TYPE_STRING:\
+										aux_string=*CScriptClass::STRING_PTR_TYPE_STR;\
+										all_check =\
+												(irfs->m_arg[k]==*CScriptClass::STRING_PTR_TYPE_STR && currentArg->varRef!=0)\
+											  ||irfs->m_arg[k]==*CScriptClass::CONST_CHAR_PTR_TYPE_STR;\
+										break;\
+									case STK_PROPERTY_TYPE_NULL:\
+									case STK_PROPERTY_TYPE_UNDEFINED:\
+									case STK_PROPERTY_TYPE_SCRIPTVAR:\
+									case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:\
+										var_object=((CScriptVariable *)currentArg->varRef);\
+										aux_string=var_object->getPointer_C_ClassName();\
+										if(irfs->m_arg[k]==aux_string){\
+											all_check=true;\
+										}\
+										else{\
+											CScriptClass *c_class=NULL;\
+											if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */\
+												all_check=irfs->m_arg[k]==c_class->classPtrType;\
+											}else{ /* check string ...*/\
+												if(var_type & STK_PROPERTY_TYPE_STRING){\
+													all_check=irfs->m_arg[k]==*CScriptClass::STRING_PTR_TYPE_STR;\
+												}else{\
+													all_check=false;\
+												}\
+											}\
+										}\
+										break;\
+									}\
 								} \
 								if(all_check){ /* we found the right function (set it up!) ... */ \
 									instruction->index_op2 = i; \
-									aux_function_info = sfo; \
+									aux_function_info = irfs; \
 								} \
 					}else{ /* type script function  ... */ \
-						instruction->index_op2=(intptr_t)sfo; \
-						aux_function_info = sfo; \
+						instruction->index_op2=(intptr_t)irfs; \
+						aux_function_info = irfs; \
 					} \
 				} \
 				\
@@ -545,30 +583,28 @@ namespace zetscript{
 								str_candidates.c_str()); \
 						 \
 						return NULL; \
-		 		} \
-				  \
-			}else{ \
-				aux_function_info = (CScriptFunctionObject *)instruction->index_op2; \
-			} \
-			  \
-			/* by default virtual machine gets main object class in order to run functions ... */ \
-			if((ret_obj=execute_internal(aux_function_info,this_object,mm_test_startArg,ptrCurrentStr,MAX_METAMETHOD_ARGS))==NULL){ \
-				return NULL; \
-			} \
-			  \
-			/* restore ptrCurretOp... */ \
-			ptrCurrentOp=mm_test_startArg-2; \
-			/* if function is C must register pointer ! */ \
-			  \
-			if(ret_obj->properties & STK_PROPERTY_TYPE_SCRIPTVAR){ \
-			  \
-				if(!((CScriptVariable *)(ret_obj->varRef))->initSharedPtr()){ \
-					return NULL; \
 				} \
+		}else{ \
+			aux_function_info = (CScriptFunctionObject *)instruction->index_op2; \
+		} \
+		/* by default virtual machine gets main object class in order to run functions ... */ \
+		if((ret_obj=execute_internal(aux_function_info,this_object,mm_test_startArg,ptrCurrentStr,METAMETHOD_ARGS))==NULL){ \
+				return NULL; \
+		} \
+		\
+		/* restore ptrCurretOp... */ \
+		ptrCurrentOp=mm_test_startArg-2; \
+		/* if function is C must register pointer ! */ \
+		 \
+		if(ret_obj->properties & STK_PROPERTY_TYPE_SCRIPTVAR){ \
+		\
+			if(!((CScriptVariable *)(ret_obj->varRef))->initSharedPtr()){ \
+					return NULL; \
 			} \
-			*ptrCurrentOp++ = *ret_obj; \
-			continue; \
-		}
+		} \
+		*ptrCurrentOp++ = *ret_obj; \
+		continue;\
+
 
 	string CVirtualMachine::STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement *ptr_info_ale){
 		string result="undefined";
@@ -2038,9 +2074,7 @@ namespace zetscript{
 					}
 					else{ // try metamethod ...
 
-						APPLY_METAMETHOD(ADD_METAMETHOD);
-
-						PRINT_DUAL_ERROR_OP(+);
+						APPLY_METAMETHOD(+,ADD_METAMETHOD);
 					}
 				}
 					continue;

@@ -88,21 +88,21 @@ public:
 		n=_n;
 	}
 
-	static int _add(CInteger *n1, CInteger *n2){
-		return n1->n + n2->n;
+	static CInteger * _add(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n + n2->n);
 	}
 
-	static int _add(CInteger *n1, float n2){
-		return (int)(n1->n + n2);
+	static CInteger * _add(CInteger *n1, float n2){
+		return new CInteger((int)(n1->n + n2));
 	}
 
-	static int _add(CInteger *n1, int n2){
-		return n1->n + n2;
+	static CInteger * _add(CInteger *n1, int n2){
+		return new CInteger(n1->n + n2);
 	}
 
-	static int _add(int n1, CInteger * n2){
-		return n1 + n2->n;
-	}
+	/*static CInteger * _add(int n1, CInteger * n2){
+		return new CInteger(n1 + n2->n);
+	}*/
 
 	static CInteger * _div(CInteger *n1, CInteger *n2){
 		return new CInteger(n1->n / n2->n);
@@ -539,8 +539,8 @@ int main(int argc, char * argv[]) {
 	if(!register_C_FunctionMember("CInteger",&CInteger::set)) return false;
 	if(!register_C_VariableMember("n",&CInteger::n)) return false;
 
-	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<int (*)(int,CInteger * )>(&CInteger::_add))) return false;
-	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<int (*)(CInteger *,int)>(&CInteger::_add))) return false;
+	//if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return false;
 
 
 
