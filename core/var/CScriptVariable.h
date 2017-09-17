@@ -27,10 +27,17 @@ namespace zetscript{
 
 		// Construct ...
 		CScriptVariable();
+
+		/**
+		 * info_registered_class: scriptclass info
+		 * _c_object: pass C object reference (is not delete_c_object by default)
+		 */
 		void init(CScriptClass *info_registered_class, void *  _c_object);
 
 
 		bool setIdxClass(int idx);
+		bool itHasSetMetamethod();
+		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
 
 		tSymbolInfo * addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv=NULL);
 		tSymbolInfo * getVariableSymbol(const string & varname);
@@ -70,8 +77,8 @@ namespace zetscript{
 		 * This variable tells whether is pointer function or not.
 		 */
 		CScriptClass *m_infoRegisteredClass;
-		CScriptClass *c_class_create_destroy;
-		bool destroyable;
+		CScriptClass *c_scriptclass_info;
+		bool delete_c_object;
 
 
 

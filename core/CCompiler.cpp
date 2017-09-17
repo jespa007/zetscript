@@ -669,8 +669,8 @@ namespace zetscript{
 		}
 
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->index_op1 = left_index;//&(this->m_currentFunctionInfo->stament[dest_statment]);
-		asm_op->index_op2 =  right_index;
+		asm_op->index_op1 = ZS_UNDEFINED_IDX;//&(this->m_currentFunctionInfo->stament[dest_statment]);
+		asm_op->index_op2 =  ZS_UNDEFINED_IDX;
 		asm_op->idxAstNode = idxAstNode;
 		//asm_op->symbol_name="";
 		asm_op->operator_type=ASM_OPERATOR::STORE;

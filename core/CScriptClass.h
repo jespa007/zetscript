@@ -618,12 +618,12 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 			for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
 				if(STRCMP(registered_metamethod[i],==,function_name)){
 					// check if they are gte,gt,equ, not_equ, lt, lte
-					if(  STRCMP(function_name, == ,"_equ")
-					  || STRCMP(function_name, ==, "_no_equ")
-					  || STRCMP(function_name, ==, "_lt")
-					  || STRCMP(function_name, ==, "_lte")
-					  || STRCMP(function_name, ==, "_gt")
-					  || STRCMP(function_name, ==, "_gte")
+					if(  i == EQU_METAMETHOD //STRCMP(function_name, == ,"_equ")
+					  || i == NOT_EQU_METAMETHOD //STRCMP(function_name, ==, "_nequ")
+					  || i == LT_METAMETHOD//STRCMP(function_name, ==, "_lt")
+					  || i == LTE_METAMETHOD//STRCMP(function_name, ==, "_lte")
+					  || i == GT_METAMETHOD//STRCMP(function_name, ==, "_gt")
+					  || i == GTE_METAMETHOD//STRCMP(function_name, ==, "_gte")
 					  ){
 						// return type must be bool...
 						if(STRCMP(return_type.c_str(), != ,typeid(bool).name())){
@@ -634,7 +634,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 							return false;
 
 						}
-					}else if(return_type != str_classPtr){
+					}else if((return_type != str_classPtr) && (i!= SET_METAMETHOD)){
 
 						zs_print_error_cr("error registering metamethod %s::%s. Expected return %s but it was %s",
 								demangle(typeid(_T).name()).c_str(),

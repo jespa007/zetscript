@@ -1,5 +1,7 @@
 var g=undefined;
 
+vvcx
+
 var s={
 	/*i:0+1,*/
 	j:"string1"/*,

@@ -26,5 +26,20 @@ test_switch(0);
 test_switch(3);
 test_switch(4);
 
+var s="hola";
+
+switch(s){
+default:
+	print("default-string");
+	break;
+case "hola":
+	print("hola1");
+	break;
+case "adeu":
+	print("adeu1");
+	break;
+	
+}
+
 
 

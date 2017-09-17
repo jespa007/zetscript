@@ -1476,13 +1476,13 @@ namespace zetscript{
 				}
 			}
 
+			int start_get_symbol_line=m_line;
 			// try get symbol string
 			if((aux=getSymbolValue(aux, m_line, scope_info,symbol_value, m_definedSymbolLine,pre_operator,post_operator,is_symbol_trivial_value)) == NULL){
 				return NULL;
 			}
 
 			print_ast_cr("checkpoint3:%c\n",*aux);
-
 
 			aux=IGNORE_BLANKS(aux, m_line);
 
@@ -1529,7 +1529,7 @@ namespace zetscript{
 						}
 					}
 				}else{
-					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,DUMMY_LINE,"expected operator or punctuator after \"%s\"",symbol_value.c_str());
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,start_get_symbol_line,"expected operator or punctuator after \"%s\"",symbol_value.c_str());
 					return NULL;
 				}
 			}
@@ -3060,6 +3060,7 @@ namespace zetscript{
 													case_value_node->keyword_info = key_w;
 													case_value_node->symbol_value = val;
 													case_value_node->line_value=m_line;
+													case_value_node->idxAstParent = group_cases->idxAstNode;
 													group_cases->children.push_back(case_value_node->idxAstNode);
 
 													if(key_w==DEFAULT_KEYWORD){ // save switch node ...

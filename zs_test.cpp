@@ -84,9 +84,18 @@ public:
 		n=_n;
 	}
 
-	void set(int _n){
+	void ScriptConstructor(int _n){
 		n=_n;
 	}
+
+	static void _set(CInteger  * _ci, int i){
+		_ci->n = i;
+	}
+
+	static void _set(CInteger  * _ci1, CInteger *_ci2){
+		_ci1->n = _ci2->n;
+	}
+
 
 	static CInteger * _add(CInteger *n1, CInteger *n2){
 		return new CInteger(n1->n + n2->n);
@@ -100,9 +109,9 @@ public:
 		return new CInteger(n1->n + n2);
 	}
 
-	/*static CInteger * _add(int n1, CInteger * n2){
+	static CInteger * _add(int n1, CInteger * n2){
 		return new CInteger(n1 + n2->n);
-	}*/
+	}
 
 	static CInteger * _div(CInteger *n1, CInteger *n2){
 		return new CInteger(n1->n / n2->n);
@@ -156,6 +165,9 @@ public:
 		return new CInteger(n1->n >> n2);
 	}
 
+	~CInteger(){
+	}
+
 };
 
 // Usable AlmostEqual function
@@ -164,12 +176,15 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
     // Make sure maxUlps is non-negative and small enough that the
     // default NAN won't compare as equal to anything.
     assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
-    int aInt = *(int*)&A;
+    //intptr_t aInt = *(int*)&A;
+    int aInt;
+    memcpy(&aInt,&A,sizeof(int));
     // Make aInt lexicographically ordered as a twos-complement int
-    if (aInt < 0)
-        aInt = 0x80000000 - aInt;
+    if ((int)aInt < 0)
+        aInt = (int)(0x80000000 - aInt);
     // Make bInt lexicographically ordered as a twos-complement int
-    int bInt = *(int*)&B;
+    int bInt;// = *(int*)&B;
+    memcpy(&bInt,&B,sizeof(int));
     if (bInt < 0)
         bInt = 0x80000000 - bInt;
     int intDiff = abs(aInt - bInt);
@@ -187,8 +202,9 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 				STR(op) \
 				STR(val2) \
 				";"; \
-	if((aux_value=CZetScript::eval<int>(str)) != (val1 op val2)){ \
+	if((aux_value=CZetScript::eval_int(str)) != (val1 op val2)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -201,8 +217,9 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 				STR(op) \
 				STR(val2) \
 				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval<float>(str),expr)){ \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str),expr)){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -215,8 +232,9 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 				val2\
 				";"; \
 	string expected_str = string(val1) op val2;\
-	if((aux_value=CZetScript::eval<string>(str))!=expected_str.c_str()){ \
+	if((aux_value=CZetScript::eval_string(str))!=expected_str.c_str()){ \
 		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value.c_str()); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -228,7 +246,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 				"%" \
 				STR(val2) \
 				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval<float>(str)  , fmod(val1,val2))){ \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str)  , fmod(val1,val2))){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
 		exit(-1); \
 	} \
@@ -304,6 +322,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 				";"; \
 	if((aux_value=CZetScript::eval<f>(str)) != (val1 op val2)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -313,8 +332,9 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 	int aux_value=0; \
 	string str_expr= STR(expr)";"; \
 	\
-	if((aux_value=CZetScript::eval<int>(str_expr))  != (expr)){ \
+	if((aux_value=CZetScript::eval_int(str_expr))  != (expr)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -323,8 +343,9 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 { \
 	int aux_value=0; \
 	\
-	if((aux_value=CZetScript::eval<int>(expr))  != (expected_value)){ \
+	if((aux_value=CZetScript::eval_int(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -333,8 +354,9 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 { \
 	bool aux_value=false; \
 	\
-	if((aux_value=CZetScript::eval<bool>(expr))  != (expected_value)){ \
+	if((aux_value=CZetScript::eval_bool(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -343,8 +365,9 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 { \
 	string aux_value=""; \
 	\
-	if((aux_value=CZetScript::eval<string>(expr))  != (expected_value)){ \
+	if((aux_value=CZetScript::eval_string(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,expected_value,aux_value.c_str()); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -353,8 +376,9 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 { \
 	float aux_value=0.0f; \
 	\
-	if((aux_value=CZetScript::eval<float>(expr))  != (expected_value)){ \
+	if((aux_value=CZetScript::eval_float(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -364,13 +388,15 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 	float aux_value=0; \
 	string str_expr= STR(expr)";"; \
 	\
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval<float>(str_expr)  , (expr))){ \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str_expr)  , (expr))){ \
 		double error = fabs(fabs(aux_value)-fabs(expr));\
 		if(error>0.001){ /* Only error if the difference is more than expected */\
 			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,aux_value); \
+			fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 			exit(-1); \
 		}else{\
 			fprintf(stderr,"warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n",str_expr.c_str(),expr,aux_value); \
+			fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		}\
 	} \
 }
@@ -380,8 +406,9 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
 	bool aux_value=false; \
 	string str= STR(val1) \
 				";"; \
-	if((aux_value=CZetScript::eval<bool>(str)) != (val1)){ \
+	if((aux_value=CZetScript::eval_bool(str)) != (val1)){ \
 		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",aux_value?"true":"false"); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
 }
@@ -503,29 +530,8 @@ int main(int argc, char * argv[]) {
 
 	//CZetScript::getInstance()->eval("if(undefined){print(\"true\");}else{print(\"\");} }var prova=[]; prova.add(0); prova.size();");
 
+	//TEST_NUMBER_EXPR("4.0*4;",16.0);
 	//exit(-1);
-
-	// test accessing script functions...
-	/*if(CZetScript::getInstance()->eval("class MyClass{\n"
-			"\n"
-			"function fun1(){"
-			" print(\"Hello from fun!\");"
-			"}"
-			"};\n;"
-			"var myclass=new MyClass();\n"
-			)){
-
-
-
-		auto fun=CZetScript::getInstance()->bind_function("myclass.fun1");
-
-		if(fun){
-			(*fun)(NO_PARAMS);
-		}
-	}*/
-	//TEST_ARITHMETIC_INT_OP(10,-,*10);
-
-	//CZetScript::eval<int>("10-*10");
 	//int i= 0+ +1;
 	if(!register_C_Class<CNumber>("CNumber")) return false;
 	if(!register_C_FunctionMember("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
@@ -536,38 +542,16 @@ int main(int argc, char * argv[]) {
 	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber  *)>(&CNumber::_add))) return false;*/
 
 	if(!register_C_Class<CInteger>("CInteger")) return false;
-	if(!register_C_FunctionMember("CInteger",&CInteger::set)) return false;
+	if(!register_C_FunctionMember("CInteger",&CInteger::ScriptConstructor)) return false;
 	if(!register_C_VariableMember("n",&CInteger::n)) return false;
 
-	//if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_set",static_cast<void (*)(CInteger *,int)>(&CInteger::_set))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_set",static_cast<void (*)(CInteger *,CInteger *)>(&CInteger::_set))) return false;
 
 
 
-
-	//TEST_INT_EXPR("var v=[new CInteger(15)];v.size();",1); // <-- crash if no constructor defined new CInteger(x)!
-	//TEST_INT_EXPR("v[0].n;",15);// <-- error !!!
-	//TEST_NUMBER_EXPR("v[5].n;",10.0f);
-
-	// test adding ...
-
-	//printf("%i. testing struct var ...\n",++n_test);
-
-	//TEST_INT_EXPR("var s={o:new CInteger(10)};s.size();",1);
-
-	TEST_INT_EXPR("var s=new CInteger(5);var g=0+1+2+s+4+5;",17);
-
-	exit(-1);
-	//TEST_BOOL_EXPR("s.b;",true);
-	//TEST_NUMBER_EXPR("s.n;",2.0);
-	//TEST_STRING_EXPR("s.s;","is_a_string");
-	/*TEST_INT_EXPR("var s={i:3,b:true,n:2.0,s:\"is_a_string\",v:[0,1,2],n2:new CNumber(5.0)};s.size();",6);
-	TEST_INT_EXPR("s.i;",3);
-	TEST_BOOL_EXPR("s.b;",true);
-	TEST_NUMBER_EXPR("s.n;",2.0);
-	TEST_STRING_EXPR("s.s;","is_a_string");*/
-	//TEST_NUMBER_EXPR("var n2=new CNumber(5);n2.n;",2.0);
-	//exit(-1);
 
 
 	// unsinged
@@ -628,7 +612,7 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_LOGIC_OP(10,15);
 
 	// some basics tests
-	TEST_ARITHMETIC_BOOL_EXPR(!false && !false || false);
+	TEST_ARITHMETIC_BOOL_EXPR(!false && !(false || false));
 	TEST_ARITHMETIC_BOOL_EXPR(!(true && !false) || false);
 	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
 
@@ -681,33 +665,11 @@ int main(int argc, char * argv[]) {
 	TEST_STRING_EXPR("s.s;","is_a_string");
 //	TEST_BOOL_EXPR("s.o.instanceof(MyObject);",true);
 
-
-
+	printf("%i. testing metamethod integer ...\n",++n_test);
+	TEST_INT_EXPR("var mt=new CInteger(5);mt=0+1+2+mt+4+5;mt.n;",17);
 
 	// test if-else
 
-/*
-
-
-
-
-
-
-
-
-	printf("2. testing arithmetic hexa...\n");
-
-
-
-	//------------------------------------------
-	//
-	// TEST FLOAT OPS
-	//
-
-
-	printf("3. testing arithmetic float ...\n");
-
-*/
 
 	printf("All tests passed OK!");
 

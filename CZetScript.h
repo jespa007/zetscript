@@ -8,7 +8,7 @@
 
 #define ZETSCRIPT_MAJOR_VERSION 1
 #define ZETSCRIPT_MINOR_VERSION 0
-#define ZETSCRIPT_PATCH_VERSION 10
+#define ZETSCRIPT_PATCH_VERSION 0
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
@@ -74,54 +74,10 @@ namespace zetscript{
 		static const char * getErrorMsg();
 		const char * getParsedFilenameFromIdx(unsigned idx);
 
-		template<typename _R>
-		static _R eval(const string & str_to_eval){
-
-			_R value = _R();
-			void *ptr=NULL;
-			string typestr = typeid(_R).name();
-
-
-			CZetScript *zetscript= CZetScript::getInstance();
-
-
-			if(zetscript->eval(str_to_eval)){
-
-
-				//if(zetscript->execute()){
-
-					tStackElement *se=CURRENT_VM->getLastStackValue();
-
-					if(se != NULL){
-
-						if((typestr == typeid(int).name())  && (se->properties & STK_PROPERTY_TYPE_INTEGER)){
-							ptr = &value;
-							*((intptr_t *)ptr) = (intptr_t)se->stkValue;
-						}
-						else if((typestr == typeid(float).name())  && (se->properties & STK_PROPERTY_TYPE_NUMBER)){
-							ptr = &value;
-							memcpy(ptr,&se->stkValue,sizeof(float));
-						}
-						else if((typestr == typeid(string).name())  && (se->properties & STK_PROPERTY_TYPE_STRING)){
-							ptr=&value;
-							*((string *)ptr) = ((const char *)se->stkValue);
-						}
-						else if((typestr == typeid(bool).name())  && (se->properties & STK_PROPERTY_TYPE_BOOLEAN)){
-							memcpy(&value, &se->stkValue, sizeof(bool));
-						}
-						else{
-							fprintf(stderr,"eval<%s>(...): Error evaluating \"%s\". Property:0x%X",typestr.c_str(),str_to_eval.c_str(),se->properties);
-							exit(-1);
-						}
-
-
-					}
-				//}
-			}
-
-			return value;
-
-		}
+		static int eval_int(const string & str_to_eval);
+		static bool eval_bool(const string & str_to_eval);
+		static float eval_float(const string & str_to_eval);
+		static string eval_string(const string & str_to_eval);
 
 		//---------------
 		// PRINT ASM INFO

@@ -330,26 +330,26 @@ namespace zetscript{
 			STACK_ELEMENT_PTR= new string(typeid(tStackElement *).name());
 
 			// register metamethods ...
-			strcpy(registered_metamethod[EQU_METAMETHOD],"_equ");  // ,,
-			strcpy(registered_metamethod[NOT_EQU_METAMETHOD],"_not_equ");  // !,
+			strcpy(registered_metamethod[EQU_METAMETHOD],"_equ");  // ==
+			strcpy(registered_metamethod[NOT_EQU_METAMETHOD],"_nequ");  // !=,
 			strcpy(registered_metamethod[LT_METAMETHOD],"_lt");  // <
-			strcpy(registered_metamethod[LTE_METAMETHOD],"_lte");  // <,
+			strcpy(registered_metamethod[LTE_METAMETHOD],"_lte");  // <=
 			strcpy(registered_metamethod[NOT_METAMETHOD],"_not"); // !
 			strcpy(registered_metamethod[GT_METAMETHOD],"_gt");  // >
-			strcpy(registered_metamethod[GTE_METAMETHOD],"_gte"); // >,
+			strcpy(registered_metamethod[GTE_METAMETHOD],"_gte"); // >=
+
+			strcpy(registered_metamethod[NEG_METAMETHOD],"_neg"); // -a, !a
 			strcpy(registered_metamethod[ADD_METAMETHOD],"_add"); // +
-			strcpy(registered_metamethod[NEG_METAMETHOD],"_neg"); // -a
-			strcpy(registered_metamethod[LOGIC_AND_METAMETHOD],"_land"); // &&
-			strcpy(registered_metamethod[LOGIC_OR_METAMETHOD],"_lor");  // ||
 			strcpy(registered_metamethod[DIV_METAMETHOD],"_div"); // /
 			strcpy(registered_metamethod[MUL_METAMETHOD],"_mul"); // *
 			strcpy(registered_metamethod[MOD_METAMETHOD],"_mod");  // %
-			strcpy(registered_metamethod[AND_METAMETHOD],"_and"); // bitwise logic and
-			strcpy(registered_metamethod[OR_METAMETHOD],"_or"); // bitwise logic or
-			strcpy(registered_metamethod[XOR_METAMETHOD],"_xor"); // logic xor
-			strcpy(registered_metamethod[SHL_METAMETHOD],"_shl"); // shift left
-			strcpy(registered_metamethod[SHR_METAMETHOD],"_shr"); // shift right
 
+			strcpy(registered_metamethod[AND_METAMETHOD],"_and"); // binary and
+			strcpy(registered_metamethod[OR_METAMETHOD],"_or"); //   binary or
+			strcpy(registered_metamethod[XOR_METAMETHOD],"_xor"); // binary xor
+			strcpy(registered_metamethod[SHL_METAMETHOD],"_shl"); // binary shift left
+			strcpy(registered_metamethod[SHR_METAMETHOD],"_shr"); // binary shift right
+			strcpy(registered_metamethod[SET_METAMETHOD],"_set"); // set
 			//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			//IDX_CLASS_MAIN=0, 	// Main class ...
 			//IDX_CLASS_UNDEFINED,	// 1
@@ -787,10 +787,10 @@ namespace zetscript{
 		 int idx_main_function = ((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 		 CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 		 zs_print_debug_cr("DEFINED CLASSES");
-		 vector<int>  mrf;
+		 vector<int>  mrf; // aux vector for collect function obj info.
 		 bool symbol_found = false;
 
-		 // For each class...
+		 // For each class (after primitives)...
 		 for(unsigned i = IDX_START_SCRIPTVAR; i < (*vec_script_class_node).size(); i++){
 
 			 mrf.clear();
@@ -940,6 +940,24 @@ namespace zetscript{
 					 }
 				 }
 			 }
+
+			 // check whether class has aritmethic metamethod but it hasn't a set metamethod....
+			 bool it_has_any_metamethod=false;
+
+			 for(int m = 0; m < MAX_METAMETHOD_OPERATORS && !it_has_any_metamethod; m++){
+				 if((*vec_script_class_node)[i]->metamethod_operator[m].size()>0){
+					 it_has_any_metamethod=true;
+				 }
+			 }
+
+			 if(it_has_any_metamethod && ((*vec_script_class_node)[i]->metamethod_operator[SET_METAMETHOD].size()==0)){
+				 fprintf(stderr,"class \"%s\" it has some metamethods but it doesn't have _set metamethod (aka '='). The variable will be override on assigment.\n"
+						 ,(*vec_script_class_node)[i]->metadata_info.object_info.symbol_info.symbol_name.c_str()
+				);
+			 }
+
+
+
 		 }
 
 		 // update global variables, only C refs...

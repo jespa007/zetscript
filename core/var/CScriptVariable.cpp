@@ -74,10 +74,10 @@ namespace zetscript{
 		c_object = NULL;
 		created_object = NULL;
 		m_value = NULL;
-		c_class_create_destroy=NULL;
+		c_scriptclass_info=NULL;
 		idxScriptClass = -1;
 		aux_string ="";
-		destroyable = true;
+		delete_c_object = true;
 
 	}
 
@@ -86,32 +86,33 @@ namespace zetscript{
 	}
 
 	void CScriptVariable::init(CScriptClass *irv, void * _c_object){
+
 		setup();
 
 		this->m_infoRegisteredClass = irv;
 		idxScriptClass = irv->idxClass;
 		c_object = _c_object;
-		destroyable = true;
-		c_class_create_destroy=irv;
+		delete_c_object = true;
+		c_scriptclass_info=NULL;
 
-		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (c_class_create_destroy) to get needed info to destroy create the C++ object.
+		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (c_scriptclass_info) to get needed info to destroy create the C++ object.
 
 			if(m_infoRegisteredClass->baseClass.size()==1){ // is the first!
 				CScriptClass *base = m_infoRegisteredClass->baseClass[0];
 				if(base->is_c_class()){
-					c_class_create_destroy=base;
+					c_scriptclass_info=base;
 					created_object = (*base->c_constructor)();
 					c_object = created_object;
 				}
 			}else if(m_infoRegisteredClass->is_c_class()){
-					c_class_create_destroy=m_infoRegisteredClass;
+					c_scriptclass_info=m_infoRegisteredClass;
 					created_object = (*m_infoRegisteredClass->c_constructor)();
 					c_object = created_object;
 			}
 
-		}else{ // not null initialize the class anyway...
-			//c_class_create_destroy=m_infoRegisteredClass;
-			destroyable = false;
+		}else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
+			c_scriptclass_info=irv;
+			delete_c_object = false;
 		}
 
 		// only create symbols if not string type to make it fast ...
@@ -138,6 +139,18 @@ namespace zetscript{
 
 		m_infoRegisteredClass = _info_registered_class;
 		return true;
+	}
+
+	bool CScriptVariable::itHasSetMetamethod(){
+		return m_infoRegisteredClass->metamethod_operator[SET_METAMETHOD].size() > 0;
+
+	}
+
+	void CScriptVariable::setDelete_C_ObjectOnDestroy(bool _delete_on_destroy){
+		created_object=NULL;
+		if((this->delete_c_object = _delete_on_destroy)==true){
+			created_object=c_object;
+		}
 	}
 
 	tSymbolInfo * CScriptVariable::addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv){
@@ -355,7 +368,7 @@ namespace zetscript{
 
 	CScriptClass * CScriptVariable::get_C_Class(){
 
-		 return c_class_create_destroy;
+		 return c_scriptclass_info;
 	}
 
 	bool CScriptVariable::is_c_object(){
@@ -365,10 +378,10 @@ namespace zetscript{
 
 	void CScriptVariable::destroy(bool delete_user_request){
 		if(created_object != 0){
-			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request){ // only erases pointer if vector/struct, etc ...
-				if(destroyable){
-					(*c_class_create_destroy->c_destructor)(created_object);
-				}
+			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
+
+				(*c_scriptclass_info->c_destructor)(created_object);
+
 			}
 		}
 

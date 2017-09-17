@@ -9,7 +9,7 @@ namespace zetscript{
 
 	CStructScriptVariable * CJSON::parse(const char *str){
 
-		return CZetScript::eval<CStructScriptVariable *>(str);
+		return NULL;//CZetScript::eval<CStructScriptVariable *>(str);
 
 	}
 
