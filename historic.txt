@@ -82,6 +82,7 @@
 
 > A lot memory leaks!
 
+- Fixed issue unexpected "this" after return.
 - Added JSON util (not implemented yet!)
 - Implement ZS_GET_ERROR_MSG and put in usefull places 
 - Added const char *

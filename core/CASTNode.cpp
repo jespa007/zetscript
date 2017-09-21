@@ -3608,7 +3608,8 @@ namespace zetscript{
 			if((keyw2nd = isKeyword(aux_p))!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
 
 				if(
-						keyw2nd != KEYWORD_TYPE::FUNCTION_KEYWORD   // list of exceptional keywords...
+						   (keyw2nd != KEYWORD_TYPE::FUNCTION_KEYWORD)   // list of exceptional keywords...
+						&& (keyw2nd != KEYWORD_TYPE::THIS_KEYWORD)   // list of exceptional keywords...
 				  ){
 
 					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"unexpected keyword \"%s\"",defined_keyword[keyw2nd].str);

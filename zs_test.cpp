@@ -170,12 +170,15 @@ public:
 
 };
 
+#define epsilon
+
 // Usable AlmostEqual function
-bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
+bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 {
+	 return (fabs(A - B) <= FLT_EPSILON *2* std::max(fabs(A), fabs(B)));
     // Make sure maxUlps is non-negative and small enough that the
     // default NAN won't compare as equal to anything.
-    assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
+    /*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
     //intptr_t aInt = *(int*)&A;
     int aInt;
     memcpy(&aInt,&A,sizeof(int));
@@ -190,7 +193,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=4)
     int intDiff = abs(aInt - bInt);
     if (intDiff <= maxUlps)
         return true;
-    return false;
+    return false;*/
 }
 
 
@@ -494,7 +497,6 @@ int main(int argc, char * argv[]) {
 
 	CZetScript::getInstance();
 
-
 	//register_C_Function("my_fun",my_fun);
 
 
@@ -569,6 +571,7 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4.0); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,4.0); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,2.0e2); // op1 > op2
 
 	printf("%i. testing arithmetic float vs int ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4); // op1==op2
@@ -647,7 +650,7 @@ int main(int argc, char * argv[]) {
 
 	printf("%i. testing vector var ...\n",++n_test);
 
-	TEST_INT_EXPR("var v=[3,true,2.0,\"is_a_string\", new CInteger(5), new CNumber(10.0)];v.size();",6); // <-- crash if no constructor defined new CInteger(x)!
+	TEST_INT_EXPR("var v=[3,true,2.0,\"is_a_string\"];v.size();",6); // <-- crash if no constructor defined new CInteger(x)!
 	TEST_INT_EXPR("v[0];",3);
 	TEST_BOOL_EXPR("v[1];",true);
 	TEST_NUMBER_EXPR("v[2];",2.0);

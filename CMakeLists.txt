@@ -175,7 +175,7 @@ set( ZETSCRIPT_LIB_SRCS
 	core/zs_core.cpp
 	
 	#-- Registered Class --
-	reg_class/zs_reg_class.cpp	
+	extra/zs_extra.cpp	
 
 	#-- Script Core --
 	CZetScript.cpp	
@@ -210,7 +210,7 @@ SET(
 	core/CNativeFunction.h
 	core/CScriptFunctionObject.h
 	core/zs_core.h
-	reg_class/zs_reg_class.h
+	reg_class/zs_extra.h
 	reg_class/CJSON.h
 	CZetScript.h
 )
