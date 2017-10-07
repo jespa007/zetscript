@@ -23,7 +23,7 @@ namespace zetscript{
 	tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_PUNCTUATORS];
 	int CASTNode::DUMMY_LINE=0;
 	const char * CASTNode::current_parsing_filename="unknow";
-
+	int CASTNode::current_idx_parsing_filename=-1;
 
 
 	bool IS_SINGLE_COMMENT(char *str){
@@ -208,6 +208,7 @@ namespace zetscript{
 		CASTNode	*ast_node = new CASTNode();
 		vec_ast_node->push_back(ast_node);
 		ast_node->idxAstNode = (short)(vec_ast_node->size()-1);
+		ast_node->idxFilename =current_idx_parsing_filename;
 		return ast_node;
 	}
 

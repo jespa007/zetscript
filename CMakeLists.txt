@@ -187,7 +187,7 @@ add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
 target_link_libraries(zetscript${POST_NAME} )
 
 SET(
-	HS 
+	HS
 	utils/CIO_Utils.h
 	utils/CColorTerm.h
 	utils/zs_utils.h
@@ -210,14 +210,14 @@ SET(
 	core/CNativeFunction.h
 	core/CScriptFunctionObject.h
 	core/zs_core.h
-	reg_class/zs_extra.h
-	reg_class/CJSON.h
+	extra/zs_extra.h
+	extra/CJSON.h
 	CZetScript.h
 )
 
 
 
-INSTALL(TARGETS zetscript${POST_NAME} 
+INSTALL(TARGETS zetscript${POST_NAME}
 		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
     	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
     	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
@@ -232,7 +232,7 @@ if ( "${EMSCRIPTEN}" STREQUAL "yes" )
 	)
 	
 	
-		set_target_properties(zs${POST_NAME} PROPERTIES LINK_FLAGS " --preload-file test")
+	set_target_properties(zs${POST_NAME} PROPERTIES LINK_FLAGS " --preload-file test")
 
  	
 else()
@@ -245,9 +245,37 @@ else()
 	# zs_test
 	add_executable(zs_test${POST_NAME}
 		${PROJECT_SOURCE_DIR}/zs_test.cpp
-	)	
+	)
 	
 	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+	
+	# helloworld
+	add_executable(helloworld${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/helloworld.cpp
+	)
+	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
+	
+	# register_variables
+	add_executable(register_variable${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/register_variable.cpp
+	)	
+	
+	target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
+	
+	
+	# register_class
+	add_executable(register_class${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/register_class.cpp
+	)	
+	
+	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
+
+	# function_script_call
+	add_executable(function_script_call_from_cpp${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/function_script_call_from_cpp.cpp
+	)	
+	
+	target_link_libraries(function_script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
 	
 	
 endif()
@@ -255,4 +283,9 @@ endif()
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
 
 
-
+INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
+		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
+		RUNTIME DESTINATION  	${CMAKE_INSTALL_PREFIX}/bin
+    	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
+    	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
+)

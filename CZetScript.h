@@ -44,7 +44,7 @@ namespace zetscript{
 
 
 		static vector<tInfoParsedSource> * m_parsedSource;
-
+		static int getIdxParsedFilenameSource(const char *file);
 
 
 		bool isFilenameAlreadyParsed(const char *filename);
@@ -68,6 +68,8 @@ namespace zetscript{
 
 		static CZetScript * getInstance();
 		static void setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles);
+
+
 
 		static void clearErrorMsg();
 		static void writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);

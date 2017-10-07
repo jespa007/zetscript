@@ -326,15 +326,20 @@ namespace zetscript{
 						src_ins->stkValue,\
 						NULL};\
 		}else if(type_var & STK_PROPERTY_TYPE_STRING){\
-			if(((dst_ins->properties & STK_PROPERTY_TYPE_STRING)==0) || (dst_ins->varRef==NULL)){/* Generates a string var */  \
-				script_var= NEW_STRING_VAR;\
-				dst_ins->varRef=script_var;\
-				aux_str=&(((CStringScriptVariable *)script_var)->m_strValue);\
-				dst_ins->stkValue=(void *)aux_str->c_str();\
-				dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_STRING | STK_PROPERTY_TYPE_SCRIPTVAR;\
-				script_var->initSharedPtr(true);\
+			if(dst_ins->properties & STK_PROPERTY_IS_C_VAR){\
+				*((string *)dst_ins->varRef)=((const char *)src_ins->stkValue);/* Assign string */\
+				dst_ins->stkValue=(void *)(((string *)dst_ins->varRef)->c_str());/* Because string assignment implies reallocs ptr char it changes, so reassing const char pointer */\
+			}else{\
+				if(((dst_ins->properties & STK_PROPERTY_TYPE_STRING)==0) || (dst_ins->varRef==NULL)){/* Generates a string var */  \
+					script_var= NEW_STRING_VAR;\
+					dst_ins->varRef=script_var;\
+					aux_str=&(((CStringScriptVariable *)script_var)->m_strValue);\
+					dst_ins->stkValue=(void *)aux_str->c_str();\
+					dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_STRING | STK_PROPERTY_TYPE_SCRIPTVAR;\
+					script_var->initSharedPtr(true);\
+				}\
+				(*aux_str)=((const char *)src_ins->stkValue);\
 			}\
-			(*aux_str)=((const char *)src_ins->stkValue);\
 		}else if(type_var & STK_PROPERTY_TYPE_SCRIPTVAR){\
 			script_var=(CScriptVariable *)src_ins->varRef;\
 			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_SCRIPTVAR;\
@@ -2040,11 +2045,13 @@ if(aux_function_info == NULL){\
 						case STK_PROPERTY_TYPE_BOOLEAN:
 						case STK_PROPERTY_TYPE_FUNCTION: // we aren't take care about nothing! :)
 							break;
-						case STK_PROPERTY_TYPE_STRING:
+						case STK_PROPERTY_TYPE_STRING: // type string is really a string or variable ?!?!
 						case STK_PROPERTY_TYPE_SCRIPTVAR: // we are getting script vars ...
-							if(old_dst_ins.varRef!=NULL){ // it had a pointer (no constant)...
-								if(src_ins->varRef != dst_ins->varRef){ // unref pointer because new pointer has been attached...
-									unrefSharedScriptVar(((CScriptVariable  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
+							if(!(((old_dst_ins.properties & (STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR))==(STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR)))){
+								if(old_dst_ins.varRef!=NULL){ // it had a pointer (no constant)...
+									if(src_ins->varRef != dst_ins->varRef){ // unref pointer because new pointer has been attached...
+										unrefSharedScriptVar(((CScriptVariable  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
+									}
 								}
 							}
 							break;

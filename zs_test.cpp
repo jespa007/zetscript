@@ -170,7 +170,20 @@ public:
 
 };
 
-#define epsilon
+
+std::function<CScriptVariable *(const vector<CScriptVariable *> &)> *test_2nd_script_call=NULL;
+
+
+void test_function_1st_c_call(){
+	 printf("C Function 1st call from script\n");
+
+	 if(test_2nd_script_call != NULL){
+		 (*test_2nd_script_call)(NO_PARAMS);
+	 }
+}
+
+
+
 
 // Usable AlmostEqual function
 bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
@@ -648,9 +661,9 @@ int main(int argc, char * argv[]) {
 	//TEST_BOOL_EXPR("i=!i;",true);
 
 
-	printf("%i. testing vector var ...\n",++n_test);
+	/*printf("%i. testing vector var ...\n",++n_test);
 
-	TEST_INT_EXPR("var v=[3,true,2.0,\"is_a_string\"];v.size();",6); // <-- crash if no constructor defined new CInteger(x)!
+	TEST_INT_EXPR("var v=[3,true,2.0,\"is_a_string\"];v.size();",4); // <-- crash if no constructor defined new CInteger(x)!
 	TEST_INT_EXPR("v[0];",3);
 	TEST_BOOL_EXPR("v[1];",true);
 	TEST_NUMBER_EXPR("v[2];",2.0);
@@ -669,9 +682,22 @@ int main(int argc, char * argv[]) {
 //	TEST_BOOL_EXPR("s.o.instanceof(MyObject);",true);
 
 	printf("%i. testing metamethod integer ...\n",++n_test);
-	TEST_INT_EXPR("var mt=new CInteger(5);mt=0+1+2+mt+4+5;mt.n;",17);
+	TEST_INT_EXPR("var mt=new CInteger(5);mt=0+1+2+mt+4+5;mt.n;",17);*/
 
-	// test if-else
+	printf("%i. test if-else ...\n",++n_test);
+	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}i;",10);
+	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);
+
+	printf("%i. test consisten script-c-script calls ...\n",++n_test);
+	// test calling script-c-script-c
+	register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
+	CZetScript::getInstance()->eval("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
+	auto test_1st_script_call=CZetScript::getInstance()->bind_function("test_1st_script_call");
+	test_2nd_script_call=CZetScript::getInstance()->bind_function("test_2nd_script_call");
+
+	if(test_1st_script_call){
+		(*test_1st_script_call)(NO_PARAMS);
+	}
 
 
 	printf("All tests passed OK!");

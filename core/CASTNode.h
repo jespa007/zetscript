@@ -35,9 +35,10 @@
 namespace zetscript{
 
 
-	#define SET_PARSING_FILENAME(str) 	CASTNode::current_parsing_filename=str;
-	#define RESET_PARSING_FILENAME 		CASTNode::current_parsing_filename="unknow";
-	#define CURRENT_PARSING_FILENAME	CASTNode::current_parsing_filename
+	#define SET_PARSING_FILENAME(idx,str)	CASTNode::current_idx_parsing_filename=idx;CASTNode::current_parsing_filename=str
+	#define RESET_PARSING_FILENAME 			CASTNode::current_idx_parsing_filename=-1
+	#define CURRENT_IDX_PARSING_FILENAME	CASTNode::current_idx_parsing_filename
+	#define CURRENT_PARSING_FILENAME		CASTNode::current_parsing_filename
 
 
 	enum GROUP_TYPE{
@@ -65,6 +66,7 @@ namespace zetscript{
 
 	public:
 		static const char * current_parsing_filename;
+		static int current_idx_parsing_filename;
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
 		static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];
 

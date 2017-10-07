@@ -6,7 +6,7 @@ class Test{
 	
 	function function1(a){
 		this.data1 =a;
-		print("data1:"+this.data1);
+		print("calling from Test. data1:"+this.data1);
 	}
 	
 	function function2(){
@@ -15,34 +15,29 @@ class Test{
 	}
 };
 
-var Test::value3;
+var Test::data3;
 
 function Test::function3(){
-	this.value3="a string";
+	this.data3="a string";
 }
 
 class TestExtended: Test{
 	var data4;
-	function function1(){
+	function function1(a){
 		super(2); // it calls Test::function1(2)
-		this.value1+=5; // Now value1=5+2 = 7
-		print(“value1:”+this.value1);
+		this.data1+=5; // Now data1=5+2 = 7
+		print("calling from TestExtended. Data1:"+this.data1);
 	}
 	
 	function function4(){
 		this.data4=6;
-		this.value4=This.value3+this.function2()+this.value1;
+		this.data4=this.data3+this.function2()+this.data1;
 	}
 };
 
 
 
 
-var t=new Test();
-
-t.function1(2); // initializes data1 as 2
+var t=new TestExtended();
 var i=t.function1(2); // initializes data2 as 3.0 and return the value
-print("data1 is:"+t.data1); // prints value of data1
 
-
-//print(""+a.i);

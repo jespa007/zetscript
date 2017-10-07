@@ -121,7 +121,7 @@ namespace zetscript{
 
 				return {
 						STK_PROPERTY_TYPE_STRING|STK_PROPERTY_IS_C_VAR,
-						0,
+						(void *)((string *)ptr_variable)->c_str(),
 						ptr_variable
 				};
 

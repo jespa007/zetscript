@@ -6,6 +6,20 @@ namespace zetscript{
 	char CZetScript::str_error[MAX_BUFFER_STR_ERROR] = { 0 };
 	vector<tInfoParsedSource> * CZetScript::m_parsedSource = NULL;
 
+	int CZetScript::getIdxParsedFilenameSource(const char *file){
+
+		if(file == NULL) return 0;
+
+		for(unsigned i =0; i < m_parsedSource->size(); i++){
+			if(m_parsedSource->at(i).filename == file){
+				return i;
+			}
+		}
+
+		zs_print_error_cr("Fatal error! Cannot find idx for \"%s\"",file);
+
+		return -1;
+	}
 
 
 	void CZetScript::setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles){
@@ -407,6 +421,11 @@ namespace zetscript{
 		 // init custom registers...
 		 CJSON::registerScript();
 
+		 // push undefined file by default ...
+		tInfoParsedSource ps;
+		ps.filename = "undefined";
+		m_parsedSource->push_back(ps);
+
 
 		 // after init, let's save/restore state...
 		 CState::saveState();
@@ -430,8 +449,13 @@ namespace zetscript{
 		int m_line = 1;
 		bool error=false;
 		PASTNode main_node = MAIN_AST_NODE;
+		int idx_parsed_source = getIdxParsedFilenameSource(filename);
 
-		SET_PARSING_FILENAME(filename);
+		if(idx_parsed_source == -1){
+			return false;
+		}
+
+		SET_PARSING_FILENAME(idx_parsed_source,filename);
 
 
 		if(CASTNode::generateAST_Recursive(
@@ -647,6 +671,8 @@ namespace zetscript{
 			zs_print_error_cr("Filename already parsed");
 			return false;
 		}
+
+
 		bool status = false;
 
 		char *buf_tmp=NULL;
@@ -657,6 +683,7 @@ namespace zetscript{
 			string file=CIO_Utils::getFileName(filename);
 			tInfoParsedSource ps;
 			ps.filename = file;
+			m_parsedSource->push_back(ps);
 			//ps.data = buf_tmp;
 
 			status = eval((char *)buf_tmp, true, file.c_str());
