@@ -6,9 +6,13 @@ class MyClass{
 public:
 	int data1;
 
+	MyClass(){
+		this->data1=5;
+	}
+
 	void function1(int arg){
 		this->data1 = arg;
-		printf("Int argument is %i\n",this->data1);
+		printf("int argument is %i\n",this->data1);
 	}
 };
 
@@ -39,7 +43,15 @@ int main(){
 	class_C_baseof<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
 
 	zs->eval(
-		"var myclass = new MyClassExtend();" // instances MyClassExtend
+		"class ScriptMyClassExtend:MyClassExtend{"
+		"	var data3;"
+		"	function function1(arg){"
+		"		var i=this.data1;"
+		"		super(this.data1+arg);"
+		"		print(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);"
+	    "   }"
+		"};"
+		"var myclass = new ScriptMyClassExtend();" // instances MyClassExtend
 		"myclass.function1(12);" // it prints "Int argument is 12"
 		"myclass.function2(0.5);" // it prints "Float argument is 0.5"
 		"print(\"data1:\"+myclass.data1);" // it prints "data1:12"
