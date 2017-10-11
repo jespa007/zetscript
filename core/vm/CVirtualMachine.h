@@ -85,6 +85,7 @@ namespace zetscript{
 	//===================================================================================================
 
 		void iniStackVar(unsigned int pos,const tStackElement & stk);
+		void clearGlobals();
 
 		string stk_C_TypeStr(const tStackElement & stk_v);
 

@@ -37,21 +37,21 @@ namespace zetscript{
 
 }
 
-#define zs_print_error_cr(s, ...) 			CLog::print(__FILE__,__LINE__,CLog::LOG_ERROR	, true,s, ##__VA_ARGS__)
-#define zs_print_warning_cr(s, ...)   		CLog::print(__FILE__,__LINE__,CLog::LOG_WARNING	, true,s, ##__VA_ARGS__)
-#define zs_print_info_cr(s, ...)   		CLog::print(__FILE__,__LINE__,CLog::LOG_INFO	, true,s, ##__VA_ARGS__)
+#define zs_print_error_cr(s, ...) 			zetscript::CLog::print(__FILE__,__LINE__,zetscript::CLog::LOG_ERROR	, true,s, ##__VA_ARGS__)
+#define zs_print_warning_cr(s, ...)   		zetscript::CLog::print(__FILE__,__LINE__,zetscript::CLog::LOG_WARNING	, true,s, ##__VA_ARGS__)
+#define zs_print_info_cr(s, ...)   		zetscript::CLog::print(__FILE__,__LINE__,zetscript::CLog::LOG_INFO	, true,s, ##__VA_ARGS__)
 #ifdef __DEBUG__
-#define zs_print_debug_cr(s, ...)   		CLog::print(__FILE__,__LINE__,CLog::LOG_DEBUG	, true,s, ##__VA_ARGS__)
+#define zs_print_debug_cr(s, ...)   		zetscript::CLog::print(__FILE__,__LINE__,CLog::LOG_DEBUG	, true,s, ##__VA_ARGS__)
 #else
 #define zs_print_debug_cr(s, ...)
 #endif
 
 
-#define zs_print_error(s, ...) 			CLog::print(__FILE__,__LINE__,CLog::LOG_ERROR	, false,s, ##__VA_ARGS__)
-#define zs_print_warning(s, ...)   		CLog::print(__FILE__,__LINE__,CLog::LOG_WARNING	, false,s, ##__VA_ARGS__)
-#define zs_print_info(s, ...)   		CLog::print(__FILE__,__LINE__,CLog::LOG_INFO	, false,s, ##__VA_ARGS__)
+#define zs_print_error(s, ...) 			zetscript::CLog::print(__FILE__,__LINE__,zetscript::CLog::LOG_ERROR	, false,s, ##__VA_ARGS__)
+#define zs_print_warning(s, ...)   		zetscript::CLog::print(__FILE__,__LINE__,zetscript::CLog::LOG_WARNING	, false,s, ##__VA_ARGS__)
+#define zs_print_info(s, ...)   		zetscript::CLog::print(__FILE__,__LINE__,zetscript::CLog::LOG_INFO	, false,s, ##__VA_ARGS__)
 #ifdef __DEBUG__
-#define zs_print_debug(s, ...)   		CLog::print(__FILE__,__LINE__,CLog::LOG_DEBUG	, false,s, ##__VA_ARGS__)
+#define zs_print_debug(s, ...)   		zetscript::CLog::print(__FILE__,__LINE__,zetscript::CLog::LOG_DEBUG	, false,s, ##__VA_ARGS__)
 #else
 #define zs_print_debug(s, ...)
 #endif

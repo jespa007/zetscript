@@ -811,6 +811,41 @@ if(aux_function_info == NULL){\
 
 	}
 
+	void CVirtualMachine::clearGlobals(){
+		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
+
+		if(zero_shares == NULL){
+			return;
+		}
+
+		if(main_function == NULL){ // not created.
+			return;
+		}
+
+
+		for(unsigned i = 0; i < main_function->object_info.local_symbols.m_registeredVariable.size(); i++){
+			tStackElement *ptr_ale =&stack[i];
+			CScriptVariable *var = NULL;
+			switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
+			case STK_PROPERTY_TYPE_STRING:
+			case STK_PROPERTY_TYPE_SCRIPTVAR:
+				var =((CScriptVariable *)(ptr_ale->varRef));
+				if(var){
+					if(var->ptr_shared_pointer_node != NULL){
+						var->unrefSharedPtr();
+					}
+				}
+			}
+			*ptr_ale={
+					STK_PROPERTY_TYPE_UNDEFINED,
+					0,
+					0
+			};
+		}
+
+		REMOVE_0_SHARED_POINTERS(0,NULL);
+	}
+
 	#ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
 	//#define __VERBOSE_MESSAGE__
 	#endif

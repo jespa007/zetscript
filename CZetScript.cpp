@@ -44,7 +44,9 @@ namespace zetscript{
 
 	void CZetScript::destroy(){
 
+		CURRENT_VM->clearGlobals();
 
+		// clear globals...
 		if(m_instance!=NULL){
 			delete m_instance;
 		}

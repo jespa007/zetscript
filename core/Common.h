@@ -76,7 +76,7 @@ using std::ostringstream;
 
 // Prototypes & structs
 #ifdef __MEMMANAGER__
-#include "../../zs_dev/system/zs_system.h"
+#include "system/zs_system.h"
 #endif
 
 

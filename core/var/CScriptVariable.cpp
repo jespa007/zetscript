@@ -377,6 +377,9 @@ namespace zetscript{
 	}
 
 	void CScriptVariable::destroy(bool delete_user_request){
+
+		zs_print_info_cr("HHHHHHHH");
+
 		if(created_object != 0){
 			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
 

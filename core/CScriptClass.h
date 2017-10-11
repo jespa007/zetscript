@@ -334,6 +334,9 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 				irc->classPtrType=str_classPtr;
 				irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
+
+				irc->c_constructor = NULL;
+				irc->c_destructor = NULL;
 				(*vec_script_class_node).push_back(irc);
 
 				irc->idxClass=(*vec_script_class_node).size()-1;

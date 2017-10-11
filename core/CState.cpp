@@ -37,6 +37,9 @@ namespace zetscript{
 			return false;
 		}
 
+		// clear globals ...
+		CURRENT_VM->clearGlobals();
+
 		CState * state_to_restore = vec_saved_state->at(idx);
 
 		// TODO:maybe is better to re-run vm to optimize vec acceses
@@ -191,11 +194,48 @@ namespace zetscript{
 	}
 
 	void CState::destroySingletons(){
+
+		vector<CScriptClass *> *vec = current_state->getVectorScriptClassNode();
+
+		// we have to destroy all allocated constructor/destructor ...
+		for(vector<CScriptClass *>::iterator i = vec->begin()+MAX_BASIC_CLASS_TYPES;i!=vec->end();i++){
+
+			CScriptClass *irv = *i;
+
+
+
+			if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+
+				zs_print_info_cr("* Erasing c destructor/contructor %s...",irv->classPtrType.c_str());
+				if(irv->c_constructor){
+					delete irv->c_constructor;
+				}
+
+				if(irv->c_destructor){
+					delete irv->c_destructor;
+				}
+
+				// delete CScriptClass
+				//delete irv;
+
+				//vec_script_class_node->erase(i);
+			}
+			//else{
+			//	i++;
+			//}
+		}
+
+
+		// erase saved states ...
 		for(unsigned i = 0; i < vec_saved_state->size(); i++){
 			delete vec_saved_state->at(i);
 		}
 
+		// delete vector states...
 		delete vec_saved_state;
+
+		// erase current state...
+		delete current_state;
 	}
 
 	//------------------------------------------------------------------------------------------------------
@@ -249,16 +289,19 @@ namespace zetscript{
 
 			CScriptClass *irv = *i;
 
-			if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+			zs_print_info_cr("* Erasing %s...",irv->classPtrType.c_str());
+
+			//if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+
 
 				// delete CScriptClass
 				delete irv;
 
 				vec_script_class_node->erase(i);
-			}
-			else{
-				i++;
-			}
+			//}
+			//else{
+			//	i++;
+			//}
 		}
 	}
 
@@ -300,7 +343,7 @@ namespace zetscript{
 					 free(info_function->object_info.info_var_scope);
 				}
 
-				// unregister variables & functions ...
+				// unregister global variables & functions ...
 				 if(i == 0){ // is the main function so don't touch (i.e preserve) C functions/vars ...
 
 					 for(vector<int>::iterator f =info_function->object_info.local_symbols.vec_idx_registeredFunction.begin(); f != info_function->object_info.local_symbols.vec_idx_registeredFunction.end();){
