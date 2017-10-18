@@ -308,6 +308,12 @@ namespace zetscript{
 		fflush(stdout);
 	 }
 
+	 void  internal_print_error(const char *s){
+		 CURRENT_VM->setError(s);
+		//printf("%s\n",s);
+		//fflush(stderr);
+	 }
+
 	 bool CScriptClass::init(){
 
 			if(vec_script_class_node == NULL){
@@ -438,6 +444,7 @@ namespace zetscript{
 			// Let's register functions,...
 			// register c function's
 			if(!register_C_Function("print",print)) return false;
+			if(!register_C_Function("error",internal_print_error)) return false;
 
 
 			if(!register_C_FunctionMember("size",&CVectorScriptVariable::size)) return false;

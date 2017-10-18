@@ -2,6 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
+
 #include "zs_core.h"
 
 
@@ -2681,10 +2682,11 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		char *end_expr,*start_symbol;
 		KEYWORD_TYPE key_w;
-		PASTNode conditional=NULL, if_node=NULL, else_node=NULL;
+		PASTNode conditional=NULL, if_node=NULL, else_node=NULL,block=NULL, group_conditional_nodes = NULL;
 		string conditional_str;
 		bool error = false;
 		int conditional_line;
+
 
 		aux_p=IGNORE_BLANKS(aux_p,m_line);
 
@@ -2698,92 +2700,136 @@ namespace zetscript{
 					if((*ast_node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
+
+					if((group_conditional_nodes = CASTNode::newASTNode()) == NULL) return NULL;
+					group_conditional_nodes->node_type = GROUP_IF_NODES;
+					(*ast_node_to_be_evaluated)->children.push_back(group_conditional_nodes->idxAstNode);
+
 				}
-				aux_p += strlen(defined_keyword[key_w].str);
 
-				// evaluate conditional line ...
-				aux_p=IGNORE_BLANKS(aux_p,m_line);
-				if(*aux_p == '('){
+
+				do{
+
+					if(ast_node_to_be_evaluated != NULL){
+						if((if_node = CASTNode::newASTNode()) == NULL) return NULL;
+						if_node->node_type = IF_NODE;
+						group_conditional_nodes->children.push_back(if_node->idxAstNode);
+					}
+
+					aux_p += strlen(defined_keyword[key_w].str);
+					aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+					if(*aux_p != '('){
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '(' if");
+						return NULL;
+					}
+
 					conditional_line=m_line;
-					if((end_expr = parseExpression(aux_p+1,m_line,scope_info,ast_node_to_be_evaluated != NULL? &conditional: NULL)) != NULL){
 
-						if(*end_expr != ')'){
-							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
-							return NULL;
-						}
-
-						if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
-							return NULL;
-						}
-
-						conditional_str=start_symbol;
-
-						if(ast_node_to_be_evaluated!=NULL){
-							PASTNode aux;
-							if((aux = CASTNode::newASTNode()) == NULL) return NULL;
-							aux->children.push_back(conditional->idxAstNode);
-							aux->node_type = CONDITIONAL_NODE;
-							aux->line_value=conditional_line;
-							(*ast_node_to_be_evaluated)->children.push_back(aux->idxAstNode);
-						}
-
-						aux_p=IGNORE_BLANKS(end_expr+1,m_line);
-						if(*aux_p != '{'){
-							if(!printErrorUnexpectedKeywordOrPunctuator(aux_p, m_line)){
-								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected if-block open block ('{')");
-							}
-							return NULL;
-						}
-
-						if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &if_node : NULL))!= NULL){
-							if(!error){
-								if(ast_node_to_be_evaluated != NULL){
-									(*ast_node_to_be_evaluated)->children.push_back(if_node->idxAstNode);
-								}
-
-								aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-								bool else_key = false;
-								if((key_w = isKeyword(aux_p)) != KEYWORD_TYPE::UNKNOWN_KEYWORD){
-									else_key = (key_w == KEYWORD_TYPE::ELSE_KEYWORD);
-								}
-
-								if(else_key){
-									aux_p += strlen(defined_keyword[key_w].str);
-
-									aux_p=IGNORE_BLANKS(aux_p,m_line);
-									if(*aux_p != '{'){
-										ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected else-block open block ('{')");
-										return NULL;
-									}
-
-									if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &else_node : NULL))!= NULL){
-											if(!error){
-
-												if( ast_node_to_be_evaluated != NULL){
-													(*ast_node_to_be_evaluated)->children.push_back(else_node->idxAstNode);
-												}
-
-												return aux_p;
-											}
-											else{
-
-											}
-									}
-								}else{
-									return aux_p;
-								}
-							}
-						}
-					}else{
+					if((end_expr = parseExpression(aux_p+1,m_line,scope_info,ast_node_to_be_evaluated != NULL? &conditional: NULL)) == NULL){
 						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')' if ");
 						return NULL;
 					}
 
-				}else{
-					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '(' if");
-					return NULL;
-				}
+					if(*end_expr != ')'){
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
+						return NULL;
+					}
+
+					if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
+						return NULL;
+					}
+
+					conditional_str=start_symbol;
+
+					if(ast_node_to_be_evaluated!=NULL){
+						PASTNode aux;
+						if((aux = CASTNode::newASTNode()) == NULL) return NULL;
+						aux->children.push_back(conditional->idxAstNode);
+						aux->node_type = CONDITIONAL_NODE;
+						aux->line_value=conditional_line;
+						if_node->children.push_back(aux->idxAstNode);
+					}
+
+					aux_p=IGNORE_BLANKS(end_expr+1,m_line);
+					if(*aux_p != '{'){
+						if(!printErrorUnexpectedKeywordOrPunctuator(aux_p, m_line)){
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected if-block open block ('{')");
+						}
+						return NULL;
+					}
+
+
+					if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &block : NULL))== NULL){
+						return NULL;
+					}
+
+					if(error){
+						return NULL;
+					}
+
+					if(ast_node_to_be_evaluated != NULL){
+						if_node->children.push_back(block->idxAstNode);
+					}
+
+					aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+					bool else_key = false;
+					if((key_w = isKeyword(aux_p)) != KEYWORD_TYPE::UNKNOWN_KEYWORD){
+						else_key = (key_w == KEYWORD_TYPE::ELSE_KEYWORD);
+					}
+
+					if(else_key){
+						aux_p += strlen(defined_keyword[key_w].str);
+
+						if(*aux_p != '{'){
+							aux_p++;
+						}
+
+						aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+						bool if_key = false;
+						if((key_w = isKeyword(aux_p)) != KEYWORD_TYPE::UNKNOWN_KEYWORD){
+							if_key = (key_w == KEYWORD_TYPE::IF_KEYWORD);
+						}
+
+						if(!if_key){
+
+							if(*aux_p != '{'){
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected else-block open block ('{')");
+								return NULL;
+							}
+
+							if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &else_node : NULL))!= NULL){
+									if(!error){
+
+										if( ast_node_to_be_evaluated != NULL){
+											(*ast_node_to_be_evaluated)->children.push_back(else_node->idxAstNode);
+										}
+
+										return aux_p;
+									}
+									else{
+
+									}
+							}
+						} // else keep up parsing if nodes case ...
+					}else{
+						return aux_p;
+					}
+
+
+
+
+
+
+				}while(true); // loop
+
+				/*
+
+				// evaluate conditional line ...
+
+				*/
 			}
 		}
 		return NULL;

@@ -67,7 +67,8 @@ namespace zetscript{
 				unsigned char n_args=0,
 				int idxAstNode = ZS_UNDEFINED_IDX);//vector<CScriptVariable *> * argv=NULL,int stk=0);
 
-
+		bool cancel_execution;
+		const char *custom_error;
 
 	public:
 
@@ -109,6 +110,7 @@ namespace zetscript{
 		void setCallResult(tStackElement *);
 		tStackElement *getLastStackValue();
 		tStackElement * getStackElement(unsigned int idx_glb_element);
+		void setError(const char *str);
 
 		CVirtualMachine();
 		~CVirtualMachine();

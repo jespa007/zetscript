@@ -1,9 +1,12 @@
-var n=0;
+var n=-1;
 
-if(n==0){
-	print("0");
-}else if(n==1){
-	print("1");
+error("caca");
+
+if(n<10){
+	print("n < 10");
+}else if(n<20){
+	print("n < 20");
 }else{
-	print("2");
+	print("n >=20");
 }
+

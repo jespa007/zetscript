@@ -794,6 +794,8 @@ if(aux_function_info == NULL){\
 		f_return_value=0;
 		s_return_value="unknow";
 
+		cancel_execution=false;
+
 		ptrCurrentOp=NULL;
 		current_scope_idx = scope_idx;
 
@@ -1351,6 +1353,7 @@ if(aux_function_info == NULL){\
 			}
 		}
 
+
 		// save return type ...
 		switch(irfs->idx_return_type){
 		 case IDX_CLASS_VOID_C:
@@ -1403,6 +1406,11 @@ if(aux_function_info == NULL){\
 		return NULL;
 	}
 
+	void CVirtualMachine::setError(const char *str){
+		custom_error = str;
+		cancel_execution = true;
+	}
+
 
 	CScriptVariable * CVirtualMachine::execute(
 			 CScriptFunctionObject *info_function,
@@ -1417,6 +1425,8 @@ if(aux_function_info == NULL){\
 		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);//GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 
 		if(idxCurrentStack==0){ // set stack for first call
+
+			cancel_execution=false;
 
 
 			ptrCurrentOp=stack;
@@ -1618,6 +1628,7 @@ if(aux_function_info == NULL){\
 		tInfoAsmOp *instruction_it;
 
 		for(;;){ // foreach stament ...
+
 
 			current_statment = ptr_statment_iteration++;
 			instruction_it = *current_statment;
@@ -2525,6 +2536,12 @@ if(aux_function_info == NULL){\
 								return NULL;
 							}
 						}
+
+						if(cancel_execution) {
+							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
+							return NULL;
+						}
+
 					}
 
 					// reset stack (function+asm_op (-1 op less))...

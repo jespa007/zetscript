@@ -108,6 +108,8 @@ enum NODE_TYPE
 	SYMBOL_NODE,
 	BODY_NODE,
 	GROUP_CASES_NODE,
+	GROUP_IF_NODES, // if, else-if
+	IF_NODE, // if-node (each one has a conditional + body )
 	CONDITIONAL_NODE,
 	PRE_FOR_NODE,
 	POST_FOR_NODE,

@@ -2051,28 +2051,50 @@ namespace zetscript{
 		if(_node == NULL) {zs_print_error_cr("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE ){zs_print_error_cr("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::IF_KEYWORD){zs_print_error_cr("node is not IF keyword type");return false;}
-		if(_node->children.size()<2) {zs_print_error_cr("node IF has not valid number of nodes");return false;}
-		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_NODE )) {zs_print_error_cr("node IF has not valid TYPE nodes");return false;}
-		tInfoAsmOpCompiler *asm_op_jmp_else_if,*asm_op_jmp_end;
+		if(_node->children.size()<1) {zs_print_error_cr("node IF has not valid number of nodes");return false;}
 
-		// compile conditional expression...
-		if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
-		asm_op_jmp_else_if = insert_JNT_Instruction(_node->children[0]); // goto else body ...
+		CASTNode *if_group_nodes =  AST_NODE(_node->children[0]);
 
-		// compile if-body ...
-		if(!gacBody(_node->children[1],SCOPE_INFO_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
+		if(if_group_nodes->node_type!=GROUP_IF_NODES) {zs_print_error_cr("node IF has not GROUP IF NODES");return false;}
+		if((if_group_nodes->children.size()<1)) {zs_print_error_cr("GROUP IF NODES has to have at least one node.");return false;}
+
+		tInfoAsmOpCompiler *asm_op_jmp_else_if;
+
+		vector<tInfoAsmOpCompiler *> asm_op_jmp_end;
+
+
+
+		for(unsigned int i=0; i < if_group_nodes->children.size(); i++){
+
+			CASTNode * if_node =  AST_NODE(if_group_nodes->children[i]);
+			if(if_node->children.size() != 2) {zs_print_error_cr(" IF NODE HAS TO HAVE 2 NODES");return false;}
+
+			// compile conditional expression...
+			if(!ast2asm_Recursive(if_node->children[0],_lc)){ return false;}
+			asm_op_jmp_else_if = insert_JNT_Instruction(if_node->children[0]); // goto else body ...
+
+			// compile if-body ...
+			if(!gacBody(if_node->children[1],SCOPE_INFO_NODE(AST_NODE(if_node->children[1])->idxScope))){ return false;}
+
+			asm_op_jmp_end.push_back(insert_JMP_Instruction(_node->idxAstNode));
+			asm_op_jmp_else_if->index_op2 = getCurrentStatmentIndex()+1;
+
+		}
 
 		// if there's else body, compile-it
-		if(_node->children.size()==3){
-			asm_op_jmp_end = insert_JMP_Instruction(_node->idxAstNode); // goto end
+		if(_node->children.size()==2){
+			//asm_op_jmp_end = insert_JMP_Instruction(_node->idxAstNode); // goto end
 			asm_op_jmp_else_if->index_op2 = getCurrentStatmentIndex()+1;
-			if(!gacBody(_node->children[2],_lc)){ return false;}
+			if(!gacBody(_node->children[1],_lc)){ return false;}
 
-			asm_op_jmp_end->index_op2 = getCurrentStatmentIndex()+1;
+			//asm_op_jmp_end->index_op2 = getCurrentStatmentIndex()+1;
 		}
-		else{
-			asm_op_jmp_else_if->index_op2 = getCurrentStatmentIndex()+1;
+
+		// assign all if jmp after block finishes (except else)
+		for(unsigned j = 0; j < asm_op_jmp_end.size();j++){
+			asm_op_jmp_end[j]->index_op2 = getCurrentStatmentIndex()+1;
 		}
+
 		return true;
 	}
 
@@ -2425,7 +2447,7 @@ namespace zetscript{
 			switch(_node->node_type){
 				default:
 				case UNKNOWN_NODE:
-					zs_print_debug_cr("UNKNOWN_NODE (%i)",_node->node_type);
+					zs_print_error_cr("UNKNOWN_NODE (%i)",_node->node_type);
 					return false;
 					break;
 				case EXPRESSION_NODE: // in fact is EXPRESSION NODE

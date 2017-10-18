@@ -210,7 +210,7 @@ namespace zetscript{
 
 			if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 
-				zs_print_info_cr("* Erasing c destructor/contructor %s...",irv->classPtrType.c_str());
+				zs_print_debug_cr("* Erasing c destructor/contructor %s...",irv->classPtrType.c_str());
 				if(irv->c_constructor){
 					delete irv->c_constructor;
 				}
@@ -293,7 +293,7 @@ namespace zetscript{
 
 			CScriptClass *irv = *i;
 
-			zs_print_info_cr("* Erasing %s...",irv->classPtrType.c_str());
+			zs_print_debug_cr("* Erasing %s...",irv->classPtrType.c_str());
 
 			//if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
 
