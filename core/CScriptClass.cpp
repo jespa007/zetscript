@@ -735,7 +735,7 @@ namespace zetscript{
 
 									 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
-										 zs_print_info_cr("Symbol defined at line %i \"%s\" will solved at run-time",AST_LINE(iao->idxAstNode), symbol_to_find.c_str());
+										 ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\" will solved at run-time", symbol_to_find.c_str());
 									 }
 									 else{
 										 // search local...
@@ -748,15 +748,15 @@ namespace zetscript{
 													if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 														if(!symbol_found){
-															zs_print_error_cr("Line %i: function \"%s\" not registered",AST_LINE(iao->idxAstNode), symbol_to_find.c_str() );
+															ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
 														}
 														else{
-															zs_print_error_cr("Line %i: Cannot match function \"%s\" with %i args",AST_LINE(iao->idxAstNode), symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+															ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
 														}
 
 													}
 													else{
-														zs_print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE(iao->idxAstNode), symbol_to_find.c_str());
+														ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", symbol_to_find.c_str());
 													}
 												 return false;
 											 }
@@ -867,7 +867,7 @@ namespace zetscript{
 
 										 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
-											 zs_print_info_cr("Symbol defined at line %i \"%s\" will solved at run-time",AST_LINE(iao->idxAstNode), AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
+											 ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" will solved at run-time", AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
 										 }
 										 else{
 
@@ -889,10 +889,10 @@ namespace zetscript{
 															 }
 															 arg_str+="arg"+CStringUtils::intToString(i);
 														 }
-														 zs_print_error_cr("line %i: Cannot find ancestor function for \"%s(%s)\". Is registered ?",AST_LINE(iao->idxAstNode), symbol_to_find.c_str(),arg_str.c_str());
+														 ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find ancestor function for \"%s(%s)\". Is registered ?", symbol_to_find.c_str(),arg_str.c_str());
 													 }
 													 else{
-														 zs_print_error_cr("Symbol defined at line %i \"%s::%s\"not found",AST_LINE(iao->idxAstNode), base_class.c_str(),symbol_to_find.c_str());
+														 ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s::%s\"not found", base_class.c_str(),symbol_to_find.c_str());
 													 }
 													 return false;
 												 }
@@ -909,15 +909,15 @@ namespace zetscript{
 															if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 																if(!symbol_found){
-																	zs_print_error_cr("Line %i: function \"%s\" not registered",AST_LINE(iao->idxAstNode), symbol_to_find.c_str() );
+																	ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
 																}
 																else{
-																	zs_print_error_cr("Line %i: Cannot match function \"%s\" with %i args",AST_LINE(iao->idxAstNode), symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+																	ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
 																}
 
 															}
 															else{
-																zs_print_error_cr("Symbol defined at line %i \"%s\"not found",AST_LINE(iao->idxAstNode), symbol_to_find.c_str());
+																ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\"not found",symbol_to_find.c_str());
 															}
 														 return false;
 													 }

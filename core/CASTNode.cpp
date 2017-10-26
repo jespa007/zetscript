@@ -2106,12 +2106,14 @@ namespace zetscript{
 
 					if(*aux_p != '}'){
 						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,class_line ,"class \"%s\" declared is not closed ",class_name.c_str());
+						return NULL;
 					}
 
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
 					if(*aux_p != ';'){
-						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,class_line ,"class \"%s\" declared line %i not end with ;",class_name.c_str());
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,class_line ,"class \"%s\" not end with ;",class_name.c_str());
+						return NULL;
 					}
 
 					return aux_p+1;
@@ -2810,8 +2812,10 @@ namespace zetscript{
 										return aux_p;
 									}
 									else{
-
+										return NULL;
 									}
+							}else{
+								return NULL;
 							}
 						} // else keep up parsing if nodes case ...
 					}else{
@@ -3796,6 +3800,12 @@ namespace zetscript{
 						int starting_expression=m_line;
 
 						if((end_expr = parseExpression(aux,m_line, scope_info,node_to_be_evaluated != NULL ? &children:NULL)) == NULL){ // something wrong was happen.
+							return NULL;
+						}
+
+						if(*end_expr == ')'){ // unexpected close parenthesis.
+							error = true;
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,starting_expression,"missing open parenthesis");
 							return NULL;
 						}
 
