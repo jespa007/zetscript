@@ -3493,8 +3493,10 @@ namespace zetscript{
 					return NULL;
 				}
 				// ignores ';' or ','
-				if(*aux_p == ',')
-					aux_p++;
+				if(*aux_p == ','){
+					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
+				}
+
 			}
 
 			if(*aux_p == ';'){
