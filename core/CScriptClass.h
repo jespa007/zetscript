@@ -631,6 +631,7 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 					  || i == LTE_METAMETHOD//STRCMP(function_name, ==, "_lte")
 					  || i == GT_METAMETHOD//STRCMP(function_name, ==, "_gt")
 					  || i == GTE_METAMETHOD//STRCMP(function_name, ==, "_gte")
+					  || i == NOT_METAMETHOD//STRCMP(function_name, ==, "_gte")
 					  ){
 						// return type must be bool...
 						if(STRCMP(return_type.c_str(), != ,typeid(bool).name())){

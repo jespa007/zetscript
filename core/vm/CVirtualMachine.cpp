@@ -17,7 +17,7 @@ namespace zetscript{
 	string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
 		   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
 	\
-	ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\"",\
+	ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 			var_type1.c_str(),\
 			c,\
 			var_type2.c_str());\
@@ -550,6 +550,54 @@ if(aux_function_info == NULL){\
 	else{ \
 		int n_candidates=0; \
 		string str_candidates=""; \
+		string args_str = "";\
+		/* get arguments... */ \
+		\
+		for( unsigned k = 0; k < n_args;k++){ \
+			tStackElement *currentArg=&startArg[k]; \
+			if(currentArg->properties & STK_PROPERTY_IS_STACKVAR){ \
+				currentArg = (tStackElement *)currentArg->varRef; \
+			} \
+			if(k>0){\
+				args_str+=",";\
+			}\
+			unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);\
+			switch(var_type){\
+			default:\
+				aux_string="unknow";\
+				break;\
+			case STK_PROPERTY_TYPE_INTEGER:\
+				aux_string=(*CScriptClass::INT_TYPE_STR);\
+				break;\
+			case STK_PROPERTY_TYPE_NUMBER:\
+				aux_string=*CScriptClass::FLOAT_TYPE_STR;\
+				break;\
+			case STK_PROPERTY_TYPE_BOOLEAN:\
+				aux_string=*CScriptClass::BOOL_TYPE_STR;\
+				break;\
+			case STK_PROPERTY_TYPE_STRING:\
+				aux_string=*CScriptClass::STRING_PTR_TYPE_STR;\
+				if(currentArg->varRef==NULL){ /* is constant char */ \
+					aux_string=	*CScriptClass::CONST_CHAR_PTR_TYPE_STR;\
+				}\
+				break;\
+			case STK_PROPERTY_TYPE_NULL:\
+			case STK_PROPERTY_TYPE_UNDEFINED:\
+			case STK_PROPERTY_TYPE_SCRIPTVAR:\
+			case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:\
+				aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();\
+				break;\
+			}\
+			args_str+=demangle(aux_string);\
+			\
+			if(var_type == STK_PROPERTY_TYPE_INTEGER \
+			||var_type == STK_PROPERTY_TYPE_NUMBER \
+			||var_type == STK_PROPERTY_TYPE_BOOLEAN \
+			){\
+				args_str+=" [*] ";\
+			}\
+		}\
+		\
 		for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ /* search all function that match symbol ... */ \
 			CScriptFunctionObject *irfs = NULL; \
 			if(m_functionSymbol!=NULL){ \
@@ -588,59 +636,15 @@ if(aux_function_info == NULL){\
 			if(metamethod_str != NULL){\
 				PRINT_DUAL_ERROR_OP(metamethod_str);\
 			}else{\
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s\" function.\n\n",\
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\" function.\n\n",\
 					is_constructor ? "constructor":"function",\
 					calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",\
-					AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));\
+					AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),\
+					 args_str.c_str()\
+					);\
 			}\
 		}\
 		else{\
-			string args_str = "";\
-			/* get arguments... */ \
-			for( unsigned k = 0; k < n_args;k++){ \
-				tStackElement *currentArg=&startArg[k]; \
-				if(currentArg->properties & STK_PROPERTY_IS_STACKVAR){ \
-					currentArg = (tStackElement *)currentArg->varRef; \
-				} \
-				if(k>0){\
-					args_str+=",";\
-				}\
-				unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);\
-				switch(var_type){\
-				default:\
-					aux_string="unknow";\
-					break;\
-				case STK_PROPERTY_TYPE_INTEGER:\
-					aux_string=(*CScriptClass::INT_TYPE_STR);\
-					break;\
-				case STK_PROPERTY_TYPE_NUMBER:\
-					aux_string=*CScriptClass::FLOAT_TYPE_STR;\
-					break;\
-				case STK_PROPERTY_TYPE_BOOLEAN:\
-					aux_string=*CScriptClass::BOOL_TYPE_STR;\
-					break;\
-				case STK_PROPERTY_TYPE_STRING:\
-					aux_string=*CScriptClass::STRING_PTR_TYPE_STR;\
-					if(currentArg->varRef==NULL){ /* is constant char */ \
-						aux_string=	*CScriptClass::CONST_CHAR_PTR_TYPE_STR;\
-					}\
-					break;\
-				case STK_PROPERTY_TYPE_NULL:\
-				case STK_PROPERTY_TYPE_UNDEFINED:\
-				case STK_PROPERTY_TYPE_SCRIPTVAR:\
-				case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:\
-					aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();\
-					break;\
-				}\
-				args_str+=demangle(aux_string);\
-				\
-				if(var_type == STK_PROPERTY_TYPE_INTEGER \
-				||var_type == STK_PROPERTY_TYPE_NUMBER \
-				||var_type == STK_PROPERTY_TYPE_BOOLEAN \
-				){\
-					args_str+=" [*] ";\
-				}\
-			}\
 			if(metamethod_str!=NULL){\
 				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s", \
 												metamethod_str, \
@@ -686,7 +690,7 @@ if(aux_function_info == NULL){\
 				string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
 						   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
 				\
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\"",\
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 						var_type1.c_str(),\
 						STR(__OVERR_OP__),\
 						var_type2.c_str());\
@@ -2139,7 +2143,7 @@ if(aux_function_info == NULL){\
 					continue;
 				case LTE:  // <=
 					POP_TWO;
-					PROCESS_COMPARE_OPERATION(<, LTE_METAMETHOD);
+					PROCESS_COMPARE_OPERATION(<=, LTE_METAMETHOD);
 					continue;
 				case GT:  // >
 
@@ -2191,9 +2195,10 @@ if(aux_function_info == NULL){\
 						PUSH_NUMBER(-f_aux_value1);
 					}else if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN){
 						PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
-					}else{
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected preoperator '-' number or integer!");
-							return NULL;
+					}else{ // try metamethod ...
+							APPLY_METAMETHOD(!,NOT_METAMETHOD);
+							//ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected preoperator '-' number or integer!");
+							//return NULL;
 					}
 					continue;
 

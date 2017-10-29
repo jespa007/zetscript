@@ -470,62 +470,13 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(true));
 
 
-const char * my_fun(const char *str){
-	printf("prova %s",str);
-
-	return str;
-}
-
-void print2(string * str){
-	printf("%s\n",str->c_str());
-	fflush(stdout);
-}
 
 
 int main(int argc, char * argv[]) {
 
 	int n_test=0;
 
-	/*float ff=2.1234456f;
 
-	auto fun_ptr=(void *)( new std::function<float (intptr_t)>(std::bind((float (*)(intptr_t))return_float, std::placeholders::_1)));
-
-	//auto fun=std::function<intptr_t (intptr_t)>(return_float);
-	//void * fun_ptr=(void *)&fun;
-
-	int int_bits=*(int*)&ff;
-
-
-
-	float result=(*((std::function<float (intptr_t)> *)fun_ptr))(
-			int_bits
-	);
-
-	printf("result:%f\n",result);
-
-	exit(-1);*/
-
-	//TEST_NUMBER_EXPR("var i=2.0;i=-i;i;",-2.0);
-	//TEST_BOOL_EXPR("var i=2.0;i=true;i=!i;i;",false);
-	//return 0;
-	//TEST_ARITHMETIC_BOOL_EXPR(!(!(!false)));//  || !(true && !false));
-	//TEST_ARITHMETIC_BOOL_EXPR(!(!false));//  || !(true && !false));
-	//return 0;
-
-	CZetScript::getInstance();
-
-	//register_C_Function("my_fun",my_fun);
-
-
-	//CZetScript::getInstance()->eval("var s=\"caca\"; if(s instanceof gg){print(\"true\");}else{print(\"false\");}");
-
-	//exit(-1);
-	//TEST_INT_EXPR("var s={i:3,b:true,n:2.0,s:\"is_a_string\",o:new CInteger(5)};s.size();",3);
-
-
-	//printf("\nnumber is %f",((2.0f+2.0f*(5.0f-6.1f))*10.0f));
-	//TEST_BOOL_EXPR("!false && !false || false;",true);
-	//return 0;
 
 /*	"test_arithmetic_operations.zs",
 	"test_binary_operations.zs",
@@ -568,8 +519,6 @@ int main(int argc, char * argv[]) {
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_set",static_cast<void (*)(CInteger *,int)>(&CInteger::_set))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_set",static_cast<void (*)(CInteger *,CInteger *)>(&CInteger::_set))) return false;
-
-
 
 
 
