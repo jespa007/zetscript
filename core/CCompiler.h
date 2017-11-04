@@ -173,6 +173,7 @@ namespace zetscript{
 		bool insertMovVarInstruction(short idxAstNode, int left_index, int right_index);
 
 
+		void insertNot(short idxAstNode);
 		void insertNeg(short idxAstNode);
 		/**
 		 * Unconditional Jump instruction

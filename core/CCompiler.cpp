@@ -683,6 +683,14 @@ namespace zetscript{
 		return true;
 	}
 
+	void CCompiler::insertNot(short idxAstNode){
+		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
+		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		asm_op->idxAstNode = idxAstNode;
+		asm_op->operator_type=ASM_OPERATOR::NOT;
+		ptr_current_statement_op->asm_op.push_back(asm_op);
+	}
+
 	void CCompiler::insertNeg(short idxAstNode){
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
@@ -768,7 +776,7 @@ namespace zetscript{
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
-		// if type return is object return first index
+		// if type return is object type, then return first index...
 		if(ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::DECL_VEC ||
 		   ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::NEW ||
 		   ptr_current_statement_op->asm_op[0]->operator_type == ASM_OPERATOR::DECL_STRUCT
@@ -1423,7 +1431,7 @@ namespace zetscript{
 							_node->node_type == FUNCTION_OBJECT_NODE || // =function()
 							_node->node_type == CALLING_OBJECT_NODE ||  // pool[] or pool()
 							_node->node_type == NEW_OBJECT_NODE ||  // new
-							_node->node_type == DELETE_OBJECT_NODE ||  // new
+							//_node->node_type == DELETE_OBJECT_NODE ||  // new
 							_node->node_type == STRUCT_NODE;
 
 		// TERMINAL SYMBOLS OR SPECIAL NODE
@@ -1484,13 +1492,14 @@ namespace zetscript{
 
 							r=CCompiler::getCurrentInstructionIndex();
 							break;
-						case DELETE_OBJECT_NODE:
+						/*case DELETE_OBJECT_NODE:
+
 							if((gacDelete(_node->idxAstNode, _lc))==ZS_UNDEFINED_IDX){
 								return ZS_UNDEFINED_IDX;
 							}
 
 							r=CCompiler::getCurrentInstructionIndex();
-							break;
+							break;*/
 						case STRUCT_NODE:
 							if((r=gacExpression_Struct(_node->idxAstNode, _lc))==ZS_UNDEFINED_IDX){
 								return ZS_UNDEFINED_IDX;
@@ -1598,6 +1607,8 @@ namespace zetscript{
 
 		switch(pre_operator){
 		case PUNCTUATOR_TYPE::LOGIC_NOT_PUNCTUATOR:
+			insertNot(_node->idxAstNode);
+			break;
 		case PUNCTUATOR_TYPE::SUB_PUNCTUATOR:
 			insertNeg(_node->idxAstNode);
 			break;
@@ -1876,13 +1887,16 @@ namespace zetscript{
 		PASTNode _node = AST_NODE(idxAstNode);
 
 		if(_node == NULL) {zs_print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
-		if(_node->node_type != DELETE_OBJECT_NODE ){zs_print_error_cr("node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type != DELETE_OBJECT_NODE ){zs_print_error_cr("gacDelete: node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
+		if(_node->children.size() != 1 ){zs_print_error_cr("gacDelete: expected 1 children");return ZS_UNDEFINED_IDX;}
 
 		// load function ...
 		// push value  ...
-		if(!insertLoadValueInstruction(_node->idxAstNode, _lc)){
+		/*if(!insertLoadValueInstruction(_node->idxAstNode, _lc)){
 			return ZS_UNDEFINED_IDX;
-		}
+		}*/
+		// parse expression ...
+		if(!ast2asm_Recursive(_node->children[0],SCOPE_INFO_NODE(_node->idxScope))){ return ZS_UNDEFINED_IDX;}
 
 		// delete object instruction ...
 		if(!insert_DeleteObject_Instruction(_node->idxAstNode)) // goto end  ...
@@ -2449,6 +2463,10 @@ namespace zetscript{
 				case UNKNOWN_NODE:
 					zs_print_error_cr("UNKNOWN_NODE (%i)",_node->node_type);
 					return false;
+					break;
+				case DELETE_OBJECT_NODE:
+					zs_print_debug_cr("DELETE NODE");
+					return gacDelete(_node->idxAstNode, _lc);
 					break;
 				case EXPRESSION_NODE: // in fact is EXPRESSION NODE
 					zs_print_debug_cr("EXPRESSION_NODE");

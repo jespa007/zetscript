@@ -18,6 +18,7 @@ namespace zetscript{
 
 
 		int size();
+		virtual void destroy(bool delete_user_request=false);
 	};
 
 }

@@ -94,4 +94,22 @@ namespace zetscript{
 	int CVectorScriptVariable::size(){
 		return  m_objVector.size();
 	}
+
+	void CVectorScriptVariable::destroy(bool delete_user_request){
+
+
+		for(unsigned i = 0; i < m_objVector.size(); i++){
+			//ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"vec symbol.size() > 0. internal error!");
+			//return false;
+			if(m_objVector[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+				CScriptVariable *var = (CScriptVariable *)m_objVector[i].varRef;
+				var->destroy(delete_user_request);
+				/*if(!var->initSharedPtr()){
+					return false;
+				}*/
+			}
+		}
+
+		//CScriptVariable::destroy(delete_user_request);
+	}
 }

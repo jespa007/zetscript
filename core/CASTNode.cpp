@@ -1164,9 +1164,11 @@ namespace zetscript{
 				}
 				break;
 			case KEYWORD_TYPE::DELETE_KEYWORD:
-				if((aux = parseDelete(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
+				zs_print_error_cr("internal error! delete bad ast processing!");
+				return NULL;
+				/*if((aux = parseDelete(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 					return NULL;
-				}
+				}*/
 				break;
 
 			case KEYWORD_TYPE::THIS_KEYWORD:
@@ -1938,6 +1940,7 @@ namespace zetscript{
 		char *end_p;
 		string symbol_value;
 		KEYWORD_TYPE key_w;
+		PASTNode   value;
 
 		aux_p=IGNORE_BLANKS(aux_p,m_line);
 
@@ -1958,10 +1961,22 @@ namespace zetscript{
 
 				 symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
 
-				if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
-				(*ast_node_to_be_evaluated)->node_type = DELETE_OBJECT_NODE;
-				(*ast_node_to_be_evaluated)->keyword_info = KEYWORD_TYPE::UNKNOWN_KEYWORD;
-				(*ast_node_to_be_evaluated)->symbol_value = symbol_value;
+				if(ast_node_to_be_evaluated != NULL){
+					if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
+					(*ast_node_to_be_evaluated)->node_type = DELETE_OBJECT_NODE;
+					(*ast_node_to_be_evaluated)->keyword_info = KEYWORD_TYPE::UNKNOWN_KEYWORD;
+					(*ast_node_to_be_evaluated)->symbol_value = symbol_value;
+					(*ast_node_to_be_evaluated)->idxScope = scope_info->idxScope;
+				}
+
+				//parse expression ...
+				if((aux_p = parseExpression(aux_p,m_line,scope_info,(ast_node_to_be_evaluated != NULL ? &value : NULL)))==NULL){
+					return NULL;
+				}
+
+				if(ast_node_to_be_evaluated != NULL){
+					(*ast_node_to_be_evaluated)->children.push_back(value->idxAstNode);
+				}
 
 				return aux_p;
 			}
@@ -3667,6 +3682,7 @@ namespace zetscript{
 				if(
 						   (keyw2nd != KEYWORD_TYPE::FUNCTION_KEYWORD)   // list of exceptional keywords...
 						&& (keyw2nd != KEYWORD_TYPE::THIS_KEYWORD)   // list of exceptional keywords...
+						&& (keyw2nd != KEYWORD_TYPE::NEW_KEYWORD)   // list of exceptional keywords...
 				  ){
 
 					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"unexpected keyword \"%s\"",defined_keyword[keyw2nd].str);
@@ -3905,7 +3921,7 @@ namespace zetscript{
 		//	defined_keyword[KEYWORD_TYPE::SUPER_KEYWORD] = {SUPER_KEYWORD,"super", NULL};
 			defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
 			defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
-			defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
+			defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",parseDelete};
 			// create main ast management
 	}
 

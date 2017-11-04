@@ -43,4 +43,14 @@ namespace zetscript{
 		return  this->m_variableSymbol.size();
 	}
 
+	void CStructScriptVariable::destroy(bool delete_user_request){
+
+		for(unsigned i = 0; i < m_variableSymbol.size(); i++){
+			CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
+			if(var){
+				var->destroy(delete_user_request);
+			}
+		}
+	}
+
 }

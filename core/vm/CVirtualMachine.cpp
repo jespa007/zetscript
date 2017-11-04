@@ -4,7 +4,8 @@
  */
 #include "../../CZetScript.h"
 
-#define METAMETHOD_ARGS 2
+#define METAMETHOD_2_ARGS 2
+#define METAMETHOD_1_ARGS 1
 
 namespace zetscript{
 //CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
@@ -323,7 +324,7 @@ namespace zetscript{
 			if(copy_aux!=NULL)(*(float *)copy_aux)=*((float *)src_ref);\
 		}else if(type_var & STK_PROPERTY_TYPE_BOOLEAN){\
 			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_BOOLEAN;\
-			*((int *)dst_ref)=*((int *)src_ref);\
+			*((bool *)dst_ref)=*((bool *)src_ref);\
 			if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)src_ref);\
 		}else if(type_var  &  STK_PROPERTY_TYPE_FUNCTION){\
 			*dst_ins={(unsigned short)(runtime_var | STK_PROPERTY_TYPE_FUNCTION),\
@@ -396,16 +397,16 @@ namespace zetscript{
 		PInfoSharedPointerNode first_node,current;\
 		first_node=current=list->first;\
 		if(current != NULL){\
-			while(current->next !=first_node){\
-				PInfoSharedPointerNode node_to_remove=current;\
-				if(_ret_ref!=node_to_remove->data.shared_ptr){\
-					delete node_to_remove->data.shared_ptr;\
+			bool finish=false;\
+			do{\
+				PInfoSharedPointerNode next_node=current->next;\
+				finish=next_node ==first_node;\
+				if(callc_result.varRef!=current->data.shared_ptr){\
+					delete current->data.shared_ptr;\
 				}\
-				current=current->next;\
-				free(node_to_remove);\
-			}\
-			delete current->data.shared_ptr;\
-			free(current);\
+				free(current);\
+				current=next_node;\
+			}while(!finish);\
 		}\
 		list->first=list->last=NULL;\
 
@@ -667,8 +668,9 @@ if(aux_function_info == NULL){\
 
 
 	#define APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__) \
-		tStackElement *mm_test_startArg = ptrCurrentOp+METAMETHOD_ARGS; \
-		if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ /* search for first time , else the function is stored in index_op2 */ \
+		int n_metam_args=((__METAMETHOD__== NOT_METAMETHOD|| __METAMETHOD__ ==NEG_METAMETHOD ) ? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);\
+		tStackElement *mm_test_startArg = ptrCurrentOp+n_metam_args; \
+		if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ /* search for first time , else the function is stored in index_op2 */\
 			script_class_aux=NULL; \
 			vec_global_functions=NULL; \
 			aux_function_info = NULL; \
@@ -681,19 +683,29 @@ if(aux_function_info == NULL){\
 				if(((ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){\
 					v1 = (CScriptVariable *)(((tStackElement *)v1))->varRef;\
 				}\
-			}else if(((ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){\
+			}else if(((ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
 				v1 = (CScriptVariable *)(ptrResultInstructionOp2->varRef);\
 				if(((ptrResultInstructionOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){\
 					v1 = (CScriptVariable *)(((tStackElement *)v1))->varRef;\
 				}\
 			}else{\
-				string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
-						   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
 				\
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
-						var_type1.c_str(),\
-						STR(__OVERR_OP__),\
-						var_type2.c_str());\
+				string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
+						var_type2="";\
+				\
+				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/\
+					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+							STR(__OVERR_OP),\
+							var_type1.c_str()\
+							);\
+				}else{ /* 2 args*/ \
+					var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
+					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+							var_type1.c_str(),\
+							STR(__OVERR_OP__),\
+							var_type2.c_str());\
+				}\
+				\
 				return NULL;\
 			}\
 \
@@ -702,8 +714,8 @@ if(aux_function_info == NULL){\
 			vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];\
 			int size_fun_vec = vec_global_functions->size()-1;\
 			bool is_constructor = false;\
-			tStackElement *startArgs=(mm_test_startArg-METAMETHOD_ARGS);\
-			unsigned n_args=METAMETHOD_ARGS;\
+			tStackElement *startArgs=(mm_test_startArg-n_metam_args);\
+			unsigned n_args=n_metam_args;\
 			symbol_to_find=script_class_aux->registered_metamethod[__METAMETHOD__];\
 			\
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
@@ -721,7 +733,7 @@ if(aux_function_info == NULL){\
 			aux_function_info = (CScriptFunctionObject *)instruction->index_op2; \
 		} \
 		/* by default virtual machine gets main object class in order to run functions ... */ \
-		if((ret_obj=execute_internal(aux_function_info,this_object,mm_test_startArg,ptrCurrentStr,METAMETHOD_ARGS))==NULL){ \
+		if((ret_obj=execute_internal(aux_function_info,this_object,mm_test_startArg,ptrCurrentStr,n_metam_args))==NULL){ \
 				return NULL; \
 		} \
 		\
@@ -805,6 +817,8 @@ if(aux_function_info == NULL){\
 
 		f_aux_value1=0;
 		f_aux_value2=0;
+
+		custom_error = "unknow_error";
 
 		ptrLastStr=&stkString[VM_LOCAL_VAR_MAX_STACK-1]; // aux values for string ...
 		ptrCurrentStr=NULL;
@@ -1947,7 +1961,7 @@ if(aux_function_info == NULL){\
 
 						if(!(scope_type == INS_PROPERTY_THIS_SCOPE || scope_type == INS_PROPERTY_SUPER_SCOPE)){
 
-							if(index_op2 == ZS_UNDEFINED_IDX){ // is will be processed after in CALL instruction ...
+							if(index_op2 == ZS_UNDEFINED_IDX || index_op2 == ZS_FUNCTION_NOT_FOUND_IDX){ // is will be processed after in CALL instruction ...
 								//function_properties=INS_PROPERTY_UNRESOLVED_FUNCTION;
 								function_obj= NULL;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
 							}else if((index_op2<(int)vec_functions->size())) // get the function ...
@@ -2179,8 +2193,9 @@ if(aux_function_info == NULL){\
 					if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN){ // operation will result as integer.
 						PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
 					}else{
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
-							return NULL;
+						APPLY_METAMETHOD(!,NOT_METAMETHOD);
+							//ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
+							//return NULL;
 					}
 					continue;
 
@@ -2193,10 +2208,11 @@ if(aux_function_info == NULL){\
 					}else if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_NUMBER){
 						COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);
 						PUSH_NUMBER(-f_aux_value1);
-					}else if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN){
+					/*}else if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN){
 						PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
+					*/
 					}else{ // try metamethod ...
-							APPLY_METAMETHOD(!,NOT_METAMETHOD);
+							APPLY_METAMETHOD(-,NEG_METAMETHOD);
 							//ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected preoperator '-' number or integer!");
 							//return NULL;
 					}
@@ -2576,7 +2592,11 @@ if(aux_function_info == NULL){\
 							}
 
 							svar = (CScriptVariable *)(se)->varRef;
-							if(svar->idxScriptClass >= MAX_BASIC_CLASS_TYPES){ // max ...
+							if(svar->idxScriptClass >= MAX_BASIC_CLASS_TYPES
+							 ||svar->idxScriptClass==IDX_CLASS_VECTOR
+							 ||svar->idxScriptClass==IDX_CLASS_STRUCT
+							)
+							{ // max ...
 
 								svar->destroy(true);
 								se->stkValue=NULL;
@@ -2657,6 +2677,7 @@ if(aux_function_info == NULL){\
 
 	//if(info_function->object_info.idxScriptFunctionObject != 0){ // if not main function do not do the pop action (preserve variables always!)
 		POP_SCOPE(callc_result.varRef);
+
 
 		//=========================
 		// POP STACK
