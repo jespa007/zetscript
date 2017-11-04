@@ -1537,7 +1537,7 @@ namespace zetscript{
 						}
 					}
 				}else{
-					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,start_get_symbol_line,"expected operator or punctuator after \"%s\"",symbol_value.c_str());
+					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,start_get_symbol_line,"expected ';' or operator or punctuator after \"%s\"",symbol_value.c_str());
 					return NULL;
 				}
 			}
@@ -2640,6 +2640,8 @@ namespace zetscript{
 						}
 
 						aux_p += strlen(defined_keyword[key_w].str);
+
+						aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 						if(*aux_p == '('){
 

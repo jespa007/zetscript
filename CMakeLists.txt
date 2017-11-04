@@ -244,7 +244,7 @@ else()
 	
 	# zs_test
 	add_executable(zs_test${POST_NAME}
-		${PROJECT_SOURCE_DIR}/zs_test.cpp
+		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
 	)
 	
 	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})

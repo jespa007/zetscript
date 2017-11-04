@@ -339,11 +339,11 @@ namespace zetscript{
 					script_var= NEW_STRING_VAR;\
 					dst_ins->varRef=script_var;\
 					aux_str=&(((CStringScriptVariable *)script_var)->m_strValue);\
-					dst_ins->stkValue=(void *)aux_str->c_str();\
 					dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_STRING | STK_PROPERTY_TYPE_SCRIPTVAR;\
 					script_var->initSharedPtr(true);\
 				}\
 				(*aux_str)=((const char *)src_ins->stkValue);\
+				dst_ins->stkValue=(void *)aux_str->c_str();/* Because string assignment implies reallocs ptr char it changes, so reassing const char pointer */ \
 			}\
 		}else if(type_var & STK_PROPERTY_TYPE_SCRIPTVAR){\
 			script_var=(CScriptVariable *)src_ins->varRef;\
@@ -738,7 +738,7 @@ if(aux_function_info == NULL){\
 		} \
 		\
 		/* restore ptrCurretOp... */ \
-		ptrCurrentOp=mm_test_startArg-2; \
+		ptrCurrentOp=mm_test_startArg-n_metam_args; \
 		/* if function is C must register pointer ! */ \
 		 \
 		if(ret_obj->properties & STK_PROPERTY_TYPE_SCRIPTVAR){ \
