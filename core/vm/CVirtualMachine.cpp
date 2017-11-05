@@ -850,6 +850,10 @@ if(aux_function_info == NULL){\
 	void CVirtualMachine::clearGlobals(){
 		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
 
+		if(zero_shares == NULL){
+			return;
+		}
+
 		if(main_function == NULL){ // not created.
 			return;
 		}
@@ -876,6 +880,7 @@ if(aux_function_info == NULL){\
 		}
 
 		REMOVE_0_SHARED_POINTERS(0,NULL);
+
 	}
 
 	#ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
