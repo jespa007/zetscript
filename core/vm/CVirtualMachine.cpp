@@ -850,10 +850,6 @@ if(aux_function_info == NULL){\
 	void CVirtualMachine::clearGlobals(){
 		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
 
-		if(zero_shares == NULL){
-			return;
-		}
-
 		if(main_function == NULL){ // not created.
 			return;
 		}
