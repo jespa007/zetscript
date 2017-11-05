@@ -541,6 +541,12 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 			(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
+			if(STRCMP(registered_metamethod[SET_METAMETHOD],==,function_name)){
+				(*vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(irs->object_info.idxScriptFunctionObject);
+				zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
+			}
+
+
 			return true;
 		}
 
@@ -620,43 +626,49 @@ BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 			(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
-			// check whether is metamethod...
+			// check whether is static metamethod...
+			if(STRCMP(registered_metamethod[SET_METAMETHOD],!=,function_name)){
 
-			for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-				if(STRCMP(registered_metamethod[i],==,function_name)){
-					// check if they are gte,gt,equ, not_equ, lt, lte
-					if(  i == EQU_METAMETHOD //STRCMP(function_name, == ,"_equ")
-					  || i == NOT_EQU_METAMETHOD //STRCMP(function_name, ==, "_nequ")
-					  || i == LT_METAMETHOD//STRCMP(function_name, ==, "_lt")
-					  || i == LTE_METAMETHOD//STRCMP(function_name, ==, "_lte")
-					  || i == GT_METAMETHOD//STRCMP(function_name, ==, "_gt")
-					  || i == GTE_METAMETHOD//STRCMP(function_name, ==, "_gte")
-					  || i == NOT_METAMETHOD//STRCMP(function_name, ==, "_gte")
-					  ){
-						// return type must be bool...
-						if(STRCMP(return_type.c_str(), != ,typeid(bool).name())){
-							zs_print_error_cr("error registering metamethod %s::%s. Expected return bool but it was %s",
+				for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
+					if(STRCMP(registered_metamethod[i],==,function_name)){
+
+						// check if they are gte,gt,equ, not_equ, lt, lte
+						if(  i == EQU_METAMETHOD //STRCMP(function_name, == ,"_equ")
+						  || i == NOT_EQU_METAMETHOD //STRCMP(function_name, ==, "_nequ")
+						  || i == LT_METAMETHOD//STRCMP(function_name, ==, "_lt")
+						  || i == LTE_METAMETHOD//STRCMP(function_name, ==, "_lte")
+						  || i == GT_METAMETHOD//STRCMP(function_name, ==, "_gt")
+						  || i == GTE_METAMETHOD//STRCMP(function_name, ==, "_gte")
+						  || i == NOT_METAMETHOD//STRCMP(function_name, ==, "_gte")
+						  ){
+							// return type must be bool...
+							if(STRCMP(return_type.c_str(), != ,typeid(bool).name())){
+								zs_print_error_cr("error registering metamethod %s::%s. Expected return bool but it was %s",
+										demangle(typeid(_T).name()).c_str(),
+										function_name,
+										demangle(return_type.c_str()).c_str());
+								return false;
+
+							}
+						}else if((return_type != str_classPtr) && (i!= SET_METAMETHOD)){
+
+							zs_print_error_cr("error registering metamethod %s::%s. Expected return %s but it was %s",
 									demangle(typeid(_T).name()).c_str(),
 									function_name,
+									demangle(str_classPtr.c_str()).c_str(),
 									demangle(return_type.c_str()).c_str());
 							return false;
-
 						}
-					}else if((return_type != str_classPtr) && (i!= SET_METAMETHOD)){
 
-						zs_print_error_cr("error registering metamethod %s::%s. Expected return %s but it was %s",
-								demangle(typeid(_T).name()).c_str(),
-								function_name,
-								demangle(str_classPtr.c_str()).c_str(),
-								demangle(return_type.c_str()).c_str());
-						return false;
+						(*vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
+
+						zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
+						break;
 					}
-
-					(*vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
-
-					zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
-					break;
 				}
+			}else{
+				zs_print_error_cr("error! cannot register metamethod set on static function. Must be member function!");
+				return false;
 			}
 
 			return true;

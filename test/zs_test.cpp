@@ -92,12 +92,12 @@ public:
 		n=_n;
 	}
 
-	static void _set(CInteger  * _ci, int i){
-		_ci->n = i;
+	void _set(int i){
+		this->n = i;
 	}
 
-	static void _set(CInteger  * _ci1, CInteger *_ci2){
-		_ci1->n = _ci2->n;
+	void _set(CInteger *_ci2){
+		this->n = _ci2->n;
 	}
 
 
@@ -476,7 +476,7 @@ int main(int argc, char * argv[]) {
 
 	int n_test=0;
 
-
+	CZetScript::getInstance();
 
 /*	"test_arithmetic_operations.zs",
 	"test_binary_operations.zs",
@@ -517,8 +517,8 @@ int main(int argc, char * argv[]) {
 
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return false;
-	if(!register_C_StaticFunctionMember<CInteger>("_set",static_cast<void (*)(CInteger *,int)>(&CInteger::_set))) return false;
-	if(!register_C_StaticFunctionMember<CInteger>("_set",static_cast<void (*)(CInteger *,CInteger *)>(&CInteger::_set))) return false;
+	if(!register_C_FunctionMember("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set))) return false;
+	if(!register_C_FunctionMember("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set))) return false;
 
 
 

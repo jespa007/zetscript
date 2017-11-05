@@ -285,7 +285,7 @@ namespace zetscript{
 	#define ASSIGN_STACK_VAR(dst_ins, src_ins) \
 	{\
 		CScriptVariable *script_var=NULL;\
-		string *aux_str;\
+		string *aux_str=NULL;\
 		void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update stkValue on save) */\
 		void **src_ref=&src_ins->stkValue;\
 		void **dst_ref=&dst_ins->stkValue;\
@@ -668,25 +668,37 @@ if(aux_function_info == NULL){\
 
 
 	#define APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__) \
-		int n_metam_args=((__METAMETHOD__== NOT_METAMETHOD|| __METAMETHOD__ ==NEG_METAMETHOD ) ? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);\
+		int idxOffsetFunctionMemberStart=0;\
+		CScriptVariable *script_var_object = NULL;\
+		CScriptVariable *one_param = NULL;\
+		int n_metam_args=((__METAMETHOD__ == NOT_METAMETHOD\
+				        || __METAMETHOD__ == NEG_METAMETHOD\
+						|| __METAMETHOD__ == SET_METAMETHOD\
+   	   	   	   	   	   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);\
 		tStackElement *mm_test_startArg = ptrCurrentOp+n_metam_args; \
 		if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ /* search for first time , else the function is stored in index_op2 */\
 			script_class_aux=NULL; \
 			vec_global_functions=NULL; \
 			aux_function_info = NULL; \
-			CScriptVariable *v1 = NULL;\
 			\
 			\
 			\
 			if(((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){\
-				v1 = (CScriptVariable *)(ptrResultInstructionOp1->varRef);\
+				script_var_object = (CScriptVariable *)(ptrResultInstructionOp1->varRef);\
 				if(((ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){\
-					v1 = (CScriptVariable *)(((tStackElement *)v1))->varRef;\
+					script_var_object = (CScriptVariable *)(((tStackElement *)script_var_object))->varRef;\
+				}\
+				if(__METAMETHOD__ == SET_METAMETHOD){\
+					idxOffsetFunctionMemberStart=1;\
+					one_param = (CScriptVariable *)(ptrResultInstructionOp2->varRef);\
+					if(((ptrResultInstructionOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){\
+						one_param = (CScriptVariable *)(((tStackElement *)one_param))->varRef;\
+					}\
 				}\
 			}else if(((ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
-				v1 = (CScriptVariable *)(ptrResultInstructionOp2->varRef);\
+				script_var_object = (CScriptVariable *)(ptrResultInstructionOp2->varRef);\
 				if(((ptrResultInstructionOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){\
-					v1 = (CScriptVariable *)(((tStackElement *)v1))->varRef;\
+					script_var_object = (CScriptVariable *)(((tStackElement *)script_var_object))->varRef;\
 				}\
 			}else{\
 				\
@@ -709,12 +721,12 @@ if(aux_function_info == NULL){\
 				return NULL;\
 			}\
 \
-			script_class_aux=REGISTERED_CLASS_NODE(v1->idxScriptClass);\
+			script_class_aux=REGISTERED_CLASS_NODE(script_var_object->idxScriptClass);\
 			vector<tSymbolInfo> *m_functionSymbol=NULL;\
 			vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];\
 			int size_fun_vec = vec_global_functions->size()-1;\
 			bool is_constructor = false;\
-			tStackElement *startArgs=(mm_test_startArg-n_metam_args);\
+			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);\
 			unsigned n_args=n_metam_args;\
 			symbol_to_find=script_class_aux->registered_metamethod[__METAMETHOD__];\
 			\
@@ -733,7 +745,7 @@ if(aux_function_info == NULL){\
 			aux_function_info = (CScriptFunctionObject *)instruction->index_op2; \
 		} \
 		/* by default virtual machine gets main object class in order to run functions ... */ \
-		if((ret_obj=execute_internal(aux_function_info,this_object,mm_test_startArg,ptrCurrentStr,n_metam_args))==NULL){ \
+		if((ret_obj=execute_internal(aux_function_info,script_var_object,mm_test_startArg+idxOffsetFunctionMemberStart,ptrCurrentStr,n_metam_args))==NULL){ \
 				return NULL; \
 		} \
 		\
@@ -1744,6 +1756,15 @@ if(aux_function_info == NULL){\
 
 								if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 									POP_ONE; // get var op1 and symbol op2
+
+									if((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR)!= STK_PROPERTY_TYPE_SCRIPTVAR)
+									{
+
+										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var is not scriptvariable");
+										return NULL;
+									}
+
+
 									CScriptVariable  * base_var = (CScriptVariable  *)ptrResultInstructionOp1->varRef;
 									if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {
 										tStackElement *stk_ins=((tStackElement *)ptrResultInstructionOp1->varRef);
@@ -2088,7 +2109,6 @@ if(aux_function_info == NULL){\
 							if(((CScriptVariable *)dst_ins->varRef)->itHasSetMetamethod()){
 								APPLY_METAMETHOD(=,SET_METAMETHOD);
 								assign_metamethod=true;
-
 							}
 						}
 

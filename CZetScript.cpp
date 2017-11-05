@@ -71,10 +71,10 @@ namespace zetscript{
 			memset(str_error, 0,sizeof(str_error));
 		}
 
-		sprintf(str_error,"[%s:%i] %s", filename, line, aux_text);
+		sprintf(str_error,"%s[%s:%i] %s\n",str_error, filename, line, aux_text);
 
 #if __DEBUG__
-		zs_print_error_cr(str_error);
+		zs_print_error_cr("[%s:%i] %s",filename, line,aux_text);
 #endif
 
 	}
