@@ -5,72 +5,55 @@
 #include "CZetScript.h"
 
 using namespace zetscript;
-class MyNumber{
-public:
-  int num;
 
-  MyNumber(){
-    this->num=0;
-  }
 
-  void _construct(int _n){
-     printf("_construct MyNumber to %i\n",_n);
-     this->num=_n;
-  }
+/**
+ * Register C Member function Class
+ */
+template <  typename _F>
+std::function<_F> * bind_staticFunctionMemberInt()
+{
+	string return_type;
+	vector<string> params;
+	//CScriptFunctionObject *irs=NULL;
+	vector<string> m_arg;
+	int idx_return_type=-1;
+	//_F function_type;
+	//unsigned int ref_ptr=-1;
+	//string str_classPtr = typeid( _T *).name();
 
-  void _construct(MyNumber * _n){
-     printf("_construct MyNumber to %i\n",_n->num);
-     this->num=_n->num;
-  }
+	/*int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
 
-  void _set(int _n){
-     printf("assign v: %i\n",_n);
-     this->num=_n;
-  }
+	if(idxRegisterdClass == -1){
+		return false;
+	}*/
 
-  void _set(MyNumber * _n){
-     printf("assign object v:%i\n",_n->num);
-     this->num=_n->num;
-  }
+	// 1. check all parameters ok.
+	using Traits3 = function_traits<_F>;//decltype(function_type)>;
+	getParamsFunction<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
 
-};
+
+	// check valid parameters ...
+	if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
+		zs_print_error_cr("Return type \"%s\" for bind function not registered",demangle(return_type).c_str());
+		return NULL;
+	}
+
+	for(unsigned int i = 0; i < m_arg.size(); i++){
+		if(getIdxClassFromIts_C_Type(m_arg[i])==-1){
+			zs_print_error_cr("Argument (%i) type \"%s\" for bind function not registered",i,demangle(m_arg[i]).c_str());
+			return NULL;
+		}
+
+	}
+
+	return true;
+
+}
 
 int main(int argc, char * argv[]) {
 
-	/* CZetScript *zs = CZetScript::getInstance();
-
-	  // register class MyNumber
-	  register_C_Class<MyNumber>("MyNumber");
-
-	  // register variable member num
-	  register_C_VariableMember("num",&MyNumber::num);
-
-	  // register constructor through function MyNumber::_set
-	  register_C_FunctionMember("MyNumber",static_cast<void (MyNumber ::*)(int)>(&MyNumber::_construct));
-	  register_C_FunctionMember("MyNumber",static_cast<void (MyNumber ::*)(MyNumber *)>(&MyNumber::_construct));
-
-
-	  // register function _set as metamethod (same as constructor)
-	  register_C_FunctionMember("_set",static_cast<void (MyNumber ::*)(int)>(&MyNumber::_set));
-	  register_C_FunctionMember("_set",static_cast<void (MyNumber ::*)(MyNumber *)>(&MyNumber::_set));*/
-
-	/*  if(!zs->eval(
-	"var n1 = new MyNumber (10);\n"
-"var n2 = new MyNumber (20);\n"
-"var n3=n1; //  n3 is undefined!\n"
-"n3=n2;\n"
-"print(\"n1:\"+n1.num);\n"
-"print(\"n3:\"+n3.num);\n"
-"n3=10;\n"
-"print(\"n3:\"+n3.num);\n"
-
-	  )){
-	     fprintf(stderr,"%s",ZS_GET_ERROR_MSG());
-	  }
-
-
-	  return 0;*/
-
+	auto f=bind_staticFunctionMemberInt<void ()>();
 
 	CZetScript *zetscript = CZetScript::getInstance();
 
@@ -86,14 +69,10 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
-	//if (
-			if(!zetscript->eval_file(argv[1])){
-				fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
-			}
-	 //  )
-//	{
-//		zetscript->execute();
-//	}
+
+	if(!zetscript->eval_file(argv[1])){
+		fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
+	}
 
 	CZetScript::destroy();
 
