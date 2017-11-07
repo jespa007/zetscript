@@ -60,8 +60,6 @@
 
 namespace zetscript{
 
-int 							getIdxClassFromIts_C_Type(const string & c_type_str);
-BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 /**
  * Stores the basic information to build a object through built AST structure

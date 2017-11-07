@@ -26,8 +26,6 @@ namespace zetscript{
 	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const vector<CScriptVariable *> & param)>
 
 
-	int 									getIdxClassFromIts_C_Type(const string & c_type_str);
-	BASIC_CLASS_TYPE 				getIdxPrimitiveFromIts_C_Type(const string & c_type_str);
 
 
 	class CScriptFunction;

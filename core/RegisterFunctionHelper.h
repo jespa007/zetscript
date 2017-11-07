@@ -79,7 +79,7 @@ namespace zetscript{
 	};
 
 
-
+	// unpack function helper
 	template <std::size_t...> struct index_sequence {};
 	template <std::size_t N, std::size_t... Is> struct make_index_sequence : make_index_sequence<N-1, N-1, Is...> {};
 	template <std::size_t... Is> struct make_index_sequence<0, Is...> : index_sequence<Is...> {};
