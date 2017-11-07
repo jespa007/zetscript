@@ -28,23 +28,17 @@ int main(){
 
 
 
-	auto delete_test=zs->bind_function("delete_test");
-	auto test_function1=zs->bind_function("test.function1");
+	auto delete_test=zs->bind_function<void ()>("delete_test");
+	auto test_function1=zs->bind_function<void ()>("test.function1");
 
 
 
 	if(test_function1){
-		if(!(*test_function1)(NO_PARAMS)){
-			fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
-			return -1;
-		}
+		(*test_function1)();
 	}
 
 	if(delete_test){ // if the function exist,
-		if(!(*delete_test)(NO_PARAMS)){
-			fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
-			return -1;
-		}
+		(*delete_test)();
 	}
 
 	// delete function obj

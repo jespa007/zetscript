@@ -10,7 +10,43 @@ namespace zetscript{
 		: public function_traits<decltype(&T::operator())>
 	{};
 
-	// function pointer
+
+	//------------------------------------------------------------
+	// Function traits for typedef function
+
+	// function without args ...
+	template<class R>
+	struct function_traits<R()>
+	{
+		using return_type = R;
+		static constexpr std::size_t arity = 0;
+		struct argument
+		{
+
+		};
+
+	};
+
+
+	// with args  ...
+	template<class R, class... Args>
+	struct function_traits<R(Args...)>
+	{
+		using return_type = R;
+
+		static constexpr std::size_t arity = sizeof...(Args);
+
+		template <std::size_t N>
+		struct argument
+		{
+			static_assert(N < arity, "error:  Member function OBJECT invalid parameter index.");
+			using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
+		};
+	};
+
+
+	//------------------------------------------------------------
+	// Function traits typedef C pointer function
 	template<class R, class... Args>
 	struct function_traits<R(*)(Args...)> : public function_traits<R(Args...)>
 	{
@@ -21,12 +57,20 @@ namespace zetscript{
 		template <std::size_t N>
 		struct argument
 		{
-			static_assert(N < arity, "error: invalid parameter index.");
+			static_assert(N < arity, "error: C function invalid parameter index.");
 			using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
 		};
 	};
 
-	// member function pointer
+	//------------------------------------------------------------
+	// Function traits member object pointer
+	template<class C, class R>
+	struct function_traits<R(C::*)> : public function_traits<R(C&)>
+	{};
+
+	//------------------------------------------------------------
+	// Function traits typedef function member pointer function
+
 	template<class C, class R, class... Args>
 	struct function_traits<R(C::*)(Args...)> : public function_traits<R(C&,Args...)>
 	{
@@ -37,7 +81,7 @@ namespace zetscript{
 		template <std::size_t N>
 		struct argument
 		{
-			static_assert(N < arity, "error: invalid parameter index.");
+			static_assert(N < arity, "error: C function invalid parameter index.");
 			using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
 		};
 	};
@@ -53,30 +97,11 @@ namespace zetscript{
 		template <std::size_t N>
 		struct argument
 		{
-			static_assert(N < arity, "error: invalid parameter index.");
+			static_assert(N < arity, "error: Member function invalid parameter index.");
 			using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
 		};
 	};
 
-	// member object pointer
-	template<class C, class R>
-	struct function_traits<R(C::*)> : public function_traits<R(C&)>
-	{};
-
-	template<class R, class... Args>
-	struct function_traits<R(Args...)>
-	{
-		using return_type = R;
-
-		static constexpr std::size_t arity = sizeof...(Args);
-
-		template <std::size_t N>
-		struct argument
-		{
-			static_assert(N < arity, "error: invalid parameter index.");
-			using type = typename std::tuple_element<N,std::tuple<Args...>>::type;
-		};
-	};
 
 
 	// unpack function helper
@@ -85,8 +110,7 @@ namespace zetscript{
 	template <std::size_t... Is> struct make_index_sequence<0, Is...> : index_sequence<Is...> {};
 
 
-
-
+	// Dynaminc unpack parameter function ...
 	// template for last parameter argIdx == 1
 	template <size_t argIdx, typename F, typename... Args>
 	auto getArgTypes( std::vector<std::string> & params)

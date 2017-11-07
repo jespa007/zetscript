@@ -175,14 +175,14 @@ public:
 };
 
 
-std::function<CScriptVariable *(const vector<CScriptVariable *> &)> *test_2nd_script_call=NULL;
+std::function<void ()> * test_2nd_script_call = NULL;
 
 
 void test_function_1st_c_call(){
 	 printf("C Function 1st call from script\n");
 
 	 if(test_2nd_script_call != NULL){
-		 (*test_2nd_script_call)(NO_PARAMS);
+		 (*test_2nd_script_call)();
 	 }
 }
 
@@ -645,11 +645,11 @@ int main(int argc, char * argv[]) {
 	// test calling script-c-script-c
 	register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
 	CZetScript::getInstance()->eval("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
-	auto test_1st_script_call=CZetScript::getInstance()->bind_function("test_1st_script_call");
-	test_2nd_script_call=CZetScript::getInstance()->bind_function("test_2nd_script_call");
+	auto test_1st_script_call=CZetScript::getInstance()->bind_function<void ()>("test_1st_script_call");
+	test_2nd_script_call=CZetScript::getInstance()->bind_function<void ()>("test_2nd_script_call");
 
 	if(test_1st_script_call){
-		(*test_1st_script_call)(NO_PARAMS);
+		(*test_1st_script_call)();
 	}
 
 

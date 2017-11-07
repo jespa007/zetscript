@@ -697,11 +697,12 @@ namespace zetscript{
 		return status;
 	}
 
-	std::function<CScriptVariable * (const std::vector<CScriptVariable *> & args)> * CZetScript::bind_function(const string &function_access_expression){
+	//CScriptFunctionObject *getScriptObjectFromScriptFunctionAccessName(const string &function_access_expression)
+	CScriptFunctionObject * CZetScript::getScriptObjectFromFunctionAccess(const string &function_access){
 
 		ZS_CLEAR_ERROR_MSG();
 
-		vector<string> access_var = CStringUtils::split(function_access_expression,'.');
+		vector<string> access_var = CStringUtils::split(function_access,'.');
 		CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
 		CScriptVariable *calling_obj = NULL;
 		tSymbolInfo *is=NULL;
@@ -737,12 +738,12 @@ namespace zetscript{
 						if(is->object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							calling_obj=(CScriptVariable *)is->object.varRef;
 						}else{
-							zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access_expression.c_str(),symbol_to_find.c_str());
+							zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
 							return NULL;
 						}
 					}
 					else{
-						zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access_expression.c_str(),symbol_to_find.c_str());
+						zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return NULL;
 					}
 
@@ -757,7 +758,7 @@ namespace zetscript{
 				}
 			}else{
 
-				zs_print_error_cr("error evaluating \"%s\". Cannot find function \"%s\"",function_access_expression.c_str(),access_var[access_var.size()-1].c_str());
+				zs_print_error_cr("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
 				return NULL;
 			}
 
@@ -773,18 +774,18 @@ namespace zetscript{
 		}
 
 		if(fun_obj==NULL){
-			zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access_expression.c_str(),access_var[access_var.size()-1].c_str());
+			zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str());
 			return NULL;
 		}
 
+		return fun_obj;
 
-
-		return new std::function<CScriptVariable * (const std::vector<CScriptVariable *> & _args)>([&,calling_obj,fun_obj](const std::vector<CScriptVariable *> & _args){
+/*		return new std::function<CScriptVariable * (const std::vector<CScriptVariable *> & _args)>([&,calling_obj,fun_obj](const std::vector<CScriptVariable *> & _args){
 					return vm->execute(
 								fun_obj,
 								calling_obj,
 								_args);
-				});
+				});*/
 	}
 
 	CVirtualMachine * CZetScript::getVirtualMachine(){
