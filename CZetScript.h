@@ -10,8 +10,8 @@
 #include "core/zs_core.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 1
-#define ZETSCRIPT_MINOR_VERSION 0
-#define ZETSCRIPT_PATCH_VERSION 2
+#define ZETSCRIPT_MINOR_VERSION 1
+#define ZETSCRIPT_PATCH_VERSION 0
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
