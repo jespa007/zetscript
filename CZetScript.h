@@ -55,7 +55,7 @@ namespace zetscript{
 
 		bool parse_ast(const char *str, const char *filename=NULL);
 
-		CScriptFunctionObject * getScriptObjectFromFunctionAccess(const string &function_access_expression);
+
 
 
 		//CScriptFunctionObject m_structInfoMain;
@@ -97,188 +97,9 @@ namespace zetscript{
 		// PRINT ASM INFO
 		//---------------
 
-		// we implement as many interface C++ functions as max parameters we can manage (6)
-
-		// trivial case when parameters (argIdx == 0).
-		template <typename _T>
-		auto bind_script_function_builder(void **f)
-		{
-
-			using tReturn = typename _T::return_type;
-			//return NULL;
-			 // NO ARGS CASE
-			*f=((void *)(new std::function<tReturn ()>(
-				[](){
-					printf("hello 0");
-				}
-			)));
-		}
-
-		// template for last parameter argIdx == 1
-		template<typename _T,  typename... ArgTypes>
-		auto bind_script_function_builder(void **f )
-			-> typename std::enable_if<sizeof...(ArgTypes) == 1>::type
-		{
-			//return NULL;
-			using tReturn = typename _T::return_type;
-			using tParam1 = typename _T::template argument<0>::type;
-
-			*f=((void *)(new std::function<tReturn (tParam1)>([](tParam1 p1){
-				printf("hello 1");
-			})));
-
-		}
-
-		// template when parameters argIdx == 2
-		template <typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f)
-			-> typename std::enable_if<(sizeof...(ArgTypes) == 2)>::type
-		{
-			using tReturn = typename _T::return_type;
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-
-			*f=((void *)(new std::function<tReturn (tParam1,tParam2)>([](tParam1 p1,tParam2 p2){
-				printf("hello 2");
-			})));
-
-
-			//return NULL;
-		}
-
-		// template when parameters argIdx == 3
-		template <typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f)
-			-> typename std::enable_if<(sizeof...(ArgTypes) == 3)>::type
-		{
-			using tReturn = typename _T::return_type;
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-
-
-			*f=((void *)(new std::function<tReturn (tParam1,tParam2,tParam3)>(
-				[](tParam1 p1,tParam2 p2,tParam3 p3){
-					printf("hello 3");
-				}
-			)));;
-		}
-
-		// template when parameters argIdx == 4
-		template <typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f)
-			-> typename std::enable_if<(sizeof...(ArgTypes) == 4)>::type
-		{
-			using tReturn = typename _T::return_type;
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-			using tParam4 = typename _T::template argument<3>::type;
-
-			*f=((void *)(new std::function<tReturn (tParam1,tParam2,tParam3,tParam4)>(
-				[](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4){
-					printf("hello 4");
-				}
-			)));
-		}
-
-
-		// template when parameters argIdx == 5
-		template <typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f)
-			-> typename std::enable_if<(sizeof...(ArgTypes) == 5)>::type
-		{
-			using tReturn = typename _T::return_type;
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-			using tParam4 = typename _T::template argument<3>::type;
-			using tParam5 = typename _T::template argument<4>::type;
-
-			*f=((void *)(new std::function<tReturn (tParam1,tParam2,tParam3,tParam4,tParam5)>(
-				[](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5){
-					printf("hello 5");
-				}
-			)));
-			//return NULL;
-		}
-
-		// template when parameters argIdx == 6
-		template <typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f)
-			-> typename std::enable_if<(sizeof...(ArgTypes) == 6)>::type
-		{
-			using tReturn = typename _T::return_type;
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-			using tParam4 = typename _T::template argument<3>::type;
-			using tParam5 = typename _T::template argument<4>::type;
-			using tParam6 = typename _T::template argument<5>::type;
-
-			*f=((void *)(new std::function<tReturn (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
-				[](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
-					printf("hello 6");
-				}
-			)));
-			//return NULL;
-		}
-
-
-		 template <typename _T, std::size_t... Is>
-		void bind_script_function_builder_base(void **f, index_sequence<Is...>)
-		{
-
-			 bind_script_function_builder<_T, typename _T::template argument<Is>::type...>(f);
-		}
-
-					// 3. build custom function in function of parameter number ...
-					//bind_script_function_builder_base<Traits3>(&ptr,make_index_sequence<Traits3::arity>{});
-
-		/**
-		 * Main bind function
-		 */
-
-		template <  typename _F>
-		std::function<_F> * bind_function(const string & function_access)
-		{
-			string return_type;
-			vector<string> params;
-			vector<string> m_arg;
-			int idx_return_type=-1;
-			void *ptr;
-			CScriptFunctionObject * fun = getScriptObjectFromFunctionAccess(function_access);
-
-			if(fun)
-			{
-
-				// 1. check all parameters ok.
-				using Traits3 = function_traits<_F>;//decltype(function_type)>;
-				getParamsFunction<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
-
-				// 2. check valid parameters ...
-				if((idx_return_type=CScriptClass::getIdxClassFromIts_C_Type(return_type)) == -1){
-					zs_print_error_cr("Return type \"%s\" for bind function not registered",demangle(return_type).c_str());
-					return NULL;
-				}
-
-				for(unsigned int i = 0; i < m_arg.size(); i++){
-					if(CScriptClass::getIdxClassFromIts_C_Type(m_arg[i])==-1){
-						zs_print_error_cr("Argument (%i) type \"%s\" for bind function not registered",i,demangle(m_arg[i]).c_str());
-						return NULL;
-					}
-
-				}
-
-				// 3. build custom function in function of parameter number ...
-				bind_script_function_builder_base<Traits3>(&ptr,make_index_sequence<Traits3::arity>{});
-				return (std::function<_F> *)ptr;
-
-			}
-
-			return NULL;
-
-		}
+		bool getScriptObjectFromFunctionAccess(const string &function_access_expression
+																  ,CScriptVariable **calling_obj
+																  ,CScriptFunctionObject **fun_obj);
 
 		/*CScriptFunctionObject *getMainStructInfo(){return m_mainFunctionInfo;}
 		tFunctionInfo *getMainObjectInfo(){return &m_mainFunctionInfo->object_info;}
@@ -294,7 +115,7 @@ namespace zetscript{
 
 		//std::function<CScriptVariable * (void)> * function_bind_no_params(const string &script_function_name);
 
-		CScriptVariable * execute();
+		bool execute();
 
 		bool eval(const string & string, bool execute=true, const char *filename=NULL);
 		bool eval_file(const char * filename);

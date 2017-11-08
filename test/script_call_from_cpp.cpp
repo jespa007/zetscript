@@ -28,7 +28,7 @@ int main(){
 
 
 
-	auto delete_test=zs->bind_function<void ()>("delete_test");
+/*	auto delete_test=zs->bind_function<void ()>("delete_test");
 	auto test_function1=zs->bind_function<void ()>("test.function1");
 
 
@@ -43,6 +43,6 @@ int main(){
 
 	// delete function obj
 	delete 	test_function1;
-	delete 	delete_test;
+	delete 	delete_test;*/
 
 }

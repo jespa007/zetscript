@@ -22,7 +22,7 @@ namespace zetscript{
 	#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
 	#define SET_STRING_RETURN(s)  	CURRENT_VM->setStringReturnValue(s)
 
-	#define NO_PARAMS vector<zetscript::CScriptVariable*>{}
+	#define NO_PARAMS vector<tStackElement>{}
 	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const vector<CScriptVariable *> & param)>
 
 
@@ -99,10 +99,10 @@ namespace zetscript{
 		}
 
 
-		CScriptVariable * execute(
+		tStackElement * execute(
 					 CScriptFunctionObject *info_function,
 					 CScriptVariable *this_object,
-					const vector<CScriptVariable *> &  argv=NO_PARAMS);
+					const vector<tStackElement> &  argv=NO_PARAMS);
 
 
 		void setCallResult(tStackElement *);

@@ -1443,10 +1443,10 @@ if(aux_function_info == NULL){\
 	}
 
 
-	CScriptVariable * CVirtualMachine::execute(
+	tStackElement * CVirtualMachine::execute(
 			 CScriptFunctionObject *info_function,
 			 CScriptVariable *this_object,
-			const vector<CScriptVariable *> & arg
+			const vector<tStackElement> & arg
 			){
 
 		if(info_function==NULL){
@@ -1469,11 +1469,14 @@ if(aux_function_info == NULL){\
 		}
 
 		int n_arg=0;
-		if(arg.size()>0){
+		if(arg.size()>0){ // pass parameters...
 
+			for(unsigned i = 0; i < arg.size(); i++){
+				*ptrCurrentOp++=arg[i];
+			}
 			//advance idxBaseStk...
 			//idxBaseStk+=arg->size();
-			//n_arg=arg->size();
+			n_arg=arg.size();
 		}
 
 		// Script function starts here.... later script function can call c++ function, but once in c++ function is not possible by now call script function again.
@@ -1493,7 +1496,7 @@ if(aux_function_info == NULL){\
 			return NULL;
 		}
 
-		return ((CScriptVariable *)(-1));
+		return info;
 	}
 
 

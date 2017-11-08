@@ -698,15 +698,15 @@ namespace zetscript{
 	}
 
 	//CScriptFunctionObject *getScriptObjectFromScriptFunctionAccessName(const string &function_access_expression)
-	CScriptFunctionObject * CZetScript::getScriptObjectFromFunctionAccess(const string &function_access){
+	bool CZetScript::getScriptObjectFromFunctionAccess(const string &function_access,CScriptVariable **calling_obj,CScriptFunctionObject **fun_obj ){
 
 		ZS_CLEAR_ERROR_MSG();
 
 		vector<string> access_var = CStringUtils::split(function_access,'.');
 		CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
-		CScriptVariable *calling_obj = NULL;
+		*calling_obj = NULL;
 		tSymbolInfo *is=NULL;
-		CScriptFunctionObject *fun_obj=NULL;
+		*fun_obj=NULL;
 
 
 		// 1. accessing var scopes...
@@ -721,64 +721,64 @@ namespace zetscript{
 							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].
 							if(stk!=NULL){
 								if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-									calling_obj=(CScriptVariable *)stk->varRef;
+									*calling_obj=(CScriptVariable *)stk->varRef;
 								}
 							}
 							else{
 								zs_print_error_cr("cannot access i (%i)",j);
-								return NULL;
+								return false;
 							}
 						}
 					}
 				}else{ // we have got the calling_obj from last iteration ...
-					is = calling_obj->getVariableSymbol(symbol_to_find);
+					is = (*calling_obj)->getVariableSymbol(symbol_to_find);
 
 					if(is!=NULL){
 
 						if(is->object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							calling_obj=(CScriptVariable *)is->object.varRef;
+							*calling_obj=(CScriptVariable *)is->object.varRef;
 						}else{
 							zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
-							return NULL;
+							return false;
 						}
 					}
 					else{
 						zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
-						return NULL;
+						return false;
 					}
 
 				}
 
 			}
 
-			is=calling_obj->getFunctionSymbol(access_var[access_var.size()-1]);
+			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1]);
 			if(is!=NULL){
 				if(is->object.properties & STK_PROPERTY_TYPE_FUNCTION){
-					fun_obj=(CScriptFunctionObject *)is->object.stkValue;
+					*fun_obj=(CScriptFunctionObject *)is->object.stkValue;
 				}
 			}else{
 
 				zs_print_error_cr("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
-				return NULL;
+				return false;
 			}
 
 
 		}else{
-			calling_obj = m_mainObject;
+			*calling_obj = m_mainObject;
 			for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size() && fun_obj==NULL; i++){
 				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
 				if(aux_fun_obj->object_info.symbol_info.symbol_name == access_var[0]){
-					fun_obj=aux_fun_obj;
+					*fun_obj=aux_fun_obj;
 				}
 			}
 		}
 
 		if(fun_obj==NULL){
 			zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str());
-			return NULL;
+			return false;
 		}
 
-		return fun_obj;
+		return true;
 
 /*		return new std::function<CScriptVariable * (const std::vector<CScriptVariable *> & _args)>([&,calling_obj,fun_obj](const std::vector<CScriptVariable *> & _args){
 					return vm->execute(
@@ -792,12 +792,12 @@ namespace zetscript{
 		return vm;
 	}
 
-	CScriptVariable * CZetScript::execute(){
+	bool CZetScript::execute(){
 
 		if(!__init__) return NULL;
 
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject);//->excute();
+		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject) != NULL;//->excute();
 	}
 	//-------------------------------------------------------------------------------------
 	CZetScript::~CZetScript(){
