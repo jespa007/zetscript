@@ -716,7 +716,7 @@ namespace zetscript{
 				string symbol_to_find=access_var[i];
 				if(i==0){ // get variable through main_class.main_function (global element)
 
-					for(unsigned j = 0; j < m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable.size() && calling_obj==NULL; j++){
+					for(unsigned j = 0; j < m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable.size() && *calling_obj==NULL; j++){
 						if(m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].symbol_name==symbol_to_find){
 							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].
 							if(stk!=NULL){
@@ -765,7 +765,7 @@ namespace zetscript{
 
 		}else{
 			*calling_obj = m_mainObject;
-			for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size() && fun_obj==NULL; i++){
+			for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size() && *fun_obj==NULL; i++){
 				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
 				if(aux_fun_obj->object_info.symbol_info.symbol_name == access_var[0]){
 					*fun_obj=aux_fun_obj;
@@ -773,7 +773,7 @@ namespace zetscript{
 			}
 		}
 
-		if(fun_obj==NULL){
+		if(*fun_obj==NULL){
 			zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str());
 			return false;
 		}

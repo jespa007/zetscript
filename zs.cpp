@@ -57,9 +57,9 @@ tStackElement var2stk(_T var){
 }
 
 template<typename _T>
-intptr_t stk2var(tStackElement *stk_ret, int idx_ret){
+void stk2var(tStackElement *stk_ret, int idx_ret, void **result){
 
-	intptr_t val_ret=0;
+	void * val_ret=0;
 	string type_return_str = typeid(_T).name();
 	CScriptVariable *script_variable=NULL;
 
@@ -70,70 +70,70 @@ intptr_t stk2var(tStackElement *stk_ret, int idx_ret){
 	}
 
 	if((type_return_str == *CScriptClass::STACK_ELEMENT_PTR)){// && (stk_ret->properties & STK_PROPERTY_IS_STACKVAR)){ // set directly stackvar
-		val_ret=(intptr_t)stk_ret;
+		val_ret=stk_ret;
 	}else{
 
 		switch(GET_INS_PROPERTY_VAR_TYPE(stk_ret->properties)){
 		case STK_PROPERTY_TYPE_BOOLEAN:
 			if(type_return_str == *CScriptClass::BOOL_TYPE_STR){
-				val_ret=(intptr_t)(stk_ret->stkValue);
+				val_ret=(stk_ret->stkValue);
 			}else if(type_return_str != *CScriptClass::BOOL_PTR_TYPE_STR){
-				val_ret=(intptr_t)(&stk_ret->stkValue);
+				val_ret=(&stk_ret->stkValue);
 			}else{
 				zs_print_error_cr("cannot convert %s into %s",
 
 										demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
 										demangle(type_return_str).c_str()
 										);
-				return val_ret;
+				return;
 			}
 
 			break;
 		case STK_PROPERTY_TYPE_NUMBER:
 			if(type_return_str == *CScriptClass::FLOAT_TYPE_STR){
-				val_ret=(intptr_t)(stk_ret->stkValue);
+				val_ret=stk_ret->stkValue;
 			}else if(type_return_str == *CScriptClass::FLOAT_PTR_TYPE_STR){
-				val_ret=(intptr_t)(&stk_ret->stkValue);
+				val_ret=(&stk_ret->stkValue);
 			}else{
 				zs_print_error_cr( " cannot convert %s into %s",
 										demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
 										demangle(type_return_str).c_str()
 										);
-				return 0;
+				return;
 			}
 			break;
 		case STK_PROPERTY_TYPE_INTEGER:
 			if(type_return_str == *CScriptClass::INT_TYPE_STR){
-				val_ret=(intptr_t)(stk_ret->stkValue);
+				val_ret=(stk_ret->stkValue);
 			}else if(type_return_str == *CScriptClass::INT_PTR_TYPE_STR){
-				val_ret=(intptr_t)(&stk_ret->stkValue);
+				val_ret=(&stk_ret->stkValue);
 			}else{
 				zs_print_error_cr( "cannot convert %s into %s",
 							demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
 							demangle(type_return_str).c_str()
 						);
-				return 0;
+				return;
 			}
 			break;
 
 		case STK_PROPERTY_TYPE_STRING:
 			if(type_return_str == *CScriptClass::STRING_PTR_TYPE_STR){
 				if(stk_ret->varRef != 0){
-					val_ret=(intptr_t)(&((CStringScriptVariable *)(stk_ret->varRef))->m_strValue);
+					val_ret=(&((CStringScriptVariable *)(stk_ret->varRef))->m_strValue);
 				}
 				else{ // pass param string ...
 					zs_print_error_cr("(string *)Expected varRef not NULL");
-					return 0;
+					return;
 				}
 
 			}else if (type_return_str == *CScriptClass::CONST_CHAR_PTR_TYPE_STR){
-				val_ret=(intptr_t)(stk_ret->stkValue);
+				val_ret=(stk_ret->stkValue);
 			}else{
 				zs_print_error_cr(
 						demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
 						demangle(type_return_str).c_str()
 						);
-				return 0;
+				return;
 			}
 
 
@@ -146,45 +146,45 @@ intptr_t stk2var(tStackElement *stk_ret, int idx_ret){
 			if(script_variable==NULL){
 
 				zs_print_error_cr( "Variable is not defined");
-				return 0;
+				return;
 			}
 
 			if(script_variable->idxScriptClass==IDX_CLASS_STRING){
-				val_ret=(intptr_t)(&script_variable->m_strValue);
+				val_ret=(&script_variable->m_strValue);
 			}else if(
 
 			   (script_variable->idxScriptClass==IDX_CLASS_VECTOR
 			|| script_variable->idxScriptClass==IDX_CLASS_STRUCT)){
 
 				if(type_return_str==script_variable->getPointer_C_ClassName()){
-					val_ret=(intptr_t)script_variable->get_C_Object();
+					val_ret=script_variable->get_C_Object();
 				}
 
 			}else if((c_class=script_variable->get_C_Class())!=NULL){ // get the pointer directly ...
 				fntConversionType paramConv=0;
 				if(c_class->classPtrType==type_return_str){
-					val_ret=(intptr_t)script_variable->get_C_Object();
+					val_ret=script_variable->get_C_Object();
 				}else if((paramConv=CScriptClass::getConversionType(c_class->classPtrType,type_return_str))!=0){
-					val_ret=paramConv(script_variable);
+					val_ret=(void *)paramConv(script_variable);
 				}else { // try get C object ..
 
 					zs_print_error_cr("cannot convert %s into %s",
 								script_variable->getPointer_C_ClassName().c_str(),
 								type_return_str.c_str()
 						);
-					return 0;
+					return;
 				}
 			}else{ // CScriptVariable ?
 				zs_print_error_cr(" Error calling function, no C-object parameter! Unexpected script variable (%s)!"
 
 						,script_variable->getClassName().c_str());
-				return 0;
+				return;
 			}
 			break;
 		}
 	}
 
-	return val_ret;
+	*result = val_ret;
 
 
 }
@@ -200,7 +200,7 @@ auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptF
 	int idx_return_type=CScriptClass::getIdxClassFromIts_C_Type(typeid(tReturn).name());
 	 // NO ARGS CASE
 	if(idx_return_type == IDX_CLASS_VOID_C){
-		*f=((void *)(new std::function<tReturn ()>(
+		*f=((void *)(new std::function<void ()>(
 			[&,calling_obj,fun_obj,idx_return_type](){
 
 				CURRENT_VM->execute(
@@ -215,12 +215,14 @@ auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptF
 		*f=((void *)(new std::function<tReturn ()>(
 			[&,calling_obj,fun_obj,idx_return_type](){
 
+					tReturn ret_value;
+
 					tStackElement *stk = CURRENT_VM->execute(
 							fun_obj,
 							calling_obj);
 
-					return (tReturn)(stk2var<tReturn>(stk,idx_return_type));
-
+					stk2var<tReturn>(stk,idx_return_type, (void **)(&ret_value));
+					return ret_value;
 			}
 		)));
 	}
@@ -240,7 +242,7 @@ auto bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScript
 
 	if(idx_return_type == IDX_CLASS_VOID_C){
 
-		*f=((void *)(new std::function<tReturn (tParam1)>(
+		*f=((void *)(new std::function<void (tParam1)>(
 			[&,calling_obj,fun_obj,idx_return_type](tParam1 p1){
 
 				vector<tStackElement> args={
@@ -248,10 +250,10 @@ auto bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScript
 				};
 
 
-								CURRENT_VM->execute(
-											fun_obj,
-											calling_obj,
-											args);
+				CURRENT_VM->execute(
+							fun_obj,
+							calling_obj,
+							args);
 			}
 
 		)));
@@ -263,13 +265,15 @@ auto bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScript
 							 var2stk<tParam1>(p1)
 					};
 
+					tReturn ret_value;
 
 					tStackElement *stk = CURRENT_VM->execute(
 												fun_obj,
 												calling_obj,
 												args);
 
-					return (tReturn)(stk2var<tReturn>(stk,idx_return_type));
+					stk2var<tReturn>(stk,idx_return_type, (void **)(&ret_value));
+										return ret_value;
 
 			}
 		)));
@@ -290,7 +294,7 @@ auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptF
 
 	if(idx_return_type == IDX_CLASS_VOID_C){
 
-		*f=((void *)(new std::function<tReturn (tParam1,tParam2)>(
+		*f=((void *)(new std::function<void (tParam1,tParam2)>(
 			[&,calling_obj,fun_obj,idx_return_type](tParam1 p1,tParam2 p2){
 
 				vector<tStackElement> args={
@@ -346,7 +350,7 @@ auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptF
 
 	if(idx_return_type == IDX_CLASS_VOID_C){
 
-		*f=((void *)(new std::function<tReturn (tParam1,tParam2,tParam3)>(
+		*f=((void *)(new std::function<void (tParam1,tParam2,tParam3)>(
 			[&,calling_obj,fun_obj,idx_return_type](tParam1 p1,tParam2 p2,tParam3 p3){
 
 				vector<tStackElement> args={
@@ -401,7 +405,7 @@ auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptF
 
 	if(idx_return_type == IDX_CLASS_VOID_C){
 
-		*f=((void *)(new std::function<tReturn (tParam1,tParam2,tParam3,tParam4)>(
+		*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4)>(
 			[&,calling_obj,fun_obj,idx_return_type](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4){
 
 				vector<tStackElement> args={
@@ -460,7 +464,7 @@ auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptF
 
 	if(idx_return_type == IDX_CLASS_VOID_C){
 
-		*f=((void *)(new std::function<tReturn (tParam1,tParam2,tParam3,tParam4,tParam5)>(
+		*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4,tParam5)>(
 			[&,calling_obj,fun_obj,idx_return_type](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5){
 
 				vector<tStackElement> args={
@@ -524,7 +528,7 @@ auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptF
 
 	if(idx_return_type == IDX_CLASS_VOID_C){
 
-		*f=((void *)(new std::function<tReturn (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
+		*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
 			[&,calling_obj,fun_obj,idx_return_type](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
 
 				vector<tStackElement> args={
@@ -576,6 +580,8 @@ auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptF
 void bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj,index_sequence<Is...>)
 {
 
+		//returnType = typeid(typename F::return_type).name();
+		//getArgTypes<F::arity, F, typename F::template argument<Is>::type...>(typeParams);
 	 bind_script_function_builder<_T, typename _T::template argument<Is>::type...>(f,calling_obj,fun_obj);
 }
 
@@ -628,17 +634,36 @@ std::function<_F> * bind_function(const string & function_access)
 
 }
 
+void test(){
+
+	CZetScript *zetscript = CZetScript::getInstance();
+	if(!zetscript->eval(
+		"function fun(arg1)\n"
+		"{\n"
+			"print(\"hello!!!\"+arg1);"
+			"return 1.5;"
+		"}"
+	)){
+			fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
+	}
+
+	auto fun = bind_function<float (int)>("fun");
+
+	float f= (*fun)(100);
+
+	printf("return %f\n",f);
+
+}
+
 int main(int argc, char * argv[]) {
 
 
+	test();
+
+	return 0;
 
 	CZetScript *zetscript = CZetScript::getInstance();
 
-	auto ptr = bind_function<void (int)>("caca");
-
-	(*ptr)(0);
-
-	return 0;
 
 
 	if (argc < 2) {

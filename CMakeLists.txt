@@ -91,7 +91,7 @@ if(MSVC)
 else()
 
 
-	set(TARGET_FLAGS " -O3 ")
+	set(TARGET_FLAGS " -O2 ")
 	set( POST_NAME "")
 
 	# -D_GLIBCXX_DEBUG
@@ -113,7 +113,7 @@ else()
 		
 
 		MESSAGE ("********* EMSCRIPTEN CONF ************" )
-		set(TARGET_FLAGS " -O0 -g4 ")
+		set(TARGET_FLAGS " -O2 ")
 		set(CMAKE_C_COMPILER "$ENV{EMSCRIPTENDIR}/emcc")
 		set(CMAKE_CXX_COMPILER "$ENV{EMSCRIPTENDIR}/em++")
 
