@@ -1,9 +1,9 @@
 
 //----------------------------------------------------------
 Version: 1.1.0
-Date: XX-XX-XXX
+Date: 11-11-2017
 
-> Script function calls usign std::function.
+- Script function calls usign std::function.
 
 //----------------------------------------------------------
 Version: 1.0.2
