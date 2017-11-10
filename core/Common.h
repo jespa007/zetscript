@@ -604,6 +604,8 @@ namespace zetscript{
 		unsigned short properties; // it tells its properties
 		void * stkValue; // operable value
 		void * varRef; // stack ref in case to assign new value.
+
+
 	};
 
 	struct tSymbolInfo {

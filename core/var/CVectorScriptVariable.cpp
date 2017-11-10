@@ -38,8 +38,8 @@ namespace zetscript{
 		if(CScriptVariable::initSharedPtr(is_assigned)){
 
 			for(unsigned i = 0; i < m_objVector.size(); i++){
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"vec symbol.size() > 0. internal error!");
-				return false;
+				//ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"vec symbol.size() > 0. internal error!");
+				//return false;
 				/*if(m_objVector[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 					CScriptVariable *var = (CScriptVariable *)m_objVector[i].varRef;
 					if(!var->initSharedPtr()){

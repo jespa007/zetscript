@@ -108,6 +108,12 @@ namespace zetscript{
 		void setCallResult(tStackElement *);
 		tStackElement *getLastStackValue();
 		tStackElement * getStackElement(unsigned int idx_glb_element);
+
+		//template<typename _T>
+
+
+
+
 		void setError(const char *str);
 
 		CVirtualMachine();
