@@ -131,7 +131,7 @@ namespace zetscript{
 
 		char		str_aux[8192];
 		float 		f_aux_value1,f_aux_value2;
-		 string 	aux_string,symbol_to_find;
+		 string 	aux_string,symbol_to_find,error;
 
 		 string     aux_string_param[MAX_N_ARGS]; // for string params...
 

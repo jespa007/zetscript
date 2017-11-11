@@ -365,7 +365,7 @@ namespace zetscript{
 
 
 			if((registerClass("const char *","",NULL)) == NULL) return false;		// 3
-			vec_script_class_node->at(CONST_CONST_CHAR_PTR_TYPE_STR)->classPtrType=*CONST_CHAR_PTR_TYPE_STR;
+			vec_script_class_node->at(IDX_CLASS_CONST_CHAR_PTR_C)->classPtrType=*CONST_CHAR_PTR_TYPE_STR;
 
 			if((registerClass("string *","",NULL)) == NULL) return false;		// 4
 			vec_script_class_node->at(IDX_CLASS_STRING_PTR_C)->classPtrType=*STRING_PTR_TYPE_STR;
@@ -1288,7 +1288,12 @@ namespace zetscript{
 
 		if(idxScriptFunctionObject!=-1){
 
-			GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject)->m_arg.push_back(arg_name);
+			int idx_type = CScriptClass::getIdx_C_RegisteredClass(arg_name);
+			if(idx_type == -1){
+				zs_print_error_cr("internal error");
+				return false;
+			}
+			GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject)->m_arg.push_back(idx_type);
 		}else{
 			//zs_print_error_cr("object info NULL");
 		}

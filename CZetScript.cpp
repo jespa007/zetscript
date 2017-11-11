@@ -496,13 +496,7 @@ namespace zetscript{
 	}
 
 	int CZetScript::eval_int(const string & str_to_eval){
-		int value = int();
-		void *ptr=NULL;
-		string typestr = typeid(int).name();
-
-
 		CZetScript *zetscript= CZetScript::getInstance();
-
 
 		if(zetscript->eval(str_to_eval)){
 
@@ -511,12 +505,12 @@ namespace zetscript{
 
 				if(se != NULL){
 
-					if((typestr == typeid(int).name())  && (se->properties & STK_PROPERTY_TYPE_INTEGER)){
-						ptr = &value;
-						*((intptr_t *)ptr) = (intptr_t)se->stkValue;
+					if(se->properties & STK_PROPERTY_TYPE_INTEGER){
+
+						return (int)((intptr_t)se->stkValue);
 					}
 					else{
-						fprintf(stderr,"eval<%s>(...): Error evaluating \"%s\". Property:0x%X",typestr.c_str(),str_to_eval.c_str(),se->properties);
+						fprintf(stderr,"eval_int(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 						exit(-1);
 					}
 
@@ -524,13 +518,10 @@ namespace zetscript{
 				}
 		}
 
-		return value;
+		return 0;
 	}
 
 	bool CZetScript::eval_bool(const string & str_to_eval){
-		bool value = bool();
-		string typestr = typeid(bool).name();
-
 
 		CZetScript *zetscript= CZetScript::getInstance();
 
@@ -542,23 +533,20 @@ namespace zetscript{
 
 				if(se != NULL){
 
-					if((typestr == typeid(bool).name())  && (se->properties & STK_PROPERTY_TYPE_BOOLEAN)){
-												memcpy(&value, &se->stkValue, sizeof(bool));
+					if(se->properties & STK_PROPERTY_TYPE_BOOLEAN){
+						return (bool)((intptr_t)se->stkValue);
 
 					}else{
-						fprintf(stderr,"eval<%s>(...): Error evaluating \"%s\". Property:0x%X",typestr.c_str(),str_to_eval.c_str(),se->properties);
+						fprintf(stderr,"eval_bool(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 						exit(-1);
 					}
 				}
 		}
 
-		return value;
+		return false;
 	}
 
 	float CZetScript::eval_float(const string & str_to_eval){
-		float value = float();
-		void *ptr=NULL;
-		string typestr = typeid(float).name();
 
 
 		CZetScript *zetscript= CZetScript::getInstance();
@@ -571,12 +559,12 @@ namespace zetscript{
 
 				if(se != NULL){
 
-					if((typestr == typeid(float).name())  && (se->properties & STK_PROPERTY_TYPE_NUMBER)){
-						ptr = &value;
-						memcpy(ptr,(const void *)&se->stkValue,sizeof(float));
+					if(se->properties & STK_PROPERTY_TYPE_NUMBER){
+						float *f = ((float *)(&se->stkValue));
+						return *f;
 					}
 					else{
-						fprintf(stderr,"eval<%s>(...): Error evaluating \"%s\". Property:0x%X",typestr.c_str(),str_to_eval.c_str(),se->properties);
+						fprintf(stderr,"eval_float(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 						exit(-1);
 					}
 
@@ -584,14 +572,12 @@ namespace zetscript{
 				}
 		}
 
-		return value;
+		return 0.0f;
 	}
 
 	string CZetScript::eval_string(const string & str_to_eval){
 
-		string value;
-		void *ptr=NULL;
-		string typestr = typeid(string).name();
+		string value="---";
 
 
 		CZetScript *zetscript= CZetScript::getInstance();
@@ -603,12 +589,12 @@ namespace zetscript{
 
 				if(se != NULL){
 
-					if((typestr == typeid(string).name())  && (se->properties & STK_PROPERTY_TYPE_STRING)){
-						ptr=&value;
-						*((string *)ptr) = ((const char *)se->stkValue);
+					if(se->properties & STK_PROPERTY_TYPE_STRING){
+
+						value = ((const char *)se->stkValue);
 					}
 					else{
-						fprintf(stderr,"eval<%s>(...): Error evaluating \"%s\". Property:0x%X",typestr.c_str(),str_to_eval.c_str(),se->properties);
+						fprintf(stderr,"eval_string(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 						exit(-1);
 					}
 				}

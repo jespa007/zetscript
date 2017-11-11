@@ -2362,7 +2362,7 @@ namespace zetscript{
 								return NULL;
 							}
 							// ok register symbol into the object function ...
-							//object_function.m_arg.push_back(symbol_value);
+
 						}
 						aux_p=end_var;
 						aux_p=IGNORE_BLANKS(aux_p,m_line);

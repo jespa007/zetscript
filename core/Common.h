@@ -474,7 +474,7 @@ enum BASIC_CLASS_TYPE {
 	IDX_CLASS_VOID_C = 0,
 	IDX_CLASS_INT_PTR_C,
 	IDX_CLASS_FLOAT_PTR_C,
-	CONST_CONST_CHAR_PTR_TYPE_STR, // const char * (read only)
+	IDX_CLASS_CONST_CHAR_PTR_C, // const char * (read only)
 	IDX_CLASS_STRING_PTR_C, // (string read/write)
 	IDX_CLASS_BOOL_PTR_C,
 	IDX_CLASS_INT_C,

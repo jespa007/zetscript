@@ -22,7 +22,7 @@
 
 
 #include "CNativeFunction.h"
-#include "RegisterFunctionHelper.h"
+#include "../helpers/RegisterFunctionHelper.h"
 
 
 #define register_C_Function(text,s) zetscript::CScriptClass::register_C_FunctionInt(text,s)
@@ -57,6 +57,8 @@
 #define GET_SCRIPT_CLASS_INFO(idx)				(zetscript::CScriptClass::getScriptClassByIdx(idx))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_NAME(s)		(zetscript::CScriptClass::getScriptClassByName(s))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(zetscript::CScriptClass::getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
+
+#define GET_IDX_2_CLASS_C_STR(idx) (CScriptClass::getScriptClassByIdx(idx)->classPtrType)
 
 namespace zetscript{
 
@@ -223,6 +225,7 @@ namespace zetscript{
 			int idx_return_type=-1;
 			string return_type;
 			vector<string> m_arg;
+			vector<int> m_idxArg;
 			intptr_t ref_ptr=-1;
 			CScriptFunctionObject *irs=NULL;
 
@@ -251,10 +254,13 @@ namespace zetscript{
 			}
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
-				if(getIdxClassFromIts_C_Type(m_arg[i])==-1){
+				int idx_type = getIdxClassFromIts_C_Type(m_arg[i]);
+				if(idx_type ==-1){
 					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name.c_str());
 					return false;
 				}
+
+				m_idxArg.push_back(idx_type);
 			}
 
 			if(idx_return_type == IDX_CLASS_VOID_C){
@@ -272,7 +278,7 @@ namespace zetscript{
 			// init struct...
 			irs = NEW_SCRIPT_FUNCTION_OBJECT;
 
-			irs->m_arg = m_arg;
+			irs->m_arg = m_idxArg;
 			irs->idx_return_type = idx_return_type;
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
 
@@ -474,6 +480,7 @@ namespace zetscript{
 			vector<string> params;
 			CScriptFunctionObject *irs=NULL;
 			vector<string> m_arg;
+			vector<int> m_idxArg;
 			int idx_return_type=-1;
 			unsigned int ref_ptr=-1;
 			string str_classPtr = typeid( _T *).name();
@@ -496,10 +503,13 @@ namespace zetscript{
 			}
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
-				if(getIdxClassFromIts_C_Type(m_arg[i])==-1){
+				int idx_type=getIdxClassFromIts_C_Type(m_arg[i]);
+				if(idx_type==-1){
 					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
 				}
+
+				m_idxArg.push_back(idx_type);
 
 			}
 
@@ -532,7 +542,7 @@ namespace zetscript{
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
-			irs->m_arg = m_arg;
+			irs->m_arg = m_idxArg;
 			irs->idx_return_type = idx_return_type;
 
 			irs->object_info.symbol_info.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
@@ -559,6 +569,7 @@ namespace zetscript{
 			vector<string> params;
 			CScriptFunctionObject *irs=NULL;
 			vector<string> m_arg;
+			vector<int> m_idxArg;
 			int idx_return_type=-1;
 			unsigned int ref_ptr=-1;
 			string str_classPtr = typeid( _T *).name();
@@ -581,10 +592,13 @@ namespace zetscript{
 			}
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
-				if(getIdxClassFromIts_C_Type(m_arg[i])==-1){
+				int idx_type = getIdxClassFromIts_C_Type(m_arg[i]);
+				if(idx_type==-1){
 					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
 				}
+
+				m_idxArg.push_back(idx_type);
 
 			}
 
@@ -618,7 +632,7 @@ namespace zetscript{
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
-			irs->m_arg = m_arg;
+			irs->m_arg = m_idxArg;
 			irs->idx_return_type = idx_return_type;
 			irs->object_info.symbol_info.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
 			(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);

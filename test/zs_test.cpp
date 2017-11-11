@@ -507,9 +507,6 @@ int main(int argc, char * argv[]) {
 	if(!register_C_FunctionMember("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
 	if(!register_C_FunctionMember("CNumber",static_cast<void (CNumber::*)(float )>(&CNumber::set))) return false;
 	if(!register_C_VariableMember("n",&CNumber::n)) return false;
-	/*if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,int )>(&CNumber::_add))) return false;
-	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add))) return false;
-	if(!CScriptClass::register_C_StaticFunctionMemberInt<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber  *)>(&CNumber::_add))) return false;*/
 
 	if(!register_C_Class<CInteger>("CInteger")) return false;
 	if(!register_C_FunctionMember("CInteger",&CInteger::ScriptConstructor)) return false;
@@ -522,11 +519,13 @@ int main(int argc, char * argv[]) {
 
 
 
+
 	// unsinged
 	printf("%i. testing arithmetic ints...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_INT_OP(4,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(4,5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(5,4); // op1 > op2
+
 
 	printf("%i. testing arithmetic hexa (int)...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_INT_OP(0x4,0x4); // op1==op2
@@ -645,12 +644,13 @@ int main(int argc, char * argv[]) {
 	// test calling script-c-script-c
 	register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
 	CZetScript::getInstance()->eval("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
-	/*auto test_1st_script_call=CZetScript::getInstance()->bind_function<void ()>("test_1st_script_call");
-	test_2nd_script_call=CZetScript::getInstance()->bind_function<void ()>("test_2nd_script_call");
+
+	auto test_1st_script_call=bind_function<void ()>("test_1st_script_call");
+	test_2nd_script_call=bind_function<void ()>("test_2nd_script_call");
 
 	if(test_1st_script_call){
 		(*test_1st_script_call)();
-	}*/
+	}
 
 
 	printf("All tests passed OK!");

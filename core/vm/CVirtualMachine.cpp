@@ -463,10 +463,11 @@ namespace zetscript{
 	if(match_signature){\
 		if((irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF)){ /* C! Must match args...*/ \
 					bool all_check=true; /*  check arguments types ... */ \
+					int idx_type=-1;\
 					for( unsigned k = 0; k < n_args && all_check;k++){\
 						tStackElement *currentArg=&startArg[k];\
 \
-						if(irfs->m_arg[k]==*CScriptClass::STACK_ELEMENT_PTR){ \
+						if(irfs->m_arg[k]==IDX_STACK_ELEMENT){\
 							/* do nothing because is already trivial ! */ \
 						} \
 						else{ \
@@ -482,29 +483,29 @@ namespace zetscript{
 								all_check=false;\
 								break;\
 							case STK_PROPERTY_TYPE_INTEGER:\
-								aux_string=*CScriptClass::INT_PTR_TYPE_STR;\
+								idx_type=IDX_CLASS_INT_PTR_C;\
 								all_check=\
-										irfs->m_arg[k]==*CScriptClass::INT_PTR_TYPE_STR\
-									  ||irfs->m_arg[k]==*CScriptClass::INT_TYPE_STR;\
+										irfs->m_arg[k]==IDX_CLASS_INT_PTR_C\
+									  ||irfs->m_arg[k]==IDX_CLASS_INT_C;\
 								break;\
 							case STK_PROPERTY_TYPE_NUMBER:\
-								aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;\
-								all_check=irfs->m_arg[k]==*CScriptClass::FLOAT_PTR_TYPE_STR\
-										||irfs->m_arg[k]==*CScriptClass::FLOAT_TYPE_STR;\
+								idx_type=IDX_CLASS_FLOAT_PTR_C;\
+								all_check=irfs->m_arg[k]==IDX_CLASS_FLOAT_PTR_C\
+										||irfs->m_arg[k]==IDX_CLASS_FLOAT_C;\
 								break;\
 							case STK_PROPERTY_TYPE_BOOLEAN:\
-								aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;\
+								idx_type=IDX_CLASS_BOOL_PTR_C;\
 								all_check=\
-										irfs->m_arg[k]==*CScriptClass::BOOL_PTR_TYPE_STR\
-									  ||irfs->m_arg[k]==*CScriptClass::BOOL_TYPE_STR;\
+										irfs->m_arg[k]==IDX_CLASS_BOOL_PTR_C\
+									  ||irfs->m_arg[k]==IDX_CLASS_BOOL_C;\
 \
 								break;\
 							case STK_PROPERTY_TYPE_STRING:\
-								aux_string=*CScriptClass::STRING_PTR_TYPE_STR;\
+								idx_type=IDX_CLASS_STRING_PTR_C;\
 \
 								all_check =\
-										(irfs->m_arg[k]==*CScriptClass::STRING_PTR_TYPE_STR && currentArg->varRef!=0)\
-									  ||irfs->m_arg[k]==*CScriptClass::CONST_CHAR_PTR_TYPE_STR;\
+										(irfs->m_arg[k]==IDX_CLASS_STRING_PTR_C && currentArg->varRef!=0)\
+									  ||irfs->m_arg[k]==IDX_CLASS_CONST_CHAR_PTR_C;\
 								break;\
 							case STK_PROPERTY_TYPE_NULL:\
 							case STK_PROPERTY_TYPE_UNDEFINED:\
@@ -513,16 +514,16 @@ namespace zetscript{
 								var_object=((CScriptVariable *)currentArg->varRef);\
 								aux_string=var_object->getPointer_C_ClassName();\
 \
-								if(irfs->m_arg[k]==aux_string){\
+								if(irfs->m_arg[k]==idx_type){\
 									all_check=true;\
 								}\
 								else{\
 									CScriptClass *c_class=NULL;\
 									if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */ \
-										all_check=irfs->m_arg[k]==c_class->classPtrType;\
+										all_check=irfs->m_arg[k]==c_class->idxClass;\
 									}else{ /* check string ... */ \
 										if(var_type & STK_PROPERTY_TYPE_STRING){ \
-											all_check=irfs->m_arg[k]==*CScriptClass::STRING_PTR_TYPE_STR; \
+											all_check=irfs->m_arg[k]==IDX_CLASS_STRING_PTR_C; \
 										}else{ \
 											all_check=false; \
 										}\
@@ -624,7 +625,7 @@ if(aux_function_info == NULL){\
 							}\
 \
 							if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){\
-								str_candidates+=demangle(irfs->m_arg[a]);\
+								str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a]));\
 							}else{ /* typic var ... */ \
 								str_candidates+="arg"+CStringUtils::intToString(a+1); \
 							} \
@@ -1008,11 +1009,11 @@ if(aux_function_info == NULL){\
 
 
 		//auto v = argv->at(0)->getPointer_C_ClassName();
-		CScriptVariable *script_variable=NULL;
+		//CScriptVariable *script_variable=NULL;
 		intptr_t converted_param[MAX_N_ARGS];
 		intptr_t result=0;
 		tStackElement *currentArg;
-		float aux_float=0;
+		//float aux_float=0;
 
 		if(n_args>=MAX_N_ARGS){
 			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
@@ -1045,134 +1046,12 @@ if(aux_function_info == NULL){\
 
 			currentArg=&ptrArg[i];
 
-			// due some args are stacked in order to have in/out features it doesn't has any sense through C...
-			if(currentArg->properties & STK_PROPERTY_IS_STACKVAR){
-				currentArg=((tStackElement *)currentArg->varRef);
-			}
-
-			if((irfs->m_arg[i] == *CScriptClass::STACK_ELEMENT_PTR)){// && (currentArg->properties & STK_PROPERTY_IS_STACKVAR)){ // set directly stackvar
-				converted_param[i]=(intptr_t)currentArg;
-			}else{
-
-				switch(GET_INS_PROPERTY_VAR_TYPE(currentArg->properties)){
-				case STK_PROPERTY_TYPE_BOOLEAN:
-					if(irfs->m_arg[i] == *CScriptClass::BOOL_TYPE_STR){
-						converted_param[i]=(intptr_t)(currentArg->stkValue);
-					}else if(irfs->m_arg[i] != *CScriptClass::BOOL_PTR_TYPE_STR){
-						converted_param[i]=(intptr_t)(&currentArg->stkValue);
-					}else{
-						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: cannot convert %s into %s",
-												irfs->object_info.symbol_info.symbol_name.c_str(),
-												i,
-												demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
-												demangle(irfs->m_arg[i]).c_str()
-												);
-						return NULL;
-					}
-
-					break;
-				case STK_PROPERTY_TYPE_NUMBER:
-					if(irfs->m_arg[i] == *CScriptClass::FLOAT_TYPE_STR){
-						converted_param[i]=(intptr_t)(currentArg->stkValue);
-					}else if(irfs->m_arg[i] == *CScriptClass::FLOAT_PTR_TYPE_STR){
-						converted_param[i]=(intptr_t)(&currentArg->stkValue);
-					}else{
-						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode), "Function %s, param %i: cannot convert %s into %s",
-												irfs->object_info.symbol_info.symbol_name.c_str(),
-												i,
-												demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
-												demangle(irfs->m_arg[i]).c_str()
-												);
-						return NULL;
-					}
-					break;
-				case STK_PROPERTY_TYPE_INTEGER:
-					if(irfs->m_arg[i] == *CScriptClass::INT_TYPE_STR){
-						converted_param[i]=(intptr_t)(currentArg->stkValue);
-					}else if(irfs->m_arg[i] == *CScriptClass::INT_PTR_TYPE_STR){
-						converted_param[i]=(intptr_t)(&currentArg->stkValue);
-					}else{
-						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode), "Function %s, param %i: cannot convert %s into %s",
-												irfs->object_info.symbol_info.symbol_name.c_str(),
-												i,
-												demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
-												demangle(irfs->m_arg[i]).c_str()
-												);
-						return NULL;
-					}
-					break;
-
-				case STK_PROPERTY_TYPE_STRING:
-					if(irfs->m_arg[i] == *CScriptClass::STRING_PTR_TYPE_STR){
-						if(currentArg->varRef != 0){
-							converted_param[i]=(intptr_t)(&((CStringScriptVariable *)(currentArg->varRef))->m_strValue);
-						}
-						else{ // pass param string ...
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode), "(string *)Expected varRef not NULL");
-							return NULL;
-						}
-
-					}else if (irfs->m_arg[i] == *CScriptClass::CONST_CHAR_PTR_TYPE_STR){
-						converted_param[i]=(intptr_t)(currentArg->stkValue);
-					}else{
-						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: cannot convert %s into %s",
-								irfs->object_info.symbol_info.symbol_name.c_str(),
-								i,
-								demangle((*CScriptClass::STRING_PTR_TYPE_STR)).c_str(),
-								demangle(irfs->m_arg[i]).c_str()
-								);
-						return NULL;
-					}
-
-
-					break;
-				default: // script variable by default ...
-
-					script_variable=(CScriptVariable *)currentArg->varRef;
-					CScriptClass *c_class=NULL;
-
-					if(script_variable==NULL){
-
-						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode), "Function %s, param %i is not defined",
-								irfs->object_info.symbol_info.symbol_name.c_str(),
-								i
-						);
-						return NULL;
-					}
-
-					if(script_variable->idxScriptClass==IDX_CLASS_STRING){
-						converted_param[i]=(intptr_t)(&script_variable->m_strValue);
-					}else if(
-
-					   (script_variable->idxScriptClass==IDX_CLASS_VECTOR
-					|| script_variable->idxScriptClass==IDX_CLASS_STRUCT)){
-
-						if(irfs->m_arg[i]==script_variable->getPointer_C_ClassName()){
-							converted_param[i]=(intptr_t)script_variable->get_C_Object();
-						}
-
-					}else if((c_class=script_variable->get_C_Class())!=NULL){ // get the pointer directly ...
-						fntConversionType paramConv=0;
-						if(c_class->classPtrType==irfs->m_arg[i]){
-							converted_param[i]=(intptr_t)script_variable->get_C_Object();
-						}else if((paramConv=CScriptClass::getConversionType(c_class->classPtrType,irfs->m_arg[i]))!=0){
-							converted_param[i]=paramConv(script_variable);
-						}else { // try get C object ..
-
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function %s%s param %i: cannot convert %s into %s",
-										irfs->object_info.symbol_info.symbol_name.c_str(),
-										i,
-										script_variable->getPointer_C_ClassName().c_str(),
-										irfs->m_arg[i].c_str()
-								);
-							return NULL;
-						}
-					}else{ // CScriptVariable ?
-						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode), " Error calling function \"%s\", no C-object parameter! Unexpected script variable (%s)!",irfs->object_info.symbol_info.symbol_name.c_str(),script_variable->getClassName().c_str());
-						return NULL;
-					}
-					break;
-				}
+			if(!stk2var(currentArg,irfs->m_arg[i],(void **)&converted_param[i],error)){
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: %s",
+																irfs->object_info.symbol_info.symbol_name.c_str(),
+																i,
+																error.c_str()
+																);
 			}
 		}
 
@@ -1229,7 +1108,7 @@ if(aux_function_info == NULL){\
 				break;
 			}
 
-		}else if(irfs->idx_return_type==IDX_CLASS_BOOL_C){
+		}else if(irfs->idx_return_type==IDX_CLASS_BOOL_C){  // we must do a bool cast in order to get float return.
 			switch(n_args){
 			case 0:
 				result=(*((std::function<bool ()> *)fun_ptr))();
@@ -1280,30 +1159,30 @@ if(aux_function_info == NULL){\
 				break;
 
 			}
-		}else if(irfs->idx_return_type==IDX_CLASS_FLOAT_C){
+		}else if(irfs->idx_return_type==IDX_CLASS_FLOAT_C){ // we must do a float cast in order to get float return.
 				switch(n_args){
 				case 0:
-					aux_float=(*((std::function<float ()> *)fun_ptr))();
+					result=(*((std::function<float ()> *)fun_ptr))();
 					break;
 				case 1:
-					aux_float=(*((std::function<float (intptr_t)> *)fun_ptr))(converted_param[0]);
+					result=(*((std::function<float (intptr_t)> *)fun_ptr))(converted_param[0]);
 					break;
 				case 2:
 
-					aux_float=(*((std::function<float (intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<float (intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1]
 											);
 					break;
 				case 3:
-					aux_float=(*((std::function<float (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<float (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1],
 							converted_param[2]
 											);
 					break;
 				case 4:
-					aux_float=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1],
 							converted_param[2],
@@ -1311,7 +1190,7 @@ if(aux_function_info == NULL){\
 											);
 					break;
 				case 5:
-					aux_float=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1],
 							converted_param[2],
@@ -1320,7 +1199,7 @@ if(aux_function_info == NULL){\
 						);
 					break;
 				case 6:
-					aux_float=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1],
 							converted_param[2],
@@ -1385,45 +1264,8 @@ if(aux_function_info == NULL){\
 			}
 		}
 
+		callc_result=var2stk(result,irfs->idx_return_type);
 
-		// save return type ...
-		switch(irfs->idx_return_type){
-		 case IDX_CLASS_VOID_C:
-			break;
-		 case IDX_CLASS_INT_PTR_C:
-			 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(*((intptr_t *)result)),NULL};
-			 break;
-		 case IDX_CLASS_INT_C:
-			 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(((intptr_t)result)),NULL};
-			 break;
-		 case IDX_CLASS_FLOAT_C:
-			 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
-			 COPY_NUMBER(&callc_result.stkValue,&aux_float);
-			 callc_result.varRef=NULL;
-			 break;
-		 case IDX_CLASS_FLOAT_PTR_C:
-			 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
-			 COPY_NUMBER(&callc_result.stkValue,(float *)result);
-			 callc_result.varRef=NULL;
-			 break;
-
-		 case IDX_CLASS_BOOL_PTR_C:
-			 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(*((bool *)result)),NULL};
-			 break;
-		 case IDX_CLASS_BOOL_C:
-			 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(((bool)result)),NULL};
-			 break;
-		 case CONST_CONST_CHAR_PTR_TYPE_STR:
-			 callc_result={STK_PROPERTY_TYPE_STRING,(void *)result,NULL};//new string(*((string *)result))};
-			 break;
-		 case IDX_CLASS_STRING_PTR_C:
-			 s_return_value = *((string *)result);
-			 callc_result={STK_PROPERTY_TYPE_STRING,(void *)s_return_value.c_str(),NULL};//new string(*((string *)result))};
-			 break;
-		 default:
-			 callc_result = {STK_PROPERTY_TYPE_SCRIPTVAR,NULL,CScriptClass::instanceScriptVariableByIdx(irfs->idx_return_type,(void *)result)};
-			 break;
-		}
 
 		return &callc_result;
 	}

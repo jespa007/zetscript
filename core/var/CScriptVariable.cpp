@@ -225,6 +225,7 @@ namespace zetscript{
 
 		// from lat value to first to get last override function...
 		bool all_check=false;
+		int idx_type;
 
 		for(int i = this->m_functionSymbol.size()-1; i>=0; i--){
 
@@ -243,32 +244,32 @@ namespace zetscript{
 							return ZS_UNDEFINED_IDX;
 							break;
 						case STK_PROPERTY_TYPE_INTEGER:
-							aux_string=*CScriptClass::INT_PTR_TYPE_STR;
+							idx_type = IDX_CLASS_INT_PTR_C; //aux_string=*CScriptClass::INT_PTR_TYPE_STR;
 							break;
 						case STK_PROPERTY_TYPE_NUMBER:
-							aux_string=*CScriptClass::FLOAT_PTR_TYPE_STR;
+							idx_type= IDX_CLASS_FLOAT_PTR_C;//*CScriptClass::FLOAT_PTR_TYPE_STR;
 							break;
 						case STK_PROPERTY_TYPE_BOOLEAN:
-							aux_string=*CScriptClass::BOOL_PTR_TYPE_STR;
+							idx_type= IDX_CLASS_BOOL_PTR_C; //*CScriptClass::BOOL_PTR_TYPE_STR;
 							break;
 						case STK_PROPERTY_TYPE_STRING:
-							aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
+							idx_type=IDX_CLASS_STRING_PTR_C;
 							break;
 						case STK_PROPERTY_TYPE_NULL:
 						case STK_PROPERTY_TYPE_UNDEFINED:
 						case STK_PROPERTY_TYPE_SCRIPTVAR:
 						case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:
-							aux_string = ((CScriptVariable *)ptrArg[k].varRef)->getPointer_C_ClassName();
+						idx_type = ((CScriptVariable *)ptrArg[k].varRef)->idxScriptClass;//getPointer_C_ClassName();
 							break;
 						}
 
 					bool is_script_var = aux_string == TYPE_SCRIPT_VARIABLE; // if C_ClassName is void means that is a ScriptClass...
 					if(match_signature){
-						all_check = (aux_string==irfs->m_arg[k]) || (is_script_var);
+						all_check = (idx_type==irfs->m_arg[k]) || (is_script_var);
 					}
 					else{
-						if(aux_string!=irfs->m_arg[k] && !(is_script_var)){
-							all_check =(CScriptClass::getConversionType(aux_string,irfs->m_arg[k], false)!=NULL);
+						if(idx_type!=irfs->m_arg[k] && !(is_script_var)){
+							all_check =(CScriptClass::getConversionType(GET_IDX_2_CLASS_C_STR(idx_type),GET_IDX_2_CLASS_C_STR(irfs->m_arg[k]), false)!=NULL);
 						}
 					}
 				}
@@ -300,7 +301,7 @@ namespace zetscript{
 					if(a>0){
 						str_candidates+=",";
 					}
-					str_candidates+=demangle(irfs->m_arg[a]);
+					str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a]));
 				}
 				str_candidates+=");\n";
 
