@@ -240,7 +240,7 @@ namespace zetscript{
 			[&,calling_obj,fun_obj, idx_param1](tParam1 p1){
 
 				vector<tStackElement> args={
-						 var2stk(p1,idx_param1)
+						 var2stk((intptr_t)p1,idx_param1)
 
 				};
 
@@ -269,7 +269,7 @@ namespace zetscript{
 					string error;
 
 					vector<tStackElement> args={
-							 var2stk(p1,idx_param1)
+							 var2stk((intptr_t)p1,idx_param1)
 					};
 
 					tStackElement *stk = CURRENT_VM->execute(
@@ -306,8 +306,8 @@ namespace zetscript{
 			[&,calling_obj,fun_obj, idx_param1, idx_param2](tParam1 p1,tParam2 p2){
 
 				vector<tStackElement> args={
-						 var2stk(p1,idx_param1)
-						,var2stk(p2,idx_param2)
+						 var2stk((intptr_t)p1,idx_param1)
+						,var2stk((intptr_t)p2,idx_param2)
 
 				};
 
@@ -339,8 +339,8 @@ namespace zetscript{
 					string error;
 
 					vector<tStackElement> args={
-							 var2stk(p1,idx_param1)
-							,var2stk(p2,idx_param2)
+							 var2stk((intptr_t)p1,idx_param1)
+							,var2stk((intptr_t)p2,idx_param2)
 
 					};
 
@@ -383,9 +383,9 @@ namespace zetscript{
 			[&,calling_obj,fun_obj,idx_param1, idx_param2, idx_param3](tParam1 p1,tParam2 p2,tParam3 p3){
 
 				vector<tStackElement> args={
-						 var2stk(p1,idx_param1)
-						,var2stk(p2,idx_param2)
-						,var2stk(p3,idx_param3)
+						 var2stk((intptr_t)p1,idx_param1)
+						,var2stk((intptr_t)p2,idx_param2)
+						,var2stk((intptr_t)p3,idx_param3)
 				};
 
 				CURRENT_VM->execute(
@@ -416,9 +416,9 @@ namespace zetscript{
 				string error;
 
 				vector<tStackElement> args={
-						 var2stk(p1,idx_param1)
-						,var2stk(p2,idx_param2)
-						,var2stk(p3,idx_param3)
+						 var2stk((intptr_t)p1,idx_param1)
+						,var2stk((intptr_t)p2,idx_param2)
+						,var2stk((intptr_t)p3,idx_param3)
 				};
 
 				tStackElement *stk = CURRENT_VM->execute(
@@ -460,10 +460,10 @@ namespace zetscript{
 			[&,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4){
 
 				vector<tStackElement> args={
-						 var2stk(p1,idx_param1)
-						,var2stk(p2,idx_param2)
-						,var2stk(p3,idx_param3)
-						,var2stk(p4,idx_param4)
+						 var2stk((intptr_t)p1,idx_param1)
+						,var2stk((intptr_t)p2,idx_param2)
+						,var2stk((intptr_t)p3,idx_param3)
+						,var2stk((intptr_t)p4,idx_param4)
 
 				};
 
@@ -498,10 +498,10 @@ namespace zetscript{
 					string error;
 
 					vector<tStackElement> args={
-							 var2stk(p1,idx_param1)
-							,var2stk(p2,idx_param2)
-							,var2stk(p3,idx_param3)
-							,var2stk(p4,idx_param4)
+							 var2stk((intptr_t)p1,idx_param1)
+							,var2stk((intptr_t)p2,idx_param2)
+							,var2stk((intptr_t)p3,idx_param3)
+							,var2stk((intptr_t)p4,idx_param4)
 
 					};
 
@@ -548,11 +548,11 @@ namespace zetscript{
 			[&,calling_obj,fun_obj,idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5){
 
 				vector<tStackElement> args={
-						 var2stk(p1,idx_param1)
-						,var2stk(p2,idx_param2)
-						,var2stk(p3,idx_param3)
-						,var2stk(p4,idx_param4)
-						,var2stk(p5,idx_param5)
+						 var2stk((intptr_t)p1,idx_param1)
+						,var2stk((intptr_t)p2,idx_param2)
+						,var2stk((intptr_t)p3,idx_param3)
+						,var2stk((intptr_t)p4,idx_param4)
+						,var2stk((intptr_t)p5,idx_param5)
 
 				};
 
@@ -591,11 +591,11 @@ namespace zetscript{
 				string error;
 
 				vector<tStackElement> args={
-						 var2stk(p1,idx_param1)
-						,var2stk(p2,idx_param2)
-						,var2stk(p3,idx_param3)
-						,var2stk(p4,idx_param4)
-						,var2stk(p5,idx_param5)
+						 var2stk((intptr_t)p1,idx_param1)
+						,var2stk((intptr_t)p2,idx_param2)
+						,var2stk((intptr_t)p3,idx_param3)
+						,var2stk((intptr_t)p4,idx_param4)
+						,var2stk((intptr_t)p5,idx_param5)
 
 				};
 
@@ -645,12 +645,12 @@ namespace zetscript{
 			[&,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
 
 				vector<tStackElement> args={
-						 var2stk(p1,idx_param1)
-						,var2stk(p2,idx_param2)
-						,var2stk(p3,idx_param3)
-						,var2stk(p4,idx_param4)
-						,var2stk(p5,idx_param5)
-						,var2stk(p6,idx_param6)
+						 var2stk((intptr_t)p1,idx_param1)
+						,var2stk((intptr_t)p2,idx_param2)
+						,var2stk((intptr_t)p3,idx_param3)
+						,var2stk((intptr_t)p4,idx_param4)
+						,var2stk((intptr_t)p5,idx_param5)
+						,var2stk((intptr_t)p6,idx_param6)
 
 				};
 
@@ -689,12 +689,12 @@ namespace zetscript{
 					string error;
 
 					vector<tStackElement> args={
-							 var2stk(p1,idx_param1)
-							,var2stk(p2,idx_param2)
-							,var2stk(p3,idx_param3)
-							,var2stk(p4,idx_param4)
-							,var2stk(p5,idx_param5)
-							,var2stk(p6,idx_param6)
+							 var2stk((intptr_t)p1,idx_param1)
+							,var2stk((intptr_t)p2,idx_param2)
+							,var2stk((intptr_t)p3,idx_param3)
+							,var2stk((intptr_t)p4,idx_param4)
+							,var2stk((intptr_t)p5,idx_param5)
+							,var2stk((intptr_t)p6,idx_param6)
 					};
 
 					tStackElement *stk = CURRENT_VM->execute(
@@ -798,12 +798,9 @@ namespace zetscript{
 							return v_out;
 						}
 						break;
-
 				}
 			}
 		}
-
-
 		return v_out;
 	}
 
@@ -813,7 +810,8 @@ namespace zetscript{
 
 		for ( unsigned i = 0; i < v.size(); i++){
 			tStackElement *stk = vsv->push();
-			*stk = var2stk(v[i],CScriptClass::getIdxClassFromIts_C_Type(typeid(_T).name()));
+			//intptr_t uvar = (intptr_t)(v[i]);
+			*stk = var2stk((intptr_t)(v[i]),CScriptClass::getIdxClassFromIts_C_Type(typeid(_T).name()));
 		}
 
 		return vsv;

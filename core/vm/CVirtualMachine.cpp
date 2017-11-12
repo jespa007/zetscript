@@ -1331,7 +1331,7 @@ if(aux_function_info == NULL){\
 				NULL,
 				n_arg);
 
-		if(info==NULL){ // it was error so reset stack...
+		if(info==NULL){ // it was error so reset stack and stop execution ? ...
 			stackDumped();
 		}
 
