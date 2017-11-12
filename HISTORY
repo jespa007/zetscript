@@ -1,5 +1,15 @@
 
 //----------------------------------------------------------
+Version: 1.1.1
+Date: 12-11-2017
+
+Fixed bug #24
+Fixed bug #23
+
+#22: cast vector from/to stk implemented
+#21: bind functions already implemented
+
+//----------------------------------------------------------
 Version: 1.1.0
 Date: 11-11-2017
 

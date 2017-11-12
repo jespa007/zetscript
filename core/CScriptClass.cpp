@@ -1288,12 +1288,7 @@ namespace zetscript{
 
 		if(idxScriptFunctionObject!=-1){
 
-			int idx_type = CScriptClass::getIdx_C_RegisteredClass(arg_name);
-			if(idx_type == -1){
-				zs_print_error_cr("internal error");
-				return false;
-			}
-			GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject)->m_arg.push_back(idx_type);
+			GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject)->m_arg.push_back({ZS_UNDEFINED_IDX,arg_name});
 		}else{
 			//zs_print_error_cr("object info NULL");
 		}

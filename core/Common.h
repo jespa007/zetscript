@@ -331,7 +331,7 @@ enum METAMETHOD_OPERATOR
  UNKNOW_PRE_POST_OPERATOR=0,
  PRE_INC, // ++
  POST_INC, // ++
- PRE_DEC, // --
+ PRE_DEC, // --getIdxArgument
  POST_DEC, // --
  PRE_NEG
  };
@@ -691,6 +691,11 @@ namespace zetscript{
 		unsigned short currentStack;
 		PInfoSharedPointerNode previous, next;
 	} tInfoSharedPointerNode;
+
+	typedef struct{
+		int idx_type;
+		string arg_name; //arg c++ type or arg name
+	}tArgumentInfo;
 
 
 	#pragma pack(pop)

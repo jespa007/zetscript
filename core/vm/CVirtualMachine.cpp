@@ -467,7 +467,7 @@ namespace zetscript{
 					for( unsigned k = 0; k < n_args && all_check;k++){\
 						tStackElement *currentArg=&startArg[k];\
 \
-						if(irfs->m_arg[k]==IDX_STACK_ELEMENT){\
+						if(irfs->m_arg[k].idx_type==IDX_STACK_ELEMENT){\
 							/* do nothing because is already trivial ! */ \
 						} \
 						else{ \
@@ -485,27 +485,27 @@ namespace zetscript{
 							case STK_PROPERTY_TYPE_INTEGER:\
 								idx_type=IDX_CLASS_INT_PTR_C;\
 								all_check=\
-										irfs->m_arg[k]==IDX_CLASS_INT_PTR_C\
-									  ||irfs->m_arg[k]==IDX_CLASS_INT_C;\
+										irfs->m_arg[k].idx_type==IDX_CLASS_INT_PTR_C\
+									  ||irfs->m_arg[k].idx_type==IDX_CLASS_INT_C;\
 								break;\
 							case STK_PROPERTY_TYPE_NUMBER:\
 								idx_type=IDX_CLASS_FLOAT_PTR_C;\
-								all_check=irfs->m_arg[k]==IDX_CLASS_FLOAT_PTR_C\
-										||irfs->m_arg[k]==IDX_CLASS_FLOAT_C;\
+								all_check=irfs->m_arg[k].idx_type==IDX_CLASS_FLOAT_PTR_C\
+										||irfs->m_arg[k].idx_type==IDX_CLASS_FLOAT_C;\
 								break;\
 							case STK_PROPERTY_TYPE_BOOLEAN:\
 								idx_type=IDX_CLASS_BOOL_PTR_C;\
 								all_check=\
-										irfs->m_arg[k]==IDX_CLASS_BOOL_PTR_C\
-									  ||irfs->m_arg[k]==IDX_CLASS_BOOL_C;\
+										irfs->m_arg[k].idx_type==IDX_CLASS_BOOL_PTR_C\
+									  ||irfs->m_arg[k].idx_type==IDX_CLASS_BOOL_C;\
 \
 								break;\
 							case STK_PROPERTY_TYPE_STRING:\
 								idx_type=IDX_CLASS_STRING_PTR_C;\
 \
 								all_check =\
-										(irfs->m_arg[k]==IDX_CLASS_STRING_PTR_C && currentArg->varRef!=0)\
-									  ||irfs->m_arg[k]==IDX_CLASS_CONST_CHAR_PTR_C;\
+										(irfs->m_arg[k].idx_type==IDX_CLASS_STRING_PTR_C && currentArg->varRef!=0)\
+									  ||irfs->m_arg[k].idx_type==IDX_CLASS_CONST_CHAR_PTR_C;\
 								break;\
 							case STK_PROPERTY_TYPE_NULL:\
 							case STK_PROPERTY_TYPE_UNDEFINED:\
@@ -514,16 +514,16 @@ namespace zetscript{
 								var_object=((CScriptVariable *)currentArg->varRef);\
 								aux_string=var_object->getPointer_C_ClassName();\
 \
-								if(irfs->m_arg[k]==idx_type){\
+								if(irfs->m_arg[k].idx_type==idx_type){\
 									all_check=true;\
 								}\
 								else{\
 									CScriptClass *c_class=NULL;\
 									if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */ \
-										all_check=irfs->m_arg[k]==c_class->idxClass;\
+										all_check=irfs->m_arg[k].idx_type==c_class->idxClass;\
 									}else{ /* check string ... */ \
 										if(var_type & STK_PROPERTY_TYPE_STRING){ \
-											all_check=irfs->m_arg[k]==IDX_CLASS_STRING_PTR_C; \
+											all_check=irfs->m_arg[k].idx_type==IDX_CLASS_STRING_PTR_C; \
 										}else{ \
 											all_check=false; \
 										}\
@@ -625,7 +625,7 @@ if(aux_function_info == NULL){\
 							}\
 \
 							if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){\
-								str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a]));\
+								str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a].idx_type));\
 							}else{ /* typic var ... */ \
 								str_candidates+="arg"+CStringUtils::intToString(a+1); \
 							} \
@@ -1046,7 +1046,7 @@ if(aux_function_info == NULL){\
 
 			currentArg=&ptrArg[i];
 
-			if(!stk2var(currentArg,irfs->m_arg[i],(void **)&converted_param[i],error)){
+			if(!stk2var(currentArg,irfs->m_arg[i].idx_type,(void **)&converted_param[i],error)){
 				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: %s",
 																irfs->object_info.symbol_info.symbol_name.c_str(),
 																i,
@@ -2278,6 +2278,8 @@ if(aux_function_info == NULL){\
 							if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 								bool b = CScriptClass::idxClassInstanceofIdxClass(((CScriptVariable *)(ptrResultInstructionOp1->varRef))->idxScriptClass, (intptr_t)ptrResultInstructionOp2->stkValue);
 								PUSH_BOOLEAN(b);
+							}else{
+								PUSH_BOOLEAN(false);
 							}
 							break;
 						}

@@ -265,11 +265,11 @@ namespace zetscript{
 
 					bool is_script_var = aux_string == TYPE_SCRIPT_VARIABLE; // if C_ClassName is void means that is a ScriptClass...
 					if(match_signature){
-						all_check = (idx_type==irfs->m_arg[k]) || (is_script_var);
+						all_check = (idx_type==irfs->m_arg[k].idx_type) || (is_script_var);
 					}
 					else{
-						if(idx_type!=irfs->m_arg[k] && !(is_script_var)){
-							all_check =(CScriptClass::getConversionType(GET_IDX_2_CLASS_C_STR(idx_type),GET_IDX_2_CLASS_C_STR(irfs->m_arg[k]), false)!=NULL);
+						if(idx_type!=irfs->m_arg[k].idx_type && !(is_script_var)){
+							all_check =(CScriptClass::getConversionType(GET_IDX_2_CLASS_C_STR(idx_type),GET_IDX_2_CLASS_C_STR(irfs->m_arg[k].idx_type), false)!=NULL);
 						}
 					}
 				}
@@ -301,7 +301,7 @@ namespace zetscript{
 					if(a>0){
 						str_candidates+=",";
 					}
-					str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a]));
+					str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a].idx_type));
 				}
 				str_candidates+=");\n";
 

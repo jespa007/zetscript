@@ -225,7 +225,7 @@ namespace zetscript{
 			int idx_return_type=-1;
 			string return_type;
 			vector<string> m_arg;
-			vector<int> m_idxArg;
+			vector<tArgumentInfo> m_infoArg;
 			intptr_t ref_ptr=-1;
 			CScriptFunctionObject *irs=NULL;
 
@@ -260,7 +260,7 @@ namespace zetscript{
 					return false;
 				}
 
-				m_idxArg.push_back(idx_type);
+				m_infoArg.push_back({idx_type,m_arg[i]});
 			}
 
 			if(idx_return_type == IDX_CLASS_VOID_C){
@@ -278,7 +278,7 @@ namespace zetscript{
 			// init struct...
 			irs = NEW_SCRIPT_FUNCTION_OBJECT;
 
-			irs->m_arg = m_idxArg;
+			irs->m_arg = m_infoArg;
 			irs->idx_return_type = idx_return_type;
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
 
@@ -477,10 +477,10 @@ namespace zetscript{
 		static bool register_C_FunctionMemberInt(const char *function_name,_R (_T:: *function_type)(_A...) )
 		{
 			string return_type;
-			vector<string> params;
+			//vector<string> params;
 			CScriptFunctionObject *irs=NULL;
 			vector<string> m_arg;
-			vector<int> m_idxArg;
+			vector<tArgumentInfo> m_argInfo;
 			int idx_return_type=-1;
 			unsigned int ref_ptr=-1;
 			string str_classPtr = typeid( _T *).name();
@@ -509,7 +509,7 @@ namespace zetscript{
 					return false;
 				}
 
-				m_idxArg.push_back(idx_type);
+				m_argInfo.push_back({idx_type,m_arg[i]});
 
 			}
 
@@ -542,7 +542,7 @@ namespace zetscript{
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
-			irs->m_arg = m_idxArg;
+			irs->m_arg = m_argInfo;
 			irs->idx_return_type = idx_return_type;
 
 			irs->object_info.symbol_info.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
@@ -569,7 +569,7 @@ namespace zetscript{
 			vector<string> params;
 			CScriptFunctionObject *irs=NULL;
 			vector<string> m_arg;
-			vector<int> m_idxArg;
+			vector<tArgumentInfo> m_argInfo;
 			int idx_return_type=-1;
 			unsigned int ref_ptr=-1;
 			string str_classPtr = typeid( _T *).name();
@@ -598,7 +598,7 @@ namespace zetscript{
 					return false;
 				}
 
-				m_idxArg.push_back(idx_type);
+				m_argInfo.push_back({idx_type,m_arg[i]});
 
 			}
 
@@ -632,7 +632,7 @@ namespace zetscript{
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
-			irs->m_arg = m_idxArg;
+			irs->m_arg = m_argInfo;
 			irs->idx_return_type = idx_return_type;
 			irs->object_info.symbol_info.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
 			(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
@@ -695,7 +695,7 @@ namespace zetscript{
 		{
 			string var_type = typeid(_R *).name(); // we need the pointer type ...
 			string return_type;
-			vector<string> params;
+			//vector<string> params;
 			tInfoVariableSymbol irs;
 			string str_classPtr = typeid( _T *).name();
 			unsigned int offset=zetscript::offset_of(var_pointer);

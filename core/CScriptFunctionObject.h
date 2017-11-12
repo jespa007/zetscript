@@ -37,7 +37,7 @@ namespace zetscript{
 		//CScriptFunctionObject *virtual_function;
 
 		// var for function ...
-		vector<int> m_arg; // tells var arg name or var type name (in of C )
+		vector<tArgumentInfo> m_arg; // tells var arg name or var type name (in of C )
 		int idx_return_type; // -1 not inicialized type return.
 
 		CScriptFunctionObject(){

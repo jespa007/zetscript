@@ -330,17 +330,11 @@ namespace zetscript{
 
 	int CCompiler::getIdxArgument(const string & var){
 
-		int idx_type = CScriptClass::getIdxClassFromIts_C_Type(var);
-
-		/*if(idx_type == -1){
-			zs_print_error_cr("internal error: %s is not registered!",var.c_str());
-			exit(-1);
-		}*/
 
 		// search if symbol belongs to arg vector...
 		for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->m_arg.size(); i++){
 
-			if(this->m_currentFunctionInfo->function_info_object->m_arg[i] == idx_type){
+			if(this->m_currentFunctionInfo->function_info_object->m_arg[i].arg_name == var){
 				return i;
 			}
 		}
@@ -2061,15 +2055,8 @@ namespace zetscript{
 		// 1. Processing args ...
 		for(unsigned i = 0; i < AST_NODE(_node->children[0])->children.size(); i++){
 			string ss = AST_NODE(AST_NODE(_node->children[0])->children[i])->symbol_value;
-			int idx_type = CScriptClass::getIdxClassFromIts_C_Type(ss);
-
-			if(idx_type==-1){
-				zs_print_error("type internal error cannot find class name %s",AST_NODE(AST_NODE(_node->children[0])->children[i])->symbol_value.c_str());
-				return false;
-			}
-
 			irfs->m_arg.push_back(
-					idx_type
+					{ZS_UNDEFINED_IDX,ss}
 			);
 		}
 		// 2. Compiles the function ...
