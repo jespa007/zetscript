@@ -17,7 +17,7 @@
 #include "CScriptFunctionObject.h"
 #include "extra/zs_extra.h"
 #include "CScriptClass.h"
-#include "BindScriptFunctionHelper.h"
+
 
 
 

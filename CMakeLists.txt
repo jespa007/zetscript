@@ -201,7 +201,8 @@ SET(
 	core/var/zg_variable.h
 	core/var/CScriptVariable.h
 	core/CCompiler.h
-	core/RegisterFunctionHelper.h
+	helpers/RegisterFunctionHelper.h
+	helpers/CppBindingHelper.h
 	core/Common.h
 	core/CState.h
 	core/CScope.h
