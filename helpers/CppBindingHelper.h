@@ -99,7 +99,7 @@ namespace zetscript{
 				}else if(idx_return_type == IDX_CLASS_INT_C){////*CScriptClass::INT_TYPE_STR){
 					int *aux_dst = ((int *)&val_ret);
 					float *aux_src=(float *)&stk_ret->stkValue;
-					*aux_dst=*aux_src;
+					*aux_dst=(int)(*aux_src);
 				}else{
 					error="cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type));
 					return false;
@@ -113,7 +113,7 @@ namespace zetscript{
 				}else if(idx_return_type == IDX_CLASS_FLOAT_C){//*CScriptClass::FLOAT_TYPE_STR){
 					float *aux_dst = ((float *)&val_ret);
 					int *aux_src=(int *)&stk_ret->stkValue;
-					*aux_dst = *aux_src;
+					*aux_dst = (float)(*aux_src);
 				}else{
 					error= "cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type));
 					return false;

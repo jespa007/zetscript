@@ -1246,7 +1246,7 @@ namespace zetscript{
 
 		PASTNode _node=AST_NODE(idxAstNode);
 
-		if(_node == NULL) {zs_print_error_cr("NULL node");return ZS_UNDEFINED_IDX;}
+		if(_node == NULL) {zs_print_error_cr("NULL node");return false;}
 		if(_node->node_type != FUNCTION_OBJECT_NODE ){zs_print_error_cr("node is not FUNCTION_OBJECT_NODE type or null");return false;}
 		if(_node->children.size()!=2) {zs_print_error_cr("Array access should have 2 children");return false;}
 

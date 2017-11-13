@@ -23,7 +23,7 @@ public:
 	}
 
 	void set(int _n){
-		n=_n;
+		n=(float)_n;
 	}
 
 	static CNumber * _add(CNumber *n1, CNumber *n2){
@@ -59,7 +59,7 @@ public:
 	}
 
 	static CNumber * _mod(CNumber *n1, int n2){
-		return new CNumber(fmod(n1->n , n2));
+		return new CNumber((float)fmod(n1->n , n2));
 	}
 
 	static CNumber * _mul(CNumber *n1, CNumber *n2){
@@ -231,7 +231,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_ARITHMETIC_FLOAT_OP(val1, op, val2) \
 { \
-	float expr=(float)(val1 op val2);\
+	float expr=((float)(val1) op (float)(val2));\
 	float aux_value=0; \
 	string str= STR(val1) \
 				STR(op) \

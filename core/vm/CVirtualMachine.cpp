@@ -1162,29 +1162,30 @@ if(aux_function_info == NULL){\
 
 				}
 			}else if(irfs->idx_return_type==IDX_CLASS_FLOAT_C){ // we must do a float cast in order to get float return.
+					float aux_flt;
 					switch(n_args){
 					case 0:
-						result=(*((std::function<float ()> *)fun_ptr))();
+						aux_flt =(*((std::function<float ()> *)fun_ptr))();
 						break;
 					case 1:
-						result=(*((std::function<float (intptr_t)> *)fun_ptr))(converted_param[0]);
+						aux_flt =(*((std::function<float (intptr_t)> *)fun_ptr))(converted_param[0]);
 						break;
 					case 2:
 
-						result=(*((std::function<float (intptr_t,intptr_t)> *)fun_ptr))(
+						aux_flt =(*((std::function<float (intptr_t,intptr_t)> *)fun_ptr))(
 								converted_param[0],
 								converted_param[1]
 												);
 						break;
 					case 3:
-						result=(*((std::function<float (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						aux_flt =(*((std::function<float (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 								converted_param[0],
 								converted_param[1],
 								converted_param[2]
 												);
 						break;
 					case 4:
-						result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						aux_flt =(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 								converted_param[0],
 								converted_param[1],
 								converted_param[2],
@@ -1192,7 +1193,7 @@ if(aux_function_info == NULL){\
 												);
 						break;
 					case 5:
-						result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						aux_flt =(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 								converted_param[0],
 								converted_param[1],
 								converted_param[2],
@@ -1201,7 +1202,7 @@ if(aux_function_info == NULL){\
 							);
 						break;
 					case 6:
-						result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+						aux_flt =(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 								converted_param[0],
 								converted_param[1],
 								converted_param[2],
@@ -1212,6 +1213,8 @@ if(aux_function_info == NULL){\
 						break;
 
 					}
+
+					memcpy(&result, &aux_flt, sizeof(float));
 			}else{ // generic int
 
 				switch(n_args){
