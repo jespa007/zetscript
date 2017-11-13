@@ -1108,81 +1108,32 @@ if(aux_function_info == NULL){\
 				break;
 			}
 
-		}else if(irfs->idx_return_type==IDX_CLASS_BOOL_C){  // we must do a bool cast in order to get float return.
-			switch(n_args){
-			case 0:
-				result=(*((std::function<bool ()> *)fun_ptr))();
-				break;
-			case 1:
-				result=(*((std::function<bool (intptr_t)> *)fun_ptr))(converted_param[0]);
-				break;
-			case 2:
+		}else{
 
-				result=(*((std::function<bool (intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1]
-										);
-				break;
-			case 3:
-				result=(*((std::function<bool (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2]
-										);
-				break;
-			case 4:
-				result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3]
-										);
-				break;
-			case 5:
-				result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3],
-						converted_param[4]
-					);
-				break;
-			case 6:
-				result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3],
-						converted_param[4],
-						converted_param[5]
-										);
-				break;
-
-			}
-		}else if(irfs->idx_return_type==IDX_CLASS_FLOAT_C){ // we must do a float cast in order to get float return.
+			if(irfs->idx_return_type==IDX_CLASS_BOOL_C){  // we must do a bool cast in order to get float return.
 				switch(n_args){
 				case 0:
-					result=(*((std::function<float ()> *)fun_ptr))();
+					result=(*((std::function<bool ()> *)fun_ptr))();
 					break;
 				case 1:
-					result=(*((std::function<float (intptr_t)> *)fun_ptr))(converted_param[0]);
+					result=(*((std::function<bool (intptr_t)> *)fun_ptr))(converted_param[0]);
 					break;
 				case 2:
 
-					result=(*((std::function<float (intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<bool (intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1]
 											);
 					break;
 				case 3:
-					result=(*((std::function<float (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1],
 							converted_param[2]
 											);
 					break;
 				case 4:
-					result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1],
 							converted_param[2],
@@ -1190,7 +1141,7 @@ if(aux_function_info == NULL){\
 											);
 					break;
 				case 5:
-					result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1],
 							converted_param[2],
@@ -1199,7 +1150,7 @@ if(aux_function_info == NULL){\
 						);
 					break;
 				case 6:
-					result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
 							converted_param[0],
 							converted_param[1],
 							converted_param[2],
@@ -1210,61 +1161,118 @@ if(aux_function_info == NULL){\
 					break;
 
 				}
-		}else{ // generic int
+			}else if(irfs->idx_return_type==IDX_CLASS_FLOAT_C){ // we must do a float cast in order to get float return.
+					switch(n_args){
+					case 0:
+						result=(*((std::function<float ()> *)fun_ptr))();
+						break;
+					case 1:
+						result=(*((std::function<float (intptr_t)> *)fun_ptr))(converted_param[0]);
+						break;
+					case 2:
 
-			switch(n_args){
-			case 0:
-				result=(*((std::function<intptr_t ()> *)fun_ptr))();
-				break;
-			case 1:
-				result=(*((std::function<intptr_t (intptr_t)> *)fun_ptr))(converted_param[0]);
-				break;
-			case 2:
+						result=(*((std::function<float (intptr_t,intptr_t)> *)fun_ptr))(
+								converted_param[0],
+								converted_param[1]
+												);
+						break;
+					case 3:
+						result=(*((std::function<float (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+								converted_param[0],
+								converted_param[1],
+								converted_param[2]
+												);
+						break;
+					case 4:
+						result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+								converted_param[0],
+								converted_param[1],
+								converted_param[2],
+								converted_param[3]
+												);
+						break;
+					case 5:
+						result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+								converted_param[0],
+								converted_param[1],
+								converted_param[2],
+								converted_param[3],
+								converted_param[4]
+							);
+						break;
+					case 6:
+						result=(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+								converted_param[0],
+								converted_param[1],
+								converted_param[2],
+								converted_param[3],
+								converted_param[4],
+								converted_param[5]
+												);
+						break;
 
-				result=(*((std::function<intptr_t (intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1]
-										);
-				break;
-			case 3:
-				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2]
-										);
-				break;
-			case 4:
-				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3]
-										);
-				break;
-			case 5:
-				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3],
-						converted_param[4]
-					);
-				break;
-			case 6:
-				result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3],
-						converted_param[4],
-						converted_param[5]
-										);
-				break;
+					}
+			}else{ // generic int
+
+				switch(n_args){
+				case 0:
+					result=(*((std::function<intptr_t ()> *)fun_ptr))();
+					break;
+				case 1:
+					result=(*((std::function<intptr_t (intptr_t)> *)fun_ptr))(converted_param[0]);
+					break;
+				case 2:
+
+					result=(*((std::function<intptr_t (intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1]
+											);
+					break;
+				case 3:
+					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2]
+											);
+					break;
+				case 4:
+					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3]
+											);
+					break;
+				case 5:
+					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3],
+							converted_param[4]
+						);
+					break;
+				case 6:
+					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
+							converted_param[0],
+							converted_param[1],
+							converted_param[2],
+							converted_param[3],
+							converted_param[4],
+							converted_param[5]
+											);
+					break;
+
+				}
+
 
 			}
+
+			callc_result=var2stk(result,irfs->idx_return_type);
 		}
 
-		callc_result=var2stk(result,irfs->idx_return_type);
+
+
 
 
 		return &callc_result;

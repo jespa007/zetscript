@@ -7,6 +7,13 @@
 namespace zetscript{
 
 
+#ifdef __EMSCRIPTEN__
+#define THROW_RUNTIME_ERROR cerr <<
+#else
+#define THROW_RUNTIME_ERROR throw std::runtime_error
+#endif
+
+
 
 // Helpers...
 
@@ -191,9 +198,13 @@ namespace zetscript{
 		*f=((void *)(new std::function<void ()>(
 			[&,calling_obj,fun_obj](){
 
-			CURRENT_VM->execute(
-								fun_obj,
-								calling_obj);
+				if(CURRENT_VM->execute(
+									fun_obj,
+									calling_obj)==NULL){
+
+					THROW_RUNTIME_ERROR(string("run-time error: ")+CZetScript::getErrorMsg());
+
+				}
 			}
 		)));
 	}
@@ -213,8 +224,14 @@ namespace zetscript{
 							fun_obj,
 							calling_obj);
 
+
+					if(stk == NULL){
+						THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
+					}
+
+
 					if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
-						zs_print_error_cr("error converting result value: %s",error.c_str());
+						THROW_RUNTIME_ERROR(string("error converting result value:")+error);
 					}
 					return ret_value;
 			}
@@ -244,10 +261,12 @@ namespace zetscript{
 
 				};
 
-				CURRENT_VM->execute(
+				if(CURRENT_VM->execute(
 							fun_obj,
 							calling_obj,
-							args);
+							args)==NULL){
+					THROW_RUNTIME_ERROR(string("run-time error: %s")+CZetScript::getErrorMsg());
+				}
 			}
 		)));
 	}
@@ -277,8 +296,12 @@ namespace zetscript{
 												calling_obj,
 												args);
 
+					if(stk == NULL){
+						THROW_RUNTIME_ERROR(string("run-time error: %s")+CZetScript::getErrorMsg());
+					}
+
 					if(!stk2var(stk,idx_return, (void **)(&ret_value),error)){
-						zs_print_error_cr("error converting result value: %s",error.c_str());
+						THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 					}
 					return ret_value;
 			}
@@ -311,10 +334,14 @@ namespace zetscript{
 
 				};
 
-				CURRENT_VM->execute(
+				if(CURRENT_VM->execute(
 								fun_obj,
 								calling_obj,
-								args);
+								args)==NULL){
+
+
+					THROW_RUNTIME_ERROR(string("run-time error: %s")+CZetScript::getErrorMsg());
+				}
 			}
 
 		)));
@@ -349,8 +376,12 @@ namespace zetscript{
 												calling_obj,
 												args);
 
+					if(stk == NULL){
+						THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
+					}
+
 					if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
-						zs_print_error_cr("error converting result value: %s",error.c_str());
+						THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 					}
 					return ret_value;
 			}
@@ -388,10 +419,12 @@ namespace zetscript{
 						,var2stk((intptr_t)p3,idx_param3)
 				};
 
-				CURRENT_VM->execute(
-									fun_obj,
-									calling_obj,
-									args);
+				if(CURRENT_VM->execute(
+								fun_obj,
+								calling_obj,
+								args)==NULL){
+					THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
+				}
 			}
 
 		)));
@@ -426,8 +459,12 @@ namespace zetscript{
 											calling_obj,
 											args);
 
+				if(stk == NULL){
+					THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
+				}
+
 				if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
-					zs_print_error_cr("error converting result value: %s",error.c_str());
+					THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 				}
 				return ret_value;
 			}
@@ -467,10 +504,12 @@ namespace zetscript{
 
 				};
 
-				CURRENT_VM->execute(
-									fun_obj,
-									calling_obj,
-									args);
+				if(CURRENT_VM->execute(
+								fun_obj,
+								calling_obj,
+								args)==NULL){
+					THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
+				}
 			}
 
 		)));
@@ -510,8 +549,12 @@ namespace zetscript{
 												calling_obj,
 												args);
 
+					if(stk == NULL){
+						THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
+					}
+
 					if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
-						zs_print_error_cr("error converting result value: %s",error.c_str());
+						THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 					}
 					return ret_value;
 
@@ -556,10 +599,12 @@ namespace zetscript{
 
 				};
 
-				CURRENT_VM->execute(
+				if(CURRENT_VM->execute(
 								fun_obj,
 								calling_obj,
-								args);
+								args)==NULL){
+					THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
+				}
 			}
 
 		)));
@@ -604,8 +649,12 @@ namespace zetscript{
 											calling_obj,
 											args);
 
+				if(stk == NULL){
+					THROW_RUNTIME_ERROR(string("run-time error: %s")+CZetScript::getErrorMsg());
+				}
+
 				if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
-					zs_print_error_cr("error converting result value: %s",error.c_str());
+					THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 				}
 				return ret_value;
 			}
@@ -654,10 +703,12 @@ namespace zetscript{
 
 				};
 
-				CURRENT_VM->execute(
+				if(CURRENT_VM->execute(
 								fun_obj,
 								calling_obj,
-								args);
+								args)==NULL){
+					THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
+				}
 			}
 
 		)));
@@ -702,8 +753,12 @@ namespace zetscript{
 												calling_obj,
 												args);
 
+					if(stk == NULL){
+						THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
+					}
+
 					if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
-						zs_print_error_cr("error converting result value: %s",error.c_str());
+						THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 					}
 					return ret_value;
 
@@ -712,7 +767,9 @@ namespace zetscript{
 	}
 
 
-
+	//
+	//
+	//--------------------------------------------------------------------------------------------------------------------
 
 	 template <typename _T, std::size_t... Is>
 	 void bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj,index_sequence<Is...>)

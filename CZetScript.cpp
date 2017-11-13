@@ -604,7 +604,7 @@ namespace zetscript{
 
 	}
 
-	bool CZetScript::eval(const string & s, bool execute, const char *filename){
+	bool CZetScript::eval(const string & s, bool execute, const char *filename)  {
 
 		if(!__init__) return false;
 

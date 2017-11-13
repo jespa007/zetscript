@@ -117,7 +117,7 @@ else()
 		set(CMAKE_C_COMPILER "$ENV{EMSCRIPTENDIR}/emcc")
 		set(CMAKE_CXX_COMPILER "$ENV{EMSCRIPTENDIR}/em++")
 
-		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I$ENV{EMSCRIPTENDIR}/system/lib/libcxxabi/include/ -s DEMANGLE_SUPPORT=1 ") #-s ASSERTIONS=2 -s VERBOSE=1 ")
+		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I$ENV{EMSCRIPTENDIR}/system/lib/libcxxabi/include/ -s DEMANGLE_SUPPORT=1 -s DISABLE_EXCEPTION_CATCHING=0") #-s DEMANGLE_SUPPORT=1 -s ASSERTIONS=1 -s VERBOSE=1 ")
 		
 		set( POST_NAME ${POST_NAME}.html)
 	
@@ -232,8 +232,14 @@ if ( "${EMSCRIPTEN}" STREQUAL "yes" )
 		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
 	
-	
 	set_target_properties(zs${POST_NAME} PROPERTIES LINK_FLAGS " --preload-file test")
+	
+	add_executable(zs_test${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
+	)
+	
+	
+	#set_target_properties(zs_test${POST_NAME})
 
  	
 else()

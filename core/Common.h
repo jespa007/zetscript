@@ -25,7 +25,7 @@
 #include <utility>
 #include <float.h>
 #include <cstdarg>
-#include <assert.h>
+#include <stdexcept>
 
 #include <typeinfo>
 #include <stdio.h>
