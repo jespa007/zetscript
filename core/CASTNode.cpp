@@ -2700,6 +2700,7 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		char *end_expr,*start_symbol;
+		int dl=-1;
 		KEYWORD_TYPE key_w;
 		PASTNode conditional=NULL, if_node=NULL, else_node=NULL,block=NULL, group_conditional_nodes = NULL;
 		string conditional_str;
@@ -2752,6 +2753,11 @@ namespace zetscript{
 
 					if(*end_expr != ')'){
 						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
+						return NULL;
+					}
+
+					if(IGNORE_BLANKS(aux_p+1,dl)==end_expr){
+						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"no conditional expression");
 						return NULL;
 					}
 
