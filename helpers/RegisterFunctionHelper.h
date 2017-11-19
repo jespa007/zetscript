@@ -135,16 +135,25 @@ namespace zetscript{
 	// trivial case when parameters (argIdx == 0).
 	template <size_t argIdx, typename F>
 	auto getArgTypes(std::vector<std::string> & params)
-
+	-> typename std::enable_if<(argIdx == 0)>::type
 	{
 		 // NO ARGS CASE
 	}
 
-	template <typename F, std::size_t... Is>
-	void getParamsFunction(int i,string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
+	template <typename _F, std::size_t... Is>
+	auto getParamsFunction(int i,string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
+	-> typename std::enable_if<(_F::arity > 0)>::type
 	{
-		returnType = typeid(typename F::return_type).name();
-		getArgTypes<F::arity, F, typename F::template argument<Is>::type...>(typeParams);
+		returnType = typeid(typename _F::return_type).name();
+		getArgTypes<_F::arity, _F, typename _F::template argument<Is>::type...>(typeParams);
+	}
+
+	template <typename _F, std::size_t... Is>
+	auto getParamsFunction(int i,string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
+	-> typename std::enable_if<(_F::arity == 0)>::type
+	{
+		returnType = typeid(typename _F::return_type).name();
+		getArgTypes<0, _F>(typeParams);
 	}
 
 

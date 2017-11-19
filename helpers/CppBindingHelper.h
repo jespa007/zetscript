@@ -771,12 +771,19 @@ namespace zetscript{
 	//
 	//--------------------------------------------------------------------------------------------------------------------
 
-	 template <typename _T, std::size_t... Is>
-	 void bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj,index_sequence<Is...>)
+	 template <typename _F, std::size_t... Is>
+	 auto bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj,index_sequence<Is...>)
+	 -> typename std::enable_if<(_F::arity > 0)>::type
 	{
-		 bind_script_function_builder<typename _T::return_type, _T,  typename _T::template argument<Is>::type...>(f,calling_obj,fun_obj);
+		 bind_script_function_builder<typename _F::return_type, _F,  typename _F::template argument<Is>::type...>(f,calling_obj,fun_obj);
 	}
 
+	 template <typename _F, std::size_t... Is>
+	 auto bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj,index_sequence<Is...>)
+	 -> typename std::enable_if<(_F::arity == 0)>::type
+	{
+		 bind_script_function_builder<typename _F::return_type, _F>(f,calling_obj,fun_obj);
+	}
 
 
 

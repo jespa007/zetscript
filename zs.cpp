@@ -6,8 +6,8 @@
 
 using namespace zetscript;
 
-int main(int argc, char * argv[]) {
 
+int main(int argc, char * argv[]) {
 
 	CZetScript *zetscript = CZetScript::getInstance();
 

@@ -645,7 +645,7 @@ int main(int argc, char * argv[]) {
 	register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
 	CZetScript::getInstance()->eval("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
 
-	auto test_1st_script_call=bind_function<void ()>("test_1st_script_call");
+	std::function<void ()> * test_1st_script_call=bind_function<void ()>("test_1st_script_call");
 	test_2nd_script_call=bind_function<void ()>("test_2nd_script_call");
 
 	if(test_1st_script_call){
