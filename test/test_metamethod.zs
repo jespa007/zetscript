@@ -12,6 +12,7 @@ class CVector2{
 		this.y=_y;
 	}
 
+	// defines _add metamethod...
 	function _add(v1,v2){
 		var v3=new CVector2();
 		v3.x=v1.x + v2.x;
@@ -25,7 +26,6 @@ class CVector2{
 var v1=new CVector2(0,2),v2=new CVector2(1,0);
 var v3=v1+v2; // add a+b and 
 
-print("v3=("+v3.x+","+v3.y+")");
-
+print("v3=("+v3.x+","+v3.y+")"); // should be CVector(1,2)
 
 

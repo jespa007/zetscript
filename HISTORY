@@ -1,0 +1,46 @@
+
+//----------------------------------------------------------
+Version: 1.1.2
+Date: 19-11-2017
+
+Solved bug #25: Fixed error on keyword after case/default keyword
+
+//----------------------------------------------------------
+Version: 1.1.1
+Date: 12-11-2017
+
+Fixed bug #24
+Fixed bug #23
+
+#22: cast vector from/to stk implemented
+#21: bind functions already implemented
+
+//----------------------------------------------------------
+Version: 1.1.0
+Date: 11-11-2017
+
+- Script function calls usign std::function.
+
+//----------------------------------------------------------
+Version: 1.0.2
+Date: 05-11-2017
+
+Solved some bugs
+print comulative errors getErrorMsg()
+
+//----------------------------------------------------------
+Version: 1.0.1
+Date: 04-11-2017
+
+Solved some bugs
+
+//----------------------------------------------------------
+Version: 1.0.0
+Date: 04-11-2017
+
+Solved various bugs
+ZetScript bugs various bug
+Implement error feature feature
+Support for if-else if-else feature
+Memory leaks improvement
+ 
