@@ -3165,12 +3165,13 @@ namespace zetscript{
 												return NULL;
 											}
 											break;
-										case BREAK_KEYWORD:
+										//case BREAK_KEYWORD:
+										//	end=true;
+										//	break;
+										default: // ok it can be other type of keyword...
+											//ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Unexpected keyword.");
+											//return NULL;
 											end=true;
-											break;
-										default:
-											ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected case or default in switch");
-											return NULL;
 											break;
 										}
 										aux_p=IGNORE_BLANKS(aux_p,m_line);
@@ -3184,8 +3185,6 @@ namespace zetscript{
 									// print warning ignored cases in case there's a default in there...
 									if(ast_node_to_be_evaluated!= NULL){
 										if(group_cases->children.size() > 1 && theres_a_default){
-
-
 
 											for(vector<short>::iterator it = group_cases->children.begin(); it != group_cases->children.end(); ){ //erase cases and print warning !
 												if(AST_NODE(*it)->keyword_info == CASE_KEYWORD){
