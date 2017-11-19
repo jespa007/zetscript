@@ -1,20 +1,18 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #pragma once
 
 #include "../Common.h"
 
-class CUndefined;
-class CNull;
-
-
 #include "utils/zs_utils.h"
 
 #include "CScriptVariable.h"
-#include "CString.h"
-#include "CVector.h"
-#include "CFunctor.h"
-#include "CNull.h"
-#include "CUndefined.h"
-#include "CStruct.h"
+#include "CStringScriptVariable.h"
+#include "CVectorScriptVariable.h"
+#include "CFunctorScriptVariable.h"
+#include "CStructScriptVariable.h"
 
 
 

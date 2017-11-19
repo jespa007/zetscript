@@ -1,45 +1,23 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #pragma once
 
-#ifdef _WIN32
-#define DLL_FILES "*.dll"
-#else
-#define DLL_FILES "*.so"
-#endif
+namespace zetscript{
+
+	class CIO_Utils
+	{
+
+	public:
 
 
-class CIO_Utils
-{
+		static string  getFileName(const string &  _path);
+		static string  getFileNameWithoutExtension(const string & _path);
+		static bool fileExists(const string & m_file);
+		//static bool readFile(const string & filename, char *buffer, int length);
+		static char * readFile(const string & filename, int & n_readed_bytes);
+		static int  getLength(const string & filename);
+	};
 
-
-	int m_totalLength;
-	unsigned char *buffer;
-	std::string  m_filename,m_flags;
-
-
-public:
-	static bool fileExists(const string & m_file);
-	//static bool readFile(const string & filename, char *buffer, int length);
-
-	static void writeFile(const string & filename, string & data);
-	static ByteBuffer * readFile(const string & filename);
-
-
-	static int  getLength(const  string  & file);
-	static int  getLength(FILE * file);
-	static bool setWorkPath(const string & m_path);
-	static std::string getCwd();
-
-	static std::string  getFolder(const string & _filename);
-	static std::string  getFileName(const string & _filename);
-	static std::string  getFileNameWithoutExtension(const string & _filename);
-
-	static bool	 isDirectory(const string & filename);
-	static bool	 createDirectory(const string & filename);
-
-	static std::vector<string > searchFiles(const std::string & folder, const std::string & filter="*");
-	//static void getFilenameFromAbsolutePath(string & filename, const string & absolute_path_with_filename);
-
-
-
-
-};
+}

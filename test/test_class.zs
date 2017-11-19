@@ -1,22 +1,43 @@
-class A{
-	var i;
+
+
+class Test{
+	var data1;
+	var data2;
 	
-	function A(j){
-		var f=j;
-		
-		print("hola"+f);
-		this.i=f;
-		
-		f=2;
-		
-		print("hola"+this.i++);
-		
-		print("hola"+this.i++);
+	function function1(a){
+		this.data1 =a;
+		print("calling from Test. data1:"+this.data1);
+	}
+	
+	function function2(){
+		this.data2=3.0;
+		return this.data2;
 	}
 };
 
-var k="hola caca";
+var Test::data3;
 
-var a = new A(k);
+function Test::function3(){
+	this.data3="a string";
+}
 
-//print(""+a.i);
+class TestExtended: Test{
+	var data4;
+	function function1(a){
+		super(2); // it calls Test::function1(2)
+		this.data1+=5; // Now data1=5+2 = 7
+		print("calling from TestExtended. Data1:"+this.data1);
+	}
+	
+	function function4(){
+		this.data4=6;
+		this.data4=this.data3+this.function2()+this.data1;
+	}
+};
+
+
+
+
+var t=new TestExtended();
+var i=t.function1(2); // initializes data2 as 3.0 and return the value
+

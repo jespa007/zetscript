@@ -1,42 +1,71 @@
 cmake_minimum_required(VERSION 2.8)
  
-project(libzetscript)
+project(zetscript)
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# MACRO UTILS
+#
 
 
+MACRO(INSTALL_HEADERS_WITH_DIRECTORY HEADER_LIST)
+
+    FOREACH(HEADER ${${HEADER_LIST}})
+        get_filename_component(DIR ${HEADER} DIRECTORY)
+        INSTALL(FILES ${HEADER} DESTINATION include/zetscript/${DIR})
+    ENDFOREACH(HEADER)
+
+ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
 # COMMON PARAMS
 #
-  SET( COMMON_PARAMS " -D__STDC_CONSTANT_MACROS -std=c++1y -I${PROJECT_SOURCE_DIR} -pthread -Wall")
-   
-if (MINGW)
-	set(CMAKE_LEGACY_MINGW_WIN32 0)
-	set(CMAKE_PREFIX_PATH "$ENV{MINGWDIR}/local32/lib")
 
-	MESSAGE ("include" ${include_directories})
+include_directories (
+	${PROJECT_SOURCE_DIR}
+	
+)
+
+message("dest dir:" ${CMAKE_INSTALL_PREFIX})
+
+if(MSVC)
+	MESSAGE ("********* MSVC ************" )
+	
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DZETSCRIPT_EXPORTS)
+
+	#disable C4103 warning because is perfectly valid. Only MSVC complains about it
+	add_definitions(/wd4103)
+
+else()
+
+	SET( COMMON_PARAMS " ${COMMON_PARAMS} -D__STDC_CONSTANT_MACROS -std=c++1y -I -pthread -Wall")
+   
+	if (MINGW)
+		MESSAGE ("********* MINGW CONF ************" )
+		message("mingw path: $ENV{MINGWDIR} ")
+		
+		set(CMAKE_LEGACY_MINGW_WIN32 0)
+		set(CMAKE_PREFIX_PATH "$ENV{MINGWDIR}/local32/lib")
+
+		MESSAGE ("include" ${include_directories})
  
-	SET( COMMON_PARAMS " ${COMMON_PARAMS} -I/local32/include -I/usr/local/include ")
+		SET( COMMON_PARAMS " ${COMMON_PARAMS} ")
   
+	endif()
+
+	include_directories (
+		$ENV{MINGWDIR}/local32/include
+	)
+
+	LINK_DIRECTORIES (
+		$ENV{MINGWDIR}/local32/lib
+	)
+
+
 endif()
 
 
-include_directories (
-	/usr/local/include
-	${OPENGL_INCLUDE_DIRS}  
-	${GLU_INCLUDE_DIRS}
-)
-
-
-LINK_DIRECTORIES (
-	/usr/local/lib
-	/loca32/lib
-)
-
-
-include_directories (
-	/usr/local/include
-)
 
 
 #
@@ -50,38 +79,67 @@ include_directories (
 
 IF ( "${TARGET}" STREQUAL "")
    SET ( TARGET "release" )
-ENDIF () 
-
-set(TARGET_FLAGS " -O3 ")
-set( POST_NAME "")
-
-# -D_GLIBCXX_DEBUG
-
-IF ( "${TARGET}" STREQUAL "debug")
-	set( POST_NAME "_d")
-	set(TARGET_FLAGS " -O0 ")
-	set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__DEBUG__ ")
 ENDIF ()
+ 
+
+if(MSVC)
+	IF ( "${TARGET}" STREQUAL "debug")
+		add_definitions(/bigobj)
+	ENDIF()
 
 
-# Compile for x86 target by default ...
-set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
+else()
 
 
-if ( "${EMMSCRIPTEN}" STREQUAL "yes" )
+	set(TARGET_FLAGS " -O2 ")
+	set( POST_NAME "")
 
-	SET( EMMSCRIPTEN_DIR "/opt/emsdk/emscripten/master")
+	# -D_GLIBCXX_DEBUG
 
-	MESSAGE ("********* ¡¡ EMMSCRIPTEN RELEASE !!! ************" )
-	set(CMAKE_C_COMPILER "${EMMSCRIPTEN_DIR}/emcc")
-	set(CMAKE_CXX_COMPILER "${EMMSCRIPTEN_DIR}/em++")
+	IF ( "${TARGET}" STREQUAL "debug")
+		set( POST_NAME "_d")
+		set(TARGET_FLAGS " -O0 ")
+		set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__DEBUG__ ")
+	ENDIF ()
 
-	SET( COMMON_PARAMS " ${COMMON_PARAMS} -I${EMMSCRIPTEN_DIR}/system/lib/libcxxabi/include/ ")
+
+	# Compile for x86 target by default ...
+	set(TARGET_FLAGS " ${TARGET_FLAGS} ")
+
+
+	if ( "${EMSCRIPTEN}" STREQUAL "yes" )
+
+		message("emscripten path: $ENV{EMSCRIPTENDIR} ")
+		
+
+		MESSAGE ("********* EMSCRIPTEN CONF ************" )
+		set(TARGET_FLAGS " -O2 ")
+		set(CMAKE_C_COMPILER "$ENV{EMSCRIPTENDIR}/emcc")
+		set(CMAKE_CXX_COMPILER "$ENV{EMSCRIPTENDIR}/em++")
+
+		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I$ENV{EMSCRIPTENDIR}/system/lib/libcxxabi/include/ -s DEMANGLE_SUPPORT=1 -s DISABLE_EXCEPTION_CATCHING=0") #-s DEMANGLE_SUPPORT=1 -s ASSERTIONS=1 -s VERBOSE=1 ")
+		
+		set( POST_NAME ${POST_NAME}.html)
+	
+	endif()
+
+	#set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
+	
+	SET(CMAKE_C_FLAGS " ")
+	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
+	
+	
+	MESSAGE ("Target : " ${TARGET})
+
+	#Redefine output dir ...
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
+	LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 	
 endif()
 
-SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
-SET(CMAKE_C_FLAGS "  -I/local32/include ")
+
 
 
 #
@@ -94,13 +152,7 @@ SET(CMAKE_C_FLAGS "  -I/local32/include ")
 
 
 
-MESSAGE ("Target : " ${TARGET})
 
-#Redefine output dir ...
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
-LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 
 
 
@@ -113,31 +165,141 @@ LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 
 # Library
 
-set( ZG_BASE_LIB_SRCS
+set( ZETSCRIPT_LIB_SRCS
 
     #-- Utils --
 	utils/zs_utils.cpp
 
 	
 	#-- Script Core --
-	core/zs_core.cpp	
+	core/zs_core.cpp
+	
+	#-- Registered Class --
+	extra/zs_extra.cpp	
 
 	#-- Script Core --
 	CZetScript.cpp	
 
 )
 
+# zetscriptlib
+add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
+target_link_libraries(zetscript${POST_NAME} )
 
-add_library( zetscript${POST_NAME} SHARED ${ZG_BASE_LIB_SRCS} )
+SET(
+	HS
+	utils/CIO_Utils.h
+	utils/CColorTerm.h
+	utils/zs_utils.h
+	utils/CStringUtils.h
+	utils/CLog.h
+	core/CASTNode.h
+	core/var/CStringScriptVariable.h
+	core/var/CVectorScriptVariable.h
+	core/var/CFunctorScriptVariable.h
+	core/var/CStructScriptVariable.h
+	core/var/zg_variable.h
+	core/var/CScriptVariable.h
+	core/CCompiler.h
+	helpers/RegisterFunctionHelper.h
+	helpers/CppBindingHelper.h
+	core/Common.h
+	core/CState.h
+	core/CScope.h
+	core/CScriptClass.h
+	core/vm/CVirtualMachine.h
+	core/CNativeFunction.h
+	core/CScriptFunctionObject.h
+	core/zs_core.h
+	extra/zs_extra.h
+	extra/CJSON.h
+	CZetScript.h
+)
 
 
-IF (MINGW)
 
-	target_link_libraries(zetscript${POST_NAME} Rpcrt4 kernel32 "-Wl,--no-as-needed" )
-   
-ELSE(MINGW)
+INSTALL(TARGETS zetscript${POST_NAME}
+		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
+    	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
+    	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
+)
 
-	target_link_libraries(zetscript${POST_NAME}  "-Wl,--no-as-needed" )
+INSTALL_HEADERS_WITH_DIRECTORY(HS)
+
+if ( "${EMSCRIPTEN}" STREQUAL "yes" )
+
+	add_executable(zs${POST_NAME}
+		${PROJECT_SOURCE_DIR}/zs.cpp
+	)
 	
-ENDIF(MINGW)
+	set_target_properties(zs${POST_NAME} PROPERTIES LINK_FLAGS " --preload-file test")
+	
+	add_executable(zs_test${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
+	)
+	
+	
+	#set_target_properties(zs_test${POST_NAME})
 
+ 	
+else()
+
+	#zs console
+	add_executable(zs${POST_NAME}
+		${PROJECT_SOURCE_DIR}/zs.cpp
+	)
+	
+	# zs_test
+	add_executable(zs_test${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
+	)
+	
+	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+	
+	# helloworld
+	add_executable(helloworld${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/helloworld.cpp
+	)
+	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
+	
+	# register_variables
+	add_executable(register_variable${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/register_variable.cpp
+	)	
+	
+	target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
+	
+	# register_functions
+	add_executable(register_function${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/register_function.cpp
+	)	
+	
+	target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})	
+	
+	
+	# register_class
+	add_executable(register_class${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/register_class.cpp
+	)	
+	
+	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
+
+	# function_script_call
+	add_executable(script_call_from_cpp${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/script_call_from_cpp.cpp
+	)	
+	
+	target_link_libraries(script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
+	
+	
+endif()
+
+target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
+
+
+INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
+		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
+		RUNTIME DESTINATION  	${CMAKE_INSTALL_PREFIX}/bin
+    	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
+    	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
+)

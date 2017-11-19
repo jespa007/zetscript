@@ -1,430 +1,401 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #include "zs_core.h"
 
-vector<CState *> *  CState::vec_saved_state=NULL;
-CState * CState::current_state=NULL;
-//vector<CASTNode *> 							* current_vec_ast_node=NULL; // ast collection register...
-//vector<tScopeVar *> 					* current_vec_info_scope_var_node=NULL;
+
+namespace zetscript{
+
+	vector<CState *> *  CState::vec_saved_state=NULL;
+	CState * CState::current_state=NULL;
+	string * CState::aux_str= NULL;//"1234_unknow_1234";
+
+	void CState::init(){
+		if(vec_saved_state == NULL){
+			CState *st=new CState();
+			vec_saved_state = new vector<CState *> ();
 
 
+			CASTNode::setVectorASTNode(st->getVectorASTNodeNode());
+			CScope::setVectorScopeNode(st->getVectorScopeNode());
+			CScriptFunctionObject::setVectorScriptFunctionObjectNode(st->getVectorScriptFunctionObjectNode());
+			CScriptClass::setVectorScriptClassNode(st->getVectorScriptClassNode());
+			CZetScript::setVectorInfoParsedFiles(st->getVectorInfoParsedSourceNode());
 
+			// add empty ast_node...
 
+			CASTNode *ast =CASTNode::newASTNode();
+			CScope *sc=CScope::newScope(ZS_UNDEFINED_IDX);
+			ast->idxScope = sc->idxScope;
+			ast->node_type = NODE_TYPE::BODY_NODE;
 
-string * CState::aux_str= NULL;//"1234_unknow_1234";
+			current_state=st;
 
-void CState::init(){
-	if(vec_saved_state == NULL){
-		CState *st;
-		vec_saved_state = new vector<CState *> ();
-		vec_saved_state->push_back(st=new CState()); // create first state 0.
-
-		CASTNode::setVectorASTNode(st->getVectorASTNodeNode());
-		CScope::setVectorScopeNode(st->getVectorScopeNode());
-		CScriptFunctionObject::setVectorScriptFunctionObjectNode(st->getVectorScriptFunctionObjectNode());
-		CScriptClass::setVectorScriptClassNode(st->getVectorScriptClassNode());
-		CZetScript::setVectorInfoParsedFiles(st->getVectorInfoParsedSourceNode());
-
-		// create state by default ...
-		//current_state = new CState();
-		//current_vec_ast_node = current_state->getVectorASTNodeNode();
-		//current_vec_scope_node = current_state->getVectorScopeNode();
-		//current_vec_info_scope_var_node = current_state->getVecScopeVarNode();
-		//current_vec_registered_class_node= current_state->getScriptClassNode();
-		//current_vec_info_registered_function_symbol_node = current_state->getVecInfoFunctionSymbolNode();
+		}
 	}
-}
 
-bool  CState::setState(int idx){
-	if(idx < 0 || (unsigned)idx >= vec_saved_state->size()){
-		print_error_cr("index out of bounds");
+	bool  CState::setState(int idx){
+		if(idx < 0 || (unsigned)idx >= vec_saved_state->size()){
+			zs_print_error_cr("index out of bounds");
+			return false;
+		}
+
+		// clear globals ...
+		CURRENT_VM->clearGlobals();
+
+		CState * state_to_restore = vec_saved_state->at(idx);
+
+		// TODO:maybe is better to re-run vm to optimize vec acceses
+
+		// 1. destroy current state (0)
+
+
+		// 2. Copy state 1
+		vector<CASTNode *> 				* vec_ast_node_src					= state_to_restore->getVectorASTNodeNode();
+		vector<CScope *> 				* vec_scope_src						= state_to_restore->getVectorScopeNode();
+		vector<CScriptClass *> 			* vec_script_class_src				= state_to_restore->getVectorScriptClassNode();
+		vector<CScriptFunctionObject *>	* vec_script_function_object_src	= state_to_restore->getVectorScriptFunctionObjectNode();
+		vector<tInfoParsedSource>		* vec_info_parsed_source_src		= state_to_restore->getVectorInfoParsedSourceNode();
+
+
+
+
+		delete current_state;//->destroy();
+
+		current_state=new CState(); // create first state 0.
+
+		vector<CASTNode *> 				* vec_ast_node_dst					= current_state->getVectorASTNodeNode();
+		vector<CScope *> 				* vec_scope_dst						= current_state->getVectorScopeNode();
+		vector<CScriptClass *> 			* vec_script_class_dst				= current_state->getVectorScriptClassNode();
+		vector<CScriptFunctionObject *>	* vec_script_function_object_dst	= current_state->getVectorScriptFunctionObjectNode();
+		vector<tInfoParsedSource>		* vec_info_parsed_source_dst		= current_state->getVectorInfoParsedSourceNode();
+
+
+		// finally set vectors....
+		CASTNode::setVectorASTNode(vec_ast_node_dst);
+		CScope::setVectorScopeNode(vec_scope_dst);
+		CScriptFunctionObject::setVectorScriptFunctionObjectNode(vec_script_function_object_dst);
+		CScriptClass::setVectorScriptClassNode(vec_script_class_dst);
+		CZetScript::setVectorInfoParsedFiles(vec_info_parsed_source_dst);
+
+
+		// 1- Copy current state...
+		// 1.1-Copy AST...
+		for(unsigned int i = 0; i < vec_ast_node_src->size(); i++){
+			CASTNode *ast = new CASTNode();
+			*ast = *vec_ast_node_src->at(i);
+			vec_ast_node_dst->push_back(ast);
+		}
+
+		// 1.2-Copy Scope...
+		for(unsigned int i = 0; i < vec_scope_src->size(); i++){
+			CScope *scope = new CScope();
+			*scope = *vec_scope_src->at(i);
+			vec_scope_dst->push_back(scope);
+
+		}
+
+		// 1.3-Copy CScriptClass...
+		for(unsigned int i = 0; i < vec_script_class_src->size(); i++){
+			CScriptClass *sclass = new CScriptClass();
+			*sclass = *vec_script_class_src->at(i);
+			vec_script_class_dst->push_back(sclass);
+		}
+
+		// 1.4-Copy CScriptFunctionObject...
+		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
+			CScriptFunctionObject *sfo = new CScriptFunctionObject();
+			*sfo = *vec_script_function_object_src->at(i);
+			vec_script_function_object_dst->push_back(sfo);
+		}
+
+		// 1.5-Copy tInfoParsedSource...
+		for(unsigned int i = 0; i < vec_info_parsed_source_src->size(); i++){
+			tInfoParsedSource ips;
+			ips = vec_info_parsed_source_src->at(i);
+			vec_info_parsed_source_dst->push_back(ips);
+		}
+
+
+
+
 		return false;
 	}
 
-	CState * state_to_restore = vec_saved_state->at(idx);
+	int   CState::saveState(){
 
-	/*current_vec_ast_node = current_state->getVectorASTNodeNode();
-	current_vec_scope_node = current_state->getVectorScopeNode();
-	current_vec_info_scope_var_node = current_state->getVecScopeVarNode();
-	current_vec_registered_class_node= current_state->getVecScriptClass();
-	current_vec_info_registered_function_symbol_node = current_state->getVecInfoRegisteredFunctionFunctionNode();*/
-
-	// TODO:maybe is better to re-run vm to optimize vec acceses
-
-	// 1. destroy current state (0)
-	current_state->destroy();
-
-	// 2. Copy state 1
-	vector<CASTNode *> 				* vec_ast_node_src					= state_to_restore->getVectorASTNodeNode();
-	vector<CScope *> 				* vec_scope_src						= state_to_restore->getVectorScopeNode();
-	vector<CScriptClass *> 			* vec_script_class_src				= state_to_restore->getVectorScriptClassNode();
-	vector<CScriptFunctionObject *>	* vec_script_function_object_src	= state_to_restore->getVectorScriptFunctionObjectNode();
-	vector<tInfoParsedSource>		* vec_info_parsed_source_src		= state_to_restore->getVectorInfoParsedSourceNode();
-
-	vector<CASTNode *> 				* vec_ast_node_dst					= state_to_restore->getVectorASTNodeNode();
-	vector<CScope *> 				* vec_scope_dst						= state_to_restore->getVectorScopeNode();
-	vector<CScriptClass *> 			* vec_script_class_dst				= state_to_restore->getVectorScriptClassNode();
-	vector<CScriptFunctionObject *>	* vec_script_function_object_dst	= state_to_restore->getVectorScriptFunctionObjectNode();
-	vector<tInfoParsedSource>		* vec_info_parsed_source_dst		= state_to_restore->getVectorInfoParsedSourceNode();
-
-	// 1- Copy current state...
-	// 1.1-Copy AST...
-	for(unsigned int i = 0; i < vec_ast_node_src->size(); i++){
-		CASTNode *ast = new CASTNode();
-		*ast = *vec_ast_node_src->at(i);
-		vec_ast_node_dst->push_back(ast);
-	}
-
-	// 1.2-Copy Scope...
-	for(unsigned int i = 0; i < vec_scope_src->size(); i++){
-		CScope *scope = new CScope();
-		*scope = *vec_scope_src->at(i);
-		vec_scope_dst->push_back(scope);
-
-	}
-
-	// 1.3-Copy CScriptClass...
-	for(unsigned int i = 0; i < vec_script_class_src->size(); i++){
-		CScriptClass *sclass = new CScriptClass();
-		*sclass = *vec_script_class_src->at(i);
-		vec_script_class_dst->push_back(sclass);
-	}
-
-	// 1.4-Copy CScriptFunctionObject...
-	for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
-		CScriptFunctionObject *sfo = new CScriptFunctionObject();
-		*sfo = *vec_script_function_object_src->at(i);
-		vec_script_function_object_dst->push_back(sfo);
-	}
-
-	// 1.5-Copy tInfoParsedSource...
-	for(unsigned int i = 0; i < vec_info_parsed_source_src->size(); i++){
-		tInfoParsedSource ips;
-		ips = vec_info_parsed_source_src->at(i);
-		vec_info_parsed_source_dst->push_back(ips);
-	}
-
-	return false;
-}
-
-int   CState::saveState(){
-
-
-
-	CState * save_st = new CState();
-	vector<CASTNode *> 				* vec_ast_node_dst					= save_st->getVectorASTNodeNode();
-	vector<CScope *> 				* vec_scope_dst						= save_st->getVectorScopeNode();
-	vector<CScriptClass *> 			* vec_script_class_dst				= save_st->getVectorScriptClassNode();
-	vector<CScriptFunctionObject *>	* vec_script_function_object_dst	= save_st->getVectorScriptFunctionObjectNode();
-	vector<tInfoParsedSource>		* vec_info_parsed_source_dst		= save_st->getVectorInfoParsedSourceNode();
-
-	vector<CASTNode *> 				* vec_ast_node_src					= current_state->getVectorASTNodeNode();
-	vector<CScope *> 				* vec_scope_src						= current_state->getVectorScopeNode();
-	vector<CScriptClass *> 			* vec_script_class_src				= current_state->getVectorScriptClassNode();
-	vector<CScriptFunctionObject *>	* vec_script_function_object_src	= current_state->getVectorScriptFunctionObjectNode();
-	vector<tInfoParsedSource>		* vec_info_parsed_source_src		= current_state->getVectorInfoParsedSourceNode();
-
-	// 1- Copy current state...
-	// 1.1-Copy AST...
-	for(unsigned int i = 0; i < vec_ast_node_src->size(); i++){
-		CASTNode *ast = new CASTNode();
-		*ast = *vec_ast_node_src->at(i);
-		vec_ast_node_dst->push_back(ast);
-	}
-
-	// 1.2-Copy Scope...
-	for(unsigned int i = 0; i < vec_scope_src->size(); i++){
-		CScope *scope = new CScope();
-		*scope = *vec_scope_src->at(i);
-		vec_scope_dst->push_back(scope);
-
-	}
-
-	// 1.3-Copy CScriptClass...
-	for(unsigned int i = 0; i < vec_script_class_src->size(); i++){
-		CScriptClass *sclass = new CScriptClass();
-		*sclass = *vec_script_class_src->at(i);
-		vec_script_class_dst->push_back(sclass);
-	}
-
-	// 1.4-Copy CScriptFunctionObject...
-	for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
-		CScriptFunctionObject *sfo = new CScriptFunctionObject();
-		*sfo = *vec_script_function_object_src->at(i);
-		vec_script_function_object_dst->push_back(sfo);
-	}
-
-	// 1.5-Copy tInfoParsedSource...
-	for(unsigned int i = 0; i < vec_info_parsed_source_src->size(); i++){
-		tInfoParsedSource ips;
-		ips = vec_info_parsed_source_src->at(i);
-		vec_info_parsed_source_dst->push_back(ips);
-	}
-
-
-	vec_saved_state->push_back(save_st);
-
-	return (vec_saved_state->size()-1);
-}
-
-CState * CState::currentState(){
-	return current_state;
-}
-
-void CState::destroySingletons(){
-	for(unsigned i = 0; i < vec_saved_state->size(); i++){
-		delete vec_saved_state->at(i);
-	}
-
-	delete vec_saved_state;
-}
-
-
-
-
-
-
-/*
-vector<tScopeVar *> 				*	CState::getCurrentVecScopeVarNode(){
-	return current_vec_scope_var_node;
-}
-
-int 				  	CState::registerScopeVar(tScopeVar *info_scope_var){
-	current_vec_info_scope_var_node->push_back(info_scope_var);
-	info_scope_var->idxScopeVar = current_vec_info_scope_var_node->size()-1;
-	return info_scope_var->idxScopeVar;
-}
-
-tScopeVar 	* CState::getScopeVarNodeByIdx(int idx){
-	if(idx < 0 || (unsigned)idx >= current_vec_info_scope_var_node->size()){
-		print_error_cr("tScopeVar node out of bound");
-		return NULL;
-	}
-
-	return current_vec_info_scope_var_node->at(idx);
-}
-*/
-
-
-
-
-//------------------------------------------------------------------------------------------------------
-
-CState::CState(){
-
-	vec_ast_node = new vector<CASTNode *>; // ast collection register...
-	vec_scope_node = new vector<CScope *>;
-	//vector<tScopeVar *> 						vec_scope_var_node;
-	vec_script_class_node = new vector<CScriptClass *> ;
-	vec_script_function_object_node = new vector<CScriptFunctionObject *>;
-	vec_info_parsed_source_node = new vector<tInfoParsedSource> ;
-
-}
-
-
-vector<CASTNode *> 		*		CState::getVectorASTNodeNode(){
-	return vec_ast_node;
-}
-vector<CScope *> 	*		CState::getVectorScopeNode(){
-	return vec_scope_node;
-}
-
-/*
-vector<tScopeVar *> 	*	CState::getVecScopeVarNode(){
-	return &vec_scope_var_node;
-}*/
-
-vector<CScriptClass *> 	*CState::getVectorScriptClassNode(){
-	return vec_script_class_node;
-}
-
-vector<tInfoParsedSource> 	*CState::getVectorInfoParsedSourceNode(){
-	return vec_info_parsed_source_node;
-}
-
-vector<CScriptFunctionObject *> 	*CState::getVectorScriptFunctionObjectNode(){
-	return vec_script_function_object_node;
-}
-
-
-void CState::destroyASTNodes(){
-	for(unsigned i = 0; i < vec_ast_node->size(); i++){
-		delete vec_ast_node->at(i);
-	}
-
-	delete vec_ast_node;
-	vec_ast_node = NULL;
-
-}
-void CState::destroyScopeNodes(){
-	for(unsigned i = 0; i < vec_scope_node->size(); i++){
-		delete vec_scope_node->at(i);
-	}
-
-	delete vec_scope_node;
-	vec_scope_node=NULL;
-}
-
-
-
-void CState::destroyScriptFunctionObjectNodes(){
-
-	for(unsigned i = 0; i < vec_script_function_object_node->size(); i++){
-
-		CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
-
-		if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
-			//return;
+		if(current_state == NULL){
+			zs_print_warning_cr("ZetScript was not inicialized");
+			return -1;
 		}
 
-		print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
-		if(info_function->object_info.statment_op!=NULL){
-			for(PtrStatment stat =info_function->object_info.statment_op; *stat != NULL; stat++){
+		CState * save_st = new CState();
+		vector<CASTNode *> 				* vec_ast_node_dst					= save_st->getVectorASTNodeNode();
+		vector<CScope *> 				* vec_scope_dst						= save_st->getVectorScopeNode();
+		vector<CScriptClass *> 			* vec_script_class_dst				= save_st->getVectorScriptClassNode();
+		vector<CScriptFunctionObject *>	* vec_script_function_object_dst	= save_st->getVectorScriptFunctionObjectNode();
+		vector<tInfoParsedSource>		* vec_info_parsed_source_dst		= save_st->getVectorInfoParsedSourceNode();
 
-				free(*stat);
-			}
+		vector<CASTNode *> 				* vec_ast_node_src					= current_state->getVectorASTNodeNode();
+		vector<CScope *> 				* vec_scope_src						= current_state->getVectorScopeNode();
+		vector<CScriptClass *> 			* vec_script_class_src				= current_state->getVectorScriptClassNode();
+		vector<CScriptFunctionObject *>	* vec_script_function_object_src	= current_state->getVectorScriptFunctionObjectNode();
+		vector<tInfoParsedSource>		* vec_info_parsed_source_src		= current_state->getVectorInfoParsedSourceNode();
 
-			free(info_function->object_info.statment_op);
+		// 1- Copy current state...
+		// 1.1-Copy AST...
+		for(unsigned int i = 0; i < vec_ast_node_src->size(); i++){
+			CASTNode *ast = new CASTNode();
+			*ast = *vec_ast_node_src->at(i);
+			vec_ast_node_dst->push_back(ast);
 		}
 
-		// unloading scope ...
+		// 1.2-Copy Scope...
+		for(unsigned int i = 0; i < vec_scope_src->size(); i++){
+			CScope *scope = new CScope();
+			*scope = *vec_scope_src->at(i);
+			vec_scope_dst->push_back(scope);
 
+		}
 
+		// 1.3-Copy CScriptClass...
+		for(unsigned int i = 0; i < vec_script_class_src->size(); i++){
+			CScriptClass *sclass = new CScriptClass();
+			*sclass = *vec_script_class_src->at(i);
+			vec_script_class_dst->push_back(sclass);
+		}
 
-		 for(unsigned j = 0; j < info_function->object_info.n_info_var_scope; j++){
-			 free(info_function->object_info.info_var_scope[j].var_index);
-		 }
+		// 1.4-Copy CScriptFunctionObject...
+		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
+			CScriptFunctionObject *sfo = new CScriptFunctionObject();
+			*sfo = *vec_script_function_object_src->at(i);
+			vec_script_function_object_dst->push_back(sfo);
+		}
 
-		 free(info_function->object_info.info_var_scope);
+		// 1.5-Copy tInfoParsedSource...
+		for(unsigned int i = 0; i < vec_info_parsed_source_src->size(); i++){
+			tInfoParsedSource ips;
+			ips = vec_info_parsed_source_src->at(i);
+			vec_info_parsed_source_dst->push_back(ips);
+		}
 
+		vec_saved_state->push_back(save_st);
 
-		delete info_function;
-
+		return (vec_saved_state->size()-1);
 	}
 
-	delete vec_script_function_object_node;
-	vec_script_function_object_node=NULL;
-}
+	bool   CState::restoreLastState(){
+		return setState(vec_saved_state->size()-1);
+	}
+
+	CState * CState::currentState(){
+		return current_state;
+	}
+
+	void CState::clearCurrentCompileInformation(){
+		current_state->clearCompileInformation();
+	}
+
+	void CState::destroySingletons(){
+
+		vector<CScriptClass *> *vec = current_state->getVectorScriptClassNode();
+
+		// we have to destroy all allocated constructor/destructor ...
+		for(vector<CScriptClass *>::iterator i = vec->begin()+MAX_BASIC_CLASS_TYPES;i!=vec->end();i++){
+
+			CScriptClass *irv = *i;
 
 
-void CState::destroyScriptClassNodes() {
 
-	for(unsigned i = 0;i<vec_script_class_node->size();i++){
+			if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 
-		CScriptClass *irv = vec_script_class_node->at(i);
-		for(unsigned j = 0; j < irv->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size();j++){
-
-			CScriptFunctionObject * info_function = GET_SCRIPT_FUNCTION_OBJECT(irv->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[j]);
-
-			print_debug_cr("unloading %s::%s...",vec_script_class_node->at(i)->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
-
-			// C related functions ...
-			if(i==0 && j==0){ // MAIN FUNCTION (C functions)
-
-				// check external C functions defined inside main function ...
-				for(unsigned f=0; f < info_function->object_info.local_symbols.vec_idx_registeredFunction.size();f++){
-
-					CScriptFunctionObject * irv_main_function =  GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[f]);
-
-					if((irv_main_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
-
-						/*if(irv_main_function->idx_return_type == getIdxClassVoid()){
-							delete_proxy_function<void>(irv_main_function->m_arg.size(),(void *)irv_main_function->object_info.symbol_info.ref_ptr);//=(int)new_proxy_function<void>(irs.m_arg.size(),function_ptr))==0){//(int)function_ptr;
-
-						}
-						else{
-							delete_proxy_function<int>(irv_main_function->m_arg.size(),(void *)irv_main_function->object_info.symbol_info.ref_ptr);
-						}*/
-					}
+				zs_print_debug_cr("* Erasing c destructor/contructor %s...",irv->classPtrType.c_str());
+				if(irv->c_constructor){
+					delete irv->c_constructor;
 				}
+
+				if(irv->c_destructor){
+					delete irv->c_destructor;
+				}
+
+				// delete CScriptClass
+				//delete irv;
+
+				//vec_script_class_node->erase(i);
 			}
-			else{ // normal class function member ...
-				/*if(((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF)
-				 &&((info_function->object_info.symbol_info.properties & PROPERTY_IS_DERIVATED) != PROPERTY_IS_DERIVATED)
-				 ){
-
-					delete ((std::function<void *(void *,PROXY_CREATOR)> *)	info_function->object_info.symbol_info.ref_ptr);
-				}*/
-			}
-
-			info_function->object_info.symbol_info.ref_ptr = 0;
-
+			//else{
+			//	i++;
+			//}
 		}
 
 
-
-		if(irv->c_constructor != NULL){
-			delete irv->c_constructor;
+		// erase saved states ...
+		for(unsigned i = 0; i < vec_saved_state->size(); i++){
+			delete vec_saved_state->at(i);
 		}
 
-		if(irv->c_destructor != NULL){
-			delete irv->c_destructor;
-		}
+		// delete vector states...
+		delete vec_saved_state;
 
-		if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){ //ast created for compatibility reasons, we need to deallocate
-
-			//delete irv->metadata_info.object_info.symbol_info.ast;
-		}
-		else{
-
-			if(i==0){ // MAIN CLASS...
-
-
-				//delete_proxy_function
-
-
-			}else{ // generic class ...
-
-				/*CScope *scope_info_ptr = AST_SCOPE_INFO(irv->metadata_info.object_info.symbol_info.idxAstNode);
-
-				if(scope_info_ptr != NULL){
-
-					scope_info_ptr->destroyScopes();
-					delete scope_info_ptr;
-				}*/
-				//delete irv->metadata_info.object_info.symbol_info.ast;
-			}
-		}
-
-
-		// delete CScriptClass
-		delete irv;
+		// erase current state...
+		delete current_state;
 	}
 
-	delete vec_script_class_node;
-	vec_script_class_node =NULL;
-}
+	//------------------------------------------------------------------------------------------------------
 
-void CState::destroyInfoParsedSourceNode(){
-	for(unsigned i =0; i < vec_info_parsed_source_node->size(); i++){
-		delete vec_info_parsed_source_node->at(i).data;
+	CState::CState(){
+
+		vec_ast_node = new vector<CASTNode *>; // ast collection register...
+		vec_scope_node = new vector<CScope *>;
+		//vector<tScopeVar *> 						vec_scope_var_node;
+		vec_script_class_node = new vector<CScriptClass *> ;
+		vec_script_function_object_node = new vector<CScriptFunctionObject *>;
+		vec_info_parsed_source_node = new vector<tInfoParsedSource> ;
+
 	}
 
-	delete vec_info_parsed_source_node;
-	vec_info_parsed_source_node=NULL;
-}
 
-void CState::destroy(){
-	destroyScriptClassNodes();
-	destroyScriptFunctionObjectNodes();
+	vector<CASTNode *> 		*		CState::getVectorASTNodeNode(){
+		return vec_ast_node;
+	}
+	vector<CScope *> 	*		CState::getVectorScopeNode(){
+		return vec_scope_node;
+	}
 
-	destroyScopeNodes();
-	destroyASTNodes();
-	destroyInfoParsedSourceNode();
+	vector<CScriptClass *> 	*CState::getVectorScriptClassNode(){
+		return vec_script_class_node;
+	}
+
+	vector<tInfoParsedSource> 	*CState::getVectorInfoParsedSourceNode(){
+		return vec_info_parsed_source_node;
+	}
+
+	vector<CScriptFunctionObject *> 	*CState::getVectorScriptFunctionObjectNode(){
+		return vec_script_function_object_node;
+	}
+
+	void CState::destroyASTNodes(){
+		for(unsigned i = 0; i < vec_ast_node->size(); i++){
+			delete vec_ast_node->at(i);
+		}
+	}
+
+	void CState::destroyScopeNodes(){
+		for(unsigned i = 0; i < vec_scope_node->size(); i++){
+			delete vec_scope_node->at(i);
+		}
+	}
+
+	void CState::destroyScriptClassNodes() {
+
+		for(vector<CScriptClass *>::iterator i = vec_script_class_node->begin()+MAX_BASIC_CLASS_TYPES;i!=vec_script_class_node->end();){
+
+			CScriptClass *irv = *i;
+
+			zs_print_debug_cr("* Erasing %s...",irv->classPtrType.c_str());
+
+			//if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
 
 
+				// delete CScriptClass
+				delete irv;
 
+				vec_script_class_node->erase(i);
+			//}
+			//else{
+			//	i++;
+			//}
+		}
+	}
 
-	// Destroy scope ...
-	//m_rootAstNode->scope_info_ptr->destroyScopes();
-	//delete m_rootAstNode->scope_info_ptr;//m_rootScope;
-	// End destroy scope ...
+	void CState::destroyInfoParsedSourceNode(){
+		delete vec_info_parsed_source_node;
+		vec_info_parsed_source_node=NULL;
+	}
 
-	//delete vec_ast_node->at(0);
-}
+	void  CState::clearCompileInformation(){
 
-CState::~CState(){
+		for(unsigned i = 0; i < vec_script_function_object_node->size(); i++){
 
-	destroy();
+			CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
 
-	//m_rootScope=NULL;
+			if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){ // is a compiled script ...
+#ifdef __DEBUG__
+				CScriptClass *sc = CScriptClass::getScriptClassByIdx(info_function->object_info.symbol_info.idxScriptClass);
+				if(sc){
+				zs_print_debug_cr("Clear function %s::%s...",sc->metadata_info.object_info.symbol_info.symbol_name.c_str(),info_function->object_info.symbol_info.symbol_name.c_str());
+				}
+#endif
+
+				//zs_print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
+				if(info_function->object_info.statment_op!=NULL){
+					for(PtrStatment stat =info_function->object_info.statment_op; *stat != NULL; stat++){
+
+						free(*stat);
+					}
+
+					free(info_function->object_info.statment_op);
+				}
+
+				// unloading scope ...
+				if(info_function->object_info.info_var_scope != NULL){
+					 for(unsigned j = 0; j < info_function->object_info.n_info_var_scope; j++){
+						 free(info_function->object_info.info_var_scope[j].var_index);
+					 }
+
+					 free(info_function->object_info.info_var_scope);
+				}
+
+				// unregister global variables & functions ...
+				 if(i == 0){ // is the main function so don't touch (i.e preserve) C functions/vars ...
+
+					 for(vector<int>::iterator f =info_function->object_info.local_symbols.vec_idx_registeredFunction.begin(); f != info_function->object_info.local_symbols.vec_idx_registeredFunction.end();){
+						 // get function info
+						 CScriptFunctionObject * local_function = GET_SCRIPT_FUNCTION_OBJECT(*f);
+
+						 if((local_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+							 info_function->object_info.local_symbols.vec_idx_registeredFunction.erase(f);
+						 }else{
+							 f++;
+						 }
+
+					 }
+
+					 for(vector<tInfoVariableSymbol>::iterator v = info_function->object_info.local_symbols.m_registeredVariable.begin();
+					     v != info_function->object_info.local_symbols.m_registeredVariable.end(); ){
+
+						 if((v->properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+
+							 info_function->object_info.local_symbols.m_registeredVariable.erase(v);
+
+						 }else{
+							 v++;
+						 }
+					 }
+				 }
+				 else{ // is not the main function so let's remove it and their local symbols ...
+					 // not main function it's safe to unregister all symbols ...
+					 info_function->object_info.local_symbols.m_registeredVariable.clear();
+					 info_function->object_info.local_symbols.vec_idx_registeredFunction.clear();
+
+					 delete info_function;
+				 }
+			}
+		}
+	}
+
+	void CState::destroy(){
+		clearCompileInformation();
+		destroyScriptClassNodes();
+		//destroyScriptFunctionObjectNodes();
+		destroyScopeNodes();
+		destroyASTNodes();
+		destroyInfoParsedSourceNode();
+	}
+
+	CState::~CState(){
+		destroy();
+	}
 }
 

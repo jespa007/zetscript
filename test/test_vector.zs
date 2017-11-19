@@ -1,33 +1,14 @@
+var vv=["jordi",0,true];
+print(vv); // print vector...
 
 
+vv.push("kk");
+vv[1]++;
+
+print(vv);
+
+vv.pop();
+
+print(vv);
 
 
-{
-
-	
- var vv=["jordi"];
-//var gg1="gg";
-
-//vv[0]=vv[0]+"_hola";
-
-
-var j=vv[0];
-
-//print(j);
-//print(vv[0]);
-
-}
-
-
-//j=1;
-//print(j);
-
-print(vv[0]);
-
-/*vv.size();
-print("size:"+vv.size());*/
-
-/*for(var i=0; i < vv.size(); i++){
-
-	print(vv[0]);//vv[1]);
-}*/

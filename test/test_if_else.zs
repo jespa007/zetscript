@@ -1,5 +1,12 @@
-if(0==1){
-	return 1;
+var n=-1;
+
+error("caca");
+
+if(n<10){
+	print("n < 10");
+}else if(n<20){
+	print("n < 20");
 }else{
-	return 0;
+	print("n >=20");
 }
+

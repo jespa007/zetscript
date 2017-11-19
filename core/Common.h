@@ -1,3 +1,7 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #pragma once
 
 // MAIN INCLUDES....
@@ -21,7 +25,7 @@
 #include <utility>
 #include <float.h>
 #include <cstdarg>
-#include <assert.h>
+#include <stdexcept>
 
 #include <typeinfo>
 #include <stdio.h>
@@ -75,30 +79,23 @@ using std::stack;
 using std::ostringstream;
 
 // Prototypes & structs
-#ifdef D__MEMMANAGER__
-#include "../../zs_dev/system/zs_system.h"
+#ifdef __MEMMANAGER__
+#include "system/zs_system.h"
 #endif
 
 
-class CASTNode;
-typedef CASTNode *PASTNode;
-struct CScriptFunctionObject;
-class tScopeVar;
-class CScope;
-class CScriptClass;
-class CScriptVariable;
-struct tFunctionInfo;
-struct tInfoVarScopeBlock;
 
-int getIdxClassFromIts_C_Type(const string & s);
 
-#define ZS_ERROR			-1
-#define ZS_UNDEFINED_IDX 	-1
+#define ZS_ERROR						-1
+#define ZS_UNDEFINED_IDX 				-1
+#define ZS_FUNCTION_NOT_FOUND_IDX	 	-2
+
 #define MAX_N_ARGS 			 6
+
 
 enum NODE_TYPE
 	:unsigned char {
-		UNKNOWN_NODE = 0,
+	UNKNOWN_NODE = 0,
 	PUNCTUATOR_NODE,
 	EXPRESSION_NODE,
 	KEYWORD_NODE,
@@ -111,6 +108,8 @@ enum NODE_TYPE
 	SYMBOL_NODE,
 	BODY_NODE,
 	GROUP_CASES_NODE,
+	GROUP_IF_NODES, // if, else-if
+	IF_NODE, // if-node (each one has a conditional + body )
 	CONDITIONAL_NODE,
 	PRE_FOR_NODE,
 	POST_FOR_NODE,
@@ -121,6 +120,7 @@ enum NODE_TYPE
 	ARRAY_REF_NODE,
 	FUNCTION_REF_NODE,
 	NEW_OBJECT_NODE,
+	DELETE_OBJECT_NODE,
 	ACCESS_OBJECT_MEMBER_NODE,
 	STRUCT_NODE,
 	MAX_NODE_TYPE
@@ -128,11 +128,12 @@ enum NODE_TYPE
 
 enum KEYWORD_TYPE
 	:unsigned char {
-		UNKNOWN_KEYWORD = 0,
+	UNKNOWN_KEYWORD = 0,
 	IF_KEYWORD,
 	ELSE_KEYWORD,
 	FOR_KEYWORD,
 	WHILE_KEYWORD,
+	DO_WHILE_KEYWORD,
 	VAR_KEYWORD,
 	SWITCH_KEYWORD,
 	CASE_KEYWORD,
@@ -151,10 +152,10 @@ enum KEYWORD_TYPE
 enum PUNCTUATOR_TYPE
 	:unsigned char {
 
-		UNKNOWN_PUNCTUATOR = 0,
+	UNKNOWN_PUNCTUATOR = 0,
 
-		//--------------------------------
-		// First OPERATORS 2 char size
+	//--------------------------------
+	// First OPERATORS 2 char size
 
 	SHIFT_LEFT_PUNCTUATOR = 1, // <<
 	SHIFT_RIGHT_PUNCTUATOR, // >>
@@ -165,6 +166,7 @@ enum PUNCTUATOR_TYPE
 	LOGIC_NOT_EQUAL_PUNCTUATOR, // !=
 	LOGIC_GTE_PUNCTUATOR, // >=
 	LOGIC_LTE_PUNCTUATOR, // <=
+	INSTANCEOF_PUNCTUATOR, // instanceof
 
 	PRE_INC_PUNCTUATOR, // ++
 	PRE_DEC_PUNCTUATOR, // --
@@ -173,8 +175,8 @@ enum PUNCTUATOR_TYPE
 	POST_DEC_PUNCTUATOR, // --
 
 	// Then OPERATORS 1 char size
-	ADD_PUNCTUATOR, // +
-	SUB_PUNCTUATOR, // -
+	ADD_PUNCTUATOR, // a+b
+	SUB_PUNCTUATOR, // a+(-b)
 	MUL_PUNCTUATOR, // *
 	DIV_PUNCTUATOR, // /
 	MOD_PUNCTUATOR, // %
@@ -233,16 +235,6 @@ enum LOAD_TYPE
 	LOAD_TYPE_ARGUMENT
 };
 
-/*
- enum SCOPE_TYPE:char{
- UNKNOWN_SCOPE=0,
- GLOBAL_SCOPE,
- LOCAL_SCOPE,
- THIS_SCOPE,
- SUPER_SCOPE,
- ACCESS_SCOPE
- };*/
-
 enum IDX_OBJ_SPECIAL_VALUE {
 	IDX_INVALID = -1, IDX_THIS = -10
 };
@@ -252,8 +244,13 @@ enum PROXY_CREATOR {
 };
 
 enum ASM_OPERATOR
-	:unsigned char {
-		END_STATMENT = 0, NOP, STORE, // mov expression to var
+	:char {
+
+	// ARITMETHIC OPERATORS.
+
+	INVALID_OP=-1,
+	END_STATMENT = 0,
+	STORE, // mov expression to var
 	LOAD, // primitive value like number/string or boolean...
 	EQU,  // ==
 	NOT_EQU,  // !=
@@ -262,18 +259,13 @@ enum ASM_OPERATOR
 	NOT, // !
 	GT,  // >
 	GTE, // >=
-
 	ADD, // +
-	ADD_ASSIGN, // +=
 	NEG, // -a
 	LOGIC_AND, // &&
 	LOGIC_OR,  // ||
 	DIV, // /
-	DIV_ASSIGN, // /=
 	MUL, // *
-	MUL_ASSIGN, // *=
 	MOD,  // %
-	MOD_ASSIGN,  // %=
 	AND, // bitwise logic and
 	OR, // bitwise logic or
 	XOR, // logic xor
@@ -295,10 +287,13 @@ enum ASM_OPERATOR
 	RET, // ret instruction ..
 
 	NEW, // new operator...
+	DELETE_OP,
 	OBJECT_ACCESS, // object access .
+	INSTANCEOF,
 	//SAVE_I, // save current instruction...
 	//LOAD_I, // load value that points saved instruction...
 
+	PUSH_SCOPE,
 	POP_SCOPE,
 	DECL_STRUCT,
 	PUSH_ATTR,
@@ -306,51 +301,78 @@ enum ASM_OPERATOR
 
 };
 
+
+enum METAMETHOD_OPERATOR
+	:char {
+		EQU_METAMETHOD,  // ==
+		NOT_EQU_METAMETHOD,  // !=
+		LT_METAMETHOD,  // <
+		LTE_METAMETHOD,  // <=
+		NOT_METAMETHOD, // !
+		GT_METAMETHOD,  // >
+		GTE_METAMETHOD, // >=
+		NEG_METAMETHOD, // -a
+		ADD_METAMETHOD, // +
+		DIV_METAMETHOD, // /
+		MUL_METAMETHOD, // *
+		MOD_METAMETHOD,  // %
+		AND_METAMETHOD, // bitwise logic and
+		OR_METAMETHOD, // bitwise logic or
+		XOR_METAMETHOD, // logic xor
+		SHL_METAMETHOD, // shift left
+		SHR_METAMETHOD, // shift right
+		SET_METAMETHOD, // store '='
+
+		MAX_METAMETHOD_OPERATORS
+};
+
 /*
  enum ASM_PRE_POST_OPERATORS:char{
  UNKNOW_PRE_POST_OPERATOR=0,
  PRE_INC, // ++
  POST_INC, // ++
- PRE_DEC, // --
+ PRE_DEC, // --getIdxArgument
  POST_DEC, // --
  PRE_NEG
  };
  */
 
 // properties shared by compiler + VM
-enum
+enum STACK_ELEMENT_PROPERTY
 	:unsigned char {
 
 		//-- COMPILER/VM TYPE VAR
-	BIT_TYPE_UNDEFINED = 0,
-	BIT_TYPE_NULL,
-	BIT_TYPE_INTEGER,
-	BIT_TYPE_NUMBER,
-	BIT_TYPE_BOOLEAN,
-	BIT_TYPE_STRING,
-	BIT_TYPE_FUNCTION,
-	BIT_TYPE_SCRIPTVAR,
+	BIT_TYPE_UNDEFINED = 0,	// 0x1
+	BIT_TYPE_NULL,			// 0x2
+	BIT_TYPE_INTEGER,		// 0x4
+	BIT_TYPE_NUMBER,		// 0x8
+	BIT_TYPE_BOOLEAN,		// 0x10
+	BIT_TYPE_STRING,		// 0x20
+	BIT_TYPE_FUNCTION,		// 0x40
+	BIT_TYPE_SCRIPTVAR,		// 0x80
 	MAX_BIT_VAR_TYPE,
 	//-- VM RUNTIME
-	BIT_IS_C_VAR = MAX_BIT_VAR_TYPE,
-	BIT_IS_STACKVAR,
-	BIT_IS_UNRESOLVED_FUNCTION,
-
-	//BIT_START_FUNCTION_ARGS,
+	BIT_IS_C_VAR = MAX_BIT_VAR_TYPE, // 0x100
+	BIT_IS_STACKVAR,				 // 0x200
+	BIT_IS_INSTRUCTIONVAR,			 // 0x400
+	BIT_POP_ONE,				 	 // 0x800
+	BIT_UNRESOLVED_FUNCTION,		 // 0x1000
+	BIT_CONSTRUCTOR_FUNCTION,		 // 0x2000
+	BIT_SET_FUNCTION,				 // 0x4000
 	MAX_BIT_RUNTIME
 
 };
 
 enum
 	:unsigned short {
-		INS_PROPERTY_TYPE_UNDEFINED = (0x1 << BIT_TYPE_UNDEFINED), // is a variable not defined...
-	INS_PROPERTY_TYPE_NULL = (0x1 << BIT_TYPE_NULL), // null is a assigned var ..
-	INS_PROPERTY_TYPE_INTEGER = (0x1 << BIT_TYPE_INTEGER), // primitive int
-	INS_PROPERTY_TYPE_NUMBER = (0x1 << BIT_TYPE_NUMBER), // primitive number
-	INS_PROPERTY_TYPE_BOOLEAN = (0x1 << BIT_TYPE_BOOLEAN), // primitive bool
-	INS_PROPERTY_TYPE_STRING = (0x1 << BIT_TYPE_STRING), // constant / script var
-	INS_PROPERTY_TYPE_FUNCTION = (0x1 << BIT_TYPE_FUNCTION), // primitive function
-	INS_PROPERTY_TYPE_SCRIPTVAR = (0x1 << BIT_TYPE_SCRIPTVAR) // always is an script class...
+	STK_PROPERTY_TYPE_UNDEFINED = (0x1 << BIT_TYPE_UNDEFINED), // is a variable not defined...
+	STK_PROPERTY_TYPE_NULL = (0x1 << BIT_TYPE_NULL), // null is a assigned var ..
+	STK_PROPERTY_TYPE_INTEGER = (0x1 << BIT_TYPE_INTEGER), // primitive int
+	STK_PROPERTY_TYPE_NUMBER = (0x1 << BIT_TYPE_NUMBER), // primitive number
+	STK_PROPERTY_TYPE_BOOLEAN = (0x1 << BIT_TYPE_BOOLEAN), // primitive bool
+	STK_PROPERTY_TYPE_STRING = (0x1 << BIT_TYPE_STRING), // constant / script var
+	STK_PROPERTY_TYPE_FUNCTION = (0x1 << BIT_TYPE_FUNCTION), // primitive function
+	STK_PROPERTY_TYPE_SCRIPTVAR = (0x1 << BIT_TYPE_SCRIPTVAR) // always is an script class...
 
 };
 
@@ -362,9 +384,13 @@ enum
 
 enum
 	:unsigned short {
-		INS_PROPERTY_IS_C_VAR = (0x1 << BIT_IS_C_VAR),
-	INS_PROPERTY_IS_STACKVAR = (0x1 << BIT_IS_STACKVAR),
-	INS_PROPERTY_UNRESOLVED_FUNCTION = (0x1 << BIT_IS_UNRESOLVED_FUNCTION) // always is an script class...
+	STK_PROPERTY_IS_C_VAR = (0x1 << BIT_IS_C_VAR),
+	STK_PROPERTY_IS_STACKVAR = (0x1 << BIT_IS_STACKVAR),
+	STK_PROPERTY_IS_INSTRUCTIONVAR = (0x1 << BIT_IS_INSTRUCTIONVAR),
+	STK_PROPERTY_READ_TWO_POP_ONE = (0x1 << BIT_POP_ONE),
+	STK_PROPERTY_UNRESOLVED_FUNCTION = (0x1 << BIT_UNRESOLVED_FUNCTION),
+	STK_PROPERTY_CONSTRUCTOR_FUNCTION = (0x1 << BIT_CONSTRUCTOR_FUNCTION),
+	STK_PROPERTY_SET_FUNCTION = (0x1 << BIT_SET_FUNCTION)
 //INS_PROPERTY_START_FUNCTION_ARGS=	(0x1<<BIT_START_FUNCTION_ARGS)
 };
 
@@ -372,26 +398,27 @@ enum
 #define GET_INS_PROPERTY_RUNTIME(prop)		((prop)&MASK_RUNTIME)
 
 // properties shared by compiler + instruction ..
-enum {
+enum INSTRUCTION_PROPERTY{
 	//-- PRE/POST OPERATORS (Byy default there's no operators involved)
-	BIT_PRE_INC = 0,
-	BIT_POST_INC,
-	BIT_PRE_DEC,
-	BIT_POST_DEC,
-	BIT_PRE_NOT,
+	BIT_PRE_INC = 0,	// 0x1
+	BIT_POST_INC,		// 0x2
+	BIT_PRE_DEC,		// 0x4
+	BIT_POST_DEC,		// 0x8
+	BIT_PRE_NOT,		// 0x10
 	MAX_BIT_PRE_POST_OP,
 
 	//-- SCOPE TYPE (By default is global scope)
-	BIT_LOCAL_SCOPE = MAX_BIT_PRE_POST_OP,
-	BIT_THIS_SCOPE,
-	BIT_SUPER_SCOPE,
-	BIT_ACCESS_SCOPE,
+	BIT_LOCAL_SCOPE = MAX_BIT_PRE_POST_OP, 	// 0x20
+	BIT_THIS_SCOPE,							// 0x40
+	BIT_SUPER_SCOPE,						// 0x80
+	BIT_ACCESS_SCOPE,						// 0x100
 	MAX_BIT_SCOPE_TYPE,
 
 	//-- CALL TYPE
-	BIT_CALLING_OBJECT = MAX_BIT_SCOPE_TYPE,
-	BIT_DIRECT_CALL_RETURN,
-	BIT_CONSTRUCT_CALL,
+	BIT_CALLING_OBJECT = MAX_BIT_SCOPE_TYPE,// 0x200
+	BIT_DIRECT_CALL_RETURN,					// 0x400
+	BIT_DEDUCE_C_CALL,						// 0x800
+	BIT_CONSTRUCT_CALL,						// 0x1000
 	MAX_BIT_CALL_PROPERTIES,
 };
 
@@ -417,6 +444,7 @@ enum {
 // CALL TYPE
 //#define	INS_PROPERTY_CALLING_OBJECT			(0x1<<BIT_CALLING_OBJECT)
 #define INS_PROPERTY_DIRECT_CALL_RETURN		(0x1<<BIT_DIRECT_CALL_RETURN)
+#define INS_PROPERTY_DEDUCE_C_CALL			(0x1<<BIT_DEDUCE_C_CALL)
 #define INS_PROPERTY_CONSTRUCT_CALL			(0x1<<BIT_CONSTRUCT_CALL)
 #define MASK_CALL_TYPE						(((0x1<<(MAX_BIT_CALL_PROPERTIES-INS_PROPERTY_CALLING_OBJECT))-1)<<(INS_PROPERTY_CALLING_OBJECT))
 #define GET_INS_PROPERTY_CALL_TYPE(prop)	((prop)&MASK_CALL_TYPE)
@@ -424,7 +452,7 @@ enum {
 #define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"
 #define MAIN_SCRIPT_FUNCTION_OBJECT_NAME 	"__mainFunction__"
 
-typedef intptr_t (*fntConversionType)(CScriptVariable *obj);
+
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 enum SYMBOL_INFO_PROPERTIES {
@@ -446,194 +474,232 @@ enum BASIC_CLASS_TYPE {
 	IDX_CLASS_VOID_C = 0,
 	IDX_CLASS_INT_PTR_C,
 	IDX_CLASS_FLOAT_PTR_C,
-	IDX_CLASS_STRING_PTR_C,
+	IDX_CLASS_CONST_CHAR_PTR_C, // const char * (read only)
+	IDX_CLASS_STRING_PTR_C, // (string read/write)
 	IDX_CLASS_BOOL_PTR_C,
+	IDX_CLASS_INT_C,
+	IDX_CLASS_FLOAT_C,
+	IDX_CLASS_BOOL_C,
 	//... add more primitives (don't forgot to configure it in CScriptVar...
 	MAX_CLASS_C_TYPES,
 	// here classes starts ...
 
 	IDX_START_SCRIPTVAR = MAX_CLASS_C_TYPES, 		// Starting classes ...
 	IDX_CLASS_MAIN = MAX_CLASS_C_TYPES, 			// Main class ...
-	IDX_CLASS_UNDEFINED,	// 1
-	IDX_CLASS_NULL,			// 3
+	IDX_STACK_ELEMENT,		// 1
 	IDX_CLASS_SCRIPT_VAR, 	// 4 script base that all object derive from it...
-	IDX_CLASS_STRING,     	// 8
-	IDX_CLASS_VECTOR,		// 10
-	IDX_CLASS_FUNCTOR,		// 11
-	IDX_CLASS_STRUCT,		// 12
+	IDX_CLASS_STRING,     	// 5
+	IDX_CLASS_VECTOR,		// 6
+	IDX_CLASS_FUNCTOR,		// 7
+	IDX_CLASS_STRUCT,		// 8
 	MAX_BASIC_CLASS_TYPES
 };
 
-typedef struct {
-	KEYWORD_TYPE id;
-	const char *str;
-	char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
-} tKeywordInfo;
 
-typedef struct {
-	PUNCTUATOR_TYPE id;
-	const char *str;
-	bool (*parse_fun)(const char *);
-} tPunctuatorInfo;
+namespace zetscript{
 
-enum {
-	LEFT_NODE = 0, RIGHT_NODE
-};
+	class CASTNode;
+	typedef CASTNode *PASTNode;
+	class CScriptFunctionObject;
+	class CScope;
+	class CScriptClass;
+	class CScriptVariable;
 
-//-----------------------------
 
-struct tScopeVar {
-	//public:
-	string symbol_ref;
-	string name; // var name
-	//int idxScopeVar;
-	int idxAstNode; // ast node info.
-};
 
-//-----------------------------
+	struct tScopeVar;
+	struct tFunctionInfo;
+	struct tInfoVarScopeBlock;
 
-typedef struct {
-	const char *op_str;
-	ASM_OPERATOR op_id;
-	int n_ops;
-} tDefOperator;
+	typedef intptr_t (*fntConversionType)(CScriptVariable *obj);
 
-/*
- enum ASM_PROPERTIES{
+	typedef struct {
+		KEYWORD_TYPE id;
+		const char *str;
+		char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
+	} tKeywordInfo;
 
- };
- */
+	typedef struct {
+		PUNCTUATOR_TYPE id;
+		const char *str;
+		bool (*parse_fun)(const char *);
+	} tPunctuatorInfo;
 
-#pragma pack(1)
+	enum {
+		LEFT_NODE = 0, RIGHT_NODE
+	};
 
-struct tInfoVariableSymbol { // it can be a variable or function
-	intptr_t ref_ptr; // pointer ref to C Var/Function
-	string symbol_name; // symbol name
-	short idxScriptClass; //CScriptClass		 *class_info;
-	short idxSymbol; // idx of class function/variable symbol that keeps.
-	short idxAstNode;
-	unsigned short properties; // SYMBOL_INFO_PROPERTIES
-	string c_type; // In case is C, we need to know its type ...
+	//-----------------------------
 
-	tInfoVariableSymbol() {
-		properties = 0;
-		c_type = "";
-		idxAstNode = -1;
-		symbol_name = "";
-		ref_ptr = 0;
-		//class_info=NULL;
+	struct tScopeVar {
+		//public:
+		string symbol_ref;
+		string name; // var name
+		//int idxScopeVar;
+		int idxAstNode; // ast node info.
+	};
 
-		idxScriptClass = -1;
-		//idxScopeVar=-1;
-		idxSymbol = -1;
-	}
-};
+	//-----------------------------
 
-struct tInfoAsmOp {
+	typedef struct {
+		const char *op_str;
+		ASM_OPERATOR op_id;
+		int n_ops;
+	} tDefOperator;
 
-	ASM_OPERATOR operator_type;
-	unsigned char index_op1;	// left and right respectively
-	intptr_t index_op2;
-	unsigned short instruction_properties;
-	short idxAstNode; // define ast node for give some information at run time
+	/*
+	 enum ASM_PROPERTIES{
 
-	tInfoAsmOp() {
-		operator_type = ASM_OPERATOR::END_STATMENT;
-		idxAstNode = -1;
-		instruction_properties = 0;
-		index_op1 = index_op2 = -1;
-	}
+	 };
+	 */
 
-};
+	#pragma pack(push, 1)
 
-typedef tInfoAsmOp **PtrStatment;
+	struct tInfoVariableSymbol { // it can be a variable or function
+		intptr_t ref_ptr; // pointer ref to C Var/Function
+		string symbol_name; // symbol name
+		short idxScriptClass; //CScriptClass		 *class_info;
+		short idxSymbol; // idx of class function/variable symbol that keeps.
+		short idxAstNode;
+		unsigned short properties; // SYMBOL_INFO_PROPERTIES
+		string c_type; // In case is C, we need to know its type ...
 
-struct tStackElement {
-	//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
-	unsigned short properties; // it tells its properties
-	void * stkValue; // operable value
-	void * varRef; // stack ref in case to assign new value.
-};
+		tInfoVariableSymbol() {
+			properties = 0;
+			c_type = "";
+			idxAstNode = -1;
+			symbol_name = "";
+			ref_ptr = 0;
+			//class_info=NULL;
 
-struct tSymbolInfo {
+			idxScriptClass = -1;
+			//idxScopeVar=-1;
+			idxSymbol = -1;
+		}
 
-	tStackElement object; // created object. undefined by default.
-	void * proxy_ptr; // for proxy functions...
-	tSymbolInfo *super_function; // only for functions ...
-	string symbol_value;
-	short idxAstNode; // in case there's ast node...
 
-	tSymbolInfo() {
-		proxy_ptr = NULL;
-		object= {
-			INS_PROPERTY_TYPE_UNDEFINED|INS_PROPERTY_IS_C_VAR, // undefined.
-			0,// 0 value
-			0// no var ref related
-		};
+	};
 
-		idxAstNode = ZS_UNDEFINED_IDX;
-		super_function = NULL;
-	}
+	struct tInfoAsmOp {
 
-};
+		ASM_OPERATOR operator_type;
+		unsigned char index_op1;	// left and right respectively
+		intptr_t index_op2;
+		unsigned short instruction_properties;
+		short idxAstNode; // define ast node for give some information at run time
 
-//-------------------------------------------------------
+		tInfoAsmOp() {
+			operator_type = ASM_OPERATOR::END_STATMENT;
+			idxAstNode = -1;
+			instruction_properties = 0;
+			index_op1 = index_op2 = -1;
+		}
 
-struct tLocalSymbolInfo {
-	vector<tInfoVariableSymbol> m_registeredVariable; // member variables to be copied in every new instance
-	vector<int> vec_idx_registeredFunction; // idx member functions (from main vector collection)
-};
+	};
 
-struct tFunctionInfo { // script function is shared by class and function ...
+	typedef tInfoAsmOp **PtrStatment;
 
-	tInfoVariableSymbol symbol_info;
-	tLocalSymbolInfo local_symbols;
+	struct tStackElement {
+		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
+		unsigned short properties; // it tells its properties
+		void * stkValue; // operable value
+		void * varRef; // stack ref in case to assign new value.
 
-	//--------------------------------------
-	// optimized ones...
-	PtrStatment statment_op;
-	//unsigned					 n_statment_op;
 
-	tInfoVarScopeBlock *info_var_scope;
-	unsigned n_info_var_scope;
+	};
 
-	int idxScriptFunctionObject;
+	struct tSymbolInfo {
 
-	tFunctionInfo() {
-		idxScriptFunctionObject = -1;
-		statment_op = NULL;
-		info_var_scope = NULL;
-		//n_statment_op=0;
-		n_info_var_scope = 0;
-	}
-};
+		tStackElement object; // created object. undefined by default.
+		intptr_t  proxy_ptr; // for proxy functions...
+		//tSymbolInfo *super_function; // only for functions ...
+		string symbol_value;
+		short idxAstNode; // in case there's ast node...
 
-typedef struct {
-	string filename;
-	unsigned char *data;
-} tInfoParsedSource;
+		tSymbolInfo() {
+			proxy_ptr = 0;
+			object= {
+				STK_PROPERTY_TYPE_UNDEFINED|STK_PROPERTY_IS_C_VAR, // undefined.
+				0,// 0 value
+				0// no var ref related
+			};
 
-/**
- * Scope register
- */
-struct tInfoVarScopeBlock {
-	int *var_index;
-	char n_var_index;
-	int idxScope;
-};
+			idxAstNode = ZS_UNDEFINED_IDX;
+			//super_function = NULL;
+		}
 
-typedef struct _tInfoSharedPointer *PInfoSharedPointer;
+	};
 
-typedef struct _tInfoSharedPointer {
-	CScriptVariable *shared_ptr;
-	unsigned char n_shares;
-	//short idx_0_shares;
-	//PInfoSharedPointer next;
-} tInfoSharedPointer;
+	//-------------------------------------------------------
 
-typedef struct _tNode * PInfoSharedPointerNode;
-typedef struct _tNode {
-	tInfoSharedPointer data;
-	PInfoSharedPointerNode previous, next;
-} tInfoSharedPointerNode;
+	struct tLocalSymbolInfo {
+		vector<tInfoVariableSymbol> m_registeredVariable; // member variables to be copied in every new instance
+		vector<int> vec_idx_registeredFunction; // idx member functions (from main vector collection)
+	};
+
+	struct tFunctionInfo { // script function is shared by class and function ...
+
+		tInfoVariableSymbol symbol_info;
+		tLocalSymbolInfo local_symbols;
+
+		//--------------------------------------
+		// optimized ones...
+		PtrStatment statment_op;
+		//unsigned					 n_statment_op;
+
+		tInfoVarScopeBlock *info_var_scope;
+		unsigned n_info_var_scope;
+
+		int idxScriptFunctionObject;
+
+		tFunctionInfo() {
+			idxScriptFunctionObject = -1;
+			statment_op = NULL;
+			info_var_scope = NULL;
+			//n_statment_op=0;
+			n_info_var_scope = 0;
+		}
+	};
+
+	typedef struct {
+		string filename;
+		//unsigned char *data;
+	} tInfoParsedSource;
+
+	/**
+	 * Scope register
+	 */
+	struct tInfoVarScopeBlock {
+		int *var_index;
+		char n_var_index;
+		int idxScope;
+	};
+
+	typedef struct _tInfoSharedPointer *PInfoSharedPointer;
+
+	typedef struct _tInfoSharedPointer {
+		CScriptVariable *shared_ptr;
+		unsigned char n_shares;
+
+		//short idx_0_shares;
+		//PInfoSharedPointer next;
+	} tInfoSharedPointer;
+
+	typedef struct _tNode * PInfoSharedPointerNode;
+	typedef struct _tNode {
+		tInfoSharedPointer data;
+		unsigned short currentStack;
+		PInfoSharedPointerNode previous, next;
+	} tInfoSharedPointerNode;
+
+	typedef struct{
+		int idx_type;
+		string arg_name; //arg c++ type or arg name
+	}tArgumentInfo;
+
+
+	#pragma pack(pop)
+
+
+}
 
