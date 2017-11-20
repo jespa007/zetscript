@@ -1,7 +1,5 @@
 var n=-1;
 
-error("caca");
-
 if(n<10){
 	print("n < 10");
 }else if(n<20){

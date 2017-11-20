@@ -36,6 +36,8 @@ if(MSVC)
 
 	#disable C4103 warning because is perfectly valid. Only MSVC complains about it
 	add_definitions(/wd4103)
+	add_definitions(/wd4800)
+	add_definitions(/wd4244)
 
 else()
 
@@ -303,3 +305,4 @@ INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
     	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
     	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
 )
+
