@@ -1,8 +1,8 @@
-var vv=["jordi",0,true];
+var vv=["George",0,true];
 print(vv); // print vector...
 
 
-vv.push("kk");
+vv.push("kk_var");
 vv[1]++;
 
 print(vv);
