@@ -66,6 +66,10 @@
 
 #endif
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 
 using std::string;
 using std::vector;
@@ -552,7 +556,6 @@ namespace zetscript{
 
 	 };
 	 */
-
 	#pragma pack(push, 1)
 
 	struct tInfoVariableSymbol { // it can be a variable or function
@@ -697,9 +700,7 @@ namespace zetscript{
 		string arg_name; //arg c++ type or arg name
 	}tArgumentInfo;
 
-
 	#pragma pack(pop)
-
 
 }
 
