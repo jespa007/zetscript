@@ -11,7 +11,7 @@
 
 #define ZETSCRIPT_MAJOR_VERSION 1
 #define ZETSCRIPT_MINOR_VERSION 1
-#define ZETSCRIPT_PATCH_VERSION 3
+#define ZETSCRIPT_PATCH_VERSION 4
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
@@ -26,7 +26,7 @@
 #define MAX_BUFFER_AUX_TMP		4096
 
 
-#define ZS_GET_ERROR "¡not implemented error handling!!"
+#define ZS_GET_ERROR "not implemented error handling!!"
 
 namespace zetscript{
 
@@ -128,3 +128,4 @@ namespace zetscript{
 }
 
 #include "helpers/CppBindingHelper.h"
+

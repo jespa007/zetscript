@@ -63,7 +63,7 @@ namespace zetscript{
 
 	class CScope;
 
-	#pragma pack(1)
+	#pragma pack(push,1)
 	class  CASTNode{
 
 
@@ -287,5 +287,7 @@ namespace zetscript{
 
 
 	};
+
+#pragma pack(pop)
 
 }
