@@ -192,6 +192,16 @@ namespace zetscript{
 		return NULL;
 	}
 
+	char ** CScriptClass::getRegisteredMetamethod(){
+		return (char **)registered_metamethod;
+	}
+
+
+	vector<CScriptClass *> * CScriptClass::getVecScriptClassNode(){
+		return vec_script_class_node;
+	}
+
+
 	CScriptClass 	* CScriptClass::getScriptClassByIdx(int idx){
 		if(idx < 0 || (unsigned)idx >= vec_script_class_node->size()){
 			zs_print_error_cr("CScriptClass node out of bound");

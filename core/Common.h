@@ -4,6 +4,7 @@
  */
 #pragma once
 
+
 // MAIN INCLUDES....
 
 #include          <stdlib.h>
@@ -41,6 +42,16 @@
 #include <type_traits>
 
 #include <mutex>
+
+//#ifdef _MSC_VER
+#ifdef  ZETSCRIPT_EXPORTS
+	#define ZETSCRIPT_MODULE_EXPORT __declspec(dllexport)
+#else
+	#define ZETSCRIPT_MODULE_EXPORT  //__declspec(dllimport)
+#endif
+//#else
+//#define ZETSCRIPT_MODULE_EXPORT
+//#endif
 
 #if defined(__GNUC__)
 	#include <cxxabi.h>

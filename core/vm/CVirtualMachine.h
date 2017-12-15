@@ -99,7 +99,7 @@ namespace zetscript{
 		}
 
 
-		tStackElement * execute(
+		ZETSCRIPT_MODULE_EXPORT tStackElement * execute(
 					 CScriptFunctionObject *info_function,
 					 CScriptVariable *this_object,
 					const vector<tStackElement> &  argv=NO_PARAMS);

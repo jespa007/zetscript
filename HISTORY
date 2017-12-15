@@ -3,7 +3,8 @@
 Version: 1.1.4
 Date: XX-XX-XXXX
 
-fixed bug #30: CAST Node has a push but no pop pragma.
+#30: fixed bug CAST Node has a push but no pop pragma.
+#31: link zetscript as shared library 
 
 //----------------------------------------------------------
 Version: 1.1.3

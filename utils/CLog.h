@@ -32,7 +32,7 @@ namespace zetscript{
 
 		//void  print_with_file_line(const  char  *file,  int  line,  const  char  *string_text,...);
 		//void  print(const  char  *string_text,...);
-		static void  print(const  char  *file, int  line, int level, bool with_cr, const  char  *string_text, ...);
+		ZETSCRIPT_MODULE_EXPORT static void  print(const  char  *file, int  line, int level, bool with_cr, const  char  *string_text, ...);
 
 
 

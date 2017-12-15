@@ -17,6 +17,6 @@
 
 
 
-std::string demangle(const string & name);
+ZETSCRIPT_MODULE_EXPORT std::string demangle(const string & name);
 
 

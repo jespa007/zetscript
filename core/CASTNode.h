@@ -86,11 +86,11 @@ namespace zetscript{
 		 */
 
 		static void 					init();
-		static CASTNode				*  	newASTNode();
+		ZETSCRIPT_MODULE_EXPORT static CASTNode				*  	newASTNode();
 		static vector<CASTNode *>	*	getVectorASTNode(); // ast collection register...
 
 
-		static CASTNode				* 	getAstNode(short idx);
+		ZETSCRIPT_MODULE_EXPORT static CASTNode				* 	getAstNode(short idx);
 		static CScope 				*	getScope(short ast_idx);
 		static int						getScopeIdx(short idx);
 		static int 				  		getAstLine(short ast_idx);

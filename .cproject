@@ -138,6 +138,7 @@
 		<buildTargets>
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
+				<buildArguments/>
 				<buildTarget>-DTARGET=debug</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
@@ -145,6 +146,7 @@
 			</target>
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
+				<buildArguments/>
 				<buildTarget>-DTARGET=release</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
@@ -152,7 +154,8 @@
 			</target>
 			<target name="CMake Release (EMScripten)" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
-				<buildTarget>-DTARGET=release -DEMSCRIPTEN=yes</buildTarget>
+				<buildArguments/>
+				<buildTarget>-DTARGET=release -DEMSCRIPTEN=yes -G "MinGW Makefiles"</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

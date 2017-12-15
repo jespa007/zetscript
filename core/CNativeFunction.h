@@ -14,7 +14,7 @@ namespace zetscript{
 		CNativeFunction();
 		~CNativeFunction();
 
-		static CNativeFunction * getInstance();
+		ZETSCRIPT_MODULE_EXPORT static CNativeFunction * getInstance();
 		static void destroySingletons();
 
 

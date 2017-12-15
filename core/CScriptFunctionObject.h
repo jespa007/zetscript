@@ -52,7 +52,7 @@ namespace zetscript{
 		static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunctionObject *> 	* set_vec);
 		static vector<CScriptFunctionObject *> 	*	getVectorScriptFunctionObjectNode();
 
-		static CScriptFunctionObject 			*	newScriptFunctionObject();
+		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject 			*	newScriptFunctionObject();
 		static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
 		static tFunctionInfo					* 	getFunctionInfo(int idx);
 		static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);

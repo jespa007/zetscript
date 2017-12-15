@@ -70,29 +70,29 @@ namespace zetscript{
 
 
 
-		static CZetScript * getInstance();
-		static void setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles);
+		ZETSCRIPT_MODULE_EXPORT static CZetScript * getInstance();
+		ZETSCRIPT_MODULE_EXPORT static void setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles);
 
 
 
 		static void clearErrorMsg();
 		static void writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-		static const char * getErrorMsg();
+		ZETSCRIPT_MODULE_EXPORT static const char * getErrorMsg();
 		const char * getParsedFilenameFromIdx(unsigned idx);
 
-		static int eval_int(const string & str_to_eval);
-		static bool eval_bool(const string & str_to_eval);
-		static float eval_float(const string & str_to_eval);
-		static string eval_string(const string & str_to_eval);
+		ZETSCRIPT_MODULE_EXPORT static int eval_int(const string & str_to_eval);
+		ZETSCRIPT_MODULE_EXPORT static bool eval_bool(const string & str_to_eval);
+		ZETSCRIPT_MODULE_EXPORT static float eval_float(const string & str_to_eval);
+		ZETSCRIPT_MODULE_EXPORT static string eval_string(const string & str_to_eval);
 
 		//---------------
 		// PRINT ASM INFO
 		char print_aux_load_value[1024*8];
 		const char * getStrMovVar(tInfoAsmOp * iao);
 		const char * getStrTypeLoadValue(PtrStatment m_listStatements,int current_statment, int current_instruction);
-		void printGeneratedCode_Recursive(tFunctionInfo *fs);
-		void printGeneratedCode(tFunctionInfo *fs);
-		void printGeneratedCodeAllClasses();
+		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode_Recursive(tFunctionInfo *fs);
+		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(tFunctionInfo *fs);
+		ZETSCRIPT_MODULE_EXPORT void printGeneratedCodeAllClasses();
 		// PRINT ASM INFO
 		//---------------
 
@@ -100,7 +100,7 @@ namespace zetscript{
 		 * Main bind function
 		 */
 
-		bool getScriptObjectFromFunctionAccess(const string &function_access_expression
+		ZETSCRIPT_MODULE_EXPORT bool getScriptObjectFromFunctionAccess(const string &function_access_expression
 														  ,CScriptVariable **calling_obj
 														  ,CScriptFunctionObject **fun_obj);
 		//----
@@ -108,18 +108,18 @@ namespace zetscript{
 
 
 
-		CVirtualMachine * getVirtualMachine();
-		CScriptVariable *getMainObject(){return m_mainObject;}
+		ZETSCRIPT_MODULE_EXPORT CVirtualMachine * getVirtualMachine();
+		ZETSCRIPT_MODULE_EXPORT CScriptVariable *getMainObject(){return m_mainObject;}
 
 
 
-		bool execute();
+		ZETSCRIPT_MODULE_EXPORT bool execute();
 
-		bool eval(const string & string, bool execute=true, const char *filename=NULL);
-		bool eval_file(const char * filename);
+		ZETSCRIPT_MODULE_EXPORT bool eval(const string & string, bool execute=true, const char *filename=NULL);
+		ZETSCRIPT_MODULE_EXPORT bool eval_file(const char * filename);
 
 
-		static void destroy();
+		ZETSCRIPT_MODULE_EXPORT static void destroy();
 	};
 
 
