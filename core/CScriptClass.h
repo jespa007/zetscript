@@ -86,8 +86,7 @@ namespace zetscript{
 		static string  *BOOL_TYPE_STR;//	typeid(bool).name()
 		static string  *STACK_ELEMENT_PTR;//	typeid(bool).name()
 
-		static char     registered_metamethod[MAX_METAMETHOD_OPERATORS][50];
-		ZETSCRIPT_MODULE_EXPORT static char ** getRegisteredMetamethod();
+		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
 
 		CScriptFunctionObject	metadata_info;
 		int idx_function_script_constructor;
@@ -111,6 +110,7 @@ namespace zetscript{
 	private:
 		static 			vector<CScriptClass *> 			* vec_script_class_node;
 		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
+		ZETSCRIPT_MODULE_EXPORT static map<string, map<string, fntConversionType>>  *	 getMapTypeConversion();
 		
 	public:
 
@@ -157,7 +157,7 @@ namespace zetscript{
 		ZETSCRIPT_MODULE_EXPORT static int 			getIdxClassFromIts_C_Type(const string & s);
 
 
-		static bool 								idxClassInstanceofIdxClass(int theClass,int class_idx);
+		ZETSCRIPT_MODULE_EXPORT static bool			idxClassInstanceofIdxClass(int theClass,int class_idx);
 
 
 
@@ -273,7 +273,7 @@ namespace zetscript{
 				}
 			}
 			else{
-				if((ref_ptr=(intptr_t)CNativeFunction::getInstance()->new_proxy_function<int>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)CNativeFunction::getInstance()->new_proxy_function<intptr_t>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
 					return false;
 				}
 			}
@@ -390,6 +390,7 @@ namespace zetscript{
 
 			// to make compatible MSVC shared library
 			vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
+			map<string, map<string, fntConversionType>>  *	local_map_type_conversion=	getMapTypeConversion();
 
 			string base_class_name=typeid(_B).name();
 			string base_class_name_ptr=typeid(_B *).name();
@@ -403,6 +404,10 @@ namespace zetscript{
 			int register_class = getIdxClassFromIts_C_Type(typeid(_T *).name());
 			if(register_class == -1) return false;
 
+			if(idxClassInstanceofIdxClass(register_class,idxBaseClass)){
+				zs_print_error_cr("C++ class \"%s\" is already registered as base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+				return false;
+			}
 
 			// check whether is in fact base of ...
 			if(!std::is_base_of<_B,_T>::value){
@@ -417,14 +422,14 @@ namespace zetscript{
 				}
 			}
 
-			if(mapTypeConversion.count(class_name_ptr) == 1){ // create new map...
-				if(mapTypeConversion[class_name_ptr].count(base_class_name_ptr)==1){
+			if(local_map_type_conversion->count(class_name_ptr) == 1){ // create new map...
+				if(local_map_type_conversion->at(class_name_ptr).count(base_class_name_ptr)==1){
 					zs_print_error_cr("Conversion type \"%s\" -> \"%s\" already inserted",demangle(class_name).c_str(),demangle(base_class_name).c_str());
 					return false;
 				}
 			}
 
-			mapTypeConversion[class_name_ptr][base_class_name_ptr]=[](CScriptVariable *s){ return (intptr_t)reinterpret_cast<_B *>(s);};
+			(*local_map_type_conversion)[class_name_ptr][base_class_name_ptr]=[](CScriptVariable *s){ return (intptr_t)reinterpret_cast<_B *>(s);};
 
 			CScriptClass *irc_base = (*local_vec_script_class_node)[idxBaseClass];
 			CScriptClass *irc_class = (*local_vec_script_class_node)[register_class];
@@ -489,7 +494,6 @@ namespace zetscript{
 
 			// to make compatible MSVC shared library
 			vector<CScriptClass *> * 	local_vec_script_class_node = getVecScriptClassNode();
-			char ** 					local_registered_metamethod = getRegisteredMetamethod();
 
 			string return_type;
 			//vector<string> params;
@@ -564,7 +568,7 @@ namespace zetscript{
 			(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
-			if(STRCMP(local_registered_metamethod[SET_METAMETHOD],==,function_name)){
+			if(STRCMP(getMetamethod(SET_METAMETHOD),==,function_name)){
 				(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(irs->object_info.idxScriptFunctionObject);
 				zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 			}
@@ -582,7 +586,6 @@ namespace zetscript{
 		{
 			// to make compatible MSVC shared library
 			vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
-			char ** 				 local_registered_metamethod = getRegisteredMetamethod();
 
 			string return_type;
 			vector<string> params;
@@ -658,10 +661,10 @@ namespace zetscript{
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
 			// check whether is static metamethod...
-			if(STRCMP(local_registered_metamethod[SET_METAMETHOD],!=,function_name)){
+			if(STRCMP(getMetamethod(SET_METAMETHOD),!=,function_name)){
 
 				for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-					if(STRCMP(local_registered_metamethod[i],==,function_name)){
+					if(STRCMP(getMetamethod((METAMETHOD_OPERATOR)i),==,function_name)){
 
 						// check if they are gte,gt,equ, not_equ, lt, lte
 						if(  i == EQU_METAMETHOD //STRCMP(function_name, == ,"_equ")
@@ -771,7 +774,7 @@ namespace zetscript{
 
 
 		static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
-		static map<string,map<string,fntConversionType>> mapTypeConversion;
+		static map<string,map<string,fntConversionType>> * mapTypeConversion;
 
 		 template<typename _S, typename _D, typename _F>
 		 static bool addPrimitiveTypeConversion(_F f){
@@ -793,14 +796,14 @@ namespace zetscript{
 
 
 
-			if(mapTypeConversion.count(typeid(_S).name()) == 1){ // create new map...
-				if(mapTypeConversion[typeid(_S).name()].count(typeid(_D).name())==1){
+			if(mapTypeConversion->count(typeid(_S).name()) == 1){ // create new map...
+				if(mapTypeConversion->at(typeid(_S).name()).count(typeid(_D).name())==1){
 					zs_print_error_cr("type conversion \"%s\" to \"%s\" already inserted",typeid(_S).name(),typeid(_D).name());
 					return false;
 				}
 			}
 
-			mapTypeConversion[typeid(_S).name()][typeid(_D).name()]=f;
+			(*mapTypeConversion)[typeid(_S).name()][typeid(_D).name()]=f;
 
 			return true;
 			//typeConversion["P7CNumber"]["Ss"](&n);

@@ -55,7 +55,7 @@ namespace zetscript{
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject 			*	newScriptFunctionObject();
 		static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
 		static tFunctionInfo					* 	getFunctionInfo(int idx);
-		static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);
+		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);
 		static int						 			getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name,char n_args=-1, bool show_msg=true);
 		static int						 			getIdxVariableSymbol(tFunctionInfo * info_function,const string & function_name, bool show_msg=true);
 

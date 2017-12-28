@@ -390,7 +390,7 @@ namespace zetscript{
 	}
 
 	#define PUSH_SCOPE(_index,_ptr_info_function, _ptr_local_var) \
-		*current_scope_idx++={(short)(_index),_ptr_info_function,_ptr_local_var};
+		*current_scope_info_ptr++={(short)(_index),_ptr_info_function,_ptr_local_var};
 
 	#define REMOVE_0_SHARED_POINTERS(idxCurrentStack,_ret_ref) \
 		tInfoSharedList *list = &zero_shares[idxCurrentStack];\
@@ -411,11 +411,11 @@ namespace zetscript{
 		list->first=list->last=NULL;\
 
 	#define POP_SCOPE(_ret_ref) \
-	if(current_scope_idx!=scope_idx)\
+	if(current_scope_info_ptr!=scope_info)\
 	{\
-		CScriptFunctionObject *ptr_info_function=(current_scope_idx-1)->ptr_info_function;\
-		int index         = (current_scope_idx-1)->index;\
-		tStackElement         *ptr_local_var=(current_scope_idx-1)->ptr_local_var;\
+		CScriptFunctionObject *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;\
+		int index         = (current_scope_info_ptr-1)->index;\
+		tStackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;\
 		for(int i = 0; i < ptr_info_function->object_info.info_var_scope[index].n_var_index; i++){\
 			int idx_local_var = ptr_info_function->object_info.info_var_scope[index].var_index[i];\
 			tStackElement *ptr_ale =&ptr_local_var[idx_local_var];\
@@ -439,7 +439,7 @@ namespace zetscript{
 	\
 		REMOVE_0_SHARED_POINTERS(idxCurrentStack,_ret_ref);\
 		/* pop current var */ \
-		--current_scope_idx;\
+		--current_scope_info_ptr;\
 	}
 
 
@@ -729,7 +729,7 @@ if(aux_function_info == NULL){\
 			bool is_constructor = false;\
 			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);\
 			unsigned n_args=n_metam_args;\
-			symbol_to_find=script_class_aux->registered_metamethod[__METAMETHOD__];\
+			symbol_to_find=CScriptClass::getMetamethod(__METAMETHOD__);\
 			\
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
 			FIND_FUNCTION(\
@@ -795,7 +795,7 @@ if(aux_function_info == NULL){\
 
 	void CVirtualMachine::stackDumped(){
 		// derefer all variables in all scopes (include the main )...
-		while(scope_idx!=current_scope_idx){
+		while(scope_info!=current_scope_info_ptr){
 			POP_SCOPE(NULL);
 		}
 
@@ -826,7 +826,7 @@ if(aux_function_info == NULL){\
 		cancel_execution=false;
 
 		ptrCurrentOp=NULL;
-		current_scope_idx = scope_idx;
+		current_scope_info_ptr = scope_info;
 
 		f_aux_value1=0;
 		f_aux_value2=0;
@@ -884,7 +884,7 @@ if(aux_function_info == NULL){\
 
 	}
 
-	#ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
+	#ifdef __ZETSCRIPT_DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
 	//#define __VERBOSE_MESSAGE__
 	#endif
 

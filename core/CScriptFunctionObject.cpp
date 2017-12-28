@@ -20,7 +20,7 @@ namespace zetscript{
 
 
 	CScriptFunctionObject *		 CScriptFunctionObject::newScriptFunctionObject(){
-		CScriptFunctionObject *script_function = new CScriptFunctionObject;
+		CScriptFunctionObject *script_function = new CScriptFunctionObject();
 		vec_script_function_object_node->push_back(script_function);
 		script_function->object_info.idxScriptFunctionObject = vec_script_function_object_node->size()-1;
 		return script_function;

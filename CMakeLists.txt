@@ -101,7 +101,7 @@ else()
 	IF ( "${TARGET}" STREQUAL "debug")
 		set( POST_NAME "_d")
 		set(TARGET_FLAGS " -O0 ")
-		set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__DEBUG__ ")
+		set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__ZETSCRIPT_DEBUG__ ")
 	ENDIF ()
 
 

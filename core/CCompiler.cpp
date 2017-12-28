@@ -4,7 +4,7 @@
  */
 #include "CZetScript.h"
 
-#ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
+#ifdef __ZETSCRIPT_DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
 //#define __VERBOSE_MESSAGE__
 #endif
 
@@ -1823,8 +1823,8 @@ namespace zetscript{
 		if(!doRegisterVariableSymbolsClass(_node->symbol_value,irc)){
 			return false;
 		}
-		// pop class ref so we go back to main scope...
-		popFunction();
+		// pop class ref so we go back to main scope (don't save its statment op)
+		popFunction(false);
 		return true;
 	}
 
@@ -2526,35 +2526,37 @@ namespace zetscript{
 		this->m_treescope = SCOPE_INFO_NODE(_node->idxScope);
 	}
 
-	void CCompiler::popFunction(){
+	void CCompiler::popFunction(bool save_statment_op){
 
-		// reserve memory for statment struct...
-		vector<tInfoStatementOpCompiler> *vec_comp_statment;
-		vec_comp_statment = &m_currentFunctionInfo->stament;
+		if (save_statment_op) {
+			// reserve memory for statment struct...
+			vector<tInfoStatementOpCompiler> *vec_comp_statment;
+			vec_comp_statment = &m_currentFunctionInfo->stament;
 
-		// get total size op + 1 ends with NULL
-		unsigned size=(vec_comp_statment->size()+1)*sizeof(PtrStatment);
-		m_currentFunctionInfo->function_info_object->object_info.statment_op = (PtrStatment)malloc(size);
-		memset(m_currentFunctionInfo->function_info_object->object_info.statment_op,0,size);
-		//m_currentFunctionInfo->function_info_object->object_info.n_statment_op = vec_comp_statment->size();
+			// get total size op + 1 ends with NULL
+			unsigned size = (vec_comp_statment->size() + 1) * sizeof(PtrStatment);
+			m_currentFunctionInfo->function_info_object->object_info.statment_op = (PtrStatment)malloc(size);
+			memset(m_currentFunctionInfo->function_info_object->object_info.statment_op, 0, size);
+			//m_currentFunctionInfo->function_info_object->object_info.n_statment_op = vec_comp_statment->size();
 
-		for(unsigned i = 0; i < vec_comp_statment->size();i++){ // foreach statment...
-			// reserve memory for n ops + 1 NULL end of instruction...
-			size = (vec_comp_statment->at(i).asm_op.size()+1)*sizeof(tInfoAsmOp);
-			m_currentFunctionInfo->function_info_object->object_info.statment_op[i] = (tInfoAsmOp *)malloc(size);
+			for (unsigned i = 0; i < vec_comp_statment->size(); i++) { // foreach statment...
+				// reserve memory for n ops + 1 NULL end of instruction...
+				size = (vec_comp_statment->at(i).asm_op.size() + 1) * sizeof(tInfoAsmOp);
+				m_currentFunctionInfo->function_info_object->object_info.statment_op[i] = (tInfoAsmOp *)malloc(size);
 
-			memset(m_currentFunctionInfo->function_info_object->object_info.statment_op[i],0,size);
-			//m_currentFunctionInfo->function_info_object->object_info.statment_op[i].n_asm_op=vec_comp_statment->at(i).asm_op.size();
-			//m_currentFunctionInfo->object_info.statment_op[i] = m_currentListStatements->at(i);
-			for(unsigned j = 0; j < vec_comp_statment->at(i).asm_op.size();j++){
+				memset(m_currentFunctionInfo->function_info_object->object_info.statment_op[i], 0, size);
+				//m_currentFunctionInfo->function_info_object->object_info.statment_op[i].n_asm_op=vec_comp_statment->at(i).asm_op.size();
+				//m_currentFunctionInfo->object_info.statment_op[i] = m_currentListStatements->at(i);
+				for (unsigned j = 0; j < vec_comp_statment->at(i).asm_op.size(); j++) {
 
-				tInfoAsmOpCompiler *asm_op = vec_comp_statment->at(i).asm_op[j];
+					tInfoAsmOpCompiler *asm_op = vec_comp_statment->at(i).asm_op[j];
 
-				m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].idxAstNode=asm_op->idxAstNode;
-				m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].operator_type=asm_op->operator_type;
-				m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].index_op1=asm_op->index_op1;
-				m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].index_op2=asm_op->index_op2;
-				m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].instruction_properties=asm_op->pre_post_op_type | asm_op->scope_type | asm_op->runtime_prop;
+					m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].idxAstNode = asm_op->idxAstNode;
+					m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].operator_type = asm_op->operator_type;
+					m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].index_op1 = asm_op->index_op1;
+					m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].index_op2 = asm_op->index_op2;
+					m_currentFunctionInfo->function_info_object->object_info.statment_op[i][j].instruction_properties = asm_op->pre_post_op_type | asm_op->scope_type | asm_op->runtime_prop;
+				}
 			}
 		}
 

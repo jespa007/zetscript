@@ -73,7 +73,7 @@ namespace zetscript{
 
 		sprintf(str_error,"%s[%s:%i] %s\n",str_error, filename, line, aux_text);
 
-#if __DEBUG__
+#if __ZETSCRIPT_DEBUG__
 		zs_print_error_cr("[%s:%i] %s",filename, line,aux_text);
 #endif
 
@@ -413,25 +413,7 @@ namespace zetscript{
 	bool CZetScript::init(){
 
 		CState::init();
-		CASTNode::init();
 
-
-		 if(!CScriptClass::init()){
-				exit(EXIT_FAILURE);
-		 }
-
-		 // init custom registers...
-		 CJSON::registerScript();
-
-		 // push undefined file by default ...
-		tInfoParsedSource ps;
-		ps.filename = "undefined";
-		m_parsedSource->push_back(ps);
-
-
-		 // after init, let's save/restore state...
-		 CState::saveState();
-		 CState::setState(0);
 
 
 
@@ -494,6 +476,7 @@ namespace zetscript{
 
 		return m_parsedSource->at(idx).filename.c_str();
 	}
+
 
 	int CZetScript::eval_int(const string & str_to_eval){
 		CZetScript *zetscript= CZetScript::getInstance();
@@ -604,6 +587,16 @@ namespace zetscript{
 
 	}
 
+	void CZetScript::destroyMainFunction() {
+
+		if (m_mainObject != NULL) {
+			delete m_mainObject;
+		}
+
+		m_mainObject = NULL;
+	}
+
+
 	bool CZetScript::eval(const string & s, bool execute, const char *filename)  {
 
 		if(!__init__) return false;
@@ -613,9 +606,10 @@ namespace zetscript{
 
 		if(parse_ast(s.c_str(),filename)){
 
-			idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
-
 			CLEAR_COMPILE_INFORMATION;
+
+			idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
+			
 
 			if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
 				// print generated asm ...
@@ -633,7 +627,7 @@ namespace zetscript{
 
 				}
 
-	#ifdef __DEBUG__
+	#ifdef __ZETSCRIPT_DEBUG__
 				printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
 	#endif
 
@@ -788,9 +782,7 @@ namespace zetscript{
 	//-------------------------------------------------------------------------------------
 	CZetScript::~CZetScript(){
 		// unregister operators ...
-		if( m_mainObject != NULL){
-			delete m_mainObject;
-		}
+		destroyMainFunction();
 		delete vm;
 
 

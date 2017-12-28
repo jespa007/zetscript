@@ -5,7 +5,7 @@
 #include "zs_core.h"
 
 namespace zetscript{
-
+	
 	#define REGISTER_BASIC_TYPE(type_class, idx_class)\
 		if(!register_C_ClassInt<type_class>(STR(type_class))) return false;\
 		if(vec_script_class_node->at(idx_class)->classPtrType!=typeid(type_class *).name()){\
@@ -27,13 +27,13 @@ namespace zetscript{
 	string  * CScriptClass::BOOL_TYPE_STR=NULL;//	typeid(bool *).name()
 	string  * CScriptClass::STACK_ELEMENT_PTR=NULL;//	typeid(bool *).name()
 
-	char CScriptClass::registered_metamethod[MAX_METAMETHOD_OPERATORS][50]={{0}};
+	//char ** CScriptClass::registered_metamethod = NULL;// [MAX_METAMETHOD_OPERATORS][50] = { {0} };
 	 //CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
 	 //CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 
 	// register metamethods str ...
 	 //--obj , type convert, ---
-	 map<string,map<string,fntConversionType>> CScriptClass::mapTypeConversion;
+	 map<string,map<string,fntConversionType>>  * CScriptClass::mapTypeConversion=NULL;
 
 
 
@@ -192,8 +192,31 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char ** CScriptClass::getRegisteredMetamethod(){
-		return (char **)registered_metamethod;
+	const char * CScriptClass::getMetamethod(METAMETHOD_OPERATOR op){
+
+		switch (op) {
+		case	EQU_METAMETHOD:		return  "_equ";  // ==
+		case	NOT_EQU_METAMETHOD: return  "_nequ";  // !=,
+		case	LT_METAMETHOD:		return  "_lt";  // <
+		case	LTE_METAMETHOD:		return  "_lte";  // <=
+		case	NOT_METAMETHOD:		return  "_not"; // !
+		case	GT_METAMETHOD:		return  "_gt";  // >
+		case	GTE_METAMETHOD:		return  "_gte"; // >=
+
+		case	NEG_METAMETHOD:		return  "_neg"; // -a, !a
+		case	ADD_METAMETHOD:		return  "_add"; // +
+		case	DIV_METAMETHOD:		return  "_div"; // /
+		case	MUL_METAMETHOD:		return  "_mul"; // *
+		case	MOD_METAMETHOD:		return  "_mod";  // %
+		case	AND_METAMETHOD:		return  "_and"; // binary and
+		case	OR_METAMETHOD:		return  "_or"; //   binary or
+		case	XOR_METAMETHOD:		return  "_xor"; // binary xor
+		case	SHL_METAMETHOD:		return  "_shl"; // binary shift left
+		case	SHR_METAMETHOD:		return  "_shr"; // binary shift right
+		case	SET_METAMETHOD:		return  "_set"; // set
+		}
+
+		return "none";
 	}
 
 
@@ -201,6 +224,9 @@ namespace zetscript{
 		return vec_script_class_node;
 	}
 
+	map<string, map<string, fntConversionType>>  *	 CScriptClass::getMapTypeConversion() {
+		return mapTypeConversion;
+	}
 
 	CScriptClass 	* CScriptClass::getScriptClassByIdx(int idx){
 		if(idx < 0 || (unsigned)idx >= vec_script_class_node->size()){
@@ -271,24 +297,24 @@ namespace zetscript{
 	//------------------------------------------------------------
 	fntConversionType CScriptClass::getConversionType(string objectType, string conversionType, bool show_errors){
 
-		if(mapTypeConversion.count(objectType) == 0){
+		if(mapTypeConversion->count(objectType) == 0){
 			if(show_errors){
 				zs_print_error_cr("There's no type conversion \"%s\". Add conversion types through \"addPrimitiveTypeConversion\" function",demangle(objectType).c_str());
 			}
 			return NULL;
 		}
 
-		if(mapTypeConversion[objectType].count(conversionType) == 0){
+		if(mapTypeConversion->at(objectType).count(conversionType) == 0){
 			if(show_errors){
 				zs_print_error("There's no CONVERSION from type \"%s\" to type \"%s\"",demangle(objectType).c_str(),demangle(conversionType).c_str());
 				printf("\n\tAvailable types are:\n");
-				for(map<string, fntConversionType>::iterator j =mapTypeConversion[objectType].begin() ; j != mapTypeConversion[objectType].end();j++){
+				for(map<string, fntConversionType>::iterator j =mapTypeConversion->at(objectType).begin() ; j != mapTypeConversion->at(objectType).end();j++){
 					printf("\t\t* \"%s\"\n", demangle(j->first).c_str());
 				}
 			}
 			return NULL;
 		}
-		return mapTypeConversion[objectType][conversionType];
+		return mapTypeConversion->at(objectType)[conversionType];
 	 }
 
 	 void  print(const char *s){
@@ -315,6 +341,8 @@ namespace zetscript{
 				return false;
 			}
 
+			mapTypeConversion = new map<string, map<string, fntConversionType>>();
+
 			VOID_TYPE_STR = new string(typeid(void).name());
 			INT_PTR_TYPE_STR = new string(typeid(int *).name());
 			FLOAT_PTR_TYPE_STR = new string(typeid(float *).name());
@@ -328,27 +356,6 @@ namespace zetscript{
 			FLOAT_TYPE_STR = new string(typeid(float).name());
 			STACK_ELEMENT_PTR= new string(typeid(tStackElement *).name());
 
-			// register metamethods ...
-			strcpy(registered_metamethod[EQU_METAMETHOD],"_equ");  // ==
-			strcpy(registered_metamethod[NOT_EQU_METAMETHOD],"_nequ");  // !=,
-			strcpy(registered_metamethod[LT_METAMETHOD],"_lt");  // <
-			strcpy(registered_metamethod[LTE_METAMETHOD],"_lte");  // <=
-			strcpy(registered_metamethod[NOT_METAMETHOD],"_not"); // !
-			strcpy(registered_metamethod[GT_METAMETHOD],"_gt");  // >
-			strcpy(registered_metamethod[GTE_METAMETHOD],"_gte"); // >=
-
-			strcpy(registered_metamethod[NEG_METAMETHOD],"_neg"); // -a, !a
-			strcpy(registered_metamethod[ADD_METAMETHOD],"_add"); // +
-			strcpy(registered_metamethod[DIV_METAMETHOD],"_div"); // /
-			strcpy(registered_metamethod[MUL_METAMETHOD],"_mul"); // *
-			strcpy(registered_metamethod[MOD_METAMETHOD],"_mod");  // %
-
-			strcpy(registered_metamethod[AND_METAMETHOD],"_and"); // binary and
-			strcpy(registered_metamethod[OR_METAMETHOD],"_or"); //   binary or
-			strcpy(registered_metamethod[XOR_METAMETHOD],"_xor"); // binary xor
-			strcpy(registered_metamethod[SHL_METAMETHOD],"_shl"); // binary shift left
-			strcpy(registered_metamethod[SHR_METAMETHOD],"_shr"); // binary shift right
-			strcpy(registered_metamethod[SET_METAMETHOD],"_set"); // set
 			//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			//IDX_CLASS_MAIN=0, 	// Main class ...
 			//IDX_CLASS_UNDEFINED,	// 1
@@ -472,12 +479,38 @@ namespace zetscript{
 			 delete BOOL_PTR_TYPE_STR;
 		 }
 
+		 if (BOOL_TYPE_STR != NULL) {
+			 delete BOOL_TYPE_STR;
+		 }
+		 
+		 if (INT_TYPE_STR != NULL) {
+			 delete INT_TYPE_STR;
+		 }
+		 
+		 if (FLOAT_TYPE_STR != NULL) {
+			 delete FLOAT_TYPE_STR;
+		 }
+		 
+		 if (STACK_ELEMENT_PTR != NULL) {
+			 delete STACK_ELEMENT_PTR;
+		 }
+
+		 if (mapTypeConversion != NULL) {
+			 delete mapTypeConversion;
+		 }
+
 		 VOID_TYPE_STR=NULL;
 		 INT_PTR_TYPE_STR=NULL;
 		 FLOAT_PTR_TYPE_STR=NULL;
 		 CONST_CHAR_PTR_TYPE_STR=NULL;
 		 STRING_PTR_TYPE_STR=NULL;
 		 BOOL_PTR_TYPE_STR=NULL;
+		 BOOL_TYPE_STR = NULL;
+		 INT_TYPE_STR = NULL;
+		 FLOAT_TYPE_STR = NULL;
+		 STACK_ELEMENT_PTR = NULL;
+		 mapTypeConversion = NULL;
+		 
 	 }
 
 	 CScriptClass::CScriptClass(){
@@ -1232,7 +1265,7 @@ namespace zetscript{
 
 			// check if metamethod...
 			for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-				if(STRCMP(registered_metamethod[i],==,fun_name.c_str())){
+				if(STRCMP(getMetamethod((METAMETHOD_OPERATOR)i),==,fun_name.c_str())){
 
 					rc->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
 

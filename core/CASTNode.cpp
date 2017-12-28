@@ -9,7 +9,7 @@
 #define MAX_EXPRESSION_LENGHT 2096
 
 
-#ifdef __DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
+#ifdef __ZETSCRIPT_DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
 #define __VERBOSE_MESSAGE__
 #endif
 
@@ -2901,10 +2901,10 @@ namespace zetscript{
 					// save scope pointer ...
 					if(ast_node_to_be_evaluated != NULL){
 						_currentScope =scope_info->pushScope(); // push current scope
-						(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
-						if(_currentScope!=NULL){
-							(*ast_node_to_be_evaluated)->idxScope=_currentScope->idxScope;
-						}
+						//(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
+						//if(_currentScope!=NULL){
+						(*ast_node_to_be_evaluated)->idxScope=_currentScope->idxScope;
+						//}
 					}
 
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
@@ -2966,7 +2966,7 @@ namespace zetscript{
 					}
 
 					// parse block ...
-					if((aux_p=parseBlock(aux_p,m_line,_currentScope,error,ast_node_to_be_evaluated != NULL ? &block_for : NULL,true))!= NULL){ // true: We treat declared variables into for as another scope.
+					if((aux_p=parseBlock(aux_p,m_line,_currentScope,error,ast_node_to_be_evaluated != NULL ? &block_for : NULL))!= NULL){ // true: We treat declared variables into for as another scope.
 						if(!error){
 
 							if(ast_node_to_be_evaluated != NULL) {
@@ -3186,10 +3186,11 @@ namespace zetscript{
 									if(ast_node_to_be_evaluated!= NULL){
 										if(group_cases->children.size() > 1 && theres_a_default){
 
-											for(vector<short>::iterator it = group_cases->children.begin(); it != group_cases->children.end(); ){ //erase cases and print warning !
-												if(AST_NODE(*it)->keyword_info == CASE_KEYWORD){
-													zs_print_warning_cr("Ignored case %s defined at line %i because is joined by default keyword",AST_NODE(*it)->symbol_value.c_str(),AST_NODE(*it)->line_value);
-													group_cases->children.erase(it);
+											for(unsigned it = 0; it < group_cases->children.size(); ){ //erase cases and print warning !
+												PASTNode ast_grp_case = AST_NODE(it);
+												if(ast_grp_case->keyword_info == CASE_KEYWORD){
+													zs_print_warning_cr("Ignored case %s defined at line %i because is joined by default keyword", ast_grp_case->symbol_value.c_str(), ast_grp_case->line_value);
+													group_cases->children.erase(group_cases->children.begin()+it);
 
 												}else{
 													it++;
@@ -3205,10 +3206,9 @@ namespace zetscript{
 									}
 
 									// eval block...
-									if((aux_p=generateAST_Recursive(aux_p, m_line, scope_info, error, ast_node_to_be_evaluated != NULL ? &case_body_node : NULL,true))==NULL){
+									if((aux_p=generateAST_Recursive(aux_p, m_line, m_currentScope, error, ast_node_to_be_evaluated != NULL ? &case_body_node : NULL,true))==NULL){
 										return NULL;
 									}
-
 
 									if(error){
 										return NULL;
@@ -3254,10 +3254,17 @@ namespace zetscript{
 									if(default_switch_node!= NULL){
 										bool end=false;
 										// start iterator from begin + 1 because the first is the switch value expression itself
-										for(vector<short>::iterator it = ((*ast_node_to_be_evaluated)->children.begin()+1); it != (*ast_node_to_be_evaluated)->children.end() && !end; ){ //erase cases and print warning !
+										for(unsigned it = 1; it < (*ast_node_to_be_evaluated)->children.size() && !end; ){ //erase cases and print warning !
 
-											if(AST_NODE(AST_NODE(AST_NODE(*it)->children[0])->children[0])->keyword_info == DEFAULT_KEYWORD){ // group cases-case node access
-												(*ast_node_to_be_evaluated)->children.erase(it);
+											//(AST_NODE(AST_NODE(AST_NODE(*it)->children[0])->children[0]);//->keyword_info == DEFAULT_KEYWORD) { // group cases-case node access
+											PASTNode ast_node = AST_NODE((*ast_node_to_be_evaluated)->children[it]);// case keyword
+											ast_node = AST_NODE(ast_node->children[0]); // case grp
+											ast_node = AST_NODE(ast_node->children[0]); // case keyword?
+											//AST_NODE(AST_NODE(AST_NODE(it)->children[0])->children[0]);
+											//((*ast_node_to_be_evaluated)->children.begin() + 1)
+
+											if(ast_node->keyword_info == DEFAULT_KEYWORD){ // group cases-case node access
+												(*ast_node_to_be_evaluated)->children.erase((*ast_node_to_be_evaluated)->children.begin()+it);
 												end=true;
 											}else{
 												it++;
@@ -3558,7 +3565,7 @@ namespace zetscript{
 				}
 			}
 
-			if((aux_p = generateAST_Recursive(aux_p, m_line,scope_info,error,ast_node_to_be_evaluated)) != NULL){
+			if((aux_p = generateAST_Recursive(aux_p, m_line, currentScope,error,ast_node_to_be_evaluated)) != NULL){
 				if(error){
 					return NULL;
 				}

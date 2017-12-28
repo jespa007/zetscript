@@ -4,7 +4,10 @@ Version: 1.1.4
 Date: XX-XX-XXXX
 
 #30: fixed bug CAST Node has a push but no pop pragma.
-#31: link zetscript as shared library 
+#31: link zetscript as shared library and partially compatible with vc 
+#28: Fixed ciclic dependency on already registered classes. 
+
+Fixed bug bad scope index on push/pop ast node.
 
 //----------------------------------------------------------
 Version: 1.1.3

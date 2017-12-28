@@ -187,6 +187,15 @@ void test_function_1st_c_call(){
 }
 
 
+class CNumber2:public CNumber {
+
+};
+
+class CNumber3 :public CNumber {
+
+};
+
+
 
 
 // Usable AlmostEqual function
@@ -504,6 +513,13 @@ int main(int argc, char * argv[]) {
 	//exit(-1);
 	//int i= 0+ +1;
 	if(!register_C_Class<CNumber>("CNumber")) return false;
+
+	if (!register_C_Class<CNumber2>("CNumber2")) return false;
+	if (!register_C_Class<CNumber3>("CNumber3")) return false;
+
+	if(!class_C_baseof<CNumber, CNumber>()) return false;
+	//if(!class_C_baseof<CNumber2, CNumber>()) return false;
+
 	if(!register_C_FunctionMember("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
 	if(!register_C_FunctionMember("CNumber",static_cast<void (CNumber::*)(float )>(&CNumber::set))) return false;
 	if(!register_C_VariableMember("n",&CNumber::n)) return false;

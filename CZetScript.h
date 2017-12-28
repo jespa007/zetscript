@@ -106,7 +106,7 @@ namespace zetscript{
 		//----
 
 
-
+		void destroyMainFunction();
 
 		ZETSCRIPT_MODULE_EXPORT CVirtualMachine * getVirtualMachine();
 		ZETSCRIPT_MODULE_EXPORT CScriptVariable *getMainObject(){return m_mainObject;}

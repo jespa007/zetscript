@@ -94,7 +94,7 @@ using std::stack;
 using std::ostringstream;
 
 // Prototypes & structs
-#ifdef __MEMMANAGER__
+#ifdef __ZETSCRIPT_MEMMANAGER__
 #include "system/zs_system.h"
 #endif
 
@@ -319,7 +319,7 @@ enum ASM_OPERATOR
 
 enum METAMETHOD_OPERATOR
 	:char {
-		EQU_METAMETHOD,  // ==
+		EQU_METAMETHOD=0,  // ==
 		NOT_EQU_METAMETHOD,  // !=
 		LT_METAMETHOD,  // <
 		LTE_METAMETHOD,  // <=
