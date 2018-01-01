@@ -82,6 +82,13 @@
 #endif
 
 
+#ifdef __ZETSCRIPT_DEBUG__ // incoment __ZETSCRIPT_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
+//#define __ZETSCRIPT_VERBOSE_MESSAGE__
+#endif
+
+
+
+
 using std::string;
 using std::vector;
 using std::map;
@@ -493,6 +500,8 @@ enum BASIC_CLASS_TYPE {
 	IDX_CLASS_STRING_PTR_C, // (string read/write)
 	IDX_CLASS_BOOL_PTR_C,
 	IDX_CLASS_INT_C,
+	IDX_CLASS_UNSIGNED_INT_C,
+	IDX_CLASS_INTPTR_T_C,
 	IDX_CLASS_FLOAT_C,
 	IDX_CLASS_BOOL_C,
 	//... add more primitives (don't forgot to configure it in CScriptVar...

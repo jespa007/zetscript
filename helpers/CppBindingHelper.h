@@ -30,6 +30,8 @@ namespace zetscript{
 			 case IDX_CLASS_INT_PTR_C:
 				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(*((intptr_t *)var_trans)),NULL};
 				 break;
+			 case IDX_CLASS_UNSIGNED_INT_C:
+			 case IDX_CLASS_INTPTR_T_C:
 			 case IDX_CLASS_INT_C:
 				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(((intptr_t)var_trans)),NULL};
 				 break;
@@ -92,36 +94,52 @@ namespace zetscript{
 
 				break;
 			case STK_PROPERTY_TYPE_NUMBER:
-				if(idx_return_type == IDX_CLASS_FLOAT_C){//*CScriptClass::FLOAT_TYPE_STR){
+				switch(idx_return_type){
+				case IDX_CLASS_FLOAT_C:
 					val_ret=stk_ret->stkValue;
-				}else if(idx_return_type == IDX_CLASS_FLOAT_PTR_C){//*CScriptClass::FLOAT_PTR_TYPE_STR){
+					break;
+				case IDX_CLASS_FLOAT_PTR_C:
 					val_ret=(&stk_ret->stkValue);
-				}else if(idx_return_type == IDX_CLASS_INT_C){////*CScriptClass::INT_TYPE_STR){
-					int *aux_dst = ((int *)&val_ret);
-					float *aux_src=(float *)&stk_ret->stkValue;
-					*aux_dst=(int)(*aux_src);
-				}else{
+					break;
+				case IDX_CLASS_UNSIGNED_INT_C:
+				case IDX_CLASS_INTPTR_T_C:
+				case IDX_CLASS_INT_C:
+					{
+						int *aux_dst = ((int *)&val_ret);
+						float *aux_src=(float *)&stk_ret->stkValue;
+						*aux_dst=(int)(*aux_src);
+					}
+					break;
+				default:
 					error="cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type));
 					return false;
 				}
 				break;
 			case STK_PROPERTY_TYPE_INTEGER:
-				if(idx_return_type == IDX_CLASS_INT_C){//*CScriptClass::INT_TYPE_STR){
+				switch(idx_return_type){
+				case IDX_CLASS_UNSIGNED_INT_C:
+				case IDX_CLASS_INTPTR_T_C:
+				case IDX_CLASS_INT_C:
 					val_ret=(stk_ret->stkValue);
-				}else if(idx_return_type == IDX_CLASS_INT_PTR_C){//*CScriptClass::INT_PTR_TYPE_STR){
+					break;
+				case IDX_CLASS_INT_PTR_C:
 					val_ret=(&stk_ret->stkValue);
-				}else if(idx_return_type == IDX_CLASS_FLOAT_C){//*CScriptClass::FLOAT_TYPE_STR){
-					float *aux_dst = ((float *)&val_ret);
-					int *aux_src=(int *)&stk_ret->stkValue;
-					*aux_dst = (float)(*aux_src);
-				}else{
+					break;
+				case IDX_CLASS_FLOAT_C:
+					{
+						float *aux_dst = ((float *)&val_ret);
+						int *aux_src=(int *)&stk_ret->stkValue;
+						*aux_dst = (float)(*aux_src);
+					}
+					break;
+				default:
 					error= "cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type));
 					return false;
 				}
 				break;
 
 			case STK_PROPERTY_TYPE_STRING:
-				if(idx_return_type == IDX_CLASS_STRING_PTR_C){//*CScriptClass::STRING_PTR_TYPE_STR){
+				if(idx_return_type == IDX_CLASS_STRING_PTR_C){
 					if(stk_ret->varRef != 0){
 						val_ret=(&((CStringScriptVariable *)(stk_ret->varRef))->m_strValue);
 					}
@@ -130,7 +148,7 @@ namespace zetscript{
 						return false;
 					}
 
-				}else if (idx_return_type == IDX_CLASS_CONST_CHAR_PTR_C){//*CScriptClass::CONST_CHAR_PTR_TYPE_STR){
+				}else if (idx_return_type == IDX_CLASS_CONST_CHAR_PTR_C){
 					val_ret=(stk_ret->stkValue);
 				}else{
 					error= "cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type));

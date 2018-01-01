@@ -3,11 +3,14 @@
 Version: 1.1.4
 Date: XX-XX-XXXX
 
-#30: fixed bug CAST Node has a push but no pop pragma.
+#30: fixed bug CAST Node has a push but no pop pragma. (it was really a bug ???)
 #31: link zetscript as shared library and partially compatible with vc 
-#28: Fixed ciclic dependency on already registered classes. 
+#28: Fixed ciclic dependency on already registered classes.
+#34: Add support for unsigned int and intptr_t types. 
+#35: Fixed bug bad scope index on push/pop ast node 
+#36: Fixed doesn't register class if try to register some variable base of class that has not registered by base_of_class 
+#37: Fixed when symbols are not found during searching its linking, it does a memory corruption 
 
-Fixed bug bad scope index on push/pop ast node.
 
 //----------------------------------------------------------
 Version: 1.1.3

@@ -105,10 +105,6 @@ else()
 	ENDIF ()
 
 
-	# Compile for x86 target by default ...
-	set(TARGET_FLAGS " ${TARGET_FLAGS} ")
-
-
 	if ( "${EMSCRIPTEN}" STREQUAL "yes" )
 
 		message("emscripten path: $ENV{EMSCRIPTENDIR} ")
@@ -220,12 +216,6 @@ SET(
 
 
 
-INSTALL(TARGETS zetscript${POST_NAME}
-		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
-    	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/bin
-    	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
-)
-
 INSTALL_HEADERS_WITH_DIRECTORY(HS)
 
 if ( "${EMSCRIPTEN}" STREQUAL "yes" )
@@ -297,6 +287,7 @@ else()
 endif()
 
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
+
 
 
 INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}

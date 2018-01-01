@@ -464,10 +464,12 @@ namespace zetscript{
 		if((irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF)){ /* C! Must match args...*/ \
 					bool all_check=true; /*  check arguments types ... */ \
 					int idx_type=-1;\
+					int arg_idx_type=-1;\
 					for( unsigned k = 0; k < n_args && all_check;k++){\
 						tStackElement *currentArg=&startArg[k];\
+						arg_idx_type=irfs->m_arg[k].idx_type;\
 \
-						if(irfs->m_arg[k].idx_type==IDX_STACK_ELEMENT){\
+						if(arg_idx_type==IDX_STACK_ELEMENT){\
 							/* do nothing because is already trivial ! */ \
 						} \
 						else{ \
@@ -485,27 +487,29 @@ namespace zetscript{
 							case STK_PROPERTY_TYPE_INTEGER:\
 								idx_type=IDX_CLASS_INT_PTR_C;\
 								all_check=\
-										irfs->m_arg[k].idx_type==IDX_CLASS_INT_PTR_C\
-									  ||irfs->m_arg[k].idx_type==IDX_CLASS_INT_C;\
+										arg_idx_type==IDX_CLASS_INT_PTR_C\
+									  ||arg_idx_type==IDX_CLASS_INT_C\
+									  ||arg_idx_type==IDX_CLASS_UNSIGNED_INT_C\
+									  ||arg_idx_type==IDX_CLASS_INTPTR_T_C;\
 								break;\
 							case STK_PROPERTY_TYPE_NUMBER:\
 								idx_type=IDX_CLASS_FLOAT_PTR_C;\
-								all_check=irfs->m_arg[k].idx_type==IDX_CLASS_FLOAT_PTR_C\
-										||irfs->m_arg[k].idx_type==IDX_CLASS_FLOAT_C;\
+								all_check=arg_idx_type==IDX_CLASS_FLOAT_PTR_C\
+										||arg_idx_type==IDX_CLASS_FLOAT_C;\
 								break;\
 							case STK_PROPERTY_TYPE_BOOLEAN:\
 								idx_type=IDX_CLASS_BOOL_PTR_C;\
 								all_check=\
-										irfs->m_arg[k].idx_type==IDX_CLASS_BOOL_PTR_C\
-									  ||irfs->m_arg[k].idx_type==IDX_CLASS_BOOL_C;\
+										arg_idx_type==IDX_CLASS_BOOL_PTR_C\
+									  ||arg_idx_type==IDX_CLASS_BOOL_C;\
 \
 								break;\
 							case STK_PROPERTY_TYPE_STRING:\
 								idx_type=IDX_CLASS_STRING_PTR_C;\
 \
 								all_check =\
-										(irfs->m_arg[k].idx_type==IDX_CLASS_STRING_PTR_C && currentArg->varRef!=0)\
-									  ||irfs->m_arg[k].idx_type==IDX_CLASS_CONST_CHAR_PTR_C;\
+										(	arg_idx_type==IDX_CLASS_STRING_PTR_C && currentArg->varRef!=0)\
+									  ||	arg_idx_type==IDX_CLASS_CONST_CHAR_PTR_C;\
 								break;\
 							case STK_PROPERTY_TYPE_NULL:\
 							case STK_PROPERTY_TYPE_UNDEFINED:\
@@ -514,16 +518,16 @@ namespace zetscript{
 								var_object=((CScriptVariable *)currentArg->varRef);\
 								aux_string=var_object->getPointer_C_ClassName();\
 \
-								if(irfs->m_arg[k].idx_type==idx_type){\
+								if(arg_idx_type==idx_type){\
 									all_check=true;\
 								}\
 								else{\
 									CScriptClass *c_class=NULL;\
 									if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */ \
-										all_check=irfs->m_arg[k].idx_type==c_class->idxClass;\
+										all_check=arg_idx_type==c_class->idxClass;\
 									}else{ /* check string ... */ \
 										if(var_type & STK_PROPERTY_TYPE_STRING){ \
-											all_check=irfs->m_arg[k].idx_type==IDX_CLASS_STRING_PTR_C; \
+											all_check=arg_idx_type==IDX_CLASS_STRING_PTR_C; \
 										}else{ \
 											all_check=false; \
 										}\
@@ -884,12 +888,9 @@ if(aux_function_info == NULL){\
 
 	}
 
-	#ifdef __ZETSCRIPT_DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
-	//#define __VERBOSE_MESSAGE__
-	#endif
 
 
-	#ifdef  __VERBOSE_MESSAGE__
+	#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
 
 	#define print_vm_cr zs_print_info_cr
 	#else

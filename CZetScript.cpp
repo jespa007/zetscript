@@ -608,6 +608,7 @@ namespace zetscript{
 
 			CLEAR_COMPILE_INFORMATION;
 
+
 			idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 			
 
@@ -615,6 +616,7 @@ namespace zetscript{
 				// print generated asm ...
 
 				if(!CScriptClass::updateReferenceSymbols()){
+					CLEAR_COMPILE_INFORMATION; // clear compile information due missing ops that  would lead a possibly memory corruption on exit.
 					return false;
 				}
 

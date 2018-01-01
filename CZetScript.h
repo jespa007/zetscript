@@ -26,8 +26,6 @@
 #define MAX_BUFFER_AUX_TMP		4096
 
 
-#define ZS_GET_ERROR "not implemented error handling!!"
-
 namespace zetscript{
 
 	class CScriptVariable;

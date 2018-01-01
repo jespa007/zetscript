@@ -82,6 +82,9 @@ namespace zetscript{
 		static string  *CONST_CHAR_PTR_TYPE_STR;//	typeid(string *).name()
 		static string  *BOOL_PTR_TYPE_STR;//	typeid(bool *).name()
 		static string  *INT_TYPE_STR;//	typeid(int).name()
+		static string  *UNSIGNED_INT_TYPE_STR;//	typeid(unsigned int).name()
+		static string  *INTPTR_T_TYPE_STR;//	typeid(intptr_t).name()
+
 		static string  *FLOAT_TYPE_STR;//	typeid(int).name()
 		static string  *BOOL_TYPE_STR;//	typeid(bool).name()
 		static string  *STACK_ELEMENT_PTR;//	typeid(bool).name()

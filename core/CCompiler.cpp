@@ -4,15 +4,8 @@
  */
 #include "CZetScript.h"
 
-#ifdef __ZETSCRIPT_DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
-//#define __VERBOSE_MESSAGE__
-#endif
-
-
-
-#ifdef  __VERBOSE_MESSAGE__
-
-#define print_com_cr print_ast_cr
+#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
+#define print_com_cr zs_print_info_cr
 #else
 #define print_com_cr(s,...)
 #endif
@@ -2527,6 +2520,8 @@ namespace zetscript{
 	}
 
 	void CCompiler::popFunction(bool save_statment_op){
+
+		m_currentFunctionInfo->function_info_object->object_info.statment_op=NULL;
 
 		if (save_statment_op) {
 			// reserve memory for statment struct...

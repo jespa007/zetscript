@@ -23,6 +23,8 @@ namespace zetscript{
 	string  * CScriptClass::BOOL_PTR_TYPE_STR=NULL;//	typeid(bool *).name()
 
 	string  * CScriptClass::INT_TYPE_STR=NULL;//	typeid(int *).name()
+	string  * CScriptClass::UNSIGNED_INT_TYPE_STR=NULL;//	typeid(int *).name()
+	string  * CScriptClass::INTPTR_T_TYPE_STR=NULL;//	typeid(int *).name()
 	string  * CScriptClass::FLOAT_TYPE_STR=NULL;//	typeid(int *).name()
 	string  * CScriptClass::BOOL_TYPE_STR=NULL;//	typeid(bool *).name()
 	string  * CScriptClass::STACK_ELEMENT_PTR=NULL;//	typeid(bool *).name()
@@ -353,6 +355,8 @@ namespace zetscript{
 			// particular case for return ... for not to force user returning pointer (this is the only vars allowed, sorry!)
 			BOOL_TYPE_STR = new string(typeid(bool).name());
 			INT_TYPE_STR = new string(typeid(int).name());
+			UNSIGNED_INT_TYPE_STR = new string(typeid(unsigned int).name());
+			INTPTR_T_TYPE_STR = new string(typeid(intptr_t).name());
 			FLOAT_TYPE_STR = new string(typeid(float).name());
 			STACK_ELEMENT_PTR= new string(typeid(tStackElement *).name());
 
@@ -393,16 +397,23 @@ namespace zetscript{
 			if((registerClass("int","",NULL)) == NULL) return false;		// 6
 			vec_script_class_node->at(IDX_CLASS_INT_C)->classPtrType=*INT_TYPE_STR;
 
-			if((registerClass("float","",NULL)) == NULL) return false;		// 7
+			if((registerClass("unsigned int","",NULL)) == NULL) return false;		// 7
+			vec_script_class_node->at(IDX_CLASS_UNSIGNED_INT_C)->classPtrType=*UNSIGNED_INT_TYPE_STR;
+
+			if((registerClass("intptr_t","",NULL)) == NULL) return false;		// 8
+			vec_script_class_node->at(IDX_CLASS_INTPTR_T_C)->classPtrType=*INTPTR_T_TYPE_STR;
+
+
+			if((registerClass("float","",NULL)) == NULL) return false;		// 9
 			vec_script_class_node->at(IDX_CLASS_FLOAT_C)->classPtrType=*FLOAT_TYPE_STR;
 
 
-			if((registerClass("bool","",NULL)) == NULL) return false;		// 8
+			if((registerClass("bool","",NULL)) == NULL) return false;		// 10
 			vec_script_class_node->at(IDX_CLASS_BOOL_C)->classPtrType=*BOOL_TYPE_STR;
 
 
 			// register basic classes...
-			if((registerClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 7
+			if((registerClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 11
 			if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME,IDX_MAIN_AST_NODE)) == NULL) return false;
 
 			REGISTER_BASIC_TYPE(tStackElement,IDX_STACK_ELEMENT);
@@ -487,6 +498,16 @@ namespace zetscript{
 			 delete INT_TYPE_STR;
 		 }
 		 
+		 if (UNSIGNED_INT_TYPE_STR != NULL) {
+			 delete UNSIGNED_INT_TYPE_STR;
+		 }
+
+		 if (INTPTR_T_TYPE_STR != NULL) {
+			 delete INTPTR_T_TYPE_STR;
+		 }
+
+
+
 		 if (FLOAT_TYPE_STR != NULL) {
 			 delete FLOAT_TYPE_STR;
 		 }
@@ -507,6 +528,8 @@ namespace zetscript{
 		 BOOL_PTR_TYPE_STR=NULL;
 		 BOOL_TYPE_STR = NULL;
 		 INT_TYPE_STR = NULL;
+		 UNSIGNED_INT_TYPE_STR = NULL;
+		 INTPTR_T_TYPE_STR=NULL;
 		 FLOAT_TYPE_STR = NULL;
 		 STACK_ELEMENT_PTR = NULL;
 		 mapTypeConversion = NULL;

@@ -8,17 +8,14 @@
 
 #define MAX_EXPRESSION_LENGHT 2096
 
-
-#ifdef __ZETSCRIPT_DEBUG__ // incoment __VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
-#define __VERBOSE_MESSAGE__
-#endif
-
-#ifdef  __VERBOSE_MESSAGE__
+#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
 
 #define print_ast_cr zs_print_info_cr
 #else
 #define print_ast_cr(s,...)
 #endif
+
+
 
 namespace zetscript{
 

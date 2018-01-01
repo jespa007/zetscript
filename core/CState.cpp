@@ -245,6 +245,7 @@ namespace zetscript{
 				if ((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF) {
 
 					zs_print_debug_cr("* Erasing c destructor/contructor %s...", irv->classPtrType.c_str());
+
 					if (irv->c_constructor) {
 						delete irv->c_constructor;
 					}
@@ -318,7 +319,7 @@ namespace zetscript{
 			CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
 
 			if ((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) { // is a compiled script let it be ...
-#ifdef __ZETSCRIPT_DEBUG__
+#ifdef __ZETSCRIPT_VERBOSE_MESSAGE__
 				CScriptClass *sc = CScriptClass::getScriptClassByIdx(info_function->object_info.symbol_info.idxScriptClass);
 				if (sc) {
 					zs_print_debug_cr("Clear function %s::%s...", sc->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
@@ -333,6 +334,7 @@ namespace zetscript{
 					}
 
 					free(info_function->object_info.statment_op);
+					info_function->object_info.statment_op=NULL;
 				}
 
 				// unloading scope ...
@@ -342,6 +344,7 @@ namespace zetscript{
 					}
 
 					free(info_function->object_info.info_var_scope);
+					info_function->object_info.info_var_scope=NULL;
 				}
 
 				// unregister global variables & functions ...
@@ -393,39 +396,45 @@ namespace zetscript{
 		for(unsigned i = 0; i < vec_ast_node->size(); i++){
 			delete vec_ast_node->at(i);
 		}
+		vec_ast_node->clear();
+		delete vec_ast_node;
+		vec_ast_node=NULL;
 	}
 
 	void CState::destroyScopeNodes(){
 		for(unsigned i = 0; i < vec_scope_node->size(); i++){
 			delete vec_scope_node->at(i);
 		}
+		vec_scope_node->clear();
+		delete vec_scope_node;
+		vec_scope_node=NULL;
 	}
 
 	void CState::destroyScriptClassNodes() {
 
 		for(unsigned i = 0;i < vec_script_class_node->size();i++){
-
 			zs_print_debug_cr("* Erasing %s...", vec_script_class_node->at(i)->classPtrType.c_str());
-
 			delete vec_script_class_node->at(i);
 
 		}
 
 		vec_script_class_node->clear();
+		delete vec_script_class_node;
+		vec_script_class_node=NULL;
 	}	
 	
 	
 	void CState::destroyScriptFunctionObjectNodes() {
 
 		for(unsigned i = 0;i < vec_script_function_object_node->size();i++){
-
 			zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_name.c_str());
-
 			delete vec_script_function_object_node->at(i);
 
 		}
 
 		vec_script_function_object_node->clear();
+		delete vec_script_function_object_node;
+		vec_script_function_object_node=NULL;
 	}
 
 	void CState::destroyInfoParsedSourceNode(){
@@ -446,12 +455,6 @@ namespace zetscript{
 
 	CState::~CState(){
 		destroy();
-
-		delete vec_ast_node;
-		delete vec_scope_node;
-		//vector<tScopeVar *> 						vec_scope_var_node;
-		delete vec_script_class_node;
-		delete vec_script_function_object_node;
 	}
 }
 
