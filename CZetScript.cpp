@@ -686,6 +686,14 @@ namespace zetscript{
 
 		vector<string> access_var = CStringUtils::split(function_access,'.');
 		CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
+
+
+		if(m_mainFunctionInfo == NULL){
+			zs_print_error_cr("m_mainFunctionInfo is not initialized");
+			return false;
+		}
+
+
 		*calling_obj = NULL;
 		tSymbolInfo *is=NULL;
 		*fun_obj=NULL;
