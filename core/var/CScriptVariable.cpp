@@ -81,7 +81,7 @@ namespace zetscript{
 		c_scriptclass_info=NULL;
 		idxScriptClass = -1;
 		aux_string ="";
-		delete_c_object = true;
+		delete_c_object = false; // --> user is responsible to delete C objects!
 
 	}
 
@@ -96,27 +96,26 @@ namespace zetscript{
 		this->m_infoRegisteredClass = irv;
 		idxScriptClass = irv->idxClass;
 		c_object = _c_object;
-		delete_c_object = true;
+		
 		c_scriptclass_info=NULL;
 
 		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (c_scriptclass_info) to get needed info to destroy create the C++ object.
 
-			if(m_infoRegisteredClass->baseClass.size()==1){ // is the first!
-				CScriptClass *base = m_infoRegisteredClass->baseClass[0];
+			if(m_infoRegisteredClass->is_c_class()){
+					c_scriptclass_info=m_infoRegisteredClass;
+					created_object = (*m_infoRegisteredClass->c_constructor)();
+					c_object = created_object;
+			}else if(m_infoRegisteredClass->idxBaseClass.size()==1){ // mixed script + c class ?
+				CScriptClass *base = CScriptClass::getScriptClassByIdx(m_infoRegisteredClass->idxBaseClass[0]);
 				if(base->is_c_class()){
 					c_scriptclass_info=base;
 					created_object = (*base->c_constructor)();
 					c_object = created_object;
 				}
-			}else if(m_infoRegisteredClass->is_c_class()){
-					c_scriptclass_info=m_infoRegisteredClass;
-					created_object = (*m_infoRegisteredClass->c_constructor)();
-					c_object = created_object;
 			}
 
 		}else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
 			c_scriptclass_info=irv;
-			delete_c_object = false;
 		}
 
 		// only create symbols if not string type to make it fast ...
@@ -221,67 +220,6 @@ namespace zetscript{
 		return NULL;
 	}
 
-	int CScriptVariable::getidxScriptFunctionObjectWithMatchArgs(const string & varname, tStackElement * ptrArg, unsigned char n_args, bool match_signature){
-
-		// from lat value to first to get last override function...
-		bool all_check=false;
-		int idx_type;
-
-		for(int i = this->m_functionSymbol.size()-1; i>=0; i--){
-
-			CScriptFunctionObject *irfs = (CScriptFunctionObject *)m_functionSymbol[i].object.stkValue;
-
-			if(this->m_functionSymbol[i].symbol_value == varname && (irfs->m_arg.size() == n_args)){
-				all_check=true;
-				// convert parameters script to c...
-				for( unsigned char k = 0; k < n_args && all_check;k++){
-
-					unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(ptrArg[k].properties);
-
-					switch(var_type){
-						default:
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(-1),"unknow variable");
-							return ZS_UNDEFINED_IDX;
-							break;
-						case STK_PROPERTY_TYPE_INTEGER:
-							idx_type = IDX_CLASS_INT_PTR_C; //aux_string=*CScriptClass::INT_PTR_TYPE_STR;
-							break;
-						case STK_PROPERTY_TYPE_NUMBER:
-							idx_type= IDX_CLASS_FLOAT_PTR_C;//*CScriptClass::FLOAT_PTR_TYPE_STR;
-							break;
-						case STK_PROPERTY_TYPE_BOOLEAN:
-							idx_type= IDX_CLASS_BOOL_PTR_C; //*CScriptClass::BOOL_PTR_TYPE_STR;
-							break;
-						case STK_PROPERTY_TYPE_STRING:
-							idx_type=IDX_CLASS_STRING_PTR_C;
-							break;
-						case STK_PROPERTY_TYPE_NULL:
-						case STK_PROPERTY_TYPE_UNDEFINED:
-						case STK_PROPERTY_TYPE_SCRIPTVAR:
-						case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:
-						idx_type = ((CScriptVariable *)ptrArg[k].varRef)->idxScriptClass;//getPointer_C_ClassName();
-							break;
-						}
-
-					bool is_script_var = aux_string == TYPE_SCRIPT_VARIABLE; // if C_ClassName is void means that is a ScriptClass...
-					if(match_signature){
-						all_check = (idx_type==irfs->m_arg[k].idx_type) || (is_script_var);
-					}
-					else{
-						if(idx_type!=irfs->m_arg[k].idx_type && !(is_script_var)){
-							all_check =(CScriptClass::getConversionType(GET_IDX_2_CLASS_C_STR(idx_type),GET_IDX_2_CLASS_C_STR(irfs->m_arg[k].idx_type), false)!=NULL);
-						}
-					}
-				}
-
-				if(all_check){ // we found the right function ...
-					return i;
-				}
-			}
-		}
-		return ZS_UNDEFINED_IDX;
-	}
-
 	string CScriptVariable::getMessageMatchingFunctions(const string & varname){
 		int n_candidates=0;
 		string str_candidates="";
@@ -384,7 +322,7 @@ namespace zetscript{
 	void CScriptVariable::destroy(bool delete_user_request){
 
 		if(created_object != 0){
-			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
+			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request){// || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
 
 				(*c_scriptclass_info->c_destructor)(created_object);
 
@@ -409,7 +347,7 @@ namespace zetscript{
 					break;
 
 				default: // variable ...
-					if(m_variableSymbol[i].object.properties & STK_PROPERTY_IS_C_VAR){ // deallocate but not if is native string
+					if((m_variableSymbol[i].object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 
 							if(m_variableSymbol[i].object.varRef != NULL){
 								delete ((CScriptVariable *)(m_variableSymbol[i].object.varRef));

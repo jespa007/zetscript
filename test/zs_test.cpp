@@ -480,7 +480,6 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 
 
-
 int main(int argc, char * argv[]) {
 
 	int n_test=0;
@@ -514,24 +513,24 @@ int main(int argc, char * argv[]) {
 	//int i= 0+ +1;
 	if(!register_C_Class<CNumber>("CNumber")) return false;
 
-	if (!register_C_Class<CNumber2>("CNumber2")) return false;
-	if (!register_C_Class<CNumber3>("CNumber3")) return false;
-
-	if(!class_C_baseof<CNumber, CNumber>()) return false;
-	//if(!class_C_baseof<CNumber2, CNumber>()) return false;
-
-	if(!register_C_FunctionMember("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
-	if(!register_C_FunctionMember("CNumber",static_cast<void (CNumber::*)(float )>(&CNumber::set))) return false;
-	if(!register_C_VariableMember("n",&CNumber::n)) return false;
+	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
+	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(float )>(&CNumber::set))) return false;
+	if(!register_C_VariableMember<CNumber>("n",&CNumber::n)) return false;
 
 	if(!register_C_Class<CInteger>("CInteger")) return false;
-	if(!register_C_FunctionMember("CInteger",&CInteger::ScriptConstructor)) return false;
-	if(!register_C_VariableMember("n",&CInteger::n)) return false;
+	if(!register_C_FunctionMember<CInteger>("CInteger",&CInteger::ScriptConstructor)) return false;
+	if(!register_C_VariableMember<CInteger>("n",&CInteger::n)) return false;
+
 
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return false;
-	if(!register_C_FunctionMember("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set))) return false;
-	if(!register_C_FunctionMember("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set))) return false;
+	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set))) return false;
+	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set))) return false;
+	if(!register_C_FunctionMember<CInteger>("dummy",&CInteger::dummy)) return false;
+
+	if(!register_C_Function("newInteger",&newInteger)) return false;
+
+
 
 
 
@@ -669,7 +668,7 @@ int main(int argc, char * argv[]) {
 	}
 
 
-	printf("All tests passed OK!");
+	printf("All tests passed OK!\n");
 
 	CZetScript::destroy();
 

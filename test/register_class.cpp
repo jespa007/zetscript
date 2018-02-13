@@ -37,11 +37,11 @@ int main(){
 	register_C_Class<MyClass>("MyClass"); // register MyClass with name MyClass in script side.
 	register_C_Class<MyClassExtend>("MyClassExtend"); // register MyClassExtend with name MyClassExtend in script side.
 
-	register_C_VariableMember("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
-	register_C_FunctionMember("function1",&MyClass::function1); // register function1 named function1 in script side as function member.
+	register_C_VariableMember<MyClass>("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
+	register_C_FunctionMember<MyClass>("function1",&MyClass::function1); // register function1 named function1 in script side as function member.
 
-	register_C_VariableMember("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
-	register_C_FunctionMember("function2",&MyClassExtend::function2); // register function2 named function2 in script side as function member.
+	register_C_VariableMember<MyClassExtend>("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
+	register_C_FunctionMember<MyClassExtend>("function2",&MyClassExtend::function2); // register function2 named function2 in script side as function member.
 
 
 	class_C_baseof<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass

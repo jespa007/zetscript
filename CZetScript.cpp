@@ -429,17 +429,22 @@ namespace zetscript{
 
 	}
 
-	bool CZetScript::parse_ast(const char   * s, const char *filename){
+	bool CZetScript::parse_ast(const char   * s, int idx_filename){
 		int m_line = 1;
 		bool error=false;
 		PASTNode main_node = MAIN_AST_NODE;
-		int idx_parsed_source = getIdxParsedFilenameSource(filename);
+		const char *filename=NULL;
+
+		if(idx_filename>=0){
+			filename=m_parsedSource->at(idx_filename).filename.c_str();
+		}
+		/*int idx_parsed_source = getIdxParsedFilenameSource(filename);
 
 		if(idx_parsed_source == -1){
 			return false;
-		}
+		}*/
 
-		SET_PARSING_FILENAME(idx_parsed_source,filename);
+		SET_PARSING_FILENAME(idx_filename,filename);
 
 
 		if(CASTNode::generateAST_Recursive(
@@ -596,48 +601,88 @@ namespace zetscript{
 		m_mainObject = NULL;
 	}
 
-
-	bool CZetScript::eval(const string & s, bool execute, const char *filename)  {
-
+	ZETSCRIPT_MODULE_EXPORT bool CZetScript::parse(const string & str_script,const char *filename_ref){
 		if(!__init__) return false;
+
+		int idx_file=-1;
+
+		if(filename_ref != NULL){
+
+			//string file=CIO_Utils::getFileName(filename_ref);
+
+			if(isFilenameAlreadyParsed(filename_ref)){
+				zs_print_error_cr("Filename \"%s\" already parsed",filename_ref);
+				return false;
+			}else{
+				tInfoParsedSource ps;
+				ps.filename = filename_ref;
+				m_parsedSource->push_back(ps);
+				idx_file=m_parsedSource->size()-1;
+			}
+		}
 
 
 		ZS_CLEAR_ERROR_MSG();
 
-		if(parse_ast(s.c_str(),filename)){
+		return parse_ast(str_script.c_str(),idx_file);
 
-			CLEAR_COMPILE_INFORMATION;
+	}
+
+	ZETSCRIPT_MODULE_EXPORT bool CZetScript::compile(){
+		if(!__init__) return false;
+		ZS_CLEAR_ERROR_MSG();
+
+		CLEAR_COMPILE_INFORMATION;
 
 
-			idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
-			
+		idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 
-			if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
-				// print generated asm ...
 
-				if(!CScriptClass::updateReferenceSymbols()){
-					CLEAR_COMPILE_INFORMATION; // clear compile information due missing ops that  would lead a possibly memory corruption on exit.
-					return false;
+		if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
+			// print generated asm ...
+
+			if(!CScriptClass::updateReferenceSymbols()){
+				CLEAR_COMPILE_INFORMATION; // clear compile information due missing ops that  would lead a possibly memory corruption on exit.
+				return false;
+			}
+
+			if(m_mainObject == NULL){
+				// creates the main entry function with compiled code. On every executing code, within "execute" function
+				// virtual machine is un charge of allocating space for all local variables...
+
+				m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
+			}
+
+			return true;
+
+		}
+
+		return false;
+
+	}
+
+	bool CZetScript::execute(){
+
+		if(!__init__) return NULL;
+		ZS_CLEAR_ERROR_MSG();
+
+		// the first code to execute is the main function that in fact is a special member function inside our main class
+		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject) != NULL;//->excute();
+	}
+
+
+	bool CZetScript::eval(const string & s, bool exec_vm, const char *filename_ref)  {
+
+		if(parse(s,filename_ref)){
+			if(compile()){
+				if(exec_vm){
+					if(execute()){
+						return true;
+					}
 				}
-
-				if(m_mainObject == NULL){
-					// creates the main entry function with compiled code. On every executing code, within "execute" function
-					// virtual machine is un charge of allocating space for all local variables...
-
-					m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
-
-
+				else{
+					return true;
 				}
-
-	#ifdef __ZETSCRIPT_DEBUG__
-				printGeneratedCodeAllClasses();//&m_mainFunctionInfo->object_info);
-	#endif
-
-				if(execute){
-					return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject);
-				}
-
-				return true;
 			}
 		}
 
@@ -647,14 +692,11 @@ namespace zetscript{
 		return false;
 	}
 
-	bool CZetScript::eval_file(const char * filename){
+	bool CZetScript::eval_file(const char * filename, bool execute){
 
 		ZS_CLEAR_ERROR_MSG();
 
-		if(isFilenameAlreadyParsed(filename)){
-			zs_print_error_cr("Filename already parsed");
-			return false;
-		}
+
 
 
 		bool status = false;
@@ -664,13 +706,8 @@ namespace zetscript{
 
 		if((buf_tmp=CIO_Utils::readFile(filename, n_bytes))!=NULL){
 
-			string file=CIO_Utils::getFileName(filename);
-			tInfoParsedSource ps;
-			ps.filename = file;
-			m_parsedSource->push_back(ps);
-			//ps.data = buf_tmp;
 
-			status = eval((char *)buf_tmp, true, file.c_str());
+			status = eval((char *)buf_tmp, execute, filename);
 
 			free(buf_tmp);
 		}
@@ -720,6 +757,14 @@ namespace zetscript{
 							}
 						}
 					}
+
+					if((*calling_obj) == NULL){
+						zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						return false;
+					}
+
+
+
 				}else{ // we have got the calling_obj from last iteration ...
 					is = (*calling_obj)->getVariableSymbol(symbol_to_find);
 
@@ -740,6 +785,7 @@ namespace zetscript{
 				}
 
 			}
+
 
 			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1]);
 			if(is!=NULL){
@@ -782,13 +828,7 @@ namespace zetscript{
 		return vm;
 	}
 
-	bool CZetScript::execute(){
 
-		if(!__init__) return NULL;
-
-		// the first code to execute is the main function that in fact is a special member function inside our main class
-		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject) != NULL;//->excute();
-	}
 	//-------------------------------------------------------------------------------------
 	CZetScript::~CZetScript(){
 		// unregister operators ...

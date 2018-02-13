@@ -26,6 +26,24 @@ namespace zetscript{
 		return script_function;
 	}
 
+	bool CScriptFunctionObject::checkCanRegister_C_Function(const char *f){
+
+		int size = vec_script_function_object_node->size();
+
+		if(size>=3){ //0 is main function (reserved). We check when >= 3 to check previous one (i.e from 1)
+			if((
+
+				((*vec_script_function_object_node)[size-1]->object_info.symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
+			){
+				zs_print_error_cr("function \"%s\" should register after C functions. Register after script functions is not allowed",f);
+				return false;
+			}
+
+		}
+
+		return true;
+	}
+
 
 	tInfoVariableSymbol * CScriptFunctionObject::newVariableSymbol(int idxFunction){
 

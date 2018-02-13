@@ -10,8 +10,8 @@
 #include "core/zs_core.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 1
-#define ZETSCRIPT_MINOR_VERSION 1
-#define ZETSCRIPT_PATCH_VERSION 4
+#define ZETSCRIPT_MINOR_VERSION 2
+#define ZETSCRIPT_PATCH_VERSION 0
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
@@ -51,7 +51,7 @@ namespace zetscript{
 
 		bool isFilenameAlreadyParsed(const char *filename);
 
-		bool parse_ast(const char *str, const char *filename=NULL);
+		bool parse_ast(const char *str, int idx_filename=-1);
 
 
 
@@ -111,10 +111,12 @@ namespace zetscript{
 
 
 
+		ZETSCRIPT_MODULE_EXPORT bool parse(const string & string,const char *filename_ref=NULL);
+		ZETSCRIPT_MODULE_EXPORT bool compile();
 		ZETSCRIPT_MODULE_EXPORT bool execute();
 
-		ZETSCRIPT_MODULE_EXPORT bool eval(const string & string, bool execute=true, const char *filename=NULL);
-		ZETSCRIPT_MODULE_EXPORT bool eval_file(const char * filename);
+		ZETSCRIPT_MODULE_EXPORT bool eval(const string & string, bool execute=true, const char *filename_ref=NULL);
+		ZETSCRIPT_MODULE_EXPORT bool eval_file(const char * filename,bool execute=true);
 
 
 		ZETSCRIPT_MODULE_EXPORT static void destroy();

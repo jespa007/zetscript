@@ -69,6 +69,9 @@ namespace zetscript{
 		// clear globals ...
 		CURRENT_VM->clearGlobals();
 
+		// clean before save ...
+		current_state->clearCompileInformation();
+
 		CState * state_to_restore = vec_saved_state->at(idx);
 
 		// TODO:maybe is better to re-run vm to optimize vec acceses
@@ -123,8 +126,9 @@ namespace zetscript{
 		// 1.4-Copy CScriptFunctionObject...
 		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
 			CScriptFunctionObject *sfo = new CScriptFunctionObject();
-
 			*sfo = *vec_script_function_object_src->at(i);
+			sfo->object_info.statment_op=NULL;
+			sfo->object_info.info_var_scope=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
 
@@ -165,6 +169,9 @@ namespace zetscript{
 			return -1;
 		}
 
+		// compile before save ...
+		current_state->clearCompileInformation();
+
 		CState * save_st = new CState();
 		vector<CASTNode *> 				* vec_ast_node_dst					= save_st->getVectorASTNodeNode();
 		vector<CScope *> 				* vec_scope_dst						= save_st->getVectorScopeNode();
@@ -204,6 +211,8 @@ namespace zetscript{
 		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
 			CScriptFunctionObject *sfo = new CScriptFunctionObject();
 			*sfo = *vec_script_function_object_src->at(i);
+			sfo->object_info.statment_op=NULL;
+			sfo->object_info.info_var_scope=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
 
@@ -314,19 +323,46 @@ namespace zetscript{
 
 	void  CState::clearCompileInformation() {
 
-		for (unsigned i = 0; i < vec_script_function_object_node->size(); i++) {
+		CScriptFunctionObject * main_function = vec_script_function_object_node->at(0);
 
-			CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
+		// clean main functions ... remove script functions and leave c functions...
+		for (unsigned f = 0;
+			f < main_function->object_info.local_symbols.vec_idx_registeredFunction.size()
+			;) {
+			// get function info
+			CScriptFunctionObject * local_function = GET_SCRIPT_FUNCTION_OBJECT(main_function->object_info.local_symbols.vec_idx_registeredFunction[f]);
 
-			if ((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) { // is a compiled script let it be ...
-#ifdef __ZETSCRIPT_VERBOSE_MESSAGE__
-				CScriptClass *sc = CScriptClass::getScriptClassByIdx(info_function->object_info.symbol_info.idxScriptClass);
-				if (sc) {
-					zs_print_debug_cr("Clear function %s::%s...", sc->metadata_info.object_info.symbol_info.symbol_name.c_str(), info_function->object_info.symbol_info.symbol_name.c_str());
-				}
-#endif
+			if ((local_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+				main_function->object_info.local_symbols.vec_idx_registeredFunction.erase(main_function->object_info.local_symbols.vec_idx_registeredFunction.begin() + f);
+			}
+			else {
+				f++;
+			}
 
-				//zs_print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
+		}
+
+		// remove c variables ...
+		for (unsigned v = 0;
+			v < main_function->object_info.local_symbols.m_registeredVariable.size(); ) {
+
+			if ((main_function->object_info.local_symbols.m_registeredVariable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+
+				main_function->object_info.local_symbols.m_registeredVariable.erase(main_function->object_info.local_symbols.m_registeredVariable.begin() + v);
+
+			}
+			else {
+				v++;
+			}
+		}
+
+		//int i = vec_script_function_object_node->size()-1;
+		bool end=false;
+		do{
+			CScriptFunctionObject * info_function = vec_script_function_object_node->at(vec_script_function_object_node->size()-1);
+			end=(info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF;
+
+			if(!end){
+
 				if (info_function->object_info.statment_op != NULL) {
 					for (PtrStatment stat = info_function->object_info.statment_op; *stat != NULL; stat++) {
 
@@ -347,49 +383,30 @@ namespace zetscript{
 					info_function->object_info.info_var_scope=NULL;
 				}
 
-				// unregister global variables & functions ...
-				if (i == 0) { // is the main function so don't touch (i.e preserve) C functions/vars ...
+				vec_script_function_object_node->pop_back();
+				delete info_function;
 
-					// remove script functions and leave c functions...
-					for (unsigned f = 0;
-						f < info_function->object_info.local_symbols.vec_idx_registeredFunction.size()
-						;) {
-						// get function info
-						CScriptFunctionObject * local_function = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[f]);
-
-						if ((local_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
-							info_function->object_info.local_symbols.vec_idx_registeredFunction.erase(info_function->object_info.local_symbols.vec_idx_registeredFunction.begin() + f);
-						}
-						else {
-							f++;
-						}
-
-					}
-
-					// remove c variables ...
-					for (unsigned v = 0;
-						v < info_function->object_info.local_symbols.m_registeredVariable.size(); ) {
-
-						if ((info_function->object_info.local_symbols.m_registeredVariable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
-
-							info_function->object_info.local_symbols.m_registeredVariable.erase(info_function->object_info.local_symbols.m_registeredVariable.begin() + v);
-
-						}
-						else {
-							v++;
-						}
-					}
-					//info_function->object_info.local_symbols.m_registeredVariable.clear();
-					//info_function->object_info.local_symbols.vec_idx_registeredFunction.clear();
-				}
-				else { // is not the main function so let's remove it and their local symbols ...
-					// not main function it's safe to unregister all symbols ...
-					info_function->object_info.local_symbols.m_registeredVariable.clear();
-					info_function->object_info.local_symbols.vec_idx_registeredFunction.clear();
-					//delete vec_script_function_object_node->at(i);
-				}
 			}
-		}
+
+		}while(!end);
+
+
+		// clean script classes ...
+
+		end=false;
+		do{
+			CScriptClass * sc = vec_script_class_node->at(vec_script_class_node->size()-1);
+			end=(sc->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF;
+
+			if(!end){
+
+				delete sc;
+				vec_script_class_node->pop_back();
+
+			}
+
+		}while(!end);
+
 	}
 
 	void CState::destroyASTNodes(){
@@ -441,8 +458,6 @@ namespace zetscript{
 		delete vec_info_parsed_source_node;
 		vec_info_parsed_source_node=NULL;
 	}
-
-
 
 	void CState::destroy(){
 		clearCompileInformation();

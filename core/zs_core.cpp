@@ -4,7 +4,6 @@
  */
 
 //#include "CSharedPointerManager.cpp"
-#include "var/zg_variable.cpp"
 #include "CScope.cpp"
 #include "CASTNode.cpp"
 #include "CNativeFunction.cpp"
@@ -16,4 +15,5 @@
 
 
 #include "CState.cpp"
+#include "var/zs_variable.cpp"
 

@@ -1291,6 +1291,10 @@ namespace zetscript{
 			// only parse no evaluate (don't save ast node)
 			end_expression = parseExpression_Recursive(aux, m_line, scope_info);//, ast_node_to_be_evaluated, type_group,parent);
 
+			if(end_expression == NULL){
+				return NULL;
+			}
+
 			if(*end_expression != ')'){
 				ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"Not closed parenthesis starting");
 				return NULL;
@@ -1449,7 +1453,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		print_ast_cr("new expression eval:\"%.30s ...\" group:%i at line %i",aux,type_group, m_line);
+		print_ast_cr("new expression eval:\"%.80s ...\" group:%i at line %i",aux,type_group, m_line);
 
 		// searching for operator!
 		if(*aux == '{'){ //json expression...
@@ -1618,7 +1622,7 @@ namespace zetscript{
 				// there's a Punctuator, so let's perform generate its AST
 					// reset prePunctuator...
 					pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
-					print_ast_cr("try to generate group1 expression: %.20s ...\n",s_effective_start);
+					print_ast_cr("try to generate group1 expression: %.40s ...\n",s_effective_start);
 					return parseExpression_Recursive(
 							s,
 							start_line, // start line because was reparsed before (i.e group -1)
@@ -2270,6 +2274,7 @@ namespace zetscript{
 					if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // check if particular case extension attribute class
 						idxScope = class_node->idxScope; // override scope info
 						symbol_value = (char *)class_member.c_str();
+						function_name = symbol_value;
 					}
 					else{
 						if(error){

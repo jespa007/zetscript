@@ -49,7 +49,7 @@ namespace zetscript{
 
 		tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates=true);
 		tSymbolInfo * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
-		int getidxScriptFunctionObjectWithMatchArgs(const string & varname, tStackElement * ptrArg, unsigned char n_args, bool match_signature=false);
+
 		string getMessageMatchingFunctions(const string & varname);
 		tSymbolInfo * getFunctionSymbol(const string & varname);
 		tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);

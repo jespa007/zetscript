@@ -535,7 +535,7 @@ namespace zetscript{
 	struct tFunctionInfo;
 	struct tInfoVarScopeBlock;
 
-	typedef intptr_t (*fntConversionType)(CScriptVariable *obj);
+	typedef intptr_t (*fntConversionType)(intptr_t);
 
 	typedef struct {
 		KEYWORD_TYPE id;

@@ -35,7 +35,7 @@ namespace zetscript{
 
 	// register metamethods str ...
 	 //--obj , type convert, ---
-	 map<string,map<string,fntConversionType>>  * CScriptClass::mapTypeConversion=NULL;
+	 map<int,map<int,fntConversionType>>  * CScriptClass::mapTypeConversion=NULL;
 
 
 
@@ -57,7 +57,7 @@ namespace zetscript{
 		return CScriptClass::getIdxClassFromIts_C_TypeInternal(c_type_str);
 	}
 
-	bool 	CScriptClass::idxClassInstanceofIdxClass(int idxSrcClass, int class_idx){
+	bool 	CScriptClass::isIdxClassInstanceOf(int idxSrcClass, int class_idx){
 
 
 		if(idxSrcClass == class_idx){
@@ -66,8 +66,8 @@ namespace zetscript{
 
 		CScriptClass * theClass = vec_script_class_node->at(idxSrcClass);
 
-		for(unsigned i=0; i <theClass->baseClass.size(); i++){
-			if(idxClassInstanceofIdxClass(theClass->baseClass[i]->idxClass,class_idx)){
+		for(unsigned i=0; i < theClass->idxBaseClass.size(); i++){
+			if(isIdxClassInstanceOf(theClass->idxBaseClass[i],class_idx)){
 				return true;
 			}
 		}
@@ -172,7 +172,7 @@ namespace zetscript{
 			sci->classPtrType = TYPE_SCRIPT_VARIABLE;
 
 			if(base_class != NULL){
-				sci->baseClass.push_back(base_class);
+				sci->idxBaseClass.push_back(base_class->idxClass);
 			}
 
 			sci->metadata_info.object_info.symbol_info.symbol_name = class_name;
@@ -216,6 +216,8 @@ namespace zetscript{
 		case	SHL_METAMETHOD:		return  "_shl"; // binary shift left
 		case	SHR_METAMETHOD:		return  "_shr"; // binary shift right
 		case	SET_METAMETHOD:		return  "_set"; // set
+		default:
+			return "none";
 		}
 
 		return "none";
@@ -226,7 +228,7 @@ namespace zetscript{
 		return vec_script_class_node;
 	}
 
-	map<string, map<string, fntConversionType>>  *	 CScriptClass::getMapTypeConversion() {
+	map<int, map<int, fntConversionType>>  *	 CScriptClass::getMapTypeConversion() {
 		return mapTypeConversion;
 	}
 
@@ -256,7 +258,7 @@ namespace zetscript{
 	CScriptClass *CScriptClass::getScriptClassBy_C_ClassPtr(const string & class_type, bool print_msg){
 
 		for(unsigned i = 0; i < vec_script_class_node->size(); i++){
-			if(class_type == vec_script_class_node->at(i)->metadata_info.object_info.symbol_info.c_type){
+			if(class_type == vec_script_class_node->at(i)->classPtrType){//metadata_info.object_info.symbol_info.c_type){
 				return vec_script_class_node->at(i);
 			}
 		}
@@ -297,28 +299,6 @@ namespace zetscript{
 		 return ((metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != 0);
 	}
 	//------------------------------------------------------------
-	fntConversionType CScriptClass::getConversionType(string objectType, string conversionType, bool show_errors){
-
-		if(mapTypeConversion->count(objectType) == 0){
-			if(show_errors){
-				zs_print_error_cr("There's no type conversion \"%s\". Add conversion types through \"addPrimitiveTypeConversion\" function",demangle(objectType).c_str());
-			}
-			return NULL;
-		}
-
-		if(mapTypeConversion->at(objectType).count(conversionType) == 0){
-			if(show_errors){
-				zs_print_error("There's no CONVERSION from type \"%s\" to type \"%s\"",demangle(objectType).c_str(),demangle(conversionType).c_str());
-				printf("\n\tAvailable types are:\n");
-				for(map<string, fntConversionType>::iterator j =mapTypeConversion->at(objectType).begin() ; j != mapTypeConversion->at(objectType).end();j++){
-					printf("\t\t* \"%s\"\n", demangle(j->first).c_str());
-				}
-			}
-			return NULL;
-		}
-		return mapTypeConversion->at(objectType)[conversionType];
-	 }
-
 	 void  print(const char *s){
 
 		printf("%s\n",s);
@@ -343,7 +323,7 @@ namespace zetscript{
 				return false;
 			}
 
-			mapTypeConversion = new map<string, map<string, fntConversionType>>();
+			mapTypeConversion = new map<int, map<int, fntConversionType>>();
 
 			VOID_TYPE_STR = new string(typeid(void).name());
 			INT_PTR_TYPE_STR = new string(typeid(int *).name());
@@ -433,14 +413,14 @@ namespace zetscript{
 
 			//-----------------------
 			// Conversion from object types to primitive types (move into factory) ...
-			if(!addPrimitiveTypeConversion<CStringScriptVariable *,string *>( [] (CScriptVariable *obj){
+			/*if(!addPrimitiveTypeConversion<CStringScriptVariable *,string *>( [] (CScriptVariable *obj){
 				return (intptr_t)(((CStringScriptVariable *)obj)->m_value);
-			})) return false;
+			})) return false;*/
 			//----------------------------------------------------------------------
 			// From here you defined all basic, start define hierarchy
 
 			// register custom functions ...
-			if(!register_C_FunctionMember("toString",&CScriptVariable::toString)) return false;
+			if(!register_C_FunctionMember<CScriptVariable>("toString",&CScriptVariable::toString)) return false;
 
 			if(!class_C_baseof<CVectorScriptVariable,CScriptVariable>()) return false;
 			if(!class_C_baseof<CFunctorScriptVariable,CScriptVariable>()) return false;
@@ -454,12 +434,12 @@ namespace zetscript{
 			if(!register_C_Function("error",internal_print_error)) return false;
 
 
-			if(!register_C_FunctionMember("size",&CVectorScriptVariable::size)) return false;
-			if(!register_C_FunctionMember("add",&CVectorScriptVariable::add)) return false;
-			if(!register_C_FunctionMember("pop",&CVectorScriptVariable::pop)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("size",&CVectorScriptVariable::size)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("add",&CVectorScriptVariable::add)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop)) return false;
 
 
-			if(!register_C_FunctionMember("size",&CStructScriptVariable::size)) return false;
+			if(!register_C_FunctionMember<CStructScriptVariable>("size",&CStructScriptVariable::size)) return false;
 			return true;
 	 }
 
@@ -1259,8 +1239,8 @@ namespace zetscript{
 		}
 
 		CScriptClass *base = NULL;
-		if(irc->baseClass.size() > 0){
-			base = irc->baseClass[0];
+		if(irc->idxBaseClass.size() > 0){
+			base = CScriptClass::getScriptClassByIdx(irc->idxBaseClass[0]);
 		}
 
 		return getSuperClass(base,fun_name);
@@ -1368,6 +1348,30 @@ namespace zetscript{
 
 	CScriptClass *  CScriptClass::getRegisteredClassString(){
 		return (*vec_script_class_node)[IDX_CLASS_STRING];
+	}
+
+	intptr_t CScriptClass::doCast(intptr_t obj, int idx_src_class, int idx_convert_class){//c_class->idxClass,idx_return_type){
+		//intptr_t cast_obj;
+
+	//	map<int, map<int, fntConversionType>>  *	local_map_type_conversion=	getMapTypeConversion();
+		CScriptClass *src_class = CScriptClass::getScriptClassByIdx(idx_src_class);
+		CScriptClass *convert_class = CScriptClass::getScriptClassByIdx(idx_convert_class);
+
+		//local_map_type_conversion
+
+		if(mapTypeConversion->count(idx_src_class) == 0){
+			zs_print_error_cr("There's no type src conversion class \"%s\".",demangle(src_class->classPtrType).c_str());
+			return 0;
+		}
+
+		if((*mapTypeConversion)[idx_src_class].count(idx_convert_class) == 0){
+			zs_print_error_cr("There's no dest conversion class \"%s\".",demangle(convert_class->classPtrType).c_str());
+			return 0;
+		}
+
+		return (*mapTypeConversion)[idx_src_class][idx_convert_class](obj);
+
+
 	}
 
 	CScriptClass *  CScriptClass::getRegisteredClassVector(){

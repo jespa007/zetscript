@@ -42,6 +42,9 @@ namespace zetscript{
 			(((const char *)(ptr_result_instruction->stkValue)))
 
 
+	#define IS_NUMBER_OR_INT(properties)\
+		(properties & (STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_TYPE_INTEGER))
+
 	// Check types
 	#define IS_NUMBER(properties) \
 	(properties & STK_PROPERTY_TYPE_NUMBER)
@@ -275,7 +278,7 @@ namespace zetscript{
 				(*((float *)(ref)))__OPERATOR__;\
 				break;\
 		default:\
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode)," Cannot perform pre/post operator (%s)",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrOp).c_str());\
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode)," Cannot perform pre/post operator (%s)",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrOp));\
 			return NULL;\
 			break;\
 		}\
@@ -293,23 +296,26 @@ namespace zetscript{
 			src_ref=(void **)((src_ins)->varRef);\
 		}\
 		if(dst_ins->properties & STK_PROPERTY_IS_C_VAR){\
-			if(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) != GET_INS_PROPERTY_VAR_TYPE(dst_ins->properties)\
-			){\
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Primitive type not equal! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals");\
-				return NULL;\
-			}else{\
-				if(\
-					(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) == STK_PROPERTY_TYPE_SCRIPTVAR)\
+			if(!IS_NUMBER_OR_INT(src_ins->properties) && IS_NUMBER_OR_INT(dst_ins->properties)){\
+				if(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) != GET_INS_PROPERTY_VAR_TYPE(dst_ins->properties)\
 				){\
-						zs_print_info_cr("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.");\
-						return NULL;\
+					PASTNode ast=AST_NODE(instruction->idxAstNode);\
+					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",ast->symbol_value.c_str());\
+					return NULL;\
+				}else{\
+					if(\
+						(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) == STK_PROPERTY_TYPE_SCRIPTVAR)\
+					){\
+							zs_print_info_cr("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.");\
+							return NULL;\
+					}\
 				}\
 			}\
 			dst_ref=(void **)((dst_ins)->varRef);\
 			copy_aux=&((dst_ins)->stkValue);\
 		}\
 		unsigned short type_var=src_ins->properties;\
-		unsigned short runtime_var=GET_INS_PROPERTY_RUNTIME(type_var);\
+		unsigned short runtime_var=0; /* there's no reason to heredate runtime_props ?!? GET_INS_PROPERTY_RUNTIME(type_var);*/\
 		if(type_var & STK_PROPERTY_TYPE_UNDEFINED){\
 			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_UNDEFINED;\
 		}else if(type_var & STK_PROPERTY_TYPE_NULL){\
@@ -524,7 +530,7 @@ namespace zetscript{
 								else{\
 									CScriptClass *c_class=NULL;\
 									if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */ \
-										all_check=arg_idx_type==c_class->idxClass;\
+										all_check=CScriptClass::isIdxClassInstanceOf(c_class->idxClass,arg_idx_type); \
 									}else{ /* check string ... */ \
 										if(var_type & STK_PROPERTY_TYPE_STRING){ \
 											all_check=arg_idx_type==IDX_CLASS_STRING_PTR_C; \
@@ -642,7 +648,7 @@ if(aux_function_info == NULL){\
 			if(metamethod_str != NULL){\
 				PRINT_DUAL_ERROR_OP(metamethod_str);\
 			}else{\
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\" function.\n\n",\
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\".\n\n",\
 					is_constructor ? "constructor":"function",\
 					calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",\
 					AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),\
@@ -773,12 +779,12 @@ if(aux_function_info == NULL){\
 
 
 
-	string CVirtualMachine::STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement *ptr_info_ale){
-		string result="undefined";
+	const char * CVirtualMachine::STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement *ptr_info_ale){
+		const char * result="undefined";
 		if(IS_INT(ptr_info_ale->properties))
 			result= "int";
 		else if(IS_NUMBER(ptr_info_ale->properties))
-			result= "number";
+			result= "float";
 		else if(IS_BOOLEAN(ptr_info_ale->properties))
 			result= "bool";
 		else if(IS_STRING(ptr_info_ale->properties))
@@ -791,7 +797,7 @@ if(aux_function_info == NULL){\
 			if(ptr_info_ale->properties & STK_PROPERTY_IS_STACKVAR){
 				var=(tStackElement *)var->varRef;
 			}
-			result=((CScriptVariable *)var->varRef)->getClassName();
+			result=((CScriptVariable *)var->varRef)->getClassName().c_str();
 		}
 
 		return result;
@@ -1016,7 +1022,7 @@ if(aux_function_info == NULL){\
 		tStackElement *currentArg;
 		//float aux_float=0;
 
-		if(n_args>=MAX_N_ARGS){
+		if(n_args>MAX_N_ARGS){
 			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
 			return NULL;
 		}
@@ -1024,22 +1030,25 @@ if(aux_function_info == NULL){\
 
 		if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) {
 			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function is not registered as C");
-			return &callc_result;//CScriptVariable::UndefinedSymbol;
+			return NULL;
 		}
 
 		if(fun_ptr==0){
 			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Null function");
-			return &callc_result;//CScriptVariable::UndefinedSymbol;
+			//return &callc_result;//CScriptVariable::UndefinedSymbol;
+			return NULL;
 		}
 
 		if((char)irfs->m_arg.size() != n_args){
 			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"C argument VS scrip argument doestn't match sizes");
-			return &callc_result;//CScriptVariable::UndefinedSymbol;
+			//return &callc_result;//CScriptVariable::UndefinedSymbol;
+			return NULL;
 		}
 
-		if(irfs->m_arg.size() >= MAX_N_ARGS){
+		if(irfs->m_arg.size() > MAX_N_ARGS){
 			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_N_ARGS);
-			return &callc_result;//CScriptVariable::UndefinedSymbol;
+			return NULL;
+			//return &callc_result;//CScriptVariable::UndefinedSymbol;
 		}
 
 		// convert parameters script to c...
@@ -1047,12 +1056,14 @@ if(aux_function_info == NULL){\
 
 			currentArg=&ptrArg[i];
 
-			if(!stk2var(currentArg,irfs->m_arg[i].idx_type,(void **)&converted_param[i],error)){
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: %s",
+			if(!stk2var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error)){
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
 																irfs->object_info.symbol_info.symbol_name.c_str(),
 																i,
-																error.c_str()
+																error.c_str(),
+																irfs->object_info.symbol_info.symbol_name.c_str()
 																);
+				return NULL;
 			}
 		}
 
@@ -1645,7 +1656,7 @@ if(aux_function_info == NULL){\
 										return NULL;
 									}
 								}
-								else{
+								else{ // this scope ...
 									if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
 										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"cannot find symbol this.%s",ast->symbol_value.c_str());
 										return NULL;
@@ -1815,8 +1826,9 @@ if(aux_function_info == NULL){\
 								vec_functions=&sc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
 							}
 							else{
+								CASTNode *ast_previous=AST_NODE((instruction-1)->idxAstNode);
 								CASTNode *ast=AST_NODE((int)instruction->idxAstNode);
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"error accessing function \"%s\". Expected scriptvar.",ast->symbol_value.c_str());
+								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"Cannot access symbol \"%s\" (type of %s is %s)",ast->symbol_value.c_str(),ast_previous->symbol_value.c_str(),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
 								return NULL;
 							}
 						}else if(scope_type ==INS_PROPERTY_THIS_SCOPE){
@@ -2288,7 +2300,7 @@ if(aux_function_info == NULL){\
 							break;
 						default:
 							if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-								bool b = CScriptClass::idxClassInstanceofIdxClass(((CScriptVariable *)(ptrResultInstructionOp1->varRef))->idxScriptClass, (intptr_t)ptrResultInstructionOp2->stkValue);
+								bool b = CScriptClass::isIdxClassInstanceOf(((CScriptVariable *)(ptrResultInstructionOp1->varRef))->idxScriptClass, (intptr_t)ptrResultInstructionOp2->stkValue);
 								PUSH_BOOLEAN(b);
 							}else{
 								PUSH_BOOLEAN(false);

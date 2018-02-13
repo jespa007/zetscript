@@ -121,8 +121,6 @@ else()
 	
 	endif()
 
-	#set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
-	
 	SET(CMAKE_C_FLAGS " ")
 	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
 	
@@ -150,16 +148,10 @@ endif()
 
 
 
-
-
-
-
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 #
 # SOURCE UTILS
 #
-
-
 
 # Library
 
@@ -196,7 +188,7 @@ SET(
 	core/var/CVectorScriptVariable.h
 	core/var/CFunctorScriptVariable.h
 	core/var/CStructScriptVariable.h
-	core/var/zg_variable.h
+	core/var/zs_variable.h
 	core/var/CScriptVariable.h
 	core/CCompiler.h
 	helpers/RegisterFunctionHelper.h

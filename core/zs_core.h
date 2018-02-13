@@ -10,7 +10,7 @@
 #include "utils/zs_utils.h"
 
 //#include "CSharedPointerManager.h"
-#include "var/zg_variable.h"
+#include "var/zs_variable.h"
 #include "CASTNode.h"
 #include "CScope.h"
 #include "CCompiler.h"
@@ -19,6 +19,7 @@
 #include "CScriptFunctionObject.h"
 #include "extra/zs_extra.h"
 #include "CScriptClass.h"
+
 
 
 

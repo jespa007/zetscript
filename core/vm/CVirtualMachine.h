@@ -160,7 +160,7 @@ namespace zetscript{
 		 * Reserve for N vars. Return base pointer.
 		 */
 
-		string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
+		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
 		void 				stackDumped();
 
 	};

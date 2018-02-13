@@ -1668,9 +1668,9 @@ namespace zetscript{
 			return true;
 		}
 
-		if(current_class->baseClass.size() !=0){
-			for(int i = 0; i < (int)current_class->baseClass.size() ; i++){
-				if(!CCompiler::doRegisterVariableSymbolsClass(class_name,current_class->baseClass.at(i))){
+		if(current_class->idxBaseClass.size() > 0){
+			for(int i = 0; i < (int)current_class->idxBaseClass.size() ; i++){
+				if(!CCompiler::doRegisterVariableSymbolsClass(class_name,CScriptClass::getScriptClassByIdx(current_class->idxBaseClass.at(i)))){
 					return false;
 				}
 			}
