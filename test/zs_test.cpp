@@ -526,13 +526,6 @@ int main(int argc, char * argv[]) {
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return false;
 	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set))) return false;
 	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set))) return false;
-	if(!register_C_FunctionMember<CInteger>("dummy",&CInteger::dummy)) return false;
-
-	if(!register_C_Function("newInteger",&newInteger)) return false;
-
-
-
-
 
 
 	// unsinged
