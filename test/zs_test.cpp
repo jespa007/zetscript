@@ -169,6 +169,10 @@ public:
 		return new CInteger(n1->n >> n2);
 	}
 
+	int toInt(){
+		return n;
+	}
+
 	~CInteger(){
 	}
 
@@ -237,6 +241,25 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		exit(-1); \
 	} \
 }
+
+#define TEST_ARITHMETIC_CINTEGER_OP(val1, op, val2) \
+		{ \
+			int aux_value=0; \
+			string str= "("\
+						"(new CInteger(" \
+					    STR(val1) \
+						"))" \
+						STR(op) \
+						"(new CInteger(" \
+						STR(val2) \
+						"))"\
+					 	").toInt();";\
+			if((aux_value=CZetScript::eval_int(str)) != (val1 op val2)){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
+				fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
+				exit(-1); \
+			} \
+		}
 
 #define TEST_ARITHMETIC_FLOAT_OP(val1, op, val2) \
 { \
@@ -307,6 +330,32 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		TEST_ARITHMETIC_INT_OP(val1,%,-val2); \
 		TEST_ARITHMETIC_INT_OP(-val1,%,val2); \
 		TEST_ARITHMETIC_INT_OP(-val1,%,-val2);
+
+#define COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(val1,val2) \
+		TEST_ARITHMETIC_CINTEGER_OP(val1,+,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,+,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,+,-val2); \
+		\
+		TEST_ARITHMETIC_CINTEGER_OP(val1,-,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(val1,-,-val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,-,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,-,-val2); \
+		\
+		TEST_ARITHMETIC_CINTEGER_OP(val1,*,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(val1,*,-val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,*,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,*,-val2); \
+		\
+		TEST_ARITHMETIC_CINTEGER_OP(val1,/,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(val1,/,-val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,/,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,/,-val2); \
+		\
+		TEST_ARITHMETIC_CINTEGER_OP(val1,%,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(val1,%,-val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,%,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(-val1,%,-val2);
 
 #define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(val1,val2) \
 		TEST_ARITHMETIC_FLOAT_OP(val1,+,val2); \
@@ -506,6 +555,10 @@ int main(int argc, char * argv[]) {
 	// TEST INT OPS
 	//
 
+
+
+
+
 	//CZetScript::getInstance()->eval("if(undefined){print(\"true\");}else{print(\"\");} }var prova=[]; prova.add(0); prova.size();");
 
 	//TEST_NUMBER_EXPR("4.0*4;",16.0);
@@ -519,49 +572,66 @@ int main(int argc, char * argv[]) {
 
 	if(!register_C_Class<CInteger>("CInteger")) return false;
 	if(!register_C_FunctionMember<CInteger>("CInteger",&CInteger::ScriptConstructor)) return false;
+	if(!register_C_FunctionMember<CInteger>("toInt",&CInteger::toInt)) return false;
 	if(!register_C_VariableMember<CInteger>("n",&CInteger::n)) return false;
 
 
+	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return false;
 	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set))) return false;
 	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set))) return false;
 
+	//CState::saveState();
 
-	// unsinged
+	// int
+	printf("%i. testing metamethod ints...\n",++n_test);
+	//TEST_INT_EXPR("var c_integer=new CInteger(1);c_integer.toInt();",1);
+	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(5,4); // op1 > op2
+	return 0;
+
+	// int
 	printf("%i. testing arithmetic ints...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_INT_OP(4,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(4,5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(5,4); // op1 > op2
 
 
+	// hexadecimal...
 	printf("%i. testing arithmetic hexa (int)...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_INT_OP(0x4,0x4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(0x4,0x5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(0x5,0x4); // op1 > op2
 
+	// float...
 	printf("%i. testing arithmetic float ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4.0); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,4.0); // op1 > op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,2.0e2); // op1 > op2
 
+	// float vs int...
 	printf("%i. testing arithmetic float vs int ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,4); // op1 > op2
 
+	// int vs float...
 	printf("%i. testing arithmetic int vs float ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,4.0); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5,4.0); // op1 > op2
 
+	// binary ops...
 	printf("%i. testing binary op ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x4,0x4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x4,0x5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x5,0x4); // op1 > op2
 
 
+	// strings...
 	printf("%i. testing string...\n",++n_test);
 	TEST_ARITHMETIC_STRING_OP("test_",+,"100"); // concatenate int
 	TEST_ARITHMETIC_STRING_OP("test_",+,"-100"); // concatenate -int
@@ -588,9 +658,14 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_LOGIC_OP(10,15);
 
 	// some basics tests
-	TEST_ARITHMETIC_BOOL_EXPR(!false && !(false || false));
+	TEST_ARITHMETIC_BOOL_EXPR((!false && !(false)) || false);
 	TEST_ARITHMETIC_BOOL_EXPR(!(true && !false) || false);
 	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
+	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
+	TEST_ARITHMETIC_BOOL_EXPR(!false && !(false || false));
+	TEST_ARITHMETIC_BOOL_EXPR(!true && !(false || false));
+	TEST_ARITHMETIC_BOOL_EXPR(true && !(false || !false));
+	TEST_ARITHMETIC_BOOL_EXPR(true && !(false || !false));
 
 	// test declare var int/bool/string/number
 	printf("%i. testing primitive var\n",++n_test);

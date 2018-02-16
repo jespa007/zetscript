@@ -601,6 +601,11 @@ namespace zetscript{
 		m_mainObject = NULL;
 	}
 
+	ZETSCRIPT_MODULE_EXPORT void CZetScript::clean(){
+		// celan action is in fact a restore of last state...
+		CState::restoreLastState();
+	}
+
 	ZETSCRIPT_MODULE_EXPORT bool CZetScript::parse(const string & str_script,const char *filename_ref){
 		if(!__init__) return false;
 
@@ -673,6 +678,7 @@ namespace zetscript{
 
 	bool CZetScript::eval(const string & s, bool exec_vm, const char *filename_ref)  {
 
+
 		if(parse(s,filename_ref)){
 			if(compile()){
 				if(exec_vm){
@@ -685,9 +691,6 @@ namespace zetscript{
 				}
 			}
 		}
-
-		// restore to last state...
-		CState::restoreLastState();
 
 		return false;
 	}
