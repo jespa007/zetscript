@@ -27,12 +27,12 @@
 #include <float.h>
 #include <cstdarg>
 #include <stdexcept>
+#include <stdint.h>
 
 #include <typeinfo>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <string>
 #include <string>
 #include <map>
 

@@ -601,6 +601,7 @@ namespace zetscript{
 		m_mainObject = NULL;
 	}
 
+
 	ZETSCRIPT_MODULE_EXPORT bool CZetScript::parse(const string & str_script,const char *filename_ref){
 		if(!__init__) return false;
 
@@ -685,10 +686,6 @@ namespace zetscript{
 				}
 			}
 		}
-
-		// restore to last state...
-		CState::restoreLastState();
-
 		return false;
 	}
 

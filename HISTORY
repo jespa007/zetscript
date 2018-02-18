@@ -32,6 +32,9 @@ Date: 13-02-2018
 -Fixed. Seg. fault on restore/save states.
 -Renamed zg_variable.x to zs_variable.
 
+-Due float it cannot be the same size as the any param of c functions, float type is disable since 1.2. Instead do float *.
+-Implement validation for C metamethods.
+
 
 
 //----------------------------------------------------------
