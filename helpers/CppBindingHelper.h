@@ -846,7 +846,7 @@ namespace zetscript{
 	template<typename _T>
 	vector<_T> vscript2vector(CVectorScriptVariable *v_in){
 		vector<_T> v_out;
-		string dst_convert_type = typeid(_T).name();
+		const char * dst_convert_type = typeid(_T).name();
 		float aux_flt;
 
 		if(v_in){
@@ -860,10 +860,10 @@ namespace zetscript{
 					case STK_PROPERTY_TYPE_UNDEFINED:
 					case STK_PROPERTY_TYPE_NULL:
 					case STK_PROPERTY_TYPE_NUMBER:
-						if((dst_convert_type == *CScriptClass::FLOAT_TYPE_STR)){
+						if(STRCMP(dst_convert_type, ==,typeid(float).name())){
 							memcpy(&aux_flt, &sv.stkValue, sizeof(float));
 							v_out.push_back(aux_flt);
-						}else if((dst_convert_type == *CScriptClass::INT_TYPE_STR)){
+						}else if(STRCMP(dst_convert_type, ==,typeid(int).name())){
 							v_out.push_back((intptr_t)sv.stkValue);
 						}else{
 							zs_print_error_cr("Error trying to cast element on vector<float>");
@@ -877,7 +877,7 @@ namespace zetscript{
 						return v_out;
 						break;
 					case STK_PROPERTY_TYPE_INTEGER:
-						if(dst_convert_type == *CScriptClass::INT_TYPE_STR || dst_convert_type == *CScriptClass::FLOAT_TYPE_STR){// typeid(int).name()) || ){
+						if(STRCMP(dst_convert_type, ==,typeid(int).name()) || STRCMP(dst_convert_type, ==,typeid(float).name())){// typeid(int).name()) || ){
 							v_out.push_back((intptr_t)sv.stkValue);
 						}else{
 							zs_print_error_cr("Error trying to cast element on vector<int>");

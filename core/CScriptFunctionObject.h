@@ -56,7 +56,7 @@ namespace zetscript{
 		static vector<CScriptFunctionObject *> 	*	getVectorScriptFunctionObjectNode();
 
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject 			*	newScriptFunctionObject();
-		static bool									checkCanRegister_C_Function(const char *f);
+		ZETSCRIPT_MODULE_EXPORT static bool									checkCanRegister_C_Function(const char *f);
 		static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
 		static tFunctionInfo					* 	getFunctionInfo(int idx);
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);

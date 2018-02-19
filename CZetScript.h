@@ -110,7 +110,6 @@ namespace zetscript{
 		ZETSCRIPT_MODULE_EXPORT CScriptVariable *getMainObject(){return m_mainObject;}
 
 
-		ZETSCRIPT_MODULE_EXPORT void clean();
 		ZETSCRIPT_MODULE_EXPORT bool parse(const string & string,const char *filename_ref=NULL);
 		ZETSCRIPT_MODULE_EXPORT bool compile();
 		ZETSCRIPT_MODULE_EXPORT bool execute();
