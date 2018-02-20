@@ -18,12 +18,13 @@ public:
 		n=_n;
 	}
 
-	void set(float _n){
-		n=_n;
+
+	void _set(CNumber * _n){
+		n=_n->n;
 	}
 
-	void set(int _n){
-		n=(float)_n;
+	void _set(float *_n){
+		n=*_n;
 	}
 
 	static CNumber * _add(CNumber *n1, CNumber *n2){
@@ -34,9 +35,14 @@ public:
 		return new CNumber(n1->n + *n2);
 	}
 
-	static CNumber * _add(CNumber *n1, int n2){
-		return new CNumber(n1->n + n2);
+	static CNumber * _add(float *n1, CNumber *n2){
+		return new CNumber(*n1 + n2->n);
 	}
+
+	static CNumber * _neg(CNumber *n1){
+		return new CNumber(-n1->n);
+	}
+
 
 	static CNumber * _div(CNumber *n1, CNumber *n2){
 		return new CNumber(n1->n / n2->n);
@@ -46,8 +52,8 @@ public:
 		return new CNumber(n1->n / *n2);
 	}
 
-	static CNumber * _div(CNumber *n1, int n2){
-		return new CNumber(n1->n / n2);
+	static CNumber * _div(float *n1, CNumber *n2){
+		return new CNumber(*n1 / n2->n);
 	}
 
 	static CNumber * _mod(CNumber *n1, CNumber *n2){
@@ -58,8 +64,8 @@ public:
 		return new CNumber(fmod(n1->n, *n2));
 	}
 
-	static CNumber * _mod(CNumber *n1, int n2){
-		return new CNumber((float)fmod(n1->n , n2));
+	static CNumber * _mod(float *n1, CNumber *n2){
+		return new CNumber(fmod(*n1 ,n2->n));
 	}
 
 	static CNumber * _mul(CNumber *n1, CNumber *n2){
@@ -70,8 +76,12 @@ public:
 		return new CNumber(n1->n * *n2);
 	}
 
-	static CNumber * _mul(CNumber *n1, int n2){
-		return new CNumber(n1->n * n2);
+	static CNumber * _mul(float *n1, CNumber *n2){
+		return new CNumber(*n1 * n2->n);
+	}
+
+	float toFloat(){
+		return n;
 	}
 
 };
@@ -121,36 +131,43 @@ public:
 		return new CInteger(n1->n / n2->n);
 	}
 
-	static CInteger * _div(CInteger *n1, float *n2){
-		return new CInteger(n1->n / *n2);
-	}
-
 	static CInteger * _div(CInteger *n1, int n2){
 		return new CInteger(n1->n / n2);
 	}
+
+	static CInteger * _div(int n1, CInteger *n2){
+		return new CInteger(n1 / n2->n);
+	}
+
+
+
+	static CInteger * _neg(CInteger *n1){
+		return new CInteger(-n1->n);
+	}
+
 
 	static CInteger * _mod(CInteger *n1, CInteger *n2){
 		return new CInteger(n1->n % n2->n);
 	}
 
-	static CInteger * _mod(CInteger *n1, float *n2){
-		return new CInteger(fmod(n1->n, *n2));
+	static CInteger * _mod(CInteger *n1, int n2){
+		return new CInteger(fmod(n1->n, n2));
 	}
 
-	static CInteger * _mod(CInteger *n1, int n2){
-		return new CInteger(n1->n % n2);
+	static CInteger * _mod(int n1, CInteger *n2){
+		return new CInteger(n1 % n2->n);
 	}
 
 	static CInteger * _mul(CInteger *n1, CInteger *n2){
 		return new CInteger(n1->n * n2->n);
 	}
 
-	static CInteger * _mul(CInteger *n1, float *n2){
-		return new CInteger(n1->n * *n2);
-	}
-
 	static CInteger * _mul(CInteger *n1, int n2){
 		return new CInteger(n1->n * n2);
+	}
+
+	static CInteger * _mul(int n1, CInteger * n2){
+		return new CInteger(n1 * n2->n);
 	}
 
 	static CInteger * _shl(CInteger *n1, CInteger *n2){
@@ -161,6 +178,48 @@ public:
 		return new CInteger(n1->n << n2);
 	}
 
+	static CInteger * _shl(int n1, CInteger *n2){
+		return new CInteger(n1 << n2->n);
+	}
+
+	static CInteger * _and(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n & n2->n);
+	}
+
+	static CInteger * _and(CInteger *n1, int n2){
+		return new CInteger(n1->n & n2);
+	}
+
+	static CInteger * _and(int n1, CInteger * n2){
+		return new CInteger(n1 & n2->n);
+	}
+
+	static CInteger * _or(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n | n2->n);
+	}
+
+	static CInteger * _or(CInteger *n1, int n2){
+		return new CInteger(n1->n | n2);
+	}
+
+	static CInteger * _or(int n1, CInteger * n2){
+		return new CInteger(n1 | n2->n);
+	}
+
+
+	static CInteger * _xor(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n ^ n2->n);
+	}
+
+	static CInteger * _xor(CInteger *n1, int n2){
+		return new CInteger(n1->n ^ n2);
+	}
+
+	static CInteger * _xor(int n1, CInteger * n2){
+		return new CInteger(n1 ^ n2->n);
+	}
+
+
 	static CInteger * _shr(CInteger *n1, CInteger *n2){
 		return new CInteger(n1->n >> n2->n);
 	}
@@ -168,6 +227,11 @@ public:
 	static CInteger * _shr(CInteger *n1, int n2){
 		return new CInteger(n1->n >> n2);
 	}
+
+	static CInteger * _shr(int n1, CInteger *n2){
+		return new CInteger(n1 >> n2->n);
+	}
+
 
 	int toInt(){
 		return n;
@@ -243,23 +307,23 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 }
 
 #define TEST_ARITHMETIC_CINTEGER_OP(val1, op, val2) \
-		{ \
-			int aux_value=0; \
-			string str= "("\
-						"(new CInteger(" \
-					    STR(val1) \
-						"))" \
-						STR(op) \
-						"(new CInteger(" \
-						STR(val2) \
-						"))"\
-					 	").toInt();";\
-			if((aux_value=CZetScript::eval_int(str)) != (val1 op val2)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
-				fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
-				exit(-1); \
-			} \
-		}
+{ \
+	int aux_value=0; \
+	string str= "("\
+				"(new CInteger("\
+				STR(val1) \
+				"))"\
+				STR(op) \
+				"(new CInteger("\
+				STR(val2) \
+				"))"\
+				").toInt();"; \
+	if((aux_value=CZetScript::eval_int(str)) != (val1 op val2)){ \
+		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
+		exit(-1); \
+	} \
+}
 
 #define TEST_ARITHMETIC_FLOAT_OP(val1, op, val2) \
 { \
@@ -276,6 +340,60 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 	} \
 }
 
+
+#define TEST_ARITHMETIC_FLOAT_MOD(val1, val2) \
+{ \
+	float aux_value=0; \
+	string str= STR(val1) \
+				"%" \
+				STR(val2) \
+				";"; \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str)  , fmod(val1,val2))){ \
+		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
+		exit(-1); \
+	} \
+}
+
+
+#define TEST_ARITHMETIC_CNUMBER_OP(val1, op, val2) \
+{ \
+	float expr=((float)(val1) op (float)(val2));\
+	float aux_value=0; \
+	string str= "("\
+				"(new CNumber("\
+				STR(val1) \
+				"))"\
+				STR(op) \
+				"(new CNumber("\
+				STR(val2) \
+				"))"\
+				").toFloat();"; \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str),expr)){ \
+		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
+		exit(-1); \
+	} \
+}
+
+#define TEST_ARITHMETIC_CNUMBER_MOD(val1, val2) \
+{ \
+	float aux_value=0; \
+	string str= "("\
+				"(new CNumber("\
+				STR(val1) \
+				"))"\
+				"%" \
+				"(new CNumber("\
+				STR(val2) \
+				"))"\
+				").toFloat();"; \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str)  , fmod(val1,val2))){ \
+		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
+		exit(-1); \
+	} \
+}
+
+
 #define TEST_ARITHMETIC_STRING_OP(val1,op, val2) \
 { \
 	string aux_value=""; \
@@ -291,18 +409,6 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 	} \
 }
 
-#define TEST_ARITHMETIC_FLOAT_MOD(val1, val2) \
-{ \
-	float aux_value=0; \
-	string str= STR(val1) \
-				"%" \
-				STR(val2) \
-				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str)  , fmod(val1,val2))){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
-		exit(-1); \
-	} \
-}
 
 
 #define COMPLETE_TEST_ARITHMETIC_INT_OP(val1,val2) \
@@ -357,6 +463,32 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		TEST_ARITHMETIC_CINTEGER_OP(-val1,%,val2); \
 		TEST_ARITHMETIC_CINTEGER_OP(-val1,%,-val2);
 
+#define COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(val1,val2) \
+		TEST_ARITHMETIC_CNUMBER_OP(val1,+,val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(val1,+,-val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(-val1,+,val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(-val1,+,-val2); \
+		\
+		TEST_ARITHMETIC_CNUMBER_OP(val1,-,val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(val1,-,-val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(-val1,-,val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(-val1,-,-val2); \
+		\
+		TEST_ARITHMETIC_CNUMBER_OP(val1,*,val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(val1,*,-val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(-val1,*,val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(-val1,*,-val2); \
+		\
+		TEST_ARITHMETIC_CNUMBER_OP(val1,/,val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(val1,/,-val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(-val1,/,val2); \
+		TEST_ARITHMETIC_CNUMBER_OP(-val1,/,-val2); \
+		\
+		TEST_ARITHMETIC_CNUMBER_MOD(val1,val2); \
+		TEST_ARITHMETIC_CNUMBER_MOD(val1,-val2); \
+		TEST_ARITHMETIC_CNUMBER_MOD(-val1,val2); \
+		TEST_ARITHMETIC_CNUMBER_MOD(-val1,-val2);
+
 #define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(val1,val2) \
 		TEST_ARITHMETIC_FLOAT_OP(val1,+,val2); \
 		TEST_ARITHMETIC_FLOAT_OP(val1,+,-val2); \
@@ -391,6 +523,14 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 	TEST_ARITHMETIC_INT_OP(val1,^,val2);
 
 
+#define COMPLETE_TEST_ARITHMETIC_CINTEGER_BINARY_OP(val1, val2) \
+	TEST_ARITHMETIC_CINTEGER_OP(val1,&,val2); \
+	TEST_ARITHMETIC_CINTEGER_OP(val1,|,val2); \
+	TEST_ARITHMETIC_CINTEGER_OP(val1,>>,1); \
+	TEST_ARITHMETIC_CINTEGER_OP(val1,<<,1); \
+	TEST_ARITHMETIC_CINTEGER_OP(val1,^,val2);
+
+
 #define TEST_ARITHMETIC_OP(val1, op, val2) \
 { \
 	int aux_value=0; \
@@ -423,6 +563,18 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 	\
 	if((aux_value=CZetScript::eval_int(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
+		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
+		exit(-1); \
+	} \
+}
+
+
+#define TEST_FLOAT_EXPR(expr, expected_value) \
+{ \
+	float aux_value=0; \
+	\
+	if((aux_value=CZetScript::eval_float(expr))  != (expected_value)){ \
+		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,aux_value); \
 		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
 		exit(-1); \
 	} \
@@ -527,9 +679,8 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(false)); \
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(true));
 
-
-
 int main(int argc, char * argv[]) {
+
 
 	int n_test=0;
 
@@ -555,10 +706,6 @@ int main(int argc, char * argv[]) {
 	// TEST INT OPS
 	//
 
-
-
-
-
 	//CZetScript::getInstance()->eval("if(undefined){print(\"true\");}else{print(\"\");} }var prova=[]; prova.add(0); prova.size();");
 
 	//TEST_NUMBER_EXPR("4.0*4;",16.0);
@@ -566,9 +713,33 @@ int main(int argc, char * argv[]) {
 	//int i= 0+ +1;
 	if(!register_C_Class<CNumber>("CNumber")) return false;
 
-	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(int )>(&CNumber::set))) return false;
-	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(float )>(&CNumber::set))) return false;
+	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(float *)>(&CNumber::_set))) return false;
+	if(!register_C_FunctionMember<CNumber>("toFloat",&CNumber::toFloat)) return false;
 	if(!register_C_VariableMember<CNumber>("n",&CNumber::n)) return false;
+
+
+	if(!register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_add))) return false;
+	if(!register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add))) return false;
+	if(!register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_add))) return false;
+
+	if(!register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mul))) return false;
+	if(!register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mul))) return false;
+	if(!register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mul))) return false;
+
+	if(!register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_div))) return false;
+	if(!register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_div))) return false;
+	if(!register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_div))) return false;
+
+	if(!register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mod))) return false;
+	if(!register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mod))) return false;
+	if(!register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mod))) return false;
+
+	if(!register_C_StaticFunctionMember<CNumber>("_neg",static_cast<CNumber * (*)(CNumber *)>(&CNumber::_neg))) return false;
+
+	if(!register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(float *)>(&CNumber::_set))) return false;
+	if(!register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(CNumber *)>(&CNumber::_set))) return false;
+
+
 
 	if(!register_C_Class<CInteger>("CInteger")) return false;
 	if(!register_C_FunctionMember<CInteger>("CInteger",&CInteger::ScriptConstructor)) return false;
@@ -576,62 +747,84 @@ int main(int argc, char * argv[]) {
 	if(!register_C_VariableMember<CInteger>("n",&CInteger::n)) return false;
 
 
-	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add))) return false;
+
+	if(!register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mul))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mul))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mul))) return false;
+
+	if(!register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_div))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_div))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_div))) return false;
+
+	if(!register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mod))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mod))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mod))) return false;
+
+
+	if(!register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shr))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shr))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shr))) return false;
+
+
+	if(!register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shl))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shl))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shl))) return false;
+
+
+	if(!register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_and))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_and))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_and))) return false;
+
+	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_or))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or))) return false;
+
+
+
+	if(!register_C_StaticFunctionMember<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg))) return false;
+
 	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set))) return false;
 	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set))) return false;
 
-	//CState::saveState();
 
-	// int
-	printf("%i. testing metamethod ints...\n",++n_test);
-	//TEST_INT_EXPR("var c_integer=new CInteger(1);c_integer.toInt();",1);
-	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(5,4); // op1 > op2
-	return 0;
 
-	// int
-	printf("%i. testing arithmetic ints...\n",++n_test);
+	// unsinged
+	printf("%i. testing arithmetic CInteger...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_INT_OP(4,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(4,5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(5,4); // op1 > op2
 
 
-	// hexadecimal...
 	printf("%i. testing arithmetic hexa (int)...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_INT_OP(0x4,0x4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(0x4,0x5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_INT_OP(0x5,0x4); // op1 > op2
 
-	// float...
 	printf("%i. testing arithmetic float ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4.0); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,4.0); // op1 > op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,2.0e2); // op1 > op2
 
-	// float vs int...
 	printf("%i. testing arithmetic float vs int ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,4); // op1 > op2
 
-	// int vs float...
 	printf("%i. testing arithmetic int vs float ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,4.0); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5,4.0); // op1 > op2
 
-	// binary ops...
 	printf("%i. testing binary op ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x4,0x4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x4,0x5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x5,0x4); // op1 > op2
 
 
-	// strings...
 	printf("%i. testing string...\n",++n_test);
 	TEST_ARITHMETIC_STRING_OP("test_",+,"100"); // concatenate int
 	TEST_ARITHMETIC_STRING_OP("test_",+,"-100"); // concatenate -int
@@ -658,14 +851,9 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_LOGIC_OP(10,15);
 
 	// some basics tests
-	TEST_ARITHMETIC_BOOL_EXPR((!false && !(false)) || false);
+	TEST_ARITHMETIC_BOOL_EXPR(!false && !(false || false));
 	TEST_ARITHMETIC_BOOL_EXPR(!(true && !false) || false);
 	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
-	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
-	TEST_ARITHMETIC_BOOL_EXPR(!false && !(false || false));
-	TEST_ARITHMETIC_BOOL_EXPR(!true && !(false || false));
-	TEST_ARITHMETIC_BOOL_EXPR(true && !(false || !false));
-	TEST_ARITHMETIC_BOOL_EXPR(true && !(false || !false));
 
 	// test declare var int/bool/string/number
 	printf("%i. testing primitive var\n",++n_test);
@@ -722,6 +910,23 @@ int main(int argc, char * argv[]) {
 	printf("%i. test if-else ...\n",++n_test);
 	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}i;",10);
 	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);
+
+	printf("%i. testing cinteger ops...\n",++n_test);
+	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(5,4); // op1 > op2
+
+	printf("%i. testing cnumber float ...\n",++n_test);
+	COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(4.0,4.0); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(4.0,5.0); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(5.0,4.0); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(5.0,2.0e2); // op1 > op2
+
+	printf("%i. testing binary cinteger op ...\n",++n_test);
+	COMPLETE_TEST_ARITHMETIC_CINTEGER_BINARY_OP(0x4,0x4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_CINTEGER_BINARY_OP(0x4,0x5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_CINTEGER_BINARY_OP(0x5,0x4); // op1 > op2
+
 
 	printf("%i. test consisten script-c-script calls ...\n",++n_test);
 	// test calling script-c-script-c

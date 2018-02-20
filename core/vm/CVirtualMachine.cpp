@@ -24,7 +24,13 @@ namespace zetscript{
 			var_type2.c_str());\
 			return NULL;
 
-
+	#define PRINT_ERROR_OP(c)\
+		string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1);\
+	\
+	ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+		c,\
+		var_type1.c_str());\
+		return NULL;
 
 	#define COPY_NUMBER(d,s)  memcpy((d),(s),sizeof(float))
 
@@ -646,9 +652,13 @@ if(aux_function_info == NULL){\
 		}\
 		if(n_candidates == 0){\
 			if(metamethod_str != NULL){\
-				PRINT_DUAL_ERROR_OP(metamethod_str);\
+				if(n_args==2){\
+					PRINT_DUAL_ERROR_OP(metamethod_str);\
+				}else{\
+					PRINT_ERROR_OP(metamethod_str);\
+				}\
 			}else{\
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\".\n\n",\
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAMNEE_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\".\n\n",\
 					is_constructor ? "constructor":"function",\
 					calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",\
 					AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),\
@@ -2104,8 +2114,7 @@ if(aux_function_info == NULL){\
 					*/
 					}else{ // try metamethod ...
 							APPLY_METAMETHOD(-,NEG_METAMETHOD);
-							//ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected preoperator '-' number or integer!");
-							//return NULL;
+							//#define APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__)
 					}
 					continue;
 

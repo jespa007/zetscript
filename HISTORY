@@ -20,6 +20,7 @@ Date: 13-02-2018
      Due 41, now we have to pass class type on both register_C_FunctionMember/register_C_VariableMember (+1 feature version)
 #45: Fixed. Seg. fault on returning wrong C pointer derived class. A helper function has been implemented to return right pointer in function of type parameter.
 
+-Due float it cannot be the same size as the any param of c functions, float type is disable since 1.2. Instead do float *. 
 -Fixed. Seg.faults on returning strings * from C functions.
 -Check if C function can be registered. C function should be registered at last elements. 
 -VM: It prints more information when user wants to access to member function into primitive. Currently it gives the error 

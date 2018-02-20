@@ -573,6 +573,12 @@ namespace zetscript{
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
 				int idx_type=getIdxClassFromIts_C_Type(m_arg[i]);
+
+				if(idx_type==IDX_CLASS_FLOAT_C || idx_type==IDX_CLASS_BOOL_C){
+					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you shoud use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str());
+					return false;
+				}
+
 				if(idx_type==-1){
 					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
@@ -671,6 +677,12 @@ namespace zetscript{
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
 				int idx_type = getIdxClassFromIts_C_Type(m_arg[i]);
+
+				if(idx_type==IDX_CLASS_FLOAT_C || idx_type==IDX_CLASS_BOOL_C){
+					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you shoud use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str());
+					return false;
+				}
+
 				if(idx_type==-1){
 					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
