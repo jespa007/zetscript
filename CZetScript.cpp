@@ -628,6 +628,24 @@ namespace zetscript{
 
 	}
 
+	bool CZetScript::parse_file(const char * filename){
+
+		ZS_CLEAR_ERROR_MSG();
+
+		bool status = false;
+		char *buf_tmp=NULL;
+		int n_bytes;
+
+		if((buf_tmp=CIO_Utils::readFile(filename, n_bytes))!=NULL){
+
+			status = parse((char *)buf_tmp, filename);
+			free(buf_tmp);
+		}
+
+
+		return status;
+	}
+
 	ZETSCRIPT_MODULE_EXPORT bool CZetScript::compile(){
 		if(!__init__) return false;
 		ZS_CLEAR_ERROR_MSG();

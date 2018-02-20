@@ -111,6 +111,7 @@ namespace zetscript{
 
 
 		ZETSCRIPT_MODULE_EXPORT bool parse(const string & string,const char *filename_ref=NULL);
+		ZETSCRIPT_MODULE_EXPORT bool parse_file(const char * filename);
 		ZETSCRIPT_MODULE_EXPORT bool compile();
 		ZETSCRIPT_MODULE_EXPORT bool execute();
 
