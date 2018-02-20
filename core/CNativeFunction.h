@@ -14,7 +14,7 @@ namespace zetscript{
 		CNativeFunction();
 		~CNativeFunction();
 
-		static CNativeFunction * getInstance();
+		ZETSCRIPT_MODULE_EXPORT static CNativeFunction * getInstance();
 		static void destroySingletons();
 
 
@@ -107,7 +107,7 @@ namespace zetscript{
 		}
 
 
-		template <class _T, class _R,typename _F>
+		template <typename _T, typename _S,typename _R,typename _F>
 		void * c_member_class_function_proxy(unsigned int n_args, _F fun_obj){
 			using namespace std::placeholders;
 			std::function<void *(void *,PROXY_CREATOR)> *c_function_builder=NULL;
@@ -121,7 +121,7 @@ namespace zetscript{
 					void *return_val=NULL;
 
 					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val= (void *)(new std::function<_R ()>(std::bind((_R (_T::*)())(fun_obj), (_T *)obj)));
+						return_val= (void *)(new std::function<_R ()>(std::bind((_R (_S::*)())(fun_obj), (_T *)obj)));
 					}
 					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
 						delete (std::function<_R ()> *)obj;
@@ -135,7 +135,7 @@ namespace zetscript{
 					void *return_val=NULL;
 
 					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t)>(std::bind((_R (_T::*)(intptr_t))(fun_obj), (_T *)obj, _1)));
+						return_val=  (void *)(new std::function<_R (intptr_t)>(std::bind((_R (_S::*)(intptr_t))(fun_obj), (_T *)obj, _1)));
 					}
 					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
 						delete (std::function<_R (intptr_t)> *)obj;
@@ -149,7 +149,7 @@ namespace zetscript{
 					void *return_val=NULL;
 
 					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2)));
+						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2)));
 					}
 					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
 						delete (std::function<_R (intptr_t,intptr_t)> *)obj;
@@ -163,7 +163,7 @@ namespace zetscript{
 					void *return_val=NULL;
 
 					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3)));
+						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3)));
 					}
 					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
 						delete (std::function<_R (intptr_t,intptr_t,intptr_t)> *)obj;
@@ -177,7 +177,7 @@ namespace zetscript{
 					void *return_val=NULL;
 
 					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
+						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
 					}
 					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
 						delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)> *)obj;
@@ -192,7 +192,7 @@ namespace zetscript{
 					void *return_val=NULL;
 
 					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
+						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
 					}
 					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
 						delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)obj;
@@ -207,7 +207,7 @@ namespace zetscript{
 					void *return_val=NULL;
 
 					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val= (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
+						return_val= (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
 					}
 					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
 						delete (std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)obj;

@@ -28,7 +28,7 @@ namespace zetscript{
 
 		void destroyASTNodes();
 		void destroyScopeNodes();
-		//void destroyScriptFunctionObjectNodes();
+		void destroyScriptFunctionObjectNodes();
 		void destroyScriptClassNodes();
 		void destroyInfoParsedSourceNode();
 
@@ -42,12 +42,12 @@ namespace zetscript{
 	public:
 
 		static void init();
-		static bool  setState(int idx);
+		ZETSCRIPT_MODULE_EXPORT static bool  setState(int idx);
 
 		/**
 		 * Save current state
 		 */
-		static int   saveState();
+		ZETSCRIPT_MODULE_EXPORT static int   saveState();
 
 		static bool   restoreLastState();
 

@@ -25,7 +25,7 @@ namespace zetscript{
 		void add(tStackElement  * v);
 		void pop();
 		tStackElement *push();
-		int size();
+		ZETSCRIPT_MODULE_EXPORT int size();
 
 		virtual void destroy(bool delete_user_request=false);
 

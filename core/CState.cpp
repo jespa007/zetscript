@@ -13,15 +13,16 @@ namespace zetscript{
 
 	void CState::init(){
 		if(vec_saved_state == NULL){
-			CState *st=new CState();
+			current_state=new CState();
 			vec_saved_state = new vector<CState *> ();
 
 
-			CASTNode::setVectorASTNode(st->getVectorASTNodeNode());
-			CScope::setVectorScopeNode(st->getVectorScopeNode());
-			CScriptFunctionObject::setVectorScriptFunctionObjectNode(st->getVectorScriptFunctionObjectNode());
-			CScriptClass::setVectorScriptClassNode(st->getVectorScriptClassNode());
-			CZetScript::setVectorInfoParsedFiles(st->getVectorInfoParsedSourceNode());
+			CASTNode::setVectorASTNode(current_state->getVectorASTNodeNode());
+			CScope::setVectorScopeNode(current_state->getVectorScopeNode());
+			CScriptFunctionObject::setVectorScriptFunctionObjectNode(current_state->getVectorScriptFunctionObjectNode());
+			CScriptClass::setVectorScriptClassNode(current_state->getVectorScriptClassNode());
+			CZetScript::setVectorInfoParsedFiles(current_state->getVectorInfoParsedSourceNode());
+
 
 			// add empty ast_node...
 
@@ -30,8 +31,32 @@ namespace zetscript{
 			ast->idxScope = sc->idxScope;
 			ast->node_type = NODE_TYPE::BODY_NODE;
 
-			current_state=st;
+			
 
+			CASTNode::init();
+
+
+			if (!CScriptClass::init()) {
+				exit(EXIT_FAILURE);
+			}
+
+			// init custom registers...
+			CJSON::registerScript();
+
+			// push undefined file by default ...
+			tInfoParsedSource ps;
+			ps.filename = "undefined";
+			current_state->getVectorInfoParsedSourceNode()->push_back(ps);
+
+
+			// after init, let's save/restore state...
+			CState::saveState();
+			CState::setState(0);
+
+			// save first state ...
+			//vec_saved_state->push_back(st);
+			//current_state = st;
+			
 		}
 	}
 
@@ -43,6 +68,9 @@ namespace zetscript{
 
 		// clear globals ...
 		CURRENT_VM->clearGlobals();
+
+		// clean before save ...
+		current_state->clearCompileInformation();
 
 		CState * state_to_restore = vec_saved_state->at(idx);
 
@@ -60,24 +88,16 @@ namespace zetscript{
 
 
 
+		CState * current_state_new=new CState(); // create first state 0.
 
-		delete current_state;//->destroy();
-
-		current_state=new CState(); // create first state 0.
-
-		vector<CASTNode *> 				* vec_ast_node_dst					= current_state->getVectorASTNodeNode();
-		vector<CScope *> 				* vec_scope_dst						= current_state->getVectorScopeNode();
-		vector<CScriptClass *> 			* vec_script_class_dst				= current_state->getVectorScriptClassNode();
-		vector<CScriptFunctionObject *>	* vec_script_function_object_dst	= current_state->getVectorScriptFunctionObjectNode();
-		vector<tInfoParsedSource>		* vec_info_parsed_source_dst		= current_state->getVectorInfoParsedSourceNode();
+		vector<CASTNode *> 				* vec_ast_node_dst					= current_state_new->getVectorASTNodeNode();
+		vector<CScope *> 				* vec_scope_dst						= current_state_new->getVectorScopeNode();
+		vector<CScriptClass *> 			* vec_script_class_dst				= current_state_new->getVectorScriptClassNode();
+		vector<CScriptFunctionObject *>	* vec_script_function_object_dst	= current_state_new->getVectorScriptFunctionObjectNode();
+		vector<tInfoParsedSource>		* vec_info_parsed_source_dst		= current_state_new->getVectorInfoParsedSourceNode();
 
 
-		// finally set vectors....
-		CASTNode::setVectorASTNode(vec_ast_node_dst);
-		CScope::setVectorScopeNode(vec_scope_dst);
-		CScriptFunctionObject::setVectorScriptFunctionObjectNode(vec_script_function_object_dst);
-		CScriptClass::setVectorScriptClassNode(vec_script_class_dst);
-		CZetScript::setVectorInfoParsedFiles(vec_info_parsed_source_dst);
+
 
 
 		// 1- Copy current state...
@@ -107,6 +127,8 @@ namespace zetscript{
 		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
 			CScriptFunctionObject *sfo = new CScriptFunctionObject();
 			*sfo = *vec_script_function_object_src->at(i);
+			sfo->object_info.statment_op=NULL;
+			sfo->object_info.info_var_scope=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
 
@@ -117,10 +139,27 @@ namespace zetscript{
 			vec_info_parsed_source_dst->push_back(ips);
 		}
 
+		if (current_state != NULL) {
+			delete current_state;//->destroy();
+			current_state = NULL;
+		}
 
 
+		// set main function pointer ...
 
-		return false;
+
+		current_state = current_state_new;
+
+		// finally set vectors....
+		CASTNode::setVectorASTNode(vec_ast_node_dst);
+		CScope::setVectorScopeNode(vec_scope_dst);
+		CScriptFunctionObject::setVectorScriptFunctionObjectNode(vec_script_function_object_dst);
+		CScriptClass::setVectorScriptClassNode(vec_script_class_dst);
+		CZetScript::setVectorInfoParsedFiles(vec_info_parsed_source_dst);
+
+		CZetScript::getInstance()->destroyMainFunction();
+
+		return true;
 	}
 
 	int   CState::saveState(){
@@ -129,6 +168,9 @@ namespace zetscript{
 			zs_print_warning_cr("ZetScript was not inicialized");
 			return -1;
 		}
+
+		// compile before save ...
+		current_state->clearCompileInformation();
 
 		CState * save_st = new CState();
 		vector<CASTNode *> 				* vec_ast_node_dst					= save_st->getVectorASTNodeNode();
@@ -156,7 +198,6 @@ namespace zetscript{
 			CScope *scope = new CScope();
 			*scope = *vec_scope_src->at(i);
 			vec_scope_dst->push_back(scope);
-
 		}
 
 		// 1.3-Copy CScriptClass...
@@ -170,6 +211,8 @@ namespace zetscript{
 		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
 			CScriptFunctionObject *sfo = new CScriptFunctionObject();
 			*sfo = *vec_script_function_object_src->at(i);
+			sfo->object_info.statment_op=NULL;
+			sfo->object_info.info_var_scope=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
 
@@ -199,34 +242,36 @@ namespace zetscript{
 
 	void CState::destroySingletons(){
 
-		vector<CScriptClass *> *vec = current_state->getVectorScriptClassNode();
+		if (current_state != NULL) {
 
-		// we have to destroy all allocated constructor/destructor ...
-		for(vector<CScriptClass *>::iterator i = vec->begin()+MAX_BASIC_CLASS_TYPES;i!=vec->end();i++){
+			vector<CScriptClass *> *vec = current_state->getVectorScriptClassNode();
 
-			CScriptClass *irv = *i;
+			// we have to destroy all allocated constructor/destructor ...
+			for (unsigned i = 0; i < vec->size(); i++) {
 
+				CScriptClass *irv = vec->at(i);
 
+				if ((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF) {
 
-			if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+					zs_print_debug_cr("* Erasing c destructor/contructor %s...", irv->classPtrType.c_str());
 
-				zs_print_debug_cr("* Erasing c destructor/contructor %s...",irv->classPtrType.c_str());
-				if(irv->c_constructor){
-					delete irv->c_constructor;
+					if (irv->c_constructor) {
+						delete irv->c_constructor;
+					}
+
+					if (irv->c_destructor) {
+						delete irv->c_destructor;
+					}
+
+					// delete CScriptClass
+					//delete irv;
+
+					//vec_script_class_node->erase(i);
 				}
-
-				if(irv->c_destructor){
-					delete irv->c_destructor;
-				}
-
-				// delete CScriptClass
-				//delete irv;
-
-				//vec_script_class_node->erase(i);
+				//else{
+				//	i++;
+				//}
 			}
-			//else{
-			//	i++;
-			//}
 		}
 
 
@@ -239,7 +284,9 @@ namespace zetscript{
 		delete vec_saved_state;
 
 		// erase current state...
-		delete current_state;
+		if (current_state != NULL) {
+			delete current_state;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------------
@@ -254,7 +301,6 @@ namespace zetscript{
 		vec_info_parsed_source_node = new vector<tInfoParsedSource> ;
 
 	}
-
 
 	vector<CASTNode *> 		*		CState::getVectorASTNodeNode(){
 		return vec_ast_node;
@@ -275,38 +321,137 @@ namespace zetscript{
 		return vec_script_function_object_node;
 	}
 
+	void  CState::clearCompileInformation() {
+
+		CScriptFunctionObject * main_function = vec_script_function_object_node->at(0);
+
+		// clean main functions ... remove script functions and leave c functions...
+		for (unsigned f = 0;
+			f < main_function->object_info.local_symbols.vec_idx_registeredFunction.size()
+			;) {
+			// get function info
+			CScriptFunctionObject * local_function = GET_SCRIPT_FUNCTION_OBJECT(main_function->object_info.local_symbols.vec_idx_registeredFunction[f]);
+
+			if ((local_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+				main_function->object_info.local_symbols.vec_idx_registeredFunction.erase(main_function->object_info.local_symbols.vec_idx_registeredFunction.begin() + f);
+			}
+			else {
+				f++;
+			}
+
+		}
+
+		// remove c variables ...
+		for (unsigned v = 0;
+			v < main_function->object_info.local_symbols.m_registeredVariable.size(); ) {
+
+			if ((main_function->object_info.local_symbols.m_registeredVariable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+
+				main_function->object_info.local_symbols.m_registeredVariable.erase(main_function->object_info.local_symbols.m_registeredVariable.begin() + v);
+
+			}
+			else {
+				v++;
+			}
+		}
+
+		//int i = vec_script_function_object_node->size()-1;
+		bool end=false;
+		do{
+			CScriptFunctionObject * info_function = vec_script_function_object_node->at(vec_script_function_object_node->size()-1);
+			end=(info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF;
+
+			if(!end){
+
+				if (info_function->object_info.statment_op != NULL) {
+					for (PtrStatment stat = info_function->object_info.statment_op; *stat != NULL; stat++) {
+
+						free(*stat);
+					}
+
+					free(info_function->object_info.statment_op);
+					info_function->object_info.statment_op=NULL;
+				}
+
+				// unloading scope ...
+				if (info_function->object_info.info_var_scope != NULL) {
+					for (unsigned j = 0; j < info_function->object_info.n_info_var_scope; j++) {
+						free(info_function->object_info.info_var_scope[j].var_index);
+					}
+
+					free(info_function->object_info.info_var_scope);
+					info_function->object_info.info_var_scope=NULL;
+				}
+
+				vec_script_function_object_node->pop_back();
+				delete info_function;
+
+			}
+
+		}while(!end);
+
+
+		// clean script classes ...
+
+		end=false;
+		do{
+			CScriptClass * sc = vec_script_class_node->at(vec_script_class_node->size()-1);
+			end=(sc->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF;
+
+			if(!end){
+
+				delete sc;
+				vec_script_class_node->pop_back();
+
+			}
+
+		}while(!end);
+
+	}
+
 	void CState::destroyASTNodes(){
 		for(unsigned i = 0; i < vec_ast_node->size(); i++){
 			delete vec_ast_node->at(i);
 		}
+		vec_ast_node->clear();
+		delete vec_ast_node;
+		vec_ast_node=NULL;
 	}
 
 	void CState::destroyScopeNodes(){
 		for(unsigned i = 0; i < vec_scope_node->size(); i++){
 			delete vec_scope_node->at(i);
 		}
+		vec_scope_node->clear();
+		delete vec_scope_node;
+		vec_scope_node=NULL;
 	}
 
 	void CState::destroyScriptClassNodes() {
 
-		for(vector<CScriptClass *>::iterator i = vec_script_class_node->begin()+MAX_BASIC_CLASS_TYPES;i!=vec_script_class_node->end();){
+		for(unsigned i = 0;i < vec_script_class_node->size();i++){
+			zs_print_debug_cr("* Erasing %s...", vec_script_class_node->at(i)->classPtrType.c_str());
+			delete vec_script_class_node->at(i);
 
-			CScriptClass *irv = *i;
-
-			zs_print_debug_cr("* Erasing %s...",irv->classPtrType.c_str());
-
-			//if((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
-
-
-				// delete CScriptClass
-				delete irv;
-
-				vec_script_class_node->erase(i);
-			//}
-			//else{
-			//	i++;
-			//}
 		}
+
+		vec_script_class_node->clear();
+		delete vec_script_class_node;
+		vec_script_class_node=NULL;
+	}	
+	
+	
+	void CState::destroyScriptFunctionObjectNodes() {
+
+		for(unsigned i = 0;i < vec_script_function_object_node->size();i++){
+			zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_name.c_str());
+			delete vec_script_function_object_node->at(i);
+
+		}
+
+		vec_script_function_object_node->clear();
+		delete vec_script_function_object_node;
+		vec_script_function_object_node=NULL;
 	}
 
 	void CState::destroyInfoParsedSourceNode(){
@@ -314,81 +459,10 @@ namespace zetscript{
 		vec_info_parsed_source_node=NULL;
 	}
 
-	void  CState::clearCompileInformation(){
-
-		for(unsigned i = 0; i < vec_script_function_object_node->size(); i++){
-
-			CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
-
-			if((info_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){ // is a compiled script ...
-#ifdef __DEBUG__
-				CScriptClass *sc = CScriptClass::getScriptClassByIdx(info_function->object_info.symbol_info.idxScriptClass);
-				if(sc){
-				zs_print_debug_cr("Clear function %s::%s...",sc->metadata_info.object_info.symbol_info.symbol_name.c_str(),info_function->object_info.symbol_info.symbol_name.c_str());
-				}
-#endif
-
-				//zs_print_debug_cr("unloading local function %s...",info_function->object_info.symbol_info.symbol_name.c_str());
-				if(info_function->object_info.statment_op!=NULL){
-					for(PtrStatment stat =info_function->object_info.statment_op; *stat != NULL; stat++){
-
-						free(*stat);
-					}
-
-					free(info_function->object_info.statment_op);
-				}
-
-				// unloading scope ...
-				if(info_function->object_info.info_var_scope != NULL){
-					 for(unsigned j = 0; j < info_function->object_info.n_info_var_scope; j++){
-						 free(info_function->object_info.info_var_scope[j].var_index);
-					 }
-
-					 free(info_function->object_info.info_var_scope);
-				}
-
-				// unregister global variables & functions ...
-				 if(i == 0){ // is the main function so don't touch (i.e preserve) C functions/vars ...
-
-					 for(vector<int>::iterator f =info_function->object_info.local_symbols.vec_idx_registeredFunction.begin(); f != info_function->object_info.local_symbols.vec_idx_registeredFunction.end();){
-						 // get function info
-						 CScriptFunctionObject * local_function = GET_SCRIPT_FUNCTION_OBJECT(*f);
-
-						 if((local_function->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
-							 info_function->object_info.local_symbols.vec_idx_registeredFunction.erase(f);
-						 }else{
-							 f++;
-						 }
-
-					 }
-
-					 for(vector<tInfoVariableSymbol>::iterator v = info_function->object_info.local_symbols.m_registeredVariable.begin();
-					     v != info_function->object_info.local_symbols.m_registeredVariable.end(); ){
-
-						 if((v->properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
-
-							 info_function->object_info.local_symbols.m_registeredVariable.erase(v);
-
-						 }else{
-							 v++;
-						 }
-					 }
-				 }
-				 else{ // is not the main function so let's remove it and their local symbols ...
-					 // not main function it's safe to unregister all symbols ...
-					 info_function->object_info.local_symbols.m_registeredVariable.clear();
-					 info_function->object_info.local_symbols.vec_idx_registeredFunction.clear();
-
-					 delete info_function;
-				 }
-			}
-		}
-	}
-
 	void CState::destroy(){
 		clearCompileInformation();
 		destroyScriptClassNodes();
-		//destroyScriptFunctionObjectNodes();
+		destroyScriptFunctionObjectNodes();
 		destroyScopeNodes();
 		destroyASTNodes();
 		destroyInfoParsedSourceNode();

@@ -44,6 +44,9 @@ namespace zetscript{
 			//virtual_function = NULL;
 			idx_return_type = -1;
 			object_info.idxScriptFunctionObject = -1;
+			object_info.statment_op=NULL;
+			object_info.info_var_scope=NULL;
+
 		}
 
 		/**
@@ -52,10 +55,11 @@ namespace zetscript{
 		static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunctionObject *> 	* set_vec);
 		static vector<CScriptFunctionObject *> 	*	getVectorScriptFunctionObjectNode();
 
-		static CScriptFunctionObject 			*	newScriptFunctionObject();
+		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject 			*	newScriptFunctionObject();
+		ZETSCRIPT_MODULE_EXPORT static bool									checkCanRegister_C_Function(const char *f);
 		static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
 		static tFunctionInfo					* 	getFunctionInfo(int idx);
-		static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);
+		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);
 		static int						 			getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name,char n_args=-1, bool show_msg=true);
 		static int						 			getIdxVariableSymbol(tFunctionInfo * info_function,const string & function_name, bool show_msg=true);
 

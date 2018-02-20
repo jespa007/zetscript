@@ -11,8 +11,8 @@ int add(int op1, int op2){
 }
 
 
-float add(float op1, float op2){
-	return op1+op2;
+float add(float *op1, float *op2){
+	return *op1+*op2;
 }
 
 
@@ -23,7 +23,7 @@ int main(){
 	// register add(int,int)
 	register_C_Function("add",static_cast<int (*)(int,int)>(add));
 	// register add(float,float)
-	register_C_Function("add",static_cast<float (*)(float,float)>(add));
+	register_C_Function("add",static_cast<float (*)(float *,float *)>(add));
 
 
 

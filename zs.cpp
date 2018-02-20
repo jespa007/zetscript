@@ -30,7 +30,7 @@ int main(int argc, char * argv[]) {
 
 	CZetScript::destroy();
 
-#if defined(__DEBUG__) && defined(__MEMMANAGER__)
+#if defined(__ZETSCRIPT_DEBUG__) && defined(__ZETSCRIPT_MEMMANAGER__)
 	MEM_ViewStatus();
 #endif
 

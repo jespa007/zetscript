@@ -99,7 +99,7 @@ namespace zetscript{
 		}
 
 
-		tStackElement * execute(
+		ZETSCRIPT_MODULE_EXPORT tStackElement * execute(
 					 CScriptFunctionObject *info_function,
 					 CScriptVariable *this_object,
 					const vector<tStackElement> &  argv=NO_PARAMS);
@@ -136,8 +136,8 @@ namespace zetscript{
 		 string     aux_string_param[MAX_N_ARGS]; // for string params...
 
 		 vector<tSymbolInfo> vec_aux_function_symbol;
-		 tVM_ScopeInfo		*current_scope_idx;
-		 tVM_ScopeInfo		scope_idx[VM_LOCAL_VAR_MAX_STACK];
+		 tVM_ScopeInfo		*current_scope_info_ptr;
+		 tVM_ScopeInfo		scope_info[VM_LOCAL_VAR_MAX_STACK];
 		tStackElement callc_result;
 
 
@@ -160,7 +160,7 @@ namespace zetscript{
 		 * Reserve for N vars. Return base pointer.
 		 */
 
-		string STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
+		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
 		void 				stackDumped();
 
 	};

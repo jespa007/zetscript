@@ -30,6 +30,8 @@ namespace zetscript{
 			 case IDX_CLASS_INT_PTR_C:
 				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(*((intptr_t *)var_trans)),NULL};
 				 break;
+			 case IDX_CLASS_UNSIGNED_INT_C:
+			 case IDX_CLASS_INTPTR_T_C:
 			 case IDX_CLASS_INT_C:
 				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(((intptr_t)var_trans)),NULL};
 				 break;
@@ -52,8 +54,7 @@ namespace zetscript{
 				 callc_result={STK_PROPERTY_TYPE_STRING,(void *)var_trans,NULL};//new string(*((string *)result))};
 				 break;
 			 case IDX_CLASS_STRING_PTR_C:
-				 s_return_value = *((string *)var_trans);
-				 callc_result={STK_PROPERTY_TYPE_STRING,(void *)s_return_value.c_str(),NULL};//new string(*((string *)result))};
+				 callc_result={STK_PROPERTY_TYPE_STRING,(void *)((string *)var_trans)->c_str(),NULL};//new string(*((string *)result))};
 				 break;
 			 default:
 				 callc_result = {STK_PROPERTY_TYPE_SCRIPTVAR,NULL,CScriptClass::instanceScriptVariableByIdx(idx_type,(void *)var_trans)};
@@ -63,85 +64,95 @@ namespace zetscript{
 			return callc_result;
 	}
 
-	inline bool stk2var(tStackElement *stk_ret, int idx_return_type, void **result, string & error){
-		void * val_ret=0;
-
+	inline bool stk2var(tStackElement *stk_src, int idx_dst_type, intptr_t *result, string & error){
+		intptr_t val_ret=0;
 		CScriptVariable *script_variable=NULL;
 
 
 		// save return type ...
-		if(stk_ret->properties & STK_PROPERTY_IS_STACKVAR){
-			stk_ret=((tStackElement *)stk_ret->varRef);
+		if(stk_src->properties & STK_PROPERTY_IS_STACKVAR){
+			stk_src=((tStackElement *)stk_src->varRef);
 		}
 
-		if(idx_return_type == IDX_STACK_ELEMENT){//*CScriptClass::STACK_ELEMENT_PTR)){// && (stk_ret->properties & STK_PROPERTY_IS_STACKVAR)){ // set directly stackvar
-			val_ret=stk_ret;
+		if(idx_dst_type == IDX_STACK_ELEMENT){//*CScriptClass::STACK_ELEMENT_PTR)){// && (stk_src->properties & STK_PROPERTY_IS_STACKVAR)){ // set directly stackvar
+			val_ret=(intptr_t)stk_src;
 		}else{
 
-			switch(GET_INS_PROPERTY_VAR_TYPE(stk_ret->properties)){
+			switch(GET_INS_PROPERTY_VAR_TYPE(stk_src->properties)){
 			case STK_PROPERTY_TYPE_BOOLEAN:
-				if(idx_return_type == IDX_CLASS_BOOL_C){// *CScriptClass::BOOL_TYPE_STR){
-					val_ret=(stk_ret->stkValue);
-				}else if(idx_return_type == IDX_CLASS_BOOL_PTR_C){//*CScriptClass::BOOL_PTR_TYPE_STR){
-					val_ret=(&stk_ret->stkValue);
+				if(idx_dst_type == IDX_CLASS_BOOL_C){// *CScriptClass::BOOL_TYPE_STR){
+					val_ret=(intptr_t)(stk_src->stkValue);
+				}else if(idx_dst_type == IDX_CLASS_BOOL_PTR_C){//*CScriptClass::BOOL_PTR_TYPE_STR){
+					val_ret=(intptr_t)(&stk_src->stkValue);
 				}else{
-					error="cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type)).c_str();
-
+					error="cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
 					return false;
 				}
 
 				break;
 			case STK_PROPERTY_TYPE_NUMBER:
-				if(idx_return_type == IDX_CLASS_FLOAT_C){//*CScriptClass::FLOAT_TYPE_STR){
-					val_ret=stk_ret->stkValue;
-				}else if(idx_return_type == IDX_CLASS_FLOAT_PTR_C){//*CScriptClass::FLOAT_PTR_TYPE_STR){
-					val_ret=(&stk_ret->stkValue);
-				}else if(idx_return_type == IDX_CLASS_INT_C){////*CScriptClass::INT_TYPE_STR){
-					int *aux_dst = ((int *)&val_ret);
-					float *aux_src=(float *)&stk_ret->stkValue;
-					*aux_dst=(int)(*aux_src);
-				}else{
-					error="cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type));
+				switch(idx_dst_type){
+				case IDX_CLASS_FLOAT_C:
+					memcpy(&val_ret,&stk_src->stkValue,sizeof(float));
+					break;
+				case IDX_CLASS_FLOAT_PTR_C:
+					val_ret=(intptr_t)(&stk_src->stkValue);
+					break;
+				case IDX_CLASS_UNSIGNED_INT_C:
+				case IDX_CLASS_INTPTR_T_C:
+				case IDX_CLASS_INT_C:
+					{
+						int *aux_dst = ((int *)&val_ret);
+						float *aux_src=(float *)&stk_src->stkValue;
+						*aux_dst=(int)(*aux_src);
+					}
+					break;
+				default:
+					error="cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 					return false;
 				}
 				break;
 			case STK_PROPERTY_TYPE_INTEGER:
-				if(idx_return_type == IDX_CLASS_INT_C){//*CScriptClass::INT_TYPE_STR){
-					val_ret=(stk_ret->stkValue);
-				}else if(idx_return_type == IDX_CLASS_INT_PTR_C){//*CScriptClass::INT_PTR_TYPE_STR){
-					val_ret=(&stk_ret->stkValue);
-				}else if(idx_return_type == IDX_CLASS_FLOAT_C){//*CScriptClass::FLOAT_TYPE_STR){
-					float *aux_dst = ((float *)&val_ret);
-					int *aux_src=(int *)&stk_ret->stkValue;
-					*aux_dst = (float)(*aux_src);
-				}else{
-					error= "cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type));
+				switch(idx_dst_type){
+				case IDX_CLASS_UNSIGNED_INT_C:
+				case IDX_CLASS_INTPTR_T_C:
+				case IDX_CLASS_INT_C:
+					val_ret=(intptr_t)(stk_src->stkValue);
+					break;
+				case IDX_CLASS_INT_PTR_C:
+					val_ret=(intptr_t)(&stk_src->stkValue);
+					break;
+				case IDX_CLASS_FLOAT_C:
+					{
+						float *aux_dst = ((float *)&val_ret);
+						int *aux_src=(int *)&stk_src->stkValue;
+						*aux_dst = (float)(*aux_src);
+					}
+					break;
+				default:
+					error= "cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 					return false;
 				}
 				break;
 
 			case STK_PROPERTY_TYPE_STRING:
-				if(idx_return_type == IDX_CLASS_STRING_PTR_C){//*CScriptClass::STRING_PTR_TYPE_STR){
-					if(stk_ret->varRef != 0){
-						val_ret=(&((CStringScriptVariable *)(stk_ret->varRef))->m_strValue);
+				if(idx_dst_type == IDX_CLASS_STRING_PTR_C){
+					if(stk_src->varRef != 0){
+						val_ret=(intptr_t)(&((CStringScriptVariable *)(stk_src->varRef))->m_strValue);
 					}
 					else{ // pass param string ...
 						error= "(string *)Expected varRef not NULL";
 						return false;
 					}
-
-				}else if (idx_return_type == IDX_CLASS_CONST_CHAR_PTR_C){//*CScriptClass::CONST_CHAR_PTR_TYPE_STR){
-					val_ret=(stk_ret->stkValue);
+				}else if (idx_dst_type == IDX_CLASS_CONST_CHAR_PTR_C){
+					val_ret=(intptr_t)(stk_src->stkValue);
 				}else{
-					error= "cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type));
+					error= "cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 					return false;
 				}
-
-
 				break;
 			default: // script variable by default ...
-
-				script_variable=(CScriptVariable *)stk_ret->varRef;
+				script_variable=(CScriptVariable *)stk_src->varRef;
 				CScriptClass *c_class=NULL;
 
 				if(script_variable==NULL){
@@ -151,25 +162,23 @@ namespace zetscript{
 				}
 
 				if(script_variable->idxScriptClass==IDX_CLASS_STRING){
-					val_ret=(&script_variable->m_strValue);
+					val_ret=(intptr_t)(&script_variable->m_strValue);
 				}else if(
 
 				   (script_variable->idxScriptClass==IDX_CLASS_VECTOR
 				|| script_variable->idxScriptClass==IDX_CLASS_STRUCT)){
 
-					if(idx_return_type==script_variable->idxScriptClass){
-						val_ret=script_variable->get_C_Object();
+					if(idx_dst_type==script_variable->idxScriptClass){
+						val_ret=(intptr_t)script_variable->get_C_Object();
 					}
 
 				}else if((c_class=script_variable->get_C_Class())!=NULL){ // get the pointer directly ...
-					fntConversionType paramConv=0;
-					if(c_class->idxClass==idx_return_type){
-						val_ret=script_variable->get_C_Object();
-					}else if((paramConv=CScriptClass::getConversionType(c_class->classPtrType,GET_IDX_2_CLASS_C_STR(idx_return_type)))!=0){
-						val_ret=(void *)paramConv(script_variable);
-					}else { // try get C object ..
 
-						error = "cannot convert "+demangle(script_variable->getPointer_C_ClassName())+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_return_type));
+					if(c_class->idxClass==idx_dst_type){
+						val_ret=(intptr_t)script_variable->get_C_Object();
+					}
+					else if((val_ret=CScriptClass::doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
+						error = "cannot convert "+demangle(script_variable->getPointer_C_ClassName())+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 				}else{ // CScriptVariable ?
@@ -230,7 +239,7 @@ namespace zetscript{
 					}
 
 
-					if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
+					if(!stk2var(stk, idx_return, (intptr_t *)(&ret_value),error)){
 						THROW_RUNTIME_ERROR(string("error converting result value:")+error);
 					}
 					return ret_value;
@@ -300,7 +309,7 @@ namespace zetscript{
 						THROW_RUNTIME_ERROR(string("run-time error: %s")+CZetScript::getErrorMsg());
 					}
 
-					if(!stk2var(stk,idx_return, (void **)(&ret_value),error)){
+					if(!stk2var(stk,idx_return, (intptr_t*)(&ret_value),error)){
 						THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 					}
 					return ret_value;
@@ -380,7 +389,7 @@ namespace zetscript{
 						THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
 					}
 
-					if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
+					if(!stk2var(stk, idx_return, (intptr_t*)(&ret_value),error)){
 						THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 					}
 					return ret_value;
@@ -463,7 +472,7 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
 				}
 
-				if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
+				if(!stk2var(stk, idx_return, (intptr_t *)(&ret_value),error)){
 					THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 				}
 				return ret_value;
@@ -553,7 +562,7 @@ namespace zetscript{
 						THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
 					}
 
-					if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
+					if(!stk2var(stk, idx_return, (intptr_t*)(&ret_value),error)){
 						THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 					}
 					return ret_value;
@@ -653,7 +662,7 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR(string("run-time error: %s")+CZetScript::getErrorMsg());
 				}
 
-				if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
+				if(!stk2var(stk, idx_return, (intptr_t*)(&ret_value),error)){
 					THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 				}
 				return ret_value;
@@ -757,7 +766,7 @@ namespace zetscript{
 						THROW_RUNTIME_ERROR(string("run-time error:")+CZetScript::getErrorMsg());
 					}
 
-					if(!stk2var(stk, idx_return, (void **)(&ret_value),error)){
+					if(!stk2var(stk, idx_return, (intptr_t *)(&ret_value),error)){
 						THROW_RUNTIME_ERROR(string("run-time error converting result value:")+error);
 					}
 					return ret_value;
@@ -826,16 +835,13 @@ namespace zetscript{
 		}
 
 		return NULL;
-
 	}
-
-
 
 	template<typename _T>
 	vector<_T> vscript2vector(CVectorScriptVariable *v_in){
 		vector<_T> v_out;
-		string typestr = typeid(_T).name();
-
+		const char * dst_convert_type = typeid(_T).name();
+		float aux_flt;
 
 		if(v_in){
 			for(int i = 0; i < v_in->size(); i++){
@@ -848,6 +854,16 @@ namespace zetscript{
 					case STK_PROPERTY_TYPE_UNDEFINED:
 					case STK_PROPERTY_TYPE_NULL:
 					case STK_PROPERTY_TYPE_NUMBER:
+						if(STRCMP(dst_convert_type, ==,typeid(float).name())){
+							memcpy(&aux_flt, &sv.stkValue, sizeof(float));
+							v_out.push_back(aux_flt);
+						}else if(STRCMP(dst_convert_type, ==,typeid(int).name())){
+							v_out.push_back((intptr_t)sv.stkValue);
+						}else{
+							zs_print_error_cr("Error trying to cast element on vector<float>");
+							return v_out;
+						}
+						break;
 					case STK_PROPERTY_TYPE_BOOLEAN:
 					case STK_PROPERTY_TYPE_STRING:
 					case STK_PROPERTY_TYPE_FUNCTION:
@@ -855,7 +871,7 @@ namespace zetscript{
 						return v_out;
 						break;
 					case STK_PROPERTY_TYPE_INTEGER:
-						if((typestr == typeid(int).name())){
+						if(STRCMP(dst_convert_type, ==,typeid(int).name()) || STRCMP(dst_convert_type, ==,typeid(float).name())){// typeid(int).name()) || ){
 							v_out.push_back((intptr_t)sv.stkValue);
 						}else{
 							zs_print_error_cr("Error trying to cast element on vector<int>");

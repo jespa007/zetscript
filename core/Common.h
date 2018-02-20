@@ -4,6 +4,7 @@
  */
 #pragma once
 
+
 // MAIN INCLUDES....
 
 #include          <stdlib.h>
@@ -42,6 +43,16 @@
 
 #include <mutex>
 
+//#ifdef _MSC_VER
+#ifdef  ZETSCRIPT_EXPORTS
+	#define ZETSCRIPT_MODULE_EXPORT __declspec(dllexport)
+#else
+	#define ZETSCRIPT_MODULE_EXPORT  //__declspec(dllimport)
+#endif
+//#else
+//#define ZETSCRIPT_MODULE_EXPORT
+//#endif
+
 #if defined(__GNUC__)
 	#include <cxxabi.h>
 	#include <dirent.h>
@@ -66,6 +77,17 @@
 
 #endif
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
+
+#ifdef __ZETSCRIPT_DEBUG__ // incoment __ZETSCRIPT_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
+//#define __ZETSCRIPT_VERBOSE_MESSAGE__
+#endif
+
+
+
 
 using std::string;
 using std::vector;
@@ -79,7 +101,7 @@ using std::stack;
 using std::ostringstream;
 
 // Prototypes & structs
-#ifdef __MEMMANAGER__
+#ifdef __ZETSCRIPT_MEMMANAGER__
 #include "system/zs_system.h"
 #endif
 
@@ -304,7 +326,7 @@ enum ASM_OPERATOR
 
 enum METAMETHOD_OPERATOR
 	:char {
-		EQU_METAMETHOD,  // ==
+		EQU_METAMETHOD=0,  // ==
 		NOT_EQU_METAMETHOD,  // !=
 		LT_METAMETHOD,  // <
 		LTE_METAMETHOD,  // <=
@@ -478,6 +500,8 @@ enum BASIC_CLASS_TYPE {
 	IDX_CLASS_STRING_PTR_C, // (string read/write)
 	IDX_CLASS_BOOL_PTR_C,
 	IDX_CLASS_INT_C,
+	IDX_CLASS_UNSIGNED_INT_C,
+	IDX_CLASS_INTPTR_T_C,
 	IDX_CLASS_FLOAT_C,
 	IDX_CLASS_BOOL_C,
 	//... add more primitives (don't forgot to configure it in CScriptVar...
@@ -511,7 +535,7 @@ namespace zetscript{
 	struct tFunctionInfo;
 	struct tInfoVarScopeBlock;
 
-	typedef intptr_t (*fntConversionType)(CScriptVariable *obj);
+	typedef intptr_t (*fntConversionType)(intptr_t);
 
 	typedef struct {
 		KEYWORD_TYPE id;
@@ -552,7 +576,6 @@ namespace zetscript{
 
 	 };
 	 */
-
 	#pragma pack(push, 1)
 
 	struct tInfoVariableSymbol { // it can be a variable or function
@@ -697,9 +720,7 @@ namespace zetscript{
 		string arg_name; //arg c++ type or arg name
 	}tArgumentInfo;
 
-
 	#pragma pack(pop)
-
 
 }
 

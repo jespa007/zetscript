@@ -41,7 +41,7 @@ if(MSVC)
 
 else()
 
-	SET( COMMON_PARAMS " ${COMMON_PARAMS} -D__STDC_CONSTANT_MACROS -std=c++1y -I -pthread -Wall")
+	SET( COMMON_PARAMS " ${COMMON_PARAMS} -D__STDC_CONSTANT_MACROS -std=c++1y -I -Wall")
    
 	if (MINGW)
 		MESSAGE ("********* MINGW CONF ************" )
@@ -101,12 +101,8 @@ else()
 	IF ( "${TARGET}" STREQUAL "debug")
 		set( POST_NAME "_d")
 		set(TARGET_FLAGS " -O0 ")
-		set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__DEBUG__ ")
+		set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__ZETSCRIPT_DEBUG__ ")
 	ENDIF ()
-
-
-	# Compile for x86 target by default ...
-	set(TARGET_FLAGS " ${TARGET_FLAGS} ")
 
 
 	if ( "${EMSCRIPTEN}" STREQUAL "yes" )
@@ -115,18 +111,16 @@ else()
 		
 
 		MESSAGE ("********* EMSCRIPTEN CONF ************" )
-		set(TARGET_FLAGS " -O2 ")
+		set(TARGET_FLAGS " -g -O2 ")
 		set(CMAKE_C_COMPILER "$ENV{EMSCRIPTENDIR}/emcc")
 		set(CMAKE_CXX_COMPILER "$ENV{EMSCRIPTENDIR}/em++")
 
-		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I$ENV{EMSCRIPTENDIR}/system/lib/libcxxabi/include/ -s DEMANGLE_SUPPORT=1 -s DISABLE_EXCEPTION_CATCHING=0") #-s DEMANGLE_SUPPORT=1 -s ASSERTIONS=1 -s VERBOSE=1 ")
+		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I$ENV{EMSCRIPTENDIR}/system/lib/libcxxabi/include/ -s DEMANGLE_SUPPORT=1 -s DISABLE_EXCEPTION_CATCHING=0 -s EXCEPTION_DEBUG=0") #-s DEMANGLE_SUPPORT=1 -s ASSERTIONS=1 -s VERBOSE=1 ")
 		
 		set( POST_NAME ${POST_NAME}.html)
 	
 	endif()
 
-	#set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
-	
 	SET(CMAKE_C_FLAGS " ")
 	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
 	
@@ -154,16 +148,10 @@ endif()
 
 
 
-
-
-
-
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 #
 # SOURCE UTILS
 #
-
-
 
 # Library
 
@@ -185,7 +173,7 @@ set( ZETSCRIPT_LIB_SRCS
 )
 
 # zetscriptlib
-add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
+add_library( zetscript${POST_NAME} SHARED ${ZETSCRIPT_LIB_SRCS} )
 target_link_libraries(zetscript${POST_NAME} )
 
 SET(
@@ -200,7 +188,7 @@ SET(
 	core/var/CVectorScriptVariable.h
 	core/var/CFunctorScriptVariable.h
 	core/var/CStructScriptVariable.h
-	core/var/zg_variable.h
+	core/var/zs_variable.h
 	core/var/CScriptVariable.h
 	core/CCompiler.h
 	helpers/RegisterFunctionHelper.h
@@ -219,12 +207,6 @@ SET(
 )
 
 
-
-INSTALL(TARGETS zetscript${POST_NAME}
-		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
-    	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
-    	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
-)
 
 INSTALL_HEADERS_WITH_DIRECTORY(HS)
 
@@ -297,6 +279,7 @@ else()
 endif()
 
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
+
 
 
 INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}

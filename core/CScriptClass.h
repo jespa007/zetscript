@@ -82,10 +82,14 @@ namespace zetscript{
 		static string  *CONST_CHAR_PTR_TYPE_STR;//	typeid(string *).name()
 		static string  *BOOL_PTR_TYPE_STR;//	typeid(bool *).name()
 		static string  *INT_TYPE_STR;//	typeid(int).name()
+		static string  *UNSIGNED_INT_TYPE_STR;//	typeid(unsigned int).name()
+		static string  *INTPTR_T_TYPE_STR;//	typeid(intptr_t).name()
+
 		static string  *FLOAT_TYPE_STR;//	typeid(int).name()
 		static string  *BOOL_TYPE_STR;//	typeid(bool).name()
 		static string  *STACK_ELEMENT_PTR;//	typeid(bool).name()
-		static char     registered_metamethod[MAX_METAMETHOD_OPERATORS][50];
+
+		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
 
 		CScriptFunctionObject	metadata_info;
 		int idx_function_script_constructor;
@@ -95,11 +99,11 @@ namespace zetscript{
 		std::function<void (void *  p)> 	*	c_destructor;
 		string classPtrType; // type_id().name();
 		int idxClass;
-		vector<CScriptClass *> baseClass; // in the case is and extension of class.
+		vector<int> idxBaseClass; // in the case is and extension of class.
 
 		vector<int> metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
 
-		CScriptClass();
+		ZETSCRIPT_MODULE_EXPORT CScriptClass();
 
 		bool is_c_class();
 
@@ -107,7 +111,10 @@ namespace zetscript{
 		//------------- STATIC METHODS ---------------
 
 	private:
-		static vector<CScriptClass *> 			* vec_script_class_node;
+		static 			vector<CScriptClass *> 			* vec_script_class_node;
+		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
+		ZETSCRIPT_MODULE_EXPORT static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
+		
 	public:
 
 		// DEFINES
@@ -145,20 +152,20 @@ namespace zetscript{
 
 
 		static CScriptClass 				* 		getScriptClassByIdx(int idx);
-		static CScriptClass 				* 		getScriptClassByName(const string & name, bool print_msg=true);
+		ZETSCRIPT_MODULE_EXPORT static CScriptClass 				* 		getScriptClassByName(const string & name, bool print_msg=true);
 		static CScriptClass 				* 		getScriptClassBy_C_ClassPtr(const string & class_type, bool print_msg=true);
 		static int 									getIdxScriptClass_Internal(const string & class_name);
 		static int 									getIdxScriptClass(const string & v, bool print_msg=true);
 		static int 									getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
-		static int 									getIdxClassFromIts_C_Type(const string & s);
+		ZETSCRIPT_MODULE_EXPORT static int 			getIdxClassFromIts_C_Type(const string & s);
 
 
-		static bool 								idxClassInstanceofIdxClass(int theClass,int class_idx);
+		ZETSCRIPT_MODULE_EXPORT static bool			isIdxClassInstanceOf(int theClass,int class_idx);
 
 
 
 		//static BASIC_CLASS_TYPE			getIdxPrimitiveFromIts_C_TypeInternal(const string & c_type_str);
-		static bool 								isClassRegistered(const string & v);
+		ZETSCRIPT_MODULE_EXPORT  static bool 								isClassRegistered(const string & v);
 
 
 
@@ -184,8 +191,8 @@ namespace zetscript{
 
 		static CScriptFunctionObject *  registerFunctionSymbol(const string & class_name, const string & name,short idxAstNode);
 		static int getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name, bool show_errors=true);
-		static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
-		static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
+		ZETSCRIPT_MODULE_EXPORT static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
+		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
 		static CScriptFunctionObject * getScriptFunctionObjectByClassIdxFunctionName(int idxClassName,const string & function_name, bool show_errors=true);
 
 		static tFunctionInfo *  getSuperClass(CScriptClass *irc, const string & fun_name);
@@ -199,7 +206,7 @@ namespace zetscript{
 		//CScriptClass *  getRegisteredClassBy_C_ClassPtr(const string & v, bool print_msg=true);
 
 		static int 					getIdxRegisteredClass(const string & v, bool print_msg=true);
-		static fntConversionType getConversionType(string objectType, string conversionType, bool show_errors=true);
+		//static fntConversionType getConversionType(string objectType, string conversionType, bool show_errors=true);
 
 		static const char * getNameRegisteredClassByIdx(int idx);
 
@@ -216,11 +223,13 @@ namespace zetscript{
 		static CScriptClass *  getRegisteredClassNull();
 
 
+		static intptr_t doCast(intptr_t obj, int src_class, int convert_class);
+
 		/**
 		 * Register C function
 		 */
 		template <typename F>
-		static bool register_C_FunctionInt(const string & function_name,F function_ptr)
+		static bool register_C_FunctionInt(const char * function_name,F function_ptr)
 		{
 			int idx_return_type=-1;
 			string return_type;
@@ -228,6 +237,12 @@ namespace zetscript{
 			vector<tArgumentInfo> m_infoArg;
 			intptr_t ref_ptr=-1;
 			CScriptFunctionObject *irs=NULL;
+
+			if(!CScriptFunctionObject::checkCanRegister_C_Function(function_name)){
+				return false;
+			}
+
+
 
 			//tPrimitiveType *rt;
 			//vector<tPrimitiveType *> pt;
@@ -249,14 +264,20 @@ namespace zetscript{
 
 			// check valid parameters ...
 			if((idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
-				zs_print_error_cr("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name.c_str());
+				zs_print_error_cr("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name);
 				return false;
 			}
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
 				int idx_type = getIdxClassFromIts_C_Type(m_arg[i]);
+
+				if(idx_type==IDX_CLASS_FLOAT_C || idx_type==IDX_CLASS_BOOL_C){
+					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str());
+					return false;
+				}
+
 				if(idx_type ==-1){
-					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name.c_str());
+					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
 				}
 
@@ -269,7 +290,7 @@ namespace zetscript{
 				}
 			}
 			else{
-				if((ref_ptr=(intptr_t)CNativeFunction::getInstance()->new_proxy_function<int>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)CNativeFunction::getInstance()->new_proxy_function<intptr_t>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
 					return false;
 				}
 			}
@@ -296,8 +317,8 @@ namespace zetscript{
 		/**
 		 * Register C variable
 		 */
-		static bool register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
-		static int getIdx_C_RegisteredClass(const string & str_classPtr, bool print_msg=true);
+		ZETSCRIPT_MODULE_EXPORT static bool register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
+		ZETSCRIPT_MODULE_EXPORT static int getIdx_C_RegisteredClass(const string & str_classPtr, bool print_msg=true);
 		static int getIdx_C_RegisteredFunctionMemberClass(const string & str_classPtr, const string & str_functionName, bool print_msg=true);
 
 
@@ -305,7 +326,22 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		static bool register_C_SingletonClassInt(const string & class_name){//, const string & base_class_name=""){
+		ZETSCRIPT_MODULE_EXPORT static bool register_C_SingletonClassInt(const string & class_name){//, const string & base_class_name=""){
+
+			// to make compatible MSVC shared library
+			vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
+			int size=(*local_vec_script_class_node).size();
+			if(size>MAX_BASIC_CLASS_TYPES){ // after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
+				if((
+
+					(((*local_vec_script_class_node)[size-1]->metadata_info.object_info.symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
+				)){
+					zs_print_error_cr("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str());
+					return false;
+				}
+
+			}
+
 
 			if(!isClassRegistered(class_name)){
 
@@ -338,16 +374,16 @@ namespace zetscript{
 				// allow dynamic constructor in function its parameters ...
 
 
-				irc->metadata_info.object_info.symbol_info.idxScriptClass = (short)((*vec_script_class_node).size());
+				irc->metadata_info.object_info.symbol_info.idxScriptClass = (short)((*local_vec_script_class_node).size());
 				irc->classPtrType=str_classPtr;
 				irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
 
 				irc->c_constructor = NULL;
 				irc->c_destructor = NULL;
-				(*vec_script_class_node).push_back(irc);
+				(*local_vec_script_class_node).push_back(irc);
 
-				irc->idxClass=(*vec_script_class_node).size()-1;
+				irc->idxClass=(*local_vec_script_class_node).size()-1;
 				zs_print_debug_cr("* C++ class \"%s\" registered as (%s).",class_name.c_str(),demangle(str_classPtr).c_str());
 
 				return true;
@@ -368,8 +404,14 @@ namespace zetscript{
 				CScriptClass *irc = CScriptClass::getScriptClassByName(class_name);
 
 				//put the constructor/destructor...
-				irc->c_constructor = new std::function<void *()>([](){return new _T;});
-				irc->c_destructor = new std::function<void (void *)>([](void *p){delete (_T *)p;});
+				irc->c_constructor = new std::function<void *()>([=](){
+					_T* t=new _T;
+					return t;
+				});
+
+				irc->c_destructor = new std::function<void (void *)>([=](void *p){
+					delete (_T *)p;
+				});
 
 				return true;
 			}
@@ -381,18 +423,32 @@ namespace zetscript{
 		template<class _T, class _B>
 		static bool class_C_baseofInt(){
 
+			// to make compatible MSVC shared library
+			vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
+
+
 			string base_class_name=typeid(_B).name();
 			string base_class_name_ptr=typeid(_B *).name();
 			string class_name=typeid(_T).name();
 			string class_name_ptr=typeid(_T *).name();
 
-			int idxBaseClass = getIdxClassFromIts_C_Type(typeid(_B *).name());
-			if(idxBaseClass == -1) return false;
+			int idxBaseClass = getIdxClassFromIts_C_Type(base_class_name_ptr);
+			if(idxBaseClass == -1) {
+				zs_print_error_cr("base class %s not registered",base_class_name_ptr.c_str());
+				return false;
+			}
 
 
-			int register_class = getIdxClassFromIts_C_Type(typeid(_T *).name());
-			if(register_class == -1) return false;
+			int register_class = getIdxClassFromIts_C_Type(class_name_ptr);
+			if(register_class == -1) {
+				zs_print_error_cr("class %s not registered",class_name_ptr.c_str());
+				return false;
+			}
 
+			if(isIdxClassInstanceOf(register_class,idxBaseClass)){
+				zs_print_error_cr("C++ class \"%s\" is already registered as base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+				return false;
+			}
 
 			// check whether is in fact base of ...
 			if(!std::is_base_of<_B,_T>::value){
@@ -400,25 +456,34 @@ namespace zetscript{
 				return false;
 			}
 
-			for(unsigned i = 0; i < (*vec_script_class_node)[register_class]->baseClass.size(); i++){
-				if((*vec_script_class_node)[register_class]->baseClass[i]->classPtrType ==base_class_name_ptr){
+			for(unsigned i = 0; i < (*local_vec_script_class_node)[register_class]->idxBaseClass.size(); i++){
+				CScriptClass *sc = CScriptClass::getScriptClassByIdx((*local_vec_script_class_node)[register_class]->idxBaseClass[i]);
+				if(sc->classPtrType ==base_class_name_ptr){
 					zs_print_error_cr("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
 					return false;
 				}
 			}
 
-			if(mapTypeConversion.count(class_name_ptr) == 1){ // create new map...
-				if(mapTypeConversion[class_name_ptr].count(base_class_name_ptr)==1){
+			CScriptClass *irc_class = (*local_vec_script_class_node)[register_class];
+			irc_class->idxBaseClass.push_back(idxBaseClass);
+
+			map<int, map<int, fntConversionType>>  *	local_map_type_conversion=	getMapTypeConversion();
+			(*local_map_type_conversion)[irc_class->idxClass][idxBaseClass]=[](intptr_t entry){ return (intptr_t)(_B *)((_T *)entry);};
+
+
+#if 0 // disabled! This don't work for virtual classes (its map changes at runtime).
+	  // https://stackoverflow.com/questions/48572734/is-possible-do-a-later-function-binding-knowing-its-function-type-and-later-the
+	  //
+
+
+			if(local_map_type_conversion->count(class_name_ptr) == 1){ // create new map...
+				if(local_map_type_conversion->at(class_name_ptr).count(base_class_name_ptr)==1){
 					zs_print_error_cr("Conversion type \"%s\" -> \"%s\" already inserted",demangle(class_name).c_str(),demangle(base_class_name).c_str());
 					return false;
 				}
 			}
 
-			mapTypeConversion[class_name_ptr][base_class_name_ptr]=[](CScriptVariable *s){ return (intptr_t)reinterpret_cast<_B *>(s);};
-
-			CScriptClass *irc_base = (*vec_script_class_node)[idxBaseClass];
-			CScriptClass *irc_class = (*vec_script_class_node)[register_class];
-			irc_class->baseClass.push_back(irc_base);
+			CScriptClass *irc_base = (*local_vec_script_class_node)[idxBaseClass];
 
 			// register all symbols function from base ...
 			// vars ...
@@ -428,7 +493,7 @@ namespace zetscript{
 
 				tInfoVariableSymbol irs;
 				// init struct...
-				irs.idxScriptClass = idxBaseClass;//.class_info = (*vec_script_class_node)[base_class];
+				irs.idxScriptClass = idxBaseClass;
 				irs.ref_ptr=irs_source->ref_ptr;
 				irs.c_type = irs_source->c_type;
 				//irs.
@@ -465,17 +530,23 @@ namespace zetscript{
 
 
 			}
-			return true;
+#endif
 
+			// finally maps object type ...
+			return true;
 		}
 
 
 		/**
 		 * Register C Member function Class
 		 */
-		template < typename _R, class _T, typename..._A>
+		template < typename _C, typename _R, class _T, typename..._A>
 		static bool register_C_FunctionMemberInt(const char *function_name,_R (_T:: *function_type)(_A...) )
 		{
+
+			// to make compatible MSVC shared library
+			vector<CScriptClass *> * 	local_vec_script_class_node = getVecScriptClassNode();
+
 			string return_type;
 			//vector<string> params;
 			CScriptFunctionObject *irs=NULL;
@@ -483,7 +554,11 @@ namespace zetscript{
 			vector<tArgumentInfo> m_argInfo;
 			int idx_return_type=-1;
 			unsigned int ref_ptr=-1;
-			string str_classPtr = typeid( _T *).name();
+			string str_classPtr = typeid( _C *).name();
+
+			if(!CScriptFunctionObject::checkCanRegister_C_Function(function_name)){
+				return false;
+			}
 
 			int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
 
@@ -504,6 +579,12 @@ namespace zetscript{
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
 				int idx_type=getIdxClassFromIts_C_Type(m_arg[i]);
+
+				if(idx_type==IDX_CLASS_FLOAT_C || idx_type==IDX_CLASS_BOOL_C){
+					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str());
+					return false;
+				}
+
 				if(idx_type==-1){
 					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
@@ -516,11 +597,11 @@ namespace zetscript{
 			// ignores special type cast C++ member to ptr function
 			// create binding function class
 			if(idx_return_type == IDX_CLASS_VOID_C){
-				if((ref_ptr=((intptr_t)CNativeFunction::getInstance()->c_member_class_function_proxy<_T, void>(m_arg.size(),function_type)))==0){
+				if((ref_ptr=((intptr_t)CNativeFunction::getInstance()->c_member_class_function_proxy<_C,_T, void>(m_arg.size(),function_type)))==0){
 					return false;
 				}
 			}else{
-				if((ref_ptr=((intptr_t)CNativeFunction::getInstance()->c_member_class_function_proxy<_T, intptr_t>(m_arg.size(),function_type)))==0){
+				if((ref_ptr=((intptr_t)CNativeFunction::getInstance()->c_member_class_function_proxy<_C,_T, _R>(m_arg.size(),function_type)))==0){
 					return false;
 				}
 			}
@@ -532,7 +613,7 @@ namespace zetscript{
 			CASTNode *ast_symbol = CASTNode::newASTNode();
 			ast_symbol->symbol_value = function_name;
 			// get ast symbols function member node...
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
+			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
 			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
 
 
@@ -545,13 +626,13 @@ namespace zetscript{
 			irs->m_arg = m_argInfo;
 			irs->idx_return_type = idx_return_type;
 
-			irs->object_info.symbol_info.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
-			(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
-			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
+			irs->object_info.symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
+			(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
+			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 
-			if(STRCMP(registered_metamethod[SET_METAMETHOD],==,function_name)){
-				(*vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(irs->object_info.idxScriptFunctionObject);
-				zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
+			if(STRCMP(getMetamethod(SET_METAMETHOD),==,function_name)){
+				(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(irs->object_info.idxScriptFunctionObject);
+				zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 			}
 
 
@@ -562,9 +643,12 @@ namespace zetscript{
 		/**
 		 * Register C Member function Class
 		 */
-		template < class _T, typename _F>
+		template <typename _T, typename _F>
 		static bool register_C_StaticFunctionMemberInt(const char *function_name,_F function_type)
 		{
+			// to make compatible MSVC shared library
+			vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
+
 			string return_type;
 			vector<string> params;
 			CScriptFunctionObject *irs=NULL;
@@ -573,6 +657,12 @@ namespace zetscript{
 			int idx_return_type=-1;
 			unsigned int ref_ptr=-1;
 			string str_classPtr = typeid( _T *).name();
+			string function_class_name = demangle(typeid(_T).name())+"::"+function_name;
+
+
+			if(!CScriptFunctionObject::checkCanRegister_C_Function(function_class_name.c_str())){
+				return false;
+			}
 
 			int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
 
@@ -593,6 +683,12 @@ namespace zetscript{
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
 				int idx_type = getIdxClassFromIts_C_Type(m_arg[i]);
+
+				if(idx_type==IDX_CLASS_FLOAT_C || idx_type==IDX_CLASS_BOOL_C){
+					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str());
+					return false;
+				}
+
 				if(idx_type==-1){
 					zs_print_error_cr("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
@@ -622,7 +718,7 @@ namespace zetscript{
 			CASTNode *ast_symbol = CASTNode::newASTNode();
 			ast_symbol->symbol_value = function_name;
 			// get ast symbols function member node...
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
+			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
 			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
 
 
@@ -634,15 +730,15 @@ namespace zetscript{
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
 			irs->m_arg = m_argInfo;
 			irs->idx_return_type = idx_return_type;
-			irs->object_info.symbol_info.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
-			(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
+			irs->object_info.symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
+			(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
 			// check whether is static metamethod...
-			if(STRCMP(registered_metamethod[SET_METAMETHOD],!=,function_name)){
+			if(STRCMP(getMetamethod(SET_METAMETHOD),!=,function_name)){
 
 				for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-					if(STRCMP(registered_metamethod[i],==,function_name)){
+					if(STRCMP(getMetamethod((METAMETHOD_OPERATOR)i),==,function_name)){
 
 						// check if they are gte,gt,equ, not_equ, lt, lte
 						if(  i == EQU_METAMETHOD //STRCMP(function_name, == ,"_equ")
@@ -672,7 +768,7 @@ namespace zetscript{
 							return false;
 						}
 
-						(*vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
+						(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
 
 						zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 						break;
@@ -690,15 +786,18 @@ namespace zetscript{
 		 * Register C Member var
 		 */
 		//<o, decltype(o::s)>(STR(s),zetscript::offset_of(&o::s)) &CVar::mierda
-		template <typename _R,typename _T>
+		template <typename _C, typename _R,typename _T>
 		static bool register_C_VariableMemberInt(const char *var_name, _R _T::*var_pointer) //unsigned int offset)
 		{
+			// to make compatible MSVC shared library
+			vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
+
 			string var_type = typeid(_R *).name(); // we need the pointer type ...
 			string return_type;
 			//vector<string> params;
 			tInfoVariableSymbol irs;
-			string str_classPtr = typeid( _T *).name();
-			unsigned int offset=zetscript::offset_of(var_pointer);
+			string str_classPtr = typeid( _C *).name();
+			unsigned int offset=zetscript::offset_of<_C>(var_pointer);
 
 			int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
 
@@ -711,14 +810,14 @@ namespace zetscript{
 			// check valid parameters ...
 			if(getIdxClassFromIts_C_Type(var_type) == -1){
 				zs_print_error_cr("%s::%s has not valid type (%s)"
-						,(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str()
+						,(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str()
 						,var_name
 						,demangle(typeid(_R).name()).c_str());
 				return false;
 			}
 
 			// init struct...
-			irs.idxScriptClass = idxRegisterdClass;//(*vec_script_class_node)[idxRegisterdClass];
+			irs.idxScriptClass = idxRegisterdClass;
 			irs.ref_ptr=offset;
 			irs.c_type = var_type;
 			//irs.
@@ -729,13 +828,13 @@ namespace zetscript{
 			ast_symbol->symbol_value = var_name;
 
 			// get ast var symbol collection node ( because class has a var collection we need a children [0] )
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE(AST_NODE((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[0])->children[0]);
+			CASTNode *ast_symbol_node =AST_NODE(AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[0])->children[0]);
 			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
 
 
 			irs.properties = PROPERTY_C_OBJECT_REF;
-			irs.idxSymbol = (short)((*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.size());
-			(*vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
+			irs.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.size());
+			(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
 			//base_info->local_symbols.vec_idx_registeredFunction.push_back(irs);
 			return true;
 
@@ -749,47 +848,7 @@ namespace zetscript{
 
 
 		static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
-		static map<string,map<string,fntConversionType>> mapTypeConversion;
-
-		 template<typename _S, typename _D, typename _F>
-		 static bool addPrimitiveTypeConversion(_F f){
-
-			//bool valid_type = false;
-
-			// check if any entry is int, *float, *bool , *string, *int or any from factory. Anyelese will be no allowed!
-		 /*	valid_type|=valid_C_PrimitiveType[IDX_CLASS_VOID_C].type_str==string(typeid(_D).name()); ;//={typeid(void).name(),"void",IDX_CLASS_VOID_C};
-			//valid_type|=valid_C_PrimitiveType[INT_TYPE].type_str==string(typeid(_D).name()); ;//={typeid(int).name(),"int",INT_TYPE};
-			valid_type|=valid_C_PrimitiveType[IDX_CLASS_INT_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(int *).name(),"int *",IDX_CLASS_INT_PTR_C};
-			valid_type|=valid_C_PrimitiveType[IDX_CLASS_FLOAT_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(float *).name(),"float *",IDX_CLASS_FLOAT_PTR_C};
-			valid_type|=valid_C_PrimitiveType[IDX_CLASS_STRING_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(string *).name(),"string *",IDX_CLASS_STRING_PTR_C};
-			valid_type|=valid_C_PrimitiveType[IDX_CLASS_BOOL_PTR_C].type_str==string(typeid(_D).name()); ;//={typeid(bool *).name(),"bool *",IDX_CLASS_BOOL_PTR_C};
-
-			if(!valid_type){
-				zs_print_error_cr("Conversion type \"%s\" not valid",typeid(_D).name());
-				return false;
-			}*/
-
-
-
-			if(mapTypeConversion.count(typeid(_S).name()) == 1){ // create new map...
-				if(mapTypeConversion[typeid(_S).name()].count(typeid(_D).name())==1){
-					zs_print_error_cr("type conversion \"%s\" to \"%s\" already inserted",typeid(_S).name(),typeid(_D).name());
-					return false;
-				}
-			}
-
-			mapTypeConversion[typeid(_S).name()][typeid(_D).name()]=f;
-
-			return true;
-			//typeConversion["P7CNumber"]["Ss"](&n);
-		 }
-
-		//int getIdxRegisteredClass_Internal(const string & class_name);
-		//int getidxScriptFunctionObject_Internal(const string & class_name,const string & function_name);
-		//int getIdxRegisteredVariableSymbol_Internal(const string & class_name,const string & var_name);
-
-		//vector<CScriptClass *>  	 (*vec_script_class_node);
-		//CScriptVariable * createObjectFromPrimitiveType(tPrimitiveType *pt);
+		static map<int,map<int,fntConversionType>> * mapTypeConversion;
 
 		 static bool searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
 
@@ -797,11 +856,6 @@ namespace zetscript{
 		 static void unloadRecursiveFunctions(CScriptFunctionObject * info_function);
 
 		 static bool updateFunctionSymbols(int idxSxriptFunctionObject, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);
-
-
-
-		//CScriptClass();
-		//~CScriptClass();
 
 
 
