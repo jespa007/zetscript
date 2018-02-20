@@ -285,7 +285,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
     if (bInt < 0)
         bInt = 0x80000000 - bInt;
     int intDiff = abs(aInt - bInt);
-    if (intDiff <= maxUlps)
+    if (intDiff <= maxUlps)^
         return true;
     return false;*/
 }
@@ -782,6 +782,9 @@ int main(int argc, char * argv[]) {
 	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or))) return false;
 	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or))) return false;
 
+	if(!register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_xor))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_xor))) return false;
+	if(!register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_xor))) return false;
 
 
 	if(!register_C_StaticFunctionMember<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg))) return false;

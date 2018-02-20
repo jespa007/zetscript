@@ -658,7 +658,7 @@ if(aux_function_info == NULL){\
 					PRINT_ERROR_OP(metamethod_str);\
 				}\
 			}else{\
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAMNEE_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\".\n\n",\
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\".\n\n",\
 					is_constructor ? "constructor":"function",\
 					calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",\
 					AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),\
