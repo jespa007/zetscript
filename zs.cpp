@@ -8,7 +8,7 @@
 using namespace zetscript;
 
 
-const char *about="ZetScript 1.3.0 2017-2018 (c) Jordi Espada\n";
+const char *about="ZetScript 1.3.0 Copyright (C) 2017-2018 Jordi Espada\n\n";
 
 
 int main(int argc, char * argv[]) {
@@ -42,9 +42,14 @@ int main(int argc, char * argv[]) {
 	int g=0;
 
 	const char * instr[]{
-		"var g=0;",
+
+
+
 		"var f=0;",
-		"print(f);",
+		"var g=0;",
+		//"var e=0;",
+		"print(g);",
+
 		0
 	};
 
@@ -81,12 +86,12 @@ int main(int argc, char * argv[]) {
 					}
 				}
 				else{
-					CState::restoreLastState();
+					CState::restoreLastState(); // when restore global vars are cleared ?
 					//continue_from_last=false;
 				}
 			}
 			else{
-				CState::restoreLastState();
+				CState::restoreLastState(); // when restore global vars are cleared ?
 				//continue_from_last=false;
 			}
 		}

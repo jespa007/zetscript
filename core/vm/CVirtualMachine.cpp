@@ -422,7 +422,7 @@ namespace zetscript{
 		}\
 		list->first=list->last=NULL;\
 
-	#define POP_SCOPE(_ret_ref) \
+	#define POP_SCOPE(_ret_ref,_continue_from_last_statment) \
 	if(current_scope_info_ptr!=scope_info)\
 	{\
 		CScriptFunctionObject *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;\
@@ -442,11 +442,13 @@ namespace zetscript{
 					}\
 				}\
 			}\
-			*ptr_ale={\
+			if(!_continue_from_last_statment){\
+				*ptr_ale={\
 					STK_PROPERTY_TYPE_UNDEFINED,\
 					0,\
 					0\
-			};\
+				};\
+			}\
 		}\
 	\
 		REMOVE_0_SHARED_POINTERS(idxCurrentStack,_ret_ref);\
@@ -813,10 +815,14 @@ if(aux_function_info == NULL){\
 		return result;
 	}
 
-	void CVirtualMachine::stackDumped(){
+	void CVirtualMachine::stackDumped(bool _continue_from_last_statment){
 		// derefer all variables in all scopes (include the main )...
-		while(scope_info!=current_scope_info_ptr){
-			POP_SCOPE(NULL);
+		while(scope_info!=(current_scope_info_ptr-1)){
+			POP_SCOPE(NULL,false);
+		}
+
+		if(_continue_from_last_statment){
+			POP_SCOPE(NULL,true);
 		}
 
 		idxCurrentStack=0;
@@ -1381,7 +1387,7 @@ if(aux_function_info == NULL){\
 
 
 		if(info==NULL){ // it was error so reset stack and stop execution ? ...
-			stackDumped();
+			stackDumped(continue_from_last_statment);
 		}
 
 		if(info==NULL){
@@ -1510,15 +1516,18 @@ if(aux_function_info == NULL){\
 		// init local vars ...
 		if(info_function->object_info.idxScriptFunctionObject != 0){ // is not main function, so we have to initialize vars.
 
-			tStackElement *ptr_aux = ptrLocalVar;
-			for(unsigned i = 0; i < local_var->size(); i++){
 
-				// if C then pass its properties...
-				*ptr_aux++={
-						STK_PROPERTY_TYPE_UNDEFINED, // starts undefined.
-						0,							 // no value assigned.
-						0 						     // no varref related.
-				};
+			if(!continue_from_last_statment){ // not initialize variables if not interactive mode...
+				tStackElement *ptr_aux = ptrLocalVar;
+				for(unsigned i = 0; i < local_var->size(); i++){
+
+					// if C then pass its properties...
+					*ptr_aux++={
+							STK_PROPERTY_TYPE_UNDEFINED, // starts undefined.
+							0,							 // no value assigned.
+							0 						     // no varref related.
+					};
+				}
 			}
 		}
 
@@ -2581,7 +2590,7 @@ if(aux_function_info == NULL){\
 					continue;
 
 			 case POP_SCOPE:
-					POP_SCOPE(NULL);//instruction->index_op1);
+					POP_SCOPE(NULL,false);//instruction->index_op1);
 				 	break;
 
 				//
@@ -2603,8 +2612,8 @@ if(aux_function_info == NULL){\
 
 		//idx_laststatment=m_listStatements-ptr_statment_iteration;
 
-	//if(info_function->object_info.idxScriptFunctionObject != 0){ // if not main function do not do the pop action (preserve variables always!)
-		POP_SCOPE(callc_result.varRef);
+		//if(info_function->object_info.idxScriptFunctionObject != 0){ // if not main function do not do the pop action (preserve variables always!)
+		POP_SCOPE(callc_result.varRef,continue_from_last_statment);
 
 
 		//=========================
