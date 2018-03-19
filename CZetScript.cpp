@@ -679,13 +679,14 @@ namespace zetscript{
 
 	}
 
-	bool CZetScript::execute(){
+
+	bool CZetScript::execute(bool continue_from_last_statment){
 
 		if(!__init__) return NULL;
 		ZS_CLEAR_ERROR_MSG();
 
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject) != NULL;//->excute();
+		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject,NO_PARAMS,continue_from_last_statment) != NULL;//->excute();
 	}
 
 

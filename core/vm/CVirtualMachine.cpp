@@ -853,6 +853,8 @@ if(aux_function_info == NULL){\
 
 		custom_error = "unknow_error";
 
+		idx_laststatment=0;
+
 		ptrLastStr=&stkString[VM_LOCAL_VAR_MAX_STACK-1]; // aux values for string ...
 		ptrCurrentStr=NULL;
 
@@ -1322,12 +1324,15 @@ if(aux_function_info == NULL){\
 	tStackElement * CVirtualMachine::execute(
 			 CScriptFunctionObject *info_function,
 			 CScriptVariable *this_object,
-			const vector<tStackElement> & arg
+			const vector<tStackElement> & arg,
+			bool continue_from_last_statment
 			){
 
 		if(info_function==NULL){
 			return NULL;
 		}
+
+		bool save_last_statment=false;
 
 		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);//GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 
@@ -1341,6 +1346,10 @@ if(aux_function_info == NULL){\
 
 			if(info_function->object_info.idxScriptFunctionObject != 0){ // preserve stack space for global vars
 				ptrCurrentOp=&stack[main_function->object_info.local_symbols.m_registeredVariable.size()];
+			}
+
+			if(continue_from_last_statment){
+				save_last_statment=true;
 			}
 		}
 
@@ -1357,12 +1366,19 @@ if(aux_function_info == NULL){\
 
 		// Script function starts here.... later script function can call c++ function, but once in c++ function is not possible by now call script function again.
 
+
 		tStackElement *info=execute_internal(
 				info_function,
 				this_object,
 				ptrCurrentOp,
 				NULL,
-				n_arg);
+				n_arg,
+				continue_from_last_statment);
+
+		if(save_last_statment){
+			idx_laststatment=main_function->object_info.n_statments;
+		}
+
 
 		if(info==NULL){ // it was error so reset stack and stop execution ? ...
 			stackDumped();
@@ -1382,7 +1398,8 @@ if(aux_function_info == NULL){\
 			tStackElement 		  * _ptrStartOp,
 			string 		  		  * _ptrStartStr,
 			unsigned char n_args,
-			int idxAstNode){
+			int idxAstNode,
+			bool continue_from_last_statment){
 
 
 		string *ptrStartStr;
@@ -1472,6 +1489,11 @@ if(aux_function_info == NULL){\
 		//CScriptVariable *ret=VM_UNDEFINED;
 		callc_result ={STK_PROPERTY_TYPE_UNDEFINED, NULL};
 		PtrStatment m_listStatements = info_function->object_info.statment_op;
+
+		if(continue_from_last_statment>=0){ // only works for main function ...
+			printf("starting from %i\n",idx_laststatment);
+			m_listStatements=& info_function->object_info.statment_op[idx_laststatment];
+		}
 		//bool end_by_ret=false;
 
 		//=========================================
@@ -1529,6 +1551,8 @@ if(aux_function_info == NULL){\
 
 		PtrStatment current_statment = NULL,
 					ptr_statment_iteration=m_listStatements;
+
+
 
 		tStackElement *dst_ins=NULL;
 		tStackElement *src_ins=NULL;
@@ -2576,6 +2600,8 @@ if(aux_function_info == NULL){\
 		}//while(ptr_statment_iteration->asm_op!=NULL && !end_by_ret);
 
 	lbl_exit_function:
+
+		//idx_laststatment=m_listStatements-ptr_statment_iteration;
 
 	//if(info_function->object_info.idxScriptFunctionObject != 0){ // if not main function do not do the pop action (preserve variables always!)
 		POP_SCOPE(callc_result.varRef);

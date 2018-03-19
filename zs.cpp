@@ -8,7 +8,7 @@
 using namespace zetscript;
 
 
-const char *about="ZetScript 2017 © Jordi Espada\n";
+const char *about="ZetScript 1.3.0 2017-2018 (c) Jordi Espada\n";
 
 
 int main(int argc, char * argv[]) {
@@ -33,40 +33,65 @@ int main(int argc, char * argv[]) {
 	}*/
 
 	bool exit = false;
+	bool continue_from_last=true;
 	string expression;
-
+	int idx_last_instruction_ok=-1;
 
 	printf("%s",about);
 
-	do{
-		printf(">");
+	int g=0;
 
-		std::getline(std::cin,expression);
+	const char * instr[]{
+		"var g=0;",
+		"var f=0;",
+		"print(f);",
+		0
+	};
+
+	int idx_ptr=0;
+	CState::saveState();
+
+	do{
+		printf("zs>");
+
+		//std::getline(std::cin,expression);
+		expression=instr[idx_ptr];
+
+		printf("%s\n",expression.c_str());
 
 		exit = expression=="exit";
 
+		//CState::saveState();
 		if(!exit){ // evaluate expression
 
 			CState::clearCurrentCompileInformation();
 
 			if(zetscript->parse(expression)){
+
 				if(zetscript->compile()){
-					if(zetscript->execute()){
-						//CState::saveState();
+
+					zetscript->printGeneratedCodeAllClasses();
+
+					if(zetscript->execute(true)){
+						//continue_from_last=true;
+						CState::saveState();
 					}else{
 						//CState::restoreLastState();
+						//continue_from_last=false;
 					}
 				}
 				else{
-					//CState::restoreLastState();
+					CState::restoreLastState();
+					//continue_from_last=false;
 				}
 			}
 			else{
-				//CState::restoreLastState();
+				CState::restoreLastState();
+				//continue_from_last=false;
 			}
 		}
 
-	}while(!exit);
+	}while(!exit && (instr[++idx_ptr] != NULL));
 
 	CZetScript::destroy();
 

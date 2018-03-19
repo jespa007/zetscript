@@ -2534,9 +2534,12 @@ namespace zetscript{
 			memset(m_currentFunctionInfo->function_info_object->object_info.statment_op, 0, size);
 			//m_currentFunctionInfo->function_info_object->object_info.n_statment_op = vec_comp_statment->size();
 
+			m_currentFunctionInfo->function_info_object->object_info.n_statments=vec_comp_statment->size();
+
 			for (unsigned i = 0; i < vec_comp_statment->size(); i++) { // foreach statment...
 				// reserve memory for n ops + 1 NULL end of instruction...
 				size = (vec_comp_statment->at(i).asm_op.size() + 1) * sizeof(tInfoAsmOp);
+
 				m_currentFunctionInfo->function_info_object->object_info.statment_op[i] = (tInfoAsmOp *)malloc(size);
 
 				memset(m_currentFunctionInfo->function_info_object->object_info.statment_op[i], 0, size);
