@@ -54,7 +54,7 @@ int main(int argc, char * argv[]) {
 	};
 
 	int idx_ptr=0;
-	CState::saveState();
+
 
 	do{
 		printf("zs>");

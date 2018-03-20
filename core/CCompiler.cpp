@@ -2519,7 +2519,7 @@ namespace zetscript{
 		this->m_treescope = SCOPE_INFO_NODE(_node->idxScope);
 	}
 
-	void CCompiler::popFunction(bool save_statment_op){
+	void CCompiler::popFunction(bool save_statment_op, bool partial_save){
 
 		m_currentFunctionInfo->function_info_object->object_info.statment_op=NULL;
 

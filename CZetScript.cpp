@@ -646,7 +646,7 @@ namespace zetscript{
 		return status;
 	}
 
-	ZETSCRIPT_MODULE_EXPORT bool CZetScript::compile(){
+	ZETSCRIPT_MODULE_EXPORT bool CZetScript::compile(bool partial){
 		if(!__init__) return false;
 		ZS_CLEAR_ERROR_MSG();
 
@@ -656,7 +656,7 @@ namespace zetscript{
 		idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 
 
-		if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
+		if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject),partial )){
 			// print generated asm ...
 
 			if(!CScriptClass::updateReferenceSymbols()){
