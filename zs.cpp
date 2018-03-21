@@ -59,10 +59,10 @@ int main(int argc, char * argv[]) {
 	do{
 		printf("zs>");
 
-		//std::getline(std::cin,expression);
-		expression=instr[idx_ptr];
+		std::getline(std::cin,expression);
+		//expression=instr[idx_ptr];
 
-		printf("%s\n",expression.c_str());
+		//printf("%s\n",expression.c_str());
 
 		exit = expression=="exit";
 
@@ -77,26 +77,26 @@ int main(int argc, char * argv[]) {
 
 					zetscript->printGeneratedCodeAllClasses();
 
-					if(zetscript->execute(true)){
+					if(zetscript->execute()){
 						//continue_from_last=true;
-						CState::saveState();
+						//CState::saveState();
 					}else{
 						//CState::restoreLastState();
 						//continue_from_last=false;
 					}
 				}
 				else{
-					CState::restoreLastState(); // when restore global vars are cleared ?
+					//CState::restoreLastState(); // when restore global vars are cleared ?
 					//continue_from_last=false;
 				}
 			}
 			else{
-				CState::restoreLastState(); // when restore global vars are cleared ?
+				//CState::restoreLastState(); // when restore global vars are cleared ?
 				//continue_from_last=false;
 			}
 		}
 
-	}while(!exit && (instr[++idx_ptr] != NULL));
+	}while(!exit);// && (instr[++idx_ptr] != NULL));
 
 	CZetScript::destroy();
 

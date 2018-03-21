@@ -422,7 +422,7 @@ namespace zetscript{
 		}\
 		list->first=list->last=NULL;\
 
-	#define POP_SCOPE(_ret_ref,_continue_from_last_statment) \
+	#define POP_SCOPE(_ret_ref) \
 	if(current_scope_info_ptr!=scope_info)\
 	{\
 		CScriptFunctionObject *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;\
@@ -442,13 +442,11 @@ namespace zetscript{
 					}\
 				}\
 			}\
-			if(!_continue_from_last_statment){\
-				*ptr_ale={\
-					STK_PROPERTY_TYPE_UNDEFINED,\
-					0,\
-					0\
-				};\
-			}\
+			*ptr_ale={\
+				STK_PROPERTY_TYPE_UNDEFINED,\
+				0,\
+				0\
+			};\
 		}\
 	\
 		REMOVE_0_SHARED_POINTERS(idxCurrentStack,_ret_ref);\
@@ -815,14 +813,10 @@ if(aux_function_info == NULL){\
 		return result;
 	}
 
-	void CVirtualMachine::stackDumped(bool _continue_from_last_statment){
-		// derefer all variables in all scopes (include the main )...
+	void CVirtualMachine::stackDumped(){
+		// derefer all variables in all scopes (except main )...
 		while(scope_info!=(current_scope_info_ptr-1)){
-			POP_SCOPE(NULL,false);
-		}
-
-		if(_continue_from_last_statment){
-			POP_SCOPE(NULL,true);
+			POP_SCOPE(NULL);
 		}
 
 		idxCurrentStack=0;
@@ -1330,15 +1324,12 @@ if(aux_function_info == NULL){\
 	tStackElement * CVirtualMachine::execute(
 			 CScriptFunctionObject *info_function,
 			 CScriptVariable *this_object,
-			const vector<tStackElement> & arg,
-			bool continue_from_last_statment
+			const vector<tStackElement> & arg
 			){
 
 		if(info_function==NULL){
 			return NULL;
 		}
-
-		bool save_last_statment=false;
 
 		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);//GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
 
@@ -1352,10 +1343,6 @@ if(aux_function_info == NULL){\
 
 			if(info_function->object_info.idxScriptFunctionObject != 0){ // preserve stack space for global vars
 				ptrCurrentOp=&stack[main_function->object_info.local_symbols.m_registeredVariable.size()];
-			}
-
-			if(continue_from_last_statment){
-				save_last_statment=true;
 			}
 		}
 
@@ -1378,16 +1365,11 @@ if(aux_function_info == NULL){\
 				this_object,
 				ptrCurrentOp,
 				NULL,
-				n_arg,
-				continue_from_last_statment);
-
-		if(save_last_statment){
-			idx_laststatment=main_function->object_info.n_statments;
-		}
+				n_arg);
 
 
 		if(info==NULL){ // it was error so reset stack and stop execution ? ...
-			stackDumped(continue_from_last_statment);
+			stackDumped();
 		}
 
 		if(info==NULL){
@@ -1404,8 +1386,7 @@ if(aux_function_info == NULL){\
 			tStackElement 		  * _ptrStartOp,
 			string 		  		  * _ptrStartStr,
 			unsigned char n_args,
-			int idxAstNode,
-			bool continue_from_last_statment){
+			int idxAstNode){
 
 
 		string *ptrStartStr;
@@ -1496,10 +1477,6 @@ if(aux_function_info == NULL){\
 		callc_result ={STK_PROPERTY_TYPE_UNDEFINED, NULL};
 		PtrStatment m_listStatements = info_function->object_info.statment_op;
 
-		if(continue_from_last_statment>=0){ // only works for main function ...
-			printf("starting from %i\n",idx_laststatment);
-			m_listStatements=& info_function->object_info.statment_op[idx_laststatment];
-		}
 		//bool end_by_ret=false;
 
 		//=========================================
@@ -1517,7 +1494,7 @@ if(aux_function_info == NULL){\
 		if(info_function->object_info.idxScriptFunctionObject != 0){ // is not main function, so we have to initialize vars.
 
 
-			if(!continue_from_last_statment){ // not initialize variables if not interactive mode...
+			if(idxCurrentStack > 1){ // not global vars, then initialize variables as undefined...
 				tStackElement *ptr_aux = ptrLocalVar;
 				for(unsigned i = 0; i < local_var->size(); i++){
 
@@ -2590,7 +2567,7 @@ if(aux_function_info == NULL){\
 					continue;
 
 			 case POP_SCOPE:
-					POP_SCOPE(NULL,false);//instruction->index_op1);
+					POP_SCOPE(NULL);//instruction->index_op1);
 				 	break;
 
 				//
@@ -2613,7 +2590,7 @@ if(aux_function_info == NULL){\
 		//idx_laststatment=m_listStatements-ptr_statment_iteration;
 
 		//if(info_function->object_info.idxScriptFunctionObject != 0){ // if not main function do not do the pop action (preserve variables always!)
-		POP_SCOPE(callc_result.varRef,continue_from_last_statment);
+
 
 
 		//=========================
@@ -2623,6 +2600,8 @@ if(aux_function_info == NULL){\
 		if(idxCurrentStack > 0){
 			if(idxCurrentStack == 1){ // unref 0 shared pointers for main function
 				REMOVE_0_SHARED_POINTERS(idxCurrentStack,NULL);
+			}else{
+				POP_SCOPE(callc_result.varRef);
 			}
 			idxCurrentStack--;
 		}

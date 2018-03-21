@@ -64,8 +64,7 @@ namespace zetscript{
 				tStackElement 		  * _ptrStartOp=NULL,
 				string 		  		  * _ptrStartStr=NULL,
 				unsigned char n_args=0,
-				int idxAstNode = ZS_UNDEFINED_IDX,
-				bool continue_from_last_statment=false);//vector<CScriptVariable *> * argv=NULL,int stk=0);
+				int idxAstNode = ZS_UNDEFINED_IDX);//vector<CScriptVariable *> * argv=NULL,int stk=0);
 
 		bool cancel_execution;
 		const char *custom_error;
@@ -104,8 +103,7 @@ namespace zetscript{
 		ZETSCRIPT_MODULE_EXPORT tStackElement * execute(
 					 CScriptFunctionObject *info_function,
 					 CScriptVariable *this_object,
-					const vector<tStackElement> &  argv=NO_PARAMS,
-					bool continue_from_last_statment=false);
+					const vector<tStackElement> &  argv=NO_PARAMS);
 
 
 		void setCallResult(tStackElement *);
@@ -164,7 +162,7 @@ namespace zetscript{
 		 */
 
 		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
-		void 				stackDumped(bool _continue_from_last_statment = false);
+		void 				stackDumped();
 
 	};
 

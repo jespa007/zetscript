@@ -2573,7 +2573,7 @@ namespace zetscript{
 
 	}
 
-	bool CCompiler::compile(short idxAstNode, CScriptFunctionObject *sf){
+	bool CCompiler::compile(short idxAstNode ,CScriptFunctionObject *sf){
 
 		PASTNode _node =AST_NODE(idxAstNode);
 
@@ -2588,7 +2588,7 @@ namespace zetscript{
 			pushFunction(_node->idxAstNode,sf);
 			// reset current pointer ...
 			{ // main node ?
-				for(unsigned i = 0; i < _node->children.size(); i++){
+				for(unsigned i = START_AST_NODE_TO_COMPILE; i < _node->children.size(); i++){
 
 					if(!ast2asm_Recursive(_node->children[i], m_treescope)){
 						return false;

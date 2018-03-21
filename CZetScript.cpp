@@ -646,7 +646,7 @@ namespace zetscript{
 		return status;
 	}
 
-	ZETSCRIPT_MODULE_EXPORT bool CZetScript::compile(bool partial){
+	ZETSCRIPT_MODULE_EXPORT bool CZetScript::compile(){
 		if(!__init__) return false;
 		ZS_CLEAR_ERROR_MSG();
 
@@ -656,7 +656,7 @@ namespace zetscript{
 		idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 
 
-		if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject),partial )){
+		if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
 			// print generated asm ...
 
 			if(!CScriptClass::updateReferenceSymbols()){
@@ -680,13 +680,13 @@ namespace zetscript{
 	}
 
 
-	bool CZetScript::execute(bool continue_from_last_statment){
+	bool CZetScript::execute(){
 
 		if(!__init__) return NULL;
 		ZS_CLEAR_ERROR_MSG();
 
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject,NO_PARAMS,continue_from_last_statment) != NULL;//->excute();
+		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject,NO_PARAMS) != NULL;//->excute();
 	}
 
 

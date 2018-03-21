@@ -26,7 +26,7 @@ namespace zetscript{
 	int CASTNode::DUMMY_LINE=0;
 	const char * CASTNode::current_parsing_filename="unknow";
 	int CASTNode::current_idx_parsing_filename=-1;
-
+	int CASTNode::startAstNodeToCompile=0;
 
 	bool IS_SINGLE_COMMENT(char *str){
 
@@ -253,6 +253,10 @@ namespace zetscript{
 		}
 
 		return SCOPE_INFO_NODE(vec_ast_node->at(idx)->idxScope);
+	}
+
+	int CASTNode::getStartAstNodeToCompile(){
+		return startAstNodeToCompile;
 	}
 
 	int 		CASTNode::getAstLine(short idx){
