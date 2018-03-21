@@ -446,6 +446,7 @@ namespace zetscript{
 
 		SET_PARSING_FILENAME(idx_filename,filename);
 
+		SAVE_CURSOR_COMPILE;
 
 		if(CASTNode::generateAST_Recursive(
 				s,

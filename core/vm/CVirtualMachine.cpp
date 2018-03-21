@@ -1342,6 +1342,7 @@ if(aux_function_info == NULL){\
 			//*ptrCurrentOp={STK_PROPERTY_TYPE_UNDEFINED,0,0}; // ini first op
 
 			if(info_function->object_info.idxScriptFunctionObject != 0){ // preserve stack space for global vars
+				printf("total vars:%i\n",main_function->object_info.local_symbols.m_registeredVariable.size());
 				ptrCurrentOp=&stack[main_function->object_info.local_symbols.m_registeredVariable.size()];
 			}
 		}

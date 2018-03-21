@@ -25,7 +25,9 @@
 #define MAIN_AST_NODE						(CASTNode::getAstNode(IDX_MAIN_AST_NODE))
 #define MAIN_SCOPE_NODE						(CASTNode::getScope(IDX_MAIN_AST_NODE))
 #define AST_NODE(idx) 						CASTNode::getAstNode(idx)
-#define START_AST_NODE_TO_COMPILE 			CASTNode::getStartAstNodeToCompile()
+#define GET_CURSOR_COMPILE 					CASTNode::getCursorCompile()
+#define RESET_CURSOR_COMPILE	 			CASTNode::resetCursorCompile()
+#define SAVE_CURSOR_COMPILE	 				CASTNode::saveCursorCompile()
 #define AST_SCOPE_INFO_IDX(idx) 			CASTNode::getScopeIdx(idx)
 #define AST_SCOPE_INFO(idx) 				CASTNode::getScope(idx)
 #define AST_LINE(idx)		 				CASTNode::getAstLine(idx)
@@ -74,7 +76,7 @@ namespace zetscript{
 		static int current_idx_parsing_filename;
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
 		static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];
-		static int startAstNodeToCompile;
+		static int cursorCompile;
 
 		//static tPunctuatorInfo defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
@@ -94,7 +96,10 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT static CASTNode				* 	getAstNode(short idx);
 		static CScope 				*	getScope(short ast_idx);
-		static int						getStartAstNodeToCompile();
+		static int						getCursorCompile();
+		static void						resetCursorCompile();
+		static void						saveCursorCompile();
+
 		static int						getScopeIdx(short idx);
 		static int 				  		getAstLine(short ast_idx);
 		static const char           *	getAstFilename(short ast_idx);

@@ -69,7 +69,7 @@ int main(int argc, char * argv[]) {
 		//CState::saveState();
 		if(!exit){ // evaluate expression
 
-			CState::clearCurrentCompileInformation();
+			//CState::clearCurrentCompileInformation();
 
 			if(zetscript->parse(expression)){
 
