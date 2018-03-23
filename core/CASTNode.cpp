@@ -263,10 +263,6 @@ namespace zetscript{
 		cursorCompile=0;
 	}
 
-	void CASTNode::saveCursorCompile(){
-		cursorCompile=MAIN_AST_NODE->children.size();
-	}
-
 	int 		CASTNode::getAstLine(short idx){
 		if(idx==ZS_UNDEFINED_IDX){
 			return -1;
@@ -2402,43 +2398,6 @@ namespace zetscript{
 						return NULL;
 					}
 
-					// register function symbol...
-
-
-					if(ast_node_to_be_evaluated !=NULL){
-
-						int n_params=0;
-
-						if(args_node != NULL){
-							n_params=args_node->children.size();
-						}
-
-						if(named_function){ // register named function...
-							if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
-
-								if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
-									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is already defined with same args at line %i", function_name.c_str(),AST_LINE(irv->idxAstNode));
-								}else{
-									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
-								}
-
-								return NULL;
-							}
-
-							if((irv=scope_info->registerSymbol(function_name,(*ast_node_to_be_evaluated),n_params))==NULL){
-								return NULL;
-							}
-
-							if((*ast_node_to_be_evaluated) != NULL){
-								(*ast_node_to_be_evaluated)->symbol_value=function_name;
-							}
-
-						}else{ // register anonymouse function
-							irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
-							(*ast_node_to_be_evaluated)->symbol_value=irv->name;
-						}
-
-					}
 
 					aux_p++;
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
@@ -2460,7 +2419,41 @@ namespace zetscript{
 
 						if(!error){
 
+
 							if(ast_node_to_be_evaluated != NULL){
+
+								// register function symbol...
+								int n_params=0;
+
+								if(args_node != NULL){
+									n_params=args_node->children.size();
+								}
+
+								if(named_function){ // register named function...
+									if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
+
+										if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
+											ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is already defined with same args at line %i", function_name.c_str(),AST_LINE(irv->idxAstNode));
+										}else{
+											ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
+										}
+
+										return NULL;
+									}
+
+									if((irv=scope_info->registerSymbol(function_name,(*ast_node_to_be_evaluated),n_params))==NULL){
+										return NULL;
+									}
+
+									if((*ast_node_to_be_evaluated) != NULL){
+										(*ast_node_to_be_evaluated)->symbol_value=function_name;
+									}
+
+								}else{ // register anonymouse function
+									irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
+									(*ast_node_to_be_evaluated)->symbol_value=irv->name;
+								}
+
 								(*ast_node_to_be_evaluated)->children.push_back(body_node->idxAstNode);
 								scope_info->popScope();
 							}
@@ -3479,7 +3472,6 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 				if((*aux_p == ';' || *aux_p == '=' || (*aux_p == ',') )){ // JE: added multivar feature (',)).
-					zs_print_debug_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
 					var_node = NULL;
 					if(ast_node_to_be_evaluated!=NULL){
 
@@ -3487,21 +3479,10 @@ namespace zetscript{
 						// save symbol in the node ...
 						(var_node)->symbol_value = symbol_name;
 						(var_node)->idxScope = ZS_UNDEFINED_IDX;
-
-						if(_currentScope != NULL){
-							(var_node)->idxScope = _currentScope->idxScope;
-						}
-
 						(var_node)->line_value = m_line;
 
 						(*ast_node_to_be_evaluated)->children.push_back(var_node->idxAstNode);
 
-						zs_print_debug_cr("scope %i",_currentScope->idxScope);
-
-
-						if(!_currentScope->registerSymbol(symbol_name,var_node)){
-							return NULL;
-						}
 					}
 					if(*aux_p == '='){
 						PASTNode children_node=NULL;
@@ -3530,6 +3511,23 @@ namespace zetscript{
 							return NULL;
 						}
 					}
+
+					// no error->register symbol ...
+					if(ast_node_to_be_evaluated!=NULL){
+
+
+						if(_currentScope != NULL){
+							(var_node)->idxScope = _currentScope->idxScope;
+						}
+
+						zs_print_debug_cr("scope %i",_currentScope->idxScope);
+						if(!_currentScope->registerSymbol((var_node)->symbol_value,var_node)){
+							return NULL;
+						}
+
+						zs_print_debug_cr("registered symbol \"%s\" line %i ",(var_node)->symbol_value.c_str(), (var_node)->line_value);
+					}
+
 				}
 				else{
 					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected ',',';' or '=' but it was '%c'", *aux_p);
@@ -3734,24 +3732,43 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks, bool is_main_node){
+	void manageOnErrorParse(PASTNode *node_to_be_evaluated){
+
+		bool is_main_node=false;
+		if(node_to_be_evaluated!= NULL){
+			is_main_node=MAIN_AST_NODE==*node_to_be_evaluated;
+		}
+
+		if(is_main_node){ // remove global variable/function if any
+
+		}
+	}
+
+	char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks){
 
 		// PRE: **node must be created and is i/o ast pointer variable where to write changes.
 		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD;
 		char *aux = (char *)s;
 		char *end_expr=0;
 		PASTNode children,_class_node;
-
-
-		if(is_main_node){
-			char *test = IGNORE_BLANKS(s,DUMMY_LINE);
-
-			// empty script ? return true anyways
-			if(test == 0) return NULL;
-		}
+		bool is_main_node = false;
 
 		if(node_to_be_evaluated!= NULL){
-			if(!is_main_node){
+
+			is_main_node=MAIN_AST_NODE==*node_to_be_evaluated;
+
+			if(is_main_node){
+				char *test = IGNORE_BLANKS(s,DUMMY_LINE);
+
+				// empty script ? return true anyways
+				if(test == 0) return NULL;
+
+				// set cursor compile ...
+				//cursorCompile=(*node_to_be_evaluated)->children.size();
+
+			}
+			else
+			{
 				if((*node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 				(*node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
 				if(scope_info != NULL){ // by default put global scope.
@@ -3786,6 +3803,7 @@ namespace zetscript{
 						}
 						else{
 							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"unexpected \"break\"");
+							manageOnErrorParse(node_to_be_evaluated);
 							error=true;
 							return NULL;
 						}
@@ -3799,19 +3817,23 @@ namespace zetscript{
 
 							if(keyw == KEYWORD_TYPE::VAR_KEYWORD){ // is var member...
 								if((end_expr=parseMemberVar(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children))==NULL){
+									manageOnErrorParse(node_to_be_evaluated);
 									return NULL;
 								}
 								// push into var collection ...
 								AST_NODE(_class_node->children[0])->children.push_back(children->idxAstNode);
+								astToCompile->push_back(children->idxAstNode);
 
 							}else{ // is function member...
 								startLine = m_line;
 								end_expr=parseFunction(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children);
 								if(end_expr==NULL){
+									manageOnErrorParse(node_to_be_evaluated);
 									return NULL;
 								}
 								// push into function collection...
 								AST_NODE(_class_node->children[1])->children.push_back(children->idxAstNode);
+								astToCompile->push_back(children->idxAstNode);
 							}
 
 
@@ -3819,9 +3841,9 @@ namespace zetscript{
 
 						}else{
 							if(error){
+								manageOnErrorParse(node_to_be_evaluated);
 								return NULL;
 							}
-
 						}
 					}
 				}
@@ -3833,6 +3855,7 @@ namespace zetscript{
 
 					// If was unsuccessful then try to parse expression.
 					if(error){
+						manageOnErrorParse(node_to_be_evaluated);
 						return NULL;
 					}
 					// 2nd. check whether parse a block
@@ -3840,24 +3863,28 @@ namespace zetscript{
 
 						// If was unsuccessful then try to parse expression.
 						if(error){
+							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}
 						// 2nd. try expression
 						int starting_expression=m_line;
 
 						if((end_expr = parseExpression(aux,m_line, scope_info,node_to_be_evaluated != NULL ? &children:NULL)) == NULL){ // something wrong was happen.
+							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}
 
 						if(*end_expr == ')'){ // unexpected close parenthesis.
 							error = true;
 							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,starting_expression,"missing open parenthesis");
+							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}
 
 						if(*end_expr != ';'){
 							error = true;
 							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,starting_expression,"Expected ';' at expression starting ");
+							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}
 						end_expr++;
@@ -3867,6 +3894,7 @@ namespace zetscript{
 				// new expression ready to be evaluated...
 				if(node_to_be_evaluated != NULL && children != NULL){
 					(*node_to_be_evaluated)->children.push_back(children->idxAstNode);
+					astToCompile->push_back(children->idxAstNode);
 				}
 			}
 			aux=end_expr;

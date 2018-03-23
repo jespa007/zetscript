@@ -293,7 +293,7 @@ namespace zetscript{
 		void pushFunction(short idxAstNode,CScriptFunctionObject *sf);
 
 		/// popFunction pop current function scope and optionally save its compiled statment with save_statment_op=true
-		void popFunction(bool save_statment_op = true, bool partial_save=false);
+		void popFunction(bool save_statment_op = true);
 
 		bool generateAsmCode_Recursive(short idxAstNode);
 

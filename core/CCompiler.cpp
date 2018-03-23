@@ -2519,7 +2519,7 @@ namespace zetscript{
 		this->m_treescope = SCOPE_INFO_NODE(_node->idxScope);
 	}
 
-	void CCompiler::popFunction(bool save_statment_op, bool partial_save){
+	void CCompiler::popFunction(bool save_statment_op){
 
 		m_currentFunctionInfo->function_info_object->object_info.statment_op=NULL;
 
@@ -2577,10 +2577,14 @@ namespace zetscript{
 
 		PASTNode _node =AST_NODE(idxAstNode);
 
+
+
 		if(_node == NULL){
 			zs_print_error_cr("NULL node!");
 			return false;
 		}
+
+		int start_node=(idxAstNode==IDX_MAIN_AST_NODE)?GET_CURSOR_COMPILE:0;
 
 		//CScope *_scope =AST_SCOPE_INFO(idxAstNode);
 
@@ -2588,7 +2592,7 @@ namespace zetscript{
 			pushFunction(_node->idxAstNode,sf);
 			// reset current pointer ...
 			{ // main node ?
-				for(unsigned i = GET_CURSOR_COMPILE; i < _node->children.size(); i++){
+				for(unsigned i = start_node; i < _node->children.size(); i++){
 
 					if(!ast2asm_Recursive(_node->children[i], m_treescope)){
 						return false;

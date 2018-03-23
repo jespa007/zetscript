@@ -446,7 +446,7 @@ namespace zetscript{
 
 		SET_PARSING_FILENAME(idx_filename,filename);
 
-		SAVE_CURSOR_COMPILE;
+
 
 		if(CASTNode::generateAST_Recursive(
 				s,
@@ -454,8 +454,7 @@ namespace zetscript{
 				MAIN_SCOPE_NODE,
 				error,
 				&main_node,
-				false,
-				true) != NULL){
+				false) != NULL){
 			return true;
 		}
 
@@ -651,7 +650,7 @@ namespace zetscript{
 		if(!__init__) return false;
 		ZS_CLEAR_ERROR_MSG();
 
-		CLEAR_COMPILE_INFORMATION;
+		//CLEAR_COMPILE_INFORMATION;
 
 
 		idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
@@ -661,7 +660,7 @@ namespace zetscript{
 			// print generated asm ...
 
 			if(!CScriptClass::updateReferenceSymbols()){
-				CLEAR_COMPILE_INFORMATION; // clear compile information due missing ops that  would lead a possibly memory corruption on exit.
+				//CLEAR_COMPILE_INFORMATION; // clear compile information due missing ops that  would lead a possibly memory corruption on exit.
 				return false;
 			}
 

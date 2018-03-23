@@ -84,7 +84,7 @@ namespace zetscript{
 		static void setVectorASTNode(vector<CASTNode *> 	* set_vec_ast_node);
 
 
-		static char * generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false, bool is_main_node=false);
+		static char * generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false);
 		/**
 		 * Get CASTNode Node by its idx, regarding current state.
 		 */
@@ -98,7 +98,6 @@ namespace zetscript{
 		static CScope 				*	getScope(short ast_idx);
 		static int						getCursorCompile();
 		static void						resetCursorCompile();
-		static void						saveCursorCompile();
 
 		static int						getScopeIdx(short idx);
 		static int 				  		getAstLine(short ast_idx);

@@ -64,7 +64,7 @@ int main(int argc, char * argv[]) {
 
 		//printf("%s\n",expression.c_str());
 
-		exit = expression=="exit";
+		exit = expression=="exit" || expression=="quit";
 
 		//CState::saveState();
 		if(!exit){ // evaluate expression

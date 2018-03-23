@@ -310,7 +310,7 @@ namespace zetscript{
 			irs->object_info.symbol_info.idxSymbol = (short)(mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size());
 			mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 
-			zs_print_debug_cr("Registered function name: %s",function_name.c_str());
+			zs_print_debug_cr("Registered function name: %s",function_name);
 			return true;
 		}
 
