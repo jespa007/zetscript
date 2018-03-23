@@ -25,9 +25,9 @@
 #define MAIN_AST_NODE						(CASTNode::getAstNode(IDX_MAIN_AST_NODE))
 #define MAIN_SCOPE_NODE						(CASTNode::getScope(IDX_MAIN_AST_NODE))
 #define AST_NODE(idx) 						CASTNode::getAstNode(idx)
-#define GET_CURSOR_COMPILE 					CASTNode::getCursorCompile()
-#define RESET_CURSOR_COMPILE	 			CASTNode::resetCursorCompile()
-#define SAVE_CURSOR_COMPILE	 				CASTNode::saveCursorCompile()
+//#define GET_CURSOR_COMPILE 					CASTNode::getCursorCompile()
+//#define RESET_CURSOR_COMPILE	 			CASTNode::resetCursorCompile()
+//#define SAVE_CURSOR_COMPILE	 				CASTNode::saveCursorCompile()
 #define AST_SCOPE_INFO_IDX(idx) 			CASTNode::getScopeIdx(idx)
 #define AST_SCOPE_INFO(idx) 				CASTNode::getScope(idx)
 #define AST_LINE(idx)		 				CASTNode::getAstLine(idx)
@@ -62,6 +62,10 @@ namespace zetscript{
 	};
 
 
+	typedef struct{
+		short 			idxAstNodeParent;
+		short 		 	ast_node_to_compile;
+	}tInfoAstNodeToCompile;
 
 
 	class CScope;
@@ -76,7 +80,8 @@ namespace zetscript{
 		static int current_idx_parsing_filename;
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
 		static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];
-		static int cursorCompile;
+		//static int cursorCompile;
+		static vector<tInfoAstNodeToCompile> *astToCompile;
 
 		//static tPunctuatorInfo defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
@@ -110,6 +115,7 @@ namespace zetscript{
 		static int getLineValueByIdx(int idx);
 		static const string & getSymbolValueByIdx(int idx);
 		static const char * getSymbolValueConstCharByIdx(int idx);
+		static void destroySingletons();
 
 		CASTNode();
 

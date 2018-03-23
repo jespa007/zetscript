@@ -2575,24 +2575,47 @@ namespace zetscript{
 
 	bool CCompiler::compile(short idxAstNode ,CScriptFunctionObject *sf){
 
-		PASTNode _node =AST_NODE(idxAstNode);
-
-
+		/*PASTNode _node =AST_NODE(idxAstNode);
 
 		if(_node == NULL){
 			zs_print_error_cr("NULL node!");
 			return false;
+		}*/
+
+
+		for(unsigned i = 0; i < CASTNode::astToCompile->size(); i++){
+			PASTNode _node =AST_NODE(CASTNode::astToCompile->at(i).idxAstNodeParent);
+			short idxNodeToCompile =  CASTNode::astToCompile->at(i).ast_node_to_compile;
+
+			if(_node->node_type == KEYWORD_NODE && _node->keyword_info == KEYWORD_TYPE::CLASS_KEYWORD){
+				/*
+				// verify class is not already registered...
+				if((irc=CScriptClass::registerClass(_node->symbol_value,base_class,_node)) == NULL){
+					return false;
+				}*/
+
+				CScriptClass * sc=CScriptClass::getScriptClassByName(_node->symbol_value,false);
+				sf = &sc->metadata_info;
+			}
+
+			pushFunction(_node->idxAstNode,sf);
+
+			if(!ast2asm_Recursive(idxNodeToCompile, m_treescope)){
+				return false;
+			}
+
+			popFunction();
 		}
 
-		int start_node=(idxAstNode==IDX_MAIN_AST_NODE)?GET_CURSOR_COMPILE:0;
+		//int start_node=(idxAstNode==IDX_MAIN_AST_NODE)?GET_CURSOR_COMPILE:0;
 
 		//CScope *_scope =AST_SCOPE_INFO(idxAstNode);
 
-		if(_node->node_type == NODE_TYPE::BODY_NODE ){
+		/*if(_node->node_type == NODE_TYPE::BODY_NODE ){
 			pushFunction(_node->idxAstNode,sf);
 			// reset current pointer ...
 			{ // main node ?
-				for(unsigned i = start_node; i < _node->children.size(); i++){
+				for(unsigned i = 0; i < _node->children.size(); i++){
 
 					if(!ast2asm_Recursive(_node->children[i], m_treescope)){
 						return false;
@@ -2604,9 +2627,9 @@ namespace zetscript{
 		}
 		else{
 			zs_print_error_cr("Body node expected");
-		}
+		}*/
 
-		return false;
+		return true;
 	}
 
 	CCompiler::~CCompiler(){
