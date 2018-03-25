@@ -67,6 +67,12 @@ namespace zetscript{
 		short 		 	ast_node_to_compile;
 	}tInfoAstNodeToCompile;
 
+	typedef struct{
+		short 			idxAstNodeParent;
+		short 		 	ast_node_to_compile;
+		short 		 	idxAstRoot;
+	}tInfoAstNodeClassToCompile;
+
 
 	class CScope;
 
@@ -81,7 +87,8 @@ namespace zetscript{
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
 		static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];
 		//static int cursorCompile;
-		static vector<tInfoAstNodeToCompile> *astToCompile;
+		static vector<tInfoAstNodeToCompile> *astNodeToCompile;
+		static vector<tInfoAstNodeClassToCompile> *astNodeClassToCompile;
 
 		//static tPunctuatorInfo defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 

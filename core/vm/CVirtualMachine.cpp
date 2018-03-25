@@ -423,7 +423,7 @@ namespace zetscript{
 		list->first=list->last=NULL;\
 
 	#define POP_SCOPE(_ret_ref) \
-	if(current_scope_info_ptr!=scope_info)\
+	if(scope_info<(current_scope_info_ptr))\
 	{\
 		CScriptFunctionObject *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;\
 		int index         = (current_scope_info_ptr-1)->index;\
@@ -902,7 +902,27 @@ if(aux_function_info == NULL){\
 			};
 		}
 
-		REMOVE_0_SHARED_POINTERS(0,NULL);
+		//REMOVE_0_SHARED_POINTERS(0,NULL);
+
+		//int idxCurrentStack
+
+
+		tInfoSharedList *list = &zero_shares[idxCurrentStack];\
+		PInfoSharedPointerNode first_node,current;\
+		first_node=current=list->first;\
+		if(current != NULL){\
+			bool finish=false;\
+			do{\
+				PInfoSharedPointerNode next_node=current->next;\
+				finish=next_node ==first_node;\
+				if(callc_result.varRef!=current->data.shared_ptr){\
+					delete current->data.shared_ptr;\
+				}\
+				free(current);\
+				current=next_node;\
+			}while(!finish);\
+		}\
+		list->first=list->last=NULL;\
 
 	}
 
@@ -1335,6 +1355,9 @@ if(aux_function_info == NULL){\
 
 		if(idxCurrentStack==0){ // set stack for first call
 
+			if(main_function->object_info.statment_op == NULL){ // no statments
+				return NULL;
+			}
 			cancel_execution=false;
 
 
@@ -1866,7 +1889,7 @@ if(aux_function_info == NULL){\
 							}
 							function_obj =(CScriptFunctionObject *)si->object.stkValue;
 						}else{ // global
-							vec_functions = &(GET_MAIN_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
+							vec_functions = &(MAIN_SCRIPT_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
 							//function_obj = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
 						}
 
@@ -2382,7 +2405,7 @@ if(aux_function_info == NULL){\
 
 						{
 							// local vars as functions ...
-							vec_global_functions=&(GET_MAIN_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
+							vec_global_functions=&(MAIN_SCRIPT_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
 
 							int size_fun_vec = (int)vec_global_functions->size()-1;
 

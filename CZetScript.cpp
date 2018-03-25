@@ -21,7 +21,6 @@ namespace zetscript{
 		return -1;
 	}
 
-
 	void CZetScript::setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles){
 		m_parsedSource = parsedFiles;
 	}
@@ -29,11 +28,6 @@ namespace zetscript{
 	CZetScript * CZetScript::getInstance(){
 		if(m_instance==NULL){
 			m_instance = new CZetScript();
-
-			//CASTNode::createSingletons();
-			//CScope::createSingletons();
-			//CScriptClass::createSingletons();
-			//CScriptFunctionObject::createSingletons();
 
 			if(!m_instance->init()){
 				exit(-1);
@@ -63,7 +57,6 @@ namespace zetscript{
 
 	void  CZetScript::writeErrorMsg(const char *filename, int line, const  char  *string_text, ...) {
 		char  aux_text[MAX_BUFFER_AUX_TMP]={0};
-
 
 		ZETSCRIPT_CAPTURE_VARIABLE_ARGS(aux_text, string_text);
 
@@ -102,17 +95,13 @@ namespace zetscript{
 		return print_aux_load_value;
 	 }
 
-
 	 const char * CZetScript::getStrTypeLoadValue(PtrStatment m_listStatements,int current_statment, int current_instruction){
 
-
 		tInfoAsmOp * iao =&m_listStatements[current_statment][current_instruction];
-
 
 		if(iao->operator_type != LOAD){
 			return "ERROR";
 		}
-
 
 		string symbol_value="Unknown";
 
@@ -137,8 +126,6 @@ namespace zetscript{
 			sprintf(object_access,"this.");
 		}
 
-
-
 		switch(iao->index_op1){
 
 			case LOAD_TYPE::LOAD_TYPE_CONSTANT:
@@ -160,14 +147,13 @@ namespace zetscript{
 			default:
 
 				break;
-
 		}
-
-
 		return print_aux_load_value;
 	 }
 
 	 void CZetScript::printGeneratedCode_Recursive(tFunctionInfo *fs){
+
+		// PRE: it should printed after compile and updateReferences.
 
 		//tInfoStatementOp * m_listStatements = fs->statment_op;
 		string pre="";
@@ -199,15 +185,7 @@ namespace zetscript{
 
 						switch(GET_INS_PROPERTY_PRE_POST_OP(asm_op_statment->instruction_properties)){
 						case INS_PROPERTY_PRE_NEG:
-
-							// put only if load is var.
-							//if(!(
-							//	  (asm_op_statment->operator_type == LOAD)
-							 //  && (asm_op_statment->index_op1 == LOAD_TYPE::LOAD_TYPE_CONSTANT)
-							  // )
-							//){/
-								pre="-";
-							//}
+							pre="-";
 							break;
 						case INS_PROPERTY_PRE_INC:
 							pre="++";
@@ -276,9 +254,6 @@ namespace zetscript{
 								post.c_str(),
 								(int)asm_op_statment->index_op2);
 						break;
-					//case  STORE:
-					//	printf("[%02i:%02i]\t%s\t%s,[%02i:%02i]\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str,getStrMovVar((*asm_op_statment)[i]),s,index_op2);
-					//	break;
 					case POP_SCOPE:
 						printf("[%02i:%02i]\t%s(%i)\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1);
 						break;
@@ -293,12 +268,6 @@ namespace zetscript{
 								,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1
 								,(int)asm_op_statment->index_op2);
 						break;
-					/*case PRE_INC:
-					case POST_INC:
-					case PRE_DEC:
-					case POST_DEC:
-						printf("[%02i:%02i]\t%s\n",s,i,def_operator[(*asm_op_statment)[i]->operator_type].op_str);
-						break;*/
 					case VGET:
 					case VPUSH:
 						printf("[%02i:%02i]\t%s\t%sVEC[%02i:%02i]%s,[%02i:%02i]\n"
@@ -342,8 +311,6 @@ namespace zetscript{
 		// and then print its functions ...
 		vector<int> * m_vf = &fs->local_symbols.vec_idx_registeredFunction;
 
-
-
 		for(unsigned j =0; j < m_vf->size(); j++){
 
 			CScriptFunctionObject *local_irfs = GET_SCRIPT_FUNCTION_OBJECT((*m_vf)[j]);
@@ -353,8 +320,6 @@ namespace zetscript{
 
 				strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
 
-
-
 				if(local_irfs->object_info.symbol_info.idxScriptClass!=ZS_UNDEFINED_IDX){
 					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->object_info.symbol_info.idxScriptClass);
 					if(sc->metadata_info.object_info.symbol_info.idxScriptClass != IDX_CLASS_MAIN){
@@ -362,19 +327,11 @@ namespace zetscript{
 					}
 				}
 
-				/*if(MAIN_CLASS_NODE->metadata_info.object_info.idxScriptFunctionObject == fs->idxScriptFunctionObject){ // main class (main entry)
-					sprintf(symbol_ref,"MAIN_ENTRY (MainClass)");
-				}
-				else if(MAIN_CLASS_NODE->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]!=fs->idxScriptFunctionObject){ // main function (main entry)
-					sprintf(symbol_ref,"%s::%s",fs->symbol_info.symbol_name.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
-				}*/
-
 				printf("-------------------------------------------------------\n");
 				printf("\nCode for function \"%s\"\n\n",symbol_ref);
 				printGeneratedCode_Recursive(GET_FUNCTION_INFO(m_vf->at(j)));
 			}
 		}
-
 	 }
 
 	 void CZetScript::printGeneratedCode(tFunctionInfo *fs){
@@ -389,21 +346,14 @@ namespace zetscript{
 		 for(unsigned i = 0; i < registeredClass->size(); i++){
 			 printGeneratedCode(&GET_SCRIPT_CLASS_INFO(registeredClass->at(i)->metadata_info.object_info.symbol_info.idxScriptClass)->metadata_info.object_info);
 		 }
-
 	 }
-
 	 // PRINT ASM INFO
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
 	CZetScript::CZetScript(){
-
-
-		idxMainScriptFunctionObject=ZS_UNDEFINED_IDX;
+		//idxMainScriptFunctionObject=ZS_UNDEFINED_IDX;
 		m_mainObject = NULL;
 		__init__ = false;
-
 
 		vm=NULL;
 	}
@@ -414,9 +364,6 @@ namespace zetscript{
 
 		CState::init();
 
-
-
-
 		vm = new CVirtualMachine();
 
 		// ok register CInteger through CScriptVariable...
@@ -426,7 +373,6 @@ namespace zetscript{
 		__init__=true;
 
 		return true;
-
 	}
 
 	bool CZetScript::parse_ast(const char   * s, int idx_filename){
@@ -438,15 +384,8 @@ namespace zetscript{
 		if(idx_filename>=0){
 			filename=m_parsedSource->at(idx_filename).filename.c_str();
 		}
-		/*int idx_parsed_source = getIdxParsedFilenameSource(filename);
-
-		if(idx_parsed_source == -1){
-			return false;
-		}*/
 
 		SET_PARSING_FILENAME(idx_filename,filename);
-
-
 
 		if(CASTNode::generateAST_Recursive(
 				s,
@@ -482,30 +421,25 @@ namespace zetscript{
 		return m_parsedSource->at(idx).filename.c_str();
 	}
 
-
 	int CZetScript::eval_int(const string & str_to_eval){
 		CZetScript *zetscript= CZetScript::getInstance();
 
 		if(zetscript->eval(str_to_eval)){
 
+			tStackElement *se=CURRENT_VM->getLastStackValue();
 
-				tStackElement *se=CURRENT_VM->getLastStackValue();
+			if(se != NULL){
 
-				if(se != NULL){
+				if(se->properties & STK_PROPERTY_TYPE_INTEGER){
 
-					if(se->properties & STK_PROPERTY_TYPE_INTEGER){
-
-						return (int)((intptr_t)se->stkValue);
-					}
-					else{
-						fprintf(stderr,"eval_int(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
-						exit(-1);
-					}
-
-
+					return (int)((intptr_t)se->stkValue);
 				}
+				else{
+					fprintf(stderr,"eval_int(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+					exit(-1);
+				}
+			}
 		}
-
 		return 0;
 	}
 
@@ -513,51 +447,43 @@ namespace zetscript{
 
 		CZetScript *zetscript= CZetScript::getInstance();
 
-
 		if(zetscript->eval(str_to_eval)){
 
+			tStackElement *se=CURRENT_VM->getLastStackValue();
 
-				tStackElement *se=CURRENT_VM->getLastStackValue();
+			if(se != NULL){
 
-				if(se != NULL){
+				if(se->properties & STK_PROPERTY_TYPE_BOOLEAN){
+					return (bool)((intptr_t)se->stkValue);
 
-					if(se->properties & STK_PROPERTY_TYPE_BOOLEAN){
-						return (bool)((intptr_t)se->stkValue);
-
-					}else{
-						fprintf(stderr,"eval_bool(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
-						exit(-1);
-					}
+				}else{
+					fprintf(stderr,"eval_bool(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+					exit(-1);
 				}
+			}
 		}
-
 		return false;
 	}
 
 	float CZetScript::eval_float(const string & str_to_eval){
 
-
 		CZetScript *zetscript= CZetScript::getInstance();
-
 
 		if(zetscript->eval(str_to_eval)){
 
+			tStackElement *se=CURRENT_VM->getLastStackValue();
 
-				tStackElement *se=CURRENT_VM->getLastStackValue();
+			if(se != NULL){
 
-				if(se != NULL){
-
-					if(se->properties & STK_PROPERTY_TYPE_NUMBER){
-						float *f = ((float *)(&se->stkValue));
-						return *f;
-					}
-					else{
-						fprintf(stderr,"eval_float(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
-						exit(-1);
-					}
-
-
+				if(se->properties & STK_PROPERTY_TYPE_NUMBER){
+					float *f = ((float *)(&se->stkValue));
+					return *f;
 				}
+				else{
+					fprintf(stderr,"eval_float(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+					exit(-1);
+				}
+			}
 		}
 
 		return 0.0f;
@@ -567,29 +493,25 @@ namespace zetscript{
 
 		string value="---";
 
-
 		CZetScript *zetscript= CZetScript::getInstance();
-
 
 		if(zetscript->eval(str_to_eval)){
 
-				tStackElement *se=CURRENT_VM->getLastStackValue();
+			tStackElement *se=CURRENT_VM->getLastStackValue();
 
-				if(se != NULL){
+			if(se != NULL){
 
-					if(se->properties & STK_PROPERTY_TYPE_STRING){
+				if(se->properties & STK_PROPERTY_TYPE_STRING){
 
-						value = ((const char *)se->stkValue);
-					}
-					else{
-						fprintf(stderr,"eval_string(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
-						exit(-1);
-					}
+					value = ((const char *)se->stkValue);
 				}
+				else{
+					fprintf(stderr,"eval_string(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+					exit(-1);
+				}
+			}
 		}
-
 		return value;
-
 	}
 
 	void CZetScript::destroyMainFunction() {
@@ -597,7 +519,6 @@ namespace zetscript{
 		if (m_mainObject != NULL) {
 			delete m_mainObject;
 		}
-
 		m_mainObject = NULL;
 	}
 
@@ -607,9 +528,6 @@ namespace zetscript{
 		int idx_file=-1;
 
 		if(filename_ref != NULL){
-
-			//string file=CIO_Utils::getFileName(filename_ref);
-
 			if(isFilenameAlreadyParsed(filename_ref)){
 				zs_print_error_cr("Filename \"%s\" already parsed",filename_ref);
 				return false;
@@ -621,11 +539,9 @@ namespace zetscript{
 			}
 		}
 
-
 		ZS_CLEAR_ERROR_MSG();
 
 		return parse_ast(str_script.c_str(),idx_file);
-
 	}
 
 	bool CZetScript::parse_file(const char * filename){
@@ -641,8 +557,6 @@ namespace zetscript{
 			status = parse((char *)buf_tmp, filename);
 			free(buf_tmp);
 		}
-
-
 		return status;
 	}
 
@@ -650,35 +564,20 @@ namespace zetscript{
 		if(!__init__) return false;
 		ZS_CLEAR_ERROR_MSG();
 
-		//CLEAR_COMPILE_INFORMATION;
+		if(CCompiler::getInstance()->compile()){
 
-
-		idxMainScriptFunctionObject = CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
-
-
-		if(CCompiler::getInstance()->compile(IDX_MAIN_AST_NODE,GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject) )){
 			// print generated asm ...
-
-			if(!CScriptClass::updateReferenceSymbols()){
-				//CLEAR_COMPILE_INFORMATION; // clear compile information due missing ops that  would lead a possibly memory corruption on exit.
-				return false;
-			}
+			printGeneratedCodeAllClasses();
 
 			if(m_mainObject == NULL){
 				// creates the main entry function with compiled code. On every executing code, within "execute" function
 				// virtual machine is un charge of allocating space for all local variables...
-
 				m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
 			}
-
 			return true;
-
 		}
-
 		return false;
-
 	}
-
 
 	bool CZetScript::execute(){
 
@@ -686,12 +585,10 @@ namespace zetscript{
 		ZS_CLEAR_ERROR_MSG();
 
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		return vm->execute(GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject), m_mainObject,NO_PARAMS) != NULL;//->excute();
+		return vm->execute(MAIN_SCRIPT_FUNCTION_OBJECT, m_mainObject,NO_PARAMS) != NULL;//->excute();
 	}
 
-
 	bool CZetScript::eval(const string & s, bool exec_vm, const char *filename_ref)  {
-
 
 		if(parse(s,filename_ref)){
 			if(compile()){
@@ -713,9 +610,6 @@ namespace zetscript{
 
 		ZS_CLEAR_ERROR_MSG();
 
-
-
-
 		bool status = false;
 
 		char *buf_tmp=NULL;
@@ -728,8 +622,6 @@ namespace zetscript{
 
 			free(buf_tmp);
 		}
-
-
 		return status;
 	}
 
@@ -739,19 +631,16 @@ namespace zetscript{
 		ZS_CLEAR_ERROR_MSG();
 
 		vector<string> access_var = CStringUtils::split(function_access,'.');
-		CScriptFunctionObject * m_mainFunctionInfo = GET_SCRIPT_FUNCTION_OBJECT(idxMainScriptFunctionObject);
-
+		CScriptFunctionObject * m_mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;
 
 		if(m_mainFunctionInfo == NULL){
 			zs_print_error_cr("m_mainFunctionInfo is not initialized");
 			return false;
 		}
 
-
 		*calling_obj = NULL;
 		tSymbolInfo *is=NULL;
 		*fun_obj=NULL;
-
 
 		// 1. accessing var scopes...
 		if(access_var.size()>1){
@@ -780,8 +669,6 @@ namespace zetscript{
 						return false;
 					}
 
-
-
 				}else{ // we have got the calling_obj from last iteration ...
 					is = (*calling_obj)->getVariableSymbol(symbol_to_find);
 
@@ -798,11 +685,8 @@ namespace zetscript{
 						zs_print_error_cr("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return false;
 					}
-
 				}
-
 			}
-
 
 			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1]);
 			if(is!=NULL){
@@ -814,7 +698,6 @@ namespace zetscript{
 				zs_print_error_cr("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
 				return false;
 			}
-
 
 		}else{
 			*calling_obj = m_mainObject;
@@ -832,27 +715,16 @@ namespace zetscript{
 		}
 
 		return true;
-
-/*		return new std::function<CScriptVariable * (const std::vector<CScriptVariable *> & _args)>([&,calling_obj,fun_obj](const std::vector<CScriptVariable *> & _args){
-					return vm->execute(
-								fun_obj,
-								calling_obj,
-								_args);
-				});*/
 	}
 
 	CVirtualMachine * CZetScript::getVirtualMachine(){
 		return vm;
 	}
 
-
 	//-------------------------------------------------------------------------------------
 	CZetScript::~CZetScript(){
 		// unregister operators ...
 		destroyMainFunction();
 		delete vm;
-
-
 	}
-
 }

@@ -671,7 +671,7 @@ namespace zetscript{
 
 	void CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_irfs ){
 		/// PRE: base_class_irfs must be info of root class.
-		 bool is_main_function = GET_MAIN_FUNCTION_OBJECT == root_class_irfs;
+		 bool is_main_function = MAIN_SCRIPT_FUNCTION_OBJECT == root_class_irfs;
 		 PASTNode ast = AST_NODE(root_class_irfs->object_info.symbol_info.idxAstNode);
 
 		 if(ast!=NULL){
@@ -767,7 +767,7 @@ namespace zetscript{
 										 if(!searchVarFunctionSymbol(info_function,iao,n_function,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
 											 // search global...
-											 if(!searchVarFunctionSymbol(&GET_MAIN_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
+											 if(!searchVarFunctionSymbol(&MAIN_SCRIPT_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
 													PASTNode ast_node = AST_NODE(iao->idxAstNode);
 
 													if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
@@ -927,7 +927,7 @@ namespace zetscript{
 												 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
 													 // search global...
-													 CScriptFunctionObject * mainFunctionInfo = GET_MAIN_FUNCTION_OBJECT;// getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
+													 CScriptFunctionObject * mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;// getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 													 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,symbol_found,0)){
 															PASTNode ast_node = AST_NODE(iao->idxAstNode);
 

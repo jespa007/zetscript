@@ -26,7 +26,8 @@ namespace zetscript{
 	int CASTNode::DUMMY_LINE=0;
 	const char * CASTNode::current_parsing_filename="unknow";
 	int CASTNode::current_idx_parsing_filename=-1;
-	vector<tInfoAstNodeToCompile> * CASTNode::astToCompile=NULL;
+	vector<tInfoAstNodeToCompile> * CASTNode::astNodeToCompile=NULL;
+	vector<tInfoAstNodeClassToCompile> * CASTNode::astNodeClassToCompile=NULL;
 
 	bool IS_SINGLE_COMMENT(char *str){
 
@@ -257,10 +258,16 @@ namespace zetscript{
 
 
 	void CASTNode::destroySingletons(){
-		if(astToCompile != NULL){
-			delete astToCompile;
-			astToCompile=NULL;
+		if(astNodeToCompile != NULL){
+			delete astNodeToCompile;
+			astNodeToCompile=NULL;
 		}
+
+		if(astNodeClassToCompile != NULL){
+			delete astNodeClassToCompile;
+			astNodeClassToCompile=NULL;
+		}
+
 	}
 
 	int 		CASTNode::getAstLine(short idx){
@@ -3765,7 +3772,8 @@ namespace zetscript{
 
 				// set cursor compile ...
 				//cursorCompile=(*node_to_be_evaluated)->children.size();
-				astToCompile->clear();
+				astNodeToCompile->clear();
+				astNodeClassToCompile->clear();
 
 			}
 			else
@@ -3823,9 +3831,15 @@ namespace zetscript{
 								}
 								// push into var collection ...
 								AST_NODE(_class_node->children[0])->children.push_back(children->idxAstNode);
+
 								if(is_main_node){
-									astToCompile->push_back({_class_node->idxAstNode,children->idxAstNode});
+									astNodeClassToCompile->push_back({_class_node->children[0],children->idxAstNode,_class_node->idxAstNode});
 								}
+								/*if(is_main_node){
+									printf("////////////////////////// LLLL\n");
+									astToCompile->push_back({_class_node->idxAstNode,children->idxAstNode});
+									ast_compile_node_already_added=true;
+								}*/
 
 							}else{ // is function member...
 								startLine = m_line;
@@ -3836,10 +3850,20 @@ namespace zetscript{
 								}
 								// push into function collection...
 								AST_NODE(_class_node->children[1])->children.push_back(children->idxAstNode);
+
 								if(is_main_node){
-									astToCompile->push_back({_class_node->idxAstNode,children->idxAstNode});
+									astNodeClassToCompile->push_back({_class_node->children[1],children->idxAstNode,_class_node->idxAstNode});
 								}
+								/*if(is_main_node && children != NULL){
+									astToCompile->push_back({_class_node->children[1],children->idxAstNode});
+								}*/
+								/*if(is_main_node){
+									printf("////////////////////////// LLLL\n");
+									astToCompile->push_back({_class_node->idxAstNode,children->idxAstNode});
+									ast_compile_node_already_added=true;
+								}*/
 							}
+
 
 
 							children->symbol_value=_member_name;
@@ -3900,11 +3924,15 @@ namespace zetscript{
 				if(node_to_be_evaluated != NULL && children != NULL){
 					(*node_to_be_evaluated)->children.push_back(children->idxAstNode);
 
-					if(is_main_node){
-						astToCompile->push_back({(*node_to_be_evaluated)->idxAstNode,children->idxAstNode});
+					if(is_main_node && children != NULL){
+						astNodeToCompile->push_back({(*node_to_be_evaluated)->idxAstNode,children->idxAstNode});
 					}
+
 				}
 			}
+
+
+
 			aux=end_expr;
 			aux=IGNORE_BLANKS(aux, m_line);
 		}
@@ -3916,7 +3944,7 @@ namespace zetscript{
 	//
 	void CASTNode::init(){
 
-		if(astToCompile != NULL){
+		if(astNodeToCompile != NULL){
 			zs_print_error("CASTNode already initialized");
 			return;
 		}
@@ -3992,7 +4020,8 @@ namespace zetscript{
 		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
 		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",parseDelete};
 
-		astToCompile = new vector<tInfoAstNodeToCompile>();
+		astNodeToCompile = new vector<tInfoAstNodeToCompile>();
+		astNodeClassToCompile = new vector<tInfoAstNodeClassToCompile>();
 			// create main ast management
 	}
 

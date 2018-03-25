@@ -41,7 +41,7 @@ namespace zetscript{
 
 		// calling C function with differnt parameters...
 		CScriptVariable		*		m_mainObject;
-		int						 	idxMainScriptFunctionObject;
+		//int						 	idxMainScriptFunctionObject;
 
 		CVirtualMachine *vm;
 		bool __init__;

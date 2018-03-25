@@ -53,7 +53,7 @@ namespace zetscript{
 		 * Compiles main ast node with base object info to store instruction related with function information.
 		 */
 
-		bool compile(short idxMainAstNode, CScriptFunctionObject *sf);
+		bool compile();
 
 
 	private:
@@ -161,6 +161,7 @@ namespace zetscript{
 		 * Compile class struct main ast node with class base object info to store instruction related with function information.
 		 */
 		bool compile_class(short idxAstNode, tFunctionInfo *sf);
+		bool compile_body(short idxAstNode, CScriptFunctionObject *sf);
 
 
 		//bool parseExpression(const char *expression_str, int & m_line,CScriptFunctionObject * sf, CScope *currentEvaluatingScope);

@@ -45,15 +45,16 @@
 
 
 
-#define GET_MAIN_VARIABLE(idx_var)				zetscript::CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
-#define GET_MAIN_SCRIPT_FUNCTION_IDX			zetscript::CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
-#define GET_MAIN_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX)
+#define MAIN_VARIABLE(idx_var)					zetscript::CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
+#define MAIN_SCRIPT_FUNCTION_IDX				zetscript::CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
+#define MAIN_SCRIPT_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX)
 
 
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClass::instanceScriptVariableByIdx(idx))
 
 #define REGISTERED_CLASS_NODE(idx) 				(zetscript::CScriptClass::getScriptClassByIdx(idx))
 #define MAIN_CLASS_NODE							(zetscript::CScriptClass::getScriptClassByIdx(IDX_CLASS_MAIN))    // 0 is the main class
+
 #define GET_SCRIPT_CLASS_INFO(idx)				(zetscript::CScriptClass::getScriptClassByIdx(idx))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_NAME(s)		(zetscript::CScriptClass::getScriptClassByName(s))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(zetscript::CScriptClass::getScriptClassBy_C_ClassPtr(s))    // 0 is the main class

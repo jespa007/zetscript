@@ -162,7 +162,7 @@ namespace zetscript{
 			else{ //global
 
 				scope_type = 0;//INST_PROPERTY_GLOBAL_SCOPE;
-				CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX);
+				CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX);
 
 
 				for(unsigned i = 0; i < main_function->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
@@ -2052,8 +2052,8 @@ namespace zetscript{
 					{ZS_UNDEFINED_IDX,ss}
 			);
 		}
-		// 2. Compiles the function ...
-		return compile(_node->children[1], irfs);
+		// 2. Compiles function's body ...
+		return compile_body(_node->children[1], irfs);
 	}
 
 	bool CCompiler::gacIf(short idxAstNode, CScope * _lc){
@@ -2569,52 +2569,24 @@ namespace zetscript{
 		}
 	}
 
-	void CCompiler::clear(){ // clears all compiled
+	bool CCompiler::compile_body(short idxAstParentNode ,CScriptFunctionObject *sf){
 
-	}
-
-	bool CCompiler::compile(short idxAstNode ,CScriptFunctionObject *sf){
-
-		/*PASTNode _node =AST_NODE(idxAstNode);
+		PASTNode _node =AST_NODE(idxAstParentNode);
 
 		if(_node == NULL){
 			zs_print_error_cr("NULL node!");
 			return false;
-		}*/
-
-
-		for(unsigned i = 0; i < CASTNode::astToCompile->size(); i++){
-			PASTNode _node =AST_NODE(CASTNode::astToCompile->at(i).idxAstNodeParent);
-			short idxNodeToCompile =  CASTNode::astToCompile->at(i).ast_node_to_compile;
-
-			if(_node->node_type == KEYWORD_NODE && _node->keyword_info == KEYWORD_TYPE::CLASS_KEYWORD){
-				/*
-				// verify class is not already registered...
-				if((irc=CScriptClass::registerClass(_node->symbol_value,base_class,_node)) == NULL){
-					return false;
-				}*/
-
-				CScriptClass * sc=CScriptClass::getScriptClassByName(_node->symbol_value,false);
-				sf = &sc->metadata_info;
-			}
-
-			pushFunction(_node->idxAstNode,sf);
-
-			if(!ast2asm_Recursive(idxNodeToCompile, m_treescope)){
-				return false;
-			}
-
-			popFunction();
 		}
 
 		//int start_node=(idxAstNode==IDX_MAIN_AST_NODE)?GET_CURSOR_COMPILE:0;
 
 		//CScope *_scope =AST_SCOPE_INFO(idxAstNode);
 
-		/*if(_node->node_type == NODE_TYPE::BODY_NODE ){
+		if(_node->node_type == NODE_TYPE::BODY_NODE ){
 			pushFunction(_node->idxAstNode,sf);
 			// reset current pointer ...
 			{ // main node ?
+
 				for(unsigned i = 0; i < _node->children.size(); i++){
 
 					if(!ast2asm_Recursive(_node->children[i], m_treescope)){
@@ -2627,7 +2599,96 @@ namespace zetscript{
 		}
 		else{
 			zs_print_error_cr("Body node expected");
-		}*/
+		}
+
+		return false;
+	}
+
+	// clears statments on main function ...
+	void CCompiler::clear() {
+		CScriptFunctionObject *info_function=MAIN_SCRIPT_FUNCTION_OBJECT;
+
+		if (info_function->object_info.statment_op != NULL) {
+			for (PtrStatment stat = info_function->object_info.statment_op; *stat != NULL; stat++) {
+
+				free(*stat);
+			}
+
+			free(info_function->object_info.statment_op);
+			info_function->object_info.statment_op=NULL;
+		}
+
+		// unloading scope ...
+		if (info_function->object_info.info_var_scope != NULL) {
+			for (unsigned j = 0; j < info_function->object_info.n_info_var_scope; j++) {
+				free(info_function->object_info.info_var_scope[j].var_index);
+			}
+
+			free(info_function->object_info.info_var_scope);
+			info_function->object_info.info_var_scope=NULL;
+		}
+		//vec_script_function_object_node->pop_back();
+	}
+
+	bool CCompiler::compile(){
+
+		CScriptFunctionObject *sf=MAIN_SCRIPT_FUNCTION_OBJECT;
+
+		// remove old compile information...
+		clear();
+
+		// compile main code ...
+
+		pushFunction(IDX_MAIN_AST_NODE,sf);
+		for(unsigned i = 0; i < CASTNode::astNodeToCompile->size(); i++){
+			//PASTNode _node =AST_NODE(CASTNode::astToCompile->at(i).idxAstNodeParent);
+			short idxNodeToCompile =  CASTNode::astNodeToCompile->at(i).ast_node_to_compile;
+
+
+
+			// compile var or function ...
+			if(!ast2asm_Recursive(idxNodeToCompile, m_treescope)){
+				return false;
+			}
+		}
+		popFunction();
+
+		// compile code from classes (if any)
+		for(unsigned i = 0; i < CASTNode::astNodeClassToCompile->size(); i++){
+			short ast_root = CASTNode::astNodeClassToCompile->at(i).idxAstRoot;
+			short ast_parent = CASTNode::astNodeClassToCompile->at(i).idxAstNodeParent;
+			short idxNodeToCompile =  CASTNode::astNodeClassToCompile->at(i).ast_node_to_compile;
+
+			/*
+			// verify class is not already registered...
+			if((irc=CScriptClass::registerClass(_node->symbol_value,base_class,_node)) == NULL){
+				return false;
+			}*/
+			//printf("HHHHHHHHHH CLASS NODE HHHHHHHHHHHH\n");
+
+			CScriptClass * sc=CScriptClass::getScriptClassByName(AST_NODE(ast_root)->symbol_value,false);
+
+			if(sc==NULL){
+				return false;
+			}
+			sf = &sc->metadata_info;
+
+			pushFunction(ast_parent,sf);
+
+			// compile var or function ...
+			if(!ast2asm_Recursive(idxNodeToCompile, m_treescope)){
+				return false;
+			}
+
+			popFunction();
+
+		}
+
+
+		// update reference symbols (like link))
+		if(!CScriptClass::updateReferenceSymbols()){
+			return false;
+		}
 
 		return true;
 	}

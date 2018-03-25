@@ -16,72 +16,68 @@ int main(int argc, char * argv[]) {
 	CZetScript *zetscript = CZetScript::getInstance();
 
 
-	/*if (argc < 2) {
-		printf("Put file to evaluate.\n");
-		printf("\n");
-		printf("Example:\n");
-		printf("\n");
-		printf("file.zs");
-		printf("\n");
-		printf("\n");
-		return 0;
+	if (argc >= 2) {
+
+		if(!zetscript->eval_file(argv[1])){
+			fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
+		}
+
 	}
+	else{
 
+		bool exit = false;
+		bool continue_from_last=true;
+		string expression;
+		int idx_last_instruction_ok=-1;
 
-	if(!zetscript->eval_file(argv[1])){
-		fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
-	}*/
+		printf("%s",about);
 
-	bool exit = false;
-	bool continue_from_last=true;
-	string expression;
-	int idx_last_instruction_ok=-1;
+		int g=0;
 
-	printf("%s",about);
-
-	int g=0;
-
-	const char * instr[]{
+		const char * instr[]{
 
 
 
-		"var f=0;",
-		"var g=0;",
-		//"var e=0;",
-		"print(g);",
+			"var f=0;",
+			"var g=0;",
+			//"var e=0;",
+			"print(g);",
 
-		0
-	};
+			0
+		};
 
-	int idx_ptr=0;
+		int idx_ptr=0;
 
 
-	do{
-		printf("zs>");
+		do{
+			printf("zs>");
 
-		std::getline(std::cin,expression);
-		//expression=instr[idx_ptr];
+			std::getline(std::cin,expression);
+			//expression=instr[idx_ptr];
 
-		//printf("%s\n",expression.c_str());
+			//printf("%s\n",expression.c_str());
 
-		exit = expression=="exit" || expression=="quit";
+			exit = expression=="exit" || expression=="quit";
 
-		//CState::saveState();
-		if(!exit){ // evaluate expression
+			//CState::saveState();
+			if(!exit){ // evaluate expression
 
-			//CState::clearCurrentCompileInformation();
+				//CState::clearCurrentCompileInformation();
 
-			if(zetscript->parse(expression)){
+				if(zetscript->parse(expression)){
 
-				if(zetscript->compile()){
+					if(zetscript->compile()){
 
-					zetscript->printGeneratedCodeAllClasses();
-
-					if(zetscript->execute()){
-						//continue_from_last=true;
-						//CState::saveState();
-					}else{
-						//CState::restoreLastState();
+						if(zetscript->execute()){
+							//continue_from_last=true;
+							//CState::saveState();
+						}else{
+							//CState::restoreLastState();
+							//continue_from_last=false;
+						}
+					}
+					else{
+						//CState::restoreLastState(); // when restore global vars are cleared ?
 						//continue_from_last=false;
 					}
 				}
@@ -90,13 +86,10 @@ int main(int argc, char * argv[]) {
 					//continue_from_last=false;
 				}
 			}
-			else{
-				//CState::restoreLastState(); // when restore global vars are cleared ?
-				//continue_from_last=false;
-			}
-		}
 
-	}while(!exit);// && (instr[++idx_ptr] != NULL));
+		}while(!exit);// && (instr[++idx_ptr] != NULL));
+
+	}
 
 	CZetScript::destroy();
 
