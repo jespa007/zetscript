@@ -902,28 +902,8 @@ if(aux_function_info == NULL){\
 			};
 		}
 
-		//REMOVE_0_SHARED_POINTERS(0,NULL);
-
+		REMOVE_0_SHARED_POINTERS(0,NULL);
 		//int idxCurrentStack
-
-
-		tInfoSharedList *list = &zero_shares[idxCurrentStack];\
-		PInfoSharedPointerNode first_node,current;\
-		first_node=current=list->first;\
-		if(current != NULL){\
-			bool finish=false;\
-			do{\
-				PInfoSharedPointerNode next_node=current->next;\
-				finish=next_node ==first_node;\
-				if(callc_result.varRef!=current->data.shared_ptr){\
-					delete current->data.shared_ptr;\
-				}\
-				free(current);\
-				current=next_node;\
-			}while(!finish);\
-		}\
-		list->first=list->last=NULL;\
-
 	}
 
 
@@ -1493,6 +1473,12 @@ if(aux_function_info == NULL){\
 		}
 
 		if(info_function->object_info.idxScriptFunctionObject != 0){
+
+			if(info_function == NULL){
+				int hhhh=0;
+				hhhh++;
+			}
+
 			PUSH_SCOPE(scope_index,info_function,ptrLocalVar);
 		}
 
@@ -2586,6 +2572,11 @@ if(aux_function_info == NULL){\
 					}
 					goto lbl_exit_function;
 			 case PUSH_SCOPE:
+
+				 	 if(info_function == NULL){
+				 		 int hhhh=0;
+				 		 hhhh++;
+				 	 }
 					PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar);//instruction->index_op1);
 					continue;
 
@@ -2612,26 +2603,33 @@ if(aux_function_info == NULL){\
 
 		//idx_laststatment=m_listStatements-ptr_statment_iteration;
 
-		//if(info_function->object_info.idxScriptFunctionObject != 0){ // if not main function do not do the pop action (preserve variables always!)
-
-
-
-		//=========================
-		// POP STACK
-		// unref 1st scope ...
-
-		if(idxCurrentStack > 0){
-			if(idxCurrentStack == 1){ // unref 0 shared pointers for main function
-				REMOVE_0_SHARED_POINTERS(idxCurrentStack,NULL);
-			}else{
-				POP_SCOPE(callc_result.varRef);
-			}
-			idxCurrentStack--;
+		if(info_function->object_info.idxScriptFunctionObject == 0){ // if main function only remove 0s and preserve variables!)
+			REMOVE_0_SHARED_POINTERS(idxCurrentStack,NULL);
 		}
 		else{
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Internal error: Reached min stack");
-			return NULL;
+
+
+			//=========================
+			// POP STACK
+			// unref 1st scope ...
+
+			if(idxCurrentStack > 0){
+				/*if(idxCurrentStack == 1){ // unref 0 shared pointers for main function
+					REMOVE_0_SHARED_POINTERS(idxCurrentStack,NULL);
+				}else{*/
+					POP_SCOPE(callc_result.varRef);
+				//}
+				//idxCurrentStack--;
+			}
+			else{
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Internal error: Reached min stack");
+				return NULL;
+			}
 		}
+
+
+		idxCurrentStack--;
+
 
 		// POP STACK
 		//=========================

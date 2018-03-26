@@ -350,14 +350,14 @@ namespace zetscript{
 					if((m_variableSymbol[i].object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 
 							if(m_variableSymbol[i].object.varRef != NULL){
-								delete ((CScriptVariable *)(m_variableSymbol[i].object.varRef));
+								((CScriptVariable *)(m_variableSymbol[i].object.varRef))->unrefSharedPtr();
 							}
 					}
 					break;
 			}
 		}
 
-		// Register even for primitives (if appropiate)
+		// deallocate function member ...
 		for ( unsigned i = 0; i < m_functionSymbol.size(); i++){
 			si = &m_functionSymbol[i];
 			CScriptFunctionObject * ir_fun  = (CScriptFunctionObject *)(m_functionSymbol[i].object.stkValue);
