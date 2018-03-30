@@ -190,11 +190,6 @@ namespace zetscript{
 			return &m_registeredVariableFromBase[m_registeredVariableFromBase.size()-1];// irv->idxScopeVar;
 		}else{
 
-			int m_line=-1;
-			if(ast != NULL) {
-				m_line = ast->line_value;
-			}
-
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
 				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(p_irv->idxAstNode)," error var \"%s\" already registered at line %i!", var_name.c_str());
 			}else{
