@@ -682,6 +682,8 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 int main(int argc, char * argv[]) {
 
 
+	printf("vm:%lu\n",sizeof(CVirtualMachine));
+
 	int n_test=0;
 
 	CZetScript::getInstance();

@@ -8,87 +8,49 @@
 using namespace zetscript;
 
 
-const char *about="ZetScript 1.3.0 Copyright (C) 2017-2018 Jordi Espada\n\n";
-
 
 int main(int argc, char * argv[]) {
 
 	CZetScript *zetscript = CZetScript::getInstance();
-
 
 	if (argc >= 2) {
 
 		if(!zetscript->eval_file(argv[1])){
 			fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
 		}
-
 	}
 	else{
 
 		bool exit = false;
-		bool continue_from_last=true;
 		string expression;
-		int idx_last_instruction_ok=-1;
+		printf("ZetScript %i.%i.%i Copyright (C) 2017-2018 Jordi Espada\n\n"
+				,ZETSCRIPT_MAJOR_VERSION
+				,ZETSCRIPT_MINOR_VERSION
+				,ZETSCRIPT_PATCH_VERSION
+				);
 
-		printf("%s",about);
-
-		int g=0;
-
-		const char * instr[]{
-
-
-
-			"var f=0;",
-			"var g=0;",
-			//"var e=0;",
-			"print(g);",
-
-			0
-		};
-
-		int idx_ptr=0;
 
 
 		do{
 			printf("zs>");
-
 			std::getline(std::cin,expression);
-			//expression=instr[idx_ptr];
-
-			//printf("%s\n",expression.c_str());
 
 			exit = expression=="exit" || expression=="quit";
-
-			//CState::saveState();
 			if(!exit){ // evaluate expression
-
-				//CState::clearCurrentCompileInformation();
-
 				if(zetscript->parse(expression)){
-
 					if(zetscript->compile()){
-
-						if(zetscript->execute()){
-							//continue_from_last=true;
-							//CState::saveState();
-						}else{
-							//CState::restoreLastState();
-							//continue_from_last=false;
+						if(!zetscript->execute()){
+							fprintf(stderr,"%s",CZetScript::getErrorMsg());
 						}
+					}else{
+						fprintf(stderr,"%s",CZetScript::getErrorMsg());
 					}
-					else{
-						//CState::restoreLastState(); // when restore global vars are cleared ?
-						//continue_from_last=false;
-					}
-				}
-				else{
-					//CState::restoreLastState(); // when restore global vars are cleared ?
-					//continue_from_last=false;
+				}else{
+					fprintf(stderr,"%s",CZetScript::getErrorMsg());
 				}
 			}
 
 		}while(!exit);// && (instr[++idx_ptr] != NULL));
-
 	}
 
 	CZetScript::destroy();

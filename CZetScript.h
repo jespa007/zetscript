@@ -10,7 +10,7 @@
 #include "core/zs_core.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 1
-#define ZETSCRIPT_MINOR_VERSION 2
+#define ZETSCRIPT_MINOR_VERSION 3
 #define ZETSCRIPT_PATCH_VERSION 0
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
@@ -45,7 +45,7 @@ namespace zetscript{
 
 		CVirtualMachine *vm;
 		bool __init__;
-
+		bool show_filename_on_error;
 
 
 
@@ -105,6 +105,8 @@ namespace zetscript{
 
 
 		void destroyMainFunction();
+
+
 
 		ZETSCRIPT_MODULE_EXPORT CVirtualMachine * getVirtualMachine();
 		ZETSCRIPT_MODULE_EXPORT CScriptVariable *getMainObject(){return m_mainObject;}

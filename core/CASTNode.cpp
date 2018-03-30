@@ -24,7 +24,7 @@ namespace zetscript{
 	tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
 	tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_PUNCTUATORS];
 	int CASTNode::DUMMY_LINE=0;
-	const char * CASTNode::current_parsing_filename="unknow";
+	const char * CASTNode::current_parsing_filename=DEFAULT_NO_FILENAME;
 	int CASTNode::current_idx_parsing_filename=-1;
 	vector<tInfoAstNodeToCompile> * CASTNode::astNodeToCompile=NULL;
 	vector<tInfoAstNodeClassToCompile> * CASTNode::astNodeClassToCompile=NULL;
@@ -3014,7 +3014,7 @@ namespace zetscript{
 
 		PASTNode case_body_node=NULL;
 
-		CScope *m_currentScope;
+		CScope *m_currentScope=NULL;
 		PUNCTUATOR_TYPE ip;
 		char *value_to_eval;
 		string val;

@@ -37,7 +37,7 @@
 
 
 #define MAX_AST_NODES						32767
-
+#define DEFAULT_NO_FILENAME					"no_file"
 
 namespace zetscript{
 

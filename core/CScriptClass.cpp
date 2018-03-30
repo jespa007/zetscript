@@ -36,7 +36,7 @@ namespace zetscript{
 	// register metamethods str ...
 	 //--obj , type convert, ---
 	 map<int,map<int,fntConversionType>>  * CScriptClass::mapTypeConversion=NULL;
-
+	void (* CScriptClass::print_out_callback)(const char *) = NULL;
 
 
 	int CScriptClass::getIdxClassFromIts_C_TypeInternal(const string & c_type_str){
@@ -188,11 +188,13 @@ namespace zetscript{
 			return sci;
 
 		}else{
-			zs_print_error_cr("error class \"%s\" already registered at line %i!", class_name.c_str(), AST_LINE((*vec_script_class_node)[index]->metadata_info.object_info.symbol_info.idxAstNode));
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE((*vec_script_class_node)[index]->metadata_info.object_info.symbol_info.idxAstNode),"error class \"%s\" already registered at line %i!", class_name.c_str());
 		}
 
 		return NULL;
 	}
+
+
 
 	const char * CScriptClass::getMetamethod(METAMETHOD_OPERATOR op){
 
@@ -299,10 +301,19 @@ namespace zetscript{
 		 return ((metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != 0);
 	}
 	//------------------------------------------------------------
-	 void  print(const char *s){
+	void CScriptClass::setPrintOutCallback(void (* _printout_callback)(const char *)){
+		print_out_callback=_printout_callback;
+	}
+
+
+	 void  CScriptClass::print(const char *s){
 
 		printf("%s\n",s);
 		fflush(stdout);
+
+		if(print_out_callback){
+			print_out_callback(s);
+		}
 	 }
 
 	 void  internal_print_error(const char *s){
@@ -1186,7 +1197,7 @@ namespace zetscript{
 
 			return &object_info->local_symbols.m_registeredVariable[object_info->local_symbols.m_registeredVariable.size()-1];
 		}else{
-			zs_print_error_cr("class \"%s\" not exist!",class_name.c_str());
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" not exist!",class_name.c_str());
 			return NULL;
 		}
 

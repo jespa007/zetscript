@@ -90,6 +90,9 @@ namespace zetscript{
 		static string  *BOOL_TYPE_STR;//	typeid(bool).name()
 		static string  *STACK_ELEMENT_PTR;//	typeid(bool).name()
 
+
+		ZETSCRIPT_MODULE_EXPORT static void setPrintOutCallback(void (*)(const char *));
+
 		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
 
 		CScriptFunctionObject	metadata_info;
@@ -115,7 +118,9 @@ namespace zetscript{
 		static 			vector<CScriptClass *> 			* vec_script_class_node;
 		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
 		ZETSCRIPT_MODULE_EXPORT static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
-		
+		static void  print(const char *s);
+		static void (* print_out_callback)(const char *);
+
 	public:
 
 		// DEFINES

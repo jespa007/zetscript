@@ -64,7 +64,12 @@ namespace zetscript{
 			memset(str_error, 0,sizeof(str_error));
 		}
 
-		sprintf(str_error,"%s[%s:%i] %s\n",str_error, filename, line, aux_text);
+		if(filename!=NULL || !strcmp(filename,DEFAULT_NO_FILENAME)){
+			sprintf(str_error,"%s[%s:%i] %s\n",str_error, filename, line, aux_text);
+		}else{
+
+			sprintf(str_error,"%sline %i: %s\n",str_error, line, aux_text);
+		}
 
 #if __ZETSCRIPT_DEBUG__
 		zs_print_error_cr("[%s:%i] %s",filename, line,aux_text);
@@ -353,12 +358,13 @@ namespace zetscript{
 	CZetScript::CZetScript(){
 		//idxMainScriptFunctionObject=ZS_UNDEFINED_IDX;
 		m_mainObject = NULL;
+		show_filename_on_error=true;
 		__init__ = false;
 
 		vm=NULL;
 	}
 
-	int interface_variable;
+
 
 	bool CZetScript::init(){
 
@@ -415,7 +421,7 @@ namespace zetscript{
 
 		if(idx >= m_parsedSource->size()){
 			zs_print_error_cr("out of bounds");
-			return "unknown";
+			return DEFAULT_NO_FILENAME;
 		}
 
 		return m_parsedSource->at(idx).filename.c_str();
@@ -567,7 +573,7 @@ namespace zetscript{
 		if(CCompiler::getInstance()->compile()){
 
 			// print generated asm ...
-			printGeneratedCodeAllClasses();
+			//printGeneratedCodeAllClasses();
 
 			if(m_mainObject == NULL){
 				// creates the main entry function with compiled code. On every executing code, within "execute" function
@@ -584,8 +590,12 @@ namespace zetscript{
 		if(!__init__) return NULL;
 		ZS_CLEAR_ERROR_MSG();
 
+		bool error=false;
+
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		return vm->execute(MAIN_SCRIPT_FUNCTION_OBJECT, m_mainObject,NO_PARAMS) != NULL;//->excute();
+		vm->execute(MAIN_SCRIPT_FUNCTION_OBJECT, m_mainObject,error,NO_PARAMS);
+
+		return !error;
 	}
 
 	bool CZetScript::eval(const string & s, bool exec_vm, const char *filename_ref)  {
