@@ -16,8 +16,6 @@
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
 
-
-#define GET_AST_FILENAME_LINE(_idx_ast_)   AST_FILENAME(_idx_ast_),AST_LINE(_idx_ast_)
 #define ZS_WRITE_ERROR_MSG 		CZetScript::writeErrorMsg
 #define ZS_GET_ERROR_MSG		CZetScript::getErrorMsg
 #define ZS_CLEAR_ERROR_MSG		CZetScript::clearErrorMsg

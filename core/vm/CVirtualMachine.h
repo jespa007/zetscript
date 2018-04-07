@@ -49,6 +49,9 @@ namespace zetscript{
 
 		int idxCurrentStack;
 		int idx_laststatment;
+		int current_ast_node_call_c_function;
+
+		std::map<int,int> memory_leak; // check c pointers not freed with new op.
 
 	//===================================================================================================
 
@@ -86,6 +89,7 @@ namespace zetscript{
 
 		void iniStackVar(unsigned int pos,const tStackElement & stk);
 		void clearGlobals();
+		int getCurrentAstNodeCall_C_Function();
 
 		string stk_C_TypeStr(const tStackElement & stk_v);
 
@@ -115,7 +119,7 @@ namespace zetscript{
 
 
 
-
+		void cancelExecution();
 		void setError(const char *str);
 
 		CVirtualMachine();

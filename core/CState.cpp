@@ -9,7 +9,7 @@ namespace zetscript{
 
 	vector<CState *> *  CState::vec_saved_state=NULL;
 	CState * CState::current_state=NULL;
-	string * CState::aux_str= NULL;//"1234_unknow_1234";
+	string * CState::aux_str= NULL;
 
 	void CState::init(){
 		if(vec_saved_state == NULL){

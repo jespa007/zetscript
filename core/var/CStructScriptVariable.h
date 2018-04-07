@@ -10,6 +10,8 @@ namespace zetscript{
 
 	class  CStructScriptVariable:public CScriptVariable{
 
+		tSymbolInfo * exist(const char *c);
+
 	public:
 		CStructScriptVariable();
 
@@ -18,6 +20,10 @@ namespace zetscript{
 
 
 		int size();
+		void add_attr(const char *attr_name, tStackElement  * v);
+		void remove_attr(const char *attr_name);
+
+
 		virtual void destroy(bool delete_user_request=false);
 	};
 

@@ -431,7 +431,7 @@ namespace zetscript{
 			// From here you defined all basic, start define hierarchy
 
 			// register custom functions ...
-			if(!register_C_FunctionMember<CScriptVariable>("toString",&CScriptVariable::toString)) return false;
+			//if(!register_C_FunctionMember<CScriptVariable>("toString",&CScriptVariable::toString)) return false;
 
 			if(!class_C_baseof<CVectorScriptVariable,CScriptVariable>()) return false;
 			if(!class_C_baseof<CFunctorScriptVariable,CScriptVariable>()) return false;
@@ -450,6 +450,8 @@ namespace zetscript{
 			if(!register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop)) return false;
 
 
+			if(!register_C_FunctionMember<CStructScriptVariable>("add",&CStructScriptVariable::add_attr)) return false;
+			if(!register_C_FunctionMember<CStructScriptVariable>("remove",&CStructScriptVariable::remove_attr)) return false;
 			if(!register_C_FunctionMember<CStructScriptVariable>("size",&CStructScriptVariable::size)) return false;
 			return true;
 	 }
@@ -1397,7 +1399,7 @@ namespace zetscript{
 		if(idx != -1){
 			return (*vec_script_class_node)[idx]->metadata_info.object_info.symbol_info.symbol_name.c_str();
 		}
-		 return "unknow";
+		 return "class_unknow";
 	}
 }
 

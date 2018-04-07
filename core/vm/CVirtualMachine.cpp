@@ -874,6 +874,8 @@ if(aux_function_info == NULL){\
 
 		MAX_SCOPE_INFO = &scope_info[VM_MAX_SCOPES-1];
 
+		current_ast_node_call_c_function=-1;
+
 	}
 
 	void CVirtualMachine::iniStackVar(unsigned int pos,const tStackElement & stk){
@@ -1034,6 +1036,9 @@ if(aux_function_info == NULL){\
 	\
 	}
 
+	int CVirtualMachine::getCurrentAstNodeCall_C_Function(){
+		return current_ast_node_call_c_function;
+	}
 
 	//============================================================================================================================================
 	tStackElement  CVirtualMachine::call_C_function(
@@ -1049,6 +1054,7 @@ if(aux_function_info == NULL){\
 		intptr_t converted_param[MAX_N_ARGS];
 		intptr_t result=0;
 		tStackElement *currentArg;
+		current_ast_node_call_c_function = idxAstNode;
 		//float aux_float=0;
 
 		if(n_args>MAX_N_ARGS){
@@ -1333,6 +1339,11 @@ if(aux_function_info == NULL){\
 
 	void CVirtualMachine::setError(const char *str){
 		custom_error = str;
+		cancel_execution = true;
+	}
+
+	void CVirtualMachine::cancelExecution(){
+		custom_error=NULL;
 		cancel_execution = true;
 	}
 
@@ -2503,7 +2514,9 @@ if(aux_function_info == NULL){\
 						}
 
 						if(cancel_execution) {
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
+							if(custom_error!=NULL){
+								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
+							}
 							RETURN_ERROR;
 						}
 
@@ -2524,6 +2537,7 @@ if(aux_function_info == NULL){\
 						if(!svar->initSharedPtr()){
 							RETURN_ERROR;
 						}
+						svar->ast_node_new=instruction->idxAstNode;
 						(*ptrCurrentOp++)={STK_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
 						continue;
 			 	 case  DELETE_OP:

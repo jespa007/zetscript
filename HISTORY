@@ -10,7 +10,11 @@ Date: 30-03-2018
 #49 doing operations of returning values doesnt't work.
 #39 Script function and script classes are not clean after call cleancompile
 #53 Not do pop scope on returns inside body 
- 
+#56 Show only line if file == DEFAULT_FILENAME or not found
+#57 it gives "Expected symbol after ','" message on void structs
+#54 Memory leaks detection (only for new keywords that involve C class) 
+#55 Implement add_attr/remove_attr functions for CStructVariable 
+
 Added fibonacci test (fib.zs)
 
 //----------------------------------------------------------

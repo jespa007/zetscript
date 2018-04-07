@@ -284,11 +284,11 @@ namespace zetscript{
 
 	const char *	CASTNode::getAstFilename(short idx){
 		if(idx==ZS_UNDEFINED_IDX){
-			return "unknown";
+			return DEFAULT_NO_FILENAME;
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			zs_print_error_cr("unknown");
+			zs_print_error_cr(DEFAULT_NO_FILENAME);
 			return "";
 		}
 
@@ -297,7 +297,7 @@ namespace zetscript{
 		}
 
 
-		return "unknown";
+		return DEFAULT_NO_FILENAME;
 	}
 
 	const char * CASTNode::getAstSymbolName(short idx){
@@ -1824,6 +1824,9 @@ namespace zetscript{
 					(*ast_node_to_be_evaluated)->idxScope = scope_info->idxScope;
 				}
 			}
+
+			// this solve problem void structs...
+			aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
 			while (*aux_p != '}' && *aux_p != 0){
 

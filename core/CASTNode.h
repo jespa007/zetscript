@@ -34,7 +34,7 @@
 #define AST_FILENAME(idx)					CASTNode::getAstFilename(idx)
 #define AST_SYMBOL_VALUE(idx) 				CASTNode::getAstSymbolName(idx)
 #define AST_SYMBOL_VALUE_CONST_CHAR(idx) 	CASTNode::getAstSymbolNameConstChar(idx)
-
+#define GET_AST_FILENAME_LINE(_idx_ast_)   AST_FILENAME(_idx_ast_),AST_LINE(_idx_ast_)
 
 #define MAX_AST_NODES						32767
 #define DEFAULT_NO_FILENAME					"no_file"

@@ -78,11 +78,12 @@ namespace zetscript{
 		c_object = NULL;
 		created_object = NULL;
 		m_value = NULL;
+		was_created_by_constructor=false;
 		c_scriptclass_info=NULL;
 		idxScriptClass = -1;
 		aux_string ="";
 		delete_c_object = false; // --> user is responsible to delete C objects!
-
+		ast_node_new=ZS_UNDEFINED_IDX;
 	}
 
 	CScriptVariable::CScriptVariable(){
@@ -104,12 +105,14 @@ namespace zetscript{
 			if(m_infoRegisteredClass->is_c_class()){
 					c_scriptclass_info=m_infoRegisteredClass;
 					created_object = (*m_infoRegisteredClass->c_constructor)();
+					was_created_by_constructor=true;
 					c_object = created_object;
 			}else if(m_infoRegisteredClass->idxBaseClass.size()==1){ // mixed script + c class ?
 				CScriptClass *base = CScriptClass::getScriptClassByIdx(m_infoRegisteredClass->idxBaseClass[0]);
 				if(base->is_c_class()){
 					c_scriptclass_info=base;
 					created_object = (*base->c_constructor)();
+					was_created_by_constructor=true;
 					c_object = created_object;
 				}
 			}
@@ -159,14 +162,52 @@ namespace zetscript{
 	tSymbolInfo * CScriptVariable::addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv){
 		tSymbolInfo si;
 		si.proxy_ptr=0;
+		bool error_symbol=false;
+
 
 		if(getVariableSymbol(symbol_value) != NULL){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_idxAstNode),"symbol already exists!");
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_idxAstNode),"symbol \"%s\" already exists!",symbol_value.c_str());
+			return NULL;
+		}
+
+		char *aux_p=(char *)symbol_value.c_str();
+		if(
+			   ('a' <= *aux_p && *aux_p <='z') ||
+			   ('A' <= *aux_p && *aux_p <='Z')
+
+
+			){ // let's see it has right chars...
+				aux_p++;
+				while((*aux_p!=0) && (
+					  ('a' <= *aux_p && *aux_p <='z') ||
+					  ('0' <= *aux_p && *aux_p <='9') ||
+					  (*aux_p=='_') ||
+					  ('A' <= *aux_p && *aux_p <='Z'))){
+					aux_p++;
+				}
+
+				if((*aux_p!=0)){
+					error_symbol=true;
+				}
+		}else{
+			error_symbol=true;
+			//ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line," Symbol name cannot begin with %c", *aux_p);
+			//return NULL;
+		}
+
+		if(error_symbol){
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_idxAstNode),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			return NULL;
 		}
 
 		if(sv != NULL){
 			si.object = *sv;
+
+			// update n_refs +1
+			if(sv->properties&STK_PROPERTY_TYPE_SCRIPTVAR){
+				CURRENT_VM->sharePointer(((CScriptVariable *)(sv->varRef))->ptr_shared_pointer_node);
+			}
+
 		}else{
 
 			si.object={
@@ -199,6 +240,59 @@ namespace zetscript{
 			}
 		}
 		return NULL;
+	}
+
+
+	bool CScriptVariable::removeVariableSymbolByIndex(unsigned idx, bool remove_vector){//onst string & varname){
+
+		tSymbolInfo *si;
+
+		if(idx >= m_functionSymbol.size()){
+			ZS_WRITE_ERROR_MSG(NULL,0,"idx out of bounds (%i>=%i)",idx,m_functionSymbol.size());
+			return false;
+		}
+
+		si=&m_variableSymbol[idx];
+		unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(si->object.properties);
+
+		switch(var_type){
+
+			case STK_PROPERTY_TYPE_BOOLEAN:
+			case STK_PROPERTY_TYPE_INTEGER:
+			case STK_PROPERTY_TYPE_UNDEFINED:
+			case STK_PROPERTY_TYPE_NULL:
+			case STK_PROPERTY_TYPE_FUNCTION:
+			case STK_PROPERTY_TYPE_NUMBER:
+				break;
+			default: // variable ...
+
+
+				if((var_type & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
+					if(si->object.varRef != NULL){
+						((CScriptVariable *)(si->object.varRef))->unrefSharedPtr();
+					}
+				}
+				break;
+		}
+
+		// remove symbol on vector ...
+		if(remove_vector){
+			m_variableSymbol.erase(m_variableSymbol.begin()+idx);
+		}
+
+		return true;
+
+	}
+
+
+	bool CScriptVariable::removeVariableSymbolByName(const string & varname, int idxAstNode){
+		for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
+			if(varname == this->m_variableSymbol[i].symbol_value){
+				return removeVariableSymbolByIndex(i,true);
+			}
+		}
+		ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"symbol %s doesn't exist",varname.c_str());
+		return false;
 	}
 
 	tSymbolInfo * CScriptVariable::getVariableSymbolByIndex(unsigned idx){
@@ -320,41 +414,30 @@ namespace zetscript{
 	}
 
 	void CScriptVariable::destroy(bool delete_user_request){
-
+		bool deallocated = false;
 		if(created_object != 0){
 			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request){// || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
 
 				(*c_scriptclass_info->c_destructor)(created_object);
+				deallocated=true;
 
 			}
 		}
+
+
+
+//#ifdef __ZETSCRIPT_DEBUG__
+		if(!deallocated && was_created_by_constructor){
+			printf("[%s:%i] Allocated C pointer not deallocated\n",GET_AST_FILENAME_LINE(ast_node_new));
+		}
+//#endif
 
 		// remove vars & fundtions if class is C...
 		tSymbolInfo *si;
 
 		for ( unsigned i = 0; i < m_variableSymbol.size(); i++){
-			si = &m_variableSymbol[i];
-			unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(m_variableSymbol[i].object.properties);
+			removeVariableSymbolByIndex(i);
 
-			switch(var_type){
-
-				case STK_PROPERTY_TYPE_BOOLEAN:
-				case STK_PROPERTY_TYPE_INTEGER:
-				case STK_PROPERTY_TYPE_UNDEFINED:
-				case STK_PROPERTY_TYPE_NULL:
-				case STK_PROPERTY_TYPE_FUNCTION:
-				case STK_PROPERTY_TYPE_NUMBER:
-					break;
-
-				default: // variable ...
-					if((m_variableSymbol[i].object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
-
-							if(m_variableSymbol[i].object.varRef != NULL){
-								((CScriptVariable *)(m_variableSymbol[i].object.varRef))->unrefSharedPtr();
-							}
-					}
-					break;
-			}
 		}
 
 		// deallocate function member ...
@@ -368,6 +451,9 @@ namespace zetscript{
 				 }
 			}
 		}
+
+
+
 	}
 
 	CScriptVariable::~CScriptVariable(){
