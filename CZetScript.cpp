@@ -64,6 +64,7 @@ namespace zetscript{
 			memset(str_error, 0,sizeof(str_error));
 		}
 
+
 		if(filename!=NULL && (strcmp(filename,DEFAULT_NO_FILENAME)!=0)){
 			sprintf(str_error,"%s[%s:%i] %s\n",str_error, filename, line, aux_text);
 		}else{
