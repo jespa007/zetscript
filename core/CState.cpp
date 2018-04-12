@@ -169,8 +169,7 @@ namespace zetscript{
 			return -1;
 		}
 
-		// compile before save ...
-		current_state->clearCompileInformation();
+		// before save ...
 
 		CState * save_st = new CState();
 		vector<CASTNode *> 				* vec_ast_node_dst					= save_st->getVectorASTNodeNode();

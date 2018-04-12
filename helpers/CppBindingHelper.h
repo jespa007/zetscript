@@ -18,16 +18,19 @@ namespace zetscript{
 // Helpers...
 
 
+
+
 	inline tStackElement var2stk(intptr_t var_trans, int idx_type){
 		//intptr_t var_trans = (intptr_t)input_var;
 			string s_return_value;
-			tStackElement callc_result={0};
+			tStackElement callc_result={STK_PROPERTY_TYPE_UNDEFINED,0,0};
 			//int idx_type=CScriptClass::getIdxClassFromIts_C_Type(typeid(_T).name());
 			// save return type ...
 			switch(idx_type){
 			 case IDX_CLASS_VOID_C:
 				break;
 			 case IDX_CLASS_INT_PTR_C:
+				 if(var_trans==0) return callc_result;
 				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(*((intptr_t *)var_trans)),NULL};
 				 break;
 			 case IDX_CLASS_UNSIGNED_INT_C:
@@ -41,25 +44,31 @@ namespace zetscript{
 
 				 break;
 			 case IDX_CLASS_FLOAT_PTR_C:
+				 if(var_trans==0) return callc_result;
 				 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
 				 memcpy(&callc_result.stkValue,&(*(float *)var_trans),sizeof(float));
 				 break;
 			 case IDX_CLASS_BOOL_PTR_C:
+				 if(var_trans==0) return callc_result;
 				 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(*((bool *)var_trans)),NULL};
 				 break;
 			 case IDX_CLASS_BOOL_C:
 				 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(((bool)var_trans)),NULL};
 				 break;
 			 case IDX_CLASS_CONST_CHAR_PTR_C:
+				 if(var_trans==0) return callc_result;
 				 callc_result={STK_PROPERTY_TYPE_STRING,(void *)var_trans,NULL};//new string(*((string *)result))};
 				 break;
 			 case IDX_CLASS_STRING_PTR_C:
+				 if(var_trans==0) return callc_result;
 				 callc_result={STK_PROPERTY_TYPE_STRING,(void *)((string *)var_trans)->c_str(),NULL};//new string(*((string *)result))};
 				 break;
 			 case IDX_STACK_ELEMENT:
+				 if(var_trans==0) return callc_result;
 				 callc_result=*((tStackElement *)var_trans);//{STK_PROPERTY_TYPE_STRING,(void *)((string *)var_trans)->c_str(),NULL};//new string(*((string *)result))};
 				 break;
 			 default:
+				 if(var_trans==0) return callc_result;
 				 callc_result = {STK_PROPERTY_TYPE_SCRIPTVAR,NULL,CScriptClass::instanceScriptVariableByIdx(idx_type,(void *)var_trans)};
 				 break;
 			}

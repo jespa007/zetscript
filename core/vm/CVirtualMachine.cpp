@@ -422,7 +422,7 @@ namespace zetscript{
 				finish=next_node ==first_node;\
 				bool delete_node=true;\
 				if(ptr_callc_result!=NULL){\
-					if(((tStackElement *)ptr_callc_result)->varRef==current->data.shared_ptr){\
+					if(ptr_callc_result==current->data.shared_ptr){\
 						delete_node=false;\
 					}\
 				}\
@@ -538,6 +538,7 @@ namespace zetscript{
 								break;\
 							case STK_PROPERTY_TYPE_NULL:\
 							case STK_PROPERTY_TYPE_UNDEFINED:\
+								break;\
 							case STK_PROPERTY_TYPE_SCRIPTVAR:\
 							case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:\
 								var_object=((CScriptVariable *)currentArg->varRef);\
@@ -2508,6 +2509,7 @@ if(aux_function_info == NULL){\
 
 						if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
+							// if c pointer is not from application share ...
 							if(!((CScriptVariable *)(ret_obj.varRef))->initSharedPtr()){
 								RETURN_ERROR;
 							}
@@ -2605,6 +2607,7 @@ if(aux_function_info == NULL){\
 						}
 
 						// unref pointer to be deallocated from gc...
+						//((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node->data.shared_ptr=NULL;
 						((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node=NULL;
 						// share pointer  + 1
 					}
@@ -2644,7 +2647,7 @@ if(aux_function_info == NULL){\
 
 			// deallocates all scopes
 			while(ptrStartScopeInfo<=(current_scope_info_ptr)){
-				POP_SCOPE(NULL);
+				POP_SCOPE(callc_result.varRef);
 			}
 			//=========================
 			// POP STACK

@@ -2634,15 +2634,24 @@ namespace zetscript{
 
 		CScriptFunctionObject *sf=MAIN_SCRIPT_FUNCTION_OBJECT;
 
+		vector<zetscript::tInfoAstNodeToCompile> astNodeToCompileAux=*CASTNode::astNodeToCompile;//->clear();
+		vector<zetscript::tInfoAstNodeClassToCompile> astNodeClassToCompileAux=*CASTNode::astNodeClassToCompile;//->clear();
+
+
+		// removes all ast node to compile...
+		CASTNode::astNodeToCompile->clear();
+		CASTNode::astNodeClassToCompile->clear();
+
+
 		// remove old compile information...
 		clear();
 
 		// compile main code ...
 
 		pushFunction(IDX_MAIN_AST_NODE,sf);
-		for(unsigned i = 0; i < CASTNode::astNodeToCompile->size(); i++){
+		for(unsigned i = 0; i < astNodeToCompileAux.size(); i++){
 			//PASTNode _node =AST_NODE(CASTNode::astToCompile->at(i).idxAstNodeParent);
-			short idxNodeToCompile =  CASTNode::astNodeToCompile->at(i).ast_node_to_compile;
+			short idxNodeToCompile =  astNodeToCompileAux.at(i).ast_node_to_compile;
 
 
 
@@ -2654,10 +2663,10 @@ namespace zetscript{
 		popFunction();
 
 		// compile code from classes (if any)
-		for(unsigned i = 0; i < CASTNode::astNodeClassToCompile->size(); i++){
-			short ast_root = CASTNode::astNodeClassToCompile->at(i).idxAstRoot;
-			short ast_parent = CASTNode::astNodeClassToCompile->at(i).idxAstNodeParent;
-			short idxNodeToCompile =  CASTNode::astNodeClassToCompile->at(i).ast_node_to_compile;
+		for(unsigned i = 0; i < astNodeClassToCompileAux.size(); i++){
+			short ast_root = astNodeClassToCompileAux.at(i).idxAstRoot;
+			short ast_parent = astNodeClassToCompileAux.at(i).idxAstNodeParent;
+			short idxNodeToCompile =  astNodeClassToCompileAux.at(i).ast_node_to_compile;
 
 			/*
 			// verify class is not already registered...

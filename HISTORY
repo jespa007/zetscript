@@ -14,6 +14,8 @@ Date: 30-03-2018
 #57 it gives "Expected symbol after ','" message on void structs
 #54 Memory leaks detection (only for new keywords that involve C class) 
 #55 Implement add_attr/remove_attr functions for CStructVariable 
+#58 Removed clear compile information on saveState. 
+#59 Return undefined on NULL pointers after call C function with value. 
 
 Added fibonacci test (fib.zs)
 

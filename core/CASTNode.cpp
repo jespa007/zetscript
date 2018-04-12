@@ -3775,8 +3775,6 @@ namespace zetscript{
 
 				// set cursor compile ...
 				//cursorCompile=(*node_to_be_evaluated)->children.size();
-				astNodeToCompile->clear();
-				astNodeClassToCompile->clear();
 
 			}
 			else
