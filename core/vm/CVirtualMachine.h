@@ -46,6 +46,9 @@ namespace zetscript{
 		tInfoSharedList zero_shares[MAX_FUNCTION_CALL];
 		tInfoSharedList shared_var[MAX_FUNCTION_CALL];
 
+		CScriptFunctionObject  *main_function_object;
+		vector<CScriptFunctionObject *> 	*vec_script_function_object_node;
+		vector<CASTNode *> *vec_ast_node;
 
 		int idxCurrentStack;
 		int idx_laststatment;

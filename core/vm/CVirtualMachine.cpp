@@ -310,7 +310,7 @@ namespace zetscript{
 			if(!IS_NUMBER_OR_INT(src_ins->properties) && IS_NUMBER_OR_INT(dst_ins->properties)){\
 				if(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) != GET_INS_PROPERTY_VAR_TYPE(dst_ins->properties)\
 				){\
-					PASTNode ast=AST_NODE(instruction->idxAstNode);\
+					PASTNode ast=vec_ast_node->at(instruction->idxAstNode);\
 					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",ast->symbol_value.c_str());\
 					RETURN_ERROR;\
 				}else{\
@@ -477,7 +477,7 @@ namespace zetscript{
 		irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;\
 		aux_string=m_functionSymbol->at(i).symbol_value;\
 	}else{\
-		irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i));\
+		irfs=vec_script_function_object_node->at(vec_global_functions->at(i));\
 		aux_string=irfs->object_info.symbol_info.symbol_name;\
 	}\
 \
@@ -635,11 +635,11 @@ if(aux_function_info == NULL){\
 			if(m_functionSymbol!=NULL){ \
 				irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue; \
 			}else{ \
-				irfs=GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(i)); \
+				irfs=vec_script_function_object_node->at(vec_global_functions->at(i)); \
 			} \
 			bool match_signature = metamethod_str != NULL;\
 			if(!match_signature){\
-				match_signature = irfs->object_info.symbol_info.symbol_name == AST_NODE(iao->idxAstNode)->symbol_value;\
+				match_signature = irfs->object_info.symbol_info.symbol_name == vec_ast_node->at(iao->idxAstNode)->symbol_value;\
 			}\
 				if( \
 					 (match_signature) \
@@ -685,7 +685,7 @@ if(aux_function_info == NULL){\
 				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s", \
 												metamethod_str, \
 												calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",\
-												GET_SCRIPT_FUNCTION_OBJECT(vec_global_functions->at(0))->object_info.symbol_info.symbol_name.c_str(),\
+												vec_script_function_object_node->at(vec_global_functions->at(0))->object_info.symbol_info.symbol_name.c_str(),\
 												args_str.c_str(),\
 												str_candidates.c_str()); \
 			}else{\
@@ -876,6 +876,11 @@ if(aux_function_info == NULL){\
 		MAX_SCOPE_INFO = &scope_info[VM_MAX_SCOPES-1];
 
 		current_ast_node_call_c_function=-1;
+
+		main_function_object = NULL;
+
+		vec_script_function_object_node = NULL;
+		vec_ast_node = NULL;
 
 	}
 
@@ -1364,11 +1369,13 @@ if(aux_function_info == NULL){\
 			RETURN_ERROR;
 		}
 
-		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);//GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
+		main_function_object = GET_SCRIPT_FUNCTION_OBJECT(0);//GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[0]);
+		vec_script_function_object_node=CScriptFunctionObject::getVectorScriptFunctionObjectNode();
+		vec_ast_node = CASTNode::getVectorASTNode();
 
 		if(idxCurrentStack==0){ // set stack for first call
 
-			if(main_function->object_info.statment_op == NULL){ // no statments
+			if(main_function_object->object_info.statment_op == NULL){ // no statments
 				RETURN_ERROR;
 			}
 			cancel_execution=false;
@@ -1378,7 +1385,7 @@ if(aux_function_info == NULL){\
 			//*ptrCurrentOp={STK_PROPERTY_TYPE_UNDEFINED,0,0}; // ini first op
 
 			if(info_function->object_info.idxScriptFunctionObject != 0){ // calls script function from C : preserve stack space for global vars
-				ptrCurrentOp=&stack[main_function->object_info.local_symbols.m_registeredVariable.size()];
+				ptrCurrentOp=&stack[main_function_object->object_info.local_symbols.m_registeredVariable.size()];
 			}
 		}
 
@@ -1502,13 +1509,13 @@ if(aux_function_info == NULL){\
 			return se;
 		}
 
-		PASTNode ast = AST_NODE(info_function->object_info.symbol_info.idxAstNode);
+		PASTNode ast = vec_ast_node->at(info_function->object_info.symbol_info.idxAstNode);
 
 		short scope_index =  ast->idxScope;
 
 
 		if(ast->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD){
-			scope_index=AST_NODE(ast->children[1])->idxScope;
+			scope_index=vec_ast_node->at(ast->children[1])->idxScope;
 		}
 
 		if(info_function->object_info.idxScriptFunctionObject != 0){
@@ -1684,7 +1691,7 @@ if(aux_function_info == NULL){\
 							case INS_PROPERTY_ACCESS_SCOPE:
 							case INS_PROPERTY_THIS_SCOPE:
 								if(instruction->idxAstNode != -1){
-									ast = AST_NODE(instruction->idxAstNode);
+									ast = vec_ast_node->at(instruction->idxAstNode);
 
 								}
 
@@ -1890,14 +1897,14 @@ if(aux_function_info == NULL){\
 								vec_functions=&sc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
 							}
 							else{
-								CASTNode *ast_previous=AST_NODE((instruction-1)->idxAstNode);
-								CASTNode *ast=AST_NODE((int)instruction->idxAstNode);
+								CASTNode *ast_previous=vec_ast_node->at((instruction-1)->idxAstNode);
+								CASTNode *ast=vec_ast_node->at((int)instruction->idxAstNode);
 								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"Cannot access symbol \"%s\" (type of %s is %s)",ast->symbol_value.c_str(),ast_previous->symbol_value.c_str(),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
 								RETURN_ERROR;
 							}
 						}else if(scope_type ==INS_PROPERTY_THIS_SCOPE){
 							if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"this.%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str());
+								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"this.%s\"",vec_ast_node->at(instruction->idxAstNode)->symbol_value.c_str());
 								RETURN_ERROR;
 							}
 
@@ -1905,12 +1912,12 @@ if(aux_function_info == NULL){\
 
 						}else if(scope_type == INS_PROPERTY_SUPER_SCOPE){ // super scope ?
 							if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"super.%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str());
+								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"super.%s\"",vec_ast_node->at(instruction->idxAstNode)->symbol_value.c_str());
 								RETURN_ERROR;
 							}
 							function_obj =(CScriptFunctionObject *)si->object.stkValue;
 						}else{ // global
-							vec_functions = &(MAIN_SCRIPT_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
+							vec_functions = &(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
 							//function_obj = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
 						}
 
@@ -1922,10 +1929,10 @@ if(aux_function_info == NULL){\
 								function_obj= NULL;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
 							}else if((index_op2<(int)vec_functions->size())) // get the function ...
 							{
-								function_obj =GET_SCRIPT_FUNCTION_OBJECT((*vec_functions)[index_op2]);
+								function_obj = vec_script_function_object_node->at((*vec_functions)[index_op2]);
 							}
 							else{
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find symbol global \"%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str());
+								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find symbol global \"%s\"",vec_ast_node->at(instruction->idxAstNode)->symbol_value.c_str());
 								RETURN_ERROR;
 							}
 						}
@@ -2420,14 +2427,14 @@ if(aux_function_info == NULL){\
 					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
 						tInfoAsmOp *iao = (tInfoAsmOp *)(callAle)->stkValue;
 
-						symbol_to_find = AST_NODE(iao->idxAstNode)->symbol_value;
+						symbol_to_find = vec_ast_node->at(iao->idxAstNode)->symbol_value;
 
 						//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
 						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
 						{
 							// local vars as functions ...
-							vec_global_functions=&(MAIN_SCRIPT_FUNCTION_OBJECT->object_info.local_symbols.vec_idx_registeredFunction);
+							vec_global_functions=&(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
 
 							int size_fun_vec = (int)vec_global_functions->size()-1;
 
