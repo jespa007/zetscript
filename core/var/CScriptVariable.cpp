@@ -247,8 +247,8 @@ namespace zetscript{
 
 		tSymbolInfo *si;
 
-		if(idx >= m_functionSymbol.size()){
-			ZS_WRITE_ERROR_MSG(NULL,0,"idx out of bounds (%i>=%i)",idx,m_functionSymbol.size());
+		if(idx >= m_variableSymbol.size()){
+			ZS_WRITE_ERROR_MSG(NULL,0,"idx out of bounds (%i>=%i)",idx,m_variableSymbol.size());
 			return false;
 		}
 
@@ -267,7 +267,7 @@ namespace zetscript{
 			default: // variable ...
 
 
-				if((var_type & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
+				if((si->object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 					if(si->object.varRef != NULL){
 						((CScriptVariable *)(si->object.varRef))->unrefSharedPtr();
 					}

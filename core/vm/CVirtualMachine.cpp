@@ -915,14 +915,15 @@ if(aux_function_info == NULL){\
 					}
 				}
 			}
-			*ptr_ale={
-					STK_PROPERTY_TYPE_UNDEFINED,
-					0,
-					0
-			};
 		}
 
 		REMOVE_0_SHARED_POINTERS(0,NULL);
+
+		// clear all stack variables
+		tStackElement *aux=stack;
+		for(int i=0; i < VM_LOCAL_VAR_MAX_STACK;i++){
+			*aux++={STK_PROPERTY_TYPE_UNDEFINED,0,NULL};
+		}
 		//int idxCurrentStack
 	}
 
@@ -1376,7 +1377,7 @@ if(aux_function_info == NULL){\
 			ptrCurrentOp=stack;
 			//*ptrCurrentOp={STK_PROPERTY_TYPE_UNDEFINED,0,0}; // ini first op
 
-			if(info_function->object_info.idxScriptFunctionObject != 0){ // preserve stack space for global vars
+			if(info_function->object_info.idxScriptFunctionObject != 0){ // calls script function from C : preserve stack space for global vars
 				ptrCurrentOp=&stack[main_function->object_info.local_symbols.m_registeredVariable.size()];
 			}
 		}
@@ -2040,6 +2041,7 @@ if(aux_function_info == NULL){\
 
 						// ok load object pointer ...
 						if(dst_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+
 							if(((CScriptVariable *)dst_ins->varRef)->itHasSetMetamethod()){
 								APPLY_METAMETHOD(=,SET_METAMETHOD);
 								assign_metamethod=true;
@@ -2633,44 +2635,23 @@ if(aux_function_info == NULL){\
 
 	// exit statment (don't remove ;, it gives a compile error)
 	lbl_exit_statment:;
-
-		}//while(ptr_statment_iteration->asm_op!=NULL && !end_by_ret);
+		}
 
 	lbl_exit_function:
 
-		//idx_laststatment=m_listStatements-ptr_statment_iteration;
 
+		//=========================
+		// POP STACK
 		if(info_function->object_info.idxScriptFunctionObject == 0){ // if main function only remove 0s and preserve variables!)
 			REMOVE_0_SHARED_POINTERS(idxCurrentStack,NULL);
 		}
 		else{
-
-			// deallocates all scopes
 			while(ptrStartScopeInfo<=(current_scope_info_ptr)){
 				POP_SCOPE(callc_result.varRef);
 			}
-			//=========================
-			// POP STACK
-			// unref 1st scope ...
-
-			/*if(idxCurrentStack > 0){
-				if(idxCurrentStack == 1){ // unref 0 shared pointers for main function
-					REMOVE_0_SHARED_POINTERS(idxCurrentStack,NULL);
-				}else{
-					POP_SCOPE(callc_result.varRef);
-				//}
-				//idxCurrentStack--;
-			}
-			else{
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Internal error: Reached min stack");
-				RETURN_ERROR;
-			}*/
 		}
 
-
 		idxCurrentStack--;
-
-
 		// POP STACK
 		//=========================
 

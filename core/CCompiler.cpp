@@ -52,6 +52,7 @@ namespace zetscript{
 
 			info_symbol.idxAstNode = idxAstNode;
 			info_symbol.symbol_name = var_name;
+			int n_element=this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size();
 
 
 
@@ -59,11 +60,11 @@ namespace zetscript{
 
 			// init stack variable ...
 			if(this->m_currentFunctionInfo->function_info_object->object_info.symbol_info.idxScriptClass == IDX_CLASS_MAIN && this->m_currentFunctionInfo->function_info_object->object_info.idxScriptFunctionObject == 0){ // initialize new global var initialized on MainFuntion ...
-				CURRENT_VM->iniStackVar(this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size(),{STK_PROPERTY_TYPE_UNDEFINED,0,0});
+				CURRENT_VM->iniStackVar(n_element,{STK_PROPERTY_TYPE_UNDEFINED,0,0});
 			}
 
 
-			return this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size()-1;
+			return n_element;//this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size()-1;
 		} // else already added so we refer the same var.
 		return idxVar;
 	}
@@ -2665,15 +2666,9 @@ namespace zetscript{
 		// compile code from classes (if any)
 		for(unsigned i = 0; i < astNodeClassToCompileAux.size(); i++){
 			short ast_root = astNodeClassToCompileAux.at(i).idxAstRoot;
-			short ast_parent = astNodeClassToCompileAux.at(i).idxAstNodeParent;
+			//short ast_parent = astNodeClassToCompileAux.at(i).idxAstNodeParent;
 			short idxNodeToCompile =  astNodeClassToCompileAux.at(i).ast_node_to_compile;
 
-			/*
-			// verify class is not already registered...
-			if((irc=CScriptClass::registerClass(_node->symbol_value,base_class,_node)) == NULL){
-				return false;
-			}*/
-			//printf("HHHHHHHHHH CLASS NODE HHHHHHHHHHHH\n");
 
 			CScriptClass * sc=CScriptClass::getScriptClassByName(AST_NODE(ast_root)->symbol_value,false);
 
@@ -2682,7 +2677,7 @@ namespace zetscript{
 			}
 			sf = &sc->metadata_info;
 
-			pushFunction(ast_parent,sf);
+			pushFunction(idxNodeToCompile,sf);
 
 			// compile var or function ...
 			if(!ast2asm_Recursive(idxNodeToCompile, m_treescope)){

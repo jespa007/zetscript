@@ -309,15 +309,15 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 #define TEST_ARITHMETIC_CINTEGER_OP(val1, op, val2) \
 { \
 	int aux_value=0; \
-	string str= "("\
-				"(new CInteger("\
+	string str= "it1=("\
+				"(i1=new CInteger("\
 				STR(val1) \
 				"))"\
 				STR(op) \
-				"(new CInteger("\
+				"(i2=new CInteger("\
 				STR(val2) \
 				"))"\
-				").toInt();"; \
+				");it2=it1.toInt();delete it1;delete i1;delete i2;it2;"; \
 	if((aux_value=CZetScript::eval_int(str)) != (val1 op val2)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
 		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
@@ -359,15 +359,15 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 { \
 	float expr=((float)(val1) op (float)(val2));\
 	float aux_value=0; \
-	string str= "("\
-				"(new CNumber("\
+	string str= "nt1=("\
+				"(n1=new CNumber("\
 				STR(val1) \
 				"))"\
 				STR(op) \
-				"(new CNumber("\
+				"(n2=new CNumber("\
 				STR(val2) \
 				"))"\
-				").toFloat();"; \
+				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;nt2;"; \
 	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str),expr)){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
 		fprintf(stderr,"%s",ZS_GET_ERROR_MSG());\
@@ -378,15 +378,15 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 #define TEST_ARITHMETIC_CNUMBER_MOD(val1, val2) \
 { \
 	float aux_value=0; \
-	string str= "("\
-				"(new CNumber("\
+	string str= "nt1=("\
+				"(n1=new CNumber("\
 				STR(val1) \
 				"))"\
 				"%" \
-				"(new CNumber("\
+				"(n2=new CNumber("\
 				STR(val2) \
 				"))"\
-				").toFloat();"; \
+				");nt2=nt1.toFloat();delete n1; delete n2;delete nt1;nt2;"; \
 	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str)  , fmod(val1,val2))){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
 		exit(-1); \
@@ -864,6 +864,8 @@ int main(int argc, char * argv[]) {
 	printf("%i. testing primitive var\n",++n_test);
 
 
+
+
 	TEST_INT_EXPR("var i=1;",1);
 	TEST_INT_EXPR("i++;i;",2);
 	TEST_INT_EXPR("++i;i;",3);
@@ -915,6 +917,8 @@ int main(int argc, char * argv[]) {
 	printf("%i. test if-else ...\n",++n_test);
 	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}i;",10);
 	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);
+
+	CZetScript::getInstance()->eval("var i1,i2,it1,it2,n1,n2,nt1,nt2;");
 
 	printf("%i. testing cinteger ops...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,4); // op1==op2

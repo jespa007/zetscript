@@ -940,7 +940,7 @@ namespace zetscript{
 												 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
 													 // search global...
-													 CScriptFunctionObject * mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;// getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
+													 CScriptFunctionObject * mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;
 													 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,symbol_found,0)){
 															PASTNode ast_node = AST_NODE(iao->idxAstNode);
 

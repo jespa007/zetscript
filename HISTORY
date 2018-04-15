@@ -16,6 +16,8 @@ Date: 30-03-2018
 #55 Implement add_attr/remove_attr functions for CStructVariable 
 #58 Removed clear compile information on saveState. 
 #59 Return undefined on NULL pointers after call C function with value. 
+#60 seg fault on calling first a function call and then register a variable
+#61 Clean whoke stack array on clean compile  
 
 Added fibonacci test (fib.zs)
 
