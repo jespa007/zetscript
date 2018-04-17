@@ -47,8 +47,11 @@ namespace zetscript{
 		tInfoSharedList shared_var[MAX_FUNCTION_CALL];
 
 		CScriptFunctionObject  *main_function_object;
-		vector<CScriptFunctionObject *> 	*vec_script_function_object_node;
-		vector<CASTNode *> *vec_ast_node;
+		CScriptFunctionObject 	**vec_script_function_object_node;
+		unsigned				size_vec_script_function_object_node;
+		CASTNode 				**vec_ast_node;
+		unsigned  				size_vec_ast_node;
+		void destroyCache();
 
 		int idxCurrentStack;
 		int idx_laststatment;
@@ -121,6 +124,7 @@ namespace zetscript{
 		//template<typename _T>
 
 
+		void buildCache();
 
 		void cancelExecution();
 		void setError(const char *str);

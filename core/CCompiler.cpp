@@ -2694,6 +2694,9 @@ namespace zetscript{
 			return false;
 		}
 
+		// build current cache after compile...
+		CURRENT_VM->buildCache();
+
 		return true;
 	}
 
