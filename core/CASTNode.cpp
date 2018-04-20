@@ -1831,7 +1831,7 @@ namespace zetscript{
 			while (*aux_p != '}' && *aux_p != 0){
 
 				m_lineSymbol = m_line;
-				aux_p=IGNORE_BLANKS(aux_p+1,m_line);
+				//aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
 				// expect word...
 				end_p = getEndWord(aux_p, m_line);
@@ -1867,7 +1867,10 @@ namespace zetscript{
 
 				 aux_p=IGNORE_BLANKS(aux_p,m_line);
 
-				 if(*aux_p != ',' && *aux_p != '}' ){
+				 if(*aux_p == ','){
+					 aux_p=IGNORE_BLANKS(aux_p+1,m_line);
+				 }
+				 else if(*aux_p != '}' ){
 					 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected '}' or ','");
 					 return NULL;
 				 }

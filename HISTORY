@@ -18,17 +18,9 @@ Date: 30-03-2018
 #59 Return undefined on NULL pointers after call C function with value. 
 #60 seg fault on calling first a function call and then register a variable
 #61 Clean whoke stack array on clean compile  
+#62 VM speed improve ~ x2
 
 Added fibonacci test (fib.zs)
-
-
-#62 VM speed improve. 
-* Source test: fib.zs
-* Initial VM speed 5.7s
-* 1st optimize     3.0s
-* 2nd optimize     3.0s
-
-
 
 //----------------------------------------------------------
 Version: 1.2.0

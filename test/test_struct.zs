@@ -25,6 +25,9 @@ var s={
 };
 
 
-print(s.j);
+print("s.f():"+s.f());
+s.add("a","string_new_attribute");
+s.remove("a");
+//print("s.a:"+s.a);
 
 
