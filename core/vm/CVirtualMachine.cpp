@@ -914,9 +914,9 @@ if(aux_function_info == NULL){\
 		for(unsigned i = 0; i < main_function->object_info.local_symbols.m_registeredVariable.size(); i++){
 			tStackElement *ptr_ale =&stack[i];
 			CScriptVariable *var = NULL;
-			switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
-			case STK_PROPERTY_TYPE_STRING:
-			case STK_PROPERTY_TYPE_SCRIPTVAR:
+			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
+			//case STK_PROPERTY_TYPE_STRING:
+			if(ptr_ale->properties &STK_PROPERTY_TYPE_SCRIPTVAR){
 				var =((CScriptVariable *)(ptr_ale->varRef));
 				if(var){
 					if(var->ptr_shared_pointer_node != NULL){
@@ -924,6 +924,7 @@ if(aux_function_info == NULL){\
 					}
 				}
 			}
+			//}
 		}
 
 		REMOVE_0_SHARED_POINTERS(0,NULL);

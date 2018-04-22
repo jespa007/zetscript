@@ -266,10 +266,11 @@ namespace zetscript{
 				break;
 			default: // variable ...
 
-
-				if((si->object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
-					if(si->object.varRef != NULL){
-						((CScriptVariable *)(si->object.varRef))->unrefSharedPtr();
+				if(var_type & STK_PROPERTY_TYPE_SCRIPTVAR){
+					if((si->object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
+						if(si->object.varRef != NULL){
+							((CScriptVariable *)(si->object.varRef))->unrefSharedPtr();
+						}
 					}
 				}
 				break;

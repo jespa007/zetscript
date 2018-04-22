@@ -27,10 +27,12 @@ namespace zetscript{
 		if(CScriptVariable::unrefSharedPtr()){
 
 			for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-				CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
-				if(var){
-					if(!var->unrefSharedPtr()){
-						return false;
+				if(m_variableSymbol[i].object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+					CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
+					if(var){
+						if(!var->unrefSharedPtr()){
+							return false;
+						}
 					}
 				}
 			}
@@ -94,9 +96,11 @@ namespace zetscript{
 	void CStructScriptVariable::destroy(bool delete_user_request){
 
 		for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-			CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
-			if(var){
-				var->destroy(delete_user_request);
+			if(m_variableSymbol[i].object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+				CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
+				if(var){
+					var->destroy(delete_user_request);
+				}
 			}
 		}
 	}

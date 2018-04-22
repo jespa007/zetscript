@@ -1,3 +1,12 @@
+class A{
+	
+	var j;
+	
+	function A(){
+		this.j=-10;
+	}
+};
+
 var s={
 	i:0+1,
 	j:"string1",
@@ -26,8 +35,13 @@ var s={
 
 
 print("s.f():"+s.f());
-s.add("a","string_new_attribute");
+s.add("a",new A());
+s.add("b","dadas");
+print("s.a.j:"+s.a.j);
+
 s.remove("a");
-//print("s.a:"+s.a);
+s.remove("b");
+
+
 
 
