@@ -52,6 +52,7 @@ namespace zetscript{
 
 			info_symbol.idxAstNode = idxAstNode;
 			info_symbol.symbol_name = var_name;
+			int n_element=this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size();
 
 
 
@@ -59,11 +60,11 @@ namespace zetscript{
 
 			// init stack variable ...
 			if(this->m_currentFunctionInfo->function_info_object->object_info.symbol_info.idxScriptClass == IDX_CLASS_MAIN && this->m_currentFunctionInfo->function_info_object->object_info.idxScriptFunctionObject == 0){ // initialize new global var initialized on MainFuntion ...
-				CURRENT_VM->iniStackVar(this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size(),{STK_PROPERTY_TYPE_UNDEFINED,0,0});
+				CURRENT_VM->iniStackVar(n_element,{STK_PROPERTY_TYPE_UNDEFINED,0,0});
 			}
 
 
-			return this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size()-1;
+			return n_element;//this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size()-1;
 		} // else already added so we refer the same var.
 		return idxVar;
 	}
@@ -162,7 +163,7 @@ namespace zetscript{
 			else{ //global
 
 				scope_type = 0;//INST_PROPERTY_GLOBAL_SCOPE;
-				CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX);
+				CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX);
 
 
 				for(unsigned i = 0; i < main_function->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
@@ -2052,8 +2053,8 @@ namespace zetscript{
 					{ZS_UNDEFINED_IDX,ss}
 			);
 		}
-		// 2. Compiles the function ...
-		return compile(_node->children[1], irfs);
+		// 2. Compiles function's body ...
+		return compile_body(_node->children[1], irfs);
 	}
 
 	bool CCompiler::gacIf(short idxAstNode, CScope * _lc){
@@ -2534,9 +2535,12 @@ namespace zetscript{
 			memset(m_currentFunctionInfo->function_info_object->object_info.statment_op, 0, size);
 			//m_currentFunctionInfo->function_info_object->object_info.n_statment_op = vec_comp_statment->size();
 
+			m_currentFunctionInfo->function_info_object->object_info.n_statments=vec_comp_statment->size();
+
 			for (unsigned i = 0; i < vec_comp_statment->size(); i++) { // foreach statment...
 				// reserve memory for n ops + 1 NULL end of instruction...
 				size = (vec_comp_statment->at(i).asm_op.size() + 1) * sizeof(tInfoAsmOp);
+
 				m_currentFunctionInfo->function_info_object->object_info.statment_op[i] = (tInfoAsmOp *)malloc(size);
 
 				memset(m_currentFunctionInfo->function_info_object->object_info.statment_op[i], 0, size);
@@ -2566,18 +2570,16 @@ namespace zetscript{
 		}
 	}
 
-	void CCompiler::clear(){ // clears all compiled
+	bool CCompiler::compile_body(short idxAstParentNode ,CScriptFunctionObject *sf){
 
-	}
-
-	bool CCompiler::compile(short idxAstNode, CScriptFunctionObject *sf){
-
-		PASTNode _node =AST_NODE(idxAstNode);
+		PASTNode _node =AST_NODE(idxAstParentNode);
 
 		if(_node == NULL){
 			zs_print_error_cr("NULL node!");
 			return false;
 		}
+
+		//int start_node=(idxAstNode==IDX_MAIN_AST_NODE)?GET_CURSOR_COMPILE:0;
 
 		//CScope *_scope =AST_SCOPE_INFO(idxAstNode);
 
@@ -2585,6 +2587,7 @@ namespace zetscript{
 			pushFunction(_node->idxAstNode,sf);
 			// reset current pointer ...
 			{ // main node ?
+
 				for(unsigned i = 0; i < _node->children.size(); i++){
 
 					if(!ast2asm_Recursive(_node->children[i], m_treescope)){
@@ -2600,6 +2603,101 @@ namespace zetscript{
 		}
 
 		return false;
+	}
+
+	// clears statments on main function ...
+	void CCompiler::clear() {
+		CScriptFunctionObject *info_function=MAIN_SCRIPT_FUNCTION_OBJECT;
+
+		if (info_function->object_info.statment_op != NULL) {
+			for (PtrStatment stat = info_function->object_info.statment_op; *stat != NULL; stat++) {
+
+				free(*stat);
+			}
+
+			free(info_function->object_info.statment_op);
+			info_function->object_info.statment_op=NULL;
+		}
+
+		// unloading scope ...
+		if (info_function->object_info.info_var_scope != NULL) {
+			for (unsigned j = 0; j < info_function->object_info.n_info_var_scope; j++) {
+				free(info_function->object_info.info_var_scope[j].var_index);
+			}
+
+			free(info_function->object_info.info_var_scope);
+			info_function->object_info.info_var_scope=NULL;
+		}
+		//vec_script_function_object_node->pop_back();
+	}
+
+	bool CCompiler::compile(){
+
+		CScriptFunctionObject *sf=MAIN_SCRIPT_FUNCTION_OBJECT;
+
+		vector<zetscript::tInfoAstNodeToCompile> astNodeToCompileAux=*CASTNode::astNodeToCompile;//->clear();
+		vector<zetscript::tInfoAstNodeClassToCompile> astNodeClassToCompileAux=*CASTNode::astNodeClassToCompile;//->clear();
+
+
+		// removes all ast node to compile...
+		CASTNode::astNodeToCompile->clear();
+		CASTNode::astNodeClassToCompile->clear();
+
+
+		// remove old compile information...
+		clear();
+
+		// compile main code ...
+
+		pushFunction(IDX_MAIN_AST_NODE,sf);
+		for(unsigned i = 0; i < astNodeToCompileAux.size(); i++){
+			//PASTNode _node =AST_NODE(CASTNode::astToCompile->at(i).idxAstNodeParent);
+			short idxNodeToCompile =  astNodeToCompileAux.at(i).ast_node_to_compile;
+
+
+
+			// compile var or function ...
+			if(!ast2asm_Recursive(idxNodeToCompile, m_treescope)){
+				return false;
+			}
+		}
+		popFunction();
+
+		// compile code from classes (if any)
+		for(unsigned i = 0; i < astNodeClassToCompileAux.size(); i++){
+			short ast_root = astNodeClassToCompileAux.at(i).idxAstRoot;
+			//short ast_parent = astNodeClassToCompileAux.at(i).idxAstNodeParent;
+			short idxNodeToCompile =  astNodeClassToCompileAux.at(i).ast_node_to_compile;
+
+
+			CScriptClass * sc=CScriptClass::getScriptClassByName(AST_NODE(ast_root)->symbol_value,false);
+
+			if(sc==NULL){
+				return false;
+			}
+			sf = &sc->metadata_info;
+
+			pushFunction(idxNodeToCompile,sf);
+
+			// compile var or function ...
+			if(!ast2asm_Recursive(idxNodeToCompile, m_treescope)){
+				return false;
+			}
+
+			popFunction();
+
+		}
+
+
+		// update reference symbols (like link))
+		if(!CScriptClass::updateReferenceSymbols()){
+			return false;
+		}
+
+		// build current cache after compile...
+		CURRENT_VM->buildCache();
+
+		return true;
 	}
 
 	CCompiler::~CCompiler(){

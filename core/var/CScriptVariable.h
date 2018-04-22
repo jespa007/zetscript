@@ -23,6 +23,8 @@ namespace zetscript{
 		//int idx_shared_ptr;
 		PInfoSharedPointerNode ptr_shared_pointer_node;
 		short idxScriptClass;
+		short ast_node_new;
+		bool was_created_by_constructor;
 		//----------------------
 
 		// public vars ...
@@ -46,6 +48,9 @@ namespace zetscript{
 		tSymbolInfo * addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv=NULL);
 		tSymbolInfo * getVariableSymbol(const string & varname);
 		tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
+		bool removeVariableSymbolByName(const string & symbol_value, int idxAstNode);
+		bool removeVariableSymbolByIndex(unsigned idx, bool remove_vector=false);
+
 
 		tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates=true);
 		tSymbolInfo * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);

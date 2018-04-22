@@ -9,7 +9,7 @@ namespace zetscript{
 
 	vector<CState *> *  CState::vec_saved_state=NULL;
 	CState * CState::current_state=NULL;
-	string * CState::aux_str= NULL;//"1234_unknow_1234";
+	string * CState::aux_str= NULL;
 
 	void CState::init(){
 		if(vec_saved_state == NULL){
@@ -169,8 +169,7 @@ namespace zetscript{
 			return -1;
 		}
 
-		// compile before save ...
-		current_state->clearCompileInformation();
+		// before save ...
 
 		CState * save_st = new CState();
 		vector<CASTNode *> 				* vec_ast_node_dst					= save_st->getVectorASTNodeNode();

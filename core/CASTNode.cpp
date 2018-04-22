@@ -24,9 +24,10 @@ namespace zetscript{
 	tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
 	tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_PUNCTUATORS];
 	int CASTNode::DUMMY_LINE=0;
-	const char * CASTNode::current_parsing_filename="unknow";
+	const char * CASTNode::current_parsing_filename=DEFAULT_NO_FILENAME;
 	int CASTNode::current_idx_parsing_filename=-1;
-
+	vector<tInfoAstNodeToCompile> * CASTNode::astNodeToCompile=NULL;
+	vector<tInfoAstNodeClassToCompile> * CASTNode::astNodeClassToCompile=NULL;
 
 	bool IS_SINGLE_COMMENT(char *str){
 
@@ -255,6 +256,20 @@ namespace zetscript{
 		return SCOPE_INFO_NODE(vec_ast_node->at(idx)->idxScope);
 	}
 
+
+	void CASTNode::destroySingletons(){
+		if(astNodeToCompile != NULL){
+			delete astNodeToCompile;
+			astNodeToCompile=NULL;
+		}
+
+		if(astNodeClassToCompile != NULL){
+			delete astNodeClassToCompile;
+			astNodeClassToCompile=NULL;
+		}
+
+	}
+
 	int 		CASTNode::getAstLine(short idx){
 		if(idx==ZS_UNDEFINED_IDX){
 			return -1;
@@ -269,11 +284,11 @@ namespace zetscript{
 
 	const char *	CASTNode::getAstFilename(short idx){
 		if(idx==ZS_UNDEFINED_IDX){
-			return "unknown";
+			return DEFAULT_NO_FILENAME;
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			zs_print_error_cr("unknown");
+			zs_print_error_cr(DEFAULT_NO_FILENAME);
 			return "";
 		}
 
@@ -282,7 +297,7 @@ namespace zetscript{
 		}
 
 
-		return "unknown";
+		return DEFAULT_NO_FILENAME;
 	}
 
 	const char * CASTNode::getAstSymbolName(short idx){
@@ -1810,10 +1825,13 @@ namespace zetscript{
 				}
 			}
 
+			// this solve problem void structs...
+			aux_p=IGNORE_BLANKS(aux_p+1,m_line);
+
 			while (*aux_p != '}' && *aux_p != 0){
 
 				m_lineSymbol = m_line;
-				aux_p=IGNORE_BLANKS(aux_p+1,m_line);
+				//aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
 				// expect word...
 				end_p = getEndWord(aux_p, m_line);
@@ -1849,7 +1867,10 @@ namespace zetscript{
 
 				 aux_p=IGNORE_BLANKS(aux_p,m_line);
 
-				 if(*aux_p != ',' && *aux_p != '}' ){
+				 if(*aux_p == ','){
+					 aux_p=IGNORE_BLANKS(aux_p+1,m_line);
+				 }
+				 else if(*aux_p != '}' ){
 					 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected '}' or ','");
 					 return NULL;
 				 }
@@ -2390,43 +2411,6 @@ namespace zetscript{
 						return NULL;
 					}
 
-					// register function symbol...
-
-
-					if(ast_node_to_be_evaluated !=NULL){
-
-						int n_params=0;
-
-						if(args_node != NULL){
-							n_params=args_node->children.size();
-						}
-
-						if(named_function){ // register named function...
-							if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
-
-								if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
-									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is already defined with same args at line %i", function_name.c_str(),AST_LINE(irv->idxAstNode));
-								}else{
-									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
-								}
-
-								return NULL;
-							}
-
-							if((irv=scope_info->registerSymbol(function_name,(*ast_node_to_be_evaluated),n_params))==NULL){
-								return NULL;
-							}
-
-							if((*ast_node_to_be_evaluated) != NULL){
-								(*ast_node_to_be_evaluated)->symbol_value=function_name;
-							}
-
-						}else{ // register anonymouse function
-							irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
-							(*ast_node_to_be_evaluated)->symbol_value=irv->name;
-						}
-
-					}
 
 					aux_p++;
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
@@ -2448,7 +2432,41 @@ namespace zetscript{
 
 						if(!error){
 
+
 							if(ast_node_to_be_evaluated != NULL){
+
+								// register function symbol...
+								int n_params=0;
+
+								if(args_node != NULL){
+									n_params=args_node->children.size();
+								}
+
+								if(named_function){ // register named function...
+									if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
+
+										if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
+											ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is already defined with same args at line %i", function_name.c_str(),AST_LINE(irv->idxAstNode));
+										}else{
+											ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
+										}
+
+										return NULL;
+									}
+
+									if((irv=scope_info->registerSymbol(function_name,(*ast_node_to_be_evaluated),n_params))==NULL){
+										return NULL;
+									}
+
+									if((*ast_node_to_be_evaluated) != NULL){
+										(*ast_node_to_be_evaluated)->symbol_value=function_name;
+									}
+
+								}else{ // register anonymouse function
+									irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
+									(*ast_node_to_be_evaluated)->symbol_value=irv->name;
+								}
+
 								(*ast_node_to_be_evaluated)->children.push_back(body_node->idxAstNode);
 								scope_info->popScope();
 							}
@@ -3002,7 +3020,7 @@ namespace zetscript{
 
 		PASTNode case_body_node=NULL;
 
-		CScope *m_currentScope;
+		CScope *m_currentScope=NULL;
 		PUNCTUATOR_TYPE ip;
 		char *value_to_eval;
 		string val;
@@ -3467,7 +3485,6 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 				if((*aux_p == ';' || *aux_p == '=' || (*aux_p == ',') )){ // JE: added multivar feature (',)).
-					zs_print_debug_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
 					var_node = NULL;
 					if(ast_node_to_be_evaluated!=NULL){
 
@@ -3475,21 +3492,10 @@ namespace zetscript{
 						// save symbol in the node ...
 						(var_node)->symbol_value = symbol_name;
 						(var_node)->idxScope = ZS_UNDEFINED_IDX;
-
-						if(_currentScope != NULL){
-							(var_node)->idxScope = _currentScope->idxScope;
-						}
-
 						(var_node)->line_value = m_line;
 
 						(*ast_node_to_be_evaluated)->children.push_back(var_node->idxAstNode);
 
-						zs_print_debug_cr("scope %i",_currentScope->idxScope);
-
-
-						if(!_currentScope->registerSymbol(symbol_name,var_node)){
-							return NULL;
-						}
 					}
 					if(*aux_p == '='){
 						PASTNode children_node=NULL;
@@ -3518,6 +3524,23 @@ namespace zetscript{
 							return NULL;
 						}
 					}
+
+					// no error->register symbol ...
+					if(ast_node_to_be_evaluated!=NULL){
+
+
+						if(_currentScope != NULL){
+							(var_node)->idxScope = _currentScope->idxScope;
+						}
+
+						zs_print_debug_cr("scope %i",_currentScope->idxScope);
+						if(!_currentScope->registerSymbol((var_node)->symbol_value,var_node)){
+							return NULL;
+						}
+
+						zs_print_debug_cr("registered symbol \"%s\" line %i ",(var_node)->symbol_value.c_str(), (var_node)->line_value);
+					}
+
 				}
 				else{
 					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected ',',';' or '=' but it was '%c'", *aux_p);
@@ -3722,24 +3745,43 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks, bool is_main_node){
+	void manageOnErrorParse(PASTNode *node_to_be_evaluated){
+
+		bool is_main_node=false;
+		if(node_to_be_evaluated!= NULL){
+			is_main_node=MAIN_AST_NODE==*node_to_be_evaluated;
+		}
+
+		if(is_main_node){ // remove global variable/function if any
+
+		}
+	}
+
+	char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks){
 
 		// PRE: **node must be created and is i/o ast pointer variable where to write changes.
 		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD;
 		char *aux = (char *)s;
 		char *end_expr=0;
-		PASTNode children,_class_node;
-
-
-		if(is_main_node){
-			char *test = IGNORE_BLANKS(s,DUMMY_LINE);
-
-			// empty script ? return true anyways
-			if(test == 0) return NULL;
-		}
+		PASTNode children=NULL,_class_node=NULL;
+		bool is_main_node = false;
 
 		if(node_to_be_evaluated!= NULL){
-			if(!is_main_node){
+
+			is_main_node=MAIN_AST_NODE==*node_to_be_evaluated;
+
+			if(is_main_node){
+				char *test = IGNORE_BLANKS(s,DUMMY_LINE);
+
+				// empty script ? return true anyways
+				if(test == 0) return NULL;
+
+				// set cursor compile ...
+				//cursorCompile=(*node_to_be_evaluated)->children.size();
+
+			}
+			else
+			{
 				if((*node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 				(*node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
 				if(scope_info != NULL){ // by default put global scope.
@@ -3774,6 +3816,7 @@ namespace zetscript{
 						}
 						else{
 							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"unexpected \"break\"");
+							manageOnErrorParse(node_to_be_evaluated);
 							error=true;
 							return NULL;
 						}
@@ -3787,29 +3830,53 @@ namespace zetscript{
 
 							if(keyw == KEYWORD_TYPE::VAR_KEYWORD){ // is var member...
 								if((end_expr=parseMemberVar(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children))==NULL){
+									manageOnErrorParse(node_to_be_evaluated);
 									return NULL;
 								}
 								// push into var collection ...
 								AST_NODE(_class_node->children[0])->children.push_back(children->idxAstNode);
 
+								if(is_main_node){
+									astNodeClassToCompile->push_back({_class_node->children[0],children->idxAstNode,_class_node->idxAstNode});
+								}
+								/*if(is_main_node){
+									printf("////////////////////////// LLLL\n");
+									astToCompile->push_back({_class_node->idxAstNode,children->idxAstNode});
+									ast_compile_node_already_added=true;
+								}*/
+
 							}else{ // is function member...
 								startLine = m_line;
 								end_expr=parseFunction(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children);
 								if(end_expr==NULL){
+									manageOnErrorParse(node_to_be_evaluated);
 									return NULL;
 								}
 								// push into function collection...
 								AST_NODE(_class_node->children[1])->children.push_back(children->idxAstNode);
+
+								if(is_main_node){
+									astNodeClassToCompile->push_back({_class_node->children[1],children->idxAstNode,_class_node->idxAstNode});
+								}
+								/*if(is_main_node && children != NULL){
+									astToCompile->push_back({_class_node->children[1],children->idxAstNode});
+								}*/
+								/*if(is_main_node){
+									printf("////////////////////////// LLLL\n");
+									astToCompile->push_back({_class_node->idxAstNode,children->idxAstNode});
+									ast_compile_node_already_added=true;
+								}*/
 							}
+
 
 
 							children->symbol_value=_member_name;
 
 						}else{
 							if(error){
+								manageOnErrorParse(node_to_be_evaluated);
 								return NULL;
 							}
-
 						}
 					}
 				}
@@ -3821,6 +3888,7 @@ namespace zetscript{
 
 					// If was unsuccessful then try to parse expression.
 					if(error){
+						manageOnErrorParse(node_to_be_evaluated);
 						return NULL;
 					}
 					// 2nd. check whether parse a block
@@ -3828,24 +3896,28 @@ namespace zetscript{
 
 						// If was unsuccessful then try to parse expression.
 						if(error){
+							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}
 						// 2nd. try expression
 						int starting_expression=m_line;
 
 						if((end_expr = parseExpression(aux,m_line, scope_info,node_to_be_evaluated != NULL ? &children:NULL)) == NULL){ // something wrong was happen.
+							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}
 
 						if(*end_expr == ')'){ // unexpected close parenthesis.
 							error = true;
 							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,starting_expression,"missing open parenthesis");
+							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}
 
 						if(*end_expr != ';'){
 							error = true;
 							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,starting_expression,"Expected ';' at expression starting ");
+							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}
 						end_expr++;
@@ -3855,8 +3927,16 @@ namespace zetscript{
 				// new expression ready to be evaluated...
 				if(node_to_be_evaluated != NULL && children != NULL){
 					(*node_to_be_evaluated)->children.push_back(children->idxAstNode);
+
+					if(is_main_node && children != NULL){
+						astNodeToCompile->push_back({(*node_to_be_evaluated)->idxAstNode,children->idxAstNode});
+					}
+
 				}
 			}
+
+
+
 			aux=end_expr;
 			aux=IGNORE_BLANKS(aux, m_line);
 		}
@@ -3868,76 +3948,84 @@ namespace zetscript{
 	//
 	void CASTNode::init(){
 
-			// init operator punctuators...
-			defined_operator_punctuator[UNKNOWN_PUNCTUATOR]={UNKNOWN_PUNCTUATOR, "none",NULL};
+		if(astNodeToCompile != NULL){
+			zs_print_error("CASTNode already initialized");
+			return;
+		}
 
-			defined_operator_punctuator[ADD_PUNCTUATOR]={ADD_PUNCTUATOR, "+",parsePlusPunctuator};
-			defined_operator_punctuator[SUB_PUNCTUATOR]={SUB_PUNCTUATOR, "-",parseMinusPunctuator};
-			defined_operator_punctuator[MUL_PUNCTUATOR]={MUL_PUNCTUATOR, "*",parseMulPunctuator};
-			defined_operator_punctuator[DIV_PUNCTUATOR]={DIV_PUNCTUATOR, "/",parseDivPunctuator};
-			defined_operator_punctuator[MOD_PUNCTUATOR]={MOD_PUNCTUATOR, "%",parseModPunctuator};
-			defined_operator_punctuator[FIELD_PUNCTUATOR]={FIELD_PUNCTUATOR, ".",parseFieldPunctuator};
-			defined_operator_punctuator[TERNARY_IF_PUNCTUATOR]={TERNARY_IF_PUNCTUATOR, "?",parseInlineIfPunctuator};
-			defined_operator_punctuator[TERNARY_ELSE_PUNCTUATOR]={TERNARY_ELSE_PUNCTUATOR, ":",parseInlineElsePunctuator};
-			defined_operator_punctuator[ASSIGN_PUNCTUATOR]={ASSIGN_PUNCTUATOR, "=",parseAssignPunctuator};
-			defined_operator_punctuator[ADD_ASSIGN_PUNCTUATOR]={ADD_ASSIGN_PUNCTUATOR, "+=",parseAddAssignPunctuator};
-			defined_operator_punctuator[SUB_ASSIGN_PUNCTUATOR]={SUB_ASSIGN_PUNCTUATOR, "-=",parseSubAssignPunctuator};
-			defined_operator_punctuator[MUL_ASSIGN_PUNCTUATOR]={MUL_ASSIGN_PUNCTUATOR, "*=",parseMulAssignPunctuator};
-			defined_operator_punctuator[DIV_ASSIGN_PUNCTUATOR]={DIV_ASSIGN_PUNCTUATOR, "/=",parseDivAssignPunctuator};
-			defined_operator_punctuator[MOD_ASSIGN_PUNCTUATOR]={MOD_ASSIGN_PUNCTUATOR, "%=",parseModAssignPunctuator};
-			defined_operator_punctuator[BINARY_XOR_PUNCTUATOR]={BINARY_XOR_PUNCTUATOR, "^",parseBinaryXorPunctuator};
-			defined_operator_punctuator[BINARY_AND_PUNCTUATOR]={BINARY_AND_PUNCTUATOR, "&",parseBinaryAndPunctuator};
-			defined_operator_punctuator[BINARY_OR_PUNCTUATOR]={BINARY_OR_PUNCTUATOR, "|",parseBinaryOrPunctuator};
-			defined_operator_punctuator[SHIFT_LEFT_PUNCTUATOR]={SHIFT_LEFT_PUNCTUATOR, "<<",parseShiftLeftPunctuator};
-			defined_operator_punctuator[SHIFT_RIGHT_PUNCTUATOR]={SHIFT_RIGHT_PUNCTUATOR, ">>",parseShiftRightPunctuator};
-			defined_operator_punctuator[LOGIC_AND_PUNCTUATOR]={LOGIC_AND_PUNCTUATOR, "&&",parseLogicAndPunctuator};
-			defined_operator_punctuator[LOGIC_OR_PUNCTUATOR]={LOGIC_OR_PUNCTUATOR, "||",parseLogicOrPunctuator};
-			defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR]={LOGIC_EQUAL_PUNCTUATOR, "==",parseLogicEqualPunctuator};
-			defined_operator_punctuator[LOGIC_NOT_EQUAL_PUNCTUATOR]={LOGIC_NOT_EQUAL_PUNCTUATOR, "!=",parseLogicNotEqualPunctuator};
-			defined_operator_punctuator[LOGIC_GT_PUNCTUATOR]={LOGIC_GT_PUNCTUATOR, ">",parseLogicGreatherThanPunctuator};
-			defined_operator_punctuator[LOGIC_LT_PUNCTUATOR]={LOGIC_LT_PUNCTUATOR, "<",parseLogicLessThanPunctuator};
-			defined_operator_punctuator[LOGIC_GTE_PUNCTUATOR]={LOGIC_GTE_PUNCTUATOR, ">=",parseLogicGreatherEqualThanPunctuator};
-			defined_operator_punctuator[LOGIC_LTE_PUNCTUATOR]={LOGIC_LTE_PUNCTUATOR, "<=",parseLessEqualThanPunctuator};
-			defined_operator_punctuator[INSTANCEOF_PUNCTUATOR]={INSTANCEOF_PUNCTUATOR, "instanceof",parseInstanceOfPunctuator};
+		// init operator punctuators...
+		defined_operator_punctuator[UNKNOWN_PUNCTUATOR]={UNKNOWN_PUNCTUATOR, "none",NULL};
+
+		defined_operator_punctuator[ADD_PUNCTUATOR]={ADD_PUNCTUATOR, "+",parsePlusPunctuator};
+		defined_operator_punctuator[SUB_PUNCTUATOR]={SUB_PUNCTUATOR, "-",parseMinusPunctuator};
+		defined_operator_punctuator[MUL_PUNCTUATOR]={MUL_PUNCTUATOR, "*",parseMulPunctuator};
+		defined_operator_punctuator[DIV_PUNCTUATOR]={DIV_PUNCTUATOR, "/",parseDivPunctuator};
+		defined_operator_punctuator[MOD_PUNCTUATOR]={MOD_PUNCTUATOR, "%",parseModPunctuator};
+		defined_operator_punctuator[FIELD_PUNCTUATOR]={FIELD_PUNCTUATOR, ".",parseFieldPunctuator};
+		defined_operator_punctuator[TERNARY_IF_PUNCTUATOR]={TERNARY_IF_PUNCTUATOR, "?",parseInlineIfPunctuator};
+		defined_operator_punctuator[TERNARY_ELSE_PUNCTUATOR]={TERNARY_ELSE_PUNCTUATOR, ":",parseInlineElsePunctuator};
+		defined_operator_punctuator[ASSIGN_PUNCTUATOR]={ASSIGN_PUNCTUATOR, "=",parseAssignPunctuator};
+		defined_operator_punctuator[ADD_ASSIGN_PUNCTUATOR]={ADD_ASSIGN_PUNCTUATOR, "+=",parseAddAssignPunctuator};
+		defined_operator_punctuator[SUB_ASSIGN_PUNCTUATOR]={SUB_ASSIGN_PUNCTUATOR, "-=",parseSubAssignPunctuator};
+		defined_operator_punctuator[MUL_ASSIGN_PUNCTUATOR]={MUL_ASSIGN_PUNCTUATOR, "*=",parseMulAssignPunctuator};
+		defined_operator_punctuator[DIV_ASSIGN_PUNCTUATOR]={DIV_ASSIGN_PUNCTUATOR, "/=",parseDivAssignPunctuator};
+		defined_operator_punctuator[MOD_ASSIGN_PUNCTUATOR]={MOD_ASSIGN_PUNCTUATOR, "%=",parseModAssignPunctuator};
+		defined_operator_punctuator[BINARY_XOR_PUNCTUATOR]={BINARY_XOR_PUNCTUATOR, "^",parseBinaryXorPunctuator};
+		defined_operator_punctuator[BINARY_AND_PUNCTUATOR]={BINARY_AND_PUNCTUATOR, "&",parseBinaryAndPunctuator};
+		defined_operator_punctuator[BINARY_OR_PUNCTUATOR]={BINARY_OR_PUNCTUATOR, "|",parseBinaryOrPunctuator};
+		defined_operator_punctuator[SHIFT_LEFT_PUNCTUATOR]={SHIFT_LEFT_PUNCTUATOR, "<<",parseShiftLeftPunctuator};
+		defined_operator_punctuator[SHIFT_RIGHT_PUNCTUATOR]={SHIFT_RIGHT_PUNCTUATOR, ">>",parseShiftRightPunctuator};
+		defined_operator_punctuator[LOGIC_AND_PUNCTUATOR]={LOGIC_AND_PUNCTUATOR, "&&",parseLogicAndPunctuator};
+		defined_operator_punctuator[LOGIC_OR_PUNCTUATOR]={LOGIC_OR_PUNCTUATOR, "||",parseLogicOrPunctuator};
+		defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR]={LOGIC_EQUAL_PUNCTUATOR, "==",parseLogicEqualPunctuator};
+		defined_operator_punctuator[LOGIC_NOT_EQUAL_PUNCTUATOR]={LOGIC_NOT_EQUAL_PUNCTUATOR, "!=",parseLogicNotEqualPunctuator};
+		defined_operator_punctuator[LOGIC_GT_PUNCTUATOR]={LOGIC_GT_PUNCTUATOR, ">",parseLogicGreatherThanPunctuator};
+		defined_operator_punctuator[LOGIC_LT_PUNCTUATOR]={LOGIC_LT_PUNCTUATOR, "<",parseLogicLessThanPunctuator};
+		defined_operator_punctuator[LOGIC_GTE_PUNCTUATOR]={LOGIC_GTE_PUNCTUATOR, ">=",parseLogicGreatherEqualThanPunctuator};
+		defined_operator_punctuator[LOGIC_LTE_PUNCTUATOR]={LOGIC_LTE_PUNCTUATOR, "<=",parseLessEqualThanPunctuator};
+		defined_operator_punctuator[INSTANCEOF_PUNCTUATOR]={INSTANCEOF_PUNCTUATOR, "instanceof",parseInstanceOfPunctuator};
 
 
-			defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR]={LOGIC_NOT_PUNCTUATOR, "!",parseNotPunctuator};
-			defined_operator_punctuator[PRE_INC_PUNCTUATOR]={PRE_INC_PUNCTUATOR, "++",parseIncPunctuator};
-			defined_operator_punctuator[PRE_DEC_PUNCTUATOR]={PRE_DEC_PUNCTUATOR, "--",parseDecPunctuator};
-			defined_operator_punctuator[POST_INC_PUNCTUATOR]={POST_INC_PUNCTUATOR, "++",parseIncPunctuator};
-			defined_operator_punctuator[POST_DEC_PUNCTUATOR]={POST_DEC_PUNCTUATOR, "--",parseDecPunctuator};
+		defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR]={LOGIC_NOT_PUNCTUATOR, "!",parseNotPunctuator};
+		defined_operator_punctuator[PRE_INC_PUNCTUATOR]={PRE_INC_PUNCTUATOR, "++",parseIncPunctuator};
+		defined_operator_punctuator[PRE_DEC_PUNCTUATOR]={PRE_DEC_PUNCTUATOR, "--",parseDecPunctuator};
+		defined_operator_punctuator[POST_INC_PUNCTUATOR]={POST_INC_PUNCTUATOR, "++",parseIncPunctuator};
+		defined_operator_punctuator[POST_DEC_PUNCTUATOR]={POST_DEC_PUNCTUATOR, "--",parseDecPunctuator};
 
-			// special punctuators...
-			defined_operator_punctuator[COMA_PUNCTUATOR]={COMA_PUNCTUATOR, ",",NULL};
-			defined_operator_punctuator[SEMICOLON_PUNCTUATOR]={SEMICOLON_PUNCTUATOR, ";",NULL};
-			defined_operator_punctuator[OPEN_PARENTHESIS_PUNCTUATOR]={OPEN_PARENTHESIS_PUNCTUATOR, "(",NULL};
-			defined_operator_punctuator[CLOSE_PARENTHESIS_PUNCTUATOR]={CLOSE_PARENTHESIS_PUNCTUATOR, ")",NULL};
-			defined_operator_punctuator[OPEN_BRAKET_PUNCTUATOR]={OPEN_BRAKET_PUNCTUATOR, "{",NULL};
-			defined_operator_punctuator[CLOSE_BRAKET_PUNCTUATOR]={CLOSE_BRAKET_PUNCTUATOR, "}",NULL};
-			defined_operator_punctuator[OPEN_SQUARE_BRAKET_PUNCTUATOR]={OPEN_SQUARE_BRAKET_PUNCTUATOR, "[",NULL};
-			defined_operator_punctuator[CLOSE_SQUARE_BRAKET_PUNCTUATOR]={CLOSE_SQUARE_BRAKET_PUNCTUATOR, "]",NULL};
+		// special punctuators...
+		defined_operator_punctuator[COMA_PUNCTUATOR]={COMA_PUNCTUATOR, ",",NULL};
+		defined_operator_punctuator[SEMICOLON_PUNCTUATOR]={SEMICOLON_PUNCTUATOR, ";",NULL};
+		defined_operator_punctuator[OPEN_PARENTHESIS_PUNCTUATOR]={OPEN_PARENTHESIS_PUNCTUATOR, "(",NULL};
+		defined_operator_punctuator[CLOSE_PARENTHESIS_PUNCTUATOR]={CLOSE_PARENTHESIS_PUNCTUATOR, ")",NULL};
+		defined_operator_punctuator[OPEN_BRAKET_PUNCTUATOR]={OPEN_BRAKET_PUNCTUATOR, "{",NULL};
+		defined_operator_punctuator[CLOSE_BRAKET_PUNCTUATOR]={CLOSE_BRAKET_PUNCTUATOR, "}",NULL};
+		defined_operator_punctuator[OPEN_SQUARE_BRAKET_PUNCTUATOR]={OPEN_SQUARE_BRAKET_PUNCTUATOR, "[",NULL};
+		defined_operator_punctuator[CLOSE_SQUARE_BRAKET_PUNCTUATOR]={CLOSE_SQUARE_BRAKET_PUNCTUATOR, "]",NULL};
 
-			// init special punctuators...
-			// init keywords...
-			defined_keyword[KEYWORD_TYPE::UNKNOWN_KEYWORD] = {UNKNOWN_KEYWORD, "none",NULL};
-			defined_keyword[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",parseVar};
-			defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",parseIf};
-			defined_keyword[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else",NULL};
-			defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",parseFor};
-			defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",parseWhile};
-			defined_keyword[KEYWORD_TYPE::DO_WHILE_KEYWORD] = {DO_WHILE_KEYWORD,"do",parseDoWhile}; // while is expected in the end ...
+		// init special punctuators...
+		// init keywords...
+		defined_keyword[KEYWORD_TYPE::UNKNOWN_KEYWORD] = {UNKNOWN_KEYWORD, "none",NULL};
+		defined_keyword[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",parseVar};
+		defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",parseIf};
+		defined_keyword[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else",NULL};
+		defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",parseFor};
+		defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",parseWhile};
+		defined_keyword[KEYWORD_TYPE::DO_WHILE_KEYWORD] = {DO_WHILE_KEYWORD,"do",parseDoWhile}; // while is expected in the end ...
 
-			defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",parseSwitch};
-			defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
-			defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
-			defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
-			defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunction};
-			defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
-			defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
-		//	defined_keyword[KEYWORD_TYPE::SUPER_KEYWORD] = {SUPER_KEYWORD,"super", NULL};
-			defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
-			defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
-			defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",parseDelete};
+		defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",parseSwitch};
+		defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
+		defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
+		defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
+		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",parseFunction};
+		defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",parseReturn};
+		defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
+	//	defined_keyword[KEYWORD_TYPE::SUPER_KEYWORD] = {SUPER_KEYWORD,"super", NULL};
+		defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
+		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
+		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",parseDelete};
+
+		astNodeToCompile = new vector<tInfoAstNodeToCompile>();
+		astNodeClassToCompile = new vector<tInfoAstNodeClassToCompile>();
 			// create main ast management
 	}
 

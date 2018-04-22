@@ -667,6 +667,7 @@ namespace zetscript{
 
 		//--------------------------------------
 		// optimized ones...
+		int n_statments;
 		PtrStatment statment_op;
 		//unsigned					 n_statment_op;
 
@@ -676,6 +677,7 @@ namespace zetscript{
 		int idxScriptFunctionObject;
 
 		tFunctionInfo() {
+			n_statments=0;
 			idxScriptFunctionObject = -1;
 			statment_op = NULL;
 			info_var_scope = NULL;

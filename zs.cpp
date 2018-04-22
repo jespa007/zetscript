@@ -3,29 +3,54 @@
  *  See LICENSE file for details.
  */
 #include "CZetScript.h"
+#include <istream>
 
 using namespace zetscript;
+
 
 
 int main(int argc, char * argv[]) {
 
 	CZetScript *zetscript = CZetScript::getInstance();
 
+	if (argc >= 2) {
 
-	if (argc < 2) {
-		printf("Put file to evaluate.\n");
-		printf("\n");
-		printf("Example:\n");
-		printf("\n");
-		printf("file.zs");
-		printf("\n");
-		printf("\n");
-		return 0;
+		if(!zetscript->eval_file(argv[1])){
+			fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
+		}
 	}
+	else{
+
+		bool exit = false;
+		string expression;
+		printf("ZetScript %i.%i.%i Copyright (C) 2017-2018 Jordi Espada\n\n"
+				,ZETSCRIPT_MAJOR_VERSION
+				,ZETSCRIPT_MINOR_VERSION
+				,ZETSCRIPT_PATCH_VERSION
+				);
 
 
-	if(!zetscript->eval_file(argv[1])){
-		fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
+
+		do{
+			printf("zs>");
+			std::getline(std::cin,expression);
+
+			exit = expression=="exit" || expression=="quit";
+			if(!exit){ // evaluate expression
+				if(zetscript->parse(expression)){
+					if(zetscript->compile()){
+						if(!zetscript->execute()){
+							fprintf(stderr,"%s",CZetScript::getErrorMsg());
+						}
+					}else{
+						fprintf(stderr,"%s",CZetScript::getErrorMsg());
+					}
+				}else{
+					fprintf(stderr,"%s",CZetScript::getErrorMsg());
+				}
+			}
+
+		}while(!exit);// && (instr[++idx_ptr] != NULL));
 	}
 
 	CZetScript::destroy();

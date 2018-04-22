@@ -104,23 +104,6 @@ else()
 		set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__ZETSCRIPT_DEBUG__ ")
 	ENDIF ()
 
-
-	if ( "${EMSCRIPTEN}" STREQUAL "yes" )
-
-		message("emscripten path: $ENV{EMSCRIPTENDIR} ")
-		
-
-		MESSAGE ("********* EMSCRIPTEN CONF ************" )
-		set(TARGET_FLAGS " -g -O2 ")
-		set(CMAKE_C_COMPILER "$ENV{EMSCRIPTENDIR}/emcc")
-		set(CMAKE_CXX_COMPILER "$ENV{EMSCRIPTENDIR}/em++")
-
-		SET( COMMON_PARAMS " ${COMMON_PARAMS} -I$ENV{EMSCRIPTENDIR}/system/lib/libcxxabi/include/ -s DEMANGLE_SUPPORT=1 -s DISABLE_EXCEPTION_CATCHING=0 -s EXCEPTION_DEBUG=0") #-s DEMANGLE_SUPPORT=1 -s ASSERTIONS=1 -s VERBOSE=1 ")
-		
-		set( POST_NAME ${POST_NAME}.html)
-	
-	endif()
-
 	SET(CMAKE_C_FLAGS " ")
 	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
 	
@@ -134,8 +117,6 @@ else()
 	LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 	
 endif()
-
-
 
 
 #
@@ -210,74 +191,53 @@ SET(
 
 INSTALL_HEADERS_WITH_DIRECTORY(HS)
 
-if ( "${EMSCRIPTEN}" STREQUAL "yes" )
 
-	add_executable(zs${POST_NAME}
-		${PROJECT_SOURCE_DIR}/zs.cpp
-	)
-	
-	set_target_properties(zs${POST_NAME} PROPERTIES LINK_FLAGS " --preload-file test")
-	
-	add_executable(zs_test${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
-	)
-	
-	
-	#set_target_properties(zs_test${POST_NAME})
+#zs console
+add_executable(zs${POST_NAME}
+	${PROJECT_SOURCE_DIR}/zs.cpp
+)
 
- 	
-else()
+# zs_test
+add_executable(zs_test${POST_NAME}
+	${PROJECT_SOURCE_DIR}/test/zs_test.cpp
+)
 
-	#zs console
-	add_executable(zs${POST_NAME}
-		${PROJECT_SOURCE_DIR}/zs.cpp
-	)
-	
-	# zs_test
-	add_executable(zs_test${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
-	)
-	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
-	
-	# helloworld
-	add_executable(helloworld${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/helloworld.cpp
-	)
-	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
-	
-	# register_variables
-	add_executable(register_variable${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/register_variable.cpp
-	)	
-	
-	target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
-	
-	# register_functions
-	add_executable(register_function${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/register_function.cpp
-	)	
-	
-	target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})	
-	
-	
-	# register_class
-	add_executable(register_class${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/register_class.cpp
-	)	
-	
-	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
+target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 
-	# function_script_call
-	add_executable(script_call_from_cpp${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/script_call_from_cpp.cpp
-	)	
-	
-	target_link_libraries(script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
-	
-	
-endif()
+# helloworld
+add_executable(helloworld${POST_NAME}
+	${PROJECT_SOURCE_DIR}/test/helloworld.cpp
+)
+target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
 
+# register_variables
+add_executable(register_variable${POST_NAME}
+	${PROJECT_SOURCE_DIR}/test/register_variable.cpp
+)	
+
+target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
+
+# register_functions
+add_executable(register_function${POST_NAME}
+	${PROJECT_SOURCE_DIR}/test/register_function.cpp
+)	
+
+target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})	
+
+
+# register_class
+add_executable(register_class${POST_NAME}
+	${PROJECT_SOURCE_DIR}/test/register_class.cpp
+)	
+
+target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
+
+# function_script_call
+add_executable(script_call_from_cpp${POST_NAME}
+	${PROJECT_SOURCE_DIR}/test/script_call_from_cpp.cpp
+)	
+
+target_link_libraries(script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
 
 

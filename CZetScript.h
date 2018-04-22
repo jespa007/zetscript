@@ -10,14 +10,12 @@
 #include "core/zs_core.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 1
-#define ZETSCRIPT_MINOR_VERSION 2
+#define ZETSCRIPT_MINOR_VERSION 3
 #define ZETSCRIPT_PATCH_VERSION 0
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
 
-
-#define GET_AST_FILENAME_LINE(_idx_ast_)   AST_FILENAME(_idx_ast_),AST_LINE(_idx_ast_)
 #define ZS_WRITE_ERROR_MSG 		CZetScript::writeErrorMsg
 #define ZS_GET_ERROR_MSG		CZetScript::getErrorMsg
 #define ZS_CLEAR_ERROR_MSG		CZetScript::clearErrorMsg
@@ -41,11 +39,11 @@ namespace zetscript{
 
 		// calling C function with differnt parameters...
 		CScriptVariable		*		m_mainObject;
-		int						 	idxMainScriptFunctionObject;
+		//int						 	idxMainScriptFunctionObject;
 
 		CVirtualMachine *vm;
 		bool __init__;
-
+		bool show_filename_on_error;
 
 
 
@@ -106,8 +104,11 @@ namespace zetscript{
 
 		void destroyMainFunction();
 
+
+
 		ZETSCRIPT_MODULE_EXPORT CVirtualMachine * getVirtualMachine();
 		ZETSCRIPT_MODULE_EXPORT CScriptVariable *getMainObject(){return m_mainObject;}
+
 
 
 		ZETSCRIPT_MODULE_EXPORT bool parse(const string & string,const char *filename_ref=NULL);

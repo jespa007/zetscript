@@ -45,15 +45,16 @@
 
 
 
-#define GET_MAIN_VARIABLE(idx_var)				zetscript::CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
-#define GET_MAIN_SCRIPT_FUNCTION_IDX			zetscript::CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
-#define GET_MAIN_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION_OBJECT(GET_MAIN_SCRIPT_FUNCTION_IDX)
+#define MAIN_VARIABLE(idx_var)					zetscript::CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
+#define MAIN_SCRIPT_FUNCTION_IDX				zetscript::CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
+#define MAIN_SCRIPT_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX)
 
 
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClass::instanceScriptVariableByIdx(idx))
 
 #define REGISTERED_CLASS_NODE(idx) 				(zetscript::CScriptClass::getScriptClassByIdx(idx))
 #define MAIN_CLASS_NODE							(zetscript::CScriptClass::getScriptClassByIdx(IDX_CLASS_MAIN))    // 0 is the main class
+
 #define GET_SCRIPT_CLASS_INFO(idx)				(zetscript::CScriptClass::getScriptClassByIdx(idx))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_NAME(s)		(zetscript::CScriptClass::getScriptClassByName(s))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(zetscript::CScriptClass::getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
@@ -89,6 +90,9 @@ namespace zetscript{
 		static string  *BOOL_TYPE_STR;//	typeid(bool).name()
 		static string  *STACK_ELEMENT_PTR;//	typeid(bool).name()
 
+
+		ZETSCRIPT_MODULE_EXPORT static void setPrintOutCallback(void (*)(const char *));
+
 		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
 
 		CScriptFunctionObject	metadata_info;
@@ -114,7 +118,9 @@ namespace zetscript{
 		static 			vector<CScriptClass *> 			* vec_script_class_node;
 		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
 		ZETSCRIPT_MODULE_EXPORT static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
-		
+		static void  print(const char *s);
+		static void (* print_out_callback)(const char *);
+
 	public:
 
 		// DEFINES
@@ -310,7 +316,7 @@ namespace zetscript{
 			irs->object_info.symbol_info.idxSymbol = (short)(mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size());
 			mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 
-			zs_print_debug_cr("Registered function name: %s",function_name.c_str());
+			zs_print_debug_cr("Registered function name: %s",function_name);
 			return true;
 		}
 

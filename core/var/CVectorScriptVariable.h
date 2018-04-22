@@ -12,7 +12,7 @@ namespace zetscript{
 
 	public:
 
-
+		tStackElement return_callc;
 		int _i_size;
 
 		vector<tStackElement> m_objVector;
@@ -23,8 +23,8 @@ namespace zetscript{
 		virtual bool initSharedPtr(bool is_assigned=false);
 
 		void add(tStackElement  * v);
-		void pop();
-		tStackElement *push();
+		tStackElement * pop();
+		tStackElement * push();
 		ZETSCRIPT_MODULE_EXPORT int size();
 
 		virtual void destroy(bool delete_user_request=false);

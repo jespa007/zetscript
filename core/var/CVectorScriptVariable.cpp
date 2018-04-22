@@ -69,25 +69,25 @@ namespace zetscript{
 		}
 	}
 
-	void CVectorScriptVariable::pop(){
-		tStackElement info={STK_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
+	tStackElement * CVectorScriptVariable::pop(){
+		return_callc={STK_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
 		if(m_objVector.size()>0){
-			info=m_objVector[m_objVector.size()-1];
+			return_callc=m_objVector[m_objVector.size()-1];
 
-			CScriptVariable *var = (CScriptVariable *)info.varRef;
+			CScriptVariable *var = (CScriptVariable *)return_callc.varRef;
 			if(var){
 				if(!var->unrefSharedPtr()){
-					zs_print_error("pop(): error doing unref var");
+					ZS_WRITE_ERROR_MSG(NULL,0,"pop(): error doing unref var");
 				}
 			}
 
 			m_objVector.pop_back();
 		}else{
-			zs_print_error("pop(): error stack already empty");
+			ZS_WRITE_ERROR_MSG(NULL,0,"pop(): error stack already empty");
 		}
 
 		// due the call is void we are doing the operations behind...
-		CURRENT_VM->setCallResult(&info);
+		return &return_callc;
 	}
 
 

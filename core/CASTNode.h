@@ -25,16 +25,19 @@
 #define MAIN_AST_NODE						(CASTNode::getAstNode(IDX_MAIN_AST_NODE))
 #define MAIN_SCOPE_NODE						(CASTNode::getScope(IDX_MAIN_AST_NODE))
 #define AST_NODE(idx) 						CASTNode::getAstNode(idx)
+//#define GET_CURSOR_COMPILE 					CASTNode::getCursorCompile()
+//#define RESET_CURSOR_COMPILE	 			CASTNode::resetCursorCompile()
+//#define SAVE_CURSOR_COMPILE	 				CASTNode::saveCursorCompile()
 #define AST_SCOPE_INFO_IDX(idx) 			CASTNode::getScopeIdx(idx)
 #define AST_SCOPE_INFO(idx) 				CASTNode::getScope(idx)
 #define AST_LINE(idx)		 				CASTNode::getAstLine(idx)
 #define AST_FILENAME(idx)					CASTNode::getAstFilename(idx)
 #define AST_SYMBOL_VALUE(idx) 				CASTNode::getAstSymbolName(idx)
 #define AST_SYMBOL_VALUE_CONST_CHAR(idx) 	CASTNode::getAstSymbolNameConstChar(idx)
-
+#define GET_AST_FILENAME_LINE(_idx_ast_)   AST_FILENAME(_idx_ast_),AST_LINE(_idx_ast_)
 
 #define MAX_AST_NODES						32767
-
+#define DEFAULT_NO_FILENAME					"no_file"
 
 namespace zetscript{
 
@@ -59,6 +62,16 @@ namespace zetscript{
 	};
 
 
+	typedef struct{
+		short 			idxAstNodeParent;
+		short 		 	ast_node_to_compile;
+	}tInfoAstNodeToCompile;
+
+	typedef struct{
+		short 			idxAstNodeParent;
+		short 		 	ast_node_to_compile;
+		short 		 	idxAstRoot;
+	}tInfoAstNodeClassToCompile;
 
 
 	class CScope;
@@ -73,6 +86,9 @@ namespace zetscript{
 		static int current_idx_parsing_filename;
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
 		static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];
+		//static int cursorCompile;
+		static vector<tInfoAstNodeToCompile> *astNodeToCompile;
+		static vector<tInfoAstNodeClassToCompile> *astNodeClassToCompile;
 
 		//static tPunctuatorInfo defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
@@ -80,7 +96,7 @@ namespace zetscript{
 		static void setVectorASTNode(vector<CASTNode *> 	* set_vec_ast_node);
 
 
-		static char * generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false, bool is_main_node=false);
+		static char * generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false);
 		/**
 		 * Get CASTNode Node by its idx, regarding current state.
 		 */
@@ -92,6 +108,9 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT static CASTNode				* 	getAstNode(short idx);
 		static CScope 				*	getScope(short ast_idx);
+		static int						getCursorCompile();
+		static void						resetCursorCompile();
+
 		static int						getScopeIdx(short idx);
 		static int 				  		getAstLine(short ast_idx);
 		static const char           *	getAstFilename(short ast_idx);
@@ -103,6 +122,7 @@ namespace zetscript{
 		static int getLineValueByIdx(int idx);
 		static const string & getSymbolValueByIdx(int idx);
 		static const char * getSymbolValueConstCharByIdx(int idx);
+		static void destroySingletons();
 
 		CASTNode();
 

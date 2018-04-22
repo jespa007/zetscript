@@ -1,5 +1,28 @@
 
 //----------------------------------------------------------
+Version: 1.3.0
+Date: 30-03-2018
+
+
+#48 Optimize compile process.
+#47 Implement interactive console (zs).
+#46 Fixed seg fault on destroy objects in struct.
+#49 doing operations of returning values doesnt't work.
+#39 Script function and script classes are not clean after call cleancompile
+#53 Not do pop scope on returns inside body 
+#56 Show only line if file == DEFAULT_FILENAME or not found
+#57 it gives "Expected symbol after ','" message on void structs
+#54 Memory leaks detection (only for new keywords that involve C class) 
+#55 Implement add_attr/remove_attr functions for CStructVariable 
+#58 Removed clear compile information on saveState. 
+#59 Return undefined on NULL pointers after call C function with value. 
+#60 seg fault on calling first a function call and then register a variable
+#61 Clean whoke stack array on clean compile  
+#62 VM speed improve ~ x2
+
+Added fibonacci test (fib.zs)
+
+//----------------------------------------------------------
 Version: 1.2.0
 Date: 13-02-2018
 

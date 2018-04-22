@@ -36,7 +36,7 @@ namespace zetscript{
 	// register metamethods str ...
 	 //--obj , type convert, ---
 	 map<int,map<int,fntConversionType>>  * CScriptClass::mapTypeConversion=NULL;
-
+	void (* CScriptClass::print_out_callback)(const char *) = NULL;
 
 
 	int CScriptClass::getIdxClassFromIts_C_TypeInternal(const string & c_type_str){
@@ -188,11 +188,13 @@ namespace zetscript{
 			return sci;
 
 		}else{
-			zs_print_error_cr("error class \"%s\" already registered at line %i!", class_name.c_str(), AST_LINE((*vec_script_class_node)[index]->metadata_info.object_info.symbol_info.idxAstNode));
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE((*vec_script_class_node)[index]->metadata_info.object_info.symbol_info.idxAstNode),"error class \"%s\" already registered at line %i!", class_name.c_str());
 		}
 
 		return NULL;
 	}
+
+
 
 	const char * CScriptClass::getMetamethod(METAMETHOD_OPERATOR op){
 
@@ -299,10 +301,19 @@ namespace zetscript{
 		 return ((metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != 0);
 	}
 	//------------------------------------------------------------
-	 void  print(const char *s){
+	void CScriptClass::setPrintOutCallback(void (* _printout_callback)(const char *)){
+		print_out_callback=_printout_callback;
+	}
+
+
+	 void  CScriptClass::print(const char *s){
 
 		printf("%s\n",s);
 		fflush(stdout);
+
+		if(print_out_callback){
+			print_out_callback(s);
+		}
 	 }
 
 	 void  internal_print_error(const char *s){
@@ -420,7 +431,7 @@ namespace zetscript{
 			// From here you defined all basic, start define hierarchy
 
 			// register custom functions ...
-			if(!register_C_FunctionMember<CScriptVariable>("toString",&CScriptVariable::toString)) return false;
+			//if(!register_C_FunctionMember<CScriptVariable>("toString",&CScriptVariable::toString)) return false;
 
 			if(!class_C_baseof<CVectorScriptVariable,CScriptVariable>()) return false;
 			if(!class_C_baseof<CFunctorScriptVariable,CScriptVariable>()) return false;
@@ -439,6 +450,8 @@ namespace zetscript{
 			if(!register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop)) return false;
 
 
+			if(!register_C_FunctionMember<CStructScriptVariable>("add",&CStructScriptVariable::add_attr)) return false;
+			if(!register_C_FunctionMember<CStructScriptVariable>("remove",&CStructScriptVariable::remove_attr)) return false;
 			if(!register_C_FunctionMember<CStructScriptVariable>("size",&CStructScriptVariable::size)) return false;
 			return true;
 	 }
@@ -671,7 +684,7 @@ namespace zetscript{
 
 	void CScriptClass::buildScopeVariablesBlock(CScriptFunctionObject *root_class_irfs ){
 		/// PRE: base_class_irfs must be info of root class.
-		 bool is_main_function = GET_MAIN_FUNCTION_OBJECT == root_class_irfs;
+		 bool is_main_function = MAIN_SCRIPT_FUNCTION_OBJECT == root_class_irfs;
 		 PASTNode ast = AST_NODE(root_class_irfs->object_info.symbol_info.idxAstNode);
 
 		 if(ast!=NULL){
@@ -767,7 +780,7 @@ namespace zetscript{
 										 if(!searchVarFunctionSymbol(info_function,iao,n_function,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
 											 // search global...
-											 if(!searchVarFunctionSymbol(&GET_MAIN_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
+											 if(!searchVarFunctionSymbol(&MAIN_SCRIPT_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
 													PASTNode ast_node = AST_NODE(iao->idxAstNode);
 
 													if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
@@ -927,7 +940,7 @@ namespace zetscript{
 												 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
 													 // search global...
-													 CScriptFunctionObject * mainFunctionInfo = GET_MAIN_FUNCTION_OBJECT;// getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
+													 CScriptFunctionObject * mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;
 													 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,symbol_found,0)){
 															PASTNode ast_node = AST_NODE(iao->idxAstNode);
 
@@ -1186,7 +1199,7 @@ namespace zetscript{
 
 			return &object_info->local_symbols.m_registeredVariable[object_info->local_symbols.m_registeredVariable.size()-1];
 		}else{
-			zs_print_error_cr("class \"%s\" not exist!",class_name.c_str());
+			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" not exist!",class_name.c_str());
 			return NULL;
 		}
 
@@ -1386,7 +1399,7 @@ namespace zetscript{
 		if(idx != -1){
 			return (*vec_script_class_node)[idx]->metadata_info.object_info.symbol_info.symbol_name.c_str();
 		}
-		 return "unknow";
+		 return "class_unknow";
 	}
 }
 
