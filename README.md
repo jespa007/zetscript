@@ -1,4 +1,6 @@
-<p>You can also run an interactive console <a href="http://zetscript.org/zs.html">here</a>.</p>
+# ZetScript
+
+## Simple Script engine for C++
 
 <h2>Introduction</h2>
 
@@ -59,24 +61,13 @@ cmake CMakeLists.txt</pre>
 <p>Note:&nbsp;MSVC 2017, it has a feature a Open Folder that easily configures a CMakeFile project just opening the folder where the project is, avoiding configure the project in the same directory and leave a lot of files and directories related with configuration</p>
 </blockquote>
 
-<h3><br />
-Yet another script language ?</h3>
-
-<p>Few years ago, I decided to start work with scripting because I needed to be faster in terms of production. Of course, because I always try to be a good engineer I started to play with all script engines that already are in this world.&nbsp;<br />
-<br />
-Some of them were faster but it I didn&#39;t like its syntax. Others, the sintaxis was good but slow at run-time, etc. After spent a lot of time playing with them and trying to decide what&#39;s kind of script engine could be a better candidate for my project I finished to know that none of them fitted at all for my neededs.&nbsp;<br />
-<br />
-So two years ago decided to start my own script engine, but apart of putting my effort with my neededs I read from some forums what it expects to have from a good scrip engine, I mixed the both things together and It became ZetScript.<br />
-<br />
-At the end I decided to put ZetScript free because I like make easy life for the people, just in case they find useful this tool.</p>
-
 <h2>Language overview</h2>
 
 <h3>Built-in types</h3>
 
 <p>Zetscript has a built in basic types like integers, numbers, booleans and containers as vectors and structures.</p>
 
-<pre lang="jscript">
+<pre lang="javascript">
 var i=10; //integer
 var f=0.5; // number
 var s=&quot;a string&quot;; // string
@@ -114,7 +105,7 @@ var i= 0; // global var (never is destroyed when is declared)
 
 <p>Zetscript supports if-else and switch conditionals</p>
 
-<pre lang="jscript">
+<pre lang="javascript">
 // if-else conditional
 var number=5;
 if(number &lt; 10){
@@ -294,7 +285,7 @@ int main(){
 
 <p>Binding C++ class in Zetscript is done easyly with&nbsp;<i>register_C_Class</i>&nbsp;method. To bind variables and functions members it can be done through <i>register_C_VariableMember</i>&nbsp;and&nbsp;<i>register_C_FunctionMember</i>&nbsp;respectively. In script you can instance the C++ class in script side through operator&nbsp;<strong><i>new</i></strong>. When the instanced C Class variable is not used anymore the user has to delete it with operator&nbsp;<i><strong>delete</strong>.</i></p>
 
-<pre>
+<pre lang="c++">
 #include &quot;CZetScript.h&quot;
 
 using namespace zetscript;
@@ -366,7 +357,7 @@ int main(){
 
 <p>From list 1.2 we present an example script that <em>ScripMyClassExtends </em>class is inherited by <em>MyClassExtends </em>class (from C++),</p>
 
-<pre lang="jscript">
+<pre lang="javascript">
 class ScriptMyClassExtended: MyClassExtend{ // &lt;-- inheritances MyClassExtend (c++)
   function function1(arg1){
     print(&quot;script argument is &quot;+arg1)
@@ -517,11 +508,11 @@ CState::setState(idx)</pre>
 
 <h2>Performance</h2>
 
-<p>I had checked ZetScript performance 1.3.0 version with other script languages. Because Lua is the fastest and one of the most scripting language used I chose&nbsp;this&nbsp;to compare Fibonacci calculation time with N=34.</p>
+<p>At 1.3.0 version it was compared ZetScript performance with other script languages. Because Lua is the fastest and one of the most scripting language used It was chosen compare with a Fibonacci calculation with N=34 through a script.</p>
 
 <p>A Fibonacci script implemented in ZetScript is,</p>
 
-<pre lang="jscript">
+<pre lang="javascript">
 function fibR(n)
 {
     if (n &lt; 2) { 
@@ -550,7 +541,7 @@ print(&quot;fib: &quot; .. fibR(34))</pre>
 
 <p>&nbsp;</p>
 
-<p>And I have compared them through the <code>time</code> command already available in linux and the tests were made on a computer with i5-2450 CPU with&nbsp;2.50GHz and 8GB of RAM.</p>
+<p>And It were compared them through the <code>time</code> command already available in linux on a computer with i5-2450 CPU 2.50GHz with 8GB of RAM.</p>
 
 <p>The result was the following,</p>
 
@@ -559,54 +550,8 @@ print(&quot;fib: &quot; .. fibR(34))</pre>
 	<li>ZetScript: <strong>3110ms</strong></li>
 </ul>
 
-<p>So It can say that <strong>Lua is</strong> 3110/1355=<strong>2,29 times faster</strong> than ZetScript in this test.</p>
+<p>So it can be said that <strong>Lua is</strong> 3110/1355=<strong>2,29 times faster</strong> than ZetScript in this test.</p>
 
 <p>&nbsp;</p>
 
-<h2>Conclusions</h2>
 
-<p>I have presented a new programming language, but is not quite new because is close to Javascript so many people can find confortable using it. Furthermore, Zetscript API exposes C++ code in script side in a straighforward way so is quite productive in general.</p>
-
-<p>The language is new and of course, even though it have had a several tests, more bugs can be found. I would happy if people starts to use it and gives its feedback.</p>
-
-<p>Maybe It will have success or not. I did this project for my needs but I freed in case &nbsp;other people can find useful for their projects.</p>
-
-<p>If someone finds interesting this project it can go to these sites for further information:</p>
-
-<ul>
-	<li><a href="http://zetscript.org" target="zetscript">ZetScript webpage</a></li>
-	<li><a href="http://zetscript.org/forum" target="zetscript">ZetScript Forum</a></li>
-</ul>
-
-<p>Also there&#39;s an example of using ZetScript,</p>
-
-<ul>
-	<li><a href="https://www.codeproject.com/Tips/1215529/Game-engine-using-SDL-and-ZetScript">Game Engine with SDL2 and ZetScript</a></li>
-</ul>
-
-<h2>Changes since 1.3</h2>
-
-<ul>
-	<li>It implements&nbsp;an interactive console.</li>
-	<li>Added add/remove attributes on struct variable</li>
-	<li>Optimized eval&nbsp;process</li>
-	<li>Improve virtual machine speed ~x2</li>
-	<li>Minor bug fixes.</li>
-</ul>
-
-<h2>Changes since 1.2</h2>
-
-<ul>
-	<li>eval process can be split in parse/compile and execute (see seccion 2.4 from ZetScript documentation)</li>
-	<li>Due virtual classes changes its memory map at run-time, function and variables cannot ensure the same pointer as base class so has been decided to disable heritate all functions/variables from parent classes (only C).&nbsp; Due that change, now we have to pass class type on both <code>register_C_FunctionMember</code> and <code>register_C_VariableMember</code>.</li>
-	<li>ZetScript 1.1.3 supported automatic register of parent functions/variables but, due of problem of virtual functions it cannot do since 1.2. Derived classes has to re-register parent functions/variables in order to use in script side.</li>
-	<li>ZetScript 1.1.3 allowed pass float type as arguments but this only works 100% for x32 builds. So to avoid confusions I decided to constraint pass float types as pointer (i.e float *).</li>
-</ul>
-
-<h2>History</h2>
-
-<ul>
-	<li><strong>2018-04-20 ZetScript 1.3.0:</strong> Has been implemented an interactive console (zs.exe), it has improve virtual machine speed and a minor bug fixes. (see HISTORY for more information). Added performance test comparison with Lua script language in this article.</li>
-	<li><strong>2018-02-21&nbsp;ZetScript 1.2.0:</strong> It has some features and a major bug fix so, as far I could test, is stable version. Despite I prefer version 1.1.3 I don&#39;t recommend use it because it doesn&#39;t work on virtual classes (it has segmentation fault as a hell) and also it doesn&#39;t work passing float for functions with 2 or more arguments on x64 builds.</li>
-	<li><strong>2017-12-01&nbsp;ZetScript 1.1.3:</strong> First release</li>
-</ul>
