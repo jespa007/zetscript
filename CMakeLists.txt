@@ -103,6 +103,10 @@ else()
 		set(TARGET_FLAGS " -O0 ")
 		set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer -D__ZETSCRIPT_DEBUG__ ")
 	ENDIF ()
+	
+	IF ( "${32BIT}" STREQUAL "debug")
+		set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
+	ENDIF ()
 
 	SET(CMAKE_C_FLAGS " ")
 	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
