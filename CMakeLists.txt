@@ -118,6 +118,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		set(TARGET_FLAGS " -O0 ")
 		set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer ")
 	ENDIF ()
+	
+	IF ( "${32BIT}" STREQUAL "debug")
+		set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
+	ENDIF ()
 
 	SET(CMAKE_C_FLAGS " ")
 	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
