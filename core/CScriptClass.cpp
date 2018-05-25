@@ -925,7 +925,7 @@ namespace zetscript{
 															 if(i>0){
 																 arg_str+=",";
 															 }
-															 arg_str+="arg"+CStringUtils::intToString(i);
+															 arg_str+="arg"+CZetScriptUtils::intToString(i);
 														 }
 														 ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find ancestor function for \"%s(%s)\". Is registered ?", symbol_to_find.c_str(),arg_str.c_str());
 													 }

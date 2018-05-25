@@ -67,13 +67,6 @@ namespace zetscript{
 		short 		 	ast_node_to_compile;
 	}tInfoAstNodeToCompile;
 
-	typedef struct{
-		short 			idxAstNodeParent;
-		short 		 	ast_node_to_compile;
-		short 		 	idxAstRoot;
-	}tInfoAstNodeClassToCompile;
-
-
 	class CScope;
 
 	#pragma pack(push,1)
@@ -85,10 +78,12 @@ namespace zetscript{
 		static const char * current_parsing_filename;
 		static int current_idx_parsing_filename;
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
+		static tDirectiveInfo defined_directive[MAX_DIRECTIVES];
+
 		static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];
 		//static int cursorCompile;
 		static vector<tInfoAstNodeToCompile> *astNodeToCompile;
-		static vector<tInfoAstNodeClassToCompile> *astNodeClassToCompile;
+
 
 		//static tPunctuatorInfo defined_special_punctuator[MAX_SPECIAL_PUNCTUATORS];
 
@@ -122,6 +117,11 @@ namespace zetscript{
 		static int getLineValueByIdx(int idx);
 		static const string & getSymbolValueByIdx(int idx);
 		static const char * getSymbolValueConstCharByIdx(int idx);
+		static int findConstructorIdxNode(short idxAstNode);
+		static PASTNode itHasReturnSymbol(PASTNode _node);
+		static bool isThisScope(short idxAstNode);
+		static bool isSuperScope(short idxAstNode);
+
 		static void destroySingletons();
 
 		CASTNode();
@@ -152,7 +152,8 @@ namespace zetscript{
 
 
 
-		static KEYWORD_TYPE isKeyword(const char *c);
+		static KEYWORD_TYPE 	isKeyword(const char *c);
+		static DIRECTIVE_TYPE 	isDirective(const char *c);
 
 		//static int insertAstNode(CASTNode *ast_node);
 		//static string *aux_str;

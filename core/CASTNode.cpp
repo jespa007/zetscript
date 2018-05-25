@@ -10,7 +10,7 @@
 
 #ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
 
-#define print_ast_cr zs_print_info_cr
+#define print_ast_cr zs_print_debug_cr
 #else
 #define print_ast_cr(s,...)
 #endif
@@ -22,12 +22,13 @@ namespace zetscript{
 
 
 	tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
+	tDirectiveInfo CASTNode::defined_directive[MAX_DIRECTIVES];
 	tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_PUNCTUATORS];
 	int CASTNode::DUMMY_LINE=0;
 	const char * CASTNode::current_parsing_filename=DEFAULT_NO_FILENAME;
 	int CASTNode::current_idx_parsing_filename=-1;
 	vector<tInfoAstNodeToCompile> * CASTNode::astNodeToCompile=NULL;
-	vector<tInfoAstNodeClassToCompile> * CASTNode::astNodeClassToCompile=NULL;
+
 
 	bool IS_SINGLE_COMMENT(char *str){
 
@@ -256,16 +257,72 @@ namespace zetscript{
 		return SCOPE_INFO_NODE(vec_ast_node->at(idx)->idxScope);
 	}
 
+	int CASTNode::findConstructorIdxNode(short idxAstNode){
+
+		PASTNode _node=AST_NODE(idxAstNode);
+
+		if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {zs_print_error_cr("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
+		for(unsigned i = 0; i < _node->children.size(); i++){
+			PASTNode child_node = AST_NODE(_node->children[i]);
+			if(child_node->node_type == NODE_TYPE::KEYWORD_NODE){
+
+				if(child_node->keyword_info==KEYWORD_TYPE::FUNCTION_KEYWORD){
+					if(child_node->symbol_value == _node->symbol_value){
+						return i;
+					}
+				}
+			}
+		}
+		return ZS_UNDEFINED_IDX;
+	}
+
+	PASTNode CASTNode::itHasReturnSymbol(PASTNode _node){
+
+		PASTNode _ret;
+		if(_node == NULL) return NULL;
+		if(_node->keyword_info == RETURN_KEYWORD) return _node;
+
+		for(unsigned i = 0; i < _node->children.size(); i++){
+			if((_ret = itHasReturnSymbol(AST_NODE(_node->children[i]))) != NULL){
+				return _ret;
+			}
+		}
+		return NULL;//itHasReturnSymbol(PASTNode _node);
+	}
+
+	bool CASTNode::isThisScope(short idxAstNode){
+
+		PASTNode _node = AST_NODE(idxAstNode);
+
+		if(_node == NULL){
+			return false;
+		}
+
+		return ((_node->node_type == PUNCTUATOR_NODE) &&
+				   //(_node->parent != NULL && _node->parent->node_type != PUNCTUATOR_NODE) &&
+				   (_node->children.size()==2 && AST_NODE(_node->children[0])->symbol_value=="this")
+				   );
+	}
+
+	bool CASTNode::isSuperScope(short idxAstNode){
+
+		PASTNode _node=AST_NODE(idxAstNode);
+
+		if(_node == NULL){
+			return false;
+		}
+
+		return ((_node->node_type == PUNCTUATOR_NODE) &&
+				   //(_node->parent != NULL && _node->parent->node_type != PUNCTUATOR_NODE) &&
+				   (_node->children.size()==2 && AST_NODE(_node->children[0])->symbol_value=="super")
+				   );
+	}
+
 
 	void CASTNode::destroySingletons(){
 		if(astNodeToCompile != NULL){
 			delete astNodeToCompile;
 			astNodeToCompile=NULL;
-		}
-
-		if(astNodeClassToCompile != NULL){
-			delete astNodeClassToCompile;
-			astNodeClassToCompile=NULL;
 		}
 
 	}
@@ -858,7 +915,7 @@ namespace zetscript{
 				// check for special punctuator ( the field '.' separator is processed within the word )
 				if(i==0 && !start_digit){ // possible digit ...
 
-					is_possible_number = CStringUtils::isDigit(*aux);
+					is_possible_number = CZetScriptUtils::isDigit(*aux);
 					start_digit = true;
 				}
 
@@ -878,11 +935,11 @@ namespace zetscript{
 			}
 
 			if(is_possible_number){
-				string num = CStringUtils::copyStringFromInterval(start_str,aux);
+				string num = CZetScriptUtils::copyStringFromInterval(start_str,aux);
 
-				if(!CStringUtils::isBinary(num)){
+				if(!CZetScriptUtils::isBinary(num)){
 
-					if(!CStringUtils::isNumber(num)){
+					if(!CZetScriptUtils::isNumber(num)){
 						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"%s is not a valid number",num.c_str());
 						return NULL;
 					}
@@ -948,6 +1005,21 @@ namespace zetscript{
 			}
 		}
 		return KEYWORD_TYPE::UNKNOWN_KEYWORD;
+	}
+
+	DIRECTIVE_TYPE CASTNode::isDirective(const char *c){
+		int m_line=0;
+		char *str=IGNORE_BLANKS(c,m_line);
+
+		for(int i = 0; i < MAX_DIRECTIVES; i++){
+			int size = strlen(defined_directive[i].str);
+			char *aux = str+size;
+			if(strncmp(str,defined_directive[i].str,size)==0)
+			{
+				return defined_directive[i].id;
+			}
+		}
+		return DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE;
 	}
 	//------------------------------------------------------------------------------------------------------------
 	PUNCTUATOR_TYPE CASTNode::checkPreOperatorPunctuator(const char *s){
@@ -1213,7 +1285,7 @@ namespace zetscript{
 
 			 if(!(end_expression == NULL || end_expression == aux)){ // is valid word...
 
-				 symbol_value = CStringUtils::copyStringFromInterval(aux,end_expression);
+				 symbol_value = CZetScriptUtils::copyStringFromInterval(aux,end_expression);
 				 word_str = IGNORE_BLANKS(end_expression, m_startLine);
 
 				 try_array_or_function_access = true;
@@ -1320,7 +1392,7 @@ namespace zetscript{
 				 return NULL;
 			 }
 
-			 symbol_name=CStringUtils::copyStringFromInterval(aux,end_expression);
+			 symbol_name=CZetScriptUtils::copyStringFromInterval(aux,end_expression);
 			end_expression=end_expression+1;
 			//end_expression = aux+1;
 		}else{ // check for symbols (must have a symbol at least)
@@ -1353,7 +1425,7 @@ namespace zetscript{
 				if(end_expression == NULL){
 					return NULL;
 				}
-				symbol_name = CStringUtils::copyStringFromInterval(aux, end_expression);
+				symbol_name = CZetScriptUtils::copyStringFromInterval(aux, end_expression);
 			}
 			else // array object ...
 			{
@@ -1365,7 +1437,7 @@ namespace zetscript{
 					if(end_expression == NULL){
 						return NULL;
 					}
-					symbol_name = CStringUtils::copyStringFromInterval(aux, end_expression);
+					symbol_name = CZetScriptUtils::copyStringFromInterval(aux, end_expression);
 				}
 				else{
 					char *start_expression = aux;
@@ -1391,7 +1463,7 @@ namespace zetscript{
 						 return NULL;
 					 }
 
-					 symbol_name=CStringUtils::copyStringFromInterval(start_expression,end_expression);
+					 symbol_name=CZetScriptUtils::copyStringFromInterval(start_expression,end_expression);
 
 					 // check for post opertator...
 					 end_expression = IGNORE_BLANKS(end_expression, m_line);
@@ -1421,7 +1493,7 @@ namespace zetscript{
 				 end_expression = IGNORE_BLANKS(end_expression, m_line);
 				}
 
-				symbol_name = CStringUtils::copyStringFromInterval(aux, end_expression);
+				symbol_name = CZetScriptUtils::copyStringFromInterval(aux, end_expression);
 			}
 		}
 		// GETTING TRIVIAL SYMBOLS
@@ -1523,12 +1595,8 @@ namespace zetscript{
 					else if(operator_group ==  PRE_DEC_PUNCTUATOR){ // -- really is a + PUNCTUATOR...
 						operator_group = SUB_PUNCTUATOR;
 						pre_operator = SUB_PUNCTUATOR;
-						//special_pre_post_cond=true;
-					}/*else if (operator_group == SUB_PUNCTUATOR){ // +(-i)
-						operator_group = ADD_PUNCTUATOR;
-						special_pre_post_cond=true;
-						advance_ptr=false;
-					}*/
+
+					}
 
 					theres_some_operator |= true;
 					expr_start_op=aux;
@@ -1842,7 +1910,7 @@ namespace zetscript{
 				 }
 
 
-				 symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
+				 symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_p);
 				 aux_p=IGNORE_BLANKS(end_p,m_line);
 
 				 if(*aux_p != ':'){ // expected : ...
@@ -1928,7 +1996,7 @@ namespace zetscript{
 					 ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected symbol");
 					 return NULL;
 				 }
-				 symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
+				 symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_p);
 				 aux_p=IGNORE_BLANKS(end_p,m_line);
 
 				 if(*aux_p != '('){
@@ -1981,7 +2049,7 @@ namespace zetscript{
 					 return NULL;
 				 }
 
-				 symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_p);
+				 symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_p);
 
 				if(ast_node_to_be_evaluated != NULL){
 					if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
@@ -2044,7 +2112,7 @@ namespace zetscript{
 				}
 				// try to register class...
 				class_line = m_line;
-				class_name = CStringUtils::copyStringFromInterval(aux_p, end_p);
+				class_name = CZetScriptUtils::copyStringFromInterval(aux_p, end_p);
 
 				zs_print_debug_cr("registered class \"%s\" line %i ",class_name.c_str(), class_line);
 
@@ -2061,11 +2129,11 @@ namespace zetscript{
 						return NULL;
 					}
 
-					ext_name=CStringUtils::copyStringFromInterval(aux_p, end_p);
+					ext_name=CZetScriptUtils::copyStringFromInterval(aux_p, end_p);
 
 					if(ast_node_to_be_evaluated != NULL){
 						if((base_class_node = CASTNode::newASTNode()) == NULL) return NULL;
-						base_class_node->symbol_value = CStringUtils::copyStringFromInterval(aux_p, end_p);
+						base_class_node->symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p, end_p);
 						base_class_node->node_type = BASE_CLASS_NODE;
 					}
 
@@ -2082,7 +2150,7 @@ namespace zetscript{
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
 					(*ast_node_to_be_evaluated)->symbol_value = class_name;
 
-					CScope *scp = CScope::newScope(ZS_UNDEFINED_IDX);
+					CScope *scp = CScope::newScope(ZS_UNDEFINED_IDX,(*ast_node_to_be_evaluated)->idxAstNode );
 					(*ast_node_to_be_evaluated)->idxScope =scp->idxScope;
 					class_scope_info =scp;
 
@@ -2123,13 +2191,13 @@ namespace zetscript{
 								}
 								break;
 							case KEYWORD_TYPE::VAR_KEYWORD:
-								if((aux_p = parseMemberVar(aux_p, m_line,class_scope_info, &child_node)) != NULL){
+								if((aux_p = parseVar(aux_p, m_line,class_scope_info, &child_node)) == NULL){
 
-									if(ast_node_to_be_evaluated != NULL){
+									/*if(ast_node_to_be_evaluated != NULL){
 										vars_collection_node->children.push_back(child_node->idxAstNode);
-									}
+									}*/
 
-								} else{
+								/*} else{*/
 									return NULL;
 								}
 								break;
@@ -2308,7 +2376,7 @@ namespace zetscript{
 
 							if(end_var != NULL){
 
-								if((symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+								if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
 									return NULL;
 
 								function_name = symbol_value;
@@ -2361,7 +2429,7 @@ namespace zetscript{
 
 						end_var=getSymbolName(aux_p,m_line);
 
-						if((symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+						if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
 							return NULL;
 
 						// check if repeats...
@@ -2571,7 +2639,7 @@ namespace zetscript{
 							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
 							return NULL;
 						}
-						if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
+						if((start_symbol = CZetScriptUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
 							return NULL;
 						}
 
@@ -2671,7 +2739,7 @@ namespace zetscript{
 									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ')' at line");
 									return NULL;
 								}
-								if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
+								if((start_symbol = CZetScriptUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
 									return NULL;
 								}
 
@@ -2781,7 +2849,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					if((start_symbol = CStringUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
+					if((start_symbol = CZetScriptUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
 						return NULL;
 					}
 
@@ -3126,7 +3194,7 @@ namespace zetscript{
 												end_symbol = getEndWord(aux_p, m_line);
 												aux_p=end_symbol;
 
-												value_to_eval = CStringUtils::copyStringFromInterval(start_symbol, end_symbol);
+												value_to_eval = CZetScriptUtils::copyStringFromInterval(start_symbol, end_symbol);
 
 												if(value_to_eval==NULL){ return NULL;}
 
@@ -3311,7 +3379,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CASTNode::parseMemberVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
+	char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
@@ -3321,9 +3389,20 @@ namespace zetscript{
 		char *start_var,*end_var, *symbol_name;
 		string class_name, class_member;
 		PASTNode class_node;
+		PASTNode var_node;
+		PASTNode parent_ast_to_insert_var=NULL;
 		bool error=false;
-		string s_aux;
+		int idxScope=ZS_UNDEFINED_IDX;
+		string s_aux,variable_name;
+		char *symbol_value;
 		bool extension_prop=false;
+		bool is_class_member;
+		int m_startLine=0;
+
+		if(scope_info != NULL){
+			idxScope=scope_info->getCurrentScopePointer()->idxScope;
+		}
+
 
 		aux_p=IGNORE_BLANKS(aux_p,m_line);
 		key_w = isKeyword(aux_p);
@@ -3336,13 +3415,14 @@ namespace zetscript{
 
 				//
 				if(ast_node_to_be_evaluated != NULL){
-					_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
+					//_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
 					if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
 					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
+					(*ast_node_to_be_evaluated)->idxScope =idxScope; // assign main scope...
 				}
 
-				if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // particular case extension attribute class
+				/*if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // particular case extension attribute class
 					if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
 
 						PASTNode var_new=NULL;
@@ -3372,48 +3452,144 @@ namespace zetscript{
 						return NULL;
 					}
 
-					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"registered symbol \"%s::%s\"",class_name.c_str(),class_member.c_str());
+					zs_print_debug_cr(CURRENT_PARSING_FILENAME,m_line,"registered symbol \"%s::%s\"",class_name.c_str(),class_member.c_str());
 					return aux_p;
 				}
 				else{
 					if(error){
 						return NULL;
 					}
-				}
+				}*/
 
 				while(*aux_p != ';' && *aux_p != 0){ // JE: added multivar feature.
+					aux_p=IGNORE_BLANKS(aux_p,m_line);
 					start_var=aux_p;
-					//m_startLine = m_line;
+					m_startLine = m_line;
 
-					if((end_var=getSymbolName(aux_p,m_line))==NULL){
+					parent_ast_to_insert_var=NULL;
+
+					if(ast_node_to_be_evaluated!=NULL){
+						parent_ast_to_insert_var = *ast_node_to_be_evaluated;
+					}
+
+					if(scope_info != NULL){ // main as default
+						idxScope=scope_info->getCurrentScopePointer()->idxScope;
+					}
+
+
+
+					/*if((end_var=getSymbolName(aux_p,m_line))==NULL){
 						return NULL;
 					}
 
-					if((symbol_name=CStringUtils::copyStringFromInterval(start_var,end_var)) == NULL){
+					if((symbol_name=CZetScriptUtils::copyStringFromInterval(start_var,end_var)) == NULL){
 						return NULL;
 					}
 
 					aux_p=end_var;
-					aux_p=IGNORE_BLANKS(aux_p,m_line);
+					aux_p=IGNORE_BLANKS(aux_p,m_line);*/
+					is_class_member=false;
 
-					if((*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
-						zs_print_debug_cr("registered symbol \"%s\" line %i ",symbol_name, m_line);
+					if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // check if particular case extension attribute class
+						idxScope = class_node->idxScope; // override scope info
+						symbol_value = (char *)class_member.c_str();
+						variable_name = symbol_value;
+						class_node->children[0];
+						if(ast_node_to_be_evaluated!=NULL){
+							parent_ast_to_insert_var=AST_NODE(class_node->children[0]);
+						}
+						is_class_member=true;
+					}
+					else{
+						if(error){
+							return NULL;
+						}
+						else{ // get normal name...
 
-						if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
+							// check whwther the function is anonymous with a previous arithmetic operation ....
+							end_var=getSymbolName(aux_p,m_line);
 
-							PASTNode var_new=NULL;
-							if((var_new=CASTNode::newASTNode()) == NULL) return NULL;
-							// save symbol in the node ...
-							var_new->symbol_value = symbol_name;
-							var_new->idxScope = ZS_UNDEFINED_IDX;
-							if(_currentScope != NULL){
-								var_new->idxScope = _currentScope->idxScope;
-							}
-							var_new->line_value = m_line;
-							if(!_currentScope->registerSymbol(var_new->symbol_value,var_new)){
+							if(end_var != NULL){
+
+								if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+									return NULL;
+
+								variable_name = symbol_value;
+
+								// check whether parameter name's matches with some global variable...
+							}else{
 								return NULL;
 							}
-							(*ast_node_to_be_evaluated)->children.push_back(var_new->idxAstNode);
+						}
+					}
+					aux_p=end_var;
+					aux_p=IGNORE_BLANKS(aux_p,m_line);
+					//}
+					bool ok_char=*aux_p == ';' || *aux_p == ',' ;
+					if(!is_class_member){
+						ok_char=ok_char || *aux_p == '=';
+					}
+
+					if(ok_char){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
+						//zs_print_debug_cr("registered symbol \"%s\" line %i ",variable_name, m_line);
+						var_node = NULL;
+						if(parent_ast_to_insert_var!=NULL){
+
+							if((var_node = CASTNode::newASTNode()) == NULL) return NULL;
+							// save symbol in the node ...
+							(var_node)->symbol_value = variable_name;
+							(var_node)->idxScope = idxScope;
+							(var_node)->line_value = m_line;
+
+							parent_ast_to_insert_var->children.push_back(var_node->idxAstNode);
+
+						}
+
+						if(*aux_p == '='){
+							PASTNode children_node=NULL;
+
+							// try to evaluate expression...
+							aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+							if((aux_p = parseExpression(start_var,m_startLine,scope_info,var_node != NULL ? &children_node : NULL)) == NULL){
+								return NULL;
+							}
+
+							if(var_node != NULL){
+
+								if(children_node==NULL){
+									zs_print_error_cr("internal:children node == NULL");
+									return NULL;
+								}
+
+								var_node->children.push_back(children_node->idxAstNode);
+							}
+
+							m_line = m_startLine;
+
+							/*if(!(*aux_p == ';' || *aux_p == '=' || *aux_p == ',' )){
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected ',',';' or '=' but it was '%c'",*aux_p);
+								return NULL;
+							}*/
+						}
+
+						if(parent_ast_to_insert_var!=NULL){ // define as many vars is declared within ','
+
+							//PASTNode var_new=NULL;
+							//if((var_new=CASTNode::newASTNode()) == NULL) return NULL;
+							// save symbol in the node ...
+							//var_new->symbol_value = variable_name;
+							//var_new->idxScope = ZS_UNDEFINED_IDX;
+							//if(_currentScope != NULL){
+							//var_new->idxScope = idxScope;
+							//}
+							//var_new->line_value = m_line;
+							if(!SCOPE_INFO_NODE(idxScope)->registerSymbol(var_node->symbol_value,var_node)){
+								return NULL;
+							}
+							//(*ast_node_to_be_evaluated)->children.push_back(var_node->idxAstNode);
+
+							zs_print_debug_cr("registered symbol \"%s\" line %i ",(var_node)->symbol_value.c_str(), (var_node)->line_value);
 						}
 					}
 					else{
@@ -3440,7 +3616,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
+	/*char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -3477,7 +3653,7 @@ namespace zetscript{
 				if((end_var=getSymbolName(aux_p,m_line))==NULL){
 					return NULL;
 				}
-				if((symbol_name=CStringUtils::copyStringFromInterval(start_var,end_var)) == NULL){
+				if((symbol_name=CZetScriptUtils::copyStringFromInterval(start_var,end_var)) == NULL){
 					return NULL;
 				}
 
@@ -3564,11 +3740,13 @@ namespace zetscript{
 			return aux_p;
 		}
 		else{
+
 			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"var keyword expected!");
+
 		}
 		//}
 		return NULL;
-	}
+	}*/
 
 
 	char * CASTNode::parseBlock(const char *s,int & m_line,  CScope *scope_info, bool & error,PASTNode *ast_node_to_be_evaluated, bool push_scope){
@@ -3636,7 +3814,7 @@ namespace zetscript{
 
 		if(end_var != NULL){
 
-			if((symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+			if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
 				return NULL;
 		}else{
 			return NULL;
@@ -3661,7 +3839,7 @@ namespace zetscript{
 
 			if(end_var != NULL){
 
-				if((symbol_value = CStringUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+				if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
 					return NULL;
 			}else{
 				return NULL;
@@ -3761,6 +3939,7 @@ namespace zetscript{
 
 		// PRE: **node must be created and is i/o ast pointer variable where to write changes.
 		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD;
+		DIRECTIVE_TYPE directive=DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE;
 		char *aux = (char *)s;
 		char *end_expr=0;
 		PASTNode children=NULL,_class_node=NULL;
@@ -3780,7 +3959,7 @@ namespace zetscript{
 				//cursorCompile=(*node_to_be_evaluated)->children.size();
 
 			}
-			else
+			else // under node...
 			{
 				if((*node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 				(*node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
@@ -3820,7 +3999,7 @@ namespace zetscript{
 							error=true;
 							return NULL;
 						}
-					}else if(keyw == KEYWORD_TYPE::FUNCTION_KEYWORD||keyw == KEYWORD_TYPE::VAR_KEYWORD){
+					}/*else if(keyw == KEYWORD_TYPE::FUNCTION_KEYWORD||keyw == KEYWORD_TYPE::VAR_KEYWORD){
 
 						int startLine = m_line;
 						string _class_name, _member_name;
@@ -3829,21 +4008,20 @@ namespace zetscript{
 
 
 							if(keyw == KEYWORD_TYPE::VAR_KEYWORD){ // is var member...
-								if((end_expr=parseMemberVar(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children))==NULL){
+								if((end_expr=parseVar(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children))==NULL){
 									manageOnErrorParse(node_to_be_evaluated);
 									return NULL;
 								}
-								// push into var collection ...
-								AST_NODE(_class_node->children[0])->children.push_back(children->idxAstNode);
+
+								PASTNode vars_collection_node=AST_NODE(_class_node->children[0]);
+								vars_collection_node->children.push_back(children->idxAstNode);
 
 								if(is_main_node){
 									astNodeClassToCompile->push_back({_class_node->children[0],children->idxAstNode,_class_node->idxAstNode});
+								}else{
+									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"post-declared function/var members should be defined at main");
+									return NULL;
 								}
-								/*if(is_main_node){
-									printf("////////////////////////// LLLL\n");
-									astToCompile->push_back({_class_node->idxAstNode,children->idxAstNode});
-									ast_compile_node_already_added=true;
-								}*/
 
 							}else{ // is function member...
 								startLine = m_line;
@@ -3852,23 +4030,25 @@ namespace zetscript{
 									manageOnErrorParse(node_to_be_evaluated);
 									return NULL;
 								}
-								// push into function collection...
-								AST_NODE(_class_node->children[1])->children.push_back(children->idxAstNode);
+
+								PASTNode funct_collection_node=AST_NODE(_class_node->children[1]);
+
+								if(children->symbol_value != ""){
+									funct_collection_node->children.push_back(children->idxAstNode);
+								}
+								else {
+									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected symbol after function");
+									return NULL;
+								}
 
 								if(is_main_node){
 									astNodeClassToCompile->push_back({_class_node->children[1],children->idxAstNode,_class_node->idxAstNode});
+								}else{
+									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"post-declared function/var members should be defined at main");
+									return NULL;
 								}
-								/*if(is_main_node && children != NULL){
-									astToCompile->push_back({_class_node->children[1],children->idxAstNode});
-								}*/
-								/*if(is_main_node){
-									printf("////////////////////////// LLLL\n");
-									astToCompile->push_back({_class_node->idxAstNode,children->idxAstNode});
-									ast_compile_node_already_added=true;
-								}*/
+
 							}
-
-
 
 							children->symbol_value=_member_name;
 
@@ -3878,7 +4058,62 @@ namespace zetscript{
 								return NULL;
 							}
 						}
+					}*/
+				}else{ // try directive...
+					// try directive ...
+					DIRECTIVE_TYPE directive = isDirective(aux);
+					char *start_var,* end_var,*symbol_name;
+					if(directive != DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE){
+						switch(directive){
+						case INCLUDE_DIRECTIVE:
+							aux += strlen(defined_directive[directive].str);
+							aux = IGNORE_BLANKS(aux,m_line);
+							if(*aux != '\"'){
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected starting \" directive!");
+								return NULL;
+							}
+							aux++;
+							start_var=aux;
+
+							while(*aux != '\n' && *aux!=0 && *aux!='\"') aux++;
+
+							if(*aux != '\"'){
+								ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected end \" directive!");
+								return NULL;
+							}
+
+							end_var=aux;
+
+							if((symbol_name=CZetScriptUtils::copyStringFromInterval(start_var,end_var)) == NULL){
+								return NULL;
+							}
+
+							zs_print_debug_cr("include file: %s",symbol_name);
+
+							{
+								// save current file info...
+								const char *current_file=CASTNode::current_parsing_filename;
+								int current_file_idx=CASTNode::current_idx_parsing_filename;
+
+								if(!CZetScript::getInstance()->parse_file(symbol_name)){
+									return NULL;
+								}
+
+								//restore current file info...
+								CASTNode::current_parsing_filename=current_file;
+								CASTNode::current_idx_parsing_filename=current_file_idx;
+
+
+							}
+
+							aux++;
+							break;
+						default:
+							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"directive not supported!");
+							break;
+						}
 					}
+
 				}
 			}
 			// 0st special case member class extension ...
@@ -3925,14 +4160,27 @@ namespace zetscript{
 				}
 
 				// new expression ready to be evaluated...
+
 				if(node_to_be_evaluated != NULL && children != NULL){
 					(*node_to_be_evaluated)->children.push_back(children->idxAstNode);
 
-					if(is_main_node && children != NULL){
+					if(is_main_node){
+
+						/*short idxRootAstClass=-1;
+						if(children->idxScope != ZS_UNDEFINED_IDX){
+							CScope *si=SCOPE_INFO_NODE(children->idxScope);
+							if(
+								(children->keyword_info == KEYWORD_TYPE::VAR_KEYWORD || children->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD)
+									&& (si->getIdxBaseScope() != 0)){
+								idxRootAstClass = si->getIdxBaseAstNode();
+							}
+						}*/
 						astNodeToCompile->push_back({(*node_to_be_evaluated)->idxAstNode,children->idxAstNode});
+
 					}
 
 				}
+
 			}
 
 
@@ -4024,8 +4272,12 @@ namespace zetscript{
 		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
 		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",parseDelete};
 
+		// DIRECTIVES
+		defined_directive[UNKNOWN_DIRECTIVE]={UNKNOWN_DIRECTIVE, "none"};
+		defined_directive[INCLUDE_DIRECTIVE]={INCLUDE_DIRECTIVE, "#include"};
+
 		astNodeToCompile = new vector<tInfoAstNodeToCompile>();
-		astNodeClassToCompile = new vector<tInfoAstNodeClassToCompile>();
+
 			// create main ast management
 	}
 

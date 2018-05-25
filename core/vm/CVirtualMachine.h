@@ -78,6 +78,31 @@ namespace zetscript{
 		bool cancel_execution;
 		const char *custom_error;
 
+		inline void REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result){
+			tInfoSharedList *list = &zero_shares[idxCurrentStack];\
+			PInfoSharedPointerNode first_node,current;\
+			first_node=current=list->first;\
+			if(current != NULL){\
+				bool finish=false;\
+				do{\
+					PInfoSharedPointerNode next_node=current->next;\
+					finish=next_node ==first_node;\
+					bool delete_node=true;\
+					if(ptr_callc_result!=NULL){\
+						if(ptr_callc_result==current->data.shared_ptr){\
+							delete_node=false;\
+						}\
+					}\
+					if(delete_node){\
+						delete current->data.shared_ptr;\
+					}\
+					free(current);\
+					current=next_node;\
+				}while(!finish);\
+			}\
+			list->first=list->last=NULL;\
+		}
+
 	public:
 
 

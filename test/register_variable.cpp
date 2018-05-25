@@ -35,5 +35,11 @@ int main(){
 		"print(\"string_var:\"+string_var);" // prints "string_var:in c++ and in script"
 	);
 
+	CZetScript::destroy();
+
+#ifdef __MEMMANAGER__
+  MEM_ViewStatus();
+#endif
+
 	return 0;
 }

@@ -7,7 +7,7 @@
 
 
 #include "Common.h"
-#include "utils/zs_utils.h"
+#include "CZetScriptUtils.h"
 
 //#include "CSharedPointerManager.h"
 #include "var/zs_variable.h"

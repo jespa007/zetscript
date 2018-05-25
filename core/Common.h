@@ -4,109 +4,16 @@
  */
 #pragma once
 
-
-// MAIN INCLUDES....
-
-#include          <stdlib.h>
-#include          <memory.h>
-
-#include          <stdio.h>
-#include          <math.h>
-
-#include          <vector>
-#include          <stack>
-#include 			<regex>
-#include                  <new>
-#include           <iostream>
-#include <functional>
-#include 		<sstream>
-#include <string>
-#include <cstring>
-#include <list>
-#include <utility>
-#include <float.h>
-#include <cstdarg>
-#include <stdexcept>
-
-#include <typeinfo>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <string>
-#include <map>
-
-#include <sstream>
-#include <cstddef>
-
-#include <type_traits>
-
-#include <mutex>
-
-//#ifdef _MSC_VER
-#ifdef  ZETSCRIPT_EXPORTS
-	#define ZETSCRIPT_MODULE_EXPORT __declspec(dllexport)
-#else
-	#define ZETSCRIPT_MODULE_EXPORT  //__declspec(dllimport)
-#endif
-//#else
-//#define ZETSCRIPT_MODULE_EXPORT
-//#endif
-
-#if defined(__GNUC__)
-	#include <cxxabi.h>
-	#include <dirent.h>
-	#include <sys/stat.h>
-	#include <sys/types.h>
-	#include <unistd.h>
-	#include <memory.h>
-	#include <fcntl.h>
-
-	#ifdef _WIN32
-		#include <windows.h>
-		#include <stdio.h>
-		#include <conio.h>
-		#include <tchar.h>
-	#else
-		#include <dlfcn.h>
-		#include <sys/ipc.h>
-		#include <sys/shm.h>
-		#include <sys/ioctl.h>
-		#include <termios.h>
-	#endif
-
-#endif
-
-#ifdef EMSCRIPTEN
-#include <emscripten.h>
-#endif
-
-
 #ifdef __ZETSCRIPT_DEBUG__ // incoment __ZETSCRIPT_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
 //#define __ZETSCRIPT_VERBOSE_MESSAGE__
 #endif
 
 
-
-
-using std::string;
-using std::vector;
-using std::map;
-using std::cout;
-using std::cerr;
-using std::endl;
-using std::string;
-using std::vector;
-using std::stack;
-using std::ostringstream;
-
-// Prototypes & structs
-#ifdef __ZETSCRIPT_MEMMANAGER__
-#include "system/zs_system.h"
+#ifdef  ZETSCRIPT_EXPORTS
+	#define ZETSCRIPT_MODULE_EXPORT __declspec(dllexport)
+#else
+	#define ZETSCRIPT_MODULE_EXPORT
 #endif
-
-
-
 
 #define ZS_ERROR						-1
 #define ZS_UNDEFINED_IDX 				-1
@@ -169,6 +76,13 @@ enum KEYWORD_TYPE
 	NEW_KEYWORD,
 	DELETE_KEYWORD,
 	MAX_KEYWORD
+};
+
+enum DIRECTIVE_TYPE
+	:unsigned char {
+	UNKNOWN_DIRECTIVE = 0,
+	INCLUDE_DIRECTIVE,
+	MAX_DIRECTIVES
 };
 
 enum PUNCTUATOR_TYPE
@@ -528,12 +442,11 @@ namespace zetscript{
 	class CScope;
 	class CScriptClass;
 	class CScriptVariable;
-
-
-
 	struct tScopeVar;
 	struct tFunctionInfo;
 	struct tInfoVarScopeBlock;
+
+	typedef void  (* tPrintFunctionCallback)(const char *filename, int line, const  char  *string_text);
 
 	typedef intptr_t (*fntConversionType)(intptr_t);
 
@@ -542,6 +455,12 @@ namespace zetscript{
 		const char *str;
 		char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
 	} tKeywordInfo;
+
+	typedef struct {
+		DIRECTIVE_TYPE id;
+		const char *str;
+		//char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
+	} tDirectiveInfo;
 
 	typedef struct {
 		PUNCTUATOR_TYPE id;

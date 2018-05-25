@@ -32,5 +32,11 @@ int main(){
 		"print(\"result 0.5+4.6:\"+add(0.5,4.6));"       // prints "result 5+4:9"
 	);
 
+	CZetScript::destroy();
+
+#ifdef __MEMMANAGER__
+  MEM_ViewStatus();
+#endif
+
 	return 0;
 }

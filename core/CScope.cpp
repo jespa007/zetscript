@@ -38,8 +38,8 @@ namespace zetscript{
 		return vec_scope_node;
 	}
 
-	CScope *	 CScope::newScope(int idxParentScope){
-		CScope * scope_node = new CScope(vec_scope_node->size(), idxParentScope);
+	CScope *	 CScope::newScope(int idxParentScope, short idxBaseAstNode){
+		CScope * scope_node = new CScope(vec_scope_node->size(), idxParentScope,idxBaseAstNode);
 		vec_scope_node->push_back(scope_node);
 		//scope_node->idxScope = vec_scope_node->size()-1;
 		return scope_node;
@@ -59,21 +59,28 @@ namespace zetscript{
 		idxCurrentScopePointer=ZS_UNDEFINED_IDX;
 		idxScope = ZS_UNDEFINED_IDX;
 		idxBaseScope =ZS_UNDEFINED_IDX;
+		idxBaseAstNode =ZS_UNDEFINED_IDX;
 	}
 
-	CScope::CScope(int idx_this, int idx_parent){//, int _index){
+	CScope::CScope(int idx_this, int idx_parent, short idx_base_ast_node){//, int _index){
 		idxParentScope = idx_parent;
 		//m_index = _index;
 		idxCurrentScopePointer=ZS_UNDEFINED_IDX;
 		//m_baseScope = this;
 		idxScope = idx_this;
 
-		if(idx_parent == ZS_UNDEFINED_IDX){
+		if(idx_parent == ZS_UNDEFINED_IDX){ // first node...
+			idxBaseAstNode = idx_base_ast_node;
 			idxBaseScope = idx_this;
 			idxCurrentScopePointer=idx_this;
 		}else{
 			idxBaseScope = SCOPE_INFO_NODE( idx_parent)->getIdxBaseScope();
+			idxBaseAstNode = SCOPE_INFO_NODE( idx_parent)->getIdxBaseAstNode();
 		}
+	}
+
+	short CScope::getIdxBaseAstNode(){
+		return idxBaseAstNode;
 	}
 
 	int CScope::getIdxBaseScope(){
@@ -134,7 +141,7 @@ namespace zetscript{
 		tScopeVar irv;// = new tScopeVar;
 
 
-		string var_name = "_afun_"+CStringUtils::intToString(n_anonymouse_func++);
+		string var_name = "_afun_"+CZetScriptUtils::intToString(n_anonymouse_func++);
 		string symbol_ref = "";//"_"+var_name;
 		PASTNode args_node = AST_NODE(ast->children[0]);
 
@@ -142,7 +149,7 @@ namespace zetscript{
 
 		if(args_node != NULL){
 			//n_params=args_node->children.size();
-			symbol_ref = "_p"+CStringUtils::intToString(args_node->children.size());
+			symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size());
 		}
 		symbol_ref=symbol_ref+"_"+var_name;
 
@@ -173,7 +180,7 @@ namespace zetscript{
 			if(n_params<0){ // register var symbol
 				symbol_ref = "_";
 			}else{ // register function symbol
-				symbol_ref = "_p"+CStringUtils::intToString(n_params);
+				symbol_ref = "_p"+CZetScriptUtils::intToString(n_params);
 			}
 			symbol_ref=symbol_ref+"_"+var_name;
 
@@ -191,7 +198,7 @@ namespace zetscript{
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(p_irv->idxAstNode)," error var \"%s\" already registered at line %i!", var_name.c_str());
+				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode)," error var \"%s\" already registered at line %i!", var_name.c_str(),AST_LINE(p_irv->idxAstNode));
 			}else{
 				ZS_WRITE_ERROR_MSG(NULL,0," error var \"%s\" already registered as C++!", var_name.c_str());
 			}
@@ -207,7 +214,7 @@ namespace zetscript{
 		if(n_params<0){ // register var symbol
 			symbol_ref = "_";
 		}else{ // register function symbol
-			symbol_ref = "_p"+CStringUtils::intToString(n_params);
+			symbol_ref = "_p"+CZetScriptUtils::intToString(n_params);
 		}
 		symbol_ref=symbol_ref+"_"+var_name;
 

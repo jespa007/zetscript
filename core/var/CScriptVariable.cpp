@@ -417,7 +417,7 @@ namespace zetscript{
 	void CScriptVariable::destroy(bool delete_user_request){
 		bool deallocated = false;
 		if(created_object != 0){
-			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request){// || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
+			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
 
 				(*c_scriptclass_info->c_destructor)(created_object);
 				deallocated=true;

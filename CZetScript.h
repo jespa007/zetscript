@@ -7,20 +7,107 @@
 
 #pragma once
 
+
+// MAIN INCLUDES....
+
+#include          <stdlib.h>
+#include          <memory.h>
+
+#include          <stdio.h>
+#include          <math.h>
+
+#include          <vector>
+#include          <stack>
+#include 			<regex>
+#include                  <new>
+#include           <iostream>
+#include <functional>
+#include 		<sstream>
+#include <string>
+#include <cstring>
+#include <list>
+#include <utility>
+#include <float.h>
+#include <cstdarg>
+#include <stdexcept>
+
+#include <typeinfo>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string>
+#include <string>
+#include <map>
+
+#include <sstream>
+#include <cstddef>
+
+#include <type_traits>
+
+#include <mutex>
+
+#if defined(__GNUC__)
+	#include <cxxabi.h>
+	#include <dirent.h>
+	#include <sys/stat.h>
+	#include <sys/types.h>
+	#include <unistd.h>
+	#include <memory.h>
+	#include <fcntl.h>
+
+	#ifdef _WIN32
+		#include <windows.h>
+		#include <stdio.h>
+		#include <conio.h>
+		#include <tchar.h>
+	#else
+		#include <dlfcn.h>
+		#include <sys/ipc.h>
+		#include <sys/shm.h>
+		#include <sys/ioctl.h>
+		#include <termios.h>
+	#endif
+
+#endif
+
+
+
+
+
+using std::string;
+using std::vector;
+using std::map;
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::vector;
+using std::stack;
+using std::ostringstream;
+
+// Prototypes & structs
+#ifdef __MEMMANAGER__
+#include "MEM_ram.h"
+#endif
+
+
 #include "core/zs_core.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 1
-#define ZETSCRIPT_MINOR_VERSION 3
+#define ZETSCRIPT_MINOR_VERSION 4
 #define ZETSCRIPT_PATCH_VERSION 0
+
+
 
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
 
 
-#define ZS_WRITE_ERROR_MSG 		CZetScript::writeErrorMsg
-#define ZS_GET_ERROR_MSG		CZetScript::getErrorMsg
-#define ZS_CLEAR_ERROR_MSG		CZetScript::clearErrorMsg
 
-#define MAX_BUFFER_STR_ERROR	4096
+#define ZS_WRITE_ERROR_MSG 		writeErrorMsg
+#define ZS_GET_ERROR_MSG		CZetScript::getErrorMsg
+//#define ZS_CLEAR_ERROR_MSG		CZetScript::clearErrorMsg
+
+//#define MAX_BUFFER_STR_ERROR	4096
 #define MAX_BUFFER_AUX_TMP		4096
 
 
@@ -32,7 +119,8 @@ namespace zetscript{
 
 	class  CZetScript{
 
-		static char str_error[MAX_BUFFER_STR_ERROR];
+
+		//static char str_error[MAX_BUFFER_STR_ERROR];
 		static CZetScript * m_instance;
 		static vector<tInfoParsedSource> * m_parsedSource;
 		static int getIdxParsedFilenameSource(const char *file);
@@ -71,10 +159,12 @@ namespace zetscript{
 
 
 
-		static void clearErrorMsg();
-		static void writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-		ZETSCRIPT_MODULE_EXPORT static const char * getErrorMsg();
+		//static void clearErrorMsg();
+		//static void writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+		//ZETSCRIPT_MODULE_EXPORT static const char * getErrorMsg();
 		const char * getParsedFilenameFromIdx(unsigned idx);
+
+		void	setUserCallbackOnError(tPrintFunctionCallback _fun);
 
 		ZETSCRIPT_MODULE_EXPORT static int eval_int(const string & str_to_eval);
 		ZETSCRIPT_MODULE_EXPORT static bool eval_bool(const string & str_to_eval);
@@ -124,7 +214,7 @@ namespace zetscript{
 	};
 
 
-
+	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
 }
 

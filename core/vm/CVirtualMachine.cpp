@@ -411,29 +411,7 @@ namespace zetscript{
 		*current_scope_info_ptr++={(short)(_index),_ptr_info_function,_ptr_local_var};\
 	}
 
-	#define REMOVE_0_SHARED_POINTERS(idxCurrentStack,ptr_callc_result) \
-		tInfoSharedList *list = &zero_shares[idxCurrentStack];\
-		PInfoSharedPointerNode first_node,current;\
-		first_node=current=list->first;\
-		if(current != NULL){\
-			bool finish=false;\
-			do{\
-				PInfoSharedPointerNode next_node=current->next;\
-				finish=next_node ==first_node;\
-				bool delete_node=true;\
-				if(ptr_callc_result!=NULL){\
-					if(ptr_callc_result==current->data.shared_ptr){\
-						delete_node=false;\
-					}\
-				}\
-				if(delete_node){\
-					delete current->data.shared_ptr;\
-				}\
-				free(current);\
-				current=next_node;\
-			}while(!finish);\
-		}\
-		list->first=list->last=NULL;\
+
 
 	#define POP_SCOPE(ptr_callc_result) \
 	if(scope_info<(current_scope_info_ptr))\
@@ -657,7 +635,7 @@ if(aux_function_info == NULL){\
 							if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){\
 								str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a].idx_type));\
 							}else{ /* typic var ... */ \
-								str_candidates+="arg"+CStringUtils::intToString(a+1); \
+								str_candidates+="arg"+CZetScriptUtils::intToString(a+1); \
 							} \
 						} \
 						str_candidates+=");\n";\
@@ -1350,6 +1328,9 @@ if(aux_function_info == NULL){\
 	}
 
 	void CVirtualMachine::setError(const char *str){
+
+		ZS_WRITE_ERROR_MSG("custom_user",-1,str);
+
 		custom_error = str;
 		cancel_execution = true;
 	}
@@ -2607,8 +2588,8 @@ if(aux_function_info == NULL){\
 							 ||svar->idxScriptClass==IDX_CLASS_STRUCT
 							)
 							{ // max ...
-
-								svar->destroy(true);
+								svar->unrefSharedPtr();
+								svar->setDelete_C_ObjectOnDestroy(true);
 								se->stkValue=NULL;
 								se->varRef=NULL;
 								se->properties=STK_PROPERTY_TYPE_UNDEFINED;

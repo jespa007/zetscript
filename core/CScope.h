@@ -24,6 +24,9 @@
 
 #define SCOPE_INFO_NODE(idx) 				CScope::getScopeNodeByIdx(idx)
 
+// if 0 is in main <> 0, else.
+#define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScopeNodeByIdx(idx))->getIdxBaseScope()==0)
+
 namespace zetscript{
 
 
@@ -42,7 +45,7 @@ namespace zetscript{
 		 * Get CScope Node by its idx, regarding current state.
 		 */
 
-		static CScope	    		*	newScope(int idx_parent_scope=ZS_UNDEFINED_IDX);
+		static CScope	    		*	newScope(int idx_parent_scope=ZS_UNDEFINED_IDX, short idx_base_ast_node=ZS_UNDEFINED_IDX);
 		static CScope 				* 	getScopeNodeByIdx(int idx);
 
 		int idxScope;
@@ -66,9 +69,10 @@ namespace zetscript{
 
 
 		CScope();
-		CScope(int idx_this, int idx_parent=ZS_UNDEFINED_IDX);//, int _index);
+		CScope(int idx_this, int idx_parent=ZS_UNDEFINED_IDX, short idx_base_ast_node=ZS_UNDEFINED_IDX);//, int _index);
 
 		int 	 getIdxBaseScope();
+		short 	 getIdxBaseAstNode();
 		int		 getIdxParent();
 		CScope * getCurrentScopePointer();
 		int		 getIdxCurrentScopePointer();
@@ -100,6 +104,7 @@ namespace zetscript{
 
 		// The a parent scope ...
 		int idxParentScope, idxCurrentScopePointer, idxBaseScope;
+		short idxBaseAstNode;
 		//int m_index;
 
 		static vector<CScope *> 					* vec_scope_node;

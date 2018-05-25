@@ -6,7 +6,7 @@
 
 #include "../Common.h"
 
-#include "utils/zs_utils.h"
+#include "CZetScriptUtils.h"
 
 #include "CScriptVariable.h"
 #include "CStringScriptVariable.h"

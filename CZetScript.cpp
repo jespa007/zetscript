@@ -3,8 +3,9 @@
 namespace zetscript{
 
 	CZetScript * CZetScript::m_instance = NULL;
-	char CZetScript::str_error[MAX_BUFFER_STR_ERROR] = { 0 };
+	//char CZetScript::str_error[MAX_BUFFER_STR_ERROR] = { 0 };
 	vector<tInfoParsedSource> * CZetScript::m_parsedSource = NULL;
+	tPrintFunctionCallback print_error_callback=NULL;
 
 	int CZetScript::getIdxParsedFilenameSource(const char *file){
 
@@ -49,38 +50,50 @@ namespace zetscript{
 		CState::destroySingletons();
 		CNativeFunction::destroySingletons();
 		CScriptClass::destroySingletons();
+		CASTNode::destroySingletons();
 	}
-	
-	void  CZetScript::clearErrorMsg(){
+
+	/*void  CZetScript::clearErrorMsg(){
 		memset(str_error, 0,sizeof(str_error));
+	}*/
+
+	void	CZetScript::setUserCallbackOnError(tPrintFunctionCallback _fun){
+		print_error_callback=_fun;
 	}
 
-	void  CZetScript::writeErrorMsg(const char *filename, int line, const  char  *string_text, ...) {
-		char  aux_text[MAX_BUFFER_AUX_TMP]={0};
+	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...) {
+		char  text_out[MAX_BUFFER_AUX_TMP]={0};
+		char  str_error[MAX_BUFFER_AUX_TMP]={0};
+		const char *file=filename;
 
-		ZETSCRIPT_CAPTURE_VARIABLE_ARGS(aux_text, string_text);
+		va_list  ap;\
+		va_start(ap,  string_text);\
+		vsprintf(text_out,  string_text,  ap);\
+		va_end(ap);
 
-		if (strlen(aux_text) + strlen(str_error) > MAX_BUFFER_STR_ERROR) {
+		/*if (strlen(text_out) + strlen(str_error) > MAX_BUFFER_STR_ERROR) {
 			memset(str_error, 0,sizeof(str_error));
+		}*/
+		if(filename==NULL || (strcmp(filename,DEFAULT_NO_FILENAME)==0)){
+			file=NULL;
 		}
 
-
-		if(filename!=NULL && (strcmp(filename,DEFAULT_NO_FILENAME)!=0)){
-			sprintf(str_error,"%s[%s:%i] %s\n",str_error, filename, line, aux_text);
-		}else{
-
-			sprintf(str_error,"%sline %i: %s\n",str_error, line, aux_text);
+		if(print_error_callback != NULL){
+			print_error_callback(file,line,text_out);
 		}
-
-#if __ZETSCRIPT_DEBUG__
-		zs_print_error_cr("[%s:%i] %s",filename, line,aux_text);
-#endif
-
+		else{
+			if(file!=NULL){
+				fprintf(stderr,"[%s:%i] %s\n",file, line, text_out);
+			}else{
+				fprintf(stderr,"line %i: %s\n",line, text_out);
+			}
+			fflush(stderr);
+		}
 	}
 
-	const char *  CZetScript::getErrorMsg() {
+	/*const char *  CZetScript::getErrorMsg() {
 		return str_error;
-	}
+	}*/
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
 
@@ -546,20 +559,20 @@ namespace zetscript{
 			}
 		}
 
-		ZS_CLEAR_ERROR_MSG();
+		//ZS_CLEAR_ERROR_MSG();
 
 		return parse_ast(str_script.c_str(),idx_file);
 	}
 
 	bool CZetScript::parse_file(const char * filename){
 
-		ZS_CLEAR_ERROR_MSG();
+		//ZS_CLEAR_ERROR_MSG();
 
 		bool status = false;
 		char *buf_tmp=NULL;
 		int n_bytes;
 
-		if((buf_tmp=CIO_Utils::readFile(filename, n_bytes))!=NULL){
+		if((buf_tmp=CZetScriptUtils::readFile(filename, n_bytes))!=NULL){
 
 			status = parse((char *)buf_tmp, filename);
 			free(buf_tmp);
@@ -569,12 +582,12 @@ namespace zetscript{
 
 	ZETSCRIPT_MODULE_EXPORT bool CZetScript::compile(){
 		if(!__init__) return false;
-		ZS_CLEAR_ERROR_MSG();
+		//ZS_CLEAR_ERROR_MSG();
 
 		if(CCompiler::getInstance()->compile()){
 
 			// print generated asm ...
-			//printGeneratedCodeAllClasses();
+			printGeneratedCodeAllClasses();
 
 			if(m_mainObject == NULL){
 				// creates the main entry function with compiled code. On every executing code, within "execute" function
@@ -589,7 +602,7 @@ namespace zetscript{
 	bool CZetScript::execute(){
 
 		if(!__init__) return NULL;
-		ZS_CLEAR_ERROR_MSG();
+		//ZS_CLEAR_ERROR_MSG();
 
 		bool error=false;
 
@@ -619,14 +632,14 @@ namespace zetscript{
 
 	bool CZetScript::eval_file(const char * filename, bool execute){
 
-		ZS_CLEAR_ERROR_MSG();
+		//ZS_CLEAR_ERROR_MSG();
 
 		bool status = false;
 
 		char *buf_tmp=NULL;
 		int n_bytes;
 
-		if((buf_tmp=CIO_Utils::readFile(filename, n_bytes))!=NULL){
+		if((buf_tmp=CZetScriptUtils::readFile(filename, n_bytes))!=NULL){
 
 
 			status = eval((char *)buf_tmp, execute, filename);
@@ -639,9 +652,9 @@ namespace zetscript{
 	//CScriptFunctionObject *getScriptObjectFromScriptFunctionAccessName(const string &function_access_expression)
 	bool CZetScript::getScriptObjectFromFunctionAccess(const string &function_access,CScriptVariable **calling_obj,CScriptFunctionObject **fun_obj ){
 
-		ZS_CLEAR_ERROR_MSG();
+		//ZS_CLEAR_ERROR_MSG();
 
-		vector<string> access_var = CStringUtils::split(function_access,'.');
+		vector<string> access_var = CZetScriptUtils::split(function_access,'.');
 		CScriptFunctionObject * m_mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;
 
 		if(m_mainFunctionInfo == NULL){

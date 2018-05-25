@@ -14,10 +14,7 @@ int main(int argc, char * argv[]) {
 	CZetScript *zetscript = CZetScript::getInstance();
 
 	if (argc >= 2) {
-
-		if(!zetscript->eval_file(argv[1])){
-			fprintf(stderr,"%s\n",ZS_GET_ERROR_MSG());
-		}
+		zetscript->eval_file(argv[1]);
 	}
 	else{
 
@@ -39,14 +36,13 @@ int main(int argc, char * argv[]) {
 			if(!exit){ // evaluate expression
 				if(zetscript->parse(expression)){
 					if(zetscript->compile()){
-						if(!zetscript->execute()){
-							fprintf(stderr,"%s",CZetScript::getErrorMsg());
-						}
+						zetscript->execute();
+						//fprintf(stderr,"%s",CZetScript::getErrorMsg());
 					}else{
-						fprintf(stderr,"%s",CZetScript::getErrorMsg());
+						//fprintf(stderr,"%s",CZetScript::getErrorMsg());
 					}
 				}else{
-					fprintf(stderr,"%s",CZetScript::getErrorMsg());
+					//fprintf(stderr,"%s",CZetScript::getErrorMsg());
 				}
 			}
 

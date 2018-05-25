@@ -121,8 +121,6 @@ namespace zetscript{
 
 		void insertDebugInformation(int _asm_stament_idx, const char *src_str);
 
-		static bool isThisScope(short idxAstNode);
-		static bool isSuperScope(short idxAstNode);
 
 		// DEBUG TOOLS
 		//---------------------------------------------------------------------------------------------------------------------------------------
@@ -153,9 +151,6 @@ namespace zetscript{
 		//
 		// INSTRUCTION UTILS
 		//
-
-
-
 
 		/**
 		 * Compile class struct main ast node with class base object info to store instruction related with function information.
@@ -272,6 +267,8 @@ namespace zetscript{
 		/**
 		 * Adds class info into factory
 		 */
+		bool registerFunctionClassSymbol(short idx_var_node, const string & class_name,CScriptClass * current_class);
+		bool registerVariableClassSymbol(short idx_node_fun, const string & class_name,CScriptClass * current_class);
 		bool doRegisterVariableSymbolsClass(const string & class_name, CScriptClass *current_class);
 		bool gacClass(short idxAstNode, CScope * _lc);
 
@@ -286,7 +283,7 @@ namespace zetscript{
 		bool gacFunctionOrOperator(short idxAstNode, CScope * _lc, CScriptFunctionObject *irfs);
 		bool gacReturn(short idxAstNode, CScope * _lc);
 		bool gacIf(short idxAstNode, CScope * _lc);
-		int gacInlineIf(short idxAstNode, CScope * _lc, int & instruction);
+		int  gacInlineIf(short idxAstNode, CScope * _lc, int & instruction);
 		bool gacSwitch(short idxAstNode, CScope * _lc);
 		bool gacBody(short idxAstNode, CScope * _lc);
 
@@ -300,14 +297,11 @@ namespace zetscript{
 
 		bool ast2asm_Recursive(short idxAstNode, CScope * _lc);
 
-		//vector<tInfoStatementOpCompiler > 			*m_currentListStatements;
-		//vector<vector<tInfoStatementOpCompiler > *>	m_functionAsmStatements;
 		CScope										*m_treescope;
 		tInfoFunctionCompile						*m_currentFunctionInfo;
 		vector <tInfoFunctionCompile *>  			stk_scriptFunction;
 
 		//---------------------------------------------------------------
-
 
 		CCompiler();
 		~CCompiler();

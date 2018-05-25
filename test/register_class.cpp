@@ -63,5 +63,11 @@ int main(){
 		"delete myclass;" // delete script var with c pointers attached inside.
 	);
 
+	CZetScript::destroy();
+
+#ifdef __MEMMANAGER__
+  MEM_ViewStatus();
+#endif
+
 	return 0;
 }

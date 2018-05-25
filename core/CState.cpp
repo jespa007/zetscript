@@ -27,7 +27,7 @@ namespace zetscript{
 			// add empty ast_node...
 
 			CASTNode *ast =CASTNode::newASTNode();
-			CScope *sc=CScope::newScope(ZS_UNDEFINED_IDX);
+			CScope *sc=CScope::newScope();
 			ast->idxScope = sc->idxScope;
 			ast->node_type = NODE_TYPE::BODY_NODE;
 
@@ -444,8 +444,29 @@ namespace zetscript{
 
 		for(unsigned i = 0;i < vec_script_function_object_node->size();i++){
 			zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_name.c_str());
-			delete vec_script_function_object_node->at(i);
+			CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
 
+			if (info_function->object_info.statment_op != NULL) {
+				for (PtrStatment stat = info_function->object_info.statment_op; *stat != NULL; stat++) {
+
+					free(*stat);
+				}
+
+				free(info_function->object_info.statment_op);
+				info_function->object_info.statment_op=NULL;
+			}
+
+			// unloading scope ...
+			if (info_function->object_info.info_var_scope != NULL) {
+				for (unsigned j = 0; j < info_function->object_info.n_info_var_scope; j++) {
+					free(info_function->object_info.info_var_scope[j].var_index);
+				}
+
+				free(info_function->object_info.info_var_scope);
+				info_function->object_info.info_var_scope=NULL;
+			}
+
+			delete info_function;
 		}
 
 		vec_script_function_object_node->clear();

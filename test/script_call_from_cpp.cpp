@@ -34,4 +34,10 @@ int main(){
 	delete 	test_function1;
 	delete 	delete_test;
 
+
+	CZetScript::destroy();
+
+#ifdef __MEMMANAGER__
+  MEM_ViewStatus();
+#endif
 }

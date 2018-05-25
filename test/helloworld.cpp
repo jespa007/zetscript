@@ -17,5 +17,13 @@ int main(){
 	register_C_Function("say_helloworld",say_helloworld);
 
 	zs->eval("say_helloworld();"); // Call c function and prints hello world!
+
+
+	CZetScript::destroy();
+
+#ifdef __MEMMANAGER__
+  MEM_ViewStatus();
+#endif
+
 	return 0;
 }
