@@ -47,20 +47,20 @@ int main(){
 	class_C_baseof<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
 
 	zs->eval(
-		"class ScriptMyClassExtend:MyClassExtend{"
-		"	var data3;"
-		"	function function1(arg){"
-		"		var i=this.data1;"
-		"		super(this.data1+arg);"
-		"		print(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);"
-	    "   }"
-		"};"
-		"var myclass = new ScriptMyClassExtend();" // instances MyClassExtend
-		"myclass.function1(12);" // it prints "Int argument is 12"
-		"myclass.function2(0.5);" // it prints "Float argument is 0.5"
-		"print(\"data1:\"+myclass.data1);" // it prints "data1:12"
-		"print(\"data2:\"+myclass.data2);" // it prints "data2:0.5"
-		"delete myclass;" // delete script var with c pointers attached inside.
+		"class ScriptMyClassExtend:MyClassExtend{\n"
+		"	var data3;\n"
+		"	function function1(arg){\n"
+		"		var i=this.data1;\n"
+		"		super(this.data1+arg);\n"
+		"		print(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);\n"
+	    "   }\n"
+		"};\n"
+		"var myclass = new ScriptMyClassExtend();\n" // instances MyClassExtend
+		"myclass.function1(12);\n" // it prints "Int argument is 12"
+		"myclass.function2(0.5);\n" // it prints "Float argument is 0.5"
+		"print(\"data1:\"+myclass.data1);\n" // it prints "data1:12"
+		"print(\"data2:\"+myclass.data2);\n" // it prints "data2:0.5"
+		"delete myclass;\n" // delete script var with c pointers attached inside.
 	);
 
 	CZetScript::destroy();

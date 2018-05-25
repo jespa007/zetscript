@@ -16,9 +16,7 @@
 #endif
 
 
-
 namespace zetscript{
-
 
 
 	tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
@@ -28,7 +26,6 @@ namespace zetscript{
 	const char * CASTNode::current_parsing_filename=DEFAULT_NO_FILENAME;
 	int CASTNode::current_idx_parsing_filename=-1;
 	vector<tInfoAstNodeToCompile> * CASTNode::astNodeToCompile=NULL;
-
 
 	bool IS_SINGLE_COMMENT(char *str){
 
@@ -72,7 +69,6 @@ namespace zetscript{
 		}
 
 		return aux_p;
-
 	}
 
 	char *ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
@@ -82,16 +78,8 @@ namespace zetscript{
 			bool end = false;
 			while(*aux_p != 0  && !end){//!IS_END_COMMENT(aux_p) && *aux_p != 0){
 
-				//while(*aux_p!=0 && *aux_p!='*') {
-
-
-
-				//}
-				//if(*aux_p == '\n') {aux_p++;m_line++;}; // make compatible windows format...
-				//if(*aux_p == '\r') aux_p++;
 				if(*aux_p == '*' && *(aux_p+1) == '/') {
 					end=true;
-					//aux_p+=2;
 				} // not end comment ... advance ...
 				else {
 					if(*aux_p=='\n'){
@@ -159,7 +147,6 @@ namespace zetscript{
 		return aux_p;
 	}
 
-
 	char *ADVANCE_TO_ONE_OF_COLLECTION_CHAR(char *str,char *end_char_standard_value, int &m_line) {
 		char *aux_p = str;
 		char *chk_char;
@@ -187,11 +174,7 @@ namespace zetscript{
 		return aux_p;
 	}
 
-
-
-
 	vector<CASTNode *> 			* CASTNode::vec_ast_node=NULL;
-
 
 	void CASTNode::setVectorASTNode(vector<CASTNode *> 	* set_vec_ast_node){
 		vec_ast_node = set_vec_ast_node;
@@ -324,7 +307,6 @@ namespace zetscript{
 			delete astNodeToCompile;
 			astNodeToCompile=NULL;
 		}
-
 	}
 
 	int 		CASTNode::getAstLine(short idx){
@@ -352,7 +334,6 @@ namespace zetscript{
 		if(vec_ast_node->at(idx)->idxFilename != -1){
 			return CZetScript::getInstance()->getParsedFilenameFromIdx(vec_ast_node->at(idx)->idxFilename);
 		}
-
 
 		return DEFAULT_NO_FILENAME;
 	}
@@ -467,7 +448,6 @@ namespace zetscript{
 		if(*s == '^')
 			return ((*(s+1) != '='));
 		return false;
-
 	}
 
 	bool CASTNode::parseBinaryAndPunctuator(const char *s){
@@ -618,7 +598,6 @@ namespace zetscript{
 
 	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup2(const char *s){
 
-
 		PUNCTUATOR_TYPE index_to_evaluate[]={
 
 				LOGIC_AND_PUNCTUATOR,
@@ -641,7 +620,6 @@ namespace zetscript{
 	}
 
 	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup3(const char *s){
-
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
 
@@ -696,7 +674,6 @@ namespace zetscript{
 	}
 
 	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup5(const char *s){
-
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
 				LOGIC_NOT_EQUAL_PUNCTUATOR
@@ -1073,9 +1050,7 @@ namespace zetscript{
 					return op;
 				}
 			}
-
 		}
-
 		return UNKNOWN_PUNCTUATOR;
 	}
 
@@ -1432,7 +1407,6 @@ namespace zetscript{
 				if(*aux == '['){ // vector object ...
 					// parse function but do not create ast node (we will create in trivial case value
 					end_expression = parseArgs('[', ']',aux,m_line,scope_info);
-					//symbol_node->symbol_value="anonymous_array";
 
 					if(end_expression == NULL){
 						return NULL;
@@ -1734,12 +1708,6 @@ namespace zetscript{
 				expr_op_end+=strlen(defined_operator_punctuator[operator_group].str);
 			}
 
-			//if(special_pre_post_cond){
-			//expr_op_end++;
-			//}
-			//if(!(operator_group==ADD_PUNCTUATOR && *expr_start_op=='-')) // special case (preserve the sign as preneg)...
-		//		expr_op_end+=strlen(defined_operator_punctuator[operator_group].str);
-
 			print_ast_cr("operator \"%s\" found we can evaluate left and right branches!!\n",CASTNode::defined_operator_punctuator[operator_group].str);
 			char eval_left[MAX_EXPRESSION_LENGTH]={0};
 
@@ -1766,18 +1734,6 @@ namespace zetscript{
 					}
 				}
 			}
-
-			/*if(	ast_node_to_be_evaluated != NULL ){
-				if(operator_group == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR){
-					(*ast_node_to_be_evaluated)->pre_post_operator_info=left_node->pre_post_operator_info;
-					left_node->pre_post_operator_info=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
-				}
-				else
-				if(left_node->pre_post_operator_info == PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){ // may subnode found post operator...
-					left_node->pre_post_operator_info = pre_operator;
-				}
-
-			}*/
 
 			// RIGHT BRANCH
 			if((aux=parseExpression_Recursive(
@@ -1819,14 +1775,7 @@ namespace zetscript{
 						ast_neg_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
 						ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
 						(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=ast_neg_node->idxAstNode;
-					}/*else{ // let's take the right-left node ...
-						CASTNode *rn_ln = AST_NODE(rn->children[LEFT_NODE]);
-						ast_neg_node->idxAstParent = rn->idxAstNode;
-						ast_neg_node->children.push_back(rn_ln->idxAstNode);
-						rn_ln->idxAstParent = ast_neg_node->idxAstNode;
-						rn->children[LEFT_NODE]=ast_neg_node->idxAstNode;
-						//(*ast_node_to_be_evaluated)->children[LEFT_NODE]=ast_neg_node->idxAstNode;
-					}*/
+					}
 				}
 
 				if(operator_group == SUB_PUNCTUATOR){
@@ -2191,13 +2140,13 @@ namespace zetscript{
 								}
 								break;
 							case KEYWORD_TYPE::VAR_KEYWORD:
-								if((aux_p = parseVar(aux_p, m_line,class_scope_info, &child_node)) == NULL){
+								if((aux_p = parseVar(aux_p, m_line,class_scope_info, &child_node)) != NULL){
 
-									/*if(ast_node_to_be_evaluated != NULL){
+									if(ast_node_to_be_evaluated != NULL){
 										vars_collection_node->children.push_back(child_node->idxAstNode);
-									}*/
+									}
 
-								/*} else{*/
+								} else{
 									return NULL;
 								}
 								break;
@@ -2322,7 +2271,9 @@ namespace zetscript{
 		string str_name;
 		string class_member,class_name, function_name="";
 		PASTNode class_node=NULL;
+		PASTNode function_collection_node=NULL;
 		int idxScope=ZS_UNDEFINED_IDX;
+
 
 		if(scope_info != NULL){
 			idxScope=scope_info->idxScope;
@@ -2364,6 +2315,7 @@ namespace zetscript{
 						idxScope = class_node->idxScope; // override scope info
 						symbol_value = (char *)class_member.c_str();
 						function_name = symbol_value;
+						function_collection_node=AST_NODE(class_node->children[1]);
 					}
 					else{
 						if(error){
@@ -2541,6 +2493,10 @@ namespace zetscript{
 
 							return aux_p;
 						}
+					}
+
+					if(ast_node_to_be_evaluated != NULL && function_collection_node !=NULL){
+						function_collection_node->children.push_back((*ast_node_to_be_evaluated)->idxAstNode);
 					}
 				}
 				else{
@@ -2776,8 +2732,6 @@ namespace zetscript{
 						return end_expr+1;
 					}
 				}
-
-
 			}
 		}
 		return NULL;
@@ -2795,7 +2749,6 @@ namespace zetscript{
 		bool error = false;
 		int conditional_line;
 
-
 		aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 		// check for keyword ...
@@ -2812,9 +2765,7 @@ namespace zetscript{
 					if((group_conditional_nodes = CASTNode::newASTNode()) == NULL) return NULL;
 					group_conditional_nodes->node_type = GROUP_IF_NODES;
 					(*ast_node_to_be_evaluated)->children.push_back(group_conditional_nodes->idxAstNode);
-
 				}
-
 
 				do{
 
@@ -2933,18 +2884,7 @@ namespace zetscript{
 						return aux_p;
 					}
 
-
-
-
-
-
 				}while(true); // loop
-
-				/*
-
-				// evaluate conditional line ...
-
-				*/
 			}
 		}
 		return NULL;
@@ -2989,10 +2929,7 @@ namespace zetscript{
 					// save scope pointer ...
 					if(ast_node_to_be_evaluated != NULL){
 						_currentScope =scope_info->pushScope(); // push current scope
-						//(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
-						//if(_currentScope!=NULL){
 						(*ast_node_to_be_evaluated)->idxScope=_currentScope->idxScope;
-						//}
 					}
 
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
@@ -3063,9 +3000,7 @@ namespace zetscript{
 							}
 							return aux_p;
 						}
-						else{
 
-						}
 					}
 				}else{
 					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected '(' for");
@@ -3390,7 +3325,7 @@ namespace zetscript{
 		string class_name, class_member;
 		PASTNode class_node;
 		PASTNode var_node;
-		PASTNode parent_ast_to_insert_var=NULL;
+		PASTNode vars_collection_node=NULL;
 		bool error=false;
 		int idxScope=ZS_UNDEFINED_IDX;
 		string s_aux,variable_name;
@@ -3398,9 +3333,14 @@ namespace zetscript{
 		bool extension_prop=false;
 		bool is_class_member;
 		int m_startLine=0;
+		bool class_scope=false;//scope_info->getIdxBaseScope()!=0;
 
-		if(scope_info != NULL){
-			idxScope=scope_info->getCurrentScopePointer()->idxScope;
+
+
+		if(scope_info != NULL){// && class_scope){ // if class scope let's see if is within function member..
+			if(scope_info->getIdxBaseScope() != 0) { // if base scope != 0 is a class
+				class_scope = scope_info->getIdxBaseScope() == scope_info->getCurrentScopePointer()->idxScope;
+			}
 		}
 
 
@@ -3419,88 +3359,45 @@ namespace zetscript{
 					if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
 					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
-					(*ast_node_to_be_evaluated)->idxScope =idxScope; // assign main scope...
+					(*ast_node_to_be_evaluated)->idxScope =ZS_UNDEFINED_IDX; // assign main scope...
 				}
 
-				/*if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // particular case extension attribute class
-					if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
-
-						PASTNode var_new=NULL;
-						if((var_new=CASTNode::newASTNode()) == NULL) return NULL;
-						// save symbol in the node ...
-						var_new->symbol_value = class_member;
-						var_new->idxScope = ZS_UNDEFINED_IDX;
-						if(_currentScope != NULL){
-							var_new->idxScope =_currentScope->idxScope;
-						}
-						var_new->line_value = m_line;
-
-						if(!_currentScope->registerSymbol(var_new->symbol_value,var_new)){
-							return NULL;
-						}
-
-						(*ast_node_to_be_evaluated)->children.push_back(var_new->idxAstNode);
-					}
-
-					aux_p=IGNORE_BLANKS(end_var,m_line);
-
-					if(*aux_p == ';'){
-						aux_p++;
-					}
-					else{
-						ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected ';' after extension class attribute", *aux_p);
-						return NULL;
-					}
-
-					zs_print_debug_cr(CURRENT_PARSING_FILENAME,m_line,"registered symbol \"%s::%s\"",class_name.c_str(),class_member.c_str());
-					return aux_p;
-				}
-				else{
-					if(error){
-						return NULL;
-					}
-				}*/
 
 				while(*aux_p != ';' && *aux_p != 0){ // JE: added multivar feature.
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 					start_var=aux_p;
 					m_startLine = m_line;
+					vars_collection_node=NULL;
 
-					parent_ast_to_insert_var=NULL;
-
-					if(ast_node_to_be_evaluated!=NULL){
-						parent_ast_to_insert_var = *ast_node_to_be_evaluated;
-					}
-
+					//parent_ast_to_insert_var=NULL;
 					if(scope_info != NULL){ // main as default
 						idxScope=scope_info->getCurrentScopePointer()->idxScope;
 					}
 
-
-
-					/*if((end_var=getSymbolName(aux_p,m_line))==NULL){
-						return NULL;
-					}
-
-					if((symbol_name=CZetScriptUtils::copyStringFromInterval(start_var,end_var)) == NULL){
-						return NULL;
-					}
-
-					aux_p=end_var;
-					aux_p=IGNORE_BLANKS(aux_p,m_line);*/
 					is_class_member=false;
 
 					if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // check if particular case extension attribute class
 						idxScope = class_node->idxScope; // override scope info
 						symbol_value = (char *)class_member.c_str();
 						variable_name = symbol_value;
-						class_node->children[0];
-						if(ast_node_to_be_evaluated!=NULL){
-							parent_ast_to_insert_var=AST_NODE(class_node->children[0]);
-						}
 						is_class_member=true;
+						//vars_collection_node=AST_NODE(class_node->children[0]);
+						//PASTNode vars_collection_node=CASTNode::newASTNode();
+						//if(vars_collection_node==NULL) return NULL;
+						if(ast_node_to_be_evaluated!=NULL){
+
+							if((vars_collection_node = CASTNode::newASTNode()) == NULL) return NULL;
+							// save symbol in the node ...
+							//(vars_collection_node)->symbol_value = variable_name;
+							(vars_collection_node)->idxScope = idxScope;
+							(vars_collection_node)->line_value = m_line;
+
+							AST_NODE(class_node->children[0])->children.push_back(vars_collection_node->idxAstNode);
+
+						}
+
 					}
-					else{
+					else{ // causal variable
 						if(error){
 							return NULL;
 						}
@@ -3522,18 +3419,20 @@ namespace zetscript{
 							}
 						}
 					}
+
+
 					aux_p=end_var;
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 					//}
-					bool ok_char=*aux_p == ';' || *aux_p == ',' ;
-					if(!is_class_member){
+					bool ok_char=*aux_p == ';' || *aux_p == ',' || *aux_p == '=' ;
+					/*if(!(is_class_member || class_scope)){
 						ok_char=ok_char || *aux_p == '=';
-					}
+					}*/
 
 					if(ok_char){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
 						//zs_print_debug_cr("registered symbol \"%s\" line %i ",variable_name, m_line);
 						var_node = NULL;
-						if(parent_ast_to_insert_var!=NULL){
+						if(ast_node_to_be_evaluated!=NULL){
 
 							if((var_node = CASTNode::newASTNode()) == NULL) return NULL;
 							// save symbol in the node ...
@@ -3541,11 +3440,11 @@ namespace zetscript{
 							(var_node)->idxScope = idxScope;
 							(var_node)->line_value = m_line;
 
-							parent_ast_to_insert_var->children.push_back(var_node->idxAstNode);
+							(*ast_node_to_be_evaluated)->children.push_back(var_node->idxAstNode);
 
 						}
 
-						if(*aux_p == '='){
+						if(*aux_p == '='){ // only for variables (not class members)
 							PASTNode children_node=NULL;
 
 							// try to evaluate expression...
@@ -3573,21 +3472,15 @@ namespace zetscript{
 							}*/
 						}
 
-						if(parent_ast_to_insert_var!=NULL){ // define as many vars is declared within ','
+						if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
 
-							//PASTNode var_new=NULL;
-							//if((var_new=CASTNode::newASTNode()) == NULL) return NULL;
-							// save symbol in the node ...
-							//var_new->symbol_value = variable_name;
-							//var_new->idxScope = ZS_UNDEFINED_IDX;
-							//if(_currentScope != NULL){
-							//var_new->idxScope = idxScope;
-							//}
-							//var_new->line_value = m_line;
 							if(!SCOPE_INFO_NODE(idxScope)->registerSymbol(var_node->symbol_value,var_node)){
 								return NULL;
 							}
-							//(*ast_node_to_be_evaluated)->children.push_back(var_node->idxAstNode);
+
+							if(vars_collection_node != NULL && ast_node_to_be_evaluated != NULL){
+								vars_collection_node->children.push_back(var_node->idxAstNode);
+							}
 
 							zs_print_debug_cr("registered symbol \"%s\" line %i ",(var_node)->symbol_value.c_str(), (var_node)->line_value);
 						}
@@ -3615,139 +3508,6 @@ namespace zetscript{
 		}
 		return NULL;
 	}
-
-	/*char * CASTNode::parseVar(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
-
-		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-		char *aux_p = (char *)s;
-		CScope *_currentScope = NULL;
-		PASTNode var_node;
-		KEYWORD_TYPE key_w;
-		char *start_var,*end_var, *symbol_name;
-		int m_startLine=0;
-		string s_aux;
-
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-		key_w = isKeyword(aux_p);
-
-		//if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
-		if(key_w == KEYWORD_TYPE::VAR_KEYWORD){ // possible variable...
-			aux_p += strlen(defined_keyword[key_w].str);
-			aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-			if(ast_node_to_be_evaluated != NULL){
-				_currentScope=scope_info->getCurrentScopePointer(); // gets current evaluating scope...
-				if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
-				(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
-				(*ast_node_to_be_evaluated)->keyword_info = key_w;
-				(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
-				if(_currentScope != NULL){
-					(*ast_node_to_be_evaluated)->idxScope = _currentScope->idxScope;
-				}
-			}
-			while(*aux_p != ';' && *aux_p != 0 ){ // JE: added multivar feature.
-				start_var=aux_p;
-				m_startLine = m_line;
-
-				if((end_var=getSymbolName(aux_p,m_line))==NULL){
-					return NULL;
-				}
-				if((symbol_name=CZetScriptUtils::copyStringFromInterval(start_var,end_var)) == NULL){
-					return NULL;
-				}
-
-				aux_p=end_var;
-				aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-				if((*aux_p == ';' || *aux_p == '=' || (*aux_p == ',') )){ // JE: added multivar feature (',)).
-					var_node = NULL;
-					if(ast_node_to_be_evaluated!=NULL){
-
-						if((var_node = CASTNode::newASTNode()) == NULL) return NULL;
-						// save symbol in the node ...
-						(var_node)->symbol_value = symbol_name;
-						(var_node)->idxScope = ZS_UNDEFINED_IDX;
-						(var_node)->line_value = m_line;
-
-						(*ast_node_to_be_evaluated)->children.push_back(var_node->idxAstNode);
-
-					}
-					if(*aux_p == '='){
-						PASTNode children_node=NULL;
-
-						// try to evaluate expression...
-						aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-						if((aux_p = parseExpression(start_var,m_startLine,scope_info,var_node != NULL ? &children_node : NULL)) == NULL){
-							return NULL;
-						}
-
-						if(var_node != NULL){
-
-							if(children_node==NULL){
-								zs_print_error_cr("internal:children node == NULL");
-								return NULL;
-							}
-
-							var_node->children.push_back(children_node->idxAstNode);
-						}
-
-						m_line = m_startLine;
-
-						if(!(*aux_p == ';' || *aux_p == '=' || *aux_p == ',' )){
-							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected ',',';' or '=' but it was '%c'",*aux_p);
-							return NULL;
-						}
-					}
-
-					// no error->register symbol ...
-					if(ast_node_to_be_evaluated!=NULL){
-
-
-						if(_currentScope != NULL){
-							(var_node)->idxScope = _currentScope->idxScope;
-						}
-
-						zs_print_debug_cr("scope %i",_currentScope->idxScope);
-						if(!_currentScope->registerSymbol((var_node)->symbol_value,var_node)){
-							return NULL;
-						}
-
-						zs_print_debug_cr("registered symbol \"%s\" line %i ",(var_node)->symbol_value.c_str(), (var_node)->line_value);
-					}
-
-				}
-				else{
-					ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"expected ',',';' or '=' but it was '%c'", *aux_p);
-					return NULL;
-				}
-				// ignores ';' or ','
-				if(*aux_p == ','){
-					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
-				}
-
-			}
-
-			if(*aux_p == ';'){
-				aux_p++;
-			}
-			else{
-				ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected ';' ");
-				return NULL;
-			}
-
-			return aux_p;
-		}
-		else{
-
-			ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"var keyword expected!");
-
-		}
-		//}
-		return NULL;
-	}*/
-
 
 	char * CASTNode::parseBlock(const char *s,int & m_line,  CScope *scope_info, bool & error,PASTNode *ast_node_to_be_evaluated, bool push_scope){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
@@ -3834,8 +3594,6 @@ namespace zetscript{
 			aux_p=IGNORE_BLANKS(aux_p+2,m_line); // ignore ::
 
 			end_var=getSymbolName(aux_p,m_line);
-
-
 
 			if(end_var != NULL){
 
@@ -3954,10 +3712,6 @@ namespace zetscript{
 
 				// empty script ? return true anyways
 				if(test == 0) return NULL;
-
-				// set cursor compile ...
-				//cursorCompile=(*node_to_be_evaluated)->children.size();
-
 			}
 			else // under node...
 			{
@@ -3999,66 +3753,8 @@ namespace zetscript{
 							error=true;
 							return NULL;
 						}
-					}/*else if(keyw == KEYWORD_TYPE::FUNCTION_KEYWORD||keyw == KEYWORD_TYPE::VAR_KEYWORD){
+					}
 
-						int startLine = m_line;
-						string _class_name, _member_name;
-						bool error=false;
-						if(isClassMember(aux+strlen(defined_keyword[keyw].str),startLine, _class_name, _member_name, _class_node,error, keyw) != NULL){
-
-
-							if(keyw == KEYWORD_TYPE::VAR_KEYWORD){ // is var member...
-								if((end_expr=parseVar(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children))==NULL){
-									manageOnErrorParse(node_to_be_evaluated);
-									return NULL;
-								}
-
-								PASTNode vars_collection_node=AST_NODE(_class_node->children[0]);
-								vars_collection_node->children.push_back(children->idxAstNode);
-
-								if(is_main_node){
-									astNodeClassToCompile->push_back({_class_node->children[0],children->idxAstNode,_class_node->idxAstNode});
-								}else{
-									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"post-declared function/var members should be defined at main");
-									return NULL;
-								}
-
-							}else{ // is function member...
-								startLine = m_line;
-								end_expr=parseFunction(aux,m_line,SCOPE_INFO_NODE(_class_node->idxScope),&children);
-								if(end_expr==NULL){
-									manageOnErrorParse(node_to_be_evaluated);
-									return NULL;
-								}
-
-								PASTNode funct_collection_node=AST_NODE(_class_node->children[1]);
-
-								if(children->symbol_value != ""){
-									funct_collection_node->children.push_back(children->idxAstNode);
-								}
-								else {
-									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"Expected symbol after function");
-									return NULL;
-								}
-
-								if(is_main_node){
-									astNodeClassToCompile->push_back({_class_node->children[1],children->idxAstNode,_class_node->idxAstNode});
-								}else{
-									ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"post-declared function/var members should be defined at main");
-									return NULL;
-								}
-
-							}
-
-							children->symbol_value=_member_name;
-
-						}else{
-							if(error){
-								manageOnErrorParse(node_to_be_evaluated);
-								return NULL;
-							}
-						}
-					}*/
 				}else{ // try directive...
 					// try directive ...
 					DIRECTIVE_TYPE directive = isDirective(aux);
@@ -4102,8 +3798,6 @@ namespace zetscript{
 								//restore current file info...
 								CASTNode::current_parsing_filename=current_file;
 								CASTNode::current_idx_parsing_filename=current_file_idx;
-
-
 							}
 
 							aux++;
@@ -4113,7 +3807,6 @@ namespace zetscript{
 							break;
 						}
 					}
-
 				}
 			}
 			// 0st special case member class extension ...
@@ -4165,25 +3858,11 @@ namespace zetscript{
 					(*node_to_be_evaluated)->children.push_back(children->idxAstNode);
 
 					if(is_main_node){
-
-						/*short idxRootAstClass=-1;
-						if(children->idxScope != ZS_UNDEFINED_IDX){
-							CScope *si=SCOPE_INFO_NODE(children->idxScope);
-							if(
-								(children->keyword_info == KEYWORD_TYPE::VAR_KEYWORD || children->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD)
-									&& (si->getIdxBaseScope() != 0)){
-								idxRootAstClass = si->getIdxBaseAstNode();
-							}
-						}*/
 						astNodeToCompile->push_back({(*node_to_be_evaluated)->idxAstNode,children->idxAstNode});
-
 					}
 
 				}
-
 			}
-
-
 
 			aux=end_expr;
 			aux=IGNORE_BLANKS(aux, m_line);
@@ -4296,7 +3975,6 @@ namespace zetscript{
 
 		is_packed_node = false;
 		idxFilename = ZS_UNDEFINED_IDX;
-
 	}
 
 

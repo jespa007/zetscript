@@ -1,6 +1,11 @@
 
 
 class Test{
+	//var data1,data2;
+	function fun(){
+		var i;
+		i=0;
+	}
 };
 
 var Test::data3;
@@ -12,9 +17,15 @@ var Test::data3;
 class TestExtended: Test{
 	
 	function function4(){
-		this.data3;//this.function2()+this.data1;
+		//var i=0;
+		//i=1;
+		/*this.data1;
+		this.data2;
+		this.data3;//this.function2()+this.data1;*/
 	}
 };
 
 //var t=new TestExtended();
 
+//var t=new TestExtended();
+//t.function4();
