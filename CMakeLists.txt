@@ -210,6 +210,8 @@ add_executable(zs${POST_NAME}
 	${PROJECT_SOURCE_DIR}/zs.cpp
 )
 
+target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
+
 # zs_test
 add_executable(zs_test${POST_NAME}
 	${PROJECT_SOURCE_DIR}/test/zs_test.cpp
@@ -235,8 +237,7 @@ add_executable(register_function${POST_NAME}
 	${PROJECT_SOURCE_DIR}/test/register_function.cpp
 )	
 
-target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})	
-
+target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})
 
 # register_class
 add_executable(register_class${POST_NAME}
@@ -248,10 +249,19 @@ target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
 # function_script_call
 add_executable(script_call_from_cpp${POST_NAME}
 	${PROJECT_SOURCE_DIR}/test/script_call_from_cpp.cpp
-)	
+)
 
 target_link_libraries(script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
-target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
+
+# test_bug_metamethod
+add_executable(test_bug_metamethod${POST_NAME}
+	${PROJECT_SOURCE_DIR}/test/test_bug_metamethod.cpp
+)		
+
+
+target_link_libraries(test_bug_metamethod${POST_NAME} zetscript${POST_NAME})	
+
+
 
 
 
