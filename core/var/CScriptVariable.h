@@ -41,6 +41,7 @@ namespace zetscript{
 		void init(CScriptClass *info_registered_class, void *  _c_object);
 
 
+		bool isCreatedByContructor();
 		bool setIdxClass(int idx);
 		bool itHasSetMetamethod();
 		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
@@ -77,7 +78,7 @@ namespace zetscript{
 
 		intptr_t get_C_StructPtr();
 
-		virtual void destroy(bool delete_user_request=false);
+		virtual void destroy();
 		virtual ~CScriptVariable();
 
 	protected:

@@ -2589,7 +2589,11 @@ if(aux_function_info == NULL){\
 							)
 							{ // max ...
 								svar->unrefSharedPtr();
-								svar->setDelete_C_ObjectOnDestroy(true);
+
+								if(svar->isCreatedByContructor()){
+									svar->setDelete_C_ObjectOnDestroy(true);
+								}
+
 								se->stkValue=NULL;
 								se->varRef=NULL;
 								se->properties=STK_PROPERTY_TYPE_UNDEFINED;

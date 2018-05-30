@@ -1667,7 +1667,6 @@ namespace zetscript{
 
 	bool CCompiler::doRegisterVariableSymbolsClass(const string & class_name, CScriptClass *current_class){
 
-		PASTNode _node_ret=NULL;
 		string symbol_value;
 
 		if(current_class == NULL){

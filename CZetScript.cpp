@@ -63,7 +63,7 @@ namespace zetscript{
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...) {
 		char  text_out[MAX_BUFFER_AUX_TMP]={0};
-		char  str_error[MAX_BUFFER_AUX_TMP]={0};
+
 		const char *file=filename;
 
 		va_list  ap;\

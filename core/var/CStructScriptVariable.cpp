@@ -64,28 +64,6 @@ namespace zetscript{
 		if(!removeVariableSymbolByName(string(attr_name),CURRENT_VM->getCurrentAstNodeCall_C_Function())){
 			CURRENT_VM->cancelExecution();
 		}
-
-			//ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"struct symbol.size() > 0. internal error!");
-			//CURRENT_VM->getCurrentAstNodeCall_C_Function()
-
-		/*return_callc={STK_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
-		if(m_objVector.size()>0){
-			return_callc=m_objVector[m_objVector.size()-1];
-
-			CScriptVariable *var = (CScriptVariable *)return_callc.varRef;
-			if(var){
-				if(!var->unrefSharedPtr()){
-					ZS_WRITE_ERROR_MSG(NULL,0,"pop(): error doing unref var");
-				}
-			}
-
-			m_objVector.pop_back();
-		}else{
-			ZS_WRITE_ERROR_MSG(NULL,0,"pop(): error stack already empty");
-		}
-
-		// due the call is void we are doing the operations behind...
-		return &return_callc;*/
 	}
 
 
@@ -93,16 +71,21 @@ namespace zetscript{
 		return  this->m_variableSymbol.size();
 	}
 
-	void CStructScriptVariable::destroy(bool delete_user_request){
+	void CStructScriptVariable::destroy(){
 
 		for(unsigned i = 0; i < m_variableSymbol.size(); i++){
 			if(m_variableSymbol[i].object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-				CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
-				if(var){
-					var->destroy(delete_user_request);
+				CScriptVariable *svar = (CScriptVariable *)m_variableSymbol[i].object.varRef;
+				svar->unrefSharedPtr();
+				if(svar->isCreatedByContructor()){
+					svar->setDelete_C_ObjectOnDestroy(true);
 				}
 			}
 		}
+	}
+
+	CStructScriptVariable::~CStructScriptVariable(){
+		destroy();
 	}
 
 }

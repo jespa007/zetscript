@@ -27,9 +27,9 @@ namespace zetscript{
 		tStackElement * push();
 		ZETSCRIPT_MODULE_EXPORT int size();
 
-		virtual void destroy(bool delete_user_request=false);
+		virtual void destroy();
 
-
+		virtual ~CVectorScriptVariable();
 
 
 	};

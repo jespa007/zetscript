@@ -24,7 +24,9 @@ namespace zetscript{
 		void remove_attr(const char *attr_name);
 
 
-		virtual void destroy(bool delete_user_request=false);
+		virtual void destroy();
+
+		virtual ~CStructScriptVariable();
 	};
 
 }

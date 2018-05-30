@@ -990,7 +990,7 @@ namespace zetscript{
 
 		for(int i = 0; i < MAX_DIRECTIVES; i++){
 			int size = strlen(defined_directive[i].str);
-			char *aux = str+size;
+
 			if(strncmp(str,defined_directive[i].str,size)==0)
 			{
 				return defined_directive[i].id;
@@ -3319,9 +3319,9 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
 		char *aux_p = (char *)s;
-		CScope *_currentScope = NULL;
+
 		KEYWORD_TYPE key_w;
-		char *start_var,*end_var, *symbol_name;
+		char *start_var,*end_var;
 		string class_name, class_member;
 		PASTNode class_node;
 		PASTNode var_node;
@@ -3330,18 +3330,18 @@ namespace zetscript{
 		int idxScope=ZS_UNDEFINED_IDX;
 		string s_aux,variable_name;
 		char *symbol_value;
-		bool extension_prop=false;
-		bool is_class_member;
+
+		//bool is_class_member;
 		int m_startLine=0;
-		bool class_scope=false;//scope_info->getIdxBaseScope()!=0;
 
 
 
-		if(scope_info != NULL){// && class_scope){ // if class scope let's see if is within function member..
+
+/*		if(scope_info != NULL){// && class_scope){ // if class scope let's see if is within function member..
 			if(scope_info->getIdxBaseScope() != 0) { // if base scope != 0 is a class
-				class_scope = scope_info->getIdxBaseScope() == scope_info->getCurrentScopePointer()->idxScope;
+				is_class_member = scope_info->getIdxBaseScope() == scope_info->getCurrentScopePointer()->idxScope;
 			}
-		}
+		}*/
 
 
 		aux_p=IGNORE_BLANKS(aux_p,m_line);
@@ -3374,13 +3374,13 @@ namespace zetscript{
 						idxScope=scope_info->getCurrentScopePointer()->idxScope;
 					}
 
-					is_class_member=false;
+
 
 					if((end_var=isClassMember(aux_p,m_line,class_name,class_member,class_node, error,key_w))!=NULL){ // check if particular case extension attribute class
 						idxScope = class_node->idxScope; // override scope info
 						symbol_value = (char *)class_member.c_str();
 						variable_name = symbol_value;
-						is_class_member=true;
+
 						//vars_collection_node=AST_NODE(class_node->children[0]);
 						//PASTNode vars_collection_node=CASTNode::newASTNode();
 						//if(vars_collection_node==NULL) return NULL;
@@ -3697,11 +3697,12 @@ namespace zetscript{
 
 		// PRE: **node must be created and is i/o ast pointer variable where to write changes.
 		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD;
-		DIRECTIVE_TYPE directive=DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE;
+
 		char *aux = (char *)s;
 		char *end_expr=0;
-		PASTNode children=NULL,_class_node=NULL;
+		PASTNode children=NULL;
 		bool is_main_node = false;
+		bool processed_directive=false;
 
 		if(node_to_be_evaluated!= NULL){
 
@@ -3726,6 +3727,7 @@ namespace zetscript{
 
 		while(*aux != 0 ){
 
+			processed_directive=false;
 			children = NULL;
 			// ignore all ;
 			while(*aux==';' && *aux != 0){
@@ -3788,15 +3790,16 @@ namespace zetscript{
 
 							{
 								// save current file info...
-								const char *current_file=CASTNode::current_parsing_filename;
+								string current_file_str=CASTNode::current_parsing_filename;
 								int current_file_idx=CASTNode::current_idx_parsing_filename;
+								string file_to_parse=symbol_name;
 
-								if(!CZetScript::getInstance()->parse_file(symbol_name)){
+								if(!CZetScript::getInstance()->parse_file(file_to_parse.c_str())){
 									return NULL;
 								}
 
 								//restore current file info...
-								CASTNode::current_parsing_filename=current_file;
+								CASTNode::current_parsing_filename=current_file_str.c_str();
 								CASTNode::current_idx_parsing_filename=current_file_idx;
 							}
 
@@ -3806,11 +3809,14 @@ namespace zetscript{
 							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"directive not supported!");
 							break;
 						}
+
+						processed_directive = true;
+						end_expr=aux;
 					}
 				}
 			}
 			// 0st special case member class extension ...
-			if(children==NULL){ // not processed yet ...
+			if(children==NULL && !processed_directive){ // not processed yet ...
 				// 1st. check whether parse a keyword...
 				if((end_expr = parseKeyWord(aux, m_line, scope_info, error, node_to_be_evaluated != NULL ? &children : NULL)) == NULL){
 

@@ -404,6 +404,10 @@ namespace zetscript{
 		return c_object;
 	}
 
+	bool CScriptVariable::isCreatedByContructor(){
+		return was_created_by_constructor;
+	}
+
 	CScriptClass * CScriptVariable::get_C_Class(){
 
 		 return c_scriptclass_info;
@@ -414,10 +418,10 @@ namespace zetscript{
 		 return ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != 0);
 	}
 
-	void CScriptVariable::destroy(bool delete_user_request){
+	void CScriptVariable::destroy(){
 		bool deallocated = false;
 		if(created_object != 0){
-			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_user_request || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
+			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
 
 				(*c_scriptclass_info->c_destructor)(created_object);
 				deallocated=true;
