@@ -1942,14 +1942,16 @@ namespace zetscript{
 		if(_node == NULL) {zs_print_error_cr("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE){zs_print_error_cr("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::RETURN_KEYWORD){zs_print_error_cr("node is not RETURN keyword type");return false;}
-		if(_node->children.size() != 1){zs_print_error_cr("node RETURN has not 1 child");return false;}
+		if(_node->children.size() >= 1){
 
-		if(gacExpression(_node->children[0], _lc)){
-			// finally we put mov to Value ...
-			insertRet(_node->idxAstNode,getCurrentInstructionIndex());
+			if(gacExpression(_node->children[0], _lc)){
+				// finally we put mov to Value ...
+				insertRet(_node->idxAstNode,getCurrentInstructionIndex());
+			}
 		}
 		else {
-			return false;
+			insertRet(_node->idxAstNode,ZS_UNDEFINED_IDX);
+
 		}
 		return true;
 	}

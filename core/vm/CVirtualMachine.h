@@ -113,7 +113,7 @@ namespace zetscript{
 
 		PInfoSharedPointerNode newSharedPointer(CScriptVariable *var_ptr);
 		void sharePointer( PInfoSharedPointerNode _node);
-		void unrefSharedScriptVar( PInfoSharedPointerNode _node);
+		void unrefSharedScriptVar( PInfoSharedPointerNode _node, bool remove_if_0=false);
 		void removefSharedScriptVar( PInfoSharedPointerNode _node);
 
 	//===================================================================================================

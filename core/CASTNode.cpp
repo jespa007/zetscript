@@ -2004,6 +2004,7 @@ namespace zetscript{
 					if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode()) == NULL) return NULL;
 					(*ast_node_to_be_evaluated)->node_type = DELETE_OBJECT_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = KEYWORD_TYPE::UNKNOWN_KEYWORD;
+					(*ast_node_to_be_evaluated)->line_value=m_line;
 					(*ast_node_to_be_evaluated)->symbol_value = symbol_value;
 					(*ast_node_to_be_evaluated)->idxScope = scope_info->idxScope;
 				}
@@ -2536,13 +2537,15 @@ namespace zetscript{
 
 				if((aux_p = parseExpression(aux_p, m_line, scope_info, ast_node_to_be_evaluated != NULL ? &child_node : NULL))!= NULL){
 
-					if(ast_node_to_be_evaluated != NULL){
-						if(child_node == NULL){
-							ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line,"parse_return: child_node null");
-							return NULL;
+					if(ast_node_to_be_evaluated != NULL){ // return value;
+						if(child_node != NULL){
+							(*ast_node_to_be_evaluated)->children.push_back(child_node->idxAstNode);
+						}
+						else{ // return;
+
 						}
 
-						(*ast_node_to_be_evaluated)->children.push_back(child_node->idxAstNode);
+
 					}
 
 					if(*aux_p!=';'){

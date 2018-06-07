@@ -3,16 +3,18 @@
 Version: 1.4.0
 Date: XX-XX-2018
 
-> #70 concatenate string with return result from variable dot access it gives the function instead of result. 
-> #72 post declare variable members it gives "already declared variable error"
  
 #64 Implement include preprocessor feature 
-#67 Compact all utils source in one called CZetScriptUtils 
 #65 added shared/static link cmake option through -DLINK=[SHARED|STATIC]
-#71 Improve cmake print messages
-#68 CZetScript getErrorMsg is not used anymore. It prints error on stderr or through user function callback if defined 
 #66 Added memory leak detection manager (only for GNU toolchain).  It needs memmanager https://github.org/jespa007/memmanager and pass -DMEMMANAGER parameter on cmake
-#69 Fix memory leaks on delete keyword 
+#67 Compact all utils source in one called CZetScriptUtils
+#68 CZetScript getErrorMsg is not used anymore. It prints error on stderr or through user function callback if defined
+#69 Fix memory leaks on delete keyword
+#70 concatenate string with return result from variable dot access it gives the function instead of result.
+#71 Improve cmake print messages 
+#72 post declare variable members it gives "already declared variable error"
+#73 fixed return; fails 
+#74 vectors are not deallocated if they are initialized on functions and declared as global (may be it has to deallocate on clearGlobalVariables ?) 
 
 //----------------------------------------------------------
 Version: 1.3.0

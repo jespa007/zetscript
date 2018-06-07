@@ -907,6 +907,7 @@ if(aux_function_info == NULL){\
 
 		REMOVE_0_SHARED_POINTERS(0,NULL);
 
+
 		// clear all stack variables
 		tStackElement *aux=stack;
 		for(int i=0; i < VM_LOCAL_VAR_MAX_STACK;i++){
@@ -986,15 +987,23 @@ if(aux_function_info == NULL){\
 
 	}
 
-	void CVirtualMachine::unrefSharedScriptVar(PInfoSharedPointerNode _node){
+	void CVirtualMachine::unrefSharedScriptVar(PInfoSharedPointerNode _node, bool remove_if_0){
 
 		unsigned char *n_shares = &_node->data.n_shares;
 		if(*n_shares > 0){
 			if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
+
 				SHARE_LIST_DEATTACH(shared_var[_node->currentStack],_node);
-				// update current stack due different levels from functions!
-				_node->currentStack=idxCurrentStack;
-				SHARE_LIST_INSERT(zero_shares[idxCurrentStack],_node);
+
+				if(remove_if_0){ // remove node and data instead...
+					free(_node);
+					delete _node->data.shared_ptr;
+				}
+				else{ // insert into zero array.. if not referenced anymore will be removed by REMOVE_0_SHARED
+					// update current stack due different levels from functions!
+					_node->currentStack=idxCurrentStack;
+					SHARE_LIST_INSERT(zero_shares[idxCurrentStack],_node);
+				}
 			}
 		}
 	}
@@ -1982,138 +1991,138 @@ if(aux_function_info == NULL){\
 				case VPUSH:
 				case PUSH_ATTR:
 
-				{
-					bool assign_metamethod=false;
-					bool push_value=true;
+					{
+						bool assign_metamethod=false;
+						bool push_value=true;
 
-					if(operator_type==VPUSH){
-						POP_ONE; // only pops the value, the last is the vector variable itself
-						CScriptVariable *vec_obj = NULL;
-						if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							vec_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
-							if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){ // push value ...
-								// op1 is now the src value ...
-								src_ins=ptrResultInstructionOp1;
-								dst_ins=((CVectorScriptVariable *)vec_obj)->push();
-								ok=true;
-							}
-						}
-
-						if(!ok){
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector object");
-							RETURN_ERROR;
-						}
-
-						push_value=false;
-
-					}else if(operator_type==PUSH_ATTR){
-
-
-						POP_TWO; // first must be the value name and the other the variable name ...
-						CScriptVariable *struct_obj = NULL;
-						if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							struct_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
-							if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
-								// op1 is now the src value ...
-								if(ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_STRING){
-									tSymbolInfo *si=NULL;
-									const char *str = (const char *)ptrResultInstructionOp2->stkValue;
+						if(operator_type==VPUSH){
+							POP_ONE; // only pops the value, the last is the vector variable itself
+							CScriptVariable *vec_obj = NULL;
+							if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+								vec_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
+								if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){ // push value ...
+									// op1 is now the src value ...
 									src_ins=ptrResultInstructionOp1;
-									if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
-										si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str, -1,NULL, false );
-									}else{
-										si =((CStructScriptVariable *)struct_obj)->addVariableSymbol(str, -1,NULL );
-									}
-
-									if(si == NULL){
-										RETURN_ERROR;
-									}
-
-									dst_ins=&si->object;
+									dst_ins=((CVectorScriptVariable *)vec_obj)->push();
 									ok=true;
 								}
-								else{
-									ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"internal error (operator2 is not string)");
+							}
+
+							if(!ok){
+								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector object");
+								RETURN_ERROR;
+							}
+
+							push_value=false;
+
+						}else if(operator_type==PUSH_ATTR){
+
+
+							POP_TWO; // first must be the value name and the other the variable name ...
+							CScriptVariable *struct_obj = NULL;
+							if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+								struct_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
+								if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
+									// op1 is now the src value ...
+									if(ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_STRING){
+										tSymbolInfo *si=NULL;
+										const char *str = (const char *)ptrResultInstructionOp2->stkValue;
+										src_ins=ptrResultInstructionOp1;
+										if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
+											si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str, -1,NULL, false );
+										}else{
+											si =((CStructScriptVariable *)struct_obj)->addVariableSymbol(str, -1,NULL );
+										}
+
+										if(si == NULL){
+											RETURN_ERROR;
+										}
+
+										dst_ins=&si->object;
+										ok=true;
+									}
+									else{
+										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"internal error (operator2 is not string)");
+										RETURN_ERROR;
+									}
+								}else{
+									ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected struct object");
 									RETURN_ERROR;
 								}
 							}else{
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected struct object");
+								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected scriptvar");
 								RETURN_ERROR;
 							}
-						}else{
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected scriptvar");
-							RETURN_ERROR;
+							push_value=false;
 						}
-						push_value=false;
-					}
-					else{ // pop two parameters nothing ...
-						POP_TWO;
+						else{ // pop two parameters nothing ...
+							POP_TWO;
 
 
-						if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
-							dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
-						}else{
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected object l-value mov");
-							RETURN_ERROR;
-						}
-
-						src_ins=ptrResultInstructionOp2; // store ptr instruction2 op as src_var_value
-
-						// we need primitive stackelement in order to assign...
-						if(src_ins->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
-							src_ins=(tStackElement *)src_ins->varRef; // stkValue is expect to contents a stack variable
-
-						}
-
-
-
-						// ok load object pointer ...
-						if(dst_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-
-							if(((CScriptVariable *)dst_ins->varRef)->itHasSetMetamethod()){
-								APPLY_METAMETHOD(=,SET_METAMETHOD);
-								assign_metamethod=true;
+							if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
+								dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
+							}else{
+								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected object l-value mov");
+								RETURN_ERROR;
 							}
-						}
 
-					}
+							src_ins=ptrResultInstructionOp2; // store ptr instruction2 op as src_var_value
 
+							// we need primitive stackelement in order to assign...
+							if(src_ins->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
+								src_ins=(tStackElement *)src_ins->varRef; // stkValue is expect to contents a stack variable
 
-
-					if(! assign_metamethod){
-
-						tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
-
-						ASSIGN_STACK_VAR(dst_ins,src_ins);
+							}
 
 
 
-						// check old var structure ...
-						switch(GET_INS_PROPERTY_VAR_TYPE(old_dst_ins.properties)){
-						case STK_PROPERTY_TYPE_NULL:
-						case STK_PROPERTY_TYPE_UNDEFINED:
-						case STK_PROPERTY_TYPE_INTEGER:
-						case STK_PROPERTY_TYPE_NUMBER:
-						case STK_PROPERTY_TYPE_BOOLEAN:
-						case STK_PROPERTY_TYPE_FUNCTION: // we aren't take care about nothing! :)
-							break;
-						case STK_PROPERTY_TYPE_STRING: // type string is really a string or variable ?!?!
-						case STK_PROPERTY_TYPE_SCRIPTVAR: // we are getting script vars ...
-							if(!(((old_dst_ins.properties & (STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR))==(STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR)))){
-								if(old_dst_ins.varRef!=NULL){ // it had a pointer (no constant)...
-									if(src_ins->varRef != dst_ins->varRef){ // unref pointer because new pointer has been attached...
-										unrefSharedScriptVar(((CScriptVariable  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
-									}
+							// ok load object pointer ...
+							if(dst_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+
+								if(((CScriptVariable *)dst_ins->varRef)->itHasSetMetamethod()){
+									APPLY_METAMETHOD(=,SET_METAMETHOD);
+									assign_metamethod=true;
 								}
 							}
-							break;
+
 						}
 
-					}
 
-					if(push_value){ // to be able to do multiple assigns like a=b=c=1 (1 will be pushed in each store instruction)
-						*ptrCurrentOp++=*src_ins;
-					}
+
+						if(! assign_metamethod){
+
+							tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
+
+							ASSIGN_STACK_VAR(dst_ins,src_ins);
+
+
+
+							// check old var structure ...
+							switch(GET_INS_PROPERTY_VAR_TYPE(old_dst_ins.properties)){
+							case STK_PROPERTY_TYPE_NULL:
+							case STK_PROPERTY_TYPE_UNDEFINED:
+							case STK_PROPERTY_TYPE_INTEGER:
+							case STK_PROPERTY_TYPE_NUMBER:
+							case STK_PROPERTY_TYPE_BOOLEAN:
+							case STK_PROPERTY_TYPE_FUNCTION: // we aren't take care about nothing! :)
+								break;
+							case STK_PROPERTY_TYPE_STRING: // type string is really a string or variable ?!?!
+							case STK_PROPERTY_TYPE_SCRIPTVAR: // we are getting script vars ...
+								if(!(((old_dst_ins.properties & (STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR))==(STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR)))){
+									if(old_dst_ins.varRef!=NULL){ // it had a pointer (no constant)...
+										if(old_dst_ins.varRef != dst_ins->varRef){ // unref pointer because new pointer has been attached...
+											unrefSharedScriptVar(((CScriptVariable  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
+										}
+									}
+								}
+								break;
+							}
+
+						}
+
+						if(push_value){ // to be able to do multiple assigns like a=b=c=1 (1 will be pushed in each store instruction)
+							*ptrCurrentOp++=*src_ins;
+						}
 
 					}
 
@@ -2601,7 +2610,7 @@ if(aux_function_info == NULL){\
 							}
 						}
 						else{
-							ZS_WRITE_ERROR_MSG(NULL,0,"Delete: expected scriptvar var! (internal error)");
+							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"delete op: expected scriptvar var but it was \"%s\"",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1));
 							RETURN_ERROR;
 						}
 						continue;
@@ -2632,20 +2641,22 @@ if(aux_function_info == NULL){\
 
 			 	 case  RET:
 
-					callc_result=*(ptrCurrentOp-1);
+			 		 if(instruction->index_op1 != 0xff){ // return a value, void else.
+						callc_result=*(ptrCurrentOp-1);
 
-					// remove shared pointer if scriptvar ...
-					if(callc_result.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-						if(callc_result.properties & STK_PROPERTY_IS_STACKVAR){
-							callc_result=*((tStackElement *)((tStackElement *)callc_result.varRef));
+						// remove shared pointer if scriptvar ...
+						if(callc_result.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+							if(callc_result.properties & STK_PROPERTY_IS_STACKVAR){
+								callc_result=*((tStackElement *)((tStackElement *)callc_result.varRef));
 
+							}
+
+							// unref pointer to be deallocated from gc...
+							//((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node->data.shared_ptr=NULL;
+							((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node=NULL;
+							// share pointer  + 1
 						}
-
-						// unref pointer to be deallocated from gc...
-						//((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node->data.shared_ptr=NULL;
-						((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node=NULL;
-						// share pointer  + 1
-					}
+			 		 }
 					goto lbl_exit_function;
 			 case PUSH_SCOPE:
 

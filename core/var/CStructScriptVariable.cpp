@@ -75,11 +75,16 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < m_variableSymbol.size(); i++){
 			if(m_variableSymbol[i].object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-				CScriptVariable *svar = (CScriptVariable *)m_variableSymbol[i].object.varRef;
-				svar->unrefSharedPtr();
-				if(svar->isCreatedByContructor()){
-					svar->setDelete_C_ObjectOnDestroy(true);
+				//CScriptVariable *svar = (CScriptVariable *)m_variableSymbol[i].object.varRef;
+				//svar->unrefSharedPtr();
+
+				if((m_variableSymbol[i].object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
+					if(m_variableSymbol[i].object.varRef != NULL){
+						// remove property if not referenced anymore
+						CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(m_variableSymbol[i].object.varRef))->ptr_shared_pointer_node,true);
+					}
 				}
+
 			}
 		}
 	}

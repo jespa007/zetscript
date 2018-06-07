@@ -73,7 +73,6 @@ namespace zetscript{
 		return_callc={STK_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
 		if(m_objVector.size()>0){
 			return_callc=m_objVector[m_objVector.size()-1];
-
 			CScriptVariable *var = (CScriptVariable *)return_callc.varRef;
 			if(var){
 				if(!var->unrefSharedPtr()){
@@ -100,10 +99,14 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < m_objVector.size(); i++){
 			if(m_objVector[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-				CScriptVariable *svar = (CScriptVariable *)m_objVector[i].varRef;
-				svar->unrefSharedPtr();
-				if(svar->isCreatedByContructor()){
-					svar->setDelete_C_ObjectOnDestroy(true);
+
+				tStackElement si=m_objVector[i];
+
+				if((si.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
+					if(si.varRef != NULL){
+						// remove property if not referenced anymore
+						CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(si.varRef))->ptr_shared_pointer_node,true);
+					}
 				}
 			}
 		}
