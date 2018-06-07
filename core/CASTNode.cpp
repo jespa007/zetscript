@@ -3961,8 +3961,8 @@ namespace zetscript{
 		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",parseDelete};
 
 		// DIRECTIVES
-		defined_directive[UNKNOWN_DIRECTIVE]={UNKNOWN_DIRECTIVE, "none"};
-		defined_directive[INCLUDE_DIRECTIVE]={INCLUDE_DIRECTIVE, "#include"};
+		defined_directive[UNKNOWN_DIRECTIVE]={UNKNOWN_DIRECTIVE, NULL};
+		defined_directive[INCLUDE_DIRECTIVE]={INCLUDE_DIRECTIVE, "import"};
 
 		astNodeToCompile = new vector<tInfoAstNodeToCompile>();
 

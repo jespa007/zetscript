@@ -223,6 +223,7 @@ target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 add_executable(helloworld${POST_NAME}
 	${PROJECT_SOURCE_DIR}/test/helloworld.cpp
 )
+
 target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
 
 # register_variables
@@ -252,14 +253,6 @@ add_executable(script_call_from_cpp${POST_NAME}
 )
 
 target_link_libraries(script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
-
-# test_bug_metamethod
-add_executable(test_bug_metamethod${POST_NAME}
-	${PROJECT_SOURCE_DIR}/test/test_bug_metamethod.cpp
-)		
-
-
-target_link_libraries(test_bug_metamethod${POST_NAME} zetscript${POST_NAME})	
 
 
 

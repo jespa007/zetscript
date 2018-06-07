@@ -1753,13 +1753,22 @@ if(aux_function_info == NULL){\
 									}
 
 									if((si = base_var->getVariableSymbol(ast->symbol_value))==NULL){
-										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"Variable %s as type %s has not symbol %s",AST_SYMBOL_VALUE_CONST_CHAR((*current_statment)[instruction->index_op2].idxAstNode),base_var->getClassName().c_str(), ast->symbol_value.c_str());
+
+										tInfoAsmOp *previous= (instruction-1);
+										string parent_symbol="unknow";
+
+										if(previous->idxAstNode != -1){
+											PASTNode aa= AST_NODE(previous->idxAstNode);
+											parent_symbol=aa->symbol_value;
+										}
+
+										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"Variable \"%s\" as type \"%s\" has not symbol \"%s\"",parent_symbol.c_str(),base_var->getClassName().c_str(), ast->symbol_value.c_str());
 										RETURN_ERROR;
 									}
 								}
 								else{ // this scope ...
 									if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
-										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"cannot find symbol this.%s",ast->symbol_value.c_str());
+										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"cannot find symbol \"this.%s\"",ast->symbol_value.c_str());
 										RETURN_ERROR;
 									}
 								}

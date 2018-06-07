@@ -587,7 +587,7 @@ namespace zetscript{
 		if(CCompiler::getInstance()->compile()){
 
 			// print generated asm ...
-			//printGeneratedCodeAllClasses();
+			printGeneratedCodeAllClasses();
 
 			if(m_mainObject == NULL){
 				// creates the main entry function with compiled code. On every executing code, within "execute" function
