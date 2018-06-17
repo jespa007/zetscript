@@ -151,9 +151,32 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
     #-- Utils --
 	CZetScriptUtils.cpp
 
+	#-- Variables
+	CFunctorScriptVariable.cpp
+	CScriptVariable.cpp
+	CStringScriptVariable.cpp
+	CStructScriptVariable.cpp
+	CVectorScriptVariable.cpp
 	
 	#-- Script Core --
-	core/zs_core.cpp
+	
+	CFunctorScriptVariable.cpp
+	CScriptVariable.cpp
+	CStringScriptVariable.cpp
+	CStructScriptVariable.cpp
+ 	CVectorScriptVariable.cpp	
+	
+	CScope.cpp
+	CASTNode.cpp
+	CNativeFunction.cpp
+	CScriptClass.cpp
+	CScriptFunctionObject.cpp
+	
+	CVirtualMachine.cpp
+	CCompiler.cpp
+	
+	
+	CState.cpp
 	
 	#-- Registered Class --
 	extra/zs_extra.cpp	
@@ -172,31 +195,26 @@ endif()
 
 SET(
 	HS
-	utils/CIO_Utils.h
-	utils/CColorTerm.h
-	utils/zs_utils.h
-	utils/CStringUtils.h
-	utils/CLog.h
-	core/CASTNode.h
-	core/var/CStringScriptVariable.h
-	core/var/CVectorScriptVariable.h
-	core/var/CFunctorScriptVariable.h
-	core/var/CStructScriptVariable.h
-	core/var/zs_variable.h
-	core/var/CScriptVariable.h
-	core/CCompiler.h
-	helpers/RegisterFunctionHelper.h
-	helpers/CppBindingHelper.h
-	core/Common.h
-	core/CState.h
-	core/CScope.h
-	core/CScriptClass.h
-	core/vm/CVirtualMachine.h
-	core/CNativeFunction.h
-	core/CScriptFunctionObject.h
-	core/zs_core.h
-	extra/zs_extra.h
-	extra/CJSON.h
+	CASTNode.h
+	CStringScriptVariable.h
+	CVectorScriptVariable.h
+	CFunctorScriptVariable.h
+	CStructScriptVariable.h
+	
+	CScriptVariable.h
+	CCompiler.h
+	RegisterFunctionHelper.h
+	CppBindingHelper.h
+	Common.h
+	CState.h
+	CScope.h
+	CScriptClass.h
+	CVirtualMachine.h
+	CNativeFunction.h
+	CScriptFunctionObject.h
+	zs_core.h
+	zs_extra.h
+	CJSON.h
 	CZetScript.h
 )
 

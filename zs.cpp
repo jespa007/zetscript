@@ -51,7 +51,7 @@ int main(int argc, char * argv[]) {
 
 	CZetScript::destroy();
 
-#if defined(__ZETSCRIPT_DEBUG__) && defined(__ZETSCRIPT_MEMMANAGER__)
+#ifdef __MEMMANAGER__
 	MEM_ViewStatus();
 #endif
 

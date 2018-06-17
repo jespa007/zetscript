@@ -989,11 +989,13 @@ namespace zetscript{
 		char *str=IGNORE_BLANKS(c,m_line);
 
 		for(int i = 0; i < MAX_DIRECTIVES; i++){
-			int size = strlen(defined_directive[i].str);
+			if(defined_directive[i].str){
+				int size = strlen(defined_directive[i].str);
 
-			if(strncmp(str,defined_directive[i].str,size)==0)
-			{
-				return defined_directive[i].id;
+				if(strncmp(str,defined_directive[i].str,size)==0)
+				{
+					return defined_directive[i].id;
+				}
 			}
 		}
 		return DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE;

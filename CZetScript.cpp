@@ -2,6 +2,19 @@
 
 namespace zetscript{
 
+	// define prototype ...
+	int error_line;
+	char error_filename[512];
+	char error_description[512];
+	const char error_type;
+	bool assigned_error=false;
+
+
+	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+	int getErrorLine();
+	const char * getErrorDescription();
+	const char * getErrorFilename();
+
 	CZetScript * CZetScript::m_instance = NULL;
 	//char CZetScript::str_error[MAX_BUFFER_STR_ERROR] = { 0 };
 	vector<tInfoParsedSource> * CZetScript::m_parsedSource = NULL;
@@ -61,39 +74,6 @@ namespace zetscript{
 		print_error_callback=_fun;
 	}
 
-	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...) {
-		char  text_out[MAX_BUFFER_AUX_TMP]={0};
-
-		const char *file=filename;
-
-		va_list  ap;\
-		va_start(ap,  string_text);\
-		vsprintf(text_out,  string_text,  ap);\
-		va_end(ap);
-
-		/*if (strlen(text_out) + strlen(str_error) > MAX_BUFFER_STR_ERROR) {
-			memset(str_error, 0,sizeof(str_error));
-		}*/
-		if(filename==NULL || (strcmp(filename,DEFAULT_NO_FILENAME)==0)){
-			file=NULL;
-		}
-
-		if(print_error_callback != NULL){
-			print_error_callback(file,line,text_out);
-		}
-		else{
-			if(file!=NULL){
-				fprintf(stderr,"[%s:%i] %s\n",file, line, text_out);
-			}else{
-				fprintf(stderr,"line %i: %s\n",line, text_out);
-			}
-			fflush(stderr);
-		}
-	}
-
-	/*const char *  CZetScript::getErrorMsg() {
-		return str_error;
-	}*/
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
 
@@ -395,7 +375,7 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CZetScript::parse_ast(const char   * s, int idx_filename){
+	void CZetScript::parse_ast(const char   * s, int idx_filename){
 		int m_line = 1;
 		bool error=false;
 		PASTNode main_node = MAIN_AST_NODE;
@@ -407,19 +387,21 @@ namespace zetscript{
 
 		SET_PARSING_FILENAME(idx_filename,filename);
 
-		if(CASTNode::generateAST_Recursive(
+		if(!CASTNode::generateAST_Recursive(
 				s,
 				m_line,
 				MAIN_SCOPE_NODE,
 				error,
 				&main_node,
 				false) != NULL){
-			return true;
+			error=true;
 		}
 
 		RESET_PARSING_FILENAME;
 
-		return false;
+		if(error){
+			return throw_error();
+		}
 	}
 
 	bool CZetScript::isFilenameAlreadyParsed(const char * filename){
@@ -542,15 +524,14 @@ namespace zetscript{
 		m_mainObject = NULL;
 	}
 
-	ZETSCRIPT_MODULE_EXPORT bool CZetScript::parse(const string & str_script,const char *filename_ref){
-		if(!__init__) return false;
+	ZETSCRIPT_MODULE_EXPORT void CZetScript::parse(const string & str_script,const char *filename_ref){
+		if(!__init__) throw("zetscript not initialized");
 
 		int idx_file=-1;
 
 		if(filename_ref != NULL){
 			if(isFilenameAlreadyParsed(filename_ref)){
-				zs_print_error_cr("Filename \"%s\" already parsed",filename_ref);
-				return false;
+				throw("Filename \""+string(filename_ref)+"\" already parsed");
 			}else{
 				tInfoParsedSource ps;
 				ps.filename = filename_ref;
@@ -560,8 +541,7 @@ namespace zetscript{
 		}
 
 		//ZS_CLEAR_ERROR_MSG();
-
-		return parse_ast(str_script.c_str(),idx_file);
+		parse_ast(str_script.c_str(),idx_file);
 	}
 
 	bool CZetScript::parse_file(const char * filename){
@@ -587,7 +567,7 @@ namespace zetscript{
 		if(CCompiler::getInstance()->compile()){
 
 			// print generated asm ...
-			printGeneratedCodeAllClasses();
+			//printGeneratedCodeAllClasses();
 
 			if(m_mainObject == NULL){
 				// creates the main entry function with compiled code. On every executing code, within "execute" function

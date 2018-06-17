@@ -91,7 +91,24 @@ using std::ostringstream;
 #endif
 
 
-#include "core/zs_core.h"
+
+#include "CZetScriptUtils.h"
+
+//#include "CSharedPointerManager.h"
+#include "Common.h"
+#include "CZetScriptUtils.h"
+#include "CScriptVariable.h"
+#include "CStringScriptVariable.h"
+#include "CVectorScriptVariable.h"
+#include "CFunctorScriptVariable.h"
+#include "CStructScriptVariable.h"
+#include "CASTNode.h"
+#include "CScope.h"
+#include "CCompiler.h"
+#include "CVirtualMachine.h"
+#include "CState.h"
+#include "CScriptFunctionObject.h"
+#include "CScriptClass.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 1
 #define ZETSCRIPT_MINOR_VERSION 4
@@ -103,8 +120,8 @@ using std::ostringstream;
 
 
 
-#define ZS_WRITE_ERROR_MSG 		writeErrorMsg
-#define ZS_GET_ERROR_MSG		CZetScript::getErrorMsg
+//#define ZS_WRITE_ERROR_MSG 		writeErrorMsg
+//#define ZS_GET_ERROR_MSG		CZetScript::getErrorMsg
 //#define ZS_CLEAR_ERROR_MSG		CZetScript::clearErrorMsg
 
 //#define MAX_BUFFER_STR_ERROR	4096
@@ -201,20 +218,20 @@ namespace zetscript{
 
 
 
-		ZETSCRIPT_MODULE_EXPORT bool parse(const string & string,const char *filename_ref=NULL);
-		ZETSCRIPT_MODULE_EXPORT bool parse_file(const char * filename);
-		ZETSCRIPT_MODULE_EXPORT bool compile();
-		ZETSCRIPT_MODULE_EXPORT bool execute();
+		ZETSCRIPT_MODULE_EXPORT void parse(const string & string,const char *filename_ref=NULL);
+		ZETSCRIPT_MODULE_EXPORT void parse_file(const char * filename);
+		ZETSCRIPT_MODULE_EXPORT void compile();
+		ZETSCRIPT_MODULE_EXPORT void execute();
 
-		ZETSCRIPT_MODULE_EXPORT bool eval(const string & string, bool execute=true, const char *filename_ref=NULL);
-		ZETSCRIPT_MODULE_EXPORT bool eval_file(const char * filename,bool execute=true);
+		ZETSCRIPT_MODULE_EXPORT void eval(const string & string, bool execute=true, const char *filename_ref=NULL);
+		ZETSCRIPT_MODULE_EXPORT void eval_file(const char * filename,bool execute=true);
 
 
 		ZETSCRIPT_MODULE_EXPORT static void destroy();
 	};
 
 
-	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+
 
 }
 
