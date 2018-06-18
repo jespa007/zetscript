@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include "../Common.h"
-#include "core/CScope.h"
+#include "Common.h"
+#include "CScope.h"
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
 

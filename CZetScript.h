@@ -92,11 +92,11 @@ using std::ostringstream;
 
 
 
-#include "zs_utils.h"
+
 
 //#include "CSharedPointerManager.h"
 #include "Common.h"
-#include "zs_utils.h"
+#include "zetscript_utils.h"
 #include "CScriptVariable.h"
 #include "CStringScriptVariable.h"
 #include "CVectorScriptVariable.h"
@@ -235,5 +235,5 @@ namespace zetscript{
 
 }
 
-#include "helpers/CppBindingHelper.h"
+#include "CppBindingHelper.h"
 

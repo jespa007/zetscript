@@ -3,7 +3,7 @@
 
 namespace zetscript{
 
-	#include "core/CCompiler.h"
+	#include "CCompiler.h"
 	//#include "core/CScriptClass.h"
 
 

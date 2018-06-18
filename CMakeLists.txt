@@ -149,7 +149,7 @@ endif()
 set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 
     #-- Utils --
-	CZetScriptUtils.cpp
+	zetscript_utils.cpp
 
 	#-- Variables
 	CFunctorScriptVariable.cpp
@@ -178,8 +178,6 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 	
 	CState.cpp
 	
-	#-- Registered Class --
-	extra/zs_extra.cpp	
 
 	#-- Script Core --
 	CZetScript.cpp	
@@ -212,9 +210,6 @@ SET(
 	CVirtualMachine.h
 	CNativeFunction.h
 	CScriptFunctionObject.h
-	zs_core.h
-	zs_extra.h
-	CJSON.h
 	CZetScript.h
 )
 
