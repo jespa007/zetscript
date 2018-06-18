@@ -394,7 +394,7 @@ namespace zetscript{
 				error,
 				&main_node,
 				false) == NULL){
-			return throw_error();
+			return THROW_SCRIPT_ERROR();
 		}
 
 	}
@@ -424,7 +424,7 @@ namespace zetscript{
 		try{
 			zetscript->eval(str_to_eval);
 		}
-		catch(script_error_exception & error){
+		catch(script_error & error){
 			throw error;
 		}
 
@@ -454,7 +454,7 @@ namespace zetscript{
 		try{
 			zetscript->eval(str_to_eval);
 		}
-		catch(script_error_exception & error){
+		catch(script_error & error){
 			throw error;
 		}
 
@@ -481,7 +481,7 @@ namespace zetscript{
 		try{
 			zetscript->eval(str_to_eval);
 		}
-		catch(script_error_exception & error){
+		catch(script_error & error){
 			throw error;
 		}
 
@@ -512,7 +512,7 @@ namespace zetscript{
 		try{
 			zetscript->eval(str_to_eval);
 		}
-		catch(script_error_exception & error){
+		catch(script_error & error){
 			throw error;
 		}
 
@@ -575,7 +575,7 @@ namespace zetscript{
 			try{
 				parse((char *)buf_tmp, filename);
 			}
-			catch(script_error_exception & error){
+			catch(script_error & error){
 				free(buf_tmp);
 				throw error;
 			}
@@ -601,7 +601,7 @@ namespace zetscript{
 			}
 
 		}
-		else throw_error();
+		else THROW_SCRIPT_ERROR();
 
 	}
 
@@ -616,7 +616,7 @@ namespace zetscript{
 		vm->execute(MAIN_SCRIPT_FUNCTION_OBJECT, m_mainObject,error,NO_PARAMS);
 
 		if(error){
-			throw_error();
+			THROW_SCRIPT_ERROR();
 		}
 
 
@@ -644,7 +644,7 @@ namespace zetscript{
 
 			try{
 				eval((char *)buf_tmp, execute, filename);
-			}catch(script_error_exception & error){
+			}catch(script_error & error){
 				free(buf_tmp);
 				throw error;
 			}

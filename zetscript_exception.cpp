@@ -31,13 +31,13 @@ namespace zetscript {
 
 
 
-		script_error_exception::script_error_exception(const char *  _file, int _line, const char * _error):script_exception(_file,  _line, _error,"ERR"){}
+		script_error::script_error(const char *  _file, int _line, const char * _error):script_exception(_file,  _line, _error,"ERR"){}
 
 
 
 
 	void throw_error(){
-		throw script_error_exception(getErrorFilename(),getErrorLine(),getErrorDescription());
+		throw script_error(getErrorFilename(),getErrorLine(),getErrorDescription());
 	}
 
 };

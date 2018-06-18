@@ -3808,7 +3808,7 @@ const char * getErrorFilename();
 
 								try{
 									CZetScript::getInstance()->parse_file(file_to_parse.c_str());
-								}catch(script_error_exception & error){
+								}catch(script_error & error){
 									throw error;
 								}
 

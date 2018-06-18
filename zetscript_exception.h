@@ -6,6 +6,16 @@
 
 namespace zetscript {
 
+
+
+#ifdef __EMSCRIPTEN__
+#define THROW_RUNTIME_ERROR cerr <<
+#define THROW_SCRIPT_ERROR cerr <<
+#else
+#define THROW_RUNTIME_ERROR std::runtime_error
+#define THROW_SCRIPT_ERROR throw_script_error
+#endif
+
 class script_exception: public std::exception
 	{
 		const char *error_type;
@@ -25,14 +35,14 @@ class script_exception: public std::exception
 
 
 
-	class script_error_exception: public script_exception{
+	class script_error: public script_exception{
 	public:
 
-		script_error_exception(const char *  _file, int _line, const char * _error);
+		script_error(const char *  _file, int _line, const char * _error);
 
 
 	};
 
-	void throw_error();
+	void throw_script_error();
 
 };

@@ -7,11 +7,6 @@
 namespace zetscript{
 
 
-#ifdef __EMSCRIPTEN__
-#define THROW_RUNTIME_ERROR cerr <<
-#else
-#define THROW_RUNTIME_ERROR throw std::runtime_error
-#endif
 
 
 
@@ -231,7 +226,7 @@ namespace zetscript{
 									error);
 				if(error){
 
-					THROW_RUNTIME_ERROR(string("run-time error"));
+					THROW_SCRIPT_ERROR();
 
 				}
 			}
@@ -257,7 +252,7 @@ namespace zetscript{
 
 
 					if(error){
-						THROW_RUNTIME_ERROR(string("run-time error"));
+						THROW_SCRIPT_ERROR();//THROW_RUNTIME_ERROR(string("run-time error"));
 					}
 
 
@@ -299,7 +294,7 @@ namespace zetscript{
 							error,
 							args);
 				if(error){
-					THROW_RUNTIME_ERROR(string("run-time error"));
+					THROW_SCRIPT_ERROR();//(string("run-time error"));
 				}
 			}
 		)));
@@ -333,7 +328,7 @@ namespace zetscript{
 												args);
 
 					if(error){
-						THROW_RUNTIME_ERROR(string("run-time error"));
+						THROW_SCRIPT_ERROR();//(string("run-time error"));
 					}
 
 					if(!stk2var(&stk,idx_return, (intptr_t*)(&ret_value),error_str)){
@@ -380,7 +375,7 @@ namespace zetscript{
 
 
 				if(error){
-					THROW_RUNTIME_ERROR(string("run-time error"));
+					THROW_SCRIPT_ERROR();//(string("run-time error"));
 				}
 			}
 
@@ -419,7 +414,7 @@ namespace zetscript{
 												args);
 
 					if(error){
-						THROW_RUNTIME_ERROR(string("run-time error"));
+						THROW_SCRIPT_ERROR();//(string("run-time error"));
 					}
 
 					if(!stk2var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
@@ -470,7 +465,7 @@ namespace zetscript{
 								args);
 
 				if(error){
-					THROW_RUNTIME_ERROR(string("run-time error"));
+					THROW_SCRIPT_ERROR();//(string("run-time error"));
 				}
 			}
 
@@ -509,7 +504,7 @@ namespace zetscript{
 											args);
 
 				if(error){
-					THROW_RUNTIME_ERROR(string("run-time error"));
+					THROW_SCRIPT_ERROR();//(string("run-time error"));
 				}
 
 				if(!stk2var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
@@ -562,7 +557,7 @@ namespace zetscript{
 								args);
 
 				if(error){
-					THROW_RUNTIME_ERROR(string("run-time error"));
+					THROW_SCRIPT_ERROR();//(string("run-time error"));
 				}
 			}
 
@@ -606,7 +601,7 @@ namespace zetscript{
 												args);
 
 					if(error){
-						THROW_RUNTIME_ERROR(string("run-time error"));
+						THROW_SCRIPT_ERROR();//(string("run-time error"));
 					}
 
 					if(!stk2var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
@@ -662,7 +657,7 @@ namespace zetscript{
 								error,
 								args);
 				if(error){
-					THROW_RUNTIME_ERROR(string("run-time error"));
+					THROW_SCRIPT_ERROR();//(string("run-time error"));
 				}
 			}
 
@@ -712,7 +707,7 @@ namespace zetscript{
 											args);
 
 				if(error){
-					THROW_RUNTIME_ERROR(string("run-time error"));
+					THROW_SCRIPT_ERROR();//(string("run-time error"));
 				}
 
 				if(!stk2var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
@@ -772,7 +767,7 @@ namespace zetscript{
 								args);
 				if(error){
 
-					THROW_RUNTIME_ERROR(string("run-time error"));
+					THROW_SCRIPT_ERROR();//(string("run-time error"));
 				}
 			}
 
@@ -821,7 +816,7 @@ namespace zetscript{
 												args);
 
 					if(error){
-						THROW_RUNTIME_ERROR(string("run-time error"));
+						THROW_SCRIPT_ERROR();//(string("run-time error"));
 					}
 
 					if(!stk2var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
