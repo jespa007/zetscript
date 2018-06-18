@@ -92,11 +92,11 @@ using std::ostringstream;
 
 
 
-#include "CZetScriptUtils.h"
+#include "zs_utils.h"
 
 //#include "CSharedPointerManager.h"
 #include "Common.h"
-#include "CZetScriptUtils.h"
+#include "zs_utils.h"
 #include "CScriptVariable.h"
 #include "CStringScriptVariable.h"
 #include "CVectorScriptVariable.h"
