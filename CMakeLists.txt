@@ -150,22 +150,16 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 
     #-- Utils --
 	zetscript_utils.cpp
+	zetscript_exception.cpp
 
 	#-- Variables
-	CFunctorScriptVariable.cpp
-	CScriptVariable.cpp
-	CStringScriptVariable.cpp
-	CStructScriptVariable.cpp
-	CVectorScriptVariable.cpp
+	var/CScriptVariable.cpp
+	var/CStringScriptVariable.cpp
+	var/CStructScriptVariable.cpp
+	var/CVectorScriptVariable.cpp
+	var/CFunctorScriptVariable.cpp
 	
 	#-- Script Core --
-	
-	CFunctorScriptVariable.cpp
-	CScriptVariable.cpp
-	CStringScriptVariable.cpp
-	CStructScriptVariable.cpp
- 	CVectorScriptVariable.cpp	
-	
 	CScope.cpp
 	CASTNode.cpp
 	CNativeFunction.cpp
@@ -194,15 +188,16 @@ endif()
 SET(
 	HS
 	CASTNode.h
-	CStringScriptVariable.h
-	CVectorScriptVariable.h
-	CFunctorScriptVariable.h
-	CStructScriptVariable.h
 	
-	CScriptVariable.h
+	var/CStringScriptVariable.h
+	var/CVectorScriptVariable.h
+	var/CFunctorScriptVariable.h
+	var/CStructScriptVariable.h
+	var/CScriptVariable.h
+	
 	CCompiler.h
-	RegisterFunctionHelper.h
-	CppBindingHelper.h
+	helper/RegisterFunctionHelper.h
+	helper/CppBindingHelper.h
 	Common.h
 	CState.h
 	CScope.h

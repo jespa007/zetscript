@@ -2,9 +2,10 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "zs_core.h"
+#include "CZetScript.h"
 
 namespace zetscript{
+
 	
 	#define REGISTER_BASIC_TYPE(type_class, idx_class)\
 		if(!register_C_ClassInt<type_class>(STR(type_class))) return false;\
@@ -12,6 +13,12 @@ namespace zetscript{
 			zs_print_error_cr("Error initializing basic type: %s",STR(type_class));\
 			return false;\
 		}
+
+void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+int getErrorLine();
+const char * getErrorDescription();
+const char * getErrorFilename();
+
 
 	vector<CScriptClass *> 				* CScriptClass::vec_script_class_node=NULL;
 
@@ -188,7 +195,7 @@ namespace zetscript{
 			return sci;
 
 		}else{
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE((*vec_script_class_node)[index]->metadata_info.object_info.symbol_info.idxAstNode),"error class \"%s\" already registered at line %i!", class_name.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE((*vec_script_class_node)[index]->metadata_info.object_info.symbol_info.idxAstNode),"error class \"%s\" already registered at line %i!", class_name.c_str());
 		}
 
 		return NULL;
@@ -773,7 +780,7 @@ namespace zetscript{
 
 									 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
-										 ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\" will solved at run-time", symbol_to_find.c_str());
+										 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\" will solved at run-time", symbol_to_find.c_str());
 									 }
 									 else{
 										 // search local...
@@ -786,15 +793,15 @@ namespace zetscript{
 													if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 														if(!symbol_found){
-															ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
+															writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
 														}
 														else{
-															ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+															writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
 														}
 
 													}
 													else{
-														ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", symbol_to_find.c_str());
+														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", symbol_to_find.c_str());
 													}
 												 return false;
 											 }
@@ -905,7 +912,7 @@ namespace zetscript{
 
 										 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
-											 ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" will solved at run-time", AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
+											 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" will solved at run-time", AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
 										 }
 										 else{
 
@@ -927,10 +934,10 @@ namespace zetscript{
 															 }
 															 arg_str+="arg"+CZetScriptUtils::intToString(i);
 														 }
-														 ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find ancestor function for \"%s(%s)\". Is registered ?", symbol_to_find.c_str(),arg_str.c_str());
+														 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find ancestor function for \"%s(%s)\". Is registered ?", symbol_to_find.c_str(),arg_str.c_str());
 													 }
 													 else{
-														 ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s::%s\"not found", base_class.c_str(),symbol_to_find.c_str());
+														 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s::%s\"not found", base_class.c_str(),symbol_to_find.c_str());
 													 }
 													 return false;
 												 }
@@ -947,15 +954,15 @@ namespace zetscript{
 															if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 																if(!symbol_found){
-																	ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
+																	writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
 																}
 																else{
-																	ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+																	writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
 																}
 
 															}
 															else{
-																ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\"not found",symbol_to_find.c_str());
+																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\"not found",symbol_to_find.c_str());
 															}
 														 return false;
 													 }
@@ -1199,7 +1206,7 @@ namespace zetscript{
 
 			return &object_info->local_symbols.m_registeredVariable[object_info->local_symbols.m_registeredVariable.size()-1];
 		}else{
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" not exist!",class_name.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" not exist!",class_name.c_str());
 			return NULL;
 		}
 

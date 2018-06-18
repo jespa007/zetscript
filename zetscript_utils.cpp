@@ -98,17 +98,18 @@ namespace zetscript{
 				readed_elements = fread(buffer, 1, file_length, fp);
 
 				if(readed_elements != file_length) {
-					zs_print_error_cr("number elements doesn't match with length file (%s)",filename.c_str());
+
 					free(buffer);
-					return NULL;
+					throw("number elements doesn't match with length file ("+filename+")");
+
 				}
 
 				fclose(fp);
 				return buffer;
 			}
-			else  zs_print_error_cr("I can't read file \"%s\"",filename.c_str());
+			else  throw("I can't read file \""+filename+"\"");
 		}
-		else  zs_print_error_cr("I can't open file \"%s\"",filename.c_str());
+		else  throw("I can't open file \""+filename+"\"");
 
 
 		return NULL;

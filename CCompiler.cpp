@@ -12,6 +12,12 @@
 
 namespace zetscript{
 
+void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+int getErrorLine();
+const char * getErrorDescription();
+const char * getErrorFilename();
+
+
 
 	tDefOperator CCompiler::def_operator[MAX_OPERATORS];
 	map<string, CCompiler::tInfoConstantValue *> * CCompiler::constant_pool=NULL;
@@ -99,7 +105,7 @@ namespace zetscript{
 			PASTNode ast_args =AST_NODE(ast_node->children[0]);
 
 			if(ast_args->node_type != NODE_TYPE::ARGS_DECL_NODE){
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"expected args node");
+				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"expected args node");
 				return NULL;
 			}
 
@@ -119,12 +125,12 @@ namespace zetscript{
 				return info_symbol;
 			}
 			else{
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" with %i args is defined!",function_name.c_str(), n_params);
+				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" with %i args is defined!",function_name.c_str(), n_params);
 			}
 
 		}
 		else{
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" is defined!",function_name.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" is defined!",function_name.c_str());
 		}
 		return NULL;
 	}
@@ -140,7 +146,7 @@ namespace zetscript{
 		PASTNode ast_node=AST_NODE(idxAstNode);
 		PASTNode ast_args = AST_NODE(ast_node->children[0]);
 		if(ast_args->node_type != NODE_TYPE::ARGS_DECL_NODE){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"expected args node");
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"expected args node");
 			return ZS_UNDEFINED_IDX;
 		}
 
@@ -406,7 +412,7 @@ namespace zetscript{
 
 		// ignore node this ...
 		if(_node->symbol_value == "this"){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"\"%s\" cannot be processed here!",_node->symbol_value.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"\"%s\" cannot be processed here!",_node->symbol_value.c_str());
 			return false;
 		}
 
@@ -442,7 +448,7 @@ namespace zetscript{
 				classidx=IDX_CLASS_FUNCTOR;
 			}else{ // search idx...
 				if((classidx=CScriptClass::getIdxScriptClass(v,false))==-1){
-					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode)," in instenceof operator  class \"%s\" is not registered",v.c_str());
+					writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode)," in instenceof operator  class \"%s\" is not registered",v.c_str());
 					return false;
 				}
 			}
@@ -611,7 +617,7 @@ namespace zetscript{
 									if(_lc!=NULL){
 										if(!_lc->existRegisteredSymbol(symbol_name)){ // check local
 											if(!SCOPE_INFO_NODE(0)->existRegisteredSymbol(symbol_name)){ // check global
-												ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode)," variable \"%s\" not defined",symbol_name.c_str());
+												writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode)," variable \"%s\" not defined",symbol_name.c_str());
 												return false;
 											}
 										}
@@ -628,7 +634,7 @@ namespace zetscript{
 
 			if((pre_post_operator_type !=0 && GET_INS_PROPERTY_PRE_POST_OP(pre_post_operator_type) !=INS_PROPERTY_PRE_NEG) &&
 				is_constant){
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"operation \"%s\" not allowed for constants ",CASTNode::defined_operator_punctuator[_node->pre_post_operator_info].str);
+				writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"operation \"%s\" not allowed for constants ",CASTNode::defined_operator_punctuator[_node->pre_post_operator_info].str);
 				return false;
 			}
 		}
@@ -663,7 +669,7 @@ namespace zetscript{
 			//int line = -1;
 			//if(left_asm_op->idxAstNode!=ZS_UNDEFINED_IDX)
 			//	line=AST_LINE(left_asm_op->idxAstNode);
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(left_asm_op->idxAstNode)," left operand must be l-value for '=' operator");
+			writeErrorMsg(GET_AST_FILENAME_LINE(left_asm_op->idxAstNode)," left operand must be l-value for '=' operator");
 			return false;
 		}
 
@@ -814,7 +820,7 @@ namespace zetscript{
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 		if((asm_op->index_op1 = CScriptClass::getIdxScriptClass(class_name))==ZS_UNDEFINED_IDX){//&(this->m_currentFunctionInfo->stament[dest_statment]);
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" is not registered", class_name.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" is not registered", class_name.c_str());
 			return false;
 		}
 		asm_op->operator_type=ASM_OPERATOR::NEW;
@@ -1241,7 +1247,7 @@ namespace zetscript{
 
 		// 1. insert load reference created object ...
 		if(functionSymbolExists(_node->symbol_value, _node->idxAstNode)){
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function \"%s\" already defined !",_node->symbol_value.c_str());
+				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function \"%s\" already defined !",_node->symbol_value.c_str());
 				return false;
 		}
 
@@ -1475,7 +1481,7 @@ namespace zetscript{
 		}else{
 
 			if(_node->operator_info == PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"Malformed expression at line %i");
+				writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Malformed expression at line %i");
 				return ZS_UNDEFINED_IDX;
 			}
 
@@ -1486,7 +1492,7 @@ namespace zetscript{
 					return t1;
 
 				}else{
-					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode)," Put parenthesis on the inner ternary conditional");
+					writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode)," Put parenthesis on the inner ternary conditional");
 					return ZS_UNDEFINED_IDX;
 				}
 			}else{
@@ -1522,20 +1528,20 @@ namespace zetscript{
 					if(!access_node){
 						// particular case if operator is =
 						if(!insertOperatorInstruction(_node->operator_info,_node->idxAstNode,error_str,left,right)){
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
+							writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
 							return ZS_UNDEFINED_IDX;
 						}
 					}
 
 				}else if(right!=ZS_UNDEFINED_IDX){ // one op..
 					if(!insertOperatorInstruction(_node->operator_info,_node->idxAstNode,  error_str,right)){
-						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
+						writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
 						return ZS_UNDEFINED_IDX;
 					}
 
 				}else if(left!=ZS_UNDEFINED_IDX){ // one op..
 					if(!insertOperatorInstruction(_node->operator_info,_node->idxAstNode,error_str,left)){
-						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
+						writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
 						return ZS_UNDEFINED_IDX;
 					}
 				}else{ // ERROR
@@ -1623,7 +1629,7 @@ namespace zetscript{
 				symbol_value = class_name; // rename to be base constructor later ...
 
 				if((_node_ret=CASTNode::itHasReturnSymbol(node_fun))!=NULL){
-					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node_ret->idxAstNode),"return keyword is not allowed in constructor");
+					writeErrorMsg(GET_AST_FILENAME_LINE(_node_ret->idxAstNode),"return keyword is not allowed in constructor");
 					return false;
 				}
 			}
@@ -1966,7 +1972,7 @@ namespace zetscript{
 			! ( _node->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD
 			||  _node->node_type    == FUNCTION_OBJECT_NODE
 			)) {
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"Expected FUNCTION or OPERATOR or FUNCTION_OBJECT_NODE keyword type");
+			writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Expected FUNCTION or OPERATOR or FUNCTION_OBJECT_NODE keyword type");
 			return false;
 		}
 
@@ -2151,7 +2157,7 @@ namespace zetscript{
 													// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases + body...
 													jt_instruction[i-1].push_back(insert_JMP_Instruction(case_value->idxAstNode));
 												}else{
-													ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(case_value->idxAstNode),"case already defined!");
+													writeErrorMsg(GET_AST_FILENAME_LINE(case_value->idxAstNode),"case already defined!");
 													return false;
 												}
 												break;
@@ -2162,7 +2168,7 @@ namespace zetscript{
 
 												// is equal ? ==
 												if(!insertOperatorInstruction(LOGIC_EQUAL_PUNCTUATOR,0, error_str, switch_value_index ,getCurrentInstructionIndex())){
-														ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(case_value->idxAstNode),"%s",error_str.c_str());
+														writeErrorMsg(GET_AST_FILENAME_LINE(case_value->idxAstNode),"%s",error_str.c_str());
 														return false;
 												}
 
@@ -2266,7 +2272,7 @@ namespace zetscript{
 			}else { // normal var
 
 				if(localVarSymbolExists(node_var->symbol_value, _node->idxAstNode)){
-					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"Variable \"%s\" already defined !",_node->symbol_value.c_str());
+					writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Variable \"%s\" already defined !",_node->symbol_value.c_str());
 					return false;
 				}
 
@@ -2343,7 +2349,7 @@ namespace zetscript{
 
 
 				if(functionSymbolExists(_node->symbol_value, _node->idxAstNode)){
-					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_node->idxAstNode),"Function \"%s\" already defined !",_node->symbol_value.c_str());
+					writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Function \"%s\" already defined !",_node->symbol_value.c_str());
 						return false;
 				}
 

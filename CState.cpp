@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "zs_core.h"
+#include "CZetScript.h"
 
 
 namespace zetscript{
@@ -41,7 +41,7 @@ namespace zetscript{
 			}
 
 			// init custom registers...
-			CJSON::registerScript();
+
 
 			// push undefined file by default ...
 			tInfoParsedSource ps;

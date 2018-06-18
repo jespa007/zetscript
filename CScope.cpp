@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "../CZetScript.h"
+#include "CZetScript.h"
 
 #define MAX_STATMENT_LENGTH 2096
 #define MAX_VAR_LENGTH 100
@@ -24,6 +24,13 @@
 
 
 namespace zetscript{
+
+
+void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+int getErrorLine();
+const char * getErrorDescription();
+const char * getErrorFilename();
+
 
 	vector<CScope *> 						* CScope::vec_scope_node=NULL;
 	int n_anonymouse_func=0;
@@ -198,9 +205,9 @@ namespace zetscript{
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode)," error var \"%s\" already registered at line %i!", var_name.c_str(),AST_LINE(p_irv->idxAstNode));
+				writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode)," error var \"%s\" already registered at line %i!", var_name.c_str(),AST_LINE(p_irv->idxAstNode));
 			}else{
-				ZS_WRITE_ERROR_MSG(NULL,0," error var \"%s\" already registered as C++!", var_name.c_str());
+				writeErrorMsg(NULL,0," error var \"%s\" already registered as C++!", var_name.c_str());
 			}
 		}
 		return NULL;//false;//-1;

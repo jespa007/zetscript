@@ -22,7 +22,7 @@
 
 
 #include "CNativeFunction.h"
-#include "RegisterFunctionHelper.h"
+#include "helper/RegisterFunctionHelper.h"
 
 
 #define register_C_Function(text,s) zetscript::CScriptClass::register_C_FunctionInt(text,s)

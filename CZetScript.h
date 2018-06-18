@@ -96,12 +96,13 @@ using std::ostringstream;
 
 //#include "CSharedPointerManager.h"
 #include "Common.h"
+#include "zetscript_exception.h"
 #include "zetscript_utils.h"
-#include "CScriptVariable.h"
-#include "CStringScriptVariable.h"
-#include "CVectorScriptVariable.h"
-#include "CFunctorScriptVariable.h"
-#include "CStructScriptVariable.h"
+#include "var/CScriptVariable.h"
+#include "var/CStringScriptVariable.h"
+#include "var/CVectorScriptVariable.h"
+#include "var/CFunctorScriptVariable.h"
+#include "var/CStructScriptVariable.h"
 #include "CASTNode.h"
 #include "CScope.h"
 #include "CCompiler.h"
@@ -154,7 +155,7 @@ namespace zetscript{
 
 		bool isFilenameAlreadyParsed(const char *filename);
 
-		bool parse_ast(const char *str, int idx_filename=-1);
+		void parse_ast(const char *str, int idx_filename=-1);
 
 
 
@@ -235,5 +236,5 @@ namespace zetscript{
 
 }
 
-#include "CppBindingHelper.h"
+#include "helper/CppBindingHelper.h"
 

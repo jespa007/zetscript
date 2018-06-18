@@ -2,9 +2,15 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "../../CZetScript.h"
+#include "../CZetScript.h"
 
 namespace zetscript{
+
+	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+	int getErrorLine();
+	const char * getErrorDescription();
+	const char * getErrorFilename();
+
 
 	CStructScriptVariable::CStructScriptVariable(){//CScriptClass *info_registered_class):CScriptVariable(info_registered_class, this){
 		init(CScriptClass::getRegisteredClassStruct(), (void *)this);
@@ -45,7 +51,7 @@ namespace zetscript{
 		if(CScriptVariable::initSharedPtr(is_assigned)){
 
 			for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"struct symbol.size() > 0. internal error!");
+				writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"struct symbol.size() > 0. internal error!");
 				return false;
 			}
 			return true;

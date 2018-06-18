@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "../../CZetScript.h"
+#include "CZetScript.h"
 
 #define RETURN_ERROR\
 	error=true;\
@@ -13,6 +13,12 @@
 #define METAMETHOD_1_ARGS 1
 
 namespace zetscript{
+
+	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+	int getErrorLine();
+	const char * getErrorDescription();
+	const char * getErrorFilename();
+
 //CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
 //vector<CVirtualMachine::CVirtualMachine> CVirtualMachine::ALE;
 // static: only defined in this module...
@@ -23,7 +29,7 @@ namespace zetscript{
 	string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
 		   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
 	\
-	ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+	writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 			var_type1.c_str(),\
 			c,\
 			var_type2.c_str());\
@@ -32,7 +38,7 @@ namespace zetscript{
 	#define PRINT_ERROR_OP(c)\
 		string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1);\
 	\
-	ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+	writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 		c,\
 		var_type1.c_str());\
 		RETURN_ERROR;
@@ -157,7 +163,7 @@ namespace zetscript{
 	}
 
 	#define PUSH_STRING(init_value)\
-		if(ptrCurrentStr==ptrLastStr){ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Error stkString out-stack");RETURN_ERROR;}\
+		if(ptrCurrentStr==ptrLastStr){writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Error stkString out-stack");RETURN_ERROR;}\
 		*ptrCurrentStr++=init_value;\
 		*ptrCurrentOp++={STK_PROPERTY_TYPE_STRING,(void *)((ptrCurrentStr-1)->c_str()),NULL};\
 
@@ -289,7 +295,7 @@ namespace zetscript{
 				(*((float *)(ref)))__OPERATOR__;\
 				break;\
 		default:\
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode)," Cannot perform pre/post operator (%s)",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrOp));\
+			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode)," Cannot perform pre/post operator (%s)",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrOp));\
 			RETURN_ERROR;\
 			break;\
 		}\
@@ -311,7 +317,7 @@ namespace zetscript{
 				if(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) != GET_INS_PROPERTY_VAR_TYPE(dst_ins->properties)\
 				){\
 					PASTNode ast=vec_ast_node[instruction->idxAstNode];\
-					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",ast->symbol_value.c_str());\
+					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",ast->symbol_value.c_str());\
 					RETURN_ERROR;\
 				}else{\
 					if(\
@@ -369,7 +375,7 @@ namespace zetscript{
 			dst_ins->varRef=script_var;\
 			sharePointer(script_var->ptr_shared_pointer_node);\
 		}else{\
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"(internal) cannot determine var type %i",GET_INS_PROPERTY_VAR_TYPE(src_ins->properties));\
+			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"(internal) cannot determine var type %i",GET_INS_PROPERTY_VAR_TYPE(src_ins->properties));\
 			RETURN_ERROR;\
 		}\
 		if(copy_aux!=NULL)dst_ins->properties|=STK_PROPERTY_IS_C_VAR;\
@@ -407,7 +413,7 @@ namespace zetscript{
 	}
 
 	#define PUSH_SCOPE(_index,_ptr_info_function, _ptr_local_var) {\
-		if(current_scope_info_ptr >=  MAX_SCOPE_INFO){ZS_WRITE_ERROR_MSG(NULL,0,"reached max scope"); RETURN_ERROR;}\
+		if(current_scope_info_ptr >=  MAX_SCOPE_INFO){writeErrorMsg(NULL,0,"reached max scope"); RETURN_ERROR;}\
 		*current_scope_info_ptr++={(short)(_index),_ptr_info_function,_ptr_local_var};\
 	}
 
@@ -650,7 +656,7 @@ if(aux_function_info == NULL){\
 					PRINT_ERROR_OP(metamethod_str);\
 				}\
 			}else{\
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\".\n\n",\
+			writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\".\n\n",\
 					is_constructor ? "constructor":"function",\
 					calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",\
 					AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),\
@@ -660,14 +666,14 @@ if(aux_function_info == NULL){\
 		}\
 		else{\
 			if(metamethod_str!=NULL){\
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s", \
+				writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s", \
 												metamethod_str, \
 												calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",\
 												vec_script_function_object_node[vec_global_functions->at(0)]->object_info.symbol_info.symbol_name.c_str(),\
 												args_str.c_str(),\
 												str_candidates.c_str()); \
 			}else{\
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match %s \"%s%s(%s)\" .\n\n%s",\
+				writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match %s \"%s%s(%s)\" .\n\n%s",\
 						is_constructor ? "constructor":"function",\
 						calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",\
 						AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),\
@@ -719,13 +725,13 @@ if(aux_function_info == NULL){\
 						var_type2="";\
 				\
 				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/\
-					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							STR(__OVERR_OP),\
 							var_type1.c_str()\
 							);\
 				}else{ /* 2 args*/ \
 					var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
-					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							var_type1.c_str(),\
 							STR(__OVERR_OP__),\
 							var_type2.c_str());\
@@ -871,7 +877,7 @@ if(aux_function_info == NULL){\
 		if(pos < VM_LOCAL_VAR_MAX_STACK){
 			stack[pos]=stk;
 		}else{
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Attempt to assign stack element over limit (%i)",pos);
+			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Attempt to assign stack element over limit (%i)",pos);
 		}
 
 	}
@@ -970,7 +976,7 @@ if(aux_function_info == NULL){\
 		bool move_to_shared_list=*n_shares==0;
 
 		if(*n_shares >= MAX_SHARES_VARIABLE){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
+			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
 			exit(EXIT_FAILURE);
 		}
 
@@ -1057,29 +1063,29 @@ if(aux_function_info == NULL){\
 		//float aux_float=0;
 
 		if(n_args>MAX_N_ARGS){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
 			RETURN_ERROR;
 		}
 
 
 		if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) {
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function is not registered as C");
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function is not registered as C");
 			RETURN_ERROR;
 		}
 
 		if(fun_ptr==0){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Null function");
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Null function");
 			//return &callc_result;//CScriptVariable::UndefinedSymbol;
 			RETURN_ERROR;
 		}
 
 		if((char)irfs->m_arg.size() != n_args){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"C argument VS scrip argument doestn't match sizes");
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"C argument VS scrip argument doestn't match sizes");
 			RETURN_ERROR;
 		}
 
 		if(irfs->m_arg.size() > MAX_N_ARGS){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_N_ARGS);
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_N_ARGS);
 			RETURN_ERROR;
 			//return &callc_result;//CScriptVariable::UndefinedSymbol;
 		}
@@ -1090,7 +1096,7 @@ if(aux_function_info == NULL){\
 			currentArg=&ptrArg[i];
 
 			if(!stk2var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
+				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
 																irfs->object_info.symbol_info.symbol_name.c_str(),
 																i,
 																error_str.c_str(),
@@ -1338,7 +1344,7 @@ if(aux_function_info == NULL){\
 
 	void CVirtualMachine::setError(const char *str){
 
-		ZS_WRITE_ERROR_MSG("custom_user",-1,str);
+		writeErrorMsg("custom_user",-1,str);
 
 		custom_error = str;
 		cancel_execution = true;
@@ -1486,7 +1492,7 @@ if(aux_function_info == NULL){\
 		int idxBaseStk=(ptrStartOp-stack);//>>sizeof(tStackElement *);
 
 		if(idxBaseStk<n_args){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Internal error (idxBaseStk<n_args) (%i<%i)",idxBaseStk,n_args);
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Internal error (idxBaseStk<n_args) (%i<%i)",idxBaseStk,n_args);
 			exit(EXIT_FAILURE);
 		}
 
@@ -1509,7 +1515,7 @@ if(aux_function_info == NULL){\
 			idxCurrentStack++;
 		}
 		else{
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Reached max stack");
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Reached max stack");
 			exit(EXIT_FAILURE);
 		}
 
@@ -1530,7 +1536,7 @@ if(aux_function_info == NULL){\
 				idxCurrentStack--;
 			}
 			else{
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Reached min stack");
+				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Reached min stack");
 				RETURN_ERROR;
 			}
 
@@ -1567,7 +1573,7 @@ if(aux_function_info == NULL){\
 		unsigned n_total_vars=n_args+size_local_var;
 
 		if((idxBaseStk+n_total_vars) >=  VM_LOCAL_VAR_MAX_STACK){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"Error MAXIMUM stack size reached");
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Error MAXIMUM stack size reached");
 			exit(EXIT_FAILURE);
 		}
 
@@ -1656,7 +1662,7 @@ if(aux_function_info == NULL){\
 
 				switch(operator_type){
 				default:
-					ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
 					RETURN_ERROR;
 				case END_STATMENT:
 					goto lbl_exit_statment;
@@ -1684,26 +1690,26 @@ if(aux_function_info == NULL){\
 
 										// check indexes ...
 										if(v_index < 0){
-											ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Negative index vector (%i)!",v_index);
+											writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Negative index vector (%i)!",v_index);
 											RETURN_ERROR;
 										}
 
 										if(v_index >= (int)(vec->m_objVector.size())){
-											ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Index vector out of bounds (%i)!",v_index);
+											writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Index vector out of bounds (%i)!",v_index);
 											RETURN_ERROR;
 										}
 
 										ldrVar = &vec->m_objVector[v_index];;
 										ok = true;
 									}else{
-										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector-index as integer");
+										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector-index as integer");
 										RETURN_ERROR;
 									}
 								}
 							}
 
 							if(!ok){
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Variable \"%s\" is not type vector",
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Variable \"%s\" is not type vector",
 									AST_SYMBOL_VALUE_CONST_CHAR((*current_statment)[instruction->index_op1].idxAstNode)
 								);
 								RETURN_ERROR;
@@ -1731,7 +1737,7 @@ if(aux_function_info == NULL){\
 									if((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR)!= STK_PROPERTY_TYPE_SCRIPTVAR)
 									{
 
-										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var is not scriptvariable");
+										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var is not scriptvariable");
 										RETURN_ERROR;
 									}
 
@@ -1748,7 +1754,7 @@ if(aux_function_info == NULL){\
 									if(base_var == NULL)
 									{
 
-										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var is not scriptvariable");
+										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var is not scriptvariable");
 										RETURN_ERROR;
 									}
 
@@ -1762,13 +1768,13 @@ if(aux_function_info == NULL){\
 											parent_symbol=aa->symbol_value;
 										}
 
-										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"Variable \"%s\" as type \"%s\" has not symbol \"%s\"",parent_symbol.c_str(),base_var->getClassName().c_str(), ast->symbol_value.c_str());
+										writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"Variable \"%s\" as type \"%s\" has not symbol \"%s\"",parent_symbol.c_str(),base_var->getClassName().c_str(), ast->symbol_value.c_str());
 										RETURN_ERROR;
 									}
 								}
 								else{ // this scope ...
 									if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
-										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"cannot find symbol \"this.%s\"",ast->symbol_value.c_str());
+										writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"cannot find symbol \"this.%s\"",ast->symbol_value.c_str());
 										RETURN_ERROR;
 									}
 								}
@@ -1835,7 +1841,7 @@ if(aux_function_info == NULL){\
 									ptrCurrentOp++;
 									break;
 								default:
-									ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - because is not number");
+									writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - because is not number");
 									RETURN_ERROR;
 								}
 								continue;
@@ -1893,7 +1899,7 @@ if(aux_function_info == NULL){\
 									COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
 									break;
 								default:
-									ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - constant because is not numeric");
+									writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - constant because is not numeric");
 									RETURN_ERROR;
 								}
 								break;
@@ -1938,12 +1944,12 @@ if(aux_function_info == NULL){\
 							else{
 								CASTNode *ast_previous=vec_ast_node[(instruction-1)->idxAstNode];
 								CASTNode *ast=vec_ast_node[(int)instruction->idxAstNode];
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ast->idxAstNode),"Cannot access symbol \"%s\" (type of %s is %s)",ast->symbol_value.c_str(),ast_previous->symbol_value.c_str(),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
+								writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"Cannot access symbol \"%s\" (type of %s is %s)",ast->symbol_value.c_str(),ast_previous->symbol_value.c_str(),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
 								RETURN_ERROR;
 							}
 						}else if(scope_type ==INS_PROPERTY_THIS_SCOPE){
 							if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"this.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"this.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
 								RETURN_ERROR;
 							}
 
@@ -1951,7 +1957,7 @@ if(aux_function_info == NULL){\
 
 						}else if(scope_type == INS_PROPERTY_SUPER_SCOPE){ // super scope ?
 							if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"super.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"super.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
 								RETURN_ERROR;
 							}
 							function_obj =(CScriptFunctionObject *)si->object.stkValue;
@@ -1971,7 +1977,7 @@ if(aux_function_info == NULL){\
 								function_obj = vec_script_function_object_node[(*vec_functions)[index_op2]];
 							}
 							else{
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find symbol global \"%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find symbol global \"%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
 								RETURN_ERROR;
 							}
 						}
@@ -1990,7 +1996,7 @@ if(aux_function_info == NULL){\
 					}
 					else{
 
-						ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"runtime error. Try to restart");
+						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"runtime error. Try to restart");
 						RETURN_ERROR;
 
 					}
@@ -2018,7 +2024,7 @@ if(aux_function_info == NULL){\
 							}
 
 							if(!ok){
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector object");
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector object");
 								RETURN_ERROR;
 							}
 
@@ -2051,15 +2057,15 @@ if(aux_function_info == NULL){\
 										ok=true;
 									}
 									else{
-										ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"internal error (operator2 is not string)");
+										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"internal error (operator2 is not string)");
 										RETURN_ERROR;
 									}
 								}else{
-									ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected struct object");
+									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected struct object");
 									RETURN_ERROR;
 								}
 							}else{
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected scriptvar");
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected scriptvar");
 								RETURN_ERROR;
 							}
 							push_value=false;
@@ -2071,7 +2077,7 @@ if(aux_function_info == NULL){\
 							if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
 								dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
 							}else{
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected object l-value mov");
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected object l-value mov");
 								RETURN_ERROR;
 							}
 
@@ -2196,7 +2202,7 @@ if(aux_function_info == NULL){\
 						PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
 					}else{
 						APPLY_METAMETHOD(!,NOT_METAMETHOD);
-							//ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
+							//writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
 							RETURN_ERROR;
 					}
 					continue;
@@ -2247,7 +2253,7 @@ if(aux_function_info == NULL){\
 						if (IS_STRING(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 							sprintf(str_aux,"%s%i",((const char *)ptrResultInstructionOp1->stkValue),(int)((intptr_t)ptrResultInstructionOp2->stkValue));
 							//PUSH_STRING(str_aux);
-							if(ptrCurrentStr==ptrLastStr){ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Error stkString out-stack");RETURN_ERROR;}\
+							if(ptrCurrentStr==ptrLastStr){writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Error stkString out-stack");RETURN_ERROR;}\
 									*ptrCurrentStr++=str_aux;\
 									*ptrCurrentOp++={STK_PROPERTY_TYPE_STRING,(void *)((ptrCurrentStr-1)->c_str()),NULL};\
 
@@ -2530,7 +2536,7 @@ if(aux_function_info == NULL){\
 					if(aux_function_info !=NULL)
 					{
 						if(n_args > MAX_N_ARGS){
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max arguments reached function at line XXX");
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max arguments reached function at line XXX");
 							RETURN_ERROR;
 						}
 
@@ -2566,7 +2572,7 @@ if(aux_function_info == NULL){\
 
 						if(cancel_execution) {
 							if(custom_error!=NULL){
-								ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
 							}
 							RETURN_ERROR;
 						}
@@ -2619,7 +2625,7 @@ if(aux_function_info == NULL){\
 							}
 						}
 						else{
-							ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(instruction->idxAstNode),"delete op: expected scriptvar var but it was \"%s\"",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1));
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"delete op: expected scriptvar var but it was \"%s\"",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1));
 							RETURN_ERROR;
 						}
 						continue;

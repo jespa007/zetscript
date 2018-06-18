@@ -2,9 +2,16 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "../CZetScript.h"
 
 namespace zetscript{
+
+
+	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+	int getErrorLine();
+	const char * getErrorDescription();
+	const char * getErrorFilename();
+
 
 	tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates){
 		tSymbolInfo si;
@@ -17,7 +24,7 @@ namespace zetscript{
 
 		if(!ignore_duplicates){
 			if(getFunctionSymbol(symbol_value) != NULL){
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_idxAstNode), "symbol already exists!");
+				writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode), "symbol already exists!");
 				return NULL;
 			}
 		}
@@ -166,7 +173,7 @@ namespace zetscript{
 
 
 		if(getVariableSymbol(symbol_value) != NULL){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_idxAstNode),"symbol \"%s\" already exists!",symbol_value.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"symbol \"%s\" already exists!",symbol_value.c_str());
 			return NULL;
 		}
 
@@ -191,12 +198,12 @@ namespace zetscript{
 				}
 		}else{
 			error_symbol=true;
-			//ZS_WRITE_ERROR_MSG(CURRENT_PARSING_FILENAME,m_line," Symbol name cannot begin with %c", *aux_p);
+			//writeErrorMsg(CURRENT_PARSING_FILENAME,m_line," Symbol name cannot begin with %c", *aux_p);
 			//return NULL;
 		}
 
 		if(error_symbol){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(_idxAstNode),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			return NULL;
 		}
 
@@ -248,7 +255,7 @@ namespace zetscript{
 		tSymbolInfo *si;
 
 		if(idx >= m_variableSymbol.size()){
-			ZS_WRITE_ERROR_MSG(NULL,0,"idx out of bounds (%i>=%i)",idx,m_variableSymbol.size());
+			writeErrorMsg(NULL,0,"idx out of bounds (%i>=%i)",idx,m_variableSymbol.size());
 			return false;
 		}
 
@@ -293,13 +300,13 @@ namespace zetscript{
 				return removeVariableSymbolByIndex(i,true);
 			}
 		}
-		ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(idxAstNode),"symbol %s doesn't exist",varname.c_str());
+		writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol %s doesn't exist",varname.c_str());
 		return false;
 	}
 
 	tSymbolInfo * CScriptVariable::getVariableSymbolByIndex(unsigned idx){
 		if(idx >= m_variableSymbol.size()){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds (%i)",idx);
+			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
 		return &m_variableSymbol[idx];
@@ -368,7 +375,7 @@ namespace zetscript{
 				return true;
 			}
 
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX)," shared ptr alrady registered");
+			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX)," shared ptr alrady registered");
 			return false;
 		}
 
@@ -379,7 +386,7 @@ namespace zetscript{
 				return true;
 			}
 			else{
-				ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"shared ptr not registered");
+				writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"shared ptr not registered");
 			}
 
 			return false;
@@ -391,7 +398,7 @@ namespace zetscript{
 
 	tSymbolInfo *CScriptVariable::getFunctionSymbolByIndex(unsigned idx){
 		if(idx >= m_functionSymbol.size()){
-			ZS_WRITE_ERROR_MSG(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds");
+			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds");
 			return NULL;
 		}
 		return &m_functionSymbol[idx];
