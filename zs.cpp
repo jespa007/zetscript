@@ -34,15 +34,12 @@ int main(int argc, char * argv[]) {
 
 			exit = expression=="exit" || expression=="quit";
 			if(!exit){ // evaluate expression
-				if(zetscript->parse(expression)){
-					if(zetscript->compile()){
-						zetscript->execute();
-						//fprintf(stderr,"%s",CZetScript::getErrorMsg());
-					}else{
-						//fprintf(stderr,"%s",CZetScript::getErrorMsg());
-					}
-				}else{
-					//fprintf(stderr,"%s",CZetScript::getErrorMsg());
+				try{
+					zetscript->parse(expression);
+					zetscript->compile();
+					zetscript->execute();
+				}catch(script_error & ex){
+					fprintf(stderr,"%s\n",ex.what());
 				}
 			}
 

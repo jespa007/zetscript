@@ -10,7 +10,7 @@ namespace zetscript{
 
 
 	//---------------------------------------------------------------------------------------------------------
-	void  CZetScriptUtils::print_log(const  char  *file, int  line, int level, bool with_cr, const  char  *string_text, ...) {
+	void  CZetScriptUtils::print_log(const  char  *file, int  line, int level, bool with_cr, const  char  *input_text, ...) {
 		//FILE *log_std=stdout;
 
 		FILE *std_type = stdout;
@@ -33,8 +33,8 @@ namespace zetscript{
 
 
 		va_list  ap;
-		va_start(ap,  string_text);
-		vsprintf(text,  string_text,  ap);
+		va_start(ap,  input_text);
+		vsprintf(text,  input_text,  ap);
 		va_end(ap);
 
 

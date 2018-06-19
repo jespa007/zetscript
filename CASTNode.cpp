@@ -195,7 +195,7 @@ const char * getErrorFilename();
 
 
 		if(vec_ast_node->size() >= MAX_AST_NODES){
-			zs_print_error_cr("Max AST Nodes reached (%i)",MAX_AST_NODES);
+			THROW_EXCEPTION("Max AST Nodes reached ("+CZetScriptUtils::intToString(MAX_AST_NODES)+")");
 			return NULL;
 		}
 
@@ -215,7 +215,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			zs_print_error_cr("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return NULL;
 		}
 		 return vec_ast_node->at(idx);
@@ -227,7 +227,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			zs_print_error_cr("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return ZS_UNDEFINED_IDX;
 		}
 
@@ -240,7 +240,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			zs_print_error_cr("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return NULL;
 		}
 
@@ -251,7 +251,7 @@ const char * getErrorFilename();
 
 		PASTNode _node=AST_NODE(idxAstNode);
 
-		if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {zs_print_error_cr("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {THROW_EXCEPTION("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
 		for(unsigned i = 0; i < _node->children.size(); i++){
 			PASTNode child_node = AST_NODE(_node->children[i]);
 			if(child_node->node_type == NODE_TYPE::KEYWORD_NODE){
@@ -322,7 +322,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			zs_print_error_cr("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return -1;
 		}
 		return vec_ast_node->at(idx)->line_value;
@@ -334,7 +334,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			zs_print_error_cr(DEFAULT_NO_FILENAME);
+			THROW_EXCEPTION(string(DEFAULT_NO_FILENAME));
 			return "";
 		}
 
@@ -351,7 +351,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			zs_print_error_cr("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return "";
 		}
 		return vec_ast_node->at(idx)->symbol_value.c_str();
@@ -363,7 +363,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			zs_print_error_cr("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return NULL;
 		}
 
@@ -569,7 +569,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -591,7 +591,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -614,7 +614,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -641,7 +641,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -668,7 +668,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -689,7 +689,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -713,7 +713,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -734,7 +734,7 @@ const char * getErrorFilename();
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -755,7 +755,7 @@ const char * getErrorFilename();
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
@@ -831,7 +831,7 @@ const char * getErrorFilename();
 		for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				zs_print_error_cr("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -1232,7 +1232,7 @@ const char * getErrorFilename();
 				}
 				break;
 			case KEYWORD_TYPE::DELETE_KEYWORD:
-				zs_print_error_cr("internal error! delete bad ast processing!");
+				THROW_EXCEPTION("internal error! delete bad ast processing!");
 				return NULL;
 				/*if((aux = parseDelete(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 					return NULL;
@@ -1519,7 +1519,7 @@ const char * getErrorFilename();
 		}
 
 		if(type_group>=MAX_GROUPS) {
-			zs_print_error_cr("Internal:Cannot find ast tree operator");
+			THROW_EXCEPTION("Internal:Cannot find ast tree operator");
 			return NULL;
 		}
 
@@ -3469,7 +3469,7 @@ const char * getErrorFilename();
 							if(var_node != NULL){
 
 								if(children_node==NULL){
-									zs_print_error_cr("internal:children node == NULL");
+									THROW_EXCEPTION("internal:children node == NULL");
 									return NULL;
 								}
 
@@ -3684,8 +3684,6 @@ const char * getErrorFilename();
 					return aux_p;
 				}
 				error = true;
-			}else{
-				//zs_print_error_cr("%s has no parse function implemented yet!",defined_keyword[keyw->id].str);
 			}
 			// something wrong was happen..
 		}

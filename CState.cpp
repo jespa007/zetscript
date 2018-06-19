@@ -165,8 +165,8 @@ namespace zetscript{
 	int   CState::saveState(){
 
 		if(current_state == NULL){
-			zs_print_warning_cr("ZetScript was not inicialized");
-			return -1;
+			throw ("ZetScript was not inicialized");
+
 		}
 
 		// before save ...

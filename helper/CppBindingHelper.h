@@ -870,13 +870,13 @@ namespace zetscript{
 
 			// 2. check valid parameters ...
 			if((idx_return_type=CScriptClass::getIdxClassFromIts_C_Type(return_type)) == -1){
-				zs_print_error_cr("Return type \"%s\" for bind function not registered",demangle(return_type).c_str());
+				THROW_EXCEPTION("Return type \""+demangle(return_type)+"\" for bind function not registered");
 				return NULL;
 			}
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
 				if(CScriptClass::getIdxClassFromIts_C_Type(m_arg[i])==-1){
-					zs_print_error_cr("Argument (%i) type \"%s\" for bind function not registered",i,demangle(m_arg[i]).c_str());
+					THROW_EXCEPTION("Argument ("+CZetScriptUtils::intToString(i)+") type \""+demangle(m_arg[i])+"\" for bind function not registered");
 					return NULL;
 				}
 			}
@@ -913,21 +913,21 @@ namespace zetscript{
 						}else if(STRCMP(dst_convert_type, ==,typeid(int).name())){
 							v_out.push_back((intptr_t)sv.stkValue);
 						}else{
-							zs_print_error_cr("Error trying to cast element on vector<float>");
+							THROW_EXCEPTION("Error trying to cast element on vector<float>");
 							return v_out;
 						}
 						break;
 					case STK_PROPERTY_TYPE_BOOLEAN:
 					case STK_PROPERTY_TYPE_STRING:
 					case STK_PROPERTY_TYPE_FUNCTION:
-						zs_print_error_cr("type not implemented to cast. Sorry.");
+						THROW_EXCEPTION("type not implemented to cast. Sorry.");
 						return v_out;
 						break;
 					case STK_PROPERTY_TYPE_INTEGER:
 						if(STRCMP(dst_convert_type, ==,typeid(int).name()) || STRCMP(dst_convert_type, ==,typeid(float).name())){// typeid(int).name()) || ){
 							v_out.push_back((intptr_t)sv.stkValue);
 						}else{
-							zs_print_error_cr("Error trying to cast element on vector<int>");
+							THROW_EXCEPTION("Error trying to cast element on vector<int>");
 							return v_out;
 						}
 						break;

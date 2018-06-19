@@ -9,11 +9,13 @@ namespace zetscript {
 
 
 #ifdef __EMSCRIPTEN__
-#define THROW_RUNTIME_ERROR cerr <<
-#define THROW_SCRIPT_ERROR cerr <<
+#define THROW_ERROR 			cerr <<
+#define THROW_RUNTIME_ERROR 	cerr <<
+#define THROW_SCRIPT_ERROR 		cerr <<
 #else
+#define THROW_EXCEPTION		throw
 #define THROW_RUNTIME_ERROR std::runtime_error
-#define THROW_SCRIPT_ERROR throw_script_error
+#define THROW_SCRIPT_ERROR 	throw_script_error
 #endif
 
 class script_exception: public std::exception

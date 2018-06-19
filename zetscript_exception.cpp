@@ -19,6 +19,7 @@ namespace zetscript {
 			line=_line;
 			error_description=_error_description;
 
+
 			sprintf(what_msg,"[%s %s:%i] %s",error_type,_file, _line, (char *)error_description.c_str());
 		}
 
@@ -36,7 +37,7 @@ namespace zetscript {
 
 
 
-	void throw_error(){
+	void throw_script_error(){
 		throw script_error(getErrorFilename(),getErrorLine(),getErrorDescription());
 	}
 

@@ -5,15 +5,48 @@ namespace zetscript{
 	// define prototype ...
 	int error_line;
 	char error_filename[512];
-	char error_description[512];
+	char error_description[1024];
 	const char *error_type="NA";
-	bool assigned_error=false;
 
 
-	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-	int getErrorLine();
-	const char * getErrorDescription();
-	const char * getErrorFilename();
+
+	void  writeErrorMsg(const char *filename, int line, const  char  *input_text, ...){
+
+		char output_text[4096];
+
+		va_list  ap;
+		va_start(ap,  input_text);
+		vsprintf(output_text,  input_text,  ap);
+		va_end(ap);
+
+
+		memset(error_filename,0,sizeof(error_filename));
+
+#ifdef __DEBUG__
+		fprintf(stderr,"[ERR %s:%i] %s",filename,line,output_text);
+#endif
+
+		if(filename){
+			strcpy(error_filename,filename);
+		}
+
+		error_line=line;
+		strcpy(error_description,output_text);
+
+
+	}
+
+	int getErrorLine(){
+		return error_line;
+	}
+
+	const char * getErrorDescription(){
+		return error_description;
+	}
+
+	const char * getErrorFilename(){
+
+	}
 
 	CZetScript * CZetScript::m_instance = NULL;
 	//char CZetScript::str_error[MAX_BUFFER_STR_ERROR] = { 0 };
