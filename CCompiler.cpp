@@ -12,10 +12,8 @@
 
 namespace zetscript{
 
-void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-int getErrorLine();
-const char * getErrorDescription();
-const char * getErrorFilename();
+	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+
 
 
 
@@ -42,7 +40,7 @@ const char * getErrorFilename();
 			*info_ptr={properties,obj,NULL};
 			(*constant_pool)[const_name]=info_ptr;
 		}else{
-			THROW_EXCEPTION("internal:constant %s already exist",const_name.c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("internal:constant %s already exist",const_name.c_str()));
 		}
 
 		return info_ptr;
@@ -55,9 +53,10 @@ const char * getErrorFilename();
 
 		if((idxVar=getIdxLocalVarSymbol(var_name,idxAstNode,false))==ZS_UNDEFINED_IDX){
 			tInfoVariableSymbol info_symbol;
+			PASTNode ast = AST_NODE(idxAstNode);
 
 			info_symbol.idxAstNode = idxAstNode;
-			info_symbol.symbol_name = var_name;
+			info_symbol.symbol_ref = CScope::makeSymbolVarRef(var_name,ast->idxScope);
 			int n_element=this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size();
 
 
@@ -72,7 +71,10 @@ const char * getErrorFilename();
 
 			return n_element;//this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size()-1;
 		} // else already added so we refer the same var.
-		return idxVar;
+
+		writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol \"%s\" already defined. (link issue)",var_name.c_str());
+		return ZS_UNDEFINED_IDX;
+		//THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Error symbol %s already defined",var_name.c_str()));
 	}
 
 	bool CCompiler::localVarSymbolExists(const string & name,short  idxAstNode){
@@ -86,7 +88,7 @@ const char * getErrorFilename();
 		string  var_name = AST_NODE(idxAstNode)->symbol_value;
 
 		for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size(); i++){
-			if(this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable[i].symbol_name == var_name ){
+			if(this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable[i].symbol_ref == var_name ){
 				return i;
 			}
 		}
@@ -118,7 +120,7 @@ const char * getErrorFilename();
 
 				info_symbol->object_info.symbol_info.idxAstNode = irv->idxAstNode;
 				//info_symbol.object_info.symbol_info.idxScopeVar = irv->idxScopeVar;
-				info_symbol->object_info.symbol_info.symbol_name = name;
+				info_symbol->object_info.symbol_info.symbol_ref = CScope::makeSymbolFunctionRef(name,ast_node->idxScope,n_params);
 
 				this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction.push_back(info_symbol->object_info.idxScriptFunctionObject);
 
@@ -161,7 +163,7 @@ const char * getErrorFilename();
 			if((ast != NULL) && (AST_NODE(idxAstNode)->idxScope == ast->idxScope)){
 				for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction[i]);
-					if(sfo->object_info.symbol_info.symbol_name == name  && sfo->m_arg.size()==n_args){
+					if(sfo->object_info.symbol_info.symbol_ref == name  && sfo->m_arg.size()==n_args){
 						return i;
 					}
 				}
@@ -174,7 +176,7 @@ const char * getErrorFilename();
 
 				for(unsigned i = 0; i < main_function->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(main_function->object_info.local_symbols.vec_idx_registeredFunction[i]);
-					if(sfo->object_info.symbol_info.symbol_name == name  && sfo->m_arg.size()==n_args ){
+					if(sfo->object_info.symbol_info.symbol_ref == name  && sfo->m_arg.size()==n_args ){
 						return i;
 					}
 				}
@@ -321,7 +323,7 @@ const char * getErrorFilename();
 		PASTNode node = AST_NODE(idxAstNode);
 
 		if(node==NULL){
-			THROW_EXCEPTION("Node is NULL!");
+			THROW_RUNTIME_ERROR("Node is NULL!");
 			return false;
 		}
 
@@ -623,7 +625,7 @@ const char * getErrorFilename();
 										}
 									}
 									else{
-										THROW_EXCEPTION("scope null");
+										THROW_RUNTIME_ERROR("scope null");
 										return false;
 									}
 								}
@@ -855,7 +857,7 @@ const char * getErrorFilename();
 
 	bool CCompiler::insertPushScopeInstruction(short idxAstNode,int scope_idx){
 		if(scope_idx==ZS_UNDEFINED_IDX){
-			THROW_EXCEPTION("Internal error undefined scope!");
+			THROW_RUNTIME_ERROR("Internal error undefined scope!");
 			return false;
 		}
 
@@ -925,7 +927,7 @@ const char * getErrorFilename();
 
 		switch(op){
 		default:
-			THROW_EXCEPTION(string(CASTNode::defined_operator_punctuator[op].str)+" Not implemented" );
+			THROW_RUNTIME_ERROR(string(CASTNode::defined_operator_punctuator[op].str)+" Not implemented" );
 			break;
 		case SUB_PUNCTUATOR:
 			return ASM_OPERATOR::NEG;
@@ -1112,7 +1114,7 @@ const char * getErrorFilename();
 
 
 			}else {
-				THROW_EXCEPTION("internal error.Calling object should have at least 1 children");
+				THROW_RUNTIME_ERROR("internal error.Calling object should have at least 1 children");
 				return ZS_UNDEFINED_IDX;
 			}
 		}
@@ -1123,7 +1125,7 @@ const char * getErrorFilename();
 			return gacExpression_FunctionAccess(_node_access->idxAstNode, _lc);
 		}
 
-		THROW_EXCEPTION("internal error. Expected function or array access");
+		THROW_RUNTIME_ERROR("internal error. Expected function or array access");
 		return ZS_UNDEFINED_IDX;
 	}
 
@@ -1131,9 +1133,9 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return ZS_UNDEFINED_IDX;}
-		if(_node->node_type != CALLING_OBJECT_NODE ){THROW_EXCEPTION("node is not CALLING_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
-		if(!(_node->children.size()==2 || _node->children.size()==3)) {THROW_EXCEPTION("Array access should have 2 children");return ZS_UNDEFINED_IDX;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type != CALLING_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not CALLING_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
+		if(!(_node->children.size()==2 || _node->children.size()==3)) {THROW_RUNTIME_ERROR("Array access should have 2 children");return ZS_UNDEFINED_IDX;}
 
 
 		PASTNode node_0=AST_NODE(_node->children[0]),
@@ -1144,8 +1146,8 @@ const char * getErrorFilename();
 			node_2 = AST_NODE(_node->children[2]);
 		}
 
-		if(node_0->node_type != ARRAY_REF_NODE && node_0->node_type != ARRAY_OBJECT_NODE ){THROW_EXCEPTION("Node is not ARRAY_OBJECT type"); return ZS_UNDEFINED_IDX;}
-		if(node_1->node_type != ARRAY_ACCESS_NODE || node_1->children.size() == 0){THROW_EXCEPTION("Array has no index nodes "); return ZS_UNDEFINED_IDX;}
+		if(node_0->node_type != ARRAY_REF_NODE && node_0->node_type != ARRAY_OBJECT_NODE ){THROW_RUNTIME_ERROR("Node is not ARRAY_OBJECT type"); return ZS_UNDEFINED_IDX;}
+		if(node_1->node_type != ARRAY_ACCESS_NODE || node_1->children.size() == 0){THROW_RUNTIME_ERROR("Array has no index nodes "); return ZS_UNDEFINED_IDX;}
 
 		int vec=0;
 
@@ -1177,11 +1179,11 @@ const char * getErrorFilename();
 					vec = getCurrentInstructionIndex();
 
 				}else{
-					THROW_EXCEPTION("Expected 1 children");
+					THROW_RUNTIME_ERROR("Expected 1 children");
 					return ZS_UNDEFINED_IDX;
 				}
 			}else{
-				THROW_EXCEPTION("Node not ARRAY_INDEX_NODE");
+				THROW_RUNTIME_ERROR("Node not ARRAY_INDEX_NODE");
 				return ZS_UNDEFINED_IDX;
 			}
 		}
@@ -1209,8 +1211,8 @@ const char * getErrorFilename();
 
 		PASTNode _node=AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != ARRAY_OBJECT_NODE ){THROW_EXCEPTION("node is not ARRAY_OBJECT_NODE type or null");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != ARRAY_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not ARRAY_OBJECT_NODE type or null");return false;}
 		//int r=0;
 
 		// 1. create object ...
@@ -1239,9 +1241,9 @@ const char * getErrorFilename();
 
 		PASTNode _node=AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != FUNCTION_OBJECT_NODE ){THROW_EXCEPTION("node is not FUNCTION_OBJECT_NODE type or null");return false;}
-		if(_node->children.size()!=2) {THROW_EXCEPTION("Array access should have 2 children");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != FUNCTION_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not FUNCTION_OBJECT_NODE type or null");return false;}
+		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("Array access should have 2 children");return false;}
 
 		CScriptFunctionObject * script_function=NULL;
 
@@ -1267,9 +1269,9 @@ const char * getErrorFilename();
 
 		PASTNode _node=AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return ZS_UNDEFINED_IDX;}
-		if(_node->node_type != CALLING_OBJECT_NODE ){THROW_EXCEPTION("node is not CALLING_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
-		if(!(_node->children.size()==2 || _node->children.size()==3)) {THROW_EXCEPTION("Array access should have 2 or 3 children");return ZS_UNDEFINED_IDX;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type != CALLING_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not CALLING_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
+		if(!(_node->children.size()==2 || _node->children.size()==3)) {THROW_RUNTIME_ERROR("Array access should have 2 or 3 children");return ZS_UNDEFINED_IDX;}
 
 		PASTNode node_0=AST_NODE(_node->children[0]),
 				 node_1=AST_NODE(_node->children[1]),
@@ -1279,8 +1281,8 @@ const char * getErrorFilename();
 			node_2 = AST_NODE(_node->children[2]);
 		}
 
-		if(node_0->node_type != FUNCTION_REF_NODE && node_0->node_type != FUNCTION_OBJECT_NODE){THROW_EXCEPTION("Node is not FUNCTION_OBJECT_NODE type"); return ZS_UNDEFINED_IDX;}
-		if(node_1->node_type != ARGS_PASS_NODE){THROW_EXCEPTION("Function has no index nodes "); return ZS_UNDEFINED_IDX;}
+		if(node_0->node_type != FUNCTION_REF_NODE && node_0->node_type != FUNCTION_OBJECT_NODE){THROW_RUNTIME_ERROR("Node is not FUNCTION_OBJECT_NODE type"); return ZS_UNDEFINED_IDX;}
+		if(node_1->node_type != ARGS_PASS_NODE){THROW_RUNTIME_ERROR("Function has no index nodes "); return ZS_UNDEFINED_IDX;}
 
 		// load function ...
 		if(node_0->symbol_value != "--"){ // starts with symbol ...
@@ -1319,8 +1321,8 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return ZS_UNDEFINED_IDX;}
-		if(_node->node_type != EXPRESSION_NODE ){THROW_EXCEPTION("node is not EXPRESSION_NODE type or null");return ZS_UNDEFINED_IDX;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type != EXPRESSION_NODE ){THROW_RUNTIME_ERROR("node is not EXPRESSION_NODE type or null");return ZS_UNDEFINED_IDX;}
 
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
@@ -1352,8 +1354,8 @@ const char * getErrorFilename();
 
 		PASTNode _node=AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return ZS_UNDEFINED_IDX;}
-		if(_node->node_type != STRUCT_NODE ){THROW_EXCEPTION("node is not STRUCT_NODE type or null");return ZS_UNDEFINED_IDX;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type != STRUCT_NODE ){THROW_RUNTIME_ERROR("node is not STRUCT_NODE type or null");return ZS_UNDEFINED_IDX;}
 
 		insert_DeclStruct_Instruction(_node->idxAstNode);
 		int ref_obj = getCurrentInstructionIndex();
@@ -1418,7 +1420,7 @@ const char * getErrorFilename();
 
 
 				}else {
-					THROW_EXCEPTION("Calling object should have at least 1 children");
+					THROW_RUNTIME_ERROR("Calling object should have at least 1 children");
 					return ZS_UNDEFINED_IDX;
 				}
 			}
@@ -1465,7 +1467,7 @@ const char * getErrorFilename();
 							//r=CCompiler::getCurrentInstructionIndex();
 							break;
 						default:
-							THROW_EXCEPTION("Unexpected node type "+CZetScriptUtils::intToString(eval_node_sp->node_type));
+							THROW_RUNTIME_ERROR("Unexpected node type "+CZetScriptUtils::intToString(eval_node_sp->node_type));
 							return ZS_UNDEFINED_IDX;
 							break;
 						}
@@ -1545,7 +1547,7 @@ const char * getErrorFilename();
 						return ZS_UNDEFINED_IDX;
 					}
 				}else{ // ERROR
-					THROW_EXCEPTION("ERROR both ops ==0!");
+					THROW_RUNTIME_ERROR("ERROR both ops ==0!");
 					return ZS_UNDEFINED_IDX;
 				}
 			}
@@ -1580,12 +1582,12 @@ const char * getErrorFilename();
 
 	bool CCompiler::registerVariableClassSymbol(short idx_var_node, const string & class_name,CScriptClass * current_class){
 		tInfoVariableSymbol *irs_dest=NULL;
-		string current_class_name = current_class->metadata_info.object_info.symbol_info.symbol_name;
+		string current_class_name = current_class->metadata_info.object_info.symbol_info.symbol_ref;
 		PASTNode var_node = AST_NODE(idx_var_node);
 		string symbol_value = var_node->symbol_value;
 
 		if(symbol_value==""){
-			THROW_EXCEPTION("symbol name is null");
+			THROW_RUNTIME_ERROR("symbol name is null");
 			return false;
 		}
 
@@ -1618,7 +1620,7 @@ const char * getErrorFilename();
 
 	bool CCompiler::registerFunctionClassSymbol(short idx_node_fun, const string & class_name,CScriptClass * current_class ){
 			CScriptFunctionObject *irfs;
-			string current_class_name = current_class->metadata_info.object_info.symbol_info.symbol_name;
+			string current_class_name = current_class->metadata_info.object_info.symbol_info.symbol_ref;
 			PASTNode node_class = AST_NODE(current_class->metadata_info.object_info.symbol_info.idxAstNode);
 			PASTNode _node_ret=NULL;
 			PASTNode node_fun = AST_NODE(idx_node_fun);
@@ -1651,7 +1653,7 @@ const char * getErrorFilename();
 				if(irs_src){
 
 					// copy c refs ...
-					irfs->object_info.symbol_info.symbol_name= symbol_value;//irs_src->object_info.symbol_info.symbol_name;
+					irfs->object_info.symbol_info.symbol_ref= CScope::makeSymbolFunctionRef(symbol_value,node_fun->idxScope,0);//irs_src->object_info.symbol_info.symbol_name;
 					irfs->object_info.symbol_info.properties = irs_src->object_info.symbol_info.properties;
 
 					irfs->object_info.symbol_info.ref_ptr = irs_src->object_info.symbol_info.ref_ptr;
@@ -1719,10 +1721,10 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != KEYWORD_NODE){THROW_EXCEPTION("node is not keyword type or null");return false;}
-		if(_node->keyword_info != KEYWORD_TYPE::CLASS_KEYWORD){THROW_EXCEPTION("node is not CLASS keyword type");return false;}
-		if(_node->children.size()==3 && AST_NODE(_node->children[2])->node_type != BASE_CLASS_NODE){THROW_EXCEPTION("expected BASE CLASS keyword type");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
+		if(_node->keyword_info != KEYWORD_TYPE::CLASS_KEYWORD){THROW_RUNTIME_ERROR("node is not CLASS keyword type");return false;}
+		if(_node->children.size()==3 && AST_NODE(_node->children[2])->node_type != BASE_CLASS_NODE){THROW_RUNTIME_ERROR("expected BASE CLASS keyword type");return false;}
 
 		string base_class= "";
 		if(_node->children.size()==3){
@@ -1732,7 +1734,7 @@ const char * getErrorFilename();
 		CScriptClass *irc;
 
 		// children[0]==var_collection && children[1]=function_collection
-		if(_node->children.size()!=2 && _node->children.size()!=3) {THROW_EXCEPTION("node CLASS has not valid number of nodes");return false;}
+		if(_node->children.size()!=2 && _node->children.size()!=3) {THROW_RUNTIME_ERROR("node CLASS has not valid number of nodes");return false;}
 
 		if(_node->children.size() == 3){
 			AST_NODE(_node->children[2])->symbol_value = base_class;
@@ -1757,10 +1759,10 @@ const char * getErrorFilename();
 	int CCompiler::gacNew(short idxAstNode, CScope * _lc){
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return ZS_UNDEFINED_IDX;}
-		if(_node->node_type != NEW_OBJECT_NODE ){THROW_EXCEPTION("node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
-		if(_node->children.size()!=1) {THROW_EXCEPTION("node NEW has not valid number of nodes");return ZS_UNDEFINED_IDX;}
-		if(AST_NODE(_node->children[0])->node_type!=NODE_TYPE::ARGS_PASS_NODE) {THROW_EXCEPTION("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type != NEW_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
+		if(_node->children.size()!=1) {THROW_RUNTIME_ERROR("node NEW has not valid number of nodes");return ZS_UNDEFINED_IDX;}
+		if(AST_NODE(_node->children[0])->node_type!=NODE_TYPE::ARGS_PASS_NODE) {THROW_RUNTIME_ERROR("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
 
 		tInfoAsmOpCompiler *iao=NULL;
 
@@ -1814,9 +1816,9 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return ZS_UNDEFINED_IDX;}
-		if(_node->node_type != DELETE_OBJECT_NODE ){THROW_EXCEPTION("gacDelete: node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
-		if(_node->children.size() != 1 ){THROW_EXCEPTION("gacDelete: expected 1 children");return ZS_UNDEFINED_IDX;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type != DELETE_OBJECT_NODE ){THROW_RUNTIME_ERROR("gacDelete: node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
+		if(_node->children.size() != 1 ){THROW_RUNTIME_ERROR("gacDelete: expected 1 children");return ZS_UNDEFINED_IDX;}
 
 		// load function ...
 		// push value  ...
@@ -1838,12 +1840,12 @@ const char * getErrorFilename();
 
 		PASTNode _node=AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != KEYWORD_NODE ){THROW_EXCEPTION("node is not keyword type or null");return false;}
-		if(_node->keyword_info != KEYWORD_TYPE::FOR_KEYWORD){THROW_EXCEPTION("node is not FOR keyword type");return false;}
-		if(_node->children.size()!=4) {THROW_EXCEPTION("node FOR has not valid number of nodes");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
+		if(_node->keyword_info != KEYWORD_TYPE::FOR_KEYWORD){THROW_RUNTIME_ERROR("node is not FOR keyword type");return false;}
+		if(_node->children.size()!=4) {THROW_RUNTIME_ERROR("node FOR has not valid number of nodes");return false;}
 		if(!(AST_NODE(_node->children[0])->node_type==PRE_FOR_NODE && AST_NODE(_node->children[1])->node_type==CONDITIONAL_NODE &&
-		AST_NODE(_node->children[2])->node_type==POST_FOR_NODE && AST_NODE(_node->children[3])->node_type==BODY_NODE)) {THROW_EXCEPTION("node FOR has not valid TYPE nodes");return false;}
+		AST_NODE(_node->children[2])->node_type==POST_FOR_NODE && AST_NODE(_node->children[3])->node_type==BODY_NODE)) {THROW_RUNTIME_ERROR("node FOR has not valid TYPE nodes");return false;}
 		tInfoAsmOpCompiler *asm_op;
 
 		// 0. insert push statment
@@ -1892,11 +1894,11 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != KEYWORD_NODE){THROW_EXCEPTION("node is not keyword type or null");return false;}
-		if(_node->keyword_info != KEYWORD_TYPE::WHILE_KEYWORD){THROW_EXCEPTION("node is not WHILE keyword type");return false;}
-		if(_node->children.size()!=2) {THROW_EXCEPTION("node WHILE has not valid number of nodes");return false;}
-		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_NODE )) {THROW_EXCEPTION("node WHILE has not valid TYPE nodes");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
+		if(_node->keyword_info != KEYWORD_TYPE::WHILE_KEYWORD){THROW_RUNTIME_ERROR("node is not WHILE keyword type");return false;}
+		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("node WHILE has not valid number of nodes");return false;}
+		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_NODE )) {THROW_RUNTIME_ERROR("node WHILE has not valid TYPE nodes");return false;}
 		tInfoAsmOpCompiler *asm_op_jmp_end;
 		int index_ini_while;
 
@@ -1918,11 +1920,11 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != KEYWORD_NODE){THROW_EXCEPTION("node is not keyword type or null");return false;}
-		if(_node->keyword_info != KEYWORD_TYPE::DO_WHILE_KEYWORD){THROW_EXCEPTION("node is not DO_WHILE keyword type");return false;}
-		if(_node->children.size()!=2) {THROW_EXCEPTION("node DO-WHILE has not valid number of nodes");return false;}
-		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_NODE )) {THROW_EXCEPTION("node WHILE has not valid TYPE nodes");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
+		if(_node->keyword_info != KEYWORD_TYPE::DO_WHILE_KEYWORD){THROW_RUNTIME_ERROR("node is not DO_WHILE keyword type");return false;}
+		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("node DO-WHILE has not valid number of nodes");return false;}
+		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_NODE )) {THROW_RUNTIME_ERROR("node WHILE has not valid TYPE nodes");return false;}
 		int index_start_do_while;
 
 		// compile conditional expression...
@@ -1945,9 +1947,9 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != KEYWORD_NODE){THROW_EXCEPTION("node is not keyword type or null");return false;}
-		if(_node->keyword_info != KEYWORD_TYPE::RETURN_KEYWORD){THROW_EXCEPTION("node is not RETURN keyword type");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
+		if(_node->keyword_info != KEYWORD_TYPE::RETURN_KEYWORD){THROW_RUNTIME_ERROR("node is not RETURN keyword type");return false;}
 		if(_node->children.size() >= 1){
 
 			if(gacExpression(_node->children[0], _lc)){
@@ -1966,7 +1968,7 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 
 		if(
 			! ( _node->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD
@@ -1976,9 +1978,9 @@ const char * getErrorFilename();
 			return false;
 		}
 
-		if(_node->children.size() != 2){THROW_EXCEPTION("node FUNCTION has not 2 child");return false;}
-		if(AST_NODE(_node->children[0])->node_type != NODE_TYPE::ARGS_DECL_NODE){THROW_EXCEPTION("node FUNCTION has not ARGS node");return false;}
-		if(AST_NODE(_node->children[1])->node_type != NODE_TYPE::BODY_NODE){THROW_EXCEPTION("node FUNCTION has not BODY node");return false;}
+		if(_node->children.size() != 2){THROW_RUNTIME_ERROR("node FUNCTION has not 2 child");return false;}
+		if(AST_NODE(_node->children[0])->node_type != NODE_TYPE::ARGS_DECL_NODE){THROW_RUNTIME_ERROR("node FUNCTION has not ARGS node");return false;}
+		if(AST_NODE(_node->children[1])->node_type != NODE_TYPE::BODY_NODE){THROW_RUNTIME_ERROR("node FUNCTION has not BODY node");return false;}
 
 		// 1. Processing args ...
 		for(unsigned i = 0; i < AST_NODE(_node->children[0])->children.size(); i++){
@@ -1995,15 +1997,15 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != KEYWORD_NODE ){THROW_EXCEPTION("node is not keyword type or null");return false;}
-		if(_node->keyword_info != KEYWORD_TYPE::IF_KEYWORD){THROW_EXCEPTION("node is not IF keyword type");return false;}
-		if(_node->children.size()<1) {THROW_EXCEPTION("node IF has not valid number of nodes");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
+		if(_node->keyword_info != KEYWORD_TYPE::IF_KEYWORD){THROW_RUNTIME_ERROR("node is not IF keyword type");return false;}
+		if(_node->children.size()<1) {THROW_RUNTIME_ERROR("node IF has not valid number of nodes");return false;}
 
 		CASTNode *if_group_nodes =  AST_NODE(_node->children[0]);
 
-		if(if_group_nodes->node_type!=GROUP_IF_NODES) {THROW_EXCEPTION("node IF has not GROUP IF NODES");return false;}
-		if((if_group_nodes->children.size()<1)) {THROW_EXCEPTION("GROUP IF NODES has to have at least one node.");return false;}
+		if(if_group_nodes->node_type!=GROUP_IF_NODES) {THROW_RUNTIME_ERROR("node IF has not GROUP IF NODES");return false;}
+		if((if_group_nodes->children.size()<1)) {THROW_RUNTIME_ERROR("GROUP IF NODES has to have at least one node.");return false;}
 
 		tInfoAsmOpCompiler *asm_op_jmp_else_if;
 
@@ -2014,7 +2016,7 @@ const char * getErrorFilename();
 		for(unsigned int i=0; i < if_group_nodes->children.size(); i++){
 
 			CASTNode * if_node =  AST_NODE(if_group_nodes->children[i]);
-			if(if_node->children.size() != 2) {THROW_EXCEPTION(" IF NODE HAS TO HAVE 2 NODES");return false;}
+			if(if_node->children.size() != 2) {THROW_RUNTIME_ERROR(" IF NODE HAS TO HAVE 2 NODES");return false;}
 
 			// compile conditional expression...
 			if(!ast2asm_Recursive(if_node->children[0],_lc)){ return false;}
@@ -2049,12 +2051,12 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return ZS_UNDEFINED_IDX;}
-		if(_node->node_type != PUNCTUATOR_NODE ){THROW_EXCEPTION("node is not punctuator type or null");return ZS_UNDEFINED_IDX;}
-		if(_node->operator_info != TERNARY_IF_PUNCTUATOR){THROW_EXCEPTION("node is not INLINE-IF PUNCTUATOR type");return ZS_UNDEFINED_IDX;}
-		if(_node->children.size()!=2) {THROW_EXCEPTION("node INLINE-IF has not 2 nodes");return ZS_UNDEFINED_IDX;}
-		if(!(AST_NODE(_node->children[1])->node_type==PUNCTUATOR_NODE && AST_NODE(_node->children[1])->operator_info==TERNARY_ELSE_PUNCTUATOR )) {THROW_EXCEPTION("node INLINE-ELSE has not found");return ZS_UNDEFINED_IDX;}
-		if(AST_NODE(_node->children[1])->children.size() != 2) {THROW_EXCEPTION("node INLINE-ELSE has not 2 nodes");return ZS_UNDEFINED_IDX;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type != PUNCTUATOR_NODE ){THROW_RUNTIME_ERROR("node is not punctuator type or null");return ZS_UNDEFINED_IDX;}
+		if(_node->operator_info != TERNARY_IF_PUNCTUATOR){THROW_RUNTIME_ERROR("node is not INLINE-IF PUNCTUATOR type");return ZS_UNDEFINED_IDX;}
+		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("node INLINE-IF has not 2 nodes");return ZS_UNDEFINED_IDX;}
+		if(!(AST_NODE(_node->children[1])->node_type==PUNCTUATOR_NODE && AST_NODE(_node->children[1])->operator_info==TERNARY_ELSE_PUNCTUATOR )) {THROW_RUNTIME_ERROR("node INLINE-ELSE has not found");return ZS_UNDEFINED_IDX;}
+		if(AST_NODE(_node->children[1])->children.size() != 2) {THROW_RUNTIME_ERROR("node INLINE-ELSE has not 2 nodes");return ZS_UNDEFINED_IDX;}
 		tInfoAsmOpCompiler *asm_op_jmp_else_if,*asm_op_jmp_end;
 
 		int r=instruction;
@@ -2092,9 +2094,9 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != KEYWORD_NODE ){THROW_EXCEPTION("node is not keyword type or null");return false;}
-		if(_node->keyword_info != SWITCH_KEYWORD){THROW_EXCEPTION("node is not SWITCH keyword type");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
+		if(_node->keyword_info != SWITCH_KEYWORD){THROW_RUNTIME_ERROR("node is not SWITCH keyword type");return false;}
 		bool has_default = false;
 		PASTNode switch_node;
 		PASTNode group_cases;
@@ -2148,7 +2150,7 @@ const char * getErrorFilename();
 
 											switch(case_value->keyword_info){
 											default:
-												THROW_EXCEPTION("Unexpected %s keyword node in SWITCH node",CASTNode::defined_keyword[case_value->keyword_info].str);
+												THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Unexpected %s keyword node in SWITCH node",CASTNode::defined_keyword[case_value->keyword_info].str));
 												break;
 											case DEFAULT_KEYWORD:
 
@@ -2184,12 +2186,12 @@ const char * getErrorFilename();
 											}
 
 										}else{
-											THROW_EXCEPTION("Not SWITCH case or NULL keyword info");
+											THROW_RUNTIME_ERROR("Not SWITCH case or NULL keyword info");
 											return false;
 										}
 									}
 								}else{
-									THROW_EXCEPTION("Expected group cases type node in SWITCH node");
+									THROW_RUNTIME_ERROR("Expected group cases type node in SWITCH node");
 									return false;
 								}
 								break;
@@ -2218,12 +2220,12 @@ const char * getErrorFilename();
 							}
 						}
 						else{
-							THROW_EXCEPTION("SWITCH node has not 2 nodes");
+							THROW_RUNTIME_ERROR("SWITCH node has not 2 nodes");
 							return false;
 						}
 					}
 					else{
-						THROW_EXCEPTION("SWITCH node NULL");
+						THROW_RUNTIME_ERROR("SWITCH node NULL");
 						return false;
 					}
 				}
@@ -2244,9 +2246,9 @@ const char * getErrorFilename();
 		PASTNode _node = AST_NODE(idxAstNode);
 
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != KEYWORD_NODE ){THROW_EXCEPTION("node is not keyword type or null");return false;}
-		if(_node->keyword_info != VAR_KEYWORD){THROW_EXCEPTION("node is not VAR keyword type");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
+		if(_node->keyword_info != VAR_KEYWORD){THROW_RUNTIME_ERROR("node is not VAR keyword type");return false;}
 
 		int local_variable_idx;
 
@@ -2261,7 +2263,7 @@ const char * getErrorFilename();
 				PASTNode class_node=AST_NODE(idxRootAstClass);
 				CScriptClass * sc=CScriptClass::getScriptClassByName(class_node->symbol_value,false);
 				if(sc==NULL){
-					THROW_EXCEPTION("cannot get class_node %s",class_node->symbol_value.c_str());return false;
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("cannot get class_node %s",class_node->symbol_value.c_str()));return false;
 					return false;
 				}
 
@@ -2298,12 +2300,12 @@ const char * getErrorFilename();
 		bool is_function_member;
 
 		CScriptFunctionObject *function_object=NULL;
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != KEYWORD_NODE){THROW_EXCEPTION("node is not keyword type or null");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 
 		switch(_node->keyword_info){
 		default:
-			THROW_EXCEPTION("Keyword [ %s ] not implemented yet!",CASTNode::defined_keyword[_node->keyword_info].str);
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Keyword [ %s ] not implemented yet!",CASTNode::defined_keyword[_node->keyword_info].str));
 			break;
 		case KEYWORD_TYPE::CLASS_KEYWORD:
 			return gacClass(_node->idxAstNode, _lc);
@@ -2336,7 +2338,7 @@ const char * getErrorFilename();
 				PASTNode class_node=AST_NODE(idxRootAstClass);
 				CScriptClass * sc=CScriptClass::getScriptClassByName(class_node->symbol_value,false);
 				if(sc==NULL){
-					THROW_EXCEPTION("cannot get class_node %s",class_node->symbol_value.c_str());return false;
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("cannot get class_node %s",class_node->symbol_value.c_str()));return false;
 					return false;
 				}
 
@@ -2372,8 +2374,8 @@ const char * getErrorFilename();
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != BODY_NODE ){THROW_EXCEPTION("node is not BODY type or null");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != BODY_NODE ){THROW_RUNTIME_ERROR("node is not BODY type or null");return false;}
 
 
 		// 0. insert push statment
@@ -2410,8 +2412,8 @@ const char * getErrorFilename();
 			index_instruction = 0; // set as 0
 		}
 
-		if(_node == NULL) {THROW_EXCEPTION("NULL node");return false;}
-		if(_node->node_type != EXPRESSION_NODE){THROW_EXCEPTION("node is not Expression");return false;}
+		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		if(_node->node_type != EXPRESSION_NODE){THROW_RUNTIME_ERROR("node is not Expression");return false;}
 
 		int r = gacExpression_Recursive(_node->children[0], _lc,index_instruction);
 
@@ -2426,7 +2428,7 @@ const char * getErrorFilename();
 			switch(_node->node_type){
 				default:
 				case UNKNOWN_NODE:
-					THROW_EXCEPTION("UNKNOWN_NODE (%i)",_node->node_type);
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("UNKNOWN_NODE (%i)",_node->node_type));
 					return false;
 					break;
 				case DELETE_OBJECT_NODE:
@@ -2454,7 +2456,7 @@ const char * getErrorFilename();
 					if(_node->children.size() == 1){
 						return gacExpression(_node->children[0], _lc);
 					}else{
-						THROW_EXCEPTION("Expected nodes for %i",_node->node_type);
+						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Expected nodes for %i",_node->node_type));
 					}
 
 					break;
@@ -2462,7 +2464,7 @@ const char * getErrorFilename();
 					if(_node->children.size() == 1){
 						return ast2asm_Recursive(_node->children[0], _lc);
 					}else{
-						THROW_EXCEPTION("Expected nodes for %i",_node->node_type);
+						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Expected nodes for %i",_node->node_type));
 					}
 					break;
 				case FUNCTION_OBJECT_NODE:
@@ -2474,7 +2476,7 @@ const char * getErrorFilename();
 				case CALLING_OBJECT_NODE:zs_print_debug_cr("CALLING_OBJECT_NODE");break;
 			}
 		}else{
-			THROW_EXCEPTION("Node is null!");
+			THROW_RUNTIME_ERROR("Node is null!");
 		}
 		return false;
 	}
@@ -2541,13 +2543,9 @@ const char * getErrorFilename();
 		PASTNode _node =AST_NODE(idxAstParentNode);
 
 		if(_node == NULL){
-			THROW_EXCEPTION("NULL node!");
+			THROW_RUNTIME_ERROR("NULL node!");
 			return false;
 		}
-
-		//int start_node=(idxAstNode==IDX_MAIN_AST_NODE)?GET_CURSOR_COMPILE:0;
-
-		//CScope *_scope =AST_SCOPE_INFO(idxAstNode);
 
 		if(_node->node_type == NODE_TYPE::BODY_NODE ){
 
@@ -2565,7 +2563,7 @@ const char * getErrorFilename();
 			return !error;
 		}
 		else{
-			THROW_EXCEPTION("Body node expected");
+			THROW_RUNTIME_ERROR("Body node expected");
 		}
 
 		return false;

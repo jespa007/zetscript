@@ -71,7 +71,7 @@ namespace zetscript{
 		static string toLower(const string & str);
 		static string toUpper(const string & str);
 		static std::wstring toWString(const std::string &s);
-
+		ZETSCRIPT_MODULE_EXPORT static string  sformat(const  char  *string_text, ...);
 
 		static bool endsWith(const string & fullString, const string & ending);
 
@@ -103,7 +103,7 @@ namespace zetscript{
 
 }
 
-#define zs_print_error_cr(s, ...) 			zetscript::CZetScriptUtils::print_log(__FILE__,__LINE__,zetscript::CZetScriptUtils::LOG_ERROR	, true,s, ##__VA_ARGS__)
+//#define zs_print_error_cr(s, ...) 			zetscript::CZetScriptUtils::print_log(__FILE__,__LINE__,zetscript::CZetScriptUtils::LOG_ERROR	, true,s, ##__VA_ARGS__)
 #define zs_print_warning_cr(s, ...)   		zetscript::CZetScriptUtils::print_log(__FILE__,__LINE__,zetscript::CZetScriptUtils::LOG_WARNING	, true,s, ##__VA_ARGS__)
 #define zs_print_info_cr(s, ...)   		zetscript::CZetScriptUtils::print_log(__FILE__,__LINE__,zetscript::CZetScriptUtils::LOG_INFO	, true,s, ##__VA_ARGS__)
 #ifdef __ZETSCRIPT_VERBOSE_MESSAGE__
@@ -113,7 +113,7 @@ namespace zetscript{
 #endif
 
 
-#define zs_print_error(s, ...) 			zetscript::CZetScriptUtils::print_log(__FILE__,__LINE__,zetscript::CZetScriptUtils::LOG_ERROR	, false,s, ##__VA_ARGS__)
+//#define zs_print_error(s, ...) 			zetscript::CZetScriptUtils::print_log(__FILE__,__LINE__,zetscript::CZetScriptUtils::LOG_ERROR	, false,s, ##__VA_ARGS__)
 #define zs_print_warning(s, ...)   		zetscript::CZetScriptUtils::print_log(__FILE__,__LINE__,zetscript::CZetScriptUtils::LOG_WARNING	, false,s, ##__VA_ARGS__)
 #define zs_print_info(s, ...)   		zetscript::CZetScriptUtils::print_log(__FILE__,__LINE__,zetscript::CZetScriptUtils::LOG_INFO	, false,s, ##__VA_ARGS__)
 #ifdef __ZETSCRIPT_VERBOSE_MESSAGE__

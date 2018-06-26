@@ -15,9 +15,7 @@
 namespace zetscript{
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-	int getErrorLine();
-	const char * getErrorDescription();
-	const char * getErrorFilename();
+
 
 //CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
 //vector<CVirtualMachine::CVirtualMachine> CVirtualMachine::ALE;
@@ -462,7 +460,7 @@ namespace zetscript{
 		aux_string=m_functionSymbol->at(i).symbol_value;\
 	}else{\
 		irfs=vec_script_function_object_node[vec_global_functions->at(i)];\
-		aux_string=irfs->object_info.symbol_info.symbol_name;\
+		aux_string=irfs->object_info.symbol_info.symbol_ref;\
 	}\
 \
 	bool match_signature = metamethod_str != NULL;\
@@ -623,7 +621,7 @@ if(aux_function_info == NULL){\
 			} \
 			bool match_signature = metamethod_str != NULL;\
 			if(!match_signature){\
-				match_signature = irfs->object_info.symbol_info.symbol_name == vec_ast_node[iao->idxAstNode]->symbol_value;\
+				match_signature = irfs->object_info.symbol_info.symbol_ref == vec_ast_node[iao->idxAstNode]->symbol_value;\
 			}\
 				if( \
 					 (match_signature) \
@@ -631,7 +629,7 @@ if(aux_function_info == NULL){\
 						if(n_candidates == 0){ \
 							str_candidates+="\t\tPossible candidates are:\n\n"; \
 						} \
-						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+irfs->object_info.symbol_info.symbol_name+"("; \
+						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+GET_SYMBOL_NAME(irfs->object_info.symbol_info.symbol_ref)+"("; \
 \
 						for(unsigned a = 0; a < irfs->m_arg.size(); a++){\
 							if(a>0){\
@@ -669,7 +667,7 @@ if(aux_function_info == NULL){\
 				writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s", \
 												metamethod_str, \
 												calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",\
-												vec_script_function_object_node[vec_global_functions->at(0)]->object_info.symbol_info.symbol_name.c_str(),\
+												GET_SYMBOL_NAME(vec_script_function_object_node[vec_global_functions->at(0)]->object_info.symbol_info.symbol_ref).c_str(),\
 												args_str.c_str(),\
 												str_candidates.c_str()); \
 			}else{\
@@ -969,15 +967,16 @@ if(aux_function_info == NULL){\
 	}
 
 
-	void CVirtualMachine::sharePointer(PInfoSharedPointerNode _node){
+	bool CVirtualMachine::sharePointer(PInfoSharedPointerNode _node){
 
 		unsigned char *n_shares = &_node->data.n_shares;
 
 		bool move_to_shared_list=*n_shares==0;
 
 		if(*n_shares >= MAX_SHARES_VARIABLE){
-			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
-			exit(EXIT_FAILURE);
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE));
+			return false;
+
 		}
 
 		(*n_shares)++;
@@ -990,6 +989,8 @@ if(aux_function_info == NULL){\
 			_node->currentStack=idxCurrentStack;
 			SHARE_LIST_INSERT(shared_var[idxCurrentStack],_node);
 		}
+
+		return true;
 
 	}
 
@@ -1097,10 +1098,10 @@ if(aux_function_info == NULL){\
 
 			if(!stk2var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
 				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
-																irfs->object_info.symbol_info.symbol_name.c_str(),
+																irfs->object_info.symbol_info.symbol_ref.c_str(),
 																i,
 																error_str.c_str(),
-																irfs->object_info.symbol_info.symbol_name.c_str()
+																irfs->object_info.symbol_info.symbol_ref.c_str()
 																);
 				RETURN_ERROR;
 			}
@@ -1493,7 +1494,7 @@ if(aux_function_info == NULL){\
 
 		if(idxBaseStk<n_args){
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Internal error (idxBaseStk<n_args) (%i<%i)",idxBaseStk,n_args);
-			exit(EXIT_FAILURE);
+			RETURN_ERROR;
 		}
 
 		if(n_args>0){
@@ -1516,7 +1517,7 @@ if(aux_function_info == NULL){\
 		}
 		else{
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Reached max stack");
-			exit(EXIT_FAILURE);
+			RETURN_ERROR;
 		}
 
 		if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
@@ -1574,7 +1575,7 @@ if(aux_function_info == NULL){\
 
 		if((idxBaseStk+n_total_vars) >=  VM_LOCAL_VAR_MAX_STACK){
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Error MAXIMUM stack size reached");
-			exit(EXIT_FAILURE);
+			RETURN_ERROR;
 		}
 
 		// init local vars ...

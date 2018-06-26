@@ -259,8 +259,8 @@ namespace zetscript{
 			//CScriptClass *rc = CScriptClass::getInstance()->getRegisteredClass(class_name);
 
 			if(mainFunctionInfo == NULL){
-				THROW_EXCEPTION("main function is not created");
-				exit(EXIT_FAILURE);
+				THROW_RUNTIME_ERROR("main function is not created");
+				return false;
 			}
 
 			// 1. check all parameters ok.
@@ -270,7 +270,7 @@ namespace zetscript{
 
 			// check valid parameters ...
 			if((idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
-				THROW_EXCEPTION("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name);
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name));
 				return false;
 			}
 
@@ -278,12 +278,12 @@ namespace zetscript{
 				int idx_type = getIdxClassFromIts_C_Type(m_arg[i]);
 
 				if(idx_type==IDX_CLASS_FLOAT_C || idx_type==IDX_CLASS_BOOL_C){
-					THROW_EXCEPTION("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str()));
 					return false;
 				}
 
 				if(idx_type ==-1){
-					THROW_EXCEPTION("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name));
 					return false;
 				}
 
@@ -310,7 +310,7 @@ namespace zetscript{
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
 
 			irs->object_info.symbol_info.idxAstNode = -1;
-			irs->object_info.symbol_info.symbol_name = function_name;
+			irs->object_info.symbol_info.symbol_ref = function_name;
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
 			irs->object_info.symbol_info.idxSymbol = (short)(mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size());
@@ -342,7 +342,7 @@ namespace zetscript{
 
 					(((*local_vec_script_class_node)[size-1]->metadata_info.object_info.symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
 				)){
-					THROW_EXCEPTION("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str()));
 					return false;
 				}
 
@@ -354,11 +354,11 @@ namespace zetscript{
 				string str_classPtr = typeid( _T *).name();
 
 				if(getIdx_C_RegisteredClass(str_classPtr,false)!=-1){
-					THROW_EXCEPTION("this %s is already registered",demangle(typeid( _T).name()).c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("this %s is already registered",demangle(typeid( _T).name()).c_str()));
 					return false;
 				}
 
-				//THROW_EXCEPTION("CHECK AND TODOOOOOO!");
+				//THROW_RUNTIME_ERROR("CHECK AND TODOOOOOO!");
 				CScriptClass *irc = new CScriptClass;
 
 				CASTNode *ast =CASTNode::newASTNode();
@@ -373,7 +373,7 @@ namespace zetscript{
 
 				irc->metadata_info.object_info.symbol_info.idxAstNode = ast->idxAstNode;
 				//irc->metadata_info.object_info.symbol_info.idxScopeVar=-1;
-				irc->metadata_info.object_info.symbol_info.symbol_name = class_name;
+				irc->metadata_info.object_info.symbol_info.symbol_ref = class_name;
 				//irc->baseClass = base_class; // identify extend class ?!?!!?
 				// in C there's no script constructor ...
 				irc->idx_function_script_constructor=-1;
@@ -395,7 +395,7 @@ namespace zetscript{
 				return true;
 			}
 			else{
-				THROW_EXCEPTION("%s already exist", class_name.c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("%s already exist", class_name.c_str()));
 			}
 
 			return false;
@@ -440,32 +440,32 @@ namespace zetscript{
 
 			int idxBaseClass = getIdxClassFromIts_C_Type(base_class_name_ptr);
 			if(idxBaseClass == -1) {
-				THROW_EXCEPTION("base class %s not registered",base_class_name_ptr.c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("base class %s not registered",base_class_name_ptr.c_str()));
 				return false;
 			}
 
 
 			int register_class = getIdxClassFromIts_C_Type(class_name_ptr);
 			if(register_class == -1) {
-				THROW_EXCEPTION("class %s not registered",class_name_ptr.c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("class %s not registered",class_name_ptr.c_str()));
 				return false;
 			}
 
 			if(isIdxClassInstanceOf(register_class,idxBaseClass)){
-				THROW_EXCEPTION("C++ class \"%s\" is already registered as base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C++ class \"%s\" is already registered as base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str()));
 				return false;
 			}
 
 			// check whether is in fact base of ...
 			if(!std::is_base_of<_B,_T>::value){
-				THROW_EXCEPTION("C++ class \"%s\" is not base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C++ class \"%s\" is not base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str()));
 				return false;
 			}
 
 			for(unsigned i = 0; i < (*local_vec_script_class_node)[register_class]->idxBaseClass.size(); i++){
 				CScriptClass *sc = CScriptClass::getScriptClassByIdx((*local_vec_script_class_node)[register_class]->idxBaseClass[i]);
 				if(sc->classPtrType ==base_class_name_ptr){
-					THROW_EXCEPTION("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str()));
 					return false;
 				}
 			}
@@ -484,7 +484,7 @@ namespace zetscript{
 
 			if(local_map_type_conversion->count(class_name_ptr) == 1){ // create new map...
 				if(local_map_type_conversion->at(class_name_ptr).count(base_class_name_ptr)==1){
-					THROW_EXCEPTION("Conversion type \"%s\" -> \"%s\" already inserted",demangle(class_name).c_str(),demangle(base_class_name).c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Conversion type \"%s\" -> \"%s\" already inserted",demangle(class_name).c_str(),demangle(base_class_name).c_str()));
 					return false;
 				}
 			}
@@ -579,7 +579,7 @@ namespace zetscript{
 
 			// check valid parameters ...
 			if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
-				THROW_EXCEPTION("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name);
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name));
 				return false;
 			}
 
@@ -587,12 +587,12 @@ namespace zetscript{
 				int idx_type=getIdxClassFromIts_C_Type(m_arg[i]);
 
 				if(idx_type==IDX_CLASS_FLOAT_C || idx_type==IDX_CLASS_BOOL_C){
-					THROW_EXCEPTION("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str()));
 					return false;
 				}
 
 				if(idx_type==-1){
-					THROW_EXCEPTION("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name));
 					return false;
 				}
 
@@ -625,7 +625,7 @@ namespace zetscript{
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->object_info.symbol_info.symbol_name=function_name;
+			irs->object_info.symbol_info.symbol_ref=function_name;
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
@@ -683,7 +683,7 @@ namespace zetscript{
 
 			// check valid parameters ...
 			if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
-				THROW_EXCEPTION("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name);
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Return type \"%s\" for function \"%s\" not registered",demangle(return_type).c_str(),function_name));
 				return false;
 			}
 
@@ -691,12 +691,12 @@ namespace zetscript{
 				int idx_type = getIdxClassFromIts_C_Type(m_arg[i]);
 
 				if(idx_type==IDX_CLASS_FLOAT_C || idx_type==IDX_CLASS_BOOL_C){
-					THROW_EXCEPTION("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,demangle(m_arg[i]).c_str(),function_name,demangle(m_arg[i]).c_str()));
 					return false;
 				}
 
 				if(idx_type==-1){
-					THROW_EXCEPTION("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name));
 					return false;
 				}
 
@@ -730,7 +730,7 @@ namespace zetscript{
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->object_info.symbol_info.symbol_name=function_name;
+			irs->object_info.symbol_info.symbol_ref=function_name;
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
@@ -757,20 +757,20 @@ namespace zetscript{
 						  ){
 							// return type must be bool...
 							if(STRCMP(return_type.c_str(), != ,typeid(bool).name())){
-								THROW_EXCEPTION("error registering metamethod %s::%s. Expected return bool but it was %s",
+								THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("error registering metamethod %s::%s. Expected return bool but it was %s",
 										demangle(typeid(_T).name()).c_str(),
 										function_name,
-										demangle(return_type.c_str()).c_str());
+										demangle(return_type.c_str()).c_str()));
 								return false;
 
 							}
 						}else if((return_type != str_classPtr) && (i!= SET_METAMETHOD)){
 
-							THROW_EXCEPTION("error registering metamethod %s::%s. Expected return %s but it was %s",
+							THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("error registering metamethod %s::%s. Expected return %s but it was %s",
 									demangle(typeid(_T).name()).c_str(),
 									function_name,
 									demangle(str_classPtr.c_str()).c_str(),
-									demangle(return_type.c_str()).c_str());
+									demangle(return_type.c_str()).c_str()));
 							return false;
 						}
 
@@ -781,7 +781,7 @@ namespace zetscript{
 					}
 				}
 			}else{
-				THROW_EXCEPTION("error! cannot register metamethod set on static function. Must be member function!");
+				THROW_RUNTIME_ERROR("error! cannot register metamethod set on static function. Must be member function!");
 				return false;
 			}
 
@@ -815,10 +815,10 @@ namespace zetscript{
 
 			// check valid parameters ...
 			if(getIdxClassFromIts_C_Type(var_type) == -1){
-				THROW_EXCEPTION("%s::%s has not valid type (%s)"
-						,(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_name.c_str()
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("%s::%s has not valid type (%s)"
+						,(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_ref.c_str()
 						,var_name
-						,demangle(typeid(_R).name()).c_str());
+						,demangle(typeid(_R).name()).c_str()));
 				return false;
 			}
 
@@ -827,7 +827,7 @@ namespace zetscript{
 			irs.ref_ptr=offset;
 			irs.c_type = var_type;
 			//irs.
-			irs.symbol_name=var_name;
+			irs.symbol_ref=var_name;
 
 			// init ast
 			CASTNode *ast_symbol = CASTNode::newASTNode();

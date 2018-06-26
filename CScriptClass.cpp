@@ -10,14 +10,12 @@ namespace zetscript{
 	#define REGISTER_BASIC_TYPE(type_class, idx_class)\
 		if(!register_C_ClassInt<type_class>(STR(type_class))) return false;\
 		if(vec_script_class_node->at(idx_class)->classPtrType!=typeid(type_class *).name()){\
-			zs_print_error_cr("Error initializing basic type: %s",STR(type_class));\
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Error initializing basic type: %s",STR(type_class)));\
 			return false;\
 		}
 
-void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-int getErrorLine();
-const char * getErrorDescription();
-const char * getErrorFilename();
+	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+
 
 
 	vector<CScriptClass *> 				* CScriptClass::vec_script_class_node=NULL;
@@ -138,7 +136,7 @@ const char * getErrorFilename();
 				}
 		}
 		}else{
-			zs_print_error_cr("Variable %s is not c referenced as C symbol",ir_var->symbol_name.c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Variable %s is not c referenced as C symbol",ir_var->symbol_ref.c_str()));
 		}
 
 		return{STK_PROPERTY_TYPE_UNDEFINED,
@@ -160,7 +158,7 @@ const char * getErrorFilename();
 		CScriptClass *sci=NULL;
 
 		if(class_name.empty()){
-			zs_print_error_cr("Class name empty");
+			THROW_RUNTIME_ERROR("Class name empty");
 			return NULL;
 		}
 
@@ -182,7 +180,7 @@ const char * getErrorFilename();
 				sci->idxBaseClass.push_back(base_class->idxClass);
 			}
 
-			sci->metadata_info.object_info.symbol_info.symbol_name = class_name;
+			sci->metadata_info.object_info.symbol_info.symbol_ref = class_name;
 			sci->metadata_info.object_info.symbol_info.idxAstNode=-1;
 
 			if(_ast != NULL){
@@ -243,7 +241,7 @@ const char * getErrorFilename();
 
 	CScriptClass 	* CScriptClass::getScriptClassByIdx(int idx){
 		if(idx < 0 || (unsigned)idx >= vec_script_class_node->size()){
-			zs_print_error_cr("CScriptClass node out of bound");
+			THROW_RUNTIME_ERROR("CScriptClass node out of bound");
 			return NULL;
 		}
 
@@ -257,7 +255,7 @@ const char * getErrorFilename();
 			return vec_script_class_node->at(index);
 		}else{
 			if(print_msg){
-				zs_print_error_cr("class \"%s\" doesn't exist!", class_name.c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("class \"%s\" doesn't exist!", class_name.c_str()));
 			}
 		}
 
@@ -273,7 +271,7 @@ const char * getErrorFilename();
 		}
 
 		if(print_msg){
-			zs_print_error_cr("C class type \"%s\" is not registered", demangle(class_type).c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C class type \"%s\" is not registered", demangle(class_type).c_str()));
 		}
 
 		return NULL;
@@ -282,7 +280,7 @@ const char * getErrorFilename();
 	int CScriptClass::getIdxScriptClass_Internal(const string & class_name){
 
 		for(unsigned i = 0; i < vec_script_class_node->size(); i++){
-			if(class_name == vec_script_class_node->at(i)->metadata_info.object_info.symbol_info.symbol_name){
+			if(class_name == vec_script_class_node->at(i)->metadata_info.object_info.symbol_info.symbol_ref){
 				return i;
 			}
 		}
@@ -292,9 +290,10 @@ const char * getErrorFilename();
 	int CScriptClass::getIdxScriptClass(const string & v, bool print_msg){
 		int index= getIdxScriptClass_Internal(v);
 
-		if(index == -1 && print_msg){
-			zs_print_error_cr("class %s not registered",v.c_str());
-		}
+		/*if(index == -1 && print_msg){
+			//THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("class %s not registered",v.c_str()));
+			return ZS_UNDEFINED_IDX;
+		}*/
 
 		return index;
 	}
@@ -332,12 +331,12 @@ const char * getErrorFilename();
 	 bool CScriptClass::init(){
 
 			if(vec_script_class_node == NULL){
-				zs_print_error_cr("vector class factory not set");
+				THROW_RUNTIME_ERROR("vector class factory not set");
 				return false;
 			}
 
 			if(vec_script_class_node->size() != 0){ // must be 0 in order to register basic types...
-				zs_print_error_cr("vector class factory not 0!");
+				THROW_RUNTIME_ERROR("vector class factory not 0!");
 				return false;
 			}
 
@@ -551,35 +550,35 @@ const char * getErrorFilename();
 			ast_node = AST_NODE(ast_node->idxAstParent);
 
 			if(ast_node == NULL){
-				zs_print_error_cr("internal error, parent null");
+				THROW_RUNTIME_ERROR("internal error, parent null");
 				return false;
 			}
 
 			if(ast_node->node_type != NODE_TYPE::CALLING_OBJECT_NODE){
-				zs_print_error_cr("internal error, expected calling object node");
+				THROW_RUNTIME_ERROR("internal error, expected calling object node");
 				return false;
 			}
 
 			if(ast_node->children.size()!=2){
-				zs_print_error_cr("internal error, expected calling function 2 children");
+				THROW_RUNTIME_ERROR("internal error, expected calling function 2 children");
 				return false;
 			}
 
 			ast_node = AST_NODE(ast_node->children[1]);
 
 			if(ast_node == NULL){
-				zs_print_error_cr("internal error, expected args node");
+				THROW_RUNTIME_ERROR("internal error, expected args node");
 				return false;
 			}
 
 			if(ast_node->node_type != NODE_TYPE::ARGS_PASS_NODE){
-				zs_print_error_cr("internal error, espected ARGS PASS NODE");
+				THROW_RUNTIME_ERROR("internal error, espected ARGS PASS NODE");
 				return false;
 			}
 
 			return ast_node->children.size();
 		}else{
-			zs_print_error_cr("internal error, espected FUNCTION_REF_NODE");
+			THROW_RUNTIME_ERROR("internal error, espected FUNCTION_REF_NODE");
 		}
 
 		return -1;
@@ -589,25 +588,25 @@ const char * getErrorFilename();
 		if(ast_node->node_type == NODE_TYPE::FUNCTION_OBJECT_NODE){ // function
 
 			if(ast_node->children.size()!=2){
-				zs_print_error_cr("internal error, expected calling function 1 children");
+				THROW_RUNTIME_ERROR("internal error, expected calling function 1 children");
 				return false;
 			}
 
 			ast_node = AST_NODE(ast_node->children[0]);
 
 			if(ast_node == NULL){
-				zs_print_error_cr("internal error, expected args node");
+				THROW_RUNTIME_ERROR("internal error, expected args node");
 				return false;
 			}
 
 			if(ast_node->node_type != NODE_TYPE::ARGS_DECL_NODE){
-				zs_print_error_cr("internal error, espected ARGS PASS NODE");
+				THROW_RUNTIME_ERROR("internal error, espected ARGS PASS NODE");
 				return false;
 			}
 
 			return ast_node->children.size();
 		}else{
-			zs_print_error_cr("internal error, espected FUNCTION_OBJECT_NODE");
+			THROW_RUNTIME_ERROR("internal error, espected FUNCTION_OBJECT_NODE");
 		}
 
 		return -1;
@@ -633,14 +632,14 @@ const char * getErrorFilename();
 			if(current_function > 0){ // minimum have to have a 1
 
 				tFunctionInfo *irfs =  GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[current_function]);//.object_info;
-				symbol_to_find = irfs->symbol_info.symbol_name;
+				symbol_to_find = irfs->symbol_info.symbol_ref;
 
 				int idx_super=-1;
 				bool is_c=false;
 
 				for(int i = current_function-1; i >= 0 && idx_super==-1; i--){
 					CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(info_function->local_symbols.vec_idx_registeredFunction[i]);
-					if((sfo->object_info.symbol_info.symbol_name == symbol_to_find) && ((int)sfo->m_arg.size() == n_args_to_find)){ // match name and args ...
+					if((sfo->object_info.symbol_info.symbol_ref == symbol_to_find) && ((int)sfo->m_arg.size() == n_args_to_find)){ // match name and args ...
 						is_c = (sfo->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != 0;
 						idx_super=i;
 					}
@@ -756,7 +755,7 @@ const char * getErrorFilename();
 		tFunctionInfo * info_function = &sfo->object_info;
 		bool symbol_found=false;
 
-		zs_print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->symbol_info.symbol_name.c_str());
+		zs_print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->symbol_info.symbol_ref.c_str());
 
 		buildScopeVariablesBlock(sfo);
 
@@ -829,7 +828,7 @@ const char * getErrorFilename();
 
 		 for(unsigned k=0; k < mrf->size();k++){
 
-			 if(!updateFunctionSymbols(mrf->at(k), info_function->symbol_info.symbol_name, k)){
+			 if(!updateFunctionSymbols(mrf->at(k), info_function->symbol_info.symbol_ref, k)){
 				 return false;
 			 }
 		 }
@@ -890,7 +889,7 @@ const char * getErrorFilename();
 
 							 if(iao->operator_type==ASM_OPERATOR::LOAD){
 
-								 string base_class = _belonging_class->metadata_info.object_info.symbol_info.symbol_name;
+								 string base_class = _belonging_class->metadata_info.object_info.symbol_info.symbol_ref;
 
 								 tFunctionInfo *sfi=NULL;
 								 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
@@ -920,7 +919,7 @@ const char * getErrorFilename();
 											 if(sfi != NULL){
 												 // search global...
 												 if(scope_type & INS_PROPERTY_SUPER_SCOPE){
-													 symbol_to_find = GET_SCRIPT_FUNCTION_OBJECT(sfi->local_symbols.vec_idx_registeredFunction[k])->object_info.symbol_info.symbol_name;
+													 symbol_to_find = GET_SCRIPT_FUNCTION_OBJECT(sfi->local_symbols.vec_idx_registeredFunction[k])->object_info.symbol_info.symbol_ref;
 												 }
 
 												 if(!searchVarFunctionSymbol(sfi,iao,k,symbol_found,scope_type)){
@@ -990,7 +989,7 @@ const char * getErrorFilename();
 					 for(unsigned m=0; m < info_function->object_info.local_symbols.vec_idx_registeredFunction.size(); m++){
 						 if(!updateFunctionSymbols(
 								 info_function->object_info.local_symbols.vec_idx_registeredFunction[m],
-								 info_function->object_info.symbol_info.symbol_name,m)){
+								 info_function->object_info.symbol_info.symbol_ref,m)){
 							 return false;
 						 }
 					 }
@@ -1008,7 +1007,7 @@ const char * getErrorFilename();
 
 			 if(it_has_any_metamethod && ((*vec_script_class_node)[i]->metamethod_operator[SET_METAMETHOD].size()==0)){
 				 fprintf(stderr,"class \"%s\" it has some metamethods but it doesn't have _set metamethod (aka '='). The variable will be override on assigment.\n"
-						 ,(*vec_script_class_node)[i]->metadata_info.object_info.symbol_info.symbol_name.c_str()
+						 ,(*vec_script_class_node)[i]->metadata_info.object_info.symbol_info.symbol_ref.c_str()
 				);
 			 }
 
@@ -1062,7 +1061,7 @@ const char * getErrorFilename();
 			 case IDX_CLASS_FLOAT_PTR_C:
 			 case IDX_CLASS_STRING_PTR_C:
 			 case IDX_CLASS_BOOL_PTR_C:
-				 zs_print_error_cr("Internal error!");
+				 THROW_RUNTIME_ERROR("Internal error!");
 				 return NULL;
 				 break;
 
@@ -1083,7 +1082,7 @@ const char * getErrorFilename();
 
 
 		 if(idx_var == ZS_UNDEFINED_IDX){
-			 zs_print_error_cr("invalid index");
+			 THROW_RUNTIME_ERROR("invalid index");
 			 return NULL;
 		 }
 		 // 0. Search class info ...
@@ -1095,7 +1094,7 @@ const char * getErrorFilename();
 				 return (CScriptVariable  *)rc->metadata_info.object_info.local_symbols.m_registeredVariable[idx_var].ref_ptr;
 			 }
 			 else{
-				 zs_print_error_cr("index out of bounds");
+				 THROW_RUNTIME_ERROR("index out of bounds");
 			 }
 		 }
 
@@ -1111,19 +1110,19 @@ const char * getErrorFilename();
 		tInfoVariableSymbol *irs;
 
 		if(var_ptr==NULL){
-			zs_print_error_cr("cannot register var \"%s\" with NULL reference value", var_name.c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("cannot register var \"%s\" with NULL reference value", var_name.c_str()));
 			return false;
 		}
 
 		int idxMainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 
 		if(idxMainFunctionInfo == -1){
-			zs_print_error_cr("main function is not created");
+			THROW_RUNTIME_ERROR("main function is not created");
 			return false;
 		}
 
 		if(getIdxClassFromIts_C_Type(var_type) == -1){
-			zs_print_error_cr("%s has not valid type (%s)",var_name.c_str(),var_type.c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("%s has not valid type (%s)",var_name.c_str(),var_type.c_str()));
 			return false;
 		}
 
@@ -1135,7 +1134,7 @@ const char * getErrorFilename();
 
 			// init struct...
 			irs->properties = ::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-			irs->symbol_name = var_name;
+			irs->symbol_ref = CScope::makeSymbolVarRef(var_name,0);
 			irs->ref_ptr=(intptr_t)var_ptr;
 			irs->c_type=var_type;
 
@@ -1157,7 +1156,7 @@ const char * getErrorFilename();
 			}
 
 			if(print_msg){
-				zs_print_error_cr("C class %s is not registered",str_classPtr.c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C class %s is not registered",str_classPtr.c_str()));
 			}
 
 			return -1;
@@ -1182,7 +1181,7 @@ const char * getErrorFilename();
 			}
 
 			if(print_msg){
-				zs_print_error_cr("C class %s is not registered",str_classPtr.c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C class %s is not registered",str_classPtr.c_str()));
 			}
 
 			return -1;
@@ -1196,11 +1195,11 @@ const char * getErrorFilename();
 		if(rc != NULL){//idxScriptClass != -1){
 
 			tFunctionInfo *object_info=&rc->metadata_info.object_info;
-
+			PASTNode ast = AST_NODE(idxAstNode);
 			tInfoVariableSymbol info_var;
 			info_var.idxScriptClass = rc->metadata_info.object_info.symbol_info.idxScriptClass;
 			info_var.idxAstNode = idxAstNode;
-			info_var.symbol_name =var_name;
+			info_var.symbol_ref =CScope::makeSymbolVarRef(var_name,ast->idxScope);
 			info_var.idxSymbol = (short)object_info->local_symbols.m_registeredVariable.size();
 			object_info->local_symbols.m_registeredVariable.push_back(info_var);
 
@@ -1221,25 +1220,25 @@ const char * getErrorFilename();
 			tFunctionInfo *object_info=&rc->metadata_info.object_info;
 
 			for(unsigned i = 0; i < object_info->local_symbols.m_registeredVariable.size(); i++){
-				if(object_info->local_symbols.m_registeredVariable[i].symbol_name == function_name){
+				if(object_info->local_symbols.m_registeredVariable[i].symbol_ref == function_name){
 					return &object_info->local_symbols.m_registeredVariable[i];
 				}
 			}
 		}
-		zs_print_error_cr("variable member %s::%s doesn't exist",class_name.c_str(),function_name.c_str());
+		THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("variable member %s::%s doesn't exist",class_name.c_str(),function_name.c_str()));
 		return NULL;
 	}
 
 	int CScriptClass::getIdxRegisteredVariableSymbol(tFunctionInfo *idxFunction ,const string & function_name, bool show_msg){
 
 		for(unsigned i = 0; i < idxFunction->local_symbols.m_registeredVariable.size(); i++){
-			if(idxFunction->local_symbols.m_registeredVariable[i].symbol_name == function_name){
+			if(idxFunction->local_symbols.m_registeredVariable[i].symbol_ref == function_name){
 				return i;
 			}
 		}
 
 		if(show_msg){
-			zs_print_error_cr("variable member %s::%s doesn't exist",idxFunction->symbol_info.symbol_name.c_str(),function_name.c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("variable member %s::%s doesn't exist",idxFunction->symbol_info.symbol_ref.c_str(),function_name.c_str()));
 		}
 		return -1;
 	}
@@ -1253,7 +1252,7 @@ const char * getErrorFilename();
 
 		for(unsigned i = 0; i < irc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 			CScriptFunctionObject *sfo = GET_SCRIPT_FUNCTION_OBJECT(irc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
-			if(sfo->object_info.symbol_info.symbol_name == fun_name){
+			if(sfo->object_info.symbol_info.symbol_ref == fun_name){
 				return &irc->metadata_info.object_info;
 			}
 		}
@@ -1276,8 +1275,10 @@ const char * getErrorFilename();
 
 			CScriptFunctionObject *irs = CScriptFunctionObject::newScriptFunctionObject();
 
+			PASTNode ast = AST_NODE(idxAstNode);
+
 			irs->object_info.symbol_info.idxScriptClass = object_info->symbol_info.idxScriptClass;
-			irs->object_info.symbol_info.symbol_name = fun_name;
+			irs->object_info.symbol_info.symbol_ref = CScope::makeSymbolFunctionRef(fun_name,ast->idxScope);
 			irs->object_info.symbol_info.idxAstNode = idxAstNode;
 
 			if(fun_name == class_name){
@@ -1310,13 +1311,13 @@ const char * getErrorFilename();
 			// from lat value to first to get last override function...
 			for(int i = object_info->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
 				tFunctionInfo * function_info = GET_FUNCTION_INFO(object_info->local_symbols.vec_idx_registeredFunction[i]);
-				if(function_info->symbol_info.symbol_name == function_name){
+				if(function_info->symbol_info.symbol_ref == function_name){
 					return object_info->local_symbols.vec_idx_registeredFunction[i];
 				}
 			}
 
 			if(show_errors){
-				zs_print_error_cr("function member %s::%s doesn't exist",rc->metadata_info.object_info.symbol_info.symbol_name.c_str(),function_name.c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("function member %s::%s doesn't exist",rc->metadata_info.object_info.symbol_info.symbol_ref.c_str(),function_name.c_str()));
 			}
 		}
 		return -1;
@@ -1356,7 +1357,7 @@ const char * getErrorFilename();
 
 			GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject)->m_arg.push_back({ZS_UNDEFINED_IDX,arg_name});
 		}else{
-			//zs_print_error_cr("object info NULL");
+			//THROW_RUNTIME_ERROR("object info NULL");
 		}
 		return false;
 	}
@@ -1380,12 +1381,12 @@ const char * getErrorFilename();
 		//local_map_type_conversion
 
 		if(mapTypeConversion->count(idx_src_class) == 0){
-			zs_print_error_cr("There's no type src conversion class \"%s\".",demangle(src_class->classPtrType).c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("There's no type src conversion class \"%s\".",demangle(src_class->classPtrType).c_str()));
 			return 0;
 		}
 
 		if((*mapTypeConversion)[idx_src_class].count(idx_convert_class) == 0){
-			zs_print_error_cr("There's no dest conversion class \"%s\".",demangle(convert_class->classPtrType).c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("There's no dest conversion class \"%s\".",demangle(convert_class->classPtrType).c_str()));
 			return 0;
 		}
 
@@ -1404,7 +1405,7 @@ const char * getErrorFilename();
 
 	const char * CScriptClass::getNameRegisteredClassByIdx(int idx){
 		if(idx != -1){
-			return (*vec_script_class_node)[idx]->metadata_info.object_info.symbol_info.symbol_name.c_str();
+			return (*vec_script_class_node)[idx]->metadata_info.object_info.symbol_info.symbol_ref.c_str();
 		}
 		 return "class_unknow";
 	}

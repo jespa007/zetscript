@@ -37,7 +37,8 @@ namespace zetscript{
 
 
 			if (!CScriptClass::init()) {
-				exit(EXIT_FAILURE);
+				THROW_RUNTIME_ERROR("CScriptClass not initialized");
+				return;
 			}
 
 			// init custom registers...
@@ -62,7 +63,7 @@ namespace zetscript{
 
 	bool  CState::setState(int idx){
 		if(idx < 0 || (unsigned)idx >= vec_saved_state->size()){
-			zs_print_error_cr("index out of bounds");
+			THROW_RUNTIME_ERROR("index out of bounds");
 			return false;
 		}
 
@@ -165,7 +166,8 @@ namespace zetscript{
 	int   CState::saveState(){
 
 		if(current_state == NULL){
-			throw ("ZetScript was not inicialized");
+			THROW_RUNTIME_ERROR ("ZetScript was not inicialized");
+			return -1;
 
 		}
 

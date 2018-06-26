@@ -499,7 +499,7 @@ namespace zetscript{
 
 	struct tInfoVariableSymbol { // it can be a variable or function
 		intptr_t ref_ptr; // pointer ref to C Var/Function
-		string symbol_name; // symbol name
+		string symbol_ref; // symbol name
 		short idxScriptClass; //CScriptClass		 *class_info;
 		short idxSymbol; // idx of class function/variable symbol that keeps.
 		short idxAstNode;
@@ -510,7 +510,7 @@ namespace zetscript{
 			properties = 0;
 			c_type = "";
 			idxAstNode = -1;
-			symbol_name = "";
+			symbol_ref = "";
 			ref_ptr = 0;
 			//class_info=NULL;
 

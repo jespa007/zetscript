@@ -19,10 +19,8 @@
 namespace zetscript{
 
 
-void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-int getErrorLine();
-const char * getErrorDescription();
-const char * getErrorFilename();
+	void  		writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+
 
 
 
@@ -195,7 +193,7 @@ const char * getErrorFilename();
 
 
 		if(vec_ast_node->size() >= MAX_AST_NODES){
-			THROW_EXCEPTION("Max AST Nodes reached ("+CZetScriptUtils::intToString(MAX_AST_NODES)+")");
+			THROW_RUNTIME_ERROR("Max AST Nodes reached ("+CZetScriptUtils::intToString(MAX_AST_NODES)+")");
 			return NULL;
 		}
 
@@ -215,7 +213,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_EXCEPTION("Ast node out of bound");
+			THROW_RUNTIME_ERROR("Ast node out of bound");
 			return NULL;
 		}
 		 return vec_ast_node->at(idx);
@@ -227,7 +225,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_EXCEPTION("Ast node out of bound");
+			THROW_RUNTIME_ERROR("Ast node out of bound");
 			return ZS_UNDEFINED_IDX;
 		}
 
@@ -240,7 +238,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_EXCEPTION("Ast node out of bound");
+			THROW_RUNTIME_ERROR("Ast node out of bound");
 			return NULL;
 		}
 
@@ -251,7 +249,7 @@ const char * getErrorFilename();
 
 		PASTNode _node=AST_NODE(idxAstNode);
 
-		if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {THROW_EXCEPTION("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {THROW_RUNTIME_ERROR("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
 		for(unsigned i = 0; i < _node->children.size(); i++){
 			PASTNode child_node = AST_NODE(_node->children[i]);
 			if(child_node->node_type == NODE_TYPE::KEYWORD_NODE){
@@ -322,7 +320,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_EXCEPTION("Ast node out of bound");
+			THROW_RUNTIME_ERROR("Ast node out of bound");
 			return -1;
 		}
 		return vec_ast_node->at(idx)->line_value;
@@ -334,7 +332,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_EXCEPTION(string(DEFAULT_NO_FILENAME));
+			THROW_RUNTIME_ERROR(string(DEFAULT_NO_FILENAME));
 			return "";
 		}
 
@@ -351,7 +349,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_EXCEPTION("Ast node out of bound");
+			THROW_RUNTIME_ERROR("Ast node out of bound");
 			return "";
 		}
 		return vec_ast_node->at(idx)->symbol_value.c_str();
@@ -363,7 +361,7 @@ const char * getErrorFilename();
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_EXCEPTION("Ast node out of bound");
+			THROW_RUNTIME_ERROR("Ast node out of bound");
 			return NULL;
 		}
 
@@ -569,7 +567,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -591,7 +589,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -614,7 +612,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -641,7 +639,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -668,7 +666,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -689,7 +687,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -713,7 +711,7 @@ const char * getErrorFilename();
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -734,7 +732,7 @@ const char * getErrorFilename();
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -755,7 +753,7 @@ const char * getErrorFilename();
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
@@ -831,7 +829,7 @@ const char * getErrorFilename();
 		for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -1232,7 +1230,7 @@ const char * getErrorFilename();
 				}
 				break;
 			case KEYWORD_TYPE::DELETE_KEYWORD:
-				THROW_EXCEPTION("internal error! delete bad ast processing!");
+				THROW_RUNTIME_ERROR("internal error! delete bad ast processing!");
 				return NULL;
 				/*if((aux = parseDelete(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 					return NULL;
@@ -1519,7 +1517,7 @@ const char * getErrorFilename();
 		}
 
 		if(type_group>=MAX_GROUPS) {
-			THROW_EXCEPTION("Internal:Cannot find ast tree operator");
+			THROW_RUNTIME_ERROR("Internal:Cannot find ast tree operator");
 			return NULL;
 		}
 
@@ -3343,17 +3341,17 @@ const char * getErrorFilename();
 		string s_aux,variable_name;
 		char *symbol_value;
 
-		//bool is_class_member;
+		bool parent_scope_is_class=false;
 		int m_startLine=0;
 
 
 
 
-/*		if(scope_info != NULL){// && class_scope){ // if class scope let's see if is within function member..
+		if(scope_info != NULL){// && class_scope){ // if class scope let's see if is within function member..
 			if(scope_info->getIdxBaseScope() != 0) { // if base scope != 0 is a class
-				is_class_member = scope_info->getIdxBaseScope() == scope_info->getCurrentScopePointer()->idxScope;
+				parent_scope_is_class = scope_info->getIdxBaseScope() == scope_info->getCurrentScopePointer()->idxScope;
 			}
-		}*/
+		}
 
 
 		aux_p=IGNORE_BLANKS(aux_p,m_line);
@@ -3376,6 +3374,9 @@ const char * getErrorFilename();
 
 
 				while(*aux_p != ';' && *aux_p != 0){ // JE: added multivar feature.
+
+					bool is_class_member=parent_scope_is_class;
+
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 					start_var=aux_p;
 					m_startLine = m_line;
@@ -3392,6 +3393,8 @@ const char * getErrorFilename();
 						idxScope = class_node->idxScope; // override scope info
 						symbol_value = (char *)class_member.c_str();
 						variable_name = symbol_value;
+
+						is_class_member=true;
 
 						//vars_collection_node=AST_NODE(class_node->children[0]);
 						//PASTNode vars_collection_node=CASTNode::newASTNode();
@@ -3437,9 +3440,11 @@ const char * getErrorFilename();
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 					//}
 					bool ok_char=*aux_p == ';' || *aux_p == ',' || *aux_p == '=' ;
-					/*if(!(is_class_member || class_scope)){
-						ok_char=ok_char || *aux_p == '=';
-					}*/
+					if(is_class_member && *aux_p == '='){
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"cannot assign class variables. Use constructor instead.");
+						return NULL;
+
+					}
 
 					if(ok_char){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
 						//zs_print_debug_cr("registered symbol \"%s\" line %i ",variable_name, m_line);
@@ -3457,6 +3462,9 @@ const char * getErrorFilename();
 						}
 
 						if(*aux_p == '='){ // only for variables (not class members)
+
+
+
 							PASTNode children_node=NULL;
 
 							// try to evaluate expression...
@@ -3469,7 +3477,7 @@ const char * getErrorFilename();
 							if(var_node != NULL){
 
 								if(children_node==NULL){
-									THROW_EXCEPTION("internal:children node == NULL");
+									THROW_RUNTIME_ERROR("internal:children node == NULL");
 									return NULL;
 								}
 
@@ -3498,6 +3506,7 @@ const char * getErrorFilename();
 						}
 					}
 					else{
+
 						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"unexpected '%c'", *aux_p);
 						return NULL;
 					}
@@ -3807,7 +3816,8 @@ const char * getErrorFilename();
 								try{
 									CZetScript::getInstance()->parse_file(file_to_parse.c_str());
 								}catch(script_error & error){
-									throw error;
+									THROW_EXCEPTION error;
+									return NULL;
 								}
 
 								//restore current file info...
@@ -3894,7 +3904,7 @@ const char * getErrorFilename();
 	void CASTNode::init(){
 
 		if(astNodeToCompile != NULL){
-			zs_print_error("CASTNode already initialized");
+			THROW_RUNTIME_ERROR("CASTNode already initialized");
 			return;
 		}
 

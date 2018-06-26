@@ -8,9 +8,6 @@ namespace zetscript{
 
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-	int getErrorLine();
-	const char * getErrorDescription();
-	const char * getErrorFilename();
 
 
 	tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates){
@@ -43,7 +40,7 @@ namespace zetscript{
 		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
 
 			tInfoVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
-			si = addVariableSymbol(ir_var->symbol_name,ir_var->idxAstNode);
+			si = addVariableSymbol(ir_var->symbol_ref,ir_var->idxAstNode);
 
 			if(ir_var->properties & PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 			{ // we know the type object so we assign the pointer ...
@@ -59,7 +56,7 @@ namespace zetscript{
 		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 			CScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
 			 si =addFunctionSymbol(
-					 ir_fun->object_info.symbol_info.symbol_name,
+					 ir_fun->object_info.symbol_info.symbol_ref,
 					 ir_fun->object_info.symbol_info.idxAstNode,
 					ir_fun
 
@@ -212,7 +209,9 @@ namespace zetscript{
 
 			// update n_refs +1
 			if(sv->properties&STK_PROPERTY_TYPE_SCRIPTVAR){
-				CURRENT_VM->sharePointer(((CScriptVariable *)(sv->varRef))->ptr_shared_pointer_node);
+				if(!CURRENT_VM->sharePointer(((CScriptVariable *)(sv->varRef))->ptr_shared_pointer_node)){
+					return NULL;
+				}
 			}
 
 		}else{
@@ -336,7 +335,7 @@ namespace zetscript{
 				}
 
 
-				str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_name+"(";
+				str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_ref+"(";
 
 				for(unsigned a = 0; a < irfs->m_arg.size(); a++){
 					if(a>0){
@@ -353,7 +352,7 @@ namespace zetscript{
 	}
 
 	const string & CScriptVariable::getClassName(){
-			return m_infoRegisteredClass->metadata_info.object_info.symbol_info.symbol_name;
+			return m_infoRegisteredClass->metadata_info.object_info.symbol_info.symbol_ref;
 		}
 
 		const string & CScriptVariable::getPointer_C_ClassName(){
@@ -370,7 +369,9 @@ namespace zetscript{
 				ptr_shared_pointer_node = CURRENT_VM->newSharedPointer(this);
 
 				if(is_assigned){ // increment number shared pointers...
-					CURRENT_VM->sharePointer(ptr_shared_pointer_node);
+					if(!CURRENT_VM->sharePointer(ptr_shared_pointer_node)){
+						return NULL;
+					}
 				}
 				return true;
 			}

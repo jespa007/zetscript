@@ -14,7 +14,11 @@ int main(int argc, char * argv[]) {
 	CZetScript *zetscript = CZetScript::getInstance();
 
 	if (argc >= 2) {
-		zetscript->eval_file(argv[1]);
+		try{
+			zetscript->eval_file(argv[1]);
+		}catch(script_error & error){
+			fprintf(stderr,"%s\n",error.what());
+		}
 	}
 	else{
 

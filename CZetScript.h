@@ -132,9 +132,6 @@ using std::ostringstream;
 namespace zetscript{
 
 	class CScriptVariable;
-	class CScope;
-
-
 	class  CZetScript{
 
 

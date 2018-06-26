@@ -26,14 +26,85 @@
 namespace zetscript{
 
 
-void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-int getErrorLine();
-const char * getErrorDescription();
-const char * getErrorFilename();
+	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
 
 	vector<CScope *> 						* CScope::vec_scope_node=NULL;
 	int n_anonymouse_func=0;
+
+
+	string CScope::makeSymbolVarRef(const string & symbol_var, int idxScope){
+		return string("@lnkvar_s"+CZetScriptUtils::intToString(idxScope)+"_"+symbol_var);
+	}
+
+	string CScope::makeSymbolFunctionRef(const string & symbol_var, int idxScope, int n_params){
+
+		return string("@lnkfun_s"+CZetScriptUtils::intToString(idxScope)+"_p"+CZetScriptUtils::intToString(n_params)+"_"+symbol_var);
+	}
+
+	string 		CScope::getSymbolNameFromSymbolRef(const string & ref_symbol){
+		string symbol_var="";
+		bool is_function_ref = false;
+
+		if(strncmp("@lnkvar",ref_symbol.c_str(),7)!=0){
+			if(strncmp("@lnkfun",ref_symbol.c_str(),7)!=0){
+				THROW_RUNTIME_ERROR("not symbol ref (expected @lnk[var|fun]_)");
+				return symbol_var;
+			}else{
+				is_function_ref=true;
+			}
+		}
+
+		char * start_ptr=strchr((char *)ref_symbol.c_str(),'_');
+
+		if(start_ptr==NULL){
+			THROW_RUNTIME_ERROR("cannot get '_'");
+			return symbol_var;
+		}
+
+		start_ptr++;
+
+		// pass scope info...
+		start_ptr=strchr(start_ptr,'_');
+
+		if(start_ptr==NULL){
+			THROW_RUNTIME_ERROR("cannot get '_' sX");
+			return symbol_var;
+		}
+
+
+		start_ptr++;
+		// pass parameters ...
+		if(is_function_ref){
+			if(start_ptr==NULL){
+				THROW_RUNTIME_ERROR("cannot get '_' pX");
+				return symbol_var;
+			}
+		}
+
+		start_ptr++;
+		// finally we get var ...
+		while(*start_ptr != 0){
+			symbol_var+=*start_ptr;
+		}
+
+
+		return symbol_var;
+	}
+
+	/*int	 		CScope::getIdxScopeFromSymbolRef(const string & ref_symbol){
+
+		int idxScope=ZS_INVALID_IDX;
+
+		if(strncmp("@lnk",ref_symbol.c_str(),4)!=0){
+					THROW_RUNTIME_ERROR("not symbol ref (expected @lnk_)");
+					return idxScope;
+		}
+
+		return idxScope;
+
+
+	}*/
 
 
 	void 						CScope::setVectorScopeNode(vector<CScope *> 	* set_vec){
@@ -54,7 +125,7 @@ const char * getErrorFilename();
 
 	CScope 		* CScope::getScopeNodeByIdx(int idx){
 		if(idx < 0 || (unsigned)idx >= vec_scope_node->size()){
-			zs_print_error_cr("CScope node out of bound");
+			THROW_RUNTIME_ERROR("CScope node out of bound");
 			return NULL;
 		}
 
@@ -154,11 +225,17 @@ const char * getErrorFilename();
 
 		//int n_params=0;
 
-		if(args_node != NULL){
-			//n_params=args_node->children.size();
-			symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size());
-		}
-		symbol_ref=symbol_ref+"_"+var_name;
+
+		//n_params=args_node->children.size();
+		//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
+		symbol_ref=makeSymbolFunctionRef(var_name,ast->idxScope,args_node!=NULL?args_node->children.size():0);
+
+
+		//}
+		//else{
+		//	symbol_ref=makeSymbolVarRef(var_name,ast->idxScope);
+		//}
+		//symbol_ref=symbol_ref+"_"+var_name;
 
 
 		irv.symbol_ref = symbol_ref;
@@ -184,12 +261,22 @@ const char * getErrorFilename();
 			string symbol_ref = "";
 
 
-			if(n_params<0){ // register var symbol
-				symbol_ref = "_";
-			}else{ // register function symbol
-				symbol_ref = "_p"+CZetScriptUtils::intToString(n_params);
+			if(n_params>=0){
+				//n_params=args_node->children.size();
+				//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
+				symbol_ref=makeSymbolFunctionRef(var_name,this->idxScope,n_params);
+
 			}
-			symbol_ref=symbol_ref+"_"+var_name;
+			else{
+				symbol_ref=makeSymbolVarRef(var_name,this->idxScope);
+			}
+
+			/*if(n_params<0){ // register var symbol
+				symbol_ref = "_s"+CZetScriptUtils::intToString(ast->idxScope)+"_";
+			}else{ // register function symbol
+				symbol_ref = "_p"+CZetScriptUtils::intToString(n_params)+"_s"+CZetScriptUtils::intToString(ast->idxScope);
+			}
+			symbol_ref=symbol_ref+"_"+var_name;*/
 
 			tScopeVar irv;// = new tScopeVar;
 			//irv->m_obj=NULL;
@@ -213,22 +300,31 @@ const char * getErrorFilename();
 		return NULL;//false;//-1;
 	}
 
-	tScopeVar * CScope::existRegisteredSymbol(const string & var_name, int n_params){
+	tScopeVar * CScope::existRegisteredSymbolRecursive(const string & var_name, int idxScope, int n_params){
 
 		string symbol_ref = "";
 
+		if(n_params>=0){
+			//n_params=args_node->children.size();
+			//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
+			symbol_ref=makeSymbolFunctionRef(var_name,idxScope,n_params);
 
-		if(n_params<0){ // register var symbol
-			symbol_ref = "_";
-		}else{ // register function symbol
-			symbol_ref = "_p"+CZetScriptUtils::intToString(n_params);
 		}
-		symbol_ref=symbol_ref+"_"+var_name;
+		else{
+			symbol_ref=makeSymbolVarRef(var_name,idxScope);
+		}
+
+		/*if(n_params<0){ // register var symbol
+			symbol_ref = "_s"+CZetScriptUtils::intToString(this->idxScope)+"_";
+		}else{ // register function symbol
+			symbol_ref = "_p"+CZetScriptUtils::intToString(n_params)+"_s"+CZetScriptUtils::intToString(this->idxScope);
+		}
+		symbol_ref=symbol_ref+"_"+var_name;*/
 
 		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
 			if(n_params<0){ // get first ocurrence...
-				string ref = "__"+m_registeredVariableFromBase[i].name;
-				if(ref==symbol_ref){
+				//string ref = "__"+m_registeredVariableFromBase[i].name;
+				if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
 					return &m_registeredVariableFromBase[i];
 				}
 			}else{
@@ -240,18 +336,22 @@ const char * getErrorFilename();
 
 		int parent =  getIdxParent();
 		if(parent != ZS_UNDEFINED_IDX){
-			return SCOPE_INFO_NODE(parent)->existRegisteredSymbol(var_name,n_params);
+			return SCOPE_INFO_NODE(parent)->existRegisteredSymbolRecursive(var_name,idxScope,n_params);
 		}
 
 		return NULL;//false;//-1;
 
 	}
 
+	tScopeVar * CScope::existRegisteredSymbol(const string & var_name, int n_params){
+		return existRegisteredSymbolRecursive(var_name, this->idxScope, n_params);
+	}
+
 
 	tScopeVar * CScope::getInfoRegisteredSymbol(const string & v, int n_params, bool print_msg){
 		tScopeVar *irv = existRegisteredSymbol(v,n_params);
 		if(irv == NULL && print_msg){
-			zs_print_error_cr("%s not exist",v.c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("%s not exist",v.c_str()));
 		}
 
 		return irv;
