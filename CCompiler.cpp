@@ -40,7 +40,7 @@ namespace zetscript{
 			*info_ptr={properties,obj,NULL};
 			(*constant_pool)[const_name]=info_ptr;
 		}else{
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("internal:constant %s already exist",const_name.c_str()));
+			THROW_RUNTIME_ERROR("internal:constant %s already exist",const_name.c_str());
 		}
 
 		return info_ptr;
@@ -72,7 +72,7 @@ namespace zetscript{
 
 		writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol \"%s\" already defined. (link issue)",var_name.c_str());
 		return ZS_UNDEFINED_IDX;
-		//THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Error symbol %s already defined",var_name.c_str()));
+		//THROW_RUNTIME_ERROR("Error symbol %s already defined",var_name.c_str());
 	}
 
 	bool CCompiler::localVarSymbolExists(const string & name,short  idxAstNode){
@@ -925,7 +925,7 @@ namespace zetscript{
 
 		switch(op){
 		default:
-			THROW_RUNTIME_ERROR(string(CASTNode::defined_operator_punctuator[op].str)+" Not implemented" );
+			THROW_RUNTIME_ERROR("%s Not implemented",CASTNode::defined_operator_punctuator[op].str );
 			break;
 		case SUB_PUNCTUATOR:
 			return ASM_OPERATOR::NEG;
@@ -1465,7 +1465,7 @@ namespace zetscript{
 							//r=CCompiler::getCurrentInstructionIndex();
 							break;
 						default:
-							THROW_RUNTIME_ERROR("Unexpected node type "+CZetScriptUtils::intToString(eval_node_sp->node_type));
+							THROW_RUNTIME_ERROR("Unexpected node type %i",CZetScriptUtils::intToString(eval_node_sp->node_type));
 							return ZS_UNDEFINED_IDX;
 							break;
 						}
@@ -2148,7 +2148,7 @@ namespace zetscript{
 
 											switch(case_value->keyword_info){
 											default:
-												THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Unexpected %s keyword node in SWITCH node",CASTNode::defined_keyword[case_value->keyword_info].str));
+												THROW_RUNTIME_ERROR("Unexpected %s keyword node in SWITCH node",CASTNode::defined_keyword[case_value->keyword_info].str);
 												break;
 											case DEFAULT_KEYWORD:
 
@@ -2261,7 +2261,7 @@ namespace zetscript{
 				PASTNode class_node=AST_NODE(idxRootAstClass);
 				CScriptClass * sc=CScriptClass::getScriptClassByName(class_node->symbol_value,false);
 				if(sc==NULL){
-					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("cannot get class_node %s",class_node->symbol_value.c_str()));return false;
+					THROW_RUNTIME_ERROR("cannot get class_node %s",class_node->symbol_value.c_str());return false;
 					return false;
 				}
 
@@ -2303,7 +2303,7 @@ namespace zetscript{
 
 		switch(_node->keyword_info){
 		default:
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Keyword [ %s ] not implemented yet!",CASTNode::defined_keyword[_node->keyword_info].str));
+			THROW_RUNTIME_ERROR("Keyword [ %s ] not implemented yet!",CASTNode::defined_keyword[_node->keyword_info].str);
 			break;
 		case KEYWORD_TYPE::CLASS_KEYWORD:
 			return gacClass(_node->idxAstNode, _lc);
@@ -2336,7 +2336,7 @@ namespace zetscript{
 				PASTNode class_node=AST_NODE(idxRootAstClass);
 				CScriptClass * sc=CScriptClass::getScriptClassByName(class_node->symbol_value,false);
 				if(sc==NULL){
-					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("cannot get class_node %s",class_node->symbol_value.c_str()));return false;
+					THROW_RUNTIME_ERROR("cannot get class_node %s",class_node->symbol_value.c_str());return false;
 					return false;
 				}
 
@@ -2426,7 +2426,7 @@ namespace zetscript{
 			switch(_node->node_type){
 				default:
 				case UNKNOWN_NODE:
-					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("UNKNOWN_NODE (%i)",_node->node_type));
+					THROW_RUNTIME_ERROR("UNKNOWN_NODE (%i)",_node->node_type);
 					return false;
 					break;
 				case DELETE_OBJECT_NODE:
@@ -2454,7 +2454,7 @@ namespace zetscript{
 					if(_node->children.size() == 1){
 						return gacExpression(_node->children[0], _lc);
 					}else{
-						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Expected nodes for %i",_node->node_type));
+						THROW_RUNTIME_ERROR("Expected nodes for %i",_node->node_type);
 					}
 
 					break;
@@ -2462,7 +2462,7 @@ namespace zetscript{
 					if(_node->children.size() == 1){
 						return ast2asm_Recursive(_node->children[0], _lc);
 					}else{
-						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Expected nodes for %i",_node->node_type));
+						THROW_RUNTIME_ERROR("Expected nodes for %i",_node->node_type);
 					}
 					break;
 				case FUNCTION_OBJECT_NODE:

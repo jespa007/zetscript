@@ -10,7 +10,7 @@ namespace zetscript{
 	#define REGISTER_BASIC_TYPE(type_class, idx_class)\
 		if(!register_C_ClassInt<type_class>(STR(type_class))) return false;\
 		if(vec_script_class_node->at(idx_class)->classPtrType!=typeid(type_class *).name()){\
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Error initializing basic type: %s",STR(type_class)));\
+			THROW_RUNTIME_ERROR("Error initializing basic type: %s",STR(type_class));\
 			return false;\
 		}
 
@@ -136,7 +136,7 @@ namespace zetscript{
 				}
 		}
 		}else{
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Variable %s is not c referenced as C symbol",ir_var->symbol_ref.c_str()));
+			THROW_RUNTIME_ERROR("Variable %s is not c referenced as C symbol",ir_var->symbol_ref.c_str());
 		}
 
 		return{STK_PROPERTY_TYPE_UNDEFINED,
@@ -255,7 +255,7 @@ namespace zetscript{
 			return vec_script_class_node->at(index);
 		}else{
 			if(print_msg){
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("class \"%s\" doesn't exist!", class_name.c_str()));
+				THROW_RUNTIME_ERROR("class \"%s\" doesn't exist!", class_name.c_str());
 			}
 		}
 
@@ -271,7 +271,7 @@ namespace zetscript{
 		}
 
 		if(print_msg){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C class type \"%s\" is not registered", demangle(class_type).c_str()));
+			THROW_RUNTIME_ERROR("C class type \"%s\" is not registered", demangle(class_type).c_str());
 		}
 
 		return NULL;
@@ -291,7 +291,7 @@ namespace zetscript{
 		int index= getIdxScriptClass_Internal(v);
 
 		/*if(index == -1 && print_msg){
-			//THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("class %s not registered",v.c_str()));
+			//THROW_RUNTIME_ERROR("class %s not registered",v.c_str());
 			return ZS_UNDEFINED_IDX;
 		}*/
 
@@ -1110,7 +1110,7 @@ namespace zetscript{
 		tInfoVariableSymbol *irs;
 
 		if(var_ptr==NULL){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("cannot register var \"%s\" with NULL reference value", var_name.c_str()));
+			THROW_RUNTIME_ERROR("cannot register var \"%s\" with NULL reference value", var_name.c_str());
 			return false;
 		}
 
@@ -1122,7 +1122,7 @@ namespace zetscript{
 		}
 
 		if(getIdxClassFromIts_C_Type(var_type) == -1){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("%s has not valid type (%s)",var_name.c_str(),var_type.c_str()));
+			THROW_RUNTIME_ERROR("%s has not valid type (%s)",var_name.c_str(),var_type.c_str());
 			return false;
 		}
 
@@ -1156,7 +1156,7 @@ namespace zetscript{
 			}
 
 			if(print_msg){
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C class %s is not registered",str_classPtr.c_str()));
+				THROW_RUNTIME_ERROR("C class %s is not registered",str_classPtr.c_str());
 			}
 
 			return -1;
@@ -1181,7 +1181,7 @@ namespace zetscript{
 			}
 
 			if(print_msg){
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("C class %s is not registered",str_classPtr.c_str()));
+				THROW_RUNTIME_ERROR("C class %s is not registered",str_classPtr.c_str());
 			}
 
 			return -1;
@@ -1225,7 +1225,7 @@ namespace zetscript{
 				}
 			}
 		}
-		THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("variable member %s::%s doesn't exist",class_name.c_str(),function_name.c_str()));
+		THROW_RUNTIME_ERROR("variable member %s::%s doesn't exist",class_name.c_str(),function_name.c_str());
 		return NULL;
 	}
 
@@ -1238,7 +1238,7 @@ namespace zetscript{
 		}
 
 		if(show_msg){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("variable member %s::%s doesn't exist",idxFunction->symbol_info.symbol_ref.c_str(),function_name.c_str()));
+			THROW_RUNTIME_ERROR("variable member %s::%s doesn't exist",idxFunction->symbol_info.symbol_ref.c_str(),function_name.c_str());
 		}
 		return -1;
 	}
@@ -1317,7 +1317,7 @@ namespace zetscript{
 			}
 
 			if(show_errors){
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("function member %s::%s doesn't exist",rc->metadata_info.object_info.symbol_info.symbol_ref.c_str(),function_name.c_str()));
+				THROW_RUNTIME_ERROR("function member %s::%s doesn't exist",rc->metadata_info.object_info.symbol_info.symbol_ref.c_str(),function_name.c_str());
 			}
 		}
 		return -1;
@@ -1381,12 +1381,12 @@ namespace zetscript{
 		//local_map_type_conversion
 
 		if(mapTypeConversion->count(idx_src_class) == 0){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("There's no type src conversion class \"%s\".",demangle(src_class->classPtrType).c_str()));
+			THROW_RUNTIME_ERROR("There's no type src conversion class \"%s\".",demangle(src_class->classPtrType).c_str());
 			return 0;
 		}
 
 		if((*mapTypeConversion)[idx_src_class].count(idx_convert_class) == 0){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("There's no dest conversion class \"%s\".",demangle(convert_class->classPtrType).c_str()));
+			THROW_RUNTIME_ERROR("There's no dest conversion class \"%s\".",demangle(convert_class->classPtrType).c_str());
 			return 0;
 		}
 

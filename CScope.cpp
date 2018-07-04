@@ -48,7 +48,7 @@ namespace zetscript{
 		char * start_ptr=strchr((char *)ref_symbol.c_str(),'_');
 
 		if(start_ptr==NULL){
-			THROW_EXCEPTION("cannot get '_'");
+			THROW_RUNTIME_ERROR("cannot get '_'");
 			return symbol_var;
 		}
 
@@ -66,7 +66,7 @@ namespace zetscript{
 		int idxScope=ZS_INVALID_IDX;
 
 		if(strncmp("@lnk",ref_symbol.c_str(),4)!=0){
-					THROW_EXCEPTION("not symbol ref (expected @lnk_)");
+					THROW_RUNTIME_ERROR("not symbol ref (expected @lnk_)");
 					return idxScope;
 		}
 
@@ -94,7 +94,7 @@ namespace zetscript{
 
 	CScope 		* CScope::getScopeNodeByIdx(int idx){
 		if(idx < 0 || (unsigned)idx >= vec_scope_node->size()){
-			THROW_EXCEPTION("CScope node out of bound");
+			THROW_RUNTIME_ERROR("CScope node out of bound");
 			return NULL;
 		}
 
@@ -340,7 +340,7 @@ namespace zetscript{
 	tScopeVar * CScope::getInfoRegisteredSymbol(const string & v, int n_params, bool print_msg){
 		tScopeVar *irv = existRegisteredSymbol(v,n_params);
 		if(irv == NULL && print_msg){
-			THROW_EXCEPTION("%s not exist",v.c_str());
+			THROW_RUNTIME_ERROR("%s not exist",v.c_str());
 		}
 
 		return irv;

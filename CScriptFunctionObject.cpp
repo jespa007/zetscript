@@ -35,7 +35,7 @@ namespace zetscript{
 
 				((*vec_script_function_object_node)[size-1]->object_info.symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
 			){
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("function \"%s\" should register after C functions. Register after script functions is not allowed",f));
+				THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",f);
 				return false;
 			}
 
@@ -89,7 +89,7 @@ namespace zetscript{
 		}
 
 		if(show_msg){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("function member %s::%s doesn't exist",info_function->symbol_info.symbol_ref.c_str(),function_name.c_str()));
+			THROW_RUNTIME_ERROR("function member %s::%s doesn't exist",info_function->symbol_info.symbol_ref.c_str(),function_name.c_str());
 		}
 
 		return -1;
@@ -106,7 +106,7 @@ namespace zetscript{
 		}
 
 		if(show_msg){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("variable member %s::%s doesn't exist",info_function->symbol_info.symbol_ref.c_str(),function_name.c_str()));
+			THROW_RUNTIME_ERROR("variable member %s::%s doesn't exist",info_function->symbol_info.symbol_ref.c_str(),function_name.c_str());
 		}
 
 		return -1;
