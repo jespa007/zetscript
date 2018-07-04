@@ -34,21 +34,16 @@ namespace zetscript{
 
 
 	string CScope::makeSymbolVarRef(const string & symbol_var, int idxScope){
-		return string("@lnkvar_s"+CZetScriptUtils::intToString(idxScope)+"_"+symbol_var);
+		return string("@lnkvar"+CZetScriptUtils::intToString(idxScope)+"_"+symbol_var);
 	}
 
 	string CScope::makeSymbolFunctionRef(const string & symbol_var, int idxScope, int n_params){
 
-		return string("@lnkfun_s"+CZetScriptUtils::intToString(idxScope)+"_p"+CZetScriptUtils::intToString(n_params)+"_"+symbol_var);
+		return string("@lnkfun"+CZetScriptUtils::intToString(idxScope)+"p"+CZetScriptUtils::intToString(n_params)+"_"+symbol_var);
 	}
 
 	string 		CScope::getSymbolNameFromSymbolRef(const string & ref_symbol){
 		string symbol_var="";
-
-		if(strncmp("@lnk",ref_symbol.c_str(),4)!=0){
-			THROW_EXCEPTION("not symbol ref (expected @lnk_)");
-			return symbol_var;
-		}
 
 		char * start_ptr=strchr((char *)ref_symbol.c_str(),'_');
 
@@ -59,17 +54,9 @@ namespace zetscript{
 
 		start_ptr++;
 
-		char * end_ptr=strchr(start_ptr,'_');
-
-		if(end_ptr){
-			THROW_EXCEPTION("cannot get end '_'");
-			return symbol_var;
+		while(*start_ptr !=0){
+			symbol_var+=*start_ptr++;
 		}
-
-		while(start_ptr < end_ptr){
-			symbol_var+=*start_ptr;
-		}
-
 
 		return symbol_var;
 	}
@@ -134,8 +121,8 @@ namespace zetscript{
 			idxBaseScope = idx_this;
 			idxCurrentScopePointer=idx_this;
 		}else{
-			idxBaseScope = SCOPE_INFO_NODE( idx_parent)->getIdxBaseScope();
-			idxBaseAstNode = SCOPE_INFO_NODE( idx_parent)->getIdxBaseAstNode();
+			idxBaseScope = SCOPE_NODE( idx_parent)->getIdxBaseScope();
+			idxBaseAstNode = SCOPE_NODE( idx_parent)->getIdxBaseAstNode();
 		}
 	}
 
@@ -152,35 +139,35 @@ namespace zetscript{
 	}
 
 	int CScope::getIdxCurrentScopePointer(){
-		return SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer;
+		return SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer;
 	}
 
 	CScope * CScope::getCurrentScopePointer(){
-		return SCOPE_INFO_NODE(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer);
+		return SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);
 	}
 
 
 	void CScope::resetScopePointer(){
-		SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer = idxBaseScope;
+		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = idxBaseScope;
 	}
 
 	CScope * CScope::pushScope(){
 
-		CScope *new_scope = CScope::newScope(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
-		SCOPE_INFO_NODE(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
-		SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
+		CScope *new_scope = CScope::newScope(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
+		SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
+		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
 		return new_scope;
 
 	}
 
 	CScope * CScope::popScope(){
 
-		CScope *current_scope = SCOPE_INFO_NODE(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer);
+		CScope *current_scope = SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);
 		if(current_scope->idxParentScope != ZS_UNDEFINED_IDX){
 
-			SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer = current_scope->idxParentScope;
+			SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = current_scope->idxParentScope;
 			//m_baseScope->m_currentScopePointer = m_baseScope->m_currentScopePointer->m_parentScope;
-			return SCOPE_INFO_NODE(SCOPE_INFO_NODE(idxBaseScope)->idxCurrentScopePointer);
+			return SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);
 		}
 
 		return NULL;
@@ -227,7 +214,7 @@ namespace zetscript{
 			irv.idxAstNode=ast->idxAstNode;
 		}
 
-		CScope *base = SCOPE_INFO_NODE(idxBaseScope);
+		CScope *base = SCOPE_NODE(idxBaseScope);
 
 		base->m_registeredVariableFromBase.push_back(irv);
 
@@ -246,11 +233,11 @@ namespace zetscript{
 			if(n_params>=0){
 				//n_params=args_node->children.size();
 				//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
-				symbol_ref=makeSymbolFunctionRef(var_name,this->idxScope,n_params);
+				symbol_ref="@funp"+CZetScriptUtils::intToString(n_params)+"_"+var_name;
 
 			}
 			else{
-				symbol_ref=makeSymbolVarRef(var_name,this->idxScope);
+				symbol_ref="@var_"+var_name;
 			}
 
 			/*if(n_params<0){ // register var symbol
@@ -282,51 +269,71 @@ namespace zetscript{
 		return NULL;//false;//-1;
 	}
 
-	tScopeVar * CScope::existRegisteredSymbolRecursive(const string & var_name, int idxScope, int n_params){
+	tScopeVar * CScope::existRegisteredSymbolRecursiveDownScope(const string & symbol_ref){
 
-		string symbol_ref = "";
-
-		if(n_params>=0){
-			//n_params=args_node->children.size();
-			//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
-			symbol_ref=makeSymbolFunctionRef(var_name,idxScope,n_params);
-
-		}
-		else{
-			symbol_ref=makeSymbolVarRef(var_name,idxScope);
-		}
-
-		/*if(n_params<0){ // register var symbol
-			symbol_ref = "_s"+CZetScriptUtils::intToString(this->idxScope)+"_";
-		}else{ // register function symbol
-			symbol_ref = "_p"+CZetScriptUtils::intToString(n_params)+"_s"+CZetScriptUtils::intToString(this->idxScope);
-		}
-		symbol_ref=symbol_ref+"_"+var_name;*/
 
 		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
-			if(n_params<0){ // get first ocurrence...
-				//string ref = "__"+m_registeredVariableFromBase[i].name;
-				if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
-					return &m_registeredVariableFromBase[i];
-				}
-			}else{
-				if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
-					return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
-				}
+			if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
+				return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
 
 		int parent =  getIdxParent();
 		if(parent != ZS_UNDEFINED_IDX){
-			return SCOPE_INFO_NODE(parent)->existRegisteredSymbolRecursive(var_name,idxScope,n_params);
+			return SCOPE_NODE(parent)->existRegisteredSymbolRecursiveDownScope(symbol_ref);
 		}
 
 		return NULL;//false;//-1;
 
 	}
 
+	tScopeVar * CScope::existRegisteredSymbolRecursiveUpScope(const string & symbol_ref){
+		tScopeVar *sv=NULL;
+		// for each variable in current scope ...
+		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
+
+			if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
+				return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
+			}
+		}
+
+		// ok lets iterate through current scope list
+		for(unsigned i = 0; i < m_localScopeList.size(); i++){
+			CScope *s=SCOPE_NODE(m_localScopeList[i]);
+
+			sv=s->existRegisteredSymbolRecursiveUpScope(symbol_ref);
+
+			if(sv != NULL) return sv;
+		}
+
+		return NULL;//false;//-1;
+
+	}
+
+	tScopeVar * CScope::existRegisteredSymbolRecursive(const string & var_name, int n_params){
+
+		string symbol_ref = "";
+		tScopeVar *sv=NULL;
+
+		if(n_params>=0){
+			//n_params=args_node->children.size();
+			//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
+			symbol_ref="@funp"+CZetScriptUtils::intToString(n_params)+"_"+var_name;
+
+		}
+		else{
+			symbol_ref="@var_"+var_name;
+		}
+
+		sv=existRegisteredSymbolRecursiveDownScope(symbol_ref);
+		if(sv!=NULL) return sv;
+
+		return existRegisteredSymbolRecursiveUpScope(symbol_ref);
+
+	}
+
 	tScopeVar * CScope::existRegisteredSymbol(const string & var_name, int n_params){
-		return existRegisteredSymbolRecursive(var_name, this->idxScope, n_params);
+		return existRegisteredSymbolRecursive(var_name, n_params);
 	}
 
 

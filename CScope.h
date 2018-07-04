@@ -26,7 +26,7 @@
 namespace zetscript{
 
 
-#define SCOPE_INFO_NODE(idx) 				CScope::getScopeNodeByIdx(idx)
+#define SCOPE_NODE(idx) 				CScope::getScopeNodeByIdx(idx)
 
 // if 0 is in main <> 0, else.
 #define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScopeNodeByIdx(idx))->getIdxBaseScope()==0)
@@ -41,7 +41,9 @@ namespace zetscript{
 	class CContext;
 	class  CScope{
 
-		tScopeVar * existRegisteredSymbolRecursive(const string & var_name, int idxScope, int n_params=-1);
+		tScopeVar * existRegisteredSymbolRecursive(const string & var_name, int n_params=-1);
+		tScopeVar * existRegisteredSymbolRecursiveDownScope(const string & ref_symbol);
+		tScopeVar * existRegisteredSymbolRecursiveUpScope(const string & ref_symbol);
 	public:
 
 

@@ -242,7 +242,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		return SCOPE_INFO_NODE(vec_ast_node->at(idx)->idxScope);
+		return SCOPE_NODE(vec_ast_node->at(idx)->idxScope);
 	}
 
 	int CASTNode::findConstructorIdxNode(short idxAstNode){
@@ -3494,7 +3494,7 @@ namespace zetscript{
 
 						if(ast_node_to_be_evaluated!=NULL){ // define as many vars is declared within ','
 
-							if(!SCOPE_INFO_NODE(idxScope)->registerSymbol(var_node->symbol_value,var_node)){
+							if(!SCOPE_NODE(idxScope)->registerSymbol(var_node->symbol_value,var_node)){
 								return NULL;
 							}
 

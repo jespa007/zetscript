@@ -59,8 +59,6 @@ namespace zetscript{
 			info_symbol.symbol_ref = var_name,ast->idxScope;
 			int n_element=this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size();
 
-
-
 			this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
 
 			// init stack variable ...
@@ -113,7 +111,7 @@ namespace zetscript{
 
 			int n_params= ast_args->children.size();
 
-			tScopeVar *irv = SCOPE_INFO_NODE(ast_node->idxScope)->getInfoRegisteredSymbol(function_name,n_params,false);
+			tScopeVar *irv = SCOPE_NODE(ast_node->idxScope)->getInfoRegisteredSymbol(function_name,n_params,false);
 			if(irv != NULL){
 
 				CScriptFunctionObject *info_symbol = CScriptFunctionObject::newScriptFunctionObject();
@@ -154,7 +152,7 @@ namespace zetscript{
 
 		unsigned n_args = ast_args->children.size();
 
-		tScopeVar *irv=SCOPE_INFO_NODE(AST_NODE(idxAstNode)->idxScope)->getInfoRegisteredSymbol(name,(int)n_args,false);
+		tScopeVar *irv=SCOPE_NODE(AST_NODE(idxAstNode)->idxScope)->getInfoRegisteredSymbol(name,(int)n_args,false);
 		scope_type = INS_PROPERTY_LOCAL_SCOPE;
 		if(irv != NULL){
 
@@ -618,7 +616,7 @@ namespace zetscript{
 								if(_node->node_type == SYMBOL_NODE){
 									if(_lc!=NULL){
 										if(!_lc->existRegisteredSymbol(symbol_name)){ // check local
-											if(!SCOPE_INFO_NODE(0)->existRegisteredSymbol(symbol_name)){ // check global
+											if(!SCOPE_NODE(0)->existRegisteredSymbol(symbol_name)){ // check global
 												writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode)," variable \"%s\" not defined",symbol_name.c_str());
 												return false;
 											}
@@ -1666,7 +1664,7 @@ namespace zetscript{
 
 			}else{ // compile function ...
 				// compile function (within scope class)...
-				if(!gacFunctionOrOperator(node_fun->idxAstNode, SCOPE_INFO_NODE(node_class->idxScope),irfs)){
+				if(!gacFunctionOrOperator(node_fun->idxAstNode, SCOPE_NODE(node_class->idxScope),irfs)){
 					return false;
 				}
 			}
@@ -1826,7 +1824,7 @@ namespace zetscript{
 			return ZS_UNDEFINED_IDX;
 		}*/
 		// parse expression ...
-		if(!ast2asm_Recursive(_node->children[0],SCOPE_INFO_NODE(_node->idxScope))){ return ZS_UNDEFINED_IDX;}
+		if(!ast2asm_Recursive(_node->children[0],SCOPE_NODE(_node->idxScope))){ return ZS_UNDEFINED_IDX;}
 
 		// delete object instruction ...
 		if(!insert_DeleteObject_Instruction(_node->idxAstNode)) // goto end  ...
@@ -1857,11 +1855,11 @@ namespace zetscript{
 		// 1. compile var init ...
 
 		if(AST_NODE(_node->children[0])->children.size()>0){
-			if(!ast2asm_Recursive(_node->children[0],SCOPE_INFO_NODE(_node->idxScope))){ return false;}
+			if(!ast2asm_Recursive(_node->children[0],SCOPE_NODE(_node->idxScope))){ return false;}
 		}
 
 		// 2. compile conditional
-		if(!ast2asm_Recursive(_node->children[1],SCOPE_INFO_NODE(_node->idxScope))){ return false;}
+		if(!ast2asm_Recursive(_node->children[1],SCOPE_NODE(_node->idxScope))){ return false;}
 		// get current index statment in order to jmp from end body for.
 		int index_statment_conditional_for_= getCurrentStatmentIndex();
 
@@ -1870,11 +1868,11 @@ namespace zetscript{
 
 		// 3. compile body
 
-		if(!gacBody(_node->children[3],SCOPE_INFO_NODE(AST_NODE(_node->children[3])->idxScope))){ return false;}
+		if(!gacBody(_node->children[3],SCOPE_NODE(AST_NODE(_node->children[3])->idxScope))){ return false;}
 
 		// 4. compile post oper
 		if(AST_NODE(_node->children[2])->children.size()>0 && AST_NODE(_node->children[2])->children[0] != ZS_UNDEFINED_IDX){
-			if(!ast2asm_Recursive(_node->children[2],SCOPE_INFO_NODE(_node->idxScope))){ return false;}
+			if(!ast2asm_Recursive(_node->children[2],SCOPE_NODE(_node->idxScope))){ return false;}
 		}
 
 		// 5. jmp to the conditional index ...
@@ -1908,7 +1906,7 @@ namespace zetscript{
 		asm_op_jmp_end = insert_JNT_Instruction(_node->children[0]); // goto end  ...
 
 		// compile if-body ...
-		if(!gacBody(_node->children[1],SCOPE_INFO_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
+		if(!gacBody(_node->children[1],SCOPE_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
 		insert_JMP_Instruction(_node->children[0],index_ini_while); // goto end  ...
 
 		// save jmp value ...
@@ -1931,7 +1929,7 @@ namespace zetscript{
 		index_start_do_while =  getCurrentStatmentIndex()+1;
 
 		// compile do-body ...
-		if(!gacBody(_node->children[1],SCOPE_INFO_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
+		if(!gacBody(_node->children[1],SCOPE_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
 
 		// compile while condition...
 		if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
@@ -2023,7 +2021,7 @@ namespace zetscript{
 			asm_op_jmp_else_if = insert_JNT_Instruction(if_node->children[0]); // goto else body ...
 
 			// compile if-body ...
-			if(!gacBody(if_node->children[1],SCOPE_INFO_NODE(AST_NODE(if_node->children[1])->idxScope))){ return false;}
+			if(!gacBody(if_node->children[1],SCOPE_NODE(AST_NODE(if_node->children[1])->idxScope))){ return false;}
 
 			asm_op_jmp_end.push_back(insert_JMP_Instruction(_node->idxAstNode));
 			asm_op_jmp_else_if->index_op2 = getCurrentStatmentIndex()+1;
@@ -2108,7 +2106,7 @@ namespace zetscript{
 		string error_str;
 		string detected_type_str;
 		//int idxScope=AST_SCOPE_INFO_IDX(this->m_currentFunctionInfo->function_info_object->object_info.symbol_info.idxAstNode);
-		 //CScope *_scope = SCOPE_INFO_NODE(idxScope)->getCurrentScopePointer();
+		 //CScope *_scope = SCOPE_NODE(idxScope)->getCurrentScopePointer();
 		 vector<tInfoAsmOpCompiler *> jmp_instruction;//=NULL;
 		 vector<vector<tInfoAsmOpCompiler *>> jt_instruction;
 
@@ -2254,7 +2252,7 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < _node->children.size(); i++){ // for all vars ...
 			PASTNode node_var=AST_NODE(_node->children[i]);
-			CScope * scope_var=SCOPE_INFO_NODE(node_var->idxScope);
+			CScope * scope_var=SCOPE_NODE(node_var->idxScope);
 
 			bool is_var_member = (scope_var->getIdxBaseScope() != 0) && (node_var->idxScope == scope_var->getIdxBaseScope());
 
@@ -2273,10 +2271,10 @@ namespace zetscript{
 
 			}else { // normal var
 
-				if(localVarSymbolExists(node_var->symbol_value, _node->idxAstNode)){
+				/*if(localVarSymbolExists(node_var->symbol_value, _node->idxAstNode)){
 					writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Variable \"%s\" already defined !",_node->symbol_value.c_str());
 					return false;
-				}
+				}*/
 
 				if((local_variable_idx=addLocalVarSymbol(node_var->symbol_value,node_var->idxAstNode)) == ZS_UNDEFINED_IDX){
 					return false;
@@ -2296,7 +2294,7 @@ namespace zetscript{
 	bool CCompiler::gacKeyword(short idxAstNode, CScope * _lc){
 
 		PASTNode _node = AST_NODE(idxAstNode);
-		CScope * _scope_node = NULL;//SCOPE_INFO_NODE(_node->idxScope);
+		CScope * _scope_node = NULL;//SCOPE_NODE(_node->idxScope);
 		bool is_function_member;
 
 		CScriptFunctionObject *function_object=NULL;
@@ -2330,7 +2328,7 @@ namespace zetscript{
 			break;
 		case KEYWORD_TYPE::FUNCTION_KEYWORD: // don't compile function. It will compiled later, after main body
 
-			_scope_node = SCOPE_INFO_NODE(_node->idxScope);
+			_scope_node = SCOPE_NODE(_node->idxScope);
 			// check if function belongs to class...
 			is_function_member = (_scope_node->getIdxBaseScope() != 0) && (_scope_node->idxScope == _scope_node->getIdxBaseScope());
 			if(is_function_member){
@@ -2448,7 +2446,7 @@ namespace zetscript{
 					break;
 				case BODY_NODE:
 					zs_print_debug_cr("BODY_NODE");
-					return gacBody(_node->idxAstNode, SCOPE_INFO_NODE(_node->idxScope)); // we pass scope node
+					return gacBody(_node->idxAstNode, SCOPE_NODE(_node->idxScope)); // we pass scope node
 					break;
 				case POST_FOR_NODE:
 				case CONDITIONAL_NODE:
@@ -2485,7 +2483,7 @@ namespace zetscript{
 
 		PASTNode _node =AST_NODE(idxAstNode);
 		stk_scriptFunction.push_back(m_currentFunctionInfo=new tInfoFunctionCompile(sf));
-		this->m_treescope = SCOPE_INFO_NODE(_node->idxScope);
+		this->m_treescope = SCOPE_NODE(_node->idxScope);
 	}
 
 	void CCompiler::popFunction(bool save_statment_op){
