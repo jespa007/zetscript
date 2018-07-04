@@ -56,7 +56,7 @@ namespace zetscript{
 			PASTNode ast = AST_NODE(idxAstNode);
 
 			info_symbol.idxAstNode = idxAstNode;
-			info_symbol.symbol_ref = CScope::makeSymbolVarRef(var_name,ast->idxScope);
+			info_symbol.symbol_ref = var_name,ast->idxScope;
 			int n_element=this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size();
 
 
@@ -120,7 +120,7 @@ namespace zetscript{
 
 				info_symbol->object_info.symbol_info.idxAstNode = irv->idxAstNode;
 				//info_symbol.object_info.symbol_info.idxScopeVar = irv->idxScopeVar;
-				info_symbol->object_info.symbol_info.symbol_ref = CScope::makeSymbolFunctionRef(name,ast_node->idxScope,n_params);
+				info_symbol->object_info.symbol_info.symbol_ref = name;
 
 				this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction.push_back(info_symbol->object_info.idxScriptFunctionObject);
 
@@ -1653,7 +1653,7 @@ namespace zetscript{
 				if(irs_src){
 
 					// copy c refs ...
-					irfs->object_info.symbol_info.symbol_ref= CScope::makeSymbolFunctionRef(symbol_value,node_fun->idxScope,0);//irs_src->object_info.symbol_info.symbol_name;
+					irfs->object_info.symbol_info.symbol_ref= symbol_value;//irs_src->object_info.symbol_info.symbol_name;
 					irfs->object_info.symbol_info.properties = irs_src->object_info.symbol_info.properties;
 
 					irfs->object_info.symbol_info.ref_ptr = irs_src->object_info.symbol_info.ref_ptr;

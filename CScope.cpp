@@ -44,47 +44,29 @@ namespace zetscript{
 
 	string 		CScope::getSymbolNameFromSymbolRef(const string & ref_symbol){
 		string symbol_var="";
-		bool is_function_ref = false;
 
-		if(strncmp("@lnkvar",ref_symbol.c_str(),7)!=0){
-			if(strncmp("@lnkfun",ref_symbol.c_str(),7)!=0){
-				THROW_RUNTIME_ERROR("not symbol ref (expected @lnk[var|fun]_)");
-				return symbol_var;
-			}else{
-				is_function_ref=true;
-			}
+		if(strncmp("@lnk",ref_symbol.c_str(),4)!=0){
+			THROW_EXCEPTION("not symbol ref (expected @lnk_)");
+			return symbol_var;
 		}
 
 		char * start_ptr=strchr((char *)ref_symbol.c_str(),'_');
 
 		if(start_ptr==NULL){
-			THROW_RUNTIME_ERROR("cannot get '_'");
+			THROW_EXCEPTION("cannot get '_'");
 			return symbol_var;
 		}
 
 		start_ptr++;
 
-		// pass scope info...
-		start_ptr=strchr(start_ptr,'_');
+		char * end_ptr=strchr(start_ptr,'_');
 
-		if(start_ptr==NULL){
-			THROW_RUNTIME_ERROR("cannot get '_' sX");
+		if(end_ptr){
+			THROW_EXCEPTION("cannot get end '_'");
 			return symbol_var;
 		}
 
-
-		start_ptr++;
-		// pass parameters ...
-		if(is_function_ref){
-			if(start_ptr==NULL){
-				THROW_RUNTIME_ERROR("cannot get '_' pX");
-				return symbol_var;
-			}
-		}
-
-		start_ptr++;
-		// finally we get var ...
-		while(*start_ptr != 0){
+		while(start_ptr < end_ptr){
 			symbol_var+=*start_ptr;
 		}
 
@@ -97,7 +79,7 @@ namespace zetscript{
 		int idxScope=ZS_INVALID_IDX;
 
 		if(strncmp("@lnk",ref_symbol.c_str(),4)!=0){
-					THROW_RUNTIME_ERROR("not symbol ref (expected @lnk_)");
+					THROW_EXCEPTION("not symbol ref (expected @lnk_)");
 					return idxScope;
 		}
 
@@ -125,7 +107,7 @@ namespace zetscript{
 
 	CScope 		* CScope::getScopeNodeByIdx(int idx){
 		if(idx < 0 || (unsigned)idx >= vec_scope_node->size()){
-			THROW_RUNTIME_ERROR("CScope node out of bound");
+			THROW_EXCEPTION("CScope node out of bound");
 			return NULL;
 		}
 
@@ -351,7 +333,7 @@ namespace zetscript{
 	tScopeVar * CScope::getInfoRegisteredSymbol(const string & v, int n_params, bool print_msg){
 		tScopeVar *irv = existRegisteredSymbol(v,n_params);
 		if(irv == NULL && print_msg){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("%s not exist",v.c_str()));
+			THROW_EXCEPTION("%s not exist",v.c_str());
 		}
 
 		return irv;

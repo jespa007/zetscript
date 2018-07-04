@@ -252,7 +252,7 @@ namespace zetscript{
 
 			//tPrimitiveType *rt;
 			//vector<tPrimitiveType *> pt;
-			//CScope::tScopeVar  *rs;
+
 
 			//CScriptVariable *sf=NULL;
 			CScriptFunctionObject * mainFunctionInfo = getScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);

@@ -296,7 +296,7 @@ namespace zetscript{
 
 		vec_ast_node = new vector<CASTNode *>; // ast collection register...
 		vec_scope_node = new vector<CScope *>;
-		//vector<tScopeVar *> 						vec_scope_var_node;
+
 		vec_script_class_node = new vector<CScriptClass *> ;
 		vec_script_function_object_node = new vector<CScriptFunctionObject *>;
 		vec_info_parsed_source_node = new vector<tInfoParsedSource> ;

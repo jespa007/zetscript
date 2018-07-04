@@ -193,7 +193,7 @@ namespace zetscript{
 
 
 		if(vec_ast_node->size() >= MAX_AST_NODES){
-			THROW_RUNTIME_ERROR("Max AST Nodes reached ("+CZetScriptUtils::intToString(MAX_AST_NODES)+")");
+			THROW_EXCEPTION("Max AST Nodes reached ("+CZetScriptUtils::intToString(MAX_AST_NODES)+")");
 			return NULL;
 		}
 
@@ -213,7 +213,7 @@ namespace zetscript{
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_RUNTIME_ERROR("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return NULL;
 		}
 		 return vec_ast_node->at(idx);
@@ -225,7 +225,7 @@ namespace zetscript{
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_RUNTIME_ERROR("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return ZS_UNDEFINED_IDX;
 		}
 
@@ -238,7 +238,7 @@ namespace zetscript{
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_RUNTIME_ERROR("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return NULL;
 		}
 
@@ -249,7 +249,7 @@ namespace zetscript{
 
 		PASTNode _node=AST_NODE(idxAstNode);
 
-		if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {THROW_RUNTIME_ERROR("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
+		if(_node->node_type!=NODE_TYPE::ARGS_PASS_NODE) {THROW_EXCEPTION("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
 		for(unsigned i = 0; i < _node->children.size(); i++){
 			PASTNode child_node = AST_NODE(_node->children[i]);
 			if(child_node->node_type == NODE_TYPE::KEYWORD_NODE){
@@ -320,7 +320,7 @@ namespace zetscript{
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_RUNTIME_ERROR("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return -1;
 		}
 		return vec_ast_node->at(idx)->line_value;
@@ -332,7 +332,7 @@ namespace zetscript{
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_RUNTIME_ERROR(string(DEFAULT_NO_FILENAME));
+			THROW_EXCEPTION(string(DEFAULT_NO_FILENAME));
 			return "";
 		}
 
@@ -349,7 +349,7 @@ namespace zetscript{
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_RUNTIME_ERROR("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return "";
 		}
 		return vec_ast_node->at(idx)->symbol_value.c_str();
@@ -361,7 +361,7 @@ namespace zetscript{
 		}
 
 		if(idx < 0 || (unsigned)idx >= vec_ast_node->size()){
-			THROW_RUNTIME_ERROR("Ast node out of bound");
+			THROW_EXCEPTION("Ast node out of bound");
 			return NULL;
 		}
 
@@ -567,7 +567,7 @@ namespace zetscript{
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -589,7 +589,7 @@ namespace zetscript{
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -612,7 +612,7 @@ namespace zetscript{
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -639,7 +639,7 @@ namespace zetscript{
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -666,7 +666,7 @@ namespace zetscript{
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -687,7 +687,7 @@ namespace zetscript{
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -711,7 +711,7 @@ namespace zetscript{
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -732,7 +732,7 @@ namespace zetscript{
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -753,7 +753,7 @@ namespace zetscript{
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
@@ -829,7 +829,7 @@ namespace zetscript{
 		for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
-				THROW_RUNTIME_ERROR("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
+				THROW_EXCEPTION("internal: "+string(defined_operator_punctuator[index_to_evaluate[i]].str)+" not have parse function");
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
@@ -1230,7 +1230,7 @@ namespace zetscript{
 				}
 				break;
 			case KEYWORD_TYPE::DELETE_KEYWORD:
-				THROW_RUNTIME_ERROR("internal error! delete bad ast processing!");
+				THROW_EXCEPTION("internal error! delete bad ast processing!");
 				return NULL;
 				/*if((aux = parseDelete(str,m_startLine,scope_info,ast_node_to_be_evaluated!=NULL?ast_node_to_be_evaluated:NULL)) == NULL){
 					return NULL;
@@ -1517,7 +1517,7 @@ namespace zetscript{
 		}
 
 		if(type_group>=MAX_GROUPS) {
-			THROW_RUNTIME_ERROR("Internal:Cannot find ast tree operator");
+			THROW_EXCEPTION("Internal:Cannot find ast tree operator");
 			return NULL;
 		}
 
@@ -3477,7 +3477,7 @@ namespace zetscript{
 							if(var_node != NULL){
 
 								if(children_node==NULL){
-									THROW_RUNTIME_ERROR("internal:children node == NULL");
+									THROW_EXCEPTION("internal:children node == NULL");
 									return NULL;
 								}
 
@@ -3816,7 +3816,7 @@ namespace zetscript{
 								try{
 									CZetScript::getInstance()->parse_file(file_to_parse.c_str());
 								}catch(script_error & error){
-									THROW_EXCEPTION error;
+									THROW_EXCEPTION(error);
 									return NULL;
 								}
 
@@ -3904,7 +3904,7 @@ namespace zetscript{
 	void CASTNode::init(){
 
 		if(astNodeToCompile != NULL){
-			THROW_RUNTIME_ERROR("CASTNode already initialized");
+			THROW_EXCEPTION("CASTNode already initialized");
 			return;
 		}
 

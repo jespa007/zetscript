@@ -936,7 +936,7 @@ namespace zetscript{
 														 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find ancestor function for \"%s(%s)\". Is registered ?", symbol_to_find.c_str(),arg_str.c_str());
 													 }
 													 else{
-														 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s::%s\"not found", base_class.c_str(),symbol_to_find.c_str());
+														 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s::%s\" not found", base_class.c_str(),symbol_to_find.c_str());
 													 }
 													 return false;
 												 }
@@ -961,7 +961,7 @@ namespace zetscript{
 
 															}
 															else{
-																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\"not found",symbol_to_find.c_str());
+																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" not found",symbol_to_find.c_str());
 															}
 														 return false;
 													 }
@@ -1134,7 +1134,7 @@ namespace zetscript{
 
 			// init struct...
 			irs->properties = ::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-			irs->symbol_ref = CScope::makeSymbolVarRef(var_name,0);
+			irs->symbol_ref = var_name;
 			irs->ref_ptr=(intptr_t)var_ptr;
 			irs->c_type=var_type;
 
@@ -1199,7 +1199,7 @@ namespace zetscript{
 			tInfoVariableSymbol info_var;
 			info_var.idxScriptClass = rc->metadata_info.object_info.symbol_info.idxScriptClass;
 			info_var.idxAstNode = idxAstNode;
-			info_var.symbol_ref =CScope::makeSymbolVarRef(var_name,ast->idxScope);
+			info_var.symbol_ref =var_name;
 			info_var.idxSymbol = (short)object_info->local_symbols.m_registeredVariable.size();
 			object_info->local_symbols.m_registeredVariable.push_back(info_var);
 
@@ -1278,7 +1278,7 @@ namespace zetscript{
 			PASTNode ast = AST_NODE(idxAstNode);
 
 			irs->object_info.symbol_info.idxScriptClass = object_info->symbol_info.idxScriptClass;
-			irs->object_info.symbol_info.symbol_ref = CScope::makeSymbolFunctionRef(fun_name,ast->idxScope);
+			irs->object_info.symbol_info.symbol_ref = fun_name;
 			irs->object_info.symbol_info.idxAstNode = idxAstNode;
 
 			if(fun_name == class_name){
