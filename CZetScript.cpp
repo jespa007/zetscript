@@ -355,7 +355,7 @@ namespace zetscript{
 				if(local_irfs->object_info.symbol_info.idxScriptClass!=ZS_UNDEFINED_IDX){
 					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->object_info.symbol_info.idxScriptClass);
 					if(sc->metadata_info.object_info.symbol_info.idxScriptClass != IDX_CLASS_MAIN){
-						sprintf(symbol_ref,"%s::%s",GET_SYMBOL_NAME(fs->symbol_info.symbol_ref).c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
+						sprintf(symbol_ref,"%s::%s",fs->symbol_info.symbol_ref.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
 					}
 				}
 
