@@ -61,6 +61,11 @@
 
 #define GET_IDX_2_CLASS_C_STR(idx) (CScriptClass::getScriptClassByIdx(idx)->classPtrType)
 
+#define LNK_SYM				"@lnk"
+#define VAR_TYPE			"var"
+#define FUN_TYPE			"fun"
+
+
 namespace zetscript{
 
 
@@ -138,6 +143,8 @@ namespace zetscript{
 			tPrimitiveType 				*return_type;
 			vector<tPrimitiveType*>		params;
 		}tRegisterFunction;
+
+
 
 
 		// HELPERS
@@ -310,7 +317,7 @@ namespace zetscript{
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
 
 			irs->object_info.symbol_info.idxAstNode = -1;
-			irs->object_info.symbol_info.symbol_ref = function_name;
+			irs->object_info.symbol_info.symbol_ref = CCompiler::makeSymbolRef(function_name,0);
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
 			irs->object_info.symbol_info.idxSymbol = (short)(mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size());
@@ -625,7 +632,7 @@ namespace zetscript{
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->object_info.symbol_info.symbol_ref=function_name;
+			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,0);
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;

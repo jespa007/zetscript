@@ -44,6 +44,8 @@ namespace zetscript{
 	void (* CScriptClass::print_out_callback)(const char *) = NULL;
 
 
+
+
 	int CScriptClass::getIdxClassFromIts_C_TypeInternal(const string & c_type_str){
 
 		// 1. we have to handle primitives like void, (int *), (bool *),(float *) and (string *).
@@ -618,7 +620,7 @@ namespace zetscript{
 		symbol_not_found = true;
 		char n_args_to_find =-1;
 		PASTNode ast_node = AST_NODE(iao->idxAstNode);
-		string symbol_to_find =ast_node->symbol_value;
+		string symbol_to_find =ast_node->symbol_value;//CCompiler::makeSymbolRef(ast_node->symbol_value, ast_node->idxScope);
 
 		if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
@@ -665,23 +667,35 @@ namespace zetscript{
 		}
 		else{
 
-			 if((idx=CScriptFunctionObject::getIdxFunctionObject(info_function,symbol_to_find,n_args_to_find,false))!=-1){
-				 REMOVE_SCOPES(iao->instruction_properties);
-				 iao->instruction_properties |= param_scope_type;
-				 iao->index_op1 = LOAD_TYPE_FUNCTION;
-				 iao->index_op2 = idx;
-				 if((GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[idx])->symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
-					 iao->index_op2 = -1;
-				 }
-				 return true;
-			 }else {
-				 if((idx=CScriptFunctionObject::getIdxVariableSymbol(info_function,symbol_to_find, false))!=-1){
+			 int idx_scope=ast_node->idxScope;
+
+			 while(idx_scope!=IDX_INVALID){ // we try all scopes until match symbols at right scope...
+
+				 CScope *sc=SCOPE_NODE(idx_scope);
+				 symbol_to_find=CCompiler::makeSymbolRef(ast_node->symbol_value,idx_scope);
+
+				 if((idx=CScriptFunctionObject::getIdxFunctionObject(info_function,symbol_to_find,n_args_to_find,false))!=-1){
 					 REMOVE_SCOPES(iao->instruction_properties);
 					 iao->instruction_properties |= param_scope_type;
-					 iao->index_op1 = LOAD_TYPE_VARIABLE;
+					 iao->index_op1 = LOAD_TYPE_FUNCTION;
 					 iao->index_op2 = idx;
+					 if((GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[idx])->symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
+						 iao->index_op2 = -1;
+					 }
 					 return true;
+				 }else {
+
+					 if((idx=CScriptFunctionObject::getIdxVariableSymbol(info_function,symbol_to_find, false))!=-1){
+						 REMOVE_SCOPES(iao->instruction_properties);
+						 iao->instruction_properties |= param_scope_type;
+						 iao->index_op1 = LOAD_TYPE_VARIABLE;
+						 iao->index_op2 = idx;
+						 return true;
+					 }
+
 				 }
+
+			 	 idx_scope=sc->getIdxParent();
 			 }
 		}
 		symbol_not_found = false;
@@ -906,8 +920,9 @@ namespace zetscript{
 									 }
 
 									 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
+										 PASTNode iao_node = AST_NODE(iao->idxAstNode);
 
-										 string symbol_to_find =AST_SYMBOL_VALUE(iao->idxAstNode);
+										 string symbol_to_find =iao_node->symbol_value;
 
 										 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
@@ -917,6 +932,7 @@ namespace zetscript{
 
 											// this/super required ...
 											 if(sfi != NULL){
+												 // make ref var from class scope ...
 												 // search global...
 												 if(scope_type & INS_PROPERTY_SUPER_SCOPE){
 													 symbol_to_find = GET_SCRIPT_FUNCTION_OBJECT(sfi->local_symbols.vec_idx_registeredFunction[k])->object_info.symbol_info.symbol_ref;
@@ -942,6 +958,7 @@ namespace zetscript{
 												 }
 											 }
 											 else{ //normal symbol...
+												 string symbol_to_find =CCompiler::makeSymbolRef(iao_node->symbol_value,iao_node->idxScope);
 												 // search local...
 												 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
@@ -1134,7 +1151,7 @@ namespace zetscript{
 
 			// init struct...
 			irs->properties = ::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-			irs->symbol_ref = var_name;
+			irs->symbol_ref = CCompiler::makeSymbolRef(var_name,0);
 			irs->ref_ptr=(intptr_t)var_ptr;
 			irs->c_type=var_type;
 

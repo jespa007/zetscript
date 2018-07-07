@@ -33,33 +33,6 @@ namespace zetscript{
 	int n_anonymouse_func=0;
 
 
-	string CScope::makeSymbolVarRef(const string & symbol_var, int idxScope){
-		return string("@lnkvar"+CZetScriptUtils::intToString(idxScope)+"_"+symbol_var);
-	}
-
-	string CScope::makeSymbolFunctionRef(const string & symbol_var, int idxScope, int n_params){
-
-		return string("@lnkfun"+CZetScriptUtils::intToString(idxScope)+"p"+CZetScriptUtils::intToString(n_params)+"_"+symbol_var);
-	}
-
-	string 		CScope::getSymbolNameFromSymbolRef(const string & ref_symbol){
-		string symbol_var="";
-
-		char * start_ptr=strchr((char *)ref_symbol.c_str(),'_');
-
-		if(start_ptr==NULL){
-			THROW_RUNTIME_ERROR("cannot get '_'");
-			return symbol_var;
-		}
-
-		start_ptr++;
-
-		while(*start_ptr !=0){
-			symbol_var+=*start_ptr++;
-		}
-
-		return symbol_var;
-	}
 
 	/*int	 		CScope::getIdxScopeFromSymbolRef(const string & ref_symbol){
 
@@ -187,17 +160,17 @@ namespace zetscript{
 
 		tScopeVar irv;// = new tScopeVar;
 
-
-		string var_name = "_afun_"+CZetScriptUtils::intToString(n_anonymouse_func++);
-		string symbol_ref = "";//"_"+var_name;
 		PASTNode args_node = AST_NODE(ast->children[0]);
+		string var_name = "_afun"+CZetScriptUtils::intToString(args_node!=NULL?args_node->children.size():0)+"_"+CZetScriptUtils::intToString(n_anonymouse_func++);
+		//string symbol_ref = "_"+var_name;
+
 
 		//int n_params=0;
 
 
 		//n_params=args_node->children.size();
 		//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
-		symbol_ref=makeSymbolFunctionRef(var_name,ast->idxScope,args_node!=NULL?args_node->children.size():0);
+		//symbol_ref=var_name args_node!=NULL?args_node->children.size():0;
 
 
 		//}
@@ -207,7 +180,7 @@ namespace zetscript{
 		//symbol_ref=symbol_ref+"_"+var_name;
 
 
-		irv.symbol_ref = symbol_ref;
+		irv.symbol_ref = var_name;
 		irv.name=var_name;
 		irv.idxAstNode=-1;
 		if(ast != NULL){

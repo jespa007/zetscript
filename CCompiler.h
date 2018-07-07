@@ -5,7 +5,8 @@
 #pragma once
 
 
-#define CLEAR_COMPILE_INFORMATION CState::clearCurrentCompileInformation()
+#define CLEAR_COMPILE_INFORMATION 	CState::clearCurrentCompileInformation()
+#define GET_SYMBOL_NAME(s)			(CCompiler::getSymbolNameFromSymbolRef(s))
 
 namespace zetscript{
 
@@ -30,6 +31,9 @@ namespace zetscript{
 		typedef tStackElement tInfoConstantValue;
 
 		static tDefOperator def_operator[MAX_OPERATORS];
+
+		static string 					makeSymbolRef(const string & symbol_name, int idxScope);
+		static string 					getSymbolNameFromSymbolRef(const string & ref_symbol);
 
 
 		static CCompiler * getInstance();
@@ -59,6 +63,7 @@ namespace zetscript{
 	private:
 		static CCompiler *m_compiler;
 		static map<string,tInfoConstantValue *> *constant_pool;
+
 
 		struct tInfoAsmOpCompiler{
 			ASM_OPERATOR operator_type;

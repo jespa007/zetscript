@@ -32,10 +32,7 @@ namespace zetscript{
 #define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScopeNodeByIdx(idx))->getIdxBaseScope()==0)
 
 
-#define SCOPE_LNK_SYM		"@lnk"
-#define SCOPE_VAR_TYPE		"var"
-#define SCOPE_FUN_TYPE		"fun"
-#define GET_SYMBOL_NAME(s)	(CScope::getSymbolNameFromSymbolRef(s))
+
 
 
 	class CContext;
@@ -59,9 +56,6 @@ namespace zetscript{
 		static CScope 				* 	getScopeNodeByIdx(int idx);
 
 		// ref symbol management...
-		static string 					makeSymbolVarRef(const string & symbol_name, int idxScope);
-		static string 					makeSymbolFunctionRef(const string & symbol_name, int idxScope, int n_params=0);
-		static string 					getSymbolNameFromSymbolRef(const string & ref_symbol);
 		//static int	 					getIdxScopeFromSymbolRef(const string & ref_symbol);
 		//static int	 					getParamsFromSymbolRef(const string & ref_symbol);
 
