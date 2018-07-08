@@ -771,7 +771,7 @@ namespace zetscript{
 			*calling_obj = m_mainObject;
 			for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size() && *fun_obj==NULL; i++){
 				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
-				if(aux_fun_obj->object_info.symbol_info.symbol_ref == access_var[0]){
+				if(aux_fun_obj->object_info.symbol_info.symbol_ref == CCompiler::makeSymbolRef(access_var[0],0)){
 					*fun_obj=aux_fun_obj;
 				}
 			}

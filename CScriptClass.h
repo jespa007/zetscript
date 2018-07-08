@@ -108,7 +108,10 @@ namespace zetscript{
 		std::function<void (void *  p)> 	*	c_destructor;
 		string classPtrType; // type_id().name();
 		int idxClass;
-		vector<int> idxBaseClass; // in the case is and extension of class.
+
+
+		// vector<int> is set because C can have multiple herited classes (and we have to check whether an attempt C class to base of is not already set) where as script class only have one.
+		vector<int> idxBaseClass;
 
 		vector<int> metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
 
@@ -317,7 +320,7 @@ namespace zetscript{
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
 
 			irs->object_info.symbol_info.idxAstNode = -1;
-			irs->object_info.symbol_info.symbol_ref = CCompiler::makeSymbolRef(function_name,0);
+			irs->object_info.symbol_info.symbol_ref = CCompiler::makeSymbolRef(function_name,IDX_GLOBAL_SCOPE); // <-- defined as global
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
 			irs->object_info.symbol_info.idxSymbol = (short)(mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size());
@@ -445,8 +448,8 @@ namespace zetscript{
 			string class_name=typeid(_T).name();
 			string class_name_ptr=typeid(_T *).name();
 
-			int idxBaseClass = getIdxClassFromIts_C_Type(base_class_name_ptr);
-			if(idxBaseClass == -1) {
+			int idx_base_class = getIdxClassFromIts_C_Type(base_class_name_ptr);
+			if(idx_base_class == -1) {
 				THROW_RUNTIME_ERROR("base class %s not registered",base_class_name_ptr.c_str());
 				return false;
 			}
@@ -458,7 +461,7 @@ namespace zetscript{
 				return false;
 			}
 
-			if(isIdxClassInstanceOf(register_class,idxBaseClass)){
+			if(isIdxClassInstanceOf(register_class,idx_base_class)){
 				THROW_RUNTIME_ERROR("C++ class \"%s\" is already registered as base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
 				return false;
 			}
@@ -469,19 +472,30 @@ namespace zetscript{
 				return false;
 			}
 
-			for(unsigned i = 0; i < (*local_vec_script_class_node)[register_class]->idxBaseClass.size(); i++){
+			CScriptClass *sc=(*local_vec_script_class_node)[register_class];
+			while( sc->idxBaseClass.size()>0){
+
+				sc=CScriptClass::getScriptClassByIdx(sc->idxBaseClass[0]); // get base class...
+				if(sc->classPtrType ==base_class_name_ptr){
+					THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
+					return false;
+				}
+
+			}
+
+			/*for(unsigned i = 0; i < (*local_vec_script_class_node)[register_class]->idxBaseClass.size(); i++){
 				CScriptClass *sc = CScriptClass::getScriptClassByIdx((*local_vec_script_class_node)[register_class]->idxBaseClass[i]);
 				if(sc->classPtrType ==base_class_name_ptr){
 					THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
 					return false;
 				}
-			}
+			}*/
 
 			CScriptClass *irc_class = (*local_vec_script_class_node)[register_class];
-			irc_class->idxBaseClass.push_back(idxBaseClass);
+			irc_class->idxBaseClass.push_back(idx_base_class);
 
 			map<int, map<int, fntConversionType>>  *	local_map_type_conversion=	getMapTypeConversion();
-			(*local_map_type_conversion)[irc_class->idxClass][idxBaseClass]=[](intptr_t entry){ return (intptr_t)(_B *)((_T *)entry);};
+			(*local_map_type_conversion)[irc_class->idxClass][idx_base_class]=[](intptr_t entry){ return (intptr_t)(_B *)((_T *)entry);};
 
 
 #if 0 // disabled! This don't work for virtual classes (its map changes at runtime).
@@ -620,11 +634,17 @@ namespace zetscript{
 			}
 
 			// ok, function candidate to be added into class...
-			irs = NEW_SCRIPT_FUNCTION_OBJECT;//CScriptFunctionObject::newScriptFunctionObject();
+			irs = NEW_SCRIPT_FUNCTION_OBJECT;
 
 			// init struct...
 			CASTNode *ast_symbol = CASTNode::newASTNode();
+			ast_symbol->idxScope=IDX_MEMBER_CLASS_REGISTERED_SCOPE;
 			ast_symbol->symbol_value = function_name;
+
+			for(int a=0; a < m_argInfo.size();a++){ // set number args...
+				ast_symbol->children.push_back(-1);
+			}
+
 			// get ast symbols function member node...
 			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
 			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
@@ -632,7 +652,7 @@ namespace zetscript{
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,0);
+			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_MEMBER_CLASS_REGISTERED_SCOPE);
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
@@ -725,11 +745,16 @@ namespace zetscript{
 			}
 
 			// ok, function candidate to be added into class...
-			irs = NEW_SCRIPT_FUNCTION_OBJECT;//CScriptFunctionObject::newScriptFunctionObject();
+			irs = NEW_SCRIPT_FUNCTION_OBJECT;
 
 			// init struct...
 			CASTNode *ast_symbol = CASTNode::newASTNode();
+			ast_symbol->idxScope = IDX_MEMBER_CLASS_REGISTERED_SCOPE;
 			ast_symbol->symbol_value = function_name;
+
+			for(int a=0; a < m_argInfo.size();a++){ // set number args...
+				ast_symbol->children.push_back(-1);
+			}
 			// get ast symbols function member node...
 			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
 			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
@@ -737,7 +762,7 @@ namespace zetscript{
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->object_info.symbol_info.symbol_ref=function_name;
+			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_MEMBER_CLASS_REGISTERED_SCOPE);
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
@@ -834,10 +859,11 @@ namespace zetscript{
 			irs.ref_ptr=offset;
 			irs.c_type = var_type;
 			//irs.
-			irs.symbol_ref=var_name;
+			irs.symbol_ref=CCompiler::makeSymbolRef(var_name,IDX_MEMBER_CLASS_REGISTERED_SCOPE);
 
 			// init ast
 			CASTNode *ast_symbol = CASTNode::newASTNode();
+			ast_symbol->idxScope=IDX_MEMBER_CLASS_REGISTERED_SCOPE;
 			ast_symbol->symbol_value = var_name;
 
 			// get ast var symbol collection node ( because class has a var collection we need a children [0] )

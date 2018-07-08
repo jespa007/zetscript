@@ -28,10 +28,12 @@ namespace zetscript{
 
 #define SCOPE_NODE(idx) 				CScope::getScopeNodeByIdx(idx)
 
+#define IDX_GLOBAL_SCOPE				0
+
 // if 0 is in main <> 0, else.
-#define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScopeNodeByIdx(idx))->getIdxBaseScope()==0)
+#define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScopeNodeByIdx(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
 
-
+#define IDX_MEMBER_CLASS_REGISTERED_SCOPE	-2
 
 
 

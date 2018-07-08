@@ -55,7 +55,13 @@ int main(){
 		"		print(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);\n"
 	    "   }\n"
 		"};\n"
-		"var myclass = new ScriptMyClassExtend();\n" // instances MyClassExtend
+			"class ScriptMyClassExtend2:ScriptMyClassExtend{\n"
+					"	var data4;\n"
+					"	function function5(arg){\n"
+					"		var i=this.data1;\n"
+				    "   }\n"
+					"};\n"
+		"var myclass = new ScriptMyClassExtend2();\n" // instances MyClassExtend
 		"myclass.function1(12);\n" // it prints "Int argument is 12"
 		"myclass.function2(0.5);\n" // it prints "Float argument is 0.5"
 		"print(\"data1:\"+myclass.data1);\n" // it prints "data1:12"

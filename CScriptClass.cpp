@@ -538,8 +538,9 @@ namespace zetscript{
 	 }
 
 	 CScriptClass::CScriptClass(){
+
 			classPtrType="";
-			idxClass=-1;
+			idxClass=ZS_UNDEFINED_IDX;
 			c_destructor = NULL;
 			c_constructor=NULL;
 			idx_function_script_constructor=-1;
@@ -635,13 +636,21 @@ namespace zetscript{
 
 				tFunctionInfo *irfs =  GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[current_function]);//.object_info;
 				symbol_to_find = irfs->symbol_info.symbol_ref;
+				short idxScope=CCompiler::getIdxScopeFromSymbolRef(symbol_to_find);
+
+				if(idxScope == -1){
+					return false;
+				}
 
 				int idx_super=-1;
 				bool is_c=false;
 
 				for(int i = current_function-1; i >= 0 && idx_super==-1; i--){
 					CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(info_function->local_symbols.vec_idx_registeredFunction[i]);
-					if((sfo->object_info.symbol_info.symbol_ref == symbol_to_find) && ((int)sfo->m_arg.size() == n_args_to_find)){ // match name and args ...
+					string symbol_ref=CCompiler::getSymbolNameFromSymbolRef(sfo->object_info.symbol_info.symbol_ref);
+					string symbol_ref_to_find=CCompiler::getSymbolNameFromSymbolRef(symbol_to_find);
+
+					if((symbol_ref == symbol_ref_to_find) && ((int)sfo->m_arg.size() == n_args_to_find)){ // match name and args ...
 						is_c = (sfo->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != 0;
 						idx_super=i;
 					}
@@ -667,11 +676,27 @@ namespace zetscript{
 		}
 		else{
 
+
+			CScriptClass *sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxScriptClass);
+
+
+			bool partial_c_class=(info_function->symbol_info.properties&SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) !=0;
+			while( sc->idxBaseClass.size()>0 && !partial_c_class){
+
+				sc=CScriptClass::getScriptClassByIdx(sc->idxBaseClass[0]); // get base class...
+				partial_c_class|=(sc->metadata_info.object_info.symbol_info.properties&SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) !=0;
+
+
+			}
+
+			 bool variable_in_main_class=SCOPE_IN_MAIN_CLASS(ast_node->idxScope);//!=0;
 			 int idx_scope=ast_node->idxScope;
+			 bool end=false;
 
-			 while(idx_scope!=IDX_INVALID){ // we try all scopes until match symbols at right scope...
 
-				 CScope *sc=SCOPE_NODE(idx_scope);
+			 while(!end){ // we try all scopes until match symbols at right scope...
+
+
 				 symbol_to_find=CCompiler::makeSymbolRef(ast_node->symbol_value,idx_scope);
 
 				 if((idx=CScriptFunctionObject::getIdxFunctionObject(info_function,symbol_to_find,n_args_to_find,false))!=-1){
@@ -695,7 +720,32 @@ namespace zetscript{
 
 				 }
 
-			 	 idx_scope=sc->getIdxParent();
+			 	if(idx_scope >= 0){ // var local or class member ?
+					 CScope *sc=SCOPE_NODE(idx_scope);
+				 	 idx_scope=sc->getIdxParent();
+			 	}
+
+			 	if(idx_scope<0){
+
+			 		idx_scope=ZS_UNDEFINED_IDX;
+
+			 		if(partial_c_class){ // var in c scope ?
+
+			 			idx_scope = IDX_MEMBER_CLASS_REGISTERED_SCOPE;
+			 			partial_c_class=false; // <-- set it false to tell that is already test
+
+			 		}else{ // finally try global...
+
+						 if(!variable_in_main_class){ // try global scope...
+							 variable_in_main_class=true;
+							 idx_scope=0; // set scope global and try last...
+						 }
+			 		}
+			 	 }
+
+			 	 end = idx_scope == ZS_UNDEFINED_IDX;
+
+
 			 }
 		}
 		symbol_not_found = false;
@@ -796,11 +846,11 @@ namespace zetscript{
 										 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\" will solved at run-time", symbol_to_find.c_str());
 									 }
 									 else{
-										 // search local...
+										 // search symbol...
 										 if(!searchVarFunctionSymbol(info_function,iao,n_function,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
 											 // search global...
-											 if(!searchVarFunctionSymbol(&MAIN_SCRIPT_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
+											 //if(!searchVarFunctionSymbol(&MAIN_SCRIPT_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
 													PASTNode ast_node = AST_NODE(iao->idxAstNode);
 
 													if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
@@ -817,7 +867,7 @@ namespace zetscript{
 														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", symbol_to_find.c_str());
 													}
 												 return false;
-											 }
+											 //}
 
 										 }
 								 }
@@ -1151,7 +1201,7 @@ namespace zetscript{
 
 			// init struct...
 			irs->properties = ::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-			irs->symbol_ref = CCompiler::makeSymbolRef(var_name,0);
+			irs->symbol_ref = CCompiler::makeSymbolRef(var_name,IDX_GLOBAL_SCOPE); //<-- defined as global!
 			irs->ref_ptr=(intptr_t)var_ptr;
 			irs->c_type=var_type;
 
@@ -1290,7 +1340,7 @@ namespace zetscript{
 
 			tFunctionInfo *object_info=&rc->metadata_info.object_info;
 
-			CScriptFunctionObject *irs = CScriptFunctionObject::newScriptFunctionObject();
+			CScriptFunctionObject *irs = NEW_SCRIPT_FUNCTION_OBJECT;
 
 			PASTNode ast = AST_NODE(idxAstNode);
 

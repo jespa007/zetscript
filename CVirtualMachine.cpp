@@ -457,10 +457,10 @@ namespace zetscript{
 	CScriptFunctionObject *irfs = NULL;\
 	if(m_functionSymbol != NULL){\
 		irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;\
-		aux_string=m_functionSymbol->at(i).symbol_value;\
+		aux_string=CCompiler::getSymbolNameFromSymbolRef(m_functionSymbol->at(i).symbol_value);\
 	}else{\
 		irfs=vec_script_function_object_node[vec_global_functions->at(i)];\
-		aux_string=irfs->object_info.symbol_info.symbol_ref;\
+		aux_string=CCompiler::getSymbolNameFromSymbolRef(irfs->object_info.symbol_info.symbol_ref);\
 	}\
 \
 	bool match_signature = metamethod_str != NULL;\
@@ -1759,7 +1759,7 @@ if(aux_function_info == NULL){\
 										RETURN_ERROR;
 									}
 
-									if((si = base_var->getVariableSymbol(ast->symbol_value))==NULL){
+									if((si = base_var->getVariableSymbol(ast->symbol_value,true))==NULL){
 
 										tInfoAsmOp *previous= (instruction-1);
 										string parent_symbol="unknow";
@@ -2472,61 +2472,62 @@ if(aux_function_info == NULL){\
 					// try to find the function ...
 					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
 						tInfoAsmOp *iao = (tInfoAsmOp *)(callAle)->stkValue;
+						PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
-						symbol_to_find = vec_ast_node[iao->idxAstNode]->symbol_value;
+						symbol_to_find = ast_node_call_ale->symbol_value;
 
 						//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
 						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
-						{
-							// local vars as functions ...
-							vec_global_functions=&(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
 
-							int size_fun_vec = (int)vec_global_functions->size()-1;
+						// local vars as functions ...
+						vec_global_functions=&(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
 
-							// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
-							vector<tSymbolInfo> *m_functionSymbol=NULL;
-							if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
-								calling_object = (CScriptVariable *)callAle->varRef;
+						int size_fun_vec = (int)vec_global_functions->size()-1;
 
-								// we have to no to call default constructor...is implicit
-								if(is_constructor) {
+						// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
+						vector<tSymbolInfo> *m_functionSymbol=NULL;
+						if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+							calling_object = (CScriptVariable *)callAle->varRef;
 
-									is_c=calling_object->is_c_object();
+							// we have to no to call default constructor...is implicit
+							if(is_constructor) {
 
-									if(n_args == 0 && is_c){
-										aux_function_info = NULL;
-										iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
-									}
+								is_c=calling_object->is_c_object();
+
+								if(n_args == 0 && is_c){
+									aux_function_info = NULL;
+									iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
 								}
-
-								m_functionSymbol=calling_object->getVectorFunctionSymbol();
-								size_fun_vec = (int)m_functionSymbol->size()-1;
-
 							}
 
-							//bool all_check=true;
+							m_functionSymbol=calling_object->getVectorFunctionSymbol();
 
-							if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
-							{
-								//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
-								FIND_FUNCTION(
-										m_functionSymbol
-										,iao
-										,is_constructor
-										,symbol_to_find
-										,size_fun_vec
-										,vec_global_functions
-										,startArg
-										,n_args
-										,NULL);
+							size_fun_vec = (int)m_functionSymbol->size()-1;
 
-
-								// saves function pointer found ...
-								callAle->stkValue=aux_function_info;
-
-							}
 						}
+
+						//bool all_check=true;
+						if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
+						{
+							//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
+							FIND_FUNCTION(
+									m_functionSymbol
+									,iao
+									,is_constructor
+									,symbol_to_find
+									,size_fun_vec
+									,vec_global_functions
+									,startArg
+									,n_args
+									,NULL);
+
+
+							// saves function pointer found ...
+							callAle->stkValue=aux_function_info;
+
+						}
+
 					}
 					else{
 						if(((callAle)->properties & STK_PROPERTY_UNRESOLVED_FUNCTION)==0){

@@ -33,6 +33,7 @@ namespace zetscript{
 		static tDefOperator def_operator[MAX_OPERATORS];
 
 		static string 					makeSymbolRef(const string & symbol_name, int idxScope);
+		static int 						getIdxScopeFromSymbolRef(const string & symbol_ref);
 		static string 					getSymbolNameFromSymbolRef(const string & ref_symbol);
 
 

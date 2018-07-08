@@ -47,7 +47,7 @@ namespace zetscript{
 		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
 
 		tSymbolInfo * addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv=NULL);
-		tSymbolInfo * getVariableSymbol(const string & varname);
+		tSymbolInfo * getVariableSymbol(const string & varname,bool only_var_name=false);
 		tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
 		bool removeVariableSymbolByName(const string & symbol_value, int idxAstNode);
 		bool removeVariableSymbolByIndex(unsigned idx, bool remove_vector=false);
@@ -57,7 +57,7 @@ namespace zetscript{
 		tSymbolInfo * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
 
 		string getMessageMatchingFunctions(const string & varname);
-		tSymbolInfo * getFunctionSymbol(const string & varname);
+		tSymbolInfo * getFunctionSymbol(const string & varname,bool only_var_name=false);
 		tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 		vector <tSymbolInfo> * getVectorFunctionSymbol();
 

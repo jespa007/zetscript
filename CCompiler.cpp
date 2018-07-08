@@ -48,6 +48,34 @@ namespace zetscript{
 		return string("@lnk"+CZetScriptUtils::intToString(idxScope)+"_"+symbol_var);
 	}
 
+	int	CCompiler::getIdxScopeFromSymbolRef(const string & symbol_ref){
+
+		short idxScope=-1;
+		char buffer[30]={0};
+
+		if((strncmp("@lnk",symbol_ref.c_str(),4))!=0){
+			THROW_RUNTIME_ERROR("symbol doesn't start with @lnk");
+			return -1;
+		}
+
+		char *start=(char *)symbol_ref.c_str()+4;
+		char *end=strchr(start,'_');
+
+		strncpy(buffer,start,end-start);
+
+		int *i=CZetScriptUtils::ParseInteger(buffer);
+
+		if(i==NULL){
+			THROW_RUNTIME_ERROR("%s is not valid integer",buffer);
+			return -1;
+		}
+
+		idxScope=*i;
+		delete i;
+
+		return idxScope;
+	}
+
 
 
 	CCompiler::tInfoConstantValue *CCompiler::getConstant(const string & const_name){
@@ -142,7 +170,7 @@ namespace zetscript{
 			tScopeVar *irv = SCOPE_NODE(ast_node->idxScope)->getInfoRegisteredSymbol(function_name,n_params,false);
 			if(irv != NULL){
 
-				CScriptFunctionObject *info_symbol = CScriptFunctionObject::newScriptFunctionObject();
+				CScriptFunctionObject *info_symbol = NEW_SCRIPT_FUNCTION_OBJECT;;
 
 				info_symbol->object_info.symbol_info.idxAstNode = irv->idxAstNode;
 				//info_symbol.object_info.symbol_info.idxScopeVar = irv->idxScopeVar;
@@ -1683,7 +1711,8 @@ namespace zetscript{
 
 				CScriptFunctionObject *irs_src=CScriptClass::getScriptFunctionObjectByClassFunctionName(
 						current_class_name,
-						node_fun->symbol_value);
+						CCompiler::makeSymbolRef(node_fun->symbol_value,IDX_MEMBER_CLASS_REGISTERED_SCOPE)
+				);
 
 				if(irs_src){
 

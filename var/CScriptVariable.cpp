@@ -111,14 +111,21 @@ namespace zetscript{
 					created_object = (*m_infoRegisteredClass->c_constructor)();
 					was_created_by_constructor=true;
 					c_object = created_object;
-			}else if(m_infoRegisteredClass->idxBaseClass.size()==1){ // mixed script + c class ?
-				CScriptClass *base = CScriptClass::getScriptClassByIdx(m_infoRegisteredClass->idxBaseClass[0]);
-				if(base->is_c_class()){
-					c_scriptclass_info=base;
-					created_object = (*base->c_constructor)();
-					was_created_by_constructor=true;
-					c_object = created_object;
+			}else {
+
+				CScriptClass *sc=m_infoRegisteredClass;
+				while( sc->idxBaseClass.size()>0 && c_scriptclass_info==NULL){
+
+					sc=CScriptClass::getScriptClassByIdx(sc->idxBaseClass[0]); // get base class...
+					if(sc->is_c_class()){
+						c_scriptclass_info=sc;
+						created_object = (*sc->c_constructor)();
+						was_created_by_constructor=true;
+						c_object = created_object;
+					}
+
 				}
+
 			}
 
 		}else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
@@ -174,7 +181,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		char *aux_p=(char *)symbol_value.c_str();
+		/*char *aux_p=(char *)symbol_value.c_str();
 		if(
 			   ('a' <= *aux_p && *aux_p <='z') ||
 			   ('A' <= *aux_p && *aux_p <='Z')
@@ -201,8 +208,9 @@ namespace zetscript{
 
 		if(error_symbol){
 			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
+			THROW_RUNTIME_ERROR("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			return NULL;
-		}
+		}*/
 
 		if(sv != NULL){
 			si.object = *sv;
@@ -230,17 +238,30 @@ namespace zetscript{
 		return &m_variableSymbol[m_variableSymbol.size()-1];
 	}
 
-	tSymbolInfo * CScriptVariable::getVariableSymbol(const string & varname){
+	tSymbolInfo * CScriptVariable::getVariableSymbol(const string & varname,bool only_var_name){
 		for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
-			if(varname == this->m_variableSymbol[i].symbol_value){
+			string symbol = this->m_variableSymbol[i].symbol_value;
+
+			if(only_var_name){
+				symbol=CCompiler::getSymbolNameFromSymbolRef(symbol);
+			}
+
+			if(varname == symbol){
 				return &m_variableSymbol[i];
 			}
 		}
 		return NULL;
 	}
 
-	tSymbolInfo * CScriptVariable::getFunctionSymbol(const string & varname){
+	tSymbolInfo * CScriptVariable::getFunctionSymbol(const string & varname,bool only_var_name){
 		for(unsigned int i = 0; i < this->m_functionSymbol.size(); i++){
+
+			string symbol = this->m_functionSymbol[i].symbol_value;
+
+			if(only_var_name){
+				symbol=CCompiler::getSymbolNameFromSymbolRef(symbol);
+			}
+
 			if(varname == this->m_functionSymbol[i].symbol_value){
 				return &m_functionSymbol[i];
 			}
