@@ -4,11 +4,11 @@ class  A{
 	var a;
 	function A(){
 		this.a=10;
-		this.fun=function(obj){ print ("a:"+obj.a);};
+		this.fun=function(){ print ("a:"+this.a);};
 	}
 	
 	function print(){
-		this.fun(this);
+		this.fun();
 	}
 };
 
