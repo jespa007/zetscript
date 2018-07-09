@@ -1,4 +1,17 @@
 
+class A{
+	var fun;
+	var a;
+	function A(){
+		this.a=10;
+		this.fun=function(obj){ print ("hello world:"+obj.a);};
+	}
+	
+	function print(){
+		this.fun(this);
+	}
+};
+
 function add(a,b,c){
 	return a+b+c;
 }

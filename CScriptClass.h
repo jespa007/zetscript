@@ -221,7 +221,7 @@ namespace zetscript{
 		//CScriptClass *	getRegisteredClassByIdx(unsigned index);
 		//CScriptClass *  getRegisteredClassBy_C_ClassPtr(const string & v, bool print_msg=true);
 
-		static int 					getIdxRegisteredClass(const string & v, bool print_msg=true);
+
 		//static fntConversionType getConversionType(string objectType, string conversionType, bool show_errors=true);
 
 		static const char * getNameRegisteredClassByIdx(int idx);

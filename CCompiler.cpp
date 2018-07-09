@@ -170,9 +170,13 @@ namespace zetscript{
 			tScopeVar *irv = SCOPE_NODE(ast_node->idxScope)->getInfoRegisteredSymbol(function_name,n_params,false);
 			if(irv != NULL){
 
-				CScriptFunctionObject *info_symbol = NEW_SCRIPT_FUNCTION_OBJECT;;
+				CScriptFunctionObject *info_symbol = NEW_SCRIPT_FUNCTION_OBJECT;
+
+				CScope *scope=SCOPE_NODE(ast_node->idxScope);
+				PASTNode ast_node_root=AST_NODE(scope->getIdxBaseAstNode());
 
 				info_symbol->object_info.symbol_info.idxAstNode = irv->idxAstNode;
+				info_symbol->object_info.symbol_info.idxScriptClass = ast_node_root==NULL?IDX_CLASS_MAIN:CScriptClass::getIdxScriptClass(ast_node_root->symbol_value);
 				//info_symbol.object_info.symbol_info.idxScopeVar = irv->idxScopeVar;
 				info_symbol->object_info.symbol_info.symbol_ref = makeSymbolRef(name,ast_node->idxScope);
 
