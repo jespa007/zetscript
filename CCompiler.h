@@ -8,6 +8,10 @@
 #define CLEAR_COMPILE_INFORMATION 	CState::clearCurrentCompileInformation()
 #define GET_SYMBOL_NAME(s)			(CCompiler::getSymbolNameFromSymbolRef(s))
 
+#define LNK_SYM				"@lnk"
+#define VAR_TYPE			"var"
+#define FUN_TYPE			"fun"
+
 namespace zetscript{
 
 

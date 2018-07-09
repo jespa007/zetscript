@@ -61,9 +61,7 @@
 
 #define GET_IDX_2_CLASS_C_STR(idx) (CScriptClass::getScriptClassByIdx(idx)->classPtrType)
 
-#define LNK_SYM				"@lnk"
-#define VAR_TYPE			"var"
-#define FUN_TYPE			"fun"
+
 
 
 namespace zetscript{

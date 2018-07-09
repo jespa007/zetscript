@@ -1,10 +1,10 @@
 
-class A{
+class  A{
 	var fun;
 	var a;
 	function A(){
 		this.a=10;
-		this.fun=function(obj){ print ("hello world:"+obj.a);};
+		this.fun=function(obj){ print ("a:"+obj.a);};
 	}
 	
 	function print(){
@@ -12,7 +12,10 @@ class A{
 	}
 };
 
-function add(a,b,c){
+function add(
+		a
+		,b
+		,c){
 	return a+b+c;
 }
 
@@ -28,4 +31,8 @@ if(add_function_obj(30,40)<add_function_obj(10,0)){
 }else{
 	print("higher");
 }
+
+var d=new A();
+
+d.print();
 

@@ -161,8 +161,8 @@ namespace zetscript{
 		tScopeVar irv;// = new tScopeVar;
 
 		PASTNode args_node = AST_NODE(ast->children[0]);
-		string var_name = "_afun"+CZetScriptUtils::intToString(args_node!=NULL?args_node->children.size():0)+"_"+CZetScriptUtils::intToString(n_anonymouse_func++);
-		//string symbol_ref = "_"+var_name;
+		string var_name ="_afun"+CZetScriptUtils::intToString(n_anonymouse_func++);
+		string symbol_ref = "@funp"+CZetScriptUtils::intToString(args_node!=NULL?args_node->children.size():0)+"_"+var_name;
 
 
 		//int n_params=0;
@@ -180,7 +180,7 @@ namespace zetscript{
 		//symbol_ref=symbol_ref+"_"+var_name;
 
 
-		irv.symbol_ref = var_name;
+		irv.symbol_ref = symbol_ref;
 		irv.name=var_name;
 		irv.idxAstNode=-1;
 		if(ast != NULL){
@@ -263,12 +263,16 @@ namespace zetscript{
 	tScopeVar * CScope::existRegisteredSymbolRecursiveUpScope(const string & symbol_ref){
 		tScopeVar *sv=NULL;
 		// for each variable in current scope ...
+
+		//if(this->idxBaseScope != ZS_UNDEFINED_IDX){ // don't test var on class cases...
+
 		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
 
 			if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
 				return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
+		//}
 
 		// ok lets iterate through current scope list
 		for(unsigned i = 0; i < m_localScopeList.size(); i++){

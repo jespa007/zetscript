@@ -167,7 +167,13 @@ namespace zetscript{
 
 			int n_params= ast_args->children.size();
 
-			tScopeVar *irv = SCOPE_NODE(ast_node->idxScope)->getInfoRegisteredSymbol(function_name,n_params,false);
+			short idxScope=ast_node->idxScope;
+
+			/*if(strncmp(name.c_str(),"_afun",4)==0){ //anonymouse functions are in global scope...
+				idxScope=IDX_GLOBAL_SCOPE;
+			}*/
+
+			tScopeVar *irv = SCOPE_NODE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false);
 			if(irv != NULL){
 
 				CScriptFunctionObject *info_symbol = NEW_SCRIPT_FUNCTION_OBJECT;

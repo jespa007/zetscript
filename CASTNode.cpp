@@ -2387,6 +2387,7 @@ namespace zetscript{
 							return NULL;
 						}
 
+						int m_start_arg=m_line;
 						end_var=getSymbolName(aux_p,m_line);
 
 						if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
@@ -2407,11 +2408,6 @@ namespace zetscript{
 								return NULL;
 							}
 
-							// ok register arg symbol...
-
-							if((_currentScope->registerSymbol(symbol_value,args_node)) == NULL){
-								return NULL;
-							}
 							// ok register symbol into the object function ...
 
 						}
@@ -2429,8 +2425,14 @@ namespace zetscript{
 						// PUSH NEW ARG...
 						if(ast_node_to_be_evaluated != NULL){
 							if((arg_node = CASTNode::newASTNode()) == NULL) return NULL;
+							arg_node->line_value=m_start_arg;
 							arg_node->symbol_value=symbol_value;
 							args_node->children.push_back(arg_node->idxAstNode);
+
+							if((_currentScope->registerSymbol(symbol_value,arg_node)) == NULL){
+								return NULL;
+							}
+
 						}
 					}
 
