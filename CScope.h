@@ -35,14 +35,17 @@ namespace zetscript{
 
 #define IDX_MEMBER_CLASS_REGISTERED_SCOPE	-2
 
+#define NO_PARAMS_IS_VARIABLE	-1
+#define NO_PARAMS_SYMBOL_ONLY	-2
+
 
 
 	class CContext;
 	class  CScope{
 
-		tScopeVar * existRegisteredSymbolRecursive(const string & var_name, int n_params=-1);
-		tScopeVar * existRegisteredSymbolRecursiveDownScope(const string & ref_symbol);
-		tScopeVar * existRegisteredSymbolRecursiveUpScope(const string & ref_symbol);
+		tScopeVar * existRegisteredSymbolRecursive(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
+		tScopeVar * existRegisteredSymbolRecursiveDownScope(const string & ref_symbol, int n_params=NO_PARAMS_IS_VARIABLE);
+		tScopeVar * existRegisteredSymbolRecursiveUpScope(const string & ref_symbol, int n_params=NO_PARAMS_IS_VARIABLE);
 	public:
 
 
@@ -77,9 +80,9 @@ namespace zetscript{
 		 */
 		tScopeVar * getInfoRegisteredSymbol(const string & v, int n_params=-1, bool print_msg=true);
 		tScopeVar * registerAnonymouseFunction(PASTNode ast);
-		tScopeVar * registerSymbol(const string & var_name, PASTNode ast=NULL, int n_params=-1);
+		tScopeVar * registerSymbol(const string & var_name, PASTNode ast=NULL, int n_params=NO_PARAMS_IS_VARIABLE);
 
-		tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=-1);
+		tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
 
 		CScope();
 		CScope(int idx_this, int idx_parent=ZS_UNDEFINED_IDX, short idx_base_ast_node=ZS_UNDEFINED_IDX);//, int _index);

@@ -689,9 +689,9 @@ namespace zetscript{
 
 								if(_node->node_type == SYMBOL_NODE){
 									if(_lc!=NULL){
-										if(!_lc->existRegisteredSymbol(symbol_name)){ // check local
-											if(!SCOPE_NODE(0)->existRegisteredSymbol(symbol_name)){ // check global
-												writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode)," variable \"%s\" not defined",symbol_name.c_str());
+										if(!_lc->existRegisteredSymbol(symbol_name,NO_PARAMS_SYMBOL_ONLY)){ // check local
+											if(!SCOPE_NODE(IDX_GLOBAL_SCOPE)->existRegisteredSymbol(symbol_name,NO_PARAMS_SYMBOL_ONLY)){ // check global
+												writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Variable \"%s\" not defined",symbol_name.c_str());
 												return false;
 											}
 										}

@@ -242,11 +242,16 @@ namespace zetscript{
 		return NULL;//false;//-1;
 	}
 
-	tScopeVar * CScope::existRegisteredSymbolRecursiveDownScope(const string & symbol_ref){
+	tScopeVar * CScope::existRegisteredSymbolRecursiveDownScope(const string & symbol_ref, int n_params){
 
 
 		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
-			if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
+			string current_symbol_ref=m_registeredVariableFromBase[i].symbol_ref;
+			if(n_params==NO_PARAMS_SYMBOL_ONLY){
+				current_symbol_ref=CCompiler::getSymbolNameFromSymbolRef(current_symbol_ref);
+			}
+
+			if(current_symbol_ref==symbol_ref){
 				return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
@@ -260,7 +265,7 @@ namespace zetscript{
 
 	}
 
-	tScopeVar * CScope::existRegisteredSymbolRecursiveUpScope(const string & symbol_ref){
+	tScopeVar * CScope::existRegisteredSymbolRecursiveUpScope(const string & symbol_ref, int n_params){
 		tScopeVar *sv=NULL;
 		// for each variable in current scope ...
 
@@ -268,7 +273,12 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
 
-			if(m_registeredVariableFromBase[i].symbol_ref==symbol_ref){
+			string current_symbol_ref=m_registeredVariableFromBase[i].symbol_ref;
+			if(n_params==NO_PARAMS_SYMBOL_ONLY){
+				current_symbol_ref=CCompiler::getSymbolNameFromSymbolRef(current_symbol_ref);
+			}
+
+			if(current_symbol_ref==symbol_ref){
 				return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
@@ -299,13 +309,18 @@ namespace zetscript{
 
 		}
 		else{
-			symbol_ref="@var_"+var_name;
+			if(n_params==NO_PARAMS_IS_VARIABLE){
+				symbol_ref="@var_"+var_name;
+			}
+			else{ // else only symbol...
+				symbol_ref=var_name;
+			}
 		}
 
-		sv=existRegisteredSymbolRecursiveDownScope(symbol_ref);
+		sv=existRegisteredSymbolRecursiveDownScope(symbol_ref,n_params);
 		if(sv!=NULL) return sv;
 
-		return existRegisteredSymbolRecursiveUpScope(symbol_ref);
+		return existRegisteredSymbolRecursiveUpScope(symbol_ref,n_params);
 
 	}
 

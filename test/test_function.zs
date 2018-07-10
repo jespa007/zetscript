@@ -4,13 +4,16 @@ class  A{
 	var a;
 	function A(){
 		this.a=10;
-		this.fun=function(){ print ("a:"+this.a);};
+		this.fun=function(obj){ 
+			obj.a=0;
+		};
 	}
 	
 	function print(){
-		this.fun();
+		this.fun(this);
 	}
 };
+function merda(){}
 
 function add(
 		a
@@ -26,7 +29,7 @@ function add(a,b){
 
 var add_function_obj=add;
 
-if(add_function_obj(30,40)<add_function_obj(10,0)){
+if(add_function_obj(30,40)<add_function_obj(10,0,10)){
 	print("lower");
 }else{
 	print("higher");
