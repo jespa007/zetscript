@@ -6,11 +6,12 @@ class  A{
 		this.a=10;
 		this.fun=function(obj){ 
 			obj.a=0;
+			print("dasds"+obj.a); // <-- print is not recognized here
 		};
 	}
 	
 	function print(){
-		this.fun(this);
+		this.fun(this); //<-- this cannot be processed here
 	}
 };
 function merda(){}
