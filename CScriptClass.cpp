@@ -617,6 +617,8 @@ namespace zetscript{
 
 	bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
 
+
+
 		int idx=0;
 		symbol_not_found = true;
 		char n_args_to_find =-1;
@@ -738,6 +740,8 @@ namespace zetscript{
 
 						 if(!variable_in_main_class){ // try global scope...
 							 variable_in_main_class=true;
+							 CScriptFunctionObject *main=MAIN_SCRIPT_FUNCTION_OBJECT;
+							 info_function=&main->object_info; // set main function as other...
 							 idx_scope=0; // set scope global and try last...
 						 }
 			 		}

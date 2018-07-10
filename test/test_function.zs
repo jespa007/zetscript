@@ -11,7 +11,7 @@ class  A{
 	}
 	
 	function print(){
-		this.fun(this); //<-- this cannot be processed here
+		this.fun(); //<-- this cannot be processed here
 	}
 };
 function merda(){}

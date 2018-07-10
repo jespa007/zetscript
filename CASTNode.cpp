@@ -2492,8 +2492,10 @@ namespace zetscript{
 										(*ast_node_to_be_evaluated)->symbol_value=function_name;
 									}
 
-								}else{ // register anonymouse function
-									irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
+								}else{ // register anonymouse function at global scope...
+									irv=SCOPE_NODE(IDX_GLOBAL_SCOPE)->registerAnonymouseFunction((*ast_node_to_be_evaluated));
+									(*ast_node_to_be_evaluated)->idxScope=IDX_GLOBAL_SCOPE;
+									//irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
 									(*ast_node_to_be_evaluated)->symbol_value=irv->name;
 								}
 
