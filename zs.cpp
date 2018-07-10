@@ -18,6 +18,9 @@ int main(int argc, char * argv[]) {
 		}catch(script_error & error){
 			fprintf(stderr,"%s\n",error.what());
 		}
+		catch(std::exception & error){
+			fprintf(stderr,"%s\n",error.what());
+		}
 	}
 	else{
 
