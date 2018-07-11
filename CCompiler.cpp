@@ -485,10 +485,10 @@ namespace zetscript{
 		string v = _node->symbol_value;
 
 		// ignore node this ...
-		if(_node->symbol_value == "this"){
+		/*if(_node->symbol_value == "this"){
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"\"%s\" cannot be processed here!",_node->symbol_value.c_str());
 			return false;
-		}
+		}*/
 
 
 		unsigned int pre_post_operator_type =0;//INS_PROPERTY_UNKNOW_PRE_POST_OPERATOR;
@@ -674,11 +674,11 @@ namespace zetscript{
 						 }
 					}
 				}
-				else if(
-					(_node->symbol_value == "super")
-					){
+				else if(_node->symbol_value == "super"){
 						scope_type=INS_PROPERTY_SUPER_SCOPE;
-					}else{
+				}else if(_node->symbol_value == "this"){
+						scope_type=INS_PROPERTY_THIS_SCOPE;
+				}else{
 
 						// if not function then is var or arg node ?
 						// first we find the list of argments

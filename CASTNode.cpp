@@ -3439,6 +3439,14 @@ namespace zetscript{
 						}
 					}
 
+					KEYWORD_TYPE keyw = isKeyword(variable_name.c_str());
+
+					if(keyw != KEYWORD_TYPE::UNKNOWN_KEYWORD){ // a keyword was detected...
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Cannot use reserved word (%s) as var.",defined_keyword[keyw].str);
+						return NULL;
+					}
+
+
 
 					aux_p=end_var;
 					aux_p=IGNORE_BLANKS(aux_p,m_line);

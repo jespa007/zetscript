@@ -37,10 +37,18 @@ namespace zetscript{
 	void CScriptVariable::createSymbols(CScriptClass *ir_class){
 		tSymbolInfo *si;
 
+		// Register variables...
 		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
 
 			tInfoVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
 			si = addVariableSymbol(ir_var->symbol_ref,ir_var->idxAstNode);
+
+			if(m_infoRegisteredClass->idxClass >=MAX_BASIC_CLASS_TYPES){
+				if(ir_var->symbol_ref=="this"){
+					si->object.varRef=this;
+					si->object.properties=STK_PROPERTY_IS_THIS_VAR|STK_PROPERTY_TYPE_SCRIPTVAR;
+				}
+			}
 
 			if(ir_var->properties & PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 			{ // we know the type object so we assign the pointer ...
@@ -52,7 +60,7 @@ namespace zetscript{
 		}
 
 
-		// Register even for primitives (if appropiate)
+		// Register functions...
 		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 			CScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
 			 si =addFunctionSymbol(
@@ -71,6 +79,10 @@ namespace zetscript{
 				 }
 			}
 		}
+
+
+
+
 	}
 
 
@@ -239,7 +251,7 @@ namespace zetscript{
 	}
 
 	tSymbolInfo * CScriptVariable::getVariableSymbol(const string & varname,bool only_var_name){
-		for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
+		for(unsigned int i = 1; i < this->m_variableSymbol.size(); i++){
 			string symbol = this->m_variableSymbol[i].symbol_value;
 
 			if(only_var_name){
@@ -294,7 +306,8 @@ namespace zetscript{
 			default: // variable ...
 
 				if(var_type & STK_PROPERTY_TYPE_SCRIPTVAR){
-					if((si->object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
+					if(((si->object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR)
+						&& ((si->object.properties & STK_PROPERTY_IS_THIS_VAR) != STK_PROPERTY_IS_THIS_VAR)){ // deallocate but not if is c or this ref
 						if(si->object.varRef != NULL){
 							// remove property if not referenced anymore
 							CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(si->object.varRef))->ptr_shared_pointer_node,true);

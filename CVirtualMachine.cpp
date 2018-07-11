@@ -1738,7 +1738,10 @@ if(aux_function_info == NULL){\
 									if((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR)!= STK_PROPERTY_TYPE_SCRIPTVAR)
 									{
 
-										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var is not scriptvariable");
+										PASTNode ast=AST_NODE(instruction->idxAstNode);
+										PASTNode parent = AST_NODE(ast->idxAstParent);
+										ast=AST_NODE(parent->children[0]);  // get left node ... is the object ancestor.
+										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var \"%s\" is not scriptvariable",ast->symbol_value.c_str());
 										RETURN_ERROR;
 									}
 
@@ -1754,8 +1757,11 @@ if(aux_function_info == NULL){\
 
 									if(base_var == NULL)
 									{
+										PASTNode ast=AST_NODE(instruction->idxAstNode);
+										PASTNode parent = AST_NODE(ast->idxAstParent);
+										ast=AST_NODE(parent->children[0]); // get left node ... is the object ancestor.
+										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var \"%s\" is not scriptvariable",ast->symbol_value.c_str());
 
-										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var is not scriptvariable");
 										RETURN_ERROR;
 									}
 
@@ -2106,6 +2112,11 @@ if(aux_function_info == NULL){\
 
 
 						if(! assign_metamethod){
+
+							if(dst_ins->properties & STK_PROPERTY_IS_THIS_VAR){
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"\"this\" is not assignable");
+								RETURN_ERROR;
+							}
 
 							tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
 

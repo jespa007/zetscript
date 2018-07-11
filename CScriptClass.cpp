@@ -178,9 +178,7 @@ namespace zetscript{
 			sci->metadata_info.object_info.symbol_info.idxScriptClass = (short)vec_script_class_node->size();
 			sci->classPtrType = TYPE_SCRIPT_VARIABLE;
 
-			if(base_class != NULL){
-				sci->idxBaseClass.push_back(base_class->idxClass);
-			}
+
 
 			sci->metadata_info.object_info.symbol_info.symbol_ref = class_name;
 			sci->metadata_info.object_info.symbol_info.idxAstNode=-1;
@@ -191,6 +189,15 @@ namespace zetscript{
 
 			(*vec_script_class_node).push_back(sci);
 			sci->idxClass=(*vec_script_class_node).size()-1;
+
+			// register this var ...
+			if(base_class != NULL){
+				sci->idxBaseClass.push_back(base_class->idxClass);
+			}else{ // register this for first time ...
+				if(sci->idxClass >=MAX_BASIC_CLASS_TYPES){
+					registerVariableSymbol(class_name,"this",_ast != NULL?_ast->idxAstNode:-1);
+				}
+			}
 
 			return sci;
 
@@ -678,6 +685,14 @@ namespace zetscript{
 		}
 		else{
 
+			if(symbol_to_find == "this" && (iao_scope & INS_PROPERTY_THIS_SCOPE)){ // trivial is the first symbol we find...
+				 REMOVE_SCOPES(iao->instruction_properties);
+				 iao->instruction_properties |= INS_PROPERTY_THIS_SCOPE;
+				 iao->index_op1 = LOAD_TYPE_VARIABLE;
+				 iao->index_op2 = 0;
+				 return true;
+
+			}
 
 			CScriptClass *sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxScriptClass);
 
@@ -981,8 +996,8 @@ namespace zetscript{
 										 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
 											 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" will solved at run-time", AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
-										 }
-										 else{
+
+										 }else{
 
 											// this/super required ...
 											 if(sfi != NULL){
