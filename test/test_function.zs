@@ -1,16 +1,28 @@
+var g=0;
 
 class  A{
 	var fun;
-	var a;
+	//var a;
 	function A(){
-		this.a=10;
-		this.fun=function(){ print ("a:"+this.a);};
+		//this.a=10;
+		//print ("g:"+this.a);
+		this.fun=function(){ print ("g:");};
 	}
 	
 	function print(){
 		this.fun();
 	}
 };
+
+class B:A
+{
+	var a;
+	
+	function B(){
+		//this.a=20;
+	}
+};
+
 
 function add(
 		a
@@ -32,7 +44,7 @@ if(add_function_obj(30,40)<add_function_obj(10,0)){
 	print("higher");
 }
 
-var d=new A();
+var d=new B();
 
 d.print();
 
