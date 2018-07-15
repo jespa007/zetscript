@@ -862,9 +862,9 @@ namespace zetscript{
 		CScriptVariable *calling_obj=NULL;
 
 		// get function symbol ref from global scope ...
-		string function_ref=CCompiler::makeSymbolRef(function_access,0);
 
-		if(CZetScript::getInstance()->getScriptObjectFromFunctionAccess(function_ref,&calling_obj,&fun))
+
+		if(CZetScript::getInstance()->getScriptObjectFromFunctionAccess(function_access,&calling_obj,&fun))
 		{
 
 			// 1. check all parameters ok.

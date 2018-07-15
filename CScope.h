@@ -33,7 +33,7 @@ namespace zetscript{
 // if 0 is in main <> 0, else.
 #define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScopeNodeByIdx(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
 
-#define IDX_MEMBER_CLASS_REGISTERED_SCOPE	-2
+#define IDX_C_MEMBER_CLASS_REGISTERED_SCOPE	-2
 
 #define NO_PARAMS_IS_VARIABLE	-1
 #define NO_PARAMS_SYMBOL_ONLY	-2

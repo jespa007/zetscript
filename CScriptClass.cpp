@@ -752,7 +752,7 @@ namespace zetscript{
 
 			 		if(partial_c_class){ // var in c scope ?
 
-			 			idx_scope = IDX_MEMBER_CLASS_REGISTERED_SCOPE;
+			 			idx_scope = IDX_C_MEMBER_CLASS_REGISTERED_SCOPE;
 			 			partial_c_class=false; // <-- set it false to tell that is already test
 
 			 		}else{ // finally try global...

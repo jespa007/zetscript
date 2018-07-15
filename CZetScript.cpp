@@ -631,7 +631,7 @@ namespace zetscript{
 		if(CCompiler::getInstance()->compile()){
 
 			// print generated asm ...
-			printGeneratedCodeAllClasses();
+			//printGeneratedCodeAllClasses();
 
 			if(m_mainObject == NULL){
 				// creates the main entry function with compiled code. On every executing code, within "execute" function
@@ -716,7 +716,7 @@ namespace zetscript{
 
 				string symbol_to_find=access_var[i];
 				if(i==0){ // get variable through main_class.main_function (global element)
-
+					symbol_to_find=CCompiler::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
 					for(unsigned j = 0; j < m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable.size() && *calling_obj==NULL; j++){
 						if(m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].symbol_ref==symbol_to_find){
 							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].
@@ -738,7 +738,7 @@ namespace zetscript{
 					}
 
 				}else{ // we have got the calling_obj from last iteration ...
-					is = (*calling_obj)->getVariableSymbol(symbol_to_find);
+					is = (*calling_obj)->getVariableSymbol(symbol_to_find,true);
 
 					if(is!=NULL){
 
@@ -756,7 +756,7 @@ namespace zetscript{
 				}
 			}
 
-			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1]);
+			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1],true);
 			if(is!=NULL){
 				if(is->object.properties & STK_PROPERTY_TYPE_FUNCTION){
 					*fun_obj=(CScriptFunctionObject *)is->object.stkValue;
@@ -767,11 +767,12 @@ namespace zetscript{
 				return false;
 			}
 
-		}else{
+		}else{ // function
 			*calling_obj = m_mainObject;
+			string symbol_to_find=CCompiler::makeSymbolRef(access_var[0],IDX_GLOBAL_SCOPE);
 			for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size() && *fun_obj==NULL; i++){
 				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
-				if(aux_fun_obj->object_info.symbol_info.symbol_ref == CCompiler::makeSymbolRef(access_var[0],0)){
+				if(aux_fun_obj->object_info.symbol_info.symbol_ref == symbol_to_find){
 					*fun_obj=aux_fun_obj;
 				}
 			}

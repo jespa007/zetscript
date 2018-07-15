@@ -283,7 +283,7 @@ namespace zetscript{
 				symbol=CCompiler::getSymbolNameFromSymbolRef(symbol);
 			}
 
-			if(varname == this->m_functionSymbol[i].symbol_value){
+			if(varname == symbol){
 				return &m_functionSymbol[i];
 			}
 		}

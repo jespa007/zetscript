@@ -371,7 +371,7 @@ namespace zetscript{
 			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_SCRIPTVAR;\
 			dst_ins->stkValue=NULL;\
 			dst_ins->varRef=script_var;\
-			if(dst_ins->properties & STK_PROPERTY_IS_THIS_VAR !=  STK_PROPERTY_IS_THIS_VAR){\
+			if((dst_ins->properties & STK_PROPERTY_IS_THIS_VAR) !=  STK_PROPERTY_IS_THIS_VAR){\
 				sharePointer(script_var->ptr_shared_pointer_node);\
 			}\
 		}else{\

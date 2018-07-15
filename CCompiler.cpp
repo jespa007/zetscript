@@ -1695,7 +1695,13 @@ namespace zetscript{
 		}
 
 		PASTNode ast_class_to_register=AST_NODE(sc->metadata_info.object_info.symbol_info.idxAstNode);
-		string symbol_ref = makeSymbolRef(var_node->symbol_value,ast_class_to_register->idxScope);
+		string symbol_ref = "";
+		if(current_class->is_c_class()){
+			symbol_ref=makeSymbolRef(var_node->symbol_value,IDX_C_MEMBER_CLASS_REGISTERED_SCOPE);
+		}
+		else{
+			symbol_ref=makeSymbolRef(var_node->symbol_value,ast_class_to_register->idxScope);
+		}
 
 		if(CScriptClass::variableSymbolExist(sc,symbol_ref)){ // let's search
 			string conflict_class="unknow";
@@ -1789,7 +1795,7 @@ namespace zetscript{
 
 				CScriptFunctionObject *irs_src=CScriptClass::getScriptFunctionObjectByClassFunctionName(
 						current_class_name,
-						CCompiler::makeSymbolRef(fun_node->symbol_value,IDX_MEMBER_CLASS_REGISTERED_SCOPE)
+						CCompiler::makeSymbolRef(fun_node->symbol_value,IDX_C_MEMBER_CLASS_REGISTERED_SCOPE)
 				);
 
 				if(irs_src){
