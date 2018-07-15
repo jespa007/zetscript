@@ -278,7 +278,7 @@ namespace zetscript{
 		return NULL;//itHasReturnSymbol(PASTNode _node);
 	}
 
-	bool CASTNode::isThisScope(short idxAstNode){
+	/*bool CASTNode::isThisAccessScope(short idxAstNode){
 
 		PASTNode _node = AST_NODE(idxAstNode);
 
@@ -304,7 +304,7 @@ namespace zetscript{
 				   //(_node->parent != NULL && _node->parent->node_type != PUNCTUATOR_NODE) &&
 				   (_node->children.size()==2 && AST_NODE(_node->children[0])->symbol_value=="super")
 				   );
-	}
+	}*/
 
 
 	void CASTNode::destroySingletons(){
@@ -1614,6 +1614,21 @@ namespace zetscript{
 				if(ast_node_to_be_evaluated != NULL){
 
 					if(is_symbol_trivial_value){
+
+
+						if(SCOPE_NODE(scope_info->idxScope)->getIdxBaseScope()==IDX_GLOBAL_SCOPE){
+							if(symbol_value == "this"){
+								writeErrorMsg(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"\"this\" keyword is allowed only in member classes");
+								return NULL;
+							}
+
+							if(symbol_value == "super"){
+								writeErrorMsg(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"\"super\" keyword is allowed only in member classes");
+								return NULL;
+							}
+						}
+
+
 
 						if(((*ast_node_to_be_evaluated)=CASTNode::newASTNode()) == NULL) return NULL;
 						(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
@@ -3453,7 +3468,7 @@ namespace zetscript{
 					//}
 					bool ok_char=*aux_p == ';' || *aux_p == ',' || *aux_p == '=' ;
 					if(is_class_member && *aux_p == '='){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"cannot assign class variables. Use constructor instead.");
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Variable member is not assignable on its declaration. Initialize it within constructor function.");
 						return NULL;
 
 					}
@@ -3798,7 +3813,7 @@ namespace zetscript{
 							aux += strlen(defined_directive[directive].str);
 							aux = IGNORE_BLANKS(aux,m_line);
 							if(*aux != '\"'){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected starting \" directive!");
+								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected starting \" directive");
 								return NULL;
 							}
 							aux++;
@@ -3807,7 +3822,7 @@ namespace zetscript{
 							while(*aux != '\n' && *aux!=0 && *aux!='\"') aux++;
 
 							if(*aux != '\"'){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected end \" directive!");
+								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected end \" directive");
 								return NULL;
 							}
 
@@ -3840,7 +3855,7 @@ namespace zetscript{
 							aux++;
 							break;
 						default:
-							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"directive not supported!");
+							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"directive \"%s\" not supported",defined_directive[directive].str);
 							break;
 						}
 

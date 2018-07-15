@@ -8,15 +8,21 @@ Date: XX-XX-2018
 #65 added shared/static link cmake option through -DLINK=[SHARED|STATIC]
 #66 Added memory leak detection manager (only for GNU toolchain).  It needs memmanager https://github.org/jespa007/memmanager and pass -DMEMMANAGER parameter on cmake
 #67 Compact all utils source in one called CZetScriptUtils
-#68 CZetScript getErrorMsg is not used anymore. It prints error on stderr or through user function callback if defined
+#68 implement try/catch. CZetScript getErrorMsg is not used anymore. catch will return message error and line
 #69 Fix memory leaks on delete keyword
 #70 concatenate string with return result from variable dot access it gives the function instead of result.
 #71 Improve cmake print messages 
 #72 post declare variable members it gives "already declared variable error"
 #73 fixed return; fails 
-#74 vectors are not deallocated if they are initialized on functions and declared as global (may be it has to deallocate on clearGlobalVariables ?) 
+#74 vectors are not deallocated if they are initialized on functions and declared as global (may be it has to deallocate on clearGlobalVariables ?)
+#75 create vars within for/while scope gives memory leaks and there's no control about nomber of open/close claudators on main function 
 #76 Fix print parent variable on access member error
  
+ 
+ 
+#80 initialize vars within class doesn't tell any error or warning 
+#81 final parentesis/claudator lack detector 
+#82 Allow "this" do assign or pass parameter as well as any object 
 
 //----------------------------------------------------------
 Version: 1.3.0

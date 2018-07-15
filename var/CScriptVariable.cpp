@@ -21,7 +21,7 @@ namespace zetscript{
 
 		if(!ignore_duplicates){
 			if(getFunctionSymbol(symbol_value) != NULL){
-				writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode), "symbol already exists!");
+				writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode), "symbol already exists");
 				return NULL;
 			}
 		}
@@ -35,20 +35,23 @@ namespace zetscript{
 	}
 
 	void CScriptVariable::createSymbols(CScriptClass *ir_class){
+
+
 		tSymbolInfo *si;
+
+		if(m_infoRegisteredClass->idxClass >=MAX_BASIC_CLASS_TYPES){
+			this_symbol.object.varRef=this;
+			this_symbol.object.properties=STK_PROPERTY_IS_THIS_VAR|STK_PROPERTY_TYPE_SCRIPTVAR;
+		}
 
 		// Register variables...
 		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
 
+
 			tInfoVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
 			si = addVariableSymbol(ir_var->symbol_ref,ir_var->idxAstNode);
 
-			if(m_infoRegisteredClass->idxClass >=MAX_BASIC_CLASS_TYPES){
-				if(ir_var->symbol_ref=="this"){
-					si->object.varRef=this;
-					si->object.properties=STK_PROPERTY_IS_THIS_VAR|STK_PROPERTY_TYPE_SCRIPTVAR;
-				}
-			}
+
 
 			if(ir_var->properties & PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 			{ // we know the type object so we assign the pointer ...
@@ -100,6 +103,7 @@ namespace zetscript{
 		aux_string ="";
 		delete_c_object = false; // --> user is responsible to delete C objects!
 		ast_node_new=ZS_UNDEFINED_IDX;
+		memset(&this_symbol,0,sizeof(this_symbol));
 	}
 
 	CScriptVariable::CScriptVariable(){
@@ -189,7 +193,7 @@ namespace zetscript{
 
 
 		if(getVariableSymbol(symbol_value) != NULL){
-			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"symbol \"%s\" already exists!",symbol_value.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"symbol \"%s\" already exists",symbol_value.c_str());
 			return NULL;
 		}
 
@@ -251,7 +255,12 @@ namespace zetscript{
 	}
 
 	tSymbolInfo * CScriptVariable::getVariableSymbol(const string & varname,bool only_var_name){
-		for(unsigned int i = 1; i < this->m_variableSymbol.size(); i++){
+
+		if(varname == "this"){
+			return &this_symbol;
+		}
+
+		for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
 			string symbol = this->m_variableSymbol[i].symbol_value;
 
 			if(only_var_name){
@@ -285,6 +294,7 @@ namespace zetscript{
 	bool CScriptVariable::removeVariableSymbolByIndex(unsigned idx, bool remove_vector){//onst string & varname){
 
 		tSymbolInfo *si;
+
 
 		if(idx >= m_variableSymbol.size()){
 			writeErrorMsg(NULL,0,"idx out of bounds (%i>=%i)",idx,m_variableSymbol.size());
@@ -337,11 +347,18 @@ namespace zetscript{
 		return false;
 	}
 
-	tSymbolInfo * CScriptVariable::getVariableSymbolByIndex(unsigned idx){
+	tSymbolInfo * CScriptVariable::getVariableSymbolByIndex(int idx){
+
+		if(idx==ZS_THIS_IDX){
+			return &this_symbol;
+		}
+
+
 		if(idx >= m_variableSymbol.size()){
 			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
+
 		return &m_variableSymbol[idx];
 	}
 

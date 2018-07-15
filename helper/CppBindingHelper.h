@@ -195,7 +195,7 @@ namespace zetscript{
 						return false;
 					}
 				}else{ // CScriptVariable ?
-					error = " Error calling function, no C-object parameter! Unexpected script variable ("+demangle(script_variable->getClassName())+")!";
+					error = " Error calling function, no C-object parameter! Unexpected script variable ("+demangle(script_variable->getClassName())+")";
 					return false;
 				}
 				break;

@@ -119,8 +119,8 @@ namespace zetscript{
 		static const char * getSymbolValueConstCharByIdx(int idx);
 		static int findConstructorIdxNode(short idxAstNode);
 		static PASTNode itHasReturnSymbol(PASTNode _node);
-		static bool isThisScope(short idxAstNode);
-		static bool isSuperScope(short idxAstNode);
+		//static bool isThisAccessScope(short idxAstNode);
+		//static bool isSuperScope(short idxAstNode);
 
 		static void destroySingletons();
 

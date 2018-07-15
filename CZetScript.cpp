@@ -625,13 +625,13 @@ namespace zetscript{
 	}
 
 	ZETSCRIPT_MODULE_EXPORT void CZetScript::compile(){
-		if(!__init__) {THROW_RUNTIME_ERROR("ZetScript not initialized!"); return;}
+		if(!__init__) {THROW_RUNTIME_ERROR("ZetScript not initialized"); return;}
 		//ZS_CLEAR_ERROR_MSG();
 
 		if(CCompiler::getInstance()->compile()){
 
 			// print generated asm ...
-			//printGeneratedCodeAllClasses();
+			printGeneratedCodeAllClasses();
 
 			if(m_mainObject == NULL){
 				// creates the main entry function with compiled code. On every executing code, within "execute" function

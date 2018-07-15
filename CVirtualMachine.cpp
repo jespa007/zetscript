@@ -371,7 +371,9 @@ namespace zetscript{
 			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_SCRIPTVAR;\
 			dst_ins->stkValue=NULL;\
 			dst_ins->varRef=script_var;\
-			sharePointer(script_var->ptr_shared_pointer_node);\
+			if(dst_ins->properties & STK_PROPERTY_IS_THIS_VAR !=  STK_PROPERTY_IS_THIS_VAR){\
+				sharePointer(script_var->ptr_shared_pointer_node);\
+			}\
 		}else{\
 			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"(internal) cannot determine var type %i",GET_INS_PROPERTY_VAR_TYPE(src_ins->properties));\
 			RETURN_ERROR;\
@@ -1489,7 +1491,7 @@ if(aux_function_info == NULL){\
 		tStackElement *ptrArg=NULL;
 		tVM_ScopeInfo * ptrStartScopeInfo=NULL;
 
-		zs_print_debug_cr("Executing function %s ...",info_function->object_info.symbol_info.symbol_name.c_str());
+		zs_print_debug_cr("Executing function %s ...",info_function->object_info.symbol_info.symbol_ref.c_str());
 		int idxBaseStk=(ptrStartOp-stack);//>>sizeof(tStackElement *);
 
 		if(idxBaseStk<n_args){
@@ -1691,12 +1693,12 @@ if(aux_function_info == NULL){\
 
 										// check indexes ...
 										if(v_index < 0){
-											writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Negative index vector (%i)!",v_index);
+											writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Negative index vector (%i)",v_index);
 											RETURN_ERROR;
 										}
 
 										if(v_index >= (int)(vec->m_objVector.size())){
-											writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Index vector out of bounds (%i)!",v_index);
+											writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Index vector out of bounds (%i)",v_index);
 											RETURN_ERROR;
 										}
 
@@ -1790,6 +1792,13 @@ if(aux_function_info == NULL){\
 							case INS_PROPERTY_LOCAL_SCOPE:
 								ldrVar = &ptrLocalVar[instruction->index_op2];
 								break;
+							}
+
+							if(instruction->instruction_properties&INS_CHECK_IS_FUNCTION){
+								if((ldrVar->properties & STK_PROPERTY_TYPE_FUNCTION) != STK_PROPERTY_TYPE_FUNCTION){
+									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"\"%s\" expected function variable but is \"%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str(), STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrVar));
+									RETURN_ERROR;
+								}
 							}
 						}
 

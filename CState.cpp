@@ -445,7 +445,7 @@ namespace zetscript{
 	void CState::destroyScriptFunctionObjectNodes() {
 
 		for(unsigned i = 0;i < vec_script_function_object_node->size();i++){
-			zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_name.c_str());
+			zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_ref.c_str());
 			CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
 
 			if (info_function->object_info.statment_op != NULL) {

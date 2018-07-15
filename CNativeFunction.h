@@ -49,7 +49,7 @@ namespace zetscript{
 				proxy_function=(void *)( new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))fun_obj, _1,_2, _3, _4, _5, _6)));
 				break;
 			default:
-				THROW_RUNTIME_ERROR("Max arguments reached!");
+				THROW_RUNTIME_ERROR("Max arguments reached");
 				break;
 
 			}
@@ -97,7 +97,7 @@ namespace zetscript{
 				delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>*)obj;
 				break;
 			default:
-				THROW_RUNTIME_ERROR("Max arguments reached!");
+				THROW_RUNTIME_ERROR("Max arguments reached");
 				return false;
 			}
 
@@ -216,7 +216,7 @@ namespace zetscript{
 				});
 				break;
 			default:
-				THROW_RUNTIME_ERROR("Max argyments reached!");
+				THROW_RUNTIME_ERROR("Max argyments reached");
 
 			}
 

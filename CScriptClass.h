@@ -198,8 +198,9 @@ namespace zetscript{
 		static bool updateReferenceSymbols();
 
 		static tInfoVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,short  idxAstNode);
+		static bool 				  variableSymbolExist(CScriptClass *rc,const string & symbolname_ref);
 		static tInfoVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
-		static int 							 getIdxRegisteredVariableSymbol(const string & class_name,const string & varname, bool show_msg=true);
+
 		static int 							 getIdxRegisteredVariableSymbol(tFunctionInfo *irf,const string & var_name, bool show_msg=true);
 
 
@@ -207,6 +208,7 @@ namespace zetscript{
 		static int getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name, bool show_errors=true);
 		ZETSCRIPT_MODULE_EXPORT static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
+		static bool 				  functionSymbolExist(CScriptClass *rc,const string & symbolname_ref, int n_params);
 		static CScriptFunctionObject * getScriptFunctionObjectByClassIdxFunctionName(int idxClassName,const string & function_name, bool show_errors=true);
 
 		static tFunctionInfo *  getSuperClass(CScriptClass *irc, const string & fun_name);
@@ -811,7 +813,7 @@ namespace zetscript{
 					}
 				}
 			}else{
-				THROW_RUNTIME_ERROR("error! cannot register metamethod set on static function. Must be member function!");
+				THROW_RUNTIME_ERROR("error! cannot register metamethod set on static function. Must be member function");
 				return false;
 			}
 

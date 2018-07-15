@@ -95,18 +95,18 @@ namespace zetscript{
 		return -1;
 	}
 
-	int				CScriptFunctionObject::getIdxVariableSymbol(tFunctionInfo * info_function,const string & function_name, bool show_msg){
+	int				CScriptFunctionObject::getIdxVariableSymbol(tFunctionInfo * info_function,const string & variable_name, bool show_msg){
 		// from lat value to first to get last override function...
 
 
 		for(int i = info_function->local_symbols.m_registeredVariable.size()-1; i >= 0 ; i--){
-			if(info_function->local_symbols.m_registeredVariable[i].symbol_ref == function_name){
+			if(info_function->local_symbols.m_registeredVariable[i].symbol_ref == variable_name){
 				return i;
 			}
 		}
 
 		if(show_msg){
-			THROW_RUNTIME_ERROR("variable member %s::%s doesn't exist",info_function->symbol_info.symbol_ref.c_str(),function_name.c_str());
+			THROW_RUNTIME_ERROR("variable member %s::%s doesn't exist",info_function->symbol_info.symbol_ref.c_str(),variable_name.c_str());
 		}
 
 		return -1;

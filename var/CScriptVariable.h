@@ -14,7 +14,8 @@ namespace zetscript{
 	class CScriptClass;
 
 	class  CScriptVariable{//: public CVariable{
-
+	protected:
+		tSymbolInfo this_symbol;
 	public:
 
 		//----------------------
@@ -48,7 +49,7 @@ namespace zetscript{
 
 		tSymbolInfo * addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv=NULL);
 		tSymbolInfo * getVariableSymbol(const string & varname,bool only_var_name=false);
-		tSymbolInfo * getVariableSymbolByIndex(unsigned idx);
+		tSymbolInfo * getVariableSymbolByIndex(int idx);
 		bool removeVariableSymbolByName(const string & symbol_value, int idxAstNode);
 		bool removeVariableSymbolByIndex(unsigned idx, bool remove_vector=false);
 
