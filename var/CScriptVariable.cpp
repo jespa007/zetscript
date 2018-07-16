@@ -197,7 +197,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		/*char *aux_p=(char *)symbol_value.c_str();
+		char *aux_p=(char *)symbol_value.c_str();
 		if(
 			   ('a' <= *aux_p && *aux_p <='z') ||
 			   ('A' <= *aux_p && *aux_p <='Z')
@@ -226,7 +226,7 @@ namespace zetscript{
 			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			THROW_RUNTIME_ERROR("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			return NULL;
-		}*/
+		}
 
 		if(sv != NULL){
 			si.object = *sv;
