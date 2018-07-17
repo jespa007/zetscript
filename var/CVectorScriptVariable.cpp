@@ -77,6 +77,31 @@ namespace zetscript{
 		}
 	}
 
+
+	tStackElement * CVectorScriptVariable::get(const string & s){
+		bool found=false;
+		tStackElement *se=NULL;
+
+		for(unsigned i=0; i < vecNamedElement.size() && se==NULL; i++){
+			if(vecNamedElement[i].key==s){
+				se=&m_objVector[vecNamedElement[i].idx];
+			}
+		}
+
+		if(se==NULL){
+			tNamedElementVector nev;
+
+			//
+			nev.key=s;
+			nev.idx=m_objVector.size();
+
+			vecNamedElement.push_back(nev);
+			se=push();
+		}
+
+		return se;
+	}
+
 	tStackElement * CVectorScriptVariable::pop(){
 		return_callc={STK_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
 		if(m_objVector.size()>0){

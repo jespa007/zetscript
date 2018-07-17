@@ -29,11 +29,14 @@ namespace zetscript{
 #define SCOPE_NODE(idx) 				CScope::getScopeNodeByIdx(idx)
 
 #define IDX_GLOBAL_SCOPE				0
+#define IDX_C_CLASS_SCOPE				-2
+#define IDX_ANONYMOUSE_SCOPE			-3
 
 // if 0 is in main <> 0, else.
 #define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScopeNodeByIdx(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
 
-#define IDX_C_MEMBER_CLASS_REGISTERED_SCOPE	-2
+
+
 
 #define NO_PARAMS_IS_VARIABLE	-1
 #define NO_PARAMS_SYMBOL_ONLY	-2

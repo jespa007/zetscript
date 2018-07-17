@@ -326,6 +326,7 @@ namespace zetscript{
 		}
 	 }
 
+
 	 void  internal_print_error(const char *s){
 		 CURRENT_VM->setError(s);
 		//printf("%s\n",s);
@@ -452,6 +453,8 @@ namespace zetscript{
 			// Let's register functions,...
 			// register c function's
 			if(!register_C_Function("print",print)) return false;
+
+
 			if(!register_C_Function("error",internal_print_error)) return false;
 
 
@@ -752,7 +755,7 @@ namespace zetscript{
 
 			 		if(partial_c_class){ // var in c scope ?
 
-			 			idx_scope = IDX_C_MEMBER_CLASS_REGISTERED_SCOPE;
+			 			idx_scope = IDX_C_CLASS_SCOPE;
 			 			partial_c_class=false; // <-- set it false to tell that is already test
 
 			 		}else{ // finally try global...

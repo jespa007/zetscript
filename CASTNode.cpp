@@ -62,7 +62,7 @@ namespace zetscript{
 		while(*aux_p!=0 && (*aux_p !=(c) )) {
 			if(*aux_p == '\"') { // go to end..
 				aux_p++;
-				while (*aux_p!=0 && *aux_p !='\"' && *aux_p != '\n') {aux_p++;}
+				while (*aux_p!=0 && !(*aux_p =='\"' && *(aux_p-1) !='\\') && *aux_p != '\n') {aux_p++;}
 
 				if(*aux_p != '\"'){
 					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line, "string is not closed at line %i",m_line);
@@ -865,7 +865,7 @@ namespace zetscript{
 
 		if(*aux == '\"'){
 			aux++;
-			while((*aux)!=0 && !((*aux)=='\n') && !((*aux)=='\"')) {
+			while((*aux)!=0 && !((*aux)=='\n') && !((*aux)=='\"' && *(aux-1) !='\\')) {
 				aux++;
 			}
 
@@ -3819,7 +3819,7 @@ namespace zetscript{
 							aux++;
 							start_var=aux;
 
-							while(*aux != '\n' && *aux!=0 && *aux!='\"') aux++;
+							while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
 
 							if(*aux != '\"'){
 								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected end \" directive");

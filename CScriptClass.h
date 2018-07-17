@@ -638,7 +638,7 @@ namespace zetscript{
 
 			// init struct...
 			CASTNode *ast_symbol = CASTNode::newASTNode();
-			ast_symbol->idxScope=IDX_C_MEMBER_CLASS_REGISTERED_SCOPE;
+			ast_symbol->idxScope=IDX_C_CLASS_SCOPE;
 			ast_symbol->symbol_value = function_name;
 
 			for(int a=0; a < m_argInfo.size();a++){ // set number args...
@@ -652,7 +652,7 @@ namespace zetscript{
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_MEMBER_CLASS_REGISTERED_SCOPE);
+			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_CLASS_SCOPE);
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
@@ -749,7 +749,7 @@ namespace zetscript{
 
 			// init struct...
 			CASTNode *ast_symbol = CASTNode::newASTNode();
-			ast_symbol->idxScope = IDX_C_MEMBER_CLASS_REGISTERED_SCOPE;
+			ast_symbol->idxScope = IDX_C_CLASS_SCOPE;
 			ast_symbol->symbol_value = function_name;
 
 			for(int a=0; a < m_argInfo.size();a++){ // set number args...
@@ -762,7 +762,7 @@ namespace zetscript{
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_MEMBER_CLASS_REGISTERED_SCOPE);
+			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_CLASS_SCOPE);
 			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
 			irs->object_info.symbol_info.ref_ptr = ref_ptr;
@@ -859,11 +859,11 @@ namespace zetscript{
 			irs.ref_ptr=offset;
 			irs.c_type = var_type;
 			//irs.
-			irs.symbol_ref=CCompiler::makeSymbolRef(var_name,IDX_C_MEMBER_CLASS_REGISTERED_SCOPE);
+			irs.symbol_ref=CCompiler::makeSymbolRef(var_name,IDX_C_CLASS_SCOPE);
 
 			// init ast
 			CASTNode *ast_symbol = CASTNode::newASTNode();
-			ast_symbol->idxScope=IDX_C_MEMBER_CLASS_REGISTERED_SCOPE;
+			ast_symbol->idxScope=IDX_C_CLASS_SCOPE;
 			ast_symbol->symbol_value = var_name;
 
 			// get ast var symbol collection node ( because class has a var collection we need a children [0] )

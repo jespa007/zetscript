@@ -10,29 +10,7 @@ namespace zetscript{
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
 
-	tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates){
-		tSymbolInfo si;
-		si.proxy_ptr=0;
-		si.object = {
-				STK_PROPERTY_TYPE_FUNCTION, // dfine as function.
-				irv,						// function struct pointer.
-				NULL						// no var ref releated.
-		};
 
-		if(!ignore_duplicates){
-			if(getFunctionSymbol(symbol_value) != NULL){
-				writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode), "symbol already exists");
-				return NULL;
-			}
-		}
-
-		// get super function ...
-		si.symbol_value = symbol_value;
-		si.idxAstNode = _idxAstNode;
-		m_functionSymbol.push_back(si);
-
-		return &m_functionSymbol[m_functionSymbol.size()-1];
-	}
 
 	void CScriptVariable::createSymbols(CScriptClass *ir_class){
 
@@ -49,7 +27,8 @@ namespace zetscript{
 
 
 			tInfoVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
-			si = addVariableSymbol(ir_var->symbol_ref,ir_var->idxAstNode);
+
+			si = addVariableSymbol(CCompiler::getSymbolNameFromSymbolRef(ir_var->symbol_ref),ir_var->idxAstNode);
 
 
 
@@ -67,7 +46,7 @@ namespace zetscript{
 		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 			CScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
 			 si =addFunctionSymbol(
-					 ir_fun->object_info.symbol_info.symbol_ref,
+					 CCompiler::getSymbolNameFromSymbolRef( ir_fun->object_info.symbol_info.symbol_ref),
 					 ir_fun->object_info.symbol_info.idxAstNode,
 					ir_fun
 
@@ -192,10 +171,6 @@ namespace zetscript{
 		bool error_symbol=false;
 
 
-		if(getVariableSymbol(symbol_value) != NULL){
-			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"symbol \"%s\" already exists",symbol_value.c_str());
-			return NULL;
-		}
 
 		char *aux_p=(char *)symbol_value.c_str();
 		if(
@@ -228,6 +203,13 @@ namespace zetscript{
 			return NULL;
 		}
 
+		string symbol_ref=CCompiler::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+
+		if(getVariableSymbol(symbol_ref) != NULL){
+			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"symbol \"%s\" already exists",symbol_value.c_str());
+			return NULL;
+		}
+
 		if(sv != NULL){
 			si.object = *sv;
 
@@ -248,7 +230,7 @@ namespace zetscript{
 		}
 
 		si.idxAstNode = _idxAstNode;
-		si.symbol_value = symbol_value;
+		si.symbol_value = symbol_ref;
 		m_variableSymbol.push_back(si);
 
 		return &m_variableSymbol[m_variableSymbol.size()-1];
@@ -272,6 +254,32 @@ namespace zetscript{
 			}
 		}
 		return NULL;
+	}
+
+	tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates){
+		tSymbolInfo si;
+		si.proxy_ptr=0;
+		si.object = {
+				STK_PROPERTY_TYPE_FUNCTION, // dfine as function.
+				irv,						// function struct pointer.
+				NULL						// no var ref releated.
+		};
+
+		string symbol_ref=CCompiler::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+
+		if(!ignore_duplicates){
+			if(getFunctionSymbol(symbol_ref) != NULL){
+				writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode), "symbol already exists");
+				return NULL;
+			}
+		}
+
+		// get super function ...
+		si.symbol_value = symbol_ref;
+		si.idxAstNode = _idxAstNode;
+		m_functionSymbol.push_back(si);
+
+		return &m_functionSymbol[m_functionSymbol.size()-1];
 	}
 
 	tSymbolInfo * CScriptVariable::getFunctionSymbol(const string & varname,bool only_var_name){
@@ -338,8 +346,9 @@ namespace zetscript{
 
 
 	bool CScriptVariable::removeVariableSymbolByName(const string & varname, int idxAstNode){
+		string symbol_ref=CCompiler::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
 		for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
-			if(varname == this->m_variableSymbol[i].symbol_value){
+			if(symbol_ref == this->m_variableSymbol[i].symbol_value){
 				return removeVariableSymbolByIndex(i,true);
 			}
 		}
