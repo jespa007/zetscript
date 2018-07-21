@@ -459,7 +459,7 @@ namespace zetscript{
 
 
 			if(!register_C_FunctionMember<CVectorScriptVariable>("size",&CVectorScriptVariable::size)) return false;
-			if(!register_C_FunctionMember<CVectorScriptVariable>("add",&CVectorScriptVariable::add)) return false;
+			if(!register_C_FunctionMember<CVectorScriptVariable>("push",static_cast<void (CVectorScriptVariable:: *)(tStackElement *)>(&CVectorScriptVariable::push))) return false;
 			if(!register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop)) return false;
 
 

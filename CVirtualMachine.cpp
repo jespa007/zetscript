@@ -533,14 +533,14 @@ namespace zetscript{
 								}\
 								else{\
 									CScriptClass *c_class=NULL;\
-									if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */ \
+									if(var_type & STK_PROPERTY_TYPE_STRING){ \
+										all_check =\
+												(	arg_idx_type==IDX_CLASS_STRING_PTR_C && currentArg->varRef!=0)\
+											  ||	arg_idx_type==IDX_CLASS_CONST_CHAR_PTR_C;\
+									}else if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */ \
 										all_check=CScriptClass::isIdxClassInstanceOf(c_class->idxClass,arg_idx_type); \
-									}else{ /* check string ... */ \
-										if(var_type & STK_PROPERTY_TYPE_STRING){ \
-											all_check=arg_idx_type==IDX_CLASS_STRING_PTR_C; \
-										}else{ \
-											all_check=false; \
-										}\
+									}else{ /* fail ... */ \
+										all_check=false; \
 									}\
 								}\
 \

@@ -29,10 +29,11 @@ namespace zetscript{
 		virtual bool initSharedPtr(bool is_assigned=false);
 
 		tStackElement * get(const string & s);
-		void add(tStackElement  * v);
 
-		tStackElement * pop();
+
 		tStackElement * push();
+		void 			push(tStackElement  * v);
+		tStackElement * pop();
 
 		ZETSCRIPT_MODULE_EXPORT int size();
 

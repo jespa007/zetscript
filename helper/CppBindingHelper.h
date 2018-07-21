@@ -175,7 +175,11 @@ namespace zetscript{
 				}
 
 				if(script_variable->idxScriptClass==IDX_CLASS_STRING){
+
 					val_ret=(intptr_t)(&script_variable->m_strValue);
+					if(idx_dst_type == IDX_CLASS_CONST_CHAR_PTR_C){
+						val_ret=(intptr_t)script_variable->m_strValue.c_str();
+					}
 				}else if(
 
 				   (script_variable->idxScriptClass==IDX_CLASS_VECTOR

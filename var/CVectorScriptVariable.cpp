@@ -66,7 +66,7 @@ namespace zetscript{
 		return &m_objVector[m_objVector.size()-1];
 	}
 
-	void CVectorScriptVariable::add(tStackElement  * v){
+	void CVectorScriptVariable::push(tStackElement  * v){
 		m_objVector.push_back(*v);
 
 		// update n_refs +1

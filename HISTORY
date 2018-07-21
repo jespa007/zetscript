@@ -1,6 +1,6 @@
 
 //----------------------------------------------------------
-Version: 2.0.0
+Version: 1.4.0
 Date: XX-XX-2018
 
  
@@ -18,15 +18,15 @@ Date: XX-XX-2018
 #75 create vars within for/while scope gives memory leaks and there's no control about nomber of open/close claudators on main function 
 #76 Fix print parent variable on access member error
  
- 
- 
 #80 initialize vars within class doesn't tell any error or warning 
 #81 final parentesis/claudator lack detector 
 #82 Allow "this" do assign or pass parameter as well as any object 
 
-
 #88 struct: failed to find none of its elements 
-#89 string as function parameter: Doesn't parse \" within string 
+#89 string as function parameter: Doesn't parse \" within string
+
+#91 Change name vector::add by vector::push  
+#92 Support for StringVar to const char conversion as parameter into C function 
 
 //----------------------------------------------------------
 Version: 1.3.0
