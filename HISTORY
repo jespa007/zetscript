@@ -22,6 +22,7 @@ Date: XX-XX-2018
 #81 final parentesis/claudator lack detector 
 #82 Allow "this" do assign or pass parameter as well as any object 
 
+#87 vector: Cannot "push" strings into vector 
 #88 struct: failed to find none of its elements 
 #89 string as function parameter: Doesn't parse \" within string
 

@@ -73,7 +73,7 @@ namespace zetscript{
 	class  CASTNode{
 
 
-
+		static int n_foreach;
 	public:
 		static const char * current_parsing_filename;
 		static int current_idx_parsing_filename;
@@ -266,6 +266,7 @@ namespace zetscript{
 		static char * parseStruct(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseFor(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
+		static char * parseForeach(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseWhile(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseDoWhile(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
 		static char * parseSwitch(const char *s,int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL);
