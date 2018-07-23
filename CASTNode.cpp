@@ -2926,7 +2926,7 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		KEYWORD_TYPE key_w;
 		bool error=false;
-		PASTNode block_for = NULL,node_for_expression=NULL;
+		PASTNode block_for = NULL,pre_node=NULL,cond_node=NULL,post_node=NULL, pre_node_expression=NULL, cond_node_expression=NULL,post_node_expression=NULL;
 		string eval_for;
 		//CScope *_localScope =  scope_info != NULL?scope_info->symbol_info.ast->scope_info_ptr:NULL; // gets scope...
 		CScope *_currentScope=NULL;
@@ -2944,10 +2944,21 @@ namespace zetscript{
 					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
 
+
+					if((pre_node= CASTNode::newASTNode()) == NULL) return NULL;
+					pre_node->node_type = PRE_FOR_NODE;
+
+					if((cond_node= CASTNode::newASTNode()) == NULL) return NULL;
+					cond_node->node_type = CONDITIONAL_NODE;
+
+					if((post_node= CASTNode::newASTNode()) == NULL) return NULL;
+					post_node->node_type = POST_FOR_NODE;
+
+
 					// reserve 3 nodes for init/eval/post_op
-					(*ast_node_to_be_evaluated)->children.push_back(ZS_UNDEFINED_IDX);
-					(*ast_node_to_be_evaluated)->children.push_back(ZS_UNDEFINED_IDX);
-					(*ast_node_to_be_evaluated)->children.push_back(ZS_UNDEFINED_IDX);
+					(*ast_node_to_be_evaluated)->children.push_back(pre_node->idxAstNode);
+					(*ast_node_to_be_evaluated)->children.push_back(cond_node->idxAstNode);
+					(*ast_node_to_be_evaluated)->children.push_back(post_node->idxAstNode);
 
 				}
 
@@ -2964,46 +2975,126 @@ namespace zetscript{
 
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
-					struct{
+					/*struct{
 						char next_char;
 						NODE_TYPE node_type;
 					}info_for[3]={
 							{';',PRE_FOR_NODE},
 							{';',CONDITIONAL_NODE},
 							{')',POST_FOR_NODE}
-					};
+					};*/
 
-					for(int i = 0; i < 3; i++){
-						bool parse_var = false;
+					//for(int i = 0; i < 3; i++){
+						//bool parse_var = false;
 
-						if(i==0){
+						//if(i==0){
+					if(*aux_p != ';'){
+					// init node ...
 							KEYWORD_TYPE key_w = isKeyword(aux_p);
 							if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
 								if(key_w == VAR_KEYWORD){
-									if((aux_p = parseVar(aux_p,m_line, _currentScope, ast_node_to_be_evaluated != NULL ? &node_for_expression: NULL))==NULL){
+									if((aux_p = parseVar(aux_p,m_line, _currentScope, ast_node_to_be_evaluated != NULL ? &pre_node_expression: NULL))==NULL){
 										return NULL;
 									}
-									else{
-										parse_var = true;
-										aux_p = aux_p - 1; // particular case to get end op...
+
+									if(ast_node_to_be_evaluated!=NULL){
+										pre_node->children.push_back(pre_node_expression->idxAstNode);
 									}
+									/*else{
+							//			parse_var = true;
+										aux_p = aux_p - 1; // particular case to get end op...
+									}*/
+									aux_p = aux_p - 1; // redirect aux_p to ';'
+								}
+								else{
+
+								//	if(*aux_p != info_for[i].next_char){
+										writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected 'var' keyword");
+										return NULL;
+									//}
 								}
 							}
-						}
+					}
 
-						if(!parse_var){
-							if((aux_p = parseExpression((const char *)aux_p,m_line,_currentScope, ast_node_to_be_evaluated != NULL ? &node_for_expression: NULL)) == NULL){
+					aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+					if(*aux_p != ';'){
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ';'");
+						return NULL;
+
+					}
+
+					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
+
+					if(*aux_p != ';'){ // conditional...
+						//}else{
+
+						//if(!parse_var){
+							if((aux_p = parseExpression((const char *)aux_p,m_line,_currentScope, ast_node_to_be_evaluated != NULL ? &cond_node_expression: NULL)) == NULL){
 								return NULL;
 							}
+
+							if(ast_node_to_be_evaluated!=NULL){
+								cond_node->children.push_back(cond_node_expression->idxAstNode);
+							}
+					}
+
+					aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+					if(*aux_p != ';'){
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ';'");
+						return NULL;
+
+					}
+
+					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
+
+
+					if(*aux_p != ')' ){ // finally do post op...
+
+						if(*aux_p == ',' ){
+							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected ) ");
+							return NULL;
 						}
 
-						if(*aux_p == info_for[i].next_char){
+						do{
+							if((aux_p = parseExpression(aux_p,m_line,scope_info,(ast_node_to_be_evaluated != NULL ? &post_node_expression : NULL)))==NULL){
+								return NULL;
+							}
+
+							// push arg into node...
+							if(ast_node_to_be_evaluated!=NULL){
+								post_node->children.push_back(post_node_expression->idxAstNode);
+							}
+
+							if(*aux_p == ',' ){
+								aux_p=IGNORE_BLANKS(aux_p+1,m_line);
+							}else{
+								if(*aux_p != ')' ){
+									writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
+									return NULL;
+								}
+							}
+
+						}while(*aux_p != ')' && *aux_p != 0);
+					}
+
+					if(*aux_p != ')'){
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
+						return NULL;
+
+					}
+
+
+					/*	if(*aux_p == info_for[i].next_char){
 							if(ast_node_to_be_evaluated != NULL){ // add node as for node type and its expression below.
-								PASTNode aux;
-								if((aux= CASTNode::newASTNode()) == NULL) return NULL;
-								aux->node_type = info_for[i].node_type;
-								aux->children.push_back(node_for_expression->idxAstNode);
-								(*ast_node_to_be_evaluated)->children[i]=aux->idxAstNode;
+								if(node_for_expression!=NULL){
+									PASTNode aux;
+									if((aux= CASTNode::newASTNode()) == NULL) return NULL;
+									aux->node_type = info_for[i].node_type;
+									aux->children.push_back(node_for_expression->idxAstNode);
+									(*ast_node_to_be_evaluated)->children[i]=aux->idxAstNode;
+								}
 							}
 						}
 						else{
@@ -3012,9 +3103,9 @@ namespace zetscript{
 						}
 						node_for_expression=NULL;
 						aux_p=IGNORE_BLANKS(aux_p+1,m_line);
-					}
+					}*/
 
-					aux_p=IGNORE_BLANKS(aux_p,m_line);
+					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 					if(*aux_p != '{'){
 						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected '{' for-block");
 						return NULL;
