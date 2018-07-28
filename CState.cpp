@@ -27,9 +27,9 @@ namespace zetscript{
 			// add empty ast_node...
 
 			CASTNode *ast =CASTNode::newASTNode();
-			CScope *sc=CScope::newScope();
-			ast->idxScope = sc->idxScope;
-			ast->node_type = NODE_TYPE::BODY_NODE;
+			CScope *sc=CScope::newScope(ast);
+
+			ast->node_type = NODE_TYPE::BODY_BLOCK_NODE;
 
 			
 

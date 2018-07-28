@@ -91,7 +91,7 @@ namespace zetscript{
 		static void setVectorASTNode(vector<CASTNode *> 	* set_vec_ast_node);
 
 
-		static char * generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated=NULL, bool allow_breaks = false);
+		static char * generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode node_to_be_evaluated);
 		/**
 		 * Get CASTNode Node by its idx, regarding current state.
 		 */
@@ -119,8 +119,6 @@ namespace zetscript{
 		static const char * getSymbolValueConstCharByIdx(int idx);
 		static int findConstructorIdxNode(short idxAstNode);
 		static PASTNode itHasReturnSymbol(PASTNode _node);
-		//static bool isThisAccessScope(short idxAstNode);
-		//static bool isSuperScope(short idxAstNode);
 
 		static void destroySingletons();
 
@@ -255,7 +253,7 @@ namespace zetscript{
 
 
 		// parse block { }
-		static char * parseBlock(const char *s,int & m_line,  CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated=NULL, bool push_scope=true);
+		static char * parseBlock(const char *s,int & m_line,  CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated=NULL, PASTNode parent=NULL,bool push_scope=true);
 
 
 		// keyword...

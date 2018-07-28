@@ -36,7 +36,8 @@ enum NODE_TYPE
 	ARRAY_OBJECT_NODE,
 	FUNCTION_OBJECT_NODE,
 	SYMBOL_NODE,
-	BODY_NODE,
+	BODY_BLOCK_NODE,
+	BODY_CASE_NODE,
 	GROUP_CASES_NODE,
 	GROUP_IF_NODES, // if, else-if
 	IF_NODE, // if-node (each one has a conditional + body )

@@ -279,35 +279,6 @@ namespace zetscript{
 		return NULL;//itHasReturnSymbol(PASTNode _node);
 	}
 
-	/*bool CASTNode::isThisAccessScope(short idxAstNode){
-
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL){
-			return false;
-		}
-
-		return ((_node->node_type == PUNCTUATOR_NODE) &&
-				   //(_node->parent != NULL && _node->parent->node_type != PUNCTUATOR_NODE) &&
-				   (_node->children.size()==2 && AST_NODE(_node->children[0])->symbol_value=="this")
-				   );
-	}
-
-	bool CASTNode::isSuperScope(short idxAstNode){
-
-		PASTNode _node=AST_NODE(idxAstNode);
-
-		if(_node == NULL){
-			return false;
-		}
-
-		return ((_node->node_type == PUNCTUATOR_NODE) &&
-				   //(_node->parent != NULL && _node->parent->node_type != PUNCTUATOR_NODE) &&
-				   (_node->children.size()==2 && AST_NODE(_node->children[0])->symbol_value=="super")
-				   );
-	}*/
-
-
 	void CASTNode::destroySingletons(){
 		if(astNodeToCompile != NULL){
 			delete astNodeToCompile;
@@ -369,7 +340,6 @@ namespace zetscript{
 		return vec_ast_node->at(idx)->symbol_value.c_str();
 	}
 
-
 	bool CASTNode::parsePlusPunctuator(const char *s){
 		if(*s=='+')
 			return ((*(s+1) != '+') && (*(s+1) != '='));
@@ -398,7 +368,6 @@ namespace zetscript{
 		if(*s == '%')
 			return ((*(s+1) != '='));
 		return false;
-
 	}
 
 	bool CASTNode::parseFieldPunctuator(const char *s){
@@ -2123,7 +2092,7 @@ namespace zetscript{
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
 					(*ast_node_to_be_evaluated)->symbol_value = class_name;
 
-					CScope *scp = CScope::newScope(ZS_UNDEFINED_IDX,(*ast_node_to_be_evaluated)->idxAstNode );
+					CScope *scp = CScope::newScope((*ast_node_to_be_evaluated));
 					(*ast_node_to_be_evaluated)->idxScope =scp->idxScope;
 					class_scope_info =scp;
 
@@ -2390,7 +2359,7 @@ namespace zetscript{
 
 					if(ast_node_to_be_evaluated != NULL){
 
-						_currentScope=scope_info->pushScope();
+						_currentScope=scope_info->pushScope(*ast_node_to_be_evaluated);
 					}
 
 					// grab words separated by ,
@@ -2472,7 +2441,8 @@ namespace zetscript{
 							m_line,
 							ast_node_to_be_evaluated != NULL ? scope_info:NULL ,
 							error,
-							ast_node_to_be_evaluated != NULL ? &body_node : NULL
+							ast_node_to_be_evaluated != NULL ? &body_node : NULL,
+							ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
 
 						)) != NULL){
 
@@ -2641,7 +2611,12 @@ namespace zetscript{
 							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected while-block open block ('{') ");
 							return NULL;
 						}
-						if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &while_node : NULL))!= NULL){
+						if((aux_p=parseBlock(aux_p
+								,m_line
+								,scope_info,error
+								,ast_node_to_be_evaluated != NULL ? &while_node : NULL
+								,ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
+								))!= NULL){
 							if(!error){
 								if(ast_node_to_be_evaluated != NULL){
 									(*ast_node_to_be_evaluated)->children.push_back(while_node->idxAstNode);
@@ -2699,7 +2674,13 @@ namespace zetscript{
 					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected open block ('{') in do-while expression");
 					return NULL;
 				}
-				if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &body_node : NULL))!= NULL){
+				if((aux_p=parseBlock(aux_p
+						,m_line
+						,scope_info
+						,error
+						,ast_node_to_be_evaluated != NULL ? &body_node : NULL
+						,ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
+						))!= NULL){
 					if(!error){
 
 						// Finally evaluate conditional line ...
@@ -2854,7 +2835,13 @@ namespace zetscript{
 					}
 
 
-					if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &block : NULL))== NULL){
+					if((aux_p=parseBlock(aux_p
+							,m_line
+							,scope_info
+							,error
+							,ast_node_to_be_evaluated != NULL ? &block : NULL
+							,ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
+							))== NULL){
 						return NULL;
 					}
 
@@ -2894,7 +2881,13 @@ namespace zetscript{
 								return NULL;
 							}
 
-							if((aux_p=parseBlock(aux_p,m_line,scope_info,error,ast_node_to_be_evaluated != NULL ? &else_node : NULL))!= NULL){
+							if((aux_p=parseBlock(aux_p
+									,m_line
+									,scope_info
+									,error
+									,ast_node_to_be_evaluated != NULL ? &else_node : NULL
+									,ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
+									))!= NULL){
 									if(!error){
 
 										if( ast_node_to_be_evaluated != NULL){
@@ -2969,8 +2962,7 @@ namespace zetscript{
 
 					// save scope pointer ...
 					if(ast_node_to_be_evaluated != NULL){
-						_currentScope =scope_info->pushScope(); // push current scope
-						(*ast_node_to_be_evaluated)->idxScope=_currentScope->idxScope;
+						_currentScope =scope_info->pushScope(*ast_node_to_be_evaluated); // push current scope
 					}
 
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
@@ -3112,7 +3104,13 @@ namespace zetscript{
 					}
 
 					// parse block ...
-					if((aux_p=parseBlock(aux_p,m_line,_currentScope,error,ast_node_to_be_evaluated != NULL ? &block_for : NULL))!= NULL){ // true: We treat declared variables into for as another scope.
+					if((aux_p=parseBlock(aux_p
+							,m_line
+							,_currentScope
+							,error
+							,ast_node_to_be_evaluated != NULL ? &block_for : NULL
+							,ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
+						))!= NULL){ // true: We treat declared variables into for as another scope.
 						if(!error){
 
 							if(ast_node_to_be_evaluated != NULL) {
@@ -3172,8 +3170,8 @@ namespace zetscript{
 
 					// save scope pointer ...
 					if(ast_node_to_be_evaluated != NULL){
-						_currentScope =scope_info->pushScope(); // push current scope
-						(*ast_node_to_be_evaluated)->idxScope=_currentScope->idxScope;
+						_currentScope =scope_info->pushScope(*ast_node_to_be_evaluated); // push current scope
+
 					}
 
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
@@ -3285,7 +3283,13 @@ namespace zetscript{
 					}
 
 					// parse block ...
-					if((aux_p=parseBlock(aux_p,m_line,_currentScope,error,ast_node_to_be_evaluated != NULL ? &block_for : NULL))!= NULL){ // true: We treat declared variables into for as another scope.
+					if((aux_p=parseBlock(aux_p
+							,m_line
+							,_currentScope
+							,error
+							,ast_node_to_be_evaluated != NULL ? &block_for : NULL
+							,ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
+							))!= NULL){ // true: We treat declared variables into for as another scope.
 						if(!error){
 
 							if(ast_node_to_be_evaluated != NULL) {
@@ -3518,12 +3522,18 @@ namespace zetscript{
 
 									// save scope pointer ...
 									if(ast_node_to_be_evaluated != NULL){
-										m_currentScope = scope_info->pushScope();
-										switch_node->idxScope =m_currentScope->idxScope;
+
+										if((case_body_node = CASTNode::newASTNode()) == NULL) return NULL;
+
+										m_currentScope = scope_info->pushScope(case_body_node);
+
+										case_body_node->node_type = NODE_TYPE::BODY_CASE_NODE;
+										case_body_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
+
 									}
 
 									// eval block...
-									if((aux_p=generateAST_Recursive(aux_p, m_line, m_currentScope, error, ast_node_to_be_evaluated != NULL ? &case_body_node : NULL,true))==NULL){
+									if((aux_p=generateAST_Recursive(aux_p, m_line, m_currentScope, error, ast_node_to_be_evaluated != NULL ? case_body_node : NULL))==NULL){
 										return NULL;
 									}
 
@@ -3535,6 +3545,9 @@ namespace zetscript{
 									switch_node->children[1]=case_body_node->idxAstNode;
 
 
+									//------------------------------------------------------
+									// TODO: search break within case body node ...
+
 									key_w2 = isKeyword(aux_p);
 									if(key_w2 == BREAK_KEYWORD){
 										aux_p += strlen(defined_keyword[key_w2].str);
@@ -3544,7 +3557,7 @@ namespace zetscript{
 											if(ast_node_to_be_evaluated != NULL){
 
 												if(switch_node->children[1] != ZS_UNDEFINED_IDX){
-													AST_NODE(switch_node->children[1])->node_type = BODY_NODE;
+													AST_NODE(switch_node->children[1])->node_type = BODY_BLOCK_NODE;
 												}
 											}
 										}
@@ -3557,6 +3570,9 @@ namespace zetscript{
 										writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected break",m_line);
 										return NULL;
 									}
+
+									// TODO: search break within case body node ...
+									//------------------------------------------------------
 
 									if(scope_info != NULL){
 										scope_info->popScope();
@@ -3822,7 +3838,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CASTNode::parseBlock(const char *s,int & m_line,  CScope *scope_info, bool & error,PASTNode *ast_node_to_be_evaluated, bool push_scope){
+	char * CASTNode::parseBlock(const char *s,int & m_line,  CScope *scope_info, bool & error,PASTNode *ast_node_to_be_evaluated, PASTNode parent, bool push_scope){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 
@@ -3835,23 +3851,20 @@ namespace zetscript{
 			aux_p++;
 
 			if(scope_info != NULL){
+				if((*ast_node_to_be_evaluated=newASTNode())==NULL) return NULL;
+				(*ast_node_to_be_evaluated)->node_type = BODY_BLOCK_NODE;
+				(*ast_node_to_be_evaluated)->idxAstParent = parent->idxAstNode;
 				currentScope =scope_info->getCurrentScopePointer();
 				if(push_scope){
-					currentScope = scope_info->pushScope();
+					currentScope = scope_info->pushScope(*ast_node_to_be_evaluated); // special case... ast is created later ...
 				}
 			}
 
-			if((aux_p = generateAST_Recursive(aux_p, m_line, currentScope,error,ast_node_to_be_evaluated)) != NULL){
+			if((aux_p = generateAST_Recursive(aux_p, m_line, currentScope,error,ast_node_to_be_evaluated!=NULL?*ast_node_to_be_evaluated:NULL)) != NULL){
 				if(error){
 					return NULL;
 				}
 
-				if(ast_node_to_be_evaluated != NULL){
-					(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
-					if(currentScope != NULL){
-						(*ast_node_to_be_evaluated)->idxScope = currentScope->idxScope;
-					}
-				}
 
 				if(*aux_p != '}'){
 					error = true;
@@ -3863,9 +3876,6 @@ namespace zetscript{
 					scope_info->popScope();
 				}
 
-				if(ast_node_to_be_evaluated != NULL){
-					(*ast_node_to_be_evaluated)->node_type = BODY_NODE;
-				}
 				return aux_p+1;
 			}
 		}
@@ -3927,11 +3937,51 @@ namespace zetscript{
 		return NULL;
 	}
 
+
+	PASTNode  findSwitchForWhileScopeRecursive(CScope *scope_info){
+		PASTNode _ast = AST_NODE(scope_info->idxAstNode);
+
+		if(_ast != NULL){ // some nodes may not initialized...
+
+			if(_ast->node_type == NODE_TYPE::BODY_CASE_NODE){ // switch scope...
+				return _ast;
+			}
+			else if(_ast->node_type == NODE_TYPE::BODY_BLOCK_NODE){
+
+				if(_ast->idxAstParent != ZS_UNDEFINED_IDX){
+					PASTNode parent = AST_NODE(_ast->idxAstParent);
+
+					if(parent->keyword_info == KEYWORD_TYPE::FOREACH_KEYWORD
+								|| parent->keyword_info == KEYWORD_TYPE::FOR_KEYWORD
+								||parent->keyword_info == KEYWORD_TYPE::WHILE_KEYWORD
+								|| parent->keyword_info == KEYWORD_TYPE::CASE_KEYWORD){
+
+
+						return parent;
+					}
+				}
+			}
+		}
+
+		short idxParent=scope_info->getIdxParent();
+
+		if(idxParent != ZS_UNDEFINED_IDX){
+			return findSwitchForWhileScopeRecursive(SCOPE_NODE(idxParent));
+		}
+
+		return NULL;
+
+	}
+
+	PASTNode  findSwitchForWhileScope(CScope *scope_info){
+		return findSwitchForWhileScopeRecursive(scope_info);
+
+	}
+
 	char *CASTNode::parseKeyWord(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p= (char *)s;
-
 
 		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD,keyw2nd=KEYWORD_TYPE::UNKNOWN_KEYWORD;
 
@@ -3942,8 +3992,37 @@ namespace zetscript{
 
 		if(keyw != KEYWORD_TYPE::UNKNOWN_KEYWORD){ // a keyword was detected...
 
+
 			aux_p+=strlen(defined_keyword[keyw].str);
 			aux_p=IGNORE_BLANKS(aux_p, m_line);
+
+			if(keyw == KEYWORD_TYPE::BREAK_KEYWORD){
+				PASTNode switch_for_while_scope;
+				if((switch_for_while_scope = findSwitchForWhileScope(scope_info)) != NULL){ // ok break is valid in current scope...
+					//if(switch_for_while_scope->node_type != BODY_CASE_NODE){
+						if(*aux_p != ';'){
+							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected ';'");
+							error = true;
+							return NULL;
+						}
+
+						if(ast_node_to_be_evaluated!=NULL){
+							*ast_node_to_be_evaluated = newASTNode();
+							(*ast_node_to_be_evaluated)->node_type=NODE_TYPE::KEYWORD_NODE;
+							(*ast_node_to_be_evaluated)->keyword_info=keyw;
+						}
+
+						return aux_p+1;
+					//}
+					//return (char *)s; // return break;
+
+				}
+				else{
+					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"unexpected \"break\"");
+					error = true;
+					return NULL;
+				}
+			}
 
 			// check if non named function...
 			if(keyw == KEYWORD_TYPE::FUNCTION_KEYWORD){
@@ -3992,11 +4071,11 @@ namespace zetscript{
 		return NULL;
 	}
 
-	void manageOnErrorParse(PASTNode *node_to_be_evaluated){
+	void manageOnErrorParse(PASTNode node_to_be_evaluated){
 
 		bool is_main_node=false;
 		if(node_to_be_evaluated!= NULL){
-			is_main_node=MAIN_AST_NODE==*node_to_be_evaluated;
+			is_main_node=MAIN_AST_NODE==node_to_be_evaluated;
 		}
 
 		if(is_main_node){ // remove global variable/function if any
@@ -4004,9 +4083,10 @@ namespace zetscript{
 		}
 	}
 
-	char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *node_to_be_evaluated, bool allow_breaks){
+	char * CASTNode::generateAST_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode node_to_be_evaluated){
 
-		// PRE: **node must be created and is i/o ast pointer variable where to write changes.
+		// PRE: *node_to_be_evaluated must be created (the pointer is only read mode)
+
 		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD;
 
 		char *aux = (char *)s;
@@ -4017,7 +4097,7 @@ namespace zetscript{
 
 		if(node_to_be_evaluated!= NULL){
 
-			is_main_node=MAIN_AST_NODE==*node_to_be_evaluated;
+			is_main_node=MAIN_AST_NODE==node_to_be_evaluated;
 
 			if(is_main_node){
 				char *test = IGNORE_BLANKS(s,DUMMY_LINE);
@@ -4025,14 +4105,14 @@ namespace zetscript{
 				// empty script ? return true anyways
 				if(test == 0) return NULL;
 			}
-			else // under node...
+			/*else // under node...
 			{
 				if((*node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 				(*node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
 				if(scope_info != NULL){ // by default put global scope.
 					(*node_to_be_evaluated)->idxScope = scope_info->idxScope;
 				}
-			}
+			}*/
 		}
 		aux=IGNORE_BLANKS(aux, m_line);
 
@@ -4053,11 +4133,12 @@ namespace zetscript{
 				return aux;
 			}else{
 				keyw = isKeyword(aux);
-				if(keyw!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
+				if(keyw== KEYWORD_TYPE::UNKNOWN_KEYWORD){
 
-					if(keyw == KEYWORD_TYPE::BREAK_KEYWORD){
-						if(allow_breaks){
-
+/*					if(keyw == KEYWORD_TYPE::BREAK_KEYWORD){
+						PASTNode switch_for_while_scope;f
+						if((switch_for_while_scope = findSwitchForWhileScope(scope_info)) != NULL){ // ok break is valid in current scope...
+							// create AST NODE and return...
 							return aux;
 						}
 						else{
@@ -4068,7 +4149,7 @@ namespace zetscript{
 						}
 					}
 
-				}else{ // try directive...
+				}else{ */// try directive...*/
 					// try directive ...
 					DIRECTIVE_TYPE directive = isDirective(aux);
 					char *start_var,* end_var,*symbol_name;
@@ -4140,7 +4221,12 @@ namespace zetscript{
 						return NULL;
 					}
 					// 2nd. check whether parse a block
-					if((end_expr = parseBlock(aux,m_line, scope_info, error,node_to_be_evaluated != NULL ? &children:NULL))==NULL){
+					if((end_expr = parseBlock(aux
+							,m_line
+							, scope_info
+							, error
+							,node_to_be_evaluated != NULL ? &children:NULL
+							,node_to_be_evaluated))==NULL){
 
 						// If was unsuccessful then try to parse expression.
 						if(error){
@@ -4175,10 +4261,10 @@ namespace zetscript{
 				// new expression ready to be evaluated...
 
 				if(node_to_be_evaluated != NULL && children != NULL){
-					(*node_to_be_evaluated)->children.push_back(children->idxAstNode);
+					(node_to_be_evaluated)->children.push_back(children->idxAstNode);
 
 					if(is_main_node){
-						astNodeToCompile->push_back({(*node_to_be_evaluated)->idxAstNode,children->idxAstNode});
+						astNodeToCompile->push_back({(node_to_be_evaluated)->idxAstNode,children->idxAstNode});
 					}
 
 				}

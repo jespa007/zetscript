@@ -60,14 +60,14 @@ namespace zetscript{
 		 * Get CScope Node by its idx, regarding current state.
 		 */
 
-		static CScope	    		*	newScope(int idx_parent_scope=ZS_UNDEFINED_IDX, short idx_base_ast_node=ZS_UNDEFINED_IDX);
-		static CScope 				* 	getScopeNodeByIdx(int idx);
+		static CScope	    		*	newScope(PASTNode _ast_node,short idx_parent_scope=ZS_UNDEFINED_IDX);
+		static CScope 				* 	getScopeNodeByIdx(short idx);
 
 		// ref symbol management...
 		//static int	 					getIdxScopeFromSymbolRef(const string & ref_symbol);
 		//static int	 					getParamsFromSymbolRef(const string & ref_symbol);
 
-		int idxScope;
+		short idxScope,idxAstNode;
 
 		//---------------------------------
 		// Register functions
@@ -88,22 +88,22 @@ namespace zetscript{
 		tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
 
 		CScope();
-		CScope(int idx_this, int idx_parent=ZS_UNDEFINED_IDX, short idx_base_ast_node=ZS_UNDEFINED_IDX);//, int _index);
+		CScope(PASTNode _ast, short idx_this, short idx_parent=ZS_UNDEFINED_IDX);//, int _index);
 
-		int 	 getIdxBaseScope();
+		short 	 getIdxBaseScope();
 		short 	 getIdxBaseAstNode();
-		int		 getIdxParent();
+		short		 getIdxParent();
 		CScope * getCurrentScopePointer();
-		int		 getIdxCurrentScopePointer();
+		short		 getIdxCurrentScopePointer();
 		//void         generateScopeList(vector<CScope *> & vector);
 		//int          getIndex();
-		vector<int> * getLocalScopeList();
+		vector<short> * getLocalScopeList();
 
 		vector<tScopeVar *> * getRegisteredVariableList();
 
 		//int incTotalScopes();
 
-		CScope * pushScope();
+		CScope * pushScope(PASTNode _ast);
 		CScope * popScope();
 
 		//void destroyScopes();
@@ -119,11 +119,11 @@ namespace zetscript{
 		//void generateScopeListRecursive(CScope * scope, vector<CScope *> & vector);
 		//static int getScopeIndexRecursive(CScope * current_scope, CScope *scope_to_find,int & _index);
 
-		vector<int> m_localScopeList;
+		vector<short> m_localScopeList;
 
 		// The a parent scope ...
-		int idxParentScope, idxCurrentScopePointer, idxBaseScope;
-		short idxBaseAstNode;
+		short idxParentScope, idxCurrentScopePointer, idxBaseScope;
+		//short idxBaseAstNode;
 		//int m_index;
 
 		static vector<CScope *> 					* vec_scope_node;

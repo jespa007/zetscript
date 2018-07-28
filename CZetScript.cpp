@@ -426,8 +426,8 @@ namespace zetscript{
 				m_line,
 				MAIN_SCOPE_NODE,
 				error,
-				&main_node,
-				false)) == NULL){
+				main_node
+				)) == NULL){
 			return THROW_SCRIPT_ERROR();
 		}
 
@@ -631,7 +631,7 @@ namespace zetscript{
 		if(CCompiler::getInstance()->compile()){
 
 			// print generated asm ...
-			//printGeneratedCodeAllClasses();
+			printGeneratedCodeAllClasses();
 
 			if(m_mainObject == NULL){
 				// creates the main entry function with compiled code. On every executing code, within "execute" function

@@ -1993,7 +1993,7 @@ namespace zetscript{
 		if(_node->keyword_info != KEYWORD_TYPE::FOR_KEYWORD){THROW_RUNTIME_ERROR("node is not FOR keyword type");return false;}
 		if(_node->children.size()!=4) {THROW_RUNTIME_ERROR("node FOR has not valid number of nodes");return false;}
 		if(!(AST_NODE(_node->children[0])->node_type==PRE_FOR_NODE && AST_NODE(_node->children[1])->node_type==CONDITIONAL_NODE &&
-		AST_NODE(_node->children[2])->node_type==POST_FOR_NODE && AST_NODE(_node->children[3])->node_type==BODY_NODE)) {THROW_RUNTIME_ERROR("node FOR has not valid TYPE nodes");return false;}
+		AST_NODE(_node->children[2])->node_type==POST_FOR_NODE && AST_NODE(_node->children[3])->node_type==BODY_BLOCK_NODE)) {THROW_RUNTIME_ERROR("node FOR has not valid TYPE nodes");return false;}
 		tInfoAsmOpCompiler *asm_op;
 
 		// 0. insert push statment
@@ -2046,7 +2046,7 @@ namespace zetscript{
 		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::WHILE_KEYWORD){THROW_RUNTIME_ERROR("node is not WHILE keyword type");return false;}
 		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("node WHILE has not valid number of nodes");return false;}
-		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_NODE )) {THROW_RUNTIME_ERROR("node WHILE has not valid TYPE nodes");return false;}
+		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_BLOCK_NODE )) {THROW_RUNTIME_ERROR("node WHILE has not valid TYPE nodes");return false;}
 		tInfoAsmOpCompiler *asm_op_jmp_end;
 		int index_ini_while;
 
@@ -2072,7 +2072,7 @@ namespace zetscript{
 		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::DO_WHILE_KEYWORD){THROW_RUNTIME_ERROR("node is not DO_WHILE keyword type");return false;}
 		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("node DO-WHILE has not valid number of nodes");return false;}
-		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_NODE )) {THROW_RUNTIME_ERROR("node WHILE has not valid TYPE nodes");return false;}
+		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_BLOCK_NODE )) {THROW_RUNTIME_ERROR("node WHILE has not valid TYPE nodes");return false;}
 		int index_start_do_while;
 
 		// compile conditional expression...
@@ -2128,7 +2128,7 @@ namespace zetscript{
 
 		if(_node->children.size() != 2){THROW_RUNTIME_ERROR("node FUNCTION has not 2 child");return false;}
 		if(AST_NODE(_node->children[0])->node_type != NODE_TYPE::ARGS_DECL_NODE){THROW_RUNTIME_ERROR("node FUNCTION has not ARGS node");return false;}
-		if(AST_NODE(_node->children[1])->node_type != NODE_TYPE::BODY_NODE){THROW_RUNTIME_ERROR("node FUNCTION has not BODY node");return false;}
+		if(AST_NODE(_node->children[1])->node_type != NODE_TYPE::BODY_BLOCK_NODE){THROW_RUNTIME_ERROR("node FUNCTION has not BODY node");return false;}
 
 		// 1. Processing args ...
 		for(unsigned i = 0; i < AST_NODE(_node->children[0])->children.size(); i++){
@@ -2523,7 +2523,7 @@ namespace zetscript{
 		PASTNode _node = AST_NODE(idxAstNode);
 
 		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
-		if(_node->node_type != BODY_NODE ){THROW_RUNTIME_ERROR("node is not BODY type or null");return false;}
+		if(_node->node_type != BODY_BLOCK_NODE ){THROW_RUNTIME_ERROR("node is not BODY type or null");return false;}
 
 
 		// 0. insert push statment
@@ -2594,8 +2594,8 @@ namespace zetscript{
 					zs_print_debug_cr("KEYWORD_NODE %s",CASTNode::defined_keyword[_node->keyword_info].str);
 					return gacKeyword(_node->idxAstNode, _lc);
 					break;
-				case BODY_NODE:
-					zs_print_debug_cr("BODY_NODE");
+				case BODY_BLOCK_NODE:
+					zs_print_debug_cr("BODY_BLOCK_NODE");
 					return gacBody(_node->idxAstNode, SCOPE_NODE(_node->idxScope)); // we pass scope node
 					break;
 				case POST_FOR_NODE:
@@ -2695,7 +2695,7 @@ namespace zetscript{
 			return false;
 		}
 
-		if(_node->node_type == NODE_TYPE::BODY_NODE ){
+		if(_node->node_type == NODE_TYPE::BODY_BLOCK_NODE ){
 
 			bool error=false;
 			pushFunction(_node->idxAstNode,sf);
