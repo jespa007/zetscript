@@ -160,10 +160,10 @@ namespace zetscript{
 		//
 		static int DUMMY_LINE;
 
-		PASTNode  findConditionForContinueRecursive(CScope *scope_info);
-		PASTNode  findConditionForContinue(CScope *scope_info);
-		PASTNode  findConditionForBreakRecursive(CScope *scope_info);
-		PASTNode  findConditionForBreak(CScope *scope_info);
+		static PASTNode  findConditionForContinueRecursive(CScope *scope_info);
+		static PASTNode  findConditionForContinue(CScope *scope_info);
+		static PASTNode  findConditionForBreakRecursive(CScope *scope_info);
+		static PASTNode  findConditionForBreak(CScope *scope_info);
 
 
 		static PASTNode  findAstRecursive(const string & _name_to_find, NODE_TYPE _node_type, KEYWORD_TYPE _keyword_type, PASTNode _node);

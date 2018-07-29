@@ -837,7 +837,7 @@ namespace zetscript{
 			if((key_w = isKeyword(s))!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
 				if( key_w != KEYWORD_TYPE::THIS_KEYWORD){
 				 //&& key_w->id != KEYWORD_TYPE::SUPER_KEYWORD ){ // unexpected token ?
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected keyword \"%s\" at line %i. Forgot \";\" ?",defined_keyword[key_w].str);
+					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected keyword \"%s\". Forgot \";\" ?",defined_keyword[key_w].str);
 					return NULL;
 				}
 			}
@@ -2167,7 +2167,7 @@ namespace zetscript{
 
 			if(*aux_p != c2 ){
 				if(*aux_p == ',' ){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected , at line %i",c2);
+					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected %c",c2);
 					return NULL;
 				}
 
@@ -2668,7 +2668,7 @@ namespace zetscript{
 							if((end_expr = parseExpression(aux_p+1,m_line,scope_info,&conditional_expression)) != NULL){
 
 								if(*end_expr != ')'){
-									writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')' at line");
+									writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
 									return NULL;
 								}
 								if((start_symbol = CZetScriptUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
@@ -3240,9 +3240,9 @@ namespace zetscript{
 					 case_value_node=NULL,
 					 default_switch_node=NULL;
 
+		CScope *scope_case=NULL;
 		PASTNode case_body_node=NULL;
 
-		CScope *m_currentScope=NULL;
 		PUNCTUATOR_TYPE ip;
 		char *value_to_eval;
 		string val;
@@ -3444,15 +3444,13 @@ namespace zetscript{
 									if(ast_node_to_be_evaluated != NULL){
 
 										if((case_body_node = CASTNode::newASTNode()) == NULL) return NULL;
-
-										m_currentScope = scope_info->pushScope(case_body_node);
-
+										scope_case=scope_info->pushScope(case_body_node);
 										case_body_node->node_type = NODE_TYPE::BODY_BLOCK_NODE;
 										case_body_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
 									}
 
 									// eval block...
-									if((aux_p=generateAST_Recursive(aux_p, m_line, m_currentScope, error, ast_node_to_be_evaluated != NULL ? case_body_node : NULL))==NULL){
+									if((aux_p=generateAST_Recursive(aux_p, m_line, scope_case, error, ast_node_to_be_evaluated != NULL ? case_body_node : NULL))==NULL){
 										return NULL;
 									}
 
@@ -3468,7 +3466,7 @@ namespace zetscript{
 										scope_info->popScope();
 									}
 
-									aux_p =IGNORE_BLANKS(aux_p+1,m_line);
+									aux_p =IGNORE_BLANKS(aux_p,m_line);
 								}
 
 							if(*aux_p == '}'){
@@ -4032,7 +4030,11 @@ namespace zetscript{
 				return aux;
 			}else{
 				keyw = isKeyword(aux);
-				if(keyw== KEYWORD_TYPE::UNKNOWN_KEYWORD){
+				if(keyw!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
+					if(keyw == KEYWORD_TYPE::CASE_KEYWORD ||keyw == KEYWORD_TYPE::DEFAULT_KEYWORD){
+							return aux;
+					}
+				}else{
 
 					// try directive ...
 					DIRECTIVE_TYPE directive = isDirective(aux);
