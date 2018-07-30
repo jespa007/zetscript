@@ -248,7 +248,7 @@ namespace zetscript{
 
 		int parent =  getIdxParent();
 		if(parent != ZS_UNDEFINED_IDX){
-			return SCOPE_NODE(parent)->existRegisteredSymbolRecursiveDownScope(symbol_ref);
+			return SCOPE_NODE(parent)->existRegisteredSymbolRecursiveDownScope(symbol_ref,n_params);
 		}
 
 		return NULL;//false;//-1;
@@ -278,7 +278,7 @@ namespace zetscript{
 		for(unsigned i = 0; i < m_localScopeList.size(); i++){
 			CScope *s=SCOPE_NODE(m_localScopeList[i]);
 
-			sv=s->existRegisteredSymbolRecursiveUpScope(symbol_ref);
+			sv=s->existRegisteredSymbolRecursiveUpScope(symbol_ref,n_params);
 
 			if(sv != NULL) return sv;
 		}

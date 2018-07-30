@@ -927,7 +927,7 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::insertPushScopeInstruction(short idxAstNode,int scope_idx){
+	bool CCompiler::insertPushScopeInstruction(short idxAstNode,int scope_idx, bool save_break){
 		if(scope_idx==ZS_UNDEFINED_IDX){
 			THROW_RUNTIME_ERROR("Internal error undefined scope");
 			return false;
@@ -936,10 +936,11 @@ namespace zetscript{
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
-		asm_op->index_op1 = ZS_UNDEFINED_IDX;
+		asm_op->index_op1 = save_break?1:ZS_UNDEFINED_IDX;
 		asm_op->index_op2 = scope_idx; // index from object cached node ?
 		asm_op->operator_type=ASM_OPERATOR::PUSH_SCOPE;
 		asm_op->idxAstNode = idxAstNode;
+
 
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 
@@ -1998,12 +1999,11 @@ namespace zetscript{
 
 		// 0. insert push statment
 		newStatment();
-		if(!insertPushScopeInstruction(_node->idxAstNode,_node->idxScope)){
+		if(!insertPushScopeInstruction(_node->idxAstNode,_node->idxScope,true)){
 			return false;
 		}
 
 		// 1. compile var init ...
-
 		if(AST_NODE(_node->children[0])->children.size()>0){
 			if(!ast2asm_Recursive(_node->children[0],SCOPE_NODE(_node->idxScope))){ return false;}
 		}
@@ -2017,12 +2017,13 @@ namespace zetscript{
 		asm_op = insert_JNT_Instruction(_node->children[1]);
 
 		// 3. compile body
-
-		if(!gacBody(_node->children[3],SCOPE_NODE(AST_NODE(_node->children[3])->idxScope))){ return false;}
+		PASTNode _body_node=AST_NODE(_node->children[3]);
+		if(!gacBody(_node->children[3],SCOPE_NODE(_body_node->idxScope))){ return false;}
 
 		// 4. compile post oper
-		if(AST_NODE(_node->children[2])->children.size()>0 && AST_NODE(_node->children[2])->children[0] != ZS_UNDEFINED_IDX){
-			if(!ast2asm_Recursive(_node->children[2],SCOPE_NODE(_node->idxScope))){ return false;}
+		PASTNode post_node=AST_NODE(_node->children[2]);
+		for(unsigned i=0; i < post_node->children.size(); i++){
+			if(!ast2asm_Recursive(post_node->children[i],SCOPE_NODE(_node->idxScope))){ return false;}
 		}
 
 		// 5. jmp to the conditional index ...

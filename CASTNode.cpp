@@ -2996,7 +2996,7 @@ namespace zetscript{
 						}
 
 						do{
-							if((aux_p = parseExpression(aux_p,m_line,scope_info,(ast_node_to_be_evaluated != NULL ? &post_node_expression : NULL)))==NULL){
+							if((aux_p = parseExpression(aux_p,m_line,_currentScope,(ast_node_to_be_evaluated != NULL ? &post_node_expression : NULL)))==NULL){
 								return NULL;
 							}
 
@@ -3590,6 +3590,8 @@ namespace zetscript{
 						}
 						else{ // get normal name...
 
+							m_line = m_startLine;
+
 							// check whwther the function is anonymous with a previous arithmetic operation ....
 							end_var=getSymbolName(aux_p,m_line);
 
@@ -3632,7 +3634,7 @@ namespace zetscript{
 							// save symbol in the node ...
 							(var_node)->symbol_value = variable_name;
 							(var_node)->idxScope = idxScope;
-							(var_node)->line_value = m_line;
+							(var_node)->line_value = m_startLine;
 
 							(*ast_node_to_be_evaluated)->children.push_back(var_node->idxAstNode);
 						}

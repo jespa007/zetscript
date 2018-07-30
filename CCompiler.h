@@ -246,7 +246,7 @@ namespace zetscript{
 		int getCurrentStatmentIndex();
 
 
-		bool insertPushScopeInstruction(short idxAstNode,int scope_idx);
+		bool insertPushScopeInstruction(short idxAstNode,int scope_idx, bool save_break=false);
 		void insertPopScopeInstruction(short idxAstNode);
 
 
