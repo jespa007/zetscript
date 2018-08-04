@@ -2933,23 +2933,23 @@ namespace zetscript{
 					if(*aux_p != ';'){ // there's some var init...
 						// init node ...
 						KEYWORD_TYPE key_w = isKeyword(aux_p);
-						if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
-							if(key_w == VAR_KEYWORD){
-								if((aux_p = parseVar(aux_p,m_line, _currentScope, ast_node_to_be_evaluated != NULL ? &pre_node_expression: NULL))==NULL){
-									return NULL;
-								}
 
-								if(ast_node_to_be_evaluated!=NULL){
-									pre_node->children.push_back(pre_node_expression->idxAstNode);
-								}
-								aux_p = aux_p - 1; // redirect aux_p to ';'
-							}
-							else{
-
-								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected 'var' keyword");
+						if(key_w == VAR_KEYWORD){
+							if((aux_p = parseVar(aux_p,m_line, _currentScope, ast_node_to_be_evaluated != NULL ? &pre_node_expression: NULL))==NULL){
 								return NULL;
 							}
+
+							if(ast_node_to_be_evaluated!=NULL){
+								pre_node->children.push_back(pre_node_expression->idxAstNode);
+							}
+							aux_p = aux_p - 1; // redirect aux_p to ';'
 						}
+						else{
+
+							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected 'var' keyword");
+							return NULL;
+						}
+
 					}
 
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
@@ -3241,12 +3241,13 @@ namespace zetscript{
 					 default_switch_node=NULL;
 
 		CScope *scope_case=NULL;
-		PASTNode case_body_node=NULL;
+		PASTNode body_switch=NULL;
 
 		PUNCTUATOR_TYPE ip;
 		char *value_to_eval;
 		string val;
 		KEYWORD_TYPE key_w,key_w2;
+		CScope *currentScope=scope_info;
 
 		bool error=false;
 		int n_cases;
@@ -3263,6 +3264,7 @@ namespace zetscript{
 					if((*ast_node_to_be_evaluated = CASTNode::newASTNode())==NULL) return NULL;
 					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
+					currentScope=scope_info->pushScope((*ast_node_to_be_evaluated));
 				}
 
 				aux_p += strlen(defined_keyword[key_w].str);
@@ -3299,202 +3301,17 @@ namespace zetscript{
 
 						if(*aux_p == '{'){
 
-							// ok try to get cases and default nodes ...
-							aux_p++;
-							aux_p = IGNORE_BLANKS(aux_p,m_line);
-
-							// foreach case evaluate its body,
-							while(*aux_p!='}' && *aux_p!=0){
-									n_cases = 0;
-									bool theres_a_default= false;
-									// init node ..
-									if(ast_node_to_be_evaluated!= NULL){
-										if((switch_node = CASTNode::newASTNode()) == NULL) return NULL;
-										if((group_cases = CASTNode::newASTNode()) == NULL) return NULL;
-
-										(*ast_node_to_be_evaluated)->children.push_back(switch_node->idxAstNode);
-										switch_node->children.push_back(group_cases->idxAstNode); // multiple conditions that performs the same body => switch_node->children[0]
-										switch_node->children.push_back(ZS_UNDEFINED_IDX); // the body => switch_node->children[1]
-										group_cases->node_type = GROUP_CASES_NODE;
-									}
-
-									bool end = false;
-
-									while((key_w = isKeyword(aux_p)) != KEYWORD_TYPE::UNKNOWN_KEYWORD && !end){ // acumulative cases /defaults...
-
-										switch(key_w){
-										case DEFAULT_KEYWORD:
-										case CASE_KEYWORD:
-
-											val = "default";
-											aux_p += strlen(defined_keyword[key_w].str);
-											aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-											if(key_w == CASE_KEYWORD){
-												// get the symbol...
-												start_symbol=aux_p;
-
-												if((ip = isPunctuator(aux_p)) != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-													if(ip == PUNCTUATOR_TYPE::ADD_PUNCTUATOR ||ip == PUNCTUATOR_TYPE::SUB_PUNCTUATOR){
-														aux_p+=strlen(defined_operator_punctuator[ip].str);
-													}
-													else{
-														writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"unexpected token %s",defined_operator_punctuator[ip].str);
-														error = true;
-														return NULL;
-													}
-												}
-												end_symbol = getEndWord(aux_p, m_line);
-												aux_p=end_symbol;
-
-												value_to_eval = CZetScriptUtils::copyStringFromInterval(start_symbol, end_symbol);
-
-												if(value_to_eval==NULL){ return NULL;}
-
-												val = value_to_eval;
-
-												aux_p=IGNORE_BLANKS(aux_p,m_line);
-											}else{
-												theres_a_default = true;
-											}
-
-											if(*aux_p == ':'){
-
-												if(ast_node_to_be_evaluated != NULL){
-													// check if repeated (starts from 1 because the first is the switch expression)...
-													for(unsigned j=1; j <(*ast_node_to_be_evaluated)->children.size(); j++ ){ // switch nodes
-
-														PASTNode child_access_j_0 = AST_NODE(AST_NODE((*ast_node_to_be_evaluated)->children[j])->children[0]);
-
-														for(unsigned h=1; h <child_access_j_0->children.size(); h++ ){ // groups nodes
-															if(AST_NODE(child_access_j_0->children[h])->symbol_value == val){
-																writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Symbol %s repeteaded in switch",val.c_str());
-																return NULL;
-															}
-														}
-													}
-
-													if((case_value_node = CASTNode::newASTNode())==NULL) return NULL;
-													case_value_node->node_type = KEYWORD_NODE;
-													case_value_node->keyword_info = key_w;
-													case_value_node->symbol_value = val;
-													case_value_node->line_value=m_line;
-													case_value_node->idxAstParent = group_cases->idxAstNode;
-													group_cases->children.push_back(case_value_node->idxAstNode);
-
-													if(key_w==DEFAULT_KEYWORD){ // save switch node ...
-														default_switch_node=switch_node;
-													}
-												}
-												aux_p++;
-												n_cases++;
-											}
-											else{
-												writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected  : case ");
-												return NULL;
-											}
-											break;
-
-											aux_p += strlen(defined_keyword[key_w].str);
-											aux_p=IGNORE_BLANKS(aux_p,m_line);
-											if(*aux_p == ':'){
-												n_cases++;
-												aux_p++;
-											}
-											else{
-												writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected  : default");
-												return NULL;
-											}
-											break;
-										//case BREAK_KEYWORD:
-										//	end=true;
-										//	break;
-										default: // ok it can be other type of keyword...
-											//writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected keyword.");
-											//return NULL;
-											end=true;
-											break;
-										}
-										aux_p=IGNORE_BLANKS(aux_p,m_line);
-									}
-
-									if(n_cases == 0){
-										writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected case or default in switch");
-										return NULL;
-									}
-
-									// print warning ignored cases in case there's a default in there...
-									if(ast_node_to_be_evaluated!= NULL){
-										if(group_cases->children.size() > 1 && theres_a_default){
-
-											for(unsigned it = 0; it < group_cases->children.size(); ){ //erase cases and print warning !
-												PASTNode ast_grp_case = AST_NODE(it);
-												if(ast_grp_case->keyword_info == CASE_KEYWORD){
-													zs_print_warning_cr("Ignored case %s defined at line %i because is joined by default keyword", ast_grp_case->symbol_value.c_str(), ast_grp_case->line_value);
-													group_cases->children.erase(group_cases->children.begin()+it);
-
-												}else{
-													it++;
-												}
-											}
-										}
-									}
-
-									// save scope pointer ...
-									if(ast_node_to_be_evaluated != NULL){
-
-										if((case_body_node = CASTNode::newASTNode()) == NULL) return NULL;
-										scope_case=scope_info->pushScope(case_body_node);
-										case_body_node->node_type = NODE_TYPE::BODY_BLOCK_NODE;
-										case_body_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
-									}
-
-									// eval block...
-									if((aux_p=generateAST_Recursive(aux_p, m_line, scope_case, error, ast_node_to_be_evaluated != NULL ? case_body_node : NULL))==NULL){
-										return NULL;
-									}
-
-									if(error){
-										return NULL;
-									}
-
-									// assign the body ast...
-									switch_node->children[1]=case_body_node->idxAstNode;
-
-
-									if(scope_info != NULL){
-										scope_info->popScope();
-									}
-
-									aux_p =IGNORE_BLANKS(aux_p,m_line);
-								}
-
-							if(*aux_p == '}'){
-
-								// check default node to put to the end of the list ...
-									if(default_switch_node!= NULL){
-										bool end=false;
-										// start iterator from begin + 1 because the first is the switch value expression itself
-										for(unsigned it = 1; it < (*ast_node_to_be_evaluated)->children.size() && !end; ){ //erase cases and print warning !
-
-											PASTNode ast_node = AST_NODE((*ast_node_to_be_evaluated)->children[it]);// case keyword
-											ast_node = AST_NODE(ast_node->children[0]); // case grp
-											ast_node = AST_NODE(ast_node->children[0]); // case keyword?
-
-											if(ast_node->keyword_info == DEFAULT_KEYWORD){ // group cases-case node access
-												(*ast_node_to_be_evaluated)->children.erase((*ast_node_to_be_evaluated)->children.begin()+it);
-												end=true;
-											}else{
-												it++;
-											}
-										}
-
-										(*ast_node_to_be_evaluated)->children.push_back(default_switch_node->idxAstNode);
-									}
-								return aux_p + 1;
+							if(ast_node_to_be_evaluated != NULL){
+								if((body_switch = CASTNode::newASTNode())==NULL) return NULL;
+								body_switch->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
+								(*ast_node_to_be_evaluated)->children.push_back(body_switch->idxAstNode);
+								body_switch->idxScope = currentScope->idxScope;
 							}
-							else{
-								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected '}' switch");
+
+							aux_p++;
+
+							if((aux_p=generateAST_Recursive(aux_p, m_line, currentScope, error, body_switch))==NULL){
+								return NULL;
 							}
 						}
 						else{
@@ -3835,7 +3652,10 @@ namespace zetscript{
 
 		if(_ast != NULL){ // some nodes may not initialized...
 
-			if(_ast->node_type == NODE_TYPE::BODY_BLOCK_NODE){
+			if(_ast->keyword_info == KEYWORD_TYPE::SWITCH_KEYWORD){
+				return _ast;
+			}
+			else if(_ast->node_type == NODE_TYPE::BODY_BLOCK_NODE){
 
 				if(_ast->idxAstParent != ZS_UNDEFINED_IDX){
 					PASTNode parent = AST_NODE(_ast->idxAstParent);
@@ -3843,7 +3663,7 @@ namespace zetscript{
 					if(parent->keyword_info == KEYWORD_TYPE::FOREACH_KEYWORD
 								|| parent->keyword_info == KEYWORD_TYPE::FOR_KEYWORD
 								||parent->keyword_info == KEYWORD_TYPE::WHILE_KEYWORD
-								|| parent->keyword_info == KEYWORD_TYPE::SWITCH_KEYWORD){
+								){
 						return parent;
 					}
 				}
@@ -3880,8 +3700,62 @@ namespace zetscript{
 
 			aux_p+=strlen(defined_keyword[keyw].str);
 			aux_p=IGNORE_BLANKS(aux_p, m_line);
+			char *value_to_eval;
 
-			if(keyw == KEYWORD_TYPE::BREAK_KEYWORD){
+			if(keyw == KEYWORD_TYPE::CASE_KEYWORD ||keyw == KEYWORD_TYPE::DEFAULT_KEYWORD){
+				PASTNode ast=AST_NODE(scope_info->idxAstNode);
+				if(ast->keyword_info != KEYWORD_TYPE::SWITCH_KEYWORD){
+					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"case or default\" are allowed only within switch statements");
+					error = true;
+					return NULL;
+				}
+
+				if(keyw == KEYWORD_TYPE::CASE_KEYWORD){
+
+					aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+					// get the symbol...
+					char *start_symbol=aux_p;
+					PUNCTUATOR_TYPE ip;
+
+					if((ip = isPunctuator(aux_p)) != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+						if(ip == PUNCTUATOR_TYPE::ADD_PUNCTUATOR ||ip == PUNCTUATOR_TYPE::SUB_PUNCTUATOR){
+							aux_p+=strlen(defined_operator_punctuator[ip].str);
+						}
+						else{
+							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"unexpected token %s",defined_operator_punctuator[ip].str);
+							error = true;
+							return NULL;
+						}
+					}
+					char *end_symbol = getEndWord(aux_p, m_line);
+					aux_p=end_symbol;
+
+					value_to_eval = CZetScriptUtils::copyStringFromInterval(start_symbol, end_symbol);
+
+					if(value_to_eval==NULL){ return NULL;}
+
+				}
+
+				aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+				if(*aux_p != ':'){
+					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected  ':' ");
+					return NULL;
+				}
+
+				if(ast_node_to_be_evaluated!=NULL){
+					*ast_node_to_be_evaluated = newASTNode();
+					(*ast_node_to_be_evaluated)->node_type=NODE_TYPE::KEYWORD_NODE;
+					(*ast_node_to_be_evaluated)->keyword_info=keyw;
+
+					(*ast_node_to_be_evaluated)->symbol_value=value_to_eval;
+					(*ast_node_to_be_evaluated)->line_value = m_line;
+				}
+
+				return aux_p+1;
+
+			}else if(keyw == KEYWORD_TYPE::BREAK_KEYWORD){
 				PASTNode break_ast;
 				if((break_ast = findConditionForBreak(scope_info)) != NULL){ // ok break is valid in current scope...
 					if(*aux_p != ';'){
@@ -3903,9 +3777,8 @@ namespace zetscript{
 					error = true;
 					return NULL;
 				}
-			}
+			}else if(keyw == KEYWORD_TYPE::CONTINUE_KEYWORD){
 
-			if(keyw == KEYWORD_TYPE::CONTINUE_KEYWORD){
 				PASTNode continue_ast;
 				if((continue_ast = findConditionForContinue(scope_info)) != NULL){ // ok break is valid in current scope...
 					if(*aux_p != ';'){
@@ -3994,7 +3867,7 @@ namespace zetscript{
 		// PRE: *node_to_be_evaluated must be created (the pointer is only read mode)
 
 		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD;
-
+		bool custom_quit = false;
 		char *aux = (char *)s;
 		char *end_expr=0;
 		PASTNode children=NULL;
@@ -4015,7 +3888,7 @@ namespace zetscript{
 		}
 		aux=IGNORE_BLANKS(aux, m_line);
 
-		while(*aux != 0 ){
+		while(*aux != 0 && !custom_quit){
 
 			processed_directive=false;
 			children = NULL;
@@ -4031,73 +3904,67 @@ namespace zetscript{
 			if(*aux == '}'){ // trivial cases...
 				return aux;
 			}else{
-				keyw = isKeyword(aux);
-				if(keyw!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
-					if(keyw == KEYWORD_TYPE::CASE_KEYWORD ||keyw == KEYWORD_TYPE::DEFAULT_KEYWORD){
-							return aux;
-					}
-				}else{
 
-					// try directive ...
-					DIRECTIVE_TYPE directive = isDirective(aux);
-					char *start_var,* end_var,*symbol_name;
-					if(directive != DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE){
-						switch(directive){
-						case INCLUDE_DIRECTIVE:
-							aux += strlen(defined_directive[directive].str);
-							aux = IGNORE_BLANKS(aux,m_line);
-							if(*aux != '\"'){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected starting \" directive");
-								return NULL;
-							}
-							aux++;
-							start_var=aux;
+				// try directive ...
+				DIRECTIVE_TYPE directive = isDirective(aux);
+				char *start_var,* end_var,*symbol_name;
+				if(directive != DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE){
+					switch(directive){
+					case INCLUDE_DIRECTIVE:
+						aux += strlen(defined_directive[directive].str);
+						aux = IGNORE_BLANKS(aux,m_line);
+						if(*aux != '\"'){
+							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected starting \" directive");
+							return NULL;
+						}
+						aux++;
+						start_var=aux;
 
-							while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
+						while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
 
-							if(*aux != '\"'){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected end \" directive");
-								return NULL;
-							}
-
-							end_var=aux;
-
-							if((symbol_name=CZetScriptUtils::copyStringFromInterval(start_var,end_var)) == NULL){
-								return NULL;
-							}
-
-							zs_print_debug_cr("include file: %s",symbol_name);
-
-							{
-								// save current file info...
-								string current_file_str=CASTNode::current_parsing_filename;
-								int current_file_idx=CASTNode::current_idx_parsing_filename;
-								string file_to_parse=symbol_name;
-
-								try{
-									CZetScript::getInstance()->parse_file(file_to_parse.c_str());
-								}catch(script_error & error){
-									THROW_EXCEPTION(error.what());
-									return NULL;
-								}
-
-								//restore current file info...
-								CASTNode::current_parsing_filename=current_file_str.c_str();
-								CASTNode::current_idx_parsing_filename=current_file_idx;
-							}
-
-							aux++;
-							break;
-						default:
-							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"directive \"%s\" not supported",defined_directive[directive].str);
-							break;
+						if(*aux != '\"'){
+							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected end \" directive");
+							return NULL;
 						}
 
-						processed_directive = true;
-						end_expr=aux;
+						end_var=aux;
+
+						if((symbol_name=CZetScriptUtils::copyStringFromInterval(start_var,end_var)) == NULL){
+							return NULL;
+						}
+
+						zs_print_debug_cr("include file: %s",symbol_name);
+
+						{
+							// save current file info...
+							string current_file_str=CASTNode::current_parsing_filename;
+							int current_file_idx=CASTNode::current_idx_parsing_filename;
+							string file_to_parse=symbol_name;
+
+							try{
+								CZetScript::getInstance()->parse_file(file_to_parse.c_str());
+							}catch(script_error & error){
+								THROW_EXCEPTION(error.what());
+								return NULL;
+							}
+
+							//restore current file info...
+							CASTNode::current_parsing_filename=current_file_str.c_str();
+							CASTNode::current_idx_parsing_filename=current_file_idx;
+						}
+
+						aux++;
+						break;
+					default:
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"directive \"%s\" not supported",defined_directive[directive].str);
+						break;
 					}
+
+					processed_directive = true;
+					end_expr=aux;
 				}
 			}
+
 			// 0st special case member class extension ...
 			if(children==NULL && !processed_directive){ // not processed yet ...
 				// 1st. check whether parse a keyword...

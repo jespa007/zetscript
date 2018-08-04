@@ -164,6 +164,8 @@ namespace zetscript{
 		static PASTNode  findConditionForContinue(CScope *scope_info);
 		static PASTNode  findConditionForBreakRecursive(CScope *scope_info);
 		static PASTNode  findConditionForBreak(CScope *scope_info);
+		//static PASTNode  findConditionForCaseOrDefaultRecursive(CScope *scope_info);
+		//static PASTNode  findConditionForCaseOrDefault(CScope *scope_info);
 
 
 		static PASTNode  findAstRecursive(const string & _name_to_find, NODE_TYPE _node_type, KEYWORD_TYPE _keyword_type, PASTNode _node);
