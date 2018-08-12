@@ -99,6 +99,8 @@ namespace zetscript{
 			vector<tInfoAsmOpCompiler *> asm_op;
 		};
 
+		typedef tInfoStatementOpCompiler tContinueInstructionScope,tBreakInstructionScope;
+
 		struct tInfoFunctionCompile{
 			vector<tInfoStatementOpCompiler> 		stament;
 			CScriptFunctionObject 				*  	function_info_object;
@@ -184,17 +186,17 @@ namespace zetscript{
 		/**
 		 * Unconditional Jump instruction
 		 */
-		tInfoAsmOpCompiler * insert_JMP_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
+		tInfoAsmOpCompiler * insert_JMP_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, char instruction_index = ZS_UNDEFINED_IDX);
 
 		/**
 		 * Jump Not True (JNT) instruction
 		 */
-		tInfoAsmOpCompiler * insert_JNT_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
+		tInfoAsmOpCompiler * insert_JNT_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, char instruction_index = ZS_UNDEFINED_IDX);
 
 		/**
 		 * Jump if True (JT) instruction
 		 */
-		tInfoAsmOpCompiler * insert_JT_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, int instruction_index = ZS_UNDEFINED_IDX);
+		tInfoAsmOpCompiler * insert_JT_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, char instruction_index = ZS_UNDEFINED_IDX);
 		void insert_NOP_Instruction();
 
 		tInfoAsmOpCompiler * insert_Save_CurrentInstruction();
@@ -310,6 +312,20 @@ namespace zetscript{
 		CScope										*m_treescope;
 		tInfoFunctionCompile						*m_currentFunctionInfo;
 		vector <tInfoFunctionCompile *>  			stk_scriptFunction;
+
+		// in order to find break continues within switch/for/while scopes
+		vector<tBreakInstructionScope>				stk_breakInstructionsScope;
+		tBreakInstructionScope						*ptr_breakInstructionsScope;
+
+		vector<tContinueInstructionScope>			stk_continueInstructionsScope;
+		tContinueInstructionScope					*ptr_continueInstructionsScope;
+
+		void pushBreakInstructionScope();
+		void popBreakInstructionScope();
+
+		void pushContinueInstructionScope();
+		void popContinueInstructionScope();
+
 
 		//---------------------------------------------------------------
 

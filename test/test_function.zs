@@ -1,9 +1,13 @@
+function fun(){}
 
+fun();
+
+/*
 
 
 class  A{
 	var fun;
-	var a=10;
+	var a;
 	function A(){
 		
 		var obj=this;
@@ -33,7 +37,7 @@ class B:A
 		super();
 		//this.a=20;
 	}
-};
+};*/
 
 /*
 function add(
@@ -55,9 +59,9 @@ if(add_function_obj(30,40)<add_function_obj(10,0)){
 }else{
 	print("higher");
 }*/
-
+/*
 
 var d=new B();
 
 d.print2();
-
+*/

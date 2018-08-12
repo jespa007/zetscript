@@ -10,7 +10,6 @@ using namespace zetscript;
 
 int main(int argc, char * argv[]) {
 
-
 	CZetScript *zetscript = CZetScript::getInstance();
 
 	if (argc >= 2) {

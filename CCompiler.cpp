@@ -774,7 +774,7 @@ namespace zetscript{
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 	}
 
-	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JMP_Instruction(short idxAstNode,int jmp_statement, int instruction_index){
+	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JMP_Instruction(short idxAstNode,int jmp_statement, char instruction_index){
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
@@ -786,7 +786,7 @@ namespace zetscript{
 		return asm_op;
 	}
 
-	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JNT_Instruction(short idxAstNode,int jmp_statement, int instruction_index){
+	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JNT_Instruction(short idxAstNode,int jmp_statement, char instruction_index){
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
@@ -799,7 +799,7 @@ namespace zetscript{
 		return asm_op;
 	}
 
-	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JT_Instruction(short idxAstNode,int jmp_statement, int instruction_index){
+	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JT_Instruction(short idxAstNode,int jmp_statement, char instruction_index){
 
 		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
@@ -1997,6 +1997,12 @@ namespace zetscript{
 		AST_NODE(_node->children[2])->node_type==POST_FOR_NODE && AST_NODE(_node->children[3])->node_type==BODY_BLOCK_NODE)) {THROW_RUNTIME_ERROR("node FOR has not valid TYPE nodes");return false;}
 		tInfoAsmOpCompiler *asm_op;
 
+
+		// push current continue/break instruction scope...
+		pushContinueInstructionScope();
+		pushBreakInstructionScope();
+
+
 		// 0. insert push statment
 		newStatment();
 		if(!insertPushScopeInstruction(_node->idxAstNode,_node->idxScope,true)){
@@ -2036,6 +2042,17 @@ namespace zetscript{
 
 		// save jmp value...
 		asm_op->index_op2=getCurrentStatmentIndex();
+
+
+		// set jmps from breaks...
+
+
+		// and pop break/continue instructions scope...
+
+		popContinueInstructionScope();
+		popBreakInstructionScope();
+
+
 		return true;
 	}
 
@@ -2051,6 +2068,10 @@ namespace zetscript{
 		tInfoAsmOpCompiler *asm_op_jmp_end;
 		int index_ini_while;
 
+		// push current break instruction scope...
+		pushBreakInstructionScope();
+
+
 		// compile conditional expression...
 		if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
 		index_ini_while = getCurrentStatmentIndex();
@@ -2062,6 +2083,12 @@ namespace zetscript{
 
 		// save jmp value ...
 		asm_op_jmp_end->index_op2= getCurrentStatmentIndex()+1;
+
+		// set jmps from breaks...
+
+
+		// and pop break instructions scope...
+		popBreakInstructionScope();
 		return true;
 	}
 
@@ -2076,6 +2103,9 @@ namespace zetscript{
 		if(!(AST_NODE(_node->children[0])->node_type==CONDITIONAL_NODE && AST_NODE(_node->children[1])->node_type==BODY_BLOCK_NODE )) {THROW_RUNTIME_ERROR("node WHILE has not valid TYPE nodes");return false;}
 		int index_start_do_while;
 
+		// push current break instruction scope...
+		pushBreakInstructionScope();
+
 		// compile conditional expression...
 		index_start_do_while =  getCurrentStatmentIndex()+1;
 
@@ -2089,6 +2119,13 @@ namespace zetscript{
 
 		// save jmp value ...
 		//asm_op_jmp_end->index_op2= index_start_do_while;
+
+		// set jmps from breaks...
+
+
+		// and pop break instructions scope...
+		popBreakInstructionScope();
+
 		return true;
 	}
 
@@ -2246,13 +2283,33 @@ namespace zetscript{
 		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != SWITCH_KEYWORD){THROW_RUNTIME_ERROR("node is not SWITCH keyword type");return false;}
+		if(_node->children.size() != 2){THROW_RUNTIME_ERROR("SWITCH node has no 2 nodes");return false;}
 		bool has_default = false;
 		PASTNode switch_node;
-		PASTNode group_cases;
-		PASTNode case_value;
-		PASTNode case_body;
+
+		bool last_keyword_was_break=false;
+
+		struct tCaseInfo{
+			PASTNode case_node;
+			vector<short> body_node;
+			tInfoAsmOpCompiler *info_jt_instruction;
+		};
+
+		/**
+		 * A case group is a group of cases that ends with break or } (i.e switch end)
+		 */
+		struct tCaseGroup{
+			vector <tCaseInfo> case_info;
+			PASTNode end_body_node;
+		};
+
+		vector <tCaseGroup> case_group;
+		tCaseGroup current_case_group;
+		tCaseGroup *default_case_group_ptr;
+		tCaseGroup default_case_group;
 
 		tInfoAsmOpCompiler * asm_op=NULL;
+		tInfoAsmOpCompiler *jmp_default_end_switch;
 
 		string error_str;
 		string detected_type_str;
@@ -2261,16 +2318,239 @@ namespace zetscript{
 		 vector<tInfoAsmOpCompiler *> jmp_instruction;//=NULL;
 		 vector<vector<tInfoAsmOpCompiler *>> jt_instruction;
 
+		 // override current scope by switch node...
+		 _lc = SCOPE_NODE(_node->idxScope);
+
+		// push current break instruction scope...
+		pushBreakInstructionScope();
+
 		// create new statment ...
 		CCompiler::getInstance()->newStatment();
 
-		if(ast2asm_Recursive(_node->children[0],_lc)){ // insert condition value ...
+		if(!ast2asm_Recursive(_node->children[0],_lc)){ // insert condition value node 0)...
+			return false;
+		}
 
 			// get current instruction value to take as ref for compare within value cases...
 			int switch_value_index  = getCurrentInstructionIndex();
 
+			switch_node = AST_NODE(_node->children[1]);
+			PASTNode last_case_default_node = NULL;
+			tCaseGroup *current_case_group_ptr=NULL;
+			tCaseGroup *last_case_group_ptr=NULL;
+			default_case_group_ptr=NULL;
+
+
+
+			for(unsigned i = 0; i < switch_node->children.size(); i++){ // find cases/default within switch body ...
+
+				PASTNode current_node=AST_NODE(switch_node->children[i]);
+
+				if(current_case_group_ptr == NULL){ // init by case or default...
+
+					 if(current_node->keyword_info == KEYWORD_TYPE::CASE_KEYWORD){
+
+							tCaseGroup current_case_group;
+							current_case_group.end_body_node=NULL;
+							current_case_group.case_info.clear();
+
+							case_group.push_back(current_case_group);
+
+							current_case_group_ptr=&case_group[case_group.size()-1];
+
+					 }else if(current_node->keyword_info == KEYWORD_TYPE::DEFAULT_KEYWORD){
+							if(default_case_group_ptr==NULL){
+								default_case_group_ptr == &default_case_group;
+								current_case_group_ptr=default_case_group_ptr;
+							}else{
+								writeErrorMsg(GET_AST_FILENAME_LINE(current_node->idxAstNode),"default statement already defined at line %i",default_case_group_ptr->case_info[0].case_node->line_value);
+								return false;
+							}
+					 }else{
+							writeErrorMsg(GET_AST_FILENAME_LINE(current_node->idxAstNode),"expected case or default");
+							return false;
+					 }
+				}
+
+				if(current_node->keyword_info == KEYWORD_TYPE::CASE_KEYWORD || current_node->keyword_info == KEYWORD_TYPE::DEFAULT_KEYWORD){
+
+					tCaseInfo case_info;// = {current_node}; // init case info...
+					case_info.case_node=current_node;
+
+					if(last_case_default_node != NULL){
+						if( (last_case_default_node->keyword_info == KEYWORD_TYPE::DEFAULT_KEYWORD && current_node->keyword_info == KEYWORD_TYPE::CASE_KEYWORD)
+						 || (current_node->keyword_info == KEYWORD_TYPE::DEFAULT_KEYWORD && last_case_default_node->keyword_info == KEYWORD_TYPE::CASE_KEYWORD)){
+							writeErrorMsg(GET_AST_FILENAME_LINE(current_node->idxAstNode),"default statement cannot combain with default \"cases\"");
+							return false;
+						}
+					}
+
+					if(current_node->keyword_info == KEYWORD_TYPE::CASE_KEYWORD){
+
+					 // CASE : write CMP + JT
+
+						// load case X:
+						insertLoadValueInstruction(current_node->idxAstNode,_lc);
+
+						// is equal ? ==
+						if(!insertOperatorInstruction(LOGIC_EQUAL_PUNCTUATOR,0, error_str, switch_value_index ,getCurrentInstructionIndex())){
+							writeErrorMsg(GET_AST_FILENAME_LINE(current_node->idxAstNode),"%s",error_str.c_str());
+							return false;
+						}
+
+						// set property as READ_TWO_AND_ONE_POP...
+						asm_op=getLastInsertedInfoAsmOpCompiler();
+						asm_op->runtime_prop|=STK_PROPERTY_READ_TWO_POP_ONE;
+
+						// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases...
+						case_info.info_jt_instruction=insert_JT_Instruction(current_node->idxAstNode);
+						//jt_instruction[i-1].push_back();
+					}
+
+					current_case_group_ptr->case_info.push_back(case_info);
+
+
+					/*if(current_case_group_ptr->case_info.size() > 0){
+
+					if(current_node->keyword_info == KEYWORD_TYPE::DEFAULT_KEYWORD){
+						if(current_case_group_ptr->case_info.size() > 0){
+							writeErrorMsg(GET_AST_FILENAME_LINE(current_node->idxAstNode),"default statement cannot contain \"case\" below");
+							return false;
+						}
+					}else{
+						if(current_case_group_ptr->case_info.size() > 0){}
+					}
+
+
+
+					jt_instruction.push_back(vector<tInfoAsmOpCompiler *>{});
+					case_value = current_node;
+
+					switch(case_value->keyword_info){
+						default:
+							THROW_RUNTIME_ERROR("Unexpected %s keyword node in SWITCH node",CASTNode::defined_keyword[case_value->keyword_info].str);
+							break;
+						case DEFAULT_KEYWORD:
+
+							if(!has_default){
+								has_default = true;
+								// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases + body...
+								jt_instruction[i-1].push_back(insert_JMP_Instruction(case_value->idxAstNode));
+							}else{
+								writeErrorMsg(GET_AST_FILENAME_LINE(case_value->idxAstNode),"case already defined");
+								return false;
+							}
+							break;
+						case CASE_KEYWORD:
+
+							// load case X:
+							insertLoadValueInstruction(case_value->idxAstNode,_lc);
+
+							// is equal ? ==
+							if(!insertOperatorInstruction(LOGIC_EQUAL_PUNCTUATOR,0, error_str, switch_value_index ,getCurrentInstructionIndex())){
+									writeErrorMsg(GET_AST_FILENAME_LINE(case_value->idxAstNode),"%s",error_str.c_str());
+									return false;
+							}
+
+							// set property as READ_TWO_AND_ONE_POP...
+							asm_op=getLastInsertedInfoAsmOpCompiler();
+							asm_op->runtime_prop|=STK_PROPERTY_READ_TWO_POP_ONE;
+
+							// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases...
+							jt_instruction[i-1].push_back(insert_JT_Instruction(case_value->idxAstNode));
+
+							break;
+
+						}
+					}*/
+
+
+				}
+				else{
+					 if(current_node->keyword_info == KEYWORD_TYPE::BREAK_KEYWORD){ // set jmp value to accumulated cases-default
+						 current_case_group_ptr->end_body_node=current_node;
+						 current_case_group_ptr=NULL;
+					 }
+					 else{ // set start expression node ...
+
+
+						 current_case_group_ptr->case_info[current_case_group_ptr->case_info.size()-1].body_node.push_back(current_node->idxAstNode);
+						 //if(current_case_group_ptr->case_info[current_case_group_ptr->case_info.size()-1].case_start_body == NULL){
+
+	//					 current_case_group_ptr->case_info[current_case_group_ptr->case_info.size()-1].case_node[].case_start_body=current_node;
+
+						 //}
+					 }
+				}
+			}
+
+			// write JMP (for default or end switch)
+			jmp_default_end_switch = insert_JMP_Instruction(-1);
+
+
+			// build body-case ...
+			for(unsigned i = 0; i < case_group.size(); i++){
+
+				for(unsigned j = 0; j < case_group[i].case_info.size(); j++){
+
+					tInfoStatementOpCompiler *st= newStatment();
+					case_group[i].case_info[j].info_jt_instruction->index_op1 = 0;
+					case_group[i].case_info[j].info_jt_instruction->index_op2 = getCurrentStatmentIndex();
+
+					// compile all body nodes ...
+					for(unsigned k = 0; k < case_group[i].case_info[j].body_node.size(); k++){
+						if(!ast2asm_Recursive(case_group[i].case_info[j].body_node[k],_lc)){
+							return false;
+						}
+					}
+				}
+
+			}
+
+			// build body-default (if exist)...
+
+
+
+			// link jmp-break body-case...
+
+
+
+
+			/*for(unsigned i = 0; i < switch_node->children.size(); i++){ // build switch body and link default/cases...
+				PASTNode current_node = AST_NODE(switch_node->children[i]);
+
+
+				if(current_node->keyword_info == KEYWORD_TYPE::CASE_KEYWORD){
+
+					PASTNode case_found=NULL;
+
+					// search case and link case ...
+					for(unsigned j=0; j < case_group.size() && case_group == NULL; j++){
+						for(unsigned k=0; k < case_group.[j].case_info.size() && case_group == NULL; j++){
+						if(case_group
+					}
+
+					// set current instruction index...
+					getCurrentStatment();
+
+				}
+				else{ // build body...
+					if(!ast2asm_Recursive(current_node->idxAstNode,_lc)){
+						return false;
+					}
+				}
+			}*/
+
+			// now we have all collected cases...
+			/*for(unsigned i=0; i < case_group.size(); i++) // compiles body and set case jmp index ...
+			{
+
+
+
+			}*/
+
 			// the stratege is first evaluate all cases and then their bodies...
-			for(unsigned s=0; s < 2; s++){
+		/*	for(unsigned s=0; s < 2; s++){
 				// start +1 because 0 is switch value ...
 				for(unsigned i = 1; i < _node->children.size(); i++){ // expect node type group cases ...
 					switch_node = AST_NODE(_node->children[i]);
@@ -2386,7 +2666,14 @@ namespace zetscript{
 			}
 		}else{
 			return false;
-		}
+		}*/
+
+		// set jmps from breaks...
+
+
+		// and pop break instructions scope...
+		popBreakInstructionScope();
+
 		return true;
 	}
 
@@ -2687,6 +2974,37 @@ namespace zetscript{
 		}
 	}
 
+
+	void CCompiler::pushBreakInstructionScope(){
+		tBreakInstructionScope bis;
+		stk_breakInstructionsScope.push_back(bis);
+		ptr_breakInstructionsScope=&stk_breakInstructionsScope[stk_breakInstructionsScope.size()-1];
+	}
+
+	void CCompiler::popBreakInstructionScope(){
+		stk_breakInstructionsScope.pop_back();
+		ptr_breakInstructionsScope=NULL;
+		if(stk_breakInstructionsScope.size() > 0){
+			ptr_breakInstructionsScope=&stk_breakInstructionsScope[stk_breakInstructionsScope.size()-1];
+		}
+	}
+
+	void CCompiler::pushContinueInstructionScope(){
+		tContinueInstructionScope cis;
+		stk_continueInstructionsScope.push_back(cis);
+		ptr_continueInstructionsScope=&stk_continueInstructionsScope[stk_continueInstructionsScope.size()-1];
+	}
+
+	void CCompiler::popContinueInstructionScope(){
+
+		stk_continueInstructionsScope.pop_back();
+		ptr_continueInstructionsScope=NULL;
+		if(stk_continueInstructionsScope.size() > 0){
+			ptr_continueInstructionsScope=&stk_continueInstructionsScope[stk_continueInstructionsScope.size()-1];
+		}
+	}
+
+
 	bool CCompiler::compile_body(short idxAstParentNode ,CScriptFunctionObject *sf){
 
 		PASTNode _node =AST_NODE(idxAstParentNode);
@@ -2742,6 +3060,12 @@ namespace zetscript{
 			info_function->object_info.info_var_scope=NULL;
 		}
 		//vec_script_function_object_node->pop_back();
+
+		stk_breakInstructionsScope.clear();
+		ptr_breakInstructionsScope=NULL;
+
+		stk_continueInstructionsScope.clear();
+		ptr_continueInstructionsScope=NULL;
 	}
 
 	bool CCompiler::compile(){

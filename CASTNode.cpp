@@ -1312,7 +1312,7 @@ namespace zetscript{
 			aux=aux+1;
 
 			// only parse no evaluate (don't save ast node)
-			end_expression = parseExpression_Recursive(aux, m_line, scope_info);//, ast_node_to_be_evaluated, type_group,parent);
+			end_expression = parseExpression_Recursive(aux, m_line, scope_info,NULL);//, ast_node_to_be_evaluated, type_group,parent);
 
 			if(end_expression == NULL){
 				return NULL;
@@ -1355,7 +1355,7 @@ namespace zetscript{
 					}
 				}
 				// parse function but do not create ast node (we will create in trivial case value
-				end_expression = parseFunction(aux,m_line,scope_info);
+				end_expression = parseFunction(aux,m_line,scope_info,NULL);
 
 				//symbol_node->symbol_value="anonymous_function";
 				if(end_expression == NULL){
@@ -1367,7 +1367,7 @@ namespace zetscript{
 			{
 				if(*aux == '['){ // vector object ...
 					// parse function but do not create ast node (we will create in trivial case value
-					end_expression = parseArgs('[', ']',aux,m_line,scope_info);
+					end_expression = parseArgs('[', ']',aux,m_line,scope_info,NULL);
 
 					if(end_expression == NULL){
 						return NULL;
@@ -1415,7 +1415,7 @@ namespace zetscript{
 
 			if(*end_expression == '[' || *end_expression == '('){ // function or array access --> process its ast but not save ...
 				is_symbol_trivial = false;
-				end_expression = functionArrayAccess(end_expression,m_line,scope_info);
+				end_expression = functionArrayAccess(end_expression,m_line,scope_info,NULL);
 
 				if(end_expression == NULL){
 					return NULL;
@@ -2234,7 +2234,7 @@ namespace zetscript{
 		PASTNode args_node=NULL, body_node=NULL, arg_node=NULL;
 		string conditional_str;
 		bool error=false;
-		CScope *_currentScope=NULL;
+
 		tScopeVar * irv=NULL;
 		string str_name;
 		string class_member,class_name, function_name="";
@@ -2329,11 +2329,6 @@ namespace zetscript{
 					aux_p++;
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 
-					if(ast_node_to_be_evaluated != NULL){
-
-						_currentScope=scope_info->pushScope(*ast_node_to_be_evaluated);
-					}
-
 					// grab words separated by ,
 					while(*aux_p != 0 && *aux_p != ')'){
 
@@ -2360,7 +2355,7 @@ namespace zetscript{
 							}
 
 							// check whether parameter name's matches with some global variable...
-							if((irv=_currentScope->getInfoRegisteredSymbol(symbol_value,-1,false)) != NULL){
+							if((irv=scope_info->getInfoRegisteredSymbol(symbol_value,-1,false)) != NULL){
 								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Ambiguous symbol argument \"%s\" name with var defined at %i", symbol_value, AST_LINE(irv->idxAstNode));
 								return NULL;
 							}
@@ -2384,7 +2379,7 @@ namespace zetscript{
 							arg_node->symbol_value=symbol_value;
 							args_node->children.push_back(arg_node->idxAstNode);
 
-							if((_currentScope->registerSymbol(symbol_value,arg_node)) == NULL){
+							if((scope_info->registerSymbol(symbol_value,arg_node)) == NULL){
 								return NULL;
 							}
 						}
@@ -2454,7 +2449,6 @@ namespace zetscript{
 								}
 
 								(*ast_node_to_be_evaluated)->children.push_back(body_node->idxAstNode);
-								scope_info->popScope();
 							}
 
 							return aux_p;
@@ -3301,25 +3295,38 @@ namespace zetscript{
 
 						if(*aux_p == '{'){
 
+							aux_p++;
+
 							if(ast_node_to_be_evaluated != NULL){
 								if((body_switch = CASTNode::newASTNode())==NULL) return NULL;
 								body_switch->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
 								(*ast_node_to_be_evaluated)->children.push_back(body_switch->idxAstNode);
 								body_switch->idxScope = currentScope->idxScope;
+
 							}
 
-							aux_p++;
 
 							if((aux_p=generateAST_Recursive(aux_p, m_line, currentScope, error, body_switch))==NULL){
 								return NULL;
 							}
+
+							aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+							if(*aux_p != '}'){
+								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected '}' switch");
+								return NULL;
+							}
+
+							return aux_p+1;
 						}
 						else{
 							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected '{' switch");
+							return NULL;
 						}
 				}
 				else{
 					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected '(' switch ");
+					return NULL;
 				}
 			}
 		}
@@ -4017,6 +4024,8 @@ namespace zetscript{
 
 				if(node_to_be_evaluated != NULL && children != NULL){
 					(node_to_be_evaluated)->children.push_back(children->idxAstNode);
+					children->idxAstParent = (node_to_be_evaluated)->idxAstNode;
+
 
 					if(is_main_node){
 						astNodeToCompile->push_back({(node_to_be_evaluated)->idxAstNode,children->idxAstNode});

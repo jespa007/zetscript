@@ -683,34 +683,32 @@ namespace zetscript{
 		}
 		else{
 
-			CScriptClass *sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxScriptClass);
-
-			if(symbol_to_find == "this" && (iao_scope & INS_PROPERTY_THIS_SCOPE)){ // trivial is the first symbol we find...
-				 REMOVE_SCOPES(iao->instruction_properties);
-				 iao->instruction_properties |= INS_PROPERTY_THIS_SCOPE;
-				 iao->index_op1 = LOAD_TYPE_VARIABLE;
-				 iao->index_op2 = ZS_THIS_IDX;
-				 return true;
-
-			}
-
-
-
-
-			bool partial_c_class=(info_function->symbol_info.properties&SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) !=0;
-			while( sc->idxBaseClass.size()>0 && !partial_c_class){
-
-				sc=CScriptClass::getScriptClassByIdx(sc->idxBaseClass[0]); // get base class...
-				partial_c_class|=(sc->metadata_info.object_info.symbol_info.properties&SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) !=0;
-
-
-			}
-
 			int idx_scope=ast_node->idxScope;
+			bool partial_c_class= false;
 
-			if(iao_scope & INS_PROPERTY_THIS_SCOPE){ // start from class scope to find its variable/function member...
-				sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxScriptClass);
-				idx_scope=AST_NODE(sc->metadata_info.object_info.symbol_info.idxAstNode)->idxScope;
+			if(info_function->symbol_info.idxScriptClass != -1){
+				CScriptClass *sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxScriptClass);
+
+				if(symbol_to_find == "this" && (iao_scope & INS_PROPERTY_THIS_SCOPE)){ // trivial is the first symbol we find...
+					 REMOVE_SCOPES(iao->instruction_properties);
+					 iao->instruction_properties |= INS_PROPERTY_THIS_SCOPE;
+					 iao->index_op1 = LOAD_TYPE_VARIABLE;
+					 iao->index_op2 = ZS_THIS_IDX;
+					 return true;
+
+				}
+
+				 partial_c_class=(info_function->symbol_info.properties&SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) !=0;
+				while( sc->idxBaseClass.size()>0 && !partial_c_class){
+
+					sc=CScriptClass::getScriptClassByIdx(sc->idxBaseClass[0]); // get base class...
+					partial_c_class|=(sc->metadata_info.object_info.symbol_info.properties&SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) !=0;
+				}
+
+				if(iao_scope & INS_PROPERTY_THIS_SCOPE){ // start from class scope to find its variable/function member...
+					sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxScriptClass);
+					idx_scope=AST_NODE(sc->metadata_info.object_info.symbol_info.idxAstNode)->idxScope;
+				}
 			}
 
 			 bool variable_in_main_class=SCOPE_IN_MAIN_CLASS(ast_node->idxScope);//!=0;

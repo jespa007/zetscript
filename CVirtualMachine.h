@@ -73,7 +73,7 @@ namespace zetscript{
 				tStackElement 		  * _ptrStartOp=NULL,
 				string 		  		  * _ptrStartStr=NULL,
 				unsigned char n_args=0,
-				int idxAstNode = ZS_UNDEFINED_IDX);//vector<CScriptVariable *> * argv=NULL,int stk=0);
+				int idxAstNode = ZS_UNDEFINED_IDX);
 
 		bool cancel_execution;
 		const char *custom_error;
@@ -173,7 +173,6 @@ namespace zetscript{
 
 		 string     aux_string_param[MAX_N_ARGS]; // for string params...
 
-		 vector<tSymbolInfo> vec_aux_function_symbol;
 		 tVM_ScopeInfo		*current_scope_info_ptr;
 		 tVM_ScopeInfo		scope_info[VM_MAX_SCOPES];
 		 tVM_ScopeInfo		*MAX_SCOPE_INFO;
