@@ -348,21 +348,18 @@ namespace zetscript{
 		def_operator[JT]          ={"JT",JT,2}; // goto if true ... goes end to conditional.
 
 		def_operator[CALL]={"CALL",CALL,1}; // calling function after all of arguments are processed...
-		def_operator[PUSH]={"PUSH",PUSH,1};
-		//def_operator[START_ARG]={"START_ARG",START_ARG,0};
+
+
 		def_operator[VGET]={"VGET",VGET,1}; // vector access after each index is processed...
 
 		def_operator[DECL_VEC]={"DECL_VEC",DECL_VEC,1}; // Vector object (CREATE)
 
 		def_operator[VPUSH]={"VPUSH",VPUSH,1}; // Value push for vector
-		def_operator[VPOP]={"VPOP",VPOP,1}; // Value pop for vector
 		def_operator[RET]={"RET",RET,1}; // Value pop for vector
 
 		def_operator[NEW]={"NEW",NEW,1}; // New object (CREATE)
 		def_operator[DELETE_OP]={"DELETE_OP",DELETE_OP,1};
-		def_operator[OBJECT_ACCESS]={"OBJECT_ACCESS",OBJECT_ACCESS,2}; // New object (CREATE)
-		//def_operator[SAVE_I]={"SAVE_I",SAVE_I,0}; // New object (CREATE)
-		//def_operator[LOAD_I]={"LOAD_I",LOAD_I,0}; // New object (CREATE)
+
 		def_operator[POP_SCOPE]={"POP_SCOPE",POP_SCOPE,0}; // New object (CREATE)
 		def_operator[PUSH_SCOPE]={"PUSH_SCOPE",PUSH_SCOPE,1}; // New object (CREATE)
 		def_operator[PUSH_ATTR]={"PUSH_ATTR",PUSH_ATTR,2}; // New object (CREATE)
@@ -479,8 +476,8 @@ namespace zetscript{
 		ptr_current_statement_op->asm_op.push_back(asm_op);
 	}
 
-	bool CCompiler::insertLoadValueInstruction(short idxAstNode, CScope * _lc, tInfoAsmOpCompiler **iao_result){
-		PASTNode _node=AST_NODE(idxAstNode);
+	bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc, tInfoAsmOpCompiler **iao_result){
+
 		PASTNode _parent=AST_NODE(_node->idxAstParent);
 		string v = _node->symbol_value;
 
@@ -501,7 +498,7 @@ namespace zetscript{
 		unsigned int scope_type=0;//INS_PROPERTY_UNKNOWN_SCOPE;
 		bool is_constant = true;
 
-		if((_parent->operator_info == INSTANCEOF_PUNCTUATOR) && (_parent->children[1] == idxAstNode)){ // we search for class idx
+		if((_parent->operator_info == INSTANCEOF_PUNCTUATOR) && (_parent->children[1] == _node->idxAstNode)){ // we search for class idx
 
 			intptr_t classidx=-1;
 
@@ -522,7 +519,7 @@ namespace zetscript{
 				classidx=IDX_CLASS_FUNCTOR;
 			}else{ // search idx...
 				if((classidx=CScriptClass::getIdxScriptClass(v,false))==-1){
-					writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode)," in instenceof operator  class \"%s\" is not registered",v.c_str());
+					writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode)," in instenceof operator  class \"%s\" is not registered",v.c_str());
 					return false;
 				}
 			}
@@ -915,18 +912,6 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::insertObjectMemberAccessFrom(short idxAstNode, int ref_node_index){
-		tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->index_op1 = ref_node_index;
-		asm_op->index_op2 = ZS_UNDEFINED_IDX; // index from object cached node ?
-		asm_op->operator_type=ASM_OPERATOR::OBJECT_ACCESS;
-		asm_op->idxAstNode = idxAstNode;
-
-		ptr_current_statement_op->asm_op.push_back(asm_op);
-		return true;
-	}
-
 	bool CCompiler::insertPushScopeInstruction(short idxAstNode,int scope_idx, bool save_break){
 		if(scope_idx==ZS_UNDEFINED_IDX){
 			THROW_RUNTIME_ERROR("Internal error undefined scope");
@@ -1042,8 +1027,6 @@ namespace zetscript{
 			return ASM_OPERATOR::LTE;
 		case LOGIC_NOT_PUNCTUATOR:
 			return ASM_OPERATOR::NOT;
-		case FIELD_PUNCTUATOR:
-			return ASM_OPERATOR::OBJECT_ACCESS;
 		case INSTANCEOF_PUNCTUATOR:
 			return ASM_OPERATOR::INSTANCEOF;
 		}
@@ -1173,9 +1156,9 @@ namespace zetscript{
 	// COMPILE EXPRESSIONS AND GENERATE ITS ASM
 	//
 
-	int CCompiler::gacExpression_FunctionOrArrayAccess(short idxAstNode, CScope *_lc){
+	int CCompiler::gacExpression_FunctionOrArrayAccess(PASTNode _node_access, CScope *_lc){
 
-		PASTNode _node_access=AST_NODE(idxAstNode);
+
 		bool  function_access = false;
 		bool array_access = false;
 
@@ -1195,20 +1178,17 @@ namespace zetscript{
 		}
 
 		if(array_access){
-			return gacExpression_ArrayAccess(_node_access->idxAstNode, _lc);
+			return gacExpression_ArrayAccess(_node_access, _lc);
 		}else if(function_access){
-			return gacExpression_FunctionAccess(_node_access->idxAstNode, _lc);
+			return gacExpression_FunctionAccess(_node_access, _lc);
 		}
 
 		THROW_RUNTIME_ERROR("internal error. Expected function or array access");
 		return ZS_UNDEFINED_IDX;
 	}
 
-	int CCompiler::gacExpression_ArrayAccess(short idxAstNode, CScope *_lc){
+	int CCompiler::gacExpression_ArrayAccess(PASTNode _node, CScope *_lc){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
 		if(_node->node_type != CALLING_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not CALLING_OBJECT_NODE type or null");return ZS_UNDEFINED_IDX;}
 		if(!(_node->children.size()==2 || _node->children.size()==3)) {THROW_RUNTIME_ERROR("Array access should have 2 children");return ZS_UNDEFINED_IDX;}
 
@@ -1227,12 +1207,12 @@ namespace zetscript{
 		int vec=0;
 
 		if(node_0->node_type == ARRAY_OBJECT_NODE){ // must first create the object ...
-			if(!gacExpression_ArrayObject(node_0->idxAstNode,_lc)){
+			if(!gacExpression_ArrayObject(node_0,_lc)){
 				return ZS_UNDEFINED_IDX;
 			}
 		}else{
 			if(node_0->symbol_value != "--"){ // starts with symbol ...
-				if(!insertLoadValueInstruction(node_0->idxAstNode,  _lc)){
+				if(!insertLoadValueInstruction(node_0,  _lc)){
 					return ZS_UNDEFINED_IDX;
 				}
 			}
@@ -1246,7 +1226,7 @@ namespace zetscript{
 			if(AST_NODE(array_acces->children [k])->node_type == ARRAY_INDEX_NODE){
 				if(AST_NODE(array_acces->children [k])->children.size() == 1){
 					// check whether is expression node...
-					if(!(gacExpression(AST_NODE(array_acces->children [k])->children[0], _lc,getCurrentInstructionIndex()+1))){
+					if(!(gacExpression(AST_NODE(AST_NODE(array_acces->children [k])->children[0]), _lc,getCurrentInstructionIndex()+1))){
 						return ZS_UNDEFINED_IDX;
 					}
 					// insert vector access instruction ...
@@ -1272,21 +1252,16 @@ namespace zetscript{
 
 		if(_node->children.size()==3){ // array or function access ...
 
-			return gacExpression_FunctionOrArrayAccess(node_2->idxAstNode, _lc);
+			return gacExpression_FunctionOrArrayAccess(node_2, _lc);
 		}
 		// return last instruction where was modified
 		return getCurrentInstructionIndex();
 	}
 
-	int CCompiler::gacExpression_ArrayObject_Recursive(short idxAstNode, CScope *_lc){
-		return 0;
-	}
 
-	bool CCompiler::gacExpression_ArrayObject(short idxAstNode, CScope *_lc){
 
-		PASTNode _node=AST_NODE(idxAstNode);
+	bool CCompiler::gacExpression_ArrayObject(PASTNode _node, CScope *_lc){
 
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != ARRAY_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not ARRAY_OBJECT_NODE type or null");return false;}
 		//int r=0;
 
@@ -1304,7 +1279,7 @@ namespace zetscript{
 				ini_instruction = getCurrentInstructionIndex()+1;
 			}
 			// check whether is expression node...
-			if(!gacExpression(_node->children[j], _lc,ini_instruction)){
+			if(!gacExpression(AST_NODE(_node->children[j]), _lc,ini_instruction)){
 				return false;
 			}
 			insert_ArrayObject_PushValueInstruction(_node->idxAstNode,index_created_vec,ini_instruction);
@@ -1312,11 +1287,8 @@ namespace zetscript{
 		return true;//index_created_vec;//CCompiler::getCurrentInstructionIndex();
 	}
 
-	bool CCompiler::gacExpression_FunctionObject(short idxAstNode, CScope *_lc){
+	bool CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc){
 
-		PASTNode _node=AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != FUNCTION_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not FUNCTION_OBJECT_NODE type or null");return false;}
 		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("Array access should have 2 children");return false;}
 
@@ -1324,7 +1296,7 @@ namespace zetscript{
 
 		// 1. insert load reference created object ...
 		if(functionSymbolExists(_node->symbol_value, _node->idxAstNode)){
-				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function \"%s\" already defined",_node->symbol_value.c_str());
+				writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Function \"%s\" already defined",_node->symbol_value.c_str());
 				return false;
 		}
 
@@ -1333,16 +1305,16 @@ namespace zetscript{
 		}
 
 		// compiles anonymous function ...
-		if(!gacFunctionOrOperator(_node->idxAstNode,_lc, script_function)){
+		if(!gacFunctionOrOperator(_node,_lc, script_function)){
 			return false;
 		}
 
-		return insertLoadValueInstruction(_node->idxAstNode, _lc);
+		return insertLoadValueInstruction(_node, _lc);
 	}
 
-	int CCompiler::gacExpression_FunctionAccess(short idxAstNode, CScope *_lc){
+	int CCompiler::gacExpression_FunctionAccess(PASTNode _node, CScope *_lc){
 
-		PASTNode _node=AST_NODE(idxAstNode);
+
 		tInfoAsmOpCompiler *iao_call=NULL;
 
 		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
@@ -1362,7 +1334,7 @@ namespace zetscript{
 
 		// load function ...
 		if(node_0->symbol_value != "--"){ // starts with symbol ...
-			if(!insertLoadValueInstruction(node_0->idxAstNode,_lc,&iao_call)) {
+			if(!insertLoadValueInstruction(node_0,_lc,&iao_call)) {
 				return ZS_UNDEFINED_IDX;
 			}
 
@@ -1378,7 +1350,7 @@ namespace zetscript{
 			for(unsigned k = 0; k < function_args->children.size(); k++){
 
 				// check whether is expression node...
-				if(!gacExpression(function_args->children[k], _lc,getCurrentInstructionIndex()+1)){
+				if(!gacExpression(AST_NODE(function_args->children[k]), _lc,getCurrentInstructionIndex()+1)){
 					return ZS_UNDEFINED_IDX;
 				}
 			}
@@ -1389,17 +1361,14 @@ namespace zetscript{
 
 		if(_node->children.size()==3){ // array or function access ...
 
-			return gacExpression_FunctionOrArrayAccess(node_2->idxAstNode, _lc);
+			return gacExpression_FunctionOrArrayAccess(node_2, _lc);
 		}
 
 		return CCompiler::getCurrentInstructionIndex();
 	}
 
-	int CCompiler::gacExpression_StructAttribute(short idxAstNode, CScope *_lc, int index_ref_object){
+	int CCompiler::gacExpression_StructAttribute(PASTNode _node, CScope *_lc, int index_ref_object){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
 		if(_node->node_type != EXPRESSION_NODE ){THROW_RUNTIME_ERROR("node is not EXPRESSION_NODE type or null");return ZS_UNDEFINED_IDX;}
 
 
@@ -1407,7 +1376,7 @@ namespace zetscript{
 		int index_attr = getCurrentInstructionIndex()+1;
 
 		// 1st evalualte expression...
-		if(!gacExpression(_node->idxAstNode, _lc,getCurrentInstructionIndex()+1)){
+		if(!gacExpression(_node, _lc,getCurrentInstructionIndex()+1)){
 			return ZS_UNDEFINED_IDX;
 		}
 
@@ -1428,9 +1397,9 @@ namespace zetscript{
 		return CCompiler::getCurrentInstructionIndex();
 	}
 
-	int CCompiler::gacExpression_Struct(short idxAstNode, CScope *_lc){
+	int CCompiler::gacExpression_Struct(PASTNode _node, CScope *_lc){
 
-		PASTNode _node=AST_NODE(idxAstNode);
+
 
 		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
 		if(_node->node_type != STRUCT_NODE ){THROW_RUNTIME_ERROR("node is not STRUCT_NODE type or null");return ZS_UNDEFINED_IDX;}
@@ -1440,16 +1409,16 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < _node->children.size(); i++){
 			// evaluate attribute
-			if(gacExpression_StructAttribute(_node->children[i], _lc,ref_obj) == ZS_UNDEFINED_IDX){
+			if(gacExpression_StructAttribute(AST_NODE(_node->children[i]), _lc,ref_obj) == ZS_UNDEFINED_IDX){
 				return ZS_UNDEFINED_IDX;
 			}
 		}
 		return ref_obj;
 	}
 
-	int CCompiler::gacExpression_Recursive(short idxAstNode, CScope *_lc, int & index_instruction){
+	int CCompiler::gacExpression_Recursive(PASTNode _node, CScope *_lc, int & index_instruction){
 
-		PASTNode _node = AST_NODE(idxAstNode);
+
 
 
 		int r=index_instruction;
@@ -1529,18 +1498,18 @@ namespace zetscript{
 
 			if(special_node ){
 					if(array_access){
-						if((r=gacExpression_ArrayAccess(_node->idxAstNode, _lc)) == ZS_UNDEFINED_IDX){
+						if((r=gacExpression_ArrayAccess(_node, _lc)) == ZS_UNDEFINED_IDX){
 													return ZS_UNDEFINED_IDX;
 												}
 					}else if(function_access){
-						if((r=gacExpression_FunctionAccess(_node->idxAstNode, _lc)) == ZS_UNDEFINED_IDX){
+						if((r=gacExpression_FunctionAccess(_node, _lc)) == ZS_UNDEFINED_IDX){
 							return ZS_UNDEFINED_IDX;
 						}
 					}
 					else{
 						switch(eval_node_sp->node_type){
 						case ARRAY_OBJECT_NODE: // should have 1 children
-							if(!gacExpression_ArrayObject(_node->idxAstNode, _lc)){
+							if(!gacExpression_ArrayObject(_node, _lc)){
 								return ZS_UNDEFINED_IDX;
 							}
 
@@ -1549,21 +1518,21 @@ namespace zetscript{
 							break;
 
 						case FUNCTION_OBJECT_NODE: // should have 1 children
-							if(!gacExpression_FunctionObject(_node->idxAstNode, _lc)){
+							if(!gacExpression_FunctionObject(_node, _lc)){
 								return ZS_UNDEFINED_IDX;
 							}
 							r=CCompiler::getCurrentInstructionIndex();
 							break;
 
 						case NEW_OBJECT_NODE:
-							if((gacNew(_node->idxAstNode, _lc))==ZS_UNDEFINED_IDX){
+							if((gacNew(_node, _lc))==ZS_UNDEFINED_IDX){
 								return ZS_UNDEFINED_IDX;
 							}
 
 							r=CCompiler::getCurrentInstructionIndex();
 							break;
 						case STRUCT_NODE:
-							if((r=gacExpression_Struct(_node->idxAstNode, _lc))==ZS_UNDEFINED_IDX){
+							if((r=gacExpression_Struct(_node, _lc))==ZS_UNDEFINED_IDX){
 								return ZS_UNDEFINED_IDX;
 							}
 							//r=CCompiler::getCurrentInstructionIndex();
@@ -1577,7 +1546,7 @@ namespace zetscript{
 			}
 			else{ // TERMINAL NODE
 
-				if(!insertLoadValueInstruction(_node->idxAstNode, _lc)){
+				if(!insertLoadValueInstruction(_node, _lc)){
 					return ZS_UNDEFINED_IDX;
 				}
 			}
@@ -1591,7 +1560,7 @@ namespace zetscript{
 
 			if(_node->operator_info == TERNARY_IF_PUNCTUATOR){
 				if(AST_NODE(_node->children[1])->operator_info == TERNARY_ELSE_PUNCTUATOR){
-					int t1= gacInlineIf(_node->idxAstNode,_lc,index_instruction);
+					int t1= gacInlineIf(_node,_lc,index_instruction);
 
 					return t1;
 
@@ -1606,12 +1575,12 @@ namespace zetscript{
 				}
 				// check if there's inline-if-else
 				int right=ZS_UNDEFINED_IDX, left=ZS_UNDEFINED_IDX;
-				if((left=gacExpression_Recursive(_node->children[LEFT_NODE], _lc,index_instruction)) == ZS_UNDEFINED_IDX){
+				if((left=gacExpression_Recursive(AST_NODE(_node->children[LEFT_NODE]), _lc,index_instruction)) == ZS_UNDEFINED_IDX){
 					return ZS_UNDEFINED_IDX;
 				}
 
 				if(_node->children.size()==2){
-					if((right=gacExpression_Recursive(_node->children[RIGHT_NODE],_lc,index_instruction)) == ZS_UNDEFINED_IDX){
+					if((right=gacExpression_Recursive(AST_NODE(_node->children[RIGHT_NODE]),_lc,index_instruction)) == ZS_UNDEFINED_IDX){
 						return ZS_UNDEFINED_IDX;
 					}
 				}
@@ -1815,7 +1784,7 @@ namespace zetscript{
 
 			}else{ // compile function ...
 				// compile function (within scope class)...
-				if(!gacFunctionOrOperator(fun_node->idxAstNode, SCOPE_NODE(node_class->idxScope),irfs)){
+				if(!gacFunctionOrOperator(fun_node, SCOPE_NODE(node_class->idxScope),irfs)){
 					return false;
 				}
 			}
@@ -1866,11 +1835,8 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::gacClass(short idxAstNode, CScope * _lc){
+	bool CCompiler::gacClass(PASTNode _node, CScope * _lc){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::CLASS_KEYWORD){THROW_RUNTIME_ERROR("node is not CLASS keyword type");return false;}
 		if(_node->children.size()==3 && AST_NODE(_node->children[2])->node_type != BASE_CLASS_NODE){THROW_RUNTIME_ERROR("expected BASE CLASS keyword type");return false;}
@@ -1905,10 +1871,7 @@ namespace zetscript{
 		return true;
 	}
 
-	int CCompiler::gacNew(short idxAstNode, CScope * _lc){
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
+	int CCompiler::gacNew(PASTNode _node, CScope * _lc){
 		if(_node->node_type != NEW_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
 		if(_node->children.size()!=1) {THROW_RUNTIME_ERROR("node NEW has not valid number of nodes");return ZS_UNDEFINED_IDX;}
 		if(AST_NODE(_node->children[0])->node_type!=NODE_TYPE::ARGS_PASS_NODE) {THROW_RUNTIME_ERROR("children[0] is not args_pass_node");return ZS_UNDEFINED_IDX;}
@@ -1924,7 +1887,7 @@ namespace zetscript{
 
 		// 2. load function ...
 
-		if(!insertLoadValueInstruction(_node->idxAstNode,_lc,&iao)) {
+		if(!insertLoadValueInstruction(_node,_lc,&iao)) {
 			return ZS_UNDEFINED_IDX;
 		}
 
@@ -1944,7 +1907,7 @@ namespace zetscript{
 			for(unsigned k = 0; k < constructor_args->children.size(); k++){
 
 				// check whether is expression node...
-				if(!gacExpression(constructor_args->children[k], _lc,getCurrentInstructionIndex()+1)){
+				if(!gacExpression(AST_NODE(constructor_args->children[k]), _lc,getCurrentInstructionIndex()+1)){
 					return ZS_UNDEFINED_IDX;
 				}
 
@@ -1960,12 +1923,9 @@ namespace zetscript{
 		return CCompiler::getCurrentInstructionIndex();
 	}
 
-	int CCompiler::gacDelete(short idxAstNode, CScope * _lc){
+	int CCompiler::gacDelete(PASTNode _node, CScope * _lc){
 
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
 		if(_node->node_type != DELETE_OBJECT_NODE ){THROW_RUNTIME_ERROR("gacDelete: node is not NEW OBJECT NODE type");return ZS_UNDEFINED_IDX;}
 		if(_node->children.size() != 1 ){THROW_RUNTIME_ERROR("gacDelete: expected 1 children");return ZS_UNDEFINED_IDX;}
 
@@ -1985,18 +1945,16 @@ namespace zetscript{
 		return CCompiler::getCurrentInstructionIndex();
 	}
 
-	bool CCompiler::gacFor(short idxAstNode, CScope * _lc){
+	bool CCompiler::gacFor(PASTNode _node, CScope * _lc){
 
-		PASTNode _node=AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::FOR_KEYWORD){THROW_RUNTIME_ERROR("node is not FOR keyword type");return false;}
 		if(_node->children.size()!=4) {THROW_RUNTIME_ERROR("node FOR has not valid number of nodes");return false;}
 		if(!(AST_NODE(_node->children[0])->node_type==PRE_FOR_NODE && AST_NODE(_node->children[1])->node_type==CONDITIONAL_NODE &&
 		AST_NODE(_node->children[2])->node_type==POST_FOR_NODE && AST_NODE(_node->children[3])->node_type==BODY_BLOCK_NODE)) {THROW_RUNTIME_ERROR("node FOR has not valid TYPE nodes");return false;}
-		tInfoAsmOpCompiler *asm_op;
+		tInfoAsmOpCompiler *asm_op=NULL;
 
+		PASTNode ast_conditional=NULL;
 
 		// push current continue/break instruction scope...
 		pushContinueInstructionScope();
@@ -2015,16 +1973,22 @@ namespace zetscript{
 		}
 
 		// 2. compile conditional
-		if(!ast2asm_Recursive(_node->children[1],SCOPE_NODE(_node->idxScope))){ return false;}
+		ast_conditional=AST_NODE(_node->children[1]);
+		if(ast_conditional->children.size()>0){ // it has conditional... (infinite else)
+			if(!ast2asm_Recursive(ast_conditional->idxAstNode,SCOPE_NODE(_node->idxScope))){ return false;}
+		}
 		// get current index statment in order to jmp from end body for.
 		int index_statment_conditional_for_= getCurrentStatmentIndex();
 
-		// insert conditional jmp (if not true go to the end)
-		asm_op = insert_JNT_Instruction(_node->children[1]);
+		if(ast_conditional->children.size()>0){ // conditional break...
+			// insert conditional jmp (if not true go to the end)
+			asm_op = insert_JNT_Instruction(_node->children[1]);
+		}
+
 
 		// 3. compile body
 		PASTNode _body_node=AST_NODE(_node->children[3]);
-		if(!gacBody(_node->children[3],SCOPE_NODE(_body_node->idxScope))){ return false;}
+		if(!gacBody(AST_NODE(_node->children[3]),SCOPE_NODE(_body_node->idxScope))){ return false;}
 
 		// 4. compile post oper
 		PASTNode post_node=AST_NODE(_node->children[2]);
@@ -2041,7 +2005,9 @@ namespace zetscript{
 		//}
 
 		// save jmp value...
-		asm_op->index_op2=getCurrentStatmentIndex();
+		if(asm_op != NULL){
+			asm_op->index_op2=getCurrentStatmentIndex();
+		}
 
 
 		// set jmps from breaks...
@@ -2056,11 +2022,8 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::gacWhile(short idxAstNode, CScope * _lc){
+	bool CCompiler::gacWhile(PASTNode _node, CScope * _lc){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::WHILE_KEYWORD){THROW_RUNTIME_ERROR("node is not WHILE keyword type");return false;}
 		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("node WHILE has not valid number of nodes");return false;}
@@ -2078,7 +2041,7 @@ namespace zetscript{
 		asm_op_jmp_end = insert_JNT_Instruction(_node->children[0]); // goto end  ...
 
 		// compile if-body ...
-		if(!gacBody(_node->children[1],SCOPE_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
+		if(!gacBody(AST_NODE(_node->children[1]),SCOPE_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
 		insert_JMP_Instruction(_node->children[0],index_ini_while); // goto end  ...
 
 		// save jmp value ...
@@ -2092,11 +2055,8 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::gacDoWhile(short idxAstNode, CScope * _lc){
+	bool CCompiler::gacDoWhile(PASTNode _node, CScope * _lc){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::DO_WHILE_KEYWORD){THROW_RUNTIME_ERROR("node is not DO_WHILE keyword type");return false;}
 		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("node DO-WHILE has not valid number of nodes");return false;}
@@ -2110,7 +2070,7 @@ namespace zetscript{
 		index_start_do_while =  getCurrentStatmentIndex()+1;
 
 		// compile do-body ...
-		if(!gacBody(_node->children[1],SCOPE_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
+		if(!gacBody(AST_NODE(_node->children[1]),SCOPE_NODE(AST_NODE(_node->children[1])->idxScope))){ return false;}
 
 		// compile while condition...
 		if(!ast2asm_Recursive(_node->children[0],_lc)){ return false;}
@@ -2129,16 +2089,13 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::gacReturn(short idxAstNode, CScope * _lc){
+	bool CCompiler::gacReturn(PASTNode _node, CScope * _lc){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::RETURN_KEYWORD){THROW_RUNTIME_ERROR("node is not RETURN keyword type");return false;}
 		if(_node->children.size() >= 1){
 
-			if(gacExpression(_node->children[0], _lc)){
+			if(gacExpression(AST_NODE(_node->children[0]), _lc)){
 				// finally we put mov to Value ...
 				insertRet(_node->idxAstNode,getCurrentInstructionIndex());
 			}
@@ -2150,11 +2107,8 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::gacFunctionOrOperator(short idxAstNode, CScope * _lc, CScriptFunctionObject *irfs){
+	bool CCompiler::gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 
 		if(
 			! ( _node->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD
@@ -2176,14 +2130,34 @@ namespace zetscript{
 			);
 		}
 		// 2. Compiles function's body ...
-		return compile_body(_node->children[1], irfs);
+		return compile_body(AST_NODE(_node->children[1]), irfs);
 	}
 
-	bool CCompiler::gacIf(short idxAstNode, CScope * _lc){
+	bool CCompiler::gacBreak(PASTNode _node, CScope * _lc){
 
-		PASTNode _node = AST_NODE(idxAstNode);
+		if(_node->keyword_info != KEYWORD_TYPE::BREAK_KEYWORD ){THROW_RUNTIME_ERROR("node is not break type");return false;}
 
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
+		tInfoAsmOpCompiler *iao= insert_JMP_Instruction(_node->idxAstNode, -1,-1);
+		this->ptr_breakInstructionsScope->asm_op.push_back(iao);
+
+
+		return true;
+	}
+
+	bool CCompiler::gacContinue(PASTNode _node, CScope * _lc){
+
+		if(_node->keyword_info != KEYWORD_TYPE::CONTINUE_KEYWORD ){THROW_RUNTIME_ERROR("node is not continue type");return false;}
+
+		tInfoAsmOpCompiler *iao= insert_JMP_Instruction(_node->idxAstNode, -1,-1);
+		this->ptr_continueInstructionsScope->asm_op.push_back(iao);
+
+
+		return true;
+	}
+
+
+	bool CCompiler::gacIf(PASTNode _node, CScope * _lc){
+
 		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::IF_KEYWORD){THROW_RUNTIME_ERROR("node is not IF keyword type");return false;}
 		if(_node->children.size()<1) {THROW_RUNTIME_ERROR("node IF has not valid number of nodes");return false;}
@@ -2209,7 +2183,7 @@ namespace zetscript{
 			asm_op_jmp_else_if = insert_JNT_Instruction(if_node->children[0]); // goto else body ...
 
 			// compile if-body ...
-			if(!gacBody(if_node->children[1],SCOPE_NODE(AST_NODE(if_node->children[1])->idxScope))){ return false;}
+			if(!gacBody(AST_NODE(if_node->children[1]),SCOPE_NODE(AST_NODE(if_node->children[1])->idxScope))){ return false;}
 
 			asm_op_jmp_end.push_back(insert_JMP_Instruction(_node->idxAstNode));
 			asm_op_jmp_else_if->index_op2 = getCurrentStatmentIndex()+1;
@@ -2220,7 +2194,7 @@ namespace zetscript{
 		if(_node->children.size()==2){
 			//asm_op_jmp_end = insert_JMP_Instruction(_node->idxAstNode); // goto end
 			asm_op_jmp_else_if->index_op2 = getCurrentStatmentIndex()+1;
-			if(!gacBody(_node->children[1],_lc)){ return false;}
+			if(!gacBody(AST_NODE(_node->children[1]),_lc)){ return false;}
 
 			//asm_op_jmp_end->index_op2 = getCurrentStatmentIndex()+1;
 		}
@@ -2233,11 +2207,8 @@ namespace zetscript{
 		return true;
 	}
 
-	int CCompiler::gacInlineIf(short idxAstNode, CScope * _lc, int & instruction){
+	int CCompiler::gacInlineIf(PASTNode _node, CScope * _lc, int & instruction){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return ZS_UNDEFINED_IDX;}
 		if(_node->node_type != PUNCTUATOR_NODE ){THROW_RUNTIME_ERROR("node is not punctuator type or null");return ZS_UNDEFINED_IDX;}
 		if(_node->operator_info != TERNARY_IF_PUNCTUATOR){THROW_RUNTIME_ERROR("node is not INLINE-IF PUNCTUATOR type");return ZS_UNDEFINED_IDX;}
 		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("node INLINE-IF has not 2 nodes");return ZS_UNDEFINED_IDX;}
@@ -2248,12 +2219,12 @@ namespace zetscript{
 		int r=instruction;
 
 		// compile conditional expression...
-		if((r=gacExpression_Recursive(_node->children[0],_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
+		if((r=gacExpression_Recursive(AST_NODE(_node->children[0]),_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
 		asm_op_jmp_else_if = insert_JNT_Instruction(_node->children[0]); // goto else body ...
 
 		// compile if-body ...
 		r+=2; // in order to execute recursive expression we have to advance r pointer jnt (+2)
-		if((r=gacExpression_Recursive(AST_NODE(_node->children[1])->children[0],_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
+		if((r=gacExpression_Recursive(AST_NODE(AST_NODE(_node->children[1])->children[0]),_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
 
 		//insert_Save_CurrentInstruction();
 
@@ -2266,7 +2237,7 @@ namespace zetscript{
 
 		r+=3;
 
-		if((r=gacExpression_Recursive(AST_NODE(_node->children[1])->children[1],_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
+		if((r=gacExpression_Recursive(AST_NODE(AST_NODE(_node->children[1])->children[1]),_lc,r))==ZS_UNDEFINED_IDX){ return ZS_UNDEFINED_IDX;}
 
 		asm_op_jmp_end->index_op1 = getCurrentInstructionIndex()+1;
 		asm_op_jmp_end->index_op2 = getCurrentStatmentIndex();
@@ -2276,11 +2247,8 @@ namespace zetscript{
 		return r;
 	}
 
-	bool CCompiler::gacSwitch(short idxAstNode, CScope * _lc){
+	bool CCompiler::gacSwitch(PASTNode _node, CScope * _lc){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != SWITCH_KEYWORD){THROW_RUNTIME_ERROR("node is not SWITCH keyword type");return false;}
 		if(_node->children.size() != 2){THROW_RUNTIME_ERROR("SWITCH node has no 2 nodes");return false;}
@@ -2390,7 +2358,7 @@ namespace zetscript{
 					 // CASE : write CMP + JT
 
 						// load case X:
-						insertLoadValueInstruction(current_node->idxAstNode,_lc);
+						insertLoadValueInstruction(current_node,_lc);
 
 						// is equal ? ==
 						if(!insertOperatorInstruction(LOGIC_EQUAL_PUNCTUATOR,0, error_str, switch_value_index ,getCurrentInstructionIndex())){
@@ -2677,12 +2645,9 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::gacVar(short idxAstNode, CScope * _lc){
-
-		PASTNode _node = AST_NODE(idxAstNode);
+	bool CCompiler::gacVar(PASTNode _node, CScope * _lc){
 
 
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != VAR_KEYWORD){THROW_RUNTIME_ERROR("node is not VAR keyword type");return false;}
 
@@ -2720,7 +2685,7 @@ namespace zetscript{
 
 				//for(unsigned i = 0 ; i < _node->children.size(); i++){ // init all requested vars...
 				if(node_var->children.size()==1){
-					if(!gacExpression(node_var->children[0], _lc)){
+					if(!gacExpression(AST_NODE(node_var->children[0]), _lc)){
 						return false;
 					}
 				}
@@ -2729,14 +2694,13 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::gacKeyword(short idxAstNode, CScope * _lc){
+	bool CCompiler::gacKeyword(PASTNode _node, CScope * _lc){
 
-		PASTNode _node = AST_NODE(idxAstNode);
+
 		CScope * _scope_node = NULL;//SCOPE_NODE(_node->idxScope);
 		bool is_function_member;
 
 		CScriptFunctionObject *function_object=NULL;
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 
 		switch(_node->keyword_info){
@@ -2744,25 +2708,31 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Keyword [ %s ] not implemented yet",CASTNode::defined_keyword[_node->keyword_info].str);
 			break;
 		case KEYWORD_TYPE::CLASS_KEYWORD:
-			return gacClass(_node->idxAstNode, _lc);
+			return gacClass(_node, _lc);
 			break;
 		case KEYWORD_TYPE::SWITCH_KEYWORD:
-			return gacSwitch(_node->idxAstNode, _lc);
+			return gacSwitch(_node, _lc);
 			break;
 		case KEYWORD_TYPE::FOR_KEYWORD:
-			return gacFor(_node->idxAstNode, _lc);
+			return gacFor(_node, _lc);
 			break;
 		case KEYWORD_TYPE::WHILE_KEYWORD:
-			return gacWhile(_node->idxAstNode, _lc);
+			return gacWhile(_node, _lc);
 			break;
 		case KEYWORD_TYPE::DO_WHILE_KEYWORD:
-			return gacDoWhile(_node->idxAstNode, _lc);
+			return gacDoWhile(_node, _lc);
 			break;
 		case KEYWORD_TYPE::IF_KEYWORD:
-			return gacIf(_node->idxAstNode, _lc);
+			return gacIf(_node, _lc);
+			break;
+		case KEYWORD_TYPE::BREAK_KEYWORD:
+			return gacBreak(_node, _lc);
+			break;
+		case KEYWORD_TYPE::CONTINUE_KEYWORD:
+			return gacContinue(_node, _lc);
 			break;
 		case KEYWORD_TYPE::VAR_KEYWORD:
-			return gacVar(_node->idxAstNode, _lc);
+			return gacVar(_node, _lc);
 			break;
 		case KEYWORD_TYPE::FUNCTION_KEYWORD: // don't compile function. It will compiled later, after main body
 
@@ -2778,7 +2748,7 @@ namespace zetscript{
 					return false;
 				}
 
-				if(!registerFunctionClassSymbol(idxAstNode ,class_node->symbol_value,sc)){
+				if(!registerFunctionClassSymbol(_node->idxAstNode ,class_node->symbol_value,sc)){
 						return false;
 				}
 
@@ -2795,22 +2765,19 @@ namespace zetscript{
 					return false;
 				}
 
-				return gacFunctionOrOperator(_node->idxAstNode, _lc,function_object);
+				return gacFunctionOrOperator(_node, _lc,function_object);
 			}
 			break;
 		case KEYWORD_TYPE::RETURN_KEYWORD:
-			return gacReturn(_node->idxAstNode, _lc);
+			return gacReturn(_node, _lc);
 			break;
 		}
 
 		return false;
 	}
 
-	bool CCompiler::gacBody(short idxAstNode, CScope * _lc){
+	bool CCompiler::gacBody(PASTNode _node, CScope * _lc){
 
-		PASTNode _node = AST_NODE(idxAstNode);
-
-		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != BODY_BLOCK_NODE ){THROW_RUNTIME_ERROR("node is not BODY type or null");return false;}
 
 
@@ -2837,9 +2804,9 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::gacExpression(short idxAstNode, CScope *_lc,int index_instruction){
+	bool CCompiler::gacExpression(PASTNode _node, CScope *_lc,int index_instruction){
 
-		PASTNode _node = AST_NODE(idxAstNode);
+
 
 		if(index_instruction == ZS_UNDEFINED_IDX){ // create new statment
 			//int index_instruction=0;
@@ -2851,7 +2818,7 @@ namespace zetscript{
 		if(_node == NULL) {THROW_RUNTIME_ERROR("NULL node");return false;}
 		if(_node->node_type != EXPRESSION_NODE){THROW_RUNTIME_ERROR("node is not Expression");return false;}
 
-		int r = gacExpression_Recursive(_node->children[0], _lc,index_instruction);
+		int r = gacExpression_Recursive(AST_NODE(_node->children[0]), _lc,index_instruction);
 
 		return r!= ZS_UNDEFINED_IDX;
 	}
@@ -2869,28 +2836,28 @@ namespace zetscript{
 					break;
 				case DELETE_OBJECT_NODE:
 					zs_print_debug_cr("DELETE NODE");
-					return gacDelete(_node->idxAstNode, _lc);
+					return gacDelete(_node, _lc);
 					break;
 				case EXPRESSION_NODE: // in fact is EXPRESSION NODE
 					zs_print_debug_cr("EXPRESSION_NODE");
-					return gacExpression(_node->idxAstNode, _lc);
+					return gacExpression(_node, _lc);
 					break;
 				case GROUP_CASES_NODE:
 					zs_print_debug_cr("GROUP_CASES_NODE");
 					break;
 				case KEYWORD_NODE:
 					zs_print_debug_cr("KEYWORD_NODE %s",CASTNode::defined_keyword[_node->keyword_info].str);
-					return gacKeyword(_node->idxAstNode, _lc);
+					return gacKeyword(_node, _lc);
 					break;
 				case BODY_BLOCK_NODE:
 					zs_print_debug_cr("BODY_BLOCK_NODE");
-					return gacBody(_node->idxAstNode, SCOPE_NODE(_node->idxScope)); // we pass scope node
+					return gacBody(_node, SCOPE_NODE(_node->idxScope)); // we pass scope node
 					break;
 				case POST_FOR_NODE:
 				case CONDITIONAL_NODE:
 					zs_print_debug_cr("%s",_node->node_type == CONDITIONAL_NODE ? "CONDITIONAL_NODE":"POST_FOR_NODE");
 					if(_node->children.size() == 1){
-						return gacExpression(_node->children[0], _lc);
+						return gacExpression(AST_NODE(_node->children[0]), _lc);
 					}else{
 						THROW_RUNTIME_ERROR("Expected nodes for %i",_node->node_type);
 					}
@@ -2919,9 +2886,9 @@ namespace zetscript{
 
 	void CCompiler::pushFunction(short idxAstNode,CScriptFunctionObject *sf){
 
-		PASTNode _node =AST_NODE(idxAstNode);
+
 		stk_scriptFunction.push_back(m_currentFunctionInfo=new tInfoFunctionCompile(sf));
-		this->m_treescope = SCOPE_NODE(_node->idxScope);
+		this->m_treescope = SCOPE_NODE(AST_NODE(idxAstNode)->idxScope);
 	}
 
 	void CCompiler::popFunction(bool save_statment_op){
@@ -2974,7 +2941,6 @@ namespace zetscript{
 		}
 	}
 
-
 	void CCompiler::pushBreakInstructionScope(){
 		tBreakInstructionScope bis;
 		stk_breakInstructionsScope.push_back(bis);
@@ -3004,15 +2970,8 @@ namespace zetscript{
 		}
 	}
 
+	bool CCompiler::compile_body(PASTNode _node ,CScriptFunctionObject *sf){
 
-	bool CCompiler::compile_body(short idxAstParentNode ,CScriptFunctionObject *sf){
-
-		PASTNode _node =AST_NODE(idxAstParentNode);
-
-		if(_node == NULL){
-			THROW_RUNTIME_ERROR("NULL node");
-			return false;
-		}
 
 		if(_node->node_type == NODE_TYPE::BODY_BLOCK_NODE ){
 

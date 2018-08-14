@@ -190,53 +190,44 @@ enum ASM_OPERATOR
 
 	INVALID_OP=-1,
 	END_STATMENT = 0,
-	STORE, // mov expression to var
 	LOAD, // primitive value like number/string or boolean...
+	VGET, // vector access after each index is processed...
+	STORE, // mov expression to var
+	VPUSH, // Value push for vector
+	PUSH_ATTR,
 	EQU,  // ==
 	NOT_EQU,  // !=
 	LT,  // <
 	LTE,  // <=
-	NOT, // !
 	GT,  // >
 	GTE, // >=
-	ADD, // +
-	NEG, // -a
 	LOGIC_AND, // &&
 	LOGIC_OR,  // ||
-	DIV, // /
+	NOT, // !
+	NEG, // -a
+	ADD, // +
 	MUL, // *
+	DIV, // /
 	MOD,  // %
 	AND, // bitwise logic and
 	OR, // bitwise logic or
 	XOR, // logic xor
 	SHL, // shift left
 	SHR, // shift right
-	// special internal ops...
 	JMP,
+	INSTANCEOF,
 	JNT, // goto if not true ... goes end to conditional.
 	JT, // goto if true ... goes end to conditional.
 	CALL, // calling function after all of args are processed...
-	PUSH, // push arg
-	//		START_ARG, // set instruction as starting args
-	VGET, // vector access after each index is processed...
-
-	VPUSH, // Value push for vector
-	VPOP, // Value pop for vector
-
-	DECL_VEC, // Vector object
-	RET, // ret instruction ..
-
 	NEW, // new operator...
 	DELETE_OP,
-	OBJECT_ACCESS, // object access .
-	INSTANCEOF,
-	//SAVE_I, // save current instruction...
-	//LOAD_I, // load value that points saved instruction...
-
+	DECL_VEC, // Vector object
+	DECL_STRUCT,
+	RET, // ret instruction ..
 	PUSH_SCOPE,
 	POP_SCOPE,
-	DECL_STRUCT,
-	PUSH_ATTR,
+
+
 	MAX_OPERATORS
 
 };

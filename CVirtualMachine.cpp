@@ -1664,9 +1664,9 @@ if(aux_function_info == NULL){\
 				const unsigned char index_op1=instruction->index_op1;
 
 				switch(operator_type){
-				default:
-					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
-					RETURN_ERROR;
+				//default:
+				//	writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+				//	RETURN_ERROR;
 				case END_STATMENT:
 					goto lbl_exit_statment;
 				case LOAD:
@@ -2702,7 +2702,7 @@ if(aux_function_info == NULL){\
 
 			 case POP_SCOPE:
 					POP_SCOPE(NULL);//instruction->index_op1);
-				 	break;
+				 	continue;
 
 				//
 				// END OPERATOR MANAGEMENT
@@ -2710,7 +2710,13 @@ if(aux_function_info == NULL){\
 				//-----------------------------------------------------------------------------------------------------------------------
 
 				}
+
+				writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+				RETURN_ERROR;
+
+
 			 }
+
 
 
 

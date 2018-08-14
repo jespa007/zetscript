@@ -1,5 +1,6 @@
 var v=[1,2,3,4];
 
+
 var i=0,j=0;
 
 for(
@@ -24,6 +25,19 @@ for(
 	print("e:"+e+" i:"+i+" j:"+j+" _for_in_index1:"+_for_in_index1);	
 	
 }
+
+i=0;
+
+for(;;){
+	
+	if(i>10){
+		break;
+	}
+	
+	i++;
+	
+}
+
 /*
 i=0;
 switch(i){

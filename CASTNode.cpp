@@ -1241,7 +1241,6 @@ namespace zetscript{
 
 		if(try_array_or_function_access){// try array/function access
 			if((aux = functionArrayAccess(aux, m_line,scope_info,ast_node_to_be_evaluated,parent)) == NULL){
-				writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Cannot parse 2");
 				return NULL;
 			}
 
@@ -3667,6 +3666,11 @@ namespace zetscript{
 				if(_ast->idxAstParent != ZS_UNDEFINED_IDX){
 					PASTNode parent = AST_NODE(_ast->idxAstParent);
 
+
+					if( parent->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD){
+						return NULL;
+					}
+
 					if(parent->keyword_info == KEYWORD_TYPE::FOREACH_KEYWORD
 								|| parent->keyword_info == KEYWORD_TYPE::FOR_KEYWORD
 								||parent->keyword_info == KEYWORD_TYPE::WHILE_KEYWORD
@@ -3763,33 +3767,35 @@ namespace zetscript{
 				return aux_p+1;
 
 			}else if(keyw == KEYWORD_TYPE::BREAK_KEYWORD){
-				PASTNode break_ast;
-				if((break_ast = findConditionForBreak(scope_info)) != NULL){ // ok break is valid in current scope...
-					if(*aux_p != ';'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected ';'");
+
+
+				if(ast_node_to_be_evaluated!=NULL){
+					PASTNode break_ast;
+					if((break_ast = findConditionForBreak(scope_info)) == NULL){ // ok break is valid in current scope...
+
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"break\" allowed within loop or case-switch statements");
 						error = true;
 						return NULL;
 					}
 
-					if(ast_node_to_be_evaluated!=NULL){
-						*ast_node_to_be_evaluated = newASTNode();
-						(*ast_node_to_be_evaluated)->node_type=NODE_TYPE::KEYWORD_NODE;
-						(*ast_node_to_be_evaluated)->keyword_info=keyw;
-					}
-
-					return aux_p+1;
+					*ast_node_to_be_evaluated = newASTNode();
+					(*ast_node_to_be_evaluated)->node_type=NODE_TYPE::KEYWORD_NODE;
+					(*ast_node_to_be_evaluated)->keyword_info=keyw;
 				}
-				else{
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"break\" allowed within loop or case-switch statements");
+
+				if(*aux_p != ';'){
+					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected ';'");
 					error = true;
 					return NULL;
 				}
+
+				return aux_p+1;
 			}else if(keyw == KEYWORD_TYPE::CONTINUE_KEYWORD){
 
-				PASTNode continue_ast;
-				if((continue_ast = findConditionForContinue(scope_info)) != NULL){ // ok break is valid in current scope...
-					if(*aux_p != ';'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected ';'");
+				if(ast_node_to_be_evaluated!=NULL){
+					PASTNode continue_ast;
+					if((continue_ast = findConditionForContinue(scope_info)) == NULL){ // ok break is valid in current scope...
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"continue\" allowed within for or foreach loop");
 						error = true;
 						return NULL;
 					}
@@ -3799,15 +3805,17 @@ namespace zetscript{
 						(*ast_node_to_be_evaluated)->node_type=NODE_TYPE::KEYWORD_NODE;
 						(*ast_node_to_be_evaluated)->keyword_info=keyw;
 					}
-
-					return aux_p+1;
-
 				}
-				else{
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"continue\" allowed within for or foreach loop");
+
+				if(*aux_p != ';'){
+					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected ';'");
 					error = true;
 					return NULL;
 				}
+
+
+				return aux_p+1;
+
 			}
 
 			// check if non named function...

@@ -167,8 +167,8 @@ namespace zetscript{
 		/**
 		 * Compile class struct main ast node with class base object info to store instruction related with function information.
 		 */
-		bool compile_class(short idxAstNode, tFunctionInfo *sf);
-		bool compile_body(short idxAstNode, CScriptFunctionObject *sf);
+
+		bool compile_body(PASTNode _node, CScriptFunctionObject *sf);
 
 
 		//bool parseExpression(const char *expression_str, int & m_line,CScriptFunctionObject * sf, CScope *currentEvaluatingScope);
@@ -177,7 +177,7 @@ namespace zetscript{
 		 */
 		tInfoStatementOpCompiler  *newStatment();
 		void insertStringConstantValueInstruction(short idxAstNode, const string & v);
-		bool insertLoadValueInstruction(short idxAstNode, CScope * _lc, tInfoAsmOpCompiler **iao_result=NULL);
+		bool insertLoadValueInstruction(PASTNode _node, CScope * _lc, tInfoAsmOpCompiler **iao_result=NULL);
 		bool insertMovVarInstruction(short idxAstNode, int left_index, int right_index);
 
 
@@ -260,21 +260,21 @@ namespace zetscript{
 		ASM_OPERATOR puntuator2instruction(PUNCTUATOR_TYPE  op);
 		unsigned int post_operator2instruction_property(PUNCTUATOR_TYPE op);
 
-		int gacExpression_FunctionOrArrayAccess(short idxAstNode, CScope *_lc);
-		int gacExpression_ArrayObject_Recursive(short idxAstNode, CScope *_lc);
-		bool gacExpression_ArrayObject(short idxAstNode, CScope *_lc);
-		bool gacExpression_FunctionObject(short idxAstNode, CScope *_lc);
-		int gacExpression_FunctionAccess(short idxAstNode, CScope *_lc);
+		int gacExpression_FunctionOrArrayAccess(PASTNode _node, CScope *_lc);
 
-		int gacExpression_Struct(short idxAstNode, CScope *_lc);
-		int gacExpression_StructAttribute(short idxAstNode, CScope *_lc, int index_calling_object);
+		bool gacExpression_ArrayObject(PASTNode _node, CScope *_lc);
+		bool gacExpression_FunctionObject(PASTNode _node, CScope *_lc);
+		int gacExpression_FunctionAccess(PASTNode _node, CScope *_lc);
+
+		int gacExpression_Struct(PASTNode _node, CScope *_lc);
+		int gacExpression_StructAttribute(PASTNode _node, CScope *_lc, int index_calling_object);
 
 
-		int gacExpression_ArrayAccess(short idxAstNode, CScope *_lc);
-		int  gacExpression_Recursive(short idxAstNode, CScope * _lc, int & numreg);
-		bool  gacExpression(short idxAstNode, CScope * _lc,int index_instruction=ZS_UNDEFINED_IDX);
+		int gacExpression_ArrayAccess(PASTNode _node, CScope *_lc);
+		int  gacExpression_Recursive(PASTNode _node, CScope * _lc, int & numreg);
+		bool  gacExpression(PASTNode _node, CScope * _lc,int index_instruction=ZS_UNDEFINED_IDX);
 
-		bool gacKeyword(short idxAstNode, CScope * _lc);
+		bool gacKeyword(PASTNode _node, CScope * _lc);
 
 		/**
 		 * Adds class info into factory
@@ -282,22 +282,26 @@ namespace zetscript{
 		bool registerFunctionClassSymbol(short idx_var_node, const string & class_name,CScriptClass * current_class);
 		bool registerVariableClassSymbol(short idx_node_fun, const string & class_name,CScriptClass * current_class);
 		bool doRegisterVariableSymbolsClass(const string & class_name, CScriptClass *current_class);
-		bool gacClass(short idxAstNode, CScope * _lc);
+		bool gacClass(PASTNode _node, CScope * _lc);
 
-		int gacNew(short idxAstNode, CScope * _lc);
-		int gacDelete(short idxAstNode, CScope * _lc);
+		int gacNew(PASTNode _node, CScope * _lc);
+		int gacDelete(PASTNode _node, CScope * _lc);
 
-		bool gacFor(short idxAstNode, CScope * _lc);
-		bool gacVar(short idxAstNode, CScope * _lc);
-		bool gacWhile(short idxAstNode, CScope * _lc);
-		bool gacDoWhile(short idxAstNode, CScope * _lc);
+		bool gacBreak(PASTNode _node, CScope * _lc);
+		bool gacContinue(PASTNode _node, CScope * _lc);
 
-		bool gacFunctionOrOperator(short idxAstNode, CScope * _lc, CScriptFunctionObject *irfs);
-		bool gacReturn(short idxAstNode, CScope * _lc);
-		bool gacIf(short idxAstNode, CScope * _lc);
-		int  gacInlineIf(short idxAstNode, CScope * _lc, int & instruction);
-		bool gacSwitch(short idxAstNode, CScope * _lc);
-		bool gacBody(short idxAstNode, CScope * _lc);
+
+		bool gacFor(PASTNode _node, CScope * _lc);
+		bool gacVar(PASTNode _node, CScope * _lc);
+		bool gacWhile(PASTNode _node, CScope * _lc);
+		bool gacDoWhile(PASTNode _node, CScope * _lc);
+
+		bool gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs);
+		bool gacReturn(PASTNode _node, CScope * _lc);
+		bool gacIf(PASTNode _node, CScope * _lc);
+		int  gacInlineIf(PASTNode _node, CScope * _lc, int & instruction);
+		bool gacSwitch(PASTNode _node, CScope * _lc);
+		bool gacBody(PASTNode _node, CScope * _lc);
 
 
 		void pushFunction(short idxAstNode,CScriptFunctionObject *sf);
