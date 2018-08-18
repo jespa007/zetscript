@@ -16,7 +16,7 @@ namespace zetscript{
 		CStructScriptVariable();
 
 		virtual bool unrefSharedPtr();
-		virtual bool initSharedPtr(bool is_assigned=false);
+
 
 
 		int size();

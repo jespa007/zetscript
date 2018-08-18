@@ -3397,15 +3397,7 @@ namespace zetscript{
 
 						is_class_member=true;
 
-						if(ast_node_to_be_evaluated!=NULL){
 
-							if((vars_collection_node = CASTNode::newASTNode()) == NULL) return NULL;
-							// save symbol in the node ...
-							(vars_collection_node)->idxScope = idxScope;
-							(vars_collection_node)->line_value = m_line;
-
-							AST_NODE(class_node->children[0])->children.push_back(vars_collection_node->idxAstNode);
-						}
 					}
 					else{ // causal variable
 						if(error){

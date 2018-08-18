@@ -190,7 +190,7 @@ namespace zetscript{
 		// PRINT ASM INFO
 		char print_aux_load_value[1024*8];
 		const char * getStrMovVar(tInfoAsmOp * iao);
-		const char * getStrTypeLoadValue(PtrStatment m_listStatements,int current_statment, int current_instruction);
+		const char * getStrTypeLoadValue(PtrAsmOp m_listStatements, int current_instruction);
 		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode_Recursive(tFunctionInfo *fs);
 		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(tFunctionInfo *fs);
 		ZETSCRIPT_MODULE_EXPORT void printGeneratedCodeAllClasses();
@@ -218,11 +218,11 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT void parse(const string & string,const char *filename_ref=NULL);
 		ZETSCRIPT_MODULE_EXPORT void parse_file(const char * filename);
-		ZETSCRIPT_MODULE_EXPORT void compile();
+		ZETSCRIPT_MODULE_EXPORT void compile(bool show_bytecode=false);
 		ZETSCRIPT_MODULE_EXPORT void execute();
 
-		ZETSCRIPT_MODULE_EXPORT void eval(const string & string, bool execute=true, const char *filename_ref=NULL);
-		ZETSCRIPT_MODULE_EXPORT void eval_file(const char * filename,bool execute=true);
+		ZETSCRIPT_MODULE_EXPORT void eval(const string & string, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
+		ZETSCRIPT_MODULE_EXPORT void eval_file(const char * filename,bool execute=true,bool show_bytecode=false);
 
 
 		ZETSCRIPT_MODULE_EXPORT static void destroy();

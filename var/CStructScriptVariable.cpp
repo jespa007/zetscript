@@ -47,17 +47,7 @@ namespace zetscript{
 		return false;
 	}
 
-	bool CStructScriptVariable::initSharedPtr(bool is_assigned){ // ref every element in list ...
-		if(CScriptVariable::initSharedPtr(is_assigned)){
 
-			for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-				writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"struct symbol.size() > 0. internal error!");
-				return false;
-			}
-			return true;
-		}
-		return false;
-	}
 
 	void CStructScriptVariable::add_attr(const char *attr_name, tStackElement  * v){
 		if(addVariableSymbol(string(attr_name),CURRENT_VM->getCurrentAstNodeCall_C_Function(),v)==NULL){

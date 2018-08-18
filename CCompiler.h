@@ -81,10 +81,10 @@ namespace zetscript{
 			unsigned int runtime_prop;
 
 			tInfoAsmOpCompiler(){
-				operator_type=ASM_OPERATOR::END_STATMENT;
-				index_op1=-1;
-				index_op2=-1;
-				idxAstNode=-1;
+				operator_type=ASM_OPERATOR::END_FUNCTION;
+				index_op1=ZS_UNDEFINED_IDX;
+				index_op2=ZS_UNDEFINED_IDX;
+				idxAstNode=ZS_UNDEFINED_IDX;
 
 				var_type=0;
 				pre_post_op_type=0;
@@ -94,15 +94,12 @@ namespace zetscript{
 
 		};
 
-		struct tInfoStatementOpCompiler{
-
+		typedef struct {
 			vector<tInfoAsmOpCompiler *> asm_op;
-		};
-
-		typedef tInfoStatementOpCompiler tContinueInstructionScope,tBreakInstructionScope;
+		}tContinueInstructionScope,tBreakInstructionScope;
 
 		struct tInfoFunctionCompile{
-			vector<tInfoStatementOpCompiler> 		stament;
+			vector<tInfoAsmOpCompiler *> 			asm_op;
 			CScriptFunctionObject 				*  	function_info_object;
 
 			tInfoFunctionCompile(CScriptFunctionObject	* _function_info_object){
@@ -110,11 +107,11 @@ namespace zetscript{
 			}
 
 			~tInfoFunctionCompile(){
-				for(unsigned i = 0; i < stament.size(); i++){
-					for(unsigned j = 0;  j< stament[i].asm_op.size();j++){
-						delete stament[i].asm_op[j];
-					}
+
+				for(unsigned j = 0;  j< asm_op.size();j++){
+					delete asm_op[j];
 				}
+
 			}
 		};
 
@@ -128,10 +125,6 @@ namespace zetscript{
 		}tDebugInformation;
 
 		vector<tDebugInformation>	m_debugInfo;
-
-
-
-		void insertDebugInformation(int _asm_stament_idx, const char *src_str);
 
 
 		// DEBUG TOOLS
@@ -175,7 +168,7 @@ namespace zetscript{
 		/**
 		 * Load value or symbol and insert asm operation at current statment.
 		 */
-		tInfoStatementOpCompiler  *newStatment();
+		//tInfoStatementOpCompiler  *newStatment();
 		void insertStringConstantValueInstruction(short idxAstNode, const string & v);
 		bool insertLoadValueInstruction(PASTNode _node, CScope * _lc, tInfoAsmOpCompiler **iao_result=NULL);
 		bool insertMovVarInstruction(short idxAstNode, int left_index, int right_index);
@@ -224,7 +217,7 @@ namespace zetscript{
 		 * index_call: index where take function ref from.
 		 */
 		void insert_CallFunction_Instruction(short idxAstNode,int index_call,int index_object=ZS_UNDEFINED_IDX);
-		void insertRet(short idxAstNode,int index);
+		void insertRet(short idxAstNode);
 
 		/**
 		 * Class instructions.
@@ -234,45 +227,38 @@ namespace zetscript{
 		bool insert_DeleteObject_Instruction(short idxAstNode);
 		bool insertObjectMemberAccessFrom(short idxAstNode, int ref_node_index);
 
-		//bool insert_DeleteObject_Instruction(short idxAstNode, const string & class_name);
-
-
 		tInfoAsmOpCompiler * getLastInsertedInfoAsmOpCompiler();
-		bool insertOperatorInstruction(PUNCTUATOR_TYPE op, short idxAstNode, string & error_str, int left, int right=ZS_UNDEFINED_IDX);
+		bool insertOperatorInstruction(PUNCTUATOR_TYPE op, short idxAstNode, string & error_str);
 
 
 		string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
 
 		bool *getObjectResultCurrentStatmentAsBoolean();
 		int getCurrentInstructionIndex();
-		int getCurrentStatmentIndex();
 
-
-		bool insertPushScopeInstruction(short idxAstNode,int scope_idx, bool save_break=false);
-		void insertPopScopeInstruction(short idxAstNode);
-
+		bool insertPushScopeInstruction(short idxAstNode,int scope_idx, char save_breakpoint=0);
+		void insertPopScopeInstruction(short idxAstNode, char restore_breakpoint=0);
 
 		void insert_DeclStruct_Instruction(short idxAstNode);
-		void insert_PushAttribute_Instruction(short idxAstNode,int ref_object,int ref_result_expression);
+		void insert_PushAttribute_Instruction(short idxAstNode);
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// COMPILE ASSEMBLE CODE (GAC)
 
 		ASM_OPERATOR puntuator2instruction(PUNCTUATOR_TYPE  op);
 		unsigned int post_operator2instruction_property(PUNCTUATOR_TYPE op);
 
-		int gacExpression_FunctionOrArrayAccess(PASTNode _node, CScope *_lc);
+		bool gacExpression_FunctionOrArrayAccess(PASTNode _node, CScope *_lc);
 
 		bool gacExpression_ArrayObject(PASTNode _node, CScope *_lc);
 		bool gacExpression_FunctionObject(PASTNode _node, CScope *_lc);
-		int gacExpression_FunctionAccess(PASTNode _node, CScope *_lc);
+		bool gacExpression_FunctionAccess(PASTNode _node, CScope *_lc);
 
-		int gacExpression_Struct(PASTNode _node, CScope *_lc);
-		int gacExpression_StructAttribute(PASTNode _node, CScope *_lc, int index_calling_object);
+		bool gacExpression_Struct(PASTNode _node, CScope *_lc);
+		bool gacExpression_StructAttribute(PASTNode _node, CScope *_lc);
 
-
-		int gacExpression_ArrayAccess(PASTNode _node, CScope *_lc);
-		int  gacExpression_Recursive(PASTNode _node, CScope * _lc, int & numreg);
-		bool  gacExpression(PASTNode _node, CScope * _lc,int index_instruction=ZS_UNDEFINED_IDX);
+		bool  gacExpression_ArrayAccess(PASTNode _node, CScope *_lc);
+		bool  gacExpression_Recursive(PASTNode _node, CScope * _lc);
+		bool  gacExpression(PASTNode _node, CScope * _lc);
 
 		bool gacKeyword(PASTNode _node, CScope * _lc);
 
@@ -284,12 +270,11 @@ namespace zetscript{
 		bool doRegisterVariableSymbolsClass(const string & class_name, CScriptClass *current_class);
 		bool gacClass(PASTNode _node, CScope * _lc);
 
-		int gacNew(PASTNode _node, CScope * _lc);
-		int gacDelete(PASTNode _node, CScope * _lc);
+		bool gacNew(PASTNode _node, CScope * _lc);
+		bool gacDelete(PASTNode _node, CScope * _lc);
 
 		bool gacBreak(PASTNode _node, CScope * _lc);
 		bool gacContinue(PASTNode _node, CScope * _lc);
-
 
 		bool gacFor(PASTNode _node, CScope * _lc);
 		bool gacVar(PASTNode _node, CScope * _lc);
@@ -299,7 +284,7 @@ namespace zetscript{
 		bool gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs);
 		bool gacReturn(PASTNode _node, CScope * _lc);
 		bool gacIf(PASTNode _node, CScope * _lc);
-		int  gacInlineIf(PASTNode _node, CScope * _lc, int & instruction);
+		bool  gacInlineIf(PASTNode _node, CScope * _lc);
 		bool gacSwitch(PASTNode _node, CScope * _lc);
 		bool gacBody(PASTNode _node, CScope * _lc);
 
@@ -307,7 +292,7 @@ namespace zetscript{
 		void pushFunction(short idxAstNode,CScriptFunctionObject *sf);
 
 		/// popFunction pop current function scope and optionally save its compiled statment with save_statment_op=true
-		void popFunction(bool save_statment_op = true);
+		void popFunction(bool save_asm_op = true);
 
 		bool generateAsmCode_Recursive(short idxAstNode);
 

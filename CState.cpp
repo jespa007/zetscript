@@ -128,7 +128,7 @@ namespace zetscript{
 		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
 			CScriptFunctionObject *sfo = new CScriptFunctionObject();
 			*sfo = *vec_script_function_object_src->at(i);
-			sfo->object_info.statment_op=NULL;
+			sfo->object_info.asm_op=NULL;
 			sfo->object_info.info_var_scope=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
@@ -212,7 +212,7 @@ namespace zetscript{
 		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
 			CScriptFunctionObject *sfo = new CScriptFunctionObject();
 			*sfo = *vec_script_function_object_src->at(i);
-			sfo->object_info.statment_op=NULL;
+			sfo->object_info.asm_op=NULL;
 			sfo->object_info.info_var_scope=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
@@ -364,14 +364,14 @@ namespace zetscript{
 
 			if(!end){
 
-				if (info_function->object_info.statment_op != NULL) {
-					for (PtrStatment stat = info_function->object_info.statment_op; *stat != NULL; stat++) {
+				if (info_function->object_info.asm_op != NULL) {
+					//for (PtrAsmOp stat = info_function->object_info.asm_op; *stat != NULL; stat++) {
 
-						free(*stat);
-					}
+						//free(*stat);
+					//}
 
-					free(info_function->object_info.statment_op);
-					info_function->object_info.statment_op=NULL;
+					free(info_function->object_info.asm_op);
+					info_function->object_info.asm_op=NULL;
 				}
 
 				// unloading scope ...
@@ -448,14 +448,10 @@ namespace zetscript{
 			zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_ref.c_str());
 			CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
 
-			if (info_function->object_info.statment_op != NULL) {
-				for (PtrStatment stat = info_function->object_info.statment_op; *stat != NULL; stat++) {
+			if (info_function->object_info.asm_op != NULL) {
 
-					free(*stat);
-				}
-
-				free(info_function->object_info.statment_op);
-				info_function->object_info.statment_op=NULL;
+				free(info_function->object_info.asm_op);
+				info_function->object_info.asm_op=NULL;
 			}
 
 			// unloading scope ...

@@ -127,9 +127,9 @@ namespace zetscript{
 		return print_aux_load_value;
 	 }
 
-	 const char * CZetScript::getStrTypeLoadValue(PtrStatment m_listStatements,int current_statment, int current_instruction){
+	 const char * CZetScript::getStrTypeLoadValue(PtrAsmOp m_listStatements, int current_instruction){
 
-		tInfoAsmOp * iao =&m_listStatements[current_statment][current_instruction];
+		tInfoAsmOp * iao =&m_listStatements[current_instruction];
 
 		if(iao->operator_type != LOAD){
 			return "ERROR";
@@ -148,10 +148,8 @@ namespace zetscript{
 		if(iao->instruction_properties & INS_PROPERTY_ACCESS_SCOPE){
 
 			sprintf(object_access,
-					"[%02i:"
-					 "%02i"
-					"]."
-					,current_statment
+					"[%03i]."
+
 					,(int)iao->index_op2);
 		}
 		else if(iao->instruction_properties & INS_PROPERTY_THIS_SCOPE){
@@ -186,156 +184,108 @@ namespace zetscript{
 	 void CZetScript::printGeneratedCode_Recursive(tFunctionInfo *fs){
 
 		// PRE: it should printed after compile and updateReferences.
-
-		//tInfoStatementOp * m_listStatements = fs->statment_op;
 		string pre="";
 		string post="";
-		unsigned idx_statment=0;
 
-		if(fs->statment_op != NULL){
+		if(fs->asm_op != NULL){
 
+			unsigned idx_instruction=0;
+			for(tInfoAsmOp * asm_op=fs->asm_op; asm_op->operator_type!= END_FUNCTION; asm_op++,idx_instruction++){
 
-			for(PtrStatment stat = fs->statment_op; *stat != NULL; stat++,idx_statment++){
+				int n_ops=0;
+				int index_op1 = asm_op->index_op1;
+				int index_op2 = asm_op->index_op2;
 
+				if(index_op1 != -1)
+					n_ops++;
 
-				//printf("\n[%s]\n\n","file.zs");
-				unsigned idx_instruction=0;
-				for(tInfoAsmOp * asm_op_statment=*stat; asm_op_statment->operator_type!= END_STATMENT; asm_op_statment++,idx_instruction++){
+				 if(index_op2 != -1)
+					 n_ops++;
 
-					int n_ops=0;
-					int index_op1 = asm_op_statment->index_op1;
-					int index_op2 = asm_op_statment->index_op2;
+				 pre="";
+				 post="";
 
-					if(index_op1 != -1)
-						n_ops++;
-
-					 if(index_op2 != -1)
-						 n_ops++;
-
-					 pre="";
-					 post="";
-
-						switch(GET_INS_PROPERTY_PRE_POST_OP(asm_op_statment->instruction_properties)){
-						case INS_PROPERTY_PRE_NEG:
-							pre="-";
-							break;
-						case INS_PROPERTY_PRE_INC:
-							pre="++";
-							break;
-						case INS_PROPERTY_PRE_DEC:
-							pre="--";
-							break;
-						case INS_PROPERTY_POST_INC:
-							post="++";
-							break;
-						case INS_PROPERTY_POST_DEC:
-							post="--";
-							break;
-						default:
-							// check whether is constant and numeric
-							if(asm_op_statment->operator_type==ASM_OPERATOR::LOAD && asm_op_statment->index_op1==LOAD_TYPE_CONSTANT){
-								CCompiler::tInfoConstantValue *icv = (((CCompiler::tInfoConstantValue *)asm_op_statment->index_op2));
-								float n;
-
-								// change the sign
-								switch(icv->properties){
-								default:
-									break;
-								case STK_PROPERTY_TYPE_INTEGER:
-									if(((intptr_t)icv->stkValue)<0){
-										pre="-";
-									}
-									break;
-								case STK_PROPERTY_TYPE_NUMBER:
-									memcpy(&n,&icv->stkValue,sizeof(float));
-									if(n<0){
-										pre="-";
-									}
-									break;
-								}
-							}
-							break;
-
-						}
-					switch(asm_op_statment->operator_type){
-					case  PUSH_ATTR:
-
-						printf("[%02i:%02i]\t%s\tSTRUCT[%02i:%02i],[%02i:%02i],[%02i:"
-								"%02i]"
-								"\n"
-								,
-								idx_statment,idx_instruction,
-								CCompiler::def_operator[asm_op_statment->operator_type].op_str,
-
-								idx_statment,asm_op_statment->index_op1,
-								idx_statment,idx_instruction-1, // lat operand must be a string constant ...
-								(int)idx_statment
-								,(int)asm_op_statment->index_op2);
+					switch(GET_INS_PROPERTY_PRE_POST_OP(asm_op->instruction_properties)){
+					case INS_PROPERTY_PRE_NEG:
+						pre="-";
 						break;
-
-					case  NEW:
-						printf("[%02i:%02i]\t%s\t%s\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,CScriptClass::getNameRegisteredClassByIdx(asm_op_statment->index_op1));
+					case INS_PROPERTY_PRE_INC:
+						pre="++";
 						break;
-					case  LOAD:
-						printf("[%02i:%02i]\t%s\t%s%s%s --- %i\n"
-								,idx_statment
-								,idx_instruction,
-								CCompiler::def_operator[asm_op_statment->operator_type].op_str,
-								pre.c_str(),
-								getStrTypeLoadValue(fs->statment_op,idx_statment,idx_instruction),
-								post.c_str(),
-								(int)asm_op_statment->index_op2);
+					case INS_PROPERTY_PRE_DEC:
+						pre="--";
 						break;
-					case POP_SCOPE:
-						printf("[%02i:%02i]\t%s(%i)\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1);
+					case INS_PROPERTY_POST_INC:
+						post="++";
 						break;
-					case JNT:
-					case JT:
-					case JMP:
-						printf("[%02i:%02i]\t%s\t[%04i:"
-								"%04i"
-								"]\n"
-								,idx_statment
-								,idx_instruction
-								,CCompiler::def_operator[asm_op_statment->operator_type].op_str,asm_op_statment->index_op1
-								,(int)asm_op_statment->index_op2);
-						break;
-					case VGET:
-					case VPUSH:
-						printf("[%02i:%02i]\t%s\t%sVEC[%02i:%02i]%s,[%02i:%02i]\n"
-								,idx_statment
-								,idx_instruction
-								,CCompiler::def_operator[asm_op_statment->operator_type].op_str,pre.c_str()
-								,idx_statment
-								,index_op1
-								,post.c_str()
-								,idx_statment
-								,index_op2);
+					case INS_PROPERTY_POST_DEC:
+						post="--";
 						break;
 					default:
+						// check whether is constant and numeric
+						if(asm_op->operator_type==ASM_OPERATOR::LOAD && asm_op->index_op1==LOAD_TYPE_CONSTANT){
+							CCompiler::tInfoConstantValue *icv = (((CCompiler::tInfoConstantValue *)asm_op->index_op2));
+							float n;
 
-						if(n_ops==0){
-							printf("[%02i:%02i]\t%s\n",idx_statment,idx_instruction,CCompiler::def_operator[asm_op_statment->operator_type].op_str);
-						}else if(n_ops==1){
-							printf("[%02i:%02i]\t%s%s\t[%02i:%02i]\n"
-									,idx_statment
-									,idx_instruction
-									,CCompiler::def_operator[asm_op_statment->operator_type].op_str
-									,(asm_op_statment->instruction_properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
-									,idx_statment
-									,index_op1);
-						}else{
-							printf("[%02i:%02i]\t%s\t[%02i:%02i],[%02i:%02i]\n"
-									,idx_statment
-									,idx_instruction
-									,CCompiler::def_operator[asm_op_statment->operator_type].op_str
-									,idx_statment
-									,index_op1
-									,idx_statment
-									,index_op2);
+							// change the sign
+							switch(icv->properties){
+							default:
+								break;
+							case STK_PROPERTY_TYPE_INTEGER:
+								if(((intptr_t)icv->stkValue)<0){
+									pre="-";
+								}
+								break;
+							case STK_PROPERTY_TYPE_NUMBER:
+								memcpy(&n,&icv->stkValue,sizeof(float));
+								if(n<0){
+									pre="-";
+								}
+								break;
+							}
 						}
 						break;
+
 					}
+				switch(asm_op->operator_type){
+
+				case  NEW:
+					printf("[%03i]\t%s\t%s\n",idx_instruction,CCompiler::def_operator[asm_op->operator_type].op_str,CScriptClass::getNameRegisteredClassByIdx(asm_op->index_op1));
+					break;
+				case  LOAD:
+					printf("[%03i]\t%s\t%s%s%s\n"
+							,idx_instruction,
+							CCompiler::def_operator[asm_op->operator_type].op_str,
+							pre.c_str(),
+							getStrTypeLoadValue(fs->asm_op,idx_instruction),
+							post.c_str());
+					break;
+				case JNT:
+				case JT:
+				case JMP:
+					printf("[%03i]\t%s\t%03i\n"
+							,idx_instruction
+							,CCompiler::def_operator[asm_op->operator_type].op_str
+							,(int)asm_op->index_op2);
+					break;
+
+				default:
+
+					if(n_ops==0){
+						printf("[%03i]\t%s\n",idx_instruction,CCompiler::def_operator[asm_op->operator_type].op_str);
+					}else if(n_ops==1){
+						printf("[%03i]\t%s%s\n"
+								,idx_instruction
+								,CCompiler::def_operator[asm_op->operator_type].op_str
+								,(asm_op->instruction_properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
+								);
+					}else{
+						printf("[%03i]\t%s\n"
+								,idx_instruction
+								,CCompiler::def_operator[asm_op->operator_type].op_str
+								);
+					}
+					break;
 				}
 			}
 		}
@@ -354,7 +304,9 @@ namespace zetscript{
 
 				if(local_irfs->object_info.symbol_info.idxScriptClass!=ZS_UNDEFINED_IDX){
 					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->object_info.symbol_info.idxScriptClass);
-					if(sc->metadata_info.object_info.symbol_info.idxScriptClass != IDX_CLASS_MAIN){
+					if(sc->metadata_info.object_info.symbol_info.idxScriptClass == IDX_CLASS_MAIN){
+						sprintf(symbol_ref,"Main");
+					}else{
 						sprintf(symbol_ref,"%s::%s",fs->symbol_info.symbol_ref.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
 					}
 				}
@@ -624,14 +576,16 @@ namespace zetscript{
 
 	}
 
-	ZETSCRIPT_MODULE_EXPORT void CZetScript::compile(){
+	ZETSCRIPT_MODULE_EXPORT void CZetScript::compile(bool show_bytecode){
 		if(!__init__) {THROW_RUNTIME_ERROR("ZetScript not initialized"); return;}
 		//ZS_CLEAR_ERROR_MSG();
 
 		if(CCompiler::getInstance()->compile()){
 
 			// print generated asm ...
-			//printGeneratedCodeAllClasses();
+			if(show_bytecode){
+				printGeneratedCodeAllClasses();
+			}
 
 			if(m_mainObject == NULL){
 				// creates the main entry function with compiled code. On every executing code, within "execute" function
@@ -661,16 +615,16 @@ namespace zetscript{
 
 	}
 
-	void CZetScript::eval(const string & s, bool exec_vm, const char *filename_ref)  {
+	void CZetScript::eval(const string & s, bool exec_vm, const char *filename_ref, bool show_bytecode)  {
 
 		parse(s,filename_ref);
-		compile();
+		compile(show_bytecode);
 		if(exec_vm){
 			execute();
 		}
 	}
 
-	void CZetScript::eval_file(const char * filename, bool execute){
+	void CZetScript::eval_file(const char * filename, bool execute, bool show_bytecode){
 
 		//ZS_CLEAR_ERROR_MSG();
 
@@ -682,7 +636,7 @@ namespace zetscript{
 		if((buf_tmp=CZetScriptUtils::readFile(filename, n_bytes))!=NULL){
 
 			try{
-				eval((char *)buf_tmp, execute, filename);
+				eval((char *)buf_tmp, execute, filename,show_bytecode);
 			}catch(script_error & error){
 				free(buf_tmp);
 				THROW_EXCEPTION(error);

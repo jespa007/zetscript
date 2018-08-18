@@ -10,11 +10,55 @@ using namespace zetscript;
 
 int main(int argc, char * argv[]) {
 
+
 	CZetScript *zetscript = CZetScript::getInstance();
 
-	if (argc >= 2) {
+	if (argc > 1) {
+		bool execute=true;
+		bool show_bytecode=false;
+		string file="";
+
+		for(int i=1; i < argc; i++){
+
+			vector<string> a=CZetScriptUtils::split(argv[i],'=');
+			switch(a.size()){
+			case 1:
+
+				if(strcmp(argv[i],"--no_execute")==0){
+					execute = false;
+				}else if(strcmp(argv[i],"--show_bytecode")==0){
+					show_bytecode=true;
+				}
+				else{
+					fprintf(stderr,"invalid argument %s\n",argv[i]);
+					exit(-1);
+				}
+				break;
+			case 2:
+
+				if(strcmp(a[0].c_str(),"--file")==0){
+					file=a[1].c_str();
+				}
+				else{
+					fprintf(stderr,"invalid argument %s\n",argv[i]);
+					exit(-1);
+				}
+				break;
+			default:
+				fprintf(stderr,"invalid argument %s\n",argv[i]);
+				exit(-1);
+				break;
+			}
+
+		}
+
+		if(file==""){
+			fprintf(stderr,"Program with arguments you must specify file (i.e --file=filename )\n");
+			exit(-1);
+		}
+
 		try{
-			zetscript->eval_file(argv[1]);
+			zetscript->eval_file(file.c_str(),execute,show_bytecode);
 		}catch(script_error & error){
 			fprintf(stderr,"%s\n",error.what());
 		}

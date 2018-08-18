@@ -26,7 +26,6 @@ namespace zetscript{
 		CVectorScriptVariable();
 
 		virtual bool unrefSharedPtr();
-		virtual bool initSharedPtr(bool is_assigned=false);
 
 		tStackElement * get(const string & s);
 

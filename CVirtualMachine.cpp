@@ -23,23 +23,7 @@ namespace zetscript{
 
 
 	// general
-	#define PRINT_DUAL_ERROR_OP(c)\
-	string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
-		   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
-	\
-	writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
-			var_type1.c_str(),\
-			c,\
-			var_type2.c_str());\
-			RETURN_ERROR;
 
-	#define PRINT_ERROR_OP(c)\
-		string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1);\
-	\
-	writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
-		c,\
-		var_type1.c_str());\
-		RETURN_ERROR;
 
 	#define COPY_NUMBER(d,s)  memcpy((d),(s),sizeof(float))
 
@@ -57,8 +41,6 @@ namespace zetscript{
 			(((const char *)(ptr_result_instruction->stkValue)))
 
 
-	#define IS_NUMBER_OR_INT(properties)\
-		(properties & (STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_TYPE_INTEGER))
 
 	// Check types
 	#define IS_NUMBER(properties) \
@@ -454,6 +436,8 @@ namespace zetscript{
 
 	#define CALL_GC SHARED_LIST_DESTROY(zero_shares[idxCurrentStack])
 
+#if 0
+
 #define FIND_FUNCTION(m_functionSymbol, iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArg, n_args, metamethod_str) \
  for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ /* search all function that match symbol ... */ \
 	CScriptFunctionObject *irfs = NULL;\
@@ -685,6 +669,7 @@ if(aux_function_info == NULL){\
 	}\
 }
 
+#endif
 
 	#define APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__) \
 		int idxOffsetFunctionMemberStart=0;\
@@ -697,7 +682,6 @@ if(aux_function_info == NULL){\
 		tStackElement *mm_test_startArg = ptrCurrentOp+n_metam_args; \
 		if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ /* search for first time , else the function is stored in index_op2 */\
 			script_class_aux=NULL; \
-			vec_global_functions=NULL; \
 			aux_function_info = NULL; \
 			\
 			\
@@ -739,27 +723,30 @@ if(aux_function_info == NULL){\
 				\
 				RETURN_ERROR;\
 			}\
-\
+			\
 			script_class_aux=REGISTERED_CLASS_NODE(script_var_object->idxScriptClass);\
-			vector<tSymbolInfo> *m_functionSymbol=NULL;\
-			vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];\
-			int size_fun_vec = vec_global_functions->size()-1;\
-			bool is_constructor = false;\
+			vector<int> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];\
 			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);\
 			unsigned n_args=n_metam_args;\
 			symbol_to_find=CScriptClass::getMetamethod(__METAMETHOD__);\
 			\
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
-			FIND_FUNCTION(\
-					m_functionSymbol\
-					,instruction\
-					,is_constructor\
-					,symbol_to_find\
-					,size_fun_vec\
+			if((aux_function_info = FIND_FUNCTION(\
+					NULL\
 					,vec_global_functions\
+					,instruction\
+					,false\
+					,symbol_to_find\
+					,calling_object\
+					,instruction\
+					,ptrResultInstructionOp1\
+					,ptrResultInstructionOp2\
 					,startArgs\
 					,n_args\
-					,STR(__OVERR_OP__));\
+					,STR(__OVERR_OP__)))==NULL)\
+			{\
+					RETURN_ERROR;\
+			}\
 		}else{ \
 			aux_function_info = (CScriptFunctionObject *)instruction->index_op2; \
 		} \
@@ -1030,7 +1017,7 @@ if(aux_function_info == NULL){\
 	#define POP_ONE \
 	ptrResultInstructionOp1=--ptrCurrentOp;
 
-	#define CHK_JMP \
+	/*#define CHK_JMP \
 	if(instruction->index_op2 != ZS_UNDEFINED_IDX){\
 	\
 		if(current_statment!=&m_listStatements[instruction->index_op2]){\
@@ -1038,11 +1025,11 @@ if(aux_function_info == NULL){\
 			goto lbl_exit_statment;\
 		}\
 	\
-		if((char)(instruction->index_op1) != ZS_UNDEFINED_IDX){\
+		if((char)(instruction->index_op2) != ZS_UNDEFINED_IDX){\
 			instruction_it=&(*current_statment)[instruction->index_op1];\
 		}\
 	\
-	}
+	}*/
 
 	int CVirtualMachine::getCurrentAstNodeCall_C_Function(){
 		return current_ast_node_call_c_function;
@@ -1411,13 +1398,12 @@ if(aux_function_info == NULL){\
 		}
 
 
-		if(idxCurrentStack==0){ // set stack for first call
+		if(idxCurrentStack==0){ // set stack and init vars for first call...
 
-			if(main_function_object->object_info.statment_op == NULL){ // no statments
+			if(main_function_object->object_info.asm_op == NULL){ // no statments
 				RETURN_ERROR;
 			}
 			cancel_execution=false;
-
 
 			ptrCurrentOp=stack;
 			//*ptrCurrentOp={STK_PROPERTY_TYPE_UNDEFINED,0,0}; // ini first op
@@ -1564,7 +1550,7 @@ if(aux_function_info == NULL){\
 
 		//CScriptVariable *ret=VM_UNDEFINED;
 		callc_result ={STK_PROPERTY_TYPE_UNDEFINED, NULL};
-		PtrStatment m_listStatements = info_function->object_info.statment_op;
+		//PtrAsmOp m_listStatements = info_function->object_info.asm_op;
 
 		//bool end_by_ret=false;
 
@@ -1613,7 +1599,7 @@ if(aux_function_info == NULL){\
 		CScriptVariable *calling_object=NULL;
 		CScriptClass *script_class_aux;
 
-		vector<int> *vec_global_functions=NULL;
+
 
 		tStackElement *ptrResultInstructionOp1=NULL;//&stkResultInstruction[index_op1+startIdxStkResultInstruction];
 		tStackElement *ptrResultInstructionOp2=NULL;//&stkResultInstruction[index_op2+startIdxStkResultInstruction];
@@ -1625,8 +1611,8 @@ if(aux_function_info == NULL){\
 
 		unsigned short scope_type=0;//GET_INS_PROPERTY_SCOPE_TYPE(instruction->instruction_properties);
 
-		PtrStatment current_statment = NULL,
-					ptr_statment_iteration=m_listStatements;
+		//PtrAsmOp current_statment = NULL,
+		//			ptr_statment_iteration=m_listStatements;
 
 
 
@@ -1635,1036 +1621,1018 @@ if(aux_function_info == NULL){\
 		bool ok=false;
 
 
-		tInfoAsmOp *instruction_it;
 
-		for(;;){ // foreach stament ...
+		tInfoAsmOp *start_it=info_function->object_info.asm_op;
+		tInfoAsmOp *instruction_it=start_it;
+
+		ptrCurrentStr=ptrStartStr;
+		ptrCurrentOp=ptrStartOp;
 
 
-			current_statment = ptr_statment_iteration++;
-			instruction_it = *current_statment;
+		//-----------------------------------------------------------------------------------------------------------------------
+		//
+		// START OPERATOR MANAGEMENT
+		//
 
-			if(!instruction_it){
+		 for(;;){ // foreach asm instruction ...
+
+			tInfoAsmOp * instruction = instruction_it++;
+
+			const unsigned char operator_type=instruction->operator_type;
+			const unsigned char index_op1=instruction->index_op1;
+
+			switch(operator_type){
+			//default:
+			//	writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+			//	RETURN_ERROR;
+			case END_FUNCTION:
 				goto lbl_exit_function;
-			}
+			case LOAD:
+			case VGET:
 
-			// reset stack to start...
-			ptrCurrentStr=ptrStartStr;
-			ptrCurrentOp=ptrStartOp;
+				if(index_op1==LOAD_TYPE::LOAD_TYPE_VARIABLE || operator_type==VGET){
+					if(operator_type==VGET){
 
-			//-----------------------------------------------------------------------------------------------------------------------
-			//
-			// START OPERATOR MANAGEMENT
-			//
+						bool ok=false;
 
-			 for(;;){ // foreach asm instruction ...
+						POP_TWO;
 
-				tInfoAsmOp * instruction = instruction_it++;
+						if( (ptrResultInstructionOp1->properties & (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)) == (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)){
+							var_object = (CScriptVariable *)(((tStackElement *)ptrResultInstructionOp1->varRef)->varRef);
+						}
 
-				const unsigned char operator_type=instruction->operator_type;
-				const unsigned char index_op1=instruction->index_op1;
+						if(var_object != NULL){
+							if(var_object->idxScriptClass == IDX_CLASS_VECTOR){
 
-				switch(operator_type){
-				//default:
-				//	writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
-				//	RETURN_ERROR;
-				case END_STATMENT:
-					goto lbl_exit_statment;
-				case LOAD:
-				case VGET:
+								if(IS_INT(ptrResultInstructionOp2->properties)){
+									// determine object ...
+									CVectorScriptVariable * vec = (CVectorScriptVariable *)var_object;
+									int v_index = LOAD_INT_OP(ptrResultInstructionOp2);
 
-					if(index_op1==LOAD_TYPE::LOAD_TYPE_VARIABLE || operator_type==VGET){
-						if(operator_type==VGET){
-
-							bool ok=false;
-
-							POP_TWO;
-
-							if( (ptrResultInstructionOp1->properties & (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)) == (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)){
-								var_object = (CScriptVariable *)(((tStackElement *)ptrResultInstructionOp1->varRef)->varRef);
-							}
-
-							if(var_object != NULL){
-								if(var_object->idxScriptClass == IDX_CLASS_VECTOR){
-
-									if(IS_INT(ptrResultInstructionOp2->properties)){
-										// determine object ...
-										CVectorScriptVariable * vec = (CVectorScriptVariable *)var_object;
-										int v_index = LOAD_INT_OP(ptrResultInstructionOp2);
-
-										// check indexes ...
-										if(v_index < 0){
-											writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Negative index vector (%i)",v_index);
-											RETURN_ERROR;
-										}
-
-										if(v_index >= (int)(vec->m_objVector.size())){
-											writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Index vector out of bounds (%i)",v_index);
-											RETURN_ERROR;
-										}
-
-										ldrVar = &vec->m_objVector[v_index];;
-										ok = true;
-									}else{
-										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector-index as integer");
-										RETURN_ERROR;
-									}
-								}
-							}
-
-							if(!ok){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Variable \"%s\" is not type vector",
-									AST_SYMBOL_VALUE_CONST_CHAR((*current_statment)[instruction->index_op1].idxAstNode)
-								);
-								RETURN_ERROR;
-							}
-
-						}else{ // load variable ...
-
-							instruction_properties=instruction->instruction_properties;
-							scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
-
-							switch(scope_type){
-							default: // global...
-								ldrVar = &stack[instruction->index_op2];
-								break;
-							case INS_PROPERTY_ACCESS_SCOPE:
-							case INS_PROPERTY_THIS_SCOPE:
-								if(instruction->idxAstNode != -1){
-									ast = vec_ast_node[instruction->idxAstNode];
-
-								}
-
-								if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
-									POP_ONE; // get var op1 and symbol op2
-
-									if((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR)!= STK_PROPERTY_TYPE_SCRIPTVAR)
-									{
-
-										PASTNode ast=AST_NODE(instruction->idxAstNode);
-										PASTNode parent = AST_NODE(ast->idxAstParent);
-										ast=AST_NODE(parent->children[0]);  // get left node ... is the object ancestor.
-										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var \"%s\" is not scriptvariable",ast->symbol_value.c_str());
+									// check indexes ...
+									if(v_index < 0){
+										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Negative index vector (%i)",v_index);
 										RETURN_ERROR;
 									}
 
-
-									CScriptVariable  * base_var = (CScriptVariable  *)ptrResultInstructionOp1->varRef;
-									if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {
-										tStackElement *stk_ins=((tStackElement *)ptrResultInstructionOp1->varRef);
-
-										if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-											base_var=((CScriptVariable *)stk_ins->varRef);
-										}
-									}
-
-									if(base_var == NULL)
-									{
-										PASTNode ast=AST_NODE(instruction->idxAstNode);
-										PASTNode parent = AST_NODE(ast->idxAstParent);
-										ast=AST_NODE(parent->children[0]); // get left node ... is the object ancestor.
-										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var \"%s\" is not scriptvariable",ast->symbol_value.c_str());
-
+									if(v_index >= (int)(vec->m_objVector.size())){
+										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Index vector out of bounds (%i)",v_index);
 										RETURN_ERROR;
 									}
 
-									if((si = base_var->getVariableSymbol(ast->symbol_value,true))==NULL){
-
-										tInfoAsmOp *previous= (instruction-1);
-										string parent_symbol="unknow";
-
-										if(previous->idxAstNode != -1){
-											PASTNode aa= AST_NODE(previous->idxAstNode);
-											parent_symbol=aa->symbol_value;
-										}
-
-										writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"Variable \"%s\" as type \"%s\" has not symbol \"%s\"",parent_symbol.c_str(),base_var->getClassName().c_str(), ast->symbol_value.c_str());
-										RETURN_ERROR;
-									}
-								}
-								else{ // this scope ...
-									if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
-										writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"cannot find symbol \"this.%s\"",ast->symbol_value.c_str());
-										RETURN_ERROR;
-									}
-								}
-								ldrVar=&si->object;
-								break;
-							case INS_PROPERTY_LOCAL_SCOPE:
-								ldrVar = &ptrLocalVar[instruction->index_op2];
-								break;
-							}
-
-							if(instruction->instruction_properties&INS_CHECK_IS_FUNCTION){
-								if((ldrVar->properties & STK_PROPERTY_TYPE_FUNCTION) != STK_PROPERTY_TYPE_FUNCTION){
-									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"\"%s\" expected function variable but is \"%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str(), STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrVar));
+									ldrVar = &vec->m_objVector[v_index];;
+									ok = true;
+								}else{
+									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector-index as integer");
 									RETURN_ERROR;
 								}
 							}
 						}
 
-						pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction_properties);
-
-
-						// all preoperators makes load var as constant ...
-						switch(pre_post_properties){
-						case INS_PROPERTY_PRE_INC:
-								PERFORM_PRE_POST_OPERATOR(ldrVar,++);
-								(*ptrCurrentOp++)=*ldrVar;
-								continue;
-						case INS_PROPERTY_PRE_DEC:
-								PERFORM_PRE_POST_OPERATOR(ldrVar,--);
-								(*ptrCurrentOp++)=*ldrVar;
-								continue;
-						case INS_PROPERTY_POST_DEC:
-								(*ptrCurrentOp++)=*ldrVar;
-								PERFORM_PRE_POST_OPERATOR(ldrVar,--);
-								continue;
-						case INS_PROPERTY_POST_INC:
-								(*ptrCurrentOp++)=*ldrVar;
-								PERFORM_PRE_POST_OPERATOR(ldrVar,++);
-								continue;
-						case INS_PROPERTY_PRE_NEG:
-								switch(GET_INS_PROPERTY_VAR_TYPE(ldrVar->properties)){
-								case STK_PROPERTY_TYPE_INTEGER:
-									if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
-										*ptrCurrentOp++={STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_STACKVAR|STK_PROPERTY_IS_C_VAR,(void *)(-(*((intptr_t *)ldrVar->varRef))),ldrVar};
-									}else{
-										*ptrCurrentOp++={STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_STACKVAR,(void *)(-(((intptr_t)ldrVar->stkValue))),ldrVar};
-									}
-									break;
-								case STK_PROPERTY_TYPE_BOOLEAN:
-									if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
-										*ptrCurrentOp++={STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_STACKVAR|STK_PROPERTY_IS_C_VAR,(void *)(!(*((bool *)ldrVar->varRef))),ldrVar};
-									}else{
-										*ptrCurrentOp++={STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_STACKVAR,(void *)(!(((bool)ldrVar->stkValue))),ldrVar};
-									}
-									break;
-
-								case STK_PROPERTY_TYPE_NUMBER:
-									if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
-										COPY_NUMBER(&aux_float,ldrVar->varRef);
-									}else{
-										COPY_NUMBER(&aux_float,&ldrVar->stkValue);
-									}
-									aux_float=-aux_float;
-									COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
-									*ptrCurrentOp={STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_IS_STACKVAR,ptrCurrentOp->stkValue,ldrVar};
-
-									if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
-										ptrCurrentOp->properties|=STK_PROPERTY_IS_C_VAR;
-									}
-
-									ptrCurrentOp++;
-									break;
-								default:
-									writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - because is not number");
-									RETURN_ERROR;
-								}
-								continue;
-						default:
-
-							// update var if needed ...
-							PUSH_STACK_VAR(ldrVar);
-							break;
+						if(!ok){
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Variable \"%s\" is not type vector",
+								AST_SYMBOL_VALUE_CONST_CHAR(info_function->object_info.asm_op[instruction->index_op1].idxAstNode)
+							);
+							RETURN_ERROR;
 						}
 
-						// ok in case is C we must udpate stkValue becaus it can be updated from C++. (only primitives)
-						if(ldrVar->properties & STK_PROPERTY_IS_C_VAR){
-							switch(GET_INS_PROPERTY_VAR_TYPE(ldrVar->properties)){
-							case STK_PROPERTY_TYPE_INTEGER:
-								//(ptrCurrentOp-1)->stkValue=(void *)((*((int *)ldrVar->varRef)));
-								memcpy(&((ptrCurrentOp-1)->stkValue),ldrVar->varRef,sizeof(int));
-								break;
-							case STK_PROPERTY_TYPE_NUMBER:
-								COPY_NUMBER(&((ptrCurrentOp-1)->stkValue),ldrVar->varRef);
-								break;
-							case STK_PROPERTY_TYPE_BOOLEAN:
-								(ptrCurrentOp-1)->stkValue=(void *)((*((bool *)ldrVar->varRef)));
-								break;
-							}
-						}
+					}else{ // load variable ...
 
-
-
-						continue;
-
-					}else if(index_op1==LOAD_TYPE::LOAD_TYPE_NULL){
-						PUSH_NULL;
-						continue;
-					}else if(index_op1==LOAD_TYPE::LOAD_TYPE_UNDEFINED){
-						PUSH_UNDEFINED;
-						continue;
-					}else if(index_op1==LOAD_TYPE::LOAD_TYPE_CONSTANT){
-						(*ptrCurrentOp)=*(((CCompiler::tInfoConstantValue *)instruction->index_op2));
-
-						pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties);
-
-						// all preoperators makes load var as constant ...
-						switch(pre_post_properties){
-						case INS_PROPERTY_PRE_NEG:
-								switch(GET_INS_PROPERTY_VAR_TYPE(ptrCurrentOp->properties)){
-								case STK_PROPERTY_TYPE_INTEGER:
-									ptrCurrentOp->stkValue=(void *)(-((intptr_t)ptrCurrentOp->stkValue));
-									break;
-								case STK_PROPERTY_TYPE_BOOLEAN:
-									ptrCurrentOp->stkValue=(void *)(!((bool)ptrCurrentOp->stkValue));
-									break;
-								case STK_PROPERTY_TYPE_NUMBER:
-									COPY_NUMBER(&aux_float,&ptrCurrentOp->stkValue);
-									aux_float=-aux_float;
-									COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
-									break;
-								default:
-									writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - constant because is not numeric");
-									RETURN_ERROR;
-								}
-								break;
-						}
-						ptrCurrentOp++;
-						continue;
-					}else if(index_op1== LOAD_TYPE::LOAD_TYPE_FUNCTION){
-
-						unsigned short extra_flags=(instruction->instruction_properties&INS_PROPERTY_CONSTRUCT_CALL)?STK_PROPERTY_CONSTRUCTOR_FUNCTION:0;
-						extra_flags|=(instruction->index_op2==ZS_FUNCTION_NOT_FOUND_IDX) ?STK_PROPERTY_UNRESOLVED_FUNCTION:0;
-						void *function_obj=NULL;
-						vector<int> *vec_functions;
-						CScriptVariable * class_obj=NULL;
-						int index_op2 = (int)instruction->index_op2;
 						instruction_properties=instruction->instruction_properties;
 						scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
 
-						if(scope_type==INS_PROPERTY_LOCAL_SCOPE){ // local gets functions from info_function ...
-							vec_functions=&info_function->object_info.local_symbols.vec_idx_registeredFunction;
-						}else if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
-							tStackElement *var=NULL;
-							if(instruction_properties & INS_PROPERTY_CONSTRUCT_CALL){
-								var=(ptrCurrentOp-1);
-							}else{
-								POP_ONE;
-								var = ptrResultInstructionOp1;
+						switch(scope_type){
+						default: // global...
+							ldrVar = &stack[instruction->index_op2];
+							break;
+						case INS_PROPERTY_ACCESS_SCOPE:
+						case INS_PROPERTY_THIS_SCOPE:
+							if(instruction->idxAstNode != -1){
+								ast = vec_ast_node[instruction->idxAstNode];
+
 							}
 
-							tStackElement *stk_ins=NULL;
-							if(var->properties & STK_PROPERTY_IS_STACKVAR) {
-								stk_ins=((tStackElement *)var->varRef);
-							}
-							else{
-								stk_ins=var;
-							}
+							if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
+								POP_ONE; // get var op1 and symbol op2
 
-							if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-								class_obj=(CScriptVariable *)(stk_ins->varRef);
-								CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxScriptClass);
-								vec_functions=&sc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
-							}
-							else{
-								CASTNode *ast_previous=vec_ast_node[(instruction-1)->idxAstNode];
-								CASTNode *ast=vec_ast_node[(int)instruction->idxAstNode];
-								writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"Cannot access symbol \"%s\" (type of %s is %s)",ast->symbol_value.c_str(),ast_previous->symbol_value.c_str(),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
-								RETURN_ERROR;
-							}
-						}else if(scope_type ==INS_PROPERTY_THIS_SCOPE){
-							if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"this.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
-								RETURN_ERROR;
-							}
+								if((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR)!= STK_PROPERTY_TYPE_SCRIPTVAR)
+								{
 
-							function_obj =(CScriptFunctionObject *)si->object.stkValue;
+									PASTNode ast=AST_NODE(instruction->idxAstNode);
+									PASTNode parent = AST_NODE(ast->idxAstParent);
+									ast=AST_NODE(parent->children[0]);  // get left node ... is the object ancestor.
+									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var \"%s\" is not scriptvariable",ast->symbol_value.c_str());
+									RETURN_ERROR;
+								}
 
-						}else if(scope_type == INS_PROPERTY_SUPER_SCOPE){ // super scope ?
-							if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"super.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
-								RETURN_ERROR;
+
+								CScriptVariable  * base_var = (CScriptVariable  *)ptrResultInstructionOp1->varRef;
+								if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {
+									tStackElement *stk_ins=((tStackElement *)ptrResultInstructionOp1->varRef);
+
+									if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+										base_var=((CScriptVariable *)stk_ins->varRef);
+									}
+								}
+
+								if(base_var == NULL)
+								{
+									PASTNode ast=AST_NODE(instruction->idxAstNode);
+									PASTNode parent = AST_NODE(ast->idxAstParent);
+									ast=AST_NODE(parent->children[0]); // get left node ... is the object ancestor.
+									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var \"%s\" is not scriptvariable",ast->symbol_value.c_str());
+
+									RETURN_ERROR;
+								}
+
+								if((si = base_var->getVariableSymbol(ast->symbol_value,true))==NULL){
+
+									tInfoAsmOp *previous= (instruction-1);
+									string parent_symbol="unknow";
+
+									if(previous->idxAstNode != -1){
+										PASTNode aa= AST_NODE(previous->idxAstNode);
+										parent_symbol=aa->symbol_value;
+									}
+
+									writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"Variable \"%s\" as type \"%s\" has not symbol \"%s\"",parent_symbol.c_str(),base_var->getClassName().c_str(), ast->symbol_value.c_str());
+									RETURN_ERROR;
+								}
 							}
-							function_obj =(CScriptFunctionObject *)si->object.stkValue;
-						}else{ // global
-							vec_functions = &(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
-							//function_obj = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
+							else{ // this scope ...
+								if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
+									writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"cannot find symbol \"this.%s\"",ast->symbol_value.c_str());
+									RETURN_ERROR;
+								}
+							}
+							ldrVar=&si->object;
+							break;
+						case INS_PROPERTY_LOCAL_SCOPE:
+							ldrVar = &ptrLocalVar[instruction->index_op2];
+							break;
 						}
 
-
-						if(!(scope_type == INS_PROPERTY_THIS_SCOPE || scope_type == INS_PROPERTY_SUPER_SCOPE)){
-
-							if(index_op2 == ZS_UNDEFINED_IDX || index_op2 == ZS_FUNCTION_NOT_FOUND_IDX){ // is will be processed after in CALL instruction ...
-								//function_properties=INS_PROPERTY_UNRESOLVED_FUNCTION;
-								function_obj= NULL;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
-							}else if((index_op2<(int)vec_functions->size())) // get the function ...
-							{
-								function_obj = vec_script_function_object_node[(*vec_functions)[index_op2]];
-							}
-							else{
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find symbol global \"%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+						if(instruction->instruction_properties&INS_CHECK_IS_FUNCTION){
+							if((ldrVar->properties & STK_PROPERTY_TYPE_FUNCTION) != STK_PROPERTY_TYPE_FUNCTION){
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"\"%s\" expected function variable but is \"%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str(), STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrVar));
 								RETURN_ERROR;
 							}
 						}
-
-						if(index_op2 == ZS_UNDEFINED_IDX){
-							*ptrCurrentOp++={(unsigned short)(STK_PROPERTY_IS_INSTRUCTIONVAR|STK_PROPERTY_TYPE_FUNCTION|extra_flags),instruction,class_obj};
-						}else{
-							PUSH_FUNCTION(extra_flags,function_obj,class_obj);
-						}
-						continue;
-
-					}else if(index_op1== LOAD_TYPE::LOAD_TYPE_ARGUMENT){
-						//ldrVar=&ptrArg[instruction->index_op2];
-						*ptrCurrentOp++=ptrArg[instruction->index_op2]; // copy arg directly ...
-						continue;
 					}
-					else{
 
-						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"runtime error. Try to restart");
-						RETURN_ERROR;
+					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction_properties);
 
+					/* all preoperators makes load var as constant ... */
+					switch(pre_post_properties){
+					case INS_PROPERTY_PRE_INC:
+							PERFORM_PRE_POST_OPERATOR(ldrVar,++);
+							(*ptrCurrentOp++)=*ldrVar;
+							continue;
+					case INS_PROPERTY_PRE_DEC:
+							PERFORM_PRE_POST_OPERATOR(ldrVar,--);
+							(*ptrCurrentOp++)=*ldrVar;
+							continue;
+					case INS_PROPERTY_POST_DEC:
+							(*ptrCurrentOp++)=*ldrVar;
+							PERFORM_PRE_POST_OPERATOR(ldrVar,--);
+							continue;
+					case INS_PROPERTY_POST_INC:
+							(*ptrCurrentOp++)=*ldrVar;
+							PERFORM_PRE_POST_OPERATOR(ldrVar,++);
+							continue;
+					case INS_PROPERTY_PRE_NEG:
+							switch(GET_INS_PROPERTY_VAR_TYPE(ldrVar->properties)){
+							case STK_PROPERTY_TYPE_INTEGER:
+								if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
+									*ptrCurrentOp++={STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_STACKVAR|STK_PROPERTY_IS_C_VAR,(void *)(-(*((intptr_t *)ldrVar->varRef))),ldrVar};
+								}else{
+									*ptrCurrentOp++={STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_STACKVAR,(void *)(-(((intptr_t)ldrVar->stkValue))),ldrVar};
+								}
+								break;
+							case STK_PROPERTY_TYPE_BOOLEAN:
+								if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
+									*ptrCurrentOp++={STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_STACKVAR|STK_PROPERTY_IS_C_VAR,(void *)(!(*((bool *)ldrVar->varRef))),ldrVar};
+								}else{
+									*ptrCurrentOp++={STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_STACKVAR,(void *)(!(((bool)ldrVar->stkValue))),ldrVar};
+								}
+								break;
+
+							case STK_PROPERTY_TYPE_NUMBER:
+								if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
+									COPY_NUMBER(&aux_float,ldrVar->varRef);
+								}else{
+									COPY_NUMBER(&aux_float,&ldrVar->stkValue);
+								}
+								aux_float=-aux_float;
+								COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
+								*ptrCurrentOp={STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_IS_STACKVAR,ptrCurrentOp->stkValue,ldrVar};
+
+								if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
+									ptrCurrentOp->properties|=STK_PROPERTY_IS_C_VAR;
+								}
+
+								ptrCurrentOp++;
+								break;
+							default:
+								writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - because is not number");
+								RETURN_ERROR;
+							}
+							continue;
+					default:
+
+						// update var if needed ...
+						PUSH_STACK_VAR(ldrVar);
+						break;
+					}
+
+					// ok in case is C we must udpate stkValue becaus it can be updated from C++. (only primitives)
+					if(ldrVar->properties & STK_PROPERTY_IS_C_VAR){
+						switch(GET_INS_PROPERTY_VAR_TYPE(ldrVar->properties)){
+						case STK_PROPERTY_TYPE_INTEGER:
+							//(ptrCurrentOp-1)->stkValue=(void *)((*((int *)ldrVar->varRef)));
+							memcpy(&((ptrCurrentOp-1)->stkValue),ldrVar->varRef,sizeof(int));
+							break;
+						case STK_PROPERTY_TYPE_NUMBER:
+							COPY_NUMBER(&((ptrCurrentOp-1)->stkValue),ldrVar->varRef);
+							break;
+						case STK_PROPERTY_TYPE_BOOLEAN:
+							(ptrCurrentOp-1)->stkValue=(void *)((*((bool *)ldrVar->varRef)));
+							break;
+						}
+					}
+
+
+
+					continue;
+
+				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_NULL){
+					PUSH_NULL;
+					continue;
+				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_UNDEFINED){
+					PUSH_UNDEFINED;
+					continue;
+				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_CONSTANT){
+					(*ptrCurrentOp)=*(((CCompiler::tInfoConstantValue *)instruction->index_op2));
+
+					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties);
+
+					// all preoperators makes load var as constant ...
+					switch(pre_post_properties){
+					case INS_PROPERTY_PRE_NEG:
+							switch(GET_INS_PROPERTY_VAR_TYPE(ptrCurrentOp->properties)){
+							case STK_PROPERTY_TYPE_INTEGER:
+								ptrCurrentOp->stkValue=(void *)(-((intptr_t)ptrCurrentOp->stkValue));
+								break;
+							case STK_PROPERTY_TYPE_BOOLEAN:
+								ptrCurrentOp->stkValue=(void *)(!((bool)ptrCurrentOp->stkValue));
+								break;
+							case STK_PROPERTY_TYPE_NUMBER:
+								COPY_NUMBER(&aux_float,&ptrCurrentOp->stkValue);
+								aux_float=-aux_float;
+								COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
+								break;
+							default:
+								writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - constant because is not numeric");
+								RETURN_ERROR;
+							}
+							break;
+					}
+					ptrCurrentOp++;
+					continue;
+				}else if(index_op1== LOAD_TYPE::LOAD_TYPE_FUNCTION){
+
+					unsigned short extra_flags=(instruction->instruction_properties&INS_PROPERTY_CONSTRUCT_CALL)?STK_PROPERTY_CONSTRUCTOR_FUNCTION:0;
+					extra_flags|=(instruction->index_op2==ZS_FUNCTION_NOT_FOUND_IDX) ?STK_PROPERTY_UNRESOLVED_FUNCTION:0;
+					void *function_obj=NULL;
+					vector<int> *vec_functions;
+					CScriptVariable * class_obj=NULL;
+					int index_op2 = (int)instruction->index_op2;
+					instruction_properties=instruction->instruction_properties;
+					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
+
+					if(scope_type==INS_PROPERTY_LOCAL_SCOPE){ // local gets functions from info_function ...
+						vec_functions=&info_function->object_info.local_symbols.vec_idx_registeredFunction;
+					}else if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
+						tStackElement *var=NULL;
+						if(instruction_properties & INS_PROPERTY_CONSTRUCT_CALL){
+							var=(ptrCurrentOp-1);
+						}else{
+							POP_ONE;
+							var = ptrResultInstructionOp1;
+						}
+
+						tStackElement *stk_ins=NULL;
+						if(var->properties & STK_PROPERTY_IS_STACKVAR) {
+							stk_ins=((tStackElement *)var->varRef);
+						}
+						else{
+							stk_ins=var;
+						}
+
+						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+							class_obj=(CScriptVariable *)(stk_ins->varRef);
+							CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxScriptClass);
+							vec_functions=&sc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
+						}
+						else{
+							CASTNode *ast_previous=vec_ast_node[(instruction-1)->idxAstNode];
+							CASTNode *ast=vec_ast_node[(int)instruction->idxAstNode];
+							writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"Cannot access symbol \"%s\" (type of %s is %s)",ast->symbol_value.c_str(),ast_previous->symbol_value.c_str(),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
+							RETURN_ERROR;
+						}
+					}else if(scope_type ==INS_PROPERTY_THIS_SCOPE){
+						if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"this.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+							RETURN_ERROR;
+						}
+
+						function_obj =(CScriptFunctionObject *)si->object.stkValue;
+
+					}else if(scope_type == INS_PROPERTY_SUPER_SCOPE){ // super scope ?
+						if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"super.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+							RETURN_ERROR;
+						}
+						function_obj =(CScriptFunctionObject *)si->object.stkValue;
+					}else{ // global
+						vec_functions = &(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
+						//function_obj = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
+					}
+
+
+					if(!(scope_type == INS_PROPERTY_THIS_SCOPE || scope_type == INS_PROPERTY_SUPER_SCOPE)){
+
+						if(index_op2 == ZS_UNDEFINED_IDX || index_op2 == ZS_FUNCTION_NOT_FOUND_IDX){ // is will be processed after in CALL instruction ...
+							//function_properties=INS_PROPERTY_UNRESOLVED_FUNCTION;
+							function_obj= NULL;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
+						}else if((index_op2<(int)vec_functions->size())) // get the function ...
+						{
+							function_obj = vec_script_function_object_node[(*vec_functions)[index_op2]];
+						}
+						else{
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find symbol global \"%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+							RETURN_ERROR;
+						}
+					}
+
+					if(index_op2 == ZS_UNDEFINED_IDX){
+						*ptrCurrentOp++={(unsigned short)(STK_PROPERTY_IS_INSTRUCTIONVAR|STK_PROPERTY_TYPE_FUNCTION|extra_flags),instruction,class_obj};
+					}else{
+						PUSH_FUNCTION(extra_flags,function_obj,class_obj);
 					}
 					continue;
 
-				case STORE:
-				case VPUSH:
-				case PUSH_ATTR:
+				}else if(index_op1== LOAD_TYPE::LOAD_TYPE_ARGUMENT){
+					//ldrVar=&ptrArg[instruction->index_op2];
+					*ptrCurrentOp++=ptrArg[instruction->index_op2]; // copy arg directly ...
+					continue;
+				}
+				else{
 
-					{
-						bool assign_metamethod=false;
-						bool push_value=true;
+					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"runtime error. Try to restart");
+					RETURN_ERROR;
 
-						if(operator_type==VPUSH){
-							POP_ONE; // only pops the value, the last is the vector variable itself
-							CScriptVariable *vec_obj = NULL;
-							if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-								vec_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
-								if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){ // push value ...
-									// op1 is now the src value ...
+				}
+				continue;
+
+			case STORE:
+			case VPUSH:
+			case PUSH_ATTR:
+
+				{
+					bool assign_metamethod=false;
+					bool push_value=true;
+
+					if(operator_type==VPUSH){
+						POP_ONE; // only pops the value, the last is the vector variable itself
+						CScriptVariable *vec_obj = NULL;
+						if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+							vec_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
+							if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){ // push value ...
+								// op1 is now the src value ...
+								src_ins=ptrResultInstructionOp1;
+								dst_ins=((CVectorScriptVariable *)vec_obj)->push();
+								ok=true;
+							}
+						}
+
+						if(!ok){
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector object");
+							RETURN_ERROR;
+						}
+
+						push_value=false;
+
+					}else if(operator_type==PUSH_ATTR){
+
+
+						POP_TWO; // first must be the value name and the other the variable name ...
+						CScriptVariable *struct_obj = NULL;
+						if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+							struct_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
+							if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
+								// op1 is now the src value ...
+								if(ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_STRING){
+									tSymbolInfo *si=NULL;
+									const char *str = (const char *)ptrResultInstructionOp2->stkValue;
 									src_ins=ptrResultInstructionOp1;
-									dst_ins=((CVectorScriptVariable *)vec_obj)->push();
-									ok=true;
-								}
-							}
-
-							if(!ok){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector object");
-								RETURN_ERROR;
-							}
-
-							push_value=false;
-
-						}else if(operator_type==PUSH_ATTR){
-
-
-							POP_TWO; // first must be the value name and the other the variable name ...
-							CScriptVariable *struct_obj = NULL;
-							if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-								struct_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
-								if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
-									// op1 is now the src value ...
-									if(ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_STRING){
-										tSymbolInfo *si=NULL;
-										const char *str = (const char *)ptrResultInstructionOp2->stkValue;
-										src_ins=ptrResultInstructionOp1;
-										if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
-											si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str, -1,NULL, false );
-										}else{
-											si =((CStructScriptVariable *)struct_obj)->addVariableSymbol(str, -1,NULL );
-										}
-
-										if(si == NULL){
-											RETURN_ERROR;
-										}
-
-										dst_ins=&si->object;
-										ok=true;
+									if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
+										si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str, -1,NULL, false );
+									}else{
+										si =((CStructScriptVariable *)struct_obj)->addVariableSymbol(str, -1,NULL );
 									}
-									else{
-										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"internal error (operator2 is not string)");
+
+									if(si == NULL){
 										RETURN_ERROR;
 									}
-								}else{
-									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected struct object");
+
+									dst_ins=&si->object;
+									ok=true;
+								}
+								else{
+									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"internal error (operator2 is not string)");
 									RETURN_ERROR;
 								}
 							}else{
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected scriptvar");
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected struct object");
 								RETURN_ERROR;
 							}
-							push_value=false;
+						}else{
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected scriptvar");
+							RETURN_ERROR;
 						}
-						else{ // pop two parameters nothing ...
-							POP_TWO;
+						push_value=false;
+					}
+					else{ // pop two parameters nothing ...
+						POP_TWO;
 
 
-							if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
-								dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
-							}else{
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected object l-value mov");
-								RETURN_ERROR;
-							}
+						if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
+							dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
+						}else{
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected l-value mov");
+							RETURN_ERROR;
+						}
 
-							src_ins=ptrResultInstructionOp2; // store ptr instruction2 op as src_var_value
+						src_ins=ptrResultInstructionOp2; // store ptr instruction2 op as src_var_value
 
-							// we need primitive stackelement in order to assign...
-							if(src_ins->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
-								src_ins=(tStackElement *)src_ins->varRef; // stkValue is expect to contents a stack variable
-
-							}
-
-
-
-							// ok load object pointer ...
-							if(dst_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-
-								if(((CScriptVariable *)dst_ins->varRef)->itHasSetMetamethod()){
-									APPLY_METAMETHOD(=,SET_METAMETHOD);
-									assign_metamethod=true;
-								}
-							}
+						// we need primitive stackelement in order to assign...
+						if(src_ins->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
+							src_ins=(tStackElement *)src_ins->varRef; // stkValue is expect to contents a stack variable
 
 						}
 
 
 
-						if(! assign_metamethod){
+						// ok load object pointer ...
+						if(dst_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
-							if(dst_ins->properties & STK_PROPERTY_IS_THIS_VAR){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"\"this\" is not assignable");
-								RETURN_ERROR;
+							if(((CScriptVariable *)dst_ins->varRef)->itHasSetMetamethod()){
+								APPLY_METAMETHOD(=,SET_METAMETHOD);
+								assign_metamethod=true;
 							}
+						}
 
-							tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
-
-							ASSIGN_STACK_VAR(dst_ins,src_ins);
-
+					}
 
 
-							// check old var structure ...
-							switch(GET_INS_PROPERTY_VAR_TYPE(old_dst_ins.properties)){
-							case STK_PROPERTY_TYPE_NULL:
-							case STK_PROPERTY_TYPE_UNDEFINED:
-							case STK_PROPERTY_TYPE_INTEGER:
-							case STK_PROPERTY_TYPE_NUMBER:
-							case STK_PROPERTY_TYPE_BOOLEAN:
-							case STK_PROPERTY_TYPE_FUNCTION: // we aren't take care about nothing! :)
-								break;
-							case STK_PROPERTY_TYPE_STRING: // type string is really a string or variable ?!?!
-							case STK_PROPERTY_TYPE_SCRIPTVAR: // we are getting script vars ...
-								if(!(((old_dst_ins.properties & (STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR))==(STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR)))){
-									if(old_dst_ins.varRef!=NULL){ // it had a pointer (no constant)...
-										if(old_dst_ins.varRef != dst_ins->varRef){ // unref pointer because new pointer has been attached...
-											unrefSharedScriptVar(((CScriptVariable  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
-										}
+
+					if(! assign_metamethod){
+
+						if(dst_ins->properties & STK_PROPERTY_IS_THIS_VAR){
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"\"this\" is not assignable");
+							RETURN_ERROR;
+						}
+
+						tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
+
+						ASSIGN_STACK_VAR(dst_ins,src_ins);
+
+
+
+						// check old var structure ...
+						switch(GET_INS_PROPERTY_VAR_TYPE(old_dst_ins.properties)){
+						case STK_PROPERTY_TYPE_NULL:
+						case STK_PROPERTY_TYPE_UNDEFINED:
+						case STK_PROPERTY_TYPE_INTEGER:
+						case STK_PROPERTY_TYPE_NUMBER:
+						case STK_PROPERTY_TYPE_BOOLEAN:
+						case STK_PROPERTY_TYPE_FUNCTION: // we aren't take care about nothing! :)
+							break;
+						case STK_PROPERTY_TYPE_STRING: // type string is really a string or variable ?!?!
+						case STK_PROPERTY_TYPE_SCRIPTVAR: // we are getting script vars ...
+							if(!(((old_dst_ins.properties & (STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR))==(STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR)))){
+								if(old_dst_ins.varRef!=NULL){ // it had a pointer (no constant)...
+									if(old_dst_ins.varRef != dst_ins->varRef){ // unref pointer because new pointer has been attached...
+										unrefSharedScriptVar(((CScriptVariable  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
 									}
 								}
-								break;
 							}
-
-						}
-
-						if(push_value){ // to be able to do multiple assigns like a=b=c=1 (1 will be pushed in each store instruction)
-							*ptrCurrentOp++=*src_ins;
+							break;
 						}
 
 					}
 
-					continue;
-
-				case EQU:  // ==
-
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE;
-					}else{
-						POP_TWO;
+					if(push_value){ // to be able to do multiple assigns like a=b=c=1 (1 will be pushed in each store instruction)
+						*ptrCurrentOp++=*src_ins;
 					}
 
-					PROCESS_COMPARE_OPERATION(==, EQU_METAMETHOD);
-					continue;
-				case NOT_EQU:  // !=
+				}
 
+				continue;
+
+			case EQU:  // ==
+
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE;
+				}else{
 					POP_TWO;
-					PROCESS_COMPARE_OPERATION(!=, NOT_EQU_METAMETHOD);
-					continue;
+				}
 
-				case LT:  // <
+				PROCESS_COMPARE_OPERATION(==, EQU_METAMETHOD);
+				continue;
+			case NOT_EQU:  // !=
+
+				POP_TWO;
+				PROCESS_COMPARE_OPERATION(!=, NOT_EQU_METAMETHOD);
+				continue;
+
+			case LT:  // <
+				POP_TWO;
+				PROCESS_COMPARE_OPERATION(<, LT_METAMETHOD);
+				continue;
+			case LTE:  // <=
+				POP_TWO;
+				PROCESS_COMPARE_OPERATION(<=, LTE_METAMETHOD);
+				continue;
+			case GT:  // >
+
+				POP_TWO;
+				PROCESS_COMPARE_OPERATION(>,GT_METAMETHOD);
+				continue;
+			case GTE:  // >=
+				POP_TWO;
+				PROCESS_COMPARE_OPERATION(>=,GTE_METAMETHOD);
+				continue;
+			case LOGIC_AND:  // &&
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE;
+				}else{
 					POP_TWO;
-					PROCESS_COMPARE_OPERATION(<, LT_METAMETHOD);
-					continue;
-				case LTE:  // <=
+				}
+
+				PROCESS_LOGIC_OPERATION(&&);
+				continue;
+			case LOGIC_OR:  // ||
+
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE;
+				}else{
 					POP_TWO;
-					PROCESS_COMPARE_OPERATION(<=, LTE_METAMETHOD);
-					continue;
-				case GT:  // >
+				}
+				PROCESS_LOGIC_OPERATION(||);
+				continue;
+			case NOT: // !
 
+				POP_ONE;
+
+				if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN){ // operation will result as integer.
+					PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
+				}else{
+					APPLY_METAMETHOD(!,NOT_METAMETHOD);
+						//writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
+						RETURN_ERROR;
+				}
+				continue;
+
+			case NEG: // -
+
+				POP_ONE;
+
+				if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_INTEGER){ // operation will result as integer.
+					PUSH_INTEGER((-((intptr_t)(ptrResultInstructionOp1->stkValue))));
+				}else if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_NUMBER){
+					COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);
+					PUSH_NUMBER(-f_aux_value1);
+				/*}else if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN){
+					PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
+				*/
+				}else{ // try metamethod ...
+						APPLY_METAMETHOD(-,NEG_METAMETHOD);
+						//#define APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__)
+				}
+				continue;
+
+			case ADD: // +
+
+			{
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE;
+				}else{
 					POP_TWO;
-					PROCESS_COMPARE_OPERATION(>,GT_METAMETHOD);
-					continue;
-				case GTE:  // >=
-					POP_TWO;
-					PROCESS_COMPARE_OPERATION(>=,GTE_METAMETHOD);
-					continue;
-				case LOGIC_AND:  // &&
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE;
-					}else{
-						POP_TWO;
-					}
-
-					PROCESS_LOGIC_OPERATION(&&);
-					continue;
-				case LOGIC_OR:  // ||
-
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE;
-					}else{
-						POP_TWO;
-					}
-					PROCESS_LOGIC_OPERATION(||);
-					continue;
-				case NOT: // !
-
-					POP_ONE;
-
-					if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN){ // operation will result as integer.
-						PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
-					}else{
-						APPLY_METAMETHOD(!,NOT_METAMETHOD);
-							//writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
-							RETURN_ERROR;
-					}
-					continue;
-
-				case NEG: // -
-
-					POP_ONE;
-
-					if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_INTEGER){ // operation will result as integer.
-						PUSH_INTEGER((-((intptr_t)(ptrResultInstructionOp1->stkValue))));
-					}else if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_NUMBER){
-						COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);
-						PUSH_NUMBER(-f_aux_value1);
-					/*}else if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN){
-						PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
-					*/
-					}else{ // try metamethod ...
-							APPLY_METAMETHOD(-,NEG_METAMETHOD);
-							//#define APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__)
-					}
-					continue;
-
-				case ADD: // +
-
-				{
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE;
-					}else{
-						POP_TWO;
-					}
+				}
 
 
-					unsigned short mask_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties&ptrResultInstructionOp2->properties);
-					unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);
-					if(mask_properties==STK_PROPERTY_TYPE_INTEGER){
-							PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) + LOAD_INT_OP(ptrResultInstructionOp2));
-					}
-					else if(properties==(STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_TYPE_NUMBER)){
-							if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
-								COPY_NUMBER(&f_aux_value2,&ptrResultInstructionOp2->stkValue);
-								PUSH_NUMBER(LOAD_INT_OP(ptrResultInstructionOp1) + f_aux_value2);
-							}else{
-								COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);
-								PUSH_NUMBER(f_aux_value1 + LOAD_INT_OP(ptrResultInstructionOp2));
-							}
-					}
-					else if(properties==(STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_TYPE_STRING)){
-						if (IS_STRING(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
-							sprintf(str_aux,"%s%i",((const char *)ptrResultInstructionOp1->stkValue),(int)((intptr_t)ptrResultInstructionOp2->stkValue));
-							//PUSH_STRING(str_aux);
-							if(ptrCurrentStr==ptrLastStr){writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Error stkString out-stack");RETURN_ERROR;}\
-									*ptrCurrentStr++=str_aux;\
-									*ptrCurrentOp++={STK_PROPERTY_TYPE_STRING,(void *)((ptrCurrentStr-1)->c_str()),NULL};\
-
-						}else{
-							sprintf(str_aux,"%i%s",(int)((intptr_t)ptrResultInstructionOp1->stkValue),((const char *)ptrResultInstructionOp2->stkValue));
-							PUSH_STRING(str_aux);
-						}
-					}else if(properties==(STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_TYPE_STRING)){
-						if (IS_STRING(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
+				unsigned short mask_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties&ptrResultInstructionOp2->properties);
+				unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(ptrResultInstructionOp1->properties|ptrResultInstructionOp2->properties);
+				if(mask_properties==STK_PROPERTY_TYPE_INTEGER){
+						PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) + LOAD_INT_OP(ptrResultInstructionOp2));
+				}
+				else if(properties==(STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_TYPE_NUMBER)){
+						if (IS_INT(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
 							COPY_NUMBER(&f_aux_value2,&ptrResultInstructionOp2->stkValue);
-							sprintf(str_aux,"%s%f",((const char *)ptrResultInstructionOp1->stkValue),f_aux_value2);
-							PUSH_STRING(str_aux);
-
+							PUSH_NUMBER(LOAD_INT_OP(ptrResultInstructionOp1) + f_aux_value2);
 						}else{
 							COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);
-							sprintf(str_aux,"%f%s",f_aux_value1,((const char *)ptrResultInstructionOp2->stkValue));
-							PUSH_STRING(str_aux);
+							PUSH_NUMBER(f_aux_value1 + LOAD_INT_OP(ptrResultInstructionOp2));
 						}
-					}else if(properties==(STK_PROPERTY_TYPE_UNDEFINED|STK_PROPERTY_TYPE_STRING)){
-						if (IS_STRING(ptrResultInstructionOp1->properties) && IS_UNDEFINED(ptrResultInstructionOp2->properties)){
-							sprintf(str_aux,"%s%s",((const char *)ptrResultInstructionOp1->stkValue),"undefined");
-							PUSH_STRING(str_aux);
-						}else{
-							sprintf(str_aux,"%s%s","undefined",((const char *)ptrResultInstructionOp2->stkValue));
-							PUSH_STRING(str_aux);
-						}
-
-					}else if(properties==(STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_TYPE_STRING)){
-						if (IS_STRING(ptrResultInstructionOp1->properties) && IS_BOOLEAN(ptrResultInstructionOp2->properties)){
-							sprintf(str_aux,"%s%s",((const char *)ptrResultInstructionOp1->stkValue),((bool)(ptrResultInstructionOp2->stkValue))?"true":"false");
-							PUSH_STRING(str_aux);
-						}else{
-							sprintf(str_aux,"%s%s",((bool)(ptrResultInstructionOp1->stkValue))?"true":"false",((const char *)ptrResultInstructionOp2->stkValue));
-							PUSH_STRING(str_aux);
-						}
-
-					}else if (mask_properties== STK_PROPERTY_TYPE_STRING){
-							sprintf(str_aux,"%s%s",((const char *)ptrResultInstructionOp1->stkValue),((const char *)(ptrResultInstructionOp2->stkValue)));
-							PUSH_STRING(str_aux);
-
-
-					}else if(mask_properties== STK_PROPERTY_TYPE_NUMBER){
-						COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);\
-						COPY_NUMBER(&f_aux_value2,&ptrResultInstructionOp2->stkValue);\
-						PUSH_NUMBER(f_aux_value1 + f_aux_value2);\
-
-					}
-					else{ // try metamethod ...
-
-						APPLY_METAMETHOD(+,ADD_METAMETHOD);
-					}
 				}
-					continue;
+				else if(properties==(STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_TYPE_STRING)){
+					if (IS_STRING(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
+						sprintf(str_aux,"%s%i",((const char *)ptrResultInstructionOp1->stkValue),(int)((intptr_t)ptrResultInstructionOp2->stkValue));
+						//PUSH_STRING(str_aux);
+						if(ptrCurrentStr==ptrLastStr){writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Error stkString out-stack");RETURN_ERROR;}\
+								*ptrCurrentStr++=str_aux;\
+								*ptrCurrentOp++={STK_PROPERTY_TYPE_STRING,(void *)((ptrCurrentStr-1)->c_str()),NULL};\
 
-				case MUL: // *
-
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE
 					}else{
-						POP_TWO;
+						sprintf(str_aux,"%i%s",(int)((intptr_t)ptrResultInstructionOp1->stkValue),((const char *)ptrResultInstructionOp2->stkValue));
+						PUSH_STRING(str_aux);
 					}
+				}else if(properties==(STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_TYPE_STRING)){
+					if (IS_STRING(ptrResultInstructionOp1->properties) && IS_NUMBER(ptrResultInstructionOp2->properties)){
+						COPY_NUMBER(&f_aux_value2,&ptrResultInstructionOp2->stkValue);
+						sprintf(str_aux,"%s%f",((const char *)ptrResultInstructionOp1->stkValue),f_aux_value2);
+						PUSH_STRING(str_aux);
 
-					PROCESS_ARITHMETIC_OPERATION(*,MUL_METAMETHOD);
-					continue;
-
-				case DIV: // /
-
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE
 					}else{
-						POP_TWO;
+						COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);
+						sprintf(str_aux,"%f%s",f_aux_value1,((const char *)ptrResultInstructionOp2->stkValue));
+						PUSH_STRING(str_aux);
 					}
-
-					PROCESS_ARITHMETIC_OPERATION(/, DIV_METAMETHOD);
-					continue;
-
-			 	 case MOD: // /
-
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE
+				}else if(properties==(STK_PROPERTY_TYPE_UNDEFINED|STK_PROPERTY_TYPE_STRING)){
+					if (IS_STRING(ptrResultInstructionOp1->properties) && IS_UNDEFINED(ptrResultInstructionOp2->properties)){
+						sprintf(str_aux,"%s%s",((const char *)ptrResultInstructionOp1->stkValue),"undefined");
+						PUSH_STRING(str_aux);
 					}else{
-						POP_TWO;
+						sprintf(str_aux,"%s%s","undefined",((const char *)ptrResultInstructionOp2->stkValue));
+						PUSH_STRING(str_aux);
 					}
 
-					PROCESS_MOD_OPERATION;
-					continue;
-
-			 	 case AND: // &
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE
+				}else if(properties==(STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_TYPE_STRING)){
+					if (IS_STRING(ptrResultInstructionOp1->properties) && IS_BOOLEAN(ptrResultInstructionOp2->properties)){
+						sprintf(str_aux,"%s%s",((const char *)ptrResultInstructionOp1->stkValue),((bool)(ptrResultInstructionOp2->stkValue))?"true":"false");
+						PUSH_STRING(str_aux);
 					}else{
-						POP_TWO;
+						sprintf(str_aux,"%s%s",((bool)(ptrResultInstructionOp1->stkValue))?"true":"false",((const char *)ptrResultInstructionOp2->stkValue));
+						PUSH_STRING(str_aux);
 					}
 
-					PROCESS_BINARY_OPERATION(&, AND_METAMETHOD);
-					continue;
-			 	 case OR: // *
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE
-					}else{
-						POP_TWO;
+				}else if (mask_properties== STK_PROPERTY_TYPE_STRING){
+						sprintf(str_aux,"%s%s",((const char *)ptrResultInstructionOp1->stkValue),((const char *)(ptrResultInstructionOp2->stkValue)));
+						PUSH_STRING(str_aux);
+
+
+				}else if(mask_properties== STK_PROPERTY_TYPE_NUMBER){
+					COPY_NUMBER(&f_aux_value1,&ptrResultInstructionOp1->stkValue);\
+					COPY_NUMBER(&f_aux_value2,&ptrResultInstructionOp2->stkValue);\
+					PUSH_NUMBER(f_aux_value1 + f_aux_value2);\
+
+				}
+				else{ // try metamethod ...
+
+					APPLY_METAMETHOD(+,ADD_METAMETHOD);
+				}
+			}
+				continue;
+
+			case MUL: // *
+
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE
+				}else{
+					POP_TWO;
+				}
+
+				PROCESS_ARITHMETIC_OPERATION(*,MUL_METAMETHOD);
+				continue;
+
+			case DIV: // /
+
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE
+				}else{
+					POP_TWO;
+				}
+
+				PROCESS_ARITHMETIC_OPERATION(/, DIV_METAMETHOD);
+				continue;
+
+			 case MOD: // /
+
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE
+				}else{
+					POP_TWO;
+				}
+
+				PROCESS_MOD_OPERATION;
+				continue;
+
+			 case AND: // &
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE
+				}else{
+					POP_TWO;
+				}
+
+				PROCESS_BINARY_OPERATION(&, AND_METAMETHOD);
+				continue;
+			 case OR: // *
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE
+				}else{
+					POP_TWO;
+				}
+
+				PROCESS_BINARY_OPERATION(|, OR_METAMETHOD);
+				continue;
+			 case XOR: // ^
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE
+				}else{
+					POP_TWO;
+				}
+
+				PROCESS_BINARY_OPERATION(^, XOR_METAMETHOD);
+				continue;
+
+			 case SHR: // >>
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE
+				}else{
+					POP_TWO;
+				}
+
+				PROCESS_BINARY_OPERATION(>>,SHR_METAMETHOD);
+				continue;
+
+			 case SHL: // <<
+				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+					READ_TWO_POP_ONE
+				}else{
+					POP_TWO;
+				}
+
+				PROCESS_BINARY_OPERATION(<<, SHL_METAMETHOD);
+				continue;
+			 case JMP:
+				instruction_it=&start_it[instruction->index_op2];
+				continue;
+			 case INSTANCEOF: // check instance of ...
+				 POP_TWO;
+
+				if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
+					ptrResultInstructionOp1=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
+				}
+
+				switch((intptr_t)ptrResultInstructionOp2->stkValue){
+					case IDX_CLASS_INT_PTR_C:
+						PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_INTEGER)!=0);
+						break;
+					case IDX_CLASS_FLOAT_PTR_C:
+						PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_NUMBER)!=0);
+						break;
+					case IDX_CLASS_BOOL_PTR_C:
+						PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN)!=0);
+						break;
+					case IDX_CLASS_STRING_PTR_C:
+						PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_STRING)!=0);
+						break;
+					case IDX_CLASS_FUNCTOR:
+						PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_FUNCTION)!=0);
+						break;
+					default:
+						if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+							bool b = CScriptClass::isIdxClassInstanceOf(((CScriptVariable *)(ptrResultInstructionOp1->varRef))->idxScriptClass, (intptr_t)ptrResultInstructionOp2->stkValue);
+							PUSH_BOOLEAN(b);
+						}else{
+							PUSH_BOOLEAN(false);
+						}
+						break;
 					}
 
-					PROCESS_BINARY_OPERATION(|, OR_METAMETHOD);
-					continue;
-			 	 case XOR: // ^
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE
-					}else{
-						POP_TWO;
-					}
 
-					PROCESS_BINARY_OPERATION(^, XOR_METAMETHOD);
-					continue;
+				 continue;
+			 case JNT: // goto if not true ... goes end to conditional.
+				POP_ONE;
+				if(ptrResultInstructionOp1->stkValue == 0){
+					instruction_it=&start_it[instruction->index_op2];
+				}
+				continue;
+			 case JT: // goto if true ... goes end to conditional.
+				POP_ONE;
+				if(ptrResultInstructionOp1->stkValue != 0){
+					instruction_it=&start_it[instruction->index_op2];
+				}
+				continue;
+			 case  CALL: // calling function after all of args are processed...
+				// check whether signatures matches or not ...
+				// 1. get function object ...
+			 {
+				aux_function_info = NULL;
+				unsigned char n_args=0;//iao->instruction_properties;
 
-			 	 case SHR: // >>
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE
-					}else{
-						POP_TWO;
-					}
 
-					PROCESS_BINARY_OPERATION(>>,SHR_METAMETHOD);
-					continue;
+				bool is_c = false;
+				tStackElement *startArg=ptrCurrentOp;
+				tStackElement *callAle=NULL;
 
-			 	 case SHL: // <<
-					if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
-						READ_TWO_POP_ONE
-					}else{
-						POP_TWO;
-					}
+				while(n_args <= MAX_N_ARGS && (((startArg-1)->properties&STK_PROPERTY_TYPE_FUNCTION)==0)){
+					startArg--;
+					n_args++;
+				}
 
-					PROCESS_BINARY_OPERATION(<<, SHL_METAMETHOD);
-					continue;
-			 	 case JMP:
-					CHK_JMP;
-					continue;
-			 	 case INSTANCEOF: // check instance of ...
-			 		 POP_TWO;
+				callAle = ((startArg-1));
+				calling_object = this_object;
+				if(callAle->varRef!=NULL){
+					calling_object=(CScriptVariable *)callAle->varRef;
+				}
 
-			 		if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
-			 			ptrResultInstructionOp1=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
-					}
 
-			 		switch((intptr_t)ptrResultInstructionOp2->stkValue){
-						case IDX_CLASS_INT_PTR_C:
-							PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_INTEGER)!=0);
-							break;
-						case IDX_CLASS_FLOAT_PTR_C:
-							PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_NUMBER)!=0);
-							break;
-						case IDX_CLASS_BOOL_PTR_C:
-							PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN)!=0);
-							break;
-						case IDX_CLASS_STRING_PTR_C:
-							PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_STRING)!=0);
-							break;
-						case IDX_CLASS_FUNCTOR:
-							PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_FUNCTION)!=0);
-							break;
-						default:
-							if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-								bool b = CScriptClass::isIdxClassInstanceOf(((CScriptVariable *)(ptrResultInstructionOp1->varRef))->idxScriptClass, (intptr_t)ptrResultInstructionOp2->stkValue);
-								PUSH_BOOLEAN(b);
-							}else{
-								PUSH_BOOLEAN(false);
+				aux_function_info = NULL;//(CScriptFunctionObject *)callAle->stkValue;
+
+
+				bool is_constructor = (callAle->properties & STK_PROPERTY_CONSTRUCTOR_FUNCTION)!=0;
+				//bool deduce_function = false; //(iao->instruction_properties & INS_PROPERTY_DEDUCE_C_CALL)!=0;
+
+				// try to find the function ...
+				if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
+					tInfoAsmOp *iao = (tInfoAsmOp *)(callAle)->stkValue;
+					PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
+
+					symbol_to_find = ast_node_call_ale->symbol_value;
+
+					//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
+					unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
+
+
+					// local vars as functions ...
+
+					// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
+					vector<tSymbolInfo> *m_functionSymbol=NULL;
+					if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+						calling_object = (CScriptVariable *)callAle->varRef;
+
+						// we have to no to call default constructor...is implicit
+						if(is_constructor) {
+
+							is_c=calling_object->is_c_object();
+
+							if(n_args == 0 && is_c){
+								aux_function_info = NULL;
+								iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
 							}
-							break;
 						}
 
-
-			 		 continue;
-			 	 case JNT: // goto if not true ... goes end to conditional.
-					POP_ONE;
-					if(ptrResultInstructionOp1->stkValue == 0){
-						CHK_JMP;
-					}
-					continue;
-			 	 case JT: // goto if true ... goes end to conditional.
-					POP_ONE;
-					if(ptrResultInstructionOp1->stkValue != 0){
-						CHK_JMP;
-					}
-					continue;
-			 	 case  CALL: // calling function after all of args are processed...
-					// check whether signatures matches or not ...
-					// 1. get function object ...
-			 	 {
-					aux_function_info = NULL;
-					unsigned char n_args=0;//iao->instruction_properties;
-
-
-					bool is_c = false;
-					tStackElement *startArg=ptrCurrentOp;
-					tStackElement *callAle=NULL;
-
-					while(n_args <= MAX_N_ARGS && (((startArg-1)->properties&STK_PROPERTY_TYPE_FUNCTION)==0)){
-						startArg--;
-						n_args++;
+						m_functionSymbol=calling_object->getVectorFunctionSymbol();
 					}
 
-					callAle = ((startArg-1));
-					calling_object = this_object;
-					if(callAle->varRef!=NULL){
-						calling_object=(CScriptVariable *)callAle->varRef;
-					}
-
-
-					aux_function_info = NULL;//(CScriptFunctionObject *)callAle->stkValue;
-
-
-					bool is_constructor = (callAle->properties & STK_PROPERTY_CONSTRUCTOR_FUNCTION)!=0;
-					//bool deduce_function = false; //(iao->instruction_properties & INS_PROPERTY_DEDUCE_C_CALL)!=0;
-
-					// try to find the function ...
-					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
-						tInfoAsmOp *iao = (tInfoAsmOp *)(callAle)->stkValue;
-						PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
-
-						symbol_to_find = ast_node_call_ale->symbol_value;
-
-						//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
-						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
-
-
-						// local vars as functions ...
-						vec_global_functions=&(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
-
-						int size_fun_vec = (int)vec_global_functions->size()-1;
-
-						// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
-						vector<tSymbolInfo> *m_functionSymbol=NULL;
-						if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
-							calling_object = (CScriptVariable *)callAle->varRef;
-
-							// we have to no to call default constructor...is implicit
-							if(is_constructor) {
-
-								is_c=calling_object->is_c_object();
-
-								if(n_args == 0 && is_c){
-									aux_function_info = NULL;
-									iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
-								}
-							}
-
-							m_functionSymbol=calling_object->getVectorFunctionSymbol();
-
-							size_fun_vec = (int)m_functionSymbol->size()-1;
-
-						}
-
-						//bool all_check=true;
-						if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
-						{
-							//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
-							FIND_FUNCTION(
-									m_functionSymbol
-									,iao
-									,is_constructor
-									,symbol_to_find
-									,size_fun_vec
-									,vec_global_functions
-									,startArg
-									,n_args
-									,NULL);
-
-
-							// saves function pointer found ...
-							callAle->stkValue=aux_function_info;
-
-						}
-
-					}
-					else{
-						if(((callAle)->properties & STK_PROPERTY_UNRESOLVED_FUNCTION)==0){
-							aux_function_info=(CScriptFunctionObject *) (callAle->stkValue);
-						}
-					}
-
-					if(aux_function_info !=NULL)
+					//bool all_check=true;
+					if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
 					{
-						if(n_args > MAX_N_ARGS){
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max arguments reached function at line XXX");
-							RETURN_ERROR;
-						}
+						vector<int> *vec_global_functions=&(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
+						//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
+						if((aux_function_info=FIND_FUNCTION(
+								m_functionSymbol
+								,vec_global_functions
+								,iao
+								,is_constructor
+								,symbol_to_find
+								,calling_object
+								,instruction
+								,ptrResultInstructionOp1
+								,ptrResultInstructionOp2
+								,startArg
+								,n_args
+								,NULL))==NULL){
 
-						if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
-							unsigned aux_function_info_m_arg_size=aux_function_info->m_arg.size();
-							if( n_args < aux_function_info_m_arg_size){ // we must push undefined parameters ...
-								for(unsigned i = n_args; i < aux_function_info_m_arg_size; i++){
-									*ptrCurrentOp++={
-										STK_PROPERTY_TYPE_UNDEFINED, // starts undefined.
-										0,							 // no value assigned.
-										NULL			     // no varref related.
-									};
-									n_args++;
-								}
-							}
-						}
-
-						// by default virtual machine gets main object class in order to run functions ...
-						ret_obj=execute_internal(aux_function_info,calling_object,error,ptrCurrentOp,ptrCurrentStr,n_args,instruction->idxAstNode);
-
-						if(error)
-						{
-							RETURN_ERROR;
-						}
-
-						if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-
-							// if c pointer is not from application share ...
-							if(!((CScriptVariable *)(ret_obj.varRef))->initSharedPtr()){
+							if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX){
 								RETURN_ERROR;
 							}
 						}
 
-						if(cancel_execution) {
-							if(custom_error!=NULL){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
+
+						// saves function pointer found ...
+						callAle->stkValue=aux_function_info;
+
+					}
+
+				}
+				else{
+					if(((callAle)->properties & STK_PROPERTY_UNRESOLVED_FUNCTION)==0){
+						aux_function_info=(CScriptFunctionObject *) (callAle->stkValue);
+					}
+				}
+
+				if(aux_function_info !=NULL)
+				{
+					if(n_args > MAX_N_ARGS){
+						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max arguments reached function at line XXX");
+						RETURN_ERROR;
+					}
+
+					if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
+						unsigned aux_function_info_m_arg_size=aux_function_info->m_arg.size();
+						if( n_args < aux_function_info_m_arg_size){ // we must push undefined parameters ...
+							for(unsigned i = n_args; i < aux_function_info_m_arg_size; i++){
+								*ptrCurrentOp++={
+									STK_PROPERTY_TYPE_UNDEFINED, // starts undefined.
+									0,							 // no value assigned.
+									NULL			     // no varref related.
+								};
+								n_args++;
 							}
+						}
+					}
+
+					// by default virtual machine gets main object class in order to run functions ...
+					ret_obj=execute_internal(aux_function_info,calling_object,error,ptrCurrentOp,ptrCurrentStr,n_args,instruction->idxAstNode);
+
+					if(error)
+					{
+						RETURN_ERROR;
+					}
+
+					if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+
+						// if c pointer is not from application share ...
+						if(!((CScriptVariable *)(ret_obj.varRef))->initSharedPtr()){
 							RETURN_ERROR;
 						}
-
 					}
 
-					// reset stack (function+asm_op (-1 op less))...
-					ptrCurrentOp=startArg-1;
-
-					// ... and push result if not function constructor...
-					if(!is_constructor){
-						*ptrCurrentOp++ = ret_obj;
+					if(cancel_execution) {
+						if(custom_error!=NULL){
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
+						}
+						RETURN_ERROR;
 					}
-			 	 }
+
+				}
+
+				// reset stack (function+asm_op (-1 op less))...
+				ptrCurrentOp=startArg-1;
+
+				// ... and push result if not function constructor...
+				if(!is_constructor){
+					*ptrCurrentOp++ = ret_obj;
+				}
+			 }
+				continue;
+			 case  NEW:
+					svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1);
+
+					if(!svar->initSharedPtr()){
+						RETURN_ERROR;
+					}
+					svar->ast_node_new=instruction->idxAstNode;
+					(*ptrCurrentOp++)={STK_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
 					continue;
-			 	 case  NEW:
-						svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1);
-
-						if(!svar->initSharedPtr()){
-							RETURN_ERROR;
+			 case  DELETE_OP:
+					POP_ONE;
+					//svar
+					if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+						tStackElement *se=ptrResultInstructionOp1;
+						if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR){
+							se=(tStackElement *)(ptrResultInstructionOp1->varRef);
 						}
-						svar->ast_node_new=instruction->idxAstNode;
-						(*ptrCurrentOp++)={STK_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
-						continue;
-			 	 case  DELETE_OP:
-			 		 	POP_ONE;
-			 		 	//svar
-						if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							tStackElement *se=ptrResultInstructionOp1;
-							if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR){
-								se=(tStackElement *)(ptrResultInstructionOp1->varRef);
+
+						svar = (CScriptVariable *)(se)->varRef;
+						if(svar->idxScriptClass >= MAX_BASIC_CLASS_TYPES
+						 ||svar->idxScriptClass==IDX_CLASS_VECTOR
+						 ||svar->idxScriptClass==IDX_CLASS_STRUCT
+						)
+						{ // max ...
+							svar->unrefSharedPtr();
+
+							if(svar->isCreatedByContructor()){
+								svar->setDelete_C_ObjectOnDestroy(true);
 							}
 
-							svar = (CScriptVariable *)(se)->varRef;
-							if(svar->idxScriptClass >= MAX_BASIC_CLASS_TYPES
-							 ||svar->idxScriptClass==IDX_CLASS_VECTOR
-							 ||svar->idxScriptClass==IDX_CLASS_STRUCT
-							)
-							{ // max ...
-								svar->unrefSharedPtr();
+							se->stkValue=NULL;
+							se->varRef=NULL;
+							se->properties=STK_PROPERTY_TYPE_UNDEFINED;
 
-								if(svar->isCreatedByContructor()){
-									svar->setDelete_C_ObjectOnDestroy(true);
-								}
-
-								se->stkValue=NULL;
-								se->varRef=NULL;
-								se->properties=STK_PROPERTY_TYPE_UNDEFINED;
-
-							}
 						}
-						else{
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"delete op: expected scriptvar var but it was \"%s\"",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1));
-							RETURN_ERROR;
-						}
-						continue;
-			 	 case DECL_VEC: // Create new vector object...
-						svar=NEW_VECTOR_VAR;
-						//PUSH_VAR(svar,NULL,0,false);
-
-						if(!svar->initSharedPtr()){
-							RETURN_ERROR;
-						}
-
-						(*ptrCurrentOp++)={STK_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
-
-						continue;
-
-			 	 case  DECL_STRUCT: // Create new vector object...
-					svar=NEW_STRUCT_VAR;
+					}
+					else{
+						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"delete op: expected scriptvar var but it was \"%s\"",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1));
+						RETURN_ERROR;
+					}
+					continue;
+			 case DECL_VEC: // Create new vector object...
+					svar=NEW_VECTOR_VAR;
 					//PUSH_VAR(svar,NULL,0,false);
 
 					if(!svar->initSharedPtr()){
@@ -2675,54 +2643,70 @@ if(aux_function_info == NULL){\
 
 					continue;
 
+			 case  DECL_STRUCT: // Create new vector object...
+				svar=NEW_STRUCT_VAR;
+				//PUSH_VAR(svar,NULL,0,false);
 
-			 	 case  RET:
-
-			 		 if(instruction->index_op1 != 0xff){ // return a value, void else.
-						callc_result=*(ptrCurrentOp-1);
-
-						// remove shared pointer if scriptvar ...
-						if(callc_result.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							if(callc_result.properties & STK_PROPERTY_IS_STACKVAR){
-								callc_result=*((tStackElement *)((tStackElement *)callc_result.varRef));
-
-							}
-
-							// unref pointer to be deallocated from gc...
-							//((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node->data.shared_ptr=NULL;
-							((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node=NULL;
-							// share pointer  + 1
-						}
-			 		 }
-					goto lbl_exit_function;
-			 case PUSH_SCOPE:
-
-					PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar);//instruction->index_op1);
-					continue;
-
-			 case POP_SCOPE:
-					POP_SCOPE(NULL);//instruction->index_op1);
-				 	continue;
-
-				//
-				// END OPERATOR MANAGEMENT
-				//
-				//-----------------------------------------------------------------------------------------------------------------------
-
+				if(!svar->initSharedPtr()){
+					RETURN_ERROR;
 				}
 
-				writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
-				RETURN_ERROR;
+				(*ptrCurrentOp++)={STK_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
+
+				continue;
 
 
-			 }
+			 case  RET:
+
+				 //if(instruction->index_op1 != 0xff){ // return a value, void else.
+				if(ptrCurrentOp>ptrStartOp){ // can return something
+					callc_result=*(ptrCurrentOp-1);
+
+					// remove shared pointer if scriptvar ...
+					if(callc_result.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+						if(callc_result.properties & STK_PROPERTY_IS_STACKVAR){
+							callc_result=*((tStackElement *)((tStackElement *)callc_result.varRef));
+
+						}
+
+						// unref pointer to be deallocated from gc...
+						//((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node->data.shared_ptr=NULL;
+						if(((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node!=NULL){
+							free(((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node);
+							((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node=NULL;
+						}
+						// share pointer  + 1
+					}
+					else{ // remove all involved inforamtion
+						callc_result.properties&=~STK_PROPERTY_IS_STACKVAR; // remove stack var if any...
+						callc_result.varRef =NULL;
+					}
+				}
+				// }
+				goto lbl_exit_function;
+		 case PUSH_SCOPE:
+
+				PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar);//instruction->index_op1);
+				continue;
+
+		 case POP_SCOPE:
+				ptrCurrentStr=ptrStartStr; // reset op ptr
+				ptrCurrentOp=ptrStartOp;
+				POP_SCOPE(NULL);//instruction->index_op1);
+				continue;
+
+			//
+			// END OPERATOR MANAGEMENT
+			//
+			//-----------------------------------------------------------------------------------------------------------------------
+
+			}
+
+			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+			RETURN_ERROR;
 
 
-
-
-	// exit statment (don't remove ;, it gives a compile error)
-	lbl_exit_statment:;
-		}
+		 }
 
 	lbl_exit_function:
 

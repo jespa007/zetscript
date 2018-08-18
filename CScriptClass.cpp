@@ -16,8 +16,6 @@ namespace zetscript{
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
-
-
 	vector<CScriptClass *> 				* CScriptClass::vec_script_class_node=NULL;
 
 	string  * CScriptClass::VOID_TYPE_STR=NULL;// 		typeid(void).name()
@@ -34,16 +32,11 @@ namespace zetscript{
 	string  * CScriptClass::BOOL_TYPE_STR=NULL;//	typeid(bool *).name()
 	string  * CScriptClass::STACK_ELEMENT_PTR=NULL;//	typeid(bool *).name()
 
-	//char ** CScriptClass::registered_metamethod = NULL;// [MAX_METAMETHOD_OPERATORS][50] = { {0} };
-	 //CScriptClass *  	 CScriptClass::scriptClassFactory=NULL;
-	 //CScriptClass::tPrimitiveType CScriptClass::valid_C_PrimitiveType[MAX_C_TYPE_VALID_PRIMITIVE_VAR];
 
 	// register metamethods str ...
 	 //--obj , type convert, ---
 	 map<int,map<int,fntConversionType>>  * CScriptClass::mapTypeConversion=NULL;
 	void (* CScriptClass::print_out_callback)(const char *) = NULL;
-
-
 
 
 	int CScriptClass::getIdxClassFromIts_C_TypeInternal(const string & c_type_str){
@@ -65,7 +58,6 @@ namespace zetscript{
 	}
 
 	bool 	CScriptClass::isIdxClassInstanceOf(int idxSrcClass, int class_idx){
-
 
 		if(idxSrcClass == class_idx){
 			return true;
@@ -99,8 +91,6 @@ namespace zetscript{
 						0,
 						ptr_variable
 				};
-
-
 			}else if(*CScriptClass::CONST_CHAR_PTR_TYPE_STR==ir_var->c_type){
 
 				return {
@@ -108,7 +98,6 @@ namespace zetscript{
 						ptr_variable,
 						0
 				};
-
 			}else if(*CScriptClass::STRING_PTR_TYPE_STR==ir_var->c_type){
 
 				return {
@@ -116,7 +105,6 @@ namespace zetscript{
 						(void *)((string *)ptr_variable)->c_str(),
 						ptr_variable
 				};
-
 			}else if(*CScriptClass::BOOL_PTR_TYPE_STR==ir_var->c_type){
 				return {
 						STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_C_VAR,
@@ -145,7 +133,6 @@ namespace zetscript{
 			0,
 			NULL};
 	}
-
 
 	void CScriptClass::setVectorScriptClassNode(vector<CScriptClass *> 	* set_vec){
 		vec_script_class_node = set_vec;
@@ -178,8 +165,6 @@ namespace zetscript{
 			sci->metadata_info.object_info.symbol_info.idxScriptClass = (short)vec_script_class_node->size();
 			sci->classPtrType = TYPE_SCRIPT_VARIABLE;
 
-
-
 			sci->metadata_info.object_info.symbol_info.symbol_ref = class_name;
 			sci->metadata_info.object_info.symbol_info.idxAstNode=-1;
 
@@ -202,8 +187,6 @@ namespace zetscript{
 
 		return NULL;
 	}
-
-
 
 	const char * CScriptClass::getMetamethod(METAMETHOD_OPERATOR op){
 
@@ -233,7 +216,6 @@ namespace zetscript{
 
 		return "none";
 	}
-
 
 	vector<CScriptClass *> * CScriptClass::getVecScriptClassNode(){
 		return vec_script_class_node;
@@ -292,14 +274,7 @@ namespace zetscript{
 	}
 
 	int CScriptClass::getIdxScriptClass(const string & v, bool print_msg){
-		int index= getIdxScriptClass_Internal(v);
-
-		/*if(index == -1 && print_msg){
-			//THROW_RUNTIME_ERROR("class %s not registered",v.c_str());
-			return ZS_UNDEFINED_IDX;
-		}*/
-
-		return index;
+		return getIdxScriptClass_Internal(v);
 	}
 
 	bool CScriptClass::isClassRegistered(const string & v){
@@ -314,8 +289,6 @@ namespace zetscript{
 	void CScriptClass::setPrintOutCallback(void (* _printout_callback)(const char *)){
 		print_out_callback=_printout_callback;
 	}
-
-
 	 void  CScriptClass::print(const char *s){
 
 		printf("%s\n",s);
@@ -326,11 +299,8 @@ namespace zetscript{
 		}
 	 }
 
-
 	 void  internal_print_error(const char *s){
 		 CURRENT_VM->setError(s);
-		//printf("%s\n",s);
-		//fflush(stderr);
 	 }
 
 	 bool CScriptClass::init(){
@@ -469,7 +439,6 @@ namespace zetscript{
 			return true;
 	 }
 
-
 	 void CScriptClass::destroySingletons(){
 		 if(VOID_TYPE_STR != NULL){
 			delete VOID_TYPE_STR;
@@ -486,7 +455,6 @@ namespace zetscript{
 		 if(CONST_CHAR_PTR_TYPE_STR != NULL){
 			 delete CONST_CHAR_PTR_TYPE_STR;
 		 }
-
 
 		 if(STRING_PTR_TYPE_STR != NULL){
 			 delete STRING_PTR_TYPE_STR;
@@ -511,8 +479,6 @@ namespace zetscript{
 		 if (INTPTR_T_TYPE_STR != NULL) {
 			 delete INTPTR_T_TYPE_STR;
 		 }
-
-
 
 		 if (FLOAT_TYPE_STR != NULL) {
 			 delete FLOAT_TYPE_STR;
@@ -539,7 +505,6 @@ namespace zetscript{
 		 FLOAT_TYPE_STR = NULL;
 		 STACK_ELEMENT_PTR = NULL;
 		 mapTypeConversion = NULL;
-		 
 	 }
 
 	 CScriptClass::CScriptClass(){
@@ -553,7 +518,6 @@ namespace zetscript{
 
 	int getNumberArgsfromFunctionRefNode(PASTNode ast_node){
 		if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
-
 
 			ast_node = AST_NODE(ast_node->idxAstParent);
 
@@ -588,7 +552,6 @@ namespace zetscript{
 		}else{
 			THROW_RUNTIME_ERROR("internal error, espected FUNCTION_REF_NODE");
 		}
-
 		return -1;
 	}
 
@@ -621,8 +584,6 @@ namespace zetscript{
 	}
 
 	bool CScriptClass::searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
-
-
 
 		int idx=0;
 		symbol_not_found = true;
@@ -695,7 +656,6 @@ namespace zetscript{
 					 iao->index_op1 = LOAD_TYPE_VARIABLE;
 					 iao->index_op2 = ZS_THIS_IDX;
 					 return true;
-
 				}
 
 				 partial_c_class=(info_function->symbol_info.properties&SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) !=0;
@@ -718,7 +678,6 @@ namespace zetscript{
 
 			 while(!end){ // we try all scopes until match symbols at right scope...
 
-
 				 symbol_to_find=CCompiler::makeSymbolRef(ast_node->symbol_value,idx_scope);
 
 				 if((idx=CScriptFunctionObject::getIdxFunctionObject(info_function,symbol_to_find,n_args_to_find,false))!=-1){
@@ -739,7 +698,6 @@ namespace zetscript{
 						 iao->index_op2 = idx;
 						 return true;
 					 }
-
 				 }
 
 			 	if(idx_scope >= 0){ // var local or class member ?
@@ -847,70 +805,70 @@ namespace zetscript{
 
 		buildScopeVariablesBlock(sfo);
 
-		 for(PtrStatment stat = info_function->statment_op; *stat != NULL;stat++){
-			 int idx_op=0;
-			 for(tInfoAsmOp *iao=*stat; iao->operator_type!=END_STATMENT ; iao++,idx_op++){
+		//int ;
+		int idx_op=0;
+		 for(PtrAsmOp iao = info_function->asm_op; iao->operator_type != ASM_OPERATOR::END_FUNCTION;iao++,idx_op++){
 
-				 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
+			 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
-				 if(iao->operator_type==ASM_OPERATOR::LOAD){
+			 if(iao->operator_type==ASM_OPERATOR::LOAD){
 
-					 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
-						 iao->index_op1 = LOAD_TYPE_VARIABLE;
-						 iao->index_op2 = idx_op-1;
-					 }
-					 else {
+				 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
+					 iao->index_op1 = LOAD_TYPE_VARIABLE;
+					 iao->index_op2 = idx_op-1;
+				 }
+				 else {
 
-						 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
+					 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
 
-									 string symbol_to_find =AST_SYMBOL_VALUE(iao->idxAstNode);
+								 string symbol_to_find =AST_SYMBOL_VALUE(iao->idxAstNode);
 
-									 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
+								 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
-										 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\" will solved at run-time", symbol_to_find.c_str());
-									 }
-									 else{
-										 // search symbol...
-										 if(!searchVarFunctionSymbol(info_function,iao,n_function,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
+									 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\" will solved at run-time", symbol_to_find.c_str());
+								 }
+								 else{
+									 // search symbol...
+									 if(!searchVarFunctionSymbol(info_function,iao,n_function,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
 
-											 // search global...
-											 //if(!searchVarFunctionSymbol(&MAIN_SCRIPT_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
-													PASTNode ast_node = AST_NODE(iao->idxAstNode);
+										 // search global...
+										 //if(!searchVarFunctionSymbol(&MAIN_SCRIPT_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
+												PASTNode ast_node = AST_NODE(iao->idxAstNode);
 
-													if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
+												if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
-														if(!symbol_found){
-															writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
-														}
-														else{
-															writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
-														}
-
+													if(!symbol_found){
+														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
 													}
 													else{
-														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", symbol_to_find.c_str());
+														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
 													}
-												 return false;
-											 //}
 
-										 }
-								 }
-						 }
+												}
+												else{
+													writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", symbol_to_find.c_str());
+												}
+											 return false;
+										 //}
+
+									 }
+							 }
 					 }
-
-				 }else  if(iao->operator_type==ASM_OPERATOR::CALL){ // overrides variable type as function ...
-					 // check whether access scope ...
-					 if((*stat)[iao->index_op1].operator_type ==ASM_OPERATOR::LOAD  && // e
-							 (GET_INS_PROPERTY_SCOPE_TYPE((*stat)[iao->index_op1].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
-
-						 (*stat)[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
-						 (*stat)[iao->index_op1].index_op2 = iao->index_op1-1;
-						// iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
-					 }
-
 				 }
+
+			 }else  if(iao->operator_type==ASM_OPERATOR::CALL){ // overrides variable type as function ...
+				 // check whether access scope ...
+				 if(info_function->asm_op[iao->index_op1].operator_type ==ASM_OPERATOR::LOAD  && // e
+						 (GET_INS_PROPERTY_SCOPE_TYPE(info_function->asm_op[iao->index_op1].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
+
+					 info_function->asm_op[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
+					 info_function->asm_op[iao->index_op1].index_op2 = iao->index_op1-1;
+					// iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
+				 }
+
 			 }
 		 }
+
 
 		 vector<int> *mrf = &info_function->local_symbols.vec_idx_registeredFunction;
 
@@ -970,110 +928,109 @@ namespace zetscript{
 					 zs_print_debug_cr("Function %s::%s...",_belonging_class->metadata_info.object_info.symbol_info.symbol_ref.c_str(),info_function->object_info.symbol_info.symbol_ref.c_str());
 				 }
 
-				 if(info_function->object_info.statment_op != NULL){
-					 for(PtrStatment stat = info_function->object_info.statment_op; *stat!=NULL;stat++){
-						 int idx_op = 0;
-						 for(tInfoAsmOp *iao=*stat; iao->operator_type!=END_STATMENT; iao++,idx_op++){
+				 if(info_function->object_info.asm_op != NULL){
 
-							 if(iao->operator_type==ASM_OPERATOR::LOAD){
+					 int idx_op = 0;
+					 for(tInfoAsmOp *iao=info_function->object_info.asm_op; iao->operator_type!=END_FUNCTION; iao++,idx_op++){
 
-								 string base_class = _belonging_class->metadata_info.object_info.symbol_info.symbol_ref;
+						 if(iao->operator_type==ASM_OPERATOR::LOAD){
 
-								 tFunctionInfo *sfi=NULL;
-								 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
+							 string base_class = _belonging_class->metadata_info.object_info.symbol_info.symbol_ref;
 
-								 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
-									 iao->index_op1 = LOAD_TYPE_VARIABLE;
-									 iao->index_op2 = -1; // keep unknow reference for first time ..
+							 tFunctionInfo *sfi=NULL;
+							 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
+
+							 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
+								 iao->index_op1 = LOAD_TYPE_VARIABLE;
+								 iao->index_op2 = -1; // keep unknow reference for first time ..
+							 }
+							 else {
+
+								 if((scope_type & INS_PROPERTY_THIS_SCOPE) | (scope_type & INS_PROPERTY_SUPER_SCOPE)){
+
+									 sfi = &_belonging_class->metadata_info.object_info;
 								 }
-								 else {
 
-									 if((scope_type & INS_PROPERTY_THIS_SCOPE) | (scope_type & INS_PROPERTY_SUPER_SCOPE)){
+								 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
+									 PASTNode iao_node = AST_NODE(iao->idxAstNode);
 
-										 sfi = &_belonging_class->metadata_info.object_info;
-									 }
+									 string symbol_to_find =iao_node->symbol_value;
 
-									 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
-										 PASTNode iao_node = AST_NODE(iao->idxAstNode);
+									 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
-										 string symbol_to_find =iao_node->symbol_value;
+										 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" will solved at run-time", AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
 
-										 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
+									 }else{
 
-											 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" will solved at run-time", AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
+										// this/super required ...
+										 if(sfi != NULL){
+											 // make ref var from class scope ...
+											 // search global...
+											 if(scope_type & INS_PROPERTY_SUPER_SCOPE){
+												 symbol_to_find = GET_SCRIPT_FUNCTION_OBJECT(sfi->local_symbols.vec_idx_registeredFunction[k])->object_info.symbol_info.symbol_ref;
+											 }
 
-										 }else{
-
-											// this/super required ...
-											 if(sfi != NULL){
-												 // make ref var from class scope ...
-												 // search global...
+											 if(!searchVarFunctionSymbol(sfi,iao,k,symbol_found,scope_type)){
 												 if(scope_type & INS_PROPERTY_SUPER_SCOPE){
-													 symbol_to_find = GET_SCRIPT_FUNCTION_OBJECT(sfi->local_symbols.vec_idx_registeredFunction[k])->object_info.symbol_info.symbol_ref;
-												 }
-
-												 if(!searchVarFunctionSymbol(sfi,iao,k,symbol_found,scope_type)){
-													 if(scope_type & INS_PROPERTY_SUPER_SCOPE){
-														 PASTNode ast_node = AST_NODE(iao->idxAstNode);
-														 int n_args_to_find = getNumberArgsfromFunctionRefNode(ast_node);
-														 string arg_str="";
-														 for(int i = 0; i < n_args_to_find; i++){
-															 if(i>0){
-																 arg_str+=",";
-															 }
-															 arg_str+="arg"+CZetScriptUtils::intToString(i);
+													 PASTNode ast_node = AST_NODE(iao->idxAstNode);
+													 int n_args_to_find = getNumberArgsfromFunctionRefNode(ast_node);
+													 string arg_str="";
+													 for(int i = 0; i < n_args_to_find; i++){
+														 if(i>0){
+															 arg_str+=",";
 														 }
-														 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find ancestor function for \"%s(%s)\". Is registered ?", symbol_to_find.c_str(),arg_str.c_str());
+														 arg_str+="arg"+CZetScriptUtils::intToString(i);
 													 }
-													 else{
-														 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s::%s\" not found", base_class.c_str(),symbol_to_find.c_str());
-													 }
+													 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find ancestor function for \"%s(%s)\". Is registered ?", symbol_to_find.c_str(),arg_str.c_str());
+												 }
+												 else{
+													 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s::%s\" not found", base_class.c_str(),symbol_to_find.c_str());
+												 }
+												 return false;
+											 }
+										 }
+										 else{ //normal symbol...
+											 string symbol_to_find =CCompiler::makeSymbolRef(iao_node->symbol_value,iao_node->idxScope);
+											 // search local...
+											 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
+
+												 // search global...
+												 CScriptFunctionObject * mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;
+												 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,symbol_found,0)){
+														PASTNode ast_node = AST_NODE(iao->idxAstNode);
+
+														if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
+
+															if(!symbol_found){
+																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
+															}
+															else{
+																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+															}
+
+														}
+														else{
+															writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" not found",symbol_to_find.c_str());
+														}
 													 return false;
 												 }
 											 }
-											 else{ //normal symbol...
-												 string symbol_to_find =CCompiler::makeSymbolRef(iao_node->symbol_value,iao_node->idxScope);
-												 // search local...
-												 if(!searchVarFunctionSymbol(&info_function->object_info,iao,k,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
-
-													 // search global...
-													 CScriptFunctionObject * mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;
-													 if(!searchVarFunctionSymbol(&mainFunctionInfo->object_info,iao,k,symbol_found,0)){
-															PASTNode ast_node = AST_NODE(iao->idxAstNode);
-
-															if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
-
-																if(!symbol_found){
-																	writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
-																}
-																else{
-																	writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
-																}
-
-															}
-															else{
-																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" not found",symbol_to_find.c_str());
-															}
-														 return false;
-													 }
-												 }
-											}
 										}
-									 }
+									}
 								 }
+							 }
 
-							 }else  if(iao->operator_type==ASM_OPERATOR::CALL){ // overrides variable type as function ...
-								 // check whether access scope ...
-								 if((*stat)[iao->index_op1].operator_type ==ASM_OPERATOR::LOAD  && // e
-									(GET_INS_PROPERTY_SCOPE_TYPE((*stat)[iao->index_op1].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
+						 }else  if(iao->operator_type==ASM_OPERATOR::CALL){ // overrides variable type as function ...
+							 // check whether access scope ...
+							 if(info_function->object_info.asm_op[iao->index_op1].operator_type ==ASM_OPERATOR::LOAD  && // e
+								(GET_INS_PROPERTY_SCOPE_TYPE(info_function->object_info.asm_op[iao->index_op1].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
 
-									 (*stat)[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
-									 (*stat)[iao->index_op1].index_op2 = -1;
-									// iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
-								 }
+								 info_function->object_info.asm_op[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
+								 info_function->object_info.asm_op[iao->index_op1].index_op2 = -1;
 							 }
 						 }
 					 }
+
 				 }
 
 				 if(!is_main_function){ // process all function symbols ...
@@ -1101,9 +1058,6 @@ namespace zetscript{
 						 ,(*vec_script_class_node)[i]->metadata_info.object_info.symbol_info.symbol_ref.c_str()
 				);
 			 }
-
-
-
 		 }
 
 		 // update global variables, only C refs...
@@ -1282,8 +1236,6 @@ namespace zetscript{
 	tInfoVariableSymbol * CScriptClass::registerVariableSymbol(const string & class_name,const string & var_name,short  idxAstNode){
 
 
-
-
 		CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);// getIdxRegisteredClass(class_name);
 
 		if(rc != NULL){//idxScriptClass != -1){
@@ -1292,7 +1244,6 @@ namespace zetscript{
 				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol variable \"%s::%s\" already exist",class_name.c_str(),var_name.c_str());
 				return NULL;
 			}
-
 
 			tFunctionInfo *object_info=&rc->metadata_info.object_info;
 			PASTNode ast = AST_NODE(idxAstNode);
@@ -1312,7 +1263,6 @@ namespace zetscript{
 		return NULL;
 	}
 
-
 	bool  CScriptClass::variableSymbolExist(CScriptClass *rc,const string & variable_name){
 
 		if(rc != NULL){
@@ -1328,8 +1278,6 @@ namespace zetscript{
 
 		return false;
 	}
-
-
 
 	tInfoVariableSymbol *  CScriptClass::getRegisteredVariableSymbol(const string & class_name,const string & variable_name){
 
@@ -1493,8 +1441,6 @@ namespace zetscript{
 		if(idxScriptFunctionObject!=-1){
 
 			GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject)->m_arg.push_back({ZS_UNDEFINED_IDX,arg_name});
-		}else{
-			//THROW_RUNTIME_ERROR("object info NULL");
 		}
 		return false;
 	}
@@ -1509,14 +1455,11 @@ namespace zetscript{
 	}
 
 	intptr_t CScriptClass::doCast(intptr_t obj, int idx_src_class, int idx_convert_class){//c_class->idxClass,idx_return_type){
-		//intptr_t cast_obj;
 
-	//	map<int, map<int, fntConversionType>>  *	local_map_type_conversion=	getMapTypeConversion();
 		CScriptClass *src_class = CScriptClass::getScriptClassByIdx(idx_src_class);
 		CScriptClass *convert_class = CScriptClass::getScriptClassByIdx(idx_convert_class);
 
 		//local_map_type_conversion
-
 		if(mapTypeConversion->count(idx_src_class) == 0){
 			THROW_RUNTIME_ERROR("There's no type src conversion class \"%s\".",demangle(src_class->classPtrType).c_str());
 			return 0;
@@ -1528,8 +1471,6 @@ namespace zetscript{
 		}
 
 		return (*mapTypeConversion)[idx_src_class][idx_convert_class](obj);
-
-
 	}
 
 	CScriptClass *  CScriptClass::getRegisteredClassVector(){

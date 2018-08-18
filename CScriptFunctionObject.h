@@ -44,7 +44,7 @@ namespace zetscript{
 			//virtual_function = NULL;
 			idx_return_type = -1;
 			object_info.idxScriptFunctionObject = -1;
-			object_info.statment_op=NULL;
+			object_info.asm_op=NULL;
 			object_info.info_var_scope=NULL;
 
 		}

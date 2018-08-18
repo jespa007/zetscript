@@ -189,7 +189,7 @@ enum ASM_OPERATOR
 	// ARITMETHIC OPERATORS.
 
 	INVALID_OP=-1,
-	END_STATMENT = 0,
+	END_FUNCTION = 0,
 	LOAD, // primitive value like number/string or boolean...
 	VGET, // vector access after each index is processed...
 	STORE, // mov expression to var
@@ -431,6 +431,12 @@ enum BASIC_CLASS_TYPE {
 };
 
 
+enum SCOPE_BREAKPOINT_TYPE
+	:char{
+	 BREAK=0x1 << 0
+	,CONTINUE=0x1 << 1
+};
+
 namespace zetscript{
 
 	class CASTNode;
@@ -527,16 +533,10 @@ namespace zetscript{
 		unsigned short instruction_properties;
 		short idxAstNode; // define ast node for give some information at run time
 
-		tInfoAsmOp() {
-			operator_type = ASM_OPERATOR::END_STATMENT;
-			idxAstNode = -1;
-			instruction_properties = 0;
-			index_op1 = index_op2 = -1;
-		}
 
 	};
 
-	typedef tInfoAsmOp **PtrStatment;
+	typedef tInfoAsmOp *PtrAsmOp;
 
 	struct tStackElement {
 		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
@@ -583,8 +583,8 @@ namespace zetscript{
 
 		//--------------------------------------
 		// optimized ones...
-		int n_statments;
-		PtrStatment statment_op;
+		//int n_statments;
+		PtrAsmOp asm_op;
 		//unsigned					 n_statment_op;
 
 		tInfoVarScopeBlock *info_var_scope;
@@ -593,9 +593,9 @@ namespace zetscript{
 		int idxScriptFunctionObject;
 
 		tFunctionInfo() {
-			n_statments=0;
+			//n_statments=0;
 			idxScriptFunctionObject = -1;
-			statment_op = NULL;
+			asm_op = NULL;
 			info_var_scope = NULL;
 			//n_statment_op=0;
 			n_info_var_scope = 0;

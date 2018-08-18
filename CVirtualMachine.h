@@ -78,30 +78,6 @@ namespace zetscript{
 		bool cancel_execution;
 		const char *custom_error;
 
-		inline void REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result){
-			tInfoSharedList *list = &zero_shares[idxCurrentStack];\
-			PInfoSharedPointerNode first_node,current;\
-			first_node=current=list->first;\
-			if(current != NULL){\
-				bool finish=false;\
-				do{\
-					PInfoSharedPointerNode next_node=current->next;\
-					finish=next_node ==first_node;\
-					bool delete_node=true;\
-					if(ptr_callc_result!=NULL){\
-						if(ptr_callc_result==current->data.shared_ptr){\
-							delete_node=false;\
-						}\
-					}\
-					if(delete_node){\
-						delete current->data.shared_ptr;\
-					}\
-					free(current);\
-					current=next_node;\
-				}while(!finish);\
-			}\
-			list->first=list->last=NULL;\
-		}
 
 	public:
 
@@ -171,6 +147,7 @@ namespace zetscript{
 		float 		f_aux_value1,f_aux_value2;
 		 string 	aux_string,symbol_to_find,error_str;
 
+
 		 string     aux_string_param[MAX_N_ARGS]; // for string params...
 
 		 tVM_ScopeInfo		*current_scope_info_ptr;
@@ -199,8 +176,26 @@ namespace zetscript{
 		 */
 
 		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
+		inline void  REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result);
+		inline CScriptFunctionObject *  FIND_FUNCTION(vector<tSymbolInfo> *m_functionSymbol
+									,vector<int> *vec_global_functions
+									,tInfoAsmOp * iao
+									,bool is_constructor
+									,const string & symbol_to_find
+									,CScriptVariable *calling_object
+									,tInfoAsmOp *instruction
+									,tStackElement *ptrResultInstructionOp1
+									,tStackElement *ptrResultInstructionOp2
+									,tStackElement *startArg
+									,unsigned char n_args
+									,const char * metamethod_str);
+		inline bool ASSIGN_STACK_VAR(tStackElement *dst_ins, tStackElement *src_ins,tInfoAsmOp *instruction);
+
 		void 				stackDumped();
 
 	};
 
 }
+
+
+#include "CVirtualMachine.hxx"

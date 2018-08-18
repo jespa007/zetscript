@@ -7,7 +7,7 @@
 using namespace zetscript;
 
 void say_helloworld(){
-	printf("Hello World!");
+	printf("Hello World!\n");
 }
 
 int main(){
