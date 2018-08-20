@@ -283,7 +283,7 @@ namespace zetscript{
 
 	bool CScriptClass::is_c_class(){
 
-		 return ((metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != 0);
+		 return ((metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != 0);
 	}
 	//------------------------------------------------------------
 	void CScriptClass::setPrintOutCallback(void (* _printout_callback)(const char *)){
@@ -658,11 +658,11 @@ namespace zetscript{
 					 return true;
 				}
 
-				 partial_c_class=(info_function->symbol_info.properties&SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) !=0;
+				 partial_c_class=(info_function->symbol_info.properties&SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) !=0;
 				while( sc->idxBaseClass.size()>0 && !partial_c_class){
 
 					sc=CScriptClass::getScriptClassByIdx(sc->idxBaseClass[0]); // get base class...
-					partial_c_class|=(sc->metadata_info.object_info.symbol_info.properties&SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) !=0;
+					partial_c_class|=(sc->metadata_info.object_info.symbol_info.properties&SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) !=0;
 				}
 
 				if(iao_scope & INS_PROPERTY_THIS_SCOPE){ // start from class scope to find its variable/function member...
@@ -685,7 +685,7 @@ namespace zetscript{
 					 iao->instruction_properties |= param_scope_type;
 					 iao->index_op1 = LOAD_TYPE_FUNCTION;
 					 iao->index_op2 = idx;
-					 if((GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[idx])->symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
+					 if((GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[idx])->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
 						 iao->index_op2 = -1;
 					 }
 					 return true;
@@ -1002,7 +1002,7 @@ namespace zetscript{
 														if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 															if(!symbol_found){
-																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
+																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", iao_node->symbol_value.c_str() );
 															}
 															else{
 																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );

@@ -99,14 +99,6 @@ namespace zetscript{
 		CASTNode::destroySingletons();
 	}
 
-	/*void  CZetScript::clearErrorMsg(){
-		memset(str_error, 0,sizeof(str_error));
-	}
-
-	void	CZetScript::setUserCallbackOnError(tPrintFunctionCallback _fun){
-		print_error_callback=_fun;
-	}*/
-
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
 
@@ -268,7 +260,28 @@ namespace zetscript{
 							,CCompiler::def_operator[asm_op->operator_type].op_str
 							,(int)asm_op->index_op2);
 					break;
-
+				case PUSH_SCOPE:
+					printf("[%03i]\t%s%c%s%s%s%c\n"
+							,idx_instruction
+							,CCompiler::def_operator[asm_op->operator_type].op_str
+							,asm_op->index_op1!=0?'(':' '
+							,asm_op->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+							,asm_op->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+							,asm_op->index_op1&SCOPE_PROPERTY::FOREACH?" FOREACH":""
+							,asm_op->index_op1!=0?')':' '
+							);
+					break;
+				case POP_SCOPE:
+					printf("[%03i]\t%s%c%s%s%s%c\n"
+							,idx_instruction
+							,CCompiler::def_operator[asm_op->operator_type].op_str
+							,asm_op->index_op1!=0?'(':' '
+							,asm_op->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+							,asm_op->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+							,asm_op->index_op1&SCOPE_PROPERTY::FOREACH?" FOREACH":""
+							,asm_op->index_op1!=0?')':' '
+							);
+					break;
 				default:
 
 					if(n_ops==0){

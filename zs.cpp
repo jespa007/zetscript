@@ -28,8 +28,11 @@ int main(int argc, char * argv[]) {
 					execute = false;
 				}else if(strcmp(argv[i],"--show_bytecode")==0){
 					show_bytecode=true;
-				}
-				else{
+
+				}else if(strcmp(argv[i],"--version")==0){
+					printf("ZetScript %i.%i.%i Copyright (C) 2016-2018\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION);
+					exit(0);
+				}else{
 					fprintf(stderr,"invalid argument %s\n",argv[i]);
 					exit(-1);
 				}

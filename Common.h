@@ -226,7 +226,9 @@ enum ASM_OPERATOR
 	RET, // ret instruction ..
 	PUSH_SCOPE,
 	POP_SCOPE,
-
+	IT_INI,
+	IT_SET_AND_NEXT,
+	IT_CHK_END,
 
 	MAX_OPERATORS
 
@@ -388,7 +390,7 @@ enum INSTRUCTION_PROPERTY{
 
 
 //typedef tInfoStatementOp *PInfoStatementOp;
-enum SYMBOL_INFO_PROPERTIES {
+enum SYMBOL_INFO_PROPERTY {
 	PROPERTY_C_OBJECT_REF = 0x1 << 0,
 	PROPERTY_IS_DERIVATED = 0x1 << 1,
 	PROPERTY_VARIABLE = 0x1 << 2,
@@ -431,10 +433,12 @@ enum BASIC_CLASS_TYPE {
 };
 
 
-enum SCOPE_BREAKPOINT_TYPE
-	:char{
+enum SCOPE_PROPERTY
+	:unsigned char{
 	 BREAK=0x1 << 0
 	,CONTINUE=0x1 << 1
+	,FOREACH=0x1 << 2
+
 };
 
 namespace zetscript{
@@ -506,7 +510,7 @@ namespace zetscript{
 		short idxScriptClass; //CScriptClass		 *class_info;
 		short idxSymbol; // idx of class function/variable symbol that keeps.
 		short idxAstNode;
-		unsigned short properties; // SYMBOL_INFO_PROPERTIES
+		unsigned short properties; // SYMBOL_INFO_PROPERTY
 		string c_type; // In case is C, we need to know its type ...
 
 		tInfoVariableSymbol() {

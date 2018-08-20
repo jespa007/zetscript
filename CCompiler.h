@@ -117,18 +117,6 @@ namespace zetscript{
 
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
-		// DEBUG TOOLS
-
-		typedef struct{
-			string src;
-			int asm_statment_idx;
-		}tDebugInformation;
-
-		vector<tDebugInformation>	m_debugInfo;
-
-
-		// DEBUG TOOLS
-		//---------------------------------------------------------------------------------------------------------------------------------------
 		// CONSTANT TOOLS
 
 		static tInfoConstantValue * getConstant(const string & const_name);
@@ -179,17 +167,17 @@ namespace zetscript{
 		/**
 		 * Unconditional Jump instruction
 		 */
-		tInfoAsmOpCompiler * insert_JMP_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, char instruction_index = ZS_UNDEFINED_IDX);
+		tInfoAsmOpCompiler * insert_JMP_Instruction(short idxAstNode,int instruction_index=ZS_UNDEFINED_IDX);
 
 		/**
 		 * Jump Not True (JNT) instruction
 		 */
-		tInfoAsmOpCompiler * insert_JNT_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, char instruction_index = ZS_UNDEFINED_IDX);
+		tInfoAsmOpCompiler * insert_JNT_Instruction(short idxAstNode, int instruction_index=ZS_UNDEFINED_IDX);
 
 		/**
 		 * Jump if True (JT) instruction
 		 */
-		tInfoAsmOpCompiler * insert_JT_Instruction(short idxAstNode,int jmp_statement =ZS_UNDEFINED_IDX, char instruction_index = ZS_UNDEFINED_IDX);
+		tInfoAsmOpCompiler * insert_JT_Instruction(short idxAstNode, int instruction_index=ZS_UNDEFINED_IDX);
 		void insert_NOP_Instruction();
 
 		tInfoAsmOpCompiler * insert_Save_CurrentInstruction();
@@ -236,8 +224,8 @@ namespace zetscript{
 		bool *getObjectResultCurrentStatmentAsBoolean();
 		int getCurrentInstructionIndex();
 
-		bool insertPushScopeInstruction(short idxAstNode,int scope_idx, char save_breakpoint=0);
-		void insertPopScopeInstruction(short idxAstNode, char restore_breakpoint=0);
+		bool insertPushScopeInstruction(short idxAstNode,int scope_idx, unsigned char properties=0);
+		void insertPopScopeInstruction(short idxAstNode, unsigned char properties=0);
 
 		void insert_DeclStruct_Instruction(short idxAstNode);
 		void insert_PushAttribute_Instruction(short idxAstNode);
@@ -277,6 +265,7 @@ namespace zetscript{
 		bool gacContinue(PASTNode _node, CScope * _lc);
 
 		bool gacFor(PASTNode _node, CScope * _lc);
+		bool gacForEach(PASTNode _node, CScope * _lc);
 		bool gacVar(PASTNode _node, CScope * _lc);
 		bool gacWhile(PASTNode _node, CScope * _lc);
 		bool gacDoWhile(PASTNode _node, CScope * _lc);

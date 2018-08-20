@@ -1,6 +1,6 @@
 
 //----------------------------------------------------------
-Version: 1.4.0
+Version: 2.0.0
 Date: XX-XX-2018
 
  
@@ -22,12 +22,24 @@ Date: XX-XX-2018
 #81 final parentesis/claudator lack detector 
 #82 Allow "this" do assign or pass parameter as well as any object 
 
+#85 Implement foreach keyword 
+#86 Implement access vector element by string 
 #87 vector: Cannot "push" strings into vector 
 #88 struct: failed to find none of its elements 
 #89 string as function parameter: Doesn't parse \" within string
 
+#90 for: Support for no pre/conditional and post expressions.
 #91 Change name vector::add by vector::push  
 #92 Support for StringVar to const char conversion as parameter into C function 
+
+ 
+#94 for/while/switch: break support 
+#95 for/foreach: obligate to put "var" on pre for expression 
+#96 for/foreach: continue keyword support
+#98 remove statment concept 
+
+
+ 
 
 //----------------------------------------------------------
 Version: 1.3.0

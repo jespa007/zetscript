@@ -1,18 +1,14 @@
 var vv=["George",0,true];
-//print(""+vv); // print vector...
 
-print("\" an string \"");
-//vv.push("kk_var"); // <-- it fails...
-vv[1]++;
+vv[1]++; // increments 0 to 1...
 
-//print(""+vv);
+vv.pop(); // pops true
 
-vv.pop();
-
-//print(""+vv);
+vv["grow"]=100; // adds a container elements...
 
 
-vv["grow"]=100;
+foreach(var e in vv){
+	print("e: "+e);
+}
 
-print("vv['gow']:"+vv["grow"]);
-
+print("vv[\"grow\"]="+vv["grow"]);

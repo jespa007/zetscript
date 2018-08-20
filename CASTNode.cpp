@@ -26,7 +26,7 @@ namespace zetscript{
 	int CASTNode::DUMMY_LINE=0;
 	const char * CASTNode::current_parsing_filename=DEFAULT_NO_FILENAME;
 	int CASTNode::current_idx_parsing_filename=-1;
-	int CASTNode::n_foreach=0;
+
 	vector<tInfoAstNodeToCompile> * CASTNode::astNodeToCompile=NULL;
 
 	bool IS_SINGLE_COMMENT(char *str){
@@ -2329,7 +2329,7 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 					// grab words separated by ,
-					while(*aux_p != 0 && *aux_p != ')'){
+					while(*aux_p != 0 && *aux_p != ')' && *aux_p != '{'){
 
 						aux_p=IGNORE_BLANKS(aux_p,m_line);
 
@@ -2459,7 +2459,7 @@ namespace zetscript{
 					}
 				}
 				else{
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unclosed function defined");
+					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line," Expected '('");
 				}
 			}else{
 				writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected operator or function operator");
@@ -2522,6 +2522,7 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		char *end_expr,*start_symbol;
 		KEYWORD_TYPE key_w;
+		CScope *_currentScope=NULL;
 
 		PASTNode conditional_expression=NULL, while_node=NULL;
 		string conditional_str;
@@ -2539,6 +2540,10 @@ namespace zetscript{
 					if((*ast_node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
+
+
+					_currentScope =scope_info->pushScope(*ast_node_to_be_evaluated); // push current scope
+
 				}
 
 				aux_p += strlen(defined_keyword[key_w].str);
@@ -2547,7 +2552,7 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
 				if(*aux_p == '('){
 
-					if((end_expr = parseExpression(aux_p+1,m_line,scope_info,&conditional_expression)) != NULL){
+					if((end_expr = parseExpression(aux_p+1,m_line,_currentScope,&conditional_expression)) != NULL){
 
 						if(*end_expr != ')'){
 							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
@@ -2571,7 +2576,8 @@ namespace zetscript{
 						}
 						if((aux_p=parseBlock(aux_p
 								,m_line
-								,scope_info,error
+								,_currentScope
+								,error
 								,ast_node_to_be_evaluated != NULL ? &while_node : NULL
 								,ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
 								))!= NULL){
@@ -2580,6 +2586,8 @@ namespace zetscript{
 									(*ast_node_to_be_evaluated)->children.push_back(while_node->idxAstNode);
 								}
 
+
+								scope_info->popScope();
 
 								return aux_p;
 							}
@@ -2605,6 +2613,7 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		char *end_expr,*start_symbol;
 		KEYWORD_TYPE key_w;
+		CScope *_currentScope=NULL;
 
 		PASTNode conditional_expression=NULL, body_node=NULL, while_node=NULL;
 		string conditional_str;
@@ -2622,6 +2631,8 @@ namespace zetscript{
 					if((*ast_node_to_be_evaluated = CASTNode::newASTNode()) == NULL) return NULL;
 					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
+
+					_currentScope =scope_info->pushScope(*ast_node_to_be_evaluated); // push current scope
 				}
 
 				aux_p += strlen(defined_keyword[key_w].str);
@@ -2634,7 +2645,7 @@ namespace zetscript{
 				}
 				if((aux_p=parseBlock(aux_p
 						,m_line
-						,scope_info
+						,_currentScope
 						,error
 						,ast_node_to_be_evaluated != NULL ? &body_node : NULL
 						,ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
@@ -2658,7 +2669,7 @@ namespace zetscript{
 
 						if(*aux_p == '('){
 
-							if((end_expr = parseExpression(aux_p+1,m_line,scope_info,&conditional_expression)) != NULL){
+							if((end_expr = parseExpression(aux_p+1,m_line,_currentScope,&conditional_expression)) != NULL){
 
 								if(*end_expr != ')'){
 									writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
@@ -2696,6 +2707,8 @@ namespace zetscript{
 							(*ast_node_to_be_evaluated)->children.push_back(while_node->idxAstNode);
 							(*ast_node_to_be_evaluated)->children.push_back(body_node->idxAstNode);
 						}
+
+						scope_info->popScope();
 						return end_expr+1;
 					}
 				}
@@ -3077,9 +3090,9 @@ namespace zetscript{
 					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
 
-					// reserve 2 nodes for var/vector
-					(*ast_node_to_be_evaluated)->children.push_back(ZS_UNDEFINED_IDX);
-					(*ast_node_to_be_evaluated)->children.push_back(ZS_UNDEFINED_IDX);
+					// reserve 2 nodes for iterator symbol and vector symbol
+					(*ast_node_to_be_evaluated)->children.push_back(ZS_UNDEFINED_IDX); // vars current vector elements + iterators...
+					(*ast_node_to_be_evaluated)->children.push_back(ZS_UNDEFINED_IDX); // vector symbol
 					//(*ast_node_to_be_evaluated)->children.push_back(ZS_UNDEFINED_IDX);
 
 				}
@@ -3097,98 +3110,88 @@ namespace zetscript{
 
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
-					/*struct{
-						char next_char;
-						NODE_TYPE node_type;
-					}info_for[3]={
-							{';',PRE_FOR_NODE},
-							{';',CONDITIONAL_NODE},
-							{')',POST_FOR_NODE}
-					};*/
+					bool parse_var = false;
 
-					//for(int i = 0; i < 3; i++){
-						bool parse_var = false;
+					// parse var...
+					end_p=aux_p;
+					key_w = isKeyword(aux_p);
+					if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
+						if(key_w == VAR_KEYWORD){
+							aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[KEYWORD_TYPE::VAR_KEYWORD].str),m_line);
+						}
+						else{
+							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected 'var' keyword");
+							return NULL;
+						}
+					}
 
-						end_p=aux_p;
-						key_w = isKeyword(aux_p);
-						if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
-							if(key_w == VAR_KEYWORD){
-								end_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[KEYWORD_TYPE::VAR_KEYWORD].str),m_line);
+					end_p = getSymbolName(aux_p, m_line);
+					if(end_p == NULL){
+						return NULL;
+					}
+
+					strncpy(buffer,aux_p,(end_p-aux_p));
+
+
+
+					if(ast_node_to_be_evaluated != NULL){ // set children element/iterator/vector ...
+
+
+							if((node_foreach_vars = CASTNode::newASTNode()) == NULL) return NULL;;
+
+							// var current vector element
+							(*ast_node_to_be_evaluated)->children[0]=node_foreach_vars->idxAstNode;
+							node_foreach_vars->idxScope=_currentScope->idxScope;
+							node_foreach_vars->node_type=NODE_TYPE::KEYWORD_NODE;
+							node_foreach_vars->keyword_info = KEYWORD_TYPE::VAR_KEYWORD;
+							node_foreach_vars->line_value = m_line;
+
+							// var element ...
+							if((node_foreach_symbol = CASTNode::newASTNode()) == NULL) return NULL;; // var load symbol...
+							node_foreach_vars->children.push_back(node_foreach_symbol->idxAstNode);
+							node_foreach_symbol->idxScope=_currentScope->idxScope;
+							node_foreach_symbol->node_type=NODE_TYPE::SYMBOL_NODE;
+							node_foreach_symbol->symbol_value=buffer;
+							node_foreach_symbol->line_value = m_line;
+
+							// register var element and iterator var...
+							if(!SCOPE_NODE(_currentScope->idxScope)->registerSymbol(node_foreach_symbol->symbol_value,node_foreach_symbol)){
+									return NULL;
 							}
-							else{
-								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected 'var' keyword");
-								return NULL;
-							}
-						}
-
-						end_p = getSymbolName(end_p, m_line);
-						if(end_p == NULL){
-							return NULL;
-						}
-
-						strncpy(buffer,aux_p,(end_p-aux_p));
 
 
+					}
 
-						if(ast_node_to_be_evaluated != NULL){ // create for vars and iterator if needed ...
+					aux_p=IGNORE_BLANKS(end_p,m_line);
 
+					key_w = isKeyword(aux_p);
+					if(key_w != KEYWORD_TYPE::IN_KEYWORD){
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected 'in' keyword");
+						return NULL;
+					}
 
-								if((node_foreach_vars = CASTNode::newASTNode()) == NULL) return NULL;;
-
-								(*ast_node_to_be_evaluated)->children[0]=node_foreach_vars->idxAstNode;
-								node_foreach_vars->idxScope=_currentScope->idxScope;
-								node_foreach_vars->node_type=NODE_TYPE::KEYWORD_NODE;
-								node_foreach_vars->keyword_info = KEYWORD_TYPE::VAR_KEYWORD;
-								node_foreach_vars->line_value = m_line;
-
-								if((node_foreach_symbol = CASTNode::newASTNode()) == NULL) return NULL;; // var load symbol...
-								node_foreach_vars->children.push_back(node_foreach_symbol->idxAstNode);
-								node_foreach_symbol->idxScope=_currentScope->idxScope;
-								node_foreach_symbol->node_type=NODE_TYPE::SYMBOL_NODE;
-								node_foreach_symbol->symbol_value=buffer;
-								node_foreach_symbol->line_value = m_line;
-
-								if((node_foreach_symbol = CASTNode::newASTNode()) == NULL) return NULL;; // count symbol...
-								node_foreach_vars->children.push_back(node_foreach_symbol->idxAstNode);
-								node_foreach_symbol->idxScope=_currentScope->idxScope;
-								node_foreach_symbol->node_type=NODE_TYPE::SYMBOL_NODE;
-								node_foreach_symbol->symbol_value="_@foreach_it_"+CZetScriptUtils::intToString(n_foreach);
-								node_foreach_symbol->line_value = m_line;
-
-								n_foreach++;
-
-						}
-
-						aux_p=IGNORE_BLANKS(end_p,m_line);
-
-						key_w = isKeyword(aux_p);
-						if(key_w != KEYWORD_TYPE::IN_KEYWORD){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected 'in' keyword");
-							return NULL;
-						}
-
-						aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[KEYWORD_TYPE::IN_KEYWORD].str),m_line);
+					aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[KEYWORD_TYPE::IN_KEYWORD].str),m_line);
 
 
-						if((aux_p = parseExpression((const char *)aux_p,m_line,_currentScope, ast_node_to_be_evaluated != NULL ? &node_foreach_expression: NULL)) == NULL){
-							return NULL;
-						}
+					if((aux_p = parseExpression((const char *)aux_p,m_line,_currentScope, ast_node_to_be_evaluated != NULL ? &node_foreach_expression: NULL)) == NULL){
+						return NULL;
+					}
 
 
-						if(ast_node_to_be_evaluated!=NULL){
-							(*ast_node_to_be_evaluated)->children[1]=node_foreach_expression->idxAstNode;
-						}
+					if(ast_node_to_be_evaluated!=NULL){
+						(*ast_node_to_be_evaluated)->children[1]=node_foreach_expression->idxAstNode;
+					}
 
-						aux_p=IGNORE_BLANKS(aux_p,m_line);
+					aux_p=IGNORE_BLANKS(aux_p,m_line);
 
-						if(*aux_p != ')'){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
-							return NULL;
-						}
+					if(*aux_p != ')'){
+						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
+						return NULL;
+					}
 
-						aux_p++;
+					aux_p++;
 
-					//}
+
 
 					aux_p=IGNORE_BLANKS(aux_p,m_line);
 					if(*aux_p != '{'){
@@ -3314,6 +3317,10 @@ namespace zetscript{
 							if(*aux_p != '}'){
 								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected '}' switch");
 								return NULL;
+							}
+
+							if( ast_node_to_be_evaluated != NULL){
+								scope_info->popScope();
 							}
 
 							return aux_p+1;
@@ -3635,7 +3642,7 @@ namespace zetscript{
 		short idxParent=scope_info->getIdxParent();
 
 		if(idxParent != ZS_UNDEFINED_IDX){
-			return findConditionForBreakRecursive(SCOPE_NODE(idxParent));
+			return findConditionForContinueRecursive(SCOPE_NODE(idxParent));
 		}
 
 		return NULL;
@@ -3665,6 +3672,7 @@ namespace zetscript{
 
 					if(parent->keyword_info == KEYWORD_TYPE::FOREACH_KEYWORD
 								|| parent->keyword_info == KEYWORD_TYPE::FOR_KEYWORD
+								|| parent->keyword_info == KEYWORD_TYPE::DO_WHILE_KEYWORD
 								||parent->keyword_info == KEYWORD_TYPE::WHILE_KEYWORD
 								){
 						return parent;
@@ -4005,14 +4013,14 @@ namespace zetscript{
 
 						if(*end_expr == ')'){ // unexpected close parenthesis.
 							error = true;
-							writeErrorMsg(CURRENT_PARSING_FILENAME,starting_expression,"missing open parenthesis");
+							writeErrorMsg(CURRENT_PARSING_FILENAME,starting_expression,"missing '('");
 							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}
 
 						if(*end_expr != ';'){
 							error = true;
-							writeErrorMsg(CURRENT_PARSING_FILENAME,starting_expression,"Expected ';' at expression starting ");
+							writeErrorMsg(CURRENT_PARSING_FILENAME,starting_expression,"Expected ';'");
 							manageOnErrorParse(node_to_be_evaluated);
 							return NULL;
 						}

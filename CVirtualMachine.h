@@ -9,8 +9,9 @@ namespace zetscript{
 
 	//#define MAX_PER_TYPE_OPERATIONS 32
 
-	#define VM_LOCAL_VAR_MAX_STACK				512
-	#define VM_MAX_SCOPES						512
+	#define VM_LOCAL_VAR_MAX_STACK				256
+	#define VM_MAX_SCOPES						64
+	#define VM_MAX_FOREACH						64
 	#define MAX_FUNCTION_CALL 					128
 	#define VM_MAX_AUX_STRINGS					128
 	#define MAX_SHARES_VARIABLE 				64
@@ -56,8 +57,6 @@ namespace zetscript{
 		int idxCurrentStack;
 		int idx_laststatment;
 		int current_ast_node_call_c_function;
-
-		std::map<int,int> memory_leak; // check c pointers not freed with new op.
 
 	//===================================================================================================
 
@@ -141,11 +140,22 @@ namespace zetscript{
 			short					   index;
 			CScriptFunctionObject *ptr_info_function;
 			tStackElement 		  *ptr_local_var;
+			unsigned char properties;
+		};
+
+		struct tForeachInfo{
+			tStackElement 		   *element;
+			CVectorScriptVariable  *ptr_vec;
+			unsigned int 		   idx_current;
+
 		};
 
 		char		str_aux[8192];
 		float 		f_aux_value1,f_aux_value2;
 		 string 	aux_string,symbol_to_find,error_str;
+		 tForeachInfo stkForeach[VM_MAX_FOREACH];
+		 tForeachInfo *current_foreach;
+
 
 
 		 string     aux_string_param[MAX_N_ARGS]; // for string params...
@@ -190,6 +200,7 @@ namespace zetscript{
 									,unsigned char n_args
 									,const char * metamethod_str);
 		inline bool ASSIGN_STACK_VAR(tStackElement *dst_ins, tStackElement *src_ins,tInfoAsmOp *instruction);
+		inline bool POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties);
 
 		void 				stackDumped();
 

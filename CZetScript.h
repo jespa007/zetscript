@@ -111,8 +111,8 @@ using std::ostringstream;
 #include "CScriptFunctionObject.h"
 #include "CScriptClass.h"
 
-#define ZETSCRIPT_MAJOR_VERSION 1
-#define ZETSCRIPT_MINOR_VERSION 4
+#define ZETSCRIPT_MAJOR_VERSION 2
+#define ZETSCRIPT_MINOR_VERSION 0
 #define ZETSCRIPT_PATCH_VERSION 0
 
 

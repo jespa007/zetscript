@@ -51,9 +51,9 @@ namespace zetscript{
 					ir_fun
 
 					);
-			 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // create proxy function ...
+			 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // create proxy function ...
 				 // static ref only get ref function ...
-				 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF){
+				 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){
 					 si->proxy_ptr = ir_fun->object_info.symbol_info.ref_ptr;
 				 }
 				 else{
@@ -484,7 +484,7 @@ namespace zetscript{
 
 	bool CScriptVariable::is_c_object(){
 
-		 return ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != 0);
+		 return ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != 0);
 	}
 
 	void CScriptVariable::destroy(){
@@ -518,8 +518,8 @@ namespace zetscript{
 		for ( unsigned i = 0; i < m_functionSymbol.size(); i++){
 			si = &m_functionSymbol[i];
 			CScriptFunctionObject * ir_fun  = (CScriptFunctionObject *)(m_functionSymbol[i].object.stkValue);
-			 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // create proxy function ...
-				 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF){
+			 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // create proxy function ...
+				 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){
 
 					 (*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->object_info.symbol_info.ref_ptr))((void *)si->proxy_ptr,PROXY_CREATOR::DESTROY_FUNCTION);
 				 }

@@ -73,7 +73,7 @@ namespace zetscript{
 	class  CASTNode{
 
 
-		static int n_foreach;
+
 	public:
 		static const char * current_parsing_filename;
 		static int current_idx_parsing_filename;

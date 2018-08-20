@@ -32,8 +32,8 @@ namespace zetscript{
 			var_type1.c_str());
 
 
-	inline void CVirtualMachine::REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result){
-		tInfoSharedList *list = &zero_shares[idxCurrentStack];
+	inline void CVirtualMachine::REMOVE_0_SHARED_POINTERS(int idx_stack,void *ptr_callc_result){
+		tInfoSharedList *list = &zero_shares[idx_stack];
 		PInfoSharedPointerNode first_node,current;
 		first_node=current=list->first;
 		if(current != NULL){
@@ -58,90 +58,57 @@ namespace zetscript{
 	}
 
 
-	inline bool CVirtualMachine::ASSIGN_STACK_VAR(tStackElement *dst_ins, tStackElement *src_ins,tInfoAsmOp *instruction)
-	{
-		CScriptVariable *script_var=NULL;
-		string *aux_str=NULL;
-		void *copy_aux=NULL;//copy aux in case of the var is c and primitive (we have to update stkValue on save)
-		void **src_ref=&src_ins->stkValue;
-		void **dst_ref=&dst_ins->stkValue;
-		if(src_ins->properties & STK_PROPERTY_IS_C_VAR){
-			src_ref=(void **)((src_ins)->varRef);
-		}
-		if(dst_ins->properties & STK_PROPERTY_IS_C_VAR){
-			if(!IS_NUMBER_OR_INT(src_ins->properties) && IS_NUMBER_OR_INT(dst_ins->properties)){
-				if(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) != GET_INS_PROPERTY_VAR_TYPE(dst_ins->properties)
-				){
-					PASTNode ast=vec_ast_node[instruction->idxAstNode];
-					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",ast->symbol_value.c_str());
-					return false;
-				}else{
-					if(
-						(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) == STK_PROPERTY_TYPE_SCRIPTVAR)
-					){
-							zs_print_info_cr("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.");
-							return false;
+	inline bool CVirtualMachine::POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties) {
+		bool search=true;
+
+
+		while((scope_info<current_scope_info_ptr) && search)
+		{
+			CScriptFunctionObject *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
+			int index         = (current_scope_info_ptr-1)->index;
+			tStackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;
+			for(int i = 0; i < ptr_info_function->object_info.info_var_scope[index].n_var_index; i++){
+				int idx_local_var = ptr_info_function->object_info.info_var_scope[index].var_index[i];
+				tStackElement *ptr_ale =&ptr_local_var[idx_local_var];
+				CScriptVariable *var = NULL;
+				switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
+				case STK_PROPERTY_TYPE_STRING:
+				case STK_PROPERTY_TYPE_SCRIPTVAR:
+					var =((CScriptVariable *)(ptr_ale->varRef));
+					if(var){
+						if(var->ptr_shared_pointer_node != NULL){
+							var->unrefSharedPtr();
+						}
 					}
 				}
+				*ptr_ale={
+					STK_PROPERTY_TYPE_UNDEFINED,
+					0,
+					0
+				};
 			}
-			dst_ref=(void **)((dst_ins)->varRef);
-			copy_aux=&((dst_ins)->stkValue);
-		}
-		unsigned short type_var=src_ins->properties;
-		unsigned short runtime_var=0; // there's no reason to heredate runtime_props ?!? GET_INS_PROPERTY_RUNTIME(type_var);
-		if(type_var & STK_PROPERTY_TYPE_UNDEFINED){
-			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_UNDEFINED;
-		}else if(type_var & STK_PROPERTY_TYPE_NULL){
-			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_NULL;
-		}else if(type_var & STK_PROPERTY_TYPE_INTEGER){
-			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_INTEGER;
-			*((int *)dst_ref)=*((int *)src_ref);
-			if(copy_aux!=NULL)(*(int *)copy_aux)=*((int *)src_ref);
-		}else if(type_var & STK_PROPERTY_TYPE_NUMBER){
-			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_NUMBER;
-			*((float *)dst_ref)=*((float *)src_ref);
-			if(copy_aux!=NULL)(*(float *)copy_aux)=*((float *)src_ref);
-		}else if(type_var & STK_PROPERTY_TYPE_BOOLEAN){
-			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_BOOLEAN;
-			*((bool *)dst_ref)=*((bool *)src_ref);
-			if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)src_ref);
-		}else if(type_var  &  STK_PROPERTY_TYPE_FUNCTION){
-			*dst_ins={(unsigned short)(runtime_var | STK_PROPERTY_TYPE_FUNCTION),
-						src_ins->stkValue,
-						NULL};
-		}else if(type_var & STK_PROPERTY_TYPE_STRING){
-			if(dst_ins->properties & STK_PROPERTY_IS_C_VAR){
-				*((string *)dst_ins->varRef)=((const char *)src_ins->stkValue);// Assign string
-				dst_ins->stkValue=(void *)(((string *)dst_ins->varRef)->c_str());// Because string assignment implies reallocs ptr char it changes, so reassing const char pointer
-			}else{
-				if(((dst_ins->properties & STK_PROPERTY_TYPE_STRING)==0) || (dst_ins->varRef==NULL)){// Generates a string var
-					script_var= NEW_STRING_VAR;
-					dst_ins->varRef=script_var;
-					aux_str=&(((CStringScriptVariable *)script_var)->m_strValue);
-					dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_STRING | STK_PROPERTY_TYPE_SCRIPTVAR;
-					script_var->initSharedPtr(true);
-				}
-				(*aux_str)=((const char *)src_ins->stkValue);
-				dst_ins->stkValue=(void *)aux_str->c_str();// Because string assignment implies reallocs ptr char it changes, so reassing const char pointer
-			}
-		}else if(type_var & STK_PROPERTY_TYPE_SCRIPTVAR){
-			script_var=(CScriptVariable *)src_ins->varRef;
-			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_SCRIPTVAR;
-			dst_ins->stkValue=NULL;
-			dst_ins->varRef=script_var;
-			if((dst_ins->properties & STK_PROPERTY_IS_THIS_VAR) !=  STK_PROPERTY_IS_THIS_VAR){
-				sharePointer(script_var->ptr_shared_pointer_node);
-			}
-		}else{
-			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"(internal) cannot determine var type %i",GET_INS_PROPERTY_VAR_TYPE(src_ins->properties));
-			return false;
-		}
 
-		if(copy_aux!=NULL)
-			dst_ins->properties|=STK_PROPERTY_IS_C_VAR;
+			REMOVE_0_SHARED_POINTERS(idx_stack,ptr_callc_result);
+
+			search=false;
+			if((properties & SCOPE_PROPERTY::BREAK)!=0){
+				search=((current_scope_info_ptr-1)->properties & SCOPE_PROPERTY::BREAK) != SCOPE_PROPERTY::BREAK;
+			}
+
+			if((properties & SCOPE_PROPERTY::CONTINUE)!=0){
+				search=((current_scope_info_ptr-1)->properties & SCOPE_PROPERTY::CONTINUE) != SCOPE_PROPERTY::CONTINUE;
+			}
+
+
+			// pop current var
+			--current_scope_info_ptr;
+
+
+		}
 
 		return true;
 	}
+
 
 /*
 inline void SHARE_LIST_INSERT(list,_node){
@@ -177,38 +144,7 @@ inline void SHARE_LIST_DEATTACH(list,_node)
 
 
 
-inline void POP_SCOPE(ptr_callc_result) {
-	if(scope_info<(current_scope_info_ptr))
-	{
-		CScriptFunctionObject *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
-		int index         = (current_scope_info_ptr-1)->index;
-		tStackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;
-		for(int i = 0; i < ptr_info_function->object_info.info_var_scope[index].n_var_index; i++){
-			int idx_local_var = ptr_info_function->object_info.info_var_scope[index].var_index[i];
-			tStackElement *ptr_ale =&ptr_local_var[idx_local_var];
-			CScriptVariable *var = NULL;
-			switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
-			case STK_PROPERTY_TYPE_STRING:
-			case STK_PROPERTY_TYPE_SCRIPTVAR:
-				var =((CScriptVariable *)(ptr_ale->varRef));
-				if(var){
-					if(var->ptr_shared_pointer_node != NULL){
-						var->unrefSharedPtr();
-					}
-				}
-			}
-			*ptr_ale={
-				STK_PROPERTY_TYPE_UNDEFINED,
-				0,
-				0
-			};
-		}
 
-		REMOVE_0_SHARED_POINTERS(idxCurrentStack,ptr_callc_result);
-		// pop current var
-		--current_scope_info_ptr;
-	}
-}
 
 */
 

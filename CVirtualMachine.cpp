@@ -394,13 +394,15 @@ namespace zetscript{
 			}\
 	}
 
-	#define PUSH_SCOPE(_index,_ptr_info_function, _ptr_local_var) {\
+	#define PUSH_SCOPE(_index,_ptr_info_function, _ptr_local_var,_properties) {\
 		if(current_scope_info_ptr >=  MAX_SCOPE_INFO){writeErrorMsg(NULL,0,"reached max scope"); RETURN_ERROR;}\
-		*current_scope_info_ptr++={(short)(_index),_ptr_info_function,_ptr_local_var};\
+		*current_scope_info_ptr++={(short)(_index),_ptr_info_function,_ptr_local_var,_properties};\
 	}
 
 
+	#define CALL_GC SHARED_LIST_DESTROY(zero_shares[idxCurrentStack])
 
+#if 0
 	#define POP_SCOPE(ptr_callc_result) \
 	if(scope_info<(current_scope_info_ptr))\
 	{\
@@ -434,9 +436,9 @@ namespace zetscript{
 	}
 
 
-	#define CALL_GC SHARED_LIST_DESTROY(zero_shares[idxCurrentStack])
 
-#if 0
+
+
 
 #define FIND_FUNCTION(m_functionSymbol, iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArg, n_args, metamethod_str) \
  for(int i = size_fun_vec; i>=0 && aux_function_info==NULL; i--){ /* search all function that match symbol ... */ \
@@ -802,7 +804,7 @@ if(aux_function_info == NULL){\
 	void CVirtualMachine::stackDumped(){
 		// derefer all variables in all scopes (except main )...
 		while(scope_info<(current_scope_info_ptr)){
-			POP_SCOPE(NULL);
+			POP_SCOPE_CALL(idxCurrentStack,NULL,0);
 		}
 
 		idxCurrentStack=0;
@@ -855,6 +857,7 @@ if(aux_function_info == NULL){\
 
 		size_vec_script_function_object_node = 0;
 		size_vec_ast_node = 0;
+		current_foreach=NULL;
 
 
 	}
@@ -1058,7 +1061,7 @@ if(aux_function_info == NULL){\
 		}
 
 
-		if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) {
+		if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) {
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function is not registered as C");
 			RETURN_ERROR;
 		}
@@ -1411,6 +1414,8 @@ if(aux_function_info == NULL){\
 			if(info_function->object_info.idxScriptFunctionObject != 0){ // calls script function from C : preserve stack space for global vars
 				ptrCurrentOp=&stack[main_function_object->object_info.local_symbols.m_registeredVariable.size()];
 			}
+
+			current_foreach=&stkForeach[0];
 		}
 
 		int n_arg=0;
@@ -1508,11 +1513,11 @@ if(aux_function_info == NULL){\
 			RETURN_ERROR;
 		}
 
-		if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTIES::PROPERTY_C_OBJECT_REF){ // C-Call
+		if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // C-Call
 
 			intptr_t  fun_ptr = info_function->object_info.symbol_info.ref_ptr;
 
-			if((info_function->object_info.symbol_info.properties &  SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTIES::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
+			if((info_function->object_info.symbol_info.properties &  SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
 
 				if(this_object!= NULL && this_object != CZetScript::getInstance()->getMainObject()){
 					fun_ptr = this_object->getFunctionSymbolByIndex(info_function->object_info.symbol_info.idxSymbol)->proxy_ptr;
@@ -1544,7 +1549,7 @@ if(aux_function_info == NULL){\
 
 		if(info_function->object_info.idxScriptFunctionObject != 0){
 
-			PUSH_SCOPE(scope_index,info_function,ptrLocalVar);
+			PUSH_SCOPE(scope_index,info_function,ptrLocalVar,0);
 			ptrStartScopeInfo = current_scope_info_ptr;
 		}
 
@@ -1663,10 +1668,10 @@ if(aux_function_info == NULL){\
 
 						if(var_object != NULL){
 							if(var_object->idxScriptClass == IDX_CLASS_VECTOR){
+								CVectorScriptVariable * vec = (CVectorScriptVariable *)var_object;
 
 								if(IS_INT(ptrResultInstructionOp2->properties)){
 									// determine object ...
-									CVectorScriptVariable * vec = (CVectorScriptVariable *)var_object;
 									int v_index = LOAD_INT_OP(ptrResultInstructionOp2);
 
 									// check indexes ...
@@ -1682,8 +1687,12 @@ if(aux_function_info == NULL){\
 
 									ldrVar = &vec->m_objVector[v_index];;
 									ok = true;
+								}
+								else if(IS_STRING(ptrResultInstructionOp2->properties)){ // get or generate cell in function of string...
+									ldrVar = vec->get((const char *)ptrResultInstructionOp2->stkValue);
+									ok = true;
 								}else{
-									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector-index as integer");
+									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector-index as integer or string");
 									RETURN_ERROR;
 								}
 							}
@@ -2074,6 +2083,13 @@ if(aux_function_info == NULL){\
 							RETURN_ERROR;
 						}
 
+						if(current_foreach!=NULL){
+							if(dst_ins == current_foreach->element){
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"iterator value is read only");
+								RETURN_ERROR;
+							}
+						}
+
 						src_ins=ptrResultInstructionOp2; // store ptr instruction2 op as src_var_value
 
 						// we need primitive stackelement in order to assign...
@@ -2081,8 +2097,6 @@ if(aux_function_info == NULL){\
 							src_ins=(tStackElement *)src_ins->varRef; // stkValue is expect to contents a stack variable
 
 						}
-
-
 
 						// ok load object pointer ...
 						if(dst_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
@@ -2092,10 +2106,7 @@ if(aux_function_info == NULL){\
 								assign_metamethod=true;
 							}
 						}
-
 					}
-
-
 
 					if(! assign_metamethod){
 
@@ -2107,8 +2118,6 @@ if(aux_function_info == NULL){\
 						tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
 
 						ASSIGN_STACK_VAR(dst_ins,src_ins);
-
-
 
 						// check old var structure ...
 						switch(GET_INS_PROPERTY_VAR_TYPE(old_dst_ins.properties)){
@@ -2138,7 +2147,6 @@ if(aux_function_info == NULL){\
 					}
 
 				}
-
 				continue;
 
 			case EQU:  // ==
@@ -2439,156 +2447,156 @@ if(aux_function_info == NULL){\
 			 case  CALL: // calling function after all of args are processed...
 				// check whether signatures matches or not ...
 				// 1. get function object ...
-			 {
-				aux_function_info = NULL;
-				unsigned char n_args=0;//iao->instruction_properties;
+			 	 {
+					aux_function_info = NULL;
+					unsigned char n_args=0;//iao->instruction_properties;
 
 
-				bool is_c = false;
-				tStackElement *startArg=ptrCurrentOp;
-				tStackElement *callAle=NULL;
+					bool is_c = false;
+					tStackElement *startArg=ptrCurrentOp;
+					tStackElement *callAle=NULL;
 
-				while(n_args <= MAX_N_ARGS && (((startArg-1)->properties&STK_PROPERTY_TYPE_FUNCTION)==0)){
-					startArg--;
-					n_args++;
-				}
+					while(n_args <= MAX_N_ARGS && (((startArg-1)->properties&STK_PROPERTY_TYPE_FUNCTION)==0)){
+						startArg--;
+						n_args++;
+					}
 
-				callAle = ((startArg-1));
-				calling_object = this_object;
-				if(callAle->varRef!=NULL){
-					calling_object=(CScriptVariable *)callAle->varRef;
-				}
-
-
-				aux_function_info = NULL;//(CScriptFunctionObject *)callAle->stkValue;
+					callAle = ((startArg-1));
+					calling_object = this_object;
+					if(callAle->varRef!=NULL){
+						calling_object=(CScriptVariable *)callAle->varRef;
+					}
 
 
-				bool is_constructor = (callAle->properties & STK_PROPERTY_CONSTRUCTOR_FUNCTION)!=0;
-				//bool deduce_function = false; //(iao->instruction_properties & INS_PROPERTY_DEDUCE_C_CALL)!=0;
-
-				// try to find the function ...
-				if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
-					tInfoAsmOp *iao = (tInfoAsmOp *)(callAle)->stkValue;
-					PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
-
-					symbol_to_find = ast_node_call_ale->symbol_value;
-
-					//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
-					unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
+					aux_function_info = NULL;//(CScriptFunctionObject *)callAle->stkValue;
 
 
-					// local vars as functions ...
+					bool is_constructor = (callAle->properties & STK_PROPERTY_CONSTRUCTOR_FUNCTION)!=0;
+					//bool deduce_function = false; //(iao->instruction_properties & INS_PROPERTY_DEDUCE_C_CALL)!=0;
 
-					// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
-					vector<tSymbolInfo> *m_functionSymbol=NULL;
-					if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
-						calling_object = (CScriptVariable *)callAle->varRef;
+					// try to find the function ...
+					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
+						tInfoAsmOp *iao = (tInfoAsmOp *)(callAle)->stkValue;
+						PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
-						// we have to no to call default constructor...is implicit
-						if(is_constructor) {
+						symbol_to_find = ast_node_call_ale->symbol_value;
 
-							is_c=calling_object->is_c_object();
+						//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
+						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
-							if(n_args == 0 && is_c){
-								aux_function_info = NULL;
-								iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+
+						// local vars as functions ...
+
+						// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
+						vector<tSymbolInfo> *m_functionSymbol=NULL;
+						if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
+							calling_object = (CScriptVariable *)callAle->varRef;
+
+							// we have to no to call default constructor...is implicit
+							if(is_constructor) {
+
+								is_c=calling_object->is_c_object();
+
+								if(n_args == 0 && is_c){
+									aux_function_info = NULL;
+									iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+								}
+							}
+
+							m_functionSymbol=calling_object->getVectorFunctionSymbol();
+						}
+
+						//bool all_check=true;
+						if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
+						{
+							vector<int> *vec_global_functions=&(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
+							//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
+							if((aux_function_info=FIND_FUNCTION(
+									m_functionSymbol
+									,vec_global_functions
+									,iao
+									,is_constructor
+									,symbol_to_find
+									,calling_object
+									,instruction
+									,ptrResultInstructionOp1
+									,ptrResultInstructionOp2
+									,startArg
+									,n_args
+									,NULL))==NULL){
+
+								if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX){
+									RETURN_ERROR;
+								}
+							}
+
+
+							// saves function pointer found ...
+							callAle->stkValue=aux_function_info;
+
+						}
+
+					}
+					else{
+						if(((callAle)->properties & STK_PROPERTY_UNRESOLVED_FUNCTION)==0){
+							aux_function_info=(CScriptFunctionObject *) (callAle->stkValue);
+						}
+					}
+
+					if(aux_function_info !=NULL)
+					{
+						if(n_args > MAX_N_ARGS){
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max arguments reached function at line XXX");
+							RETURN_ERROR;
+						}
+
+						if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
+							unsigned aux_function_info_m_arg_size=aux_function_info->m_arg.size();
+							if( n_args < aux_function_info_m_arg_size){ // we must push undefined parameters ...
+								for(unsigned i = n_args; i < aux_function_info_m_arg_size; i++){
+									*ptrCurrentOp++={
+										STK_PROPERTY_TYPE_UNDEFINED, // starts undefined.
+										0,							 // no value assigned.
+										NULL			     // no varref related.
+									};
+									n_args++;
+								}
 							}
 						}
 
-						m_functionSymbol=calling_object->getVectorFunctionSymbol();
-					}
+						// by default virtual machine gets main object class in order to run functions ...
+						ret_obj=execute_internal(aux_function_info,calling_object,error,ptrCurrentOp,ptrCurrentStr,n_args,instruction->idxAstNode);
 
-					//bool all_check=true;
-					if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
-					{
-						vector<int> *vec_global_functions=&(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
-						//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
-						if((aux_function_info=FIND_FUNCTION(
-								m_functionSymbol
-								,vec_global_functions
-								,iao
-								,is_constructor
-								,symbol_to_find
-								,calling_object
-								,instruction
-								,ptrResultInstructionOp1
-								,ptrResultInstructionOp2
-								,startArg
-								,n_args
-								,NULL))==NULL){
+						if(error)
+						{
+							RETURN_ERROR;
+						}
 
-							if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX){
+						if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+
+							// if c pointer is not from application share ...
+							if(!((CScriptVariable *)(ret_obj.varRef))->initSharedPtr()){
 								RETURN_ERROR;
 							}
 						}
 
-
-						// saves function pointer found ...
-						callAle->stkValue=aux_function_info;
-
-					}
-
-				}
-				else{
-					if(((callAle)->properties & STK_PROPERTY_UNRESOLVED_FUNCTION)==0){
-						aux_function_info=(CScriptFunctionObject *) (callAle->stkValue);
-					}
-				}
-
-				if(aux_function_info !=NULL)
-				{
-					if(n_args > MAX_N_ARGS){
-						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max arguments reached function at line XXX");
-						RETURN_ERROR;
-					}
-
-					if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
-						unsigned aux_function_info_m_arg_size=aux_function_info->m_arg.size();
-						if( n_args < aux_function_info_m_arg_size){ // we must push undefined parameters ...
-							for(unsigned i = n_args; i < aux_function_info_m_arg_size; i++){
-								*ptrCurrentOp++={
-									STK_PROPERTY_TYPE_UNDEFINED, // starts undefined.
-									0,							 // no value assigned.
-									NULL			     // no varref related.
-								};
-								n_args++;
+						if(cancel_execution) {
+							if(custom_error!=NULL){
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
 							}
-						}
-					}
-
-					// by default virtual machine gets main object class in order to run functions ...
-					ret_obj=execute_internal(aux_function_info,calling_object,error,ptrCurrentOp,ptrCurrentStr,n_args,instruction->idxAstNode);
-
-					if(error)
-					{
-						RETURN_ERROR;
-					}
-
-					if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-
-						// if c pointer is not from application share ...
-						if(!((CScriptVariable *)(ret_obj.varRef))->initSharedPtr()){
 							RETURN_ERROR;
 						}
+
 					}
 
-					if(cancel_execution) {
-						if(custom_error!=NULL){
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
-						}
-						RETURN_ERROR;
+					// reset stack (function+asm_op (-1 op less))...
+					ptrCurrentOp=startArg-1;
+
+					// ... and push result if not function constructor...
+					if(!is_constructor){
+						*ptrCurrentOp++ = ret_obj;
 					}
-
-				}
-
-				// reset stack (function+asm_op (-1 op less))...
-				ptrCurrentOp=startArg-1;
-
-				// ... and push result if not function constructor...
-				if(!is_constructor){
-					*ptrCurrentOp++ = ret_obj;
-				}
-			 }
+			 	 }
 				continue;
 			 case  NEW:
 					svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1);
@@ -2684,17 +2692,80 @@ if(aux_function_info == NULL){\
 				}
 				// }
 				goto lbl_exit_function;
-		 case PUSH_SCOPE:
+			 case PUSH_SCOPE:
 
-				PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar);//instruction->index_op1);
+				PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar,instruction->index_op1);//instruction->index_op1);
+
+				if(instruction->index_op1 & SCOPE_PROPERTY::FOREACH){
+					if(current_foreach == &stkForeach[VM_MAX_FOREACH-1]){
+						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max foreach reached");
+						RETURN_ERROR;
+					}
+
+					current_foreach++;
+				}
 				continue;
 
-		 case POP_SCOPE:
+			 case POP_SCOPE:
 				ptrCurrentStr=ptrStartStr; // reset op ptr
 				ptrCurrentOp=ptrStartOp;
-				POP_SCOPE(NULL);//instruction->index_op1);
+				if(!POP_SCOPE_CALL(idxCurrentStack,NULL,instruction->index_op1)){
+					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Error pop scope");
+					RETURN_ERROR;
+				}
+
+				if(instruction->index_op1 & SCOPE_PROPERTY::FOREACH){
+					if(current_foreach == &stkForeach[0]){
+						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Min foreach reached");
+						RETURN_ERROR;
+					}
+
+					memset(current_foreach,0,sizeof(tForeachInfo));
+					current_foreach--;
+				}
 				continue;
 
+			 case IT_INI:
+				 POP_TWO; // op2:vec op1:element
+
+
+				 if((ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) == 0){
+						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected stackvar",
+							AST_SYMBOL_VALUE_CONST_CHAR(info_function->object_info.asm_op[instruction->index_op1].idxAstNode)
+						);
+						RETURN_ERROR;
+
+				 }
+				 current_foreach->element=(tStackElement *)ptrResultInstructionOp1->varRef;
+				 current_foreach->ptr_vec=NULL;
+				 current_foreach->idx_current=0;
+
+				 var_object = (CScriptVariable *)ptrResultInstructionOp1->varRef;
+				 if( (ptrResultInstructionOp2->properties & (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)) == (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)){
+				 		var_object = (CScriptVariable *)(((tStackElement *)ptrResultInstructionOp2->varRef)->varRef);
+				 }
+
+				if(var_object != NULL && var_object->idxScriptClass == IDX_CLASS_VECTOR){
+
+					current_foreach->ptr_vec = (CVectorScriptVariable *)var_object;
+				}else{
+					writeErrorMsg(GET_AST_FILENAME_LINE((instruction-1)->idxAstNode),"Variable \"%s\" is not type vector",
+						AST_SYMBOL_VALUE_CONST_CHAR((instruction-1)->idxAstNode)
+					);
+					RETURN_ERROR;
+				}
+				 continue;
+			 case IT_SET_AND_NEXT:
+				 *((tStackElement *)current_foreach->element)=current_foreach->ptr_vec->m_objVector[current_foreach->idx_current++];
+				 continue;
+			 case IT_CHK_END:
+				 if(current_foreach->idx_current>=current_foreach->ptr_vec->m_objVector.size()){ // set true...
+					 PUSH_BOOLEAN(true);
+				 }
+				 else{ // set false...
+					 PUSH_BOOLEAN(false);
+				 }
+				 continue;
 			//
 			// END OPERATOR MANAGEMENT
 			//
@@ -2718,7 +2789,7 @@ if(aux_function_info == NULL){\
 		}
 		else{
 			while(ptrStartScopeInfo<=(current_scope_info_ptr)){
-				POP_SCOPE(callc_result.varRef);
+				POP_SCOPE_CALL(idxCurrentStack,callc_result.varRef,0);
 			}
 		}
 

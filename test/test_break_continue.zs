@@ -1,69 +1,46 @@
-var v=[1,2,3,4];
-
-
-var i=0,j=0;
-
-for(
-		var e		
-		,  _for_in_index1=0		
-		,  _for_in_count1=v.size()		
-		;--_for_in_count1>=0		
-		;i+=2, j+=3,_for_in_index1++
-	){
-	var g=0;
-	e=v[_for_in_index1];
+for(var i=0; i < 20; i++){
 	
-	if(_for_in_index1 > 2){
-		break;
-	}
-
-/*	
-	if(_for_in_index1 % 2){
+	if((i % 2)==0){
 		continue;
-	}*/
-	
-	print("e:"+e+" i:"+i+" j:"+j+" _for_in_index1:"+_for_in_index1);	
-	
-}
-
-i=0;
-
-for(;;){
-	
-	if(i>10){
-		break;
 	}
 	
-	i++;
+	print("for1 i:"+i);	
 	
 }
 
-/*
-i=0;
-switch(i){
-default:
-case -1:
-case 0:
-	print("k");
-case 1:
-	print("kk");
-	break;
-
-}
-
-
-i=0;
-while(i < 10){
+for(var i=0;;i++){
 	
-	print("i:"+i);
-
-	if(++i > 2){
-		break;
+	print("for2 i:"+i);
+	{
+		if(i==10){
+			break;
+		}
 	}
 }
 
-foreach(e in v){
-	print("e:"+e);
+var j=0;
+
+while(j<20){
+	
+	print("while1 j:"+j);
+	
+	if(j>10){
+		break;
+	}
+	
+	j++;
 }
 
-*/
+j=0;
+
+do{
+	print("while2 j:"+j);
+	
+	if(j>10){
+		break;
+	}
+	
+	j++;
+	
+}while(j<20);
+
