@@ -9,8 +9,7 @@
 	return callc_result;
 
 
-#define METAMETHOD_2_ARGS 2
-#define METAMETHOD_1_ARGS 1
+
 
 namespace zetscript{
 
@@ -182,7 +181,15 @@ namespace zetscript{
 				PUSH_NUMBER(fmod(f_aux_value1 , f_aux_value2));\
 		}\
 		else{\
-			APPLY_METAMETHOD(%,MOD_METAMETHOD);\
+			if(!APPLY_METAMETHOD(STR(%)\
+							,MOD_METAMETHOD\
+							 ,calling_object\
+								 ,instruction\
+								,ptrResultInstructionOp1\
+								,ptrResultInstructionOp2\
+			)){\
+				RETURN_ERROR;\
+			}\
 		}\
 	}
 
@@ -207,7 +214,15 @@ namespace zetscript{
 				PUSH_NUMBER(f_aux_value1 __OVERR_OP__ f_aux_value2);\
 		}\
 		else{\
-			APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__);\
+			if(!APPLY_METAMETHOD(STR(__OVERR_OP__)\
+							, __METAMETHOD__\
+							 ,calling_object\
+							,instruction\
+							,ptrResultInstructionOp1\
+							,ptrResultInstructionOp2\
+			)){\
+				RETURN_ERROR;\
+			}\
 		}\
 	}
 
@@ -237,7 +252,15 @@ namespace zetscript{
 		else if((ptrResultInstructionOp1->properties&ptrResultInstructionOp2->properties) == STK_PROPERTY_TYPE_STRING){\
 			PUSH_BOOLEAN(STRCMP(LOAD_STRING_OP(ptrResultInstructionOp1), __OVERR_OP__ ,LOAD_STRING_OP(ptrResultInstructionOp2)));\
 		}else{\
-			APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__);\
+			if(!APPLY_METAMETHOD(STR(__OVERR_OP__)\
+						 , __METAMETHOD__\
+						 ,calling_object\
+						 ,instruction\
+						,ptrResultInstructionOp1\
+						,ptrResultInstructionOp2\
+			)){\
+				RETURN_ERROR;\
+			}\
 		}\
 	}
 
@@ -257,7 +280,15 @@ namespace zetscript{
 		if(properties == STK_PROPERTY_TYPE_INTEGER){\
 			PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2));\
 		}else{\
-			APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__);\
+			if(!APPLY_METAMETHOD(STR(__OVERR_OP__)\
+							, __METAMETHOD__\
+							,calling_object\
+							,instruction\
+							,ptrResultInstructionOp1\
+							,ptrResultInstructionOp2\
+			)){\
+				RETURN_ERROR;\
+			}\
 		}\
 	}
 
@@ -671,7 +702,7 @@ if(aux_function_info == NULL){\
 	}\
 }
 
-#endif
+
 
 	#define APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__) \
 		int idxOffsetFunctionMemberStart=0;\
@@ -775,7 +806,7 @@ if(aux_function_info == NULL){\
 			*ptrCurrentOp++ = ret_obj; \
 		}
 
-
+#endif
 
 	const char * CVirtualMachine::STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement *ptr_info_ale){
 		const char * result="undefined";
@@ -2102,7 +2133,15 @@ if(aux_function_info == NULL){\
 						if(dst_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 							if(((CScriptVariable *)dst_ins->varRef)->itHasSetMetamethod()){
-								APPLY_METAMETHOD(=,SET_METAMETHOD);
+								if(!APPLY_METAMETHOD("="
+										,SET_METAMETHOD
+										,calling_object
+										,instruction
+										,ptrResultInstructionOp1
+										,ptrResultInstructionOp2
+								)){
+									RETURN_ERROR;
+								}
 								assign_metamethod=true;
 							}
 						}
@@ -2207,9 +2246,17 @@ if(aux_function_info == NULL){\
 				if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN){ // operation will result as integer.
 					PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
 				}else{
-					APPLY_METAMETHOD(!,NOT_METAMETHOD);
+					if(!APPLY_METAMETHOD(
+							"!"
+							,NOT_METAMETHOD
+							 ,calling_object
+							,instruction
+							,ptrResultInstructionOp1
+							,ptrResultInstructionOp2
+							)){
 						//writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
 						RETURN_ERROR;
+					}
 				}
 				continue;
 
@@ -2226,8 +2273,17 @@ if(aux_function_info == NULL){\
 					PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
 				*/
 				}else{ // try metamethod ...
-						APPLY_METAMETHOD(-,NEG_METAMETHOD);
-						//#define APPLY_METAMETHOD(__OVERR_OP__, __METAMETHOD__)
+						if(!APPLY_METAMETHOD(
+								"-"
+								,NEG_METAMETHOD
+								,calling_object
+								,instruction
+								,ptrResultInstructionOp1
+								,ptrResultInstructionOp2
+								)){
+							RETURN_ERROR;
+						}
+
 				}
 				continue;
 
@@ -2309,7 +2365,16 @@ if(aux_function_info == NULL){\
 				}
 				else{ // try metamethod ...
 
-					APPLY_METAMETHOD(+,ADD_METAMETHOD);
+					if(!APPLY_METAMETHOD(
+							"+"
+							,ADD_METAMETHOD
+							 ,calling_object
+							,instruction
+							,ptrResultInstructionOp1
+							,ptrResultInstructionOp2
+							)){
+						RETURN_ERROR;
+					}
 				}
 			}
 				continue;

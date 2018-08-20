@@ -4,7 +4,8 @@ namespace zetscript{
 
 		void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
-
+		#define METAMETHOD_2_ARGS 2
+		#define METAMETHOD_1_ARGS 1
 		//CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
 		//vector<CVirtualMachine::CVirtualMachine> CVirtualMachine::ALE;
 		// static: only defined in this module...
@@ -109,6 +110,125 @@ namespace zetscript{
 		return true;
 	}
 
+
+	inline bool CVirtualMachine::APPLY_METAMETHOD(
+										const char *__OVERR_OP__
+										,METAMETHOD_OPERATOR __METAMETHOD__
+										,CScriptVariable *calling_object
+										,tInfoAsmOp *instruction
+										,tStackElement *ptrResultInstructionOp1
+										,tStackElement *ptrResultInstructionOp2
+
+										) {
+
+		int idxOffsetFunctionMemberStart=0;
+		CScriptVariable *script_var_object = NULL;
+		CScriptFunctionObject * ptr_function_found=NULL;
+
+		CScriptVariable *one_param = NULL;
+		int n_metam_args=((__METAMETHOD__ == NOT_METAMETHOD\
+						|| __METAMETHOD__ == NEG_METAMETHOD\
+						|| __METAMETHOD__ == SET_METAMETHOD\
+						   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);
+		tStackElement *mm_test_startArg = ptrCurrentOp+n_metam_args;
+		if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ /* search for first time , else the function is stored in index_op2 */
+			CScriptClass *script_class_aux=NULL;
+
+			const char * symbol_to_find;
+			ptr_function_found=NULL;
+
+
+			if(((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){
+				script_var_object = (CScriptVariable *)(ptrResultInstructionOp1->varRef);
+				if(((ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
+					script_var_object = (CScriptVariable *)(((tStackElement *)script_var_object))->varRef;
+				}
+				if(__METAMETHOD__ == SET_METAMETHOD){
+					idxOffsetFunctionMemberStart=1;
+					one_param = (CScriptVariable *)(ptrResultInstructionOp2->varRef);
+					if(((ptrResultInstructionOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
+						one_param = (CScriptVariable *)(((tStackElement *)one_param))->varRef;
+					}
+				}
+			}else if(((ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
+				script_var_object = (CScriptVariable *)(ptrResultInstructionOp2->varRef);
+				if(((ptrResultInstructionOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
+					script_var_object = (CScriptVariable *)(((tStackElement *)script_var_object))->varRef;
+				}
+			}else{
+
+				string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),
+						var_type2="";
+
+				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/
+					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+							STR(__OVERR_OP),
+							var_type1.c_str()
+							);\
+				}else{ /* 2 args*/
+					var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);
+					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+							var_type1.c_str(),
+							__OVERR_OP__,
+							var_type2.c_str());
+				}
+
+				return false;
+			}
+
+			script_class_aux=REGISTERED_CLASS_NODE(script_var_object->idxScriptClass);
+			vector<int> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
+			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
+			unsigned n_args=n_metam_args;
+
+			symbol_to_find=CScriptClass::getMetamethod(__METAMETHOD__);
+
+			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
+			if((ptr_function_found = FIND_FUNCTION(
+					NULL\
+					,vec_global_functions\
+					,instruction\
+					,false\
+					,symbol_to_find
+					,calling_object
+					,instruction\
+					,ptrResultInstructionOp1
+					,ptrResultInstructionOp2
+					,startArgs
+					,n_args\
+					,__OVERR_OP__))==NULL)
+			{
+					return false;
+			}
+		}else{
+			ptr_function_found = (CScriptFunctionObject *)instruction->index_op2;
+		}
+		/* by default virtual machine gets main object class in order to run functions ... */
+		bool error = false;
+		tStackElement ret_obj=execute_internal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,ptrCurrentStr,n_metam_args);
+		if(error){
+			return false;
+		}
+
+		/* restore ptrCurretOp... */
+		ptrCurrentOp=mm_test_startArg-n_metam_args;
+		/* if function is C must register pointer ! */
+
+		if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+
+			if(!((CScriptVariable *)(ret_obj.varRef))->initSharedPtr()){
+				return false;
+			}
+			if(__METAMETHOD__ != SET_METAMETHOD){ /* Auto destroy C when ref == 0 */
+				((CScriptVariable *)(ret_obj.varRef))->setDelete_C_ObjectOnDestroy(true);
+			}
+		}
+		if(__METAMETHOD__ != SET_METAMETHOD){ /* Auto destroy C when ref == 0 */
+			*ptrCurrentOp++ = ret_obj;
+		}
+
+		return true;
+	}
 
 /*
 inline void SHARE_LIST_INSERT(list,_node){

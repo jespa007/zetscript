@@ -202,6 +202,16 @@ namespace zetscript{
 		inline bool ASSIGN_STACK_VAR(tStackElement *dst_ins, tStackElement *src_ins,tInfoAsmOp *instruction);
 		inline bool POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties);
 
+		inline bool APPLY_METAMETHOD(
+											const char *__OVERR_OP__
+											,METAMETHOD_OPERATOR __METAMETHOD__
+											,CScriptVariable *calling_object
+											,tInfoAsmOp *instruction
+											,tStackElement *ptrResultInstructionOp1
+											,tStackElement *ptrResultInstructionOp2
+
+											);
+
 		void 				stackDumped();
 
 	};
