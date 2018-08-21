@@ -1,8 +1,4 @@
 
-var g="\"caca de vaca\"";
-
-//print(g);
-
 class A{
 	
 	var j;

@@ -14,10 +14,15 @@ public:
 		this->data1=5;
 	}
 
+	void function0(){
+		printf("function0\n");
+	}
+
 	void function1(int arg){
 		this->data1 = arg;
 		printf("int argument is %i\n",this->data1);
 	}
+
 };
 
 class MyClassExtend:public MyClass{
@@ -38,7 +43,9 @@ int main(){
 	register_C_Class<MyClassExtend>("MyClassExtend"); // register MyClassExtend with name MyClassExtend in script side.
 
 	register_C_VariableMember<MyClass>("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
+	register_C_FunctionMember<MyClass>("function0",&MyClass::function0); // register function0 named function1 in script side as function member.
 	register_C_FunctionMember<MyClass>("function1",&MyClass::function1); // register function1 named function1 in script side as function member.
+
 
 	register_C_VariableMember<MyClassExtend>("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
 	register_C_FunctionMember<MyClassExtend>("function2",&MyClassExtend::function2); // register function2 named function2 in script side as function member.
@@ -49,6 +56,9 @@ int main(){
 	zs->eval(
 		"class ScriptMyClassExtend:MyClassExtend{\n"
 		"	var data3;\n"
+		"	function function0(){\n"
+		"		super();\n"
+		"   }\n"
 		"	function function1(arg){\n"
 		"		var i=this.data1;\n"
 		"		super(this.data1+arg);\n"
@@ -62,6 +72,7 @@ int main(){
 				    "   }\n"
 					"};\n"
 		"var myclass = new ScriptMyClassExtend2();\n" // instances MyClassExtend
+		"myclass.function0();\n" // it prints "function0"
 		"myclass.function1(12);\n" // it prints "Int argument is 12"
 		"myclass.function2(0.5);\n" // it prints "Float argument is 0.5"
 		"print(\"data1:\"+myclass.data1);\n" // it prints "data1:12"

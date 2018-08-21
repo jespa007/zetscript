@@ -188,9 +188,9 @@ namespace zetscript{
 		 */
 
 		void insert_CreateArrayObject_Instruction(short idxAstNode);
-		void insert_ArrayObject_PushValueInstruction(short idxAstNode,int ref_vec_object_index, int index_instruction_to_push=ZS_UNDEFINED_IDX);
+		void insert_ArrayObject_PushValueInstruction(short idxAstNode);
 
-		void insert_ArrayAccess_Instruction(int vect_object, int index_instrucction, short idxAstNode);
+		void insert_ArrayAccess_Instruction(int instruction_vec_variable, short idxAstNode);
 
 
 		/**
@@ -204,7 +204,7 @@ namespace zetscript{
 		 * index_object: index to take asm reference from. (-1 refers to main object)
 		 * index_call: index where take function ref from.
 		 */
-		void insert_CallFunction_Instruction(short idxAstNode,int index_call,int index_object=ZS_UNDEFINED_IDX);
+		void insert_CallFunction_Instruction(short idxAstNode, int call_index);
 		void insertRet(short idxAstNode);
 
 		/**

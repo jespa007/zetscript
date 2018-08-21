@@ -671,7 +671,8 @@ namespace zetscript{
 				}
 			}
 
-			 bool variable_in_main_class=SCOPE_IN_MAIN_CLASS(ast_node->idxScope);//!=0;
+
+			bool variable_in_main_class=SCOPE_IN_MAIN_CLASS(ast_node->idxScope);
 
 			 bool end=false;
 
@@ -721,6 +722,7 @@ namespace zetscript{
 							 CScriptFunctionObject *main=MAIN_SCRIPT_FUNCTION_OBJECT;
 							 info_function=&main->object_info; // set main function as other...
 							 idx_scope=0; // set scope global and try last...
+							 param_scope_type=0; // override to global scope...
 						 }
 			 		}
 			 	 }
@@ -838,15 +840,15 @@ namespace zetscript{
 												if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 													if(!symbol_found){
-														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", symbol_to_find.c_str() );
+														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str() );
 													}
 													else{
-														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
 													}
 
 												}
 												else{
-													writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", symbol_to_find.c_str());
+													writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str());
 												}
 											 return false;
 										 //}
@@ -858,11 +860,11 @@ namespace zetscript{
 
 			 }else  if(iao->operator_type==ASM_OPERATOR::CALL){ // overrides variable type as function ...
 				 // check whether access scope ...
-				 if(info_function->asm_op[iao->index_op1].operator_type ==ASM_OPERATOR::LOAD  && // e
-						 (GET_INS_PROPERTY_SCOPE_TYPE(info_function->asm_op[iao->index_op1].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
+				 if(info_function->asm_op[iao->index_op2].operator_type ==ASM_OPERATOR::LOAD  && // e
+						 (GET_INS_PROPERTY_SCOPE_TYPE(info_function->asm_op[iao->index_op2].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
 
-					 info_function->asm_op[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
-					 info_function->asm_op[iao->index_op1].index_op2 = iao->index_op1-1;
+					 info_function->asm_op[iao->index_op2].index_op1 = LOAD_TYPE_FUNCTION;
+					 info_function->asm_op[iao->index_op2].index_op2 = iao->index_op2-1;
 					// iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
 				 }
 
@@ -981,7 +983,7 @@ namespace zetscript{
 														 }
 														 arg_str+="arg"+CZetScriptUtils::intToString(i);
 													 }
-													 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find ancestor function for \"%s(%s)\". Is registered ?", symbol_to_find.c_str(),arg_str.c_str());
+													 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find \"super\" function for \"%s(%s)\". Has the class an inheritance or parent has the function ?", symbol_to_find.c_str(),arg_str.c_str());
 												 }
 												 else{
 													 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s::%s\" not found", base_class.c_str(),symbol_to_find.c_str());
@@ -1005,12 +1007,12 @@ namespace zetscript{
 																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", iao_node->symbol_value.c_str() );
 															}
 															else{
-																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",symbol_to_find.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",iao_node->symbol_value.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
 															}
 
 														}
 														else{
-															writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" not found",symbol_to_find.c_str());
+															writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" not found",iao_node->symbol_value.c_str());
 														}
 													 return false;
 												 }
@@ -1022,11 +1024,11 @@ namespace zetscript{
 
 						 }else  if(iao->operator_type==ASM_OPERATOR::CALL){ // overrides variable type as function ...
 							 // check whether access scope ...
-							 if(info_function->object_info.asm_op[iao->index_op1].operator_type ==ASM_OPERATOR::LOAD  && // e
-								(GET_INS_PROPERTY_SCOPE_TYPE(info_function->object_info.asm_op[iao->index_op1].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
+							 if(info_function->object_info.asm_op[iao->index_op2].operator_type ==ASM_OPERATOR::LOAD  && // e
+								(GET_INS_PROPERTY_SCOPE_TYPE(info_function->object_info.asm_op[iao->index_op2].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
 
-								 info_function->object_info.asm_op[iao->index_op1].index_op1 = LOAD_TYPE_FUNCTION;
-								 info_function->object_info.asm_op[iao->index_op1].index_op2 = -1;
+								 info_function->object_info.asm_op[iao->index_op2].index_op1 = LOAD_TYPE_FUNCTION;
+								 info_function->object_info.asm_op[iao->index_op2].index_op2 = -1;
 							 }
 						 }
 					 }
@@ -1355,12 +1357,14 @@ namespace zetscript{
 			object_info->local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
 
 			// check if metamethod...
+			string function_symbol_name = CCompiler::getSymbolNameFromSymbolRef(fun_name);
+
 			for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-				if(STRCMP(getMetamethod((METAMETHOD_OPERATOR)i),==,fun_name.c_str())){
+				if(STRCMP(getMetamethod((METAMETHOD_OPERATOR)i),==,function_symbol_name.c_str())){
 
 					rc->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
 
-					zs_print_debug_cr("Registered metamethod %s::%s",class_name.c_str(), fun_name.c_str());
+					zs_print_debug_cr("Registered metamethod %s::%s",class_name.c_str(), function_symbol_name.c_str());
 					break;
 				}
 			}

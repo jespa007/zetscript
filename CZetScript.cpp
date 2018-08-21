@@ -386,6 +386,7 @@ namespace zetscript{
 
 		SET_PARSING_FILENAME(idx_filename,filename);
 
+
 		if((end=CASTNode::generateAST_Recursive(
 				s,
 				m_line,
@@ -393,8 +394,9 @@ namespace zetscript{
 				error,
 				main_node
 				)) == NULL){
-			return THROW_SCRIPT_ERROR();
+			return;
 		}
+
 
 		if(*end == '}'){
 			writeErrorMsg(filename,m_line,"Unexpected } ");

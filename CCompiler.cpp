@@ -778,26 +778,23 @@ namespace zetscript{
 		m_currentFunctionInfo->asm_op.push_back(asm_op);
 	}
 
-	void CCompiler::insert_ArrayAccess_Instruction(int vec_object, int index_instrucction, short idxAstNode){
+	void CCompiler::insert_ArrayAccess_Instruction(int index_defined_vec_variable, short idxAstNode){
 
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->index_op1 = vec_object;//&(this->m_currentFunctionInfo->stament[dest_statment]);
-		asm_op->index_op2 = index_instrucction;//&(this->m_currentFunctionInfo->stament[dest_statment]);
+		asm_op->index_op2 = index_defined_vec_variable;
 		asm_op->operator_type=ASM_OPERATOR::VGET;
 		asm_op->idxAstNode = idxAstNode;
 		asm_op->var_type = STK_PROPERTY_TYPE_SCRIPTVAR;
 		m_currentFunctionInfo->asm_op.push_back(asm_op);
 	}
 
-	void CCompiler::insert_CallFunction_Instruction(short idxAstNode,int  index_call,int  index_object){
+	void CCompiler::insert_CallFunction_Instruction(short idxAstNode, int call_index){
 
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
 
-		asm_op->index_op1 = index_call;//&(this->m_currentFunctionInfo->stament[dest_statment]);
-		asm_op->index_op2 = index_object;//&(this->m_currentFunctionInfo->stament[dest_statment]);
-
 		asm_op->idxAstNode = idxAstNode;
 		asm_op->operator_type=ASM_OPERATOR::CALL;
+		asm_op->index_op2=call_index;
 
 		m_currentFunctionInfo->asm_op.push_back(asm_op);
 	}
@@ -818,15 +815,10 @@ namespace zetscript{
 		m_currentFunctionInfo->asm_op.push_back(asm_op);
 	}
 
-	void CCompiler::insert_ArrayObject_PushValueInstruction(short idxAstNode,int ref_vec_object_index,int index_instruction_to_push){
+	void CCompiler::insert_ArrayObject_PushValueInstruction(short idxAstNode){
 
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->index_op1=ref_vec_object_index;
 		asm_op->idxAstNode = idxAstNode;
-		asm_op->index_op2=index_instruction_to_push;
-		if(index_instruction_to_push == ZS_UNDEFINED_IDX){
-			asm_op->index_op2=CCompiler::getCurrentInstructionIndex();
-		}
 		asm_op->operator_type=ASM_OPERATOR::VPUSH;
 		m_currentFunctionInfo->asm_op.push_back(asm_op);
 	}
@@ -1112,6 +1104,7 @@ namespace zetscript{
 		PASTNode node_0=AST_NODE(_node->children[0]),
 				 node_1=AST_NODE(_node->children[1]),
 				 node_2=NULL;
+		int vec=0;
 
 		if(_node->children.size()==3){
 			node_2 = AST_NODE(_node->children[2]);
@@ -1120,7 +1113,7 @@ namespace zetscript{
 		if(node_0->node_type != ARRAY_REF_NODE && node_0->node_type != ARRAY_OBJECT_NODE ){THROW_RUNTIME_ERROR("Node is not ARRAY_OBJECT type"); return false;}
 		if(node_1->node_type != ARRAY_ACCESS_NODE || node_1->children.size() == 0){THROW_RUNTIME_ERROR("Array has no index nodes "); return false;}
 
-		int vec=0;
+
 
 		if(node_0->node_type == ARRAY_OBJECT_NODE){ // must first create the object ...
 			if(!gacExpression_ArrayObject(node_0,_lc)){
@@ -1146,7 +1139,7 @@ namespace zetscript{
 						return false;
 					}
 					// insert vector access instruction ...
-					insert_ArrayAccess_Instruction(vec,CCompiler::getCurrentInstructionIndex(), array_acces->children [k]);
+					insert_ArrayAccess_Instruction(vec, array_acces->children [k]);
 					vec = getCurrentInstructionIndex();
 
 				}else{
@@ -1181,7 +1174,6 @@ namespace zetscript{
 
 		// 1. create object ...
 		insert_CreateArrayObject_Instruction(_node->idxAstNode);
-		int index_created_vec = CCompiler::getCurrentInstructionIndex();
 
 		// 2. evaluate expressions if any
 		for(unsigned j=0; j < _node->children.size(); j++){
@@ -1190,9 +1182,9 @@ namespace zetscript{
 			if(!gacExpression(AST_NODE(_node->children[j]), _lc)){
 				return false;
 			}
-			insert_ArrayObject_PushValueInstruction(_node->idxAstNode,index_created_vec);
+			insert_ArrayObject_PushValueInstruction(_node->idxAstNode);
 		}
-		return true;//index_created_vec;//CCompiler::getCurrentInstructionIndex();
+		return true;
 	}
 
 	bool CCompiler::gacExpression_FunctionObject(PASTNode _node, CScope *_lc){
@@ -1583,8 +1575,6 @@ namespace zetscript{
 			PASTNode node_class = AST_NODE(current_class->metadata_info.object_info.symbol_info.idxAstNode);
 			PASTNode _node_ret=NULL;
 			PASTNode fun_node = AST_NODE(idx_node_fun);
-			PASTNode args = AST_NODE(fun_node->children[0]);
-			//string symbol_value = makeSymbolRef(node_fun->symbol_value,idx_node_fun);
 
 			CScriptClass *sc=CScriptClass::getScriptClassByName(class_name_to_register);
 			if(sc==NULL){
@@ -1922,8 +1912,6 @@ namespace zetscript{
 		m_currentFunctionInfo->asm_op.push_back(asm_it_op);
 
 
-		//asm_it_op=new tInfoAsmOpCompiler();
-		//asm_it_op->operator_type=ASM_OPERATOR::IT_INI;
 		int instruction_it_end=getCurrentInstructionIndex()+1;
 
 		asm_it_op=new tInfoAsmOpCompiler();
@@ -2216,13 +2204,13 @@ namespace zetscript{
 		// compile else-body ...
 		asm_op_jmp_end = insert_JMP_Instruction(_node->idxAstNode); // goto end+
 
-		asm_op_jmp_else_if->index_op1 = ZS_UNDEFINED_IDX;
+
 		asm_op_jmp_else_if->index_op2 = getCurrentInstructionIndex()+1;//getCurrentStatmentIndex();
 
 
 		if((!gacExpression_Recursive(AST_NODE(AST_NODE(_node->children[1])->children[1]),_lc))){ return false;}
 
-		asm_op_jmp_end->index_op1 = ZS_UNDEFINED_IDX;//getCurrentInstructionIndex()+1;
+
 		asm_op_jmp_end->index_op2 = getCurrentInstructionIndex()+1;
 
 
@@ -2351,7 +2339,7 @@ namespace zetscript{
 					insertLoadValueInstruction(current_case_default,_lc);
 
 					// is equal ? ==
-					if(!insertOperatorInstruction(LOGIC_EQUAL_PUNCTUATOR,0, error_str)){
+					if(!insertOperatorInstruction(LOGIC_EQUAL_PUNCTUATOR,current_case_default->idxAstNode, error_str)){
 						writeErrorMsg(GET_AST_FILENAME_LINE(current_case_default->idxAstNode),"%s",error_str.c_str());
 						return false;
 					}
@@ -2391,7 +2379,6 @@ namespace zetscript{
 			for(unsigned j = 0; j < case_group[i].case_info.size(); j++){
 
 				//tInfoStatementOpCompiler *st= newStatment();
-				case_group[i].case_info[j].info_jt_instruction->index_op1 = ZS_UNDEFINED_IDX;
 				case_group[i].case_info[j].info_jt_instruction->index_op2 = getCurrentInstructionIndex()+1;
 
 				// compile all body nodes ...

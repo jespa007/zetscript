@@ -4,7 +4,7 @@ Version: 2.0.0
 Date: XX-XX-2018
 
  
-#64 Implement include preprocessor feature 
+#64 Implement "include" preprocessor feature 
 #65 added shared/static link cmake option through -DLINK=[SHARED|STATIC]
 #66 Added memory leak detection manager (only for GNU toolchain).  It needs memmanager https://github.org/jespa007/memmanager and pass -DMEMMANAGER parameter on cmake
 #67 Compact all utils source in one called CZetScriptUtils
@@ -19,26 +19,26 @@ Date: XX-XX-2018
 #76 Fix print parent variable on access member error
  
 #80 initialize vars within class doesn't tell any error or warning 
-#81 final parentesis/claudator lack detector 
+#81 Fixed final parentesis/claudator lack detector 
 #82 Allow "this" do assign or pass parameter as well as any object 
 
 #85 Implement foreach keyword 
 #86 Implement access vector element by string 
-#87 vector: Cannot "push" strings into vector 
-#88 struct: failed to find none of its elements 
-#89 string as function parameter: Doesn't parse \" within string
+#87 vector: Fixed error "push" strings into vector 
+#88 struct: Fixed fail to find none of its elements 
+#89 string as function parameter: Fixed doesn't parse \" within string
 
 #90 for: Support for no pre/conditional and post expressions.
-#91 Change name vector::add by vector::push  
+#91 Changed name vector::add by vector::push  
 #92 Support for StringVar to const char conversion as parameter into C function 
 
  
 #94 for/while/switch: break support 
 #95 for/foreach: obligate to put "var" on pre for expression 
 #96 for/foreach: continue keyword support
-#98 remove statment concept 
+#98 removed statment concept 
 
-
+#100 Improved virtual machine speed (Improved ~ x1.4) 
  
 
 //----------------------------------------------------------

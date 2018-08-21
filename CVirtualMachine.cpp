@@ -1051,20 +1051,6 @@ if(aux_function_info == NULL){\
 	#define POP_ONE \
 	ptrResultInstructionOp1=--ptrCurrentOp;
 
-	/*#define CHK_JMP \
-	if(instruction->index_op2 != ZS_UNDEFINED_IDX){\
-	\
-		if(current_statment!=&m_listStatements[instruction->index_op2]){\
-			ptr_statment_iteration=&m_listStatements[instruction->index_op2];\
-			goto lbl_exit_statment;\
-		}\
-	\
-		if((char)(instruction->index_op2) != ZS_UNDEFINED_IDX){\
-			instruction_it=&(*current_statment)[instruction->index_op1];\
-		}\
-	\
-	}*/
-
 	int CVirtualMachine::getCurrentAstNodeCall_C_Function(){
 		return current_ast_node_call_c_function;
 	}
@@ -1637,26 +1623,19 @@ if(aux_function_info == NULL){\
 
 
 
-		tStackElement *ptrResultInstructionOp1=NULL;//&stkResultInstruction[index_op1+startIdxStkResultInstruction];
-		tStackElement *ptrResultInstructionOp2=NULL;//&stkResultInstruction[index_op2+startIdxStkResultInstruction];
+		tStackElement *ptrResultInstructionOp1=NULL;
+		tStackElement *ptrResultInstructionOp2=NULL;
 		tStackElement *ldrVar;
 		unsigned short pre_post_properties=0;
 		unsigned short instruction_properties=0;
 		tSymbolInfo *si;
 		CScriptVariable *var_object = NULL;
 
-		unsigned short scope_type=0;//GET_INS_PROPERTY_SCOPE_TYPE(instruction->instruction_properties);
-
-		//PtrAsmOp current_statment = NULL,
-		//			ptr_statment_iteration=m_listStatements;
-
-
+		unsigned short scope_type=0;
 
 		tStackElement *dst_ins=NULL;
 		tStackElement *src_ins=NULL;
 		bool ok=false;
-
-
 
 		tInfoAsmOp *start_it=info_function->object_info.asm_op;
 		tInfoAsmOp *instruction_it=start_it;
@@ -1731,7 +1710,7 @@ if(aux_function_info == NULL){\
 
 						if(!ok){
 							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Variable \"%s\" is not type vector",
-								AST_SYMBOL_VALUE_CONST_CHAR(info_function->object_info.asm_op[instruction->index_op1].idxAstNode)
+								AST_SYMBOL_VALUE_CONST_CHAR(info_function->object_info.asm_op[instruction->index_op2].idxAstNode)
 							);
 							RETURN_ERROR;
 						}
@@ -2023,7 +2002,6 @@ if(aux_function_info == NULL){\
 					continue;
 
 				}else if(index_op1== LOAD_TYPE::LOAD_TYPE_ARGUMENT){
-					//ldrVar=&ptrArg[instruction->index_op2];
 					*ptrCurrentOp++=ptrArg[instruction->index_op2]; // copy arg directly ...
 					continue;
 				}
@@ -2545,8 +2523,6 @@ if(aux_function_info == NULL){\
 						PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
 						symbol_to_find = ast_node_call_ale->symbol_value;
-
-						//tInfoAsmOp *iao = &(*current_statment)[instruction->index_op1];
 						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
 
@@ -2731,7 +2707,6 @@ if(aux_function_info == NULL){\
 
 			 case  RET:
 
-				 //if(instruction->index_op1 != 0xff){ // return a value, void else.
 				if(ptrCurrentOp>ptrStartOp){ // can return something
 					callc_result=*(ptrCurrentOp-1);
 
@@ -2759,7 +2734,7 @@ if(aux_function_info == NULL){\
 				goto lbl_exit_function;
 			 case PUSH_SCOPE:
 
-				PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar,instruction->index_op1);//instruction->index_op1);
+				PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar,instruction->index_op1);
 
 				if(instruction->index_op1 & SCOPE_PROPERTY::FOREACH){
 					if(current_foreach == &stkForeach[VM_MAX_FOREACH-1]){
@@ -2795,9 +2770,7 @@ if(aux_function_info == NULL){\
 
 
 				 if((ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) == 0){
-						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected stackvar",
-							AST_SYMBOL_VALUE_CONST_CHAR(info_function->object_info.asm_op[instruction->index_op1].idxAstNode)
-						);
+						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Internal error: Expected stackvar");
 						RETURN_ERROR;
 
 				 }

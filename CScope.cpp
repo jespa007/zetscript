@@ -256,11 +256,10 @@ namespace zetscript{
 	}
 
 	tScopeVar * CScope::existRegisteredSymbolRecursiveUpScope(const string & symbol_ref, int n_params){
+		// only blocks within functions...
 		tScopeVar *sv=NULL;
+
 		// for each variable in current scope ...
-
-		//if(this->idxBaseScope != ZS_UNDEFINED_IDX){ // don't test var on class cases...
-
 		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
 
 			string current_symbol_ref=m_registeredVariableFromBase[i].symbol_ref;
@@ -277,7 +276,6 @@ namespace zetscript{
 		// ok lets iterate through current scope list
 		for(unsigned i = 0; i < m_localScopeList.size(); i++){
 			CScope *s=SCOPE_NODE(m_localScopeList[i]);
-
 			sv=s->existRegisteredSymbolRecursiveUpScope(symbol_ref,n_params);
 
 			if(sv != NULL) return sv;

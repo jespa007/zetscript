@@ -284,7 +284,6 @@ inline void SHARE_LIST_DEATTACH(list,_node)
 			) {
 
 		// by default search over global functions...
-
 		int size_fun_vec=vec_global_functions->size()-1;
 		CScriptVariable *var_object = NULL;
 		CScriptFunctionObject * ptr_function_found=NULL;

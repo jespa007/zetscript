@@ -1,31 +1,32 @@
 
-
-class Test{
-	//var data1,data2;
-	function fun(){
-		var i;
-		i=0;
-	}
-};
-
-var Test::data3;
-
-/*function Test::function3(){
-	this.data3="a string";
-}*/
-
-class TestExtended: Test{
+class Test{ // scope 1
+	var i;
 	
-	function function4(){
-		//var i=0;
-		//i=1;
-		/*this.data1;
-		this.data2;
-		this.data3;//this.function2()+this.data1;*/
+	function Test(){
+		this.i=0;
 	}
+	
+	function Test(_i){
+		this.i=_i;
+	}
+	
+	function update(){
+		print("update");
+	}
+	
 };
 
-//var t=new TestExtended();
+var t;
 
-//var t=new TestExtended();
-//t.function4();
+function ini(){
+	t=new Test();
+}
+
+function update(){
+	t.update();
+}
+
+
+
+ini();
+update();

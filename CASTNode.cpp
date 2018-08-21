@@ -2240,6 +2240,7 @@ namespace zetscript{
 		PASTNode class_node=NULL;
 		PASTNode function_collection_node=NULL;
 		int idxScope=ZS_UNDEFINED_IDX;
+		CScope *body_scope=NULL;
 
 
 		if(scope_info != NULL){
@@ -2312,7 +2313,7 @@ namespace zetscript{
 				else{ //function node
 					if(ast_node_to_be_evaluated!=NULL){ // save as function object...
 						(*ast_node_to_be_evaluated)->node_type = FUNCTION_OBJECT_NODE;
-						//(*ast_node_to_be_evaluated)->scope_info_ptr = scope_info;
+
 					}
 				}
 
@@ -2321,6 +2322,8 @@ namespace zetscript{
 					// create object function ...
 					ast_node=*ast_node_to_be_evaluated;
 					ast_node->idxScope = idxScope;
+
+					body_scope=SCOPE_NODE(idxScope)->pushScope(NULL);
 				}
 				// parse function args...
 				if(*aux_p == '('){ // push arguments...
@@ -2354,7 +2357,7 @@ namespace zetscript{
 							}
 
 							// check whether parameter name's matches with some global variable...
-							if((irv=scope_info->getInfoRegisteredSymbol(symbol_value,-1,false)) != NULL){
+							if((irv=body_scope->getInfoRegisteredSymbol(symbol_value,-1,false)) != NULL){
 								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Ambiguous symbol argument \"%s\" name with var defined at %i", symbol_value, AST_LINE(irv->idxAstNode));
 								return NULL;
 							}
@@ -2378,7 +2381,7 @@ namespace zetscript{
 							arg_node->symbol_value=symbol_value;
 							args_node->children.push_back(arg_node->idxAstNode);
 
-							if((scope_info->registerSymbol(symbol_value,arg_node)) == NULL){
+							if((body_scope->registerSymbol(symbol_value,arg_node)) == NULL){
 								return NULL;
 							}
 						}
@@ -2402,16 +2405,21 @@ namespace zetscript{
 					if((aux_p = parseBlock(
 							aux_p,
 							m_line,
-							ast_node_to_be_evaluated != NULL ? scope_info:NULL ,
+							ast_node_to_be_evaluated != NULL ? body_scope:NULL ,
 							error,
 							ast_node_to_be_evaluated != NULL ? &body_node : NULL,
-							ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL
+							ast_node_to_be_evaluated != NULL ? *ast_node_to_be_evaluated : NULL,
+							false
 
 						)) != NULL){
 
 						if(!error){
 
 							if(ast_node_to_be_evaluated != NULL){
+
+								// link scope / ast
+								body_scope->idxAstNode=body_node->idxAstNode;
+								body_node->idxScope =body_scope->idxScope;
 
 								// register function symbol...
 								int n_params=0;
@@ -2421,7 +2429,7 @@ namespace zetscript{
 								}
 
 								if(named_function){ // register named function...
-									if((irv=scope_info->getCurrentScopePointer()->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
+									if((irv=SCOPE_NODE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
 
 										if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
 											writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is already defined with same args at line %i", function_name.c_str(),AST_LINE(irv->idxAstNode));
@@ -2432,7 +2440,7 @@ namespace zetscript{
 										return NULL;
 									}
 
-									if((irv=scope_info->registerSymbol(function_name,(*ast_node_to_be_evaluated),n_params))==NULL){
+									if((irv=SCOPE_NODE(idxScope)->registerSymbol(function_name,(*ast_node_to_be_evaluated),n_params))==NULL){
 										return NULL;
 									}
 
@@ -2443,11 +2451,12 @@ namespace zetscript{
 								}else{ // register anonymouse function at global scope...
 									irv=SCOPE_NODE(IDX_GLOBAL_SCOPE)->registerAnonymouseFunction((*ast_node_to_be_evaluated));
 									(*ast_node_to_be_evaluated)->idxScope=IDX_GLOBAL_SCOPE;
-									//irv=scope_info->registerAnonymouseFunction((*ast_node_to_be_evaluated));
 									(*ast_node_to_be_evaluated)->symbol_value=irv->name;
 								}
 
 								(*ast_node_to_be_evaluated)->children.push_back(body_node->idxAstNode);
+
+								SCOPE_NODE(idxScope)->popScope();
 							}
 
 							return aux_p;
@@ -3759,6 +3768,7 @@ namespace zetscript{
 					*ast_node_to_be_evaluated = newASTNode();
 					(*ast_node_to_be_evaluated)->node_type=NODE_TYPE::KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info=keyw;
+					(*ast_node_to_be_evaluated)->idxScope=scope_info->idxScope;
 
 					(*ast_node_to_be_evaluated)->symbol_value=value_to_eval;
 					(*ast_node_to_be_evaluated)->line_value = m_line;
@@ -3930,6 +3940,7 @@ namespace zetscript{
 						aux = IGNORE_BLANKS(aux,m_line);
 						if(*aux != '\"'){
 							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected starting \" directive");
+							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
 						aux++;
@@ -3939,12 +3950,14 @@ namespace zetscript{
 
 						if(*aux != '\"'){
 							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected end \" directive");
+							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
 
 						end_var=aux;
 
 						if((symbol_name=CZetScriptUtils::copyStringFromInterval(start_var,end_var)) == NULL){
+							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
 
@@ -3959,7 +3972,7 @@ namespace zetscript{
 							try{
 								CZetScript::getInstance()->parse_file(file_to_parse.c_str());
 							}catch(script_error & error){
-								THROW_EXCEPTION(error.what());
+								THROW_SCRIPT_ERROR();
 								return NULL;
 							}
 
@@ -3988,6 +4001,7 @@ namespace zetscript{
 					// If was unsuccessful then try to parse expression.
 					if(error){
 						manageOnErrorParse(node_to_be_evaluated);
+						THROW_SCRIPT_ERROR();
 						return NULL;
 					}
 					// 2nd. check whether parse a block
@@ -4001,6 +4015,7 @@ namespace zetscript{
 						// If was unsuccessful then try to parse expression.
 						if(error){
 							manageOnErrorParse(node_to_be_evaluated);
+							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
 						// 2nd. try expression
@@ -4008,6 +4023,7 @@ namespace zetscript{
 
 						if((end_expr = parseExpression(aux,m_line, scope_info,node_to_be_evaluated != NULL ? &children:NULL)) == NULL){ // something wrong was happen.
 							manageOnErrorParse(node_to_be_evaluated);
+							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
 
@@ -4015,6 +4031,7 @@ namespace zetscript{
 							error = true;
 							writeErrorMsg(CURRENT_PARSING_FILENAME,starting_expression,"missing '('");
 							manageOnErrorParse(node_to_be_evaluated);
+							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
 
@@ -4022,6 +4039,7 @@ namespace zetscript{
 							error = true;
 							writeErrorMsg(CURRENT_PARSING_FILENAME,starting_expression,"Expected ';'");
 							manageOnErrorParse(node_to_be_evaluated);
+							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
 						end_expr++;
