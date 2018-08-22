@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "Common.h"
+#include "../Common.h"
 
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
