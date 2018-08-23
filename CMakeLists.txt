@@ -206,6 +206,9 @@ SET(
 	CNativeFunction.h
 	CScriptFunctionObject.h
 	CZetScript.h
+	zetscript_exception.h
+	zetscript_utils.h
+	CVirtualMachine.hxx
 )
 
 
