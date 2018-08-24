@@ -39,7 +39,8 @@ Date: XX-XX-2018
 #98 removed statment concept 
 #99 register C constant feature
 #100 Improved virtual machine speed (Improved ~ x1.4) 
- 
+
+> #101 Adapt inheritance feature from 1.1.3
 
 //----------------------------------------------------------
 Version: 1.3.0
