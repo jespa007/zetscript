@@ -37,7 +37,7 @@ Date: XX-XX-2018
 #95 for/foreach: obligate to put "var" on pre for expression 
 #96 for/foreach: continue keyword support
 #98 removed statment concept 
-
+#99 register C constant feature
 #100 Improved virtual machine speed (Improved ~ x1.4) 
  
 

@@ -93,6 +93,18 @@ namespace zetscript{
 		return info_ptr;
 	}
 
+	CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name, int value){
+		unsigned short type=STK_PROPERTY_TYPE_INTEGER;
+		tStackElement *stk;
+
+		if((stk = getConstant(const_name))!=NULL){
+			return stk;
+		}
+
+		return addConstant(const_name,(void *)value,type);
+
+	}
+
 	int CCompiler::addLocalVarSymbol(const string & var_name,short idxAstNode){
 
 		int idxVar;
@@ -509,7 +521,11 @@ namespace zetscript{
 			pre_post_operator_type=post_operator2instruction_property(_node->pre_post_operator_info);
 
 			// try parse value...
-			if(v=="null"){
+			get_obj = getConstant(v); // try custom constants from API
+			if(get_obj != NULL){
+				obj=get_obj;
+				load_type=LOAD_TYPE_CONSTANT;
+			}else if(v=="null"){
 				type=STK_PROPERTY_TYPE_NULL;
 				load_type=LOAD_TYPE_NULL;
 				obj=NULL;//CScriptVariable::NullSymbol;
@@ -521,18 +537,14 @@ namespace zetscript{
 					print_com_cr("%s detected as undefined\n",v.c_str());
 
 			}else if((const_obj=CZetScriptUtils::ParseInteger(v))!=NULL){
-				intptr_t value = *((int *)const_obj);
+				int value = *((int *)const_obj);
 
 				delete (int *)const_obj;
 
-				type=STK_PROPERTY_TYPE_INTEGER;
-				load_type=LOAD_TYPE_CONSTANT;
 				print_com_cr("%s detected as int\n",v.c_str());
-				if((get_obj = getConstant(v))!=NULL){
-					obj = get_obj;
-				}else{
-					obj=addConstant(v,(void *)value,type);
-				}
+				load_type=LOAD_TYPE_CONSTANT;
+
+				obj=addConstant(v,value);
 			}
 			else if((const_obj=CZetScriptUtils::ParseFloat(v))!=NULL){
 				float value = *((float *)const_obj);

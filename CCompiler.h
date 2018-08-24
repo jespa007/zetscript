@@ -5,8 +5,9 @@
 #pragma once
 
 
-#define CLEAR_COMPILE_INFORMATION 	CState::clearCurrentCompileInformation()
-#define GET_SYMBOL_NAME(s)			(CCompiler::getSymbolNameFromSymbolRef(s))
+#define CLEAR_COMPILE_INFORMATION 	zetscript::CState::clearCurrentCompileInformation()
+#define GET_SYMBOL_NAME(s)			(zetscript::CCompiler::getSymbolNameFromSymbolRef(s))
+#define register_C_Constant(s,v)			(zetscript::CCompiler::addConstant(s,(v)))
 
 #define LNK_SYM				"@lnk"
 #define VAR_TYPE			"var"
@@ -39,7 +40,7 @@ namespace zetscript{
 		static string 					makeSymbolRef(const string & symbol_name, int idxScope);
 		static int 						getIdxScopeFromSymbolRef(const string & symbol_ref);
 		static string 					getSymbolNameFromSymbolRef(const string & ref_symbol);
-
+		static tInfoConstantValue 	* 	addConstant(const string & const_name, int value);
 
 		static CCompiler * getInstance();
 
@@ -121,6 +122,7 @@ namespace zetscript{
 
 		static tInfoConstantValue * getConstant(const string & const_name);
 		static tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned short properties);
+
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// LINK UTILS

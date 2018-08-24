@@ -503,7 +503,7 @@ namespace zetscript{
 	  //
 
 
-			if(local_map_type_conversion->count(class_name_ptr) == 1){ // create new map...
+			if(local_map_type_conversion->count(class_name_ptr) == 1){
 				if(local_map_type_conversion->at(class_name_ptr).count(base_class_name_ptr)==1){
 					THROW_RUNTIME_ERROR("Conversion type \"%s\" -> \"%s\" already inserted",demangle(class_name).c_str(),demangle(base_class_name).c_str());
 					return false;

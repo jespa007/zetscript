@@ -369,6 +369,8 @@ namespace zetscript{
 		if((CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)) == ZS_UNDEFINED_IDX) return false;
 
 		__init__=true;
+		// create compiler instance ...
+		CCompiler::getInstance();
 
 		return true;
 	}

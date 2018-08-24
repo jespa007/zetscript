@@ -266,7 +266,12 @@ add_executable(script_call_from_cpp${POST_NAME}
 target_link_libraries(script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
 
 
+# register_constants
+add_executable(register_constant${POST_NAME}
+	${PROJECT_SOURCE_DIR}/test/register_constant.cpp
+)
 
+target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
 
 
 INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
