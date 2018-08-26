@@ -59,9 +59,9 @@
 #define GET_SCRIPT_CLASS_INFO_BY_NAME(s)		(zetscript::CScriptClass::getScriptClassByName(s))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(zetscript::CScriptClass::getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
 
-#define GET_IDX_2_CLASS_C_STR(idx) (CScriptClass::getScriptClassByIdx(idx)->classPtrType)
+#define GET_IDX_2_CLASS_C_STR(idx) 				(CScriptClass::getScriptClassByIdx(idx)->classPtrType)
 
-
+#define setOptimizedMode(o)						(zetscript::CScriptClass::setOptimizedModeInt(o))
 
 
 namespace zetscript{
@@ -75,7 +75,12 @@ namespace zetscript{
 
 	class  CScriptClass{
 
-
+		static 	bool 	optimized_mode;
+		static 			vector<CScriptClass *> 			* vec_script_class_node;
+		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
+		ZETSCRIPT_MODULE_EXPORT static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
+		static void  print(const char *s);
+		static void (* print_out_callback)(const char *);
 		//------------- VARIABLES STRUCT ---------------
 	public:
 
@@ -120,18 +125,8 @@ namespace zetscript{
 
 		//------------- STATIC METHODS ---------------
 
-	private:
-		static 			vector<CScriptClass *> 			* vec_script_class_node;
-		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
-		ZETSCRIPT_MODULE_EXPORT static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
-		static void  print(const char *s);
-		static void (* print_out_callback)(const char *);
 
 	public:
-
-		// DEFINES
-
-
 
 		// STRUCTS
 
@@ -146,12 +141,10 @@ namespace zetscript{
 		}tRegisterFunction;
 
 
-
-
 		// HELPERS
 		static tStackElement 						C_REF_InfoVariable_2_StackElement(tInfoVariableSymbol *ir_var, void *ptr_variable);
 
-
+		static void 								setOptimizedModeInt(bool );
 		// FUNCTIONS
 		static void 								setVectorScriptClassNode(vector<CScriptClass *> 	* set_vec);
 		static vector<CScriptClass *> 		*		getVectorScriptClassNode();
@@ -251,7 +244,7 @@ namespace zetscript{
 			string return_type;
 			vector<string> m_arg;
 			vector<tArgumentInfo> m_infoArg;
-			intptr_t ref_ptr=-1;
+			intptr_t ref_ptr=0;
 			CScriptFunctionObject *irs=NULL;
 
 			if(!CScriptFunctionObject::checkCanRegister_C_Function(function_name)){
@@ -483,13 +476,6 @@ namespace zetscript{
 
 			}
 
-			/*for(unsigned i = 0; i < (*local_vec_script_class_node)[register_class]->idxBaseClass.size(); i++){
-				CScriptClass *sc = CScriptClass::getScriptClassByIdx((*local_vec_script_class_node)[register_class]->idxBaseClass[i]);
-				if(sc->classPtrType ==base_class_name_ptr){
-					THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
-					return false;
-				}
-			}*/
 
 			CScriptClass *irc_class = (*local_vec_script_class_node)[register_class];
 			irc_class->idxBaseClass.push_back(idx_base_class);
@@ -498,66 +484,75 @@ namespace zetscript{
 			(*local_map_type_conversion)[irc_class->idxClass][idx_base_class]=[](intptr_t entry){ return (intptr_t)(_B *)((_T *)entry);};
 
 
-#if 0 // disabled! This don't work for virtual classes (its map changes at runtime).
-	  // https://stackoverflow.com/questions/48572734/is-possible-do-a-later-function-binding-knowing-its-function-type-and-later-the
-	  //
+			if(CScriptClass::optimized_mode){
+				//----------------------------
+				//
+				// DERIVATE STATE
+				//
+				// enabled but with restrictions! This don't work for virtual classes (its map changes at runtime) and multiheritance
+				// https://stackoverflow.com/questions/48572734/is-possible-do-a-later-function-binding-knowing-its-function-type-and-later-the
+				//
+
+				CScriptClass *irc_base = (*local_vec_script_class_node)[idx_base_class];
+
+				unsigned short derivated_properties=PROPERTY_C_OBJECT_REF| PROPERTY_IS_DERIVATED;
+				if(std::is_polymorphic<_B>::value==true){
+					derivated_properties|=PROPERTY_IS_POLYMORPHIC;
+				}
+
+				// register all symbols function from base ...
+				// vars ...
+				for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
+
+					tInfoVariableSymbol *irs_source = &irc_base->metadata_info.object_info.local_symbols.m_registeredVariable[i];
+
+					tInfoVariableSymbol irs;
+					// init struct...
+					irs.idxScriptClass = idx_base_class;
+					irs.ref_ptr=irs_source->ref_ptr;
+					irs.c_type = irs_source->c_type;
+					//irs.
+					irs.symbol_ref=irs_source->symbol_ref;
+					irs.properties = derivated_properties;
+					irs.idxSymbol = (short)(irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.size());
+					irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
+
+				}
+
+				// functions ...
+				for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+
+					CScriptFunctionObject *irs_source = GET_SCRIPT_FUNCTION_OBJECT(irc_base->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
+
+					CScriptFunctionObject *irs=NEW_SCRIPT_FUNCTION_OBJECT;
+					// init struct...
+					irs->object_info.symbol_info.idxAstNode = -1;
+					//irs.object_info.symbol_info.idxScopeVar = -1;
+					irs->object_info.symbol_info.symbol_ref=irs_source->object_info.symbol_info.symbol_ref;
 
 
-			if(local_map_type_conversion->count(class_name_ptr) == 1){
-				if(local_map_type_conversion->at(class_name_ptr).count(base_class_name_ptr)==1){
-					THROW_RUNTIME_ERROR("Conversion type \"%s\" -> \"%s\" already inserted",demangle(class_name).c_str(),demangle(base_class_name).c_str());
-					return false;
+					irs->m_arg = irs_source->m_arg;
+					irs->idx_return_type = irs_source->idx_return_type;
+
+					irs->object_info.symbol_info.properties = derivated_properties;
+
+					// ignores special type cast C++ member to ptr function
+					// create binding function class
+					irs->object_info.symbol_info.ref_ptr= irs_source->object_info.symbol_info.ref_ptr; // this is not correct due the pointer
+
+					irs->object_info.symbol_info.idxSymbol = (short)(irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
+					irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
+
+
 				}
 			}
 
-			CScriptClass *irc_base = (*local_vec_script_class_node)[idxBaseClass];
-
-			// register all symbols function from base ...
-			// vars ...
-			for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
-
-				tInfoVariableSymbol *irs_source = &irc_base->metadata_info.object_info.local_symbols.m_registeredVariable[i];
-
-				tInfoVariableSymbol irs;
-				// init struct...
-				irs.idxScriptClass = idxBaseClass;
-				irs.ref_ptr=irs_source->ref_ptr;
-				irs.c_type = irs_source->c_type;
-				//irs.
-				irs.symbol_name=irs_source->symbol_name;
-				irs.properties = PROPERTY_C_OBJECT_REF| PROPERTY_IS_DERIVATED;
-				irs.idxSymbol = (short)(irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.size());
-				irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
-
-			}
-
-			// functions ...
-			for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-
-				CScriptFunctionObject *irs_source = GET_SCRIPT_FUNCTION_OBJECT(irc_base->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
-
-				CScriptFunctionObject *irs=NEW_SCRIPT_FUNCTION_OBJECT;
-				// init struct...
-				irs->object_info.symbol_info.idxAstNode = -1;
-				//irs.object_info.symbol_info.idxScopeVar = -1;
-				irs->object_info.symbol_info.symbol_name=irs_source->object_info.symbol_info.symbol_name;
+			//
+			// DERIVATE STATE
+			//
+			//----------------------------
 
 
-				irs->m_arg = irs_source->m_arg;
-				irs->idx_return_type = irs_source->idx_return_type;
-
-				irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_IS_DERIVATED;
-
-				// ignores special type cast C++ member to ptr function
-				// create binding function class
-				irs->object_info.symbol_info.ref_ptr= irs_source->object_info.symbol_info.ref_ptr; // this is not correct due the pointer
-
-				irs->object_info.symbol_info.idxSymbol = (short)(irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
-				irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
-
-
-			}
-#endif
 
 			// finally maps object type ...
 			return true;
@@ -580,7 +575,7 @@ namespace zetscript{
 			vector<string> m_arg;
 			vector<tArgumentInfo> m_argInfo;
 			int idx_return_type=-1;
-			unsigned int ref_ptr=-1;
+			intptr_t ref_ptr=0;
 			string str_classPtr = typeid( _C *).name();
 
 			if(!CScriptFunctionObject::checkCanRegister_C_Function(function_name)){
@@ -688,7 +683,7 @@ namespace zetscript{
 			vector<string> m_arg;
 			vector<tArgumentInfo> m_argInfo;
 			int idx_return_type=-1;
-			unsigned int ref_ptr=-1;
+			intptr_t ref_ptr=0;
 			string str_classPtr = typeid( _T *).name();
 			string function_class_name = demangle(typeid(_T).name())+"::"+function_name;
 

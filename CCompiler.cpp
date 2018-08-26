@@ -93,7 +93,8 @@ namespace zetscript{
 		return info_ptr;
 	}
 
-	CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name, int value){
+	CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name, int _value){
+		intptr_t value = _value;
 		unsigned short type=STK_PROPERTY_TYPE_INTEGER;
 		tStackElement *stk;
 

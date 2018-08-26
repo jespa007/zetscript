@@ -17,6 +17,7 @@ namespace zetscript{
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
 	vector<CScriptClass *> 				* CScriptClass::vec_script_class_node=NULL;
+	bool CScriptClass::optimized_mode=false;
 
 	string  * CScriptClass::VOID_TYPE_STR=NULL;// 		typeid(void).name()
 	string  * CScriptClass::INT_PTR_TYPE_STR=NULL;//	typeid(int *).name()
@@ -132,6 +133,10 @@ namespace zetscript{
 		return{STK_PROPERTY_TYPE_UNDEFINED,
 			0,
 			NULL};
+	}
+
+	void CScriptClass::setOptimizedModeInt(bool optimized){
+		optimized_mode = optimized;
 	}
 
 	void CScriptClass::setVectorScriptClassNode(vector<CScriptClass *> 	* set_vec){

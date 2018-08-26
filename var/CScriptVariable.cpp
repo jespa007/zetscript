@@ -17,6 +17,7 @@ namespace zetscript{
 
 		tSymbolInfo *si;
 
+		// add extra symbol this itself if is a class typedef by user...
 		if(m_infoRegisteredClass->idxClass >=MAX_BASIC_CLASS_TYPES){
 			this_symbol.object.varRef=this;
 			this_symbol.object.properties=STK_PROPERTY_IS_THIS_VAR|STK_PROPERTY_TYPE_SCRIPTVAR;
