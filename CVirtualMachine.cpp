@@ -652,8 +652,8 @@ namespace zetscript{
 				SHARE_LIST_DEATTACH(shared_var[_node->currentStack],_node);
 
 				if(remove_if_0){ // remove node and data instead...
-					free(_node);
 					delete _node->data.shared_ptr;
+					free(_node);
 				}
 				else{ // insert into zero array.. if not referenced anymore will be removed by REMOVE_0_SHARED
 					// update current stack due different levels from functions!
