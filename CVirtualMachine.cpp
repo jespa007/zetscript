@@ -1160,7 +1160,7 @@ namespace zetscript{
 
 			if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_IS_POLYMORPHIC)){ // cannot call...
 				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
-						"1. Set zetscript in non-optimized mode and re-register the function in your project register_C_FunctionMember\n"
+						"1. Set register_C_baseSymbols(false) and  re-register the function using register_C_FunctionMember\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idxScriptClass!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
 						,CCompiler::getSymbolNameFromSymbolRef(info_function->object_info.symbol_info.symbol_ref).c_str());

@@ -61,7 +61,7 @@
 
 #define GET_IDX_2_CLASS_C_STR(idx) 				(CScriptClass::getScriptClassByIdx(idx)->classPtrType)
 
-#define setOptimizedMode(o)						(zetscript::CScriptClass::setOptimizedModeInt(o))
+#define register_C_BaseSymbols(o)		   		(zetscript::CScriptClass::register_C_BaseSymbolsInt(o))
 
 
 namespace zetscript{
@@ -75,7 +75,7 @@ namespace zetscript{
 
 	class  CScriptClass{
 
-		static 	bool 	optimized_mode;
+		static 	bool 	register_c_base_symbols;
 		static 			vector<CScriptClass *> 			* vec_script_class_node;
 		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
 		ZETSCRIPT_MODULE_EXPORT static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
@@ -144,7 +144,7 @@ namespace zetscript{
 		// HELPERS
 		static tStackElement 						C_REF_InfoVariable_2_StackElement(tInfoVariableSymbol *ir_var, void *ptr_variable);
 
-		static void 								setOptimizedModeInt(bool );
+		static void 								register_C_BaseSymbolsInt(bool );
 		// FUNCTIONS
 		static void 								setVectorScriptClassNode(vector<CScriptClass *> 	* set_vec);
 		static vector<CScriptClass *> 		*		getVectorScriptClassNode();
@@ -484,7 +484,7 @@ namespace zetscript{
 			(*local_map_type_conversion)[irc_class->idxClass][idx_base_class]=[](intptr_t entry){ return (intptr_t)(_B *)((_T *)entry);};
 
 
-			if(CScriptClass::optimized_mode){
+			if(CScriptClass::register_c_base_symbols){
 				//----------------------------
 				//
 				// DERIVATE STATE
@@ -636,7 +636,7 @@ namespace zetscript{
 			ast_symbol->idxScope=IDX_C_CLASS_SCOPE;
 			ast_symbol->symbol_value = function_name;
 
-			for(int a=0; a < m_argInfo.size();a++){ // set number args...
+			for(unsigned a=0; a < m_argInfo.size();a++){ // set number args...
 				ast_symbol->children.push_back(-1);
 			}
 
