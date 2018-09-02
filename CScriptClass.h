@@ -25,6 +25,10 @@
 #include "helper/RegisterFunctionHelper.h"
 
 
+#define MAX_REGISTER_CLASSES 200
+
+#define ZS_INVALID_CLASS	((unsigned char)ZS_UNDEFINED_IDX)
+
 #define register_C_Function(text,s) zetscript::CScriptClass::register_C_FunctionInt(text,s)
 #define register_C_Variable(text,s) zetscript::CScriptClass::register_C_VariableInt(text,&s,typeid(decltype(&s)).name())
 
@@ -104,19 +108,19 @@ namespace zetscript{
 		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
 
 		CScriptFunctionObject	metadata_info;
-		int idx_function_script_constructor;
+		unsigned char  idx_function_script_constructor;
 		//int idxScriptClass;
 
 		std::function<void * ()> 		* 	c_constructor;
 		std::function<void (void *  p)> 	*	c_destructor;
 		string classPtrType; // type_id().name();
-		int idxClass;
+		unsigned char  idxClass;
 
 
 		// vector<int> is set because C can have multiple herited classes (and we have to check whether an attempt C class to base of is not already set) where as script class only have one.
-		vector<int> idxBaseClass;
+		vector<unsigned char > idxBaseClass;
 
-		vector<int> metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
+		vector<int > metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
 
 		ZETSCRIPT_MODULE_EXPORT CScriptClass();
 
@@ -158,16 +162,16 @@ namespace zetscript{
 		static CScriptClass 				* 		registerClass(const string & class_name, const string & base_class_name, PASTNode _ast);
 
 
-		static CScriptClass 				* 		getScriptClassByIdx(int idx);
-		ZETSCRIPT_MODULE_EXPORT static CScriptClass 				* 		getScriptClassByName(const string & name, bool print_msg=true);
-		static CScriptClass 				* 		getScriptClassBy_C_ClassPtr(const string & class_type, bool print_msg=true);
-		static int 									getIdxScriptClass_Internal(const string & class_name);
-		static int 									getIdxScriptClass(const string & v, bool print_msg=true);
-		static int 									getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
-		ZETSCRIPT_MODULE_EXPORT static int 			getIdxClassFromIts_C_Type(const string & s);
+		static CScriptClass 				* 		getScriptClassByIdx(unsigned char idx);
+		ZETSCRIPT_MODULE_EXPORT static CScriptClass 				* 		getScriptClassByName(const string & name, bool throw_if_not_found=true);
+		static CScriptClass 				* 		getScriptClassBy_C_ClassPtr(const string & class_type, bool throw_if_not_found=true);
+		static unsigned char						getIdxScriptClass_Internal(const string & class_name);
+		static unsigned char						getIdxScriptClass(const string & v);
+		static unsigned char						getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
+		ZETSCRIPT_MODULE_EXPORT static unsigned char	getIdxClassFromIts_C_Type(const string & s);
 
 
-		ZETSCRIPT_MODULE_EXPORT static bool			isIdxClassInstanceOf(int theClass,int class_idx);
+		ZETSCRIPT_MODULE_EXPORT static bool			isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
 
 
 
@@ -185,8 +189,8 @@ namespace zetscript{
 		 * Class name given this function creates the object and initializes all variables.
 		 */
 		static CScriptVariable 		 * instanceScriptVariableByClassName(const string & class_name);
-		static CScriptVariable 		 * instanceScriptVariableByIdx(int idx_class, void * value_object = NULL);
-		static CScriptVariable 		 * getScriptVariableByIdx(int idx_class, int idx_var);
+		static CScriptVariable 		 * instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
+		static CScriptVariable 		 * getScriptVariableByIdx(unsigned char idx_class, int  idx_var);
 
 		static bool updateReferenceSymbols();
 
@@ -194,15 +198,15 @@ namespace zetscript{
 		static bool 				  variableSymbolExist(CScriptClass *rc,const string & symbolname_ref);
 		static tInfoVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
 
-		static int 							 getIdxRegisteredVariableSymbol(tFunctionInfo *irf,const string & var_name, bool show_msg=true);
+
 
 
 		static CScriptFunctionObject *  registerFunctionSymbol(const string & class_name, const string & name,short idxAstNode);
-		static int getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name, bool show_errors=true);
-		ZETSCRIPT_MODULE_EXPORT static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
-		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name, bool show_errors=true);
+		static int getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name);
+		ZETSCRIPT_MODULE_EXPORT static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
+		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
 		static bool 				  functionSymbolExist(CScriptClass *rc,const string & symbolname_ref, int n_params);
-		static CScriptFunctionObject * getScriptFunctionObjectByClassIdxFunctionName(int idxClassName,const string & function_name, bool show_errors=true);
+
 
 		static tFunctionInfo *  getSuperClass(CScriptClass *irc, const string & fun_name);
 
@@ -217,7 +221,7 @@ namespace zetscript{
 
 		//static fntConversionType getConversionType(string objectType, string conversionType, bool show_errors=true);
 
-		static const char * getNameRegisteredClassByIdx(int idx);
+		static const char * getNameRegisteredClassByIdx(unsigned char idx);
 
 		// internal var types ...
 		//static CScriptClass *  getRegisteredClassVoid();
@@ -232,7 +236,7 @@ namespace zetscript{
 		static CScriptClass *  getRegisteredClassNull();
 
 
-		static intptr_t doCast(intptr_t obj, int src_class, int convert_class);
+		static intptr_t doCast(intptr_t obj, unsigned char src_class, unsigned char convert_class);
 
 		/**
 		 * Register C function
@@ -327,8 +331,8 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		ZETSCRIPT_MODULE_EXPORT static bool register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
-		ZETSCRIPT_MODULE_EXPORT static int getIdx_C_RegisteredClass(const string & str_classPtr, bool print_msg=true);
-		static int getIdx_C_RegisteredFunctionMemberClass(const string & str_classPtr, const string & str_functionName, bool print_msg=true);
+		ZETSCRIPT_MODULE_EXPORT static unsigned char getIdx_C_RegisteredClass(const string & str_classPtr, bool throw_if_not_found=true);
+
 
 
 		/**
@@ -340,6 +344,12 @@ namespace zetscript{
 			// to make compatible MSVC shared library
 			vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
 			int size=(*local_vec_script_class_node).size();
+
+			if(size>=MAX_REGISTER_CLASSES){
+				THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
+				return false;
+			}
+
 			if(size>MAX_BASIC_CLASS_TYPES){ // after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
 				if((
 
@@ -356,7 +366,7 @@ namespace zetscript{
 
 				string str_classPtr = typeid( _T *).name();
 
-				if(getIdx_C_RegisteredClass(str_classPtr,false)!=-1){
+				if(getIdx_C_RegisteredClass(str_classPtr,false)!=ZS_INVALID_CLASS){
 					THROW_RUNTIME_ERROR("this %s is already registered",demangle(typeid( _T).name()).c_str());
 					return false;
 				}

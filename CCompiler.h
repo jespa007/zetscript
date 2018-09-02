@@ -73,8 +73,8 @@ namespace zetscript{
 
 		struct tInfoAsmOpCompiler{
 			ASM_OPERATOR operator_type;
-			char index_op1; // index/type/etc
-			int  index_op2; // usually a pointer or index
+			unsigned char index_op1; // index/type/etc
+			intptr_t  index_op2; // usually a pointer or index
 			short idxAstNode;
 			unsigned short var_type;
 			unsigned int pre_post_op_type;
@@ -125,7 +125,7 @@ namespace zetscript{
 
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
-		// LINK UTILS
+		// LINK/CHECK SYMBOLS FROM AST
 
 		bool isFunctionNode(short idxAstNode);
 
@@ -134,13 +134,15 @@ namespace zetscript{
 		 */
 		int getIdxArgument(const string & var);
 
-		int  addLocalVarSymbol(const string & name,short idxAstNode);
-		bool localVarSymbolExists(const string & name,short idxAstNode);
-		int  getIdxLocalVarSymbol(const string & name,short idxAstNode, bool print_msg=true);
+		int  addLocalVarSymbolFromASTNode(short idxAstNode);
+		int  getIdxLocalVarSymbolFromASTNode(short idxAstNode);
+		int  getIdxGlobalVarSymbolFromASTNode(short idxAstNode);
+		int  getIdxVarSymbolFromASTNodeScope(short idxAstNode, short idxScope);
 
-		CScriptFunctionObject *  addLocalFunctionSymbol(const string & name,short idxAstNode);
-		bool functionSymbolExists(const string & name,short idxAstNode);
-		int  getIdxFunctionObject(const string & name,short idxAstNode,unsigned int & scope_type, bool print_msg=true);
+
+		CScriptFunctionObject *  addLocalFunctionSymbolFromASTNode(short idxAstNode);
+		bool functionSymbolExistsFromASTNode(short idxAstNode);
+		int  getIdxFunctionObjectFromASTNode(short idxAstNode,unsigned int & scope_type);
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		//
@@ -161,7 +163,6 @@ namespace zetscript{
 		//tInfoStatementOpCompiler  *newStatment();
 		void insertStringConstantValueInstruction(short idxAstNode, const string & v);
 		bool insertLoadValueInstruction(PASTNode _node, CScope * _lc, tInfoAsmOpCompiler **iao_result=NULL);
-		bool insertMovVarInstruction(short idxAstNode, int left_index, int right_index);
 
 
 		void insertNot(short idxAstNode);

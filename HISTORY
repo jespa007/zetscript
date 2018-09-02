@@ -41,6 +41,9 @@ Date: XX-XX-2018
 #100 Improved virtual machine speed (Improved ~ x1.4) 
 
 #101 Adapt inheritance feature from 1.1.3
+#102 Bug: can use variable before define var itself
+
+Other: Lot of clean code up. 
 
 //----------------------------------------------------------
 Version: 1.3.0

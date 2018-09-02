@@ -2065,6 +2065,8 @@ namespace zetscript{
 					(*ast_node_to_be_evaluated)->node_type = KEYWORD_NODE;
 					(*ast_node_to_be_evaluated)->keyword_info = key_w;
 					(*ast_node_to_be_evaluated)->symbol_value = class_name;
+					(*ast_node_to_be_evaluated)->line_value = m_line;
+					(*ast_node_to_be_evaluated)->idxFilename = CURRENT_IDX_PARSING_FILENAME;
 
 					CScope *scp = CScope::newScope((*ast_node_to_be_evaluated));
 					(*ast_node_to_be_evaluated)->idxScope =scp->idxScope;
@@ -2432,7 +2434,7 @@ namespace zetscript{
 									if((irv=SCOPE_NODE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
 
 										if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
-											writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is already defined with same args at line %i", function_name.c_str(),AST_LINE(irv->idxAstNode));
+											writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is already defined with same args at %s:%i", function_name.c_str(),GET_AST_FILENAME_LINE(irv->idxAstNode));
 										}else{
 											writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
 										}
@@ -3964,10 +3966,17 @@ namespace zetscript{
 						zs_print_debug_cr("include file: %s",symbol_name);
 
 						{
+
 							// save current file info...
 							string current_file_str=CASTNode::current_parsing_filename;
 							int current_file_idx=CASTNode::current_idx_parsing_filename;
 							string file_to_parse=symbol_name;
+
+							if(CZetScript::getInstance()->isFilenameAlreadyParsed(file_to_parse.c_str())){
+								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"%s\" already parsed",file_to_parse.c_str());
+								THROW_SCRIPT_ERROR();
+								return NULL;
+							}
 
 							try{
 								CZetScript::getInstance()->parse_file(file_to_parse.c_str());
@@ -3981,7 +3990,7 @@ namespace zetscript{
 							CASTNode::current_idx_parsing_filename=current_file_idx;
 						}
 
-						aux++;
+						aux++;// advance ..
 						break;
 					default:
 						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"directive \"%s\" not supported",defined_directive[directive].str);

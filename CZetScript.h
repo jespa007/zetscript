@@ -150,7 +150,7 @@ namespace zetscript{
 
 
 
-		bool isFilenameAlreadyParsed(const char *filename);
+
 
 		void parse_ast(const char *str, int idx_filename=-1);
 
@@ -174,9 +174,11 @@ namespace zetscript{
 
 
 
+
 		//static void clearErrorMsg();
 		//static void writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 		//ZETSCRIPT_MODULE_EXPORT static const char * getErrorMsg();
+		bool isFilenameAlreadyParsed(const char *filename);
 		const char * getParsedFilenameFromIdx(unsigned idx);
 
 		void	setUserCallbackOnError(tPrintFunctionCallback _fun);

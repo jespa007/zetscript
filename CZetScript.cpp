@@ -242,7 +242,7 @@ namespace zetscript{
 				switch(asm_op->operator_type){
 
 				case  NEW:
-					printf("[%03i]\t%s\t%s\n",idx_instruction,CCompiler::def_operator[asm_op->operator_type].op_str,CScriptClass::getNameRegisteredClassByIdx(asm_op->index_op1));
+					printf("[%03i]\t%s\t%s\n",idx_instruction,CCompiler::def_operator[asm_op->operator_type].op_str,asm_op->index_op1!=ZS_INVALID_CLASS?CScriptClass::getNameRegisteredClassByIdx(asm_op->index_op1):"???");
 					break;
 				case  LOAD:
 					printf("[%03i]\t%s\t%s%s%s\n"
@@ -315,7 +315,7 @@ namespace zetscript{
 
 				strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
 
-				if(local_irfs->object_info.symbol_info.idxScriptClass!=ZS_UNDEFINED_IDX){
+				if(local_irfs->object_info.symbol_info.idxScriptClass!=ZS_INVALID_CLASS){
 					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->object_info.symbol_info.idxScriptClass);
 					if(sc->metadata_info.object_info.symbol_info.idxScriptClass == IDX_CLASS_MAIN){
 						sprintf(symbol_ref,"Main");
@@ -555,13 +555,14 @@ namespace zetscript{
 		int idx_file=-1;
 
 		if(filename_ref != NULL){
-			if(isFilenameAlreadyParsed(filename_ref)){
-				THROW_RUNTIME_ERROR("Filename \"%s\" already parsed",filename_ref);
-			}else{
+			if(!isFilenameAlreadyParsed(filename_ref)){
 				tInfoParsedSource ps;
 				ps.filename = filename_ref;
 				m_parsedSource->push_back(ps);
 				idx_file=m_parsedSource->size()-1;
+			}else{
+				// already parsed
+				return;
 			}
 		}
 

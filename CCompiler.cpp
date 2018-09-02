@@ -106,17 +106,23 @@ namespace zetscript{
 
 	}
 
-	int CCompiler::addLocalVarSymbol(const string & var_name,short idxAstNode){
+	int CCompiler::addLocalVarSymbolFromASTNode(short idxAstNode){
 
 		int idxVar;
 
+		PASTNode ast = AST_NODE(idxAstNode);
 
-		if((idxVar=getIdxLocalVarSymbol(var_name,idxAstNode,false))==ZS_UNDEFINED_IDX){
-			tInfoVariableSymbol info_symbol;
+		if(getConstant(ast->symbol_value)!=NULL){
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Cannot declare symbol \"%s\" it conflicts with constant value from API",ast->symbol_value.c_str());
+			return ZS_UNDEFINED_IDX;
+		}
+
+		if((idxVar=getIdxLocalVarSymbolFromASTNode(idxAstNode))==ZS_UNDEFINED_IDX){
 			PASTNode ast = AST_NODE(idxAstNode);
-
+			tInfoVariableSymbol info_symbol;
+			string symbol_ref = makeSymbolRef(ast->symbol_value,ast->idxScope);
 			info_symbol.idxAstNode = idxAstNode;
-			info_symbol.symbol_ref = makeSymbolRef(var_name,ast->idxScope);
+			info_symbol.symbol_ref =symbol_ref;
 			int n_element=this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size();
 
 			this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
@@ -130,19 +136,14 @@ namespace zetscript{
 			return n_element;//this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size()-1;
 		} // else already added so we refer the same var.
 
-		writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol \"%s\" already defined. (link issue)",var_name.c_str());
+		writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol \"%s\" already defined. (link issue)",ast->symbol_value.c_str());
 		return ZS_UNDEFINED_IDX;
 	}
 
-	bool CCompiler::localVarSymbolExists(const string & name,short  idxAstNode){
-
-		return getIdxLocalVarSymbol(name,idxAstNode, false) != ZS_UNDEFINED_IDX;
-	}
-
-	int  CCompiler::getIdxLocalVarSymbol(const string & name,short idxAstNode, bool print_msg){
+	int  CCompiler::getIdxLocalVarSymbolFromASTNode(short idxAstNode){
 		// name comes from same astnode...
-
-		string  symbol_ref = makeSymbolRef(name,AST_NODE(idxAstNode)->idxScope);
+		PASTNode ast=AST_NODE(idxAstNode);
+		string symbol_ref=CCompiler::makeSymbolRef(ast->symbol_value,ast->idxScope);
 
 		for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size(); i++){
 			if(this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
@@ -152,13 +153,41 @@ namespace zetscript{
 		return ZS_UNDEFINED_IDX;
 	}
 
-	CScriptFunctionObject * CCompiler::addLocalFunctionSymbol(const string & name,short idxAstNode){
+	int  CCompiler::getIdxGlobalVarSymbolFromASTNode(short idxAstNode){
+		// name comes from same astnode...
+		PASTNode ast=AST_NODE(idxAstNode);
+		string symbol_ref=CCompiler::makeSymbolRef(ast->symbol_value,IDX_GLOBAL_SCOPE);
+		CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX);
 
-		string  function_name = name;
+		for(unsigned i = 0; i < main_function->object_info.local_symbols.m_registeredVariable.size(); i++){
+			if(main_function->object_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
+				return i;
+			}
+		}
+		return ZS_UNDEFINED_IDX;
+	}
 
-		if(!functionSymbolExists(name,idxAstNode)){
+	int  CCompiler::getIdxVarSymbolFromASTNodeScope(short idxAstNode, short idxScope){
+		// name comes from same astnode...
+		PASTNode ast=AST_NODE(idxAstNode);
+		string symbol_ref=CCompiler::makeSymbolRef(ast->symbol_value,idxScope);
 
-			PASTNode ast_node = AST_NODE(idxAstNode);
+		for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size(); i++){
+			if(this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
+				return i;
+			}
+		}
+		return ZS_UNDEFINED_IDX;
+	}
+
+	CScriptFunctionObject * CCompiler::addLocalFunctionSymbolFromASTNode(short idxAstNode){
+
+
+		PASTNode ast_node = AST_NODE(idxAstNode);
+
+		if(!functionSymbolExistsFromASTNode(idxAstNode)){
+
+			string  function_name = ast_node->symbol_value;
 
 			// get n params size in order to find right symbol (rememeber the symbol syntax _pN_symbol)...
 			PASTNode ast_args =AST_NODE(ast_node->children[0]);
@@ -185,34 +214,35 @@ namespace zetscript{
 				info_symbol->object_info.symbol_info.idxAstNode = irv->idxAstNode;
 				info_symbol->object_info.symbol_info.idxScriptClass = ast_node_root==NULL?IDX_CLASS_MAIN:CScriptClass::getIdxScriptClass(ast_node_root->symbol_value);
 				//info_symbol.object_info.symbol_info.idxScopeVar = irv->idxScopeVar;
-				info_symbol->object_info.symbol_info.symbol_ref = makeSymbolRef(name,ast_node->idxScope);
+				info_symbol->object_info.symbol_info.symbol_ref = makeSymbolRef(function_name,ast_node->idxScope);
 
 				this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction.push_back(info_symbol->object_info.idxScriptFunctionObject);
 
 				return info_symbol;
 			}
 			else{
-				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" with %i args is defined",function_name.c_str(), n_params);
+				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" with %i args is defined",ast_node->symbol_value.c_str(), n_params);
 			}
 
 		}
 		else{
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" is defined",function_name.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" is defined",ast_node->symbol_value.c_str());
 		}
 		return NULL;
 	}
 
-	bool CCompiler::functionSymbolExists(const string & name, short idxAstNode){
+	bool CCompiler::functionSymbolExistsFromASTNode(short idxAstNode){
 
 		unsigned int scope_type;
-		return getIdxFunctionObject(name,idxAstNode,scope_type,false) != ZS_UNDEFINED_IDX;
+		return getIdxFunctionObjectFromASTNode(idxAstNode,scope_type) != ZS_UNDEFINED_IDX;
 	}
 
-	int  CCompiler::getIdxFunctionObject(const string & name,short idxAstNode, unsigned int & scope_type, bool print_msg){
+	int  CCompiler::getIdxFunctionObjectFromASTNode(short idxAstNode, unsigned int & scope_type){
 
 		// expects symbol name from astnode...
 
 		PASTNode ast_node=AST_NODE(idxAstNode);
+		string name = ast_node->symbol_value;
 		PASTNode ast_args = AST_NODE(ast_node->children[0]);
 		if(ast_args->node_type != NODE_TYPE::ARGS_DECL_NODE){
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"expected args node");
@@ -502,7 +532,7 @@ namespace zetscript{
 			}else if(v=="function"){
 				classidx=IDX_CLASS_FUNCTOR;
 			}else{ // search idx...
-				if((classidx=CScriptClass::getIdxScriptClass(v,false))==-1){
+				if((classidx=CScriptClass::getIdxScriptClass(v))==ZS_INVALID_CLASS){
 					writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode)," in instanceof operator  class \"%s\" is not registered",v.c_str());
 					return false;
 				}
@@ -522,11 +552,7 @@ namespace zetscript{
 			pre_post_operator_type=post_operator2instruction_property(_node->pre_post_operator_info);
 
 			// try parse value...
-			get_obj = getConstant(v); // try custom constants from API
-			if(get_obj != NULL){
-				obj=get_obj;
-				load_type=LOAD_TYPE_CONSTANT;
-			}else if(v=="null"){
+			if(v=="null"){
 				type=STK_PROPERTY_TYPE_NULL;
 				load_type=LOAD_TYPE_NULL;
 				obj=NULL;//CScriptVariable::NullSymbol;
@@ -596,11 +622,10 @@ namespace zetscript{
 				}else{
 					obj=addConstant(v,(void *)value,type);
 				}
-			}else{
+			}else{ // load symbol ...
 
 				is_constant = false;
 				string symbol_name = _node->symbol_value;
-
 
 				intptr_t idx_local_var=ZS_UNDEFINED_IDX;
 				bool access;
@@ -659,7 +684,11 @@ namespace zetscript{
 						scope_type=INS_PROPERTY_SUPER_SCOPE;
 				}else if(_node->symbol_value == "this"){
 						scope_type=INS_PROPERTY_THIS_SCOPE;
-				}else{
+				}else if((get_obj = getConstant(v)) != NULL){  // check if symbol is constant ...
+					obj=get_obj;
+					load_type=LOAD_TYPE_CONSTANT;
+					is_constant = true;
+				}else{ // it should be a variable...
 
 					// if not function then is var or arg node ?
 					// first we find the list of argments
@@ -670,12 +699,51 @@ namespace zetscript{
 
 							if(_node->node_type == SYMBOL_NODE){
 								if(_lc!=NULL){
-									if(!_lc->existRegisteredSymbol(symbol_name,NO_PARAMS_SYMBOL_ONLY)){ // check local
-										if(!SCOPE_NODE(IDX_GLOBAL_SCOPE)->existRegisteredSymbol(symbol_name,NO_PARAMS_SYMBOL_ONLY)){ // check global
+
+									// fast
+									//bool end=0;
+									CScope * sc=_lc;
+									while(sc!=NULL){
+
+										CCompiler::makeSymbolRef(_node->symbol_value,sc->idxScope);
+
+										if(getIdxVarSymbolFromASTNodeScope(_node->idxAstNode,sc->idxScope)!=ZS_UNDEFINED_IDX){
+											break;
+										}
+
+										if(sc->getIdxParent() > IDX_GLOBAL_SCOPE){
+											sc=SCOPE_NODE(sc->getIdxParent());
+										}
+										else{
+											sc=NULL;
+										}
+
+
+
+
+									}
+
+									if(sc==NULL){ // try global ...
+										if(getIdxGlobalVarSymbolFromASTNode(_node->idxAstNode)==ZS_UNDEFINED_IDX){
 											writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Variable \"%s\" not defined",symbol_name.c_str());
 											return false;
 										}
 									}
+
+
+
+									/*if(getIdxLocalVarSymbolFromASTNode(_node->idxAstNode)==ZS_UNDEFINED_IDX){
+										if(getIdxGlobalVarSymbolFromASTNode(_node->idxAstNode)==ZS_UNDEFINED_IDX){
+											writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Variable \"%s\" not defined",symbol_name.c_str());
+											return false;
+										}
+									}*/
+									/*if(!_lc->existRegisteredSymbol(symbol_name,NO_PARAMS_SYMBOL_ONLY)){ // check if symbol is declared as locally...
+										if(!SCOPE_NODE(IDX_GLOBAL_SCOPE)->existRegisteredSymbol(symbol_name,NO_PARAMS_SYMBOL_ONLY)){ // check if symbol is declared as globally...
+											writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Variable \"%s\" not defined",symbol_name.c_str());
+											return false;
+										}
+									}*/
 								}
 								else{
 									THROW_RUNTIME_ERROR("scope null");
@@ -684,7 +752,10 @@ namespace zetscript{
 							}
 					}
 				}
-				obj = (CScriptVariable *)idx_local_var;
+
+				if(!is_constant){
+					obj = (CScriptVariable *)idx_local_var;
+				}
 			}
 
 			if((pre_post_operator_type !=0 && GET_INS_PROPERTY_PRE_POST_OP(pre_post_operator_type) !=INS_PROPERTY_PRE_NEG) &&
@@ -709,25 +780,6 @@ namespace zetscript{
 		if(iao_result != NULL){
 			*iao_result=asm_op;
 		}
-		return true;
-	}
-
-	bool CCompiler::insertMovVarInstruction(short idxAstNode,int left_index, int right_index){
-
-
-		tInfoAsmOpCompiler * left_asm_op = m_currentFunctionInfo->asm_op[left_index];
-
-		// check whether left operant is object...
-		if(left_asm_op->var_type != STK_PROPERTY_TYPE_SCRIPTVAR){
-			writeErrorMsg(GET_AST_FILENAME_LINE(left_asm_op->idxAstNode)," left operand must be l-value for '=' operator");
-			return false;
-		}
-
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->idxAstNode = idxAstNode;
-		asm_op->operator_type=ASM_OPERATOR::STORE;
-
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
 		return true;
 	}
 
@@ -841,7 +893,7 @@ namespace zetscript{
 	bool CCompiler::insert_NewObject_Instruction(short idxAstNode, const string & class_name){
 
 		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		if((asm_op->index_op1 = CScriptClass::getIdxScriptClass(class_name))==ZS_UNDEFINED_IDX){//&(this->m_currentFunctionInfo->stament[dest_statment]);
+		if((asm_op->index_op1 = CScriptClass::getIdxScriptClass(class_name))==ZS_INVALID_CLASS){//&(this->m_currentFunctionInfo->stament[dest_statment]);
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" is not registered", class_name.c_str());
 			return false;
 		}
@@ -1208,12 +1260,12 @@ namespace zetscript{
 		CScriptFunctionObject * script_function=NULL;
 
 		// 1. insert load reference created object ...
-		if(functionSymbolExists(_node->symbol_value, _node->idxAstNode)){
+		if(functionSymbolExistsFromASTNode( _node->idxAstNode)){
 				writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Function \"%s\" already defined",_node->symbol_value.c_str());
 				return false;
 		}
 
-		if((script_function=addLocalFunctionSymbol(_node->symbol_value,_node->idxAstNode)) == NULL){
+		if((script_function=addLocalFunctionSymbolFromASTNode(_node->idxAstNode)) == NULL){
 			return false;
 		}
 
@@ -2322,7 +2374,9 @@ namespace zetscript{
 							default_case_group_ptr = &default_case_group;
 							current_case_group_ptr=default_case_group_ptr;
 						}else{
-							writeErrorMsg(GET_AST_FILENAME_LINE(current_case_default->idxAstNode),"default statement already defined at line %i",default_case_group_ptr->case_info[0].case_node->line_value);
+							writeErrorMsg(GET_AST_FILENAME_LINE(current_case_default->idxAstNode),"default statement already defined at %s:%i"
+									,AST_FILENAME(default_case_group_ptr->case_info[0].case_node->idxFilename)
+									,default_case_group_ptr->case_info[0].case_node->line_value);
 							return false;
 						}
 				 }else{
@@ -2465,12 +2519,11 @@ namespace zetscript{
 
 			}else { // normal var
 
-				if((local_variable_idx=addLocalVarSymbol(node_var->symbol_value,node_var->idxAstNode)) == ZS_UNDEFINED_IDX){
+				if((local_variable_idx=addLocalVarSymbolFromASTNode(node_var->idxAstNode)) == ZS_UNDEFINED_IDX){
 					return false;
 				}
 
-				//for(unsigned i = 0 ; i < _node->children.size(); i++){ // init all requested vars...
-				if(node_var->children.size()==1){
+				if(node_var->children.size()==1){ // load expression...
 					if(!gacExpression(AST_NODE(node_var->children[0]), _lc)){
 						return false;
 					}
@@ -2544,12 +2597,12 @@ namespace zetscript{
 				return true;
 			}else{
 
-				if(functionSymbolExists(_node->symbol_value, _node->idxAstNode)){
+				if(functionSymbolExistsFromASTNode( _node->idxAstNode)){
 					writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Function \"%s\" already defined",_node->symbol_value.c_str());
 						return false;
 				}
 
-				if((function_object=addLocalFunctionSymbol(_node->symbol_value,_node->idxAstNode)) == NULL){
+				if((function_object=addLocalFunctionSymbolFromASTNode(_node->idxAstNode)) == NULL){
 					return false;
 				}
 

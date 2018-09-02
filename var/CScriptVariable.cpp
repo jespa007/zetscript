@@ -207,7 +207,7 @@ namespace zetscript{
 		string symbol_ref=CCompiler::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(getVariableSymbol(symbol_ref) != NULL){
-			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"symbol \"%s\" already exists",symbol_value.c_str());
+			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"internal:symbol \"%s\" already exists",symbol_value.c_str());
 			return NULL;
 		}
 
@@ -270,7 +270,7 @@ namespace zetscript{
 
 		if(!ignore_duplicates){
 			if(getFunctionSymbol(symbol_ref) != NULL){
-				writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode), "symbol already exists");
+				writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode), "internal:symbol already exists");
 				return NULL;
 			}
 		}

@@ -50,6 +50,7 @@ namespace zetscript{
 				}
 				if(delete_node){
 					delete current->data.shared_ptr;
+					current->data.shared_ptr=NULL;
 				}
 				free(current);
 				current=next_node;

@@ -526,7 +526,6 @@ namespace zetscript{
 		}else{
 			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Attempt to assign stack element over limit (%i)",pos);
 		}
-
 	}
 
 	void CVirtualMachine::clearGlobals(){
@@ -543,15 +542,18 @@ namespace zetscript{
 
 
 		for(unsigned i = 0; i < main_function->object_info.local_symbols.m_registeredVariable.size(); i++){
-			tStackElement *ptr_ale =&stack[i];
-			CScriptVariable *var = NULL;
 			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 			//case STK_PROPERTY_TYPE_STRING:
-			if(ptr_ale->properties &STK_PROPERTY_TYPE_SCRIPTVAR){
-				var =((CScriptVariable *)(ptr_ale->varRef));
-				if(var){
-					if(var->ptr_shared_pointer_node != NULL){
-						var->unrefSharedPtr();
+			if((main_function->object_info.local_symbols.m_registeredVariable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF ){
+				tStackElement *ptr_ale =&stack[i];
+				CScriptVariable *var = NULL;
+
+				if(ptr_ale->properties &STK_PROPERTY_TYPE_SCRIPTVAR){
+					var =((CScriptVariable *)(ptr_ale->varRef));
+					if(var){
+						if(var->ptr_shared_pointer_node != NULL){
+							var->unrefSharedPtr();
+						}
 					}
 				}
 			}
@@ -566,6 +568,12 @@ namespace zetscript{
 		for(int i=0; i < VM_LOCAL_VAR_MAX_STACK;i++){
 			*aux++={STK_PROPERTY_TYPE_UNDEFINED,0,NULL};
 		}
+
+		memset(zero_shares,0,sizeof(zero_shares));
+		memset(shared_var,0,sizeof(shared_var));
+		//memset(stack,0,sizeof(stack));
+
+		idxCurrentStack=0;
 		//int idxCurrentStack
 	}
 
@@ -1719,11 +1727,10 @@ namespace zetscript{
 					else{ // pop two parameters nothing ...
 						POP_TWO;
 
-
 						if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
 							dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
 						}else{
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected l-value mov");
+							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected l-value on assignment ('=')");
 							RETURN_ERROR;
 						}
 
@@ -2275,7 +2282,7 @@ namespace zetscript{
 			 	 }
 				continue;
 			 case  NEW:
-					svar=NEW_CLASS_VAR_BY_IDX(instruction->index_op1);
+					svar=NEW_CLASS_VAR_BY_IDX(index_op1);
 
 					if(!svar->initSharedPtr()){
 						RETURN_ERROR;
@@ -2369,9 +2376,9 @@ namespace zetscript{
 				goto lbl_exit_function;
 			 case PUSH_SCOPE:
 
-				PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar,instruction->index_op1);
+				PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar,index_op1);
 
-				if(instruction->index_op1 & SCOPE_PROPERTY::FOREACH){
+				if(index_op1 & SCOPE_PROPERTY::FOREACH){
 					if(current_foreach == &stkForeach[VM_MAX_FOREACH-1]){
 						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max foreach reached");
 						RETURN_ERROR;
@@ -2384,12 +2391,12 @@ namespace zetscript{
 			 case POP_SCOPE:
 				ptrCurrentStr=ptrStartStr; // reset op ptr
 				ptrCurrentOp=ptrStartOp;
-				if(!POP_SCOPE_CALL(idxCurrentStack,NULL,instruction->index_op1)){
+				if(!POP_SCOPE_CALL(idxCurrentStack,NULL,index_op1)){
 					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Error pop scope");
 					RETURN_ERROR;
 				}
 
-				if(instruction->index_op1 & SCOPE_PROPERTY::FOREACH){
+				if(index_op1 & SCOPE_PROPERTY::FOREACH){
 					if(current_foreach == &stkForeach[0]){
 						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Min foreach reached");
 						RETURN_ERROR;
