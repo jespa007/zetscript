@@ -271,7 +271,7 @@ namespace zetscript{
 		static char * parseStruct(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
 		static char * parseIf(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
 		static char * parseFor(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
-		static char * parseForeach(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
+		//static char * parseForeach(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
 		static char * parseWhile(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
 		static char * parseDoWhile(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
 		static char * parseSwitch(const char *s,int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated);

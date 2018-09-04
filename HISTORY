@@ -22,7 +22,7 @@ Date: XX-XX-2018
 #81 Fixed final parentesis/claudator lack detector 
 #82 Allow "this" do assign or pass parameter as well as any object 
 
-#85 Implement foreach keyword 
+#85,#103 Implement for(..in..)  
 #86 Implement access vector element by string 
 #87 vector: Fixed error "push" strings into vector 
 #88 struct: Fixed fail to find none of its elements 
@@ -34,14 +34,15 @@ Date: XX-XX-2018
 
  
 #94 for/while/switch: break support 
-#95 for/foreach: obligate to put "var" on pre for expression 
-#96 for/foreach: continue keyword support
+#95 for: obligate to put "var" on pre for expression 
+#96 for: continue keyword support
 #98 removed statment concept 
 #99 register C constant feature
 #100 Improved virtual machine speed (Improved ~ x1.4) 
 
 #101 Adapt inheritance feature from 1.1.3
 #102 Bug: can use variable before define var itself
+
 
 Other: Lot of clean code up. 
 

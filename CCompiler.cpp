@@ -1841,11 +1841,15 @@ namespace zetscript{
 
 		if(_node->node_type != KEYWORD_NODE ){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 		if(_node->keyword_info != KEYWORD_TYPE::FOR_KEYWORD){THROW_RUNTIME_ERROR("node is not FOR keyword type");return false;}
-		if(_node->children.size()!=4) {THROW_RUNTIME_ERROR("node FOR has not valid number of nodes");return false;}
+		if(!(_node->children.size()==4 || _node->children.size()==3)) {THROW_RUNTIME_ERROR("node FOR has not valid number of nodes");return false;}
 		if(!(AST_NODE(_node->children[0])->node_type==PRE_FOR_NODE && AST_NODE(_node->children[1])->node_type==CONDITIONAL_NODE &&
 		AST_NODE(_node->children[2])->node_type==POST_FOR_NODE && AST_NODE(_node->children[3])->node_type==BODY_BLOCK_NODE)) {THROW_RUNTIME_ERROR("node FOR has not valid TYPE nodes");return false;}
-		tInfoAsmOpCompiler *asm_conditional_op=NULL;
+		tInfoAsmOpCompiler *asm_jt_op=NULL;
 		int instruction_continue=-1,instruction_break=-1;
+		int idxAstBodyNode=3;
+		int instruction_it_end=ZS_UNDEFINED_IDX;
+
+
 
 		PASTNode ast_conditional=NULL;
 
@@ -1860,26 +1864,67 @@ namespace zetscript{
 		}
 
 		// 1. compile var init ...
-		if(AST_NODE(_node->children[0])->children.size()>0){
-			if(!ast2asm_Recursive(_node->children[0],SCOPE_NODE(_node->idxScope))){ return false;}
+		if(!ast2asm_Recursive(_node->children[0],SCOPE_NODE(_node->idxScope))){ return false;}
+
+
+		if(_node->children.size()==3){ // is for in
+
+			idxAstBodyNode=2;
+			tInfoAsmOpCompiler *asm_load_var_op=NULL,*asm_it_op=NULL,*asm_op=NULL;
+
+			// since key variable is only registered we have to insert a load op...
+			asm_load_var_op=new tInfoAsmOpCompiler();
+			asm_load_var_op->operator_type=ASM_OPERATOR::LOAD;
+			asm_load_var_op->index_op1=LOAD_TYPE::LOAD_TYPE_NOT_DEFINED; // set undefined... compiler will link the symbol later...
+			asm_load_var_op->idxAstNode=AST_NODE(_node->children[0])->children[0]; // get variable index ...
+			m_currentFunctionInfo->asm_op.push_back(asm_load_var_op);
+
+			// evaluate vector/struct element ...
+			if(!ast2asm_Recursive(_node->children[1],SCOPE_NODE(_node->idxScope))){ return false;}
+
+			asm_it_op=new tInfoAsmOpCompiler();
+			asm_it_op->operator_type=ASM_OPERATOR::IT_INI;
+			m_currentFunctionInfo->asm_op.push_back(asm_it_op);
+
+
+			instruction_it_end=getCurrentInstructionIndex()+1;
+
+			asm_it_op=new tInfoAsmOpCompiler();
+			asm_it_op->operator_type=ASM_OPERATOR::IT_CHK_END;
+			asm_it_op->idxAstNode=AST_NODE(_node->children[0])->children[0];
+			m_currentFunctionInfo->asm_op.push_back(asm_it_op);
+
+
+			asm_jt_op = insert_JT_Instruction(_node->children[1]);
+
+			// 2. load and post inc it
+			asm_it_op=new tInfoAsmOpCompiler();
+			asm_it_op->operator_type=ASM_OPERATOR::IT_SET_AND_NEXT;
+			asm_it_op->idxAstNode=_node->children[1];
+			m_currentFunctionInfo->asm_op.push_back(asm_it_op);
+
+		}else{ // compile conditional...
+
+
+			// 2. compile conditional
+			ast_conditional=AST_NODE(_node->children[1]);
+			instruction_it_end= getCurrentInstructionIndex()+1; // index_statement conditional for...
+			if(ast_conditional->children.size()>0){ // it has conditional... (infinite else)
+
+				if(!ast2asm_Recursive(ast_conditional->idxAstNode,SCOPE_NODE(_node->idxScope))){ return false;}
+
+				asm_jt_op = insert_JNT_Instruction(_node->children[1]);
+			}
+			// get current index statment in order to jmp from end body for.
+
 		}
-
-		// 2. compile conditional
-		ast_conditional=AST_NODE(_node->children[1]);
-		int index_statment_conditional_for_= getCurrentInstructionIndex()+1;
-		if(ast_conditional->children.size()>0){ // it has conditional... (infinite else)
-
-			if(!ast2asm_Recursive(ast_conditional->idxAstNode,SCOPE_NODE(_node->idxScope))){ return false;}
-
-			asm_conditional_op = insert_JNT_Instruction(_node->children[1]);
-		}
-		// get current index statment in order to jmp from end body for.
 
 
 		// 3. compile body
-		PASTNode _body_node=AST_NODE(_node->children[3]);
+		PASTNode _body_node=AST_NODE(_node->children[idxAstBodyNode]);
 		int instruction_pushscope=getCurrentInstructionIndex()+1;
-		if(!gacBody(AST_NODE(_node->children[3]),SCOPE_NODE(_body_node->idxScope))){ return false;}
+
+		if(!gacBody(_body_node,SCOPE_NODE(_body_node->idxScope))){ return false;}
 		instruction_continue=getCurrentInstructionIndex();
 
 		// because continue behaviour es inner body we have to set instructions after for-body is compiled...
@@ -1895,14 +1940,21 @@ namespace zetscript{
 
 		m_currentFunctionInfo->asm_op[instruction_continue]->index_op1=SCOPE_PROPERTY::CONTINUE;
 
-		// 4. compile post oper
-		PASTNode post_node=AST_NODE(_node->children[2]);
-		for(unsigned i=0; i < post_node->children.size(); i++){
-			if(!ast2asm_Recursive(post_node->children[i],SCOPE_NODE(_node->idxScope))){ return false;}
+
+		if(_node->children.size()==3){ // compile post for operator...
+			// 4. compile post oper
+			PASTNode post_node=AST_NODE(_node->children[2]);
+			for(unsigned i=0; i < post_node->children.size(); i++){
+				if(!ast2asm_Recursive(post_node->children[i],SCOPE_NODE(_node->idxScope))){ return false;}
+			}
+
+
+
 		}
 
-		// 5. jmp to the conditional index ...
-		insert_JMP_Instruction(ast_conditional->idxAstNode,index_statment_conditional_for_);
+		// 5. jmp to the conditional index or begin next iterator ...
+		insert_JMP_Instruction(ZS_UNDEFINED_IDX,instruction_it_end);
+
 
 
 
@@ -1912,8 +1964,8 @@ namespace zetscript{
 		instruction_break=getCurrentInstructionIndex();
 
 		// save JNT value...
-		if(asm_conditional_op != NULL){ //
-			asm_conditional_op->index_op2=instruction_break;
+		if(asm_jt_op != NULL){ //
+			asm_jt_op->index_op2=instruction_break;
 		}
 
 		// set jmps from breaks...
@@ -1938,11 +1990,11 @@ namespace zetscript{
 	}
 
 
-	bool CCompiler::gacForEach(PASTNode _node, CScope * _lc){
+	/*bool CCompiler::gacForEach(PASTNode _node, CScope * _lc){
 
 
-		if(_node->keyword_info != KEYWORD_TYPE::FOREACH_KEYWORD){THROW_RUNTIME_ERROR("node is not FOREACH keyword type");return false;}
-		if(_node->children.size()!=3) {THROW_RUNTIME_ERROR("node FOREACH has not valid number of nodes (var/vector symbol/body");return false;}
+		if(_node->keyword_info != KEYWORD_TYPE::FOREACH_KEYWORD){THROW_RUNTIME_ERROR("node is not FOR_IN keyword type");return false;}
+		if(_node->children.size()!=3) {THROW_RUNTIME_ERROR("node FOR_IN has not valid number of nodes (var/vector symbol/body");return false;}
 		tInfoAsmOpCompiler *asm_end_op=NULL;
 		tInfoAsmOpCompiler *asm_load_var_op=NULL,*asm_it_op=NULL,*asm_jt_op=NULL,*asm_op=NULL;
 		int instruction_continue=-1,instruction_break=-1;
@@ -1954,7 +2006,7 @@ namespace zetscript{
 
 
 		// 0. insert push statment
-		if(!insertPushScopeInstruction(_node->idxAstNode,_node->idxScope,SCOPE_PROPERTY::BREAK|SCOPE_PROPERTY::FOREACH)){ // scope for vars...
+		if(!insertPushScopeInstruction(_node->idxAstNode,_node->idxScope,SCOPE_PROPERTY::BREAK|SCOPE_PROPERTY::FOR_IN)){ // scope for vars...
 			return false;
 		}
 
@@ -2018,7 +2070,7 @@ namespace zetscript{
 
 
 		// 6. insert pop scope...
-		insertPopScopeInstruction(_node->idxAstNode,SCOPE_PROPERTY::BREAK|SCOPE_PROPERTY::FOREACH);
+		insertPopScopeInstruction(_node->idxAstNode,SCOPE_PROPERTY::BREAK|SCOPE_PROPERTY::FOR_IN);
 		instruction_break=getCurrentInstructionIndex();
 
 		// save JT value...
@@ -2045,7 +2097,7 @@ namespace zetscript{
 
 
 		return true;
-	}
+	}*/
 
 	bool CCompiler::gacWhile(PASTNode _node, CScope * _lc){
 
@@ -2555,9 +2607,9 @@ namespace zetscript{
 		case KEYWORD_TYPE::FOR_KEYWORD:
 			return gacFor(_node, _lc);
 			break;
-		case KEYWORD_TYPE::FOREACH_KEYWORD:
+		/*case KEYWORD_TYPE::FOREACH_KEYWORD:
 			return gacForEach(_node, _lc);
-			break;
+			break;*/
 		case KEYWORD_TYPE::WHILE_KEYWORD:
 			return gacWhile(_node, _lc);
 			break;

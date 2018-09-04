@@ -267,7 +267,7 @@ namespace zetscript{
 							,asm_op->index_op1!=0?'(':' '
 							,asm_op->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
 							,asm_op->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-							,asm_op->index_op1&SCOPE_PROPERTY::FOREACH?" FOREACH":""
+							,asm_op->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
 							,asm_op->index_op1!=0?')':' '
 							);
 					break;
@@ -278,7 +278,7 @@ namespace zetscript{
 							,asm_op->index_op1!=0?'(':' '
 							,asm_op->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
 							,asm_op->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-							,asm_op->index_op1&SCOPE_PROPERTY::FOREACH?" FOREACH":""
+							,asm_op->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
 							,asm_op->index_op1!=0?')':' '
 							);
 					break;

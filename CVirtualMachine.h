@@ -144,8 +144,8 @@ namespace zetscript{
 		};
 
 		struct tForeachInfo{
-			tStackElement 		   *element;
-			CVectorScriptVariable  *ptr_vec;
+			tStackElement 		   *key; // iterator element can be string or integer...
+			CScriptVariable			*ptr; // can be struct or vector...
 			unsigned int 		   idx_current;
 
 		};

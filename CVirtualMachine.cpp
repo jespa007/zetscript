@@ -1735,8 +1735,8 @@ namespace zetscript{
 						}
 
 						if(current_foreach!=NULL){
-							if(dst_ins == current_foreach->element){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"iterator value is read only");
+							if(dst_ins == current_foreach->key){
+								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"for-in key value is read only");
 								RETURN_ERROR;
 							}
 						}
@@ -2378,7 +2378,7 @@ namespace zetscript{
 
 				PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar,index_op1);
 
-				if(index_op1 & SCOPE_PROPERTY::FOREACH){
+				if(index_op1 & SCOPE_PROPERTY::FOR_IN){
 					if(current_foreach == &stkForeach[VM_MAX_FOREACH-1]){
 						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max foreach reached");
 						RETURN_ERROR;
@@ -2396,7 +2396,7 @@ namespace zetscript{
 					RETURN_ERROR;
 				}
 
-				if(index_op1 & SCOPE_PROPERTY::FOREACH){
+				if(index_op1 & SCOPE_PROPERTY::FOR_IN){
 					if(current_foreach == &stkForeach[0]){
 						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Min foreach reached");
 						RETURN_ERROR;
@@ -2416,18 +2416,18 @@ namespace zetscript{
 						RETURN_ERROR;
 
 				 }
-				 current_foreach->element=(tStackElement *)ptrResultInstructionOp1->varRef;
-				 current_foreach->ptr_vec=NULL;
+				 current_foreach->key=(tStackElement *)ptrResultInstructionOp1->varRef;
+				 current_foreach->ptr=NULL;
 				 current_foreach->idx_current=0;
 
-				 var_object = (CScriptVariable *)ptrResultInstructionOp1->varRef;
+				 var_object = (CScriptVariable *)ptrResultInstructionOp2->varRef;
 				 if( (ptrResultInstructionOp2->properties & (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)) == (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)){
 				 		var_object = (CScriptVariable *)(((tStackElement *)ptrResultInstructionOp2->varRef)->varRef);
 				 }
 
-				if(var_object != NULL && var_object->idxScriptClass == IDX_CLASS_VECTOR){
+				if(var_object != NULL && (var_object->idxScriptClass == IDX_CLASS_VECTOR || var_object->idxScriptClass == IDX_CLASS_STRUCT)){
 
-					current_foreach->ptr_vec = (CVectorScriptVariable *)var_object;
+					current_foreach->ptr = var_object;
 				}else{
 					writeErrorMsg(GET_AST_FILENAME_LINE((instruction-1)->idxAstNode),"Variable \"%s\" is not type vector",
 						AST_SYMBOL_VALUE_CONST_CHAR((instruction-1)->idxAstNode)
