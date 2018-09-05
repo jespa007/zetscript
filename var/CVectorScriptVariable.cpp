@@ -59,17 +59,12 @@ namespace zetscript{
 	}
 
 
-	tStackElement * CVectorScriptVariable::get(const string & s){
+	tStackElement * CVectorScriptVariable::getValue(const string & s){
 		bool found=false;
-		tStackElement *se=NULL;
+		tStackElement *se=CScriptVariableContainer::getValue(s);
 
-		for(unsigned i=0; i < vecNamedElement.size() && se==NULL; i++){
-			if(vecNamedElement[i].key==s){
-				se=&m_objVector[vecNamedElement[i].idx];
-			}
-		}
 
-		if(se==NULL){
+		if(se==NULL){// not exist , add...
 			tNamedElementVector nev;
 
 			//

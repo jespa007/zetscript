@@ -154,6 +154,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 
 	#-- Variables
 	var/CScriptVariable.cpp
+	var/CScriptVariableContainer.cpp
 	var/CStringScriptVariable.cpp
 	var/CStructScriptVariable.cpp
 	var/CVectorScriptVariable.cpp

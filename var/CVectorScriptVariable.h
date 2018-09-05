@@ -8,14 +8,9 @@
 
 namespace zetscript{
 
-	class  CVectorScriptVariable: public CScriptVariable{
+	class  CVectorScriptVariable: public CScriptVariableContainer{
 
-		typedef struct {
-			string key;
-			int		idx;
-		}tNamedElementVector;
 
-		vector<tNamedElementVector> vecNamedElement;
 	public:
 
 		tStackElement return_callc;
@@ -27,7 +22,8 @@ namespace zetscript{
 
 		virtual bool unrefSharedPtr();
 
-		tStackElement * get(const string & s);
+		tStackElement 		  * getValue(const string & s);
+		virtual tStackElement * getValue(int idx);
 
 
 		tStackElement * push();

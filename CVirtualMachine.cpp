@@ -2408,7 +2408,7 @@ namespace zetscript{
 				continue;
 
 			 case IT_INI:
-				 POP_TWO; // op2:vec op1:element
+				 POP_TWO; // op2:vector or struct op1:key iterator
 
 
 				 if((ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) == 0){
@@ -2427,16 +2427,23 @@ namespace zetscript{
 
 				if(var_object != NULL && (var_object->idxScriptClass == IDX_CLASS_VECTOR || var_object->idxScriptClass == IDX_CLASS_STRUCT)){
 
+					if(var_object->idxScriptClass == IDX_CLASS_VECTOR){ // integer as iterator...
+						*current_foreach->key={STK_PROPERTY_TYPE_INTEGER,0,0};
+					}
+					else{ // struct -> string as iterator...
+						*current_foreach->key={STK_PROPERTY_TYPE_STRING,0,0};
+					}
+
 					current_foreach->ptr = var_object;
 				}else{
-					writeErrorMsg(GET_AST_FILENAME_LINE((instruction-1)->idxAstNode),"Variable \"%s\" is not type vector",
+					writeErrorMsg(GET_AST_FILENAME_LINE((instruction-1)->idxAstNode),"Variable \"%s\" is not type vector or struct",
 						AST_SYMBOL_VALUE_CONST_CHAR((instruction-1)->idxAstNode)
 					);
 					RETURN_ERROR;
 				}
 				 continue;
 			 case IT_SET_AND_NEXT:
-				 *((tStackElement *)current_foreach->element)=current_foreach->ptr_vec->m_objVector[current_foreach->idx_current++];
+				 *((tStackElement *)current_foreach->key)=current_foreach->ptr_vec->m_objVector[current_foreach->idx_current++];
 				 continue;
 			 case IT_CHK_END:
 				 if(current_foreach->idx_current>=current_foreach->ptr_vec->m_objVector.size()){ // set true...

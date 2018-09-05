@@ -99,6 +99,7 @@ using std::ostringstream;
 #include "zetscript_exception.h"
 #include "zetscript_utils.h"
 #include "var/CScriptVariable.h"
+#include "var/CScriptVariableContainer.h"
 #include "var/CStringScriptVariable.h"
 #include "var/CVectorScriptVariable.h"
 #include "var/CFunctorScriptVariable.h"
