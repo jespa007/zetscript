@@ -57,7 +57,6 @@ namespace zetscript{
 		virtual tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates=true);
 		tSymbolInfo * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
 
-		string getMessageMatchingFunctions(const string & varname);
 		tSymbolInfo * getFunctionSymbol(const string & varname,bool only_var_name=false);
 		tSymbolInfo * getFunctionSymbolByIndex(unsigned idx);
 		vector <tSymbolInfo> * getVectorFunctionSymbol();

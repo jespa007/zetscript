@@ -19,7 +19,7 @@ namespace zetscript{
 	tSymbolInfo * CStructScriptVariable::exist(const char *c){
 		for(unsigned i = 0; i < m_variableSymbol.size(); i++){
 			//CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
-			if(m_variableSymbol[i].symbol_value == string(c)){
+			if(m_variableSymbol[i].key_value == string(c)){
 				return &m_variableSymbol[i];
 			}
 

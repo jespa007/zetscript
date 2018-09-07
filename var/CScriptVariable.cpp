@@ -230,8 +230,8 @@ namespace zetscript{
 			};
 		}
 
-		si.idxAstNode = _idxAstNode;
-		si.symbol_value = symbol_ref;
+		//si.idxAstNode = _idxAstNode;
+		si.key_value = symbol_ref;
 		m_variableSymbol.push_back(si);
 
 		return &m_variableSymbol[m_variableSymbol.size()-1];
@@ -244,7 +244,7 @@ namespace zetscript{
 		}
 
 		for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
-			string symbol = this->m_variableSymbol[i].symbol_value;
+			string symbol = this->m_variableSymbol[i].key_value;
 
 			if(only_var_name){
 				symbol=CCompiler::getSymbolNameFromSymbolRef(symbol);
@@ -276,8 +276,8 @@ namespace zetscript{
 		}
 
 		// get super function ...
-		si.symbol_value = symbol_ref;
-		si.idxAstNode = _idxAstNode;
+		si.key_value = symbol_ref;
+		//si.idxAstNode = _idxAstNode;
 		m_functionSymbol.push_back(si);
 
 		return &m_functionSymbol[m_functionSymbol.size()-1];
@@ -286,7 +286,7 @@ namespace zetscript{
 	tSymbolInfo * CScriptVariable::getFunctionSymbol(const string & varname,bool only_var_name){
 		for(unsigned int i = 0; i < this->m_functionSymbol.size(); i++){
 
-			string symbol = this->m_functionSymbol[i].symbol_value;
+			string symbol = this->m_functionSymbol[i].key_value;
 
 			if(only_var_name){
 				symbol=CCompiler::getSymbolNameFromSymbolRef(symbol);
@@ -349,7 +349,7 @@ namespace zetscript{
 	bool CScriptVariable::removeVariableSymbolByName(const string & varname, int idxAstNode){
 		string symbol_ref=CCompiler::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
 		for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
-			if(symbol_ref == this->m_variableSymbol[i].symbol_value){
+			if(symbol_ref == this->m_variableSymbol[i].key_value){
 				return removeVariableSymbolByIndex(i,true);
 			}
 		}
@@ -376,41 +376,13 @@ namespace zetscript{
 
 		// from lat value to first to get last override function...
 		for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){
-			if(varname == this->m_functionSymbol[i].symbol_value){
+			if(varname == this->m_functionSymbol[i].key_value){
 				return &m_functionSymbol[i];
 			}
 		}
 		return NULL;
 	}
 
-	string CScriptVariable::getMessageMatchingFunctions(const string & varname){
-		int n_candidates=0;
-		string str_candidates="";
-		for(int i = this->m_functionSymbol.size()-1; i>=0; i--){
-
-			CScriptFunctionObject *irfs = (CScriptFunctionObject *)m_functionSymbol[i].object.stkValue;
-
-			if(this->m_functionSymbol[i].symbol_value == varname){
-				if(n_candidates == 0){
-					str_candidates+="\t\tPossible candidates are:\n\n";
-				}
-
-
-				str_candidates+="\t\t-"+irfs->object_info.symbol_info.symbol_ref+"(";
-
-				for(unsigned a = 0; a < irfs->m_arg.size(); a++){
-					if(a>0){
-						str_candidates+=",";
-					}
-					str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a].idx_type));
-				}
-				str_candidates+=");\n";
-
-				n_candidates++;
-			}
-		}
-		return str_candidates;
-	}
 
 	const string & CScriptVariable::getClassName(){
 			return m_infoRegisteredClass->metadata_info.object_info.symbol_info.symbol_ref;

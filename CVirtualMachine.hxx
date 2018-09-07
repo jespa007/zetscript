@@ -300,7 +300,7 @@ inline void SHARE_LIST_DEATTACH(list,_node)
 
 			if(m_functionSymbol != NULL){
 				irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
-				aux_string=CCompiler::getSymbolNameFromSymbolRef(m_functionSymbol->at(i).symbol_value);
+				aux_string=CCompiler::getSymbolNameFromSymbolRef(m_functionSymbol->at(i).key_value);
 
 			}else{
 				irfs=vec_script_function_object_node[vec_global_functions->at(i)];

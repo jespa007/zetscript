@@ -1342,7 +1342,7 @@ namespace zetscript{
 									ok = true;
 								}
 								else if(IS_STRING(ptrResultInstructionOp2->properties)){ // get or generate cell in function of string...
-									ldrVar = vec->get((const char *)ptrResultInstructionOp2->stkValue);
+									ldrVar = vec->getValue((const char *)ptrResultInstructionOp2->stkValue);
 									ok = true;
 								}else{
 									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector-index as integer or string");
@@ -2443,10 +2443,10 @@ namespace zetscript{
 				}
 				 continue;
 			 case IT_SET_AND_NEXT:
-				 *((tStackElement *)current_foreach->key)=current_foreach->ptr_vec->m_objVector[current_foreach->idx_current++];
+				 *((tStackElement *)current_foreach->key)=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector[current_foreach->idx_current++];
 				 continue;
 			 case IT_CHK_END:
-				 if(current_foreach->idx_current>=current_foreach->ptr_vec->m_objVector.size()){ // set true...
+				 if(current_foreach->idx_current>=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector.size()){ // set true...
 					 PUSH_BOOLEAN(true);
 				 }
 				 else{ // set false...
