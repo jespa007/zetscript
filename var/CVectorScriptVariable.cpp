@@ -14,17 +14,14 @@ namespace zetscript{
 
 	CVectorScriptVariable::CVectorScriptVariable(){
 		this->init(CScriptClass::getRegisteredClassVector(), (void *)this);
-		_i_size = 0;
 	}
-
-
 
 	bool CVectorScriptVariable::unrefSharedPtr(){
 
 		if(CScriptVariable::unrefSharedPtr()){
 
-			for(unsigned i = 0; i < m_objVector.size(); i++){
-				CScriptVariable *var = (CScriptVariable *)m_objVector[i].varRef;
+			for(unsigned i = 0; i < m_variable.size(); i++){
+				CScriptVariable *var = (CScriptVariable *)m_variable[i].varRef;
 				if(var != NULL){
 
 					if(!var->unrefSharedPtr()){
@@ -43,12 +40,12 @@ namespace zetscript{
 
 	tStackElement *CVectorScriptVariable::push(){
 		tStackElement s={STK_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
-		m_objVector.push_back(s);
-		return &m_objVector[m_objVector.size()-1];
+		m_variable.push_back(s);
+		return &m_variable[m_variable.size()-1];
 	}
 
 	void CVectorScriptVariable::push(tStackElement  * v){
-		m_objVector.push_back(*v);
+		m_variable.push_back(*v);
 
 		// update n_refs +1
 		if(v->properties&STK_PROPERTY_TYPE_SCRIPTVAR){
@@ -59,29 +56,11 @@ namespace zetscript{
 	}
 
 
-	tStackElement * CVectorScriptVariable::getValue(const string & s){
-		bool found=false;
-		tStackElement *se=CScriptVariableContainer::getValue(s);
-
-
-		if(se==NULL){// not exist , add...
-			tNamedElementVector nev;
-
-			//
-			nev.key=s;
-			nev.idx=m_objVector.size();
-
-			vecNamedElement.push_back(nev);
-			se=push();
-		}
-
-		return se;
-	}
 
 	tStackElement * CVectorScriptVariable::pop(){
 		return_callc={STK_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
-		if(m_objVector.size()>0){
-			return_callc=m_objVector[m_objVector.size()-1];
+		if(m_variable.size()>0){
+			return_callc=m_variable[m_variable.size()-1];
 			CScriptVariable *var = (CScriptVariable *)return_callc.varRef;
 			if(var){
 				if(!var->unrefSharedPtr()){
@@ -89,7 +68,7 @@ namespace zetscript{
 				}
 			}
 
-			m_objVector.pop_back();
+			m_variable.pop_back();
 		}else{
 			writeErrorMsg(NULL,0,"pop(): error stack already empty");
 		}
@@ -100,16 +79,16 @@ namespace zetscript{
 
 
 	int CVectorScriptVariable::size(){
-		return  m_objVector.size();
+		return  m_variable.size();
 	}
 
 	void CVectorScriptVariable::destroy(){
 
 
-		for(unsigned i = 0; i < m_objVector.size(); i++){
-			if(m_objVector[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+		for(unsigned i = 0; i < m_variable.size(); i++){
+			if(m_variable[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
-				tStackElement si=m_objVector[i];
+				tStackElement si=m_variable[i];
 
 				if((si.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 					if(si.varRef != NULL){
@@ -119,7 +98,6 @@ namespace zetscript{
 				}
 			}
 		}
-
 	}
 
 	CVectorScriptVariable::~CVectorScriptVariable(){

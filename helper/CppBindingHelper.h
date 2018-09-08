@@ -902,11 +902,12 @@ namespace zetscript{
 		vector<_T> v_out;
 		const char * dst_convert_type = typeid(_T).name();
 		float aux_flt;
+		vector<tStackElement> * m_variable = v_in->getVectorVariable();
 
 		if(v_in){
-			for(int i = 0; i < v_in->size(); i++){
+			for(unsigned i = 0; i < m_variable->size(); i++){
 
-				tStackElement sv=v_in->m_objVector[i];
+				tStackElement sv=m_variable->at(i);
 
 				switch(sv.properties & MASK_VAR_PRIMITIVE_TYPES)
 				{

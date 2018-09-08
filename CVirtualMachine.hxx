@@ -270,7 +270,7 @@ inline void SHARE_LIST_DEATTACH(list,_node)
 */
 
 	inline CScriptFunctionObject * CVirtualMachine::FIND_FUNCTION(
-			vector<tSymbolInfo> *m_functionSymbol
+			vector<tFunctionSymbol> *m_functionSymbol
 			,vector<int> *vec_global_functions
 			,tInfoAsmOp * iao
 			,bool is_constructor

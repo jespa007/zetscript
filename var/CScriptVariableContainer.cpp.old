@@ -13,8 +13,8 @@ namespace zetscript{
 		return se;
 	}
 
-	tSymbolInfo * CScriptVariableContainer::addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv){
-		tSymbolInfo *si = CScriptVariable::addVariableSymbol(symbol_value,_idxAstNode,sv);
+	tFunctionSymbol * CScriptVariableContainer::addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv){
+		tFunctionSymbol *si = CScriptVariable::addVariableSymbol(symbol_value,_idxAstNode,sv);
 		if(!si){
 			return NULL;
 		}
@@ -28,8 +28,8 @@ namespace zetscript{
 		return si;
 	}
 
-	tSymbolInfo * CScriptVariableContainer::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates){
-		tSymbolInfo *si = CScriptVariable::addFunctionSymbol(symbol_value,_idxAstNode,irv,ignore_duplicates);
+	tFunctionSymbol * CScriptVariableContainer::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates){
+		tFunctionSymbol *si = CScriptVariable::addFunctionSymbol(symbol_value,_idxAstNode,irv,ignore_duplicates);
 		if(!si){
 			return NULL;
 

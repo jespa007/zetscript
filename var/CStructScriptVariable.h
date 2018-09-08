@@ -8,9 +8,9 @@
 
 namespace zetscript{
 
-	class  CStructScriptVariable:public CScriptVariableContainer{
+	class  CStructScriptVariable:public CScriptVariable{
 
-		tSymbolInfo * exist(const char *c);
+
 
 	public:
 		CStructScriptVariable();

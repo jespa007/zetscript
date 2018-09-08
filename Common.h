@@ -547,15 +547,15 @@ namespace zetscript{
 
 	};
 
-	struct tSymbolInfo {
+	struct tFunctionSymbol {
 
 		tStackElement object; // created object. undefined by default.
 		intptr_t  proxy_ptr; // for proxy functions...
-		//tSymbolInfo *super_function; // only for functions ...
+		//tFunctionSymbol *super_function; // only for functions ...
 		string key_value;
 		//short idxAstNode; // in case there's ast node...
 
-		tSymbolInfo() {
+		tFunctionSymbol() {
 			proxy_ptr = 0;
 			object= {
 				STK_PROPERTY_TYPE_UNDEFINED|STK_PROPERTY_IS_C_VAR, // undefined and c ?.

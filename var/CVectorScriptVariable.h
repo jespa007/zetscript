@@ -8,15 +8,15 @@
 
 namespace zetscript{
 
-	class  CVectorScriptVariable: public CScriptVariableContainer{
+	class  CVectorScriptVariable: public CScriptVariable{
 
 
 	public:
 
 		tStackElement return_callc;
-		int _i_size;
+		//int _i_size;
 
-		vector<tStackElement> m_objVector;
+		//vector<tStackElement> m_objVector;
 
 		CVectorScriptVariable();
 

@@ -187,7 +187,7 @@ namespace zetscript{
 
 		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
 		inline void  REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result);
-		inline CScriptFunctionObject *  FIND_FUNCTION(vector<tSymbolInfo> *m_functionSymbol
+		inline CScriptFunctionObject *  FIND_FUNCTION(vector<tFunctionSymbol> *m_functionSymbol
 									,vector<int> *vec_global_functions
 									,tInfoAsmOp * iao
 									,bool is_constructor

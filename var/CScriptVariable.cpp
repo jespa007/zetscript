@@ -15,12 +15,13 @@ namespace zetscript{
 	void CScriptVariable::createSymbols(CScriptClass *ir_class){
 
 
-		tSymbolInfo *si;
+		tFunctionSymbol *si;
+		tStackElement *se;
 
 		// add extra symbol this itself if is a class typedef by user...
 		if(m_infoRegisteredClass->idxClass >=MAX_BASIC_CLASS_TYPES){
-			this_symbol.object.varRef=this;
-			this_symbol.object.properties=STK_PROPERTY_IS_THIS_VAR|STK_PROPERTY_TYPE_SCRIPTVAR;
+			this_variable.varRef=this;
+			this_variable.properties=STK_PROPERTY_IS_THIS_VAR|STK_PROPERTY_TYPE_SCRIPTVAR;
 		}
 
 		// Register variables...
@@ -29,19 +30,16 @@ namespace zetscript{
 
 			tInfoVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
 
-			si = addVariableSymbol(CCompiler::getSymbolNameFromSymbolRef(ir_var->symbol_ref),ir_var->idxAstNode);
-
-
+			se=addVariableSymbol(CCompiler::getSymbolNameFromSymbolRef(ir_var->symbol_ref), ZS_UNDEFINED_IDX);
 
 			if(ir_var->properties & PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 			{ // we know the type object so we assign the pointer ...
 				// check if primitive type (only 4 no more no else)...
 				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
-				si->object=CScriptClass::C_REF_InfoVariable_2_StackElement(ir_var,ptr_variable);
+				*se=CScriptClass::C_REF_InfoVariable_2_StackElement(ir_var,ptr_variable);
 			}
 		}
-
 
 		// Register functions...
 		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
@@ -62,12 +60,7 @@ namespace zetscript{
 				 }
 			}
 		}
-
-
-
-
 	}
-
 
 	void CScriptVariable::setup(){
 
@@ -83,7 +76,7 @@ namespace zetscript{
 		aux_string ="";
 		delete_c_object = false; // --> user is responsible to delete C objects!
 		ast_node_new=ZS_UNDEFINED_IDX;
-		memset(&this_symbol,0,sizeof(this_symbol));
+		memset(&this_variable,0,sizeof(this_variable));
 	}
 
 	CScriptVariable::CScriptVariable(){
@@ -143,7 +136,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	bool CScriptVariable::setIdxClass(int idx){
+	bool CScriptVariable::setIdxClass(unsigned char idx){
 		CScriptClass *_info_registered_class =  GET_SCRIPT_CLASS_INFO(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
 
 		if(_info_registered_class == NULL){
@@ -166,9 +159,9 @@ namespace zetscript{
 		}
 	}
 
-	tSymbolInfo * CScriptVariable::addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv){
-		tSymbolInfo si;
-		si.proxy_ptr=0;
+	tStackElement * CScriptVariable::addVariableSymbol(const string & symbol_value, short _idxAstNode,tStackElement * sv){
+		tStackElement si;
+
 		bool error_symbol=false;
 
 
@@ -212,7 +205,7 @@ namespace zetscript{
 		}
 
 		if(sv != NULL){
-			si.object = *sv;
+			si = *sv;
 
 			// update n_refs +1
 			if(sv->properties&STK_PROPERTY_TYPE_SCRIPTVAR){
@@ -223,7 +216,7 @@ namespace zetscript{
 
 		}else{
 
-			si.object={
+			si={
 					STK_PROPERTY_TYPE_UNDEFINED,
 					0,
 					NULL
@@ -231,34 +224,47 @@ namespace zetscript{
 		}
 
 		//si.idxAstNode = _idxAstNode;
-		si.key_value = symbol_ref;
-		m_variableSymbol.push_back(si);
+		string key_value = symbol_ref;
+		m_variable.push_back(si);
+		m_variableKey.push_back(key_value);
 
-		return &m_variableSymbol[m_variableSymbol.size()-1];
+		return &m_variable[m_variable.size()-1];
 	}
 
-	tSymbolInfo * CScriptVariable::getVariableSymbol(const string & varname,bool only_var_name){
+	tStackElement * CScriptVariable::exist(const char *c){
+		for(unsigned i = 0; i < m_variableKey.size(); i++){
+			//CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
+			if(m_variableKey[i] == string(c)){
+				return &m_variable[i];
+			}
 
-		if(varname == "this"){
-			return &this_symbol;
 		}
 
-		for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
-			string symbol = this->m_variableSymbol[i].key_value;
+		return NULL;
+	}
+
+	tStackElement * CScriptVariable::getVariableSymbol(const string & varname,bool only_var_name){
+
+		if(varname == "this"){
+			return &this_variable;
+		}
+
+		for(unsigned int i = 0; i < this->m_variableKey.size(); i++){
+			string symbol = this->m_variableKey[i];
 
 			if(only_var_name){
 				symbol=CCompiler::getSymbolNameFromSymbolRef(symbol);
 			}
 
 			if(varname == symbol){
-				return &m_variableSymbol[i];
+				return &m_variable[i];
 			}
 		}
 		return NULL;
 	}
 
-	tSymbolInfo *CScriptVariable::addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates){
-		tSymbolInfo si;
+	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const string & symbol_value,short _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates){
+		tFunctionSymbol si;
 		si.proxy_ptr=0;
 		si.object = {
 				STK_PROPERTY_TYPE_FUNCTION, // dfine as function.
@@ -283,7 +289,7 @@ namespace zetscript{
 		return &m_functionSymbol[m_functionSymbol.size()-1];
 	}
 
-	tSymbolInfo * CScriptVariable::getFunctionSymbol(const string & varname,bool only_var_name){
+	tFunctionSymbol * CScriptVariable::getFunctionSymbol(const string & varname,bool only_var_name){
 		for(unsigned int i = 0; i < this->m_functionSymbol.size(); i++){
 
 			string symbol = this->m_functionSymbol[i].key_value;
@@ -300,18 +306,18 @@ namespace zetscript{
 	}
 
 
-	bool CScriptVariable::removeVariableSymbolByIndex(unsigned idx, bool remove_vector){//onst string & varname){
+	bool CScriptVariable::removeVariableSymbolByIndex(unsigned int idx, bool remove_vector){//onst string & varname){
 
-		tSymbolInfo *si;
+		tStackElement *si;
 
 
-		if(idx >= m_variableSymbol.size()){
-			writeErrorMsg(NULL,0,"idx out of bounds (%i>=%i)",idx,m_variableSymbol.size());
+		if(idx >= m_variable.size()){
+			writeErrorMsg(NULL,0,"idx out of bounds (%i>=%i)",idx,m_variable.size());
 			return false;
 		}
 
-		si=&m_variableSymbol[idx];
-		unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(si->object.properties);
+		si=&m_variable[idx];
+		unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(si->properties);
 
 		switch(var_type){
 
@@ -325,11 +331,11 @@ namespace zetscript{
 			default: // variable ...
 
 				if(var_type & STK_PROPERTY_TYPE_SCRIPTVAR){
-					if(((si->object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR)
-						&& ((si->object.properties & STK_PROPERTY_IS_THIS_VAR) != STK_PROPERTY_IS_THIS_VAR)){ // deallocate but not if is c or this ref
-						if(si->object.varRef != NULL){
+					if(((si->properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR)
+						&& ((si->properties & STK_PROPERTY_IS_THIS_VAR) != STK_PROPERTY_IS_THIS_VAR)){ // deallocate but not if is c or this ref
+						if(si->varRef != NULL){
 							// remove property if not referenced anymore
-							CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(si->object.varRef))->ptr_shared_pointer_node,true);
+							CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(si->varRef))->ptr_shared_pointer_node,true);
 						}
 					}
 				}
@@ -338,18 +344,21 @@ namespace zetscript{
 
 		// remove symbol on vector ...
 		if(remove_vector){
-			m_variableSymbol.erase(m_variableSymbol.begin()+idx);
+			m_variable.erase(m_variable.begin()+idx);
+			m_variableKey.erase(m_variableKey.begin()+idx);
 		}
 
 		return true;
-
 	}
 
+	vector<tStackElement> * CScriptVariable::getVectorVariable(){
+		return &m_variable;
+	}
 
-	bool CScriptVariable::removeVariableSymbolByName(const string & varname, int idxAstNode){
+	bool CScriptVariable::removeVariableSymbolByName(const string & varname, short idxAstNode){
 		string symbol_ref=CCompiler::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
-		for(unsigned int i = 0; i < this->m_variableSymbol.size(); i++){
-			if(symbol_ref == this->m_variableSymbol[i].key_value){
+		for(unsigned int i = 0; i < this->m_variableKey.size(); i++){
+			if(symbol_ref == this->m_variableKey[i]){
 				return removeVariableSymbolByIndex(i,true);
 			}
 		}
@@ -357,22 +366,22 @@ namespace zetscript{
 		return false;
 	}
 
-	tSymbolInfo * CScriptVariable::getVariableSymbolByIndex(int idx){
+	tStackElement * CScriptVariable::getVariableSymbolByIndex(unsigned int idx){
 
 		if(idx==ZS_THIS_IDX){
-			return &this_symbol;
+			return &this_variable;
 		}
 
 
-		if(idx >= m_variableSymbol.size()){
+		if(idx >= m_variable.size()){
 			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
 
-		return &m_variableSymbol[idx];
+		return &m_variable[idx];
 	}
 
-	tSymbolInfo * CScriptVariable::getIdxScriptFunctionObjectByClassFunctionName(const string & varname){
+	tFunctionSymbol * CScriptVariable::getIdxScriptFunctionObjectByClassFunctionName(const string & varname){
 
 		// from lat value to first to get last override function...
 		for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){
@@ -382,7 +391,6 @@ namespace zetscript{
 		}
 		return NULL;
 	}
-
 
 	const string & CScriptVariable::getClassName(){
 			return m_infoRegisteredClass->metadata_info.object_info.symbol_info.symbol_ref;
@@ -430,7 +438,7 @@ namespace zetscript{
 			return (intptr_t)c_object;
 		}
 
-	tSymbolInfo *CScriptVariable::getFunctionSymbolByIndex(unsigned idx){
+	tFunctionSymbol *CScriptVariable::getFunctionSymbolByIndex(unsigned int idx){
 		if(idx >= m_functionSymbol.size()){
 			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds");
 			return NULL;
@@ -438,9 +446,10 @@ namespace zetscript{
 		return &m_functionSymbol[idx];
 	}
 
-	vector<tSymbolInfo> * CScriptVariable::getVectorFunctionSymbol(){
+	vector<tFunctionSymbol> * CScriptVariable::getVectorFunctionSymbol(){
 		return &m_functionSymbol;
 	}
+
 
 	void * CScriptVariable::get_C_Object(){
 		return c_object;
@@ -471,8 +480,6 @@ namespace zetscript{
 			}
 		}
 
-
-
 //#ifdef __ZETSCRIPT_DEBUG__
 		if(!deallocated && was_created_by_constructor){
 			printf("[%s:%i] Allocated C pointer not deallocated\n",GET_AST_FILENAME_LINE(ast_node_new));
@@ -480,9 +487,9 @@ namespace zetscript{
 //#endif
 
 		// remove vars & fundtions if class is C...
-		tSymbolInfo *si;
+		tFunctionSymbol *si;
 
-		for ( unsigned i = 0; i < m_variableSymbol.size(); i++){
+		for ( unsigned i = 0; i < m_variable.size(); i++){
 			removeVariableSymbolByIndex(i);
 
 		}
@@ -498,14 +505,10 @@ namespace zetscript{
 				 }
 			}
 		}
-
-
-
 	}
 
 	CScriptVariable::~CScriptVariable(){
 
 		destroy();
-
 	}
 }

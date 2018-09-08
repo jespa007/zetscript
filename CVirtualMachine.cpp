@@ -1271,7 +1271,7 @@ namespace zetscript{
 		tStackElement *ldrVar;
 		unsigned short pre_post_properties=0;
 		unsigned short instruction_properties=0;
-		tSymbolInfo *si;
+		tFunctionSymbol *si;
 		CScriptVariable *var_object = NULL;
 
 		unsigned short scope_type=0;
@@ -1694,7 +1694,7 @@ namespace zetscript{
 							if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
 								// op1 is now the src value ...
 								if(ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_STRING){
-									tSymbolInfo *si=NULL;
+									tFunctionSymbol *si=NULL;
 									const char *str = (const char *)ptrResultInstructionOp2->stkValue;
 									src_ins=ptrResultInstructionOp1;
 									if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
@@ -2171,7 +2171,7 @@ namespace zetscript{
 						// local vars as functions ...
 
 						// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
-						vector<tSymbolInfo> *m_functionSymbol=NULL;
+						vector<tFunctionSymbol> *m_functionSymbol=NULL;
 						if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
 							calling_object = (CScriptVariable *)callAle->varRef;
 

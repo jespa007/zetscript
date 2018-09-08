@@ -679,7 +679,7 @@ namespace zetscript{
 		}
 
 		*calling_obj = NULL;
-		tSymbolInfo *is=NULL;
+		tFunctionSymbol *is=NULL;
 		*fun_obj=NULL;
 
 		// 1. accessing var scopes...

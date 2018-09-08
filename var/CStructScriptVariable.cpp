@@ -16,25 +16,15 @@ namespace zetscript{
 		init(CScriptClass::getRegisteredClassStruct(), (void *)this);
 	}
 
-	tSymbolInfo * CStructScriptVariable::exist(const char *c){
-		for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-			//CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
-			if(m_variableSymbol[i].key_value == string(c)){
-				return &m_variableSymbol[i];
-			}
 
-		}
-
-		return NULL;
-	}
 
 
 	bool CStructScriptVariable::unrefSharedPtr(){ // unref each element...
 		if(CScriptVariable::unrefSharedPtr()){
 
-			for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-				if(m_variableSymbol[i].object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-					CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
+			for(unsigned i = 0; i < m_variable.size(); i++){
+				if(m_variable[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+					CScriptVariable *var = (CScriptVariable *)m_variable[i].varRef;
 					if(var){
 						if(!var->unrefSharedPtr()){
 							return false;
@@ -64,20 +54,20 @@ namespace zetscript{
 
 
 	int CStructScriptVariable::size(){
-		return  this->m_variableSymbol.size();
+		return  this->m_variable.size();
 	}
 
 	void CStructScriptVariable::destroy(){
 
-		for(unsigned i = 0; i < m_variableSymbol.size(); i++){
-			if(m_variableSymbol[i].object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+		for(unsigned i = 0; i < m_variable.size(); i++){
+			if(m_variable[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 				//CScriptVariable *svar = (CScriptVariable *)m_variableSymbol[i].object.varRef;
 				//svar->unrefSharedPtr();
 
-				if((m_variableSymbol[i].object.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
-					if(m_variableSymbol[i].object.varRef != NULL){
+				if((m_variable[i].properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
+					if(m_variable[i].varRef != NULL){
 						// remove property if not referenced anymore
-						CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(m_variableSymbol[i].object.varRef))->ptr_shared_pointer_node,true);
+						CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(m_variable[i].varRef))->ptr_shared_pointer_node,true);
 					}
 				}
 

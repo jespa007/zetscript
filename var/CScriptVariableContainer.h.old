@@ -15,8 +15,8 @@ namespace zetscript{
 		vector<tNamedElementVector> vecNamedElement;
 	public:
 
-		virtual tSymbolInfo * addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv=NULL);
-		virtual tSymbolInfo * addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates=true);
+		virtual tFunctionSymbol * addVariableSymbol(const string & symbol_value, int _idxAstNode,tStackElement * sv=NULL);
+		virtual tFunctionSymbol * addFunctionSymbol(const string & symbol_value,int _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates=true);
 
 		virtual tStackElement * getValue(const string & s);
 		virtual tStackElement * getValue(unsigned int idx);
