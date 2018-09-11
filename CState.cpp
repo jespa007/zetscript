@@ -254,7 +254,7 @@ namespace zetscript{
 
 				if ((irv->metadata_info.object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF) {
 
-					zs_print_debug_cr("* Erasing c destructor/contructor %s...", irv->classPtrType.c_str());
+					//zs_print_debug_cr("* Erasing c destructor/contructor %s...", irv->classPtrType.c_str());
 
 					if (irv->c_constructor) {
 						delete irv->c_constructor;
@@ -431,7 +431,7 @@ namespace zetscript{
 	void CState::destroyScriptClassNodes() {
 
 		for(unsigned i = 0;i < vec_script_class_node->size();i++){
-			zs_print_debug_cr("* Erasing %s...", vec_script_class_node->at(i)->classPtrType.c_str());
+			//zs_print_debug_cr("* Erasing %s...", vec_script_class_node->at(i)->classPtrType.c_str());
 			delete vec_script_class_node->at(i);
 
 		}
@@ -445,7 +445,7 @@ namespace zetscript{
 	void CState::destroyScriptFunctionObjectNodes() {
 
 		for(unsigned i = 0;i < vec_script_function_object_node->size();i++){
-			zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_ref.c_str());
+			//zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_ref.c_str());
 			CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
 
 			if (info_function->object_info.asm_op != NULL) {

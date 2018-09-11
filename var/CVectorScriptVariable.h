@@ -22,8 +22,9 @@ namespace zetscript{
 
 		virtual bool unrefSharedPtr();
 
-		tStackElement 		  * getValue(const string & s);
-		virtual tStackElement * getValue(int idx);
+
+		//tStackElement 		  * getValue(const string & s);
+		//virtual tStackElement * getValue(int idx);
 
 
 		tStackElement * push();

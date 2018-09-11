@@ -1271,6 +1271,7 @@ namespace zetscript{
 		tStackElement *ldrVar;
 		unsigned short pre_post_properties=0;
 		unsigned short instruction_properties=0;
+		tStackElement *variable_stack_element;
 		tFunctionSymbol *si;
 		CScriptVariable *var_object = NULL;
 
@@ -1333,16 +1334,12 @@ namespace zetscript{
 										RETURN_ERROR;
 									}
 
-									if(v_index >= (int)(vec->m_objVector.size())){
+									if(v_index >= (int)(vec->m_variable.size())){
 										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Index vector out of bounds (%i)",v_index);
 										RETURN_ERROR;
 									}
 
-									ldrVar = &vec->m_objVector[v_index];;
-									ok = true;
-								}
-								else if(IS_STRING(ptrResultInstructionOp2->properties)){ // get or generate cell in function of string...
-									ldrVar = vec->getValue((const char *)ptrResultInstructionOp2->stkValue);
+									ldrVar = &vec->m_variable[v_index];;
 									ok = true;
 								}else{
 									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector-index as integer or string");
@@ -1407,7 +1404,7 @@ namespace zetscript{
 									RETURN_ERROR;
 								}
 
-								if((si = base_var->getVariableSymbol(ast->symbol_value,true))==NULL){
+								if((variable_stack_element = base_var->getVariableSymbol(ast->symbol_value,true))==NULL){
 
 									tInfoAsmOp *previous= (instruction-1);
 									string parent_symbol="unknow";
@@ -1422,12 +1419,12 @@ namespace zetscript{
 								}
 							}
 							else{ // this scope ...
-								if((si = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
+								if((variable_stack_element = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
 									writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"cannot find symbol \"this.%s\"",ast->symbol_value.c_str());
 									RETURN_ERROR;
 								}
 							}
-							ldrVar=&si->object;
+							ldrVar=variable_stack_element;
 							break;
 						case INS_PROPERTY_LOCAL_SCOPE:
 							ldrVar = &ptrLocalVar[instruction->index_op2];
@@ -1694,20 +1691,23 @@ namespace zetscript{
 							if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
 								// op1 is now the src value ...
 								if(ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_STRING){
-									tFunctionSymbol *si=NULL;
+									tStackElement *se=NULL;
 									const char *str = (const char *)ptrResultInstructionOp2->stkValue;
 									src_ins=ptrResultInstructionOp1;
 									if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
-										si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str, -1,NULL, false );
+										tFunctionSymbol *si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str, -1,NULL, false );
+										if(si!=NULL){
+											se=&si->object;;
+										}
 									}else{
-										si =((CStructScriptVariable *)struct_obj)->addVariableSymbol(str, -1,NULL );
+										se =((CStructScriptVariable *)struct_obj)->addVariableSymbol(str, -1,NULL );
 									}
 
-									if(si == NULL){
+									if(se == NULL){
 										RETURN_ERROR;
 									}
 
-									dst_ins=&si->object;
+									dst_ins=se;
 									ok=true;
 								}
 								else{
@@ -2443,15 +2443,24 @@ namespace zetscript{
 				}
 				 continue;
 			 case IT_SET_AND_NEXT:
-				 *((tStackElement *)current_foreach->key)=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector[current_foreach->idx_current++];
+				 writeErrorMsg(GET_AST_FILENAME_LINE((instruction)->idxAstNode),"TODOOOOO!",
+				 						AST_SYMBOL_VALUE_CONST_CHAR((instruction)->idxAstNode)
+				 					);
+				 					RETURN_ERROR;
+				 //*((tStackElement *)current_foreach->key)=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector[current_foreach->idx_current++];
 				 continue;
 			 case IT_CHK_END:
-				 if(current_foreach->idx_current>=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector.size()){ // set true...
+				 writeErrorMsg(GET_AST_FILENAME_LINE((instruction)->idxAstNode),"TODOOOOO!",
+				 						AST_SYMBOL_VALUE_CONST_CHAR((instruction)->idxAstNode)
+				 					);
+				 					RETURN_ERROR;
+
+				 /*if(current_foreach->idx_current>=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector.size()){ // set true...
 					 PUSH_BOOLEAN(true);
 				 }
 				 else{ // set false...
 					 PUSH_BOOLEAN(false);
-				 }
+				 }*/
 				 continue;
 			//
 			// END OPERATOR MANAGEMENT

@@ -29,6 +29,7 @@ namespace zetscript{
 		short idxScriptClass;
 		short ast_node_new;
 		bool was_created_by_constructor;
+		vector<tStackElement> m_variable;
 		//----------------------
 
 		// public vars ...
@@ -99,7 +100,7 @@ namespace zetscript{
 		virtual void setup();
 
 		//vector<tFunctionSymbol> m_variableSymbol;
-		vector<tStackElement> m_variable;
+
 		vector<string> 		  m_variableKey;
 
 	private:

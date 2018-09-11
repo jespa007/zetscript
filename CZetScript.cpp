@@ -680,6 +680,7 @@ namespace zetscript{
 
 		*calling_obj = NULL;
 		tFunctionSymbol *is=NULL;
+		tStackElement *se=NULL;
 		*fun_obj=NULL;
 
 		// 1. accessing var scopes...
@@ -710,12 +711,12 @@ namespace zetscript{
 					}
 
 				}else{ // we have got the calling_obj from last iteration ...
-					is = (*calling_obj)->getVariableSymbol(symbol_to_find,true);
+					se = (*calling_obj)->getVariableSymbol(symbol_to_find,true);
 
-					if(is!=NULL){
+					if(se!=NULL){
 
-						if(is->object.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							*calling_obj=(CScriptVariable *)is->object.varRef;
+						if(se->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+							*calling_obj=(CScriptVariable *)se->varRef;
 						}else{
 							THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
 							return false;
