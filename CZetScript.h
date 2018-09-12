@@ -105,6 +105,7 @@ using std::ostringstream;
 #include "var/CFunctorScriptVariable.h"
 #include "var/CStructScriptVariable.h"
 #include "CASTNode.h"
+#include "CEval.h"
 #include "CScope.h"
 #include "CCompiler.h"
 #include "CVirtualMachine.h"
