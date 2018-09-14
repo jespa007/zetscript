@@ -145,6 +145,12 @@ namespace zetscript{
 
 	private:
 
+		/*typedef struct{
+			string symbol_name;
+			PUNCTUATOR_TYPE punctuator_type; // [ : vector object, function : function object
+			KEYWORD_TYPE keyword_type; // function/vector calling.
+		}tExpressionToken;*/
+
 		// main ast class
 		static vector<CASTNode *> 						* vec_ast_node; // ast collection register...
 

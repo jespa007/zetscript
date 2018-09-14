@@ -24,7 +24,7 @@ namespace zetscript{
 			CZetScript::setVectorInfoParsedFiles(current_state->getVectorInfoParsedSourceNode());
 
 
-			// add empty ast_node...
+			// add MAIN ast_node...
 
 			CASTNode *ast =CASTNode::newASTNode();
 			CScope *sc=CScope::newScope(ast);

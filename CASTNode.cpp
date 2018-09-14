@@ -1439,7 +1439,7 @@ namespace zetscript{
 		return (c==0 || c==';' || c==',' ||  c==')'  || c==']' || c=='}');//|| c==':');
 	}
 	//-----------------------------------------------------------------------------------------------------------
-	char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *scope_info, PASTNode *ast_node_to_be_evaluated, GROUP_TYPE type_group,PASTNode parent ){
+/*	char * CASTNode::parseExpression_Recursive_old(const char *s, int & m_line,CScope *scope_info, PASTNode *ast_node_to_be_evaluated, GROUP_TYPE type_group,PASTNode parent ){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux=(char *)s;
 		char *s_effective_start=(char *)s;
@@ -1729,6 +1729,347 @@ namespace zetscript{
 
 					// 3. insert node between rigth node and ast_node
 
+					if( rn->is_packed_node){ // end symbol node... let's take the right one...
+
+						// 2. create neg node.
+						PASTNode ast_neg_node=NULL;
+						if((ast_neg_node = CASTNode::newASTNode())==NULL) return NULL;
+						ast_neg_node->node_type = NODE_TYPE::PUNCTUATOR_NODE;
+						ast_neg_node->operator_info = SUB_PUNCTUATOR;
+
+
+						ast_neg_node->idxAstParent = (*ast_node_to_be_evaluated)->idxAstNode;
+						ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
+						(*ast_node_to_be_evaluated)->children[RIGHT_NODE]=ast_neg_node->idxAstNode;
+					}
+				}
+
+				if(operator_group == SUB_PUNCTUATOR){
+					operator_group=ADD_PUNCTUATOR;
+				}
+
+				(*ast_node_to_be_evaluated)->node_type = PUNCTUATOR_NODE;
+				(*ast_node_to_be_evaluated)->operator_info = operator_group;
+				(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
+				if(scope_info != NULL){
+					(*ast_node_to_be_evaluated)->idxScope = scope_info->idxScope;
+				}
+				(*ast_node_to_be_evaluated)->line_value = m_lineOperator;
+			}
+		}
+		return aux;
+	}
+
+	char * CASTNode::parseExpression_old(const char *s, int & m_line, CScope *scope_info, PASTNode * ast_node_to_be_evaluated ){
+
+		// PRE: s is current string to parse. This function tries to parse an expression like i+1; and generates binary ast.
+		// If this functions finds ';' then the function will generate ast.
+		if(*s==0) {
+			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"End string");
+			return NULL;
+		}
+
+		// last character is in charge of who is calling parseExpression because there's many ending cases ): [ ';' ',' ')' , ']' ]
+		char *aux_p = parseExpression_Recursive(s,m_line,scope_info,ast_node_to_be_evaluated);
+		//char *aux = parseExpression_Recursive(s, m_line, scope_info, ast_node_to_be_evaluated, NULL);
+
+		if(aux_p != NULL && ast_node_to_be_evaluated != NULL && *ast_node_to_be_evaluated!=NULL){ // can save the node and tells that is an starting of expression node...
+
+			PASTNode ast_node= NULL;
+			if((ast_node=CASTNode::newASTNode())==NULL) return NULL;
+			ast_node->node_type = EXPRESSION_NODE;
+			ast_node->children.push_back((*ast_node_to_be_evaluated)->idxAstNode);
+			(*ast_node_to_be_evaluated)->idxAstParent = ast_node->idxAstNode; // save parent ..
+			*ast_node_to_be_evaluated=ast_node;
+		}
+		return aux_p;
+	}*/
+
+	char * CASTNode::parseExpression_Recursive(const char *s, int & m_line,CScope *scope_info, PASTNode *ast_node_to_be_evaluated, GROUP_TYPE type_group,PASTNode parent ){
+		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+		char *aux=(char *)s;
+		char *s_effective_start=(char *)s;
+		char *expr_start_op=NULL;
+		int start_line = m_line; // set another start line because left node or reparse to try another group was already parsed before.
+		int m_lineOperator=-2;
+		char *end_expression=(char *)s ; // by default end expression isequal to
+
+		bool is_symbol_trivial_value=false;
+		string symbol_value;
+		string operator_str="";
+		PUNCTUATOR_TYPE pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
+						post_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
+						pre_operator_packed_node=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
+						operator_group=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		bool theres_some_operator=false;
+		int m_definedSymbolLine;
+		bool special_pre_post_cond = false; // in case of particular pre/post...
+		bool is_packed_node = false;
+
+		aux=IGNORE_BLANKS(aux, m_line);
+
+		if(isMarkEndExpression(*aux)){ // returning because is trivial!
+			return aux;
+		}
+
+		if(type_group>=MAX_GROUPS) {
+			THROW_RUNTIME_ERROR("Internal:Cannot find ast tree operator");
+			return NULL;
+		}
+
+		print_ast_cr("new expression eval:\"%.80s ...\" group:%i at line %i",aux,type_group, m_line);
+
+		// searching for operator!
+		if(*aux == '{'){ //json expression...
+			print_ast_cr("detected json expression");
+			return parseStruct(aux,m_line,scope_info,ast_node_to_be_evaluated);
+		}
+
+		print_ast_cr("searching for operator type %i...",type_group);
+
+		while(!isMarkEndExpression(*aux) && (operator_group==0)){
+			special_pre_post_cond = false;
+			print_ast_cr("checkpoint1:%c\n",*aux);
+			// 1. ignore spaces...
+			aux=IGNORE_BLANKS(aux, m_line);
+
+			if((pre_operator=checkPreOperatorPunctuator(aux))!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+
+				aux+=strlen(defined_operator_punctuator[pre_operator].str);
+				aux=IGNORE_BLANKS(aux, m_line);
+			}
+
+			if(*aux=='('){ // packed node let's said that is a packed node...
+
+				// TODO: Recursive ...
+			}
+
+			int start_get_symbol_line=m_line;
+			// try get symbol string
+			if((aux=getSymbolValue(aux, m_line, scope_info,symbol_value, m_definedSymbolLine,pre_operator,post_operator,is_symbol_trivial_value)) == NULL){
+				return NULL;
+			}
+
+			print_ast_cr("checkpoint3:%c\n",*aux);
+
+			aux=IGNORE_BLANKS(aux, m_line);
+
+			if(!isMarkEndExpression(*aux)){ // is not end expression
+
+				if((operator_group=isOperatorPunctuator(aux))!=0){
+
+					// particular cases... since the getSymbol alrady checks the pre operator it cannot be possible to get a pre inc or pre dec...
+					if(operator_group ==  PRE_INC_PUNCTUATOR){ // ++ really is a + PUNCTUATOR...
+						operator_group = ADD_PUNCTUATOR;
+						special_pre_post_cond=true;
+					}
+					else if(operator_group ==  PRE_DEC_PUNCTUATOR){ // -- really is a + PUNCTUATOR...
+						operator_group = SUB_PUNCTUATOR;
+						pre_operator = SUB_PUNCTUATOR;
+					}
+
+					theres_some_operator |= true;
+					expr_start_op=aux;
+					m_lineOperator = m_line;
+
+					if(operator_group != SUB_PUNCTUATOR) // advance ...
+						aux+=strlen(defined_operator_punctuator[operator_group].str);
+
+					if(!special_pre_post_cond && (operator_group != SUB_PUNCTUATOR)){ // not check because special case pre/post op...
+
+						switch(type_group){
+						case GROUP_0:	operator_group = parsePunctuatorGroup0(expr_start_op);break;
+						case GROUP_1:	operator_group = parsePunctuatorGroup1(expr_start_op);break;
+						case GROUP_2:	operator_group = parsePunctuatorGroup2(expr_start_op);break;
+						case GROUP_3:	operator_group = parsePunctuatorGroup3(expr_start_op);break;
+						case GROUP_4:	operator_group = parsePunctuatorGroup4(expr_start_op);break;
+						case GROUP_5:	operator_group = parsePunctuatorGroup5(expr_start_op);break;
+						case GROUP_6:	operator_group = parsePunctuatorGroup6(expr_start_op);break;
+						case GROUP_7:	operator_group = parsePunctuatorGroup7(expr_start_op);break;
+						case GROUP_8:	operator_group = parsePunctuatorGroup8(expr_start_op);break;
+						default: break;
+						}
+					}
+				}else{
+					writeErrorMsg(CURRENT_PARSING_FILENAME,start_get_symbol_line,"expected ';' or operator or punctuator after \"%s\"",symbol_value.c_str());
+					return NULL;
+				}
+			}
+		}
+
+		if(operator_group==PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR) {// there's no any operators \"type_group\"...
+			if(!theres_some_operator){ // only we have a value (trivial)
+
+				if(ast_node_to_be_evaluated != NULL){
+
+					if(is_symbol_trivial_value){
+
+
+						if(SCOPE_NODE(scope_info->idxScope)->getIdxBaseScope()==IDX_GLOBAL_SCOPE){
+							if(symbol_value == "this"){
+								writeErrorMsg(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"\"this\" keyword is allowed only in member classes");
+								return NULL;
+							}
+
+							if(symbol_value == "super"){
+								writeErrorMsg(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"\"super\" keyword is allowed only in member classes");
+								return NULL;
+							}
+						}
+
+						if(((*ast_node_to_be_evaluated)=CASTNode::newASTNode()) == NULL) return NULL;
+						(*ast_node_to_be_evaluated)->node_type = SYMBOL_NODE;
+						(*ast_node_to_be_evaluated)->symbol_value=symbol_value; // assign its value ...
+						(*ast_node_to_be_evaluated)->idxScope = scope_info->idxScope;
+
+					}else{
+						if(deduceExpression(symbol_value.c_str(),m_definedSymbolLine,scope_info, ast_node_to_be_evaluated, parent) == NULL){
+							return NULL;
+						}
+
+						if(is_packed_node){ // packed node let's say that is a packed node...
+							if(ast_node_to_be_evaluated != NULL){
+								(*ast_node_to_be_evaluated)->is_packed_node = true;
+
+								if(pre_operator_packed_node != UNKNOWN_PUNCTUATOR){ // we must create op...
+									// 2. create neg node.
+
+									//(*ast_node_to_be_evaluated)->pre_post_operator_info = UNKNOWN_PUNCTUATOR;
+									PASTNode ast_neg_node=NULL;
+									if((ast_neg_node = CASTNode::newASTNode())==NULL) return NULL;
+									ast_neg_node->node_type = NODE_TYPE::PUNCTUATOR_NODE;
+									ast_neg_node->operator_info = pre_operator_packed_node;
+
+									ast_neg_node->idxAstParent =(* ast_node_to_be_evaluated)->idxAstParent;
+									(*ast_node_to_be_evaluated)->idxAstParent = ast_neg_node->idxAstNode;
+									ast_neg_node->children.push_back((*ast_node_to_be_evaluated)->idxAstNode);
+
+									(*ast_node_to_be_evaluated)=ast_neg_node;
+								}
+							}
+						}
+					}
+
+					print_ast_cr("---------------------");
+					print_ast_cr("%s value \"%s\" at line %i",(is_symbol_trivial_value?"trivial":"NOT trivial"),symbol_value.c_str(), m_definedSymbolLine);
+					print_ast_cr("---------------------");
+
+					// put values by default ...
+					(*ast_node_to_be_evaluated)->idxAstParent=ZS_UNDEFINED_IDX;
+					if(parent!=NULL){
+						(*ast_node_to_be_evaluated)->idxAstParent=parent->idxAstNode;
+					}
+					(*ast_node_to_be_evaluated)->line_value=m_definedSymbolLine;
+
+
+					if(pre_operator!= PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR || post_operator != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){ // create pre operator node ...
+
+						if(post_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR)
+							(*ast_node_to_be_evaluated)->pre_post_operator_info = post_operator; // preNodePunctuator(post_operator,*ast_node_to_be_evaluated);
+
+						if(pre_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+							if(post_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+								if(     (pre_operator == PRE_INC_PUNCTUATOR  || pre_operator  == PRE_DEC_PUNCTUATOR) &&
+										(post_operator== POST_INC_PUNCTUATOR || post_operator == POST_DEC_PUNCTUATOR)){
+									writeErrorMsg(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"object \"%s\" has left \"%s\" and right \"%s\" is ambiguous",(*ast_node_to_be_evaluated)->symbol_value.c_str(),defined_operator_punctuator[pre_operator].str, defined_operator_punctuator[post_operator].str);
+									return NULL;
+								}
+							}
+							(*ast_node_to_be_evaluated)->pre_post_operator_info = pre_operator; //preNodePunctuator(pre_operator,*ast_node_to_be_evaluated);
+						}
+					}
+				}
+			}
+			else{
+
+				if(end_expression!= NULL){
+				// there's a Punctuator, so let's perform generate its AST
+					// reset prePunctuator...
+					pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+					print_ast_cr("try to generate group1 expression: %.40s ...\n",s_effective_start);
+					return parseExpression_Recursive(
+							s,
+							start_line, // start line because was reparsed before (i.e group -1)
+							scope_info,
+							ast_node_to_be_evaluated,
+							(GROUP_TYPE)(((int)type_group)+1),parent);
+				}
+			}
+		}else{ // we found the operator respect of GROUPX so let's put the AST to the left the resulting expression...
+
+			PASTNode left_node = NULL;
+			PASTNode right_node = NULL;
+
+			if(ast_node_to_be_evaluated != NULL){
+				if((*ast_node_to_be_evaluated=CASTNode::newASTNode())==NULL) return NULL; // always preallocate 2 nodes (left and right)
+				(*ast_node_to_be_evaluated)->idxAstParent = ZS_UNDEFINED_IDX;
+				if(parent!=NULL){
+					(*ast_node_to_be_evaluated)->idxAstParent=parent->idxAstNode;
+				}
+				(*ast_node_to_be_evaluated)->node_type = EXPRESSION_NODE;
+			}
+			char * expr_op_end = expr_start_op;
+
+
+			if((operator_group != SUB_PUNCTUATOR)){ // no advance ... we'll evaluate with preoperator
+				expr_op_end+=strlen(defined_operator_punctuator[operator_group].str);
+			}
+
+			print_ast_cr("operator \"%s\" found we can evaluate left and right branches!!\n",CASTNode::defined_operator_punctuator[operator_group].str);
+			char eval_left[MAX_EXPRESSION_LENGTH]={0};
+
+			// LEFT BRANCH
+			strncpy(eval_left,s_effective_start,expr_start_op-s_effective_start); // copy its left side...
+			if(parseExpression_Recursive(eval_left,
+										start_line, // start line because was reparsed before...
+										 scope_info,
+										 ast_node_to_be_evaluated != NULL ? &left_node: NULL,
+										 type_group,
+										 ast_node_to_be_evaluated != NULL? *ast_node_to_be_evaluated : NULL)==NULL){
+				return NULL;
+			}
+
+
+
+			if(ast_node_to_be_evaluated != NULL){
+				if(left_node != NULL){
+					(*ast_node_to_be_evaluated)->children.push_back(left_node->idxAstNode);
+
+					if(operator_group == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR){
+						(*ast_node_to_be_evaluated)->pre_post_operator_info=left_node->pre_post_operator_info;
+						left_node->pre_post_operator_info=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+					}
+				}
+			}
+
+			// RIGHT BRANCH
+			if((aux=parseExpression_Recursive(
+									expr_op_end,
+									m_line,
+									scope_info,
+									ast_node_to_be_evaluated != NULL ? &right_node : NULL,
+									type_group,
+									ast_node_to_be_evaluated != NULL ? (*ast_node_to_be_evaluated) : NULL)) == NULL){
+				return NULL;
+			}
+
+			if(ast_node_to_be_evaluated != NULL){
+				if(right_node != NULL){
+					(*ast_node_to_be_evaluated)->children.push_back(right_node->idxAstNode);
+				}
+			}
+
+			if(ast_node_to_be_evaluated != NULL){
+				// minus operators has special management because two negatives can be + but sums of negatives works
+				if(pre_operator == SUB_PUNCTUATOR) { // check -(expr)
+					// 1. change - by +
+					//operator_group=ADD_PUNCTUATOR;
+					CASTNode *rn =AST_NODE((*ast_node_to_be_evaluated)->children[RIGHT_NODE]);
+
+
+
+					// 3. insert node between rigth node and ast_node
+
 					if(/*rn->node_type == NODE_TYPE::SYMBOL_NODE ||*/ rn->is_packed_node){ // end symbol node... let's take the right one...
 
 						// 2. create neg node.
@@ -1761,6 +2102,9 @@ namespace zetscript{
 	}
 
 	char * CASTNode::parseExpression(const char *s, int & m_line, CScope *scope_info, PASTNode * ast_node_to_be_evaluated ){
+
+
+		vector<CASTNode> vt;
 
 		// PRE: s is current string to parse. This function tries to parse an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
