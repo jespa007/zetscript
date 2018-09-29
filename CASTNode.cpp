@@ -513,7 +513,6 @@ namespace zetscript{
 		return false;
 	}
 
-	#define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
 
 	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup0(const char *s){
 
@@ -528,12 +527,12 @@ namespace zetscript{
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -550,12 +549,12 @@ namespace zetscript{
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -573,12 +572,12 @@ namespace zetscript{
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -599,12 +598,12 @@ namespace zetscript{
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -625,12 +624,12 @@ namespace zetscript{
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -646,12 +645,12 @@ namespace zetscript{
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -670,12 +669,12 @@ namespace zetscript{
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -690,12 +689,12 @@ namespace zetscript{
 		};
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -710,11 +709,11 @@ namespace zetscript{
 		};
 
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -725,8 +724,8 @@ namespace zetscript{
 	PUNCTUATOR_TYPE   CASTNode::isOperatorPunctuator(const char *s){
 
 		for(unsigned char  i = 0; i < MAX_OPERATOR_PUNCTUATORS; i++){
-			if(defined_operator_punctuator[i].parse_fun != NULL){
-				if(defined_operator_punctuator[i].parse_fun(s)){
+			if(defined_operator_punctuator[i].eval_fun != NULL){
+				if(defined_operator_punctuator[i].eval_fun(s)){
 					return defined_operator_punctuator[i].id;
 				}
 			}
@@ -786,12 +785,12 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun == NULL){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
 				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 			}
 
-			if(defined_operator_punctuator[index_to_evaluate[i]].parse_fun(s)){
+			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
@@ -4252,9 +4251,9 @@ namespace zetscript{
 				}
 			}
 
-			if(defined_keyword[keyw].parse_fun != NULL){
+			if(defined_keyword[keyw].eval_fun != NULL){
 
-				if((aux_p = defined_keyword[keyw].parse_fun(s,m_line,scope_info, ast_node_to_be_evaluated)) != NULL){
+				if((aux_p = defined_keyword[keyw].eval_fun(s,m_line,scope_info, ast_node_to_be_evaluated)) != NULL){
 					return aux_p;
 				}
 				error = true;

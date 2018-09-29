@@ -163,6 +163,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 	#-- Script Core --
 	CScope.cpp
 	CASTNode.cpp
+	CEval.cpp
 	CNativeFunction.cpp
 	CScriptClass.cpp
 	CScriptFunctionObject.cpp
@@ -189,6 +190,7 @@ endif()
 SET(
 	HS
 	CASTNode.h
+	CEval.h
 	
 	var/CStringScriptVariable.h
 	var/CVectorScriptVariable.h

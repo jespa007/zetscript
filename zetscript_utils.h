@@ -10,6 +10,7 @@ namespace zetscript{
 	#define STR_EXPAND(tok) #tok
 	#define STR(tok) STR_EXPAND(tok)
 	#define STRCMP(a, R, b) (strcmp(a,b) R 0)
+	#define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
 
 	class CZetScriptUtils
 	{

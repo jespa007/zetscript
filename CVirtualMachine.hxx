@@ -186,13 +186,13 @@ namespace zetscript{
 
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
 			if((ptr_function_found = FIND_FUNCTION(
-					NULL\
-					,vec_global_functions\
-					,instruction\
-					,false\
+					NULL
+					,vec_global_functions
+					,instruction
+					,false
 					,symbol_to_find
 					,calling_object
-					,instruction\
+					,instruction
 					,ptrResultInstructionOp1
 					,ptrResultInstructionOp2
 					,startArgs

@@ -468,7 +468,7 @@ namespace zetscript{
 	typedef struct {
 		PUNCTUATOR_TYPE id;
 		const char *str;
-		bool (*parse_fun)(const char *);
+		bool (*eval_fun)(const char *);
 	} tPunctuatorInfo;
 
 	enum {
