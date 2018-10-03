@@ -693,7 +693,7 @@ namespace zetscript{
 					}
 				}
 
-				if((aux=evalArgs('(', ')',aux,m_line,scope_info,ast_node_to_be_evaluated != NULL? &args_obj : NULL)) == NULL){
+				if((aux=evalExpressionArgs('(', ')',aux,m_line,scope_info,ast_node_to_be_evaluated != NULL? &args_obj : NULL)) == NULL){
 					return NULL;
 				}
 

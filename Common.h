@@ -456,7 +456,7 @@ namespace zetscript{
 	typedef struct {
 		KEYWORD_TYPE id;
 		const char *str;
-		char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
+		char * (*eval_fun)(const char *, int &, CScope *, PASTNode *);
 	} tKeywordInfo;
 
 	typedef struct {

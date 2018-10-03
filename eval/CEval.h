@@ -141,6 +141,7 @@ namespace zetscript{
 		static char * evalExpressionFunctionArrayAccess_Recursive(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt,PASTNode parent=NULL);
 		static char * evalExpressionFunctionArrayAccess(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt,PASTNode parent);
 
+
 		//STRUCT OBJECT...
 		static char * evalExpressionStructObject_Recursive(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt);
 		static char * evalExpressionStructObject(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt);
@@ -148,6 +149,9 @@ namespace zetscript{
 		//VECTOR OBJECT...
 		static char * evalExpressionVectorObject_Recursive(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt);
 		static char * evalExpressionVectorObject(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt);
+
+		// GENERIC VECTOR/FUNCTION ARGS
+		static char * evalExpressionArgs(char c1, char c2,const char *s,int & m_line,  CScope *scope_info);
 
 
 		// END EXPRESSION FUNCTION
@@ -188,7 +192,7 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------------
 
 
-		static char * evalArgs(char c1, char c2,const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
+
 
 
 	};
