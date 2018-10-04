@@ -13,7 +13,22 @@ namespace zetscript{
 
 	class  CEval{
 
+
+
+
 	public:
+
+
+		enum EXPRESSION_TOKEN:char{
+			UNKNOW_TOKEN=0,
+			SYMBOL_TOKEN,
+			CONSTANT_TOKEN,
+			PUNCTUATOR_TOKEN,
+			OBJECT_TOKEN
+
+		};
+
+
 		static const char * current_parsing_filename;
 		static int current_idx_parsing_filename;
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
