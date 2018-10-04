@@ -163,7 +163,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 	#-- Script Core --
 	CScope.cpp
 	CASTNode.cpp
-	eval/CEval.cpp
+	
 	CNativeFunction.cpp
 	CScriptClass.cpp
 	CScriptFunctionObject.cpp
