@@ -138,16 +138,12 @@ namespace zetscript{
 
 		// FUNCTION OBJECT...
 		static char * evalExpressionFunctionObject(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
-		static char * evalExpressionFunctionArrayAccess_Recursive(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt,PASTNode parent=NULL);
-		static char * evalExpressionFunctionArrayAccess(const char *str, int & m_line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt,PASTNode parent);
 
 
 		//STRUCT OBJECT...
-		static char * evalExpressionStructObject_Recursive(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt);
 		static char * evalExpressionStructObject(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt);
 
 		//VECTOR OBJECT...
-		static char * evalExpressionVectorObject_Recursive(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt);
 		static char * evalExpressionVectorObject(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt);
 
 		// GENERIC VECTOR/FUNCTION ARGS
@@ -166,23 +162,23 @@ namespace zetscript{
 		// KEYWORDS FUNCTIONS
 		//
 
-		static char * evalKeyWord(const char *s, int & m_start_line, CScope *scope_info, bool & error);
+		static char * evalKeyword(const char *s, int & m_start_line, CScope *scope_info, bool & error);
 
-		static char * evalKeyWordIf(const char *s,int & m_line,  CScope *scope_info);
-		static char * evalKeyWordFor(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordIf(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordFor(const char *s,int & m_line,  CScope *scope_info);
 
-		static char * evalKeyWordWhile(const char *s,int & m_line,  CScope *scope_info);
-		static char * evalKeyWordDoWhile(const char *s,int & m_line,  CScope *scope_info);
-		static char * evalKeyWordSwitch(const char *s,int & m_line, CScope *scope_info);
-		static char * evalKeyWordVar(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordWhile(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordDoWhile(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordSwitch(const char *s,int & m_line, CScope *scope_info);
+		static char * evalKeywordVar(const char *s,int & m_line,  CScope *scope_info);
 
-		static char * evalKeyWordMemberVar(const char *s,int & m_line,  CScope *scope_info);
-		static char * evalKeyWordReturn(const char *s,int & m_line,  CScope *scope_info);
-		static char * evalKeyWordFunction(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordMemberVar(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordReturn(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordFunction(const char *s,int & m_line,  CScope *scope_info);
 
-		static char * evalKeyWordDelete(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordDelete(const char *s,int & m_line,  CScope *scope_info);
 
-		static char * evalKeyWordClass(const char *s,int & m_line,  CScope *scope_info);
+		static char * evalKeywordClass(const char *s,int & m_line,  CScope *scope_info);
 
 
 

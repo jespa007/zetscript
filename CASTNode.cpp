@@ -4093,7 +4093,7 @@ namespace zetscript{
 
 	}
 
-	char *CASTNode::parseKeyWord(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated){
+	char *CASTNode::parseKeyword(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p= (char *)s;
@@ -4392,7 +4392,7 @@ namespace zetscript{
 			// 0st special case member class extension ...
 			if(children==NULL && !processed_directive){ // not processed yet ...
 				// 1st. check whether parse a keyword...
-				if((end_expr = parseKeyWord(aux, m_line, scope_info, error, node_to_be_evaluated != NULL ? &children : NULL)) == NULL){
+				if((end_expr = parseKeyword(aux, m_line, scope_info, error, node_to_be_evaluated != NULL ? &children : NULL)) == NULL){
 
 					// If was unsuccessful then try to parse expression.
 					if(error){

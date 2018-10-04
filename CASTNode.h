@@ -271,7 +271,7 @@ namespace zetscript{
 
 		// keyword...
 
-		static char * parseKeyWord(const char *s, int & m_start_line, CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated);
+ 		static char * parseKeyword(const char *s, int & m_start_line, CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated);
 
 		static char * parseStruct_Recursive(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
 		static char * parseStruct(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated);
