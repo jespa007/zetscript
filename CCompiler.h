@@ -33,7 +33,7 @@ namespace zetscript{
 			unsigned int type;
 		}tInfoConstantValue;*/
 
-		typedef tStackElement tInfoConstantValue;
+
 
 		static tDefOperator def_operator[MAX_OPERATORS];
 

@@ -15,7 +15,7 @@ namespace zetscript{
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
 	tDefOperator CCompiler::def_operator[MAX_OPERATORS];
-	map<string, CCompiler::tInfoConstantValue *> * CCompiler::constant_pool=NULL;
+	map<string, tInfoConstantValue *> * CCompiler::constant_pool=NULL;
 
 	CCompiler *CCompiler::m_compiler = NULL;
 
@@ -70,7 +70,7 @@ namespace zetscript{
 		return idxScope;
 	}
 
-	CCompiler::tInfoConstantValue *CCompiler::getConstant(const string & const_name){
+	tInfoConstantValue *CCompiler::getConstant(const string & const_name){
 
 		if((*constant_pool).count(const_name) == 1){
 			return (*constant_pool)[const_name];
@@ -78,9 +78,9 @@ namespace zetscript{
 		return NULL;
 	}
 
-	CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name, void *obj, unsigned short properties){
+	tInfoConstantValue * CCompiler::addConstant(const string & const_name, void *obj, unsigned short properties){
 
-		CCompiler::tInfoConstantValue * info_ptr=NULL;
+		tInfoConstantValue * info_ptr=NULL;
 
 		if(getConstant(const_name) == NULL){
 			info_ptr=new tInfoConstantValue;
@@ -93,7 +93,7 @@ namespace zetscript{
 		return info_ptr;
 	}
 
-	CCompiler::tInfoConstantValue * CCompiler::addConstant(const string & const_name, int _value){
+	tInfoConstantValue * CCompiler::addConstant(const string & const_name, int _value){
 		intptr_t value = _value;
 		unsigned short type=STK_PROPERTY_TYPE_INTEGER;
 		tStackElement *stk;
@@ -119,21 +119,21 @@ namespace zetscript{
 
 		if((idxVar=getIdxLocalVarSymbolFromASTNode(idxAstNode))==ZS_UNDEFINED_IDX){
 			PASTNode ast = AST_NODE(idxAstNode);
-			tInfoVariableSymbol info_symbol;
+			tVariableSymbolInfo info_symbol;
 			string symbol_ref = makeSymbolRef(ast->symbol_value,ast->idxScope);
 			info_symbol.idxAstNode = idxAstNode;
 			info_symbol.symbol_ref =symbol_ref;
-			int n_element=this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size();
+			int n_element=this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.m_registeredVariable.size();
 
-			this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.push_back(info_symbol);
+			this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.m_registeredVariable.push_back(info_symbol);
 
 			// init stack variable ...
-			if(this->m_currentFunctionInfo->function_info_object->object_info.symbol_info.idxScriptClass == IDX_CLASS_MAIN && this->m_currentFunctionInfo->function_info_object->object_info.idxScriptFunctionObject == 0){ // initialize new global var initialized on MainFuntion ...
+			if(this->m_currentFunctionInfo->function_info_object->symbol_info.idxScriptClass == IDX_CLASS_MAIN && this->m_currentFunctionInfo->function_info_object->idxScriptFunctionObject == 0){ // initialize new global var initialized on MainFuntion ...
 				CURRENT_VM->iniStackVar(n_element,{STK_PROPERTY_TYPE_UNDEFINED,0,0});
 			}
 
 
-			return n_element;//this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size()-1;
+			return n_element;//this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.m_registeredVariable.size()-1;
 		} // else already added so we refer the same var.
 
 		writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol \"%s\" already defined. (link issue)",ast->symbol_value.c_str());
@@ -145,8 +145,8 @@ namespace zetscript{
 		PASTNode ast=AST_NODE(idxAstNode);
 		string symbol_ref=CCompiler::makeSymbolRef(ast->symbol_value,ast->idxScope);
 
-		for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size(); i++){
-			if(this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
+		for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.m_registeredVariable.size(); i++){
+			if(this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
 				return i;
 			}
 		}
@@ -159,8 +159,8 @@ namespace zetscript{
 		string symbol_ref=CCompiler::makeSymbolRef(ast->symbol_value,IDX_GLOBAL_SCOPE);
 		CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX);
 
-		for(unsigned i = 0; i < main_function->object_info.local_symbols.m_registeredVariable.size(); i++){
-			if(main_function->object_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
+		for(unsigned i = 0; i < main_function->scope_info.local_symbols.m_registeredVariable.size(); i++){
+			if(main_function->scope_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
 				return i;
 			}
 		}
@@ -172,8 +172,8 @@ namespace zetscript{
 		PASTNode ast=AST_NODE(idxAstNode);
 		string symbol_ref=CCompiler::makeSymbolRef(ast->symbol_value,idxScope);
 
-		for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable.size(); i++){
-			if(this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
+		for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.m_registeredVariable.size(); i++){
+			if(this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
 				return i;
 			}
 		}
@@ -206,19 +206,19 @@ namespace zetscript{
 			tScopeVar *irv = SCOPE_NODE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false);
 			if(irv != NULL){
 
-				CScriptFunctionObject *info_symbol = NEW_SCRIPT_FUNCTION_OBJECT;
+				CScriptFunctionObject *sfo = NEW_SCRIPT_FUNCTION_OBJECT;
 
 				CScope *scope=SCOPE_NODE(ast_node->idxScope);
 				PASTNode ast_node_root=AST_NODE(scope->getIdxBaseAstNode());
 
-				info_symbol->object_info.symbol_info.idxAstNode = irv->idxAstNode;
-				info_symbol->object_info.symbol_info.idxScriptClass = ast_node_root==NULL?IDX_CLASS_MAIN:CScriptClass::getIdxScriptClass(ast_node_root->symbol_value);
+				sfo->symbol_info.idxAstNode = irv->idxAstNode;
+				sfo->symbol_info.idxScriptClass = ast_node_root==NULL?IDX_CLASS_MAIN:CScriptClass::getIdxScriptClass(ast_node_root->symbol_value);
 				//info_symbol.object_info.symbol_info.idxScopeVar = irv->idxScopeVar;
-				info_symbol->object_info.symbol_info.symbol_ref = makeSymbolRef(function_name,ast_node->idxScope);
+				sfo->symbol_info.symbol_ref = makeSymbolRef(function_name,ast_node->idxScope);
 
-				this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction.push_back(info_symbol->object_info.idxScriptFunctionObject);
+				this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.vec_idx_registeredFunction.push_back(sfo->idxScriptFunctionObject);
 
-				return info_symbol;
+				return sfo;
 			}
 			else{
 				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"No function symbol \"%s\" with %i args is defined",ast_node->symbol_value.c_str(), n_params);
@@ -264,9 +264,9 @@ namespace zetscript{
 			PASTNode ast = AST_NODE(irv->idxAstNode);
 
 			if((ast != NULL) && (AST_NODE(idxAstNode)->idxScope == ast->idxScope)){
-				for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(m_currentFunctionInfo->function_info_object->object_info.local_symbols.vec_idx_registeredFunction[i]);
-					if(sfo->object_info.symbol_info.symbol_ref == symbol_ref  && sfo->m_arg.size()==n_args){
+				for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(m_currentFunctionInfo->function_info_object->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+					if(sfo->symbol_info.symbol_ref == symbol_ref  && sfo->m_arg.size()==n_args){
 						return i;
 					}
 				}
@@ -277,9 +277,9 @@ namespace zetscript{
 				CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX);
 
 
-				for(unsigned i = 0; i < main_function->object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(main_function->object_info.local_symbols.vec_idx_registeredFunction[i]);
-					if(sfo->object_info.symbol_info.symbol_ref == symbol_ref  && sfo->m_arg.size()==n_args ){
+				for(unsigned i = 0; i < main_function->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(main_function->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+					if(sfo->symbol_info.symbol_ref == symbol_ref  && sfo->m_arg.size()==n_args ){
 						return i;
 					}
 				}
@@ -302,7 +302,7 @@ namespace zetscript{
 		if(m_compiler != NULL){
 
 
-			for(map<string, CCompiler::tInfoConstantValue *>::iterator it=constant_pool->begin();it!=constant_pool->end();it++){
+			for(map<string, tInfoConstantValue *>::iterator it=constant_pool->begin();it!=constant_pool->end();it++){
 				tInfoConstantValue *icv=it->second;
 				switch(GET_INS_PROPERTY_VAR_TYPE(icv->properties)){
 				default:
@@ -473,7 +473,7 @@ namespace zetscript{
 		//tInfoStatementOpCompiler *ptr_current_statement_op = &(this->m_currentFunctionInfo->stament)[this->m_currentFunctionInfo->stament.size()-1];
 
 		unsigned int type=STK_PROPERTY_TYPE_STRING;
-		CCompiler::tInfoConstantValue *get_obj;
+		tInfoConstantValue *get_obj;
 		void *obj;
 
 		if((get_obj = getConstant(v))!=NULL){
@@ -507,7 +507,7 @@ namespace zetscript{
 		//tInfoStatementOpCompiler *ptr_current_statement_op = &(this->m_currentFunctionInfo->stament)[this->m_currentFunctionInfo->stament.size()-1];
 		void *const_obj;
 		void *obj;
-		CCompiler::tInfoConstantValue *get_obj;
+		tInfoConstantValue *get_obj;
 		unsigned short type=STK_PROPERTY_TYPE_SCRIPTVAR;
 		LOAD_TYPE load_type=LOAD_TYPE_NOT_DEFINED;
 		unsigned int scope_type=0;//INS_PROPERTY_UNKNOWN_SCOPE;
@@ -1567,8 +1567,8 @@ namespace zetscript{
 	}
 
 	bool CCompiler::registerVariableClassSymbol(short idx_var_node, const string & class_name_to_register,CScriptClass * current_class){
-		tInfoVariableSymbol *irs_dest=NULL;
-		string base_class_name = current_class->metadata_info.object_info.symbol_info.symbol_ref;
+		tVariableSymbolInfo *irs_dest=NULL;
+		string base_class_name = current_class->symbol_info.symbol_ref;
 
 		PASTNode var_node = AST_NODE(idx_var_node);
 
@@ -1577,7 +1577,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		PASTNode ast_class_to_register=AST_NODE(sc->metadata_info.object_info.symbol_info.idxAstNode);
+		PASTNode ast_class_to_register=AST_NODE(sc->symbol_info.idxAstNode);
 		string symbol_ref = "";
 		if(current_class->is_c_class()){
 			symbol_ref=makeSymbolRef(var_node->symbol_value,IDX_C_CLASS_SCOPE);
@@ -1593,10 +1593,10 @@ namespace zetscript{
 
 			while( current_sc->idxBaseClass.size()>0 && !found){
 				current_sc=CScriptClass::getScriptClassByIdx(current_sc->idxBaseClass[0]); // get base class...
-				ast_class_to_register=AST_NODE(current_sc->metadata_info.object_info.symbol_info.idxAstNode);
+				ast_class_to_register=AST_NODE(current_sc->symbol_info.idxAstNode);
 				symbol_ref= makeSymbolRef(var_node->symbol_value,ast_class_to_register->idxScope);
 				if(CScriptClass::variableSymbolExist(current_sc,symbol_ref)){
-					conflict_class=current_sc->metadata_info.object_info.symbol_info.symbol_ref;
+					conflict_class=current_sc->symbol_info.symbol_ref;
 					found=true;
 				}
 			}
@@ -1619,7 +1619,7 @@ namespace zetscript{
 		}
 
 		if(current_class->is_c_class()){
-			tInfoVariableSymbol *irs_src=CScriptClass::getRegisteredVariableSymbol(base_class_name, symbol_ref);
+			tVariableSymbolInfo *irs_src=CScriptClass::getRegisteredVariableSymbol(base_class_name, symbol_ref);
 			if(irs_src){
 
 				// copy c refs ...
@@ -1636,8 +1636,8 @@ namespace zetscript{
 
 	bool CCompiler::registerFunctionClassSymbol(short idx_node_fun, const string & class_name_to_register,CScriptClass * current_class ){
 			CScriptFunctionObject *irfs;
-			string current_class_name = current_class->metadata_info.object_info.symbol_info.symbol_ref;
-			PASTNode node_class = AST_NODE(current_class->metadata_info.object_info.symbol_info.idxAstNode);
+			string current_class_name = current_class->symbol_info.symbol_ref;
+			PASTNode node_class = AST_NODE(current_class->symbol_info.idxAstNode);
 			PASTNode _node_ret=NULL;
 			PASTNode fun_node = AST_NODE(idx_node_fun);
 
@@ -1646,7 +1646,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			PASTNode ast_class_to_register=AST_NODE(sc->metadata_info.object_info.symbol_info.idxAstNode);
+			PASTNode ast_class_to_register=AST_NODE(sc->symbol_info.idxAstNode);
 			string symbol_ref = makeSymbolRef(fun_node->symbol_value,ast_class_to_register->idxScope);
 
 			zs_print_debug_cr("* %s::%s",current_class_name.c_str(), symbol_ref.c_str());
@@ -1678,10 +1678,10 @@ namespace zetscript{
 				if(irs_src){
 
 					// copy c refs ...
-					irfs->object_info.symbol_info.symbol_ref= symbol_ref;//irs_src->object_info.symbol_info.symbol_name;
-					irfs->object_info.symbol_info.properties = irs_src->object_info.symbol_info.properties;
+					irfs->symbol_info.symbol_ref= symbol_ref;//irs_src->object_info.symbol_info.symbol_name;
+					irfs->symbol_info.properties = irs_src->symbol_info.properties;
 
-					irfs->object_info.symbol_info.ref_ptr = irs_src->object_info.symbol_info.ref_ptr;
+					irfs->symbol_info.ref_ptr = irs_src->symbol_info.ref_ptr;
 					irfs->m_arg = irs_src->m_arg;
 					irfs->idx_return_type = irs_src->idx_return_type;
 
@@ -1714,7 +1714,7 @@ namespace zetscript{
 			}
 		}
 
-		PASTNode node_class = AST_NODE(current_class->metadata_info.object_info.symbol_info.idxAstNode);
+		PASTNode node_class = AST_NODE(current_class->symbol_info.idxAstNode);
 
 		//
 		// register all vars...
@@ -1765,7 +1765,7 @@ namespace zetscript{
 			return false;
 		}
 		// we push class symbol ref as function, then all registered symbols will take account with this scope...
-		pushFunction(_node->idxAstNode,&irc->metadata_info);
+		pushFunction(_node->idxAstNode,NULL);
 
 		// register all symbols ...
 		if(!doRegisterVariableSymbolsClass(_node->symbol_value,irc)){
@@ -2768,15 +2768,15 @@ namespace zetscript{
 
 	void CCompiler::popFunction(bool save_asm_op){
 
-		m_currentFunctionInfo->function_info_object->object_info.asm_op=NULL;
+		m_currentFunctionInfo->function_info_object->asm_op=NULL;
 
 		if (save_asm_op) {
 			// get total size op + 1 ends with NULL
 			unsigned size = (m_currentFunctionInfo->asm_op.size() + 1) * sizeof(tInfoAsmOp);
-			m_currentFunctionInfo->function_info_object->object_info.asm_op = (PtrAsmOp)malloc(size);
-			memset(m_currentFunctionInfo->function_info_object->object_info.asm_op, 0, size);
+			m_currentFunctionInfo->function_info_object->asm_op = (PtrAsmOp)malloc(size);
+			memset(m_currentFunctionInfo->function_info_object->asm_op, 0, size);
 
-			tInfoAsmOp *dst_op = m_currentFunctionInfo->function_info_object->object_info.asm_op;
+			tInfoAsmOp *dst_op = m_currentFunctionInfo->function_info_object->asm_op;
 
 			for (unsigned j = 0; j < m_currentFunctionInfo->asm_op.size(); j++,dst_op++) {
 
@@ -2798,7 +2798,7 @@ namespace zetscript{
 		if(stk_scriptFunction.size() > 0){
 			m_currentFunctionInfo = stk_scriptFunction[stk_scriptFunction.size()-1];
 			//this->m_currentListStatements = &m_currentFunctionInfo->object_info.asm_op;
-			this->m_treescope =AST_SCOPE_INFO(m_currentFunctionInfo->function_info_object->object_info.symbol_info.idxAstNode);
+			this->m_treescope =AST_SCOPE_INFO(m_currentFunctionInfo->function_info_object->symbol_info.idxAstNode);
 		}
 	}
 
@@ -2860,19 +2860,19 @@ namespace zetscript{
 	void CCompiler::clear() {
 		CScriptFunctionObject *info_function=MAIN_SCRIPT_FUNCTION_OBJECT;
 
-		if (info_function->object_info.asm_op != NULL) {
-			free(info_function->object_info.asm_op);
-			info_function->object_info.asm_op=NULL;
+		if (info_function->asm_op != NULL) {
+			free(info_function->asm_op);
+			info_function->asm_op=NULL;
 		}
 
 		// unloading scope ...
-		if (info_function->object_info.info_var_scope != NULL) {
-			for (unsigned j = 0; j < info_function->object_info.n_info_var_scope; j++) {
-				free(info_function->object_info.info_var_scope[j].var_index);
+		if (info_function->scope_info.info_var_scope != NULL) {
+			for (unsigned j = 0; j < info_function->scope_info.n_info_var_scope; j++) {
+				free(info_function->scope_info.info_var_scope[j].var_index);
 			}
 
-			free(info_function->object_info.info_var_scope);
-			info_function->object_info.info_var_scope=NULL;
+			free(info_function->scope_info.info_var_scope);
+			info_function->scope_info.info_var_scope=NULL;
 		}
 
 		stk_breakInstructionsScope.clear();

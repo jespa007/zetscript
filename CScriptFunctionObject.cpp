@@ -22,7 +22,7 @@ namespace zetscript{
 	CScriptFunctionObject *		 CScriptFunctionObject::newScriptFunctionObject(){
 		CScriptFunctionObject *script_function = new CScriptFunctionObject();
 		vec_script_function_object_node->push_back(script_function);
-		script_function->object_info.idxScriptFunctionObject = vec_script_function_object_node->size()-1;
+		script_function->idxScriptFunctionObject = vec_script_function_object_node->size()-1;
 		return script_function;
 	}
 
@@ -33,7 +33,7 @@ namespace zetscript{
 		if(size>=3){ //0 is main function (reserved). We check when >= 3 to check previous one (i.e from 1)
 			if((
 
-				((*vec_script_function_object_node)[size-1]->object_info.symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
+				((*vec_script_function_object_node)[size-1]->symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
 			){
 				THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",f);
 				return false;
@@ -45,20 +45,20 @@ namespace zetscript{
 	}
 
 
-	tInfoVariableSymbol * CScriptFunctionObject::newVariableSymbol(int idxFunction){
+	tVariableSymbolInfo * CScriptFunctionObject::newVariableSymbol(int idxFunction){
 
 		if(idxFunction != -1 && idxFunction<(int)vec_script_function_object_node->size()){
 
 
-			tInfoVariableSymbol irs;
+			tVariableSymbolInfo irs;
 			CScriptFunctionObject *irc = vec_script_function_object_node->at(idxFunction);
 
 
-			irs.idxSymbol = (short)irc->object_info.local_symbols.m_registeredVariable.size();
+			irs.idxSymbol = (short)irc->scope_info.local_symbols.m_registeredVariable.size();
 
 
-			irc->object_info.local_symbols.m_registeredVariable.push_back(irs);
-			return &irc->object_info.local_symbols.m_registeredVariable[irc->object_info.local_symbols.m_registeredVariable.size()-1];
+			irc->scope_info.local_symbols.m_registeredVariable.push_back(irs);
+			return &irc->scope_info.local_symbols.m_registeredVariable[irc->scope_info.local_symbols.m_registeredVariable.size()-1];
 		}
 		else{
 			THROW_RUNTIME_ERROR("idxScriptClass -1");
@@ -69,7 +69,7 @@ namespace zetscript{
 	}
 
 
-	int CScriptFunctionObject::getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name,char n_args_to_find, bool show_msg){
+	int CScriptFunctionObject::getIdxFunctionObject(CScriptFunctionObject * in_sfo,const string & function_name,char n_args_to_find, bool show_msg){
 
 		// from lat value to first to get last override function...
 		/*if(idxFunction == -1){
@@ -77,36 +77,36 @@ namespace zetscript{
 			return -1;
 		}*/
 
-		//tFunctionInfo *fi=&vec_script_function_object_node->at(idxFunction)->object_info;
-		for(int i = info_function->local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-			CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(info_function->local_symbols.vec_idx_registeredFunction[i]);
+		//tFunctionInfo *fi=&vec_script_function_object_node->at(idxFunction)->function_info;
+		for(int i = in_sfo->scope_info.local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
+			CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(in_sfo->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 
 
-			if(sfo->object_info.symbol_info.symbol_ref == function_name && (n_args_to_find==(int)sfo->m_arg.size() || (n_args_to_find==-1)) ){
+			if(sfo->symbol_info.symbol_ref == function_name && (n_args_to_find==(int)sfo->m_arg.size() || (n_args_to_find==-1)) ){
 
 				return i;
 			}
 		}
 
 		if(show_msg){
-			THROW_RUNTIME_ERROR("function member %s::%s doesn't exist",info_function->symbol_info.symbol_ref.c_str(),function_name.c_str());
+			THROW_RUNTIME_ERROR("function member %s::%s doesn't exist",in_sfo->symbol_info.symbol_ref.c_str(),function_name.c_str());
 		}
 
 		return -1;
 	}
 
-	int				CScriptFunctionObject::getIdxVariableSymbol(tFunctionInfo * info_function,const string & variable_name, bool show_msg){
+	int				CScriptFunctionObject::getIdxVariableSymbol(CScriptFunctionObject * in_sfo,const string & variable_name, bool show_msg){
 		// from lat value to first to get last override function...
 
 
-		for(int i = info_function->local_symbols.m_registeredVariable.size()-1; i >= 0 ; i--){
-			if(info_function->local_symbols.m_registeredVariable[i].symbol_ref == variable_name){
+		for(int i = in_sfo->scope_info.local_symbols.m_registeredVariable.size()-1; i >= 0 ; i--){
+			if(in_sfo->scope_info.local_symbols.m_registeredVariable[i].symbol_ref == variable_name){
 				return i;
 			}
 		}
 
 		if(show_msg){
-			THROW_RUNTIME_ERROR("variable member %s::%s doesn't exist",info_function->symbol_info.symbol_ref.c_str(),variable_name.c_str());
+			THROW_RUNTIME_ERROR("variable member %s::%s doesn't exist",in_sfo->symbol_info.symbol_ref.c_str(),variable_name.c_str());
 		}
 
 		return -1;
@@ -123,12 +123,5 @@ namespace zetscript{
 		return vec_script_function_object_node->at(idx);
 	}
 
-	tFunctionInfo 	* CScriptFunctionObject::getFunctionInfo(int idx){
-		if(idx < 0 || (unsigned)idx >= vec_script_function_object_node->size()){
-			THROW_RUNTIME_ERROR("CScriptFunctionObject node out of bound");
-			return NULL;
-		}
 
-		return &vec_script_function_object_node->at(idx)->object_info;
-	}
 }

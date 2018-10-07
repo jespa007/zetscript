@@ -42,6 +42,7 @@ namespace zetscript{
 		return vec_scope_node;
 	}
 
+	// @deprecated
 	CScope *	 CScope::newScope( PASTNode _ast, short idxParentScope){
 		CScope * scope_node = new CScope(_ast, vec_scope_node->size(), idxParentScope);
 
@@ -49,6 +50,14 @@ namespace zetscript{
 		//scope_node->idxScope = vec_scope_node->size()-1;
 		return scope_node;
 	}
+
+/*	CScope *	 CScope::newScope( short idxParentScope){
+		CScope * scope_node = new CScope( vec_scope_node->size(), idxParentScope);
+
+		vec_scope_node->push_back(scope_node);
+		//scope_node->idxScope = vec_scope_node->size()-1;
+		return scope_node;
+	}*/
 
 	CScope 		* CScope::getScopeNodeByIdx(short idx){
 		if(idx < 0 || (unsigned)idx >= vec_scope_node->size()){
@@ -65,6 +74,7 @@ namespace zetscript{
 		idxScope = ZS_UNDEFINED_IDX;
 		idxBaseScope =ZS_UNDEFINED_IDX;
 		idxAstNode = ZS_UNDEFINED_IDX;
+		idxScriptClass=ZS_UNDEFINED_IDX;
 	}
 
 	CScope::CScope(PASTNode _ast, short idx_this, short idx_parent){//, int _index){
@@ -114,6 +124,18 @@ namespace zetscript{
 		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = idxBaseScope;
 	}
 
+	CScope * CScope::pushScope(){
+
+		CScope *new_scope = CScope::newScope(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
+		SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
+		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
+		return new_scope;
+
+	}
+
+
+
+	// @deprecated...
 	CScope * CScope::pushScope(PASTNode _ast){
 
 		CScope *new_scope = CScope::newScope(_ast,SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());

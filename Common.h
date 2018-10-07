@@ -23,6 +23,7 @@
 #define MAX_N_ARGS 			 6
 
 
+
 enum NODE_TYPE
 	:unsigned char {
 	UNKNOWN_NODE = 0,
@@ -457,7 +458,10 @@ namespace zetscript{
 		KEYWORD_TYPE id;
 		const char *str;
 		char * (*eval_fun)(const char *, int &, CScope *, PASTNode *);
-	} tKeywordInfo;
+	} tKeywordInfo_Old;
+
+
+
 
 	typedef struct {
 		DIRECTIVE_TYPE id;
@@ -500,7 +504,7 @@ namespace zetscript{
 	 */
 	#pragma pack(push, 1)
 
-	struct tInfoVariableSymbol { // it can be a variable or function
+	struct tVariableSymbolInfo { // it can be a variable or function
 		intptr_t ref_ptr; // pointer ref to C Var/Function
 		string symbol_ref; // symbol name
 		short idxScriptClass; //CScriptClass		 *class_info;
@@ -509,7 +513,7 @@ namespace zetscript{
 		unsigned short properties; // SYMBOL_INFO_PROPERTY
 		string c_type; // In case is C, we need to know its type ...
 
-		tInfoVariableSymbol() {
+		tVariableSymbolInfo() {
 			properties = 0;
 			c_type = "";
 			idxAstNode = -1;
@@ -547,6 +551,8 @@ namespace zetscript{
 
 	};
 
+	typedef tStackElement tInfoConstantValue;
+
 	struct tFunctionSymbol {
 
 		tStackElement object; // created object. undefined by default.
@@ -573,35 +579,37 @@ namespace zetscript{
 	//-------------------------------------------------------
 
 	struct tLocalSymbolInfo {
-		vector<tInfoVariableSymbol> m_registeredVariable; // member variables to be copied in every new instance
+		vector<tVariableSymbolInfo> m_registeredVariable; // member variables to be copied in every new instance
 		vector<int> vec_idx_registeredFunction; // idx member functions (from main vector collection)
 	};
 
-	struct tFunctionInfo { // script function is shared by class and function ...
+	struct tScopeInfo { // script function is shared by class and function ...
 
-		tInfoVariableSymbol symbol_info;
+
 		tLocalSymbolInfo local_symbols;
 
 		//--------------------------------------
 		// optimized ones...
 		//int n_statments;
-		PtrAsmOp asm_op;
+
 		//unsigned					 n_statment_op;
 
 		tInfoVarScopeBlock *info_var_scope;
 		unsigned n_info_var_scope;
+		short idxScope;
 
-		int idxScriptFunctionObject;
 
-		tFunctionInfo() {
+		tScopeInfo() {
 			//n_statments=0;
-			idxScriptFunctionObject = -1;
-			asm_op = NULL;
 			info_var_scope = NULL;
 			//n_statment_op=0;
 			n_info_var_scope = 0;
+			idxScope=ZS_UNDEFINED_IDX;
 		}
 	};
+
+
+
 
 	typedef struct {
 		string filename;

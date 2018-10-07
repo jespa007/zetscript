@@ -29,6 +29,7 @@ namespace zetscript{
 #define SCOPE_NODE(idx) 				CScope::getScopeNodeByIdx(idx)
 
 #define IDX_GLOBAL_SCOPE				0
+#define IDX_INVALID_SCOPE				ZS_UNDEFINED_IDX
 #define IDX_C_CLASS_SCOPE				-2
 #define IDX_ANONYMOUSE_SCOPE			-3
 
@@ -60,14 +61,17 @@ namespace zetscript{
 		 * Get CScope Node by its idx, regarding current state.
 		 */
 
+		// @deprecated
 		static CScope	    		*	newScope(PASTNode _ast_node,short idx_parent_scope=ZS_UNDEFINED_IDX);
+
+		static CScope	    		*	newScope(short idx_parent_scope=ZS_UNDEFINED_IDX);
 		static CScope 				* 	getScopeNodeByIdx(short idx);
 
 		// ref symbol management...
 		//static int	 					getIdxScopeFromSymbolRef(const string & ref_symbol);
 		//static int	 					getParamsFromSymbolRef(const string & ref_symbol);
 
-		short idxScope,idxAstNode;
+		short idxScope,idxAstNode,idxScriptClass;
 
 		//---------------------------------
 		// Register functions
@@ -91,6 +95,7 @@ namespace zetscript{
 		CScope(PASTNode _ast, short idx_this, short idx_parent=ZS_UNDEFINED_IDX);//, int _index);
 
 		short 	 getIdxBaseScope();
+		short 	 getIdxScriptClass();
 		short 	 getIdxBaseAstNode();
 		short		 getIdxParent();
 		CScope * getCurrentScopePointer();
@@ -103,7 +108,9 @@ namespace zetscript{
 
 		//int incTotalScopes();
 
+		// @deprecated
 		CScope * pushScope(PASTNode _ast);
+		CScope * pushScope();
 		CScope * popScope();
 
 		//void destroyScopes();

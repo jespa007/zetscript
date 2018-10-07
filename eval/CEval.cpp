@@ -13,13 +13,117 @@
 #else
 #define print_eval_cr(s,...)
 #endif
+/*
+
+Constants (C)
+-------------
+
+C <= Integer,Number,Boolean,String
+
+
+Pre operators (Pe)
+-------------
+
+Pe <= [ --, ++ ]
+
+Post operators (Po)
+-------------
+
+Po <= [ --, ++ ]
+
+
+Symbol (S)
+-------------
+
+S(t) <= [A-Za-Z ][A-Za-z0-9 ]*
+
+
+Punctuator (P)
+-------------
+
+Arithmetic
+
+P <= [  /, *, %, -, + ]
+
+Bit
+
+P <= [  &, |, ^, <<, >> ]
+
+Logical
+
+P <= [  ==, >=, <=, >, <, !=, &&, || ]
+
+Assignments
+
+P <= [  =, +=, -=, /=, %=, *=, <<=, >>=, ^=, |=, &=]
+
+Object
+
+P <= [  . ]
+
+Ternary
+
+P <= [  ?,: ]
+
+
+Anonymous Objects (O)
+-------------
+
+O <= [E1,E2,E3,...,En] 
+O <= function(a1,a2,...,an){ B }
+O <= {S1:E1,S2:E2,...,Sn:Em}
+
+Expression (E)
+-------------
+
+E <= (E) // parentesis E
+E <= E P E // punctuator
+E <= !E // negate result of expression
+E <= -E // Prerest (negate result of expression)
+E <= +E // Presum (it does nothing)
+E <= [Pe]S[Po] // variable with/out pre/post operator.
+E <= (S|O)[E1][E2]...[En] // array access
+E <= (S|O)(E1,E2,..,En) // function call
+E(t)<= E; | E,
+
+
+Keyword (K)
+-------------
+
+- var S=E;
+- for(var S1=Ei1,S2=Ei2,S3=Ei3,...,Sn=Eim;Ec;Ep3,Ep4,Ep5,...,Epn){ B } //
+- for(var S1 in S2) { B } //
+- while(E) { B }
+- do{ B } while(E);
+- switch(E){ // switch should have constants on case
+default:
+case C0:
+    break;
+case C1:
+    break;
+    ..
+case CN:
+    break;
+}
+
+-if(E1){ B1 } else if (E2) { B2 } else { B3 }
+
+
+Body (B)
+----------
+
+Starts with '{' and ends with '}'
+
+B <- [E;|K]* // A set of expressions ended with ; or Keyword
+
+*/
 
 namespace zetscript{
 
 
 	void  		writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
-	tKeywordInfo CEval::defined_keyword[MAX_KEYWORD];
+	CEval::tKeywordInfo CEval::defined_keyword[MAX_KEYWORD];
 	tDirectiveInfo CEval::defined_directive[MAX_DIRECTIVES];
 	tPunctuatorInfo CEval::defined_operator_punctuator[MAX_PUNCTUATORS];
 
@@ -52,25 +156,6 @@ namespace zetscript{
 		return false;
 	}
 
-	char *ADVANCE_TO_CHAR(char *str,char c, int & m_line) {
-		char *aux_p = str;
-		// make compatible windows format (\r)...
-		while(*aux_p!=0 && (*aux_p !=(c) )) {
-			if(*aux_p == '\"') { // go to end..
-				aux_p++;
-				while (*aux_p!=0 && !(*aux_p =='\"' && *(aux_p-1) !='\\') && *aux_p != '\n') {aux_p++;}
-
-				if(*aux_p != '\"'){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line, "string is not closed at line %i",m_line);
-					return NULL;
-				}
-			}
-			if(*aux_p == '\n') {m_line++;}; // make compatible windows format...
-			aux_p++;
-		}
-		return aux_p;
-	}
-
 	char *ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
 
 		if(IS_START_COMMENT(aux_p)){
@@ -101,7 +186,6 @@ namespace zetscript{
 
 			if(IS_SINGLE_COMMENT(aux_p)) // ignore line
 				while(*aux_p!=0 && *aux_p!='\n') aux_p++;
-				//aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
 
 			else if(IS_START_COMMENT(aux_p)){
 				// ignore until get the end of the comment...
@@ -125,230 +209,182 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	char *IGNORE_BLANKS_REVERSE(const char *str_begin,const char *str_end, int &m_line) {
-		char *aux_p = (char *)str_begin;
-		bool end = false;
-		while(!end){
-			end = true;
-			while(aux_p!=str_end && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p--;
-
-			// make compatible windows format...
-			if(*aux_p == '\r')
-				aux_p--;
-
-			if(*aux_p == '\n') {
-				m_line=m_line+1;
-				end=false;
-				aux_p--;
-			}
-		}
-		return aux_p;
-	}
-
-	char *ADVANCE_TO_ONE_OF_COLLECTION_CHAR(char *str,char *end_char_standard_value, int &m_line) {
-		char *aux_p = str;
-		char *chk_char;
-		while(*aux_p!=0){
-			chk_char = end_char_standard_value;
-
-			// comment blocks also is returned (these lines must be ignored)
-			if(IS_START_COMMENT(aux_p)) {
-				aux_p = ADVANCE_TO_END_COMMENT(aux_p, m_line);
-				if(IS_END_COMMENT(aux_p))
-					aux_p+=2;
-			}
-
-			if(IS_SINGLE_COMMENT(aux_p)) {
-				aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
-			}
-
-			while(*chk_char != 0){
-				if(*chk_char == *aux_p)
-					return aux_p;
-				chk_char++;
-			}
-			aux_p++;
-		}
-		return aux_p;
-	}
-
-
-	bool CEval::evalExpressionPlusPunctuator(const char *s){
+	bool isPlusPunctuator(const char *s){
 		if(*s=='+')
 			return ((*(s+1) != '+') && (*(s+1) != '='));
 		return false;
 	}
 
-	bool CEval::evalExpressionMinusPunctuator(const char *s){
+	bool isMinusPunctuator(const char *s){
 		if(*s=='-')
 			return ((*(s+1) != '-') && (*(s+1) != '='));
 		return false;
 	}
 
-	bool CEval::evalExpressionMulPunctuator(const char *s){
+	bool isMulPunctuator(const char *s){
 		if(*s == '*')
 			return ((*(s+1) != '='));
 		return false;
 	}
 
-	bool CEval::evalExpressionDivPunctuator(const char *s){
+	bool isDivPunctuator(const char *s){
 		if(*s == '/')
 			return ((*(s+1) != '='));
 		return false;
 	}
 
-	bool CEval::evalExpressionModPunctuator(const char *s){
+	bool isModPunctuator(const char *s){
 		if(*s == '%')
 			return ((*(s+1) != '='));
 		return false;
 	}
 
-	bool CEval::evalExpressionFieldPunctuator(const char *s){
+	bool isFieldPunctuator(const char *s){
 		return *s == '.';
 	}
 
-	bool CEval::evalExpressionInlineIfPunctuator(const char *s){
+	bool isInlineIfPunctuator(const char *s){
 		return *s == '?';
 	}
 
-	bool CEval::evalExpressionInlineElsePunctuator(const char *s){
+	bool isInlineElsePunctuator(const char *s){
 		return *s == ':';
 	}
 
-	bool CEval::evalExpressionAssignPunctuator(const char *s){
+	bool isAssignPunctuator(const char *s){
 		if(*s=='=')
 			return (*(s+1) != '=');
 		return false;
 	}
 
-	bool CEval::evalExpressionAddAssignPunctuator(const char *s){
+	bool isAddAssignPunctuator(const char *s){
 		if(*s=='+')
 			return (*(s+1) == '=');
 		return false;
 	}
 
-	bool CEval::evalExpressionSubAssignPunctuator(const char *s){
+	bool isSubAssignPunctuator(const char *s){
 		if(*s=='-')
 			return (*(s+1) == '=');
 		return false;
 	}
 
-	bool CEval::evalExpressionMulAssignPunctuator(const char *s){
+	bool isMulAssignPunctuator(const char *s){
 		if(*s=='*')
 			return (*(s+1) == '=');
 		return false;
 	}
 
-	bool CEval::evalExpressionDivAssignPunctuator(const char *s){
+	bool isDivAssignPunctuator(const char *s){
 		if(*s=='/')
 			return (*(s+1) == '=');
 		return false;
 	}
 
-	bool CEval::evalExpressionModAssignPunctuator(const char *s){
+	bool isModAssignPunctuator(const char *s){
 		if(*s=='%')
 			return (*(s+1) == '=');
 		return false;
 	}
 
 
-	bool CEval::evalExpressionBinaryXorPunctuator(const char *s){
+	bool isBinaryXorPunctuator(const char *s){
 		if(*s == '^')
 			return ((*(s+1) != '='));
 		return false;
 	}
 
-	bool CEval::evalExpressionBinaryAndPunctuator(const char *s){
+	bool isBinaryAndPunctuator(const char *s){
 		if(*s=='&')
 			return ((*(s+1) != '&')  && (*(s+1) != '='));
 		return false;
 	}
 
-	bool CEval::evalExpressionBinaryOrPunctuator(const char *s){
+	bool isBinaryOrPunctuator(const char *s){
 		if(*s=='|')
 			return ((*(s+1) != '|') &&  (*(s+1) != '='));
 		return false;
 	}
 
-	bool CEval::evalExpressionShiftLeftPunctuator(const char *s){
+	bool isShiftLeftPunctuator(const char *s){
 		if(*s=='<')
 			return (*(s+1) == '<');
 		return false;
 	}
 
-	bool CEval::evalExpressionShiftRightPunctuator(const char *s){
+	bool isShiftRightPunctuator(const char *s){
 		if(*s=='>')
 			return (*(s+1) == '>');
 		return false;
 	}
 
-	bool CEval::evalExpressionLogicAndPunctuator(const char *s){
+	bool isLogicAndPunctuator(const char *s){
 		if(*s=='&')
 			return (*(s+1) == '&');
 		return false;
 	}
 
-	bool CEval::evalExpressionLogicOrPunctuator(const char *s){
+	bool isLogicOrPunctuator(const char *s){
 		if(*s=='|')
 			return (*(s+1) == '|');
 		return false;
 	}
 
-	bool CEval::evalExpressionLogicEqualPunctuator(const char *s){
+	bool isLogicEqualPunctuator(const char *s){
 		if(*s=='=')
 			return (*(s+1) == '=');
 		return false;
 	}
 
-	bool CEval::evalExpressionInstanceOfPunctuator(const char *s){
+	bool isInstanceOfPunctuator(const char *s){
 		return strncmp("instanceof",s,10) == 0;
 	}
 
-	bool CEval::evalExpressionLogicNotEqualPunctuator(const char *s){
+	bool isLogicNotEqualPunctuator(const char *s){
 		if(*s=='!')
 			return (*(s+1) == '=');
 		return false;
 	}
 
-	bool CEval::evalExpressionLogicGreatherThanPunctuator(const char *s){
+	bool isLogicGreatherThanPunctuator(const char *s){
 		if( *s == '>')
 			return (*(s+1) != '>');
 		return false;
 	}
 
-	bool CEval::evalExpressionLogicLessThanPunctuator(const char *s){
+	bool isLogicLessThanPunctuator(const char *s){
 		if(*s == '<')
 			return (*(s+1) != '<');
 
 		return false;
 	}
 
-	bool CEval::evalExpressionLogicGreatherEqualThanPunctuator(const char *s){
+	bool isLogicGreatherEqualThanPunctuator(const char *s){
 		if(*s=='>')
 			return (*(s+1) == '=');
 		return false;
 	}
 
-	bool CEval::evalExpressionLessEqualThanPunctuator(const char *s){
+	bool isLessEqualThanPunctuator(const char *s){
 		if(*s=='<')
 			return (*(s+1) == '=');
 		return false;
 	}
 
-	bool CEval::evalExpressionNotPunctuator(const char *s){
+	bool isNotPunctuator(const char *s){
 		if(*s=='!')
 			return (*(s+1) != '=');
 		return false;
 	}
 
 
-	bool CEval::evalExpressionIncPunctuator(const char *s){
+	bool isIncPunctuator(const char *s){
 		if(*s=='+')
 			return (*(s+1) == '+');
 		return false;
 	}
 
-	bool CEval::evalExpressionDecPunctuator(const char *s){
+	bool isDecPunctuator(const char *s){
 		if(*s=='-')
 			return (*(s+1) == '-');
 		return false;
@@ -379,7 +415,8 @@ namespace zetscript{
 		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE   CEval::evalExpressionArithmeticPunctuator(const char *s){
+
+	PUNCTUATOR_TYPE   CEval::isOperationalPunctuator(const char *s){
 
 		PUNCTUATOR_TYPE index_to_evaluate[]={
 				SHIFT_LEFT_PUNCTUATOR, // <<
@@ -443,10 +480,10 @@ namespace zetscript{
 	}
 
 	// to string utils ...
-	char * CEval::getEndWord(const char *s, int m_line){
+	char * CEval::getTokenValue(const char *start_word, int m_line, string & value){
 
-		char *start_str=(char *)s;
-		char *aux=(char *)s;
+		char *start_str=(char *)start_word;
+		char *aux=(char *)start_word;
 		PUNCTUATOR_TYPE sp;
 		KEYWORD_TYPE key_w;
 		 bool is_possible_number=false;
@@ -467,7 +504,7 @@ namespace zetscript{
 
 		}else{
 
-			if((key_w = isKeyword(s))!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
+			if((key_w = isKeyword(start_str))!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
 				if( key_w != KEYWORD_TYPE::THIS_KEYWORD){
 				 //&& key_w->id != KEYWORD_TYPE::SUPER_KEYWORD ){ // unexpected token ?
 					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected keyword \"%s\". Forgot \";\" ?",defined_keyword[key_w].str);
@@ -518,20 +555,17 @@ namespace zetscript{
 				}
 			}
 		}
+
+
+		value = CZetScriptUtils::copyStringFromInterval(start_word,aux);
+
 		return aux;
 	}
 
 
-	char *CEval::getSymbolName(const char *s,int & m_line){
+	bool CEval::isVariableNameExpressionOk(const string & symbol, int m_line){
 
-		char *aux_p=(char *)s;
-		PUNCTUATOR_TYPE end_punctuator=isPunctuator(s);
-
-
-		if(end_punctuator != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected '%s'",defined_operator_punctuator[end_punctuator].str);
-			return NULL;
-		}
+		char *aux_p = (char *)symbol.c_str();
 
 		if(*aux_p!=0 && (
 		   ('a' <= *aux_p && *aux_p <='z') ||
@@ -549,10 +583,10 @@ namespace zetscript{
 			}
 		}else{
 			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line," Symbol name cannot begin with %c", *aux_p);
-			return NULL;
+			return false;
 		}
 
-		return aux_p;
+		return true;
 	}
 
 	KEYWORD_TYPE CEval::isKeyword(const char *c){
@@ -596,62 +630,9 @@ namespace zetscript{
 		return DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE;
 	}
 	//------------------------------------------------------------------------------------------------------------
-	PUNCTUATOR_TYPE CEval::checkPreOperatorPunctuator(const char *s){
 
-		if(evalExpressionIncPunctuator(s)) 	return PRE_INC_PUNCTUATOR;
-		if(evalExpressionDecPunctuator(s))	return PRE_DEC_PUNCTUATOR;
-		if(evalExpressionPlusPunctuator(s)) 	return ADD_PUNCTUATOR;
-		if(evalExpressionMinusPunctuator(s)) return SUB_PUNCTUATOR;
-		if(evalExpressionNotPunctuator(s))   return LOGIC_NOT_PUNCTUATOR;
 
-		return UNKNOWN_PUNCTUATOR;
-	}
-
-	PUNCTUATOR_TYPE CEval::checkPostOperatorPunctuator(const char *s){
-
-		PUNCTUATOR_TYPE op=UNKNOWN_PUNCTUATOR;
-
-		if(evalExpressionIncPunctuator(s)){
-			op=POST_INC_PUNCTUATOR;
-		}
-
-		if(evalExpressionDecPunctuator(s)){
-			op = POST_DEC_PUNCTUATOR;
-		}
-
-		if(op != UNKNOWN_PUNCTUATOR){ // let's check some situations whether is not allowed having post operator
-			PUNCTUATOR_TYPE pt=UNKNOWN_PUNCTUATOR;
-			int line=0;
-
-			char *aux=(char *)(s+strlen(defined_operator_punctuator[op].str));
-
-			aux=IGNORE_BLANKS(aux,line); // advance to next char...
-
-			if(*aux == 0){
-				return op;
-			}
-
-			// if is an operator ... ok!
-			pt=isPunctuator(aux);
-
-			if(pt != UNKNOWN_PUNCTUATOR){
-				if(pt < MAX_OPERATOR_PUNCTUATORS){ // ok...
-					return op;
-				}
-
-				if(   pt == COMA_PUNCTUATOR  // ok
-				  ||  pt == SEMICOLON_PUNCTUATOR
-				  ||  pt == CLOSE_PARENTHESIS_PUNCTUATOR
-				  ||  pt == CLOSE_SQUARE_BRAKET_PUNCTUATOR
-				  ){
-					return op;
-				}
-			}
-		}
-		return UNKNOWN_PUNCTUATOR;
-	}
-
-	char * CEval::evalExpressionFunctionObject(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
+	char * CEval::evalExpressionFunctionObject(const char *s,int & m_line,  CScope *scope_info, vector<tInfoAsmOpCompiler *> 		*	asm_op){
 
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 
@@ -659,22 +640,7 @@ namespace zetscript{
 	}
 
 
-	bool CEval::printErrorUnexpectedKeywordOrPunctuator(const char *current_string_ptr, int m_line){
-		PUNCTUATOR_TYPE ip=CEval::isPunctuator(current_string_ptr);
-		KEYWORD_TYPE kw=CEval::isKeyword(current_string_ptr);
-
-		if(kw!=KEYWORD_TYPE::UNKNOWN_KEYWORD){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected %s",defined_keyword[kw].str);
-			return true;
-		}
-		else if(ip!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected %s",defined_operator_punctuator[ip].str);
-			return true;
-		}
-		return false;
-	}
-
-	char * CEval::evalExpressionStructObject(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt){
+	char * CEval::evalExpressionStructObject(const char *s,int & m_line,  CScope *scope_info, vector<tInfoAsmOpCompiler *> 		*	asm_op){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
@@ -685,34 +651,19 @@ namespace zetscript{
 
 			if(*aux_p == '{'){ // go for final ...
 
-
-				if(((*ast_node_to_be_evaluated)=CASTNode::newASTNode())==NULL) return NULL;
-				(*ast_node_to_be_evaluated)->line_value = m_line;
-				(*ast_node_to_be_evaluated)->node_type = STRUCT_NODE;
-				(*ast_node_to_be_evaluated)->idxScope = ZS_UNDEFINED_IDX;
-				if(scope_info != NULL){
-					(*ast_node_to_be_evaluated)->idxScope = scope_info->idxScope;
-				}
-
-
 				// this solve problem void structs...
 				aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
 				while (*aux_p != '}' && *aux_p != 0){
 
 					m_lineSymbol = m_line;
-					//aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
 					// expect word...
-					end_p = getEndWord(aux_p, m_line);
-
-					 if(end_p == NULL || end_p == aux_p){
+					if((end_p = getTokenValue(aux_p, m_line,symbol_value))==NULL){
 						 writeErrorMsg(CURRENT_PARSING_FILENAME,m_lineSymbol ,"Expected symbol after ','");
 						 return NULL;
 					 }
 
-
-					 symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_p);
 					 aux_p=IGNORE_BLANKS(end_p,m_line);
 
 					 if(*aux_p != ':'){ // expected : ...
@@ -723,16 +674,11 @@ namespace zetscript{
 					 aux_p++;
 
 					 // go to variable...
-					 if((aux_p=evalExpression_Recursive(aux_p,m_line,scope_info,&attr_node,vt)) == NULL){  //IGNORE_BLANKS(aux_p+1,m_line);
+					 if((aux_p=evalExpression(aux_p,m_line,scope_info,NULL)) == NULL){  //IGNORE_BLANKS(aux_p+1,m_line);
 						 return NULL;
 					 }
 
 					 // for each attribute we stack to items SYMBOL_NODE and EXPRESSION_NODE ...
-
-					 attr_node->symbol_value = symbol_value;
-					 attr_node->line_value = m_lineSymbol;
-					(*ast_node_to_be_evaluated)->children.push_back(attr_node->idxAstNode);
-					attr_node->idxAstParent =(*ast_node_to_be_evaluated)->idxAstNode;
 
 
 					 aux_p=IGNORE_BLANKS(aux_p,m_line);
@@ -753,8 +699,7 @@ namespace zetscript{
 	}
 
 
-	char * CEval::evalExpressionVectorObject(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated, vector<CASTNode *> & vt){
-
+	char * CEval::evalExpressionVectorObject(const char *s,int & m_line,  CScope *scope_info,  vector<tInfoAsmOpCompiler *> *	asm_op){
 
 		char * aux_p=IGNORE_BLANKS(s,m_line);
 
@@ -780,25 +725,22 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 			}
 
-
-			aux_p=evalExpression(aux_p,m_line,scope_info);
+			aux_p=evalExpression(aux_p,m_line,scope_info,NULL);
 
 			v_elements++;
 		}
 
 		return aux_p;
 
-
 	}
 
-	char * CEval::evalExpressionNew(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
+	char * CEval::evalExpressionNew(const char *s,int & m_line,  CScope *scope_info, vector<tInfoAsmOpCompiler *> 		*	asm_op){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		char *end_p;
 		string symbol_value;
 
 		KEYWORD_TYPE key_w;
-		PASTNode args_node=NULL;
 
 		aux_p=IGNORE_BLANKS(aux_p,m_line);
 
@@ -811,13 +753,12 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[key_w].str),m_line);
 				// try get symbol ...
 
-				end_p = getEndWord(aux_p, m_line);
-
-				 if(end_p == NULL || end_p == aux_p){
+				if((end_p = getTokenValue(aux_p, m_line,symbol_value))==NULL){
 					 writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected symbol");
 					 return NULL;
 				 }
-				 symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_p);
+
+
 				 aux_p=IGNORE_BLANKS(end_p,m_line);
 
 				 if(*aux_p != '('){
@@ -825,19 +766,10 @@ namespace zetscript{
 					 return NULL;
 				 }
 
-				 aux_p = evalExpressionArgs('(', ')',aux_p,m_line,scope_info,&args_node);
+				 aux_p = evalExpressionArgs('(', ')',aux_p,m_line,scope_info,asm_op);
 				 if(aux_p == NULL){
 					 return NULL;
 				 }
-
-				args_node->node_type = ARGS_PASS_NODE;
-				 // it seems everything is allright... let's create the node...
-
-				if(((*ast_node_to_be_evaluated) = CASTNode::newASTNode())==NULL) return NULL;
-				(*ast_node_to_be_evaluated)->node_type = NEW_OBJECT_NODE;
-				(*ast_node_to_be_evaluated)->keyword_info = KEYWORD_TYPE::UNKNOWN_KEYWORD;
-				(*ast_node_to_be_evaluated)->symbol_value = symbol_value;
-				(*ast_node_to_be_evaluated)->children.push_back(args_node->idxAstNode);
 
 				return aux_p;
 			}
@@ -846,13 +778,13 @@ namespace zetscript{
 	}
 
 
-	bool CEval::isMarkEndExpression(char c){
+	bool CEval::isCharacterEndExpression(char c){
 		return (c==0 || c==';' || c==',' ||  c==')'  || c==']' || c=='}');//|| c==':');
 	}
 	//-----------------------------------------------------------------------------------------------------------
 
 
-	char * CEval::evalExpression(const char *s, int & m_line, CScope *scope_info ){
+	char * CEval::evalExpression(const char *s, int & m_line, CScope *scope_info, vector<tInfoAsmOpCompiler *> 		*	asm_op){
 
 
 		vector<CASTNode *> vt;
@@ -875,7 +807,6 @@ namespace zetscript{
 
 		return aux;
 
-
 	}
 
 	//---------------------------------------------------------------------------------------------------------------
@@ -887,7 +818,7 @@ namespace zetscript{
 
 
 
-	char * CEval::evalKeywordDelete(const char *s,int & m_line,  CScope *scope_info){
+	char * CEval::evalKeywordDelete(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		char *end_p;
@@ -905,17 +836,11 @@ namespace zetscript{
 
 				aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[key_w].str),m_line);
 
-				end_p = getEndWord(aux_p, m_line);
-
-				 if(end_p == NULL || end_p == aux_p){
+				if((end_p = getTokenValue(aux_p, m_line,symbol_value))==NULL){
 					 writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected symbol");
 					 return NULL;
 				 }
 
-				 symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_p);
-
-
-				// ends with ;
 
 				 aux_p=IGNORE_BLANKS(aux_p,m_line);
 
@@ -930,7 +855,44 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalKeywordClass(const char *s,int & m_line, CScope *scope_info){
+	char * CEval::isClassMember(const char *s,int & m_line,short & idxScopeClass, bool & error){
+
+		char *aux_p = (char *)s;
+		char *end_var;
+		string class_name;
+		idxScopeClass=-1;
+		CScriptClass *sc=NULL;
+
+		error = true;
+
+		aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+		// check whwther the function is anonymous or not.
+		if((end_var=getTokenValue(aux_p,m_line,class_name))==NULL){
+			return NULL;
+		}
+
+		aux_p=end_var;
+		aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
+
+			if((sc=CScriptClass::getScriptClassByName(class_name)) != NULL){
+
+				idxScopeClass=sc->scope_info.idxScope;
+
+				return aux_p+2;
+
+			}else{
+				error=true;
+			}
+
+		}
+		return NULL;
+	}
+
+
+	char * CEval::evalKeywordClass(const char *s,int & m_line, CScope *scope_info, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		char *end_p;
@@ -939,6 +901,8 @@ namespace zetscript{
 		//CScriptClass *class_info=NULL;
 		int class_line;
 		string class_name;
+		string base_class_name="";
+		CScriptClass *sc;
 		//CScriptFunctionObject * class_object=NULL;
 
 		KEYWORD_TYPE key_w;
@@ -961,36 +925,46 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[key_w].str),m_line);
 
 				// check for symbol's name
-				end_p = getEndWord(aux_p, m_line);
-				if(end_p == NULL || end_p == aux_p){
+				if((end_p = getTokenValue(aux_p, m_line,class_name))==NULL){
+
 					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected name class");
 					return NULL;
 				}
 				// try to register class...
 				class_line = m_line;
-				class_name = CZetScriptUtils::copyStringFromInterval(aux_p, end_p);
 
-				zs_print_debug_cr("registered class \"%s\" line %i ",class_name.c_str(), class_line);
 
 				aux_p=IGNORE_BLANKS(end_p,m_line);
 
 				if(*aux_p == ':' ){
-					string ext_name;
+
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
-					end_p = getEndWord(aux_p, m_line);
-
-					if(end_p == NULL || end_p == aux_p){
+					if((end_p = getTokenValue(aux_p, m_line,base_class_name))==NULL){
 						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected class name");
 						return NULL;
 					}
 
-					ext_name=CZetScriptUtils::copyStringFromInterval(aux_p, end_p);
-
-
-
 					aux_p=IGNORE_BLANKS(end_p, m_line);
 				}
+
+				// register class
+
+
+				if((sc=CScriptClass::registerClass(class_name,base_class_name,NULL))==NULL){
+					return NULL;
+				}
+
+
+				// create new scope...
+				class_scope_info = CScope::newScope();
+				class_scope_info->idxScriptClass=sc->idxClass;
+				sc->scope_info.idxScope=class_scope_info->idxScope;
+
+
+
+				zs_print_debug_cr("registered class \"%s\" line %i ",class_name.c_str(), class_line);
+
 				if(*aux_p == '{' ){
 
 					aux_p=IGNORE_BLANKS(aux_p+1,m_line);
@@ -1001,6 +975,8 @@ namespace zetscript{
 					// check for named functions or vars...
 					while(*aux_p != '}' && *aux_p != 0){
 
+						tInfoFunctionCompile *local_ifc=NULL;
+
 						// 1st. check whether eval a keyword...
 						key_w = isKeyword(aux_p);
 						if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
@@ -1010,12 +986,13 @@ namespace zetscript{
 								return NULL;
 								break;
 							case KEYWORD_TYPE::FUNCTION_KEYWORD:
-								if((aux_p = evalKeywordFunction(aux_p, m_line,class_scope_info)) == NULL){
+
+								if((aux_p = evalKeywordFunction(aux_p, m_line,class_scope_info,&local_ifc)) == NULL){
 									return NULL;
 								}
 								break;
 							case KEYWORD_TYPE::VAR_KEYWORD:
-								if((aux_p = evalKeywordVar(aux_p, m_line,class_scope_info)) == NULL){
+								if((aux_p = evalKeywordVar(aux_p, m_line,class_scope_info,NULL,error)) == NULL){
 									return NULL;
 								}
 								break;
@@ -1050,7 +1027,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalExpressionArgs(char c1,char c2,const char *s,int & m_line,  CScope *scope_info){
+	char * CEval::evalExpressionArgs(char c1,char c2,const char *s,int & m_line,  CScope *scope_info, vector<tInfoAsmOpCompiler *> 		*	asm_op){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		PASTNode   node_arg_expression=NULL;
@@ -1070,7 +1047,7 @@ namespace zetscript{
 				}
 
 				do{
-					if((aux_p = evalExpression(aux_p,m_line,scope_info))==NULL){
+					if((aux_p = evalExpression(aux_p,m_line,scope_info,asm_op))==NULL){
 						return NULL;
 					}
 
@@ -1092,7 +1069,13 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalKeywordFunction(const char *s,int & m_line,  CScope *scope_info){
+	//
+	//--------------------------------------------------------------------------------------------------------------------------------------------------------
+	//
+	//  KEYWORDS
+	//
+
+	char * CEval::evalKeywordFunction(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile ** ifc){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -1106,7 +1089,7 @@ namespace zetscript{
 
 
 		tScopeVar * irv=NULL;
-		string str_name;
+		string str_name,arg_value;
 		string class_member,class_name, function_name="";
 
 
@@ -1114,11 +1097,9 @@ namespace zetscript{
 		CScope *body_scope=NULL;
 
 
-		if(scope_info != NULL){
-			idxScope=scope_info->idxScope;
-		}
 
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
+		idxScope=scope_info->idxScope;
+
 
 		// check for keyword ...
 		key_w = isKeyword(aux_p);
@@ -1136,7 +1117,8 @@ namespace zetscript{
 
 				if(named_function){ // is named function..
 
-					if((end_var=isClassMember(aux_p,m_line, idxScopeClass,class_name, error,key_w))!=NULL){ // check if particular case extension attribute class
+					if((end_var=isClassMember(aux_p,m_line, idxScopeClass, error))!=NULL){ // check if particular case extension attribute class
+
 						idxScope = idxScopeClass;
 						symbol_value = (char *)class_member.c_str();
 						function_name = symbol_value;
@@ -1149,17 +1131,8 @@ namespace zetscript{
 						else{ // get normal name...
 
 							// check whwther the function is anonymous with a previous arithmetic operation ....
-							end_var=getSymbolName(aux_p,m_line);
 
-							if(end_var != NULL){
-
-								if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
-									return NULL;
-
-								function_name = symbol_value;
-
-								// check whether parameter name's matches with some global variable...
-							}else{
+							if((end_var=getTokenValue(aux_p,m_line,function_name)) == NULL){
 								return NULL;
 							}
 						}
@@ -1202,15 +1175,15 @@ namespace zetscript{
 						}
 
 						int m_start_arg=m_line;
-						end_var=getSymbolName(aux_p,m_line);
-
-						if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+						if((end_var=getTokenValue(aux_p,m_line,arg_value))==NULL){
 							return NULL;
+						}
+
 
 						// check if repeats...
 						for(unsigned k = 0; k < arg.size(); k++){
-							if(arg[k] == symbol_value){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Repeated argument '%s' argument ",symbol_value);
+							if(arg[k] == arg_value){
+								writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Repeated argument '%s' argument ",arg_value.c_str());
 								return NULL;
 							}
 						}
@@ -1247,6 +1220,7 @@ namespace zetscript{
 							aux_p,
 							m_line,
 							SCOPE_NODE(idxScope),
+							*ifc,
 							error
 						)) != NULL){
 
@@ -1306,13 +1280,11 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char *  CEval::evalKeywordReturn(const char *s,int & m_line,  CScope *scope_info, PASTNode *ast_node_to_be_evaluated){
+	char *  CEval::evalKeywordReturn(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		KEYWORD_TYPE key_w;
 		string s_aux;
-
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 		key_w = isKeyword(aux_p);
 
@@ -1325,16 +1297,9 @@ namespace zetscript{
 
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
 
-				if((aux_p = evalExpression(aux_p, m_line, scope_info))!= NULL){
 
-					if(ast_node_to_be_evaluated != NULL){ // return value;
-						if(child_node != NULL){
-							(*ast_node_to_be_evaluated)->children.push_back(child_node->idxAstNode);
-						}
-						else{ // return;
+				if((aux_p = evalExpression(aux_p, m_line, scope_info,&ifc->asm_op))!= NULL){
 
-						}
-					}
 
 					if(*aux_p!=';'){
 						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ';'");
@@ -1348,7 +1313,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalWhile(const char *s,int & m_line, CScope *scope_info){
+	char * CEval::evalKeywordWhile(const char *s,int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -1358,9 +1323,8 @@ namespace zetscript{
 
 		PASTNode conditional_expression=NULL, while_node=NULL;
 		string conditional_str;
-		bool error = false;
+		error = false;
 
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 		// check for keyword ...
 		key_w = isKeyword(aux_p);
@@ -1376,7 +1340,7 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
 				if(*aux_p == '('){
 
-					if((end_expr = evalExpression(aux_p+1,m_line,_currentScope)) != NULL){
+					if((end_expr = evalExpression(aux_p+1,m_line,_currentScope,&ifc->asm_op)) != NULL){
 
 						if(*end_expr != ')'){
 							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
@@ -1395,6 +1359,7 @@ namespace zetscript{
 						if((aux_p=evalBlock(aux_p
 								,m_line
 								,_currentScope
+								,ifc
 								,error
 								))!= NULL){
 							if(!error){
@@ -1419,7 +1384,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalDoWhile(const char *s,int & m_line, CScope *scope_info){
+	char * CEval::evalKeywordDoWhile(const char *s,int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
@@ -1430,9 +1395,7 @@ namespace zetscript{
 
 		PASTNode conditional_expression=NULL, body_node=NULL, while_node=NULL;
 		string conditional_str;
-		bool error = false;
-
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
+		error = false;
 
 		// check for keyword ...
 		key_w = isKeyword(aux_p);
@@ -1452,6 +1415,7 @@ namespace zetscript{
 				if((aux_p=evalBlock(aux_p
 						,m_line
 						,_currentScope
+						,ifc
 						,error
 
 						))!= NULL){
@@ -1474,7 +1438,7 @@ namespace zetscript{
 
 						if(*aux_p == '('){
 
-							if((end_expr = evalExpression(aux_p+1,m_line,_currentScope)) != NULL){
+							if((end_expr = evalExpression(aux_p+1,m_line,_currentScope,&ifc->asm_op)) != NULL){
 
 								if(*end_expr != ')'){
 									writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')'");
@@ -1504,7 +1468,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalKeywordIf(const char *s,int & m_line,  CScope *scope_info){
+	char * CEval::evalKeywordIf(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -1513,10 +1477,10 @@ namespace zetscript{
 		KEYWORD_TYPE key_w;
 		PASTNode conditional=NULL, if_node=NULL, else_node=NULL,block=NULL, group_conditional_nodes = NULL;
 		string conditional_str;
-		bool error = false;
+		error = false;
 		int conditional_line;
 
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
+
 
 		// check for keyword ...
 		key_w = isKeyword(aux_p);
@@ -1536,7 +1500,7 @@ namespace zetscript{
 
 					conditional_line=m_line;
 
-					if((end_expr = evalExpression(aux_p+1,m_line,scope_info)) == NULL){
+					if((end_expr = evalExpression(aux_p+1,m_line,scope_info,&ifc->asm_op)) == NULL){
 						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected ')' if ");
 						return NULL;
 					}
@@ -1569,6 +1533,7 @@ namespace zetscript{
 					if((aux_p=evalBlock(aux_p
 							,m_line
 							,scope_info
+							,ifc
 							,error
 							))== NULL){
 						return NULL;
@@ -1609,6 +1574,7 @@ namespace zetscript{
 							if((aux_p=evalBlock(aux_p
 									,m_line
 									,scope_info
+									,ifc
 									,error
 									))!= NULL){
 									if(!error){
@@ -1631,19 +1597,19 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalKeywordFor(const char *s,int & m_line,  CScope *scope_info){
+	char * CEval::evalKeywordFor(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		KEYWORD_TYPE key_w;
-		bool error=false;
+		error=false;
 		PASTNode block_for = NULL,pre_node=NULL,cond_node=NULL,post_node=NULL, pre_node_expression=NULL, cond_node_expression=NULL,post_node_expression=NULL;
 		string eval_for;
 
 		//CScope *_localScope =  scope_info != NULL?scope_info->symbol_info.ast->scope_info_ptr:NULL; // gets scope...
 		CScope *_currentScope=NULL;
 
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
+
 
 		// check for keyword ...
 		key_w = isKeyword(aux_p);
@@ -1668,7 +1634,7 @@ namespace zetscript{
 						KEYWORD_TYPE key_w = isKeyword(aux_p);
 
 						if(key_w == VAR_KEYWORD){
-							if((aux_p = evalKeywordVar(aux_p,m_line, _currentScope))==NULL){
+							if((aux_p = evalKeywordVar(aux_p,m_line, _currentScope,ifc,error))==NULL){
 								return NULL;
 							}
 
@@ -1692,7 +1658,7 @@ namespace zetscript{
 						aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[KEYWORD_TYPE::IN_KEYWORD].str),m_line);
 
 
-						if((aux_p = evalExpression((const char *)aux_p,m_line,_currentScope)) == NULL){
+						if((aux_p = evalExpression((const char *)aux_p,m_line,_currentScope,&ifc->asm_op)) == NULL){
 							return NULL;
 						}
 					}
@@ -1713,7 +1679,7 @@ namespace zetscript{
 
 							if(*end_p != ';'){// there's some condition if not, then is like for(X;true;X)
 
-								if((aux_p = evalExpression((const char *)aux_p,m_line,_currentScope)) == NULL){
+								if((aux_p = evalExpression((const char *)aux_p,m_line,_currentScope,&ifc->asm_op)) == NULL){
 									return NULL;
 								}
 
@@ -1739,7 +1705,7 @@ namespace zetscript{
 							}
 
 							do{
-								if((aux_p = evalExpression(aux_p,m_line,_currentScope))==NULL){
+								if((aux_p = evalExpression(aux_p,m_line,_currentScope,&ifc->asm_op))==NULL){
 									return NULL;
 								}
 
@@ -1773,6 +1739,7 @@ namespace zetscript{
 					if((aux_p=evalBlock(aux_p
 							,m_line
 							,_currentScope
+							,ifc
 							,error
 						))!= NULL){ // true: We treat declared variables into for as another scope.
 						if(!error){
@@ -1792,7 +1759,7 @@ namespace zetscript{
 	}
 
 
-	char * CEval::evalKeWordSwitch(const char *s,int & m_line,  CScope *scope_info){
+	char * CEval::evalKeywordSwitch(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -1811,10 +1778,10 @@ namespace zetscript{
 		KEYWORD_TYPE key_w,key_w2;
 		CScope *currentScope=scope_info;
 
-		bool error=false;
+		error=false;
 		int n_cases;
 
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
+
 
 		// check for keyword ...
 		key_w = isKeyword(aux_p);
@@ -1828,7 +1795,6 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 				if(*aux_p == '('){
-					//if((end_expr = ADVANCE_TO_CHAR(aux_p,')',m_line)) != NULL){
 						aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
 						// evaluate switch vale expression ...
@@ -1837,7 +1803,8 @@ namespace zetscript{
 						if((aux_p = CEval::evalExpression(
 								aux_p,
 								m_line,
-								scope_info
+								scope_info,
+								&ifc->asm_op
 								))==NULL)
 						{
 							return NULL;
@@ -1856,7 +1823,7 @@ namespace zetscript{
 
 							aux_p++;
 
-							if((aux_p=eval_Recursive(aux_p, m_line, currentScope, error))==NULL){
+							if((aux_p=eval_Recursive(aux_p, m_line, currentScope,ifc, error))==NULL){
 								return NULL;
 							}
 
@@ -1887,24 +1854,26 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalVar(const char *s,int & m_line,  CScope *scope_info){
 
-		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+	char * CEval::evalKeywordVar(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+
+		// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
 
 		char *aux_p = (char *)s;
 
 		KEYWORD_TYPE key_w;
 		char *start_var,*end_var;
-		string class_name, class_member;
+		string class_member;
 		PASTNode class_node;
 		PASTNode var_node;
 		PASTNode vars_collection_node=NULL;
-		bool error=false;
+
 		int idxScope=ZS_UNDEFINED_IDX;
 		string s_aux,variable_name;
 		char *symbol_value;
 		bool end=false;
 		bool allow_for_in=true;
+		short idxScopeClass=-1;
 
 		bool parent_scope_is_class=false;
 		int m_startLine=0;
@@ -1915,7 +1884,6 @@ namespace zetscript{
 			}
 		}
 
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
 		key_w = isKeyword(aux_p);
 
 		if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
@@ -1923,8 +1891,6 @@ namespace zetscript{
 
 				aux_p += strlen(defined_keyword[key_w].str);
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-				//
 
 
 				while(*aux_p != ';' && *aux_p != 0 && !end){ // JE: added multivar feature.
@@ -1941,8 +1907,8 @@ namespace zetscript{
 						idxScope=scope_info->getCurrentScopePointer()->idxScope;
 					}
 
-					if((end_var=isClassMember(aux_p,m_line,class_name,class_member, error,key_w))!=NULL){ // check if particular case extension attribute class
-						idxScope = class_node->idxScope; // override scope info
+					if((end_var=isClassMember(aux_p,m_line,idxScopeClass, error))!=NULL){ // check if particular case extension attribute class
+						idxScope = idxScopeClass; // override scope info
 						symbol_value = (char *)class_member.c_str();
 						variable_name = symbol_value;
 
@@ -1959,18 +1925,8 @@ namespace zetscript{
 							m_line = m_startLine;
 
 							// check whwther the function is anonymous with a previous arithmetic operation ....
-							end_var=getSymbolName(aux_p,m_line);
-
-							if(end_var != NULL){
-
-								if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+							if((end_var=getTokenValue(aux_p,m_line,variable_name))==NULL){
 									return NULL;
-
-								variable_name = symbol_value;
-
-								// check whether parameter name's matches with some global variable...
-							}else{
-								return NULL;
 							}
 						}
 					}
@@ -2005,7 +1961,7 @@ namespace zetscript{
 							// try to evaluate expression...
 							aux_p=IGNORE_BLANKS(aux_p,m_line);
 
-							if((aux_p = evalExpression(start_var,m_startLine,scope_info)) == NULL){
+							if((aux_p = evalExpression(start_var,m_startLine,scope_info,&ifc->asm_op)) == NULL){
 								return NULL;
 							}
 
@@ -2065,7 +2021,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalBlock(const char *s,int & m_line,  CScope *scope_info, bool & error){
+	char * CEval::evalBlock(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 
@@ -2081,7 +2037,7 @@ namespace zetscript{
 			currentScope = scope_info->pushScope(); // special case... ast is created later ...
 
 
-			if((aux_p = eval_Recursive(aux_p, m_line, currentScope,error)) != NULL){
+			if((aux_p = eval_Recursive(aux_p, m_line, currentScope,ifc,error)) != NULL){
 				if(error){
 					return NULL;
 				}
@@ -2101,66 +2057,114 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::isClassMember(const char *s,int & m_line, short & idxScopeClass, string & _class_name, string & var_name, bool & error, KEYWORD_TYPE kwi){
+	bool CEval::printErrorUnexpectedKeywordOrPunctuator(const char *current_string_ptr, int m_line){
+		PUNCTUATOR_TYPE ip=isPunctuator(current_string_ptr);
+		KEYWORD_TYPE kw=isKeyword(current_string_ptr);
 
-		char *aux_p = (char *)s;
-		char *end_var;
-		char *symbol_value;
-		idxScopeClass=-1;
+		if(kw!=KEYWORD_TYPE::UNKNOWN_KEYWORD){
+			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected %s",defined_keyword[kw].str);
+			return true;
+		}
+		else if(ip!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected %s",defined_operator_punctuator[ip].str);
+			return true;
+		}
+		return false;
+	}
 
-		error = true;
+	char *CEval::evalBreak(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+		// TODO: "find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n"
 
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
+		char *aux_p=(char *)s;
 
-		// check whwther the function is anonymous or not.
-		end_var=getSymbolName(aux_p,m_line);
+		fprintf(stderr,"find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n");
 
-		if(end_var != NULL){
+		{ // ok break is valid in current scope...
 
-			if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
-				return NULL;
-		}else{
+			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"break\" allowed within loop or case-switch statements");
+			error = true;
 			return NULL;
 		}
-		aux_p=end_var;
-		aux_p=IGNORE_BLANKS(aux_p,m_line);
 
-		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
-			_class_name = symbol_value;
 
-			// TODO: find symbol from CScriptClass instead of AST
-			fprintf(stderr,"find symbol from CScriptClass instead of AST\n");
+		if(*aux_p != ';'){
+			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected ';'");
+			error = true;
 			return NULL;
+		}
+	}
+
+	char *CEval::evalContinue(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+		// TODO: "find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n"
+		char *aux_p=(char*)s;
+		{ // ok break is valid in current scope...
+
+			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"continue\" allowed within loop or case-switch statements");
+			error = true;
+			return NULL;
+		}
 
 
-			aux_p=IGNORE_BLANKS(aux_p+2,m_line); // ignore ::
+		if(*aux_p != ';'){
+			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected ';'");
+			error = true;
+			return NULL;
+		}
+	}
 
-			end_var=getSymbolName(aux_p,m_line);
+	char *CEval::evalDefaultCase(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+		char *aux_p=(char *)s;
+		string value_to_eval;
 
-			if(end_var != NULL){
+		aux_p=IGNORE_BLANKS(aux_p, m_line);
 
-				if((symbol_value = CZetScriptUtils::copyStringFromInterval(aux_p,end_var))==NULL)
+		KEYWORD_TYPE keyw = isKeyword(aux_p);
+
+		if(keyw == KEYWORD_TYPE::CASE_KEYWORD){ // a keyword was detected...
+
+
+			aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+			// get the symbol...
+			char *start_symbol=aux_p;
+			PUNCTUATOR_TYPE ip;
+
+			if((ip = isPunctuator(aux_p)) != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+				if(ip == PUNCTUATOR_TYPE::ADD_PUNCTUATOR ||ip == PUNCTUATOR_TYPE::SUB_PUNCTUATOR){
+					aux_p+=strlen(defined_operator_punctuator[ip].str);
+				}
+				else{
+					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"unexpected token %s",defined_operator_punctuator[ip].str);
+					error = true;
 					return NULL;
-			}else{
-				return NULL;
+				}
 			}
 
-			var_name = symbol_value;
-			aux_p=IGNORE_BLANKS(end_var,m_line);
-			error = false;
-			return aux_p;
-		}else {
-			error = false;
+
+			aux_p=getTokenValue(aux_p, m_line,value_to_eval);
+
+			if(aux_p==NULL){ return NULL;}
+
+		}
+
+		aux_p=IGNORE_BLANKS(aux_p,m_line);
+
+		if(*aux_p != ':'){
+			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected  ':' ");
 			return NULL;
 		}
-		return NULL;
+
+
+
+		return aux_p+1;
 	}
 
 
-	char *CEval::evalKeyword(const char *s, int & m_line, CScope *scope_info, bool & error, PASTNode *ast_node_to_be_evaluated){
+	char *CEval::evalKeyword(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p= (char *)s;
+		tInfoFunctionCompile *ifc_new = NULL;
 
 		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD,keyw2nd=KEYWORD_TYPE::UNKNOWN_KEYWORD;
 
@@ -2171,153 +2175,42 @@ namespace zetscript{
 
 		if(keyw != KEYWORD_TYPE::UNKNOWN_KEYWORD){ // a keyword was detected...
 
-			aux_p+=strlen(defined_keyword[keyw].str);
-			aux_p=IGNORE_BLANKS(aux_p, m_line);
-			char *value_to_eval;
+			switch(keyw){
+			case CASE_KEYWORD:
+			case DEFAULT_KEYWORD:
+				return evalDefaultCase(s,m_line,scope_info,ifc,error);
 
-			if(keyw == KEYWORD_TYPE::CASE_KEYWORD ||keyw == KEYWORD_TYPE::DEFAULT_KEYWORD){
-				PASTNode ast=AST_NODE(scope_info->idxAstNode);
-				if(ast->keyword_info != KEYWORD_TYPE::SWITCH_KEYWORD){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"case or default\" are allowed only within switch statements");
-					error = true;
-					return NULL;
-				}
-
-				if(keyw == KEYWORD_TYPE::CASE_KEYWORD){
-
-					aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-					// get the symbol...
-					char *start_symbol=aux_p;
-					PUNCTUATOR_TYPE ip;
-
-					if((ip = isPunctuator(aux_p)) != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-						if(ip == PUNCTUATOR_TYPE::ADD_PUNCTUATOR ||ip == PUNCTUATOR_TYPE::SUB_PUNCTUATOR){
-							aux_p+=strlen(defined_operator_punctuator[ip].str);
-						}
-						else{
-							writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"unexpected token %s",defined_operator_punctuator[ip].str);
-							error = true;
-							return NULL;
-						}
-					}
-					char *end_symbol = getEndWord(aux_p, m_line);
-					aux_p=end_symbol;
-
-					value_to_eval = CZetScriptUtils::copyStringFromInterval(start_symbol, end_symbol);
-
-					if(value_to_eval==NULL){ return NULL;}
-
-				}
-
-				aux_p=IGNORE_BLANKS(aux_p,m_line);
-
-				if(*aux_p != ':'){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Expected  ':' ");
-					return NULL;
-				}
-
-
-
-				return aux_p+1;
-
-			}else if(keyw == KEYWORD_TYPE::BREAK_KEYWORD){
-
-
-				if(ast_node_to_be_evaluated!=NULL){
-
-
-					// TODO: "find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n"
-					fprintf(stderr,"find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n");
-
-					{ // ok break is valid in current scope...
-
-						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"break\" allowed within loop or case-switch statements");
-						error = true;
-						return NULL;
-					}
-				}
-
-				if(*aux_p != ';'){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected ';'");
-					error = true;
-					return NULL;
-				}
-
-				return aux_p+1;
-			}else if(keyw == KEYWORD_TYPE::CONTINUE_KEYWORD){
-
-				if(ast_node_to_be_evaluated!=NULL){
-
-					// TODO: "find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n"
-					fprintf(stderr,"find findConditionForContinue if current stackBreakForWhileSwitch.size() > 0\n");
-
-					{ // ok break is valid in current scope...
-						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"\"continue\" allowed within for or foreach loop");
-						error = true;
-						return NULL;
-					}
-				}
-
-				if(*aux_p != ';'){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"expected ';'");
-					error = true;
-					return NULL;
-				}
-
-
-				return aux_p+1;
-
-			}
-
-			// check if non named function...
-			if(keyw == KEYWORD_TYPE::FUNCTION_KEYWORD){
-				if( *aux_p == '('){
-					// Is no named. No named function is an object and should be processed within evalExpression ...
-					return NULL;
-				}
-			}
-
-			// check if class and is not main class (scope )...
-			if(keyw == KEYWORD_TYPE::CLASS_KEYWORD){
-
-				if((aux_p = evalKeywordClass(s,m_line,scope_info)) != NULL){
+			case FUNCTION_KEYWORD:
+				if((aux_p = evalKeywordFunction(s,m_line,scope_info,&ifc_new)) != NULL){
 					return aux_p;
 				}
+				error = true;
+				return NULL;
+			case CLASS_KEYWORD:
+				if((aux_p = CEval::evalKeywordClass(s,m_line,scope_info,error)) != NULL){
+					return aux_p;
+				}
+				error = true;
+				return NULL;
 
+			default:
+
+				if(defined_keyword[keyw].eval_fun != NULL){
+
+					return  defined_keyword[keyw].eval_fun(s,m_line,scope_info,ifc,error);
+				}
+				writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Not implemented");
 				error = true;
 				return NULL;
 			}
 
-			// check if another kwyword is defined ...
-			if((keyw2nd = isKeyword(aux_p))!= KEYWORD_TYPE::UNKNOWN_KEYWORD){
-
-				if(
-						   (keyw2nd != KEYWORD_TYPE::FUNCTION_KEYWORD)   // list of exceptional keywords...
-						&& (keyw2nd != KEYWORD_TYPE::THIS_KEYWORD)   // list of exceptional keywords...
-						&& (keyw2nd != KEYWORD_TYPE::NEW_KEYWORD)   // list of exceptional keywords...
-				  ){
-
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"unexpected keyword \"%s\"",defined_keyword[keyw2nd].str);
-					error = true;
-					return NULL;
-				}
-			}
-
-			if(defined_keyword[keyw].eval_fun != NULL){
-
-				if((aux_p = defined_keyword[keyw].eval_fun(s,m_line,scope_info, ast_node_to_be_evaluated)) != NULL){
-					return aux_p;
-				}
-				error = true;
-			}
 			// something wrong was happen..
 		}
 
 		return NULL;
 	}
 
-	char * CEval::eval_Recursive(const char *s, int & m_line, CScope *scope_info, bool & error){
+	char * CEval::eval_Recursive(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
 
 		// PRE: *node_to_be_evaluated must be created (the pointer is only read mode)
 
@@ -2422,11 +2315,11 @@ namespace zetscript{
 			// 0st special case member class extension ...
 			if(children==NULL && !processed_directive){ // not processed yet ...
 				// 1st. check whether eval a keyword...
-				if((end_expr = evalKeyword(aux, m_line, scope_info, error)) == NULL){
+				if((end_expr = evalKeyword(aux, m_line, scope_info,ifc, error)) == NULL){
 
 					// If was unsuccessful then try to eval expression.
 					if(error){
-						manageOnErrorParse(node_to_be_evaluated);
+
 						THROW_SCRIPT_ERROR();
 						return NULL;
 					}
@@ -2434,20 +2327,19 @@ namespace zetscript{
 					if((end_expr = evalBlock(aux
 							,m_line
 							, scope_info
+							,ifc
 							, error
 							))==NULL){
 
 						// If was unsuccessful then try to eval expression.
 						if(error){
-							manageOnErrorParse(node_to_be_evaluated);
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
 						// 2nd. try expression
 						int starting_expression=m_line;
 
-						if((end_expr = evalExpression(aux,m_line, scope_info)) == NULL){ // something wrong was happen.
-							manageOnErrorParse(node_to_be_evaluated);
+						if((end_expr = evalExpression(aux,m_line, scope_info,&ifc->asm_op)) == NULL){ // something wrong was happen.
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
@@ -2455,7 +2347,6 @@ namespace zetscript{
 						if(*end_expr == ')'){ // unexpected close parenthesis.
 							error = true;
 							writeErrorMsg(CURRENT_PARSING_FILENAME,starting_expression,"missing '('");
-							manageOnErrorParse(node_to_be_evaluated);
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
@@ -2463,7 +2354,6 @@ namespace zetscript{
 						if(*end_expr != ';'){
 							error = true;
 							writeErrorMsg(CURRENT_PARSING_FILENAME,starting_expression,"Expected ';'");
-							manageOnErrorParse(node_to_be_evaluated);
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
@@ -2491,40 +2381,40 @@ namespace zetscript{
 		// init operator punctuators...
 		defined_operator_punctuator[UNKNOWN_PUNCTUATOR]={UNKNOWN_PUNCTUATOR, "none",NULL};
 
-		defined_operator_punctuator[ADD_PUNCTUATOR]={ADD_PUNCTUATOR, "+",evalExpressionPlusPunctuator};
-		defined_operator_punctuator[SUB_PUNCTUATOR]={SUB_PUNCTUATOR, "-",evalExpressionMinusPunctuator};
-		defined_operator_punctuator[MUL_PUNCTUATOR]={MUL_PUNCTUATOR, "*",evalExpressionMulPunctuator};
-		defined_operator_punctuator[DIV_PUNCTUATOR]={DIV_PUNCTUATOR, "/",evalExpressionDivPunctuator};
-		defined_operator_punctuator[MOD_PUNCTUATOR]={MOD_PUNCTUATOR, "%",evalExpressionModPunctuator};
-		defined_operator_punctuator[FIELD_PUNCTUATOR]={FIELD_PUNCTUATOR, ".",evalExpressionFieldPunctuator};
-		defined_operator_punctuator[TERNARY_IF_PUNCTUATOR]={TERNARY_IF_PUNCTUATOR, "?",evalExpressionInlineIfPunctuator};
-		defined_operator_punctuator[TERNARY_ELSE_PUNCTUATOR]={TERNARY_ELSE_PUNCTUATOR, ":",evalExpressionInlineElsePunctuator};
-		defined_operator_punctuator[ASSIGN_PUNCTUATOR]={ASSIGN_PUNCTUATOR, "=",evalExpressionAssignPunctuator};
-		defined_operator_punctuator[ADD_ASSIGN_PUNCTUATOR]={ADD_ASSIGN_PUNCTUATOR, "+=",evalExpressionAddAssignPunctuator};
-		defined_operator_punctuator[SUB_ASSIGN_PUNCTUATOR]={SUB_ASSIGN_PUNCTUATOR, "-=",evalExpressionSubAssignPunctuator};
-		defined_operator_punctuator[MUL_ASSIGN_PUNCTUATOR]={MUL_ASSIGN_PUNCTUATOR, "*=",evalExpressionMulAssignPunctuator};
-		defined_operator_punctuator[DIV_ASSIGN_PUNCTUATOR]={DIV_ASSIGN_PUNCTUATOR, "/=",evalExpressionDivAssignPunctuator};
-		defined_operator_punctuator[MOD_ASSIGN_PUNCTUATOR]={MOD_ASSIGN_PUNCTUATOR, "%=",evalExpressionModAssignPunctuator};
-		defined_operator_punctuator[BINARY_XOR_PUNCTUATOR]={BINARY_XOR_PUNCTUATOR, "^",evalExpressionBinaryXorPunctuator};
-		defined_operator_punctuator[BINARY_AND_PUNCTUATOR]={BINARY_AND_PUNCTUATOR, "&",evalExpressionBinaryAndPunctuator};
-		defined_operator_punctuator[BINARY_OR_PUNCTUATOR]={BINARY_OR_PUNCTUATOR, "|",evalExpressionBinaryOrPunctuator};
-		defined_operator_punctuator[SHIFT_LEFT_PUNCTUATOR]={SHIFT_LEFT_PUNCTUATOR, "<<",evalExpressionShiftLeftPunctuator};
-		defined_operator_punctuator[SHIFT_RIGHT_PUNCTUATOR]={SHIFT_RIGHT_PUNCTUATOR, ">>",evalExpressionShiftRightPunctuator};
-		defined_operator_punctuator[LOGIC_AND_PUNCTUATOR]={LOGIC_AND_PUNCTUATOR, "&&",evalExpressionLogicAndPunctuator};
-		defined_operator_punctuator[LOGIC_OR_PUNCTUATOR]={LOGIC_OR_PUNCTUATOR, "||",evalExpressionLogicOrPunctuator};
-		defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR]={LOGIC_EQUAL_PUNCTUATOR, "==",evalExpressionLogicEqualPunctuator};
-		defined_operator_punctuator[LOGIC_NOT_EQUAL_PUNCTUATOR]={LOGIC_NOT_EQUAL_PUNCTUATOR, "!=",evalExpressionLogicNotEqualPunctuator};
-		defined_operator_punctuator[LOGIC_GT_PUNCTUATOR]={LOGIC_GT_PUNCTUATOR, ">",evalExpressionLogicGreatherThanPunctuator};
-		defined_operator_punctuator[LOGIC_LT_PUNCTUATOR]={LOGIC_LT_PUNCTUATOR, "<",evalExpressionLogicLessThanPunctuator};
-		defined_operator_punctuator[LOGIC_GTE_PUNCTUATOR]={LOGIC_GTE_PUNCTUATOR, ">=",evalExpressionLogicGreatherEqualThanPunctuator};
-		defined_operator_punctuator[LOGIC_LTE_PUNCTUATOR]={LOGIC_LTE_PUNCTUATOR, "<=",evalExpressionLessEqualThanPunctuator};
-		defined_operator_punctuator[INSTANCEOF_PUNCTUATOR]={INSTANCEOF_PUNCTUATOR, "instanceof",evalExpressionInstanceOfPunctuator};
+		defined_operator_punctuator[ADD_PUNCTUATOR]={ADD_PUNCTUATOR, "+",isPlusPunctuator};
+		defined_operator_punctuator[SUB_PUNCTUATOR]={SUB_PUNCTUATOR, "-",isMinusPunctuator};
+		defined_operator_punctuator[MUL_PUNCTUATOR]={MUL_PUNCTUATOR, "*",isMulPunctuator};
+		defined_operator_punctuator[DIV_PUNCTUATOR]={DIV_PUNCTUATOR, "/",isDivPunctuator};
+		defined_operator_punctuator[MOD_PUNCTUATOR]={MOD_PUNCTUATOR, "%",isModPunctuator};
+		defined_operator_punctuator[FIELD_PUNCTUATOR]={FIELD_PUNCTUATOR, ".",isFieldPunctuator};
+		defined_operator_punctuator[TERNARY_IF_PUNCTUATOR]={TERNARY_IF_PUNCTUATOR, "?",isInlineIfPunctuator};
+		defined_operator_punctuator[TERNARY_ELSE_PUNCTUATOR]={TERNARY_ELSE_PUNCTUATOR, ":",isInlineElsePunctuator};
+		defined_operator_punctuator[ASSIGN_PUNCTUATOR]={ASSIGN_PUNCTUATOR, "=",isAssignPunctuator};
+		defined_operator_punctuator[ADD_ASSIGN_PUNCTUATOR]={ADD_ASSIGN_PUNCTUATOR, "+=",isAddAssignPunctuator};
+		defined_operator_punctuator[SUB_ASSIGN_PUNCTUATOR]={SUB_ASSIGN_PUNCTUATOR, "-=",isSubAssignPunctuator};
+		defined_operator_punctuator[MUL_ASSIGN_PUNCTUATOR]={MUL_ASSIGN_PUNCTUATOR, "*=",isMulAssignPunctuator};
+		defined_operator_punctuator[DIV_ASSIGN_PUNCTUATOR]={DIV_ASSIGN_PUNCTUATOR, "/=",isDivAssignPunctuator};
+		defined_operator_punctuator[MOD_ASSIGN_PUNCTUATOR]={MOD_ASSIGN_PUNCTUATOR, "%=",isModAssignPunctuator};
+		defined_operator_punctuator[BINARY_XOR_PUNCTUATOR]={BINARY_XOR_PUNCTUATOR, "^",isBinaryXorPunctuator};
+		defined_operator_punctuator[BINARY_AND_PUNCTUATOR]={BINARY_AND_PUNCTUATOR, "&",isBinaryAndPunctuator};
+		defined_operator_punctuator[BINARY_OR_PUNCTUATOR]={BINARY_OR_PUNCTUATOR, "|",isBinaryOrPunctuator};
+		defined_operator_punctuator[SHIFT_LEFT_PUNCTUATOR]={SHIFT_LEFT_PUNCTUATOR, "<<",isShiftLeftPunctuator};
+		defined_operator_punctuator[SHIFT_RIGHT_PUNCTUATOR]={SHIFT_RIGHT_PUNCTUATOR, ">>",isShiftRightPunctuator};
+		defined_operator_punctuator[LOGIC_AND_PUNCTUATOR]={LOGIC_AND_PUNCTUATOR, "&&",isLogicAndPunctuator};
+		defined_operator_punctuator[LOGIC_OR_PUNCTUATOR]={LOGIC_OR_PUNCTUATOR, "||",isLogicOrPunctuator};
+		defined_operator_punctuator[LOGIC_EQUAL_PUNCTUATOR]={LOGIC_EQUAL_PUNCTUATOR, "==",isLogicEqualPunctuator};
+		defined_operator_punctuator[LOGIC_NOT_EQUAL_PUNCTUATOR]={LOGIC_NOT_EQUAL_PUNCTUATOR, "!=",isLogicNotEqualPunctuator};
+		defined_operator_punctuator[LOGIC_GT_PUNCTUATOR]={LOGIC_GT_PUNCTUATOR, ">",isLogicGreatherThanPunctuator};
+		defined_operator_punctuator[LOGIC_LT_PUNCTUATOR]={LOGIC_LT_PUNCTUATOR, "<",isLogicLessThanPunctuator};
+		defined_operator_punctuator[LOGIC_GTE_PUNCTUATOR]={LOGIC_GTE_PUNCTUATOR, ">=",isLogicGreatherEqualThanPunctuator};
+		defined_operator_punctuator[LOGIC_LTE_PUNCTUATOR]={LOGIC_LTE_PUNCTUATOR, "<=",isLessEqualThanPunctuator};
+		defined_operator_punctuator[INSTANCEOF_PUNCTUATOR]={INSTANCEOF_PUNCTUATOR, "instanceof",isInstanceOfPunctuator};
 
-		defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR]={LOGIC_NOT_PUNCTUATOR, "!",evalExpressionNotPunctuator};
-		defined_operator_punctuator[PRE_INC_PUNCTUATOR]={PRE_INC_PUNCTUATOR, "++",evalExpressionIncPunctuator};
-		defined_operator_punctuator[PRE_DEC_PUNCTUATOR]={PRE_DEC_PUNCTUATOR, "--",evalExpressionDecPunctuator};
-		defined_operator_punctuator[POST_INC_PUNCTUATOR]={POST_INC_PUNCTUATOR, "++",evalExpressionIncPunctuator};
-		defined_operator_punctuator[POST_DEC_PUNCTUATOR]={POST_DEC_PUNCTUATOR, "--",evalExpressionDecPunctuator};
+		defined_operator_punctuator[LOGIC_NOT_PUNCTUATOR]={LOGIC_NOT_PUNCTUATOR, "!",isNotPunctuator};
+		defined_operator_punctuator[PRE_INC_PUNCTUATOR]={PRE_INC_PUNCTUATOR, "++",isIncPunctuator};
+		defined_operator_punctuator[PRE_DEC_PUNCTUATOR]={PRE_DEC_PUNCTUATOR, "--",isDecPunctuator};
+		defined_operator_punctuator[POST_INC_PUNCTUATOR]={POST_INC_PUNCTUATOR, "++",isIncPunctuator};
+		defined_operator_punctuator[POST_DEC_PUNCTUATOR]={POST_DEC_PUNCTUATOR, "--",isDecPunctuator};
 
 		// special punctuators...
 		defined_operator_punctuator[COMA_PUNCTUATOR]={COMA_PUNCTUATOR, ",",NULL};
@@ -2540,25 +2430,23 @@ namespace zetscript{
 		// init keywords...
 		defined_keyword[KEYWORD_TYPE::UNKNOWN_KEYWORD] = {UNKNOWN_KEYWORD, "none",NULL};
 		defined_keyword[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",evalKeywordVar};
-		defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",evalKeywordIf};
+		defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",NULL};
 		defined_keyword[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else",NULL};
-		defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",evalKeywordFor};
-		//defined_keyword[KEYWORD_TYPE::FOREACH_KEYWORD] = {FOREACH_KEYWORD,"foreach",evalForeach};
-		defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",evalKeywordWhile};
-		defined_keyword[KEYWORD_TYPE::DO_WHILE_KEYWORD] = {DO_WHILE_KEYWORD,"do",evalKeywordDoWhile}; // while is expected in the end ...
+		defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",NULL};
+		defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",NULL};
+		defined_keyword[KEYWORD_TYPE::DO_WHILE_KEYWORD] = {DO_WHILE_KEYWORD,"do",NULL}; // while is expected in the end ...
 
-		defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",evalKeywordSwitch};
+		defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",NULL};
 		defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
 		defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
 		defined_keyword[KEYWORD_TYPE::CONTINUE_KEYWORD] = {CONTINUE_KEYWORD,"continue",NULL};
 		defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
-		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",evalKeywordFunction};
-		defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",evalKeywordReturn};
+		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",NULL};
+		defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",NULL};
 		defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
-	//	defined_keyword[KEYWORD_TYPE::SUPER_KEYWORD] = {SUPER_KEYWORD,"super", NULL};
 		defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
 		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
-		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",evalKeywordDelete};
+		defined_keyword[KEYWORD_TYPE::DELETE_KEYWORD] = {DELETE_KEYWORD,"delete",NULL};
 		defined_keyword[KEYWORD_TYPE::IN_KEYWORD] = {IN_KEYWORD,"in",NULL};
 
 		// DIRECTIVES

@@ -20,7 +20,7 @@ namespace zetscript{
 
 	void  		writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
-	tKeywordInfo CASTNode::defined_keyword[MAX_KEYWORD];
+	tKeywordInfo_Old CASTNode::defined_keyword[MAX_KEYWORD];
 	tDirectiveInfo CASTNode::defined_directive[MAX_DIRECTIVES];
 	tPunctuatorInfo CASTNode::defined_operator_punctuator[MAX_PUNCTUATORS];
 	int CASTNode::DUMMY_LINE=0;
@@ -53,24 +53,6 @@ namespace zetscript{
 		return false;
 	}
 
-	char *ADVANCE_TO_CHAR(char *str,char c, int & m_line) {
-		char *aux_p = str;
-		// make compatible windows format (\r)...
-		while(*aux_p!=0 && (*aux_p !=(c) )) {
-			if(*aux_p == '\"') { // go to end..
-				aux_p++;
-				while (*aux_p!=0 && !(*aux_p =='\"' && *(aux_p-1) !='\\') && *aux_p != '\n') {aux_p++;}
-
-				if(*aux_p != '\"'){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line, "string is not closed at line %i",m_line);
-					return NULL;
-				}
-			}
-			if(*aux_p == '\n') {m_line++;}; // make compatible windows format...
-			aux_p++;
-		}
-		return aux_p;
-	}
 
 	char *ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
 
@@ -102,7 +84,6 @@ namespace zetscript{
 
 			if(IS_SINGLE_COMMENT(aux_p)) // ignore line
 				while(*aux_p!=0 && *aux_p!='\n') aux_p++;
-				//aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
 
 			else if(IS_START_COMMENT(aux_p)){
 				// ignore until get the end of the comment...
@@ -122,53 +103,6 @@ namespace zetscript{
 				end=false;
 				aux_p++;
 			}
-		}
-		return aux_p;
-	}
-
-	char *IGNORE_BLANKS_REVERSE(const char *str_begin,const char *str_end, int &m_line) {
-		char *aux_p = (char *)str_begin;
-		bool end = false;
-		while(!end){
-			end = true;
-			while(aux_p!=str_end && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p--;
-
-			// make compatible windows format...
-			if(*aux_p == '\r')
-				aux_p--;
-
-			if(*aux_p == '\n') {
-				m_line=m_line+1;
-				end=false;
-				aux_p--;
-			}
-		}
-		return aux_p;
-	}
-
-	char *ADVANCE_TO_ONE_OF_COLLECTION_CHAR(char *str,char *end_char_standard_value, int &m_line) {
-		char *aux_p = str;
-		char *chk_char;
-		while(*aux_p!=0){
-			chk_char = end_char_standard_value;
-
-			// comment blocks also is returned (these lines must be ignored)
-			if(IS_START_COMMENT(aux_p)) {
-				aux_p = ADVANCE_TO_END_COMMENT(aux_p, m_line);
-				if(IS_END_COMMENT(aux_p))
-					aux_p+=2;
-			}
-
-			if(IS_SINGLE_COMMENT(aux_p)) {
-				aux_p = ADVANCE_TO_CHAR(aux_p,'\n', m_line);
-			}
-
-			while(*chk_char != 0){
-				if(*chk_char == *aux_p)
-					return aux_p;
-				chk_char++;
-			}
-			aux_p++;
 		}
 		return aux_p;
 	}
@@ -3650,7 +3584,6 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,m_line);
 
 				if(*aux_p == '('){
-					//if((end_expr = ADVANCE_TO_CHAR(aux_p,')',m_line)) != NULL){
 						aux_p=IGNORE_BLANKS(aux_p+1,m_line);
 
 						// evaluate switch vale expression ...

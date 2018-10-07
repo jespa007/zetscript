@@ -107,7 +107,8 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
 
-		CScriptFunctionObject	metadata_info;
+		tScopeInfo			scope_info;
+		tVariableSymbolInfo symbol_info;
 		unsigned char  idx_function_script_constructor;
 		//int idxScriptClass;
 
@@ -146,7 +147,7 @@ namespace zetscript{
 
 
 		// HELPERS
-		static tStackElement 						C_REF_InfoVariable_2_StackElement(tInfoVariableSymbol *ir_var, void *ptr_variable);
+		static tStackElement 						C_REF_InfoVariable_2_StackElement(tVariableSymbolInfo *ir_var, void *ptr_variable);
 
 		static void 								register_C_BaseSymbolsInt(bool );
 		// FUNCTIONS
@@ -159,7 +160,7 @@ namespace zetscript{
 		/**
 		 * This function registers a script class into factory.
 		 */
-		static CScriptClass 				* 		registerClass(const string & class_name, const string & base_class_name, PASTNode _ast);
+		static CScriptClass 				* 		registerClass(const string & class_name, const string & base_class_name="", PASTNode _ast=NULL);
 
 
 		static CScriptClass 				* 		getScriptClassByIdx(unsigned char idx);
@@ -194,9 +195,9 @@ namespace zetscript{
 
 		static bool updateReferenceSymbols();
 
-		static tInfoVariableSymbol  * registerVariableSymbol(const string & class_name,const string & name,short  idxAstNode);
+		static tVariableSymbolInfo  * registerVariableSymbol(const string & class_name,const string & name,short  idxAstNode);
 		static bool 				  variableSymbolExist(CScriptClass *rc,const string & symbolname_ref);
-		static tInfoVariableSymbol *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
+		static tVariableSymbolInfo *  getRegisteredVariableSymbol(const string & class_name,const string & varname);
 
 
 
@@ -206,9 +207,6 @@ namespace zetscript{
 		ZETSCRIPT_MODULE_EXPORT static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
 		static bool 				  functionSymbolExist(CScriptClass *rc,const string & symbolname_ref, int n_params);
-
-
-		static tFunctionInfo *  getSuperClass(CScriptClass *irc, const string & fun_name);
 
 
 		static bool addArgumentFunctionSymbol(const string & class_name,const string & function_name,const string & arg_name);
@@ -314,14 +312,14 @@ namespace zetscript{
 
 			irs->m_arg = m_infoArg;
 			irs->idx_return_type = idx_return_type;
-			irs->object_info.symbol_info.ref_ptr = ref_ptr;
+			irs->symbol_info.ref_ptr = ref_ptr;
 
-			irs->object_info.symbol_info.idxAstNode = -1;
-			irs->object_info.symbol_info.symbol_ref = CCompiler::makeSymbolRef(function_name,IDX_GLOBAL_SCOPE); // <-- defined as global
-			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
+			irs->symbol_info.idxAstNode = -1;
+			irs->symbol_info.symbol_ref = CCompiler::makeSymbolRef(function_name,IDX_GLOBAL_SCOPE); // <-- defined as global
+			irs->symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
-			irs->object_info.symbol_info.idxSymbol = (short)(mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size());
-			mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
+			irs->symbol_info.idxSymbol = (short)(mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction.size());
+			mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
 
 			zs_print_debug_cr("Registered function name: %s",function_name);
 			return true;
@@ -353,7 +351,7 @@ namespace zetscript{
 			if(size>MAX_BASIC_CLASS_TYPES){ // after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
 				if((
 
-					(((*local_vec_script_class_node)[size-1]->metadata_info.object_info.symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
+					(((*local_vec_script_class_node)[size-1]->symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
 				)){
 					THROW_RUNTIME_ERROR("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str());
 					return false;
@@ -384,18 +382,18 @@ namespace zetscript{
 				ast->children.push_back(ast_var_symbols->idxAstNode);
 				ast->children.push_back(ast_fun_symbols->idxAstNode);
 
-				irc->metadata_info.object_info.symbol_info.idxAstNode = ast->idxAstNode;
+				irc->symbol_info.idxAstNode = ast->idxAstNode;
 				//irc->metadata_info.object_info.symbol_info.idxScopeVar=-1;
-				irc->metadata_info.object_info.symbol_info.symbol_ref = class_name;
+				irc->symbol_info.symbol_ref = class_name;
 				//irc->baseClass = base_class; // identify extend class ?!?!!?
 				// in C there's no script constructor ...
 				irc->idx_function_script_constructor=-1;
 				// allow dynamic constructor in function its parameters ...
 
 
-				irc->metadata_info.object_info.symbol_info.idxScriptClass = (short)((*local_vec_script_class_node).size());
+				irc->symbol_info.idxScriptClass = (short)((*local_vec_script_class_node).size());
 				irc->classPtrType=str_classPtr;
-				irc->metadata_info.object_info.symbol_info.properties=PROPERTY_C_OBJECT_REF;
+				irc->symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
 
 				irc->c_constructor = NULL;
@@ -512,11 +510,11 @@ namespace zetscript{
 
 				// register all symbols function from base ...
 				// vars ...
-				for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
+				for(unsigned i = 0; i < irc_base->scope_info.local_symbols.m_registeredVariable.size(); i++){
 
-					tInfoVariableSymbol *irs_source = &irc_base->metadata_info.object_info.local_symbols.m_registeredVariable[i];
+					tVariableSymbolInfo *irs_source = &irc_base->scope_info.local_symbols.m_registeredVariable[i];
 
-					tInfoVariableSymbol irs;
+					tVariableSymbolInfo irs;
 					// init struct...
 					irs.idxScriptClass = idx_base_class;
 					irs.ref_ptr=irs_source->ref_ptr;
@@ -524,34 +522,34 @@ namespace zetscript{
 					//irs.
 					irs.symbol_ref=irs_source->symbol_ref;
 					irs.properties = derivated_properties;
-					irs.idxSymbol = (short)(irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.size());
-					irc_class->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
+					irs.idxSymbol = (short)(irc_class->scope_info.local_symbols.m_registeredVariable.size());
+					irc_class->scope_info.local_symbols.m_registeredVariable.push_back(irs);
 
 				}
 
 				// functions ...
-				for(unsigned i = 0; i < irc_base->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+				for(unsigned i = 0; i < irc_base->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 
-					CScriptFunctionObject *irs_source = GET_SCRIPT_FUNCTION_OBJECT(irc_base->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
+					CScriptFunctionObject *irs_source = GET_SCRIPT_FUNCTION_OBJECT(irc_base->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 
 					CScriptFunctionObject *irs=NEW_SCRIPT_FUNCTION_OBJECT;
 					// init struct...
-					irs->object_info.symbol_info.idxAstNode = -1;
+					irs->symbol_info.idxAstNode = -1;
 					//irs.object_info.symbol_info.idxScopeVar = -1;
-					irs->object_info.symbol_info.symbol_ref=irs_source->object_info.symbol_info.symbol_ref;
+					irs->symbol_info.symbol_ref=irs_source->symbol_info.symbol_ref;
 
 
 					irs->m_arg = irs_source->m_arg;
 					irs->idx_return_type = irs_source->idx_return_type;
 
-					irs->object_info.symbol_info.properties = derivated_properties;
+					irs->symbol_info.properties = derivated_properties;
 
 					// ignores special type cast C++ member to ptr function
 					// create binding function class
-					irs->object_info.symbol_info.ref_ptr= irs_source->object_info.symbol_info.ref_ptr; // this is not correct due the pointer
+					irs->symbol_info.ref_ptr= irs_source->symbol_info.ref_ptr; // this is not correct due the pointer
 
-					irs->object_info.symbol_info.idxSymbol = (short)(irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
-					irc_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
+					irs->symbol_info.idxSymbol = (short)(irc_class->scope_info.local_symbols.vec_idx_registeredFunction.size());
+					irc_class->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
 
 
 				}
@@ -651,25 +649,25 @@ namespace zetscript{
 			}
 
 			// get ast symbols function member node...
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
+			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->symbol_info.idxAstNode)->children[1]);
 			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
 
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_CLASS_SCOPE);
-			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF;
+			irs->symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_CLASS_SCOPE);
+			irs->symbol_info.properties = PROPERTY_C_OBJECT_REF;
 
-			irs->object_info.symbol_info.ref_ptr = ref_ptr;
+			irs->symbol_info.ref_ptr = ref_ptr;
 			irs->m_arg = m_argInfo;
 			irs->idx_return_type = idx_return_type;
 
-			irs->object_info.symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
+			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.size());
+			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 
 			if(STRCMP(getMetamethod(SET_METAMETHOD),==,function_name)){
-				(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(irs->object_info.idxScriptFunctionObject);
+				(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(irs->idxScriptFunctionObject);
 				zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 			}
 
@@ -761,20 +759,20 @@ namespace zetscript{
 				ast_symbol->children.push_back(-1);
 			}
 			// get ast symbols function member node...
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[1]);
+			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->symbol_info.idxAstNode)->children[1]);
 			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
 
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->object_info.symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_CLASS_SCOPE);
-			irs->object_info.symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
+			irs->symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_CLASS_SCOPE);
+			irs->symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
-			irs->object_info.symbol_info.ref_ptr = ref_ptr;
+			irs->symbol_info.ref_ptr = ref_ptr;
 			irs->m_arg = m_argInfo;
 			irs->idx_return_type = idx_return_type;
-			irs->object_info.symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.push_back(irs->object_info.idxScriptFunctionObject);
+			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.size());
+			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
 			// check whether is static metamethod...
@@ -811,7 +809,7 @@ namespace zetscript{
 							return false;
 						}
 
-						(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(irs->object_info.idxScriptFunctionObject);
+						(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(irs->idxScriptFunctionObject);
 
 						zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 						break;
@@ -838,7 +836,7 @@ namespace zetscript{
 			string var_type = typeid(_R *).name(); // we need the pointer type ...
 			string return_type;
 			//vector<string> params;
-			tInfoVariableSymbol irs;
+			tVariableSymbolInfo irs;
 			string str_classPtr = typeid( _C *).name();
 			unsigned int offset=zetscript::offset_of<_C>(var_pointer);
 
@@ -853,7 +851,7 @@ namespace zetscript{
 			// check valid parameters ...
 			if(getIdxClassFromIts_C_Type(var_type) == -1){
 				THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-						,(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.symbol_ref.c_str()
+						,(*local_vec_script_class_node)[idxRegisterdClass]->symbol_info.symbol_ref.c_str()
 						,var_name
 						,demangle(typeid(_R).name()).c_str());
 				return false;
@@ -872,13 +870,13 @@ namespace zetscript{
 			ast_symbol->symbol_value = var_name;
 
 			// get ast var symbol collection node ( because class has a var collection we need a children [0] )
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.symbol_info.idxAstNode)->children[0])->children[0]);
+			CASTNode *ast_symbol_node =AST_NODE(AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->symbol_info.idxAstNode)->children[0])->children[0]);
 			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
 
 
 			irs.properties = PROPERTY_C_OBJECT_REF;
-			irs.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->metadata_info.object_info.local_symbols.m_registeredVariable.push_back(irs);
+			irs.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.m_registeredVariable.size());
+			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.m_registeredVariable.push_back(irs);
 			//base_info->local_symbols.vec_idx_registeredFunction.push_back(irs);
 			return true;
 
@@ -893,14 +891,14 @@ namespace zetscript{
 
 		static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
 		static map<int,map<int,fntConversionType>> * mapTypeConversion;
-
-		 static bool searchVarFunctionSymbol(tFunctionInfo * info_function, tInfoAsmOp *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
+#if 0
+		 static bool searchVarFunctionSymbol(tScopeInfo * scope_info, tInfoAsmOp *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
 
 		 static void buildScopeVariablesBlock(CScriptFunctionObject *root_class_irfs );
 		 static void unloadRecursiveFunctions(CScriptFunctionObject * info_function);
 
 		 static bool updateFunctionSymbols(int idxSxriptFunctionObject, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);
-
+#endif
 
 
 	};

@@ -173,16 +173,16 @@ namespace zetscript{
 		return print_aux_load_value;
 	 }
 
-	 void CZetScript::printGeneratedCode_Recursive(tFunctionInfo *fs){
+	 void CZetScript::printGeneratedCode(CScriptFunctionObject *sfo){
 
 		// PRE: it should printed after compile and updateReferences.
 		string pre="";
 		string post="";
 
-		if(fs->asm_op != NULL){
+		if(sfo->asm_op != NULL){
 
 			unsigned idx_instruction=0;
-			for(tInfoAsmOp * asm_op=fs->asm_op; asm_op->operator_type!= END_FUNCTION; asm_op++,idx_instruction++){
+			for(tInfoAsmOp * asm_op=sfo->asm_op; asm_op->operator_type!= END_FUNCTION; asm_op++,idx_instruction++){
 
 				int n_ops=0;
 				int index_op1 = asm_op->index_op1;
@@ -216,7 +216,7 @@ namespace zetscript{
 					default:
 						// check whether is constant and numeric
 						if(asm_op->operator_type==ASM_OPERATOR::LOAD && asm_op->index_op1==LOAD_TYPE_CONSTANT){
-							CCompiler::tInfoConstantValue *icv = (((CCompiler::tInfoConstantValue *)asm_op->index_op2));
+							tInfoConstantValue *icv = (((tInfoConstantValue *)asm_op->index_op2));
 							float n;
 
 							// change the sign
@@ -249,7 +249,7 @@ namespace zetscript{
 							,idx_instruction,
 							CCompiler::def_operator[asm_op->operator_type].op_str,
 							pre.c_str(),
-							getStrTypeLoadValue(fs->asm_op,idx_instruction),
+							getStrTypeLoadValue(sfo->asm_op,idx_instruction),
 							post.c_str());
 					break;
 				case JNT:
@@ -304,36 +304,33 @@ namespace zetscript{
 		}
 
 		// and then print its functions ...
-		vector<int> * m_vf = &fs->local_symbols.vec_idx_registeredFunction;
+		vector<int> * m_vf = &sfo->scope_info.local_symbols.vec_idx_registeredFunction;
 
 		for(unsigned j =0; j < m_vf->size(); j++){
 
 			CScriptFunctionObject *local_irfs = GET_SCRIPT_FUNCTION_OBJECT((*m_vf)[j]);
 
-			if(( local_irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
 				char symbol_ref[1024*8]={0};
 
-				strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
+				strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
 
-				if(local_irfs->object_info.symbol_info.idxScriptClass!=ZS_INVALID_CLASS){
-					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->object_info.symbol_info.idxScriptClass);
-					if(sc->metadata_info.object_info.symbol_info.idxScriptClass == IDX_CLASS_MAIN){
+				if(local_irfs->symbol_info.idxScriptClass!=ZS_INVALID_CLASS){
+					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->symbol_info.idxScriptClass);
+					if(sc->symbol_info.idxScriptClass == IDX_CLASS_MAIN){
 						sprintf(symbol_ref,"Main");
 					}else{
-						sprintf(symbol_ref,"%s::%s",fs->symbol_info.symbol_ref.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->object_info.symbol_info.idxAstNode));
+						sprintf(symbol_ref,"%s::%s",sfo->symbol_info.symbol_ref.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
 					}
 				}
 
 				printf("-------------------------------------------------------\n");
 				printf("\nCode for function \"%s\"\n\n",symbol_ref);
-				printGeneratedCode_Recursive(GET_FUNCTION_INFO(m_vf->at(j)));
+				printGeneratedCode(GET_SCRIPT_FUNCTION_OBJECT(m_vf->at(j)));
 			}
 		}
 	 }
 
-	 void CZetScript::printGeneratedCode(tFunctionInfo *fs){
-		printGeneratedCode_Recursive(fs);
-	 }
 
 	 void CZetScript::printGeneratedCodeAllClasses(){
 
@@ -341,7 +338,10 @@ namespace zetscript{
 
 		 // for all classes print code...
 		 for(unsigned i = 0; i < registeredClass->size(); i++){
-			 printGeneratedCode(&GET_SCRIPT_CLASS_INFO(registeredClass->at(i)->metadata_info.object_info.symbol_info.idxScriptClass)->metadata_info.object_info);
+			 CScriptClass *rc=registeredClass->at(i);
+			 for(unsigned f = 0; f < rc->scope_info.local_symbols.vec_idx_registeredFunction.size(); f++){
+				 printGeneratedCode(GET_SCRIPT_FUNCTION_OBJECT(rc->scope_info.local_symbols.vec_idx_registeredFunction[f]));
+			 }
 		 }
 	 }
 	 // PRINT ASM INFO
@@ -690,8 +690,8 @@ namespace zetscript{
 				string symbol_to_find=access_var[i];
 				if(i==0){ // get variable through main_class.main_function (global element)
 					symbol_to_find=CCompiler::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
-					for(unsigned j = 0; j < m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable.size() && *calling_obj==NULL; j++){
-						if(m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].symbol_ref==symbol_to_find){
+					for(unsigned j = 0; j < m_mainFunctionInfo->scope_info.local_symbols.m_registeredVariable.size() && *calling_obj==NULL; j++){
+						if(m_mainFunctionInfo->scope_info.local_symbols.m_registeredVariable[j].symbol_ref==symbol_to_find){
 							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].
 							if(stk!=NULL){
 								if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
@@ -743,9 +743,9 @@ namespace zetscript{
 		}else{ // function
 			*calling_obj = m_mainObject;
 			string symbol_to_find=CCompiler::makeSymbolRef(access_var[0],IDX_GLOBAL_SCOPE);
-			for(unsigned i = 0; i < m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction.size() && *fun_obj==NULL; i++){
-				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->object_info.local_symbols.vec_idx_registeredFunction[i]);
-				if(aux_fun_obj->object_info.symbol_info.symbol_ref == symbol_to_find){
+			for(unsigned i = 0; i < m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction.size() && *fun_obj==NULL; i++){
+				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+				if(aux_fun_obj->symbol_info.symbol_ref == symbol_to_find){
 					*fun_obj=aux_fun_obj;
 				}
 			}

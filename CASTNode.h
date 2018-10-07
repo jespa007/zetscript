@@ -77,7 +77,7 @@ namespace zetscript{
 	public:
 		static const char * current_parsing_filename;
 		static int current_idx_parsing_filename;
-		static tKeywordInfo defined_keyword[MAX_KEYWORD];
+		static tKeywordInfo_Old defined_keyword[MAX_KEYWORD];
 		static tDirectiveInfo defined_directive[MAX_DIRECTIVES];
 
 		static tPunctuatorInfo defined_operator_punctuator[MAX_PUNCTUATORS];

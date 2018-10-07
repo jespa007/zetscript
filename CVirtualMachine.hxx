@@ -69,8 +69,8 @@ namespace zetscript{
 			CScriptFunctionObject *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
 			int index         = (current_scope_info_ptr-1)->index;
 			tStackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;
-			for(int i = 0; i < ptr_info_function->object_info.info_var_scope[index].n_var_index; i++){
-				int idx_local_var = ptr_info_function->object_info.info_var_scope[index].var_index[i];
+			for(int i = 0; i < ptr_info_function->scope_info.info_var_scope[index].n_var_index; i++){
+				int idx_local_var = ptr_info_function->scope_info.info_var_scope[index].var_index[i];
 				tStackElement *ptr_ale =&ptr_local_var[idx_local_var];
 				CScriptVariable *var = NULL;
 				switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
@@ -231,44 +231,6 @@ namespace zetscript{
 		return true;
 	}
 
-/*
-inline void SHARE_LIST_INSERT(list,_node){
-	if(list.first == NULL){
-		_node->previous=_node->next= list.last = list.first =_node;
-	}
-	else{
-		list.last->next=_node;
-		_node->previous=list.last;
-		list.last=_node;
-		list.first->previous=list.last;
-		list.last->next=list.first;
-	}
-}
-
-inline void SHARE_LIST_DEATTACH(list,_node)
-{
-		if(_node->next == _node){//one  node: trivial ?
-			list.first = list.last = _node->next = _node->previous=NULL;
-		}else{// >1 node
-			PInfoSharedPointerNode previous=_node->previous;
-			PInfoSharedPointerNode next=_node->next;
-			if(_node==list.first){
-				list.first = next;
-			}
-			else if(_node==list.last){
-				list.last = previous;
-			}
-			previous->next = next;
-			next->previous = previous;
-		}
-}
-
-
-
-
-
-*/
-
 	inline CScriptFunctionObject * CVirtualMachine::FIND_FUNCTION(
 			vector<tFunctionSymbol> *m_functionSymbol
 			,vector<int> *vec_global_functions
@@ -304,7 +266,7 @@ inline void SHARE_LIST_DEATTACH(list,_node)
 
 			}else{
 				irfs=vec_script_function_object_node[vec_global_functions->at(i)];
-				aux_string=CCompiler::getSymbolNameFromSymbolRef(irfs->object_info.symbol_info.symbol_ref);
+				aux_string=CCompiler::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
 			}
 
 			bool match_signature = metamethod_str != NULL;
@@ -313,7 +275,7 @@ inline void SHARE_LIST_DEATTACH(list,_node)
 			}
 
 			if(match_signature){
-				if((irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF)){ /* C! Must match args...*/
+				if((irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF)){ /* C! Must match args...*/
 							bool all_check=true; /*  check arguments types ... */
 							int idx_type=-1;
 							int arg_idx_type=-1;
@@ -472,7 +434,7 @@ inline void SHARE_LIST_DEATTACH(list,_node)
 					bool match_signature = metamethod_str != NULL;
 
 					if(!match_signature){
-						match_signature = irfs->object_info.symbol_info.symbol_ref == vec_ast_node[iao->idxAstNode]->symbol_value;
+						match_signature = irfs->symbol_info.symbol_ref == vec_ast_node[iao->idxAstNode]->symbol_value;
 					}
 
 					if(match_signature){
@@ -480,14 +442,14 @@ inline void SHARE_LIST_DEATTACH(list,_node)
 						if(n_candidates == 0){
 							str_candidates+="ttPossible candidates are:nn";
 						}
-						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+GET_SYMBOL_NAME(irfs->object_info.symbol_info.symbol_ref)+"(";
+						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+GET_SYMBOL_NAME(irfs->symbol_info.symbol_ref)+"(";
 
 						for(unsigned a = 0; a < irfs->m_arg.size(); a++){
 							if(a>0){
 								str_candidates+=",";
 							}
 
-							if(irfs->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF){
+							if(irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF){
 								str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a].idx_type));
 							}else{ /* typic var ... */
 								str_candidates+="arg"+CZetScriptUtils::intToString(a+1);
@@ -521,7 +483,7 @@ inline void SHARE_LIST_DEATTACH(list,_node)
 						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-													GET_SYMBOL_NAME(vec_script_function_object_node[vec_global_functions->at(0)]->object_info.symbol_info.symbol_ref).c_str(),
+													GET_SYMBOL_NAME(vec_script_function_object_node[vec_global_functions->at(0)]->symbol_info.symbol_ref).c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{

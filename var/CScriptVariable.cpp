@@ -25,10 +25,10 @@ namespace zetscript{
 		}
 
 		// Register variables...
-		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.m_registeredVariable.size(); i++){
+		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.m_registeredVariable.size(); i++){
 
 
-			tInfoVariableSymbol * ir_var = &ir_class->metadata_info.object_info.local_symbols.m_registeredVariable[i];
+			tVariableSymbolInfo * ir_var = &ir_class->scope_info.local_symbols.m_registeredVariable[i];
 
 			se=addVariableSymbol(CCompiler::getSymbolNameFromSymbolRef(ir_var->symbol_ref), ZS_UNDEFINED_IDX);
 
@@ -42,21 +42,21 @@ namespace zetscript{
 		}
 
 		// Register functions...
-		for ( unsigned i = 0; i < ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-			CScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[i]);
+		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+			CScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 			 si =addFunctionSymbol(
-					 CCompiler::getSymbolNameFromSymbolRef( ir_fun->object_info.symbol_info.symbol_ref),
-					 ir_fun->object_info.symbol_info.idxAstNode,
+					 CCompiler::getSymbolNameFromSymbolRef( ir_fun->symbol_info.symbol_ref),
+					 ir_fun->symbol_info.idxAstNode,
 					ir_fun
 
 					);
-			 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // create proxy function ...
+			 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // create proxy function ...
 				 // static ref only get ref function ...
-				 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){
-					 si->proxy_ptr = ir_fun->object_info.symbol_info.ref_ptr;
+				 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){
+					 si->proxy_ptr = ir_fun->symbol_info.ref_ptr;
 				 }
 				 else{
-					 si->proxy_ptr = (intptr_t)(*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->object_info.symbol_info.ref_ptr))(c_object,PROXY_CREATOR::CREATE_FUNCTION);
+					 si->proxy_ptr = (intptr_t)(*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->symbol_info.ref_ptr))(c_object,PROXY_CREATOR::CREATE_FUNCTION);
 				 }
 			}
 		}
@@ -130,7 +130,7 @@ namespace zetscript{
 	CScriptFunctionObject *CScriptVariable::getConstructorFunction(){
 
 		if(m_infoRegisteredClass->idx_function_script_constructor != ZS_UNDEFINED_IDX){
-			return GET_SCRIPT_FUNCTION_OBJECT(m_infoRegisteredClass->metadata_info.object_info.local_symbols.vec_idx_registeredFunction[m_infoRegisteredClass->idx_function_script_constructor]);
+			return GET_SCRIPT_FUNCTION_OBJECT(m_infoRegisteredClass->scope_info.local_symbols.vec_idx_registeredFunction[m_infoRegisteredClass->idx_function_script_constructor]);
 		}
 
 		return NULL;
@@ -393,7 +393,7 @@ namespace zetscript{
 	}
 
 	const string & CScriptVariable::getClassName(){
-			return m_infoRegisteredClass->metadata_info.object_info.symbol_info.symbol_ref;
+			return m_infoRegisteredClass->symbol_info.symbol_ref;
 		}
 
 		const string & CScriptVariable::getPointer_C_ClassName(){
@@ -466,7 +466,7 @@ namespace zetscript{
 
 	bool CScriptVariable::is_c_object(){
 
-		 return ((m_infoRegisteredClass->metadata_info.object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != 0);
+		 return ((m_infoRegisteredClass->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != 0);
 	}
 
 	void CScriptVariable::destroy(){
@@ -498,10 +498,10 @@ namespace zetscript{
 		for ( unsigned i = 0; i < m_functionSymbol.size(); i++){
 			si = &m_functionSymbol[i];
 			CScriptFunctionObject * ir_fun  = (CScriptFunctionObject *)(m_functionSymbol[i].object.stkValue);
-			 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // create proxy function ...
-				 if((ir_fun->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){
+			 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // create proxy function ...
+				 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){
 
-					 (*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->object_info.symbol_info.ref_ptr))((void *)si->proxy_ptr,PROXY_CREATOR::DESTROY_FUNCTION);
+					 (*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->symbol_info.ref_ptr))((void *)si->proxy_ptr,PROXY_CREATOR::DESTROY_FUNCTION);
 				 }
 			}
 		}

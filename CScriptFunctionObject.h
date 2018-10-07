@@ -19,7 +19,7 @@
 */
 
 #define NEW_SCRIPT_FUNCTION_OBJECT				CScriptFunctionObject::newScriptFunctionObject()
-#define GET_FUNCTION_INFO(idx) 					CScriptFunctionObject::getFunctionInfo(idx)
+
 #define GET_SCRIPT_FUNCTION_OBJECT(idx) 		CScriptFunctionObject::getScriptFunctionObject(idx)
 #define FUNCTION_NEW_VARIABLE_SYMBOL(idx_class)	(CScriptFunctionObject::newVariableSymbol(idx_class))    // 0 is the main class
 
@@ -32,21 +32,27 @@ namespace zetscript{
 
 	public:
 
-		tFunctionInfo	object_info;
+		tScopeInfo			scope_info;
+		tVariableSymbolInfo symbol_info;
 
 		//CScriptFunctionObject *virtual_function;
 
 		// var for function ...
 		vector<tArgumentInfo> m_arg; // tells var arg name or var type name (in of C )
 		int idx_return_type; // -1 not inicialized type return.
+		PtrAsmOp asm_op;
+
+		int idxScriptFunctionObject;
+		short idxScope;
+
 
 		CScriptFunctionObject(){
 			//virtual_function = NULL;
 			idx_return_type = -1;
-			object_info.idxScriptFunctionObject = -1;
-			object_info.asm_op=NULL;
-			object_info.info_var_scope=NULL;
-
+			idxScriptFunctionObject = ZS_UNDEFINED_IDX;
+			asm_op=NULL;
+			scope_info.info_var_scope=NULL;
+			idxScope=IDX_INVALID_SCOPE;
 		}
 
 		/**
@@ -57,11 +63,11 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject 			*	newScriptFunctionObject();
 		ZETSCRIPT_MODULE_EXPORT static bool									checkCanRegister_C_Function(const char *f);
-		static tInfoVariableSymbol				*	newVariableSymbol(int idxFunction);
-		static tFunctionInfo					* 	getFunctionInfo(int idx);
+		static tVariableSymbolInfo				*	newVariableSymbol(int idxFunction);
+
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject 			* 	getScriptFunctionObject(int idx);
-		static int						 			getIdxFunctionObject(tFunctionInfo * info_function,const string & function_name,char n_args=-1, bool show_msg=true);
-		static int						 			getIdxVariableSymbol(tFunctionInfo * info_function,const string & function_name, bool show_msg=true);
+		static int						 			getIdxFunctionObject(CScriptFunctionObject * in_sfo,const string & function_name,char n_args=-1, bool show_msg=true);
+		static int						 			getIdxVariableSymbol(CScriptFunctionObject * in_sfo,const string & function_name, bool show_msg=true);
 
 	private:
 		static vector<CScriptFunctionObject *> 	* current_vec_script_function_object_node;

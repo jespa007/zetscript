@@ -195,8 +195,8 @@ namespace zetscript{
 		char print_aux_load_value[1024*8];
 		const char * getStrMovVar(tInfoAsmOp * iao);
 		const char * getStrTypeLoadValue(PtrAsmOp m_listStatements, int current_instruction);
-		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode_Recursive(tFunctionInfo *fs);
-		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(tFunctionInfo *fs);
+
+		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(CScriptFunctionObject *sfo);
 		ZETSCRIPT_MODULE_EXPORT void printGeneratedCodeAllClasses();
 		// PRINT ASM INFO
 		//---------------

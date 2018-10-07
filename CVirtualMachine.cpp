@@ -541,10 +541,10 @@ namespace zetscript{
 		}
 
 
-		for(unsigned i = 0; i < main_function->object_info.local_symbols.m_registeredVariable.size(); i++){
+		for(unsigned i = 0; i < main_function->scope_info.local_symbols.m_registeredVariable.size(); i++){
 			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 			//case STK_PROPERTY_TYPE_STRING:
-			if((main_function->object_info.local_symbols.m_registeredVariable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF ){
+			if((main_function->scope_info.local_symbols.m_registeredVariable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF ){
 				tStackElement *ptr_ale =&stack[i];
 				CScriptVariable *var = NULL;
 
@@ -712,7 +712,7 @@ namespace zetscript{
 		}
 
 
-		if((irfs->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) {
+		if((irfs->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) {
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function is not registered as C");
 			RETURN_ERROR;
 		}
@@ -741,10 +741,10 @@ namespace zetscript{
 
 			if(!stk2var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
 				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
-																irfs->object_info.symbol_info.symbol_ref.c_str(),
+																irfs->symbol_info.symbol_ref.c_str(),
 																i,
 																error_str.c_str(),
-																irfs->object_info.symbol_info.symbol_ref.c_str()
+																irfs->symbol_info.symbol_ref.c_str()
 																);
 				RETURN_ERROR;
 			}
@@ -979,7 +979,7 @@ namespace zetscript{
 	tStackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
 		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
 
-		if(idx_glb_element < main_function->object_info.local_symbols.m_registeredVariable.size()){
+		if(idx_glb_element < main_function->scope_info.local_symbols.m_registeredVariable.size()){
 			return &stack[idx_glb_element];
 		}
 
@@ -1054,7 +1054,7 @@ namespace zetscript{
 
 		if(idxCurrentStack==0){ // set stack and init vars for first call...
 
-			if(main_function_object->object_info.asm_op == NULL){ // no statments
+			if(main_function_object->asm_op == NULL){ // no statments
 				RETURN_ERROR;
 			}
 			cancel_execution=false;
@@ -1062,8 +1062,8 @@ namespace zetscript{
 			ptrCurrentOp=stack;
 			//*ptrCurrentOp={STK_PROPERTY_TYPE_UNDEFINED,0,0}; // ini first op
 
-			if(info_function->object_info.idxScriptFunctionObject != 0){ // calls script function from C : preserve stack space for global vars
-				ptrCurrentOp=&stack[main_function_object->object_info.local_symbols.m_registeredVariable.size()];
+			if(info_function->idxScriptFunctionObject != 0){ // calls script function from C : preserve stack space for global vars
+				ptrCurrentOp=&stack[main_function_object->scope_info.local_symbols.m_registeredVariable.size()];
 			}
 
 			current_foreach=&stkForeach[0];
@@ -1120,7 +1120,7 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		vector<tInfoVariableSymbol> * local_var=&info_function->object_info.local_symbols.m_registeredVariable;
+		vector<tVariableSymbolInfo> * local_var=&info_function->scope_info.local_symbols.m_registeredVariable;
 
 		ptrStartOp =_ptrStartOp;
 		ptrStartStr =_ptrStartStr;
@@ -1133,7 +1133,7 @@ namespace zetscript{
 		tStackElement *ptrArg=NULL;
 		tVM_ScopeInfo * ptrStartScopeInfo=NULL;
 
-		zs_print_debug_cr("Executing function %s ...",info_function->object_info.symbol_info.symbol_ref.c_str());
+		zs_print_debug_cr("Executing function %s ...",info_function->symbol_info.symbol_ref.c_str());
 		int idxBaseStk=(ptrStartOp-stack);//>>sizeof(tStackElement *);
 
 		if(idxBaseStk<n_args){
@@ -1164,23 +1164,23 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) ){ // C-Call
+		if((info_function->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) ){ // C-Call
 
-			if((info_function->object_info.symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_IS_POLYMORPHIC)){ // cannot call...
+			if((info_function->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_IS_POLYMORPHIC)){ // cannot call...
 				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
 						"1. Set register_C_baseSymbols(false) and  re-register the function using register_C_FunctionMember\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idxScriptClass!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
-						,CCompiler::getSymbolNameFromSymbolRef(info_function->object_info.symbol_info.symbol_ref).c_str());
+						,CCompiler::getSymbolNameFromSymbolRef(info_function->symbol_info.symbol_ref).c_str());
 				RETURN_ERROR;
 			}
 
-			intptr_t  fun_ptr = info_function->object_info.symbol_info.ref_ptr;
+			intptr_t  fun_ptr = info_function->symbol_info.ref_ptr;
 
-			if((info_function->object_info.symbol_info.properties &  SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
+			if((info_function->symbol_info.properties &  SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
 
 				if(this_object!= NULL && this_object != CZetScript::getInstance()->getMainObject()){
-					fun_ptr = this_object->getFunctionSymbolByIndex(info_function->object_info.symbol_info.idxSymbol)->proxy_ptr;
+					fun_ptr = this_object->getFunctionSymbolByIndex(info_function->symbol_info.idxSymbol)->proxy_ptr;
 				}
 			}
 
@@ -1198,7 +1198,7 @@ namespace zetscript{
 			return se;
 		}
 
-		PASTNode ast = vec_ast_node[info_function->object_info.symbol_info.idxAstNode];
+		PASTNode ast = vec_ast_node[info_function->symbol_info.idxAstNode];
 
 		short scope_index =  ast->idxScope;
 
@@ -1207,7 +1207,7 @@ namespace zetscript{
 			scope_index=vec_ast_node[ast->children[1]]->idxScope;
 		}
 
-		if(info_function->object_info.idxScriptFunctionObject != 0){
+		if(info_function->idxScriptFunctionObject != 0){
 
 			PUSH_SCOPE(scope_index,info_function,ptrLocalVar,0);
 			ptrStartScopeInfo = current_scope_info_ptr;
@@ -1232,7 +1232,7 @@ namespace zetscript{
 		}
 
 		// init local vars ...
-		if(info_function->object_info.idxScriptFunctionObject != 0){ // is not main function, so we have to initialize vars.
+		if(info_function->idxScriptFunctionObject != 0){ // is not main function, so we have to initialize vars.
 
 
 			if(idxCurrentStack > 1){ // not global vars, then initialize variables as undefined...
@@ -1281,7 +1281,7 @@ namespace zetscript{
 		tStackElement *src_ins=NULL;
 		bool ok=false;
 
-		tInfoAsmOp *start_it=info_function->object_info.asm_op;
+		tInfoAsmOp *start_it=info_function->asm_op;
 		tInfoAsmOp *instruction_it=start_it;
 
 		ptrCurrentStr=ptrStartStr;
@@ -1350,7 +1350,7 @@ namespace zetscript{
 
 						if(!ok){
 							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Variable \"%s\" is not type vector",
-								AST_SYMBOL_VALUE_CONST_CHAR(info_function->object_info.asm_op[instruction->index_op2].idxAstNode)
+								AST_SYMBOL_VALUE_CONST_CHAR(info_function->asm_op[instruction->index_op2].idxAstNode)
 							);
 							RETURN_ERROR;
 						}
@@ -1531,7 +1531,7 @@ namespace zetscript{
 					PUSH_UNDEFINED;
 					continue;
 				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_CONSTANT){
-					(*ptrCurrentOp)=*(((CCompiler::tInfoConstantValue *)instruction->index_op2));
+					(*ptrCurrentOp)=*(((tInfoConstantValue *)instruction->index_op2));
 
 					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties);
 
@@ -1570,7 +1570,7 @@ namespace zetscript{
 					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
 
 					if(scope_type==INS_PROPERTY_LOCAL_SCOPE){ // local gets functions from info_function ...
-						vec_functions=&info_function->object_info.local_symbols.vec_idx_registeredFunction;
+						vec_functions=&info_function->scope_info.local_symbols.vec_idx_registeredFunction;
 					}else if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 						tStackElement *var=NULL;
 						if(instruction_properties & INS_PROPERTY_CONSTRUCT_CALL){
@@ -1591,7 +1591,7 @@ namespace zetscript{
 						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							class_obj=(CScriptVariable *)(stk_ins->varRef);
 							CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxScriptClass);
-							vec_functions=&sc->metadata_info.object_info.local_symbols.vec_idx_registeredFunction;
+							vec_functions=&sc->scope_info.local_symbols.vec_idx_registeredFunction;
 						}
 						else{
 							CASTNode *ast_previous=vec_ast_node[(instruction-1)->idxAstNode];
@@ -1614,7 +1614,7 @@ namespace zetscript{
 						}
 						function_obj =(CScriptFunctionObject *)si->object.stkValue;
 					}else{ // global
-						vec_functions = &(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
+						vec_functions = &(main_function_object->scope_info.local_symbols.vec_idx_registeredFunction);
 						//function_obj = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
 					}
 
@@ -2192,7 +2192,7 @@ namespace zetscript{
 						//bool all_check=true;
 						if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
 						{
-							vector<int> *vec_global_functions=&(main_function_object->object_info.local_symbols.vec_idx_registeredFunction);
+							vector<int> *vec_global_functions=&(main_function_object->scope_info.local_symbols.vec_idx_registeredFunction);
 							//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
 							if((aux_function_info=FIND_FUNCTION(
 									m_functionSymbol
@@ -2233,7 +2233,7 @@ namespace zetscript{
 							RETURN_ERROR;
 						}
 
-						if((aux_function_info->object_info.symbol_info.properties & PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
+						if((aux_function_info->symbol_info.properties & PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
 							unsigned aux_function_info_m_arg_size=aux_function_info->m_arg.size();
 							if( n_args < aux_function_info_m_arg_size){ // we must push undefined parameters ...
 								for(unsigned i = n_args; i < aux_function_info_m_arg_size; i++){
@@ -2480,7 +2480,7 @@ namespace zetscript{
 
 		//=========================
 		// POP STACK
-		if(info_function->object_info.idxScriptFunctionObject == 0){ // if main function only remove 0s and preserve variables!)
+		if(info_function->idxScriptFunctionObject == 0){ // if main function only remove 0s and preserve variables!)
 			REMOVE_0_SHARED_POINTERS(idxCurrentStack,NULL);
 		}
 		else{
