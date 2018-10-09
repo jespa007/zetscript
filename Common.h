@@ -164,6 +164,14 @@ enum PUNCTUATOR_TYPE
 
 };
 
+enum SYMBOL_TYPE:unsigned char {
+
+	UNKNOW_SYMBOL_TYPE=0,
+	CONSTANT_SYMBOL_TYPE,
+	OBJECT_SYMBOL_TYPE,
+	VARIABLE_SYMBOL_TYPE
+};
+
 enum LOAD_TYPE
 	:unsigned char {
 

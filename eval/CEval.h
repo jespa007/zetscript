@@ -119,14 +119,15 @@ namespace zetscript{
 		// string generic utils...
 		static bool   printErrorUnexpectedKeywordOrPunctuator(const char *current_string_ptr, int m_line);
 		static bool   isVariableNameExpressionOk(const string & symbol, int m_line);
-		static char * getTokenValue(const char *s, int m_line, string & value);
+		bool 		  endSymbol(char c,char pre=0);
+		static char * getSymbol(const char *s, int m_line, string & value, SYMBOL_TYPE & ttv, vector<tInfoAsmOpCompiler *> 	**	asm_op=NULL);
 
 
-		static PUNCTUATOR_TYPE   isOperationalPunctuator(const char *s);
+		static PUNCTUATOR_TYPE   evalOperationalPunctuator(const char *s);
 
-		static PUNCTUATOR_TYPE   isOperatorPunctuator(const char *s);
-		static PUNCTUATOR_TYPE   isSpecialPunctuator(const char *s);
-		static PUNCTUATOR_TYPE   isPunctuator(const char *s);
+		static PUNCTUATOR_TYPE   evalOperatorPunctuator(const char *s);
+		static PUNCTUATOR_TYPE   evalSpecialPunctuator(const char *s);
+		static PUNCTUATOR_TYPE   evalPunctuator(const char *s);
 
 
 		//------------------------------------------------------------------------------------------
