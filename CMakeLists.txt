@@ -148,11 +148,13 @@ endif()
 
 set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 
-    #-- Utils --
-	zetscript_utils.cpp
+	#-- Exception --
 	zetscript_exception.cpp
 
-	#-- Variables
+    #-- Utils --
+	CZetScriptUtils.cpp
+	
+	#-- Variables --
 	var/CScriptVariable.cpp
 
 	var/CStringScriptVariable.cpp

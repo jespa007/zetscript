@@ -29,83 +29,12 @@ namespace zetscript{
 
 	vector<tInfoAstNodeToCompile> * CASTNode::astNodeToCompile=NULL;
 
-	bool IS_SINGLE_COMMENT(char *str){
+	bool IS_SINGLE_COMMENT(char *str);
+	bool IS_START_COMMENT(char *str);
+	bool IS_END_COMMENT(char *str);
+	char *ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line);
+	char *IGNORE_BLANKS(const char *str, int &m_line);
 
-		if((*str!=0) && *str=='/'){
-			return *(str+1)=='/';
-		}
-		return false;
-	}
-
-	bool IS_START_COMMENT(char *str){
-
-		if((*str!=0) && *str=='/'){
-			return *(str+1)=='*';
-		}
-		return false;
-	}
-
-	bool IS_END_COMMENT(char *str){
-
-		if((*str!=0) && *str=='*'){
-			return *(str+1)=='/';
-		}
-		return false;
-	}
-
-
-	char *ADVANCE_TO_END_COMMENT(char *aux_p, int &m_line){
-
-		if(IS_START_COMMENT(aux_p)){
-			aux_p+=2; //advance first
-			bool end = false;
-			while(*aux_p != 0  && !end){//!IS_END_COMMENT(aux_p) && *aux_p != 0){
-
-				if(*aux_p == '*' && *(aux_p+1) == '/') {
-					end=true;
-				} // not end comment ... advance ...
-				else {
-					if(*aux_p=='\n'){
-						m_line++;
-					}
-					aux_p++;
-				}
-			}
-		}
-		return aux_p;
-	}
-
-	char *IGNORE_BLANKS(const char *str, int &m_line) {
-		char *aux_p = (char *)str;
-		bool end = false;
-		while(!end){
-			end = true;
-			while(*aux_p!=0 && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p++;
-
-			if(IS_SINGLE_COMMENT(aux_p)) // ignore line
-				while(*aux_p!=0 && *aux_p!='\n') aux_p++;
-
-			else if(IS_START_COMMENT(aux_p)){
-				// ignore until get the end of the comment...
-				aux_p = ADVANCE_TO_END_COMMENT(aux_p, m_line);
-
-				if(IS_END_COMMENT(aux_p))
-					aux_p+=2;
-
-				end=false;
-			}
-			// make compatible windows format...
-			if(*aux_p == '\r')
-				aux_p++;
-
-			if(*aux_p == '\n') {
-				m_line=m_line+1;
-				end=false;
-				aux_p++;
-			}
-		}
-		return aux_p;
-	}
 
 	vector<CASTNode *> 			* CASTNode::vec_ast_node=NULL;
 

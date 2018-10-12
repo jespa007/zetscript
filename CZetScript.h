@@ -97,7 +97,7 @@ using std::ostringstream;
 //#include "CSharedPointerManager.h"
 #include "Common.h"
 #include "zetscript_exception.h"
-#include "zetscript_utils.h"
+#include "CZetScriptUtils.h"
 #include "var/CScriptVariable.h"
 
 #include "var/CStringScriptVariable.h"

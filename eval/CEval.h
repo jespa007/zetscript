@@ -14,15 +14,14 @@ namespace zetscript{
 
 	class  CEval{
 
-
 	public:
 
 
-		static bool eval(const char *s);
+		bool eval(const char *s);
+
 		static void	init();
 
 		static void destroySingletons();
-
 
 	private:
 
@@ -34,8 +33,6 @@ namespace zetscript{
 			OBJECT_TOKEN
 
 		};
-
-
 
 
 		struct tInfoAsmOpCompiler{
@@ -86,8 +83,12 @@ namespace zetscript{
 		typedef struct {
 			KEYWORD_TYPE id;
 			const char *str;
-			char * (*eval_fun)(const char *, int &, CScope *,tInfoFunctionCompile *ifc, bool &);
+			char * (* eval_fun)(const char *, int &, CScope *,tInfoFunctionCompile *, bool &);
 		} tKeywordInfo;
+
+
+
+		// singleton
 
 		static map<string,tInfoConstantValue *> *constant_pool;
 
@@ -112,6 +113,9 @@ namespace zetscript{
 		static KEYWORD_TYPE 	isKeyword(const char *c);
 		static DIRECTIVE_TYPE 	isDirective(const char *c);
 
+		static bool evalNumberToken(const char *c, int & m_line, string & value, bool & error);
+
+
 		//-----------------------------------------------
 		//
 		//static char * 	 isClassMember(const char *s,int & m_line, string & _class_name, string & var_name, bool & error, KEYWORD_TYPE ikw);
@@ -119,8 +123,9 @@ namespace zetscript{
 		// string generic utils...
 		static bool   printErrorUnexpectedKeywordOrPunctuator(const char *current_string_ptr, int m_line);
 		static bool   isVariableNameExpressionOk(const string & symbol, int m_line);
-		bool 		  endSymbol(char c,char pre=0);
-		static char * getSymbol(const char *s, int m_line, string & value, SYMBOL_TYPE & ttv, vector<tInfoAsmOpCompiler *> 	**	asm_op=NULL);
+		static char *  getVariableToken(const char *s, const string & symbol);
+		static bool	  isEndSymbolToken(char *s,char pre=0);
+		static char * evalSymbol(const char *s, int m_line, string & value, SYMBOL_TYPE & ttv, vector<tInfoAsmOpCompiler *> 	**	asm_op=NULL);
 
 
 		static PUNCTUATOR_TYPE   evalOperationalPunctuator(const char *s);
@@ -173,29 +178,21 @@ namespace zetscript{
 		// KEYWORDS FUNCTIONS
 		//
 
-		static char * evalKeyword(const char *s, int & m_start_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-
-		static char * evalKeywordIf(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordFor(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-
-		static char * evalKeywordWhile(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordDoWhile(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-
-		static char	* evalBreak(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char	* evalContinue(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-
-		static char * evalDefaultCase(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc,bool & error);
-		static char * evalKeywordSwitch(const char *s,int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordVar(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeyword		(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeywordIf		(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeywordFor	(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeywordWhile	(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeywordDoWhile(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalBreak			(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalContinue		(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalDefaultCase	(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeywordSwitch	(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeywordVar	(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeywordReturn	(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeywordDelete	(const char *s, int & m_line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
 
 
-		static char * evalKeywordReturn(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
 		static char * evalKeywordFunction(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile ** ifc);
-
-		static char * evalKeywordDelete(const char *s,int & m_line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-
-
-
 
 
 		//
