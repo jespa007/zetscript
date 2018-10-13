@@ -377,9 +377,9 @@ namespace zetscript{
 	}
 
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup0(const char *s){
+	__PUNCTUATOR_TYPE_OLD__  CASTNode::parsePunctuatorGroup0(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 				ASSIGN_PUNCTUATOR,
 				ADD_ASSIGN_PUNCTUATOR,
 				SUB_ASSIGN_PUNCTUATOR,
@@ -392,7 +392,7 @@ namespace zetscript{
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
@@ -400,12 +400,12 @@ namespace zetscript{
 			}
 		}
 
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup1(const char *s){
+	__PUNCTUATOR_TYPE_OLD__  CASTNode::parsePunctuatorGroup1(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 				TERNARY_IF_PUNCTUATOR,
 				TERNARY_ELSE_PUNCTUATOR
 		};
@@ -414,7 +414,7 @@ namespace zetscript{
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
@@ -422,12 +422,12 @@ namespace zetscript{
 			}
 		}
 
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup2(const char *s){
+	__PUNCTUATOR_TYPE_OLD__  CASTNode::parsePunctuatorGroup2(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 
 				LOGIC_AND_PUNCTUATOR,
 				LOGIC_OR_PUNCTUATOR
@@ -437,19 +437,19 @@ namespace zetscript{
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup3(const char *s){
+	__PUNCTUATOR_TYPE_OLD__  CASTNode::parsePunctuatorGroup3(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 
 				LOGIC_EQUAL_PUNCTUATOR,
 				LOGIC_LTE_PUNCTUATOR,
@@ -463,19 +463,19 @@ namespace zetscript{
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup4(const char *s){
+	__PUNCTUATOR_TYPE_OLD__  CASTNode::parsePunctuatorGroup4(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 				ADD_PUNCTUATOR,
 				SUB_PUNCTUATOR,
 				BINARY_XOR_PUNCTUATOR,
@@ -489,7 +489,7 @@ namespace zetscript{
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
@@ -497,12 +497,12 @@ namespace zetscript{
 			}
 		}
 
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup5(const char *s){
+	__PUNCTUATOR_TYPE_OLD__  CASTNode::parsePunctuatorGroup5(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 				LOGIC_NOT_EQUAL_PUNCTUATOR
 		};
 
@@ -510,7 +510,7 @@ namespace zetscript{
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
@@ -518,12 +518,12 @@ namespace zetscript{
 			}
 		}
 
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE CASTNode::parsePunctuatorGroup6(const char *s){
+	__PUNCTUATOR_TYPE_OLD__ CASTNode::parsePunctuatorGroup6(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 
 				MUL_PUNCTUATOR,
 				DIV_PUNCTUATOR,
@@ -534,19 +534,19 @@ namespace zetscript{
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup7(const char *s){
+	__PUNCTUATOR_TYPE_OLD__  CASTNode::parsePunctuatorGroup7(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 				LOGIC_NOT_PUNCTUATOR
 
 		};
@@ -554,19 +554,19 @@ namespace zetscript{
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE  CASTNode::parsePunctuatorGroup8(const char *s){
+	__PUNCTUATOR_TYPE_OLD__  CASTNode::parsePunctuatorGroup8(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 				FIELD_PUNCTUATOR
 
 		};
@@ -574,17 +574,17 @@ namespace zetscript{
 		for(unsigned char  i = 0; i < ARRAY_LENGTH(index_to_evaluate); i++){
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
 
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE   CASTNode::isOperatorPunctuator(const char *s){
+	__PUNCTUATOR_TYPE_OLD__   CASTNode::isOperatorPunctuator(const char *s){
 
 		for(unsigned char  i = 0; i < MAX_OPERATOR_PUNCTUATORS; i++){
 			if(defined_operator_punctuator[i].eval_fun != NULL){
@@ -593,10 +593,10 @@ namespace zetscript{
 				}
 			}
 		}
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE   CASTNode::isSpecialPunctuator(const char *s){
+	__PUNCTUATOR_TYPE_OLD__   CASTNode::isSpecialPunctuator(const char *s){
 
 		for(unsigned char i = START_SPECIAL_PUNCTUATORS; i < MAX_SPECIAL_PUNCTUATORS; i++){
 
@@ -605,12 +605,12 @@ namespace zetscript{
 			}
 		}
 
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE   CASTNode::parseArithmeticPunctuator(const char *s){
+	__PUNCTUATOR_TYPE_OLD__   CASTNode::parseArithmeticPunctuator(const char *s){
 
-		PUNCTUATOR_TYPE index_to_evaluate[]={
+		__PUNCTUATOR_TYPE_OLD__ index_to_evaluate[]={
 				SHIFT_LEFT_PUNCTUATOR, // <<
 				SHIFT_RIGHT_PUNCTUATOR, // >>
 
@@ -650,21 +650,21 @@ namespace zetscript{
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun == NULL){
 				THROW_RUNTIME_ERROR("internal: %s not have parse function",defined_operator_punctuator[index_to_evaluate[i]].str);
-				return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 			}
 
 			if(defined_operator_punctuator[index_to_evaluate[i]].eval_fun(s)){
 				return defined_operator_punctuator[index_to_evaluate[i]].id;
 			}
 		}
-		return PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;;
+		return __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;;
 	}
 
-	PUNCTUATOR_TYPE   CASTNode::isPunctuator(const char *s){
+	__PUNCTUATOR_TYPE_OLD__   CASTNode::isPunctuator(const char *s){
 
-		PUNCTUATOR_TYPE ip = isOperatorPunctuator(s);
+		__PUNCTUATOR_TYPE_OLD__ ip = isOperatorPunctuator(s);
 
-		if(ip!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+		if(ip!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 			return ip;
 		}
 
@@ -676,7 +676,7 @@ namespace zetscript{
 
 		char *start_str=(char *)s;
 		char *aux=(char *)s;
-		PUNCTUATOR_TYPE sp;
+		__PUNCTUATOR_TYPE_OLD__ sp;
 		KEYWORD_TYPE key_w;
 		 bool is_possible_number=false;
 		 int i=0;
@@ -710,7 +710,7 @@ namespace zetscript{
 					(*aux)=='\n' ||
 					(*aux)=='\r'
 							) &&
-					(isSpecialPunctuator(aux)==PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR)
+					(isSpecialPunctuator(aux)==__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR)
 
 			) {
 				// check for special punctuator ( the field '.' separator is processed within the word )
@@ -720,7 +720,7 @@ namespace zetscript{
 					start_digit = true;
 				}
 
-				if((sp = isOperatorPunctuator(aux))!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+				if((sp = isOperatorPunctuator(aux))!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 					if(sp == FIELD_PUNCTUATOR  || ((*aux=='-' ||  *aux=='+') && ((i>0 && (*(aux-1)=='e'))))){
 						if(!is_possible_number){
 							return aux;
@@ -753,10 +753,10 @@ namespace zetscript{
 	char *CASTNode::getSymbolName(const char *s,int & m_line){
 
 		char *aux_p=(char *)s;
-		PUNCTUATOR_TYPE end_punctuator=isPunctuator(s);
+		__PUNCTUATOR_TYPE_OLD__ end_punctuator=isPunctuator(s);
 
 
-		if(end_punctuator != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+		if(end_punctuator != __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected '%s'",defined_operator_punctuator[end_punctuator].str);
 			return NULL;
 		}
@@ -795,8 +795,8 @@ namespace zetscript{
 					*aux == ' '  || // space
 
 					*aux == '\t'  || // tab
-					isOperatorPunctuator(aux)!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR ||
-					isSpecialPunctuator(aux)!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR ||
+					isOperatorPunctuator(aux)!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR ||
+					isSpecialPunctuator(aux)!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR ||
 					*aux == '\n' || // carry return
 
 				   (*aux == '/' && *(aux+1) == '*')) //start block comment
@@ -824,7 +824,7 @@ namespace zetscript{
 		return DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE;
 	}
 	//------------------------------------------------------------------------------------------------------------
-	PUNCTUATOR_TYPE CASTNode::checkPreOperatorPunctuator(const char *s){
+	__PUNCTUATOR_TYPE_OLD__ CASTNode::checkPreOperatorPunctuator(const char *s){
 
 		if(parseIncPunctuator(s)) 	return PRE_INC_PUNCTUATOR;
 		if(parseDecPunctuator(s))	return PRE_DEC_PUNCTUATOR;
@@ -835,9 +835,9 @@ namespace zetscript{
 		return UNKNOWN_PUNCTUATOR;
 	}
 
-	PUNCTUATOR_TYPE CASTNode::checkPostOperatorPunctuator(const char *s){
+	__PUNCTUATOR_TYPE_OLD__ CASTNode::checkPostOperatorPunctuator(const char *s){
 
-		PUNCTUATOR_TYPE op=UNKNOWN_PUNCTUATOR;
+		__PUNCTUATOR_TYPE_OLD__ op=UNKNOWN_PUNCTUATOR;
 
 		if(parseIncPunctuator(s)){
 			op=POST_INC_PUNCTUATOR;
@@ -848,7 +848,7 @@ namespace zetscript{
 		}
 
 		if(op != UNKNOWN_PUNCTUATOR){ // let's check some situations whether is not allowed having post operator
-			PUNCTUATOR_TYPE pt=UNKNOWN_PUNCTUATOR;
+			__PUNCTUATOR_TYPE_OLD__ pt=UNKNOWN_PUNCTUATOR;
 			int line=0;
 
 			char *aux=(char *)(s+strlen(defined_operator_punctuator[op].str));
@@ -1121,14 +1121,14 @@ namespace zetscript{
 	}
 
 	bool CASTNode::printErrorUnexpectedKeywordOrPunctuator(const char *current_string_ptr, int m_line){
-		PUNCTUATOR_TYPE ip=CASTNode::isPunctuator(current_string_ptr);
+		__PUNCTUATOR_TYPE_OLD__ ip=CASTNode::isPunctuator(current_string_ptr);
 		KEYWORD_TYPE kw=CASTNode::isKeyword(current_string_ptr);
 
 		if(kw!=KEYWORD_TYPE::UNKNOWN_KEYWORD){
 			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected %s",defined_keyword[kw].str);
 			return true;
 		}
-		else if(ip!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+		else if(ip!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 			writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected %s",defined_operator_punctuator[ip].str);
 			return true;
 		}
@@ -1142,8 +1142,8 @@ namespace zetscript{
 
 			string & symbol_name,
 			int & m_definedSymbolLine,
-			PUNCTUATOR_TYPE pre_operator,
-			PUNCTUATOR_TYPE & post_operator,
+			__PUNCTUATOR_TYPE_OLD__ pre_operator,
+			__PUNCTUATOR_TYPE_OLD__ & post_operator,
 			bool & is_symbol_trivial
 			){
 
@@ -1161,9 +1161,9 @@ namespace zetscript{
 		// GETTING TRIVIAL SYMBOLS
 		if(*aux=='('){ // packed symbol...
 
-			if(pre_operator != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-				if(pre_operator == PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR ||
-				   pre_operator == PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR){
+			if(pre_operator != __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
+				if(pre_operator == __PUNCTUATOR_TYPE_OLD__::PRE_INC_PUNCTUATOR ||
+				   pre_operator == __PUNCTUATOR_TYPE_OLD__::PRE_DEC_PUNCTUATOR){
 					writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected '%s' before (",defined_operator_punctuator[pre_operator].str);
 					return NULL;
 				}
@@ -1208,9 +1208,9 @@ namespace zetscript{
 
 			if(is_function_or_operator){ // function object ...
 
-				if(pre_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-					if(pre_operator == PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR ||
-						pre_operator == PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR){
+				if(pre_operator!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
+					if(pre_operator == __PUNCTUATOR_TYPE_OLD__::PRE_INC_PUNCTUATOR ||
+						pre_operator == __PUNCTUATOR_TYPE_OLD__::PRE_DEC_PUNCTUATOR){
 						writeErrorMsg(CURRENT_PARSING_FILENAME,m_line,"Unexpected '%s' before ( ",defined_operator_punctuator[pre_operator].str);
 						return NULL;
 					}
@@ -1263,7 +1263,7 @@ namespace zetscript{
 
 					 // check for post opertator...
 					 end_expression = IGNORE_BLANKS(end_expression, m_line);
-					 if((post_operator = checkPostOperatorPunctuator(end_expression)) != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+					 if((post_operator = checkPostOperatorPunctuator(end_expression)) != __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 						 end_expression+=strlen(defined_operator_punctuator[post_operator].str);
 					 }
 
@@ -1284,7 +1284,7 @@ namespace zetscript{
 
 				end_expression = IGNORE_BLANKS(end_expression, m_line);
 				// check for post opertator...
-				if(((post_operator) = checkPostOperatorPunctuator(end_expression)) != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+				if(((post_operator) = checkPostOperatorPunctuator(end_expression)) != __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 				 end_expression+=strlen(defined_operator_punctuator[post_operator].str);
 				 end_expression = IGNORE_BLANKS(end_expression, m_line);
 				}
@@ -1313,10 +1313,10 @@ namespace zetscript{
 		bool is_symbol_trivial_value=false;
 		string symbol_value;
 		string operator_str="";
-		PUNCTUATOR_TYPE pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
-						post_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
-						pre_operator_packed_node=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
-						operator_group=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		__PUNCTUATOR_TYPE_OLD__ pre_operator=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR,
+						post_operator=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR,
+						pre_operator_packed_node=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR,
+						operator_group=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 		bool theres_some_operator=false;
 		int m_definedSymbolLine;
 		bool special_pre_post_cond = false; // in case of particular pre/post...
@@ -1349,7 +1349,7 @@ namespace zetscript{
 			// 1. ignore spaces...
 			aux=IGNORE_BLANKS(aux, m_line);
 
-			if((pre_operator=checkPreOperatorPunctuator(aux))!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+			if((pre_operator=checkPreOperatorPunctuator(aux))!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 
 				aux+=strlen(defined_operator_punctuator[pre_operator].str);
 				aux=IGNORE_BLANKS(aux, m_line);
@@ -1358,7 +1358,7 @@ namespace zetscript{
 			if(*aux=='('){ // packed node let's said that is a packed node...
 
 				pre_operator_packed_node=pre_operator;
-				pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+				pre_operator=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 
 				if(ast_node_to_be_evaluated != NULL){
 					is_packed_node = true;
@@ -1418,7 +1418,7 @@ namespace zetscript{
 			}
 		}
 
-		if(operator_group==PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR) {// there's no any operators \"type_group\"...
+		if(operator_group==__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR) {// there's no any operators \"type_group\"...
 			if(!theres_some_operator){ // only we have a value (trivial)
 
 				if(ast_node_to_be_evaluated != NULL){
@@ -1483,13 +1483,13 @@ namespace zetscript{
 					(*ast_node_to_be_evaluated)->line_value=m_definedSymbolLine;
 
 
-					if(pre_operator!= PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR || post_operator != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){ // create pre operator node ...
+					if(pre_operator!= __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR || post_operator != __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){ // create pre operator node ...
 
-						if(post_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR)
+						if(post_operator!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR)
 							(*ast_node_to_be_evaluated)->pre_post_operator_info = post_operator; // preNodePunctuator(post_operator,*ast_node_to_be_evaluated);
 
-						if(pre_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-							if(post_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+						if(pre_operator!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
+							if(post_operator!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 								if(     (pre_operator == PRE_INC_PUNCTUATOR  || pre_operator  == PRE_DEC_PUNCTUATOR) &&
 										(post_operator== POST_INC_PUNCTUATOR || post_operator == POST_DEC_PUNCTUATOR)){
 									writeErrorMsg(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"object \"%s\" has left \"%s\" and right \"%s\" is ambiguous",(*ast_node_to_be_evaluated)->symbol_value.c_str(),defined_operator_punctuator[pre_operator].str, defined_operator_punctuator[post_operator].str);
@@ -1506,7 +1506,7 @@ namespace zetscript{
 				if(end_expression!= NULL){
 				// there's a Punctuator, so let's perform generate its AST
 					// reset prePunctuator...
-					pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+					pre_operator=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 					print_ast_cr("try to generate group1 expression: %.40s ...\n",s_effective_start);
 					return parseExpression_Recursive(
 							s,
@@ -1556,9 +1556,9 @@ namespace zetscript{
 				if(left_node != NULL){
 					(*ast_node_to_be_evaluated)->children.push_back(left_node->idxAstNode);
 
-					if(operator_group == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR){
+					if(operator_group == __PUNCTUATOR_TYPE_OLD__::FIELD_PUNCTUATOR){
 						(*ast_node_to_be_evaluated)->pre_post_operator_info=left_node->pre_post_operator_info;
-						left_node->pre_post_operator_info=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+						left_node->pre_post_operator_info=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 					}
 				}
 			}
@@ -1659,10 +1659,10 @@ namespace zetscript{
 		bool is_symbol_trivial_value=false;
 		string symbol_value;
 		string operator_str="";
-		PUNCTUATOR_TYPE pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
-						post_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
-						pre_operator_packed_node=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR,
-						operator_group=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		__PUNCTUATOR_TYPE_OLD__ pre_operator=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR,
+						post_operator=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR,
+						pre_operator_packed_node=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR,
+						operator_group=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 		bool theres_some_operator=false;
 		int m_definedSymbolLine;
 		bool special_pre_post_cond = false; // in case of particular pre/post...
@@ -1695,7 +1695,7 @@ namespace zetscript{
 			// 1. ignore spaces...
 			aux=IGNORE_BLANKS(aux, m_line);
 
-			if((pre_operator=checkPreOperatorPunctuator(aux))!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+			if((pre_operator=checkPreOperatorPunctuator(aux))!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 
 				aux+=strlen(defined_operator_punctuator[pre_operator].str);
 				aux=IGNORE_BLANKS(aux, m_line);
@@ -1759,7 +1759,7 @@ namespace zetscript{
 			}
 		}
 
-		if(operator_group==PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR) {// there's no any operators \"type_group\"...
+		if(operator_group==__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR) {// there's no any operators \"type_group\"...
 			if(!theres_some_operator){ // only we have a value (trivial)
 
 				if(ast_node_to_be_evaluated != NULL){
@@ -1824,13 +1824,13 @@ namespace zetscript{
 					(*ast_node_to_be_evaluated)->line_value=m_definedSymbolLine;
 
 
-					if(pre_operator!= PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR || post_operator != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){ // create pre operator node ...
+					if(pre_operator!= __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR || post_operator != __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){ // create pre operator node ...
 
-						if(post_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR)
+						if(post_operator!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR)
 							(*ast_node_to_be_evaluated)->pre_post_operator_info = post_operator; // preNodePunctuator(post_operator,*ast_node_to_be_evaluated);
 
-						if(pre_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-							if(post_operator!=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+						if(pre_operator!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
+							if(post_operator!=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 								if(     (pre_operator == PRE_INC_PUNCTUATOR  || pre_operator  == PRE_DEC_PUNCTUATOR) &&
 										(post_operator== POST_INC_PUNCTUATOR || post_operator == POST_DEC_PUNCTUATOR)){
 									writeErrorMsg(CURRENT_PARSING_FILENAME,m_definedSymbolLine,"object \"%s\" has left \"%s\" and right \"%s\" is ambiguous",(*ast_node_to_be_evaluated)->symbol_value.c_str(),defined_operator_punctuator[pre_operator].str, defined_operator_punctuator[post_operator].str);
@@ -1847,7 +1847,7 @@ namespace zetscript{
 				if(end_expression!= NULL){
 				// there's a Punctuator, so let's perform generate its AST
 					// reset prePunctuator...
-					pre_operator=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+					pre_operator=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 					print_ast_cr("try to generate group1 expression: %.40s ...\n",s_effective_start);
 					return parseExpression_Recursive(
 							s,
@@ -1897,9 +1897,9 @@ namespace zetscript{
 				if(left_node != NULL){
 					(*ast_node_to_be_evaluated)->children.push_back(left_node->idxAstNode);
 
-					if(operator_group == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR){
+					if(operator_group == __PUNCTUATOR_TYPE_OLD__::FIELD_PUNCTUATOR){
 						(*ast_node_to_be_evaluated)->pre_post_operator_info=left_node->pre_post_operator_info;
-						left_node->pre_post_operator_info=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+						left_node->pre_post_operator_info=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 					}
 				}
 			}
@@ -3485,7 +3485,7 @@ namespace zetscript{
 		CScope *scope_case=NULL;
 		PASTNode body_switch=NULL;
 
-		PUNCTUATOR_TYPE ip;
+		__PUNCTUATOR_TYPE_OLD__ ip;
 		char *value_to_eval;
 		string val;
 		KEYWORD_TYPE key_w,key_w2;
@@ -3987,10 +3987,10 @@ namespace zetscript{
 
 					// get the symbol...
 					char *start_symbol=aux_p;
-					PUNCTUATOR_TYPE ip;
+					__PUNCTUATOR_TYPE_OLD__ ip;
 
-					if((ip = isPunctuator(aux_p)) != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
-						if(ip == PUNCTUATOR_TYPE::ADD_PUNCTUATOR ||ip == PUNCTUATOR_TYPE::SUB_PUNCTUATOR){
+					if((ip = isPunctuator(aux_p)) != __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
+						if(ip == __PUNCTUATOR_TYPE_OLD__::ADD_PUNCTUATOR ||ip == __PUNCTUATOR_TYPE_OLD__::SUB_PUNCTUATOR){
 							aux_p+=strlen(defined_operator_punctuator[ip].str);
 						}
 						else{
@@ -4418,9 +4418,9 @@ namespace zetscript{
 	CASTNode::CASTNode(){
 		node_type = UNKNOWN_NODE;
 		keyword_info = KEYWORD_TYPE::UNKNOWN_KEYWORD;
-		pre_post_operator_info = PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		pre_post_operator_info = __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 		line_value=ZS_UNDEFINED_IDX;
-		operator_info=PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		operator_info=__PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 		symbol_value="";
 		idxAstParent=ZS_UNDEFINED_IDX;
 		//aux_value=NULL;

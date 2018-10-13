@@ -90,7 +90,7 @@ enum DIRECTIVE_TYPE
 	MAX_DIRECTIVES
 };
 
-enum PUNCTUATOR_TYPE
+enum __PUNCTUATOR_TYPE_OLD__
 	:unsigned char {
 
 	UNKNOWN_PUNCTUATOR = 0,
@@ -162,14 +162,6 @@ enum PUNCTUATOR_TYPE
 	MAX_SPECIAL_PUNCTUATORS,
 	MAX_PUNCTUATORS
 
-};
-
-enum SYMBOL_TYPE:unsigned char {
-
-	UNKNOW_SYMBOL_TYPE=0,
-	CONSTANT_SYMBOL_TYPE,
-	OBJECT_SYMBOL_TYPE,
-	VARIABLE_SYMBOL_TYPE
 };
 
 enum LOAD_TYPE
@@ -478,10 +470,12 @@ namespace zetscript{
 	} tDirectiveInfo;
 
 	typedef struct {
-		PUNCTUATOR_TYPE id;
+		__PUNCTUATOR_TYPE_OLD__ id;
 		const char *str;
 		bool (*eval_fun)(const char *);
 	} tPunctuatorInfo;
+
+
 
 	enum {
 		LEFT_NODE = 0, RIGHT_NODE

@@ -219,7 +219,7 @@ namespace zetscript{
 		bool insertObjectMemberAccessFrom(short idxAstNode, int ref_node_index);
 
 		tInfoAsmOpCompiler * getLastInsertedInfoAsmOpCompiler();
-		bool insertOperatorInstruction(PUNCTUATOR_TYPE op, short idxAstNode, string & error_str);
+		bool insertOperatorInstruction(__PUNCTUATOR_TYPE_OLD__ op, short idxAstNode, string & error_str);
 
 
 		string getUserTypeResultCurrentStatmentAtInstruction(unsigned instruction);
@@ -235,8 +235,8 @@ namespace zetscript{
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// COMPILE ASSEMBLE CODE (GAC)
 
-		ASM_OPERATOR puntuator2instruction(PUNCTUATOR_TYPE  op);
-		unsigned int post_operator2instruction_property(PUNCTUATOR_TYPE op);
+		ASM_OPERATOR puntuator2instruction(__PUNCTUATOR_TYPE_OLD__  op);
+		unsigned int post_operator2instruction_property(__PUNCTUATOR_TYPE_OLD__ op);
 
 		bool gacExpression_FunctionOrArrayAccess(PASTNode _node, CScope *_lc);
 

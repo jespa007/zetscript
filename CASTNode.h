@@ -126,8 +126,8 @@ namespace zetscript{
 
 		NODE_TYPE node_type;
 		KEYWORD_TYPE keyword_info;
-		PUNCTUATOR_TYPE operator_info;
-		PUNCTUATOR_TYPE pre_post_operator_info;
+		__PUNCTUATOR_TYPE_OLD__ operator_info;
+		__PUNCTUATOR_TYPE_OLD__ pre_post_operator_info;
 		string 	symbol_value;
 		short idxScope; // saves scope info ptr (only for global vars).
 		string type_class;
@@ -138,6 +138,7 @@ namespace zetscript{
 		short idxAstNode;
 		short idxFilename;
 
+
 		bool is_packed_node; // check whether is packed or not like (a+b*c)
 
 
@@ -147,7 +148,7 @@ namespace zetscript{
 
 		/*typedef struct{
 			string symbol_name;
-			PUNCTUATOR_TYPE punctuator_type; // [ : vector object, function : function object
+			__PUNCTUATOR_TYPE_OLD__ punctuator_type; // [ : vector object, function : function object
 			KEYWORD_TYPE keyword_type; // function/vector calling.
 		}tExpressionToken;*/
 
@@ -227,28 +228,28 @@ namespace zetscript{
 		static bool parseNotPunctuator(const char *s);
 
 
-		static PUNCTUATOR_TYPE checkPreOperatorPunctuator(const char *s);
-		static PUNCTUATOR_TYPE checkPostOperatorPunctuator(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__ checkPreOperatorPunctuator(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__ checkPostOperatorPunctuator(const char *s);
 
 		static bool parseIncPunctuator(const char *s);
 		static bool parseDecPunctuator(const char *s);
 
 
 
-		static PUNCTUATOR_TYPE  parsePunctuatorGroup0(const char *s);
-		static PUNCTUATOR_TYPE  parsePunctuatorGroup1(const char *s);
-		static PUNCTUATOR_TYPE  parsePunctuatorGroup2(const char *s);
-		static PUNCTUATOR_TYPE  parsePunctuatorGroup3(const char *s);
-		static PUNCTUATOR_TYPE  parsePunctuatorGroup4(const char *s);
-		static PUNCTUATOR_TYPE  parsePunctuatorGroup5(const char *s);
-		static PUNCTUATOR_TYPE  parsePunctuatorGroup6(const char *s);
-		static PUNCTUATOR_TYPE  parsePunctuatorGroup7(const char *s);
-		static PUNCTUATOR_TYPE  parsePunctuatorGroup8(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  parsePunctuatorGroup0(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  parsePunctuatorGroup1(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  parsePunctuatorGroup2(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  parsePunctuatorGroup3(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  parsePunctuatorGroup4(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  parsePunctuatorGroup5(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  parsePunctuatorGroup6(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  parsePunctuatorGroup7(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  parsePunctuatorGroup8(const char *s);
 
-		static PUNCTUATOR_TYPE   parseArithmeticPunctuator(const char *s);
-		static PUNCTUATOR_TYPE   isOperatorPunctuator(const char *s);
-		static PUNCTUATOR_TYPE   isSpecialPunctuator(const char *s);
-		static PUNCTUATOR_TYPE  isPunctuator(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__   parseArithmeticPunctuator(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__   isOperatorPunctuator(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__   isSpecialPunctuator(const char *s);
+		static __PUNCTUATOR_TYPE_OLD__  isPunctuator(const char *s);
 
 
 		// AST core functions ...
@@ -305,8 +306,8 @@ namespace zetscript{
 				CScope *scope_info,
 				string & symbol_name,
 				int & m_definedSymbolLine,
-				PUNCTUATOR_TYPE pre_operator,
-				PUNCTUATOR_TYPE & post_operator,
+				__PUNCTUATOR_TYPE_OLD__ pre_operator,
+				__PUNCTUATOR_TYPE_OLD__ & post_operator,
 				bool & is_symbol_trivial
 		);
 

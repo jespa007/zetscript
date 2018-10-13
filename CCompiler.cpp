@@ -450,7 +450,7 @@ namespace zetscript{
 			}
 
 			if(check_node != NULL){
-				node_access =check_node->operator_info==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR; // trivial case...
+				node_access =check_node->operator_info==__PUNCTUATOR_TYPE_OLD__::FIELD_PUNCTUATOR; // trivial case...
 			}
 
 			if(node_access){
@@ -460,7 +460,7 @@ namespace zetscript{
 
 						// if c.b is trivial but it has c.b.a must check that parent it has another punctuator.
 						node_access = (check_node->children[0] != child_compare)
-								   || (AST_NODE(check_node->idxAstParent)->operator_info==PUNCTUATOR_TYPE::FIELD_PUNCTUATOR); // parent not access left is first...
+								   || (AST_NODE(check_node->idxAstParent)->operator_info==__PUNCTUATOR_TYPE_OLD__::FIELD_PUNCTUATOR); // parent not access left is first...
 					}
 				}
 			}
@@ -963,20 +963,20 @@ namespace zetscript{
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	unsigned int CCompiler::post_operator2instruction_property(PUNCTUATOR_TYPE op){
+	unsigned int CCompiler::post_operator2instruction_property(__PUNCTUATOR_TYPE_OLD__ op){
 
 		switch(op){
 		default:
 			break;
-		case PUNCTUATOR_TYPE::POST_INC_PUNCTUATOR:
+		case __PUNCTUATOR_TYPE_OLD__::POST_INC_PUNCTUATOR:
 			return INS_PROPERTY_POST_INC;
-		case PUNCTUATOR_TYPE::POST_DEC_PUNCTUATOR:
+		case __PUNCTUATOR_TYPE_OLD__::POST_DEC_PUNCTUATOR:
 			return INS_PROPERTY_POST_DEC;
 		}
 		return 0;//INS_PROPERTY_UNKNOW_PRE_POST_OPERATOR;
 	}
 
-	ASM_OPERATOR CCompiler::puntuator2instruction(PUNCTUATOR_TYPE op){
+	ASM_OPERATOR CCompiler::puntuator2instruction(__PUNCTUATOR_TYPE_OLD__ op){
 
 		switch(op){
 		default:
@@ -1034,7 +1034,7 @@ namespace zetscript{
 	}
 
 
-	bool CCompiler::insertOperatorInstruction(PUNCTUATOR_TYPE op,short idxAstNode,  string & error_str){
+	bool CCompiler::insertOperatorInstruction(__PUNCTUATOR_TYPE_OLD__ op,short idxAstNode,  string & error_str){
 		PASTNode _node=AST_NODE( idxAstNode);
 		tInfoAsmOpCompiler *iao=NULL;
 
@@ -1107,7 +1107,7 @@ namespace zetscript{
 		}
 
 
-		if(op == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR){ // trivial access...
+		if(op == __PUNCTUATOR_TYPE_OLD__::FIELD_PUNCTUATOR){ // trivial access...
 			return true;
 		}
 		ASM_OPERATOR asm_op;
@@ -1217,7 +1217,7 @@ namespace zetscript{
 			}
 		}
 
-		if(_node->pre_post_operator_info != PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){ // there's pre/post increment...
+		if(_node->pre_post_operator_info != __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){ // there's pre/post increment...
 			// get post/inc
 			tInfoAsmOpCompiler *asm_op = m_currentFunctionInfo->asm_op[m_currentFunctionInfo->asm_op.size()-1];
 			asm_op->pre_post_op_type=post_operator2instruction_property(_node->pre_post_operator_info);
@@ -1379,10 +1379,10 @@ namespace zetscript{
 
 		string error_str;
 		bool access_node = false;
-		PUNCTUATOR_TYPE pre_operator = PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR;
+		__PUNCTUATOR_TYPE_OLD__ pre_operator = __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR;
 		switch(_node->pre_post_operator_info){
-		case PUNCTUATOR_TYPE::POST_DEC_PUNCTUATOR:
-		case PUNCTUATOR_TYPE::POST_INC_PUNCTUATOR:
+		case __PUNCTUATOR_TYPE_OLD__::POST_DEC_PUNCTUATOR:
+		case __PUNCTUATOR_TYPE_OLD__::POST_INC_PUNCTUATOR:
 			break;
 		default:
 			pre_operator=_node->pre_post_operator_info;
@@ -1489,7 +1489,7 @@ namespace zetscript{
 			}
 		}else{
 
-			if(_node->operator_info == PUNCTUATOR_TYPE::UNKNOWN_PUNCTUATOR){
+			if(_node->operator_info == __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
 				writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Malformed expression at line %i");
 				return false;
 			}
@@ -1505,7 +1505,7 @@ namespace zetscript{
 			}else{
 				// only inserts terminal symbols...
 				if(_node!=NULL ){
-					access_node = _node->operator_info == PUNCTUATOR_TYPE::FIELD_PUNCTUATOR;
+					access_node = _node->operator_info == __PUNCTUATOR_TYPE_OLD__::FIELD_PUNCTUATOR;
 				}
 				// check if there's inline-if-else
 				bool right=false, left=false;
@@ -1545,14 +1545,14 @@ namespace zetscript{
 		// we ignore field node instruction ...
 
 		switch(pre_operator){
-		case PUNCTUATOR_TYPE::LOGIC_NOT_PUNCTUATOR:
+		case __PUNCTUATOR_TYPE_OLD__::LOGIC_NOT_PUNCTUATOR:
 			insertNot(_node->idxAstNode);
 			break;
-		case PUNCTUATOR_TYPE::SUB_PUNCTUATOR:
+		case __PUNCTUATOR_TYPE_OLD__::SUB_PUNCTUATOR:
 			insertNeg(_node->idxAstNode);
 			break;
-		case PUNCTUATOR_TYPE::PRE_DEC_PUNCTUATOR:
-		case PUNCTUATOR_TYPE::PRE_INC_PUNCTUATOR:
+		case __PUNCTUATOR_TYPE_OLD__::PRE_DEC_PUNCTUATOR:
+		case __PUNCTUATOR_TYPE_OLD__::PRE_INC_PUNCTUATOR:
 			{
 				//tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
 				tInfoAsmOpCompiler *asm_op = m_currentFunctionInfo->asm_op[m_currentFunctionInfo->asm_op.size()-1];
@@ -2910,9 +2910,9 @@ namespace zetscript{
 
 
 		// update reference symbols (like link))
-		if(!CScriptClass::updateReferenceSymbols()){
+		/*if(!CScriptClass::updateReferenceSymbols()){
 			return false;
-		}
+		}*/
 
 		// build current cache after compile...
 		CURRENT_VM->buildCache();
