@@ -1100,6 +1100,8 @@ namespace zetscript{
 			root = &vExpressionTokens[0];
 		}
 
+		// concatenate result byte code...
+
 		// last character is a separator so it return increments by 1
 		return aux_p+1;
 	}
