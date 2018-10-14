@@ -114,7 +114,7 @@ namespace zetscript{
 			MAX_SEPARATOR_TYPES
 		};
 
-	struct tInfoAsmOpCompiler{
+	struct tInfoByteCodeCompiler{
 		ASM_OPERATOR operator_type;
 		unsigned char index_op1; 	// index/type/etc
 		intptr_t  index_op2; 		// usually a pointer or index
@@ -123,7 +123,7 @@ namespace zetscript{
 		unsigned int scope_type;
 		unsigned int runtime_prop;
 
-		tInfoAsmOpCompiler(){
+		tInfoByteCodeCompiler(){
 			operator_type=ASM_OPERATOR::END_FUNCTION;
 			index_op1=ZS_UNDEFINED_IDX;
 			index_op2=ZS_UNDEFINED_IDX;
@@ -141,7 +141,7 @@ namespace zetscript{
 		TOKEN_TYPE	  token_type; // can be operator, literal, identifier, object. (separator are not take account)
 		OPERATOR_TYPE  operator_type;
 		string value;
-		vector<tInfoAsmOpCompiler> asm_op; // byte code load literal/identifier(can be anonymous function), vector/struct.
+		vector<tInfoByteCodeCompiler> byte_code; // byte code load literal/identifier(can be anonymous function), vector/struct.
 		tTokenNode *left;
 		tTokenNode *right;
 
@@ -156,12 +156,12 @@ namespace zetscript{
 
 
 		typedef struct {
-			vector<tInfoAsmOpCompiler> asm_op;
+			vector<tInfoByteCodeCompiler> byte_code;
 		}tContinueInstructionScope,tBreakInstructionScope;
 
 		struct tInfoFunctionCompile{
 
-			vector<tInfoAsmOpCompiler> 				asm_op;
+			vector<tInfoByteCodeCompiler> 				byte_code;
 			CScriptFunctionObject 				*  	function_info_object;
 
 			tInfoFunctionCompile(CScriptFunctionObject	* _function_info_object){
@@ -267,24 +267,24 @@ namespace zetscript{
 		// AST core functions ...
 
 		static bool  buildAstExpression(tTokenNode **node,vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
-		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op);
+		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 
 
 		// NEW EXPRESSION...
-		static char * evalExpressionNew(const char *s,int & line,  CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op);
+		static char * evalExpressionNew(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 		// FUNCTION OBJECT...
-		static char * evalExpressionFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op);
+		static char * evalExpressionFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 		//STRUCT OBJECT...
-		static char * evalExpressionStructObject(const char *s,int & line,  CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op);
+		static char * evalExpressionStructObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 		//VECTOR OBJECT...
-		static char * evalExpressionVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op);
+		static char * evalExpressionVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 		// GENERIC VECTOR/FUNCTION ARGS
-		static char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op);
+		static char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 
 		// END EXPRESSION FUNCTION

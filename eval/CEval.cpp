@@ -828,7 +828,7 @@ namespace zetscript{
 	//------------------------------------------------------------------------------------------------------------
 
 
-	char * CEval::evalExpressionFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op){
+	char * CEval::evalExpressionFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code){
 
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 
@@ -836,7 +836,7 @@ namespace zetscript{
 	}
 
 
-	char * CEval::evalExpressionStructObject(const char *s,int & line,  CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op){
+	char * CEval::evalExpressionStructObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
@@ -895,7 +895,7 @@ namespace zetscript{
 	}
 
 
-	char * CEval::evalExpressionVectorObject(const char *s,int & line,  CScope *scope_info,  vector<tInfoAsmOpCompiler> *	asm_op){
+	char * CEval::evalExpressionVectorObject(const char *s,int & line,  CScope *scope_info,  vector<tInfoByteCodeCompiler> *	byte_code){
 
 		char * aux_p=IGNORE_BLANKS(s,line);
 
@@ -930,7 +930,7 @@ namespace zetscript{
 
 	}
 
-	char * CEval::evalExpressionNew(const char *s,int & line,  CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op){
+	char * CEval::evalExpressionNew(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		char *end_p;
@@ -961,7 +961,7 @@ namespace zetscript{
 					 return NULL;
 				 }
 
-				 aux_p = evalExpressionArgs('(', ')',aux_p,line,scope_info,asm_op);
+				 aux_p = evalExpressionArgs('(', ')',aux_p,line,scope_info,byte_code);
 				 if(aux_p == NULL){
 					 return NULL;
 				 }
@@ -1012,7 +1012,7 @@ namespace zetscript{
   		       buildAstExpression(&split_node->right,vExpressionTokens,idx_split+1,idx_end,error); // right branches...
 	}
 
-	char * CEval::evalExpression(const char *s, int & line, CScope *scope_info, vector<tInfoAsmOpCompiler> 	* asm_op){
+	char * CEval::evalExpression(const char *s, int & line, CScope *scope_info, vector<tInfoByteCodeCompiler> 	* byte_code){
 		// PRE: s is current string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
 
@@ -1046,8 +1046,8 @@ namespace zetscript{
 
 			// parenthesis (evals another expression)
 			if(*aux_p=='('){
-				vector<tInfoAsmOpCompiler> 	asm_op_inner;
-				if((aux_p=evalExpression(aux_p+1, line, scope_info, &asm_op_inner))==NULL){
+				vector<tInfoByteCodeCompiler> 	byte_code_inner;
+				if((aux_p=evalExpression(aux_p+1, line, scope_info, &byte_code_inner))==NULL){
 					return NULL;
 				}
 
@@ -1324,7 +1324,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalExpressionArgs(char c1,char c2,const char *s,int & line,  CScope *scope_info, vector<tInfoAsmOpCompiler> 		*	asm_op){
+	char * CEval::evalExpressionArgs(char c1,char c2,const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		PASTNode   node_arg_expression=NULL;
@@ -1344,7 +1344,7 @@ namespace zetscript{
 				}
 
 				do{
-					if((aux_p = evalExpression(aux_p,line,scope_info,asm_op))==NULL){
+					if((aux_p = evalExpression(aux_p,line,scope_info,byte_code))==NULL){
 						return NULL;
 					}
 
@@ -1598,7 +1598,7 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,line);
 
 
-				if((aux_p = evalExpression(aux_p, line, scope_info,&ifc->asm_op))!= NULL){
+				if((aux_p = evalExpression(aux_p, line, scope_info,&ifc->byte_code))!= NULL){
 
 
 					if(*aux_p!=';'){
@@ -1640,7 +1640,7 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,line);
 				if(*aux_p == '('){
 
-					if((end_expr = evalExpression(aux_p+1,line,_currentScope,&ifc->asm_op)) != NULL){
+					if((end_expr = evalExpression(aux_p+1,line,_currentScope,&ifc->byte_code)) != NULL){
 
 						if(*end_expr != ')'){
 							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')'");
@@ -1738,7 +1738,7 @@ namespace zetscript{
 
 						if(*aux_p == '('){
 
-							if((end_expr = evalExpression(aux_p+1,line,_currentScope,&ifc->asm_op)) != NULL){
+							if((end_expr = evalExpression(aux_p+1,line,_currentScope,&ifc->byte_code)) != NULL){
 
 								if(*end_expr != ')'){
 									writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')'");
@@ -1800,7 +1800,7 @@ namespace zetscript{
 
 					conditional_line=line;
 
-					if((end_expr = evalExpression(aux_p+1,line,scope_info,&ifc->asm_op)) == NULL){
+					if((end_expr = evalExpression(aux_p+1,line,scope_info,&ifc->byte_code)) == NULL){
 						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')' if ");
 						return NULL;
 					}
@@ -1957,7 +1957,7 @@ namespace zetscript{
 						aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[KEYWORD_TYPE::IN_KEYWORD].str),line);
 
 
-						if((aux_p = evalExpression((const char *)aux_p,line,_currentScope,&ifc->asm_op)) == NULL){
+						if((aux_p = evalExpression((const char *)aux_p,line,_currentScope,&ifc->byte_code)) == NULL){
 							return NULL;
 						}
 					}
@@ -1978,7 +1978,7 @@ namespace zetscript{
 
 							if(*end_p != ';'){// there's some condition if not, then is like for(X;true;X)
 
-								if((aux_p = evalExpression((const char *)aux_p,line,_currentScope,&ifc->asm_op)) == NULL){
+								if((aux_p = evalExpression((const char *)aux_p,line,_currentScope,&ifc->byte_code)) == NULL){
 									return NULL;
 								}
 
@@ -2004,7 +2004,7 @@ namespace zetscript{
 							}
 
 							do{
-								if((aux_p = evalExpression(aux_p,line,_currentScope,&ifc->asm_op))==NULL){
+								if((aux_p = evalExpression(aux_p,line,_currentScope,&ifc->byte_code))==NULL){
 									return NULL;
 								}
 
@@ -2103,7 +2103,7 @@ namespace zetscript{
 								aux_p,
 								line,
 								scope_info,
-								&ifc->asm_op
+								&ifc->byte_code
 								))==NULL)
 						{
 							return NULL;
@@ -2260,7 +2260,7 @@ namespace zetscript{
 							// try to evaluate expression...
 							aux_p=IGNORE_BLANKS(aux_p,line);
 
-							if((aux_p = evalExpression(start_var,m_startLine,scope_info,&ifc->asm_op)) == NULL){
+							if((aux_p = evalExpression(start_var,m_startLine,scope_info,&ifc->byte_code)) == NULL){
 								return NULL;
 							}
 
@@ -2401,7 +2401,7 @@ namespace zetscript{
 		string value_to_eval;
 		tTokenNode token_node;
 
-		vector<tInfoAsmOpCompiler> *tokenCompiled = NULL;
+		vector<tInfoByteCodeCompiler> *tokenCompiled = NULL;
 
 		aux_p=IGNORE_BLANKS(aux_p, line);
 
@@ -2617,7 +2617,7 @@ namespace zetscript{
 						// 2nd. try expression
 						int starting_expression=line;
 
-						if((end_expr = evalExpression(aux,line, scope_info,&ifc->asm_op)) == NULL){ // something wrong was happen.
+						if((end_expr = evalExpression(aux,line, scope_info,&ifc->byte_code)) == NULL){ // something wrong was happen.
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
