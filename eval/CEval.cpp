@@ -975,15 +975,16 @@ namespace zetscript{
 	//-----------------------------------------------------------------------------------------------------------
 	bool CEval::buildAstExpression(tTokenNode **node,vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end, bool & error){
 
-		// search priority operator and split...
 		OPERATOR_TYPE 	op_split=OPERATOR_TYPE::UNKNOWN_OPERATOR;
 		int 			idx_split=-1;
 		tTokenNode      *split_node;
 
+		// trivial case (no operator left)...
 		if(idx_start>=idx_end){
 			return false;
 		}
 
+		// search for the most priority operator...
 		for(int i=idx_start; i < idx_end; i++){
 
 			if( (vExpressionTokens->at(i).token_type == TOKEN_TYPE::OPERATOR_TOKEN)
@@ -992,7 +993,6 @@ namespace zetscript{
 				idx_split=i;
 				op_split=vExpressionTokens->at(i).operator_type;
 			}
-
 		}
 
 		if(idx_split == -1){
@@ -1007,9 +1007,9 @@ namespace zetscript{
 
 
 
-		return buildAstExpression(&split_node->left,vExpressionTokens,idx_start,idx_split-1, error) // left nodes...
+		return buildAstExpression(&split_node->left,vExpressionTokens,idx_start,idx_split-1, error) // left branches...
 									&&
-  		       buildAstExpression(&split_node->right,vExpressionTokens,idx_split+1,idx_end,error); // right nodes...
+  		       buildAstExpression(&split_node->right,vExpressionTokens,idx_split+1,idx_end,error); // right branches...
 	}
 
 	char * CEval::evalExpression(const char *s, int & line, CScope *scope_info, vector<tInfoAsmOpCompiler> 	* asm_op){
@@ -1022,10 +1022,8 @@ namespace zetscript{
 		tTokenNode *root;
 		bool error=false;
 
-
 		PASTNode ast_node_to_be_evaluated=NULL;
 		char *aux_p=IGNORE_BLANKS(s,line);
-
 
 		while(!isEndSeparator(*aux_p)){
 
@@ -1102,7 +1100,7 @@ namespace zetscript{
 			root = &vExpressionTokens[0];
 		}
 
-		// last character is a separator so it incs by 1
+		// last character is a separator so it return increments by 1
 		return aux_p+1;
 	}
 
