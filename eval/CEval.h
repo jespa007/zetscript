@@ -28,12 +28,20 @@ namespace zetscript{
     	// In a expression we can find three types of tokens: an identifier, a separator, an operator, a literal or object token.
 		enum TOKEN_TYPE:char{
 			UNKNOWN_TOKEN=0,
-			IDENTIFIER_TOKEN,
-			LITERAL_TOKEN,
-			OPERATOR_TOKEN,
-			SEPARATOR_TOKEN,
-			OBJECT_TOKEN,
+			IDENTIFIER_TOKEN,  // a,b,c,d
+			LITERAL_TOKEN, // true, false, 0.1, -12e-12
+			OPERATOR_TOKEN, // +,-,%, ...
+			SEPARATOR_TOKEN, // ',',')',...
+			OBJECT_TOKEN, // [0,1,2], function(i){ return i+1;}
 			MAX_TOKEN_TYPES
+		};
+
+		enum OPERATION_TYPE:char{
+			UNKNOWN_OPERATION=0,
+			CALL_FUNCTION_OPERATION, // v(1)
+			VECTOR_ACCESS_OPERATION, // v[0]
+			NEW_OBJECT_OPERATION, // new ob()
+
 		};
 
 		enum OPERATOR_TYPE
@@ -138,8 +146,14 @@ namespace zetscript{
 
 	struct tTokenNode{
 
-		TOKEN_TYPE	  token_type; // can be operator, literal, identifier, object. (separator are not take account)
-		OPERATOR_TYPE  operator_type;
+
+		TOKEN_TYPE	  		token_type; // can be operator, literal, identifier, object. (separator are not take account)
+		PRE_OPERATOR_TYPE   pre_operator_type; // !,+,-
+		OPERATOR_TYPE  		operator_type;
+
+		PRE_POST_OPERATOR_IDENTITY_TYPE  pre_operator_identity_type; // ++i,--i
+		PRE_POST_OPERATOR_IDENTITY_TYPE  post_operator_identity_type; // i++,i--
+
 		string value;
 		vector<tInfoByteCodeCompiler> byte_code; // byte code load literal/identifier(can be anonymous function), vector/struct.
 		tTokenNode *left;
@@ -265,7 +279,7 @@ namespace zetscript{
 
 
 		// AST core functions ...
-
+		static bool CEval::generateByteCodeExpression(tTokenNode *_node);
 		static bool  buildAstExpression(tTokenNode **node,vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
 		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 

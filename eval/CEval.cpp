@@ -973,6 +973,172 @@ namespace zetscript{
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
+	bool CEval::generateByteCodeExpression(tTokenNode *_node){
+
+		string error_str;
+		bool access_node = false;
+		PRE_OPERATOR_TYPE pre_operator = PRE_OPERATOR_TYPE::UNKNOWN_PRE_OPERATOR;
+		bool terminal_node = _node->right == NULL && _node->left == NULL;
+
+		bool this_access_scope=false;
+
+		//if(_node->node_type == PUNCTUATOR_NODE)
+		{
+
+			if((_node->left->value=="this")){
+				if(_node->operator_type == FIELD_PUNCTUATOR){
+
+					this_access_scope =true;
+
+				}
+				else if(_node->operator_type == ASSIGN_PUNCTUATOR){
+
+					writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"\"this\" is not assignable ");
+					return ZS_UNDEFINED_IDX;
+				}
+			}
+		}
+
+		if(this_access_scope)// only take care right children...
+		{
+			_node = _node->right;
+		}
+
+		switch(_node->token_type){
+		case CALL_FUNCTION_TOKEN:  // pool[] or pool()
+			break;
+		case VECTOR_ACCESS_TOKEN:  // pool[] or pool()
+			break;
+		case NEW_OBJECT_TOKEN:   // new
+		){
+					if(array_access){
+						if((!gacExpression_ArrayAccess(_node, _lc))){
+													return false;
+						}
+					}else if(function_access){
+						if((!gacExpression_FunctionAccess(_node, _lc))){
+							return false;
+						}
+					}
+					else{
+						switch(eval_node_sp->node_type){
+						case ARRAY_OBJECT_NODE: // should have 1 children
+							if(!gacExpression_ArrayObject(_node, _lc)){
+								return false;
+							}
+							break;
+
+						case FUNCTION_OBJECT_NODE: // should have 1 children
+							if(!gacExpression_FunctionObject(_node, _lc)){
+								return false;
+							}
+							break;
+
+						case NEW_OBJECT_NODE:
+							if(!(gacNew(_node, _lc))){
+								return false;
+							}
+							break;
+						case STRUCT_NODE:
+							if((!gacExpression_Struct(_node, _lc))){
+								return false;
+							}
+							break;
+						default:
+							THROW_RUNTIME_ERROR("Unexpected node type %i",CZetScriptUtils::intToString(eval_node_sp->node_type));
+							return false;
+							break;
+						}
+					}
+			}
+			else{ // TERMINAL NODE
+
+				if(!insertLoadValueInstruction(_node, _lc)){
+					return false;
+				}
+			}
+
+		}else{
+
+			if(_node->operator_info == __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){
+				writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"Malformed expression at line %i");
+				return false;
+			}
+
+			if(_node->operator_info == TERNARY_IF_PUNCTUATOR){
+				if(AST_NODE(_node->children[1])->operator_info == TERNARY_ELSE_PUNCTUATOR){
+					return gacInlineIf(_node,_lc);
+
+				}else{
+					writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode)," Put parenthesis on the inner ternary conditional");
+					return false;
+				}
+			}else{
+				// only inserts terminal symbols...
+				if(_node!=NULL ){
+					access_node = _node->operator_info == __PUNCTUATOR_TYPE_OLD__::FIELD_PUNCTUATOR;
+				}
+				// check if there's inline-if-else
+				bool right=false, left=false;
+				if((left=gacExpression_Recursive(AST_NODE(_node->children[LEFT_NODE]), _lc))==false){
+					return false;
+				}
+
+				if(_node->children.size()==2){
+					if((right=gacExpression_Recursive(AST_NODE(_node->children[RIGHT_NODE]),_lc))==false){
+						return false;
+					}
+				}
+
+				if(left !=false && right!=false){ // 2 ops (i.e 2+2)
+
+					// Ignore punctuator node. Only take cares about terminal symbols...
+					if(!access_node){
+						// particular case if operator is =
+						if(!insertOperatorInstruction(_node->operator_info,_node->idxAstNode,error_str)){
+							writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
+							return false;
+						}
+					}
+
+				}else if(left!=false){ // one op.. (i.e -i;)
+					if(!insertOperatorInstruction(_node->operator_info,_node->idxAstNode,  error_str)){
+						writeErrorMsg(GET_AST_FILENAME_LINE(_node->idxAstNode),"%s",error_str.c_str());
+						return false;
+					}
+				}else{ // ERROR
+					THROW_RUNTIME_ERROR("ERROR both ops ==0");
+					return false;
+				}
+			}
+		}
+
+		// we ignore field node instruction ...
+
+		switch(pre_operator){
+		case __PUNCTUATOR_TYPE_OLD__::LOGIC_NOT_PUNCTUATOR:
+			insertNot(_node->idxAstNode);
+			break;
+		case __PUNCTUATOR_TYPE_OLD__::SUB_PUNCTUATOR:
+			insertNeg(_node->idxAstNode);
+			break;
+		case __PUNCTUATOR_TYPE_OLD__::PRE_DEC_PUNCTUATOR:
+		case __PUNCTUATOR_TYPE_OLD__::PRE_INC_PUNCTUATOR:
+			{
+				//tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
+				tInfoAsmOpCompiler *asm_op = m_currentFunctionInfo->asm_op[m_currentFunctionInfo->asm_op.size()-1];
+				asm_op->pre_post_op_type=pre_operator==PRE_DEC_PUNCTUATOR?INS_PROPERTY_PRE_DEC:INS_PROPERTY_PRE_INC;
+			}
+			break;
+		default:
+			break;
+		}
+
+		return true;
+	}
+
+
+
 	bool CEval::buildAstExpression(tTokenNode **node,vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end, bool & error){
 
 		OPERATOR_TYPE 	op_split=OPERATOR_TYPE::UNKNOWN_OPERATOR;
