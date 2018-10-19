@@ -32,16 +32,24 @@ namespace zetscript{
 			LITERAL_TOKEN, // true, false, 0.1, -12e-12
 			OPERATOR_TOKEN, // +,-,%, ...
 			SEPARATOR_TOKEN, // ',',')',...
-			OBJECT_TOKEN, // [0,1,2], function(i){ return i+1;}
+			OBJECT_TOKEN, // [0,1,2], function(i){ return i+1;}, new obj()
 			MAX_TOKEN_TYPES
 		};
 
-		enum OPERATION_TYPE:char{
-			UNKNOWN_OPERATION=0,
-			CALL_FUNCTION_OPERATION, // v(1)
-			VECTOR_ACCESS_OPERATION, // v[0]
-			NEW_OBJECT_OPERATION, // new ob()
+		enum OBJECT_TYPE:char{
+			UNKNOWN_OBJECT_TYPE=0,
+			VECTOR_OBJECT_TYPE,
+			STRUCT_OBJECT_TYPE,
+			FUNCTION_OBJECT_TYPE,
+			NEW_OBJECT_TYPE, // =new ob(); | op (new obj()) op
+			MAX_OBJECT_TYPES
+		};
 
+		enum OPERATION_TYPE:char{
+			UNKNOWN_OPERATION_TYPE=0,
+			CALL_FUNCTION_OPERATION_TYPE, // v(1)
+			VECTOR_ACCESS_OPERATION_TYPE, // v[0]
+			MAX_OPERATION_TYPES
 		};
 
 		enum OPERATOR_TYPE
@@ -279,7 +287,7 @@ namespace zetscript{
 
 
 		// AST core functions ...
-		static bool CEval::generateByteCodeExpression(tTokenNode *_node);
+		static bool  generateByteCodeExpression(tTokenNode *_node);
 		static bool  buildAstExpression(tTokenNode **node,vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
 		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
