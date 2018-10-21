@@ -31,25 +31,21 @@ namespace zetscript{
 			IDENTIFIER_TOKEN,  // a,b,c,d
 			LITERAL_TOKEN, // true, false, 0.1, -12e-12
 			OPERATOR_TOKEN, // +,-,%, ...
-			SEPARATOR_TOKEN, // ',',')',...
-			OBJECT_TOKEN, // [0,1,2], function(i){ return i+1;}, new obj()
+			SUB_EXPRESSION_TOKEN,
+			VECTOR_OBJECT_TOKEN,
+			STRUCT_OBJECT_TOKEN,
+			FUNCTION_OBJECT_TOKEN,
+			NEW_OBJECT_TOKEN, // =new ob(); | op (new obj()) op
 			MAX_TOKEN_TYPES
 		};
 
-		enum OBJECT_TYPE:char{
-			UNKNOWN_OBJECT_TYPE=0,
-			VECTOR_OBJECT_TYPE,
-			STRUCT_OBJECT_TYPE,
-			FUNCTION_OBJECT_TYPE,
-			NEW_OBJECT_TYPE, // =new ob(); | op (new obj()) op
-			MAX_OBJECT_TYPES
-		};
 
-		enum OPERATION_TYPE:char{
-			UNKNOWN_OPERATION_TYPE=0,
-			CALL_FUNCTION_OPERATION_TYPE, // v(1)
-			VECTOR_ACCESS_OPERATION_TYPE, // v[0]
-			MAX_OPERATION_TYPES
+		enum ACCESS_TYPE:char{
+			UNKNOWN_ACCESS_TYPE=0,
+			CALL_ACCESS, // v(1)
+			VECTOR_ACCESS, // v[0]
+			MEMBER_ACCESS, // a.b.c
+			MAX_ACCESS_TYPES
 		};
 
 		enum OPERATOR_TYPE
@@ -75,6 +71,8 @@ namespace zetscript{
 			LOGIC_NOT_EQUAL_OPERATOR, 		// !=
 			LOGIC_GTE_OPERATOR, 			// >=
 			LOGIC_LTE_OPERATOR, 			// <=
+			LOGIC_GT_OPERATOR, 				// >
+			LOGIC_LT_OPERATOR, 				// <
 
 
 			ADD_OPERATOR, 					// +
@@ -90,10 +88,6 @@ namespace zetscript{
 
 			INSTANCEOF_OPERATOR, 			// instanceof
 
-			FIELD_OPERATOR, 				// .
-			LOGIC_GT_OPERATOR, 				// >
-			LOGIC_LT_OPERATOR, 				// <
-
 			TERNARY_IF_OPERATOR, 			// ?
 			TERNARY_ELSE_OPERATOR, 			// :
 			MAX_OPERATOR_TYPES
@@ -107,11 +101,11 @@ namespace zetscript{
 			MAX_PRE_OPERATOR_TYPES
 		};
 
-		enum PRE_POST_OPERATOR_IDENTITY_TYPE:unsigned char {
-			UNKNOWN_PRE_POST_IDENTITY_OPERATOR=0,
-			PRE_POST_IDENTITY_INC_OPERATOR,	// ++
-			PRE_POST_IDENTITY_DEC_OPERATOR,	// --
-			MAX_PRE_POST_IDENTITY_OPERATOR_TYPES
+		enum IDENTITY_OPERATOR_TYPE:unsigned char {
+			UNKNOWN_IDENTITY_OPERATOR=0,
+			IDENTITY_INC_OPERATOR,	// ++
+			IDENTITY_DEC_OPERATOR,	// --
+			MAX_IDENTITY_OPERATOR_TYPES
 		};
 
 
@@ -123,19 +117,19 @@ namespace zetscript{
 			SEMICOLON_SEPARATOR,    		// ;
 			OPEN_PARENTHESIS_SEPARATOR, 	// (
 			CLOSE_PARENTHESIS_SEPARATOR, 	// )
-			OPEN_BRAKET_SEPARATOR, 			// {
-			CLOSE_BRAKET_SEPARATOR, 		// }
 			OPEN_SQUARE_BRAKET_SEPARATOR, 	// [
 			CLOSE_SQUARE_BRAKET_SEPARATOR, 	// ]
 			MAX_SEPARATOR_TYPES
 		};
+
 
 	struct tInfoByteCodeCompiler{
 		ASM_OPERATOR operator_type;
 		unsigned char index_op1; 	// index/type/etc
 		intptr_t  index_op2; 		// usually a pointer or index
 		unsigned short var_type;
-		unsigned int pre_post_op_type;
+		unsigned int pre_op_type;
+		unsigned int post_op_type;
 		unsigned int scope_type;
 		unsigned int runtime_prop;
 
@@ -145,11 +139,23 @@ namespace zetscript{
 			index_op2=ZS_UNDEFINED_IDX;
 
 			var_type=0;
-			pre_post_op_type=0;
+			pre_op_type=0;
+			post_op_type=0;
 			scope_type = 0;
 			runtime_prop = 0;
 		}
 
+	};
+
+	struct tTokenNodeAccess {
+
+		ACCESS_TYPE access_type;
+		string value;
+		vector<tInfoByteCodeCompiler> byte_code;
+
+		tTokenNodeAccess(){
+			access_type=ACCESS_TYPE::UNKNOWN_ACCESS_TYPE;
+		}
 	};
 
 	struct tTokenNode{
@@ -159,21 +165,36 @@ namespace zetscript{
 		PRE_OPERATOR_TYPE   pre_operator_type; // !,+,-
 		OPERATOR_TYPE  		operator_type;
 
-		PRE_POST_OPERATOR_IDENTITY_TYPE  pre_operator_identity_type; // ++i,--i
-		PRE_POST_OPERATOR_IDENTITY_TYPE  post_operator_identity_type; // i++,i--
+
+		IDENTITY_OPERATOR_TYPE  pre_inline_operator_identity_type; // ++i,--i
+		IDENTITY_OPERATOR_TYPE  post_inline_operator_identity_type; // i++,i--
 
 		string value;
+		int line;
 		vector<tInfoByteCodeCompiler> byte_code; // byte code load literal/identifier(can be anonymous function), vector/struct.
+
+		// access info like function call, vector access and variable memeber
+		vector<tTokenNodeAccess> access;
+
+		// AST info operator.
 		tTokenNode *left;
 		tTokenNode *right;
 
 		tTokenNode(){
+			line=-1;
+
 			token_type=TOKEN_TYPE::UNKNOWN_TOKEN;
 			operator_type=OPERATOR_TYPE::UNKNOWN_OPERATOR;
 			left=right=NULL;
+			pre_operator_type=PRE_OPERATOR_TYPE::UNKNOWN_PRE_OPERATOR;
+			pre_inline_operator_identity_type=IDENTITY_OPERATOR_TYPE::UNKNOWN_IDENTITY_OPERATOR;
+			post_inline_operator_identity_type=IDENTITY_OPERATOR_TYPE::UNKNOWN_IDENTITY_OPERATOR;
+
 		}
 
 	};
+
+
 
 
 
@@ -218,10 +239,10 @@ namespace zetscript{
 		} tPreOperatorInfo;
 
 		typedef struct {
-			PRE_POST_OPERATOR_IDENTITY_TYPE id;
+			IDENTITY_OPERATOR_TYPE id;
 			const char *str;
 			bool (*eval_fun)(const char *);
-		} tPrePostIdentityOperatorInfo;
+		} tIdentityOperatorInfo;
 
 
 		typedef struct {
@@ -239,26 +260,32 @@ namespace zetscript{
 
 		static tOperatorInfo defined_operator[MAX_OPERATOR_TYPES];
 		static tPreOperatorInfo defined_pre_operator[MAX_PRE_OPERATOR_TYPES];
-		static tPrePostIdentityOperatorInfo defined_pre_post_identity_operator[MAX_PRE_POST_IDENTITY_OPERATOR_TYPES];
+		static tIdentityOperatorInfo defined_identity_operator[MAX_IDENTITY_OPERATOR_TYPES];
 		static tSeparatorInfo defined_separator[MAX_SEPARATOR_TYPES];
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
 		static tDirectiveInfo defined_directive[MAX_DIRECTIVES];
 
 
-
+		static tInfoFunctionCompile		m_currentFunctionInfo;
 
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// CONSTANT TOOLS
 
 		static tInfoConstantValue * getConstant(const string & const_name);
+		static tInfoConstantValue * addConstant(const string & const_name, int value);
 		static tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned short properties);
+
+
+		static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
+		static string 				makeSymbolRef(const string & symbol_var, int idxScope);
+		static int					getIdxScopeFromSymbolRef(const string & symbol_ref);
 
 
 		static KEYWORD_TYPE 	isKeyword(const char *c);
 		static DIRECTIVE_TYPE 	isDirective(const char *c);
 
-		static bool evalLiteralNumber(const char *c, int & line, tTokenNode * token_node, bool & error);
+		static bool evalLiteralNumber(const char *c, int & line, string & value, bool & error);
 
 
 		//-----------------------------------------------
@@ -267,15 +294,17 @@ namespace zetscript{
 
 		// string generic utils...
 
+		static bool isLiteral(const string & s);
 		static bool   isIdentifierNameExpressionOk(const string & symbol, int line);
 		static char *  getIdentifierToken(const char *s, const string & symbol);
 		static bool	  isEndSymbolToken(char *s,char pre=0);
-		static char * evalSymbol(const char *s, int line, tTokenNode * token_node);
+		static bool isAccessPunctuator(char *s);
+		static char * evalSymbol(const char *s, int line, CEval::tTokenNode *  token);
 
 		static SEPARATOR_TYPE  		evalSeparator(const char *s);
 		static OPERATOR_TYPE   		evalOperator(const char *s);
 		static PRE_OPERATOR_TYPE   	evalPreOperator(const char *s);
-		static PRE_POST_OPERATOR_IDENTITY_TYPE   evalPrePostIdentityOperator(const char *s);
+		static IDENTITY_OPERATOR_TYPE   evalPrePostIdentityOperator(const char *s);
 
 		static bool   isEndSeparator(char c);
 
@@ -294,16 +323,16 @@ namespace zetscript{
 
 
 		// NEW EXPRESSION...
-		static char * evalExpressionNew(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+		static char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 		// FUNCTION OBJECT...
-		static char * evalExpressionFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+		static char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 		//STRUCT OBJECT...
-		static char * evalExpressionStructObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+		static char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 		//VECTOR OBJECT...
-		static char * evalExpressionVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+		static char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
 
 		// GENERIC VECTOR/FUNCTION ARGS
 		static char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
