@@ -17,7 +17,7 @@ namespace zetscript{
 	public:
 
 
-		bool eval(const char *s);
+		static char * eval(const char *s);
 
 		static void	init();
 
@@ -40,12 +40,12 @@ namespace zetscript{
 		};
 
 
-		enum ACCESS_TYPE:char{
-			UNKNOWN_ACCESS_TYPE=0,
-			CALL_ACCESS, // v(1)
-			VECTOR_ACCESS, // v[0]
-			MEMBER_ACCESS, // a.b.c
-			MAX_ACCESS_TYPES
+		enum ACCESSOR_TYPE:char{
+			UNKNOWN_ACCESSOR_TYPE=0,
+			CALL_ACCESSOR, // v(1)
+			VECTOR_ACCESSOR, // v[0]
+			MEMBER_ACCESSOR, // a.b.c
+			MAX_ACCESSOR_TYPES
 		};
 
 		enum OPERATOR_TYPE
@@ -147,14 +147,14 @@ namespace zetscript{
 
 	};
 
-	struct tTokenNodeAccess {
+	struct tTokenNodeAccessor {
 
-		ACCESS_TYPE access_type;
+		ACCESSOR_TYPE accessor_type;
 		string value;
 		vector<tInfoByteCodeCompiler> byte_code;
 
-		tTokenNodeAccess(){
-			access_type=ACCESS_TYPE::UNKNOWN_ACCESS_TYPE;
+		tTokenNodeAccessor(){
+			accessor_type=ACCESSOR_TYPE::UNKNOWN_ACCESSOR_TYPE;
 		}
 	};
 
@@ -174,7 +174,7 @@ namespace zetscript{
 		vector<tInfoByteCodeCompiler> byte_code; // byte code load literal/identifier(can be anonymous function), vector/struct.
 
 		// access info like function call, vector access and variable memeber
-		vector<tTokenNodeAccess> access;
+		vector<tTokenNodeAccessor> accessor;
 
 		// AST info operator.
 		tTokenNode *left;
@@ -266,8 +266,8 @@ namespace zetscript{
 		static tDirectiveInfo defined_directive[MAX_DIRECTIVES];
 
 
-		static tInfoFunctionCompile		m_currentFunctionInfo;
-
+		static tInfoFunctionCompile				*m_currentFunctionInfo;
+		static vector<tInfoFunctionCompile *> 	*stk_scriptFunction;
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// CONSTANT TOOLS
@@ -305,9 +305,6 @@ namespace zetscript{
 		static OPERATOR_TYPE   		evalOperator(const char *s);
 		static PRE_OPERATOR_TYPE   	evalPreOperator(const char *s);
 		static IDENTITY_OPERATOR_TYPE   evalPrePostIdentityOperator(const char *s);
-
-		static bool   isEndSeparator(char c);
-
 
 		//------------------------------------------------------------------------------------------
 		//

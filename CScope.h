@@ -92,6 +92,7 @@ namespace zetscript{
 		tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
 
 		CScope();
+		CScope( short idx_this, short idx_parent);
 		CScope(PASTNode _ast, short idx_this, short idx_parent=ZS_UNDEFINED_IDX);//, int _index);
 
 		short 	 getIdxBaseScope();

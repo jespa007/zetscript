@@ -133,6 +133,7 @@ namespace zetscript{
 
 	void  		writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
+	// static vars...
 	CEval::tKeywordInfo CEval::defined_keyword[MAX_KEYWORD];
 	CEval::tDirectiveInfo CEval::defined_directive[MAX_DIRECTIVES];
 	CEval::tOperatorInfo CEval::defined_operator[MAX_OPERATOR_TYPES];
@@ -140,17 +141,21 @@ namespace zetscript{
 	CEval::tIdentityOperatorInfo CEval::defined_identity_operator[MAX_IDENTITY_OPERATOR_TYPES];
 	CEval::tSeparatorInfo CEval::defined_separator[MAX_SEPARATOR_TYPES];
 
+	map<string,tInfoConstantValue *> 		*CEval::constant_pool=NULL;
+	CEval::tInfoFunctionCompile				*CEval::m_currentFunctionInfo=NULL;
+	vector<CEval::tInfoFunctionCompile*> 	*CEval::stk_scriptFunction=NULL;
+
 	const char * CEval::current_parsing_filename=DEFAULT_NO_FILENAME;
 	int CEval::current_idx_parsing_filename=-1;
 
 
-	bool IS_PLUS_OPERATOR(const char *s)			{return	((*s=='+') && ((*(s+1)!='+') && (*(s+1)!='=')));}
-	bool IS_MINUS_OPERTATOR(const char *s)			{return	((*s=='-') && ((*(s+1)!='-') && (*(s+1)!='=')));}
+	bool IS_TERNARY_IF_OPERATOR(const char *s)		{return ((*s=='?'));}
+	bool IS_TERNARY_ELSE_OPERATOR(const char *s)	{return ((*s==':'));}
+	bool IS_PLUS_OPERATOR(const char *s)			{return	((*s=='+') && (*(s+1)!='+') && (*(s+1)!='='));}
+	bool IS_MINUS_OPERTATOR(const char *s)			{return	((*s=='-') && (*(s+1)!='-') && (*(s+1)!='='));}
 	bool IS_MUL_OPERATOR(const char *s)				{return ((*s=='*') && (*(s+1)!='='));}
 	bool IS_DIV_OPERATOR(const char *s)				{return ((*s=='/') && (*(s+1)!='='));}
 	bool IS_MOD_OPERATOR(const char *s)				{return ((*s=='%') && (*(s+1)!='='));}
-	bool IS_TERNARY_IF_OPERATOR(const char *s)		{return ((*s=='?'));}
-	bool IS_TERNARY_ELSE_OPERATOR(const char *s)	{return ((*s==':'));}
 	bool IS_ASSIGN_OPERATOR(const char *s)			{return	((*s=='=') && (*(s+1)!='='));}
 	bool IS_ADD_ASSIGN_OPERATOR(const char *s)		{return ((*s=='+') && (*(s+1)=='='));}
 	bool IS_SUB_ASSIGN_OPERATOR(const char *s)		{return ((*s=='-') && (*(s+1)=='='));}
@@ -158,8 +163,8 @@ namespace zetscript{
 	bool IS_DIV_ASSIGN_OPERATOR(const char *s)		{return ((*s=='/') && (*(s+1)=='='));}
 	bool IS_MOD_ASSIGN_OPERATOR(const char *s)		{return ((*s=='%') && (*(s+1)=='='));}
 	bool IS_BINARY_XOR_OPERATOR(const char *s)		{return ((*s=='^') && (*(s+1)!='='));}
-	bool IS_BINARY_AND_OPERATOR(const char *s)		{return ((*s=='&') && ((*(s+1)!='&') && (*(s+1)!='=')));}
-	bool IS_BINARY_OR_OPERATOR(const char *s)		{return ((*s=='|') && ((*(s+1)!='|') && (*(s+1)!='=')));}
+	bool IS_BINARY_AND_OPERATOR(const char *s)		{return ((*s=='&') && (*(s+1)!='&') && (*(s+1)!='='));}
+	bool IS_BINARY_OR_OPERATOR(const char *s)		{return ((*s=='|') && (*(s+1)!='|') && (*(s+1)!='='));}
 	bool IS_SHIFT_LEFT_OPERATOR(const char *s)		{return ((*s=='<') && (*(s+1)=='<'));}
 	bool IS_SHIFT_RIGHT_OPERATOR(const char *s)		{return	((*s=='>') && (*(s+1)=='>'));}
 	bool IS_LOGIC_AND_OPERATOR(const char *s)		{return ((*s=='&') && (*(s+1)=='&'));}
@@ -173,10 +178,10 @@ namespace zetscript{
 	bool IS_LOGIC_NOT_OPERATOR(const char *s)		{return ((*s=='!') && (*(s+1)!='='));}
 	bool IS_INC_OPERATOR(const char *s)				{return ((*s=='+') && (*(s+1)=='+'));}
 	bool IS_DEC_OPERATOR(const char *s)				{return ((*s=='-') && (*(s+1)=='-'));}
-	bool IS_INSTANCEOF_OPERATOR(const char *s)		{return strncmp("instanceof",s,10) == 0;}
 	bool IS_SINGLE_COMMENT(char *s)					{return	((*s=='/') && (*(s+1)=='/'));}
 	bool IS_START_BLOCK_COMMENT(char *s)			{return ((*s=='/') && (*(s+1)=='*'));}
 	bool IS_END_BLOCK_COMMENT(char *s)				{return ((*s=='*') && (*(s+1)=='/'));}
+	bool IS_INSTANCEOF_OPERATOR(const char *s)		{return strncmp("instanceof",s,10) == 0				 ;}
 
 
 	char *ADVANCE_TO_END_COMMENT(char *aux_p, int &line){
@@ -335,7 +340,7 @@ namespace zetscript{
 
 
 	void CEval::init(){
-
+		if(constant_pool) return; // already initialized...
 
 		// init operator punctuators...
 		defined_operator[UNKNOWN_OPERATOR]={UNKNOWN_OPERATOR, "none",NULL};
@@ -414,7 +419,24 @@ namespace zetscript{
 		defined_directive[UNKNOWN_DIRECTIVE]={UNKNOWN_DIRECTIVE, NULL};
 		defined_directive[INCLUDE_DIRECTIVE]={INCLUDE_DIRECTIVE, "import"};
 
-			// create main ast management
+		// create main ast management
+		// init variables...
+		constant_pool = new map<string,tInfoConstantValue *>;
+		stk_scriptFunction = new vector<tInfoFunctionCompile *>;
+
+
+	}
+
+	void CEval::destroySingletons(){
+		if(constant_pool)
+			delete constant_pool;
+
+		if(stk_scriptFunction){
+			delete stk_scriptFunction;
+		}
+
+		constant_pool=NULL;
+		stk_scriptFunction=NULL;
 	}
 
 
@@ -747,9 +769,9 @@ namespace zetscript{
 
 			intptr_t idx_local_var=ZS_UNDEFINED_IDX;
 
-			for(unsigned i = 0; i < m_currentFunctionInfo.function_info_object->m_arg.size() && idx_local_var == ZS_UNDEFINED_IDX; i++){
+			for(unsigned i = 0; i < m_currentFunctionInfo->function_info_object->m_arg.size() && idx_local_var == ZS_UNDEFINED_IDX; i++){
 
-				if(m_currentFunctionInfo.function_info_object->m_arg[i].arg_name == v){
+				if(m_currentFunctionInfo->function_info_object->m_arg[i].arg_name == v){
 					idx_local_var=i;
 				}
 			}
@@ -1174,15 +1196,15 @@ namespace zetscript{
 					}
 				}
 
-				// eval call/access...
+				// eval accessor element (if any)...
 				while(isAccessPunctuator(aux_p)){
-					tTokenNodeAccess access_token;
+					tTokenNodeAccessor accessor_token;
 
 					switch(*aux_p){
 					case '(': // function call
-						access_token.access_type = ACCESS_TYPE::CALL_ACCESS;
+						accessor_token.accessor_type = ACCESSOR_TYPE::CALL_ACCESSOR;
 						do{
-							if((aux_p = evalExpression(IGNORE_BLANKS(aux_p+1,line),line,scope_info,&access_token.byte_code))==NULL){
+							if((aux_p = evalExpression(IGNORE_BLANKS(aux_p+1,line),line,scope_info,&accessor_token.byte_code))==NULL){
 								return NULL;
 							}
 
@@ -1197,8 +1219,8 @@ namespace zetscript{
 						aux_p++;
 						break;
 					case '[': // vector access
-						access_token.access_type = ACCESS_TYPE::VECTOR_ACCESS;
-						if((aux_p = evalExpression(IGNORE_BLANKS(aux_p+1,line),line,scope_info,&access_token.byte_code))==NULL){
+						accessor_token.accessor_type = ACCESSOR_TYPE::VECTOR_ACCESSOR;
+						if((aux_p = evalExpression(IGNORE_BLANKS(aux_p+1,line),line,scope_info,&accessor_token.byte_code))==NULL){
 							return NULL;
 						}
 						if(*aux_p != ']'){
@@ -1208,20 +1230,20 @@ namespace zetscript{
 						aux_p++;
 						break;
 					case '.': // member access
-						access_token.access_type = ACCESS_TYPE::MEMBER_ACCESS; // eval symbol...
+						accessor_token.accessor_type = ACCESSOR_TYPE::MEMBER_ACCESSOR; // eval symbol...
 						aux_p=IGNORE_BLANKS(aux_p+1,line);
 						while(!isEndSymbolToken(aux_p)){
-							access_token.value += (*aux_p++);
+							accessor_token.value += (*aux_p++);
 						}
 
-						if(!isIdentifierNameExpressionOk(access_token.value,line)){
+						if(!isIdentifierNameExpressionOk(accessor_token.value,line)){
 							return NULL;
 						}
 
 						break;
 					}
 
-					symbol_token_node.access.push_back(access_token);
+					symbol_token_node.accessor.push_back(accessor_token);
 
 					aux_p=IGNORE_BLANKS(aux_p,line);
 				}
@@ -1245,7 +1267,7 @@ namespace zetscript{
 
 			aux_p=IGNORE_BLANKS(aux_p,line);
 
-			if(!isEndSeparator(*aux_p)){ // if not end expression then a operator is expected...
+			if(evalSeparator(aux_p)!=SEPARATOR_TYPE::UNKNOWN_SEPARATOR){ // if not end expression then a operator is expected...
 				op=evalOperator(aux_p);
 
 				if(op==OPERATOR_TYPE::UNKNOWN_OPERATOR){
@@ -2781,6 +2803,19 @@ namespace zetscript{
 			aux=IGNORE_BLANKS(aux, line);
 		}
 		return aux;
+	}
+
+	char * CEval::eval(const char *s){
+
+		int line = 1;
+		bool error=false;
+		stk_scriptFunction->push_back(new CEval::tInfoFunctionCompile(MAIN_FUNCTION_OBJECT));
+		//current_parsing_filename = filename;
+
+		return eval_Recursive(s,line,MAIN_SCOPE_NODE,stk_scriptFunction->at(stk_scriptFunction->size()-1),error);
+
+
+
 	}
 
 }

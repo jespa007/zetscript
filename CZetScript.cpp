@@ -389,7 +389,7 @@ namespace zetscript{
 		SET_PARSING_FILENAME(idx_filename,filename);
 
 
-		if((end=CASTNode::generateAST_Recursive(
+		/*if((end=CASTNode::generateAST_Recursive(
 				s,
 				m_line,
 				MAIN_SCOPE_NODE,
@@ -397,11 +397,13 @@ namespace zetscript{
 				main_node
 				)) == NULL){
 			return;
-		}
+		}*/
+
+		CEval::eval(s);
 
 
-		if(*end == '}'){
-			writeErrorMsg(filename,m_line,"Unexpected } ");
+		if(*end != 0){
+			writeErrorMsg(filename,m_line,"Unexpected \'%c\' ",*end);
 			return THROW_SCRIPT_ERROR();
 
 		}
@@ -635,11 +637,12 @@ namespace zetscript{
 
 	void CZetScript::eval(const string & s, bool exec_vm, const char *filename_ref, bool show_bytecode)  {
 
+
 		parse(s,filename_ref);
-		compile(show_bytecode);
-		if(exec_vm){
-			execute();
-		}
+		//compile(show_bytecode);
+		//if(exec_vm){
+		//	execute();
+		//}
 	}
 
 	void CZetScript::eval_file(const char * filename, bool execute, bool show_bytecode){

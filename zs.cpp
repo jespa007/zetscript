@@ -61,6 +61,7 @@ int main(int argc, char * argv[]) {
 		}
 
 		try{
+
 			zetscript->eval_file(file.c_str(),execute,show_bytecode);
 		}catch(script_error & error){
 			fprintf(stderr,"%s\n",error.what());
