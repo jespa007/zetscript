@@ -195,9 +195,6 @@ namespace zetscript{
 	};
 
 
-
-
-
 		typedef struct {
 			vector<tInfoByteCodeCompiler> byte_code;
 		}tContinueInstructionScope,tBreakInstructionScope;
@@ -223,7 +220,7 @@ namespace zetscript{
 		typedef struct {
 			KEYWORD_TYPE id;
 			const char *str;
-			char * (* eval_fun)(const char *, int &, CScope *,tInfoFunctionCompile *, bool &);
+			char * (* eval_fun)(const char *, int &, CScope *, bool &);
 		} tKeywordInfo;
 
 		typedef struct {
@@ -344,28 +341,28 @@ namespace zetscript{
 		static char * evalKeywordClass(const char *s,int & line,  CScope *scope_info, bool & error);
 
 		// eval block { }
-		static char * evalBlock(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalBlock(const char *s,int & line,  CScope *scope_info, bool & error);
 
 		//------------------------------------------------------------------------------------------
 		//
 		// KEYWORDS FUNCTIONS
 		//
 
-		static char * evalKeyword		(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordIf		(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordFor	(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordWhile	(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordDoWhile(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalBreak			(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalContinue		(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalDefaultCase	(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordSwitch	(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordVar	(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordReturn	(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
-		static char * evalKeywordDelete	(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * evalKeyword		(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalKeywordIf		(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalKeywordFor	(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalKeywordWhile	(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalKeywordDoWhile(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalBreak			(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalContinue		(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalDefaultCase	(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalKeywordSwitch	(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalKeywordVar	(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalKeywordReturn	(const char *s, int & line, CScope *scope_info, bool & error);
+		static char * evalKeywordDelete	(const char *s, int & line, CScope *scope_info, bool & error);
 
 
-		static char * evalKeywordFunction(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile ** ifc);
+		static char * evalKeywordFunction(const char *s,int & line,  CScope *scope_info, bool & error);
 
 
 		//
@@ -374,7 +371,7 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------------
 
 
-		static char * eval_Recursive(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error);
+		static char * eval_Recursive(const char *s, int & line, CScope *scope_info, bool & error);
 
 
 	};

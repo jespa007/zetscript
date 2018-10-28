@@ -1315,7 +1315,7 @@ namespace zetscript{
 
 
 
-	char * CEval::evalKeywordDelete(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char * CEval::evalKeywordDelete(const char *s,int & line,  CScope *scope_info, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		char *end_p;
@@ -1484,12 +1484,12 @@ namespace zetscript{
 								break;
 							case KEYWORD_TYPE::FUNCTION_KEYWORD:
 
-								if((aux_p = evalKeywordFunction(aux_p, line,class_scope_info,&local_ifc)) == NULL){
+								if((aux_p = evalKeywordFunction(aux_p, line,class_scope_info,error)) == NULL){
 									return NULL;
 								}
 								break;
 							case KEYWORD_TYPE::VAR_KEYWORD:
-								if((aux_p = evalKeywordVar(aux_p, line,class_scope_info,NULL,error)) == NULL){
+								if((aux_p = evalKeywordVar(aux_p, line,class_scope_info,error)) == NULL){
 									return NULL;
 								}
 								break;
@@ -1530,7 +1530,7 @@ namespace zetscript{
 	//  KEYWORDS
 	//
 
-	char * CEval::evalKeywordFunction(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile ** ifc){
+	char * CEval::evalKeywordFunction(const char *s,int & line,  CScope *scope_info, bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -1539,7 +1539,6 @@ namespace zetscript{
 
 		PASTNode args_node=NULL, body_node=NULL, arg_node=NULL;
 		string conditional_str;
-		bool error=false;
 		short idxScopeClass;
 
 
@@ -1675,7 +1674,6 @@ namespace zetscript{
 							aux_p,
 							line,
 							SCOPE_NODE(idxScope),
-							*ifc,
 							error
 						)) != NULL){
 
@@ -1735,7 +1733,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char *  CEval::evalKeywordReturn(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char *  CEval::evalKeywordReturn(const char *s,int & line,  CScope *scope_info, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		KEYWORD_TYPE key_w;
@@ -1753,7 +1751,7 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,line);
 
 
-				if((aux_p = evalExpression(aux_p, line, scope_info,&ifc->byte_code))!= NULL){
+				if((aux_p = evalExpression(aux_p, line, scope_info,&m_currentFunctionInfo->byte_code))!= NULL){
 
 
 					if(*aux_p!=';'){
@@ -1768,7 +1766,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalKeywordWhile(const char *s,int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char * CEval::evalKeywordWhile(const char *s,int & line, CScope *scope_info,  bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -1795,7 +1793,7 @@ namespace zetscript{
 				aux_p=IGNORE_BLANKS(aux_p,line);
 				if(*aux_p == '('){
 
-					if((end_expr = evalExpression(aux_p+1,line,_currentScope,&ifc->byte_code)) != NULL){
+					if((end_expr = evalExpression(aux_p+1,line,_currentScope,&m_currentFunctionInfo->byte_code)) != NULL){
 
 						if(*end_expr != ')'){
 							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')'");
@@ -1814,7 +1812,6 @@ namespace zetscript{
 						if((aux_p=evalBlock(aux_p
 								,line
 								,_currentScope
-								,ifc
 								,error
 								))!= NULL){
 							if(!error){
@@ -1839,7 +1836,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalKeywordDoWhile(const char *s,int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char * CEval::evalKeywordDoWhile(const char *s,int & line, CScope *scope_info,  bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 
@@ -1870,7 +1867,6 @@ namespace zetscript{
 				if((aux_p=evalBlock(aux_p
 						,line
 						,_currentScope
-						,ifc
 						,error
 
 						))!= NULL){
@@ -1893,7 +1889,7 @@ namespace zetscript{
 
 						if(*aux_p == '('){
 
-							if((end_expr = evalExpression(aux_p+1,line,_currentScope,&ifc->byte_code)) != NULL){
+							if((end_expr = evalExpression(aux_p+1,line,_currentScope,&m_currentFunctionInfo->byte_code)) != NULL){
 
 								if(*end_expr != ')'){
 									writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')'");
@@ -1923,7 +1919,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalKeywordIf(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char * CEval::evalKeywordIf(const char *s,int & line,  CScope *scope_info, bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -1955,7 +1951,7 @@ namespace zetscript{
 
 					conditional_line=line;
 
-					if((end_expr = evalExpression(aux_p+1,line,scope_info,&ifc->byte_code)) == NULL){
+					if((end_expr = evalExpression(aux_p+1,line,scope_info,&m_currentFunctionInfo->byte_code)) == NULL){
 						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')' if ");
 						return NULL;
 					}
@@ -1987,7 +1983,6 @@ namespace zetscript{
 					if((aux_p=evalBlock(aux_p
 							,line
 							,scope_info
-							,ifc
 							,error
 							))== NULL){
 						return NULL;
@@ -2028,7 +2023,6 @@ namespace zetscript{
 							if((aux_p=evalBlock(aux_p
 									,line
 									,scope_info
-									,ifc
 									,error
 									))!= NULL){
 									if(!error){
@@ -2051,7 +2045,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalKeywordFor(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char * CEval::evalKeywordFor(const char *s,int & line,  CScope *scope_info,  bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -2088,7 +2082,7 @@ namespace zetscript{
 						KEYWORD_TYPE key_w = isKeyword(aux_p);
 
 						if(key_w == VAR_KEYWORD){
-							if((aux_p = evalKeywordVar(aux_p,line, _currentScope,ifc,error))==NULL){
+							if((aux_p = evalKeywordVar(aux_p,line, _currentScope,error))==NULL){
 								return NULL;
 							}
 
@@ -2112,7 +2106,7 @@ namespace zetscript{
 						aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[KEYWORD_TYPE::IN_KEYWORD].str),line);
 
 
-						if((aux_p = evalExpression((const char *)aux_p,line,_currentScope,&ifc->byte_code)) == NULL){
+						if((aux_p = evalExpression((const char *)aux_p,line,_currentScope,&m_currentFunctionInfo->byte_code)) == NULL){
 							return NULL;
 						}
 					}
@@ -2133,7 +2127,7 @@ namespace zetscript{
 
 							if(*end_p != ';'){// there's some condition if not, then is like for(X;true;X)
 
-								if((aux_p = evalExpression((const char *)aux_p,line,_currentScope,&ifc->byte_code)) == NULL){
+								if((aux_p = evalExpression((const char *)aux_p,line,_currentScope,&m_currentFunctionInfo->byte_code)) == NULL){
 									return NULL;
 								}
 
@@ -2159,7 +2153,7 @@ namespace zetscript{
 							}
 
 							do{
-								if((aux_p = evalExpression(aux_p,line,_currentScope,&ifc->byte_code))==NULL){
+								if((aux_p = evalExpression(aux_p,line,_currentScope,&m_currentFunctionInfo->byte_code))==NULL){
 									return NULL;
 								}
 
@@ -2193,7 +2187,6 @@ namespace zetscript{
 					if((aux_p=evalBlock(aux_p
 							,line
 							,_currentScope
-							,ifc
 							,error
 						))!= NULL){ // true: We treat declared variables into for as another scope.
 						if(!error){
@@ -2213,7 +2206,7 @@ namespace zetscript{
 	}
 
 
-	char * CEval::evalKeywordSwitch(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char * CEval::evalKeywordSwitch(const char *s,int & line,  CScope *scope_info,  bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -2258,7 +2251,7 @@ namespace zetscript{
 								aux_p,
 								line,
 								scope_info,
-								&ifc->byte_code
+								&m_currentFunctionInfo->byte_code
 								))==NULL)
 						{
 							return NULL;
@@ -2277,7 +2270,7 @@ namespace zetscript{
 
 							aux_p++;
 
-							if((aux_p=eval_Recursive(aux_p, line, currentScope,ifc, error))==NULL){
+							if((aux_p=eval_Recursive(aux_p, line, currentScope, error))==NULL){
 								return NULL;
 							}
 
@@ -2309,7 +2302,7 @@ namespace zetscript{
 	}
 
 
-	char * CEval::evalKeywordVar(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char * CEval::evalKeywordVar(const char *s,int & line,  CScope *scope_info, bool & error){
 
 		// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
 
@@ -2415,7 +2408,7 @@ namespace zetscript{
 							// try to evaluate expression...
 							aux_p=IGNORE_BLANKS(aux_p,line);
 
-							if((aux_p = evalExpression(start_var,m_startLine,scope_info,&ifc->byte_code)) == NULL){
+							if((aux_p = evalExpression(start_var,m_startLine,scope_info,&m_currentFunctionInfo->byte_code)) == NULL){
 								return NULL;
 							}
 
@@ -2475,7 +2468,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::evalBlock(const char *s,int & line,  CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char * CEval::evalBlock(const char *s,int & line,  CScope *scope_info, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 
@@ -2491,7 +2484,7 @@ namespace zetscript{
 			currentScope = scope_info->pushScope(); // special case... ast is created later ...
 
 
-			if((aux_p = eval_Recursive(aux_p, line, currentScope,ifc,error)) != NULL){
+			if((aux_p = eval_Recursive(aux_p, line, currentScope,error)) != NULL){
 				if(error){
 					return NULL;
 				}
@@ -2511,7 +2504,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char *CEval::evalBreak(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char *CEval::evalBreak(const char *s, int & line, CScope *scope_info, bool & error){
 		// TODO: "find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n"
 
 		char *aux_p=(char *)s;
@@ -2533,7 +2526,7 @@ namespace zetscript{
 		}
 	}
 
-	char *CEval::evalContinue(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char *CEval::evalContinue(const char *s, int & line, CScope *scope_info, bool & error){
 		// TODO: "find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n"
 		char *aux_p=(char*)s;
 		{ // ok break is valid in current scope...
@@ -2551,7 +2544,7 @@ namespace zetscript{
 		}
 	}
 
-	char *CEval::evalDefaultCase(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char *CEval::evalDefaultCase(const char *s, int & line, CScope *scope_info,  bool & error){
 		char *aux_p=(char *)s;
 		string value_to_eval;
 		tTokenNode token_node;
@@ -2593,7 +2586,7 @@ namespace zetscript{
 	}
 
 
-	char *CEval::evalKeyword(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char *CEval::evalKeyword(const char *s, int & line, CScope *scope_info, bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p= (char *)s;
@@ -2611,10 +2604,10 @@ namespace zetscript{
 			switch(keyw){
 			case CASE_KEYWORD:
 			case DEFAULT_KEYWORD:
-				return evalDefaultCase(s,line,scope_info,ifc,error);
+				return evalDefaultCase(s,line,scope_info,error);
 
 			case FUNCTION_KEYWORD:
-				if((aux_p = evalKeywordFunction(s,line,scope_info,&ifc_new)) != NULL){
+				if((aux_p = evalKeywordFunction(s,line,scope_info,error)) != NULL){
 					return aux_p;
 				}
 				error = true;
@@ -2630,7 +2623,7 @@ namespace zetscript{
 
 				if(defined_keyword[keyw].eval_fun != NULL){
 
-					return  defined_keyword[keyw].eval_fun(s,line,scope_info,ifc,error);
+					return  defined_keyword[keyw].eval_fun(s,line,scope_info,error);
 				}
 				writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Not implemented");
 				error = true;
@@ -2643,7 +2636,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::eval_Recursive(const char *s, int & line, CScope *scope_info, tInfoFunctionCompile * ifc, bool & error){
+	char * CEval::eval_Recursive(const char *s, int & line, CScope *scope_info,  bool & error){
 
 		// PRE: *node_to_be_evaluated must be created (the pointer is only read mode)
 
@@ -2748,7 +2741,7 @@ namespace zetscript{
 			// 0st special case member class extension ...
 			if(children==NULL && !processed_directive){ // not processed yet ...
 				// 1st. check whether eval a keyword...
-				if((end_expr = evalKeyword(aux, line, scope_info,ifc, error)) == NULL){
+				if((end_expr = evalKeyword(aux, line, scope_info, error)) == NULL){
 
 					// If was unsuccessful then try to eval expression.
 					if(error){
@@ -2760,7 +2753,6 @@ namespace zetscript{
 					if((end_expr = evalBlock(aux
 							,line
 							, scope_info
-							,ifc
 							, error
 							))==NULL){
 
@@ -2772,7 +2764,7 @@ namespace zetscript{
 						// 2nd. try expression
 						int starting_expression=line;
 
-						if((end_expr = evalExpression(aux,line, scope_info,&ifc->byte_code)) == NULL){ // something wrong was happen.
+						if((end_expr = evalExpression(aux,line, scope_info,&m_currentFunctionInfo->byte_code)) == NULL){ // something wrong was happen.
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
@@ -2812,7 +2804,7 @@ namespace zetscript{
 		stk_scriptFunction->push_back(new CEval::tInfoFunctionCompile(MAIN_FUNCTION_OBJECT));
 		//current_parsing_filename = filename;
 
-		return eval_Recursive(s,line,MAIN_SCOPE_NODE,stk_scriptFunction->at(stk_scriptFunction->size()-1),error);
+		return eval_Recursive(s,line,MAIN_SCOPE_NODE,error);
 
 
 
