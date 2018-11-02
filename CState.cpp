@@ -19,7 +19,7 @@ namespace zetscript{
 
 			CASTNode::setVectorASTNode(current_state->getVectorASTNodeNode());
 			CScope::setVectorScopeNode(current_state->getVectorScopeNode());
-			CScriptFunctionObject::setVectorScriptFunctionObjectNode(current_state->getVectorScriptFunctionObjectNode());
+			CScriptFunction::setVectorScriptFunctionObjectNode(current_state->getVectorScriptFunctionObjectNode());
 			CScriptClass::setVectorScriptClassNode(current_state->getVectorScriptClassNode());
 			CZetScript::setVectorInfoParsedFiles(current_state->getVectorInfoParsedSourceNode());
 
@@ -84,7 +84,7 @@ namespace zetscript{
 		vector<CASTNode *> 				* vec_ast_node_src					= state_to_restore->getVectorASTNodeNode();
 		vector<CScope *> 				* vec_scope_src						= state_to_restore->getVectorScopeNode();
 		vector<CScriptClass *> 			* vec_script_class_src				= state_to_restore->getVectorScriptClassNode();
-		vector<CScriptFunctionObject *>	* vec_script_function_object_src	= state_to_restore->getVectorScriptFunctionObjectNode();
+		vector<CScriptFunction *>	* vec_script_function_object_src	= state_to_restore->getVectorScriptFunctionObjectNode();
 		vector<tInfoParsedSource>		* vec_info_parsed_source_src		= state_to_restore->getVectorInfoParsedSourceNode();
 
 
@@ -94,7 +94,7 @@ namespace zetscript{
 		vector<CASTNode *> 				* vec_ast_node_dst					= current_state_new->getVectorASTNodeNode();
 		vector<CScope *> 				* vec_scope_dst						= current_state_new->getVectorScopeNode();
 		vector<CScriptClass *> 			* vec_script_class_dst				= current_state_new->getVectorScriptClassNode();
-		vector<CScriptFunctionObject *>	* vec_script_function_object_dst	= current_state_new->getVectorScriptFunctionObjectNode();
+		vector<CScriptFunction *>	* vec_script_function_object_dst	= current_state_new->getVectorScriptFunctionObjectNode();
 		vector<tInfoParsedSource>		* vec_info_parsed_source_dst		= current_state_new->getVectorInfoParsedSourceNode();
 
 
@@ -124,11 +124,11 @@ namespace zetscript{
 			vec_script_class_dst->push_back(sclass);
 		}
 
-		// 1.4-Copy CScriptFunctionObject...
+		// 1.4-Copy CScriptFunction...
 		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
-			CScriptFunctionObject *sfo = new CScriptFunctionObject();
+			CScriptFunction *sfo = new CScriptFunction();
 			*sfo = *vec_script_function_object_src->at(i);
-			sfo->asm_op=NULL;
+			sfo->instruction=NULL;
 			sfo->scope_info.info_var_scope=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
@@ -154,7 +154,7 @@ namespace zetscript{
 		// finally set vectors....
 		CASTNode::setVectorASTNode(vec_ast_node_dst);
 		CScope::setVectorScopeNode(vec_scope_dst);
-		CScriptFunctionObject::setVectorScriptFunctionObjectNode(vec_script_function_object_dst);
+		CScriptFunction::setVectorScriptFunctionObjectNode(vec_script_function_object_dst);
 		CScriptClass::setVectorScriptClassNode(vec_script_class_dst);
 		CZetScript::setVectorInfoParsedFiles(vec_info_parsed_source_dst);
 
@@ -177,13 +177,13 @@ namespace zetscript{
 		vector<CASTNode *> 				* vec_ast_node_dst					= save_st->getVectorASTNodeNode();
 		vector<CScope *> 				* vec_scope_dst						= save_st->getVectorScopeNode();
 		vector<CScriptClass *> 			* vec_script_class_dst				= save_st->getVectorScriptClassNode();
-		vector<CScriptFunctionObject *>	* vec_script_function_object_dst	= save_st->getVectorScriptFunctionObjectNode();
+		vector<CScriptFunction *>	* vec_script_function_object_dst	= save_st->getVectorScriptFunctionObjectNode();
 		vector<tInfoParsedSource>		* vec_info_parsed_source_dst		= save_st->getVectorInfoParsedSourceNode();
 
 		vector<CASTNode *> 				* vec_ast_node_src					= current_state->getVectorASTNodeNode();
 		vector<CScope *> 				* vec_scope_src						= current_state->getVectorScopeNode();
 		vector<CScriptClass *> 			* vec_script_class_src				= current_state->getVectorScriptClassNode();
-		vector<CScriptFunctionObject *>	* vec_script_function_object_src	= current_state->getVectorScriptFunctionObjectNode();
+		vector<CScriptFunction *>	* vec_script_function_object_src	= current_state->getVectorScriptFunctionObjectNode();
 		vector<tInfoParsedSource>		* vec_info_parsed_source_src		= current_state->getVectorInfoParsedSourceNode();
 
 		// 1- Copy current state...
@@ -208,11 +208,11 @@ namespace zetscript{
 			vec_script_class_dst->push_back(sclass);
 		}
 
-		// 1.4-Copy CScriptFunctionObject...
+		// 1.4-Copy CScriptFunction...
 		for(unsigned int i = 0; i < vec_script_function_object_src->size(); i++){
-			CScriptFunctionObject *sfo = new CScriptFunctionObject();
+			CScriptFunction *sfo = new CScriptFunction();
 			*sfo = *vec_script_function_object_src->at(i);
-			sfo->asm_op=NULL;
+			sfo->instruction=NULL;
 			sfo->scope_info.info_var_scope=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
@@ -298,7 +298,7 @@ namespace zetscript{
 		vec_scope_node = new vector<CScope *>;
 
 		vec_script_class_node = new vector<CScriptClass *> ;
-		vec_script_function_object_node = new vector<CScriptFunctionObject *>;
+		vec_script_function_object_node = new vector<CScriptFunction *>;
 		vec_info_parsed_source_node = new vector<tInfoParsedSource> ;
 
 	}
@@ -318,20 +318,20 @@ namespace zetscript{
 		return vec_info_parsed_source_node;
 	}
 
-	vector<CScriptFunctionObject *> 	*CState::getVectorScriptFunctionObjectNode(){
+	vector<CScriptFunction *> 	*CState::getVectorScriptFunctionObjectNode(){
 		return vec_script_function_object_node;
 	}
 
 	void  CState::clearCompileInformation() {
 
-		CScriptFunctionObject * main_function = vec_script_function_object_node->at(0);
+		CScriptFunction * main_function = vec_script_function_object_node->at(0);
 
 		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
 			f < main_function->scope_info.local_symbols.vec_idx_registeredFunction.size()
 			;) {
 			// get function info
-			CScriptFunctionObject * local_function = GET_SCRIPT_FUNCTION_OBJECT(main_function->scope_info.local_symbols.vec_idx_registeredFunction[f]);
+			CScriptFunction * local_function = GET_SCRIPT_FUNCTION_OBJECT(main_function->scope_info.local_symbols.vec_idx_registeredFunction[f]);
 
 			if ((local_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
 				main_function->scope_info.local_symbols.vec_idx_registeredFunction.erase(main_function->scope_info.local_symbols.vec_idx_registeredFunction.begin() + f);
@@ -359,19 +359,19 @@ namespace zetscript{
 		//int i = vec_script_function_object_node->size()-1;
 		bool end=false;
 		do{
-			CScriptFunctionObject * info_function = vec_script_function_object_node->at(vec_script_function_object_node->size()-1);
+			CScriptFunction * info_function = vec_script_function_object_node->at(vec_script_function_object_node->size()-1);
 			end=(info_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF;
 
 			if(!end){
 
-				if (info_function->asm_op != NULL) {
-					//for (PtrAsmOp stat = info_function->object_info.asm_op; *stat != NULL; stat++) {
+				if (info_function->instruction != NULL) {
+					//for (PtrInstruction stat = info_function->object_info.instruction; *stat != NULL; stat++) {
 
 						//free(*stat);
 					//}
 
-					free(info_function->asm_op);
-					info_function->asm_op=NULL;
+					free(info_function->instruction);
+					info_function->instruction=NULL;
 				}
 
 				// unloading scope ...
@@ -446,12 +446,12 @@ namespace zetscript{
 
 		for(unsigned i = 0;i < vec_script_function_object_node->size();i++){
 			//zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_ref.c_str());
-			CScriptFunctionObject * info_function = vec_script_function_object_node->at(i);
+			CScriptFunction * info_function = vec_script_function_object_node->at(i);
 
-			if (info_function->asm_op != NULL) {
+			if (info_function->instruction != NULL) {
 
-				free(info_function->asm_op);
-				info_function->asm_op=NULL;
+				free(info_function->instruction);
+				info_function->instruction=NULL;
 			}
 
 			// unloading scope ...

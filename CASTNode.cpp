@@ -2205,7 +2205,7 @@ namespace zetscript{
 		//CScriptClass *class_info=NULL;
 		int class_line;
 		string class_name;
-		//CScriptFunctionObject * class_object=NULL;
+		//CScriptFunction * class_object=NULL;
 
 		KEYWORD_TYPE key_w;
 		PASTNode function_collection_node=NULL,vars_collection_node=NULL,child_node=NULL, base_class_node = NULL;

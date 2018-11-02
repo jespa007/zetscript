@@ -6,27 +6,27 @@
 
 namespace zetscript{
 
-	vector<CScriptFunctionObject *> 	* vec_script_function_object_node=NULL;
+	vector<CScriptFunction *> 	* vec_script_function_object_node=NULL;
 
 
 
-	void CScriptFunctionObject::setVectorScriptFunctionObjectNode(vector<CScriptFunctionObject *> 	* set_vec){
+	void CScriptFunction::setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec){
 		vec_script_function_object_node = set_vec;
 	}
 
-	vector<CScriptFunctionObject *> 	*CScriptFunctionObject::getVectorScriptFunctionObjectNode(){
+	vector<CScriptFunction *> 	*CScriptFunction::getVectorScriptFunctionObjectNode(){
 		return vec_script_function_object_node;
 	}
 
 
-	CScriptFunctionObject *		 CScriptFunctionObject::newScriptFunctionObject(){
-		CScriptFunctionObject *script_function = new CScriptFunctionObject();
+	CScriptFunction *		 CScriptFunction::newScriptFunctionObject(short idxScope, short idxScriptClass){
+		CScriptFunction *script_function = new CScriptFunction(idxScope,idxScriptClass);
 		vec_script_function_object_node->push_back(script_function);
 		script_function->idxScriptFunctionObject = vec_script_function_object_node->size()-1;
 		return script_function;
 	}
 
-	bool CScriptFunctionObject::checkCanRegister_C_Function(const char *f){
+	bool CScriptFunction::checkCanRegister_C_Function(const char *f){
 
 		int size = vec_script_function_object_node->size();
 
@@ -44,79 +44,78 @@ namespace zetscript{
 		return true;
 	}
 
+	int CScriptFunction::registerFunction(short idxScope, const string & function_name,  vector<tArgumentInfo>  args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
-	tVariableSymbolInfo * CScriptFunctionObject::newVariableSymbol(int idxFunction){
+		CScriptFunction *irs = NEW_SCRIPT_FUNCTION_OBJECT(idxScope,symbol_info.idxScriptClass);
 
-		if(idxFunction != -1 && idxFunction<(int)vec_script_function_object_node->size()){
-
-
-			tVariableSymbolInfo irs;
-			CScriptFunctionObject *irc = vec_script_function_object_node->at(idxFunction);
-
-
-			irs.idxSymbol = (short)irc->scope_info.local_symbols.m_registeredVariable.size();
+		irs->m_arg = args;
+		irs->idx_return_type = idx_return_type;
+		irs->symbol_info.ref_ptr = ref_ptr;
 
 
-			irc->scope_info.local_symbols.m_registeredVariable.push_back(irs);
-			return &irc->scope_info.local_symbols.m_registeredVariable[irc->scope_info.local_symbols.m_registeredVariable.size()-1];
-		}
-		else{
-			THROW_RUNTIME_ERROR("idxScriptClass -1");
-		}
+		irs->symbol_info.symbol_ref = CCompiler::makeSymbolRef(function_name,idxScope); // <-- defined as global
+		irs->symbol_info.properties = properties;
 
-		return NULL;
+		irs->symbol_info.idxSymbol = (short)(scope_info.local_symbols.vec_idx_registeredFunction.size());
+		scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
+
+		return scope_info.local_symbols.vec_idx_registeredFunction.size()-1;
+	}
+
+	int CScriptFunction::registerLocalFunction(const string & function_name,  vector<tArgumentInfo>  args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+
+		return newFunction(scope_info.idxScope,function_name,  args, idx_return_type,ref_ptr, properties);
+	}
+
+
+	int CScriptFunction::registerLocalVariable(const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties){
+
+		tVariableSymbolInfo irs;
+		irs.symbol_ref=CCompiler::makeSymbolRef(variable_name,idxScope);
+
+		irs.ref_ptr =ref_ptr;
+		irs.c_type = c_type;
+		irs.properties = properties;
+
+		irs.idxSymbol = (short)scope_info.local_symbols.m_registeredVariable.size();
+
+		scope_info.local_symbols.m_registeredVariable.push_back(irs);
+
+		return scope_info.local_symbols.m_registeredVariable.size()-1;
 
 	}
 
 
-	int CScriptFunctionObject::getIdxFunctionObject(CScriptFunctionObject * in_sfo,const string & function_name,char n_args_to_find, bool show_msg){
+	int CScriptFunction::getLocalFunction(const string & function_ref,char n_args){
 
-		// from lat value to first to get last override function...
-		/*if(idxFunction == -1){
-			THROW_RUNTIME_ERROR("-1 given");
-			return -1;
-		}*/
+		for(int i = scope_info.local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
+			CScriptFunction * sfo = GET_SCRIPT_FUNCTION_OBJECT(scope_info.local_symbols.vec_idx_registeredFunction[i]);
 
-		//tFunctionInfo *fi=&vec_script_function_object_node->at(idxFunction)->function_info;
-		for(int i = in_sfo->scope_info.local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-			CScriptFunctionObject * sfo = GET_SCRIPT_FUNCTION_OBJECT(in_sfo->scope_info.local_symbols.vec_idx_registeredFunction[i]);
-
-
-			if(sfo->symbol_info.symbol_ref == function_name && (n_args_to_find==(int)sfo->m_arg.size() || (n_args_to_find==-1)) ){
+			if(sfo->symbol_info.symbol_ref == function_ref && (n_args==(int)sfo->m_arg.size() || (n_args==-1)) ){
 
 				return i;
 			}
 		}
 
-		if(show_msg){
-			THROW_RUNTIME_ERROR("function member %s::%s doesn't exist",in_sfo->symbol_info.symbol_ref.c_str(),function_name.c_str());
-		}
-
 		return -1;
 	}
 
-	int				CScriptFunctionObject::getIdxVariableSymbol(CScriptFunctionObject * in_sfo,const string & variable_name, bool show_msg){
+	int				CScriptFunction::getLocalVariable(const string & variable_ref){
 		// from lat value to first to get last override function...
-
-
-		for(int i = in_sfo->scope_info.local_symbols.m_registeredVariable.size()-1; i >= 0 ; i--){
-			if(in_sfo->scope_info.local_symbols.m_registeredVariable[i].symbol_ref == variable_name){
+		for(int i = scope_info.local_symbols.m_registeredVariable.size()-1; i >= 0 ; i--){
+			if(scope_info.local_symbols.m_registeredVariable[i].symbol_ref == variable_ref){
 				return i;
 			}
 		}
 
-		if(show_msg){
-			THROW_RUNTIME_ERROR("variable member %s::%s doesn't exist",in_sfo->symbol_info.symbol_ref.c_str(),variable_name.c_str());
-		}
-
 		return -1;
 	}
 
 
 
-	CScriptFunctionObject 	* CScriptFunctionObject::getScriptFunctionObject(int idx){
+	CScriptFunction 	* CScriptFunction::getScriptFunctionObject(int idx){
 		if(idx < 0 || (unsigned)idx >= vec_script_function_object_node->size()){
-			THROW_RUNTIME_ERROR("CScriptFunctionObject node out of bound");
+			THROW_RUNTIME_ERROR("CScriptFunction node out of bound");
 			return NULL;
 		}
 

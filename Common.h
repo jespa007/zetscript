@@ -184,7 +184,7 @@ enum PROXY_CREATOR {
 	CREATE_FUNCTION = 0, DESTROY_FUNCTION
 };
 
-enum ASM_OPERATOR
+enum OP_CODE
 	:char {
 
 	// ARITMETHIC OPERATORS.
@@ -442,7 +442,7 @@ namespace zetscript{
 
 	class CASTNode;
 	typedef CASTNode *PASTNode;
-	class CScriptFunctionObject;
+	class CScriptFunction;
 	class CScope;
 	class CScriptClass;
 	class CScriptVariable;
@@ -495,7 +495,7 @@ namespace zetscript{
 
 	typedef struct {
 		const char *op_str;
-		ASM_OPERATOR op_id;
+		OP_CODE op_id;
 		int n_ops;
 	} tDefOperator;
 
@@ -531,9 +531,9 @@ namespace zetscript{
 
 	};
 
-	struct tInfoAsmOp {
+	struct tInstruction {
 
-		ASM_OPERATOR operator_type;
+		OP_CODE op_code;
 		unsigned char index_op1;	// left and right respectively
 		intptr_t index_op2;
 		unsigned short instruction_properties;
@@ -542,7 +542,7 @@ namespace zetscript{
 
 	};
 
-	typedef tInfoAsmOp *PtrAsmOp;
+	typedef tInstruction *PtrInstruction;
 
 	struct tStackElement {
 		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.

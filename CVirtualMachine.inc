@@ -116,7 +116,7 @@ namespace zetscript{
 										const char *__OVERR_OP__
 										,METAMETHOD_OPERATOR __METAMETHOD__
 										,CScriptVariable *calling_object
-										,tInfoAsmOp *instruction
+										,tInstruction *instruction
 										,tStackElement *ptrResultInstructionOp1
 										,tStackElement *ptrResultInstructionOp2
 
@@ -234,11 +234,11 @@ namespace zetscript{
 	inline CScriptFunctionObject * CVirtualMachine::FIND_FUNCTION(
 			vector<tFunctionSymbol> *m_functionSymbol
 			,vector<int> *vec_global_functions
-			,tInfoAsmOp * iao
+			,tInstruction * iao
 			,bool is_constructor
 			,const string & symbol_to_find
 			,CScriptVariable *calling_object
-			,tInfoAsmOp *instruction
+			,tInstruction *instruction
 			,tStackElement *ptrResultInstructionOp1
 			,tStackElement *ptrResultInstructionOp2
 			,tStackElement *startArg

@@ -36,7 +36,7 @@ namespace zetscript{
 		vector<CScope *> 							*vec_scope_node;
 
 		vector<CScriptClass *> 						*vec_script_class_node;
-		vector<CScriptFunctionObject *> 			*vec_script_function_object_node;
+		vector<CScriptFunction *> 			*vec_script_function_object_node;
 		vector<tInfoParsedSource> 					*vec_info_parsed_source_node;
 
 	public:
@@ -65,7 +65,7 @@ namespace zetscript{
 		vector<CScope *> 					*	getVectorScopeNode();
 
 		vector<CScriptClass *> 				*	getVectorScriptClassNode();
-		vector<CScriptFunctionObject *> 	*	getVectorScriptFunctionObjectNode();
+		vector<CScriptFunction *> 	*	getVectorScriptFunctionObjectNode();
 		vector<tInfoParsedSource> 			*	getVectorInfoParsedSourceNode();
 
 

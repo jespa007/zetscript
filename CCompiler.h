@@ -18,7 +18,7 @@ namespace zetscript{
 
 	class CScope;
 
-	//class CScriptFunctionObject;
+	//class CScriptFunction;
 
 	/**
 	 * The compiler compiles function structs and generates its asm instruction. The compile must know
@@ -51,7 +51,7 @@ namespace zetscript{
 		// COMMON COMPILE FUNCTIONS
 
 
-		//bool compile(const string & s, CScriptFunctionObject * pr);
+		//bool compile(const string & s, CScriptFunction * pr);
 
 
 		/**
@@ -72,7 +72,7 @@ namespace zetscript{
 
 
 		struct tInfoAsmOpCompiler{
-			ASM_OPERATOR operator_type;
+			OP_CODE operator_type;
 			unsigned char index_op1; // index/type/etc
 			intptr_t  index_op2; // usually a pointer or index
 			short idxAstNode;
@@ -82,7 +82,7 @@ namespace zetscript{
 			unsigned int runtime_prop;
 
 			tInfoAsmOpCompiler(){
-				operator_type=ASM_OPERATOR::END_FUNCTION;
+				operator_type=OP_CODE::END_FUNCTION;
 				index_op1=ZS_UNDEFINED_IDX;
 				index_op2=ZS_UNDEFINED_IDX;
 				idxAstNode=ZS_UNDEFINED_IDX;
@@ -96,21 +96,21 @@ namespace zetscript{
 		};
 
 		typedef struct {
-			vector<tInfoAsmOpCompiler *> asm_op;
+			vector<tInfoAsmOpCompiler *> instruction;
 		}tContinueInstructionScope,tBreakInstructionScope;
 
 		struct tInfoFunctionCompile{
-			vector<tInfoAsmOpCompiler *> 			asm_op;
-			CScriptFunctionObject 				*  	function_info_object;
+			vector<tInfoAsmOpCompiler *> 			instruction;
+			CScriptFunction 				*  	function_info_object;
 
-			tInfoFunctionCompile(CScriptFunctionObject	* _function_info_object){
+			tInfoFunctionCompile(CScriptFunction	* _function_info_object){
 				function_info_object = _function_info_object;
 			}
 
 			~tInfoFunctionCompile(){
 
-				for(unsigned j = 0;  j< asm_op.size();j++){
-					delete asm_op[j];
+				for(unsigned j = 0;  j< instruction.size();j++){
+					delete instruction[j];
 				}
 
 			}
@@ -140,7 +140,7 @@ namespace zetscript{
 		int  getIdxVarSymbolFromASTNodeScope(short idxAstNode, short idxScope);
 
 
-		CScriptFunctionObject *  addLocalFunctionSymbolFromASTNode(short idxAstNode);
+		CScriptFunction *  addLocalFunctionSymbolFromASTNode(short idxAstNode);
 		bool functionSymbolExistsFromASTNode(short idxAstNode);
 		int  getIdxFunctionObjectFromASTNode(short idxAstNode,unsigned int & scope_type);
 
@@ -153,10 +153,10 @@ namespace zetscript{
 		 * Compile class struct main ast node with class base object info to store instruction related with function information.
 		 */
 
-		bool compile_body(PASTNode _node, CScriptFunctionObject *sf);
+		bool compile_body(PASTNode _node, CScriptFunction *sf);
 
 
-		//bool parseExpression(const char *expression_str, int & m_line,CScriptFunctionObject * sf, CScope *currentEvaluatingScope);
+		//bool parseExpression(const char *expression_str, int & m_line,CScriptFunction * sf, CScope *currentEvaluatingScope);
 		/**
 		 * Load value or symbol and insert asm operation at current statment.
 		 */
@@ -235,7 +235,7 @@ namespace zetscript{
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// COMPILE ASSEMBLE CODE (GAC)
 
-		ASM_OPERATOR puntuator2instruction(__PUNCTUATOR_TYPE_OLD__  op);
+		OP_CODE puntuator2instruction(__PUNCTUATOR_TYPE_OLD__  op);
 		unsigned int post_operator2instruction_property(__PUNCTUATOR_TYPE_OLD__ op);
 
 		bool gacExpression_FunctionOrArrayAccess(PASTNode _node, CScope *_lc);
@@ -273,7 +273,7 @@ namespace zetscript{
 		bool gacWhile(PASTNode _node, CScope * _lc);
 		bool gacDoWhile(PASTNode _node, CScope * _lc);
 
-		bool gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs);
+		bool gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunction *irfs);
 		bool gacReturn(PASTNode _node, CScope * _lc);
 		bool gacIf(PASTNode _node, CScope * _lc);
 		bool  gacInlineIf(PASTNode _node, CScope * _lc);
@@ -281,7 +281,7 @@ namespace zetscript{
 		bool gacBody(PASTNode _node, CScope * _lc);
 
 
-		void pushFunction(short idxAstNode,CScriptFunctionObject *sf);
+		void pushFunction(short idxAstNode,CScriptFunction *sf);
 
 		/// popFunction pop current function scope and optionally save its compiled statment with save_statment_op=true
 		void popFunction(bool save_asm_op = true);

@@ -529,7 +529,7 @@ namespace zetscript{
 	}
 
 	void CVirtualMachine::clearGlobals(){
-		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
+		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
 
 		// zero shares have a late loading so it can be null at first time...
 		if(zero_shares == NULL){
@@ -692,7 +692,7 @@ namespace zetscript{
 	//============================================================================================================================================
 	tStackElement  CVirtualMachine::call_C_function(
 			intptr_t fun_ptr,
-			const CScriptFunctionObject *irfs,
+			const CScriptFunction *irfs,
 			bool & error,
 			tStackElement *ptrArg,
 			unsigned char n_args,
@@ -977,7 +977,7 @@ namespace zetscript{
 	}
 
 	tStackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
-		CScriptFunctionObject  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
+		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
 
 		if(idx_glb_element < main_function->scope_info.local_symbols.m_registeredVariable.size()){
 			return &stack[idx_glb_element];
@@ -1020,9 +1020,9 @@ namespace zetscript{
 		destroyCache();
 
 		main_function_object = GET_SCRIPT_FUNCTION_OBJECT(0);
-		vector<CScriptFunctionObject *> *vec_script_function_object_node_aux=CScriptFunctionObject::getVectorScriptFunctionObjectNode();
+		vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunction::getVectorScriptFunctionObjectNode();
 		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
-		vec_script_function_object_node=(CScriptFunctionObject **)malloc(sizeof(CScriptFunctionObject *)*size_vec_script_function_object_node);
+		vec_script_function_object_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
 		for(unsigned i=0; i < size_vec_script_function_object_node; i++){
 			vec_script_function_object_node[i]=vec_script_function_object_node_aux->at(i);
 		}
@@ -1038,7 +1038,7 @@ namespace zetscript{
 
 
 	tStackElement  CVirtualMachine::execute(
-			 CScriptFunctionObject *info_function,
+			 CScriptFunction *info_function,
 			 CScriptVariable *this_object,
 			 bool & error,
 			const vector<tStackElement> & arg
@@ -1054,7 +1054,7 @@ namespace zetscript{
 
 		if(idxCurrentStack==0){ // set stack and init vars for first call...
 
-			if(main_function_object->asm_op == NULL){ // no statments
+			if(main_function_object->instruction == NULL){ // no statments
 				RETURN_ERROR;
 			}
 			cancel_execution=false;
@@ -1102,7 +1102,7 @@ namespace zetscript{
 
 
 	tStackElement CVirtualMachine::execute_internal(
-			CScriptFunctionObject * info_function,
+			CScriptFunction * info_function,
 			CScriptVariable       * this_object,
 			bool & error,
 			tStackElement 		  * _ptrStartOp,
@@ -1215,7 +1215,7 @@ namespace zetscript{
 
 		//CScriptVariable *ret=VM_UNDEFINED;
 		callc_result ={STK_PROPERTY_TYPE_UNDEFINED, NULL};
-		//PtrAsmOp m_listStatements = info_function->object_info.asm_op;
+		//PtrInstruction m_listStatements = info_function->object_info.instruction;
 
 		//bool end_by_ret=false;
 
@@ -1257,7 +1257,7 @@ namespace zetscript{
 		float aux_float=0.0;
 
 
-		CScriptFunctionObject * aux_function_info=NULL;
+		CScriptFunction * aux_function_info=NULL;
 		tStackElement ret_obj;
 
 		CScriptVariable *svar=NULL;
@@ -1281,8 +1281,8 @@ namespace zetscript{
 		tStackElement *src_ins=NULL;
 		bool ok=false;
 
-		tInfoAsmOp *start_it=info_function->asm_op;
-		tInfoAsmOp *instruction_it=start_it;
+		tInstruction *start_it=info_function->instruction;
+		tInstruction *instruction_it=start_it;
 
 		ptrCurrentStr=ptrStartStr;
 		ptrCurrentOp=ptrStartOp;
@@ -1295,9 +1295,9 @@ namespace zetscript{
 
 		 for(;;){ // foreach asm instruction ...
 
-			tInfoAsmOp * instruction = instruction_it++;
+			tInstruction * instruction = instruction_it++;
 
-			const unsigned char operator_type=instruction->operator_type;
+			const unsigned char operator_type=instruction->op_code;
 			const unsigned char index_op1=instruction->index_op1;
 
 			switch(operator_type){
@@ -1350,7 +1350,7 @@ namespace zetscript{
 
 						if(!ok){
 							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Variable \"%s\" is not type vector",
-								AST_SYMBOL_VALUE_CONST_CHAR(info_function->asm_op[instruction->index_op2].idxAstNode)
+								AST_SYMBOL_VALUE_CONST_CHAR(info_function->instruction[instruction->index_op2].idxAstNode)
 							);
 							RETURN_ERROR;
 						}
@@ -1406,7 +1406,7 @@ namespace zetscript{
 
 								if((variable_stack_element = base_var->getVariableSymbol(ast->symbol_value,true))==NULL){
 
-									tInfoAsmOp *previous= (instruction-1);
+									tInstruction *previous= (instruction-1);
 									string parent_symbol="unknow";
 
 									if(previous->idxAstNode != -1){
@@ -1605,14 +1605,14 @@ namespace zetscript{
 							RETURN_ERROR;
 						}
 
-						function_obj =(CScriptFunctionObject *)si->object.stkValue;
+						function_obj =(CScriptFunction *)si->object.stkValue;
 
 					}else if(scope_type == INS_PROPERTY_SUPER_SCOPE){ // super scope ?
 						if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
 							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"super.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
 							RETURN_ERROR;
 						}
-						function_obj =(CScriptFunctionObject *)si->object.stkValue;
+						function_obj =(CScriptFunction *)si->object.stkValue;
 					}else{ // global
 						vec_functions = &(main_function_object->scope_info.local_symbols.vec_idx_registeredFunction);
 						//function_obj = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
@@ -2153,7 +2153,7 @@ namespace zetscript{
 					}
 
 
-					aux_function_info = NULL;//(CScriptFunctionObject *)callAle->stkValue;
+					aux_function_info = NULL;//(CScriptFunction *)callAle->stkValue;
 
 
 					bool is_constructor = (callAle->properties & STK_PROPERTY_CONSTRUCTOR_FUNCTION)!=0;
@@ -2161,7 +2161,7 @@ namespace zetscript{
 
 					// try to find the function ...
 					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
-						tInfoAsmOp *iao = (tInfoAsmOp *)(callAle)->stkValue;
+						tInstruction *iao = (tInstruction *)(callAle)->stkValue;
 						PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
 						symbol_to_find = ast_node_call_ale->symbol_value;
@@ -2222,7 +2222,7 @@ namespace zetscript{
 					}
 					else{
 						if(((callAle)->properties & STK_PROPERTY_UNRESOLVED_FUNCTION)==0){
-							aux_function_info=(CScriptFunctionObject *) (callAle->stkValue);
+							aux_function_info=(CScriptFunction *) (callAle->stkValue);
 						}
 					}
 
@@ -2272,7 +2272,7 @@ namespace zetscript{
 
 					}
 
-					// reset stack (function+asm_op (-1 op less))...
+					// reset stack (function+instruction (-1 op less))...
 					ptrCurrentOp=startArg-1;
 
 					// ... and push result if not function constructor...
@@ -2469,7 +2469,7 @@ namespace zetscript{
 
 			}
 
-			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->op_code].op_str);
 			RETURN_ERROR;
 
 

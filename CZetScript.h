@@ -110,7 +110,7 @@ using std::ostringstream;
 #include "CCompiler.h"
 #include "CVirtualMachine.h"
 #include "CState.h"
-#include "CScriptFunctionObject.h"
+#include "CScriptFunction.h"
 #include "CScriptClass.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 2
@@ -158,7 +158,7 @@ namespace zetscript{
 
 
 
-		//CScriptFunctionObject m_structInfoMain;
+		//CScriptFunction m_structInfoMain;
 
 		bool init();
 		CZetScript();
@@ -193,10 +193,10 @@ namespace zetscript{
 		//---------------
 		// PRINT ASM INFO
 		char print_aux_load_value[1024*8];
-		const char * getStrMovVar(tInfoAsmOp * iao);
-		const char * getStrTypeLoadValue(PtrAsmOp m_listStatements, int current_instruction);
+		const char * getStrMovVar(tInstruction * iao);
+		const char * getStrTypeLoadValue(PtrInstruction m_listStatements, int current_instruction);
 
-		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(CScriptFunctionObject *sfo);
+		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(CScriptFunction *sfo);
 		ZETSCRIPT_MODULE_EXPORT void printGeneratedCodeAllClasses();
 		// PRINT ASM INFO
 		//---------------
@@ -207,7 +207,7 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT bool getScriptObjectFromFunctionAccess(const string &function_access_expression
 														  ,CScriptVariable **calling_obj
-														  ,CScriptFunctionObject **fun_obj);
+														  ,CScriptFunction **fun_obj);
 		//----
 
 

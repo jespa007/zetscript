@@ -102,36 +102,36 @@ namespace zetscript{
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
 
-	 const char * CZetScript::getStrMovVar(tInfoAsmOp * iao){
+	 const char * CZetScript::getStrMovVar(tInstruction * iao){
 
-		if(iao->operator_type != STORE){
+		if(iao->op_code != STORE){
 			return "ERROR";
 		}
 
-		string symbol_value="Unknown";
+		string symbol_value="????";
 
-		if(iao->idxAstNode != -1){
+		/*if(iao->idxAstNode != -1){
 			symbol_value = AST_SYMBOL_VALUE(iao->idxAstNode);
-		}
+		}*/
 
 		sprintf(print_aux_load_value,"VAR(%s)",symbol_value.c_str());
 
 		return print_aux_load_value;
 	 }
 
-	 const char * CZetScript::getStrTypeLoadValue(PtrAsmOp m_listStatements, int current_instruction){
+	 const char * CZetScript::getStrTypeLoadValue(PtrInstruction m_listStatements, int current_instruction){
 
-		tInfoAsmOp * iao =&m_listStatements[current_instruction];
-
-		if(iao->operator_type != LOAD){
+		tInstruction * iao =&m_listStatements[current_instruction];
+		tInfoConstantValue *icv;
+		if(iao->op_code != LOAD){
 			return "ERROR";
 		}
 
-		string symbol_value="Unknown";
+		string symbol_value="????";
 
-		if(iao->idxAstNode != -1){
+		/*if(iao->idxAstNode != -1){
 			symbol_value = AST_SYMBOL_VALUE(iao->idxAstNode);
-		}
+		}*/
 
 		char object_access[512] = "";
 
@@ -151,8 +151,20 @@ namespace zetscript{
 		switch(iao->index_op1){
 
 			case LOAD_TYPE::LOAD_TYPE_CONSTANT:
+				icv=(tInfoConstantValue *)iao->index_op2;
+				switch(icv->properties){
+				case STK_PROPERTY_TYPE_BOOLEAN:
+				case STK_PROPERTY_TYPE_INTEGER:
+					sprintf(print_aux_load_value,"CONST(%i)",(int)((intptr_t)icv->stkValue));
+					break;
+				case STK_PROPERTY_TYPE_NUMBER:
+					sprintf(print_aux_load_value,"CONST(%f)",*((float *)&icv->stkValue));
+					break;
+				case STK_PROPERTY_TYPE_STRING:
+					sprintf(print_aux_load_value,"CONST(%s)",((string *)icv->stkValue)->c_str());
+					break;
 
-				sprintf(print_aux_load_value,"CONST(%s)",symbol_value.c_str());
+				}
 				break;
 
 			case LOAD_TYPE::LOAD_TYPE_VARIABLE:
@@ -173,20 +185,20 @@ namespace zetscript{
 		return print_aux_load_value;
 	 }
 
-	 void CZetScript::printGeneratedCode(CScriptFunctionObject *sfo){
+	 void CZetScript::printGeneratedCode(CScriptFunction *sfo){
 
 		// PRE: it should printed after compile and updateReferences.
 		string pre="";
 		string post="";
 
-		if(sfo->asm_op != NULL){
+		if(sfo->instruction != NULL){
 
 			unsigned idx_instruction=0;
-			for(tInfoAsmOp * asm_op=sfo->asm_op; asm_op->operator_type!= END_FUNCTION; asm_op++,idx_instruction++){
+			for(tInstruction * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
 
 				int n_ops=0;
-				int index_op1 = asm_op->index_op1;
-				int index_op2 = asm_op->index_op2;
+				int index_op1 = instruction->index_op1;
+				int index_op2 = instruction->index_op2;
 
 				if(index_op1 != -1)
 					n_ops++;
@@ -197,7 +209,7 @@ namespace zetscript{
 				 pre="";
 				 post="";
 
-					switch(GET_INS_PROPERTY_PRE_POST_OP(asm_op->instruction_properties)){
+					switch(GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties)){
 					case INS_PROPERTY_PRE_NEG:
 						pre="-";
 						break;
@@ -215,8 +227,8 @@ namespace zetscript{
 						break;
 					default:
 						// check whether is constant and numeric
-						if(asm_op->operator_type==ASM_OPERATOR::LOAD && asm_op->index_op1==LOAD_TYPE_CONSTANT){
-							tInfoConstantValue *icv = (((tInfoConstantValue *)asm_op->index_op2));
+						if(instruction->op_code==OP_CODE::LOAD && instruction->index_op1==LOAD_TYPE_CONSTANT){
+							tInfoConstantValue *icv = (((tInfoConstantValue *)instruction->index_op2));
 							float n;
 
 							// change the sign
@@ -239,17 +251,17 @@ namespace zetscript{
 						break;
 
 					}
-				switch(asm_op->operator_type){
+				switch(instruction->op_code){
 
 				case  NEW:
-					printf("[%03i]\t%s\t%s\n",idx_instruction,CCompiler::def_operator[asm_op->operator_type].op_str,asm_op->index_op1!=ZS_INVALID_CLASS?CScriptClass::getNameRegisteredClassByIdx(asm_op->index_op1):"???");
+					printf("[%03i]\t%s\t%s\n",idx_instruction,CCompiler::def_operator[instruction->op_code].op_str,instruction->index_op1!=ZS_INVALID_CLASS?CScriptClass::getNameRegisteredClassByIdx(instruction->index_op1):"???");
 					break;
 				case  LOAD:
 					printf("[%03i]\t%s\t%s%s%s\n"
 							,idx_instruction,
-							CCompiler::def_operator[asm_op->operator_type].op_str,
+							CCompiler::def_operator[instruction->op_code].op_str,
 							pre.c_str(),
-							getStrTypeLoadValue(sfo->asm_op,idx_instruction),
+							getStrTypeLoadValue(sfo->instruction,idx_instruction),
 							post.c_str());
 					break;
 				case JNT:
@@ -257,45 +269,45 @@ namespace zetscript{
 				case JMP:
 					printf("[%03i]\t%s\t%03i\n"
 							,idx_instruction
-							,CCompiler::def_operator[asm_op->operator_type].op_str
-							,(int)asm_op->index_op2);
+							,CCompiler::def_operator[instruction->op_code].op_str
+							,(int)instruction->index_op2);
 					break;
 				case PUSH_SCOPE:
 					printf("[%03i]\t%s%c%s%s%s%c\n"
 							,idx_instruction
-							,CCompiler::def_operator[asm_op->operator_type].op_str
-							,asm_op->index_op1!=0?'(':' '
-							,asm_op->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-							,asm_op->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-							,asm_op->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-							,asm_op->index_op1!=0?')':' '
+							,CCompiler::def_operator[instruction->op_code].op_str
+							,instruction->index_op1!=0?'(':' '
+							,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+							,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+							,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+							,instruction->index_op1!=0?')':' '
 							);
 					break;
 				case POP_SCOPE:
 					printf("[%03i]\t%s%c%s%s%s%c\n"
 							,idx_instruction
-							,CCompiler::def_operator[asm_op->operator_type].op_str
-							,asm_op->index_op1!=0?'(':' '
-							,asm_op->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-							,asm_op->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-							,asm_op->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-							,asm_op->index_op1!=0?')':' '
+							,CCompiler::def_operator[instruction->op_code].op_str
+							,instruction->index_op1!=0?'(':' '
+							,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+							,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+							,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+							,instruction->index_op1!=0?')':' '
 							);
 					break;
 				default:
 
 					if(n_ops==0){
-						printf("[%03i]\t%s\n",idx_instruction,CCompiler::def_operator[asm_op->operator_type].op_str);
+						printf("[%03i]\t%s\n",idx_instruction,CCompiler::def_operator[instruction->op_code].op_str);
 					}else if(n_ops==1){
 						printf("[%03i]\t%s%s\n"
 								,idx_instruction
-								,CCompiler::def_operator[asm_op->operator_type].op_str
-								,(asm_op->instruction_properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
+								,CCompiler::def_operator[instruction->op_code].op_str
+								,(instruction->instruction_properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
 								);
 					}else{
 						printf("[%03i]\t%s\n"
 								,idx_instruction
-								,CCompiler::def_operator[asm_op->operator_type].op_str
+								,CCompiler::def_operator[instruction->op_code].op_str
 								);
 					}
 					break;
@@ -308,24 +320,25 @@ namespace zetscript{
 
 		for(unsigned j =0; j < m_vf->size(); j++){
 
-			CScriptFunctionObject *local_irfs = GET_SCRIPT_FUNCTION_OBJECT((*m_vf)[j]);
+			CScriptFunction *local_irfs = GET_SCRIPT_FUNCTION_OBJECT((*m_vf)[j]);
 
 			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
-				char symbol_ref[1024*8]={0};
+				string symbol_ref="????";
 
-				strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
+
+				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
 
 				if(local_irfs->symbol_info.idxScriptClass!=ZS_INVALID_CLASS){
 					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->symbol_info.idxScriptClass);
 					if(sc->symbol_info.idxScriptClass == IDX_CLASS_MAIN){
-						sprintf(symbol_ref,"Main");
+						symbol_ref="Main";
 					}else{
-						sprintf(symbol_ref,"%s::%s",sfo->symbol_info.symbol_ref.c_str(),AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
+						symbol_ref=sfo->symbol_info.symbol_ref+string("::")+string("????");
 					}
 				}
 
 				printf("-------------------------------------------------------\n");
-				printf("\nCode for function \"%s\"\n\n",symbol_ref);
+				printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
 				printGeneratedCode(GET_SCRIPT_FUNCTION_OBJECT(m_vf->at(j)));
 			}
 		}
@@ -361,6 +374,7 @@ namespace zetscript{
 	bool CZetScript::init(){
 
 		CState::init();
+		CEval::init();
 
 		vm = new CVirtualMachine();
 
@@ -389,7 +403,7 @@ namespace zetscript{
 		SET_PARSING_FILENAME(idx_filename,filename);
 
 
-		/*if((end=CASTNode::generateAST_Recursive(
+		if((end=CASTNode::generateAST_Recursive(
 				s,
 				m_line,
 				MAIN_SCOPE_NODE,
@@ -397,9 +411,9 @@ namespace zetscript{
 				main_node
 				)) == NULL){
 			return;
-		}*/
+		}
 
-		CEval::eval(s);
+
 
 
 		if(*end != 0){
@@ -635,14 +649,42 @@ namespace zetscript{
 
 	}
 
-	void CZetScript::eval(const string & s, bool exec_vm, const char *filename_ref, bool show_bytecode)  {
+	void CZetScript::eval(const string & s, bool exec_vm, const char *filename, bool show_bytecode)  {
 
 
-		parse(s,filename_ref);
-		//compile(show_bytecode);
-		//if(exec_vm){
-		//	execute();
-		//}
+		if(!__init__) {THROW_RUNTIME_ERROR("zetscript not initialized");return;}
+
+		int idx_filename=-1;
+		int line=1;
+
+
+		if(filename != NULL){
+			if(!isFilenameAlreadyParsed(filename)){
+				tInfoParsedSource ps;
+				ps.filename = filename;
+				m_parsedSource->push_back(ps);
+				idx_filename=m_parsedSource->size()-1;
+			}else{
+				// already parsed
+				return;
+			}
+		}
+
+		SET_PARSING_FILENAME(idx_filename,filename);
+
+		if(!CEval::eval(s.c_str(),line)){
+			return;
+		}
+
+
+
+		if(show_bytecode){
+			printGeneratedCodeAllClasses();
+		}
+
+		if(exec_vm){
+			execute();
+		}
 	}
 
 	void CZetScript::eval_file(const char * filename, bool execute, bool show_bytecode){
@@ -668,13 +710,13 @@ namespace zetscript{
 
 	}
 
-	//CScriptFunctionObject *getScriptObjectFromScriptFunctionAccessName(const string &function_access_expression)
-	bool CZetScript::getScriptObjectFromFunctionAccess(const string &function_access,CScriptVariable **calling_obj,CScriptFunctionObject **fun_obj ){
+	//CScriptFunction *getScriptObjectFromScriptFunctionAccessName(const string &function_access_expression)
+	bool CZetScript::getScriptObjectFromFunctionAccess(const string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
 
 		//ZS_CLEAR_ERROR_MSG();
 
 		vector<string> access_var = CZetScriptUtils::split(function_access,'.');
-		CScriptFunctionObject * m_mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;
+		CScriptFunction * m_mainFunctionInfo = MAIN_SCRIPT_FUNCTION_OBJECT;
 
 		if(m_mainFunctionInfo == NULL){
 			THROW_RUNTIME_ERROR("m_mainFunctionInfo is not initialized");
@@ -735,7 +777,7 @@ namespace zetscript{
 			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1],true);
 			if(is!=NULL){
 				if(is->object.properties & STK_PROPERTY_TYPE_FUNCTION){
-					*fun_obj=(CScriptFunctionObject *)is->object.stkValue;
+					*fun_obj=(CScriptFunction *)is->object.stkValue;
 				}
 			}else{
 
@@ -747,7 +789,7 @@ namespace zetscript{
 			*calling_obj = m_mainObject;
 			string symbol_to_find=CCompiler::makeSymbolRef(access_var[0],IDX_GLOBAL_SCOPE);
 			for(unsigned i = 0; i < m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction.size() && *fun_obj==NULL; i++){
-				CScriptFunctionObject *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+				CScriptFunction *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 				if(aux_fun_obj->symbol_info.symbol_ref == symbol_to_find){
 					*fun_obj=aux_fun_obj;
 				}

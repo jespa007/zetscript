@@ -17,7 +17,7 @@ namespace zetscript{
 	public:
 
 
-		static char * eval(const char *s);
+		static bool eval(const char *s, int & line);
 
 		static void	init();
 
@@ -52,21 +52,25 @@ namespace zetscript{
 			:unsigned char {
 
 			UNKNOWN_OPERATOR = 0,
-			// assign group...
-			ASSIGN_OPERATOR, 				// =
-			ADD_ASSIGN_OPERATOR, 			// +=
-			SUB_ASSIGN_OPERATOR, 			// -=
-			MUL_ASSIGN_OPERATOR, 			// *=
-			DIV_ASSIGN_OPERATOR, 			// /=
-			MOD_ASSIGN_OPERATOR, 			// %=
-			BINARY_XOR_ASSIGN_OPERATOR,		// ^=
-			BINARY_AND__ASSIGN_OPERATOR,	// &=
-			BINARY_OR_ASSIGN_OPERATOR,  	// |=
 
-			// logic
+			// ASSIGN
+			ASSIGN_OPERATOR, 				// =
+			ASSIGN_ADD_OPERATOR, 			// +=
+			ASSIGN_SUB_OPERATOR, 			// -=
+			ASSIGN_MUL_OPERATOR, 			// *=
+			ASSIGN_DIV_OPERATOR, 			// /=
+			ASSIGN_MOD_OPERATOR, 			// %=
+			ASSIGN_BINARY_XOR_OPERATOR,		// ^=
+			ASSIGN_BINARY_AND_OPERATOR,		// &=
+			ASSIGN_BINARY_OR_OPERATOR,  	// |=
+			ASSIGN_SHIFT_LEFT_OPERATOR, 	// <<=
+			ASSIGN_SHIFT_RIGHT_OPERATOR, 	// >>=
+
+			// LOGIC
 			LOGIC_AND_OPERATOR, 			// &&
 			LOGIC_OR_OPERATOR, 				// ||
 
+			// RELATIONAL
 			LOGIC_EQUAL_OPERATOR, 			// ==
 			LOGIC_NOT_EQUAL_OPERATOR, 		// !=
 			LOGIC_GTE_OPERATOR, 			// >=
@@ -74,7 +78,7 @@ namespace zetscript{
 			LOGIC_GT_OPERATOR, 				// >
 			LOGIC_LT_OPERATOR, 				// <
 
-
+			// ARITHMETIC
 			ADD_OPERATOR, 					// +
 			BINARY_OR_OPERATOR, 			// |
 			BINARY_XOR_OPERATOR, 			// ^
@@ -123,8 +127,8 @@ namespace zetscript{
 		};
 
 
-	struct tInfoByteCodeCompiler{
-		ASM_OPERATOR operator_type;
+	struct tInstructionCompiler{
+		OP_CODE op_code;
 		unsigned char index_op1; 	// index/type/etc
 		intptr_t  index_op2; 		// usually a pointer or index
 		unsigned short var_type;
@@ -133,8 +137,8 @@ namespace zetscript{
 		unsigned int scope_type;
 		unsigned int runtime_prop;
 
-		tInfoByteCodeCompiler(){
-			operator_type=ASM_OPERATOR::END_FUNCTION;
+		tInstructionCompiler(){
+			op_code=OP_CODE::END_FUNCTION;
 			index_op1=ZS_UNDEFINED_IDX;
 			index_op2=ZS_UNDEFINED_IDX;
 
@@ -151,7 +155,7 @@ namespace zetscript{
 
 		ACCESSOR_TYPE accessor_type;
 		string value;
-		vector<tInfoByteCodeCompiler> byte_code;
+		vector<tInstructionCompiler> instruction;
 
 		tTokenNodeAccessor(){
 			accessor_type=ACCESSOR_TYPE::UNKNOWN_ACCESSOR_TYPE;
@@ -171,7 +175,7 @@ namespace zetscript{
 
 		string value;
 		int line;
-		vector<tInfoByteCodeCompiler> byte_code; // byte code load literal/identifier(can be anonymous function), vector/struct.
+		vector<tInstructionCompiler> instruction; // byte code load literal/identifier(can be anonymous function), vector/struct.
 
 		// access info like function call, vector access and variable memeber
 		vector<tTokenNodeAccessor> accessor;
@@ -196,17 +200,16 @@ namespace zetscript{
 
 
 		typedef struct {
-			vector<tInfoByteCodeCompiler> byte_code;
+			vector<tInstructionCompiler> instruction;
 		}tContinueInstructionScope,tBreakInstructionScope;
 
-		struct tInfoFunctionCompile{
+		struct tFunctionInfo{
 
-			vector<tInfoByteCodeCompiler> 				byte_code;
-			CScriptFunctionObject 				*  	function_info_object;
+			vector<tInstructionCompiler> 		instruction;
+			CScriptFunction 				*  	function_info_object;
 
-			tInfoFunctionCompile(CScriptFunctionObject	* _function_info_object){
+			tFunctionInfo(CScriptFunction	* _function_info_object){
 				function_info_object = _function_info_object;
-
 			}
 		};
 
@@ -263,8 +266,9 @@ namespace zetscript{
 		static tDirectiveInfo defined_directive[MAX_DIRECTIVES];
 
 
-		static tInfoFunctionCompile				*m_currentFunctionInfo;
-		static vector<tInfoFunctionCompile *> 	*stk_scriptFunction;
+		static tFunctionInfo				*pCurrentFunctionInfo;
+		static vector<tFunctionInfo *> 		*vFunctionInfo;
+		static bool is_initialized;
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// CONSTANT TOOLS
@@ -277,12 +281,17 @@ namespace zetscript{
 		static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
 		static string 				makeSymbolRef(const string & symbol_var, int idxScope);
 		static int					getIdxScopeFromSymbolRef(const string & symbol_ref);
+		static void pushFunction(CScriptFunction *sf);
+		static void popFunction();
+
+
+
 
 
 		static KEYWORD_TYPE 	isKeyword(const char *c);
 		static DIRECTIVE_TYPE 	isDirective(const char *c);
 
-		static bool evalLiteralNumber(const char *c, int & line, string & value, bool & error);
+		static char * evalLiteralNumber(const char *c, int & line, string & value, bool & error);
 
 
 		//-----------------------------------------------
@@ -291,12 +300,13 @@ namespace zetscript{
 
 		// string generic utils...
 
-		static bool isLiteral(const string & s);
-		static bool   isIdentifierNameExpressionOk(const string & symbol, int line);
-		static char *  getIdentifierToken(const char *s, const string & symbol);
-		static bool	  isEndSymbolToken(char *s,char pre=0);
-		static bool isAccessPunctuator(char *s);
-		static char * evalSymbol(const char *s, int line, CEval::tTokenNode *  token);
+		static bool 	isLiteral(const string & s);
+		static bool   	isIdentifierNameExpressionOk(const string & symbol, int line);
+		static char *  	getIdentifierToken(const char *s, string & symbol);
+		static bool	  	isEndSymbolToken(char *s,char pre=0);
+		static bool 	isAccessPunctuator(char *s);
+		static char * 	evalSymbol(const char *s, int line, CEval::tTokenNode *  token);
+		static bool     endExpression(const char * s);
 
 		static SEPARATOR_TYPE  		evalSeparator(const char *s);
 		static OPERATOR_TYPE   		evalOperator(const char *s);
@@ -310,26 +320,30 @@ namespace zetscript{
 
 
 		// AST core functions ...
-		static bool  generateByteCodeExpression(tTokenNode *_node);
-		static bool  buildAstExpression(tTokenNode **node,vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
-		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+
+		// Turn tokens into byte code throught semi AST algorithm ...
+		static OP_CODE puntuator2instruction(OPERATOR_TYPE op);
+		static bool  compileTokens(vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
+
+		// Turn expression in Tokens (with some byte code instructions inside)...
+		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
 
 
 
 		// NEW EXPRESSION...
-		static char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+		static char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
 
 		// FUNCTION OBJECT...
-		static char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+		static char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
 
 		//STRUCT OBJECT...
-		static char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+		static char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
 
 		//VECTOR OBJECT...
-		static char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+		static char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
 
 		// GENERIC VECTOR/FUNCTION ARGS
-		static char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInfoByteCodeCompiler> 		*	byte_code);
+		static char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
 
 
 		// END EXPRESSION FUNCTION

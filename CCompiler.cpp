@@ -157,7 +157,7 @@ namespace zetscript{
 		// name comes from same astnode...
 		PASTNode ast=AST_NODE(idxAstNode);
 		string symbol_ref=CCompiler::makeSymbolRef(ast->symbol_value,IDX_GLOBAL_SCOPE);
-		CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX);
+		CScriptFunction *main_function = GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX);
 
 		for(unsigned i = 0; i < main_function->scope_info.local_symbols.m_registeredVariable.size(); i++){
 			if(main_function->scope_info.local_symbols.m_registeredVariable[i].symbol_ref == symbol_ref ){
@@ -180,7 +180,7 @@ namespace zetscript{
 		return ZS_UNDEFINED_IDX;
 	}
 
-	CScriptFunctionObject * CCompiler::addLocalFunctionSymbolFromASTNode(short idxAstNode){
+	CScriptFunction * CCompiler::addLocalFunctionSymbolFromASTNode(short idxAstNode){
 
 
 		PASTNode ast_node = AST_NODE(idxAstNode);
@@ -206,7 +206,7 @@ namespace zetscript{
 			tScopeVar *irv = SCOPE_NODE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false);
 			if(irv != NULL){
 
-				CScriptFunctionObject *sfo = NEW_SCRIPT_FUNCTION_OBJECT;
+				CScriptFunction *sfo = NEW_SCRIPT_FUNCTION_OBJECT;
 
 				CScope *scope=SCOPE_NODE(ast_node->idxScope);
 				PASTNode ast_node_root=AST_NODE(scope->getIdxBaseAstNode());
@@ -265,7 +265,7 @@ namespace zetscript{
 
 			if((ast != NULL) && (AST_NODE(idxAstNode)->idxScope == ast->idxScope)){
 				for(unsigned i = 0; i < this->m_currentFunctionInfo->function_info_object->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(m_currentFunctionInfo->function_info_object->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+					CScriptFunction *sfo=GET_SCRIPT_FUNCTION_OBJECT(m_currentFunctionInfo->function_info_object->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 					if(sfo->symbol_info.symbol_ref == symbol_ref  && sfo->m_arg.size()==n_args){
 						return i;
 					}
@@ -274,11 +274,11 @@ namespace zetscript{
 			else{ //global
 
 				scope_type = 0;//INST_PROPERTY_GLOBAL_SCOPE;
-				CScriptFunctionObject *main_function = GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX);
+				CScriptFunction *main_function = GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX);
 
 
 				for(unsigned i = 0; i < main_function->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-					CScriptFunctionObject *sfo=GET_SCRIPT_FUNCTION_OBJECT(main_function->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+					CScriptFunction *sfo=GET_SCRIPT_FUNCTION_OBJECT(main_function->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 					if(sfo->symbol_info.symbol_ref == symbol_ref  && sfo->m_arg.size()==n_args ){
 						return i;
 					}
@@ -407,7 +407,7 @@ namespace zetscript{
 	//
 	int CCompiler::getCurrentInstructionIndex(){
 		//tInfoStatementOpCompiler *ptr_current_statement_op = &(m_currentFunctionInfo->stament)[m_currentFunctionInfo->stament.size()-1];
-		return m_currentFunctionInfo->asm_op.size()-1;
+		return m_currentFunctionInfo->instruction.size()-1;
 	}
 
 	bool CCompiler::isFunctionNode(short idxAstNode){
@@ -488,14 +488,14 @@ namespace zetscript{
 			((tStackElement *)obj)->varRef=s;
 		}
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
-		asm_op->var_type=type;
-		asm_op->index_op1=LOAD_TYPE_CONSTANT;
-		asm_op->index_op2=(intptr_t)obj;
-		asm_op->idxAstNode=idxAstNode;
-		asm_op->operator_type=ASM_OPERATOR::LOAD;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		instruction->var_type=type;
+		instruction->index_op1=LOAD_TYPE_CONSTANT;
+		instruction->index_op2=(intptr_t)obj;
+		instruction->idxAstNode=idxAstNode;
+		instruction->operator_type=OP_CODE::LOAD;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	bool CCompiler::insertLoadValueInstruction(PASTNode _node, CScope * _lc, tInfoAsmOpCompiler **iao_result){
@@ -765,152 +765,152 @@ namespace zetscript{
 			}
 		}
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
-		asm_op->index_op1=load_type;
-		asm_op->index_op2=(intptr_t)obj;
-		asm_op->idxAstNode=_node->idxAstNode;
-		asm_op->var_type=type;
-		asm_op->pre_post_op_type=pre_post_operator_type;
-		asm_op->scope_type=scope_type;
+		instruction->index_op1=load_type;
+		instruction->index_op2=(intptr_t)obj;
+		instruction->idxAstNode=_node->idxAstNode;
+		instruction->var_type=type;
+		instruction->pre_post_op_type=pre_post_operator_type;
+		instruction->scope_type=scope_type;
 
-		asm_op->operator_type=ASM_OPERATOR::LOAD;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		instruction->operator_type=OP_CODE::LOAD;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 
 		if(iao_result != NULL){
-			*iao_result=asm_op;
+			*iao_result=instruction;
 		}
 		return true;
 	}
 
 	void CCompiler::insertNot(short idxAstNode){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->idxAstNode = idxAstNode;
-		asm_op->operator_type=ASM_OPERATOR::NOT;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
+		instruction->idxAstNode = idxAstNode;
+		instruction->operator_type=OP_CODE::NOT;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	void CCompiler::insertNeg(short idxAstNode){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->idxAstNode = idxAstNode;
-		asm_op->operator_type=ASM_OPERATOR::NEG;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
+		instruction->idxAstNode = idxAstNode;
+		instruction->operator_type=OP_CODE::NEG;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JMP_Instruction(short idxAstNode, int instruction_index){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
-		asm_op->index_op2 = instruction_index;//&(this->m_currentFunctionInfo->stament[dest_statment]);
-		asm_op->operator_type=ASM_OPERATOR::JMP;
-		asm_op->idxAstNode = idxAstNode;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
-		return asm_op;
+		instruction->index_op2 = instruction_index;//&(this->m_currentFunctionInfo->stament[dest_statment]);
+		instruction->operator_type=OP_CODE::JMP;
+		instruction->idxAstNode = idxAstNode;
+		m_currentFunctionInfo->instruction.push_back(instruction);
+		return instruction;
 	}
 
 	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JNT_Instruction(short idxAstNode, int instruction_index){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
-		asm_op->index_op2 = instruction_index;//&(this->m_currentFunctionInfo->stament[dest_statment]);
-		asm_op->operator_type=ASM_OPERATOR::JNT;
-		asm_op->idxAstNode = idxAstNode;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		instruction->index_op2 = instruction_index;//&(this->m_currentFunctionInfo->stament[dest_statment]);
+		instruction->operator_type=OP_CODE::JNT;
+		instruction->idxAstNode = idxAstNode;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 
-		return asm_op;
+		return instruction;
 	}
 
 	CCompiler::tInfoAsmOpCompiler * CCompiler::insert_JT_Instruction(short idxAstNode, int instruction_index){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
-		asm_op->index_op2 = instruction_index;
-		asm_op->operator_type=ASM_OPERATOR::JT;
-		asm_op->idxAstNode = idxAstNode;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
-		return asm_op;
+		instruction->index_op2 = instruction_index;
+		instruction->operator_type=OP_CODE::JT;
+		instruction->idxAstNode = idxAstNode;
+		m_currentFunctionInfo->instruction.push_back(instruction);
+		return instruction;
 	}
 
 	void CCompiler::insert_CreateArrayObject_Instruction(short idxAstNode){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
-		asm_op->operator_type=ASM_OPERATOR::DECL_VEC;
-		asm_op->var_type=STK_PROPERTY_TYPE_SCRIPTVAR;
-		asm_op->idxAstNode = idxAstNode;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		instruction->operator_type=OP_CODE::DECL_VEC;
+		instruction->var_type=STK_PROPERTY_TYPE_SCRIPTVAR;
+		instruction->idxAstNode = idxAstNode;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	void CCompiler::insert_ArrayAccess_Instruction(int index_defined_vec_variable, short idxAstNode){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->index_op2 = index_defined_vec_variable;
-		asm_op->operator_type=ASM_OPERATOR::VGET;
-		asm_op->idxAstNode = idxAstNode;
-		asm_op->var_type = STK_PROPERTY_TYPE_SCRIPTVAR;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
+		instruction->index_op2 = index_defined_vec_variable;
+		instruction->operator_type=OP_CODE::VGET;
+		instruction->idxAstNode = idxAstNode;
+		instruction->var_type = STK_PROPERTY_TYPE_SCRIPTVAR;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	void CCompiler::insert_CallFunction_Instruction(short idxAstNode, int call_index){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
-		asm_op->idxAstNode = idxAstNode;
-		asm_op->operator_type=ASM_OPERATOR::CALL;
-		asm_op->index_op2=call_index;
+		instruction->idxAstNode = idxAstNode;
+		instruction->operator_type=OP_CODE::CALL;
+		instruction->index_op2=call_index;
 
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	void CCompiler::insertRet(short idxAstNode){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
 
-		tInfoAsmOpCompiler *last_asm = m_currentFunctionInfo->asm_op[m_currentFunctionInfo->asm_op.size()-1]; // get last operator
-		if(last_asm->operator_type == ASM_OPERATOR::CALL){
+		tInfoAsmOpCompiler *last_asm = m_currentFunctionInfo->instruction[m_currentFunctionInfo->instruction.size()-1]; // get last operator
+		if(last_asm->operator_type == OP_CODE::CALL){
 			last_asm->runtime_prop |=INS_PROPERTY_DIRECT_CALL_RETURN;
 		}
 
-		asm_op->operator_type=ASM_OPERATOR::RET;
-		asm_op->idxAstNode = idxAstNode;
+		instruction->operator_type=OP_CODE::RET;
+		instruction->idxAstNode = idxAstNode;
 
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	void CCompiler::insert_ArrayObject_PushValueInstruction(short idxAstNode){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->idxAstNode = idxAstNode;
-		asm_op->operator_type=ASM_OPERATOR::VPUSH;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
+		instruction->idxAstNode = idxAstNode;
+		instruction->operator_type=OP_CODE::VPUSH;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	bool CCompiler::insert_NewObject_Instruction(short idxAstNode, const string & class_name){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		if((asm_op->index_op1 = CScriptClass::getIdxScriptClass(class_name))==ZS_INVALID_CLASS){//&(this->m_currentFunctionInfo->stament[dest_statment]);
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
+		if((instruction->index_op1 = CScriptClass::getIdxScriptClass(class_name))==ZS_INVALID_CLASS){//&(this->m_currentFunctionInfo->stament[dest_statment]);
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" is not registered", class_name.c_str());
 			return false;
 		}
-		asm_op->operator_type=ASM_OPERATOR::NEW;
-		asm_op->idxAstNode = idxAstNode;
+		instruction->operator_type=OP_CODE::NEW;
+		instruction->idxAstNode = idxAstNode;
 
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		m_currentFunctionInfo->instruction.push_back(instruction);
 		return true;
 	}
 
 	bool CCompiler::insert_DeleteObject_Instruction(short idxAstNode){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
-		asm_op->operator_type=ASM_OPERATOR::DELETE_OP;
-		asm_op->idxAstNode = idxAstNode;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		instruction->operator_type=OP_CODE::DELETE_OP;
+		instruction->idxAstNode = idxAstNode;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 
 		return true;
 	}
@@ -921,45 +921,45 @@ namespace zetscript{
 			return false;
 		}
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
 
-		asm_op->index_op1 = properties;
-		asm_op->index_op2 = scope_idx; // index from object cached node ?
-		asm_op->operator_type=ASM_OPERATOR::PUSH_SCOPE;
-		asm_op->idxAstNode = idxAstNode;
+		instruction->index_op1 = properties;
+		instruction->index_op2 = scope_idx; // index from object cached node ?
+		instruction->operator_type=OP_CODE::PUSH_SCOPE;
+		instruction->idxAstNode = idxAstNode;
 
 
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		m_currentFunctionInfo->instruction.push_back(instruction);
 
 		return true;
 	}
 
 	void CCompiler::insertPopScopeInstruction(short idxAstNode, unsigned char properties){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->operator_type=ASM_OPERATOR::POP_SCOPE;
-		asm_op->idxAstNode = idxAstNode;
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
+		instruction->operator_type=OP_CODE::POP_SCOPE;
+		instruction->idxAstNode = idxAstNode;
 
-		asm_op->index_op1 = properties;
+		instruction->index_op1 = properties;
 
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	void CCompiler::insert_DeclStruct_Instruction(short idxAstNode){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->operator_type=ASM_OPERATOR::DECL_STRUCT;
-		asm_op->idxAstNode = idxAstNode;
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
+		instruction->operator_type=OP_CODE::DECL_STRUCT;
+		instruction->idxAstNode = idxAstNode;
 
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	void CCompiler::insert_PushAttribute_Instruction(short idxAstNode){
 
-		tInfoAsmOpCompiler *asm_op = new tInfoAsmOpCompiler();
-		asm_op->operator_type=ASM_OPERATOR::PUSH_ATTR;
-		asm_op->idxAstNode = idxAstNode;
-		m_currentFunctionInfo->asm_op.push_back(asm_op);
+		tInfoAsmOpCompiler *instruction = new tInfoAsmOpCompiler();
+		instruction->operator_type=OP_CODE::PUSH_ATTR;
+		instruction->idxAstNode = idxAstNode;
+		m_currentFunctionInfo->instruction.push_back(instruction);
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -976,61 +976,61 @@ namespace zetscript{
 		return 0;//INS_PROPERTY_UNKNOW_PRE_POST_OPERATOR;
 	}
 
-	ASM_OPERATOR CCompiler::puntuator2instruction(__PUNCTUATOR_TYPE_OLD__ op){
+	OP_CODE CCompiler::puntuator2instruction(__PUNCTUATOR_TYPE_OLD__ op){
 
 		switch(op){
 		default:
 			THROW_RUNTIME_ERROR("%s Not implemented",CASTNode::defined_operator_punctuator[op].str );
 			break;
 		case SUB_PUNCTUATOR:
-			return ASM_OPERATOR::NEG;
+			return OP_CODE::NEG;
 		case ADD_PUNCTUATOR:
-			return ASM_OPERATOR::ADD;
+			return OP_CODE::ADD;
 		case MUL_PUNCTUATOR:
-			return ASM_OPERATOR::MUL;
+			return OP_CODE::MUL;
 		case DIV_PUNCTUATOR:
-			return ASM_OPERATOR::DIV;
+			return OP_CODE::DIV;
 		case MOD_PUNCTUATOR:
-			return ASM_OPERATOR::MOD;
+			return OP_CODE::MOD;
 		case ASSIGN_PUNCTUATOR:
-			return ASM_OPERATOR::STORE;
+			return OP_CODE::STORE;
 		case BINARY_XOR_PUNCTUATOR:
-			return ASM_OPERATOR::XOR;
+			return OP_CODE::XOR;
 		case BINARY_AND_PUNCTUATOR:
-			return ASM_OPERATOR::AND;
+			return OP_CODE::AND;
 		case BINARY_OR_PUNCTUATOR:
-			return ASM_OPERATOR::OR;
+			return OP_CODE::OR;
 		case SHIFT_LEFT_PUNCTUATOR:
-			return ASM_OPERATOR::SHL;
+			return OP_CODE::SHL;
 		case SHIFT_RIGHT_PUNCTUATOR:
-			return ASM_OPERATOR::SHR;
+			return OP_CODE::SHR;
 		case LOGIC_AND_PUNCTUATOR:
-			return ASM_OPERATOR::LOGIC_AND;
+			return OP_CODE::LOGIC_AND;
 		case LOGIC_OR_PUNCTUATOR:
-			return ASM_OPERATOR::LOGIC_OR;
+			return OP_CODE::LOGIC_OR;
 		case LOGIC_EQUAL_PUNCTUATOR:
-			return ASM_OPERATOR::EQU;
+			return OP_CODE::EQU;
 		case LOGIC_NOT_EQUAL_PUNCTUATOR:
-			return ASM_OPERATOR::NOT_EQU;
+			return OP_CODE::NOT_EQU;
 		case LOGIC_GT_PUNCTUATOR:
-			return ASM_OPERATOR::GT;
+			return OP_CODE::GT;
 		case LOGIC_LT_PUNCTUATOR:
-			return ASM_OPERATOR::LT;
+			return OP_CODE::LT;
 		case LOGIC_GTE_PUNCTUATOR:
-			return ASM_OPERATOR::GTE;
+			return OP_CODE::GTE;
 		case LOGIC_LTE_PUNCTUATOR:
-			return ASM_OPERATOR::LTE;
+			return OP_CODE::LTE;
 		case LOGIC_NOT_PUNCTUATOR:
-			return ASM_OPERATOR::NOT;
+			return OP_CODE::NOT;
 		case INSTANCEOF_PUNCTUATOR:
-			return ASM_OPERATOR::INSTANCEOF;
+			return OP_CODE::INSTANCEOF;
 		}
 		return INVALID_OP;
 	}
 
 
 	CCompiler::tInfoAsmOpCompiler * CCompiler::getLastInsertedInfoAsmOpCompiler(){
-		return m_currentFunctionInfo->asm_op[m_currentFunctionInfo->asm_op.size()-1];
+		return m_currentFunctionInfo->instruction[m_currentFunctionInfo->instruction.size()-1];
 	}
 
 
@@ -1044,59 +1044,59 @@ namespace zetscript{
 			case ADD_ASSIGN_PUNCTUATOR: // a+b
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::ADD;
+				iao->operator_type = OP_CODE::ADD;
 				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 				iao->idxAstNode=_node->idxAstNode;
-				m_currentFunctionInfo->asm_op.push_back(iao);
+				m_currentFunctionInfo->instruction.push_back(iao);
 
 				op = ASSIGN_PUNCTUATOR;
 				break;
 			case SUB_ASSIGN_PUNCTUATOR: // a + (-b)
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::NEG;
+				iao->operator_type = OP_CODE::NEG;
 
 				iao->idxAstNode=_node->idxAstNode;
-				m_currentFunctionInfo->asm_op.push_back(iao);
+				m_currentFunctionInfo->instruction.push_back(iao);
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::ADD;
+				iao->operator_type = OP_CODE::ADD;
 				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 				iao->idxAstNode=_node->idxAstNode;
-				m_currentFunctionInfo->asm_op.push_back(iao);
+				m_currentFunctionInfo->instruction.push_back(iao);
 
 				op = ASSIGN_PUNCTUATOR;
 				break;
 			case MUL_ASSIGN_PUNCTUATOR: // a*b
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::MUL;
+				iao->operator_type = OP_CODE::MUL;
 				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 
 				iao->idxAstNode=_node->idxAstNode;
-				m_currentFunctionInfo->asm_op.push_back(iao);
+				m_currentFunctionInfo->instruction.push_back(iao);
 
 				op = ASSIGN_PUNCTUATOR;
 				break;
 			case DIV_ASSIGN_PUNCTUATOR: // a/b
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::DIV;
+				iao->operator_type = OP_CODE::DIV;
 				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 
 				iao->idxAstNode=_node->idxAstNode;
-				m_currentFunctionInfo->asm_op.push_back(iao);
+				m_currentFunctionInfo->instruction.push_back(iao);
 
 				op = ASSIGN_PUNCTUATOR;
 				break;
 			case MOD_ASSIGN_PUNCTUATOR: // a % b
 
 				iao = new tInfoAsmOpCompiler();
-				iao->operator_type = ASM_OPERATOR::MOD;
+				iao->operator_type = OP_CODE::MOD;
 				iao->runtime_prop |= STK_PROPERTY_READ_TWO_POP_ONE;
 
 				iao->idxAstNode=_node->idxAstNode;
-				m_currentFunctionInfo->asm_op.push_back(iao);
+				m_currentFunctionInfo->instruction.push_back(iao);
 
 
 				op = ASSIGN_PUNCTUATOR;
@@ -1110,15 +1110,15 @@ namespace zetscript{
 		if(op == __PUNCTUATOR_TYPE_OLD__::FIELD_PUNCTUATOR){ // trivial access...
 			return true;
 		}
-		ASM_OPERATOR asm_op;
-		if((asm_op= puntuator2instruction(op))!=INVALID_OP){
+		OP_CODE instruction;
+		if((instruction= puntuator2instruction(op))!=INVALID_OP){
 			iao = new tInfoAsmOpCompiler();
-			iao->operator_type = asm_op;
+			iao->operator_type = instruction;
 
 			if(_node!=NULL){
 				iao->idxAstNode=_node->idxAstNode;
 			}
-			m_currentFunctionInfo->asm_op.push_back(iao);
+			m_currentFunctionInfo->instruction.push_back(iao);
 			return true;
 		}
 		return false;
@@ -1219,8 +1219,8 @@ namespace zetscript{
 
 		if(_node->pre_post_operator_info != __PUNCTUATOR_TYPE_OLD__::UNKNOWN_PUNCTUATOR){ // there's pre/post increment...
 			// get post/inc
-			tInfoAsmOpCompiler *asm_op = m_currentFunctionInfo->asm_op[m_currentFunctionInfo->asm_op.size()-1];
-			asm_op->pre_post_op_type=post_operator2instruction_property(_node->pre_post_operator_info);
+			tInfoAsmOpCompiler *instruction = m_currentFunctionInfo->instruction[m_currentFunctionInfo->instruction.size()-1];
+			instruction->pre_post_op_type=post_operator2instruction_property(_node->pre_post_operator_info);
 		}
 
 		if(_node->children.size()==3){ // array or function access ...
@@ -1257,7 +1257,7 @@ namespace zetscript{
 		if(_node->node_type != FUNCTION_OBJECT_NODE ){THROW_RUNTIME_ERROR("node is not FUNCTION_OBJECT_NODE type or null");return false;}
 		if(_node->children.size()!=2) {THROW_RUNTIME_ERROR("Array access should have 2 children");return false;}
 
-		CScriptFunctionObject * script_function=NULL;
+		CScriptFunction * script_function=NULL;
 
 		// 1. insert load reference created object ...
 		if(functionSymbolExistsFromASTNode( _node->idxAstNode)){
@@ -1345,9 +1345,9 @@ namespace zetscript{
 		insertStringConstantValueInstruction(_node->idxAstNode,_node->symbol_value);
 
 		if(!(
-			 m_currentFunctionInfo->asm_op[index_attr]->operator_type == ASM_OPERATOR::DECL_VEC
-		  || m_currentFunctionInfo->asm_op[index_attr]->operator_type == ASM_OPERATOR::NEW
-		  || m_currentFunctionInfo->asm_op[index_attr]->operator_type == ASM_OPERATOR::DECL_STRUCT
+			 m_currentFunctionInfo->instruction[index_attr]->operator_type == OP_CODE::DECL_VEC
+		  || m_currentFunctionInfo->instruction[index_attr]->operator_type == OP_CODE::NEW
+		  || m_currentFunctionInfo->instruction[index_attr]->operator_type == OP_CODE::DECL_STRUCT
 		)){
 			index_attr = getCurrentInstructionIndex()-1;
 		}
@@ -1555,8 +1555,8 @@ namespace zetscript{
 		case __PUNCTUATOR_TYPE_OLD__::PRE_INC_PUNCTUATOR:
 			{
 				//tInfoStatementOpCompiler *ptr_current_statement_op = &this->m_currentFunctionInfo->stament[this->m_currentFunctionInfo->stament.size()-1];
-				tInfoAsmOpCompiler *asm_op = m_currentFunctionInfo->asm_op[m_currentFunctionInfo->asm_op.size()-1];
-				asm_op->pre_post_op_type=pre_operator==PRE_DEC_PUNCTUATOR?INS_PROPERTY_PRE_DEC:INS_PROPERTY_PRE_INC;
+				tInfoAsmOpCompiler *instruction = m_currentFunctionInfo->instruction[m_currentFunctionInfo->instruction.size()-1];
+				instruction->pre_post_op_type=pre_operator==PRE_DEC_PUNCTUATOR?INS_PROPERTY_PRE_DEC:INS_PROPERTY_PRE_INC;
 			}
 			break;
 		default:
@@ -1635,7 +1635,7 @@ namespace zetscript{
 	}
 
 	bool CCompiler::registerFunctionClassSymbol(short idx_node_fun, const string & class_name_to_register,CScriptClass * current_class ){
-			CScriptFunctionObject *irfs;
+			CScriptFunction *irfs;
 			string current_class_name = current_class->symbol_info.symbol_ref;
 			PASTNode node_class = AST_NODE(current_class->symbol_info.idxAstNode);
 			PASTNode _node_ret=NULL;
@@ -1670,7 +1670,7 @@ namespace zetscript{
 
 			if(current_class->is_c_class()){ // set c refs ...
 
-				CScriptFunctionObject *irs_src=CScriptClass::getScriptFunctionObjectByClassFunctionName(
+				CScriptFunction *irs_src=CScriptClass::getScriptFunctionObjectByClassFunctionName(
 						current_class_name,
 						CCompiler::makeSymbolRef(fun_node->symbol_value,IDX_C_CLASS_SCOPE)
 				);
@@ -1870,38 +1870,38 @@ namespace zetscript{
 		if(_node->children.size()==3){ // is for in
 
 			idxAstBodyNode=2;
-			tInfoAsmOpCompiler *asm_load_var_op=NULL,*asm_it_op=NULL,*asm_op=NULL;
+			tInfoAsmOpCompiler *asm_load_var_op=NULL,*asm_it_op=NULL,*instruction=NULL;
 
 			// since key variable is only registered we have to insert a load op...
 			asm_load_var_op=new tInfoAsmOpCompiler();
-			asm_load_var_op->operator_type=ASM_OPERATOR::LOAD;
+			asm_load_var_op->operator_type=OP_CODE::LOAD;
 			asm_load_var_op->index_op1=LOAD_TYPE::LOAD_TYPE_NOT_DEFINED; // set undefined... compiler will link the symbol later...
 			asm_load_var_op->idxAstNode=AST_NODE(_node->children[0])->children[0]; // get variable index ...
-			m_currentFunctionInfo->asm_op.push_back(asm_load_var_op);
+			m_currentFunctionInfo->instruction.push_back(asm_load_var_op);
 
 			// evaluate vector/struct element ...
 			if(!ast2asm_Recursive(_node->children[1],SCOPE_NODE(_node->idxScope))){ return false;}
 
 			asm_it_op=new tInfoAsmOpCompiler();
-			asm_it_op->operator_type=ASM_OPERATOR::IT_INI;
-			m_currentFunctionInfo->asm_op.push_back(asm_it_op);
+			asm_it_op->operator_type=OP_CODE::IT_INI;
+			m_currentFunctionInfo->instruction.push_back(asm_it_op);
 
 
 			instruction_it_end=getCurrentInstructionIndex()+1;
 
 			asm_it_op=new tInfoAsmOpCompiler();
-			asm_it_op->operator_type=ASM_OPERATOR::IT_CHK_END;
+			asm_it_op->operator_type=OP_CODE::IT_CHK_END;
 			asm_it_op->idxAstNode=AST_NODE(_node->children[0])->children[0];
-			m_currentFunctionInfo->asm_op.push_back(asm_it_op);
+			m_currentFunctionInfo->instruction.push_back(asm_it_op);
 
 
 			asm_jt_op = insert_JT_Instruction(_node->children[1]);
 
 			// 2. load and post inc it
 			asm_it_op=new tInfoAsmOpCompiler();
-			asm_it_op->operator_type=ASM_OPERATOR::IT_SET_AND_NEXT;
+			asm_it_op->operator_type=OP_CODE::IT_SET_AND_NEXT;
 			asm_it_op->idxAstNode=_node->children[1];
-			m_currentFunctionInfo->asm_op.push_back(asm_it_op);
+			m_currentFunctionInfo->instruction.push_back(asm_it_op);
 
 		}else{ // compile conditional...
 
@@ -1928,17 +1928,17 @@ namespace zetscript{
 		instruction_continue=getCurrentInstructionIndex();
 
 		// because continue behaviour es inner body we have to set instructions after for-body is compiled...
-		if(m_currentFunctionInfo->asm_op[instruction_pushscope]->operator_type != ASM_OPERATOR::PUSH_SCOPE){
+		if(m_currentFunctionInfo->instruction[instruction_pushscope]->operator_type != OP_CODE::PUSH_SCOPE){
 			THROW_RUNTIME_ERROR("expected push scope");return false;
 		}
 
-		m_currentFunctionInfo->asm_op[instruction_pushscope]->index_op1=SCOPE_PROPERTY::CONTINUE;
+		m_currentFunctionInfo->instruction[instruction_pushscope]->index_op1=SCOPE_PROPERTY::CONTINUE;
 
-		if(m_currentFunctionInfo->asm_op[instruction_continue]->operator_type != ASM_OPERATOR::POP_SCOPE){
+		if(m_currentFunctionInfo->instruction[instruction_continue]->operator_type != OP_CODE::POP_SCOPE){
 			THROW_RUNTIME_ERROR("expected pop scope");return false;
 		}
 
-		m_currentFunctionInfo->asm_op[instruction_continue]->index_op1=SCOPE_PROPERTY::CONTINUE;
+		m_currentFunctionInfo->instruction[instruction_continue]->index_op1=SCOPE_PROPERTY::CONTINUE;
 
 
 		if(_node->children.size()==3){ // compile post for operator...
@@ -1971,14 +1971,14 @@ namespace zetscript{
 		// set jmps from breaks...
 		// and pop break/continue instructions scope...
 		if(ptr_continueInstructionsScope != NULL){
-			for(unsigned i=0; i < ptr_continueInstructionsScope->asm_op.size(); i++){
-				ptr_continueInstructionsScope->asm_op[i]->index_op2=instruction_continue;
+			for(unsigned i=0; i < ptr_continueInstructionsScope->instruction.size(); i++){
+				ptr_continueInstructionsScope->instruction[i]->index_op2=instruction_continue;
 			}
 		}
 
 		if(ptr_breakInstructionsScope != NULL){
-			for(unsigned i=0; i < ptr_breakInstructionsScope->asm_op.size(); i++){
-				ptr_breakInstructionsScope->asm_op[i]->index_op2=instruction_break;
+			for(unsigned i=0; i < ptr_breakInstructionsScope->instruction.size(); i++){
+				ptr_breakInstructionsScope->instruction[i]->index_op2=instruction_break;
 			}
 		}
 
@@ -1996,7 +1996,7 @@ namespace zetscript{
 		if(_node->keyword_info != KEYWORD_TYPE::FOREACH_KEYWORD){THROW_RUNTIME_ERROR("node is not FOR_IN keyword type");return false;}
 		if(_node->children.size()!=3) {THROW_RUNTIME_ERROR("node FOR_IN has not valid number of nodes (var/vector symbol/body");return false;}
 		tInfoAsmOpCompiler *asm_end_op=NULL;
-		tInfoAsmOpCompiler *asm_load_var_op=NULL,*asm_it_op=NULL,*asm_jt_op=NULL,*asm_op=NULL;
+		tInfoAsmOpCompiler *asm_load_var_op=NULL,*asm_it_op=NULL,*asm_jt_op=NULL,*instruction=NULL;
 		int instruction_continue=-1,instruction_break=-1;
 
 
@@ -2015,35 +2015,35 @@ namespace zetscript{
 
 		// since element vector variable is only registered we have to insert a load op...
 		asm_load_var_op=new tInfoAsmOpCompiler();
-		asm_load_var_op->operator_type=ASM_OPERATOR::LOAD;
+		asm_load_var_op->operator_type=OP_CODE::LOAD;
 		asm_load_var_op->index_op1=LOAD_TYPE::LOAD_TYPE_NOT_DEFINED; // set undefined... compiler will link the symbol later...
 		asm_load_var_op->idxAstNode=AST_NODE(_node->children[0])->children[0];
-		m_currentFunctionInfo->asm_op.push_back(asm_load_var_op);
+		m_currentFunctionInfo->instruction.push_back(asm_load_var_op);
 
 		if(!ast2asm_Recursive(_node->children[1],SCOPE_NODE(_node->idxScope))){ return false;}
 
 		PASTNode ast_vec_symbol=AST_NODE(_node->children[1]);
 
 		asm_it_op=new tInfoAsmOpCompiler();
-		asm_it_op->operator_type=ASM_OPERATOR::IT_INI;
-		m_currentFunctionInfo->asm_op.push_back(asm_it_op);
+		asm_it_op->operator_type=OP_CODE::IT_INI;
+		m_currentFunctionInfo->instruction.push_back(asm_it_op);
 
 
 		int instruction_it_end=getCurrentInstructionIndex()+1;
 
 		asm_it_op=new tInfoAsmOpCompiler();
-		asm_it_op->operator_type=ASM_OPERATOR::IT_CHK_END;
+		asm_it_op->operator_type=OP_CODE::IT_CHK_END;
 		asm_it_op->idxAstNode=AST_NODE(_node->children[0])->children[0];
-		m_currentFunctionInfo->asm_op.push_back(asm_it_op);
+		m_currentFunctionInfo->instruction.push_back(asm_it_op);
 
 
 		asm_jt_op = insert_JT_Instruction(_node->children[1]);
 
 		// 2. load and post inc it
 		asm_it_op=new tInfoAsmOpCompiler();
-		asm_it_op->operator_type=ASM_OPERATOR::IT_SET_AND_NEXT;
+		asm_it_op->operator_type=OP_CODE::IT_SET_AND_NEXT;
 		asm_it_op->idxAstNode=_node->children[1];
-		m_currentFunctionInfo->asm_op.push_back(asm_it_op);
+		m_currentFunctionInfo->instruction.push_back(asm_it_op);
 
 
 		// 3. compile body
@@ -2053,17 +2053,17 @@ namespace zetscript{
 		instruction_continue=getCurrentInstructionIndex();
 
 		// because continue behaviour es inner body we have to set instructions after for-body is compiled...
-		if(m_currentFunctionInfo->asm_op[instruction_pushscope]->operator_type != ASM_OPERATOR::PUSH_SCOPE){
+		if(m_currentFunctionInfo->instruction[instruction_pushscope]->operator_type != OP_CODE::PUSH_SCOPE){
 			THROW_RUNTIME_ERROR("expected push scope");return false;
 		}
 
-		m_currentFunctionInfo->asm_op[instruction_pushscope]->index_op1=SCOPE_PROPERTY::CONTINUE;
+		m_currentFunctionInfo->instruction[instruction_pushscope]->index_op1=SCOPE_PROPERTY::CONTINUE;
 
-		if(m_currentFunctionInfo->asm_op[instruction_continue]->operator_type != ASM_OPERATOR::POP_SCOPE){
+		if(m_currentFunctionInfo->instruction[instruction_continue]->operator_type != OP_CODE::POP_SCOPE){
 			THROW_RUNTIME_ERROR("expected pop scope");return false;
 		}
 
-		m_currentFunctionInfo->asm_op[instruction_continue]->index_op1=SCOPE_PROPERTY::CONTINUE;
+		m_currentFunctionInfo->instruction[instruction_continue]->index_op1=SCOPE_PROPERTY::CONTINUE;
 
 		insert_JMP_Instruction(ZS_UNDEFINED_IDX,instruction_it_end);
 
@@ -2080,14 +2080,14 @@ namespace zetscript{
 		// set jmps from breaks...
 		// and pop break/continue instructions scope...
 		if(ptr_continueInstructionsScope != NULL){
-			for(unsigned i=0; i < ptr_continueInstructionsScope->asm_op.size(); i++){
-				ptr_continueInstructionsScope->asm_op[i]->index_op2=instruction_continue;
+			for(unsigned i=0; i < ptr_continueInstructionsScope->instruction.size(); i++){
+				ptr_continueInstructionsScope->instruction[i]->index_op2=instruction_continue;
 			}
 		}
 
 		if(ptr_breakInstructionsScope != NULL){
-			for(unsigned i=0; i < ptr_breakInstructionsScope->asm_op.size(); i++){
-				ptr_breakInstructionsScope->asm_op[i]->index_op2=instruction_break;
+			for(unsigned i=0; i < ptr_breakInstructionsScope->instruction.size(); i++){
+				ptr_breakInstructionsScope->instruction[i]->index_op2=instruction_break;
 			}
 		}
 
@@ -2137,8 +2137,8 @@ namespace zetscript{
 
 		// set jmps from breaks...
 		if(ptr_breakInstructionsScope != NULL){
-			for(unsigned i=0; i < ptr_breakInstructionsScope->asm_op.size(); i++){
-				ptr_breakInstructionsScope->asm_op[i]->index_op2=instruction_break;
+			for(unsigned i=0; i < ptr_breakInstructionsScope->instruction.size(); i++){
+				ptr_breakInstructionsScope->instruction[i]->index_op2=instruction_break;
 			}
 		}
 
@@ -2184,8 +2184,8 @@ namespace zetscript{
 
 		// set jmps from breaks...
 		if(ptr_breakInstructionsScope != NULL){
-			for(unsigned i=0; i < ptr_breakInstructionsScope->asm_op.size(); i++){
-				ptr_breakInstructionsScope->asm_op[i]->index_op2=instruction_break;
+			for(unsigned i=0; i < ptr_breakInstructionsScope->instruction.size(); i++){
+				ptr_breakInstructionsScope->instruction[i]->index_op2=instruction_break;
 			}
 		}
 
@@ -2210,7 +2210,7 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CCompiler::gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunctionObject *irfs){
+	bool CCompiler::gacFunctionOrOperator(PASTNode _node, CScope * _lc, CScriptFunction *irfs){
 
 
 		if(
@@ -2241,7 +2241,7 @@ namespace zetscript{
 		if(_node->keyword_info != KEYWORD_TYPE::BREAK_KEYWORD ){THROW_RUNTIME_ERROR("node is not break type");return false;}
 
 		tInfoAsmOpCompiler *iao= insert_JMP_Instruction(_node->idxAstNode);
-		ptr_breakInstructionsScope->asm_op.push_back(iao);
+		ptr_breakInstructionsScope->instruction.push_back(iao);
 
 		return true;
 	}
@@ -2251,7 +2251,7 @@ namespace zetscript{
 		if(_node->keyword_info != KEYWORD_TYPE::CONTINUE_KEYWORD ){THROW_RUNTIME_ERROR("node is not continue type");return false;}
 
 		tInfoAsmOpCompiler *iao= insert_JMP_Instruction(_node->idxAstNode);
-		ptr_continueInstructionsScope->asm_op.push_back(iao);
+		ptr_continueInstructionsScope->instruction.push_back(iao);
 
 		return true;
 	}
@@ -2372,7 +2372,7 @@ namespace zetscript{
 		tCaseGroup *default_case_group_ptr;
 		tCaseGroup default_case_group;
 
-		tInfoAsmOpCompiler * asm_op=NULL;
+		tInfoAsmOpCompiler * instruction=NULL;
 		tInfoAsmOpCompiler *jmp_default_end_switch;
 
 		string error_str;
@@ -2464,8 +2464,8 @@ namespace zetscript{
 					}
 
 					// set property as READ_TWO_AND_ONE_POP...
-					asm_op=getLastInsertedInfoAsmOpCompiler();
-					asm_op->runtime_prop|=STK_PROPERTY_READ_TWO_POP_ONE;
+					instruction=getLastInsertedInfoAsmOpCompiler();
+					instruction->runtime_prop|=STK_PROPERTY_READ_TWO_POP_ONE;
 
 					// insert jmp instruction and save its information to store where to jmp when we know the total code size of cases...
 					case_info.info_jt_instruction=insert_JT_Instruction(current_case_default->idxAstNode);
@@ -2591,7 +2591,7 @@ namespace zetscript{
 		CScope * _scope_node = NULL;//SCOPE_NODE(_node->idxScope);
 		bool is_function_member;
 
-		CScriptFunctionObject *function_object=NULL;
+		CScriptFunction *function_object=NULL;
 		if(_node->node_type != KEYWORD_NODE){THROW_RUNTIME_ERROR("node is not keyword type or null");return false;}
 
 		switch(_node->keyword_info){
@@ -2759,7 +2759,7 @@ namespace zetscript{
 		return false;
 	}
 
-	void CCompiler::pushFunction(short idxAstNode,CScriptFunctionObject *sf){
+	void CCompiler::pushFunction(short idxAstNode,CScriptFunction *sf){
 
 
 		stk_scriptFunction.push_back(m_currentFunctionInfo=new tInfoFunctionCompile(sf));
@@ -2768,23 +2768,23 @@ namespace zetscript{
 
 	void CCompiler::popFunction(bool save_asm_op){
 
-		m_currentFunctionInfo->function_info_object->asm_op=NULL;
+		m_currentFunctionInfo->function_info_object->instruction=NULL;
 
 		if (save_asm_op) {
 			// get total size op + 1 ends with NULL
-			unsigned size = (m_currentFunctionInfo->asm_op.size() + 1) * sizeof(tInfoAsmOp);
-			m_currentFunctionInfo->function_info_object->asm_op = (PtrAsmOp)malloc(size);
-			memset(m_currentFunctionInfo->function_info_object->asm_op, 0, size);
+			unsigned size = (m_currentFunctionInfo->instruction.size() + 1) * sizeof(tInstruction);
+			m_currentFunctionInfo->function_info_object->instruction = (PtrInstruction)malloc(size);
+			memset(m_currentFunctionInfo->function_info_object->instruction, 0, size);
 
-			tInfoAsmOp *dst_op = m_currentFunctionInfo->function_info_object->asm_op;
+			tInstruction *dst_op = m_currentFunctionInfo->function_info_object->instruction;
 
-			for (unsigned j = 0; j < m_currentFunctionInfo->asm_op.size(); j++,dst_op++) {
+			for (unsigned j = 0; j < m_currentFunctionInfo->instruction.size(); j++,dst_op++) {
 
 
-				tInfoAsmOpCompiler *src_op = m_currentFunctionInfo->asm_op[j];
+				tInfoAsmOpCompiler *src_op = m_currentFunctionInfo->instruction[j];
 
 				dst_op->idxAstNode = src_op->idxAstNode;
-				dst_op->operator_type = src_op->operator_type;
+				dst_op->op_code = src_op->operator_type;
 				dst_op->index_op1 = src_op->index_op1;
 				dst_op->index_op2 = src_op->index_op2;
 				dst_op->instruction_properties = src_op->pre_post_op_type | src_op->scope_type | src_op->runtime_prop;
@@ -2797,7 +2797,7 @@ namespace zetscript{
 
 		if(stk_scriptFunction.size() > 0){
 			m_currentFunctionInfo = stk_scriptFunction[stk_scriptFunction.size()-1];
-			//this->m_currentListStatements = &m_currentFunctionInfo->object_info.asm_op;
+			//this->m_currentListStatements = &m_currentFunctionInfo->object_info.instruction;
 			this->m_treescope =AST_SCOPE_INFO(m_currentFunctionInfo->function_info_object->symbol_info.idxAstNode);
 		}
 	}
@@ -2831,7 +2831,7 @@ namespace zetscript{
 		}
 	}
 
-	bool CCompiler::compile_body(PASTNode _node ,CScriptFunctionObject *sf){
+	bool CCompiler::compile_body(PASTNode _node ,CScriptFunction *sf){
 
 
 		if(_node->node_type == NODE_TYPE::BODY_BLOCK_NODE ){
@@ -2858,11 +2858,11 @@ namespace zetscript{
 
 	// clears statments on main function ...
 	void CCompiler::clear() {
-		CScriptFunctionObject *info_function=MAIN_SCRIPT_FUNCTION_OBJECT;
+		CScriptFunction *info_function=MAIN_SCRIPT_FUNCTION_OBJECT;
 
-		if (info_function->asm_op != NULL) {
-			free(info_function->asm_op);
-			info_function->asm_op=NULL;
+		if (info_function->instruction != NULL) {
+			free(info_function->instruction);
+			info_function->instruction=NULL;
 		}
 
 		// unloading scope ...
@@ -2884,7 +2884,7 @@ namespace zetscript{
 
 	bool CCompiler::compile(){
 
-		CScriptFunctionObject *sf=MAIN_SCRIPT_FUNCTION_OBJECT;
+		CScriptFunction *sf=MAIN_SCRIPT_FUNCTION_OBJECT;
 
 		vector<zetscript::tInfoAstNodeToCompile> astNodeToCompileAux=*CASTNode::astNodeToCompile;//->clear();
 

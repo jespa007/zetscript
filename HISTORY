@@ -44,6 +44,7 @@ Date: XX-XX-2018
 #102 Bug: can use variable before define var itself
 
 > 103: Reworked parse + compile in one single optimized step 
+
 Other: Lot of clean code up. 
 
 //----------------------------------------------------------

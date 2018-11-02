@@ -47,8 +47,8 @@ namespace zetscript{
 		tInfoSharedList zero_shares[MAX_FUNCTION_CALL];
 		tInfoSharedList shared_var[MAX_FUNCTION_CALL];
 
-		CScriptFunctionObject  *main_function_object;
-		CScriptFunctionObject 	**vec_script_function_object_node;
+		CScriptFunction  *main_function_object;
+		CScriptFunction 	**vec_script_function_object_node;
 		unsigned				size_vec_script_function_object_node;
 		CASTNode 				**vec_ast_node;
 		unsigned  				size_vec_ast_node;
@@ -66,7 +66,7 @@ namespace zetscript{
 		tStackElement stk_aux;
 
 		tStackElement  execute_internal(
-				CScriptFunctionObject *info_function,
+				CScriptFunction *info_function,
 				CScriptVariable * this_object,
 				bool & error,
 				tStackElement 		  * _ptrStartOp=NULL,
@@ -111,7 +111,7 @@ namespace zetscript{
 
 
 		ZETSCRIPT_MODULE_EXPORT tStackElement execute(
-					 CScriptFunctionObject *info_function,
+					 CScriptFunction *info_function,
 					 CScriptVariable *this_object,
 					 bool & error,
 					const vector<tStackElement> &  argv=NO_PARAMS);
@@ -138,7 +138,7 @@ namespace zetscript{
 
 		struct tVM_ScopeInfo{
 			short					   index;
-			CScriptFunctionObject *ptr_info_function;
+			CScriptFunction *ptr_info_function;
 			tStackElement 		  *ptr_local_var;
 			unsigned char properties;
 		};
@@ -175,7 +175,7 @@ namespace zetscript{
 
 		 tStackElement  call_C_function(
 				 intptr_t fun_ptr,
-				 const CScriptFunctionObject *irfs,
+				 const CScriptFunction *irfs,
 				 bool & error,
 				 tStackElement *ptrArg,
 				 unsigned char n_args,
@@ -187,26 +187,26 @@ namespace zetscript{
 
 		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
 		inline void  REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result);
-		inline CScriptFunctionObject *  FIND_FUNCTION(vector<tFunctionSymbol> *m_functionSymbol
+		inline CScriptFunction *  FIND_FUNCTION(vector<tFunctionSymbol> *m_functionSymbol
 									,vector<int> *vec_global_functions
-									,tInfoAsmOp * iao
+									,tInstruction * iao
 									,bool is_constructor
 									,const string & symbol_to_find
 									,CScriptVariable *calling_object
-									,tInfoAsmOp *instruction
+									,tInstruction *instruction
 									,tStackElement *ptrResultInstructionOp1
 									,tStackElement *ptrResultInstructionOp2
 									,tStackElement *startArg
 									,unsigned char n_args
 									,const char * metamethod_str);
-		inline bool ASSIGN_STACK_VAR(tStackElement *dst_ins, tStackElement *src_ins,tInfoAsmOp *instruction);
+		inline bool ASSIGN_STACK_VAR(tStackElement *dst_ins, tStackElement *src_ins,tInstruction *instruction);
 		inline bool POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties);
 
 		inline bool APPLY_METAMETHOD(
 											const char *__OVERR_OP__
 											,METAMETHOD_OPERATOR __METAMETHOD__
 											,CScriptVariable *calling_object
-											,tInfoAsmOp *instruction
+											,tInstruction *instruction
 											,tStackElement *ptrResultInstructionOp1
 											,tStackElement *ptrResultInstructionOp2
 
@@ -219,4 +219,4 @@ namespace zetscript{
 }
 
 
-#include "CVirtualMachine.hxx"
+#include "CVirtualMachine.inc"

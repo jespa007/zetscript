@@ -59,7 +59,7 @@ namespace zetscript{
 		vector<tStackElement> * getVectorVariable();
 
 
-		virtual tFunctionSymbol * addFunctionSymbol(const string & symbol_value,short _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates=true);
+		virtual tFunctionSymbol * addFunctionSymbol(const string & symbol_value,short _idxAstNode,CScriptFunction *irv, bool ignore_duplicates=true);
 		tFunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
 
 		tFunctionSymbol * getFunctionSymbol(const string & varname,bool only_var_name=false);
@@ -70,7 +70,7 @@ namespace zetscript{
 		bool is_c_object();
 		CScriptClass *get_C_Class();
 
-		CScriptFunctionObject *getConstructorFunction();
+		CScriptFunction *getConstructorFunction();
 
 
 		const string & getClassName();

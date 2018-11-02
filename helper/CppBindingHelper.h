@@ -216,7 +216,7 @@ namespace zetscript{
 	// 0 PARAMS
 	//
 	template <typename _R,typename _T>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 	->typename std::enable_if<std::is_same<_R,void>::value>::type
 	{
 
@@ -238,7 +238,7 @@ namespace zetscript{
 	}
 
 	template <typename _R,typename _T>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 	->typename std::enable_if<!std::is_same<_R,void>::value>::type
 	{
 		int idx_return = CScriptClass::getIdxClassFromIts_C_Type(typeid(_R).name());
@@ -275,7 +275,7 @@ namespace zetscript{
 	//
 	// template for last parameter argIdx == 1
 	template<typename _R,typename _T,  typename... ArgTypes>
-	auto bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 	{
 		//return NULL;
@@ -305,7 +305,7 @@ namespace zetscript{
 	}
 
 	template<typename _R,typename _T,  typename... ArgTypes>
-	auto bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(!std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 	{
 		using tParam1 = typename _T::template argument<0>::type;
@@ -349,7 +349,7 @@ namespace zetscript{
 	//
 	// template when parameters argIdx == 2
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 	{
 
@@ -387,7 +387,7 @@ namespace zetscript{
 	}
 
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 	{
 		using tParam1 = typename _T::template argument<0>::type;
@@ -437,7 +437,7 @@ namespace zetscript{
 	//
 	// template when parameters argIdx == 3
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 	{
 
@@ -477,7 +477,7 @@ namespace zetscript{
 	}
 
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 	{
 		using tParam1 = typename _T::template argument<0>::type;
@@ -526,7 +526,7 @@ namespace zetscript{
 	//
 	// template when parameters argIdx == 4
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 	{
 
@@ -569,7 +569,7 @@ namespace zetscript{
 	}
 
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 	{
 
@@ -624,7 +624,7 @@ namespace zetscript{
 	//
 	// template when parameters argIdx == 5
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 	{
 
@@ -670,7 +670,7 @@ namespace zetscript{
 
 
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 	{
 
@@ -729,7 +729,7 @@ namespace zetscript{
 	//
 	// template when parameters argIdx == 6
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 6)>::type
 	{
 
@@ -779,7 +779,7 @@ namespace zetscript{
 	}
 
 	template <typename _R,typename _T, typename... ArgTypes>
-	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj)
+	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type
 	{
 		using tParam1 = typename _T::template argument<0>::type;
@@ -838,14 +838,14 @@ namespace zetscript{
 	//--------------------------------------------------------------------------------------------------------------------
 
 	 template <typename _F, std::size_t... Is>
-	 auto bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj,index_sequence<Is...>)
+	 auto bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
 	 -> typename std::enable_if<(_F::arity > 0)>::type
 	{
 		 bind_script_function_builder<typename _F::return_type, _F,  typename _F::template argument<Is>::type...>(f,calling_obj,fun_obj);
 	}
 
 	 template <typename _F, std::size_t... Is>
-	 auto bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunctionObject *fun_obj,index_sequence<Is...>)
+	 auto bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
 	 -> typename std::enable_if<(_F::arity == 0)>::type
 	{
 		 bind_script_function_builder<typename _F::return_type, _F>(f,calling_obj,fun_obj);
@@ -862,7 +862,7 @@ namespace zetscript{
 		vector<string> m_arg;
 		int idx_return_type=-1;
 		void *ptr;
-		CScriptFunctionObject * fun=NULL;
+		CScriptFunction * fun=NULL;
 		CScriptVariable *calling_obj=NULL;
 
 		// get function symbol ref from global scope ...

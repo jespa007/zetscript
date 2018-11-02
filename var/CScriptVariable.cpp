@@ -43,7 +43,7 @@ namespace zetscript{
 
 		// Register functions...
 		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-			CScriptFunctionObject * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+			CScriptFunction * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 			 si =addFunctionSymbol(
 					 CCompiler::getSymbolNameFromSymbolRef( ir_fun->symbol_info.symbol_ref),
 					 ir_fun->symbol_info.idxAstNode,
@@ -127,7 +127,7 @@ namespace zetscript{
 		}
 	}
 
-	CScriptFunctionObject *CScriptVariable::getConstructorFunction(){
+	CScriptFunction *CScriptVariable::getConstructorFunction(){
 
 		if(m_infoRegisteredClass->idx_function_script_constructor != ZS_UNDEFINED_IDX){
 			return GET_SCRIPT_FUNCTION_OBJECT(m_infoRegisteredClass->scope_info.local_symbols.vec_idx_registeredFunction[m_infoRegisteredClass->idx_function_script_constructor]);
@@ -263,7 +263,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const string & symbol_value,short _idxAstNode,CScriptFunctionObject *irv, bool ignore_duplicates){
+	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const string & symbol_value,short _idxAstNode,CScriptFunction *irv, bool ignore_duplicates){
 		tFunctionSymbol si;
 		si.proxy_ptr=0;
 		si.object = {
@@ -497,7 +497,7 @@ namespace zetscript{
 		// deallocate function member ...
 		for ( unsigned i = 0; i < m_functionSymbol.size(); i++){
 			si = &m_functionSymbol[i];
-			CScriptFunctionObject * ir_fun  = (CScriptFunctionObject *)(m_functionSymbol[i].object.stkValue);
+			CScriptFunction * ir_fun  = (CScriptFunction *)(m_functionSymbol[i].object.stkValue);
 			 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // create proxy function ...
 				 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){
 
