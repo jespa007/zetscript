@@ -46,7 +46,7 @@ namespace zetscript{
 
 	int CScriptFunction::registerFunction(short idxScope, const string & function_name,  vector<tArgumentInfo>  args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
-		CScriptFunction *irs = NEW_SCRIPT_FUNCTION_OBJECT(idxScope,symbol_info.idxScriptClass);
+		CScriptFunction *irs = NEW_SCRIPT_FUNCTION(idxScope,symbol_info.idxScriptClass);
 
 		irs->m_arg = args;
 		irs->idx_return_type = idx_return_type;
@@ -89,7 +89,7 @@ namespace zetscript{
 	int CScriptFunction::getLocalFunction(const string & function_ref,char n_args){
 
 		for(int i = scope_info.local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-			CScriptFunction * sfo = GET_SCRIPT_FUNCTION_OBJECT(scope_info.local_symbols.vec_idx_registeredFunction[i]);
+			CScriptFunction * sfo = GET_SCRIPT_FUNCTION(scope_info.local_symbols.vec_idx_registeredFunction[i]);
 
 			if(sfo->symbol_info.symbol_ref == function_ref && (n_args==(int)sfo->m_arg.size() || (n_args==-1)) ){
 
@@ -120,6 +120,12 @@ namespace zetscript{
 		}
 
 		return vec_script_function_object_node->at(idx);
+	}
+
+	CScriptFunction::~CScriptFunction(){
+		if(function_data != NULL){
+			delete function_data;
+		}
 	}
 
 

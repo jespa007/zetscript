@@ -331,7 +331,7 @@ namespace zetscript{
 			f < main_function->scope_info.local_symbols.vec_idx_registeredFunction.size()
 			;) {
 			// get function info
-			CScriptFunction * local_function = GET_SCRIPT_FUNCTION_OBJECT(main_function->scope_info.local_symbols.vec_idx_registeredFunction[f]);
+			CScriptFunction * local_function = GET_SCRIPT_FUNCTION(main_function->scope_info.local_symbols.vec_idx_registeredFunction[f]);
 
 			if ((local_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
 				main_function->scope_info.local_symbols.vec_idx_registeredFunction.erase(main_function->scope_info.local_symbols.vec_idx_registeredFunction.begin() + f);

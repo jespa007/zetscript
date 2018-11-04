@@ -18,12 +18,9 @@
 //
 */
 
-#define NEW_SCRIPT_FUNCTION_OBJECT(idxScope,idxScripClass)				CScriptFunction::newScriptFunctionObject(idxScope,idxScripClass)
-
-#define GET_SCRIPT_FUNCTION_OBJECT(idx) 		CScriptFunction::getScriptFunctionObject(idx)
-//#define FUNCTION_NEW_VARIABLE_SYMBOL(idx_class)	(CScriptFunction::newVariableSymbol(idx_class))    // 0 is the main class
-
-#define MAIN_FUNCTION_OBJECT					GET_SCRIPT_FUNCTION_OBJECT(0)
+#define NEW_SCRIPT_FUNCTION(idxScope,idxScripClass)				CScriptFunction::newScriptFunctionObject(idxScope,idxScripClass)
+#define GET_SCRIPT_FUNCTION(idx) 								CScriptFunction::getScriptFunctionObject(idx)
+#define MAIN_FUNCTION											GET_SCRIPT_FUNCTION(0)
 
 namespace zetscript{
 
@@ -31,25 +28,42 @@ namespace zetscript{
 
 	public:
 
-		tScopeInfo			scope_info;
-		tVariableSymbolInfo symbol_info;
+		typedef struct {
+				string value;
+		}tInfoInstruction;
 
 		// info related for function ONLY
-		vector<tArgumentInfo> m_arg; // tells var arg name or var type name (in of C )
-		int idx_return_type; // -1 not inicialized type return.
-		PtrInstruction instruction;
-		int idxScriptFunctionObject;
+		typedef struct tFunctionData{
+			vector<tArgumentInfo> m_arg; // tells var arg name or var type name (in of C )
+			int idx_return_type; // -1 not inicialized type return.
+			PtrInstruction instruction;
+			std::map<short,tInfoInstruction> debug_info; // map that gives info about current instruction
+			int idxScriptFunctionObject;
+
+			tFunctionData(){
+				idx_return_type = ZS_UNDEFINED_IDX;
+				idxScriptFunctionObject = ZS_UNDEFINED_IDX;
+				instruction=NULL;
+			}
+		}tFunctionData;
+
+		tScopeInfo			scope_info;
+		tVariableSymbolInfo symbol_info;
+		tFunctionData 		*function_data;
 
 
-		CScriptFunction( short _idxScope,  short _idxScriptClass ){
-			//virtual_function = NULL;
-			idx_return_type = ZS_UNDEFINED_IDX;
-			idxScriptFunctionObject = ZS_UNDEFINED_IDX;
-			instruction=NULL;
+		CScriptFunction(){
+			function_data = NULL;
+			scope_info.info_var_scope=NULL;
+			scope_info.idxScope=IDX_INVALID_SCOPE;
+			symbol_info.idxScriptClass = ZS_UNDEFINED_IDX;
+		}
+
+		CScriptFunction( short _idxScope,  short _idxScriptClass ){ // functions are created using this constructor.
+			function_data = new tFunctionData();
 			scope_info.info_var_scope=NULL;
 			scope_info.idxScope=_idxScope;
 			symbol_info.idxScriptClass = _idxScriptClass;
-
 		}
 
 		// new/get function/variable it returns the idx vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
@@ -73,6 +87,8 @@ namespace zetscript{
 		//static tVariableSymbolInfo				*	newVariableSymbol(int idxFunction);
 
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			* 	getScriptFunctionObject(int idx);
+
+		virtual ~CScriptFunction();
 
 	private:
 		static vector<CScriptFunction *> 	* current_vec_script_function_object_node;

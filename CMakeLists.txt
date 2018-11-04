@@ -164,14 +164,12 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 	
 	#-- Script Core --
 	CScope.cpp
-	CASTNode.cpp
 	eval/CEval.cpp
 	CNativeFunction.cpp
 	CScriptClass.cpp
-	CScriptFunctionObject.cpp
+	CScriptFunction.cpp
 	
 	CVirtualMachine.cpp
-	CCompiler.cpp
 	
 	
 	CState.cpp
@@ -191,8 +189,8 @@ endif()
 
 SET(
 	HS
-	CASTNode.h
-	CEval.h
+	
+	eval/CEval.h
 	
 	var/CStringScriptVariable.h
 	var/CVectorScriptVariable.h
@@ -200,7 +198,6 @@ SET(
 	var/CStructScriptVariable.h
 	var/CScriptVariable.h
 	
-	CCompiler.h
 	helper/RegisterFunctionHelper.h
 	helper/CppBindingHelper.h
 	Common.h
@@ -209,7 +206,7 @@ SET(
 	CScriptClass.h
 	CVirtualMachine.h
 	CNativeFunction.h
-	CScriptFunctionObject.h
+	CScriptFunction.h
 	CZetScript.h
 	zetscript_exception.h
 	zetscript_utils.h

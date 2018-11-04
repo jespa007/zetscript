@@ -1,5 +1,5 @@
-#include "CScriptFunctionObject.h"
 #include "CScriptClass.h"
+#include "CScriptFunction.h"
 namespace zetscript{
 
 		void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);

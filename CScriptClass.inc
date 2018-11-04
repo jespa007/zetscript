@@ -9,15 +9,15 @@
 			vector<string> m_arg;
 			vector<tArgumentInfo> m_infoArg;
 			intptr_t ref_ptr=0;
-			CScriptFunctionObject *irs=NULL;
+			CScriptFunction *irs=NULL;
 
-			if(!CScriptFunctionObject::checkCanRegister_C_Function(function_name)){
+			if(!CScriptFunction::checkCanRegister_C_Function(function_name)){
 				return false;
 			}
 
 
 			//CScriptVariable *sf=NULL;
-			CScriptFunctionObject * mainFunctionInfo = getScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
+			CScriptFunction * mainFunctionInfo = getScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 			//CScriptClass *rc = CScriptClass::getInstance()->getRegisteredClass(class_name);
 
 			if(mainFunctionInfo == NULL){
@@ -281,9 +281,9 @@
 				// functions ...
 				for(unsigned i = 0; i < irc_base->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 
-					CScriptFunctionObject *irs_source = GET_SCRIPT_FUNCTION_OBJECT(irc_base->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+					CScriptFunction *irs_source = GET_SCRIPT_FUNCTION_OBJECT(irc_base->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 
-					CScriptFunctionObject *irs=NEW_SCRIPT_FUNCTION_OBJECT;
+					CScriptFunction *irs=NEW_SCRIPT_FUNCTION_OBJECT;
 					// init struct...
 					irs->symbol_info.idxAstNode = -1;
 					//irs.object_info.symbol_info.idxScopeVar = -1;
@@ -330,14 +330,14 @@
 
 			string return_type;
 			//vector<string> params;
-			CScriptFunctionObject *irs=NULL;
+			CScriptFunction *irs=NULL;
 			vector<string> m_arg;
 			vector<tArgumentInfo> m_argInfo;
 			int idx_return_type=-1;
 			intptr_t ref_ptr=0;
 			string str_classPtr = typeid( _C *).name();
 
-			if(!CScriptFunctionObject::checkCanRegister_C_Function(function_name)){
+			if(!CScriptFunction::checkCanRegister_C_Function(function_name)){
 				return false;
 			}
 
@@ -387,8 +387,10 @@
 				}
 			}
 
+
+
 			// ok, function candidate to be added into class...
-			irs = NEW_SCRIPT_FUNCTION_OBJECT;
+			/*irs = NEW_SCRIPT_FUNCTION_OBJECT(IDX_C_CLASS_SCOPE,idxRegisterdClass);
 
 			// init struct...
 			CASTNode *ast_symbol = CASTNode::newASTNode();
@@ -414,7 +416,7 @@
 			irs->idx_return_type = idx_return_type;
 
 			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
+			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);*/
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 
 			if(STRCMP(getMetamethod(SET_METAMETHOD),==,function_name)){
@@ -438,7 +440,7 @@
 
 			string return_type;
 			vector<string> params;
-			CScriptFunctionObject *irs=NULL;
+			CScriptFunction *irs=NULL;
 			vector<string> m_arg;
 			vector<tArgumentInfo> m_argInfo;
 			int idx_return_type=-1;
@@ -447,11 +449,11 @@
 			string function_class_name = demangle(typeid(_T).name())+"::"+function_name;
 
 
-			if(!CScriptFunctionObject::checkCanRegister_C_Function(function_class_name.c_str())){
+			if(!CScriptFunction::checkCanRegister_C_Function(function_class_name.c_str())){
 				return false;
 			}
 
-			int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
+			CScriptClass *c_class = get_C_RegisteredClass(str_classPtr);
 
 			if(idxRegisterdClass == -1){
 				return false;

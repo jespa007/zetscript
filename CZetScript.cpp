@@ -320,7 +320,7 @@ namespace zetscript{
 
 		for(unsigned j =0; j < m_vf->size(); j++){
 
-			CScriptFunction *local_irfs = GET_SCRIPT_FUNCTION_OBJECT((*m_vf)[j]);
+			CScriptFunction *local_irfs = GET_SCRIPT_FUNCTION((*m_vf)[j]);
 
 			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
 				string symbol_ref="????";
@@ -339,7 +339,7 @@ namespace zetscript{
 
 				printf("-------------------------------------------------------\n");
 				printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
-				printGeneratedCode(GET_SCRIPT_FUNCTION_OBJECT(m_vf->at(j)));
+				printGeneratedCode(GET_SCRIPT_FUNCTION(m_vf->at(j)));
 			}
 		}
 	 }
@@ -353,7 +353,7 @@ namespace zetscript{
 		 for(unsigned i = 0; i < registeredClass->size(); i++){
 			 CScriptClass *rc=registeredClass->at(i);
 			 for(unsigned f = 0; f < rc->scope_info.local_symbols.vec_idx_registeredFunction.size(); f++){
-				 printGeneratedCode(GET_SCRIPT_FUNCTION_OBJECT(rc->scope_info.local_symbols.vec_idx_registeredFunction[f]));
+				 printGeneratedCode(GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.vec_idx_registeredFunction[f]));
 			 }
 		 }
 	 }
@@ -789,7 +789,7 @@ namespace zetscript{
 			*calling_obj = m_mainObject;
 			string symbol_to_find=CCompiler::makeSymbolRef(access_var[0],IDX_GLOBAL_SCOPE);
 			for(unsigned i = 0; i < m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction.size() && *fun_obj==NULL; i++){
-				CScriptFunction *aux_fun_obj=GET_SCRIPT_FUNCTION_OBJECT(m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+				CScriptFunction *aux_fun_obj=GET_SCRIPT_FUNCTION(m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 				if(aux_fun_obj->symbol_info.symbol_ref == symbol_to_find){
 					*fun_obj=aux_fun_obj;
 				}

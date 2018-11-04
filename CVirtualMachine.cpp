@@ -529,7 +529,7 @@ namespace zetscript{
 	}
 
 	void CVirtualMachine::clearGlobals(){
-		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
+		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION(0);
 
 		// zero shares have a late loading so it can be null at first time...
 		if(zero_shares == NULL){
@@ -977,7 +977,7 @@ namespace zetscript{
 	}
 
 	tStackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
-		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION_OBJECT(0);
+		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION(0);
 
 		if(idx_glb_element < main_function->scope_info.local_symbols.m_registeredVariable.size()){
 			return &stack[idx_glb_element];
@@ -1019,7 +1019,7 @@ namespace zetscript{
 
 		destroyCache();
 
-		main_function_object = GET_SCRIPT_FUNCTION_OBJECT(0);
+		main_function_object = GET_SCRIPT_FUNCTION(0);
 		vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunction::getVectorScriptFunctionObjectNode();
 		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
 		vec_script_function_object_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
@@ -1615,7 +1615,7 @@ namespace zetscript{
 						function_obj =(CScriptFunction *)si->object.stkValue;
 					}else{ // global
 						vec_functions = &(main_function_object->scope_info.local_symbols.vec_idx_registeredFunction);
-						//function_obj = GET_SCRIPT_FUNCTION_OBJECT(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
+						//function_obj = GET_SCRIPT_FUNCTION(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
 					}
 
 

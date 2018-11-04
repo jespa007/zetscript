@@ -43,7 +43,7 @@ namespace zetscript{
 
 		// Register functions...
 		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-			CScriptFunction * ir_fun  = GET_SCRIPT_FUNCTION_OBJECT(ir_class->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+			CScriptFunction * ir_fun  = GET_SCRIPT_FUNCTION(ir_class->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 			 si =addFunctionSymbol(
 					 CCompiler::getSymbolNameFromSymbolRef( ir_fun->symbol_info.symbol_ref),
 					 ir_fun->symbol_info.idxAstNode,
@@ -130,7 +130,7 @@ namespace zetscript{
 	CScriptFunction *CScriptVariable::getConstructorFunction(){
 
 		if(m_infoRegisteredClass->idx_function_script_constructor != ZS_UNDEFINED_IDX){
-			return GET_SCRIPT_FUNCTION_OBJECT(m_infoRegisteredClass->scope_info.local_symbols.vec_idx_registeredFunction[m_infoRegisteredClass->idx_function_script_constructor]);
+			return GET_SCRIPT_FUNCTION(m_infoRegisteredClass->scope_info.local_symbols.vec_idx_registeredFunction[m_infoRegisteredClass->idx_function_script_constructor]);
 		}
 
 		return NULL;

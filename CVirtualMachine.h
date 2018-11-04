@@ -3,9 +3,6 @@
 
 namespace zetscript{
 
-	#include "CCompiler.h"
-	//#include "core/CScriptClass.h"
-
 
 	//#define MAX_PER_TYPE_OPERATIONS 32
 

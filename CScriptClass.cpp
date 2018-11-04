@@ -615,7 +615,7 @@ namespace zetscript{
 
 			if(current_function > 0){ // minimum have to have a 1
 
-				CScriptFunction *sfo =  GET_SCRIPT_FUNCTION_OBJECT(scope_info->local_symbols.vec_idx_registeredFunction[current_function]);//.object_info;
+				CScriptFunction *sfo =  GET_SCRIPT_FUNCTION(scope_info->local_symbols.vec_idx_registeredFunction[current_function]);//.object_info;
 				symbol_to_find = sfo->symbol_info.symbol_ref;
 				short idxScope=CCompiler::getIdxScopeFromSymbolRef(symbol_to_find);
 
@@ -627,7 +627,7 @@ namespace zetscript{
 				bool is_c=false;
 
 				for(int i = current_function-1; i >= 0 && idx_super==-1; i--){
-					CScriptFunction * sfo = GET_SCRIPT_FUNCTION_OBJECT(scope_info->local_symbols.vec_idx_registeredFunction[i]);
+					CScriptFunction * sfo = GET_SCRIPT_FUNCTION(scope_info->local_symbols.vec_idx_registeredFunction[i]);
 					string symbol_ref=CCompiler::getSymbolNameFromSymbolRef(sfo->symbol_info.symbol_ref);
 					string symbol_ref_to_find=CCompiler::getSymbolNameFromSymbolRef(symbol_to_find);
 
@@ -812,7 +812,7 @@ namespace zetscript{
 
 	bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const string & parent_symbol, int n_function){
 
-		CScriptFunction * sfo = GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject);
+		CScriptFunction * sfo = GET_SCRIPT_FUNCTION(idxScriptFunctionObject);
 		//tFunctionInfo * info_function = &sfo->object_info;
 		bool symbol_found=false;
 
@@ -901,7 +901,7 @@ namespace zetscript{
 
 
 		 int idx_main_function = ((*vec_script_class_node)[IDX_START_SCRIPTVAR]->scope_info.local_symbols.vec_idx_registeredFunction[0]);
-		 CScriptFunction  *main_function = GET_SCRIPT_FUNCTION_OBJECT((*vec_script_class_node)[IDX_START_SCRIPTVAR]->scope_info.local_symbols.vec_idx_registeredFunction[0]);
+		 CScriptFunction  *main_function = GET_SCRIPT_FUNCTION((*vec_script_class_node)[IDX_START_SCRIPTVAR]->scope_info.local_symbols.vec_idx_registeredFunction[0]);
 		 zs_print_debug_cr("DEFINED CLASSES");
 		 vector<int>  mrf; // aux vector for collect function obj info.
 		 bool symbol_found = false;
@@ -925,7 +925,7 @@ namespace zetscript{
 			 for(unsigned k=0; k < mrf.size();k++){
 
 
-				 CScriptFunction * info_function = GET_SCRIPT_FUNCTION_OBJECT(mrf[k]);
+				 CScriptFunction * info_function = GET_SCRIPT_FUNCTION(mrf[k]);
 				 bool is_main_class = i == IDX_CLASS_MAIN;
 				 bool is_main_function = is_main_class && k==0;
 				 CScriptClass * _belonging_class = (*vec_script_class_node)[i];
@@ -982,7 +982,7 @@ namespace zetscript{
 											 // make ref var from class scope ...
 											 // search global...
 											 if(scope_type & INS_PROPERTY_SUPER_SCOPE){
-												 symbol_to_find = GET_SCRIPT_FUNCTION_OBJECT(sfi->local_symbols.vec_idx_registeredFunction[k])->symbol_info.symbol_ref;
+												 symbol_to_find = GET_SCRIPT_FUNCTION(sfi->local_symbols.vec_idx_registeredFunction[k])->symbol_info.symbol_ref;
 											 }
 
 											 if(!searchVarFunctionSymbol(sfi,iao,k,symbol_found,scope_type)){
@@ -1176,7 +1176,7 @@ namespace zetscript{
 		}
 
 		//int idxMainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
-		CScriptFunction *main_function=MAIN_FUNCTION_OBJECT;
+		CScriptFunction *main_function=MAIN_FUNCTION;
 
 		if(main_function == NULL){
 			THROW_RUNTIME_ERROR("main function is not created");
@@ -1293,7 +1293,7 @@ namespace zetscript{
 
 
 
-			CScriptFunction *irs = NEW_SCRIPT_FUNCTION_OBJECT;
+			CScriptFunction *irs = NEW_SCRIPT_FUNCTION;
 
 			PASTNode ast = AST_NODE(idxAstNode);
 
@@ -1335,7 +1335,7 @@ namespace zetscript{
 		int idx = CScriptFunction::registerLocalFunction( function_name,  args,  idx_return_type,intptr_t ref_ptr,  properties);
 		 string class_name=symbol_info.symbol_ref;
 
-			//CScriptFunction *irs = NEW_SCRIPT_FUNCTION_OBJECT;
+			//CScriptFunction *irs = NEW_SCRIPT_FUNCTION;
 
 			//PASTNode ast = AST_NODE(idxAstNode);
 
@@ -1373,7 +1373,7 @@ namespace zetscript{
 
 			// from lat value to first to get last override function...
 			for(int i = rc->scope_info.local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-				CScriptFunction * sfo = GET_SCRIPT_FUNCTION_OBJECT(rc->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+				CScriptFunction * sfo = GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 				if(sfo->symbol_info.symbol_ref == function_name){
 					return rc->scope_info.local_symbols.vec_idx_registeredFunction[i];
 				}
@@ -1395,7 +1395,7 @@ namespace zetscript{
 		int idx=getIdxScriptFunctionObjectByClassFunctionName(class_name,function_name);
 
 		if(idx != ZS_UNDEFINED_IDX){
-			return GET_SCRIPT_FUNCTION_OBJECT(idx);
+			return GET_SCRIPT_FUNCTION(idx);
 		}
 		return NULL;
 	}
@@ -1408,7 +1408,7 @@ namespace zetscript{
 
 			for(unsigned i = 0; i < rc->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
 
-				CScriptFunction *fo=GET_SCRIPT_FUNCTION_OBJECT(rc->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+				CScriptFunction *fo=GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.vec_idx_registeredFunction[i]);
 
 				if(fo->symbol_info.symbol_ref == function_name && (fo->m_arg.size() == n_params)){
 					return true;
@@ -1427,7 +1427,7 @@ namespace zetscript{
 
 		if(idxScriptFunctionObject!=-1){
 
-			GET_SCRIPT_FUNCTION_OBJECT(idxScriptFunctionObject)->m_arg.push_back({ZS_UNDEFINED_IDX,arg_name});
+			GET_SCRIPT_FUNCTION(idxScriptFunctionObject)->m_arg.push_back({ZS_UNDEFINED_IDX,arg_name});
 		}
 		return false;
 	}

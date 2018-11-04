@@ -51,7 +51,7 @@
 
 #define MAIN_VARIABLE(idx_var)					zetscript::CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
 #define MAIN_SCRIPT_FUNCTION_IDX				zetscript::CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
-#define MAIN_SCRIPT_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION_OBJECT(MAIN_SCRIPT_FUNCTION_IDX)
+#define MAIN_SCRIPT_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION(MAIN_SCRIPT_FUNCTION_IDX)
 
 
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClass::instanceScriptVariableByIdx(idx))
