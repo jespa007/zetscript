@@ -440,7 +440,7 @@ enum SCOPE_PROPERTY
 
 namespace zetscript{
 
-	class CASTNode;
+
 	typedef CASTNode *PASTNode;
 	class CScriptFunction;
 	class CScope;
@@ -580,35 +580,6 @@ namespace zetscript{
 
 	//-------------------------------------------------------
 
-	struct tLocalSymbolInfo {
-		vector<tVariableSymbolInfo> m_registeredVariable; // member variables to be copied in every new instance
-		vector<int> vec_idx_registeredFunction; // idx member functions (from main vector collection)
-	};
-
-	struct tScopeInfo { // script function is shared by class and function ...
-
-
-		tLocalSymbolInfo local_symbols;
-
-		//--------------------------------------
-		// optimized ones...
-		//int n_statments;
-
-		//unsigned					 n_statment_op;
-
-		tInfoVarScopeBlock *info_var_scope;
-		unsigned n_info_var_scope;
-		short idxScope;
-
-
-		tScopeInfo() {
-			//n_statments=0;
-			info_var_scope = NULL;
-			//n_statment_op=0;
-			n_info_var_scope = 0;
-			idxScope=ZS_UNDEFINED_IDX;
-		}
-	};
 
 
 

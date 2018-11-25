@@ -1,5 +1,3 @@
-#include "CScriptClass.h"
-#include "CScriptFunction.h"
 namespace zetscript{
 
 		void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
@@ -66,11 +64,11 @@ namespace zetscript{
 
 		while((scope_info<current_scope_info_ptr) && search)
 		{
-			CScriptFunctionObject *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
+			CScriptFunction *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
 			int index         = (current_scope_info_ptr-1)->index;
 			tStackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;
-			for(int i = 0; i < ptr_info_function->scope_info.info_var_scope[index].n_var_index; i++){
-				int idx_local_var = ptr_info_function->scope_info.info_var_scope[index].var_index[i];
+			for(int i = 0; i < ptr_info_function->scope_info.lut_scope_symbol[index].n_var_index; i++){
+				int idx_local_var = ptr_info_function->scope_info.lut_scope_symbol[index].var_index[i];
 				tStackElement *ptr_ale =&ptr_local_var[idx_local_var];
 				CScriptVariable *var = NULL;
 				switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
@@ -124,7 +122,7 @@ namespace zetscript{
 
 		int idxOffsetFunctionMemberStart=0;
 		CScriptVariable *script_var_object = NULL;
-		CScriptFunctionObject * ptr_function_found=NULL;
+		CScriptFunction * ptr_function_found=NULL;
 
 		CScriptVariable *one_param = NULL;
 		int n_metam_args=((__METAMETHOD__ == NOT_METAMETHOD\
@@ -202,7 +200,7 @@ namespace zetscript{
 					return false;
 			}
 		}else{
-			ptr_function_found = (CScriptFunctionObject *)instruction->index_op2;
+			ptr_function_found = (CScriptFunction *)instruction->index_op2;
 		}
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
@@ -231,7 +229,7 @@ namespace zetscript{
 		return true;
 	}
 
-	inline CScriptFunctionObject * CVirtualMachine::FIND_FUNCTION(
+	inline CScriptFunction * CVirtualMachine::FIND_FUNCTION(
 			vector<tFunctionSymbol> *m_functionSymbol
 			,vector<int> *vec_global_functions
 			,tInstruction * iao
@@ -249,7 +247,7 @@ namespace zetscript{
 		// by default search over global functions...
 		int size_fun_vec=vec_global_functions->size()-1;
 		CScriptVariable *var_object = NULL;
-		CScriptFunctionObject * ptr_function_found=NULL;
+		CScriptFunction * ptr_function_found=NULL;
 		string aux_string;
 
 		// if m_functionSymbol not NULL search over m_functionSymbols....
@@ -258,10 +256,10 @@ namespace zetscript{
 		}
 
 		for(int i = size_fun_vec; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-			CScriptFunctionObject *irfs = NULL;
+			CScriptFunction *irfs = NULL;
 
 			if(m_functionSymbol != NULL){
-				irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
+				irfs = (CScriptFunction *)m_functionSymbol->at(i).object.stkValue;
 				aux_string=CCompiler::getSymbolNameFromSymbolRef(m_functionSymbol->at(i).key_value);
 
 			}else{
@@ -424,9 +422,9 @@ namespace zetscript{
 				}
 
 				for(int i = size_fun_vec; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-					CScriptFunctionObject *irfs = NULL;
+					CScriptFunction *irfs = NULL;
 					if(m_functionSymbol!=NULL){
-						irfs = (CScriptFunctionObject *)m_functionSymbol->at(i).object.stkValue;
+						irfs = (CScriptFunction *)m_functionSymbol->at(i).object.stkValue;
 					}else{
 						irfs=vec_script_function_object_node[vec_global_functions->at(i)];
 					}

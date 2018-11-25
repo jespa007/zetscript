@@ -129,7 +129,7 @@ namespace zetscript{
 			CScriptFunction *sfo = new CScriptFunction();
 			*sfo = *vec_script_function_object_src->at(i);
 			sfo->instruction=NULL;
-			sfo->scope_info.info_var_scope=NULL;
+			sfo->scope_info.lut_scope_symbol=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
 
@@ -213,7 +213,7 @@ namespace zetscript{
 			CScriptFunction *sfo = new CScriptFunction();
 			*sfo = *vec_script_function_object_src->at(i);
 			sfo->instruction=NULL;
-			sfo->scope_info.info_var_scope=NULL;
+			sfo->scope_info.lut_scope_symbol=NULL;
 			vec_script_function_object_dst->push_back(sfo);
 		}
 
@@ -328,13 +328,13 @@ namespace zetscript{
 
 		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
-			f < main_function->scope_info.local_symbols.vec_idx_registeredFunction.size()
+			f < main_function->scope_info.local_symbols.function.size()
 			;) {
 			// get function info
-			CScriptFunction * local_function = GET_SCRIPT_FUNCTION(main_function->scope_info.local_symbols.vec_idx_registeredFunction[f]);
+			CScriptFunction * local_function = GET_SCRIPT_FUNCTION(main_function->scope_info.local_symbols.function[f]);
 
 			if ((local_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
-				main_function->scope_info.local_symbols.vec_idx_registeredFunction.erase(main_function->scope_info.local_symbols.vec_idx_registeredFunction.begin() + f);
+				main_function->scope_info.local_symbols.function.erase(main_function->scope_info.local_symbols.function.begin() + f);
 			}
 			else {
 				f++;
@@ -344,11 +344,11 @@ namespace zetscript{
 
 		// remove c variables ...
 		for (unsigned v = 0;
-			v < main_function->scope_info.local_symbols.m_registeredVariable.size(); ) {
+			v < main_function->scope_info.local_symbols.variable.size(); ) {
 
-			if ((main_function->scope_info.local_symbols.m_registeredVariable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+			if ((main_function->scope_info.local_symbols.variable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
 
-				main_function->scope_info.local_symbols.m_registeredVariable.erase(main_function->scope_info.local_symbols.m_registeredVariable.begin() + v);
+				main_function->scope_info.local_symbols.variable.erase(main_function->scope_info.local_symbols.variable.begin() + v);
 
 			}
 			else {
@@ -375,13 +375,13 @@ namespace zetscript{
 				}
 
 				// unloading scope ...
-				if (info_function->scope_info.info_var_scope != NULL) {
-					for (unsigned j = 0; j < info_function->scope_info.n_info_var_scope; j++) {
-						free(info_function->scope_info.info_var_scope[j].var_index);
+				if (info_function->scope_info.lut_scope_symbol != NULL) {
+					for (unsigned j = 0; j < info_function->scope_info.n_lut_scope_symbols; j++) {
+						free(info_function->scope_info.lut_scope_symbol[j].var_index);
 					}
 
-					free(info_function->scope_info.info_var_scope);
-					info_function->scope_info.info_var_scope=NULL;
+					free(info_function->scope_info.lut_scope_symbol);
+					info_function->scope_info.lut_scope_symbol=NULL;
 				}
 
 				vec_script_function_object_node->pop_back();
@@ -455,13 +455,13 @@ namespace zetscript{
 			}
 
 			// unloading scope ...
-			if (info_function->scope_info.info_var_scope != NULL) {
-				for (unsigned j = 0; j < info_function->scope_info.n_info_var_scope; j++) {
-					free(info_function->scope_info.info_var_scope[j].var_index);
+			if (info_function->scope_info.lut_scope_symbol != NULL) {
+				for (unsigned j = 0; j < info_function->scope_info.n_lut_scope_symbols; j++) {
+					free(info_function->scope_info.lut_scope_symbol[j].var_index);
 				}
 
-				free(info_function->scope_info.info_var_scope);
-				info_function->scope_info.info_var_scope=NULL;
+				free(info_function->scope_info.lut_scope_symbol);
+				info_function->scope_info.lut_scope_symbol=NULL;
 			}
 
 			delete info_function;

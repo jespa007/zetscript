@@ -77,7 +77,7 @@ namespace zetscript{
 
 
 
-	class  CScriptClass:public CScriptFunction{
+	class  CScriptClass:public CBaseClassFunctionData{
 
 	private:
 
@@ -109,7 +109,7 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
 
-		//tScopeInfo			scope_info;
+		//CBaseClassFunctionData			scope_info;
 		//tVariableSymbolInfo symbol_info;
 		unsigned char  idx_function_script_constructor;
 		//int idxScriptClass;
@@ -185,12 +185,12 @@ namespace zetscript{
 
 
 
-		static CScriptFunction 				*  			registerFunctionSymbol(const string & class_name, const string & name,short idxAstNode);
-		virtual int									  			registerFunctionMember(const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		static int 												getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name);
-		ZETSCRIPT_MODULE_EXPORT static int 						getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
+		//static CScriptFunction 				*  				registerFunctionSymbol(const string & class_name, const string & name,short idxAstNode);
+		virtual CScriptFunction				*  				registerFunctionMember(const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		static int 											getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name);
+		ZETSCRIPT_MODULE_EXPORT static int 					getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunction * 	getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
-		static bool 				  							existFunctionMember(CScriptClass *rc,const string & symbolname_ref, int n_params);
+		static bool 				  						existFunctionMember(CScriptClass *rc,const string & symbolname_ref, int n_params);
 
 
 		static bool 											addArgumentFunctionSymbol(const string & class_name,const string & function_name,const string & arg_name);
@@ -278,7 +278,7 @@ namespace zetscript{
 		static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
 		static map<int,map<int,fntConversionType>> * mapTypeConversion;
 #if 0
-		 static bool searchVarFunctionSymbol(tScopeInfo * scope_info, tInstruction *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
+		 static bool searchVarFunctionSymbol(CBaseClassFunctionData * scope_info, tInstruction *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
 
 		 static void buildScopeVariablesBlock(CScriptFunction *root_class_irfs );
 		 static void unloadRecursiveFunctions(CScriptFunction * info_function);
@@ -289,6 +289,7 @@ namespace zetscript{
 
 	};
 
-	#include "CScriptClass.inc"
+
 }
 
+#include "CScriptClass.inc"

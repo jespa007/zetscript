@@ -541,10 +541,10 @@ namespace zetscript{
 		}
 
 
-		for(unsigned i = 0; i < main_function->scope_info.local_symbols.m_registeredVariable.size(); i++){
+		for(unsigned i = 0; i < main_function->scope_info.local_symbols.variable.size(); i++){
 			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 			//case STK_PROPERTY_TYPE_STRING:
-			if((main_function->scope_info.local_symbols.m_registeredVariable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF ){
+			if((main_function->scope_info.local_symbols.variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF ){
 				tStackElement *ptr_ale =&stack[i];
 				CScriptVariable *var = NULL;
 
@@ -979,7 +979,7 @@ namespace zetscript{
 	tStackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
 		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION(0);
 
-		if(idx_glb_element < main_function->scope_info.local_symbols.m_registeredVariable.size()){
+		if(idx_glb_element < main_function->scope_info.local_symbols.variable.size()){
 			return &stack[idx_glb_element];
 		}
 
@@ -1063,7 +1063,7 @@ namespace zetscript{
 			//*ptrCurrentOp={STK_PROPERTY_TYPE_UNDEFINED,0,0}; // ini first op
 
 			if(info_function->idxScriptFunctionObject != 0){ // calls script function from C : preserve stack space for global vars
-				ptrCurrentOp=&stack[main_function_object->scope_info.local_symbols.m_registeredVariable.size()];
+				ptrCurrentOp=&stack[main_function_object->scope_info.local_symbols.variable.size()];
 			}
 
 			current_foreach=&stkForeach[0];
@@ -1120,7 +1120,7 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		vector<tVariableSymbolInfo> * local_var=&info_function->scope_info.local_symbols.m_registeredVariable;
+		vector<tVariableSymbolInfo> * local_var=&info_function->scope_info.local_symbols.variable;
 
 		ptrStartOp =_ptrStartOp;
 		ptrStartStr =_ptrStartStr;
@@ -1570,7 +1570,7 @@ namespace zetscript{
 					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
 
 					if(scope_type==INS_PROPERTY_LOCAL_SCOPE){ // local gets functions from info_function ...
-						vec_functions=&info_function->scope_info.local_symbols.vec_idx_registeredFunction;
+						vec_functions=&info_function->scope_info.local_symbols.function;
 					}else if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 						tStackElement *var=NULL;
 						if(instruction_properties & INS_PROPERTY_CONSTRUCT_CALL){
@@ -1591,7 +1591,7 @@ namespace zetscript{
 						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							class_obj=(CScriptVariable *)(stk_ins->varRef);
 							CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxScriptClass);
-							vec_functions=&sc->scope_info.local_symbols.vec_idx_registeredFunction;
+							vec_functions=&sc->scope_info.local_symbols.function;
 						}
 						else{
 							CASTNode *ast_previous=vec_ast_node[(instruction-1)->idxAstNode];
@@ -1614,8 +1614,8 @@ namespace zetscript{
 						}
 						function_obj =(CScriptFunction *)si->object.stkValue;
 					}else{ // global
-						vec_functions = &(main_function_object->scope_info.local_symbols.vec_idx_registeredFunction);
-						//function_obj = GET_SCRIPT_FUNCTION(info_function->object_info.local_symbols.vec_idx_registeredFunction[index_op2]);
+						vec_functions = &(main_function_object->scope_info.local_symbols.function);
+						//function_obj = GET_SCRIPT_FUNCTION(info_function->object_info.local_symbols.function[index_op2]);
 					}
 
 
@@ -2192,7 +2192,7 @@ namespace zetscript{
 						//bool all_check=true;
 						if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
 						{
-							vector<int> *vec_global_functions=&(main_function_object->scope_info.local_symbols.vec_idx_registeredFunction);
+							vector<int> *vec_global_functions=&(main_function_object->scope_info.local_symbols.function);
 							//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
 							if((aux_function_info=FIND_FUNCTION(
 									m_functionSymbol

@@ -24,7 +24,13 @@
 
 namespace zetscript{
 
-	class  CScriptFunction{
+	class  CScriptFunction:public CBaseClassFunctionData{
+
+
+		/**
+		 * build scope variable block information
+		 */
+		void buildLutScopeSymbols();
 
 	public:
 
@@ -33,47 +39,19 @@ namespace zetscript{
 		}tInfoInstruction;
 
 		// info related for function ONLY
-		typedef struct tFunctionData{
-			vector<tArgumentInfo> m_arg; // tells var arg name or var type name (in of C )
-			int idx_return_type; // -1 not inicialized type return.
-			PtrInstruction instruction;
-			std::map<short,tInfoInstruction> debug_info; // map that gives info about current instruction
-			int idxScriptFunctionObject;
 
-			tFunctionData(){
-				idx_return_type = ZS_UNDEFINED_IDX;
-				idxScriptFunctionObject = ZS_UNDEFINED_IDX;
-				instruction=NULL;
-			}
-		}tFunctionData;
+		vector<tArgumentInfo> m_arg; // tells var arg name or var type name (in of C )
+		int idx_return_type; // -1 not inicialized type return.
+		PtrInstruction instruction;
 
-		tScopeInfo			scope_info;
-		tVariableSymbolInfo symbol_info;
-		tFunctionData 		*function_data;
+		std::map<short,tInfoInstruction> debug_info; // map that gives info about current instruction
+		int idxScriptFunctionObject;
 
 
-		CScriptFunction(){
-			function_data = NULL;
-			scope_info.info_var_scope=NULL;
-			scope_info.idxScope=IDX_INVALID_SCOPE;
-			symbol_info.idxScriptClass = ZS_UNDEFINED_IDX;
-		}
+		tInfoVarScopeBlock *lut_scope_symbol;
+		unsigned n_lut_scope_symbols;
 
-		CScriptFunction( short _idxScope,  short _idxScriptClass ){ // functions are created using this constructor.
-			function_data = new tFunctionData();
-			scope_info.info_var_scope=NULL;
-			scope_info.idxScope=_idxScope;
-			symbol_info.idxScriptClass = _idxScriptClass;
-		}
-
-		// new/get function/variable it returns the idx vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
-		int						 				registerFunction(short idxLocalScope, const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-
-
-		virtual int				 				registerLocalFunction(const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		int 									registerLocalVariable(const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
-		int						 				getLocalFunction(const string & function_ref,char n_args=0);
-		int						 				getLocalVariable(const string & variable_ref);
+		CScriptFunction();
 
 
 		/**

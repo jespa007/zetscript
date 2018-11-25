@@ -106,9 +106,10 @@ using std::ostringstream;
 #include "var/CStructScriptVariable.h"
 #include "eval/CEval.h"
 #include "CScope.h"
+#include "CBaseClassFunctionData.h"
+#include "CScriptFunction.h"
 #include "CVirtualMachine.h"
 #include "CState.h"
-#include "CScriptFunction.h"
 #include "CScriptClass.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 2
@@ -225,6 +226,12 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT void eval(const string & string, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
 		ZETSCRIPT_MODULE_EXPORT void eval_file(const char * filename,bool execute=true,bool show_bytecode=false);
+
+		int newGlobalFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		int getGlobalFunction(const string & function_ref,char n_args=0);
+
+		int newGlobalVariable(const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
+		int getGlobalVariable(const string & variable_ref);
 
 
 		ZETSCRIPT_MODULE_EXPORT static void destroy();

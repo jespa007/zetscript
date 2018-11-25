@@ -203,6 +203,7 @@ SET(
 	Common.h
 	CState.h
 	CScope.h
+	CLocalSymbolsInfo.h
 	CScriptClass.h
 	CVirtualMachine.h
 	CNativeFunction.h

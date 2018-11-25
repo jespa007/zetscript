@@ -316,7 +316,7 @@ namespace zetscript{
 		}
 
 		// and then print its functions ...
-		vector<int> * m_vf = &sfo->scope_info.local_symbols.vec_idx_registeredFunction;
+		vector<int> * m_vf = &sfo->scope_info.local_symbols.function;
 
 		for(unsigned j =0; j < m_vf->size(); j++){
 
@@ -352,8 +352,8 @@ namespace zetscript{
 		 // for all classes print code...
 		 for(unsigned i = 0; i < registeredClass->size(); i++){
 			 CScriptClass *rc=registeredClass->at(i);
-			 for(unsigned f = 0; f < rc->scope_info.local_symbols.vec_idx_registeredFunction.size(); f++){
-				 printGeneratedCode(GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.vec_idx_registeredFunction[f]));
+			 for(unsigned f = 0; f < rc->scope_info.local_symbols.function.size(); f++){
+				 printGeneratedCode(GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.function[f]));
 			 }
 		 }
 	 }
@@ -735,9 +735,9 @@ namespace zetscript{
 				string symbol_to_find=access_var[i];
 				if(i==0){ // get variable through main_class.main_function (global element)
 					symbol_to_find=CCompiler::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
-					for(unsigned j = 0; j < m_mainFunctionInfo->scope_info.local_symbols.m_registeredVariable.size() && *calling_obj==NULL; j++){
-						if(m_mainFunctionInfo->scope_info.local_symbols.m_registeredVariable[j].symbol_ref==symbol_to_find){
-							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.m_registeredVariable[j].
+					for(unsigned j = 0; j < m_mainFunctionInfo->scope_info.local_symbols.variable.size() && *calling_obj==NULL; j++){
+						if(m_mainFunctionInfo->scope_info.local_symbols.variable[j].symbol_ref==symbol_to_find){
+							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.variable[j].
 							if(stk!=NULL){
 								if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 									*calling_obj=(CScriptVariable *)stk->varRef;
@@ -788,8 +788,8 @@ namespace zetscript{
 		}else{ // function
 			*calling_obj = m_mainObject;
 			string symbol_to_find=CCompiler::makeSymbolRef(access_var[0],IDX_GLOBAL_SCOPE);
-			for(unsigned i = 0; i < m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction.size() && *fun_obj==NULL; i++){
-				CScriptFunction *aux_fun_obj=GET_SCRIPT_FUNCTION(m_mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+			for(unsigned i = 0; i < m_mainFunctionInfo->scope_info.local_symbols.function.size() && *fun_obj==NULL; i++){
+				CScriptFunction *aux_fun_obj=GET_SCRIPT_FUNCTION(m_mainFunctionInfo->scope_info.local_symbols.function[i]);
 				if(aux_fun_obj->symbol_info.symbol_ref == symbol_to_find){
 					*fun_obj=aux_fun_obj;
 				}
@@ -802,6 +802,23 @@ namespace zetscript{
 		}
 
 		return true;
+	}
+
+
+	int CZetScript::newGlobalFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0){
+
+	}
+
+	int CZetScript::getGlobalFunction(const string & function_ref,char n_args=0){
+
+	}
+
+	int CZetScript::newGlobalVariable(const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0){
+
+	}
+
+	int CZetScript::getGlobalVariable(const string & variable_ref){
+
 	}
 
 	CVirtualMachine * CZetScript::getVirtualMachine(){

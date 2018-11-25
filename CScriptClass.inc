@@ -1,3 +1,5 @@
+namespace zetscript{
+
 		/**
 		 * Register C function
 		 */
@@ -65,7 +67,7 @@
 
 
 			// init struct...
-			mainFunctionInfo->newLocalFunction(IDX_C_CLASS_SCOPE,function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+			mainFunctionInfo->registerLocalFunction(function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 			/*irs = NEW_SCRIPT_FUNCTION_OBJECT();
 
 			irs->m_arg = m_infoArg;
@@ -76,8 +78,8 @@
 			irs->symbol_info.symbol_ref = CCompiler::makeSymbolRef(function_name,IDX_GLOBAL_SCOPE); // <-- defined as global
 			irs->symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
 
-			irs->symbol_info.idxSymbol = (short)(mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction.size());
-			mainFunctionInfo->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);*/
+			irs->symbol_info.idxSymbol = (short)(mainFunctionInfo->scope_info.local_symbols.function.size());
+			mainFunctionInfo->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);*/
 
 			zs_print_debug_cr("Registered function name: %s",function_name);
 			return true;
@@ -261,9 +263,9 @@
 
 				// register all symbols function from base ...
 				// vars ...
-				for(unsigned i = 0; i < irc_base->scope_info.local_symbols.m_registeredVariable.size(); i++){
+				for(unsigned i = 0; i < irc_base->scope_info.local_symbols.variable.size(); i++){
 
-					tVariableSymbolInfo *irs_source = &irc_base->scope_info.local_symbols.m_registeredVariable[i];
+					tVariableSymbolInfo *irs_source = &irc_base->scope_info.local_symbols.variable[i];
 
 					tVariableSymbolInfo irs;
 					// init struct...
@@ -273,17 +275,25 @@
 					//irs.
 					irs.symbol_ref=irs_source->symbol_ref;
 					irs.properties = derivated_properties;
-					irs.idxSymbol = (short)(irc_class->scope_info.local_symbols.m_registeredVariable.size());
-					irc_class->scope_info.local_symbols.m_registeredVariable.push_back(irs);
+					irs.idxSymbol = (short)(irc_class->scope_info.local_symbols.variable.size());
+					irc_class->scope_info.local_symbols.variable.push_back(irs);
 
 				}
 
 				// functions ...
-				for(unsigned i = 0; i < irc_base->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+				for(unsigned i = 0; i < irc_base->scope_info.local_symbols.function.size(); i++){
 
-					CScriptFunction *irs_source = GET_SCRIPT_FUNCTION_OBJECT(irc_base->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+					CScriptFunction *irs_source = GET_SCRIPT_FUNCTION(irc_base->scope_info.local_symbols.function[i]);
+					irc_class->registerFunctionMember(
+							CEval::getSymbolNameFromSymbolRef(irs_source->symbol_info.symbol_ref),
+							irs_source->function_data->m_args,
+							irs_source->function_data->idx_return_type,
+							irs_source->symbol_info.ref_ptr,
+							derivated_properties
+							);
 
-					CScriptFunction *irs=NEW_SCRIPT_FUNCTION_OBJECT;
+
+					/*CScriptFunction *irs=NEW_SCRIPT_FUNCTION_OBJECT;
 					// init struct...
 					irs->symbol_info.idxAstNode = -1;
 					//irs.object_info.symbol_info.idxScopeVar = -1;
@@ -299,8 +309,8 @@
 					// create binding function class
 					irs->symbol_info.ref_ptr= irs_source->symbol_info.ref_ptr; // this is not correct due the pointer
 
-					irs->symbol_info.idxSymbol = (short)(irc_class->scope_info.local_symbols.vec_idx_registeredFunction.size());
-					irc_class->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
+					irs->symbol_info.idxSymbol = (short)(irc_class->scope_info.local_symbols.function.size());
+					irc_class->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);*/
 
 
 				}
@@ -387,7 +397,8 @@
 				}
 			}
 
-
+			CScriptClass *sc = (*local_vec_script_class_node)[idxRegisterdClass];
+			CScriptFunction *sf = sc->registerFunctionMember(function_name,m_argInfo,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
 
 			// ok, function candidate to be added into class...
 			/*irs = NEW_SCRIPT_FUNCTION_OBJECT(IDX_C_CLASS_SCOPE,idxRegisterdClass);
@@ -415,12 +426,15 @@
 			irs->m_arg = m_argInfo;
 			irs->idx_return_type = idx_return_type;
 
-			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);*/
+			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.size());
+			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);*/
+
+
+
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 
 			if(STRCMP(getMetamethod(SET_METAMETHOD),==,function_name)){
-				(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(irs->idxScriptFunctionObject);
+				(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(sf->function_data->idxScriptFunctionObject);
 				zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 			}
 
@@ -447,6 +461,7 @@
 			intptr_t ref_ptr=0;
 			string str_classPtr = typeid( _T *).name();
 			string function_class_name = demangle(typeid(_T).name())+"::"+function_name;
+
 
 
 			if(!CScriptFunction::checkCanRegister_C_Function(function_class_name.c_str())){
@@ -500,22 +515,8 @@
 				}
 			}
 
-			// init struct...
-			CASTNode *ast_symbol = CASTNode::newASTNode();
-			ast_symbol->idxScope = IDX_C_CLASS_SCOPE;
-			ast_symbol->symbol_value = function_name;
-
-			for(int a=0; a < m_argInfo.size();a++){ // set number args...
-				ast_symbol->children.push_back(-1);
-			}
-			// get ast symbols function member node...
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->symbol_info.idxAstNode)->children[1]);
-			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
-
-
 			// ok, function candidate to be added into class...
-			irs = NEW_SCRIPT_FUNCTION_OBJECT;
-
+			/*irs = NEW_SCRIPT_FUNCTION_OBJECT;
 
 
 			//irs.object_info.symbol_info.idxScopeVar = -1;
@@ -525,8 +526,9 @@
 			irs->symbol_info.ref_ptr = ref_ptr;
 			irs->m_arg = m_argInfo;
 			irs->idx_return_type = idx_return_type;
-			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
+			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.size());
+			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);*/
+			CScriptFunction *sf = registerLocalFunction(function_name,m_argInfo, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
 			// check whether is static metamethod...
@@ -563,7 +565,7 @@
 							return false;
 						}
 
-						(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(irs->idxScriptFunctionObject);
+						(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(sf->function_data->idxScriptFunctionObject);
 
 						zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 						break;
@@ -629,9 +631,11 @@
 
 
 			irs.properties = PROPERTY_C_OBJECT_REF;
-			irs.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.m_registeredVariable.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.m_registeredVariable.push_back(irs);
-			//base_info->local_symbols.vec_idx_registeredFunction.push_back(irs);
+			irs.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.variable.size());
+			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.variable.push_back(irs);
+			//base_info->local_symbols.function.push_back(irs);
 			return true;
 
 		}
+
+}

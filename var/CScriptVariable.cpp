@@ -25,10 +25,10 @@ namespace zetscript{
 		}
 
 		// Register variables...
-		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.m_registeredVariable.size(); i++){
+		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.variable.size(); i++){
 
 
-			tVariableSymbolInfo * ir_var = &ir_class->scope_info.local_symbols.m_registeredVariable[i];
+			tVariableSymbolInfo * ir_var = &ir_class->scope_info.local_symbols.variable[i];
 
 			se=addVariableSymbol(CCompiler::getSymbolNameFromSymbolRef(ir_var->symbol_ref), ZS_UNDEFINED_IDX);
 
@@ -42,8 +42,8 @@ namespace zetscript{
 		}
 
 		// Register functions...
-		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
-			CScriptFunction * ir_fun  = GET_SCRIPT_FUNCTION(ir_class->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.function.size(); i++){
+			CScriptFunction * ir_fun  = GET_SCRIPT_FUNCTION(ir_class->scope_info.local_symbols.function[i]);
 			 si =addFunctionSymbol(
 					 CCompiler::getSymbolNameFromSymbolRef( ir_fun->symbol_info.symbol_ref),
 					 ir_fun->symbol_info.idxAstNode,
@@ -130,7 +130,7 @@ namespace zetscript{
 	CScriptFunction *CScriptVariable::getConstructorFunction(){
 
 		if(m_infoRegisteredClass->idx_function_script_constructor != ZS_UNDEFINED_IDX){
-			return GET_SCRIPT_FUNCTION(m_infoRegisteredClass->scope_info.local_symbols.vec_idx_registeredFunction[m_infoRegisteredClass->idx_function_script_constructor]);
+			return GET_SCRIPT_FUNCTION(m_infoRegisteredClass->scope_info.local_symbols.function[m_infoRegisteredClass->idx_function_script_constructor]);
 		}
 
 		return NULL;

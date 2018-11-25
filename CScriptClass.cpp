@@ -328,6 +328,7 @@ namespace zetscript{
 				return false;
 			}
 
+			CScriptClass *main_class=NULL;
 			mapTypeConversion = new map<int, map<int, fntConversionType>>();
 
 			VOID_TYPE_STR = new string(typeid(void).name());
@@ -398,8 +399,8 @@ namespace zetscript{
 
 
 			// register basic classes...
-			if((registerClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 11
-			if((registerFunctionSymbol(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME,IDX_MAIN_AST_NODE)) == NULL) return false;
+			if((main_class=registerClass(MAIN_SCRIPT_CLASS_NAME,"",NULL)) == NULL) return false; // 11
+			if((main_class->registerFunctionMember(MAIN_SCRIPT_FUNCTION_OBJECT_NAME)) == NULL) return false;
 
 			REGISTER_BASIC_TYPE(tStackElement,IDX_STACK_ELEMENT);
 
@@ -596,7 +597,7 @@ namespace zetscript{
 		return -1;
 	}
 #if 0
-	bool CScriptClass::searchVarFunctionSymbol(tScopeInfo * scope_info, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
+	bool CScriptClass::searchVarFunctionSymbol(CBaseClassFunctionData * scope_info, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
 
 		int idx=0;
 		symbol_not_found = true;
@@ -615,7 +616,7 @@ namespace zetscript{
 
 			if(current_function > 0){ // minimum have to have a 1
 
-				CScriptFunction *sfo =  GET_SCRIPT_FUNCTION(scope_info->local_symbols.vec_idx_registeredFunction[current_function]);//.object_info;
+				CScriptFunction *sfo =  GET_SCRIPT_FUNCTION(scope_info->local_symbols.function[current_function]);//.object_info;
 				symbol_to_find = sfo->symbol_info.symbol_ref;
 				short idxScope=CCompiler::getIdxScopeFromSymbolRef(symbol_to_find);
 
@@ -627,7 +628,7 @@ namespace zetscript{
 				bool is_c=false;
 
 				for(int i = current_function-1; i >= 0 && idx_super==-1; i--){
-					CScriptFunction * sfo = GET_SCRIPT_FUNCTION(scope_info->local_symbols.vec_idx_registeredFunction[i]);
+					CScriptFunction * sfo = GET_SCRIPT_FUNCTION(scope_info->local_symbols.function[i]);
 					string symbol_ref=CCompiler::getSymbolNameFromSymbolRef(sfo->symbol_info.symbol_ref);
 					string symbol_ref_to_find=CCompiler::getSymbolNameFromSymbolRef(symbol_to_find);
 
@@ -699,7 +700,7 @@ namespace zetscript{
 					 iao->instruction_properties |= param_scope_type;
 					 iao->index_op1 = LOAD_TYPE_FUNCTION;
 					 iao->index_op2 = idx;
-					 if((GET_FUNCTION_INFO(info_function->local_symbols.vec_idx_registeredFunction[idx])->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
+					 if((GET_FUNCTION_INFO(info_function->local_symbols.function[idx])->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
 						 iao->index_op2 = -1;
 					 }
 					 return true;
@@ -774,7 +775,7 @@ namespace zetscript{
 				 };
 
 				 vector<CScope *> *list = CScope::getVectorScopeNode();
-				 vector<tVariableSymbolInfo> *vs = &root_class_irfs->object_info.local_symbols.m_registeredVariable;
+				 vector<tVariableSymbolInfo> *vs = &root_class_irfs->object_info.local_symbols.variable;
 				 vector<tInfoVarScopeBlockRegister> vec_ivsb;
 				 for(unsigned i = 0;i < list->size(); i++){ // register index var per scope ...
 					 tInfoVarScopeBlockRegister ivsb;
@@ -795,113 +796,28 @@ namespace zetscript{
 					 vec_ivsb.push_back(ivsb);
 				 }
 
-				 root_class_irfs->scope_info.info_var_scope = (tInfoVarScopeBlock*)malloc(vec_ivsb.size()*sizeof(tInfoVarScopeBlock));
-				 root_class_irfs->object_info.n_info_var_scope = vec_ivsb.size();
+				 root_class_irfs->scope_info.lut_scope_symbol = (tInfoVarScopeBlock*)malloc(vec_ivsb.size()*sizeof(tInfoVarScopeBlock));
+				 root_class_irfs->object_info.n_lut_scope_symbols = vec_ivsb.size();
 
 				 for(unsigned i = 0; i < vec_ivsb.size(); i++){
-					 root_class_irfs->scope_info.info_var_scope[i].idxScope = vec_ivsb[i].idxScope;
-					 root_class_irfs->scope_info.info_var_scope[i].n_var_index = (char)vec_ivsb[i].var_index.size();
-					 root_class_irfs->scope_info.info_var_scope[i].var_index = (int *)malloc(sizeof(int)*vec_ivsb[i].var_index.size());
+					 root_class_irfs->scope_info.lut_scope_symbol[i].idxScope = vec_ivsb[i].idxScope;
+					 root_class_irfs->scope_info.lut_scope_symbol[i].n_var_index = (char)vec_ivsb[i].var_index.size();
+					 root_class_irfs->scope_info.lut_scope_symbol[i].var_index = (int *)malloc(sizeof(int)*vec_ivsb[i].var_index.size());
 					 for(unsigned j = 0; j < vec_ivsb[i].var_index.size(); j++){
-						 root_class_irfs->scope_info.info_var_scope[i].var_index[j] = vec_ivsb[i].var_index[j];
+						 root_class_irfs->scope_info.lut_scope_symbol[i].var_index[j] = vec_ivsb[i].var_index[j];
 					 }
 				 }
 			 }
 		 }
 	}
 
-	bool CScriptClass::updateFunctionSymbols(int idxScriptFunctionObject, const string & parent_symbol, int n_function){
 
-		CScriptFunction * sfo = GET_SCRIPT_FUNCTION(idxScriptFunctionObject);
-		//tFunctionInfo * info_function = &sfo->object_info;
-		bool symbol_found=false;
-
-		zs_print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->symbol_info.symbol_ref.c_str());
-
-		buildScopeVariablesBlock(sfo);
-
-		//int ;
-		int idx_op=0;
-		 for(PtrInstruction iao = sfo->asm_op; iao->operator_type != OP_CODE::END_FUNCTION;iao++,idx_op++){
-
-			 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
-
-			 if(iao->operator_type==OP_CODE::LOAD){
-
-				 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
-					 iao->index_op1 = LOAD_TYPE_VARIABLE;
-					 iao->index_op2 = idx_op-1;
-				 }
-				 else {
-
-					 if(iao->index_op1 == LOAD_TYPE_NOT_DEFINED){
-
-								 string symbol_to_find =AST_SYMBOL_VALUE(iao->idxAstNode);
-
-								 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
-
-									 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\" will solved at run-time", symbol_to_find.c_str());
-								 }
-								 else{
-									 // search symbol...
-									 if(!searchVarFunctionSymbol(info_function,iao,n_function,symbol_found,INS_PROPERTY_LOCAL_SCOPE)){
-
-										 // search global...
-										 //if(!searchVarFunctionSymbol(&MAIN_SCRIPT_FUNCTION_OBJECT->object_info,iao,n_function,symbol_found,0)){
-												PASTNode ast_node = AST_NODE(iao->idxAstNode);
-
-												if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
-
-													if(!symbol_found){
-														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str() );
-													}
-													else{
-														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
-													}
-
-												}
-												else{
-													writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str());
-												}
-											 return false;
-										 //}
-
-									 }
-							 }
-					 }
-				 }
-
-			 }else  if(iao->operator_type==OP_CODE::CALL){ // overrides variable type as function ...
-				 // check whether access scope ...
-				 if(info_function->asm_op[iao->index_op2].operator_type ==OP_CODE::LOAD  && // e
-						 (GET_INS_PROPERTY_SCOPE_TYPE(info_function->asm_op[iao->index_op2].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
-
-					 info_function->asm_op[iao->index_op2].index_op1 = LOAD_TYPE_FUNCTION;
-					 info_function->asm_op[iao->index_op2].index_op2 = iao->index_op2-1;
-					// iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
-				 }
-
-			 }
-		 }
-
-
-		 vector<int> *mrf = &info_function->local_symbols.vec_idx_registeredFunction;
-
-		 for(unsigned k=0; k < mrf->size();k++){
-
-			 if(!updateFunctionSymbols(mrf->at(k), info_function->symbol_info.symbol_ref, k)){
-				 return false;
-			 }
-		 }
-
-		return true;
-	}
 
 	bool CScriptClass::updateReferenceSymbols(){
 
 
-		 int idx_main_function = ((*vec_script_class_node)[IDX_START_SCRIPTVAR]->scope_info.local_symbols.vec_idx_registeredFunction[0]);
-		 CScriptFunction  *main_function = GET_SCRIPT_FUNCTION((*vec_script_class_node)[IDX_START_SCRIPTVAR]->scope_info.local_symbols.vec_idx_registeredFunction[0]);
+		 int idx_main_function = ((*vec_script_class_node)[IDX_START_SCRIPTVAR]->scope_info.local_symbols.function[0]);
+		 CScriptFunction  *main_function = GET_SCRIPT_FUNCTION((*vec_script_class_node)[IDX_START_SCRIPTVAR]->scope_info.local_symbols.function[0]);
 		 zs_print_debug_cr("DEFINED CLASSES");
 		 vector<int>  mrf; // aux vector for collect function obj info.
 		 bool symbol_found = false;
@@ -911,13 +827,13 @@ namespace zetscript{
 
 			 mrf.clear();
 			 if(i==IDX_START_SCRIPTVAR){ // First entry (MAIN_CLASS), load global functions....
-				 mrf.push_back(idx_main_function);//->object_info.local_symbols.vec_idx_registeredFunction;
-				 for(unsigned h=0; h<  main_function->scope_info.local_symbols.vec_idx_registeredFunction.size(); h++){
-					 mrf.push_back(main_function->scope_info.local_symbols.vec_idx_registeredFunction[h]);
+				 mrf.push_back(idx_main_function);//->object_info.local_symbols.function;
+				 for(unsigned h=0; h<  main_function->scope_info.local_symbols.function.size(); h++){
+					 mrf.push_back(main_function->scope_info.local_symbols.function[h]);
 				 }
 			 }else{ // any other class
-				 for(unsigned h=0; h<  (*vec_script_class_node)[i]->scope_info.local_symbols.vec_idx_registeredFunction.size(); h++){
-					 mrf.push_back((*vec_script_class_node)[i]->scope_info.local_symbols.vec_idx_registeredFunction[h]);
+				 for(unsigned h=0; h<  (*vec_script_class_node)[i]->scope_info.local_symbols.function.size(); h++){
+					 mrf.push_back((*vec_script_class_node)[i]->scope_info.local_symbols.function[h]);
 				 }
 			 }
 
@@ -952,7 +868,7 @@ namespace zetscript{
 
 							 string base_class = _belonging_class->symbol_info.symbol_ref;
 
-							 tScopeInfo *sfi=NULL;
+							 CBaseClassFunctionData *sfi=NULL;
 							 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
 							 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
@@ -982,7 +898,7 @@ namespace zetscript{
 											 // make ref var from class scope ...
 											 // search global...
 											 if(scope_type & INS_PROPERTY_SUPER_SCOPE){
-												 symbol_to_find = GET_SCRIPT_FUNCTION(sfi->local_symbols.vec_idx_registeredFunction[k])->symbol_info.symbol_ref;
+												 symbol_to_find = GET_SCRIPT_FUNCTION(sfi->local_symbols.function[k])->symbol_info.symbol_ref;
 											 }
 
 											 if(!searchVarFunctionSymbol(sfi,iao,k,symbol_found,scope_type)){
@@ -1049,9 +965,9 @@ namespace zetscript{
 				 }
 
 				 if(!is_main_function){ // process all function symbols ...
-					 for(unsigned m=0; m < info_function->scope_info.local_symbols.vec_idx_registeredFunction.size(); m++){
+					 for(unsigned m=0; m < info_function->scope_info.local_symbols.function.size(); m++){
 						 if(!updateFunctionSymbols(
-								 info_function->scope_info.local_symbols.vec_idx_registeredFunction[m],
+								 info_function->scope_info.local_symbols.function[m],
 								 info_function->symbol_info.symbol_ref,m)){
 							 return false;
 						 }
@@ -1076,14 +992,14 @@ namespace zetscript{
 		 }
 
 		 // update global variables, only C refs...
-		 for(unsigned i = 0;i < main_function->scope_info.local_symbols.m_registeredVariable.size();i++){
-			 if(main_function->scope_info.local_symbols.m_registeredVariable[i].properties & PROPERTY_C_OBJECT_REF){
+		 for(unsigned i = 0;i < main_function->scope_info.local_symbols.variable.size();i++){
+			 if(main_function->scope_info.local_symbols.variable[i].properties & PROPERTY_C_OBJECT_REF){
 				 CURRENT_VM->iniStackVar(
 						 i,
 
 						 CScriptClass::C_REF_InfoVariable_2_StackElement(
-								 	&main_function->scope_info.local_symbols.m_registeredVariable[i],
-									(void *)main_function->scope_info.local_symbols.m_registeredVariable[i].ref_ptr
+								 	&main_function->scope_info.local_symbols.variable[i],
+									(void *)main_function->scope_info.local_symbols.variable[i].ref_ptr
 				 ));
 			 }
 		 }
@@ -1150,8 +1066,8 @@ namespace zetscript{
 
 		 if(rc != NULL){
 
-			 if(idx_var < (int)rc->scope_info.local_symbols.m_registeredVariable.size()){
-				 return (CScriptVariable  *)rc->scope_info.local_symbols.m_registeredVariable[idx_var].ref_ptr;
+			 if(idx_var < (int)rc->scope_info.local_symbols.variable.size()){
+				 return (CScriptVariable  *)rc->scope_info.local_symbols.variable[idx_var].ref_ptr;
 			 }
 			 else{
 				 THROW_RUNTIME_ERROR("index out of bounds");
@@ -1230,17 +1146,17 @@ namespace zetscript{
 				return NULL;
 			}
 
-			tScopeInfo *scope_info=&rc->scope_info;
+			CBaseClassFunctionData *scope_info=&rc->scope_info;
 
 			PASTNode ast = AST_NODE(idxAstNode);
 			tVariableSymbolInfo info_var;
 			info_var.idxScriptClass = rc->symbol_info.idxScriptClass;
 			info_var.idxAstNode = idxAstNode;
 			info_var.symbol_ref =var_name;
-			info_var.idxSymbol = (short)scope_info->local_symbols.m_registeredVariable.size();
-			scope_info->local_symbols.m_registeredVariable.push_back(info_var);
+			info_var.idxSymbol = (short)scope_info->local_symbols.variable.size();
+			scope_info->local_symbols.variable.push_back(info_var);
 
-			return &scope_info->local_symbols.m_registeredVariable[scope_info->local_symbols.m_registeredVariable.size()-1];
+			return &scope_info->local_symbols.variable[scope_info->local_symbols.variable.size()-1];
 		}else{
 			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" not exist",class_name.c_str());
 			return NULL;
@@ -1252,11 +1168,11 @@ namespace zetscript{
 	bool  CScriptClass::variableSymbolExist(CScriptClass *rc,const string & variable_name){
 
 		if(rc != NULL){
-			tScopeInfo *scope_info=&rc->scope_info;
+			CBaseClassFunctionData *scope_info=&rc->scope_info;
 
-			for(unsigned i = 0; i < scope_info->local_symbols.m_registeredVariable.size(); i++){
+			for(unsigned i = 0; i < scope_info->local_symbols.variable.size(); i++){
 
-				if(scope_info->local_symbols.m_registeredVariable[i].symbol_ref == variable_name){
+				if(scope_info->local_symbols.variable[i].symbol_ref == variable_name){
 					return true;
 				}
 			}
@@ -1270,11 +1186,11 @@ namespace zetscript{
 		CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);
 
 		if(rc != NULL){
-			tScopeInfo *scope_info=&rc->scope_info;
+			CBaseClassFunctionData *scope_info=&rc->scope_info;
 
-			for(unsigned i = 0; i < scope_info->local_symbols.m_registeredVariable.size(); i++){
-				if(scope_info->local_symbols.m_registeredVariable[i].symbol_ref == variable_name){
-					return &scope_info->local_symbols.m_registeredVariable[i];
+			for(unsigned i = 0; i < scope_info->local_symbols.variable.size(); i++){
+				if(scope_info->local_symbols.variable[i].symbol_ref == variable_name){
+					return &scope_info->local_symbols.variable[i];
 				}
 			}
 		}
@@ -1285,7 +1201,7 @@ namespace zetscript{
 
 
 	//-------
-	CScriptFunction * CScriptClass::registerFunctionSymbol(const string & class_name, const string & fun_name, short  idxAstNode){
+	/*CScriptFunction * CScriptClass::registerFunctionSymbol(const string & class_name, const string & fun_name, short  idxAstNode){
 
 		CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);
 
@@ -1302,10 +1218,10 @@ namespace zetscript{
 			irs->symbol_info.idxAstNode = idxAstNode;
 
 			if(fun_name == class_name){
-				rc->idx_function_script_constructor = rc->scope_info.local_symbols.vec_idx_registeredFunction.size();
+				rc->idx_function_script_constructor = rc->scope_info.local_symbols.function.size();
 			}
-			irs->symbol_info.idxSymbol = (short)rc->scope_info.local_symbols.vec_idx_registeredFunction.size();
-			rc->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
+			irs->symbol_info.idxSymbol = (short)rc->scope_info.local_symbols.function.size();
+			rc->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);
 
 			// check if metamethod...
 			string function_symbol_name = CCompiler::getSymbolNameFromSymbolRef(fun_name);
@@ -1322,9 +1238,9 @@ namespace zetscript{
 			return irs;
 		}
 		return NULL;
-	}
+	}*/
 
-	int CScriptClass::registerFunctionMember(const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CScriptClass::registerFunctionMember(const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 
 
@@ -1332,7 +1248,7 @@ namespace zetscript{
 
 		//if(rc != NULL){
 
-		int idx = CScriptFunction::registerLocalFunction( function_name,  args,  idx_return_type,intptr_t ref_ptr,  properties);
+		CScriptFunction * sf = registerLocalFunction( function_name,  args,  idx_return_type, ref_ptr,  properties);
 		 string class_name=symbol_info.symbol_ref;
 
 			//CScriptFunction *irs = NEW_SCRIPT_FUNCTION;
@@ -1344,11 +1260,11 @@ namespace zetscript{
 			//irs->symbol_info.idxAstNode = idxAstNode;
 
 			if(function_name == class_name){
-				idx_function_script_constructor = scope_info.local_symbols.vec_idx_registeredFunction.size();
+				idx_function_script_constructor = scope_info.local_symbols.function.size();
 			}
 
-			//irs->symbol_info.idxSymbol = (short)rc->scope_info.local_symbols.vec_idx_registeredFunction.size();
-			//rc->scope_info.local_symbols.vec_idx_registeredFunction.push_back(irs->idxScriptFunctionObject);
+			//irs->symbol_info.idxSymbol = (short)rc->scope_info.local_symbols.function.size();
+			//rc->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);
 
 			// check if metamethod...
 			//string function_symbol_name = CCompiler::getSymbolNameFromSymbolRef(fun_name);
@@ -1356,13 +1272,13 @@ namespace zetscript{
 			for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
 				if(STRCMP(getMetamethod((METAMETHOD_OPERATOR)i),==,function_name.c_str())){
 
-					metamethod_operator[i].push_back(idx);
+					metamethod_operator[i].push_back(sf->function_data->idxScriptFunctionObject);
 
 					zs_print_debug_cr("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());
 					break;
 				}
 			}
-			return idx;
+			return sf;
 		//}
 		//return NULL;
 	}
@@ -1372,10 +1288,10 @@ namespace zetscript{
 		if(rc != NULL){
 
 			// from lat value to first to get last override function...
-			for(int i = rc->scope_info.local_symbols.vec_idx_registeredFunction.size()-1; i >= 0 ; i--){
-				CScriptFunction * sfo = GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+			for(int i = rc->scope_info.local_symbols.function.size()-1; i >= 0 ; i--){
+				CScriptFunction * sfo = GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.function[i]);
 				if(sfo->symbol_info.symbol_ref == function_name){
-					return rc->scope_info.local_symbols.vec_idx_registeredFunction[i];
+					return rc->scope_info.local_symbols.function[i];
 				}
 			}
 
@@ -1406,9 +1322,9 @@ namespace zetscript{
 		/*if(rc != NULL){
 
 
-			for(unsigned i = 0; i < rc->scope_info.local_symbols.vec_idx_registeredFunction.size(); i++){
+			for(unsigned i = 0; i < rc->scope_info.local_symbols.function.size(); i++){
 
-				CScriptFunction *fo=GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.vec_idx_registeredFunction[i]);
+				CScriptFunction *fo=GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.function[i]);
 
 				if(fo->symbol_info.symbol_ref == function_name && (fo->m_arg.size() == n_params)){
 					return true;
