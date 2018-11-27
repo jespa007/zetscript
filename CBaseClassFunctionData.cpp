@@ -6,25 +6,27 @@ namespace zetscript{
 
 	CBaseClassFunctionData::CBaseClassFunctionData() {
 		//n_statments=0;
-		lut_scope_symbol = NULL;
+
 		//n_statment_op=0;
-		n_lut_scope_symbols = 0;
+
 		idxScope=ZS_UNDEFINED_IDX;
 		idxScriptClass=ZS_UNDEFINED_IDX;
 	}
 
-	bool CScriptClass::searchVarFunctionSymbol( tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
+	/*
+	 *  It has no sense since it's resolved at eval
+	 *  super.fun(1,2,3)*3; fun is evaluated pushing its args and then solve the function because we have the name and the args (is trivial)
+	 *
+	 *
+	bool CBaseClassFunctionData::searchVarFunctionSymbol(string symbol_to_find, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find){
 
 		int idx=0;
 		symbol_not_found = true;
-		char n_args_to_find =-1;
-		PASTNode ast_node = AST_NODE(iao->idxAstNode);
-		string symbol_to_find =ast_node->symbol_value;//CCompiler::makeSymbolRef(ast_node->symbol_value, ast_node->idxScope);
 
-		if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
+		//PASTNode ast_node = AST_NODE(iao->idxAstNode);
+		//string symbol_to_find =ast_node->symbol_value;//CCompiler::makeSymbolRef(ast_node->symbol_value, ast_node->idxScope);
 
-			n_args_to_find = getNumberArgsfromFunctionRefNode(ast_node);
-		}
+
 
 		unsigned int iao_scope = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
@@ -165,31 +167,35 @@ namespace zetscript{
 		symbol_not_found = false;
 		 return false;
 	}
+*/
 
+	int CBaseClassFunctionData::registerFunction(short idxBlockScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+			CScriptFunction *irs = NEW_SCRIPT_FUNCTION(idxBlockScope,idxScriptClass);
 
-	int CBaseClassFunctionData::newFunction(short idxLocalScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
-			CScriptFunction *irs = NEW_SCRIPT_FUNCTION(idxStartingScope,idxScriptClass);
-
-			irs->function_data->m_arg = args;
-			irs->function_data->idx_return_type = idx_return_type;
+			irs->m_arg = args;
+			irs->idx_return_type = idx_return_type;
 			irs->symbol_info.ref_ptr = ref_ptr;
 
 
-			irs->symbol_info.symbol_ref = CEval::makeSymbolRef(function_name,idxStartingScope); // <-- defined as global
+			irs->symbol_info.symbol_ref = CEval::makeSymbolRef(function_name,idxBlockScope); // <-- defined as global
 			irs->symbol_info.properties = properties;
 
 			irs->symbol_info.idxSymbol = (short)(m_function.size());
-			m_function.push_back(irs->function_data->idxScriptFunctionObject);
+			m_function.push_back(irs->idxScriptFunctionObject);
 
 			return m_function.size()-1;
 	}
 
+	int CBaseClassFunctionData::registerFunction( const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 
+		return registerFunction(this->idxScope, function_name,  args, idx_return_type,ref_ptr, properties);
+	}
 
-	int 	CBaseClassFunctionData::newVariable(const string & variable_name,const string & variable_ref, const string & c_type, intptr_t ref_ptr, unsigned short properties){
+
+	int 	CBaseClassFunctionData::registerVariable(short idxBlockScope,const string & variable_name,const string & variable_ref, const string & c_type, intptr_t ref_ptr, unsigned short properties){
 		tVariableSymbolInfo irs;
-		irs.symbol_ref=CEval::makeSymbolRef(variable_name,idxStartingScope);
+		irs.symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
 
 		irs.ref_ptr =ref_ptr;
 		irs.c_type = c_type;
@@ -202,11 +208,20 @@ namespace zetscript{
 		return m_variable.size()-1;
 	}
 
-	int CScriptFunction::getLocalVariable(const string & variable_ref){
-		// from lat value to first to get last override function...
-		for(int i = scope_info.local_symbols.variable.size()-1; i >= 0 ; i--){
-			if(scope_info.local_symbols.variable[i].symbol_ref == variable_ref){
-				return i;
+	int 	CBaseClassFunctionData::registerVariable(const string & variable_name,const string & variable_ref, const string & c_type, intptr_t ref_ptr, unsigned short properties){
+	{
+			return registerVariable(this->idxScope,  variable_name,   variable_ref,    c_type,  ref_ptr,   properties);
+	}
+
+	int CBaseClassFunctionData::getVariable(const string & symbol_ref){
+
+		if(m_variable.size()>0){
+
+			// from lat value to first to get last override function...
+			for(unsigned i = m_variable.size()-1; i >= 0 ; i--){
+				if(m_variable[i].symbol_ref == symbol_ref){
+					return i;
+				}
 			}
 		}
 

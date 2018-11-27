@@ -511,14 +511,14 @@ namespace zetscript{
 		string symbol_ref; // symbol name
 		short idxScriptClass; //CScriptClass		 *class_info;
 		short idxSymbol; // idx of class function/variable symbol that keeps.
-		short idxAstNode;
+		short idxScope;
 		unsigned short properties; // SYMBOL_INFO_PROPERTY
 		string c_type; // In case is C, we need to know its type ...
 
 		tVariableSymbolInfo() {
 			properties = 0;
 			c_type = "";
-			idxAstNode = -1;
+			idxScope = -1;
 			symbol_ref = "";
 			ref_ptr = 0;
 			//class_info=NULL;

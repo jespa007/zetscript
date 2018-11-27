@@ -9,7 +9,7 @@ namespace zetscript{
 
 	public:
 
-		bool searchVarFunctionSymbol( tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type);
+		bool searchVarFunctionSymbol( string symbol_to_find,tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find=-1);
 
 
 		// local symbols for class or function...
@@ -28,15 +28,17 @@ namespace zetscript{
 		/* Registers a function.
 		 * Desc: Inserts function at custom scope. It returns the idx vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
 		 */
-		int newFunction( short idxLocalScope, const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		int newFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		int registerFunction( short idxBlockScope, const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		int registerFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
 		int getFunction(const string & function_ref,char n_args=0);
 
 		/* Registers local variable
-		 * Desc: Inserts function at scope pointed by scope info.
+		 * Desc: Inserts variable at scope some block scope or by scope info itself.
 		 */
-		int  newVariable(const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
+		int  registerVariable( short idxBlockScope,const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
+		int  registerVariable(const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 		int  getVariable(const string & variable_ref);
+
 
 
 	};

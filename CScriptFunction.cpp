@@ -19,9 +19,13 @@ namespace zetscript{
 	}
 
 
-	void CBaseClassFunctionData::buildLutScopeSymbols(){
+	void CScriptFunction::buildLutScopeSymbols(){
 
 			if(idxScope < 0){ // it could be undefined or C
+				return;
+			}
+
+			if(m_variable.size() == 0){ // no elements...
 				return;
 			}
 
@@ -37,35 +41,47 @@ namespace zetscript{
 			 vector<CScope *> *list = CScope::getVectorScopeNode();
 			 //vector<tVariableSymbolInfo> *vs = &root_class_irfs->object_info.local_symbols.variable;
 			 vector<tInfoVarScopeBlockRegister> vec_ivsb;
-			 for(unsigned i = 0;i < list->size(); i++){ // register index var per scope ...
-				 tInfoVarScopeBlockRegister ivsb;
+			 std::map<int,tInfoVarScopeBlockRegister> map_scope_register;
+			 //for(unsigned i = 0;i < list->size(); i++){ // register index var per scope ...
+				 //tInfoVarScopeBlockRegister ivsb;
 
-				 ivsb.idxScope = list->at(i)->idxScope;
+				 //ivsb.idxScope = list->at(i)->idxScope;
 
-				 for(unsigned v = 0;v < m_variable->size(); v++){ // register index var per scope ...
+				 for(unsigned v = 0;v < m_variable.size(); v++){ // register index var per scope ...
 
-					 PASTNode ast_var = AST_NODE(vs->at(v).idxAstNode);
 
-					 if(ast_var !=NULL){
+					map_scope_register[m_variable[v].idxScope].idxScope=m_variable[v].idxScope;
+					map_scope_register[m_variable[v].idxScope].var_index.push_back(v);
 
-						if(ast_var->idxScope == ivsb.idxScope){
-							ivsb.var_index.push_back(v);
-						}
-					 }
+
+
+					 //PASTNode ast_var = AST_NODE(vs->at(v).idxAstNode);
+
+					 //if(ast_var !=NULL){
+
+						//if(ast_var->idxScope == ivsb.idxScope){
+						//	ivsb.var_index.push_back(v);
+						//}
+					 //}
 				 }
-				 vec_ivsb.push_back(ivsb);
-			 }
+				 //vec_ivsb.push_back(ivsb);
+			 //}
 
-			 lut_scope_symbol = (tInfoVarScopeBlock*)malloc(vec_ivsb.size()*sizeof(tInfoVarScopeBlock));
-			 n_lut_scope_symbols = vec_ivsb.size();
+			 lut_scope_symbol = (tInfoVarScopeBlock*)malloc(map_scope_register.size()*sizeof(tInfoVarScopeBlock));
+			 n_lut_scope_symbols =map_scope_register.size();
 
-			 for(unsigned i = 0; i < vec_ivsb.size(); i++){
-				 lut_scope_symbol[i].idxScope = vec_ivsb[i].idxScope;
-				 lut_scope_symbol[i].n_var_index = (char)vec_ivsb[i].var_index.size();
-				 lut_scope_symbol[i].var_index = (int *)malloc(sizeof(int)*vec_ivsb[i].var_index.size());
-				 for(unsigned j = 0; j < vec_ivsb[i].var_index.size(); j++){
-					 lut_scope_symbol[i].var_index[j] = vec_ivsb[i].var_index[j];
+			 int i=0;
+			 for(std::map<int,tInfoVarScopeBlockRegister>::iterator e = map_scope_register.begin(); e != map_scope_register.end(); e++){
+
+				 tInfoVarScopeBlockRegister ivs = map_scope_register[e];
+
+				 lut_scope_symbol[i].idxScope = ivs.idxScope;
+				 lut_scope_symbol[i].n_var_index = (char)ivs.var_index.size();
+				 lut_scope_symbol[i].var_index = (int *)malloc(sizeof(int)*ivs.var_index.size());
+				 for(unsigned j = 0; j < ivs.var_index.size(); j++){
+					 lut_scope_symbol[i].var_index[j] = ivs.var_index[j];
 				 }
+				 i++;
 			 }
 
 
@@ -110,7 +126,7 @@ namespace zetscript{
 
 
 
-	bool CScriptFunction::updateFunctionSymbols(const string & parent_symbol, int n_function){
+	/*bool CScriptFunction::updateFunctionSymbols(const string & parent_symbol, int n_function){
 
 
 		//tFunctionInfo * info_function = &sfo->object_info;
@@ -118,7 +134,7 @@ namespace zetscript{
 
 		zs_print_info_cr("processing function %s -> %s",parent_symbol.c_str(),info_function->symbol_info.symbol_ref.c_str());
 
-		buildScopeVariablesBlock();
+		buildLutScopeSymbols();
 
 		//int ;
 		int idx_op=0;
@@ -195,7 +211,7 @@ namespace zetscript{
 		 }
 
 		return true;
-	}
+	}*/
 
 
 	CScriptFunction 	* CScriptFunction::getScriptFunctionObject(int idx){
