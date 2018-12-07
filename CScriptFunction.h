@@ -51,7 +51,7 @@ namespace zetscript{
 		tInfoVarScopeBlock *lut_scope_symbol;
 		unsigned n_lut_scope_symbols;
 
-		CScriptFunction();
+		CScriptFunction(short _idxScope, short _idxClass);
 
 
 		/**
@@ -70,6 +70,7 @@ namespace zetscript{
 
 	private:
 		static vector<CScriptFunction *> 	* current_vec_script_function_object_node;
+		static vector<CScriptFunction *> 	* vec_c_function;
 
 	};
 

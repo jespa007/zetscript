@@ -159,7 +159,7 @@ namespace zetscript{
 
 
 
-	// @deprecated...
+	/*// @deprecated...
 	CScope * CScope::pushScope(PASTNode _ast){
 
 		CScope *new_scope = CScope::newScope(_ast,SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
@@ -167,7 +167,7 @@ namespace zetscript{
 		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
 		return new_scope;
 
-	}
+	}*/
 
 	CScope * CScope::popScope(){
 
@@ -192,13 +192,13 @@ namespace zetscript{
 	//
 	// SCOPE VARIABLE MANAGEMENT
 	//
-	tScopeVar * CScope::registerAnonymouseFunction(PASTNode ast){ // register anonymous function in the top of scope ...
+	tScopeVar * CScope::registerAnonymouseFunction(const string & file, int line, int n_args){ // register anonymous function in the top of scope ...
 
 		tScopeVar irv;// = new tScopeVar;
 
-		PASTNode args_node = AST_NODE(ast->children[0]);
+		//PASTNode args_node = AST_NODE(ast->children[0]);
 		string var_name ="_afun"+CZetScriptUtils::intToString(n_anonymouse_func++);
-		string symbol_ref = "@funp"+CZetScriptUtils::intToString(args_node!=NULL?args_node->children.size():0)+"_"+var_name;
+		string symbol_ref = "@funp"+CZetScriptUtils::intToString(n_args)+"_"+var_name;
 
 
 		//int n_params=0;
@@ -217,11 +217,13 @@ namespace zetscript{
 
 
 		irv.symbol_ref = symbol_ref;
-		irv.name=var_name;
-		irv.idxAstNode=-1;
-		if(ast != NULL){
+		irv.file = file;
+		irv.line = line;
+		//irv.name=var_name;
+		//irv.idxAstNode=-1;
+		/*if(ast != NULL){
 			irv.idxAstNode=ast->idxAstNode;
-		}
+		}*/
 
 		CScope *base = SCOPE_NODE(idxBaseScope);
 
@@ -230,7 +232,7 @@ namespace zetscript{
 		return &base->m_registeredVariableFromBase[base->m_registeredVariableFromBase.size()-1];
 	}
 
-	tScopeVar * CScope::registerSymbol(const string & var_name, PASTNode ast, int n_params){
+	tScopeVar * CScope::registerSymbol(const char *file,int line,const string & var_name, int n_params){
 		tScopeVar *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
@@ -260,17 +262,19 @@ namespace zetscript{
 			//irv->m_obj=NULL;
 
 			irv.symbol_ref = symbol_ref;
-			irv.name=var_name;
-			irv.idxAstNode=-1;
-			if(ast != NULL){
+			irv.filename = file;
+			irv.line 	 = line;
+			//irv.name=var_name;
+			//irv.idxAstNode=-1;
+			/*if(ast != NULL){
 				irv.idxAstNode=ast->idxAstNode;
-			}
+			}*/
 			m_registeredVariableFromBase.push_back(irv);
 			return &m_registeredVariableFromBase[m_registeredVariableFromBase.size()-1];// irv->idxScopeVar;
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode)," error var \"%s\" already registered at %s:%i", var_name.c_str(),GET_AST_FILENAME_LINE(p_irv->idxAstNode));
+				writeErrorMsg(file,line," error var \"%s\" already registered at %s:%i", var_name.c_str(),p_irv->filename,p_irv->line);
 			}else{
 				writeErrorMsg(NULL,0," error var \"%s\" already registered as C++", var_name.c_str());
 			}

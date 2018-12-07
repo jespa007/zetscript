@@ -334,7 +334,7 @@ namespace zetscript{
 		static char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
 
 		// FUNCTION OBJECT...
-		static char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
+		static char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 	*	instruction);
 
 		//STRUCT OBJECT...
 		static char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);

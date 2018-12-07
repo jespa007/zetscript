@@ -19,25 +19,25 @@ namespace zetscript{
 		tVariableSymbolInfo symbol_info; // class/function symbol info ...
 
 		short idxScope; // idx function/class starting scope...
-		short idxScriptClass; // wich idxClass class itself or function belongs to...
+		short idxClass; // wich idxClass class itself or function belongs to...
 
 
 
-		CBaseClassFunctionData(short idxStartScope);
+		CBaseClassFunctionData(short _idxScope, short _idxClass);
 
 		/* Registers a function.
 		 * Desc: Inserts function at custom scope. It returns the idx vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
 		 */
-		int registerFunction( short idxBlockScope, const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		int registerFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		int getFunction(const string & function_ref,char n_args=0);
+		CScriptFunction * registerFunction( short idxBlockScope, const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		CScriptFunction * registerFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		CScriptFunction * getFunction(const string & function_ref,char n_args=0);
 
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.
 		 */
-		int  registerVariable( short idxBlockScope,const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
-		int  registerVariable(const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
-		int  getVariable(const string & variable_ref);
+		tVariableSymbolInfo *  registerVariable( short idxBlockScope,const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
+		tVariableSymbolInfo *  registerVariable(const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
+		tVariableSymbolInfo *  getVariable(const string & variable_ref);
 
 
 

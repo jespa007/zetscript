@@ -67,8 +67,8 @@ namespace zetscript{
 			CScriptFunction *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
 			int index         = (current_scope_info_ptr-1)->index;
 			tStackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;
-			for(int i = 0; i < ptr_info_function->scope_info.lut_scope_symbol[index].n_var_index; i++){
-				int idx_local_var = ptr_info_function->scope_info.lut_scope_symbol[index].var_index[i];
+			for(int i = 0; i < ptr_info_function->lut_scope_symbol[index].n_var_index; i++){
+				int idx_local_var = ptr_info_function->lut_scope_symbol[index].var_index[i];
 				tStackElement *ptr_ale =&ptr_local_var[idx_local_var];
 				CScriptVariable *var = NULL;
 				switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
@@ -175,7 +175,7 @@ namespace zetscript{
 				return false;
 			}
 
-			script_class_aux=REGISTERED_CLASS_NODE(script_var_object->idxScriptClass);
+			script_class_aux=GET_SCRIPT_CLASS(script_var_object->idxClass);
 			vector<int> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
 			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;

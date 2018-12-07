@@ -62,7 +62,7 @@ namespace zetscript{
 		 */
 
 		// @deprecated
-		static CScope	    		*	newScope(PASTNode _ast_node,short idx_parent_scope=ZS_UNDEFINED_IDX);
+		//static CScope	    		*	newScope(PASTNode _ast_node,short idx_parent_scope=ZS_UNDEFINED_IDX);
 
 		static CScope	    		*	newScope(short idx_parent_scope=ZS_UNDEFINED_IDX);
 		static CScope 				* 	getScopeNodeByIdx(short idx);
@@ -86,14 +86,14 @@ namespace zetscript{
 		 * @n_params:
 		 */
 		tScopeVar * getInfoRegisteredSymbol(const string & v, int n_params=-1, bool print_msg=true);
-		tScopeVar * registerAnonymouseFunction(PASTNode ast);
-		tScopeVar * registerSymbol(const string & var_name, PASTNode ast=NULL, int n_params=NO_PARAMS_IS_VARIABLE);
+		tScopeVar * registerAnonymouseFunction(const string & file, int line,int n_args=0);
+		tScopeVar * registerSymbol(const string & file, int line,const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
 
 		tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
 
 		CScope();
 		CScope( short idx_this, short idx_parent);
-		CScope(PASTNode _ast, short idx_this, short idx_parent=ZS_UNDEFINED_IDX);//, int _index);
+		//CScope( short idx_this, short idx_parent=ZS_UNDEFINED_IDX);//, int _index);
 
 		short 	 getIdxBaseScope();
 		short 	 getIdxScriptClass();
@@ -110,7 +110,7 @@ namespace zetscript{
 		//int incTotalScopes();
 
 		// @deprecated
-		CScope * pushScope(PASTNode _ast);
+		//CScope * pushScope(PASTNode _ast);
 		CScope * pushScope();
 		CScope * popScope();
 
@@ -134,7 +134,17 @@ namespace zetscript{
 		//short idxBaseAstNode;
 		//int m_index;
 
+
+		/**
+		 * Vector of script scopes. This vector is removed when zetscript reevaluates all scrips.
+		 */
 		static vector<CScope *> 					* vec_scope_node;
+
+		/**
+		 * Vector of C scopes that will be copyed each reeval of all scripts.
+		 */
+		static vector<CScope *> 					* vec_c_scope_node;
+
 
 
 	};

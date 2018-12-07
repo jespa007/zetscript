@@ -147,7 +147,7 @@ namespace zetscript{
 		return vec_script_class_node;
 	}
 
-	CScriptClass * CScriptClass::registerClass(const string & class_name, const string & base_class_name, PASTNode _ast){
+	CScriptClass * CScriptClass::registerClass(const string & class_name, const string & base_class_name){
 		unsigned char  index;
 		CScriptClass *sci=NULL;
 
@@ -173,16 +173,17 @@ namespace zetscript{
 		if((index = getIdxScriptClass_Internal(class_name))==ZS_INVALID_CLASS){ // check whether is local var registered scope ...
 
 			//CScriptClass 	*registered_class=new CScriptClass;
-			sci = new CScriptClass;
+			// NEW SCOPE C and register ...
+			sci = new CScriptClass();
 			sci->symbol_info.idxScriptClass = (short)vec_script_class_node->size();
 			sci->classPtrType = TYPE_SCRIPT_VARIABLE;
 
 			sci->symbol_info.symbol_ref = class_name;
-			sci->symbol_info.idxAstNode=-1;
+			/*sci->symbol_info.idxAstNode=-1;
 
 			if(_ast != NULL){
 				sci->symbol_info.idxAstNode=_ast->idxAstNode;
-			}
+			}*/
 
 			(*vec_script_class_node).push_back(sci);
 			sci->idxClass=(*vec_script_class_node).size()-1;
@@ -261,7 +262,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	CScriptClass *CScriptClass::getScriptClassBy_C_ClassPtr(const string & class_type, bool throw_if_not_found){
+	CScriptClass *CScriptClass::getScriptClassBy_C_ClassPtr(const string & class_type){
 
 		for(unsigned i = 0; i < vec_script_class_node->size(); i++){
 			if(class_type == vec_script_class_node->at(i)->classPtrType){//metadata_info.object_info.symbol_info.c_type){
@@ -269,9 +270,9 @@ namespace zetscript{
 			}
 		}
 
-		if(throw_if_not_found){
+		/*if(throw_if_not_found){
 			THROW_RUNTIME_ERROR("C class type \"%s\" is not registered", demangle(class_type).c_str());
-		}
+		}*/
 
 		return NULL;
 	}

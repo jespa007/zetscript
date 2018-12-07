@@ -67,7 +67,7 @@ namespace zetscript{
 
 
 			// init struct...
-			mainFunctionInfo->registerLocalFunction(function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+			mainFunctionInfo->registerFunction(function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 			/*irs = NEW_SCRIPT_FUNCTION_OBJECT();
 
 			irs->m_arg = m_infoArg;
@@ -90,7 +90,7 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		ZETSCRIPT_MODULE_EXPORT bool CScriptClass::register_C_SingletonClassInt(const string & class_name){//, const string & base_class_name=""){
+		ZETSCRIPT_MODULE_EXPORT CScriptClass * CScriptClass::register_C_SingletonClassInt(const string & class_name){//, const string & base_class_name=""){
 
 			// to make compatible MSVC shared library
 			vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
@@ -98,7 +98,7 @@ namespace zetscript{
 
 			if(size>=MAX_REGISTER_CLASSES){
 				THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
-				return false;
+				return NULL;
 			}
 
 			if(size>MAX_BASIC_CLASS_TYPES){ // after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
@@ -107,7 +107,7 @@ namespace zetscript{
 					(((*local_vec_script_class_node)[size-1]->symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
 				)){
 					THROW_RUNTIME_ERROR("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str());
-					return false;
+					return NULL;
 				}
 
 			}
@@ -119,13 +119,13 @@ namespace zetscript{
 
 				if(getIdx_C_RegisteredClass(str_classPtr,false)!=ZS_INVALID_CLASS){
 					THROW_RUNTIME_ERROR("this %s is already registered",demangle(typeid( _T).name()).c_str());
-					return false;
+					return NULL;
 				}
 
 				//THROW_RUNTIME_ERROR("CHECK AND TODOOOOOO!");
-				CScriptClass *irc = new CScriptClass;
+				CScriptClass *irc = new CScriptClass();
 
-				CASTNode *ast =CASTNode::newASTNode();
+				/*CASTNode *ast =CASTNode::newASTNode();
 				CASTNode *ast_var_symbols =CASTNode::newASTNode();
 				CASTNode *ast_collection_var_symbols =CASTNode::newASTNode();
 				CASTNode *ast_fun_symbols =CASTNode::newASTNode();
@@ -135,7 +135,7 @@ namespace zetscript{
 				ast->children.push_back(ast_var_symbols->idxAstNode);
 				ast->children.push_back(ast_fun_symbols->idxAstNode);
 
-				irc->symbol_info.idxAstNode = ast->idxAstNode;
+				irc->symbol_info.idxAstNode = ast->idxAstNode;*/
 				//irc->metadata_info.object_info.symbol_info.idxScopeVar=-1;
 				irc->symbol_info.symbol_ref = class_name;
 				//irc->baseClass = base_class; // identify extend class ?!?!!?
@@ -156,22 +156,22 @@ namespace zetscript{
 				irc->idxClass=(*local_vec_script_class_node).size()-1;
 				zs_print_debug_cr("* C++ class \"%s\" registered as (%s).",class_name.c_str(),demangle(str_classPtr).c_str());
 
-				return true;
+				return irc;
 			}
 			else{
 				THROW_RUNTIME_ERROR("%s already exist", class_name.c_str());
 			}
 
-			return false;
+			return NULL;
 		}
 
 		/**
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		bool CScriptClass::register_C_ClassInt(const string & class_name){//, const string & base_class_name=""){
-			if(register_C_SingletonClass<_T>(class_name)){
-				CScriptClass *irc = CScriptClass::getScriptClassByName(class_name);
+		CScriptClass * CScriptClass::register_C_ClassInt(const string & class_name){//, const string & base_class_name=""){
+			CScriptClass *irc = NULL;
+			if((irc = register_C_SingletonClass<_T>(class_name))!=NULL){
 
 				//put the constructor/destructor...
 				irc->c_constructor = new std::function<void *()>([=](){
@@ -183,10 +183,10 @@ namespace zetscript{
 					delete (_T *)p;
 				});
 
-				return true;
+				return irc;
 			}
 
-			return false;
+			return NULL;
 		}
 
 
@@ -250,7 +250,7 @@ namespace zetscript{
 				//
 				// DERIVATE STATE
 				//
-				// enabled but with restrictions! This don't work for virtual classes (its map changes at runtime) and multiheritance
+				// disabled for polymorphic classes because its function pointer map change at runtime)
 				// https://stackoverflow.com/questions/48572734/is-possible-do-a-later-function-binding-knowing-its-function-type-and-later-the
 				//
 
@@ -263,9 +263,9 @@ namespace zetscript{
 
 				// register all symbols function from base ...
 				// vars ...
-				for(unsigned i = 0; i < irc_base->scope_info.local_symbols.variable.size(); i++){
+				for(unsigned i = 0; i < irc_base->m_variable.size(); i++){
 
-					tVariableSymbolInfo *irs_source = &irc_base->scope_info.local_symbols.variable[i];
+					tVariableSymbolInfo *irs_source = &irc_base->m_variable[i];
 
 					tVariableSymbolInfo irs;
 					// init struct...
@@ -275,19 +275,19 @@ namespace zetscript{
 					//irs.
 					irs.symbol_ref=irs_source->symbol_ref;
 					irs.properties = derivated_properties;
-					irs.idxSymbol = (short)(irc_class->scope_info.local_symbols.variable.size());
-					irc_class->scope_info.local_symbols.variable.push_back(irs);
+					irs.idxSymbol = (short)(irc_class->m_variable.size());
+					irc_class->m_variable.push_back(irs);
 
 				}
 
 				// functions ...
-				for(unsigned i = 0; i < irc_base->scope_info.local_symbols.function.size(); i++){
+				for(unsigned i = 0; i < irc_base->m_function.size(); i++){
 
-					CScriptFunction *irs_source = GET_SCRIPT_FUNCTION(irc_base->scope_info.local_symbols.function[i]);
-					irc_class->registerFunctionMember(
+					CScriptFunction *irs_source = irc_base->m_function[i];
+					irc_class->registerFunction(
 							CEval::getSymbolNameFromSymbolRef(irs_source->symbol_info.symbol_ref),
-							irs_source->function_data->m_args,
-							irs_source->function_data->idx_return_type,
+							irs_source->m_arg,
+							irs_source->idx_return_type,
 							irs_source->symbol_info.ref_ptr,
 							derivated_properties
 							);
@@ -398,7 +398,7 @@ namespace zetscript{
 			}
 
 			CScriptClass *sc = (*local_vec_script_class_node)[idxRegisterdClass];
-			CScriptFunction *sf = sc->registerFunctionMember(function_name,m_argInfo,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
+			CScriptFunction *sf = sc->registerFunction(function_name,m_argInfo,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
 
 			// ok, function candidate to be added into class...
 			/*irs = NEW_SCRIPT_FUNCTION_OBJECT(IDX_C_CLASS_SCOPE,idxRegisterdClass);
@@ -434,7 +434,7 @@ namespace zetscript{
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 
 			if(STRCMP(getMetamethod(SET_METAMETHOD),==,function_name)){
-				(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(sf->function_data->idxScriptFunctionObject);
+				(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(sf);
 				zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 			}
 
@@ -468,9 +468,9 @@ namespace zetscript{
 				return false;
 			}
 
-			CScriptClass *c_class = get_C_RegisteredClass(str_classPtr);
+			CScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_classPtr);
 
-			if(idxRegisterdClass == -1){
+			if(c_class == NULL){
 				return false;
 			}
 
@@ -528,7 +528,7 @@ namespace zetscript{
 			irs->idx_return_type = idx_return_type;
 			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.size());
 			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);*/
-			CScriptFunction *sf = registerLocalFunction(function_name,m_argInfo, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+			CScriptFunction * sf = c_class->registerFunction(function_name,m_argInfo, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
 			// check whether is static metamethod...
@@ -565,7 +565,7 @@ namespace zetscript{
 							return false;
 						}
 
-						(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(sf->function_data->idxScriptFunctionObject);
+						(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(sf);
 
 						zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 						break;
@@ -594,11 +594,11 @@ namespace zetscript{
 			//vector<string> params;
 			tVariableSymbolInfo irs;
 			string str_classPtr = typeid( _C *).name();
-			unsigned int offset=zetscript::offset_of<_C>(var_pointer);
+			unsigned int ref_ptr=zetscript::offset_of<_C>(var_pointer);
 
-			int idxRegisterdClass = getIdx_C_RegisteredClass(str_classPtr);
+			CScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_classPtr);
 
-			if(idxRegisterdClass == -1){
+			if(c_class == NULL){
 				return false;
 			}
 
@@ -607,14 +607,15 @@ namespace zetscript{
 			// check valid parameters ...
 			if(getIdxClassFromIts_C_Type(var_type) == -1){
 				THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-						,(*local_vec_script_class_node)[idxRegisterdClass]->symbol_info.symbol_ref.c_str()
+						,c_class->symbol_info.symbol_ref.c_str()
 						,var_name
 						,demangle(typeid(_R).name()).c_str());
 				return false;
 			}
 
 			// init struct...
-			irs.idxScriptClass = idxRegisterdClass;
+			c_class->registerVariable(var_name,var_type,ref_ptr,PROPERTY_C_OBJECT_REF);
+			/*irs.idxScriptClass = idxRegisterdClass;
 			irs.ref_ptr=offset;
 			irs.c_type = var_type;
 			//irs.
@@ -632,7 +633,7 @@ namespace zetscript{
 
 			irs.properties = PROPERTY_C_OBJECT_REF;
 			irs.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.variable.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.variable.push_back(irs);
+			(*local_vec_script_class_node)[idxRegisterdClass]->m_variable.push_back(irs);*/
 			//base_info->local_symbols.function.push_back(irs);
 			return true;
 

@@ -32,7 +32,7 @@ namespace zetscript{
 		void destroyScriptClassNodes();
 		void destroyInfoParsedSourceNode();
 
-		vector<CASTNode *> 							*vec_ast_node; // ast collection register...
+		//vector<CASTNode *> 							*vec_ast_node; // ast collection register...
 		vector<CScope *> 							*vec_scope_node;
 
 		vector<CScriptClass *> 						*vec_script_class_node;
@@ -61,7 +61,7 @@ namespace zetscript{
 		CState();
 		void clearCompileInformation();
 
-		vector<CASTNode *> 					*	getVectorASTNodeNode(); // ast collection register...
+		//vector<CASTNode *> 					*	getVectorASTNodeNode(); // ast collection register...
 		vector<CScope *> 					*	getVectorScopeNode();
 
 		vector<CScriptClass *> 				*	getVectorScriptClassNode();

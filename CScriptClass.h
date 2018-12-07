@@ -56,14 +56,14 @@
 
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClass::instanceScriptVariableByIdx(idx))
 
-#define REGISTERED_CLASS_NODE(idx) 				(zetscript::CScriptClass::getScriptClassByIdx(idx))
+#define GET_SCRIPT_CLASS(idx) 					(zetscript::CScriptClass::getScriptClass(idx))
 #define MAIN_CLASS_NODE							(zetscript::CScriptClass::getScriptClassByIdx(IDX_CLASS_MAIN))    // 0 is the main class
 
 #define GET_SCRIPT_CLASS_INFO(idx)				(zetscript::CScriptClass::getScriptClassByIdx(idx))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_NAME(s)		(zetscript::CScriptClass::getScriptClassByName(s))    // 0 is the main class
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(zetscript::CScriptClass::getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
 
-#define GET_IDX_2_CLASS_C_STR(idx) 				(CScriptClass::getScriptClassByIdx(idx)->classPtrType)
+#define GET_IDX_2_CLASS_C_STR(idx) 				(CScriptClass::getScriptClass(idx)->classPtrType)
 
 #define register_C_BaseSymbols(o)		   		(zetscript::CScriptClass::register_C_BaseSymbolsInt(o))
 
@@ -82,7 +82,16 @@ namespace zetscript{
 	private:
 
 		static 	bool 	register_c_base_symbols;
+		/**
+		 * Vector of script classes. This vector is removed when zetscript reevaluates all scrips.
+		 */
 		static 			vector<CScriptClass *> 			* vec_script_class_node;
+
+		/**
+		 * Vector of C classes that will be copyedon each reeval of all scripts.
+		 */
+		static 			vector<CScriptClass *> 			* vec_c_class_node;
+
 		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
 		ZETSCRIPT_MODULE_EXPORT static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
 		static void  print(const char *s);
@@ -117,14 +126,14 @@ namespace zetscript{
 		std::function<void * ()> 			* 	c_constructor;
 		std::function<void (void *  p)> 	*	c_destructor;
 		string classPtrType; // type_id().name();
-		unsigned char  idxClass;
+		//unsigned char  idxClass;
 
 		// vector<int> is set because C can have multiple herited classes (and we have to check whether an attempt C class to base of is not already set) where as script class only have one.
 		vector<unsigned char > idxBaseClass;
 
-		vector<int > metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
+		vector<CScriptFunction * > metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
 
-		ZETSCRIPT_MODULE_EXPORT CScriptClass();
+		ZETSCRIPT_MODULE_EXPORT CScriptClass(short _idxScope, short _idxClass);
 
 		bool is_c_class();
 
@@ -157,13 +166,13 @@ namespace zetscript{
 		/**
 		 * Class Manager
 		 */
-		static CScriptClass 						* 			registerClass(const string & class_name, const string & base_class_name="", PASTNode _ast=NULL);
+		static CScriptClass 						* 			registerClass(const string & class_name, const string & base_class_name="");
 
 
 		static CScriptClass 						* 			getScriptClass(unsigned char idx);
 		ZETSCRIPT_MODULE_EXPORT static CScriptClass * 			getScriptClass(const string & name);
 		ZETSCRIPT_MODULE_EXPORT static CScriptClass * 			getScriptClassIdx(const string & name);
-		static CScriptClass 						* 			getScriptClassBy_C_ClassPtr(const string & class_type, bool throw_if_not_found=true);
+		static CScriptClass 						* 			getScriptClassBy_C_ClassPtr(const string & class_type);
 		ZETSCRIPT_MODULE_EXPORT static bool						isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
 		ZETSCRIPT_MODULE_EXPORT  static bool 					isClassRegistered(const string & v);
 
@@ -234,13 +243,13 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		ZETSCRIPT_MODULE_EXPORT static bool register_C_SingletonClassInt(const string & class_name);
+		ZETSCRIPT_MODULE_EXPORT static CScriptClass * register_C_SingletonClassInt(const string & class_name);
 
 		/**
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		static bool register_C_ClassInt(const string & class_name);
+		static CScriptClass * register_C_ClassInt(const string & class_name);
 
 
 		template<class _T, class _B>

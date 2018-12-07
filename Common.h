@@ -441,7 +441,7 @@ enum SCOPE_PROPERTY
 namespace zetscript{
 
 
-	typedef CASTNode *PASTNode;
+	//typedef CASTNode *PASTNode;
 	class CScriptFunction;
 	class CScope;
 	class CScriptClass;
@@ -454,11 +454,11 @@ namespace zetscript{
 
 	typedef intptr_t (*fntConversionType)(intptr_t);
 
-	typedef struct {
+	/*typedef struct {
 		KEYWORD_TYPE id;
 		const char *str;
 		char * (*eval_fun)(const char *, int &, CScope *, PASTNode *);
-	} tKeywordInfo_Old;
+	} tKeywordInfo_Old;*/
 
 
 
@@ -486,9 +486,11 @@ namespace zetscript{
 	struct tScopeVar {
 		//public:
 		string symbol_ref;
-		string name; // var name
+		string file;
+		int line;
+		//string name; // var name
 		//int idxScopeVar;
-		int idxAstNode; // ast node info.
+		//int idxAstNode; // ast node info.
 	};
 
 	//-----------------------------
