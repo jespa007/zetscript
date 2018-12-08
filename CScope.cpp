@@ -29,42 +29,56 @@ namespace zetscript{
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
 
+
 	vector<CScope *> 						* CScope::vec_scope_node=NULL;
 	int n_anonymouse_func=0;
 
 
+	void CScope::initStaticVars(){
 
-	void CScope::setVectorScopeNode(vector<CScope *> 	* set_vec){
-		vec_scope_node = set_vec;
+		if(vec_scope_node==NULL){
+			vec_scope_node = new vector<CScope *>;
+		}
+
+		// add global scope so vec scope size is always > 0...
+		CScope * main_scope=newScope();
+	}
+
+	void CScope::destroyStaticVars(){
+
+		if(vec_scope_node != NULL){
+
+			// destroy all nodes ...
+			for(unsigned i = 0; i < vec_scope_node->size(); i++){
+						delete vec_scope_node->at(i);
+			}
+			vec_scope_node->clear();
+			delete vec_scope_node;
+			vec_scope_node=NULL;
+		}
 	}
 
 	vector<CScope *> 	*		CScope::getVectorScopeNode(){
 		return vec_scope_node;
 	}
 
-	CScope *	 CScope::newScope(short idxParentScope){
-		CScope * scope_node = new CScope( vec_scope_node->size(), idxParentScope);
 
+	CScope *	 CScope::newScope(short idxParentScope,bool is_c_node){
+
+		if(is_c_node){
+			if(vec_scope_node->size() > 1){ // if greather than 1 check if node consecutive...
+				if(vec_scope_node->at(vec_scope_node->size()-1)->is_c_node){ // non consecutive c node..
+						THROW_RUNTIME_ERROR("C Scopes should be added after global scope and consecutuve C scope node.");
+						return NULL;
+				}
+			}
+		}
+
+		CScope * scope_node = new CScope( vec_scope_node->size(), idxParentScope, is_c_node);
+		vec_scope_node->push_back(scope_node);
 		return scope_node;
 	}
 
-
-	// @deprecated
-	CScope *	 CScope::newScope( PASTNode _ast, short idxParentScope){
-		CScope * scope_node = new CScope(_ast, vec_scope_node->size(), idxParentScope);
-
-		vec_scope_node->push_back(scope_node);
-		//scope_node->idxScope = vec_scope_node->size()-1;
-		return scope_node;
-	}
-
-/*	CScope *	 CScope::newScope( short idxParentScope){
-		CScope * scope_node = new CScope( vec_scope_node->size(), idxParentScope);
-
-		vec_scope_node->push_back(scope_node);
-		//scope_node->idxScope = vec_scope_node->size()-1;
-		return scope_node;
-	}*/
 
 	CScope 		* CScope::getScopeNodeByIdx(short idx){
 		if(idx < 0 || (unsigned)idx >= vec_scope_node->size()){
@@ -75,56 +89,21 @@ namespace zetscript{
 		return vec_scope_node->at(idx);
 	}
 	//------------------------------------------------------------------------------------------------
-	CScope::CScope(){
-		idxParentScope = ZS_UNDEFINED_IDX;
+
+	CScope::CScope( short _idx_this, short _idx_parent, bool _is_c_node){//, int _index){
+		idxParentScope = _idx_parent;
 		idxCurrentScopePointer=ZS_UNDEFINED_IDX;
-		idxScope = ZS_UNDEFINED_IDX;
-		idxBaseScope =ZS_UNDEFINED_IDX;
-		idxAstNode = ZS_UNDEFINED_IDX;
-		idxScriptClass=ZS_UNDEFINED_IDX;
-	}
+		idxScope = _idx_this;
+		is_c_node = _is_c_node;
 
-	CScope::CScope( short idx_this, short idx_parent){//, int _index){
-		idxParentScope = idx_parent;
-		//m_index = _index;
-		idxCurrentScopePointer=ZS_UNDEFINED_IDX;
-		//m_baseScope = this;
-		idxScope = idx_this;
-		idxAstNode=ZS_UNDEFINED_IDX;
 
-		if(idx_parent == ZS_UNDEFINED_IDX){ // first node...
+		if(_idx_parent == ZS_UNDEFINED_IDX){ // first node...
 
-			idxBaseScope = idx_this;
-			idxCurrentScopePointer=idx_this;
+			idxBaseScope = _idx_this;
+			idxCurrentScopePointer=_idx_this;
 		}else{
-			idxBaseScope = SCOPE_NODE( idx_parent)->getIdxBaseScope();
+			idxBaseScope = SCOPE_NODE(_idx_parent)->getIdxBaseScope();
 		}
-	}
-
-	CScope::CScope(PASTNode _ast, short idx_this, short idx_parent){//, int _index){
-		idxParentScope = idx_parent;
-		//m_index = _index;
-		idxCurrentScopePointer=ZS_UNDEFINED_IDX;
-		//m_baseScope = this;
-		idxScope = idx_this;
-		idxAstNode=ZS_UNDEFINED_IDX;
-
-		if(_ast!=NULL){
-			idxAstNode = _ast->idxAstNode;
-			_ast->idxScope=idxScope;
-		}
-
-		if(idx_parent == ZS_UNDEFINED_IDX){ // first node...
-
-			idxBaseScope = idx_this;
-			idxCurrentScopePointer=idx_this;
-		}else{
-			idxBaseScope = SCOPE_NODE( idx_parent)->getIdxBaseScope();
-		}
-	}
-
-	short CScope::getIdxBaseAstNode(){
-		return SCOPE_NODE( idxBaseScope)->idxAstNode;
 	}
 
 	short CScope::getIdxBaseScope(){
@@ -154,20 +133,7 @@ namespace zetscript{
 		SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
 		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
 		return new_scope;
-
 	}
-
-
-
-	/*// @deprecated...
-	CScope * CScope::pushScope(PASTNode _ast){
-
-		CScope *new_scope = CScope::newScope(_ast,SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
-		SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
-		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
-		return new_scope;
-
-	}*/
 
 	CScope * CScope::popScope(){
 
@@ -175,7 +141,6 @@ namespace zetscript{
 		if(current_scope->idxParentScope != ZS_UNDEFINED_IDX){
 
 			SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = current_scope->idxParentScope;
-			//m_baseScope->m_currentScopePointer = m_baseScope->m_currentScopePointer->m_parentScope;
 			return SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);
 		}
 
@@ -187,7 +152,6 @@ namespace zetscript{
 		return &m_localScopeList;
 	}
 
-
 	//-----------------------------------------------------------------------------------------------------------
 	//
 	// SCOPE VARIABLE MANAGEMENT
@@ -195,35 +159,14 @@ namespace zetscript{
 	tScopeVar * CScope::registerAnonymouseFunction(const string & file, int line, int n_args){ // register anonymous function in the top of scope ...
 
 		tScopeVar irv;// = new tScopeVar;
-
-		//PASTNode args_node = AST_NODE(ast->children[0]);
 		string var_name ="_afun"+CZetScriptUtils::intToString(n_anonymouse_func++);
 		string symbol_ref = "@funp"+CZetScriptUtils::intToString(n_args)+"_"+var_name;
 
-
-		//int n_params=0;
-
-
-		//n_params=args_node->children.size();
-		//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
-		//symbol_ref=var_name args_node!=NULL?args_node->children.size():0;
-
-
-		//}
-		//else{
-		//	symbol_ref=makeSymbolVarRef(var_name,ast->idxScope);
-		//}
-		//symbol_ref=symbol_ref+"_"+var_name;
 
 
 		irv.symbol_ref = symbol_ref;
 		irv.file = file;
 		irv.line = line;
-		//irv.name=var_name;
-		//irv.idxAstNode=-1;
-		/*if(ast != NULL){
-			irv.idxAstNode=ast->idxAstNode;
-		}*/
 
 		CScope *base = SCOPE_NODE(idxBaseScope);
 
@@ -232,7 +175,7 @@ namespace zetscript{
 		return &base->m_registeredVariableFromBase[base->m_registeredVariableFromBase.size()-1];
 	}
 
-	tScopeVar * CScope::registerSymbol(const char *file,int line,const string & var_name, int n_params){
+	tScopeVar * CScope::registerSymbol(const string & file,int line,const string & var_name, int n_params){
 		tScopeVar *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
@@ -242,39 +185,22 @@ namespace zetscript{
 
 
 			if(n_params>=0){
-				//n_params=args_node->children.size();
-				//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
 				symbol_ref="@funp"+CZetScriptUtils::intToString(n_params)+"_"+var_name;
-
 			}
 			else{
 				symbol_ref="@var_"+var_name;
 			}
 
-			/*if(n_params<0){ // register var symbol
-				symbol_ref = "_s"+CZetScriptUtils::intToString(ast->idxScope)+"_";
-			}else{ // register function symbol
-				symbol_ref = "_p"+CZetScriptUtils::intToString(n_params)+"_s"+CZetScriptUtils::intToString(ast->idxScope);
-			}
-			symbol_ref=symbol_ref+"_"+var_name;*/
-
-			tScopeVar irv;// = new tScopeVar;
-			//irv->m_obj=NULL;
-
+			tScopeVar irv;
 			irv.symbol_ref = symbol_ref;
-			irv.filename = file;
+			irv.file	 = file;
 			irv.line 	 = line;
-			//irv.name=var_name;
-			//irv.idxAstNode=-1;
-			/*if(ast != NULL){
-				irv.idxAstNode=ast->idxAstNode;
-			}*/
 			m_registeredVariableFromBase.push_back(irv);
 			return &m_registeredVariableFromBase[m_registeredVariableFromBase.size()-1];// irv->idxScopeVar;
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				writeErrorMsg(file,line," error var \"%s\" already registered at %s:%i", var_name.c_str(),p_irv->filename,p_irv->line);
+				writeErrorMsg(file.c_str(),line," error var \"%s\" already registered at %s:%i", var_name.c_str(),p_irv->file.c_str(),p_irv->line);
 			}else{
 				writeErrorMsg(NULL,0," error var \"%s\" already registered as C++", var_name.c_str());
 			}
@@ -288,7 +214,7 @@ namespace zetscript{
 		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
 			string current_symbol_ref=m_registeredVariableFromBase[i].symbol_ref;
 			if(n_params==NO_PARAMS_SYMBOL_ONLY){
-				current_symbol_ref=CCompiler::getSymbolNameFromSymbolRef(current_symbol_ref);
+				current_symbol_ref=CEval::getSymbolNameFromSymbolRef(current_symbol_ref);
 			}
 
 			if(current_symbol_ref==symbol_ref){
@@ -314,14 +240,13 @@ namespace zetscript{
 
 			string current_symbol_ref=m_registeredVariableFromBase[i].symbol_ref;
 			if(n_params==NO_PARAMS_SYMBOL_ONLY){
-				current_symbol_ref=CCompiler::getSymbolNameFromSymbolRef(current_symbol_ref);
+				current_symbol_ref=CEval::getSymbolNameFromSymbolRef(current_symbol_ref);
 			}
 
 			if(current_symbol_ref==symbol_ref){
 				return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
-		//}
 
 		// ok lets iterate through current scope list
 		for(unsigned i = 0; i < m_localScopeList.size(); i++){
@@ -341,10 +266,7 @@ namespace zetscript{
 		tScopeVar *sv=NULL;
 
 		if(n_params>=0){
-			//n_params=args_node->children.size();
-			//symbol_ref = "_p"+CZetScriptUtils::intToString(args_node->children.size())+"_s"+CZetScriptUtils::intToString(ast->idxScope);
 			symbol_ref="@funp"+CZetScriptUtils::intToString(n_params)+"_"+var_name;
-
 		}
 		else{
 			if(n_params==NO_PARAMS_IS_VARIABLE){
@@ -378,11 +300,6 @@ namespace zetscript{
 
 	//-----------------------------------------------------------------------------------------------------------
 	CScope::~CScope(){
-
-		//deleteScope(this);
-		/*for(unsigned i = 0; i < m_scopeList.size(); i++){
-			delete m_scopeList[i];
-		}*/
 
 	}
 }

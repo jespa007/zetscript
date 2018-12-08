@@ -77,7 +77,7 @@ namespace zetscript{
 
 
 
-	class  CScriptClass:public CBaseClassFunctionData{
+	class  CScriptClass:public CCommonClassFunctionData{
 
 	private:
 
@@ -118,7 +118,7 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
 
-		//CBaseClassFunctionData			scope_info;
+		//CCommonClassFunctionData			scope_info;
 		//tVariableSymbolInfo symbol_info;
 		unsigned char  idx_function_script_constructor;
 		//int idxScriptClass;
@@ -219,8 +219,8 @@ namespace zetscript{
 
 
 
-		static bool init();
-		static void destroySingletons();
+		static bool initStaticVars();
+		static void destroyStaticVars();
 
 		/**
 		 * REGISTER C Stuff
@@ -287,7 +287,7 @@ namespace zetscript{
 		static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
 		static map<int,map<int,fntConversionType>> * mapTypeConversion;
 #if 0
-		 static bool searchVarFunctionSymbol(CBaseClassFunctionData * scope_info, tInstruction *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
+		 static bool searchVarFunctionSymbol(CCommonClassFunctionData * scope_info, tInstruction *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
 
 		 static void buildScopeVariablesBlock(CScriptFunction *root_class_irfs );
 		 static void unloadRecursiveFunctions(CScriptFunction * info_function);

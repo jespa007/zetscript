@@ -4,7 +4,7 @@ namespace zetscript{
 
 
 
-	CBaseClassFunctionData::CBaseClassFunctionData(short _idxScope, short _idxClass) {
+	CCommonClassFunctionData::CCommonClassFunctionData(short _idxScope, short _idxClass) {
 		//n_statments=0;
 
 		//n_statment_op=0;
@@ -18,7 +18,7 @@ namespace zetscript{
 	 *  super.fun(1,2,3)*3; fun is evaluated pushing its args and then solve the function because we have the name and the args (is trivial)
 	 *
 	 *
-	bool CBaseClassFunctionData::searchVarFunctionSymbol(string symbol_to_find, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find){
+	bool CCommonClassFunctionData::searchVarFunctionSymbol(string symbol_to_find, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find){
 
 		int idx=0;
 		symbol_not_found = true;
@@ -169,7 +169,7 @@ namespace zetscript{
 	}
 */
 
-	CScriptFunction * CBaseClassFunctionData::registerFunction(short idxBlockScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CCommonClassFunctionData::registerFunction(short idxBlockScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 			CScriptFunction *irs = NEW_SCRIPT_FUNCTION(idxBlockScope,idxClass);
 
 			irs->m_arg = args;
@@ -186,14 +186,14 @@ namespace zetscript{
 			return irs;
 	}
 
-	CScriptFunction * CBaseClassFunctionData::registerFunction( const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CCommonClassFunctionData::registerFunction( const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 
 		return registerFunction(this->idxScope, function_name,  args, idx_return_type,ref_ptr, properties);
 	}
 
 
-	tVariableSymbolInfo * CBaseClassFunctionData::registerVariable(short idxBlockScope,const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties){
+	tVariableSymbolInfo * CCommonClassFunctionData::registerVariable(short idxBlockScope,const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties){
 		tVariableSymbolInfo irs;
 		irs.symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
 
@@ -208,12 +208,12 @@ namespace zetscript{
 		return &m_variable[m_variable.size()-1];
 	}
 
-	tVariableSymbolInfo *	CBaseClassFunctionData::registerVariable(const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
+	tVariableSymbolInfo *	CCommonClassFunctionData::registerVariable(const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
 			return registerVariable(this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 	}
 
-	tVariableSymbolInfo *	 CBaseClassFunctionData::getVariable(const string & symbol_ref){
+	tVariableSymbolInfo *	 CCommonClassFunctionData::getVariable(const string & symbol_ref){
 
 		if(m_variable.size()>0){
 

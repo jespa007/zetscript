@@ -348,7 +348,7 @@ namespace zetscript{
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 
 
-	void CEval::init(){
+	void CEval::initStaticVars(){
 		if(is_initialized) return; // already initialized...
 
 		// init operator punctuators...
@@ -442,7 +442,7 @@ namespace zetscript{
 		is_initialized = true;
 	}
 
-	void CEval::destroySingletons(){
+	void CEval::destroyStaticVars(){
 		if(constant_pool)
 			delete constant_pool;
 

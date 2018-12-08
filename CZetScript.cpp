@@ -83,6 +83,116 @@ namespace zetscript{
 		return m_instance;
 	}
 
+	void CZetScript::clear(){
+
+		CURRENT_VM->clearGlobals();
+
+
+		vector<CScriptFunction *> * vec_script_function_object_node = CScriptFunction::getVectorScriptFunctionObjectNode();
+		vector<CScope *> * vec_scope_node = CScope::getVectorScopeNode();
+
+		CScriptFunction * main_function = vec_script_function_object_node->at(0);
+
+		// clean main functions ... remove script functions and leave c functions...
+		for (unsigned f = 0;
+			f < main_function->m_function.size()
+			;) {
+			// get function info
+			CScriptFunction * local_function = main_function->m_function[f];
+
+			if ((local_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+				main_function->m_function.erase(main_function->m_function.begin() + f);
+			}
+			else {
+				f++;
+			}
+
+		}
+
+		// remove c variables ...
+		for (unsigned v = 0;
+			v < main_function->m_variable.size(); ) {
+
+			if ((main_function->m_variable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+
+				main_function->m_variable.erase(main_function->m_variable.begin() + v);
+
+			}
+			else {
+				v++;
+			}
+		}
+
+		// remove scope vars...
+		bool end=false;
+		do{
+			CScope * info_scope = vec_scope_node->at(vec_scope_node->size()-1) || vec_scope_node->size()==1;
+			end=info_scope->is_c_node;
+
+			if(!end){
+
+
+				vec_scope_node->pop_back();
+				delete info_scope;
+
+			}
+
+		}while(!end);
+
+		//int i = vec_script_function_object_node->size()-1;
+		bool end=false;
+		do{
+			CScriptFunction * info_function = vec_script_function_object_node->at(vec_script_function_object_node->size()-1);
+			end=(info_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF || vec_script_function_object_node->size()==1;
+
+			if(!end){
+
+				if (info_function->instruction != NULL) {
+					//for (PtrInstruction stat = info_function->object_info.instruction; *stat != NULL; stat++) {
+
+						//free(*stat);
+					//}
+
+					free(info_function->instruction);
+					info_function->instruction=NULL;
+				}
+
+				// unloading scope ...
+				if (info_function->lut_scope_symbol != NULL) {
+					for (unsigned j = 0; j < info_function->n_lut_scope_symbols; j++) {
+						free(info_function->lut_scope_symbol[j].var_index);
+					}
+
+					free(info_function->lut_scope_symbol);
+					info_function->lut_scope_symbol=NULL;
+				}
+
+				vec_script_function_object_node->pop_back();
+				delete info_function;
+
+			}
+
+		}while(!end);
+
+
+		// clean script classes ...
+		vector<CScriptClass *> vec_script_class_node = CScriptClass::getVecScriptClassNode();
+
+		end=false;
+		do{
+			CScriptClass * sc = vec_script_class_node->at(vec_script_class_node->size()-1);
+			end=(sc->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF;
+
+			if(!end){
+
+				delete sc;
+				vec_script_class_node->pop_back();
+
+			}
+
+		}while(!end);
+	}
+
 	void CZetScript::destroy(){
 
 		CURRENT_VM->clearGlobals();
@@ -92,11 +202,13 @@ namespace zetscript{
 			delete m_instance;
 		}
 
-		CCompiler::destroySingletons();
-		CState::destroySingletons();
+		//CCompiler::destroySingletons();
+		//CState::destroySingletons();
+		CScriptClass::destroyStaticVars();
+		CScriptFunction::destroyStaticVars();
 		CNativeFunction::destroySingletons();
-		CScriptClass::destroySingletons();
-		CASTNode::destroySingletons();
+
+		//CASTNode::destroySingletons();
 	}
 
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -373,7 +485,7 @@ namespace zetscript{
 
 	bool CZetScript::init(){
 
-		CState::init();
+		CScope::initStaticVars();
 		CEval::init();
 
 		vm = new CVirtualMachine();
@@ -557,7 +669,7 @@ namespace zetscript{
 		return value;
 	}
 
-	void CZetScript::destroyMainFunction() {
+	void CZetScript::destroyMainObject() {
 
 		if (m_mainObject != NULL) {
 			delete m_mainObject;

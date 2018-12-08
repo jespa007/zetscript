@@ -163,16 +163,14 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 	var/CFunctorScriptVariable.cpp
 	
 	#-- Script Core --
-	CScope.cpp
 	eval/CEval.cpp
+	CScope.cpp
 	CNativeFunction.cpp
+	CCommonClassFunctionData.cpp
 	CScriptClass.cpp
 	CScriptFunction.cpp
 	
 	CVirtualMachine.cpp
-	
-	
-	CState.cpp
 	
 
 	#-- Script Core --
@@ -201,13 +199,13 @@ SET(
 	helper/RegisterFunctionHelper.h
 	helper/CppBindingHelper.h
 	Common.h
-	CState.h
 	CScope.h
-	CLocalSymbolsInfo.h
+	CCommonClassFunctionData.h
 	CScriptClass.h
+	CScriptFunction.h
 	CVirtualMachine.h
 	CNativeFunction.h
-	CScriptFunction.h
+	
 	CZetScript.h
 	zetscript_exception.h
 	zetscript_utils.h

@@ -24,7 +24,7 @@
 
 namespace zetscript{
 
-	class  CScriptFunction:public CBaseClassFunctionData{
+	class  CScriptFunction:public CCommonClassFunctionData{
 
 
 		/**
@@ -51,13 +51,16 @@ namespace zetscript{
 		tInfoVarScopeBlock *lut_scope_symbol;
 		unsigned n_lut_scope_symbols;
 
+		static void initStaticVars();
+		static void destroyStaticVars();
+
 		CScriptFunction(short _idxScope, short _idxClass);
 
 
 		/**
 		 * Set/Get CScriptClass Node by its idx, regarding current state.
 		 */
-		static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec);
+		//static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec);
 		static vector<CScriptFunction *> 	*	getVectorScriptFunctionObjectNode();
 
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			*	newScriptFunctionObject(short idxScope, short idxScriptClass);
@@ -69,8 +72,7 @@ namespace zetscript{
 		virtual ~CScriptFunction();
 
 	private:
-		static vector<CScriptFunction *> 	* current_vec_script_function_object_node;
-		static vector<CScriptFunction *> 	* vec_c_function;
+		static vector<CScriptFunction *> 	* vec_script_function_object_node;
 
 	};
 

@@ -99,18 +99,16 @@ using std::ostringstream;
 #include "zetscript_exception.h"
 #include "CZetScriptUtils.h"
 #include "var/CScriptVariable.h"
-
 #include "var/CStringScriptVariable.h"
 #include "var/CVectorScriptVariable.h"
 #include "var/CFunctorScriptVariable.h"
 #include "var/CStructScriptVariable.h"
 #include "eval/CEval.h"
 #include "CScope.h"
-#include "CBaseClassFunctionData.h"
+#include "CCommonClassFunctionData.h"
 #include "CScriptFunction.h"
-#include "CVirtualMachine.h"
-#include "CState.h"
 #include "CScriptClass.h"
+#include "CVirtualMachine.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 2
 #define ZETSCRIPT_MINOR_VERSION 0
@@ -210,7 +208,7 @@ namespace zetscript{
 		//----
 
 
-		void destroyMainFunction();
+		void destroyMainObject();
 
 
 
@@ -218,7 +216,10 @@ namespace zetscript{
 		ZETSCRIPT_MODULE_EXPORT CScriptVariable *getMainObject(){return m_mainObject;}
 
 
-
+		/**
+		 * Clear: Clear compile information.
+		 */
+		ZETSCRIPT_MODULE_EXPORT void clear();
 		ZETSCRIPT_MODULE_EXPORT void parse(const string & string,const char *filename_ref=NULL);
 		ZETSCRIPT_MODULE_EXPORT void parse_file(const char * filename);
 		ZETSCRIPT_MODULE_EXPORT void compile(bool show_bytecode=false);

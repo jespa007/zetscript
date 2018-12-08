@@ -317,7 +317,7 @@ namespace zetscript{
 		 CURRENT_VM->setError(s);
 	 }
 
-	 bool CScriptClass::init(){
+	 bool CScriptClass::initStaticVars(){
 
 			if(vec_script_class_node == NULL){
 				THROW_RUNTIME_ERROR("vector class factory not set");
@@ -454,7 +454,43 @@ namespace zetscript{
 			return true;
 	 }
 
-	 void CScriptClass::destroySingletons(){
+	 void CScriptClass::destroyStaticVars(){
+
+
+			//vector<CScriptClass *> *vec = current_state->getVectorScriptClassNode();
+
+			// we have to destroy all allocated constructor/destructor ...
+			for (unsigned i = 0; i < vec_script_class_node->size(); i++) {
+
+				CScriptClass *irv = vec_script_class_node->at(i);
+
+				if ((irv->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF) {
+
+					//zs_print_debug_cr("* Erasing c destructor/contructor %s...", irv->classPtrType.c_str());
+
+					if (irv->c_constructor) {
+						delete irv->c_constructor;
+					}
+
+					if (irv->c_destructor) {
+						delete irv->c_destructor;
+					}
+
+					// delete CScriptClass
+
+
+					//
+				}
+
+				delete irv;
+			}
+
+			vec_script_class_node->clear();
+			delete vec_script_class_node;
+			vec_script_class_node=NULL;
+
+
+
 		 if(VOID_TYPE_STR != NULL){
 			delete VOID_TYPE_STR;
 		 }
@@ -598,7 +634,7 @@ namespace zetscript{
 		return -1;
 	}
 #if 0
-	bool CScriptClass::searchVarFunctionSymbol(CBaseClassFunctionData * scope_info, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
+	bool CScriptClass::searchVarFunctionSymbol(CCommonClassFunctionData * scope_info, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
 
 		int idx=0;
 		symbol_not_found = true;
@@ -869,7 +905,7 @@ namespace zetscript{
 
 							 string base_class = _belonging_class->symbol_info.symbol_ref;
 
-							 CBaseClassFunctionData *sfi=NULL;
+							 CCommonClassFunctionData *sfi=NULL;
 							 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
 							 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
@@ -1147,7 +1183,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			CBaseClassFunctionData *scope_info=&rc->scope_info;
+			CCommonClassFunctionData *scope_info=&rc->scope_info;
 
 			PASTNode ast = AST_NODE(idxAstNode);
 			tVariableSymbolInfo info_var;
@@ -1169,7 +1205,7 @@ namespace zetscript{
 	bool  CScriptClass::variableSymbolExist(CScriptClass *rc,const string & variable_name){
 
 		if(rc != NULL){
-			CBaseClassFunctionData *scope_info=&rc->scope_info;
+			CCommonClassFunctionData *scope_info=&rc->scope_info;
 
 			for(unsigned i = 0; i < scope_info->local_symbols.variable.size(); i++){
 
@@ -1187,7 +1223,7 @@ namespace zetscript{
 		CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);
 
 		if(rc != NULL){
-			CBaseClassFunctionData *scope_info=&rc->scope_info;
+			CCommonClassFunctionData *scope_info=&rc->scope_info;
 
 			for(unsigned i = 0; i < scope_info->local_symbols.variable.size(); i++){
 				if(scope_info->local_symbols.variable[i].symbol_ref == variable_name){

@@ -9,13 +9,42 @@ namespace zetscript{
 	vector<CScriptFunction *> 	* vec_script_function_object_node=NULL;
 
 
-
-	void CScriptFunction::setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec){
-		vec_script_function_object_node = set_vec;
-	}
-
 	vector<CScriptFunction *> 	*CScriptFunction::getVectorScriptFunctionObjectNode(){
 		return vec_script_function_object_node;
+	}
+
+	void CScriptFunction::initStaticVars() {
+		vec_script_function_object_node = new vector<CScriptFunction *> ();
+	}
+
+	void CScriptFunction::destroyStaticVars() {
+
+		for(unsigned i = 0;i < vec_script_function_object_node->size();i++){
+			//zs_print_debug_cr("* Erasing function %s...", vec_script_function_object_node->at(i)->object_info.symbol_info.symbol_ref.c_str());
+			CScriptFunction * info_function = vec_script_function_object_node->at(i);
+
+			if (info_function->instruction != NULL) {
+
+				free(info_function->instruction);
+				info_function->instruction=NULL;
+			}
+
+			// unloading scope ...
+			if (info_function->lut_scope_symbol != NULL) {
+				for (unsigned j = 0; j < info_function->n_lut_scope_symbols; j++) {
+					free(info_function->lut_scope_symbol[j].var_index);
+				}
+
+				free(info_function->lut_scope_symbol);
+				info_function->lut_scope_symbol=NULL;
+			}
+
+			delete info_function;
+		}
+
+		vec_script_function_object_node->clear();
+		delete vec_script_function_object_node;
+		vec_script_function_object_node=NULL;
 	}
 
 
@@ -224,10 +253,10 @@ namespace zetscript{
 	}
 
 	CScriptFunction::~CScriptFunction(){
-		if(function_data != NULL){
-			delete function_data;
-		}
+
 	}
+
+
 
 
 }

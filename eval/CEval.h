@@ -19,9 +19,9 @@ namespace zetscript{
 
 		static bool eval(const char *s, int & line);
 
-		static void	init();
+		static void	initStaticVars();
 
-		static void destroySingletons();
+		static void destroyStaticVars();
 
 	private:
 

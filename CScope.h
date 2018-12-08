@@ -30,7 +30,6 @@ namespace zetscript{
 
 #define IDX_GLOBAL_SCOPE				0
 #define IDX_INVALID_SCOPE				ZS_UNDEFINED_IDX
-#define IDX_C_CLASS_SCOPE				-2
 #define IDX_ANONYMOUSE_SCOPE			-3
 
 // if 0 is in main <> 0, else.
@@ -52,26 +51,22 @@ namespace zetscript{
 		tScopeVar * existRegisteredSymbolRecursiveUpScope(const string & ref_symbol, int n_params=NO_PARAMS_IS_VARIABLE);
 	public:
 
+		static void initStaticVars();
+		static void destroyStaticVars();
 
-
-		static void 					setVectorScopeNode(vector<CScope *> 	* set_vec);
 		static vector<CScope *> 	* 	getVectorScopeNode();
+
 
 		/**
 		 * Get CScope Node by its idx, regarding current state.
 		 */
 
-		// @deprecated
-		//static CScope	    		*	newScope(PASTNode _ast_node,short idx_parent_scope=ZS_UNDEFINED_IDX);
 
-		static CScope	    		*	newScope(short idx_parent_scope=ZS_UNDEFINED_IDX);
+		static CScope	    		*	newScope(short idx_parent_scope=ZS_UNDEFINED_IDX,bool is_c_node=false);
 		static CScope 				* 	getScopeNodeByIdx(short idx);
 
-		// ref symbol management...
-		//static int	 					getIdxScopeFromSymbolRef(const string & ref_symbol);
-		//static int	 					getParamsFromSymbolRef(const string & ref_symbol);
-
-		short idxScope,idxAstNode,idxScriptClass;
+		short idxScope;
+		bool is_c_node;
 
 		//---------------------------------
 		// Register functions
@@ -91,8 +86,8 @@ namespace zetscript{
 
 		tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
 
-		CScope();
-		CScope( short idx_this, short idx_parent);
+		//CScope();
+		CScope( short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX);
 		//CScope( short idx_this, short idx_parent=ZS_UNDEFINED_IDX);//, int _index);
 
 		short 	 getIdxBaseScope();
@@ -101,38 +96,22 @@ namespace zetscript{
 		short		 getIdxParent();
 		CScope * getCurrentScopePointer();
 		short		 getIdxCurrentScopePointer();
-		//void         generateScopeList(vector<CScope *> & vector);
-		//int          getIndex();
 		vector<short> * getLocalScopeList();
 
 		vector<tScopeVar *> * getRegisteredVariableList();
 
-		//int incTotalScopes();
-
-		// @deprecated
-		//CScope * pushScope(PASTNode _ast);
 		CScope * pushScope();
 		CScope * popScope();
-
-		//void destroyScopes();
-
 		void resetScopePointer();
 
 		~CScope();
 
 	private:
 
-		//void deleteScopeRecursive(CScope *scope_info);
-
-		//void generateScopeListRecursive(CScope * scope, vector<CScope *> & vector);
-		//static int getScopeIndexRecursive(CScope * current_scope, CScope *scope_to_find,int & _index);
-
 		vector<short> m_localScopeList;
 
 		// The a parent scope ...
 		short idxParentScope, idxCurrentScopePointer, idxBaseScope;
-		//short idxBaseAstNode;
-		//int m_index;
 
 
 		/**
