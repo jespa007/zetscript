@@ -19,7 +19,7 @@ namespace zetscript{
 
 
 			//CScriptVariable *sf=NULL;
-			CScriptFunction * mainFunctionInfo = getScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
+			CScriptFunction * mainFunctionInfo = MAIN_FUNCTION;//MAIN_CLASS->getFunction(MAIN_SCRIPT_FUNCTION_OBJECT_NAME);//getScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 			//CScriptClass *rc = CScriptClass::getInstance()->getRegisteredClass(class_name);
 
 			if(mainFunctionInfo == NULL){
@@ -123,7 +123,9 @@ namespace zetscript{
 				}
 
 				//THROW_RUNTIME_ERROR("CHECK AND TODOOOOOO!");
-				CScriptClass *irc = new CScriptClass();
+				unsigned char idxClass=(short)((*local_vec_script_class_node).size());
+				CScope * scope = CScope::newScope(true);
+				CScriptClass *irc = new CScriptClass(idxClass,scope->idxScope);
 
 				/*CASTNode *ast =CASTNode::newASTNode();
 				CASTNode *ast_var_symbols =CASTNode::newASTNode();
@@ -144,7 +146,7 @@ namespace zetscript{
 				// allow dynamic constructor in function its parameters ...
 
 
-				irc->symbol_info.idxScriptClass = (short)((*local_vec_script_class_node).size());
+				//irc->symbol_info.idxClass = (short)((*local_vec_script_class_node).size());
 				irc->classPtrType=str_classPtr;
 				irc->symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
@@ -229,7 +231,7 @@ namespace zetscript{
 			CScriptClass *sc=(*local_vec_script_class_node)[register_class];
 			while( sc->idxBaseClass.size()>0){
 
-				sc=CScriptClass::getScriptClassByIdx(sc->idxBaseClass[0]); // get base class...
+				sc=CScriptClass::getScriptClass(sc->idxBaseClass[0]); // get base class...
 				if(sc->classPtrType ==base_class_name_ptr){
 					THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
 					return false;
@@ -269,7 +271,7 @@ namespace zetscript{
 
 					tVariableSymbolInfo irs;
 					// init struct...
-					irs.idxScriptClass = idx_base_class;
+					//irs.idxClass = idx_base_class;
 					irs.ref_ptr=irs_source->ref_ptr;
 					irs.c_type = irs_source->c_type;
 					//irs.
@@ -565,7 +567,7 @@ namespace zetscript{
 							return false;
 						}
 
-						(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[i].push_back(sf);
+						c_class->metamethod_operator[i].push_back(sf);
 
 						zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 						break;
@@ -592,7 +594,6 @@ namespace zetscript{
 			string var_type = typeid(_R *).name(); // we need the pointer type ...
 			string return_type;
 			//vector<string> params;
-			tVariableSymbolInfo irs;
 			string str_classPtr = typeid( _C *).name();
 			unsigned int ref_ptr=zetscript::offset_of<_C>(var_pointer);
 
@@ -615,7 +616,7 @@ namespace zetscript{
 
 			// init struct...
 			c_class->registerVariable(var_name,var_type,ref_ptr,PROPERTY_C_OBJECT_REF);
-			/*irs.idxScriptClass = idxRegisterdClass;
+			/*irs.idxClass = idxRegisterdClass;
 			irs.ref_ptr=offset;
 			irs.c_type = var_type;
 			//irs.

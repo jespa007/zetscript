@@ -19,11 +19,11 @@ namespace zetscript{
 		tVariableSymbolInfo symbol_info; // class/function symbol info ...
 
 		short idxScope; // idx function/class starting scope...
-		short idxClass; // wich idxClass class itself or function belongs to...
+		unsigned char idxClass; // wich idxClass class itself or function belongs to...
 
 
 
-		CCommonClassFunctionData(short _idxScope, short _idxClass);
+		CCommonClassFunctionData(unsigned char _idxClass, short _idxScope);
 
 		/* Registers a function.
 		 * Desc: Inserts function at custom scope. It returns the idx vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]

@@ -1556,7 +1556,7 @@ namespace zetscript{
 
 				// create new scope...
 				class_scope_info = CScope::newScope();
-				class_scope_info->idxScriptClass=sc->idxClass;
+				class_scope_info->idxClass=sc->idxClass;
 				sc->scope_info.idxScope=class_scope_info->idxScope;
 
 

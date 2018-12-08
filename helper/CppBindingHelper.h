@@ -174,7 +174,7 @@ namespace zetscript{
 					return false;
 				}
 
-				if(script_variable->idxScriptClass==IDX_CLASS_STRING){
+				if(script_variable->idxClass==IDX_CLASS_STRING){
 
 					val_ret=(intptr_t)(&script_variable->m_strValue);
 					if(idx_dst_type == IDX_CLASS_CONST_CHAR_PTR_C){
@@ -182,10 +182,10 @@ namespace zetscript{
 					}
 				}else if(
 
-				   (script_variable->idxScriptClass==IDX_CLASS_VECTOR
-				|| script_variable->idxScriptClass==IDX_CLASS_STRUCT)){
+				   (script_variable->idxClass==IDX_CLASS_VECTOR
+				|| script_variable->idxClass==IDX_CLASS_STRUCT)){
 
-					if(idx_dst_type==script_variable->idxScriptClass){
+					if(idx_dst_type==script_variable->idxClass){
 						val_ret=(intptr_t)script_variable->get_C_Object();
 					}
 

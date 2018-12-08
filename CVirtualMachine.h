@@ -45,7 +45,7 @@ namespace zetscript{
 		tInfoSharedList shared_var[MAX_FUNCTION_CALL];
 
 		CScriptFunction  *main_function_object;
-		CScriptFunction 	**vec_script_function_object_node;
+		CScriptFunction 	**vec_script_function_node;
 		unsigned				size_vec_script_function_object_node;
 		CASTNode 				**vec_ast_node;
 		unsigned  				size_vec_ast_node;

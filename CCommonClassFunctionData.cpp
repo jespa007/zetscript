@@ -4,7 +4,7 @@ namespace zetscript{
 
 
 
-	CCommonClassFunctionData::CCommonClassFunctionData(short _idxScope, short _idxClass) {
+	CCommonClassFunctionData::CCommonClassFunctionData(unsigned char _idxClass, short _idxScope) {
 		//n_statments=0;
 
 		//n_statment_op=0;
@@ -79,8 +79,8 @@ namespace zetscript{
 			int idx_scope=ast_node->idxScope;
 			bool partial_c_class= false;
 
-			if(idxScriptClass != ZS_INVALID_CLASS){
-				CScriptClass *sc=CScriptClass::getScriptClassByIdx(symbol_info.idxScriptClass);
+			if(idxClass != ZS_INVALID_CLASS){
+				CScriptClass *sc=CScriptClass::getScriptClassByIdx(symbol_info.idxClass);
 
 				if(symbol_to_find == "this" && (iao_scope & INS_PROPERTY_THIS_SCOPE)){ // trivial is the first symbol we find...
 					 REMOVE_SCOPES(iao->instruction_properties);
@@ -98,7 +98,7 @@ namespace zetscript{
 				}
 
 				if(iao_scope & INS_PROPERTY_THIS_SCOPE){ // start from class scope to find its variable/function member...
-					sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxScriptClass);
+					sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxClass);
 					idx_scope=AST_NODE(sc->metadata_info.object_info.symbol_info.idxAstNode)->idxScope;
 				}
 			}
@@ -169,21 +169,8 @@ namespace zetscript{
 	}
 */
 
-	CScriptFunction * CCommonClassFunctionData::registerFunction(short idxBlockScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
-			CScriptFunction *irs = NEW_SCRIPT_FUNCTION(idxBlockScope,idxClass);
-
-			irs->m_arg = args;
-			irs->idx_return_type = idx_return_type;
-			irs->symbol_info.ref_ptr = ref_ptr;
-
-
-			irs->symbol_info.symbol_ref = CEval::makeSymbolRef(function_name,idxBlockScope); // <-- defined as global
-			irs->symbol_info.properties = properties;
-
-			irs->symbol_info.idxSymbol = (short)(m_function.size());
-			m_function.push_back(irs->idxScriptFunctionObject);
-
-			return irs;
+	CScriptFunction * CCommonClassFunctionData::registerFunction(short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+			return NEW_SCRIPT_FUNCTION(idxClass,idxScope,  function_name,  args,  idx_return_type,ref_ptr, properties);
 	}
 
 	CScriptFunction * CCommonClassFunctionData::registerFunction( const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){

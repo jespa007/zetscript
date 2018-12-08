@@ -63,7 +63,7 @@ namespace zetscript{
 	}
 
 
-	CScope *	 CScope::newScope(short idxParentScope,bool is_c_node){
+	CScope *	 CScope::newScope(bool is_c_node,short idxParentScope){
 
 		if(is_c_node){
 			if(vec_scope_node->size() > 1){ // if greather than 1 check if node consecutive...

@@ -54,7 +54,7 @@ namespace zetscript{
 		static void initStaticVars();
 		static void destroyStaticVars();
 
-		CScriptFunction(short _idxScope, short _idxClass);
+		ZETSCRIPT_MODULE_EXPORT CScriptFunction(unsigned char _idxClass,short _idxScope );
 
 
 		/**
@@ -63,16 +63,22 @@ namespace zetscript{
 		//static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec);
 		static vector<CScriptFunction *> 	*	getVectorScriptFunctionObjectNode();
 
-		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			*	newScriptFunctionObject(short idxScope, short idxScriptClass);
+		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			*	newScriptFunctionObject(  short idxClass
+																							, short idxScope
+																							, const string & function_name
+																							, vector<tArgumentInfo> args={}
+																							, int idx_return_type=ZS_UNDEFINED_IDX
+																							, intptr_t ref_ptr=0
+																							, unsigned short properties=0);
+
 		ZETSCRIPT_MODULE_EXPORT static bool									checkCanRegister_C_Function(const char *f);
-		//static tVariableSymbolInfo				*	newVariableSymbol(int idxFunction);
 
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			* 	getScriptFunctionObject(int idx);
 
 		virtual ~CScriptFunction();
 
 	private:
-		static vector<CScriptFunction *> 	* vec_script_function_object_node;
+		static vector<CScriptFunction *> 	* vec_script_function_node;
 
 	};
 

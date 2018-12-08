@@ -263,7 +263,7 @@ namespace zetscript{
 				aux_string=CCompiler::getSymbolNameFromSymbolRef(m_functionSymbol->at(i).key_value);
 
 			}else{
-				irfs=vec_script_function_object_node[vec_global_functions->at(i)];
+				irfs=vec_script_function_node[vec_global_functions->at(i)];
 				aux_string=CCompiler::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
 			}
 
@@ -426,7 +426,7 @@ namespace zetscript{
 					if(m_functionSymbol!=NULL){
 						irfs = (CScriptFunction *)m_functionSymbol->at(i).object.stkValue;
 					}else{
-						irfs=vec_script_function_object_node[vec_global_functions->at(i)];
+						irfs=vec_script_function_node[vec_global_functions->at(i)];
 					}
 
 					bool match_signature = metamethod_str != NULL;
@@ -440,7 +440,7 @@ namespace zetscript{
 						if(n_candidates == 0){
 							str_candidates+="ttPossible candidates are:nn";
 						}
-						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+GET_SYMBOL_NAME(irfs->symbol_info.symbol_ref)+"(";
+						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+GET_SYMBOL_NAME(irfs->symbol_info.symbol_ref)+"(";
 
 						for(unsigned a = 0; a < irfs->m_arg.size(); a++){
 							if(a>0){
@@ -470,7 +470,7 @@ namespace zetscript{
 					}else{
 						writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\".\n\n",
 										is_constructor ? "constructor":"function",
-										calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+										calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 										AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
 										args_str.c_str()
 						);
@@ -480,14 +480,14 @@ namespace zetscript{
 					if(metamethod_str!=NULL){
 						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
-													calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-													GET_SYMBOL_NAME(vec_script_function_object_node[vec_global_functions->at(0)]->symbol_info.symbol_ref).c_str(),
+													calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+													GET_SYMBOL_NAME(vec_script_function_node[vec_global_functions->at(0)]->symbol_info.symbol_ref).c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
 						writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
-							calling_object==NULL?"":calling_object->idxScriptClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+							calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 							AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
 							args_str.c_str(),
 							str_candidates.c_str());

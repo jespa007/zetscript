@@ -175,7 +175,7 @@ namespace zetscript{
 			//CScriptClass 	*registered_class=new CScriptClass;
 			// NEW SCOPE C and register ...
 			sci = new CScriptClass();
-			sci->symbol_info.idxScriptClass = (short)vec_script_class_node->size();
+			sci->symbol_info.idxClass = (short)vec_script_class_node->size();
 			sci->classPtrType = TYPE_SCRIPT_VARIABLE;
 
 			sci->symbol_info.symbol_ref = class_name;
@@ -239,7 +239,7 @@ namespace zetscript{
 		return mapTypeConversion;
 	}
 
-	CScriptClass 	* CScriptClass::getScriptClassByIdx(unsigned char idx){
+	CScriptClass 	* CScriptClass::getScriptClass(unsigned char idx){
 		if(idx == ZS_INVALID_CLASS){
 			THROW_RUNTIME_ERROR("CScriptClass node out of bound");
 			return NULL;
@@ -248,15 +248,10 @@ namespace zetscript{
 		return vec_script_class_node->at(idx);
 	}
 
-	CScriptClass 	* CScriptClass::getScriptClassByName(const string & class_name, bool throw_if_not_found){
+	CScriptClass 	* CScriptClass::getScriptClass(const string & class_name){
 		unsigned char index;
 		if((index = getIdxScriptClass_Internal(class_name))!=ZS_INVALID_CLASS){ // check whether is local var registered scope ...
-
 			return vec_script_class_node->at(index);
-		}else{
-			if(throw_if_not_found){
-				THROW_RUNTIME_ERROR("class \"%s\" doesn't exist", class_name.c_str());
-			}
 		}
 
 		return NULL;
@@ -558,7 +553,7 @@ namespace zetscript{
 		 mapTypeConversion = NULL;
 	 }
 
-	 CScriptClass::CScriptClass(){
+	 CScriptClass::CScriptClass(unsigned char _idxClass, short _idxScope):CCommonClassFunctionData(_idxClass,_idxScope){
 
 			classPtrType="";
 			idxClass=ZS_UNDEFINED_IDX;
@@ -698,8 +693,8 @@ namespace zetscript{
 			int idx_scope=ast_node->idxScope;
 			bool partial_c_class= false;
 
-			if(info_function->symbol_info.idxScriptClass != ZS_INVALID_CLASS){
-				CScriptClass *sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxScriptClass);
+			if(info_function->symbol_info.idxClass != ZS_INVALID_CLASS){
+				CScriptClass *sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxClass);
 
 				if(symbol_to_find == "this" && (iao_scope & INS_PROPERTY_THIS_SCOPE)){ // trivial is the first symbol we find...
 					 REMOVE_SCOPES(iao->instruction_properties);
@@ -717,7 +712,7 @@ namespace zetscript{
 				}
 
 				if(iao_scope & INS_PROPERTY_THIS_SCOPE){ // start from class scope to find its variable/function member...
-					sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxScriptClass);
+					sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxClass);
 					idx_scope=AST_NODE(sc->metadata_info.object_info.symbol_info.idxAstNode)->idxScope;
 				}
 			}
@@ -1051,7 +1046,7 @@ namespace zetscript{
 		 CScriptClass * rc = getScriptClassByName(class_name);
 
 		 if(rc != NULL){
-			 return instanceScriptVariableByIdx(rc->symbol_info.idxScriptClass);
+			 return instanceScriptVariableByIdx(rc->symbol_info.idxClass);
 		 }
 
 		 return NULL;
@@ -1067,7 +1062,7 @@ namespace zetscript{
 		 if(rc != NULL){
 
 			 // Is a primitive ?
-			 switch(rc->symbol_info.idxScriptClass){
+			 switch(rc->symbol_info.idxClass){
 
 			 case IDX_CLASS_VOID_C:
 			 case IDX_CLASS_INT_PTR_C:
@@ -1091,7 +1086,7 @@ namespace zetscript{
 		 return class_object;
 	 }
 
-	 CScriptVariable 		 * CScriptClass::getScriptVariableByIdx(unsigned char idx_class, int idx_var){
+	 /*CScriptVariable 		 * CScriptClass::getScriptVariableByIdx(unsigned char idx_class, int idx_var){
 
 
 		 if(idx_var == ZS_UNDEFINED_IDX){
@@ -1112,7 +1107,7 @@ namespace zetscript{
 		 }
 
 		 return NULL;
-	 }
+	 }*/
 
 	/**
 	 * Register C variable
@@ -1128,7 +1123,6 @@ namespace zetscript{
 			return false;
 		}
 
-		//int idxMainFunctionInfo = getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
 		CScriptFunction *main_function=MAIN_FUNCTION;
 
 		if(main_function == NULL){
@@ -1176,7 +1170,7 @@ namespace zetscript{
 
 		CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);// getIdxRegisteredClass(class_name);
 
-		if(rc != NULL){//idxScriptClass != -1){
+		if(rc != NULL){//idxClass != -1){
 
 			if(variableSymbolExist(rc,var_name)){
 				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol variable \"%s::%s\" already exist",class_name.c_str(),var_name.c_str());
@@ -1187,7 +1181,7 @@ namespace zetscript{
 
 			PASTNode ast = AST_NODE(idxAstNode);
 			tVariableSymbolInfo info_var;
-			info_var.idxScriptClass = rc->symbol_info.idxScriptClass;
+			info_var.idxClass = rc->symbol_info.idxClass;
 			info_var.idxAstNode = idxAstNode;
 			info_var.symbol_ref =var_name;
 			info_var.idxSymbol = (short)scope_info->local_symbols.variable.size();
@@ -1250,7 +1244,7 @@ namespace zetscript{
 
 			PASTNode ast = AST_NODE(idxAstNode);
 
-			irs->symbol_info.idxScriptClass = rc->symbol_info.idxScriptClass;
+			irs->symbol_info.idxClass = rc->symbol_info.idxClass;
 			irs->symbol_info.symbol_ref = fun_name;
 			irs->symbol_info.idxAstNode = idxAstNode;
 
@@ -1292,7 +1286,7 @@ namespace zetscript{
 
 			//PASTNode ast = AST_NODE(idxAstNode);
 
-			//irs->symbol_info.idxScriptClass = rc->symbol_info.idxScriptClass;
+			//irs->symbol_info.idxClass = rc->symbol_info.idxClass;
 			//irs->symbol_info.symbol_ref = fun_name;
 			//irs->symbol_info.idxAstNode = idxAstNode;
 
@@ -1320,7 +1314,7 @@ namespace zetscript{
 		//return NULL;
 	}
 
-	int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name){
+	/*int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name){
 
 		if(rc != NULL){
 
@@ -1351,7 +1345,7 @@ namespace zetscript{
 			return GET_SCRIPT_FUNCTION(idx);
 		}
 		return NULL;
-	}
+	}*/
 
 	bool  CScriptClass::existFunctionMember(const string & function_name, int n_params){
 

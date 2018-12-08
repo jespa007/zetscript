@@ -72,7 +72,7 @@ namespace zetscript{
 		m_value = NULL;
 		was_created_by_constructor=false;
 		c_scriptclass_info=NULL;
-		idxScriptClass = -1;
+		idxClass = -1;
 		aux_string ="";
 		delete_c_object = false; // --> user is responsible to delete C objects!
 		ast_node_new=ZS_UNDEFINED_IDX;
@@ -88,7 +88,7 @@ namespace zetscript{
 		setup();
 
 		this->m_infoRegisteredClass = irv;
-		idxScriptClass = irv->idxClass;
+		idxClass = irv->idxClass;
 		c_object = _c_object;
 		
 		c_scriptclass_info=NULL;
@@ -122,7 +122,7 @@ namespace zetscript{
 		}
 
 		// only create symbols if not string type to make it fast ...
-		if(idxScriptClass >= MAX_CLASS_C_TYPES && idxScriptClass !=IDX_CLASS_STRING){
+		if(idxClass >= MAX_CLASS_C_TYPES && idxClass !=IDX_CLASS_STRING){
 			createSymbols(irv);
 		}
 	}
@@ -472,7 +472,7 @@ namespace zetscript{
 	void CScriptVariable::destroy(){
 		bool deallocated = false;
 		if(created_object != 0){
-			if((this->idxScriptClass<MAX_BASIC_CLASS_TYPES) || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
+			if((this->idxClass<MAX_BASIC_CLASS_TYPES) || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
 
 				(*c_scriptclass_info->c_destructor)(created_object);
 				deallocated=true;

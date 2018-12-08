@@ -25,7 +25,7 @@
 #include "helper/RegisterFunctionHelper.h"
 
 
-#define MAX_REGISTER_CLASSES 200
+#define MAX_REGISTER_CLASSES 100
 
 #define ZS_INVALID_CLASS	((unsigned char)ZS_UNDEFINED_IDX)
 
@@ -121,7 +121,7 @@ namespace zetscript{
 		//CCommonClassFunctionData			scope_info;
 		//tVariableSymbolInfo symbol_info;
 		unsigned char  idx_function_script_constructor;
-		//int idxScriptClass;
+		//int idxClass;
 
 		std::function<void * ()> 			* 	c_constructor;
 		std::function<void (void *  p)> 	*	c_destructor;
@@ -133,7 +133,7 @@ namespace zetscript{
 
 		vector<CScriptFunction * > metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
 
-		ZETSCRIPT_MODULE_EXPORT CScriptClass(short _idxScope, short _idxClass);
+		ZETSCRIPT_MODULE_EXPORT CScriptClass(unsigned char _idxClass, short _idxScope);
 
 		bool is_c_class();
 
@@ -155,6 +155,9 @@ namespace zetscript{
 		}tRegisterFunction;
 
 
+		static bool initStaticVars();
+		static void destroyStaticVars();
+
 		// HELPERS
 		static tStackElement 									C_REF_InfoVariable_2_StackElement(tVariableSymbolInfo *ir_var, void *ptr_variable);
 
@@ -169,9 +172,8 @@ namespace zetscript{
 		static CScriptClass 						* 			registerClass(const string & class_name, const string & base_class_name="");
 
 
-		static CScriptClass 						* 			getScriptClass(unsigned char idx);
+		ZETSCRIPT_MODULE_EXPORT static CScriptClass * 			getScriptClass(unsigned char idx);
 		ZETSCRIPT_MODULE_EXPORT static CScriptClass * 			getScriptClass(const string & name);
-		ZETSCRIPT_MODULE_EXPORT static CScriptClass * 			getScriptClassIdx(const string & name);
 		static CScriptClass 						* 			getScriptClassBy_C_ClassPtr(const string & class_type);
 		ZETSCRIPT_MODULE_EXPORT static bool						isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
 		ZETSCRIPT_MODULE_EXPORT  static bool 					isClassRegistered(const string & v);
@@ -183,9 +185,9 @@ namespace zetscript{
 		 */
 		static CScriptVariable 		 				* 			instanceScriptVariableByClassName(const string & class_name);
 		static CScriptVariable 		 				* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
-		static CScriptVariable 		 				* 			getScriptVariableByIdx(unsigned char idx_class, int  idx_var);
+		//static CScriptVariable 		 				* 			getScriptVariableByIdx(unsigned char idx_class, int  idx_var);
 
-		static bool 											updateReferenceSymbols();
+		//static bool 											updateReferenceSymbols();
 
 		//static tVariableSymbolInfo  				* 			registerVariableSymbol(const string & class_name,const string & name,short  idxAstNode);
 		//static bool 				  							variableSymbolExist(CScriptClass *rc,const string & symbolname_ref);
@@ -196,9 +198,9 @@ namespace zetscript{
 
 		//static CScriptFunction 				*  				registerFunctionSymbol(const string & class_name, const string & name,short idxAstNode);
 		virtual CScriptFunction				*  				registerFunctionMember(const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		static int 											getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name);
-		ZETSCRIPT_MODULE_EXPORT static int 					getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
-		ZETSCRIPT_MODULE_EXPORT static CScriptFunction * 	getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
+
+		//ZETSCRIPT_MODULE_EXPORT static int 					getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
+		//ZETSCRIPT_MODULE_EXPORT static CScriptFunction * 	getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
 		static bool 				  						existFunctionMember(CScriptClass *rc,const string & symbolname_ref, int n_params);
 
 
@@ -219,8 +221,6 @@ namespace zetscript{
 
 
 
-		static bool initStaticVars();
-		static void destroyStaticVars();
 
 		/**
 		 * REGISTER C Stuff
@@ -278,6 +278,8 @@ namespace zetscript{
 
 
 	private:
+
+		static int 												getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name);
 
 		static unsigned char									getIdxScriptClass_Internal(const string & class_name);
 		static unsigned char									getIdxClassFromIts_C_TypeInternal(const string & c_type_str);

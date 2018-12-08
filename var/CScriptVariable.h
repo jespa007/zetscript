@@ -26,7 +26,7 @@ namespace zetscript{
 		//bool deallocatable;
 		//int idx_shared_ptr;
 		PInfoSharedPointerNode ptr_shared_pointer_node;
-		short idxScriptClass;
+		unsigned char idxClass;
 		short ast_node_new;
 		bool was_created_by_constructor;
 		vector<tStackElement> m_variable;

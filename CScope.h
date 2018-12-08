@@ -62,7 +62,7 @@ namespace zetscript{
 		 */
 
 
-		static CScope	    		*	newScope(short idx_parent_scope=ZS_UNDEFINED_IDX,bool is_c_node=false);
+		static CScope	    		*	newScope(bool is_c_node=false,short idx_parent_scope=ZS_UNDEFINED_IDX);
 		static CScope 				* 	getScopeNodeByIdx(short idx);
 
 		short idxScope;

@@ -71,7 +71,7 @@ namespace zetscript{
 
 	#define IS_VECTOR(ptr_result_instruction) \
 	(( ptr_result_instruction->properties & STK_PROPERTY_TYPE_SCRIPTVAR) &&\
-	 (((CScriptVariable *)(ptr_result_instruction->stkValue))->idxScriptClass==IDX_CLASS_VECTOR))
+	 (((CScriptVariable *)(ptr_result_instruction->stkValue))->idxClass==IDX_CLASS_VECTOR))
 
 	#define IS_GENERIC_NUMBER(properties) \
 	((properties & STK_PROPERTY_TYPE_INTEGER) ||\
@@ -509,7 +509,7 @@ namespace zetscript{
 
 		main_function_object = NULL;
 
-		vec_script_function_object_node = NULL;
+		vec_script_function_node = NULL;
 		vec_ast_node = NULL;
 
 		size_vec_script_function_object_node = 0;
@@ -601,7 +601,7 @@ namespace zetscript{
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 
-			CScriptClass *c = CScriptClass::getScriptClassByIdx(((CScriptVariable *)(stk_v.varRef))->idxScriptClass);
+			CScriptClass *c = CScriptClass::getScriptClassByIdx(((CScriptVariable *)(stk_v.varRef))->idxClass);
 
 			if(c!=NULL){
 				return demangle(c->classPtrType);
@@ -1001,9 +1001,9 @@ namespace zetscript{
 
 	void CVirtualMachine::destroyCache(){
 		main_function_object=NULL;
-		if(vec_script_function_object_node!= NULL){
-			free(vec_script_function_object_node);
-			vec_script_function_object_node=NULL;
+		if(vec_script_function_node!= NULL){
+			free(vec_script_function_node);
+			vec_script_function_node=NULL;
 			size_vec_script_function_object_node=0;
 		}
 
@@ -1022,9 +1022,9 @@ namespace zetscript{
 		main_function_object = GET_SCRIPT_FUNCTION(0);
 		vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunction::getVectorScriptFunctionObjectNode();
 		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
-		vec_script_function_object_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
+		vec_script_function_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
 		for(unsigned i=0; i < size_vec_script_function_object_node; i++){
-			vec_script_function_object_node[i]=vec_script_function_object_node_aux->at(i);
+			vec_script_function_node[i]=vec_script_function_object_node_aux->at(i);
 		}
 
 
@@ -1120,7 +1120,7 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		vector<tVariableSymbolInfo> * local_var=&info_function->scope_info.local_symbols.variable;
+		vector<tVariableSymbolInfo> * local_var=&info_function->m_variable;
 
 		ptrStartOp =_ptrStartOp;
 		ptrStartStr =_ptrStartStr;
@@ -1170,7 +1170,7 @@ namespace zetscript{
 				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
 						"1. Set register_C_baseSymbols(false) and  re-register the function using register_C_FunctionMember\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
-						,this_object==NULL?"":this_object->idxScriptClass!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
+						,this_object==NULL?"":this_object->idxClass!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
 						,CCompiler::getSymbolNameFromSymbolRef(info_function->symbol_info.symbol_ref).c_str());
 				RETURN_ERROR;
 			}
@@ -1321,7 +1321,7 @@ namespace zetscript{
 						}
 
 						if(var_object != NULL){
-							if(var_object->idxScriptClass == IDX_CLASS_VECTOR){
+							if(var_object->idxClass == IDX_CLASS_VECTOR){
 								CVectorScriptVariable * vec = (CVectorScriptVariable *)var_object;
 
 								if(IS_INT(ptrResultInstructionOp2->properties)){
@@ -1590,7 +1590,7 @@ namespace zetscript{
 
 						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							class_obj=(CScriptVariable *)(stk_ins->varRef);
-							CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxScriptClass);
+							CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxClass);
 							vec_functions=&sc->scope_info.local_symbols.function;
 						}
 						else{
@@ -1626,7 +1626,7 @@ namespace zetscript{
 							function_obj= NULL;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
 						}else if((index_op2<(int)vec_functions->size())) // get the function ...
 						{
-							function_obj = vec_script_function_object_node[(*vec_functions)[index_op2]];
+							function_obj = vec_script_function_node[(*vec_functions)[index_op2]];
 						}
 						else{
 							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find symbol global \"%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
@@ -1666,7 +1666,7 @@ namespace zetscript{
 						CScriptVariable *vec_obj = NULL;
 						if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							vec_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
-							if(vec_obj->idxScriptClass == IDX_CLASS_VECTOR){ // push value ...
+							if(vec_obj->idxClass == IDX_CLASS_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								src_ins=ptrResultInstructionOp1;
 								dst_ins=((CVectorScriptVariable *)vec_obj)->push();
@@ -1688,7 +1688,7 @@ namespace zetscript{
 						CScriptVariable *struct_obj = NULL;
 						if((ptrCurrentOp-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							struct_obj = (CScriptVariable *)(ptrCurrentOp-1)->varRef;
-							if(struct_obj->idxScriptClass == IDX_CLASS_STRUCT){ // push value ...
+							if(struct_obj->idxClass == IDX_CLASS_STRUCT){ // push value ...
 								// op1 is now the src value ...
 								if(ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_STRING){
 									tStackElement *se=NULL;
@@ -2107,7 +2107,7 @@ namespace zetscript{
 						break;
 					default:
 						if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							bool b = CScriptClass::isIdxClassInstanceOf(((CScriptVariable *)(ptrResultInstructionOp1->varRef))->idxScriptClass, (intptr_t)ptrResultInstructionOp2->stkValue);
+							bool b = CScriptClass::isIdxClassInstanceOf(((CScriptVariable *)(ptrResultInstructionOp1->varRef))->idxClass, (intptr_t)ptrResultInstructionOp2->stkValue);
 							PUSH_BOOLEAN(b);
 						}else{
 							PUSH_BOOLEAN(false);
@@ -2300,9 +2300,9 @@ namespace zetscript{
 						}
 
 						svar = (CScriptVariable *)(se)->varRef;
-						if(svar->idxScriptClass >= MAX_BASIC_CLASS_TYPES
-						 ||svar->idxScriptClass==IDX_CLASS_VECTOR
-						 ||svar->idxScriptClass==IDX_CLASS_STRUCT
+						if(svar->idxClass >= MAX_BASIC_CLASS_TYPES
+						 ||svar->idxClass==IDX_CLASS_VECTOR
+						 ||svar->idxClass==IDX_CLASS_STRUCT
 						)
 						{ // max ...
 							svar->unrefSharedPtr();
@@ -2425,9 +2425,9 @@ namespace zetscript{
 				 		var_object = (CScriptVariable *)(((tStackElement *)ptrResultInstructionOp2->varRef)->varRef);
 				 }
 
-				if(var_object != NULL && (var_object->idxScriptClass == IDX_CLASS_VECTOR || var_object->idxScriptClass == IDX_CLASS_STRUCT)){
+				if(var_object != NULL && (var_object->idxClass == IDX_CLASS_VECTOR || var_object->idxClass == IDX_CLASS_STRUCT)){
 
-					if(var_object->idxScriptClass == IDX_CLASS_VECTOR){ // integer as iterator...
+					if(var_object->idxClass == IDX_CLASS_VECTOR){ // integer as iterator...
 						*current_foreach->key={STK_PROPERTY_TYPE_INTEGER,0,0};
 					}
 					else{ // struct -> string as iterator...

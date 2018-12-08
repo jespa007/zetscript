@@ -88,10 +88,10 @@ namespace zetscript{
 		CURRENT_VM->clearGlobals();
 
 
-		vector<CScriptFunction *> * vec_script_function_object_node = CScriptFunction::getVectorScriptFunctionObjectNode();
+		vector<CScriptFunction *> * vec_script_function_node = CScriptFunction::getVectorScriptFunctionObjectNode();
 		vector<CScope *> * vec_scope_node = CScope::getVectorScopeNode();
 
-		CScriptFunction * main_function = vec_script_function_object_node->at(0);
+		CScriptFunction * main_function = vec_script_function_node->at(0);
 
 		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
@@ -139,11 +139,11 @@ namespace zetscript{
 
 		}while(!end);
 
-		//int i = vec_script_function_object_node->size()-1;
+		//int i = vec_script_function_node->size()-1;
 		bool end=false;
 		do{
-			CScriptFunction * info_function = vec_script_function_object_node->at(vec_script_function_object_node->size()-1);
-			end=(info_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF || vec_script_function_object_node->size()==1;
+			CScriptFunction * info_function = vec_script_function_node->at(vec_script_function_node->size()-1);
+			end=(info_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF || vec_script_function_node->size()==1;
 
 			if(!end){
 
@@ -167,7 +167,7 @@ namespace zetscript{
 					info_function->lut_scope_symbol=NULL;
 				}
 
-				vec_script_function_object_node->pop_back();
+				vec_script_function_node->pop_back();
 				delete info_function;
 
 			}
@@ -440,9 +440,9 @@ namespace zetscript{
 
 				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
 
-				if(local_irfs->symbol_info.idxScriptClass!=ZS_INVALID_CLASS){
-					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->symbol_info.idxScriptClass);
-					if(sc->symbol_info.idxScriptClass == IDX_CLASS_MAIN){
+				if(local_irfs->symbol_info.idxClass!=ZS_INVALID_CLASS){
+					CScriptClass *sc = CScriptClass::getScriptClassByIdx(local_irfs->symbol_info.idxClass);
+					if(sc->symbol_info.idxClass == IDX_CLASS_MAIN){
 						symbol_ref="Main";
 					}else{
 						symbol_ref=sfo->symbol_info.symbol_ref+string("::")+string("????");
