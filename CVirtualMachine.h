@@ -23,6 +23,7 @@ namespace zetscript{
 	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const vector<CScriptVariable *> & param)>
 
 
+	#define GET_INSTRUCTION_FILE_LINE(info_function,instruction) (info_function)->getFile(),(info_function)->getLine(instruction)
 
 
 	class CScriptFunction;
@@ -47,8 +48,6 @@ namespace zetscript{
 		CScriptFunction  *main_function_object;
 		CScriptFunction 	**vec_script_function_node;
 		unsigned				size_vec_script_function_object_node;
-		CASTNode 				**vec_ast_node;
-		unsigned  				size_vec_ast_node;
 		void destroyCache();
 
 		int idxCurrentStack;
@@ -69,7 +68,7 @@ namespace zetscript{
 				tStackElement 		  * _ptrStartOp=NULL,
 				string 		  		  * _ptrStartStr=NULL,
 				unsigned char n_args=0,
-				int idxAstNode = ZS_UNDEFINED_IDX);
+				tInstruction *calling_instruction = NULL);
 
 		bool cancel_execution;
 		const char *custom_error;
@@ -176,7 +175,7 @@ namespace zetscript{
 				 bool & error,
 				 tStackElement *ptrArg,
 				 unsigned char n_args,
-				 int idxAstNode);
+				 tInstruction *ins);
 
 		/**
 		 * Reserve for N vars. Return base pointer.
@@ -184,8 +183,10 @@ namespace zetscript{
 
 		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
 		inline void  REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result);
-		inline CScriptFunction *  FIND_FUNCTION(vector<tFunctionSymbol> *m_functionSymbol
-									,vector<int> *vec_global_functions
+		inline CScriptFunction *  FIND_FUNCTION(
+									CScriptFunction *info_function
+				 	 	 	 	 	,vector<tFunctionSymbol> *m_functionSymbol
+									,vector<CScriptFunction *> *vec_global_functions
 									,tInstruction * iao
 									,bool is_constructor
 									,const string & symbol_to_find
@@ -200,7 +201,8 @@ namespace zetscript{
 		inline bool POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties);
 
 		inline bool APPLY_METAMETHOD(
-											const char *__OVERR_OP__
+											CScriptFunction *info_function
+											,const char *__OVERR_OP__
 											,METAMETHOD_OPERATOR __METAMETHOD__
 											,CScriptVariable *calling_object
 											,tInstruction *instruction

@@ -192,7 +192,7 @@ namespace zetscript{
 		}
 
 		if(error_symbol){
-			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(_idxAstNode),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			THROW_RUNTIME_ERROR("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			return NULL;
 		}
@@ -200,7 +200,7 @@ namespace zetscript{
 		string symbol_ref=CCompiler::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(getVariableSymbol(symbol_ref) != NULL){
-			writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode),"internal:symbol \"%s\" already exists",symbol_value.c_str());
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(_idxAstNode),"internal:symbol \"%s\" already exists",symbol_value.c_str());
 			return NULL;
 		}
 
@@ -276,7 +276,7 @@ namespace zetscript{
 
 		if(!ignore_duplicates){
 			if(getFunctionSymbol(symbol_ref) != NULL){
-				writeErrorMsg(GET_AST_FILENAME_LINE(_idxAstNode), "internal:symbol already exists");
+				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(_idxAstNode), "internal:symbol already exists");
 				return NULL;
 			}
 		}
@@ -362,7 +362,7 @@ namespace zetscript{
 				return removeVariableSymbolByIndex(i,true);
 			}
 		}
-		writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol %s doesn't exist",varname.c_str());
+		writeErrorMsg(GET_INSTRUCTION_FILE_LINE(idxAstNode),"symbol %s doesn't exist",varname.c_str());
 		return false;
 	}
 
@@ -374,7 +374,7 @@ namespace zetscript{
 
 
 		if(idx >= m_variable.size()){
-			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds (%i)",idx);
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
 
@@ -417,7 +417,7 @@ namespace zetscript{
 				return true;
 			}
 
-			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX)," shared ptr alrady registered");
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ZS_UNDEFINED_IDX)," shared ptr alrady registered");
 			return false;
 		}
 
@@ -428,7 +428,7 @@ namespace zetscript{
 				return true;
 			}
 			else{
-				writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"shared ptr not registered");
+				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ZS_UNDEFINED_IDX),"shared ptr not registered");
 			}
 
 			return false;
@@ -440,7 +440,7 @@ namespace zetscript{
 
 	tFunctionSymbol *CScriptVariable::getFunctionSymbolByIndex(unsigned int idx){
 		if(idx >= m_functionSymbol.size()){
-			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds");
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds");
 			return NULL;
 		}
 		return &m_functionSymbol[idx];
@@ -482,7 +482,7 @@ namespace zetscript{
 
 //#ifdef __ZETSCRIPT_DEBUG__
 		if(!deallocated && was_created_by_constructor){
-			printf("[%s:%i] Allocated C pointer not deallocated\n",GET_AST_FILENAME_LINE(ast_node_new));
+			printf("[%s:%i] Allocated C pointer not deallocated\n",GET_INSTRUCTION_FILE_LINE(ast_node_new));
 		}
 //#endif
 

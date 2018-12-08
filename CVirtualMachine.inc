@@ -17,7 +17,7 @@ namespace zetscript{
 		string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
 			   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
 		\
-		writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+		writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 				var_type1.c_str(),\
 				c,\
 				var_type2.c_str());
@@ -26,7 +26,7 @@ namespace zetscript{
 		#define PRINT_ERROR_OP(c)\
 			string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1);\
 		\
-		writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+		writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 			c,\
 			var_type1.c_str());
 
@@ -111,7 +111,8 @@ namespace zetscript{
 
 
 	inline bool CVirtualMachine::APPLY_METAMETHOD(
-										const char *__OVERR_OP__
+										CScriptFunction *info_function
+										,const char *__OVERR_OP__
 										,METAMETHOD_OPERATOR __METAMETHOD__
 										,CScriptVariable *calling_object
 										,tInstruction *instruction
@@ -160,13 +161,13 @@ namespace zetscript{
 						var_type2="";
 
 				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/
-					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							STR(__OVERR_OP),
 							var_type1.c_str()
 							);\
 				}else{ /* 2 args*/
 					var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);
-					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							var_type1.c_str(),
 							__OVERR_OP__,
 							var_type2.c_str());
@@ -176,7 +177,7 @@ namespace zetscript{
 			}
 
 			script_class_aux=GET_SCRIPT_CLASS(script_var_object->idxClass);
-			vector<int> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
+			vector<CScriptFunction *> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
 			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;
 
@@ -184,7 +185,8 @@ namespace zetscript{
 
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
 			if((ptr_function_found = FIND_FUNCTION(
-					NULL
+					info_function
+					,NULL
 					,vec_global_functions
 					,instruction
 					,false
@@ -230,8 +232,9 @@ namespace zetscript{
 	}
 
 	inline CScriptFunction * CVirtualMachine::FIND_FUNCTION(
-			vector<tFunctionSymbol> *m_functionSymbol
-			,vector<int> *vec_global_functions
+			CScriptFunction *info_function
+			,vector<tFunctionSymbol> *m_functionSymbol
+			,vector<CScriptFunction *> *vec_global_functions
 			,tInstruction * iao
 			,bool is_constructor
 			,const string & symbol_to_find
@@ -260,11 +263,11 @@ namespace zetscript{
 
 			if(m_functionSymbol != NULL){
 				irfs = (CScriptFunction *)m_functionSymbol->at(i).object.stkValue;
-				aux_string=CCompiler::getSymbolNameFromSymbolRef(m_functionSymbol->at(i).key_value);
+				aux_string=CEval::getSymbolNameFromSymbolRef(m_functionSymbol->at(i).key_value);
 
 			}else{
-				irfs=vec_script_function_node[vec_global_functions->at(i)];
-				aux_string=CCompiler::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
+				irfs=vec_global_functions->at(i);
+				aux_string=CEval::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
 			}
 
 			bool match_signature = metamethod_str != NULL;
@@ -426,13 +429,13 @@ namespace zetscript{
 					if(m_functionSymbol!=NULL){
 						irfs = (CScriptFunction *)m_functionSymbol->at(i).object.stkValue;
 					}else{
-						irfs=vec_script_function_node[vec_global_functions->at(i)];
+						irfs=vec_global_functions->at(i);
 					}
 
 					bool match_signature = metamethod_str != NULL;
 
 					if(!match_signature){
-						match_signature = irfs->symbol_info.symbol_ref == vec_ast_node[iao->idxAstNode]->symbol_value;
+						match_signature = irfs->symbol_info.symbol_ref == irfs->getSymbol(iao);
 					}
 
 					if(match_signature){
@@ -440,7 +443,7 @@ namespace zetscript{
 						if(n_candidates == 0){
 							str_candidates+="ttPossible candidates are:nn";
 						}
-						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+GET_SYMBOL_NAME(irfs->symbol_info.symbol_ref)+"(";
+						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+CEval::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref)+"(";
 
 						for(unsigned a = 0; a < irfs->m_arg.size(); a++){
 							if(a>0){
@@ -468,27 +471,27 @@ namespace zetscript{
 
 						}
 					}else{
-						writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find %s \"%s%s(%s)\".\n\n",
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,iao),"Cannot find %s \"%s%s(%s)\".\n\n",
 										is_constructor ? "constructor":"function",
 										calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-										AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
+										info_function->getSymbol(iao),
 										args_str.c_str()
 						);
 					}
 				}
 				else{
 					if(metamethod_str!=NULL){
-						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,iao),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-													GET_SYMBOL_NAME(vec_script_function_node[vec_global_functions->at(0)]->symbol_info.symbol_ref).c_str(),
+													CEval::getSymbolNameFromSymbolRef(vec_global_functions->at(0)->symbol_info.symbol_ref).c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
-						writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,iao),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
 							calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-							AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode),
+							info_function->getSymbol(iao),
 							args_str.c_str(),
 							str_candidates.c_str());
 					}

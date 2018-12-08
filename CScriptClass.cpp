@@ -147,7 +147,7 @@ namespace zetscript{
 		return vec_script_class_node;
 	}
 
-	CScriptClass * CScriptClass::registerClass(const string & class_name, const string & base_class_name){
+	CScriptClass * CScriptClass::registerClass(short idxScope, const string & class_name, const string & base_class_name){
 		unsigned char  index;
 		CScriptClass *sci=NULL;
 
@@ -165,28 +165,22 @@ namespace zetscript{
 
 		CScriptClass *base_class=NULL;
 		if(base_class_name != ""){
-			if((base_class = getScriptClassByName(base_class_name)) == NULL){
+			if((base_class = getScriptClass(base_class_name)) == NULL){
 				return NULL;
 			}
 		}
 
 		if((index = getIdxScriptClass_Internal(class_name))==ZS_INVALID_CLASS){ // check whether is local var registered scope ...
 
-			//CScriptClass 	*registered_class=new CScriptClass;
 			// NEW SCOPE C and register ...
-			sci = new CScriptClass();
-			sci->symbol_info.idxClass = (short)vec_script_class_node->size();
+			unsigned char idxClass=(*vec_script_class_node).size()-1;
+
+			sci = new CScriptClass(idxClass,idxScope);
 			sci->classPtrType = TYPE_SCRIPT_VARIABLE;
 
 			sci->symbol_info.symbol_ref = class_name;
-			/*sci->symbol_info.idxAstNode=-1;
-
-			if(_ast != NULL){
-				sci->symbol_info.idxAstNode=_ast->idxAstNode;
-			}*/
 
 			(*vec_script_class_node).push_back(sci);
-			sci->idxClass=(*vec_script_class_node).size()-1;
 
 			if(base_class != NULL){
 				sci->idxBaseClass.push_back(base_class->idxClass);
@@ -195,8 +189,7 @@ namespace zetscript{
 			return sci;
 
 		}else{
-			PASTNode ast_conflict = AST_NODE((*vec_script_class_node)[index]->symbol_info.idxAstNode);
-			writeErrorMsg(GET_AST_FILENAME_LINE(_ast->idxAstNode),"error class \"%s\" already registered at %s:%i", class_name.c_str(),GET_AST_FILENAME_LINE(ast_conflict->idxAstNode));
+			THROW_RUNTIME_ERROR("class \"%s\" already registered",class_name.c_str());
 		}
 
 		return NULL;
@@ -264,11 +257,6 @@ namespace zetscript{
 				return vec_script_class_node->at(i);
 			}
 		}
-
-		/*if(throw_if_not_found){
-			THROW_RUNTIME_ERROR("C class type \"%s\" is not registered", demangle(class_type).c_str());
-		}*/
-
 		return NULL;
 	}
 
@@ -385,10 +373,8 @@ namespace zetscript{
 			if((registerClass("intptr_t","",NULL)) == NULL) return false;		// 8
 			vec_script_class_node->at(IDX_CLASS_INTPTR_T_C)->classPtrType=*INTPTR_T_TYPE_STR;
 
-
 			if((registerClass("float","",NULL)) == NULL) return false;		// 9
 			vec_script_class_node->at(IDX_CLASS_FLOAT_C)->classPtrType=*FLOAT_TYPE_STR;
-
 
 			if((registerClass("bool","",NULL)) == NULL) return false;		// 10
 			vec_script_class_node->at(IDX_CLASS_BOOL_C)->classPtrType=*BOOL_TYPE_STR;
@@ -401,7 +387,6 @@ namespace zetscript{
 			REGISTER_BASIC_TYPE(tStackElement,IDX_STACK_ELEMENT);
 
 
-
 			//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 			// rgister basic classes (Warning!!! must match idx !!! and the order is important!!!)
@@ -410,20 +395,10 @@ namespace zetscript{
 			REGISTER_BASIC_TYPE(CVectorScriptVariable,IDX_CLASS_VECTOR);
 			REGISTER_BASIC_TYPE(CFunctorScriptVariable,IDX_CLASS_FUNCTOR);
 			REGISTER_BASIC_TYPE(CStructScriptVariable,IDX_CLASS_STRUCT);
-
-
-
-			//-----------------------
-			// Conversion from object types to primitive types (move into factory) ...
-			/*if(!addPrimitiveTypeConversion<CStringScriptVariable *,string *>( [] (CScriptVariable *obj){
-				return (intptr_t)(((CStringScriptVariable *)obj)->m_value);
-			})) return false;*/
 			//----------------------------------------------------------------------
 			// From here you defined all basic, start define hierarchy
 
 			// register custom functions ...
-			//if(!register_C_FunctionMember<CScriptVariable>("toString",&CScriptVariable::toString)) return false;
-
 			if(!class_C_baseof<CVectorScriptVariable,CScriptVariable>()) return false;
 			if(!class_C_baseof<CFunctorScriptVariable,CScriptVariable>()) return false;
 			if(!class_C_baseof<CStructScriptVariable,CScriptVariable>()) return false;
@@ -452,38 +427,35 @@ namespace zetscript{
 	 void CScriptClass::destroyStaticVars(){
 
 
-			//vector<CScriptClass *> *vec = current_state->getVectorScriptClassNode();
+		// we have to destroy all allocated constructor/destructor ...
+		for (unsigned i = 0; i < vec_script_class_node->size(); i++) {
 
-			// we have to destroy all allocated constructor/destructor ...
-			for (unsigned i = 0; i < vec_script_class_node->size(); i++) {
+			CScriptClass *irv = vec_script_class_node->at(i);
 
-				CScriptClass *irv = vec_script_class_node->at(i);
+			if ((irv->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF) {
 
-				if ((irv->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF) {
+				//zs_print_debug_cr("* Erasing c destructor/contructor %s...", irv->classPtrType.c_str());
 
-					//zs_print_debug_cr("* Erasing c destructor/contructor %s...", irv->classPtrType.c_str());
-
-					if (irv->c_constructor) {
-						delete irv->c_constructor;
-					}
-
-					if (irv->c_destructor) {
-						delete irv->c_destructor;
-					}
-
-					// delete CScriptClass
-
-
-					//
+				if (irv->c_constructor) {
+					delete irv->c_constructor;
 				}
 
-				delete irv;
+				if (irv->c_destructor) {
+					delete irv->c_destructor;
+				}
+
+				// delete CScriptClass
+
+
+				//
 			}
 
-			vec_script_class_node->clear();
-			delete vec_script_class_node;
-			vec_script_class_node=NULL;
+			delete irv;
+		}
 
+		vec_script_class_node->clear();
+		delete vec_script_class_node;
+		vec_script_class_node=NULL;
 
 
 		 if(VOID_TYPE_STR != NULL){
@@ -556,13 +528,12 @@ namespace zetscript{
 	 CScriptClass::CScriptClass(unsigned char _idxClass, short _idxScope):CCommonClassFunctionData(_idxClass,_idxScope){
 
 			classPtrType="";
-			idxClass=ZS_UNDEFINED_IDX;
 			c_destructor = NULL;
 			c_constructor=NULL;
 			idx_function_script_constructor=ZS_INVALID_CLASS;
 	}
 
-	int getNumberArgsfromFunctionRefNode(PASTNode ast_node){
+	/*int getNumberArgsfromFunctionRefNode(PASTNode ast_node){
 		if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 			ast_node = AST_NODE(ast_node->idxAstParent);
@@ -627,7 +598,7 @@ namespace zetscript{
 		}
 
 		return -1;
-	}
+	}*/
 #if 0
 	bool CScriptClass::searchVarFunctionSymbol(CCommonClassFunctionData * scope_info, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
 
@@ -921,7 +892,7 @@ namespace zetscript{
 
 									 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
-										 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" will solved at run-time", AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
+										 writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"Symbol \"%s\" will solved at run-time", AST_SYMBOL_VALUE_CONST_CHAR(iao->idxAstNode));
 
 									 }else{
 
@@ -944,10 +915,10 @@ namespace zetscript{
 														 }
 														 arg_str+="arg"+CZetScriptUtils::intToString(i);
 													 }
-													 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot find \"super\" function for \"%s(%s)\". Has the class an inheritance or parent has the function ?", symbol_to_find.c_str(),arg_str.c_str());
+													 writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"Cannot find \"super\" function for \"%s(%s)\". Has the class an inheritance or parent has the function ?", symbol_to_find.c_str(),arg_str.c_str());
 												 }
 												 else{
-													 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s::%s\" not found", base_class.c_str(),symbol_to_find.c_str());
+													 writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"Symbol \"%s::%s\" not found", base_class.c_str(),symbol_to_find.c_str());
 												 }
 												 return false;
 											 }
@@ -965,15 +936,15 @@ namespace zetscript{
 														if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 															if(!symbol_found){
-																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", iao_node->symbol_value.c_str() );
+																writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"function \"%s\" not registered", iao_node->symbol_value.c_str() );
 															}
 															else{
-																writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",iao_node->symbol_value.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+																writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",iao_node->symbol_value.c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
 															}
 
 														}
 														else{
-															writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol \"%s\" not found",iao_node->symbol_value.c_str());
+															writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"Symbol \"%s\" not found",iao_node->symbol_value.c_str());
 														}
 													 return false;
 												 }
@@ -1057,7 +1028,7 @@ namespace zetscript{
 		 CScriptVariable *class_object=NULL;
 
 		 // 0. Search class info ...
-		 CScriptClass *rc = getScriptClassByIdx(idx_class);
+		 CScriptClass *rc = getScriptClass(idx_class);
 
 		 if(rc != NULL){
 
@@ -1086,37 +1057,14 @@ namespace zetscript{
 		 return class_object;
 	 }
 
-	 /*CScriptVariable 		 * CScriptClass::getScriptVariableByIdx(unsigned char idx_class, int idx_var){
-
-
-		 if(idx_var == ZS_UNDEFINED_IDX){
-			 THROW_RUNTIME_ERROR("invalid index");
-			 return NULL;
-		 }
-		 // 0. Search class info ...
-		 CScriptClass *rc = getScriptClassByIdx(idx_class);
-
-		 if(rc != NULL){
-
-			 if(idx_var < (int)rc->scope_info.local_symbols.variable.size()){
-				 return (CScriptVariable  *)rc->scope_info.local_symbols.variable[idx_var].ref_ptr;
-			 }
-			 else{
-				 THROW_RUNTIME_ERROR("index out of bounds");
-			 }
-		 }
-
-		 return NULL;
-	 }*/
-
 	/**
 	 * Register C variable
 	 */
-	bool  CScriptClass::register_C_VariableInt(const string & var_name,void * var_ptr, const string & var_type)
+	 tVariableSymbolInfo *  CScriptClass::register_C_VariableInt(const string & var_name,void * var_ptr, const string & var_type)
 	{
 		//CScope *scope;
 		tVariableSymbolInfo *irs;
-		int idxVariable;
+		//int idxVariable;
 
 		if(var_ptr==NULL){
 			THROW_RUNTIME_ERROR("cannot register var \"%s\" with NULL reference value", var_name.c_str());
@@ -1139,14 +1087,14 @@ namespace zetscript{
 			return false;
 		}
 
-		if((idxVariable = main_function->newLocalVariable(var_name,var_type,(intptr_t)var_ptr,::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF)) != ZS_UNDEFINED_IDX){
+		if((irs = main_function->registerVariable(var_name,var_type,(intptr_t)var_ptr,::PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF)) != NULL){
 
 			zs_print_debug_cr("Registered variable name: %s",var_name.c_str());
 
-			return true;
+			return irs;
 		}
 
-		return false;
+		return NULL;
 	}
 
 	unsigned char CScriptClass::getIdx_C_RegisteredClass(const string & str_classPtr, bool throw_if_not_found){
@@ -1157,7 +1105,6 @@ namespace zetscript{
 				}
 			}
 
-
 			if(throw_if_not_found){
 				THROW_RUNTIME_ERROR("C class %s is not registered",str_classPtr.c_str());
 			}
@@ -1165,21 +1112,23 @@ namespace zetscript{
 			return ZS_INVALID_CLASS;
 	}
 
-	tVariableSymbolInfo * CScriptClass::registerVariableSymbol(const string & class_name,const string & var_name,short  idxAstNode){
+	/*tVariableSymbolInfo * CScriptClass::registerVariableSymbol(const string & class_name,const string & var_name){
 
 
-		CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);// getIdxRegisteredClass(class_name);
+		CScriptClass *rc = GET_SCRIPT_CLASS(class_name);// getIdxRegisteredClass(class_name);
 
 		if(rc != NULL){//idxClass != -1){
 
-			if(variableSymbolExist(rc,var_name)){
-				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"symbol variable \"%s::%s\" already exist",class_name.c_str(),var_name.c_str());
+			string symbol_ref = CEval::makeSymbolRef(var_name,rc->idxScope);
+
+			if(rc->getVariable(symbol_ref) != NULL){
+				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(idxAstNode),"symbol variable \"%s::%s\" already exist",class_name.c_str(),var_name.c_str());
 				return NULL;
 			}
 
+
 			CCommonClassFunctionData *scope_info=&rc->scope_info;
 
-			PASTNode ast = AST_NODE(idxAstNode);
 			tVariableSymbolInfo info_var;
 			info_var.idxClass = rc->symbol_info.idxClass;
 			info_var.idxAstNode = idxAstNode;
@@ -1188,193 +1137,55 @@ namespace zetscript{
 			scope_info->local_symbols.variable.push_back(info_var);
 
 			return &scope_info->local_symbols.variable[scope_info->local_symbols.variable.size()-1];
+
+			return rc->registerVariable(var_name,)
 		}else{
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"class \"%s\" not exist",class_name.c_str());
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(idxAstNode),"class \"%s\" not exist",class_name.c_str());
 			return NULL;
 		}
 
 		return NULL;
-	}
-
-	bool  CScriptClass::variableSymbolExist(CScriptClass *rc,const string & variable_name){
-
-		if(rc != NULL){
-			CCommonClassFunctionData *scope_info=&rc->scope_info;
-
-			for(unsigned i = 0; i < scope_info->local_symbols.variable.size(); i++){
-
-				if(scope_info->local_symbols.variable[i].symbol_ref == variable_name){
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	tVariableSymbolInfo *  CScriptClass::getRegisteredVariableSymbol(const string & class_name,const string & variable_name){
-
-		CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);
-
-		if(rc != NULL){
-			CCommonClassFunctionData *scope_info=&rc->scope_info;
-
-			for(unsigned i = 0; i < scope_info->local_symbols.variable.size(); i++){
-				if(scope_info->local_symbols.variable[i].symbol_ref == variable_name){
-					return &scope_info->local_symbols.variable[i];
-				}
-			}
-		}
-		THROW_RUNTIME_ERROR("variable member %s::%s doesn't exist",class_name.c_str(),variable_name.c_str());
-		return NULL;
-	}
-
-
-
-	//-------
-	/*CScriptFunction * CScriptClass::registerFunctionSymbol(const string & class_name, const string & fun_name, short  idxAstNode){
-
-		CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);
-
-		if(rc != NULL){
-
-
-
-			CScriptFunction *irs = NEW_SCRIPT_FUNCTION;
-
-			PASTNode ast = AST_NODE(idxAstNode);
-
-			irs->symbol_info.idxClass = rc->symbol_info.idxClass;
-			irs->symbol_info.symbol_ref = fun_name;
-			irs->symbol_info.idxAstNode = idxAstNode;
-
-			if(fun_name == class_name){
-				rc->idx_function_script_constructor = rc->scope_info.local_symbols.function.size();
-			}
-			irs->symbol_info.idxSymbol = (short)rc->scope_info.local_symbols.function.size();
-			rc->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);
-
-			// check if metamethod...
-			string function_symbol_name = CCompiler::getSymbolNameFromSymbolRef(fun_name);
-
-			for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-				if(STRCMP(getMetamethod((METAMETHOD_OPERATOR)i),==,function_symbol_name.c_str())){
-
-					rc->metamethod_operator[i].push_back(irs->idxScriptFunctionObject);
-
-					zs_print_debug_cr("Registered metamethod %s::%s",class_name.c_str(), function_symbol_name.c_str());
-					break;
-				}
-			}
-			return irs;
-		}
-		return NULL;
 	}*/
+
 
 	CScriptFunction * CScriptClass::registerFunctionMember(const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
+		CScriptFunction * sf = registerFunction( function_name,  args,  idx_return_type, ref_ptr,  properties);
+		string class_name=symbol_info.symbol_ref;
 
-
-		//CScriptClass *rc = GET_SCRIPT_CLASS_INFO_BY_NAME(class_name);
-
-		//if(rc != NULL){
-
-		CScriptFunction * sf = registerLocalFunction( function_name,  args,  idx_return_type, ref_ptr,  properties);
-		 string class_name=symbol_info.symbol_ref;
-
-			//CScriptFunction *irs = NEW_SCRIPT_FUNCTION;
-
-			//PASTNode ast = AST_NODE(idxAstNode);
-
-			//irs->symbol_info.idxClass = rc->symbol_info.idxClass;
-			//irs->symbol_info.symbol_ref = fun_name;
-			//irs->symbol_info.idxAstNode = idxAstNode;
-
-			if(function_name == class_name){
-				idx_function_script_constructor = scope_info.local_symbols.function.size();
-			}
-
-			//irs->symbol_info.idxSymbol = (short)rc->scope_info.local_symbols.function.size();
-			//rc->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);
-
-			// check if metamethod...
-			//string function_symbol_name = CCompiler::getSymbolNameFromSymbolRef(fun_name);
-
-			for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-				if(STRCMP(getMetamethod((METAMETHOD_OPERATOR)i),==,function_name.c_str())){
-
-					metamethod_operator[i].push_back(sf->function_data->idxScriptFunctionObject);
-
-					zs_print_debug_cr("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());
-					break;
-				}
-			}
-			return sf;
-		//}
-		//return NULL;
-	}
-
-	/*int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name){
-
-		if(rc != NULL){
-
-			// from lat value to first to get last override function...
-			for(int i = rc->scope_info.local_symbols.function.size()-1; i >= 0 ; i--){
-				CScriptFunction * sfo = GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.function[i]);
-				if(sfo->symbol_info.symbol_ref == function_name){
-					return rc->scope_info.local_symbols.function[i];
-				}
-			}
-
-
-			THROW_RUNTIME_ERROR("function member %s::%s doesn't exist",rc->symbol_info.symbol_ref.c_str(),function_name.c_str());
-
+		if(function_name == class_name){
+			idx_function_script_constructor = m_function.size();
 		}
-		return -1;
-	}
 
-	int CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name){
-		return getIdxScriptFunctionObjectByClassFunctionName_Internal(GET_SCRIPT_CLASS_INFO_BY_NAME(class_name),function_name);
-	}
 
-	CScriptFunction  * CScriptClass::getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name){
+		// check if metamethod...
+		for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
+			if(STRCMP(getMetamethod((METAMETHOD_OPERATOR)i),==,function_name.c_str())){
 
-		int idx=getIdxScriptFunctionObjectByClassFunctionName(class_name,function_name);
+				metamethod_operator[i].push_back(sf->idxScriptFunction);
 
-		if(idx != ZS_UNDEFINED_IDX){
-			return GET_SCRIPT_FUNCTION(idx);
+				zs_print_debug_cr("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());
+				break;
+			}
 		}
-		return NULL;
+		return sf;
+
+	}
+
+	/*bool  CScriptClass::existFunctionMember(const string & function_name, int n_params){
+
+		return CScriptFunction::getFunction(function_name, n_params) != ZS_UNDEFINED_IDX;
 	}*/
-
-	bool  CScriptClass::existFunctionMember(const string & function_name, int n_params){
-
-		return CScriptFunction::getLocalFunction(function_name, n_params) != ZS_UNDEFINED_IDX;
-		/*if(rc != NULL){
-
-
-			for(unsigned i = 0; i < rc->scope_info.local_symbols.function.size(); i++){
-
-				CScriptFunction *fo=GET_SCRIPT_FUNCTION(rc->scope_info.local_symbols.function[i]);
-
-				if(fo->symbol_info.symbol_ref == function_name && (fo->m_arg.size() == n_params)){
-					return true;
-				}
-			}
-		}
-
-		return false;*/
-	}
 
 	//-----
 
 	bool CScriptClass::addArgumentFunctionSymbol(const string & class_name,const string & function_name, const string & arg_name){
 
-		int idxScriptFunctionObject = getIdxScriptFunctionObjectByClassFunctionName(class_name,function_name);
+		int idxScriptFunction = getIdxScriptFunctionObjectByClassFunctionName(class_name,function_name);
 
-		if(idxScriptFunctionObject!=-1){
+		if(idxScriptFunction!=-1){
 
-			GET_SCRIPT_FUNCTION(idxScriptFunctionObject)->m_arg.push_back({ZS_UNDEFINED_IDX,arg_name});
+			GET_SCRIPT_FUNCTION(idxScriptFunction)->m_arg.push_back({ZS_UNDEFINED_IDX,arg_name});
 		}
 		return false;
 	}

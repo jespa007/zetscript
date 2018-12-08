@@ -9,7 +9,7 @@ namespace zetscript{
 	vector<CScriptFunction *> 	* vec_script_function_node=NULL;
 
 
-	vector<CScriptFunction *> 	*CScriptFunction::getVectorScriptFunctionObjectNode(){
+	vector<CScriptFunction *> 	*CScriptFunction::getVectorScriptFunctionNode(){
 		return vec_script_function_node;
 	}
 
@@ -118,14 +118,27 @@ namespace zetscript{
 
 	CScriptFunction::CScriptFunction(unsigned char _idxClass,short _idxScope):CCommonClassFunctionData(_idxClass,_idxScope){
 		idx_return_type = ZS_UNDEFINED_IDX;
-		idxScriptFunctionObject = ZS_UNDEFINED_IDX;
+		idxScriptFunction = ZS_UNDEFINED_IDX;
 		instruction=NULL;
 		lut_scope_symbol=NULL;
 		n_lut_scope_symbols=0;
 
 	}
 
-	CScriptFunction *		 CScriptFunction::newScriptFunctionObject(short idxClass, short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+
+	int 		 CScriptFunction::getLine(tInstruction * ins){
+		return -1;
+	}
+
+	const char * CScriptFunction::getSymbol(tInstruction * ins){
+		return "unknown";
+	}
+
+	const char * CScriptFunction::getFile(){
+		return "unknown";
+	}
+
+	CScriptFunction *		 CScriptFunction::newScriptFunction(unsigned char idxClass, short idxScope, const string & function_ref, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 
 		if((properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
@@ -144,15 +157,15 @@ namespace zetscript{
 		irs->symbol_info.ref_ptr = ref_ptr;
 
 
-		irs->symbol_info.symbol_ref = CEval::makeSymbolRef(function_name,idxScope); // <-- defined as global
+		irs->symbol_info.symbol_ref = function_ref; // <-- defined as global
 		irs->symbol_info.properties = properties;
 
 		irs->symbol_info.idxSymbol = (short)(m_function.size());
-		m_function.push_back(irs->idxScriptFunctionObject);
+		m_function.push_back(irs->idxScriptFunction);
 
 
 		vec_script_function_node->push_back(irs);
-		irs->idxScriptFunctionObject = vec_script_function_node->size()-1;
+		irs->idxScriptFunction = vec_script_function_node->size()-1;
 		return irs;
 	}
 
@@ -208,7 +221,7 @@ namespace zetscript{
 
 								 if(scope_type & INS_PROPERTY_ACCESS_SCOPE){
 
-									 writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\" will solved at run-time", symbol_to_find.c_str());
+									 writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"Symbol defined \"%s\" will solved at run-time", symbol_to_find.c_str());
 								 }
 								 else{
 									 // search symbol...
@@ -221,15 +234,15 @@ namespace zetscript{
 												if(ast_node->node_type == NODE_TYPE::FUNCTION_REF_NODE){ // function
 
 													if(!symbol_found){
-														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"function \"%s\" not registered", CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str() );
+														writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"function \"%s\" not registered", CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str() );
 													}
 													else{
-														writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
+														writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"Cannot match function \"%s\" with %i args",CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str(),getNumberArgsfromFunctionRefNode(ast_node) );
 													}
 
 												}
 												else{
-													writeErrorMsg(GET_AST_FILENAME_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str());
+													writeErrorMsg(GET_INSTRUCTION_FILE_LINE(iao->idxAstNode),"Symbol defined \"%s\"not found", CCompiler::getSymbolNameFromSymbolRef(symbol_to_find).c_str());
 												}
 											 return false;
 										 //}

@@ -1797,7 +1797,7 @@ namespace zetscript{
 									if((irv=SCOPE_NODE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
 
 										if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
-											writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Function name \"%s\" is already defined with same args at %s:%i", function_name.c_str(),GET_AST_FILENAME_LINE(irv->idxAstNode));
+											writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Function name \"%s\" is already defined with same args at %s:%i", function_name.c_str(),GET_INSTRUCTION_FILE_LINE(irv->idxAstNode));
 										}else{
 											writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
 										}

@@ -18,7 +18,7 @@
 //
 */
 
-#define NEW_SCRIPT_FUNCTION(idxScope,idxScripClass)				CScriptFunction::newScriptFunctionObject(idxScope,idxScripClass)
+#define NEW_SCRIPT_FUNCTION										CScriptFunction::newScriptFunction
 #define GET_SCRIPT_FUNCTION(idx) 								CScriptFunction::getScriptFunctionObject(idx)
 #define MAIN_FUNCTION											GET_SCRIPT_FUNCTION(0)
 
@@ -32,6 +32,10 @@ namespace zetscript{
 		 */
 		void buildLutScopeSymbols();
 
+		std::map<short,tInfoInstruction> debug_info; // map that gives info about current instruction
+		string cfile; // file where function was compiled.
+
+
 	public:
 
 		typedef struct {
@@ -44,8 +48,18 @@ namespace zetscript{
 		int idx_return_type; // -1 not inicialized type return.
 		PtrInstruction instruction;
 
-		std::map<short,tInfoInstruction> debug_info; // map that gives info about current instruction
-		int idxScriptFunctionObject;
+		//-----------
+		//  DEBUG
+
+		int 		 getLine(tInstruction * ins);
+		const char * getSymbol(tInstruction * ins);
+		const char * getFile();
+
+		//  DEBUG
+		//-----------
+
+
+		int idxScriptFunction;
 
 
 		tInfoVarScopeBlock *lut_scope_symbol;
@@ -61,9 +75,9 @@ namespace zetscript{
 		 * Set/Get CScriptClass Node by its idx, regarding current state.
 		 */
 		//static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec);
-		static vector<CScriptFunction *> 	*	getVectorScriptFunctionObjectNode();
+		static vector<CScriptFunction *> 	*	getVectorScriptFunctionNode();
 
-		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			*	newScriptFunctionObject(  short idxClass
+		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			*	newScriptFunction(unsigned  char idxClass
 																							, short idxScope
 																							, const string & function_name
 																							, vector<tArgumentInfo> args={}
@@ -71,9 +85,11 @@ namespace zetscript{
 																							, intptr_t ref_ptr=0
 																							, unsigned short properties=0);
 
-		ZETSCRIPT_MODULE_EXPORT static bool									checkCanRegister_C_Function(const char *f);
+		ZETSCRIPT_MODULE_EXPORT static bool							checkCanRegister_C_Function(const char *f);
 
 		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			* 	getScriptFunctionObject(int idx);
+
+
 
 		virtual ~CScriptFunction();
 

@@ -30,14 +30,16 @@ namespace zetscript{
 		 */
 		CScriptFunction * registerFunction( short idxBlockScope, const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
 		CScriptFunction * registerFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		CScriptFunction * getFunction(const string & function_ref,char n_args=0);
+		CScriptFunction * getFunctionByRef(const string & symbol_ref,char n_args=0);
+		CScriptFunction * getFunctionByName(const string & function_name,char n_args=0);
 
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.
 		 */
 		tVariableSymbolInfo *  registerVariable( short idxBlockScope,const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 		tVariableSymbolInfo *  registerVariable(const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
-		tVariableSymbolInfo *  getVariable(const string & variable_ref);
+		tVariableSymbolInfo *  getVariableByRef(const string & symbol_ref);
+		tVariableSymbolInfo *  getVariableByName(const string & var_name);
 
 
 

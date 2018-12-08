@@ -15,22 +15,10 @@ namespace zetscript{
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
-
-//CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
-//vector<CVirtualMachine::CVirtualMachine> CVirtualMachine::ALE;
-// static: only defined in this module...
-
-
-	// general
-
-
 	#define COPY_NUMBER(d,s)  memcpy((d),(s),sizeof(float))
 
 	#define LOAD_INT_OP(ptr_result_instruction) \
 			((int)((intptr_t)(ptr_result_instruction->stkValue)))
-
-
-
 
 	#define LOAD_BOOL_OP(ptr_result_instruction) \
 			(((bool)(ptr_result_instruction->stkValue)))
@@ -38,8 +26,6 @@ namespace zetscript{
 
 	#define LOAD_STRING_OP(ptr_result_instruction) \
 			(((const char *)(ptr_result_instruction->stkValue)))
-
-
 
 	// Check types
 	#define IS_NUMBER(properties) \
@@ -142,7 +128,7 @@ namespace zetscript{
 	}
 
 	#define PUSH_STRING(init_value)\
-		if(ptrCurrentStr==ptrLastStr){writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Error stkString out-stack");RETURN_ERROR;}\
+		if(ptrCurrentStr==ptrLastStr){writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Error stkString out-stack");RETURN_ERROR;}\
 		*ptrCurrentStr++=init_value;\
 		*ptrCurrentOp++={STK_PROPERTY_TYPE_STRING,(void *)((ptrCurrentStr-1)->c_str()),NULL};\
 
@@ -306,7 +292,7 @@ namespace zetscript{
 				(*((float *)(ref)))__OPERATOR__;\
 				break;\
 		default:\
-			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode)," Cannot perform pre/post operator (%s)",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrOp));\
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction)," Cannot perform pre/post operator (%s)",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrOp));\
 			RETURN_ERROR;\
 			break;\
 		}\
@@ -327,8 +313,7 @@ namespace zetscript{
 			if(!IS_NUMBER_OR_INT(src_ins->properties) && IS_NUMBER_OR_INT(dst_ins->properties)){\
 				if(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) != GET_INS_PROPERTY_VAR_TYPE(dst_ins->properties)\
 				){\
-					PASTNode ast=vec_ast_node[instruction->idxAstNode];\
-					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",ast->symbol_value.c_str());\
+					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",ast->symbol_value.c_str());\
 					RETURN_ERROR;\
 				}else{\
 					if(\
@@ -388,7 +373,7 @@ namespace zetscript{
 				sharePointer(script_var->ptr_shared_pointer_node);\
 			}\
 		}else{\
-			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"(internal) cannot determine var type %i",GET_INS_PROPERTY_VAR_TYPE(src_ins->properties));\
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"(internal) cannot determine var type %i",GET_INS_PROPERTY_VAR_TYPE(src_ins->properties));\
 			RETURN_ERROR;\
 		}\
 		if(copy_aux!=NULL)dst_ins->properties|=STK_PROPERTY_IS_C_VAR;\
@@ -524,7 +509,7 @@ namespace zetscript{
 		if(pos < VM_LOCAL_VAR_MAX_STACK){
 			stack[pos]=stk;
 		}else{
-			writeErrorMsg(GET_AST_FILENAME_LINE(ZS_UNDEFINED_IDX),"Attempt to assign stack element over limit (%i)",pos);
+			writeErrorMsg(NULL,-1,"Attempt to assign stack element over limit (%i)",pos);
 		}
 	}
 
@@ -696,7 +681,7 @@ namespace zetscript{
 			bool & error,
 			tStackElement *ptrArg,
 			unsigned char n_args,
-			int idxAstNode){
+			tInstruction *ins){
 
 		tStackElement callc_result={STK_PROPERTY_TYPE_UNDEFINED,0,0};
 
@@ -707,29 +692,29 @@ namespace zetscript{
 		//float aux_float=0;
 
 		if(n_args>MAX_N_ARGS){
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(irfs,ins),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
 			RETURN_ERROR;
 		}
 
 
 		if((irfs->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) {
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function is not registered as C");
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(irfs,ins),"Function is not registered as C");
 			RETURN_ERROR;
 		}
 
 		if(fun_ptr==0){
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Null function");
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(irfs,ins),"Null function");
 			//return &callc_result;//CScriptVariable::UndefinedSymbol;
 			RETURN_ERROR;
 		}
 
 		if((char)irfs->m_arg.size() != n_args){
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"C argument VS scrip argument doestn't match sizes");
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(irfs,ins),"C argument VS scrip argument doestn't match sizes");
 			RETURN_ERROR;
 		}
 
 		if(irfs->m_arg.size() > MAX_N_ARGS){
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_N_ARGS);
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(irfs,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_N_ARGS);
 			RETURN_ERROR;
 			//return &callc_result;//CScriptVariable::UndefinedSymbol;
 		}
@@ -740,7 +725,7 @@ namespace zetscript{
 			currentArg=&ptrArg[i];
 
 			if(!stk2var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
-				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
+				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(irfs,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
 																irfs->symbol_info.symbol_ref.c_str(),
 																i,
 																error_str.c_str(),
@@ -979,7 +964,7 @@ namespace zetscript{
 	tStackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
 		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION(0);
 
-		if(idx_glb_element < main_function->scope_info.local_symbols.variable.size()){
+		if(idx_glb_element < main_function->m_variable.size()){
 			return &stack[idx_glb_element];
 		}
 
@@ -1020,19 +1005,11 @@ namespace zetscript{
 		destroyCache();
 
 		main_function_object = GET_SCRIPT_FUNCTION(0);
-		vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunction::getVectorScriptFunctionObjectNode();
+		vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunction::getVectorScriptFunctionNode();
 		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
 		vec_script_function_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
 		for(unsigned i=0; i < size_vec_script_function_object_node; i++){
 			vec_script_function_node[i]=vec_script_function_object_node_aux->at(i);
-		}
-
-
-		vector<CASTNode * > * vec_ast_node_aux = CASTNode::getVectorASTNode();
-		size_vec_ast_node=vec_ast_node_aux->size();
-		vec_ast_node=(CASTNode **)malloc(sizeof(CASTNode *)*size_vec_ast_node);
-		for(unsigned i=0; i < size_vec_ast_node; i++){
-			vec_ast_node[i]=vec_ast_node_aux->at(i);
 		}
 	}
 
@@ -1062,8 +1039,8 @@ namespace zetscript{
 			ptrCurrentOp=stack;
 			//*ptrCurrentOp={STK_PROPERTY_TYPE_UNDEFINED,0,0}; // ini first op
 
-			if(info_function->idxScriptFunctionObject != 0){ // calls script function from C : preserve stack space for global vars
-				ptrCurrentOp=&stack[main_function_object->scope_info.local_symbols.variable.size()];
+			if(info_function->idxScriptFunction != 0){ // calls script function from C : preserve stack space for global vars
+				ptrCurrentOp=&stack[main_function_object->m_variable.size()];
 			}
 
 			current_foreach=&stkForeach[0];
@@ -1100,15 +1077,14 @@ namespace zetscript{
 		return info;
 	}
 
-
 	tStackElement CVirtualMachine::execute_internal(
-			CScriptFunction * info_function,
-			CScriptVariable       * this_object,
+			CScriptFunction 		* info_function,
+			CScriptVariable       	* this_object,
 			bool & error,
-			tStackElement 		  * _ptrStartOp,
-			string 		  		  * _ptrStartStr,
+			tStackElement 		  	* _ptrStartOp,
+			string 		  		  	* _ptrStartStr,
 			unsigned char n_args,
-			int idxAstNode){
+			tInstruction *calling_instruction){
 
 		error=false;
 		tStackElement callc_result={STK_PROPERTY_TYPE_UNDEFINED,0,0};
@@ -1137,7 +1113,7 @@ namespace zetscript{
 		int idxBaseStk=(ptrStartOp-stack);//>>sizeof(tStackElement *);
 
 		if(idxBaseStk<n_args){
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Internal error (idxBaseStk<n_args) (%i<%i)",idxBaseStk,n_args);
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,calling_instruction),"Internal error (idxBaseStk<n_args) (%i<%i)",idxBaseStk,n_args);
 			RETURN_ERROR;
 		}
 
@@ -1160,14 +1136,14 @@ namespace zetscript{
 			idxCurrentStack++;
 		}
 		else{
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Reached max stack");
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,calling_instruction),"Reached max stack");
 			RETURN_ERROR;
 		}
 
 		if((info_function->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) ){ // C-Call
 
 			if((info_function->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_IS_POLYMORPHIC)){ // cannot call...
-				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
+				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
 						"1. Set register_C_baseSymbols(false) and  re-register the function using register_C_FunctionMember\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idxClass!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
@@ -1184,13 +1160,13 @@ namespace zetscript{
 				}
 			}
 
-			tStackElement se = call_C_function(fun_ptr,info_function,error,ptrArg,n_args, idxAstNode);
+			tStackElement se = call_C_function(fun_ptr,info_function,error,ptrArg,n_args, calling_instruction);
 
 			if(idxCurrentStack > 0){
 				idxCurrentStack--;
 			}
 			else{
-				writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Reached min stack");
+				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,calling_instruction),"Reached min stack");
 				RETURN_ERROR;
 			}
 
@@ -1198,16 +1174,16 @@ namespace zetscript{
 			return se;
 		}
 
-		PASTNode ast = vec_ast_node[info_function->symbol_info.idxAstNode];
+		//PASTNode ast = vec_ast_node[info_function->symbol_info.idxAstNode];
 
-		short scope_index =  ast->idxScope;
+		short scope_index = info_function->idxScope;// ast->idxScope;
 
 
-		if(ast->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD){
-			scope_index=vec_ast_node[ast->children[1]]->idxScope;
-		}
+		//if(ast->keyword_info == KEYWORD_TYPE::FUNCTION_KEYWORD){
+		//	scope_index=vec_ast_node[ast->children[1]]->idxScope;
+		//}
 
-		if(info_function->idxScriptFunctionObject != 0){
+		if(info_function->idxScriptFunction != 0){
 
 			PUSH_SCOPE(scope_index,info_function,ptrLocalVar,0);
 			ptrStartScopeInfo = current_scope_info_ptr;
@@ -1227,12 +1203,12 @@ namespace zetscript{
 		unsigned n_total_vars=n_args+size_local_var;
 
 		if((idxBaseStk+n_total_vars) >=  VM_LOCAL_VAR_MAX_STACK){
-			writeErrorMsg(GET_AST_FILENAME_LINE(idxAstNode),"Error MAXIMUM stack size reached");
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,calling_instruction),"Error MAXIMUM stack size reached");
 			RETURN_ERROR;
 		}
 
 		// init local vars ...
-		if(info_function->idxScriptFunctionObject != 0){ // is not main function, so we have to initialize vars.
+		if(info_function->idxScriptFunction != 0){ // is not main function, so we have to initialize vars.
 
 
 			if(idxCurrentStack > 1){ // not global vars, then initialize variables as undefined...
@@ -1302,7 +1278,7 @@ namespace zetscript{
 
 			switch(operator_type){
 			//default:
-			//	writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+			//	writeErrorMsg(GET_INSTRUCTION_FILE_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
 			//	RETURN_ERROR;
 			case END_FUNCTION:
 				goto lbl_exit_function;
@@ -1330,26 +1306,26 @@ namespace zetscript{
 
 									// check indexes ...
 									if(v_index < 0){
-										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Negative index vector (%i)",v_index);
+										writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Negative index vector (%i)",v_index);
 										RETURN_ERROR;
 									}
 
 									if(v_index >= (int)(vec->m_variable.size())){
-										writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Index vector out of bounds (%i)",v_index);
+										writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Index vector out of bounds (%i)",v_index);
 										RETURN_ERROR;
 									}
 
 									ldrVar = &vec->m_variable[v_index];;
 									ok = true;
 								}else{
-									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector-index as integer or string");
+									writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Expected vector-index as integer or string");
 									RETURN_ERROR;
 								}
 							}
 						}
 
 						if(!ok){
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Variable \"%s\" is not type vector",
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type vector",
 								AST_SYMBOL_VALUE_CONST_CHAR(info_function->instruction[instruction->index_op2].idxAstNode)
 							);
 							RETURN_ERROR;
@@ -1366,21 +1342,16 @@ namespace zetscript{
 							break;
 						case INS_PROPERTY_ACCESS_SCOPE:
 						case INS_PROPERTY_THIS_SCOPE:
-							if(instruction->idxAstNode != -1){
-								ast = vec_ast_node[instruction->idxAstNode];
-
-							}
 
 							if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 								POP_ONE; // get var op1 and symbol op2
 
+								tInstruction *previous_ins= (instruction-1);
+
 								if((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR)!= STK_PROPERTY_TYPE_SCRIPTVAR)
 								{
 
-									PASTNode ast=AST_NODE(instruction->idxAstNode);
-									PASTNode parent = AST_NODE(ast->idxAstParent);
-									ast=AST_NODE(parent->children[0]);  // get left node ... is the object ancestor.
-									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var \"%s\" is not scriptvariable",ast->symbol_value.c_str());
+									writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"var \"%s\" is not scriptvariable",info_function->getSymbol(previous_ins));
 									RETURN_ERROR;
 								}
 
@@ -1396,31 +1367,20 @@ namespace zetscript{
 
 								if(base_var == NULL)
 								{
-									PASTNode ast=AST_NODE(instruction->idxAstNode);
-									PASTNode parent = AST_NODE(ast->idxAstParent);
-									ast=AST_NODE(parent->children[0]); // get left node ... is the object ancestor.
-									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"var \"%s\" is not scriptvariable",ast->symbol_value.c_str());
+									writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"var \"%s\" is not scriptvariable",info_function->getSymbol(previous_ins));
 
 									RETURN_ERROR;
 								}
 
-								if((variable_stack_element = base_var->getVariableSymbol(ast->symbol_value,true))==NULL){
+								if((variable_stack_element = base_var->getVariableSymbol(info_function->getSymbol(instruction),true))==NULL){
 
-									tInstruction *previous= (instruction-1);
-									string parent_symbol="unknow";
-
-									if(previous->idxAstNode != -1){
-										PASTNode aa= AST_NODE(previous->idxAstNode);
-										parent_symbol=aa->symbol_value;
-									}
-
-									writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"Variable \"%s\" as type \"%s\" has not symbol \"%s\"",parent_symbol.c_str(),base_var->getClassName().c_str(), ast->symbol_value.c_str());
+									writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Variable \"%s\" as type \"%s\" has not symbol \"%s\"",info_function->getSymbol(previous_ins),base_var->getClassName().c_str(), info_function->getSymbol(instruction));
 									RETURN_ERROR;
 								}
 							}
 							else{ // this scope ...
 								if((variable_stack_element = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
-									writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"cannot find symbol \"this.%s\"",ast->symbol_value.c_str());
+									writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot find symbol \"this.%s\"",info_function->getSymbol(instruction));
 									RETURN_ERROR;
 								}
 							}
@@ -1433,7 +1393,9 @@ namespace zetscript{
 
 						if(instruction->instruction_properties&INS_CHECK_IS_FUNCTION){
 							if((ldrVar->properties & STK_PROPERTY_TYPE_FUNCTION) != STK_PROPERTY_TYPE_FUNCTION){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"\"%s\" expected function variable but is \"%s\"",AST_NODE(instruction->idxAstNode)->symbol_value.c_str(), STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrVar));
+								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"\"%s\" expected function variable but is \"%s\""
+										, info_function->getSymbol(instruction)
+										, STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrVar));
 								RETURN_ERROR;
 							}
 						}
@@ -1493,7 +1455,7 @@ namespace zetscript{
 								ptrCurrentOp++;
 								break;
 							default:
-								writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - because is not number");
+								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - because is not number");
 								RETURN_ERROR;
 							}
 							continue;
@@ -1551,7 +1513,7 @@ namespace zetscript{
 								COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
 								break;
 							default:
-								writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - constant because is not numeric");
+								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - constant because is not numeric");
 								RETURN_ERROR;
 							}
 							break;
@@ -1570,7 +1532,7 @@ namespace zetscript{
 					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
 
 					if(scope_type==INS_PROPERTY_LOCAL_SCOPE){ // local gets functions from info_function ...
-						vec_functions=&info_function->scope_info.local_symbols.function;
+						vec_functions=&info_function->m_function;
 					}else if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 						tStackElement *var=NULL;
 						if(instruction_properties & INS_PROPERTY_CONSTRUCT_CALL){
@@ -1590,18 +1552,16 @@ namespace zetscript{
 
 						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							class_obj=(CScriptVariable *)(stk_ins->varRef);
-							CScriptClass *sc = CScriptClass::getScriptClassByIdx(((CScriptVariable *)class_obj)->idxClass);
-							vec_functions=&sc->scope_info.local_symbols.function;
+							CScriptClass *sc = CScriptClass::getScriptClass(((CScriptVariable *)class_obj)->idxClass);
+							vec_functions=&sc->m_function;
 						}
 						else{
-							CASTNode *ast_previous=vec_ast_node[(instruction-1)->idxAstNode];
-							CASTNode *ast=vec_ast_node[(int)instruction->idxAstNode];
-							writeErrorMsg(GET_AST_FILENAME_LINE(ast->idxAstNode),"Cannot access symbol \"%s\" (type of %s is %s)",ast->symbol_value.c_str(),ast_previous->symbol_value.c_str(),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Cannot access symbol \"%s\" (type of %s is %s)",info_function->getSymbol(instruction),info_function->getSymbol(instruction-1),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
 							RETURN_ERROR;
 						}
 					}else if(scope_type ==INS_PROPERTY_THIS_SCOPE){
 						if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"this.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot find function \"this.%s\"",info_function->getSymbol(instruction));
 							RETURN_ERROR;
 						}
 
@@ -1609,27 +1569,27 @@ namespace zetscript{
 
 					}else if(scope_type == INS_PROPERTY_SUPER_SCOPE){ // super scope ?
 						if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find function \"super.%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot find function \"super.%s\"",info_function->getSymbol(instruction));
 							RETURN_ERROR;
 						}
 						function_obj =(CScriptFunction *)si->object.stkValue;
 					}else{ // global
-						vec_functions = &(main_function_object->scope_info.local_symbols.function);
-						//function_obj = GET_SCRIPT_FUNCTION(info_function->object_info.local_symbols.function[index_op2]);
+						vec_functions = &(main_function_object->m_function);
 					}
 
 
 					if(!(scope_type == INS_PROPERTY_THIS_SCOPE || scope_type == INS_PROPERTY_SUPER_SCOPE)){
 
 						if(index_op2 == ZS_UNDEFINED_IDX || index_op2 == ZS_FUNCTION_NOT_FOUND_IDX){ // is will be processed after in CALL instruction ...
-							//function_properties=INS_PROPERTY_UNRESOLVED_FUNCTION;
 							function_obj= NULL;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
 						}else if((index_op2<(int)vec_functions->size())) // get the function ...
 						{
 							function_obj = vec_script_function_node[(*vec_functions)[index_op2]];
 						}
 						else{
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"cannot find symbol global \"%s\"",vec_ast_node[instruction->idxAstNode]->symbol_value.c_str());
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot find symbol global \"%s\""
+									,info_function->getSymbol(instruction)
+									);
 							RETURN_ERROR;
 						}
 					}
@@ -1647,7 +1607,7 @@ namespace zetscript{
 				}
 				else{
 
-					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"runtime error. Try to restart");
+					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"runtime error. Try to restart");
 					RETURN_ERROR;
 
 				}
@@ -1675,7 +1635,7 @@ namespace zetscript{
 						}
 
 						if(!ok){
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected vector object");
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Expected vector object");
 							RETURN_ERROR;
 						}
 
@@ -1711,15 +1671,15 @@ namespace zetscript{
 									ok=true;
 								}
 								else{
-									writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"internal error (operator2 is not string)");
+									writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"internal error (operator2 is not string)");
 									RETURN_ERROR;
 								}
 							}else{
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected struct object");
+								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Expected struct object");
 								RETURN_ERROR;
 							}
 						}else{
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected scriptvar");
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Expected scriptvar");
 							RETURN_ERROR;
 						}
 						push_value=false;
@@ -1730,13 +1690,13 @@ namespace zetscript{
 						if(ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
 							dst_ins=(tStackElement *)ptrResultInstructionOp1->varRef; // stkValue is expect to contents a stack variable
 						}else{
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected l-value on assignment ('=')");
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Expected l-value on assignment ('=')");
 							RETURN_ERROR;
 						}
 
 						if(current_foreach!=NULL){
 							if(dst_ins == current_foreach->key){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"for-in key value is read only");
+								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"for-in key value is read only");
 								RETURN_ERROR;
 							}
 						}
@@ -1770,7 +1730,7 @@ namespace zetscript{
 					if(! assign_metamethod){
 
 						if(dst_ins->properties & STK_PROPERTY_IS_THIS_VAR){
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"\"this\" is not assignable");
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"\"this\" is not assignable");
 							RETURN_ERROR;
 						}
 
@@ -1798,13 +1758,11 @@ namespace zetscript{
 							}
 							break;
 						}
-
 					}
 
 					if(push_value){ // to be able to do multiple assigns like a=b=c=1 (1 will be pushed in each store instruction)
 						*ptrCurrentOp++=*src_ins;
 					}
-
 				}
 				continue;
 
@@ -1874,7 +1832,7 @@ namespace zetscript{
 							,ptrResultInstructionOp1
 							,ptrResultInstructionOp2
 							)){
-						//writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
+						//writeErrorMsg(GET_INSTRUCTION_FILE_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
 						RETURN_ERROR;
 					}
 				}
@@ -1935,7 +1893,8 @@ namespace zetscript{
 					if (IS_STRING(ptrResultInstructionOp1->properties) && IS_INT(ptrResultInstructionOp2->properties)){
 						sprintf(str_aux,"%s%i",((const char *)ptrResultInstructionOp1->stkValue),(int)((intptr_t)ptrResultInstructionOp2->stkValue));
 						//PUSH_STRING(str_aux);
-						if(ptrCurrentStr==ptrLastStr){writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Error stkString out-stack");RETURN_ERROR;}\
+						if(ptrCurrentStr==ptrLastStr){
+								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Error stkString out-stack");RETURN_ERROR;}\
 								*ptrCurrentStr++=str_aux;\
 								*ptrCurrentOp++={STK_PROPERTY_TYPE_STRING,(void *)((ptrCurrentStr-1)->c_str()),NULL};\
 
@@ -2162,9 +2121,9 @@ namespace zetscript{
 					// try to find the function ...
 					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
 						tInstruction *iao = (tInstruction *)(callAle)->stkValue;
-						PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
+						//PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
-						symbol_to_find = ast_node_call_ale->symbol_value;
+						symbol_to_find = info_function->getSymbol(iao);
 						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
 
 
@@ -2192,7 +2151,7 @@ namespace zetscript{
 						//bool all_check=true;
 						if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
 						{
-							vector<int> *vec_global_functions=&(main_function_object->scope_info.local_symbols.function);
+							vector<int> *vec_global_functions=&(main_function_object->m_function);
 							//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
 							if((aux_function_info=FIND_FUNCTION(
 									m_functionSymbol
@@ -2229,7 +2188,7 @@ namespace zetscript{
 					if(aux_function_info !=NULL)
 					{
 						if(n_args > MAX_N_ARGS){
-							writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max arguments reached function at line XXX");
+							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Max arguments reached function at line XXX");
 							RETURN_ERROR;
 						}
 
@@ -2248,7 +2207,7 @@ namespace zetscript{
 						}
 
 						// by default virtual machine gets main object class in order to run functions ...
-						ret_obj=execute_internal(aux_function_info,calling_object,error,ptrCurrentOp,ptrCurrentStr,n_args,instruction->idxAstNode);
+						ret_obj=execute_internal(aux_function_info,calling_object,error,ptrCurrentOp,ptrCurrentStr,n_args,instruction);
 
 						if(error)
 						{
@@ -2265,7 +2224,7 @@ namespace zetscript{
 
 						if(cancel_execution) {
 							if(custom_error!=NULL){
-								writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),custom_error);
+								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),custom_error);
 							}
 							RETURN_ERROR;
 						}
@@ -2318,7 +2277,7 @@ namespace zetscript{
 						}
 					}
 					else{
-						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"delete op: expected scriptvar var but it was \"%s\"",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1));
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"delete op: expected scriptvar var but it was \"%s\"",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1));
 						RETURN_ERROR;
 					}
 					continue;
@@ -2380,7 +2339,7 @@ namespace zetscript{
 
 				if(index_op1 & SCOPE_PROPERTY::FOR_IN){
 					if(current_foreach == &stkForeach[VM_MAX_FOREACH-1]){
-						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Max foreach reached");
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Max foreach reached");
 						RETURN_ERROR;
 					}
 
@@ -2392,13 +2351,13 @@ namespace zetscript{
 				ptrCurrentStr=ptrStartStr; // reset op ptr
 				ptrCurrentOp=ptrStartOp;
 				if(!POP_SCOPE_CALL(idxCurrentStack,NULL,index_op1)){
-					writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Error pop scope");
+					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Error pop scope");
 					RETURN_ERROR;
 				}
 
 				if(index_op1 & SCOPE_PROPERTY::FOR_IN){
 					if(current_foreach == &stkForeach[0]){
-						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Min foreach reached");
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Min foreach reached");
 						RETURN_ERROR;
 					}
 
@@ -2412,7 +2371,7 @@ namespace zetscript{
 
 
 				 if((ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) == 0){
-						writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"Internal error: Expected stackvar");
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Internal error: Expected stackvar");
 						RETURN_ERROR;
 
 				 }
@@ -2436,22 +2395,22 @@ namespace zetscript{
 
 					current_foreach->ptr = var_object;
 				}else{
-					writeErrorMsg(GET_AST_FILENAME_LINE((instruction-1)->idxAstNode),"Variable \"%s\" is not type vector or struct",
-						AST_SYMBOL_VALUE_CONST_CHAR((instruction-1)->idxAstNode)
+					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type vector or struct",
+						info_function->getSymbol(instruction-1)
 					);
 					RETURN_ERROR;
 				}
 				 continue;
 			 case IT_SET_AND_NEXT:
-				 writeErrorMsg(GET_AST_FILENAME_LINE((instruction)->idxAstNode),"TODOOOOO!",
-				 						AST_SYMBOL_VALUE_CONST_CHAR((instruction)->idxAstNode)
+				 writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"TODOOOOO!",
+						 	 	 	 info_function->getSymbol(instruction)
 				 					);
 				 					RETURN_ERROR;
 				 //*((tStackElement *)current_foreach->key)=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector[current_foreach->idx_current++];
 				 continue;
 			 case IT_CHK_END:
-				 writeErrorMsg(GET_AST_FILENAME_LINE((instruction)->idxAstNode),"TODOOOOO!",
-				 						AST_SYMBOL_VALUE_CONST_CHAR((instruction)->idxAstNode)
+				 writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"TODOOOOO!",
+						 	 	 	 info_function->getSymbol(instruction)
 				 					);
 				 					RETURN_ERROR;
 
@@ -2469,7 +2428,7 @@ namespace zetscript{
 
 			}
 
-			writeErrorMsg(GET_AST_FILENAME_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->op_code].op_str);
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CCompiler::def_operator[instruction->op_code].op_str);
 			RETURN_ERROR;
 
 
@@ -2480,7 +2439,7 @@ namespace zetscript{
 
 		//=========================
 		// POP STACK
-		if(info_function->idxScriptFunctionObject == 0){ // if main function only remove 0s and preserve variables!)
+		if(info_function->idxScriptFunction == 0){ // if main function only remove 0s and preserve variables!)
 			REMOVE_0_SHARED_POINTERS(idxCurrentStack,NULL);
 		}
 		else{

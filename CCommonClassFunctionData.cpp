@@ -170,21 +170,64 @@ namespace zetscript{
 */
 
 	CScriptFunction * CCommonClassFunctionData::registerFunction(short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
-			return NEW_SCRIPT_FUNCTION(idxClass,idxScope,  function_name,  args,  idx_return_type,ref_ptr, properties);
+
+			string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
+			if(getFunctionByRef(symbol_ref,args.size()) != NULL){
+				THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
+				return NULL;
+			}
+
+			return NEW_SCRIPT_FUNCTION(idxClass,idxScope,  symbol_ref,  args,  idx_return_type,ref_ptr, properties);
 	}
 
 	CScriptFunction * CCommonClassFunctionData::registerFunction( const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
-
 		return registerFunction(this->idxScope, function_name,  args, idx_return_type,ref_ptr, properties);
+	}
+
+	CScriptFunction *	 CCommonClassFunctionData::getFunctionByRef(const string & function_ref, char n_args){
+
+		if(m_function.size()>0){
+
+			// from lat value to first to get last override function...
+			for(int i = (int)(m_function.size()-1); i >= 0 ; i--){
+				if((m_function[i]->symbol_info.symbol_ref == function_ref) && (m_function[i]->m_arg.size() ==  n_args)){
+					return m_function[i];
+				}
+			}
+		}
+
+		return NULL;
+	}
+
+
+	CScriptFunction *	 CCommonClassFunctionData::getFunctionByName(const string & function_name, char n_args){
+
+		if(m_function.size()>0){
+
+			// from lat value to first to get last override function...
+			for(int i = (int)(m_function.size()-1); i >= 0 ; i--){
+				if((CEval::getSymbolNameFromSymbolRef(m_function[i]->symbol_info.symbol_ref) == function_name) && (m_function[i]->m_arg.size() ==  n_args)){
+					return &m_function[i];
+				}
+			}
+		}
+
+		return NULL;
 	}
 
 
 	tVariableSymbolInfo * CCommonClassFunctionData::registerVariable(short idxBlockScope,const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties){
 		tVariableSymbolInfo irs;
-		irs.symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
+		string symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
+
+		if(getVariableByRef(irs.symbol_ref) != NULL){
+			THROW_RUNTIME_ERROR("Variable \"%s\" already exist",variable_name.c_str());
+			return NULL;
+		}
 
 		irs.ref_ptr =ref_ptr;
+		irs.symbol_ref=symbol_ref;
 		irs.c_type = c_type;
 		irs.properties = properties;
 
@@ -200,13 +243,13 @@ namespace zetscript{
 			return registerVariable(this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 	}
 
-	tVariableSymbolInfo *	 CCommonClassFunctionData::getVariable(const string & symbol_ref){
+	tVariableSymbolInfo *	 CCommonClassFunctionData::getVariableByRef(const string & var_ref){
 
 		if(m_variable.size()>0){
 
 			// from lat value to first to get last override function...
 			for(unsigned i = m_variable.size()-1; i >= 0 ; i--){
-				if(m_variable[i].symbol_ref == symbol_ref){
+				if(m_variable[i].symbol_ref == var_ref){
 					return &m_variable[i];
 				}
 			}
@@ -215,6 +258,21 @@ namespace zetscript{
 		return NULL;
 	}
 
+
+	tVariableSymbolInfo *	 CCommonClassFunctionData::getVariableByName(const string & var_name){
+
+		if(m_variable.size()>0){
+
+			// from lat value to first to get last override function...
+			for(unsigned i = m_variable.size()-1; i >= 0 ; i--){
+				if(CEval::getSymbolNameFromSymbolRef(m_variable[i].symbol_ref) == var_name){
+					return &m_variable[i];
+				}
+			}
+		}
+
+		return NULL;
+	}
 
 
 }

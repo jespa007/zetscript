@@ -19,8 +19,7 @@ namespace zetscript{
 
 
 			//CScriptVariable *sf=NULL;
-			CScriptFunction * mainFunctionInfo = MAIN_FUNCTION;//MAIN_CLASS->getFunction(MAIN_SCRIPT_FUNCTION_OBJECT_NAME);//getScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME);
-			//CScriptClass *rc = CScriptClass::getInstance()->getRegisteredClass(class_name);
+			CScriptFunction * mainFunctionInfo = MAIN_FUNCTION;
 
 			if(mainFunctionInfo == NULL){
 				THROW_RUNTIME_ERROR("main function is not created");
@@ -68,18 +67,6 @@ namespace zetscript{
 
 			// init struct...
 			mainFunctionInfo->registerFunction(function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
-			/*irs = NEW_SCRIPT_FUNCTION_OBJECT();
-
-			irs->m_arg = m_infoArg;
-			irs->idx_return_type = idx_return_type;
-			irs->symbol_info.ref_ptr = ref_ptr;
-
-			irs->symbol_info.idxAstNode = -1;
-			irs->symbol_info.symbol_ref = CCompiler::makeSymbolRef(function_name,IDX_GLOBAL_SCOPE); // <-- defined as global
-			irs->symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-
-			irs->symbol_info.idxSymbol = (short)(mainFunctionInfo->scope_info.local_symbols.function.size());
-			mainFunctionInfo->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);*/
 
 			zs_print_debug_cr("Registered function name: %s",function_name);
 			return true;
@@ -122,31 +109,16 @@ namespace zetscript{
 					return NULL;
 				}
 
-				//THROW_RUNTIME_ERROR("CHECK AND TODOOOOOO!");
 				unsigned char idxClass=(short)((*local_vec_script_class_node).size());
 				CScope * scope = CScope::newScope(true);
 				CScriptClass *irc = new CScriptClass(idxClass,scope->idxScope);
 
-				/*CASTNode *ast =CASTNode::newASTNode();
-				CASTNode *ast_var_symbols =CASTNode::newASTNode();
-				CASTNode *ast_collection_var_symbols =CASTNode::newASTNode();
-				CASTNode *ast_fun_symbols =CASTNode::newASTNode();
-
-				// push var & fun symbols node...
-				ast_var_symbols->children.push_back(ast_collection_var_symbols->idxAstNode);
-				ast->children.push_back(ast_var_symbols->idxAstNode);
-				ast->children.push_back(ast_fun_symbols->idxAstNode);
-
-				irc->symbol_info.idxAstNode = ast->idxAstNode;*/
-				//irc->metadata_info.object_info.symbol_info.idxScopeVar=-1;
 				irc->symbol_info.symbol_ref = class_name;
-				//irc->baseClass = base_class; // identify extend class ?!?!!?
+
 				// in C there's no script constructor ...
 				irc->idx_function_script_constructor=-1;
 				// allow dynamic constructor in function its parameters ...
 
-
-				//irc->symbol_info.idxClass = (short)((*local_vec_script_class_node).size());
 				irc->classPtrType=str_classPtr;
 				irc->symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
@@ -236,7 +208,6 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",demangle(class_name).c_str(), demangle(base_class_name).c_str());
 					return false;
 				}
-
 			}
 
 
@@ -293,28 +264,6 @@ namespace zetscript{
 							irs_source->symbol_info.ref_ptr,
 							derivated_properties
 							);
-
-
-					/*CScriptFunction *irs=NEW_SCRIPT_FUNCTION_OBJECT;
-					// init struct...
-					irs->symbol_info.idxAstNode = -1;
-					//irs.object_info.symbol_info.idxScopeVar = -1;
-					irs->symbol_info.symbol_ref=irs_source->symbol_info.symbol_ref;
-
-
-					irs->m_arg = irs_source->m_arg;
-					irs->idx_return_type = irs_source->idx_return_type;
-
-					irs->symbol_info.properties = derivated_properties;
-
-					// ignores special type cast C++ member to ptr function
-					// create binding function class
-					irs->symbol_info.ref_ptr= irs_source->symbol_info.ref_ptr; // this is not correct due the pointer
-
-					irs->symbol_info.idxSymbol = (short)(irc_class->scope_info.local_symbols.function.size());
-					irc_class->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);*/
-
-
 				}
 			}
 
@@ -322,8 +271,6 @@ namespace zetscript{
 			// DERIVATE STATE
 			//
 			//----------------------------
-
-
 
 			// finally maps object type ...
 			return true;
@@ -400,38 +347,9 @@ namespace zetscript{
 			}
 
 			CScriptClass *sc = (*local_vec_script_class_node)[idxRegisterdClass];
+
+			// register member function...
 			CScriptFunction *sf = sc->registerFunction(function_name,m_argInfo,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
-
-			// ok, function candidate to be added into class...
-			/*irs = NEW_SCRIPT_FUNCTION_OBJECT(IDX_C_CLASS_SCOPE,idxRegisterdClass);
-
-			// init struct...
-			CASTNode *ast_symbol = CASTNode::newASTNode();
-			ast_symbol->idxScope=IDX_C_CLASS_SCOPE;
-			ast_symbol->symbol_value = function_name;
-
-			for(unsigned a=0; a < m_argInfo.size();a++){ // set number args...
-				ast_symbol->children.push_back(-1);
-			}
-
-			// get ast symbols function member node...
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->symbol_info.idxAstNode)->children[1]);
-			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
-
-
-
-			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_CLASS_SCOPE);
-			irs->symbol_info.properties = PROPERTY_C_OBJECT_REF;
-
-			irs->symbol_info.ref_ptr = ref_ptr;
-			irs->m_arg = m_argInfo;
-			irs->idx_return_type = idx_return_type;
-
-			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);*/
-
-
 
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 
@@ -439,7 +357,6 @@ namespace zetscript{
 				(*local_vec_script_class_node)[idxRegisterdClass]->metamethod_operator[SET_METAMETHOD].push_back(sf);
 				zs_print_debug_cr("Registered metamethod %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 			}
-
 
 			return true;
 		}
@@ -517,19 +434,7 @@ namespace zetscript{
 				}
 			}
 
-			// ok, function candidate to be added into class...
-			/*irs = NEW_SCRIPT_FUNCTION_OBJECT;
-
-
-			//irs.object_info.symbol_info.idxScopeVar = -1;
-			irs->symbol_info.symbol_ref=CCompiler::makeSymbolRef(function_name,IDX_C_CLASS_SCOPE);
-			irs->symbol_info.properties = PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF;
-
-			irs->symbol_info.ref_ptr = ref_ptr;
-			irs->m_arg = m_argInfo;
-			irs->idx_return_type = idx_return_type;
-			irs->symbol_info.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.function.push_back(irs->idxScriptFunctionObject);*/
+			// register member function...
 			CScriptFunction * sf = c_class->registerFunction(function_name,m_argInfo, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
@@ -614,28 +519,8 @@ namespace zetscript{
 				return false;
 			}
 
-			// init struct...
+			// register variable...
 			c_class->registerVariable(var_name,var_type,ref_ptr,PROPERTY_C_OBJECT_REF);
-			/*irs.idxClass = idxRegisterdClass;
-			irs.ref_ptr=offset;
-			irs.c_type = var_type;
-			//irs.
-			irs.symbol_ref=CCompiler::makeSymbolRef(var_name,IDX_C_CLASS_SCOPE);
-
-			// init ast
-			CASTNode *ast_symbol = CASTNode::newASTNode();
-			ast_symbol->idxScope=IDX_C_CLASS_SCOPE;
-			ast_symbol->symbol_value = var_name;
-
-			// get ast var symbol collection node ( because class has a var collection we need a children [0] )
-			CASTNode *ast_symbol_node =AST_NODE(AST_NODE(AST_NODE((*local_vec_script_class_node)[idxRegisterdClass]->symbol_info.idxAstNode)->children[0])->children[0]);
-			ast_symbol_node->children.push_back(ast_symbol->idxAstNode);
-
-
-			irs.properties = PROPERTY_C_OBJECT_REF;
-			irs.idxSymbol = (short)((*local_vec_script_class_node)[idxRegisterdClass]->scope_info.local_symbols.variable.size());
-			(*local_vec_script_class_node)[idxRegisterdClass]->m_variable.push_back(irs);*/
-			//base_info->local_symbols.function.push_back(irs);
 			return true;
 
 		}

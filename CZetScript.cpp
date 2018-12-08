@@ -88,7 +88,7 @@ namespace zetscript{
 		CURRENT_VM->clearGlobals();
 
 
-		vector<CScriptFunction *> * vec_script_function_node = CScriptFunction::getVectorScriptFunctionObjectNode();
+		vector<CScriptFunction *> * vec_script_function_node = CScriptFunction::getVectorScriptFunctionNode();
 		vector<CScope *> * vec_scope_node = CScope::getVectorScopeNode();
 
 		CScriptFunction * main_function = vec_script_function_node->at(0);
