@@ -104,7 +104,7 @@ namespace zetscript{
 
 				string str_classPtr = typeid( _T *).name();
 
-				if(getIdx_C_RegisteredClass(str_classPtr,false)!=ZS_INVALID_CLASS){
+				if(getIdx_C_RegisteredClass(str_classPtr)!=ZS_INVALID_CLASS){
 					THROW_RUNTIME_ERROR("this %s is already registered",demangle(typeid( _T).name()).c_str());
 					return NULL;
 				}

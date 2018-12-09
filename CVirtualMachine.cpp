@@ -526,10 +526,10 @@ namespace zetscript{
 		}
 
 
-		for(unsigned i = 0; i < main_function->scope_info.local_symbols.variable.size(); i++){
+		for(unsigned i = 0; i < main_function->m_variable.size(); i++){
 			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 			//case STK_PROPERTY_TYPE_STRING:
-			if((main_function->scope_info.local_symbols.variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF ){
+			if((main_function->m_variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF ){
 				tStackElement *ptr_ale =&stack[i];
 				CScriptVariable *var = NULL;
 
@@ -586,7 +586,7 @@ namespace zetscript{
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 
-			CScriptClass *c = CScriptClass::getScriptClassByIdx(((CScriptVariable *)(stk_v.varRef))->idxClass);
+			CScriptClass *c = CScriptClass::getScriptClass(((CScriptVariable *)(stk_v.varRef))->idxClass);
 
 			if(c!=NULL){
 				return demangle(c->classPtrType);
@@ -670,8 +670,8 @@ namespace zetscript{
 	#define POP_ONE \
 	ptrResultInstructionOp1=--ptrCurrentOp;
 
-	int CVirtualMachine::getCurrentAstNodeCall_C_Function(){
-		return current_ast_node_call_c_function;
+	CScriptFunction * CVirtualMachine::getCurrent_C_FunctionCall(){
+		return current_call_c_function;
 	}
 
 	//============================================================================================================================================
@@ -688,7 +688,7 @@ namespace zetscript{
 		intptr_t converted_param[MAX_N_ARGS];
 		intptr_t result=0;
 		tStackElement *currentArg;
-		current_ast_node_call_c_function = idxAstNode;
+		current_call_c_function = irfs;
 		//float aux_float=0;
 
 		if(n_args>MAX_N_ARGS){
@@ -1326,7 +1326,7 @@ namespace zetscript{
 
 						if(!ok){
 							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type vector",
-								AST_SYMBOL_VALUE_CONST_CHAR(info_function->instruction[instruction->index_op2].idxAstNode)
+								info_function->getSymbol(&info_function->instruction[instruction->index_op2])
 							);
 							RETURN_ERROR;
 						}
@@ -1455,7 +1455,7 @@ namespace zetscript{
 								ptrCurrentOp++;
 								break;
 							default:
-								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - because is not number");
+								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"internal error:cannot perform pre operator - because is not number");
 								RETURN_ERROR;
 							}
 							continue;
@@ -1513,7 +1513,7 @@ namespace zetscript{
 								COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
 								break;
 							default:
-								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ast->idxAstNode),"internal error:cannot perform pre operator - constant because is not numeric");
+								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"internal error:cannot perform pre operator - constant because is not numeric");
 								RETURN_ERROR;
 							}
 							break;
@@ -2428,7 +2428,7 @@ namespace zetscript{
 
 			}
 
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CCompiler::def_operator[instruction->op_code].op_str);
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CEval::def_operator[instruction->op_code].op_str);
 			RETURN_ERROR;
 
 

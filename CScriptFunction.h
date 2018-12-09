@@ -32,7 +32,7 @@ namespace zetscript{
 		 */
 		void buildLutScopeSymbols();
 
-		std::map<short,tInfoInstruction> debug_info; // map that gives info about current instruction
+
 		string cfile; // file where function was compiled.
 
 
@@ -50,7 +50,7 @@ namespace zetscript{
 
 		//-----------
 		//  DEBUG
-
+		std::map<short,tInfoInstruction> debug_info; // map that gives info about current instruction
 		int 		 getLine(tInstruction * ins);
 		const char * getSymbol(tInstruction * ins);
 		const char * getFile();

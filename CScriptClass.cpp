@@ -1014,10 +1014,10 @@ namespace zetscript{
 	CScriptVariable *		CScriptClass::instanceScriptVariableByClassName(const string & class_name){
 
 		 // 0. Search class info ...
-		 CScriptClass * rc = getScriptClassByName(class_name);
+		 CScriptClass * rc = getScriptClass(class_name);
 
 		 if(rc != NULL){
-			 return instanceScriptVariableByIdx(rc->symbol_info.idxClass);
+			 return instanceScriptVariable(rc->symbol_info.idxClass);
 		 }
 
 		 return NULL;
@@ -1201,8 +1201,8 @@ namespace zetscript{
 
 	intptr_t CScriptClass::doCast(intptr_t obj, unsigned char idx_src_class, unsigned char idx_convert_class){//c_class->idxClass,idx_return_type){
 
-		CScriptClass *src_class = CScriptClass::getScriptClassByIdx(idx_src_class);
-		CScriptClass *convert_class = CScriptClass::getScriptClassByIdx(idx_convert_class);
+		CScriptClass *src_class = CScriptClass::getScriptClassx(idx_src_class);
+		CScriptClass *convert_class = CScriptClass::getScriptClass(idx_convert_class);
 
 		//local_map_type_conversion
 		if(mapTypeConversion->count(idx_src_class) == 0){

@@ -581,13 +581,13 @@ namespace zetscript{
 						}
 					}
 					else{ // error
-						 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Invalid number format \"%s\"",value.c_str());
+						 writeErrorMsg(current_parsing_filename,line ,"Invalid number format \"%s\"",value.c_str());
 						 error=true;
 						 return NULL;
 					}
 				}
 				else{ // error
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Invalid number format \"%s\"",value.c_str());
+					 writeErrorMsg(current_parsing_filename,line ,"Invalid number format \"%s\"",value.c_str());
 					 error=true;
 					 return NULL;
 				}
@@ -596,7 +596,7 @@ namespace zetscript{
 			else if(*aux_p == '.'){ // fraccional part ?
 
 				if(isHexa){
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Invalid number format \"%s\"",value.c_str());
+					 writeErrorMsg(current_parsing_filename,line ,"Invalid number format \"%s\"",value.c_str());
 						 error=true;
 						 return NULL;
 				}
@@ -606,7 +606,7 @@ namespace zetscript{
 					number_part[current_part]+=".";
 				}
 				else{ // error
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Invalid number format \"%s\"",value.c_str());
+					 writeErrorMsg(current_parsing_filename,line ,"Invalid number format \"%s\"",value.c_str());
 					 error=true;
 					 return NULL;
 				}
@@ -614,7 +614,7 @@ namespace zetscript{
 
 			else if(*aux_p == 'b'){ // is end binary format?
 				if(!is01s || (current_part != 0)){
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Invalid number format \"%s\"",value.c_str());
+					 writeErrorMsg(current_parsing_filename,line ,"Invalid number format \"%s\"",value.c_str());
 					 error=true;
 					 return NULL;
 				}
@@ -625,7 +625,7 @@ namespace zetscript{
 
 			}
 			else{
-				 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Invalid number format \"%s\"",value.c_str());
+				 writeErrorMsg(current_parsing_filename,line ,"Invalid number format \"%s\"",value.c_str());
 				 error=true;
 				 return NULL;
 			}
@@ -718,7 +718,7 @@ namespace zetscript{
 
 			if(*aux=='\"'){
 				 if(!is_constant_string){
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Unexpected '\"'");
+					 writeErrorMsg(current_parsing_filename,line ,"Unexpected '\"'");
 					 return NULL;
 				 }
 				 aux++;
@@ -886,12 +886,12 @@ namespace zetscript{
 		KEYWORD_TYPE kw;
 
 		if((kw=isKeyword(aux_p))!=KEYWORD_TYPE::UNKNOWN_KEYWORD){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line," Unexpected \"%s\" keyword", aux_p);
+			writeErrorMsg(current_parsing_filename,line," Unexpected \"%s\" keyword", aux_p);
 			return false;
 		}
 
 		if(isLiteral(symbol)){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line," Unexpected \"%s\"", aux_p);
+			writeErrorMsg(current_parsing_filename,line," Unexpected \"%s\"", aux_p);
 			return false;
 		}
 
@@ -910,7 +910,7 @@ namespace zetscript{
 				aux_p++;
 			}
 		}else{
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line," identifier cannot begin with %c", *aux_p);
+			writeErrorMsg(current_parsing_filename,line," identifier cannot begin with %c", *aux_p);
 			return false;
 		}
 
@@ -943,7 +943,7 @@ namespace zetscript{
 					lineSymbol = line;
 
 					if((aux_p=getIdentifierToken(aux_p,symbol_value))==NULL){
-						 writeErrorMsg(CURRENT_PARSING_FILENAME,lineSymbol ,"Expected symbol");
+						 writeErrorMsg(current_parsing_filename,lineSymbol ,"Expected symbol");
 						 return NULL;
 
 					}
@@ -951,7 +951,7 @@ namespace zetscript{
 					 aux_p=IGNORE_BLANKS(aux_p,line);
 
 					 if(*aux_p != ':'){ // expected : ...
-						 writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ':'");
+						 writeErrorMsg(current_parsing_filename,line,"Expected ':'");
 						 return NULL;
 					 }
 
@@ -969,13 +969,13 @@ namespace zetscript{
 						 aux_p=IGNORE_BLANKS(aux_p+1,line);
 					 }
 					 else if(*aux_p != '}' ){
-						 writeErrorMsg(CURRENT_PARSING_FILENAME,line,"expected '}' or ','");
+						 writeErrorMsg(current_parsing_filename,line,"expected '}' or ','");
 						 return NULL;
 					 }
 				}
 			}
 			else{
-				writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '{'");
+				writeErrorMsg(current_parsing_filename,line,"Expected '{'");
 			}
 			return aux_p;
 	}
@@ -986,7 +986,7 @@ namespace zetscript{
 		char * aux_p=IGNORE_BLANKS(s,line);
 
 		if(*aux_p != '['){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '['");
+			writeErrorMsg(current_parsing_filename,line,"Expected '['");
 			return NULL;
 		}
 
@@ -1000,7 +1000,7 @@ namespace zetscript{
 			// expression expected ...
 			if(v_elements > 0){
 				if(*aux_p != ','){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line,",");
+					writeErrorMsg(current_parsing_filename,line,",");
 					return NULL;
 				}
 
@@ -1035,14 +1035,14 @@ namespace zetscript{
 				// try get symbol ...
 
 				if((aux_p=getIdentifierToken(aux_p,symbol_value))==NULL){
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected symbol");
+					 writeErrorMsg(current_parsing_filename,line ,"Expected symbol");
 					 return NULL;
 				}
 
 				 aux_p=IGNORE_BLANKS(aux_p,line);
 
 				 if(*aux_p != '('){
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '(' after \'%s\'",defined_keyword[key_w].str);
+					 writeErrorMsg(current_parsing_filename,line,"Expected '(' after \'%s\'",defined_keyword[key_w].str);
 					 return NULL;
 				 }
 
@@ -1054,7 +1054,7 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(aux_p,line);
 
 					if(*aux_p != ',' && *aux_p != ')'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected ',' or ')'");
+						writeErrorMsg(current_parsing_filename,line ,"Expected ',' or ')'");
 						return NULL;
 					}
 
@@ -1156,7 +1156,7 @@ namespace zetscript{
 		}
 
 		if(idx_split == -1){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,-1,"Unexpected error");
+			writeErrorMsg(current_parsing_filename,-1,"Unexpected error");
 			error =true;
 			return false;
 		}
@@ -1223,7 +1223,7 @@ namespace zetscript{
 
 
 				if(*aux_p != ')'){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected ')'");
+					writeErrorMsg(current_parsing_filename,line ,"Expected ')'");
 					return NULL;
 				}
 
@@ -1287,19 +1287,19 @@ namespace zetscript{
 				// check first access...
 				if(isAccessPunctuator(aux_p)){
 					if(symbol_token_node.token_type == TOKEN_TYPE::LITERAL_TOKEN){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Unexpected '%c' after literal",*aux_p);
+						writeErrorMsg(current_parsing_filename,line ,"Unexpected '%c' after literal",*aux_p);
 						return NULL;
 					}
 					else if(symbol_token_node.token_type == TOKEN_TYPE::FUNCTION_OBJECT_TOKEN && *aux_p != '('){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Unexpected '%c' after function object",*aux_p);
+						writeErrorMsg(current_parsing_filename,line ,"Unexpected '%c' after function object",*aux_p);
 						return NULL;
 					}
 					else if(symbol_token_node.token_type == TOKEN_TYPE::VECTOR_OBJECT_TOKEN && *aux_p != '['){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Unexpected '%c' after vector object",*aux_p);
+						writeErrorMsg(current_parsing_filename,line ,"Unexpected '%c' after vector object",*aux_p);
 						return NULL;
 					}
 					else if(symbol_token_node.token_type == TOKEN_TYPE::STRUCT_OBJECT_TOKEN && *aux_p != '.'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Unexpected '%c' after struct object",*aux_p);
+						writeErrorMsg(current_parsing_filename,line ,"Unexpected '%c' after struct object",*aux_p);
 						return NULL;
 					}
 				}
@@ -1318,7 +1318,7 @@ namespace zetscript{
 
 
 							if(*aux_p != ',' && *aux_p != ')'){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected ',' or ')'");
+								writeErrorMsg(current_parsing_filename,line ,"Expected ',' or ')'");
 								return NULL;
 							}
 
@@ -1333,7 +1333,7 @@ namespace zetscript{
 							return NULL;
 						}
 						if(*aux_p != ']'){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected ']'");
+							writeErrorMsg(current_parsing_filename,line ,"Expected ']'");
 							return NULL;
 						}
 						aux_p=IGNORE_BLANKS(aux_p+1,line);
@@ -1380,7 +1380,7 @@ namespace zetscript{
 				op=evalOperator(aux_p);
 
 				if(op==OPERATOR_TYPE::UNKNOWN_OPERATOR){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected operator");
+					writeErrorMsg(current_parsing_filename,line ,"Expected operator");
 					return NULL;
 				}
 
@@ -1395,7 +1395,7 @@ namespace zetscript{
 		}
 
 		if(aux_p==0){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Unexpected end of file");
+			writeErrorMsg(current_parsing_filename,line ,"Unexpected end of file");
 			return NULL;
 		}
 
@@ -1436,14 +1436,14 @@ namespace zetscript{
 
 
 				if((aux_p=getIdentifierToken(aux_p,symbol_value))==NULL){
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected symbol");
+					 writeErrorMsg(current_parsing_filename,line ,"Expected symbol");
 					 return NULL;
 				}
 
 				 aux_p=IGNORE_BLANKS(aux_p,line);
 
 				 if(*aux_p != ';'){
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ;");
+					 writeErrorMsg(current_parsing_filename,line,"Expected ;");
 					 return NULL;
 				 }
 
@@ -1467,7 +1467,7 @@ namespace zetscript{
 
 		// check whwther the function is anonymous or not.
 		if((aux_p=getIdentifierToken(aux_p,class_name))==NULL){
-			 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected symbol");
+			 writeErrorMsg(current_parsing_filename,line ,"Expected symbol");
 			 return NULL;
 		}
 
@@ -1516,7 +1516,7 @@ namespace zetscript{
 			if(key_w == KEYWORD_TYPE::CLASS_KEYWORD){
 
 				if(scope_info->getIdxParent()!=ZS_UNDEFINED_IDX){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line,"class keyword is not allowed");
+					writeErrorMsg(current_parsing_filename,line,"class keyword is not allowed");
 					return NULL;
 				}
 
@@ -1524,7 +1524,7 @@ namespace zetscript{
 
 				// check for symbol's name
 				if((aux_p=getIdentifierToken(aux_p,class_name))==NULL){
-					 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected symbol");
+					 writeErrorMsg(current_parsing_filename,line ,"Expected symbol");
 					 return NULL;
 				}
 
@@ -1539,7 +1539,7 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(aux_p+1,line);
 
 					if((aux_p=getIdentifierToken(aux_p,base_class_name))==NULL){
-						 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected symbol");
+						 writeErrorMsg(current_parsing_filename,line ,"Expected symbol");
 						 return NULL;
 					}
 
@@ -1580,7 +1580,7 @@ namespace zetscript{
 						if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
 							switch(key_w){
 							default:
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected \"var\" or \"function\" keyword");
+								writeErrorMsg(current_parsing_filename,line,"Expected \"var\" or \"function\" keyword");
 								return NULL;
 								break;
 							case KEYWORD_TYPE::FUNCTION_KEYWORD:
@@ -1596,28 +1596,28 @@ namespace zetscript{
 								break;
 							}
 						}else{
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected \"var\" or \"function\" keyword");
+							writeErrorMsg(current_parsing_filename,line,"Expected \"var\" or \"function\" keyword");
 							return NULL;
 						}
 						aux_p=IGNORE_BLANKS(aux_p,line);
 					}
 
 					if(*aux_p != '}'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,class_line ,"class \"%s\" declared is not closed ",class_name.c_str());
+						writeErrorMsg(current_parsing_filename,class_line ,"class \"%s\" declared is not closed ",class_name.c_str());
 						return NULL;
 					}
 
 					aux_p=IGNORE_BLANKS(aux_p+1,line);
 
 					if(*aux_p != ';'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,class_line ,"class \"%s\" not end with ;",class_name.c_str());
+						writeErrorMsg(current_parsing_filename,class_line ,"class \"%s\" not end with ;",class_name.c_str());
 						return NULL;
 					}
 
 					return aux_p+1;
 
 				}else{
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '{'");
+					writeErrorMsg(current_parsing_filename,line,"Expected '{'");
 					return NULL;
 				}
 			}
@@ -1688,7 +1688,7 @@ namespace zetscript{
 							// check whwther the function is anonymous with a previous arithmetic operation ....
 
 							if((end_var=getIdentifierToken(aux_p,function_name)) == NULL){
-								 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected symbol");
+								 writeErrorMsg(current_parsing_filename,line ,"Expected symbol");
 								 return NULL;
 							}
 						}
@@ -1718,7 +1718,7 @@ namespace zetscript{
 
 						if(arg.size()>0){
 							if(*aux_p != ','){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ',' ");
+								writeErrorMsg(current_parsing_filename,line,"Expected ',' ");
 								return NULL;
 							}
 							aux_p=IGNORE_BLANKS(aux_p+1,line);
@@ -1726,27 +1726,27 @@ namespace zetscript{
 
 
 						if(*aux_p == ')' || *aux_p == ','){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected arg");
+							writeErrorMsg(current_parsing_filename,line,"Expected arg");
 							return NULL;
 						}
 
 						int m_start_arg=line;
 						if((end_var=getIdentifierToken(aux_p,arg_value)) == NULL){
-							 writeErrorMsg(CURRENT_PARSING_FILENAME,line ,"Expected symbol");
+							 writeErrorMsg(current_parsing_filename,line ,"Expected symbol");
 							 return NULL;
 						}
 
 						// check if repeats...
 						for(unsigned k = 0; k < arg.size(); k++){
 							if(arg[k] == arg_value){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Repeated argument '%s' argument ",arg_value.c_str());
+								writeErrorMsg(current_parsing_filename,line,"Repeated argument '%s' argument ",arg_value.c_str());
 								return NULL;
 							}
 						}
 
 						// check whether parameter name's matches with some global variable...
 						if((irv=body_scope->getInfoRegisteredSymbol(symbol_value,-1,false)) != NULL){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Ambiguous symbol argument \"%s\" name with var defined at %i", symbol_value, -1);
+							writeErrorMsg(current_parsing_filename,line,"Ambiguous symbol argument \"%s\" name with var defined at %i", symbol_value, -1);
 							return NULL;
 						}
 							// ok register symbol into the object function ...
@@ -1766,7 +1766,7 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(aux_p,line);
 
 					if(*aux_p != '{'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '{'");
+						writeErrorMsg(current_parsing_filename,line,"Expected '{'");
 						return NULL;
 					}
 
@@ -1797,9 +1797,9 @@ namespace zetscript{
 									if((irv=SCOPE_NODE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
 
 										if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
-											writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Function name \"%s\" is already defined with same args at %s:%i", function_name.c_str(),GET_INSTRUCTION_FILE_LINE(irv->idxAstNode));
+											writeErrorMsg(current_parsing_filename,line,"Function name \"%s\" is already defined with same args at %s:%i", function_name.c_str(),GET_INSTRUCTION_FILE_LINE(irv->idxAstNode));
 										}else{
-											writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
+											writeErrorMsg(current_parsing_filename,line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
 										}
 
 										return NULL;
@@ -1825,10 +1825,10 @@ namespace zetscript{
 
 				}
 				else{
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line," Expected '('");
+					writeErrorMsg(current_parsing_filename,line," Expected '('");
 				}
 			}else{
-				writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected operator or function operator");
+				writeErrorMsg(current_parsing_filename,line,"Expected operator or function operator");
 			}
 		}
 		return NULL;
@@ -1856,7 +1856,7 @@ namespace zetscript{
 
 
 					if(*aux_p!=';'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ';'");
+						writeErrorMsg(current_parsing_filename,line,"Expected ';'");
 						return NULL;
 					}
 					aux_p=IGNORE_BLANKS(aux_p+1,line);
@@ -1897,7 +1897,7 @@ namespace zetscript{
 					if((end_expr = evalExpression(aux_p+1,line,_currentScope,&pCurrentFunctionInfo->instruction)) != NULL){
 
 						if(*end_expr != ')'){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')'");
+							writeErrorMsg(current_parsing_filename,line,"Expected ')'");
 							return NULL;
 						}
 
@@ -1908,7 +1908,7 @@ namespace zetscript{
 
 						aux_p=IGNORE_BLANKS(end_expr+1,line);
 						if(*aux_p != '{'){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected while-block open block ('{') ");
+							writeErrorMsg(current_parsing_filename,line,"Expected while-block open block ('{') ");
 							return NULL;
 						}
 						if((aux_p=evalBlock(aux_p
@@ -1925,12 +1925,12 @@ namespace zetscript{
 							}
 						}
 					}else{
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')' while ");
+						writeErrorMsg(current_parsing_filename,line,"Expected ')' while ");
 						return NULL;
 					}
 
 				}else{
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '(' while ");
+					writeErrorMsg(current_parsing_filename,line,"Expected '(' while ");
 					return NULL;
 				}
 			}
@@ -1963,7 +1963,7 @@ namespace zetscript{
 				//1st evaluate body ..
 				aux_p=IGNORE_BLANKS(aux_p,line);
 				if(*aux_p != '{'){
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected open block ('{') in do-while expression");
+					writeErrorMsg(current_parsing_filename,line,"Expected open block ('{') in do-while expression");
 					return NULL;
 				}
 				if((aux_p=evalBlock(aux_p
@@ -1981,7 +1981,7 @@ namespace zetscript{
 						key_w = isKeyword(aux_p);
 
 						if(key_w!=WHILE_KEYWORD){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"expected while keyword");
+							writeErrorMsg(current_parsing_filename,line,"expected while keyword");
 							return NULL;
 						}
 
@@ -1994,7 +1994,7 @@ namespace zetscript{
 							if((end_expr = evalExpression(aux_p+1,line,_currentScope,&pCurrentFunctionInfo->instruction)) != NULL){
 
 								if(*end_expr != ')'){
-									writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')'");
+									writeErrorMsg(current_parsing_filename,line,"Expected ')'");
 									return NULL;
 								}
 								if((start_symbol = CZetScriptUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
@@ -2003,12 +2003,12 @@ namespace zetscript{
 
 
 							}else{
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')' do-while expression");
+								writeErrorMsg(current_parsing_filename,line,"Expected ')' do-while expression");
 								return NULL;
 							}
 
 						}else{
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '(' do-while expression");
+							writeErrorMsg(current_parsing_filename,line,"Expected '(' do-while expression");
 							return NULL;
 						}
 
@@ -2047,24 +2047,24 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(aux_p,line);
 
 					if(*aux_p != '('){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '(' if");
+						writeErrorMsg(current_parsing_filename,line,"Expected '(' if");
 						return NULL;
 					}
 
 					conditional_line=line;
 
 					if((end_expr = evalExpression(aux_p+1,line,scope_info,&pCurrentFunctionInfo->instruction)) == NULL){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')' if ");
+						writeErrorMsg(current_parsing_filename,line,"Expected ')' if ");
 						return NULL;
 					}
 
 					if(*end_expr != ')'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')'");
+						writeErrorMsg(current_parsing_filename,line,"Expected ')'");
 						return NULL;
 					}
 
 					if(IGNORE_BLANKS(aux_p+1,dl)==end_expr){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"no conditional expression");
+						writeErrorMsg(c,line,"no conditional expression");
 						return NULL;
 					}
 
@@ -2077,7 +2077,7 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(end_expr+1,line);
 					if(*aux_p != '{'){
 
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected if-block open block ('{')");
+						writeErrorMsg(current_parsing_filename,line,"Expected if-block open block ('{')");
 						return NULL;
 					}
 
@@ -2118,7 +2118,7 @@ namespace zetscript{
 						if(!if_key){
 
 							if(*aux_p != '{'){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected else-block open block ('{')");
+								writeErrorMsg(current_parsing_filename,line,"Expected else-block open block ('{')");
 								return NULL;
 							}
 
@@ -2192,7 +2192,7 @@ namespace zetscript{
 						}
 						else{
 
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected 'var' keyword");
+							writeErrorMsg(current_parsing_filename,line,"Expected 'var' keyword");
 							return NULL;
 						}
 
@@ -2217,7 +2217,7 @@ namespace zetscript{
 
 
 						if(*aux_p != ';'){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ';'");
+							writeErrorMsg(current_parsing_filename,line,"Expected ';'");
 							return NULL;
 
 						}
@@ -2239,7 +2239,7 @@ namespace zetscript{
 						aux_p=IGNORE_BLANKS(aux_p,line);
 
 						if(*aux_p != ';'){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ';'");
+							writeErrorMsg(current_parsing_filename,line,"Expected ';'");
 							return NULL;
 
 						}
@@ -2250,7 +2250,7 @@ namespace zetscript{
 						if(*aux_p != ')' ){ // finally do post op...
 
 							if(*aux_p == ',' ){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Unexpected ) ");
+								writeErrorMsg(current_parsing_filename,line,"Unexpected ) ");
 								return NULL;
 							}
 
@@ -2264,7 +2264,7 @@ namespace zetscript{
 									aux_p=IGNORE_BLANKS(aux_p+1,line);
 								}else{
 									if(*aux_p != ')' ){
-										writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')'");
+										writeErrorMsg(current_parsing_filename,line,"Expected ')'");
 										return NULL;
 									}
 								}
@@ -2274,14 +2274,14 @@ namespace zetscript{
 					}
 
 					if(*aux_p != ')'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')'");
+						writeErrorMsg(current_parsing_filename,line,"Expected ')'");
 						return NULL;
 
 					}
 
 					aux_p=IGNORE_BLANKS(aux_p+1,line);
 					if(*aux_p != '{'){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '{' for-block");
+						writeErrorMsg(current_parsing_filename,line,"Expected '{' for-block");
 						return NULL;
 					}
 
@@ -2299,7 +2299,7 @@ namespace zetscript{
 
 					}
 				}else{
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '(' for");
+					writeErrorMsg(current_parsing_filename,line,"Expected '(' for");
 					return NULL;
 				}
 			}
@@ -2361,7 +2361,7 @@ namespace zetscript{
 
 
 						if(*aux_p != ')'){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ')' switch");
+							writeErrorMsg(current_parsing_filename,line,"Expected ')' switch");
 							error = true;
 							return NULL;
 						}
@@ -2379,7 +2379,7 @@ namespace zetscript{
 							aux_p=IGNORE_BLANKS(aux_p,line);
 
 							if(*aux_p != '}'){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '}' switch");
+								writeErrorMsg(current_parsing_filename,line,"Expected '}' switch");
 								return NULL;
 							}
 
@@ -2390,12 +2390,12 @@ namespace zetscript{
 							return aux_p+1;
 						}
 						else{
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '{' switch");
+							writeErrorMsg(current_parsing_filename,line,"Expected '{' switch");
 							return NULL;
 						}
 				}
 				else{
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected '(' switch ");
+					writeErrorMsg(current_parsing_filename,line,"Expected '(' switch ");
 					return NULL;
 				}
 			}
@@ -2475,7 +2475,7 @@ namespace zetscript{
 
 							// check whwther the function is anonymous with a previous arithmetic operation ....
 							if((end_var=getIdentifierToken(aux_p,variable_name))==NULL){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected symbol");
+								writeErrorMsg(current_parsing_filename,line,"Expected symbol");
 								return NULL;
 							}
 						}
@@ -2484,7 +2484,7 @@ namespace zetscript{
 					KEYWORD_TYPE keyw = isKeyword(variable_name.c_str());
 
 					if(keyw != KEYWORD_TYPE::UNKNOWN_KEYWORD){ // a keyword was detected...
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Cannot use symbol name as reserverd symbol \"%s\"",defined_keyword[keyw].str);
+						writeErrorMsg(current_parsing_filename,line,"Cannot use symbol name as reserverd symbol \"%s\"",defined_keyword[keyw].str);
 						return NULL;
 					}
 
@@ -2493,7 +2493,7 @@ namespace zetscript{
 					//}
 					bool ok_char=*aux_p == ';' || *aux_p == ',' || *aux_p == '=' ;
 					if(is_class_member && *aux_p == '='){
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Variable member is not assignable on its declaration. Should be initialized within constructor.");
+						writeErrorMsg(current_parsing_filename,line,"Variable member is not assignable on its declaration. Should be initialized within constructor.");
 						return NULL;
 					}
 
@@ -2540,13 +2540,13 @@ namespace zetscript{
 						KEYWORD_TYPE keyw = isKeyword(variable_name.c_str());
 						if(keyw == KEYWORD_TYPE::IN_KEYWORD){ // in keyword was detected (return to evalr)...
 							if(!allow_for_in){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"'in' keyword should be used with an uninitialized variable (example: for ( var e in v) {...} )", *aux_p);
+								writeErrorMsg(current_parsing_filename,line,"'in' keyword should be used with an uninitialized variable (example: for ( var e in v) {...} )", *aux_p);
 								return NULL;
 							}
 							end=true;
 						}
 						else{
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"unexpected '%c'", *aux_p);
+							writeErrorMsg(current_parsing_filename,line,"unexpected '%c'", *aux_p);
 							return NULL;
 						}
 					}
@@ -2560,7 +2560,7 @@ namespace zetscript{
 					aux_p++;
 				}
 				else{
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected ';'");
+					writeErrorMsg(current_parsing_filename,line,"Expected ';'");
 					return NULL;
 				}
 
@@ -2593,7 +2593,7 @@ namespace zetscript{
 
 				if(*aux_p != '}'){
 					error = true;
-					writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected } ");
+					writeErrorMsg(current_parsing_filename,line,"Expected } ");
 					return NULL;
 				}
 
@@ -2615,14 +2615,14 @@ namespace zetscript{
 
 		{ // ok break is valid in current scope...
 
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line,"\"break\" allowed within loop or case-switch statements");
+			writeErrorMsg(current_parsing_filename,line,"\"break\" allowed within loop or case-switch statements");
 			error = true;
 			return NULL;
 		}
 
 
 		if(*aux_p != ';'){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line,"expected ';'");
+			writeErrorMsg(current_parsing_filename,line,"expected ';'");
 			error = true;
 			return NULL;
 		}
@@ -2633,14 +2633,14 @@ namespace zetscript{
 		char *aux_p=(char*)s;
 		{ // ok break is valid in current scope...
 
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line,"\"continue\" allowed within loop or case-switch statements");
+			writeErrorMsg(current_parsing_filename,line,"\"continue\" allowed within loop or case-switch statements");
 			error = true;
 			return NULL;
 		}
 
 
 		if(*aux_p != ';'){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line,"expected ';'");
+			writeErrorMsg(current_parsing_filename,line,"expected ';'");
 			error = true;
 			return NULL;
 		}
@@ -2678,7 +2678,7 @@ namespace zetscript{
 		aux_p=IGNORE_BLANKS(aux_p,line);
 
 		if(*aux_p != ':'){
-			writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Expected  ':' ");
+			writeErrorMsg(current_parsing_filename,line,"Expected  ':' ");
 			return NULL;
 		}
 
@@ -2727,7 +2727,7 @@ namespace zetscript{
 
 					return  defined_keyword[keyw].eval_fun(s,line,scope_info,error);
 				}
-				writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Not implemented");
+				writeErrorMsg(current_parsing_filename,line,"Not implemented");
 				error = true;
 				return NULL;
 			}
@@ -2779,7 +2779,7 @@ namespace zetscript{
 						aux += strlen(defined_directive[directive].str);
 						aux = IGNORE_BLANKS(aux,line);
 						if(*aux != '\"'){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"expected starting \" directive");
+							writeErrorMsg(current_parsing_filename,line,"expected starting \" directive");
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
@@ -2789,7 +2789,7 @@ namespace zetscript{
 						while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
 
 						if(*aux != '\"'){
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"expected end \" directive");
+							writeErrorMsg(current_parsing_filename,line,"expected end \" directive");
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
@@ -2811,7 +2811,7 @@ namespace zetscript{
 							string file_to_eval=symbol_name;
 
 							if(CZetScript::getInstance()->isFilenameAlreadyParsed(file_to_eval.c_str())){
-								writeErrorMsg(CURRENT_PARSING_FILENAME,line,"\"%s\" already evald",file_to_eval.c_str());
+								writeErrorMsg(current_parsing_filename,line,"\"%s\" already evald",file_to_eval.c_str());
 								THROW_SCRIPT_ERROR();
 								return NULL;
 							}
@@ -2831,7 +2831,7 @@ namespace zetscript{
 						aux++;// advance ..
 						break;
 					default:
-						writeErrorMsg(CURRENT_PARSING_FILENAME,line,"directive \"%s\" not supported",defined_directive[directive].str);
+						writeErrorMsg(current_parsing_filename,line,"directive \"%s\" not supported",defined_directive[directive].str);
 						break;
 					}
 
@@ -2873,7 +2873,7 @@ namespace zetscript{
 
 						if(*end_expr != ';'){
 
-							writeErrorMsg(CURRENT_PARSING_FILENAME,line,"expected end ;");
+							writeErrorMsg(current_parsing_filename,line,"expected end ;");
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
@@ -2944,10 +2944,10 @@ namespace zetscript{
 		bool error=false;
 		char *end=NULL;
 
-		pushFunction(MAIN_SCRIPT_FUNCTION_OBJECT);
+		pushFunction(MAIN_FUNCTION);
 		if((end=eval_Recursive(s,line,MAIN_SCOPE_NODE,error))!=NULL){
 			if(*end != 0){
-				writeErrorMsg(CURRENT_PARSING_FILENAME,line,"Unexpected \'%c\' ",*end);
+				writeErrorMsg(current_parsing_filename,line,"Unexpected \'%c\' ",*end);
 				THROW_SCRIPT_ERROR();
 				return false;
 			}

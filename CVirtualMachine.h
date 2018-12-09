@@ -52,7 +52,7 @@ namespace zetscript{
 
 		int idxCurrentStack;
 		int idx_laststatment;
-		int current_ast_node_call_c_function;
+		CScriptFunction *current_call_c_function;
 
 	//===================================================================================================
 
@@ -91,7 +91,7 @@ namespace zetscript{
 
 		void iniStackVar(unsigned int pos,const tStackElement & stk);
 		void clearGlobals();
-		int getCurrentAstNodeCall_C_Function();
+		CScriptFunction * getCurrent_C_FunctionCall();
 
 		string stk_C_TypeStr(const tStackElement & stk_v);
 

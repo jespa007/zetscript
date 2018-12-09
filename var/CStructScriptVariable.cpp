@@ -40,14 +40,14 @@ namespace zetscript{
 
 
 	void CStructScriptVariable::add_attr(const char *attr_name, tStackElement  * v){
-		if(addVariableSymbol(string(attr_name),CURRENT_VM->getCurrentAstNodeCall_C_Function(),v)==NULL){
+		if(addVariableSymbol(string(attr_name),CURRENT_VM->getCurrent_C_FunctionCall(),NULL,v)==NULL){
 			CURRENT_VM->cancelExecution();
 		}
 	}
 
 	void CStructScriptVariable::remove_attr(const char *attr_name){
 
-		if(!removeVariableSymbolByName(string(attr_name),CURRENT_VM->getCurrentAstNodeCall_C_Function())){
+		if(!removeVariableSymbolByName(string(attr_name),CURRENT_VM->getCurrent_C_FunctionCall())){
 			CURRENT_VM->cancelExecution();
 		}
 	}

@@ -15,6 +15,9 @@ namespace zetscript{
 	class  CEval{
 
 	public:
+		static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
+		static string 				makeSymbolRef(const string & symbol_var, int idxScope);
+
 
 
 		static bool eval(const char *s, int & line);
@@ -278,8 +281,6 @@ namespace zetscript{
 		static tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned short properties);
 
 
-		static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
-		static string 				makeSymbolRef(const string & symbol_var, int idxScope);
 		static int					getIdxScopeFromSymbolRef(const string & symbol_ref);
 		static void pushFunction(CScriptFunction *sf);
 		static void popFunction();

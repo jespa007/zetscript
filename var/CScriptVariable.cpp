@@ -25,12 +25,12 @@ namespace zetscript{
 		}
 
 		// Register variables...
-		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.variable.size(); i++){
+		for ( unsigned i = 0; i < ir_class->m_variable.size(); i++){
 
 
-			tVariableSymbolInfo * ir_var = &ir_class->scope_info.local_symbols.variable[i];
+			tVariableSymbolInfo * ir_var = &ir_class->m_variable[i];
 
-			se=addVariableSymbol(CCompiler::getSymbolNameFromSymbolRef(ir_var->symbol_ref), ZS_UNDEFINED_IDX);
+			se=addVariableSymbol(CEval::getSymbolNameFromSymbolRef(ir_var->symbol_ref));
 
 			if(ir_var->properties & PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 			{ // we know the type object so we assign the pointer ...
@@ -42,11 +42,11 @@ namespace zetscript{
 		}
 
 		// Register functions...
-		for ( unsigned i = 0; i < ir_class->scope_info.local_symbols.function.size(); i++){
-			CScriptFunction * ir_fun  = GET_SCRIPT_FUNCTION(ir_class->scope_info.local_symbols.function[i]);
+		for ( unsigned i = 0; i < ir_class->m_function.size(); i++){
+			CScriptFunction * ir_fun  = ir_class->m_function[i];
 			 si =addFunctionSymbol(
-					 CCompiler::getSymbolNameFromSymbolRef( ir_fun->symbol_info.symbol_ref),
-					 ir_fun->symbol_info.idxAstNode,
+					 CEval::getSymbolNameFromSymbolRef( ir_fun->symbol_info.symbol_ref),
+
 					ir_fun
 
 					);
@@ -75,7 +75,8 @@ namespace zetscript{
 		idxClass = -1;
 		aux_string ="";
 		delete_c_object = false; // --> user is responsible to delete C objects!
-		ast_node_new=ZS_UNDEFINED_IDX;
+		info_function_new=NULL;
+		instruction_new=NULL;
 		memset(&this_variable,0,sizeof(this_variable));
 	}
 
@@ -105,7 +106,7 @@ namespace zetscript{
 				CScriptClass *sc=m_infoRegisteredClass;
 				while( sc->idxBaseClass.size()>0 && c_scriptclass_info==NULL){
 
-					sc=CScriptClass::getScriptClassByIdx(sc->idxBaseClass[0]); // get base class...
+					sc=CScriptClass::getScriptClass(sc->idxBaseClass[0]); // get base class...
 					if(sc->is_c_class()){
 						c_scriptclass_info=sc;
 						created_object = (*sc->c_constructor)();
@@ -130,14 +131,14 @@ namespace zetscript{
 	CScriptFunction *CScriptVariable::getConstructorFunction(){
 
 		if(m_infoRegisteredClass->idx_function_script_constructor != ZS_UNDEFINED_IDX){
-			return GET_SCRIPT_FUNCTION(m_infoRegisteredClass->scope_info.local_symbols.function[m_infoRegisteredClass->idx_function_script_constructor]);
+			return m_infoRegisteredClass->m_function[m_infoRegisteredClass->idx_function_script_constructor];
 		}
 
 		return NULL;
 	}
 
 	bool CScriptVariable::setIdxClass(unsigned char idx){
-		CScriptClass *_info_registered_class =  GET_SCRIPT_CLASS_INFO(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
+		CScriptClass *_info_registered_class =  GET_SCRIPT_CLASS(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
 
 		if(_info_registered_class == NULL){
 			return false;
@@ -159,7 +160,7 @@ namespace zetscript{
 		}
 	}
 
-	tStackElement * CScriptVariable::addVariableSymbol(const string & symbol_value, short _idxAstNode,tStackElement * sv){
+	tStackElement * CScriptVariable::addVariableSymbol(const string & symbol_value, CScriptFunction *info_function,tInstruction *src_instruction,tStackElement * sv){
 		tStackElement si;
 
 		bool error_symbol=false;
@@ -192,15 +193,15 @@ namespace zetscript{
 		}
 
 		if(error_symbol){
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(_idxAstNode),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			THROW_RUNTIME_ERROR("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			return NULL;
 		}
 
-		string symbol_ref=CCompiler::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+		string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(getVariableSymbol(symbol_ref) != NULL){
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(_idxAstNode),"internal:symbol \"%s\" already exists",symbol_value.c_str());
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
 			return NULL;
 		}
 
@@ -253,7 +254,7 @@ namespace zetscript{
 			string symbol = this->m_variableKey[i];
 
 			if(only_var_name){
-				symbol=CCompiler::getSymbolNameFromSymbolRef(symbol);
+				symbol=CEval::getSymbolNameFromSymbolRef(symbol);
 			}
 
 			if(varname == symbol){
@@ -263,7 +264,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const string & symbol_value,short _idxAstNode,CScriptFunction *irv, bool ignore_duplicates){
+	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const string & symbol_value,CScriptFunction *irv, bool ignore_duplicates){
 		tFunctionSymbol si;
 		si.proxy_ptr=0;
 		si.object = {
@@ -272,11 +273,11 @@ namespace zetscript{
 				NULL						// no var ref releated.
 		};
 
-		string symbol_ref=CCompiler::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+		string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(!ignore_duplicates){
 			if(getFunctionSymbol(symbol_ref) != NULL){
-				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(_idxAstNode), "internal:symbol already exists");
+				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(irv,NULL), "internal:symbol already exists");
 				return NULL;
 			}
 		}
@@ -295,7 +296,7 @@ namespace zetscript{
 			string symbol = this->m_functionSymbol[i].key_value;
 
 			if(only_var_name){
-				symbol=CCompiler::getSymbolNameFromSymbolRef(symbol);
+				symbol=CEval::getSymbolNameFromSymbolRef(symbol);
 			}
 
 			if(varname == symbol){
@@ -355,14 +356,14 @@ namespace zetscript{
 		return &m_variable;
 	}
 
-	bool CScriptVariable::removeVariableSymbolByName(const string & varname, short idxAstNode){
-		string symbol_ref=CCompiler::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
+	bool CScriptVariable::removeVariableSymbolByName(const string & varname, CScriptFunction *info_function){
+		string symbol_ref=CEval::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
 		for(unsigned int i = 0; i < this->m_variableKey.size(); i++){
 			if(symbol_ref == this->m_variableKey[i]){
 				return removeVariableSymbolByIndex(i,true);
 			}
 		}
-		writeErrorMsg(GET_INSTRUCTION_FILE_LINE(idxAstNode),"symbol %s doesn't exist",varname.c_str());
+		writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,NULL),"symbol %s doesn't exist",varname.c_str());
 		return false;
 	}
 
@@ -374,7 +375,7 @@ namespace zetscript{
 
 
 		if(idx >= m_variable.size()){
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds (%i)",idx);
+			writeErrorMsg("unknow",-1,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
 
@@ -417,7 +418,7 @@ namespace zetscript{
 				return true;
 			}
 
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ZS_UNDEFINED_IDX)," shared ptr alrady registered");
+			writeErrorMsg("unknow",-1," shared ptr alrady registered");
 			return false;
 		}
 
@@ -428,7 +429,7 @@ namespace zetscript{
 				return true;
 			}
 			else{
-				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ZS_UNDEFINED_IDX),"shared ptr not registered");
+				writeErrorMsg("unknow",-1,"shared ptr not registered");
 			}
 
 			return false;
@@ -440,7 +441,7 @@ namespace zetscript{
 
 	tFunctionSymbol *CScriptVariable::getFunctionSymbolByIndex(unsigned int idx){
 		if(idx >= m_functionSymbol.size()){
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(ZS_UNDEFINED_IDX),"idx symbol index out of bounds");
+			writeErrorMsg("unknow",-1,"idx symbol index out of bounds");
 			return NULL;
 		}
 		return &m_functionSymbol[idx];
@@ -482,7 +483,7 @@ namespace zetscript{
 
 //#ifdef __ZETSCRIPT_DEBUG__
 		if(!deallocated && was_created_by_constructor){
-			printf("[%s:%i] Allocated C pointer not deallocated\n",GET_INSTRUCTION_FILE_LINE(ast_node_new));
+			printf("[%s:%i] Allocated C pointer not deallocated\n",GET_INSTRUCTION_FILE_LINE(info_function_new, instruction_new));
 		}
 //#endif
 
