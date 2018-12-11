@@ -63,6 +63,8 @@ namespace zetscript{
 	}
 
 
+
+
 	CScope *	 CScope::newScope(bool is_c_node,short idxParentScope){
 
 		if(is_c_node){
@@ -80,7 +82,7 @@ namespace zetscript{
 	}
 
 
-	CScope 		* CScope::getScopeNodeByIdx(short idx){
+	CScope 		* CScope::getScope(short idx){
 		if(idx < 0 || (unsigned)idx >= vec_scope_node->size()){
 			THROW_RUNTIME_ERROR("CScope node out of bound");
 			return NULL;
@@ -90,7 +92,7 @@ namespace zetscript{
 	}
 	//------------------------------------------------------------------------------------------------
 
-	CScope::CScope( short _idx_this, short _idx_parent, bool _is_c_node){//, int _index){
+	CScope::CScope( bool _is_c_node, short _idx_this, short _idx_parent){//, int _index){
 		idxParentScope = _idx_parent;
 		idxCurrentScopePointer=ZS_UNDEFINED_IDX;
 		idxScope = _idx_this;

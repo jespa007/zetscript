@@ -930,7 +930,7 @@ namespace zetscript{
 			char *aux_p = (char *)s;
 			string symbol_value;
 			char *end_p;
-			PASTNode attr_node = NULL;
+			//PASTNode attr_node = NULL;
 			int lineSymbol;
 
 			if(*aux_p == '{'){ // go for final ...
@@ -1189,7 +1189,7 @@ namespace zetscript{
 		KEYWORD_TYPE kw;
 		bool error=false;
 
-		PASTNode ast_node_to_be_evaluated=NULL;
+		//PASTNode ast_node_to_be_evaluated=NULL;
 		char *aux_p=IGNORE_BLANKS(s,line);
 
 		while(!endExpression(aux_p)){
@@ -1422,7 +1422,7 @@ namespace zetscript{
 		char *end_p;
 		string symbol_value;
 		KEYWORD_TYPE key_w;
-		PASTNode   value;
+		//PASTNode   value;
 
 		aux_p=IGNORE_BLANKS(aux_p,line);
 
@@ -1475,7 +1475,7 @@ namespace zetscript{
 
 		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 
-			if((sc=CScriptClass::getScriptClassByName(class_name)) != NULL){
+			if((sc=CScriptClass::getScriptClass(class_name)) != NULL){
 
 				idxScopeClass=sc->idxScope;
 
@@ -1504,7 +1504,7 @@ namespace zetscript{
 		//CScriptFunction * class_object=NULL;
 
 		KEYWORD_TYPE key_w;
-		PASTNode function_collection_node=NULL,vars_collection_node=NULL,child_node=NULL, base_class_node = NULL;
+		//PASTNode function_collection_node=NULL,vars_collection_node=NULL,child_node=NULL, base_class_node = NULL;
 
 		aux_p=IGNORE_BLANKS(aux_p,line);
 
@@ -1546,18 +1546,14 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(end_p, line);
 				}
 
-				// register class
-
-
-				if((sc=CScriptClass::registerClass(class_name,base_class_name,NULL))==NULL){
-					return NULL;
-				}
-
 
 				// create new scope...
 				class_scope_info = CScope::newScope();
-				//class_scope_info->idxClass=sc->idxClass;
-				sc->idxScope=class_scope_info->idxScope;
+
+				// register class
+				if((sc=CScriptClass::registerClass(class_scope_info->idxScope,class_name,base_class_name))==NULL){
+					return NULL;
+				}
 
 
 
@@ -1638,7 +1634,7 @@ namespace zetscript{
 		char *symbol_value,*end_var;
 		KEYWORD_TYPE key_w;
 
-		PASTNode args_node=NULL, body_node=NULL, arg_node=NULL;
+		//PASTNode args_node=NULL, body_node=NULL, arg_node=NULL;
 		string conditional_str;
 		short idxScopeClass;
 
@@ -1796,22 +1792,17 @@ namespace zetscript{
 								if(named_function){ // register named function...
 									if((irv=SCOPE_NODE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
 
-										if(irv->idxAstNode!=ZS_UNDEFINED_IDX){
-											writeErrorMsg(current_parsing_filename,line,"Function name \"%s\" is already defined with same args at %s:%i", function_name.c_str(),GET_INSTRUCTION_FILE_LINE(irv->idxAstNode));
-										}else{
-											writeErrorMsg(current_parsing_filename,line,"Function name \"%s\" is no allowed it has conflict with name of already registered function in C/C++", function_name.c_str());
-										}
-
+										writeErrorMsg(current_parsing_filename,line,"Function name \"%s\" is already defined with same args at %s:%i", function_name.c_str(),irv->file.c_str(),irv->line);
 										return NULL;
 									}
 
-									if((irv=SCOPE_NODE(idxScope)->registerSymbol(function_name,NULL,n_params))==NULL){
+									if((irv=SCOPE_NODE(idxScope)->registerSymbol(current_parsing_filename,line,function_name,n_params))==NULL){
 										return NULL;
 									}
 
 
 								}else{ // register anonymouse function at global scope...
-									irv=SCOPE_NODE(IDX_GLOBAL_SCOPE)->registerAnonymouseFunction(NULL);
+									irv=SCOPE_NODE(IDX_GLOBAL_SCOPE)->registerAnonymouseFunction(current_parsing_filename,line);
 								}
 
 
@@ -1845,7 +1836,7 @@ namespace zetscript{
 		if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
 
 			if(key_w == KEYWORD_TYPE::RETURN_KEYWORD){ // possible variable...
-				PASTNode child_node=NULL;
+				//PASTNode child_node=NULL;
 				aux_p += strlen(defined_keyword[key_w].str);
 
 
@@ -1875,7 +1866,7 @@ namespace zetscript{
 		KEYWORD_TYPE key_w;
 		CScope *_currentScope=NULL;
 
-		PASTNode conditional_expression=NULL, while_node=NULL;
+		//PASTNode conditional_expression=NULL, while_node=NULL;
 		string conditional_str;
 		error = false;
 
@@ -1947,7 +1938,7 @@ namespace zetscript{
 		KEYWORD_TYPE key_w;
 		CScope *_currentScope=NULL;
 
-		PASTNode conditional_expression=NULL, body_node=NULL, while_node=NULL;
+	//	PASTNode conditional_expression=NULL, body_node=NULL, while_node=NULL;
 		string conditional_str;
 		error = false;
 
@@ -2028,7 +2019,7 @@ namespace zetscript{
 		char *end_expr,*start_symbol;
 		int dl=-1;
 		KEYWORD_TYPE key_w;
-		PASTNode conditional=NULL, if_node=NULL, else_node=NULL,block=NULL, group_conditional_nodes = NULL;
+		//PASTNode conditional=NULL, if_node=NULL, else_node=NULL,block=NULL, group_conditional_nodes = NULL;
 		string conditional_str;
 		error = false;
 		int conditional_line;
@@ -2064,7 +2055,7 @@ namespace zetscript{
 					}
 
 					if(IGNORE_BLANKS(aux_p+1,dl)==end_expr){
-						writeErrorMsg(c,line,"no conditional expression");
+						writeErrorMsg(current_parsing_filename,line,"no conditional expression");
 						return NULL;
 					}
 
@@ -2153,7 +2144,7 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		KEYWORD_TYPE key_w;
 		error=false;
-		PASTNode block_for = NULL,pre_node=NULL,cond_node=NULL,post_node=NULL, pre_node_expression=NULL, cond_node_expression=NULL,post_node_expression=NULL;
+		//PASTNode block_for = NULL,pre_node=NULL,cond_node=NULL,post_node=NULL, pre_node_expression=NULL, cond_node_expression=NULL,post_node_expression=NULL;
 		string eval_for;
 
 		//CScope *_localScope =  scope_info != NULL?scope_info->symbol_info.ast->scope_info_ptr:NULL; // gets scope...
@@ -2203,7 +2194,7 @@ namespace zetscript{
 					key_w = isKeyword(aux_p);
 					if(key_w == KEYWORD_TYPE::IN_KEYWORD){
 
-						PASTNode node_for_in_right_op_expression=NULL;
+						//PASTNode node_for_in_right_op_expression=NULL;
 
 						aux_p=IGNORE_BLANKS(aux_p+strlen(defined_keyword[KEYWORD_TYPE::IN_KEYWORD].str),line);
 
@@ -2313,13 +2304,13 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		char *end_symbol,*start_symbol;
-		PASTNode switch_node=NULL,
+		/*PASTNode switch_node=NULL,
 					 group_cases=NULL,
 					 case_value_node=NULL,
-					 default_switch_node=NULL;
+					 default_switch_node=NULL;*/
 
 		CScope *scope_case=NULL;
-		PASTNode body_switch=NULL;
+		//PASTNode body_switch=NULL;
 
 		OPERATOR_TYPE ip;
 		char *value_to_eval;
@@ -2347,7 +2338,7 @@ namespace zetscript{
 						aux_p=IGNORE_BLANKS(aux_p+1,line);
 
 						// evaluate switch vale expression ...
-						PASTNode condition_expression_to_evaluate = NULL;
+						//PASTNode condition_expression_to_evaluate = NULL;
 						//static char * evalExpression_Recursive(const char *s, int & line, CScope *scope_info, PASTNode *ast_node_to_be_evaluated=NULL,GROUP_TYPE type_group=GROUP_TYPE::GROUP_0,PASTNode parent=NULL);
 						if((aux_p = CEval::evalExpression(
 								aux_p,
@@ -2413,9 +2404,9 @@ namespace zetscript{
 		KEYWORD_TYPE key_w;
 		char *start_var,*end_var;
 		string class_member;
-		PASTNode class_node;
-		PASTNode var_node;
-		PASTNode vars_collection_node=NULL;
+		//PASTNode class_node;
+		//PASTNode var_node;
+		//PASTNode vars_collection_node=NULL;
 
 		int idxScope=ZS_UNDEFINED_IDX;
 		string s_aux,variable_name;
@@ -2504,7 +2495,7 @@ namespace zetscript{
 
 						if(*aux_p == '='){ // only for variables (not class members)
 
-							PASTNode children_node=NULL;
+							//PASTNode children_node=NULL;
 
 
 							// try to evaluate expression...
@@ -2746,7 +2737,7 @@ namespace zetscript{
 		bool custom_quit = false;
 		char *aux = (char *)s;
 		char *end_expr=0;
-		PASTNode children=NULL;
+		//PASTNode children=NULL;
 
 		bool processed_directive=false;
 
@@ -2756,7 +2747,7 @@ namespace zetscript{
 		while(*aux != 0 && !custom_quit){
 
 			processed_directive=false;
-			children = NULL;
+			//children = NULL;
 			// ignore all ;
 			while(*aux==';' && *aux != 0){
 				aux =IGNORE_BLANKS(aux+1, line);
@@ -2945,7 +2936,7 @@ namespace zetscript{
 		char *end=NULL;
 
 		pushFunction(MAIN_FUNCTION);
-		if((end=eval_Recursive(s,line,MAIN_SCOPE_NODE,error))!=NULL){
+		if((end=eval_Recursive(s,line,MAIN_SCOPE,error))!=NULL){
 			if(*end != 0){
 				writeErrorMsg(current_parsing_filename,line,"Unexpected \'%c\' ",*end);
 				THROW_SCRIPT_ERROR();

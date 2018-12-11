@@ -208,7 +208,7 @@ namespace zetscript{
 			// from lat value to first to get last override function...
 			for(int i = (int)(m_function.size()-1); i >= 0 ; i--){
 				if((CEval::getSymbolNameFromSymbolRef(m_function[i]->symbol_info.symbol_ref) == function_name) && (m_function[i]->m_arg.size() ==  n_args)){
-					return &m_function[i];
+					return m_function[i];
 				}
 			}
 		}

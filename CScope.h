@@ -25,15 +25,17 @@
 
 namespace zetscript{
 
-
-#define SCOPE_NODE(idx) 				CScope::getScopeNodeByIdx(idx)
-
 #define IDX_GLOBAL_SCOPE				0
 #define IDX_INVALID_SCOPE				ZS_UNDEFINED_IDX
 #define IDX_ANONYMOUSE_SCOPE			-3
 
+
+#define SCOPE_NODE(idx) 				CScope::getScope(idx)
+#define MAIN_SCOPE						CScope::getScope(IDX_GLOBAL_SCOPE)
+
+
 // if 0 is in main <> 0, else.
-#define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScopeNodeByIdx(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
+#define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScope(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
 
 
 
@@ -63,7 +65,7 @@ namespace zetscript{
 
 
 		static CScope	    		*	newScope(bool is_c_node=false,short idx_parent_scope=ZS_UNDEFINED_IDX);
-		static CScope 				* 	getScopeNodeByIdx(short idx);
+		static CScope 				* 	getScope(short idx);
 
 		short idxScope;
 		bool is_c_node;
@@ -87,7 +89,7 @@ namespace zetscript{
 		tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
 
 		//CScope();
-		CScope( short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX);
+		CScope(bool is_c_node=false, short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX);
 		//CScope( short idx_this, short idx_parent=ZS_UNDEFINED_IDX);//, int _index);
 
 		short 	 getIdxBaseScope();
