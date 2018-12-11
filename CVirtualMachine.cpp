@@ -2428,7 +2428,7 @@ namespace zetscript{
 
 			}
 
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CEval::def_operator[instruction->op_code].op_str);
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CEval::defined_operator[instruction->op_code].str);
 			RETURN_ERROR;
 
 

@@ -1017,7 +1017,7 @@ namespace zetscript{
 		 CScriptClass * rc = getScriptClass(class_name);
 
 		 if(rc != NULL){
-			 return instanceScriptVariable(rc->symbol_info.idxClass);
+			 return instanceScriptVariable(rc->idxClass);
 		 }
 
 		 return NULL;
@@ -1033,7 +1033,7 @@ namespace zetscript{
 		 if(rc != NULL){
 
 			 // Is a primitive ?
-			 switch(rc->symbol_info.idxClass){
+			 switch(rc->idxClass){
 
 			 case IDX_CLASS_VOID_C:
 			 case IDX_CLASS_INT_PTR_C:

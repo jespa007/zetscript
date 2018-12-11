@@ -1477,7 +1477,7 @@ namespace zetscript{
 
 			if((sc=CScriptClass::getScriptClassByName(class_name)) != NULL){
 
-				idxScopeClass=sc->scope_info.idxScope;
+				idxScopeClass=sc->idxScope;
 
 				return aux_p+2;
 
@@ -1556,8 +1556,8 @@ namespace zetscript{
 
 				// create new scope...
 				class_scope_info = CScope::newScope();
-				class_scope_info->idxClass=sc->idxClass;
-				sc->scope_info.idxScope=class_scope_info->idxScope;
+				//class_scope_info->idxClass=sc->idxClass;
+				sc->idxScope=class_scope_info->idxScope;
 
 
 
