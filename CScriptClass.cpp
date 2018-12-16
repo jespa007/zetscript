@@ -430,27 +430,7 @@ namespace zetscript{
 		// we have to destroy all allocated constructor/destructor ...
 		for (unsigned i = 0; i < vec_script_class_node->size(); i++) {
 
-			CScriptClass *irv = vec_script_class_node->at(i);
-
-			if ((irv->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF) {
-
-				//zs_print_debug_cr("* Erasing c destructor/contructor %s...", irv->classPtrType.c_str());
-
-				if (irv->c_constructor) {
-					delete irv->c_constructor;
-				}
-
-				if (irv->c_destructor) {
-					delete irv->c_destructor;
-				}
-
-				// delete CScriptClass
-
-
-				//
-			}
-
-			delete irv;
+			delete vec_script_class_node->at(i);
 		}
 
 		vec_script_class_node->clear();
@@ -1241,6 +1221,23 @@ namespace zetscript{
 			return (*vec_script_class_node)[idx]->symbol_info.symbol_ref.c_str();
 		}
 		 return "class_unknow";
+	}
+
+	CScriptClass::~CScriptClass(){
+
+		if ((symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF) {
+
+			if (c_constructor !=NULL) {
+				delete c_constructor;
+				c_constructor=NULL;
+			}
+
+			if (c_destructor != NULL) {
+				delete c_destructor;
+				c_destructor=NULL;
+			}
+
+		}
 	}
 }
 

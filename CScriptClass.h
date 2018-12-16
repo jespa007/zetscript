@@ -50,8 +50,6 @@
 
 
 #define MAIN_VARIABLE(idx_var)					zetscript::CScriptClass::getVariableClass(IDX_CLASS_MAIN,idx_var)
-#define MAIN_SCRIPT_FUNCTION_IDX				zetscript::CScriptClass::getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)
-#define MAIN_SCRIPT_FUNCTION_OBJECT				GET_SCRIPT_FUNCTION(MAIN_SCRIPT_FUNCTION_IDX)
 
 
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClass::instanceScriptVariableByIdx(idx))
@@ -79,6 +77,21 @@ namespace zetscript{
 
 	class  CScriptClass:public CCommonClassFunctionData{
 
+	public:
+
+		// STRUCTS
+
+		typedef struct{
+			const char *   type_str;
+			BASIC_CLASS_TYPE  id;
+		}tPrimitiveType;
+
+		typedef struct{
+			tPrimitiveType 				*return_type;
+			vector<tPrimitiveType*>		params;
+		}tRegisterFunction;
+
+
 	private:
 
 		static 	bool 	register_c_base_symbols;
@@ -92,12 +105,34 @@ namespace zetscript{
 		 */
 		static 			vector<CScriptClass *> 			* vec_c_class_node;
 
-		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
+
+
 		ZETSCRIPT_MODULE_EXPORT static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
 		static void  print(const char *s);
 		static void (* print_out_callback)(const char *);
-		//------------- VARIABLES STRUCT ---------------
+
+		static unsigned char									getIdxScriptClass_Internal(const string & class_name);
+		static unsigned char									getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
+
+
 	public:
+
+
+
+
+		static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
+		static map<int,map<int,fntConversionType>> * mapTypeConversion;
+#if 0
+		 static bool searchVarFunctionSymbol(CCommonClassFunctionData * scope_info, tInstruction *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
+
+		 static void buildScopeVariablesBlock(CScriptFunction *root_class_irfs );
+		 static void unloadRecursiveFunctions(CScriptFunction * info_function);
+
+		 static bool updateFunctionSymbols(int idxSxriptFunctionObject, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);
+#endif
+
+
+		//------------- VARIABLES STRUCT ---------------
 
 		static string  *VOID_TYPE_STR;			// 	typeid(void).name()
 		static string  *INT_PTR_TYPE_STR;		//	typeid(int *).name()
@@ -113,10 +148,12 @@ namespace zetscript{
 		static string  *BOOL_TYPE_STR;			//	typeid(bool).name()
 		static string  *STACK_ELEMENT_PTR;		//	typeid(bool).name()
 
+		ZETSCRIPT_MODULE_EXPORT static unsigned char			getIdxClassFromIts_C_Type(const string & s);
 
 		ZETSCRIPT_MODULE_EXPORT static void setPrintOutCallback(void (*)(const char *));
 
 		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
+		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
 
 		//CCommonClassFunctionData			scope_info;
 		//tVariableSymbolInfo symbol_info;
@@ -138,21 +175,6 @@ namespace zetscript{
 		bool is_c_class();
 
 		//------------- STATIC METHODS ---------------
-
-
-	public:
-
-		// STRUCTS
-
-		typedef struct{
-			const char *   type_str;
-			BASIC_CLASS_TYPE  id;
-		}tPrimitiveType;
-
-		typedef struct{
-			tPrimitiveType 				*return_type;
-			vector<tPrimitiveType*>		params;
-		}tRegisterFunction;
 
 
 		static bool initStaticVars();
@@ -257,25 +279,7 @@ namespace zetscript{
 		template <typename _C, typename _R,typename _T>
 		static bool register_C_VariableMemberInt(const char *var_name, _R _T::*var_pointer);
 
-
-
-	private:
-
-		static unsigned char									getIdxScriptClass_Internal(const string & class_name);
-		static unsigned char									getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
-		ZETSCRIPT_MODULE_EXPORT static unsigned char			getIdxClassFromIts_C_Type(const string & s);
-
-
-		static tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
-		static map<int,map<int,fntConversionType>> * mapTypeConversion;
-#if 0
-		 static bool searchVarFunctionSymbol(CCommonClassFunctionData * scope_info, tInstruction *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
-
-		 static void buildScopeVariablesBlock(CScriptFunction *root_class_irfs );
-		 static void unloadRecursiveFunctions(CScriptFunction * info_function);
-
-		 static bool updateFunctionSymbols(int idxSxriptFunctionObject, const string & parent_symbol, int n_function);// is_main_class, bool is_main_function);
-#endif
+		virtual ~CScriptClass();
 
 
 	};

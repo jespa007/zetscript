@@ -5,6 +5,8 @@
 
 namespace zetscript{
 
+
+
 	template <typename T>
 	struct function_traits
 		: public function_traits<decltype(&T::operator())>

@@ -903,7 +903,7 @@ int main(int argc, char * argv[]) {
 	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}i;",10);
 	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);
 
-	CZetScript::getInstance()->eval("var i1,i2,it1,it2,n1,n2,nt1,nt2;");
+	CZetScript::getInstance()->evalString("var i1,i2,it1,it2,n1,n2,nt1,nt2;");
 
 	printf("%i. testing cinteger ops...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,4); // op1==op2
@@ -925,7 +925,7 @@ int main(int argc, char * argv[]) {
 	printf("%i. test consisten script-c-script calls ...\n",++n_test);
 	// test calling script-c-script-c
 	register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
-	CZetScript::getInstance()->eval("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
+	CZetScript::getInstance()->evalString("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
 
 	std::function<void ()> * test_1st_script_call=bind_function<void ()>("test_1st_script_call");
 	test_2nd_script_call=bind_function<void ()>("test_2nd_script_call");

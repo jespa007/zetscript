@@ -53,7 +53,7 @@ int main(){
 
 	class_C_baseof<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
 
-	zs->eval(
+	zs->evalString(
 		"class ScriptMyClassExtend:MyClassExtend{\n"
 		"	var data3;\n"
 		"	function function0(){\n"

@@ -167,12 +167,14 @@ namespace zetscript{
 				PUSH_NUMBER(fmod(f_aux_value1 , f_aux_value2));\
 		}\
 		else{\
-			if(!APPLY_METAMETHOD(STR(%)\
+			if(!APPLY_METAMETHOD(\
+							 calling_object\
+							,info_function\
+  						    ,instruction\
+							,STR(%)\
 							,MOD_METAMETHOD\
-							 ,calling_object\
-								 ,instruction\
-								,ptrResultInstructionOp1\
-								,ptrResultInstructionOp2\
+							,ptrResultInstructionOp1\
+							,ptrResultInstructionOp2\
 			)){\
 				RETURN_ERROR;\
 			}\
@@ -200,10 +202,12 @@ namespace zetscript{
 				PUSH_NUMBER(f_aux_value1 __OVERR_OP__ f_aux_value2);\
 		}\
 		else{\
-			if(!APPLY_METAMETHOD(STR(__OVERR_OP__)\
-							, __METAMETHOD__\
-							 ,calling_object\
+			if(!APPLY_METAMETHOD(\
+							calling_object\
+							,info_function\
 							,instruction\
+							,STR(__OVERR_OP__)\
+							,__METAMETHOD__\
 							,ptrResultInstructionOp1\
 							,ptrResultInstructionOp2\
 			)){\
@@ -238,10 +242,12 @@ namespace zetscript{
 		else if((ptrResultInstructionOp1->properties&ptrResultInstructionOp2->properties) == STK_PROPERTY_TYPE_STRING){\
 			PUSH_BOOLEAN(STRCMP(LOAD_STRING_OP(ptrResultInstructionOp1), __OVERR_OP__ ,LOAD_STRING_OP(ptrResultInstructionOp2)));\
 		}else{\
-			if(!APPLY_METAMETHOD(STR(__OVERR_OP__)\
-						 , __METAMETHOD__\
-						 ,calling_object\
-						 ,instruction\
+			if(!APPLY_METAMETHOD(\
+						 calling_object\
+						,info_function\
+						,instruction\
+						,STR(__OVERR_OP__)\
+						, __METAMETHOD__\
 						,ptrResultInstructionOp1\
 						,ptrResultInstructionOp2\
 			)){\
@@ -266,10 +272,12 @@ namespace zetscript{
 		if(properties == STK_PROPERTY_TYPE_INTEGER){\
 			PUSH_INTEGER(LOAD_INT_OP(ptrResultInstructionOp1) __OVERR_OP__ LOAD_INT_OP(ptrResultInstructionOp2));\
 		}else{\
-			if(!APPLY_METAMETHOD(STR(__OVERR_OP__)\
-							, __METAMETHOD__\
-							,calling_object\
+			if(!APPLY_METAMETHOD(\
+							 calling_object\
+							,info_function\
 							,instruction\
+							,STR(__OVERR_OP__)\
+							, __METAMETHOD__\
 							,ptrResultInstructionOp1\
 							,ptrResultInstructionOp2\
 			)){\
@@ -313,7 +321,7 @@ namespace zetscript{
 			if(!IS_NUMBER_OR_INT(src_ins->properties) && IS_NUMBER_OR_INT(dst_ins->properties)){\
 				if(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) != GET_INS_PROPERTY_VAR_TYPE(dst_ins->properties)\
 				){\
-					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",ast->symbol_value.c_str());\
+					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",info_function->getSymbol(instruction));\
 					RETURN_ERROR;\
 				}else{\
 					if(\
@@ -490,16 +498,17 @@ namespace zetscript{
 
 		MAX_SCOPE_INFO = &scope_info[VM_MAX_SCOPES-1];
 
-		current_ast_node_call_c_function=-1;
+		//current_ast_node_call_c_function=-1;
 
 		main_function_object = NULL;
 
 		vec_script_function_node = NULL;
-		vec_ast_node = NULL;
+		//vec_ast_node = NULL;
 
 		size_vec_script_function_object_node = 0;
-		size_vec_ast_node = 0;
+		//size_vec_ast_node = 0;
 		current_foreach=NULL;
+		current_call_c_function = NULL;
 
 
 	}
@@ -670,7 +679,7 @@ namespace zetscript{
 	#define POP_ONE \
 	ptrResultInstructionOp1=--ptrCurrentOp;
 
-	CScriptFunction * CVirtualMachine::getCurrent_C_FunctionCall(){
+	const CScriptFunction * CVirtualMachine::getCurrent_C_FunctionCall(){
 		return current_call_c_function;
 	}
 
@@ -992,11 +1001,11 @@ namespace zetscript{
 			size_vec_script_function_object_node=0;
 		}
 
-		if(vec_ast_node!= NULL){
+		/*if(vec_ast_node!= NULL){
 			free(vec_ast_node);
 			vec_ast_node=NULL;
 			size_vec_ast_node=0;
-		}
+		}*/
 
 	}
 
@@ -1147,7 +1156,7 @@ namespace zetscript{
 						"1. Set register_C_baseSymbols(false) and  re-register the function using register_C_FunctionMember\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idxClass!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
-						,CCompiler::getSymbolNameFromSymbolRef(info_function->symbol_info.symbol_ref).c_str());
+						,CEval::getSymbolNameFromSymbolRef(info_function->symbol_info.symbol_ref).c_str());
 				RETURN_ERROR;
 			}
 
@@ -1525,7 +1534,7 @@ namespace zetscript{
 					unsigned short extra_flags=(instruction->instruction_properties&INS_PROPERTY_CONSTRUCT_CALL)?STK_PROPERTY_CONSTRUCTOR_FUNCTION:0;
 					extra_flags|=(instruction->index_op2==ZS_FUNCTION_NOT_FOUND_IDX) ?STK_PROPERTY_UNRESOLVED_FUNCTION:0;
 					void *function_obj=NULL;
-					vector<int> *vec_functions;
+					vector<CScriptFunction *> *vec_functions;
 					CScriptVariable * class_obj=NULL;
 					int index_op2 = (int)instruction->index_op2;
 					instruction_properties=instruction->instruction_properties;
@@ -1584,7 +1593,8 @@ namespace zetscript{
 							function_obj= NULL;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
 						}else if((index_op2<(int)vec_functions->size())) // get the function ...
 						{
-							function_obj = vec_script_function_node[(*vec_functions)[index_op2]];
+							function_obj = (*vec_functions)[index_op2];
+
 						}
 						else{
 							writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot find symbol global \"%s\""
@@ -1655,12 +1665,12 @@ namespace zetscript{
 									const char *str = (const char *)ptrResultInstructionOp2->stkValue;
 									src_ins=ptrResultInstructionOp1;
 									if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
-										tFunctionSymbol *si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str, -1,NULL, false );
+										tFunctionSymbol *si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str,NULL);
 										if(si!=NULL){
 											se=&si->object;;
 										}
 									}else{
-										se =((CStructScriptVariable *)struct_obj)->addVariableSymbol(str, -1,NULL );
+										se =((CStructScriptVariable *)struct_obj)->addVariableSymbol(str);
 									}
 
 									if(se == NULL){
@@ -1713,10 +1723,12 @@ namespace zetscript{
 						if(dst_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 							if(((CScriptVariable *)dst_ins->varRef)->itHasSetMetamethod()){
-								if(!APPLY_METAMETHOD("="
-										,SET_METAMETHOD
-										,calling_object
+								if(!APPLY_METAMETHOD(
+										calling_object
+										,info_function
 										,instruction
+										,"="
+										,SET_METAMETHOD
 										,ptrResultInstructionOp1
 										,ptrResultInstructionOp2
 								)){
@@ -1825,10 +1837,11 @@ namespace zetscript{
 					PUSH_BOOLEAN((!((bool)(ptrResultInstructionOp1->stkValue))));
 				}else{
 					if(!APPLY_METAMETHOD(
-							"!"
-							,NOT_METAMETHOD
-							 ,calling_object
+							calling_object
+							,info_function
 							,instruction
+							,"!"
+							,NOT_METAMETHOD
 							,ptrResultInstructionOp1
 							,ptrResultInstructionOp2
 							)){
@@ -1852,10 +1865,11 @@ namespace zetscript{
 				*/
 				}else{ // try metamethod ...
 						if(!APPLY_METAMETHOD(
-								"-"
-								,NEG_METAMETHOD
-								,calling_object
+								 calling_object
+								,info_function
 								,instruction
+								,"-"
+								,NEG_METAMETHOD
 								,ptrResultInstructionOp1
 								,ptrResultInstructionOp2
 								)){
@@ -1945,10 +1959,11 @@ namespace zetscript{
 				else{ // try metamethod ...
 
 					if(!APPLY_METAMETHOD(
-							"+"
-							,ADD_METAMETHOD
-							 ,calling_object
+							 calling_object
+							,info_function
 							,instruction
+							,"+"
+							,ADD_METAMETHOD
 							,ptrResultInstructionOp1
 							,ptrResultInstructionOp2
 							)){
@@ -2120,11 +2135,11 @@ namespace zetscript{
 
 					// try to find the function ...
 					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
-						tInstruction *iao = (tInstruction *)(callAle)->stkValue;
+						tInstruction *callAleInstruction = (tInstruction *)(callAle)->stkValue;
 						//PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
-						symbol_to_find = info_function->getSymbol(iao);
-						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
+						symbol_to_find = info_function->getSymbol(callAleInstruction);
+						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(callAleInstruction->instruction_properties);
 
 
 						// local vars as functions ...
@@ -2141,7 +2156,7 @@ namespace zetscript{
 
 								if(n_args == 0 && is_c){
 									aux_function_info = NULL;
-									iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+									callAleInstruction->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
 								}
 							}
 
@@ -2149,25 +2164,27 @@ namespace zetscript{
 						}
 
 						//bool all_check=true;
-						if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
+						if(callAleInstruction->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX)
 						{
-							vector<int> *vec_global_functions=&(main_function_object->m_function);
+							vector<CScriptFunction *> *vec_global_functions=&(main_function_object->m_function);
 							//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
 							if((aux_function_info=FIND_FUNCTION(
-									m_functionSymbol
+									 calling_object
+									,info_function
+									,instruction
+									,callAleInstruction
+
+									,m_functionSymbol
 									,vec_global_functions
-									,iao
 									,is_constructor
 									,symbol_to_find
-									,calling_object
-									,instruction
 									,ptrResultInstructionOp1
 									,ptrResultInstructionOp2
 									,startArg
 									,n_args
 									,NULL))==NULL){
 
-								if(iao->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX){
+								if(callAleInstruction->index_op2 != ZS_FUNCTION_NOT_FOUND_IDX){
 									RETURN_ERROR;
 								}
 							}
@@ -2246,7 +2263,8 @@ namespace zetscript{
 					if(!svar->initSharedPtr()){
 						RETURN_ERROR;
 					}
-					svar->ast_node_new=instruction->idxAstNode;
+					svar->info_function_new=info_function;
+					svar->instruction_new=instruction;
 					(*ptrCurrentOp++)={STK_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
 					continue;
 			 case  DELETE_OP:
@@ -2428,7 +2446,7 @@ namespace zetscript{
 
 			}
 
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CEval::defined_operator[instruction->op_code].str);
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CEval::getOperatorStr(instruction->op_code));
 			RETURN_ERROR;
 
 

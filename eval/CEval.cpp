@@ -144,6 +144,10 @@ namespace zetscript{
 	map<string,tInfoConstantValue *> 		*CEval::constant_pool=NULL;
 	CEval::tFunctionInfo				*CEval::pCurrentFunctionInfo=NULL;
 	vector<CEval::tFunctionInfo*> 	*CEval::vFunctionInfo=NULL;
+	vector<tInfoParsedSource> * CEval::m_parsedSource = NULL;
+
+	char CEval::print_aux_load_value[1024*8]={0};
+
 
 	const char * CEval::current_parsing_filename=DEFAULT_NO_FILENAME;
 	int CEval::current_idx_parsing_filename=-1;
@@ -245,6 +249,316 @@ namespace zetscript{
 		}
 		return aux_p;
 	}
+
+	const char * 		CEval::getOperatorStr(unsigned char  op){
+		if(op < OPERATOR_TYPE::MAX_OPERATOR_TYPES){
+			return CEval::defined_operator[op].str;
+
+		}
+
+		return "unknow_op";
+	}
+
+	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	 // FILE MANAGEMENT
+
+
+/*	void CEval::setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles){
+		m_parsedSource = parsedFiles;
+	}
+
+	int CEval::getIdxParsedFilenameSource(const char *file){
+
+		if(file == NULL) return 0;
+
+		for(unsigned i =0; i < m_parsedSource->size(); i++){
+			if(m_parsedSource->at(i).filename == file){
+				return i;
+			}
+		}
+
+		THROW_RUNTIME_ERROR("Fatal error! Cannot find idx for \"%s\"",file);
+
+		return -1;
+	}
+*/
+
+	bool CEval::isFilenameAlreadyParsed(const string & filename){
+		for(unsigned i = 0; i < m_parsedSource->size(); i++){
+			if(m_parsedSource->at(i).filename==filename){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	const char * CEval::getParsedFilenameFromIdx(unsigned idx){
+
+		if(idx >= m_parsedSource->size()){
+			THROW_RUNTIME_ERROR("out of bounds");
+			return DEFAULT_NO_FILENAME;
+		}
+
+		return m_parsedSource->at(idx).filename.c_str();
+	}
+
+	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	 // PRINT ASM INFO
+
+	 const char * CEval::getStrMovVar(tInstruction * iao){
+
+		if(iao->op_code != STORE){
+			return "ERROR";
+		}
+
+		string symbol_value="????";
+
+
+		sprintf(print_aux_load_value,"VAR(%s)",symbol_value.c_str());
+
+		return print_aux_load_value;
+	 }
+
+	 const char * CEval::getStrTypeLoadValue(PtrInstruction m_listStatements, int current_instruction){
+
+		tInstruction * iao =&m_listStatements[current_instruction];
+		tInfoConstantValue *icv;
+		if(iao->op_code != LOAD){
+			return "ERROR";
+		}
+
+		string symbol_value="????";
+
+
+
+		char object_access[512] = "";
+
+		sprintf(print_aux_load_value,"UNDEFINED");
+
+		if(iao->instruction_properties & INS_PROPERTY_ACCESS_SCOPE){
+
+			sprintf(object_access,
+					"[%03i]."
+
+					,(int)iao->index_op2);
+		}
+		else if(iao->instruction_properties & INS_PROPERTY_THIS_SCOPE){
+			sprintf(object_access,"this.");
+		}
+
+		switch(iao->index_op1){
+
+			case LOAD_TYPE::LOAD_TYPE_CONSTANT:
+				icv=(tInfoConstantValue *)iao->index_op2;
+				switch(icv->properties){
+				case STK_PROPERTY_TYPE_BOOLEAN:
+				case STK_PROPERTY_TYPE_INTEGER:
+					sprintf(print_aux_load_value,"CONST(%i)",(int)((intptr_t)icv->stkValue));
+					break;
+				case STK_PROPERTY_TYPE_NUMBER:
+					sprintf(print_aux_load_value,"CONST(%f)",*((float *)&icv->stkValue));
+					break;
+				case STK_PROPERTY_TYPE_STRING:
+					sprintf(print_aux_load_value,"CONST(%s)",((string *)icv->stkValue)->c_str());
+					break;
+
+				}
+				break;
+
+			case LOAD_TYPE::LOAD_TYPE_VARIABLE:
+				sprintf(print_aux_load_value,"%sVAR(%s)",object_access,symbol_value.c_str());
+				break;
+			case LOAD_TYPE::LOAD_TYPE_FUNCTION:
+
+				sprintf(print_aux_load_value,"%sFUN(%s)",object_access,symbol_value.c_str());
+				break;
+
+			case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
+				sprintf(print_aux_load_value,"ARG(%s)",symbol_value.c_str());
+				break;
+			default:
+
+				break;
+		}
+		return print_aux_load_value;
+	 }
+
+	 void CEval::printGeneratedCode(CScriptFunction *sfo){
+
+		// PRE: it should printed after compile and updateReferences.
+		string pre="";
+		string post="";
+
+		if(sfo->instruction != NULL){
+
+			unsigned idx_instruction=0;
+			for(tInstruction * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
+
+				int n_ops=0;
+				int index_op1 = instruction->index_op1;
+				int index_op2 = instruction->index_op2;
+
+				if(index_op1 != -1)
+					n_ops++;
+
+				 if(index_op2 != -1)
+					 n_ops++;
+
+				 pre="";
+				 post="";
+
+					switch(GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties)){
+					case INS_PROPERTY_PRE_NEG:
+						pre="-";
+						break;
+					case INS_PROPERTY_PRE_INC:
+						pre="++";
+						break;
+					case INS_PROPERTY_PRE_DEC:
+						pre="--";
+						break;
+					case INS_PROPERTY_POST_INC:
+						post="++";
+						break;
+					case INS_PROPERTY_POST_DEC:
+						post="--";
+						break;
+					default:
+						// check whether is constant and numeric
+						if(instruction->op_code==OP_CODE::LOAD && instruction->index_op1==LOAD_TYPE_CONSTANT){
+							tInfoConstantValue *icv = (((tInfoConstantValue *)instruction->index_op2));
+							float n;
+
+							// change the sign
+							switch(icv->properties){
+							default:
+								break;
+							case STK_PROPERTY_TYPE_INTEGER:
+								if(((intptr_t)icv->stkValue)<0){
+									pre="-";
+								}
+								break;
+							case STK_PROPERTY_TYPE_NUMBER:
+								memcpy(&n,&icv->stkValue,sizeof(float));
+								if(n<0){
+									pre="-";
+								}
+								break;
+							}
+						}
+						break;
+
+					}
+				switch(instruction->op_code){
+
+				case  NEW:
+					printf("[%03i]\t%s\t%s\n",idx_instruction,CEval::getOperatorStr(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?CScriptClass::getNameRegisteredClassByIdx(instruction->index_op1):"???");
+					break;
+				case  LOAD:
+					printf("[%03i]\t%s\t%s%s%s\n"
+							,idx_instruction,
+							CEval::getOperatorStr(instruction->op_code),
+							pre.c_str(),
+							getStrTypeLoadValue(sfo->instruction,idx_instruction),
+							post.c_str());
+					break;
+				case JNT:
+				case JT:
+				case JMP:
+					printf("[%03i]\t%s\t%03i\n"
+							,idx_instruction
+							,CEval::getOperatorStr(instruction->op_code)
+							,(int)instruction->index_op2);
+					break;
+				case PUSH_SCOPE:
+					printf("[%03i]\t%s%c%s%s%s%c\n"
+							,idx_instruction
+							,CEval::getOperatorStr(instruction->op_code)
+							,instruction->index_op1!=0?'(':' '
+							,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+							,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+							,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+							,instruction->index_op1!=0?')':' '
+							);
+					break;
+				case POP_SCOPE:
+					printf("[%03i]\t%s%c%s%s%s%c\n"
+							,idx_instruction
+							,CEval::getOperatorStr(instruction->op_code)
+							,instruction->index_op1!=0?'(':' '
+							,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+							,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+							,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+							,instruction->index_op1!=0?')':' '
+							);
+					break;
+				default:
+
+					if(n_ops==0){
+						printf("[%03i]\t%s\n",idx_instruction,CEval::getOperatorStr(instruction->op_code));
+					}else if(n_ops==1){
+						printf("[%03i]\t%s%s\n"
+								,idx_instruction
+								,CEval::getOperatorStr(instruction->op_code)
+								,(instruction->instruction_properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
+								);
+					}else{
+						printf("[%03i]\t%s\n"
+								,idx_instruction
+								,CEval::getOperatorStr(instruction->op_code)
+								);
+					}
+					break;
+				}
+			}
+		}
+
+		// and then print its functions ...
+		vector<CScriptFunction *> * m_vf = &sfo->m_function;
+
+		for(unsigned j =0; j < m_vf->size(); j++){
+
+			CScriptFunction *local_irfs = (*m_vf)[j];
+
+			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+				string symbol_ref="????";
+
+
+				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
+
+				if(local_irfs->idxClass!=ZS_INVALID_CLASS){
+					CScriptClass *sc = CScriptClass::getScriptClass(local_irfs->idxClass);
+					if(sc->idxClass == IDX_CLASS_MAIN){
+						symbol_ref="Main";
+					}else{
+						symbol_ref=sfo->symbol_info.symbol_ref+string("::")+string("????");
+					}
+				}
+
+				printf("-------------------------------------------------------\n");
+				printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
+				printGeneratedCode(m_vf->at(j));
+			}
+		}
+	 }
+
+
+	 void CEval::printGeneratedCode(){
+
+		 vector<CScriptClass *> * registeredClass = CScriptClass::getVectorScriptClassNode();
+
+		 // for all classes print code...
+		 for(unsigned i = 0; i < registeredClass->size(); i++){
+			 CScriptClass *rc=registeredClass->at(i);
+			 for(unsigned f = 0; f < rc->m_function.size(); f++){
+				 printGeneratedCode(rc->m_function[f]);
+			 }
+		 }
+	 }
+	 // PRINT ASM INFO
+	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 	//
@@ -2406,7 +2720,7 @@ namespace zetscript{
 
 		int idxScope=ZS_UNDEFINED_IDX;
 		string s_aux,variable_name;
-		char *symbol_value;
+		//char *symbol_value;
 		bool end=false;
 		bool allow_for_in=true;
 		short idxScopeClass=-1;
@@ -2445,8 +2759,8 @@ namespace zetscript{
 
 					if((end_var=isClassMember(aux_p,line,idxScopeClass, error))!=NULL){ // check if particular case extension attribute class
 						idxScope = idxScopeClass; // override scope info
-						symbol_value = (char *)class_member.c_str();
-						variable_name = symbol_value;
+						variable_name = class_member;
+						//variable_name = symbol_value;
 
 						is_class_member=true;
 
@@ -2515,11 +2829,11 @@ namespace zetscript{
 
 						 // define as many vars is declared within ','
 
-						if(!SCOPE_NODE(idxScope)->registerSymbol(var_node->symbol_value /*,var_node*/)){
+						if(!SCOPE_NODE(idxScope)->registerSymbol(current_parsing_filename,line,variable_name /*,var_node*/)){
 								return NULL;
 						}
 
-						zs_print_debug_cr("registered symbol \"%s\" line %i ",(var_node)->symbol_value.c_str(), (var_node)->line_value);
+						zs_print_debug_cr("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
 
 					}
 					else{
@@ -2797,14 +3111,14 @@ namespace zetscript{
 							int current_file_idx=CEval::current_idx_parsing_filename;
 							string file_to_eval=symbol_name;
 
-							if(CZetScript::getInstance()->isFilenameAlreadyParsed(file_to_eval.c_str())){
+							if(isFilenameAlreadyParsed(file_to_eval.c_str())){
 								writeErrorMsg(current_parsing_filename,line,"\"%s\" already evald",file_to_eval.c_str());
 								THROW_SCRIPT_ERROR();
 								return NULL;
 							}
 
 							try{
-								CZetScript::getInstance()->eval_file(file_to_eval.c_str());
+								CZetScript::getInstance()->evalFile(file_to_eval);
 							}catch(script_error & error){
 								THROW_SCRIPT_ERROR();
 								return NULL;
@@ -2925,27 +3239,74 @@ namespace zetscript{
 		}
 	}
 
-	bool CEval::eval(const char *s,int & line){
+	bool CEval::evalString(const string & expression){
 
-		line = 1;
+		int line =1;
 		bool error=false;
-		char *end=NULL;
+		char *end_char=NULL;
 
-		pushFunction(MAIN_FUNCTION);
-		if((end=eval_Recursive(s,line,MAIN_SCOPE,error))!=NULL){
-			if(*end != 0){
-				writeErrorMsg(current_parsing_filename,line,"Unexpected \'%c\' ",*end);
+		if((end_char=eval_Recursive(expression.c_str(),line,MAIN_SCOPE,error))!=NULL){
+			if(*end_char != 0){
+				writeErrorMsg(current_parsing_filename,line,"Unexpected \'%c\' ",*end_char);
 				THROW_SCRIPT_ERROR();
-				return false;
+				error=true;
 			}
-
-			popFunction();
-			return true;
 		}
 
-		THROW_SCRIPT_ERROR();
-		return false;
+		return !error;
+	}
 
+	bool CEval::evalFile(const string & filename){
+
+		int idx_filename=-1;
+		int line=1;
+		bool error=false;
+		char *end_char=NULL;
+
+
+		if(!isFilenameAlreadyParsed(filename)){
+			tInfoParsedSource ps;
+			ps.filename = filename;
+			m_parsedSource->push_back(ps);
+			idx_filename=m_parsedSource->size()-1;
+
+			bool status = false;
+			char *buf_tmp=NULL;
+			int n_bytes;
+
+			if((buf_tmp=CZetScriptUtils::readFile(filename, n_bytes))!=NULL){
+
+				pushFunction(MAIN_FUNCTION);
+
+				try{
+					if((end_char=eval_Recursive(buf_tmp,line,MAIN_SCOPE,error))!=NULL){
+						if(*end_char != 0){
+							writeErrorMsg(current_parsing_filename,line,"Unexpected \'%c\' ",*end_char);
+							THROW_SCRIPT_ERROR();
+							error=true;
+						}
+					}
+				}
+				catch(script_error & e){
+					free(buf_tmp);
+					THROW_EXCEPTION(e);
+					error=true;
+				}
+
+				free(buf_tmp);
+
+				popFunction();
+			}
+
+
+		}else{
+			// already parsed
+			THROW_RUNTIME_ERROR("Filename \"%s\" already parsed",filename);
+			return false;
+		}
+
+
+		return !error;
 	}
 
 }

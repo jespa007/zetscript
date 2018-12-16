@@ -24,7 +24,7 @@ int main(){
 	register_C_Variable("bool_var",bool_var); // it takes bool *
 	register_C_Variable("string_var",string_var); // it takes string *
 
-	zs->eval(
+	zs->evalString(
 		"int_var+=5;"
 		"float_var+=5;"
 		"bool_var=!bool_var;"

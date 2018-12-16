@@ -160,7 +160,7 @@ namespace zetscript{
 		}
 	}
 
-	tStackElement * CScriptVariable::addVariableSymbol(const string & symbol_value, CScriptFunction *info_function,tInstruction *src_instruction,tStackElement * sv){
+	tStackElement * CScriptVariable::addVariableSymbol(const string & symbol_value, const CScriptFunction *info_function,tInstruction *src_instruction,tStackElement * sv){
 		tStackElement si;
 
 		bool error_symbol=false;
@@ -264,12 +264,12 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const string & symbol_value,CScriptFunction *irv, bool ignore_duplicates){
+	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates){
 		tFunctionSymbol si;
 		si.proxy_ptr=0;
 		si.object = {
 				STK_PROPERTY_TYPE_FUNCTION, // dfine as function.
-				irv,						// function struct pointer.
+				(void *)irv,						// function struct pointer.
 				NULL						// no var ref releated.
 		};
 
@@ -356,7 +356,7 @@ namespace zetscript{
 		return &m_variable;
 	}
 
-	bool CScriptVariable::removeVariableSymbolByName(const string & varname, CScriptFunction *info_function){
+	bool CScriptVariable::removeVariableSymbolByName(const string & varname, const CScriptFunction *info_function){
 		string symbol_ref=CEval::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
 		for(unsigned int i = 0; i < this->m_variableKey.size(); i++){
 			if(symbol_ref == this->m_variableKey[i]){

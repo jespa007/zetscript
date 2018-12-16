@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	vector<CScriptFunction *> 	* vec_script_function_node=NULL;
+	vector<CScriptFunction *> 	* CScriptFunction::vec_script_function_node=NULL;
 
 
 	vector<CScriptFunction *> 	*CScriptFunction::getVectorScriptFunctionNode(){
@@ -69,7 +69,7 @@ namespace zetscript{
 
 			 vector<CScope *> *list = CScope::getVectorScopeNode();
 			 vector<tInfoVarScopeBlockRegister> vec_ivsb;
-			 std::map<int,tInfoVarScopeBlockRegister> map_scope_register;
+			 std::map<short,tInfoVarScopeBlockRegister> map_scope_register;
 			 //for(unsigned i = 0;i < list->size(); i++){ // register index var per scope ...
 				 //tInfoVarScopeBlockRegister ivsb;
 
@@ -99,9 +99,9 @@ namespace zetscript{
 			 n_lut_scope_symbols =map_scope_register.size();
 
 			 int i=0;
-			 for(std::map<int,tInfoVarScopeBlockRegister>::iterator e = map_scope_register.begin(); e != map_scope_register.end(); e++){
+			 for(std::map<short,tInfoVarScopeBlockRegister>::iterator e = map_scope_register.begin(); e != map_scope_register.end(); e++){
 
-				 tInfoVarScopeBlockRegister ivs = map_scope_register[e];
+				 tInfoVarScopeBlockRegister ivs = map_scope_register[e->first];
 
 				 lut_scope_symbol[i].idxScope = ivs.idxScope;
 				 lut_scope_symbol[i].n_var_index = (char)ivs.var_index.size();
@@ -143,7 +143,7 @@ namespace zetscript{
 
 		if((properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 			if(vec_script_function_node->size() > 1){ // if greather than 1 check if node consecutive...
-				if((vec_script_function_node->at(vec_script_function_node->size()-1)->properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){ // non consecutive c node..
+				if((vec_script_function_node->at(vec_script_function_node->size()-1)->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){ // non consecutive c node..
 						THROW_RUNTIME_ERROR("C Functions should be added after global scope and consecutuve C scope node.");
 						return NULL;
 				}
@@ -160,8 +160,8 @@ namespace zetscript{
 		irs->symbol_info.symbol_ref = function_ref; // <-- defined as global
 		irs->symbol_info.properties = properties;
 
-		irs->symbol_info.idxSymbol = (short)(m_function.size());
-		m_function.push_back(irs->idxScriptFunction);
+		irs->symbol_info.idxSymbol = (short)(irs->m_function.size());
+		irs->m_function.push_back(irs);
 
 
 		vec_script_function_node->push_back(irs);

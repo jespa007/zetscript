@@ -7,7 +7,7 @@ int main(){
 
 	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
 
-	zs->eval(
+	zs->evalString(
 		"class Test{"
 		"	var data1;"
 		"	function function1(arg){"

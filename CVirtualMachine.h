@@ -23,7 +23,7 @@ namespace zetscript{
 	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const vector<CScriptVariable *> & param)>
 
 
-	#define GET_INSTRUCTION_FILE_LINE(info_function,instruction) (info_function)->getFile(),(info_function)->getLine(instruction)
+	#define GET_INSTRUCTION_FILE_LINE(info_function,instruction) ((CScriptFunction *)info_function)->getFile(), ((CScriptFunction *)info_function)->getLine(instruction)
 
 
 	class CScriptFunction;
@@ -52,7 +52,7 @@ namespace zetscript{
 
 		int idxCurrentStack;
 		int idx_laststatment;
-		CScriptFunction *current_call_c_function;
+		const CScriptFunction *current_call_c_function;
 
 	//===================================================================================================
 
@@ -91,7 +91,7 @@ namespace zetscript{
 
 		void iniStackVar(unsigned int pos,const tStackElement & stk);
 		void clearGlobals();
-		CScriptFunction * getCurrent_C_FunctionCall();
+		const CScriptFunction * getCurrent_C_FunctionCall();
 
 		string stk_C_TypeStr(const tStackElement & stk_v);
 
@@ -184,14 +184,18 @@ namespace zetscript{
 		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
 		inline void  REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result);
 		inline CScriptFunction *  FIND_FUNCTION(
-									CScriptFunction *info_function
+									CScriptVariable *calling_object
+									,CScriptFunction *info_function
+									,tInstruction *instruction
+									,tInstruction * callAleInstruction
+
 				 	 	 	 	 	,vector<tFunctionSymbol> *m_functionSymbol
 									,vector<CScriptFunction *> *vec_global_functions
-									,tInstruction * iao
+
 									,bool is_constructor
 									,const string & symbol_to_find
-									,CScriptVariable *calling_object
-									,tInstruction *instruction
+
+
 									,tStackElement *ptrResultInstructionOp1
 									,tStackElement *ptrResultInstructionOp2
 									,tStackElement *startArg
@@ -201,15 +205,15 @@ namespace zetscript{
 		inline bool POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties);
 
 		inline bool APPLY_METAMETHOD(
-											CScriptFunction *info_function
-											,const char *__OVERR_OP__
-											,METAMETHOD_OPERATOR __METAMETHOD__
-											,CScriptVariable *calling_object
-											,tInstruction *instruction
-											,tStackElement *ptrResultInstructionOp1
-											,tStackElement *ptrResultInstructionOp2
+										CScriptVariable *calling_object
+										,CScriptFunction *info_function
+										,tInstruction *instruction
+										,const char *__OVERR_OP__
+										,METAMETHOD_OPERATOR __METAMETHOD__
+										,tStackElement *ptrResultInstructionOp1
+										,tStackElement *ptrResultInstructionOp2
 
-											);
+									);
 
 		void 				stackDumped();
 

@@ -62,7 +62,7 @@ int main(int argc, char * argv[]) {
 
 		try{
 
-			zetscript->eval_file(file.c_str(),execute,show_bytecode);
+			zetscript->evalFile(file,execute,show_bytecode);
 		}catch(script_error & error){
 			fprintf(stderr,"%s\n",error.what());
 		}
@@ -89,9 +89,7 @@ int main(int argc, char * argv[]) {
 			exit = expression=="exit" || expression=="quit";
 			if(!exit){ // evaluate expression
 				try{
-					zetscript->parse(expression);
-					zetscript->compile();
-					zetscript->execute();
+					zetscript->evalString(expression);
 				}catch(script_error & ex){
 					fprintf(stderr,"%s\n",ex.what());
 				}

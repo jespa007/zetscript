@@ -111,11 +111,11 @@ namespace zetscript{
 
 
 	inline bool CVirtualMachine::APPLY_METAMETHOD(
-										CScriptFunction *info_function
+										CScriptVariable *calling_object
+										,CScriptFunction *info_function
+										,tInstruction *instruction
 										,const char *__OVERR_OP__
 										,METAMETHOD_OPERATOR __METAMETHOD__
-										,CScriptVariable *calling_object
-										,tInstruction *instruction
 										,tStackElement *ptrResultInstructionOp1
 										,tStackElement *ptrResultInstructionOp2
 
@@ -185,14 +185,16 @@ namespace zetscript{
 
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
 			if((ptr_function_found = FIND_FUNCTION(
-					info_function
+					 calling_object
+					,info_function
+					,instruction
+					,instruction
 					,NULL
 					,vec_global_functions
-					,instruction
+
 					,false
 					,symbol_to_find
-					,calling_object
-					,instruction
+
 					,ptrResultInstructionOp1
 					,ptrResultInstructionOp2
 					,startArgs
@@ -232,14 +234,17 @@ namespace zetscript{
 	}
 
 	inline CScriptFunction * CVirtualMachine::FIND_FUNCTION(
-			CScriptFunction *info_function
+			CScriptVariable *calling_object
+			,CScriptFunction *info_function
+			,tInstruction *instruction
+			,tInstruction * callAleInstruction
+
 			,vector<tFunctionSymbol> *m_functionSymbol
 			,vector<CScriptFunction *> *vec_global_functions
-			,tInstruction * iao
+
 			,bool is_constructor
 			,const string & symbol_to_find
-			,CScriptVariable *calling_object
-			,tInstruction *instruction
+
 			,tStackElement *ptrResultInstructionOp1
 			,tStackElement *ptrResultInstructionOp2
 			,tStackElement *startArg
@@ -355,11 +360,11 @@ namespace zetscript{
 								}
 							}
 							if(all_check){ /* we found the right function (set it up!) ... */
-								iao->index_op2 = i;
+								callAleInstruction->index_op2 = i;
 								ptr_function_found = irfs;
 							}
 				}else{ /* type script function  ... */
-					iao->index_op2=i;
+					callAleInstruction->index_op2=i;
 					ptr_function_found = irfs;
 				}
 			}
@@ -367,7 +372,7 @@ namespace zetscript{
 
 		if(ptr_function_found == NULL){
 			if(is_constructor && n_args == 0){ /* default constructor not found --> set as not found... */
-				iao->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+				callAleInstruction->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
 			}
 			else{ // return error elaborate a error message...
 				int n_candidates=0;
@@ -435,7 +440,7 @@ namespace zetscript{
 					bool match_signature = metamethod_str != NULL;
 
 					if(!match_signature){
-						match_signature = irfs->symbol_info.symbol_ref == irfs->getSymbol(iao);
+						match_signature = irfs->symbol_info.symbol_ref == irfs->getSymbol(callAleInstruction);
 					}
 
 					if(match_signature){
@@ -471,27 +476,27 @@ namespace zetscript{
 
 						}
 					}else{
-						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,iao),"Cannot find %s \"%s%s(%s)\".\n\n",
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,callAleInstruction),"Cannot find %s \"%s%s(%s)\".\n\n",
 										is_constructor ? "constructor":"function",
 										calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-										info_function->getSymbol(iao),
+										info_function->getSymbol(callAleInstruction),
 										args_str.c_str()
 						);
 					}
 				}
 				else{
 					if(metamethod_str!=NULL){
-						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,iao),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,callAleInstruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 													CEval::getSymbolNameFromSymbolRef(vec_global_functions->at(0)->symbol_info.symbol_ref).c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
-						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,iao),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,callAleInstruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
 							calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-							info_function->getSymbol(iao),
+							info_function->getSymbol(callAleInstruction),
 							args_str.c_str(),
 							str_candidates.c_str());
 					}

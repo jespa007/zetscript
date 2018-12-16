@@ -8,19 +8,29 @@
 
 
 #define DEFAULT_NO_FILENAME					"no_file"
-
+#define register_C_Constant(s,v)			(zetscript::CEval::addConstant(s,(v)))
 
 namespace zetscript{
 
+
+
+
 	class  CEval{
+
 
 	public:
 		static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
 		static string 				makeSymbolRef(const string & symbol_var, int idxScope);
+		static tInfoConstantValue * addConstant(const string & const_name, int value);
 
 
 
-		static bool eval(const char *s, int & line);
+		static const char * 		getOperatorStr(unsigned char  op);
+
+
+		static bool evalString(const string & expression);
+		static bool evalFile(const string & filename);
+		static ZETSCRIPT_MODULE_EXPORT void printGeneratedCode();
 
 		static void	initStaticVars();
 
@@ -117,8 +127,7 @@ namespace zetscript{
 
 
 
-	enum SEPARATOR_TYPE
-	:unsigned char {
+		enum SEPARATOR_TYPE:unsigned char {
 			UNKNOWN_SEPARATOR=0,
 			COMA_SEPARATOR,					// ,
 			SEMICOLON_SEPARATOR,    		// ;
@@ -130,76 +139,76 @@ namespace zetscript{
 		};
 
 
-	struct tInstructionCompiler{
-		OP_CODE op_code;
-		unsigned char index_op1; 	// index/type/etc
-		intptr_t  index_op2; 		// usually a pointer or index
-		unsigned short var_type;
-		unsigned int pre_op_type;
-		unsigned int post_op_type;
-		unsigned int scope_type;
-		unsigned int runtime_prop;
+		struct tInstructionCompiler{
+			OP_CODE op_code;
+			unsigned char index_op1; 	// index/type/etc
+			intptr_t  index_op2; 		// usually a pointer or index
+			unsigned short var_type;
+			unsigned int pre_op_type;
+			unsigned int post_op_type;
+			unsigned int scope_type;
+			unsigned int runtime_prop;
 
-		tInstructionCompiler(){
-			op_code=OP_CODE::END_FUNCTION;
-			index_op1=ZS_UNDEFINED_IDX;
-			index_op2=ZS_UNDEFINED_IDX;
+			tInstructionCompiler(){
+				op_code=OP_CODE::END_FUNCTION;
+				index_op1=ZS_UNDEFINED_IDX;
+				index_op2=ZS_UNDEFINED_IDX;
 
-			var_type=0;
-			pre_op_type=0;
-			post_op_type=0;
-			scope_type = 0;
-			runtime_prop = 0;
-		}
+				var_type=0;
+				pre_op_type=0;
+				post_op_type=0;
+				scope_type = 0;
+				runtime_prop = 0;
+			}
 
-	};
+		};
 
-	struct tTokenNodeAccessor {
+		struct tTokenNodeAccessor {
 
-		ACCESSOR_TYPE accessor_type;
-		string value;
-		vector<tInstructionCompiler> instruction;
+			ACCESSOR_TYPE accessor_type;
+			string value;
+			vector<tInstructionCompiler> instruction;
 
-		tTokenNodeAccessor(){
-			accessor_type=ACCESSOR_TYPE::UNKNOWN_ACCESSOR_TYPE;
-		}
-	};
+			tTokenNodeAccessor(){
+				accessor_type=ACCESSOR_TYPE::UNKNOWN_ACCESSOR_TYPE;
+			}
+		};
 
-	struct tTokenNode{
-
-
-		TOKEN_TYPE	  		token_type; // can be operator, literal, identifier, object. (separator are not take account)
-		PRE_OPERATOR_TYPE   pre_operator_type; // !,+,-
-		OPERATOR_TYPE  		operator_type;
+		struct tTokenNode{
 
 
-		IDENTITY_OPERATOR_TYPE  pre_inline_operator_identity_type; // ++i,--i
-		IDENTITY_OPERATOR_TYPE  post_inline_operator_identity_type; // i++,i--
+			TOKEN_TYPE	  		token_type; // can be operator, literal, identifier, object. (separator are not take account)
+			PRE_OPERATOR_TYPE   pre_operator_type; // !,+,-
+			OPERATOR_TYPE  		operator_type;
 
-		string value;
-		int line;
-		vector<tInstructionCompiler> instruction; // byte code load literal/identifier(can be anonymous function), vector/struct.
 
-		// access info like function call, vector access and variable memeber
-		vector<tTokenNodeAccessor> accessor;
+			IDENTITY_OPERATOR_TYPE  pre_inline_operator_identity_type; // ++i,--i
+			IDENTITY_OPERATOR_TYPE  post_inline_operator_identity_type; // i++,i--
 
-		// AST info operator.
-		tTokenNode *left;
-		tTokenNode *right;
+			string value;
+			int line;
+			vector<tInstructionCompiler> instruction; // byte code load literal/identifier(can be anonymous function), vector/struct.
 
-		tTokenNode(){
-			line=-1;
+			// access info like function call, vector access and variable memeber
+			vector<tTokenNodeAccessor> accessor;
 
-			token_type=TOKEN_TYPE::UNKNOWN_TOKEN;
-			operator_type=OPERATOR_TYPE::UNKNOWN_OPERATOR;
-			left=right=NULL;
-			pre_operator_type=PRE_OPERATOR_TYPE::UNKNOWN_PRE_OPERATOR;
-			pre_inline_operator_identity_type=IDENTITY_OPERATOR_TYPE::UNKNOWN_IDENTITY_OPERATOR;
-			post_inline_operator_identity_type=IDENTITY_OPERATOR_TYPE::UNKNOWN_IDENTITY_OPERATOR;
+			// AST info operator.
+			tTokenNode *left;
+			tTokenNode *right;
 
-		}
+			tTokenNode(){
+				line=-1;
 
-	};
+				token_type=TOKEN_TYPE::UNKNOWN_TOKEN;
+				operator_type=OPERATOR_TYPE::UNKNOWN_OPERATOR;
+				left=right=NULL;
+				pre_operator_type=PRE_OPERATOR_TYPE::UNKNOWN_PRE_OPERATOR;
+				pre_inline_operator_identity_type=IDENTITY_OPERATOR_TYPE::UNKNOWN_IDENTITY_OPERATOR;
+				post_inline_operator_identity_type=IDENTITY_OPERATOR_TYPE::UNKNOWN_IDENTITY_OPERATOR;
+
+			}
+
+		};
 
 
 		typedef struct {
@@ -258,6 +267,11 @@ namespace zetscript{
 		// singleton
 		static map<string,tInfoConstantValue *> *constant_pool;
 
+
+		static vector<tInfoParsedSource> * m_parsedSource;
+		//static int getIdxParsedFilenameSource(const char *file);
+
+
 		static const char * current_parsing_filename;
 		static int current_idx_parsing_filename;
 
@@ -273,21 +287,24 @@ namespace zetscript{
 		static vector<tFunctionInfo *> 		*vFunctionInfo;
 		static bool is_initialized;
 
+		//---------------
+		// PRINT ASM INFO
+		static char print_aux_load_value[1024*8];
+		static const char * getStrMovVar(tInstruction * iao);
+		static const char * getStrTypeLoadValue(PtrInstruction m_listStatements, int current_instruction);
+
+		ZETSCRIPT_MODULE_EXPORT static void printGeneratedCode(CScriptFunction *sfo);
+
+		// PRINT ASM INFO
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// CONSTANT TOOLS
 
 		static tInfoConstantValue * getConstant(const string & const_name);
-		static tInfoConstantValue * addConstant(const string & const_name, int value);
 		static tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned short properties);
-
 
 		static int					getIdxScopeFromSymbolRef(const string & symbol_ref);
 		static void pushFunction(CScriptFunction *sf);
 		static void popFunction();
-
-
-
-
 
 		static KEYWORD_TYPE 	isKeyword(const char *c);
 		static DIRECTIVE_TYPE 	isDirective(const char *c);
@@ -295,12 +312,17 @@ namespace zetscript{
 		static char * evalLiteralNumber(const char *c, int & line, string & value, bool & error);
 
 
+		//---------------------------------------------------------------------------------------------------------------------------------------
+		// FILE MANAGEMENT
+		static bool isFilenameAlreadyParsed(const string & filename);
+		static const char * getParsedFilenameFromIdx(unsigned idx);
+
+
 		//-----------------------------------------------
 		//
 		//static char * 	 isClassMember(const char *s,int & line, string & _class_name, string & var_name, bool & error, KEYWORD_TYPE ikw);
 
 		// string generic utils...
-
 		static bool 	isLiteral(const string & s);
 		static bool   	isIdentifierNameExpressionOk(const string & symbol, int line);
 		static char *  	getIdentifierToken(const char *s, string & symbol);
@@ -319,7 +341,6 @@ namespace zetscript{
 		// EXPRESSION FUNCTIONS
 
 
-
 		// AST core functions ...
 
 		// Turn tokens into byte code throught semi AST algorithm ...
@@ -328,7 +349,6 @@ namespace zetscript{
 
 		// Turn expression in Tokens (with some byte code instructions inside)...
 		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
-
 
 
 		// NEW EXPRESSION...
@@ -375,7 +395,6 @@ namespace zetscript{
 		static char * evalKeywordVar	(const char *s, int & line, CScope *scope_info, bool & error);
 		static char * evalKeywordReturn	(const char *s, int & line, CScope *scope_info, bool & error);
 		static char * evalKeywordDelete	(const char *s, int & line, CScope *scope_info, bool & error);
-
 
 		static char * evalKeywordFunction(const char *s,int & line,  CScope *scope_info, bool & error);
 

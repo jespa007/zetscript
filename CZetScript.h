@@ -136,8 +136,6 @@ namespace zetscript{
 
 		//static char str_error[MAX_BUFFER_STR_ERROR];
 		static CZetScript * m_instance;
-		static vector<tInfoParsedSource> * m_parsedSource;
-		static int getIdxParsedFilenameSource(const char *file);
 
 		// calling C function with differnt parameters...
 		CScriptVariable		*		m_mainObject;
@@ -161,6 +159,7 @@ namespace zetscript{
 		CZetScript();
 
 
+		void destroyMainFunction();
 		~CZetScript();
 
 	public:
@@ -177,8 +176,6 @@ namespace zetscript{
 		//static void clearErrorMsg();
 		//static void writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 		//ZETSCRIPT_MODULE_EXPORT static const char * getErrorMsg();
-		bool isFilenameAlreadyParsed(const char *filename);
-		const char * getParsedFilenameFromIdx(unsigned idx);
 
 		void	setUserCallbackOnError(tPrintFunctionCallback _fun);
 
@@ -187,16 +184,7 @@ namespace zetscript{
 		ZETSCRIPT_MODULE_EXPORT static float eval_float(const string & str_to_eval);
 		ZETSCRIPT_MODULE_EXPORT static string eval_string(const string & str_to_eval);
 
-		//---------------
-		// PRINT ASM INFO
-		char print_aux_load_value[1024*8];
-		const char * getStrMovVar(tInstruction * iao);
-		const char * getStrTypeLoadValue(PtrInstruction m_listStatements, int current_instruction);
 
-		ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(CScriptFunction *sfo);
-		ZETSCRIPT_MODULE_EXPORT void printGeneratedCodeAllClasses();
-		// PRINT ASM INFO
-		//---------------
 
 		/**
 		 * Main bind function
@@ -208,7 +196,7 @@ namespace zetscript{
 		//----
 
 
-		void destroyMainObject();
+
 
 
 
@@ -220,20 +208,20 @@ namespace zetscript{
 		 * Clear: Clear compile information.
 		 */
 		ZETSCRIPT_MODULE_EXPORT void clear();
-		ZETSCRIPT_MODULE_EXPORT void parse(const string & string,const char *filename_ref=NULL);
-		ZETSCRIPT_MODULE_EXPORT void parse_file(const char * filename);
-		ZETSCRIPT_MODULE_EXPORT void compile(bool show_bytecode=false);
+		//ZETSCRIPT_MODULE_EXPORT void parse(const string & string,const char *filename_ref=NULL);
+		//ZETSCRIPT_MODULE_EXPORT void parse_file(const char * filename);
+		//ZETSCRIPT_MODULE_EXPORT void compile(bool show_bytecode=false);
 		ZETSCRIPT_MODULE_EXPORT void execute();
 
-		ZETSCRIPT_MODULE_EXPORT void eval(const string & string, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
-		ZETSCRIPT_MODULE_EXPORT void eval_file(const char * filename,bool execute=true,bool show_bytecode=false);
+		ZETSCRIPT_MODULE_EXPORT bool evalString(const string & string, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
+		ZETSCRIPT_MODULE_EXPORT bool evalFile(const string & filename,bool execute=true,bool show_bytecode=false);
 
-		int newGlobalFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		/*int newGlobalFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
 		int getGlobalFunction(const string & function_ref,char n_args=0);
 
 		int newGlobalVariable(const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 		int getGlobalVariable(const string & variable_ref);
-
+*/
 
 		ZETSCRIPT_MODULE_EXPORT static void destroy();
 	};

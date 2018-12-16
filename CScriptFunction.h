@@ -27,6 +27,7 @@ namespace zetscript{
 	class  CScriptFunction:public CCommonClassFunctionData{
 
 
+		static vector<CScriptFunction *> 	* vec_script_function_node;
 		/**
 		 * build scope variable block information
 		 */
@@ -93,8 +94,6 @@ namespace zetscript{
 
 		virtual ~CScriptFunction();
 
-	private:
-		static vector<CScriptFunction *> 	* vec_script_function_node;
 
 	};
 

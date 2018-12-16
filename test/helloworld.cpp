@@ -16,7 +16,7 @@ int main(){
 
 	register_C_Function("say_helloworld",say_helloworld);
 
-	zs->eval("say_helloworld();"); // Call c function and prints hello world!
+	zs->evalString("say_helloworld();"); // Call c function and prints hello world!
 
 
 	CZetScript::destroy();
