@@ -1633,6 +1633,7 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		char *symbol_value,*end_var;
 		KEYWORD_TYPE key_w;
+		vector<string> arg;
 
 		//PASTNode args_node=NULL, body_node=NULL, arg_node=NULL;
 		string conditional_str;
@@ -1703,7 +1704,7 @@ namespace zetscript{
 
 					aux_p++;
 					aux_p=IGNORE_BLANKS(aux_p,line);
-					vector<string> arg;
+
 
 
 					// grab words separated by ,
@@ -1777,17 +1778,12 @@ namespace zetscript{
 						if(!error){
 
 							{
-
-								// link scope / ast
-								body_scope->idxAstNode=body_node->idxAstNode;
-								body_node->idxScope =body_scope->idxScope;
-
 								// register function symbol...
 								int n_params=0;
 
-								if(args_node != NULL){
-									n_params=args_node->children.size();
-								}
+
+								n_params=arg.size();
+
 
 								if(named_function){ // register named function...
 									if((irv=SCOPE_NODE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
@@ -2440,7 +2436,7 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(aux_p,line);
 					start_var=aux_p;
 					m_startLine = line;
-					vars_collection_node=NULL;
+					//vars_collection_node=NULL;
 
 					//parent_eval_to_insert_var=NULL;
 					if(scope_info != NULL){ // main as default
@@ -2490,7 +2486,7 @@ namespace zetscript{
 
 					if(ok_char){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
 						allow_for_in=false;
-						var_node = NULL;
+						//var_node = NULL;
 
 
 						if(*aux_p == '='){ // only for variables (not class members)
@@ -2505,21 +2501,21 @@ namespace zetscript{
 								return NULL;
 							}
 
-							if(var_node != NULL){
+							/*if(var_node != NULL){
 
 								if(children_node==NULL){
 									THROW_RUNTIME_ERROR("internal:children node == NULL");
 									return NULL;
 								}
 								var_node->children.push_back(children_node->idxAstNode);
-							}
+							}*/
 
 							line = m_startLine;
 						}
 
 						 // define as many vars is declared within ','
 
-						if(!SCOPE_NODE(idxScope)->registerSymbol(var_node->symbol_value,var_node)){
+						if(!SCOPE_NODE(idxScope)->registerSymbol(var_node->symbol_value /*,var_node*/)){
 								return NULL;
 						}
 
@@ -2832,7 +2828,7 @@ namespace zetscript{
 			}
 
 			// 0st special case member class extension ...
-			if(children==NULL && !processed_directive){ // not processed yet ...
+			if(/*children==NULL &&*/ !processed_directive){ // not processed yet ...
 				// 1st. check whether eval a keyword...
 				if((end_expr = evalKeyword(aux, line, scope_info, error)) == NULL){
 
