@@ -181,7 +181,7 @@ namespace zetscript{
 			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;
 
-			symbol_to_find=CScriptClass::getMetamethod(__METAMETHOD__);
+			symbol_to_find=GET_METAMETHOD(__METAMETHOD__);
 
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
 			if((ptr_function_found = FIND_FUNCTION(
@@ -305,31 +305,31 @@ namespace zetscript{
 										all_check=false;
 										break;
 									case STK_PROPERTY_TYPE_INTEGER:
-										idx_type=IDX_CLASS_INT_PTR_C;
+										idx_type=IDX_TYPE_INT_PTR_C;
 										all_check=
-												arg_idx_type==IDX_CLASS_INT_PTR_C
-											  ||arg_idx_type==IDX_CLASS_INT_C
-											  ||arg_idx_type==IDX_CLASS_UNSIGNED_INT_C
-											  ||arg_idx_type==IDX_CLASS_INTPTR_T_C;
+												arg_idx_type==IDX_TYPE_INT_PTR_C
+											  ||arg_idx_type==IDX_TYPE_INT_C
+											  ||arg_idx_type==IDX_TYPE_UNSIGNED_INT_C
+											  ||arg_idx_type==IDX_TYPE_INTPTR_T_C;
 										break;
 									case STK_PROPERTY_TYPE_NUMBER:
-										idx_type=IDX_CLASS_FLOAT_PTR_C;
-										all_check=arg_idx_type==IDX_CLASS_FLOAT_PTR_C
-												||arg_idx_type==IDX_CLASS_FLOAT_C;
+										idx_type=IDX_TYPE_FLOAT_PTR_C;
+										all_check=arg_idx_type==IDX_TYPE_FLOAT_PTR_C
+												||arg_idx_type==IDX_TYPE_FLOAT_C;
 										break;
 									case STK_PROPERTY_TYPE_BOOLEAN:
-										idx_type=IDX_CLASS_BOOL_PTR_C;
+										idx_type=IDX_TYPE_BOOL_PTR_C;
 										all_check=
-												arg_idx_type==IDX_CLASS_BOOL_PTR_C
-											  ||arg_idx_type==IDX_CLASS_BOOL_C;
+												arg_idx_type==IDX_TYPE_BOOL_PTR_C
+											  ||arg_idx_type==IDX_TYPE_BOOL_C;
 
 										break;
 									case STK_PROPERTY_TYPE_STRING:
-										idx_type=IDX_CLASS_STRING_PTR_C;
+										idx_type=IDX_TYPE_STRING_PTR_C;
 
 										all_check =
-												(	arg_idx_type==IDX_CLASS_STRING_PTR_C && currentArg->varRef!=0)
-											  ||	arg_idx_type==IDX_CLASS_CONST_CHAR_PTR_C;
+												(	arg_idx_type==IDX_TYPE_STRING_PTR_C && currentArg->varRef!=0)
+											  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
 										break;
 									case STK_PROPERTY_TYPE_NULL:
 									case STK_PROPERTY_TYPE_UNDEFINED:
@@ -346,10 +346,10 @@ namespace zetscript{
 											CScriptClass *c_class=NULL;
 											if(var_type & STK_PROPERTY_TYPE_STRING){
 												all_check =
-														(	arg_idx_type==IDX_CLASS_STRING_PTR_C && currentArg->varRef!=0)
-													  ||	arg_idx_type==IDX_CLASS_CONST_CHAR_PTR_C;
+														(	arg_idx_type==IDX_TYPE_STRING_PTR_C && currentArg->varRef!=0)
+													  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
 											}else if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */
-												all_check=CScriptClass::isIdxClassInstanceOf(c_class->idxClass,arg_idx_type);
+												all_check=IS_IDX_CLASS_INSTANCEOF(c_class->idxClass,arg_idx_type);
 											}else{ /* fail ... */
 												all_check=false;
 											}
@@ -398,18 +398,18 @@ namespace zetscript{
 						aux_string="unknow";
 						break;
 					case STK_PROPERTY_TYPE_INTEGER:
-						aux_string=(*CScriptClass::INT_TYPE_STR);
+						aux_string=INT_TYPE_STR;
 						break;
 					case STK_PROPERTY_TYPE_NUMBER:
-						aux_string=*CScriptClass::FLOAT_TYPE_STR;
+						aux_string=FLOAT_TYPE_STR;
 						break;
 					case STK_PROPERTY_TYPE_BOOLEAN:
-						aux_string=*CScriptClass::BOOL_TYPE_STR;
+						aux_string=BOOL_TYPE_STR;
 						break;
 					case STK_PROPERTY_TYPE_STRING:
-						aux_string=*CScriptClass::STRING_PTR_TYPE_STR;
+						aux_string=STRING_PTR_TYPE_STR;
 						if(currentArg->varRef==NULL){ /* is constant char */
-							aux_string=	*CScriptClass::CONST_CHAR_PTR_TYPE_STR;
+							aux_string=	CONST_CHAR_PTR_TYPE_STR;
 						}
 						break;
 					case STK_PROPERTY_TYPE_NULL:

@@ -25,12 +25,12 @@ namespace zetscript{
 
 
 
-		static const char * 		getOperatorStr(unsigned char  op);
+		static const char * 		getOpCodeStr(OP_CODE  op);
 
 
 		static bool evalString(const string & expression);
 		static bool evalFile(const string & filename);
-		static ZETSCRIPT_MODULE_EXPORT void printGeneratedCode();
+
 
 		static void	initStaticVars();
 
@@ -61,8 +61,7 @@ namespace zetscript{
 			MAX_ACCESSOR_TYPES
 		};
 
-		enum OPERATOR_TYPE
-			:unsigned char {
+		enum OPERATOR_TYPE:unsigned char {
 
 			UNKNOWN_OPERATOR = 0,
 
@@ -110,6 +109,7 @@ namespace zetscript{
 			MAX_OPERATOR_TYPES
 		};
 
+
 		enum PRE_OPERATOR_TYPE:unsigned char {
 			UNKNOWN_PRE_OPERATOR=0,
 			PRE_LOGIC_NOT_OPERATOR, 		// !
@@ -117,6 +117,8 @@ namespace zetscript{
 			PRE_SUB_OPERATOR	, 			// +
 			MAX_PRE_OPERATOR_TYPES
 		};
+
+
 
 		enum IDENTITY_OPERATOR_TYPE:unsigned char {
 			UNKNOWN_IDENTITY_OPERATOR=0,
@@ -263,6 +265,16 @@ namespace zetscript{
 			bool (*eval_fun)(const char *);
 		} tSeparatorInfo;
 
+		typedef struct{
+			OP_CODE op_code;
+			const char *str;
+		}tOpCodeInfo;
+
+		typedef struct {
+			string filename;
+			//unsigned char *data;
+		} tInfoParsedSource;
+
 
 		// singleton
 		static map<string,tInfoConstantValue *> *constant_pool;
@@ -280,6 +292,7 @@ namespace zetscript{
 		static tIdentityOperatorInfo defined_identity_operator[MAX_IDENTITY_OPERATOR_TYPES];
 		static tSeparatorInfo defined_separator[MAX_SEPARATOR_TYPES];
 		static tKeywordInfo defined_keyword[MAX_KEYWORD];
+		static tOpCodeInfo  defined_opcode[MAX_OP_CODES];
 		static tDirectiveInfo defined_directive[MAX_DIRECTIVES];
 
 
@@ -287,16 +300,6 @@ namespace zetscript{
 		static vector<tFunctionInfo *> 		*vFunctionInfo;
 		static bool is_initialized;
 
-		//---------------
-		// PRINT ASM INFO
-		static char print_aux_load_value[1024*8];
-		static const char * getStrMovVar(tInstruction * iao);
-		static const char * getStrTypeLoadValue(PtrInstruction m_listStatements, int current_instruction);
-
-		ZETSCRIPT_MODULE_EXPORT static void printGeneratedCode(CScriptFunction *sfo);
-
-		// PRINT ASM INFO
-		//---------------------------------------------------------------------------------------------------------------------------------------
 		// CONSTANT TOOLS
 
 		static tInfoConstantValue * getConstant(const string & const_name);
@@ -372,7 +375,7 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------------
 		// Class
 
-		static char * isClassMember(const char *s,int & line, short & idxScopeClass, bool & error);
+		static char * isClassMember(const char *s,int & line, CScriptClass **sc,string & member_symbol, bool & error);
 		static char * evalKeywordClass(const char *s,int & line,  CScope *scope_info, bool & error);
 
 		// eval block { }

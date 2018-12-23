@@ -76,8 +76,8 @@ namespace zetscript{
 
 		static bool endsWith(const string & fullString, const string & ending);
 
-		static vector<string> &split(const string &s, char delim, vector<string> &elems);
-		static vector<string> split(const string &s, char delim);
+		ZETSCRIPT_MODULE_EXPORT static vector<string> split(const string &s, char delim, vector<string> &elems);
+		ZETSCRIPT_MODULE_EXPORT static vector<string> split(const string &s, char delim);
 		static bool isEmpty(const string & str);
 
 		static bool isDigit(char c);

@@ -172,12 +172,16 @@ namespace zetscript{
 	CScriptFunction * CCommonClassFunctionData::registerFunction(short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 			string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
-			if(getFunctionByRef(symbol_ref,args.size()) != NULL){
+			if(getFunctionByRef(symbol_ref,(char)args.size()) != NULL){
 				THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
 				return NULL;
 			}
 
-			return NEW_SCRIPT_FUNCTION(idxClass,idxScope,  symbol_ref,  args,  idx_return_type,ref_ptr, properties);
+			CScriptFunction *sf =  NEW_SCRIPT_FUNCTION(idxClass,idxScope,  symbol_ref,  args,  idx_return_type,ref_ptr, properties);
+
+			m_function.push_back(sf);
+
+			return sf;
 	}
 
 	CScriptFunction * CCommonClassFunctionData::registerFunction( const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){

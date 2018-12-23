@@ -17,35 +17,13 @@
 // 	 	__________________________________
 */
 
-
-
-
-
-
-
 namespace zetscript{
 
-#define IDX_GLOBAL_SCOPE				0
-#define IDX_INVALID_SCOPE				ZS_UNDEFINED_IDX
-#define IDX_ANONYMOUSE_SCOPE			-3
+
+	#define NO_PARAMS_IS_VARIABLE	-1
+	#define NO_PARAMS_SYMBOL_ONLY	-2
 
 
-#define SCOPE_NODE(idx) 				CScope::getScope(idx)
-#define MAIN_SCOPE						CScope::getScope(IDX_GLOBAL_SCOPE)
-
-
-// if 0 is in main <> 0, else.
-#define SCOPE_IN_MAIN_CLASS(idx)			((CScope::getScope(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
-
-
-
-
-#define NO_PARAMS_IS_VARIABLE	-1
-#define NO_PARAMS_SYMBOL_ONLY	-2
-
-
-
-	class CContext;
 	class  CScope{
 
 		tScopeVar * existRegisteredSymbolRecursive(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
@@ -53,22 +31,10 @@ namespace zetscript{
 		tScopeVar * existRegisteredSymbolRecursiveUpScope(const string & ref_symbol, int n_params=NO_PARAMS_IS_VARIABLE);
 	public:
 
-		static void initStaticVars();
-		static void destroyStaticVars();
-
-		static vector<CScope *> 	* 	getVectorScopeNode();
-
-
-		/**
-		 * Get CScope Node by its idx, regarding current state.
-		 */
-
-
-		static CScope	    		*	newScope(bool is_c_node=false,short idx_parent_scope=ZS_UNDEFINED_IDX);
-		static CScope 				* 	getScope(short idx);
 
 		short idxScope;
 		bool is_c_node;
+		CScriptClass *script_class;
 
 		//---------------------------------
 		// Register functions
@@ -88,19 +54,19 @@ namespace zetscript{
 
 		tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
 
-		//CScope();
-		CScope(bool is_c_node=false, short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX);
-		//CScope( short idx_this, short idx_parent=ZS_UNDEFINED_IDX);//, int _index);
+		CScope(short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX,bool is_c_node=false);
 
-		short 	 getIdxBaseScope();
-		short 	 getIdxScriptClass();
-		short 	 getIdxBaseAstNode();
-		short		 getIdxParent();
-		CScope * getCurrentScopePointer();
-		short		 getIdxCurrentScopePointer();
-		vector<short> * getLocalScopeList();
+		short 	 	getIdxBaseScope();
+		short	 	getIdxParent();
+		CScope * 	getCurrentScopePointer();
+		short		getIdxCurrentScopePointer();
+
+
+		void setScriptClass(CScriptClass *sc);
+		CScriptClass * getScriptClass();
 
 		vector<tScopeVar *> * getRegisteredVariableList();
+		vector<short> 		* getLocalScopeList();
 
 		CScope * pushScope();
 		CScope * popScope();
@@ -109,24 +75,11 @@ namespace zetscript{
 		~CScope();
 
 	private:
-
+		static int n_anonymouse_func;
 		vector<short> m_localScopeList;
 
 		// The a parent scope ...
 		short idxParentScope, idxCurrentScopePointer, idxBaseScope;
-
-
-		/**
-		 * Vector of script scopes. This vector is removed when zetscript reevaluates all scrips.
-		 */
-		static vector<CScope *> 					* vec_scope_node;
-
-		/**
-		 * Vector of C scopes that will be copyed each reeval of all scripts.
-		 */
-		static vector<CScope *> 					* vec_c_scope_node;
-
-
 
 	};
 }

@@ -89,8 +89,8 @@ namespace zetscript{
 
 	//===================================================================================================
 
-		void iniStackVar(unsigned int pos,const tStackElement & stk);
-		void clearGlobals();
+		//void iniStackVar(unsigned int pos,const tStackElement & stk);
+
 		const CScriptFunction * getCurrent_C_FunctionCall();
 
 		string stk_C_TypeStr(const tStackElement & stk_v);
@@ -105,6 +105,9 @@ namespace zetscript{
 			return &s_return_value;
 		}
 
+
+		void addGlobalVar(const tStackElement & stk);
+		void clearGlobalVars();
 
 		ZETSCRIPT_MODULE_EXPORT tStackElement execute(
 					 CScriptFunction *info_function,
@@ -166,6 +169,10 @@ namespace zetscript{
 		string              *ptrCurrentStr;
 
 		 tStackElement     stack[VM_LOCAL_VAR_MAX_STACK];
+		 int n_globals;
+
+		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
+		 vector<tStackElement> global_var;
 		tStackElement *ptrCurrentOp;
 
 

@@ -13,7 +13,7 @@ namespace zetscript{
 
 
 	CStructScriptVariable::CStructScriptVariable(){//CScriptClass *info_registered_class):CScriptVariable(info_registered_class, this){
-		init(CScriptClass::getRegisteredClassStruct(), (void *)this);
+		init(SCRIPT_CLASS_STRUCT, (void *)this);
 	}
 
 

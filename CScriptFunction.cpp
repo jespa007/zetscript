@@ -6,46 +6,18 @@
 
 namespace zetscript{
 
-	vector<CScriptFunction *> 	* CScriptFunction::vec_script_function_node=NULL;
+	//vector<CScriptFunction *> 	* CScriptFunction::vec_script_function_node=NULL;
 
 
-	vector<CScriptFunction *> 	*CScriptFunction::getVectorScriptFunctionNode(){
-		return vec_script_function_node;
-	}
 
-	void CScriptFunction::initStaticVars() {
+/*	void CScriptFunction::initStaticVars() {
 		vec_script_function_node = new vector<CScriptFunction *> ();
 	}
 
 	void CScriptFunction::destroyStaticVars() {
 
-		for(unsigned i = 0;i < vec_script_function_node->size();i++){
-			//zs_print_debug_cr("* Erasing function %s...", vec_script_function_node->at(i)->object_info.symbol_info.symbol_ref.c_str());
-			CScriptFunction * info_function = vec_script_function_node->at(i);
 
-			if (info_function->instruction != NULL) {
-
-				free(info_function->instruction);
-				info_function->instruction=NULL;
-			}
-
-			// unloading scope ...
-			if (info_function->lut_scope_symbol != NULL) {
-				for (unsigned j = 0; j < info_function->n_lut_scope_symbols; j++) {
-					free(info_function->lut_scope_symbol[j].var_index);
-				}
-
-				free(info_function->lut_scope_symbol);
-				info_function->lut_scope_symbol=NULL;
-			}
-
-			delete info_function;
-		}
-
-		vec_script_function_node->clear();
-		delete vec_script_function_node;
-		vec_script_function_node=NULL;
-	}
+	}*/
 
 
 	void CScriptFunction::buildLutScopeSymbols(){
@@ -67,7 +39,7 @@ namespace zetscript{
 				 vector<int> var_index;
 			 };
 
-			 vector<CScope *> *list = CScope::getVectorScopeNode();
+			 vector<CScope *> *list = CScopeFactory::getInstance()->getVectorScopeNode();
 			 vector<tInfoVarScopeBlockRegister> vec_ivsb;
 			 std::map<short,tInfoVarScopeBlockRegister> map_scope_register;
 			 //for(unsigned i = 0;i < list->size(); i++){ // register index var per scope ...
@@ -136,55 +108,6 @@ namespace zetscript{
 
 	const char * CScriptFunction::getFile(){
 		return "unknown";
-	}
-
-	CScriptFunction *		 CScriptFunction::newScriptFunction(unsigned char idxClass, short idxScope, const string & function_ref, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
-
-
-		if((properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
-			if(vec_script_function_node->size() > 1){ // if greather than 1 check if node consecutive...
-				if((vec_script_function_node->at(vec_script_function_node->size()-1)->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){ // non consecutive c node..
-						THROW_RUNTIME_ERROR("C Functions should be added after global scope and consecutuve C scope node.");
-						return NULL;
-				}
-			}
-		}
-
-		CScriptFunction *irs = new CScriptFunction(idxScope,idxClass);
-
-		irs->m_arg = args;
-		irs->idx_return_type = idx_return_type;
-		irs->symbol_info.ref_ptr = ref_ptr;
-
-
-		irs->symbol_info.symbol_ref = function_ref; // <-- defined as global
-		irs->symbol_info.properties = properties;
-
-		irs->symbol_info.idxSymbol = (short)(irs->m_function.size());
-		irs->m_function.push_back(irs);
-
-
-		vec_script_function_node->push_back(irs);
-		irs->idxScriptFunction = vec_script_function_node->size()-1;
-		return irs;
-	}
-
-	bool CScriptFunction::checkCanRegister_C_Function(const char *f){
-
-		int size = vec_script_function_node->size();
-
-		if(size>=3){ //0 is main function (reserved). We check when >= 3 to check previous one (i.e from 1)
-			if((
-
-				((*vec_script_function_node)[size-1]->symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
-			){
-				THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",f);
-				return false;
-			}
-
-		}
-
-		return true;
 	}
 
 
@@ -278,15 +201,25 @@ namespace zetscript{
 		return true;
 	}*/
 
+	tVariableSymbolInfo *	CScriptFunction::registerVariable(const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
+	{
+		tVariableSymbolInfo *vsi=CCommonClassFunctionData::registerVariable(this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 
-	CScriptFunction 	* CScriptFunction::getScriptFunctionObject(int idx){
-		if(idx < 0 || (unsigned)idx >= vec_script_function_node->size()){
-			THROW_RUNTIME_ERROR("CScriptFunction node out of bound");
-			return NULL;
-		}
+		tStackElement se = {STK_PROPERTY_TYPE_UNDEFINED,0,0};
 
-		return vec_script_function_node->at(idx);
+		if(properties &  PROPERTY_C_OBJECT_REF) // convert c ref var into stack element. This should be consistent in the whole execution.
+			se=CScriptClassFactory::C_REF_InfoVariable_2_StackElement(
+										 	vsi,
+											(void *)vsi->ref_ptr);
+
+		CURRENT_VM->addGlobalVar(se);
+
+		return vsi;
+
 	}
+
+
+
 
 	CScriptFunction::~CScriptFunction(){
 

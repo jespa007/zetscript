@@ -23,7 +23,7 @@ namespace zetscript{
 		return m_instance;
 	}
 
-	void  CNativeFunction::destroySingletons(){
+	void  CNativeFunction::destroySingleton(){
 		delete m_instance;
 	}
 

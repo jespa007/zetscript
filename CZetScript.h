@@ -105,9 +105,12 @@ using std::ostringstream;
 #include "var/CStructScriptVariable.h"
 #include "eval/CEval.h"
 #include "CScope.h"
+#include "CScopeFactory.h"
 #include "CCommonClassFunctionData.h"
 #include "CScriptFunction.h"
+#include "CScriptFunctionFactory.h"
 #include "CScriptClass.h"
+#include "CScriptClassFactory.h"
 #include "CVirtualMachine.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 2
@@ -139,6 +142,7 @@ namespace zetscript{
 
 		// calling C function with differnt parameters...
 		CScriptVariable		*		m_mainObject;
+		CScriptFunction 	*		m_mainFunction;
 		//int						 	idxMainScriptFunctionObject;
 
 		CVirtualMachine *vm;
@@ -168,7 +172,7 @@ namespace zetscript{
 
 
 		ZETSCRIPT_MODULE_EXPORT static CZetScript * getInstance();
-		ZETSCRIPT_MODULE_EXPORT static void setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles);
+		//ZETSCRIPT_MODULE_EXPORT static void setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles);
 
 
 
@@ -201,7 +205,7 @@ namespace zetscript{
 
 
 		ZETSCRIPT_MODULE_EXPORT CVirtualMachine * getVirtualMachine();
-		ZETSCRIPT_MODULE_EXPORT CScriptVariable *getMainObject(){return m_mainObject;}
+		//ZETSCRIPT_MODULE_EXPORT CScriptVariable * getMainObject(){return m_mainObject;}
 
 
 		/**

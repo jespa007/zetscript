@@ -14,7 +14,7 @@ namespace zetscript{
 
 		//m_varType =VAR_TYPE::FUNCTION;
 		//m_value=_irfs;
-		this->init(CScriptClass::getRegisteredClassFunctor(), (void *)this);
+		this->init(SCRIPT_CLASS_FUNCTOR, (void *)this);
 	}
 
 	void CFunctorScriptVariable::setFunctionSymbol(CScriptFunction *_irfs){

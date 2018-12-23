@@ -19,7 +19,7 @@ namespace zetscript{
 		tStackElement *se;
 
 		// add extra symbol this itself if is a class typedef by user...
-		if(m_infoRegisteredClass->idxClass >=MAX_BASIC_CLASS_TYPES){
+		if(m_infoRegisteredClass->idxClass >=MAX_BUILT_IN_TYPES){
 			this_variable.varRef=this;
 			this_variable.properties=STK_PROPERTY_IS_THIS_VAR|STK_PROPERTY_TYPE_SCRIPTVAR;
 		}
@@ -37,7 +37,7 @@ namespace zetscript{
 				// check if primitive type (only 4 no more no else)...
 				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
-				*se=CScriptClass::C_REF_InfoVariable_2_StackElement(ir_var,ptr_variable);
+				*se=CScriptClassFactory::C_REF_InfoVariable_2_StackElement(ir_var,ptr_variable);
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace zetscript{
 				CScriptClass *sc=m_infoRegisteredClass;
 				while( sc->idxBaseClass.size()>0 && c_scriptclass_info==NULL){
 
-					sc=CScriptClass::getScriptClass(sc->idxBaseClass[0]); // get base class...
+					sc=GET_SCRIPT_CLASS(sc->idxBaseClass[0]); // get base class...
 					if(sc->is_c_class()){
 						c_scriptclass_info=sc;
 						created_object = (*sc->c_constructor)();
@@ -123,15 +123,15 @@ namespace zetscript{
 		}
 
 		// only create symbols if not string type to make it fast ...
-		if(idxClass >= MAX_CLASS_C_TYPES && idxClass !=IDX_CLASS_STRING){
+		if(idxClass >= BUILT_IN_TYPE::MAX_BUILT_IN_TYPES && idxClass !=IDX_CLASS_STRING){
 			createSymbols(irv);
 		}
 	}
 
 	CScriptFunction *CScriptVariable::getConstructorFunction(){
 
-		if(m_infoRegisteredClass->idx_function_script_constructor != ZS_UNDEFINED_IDX){
-			return m_infoRegisteredClass->m_function[m_infoRegisteredClass->idx_function_script_constructor];
+		if(m_infoRegisteredClass->idx_function_member_constructor != ZS_UNDEFINED_IDX){
+			return m_infoRegisteredClass->m_function[m_infoRegisteredClass->idx_function_member_constructor];
 		}
 
 		return NULL;
@@ -473,7 +473,7 @@ namespace zetscript{
 	void CScriptVariable::destroy(){
 		bool deallocated = false;
 		if(created_object != 0){
-			if((this->idxClass<MAX_BASIC_CLASS_TYPES) || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
+			if((this->idxClass<MAX_BUILT_IN_TYPES) || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
 
 				(*c_scriptclass_info->c_destructor)(created_object);
 				deallocated=true;

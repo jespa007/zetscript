@@ -19,42 +19,42 @@ namespace zetscript{
 		//intptr_t var_trans = (intptr_t)input_var;
 			string s_return_value;
 			tStackElement callc_result={STK_PROPERTY_TYPE_UNDEFINED,0,0};
-			//int idx_type=CScriptClass::getIdxClassFromIts_C_Type(typeid(_T).name());
+			//int idx_type=GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_T).name());
 			// save return type ...
 			switch(idx_type){
-			 case IDX_CLASS_VOID_C:
+			 case IDX_TYPE_VOID_C:
 				break;
-			 case IDX_CLASS_INT_PTR_C:
+			 case IDX_TYPE_INT_PTR_C:
 				 if(var_trans==0) return callc_result;
 				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(*((intptr_t *)var_trans)),NULL};
 				 break;
-			 case IDX_CLASS_UNSIGNED_INT_C:
-			 case IDX_CLASS_INTPTR_T_C:
-			 case IDX_CLASS_INT_C:
+			 case IDX_TYPE_UNSIGNED_INT_C:
+			 case IDX_TYPE_INTPTR_T_C:
+			 case IDX_TYPE_INT_C:
 				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(((intptr_t)var_trans)),NULL};
 				 break;
-			 case IDX_CLASS_FLOAT_C:
+			 case IDX_TYPE_FLOAT_C:
 				 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
 				 memcpy(&callc_result.stkValue,&var_trans,sizeof(float));
 
 				 break;
-			 case IDX_CLASS_FLOAT_PTR_C:
+			 case IDX_TYPE_FLOAT_PTR_C:
 				 if(var_trans==0) return callc_result;
 				 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
 				 memcpy(&callc_result.stkValue,&(*(float *)var_trans),sizeof(float));
 				 break;
-			 case IDX_CLASS_BOOL_PTR_C:
+			 case IDX_TYPE_BOOL_PTR_C:
 				 if(var_trans==0) return callc_result;
 				 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(*((bool *)var_trans)),NULL};
 				 break;
-			 case IDX_CLASS_BOOL_C:
+			 case IDX_TYPE_BOOL_C:
 				 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(((bool)var_trans)),NULL};
 				 break;
-			 case IDX_CLASS_CONST_CHAR_PTR_C:
+			 case IDX_TYPE_CONST_CHAR_PTR_C:
 				 if(var_trans==0) return callc_result;
 				 callc_result={STK_PROPERTY_TYPE_STRING,(void *)var_trans,NULL};//new string(*((string *)result))};
 				 break;
-			 case IDX_CLASS_STRING_PTR_C:
+			 case IDX_TYPE_STRING_PTR_C:
 				 if(var_trans==0) return callc_result;
 				 callc_result={STK_PROPERTY_TYPE_STRING,(void *)((string *)var_trans)->c_str(),NULL};//new string(*((string *)result))};
 				 break;
@@ -64,7 +64,7 @@ namespace zetscript{
 				 break;
 			 default:
 				 if(var_trans==0) return callc_result;
-				 callc_result = {STK_PROPERTY_TYPE_SCRIPTVAR,NULL,CScriptClass::instanceScriptVariableByIdx(idx_type,(void *)var_trans)};
+				 callc_result = {STK_PROPERTY_TYPE_SCRIPTVAR,NULL,INSTANCE_SCRIPT_VARIABLE_BY_IDX(idx_type,(void *)var_trans)};
 				 break;
 			}
 
@@ -88,12 +88,12 @@ namespace zetscript{
 
 			switch(GET_INS_PROPERTY_VAR_TYPE(stk_src->properties)){
 			case STK_PROPERTY_TYPE_BOOLEAN:
-				if(idx_dst_type == IDX_CLASS_BOOL_C){// *CScriptClass::BOOL_TYPE_STR){
+				if(idx_dst_type == IDX_TYPE_BOOL_C){// *CScriptClass::BOOL_TYPE_STR){
 					val_ret=(intptr_t)(stk_src->stkValue);
-				}else if(idx_dst_type == IDX_CLASS_BOOL_PTR_C){//*CScriptClass::BOOL_PTR_TYPE_STR){
+				}else if(idx_dst_type == IDX_TYPE_BOOL_PTR_C){//*CScriptClass::BOOL_PTR_TYPE_STR){
 					val_ret=(intptr_t)(&stk_src->stkValue);
 				}else{
-					error="cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
+					error="cannot convert "+demangle((STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
 
 					return false;
 				}
@@ -101,15 +101,15 @@ namespace zetscript{
 				break;
 			case STK_PROPERTY_TYPE_NUMBER:
 				switch(idx_dst_type){
-				case IDX_CLASS_FLOAT_C:
+				case IDX_TYPE_FLOAT_C:
 					memcpy(&val_ret,&stk_src->stkValue,sizeof(float));
 					break;
-				case IDX_CLASS_FLOAT_PTR_C:
+				case IDX_TYPE_FLOAT_PTR_C:
 					val_ret=(intptr_t)(&stk_src->stkValue);
 					break;
-				case IDX_CLASS_UNSIGNED_INT_C:
-				case IDX_CLASS_INTPTR_T_C:
-				case IDX_CLASS_INT_C:
+				case IDX_TYPE_UNSIGNED_INT_C:
+				case IDX_TYPE_INTPTR_T_C:
+				case IDX_TYPE_INT_C:
 					{
 						int *aux_dst = ((int *)&val_ret);
 						float *aux_src=(float *)&stk_src->stkValue;
@@ -117,21 +117,21 @@ namespace zetscript{
 					}
 					break;
 				default:
-					error="cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+					error="cannot convert "+demangle((STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 					return false;
 				}
 				break;
 			case STK_PROPERTY_TYPE_INTEGER:
 				switch(idx_dst_type){
-				case IDX_CLASS_UNSIGNED_INT_C:
-				case IDX_CLASS_INTPTR_T_C:
-				case IDX_CLASS_INT_C:
+				case IDX_TYPE_UNSIGNED_INT_C:
+				case IDX_TYPE_INTPTR_T_C:
+				case IDX_TYPE_INT_C:
 					val_ret=(intptr_t)(stk_src->stkValue);
 					break;
-				case IDX_CLASS_INT_PTR_C:
+				case IDX_TYPE_INT_PTR_C:
 					val_ret=(intptr_t)(&stk_src->stkValue);
 					break;
-				case IDX_CLASS_FLOAT_C:
+				case IDX_TYPE_FLOAT_C:
 					{
 						float *aux_dst = ((float *)&val_ret);
 						int *aux_src=(int *)&stk_src->stkValue;
@@ -139,13 +139,13 @@ namespace zetscript{
 					}
 					break;
 				default:
-					error= "cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+					error= "cannot convert "+demangle((STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 					return false;
 				}
 				break;
 
 			case STK_PROPERTY_TYPE_STRING:
-				if(idx_dst_type == IDX_CLASS_STRING_PTR_C){
+				if(idx_dst_type == IDX_TYPE_STRING_PTR_C){
 					if(stk_src->varRef != 0){
 						val_ret=(intptr_t)(&((CStringScriptVariable *)(stk_src->varRef))->m_strValue);
 					}
@@ -154,10 +154,10 @@ namespace zetscript{
 						return false;
 					}
 
-				}else if (idx_dst_type == IDX_CLASS_CONST_CHAR_PTR_C){
+				}else if (idx_dst_type == IDX_TYPE_CONST_CHAR_PTR_C){
 					val_ret=(intptr_t)(stk_src->stkValue);
 				}else{
-					error= "cannot convert "+demangle((*CScriptClass::STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+					error= "cannot convert "+demangle((STRING_PTR_TYPE_STR))+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 					return false;
 				}
 
@@ -177,7 +177,7 @@ namespace zetscript{
 				if(script_variable->idxClass==IDX_CLASS_STRING){
 
 					val_ret=(intptr_t)(&script_variable->m_strValue);
-					if(idx_dst_type == IDX_CLASS_CONST_CHAR_PTR_C){
+					if(idx_dst_type == IDX_TYPE_CONST_CHAR_PTR_C){
 						val_ret=(intptr_t)script_variable->m_strValue.c_str();
 					}
 				}else if(
@@ -194,7 +194,7 @@ namespace zetscript{
 					if(c_class->idxClass==idx_dst_type){
 						val_ret=(intptr_t)script_variable->get_C_Object();
 					}
-					else if((val_ret=CScriptClass::doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
+					else if((val_ret=zetscript::CScriptClassFactory::getInstance()->doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
 						error = "cannot convert "+demangle(script_variable->getPointer_C_ClassName())+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
@@ -241,7 +241,7 @@ namespace zetscript{
 	auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 	->typename std::enable_if<!std::is_same<_R,void>::value>::type
 	{
-		int idx_return = CScriptClass::getIdxClassFromIts_C_Type(typeid(_R).name());
+		int idx_return = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_R).name());
 
 		*f=((void *)(new std::function<_R ()>(
 			[&,calling_obj,fun_obj,idx_return](){
@@ -281,7 +281,7 @@ namespace zetscript{
 		//return NULL;
 
 		using tParam1 = typename _T::template argument<0>::type;
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
 
 		*f=((void *)(new std::function<void (tParam1)>(
 			[&,calling_obj,fun_obj, idx_param1](tParam1 p1){
@@ -310,8 +310,8 @@ namespace zetscript{
 	{
 		using tParam1 = typename _T::template argument<0>::type;
 
-		int idx_return = CScriptClass::getIdxClassFromIts_C_Type(typeid(_R).name());
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
+		int idx_return = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_R).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
 
 
 		*f=((void *)(new std::function<_R (tParam1)>(
@@ -357,8 +357,8 @@ namespace zetscript{
 		using tParam2 = typename _T::template argument<1>::type;
 
 
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
 
 		*f=((void *)(new std::function<void (tParam1,tParam2)>(
 			[&,calling_obj,fun_obj, idx_param1, idx_param2](tParam1 p1,tParam2 p2){
@@ -394,9 +394,9 @@ namespace zetscript{
 		using tParam2 = typename _T::template argument<1>::type;
 
 
-		int idx_return = CScriptClass::getIdxClassFromIts_C_Type(typeid(_R).name());
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
+		int idx_return = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_R).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
 
 		*f=((void *)(new std::function<_R (tParam1,tParam2)>(
 			[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2](tParam1 p1,tParam2 p2){
@@ -446,9 +446,9 @@ namespace zetscript{
 		using tParam3 = typename _T::template argument<2>::type;
 
 
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
-		int idx_param3 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam3).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
+		int idx_param3 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam3).name());
 
 
 		*f=((void *)(new std::function<void (tParam1,tParam2,tParam3)>(
@@ -484,10 +484,10 @@ namespace zetscript{
 		using tParam2 = typename _T::template argument<1>::type;
 		using tParam3 = typename _T::template argument<2>::type;
 
-		int idx_return = CScriptClass::getIdxClassFromIts_C_Type(typeid(_R).name());
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
-		int idx_param3 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam3).name());
+		int idx_return = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_R).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
+		int idx_param3 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam3).name());
 
 		*f=((void *)(new std::function<_R (tParam1,tParam2,tParam3)>(
 			[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3](tParam1 p1,tParam2 p2,tParam3 p3){
@@ -535,10 +535,10 @@ namespace zetscript{
 		using tParam3 = typename _T::template argument<2>::type;
 		using tParam4 = typename _T::template argument<3>::type;
 
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
-		int idx_param3 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam3).name());
-		int idx_param4 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam4).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
+		int idx_param3 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam3).name());
+		int idx_param4 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam4).name());
 
 
 		*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4)>(
@@ -578,11 +578,11 @@ namespace zetscript{
 		using tParam3 = typename _T::template argument<2>::type;
 		using tParam4 = typename _T::template argument<3>::type;
 
-		int idx_return = CScriptClass::getIdxClassFromIts_C_Type(typeid(_R).name());
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
-		int idx_param3 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam3).name());
-		int idx_param4 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam4).name());
+		int idx_return = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_R).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
+		int idx_param3 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam3).name());
+		int idx_param4 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam4).name());
 
 		*f=((void *)(new std::function<_R (tParam1,tParam2,tParam3,tParam4)>(
 			[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4){
@@ -635,11 +635,12 @@ namespace zetscript{
 		using tParam5 = typename _T::template argument<4>::type;
 
 
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
-		int idx_param3 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam3).name());
-		int idx_param4 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam4).name());
-		int idx_param5 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam5).name());
+
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
+		int idx_param3 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam3).name());
+		int idx_param4 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam4).name());
+		int idx_param5 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam5).name());
 
 
 		*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4,tParam5)>(
@@ -680,12 +681,12 @@ namespace zetscript{
 		using tParam4 = typename _T::template argument<3>::type;
 		using tParam5 = typename _T::template argument<4>::type;
 
-		int idx_return = CScriptClass::getIdxClassFromIts_C_Type(typeid(_R).name());
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
-		int idx_param3 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam3).name());
-		int idx_param4 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam4).name());
-		int idx_param5 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam5).name());
+		int idx_return = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_R).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
+		int idx_param3 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam3).name());
+		int idx_param4 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam4).name());
+		int idx_param5 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam5).name());
 
 		*f=((void *)(new std::function<_R (tParam1,tParam2,tParam3,tParam4,tParam5)>(
 			[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5){
@@ -741,12 +742,12 @@ namespace zetscript{
 		using tParam6 = typename _T::template argument<5>::type;
 
 
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
-		int idx_param3 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam3).name());
-		int idx_param4 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam4).name());
-		int idx_param5 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam5).name());
-		int idx_param6 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam6).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
+		int idx_param3 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam3).name());
+		int idx_param4 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam4).name());
+		int idx_param5 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam5).name());
+		int idx_param6 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam6).name());
 
 
 
@@ -789,13 +790,13 @@ namespace zetscript{
 		using tParam5 = typename _T::template argument<4>::type;
 		using tParam6 = typename _T::template argument<5>::type;
 
-		int idx_return = CScriptClass::getIdxClassFromIts_C_Type(typeid(_R).name());
-		int idx_param1 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam1).name());
-		int idx_param2 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam2).name());
-		int idx_param3 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam3).name());
-		int idx_param4 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam4).name());
-		int idx_param5 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam5).name());
-		int idx_param6 = CScriptClass::getIdxClassFromIts_C_Type(typeid(tParam6).name());
+		int idx_return = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_R).name());
+		int idx_param1 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam1).name());
+		int idx_param2 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam2).name());
+		int idx_param3 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam3).name());
+		int idx_param4 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam4).name());
+		int idx_param5 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam5).name());
+		int idx_param6 = GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(tParam6).name());
 
 		*f=((void *)(new std::function<_R (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
 			[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
@@ -876,13 +877,13 @@ namespace zetscript{
 			getParamsFunction<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
 
 			// 2. check valid parameters ...
-			if((idx_return_type=CScriptClass::getIdxClassFromIts_C_Type(return_type)) == -1){
+			if((idx_return_type=GET_IDX_CLASS_FROM_ITS_C_TYPE(return_type)) == -1){
 				THROW_RUNTIME_ERROR("Return type \"%s\" for bind function not registered",demangle(return_type).c_str());
 				return NULL;
 			}
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
-				if(CScriptClass::getIdxClassFromIts_C_Type(m_arg[i])==-1){
+				if(GET_IDX_CLASS_FROM_ITS_C_TYPE(m_arg[i])==-1){
 					THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for bind function not registered",CZetScriptUtils::intToString(i),demangle(m_arg[i]).c_str());
 					return NULL;
 				}
@@ -952,7 +953,7 @@ namespace zetscript{
 		for ( unsigned i = 0; i < v.size(); i++){
 			tStackElement *stk = vsv->push();
 			//intptr_t uvar = (intptr_t)(v[i]);
-			*stk = var2stk((intptr_t)(v[i]),CScriptClass::getIdxClassFromIts_C_Type(typeid(_T).name()));
+			*stk = var2stk((intptr_t)(v[i]),GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_T).name()));
 		}
 
 		return vsv;

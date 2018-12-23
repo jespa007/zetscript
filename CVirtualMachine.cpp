@@ -509,67 +509,14 @@ namespace zetscript{
 		//size_vec_ast_node = 0;
 		current_foreach=NULL;
 		current_call_c_function = NULL;
+		n_globals=0;
 
 
 	}
 
-	void CVirtualMachine::iniStackVar(unsigned int pos,const tStackElement & stk){
-
-		if(pos < VM_LOCAL_VAR_MAX_STACK){
-			stack[pos]=stk;
-		}else{
-			writeErrorMsg(NULL,-1,"Attempt to assign stack element over limit (%i)",pos);
-		}
-	}
-
-	void CVirtualMachine::clearGlobals(){
-		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION(0);
-
-		// zero shares have a late loading so it can be null at first time...
-		if(zero_shares == NULL){
-			return;
-		}
-
-		if(main_function == NULL){ // not created.
-			return;
-		}
 
 
-		for(unsigned i = 0; i < main_function->m_variable.size(); i++){
-			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
-			//case STK_PROPERTY_TYPE_STRING:
-			if((main_function->m_variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF ){
-				tStackElement *ptr_ale =&stack[i];
-				CScriptVariable *var = NULL;
 
-				if(ptr_ale->properties &STK_PROPERTY_TYPE_SCRIPTVAR){
-					var =((CScriptVariable *)(ptr_ale->varRef));
-					if(var){
-						if(var->ptr_shared_pointer_node != NULL){
-							var->unrefSharedPtr();
-						}
-					}
-				}
-			}
-			//}
-		}
-
-		REMOVE_0_SHARED_POINTERS(0,NULL);
-
-
-		// clear all stack variables
-		tStackElement *aux=stack;
-		for(int i=0; i < VM_LOCAL_VAR_MAX_STACK;i++){
-			*aux++={STK_PROPERTY_TYPE_UNDEFINED,0,NULL};
-		}
-
-		memset(zero_shares,0,sizeof(zero_shares));
-		memset(shared_var,0,sizeof(shared_var));
-		//memset(stack,0,sizeof(stack));
-
-		idxCurrentStack=0;
-		//int idxCurrentStack
-	}
 
 
 
@@ -595,7 +542,7 @@ namespace zetscript{
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 
-			CScriptClass *c = CScriptClass::getScriptClass(((CScriptVariable *)(stk_v.varRef))->idxClass);
+			CScriptClass *c = GET_SCRIPT_CLASS(((CScriptVariable *)(stk_v.varRef))->idxClass);
 
 			if(c!=NULL){
 				return demangle(c->classPtrType);
@@ -746,7 +693,7 @@ namespace zetscript{
 
 		zs_print_debug_cr("pre_call %i",n_args);
 
-		if(irfs->idx_return_type == IDX_CLASS_VOID_C){ // getInstance()->getIdxClassVoid()){
+		if(irfs->idx_return_type == IDX_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){
 			case 0:
@@ -799,7 +746,7 @@ namespace zetscript{
 
 		}else{
 
-			if(irfs->idx_return_type==IDX_CLASS_BOOL_C){  // we must do a bool cast in order to get float return.
+			if(irfs->idx_return_type==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
 				switch(n_args){
 				case 0:
 					result=(*((std::function<bool ()> *)fun_ptr))();
@@ -850,7 +797,7 @@ namespace zetscript{
 					break;
 
 				}
-			}else if(irfs->idx_return_type==IDX_CLASS_FLOAT_C){ // we must do a float cast in order to get float return.
+			}else if(irfs->idx_return_type==IDX_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
 					float aux_flt;
 					switch(n_args){
 					case 0:
@@ -1014,7 +961,7 @@ namespace zetscript{
 		destroyCache();
 
 		main_function_object = GET_SCRIPT_FUNCTION(0);
-		vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunction::getVectorScriptFunctionNode();
+		vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunctionFactory::getInstance()->getVectorScriptFunctionNode();
 		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
 		vec_script_function_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
 		for(unsigned i=0; i < size_vec_script_function_object_node; i++){
@@ -1022,6 +969,71 @@ namespace zetscript{
 		}
 	}
 
+/*	void CVirtualMachine::addGlobalVar(tStackElement se){
+		global_var.push_back(se);
+	}*/
+
+	void CVirtualMachine::addGlobalVar(const tStackElement & stk){
+
+		if(n_globals < VM_LOCAL_VAR_MAX_STACK){
+			stack[n_globals++]=stk;
+		}else{
+			writeErrorMsg(NULL,-1,"Max stack element over limit (%i)",VM_LOCAL_VAR_MAX_STACK);
+		}
+	}
+
+	void CVirtualMachine::clearGlobalVars(){
+		CScriptFunction  *main_function = MAIN_FUNCTION;
+
+		// zero shares have a late loading so it can be null at first time...
+		if(zero_shares == NULL){
+			return;
+		}
+
+
+
+		if(n_globals!=main_function->m_variable.size()){
+			THROW_RUNTIME_ERROR("n_globals != main variables");
+			return;
+		}
+
+		bool end=false;
+		for(unsigned i =  main_function->m_variable.size()-1; i >= 0 && !end; i--){
+			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
+			//case STK_PROPERTY_TYPE_STRING:
+			end=(main_function->m_variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;
+			if(!end){
+				tStackElement *ptr_ale =&stack[i];
+				CScriptVariable *var = NULL;
+
+				if(ptr_ale->properties &STK_PROPERTY_TYPE_SCRIPTVAR){
+					var =((CScriptVariable *)(ptr_ale->varRef));
+					if(var){
+						if(var->ptr_shared_pointer_node != NULL){
+							var->unrefSharedPtr();
+						}
+					}
+				}
+			}
+			//}
+		}
+
+		REMOVE_0_SHARED_POINTERS(0,NULL);
+
+
+		// clear all stack variables
+		tStackElement *aux=stack;
+		for(int i=0; i < VM_LOCAL_VAR_MAX_STACK;i++){
+			*aux++={STK_PROPERTY_TYPE_UNDEFINED,0,NULL};
+		}
+
+		memset(zero_shares,0,sizeof(zero_shares));
+		memset(shared_var,0,sizeof(shared_var));
+		//memset(stack,0,sizeof(stack));
+
+		idxCurrentStack=0;
+		//int idxCurrentStack
+	}
 
 	tStackElement  CVirtualMachine::execute(
 			 CScriptFunction *info_function,
@@ -1164,7 +1176,7 @@ namespace zetscript{
 
 			if((info_function->symbol_info.properties &  SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
 
-				if(this_object!= NULL && this_object != CZetScript::getInstance()->getMainObject()){
+				if(this_object!= NULL){// && this_object != NULL){//CZetScript::getInstance()->getMainObject()){
 					fun_ptr = this_object->getFunctionSymbolByIndex(info_function->symbol_info.idxSymbol)->proxy_ptr;
 				}
 			}
@@ -1247,7 +1259,7 @@ namespace zetscript{
 
 		CScriptVariable *svar=NULL;
 		CScriptVariable *calling_object=NULL;
-		CScriptClass *script_class_aux;
+//		CScriptClass *script_class_aux;
 
 
 
@@ -1561,7 +1573,7 @@ namespace zetscript{
 
 						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							class_obj=(CScriptVariable *)(stk_ins->varRef);
-							CScriptClass *sc = CScriptClass::getScriptClass(((CScriptVariable *)class_obj)->idxClass);
+							CScriptClass *sc =GET_SCRIPT_CLASS(((CScriptVariable *)class_obj)->idxClass);
 							vec_functions=&sc->m_function;
 						}
 						else{
@@ -2064,16 +2076,16 @@ namespace zetscript{
 				}
 
 				switch((intptr_t)ptrResultInstructionOp2->stkValue){
-					case IDX_CLASS_INT_PTR_C:
+					case IDX_TYPE_INT_PTR_C:
 						PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_INTEGER)!=0);
 						break;
-					case IDX_CLASS_FLOAT_PTR_C:
+					case IDX_TYPE_FLOAT_PTR_C:
 						PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_NUMBER)!=0);
 						break;
-					case IDX_CLASS_BOOL_PTR_C:
+					case IDX_TYPE_BOOL_PTR_C:
 						PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_BOOLEAN)!=0);
 						break;
-					case IDX_CLASS_STRING_PTR_C:
+					case IDX_TYPE_STRING_PTR_C:
 						PUSH_BOOLEAN((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_STRING)!=0);
 						break;
 					case IDX_CLASS_FUNCTOR:
@@ -2081,7 +2093,7 @@ namespace zetscript{
 						break;
 					default:
 						if(ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							bool b = CScriptClass::isIdxClassInstanceOf(((CScriptVariable *)(ptrResultInstructionOp1->varRef))->idxClass, (intptr_t)ptrResultInstructionOp2->stkValue);
+							bool b = SCRIPT_CLASS_FACTORY->isIdxClassInstanceOf(((CScriptVariable *)(ptrResultInstructionOp1->varRef))->idxClass, (intptr_t)ptrResultInstructionOp2->stkValue);
 							PUSH_BOOLEAN(b);
 						}else{
 							PUSH_BOOLEAN(false);
@@ -2277,7 +2289,7 @@ namespace zetscript{
 						}
 
 						svar = (CScriptVariable *)(se)->varRef;
-						if(svar->idxClass >= MAX_BASIC_CLASS_TYPES
+						if(svar->idxClass >= MAX_BUILT_IN_TYPES
 						 ||svar->idxClass==IDX_CLASS_VECTOR
 						 ||svar->idxClass==IDX_CLASS_STRUCT
 						)
@@ -2446,7 +2458,7 @@ namespace zetscript{
 
 			}
 
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CEval::getOperatorStr(instruction->op_code));
+			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CEval::getOpCodeStr(instruction->op_code));
 			RETURN_ERROR;
 
 

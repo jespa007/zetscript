@@ -52,10 +52,6 @@ namespace zetscript{
 	//char CZetScript::str_error[MAX_BUFFER_STR_ERROR] = { 0 };
 
 
-
-
-
-
 	CZetScript * CZetScript::getInstance(){
 		if(m_instance==NULL){
 			m_instance = new CZetScript();
@@ -69,13 +65,16 @@ namespace zetscript{
 
 	void CZetScript::clear(){
 
-		CURRENT_VM->clearGlobals();
+		CURRENT_VM->clearGlobalVars();
 
 
-		vector<CScriptFunction *> * vec_script_function_node = CScriptFunction::getVectorScriptFunctionNode();
-		vector<CScope *> * vec_scope_node = CScope::getVectorScopeNode();
 
-		CScriptFunction * main_function = vec_script_function_node->at(0);
+
+		//vector<CScriptFunction *> * vec_script_function_node = CScriptFunctionFactory::getInstance()->getVectorScriptFunctionNode();
+		//vector<CScope *> * vec_scope_node = CScopeFactory::getInstance()->getVectorScopeNode();
+		//vector<CScriptClass *> *vec_script_class_node = CScriptClassFactory::getInstance()->getVecScriptClassNode();
+
+		CScriptFunction * main_function = MAIN_FUNCTION;
 
 		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
@@ -108,78 +107,24 @@ namespace zetscript{
 		}
 
 		// remove scope vars...
-		bool end=false;
-		do{
-			CScope * info_scope = vec_scope_node->at(vec_scope_node->size()-1);
-			end=info_scope->is_c_node || vec_scope_node->size()==1;
 
-			if(!end){
-
-
-				vec_scope_node->pop_back();
-				delete info_scope;
-
-			}
-
-		}while(!end);
 
 		//int i = vec_script_function_node->size()-1;
-		end=false;
-		do{
-			CScriptFunction * info_function = vec_script_function_node->at(vec_script_function_node->size()-1);
-			end=(info_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF || vec_script_function_node->size()==1;
 
-			if(!end){
-
-				if (info_function->instruction != NULL) {
-					//for (PtrInstruction stat = info_function->object_info.instruction; *stat != NULL; stat++) {
-
-						//free(*stat);
-					//}
-
-					free(info_function->instruction);
-					info_function->instruction=NULL;
-				}
-
-				// unloading scope ...
-				if (info_function->lut_scope_symbol != NULL) {
-					for (unsigned j = 0; j < info_function->n_lut_scope_symbols; j++) {
-						free(info_function->lut_scope_symbol[j].var_index);
-					}
-
-					free(info_function->lut_scope_symbol);
-					info_function->lut_scope_symbol=NULL;
-				}
-
-				vec_script_function_node->pop_back();
-				delete info_function;
-
-			}
-
-		}while(!end);
+		SCOPE_FACTORY->clear();
+		SCRIPT_FUNCTION_FACTORY->clear();
+		SCRIPT_CLASS_FACTORY->clear();
 
 
-		// clean script classes ...
-		vector<CScriptClass *> *vec_script_class_node = CScriptClass::getVecScriptClassNode();
 
-		end=false;
-		do{
-			CScriptClass * sc = vec_script_class_node->at(vec_script_class_node->size()-1);
-			end=(sc->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF;
 
-			if(!end){
 
-				delete sc;
-				vec_script_class_node->pop_back();
 
-			}
-
-		}while(!end);
 	}
 
 	void CZetScript::destroy(){
 
-		CURRENT_VM->clearGlobals();
+		CURRENT_VM->clearGlobalVars();
 
 		// clear globals...
 		if(m_instance!=NULL){
@@ -188,9 +133,11 @@ namespace zetscript{
 
 		//CCompiler::destroySingletons();
 		//CState::destroySingletons();
-		CScriptClass::destroyStaticVars();
-		CScriptFunction::destroyStaticVars();
-		CNativeFunction::destroySingletons();
+		
+		CScopeFactory::destroySingleton();
+		CScriptFunctionFactory::destroySingleton();
+		CScriptClassFactory::destroySingleton();
+		CNativeFunction::destroySingleton();
 
 		//CASTNode::destroySingletons();
 	}
@@ -198,7 +145,8 @@ namespace zetscript{
 
 	CZetScript::CZetScript(){
 		//idxMainScriptFunctionObject=ZS_UNDEFINED_IDX;
-		m_mainObject = NULL;
+		//m_mainObject = NULL;
+		//m_mainFunction = NULL;
 		show_filename_on_error=true;
 		__init__ = false;
 
@@ -209,8 +157,14 @@ namespace zetscript{
 
 	bool CZetScript::init(){
 
-		CScope::initStaticVars();
+		CScopeFactory::getInstance();
+		CNativeFunction::getInstance();
+		CScriptFunctionFactory::getInstance();
+		CScriptClassFactory::getInstance();
 		CEval::initStaticVars();
+
+		//m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
+		//m_mainFunction = MAIN_FUNCTION;
 
 		vm = new CVirtualMachine();
 
@@ -376,7 +330,7 @@ namespace zetscript{
 		return value;
 	}
 
-	void CZetScript::destroyMainFunction() {
+	/*void CZetScript::destroyMainFunction() {
 
 		if (m_mainObject != NULL) {
 			delete m_mainObject;
@@ -384,7 +338,7 @@ namespace zetscript{
 		m_mainObject = NULL;
 	}
 
-	/*
+	
 	ZETSCRIPT_MODULE_EXPORT void CZetScript::parse(const string & str_script,const char *filename_ref){
 		if(!__init__) {THROW_RUNTIME_ERROR("zetscript not initialized");return;}
 
@@ -460,7 +414,7 @@ namespace zetscript{
 		bool error=false;
 
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		vm->execute(MAIN_FUNCTION, m_mainObject,error,NO_PARAMS);
+		vm->execute(MAIN_FUNCTION, NULL,error,NO_PARAMS);
 
 		if(error){
 			THROW_SCRIPT_ERROR();
@@ -482,7 +436,7 @@ namespace zetscript{
 
 
 		if(show_bytecode){
-			CEval::printGeneratedCode();
+			SCRIPT_CLASS_FACTORY->printGeneratedCode();
 		}
 
 		if(exec_vm){
@@ -497,7 +451,7 @@ namespace zetscript{
 		if(!__init__) {THROW_RUNTIME_ERROR("zetscript not initialized");return false;}
 
 		char *buf_tmp=NULL;
-		int n_bytes;
+//		int n_bytes;
 
 
 		bool status = false;
@@ -514,7 +468,7 @@ namespace zetscript{
 		}
 
 		if(show_bytecode){
-			CEval::printGeneratedCode();
+			SCRIPT_CLASS_FACTORY->printGeneratedCode();
 		}
 
 		if(exec_vm){
@@ -601,7 +555,7 @@ namespace zetscript{
 			}
 
 		}else{ // function
-			*calling_obj = m_mainObject;
+			//*calling_obj = m_mainObject;
 			string symbol_to_find=CEval::makeSymbolRef(access_var[0],IDX_GLOBAL_SCOPE);
 			for(unsigned i = 0; i < m_mainFunctionInfo->m_function.size() && *fun_obj==NULL; i++){
 				CScriptFunction *aux_fun_obj=m_mainFunctionInfo->m_function[i];
@@ -643,7 +597,11 @@ namespace zetscript{
 	//-------------------------------------------------------------------------------------
 	CZetScript::~CZetScript(){
 		// unregister operators ...
-		destroyMainFunction();
+	/*	if (m_mainObject != NULL) {
+			delete m_mainObject;
+		}
+		m_mainObject = NULL;*/
+
 		delete vm;
 	}
 }

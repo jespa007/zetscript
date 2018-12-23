@@ -5,7 +5,10 @@
 #include "CZetScript.h"
 #include <istream>
 
+#define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2019 Jordi Espada\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION
+
 using namespace zetscript;
+
 
 
 int main(int argc, char * argv[]) {
@@ -30,7 +33,7 @@ int main(int argc, char * argv[]) {
 					show_bytecode=true;
 
 				}else if(strcmp(argv[i],"--version")==0){
-					printf("ZetScript %i.%i.%i Copyright (C) 2016-2018\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION);
+					printf(ZETSCRIP_COPYRIGHT);
 					exit(0);
 				}else{
 					fprintf(stderr,"invalid argument %s\n",argv[i]);
@@ -74,11 +77,8 @@ int main(int argc, char * argv[]) {
 
 		bool exit = false;
 		string expression;
-		printf("ZetScript %i.%i.%i Copyright (C) 2017-2018 Jordi Espada\n\n"
-				,ZETSCRIPT_MAJOR_VERSION
-				,ZETSCRIPT_MINOR_VERSION
-				,ZETSCRIPT_PATCH_VERSION
-				);
+		printf(ZETSCRIP_COPYRIGHT);
+		printf("\n");
 
 
 

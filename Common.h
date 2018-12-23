@@ -184,8 +184,7 @@ enum PROXY_CREATOR {
 	CREATE_FUNCTION = 0, DESTROY_FUNCTION
 };
 
-enum OP_CODE
-	:char {
+enum OP_CODE:char {
 
 	// ARITMETHIC OPERATORS.
 
@@ -230,8 +229,7 @@ enum OP_CODE
 	IT_INI,
 	IT_SET_AND_NEXT,
 	IT_CHK_END,
-
-	MAX_OPERATORS
+	MAX_OP_CODES
 
 };
 
@@ -401,32 +399,33 @@ enum SYMBOL_INFO_PROPERTY {
  PROPERTY_ARG_VAR = 0x1 <<0,
  };*/
 
-enum BASIC_CLASS_TYPE {
-	// primitives...
-	IDX_CLASS_VOID_C = 0,
-	IDX_CLASS_INT_PTR_C,
-	IDX_CLASS_FLOAT_PTR_C,
-	IDX_CLASS_CONST_CHAR_PTR_C, // const char * (read only)
-	IDX_CLASS_STRING_PTR_C, // (string read/write)
-	IDX_CLASS_BOOL_PTR_C,
-	IDX_CLASS_INT_C,
-	IDX_CLASS_UNSIGNED_INT_C,
-	IDX_CLASS_INTPTR_T_C,
-	IDX_CLASS_FLOAT_C,
-	IDX_CLASS_BOOL_C,
-	//... add more primitives (don't forgot to configure it in CScriptVar...
-	MAX_CLASS_C_TYPES,
-	// here classes starts ...
+enum BUILT_IN_TYPE {
 
-	IDX_START_SCRIPTVAR = MAX_CLASS_C_TYPES, 		// Starting classes ...
-	IDX_CLASS_MAIN = MAX_CLASS_C_TYPES, 			// Main class ...
-	IDX_STACK_ELEMENT,		// 1
-	IDX_CLASS_SCRIPT_VAR, 	// 4 script base that all object derive from it...
-	IDX_CLASS_STRING,     	// 5
-	IDX_CLASS_VECTOR,		// 6
-	IDX_CLASS_FUNCTOR,		// 7
-	IDX_CLASS_STRUCT,		// 8
-	MAX_BASIC_CLASS_TYPES
+	// built-in types...
+	IDX_CLASS_MAIN = 0, 	// Main class ...
+
+	// built in C types...
+	IDX_TYPE_VOID_C,
+	IDX_TYPE_INT_PTR_C,
+	IDX_TYPE_FLOAT_PTR_C,
+	IDX_TYPE_CONST_CHAR_PTR_C,
+	IDX_TYPE_STRING_PTR_C,
+	IDX_TYPE_BOOL_PTR_C,
+	IDX_TYPE_INT_C,
+	IDX_TYPE_UNSIGNED_INT_C,
+	IDX_TYPE_INTPTR_T_C,
+	IDX_TYPE_FLOAT_C,
+	IDX_TYPE_BOOL_C,
+
+	// built in classes...
+	IDX_STACK_ELEMENT,
+	IDX_CLASS_SCRIPT_VAR,
+	IDX_CLASS_STRING,
+	IDX_CLASS_VECTOR,
+	IDX_CLASS_FUNCTOR,
+	IDX_CLASS_STRUCT,
+
+	MAX_BUILT_IN_TYPES
 };
 
 
@@ -459,8 +458,6 @@ namespace zetscript{
 		const char *str;
 		char * (*eval_fun)(const char *, int &, CScope *, PASTNode *);
 	} tKeywordInfo_Old;*/
-
-
 
 
 	typedef struct {
@@ -531,8 +528,6 @@ namespace zetscript{
 			//idxScopeVar=-1;
 			idxSymbol = -1;
 		}
-
-
 	};
 
 	struct tInstruction {
@@ -542,8 +537,6 @@ namespace zetscript{
 		intptr_t index_op2;
 		unsigned short instruction_properties;
 		short idxAstNode; // define ast node for give some information at run time
-
-
 	};
 
 	typedef tInstruction *PtrInstruction;
@@ -584,14 +577,6 @@ namespace zetscript{
 
 	//-------------------------------------------------------
 
-
-
-
-
-	typedef struct {
-		string filename;
-		//unsigned char *data;
-	} tInfoParsedSource;
 
 	/**
 	 * Scope register

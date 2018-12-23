@@ -91,12 +91,12 @@ Keyword (K)
 - switch(E){ // switch should have constants on case
 	default:
 	case C0:
-	    break;
+		� break;
 	case C1:
-	    break;
-	    ..
+		� break;
+		� ..
 	case CN:
-	    break;
+		� break;
 	}
 
 -if(Ec){ B1 } else if (Ec2) { B2 } else { B3 }
@@ -131,22 +131,26 @@ B <- [E;|K]* // A set of expressions ended with ; or Keyword
 namespace zetscript{
 
 
+
+
 	void  		writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
 	// static vars...
-	CEval::tKeywordInfo CEval::defined_keyword[MAX_KEYWORD];
-	CEval::tDirectiveInfo CEval::defined_directive[MAX_DIRECTIVES];
-	CEval::tOperatorInfo CEval::defined_operator[MAX_OPERATOR_TYPES];
-	CEval::tPreOperatorInfo CEval::defined_pre_operator[MAX_PRE_OPERATOR_TYPES];
-	CEval::tIdentityOperatorInfo CEval::defined_identity_operator[MAX_IDENTITY_OPERATOR_TYPES];
-	CEval::tSeparatorInfo CEval::defined_separator[MAX_SEPARATOR_TYPES];
+	CEval::tKeywordInfo 					CEval::defined_keyword[MAX_KEYWORD];
+	CEval::tDirectiveInfo	 				CEval::defined_directive[MAX_DIRECTIVES];
+	CEval::tOperatorInfo 					CEval::defined_operator[MAX_OPERATOR_TYPES];
+	CEval::tOpCodeInfo	 					CEval::defined_opcode[MAX_OP_CODES];
 
-	map<string,tInfoConstantValue *> 		*CEval::constant_pool=NULL;
-	CEval::tFunctionInfo				*CEval::pCurrentFunctionInfo=NULL;
-	vector<CEval::tFunctionInfo*> 	*CEval::vFunctionInfo=NULL;
-	vector<tInfoParsedSource> * CEval::m_parsedSource = NULL;
+	CEval::tPreOperatorInfo 				CEval::defined_pre_operator[MAX_PRE_OPERATOR_TYPES];
+	CEval::tIdentityOperatorInfo 			CEval::defined_identity_operator[MAX_IDENTITY_OPERATOR_TYPES];
+	CEval::tSeparatorInfo 					CEval::defined_separator[MAX_SEPARATOR_TYPES];
 
-	char CEval::print_aux_load_value[1024*8]={0};
+	map<string,tInfoConstantValue *> 	*	CEval::constant_pool=NULL;
+	CEval::tFunctionInfo				*	CEval::pCurrentFunctionInfo=NULL;
+	vector<CEval::tFunctionInfo*> 		*	CEval::vFunctionInfo=NULL;
+	vector<CEval::tInfoParsedSource> 	*	CEval::m_parsedSource = NULL;
+
+
 
 
 	const char * CEval::current_parsing_filename=DEFAULT_NO_FILENAME;
@@ -250,9 +254,9 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	const char * 		CEval::getOperatorStr(unsigned char  op){
-		if(op < OPERATOR_TYPE::MAX_OPERATOR_TYPES){
-			return CEval::defined_operator[op].str;
+	const char * 		CEval::getOpCodeStr(OP_CODE  op){
+		if(op < OP_CODE::MAX_OP_CODES){
+			return CEval::defined_opcode[op].str;
 
 		}
 
@@ -262,26 +266,6 @@ namespace zetscript{
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // FILE MANAGEMENT
 
-
-/*	void CEval::setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles){
-		m_parsedSource = parsedFiles;
-	}
-
-	int CEval::getIdxParsedFilenameSource(const char *file){
-
-		if(file == NULL) return 0;
-
-		for(unsigned i =0; i < m_parsedSource->size(); i++){
-			if(m_parsedSource->at(i).filename == file){
-				return i;
-			}
-		}
-
-		THROW_RUNTIME_ERROR("Fatal error! Cannot find idx for \"%s\"",file);
-
-		return -1;
-	}
-*/
 
 	bool CEval::isFilenameAlreadyParsed(const string & filename){
 		for(unsigned i = 0; i < m_parsedSource->size(); i++){
@@ -301,262 +285,6 @@ namespace zetscript{
 
 		return m_parsedSource->at(idx).filename.c_str();
 	}
-
-	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-	 // PRINT ASM INFO
-
-	 const char * CEval::getStrMovVar(tInstruction * iao){
-
-		if(iao->op_code != STORE){
-			return "ERROR";
-		}
-
-		string symbol_value="????";
-
-
-		sprintf(print_aux_load_value,"VAR(%s)",symbol_value.c_str());
-
-		return print_aux_load_value;
-	 }
-
-	 const char * CEval::getStrTypeLoadValue(PtrInstruction m_listStatements, int current_instruction){
-
-		tInstruction * iao =&m_listStatements[current_instruction];
-		tInfoConstantValue *icv;
-		if(iao->op_code != LOAD){
-			return "ERROR";
-		}
-
-		string symbol_value="????";
-
-
-
-		char object_access[512] = "";
-
-		sprintf(print_aux_load_value,"UNDEFINED");
-
-		if(iao->instruction_properties & INS_PROPERTY_ACCESS_SCOPE){
-
-			sprintf(object_access,
-					"[%03i]."
-
-					,(int)iao->index_op2);
-		}
-		else if(iao->instruction_properties & INS_PROPERTY_THIS_SCOPE){
-			sprintf(object_access,"this.");
-		}
-
-		switch(iao->index_op1){
-
-			case LOAD_TYPE::LOAD_TYPE_CONSTANT:
-				icv=(tInfoConstantValue *)iao->index_op2;
-				switch(icv->properties){
-				case STK_PROPERTY_TYPE_BOOLEAN:
-				case STK_PROPERTY_TYPE_INTEGER:
-					sprintf(print_aux_load_value,"CONST(%i)",(int)((intptr_t)icv->stkValue));
-					break;
-				case STK_PROPERTY_TYPE_NUMBER:
-					sprintf(print_aux_load_value,"CONST(%f)",*((float *)&icv->stkValue));
-					break;
-				case STK_PROPERTY_TYPE_STRING:
-					sprintf(print_aux_load_value,"CONST(%s)",((string *)icv->stkValue)->c_str());
-					break;
-
-				}
-				break;
-
-			case LOAD_TYPE::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"%sVAR(%s)",object_access,symbol_value.c_str());
-				break;
-			case LOAD_TYPE::LOAD_TYPE_FUNCTION:
-
-				sprintf(print_aux_load_value,"%sFUN(%s)",object_access,symbol_value.c_str());
-				break;
-
-			case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
-				sprintf(print_aux_load_value,"ARG(%s)",symbol_value.c_str());
-				break;
-			default:
-
-				break;
-		}
-		return print_aux_load_value;
-	 }
-
-	 void CEval::printGeneratedCode(CScriptFunction *sfo){
-
-		// PRE: it should printed after compile and updateReferences.
-		string pre="";
-		string post="";
-
-		if(sfo->instruction != NULL){
-
-			unsigned idx_instruction=0;
-			for(tInstruction * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
-
-				int n_ops=0;
-				int index_op1 = instruction->index_op1;
-				int index_op2 = instruction->index_op2;
-
-				if(index_op1 != -1)
-					n_ops++;
-
-				 if(index_op2 != -1)
-					 n_ops++;
-
-				 pre="";
-				 post="";
-
-					switch(GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties)){
-					case INS_PROPERTY_PRE_NEG:
-						pre="-";
-						break;
-					case INS_PROPERTY_PRE_INC:
-						pre="++";
-						break;
-					case INS_PROPERTY_PRE_DEC:
-						pre="--";
-						break;
-					case INS_PROPERTY_POST_INC:
-						post="++";
-						break;
-					case INS_PROPERTY_POST_DEC:
-						post="--";
-						break;
-					default:
-						// check whether is constant and numeric
-						if(instruction->op_code==OP_CODE::LOAD && instruction->index_op1==LOAD_TYPE_CONSTANT){
-							tInfoConstantValue *icv = (((tInfoConstantValue *)instruction->index_op2));
-							float n;
-
-							// change the sign
-							switch(icv->properties){
-							default:
-								break;
-							case STK_PROPERTY_TYPE_INTEGER:
-								if(((intptr_t)icv->stkValue)<0){
-									pre="-";
-								}
-								break;
-							case STK_PROPERTY_TYPE_NUMBER:
-								memcpy(&n,&icv->stkValue,sizeof(float));
-								if(n<0){
-									pre="-";
-								}
-								break;
-							}
-						}
-						break;
-
-					}
-				switch(instruction->op_code){
-
-				case  NEW:
-					printf("[%03i]\t%s\t%s\n",idx_instruction,CEval::getOperatorStr(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?CScriptClass::getNameRegisteredClassByIdx(instruction->index_op1):"???");
-					break;
-				case  LOAD:
-					printf("[%03i]\t%s\t%s%s%s\n"
-							,idx_instruction,
-							CEval::getOperatorStr(instruction->op_code),
-							pre.c_str(),
-							getStrTypeLoadValue(sfo->instruction,idx_instruction),
-							post.c_str());
-					break;
-				case JNT:
-				case JT:
-				case JMP:
-					printf("[%03i]\t%s\t%03i\n"
-							,idx_instruction
-							,CEval::getOperatorStr(instruction->op_code)
-							,(int)instruction->index_op2);
-					break;
-				case PUSH_SCOPE:
-					printf("[%03i]\t%s%c%s%s%s%c\n"
-							,idx_instruction
-							,CEval::getOperatorStr(instruction->op_code)
-							,instruction->index_op1!=0?'(':' '
-							,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-							,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-							,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-							,instruction->index_op1!=0?')':' '
-							);
-					break;
-				case POP_SCOPE:
-					printf("[%03i]\t%s%c%s%s%s%c\n"
-							,idx_instruction
-							,CEval::getOperatorStr(instruction->op_code)
-							,instruction->index_op1!=0?'(':' '
-							,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-							,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-							,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-							,instruction->index_op1!=0?')':' '
-							);
-					break;
-				default:
-
-					if(n_ops==0){
-						printf("[%03i]\t%s\n",idx_instruction,CEval::getOperatorStr(instruction->op_code));
-					}else if(n_ops==1){
-						printf("[%03i]\t%s%s\n"
-								,idx_instruction
-								,CEval::getOperatorStr(instruction->op_code)
-								,(instruction->instruction_properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
-								);
-					}else{
-						printf("[%03i]\t%s\n"
-								,idx_instruction
-								,CEval::getOperatorStr(instruction->op_code)
-								);
-					}
-					break;
-				}
-			}
-		}
-
-		// and then print its functions ...
-		vector<CScriptFunction *> * m_vf = &sfo->m_function;
-
-		for(unsigned j =0; j < m_vf->size(); j++){
-
-			CScriptFunction *local_irfs = (*m_vf)[j];
-
-			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
-				string symbol_ref="????";
-
-
-				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
-
-				if(local_irfs->idxClass!=ZS_INVALID_CLASS){
-					CScriptClass *sc = CScriptClass::getScriptClass(local_irfs->idxClass);
-					if(sc->idxClass == IDX_CLASS_MAIN){
-						symbol_ref="Main";
-					}else{
-						symbol_ref=sfo->symbol_info.symbol_ref+string("::")+string("????");
-					}
-				}
-
-				printf("-------------------------------------------------------\n");
-				printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
-				printGeneratedCode(m_vf->at(j));
-			}
-		}
-	 }
-
-
-	 void CEval::printGeneratedCode(){
-
-		 vector<CScriptClass *> * registeredClass = CScriptClass::getVectorScriptClassNode();
-
-		 // for all classes print code...
-		 for(unsigned i = 0; i < registeredClass->size(); i++){
-			 CScriptClass *rc=registeredClass->at(i);
-			 for(unsigned f = 0; f < rc->m_function.size(); f++){
-				 printGeneratedCode(rc->m_function[f]);
-			 }
-		 }
-	 }
-	 // PRINT ASM INFO
-	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -748,24 +476,88 @@ namespace zetscript{
 		defined_directive[UNKNOWN_DIRECTIVE]={UNKNOWN_DIRECTIVE, NULL};
 		defined_directive[INCLUDE_DIRECTIVE]={INCLUDE_DIRECTIVE, "import"};
 
+		// OP CODES
+		//		VAR  			|	STR   | ID | NUM OP
+		//----------------------+---------+----+-------
+
+		defined_opcode[EQU]         ={EQU,"EQU" };  // ==
+		defined_opcode[INSTANCEOF]  ={INSTANCEOF,"INSTANCEOF"};  // ==
+		defined_opcode[NOT_EQU]     ={NOT_EQU,"NOT_EQU" };  // !=
+		defined_opcode[LT]          ={LT,"LT"  };  // <
+		defined_opcode[LTE]         ={LTE,"LTE"};  // <=
+		defined_opcode[NOT]         ={NOT,"NOT"}; // !
+		defined_opcode[GT]          ={GT,"GT"};  // >
+		defined_opcode[GTE]         ={GTE,"GTE"}; // >=
+		defined_opcode[NEG]         ={NEG,"NEG"}; // !
+		defined_opcode[ADD]         ={ADD,"ADD"}; // +
+		defined_opcode[LOGIC_AND]   ={LOGIC_AND,"LOGIC_AND"}; // &&
+		defined_opcode[LOGIC_OR]    ={LOGIC_OR,"LOGIC_OR"};  // ||
+		defined_opcode[DIV]         ={DIV,"DIV"}; // /
+		defined_opcode[MUL]         ={MUL,"MUL"}; // *
+		defined_opcode[MOD]         ={MOD,"MOD"};  // %
+
+		defined_opcode[AND]         ={AND,"AND"}; // bitwise logic and
+		defined_opcode[OR]          ={OR,"OR"}; // bitwise logic or
+		defined_opcode[XOR]         ={XOR,"XOR"}; // logic xor
+		defined_opcode[SHL]         ={SHL,"SHL"}; // shift left
+		defined_opcode[SHR]         ={SHR,"SHR"}; // shift right
+
+		defined_opcode[STORE]         ={STORE,"STORE"}; // mov expression to var
+		defined_opcode[LOAD]        ={LOAD,"LOAD"}; // primitive value like number/string or boolean...
+
+		defined_opcode[JMP]         ={JMP,"JMP"}; // Unconditional jump.
+		defined_opcode[JNT]         ={JNT,"JNT"}; // goto if not true ... goes end to conditional.
+		defined_opcode[JT]          ={JT,"JT"}; // goto if true ... goes end to conditional.
+
+		defined_opcode[CALL]={CALL,"CALL"}; // calling function after all of arguments are processed...
+
+
+		defined_opcode[VGET]={VGET,"VGET"}; // vector access after each index is processed...
+
+		defined_opcode[DECL_VEC]={DECL_VEC,"DECL_VEC"}; // Vector object (CREATE)
+
+		defined_opcode[VPUSH]={VPUSH,"VPUSH"}; // Value push for vector
+		defined_opcode[RET]={RET,"RET"}; // Value pop for vector
+
+		defined_opcode[NEW]={NEW,"NEW"}; // New object (CREATE)
+		defined_opcode[DELETE_OP]={DELETE_OP,"DELETE_OP"};
+
+		defined_opcode[POP_SCOPE]={POP_SCOPE,"POP_SCOPE"}; // New object (CREATE)
+		defined_opcode[PUSH_SCOPE]={PUSH_SCOPE,"PUSH_SCOPE"}; // New object (CREATE)
+		defined_opcode[PUSH_ATTR]={PUSH_ATTR,"PUSH_ATTR"}; // New object (CREATE)
+		defined_opcode[DECL_STRUCT]={DECL_STRUCT,"DECL_STRUCT"}; // New object (CREATE)
+
+		defined_opcode[IT_INI]={IT_INI,"IT_INI"}; // IT_INI
+		defined_opcode[IT_CHK_END]={IT_CHK_END,"IT_CHK_END"}; // IT_CHK_END
+		defined_opcode[IT_SET_AND_NEXT]={IT_SET_AND_NEXT,"IT_SET_AND_NEXT"}; // IT_SET_AND_NEXT
+
 		// create main ast management
 		// init variables...
 		constant_pool = new map<string,tInfoConstantValue *>;
 		vFunctionInfo = new vector<tFunctionInfo *>;
+		m_parsedSource = new vector<CEval::tInfoParsedSource>();
 
 		is_initialized = true;
 	}
 
-	void CEval::destroyStaticVars(){
-		if(constant_pool)
+	void CEval::destroyStaticVars() {
+		if (constant_pool != NULL){
 			delete constant_pool;
-
-		if(vFunctionInfo){
-			delete vFunctionInfo;
+			constant_pool = NULL;
 		}
 
-		constant_pool=NULL;
-		vFunctionInfo=NULL;
+		if(vFunctionInfo!=NULL){
+			delete vFunctionInfo;
+			vFunctionInfo = NULL;
+		}
+
+		if (m_parsedSource != NULL) {
+			delete m_parsedSource;
+			m_parsedSource = NULL;
+		}
+
+		
+		
 	}
 
 	bool   CEval::endExpression(const char * s){
@@ -989,7 +781,7 @@ namespace zetscript{
 		char *start_str=(char *)start_word;
 		char *aux=(char *)start_word;
 		string v="";
-		OPERATOR_TYPE sp;
+//		OPERATOR_TYPE sp;
 		 bool is_possible_number=false;
 		 int i=0;
 		 bool error;
@@ -1186,6 +978,8 @@ namespace zetscript{
 						||  ('A' <= *aux_p && *aux_p <='Z')));
 
 				return aux_p;
+		}else{
+			writeErrorMsg(current_parsing_filename,-1," identifier cannot begin with %c", *aux_p);
 		}
 		return NULL;
 	}
@@ -1243,7 +1037,7 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			string symbol_value;
-			char *end_p;
+//			char *end_p;
 			//PASTNode attr_node = NULL;
 			int lineSymbol;
 
@@ -1332,7 +1126,7 @@ namespace zetscript{
 	char * CEval::evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		char *end_p;
+//		char *end_p;
 		string symbol_value;
 
 		KEYWORD_TYPE key_w;
@@ -1499,7 +1293,7 @@ namespace zetscript{
 		vector<tTokenNode> vExpressionTokens;
 		PRE_OPERATOR_TYPE pre_op = PRE_OPERATOR_TYPE::UNKNOWN_PRE_OPERATOR;
 		OPERATOR_TYPE op = OPERATOR_TYPE::UNKNOWN_OPERATOR;
-		tTokenNode *root;
+//		tTokenNode *root;
 		KEYWORD_TYPE kw;
 		bool error=false;
 
@@ -1733,7 +1527,7 @@ namespace zetscript{
 	char * CEval::evalKeywordDelete(const char *s,int & line,  CScope *scope_info, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		char *end_p;
+//		char *end_p;
 		string symbol_value;
 		KEYWORD_TYPE key_w;
 		//PASTNode   value;
@@ -1767,13 +1561,13 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::isClassMember(const char *s,int & line,short & idxScopeClass, bool & error){
+	char * CEval::isClassMember(const char *s,int & line,CScriptClass **sc,string & member_symbol, bool & error){
 
 		char *aux_p = (char *)s;
-		char *end_var;
+//		char *end_var;
 		string class_name;
-		idxScopeClass=-1;
-		CScriptClass *sc=NULL;
+		*sc=NULL;
+		//idxScopeClass=-1;
 
 		error = false;
 
@@ -1781,7 +1575,7 @@ namespace zetscript{
 
 		// check whwther the function is anonymous or not.
 		if((aux_p=getIdentifierToken(aux_p,class_name))==NULL){
-			 writeErrorMsg(current_parsing_filename,line ,"Expected symbol");
+			 writeErrorMsg(current_parsing_filename,line ,"Expected class symbol");
 			 return NULL;
 		}
 
@@ -1789,11 +1583,15 @@ namespace zetscript{
 
 		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 
-			if((sc=CScriptClass::getScriptClass(class_name)) != NULL){
+			if((*sc=GET_SCRIPT_CLASS(class_name)) != NULL){
 
-				idxScopeClass=sc->idxScope;
+				if((aux_p=getIdentifierToken(aux_p+2,member_symbol))==NULL){
+					 writeErrorMsg(current_parsing_filename,line ,"Expected class member symbol");
+					 return NULL;
+				}
+				//idxScopeClass=sc->idxScope;
 
-				return aux_p+2;
+				return aux_p;
 
 			}else{
 				error=true;
@@ -1807,7 +1605,7 @@ namespace zetscript{
 	char * CEval::evalKeywordClass(const char *s,int & line, CScope *scope_info, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		char *end_p;
+		//char *end_p;
 
 		CScope *class_scope_info=NULL;
 		//CScriptClass *class_info=NULL;
@@ -1857,19 +1655,14 @@ namespace zetscript{
 						 return NULL;
 					}
 
-					aux_p=IGNORE_BLANKS(end_p, line);
+					aux_p=IGNORE_BLANKS(aux_p, line);
 				}
 
-
-				// create new scope...
-				class_scope_info = CScope::newScope();
 
 				// register class
-				if((sc=CScriptClass::registerClass(class_scope_info->idxScope,class_name,base_class_name))==NULL){
+				if((sc=zetscript::CScriptClassFactory::getInstance()->registerClass(class_name,base_class_name))==NULL){
 					return NULL;
 				}
-
-
 
 				zs_print_debug_cr("registered class \"%s\" line %i ",class_name.c_str(), class_line);
 
@@ -1951,12 +1744,14 @@ namespace zetscript{
 
 		//PASTNode args_node=NULL, body_node=NULL, arg_node=NULL;
 		string conditional_str;
-		short idxScopeClass;
+		//short idxScopeClass;
+		CScriptClass *sc=NULL;
 
 
 		tScopeVar * irv=NULL;
 		string str_name,arg_value;
-		string class_member,class_name, function_name="";
+		//string class_member,class_name,
+		string function_name="";
 
 
 		int idxScope=ZS_UNDEFINED_IDX;
@@ -1983,11 +1778,10 @@ namespace zetscript{
 
 				if(named_function){ // is named function..
 
-					if((end_var=isClassMember(aux_p,line, idxScopeClass, error))!=NULL){ // check if particular case extension attribute class
+					if((end_var=isClassMember(aux_p,line,&sc, function_name, error))!=NULL){ // check if particular case extension attribute class
 
-						idxScope = idxScopeClass;
-						symbol_value = (char *)class_member.c_str();
-						function_name = symbol_value;
+						idxScope = sc->idxScope;
+						//symbol_value = (char *)class_member.c_str();
 
 					}
 					else{
@@ -2613,7 +2407,7 @@ namespace zetscript{
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		char *end_symbol,*start_symbol;
+//		char *end_symbol,*start_symbol;
 		/*PASTNode switch_node=NULL,
 					 group_cases=NULL,
 					 case_value_node=NULL,
@@ -2622,14 +2416,14 @@ namespace zetscript{
 		CScope *scope_case=NULL;
 		//PASTNode body_switch=NULL;
 
-		OPERATOR_TYPE ip;
-		char *value_to_eval;
+//		OPERATOR_TYPE ip;
+//		char *value_to_eval;
 		string val;
-		KEYWORD_TYPE key_w,key_w2;
+		KEYWORD_TYPE key_w;//,key_w2;
 		CScope *currentScope=scope_info;
 
 		error=false;
-		int n_cases;
+//		int n_cases;
 
 
 
@@ -2713,26 +2507,26 @@ namespace zetscript{
 
 		KEYWORD_TYPE key_w;
 		char *start_var,*end_var;
-		string class_member;
+		//string class_member;
 		//PASTNode class_node;
 		//PASTNode var_node;
 		//PASTNode vars_collection_node=NULL;
 
-		int idxScope=ZS_UNDEFINED_IDX;
+
 		string s_aux,variable_name;
 		//char *symbol_value;
 		bool end=false;
 		bool allow_for_in=true;
 		short idxScopeClass=-1;
+		short idxScope=scope_info->getCurrentScopePointer()->idxScope;
 
-		bool parent_scope_is_class=false;
+		//bool is_class_member=false;
 		int m_startLine=0;
 
-		if(scope_info != NULL){// && class_scope){ // if class scope let's see if is within function member..
-			if(scope_info->getIdxBaseScope() != 0) { // if base scope != 0 is a class
-				parent_scope_is_class = scope_info->getIdxBaseScope() == scope_info->getCurrentScopePointer()->idxScope;
-			}
-		}
+		CScriptClass *sc=NULL;
+		CScriptClass *sc_come_from=scope_info->getScriptClass();//) { // NOT GLOBAL
+			//is_class_member = scope_info->getIdxBaseScope() == scope_info->getCurrentScopePointer()->idxScope;
+
 
 		key_w = isKeyword(aux_p);
 
@@ -2745,39 +2539,43 @@ namespace zetscript{
 
 				while(*aux_p != ';' && *aux_p != 0 && !end){ // JE: added multivar feature.
 
-					bool is_class_member=parent_scope_is_class;
+					//bool is_class_member=parent_scope_is_class;
 
 					aux_p=IGNORE_BLANKS(aux_p,line);
 					start_var=aux_p;
 					m_startLine = line;
+					//is_class_member=false;
+					idxScope=scope_info->getCurrentScopePointer()->idxScope;
+					sc=NULL;
 					//vars_collection_node=NULL;
 
 					//parent_eval_to_insert_var=NULL;
-					if(scope_info != NULL){ // main as default
-						idxScope=scope_info->getCurrentScopePointer()->idxScope;
-					}
-
-					if((end_var=isClassMember(aux_p,line,idxScopeClass, error))!=NULL){ // check if particular case extension attribute class
-						idxScope = idxScopeClass; // override scope info
-						variable_name = class_member;
-						//variable_name = symbol_value;
-
-						is_class_member=true;
-
+					//if(scope_info != NULL){ // main as default
+					//	idxScope=scope_info->getCurrentScopePointer()->idxScope;
+					//}
+					if(sc_come_from != NULL){ // it comes from class declaration itself
+						idxScope=sc->idxScope;
+						sc=sc_come_from;
+						//is_class_member=true;
 
 					}
-					else{ // causal variable
-						if(error){
-							return NULL;
+					else{ // check if type var ClasS::v1 or v1
+						if((end_var=isClassMember(aux_p,line,&sc,variable_name, error))!=NULL){ // check if particular case extension attribute class
+							idxScope = idxScopeClass; // override scope info
 						}
-						else{ // get normal name...
-
-							line = m_startLine;
-
-							// check whwther the function is anonymous with a previous arithmetic operation ....
-							if((end_var=getIdentifierToken(aux_p,variable_name))==NULL){
-								writeErrorMsg(current_parsing_filename,line,"Expected symbol");
+						else{ // causal variable
+							if(error){
 								return NULL;
+							}
+							else{ // get normal name...
+
+								line = m_startLine;
+
+								// check whwther the function is anonymous with a previous arithmetic operation ....
+								if((end_var=getIdentifierToken(aux_p,variable_name))==NULL){
+									writeErrorMsg(current_parsing_filename,line,"Expected symbol");
+									return NULL;
+								}
 							}
 						}
 					}
@@ -2793,7 +2591,7 @@ namespace zetscript{
 					aux_p=IGNORE_BLANKS(aux_p,line);
 					//}
 					bool ok_char=*aux_p == ';' || *aux_p == ',' || *aux_p == '=' ;
-					if(is_class_member && *aux_p == '='){
+					if(sc!=NULL && *aux_p == '='){
 						writeErrorMsg(current_parsing_filename,line,"Variable member is not assignable on its declaration. Should be initialized within constructor.");
 						return NULL;
 					}
@@ -2801,6 +2599,8 @@ namespace zetscript{
 					if(ok_char){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
 						allow_for_in=false;
 						//var_node = NULL;
+
+
 
 
 						if(*aux_p == '='){ // only for variables (not class members)
@@ -2832,6 +2632,16 @@ namespace zetscript{
 						if(!SCOPE_NODE(idxScope)->registerSymbol(current_parsing_filename,line,variable_name /*,var_node*/)){
 								return NULL;
 						}
+
+						//--- OP
+						if(sc!=NULL){ // register as variable member...
+							sc->registerVariable(variable_name);
+						}
+						else{ // register as local variable in the function...
+							pCurrentFunctionInfo->function_info_object->registerVariable(variable_name);
+						}
+
+						//---
 
 						zs_print_debug_cr("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
 
@@ -3120,7 +2930,7 @@ namespace zetscript{
 							try{
 								CZetScript::getInstance()->evalFile(file_to_eval);
 							}catch(script_error & error){
-								THROW_SCRIPT_ERROR();
+								THROW_EXCEPTION(error);
 								return NULL;
 							}
 

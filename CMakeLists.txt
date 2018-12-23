@@ -32,6 +32,8 @@ include_directories (
 	${PROJECT_SOURCE_DIR}
 )
 
+file(GLOB_RECURSE INCS "*.h")
+
 message("-- Dest.dir: " ${CMAKE_INSTALL_PREFIX})
 
 set(ZETSCRIPT_LIB_SRCS "")
@@ -146,7 +148,7 @@ endif()
 
 # Library
 
-set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
+set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 
 	#-- Exception --
 	zetscript_exception.cpp
@@ -165,10 +167,13 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 	#-- Script Core --
 	eval/CEval.cpp
 	CScope.cpp
+	CScopeFactory.cpp
 	CNativeFunction.cpp
 	CCommonClassFunctionData.cpp
 	CScriptClass.cpp
+	CScriptClassFactory.cpp
 	CScriptFunction.cpp
+	CScriptFunctionFactory.cpp
 	
 	CVirtualMachine.cpp
 	

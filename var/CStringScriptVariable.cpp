@@ -15,13 +15,13 @@ namespace zetscript{
 
 	CStringScriptVariable::CStringScriptVariable(){
 		m_strValue = "";
-		init(CScriptClass::getRegisteredClassString(), (void *)this);
+		init(SCRIPT_CLASS_STRING, (void *)this);
 	}
 
 	CStringScriptVariable::CStringScriptVariable(const string & s){
 
 
-		init(CScriptClass::getRegisteredClassString(), (void *)this);
+		init(SCRIPT_CLASS_STRING, (void *)this);
 		m_strValue = s;
 	}
 

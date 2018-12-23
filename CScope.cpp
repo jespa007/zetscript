@@ -28,75 +28,25 @@ namespace zetscript{
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
-
-
-	vector<CScope *> 						* CScope::vec_scope_node=NULL;
-	int n_anonymouse_func=0;
-
-
-	void CScope::initStaticVars(){
-
-		if(vec_scope_node==NULL){
-			vec_scope_node = new vector<CScope *>;
-		}
-
-		// add global scope so vec scope size is always > 0...
-		CScope * main_scope=newScope();
-	}
-
-	void CScope::destroyStaticVars(){
-
-		if(vec_scope_node != NULL){
-
-			// destroy all nodes ...
-			for(unsigned i = 0; i < vec_scope_node->size(); i++){
-						delete vec_scope_node->at(i);
-			}
-			vec_scope_node->clear();
-			delete vec_scope_node;
-			vec_scope_node=NULL;
-		}
-	}
-
-	vector<CScope *> 	*		CScope::getVectorScopeNode(){
-		return vec_scope_node;
-	}
+	int CScope::n_anonymouse_func=0;
 
 
 
 
-	CScope *	 CScope::newScope(bool is_c_node,short idxParentScope){
-
-		if(is_c_node){
-			if(vec_scope_node->size() > 1){ // if greather than 1 check if node consecutive...
-				if(vec_scope_node->at(vec_scope_node->size()-1)->is_c_node){ // non consecutive c node..
-						THROW_RUNTIME_ERROR("C Scopes should be added after global scope and consecutuve C scope node.");
-						return NULL;
-				}
-			}
-		}
-
-		CScope * scope_node = new CScope( vec_scope_node->size(), idxParentScope, is_c_node);
-		vec_scope_node->push_back(scope_node);
-		return scope_node;
-	}
 
 
-	CScope 		* CScope::getScope(short idx){
-		if(idx < 0 || (unsigned)idx >= vec_scope_node->size()){
-			THROW_RUNTIME_ERROR("CScope node out of bound");
-			return NULL;
-		}
 
-		return vec_scope_node->at(idx);
-	}
+
+
+
 	//------------------------------------------------------------------------------------------------
 
-	CScope::CScope( bool _is_c_node, short _idx_this, short _idx_parent){//, int _index){
+	CScope::CScope( short _idx_this, short _idx_parent, bool _is_c_node){//, int _index){
 		idxParentScope = _idx_parent;
 		idxCurrentScopePointer=ZS_UNDEFINED_IDX;
 		idxScope = _idx_this;
 		is_c_node = _is_c_node;
+		script_class=NULL;
 
 
 		if(_idx_parent == ZS_UNDEFINED_IDX){ // first node...
@@ -106,6 +56,19 @@ namespace zetscript{
 		}else{
 			idxBaseScope = SCOPE_NODE(_idx_parent)->getIdxBaseScope();
 		}
+	}
+
+	void CScope::setScriptClass(CScriptClass *sc){
+		if(idxParentScope != ZS_UNDEFINED_IDX){
+			THROW_RUNTIME_ERROR("set scriptclass must when scope is root");
+			return;
+		}
+
+		script_class=sc;
+	}
+
+	CScriptClass * CScope::getScriptClass(){
+		return SCOPE_NODE(idxBaseScope)->script_class;
 	}
 
 	short CScope::getIdxBaseScope(){
@@ -131,7 +94,7 @@ namespace zetscript{
 
 	CScope * CScope::pushScope(){
 
-		CScope *new_scope = CScope::newScope(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
+		CScope *new_scope = NEW_SCOPE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
 		SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
 		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
 		return new_scope;
@@ -295,6 +258,7 @@ namespace zetscript{
 		tScopeVar *irv = existRegisteredSymbol(v,n_params);
 		if(irv == NULL && print_msg){
 			THROW_RUNTIME_ERROR("%s not exist",v.c_str());
+			return NULL;
 		}
 
 		return irv;

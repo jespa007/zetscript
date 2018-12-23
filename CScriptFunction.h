@@ -18,16 +18,13 @@
 //
 */
 
-#define NEW_SCRIPT_FUNCTION										CScriptFunction::newScriptFunction
-#define GET_SCRIPT_FUNCTION(idx) 								CScriptFunction::getScriptFunctionObject(idx)
-#define MAIN_FUNCTION											GET_SCRIPT_FUNCTION(0)
 
 namespace zetscript{
 
 	class  CScriptFunction:public CCommonClassFunctionData{
 
 
-		static vector<CScriptFunction *> 	* vec_script_function_node;
+
 		/**
 		 * build scope variable block information
 		 */
@@ -66,29 +63,13 @@ namespace zetscript{
 		tInfoVarScopeBlock *lut_scope_symbol;
 		unsigned n_lut_scope_symbols;
 
-		static void initStaticVars();
-		static void destroyStaticVars();
+		//static void initStaticVars();
+		//static void destroyStaticVars();
 
 		ZETSCRIPT_MODULE_EXPORT CScriptFunction(unsigned char _idxClass,short _idxScope );
 
+		tVariableSymbolInfo *  registerVariable(const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 
-		/**
-		 * Set/Get CScriptClass Node by its idx, regarding current state.
-		 */
-		//static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec);
-		static vector<CScriptFunction *> 	*	getVectorScriptFunctionNode();
-
-		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			*	newScriptFunction(unsigned  char idxClass
-																							, short idxScope
-																							, const string & function_name
-																							, vector<tArgumentInfo> args={}
-																							, int idx_return_type=ZS_UNDEFINED_IDX
-																							, intptr_t ref_ptr=0
-																							, unsigned short properties=0);
-
-		ZETSCRIPT_MODULE_EXPORT static bool							checkCanRegister_C_Function(const char *f);
-
-		ZETSCRIPT_MODULE_EXPORT static CScriptFunction 			* 	getScriptFunctionObject(int idx);
 
 
 

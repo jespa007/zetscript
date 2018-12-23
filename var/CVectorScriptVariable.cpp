@@ -13,7 +13,7 @@ namespace zetscript{
 
 
 	CVectorScriptVariable::CVectorScriptVariable(){
-		this->init(CScriptClass::getRegisteredClassVector(), (void *)this);
+		this->init(SCRIPT_CLASS_VECTOR, (void *)this);
 	}
 
 	bool CVectorScriptVariable::unrefSharedPtr(){

@@ -15,7 +15,8 @@ namespace zetscript{
 		~CNativeFunction();
 
 		ZETSCRIPT_MODULE_EXPORT static CNativeFunction * getInstance();
-		static void destroySingletons();
+		
+		static void destroySingleton();
 
 
 		template <class _R, typename _F>
