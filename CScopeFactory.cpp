@@ -28,8 +28,6 @@ namespace zetscript{
 
 	}
 
-
-
 	CScope *	 CScopeFactory::newScope(short idxParentScope,bool is_c_node){
 
 		if(is_c_node){

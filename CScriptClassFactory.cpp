@@ -17,7 +17,8 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Error initializing C built in type: %s",STR(type_class));\
 			return;\
 		}else{\
-			registerClass(STR(type_class),"");\
+			CScriptClass *sc=registerClass(STR(type_class),"");\
+			SCOPE_NODE(sc->idxScope)->is_c_node=true;\
 			vec_script_class_node.at(idx_class)->symbol_info.properties=SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;\
 			vec_script_class_node.at(idx_class)->classPtrType=(typeid(void).name());\
 		}
@@ -28,6 +29,8 @@ namespace zetscript{
 	CScriptClassFactory * CScriptClassFactory::getInstance(){
 		if(script_class_factory ==NULL){
 			script_class_factory = new CScriptClassFactory();
+			script_class_factory->setup();
+
 		}
 
 		return script_class_factory;
@@ -364,9 +367,8 @@ namespace zetscript{
 		}
 	 }
 
-
-	CScriptClassFactory::CScriptClassFactory(){
-		CScriptClass *main_class=NULL;
+	 void CScriptClassFactory::setup(){
+		 CScriptClass *main_class=NULL;
 		register_c_base_symbols=false;
 		//mapTypeConversion = new map<int, map<int, fntConversionType>>();
 
@@ -449,6 +451,11 @@ namespace zetscript{
 		register_C_FunctionMember<CStructScriptVariable>("add",&CStructScriptVariable::add_attr);
 		register_C_FunctionMember<CStructScriptVariable>("remove",&CStructScriptVariable::remove_attr);
 		register_C_FunctionMember<CStructScriptVariable>("size",&CStructScriptVariable::size);
+	 }
+
+
+	CScriptClassFactory::CScriptClassFactory(){
+
 
 	}
 

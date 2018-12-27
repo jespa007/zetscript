@@ -998,7 +998,7 @@ namespace zetscript{
 		}
 
 		bool end=false;
-		for(unsigned i =  main_function->m_variable.size()-1; i >= 0 && !end; i--){
+		for(int i =  (int)(main_function->m_variable.size())-1; i >= 0 && !end; i--){
 			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 			//case STK_PROPERTY_TYPE_STRING:
 			end=(main_function->m_variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;

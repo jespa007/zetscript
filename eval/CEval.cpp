@@ -786,7 +786,7 @@ namespace zetscript{
 		 int i=0;
 		 bool error;
 		 bool start_digit = false;
-		 token_node->token_type=TOKEN_TYPE::UNKNOWN_TOKEN;
+		 token_node->token_type = TOKEN_TYPE::LITERAL_TOKEN;
 		 KEYWORD_TYPE kw=isKeyword(aux);
 		 int start_line = line;
 		 bool is_constant_string;
@@ -920,12 +920,13 @@ namespace zetscript{
 					obj=get_obj;
 					load_type=LOAD_TYPE_CONSTANT;
 				}else{
+					// should be an identifier...
 					if(!isIdentifierNameExpressionOk(v,line)){
 						return NULL;
 					}
 
 					// search local var into current function...
-
+					token_node->token_type = TOKEN_TYPE::IDENTIFIER_TOKEN;
 
 					// search global ...
 
@@ -948,12 +949,13 @@ namespace zetscript{
 
 		instruction.op_code=OP_CODE::LOAD;
 
-		token_node->token_type = TOKEN_TYPE::LITERAL_TOKEN;
+
 		token_node->value = v;
 		token_node->instruction.push_back(instruction);
 
-		//value = CZetScriptUtils::copyStringFromInterval(start_word,aux);
+
 		return aux;
+		// POST: token as literal or identifier
 	}
 
 	char *  CEval::getIdentifierToken(const char *s, string & symbol){
@@ -1392,24 +1394,20 @@ namespace zetscript{
 
 				aux_p=IGNORE_BLANKS(aux_p,line);
 
-				// check first access...
-				if(isAccessPunctuator(aux_p)){
-					if(symbol_token_node.token_type == TOKEN_TYPE::LITERAL_TOKEN){
-						writeErrorMsg(current_parsing_filename,line ,"Unexpected '%c' after literal",*aux_p);
-						return NULL;
+				// check valid access punctuator...
+				if(isAccessPunctuator(aux_p) ){
+
+					if(!(      symbol_token_node.token_type == TOKEN_TYPE::IDENTIFIER_TOKEN
+						  || ((symbol_token_node.token_type == TOKEN_TYPE::FUNCTION_OBJECT_TOKEN)&& *aux_p == '(')// cannot be a number/boolean or string and then accessor like . / ( / [
+						  || ((symbol_token_node.token_type == TOKEN_TYPE::VECTOR_OBJECT_TOKEN  )&& *aux_p == '[')// inline function object like this: 1+function(a,b){ return a+b;} + 0
+						  || ((symbol_token_node.token_type == TOKEN_TYPE::STRUCT_OBJECT_TOKEN  )&& *aux_p == '.')// inline struct object like this: 1+{"a":0,"b":1}.a + 0
+
+						))
+					{
+							writeErrorMsg(current_parsing_filename,line ,"Unexpected '%c' after literal",*aux_p);
+							return NULL;
 					}
-					else if(symbol_token_node.token_type == TOKEN_TYPE::FUNCTION_OBJECT_TOKEN && *aux_p != '('){
-						writeErrorMsg(current_parsing_filename,line ,"Unexpected '%c' after function object",*aux_p);
-						return NULL;
-					}
-					else if(symbol_token_node.token_type == TOKEN_TYPE::VECTOR_OBJECT_TOKEN && *aux_p != '['){
-						writeErrorMsg(current_parsing_filename,line ,"Unexpected '%c' after vector object",*aux_p);
-						return NULL;
-					}
-					else if(symbol_token_node.token_type == TOKEN_TYPE::STRUCT_OBJECT_TOKEN && *aux_p != '.'){
-						writeErrorMsg(current_parsing_filename,line ,"Unexpected '%c' after struct object",*aux_p);
-						return NULL;
-					}
+
 				}
 
 				// eval accessor element (if any)...
@@ -1430,7 +1428,9 @@ namespace zetscript{
 								return NULL;
 							}
 
-							aux_p=IGNORE_BLANKS(aux_p+1,line);
+							if(*aux_p == ','){
+								aux_p=IGNORE_BLANKS(aux_p+1,line);
+							}
 
 						}while(*aux_p != ')');
 						aux_p++;
@@ -1813,11 +1813,8 @@ namespace zetscript{
 					aux_p++;
 					aux_p=IGNORE_BLANKS(aux_p,line);
 
-
-
 					// grab words separated by ,
 					while(*aux_p != 0 && *aux_p != ')'){
-
 
 						aux_p=IGNORE_BLANKS(aux_p,line);
 
@@ -1828,7 +1825,6 @@ namespace zetscript{
 							}
 							aux_p=IGNORE_BLANKS(aux_p+1,line);
 						}
-
 
 						if(*aux_p == ')' || *aux_p == ','){
 							writeErrorMsg(current_parsing_filename,line,"Expected arg");
@@ -1863,9 +1859,7 @@ namespace zetscript{
 						if(*aux_p != ')'){
 
 						}
-
 					}
-
 
 					aux_p++;
 					aux_p=IGNORE_BLANKS(aux_p,line);
@@ -1904,12 +1898,9 @@ namespace zetscript{
 										return NULL;
 									}
 
-
 								}else{ // register anonymouse function at global scope...
 									irv=SCOPE_NODE(IDX_GLOBAL_SCOPE)->registerAnonymouseFunction(current_parsing_filename,line);
 								}
-
-
 
 								SCOPE_NODE(idxScope)->popScope();
 							}
@@ -1917,7 +1908,6 @@ namespace zetscript{
 							return aux_p;
 						}
 					}
-
 				}
 				else{
 					writeErrorMsg(current_parsing_filename,line," Expected '('");
@@ -1949,7 +1939,6 @@ namespace zetscript{
 
 				if((aux_p = evalExpression(aux_p, line, scope_info,&pCurrentFunctionInfo->instruction))!= NULL){
 
-
 					if(*aux_p!=';'){
 						writeErrorMsg(current_parsing_filename,line,"Expected ';'");
 						return NULL;
@@ -1974,14 +1963,11 @@ namespace zetscript{
 		string conditional_str;
 		error = false;
 
-
 		// check for keyword ...
 		key_w = isKeyword(aux_p);
 
 		if(key_w != KEYWORD_TYPE::UNKNOWN_KEYWORD){
 			if(key_w == KEYWORD_TYPE::WHILE_KEYWORD){
-
-
 
 				aux_p += strlen(defined_keyword[key_w].str);
 
@@ -2000,7 +1986,6 @@ namespace zetscript{
 							return NULL;
 						}
 
-
 						aux_p=IGNORE_BLANKS(end_expr+1,line);
 						if(*aux_p != '{'){
 							writeErrorMsg(current_parsing_filename,line,"Expected while-block open block ('{') ");
@@ -2012,10 +1997,7 @@ namespace zetscript{
 								,error
 								))!= NULL){
 							if(!error){
-
-
 								scope_info->popScope();
-
 								return aux_p;
 							}
 						}
@@ -2036,7 +2018,6 @@ namespace zetscript{
 	char * CEval::evalKeywordDoWhile(const char *s,int & line, CScope *scope_info,  bool & error){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-
 		char *aux_p = (char *)s;
 		char *end_expr,*start_symbol;
 		KEYWORD_TYPE key_w;
@@ -2095,8 +2076,6 @@ namespace zetscript{
 								if((start_symbol = CZetScriptUtils::copyStringFromInterval(aux_p+1, end_expr))==NULL){
 									return NULL;
 								}
-
-
 							}else{
 								writeErrorMsg(current_parsing_filename,line,"Expected ')' do-while expression");
 								return NULL;

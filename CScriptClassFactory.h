@@ -246,8 +246,10 @@ namespace zetscript{
 			unsigned char							getIdxScriptClass_Internal(const string & class_name);
 			unsigned char							getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
 
+			void setup();
 
 			CScriptClassFactory();
+
 			~CScriptClassFactory();
 
 	};
