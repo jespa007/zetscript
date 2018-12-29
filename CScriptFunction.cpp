@@ -128,7 +128,7 @@ namespace zetscript{
 		int idx_op=0;
 		 for(PtrInstruction iao = instruction; iao->op_code != OP_CODE::END_FUNCTION;iao++,idx_op++){
 
-			 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
+			 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->properties);
 
 			 if(iao->op_code==OP_CODE::LOAD){
 
@@ -178,11 +178,11 @@ namespace zetscript{
 			 }else  if(iao->operator_type==OP_CODE::CALL){ // overrides variable type as function ...
 				 // check whether access scope ...
 				 if(info_function->asm_op[iao->index_op2].operator_type ==OP_CODE::LOAD  && // e
-						 (GET_INS_PROPERTY_SCOPE_TYPE(info_function->asm_op[iao->index_op2].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
+						 (GET_INS_PROPERTY_SCOPE_TYPE(info_function->asm_op[iao->index_op2].properties) & INS_PROPERTY_ACCESS_SCOPE)){
 
 					 info_function->asm_op[iao->index_op2].index_op1 = LOAD_TYPE_FUNCTION;
 					 info_function->asm_op[iao->index_op2].index_op2 = iao->index_op2-1;
-					// iao->instruction_properties |= INS_PROPERTY_CALLING_OBJECT;
+					// iao->properties |= INS_PROPERTY_CALLING_OBJECT;
 				 }
 
 			 }
@@ -205,7 +205,7 @@ namespace zetscript{
 	{
 		tVariableSymbolInfo *vsi=CCommonClassFunctionData::registerVariable(this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 
-		tStackElement se = {STK_PROPERTY_TYPE_UNDEFINED,0,0};
+		tStackElement se = {0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
 		if(properties &  PROPERTY_C_OBJECT_REF) // convert c ref var into stack element. This should be consistent in the whole execution.
 			se=CScriptClassFactory::C_REF_InfoVariable_2_StackElement(

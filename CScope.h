@@ -54,6 +54,7 @@ namespace zetscript{
 
 		tScopeVar * existRegisteredSymbol(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
 
+
 		CScope(short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX,bool is_c_node=false);
 
 		short 	 	getIdxBaseScope();

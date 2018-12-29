@@ -108,16 +108,16 @@ namespace zetscript{
 
 
 	#define PUSH_UNDEFINED \
-	*ptrCurrentOp++={STK_PROPERTY_TYPE_UNDEFINED,0,NULL};
+	*ptrCurrentOp++={0,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 
 	#define PUSH_NULL \
-	*ptrCurrentOp++={STK_PROPERTY_TYPE_NULL,0,NULL};
+	*ptrCurrentOp++={0,NULL,STK_PROPERTY_TYPE_NULL};
 
 	#define PUSH_BOOLEAN(init_value) \
-	*ptrCurrentOp++={STK_PROPERTY_TYPE_BOOLEAN,(void *)((intptr_t)(init_value)),NULL};
+	*ptrCurrentOp++={(void *)((intptr_t)(init_value)),NULL,STK_PROPERTY_TYPE_BOOLEAN};
 
 	#define PUSH_INTEGER(init_value) \
-	*ptrCurrentOp++={STK_PROPERTY_TYPE_INTEGER,(void *)((intptr_t)(init_value)),NULL};
+	*ptrCurrentOp++={(void *)((intptr_t)(init_value)),NULL,STK_PROPERTY_TYPE_INTEGER};
 
 	#define PUSH_NUMBER(init_value) \
 	{\
@@ -130,12 +130,12 @@ namespace zetscript{
 	#define PUSH_STRING(init_value)\
 		if(ptrCurrentStr==ptrLastStr){writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Error stkString out-stack");RETURN_ERROR;}\
 		*ptrCurrentStr++=init_value;\
-		*ptrCurrentOp++={STK_PROPERTY_TYPE_STRING,(void *)((ptrCurrentStr-1)->c_str()),NULL};\
+		*ptrCurrentOp++={(void *)((ptrCurrentStr-1)->c_str()),NULL,STK_PROPERTY_TYPE_STRING};\
 
 
 
 	#define PUSH_FUNCTION(function_prop,fun_obj,class_obj) \
-	*ptrCurrentOp++={(unsigned short)(STK_PROPERTY_TYPE_FUNCTION|function_prop),(void *)(fun_obj),class_obj};
+	*ptrCurrentOp++={(void *)(fun_obj),class_obj,(unsigned short)(STK_PROPERTY_TYPE_FUNCTION|function_prop)};
 
 	#define PUSH_SCRIPTVAR(var_ref) \
 	*ptrCurrentOp++={INS_PROPERTY_SCRIPTVAR,NULL,var_ref};
@@ -143,7 +143,7 @@ namespace zetscript{
 
 	// Push stack var value (as varValue and put ptr as ref second value)...
 	#define PUSH_STACK_VAR(stack_ref_var) \
-		*ptrCurrentOp++={(unsigned short)(((stack_ref_var)->properties)|STK_PROPERTY_IS_STACKVAR),(stack_ref_var)->stkValue,stack_ref_var};
+		*ptrCurrentOp++={(stack_ref_var)->stkValue,stack_ref_var,(unsigned short)(((stack_ref_var)->properties)|STK_PROPERTY_IS_STACKVAR)};
 
 
 	#define PROCESS_MOD_OPERATION \
@@ -354,9 +354,10 @@ namespace zetscript{
 			*((bool *)dst_ref)=*((bool *)src_ref);\
 			if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)src_ref);\
 		}else if(type_var  &  STK_PROPERTY_TYPE_FUNCTION){\
-			*dst_ins={(unsigned short)(runtime_var | STK_PROPERTY_TYPE_FUNCTION),\
-						src_ins->stkValue,\
-						NULL};\
+			*dst_ins={	src_ins->stkValue,\
+						NULL,\
+						(unsigned short)(runtime_var | STK_PROPERTY_TYPE_FUNCTION)\
+						};\
 		}else if(type_var & STK_PROPERTY_TYPE_STRING){\
 			if(dst_ins->properties & STK_PROPERTY_IS_C_VAR){\
 				*((string *)dst_ins->varRef)=((const char *)src_ins->stkValue);/* Assign string */\
@@ -472,7 +473,7 @@ namespace zetscript{
 		tStackElement *aux=stack;
 
 		for(int i=0; i < VM_LOCAL_VAR_MAX_STACK;i++){
-			*aux++={STK_PROPERTY_TYPE_UNDEFINED,0,NULL};
+			*aux++={0,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		}
 
 		idxCurrentStack=0;
@@ -639,7 +640,7 @@ namespace zetscript{
 			unsigned char n_args,
 			tInstruction *ins){
 
-		tStackElement callc_result={STK_PROPERTY_TYPE_UNDEFINED,0,0};
+		tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
 		intptr_t converted_param[MAX_N_ARGS];
 		intptr_t result=0;
@@ -960,7 +961,7 @@ namespace zetscript{
 
 		destroyCache();
 
-		main_function_object = GET_SCRIPT_FUNCTION(0);
+		main_function_object = MAIN_FUNCTION;
 		vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunctionFactory::getInstance()->getVectorScriptFunctionNode();
 		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
 		vec_script_function_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
@@ -1024,7 +1025,7 @@ namespace zetscript{
 		// clear all stack variables
 		tStackElement *aux=stack;
 		for(int i=0; i < VM_LOCAL_VAR_MAX_STACK;i++){
-			*aux++={STK_PROPERTY_TYPE_UNDEFINED,0,NULL};
+			*aux++={0,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		}
 
 		memset(zero_shares,0,sizeof(zero_shares));
@@ -1043,7 +1044,7 @@ namespace zetscript{
 			){
 
 
-		tStackElement callc_result={STK_PROPERTY_TYPE_UNDEFINED,0,0};
+		tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
 		if(info_function==NULL){
 			RETURN_ERROR;
@@ -1108,7 +1109,7 @@ namespace zetscript{
 			tInstruction *calling_instruction){
 
 		error=false;
-		tStackElement callc_result={STK_PROPERTY_TYPE_UNDEFINED,0,0};
+		tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
 		string *ptrStartStr;
 		tStackElement *ptrStartOp;
@@ -1211,7 +1212,7 @@ namespace zetscript{
 		}
 
 		//CScriptVariable *ret=VM_UNDEFINED;
-		callc_result ={STK_PROPERTY_TYPE_UNDEFINED, NULL};
+		callc_result ={ NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		//PtrInstruction m_listStatements = info_function->object_info.instruction;
 
 		//bool end_by_ret=false;
@@ -1238,9 +1239,10 @@ namespace zetscript{
 
 					// if C then pass its properties...
 					*ptr_aux++={
-							STK_PROPERTY_TYPE_UNDEFINED, // starts undefined.
+
 							0,							 // no value assigned.
-							0 						     // no varref related.
+							0, 						     // no varref related.
+							STK_PROPERTY_TYPE_UNDEFINED // starts undefined.
 					};
 				}
 			}
@@ -1267,7 +1269,7 @@ namespace zetscript{
 		tStackElement *ptrResultInstructionOp2=NULL;
 		tStackElement *ldrVar;
 		unsigned short pre_post_properties=0;
-		unsigned short instruction_properties=0;
+		unsigned short properties=0;
 		tStackElement *variable_stack_element;
 		tFunctionSymbol *si;
 		CScriptVariable *var_object = NULL;
@@ -1354,8 +1356,8 @@ namespace zetscript{
 
 					}else{ // load variable ...
 
-						instruction_properties=instruction->instruction_properties;
-						scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
+						properties=instruction->properties;
+						scope_type=GET_INS_PROPERTY_SCOPE_TYPE(properties);
 
 						switch(scope_type){
 						default: // global...
@@ -1412,7 +1414,7 @@ namespace zetscript{
 							break;
 						}
 
-						if(instruction->instruction_properties&INS_CHECK_IS_FUNCTION){
+						if(instruction->properties&INS_CHECK_IS_FUNCTION){
 							if((ldrVar->properties & STK_PROPERTY_TYPE_FUNCTION) != STK_PROPERTY_TYPE_FUNCTION){
 								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"\"%s\" expected function variable but is \"%s\""
 										, info_function->getSymbol(instruction)
@@ -1422,7 +1424,7 @@ namespace zetscript{
 						}
 					}
 
-					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction_properties);
+					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(properties);
 
 					/* all preoperators makes load var as constant ... */
 					switch(pre_post_properties){
@@ -1446,16 +1448,16 @@ namespace zetscript{
 							switch(GET_INS_PROPERTY_VAR_TYPE(ldrVar->properties)){
 							case STK_PROPERTY_TYPE_INTEGER:
 								if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
-									*ptrCurrentOp++={STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_STACKVAR|STK_PROPERTY_IS_C_VAR,(void *)(-(*((intptr_t *)ldrVar->varRef))),ldrVar};
+									*ptrCurrentOp++={(void *)(-(*((intptr_t *)ldrVar->varRef))),ldrVar,STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_STACKVAR|STK_PROPERTY_IS_C_VAR};
 								}else{
-									*ptrCurrentOp++={STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_STACKVAR,(void *)(-(((intptr_t)ldrVar->stkValue))),ldrVar};
+									*ptrCurrentOp++={(void *)(-(((intptr_t)ldrVar->stkValue))),ldrVar,STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_STACKVAR};
 								}
 								break;
 							case STK_PROPERTY_TYPE_BOOLEAN:
 								if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
-									*ptrCurrentOp++={STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_STACKVAR|STK_PROPERTY_IS_C_VAR,(void *)(!(*((bool *)ldrVar->varRef))),ldrVar};
+									*ptrCurrentOp++={(void *)(!(*((bool *)ldrVar->varRef))),ldrVar,STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_STACKVAR|STK_PROPERTY_IS_C_VAR};
 								}else{
-									*ptrCurrentOp++={STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_STACKVAR,(void *)(!(((bool)ldrVar->stkValue))),ldrVar};
+									*ptrCurrentOp++={(void *)(!(((bool)ldrVar->stkValue))),ldrVar,STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_STACKVAR};
 								}
 								break;
 
@@ -1467,7 +1469,7 @@ namespace zetscript{
 								}
 								aux_float=-aux_float;
 								COPY_NUMBER(&ptrCurrentOp->stkValue,&aux_float);
-								*ptrCurrentOp={STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_IS_STACKVAR,ptrCurrentOp->stkValue,ldrVar};
+								*ptrCurrentOp={ptrCurrentOp->stkValue,ldrVar,STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_IS_STACKVAR};
 
 								if(ldrVar->properties& STK_PROPERTY_IS_C_VAR){
 									ptrCurrentOp->properties|=STK_PROPERTY_IS_C_VAR;
@@ -1516,7 +1518,7 @@ namespace zetscript{
 				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_CONSTANT){
 					(*ptrCurrentOp)=*(((tInfoConstantValue *)instruction->index_op2));
 
-					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties);
+					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction->properties);
 
 					// all preoperators makes load var as constant ...
 					switch(pre_post_properties){
@@ -1543,20 +1545,20 @@ namespace zetscript{
 					continue;
 				}else if(index_op1== LOAD_TYPE::LOAD_TYPE_FUNCTION){
 
-					unsigned short extra_flags=(instruction->instruction_properties&INS_PROPERTY_CONSTRUCT_CALL)?STK_PROPERTY_CONSTRUCTOR_FUNCTION:0;
+					unsigned short extra_flags=(instruction->properties&INS_PROPERTY_CONSTRUCT_CALL)?STK_PROPERTY_CONSTRUCTOR_FUNCTION:0;
 					extra_flags|=(instruction->index_op2==ZS_FUNCTION_NOT_FOUND_IDX) ?STK_PROPERTY_UNRESOLVED_FUNCTION:0;
 					void *function_obj=NULL;
 					vector<CScriptFunction *> *vec_functions;
 					CScriptVariable * class_obj=NULL;
 					int index_op2 = (int)instruction->index_op2;
-					instruction_properties=instruction->instruction_properties;
-					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(instruction_properties);
+					properties=instruction->properties;
+					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(properties);
 
 					if(scope_type==INS_PROPERTY_LOCAL_SCOPE){ // local gets functions from info_function ...
 						vec_functions=&info_function->m_function;
 					}else if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 						tStackElement *var=NULL;
-						if(instruction_properties & INS_PROPERTY_CONSTRUCT_CALL){
+						if(properties & INS_PROPERTY_CONSTRUCT_CALL){
 							var=(ptrCurrentOp-1);
 						}else{
 							POP_ONE;
@@ -1617,7 +1619,7 @@ namespace zetscript{
 					}
 
 					if(index_op2 == ZS_UNDEFINED_IDX){
-						*ptrCurrentOp++={(unsigned short)(STK_PROPERTY_IS_INSTRUCTIONVAR|STK_PROPERTY_TYPE_FUNCTION|extra_flags),instruction,class_obj};
+						*ptrCurrentOp++={instruction,class_obj,(unsigned short)(STK_PROPERTY_IS_INSTRUCTIONVAR|STK_PROPERTY_TYPE_FUNCTION|extra_flags)};
 					}else{
 						PUSH_FUNCTION(extra_flags,function_obj,class_obj);
 					}
@@ -1792,7 +1794,7 @@ namespace zetscript{
 
 			case EQU:  // ==
 
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE;
 				}else{
 					POP_TWO;
@@ -1824,7 +1826,7 @@ namespace zetscript{
 				PROCESS_COMPARE_OPERATION(>=,GTE_METAMETHOD);
 				continue;
 			case LOGIC_AND:  // &&
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE;
 				}else{
 					POP_TWO;
@@ -1834,7 +1836,7 @@ namespace zetscript{
 				continue;
 			case LOGIC_OR:  // ||
 
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE;
 				}else{
 					POP_TWO;
@@ -1894,7 +1896,7 @@ namespace zetscript{
 			case ADD: // +
 
 			{
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE;
 				}else{
 					POP_TWO;
@@ -1922,7 +1924,7 @@ namespace zetscript{
 						if(ptrCurrentStr==ptrLastStr){
 								writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"Error stkString out-stack");RETURN_ERROR;}\
 								*ptrCurrentStr++=str_aux;\
-								*ptrCurrentOp++={STK_PROPERTY_TYPE_STRING,(void *)((ptrCurrentStr-1)->c_str()),NULL};\
+								*ptrCurrentOp++={(void *)((ptrCurrentStr-1)->c_str()),NULL,STK_PROPERTY_TYPE_STRING};\
 
 					}else{
 						sprintf(str_aux,"%i%s",(int)((intptr_t)ptrResultInstructionOp1->stkValue),((const char *)ptrResultInstructionOp2->stkValue));
@@ -1987,7 +1989,7 @@ namespace zetscript{
 
 			case MUL: // *
 
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -1998,7 +2000,7 @@ namespace zetscript{
 
 			case DIV: // /
 
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -2009,7 +2011,7 @@ namespace zetscript{
 
 			 case MOD: // /
 
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -2019,7 +2021,7 @@ namespace zetscript{
 				continue;
 
 			 case AND: // &
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -2028,7 +2030,7 @@ namespace zetscript{
 				PROCESS_BINARY_OPERATION(&, AND_METAMETHOD);
 				continue;
 			 case OR: // *
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -2037,7 +2039,7 @@ namespace zetscript{
 				PROCESS_BINARY_OPERATION(|, OR_METAMETHOD);
 				continue;
 			 case XOR: // ^
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -2047,7 +2049,7 @@ namespace zetscript{
 				continue;
 
 			 case SHR: // >>
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -2057,7 +2059,7 @@ namespace zetscript{
 				continue;
 
 			 case SHL: // <<
-				if(instruction->instruction_properties&STK_PROPERTY_READ_TWO_POP_ONE){
+				if(instruction->properties&STK_PROPERTY_READ_TWO_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -2120,7 +2122,7 @@ namespace zetscript{
 				// 1. get function object ...
 			 	 {
 					aux_function_info = NULL;
-					unsigned char n_args=0;//iao->instruction_properties;
+					unsigned char n_args=0;
 
 
 					bool is_c = false;
@@ -2143,7 +2145,6 @@ namespace zetscript{
 
 
 					bool is_constructor = (callAle->properties & STK_PROPERTY_CONSTRUCTOR_FUNCTION)!=0;
-					//bool deduce_function = false; //(iao->instruction_properties & INS_PROPERTY_DEDUCE_C_CALL)!=0;
 
 					// try to find the function ...
 					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
@@ -2151,7 +2152,7 @@ namespace zetscript{
 						//PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
 						symbol_to_find = info_function->getSymbol(callAleInstruction);
-						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(callAleInstruction->instruction_properties);
+						unsigned short scope_type = GET_INS_PROPERTY_SCOPE_TYPE(callAleInstruction->properties);
 
 
 						// local vars as functions ...
@@ -2226,9 +2227,10 @@ namespace zetscript{
 							if( n_args < aux_function_info_m_arg_size){ // we must push undefined parameters ...
 								for(unsigned i = n_args; i < aux_function_info_m_arg_size; i++){
 									*ptrCurrentOp++={
-										STK_PROPERTY_TYPE_UNDEFINED, // starts undefined.
+
 										0,							 // no value assigned.
-										NULL			     // no varref related.
+										NULL,			     // no varref related.
+										STK_PROPERTY_TYPE_UNDEFINED // starts undefined.
 									};
 									n_args++;
 								}
@@ -2277,7 +2279,7 @@ namespace zetscript{
 					}
 					svar->info_function_new=info_function;
 					svar->instruction_new=instruction;
-					(*ptrCurrentOp++)={STK_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
+					(*ptrCurrentOp++)={NULL,svar,STK_PROPERTY_TYPE_SCRIPTVAR};
 					continue;
 			 case  DELETE_OP:
 					POP_ONE;
@@ -2319,7 +2321,7 @@ namespace zetscript{
 						RETURN_ERROR;
 					}
 
-					(*ptrCurrentOp++)={STK_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
+					(*ptrCurrentOp++)={NULL,svar,STK_PROPERTY_TYPE_SCRIPTVAR};
 
 					continue;
 
@@ -2331,7 +2333,7 @@ namespace zetscript{
 					RETURN_ERROR;
 				}
 
-				(*ptrCurrentOp++)={STK_PROPERTY_TYPE_SCRIPTVAR,NULL,svar};
+				(*ptrCurrentOp++)={NULL,svar,STK_PROPERTY_TYPE_SCRIPTVAR};
 
 				continue;
 
@@ -2417,10 +2419,10 @@ namespace zetscript{
 				if(var_object != NULL && (var_object->idxClass == IDX_CLASS_VECTOR || var_object->idxClass == IDX_CLASS_STRUCT)){
 
 					if(var_object->idxClass == IDX_CLASS_VECTOR){ // integer as iterator...
-						*current_foreach->key={STK_PROPERTY_TYPE_INTEGER,0,0};
+						*current_foreach->key={0,0,STK_PROPERTY_TYPE_INTEGER};
 					}
 					else{ // struct -> string as iterator...
-						*current_foreach->key={STK_PROPERTY_TYPE_STRING,0,0};
+						*current_foreach->key={0,0,STK_PROPERTY_TYPE_STRING};
 					}
 
 					current_foreach->ptr = var_object;

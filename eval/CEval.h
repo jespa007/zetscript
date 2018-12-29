@@ -141,7 +141,7 @@ namespace zetscript{
 		};
 
 
-		struct tInstructionCompiler{
+		/*struct tInstruction{
 			OP_CODE op_code;
 			unsigned char index_op1; 	// index/type/etc
 			intptr_t  index_op2; 		// usually a pointer or index
@@ -151,7 +151,7 @@ namespace zetscript{
 			unsigned int scope_type;
 			unsigned int runtime_prop;
 
-			tInstructionCompiler(){
+			tInstruction(){
 				op_code=OP_CODE::END_FUNCTION;
 				index_op1=ZS_UNDEFINED_IDX;
 				index_op2=ZS_UNDEFINED_IDX;
@@ -163,18 +163,39 @@ namespace zetscript{
 				runtime_prop = 0;
 			}
 
-		};
+			tInstruction(
+					OP_CODE	_op_code,
+					unsigned char _index_op1=ZS_UNDEFINED_IDX,
+					intptr_t _index_op2=ZS_UNDEFINED_IDX){
 
-		struct tTokenNodeAccessor {
+				op_code=_op_code;
+				index_op1=_index_op1;
+				index_op2=_index_op2;
+
+				var_type=0;
+				pre_op_type=0;
+				post_op_type=0;
+				scope_type = 0;
+				runtime_prop = 0;
+			}
+
+		};*/
+
+		/*struct tTokenNodeAccessor {
 
 			ACCESSOR_TYPE accessor_type;
 			string value;
-			vector<tInstructionCompiler> instruction;
+
+			/// Only for function in order to match symbol in link process
+			unsigned char params;
+
+			vector<tInstruction> instruction;
 
 			tTokenNodeAccessor(){
 				accessor_type=ACCESSOR_TYPE::UNKNOWN_ACCESSOR_TYPE;
+				params=0;
 			}
-		};
+		};*/
 
 		struct tTokenNode{
 
@@ -189,10 +210,10 @@ namespace zetscript{
 
 			string value;
 			int line;
-			vector<tInstructionCompiler> instruction; // byte code load literal/identifier(can be anonymous function), vector/struct.
+			vector<tInstruction> instruction; // byte code load literal/identifier(can be anonymous function), vector/struct.
 
 			// access info like function call, vector access and variable memeber
-			vector<tTokenNodeAccessor> accessor;
+			//vector<tTokenNodeAccessor> accessor;
 
 			// AST info operator.
 			tTokenNode *left;
@@ -214,16 +235,39 @@ namespace zetscript{
 
 
 		typedef struct {
-			vector<tInstructionCompiler> instruction;
+			vector<tInstruction> instruction;
 		}tContinueInstructionScope,tBreakInstructionScope;
 
 		struct tFunctionInfo{
 
-			vector<tInstructionCompiler> 		instruction;
+			vector<tInstruction>	 		instruction;
 			CScriptFunction 				*  	function_info_object;
 
 			tFunctionInfo(CScriptFunction	* _function_info_object){
 				function_info_object = _function_info_object;
+			}
+		};
+
+		struct tLinkSymbol{
+
+			int idxInstruction;
+			short idxScriptFunction;
+			short scope;
+			string value;
+			char params;
+
+			tLinkSymbol(
+					 int _idxScriptFunction
+					,short _idxInstruction
+					,short _scope
+					,const string & _value
+					,char _params=0
+					){
+				idxScriptFunction=_idxScriptFunction;
+				idxInstruction=_idxInstruction;
+				scope=_scope;
+				value=_value;
+				params=_params;
 			}
 		};
 
@@ -276,6 +320,7 @@ namespace zetscript{
 		} tInfoParsedSource;
 
 
+
 		// singleton
 		static map<string,tInfoConstantValue *> *constant_pool;
 
@@ -298,6 +343,7 @@ namespace zetscript{
 
 		static tFunctionInfo				*pCurrentFunctionInfo;
 		static vector<tFunctionInfo *> 		*vFunctionInfo;
+		static vector<tLinkSymbol>			*vLinkSymbol;
 		static bool is_initialized;
 
 		// CONSTANT TOOLS
@@ -319,6 +365,11 @@ namespace zetscript{
 		// FILE MANAGEMENT
 		static bool isFilenameAlreadyParsed(const string & filename);
 		static const char * getParsedFilenameFromIdx(unsigned idx);
+
+		//-----------------------------------------------
+		// LINK
+		static void linkSymbols();
+
 
 
 		//-----------------------------------------------
@@ -343,31 +394,34 @@ namespace zetscript{
 		//
 		// EXPRESSION FUNCTIONS
 
+		static void linkAccessorSymbol(tTokenNode & node);
 
 		// AST core functions ...
 
-		// Turn tokens into byte code throught semi AST algorithm ...
+		/// Turn tokens into byte code throught semi AST algorithm ...
 		static OP_CODE puntuator2instruction(OPERATOR_TYPE op);
-		static bool  compileTokens(vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
 
-		// Turn expression in Tokens (with some byte code instructions inside)...
-		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
+		/// Make operator precedence from the AST of tokens built during evalExpression.
+		static bool  makeOperatorPrecedence(vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
+
+		/// Turn expression in Tokens (with some byte code instructions inside)...
+		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstruction> 		*	instruction);
 
 
-		// NEW EXPRESSION...
-		static char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
+		/// NEW EXPRESSION...
+		static char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
 
-		// FUNCTION OBJECT...
-		static char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 	*	instruction);
+		/// FUNCTION OBJECT...
+		static char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 	*	instruction);
 
-		//STRUCT OBJECT...
-		static char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
+		/// STRUCT OBJECT...
+		static char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
 
-		//VECTOR OBJECT...
-		static char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
+		/// VECTOR OBJECT...
+		static char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
 
-		// GENERIC VECTOR/FUNCTION ARGS
-		static char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction);
+		/// GENERIC VECTOR/FUNCTION ARGS
+		static char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
 
 
 		// END EXPRESSION FUNCTION
@@ -407,7 +461,7 @@ namespace zetscript{
 		//
 		//------------------------------------------------------------------------------------------
 
-
+		static char * eval(const char *s, bool & error);
 		static char * eval_Recursive(const char *s, int & line, CScope *scope_info, bool & error);
 
 

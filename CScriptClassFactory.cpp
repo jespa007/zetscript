@@ -50,36 +50,41 @@ namespace zetscript{
 
 			if(INT_PTR_TYPE_STR==ir_var->c_type){
 				return {
-						STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_C_VAR,
+
 						0,
-						ptr_variable
+						ptr_variable,
+						STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_C_VAR
 				};
 
 			}else if(FLOAT_PTR_TYPE_STR==ir_var->c_type){
 				return {
-						STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_IS_C_VAR,
+
 						0,
-						ptr_variable
+						ptr_variable,
+						STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_IS_C_VAR
 				};
 			}else if(CONST_CHAR_PTR_TYPE_STR==ir_var->c_type){
 
 				return {
-						STK_PROPERTY_TYPE_STRING,
+
 						ptr_variable,
-						0
+						0,
+						STK_PROPERTY_TYPE_STRING
 				};
 			}else if(STRING_PTR_TYPE_STR==ir_var->c_type){
 
 				return {
-						STK_PROPERTY_TYPE_STRING|STK_PROPERTY_IS_C_VAR,
+
 						(void *)((string *)ptr_variable)->c_str(),
-						ptr_variable
+						ptr_variable,
+						STK_PROPERTY_TYPE_STRING|STK_PROPERTY_IS_C_VAR
 				};
 			}else if(BOOL_PTR_TYPE_STR==ir_var->c_type){
 				return {
-						STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_C_VAR,
+
 						0,
-						ptr_variable
+						ptr_variable,
+						STK_PROPERTY_TYPE_BOOLEAN|STK_PROPERTY_IS_C_VAR
 				};
 			}else{
 				CScriptClass *info_registered_class = GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
@@ -89,9 +94,10 @@ namespace zetscript{
 					var->init(info_registered_class,ptr_variable);
 
 					return{
-							STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_IS_C_VAR,
+
 							NULL,
-							var
+							var,
+							STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_IS_C_VAR
 					};
 				}
 		}
@@ -99,9 +105,10 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Variable %s is not c referenced as C symbol",ir_var->symbol_ref.c_str());
 		}
 
-		return{STK_PROPERTY_TYPE_UNDEFINED,
+		return{
 			0,
-			NULL};
+			NULL,
+			STK_PROPERTY_TYPE_UNDEFINED};
 	}
 
 
@@ -126,14 +133,14 @@ namespace zetscript{
 
 		 sprintf(print_aux_load_value,"UNDEFINED");
 
-		 if(iao->instruction_properties & INS_PROPERTY_ACCESS_SCOPE){
+		 if(iao->properties & INS_PROPERTY_ACCESS_SCOPE){
 
 			 sprintf(object_access,
 					"[" FORMAT_PRINT_INSTRUCTION "]."
 
 					,(int)iao->index_op2);
 		 }
-		 else if(iao->instruction_properties & INS_PROPERTY_THIS_SCOPE){
+		 else if(iao->properties & INS_PROPERTY_THIS_SCOPE){
 			sprintf(object_access,"this.");
 		 }
 
@@ -198,7 +205,7 @@ namespace zetscript{
 				 pre="";
 				 post="";
 
-					switch(GET_INS_PROPERTY_PRE_POST_OP(instruction->instruction_properties)){
+					switch(GET_INS_PROPERTY_PRE_POST_OP(instruction->properties)){
 					case INS_PROPERTY_PRE_NEG:
 						pre="-";
 						break;
@@ -250,7 +257,7 @@ namespace zetscript{
 							,idx_instruction,
 							CEval::getOpCodeStr(instruction->op_code),
 							pre.c_str(),
-							getStrTypeLoadValue(sfo->instruction,idx_instruction),
+							getStrTypeLoadValue(sfo->instruction,idx_instruction).c_str(),
 							post.c_str());
 					break;
 				case JNT:
@@ -291,7 +298,7 @@ namespace zetscript{
 						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
 								,idx_instruction
 								,CEval::getOpCodeStr(instruction->op_code)
-								,(instruction->instruction_properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
+								,(instruction->properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
 								);
 					}else{
 						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"

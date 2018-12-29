@@ -31,14 +31,6 @@ namespace zetscript{
 	int CScope::n_anonymouse_func=0;
 
 
-
-
-
-
-
-
-
-
 	//------------------------------------------------------------------------------------------------
 
 	CScope::CScope( short _idx_this, short _idx_parent, bool _is_c_node){//, int _index){
@@ -252,7 +244,6 @@ namespace zetscript{
 	tScopeVar * CScope::existRegisteredSymbol(const string & var_name, int n_params){
 		return existRegisteredSymbolRecursive(var_name, n_params);
 	}
-
 
 	tScopeVar * CScope::getInfoRegisteredSymbol(const string & v, int n_params, bool print_msg){
 		tScopeVar *irv = existRegisteredSymbol(v,n_params);

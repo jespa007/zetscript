@@ -82,9 +82,9 @@ namespace zetscript{
 					}
 				}
 				*ptr_ale={
-					STK_PROPERTY_TYPE_UNDEFINED,
 					0,
-					0
+					0,
+					STK_PROPERTY_TYPE_UNDEFINED
 				};
 			}
 

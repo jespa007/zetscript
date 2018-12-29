@@ -218,9 +218,9 @@ namespace zetscript{
 		}else{
 
 			si={
-					STK_PROPERTY_TYPE_UNDEFINED,
 					0,
-					NULL
+					0,
+					STK_PROPERTY_TYPE_UNDEFINED
 			};
 		}
 
@@ -268,9 +268,10 @@ namespace zetscript{
 		tFunctionSymbol si;
 		si.proxy_ptr=0;
 		si.object = {
-				STK_PROPERTY_TYPE_FUNCTION, // dfine as function.
-				(void *)irv,						// function struct pointer.
-				NULL						// no var ref releated.
+
+				(void *)irv,				// function struct pointer.
+				NULL,						// no var ref releated.
+				STK_PROPERTY_TYPE_FUNCTION  // dfine as function.
 		};
 
 		string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);

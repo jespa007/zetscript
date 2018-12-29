@@ -91,12 +91,12 @@ Keyword (K)
 - switch(E){ // switch should have constants on case
 	default:
 	case C0:
-		  break;
+		ï¿½ break;
 	case C1:
-		  break;
-		  ..
+		ï¿½ break;
+		ï¿½ ..
 	case CN:
-		  break;
+		ï¿½ break;
 	}
 
 -if(Ec){ B1 } else if (Ec2) { B2 } else { B3 }
@@ -148,6 +148,7 @@ namespace zetscript{
 	map<string,tInfoConstantValue *> 	*	CEval::constant_pool=NULL;
 	CEval::tFunctionInfo				*	CEval::pCurrentFunctionInfo=NULL;
 	vector<CEval::tFunctionInfo*> 		*	CEval::vFunctionInfo=NULL;
+	vector<CEval::tLinkSymbol> 		*	CEval::vLinkSymbol=NULL;
 	vector<CEval::tInfoParsedSource> 	*	CEval::m_parsedSource = NULL;
 
 
@@ -363,7 +364,7 @@ namespace zetscript{
 
 		if(getConstant(const_name) == NULL){
 			info_ptr=new tInfoConstantValue;
-			*info_ptr={properties,obj,NULL};
+			*info_ptr={obj,NULL,properties};
 			(*constant_pool)[const_name]=info_ptr;
 		}else{
 			THROW_RUNTIME_ERROR("internal:constant %s already exist",const_name.c_str());
@@ -502,7 +503,7 @@ namespace zetscript{
 		defined_opcode[SHL]         ={SHL,"SHL"}; // shift left
 		defined_opcode[SHR]         ={SHR,"SHR"}; // shift right
 
-		defined_opcode[STORE]         ={STORE,"STORE"}; // mov expression to var
+		defined_opcode[STORE]       ={STORE,"STORE"}; // mov expression to var
 		defined_opcode[LOAD]        ={LOAD,"LOAD"}; // primitive value like number/string or boolean...
 
 		defined_opcode[JMP]         ={JMP,"JMP"}; // Unconditional jump.
@@ -535,6 +536,7 @@ namespace zetscript{
 		// init variables...
 		constant_pool = new map<string,tInfoConstantValue *>;
 		vFunctionInfo = new vector<tFunctionInfo *>;
+		vLinkSymbol = new vector<tLinkSymbol>;
 		m_parsedSource = new vector<CEval::tInfoParsedSource>();
 
 		is_initialized = true;
@@ -549,6 +551,11 @@ namespace zetscript{
 		if(vFunctionInfo!=NULL){
 			delete vFunctionInfo;
 			vFunctionInfo = NULL;
+		}
+
+		if(vLinkSymbol!=NULL){
+			delete vLinkSymbol;
+			vLinkSymbol = NULL;
 		}
 
 		if (m_parsedSource != NULL) {
@@ -936,22 +943,22 @@ namespace zetscript{
 			}
 		 }
 
-		tInstructionCompiler instruction;
+		;
 
-		instruction.index_op1=load_type;
-		instruction.index_op2=(intptr_t)obj;
+		//instruction.index_op1=load_type;
+		//instruction.index_op2=(intptr_t)obj;
 
-		instruction.var_type=type;
+		//instruction.properties =type | scope_type;
 		//asm_op.pre_op_type=pre_inline_operator_identity_type;
 		//asm_op.post_op_type=post_inline_operator_identity_type;
-		instruction.scope_type = scope_type;
+		//instruction.scope_type = scope_type;
 
 
-		instruction.op_code=OP_CODE::LOAD;
+		//instruction.op_code=OP_CODE::LOAD;
 
 
 		token_node->value = v;
-		token_node->instruction.push_back(instruction);
+		token_node->instruction.push_back(tInstruction(OP_CODE::LOAD,load_type,(intptr_t)obj,type | scope_type));
 
 
 		return aux;
@@ -1027,14 +1034,14 @@ namespace zetscript{
 		return true;
 	}
 	//------------------------------------------------------------------------------------------------------------
-	char * CEval::evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction){
+	char * CEval::evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction){
 
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 
 		return NULL;
 	}
 
-	char * CEval::evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction){
+	char * CEval::evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
@@ -1091,7 +1098,7 @@ namespace zetscript{
 	}
 
 
-	char * CEval::evalVectorObject(const char *s,int & line,  CScope *scope_info,  vector<tInstructionCompiler> *	instruction){
+	char * CEval::evalVectorObject(const char *s,int & line,  CScope *scope_info,  vector<tInstruction> *	instruction){
 
 		char * aux_p=IGNORE_BLANKS(s,line);
 
@@ -1125,7 +1132,7 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	char * CEval::evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionCompiler> 		*	instruction){
+	char * CEval::evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 //		char *end_p;
@@ -1235,8 +1242,14 @@ namespace zetscript{
 		return OP_CODE::END_FUNCTION;
 	}
 
-	// Compile tokens bytecode in the same AST Three...
-	bool CEval::compileTokens(vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end, bool & error){
+	void CEval::linkAccessorSymbol(tTokenNode & accessor_node){
+		switch(accessor_node.token_type){
+
+		}
+	}
+
+
+	bool CEval::makeOperatorPrecedence(vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end, bool & error){
 
 		OPERATOR_TYPE 	op_split=OPERATOR_TYPE::MAX_OPERATOR_TYPES;
 		int 			idx_split=-1;
@@ -1245,7 +1258,7 @@ namespace zetscript{
 		// trivial case (no operator left, append byte code )...
 		if(idx_start>=idx_end){
 
-			// concatenate insrtuctions ...
+			// concatenate instructions ...
 			pCurrentFunctionInfo->instruction.insert(
 					  pCurrentFunctionInfo->instruction.end()
 					, vExpressionTokens->at(idx_start).instruction.begin()
@@ -1272,23 +1285,23 @@ namespace zetscript{
 		}
 
 
-		// operator that splits...
+		// split left/right by operator precedence...
 		split_node=&vExpressionTokens->at(idx_split);
 
-		bool result= compileTokens(vExpressionTokens,idx_start,idx_split-1, error) // left branches...
+		bool result= makeOperatorPrecedence(vExpressionTokens,idx_start,idx_split-1, error) // left branches...
 									&&
-			   compileTokens(vExpressionTokens,idx_split+1,idx_end,error); // right branches...
+					makeOperatorPrecedence(vExpressionTokens,idx_split+1,idx_end,error); // right branches...
 
 		if(result){ // if result was ok, push op_code...
-			tInstructionCompiler ic;
-			ic.op_code = puntuator2instruction(split_node->operator_type);
-			pCurrentFunctionInfo->instruction.push_back(ic);
+			//tInstruction ic;
+			//ic.op_code = ;
+			pCurrentFunctionInfo->instruction.push_back(tInstruction(puntuator2instruction(split_node->operator_type)));
 		}
 
 		return result;
 	}
 
-	char * CEval::evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstructionCompiler> 	* instruction){
+	char * CEval::evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstruction> 	* instruction){
 		// PRE: s is current string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
 
@@ -1298,6 +1311,8 @@ namespace zetscript{
 //		tTokenNode *root;
 		KEYWORD_TYPE kw;
 		bool error=false;
+		bool is_first_access=false;
+		unsigned char params=0;
 
 		//PASTNode ast_node_to_be_evaluated=NULL;
 		char *aux_p=IGNORE_BLANKS(s,line);
@@ -1325,12 +1340,10 @@ namespace zetscript{
 
 			// parenthesis (evals another expression)
 			if(*aux_p=='('){ // inner expression (priority)
-				vector<tInstructionCompiler> 	instruction_inner;
+				vector<tInstruction> 	instruction_inner;
 				if((aux_p=evalExpression(aux_p+1, line, scope_info, &instruction_inner))==NULL){
 					return NULL;
 				}
-
-
 
 				if(*aux_p != ')'){
 					writeErrorMsg(current_parsing_filename,line ,"Expected ')'");
@@ -1410,34 +1423,47 @@ namespace zetscript{
 
 				}
 
+				is_first_access=true;
+
 				// eval accessor element (if any)...
 				while(isAccessPunctuator(aux_p)){
-					tTokenNodeAccessor accessor_token;
+					string accessor_value="";
+					//tTokenNodeAccessor accessor_token;
 
 					switch(*aux_p){
 					case '(': // function call
-						accessor_token.accessor_type = ACCESSOR_TYPE::CALL_ACCESSOR;
-						do{
-							if((aux_p = evalExpression(IGNORE_BLANKS(aux_p+1,line),line,scope_info,&accessor_token.instruction))==NULL){
-								return NULL;
-							}
+						params=0;
+						//accessor_token.accessor_type = ACCESSOR_TYPE::CALL_ACCESSOR;
+						aux_p = IGNORE_BLANKS(aux_p+1,line);
+						if(*aux_p != ')'){
+							do{
 
 
-							if(*aux_p != ',' && *aux_p != ')'){
-								writeErrorMsg(current_parsing_filename,line ,"Expected ',' or ')'");
-								return NULL;
-							}
+								if((aux_p = evalExpression(aux_p,line,scope_info,&symbol_token_node.instruction))==NULL){
+									return NULL;
+								}
 
-							if(*aux_p == ','){
-								aux_p=IGNORE_BLANKS(aux_p+1,line);
-							}
+								if(*aux_p != ',' && *aux_p != ')'){
+									writeErrorMsg(current_parsing_filename,line ,"Expected ',' or ')'");
+									return NULL;
+								}
 
-						}while(*aux_p != ')');
+								if(*aux_p == ','){
+									aux_p=IGNORE_BLANKS(aux_p+1,line);
+								}
+
+								params++;
+
+							}while(*aux_p != ')');
+						}
+						//accessor_token.params=params;
+						symbol_token_node.instruction.push_back(tInstruction(OP_CODE::CALL));
+
 						aux_p++;
 						break;
 					case '[': // vector access
-						accessor_token.accessor_type = ACCESSOR_TYPE::VECTOR_ACCESSOR;
-						if((aux_p = evalExpression(IGNORE_BLANKS(aux_p+1,line),line,scope_info,&accessor_token.instruction))==NULL){
+						//accessor_token.accessor_type = ACCESSOR_TYPE::VECTOR_ACCESSOR;
+						if((aux_p = evalExpression(IGNORE_BLANKS(aux_p+1,line),line,scope_info,&symbol_token_node.instruction))==NULL){
 							return NULL;
 						}
 						if(*aux_p != ']'){
@@ -1445,24 +1471,58 @@ namespace zetscript{
 							return NULL;
 						}
 						aux_p=IGNORE_BLANKS(aux_p+1,line);
+
+						symbol_token_node.instruction.push_back(tInstruction(OP_CODE::VGET));
 						break;
 					case '.': // member access
-						accessor_token.accessor_type = ACCESSOR_TYPE::MEMBER_ACCESSOR; // eval symbol...
+						//accessor_token.accessor_type = ACCESSOR_TYPE::MEMBER_ACCESSOR; // eval symbol...
 						aux_p=IGNORE_BLANKS(aux_p+1,line);
-						while(!isEndSymbolToken(aux_p)){
-							accessor_token.value += (*aux_p++);
+						accessor_value="";
+						while(!isEndSymbolToken(aux_p)){ // get name...
+							accessor_value += (*aux_p++);
 						}
 
-						if(!isIdentifierNameExpressionOk(accessor_token.value,line)){
+						if(!isIdentifierNameExpressionOk(accessor_value,line)){
 							return NULL;
 						}
+
+						pCurrentFunctionInfo->function_info_object->value_symbol[symbol_token_node.instruction.size()]=accessor_value;
+						symbol_token_node.instruction.push_back(tInstruction(OP_CODE::LOAD)); //--> must add symbol value instruction...
 
 						break;
 					}
 
-					symbol_token_node.accessor.push_back(accessor_token);
+
+					if(is_first_access){
+
+						// try to get index local symbol through scope...
+						//int idx=scope_info->getIdxSymbol(symbol_token_node.value, params);
+
+						// put to link symbol later
+						vLinkSymbol->push_back(CEval::tLinkSymbol(
+								pCurrentFunctionInfo->function_info_object->idxScriptFunction
+								,symbol_token_node.instruction.size()-1
+								,scope_info->idxScope
+								,symbol_token_node.value
+								,params
+						));
+
+					}
+					// if first access try to solve symbol
+
+
+					// solve symbol if local ...
+
+					// else put token in link vector to solve later ...
+					/*if(is_first_access){
+						accessor_token.value=symbol_token_node.value;
+					}*/
+
+					//symbol_token_node.accessor.push_back(accessor_token);
+
 
 					aux_p=IGNORE_BLANKS(aux_p,line);
+					is_first_access=false;
 				}
 
 				if(IS_INC_OPERATOR(aux_p)){
@@ -1508,8 +1568,8 @@ namespace zetscript{
 		}
 
 
-		// Turn tokens into byte code throught semi AST algorithm ...
-		if(!compileTokens(&vExpressionTokens,0,vExpressionTokens.size()-1,error)){
+		// make operator precedence from the AST built before...
+		if(!makeOperatorPrecedence(&vExpressionTokens,0,vExpressionTokens.size()-1,error)){
 			return NULL;
 		}
 
@@ -2741,7 +2801,7 @@ namespace zetscript{
 		string value_to_eval;
 		tTokenNode token_node;
 
-		vector<tInstructionCompiler> *tokenCompiled = NULL;
+		vector<tInstruction> *tokenCompiled = NULL;
 
 		aux_p=IGNORE_BLANKS(aux_p, line);
 
@@ -3009,12 +3069,12 @@ namespace zetscript{
 		for (unsigned j = 0; j < pCurrentFunctionInfo->instruction.size(); j++,dst_op++) {
 
 
-			tInstructionCompiler src_op = pCurrentFunctionInfo->instruction[j];
+			tInstruction src_op = pCurrentFunctionInfo->instruction[j];
 
 			dst_op->op_code = src_op.op_code;
 			dst_op->index_op1 = src_op.index_op1;
 			dst_op->index_op2 = src_op.index_op2;
-			dst_op->instruction_properties = src_op.pre_op_type | src_op.post_op_type | src_op.scope_type | src_op.runtime_prop;
+			dst_op->properties = src_op.properties;//pre_op_type | src_op.post_op_type | src_op.scope_type | src_op.runtime_prop;
 		}
 
 
@@ -3028,19 +3088,60 @@ namespace zetscript{
 		}
 	}
 
+	void CEval::linkSymbols(){
+		for(unsigned i =0; i < vLinkSymbol->size(); i++){
+			tLinkSymbol ls=vLinkSymbol->at(i);
+
+			// if this or super find on its class...
+
+			// else try find local symbol until scope reaches function scope (end scope) from starting scope...
+
+			// finally try to find symbol at main function...
+
+
+
+		}
+	}
+
+	char * CEval::eval(const char * str, bool & error){
+		int line =1;
+		char *end_char = NULL;
+
+		pushFunction(MAIN_FUNCTION);
+
+		end_char=eval_Recursive(str,line,MAIN_SCOPE,error);
+
+		popFunction();
+
+		if(*end_char != 0){
+			writeErrorMsg(current_parsing_filename,line,"Unexpected \'%c\' ",*end_char);
+			THROW_SCRIPT_ERROR();
+			error=true;
+		}
+
+		if(!error){
+			linkSymbols();
+			CURRENT_VM->buildCache();
+		}
+
+		return end_char;
+	}
+
 	bool CEval::evalString(const string & expression){
 
-		int line =1;
+
 		bool error=false;
 		char *end_char=NULL;
 
-		if((end_char=eval_Recursive(expression.c_str(),line,MAIN_SCOPE,error))!=NULL){
-			if(*end_char != 0){
-				writeErrorMsg(current_parsing_filename,line,"Unexpected \'%c\' ",*end_char);
-				THROW_SCRIPT_ERROR();
-				error=true;
-			}
+		try{
+			eval(expression.c_str(),error);
 		}
+		catch(script_error & e)
+		{
+			THROW_EXCEPTION(e);
+			error=true;
+		}
+
 
 		return !error;
 	}
@@ -3048,9 +3149,9 @@ namespace zetscript{
 	bool CEval::evalFile(const string & filename){
 
 		int idx_filename=-1;
-		int line=1;
+
 		bool error=false;
-		char *end_char=NULL;
+		char *buf_tmp=NULL;
 
 
 		if(!isFilenameAlreadyParsed(filename)){
@@ -3060,38 +3161,35 @@ namespace zetscript{
 			idx_filename=m_parsedSource->size()-1;
 
 			bool status = false;
-			char *buf_tmp=NULL;
+
 			int n_bytes;
 
 			if((buf_tmp=CZetScriptUtils::readFile(filename, n_bytes))!=NULL){
 
-				pushFunction(MAIN_FUNCTION);
-
 				try{
-					if((end_char=eval_Recursive(buf_tmp,line,MAIN_SCOPE,error))!=NULL){
-						if(*end_char != 0){
-							writeErrorMsg(current_parsing_filename,line,"Unexpected \'%c\' ",*end_char);
-							THROW_SCRIPT_ERROR();
-							error=true;
-						}
-					}
+					eval(buf_tmp,error);
 				}
 				catch(script_error & e){
 					free(buf_tmp);
+					buf_tmp=NULL;
 					THROW_EXCEPTION(e);
 					error=true;
 				}
-
-				free(buf_tmp);
-
-				popFunction();
 			}
 
 
 		}else{
 			// already parsed
 			THROW_RUNTIME_ERROR("Filename \"%s\" already parsed",filename);
-			return false;
+			error=true;
+		}
+
+		if(!error){
+			CURRENT_VM->buildCache();
+		}
+
+		if(buf_tmp!=NULL){
+			free(buf_tmp);
 		}
 
 

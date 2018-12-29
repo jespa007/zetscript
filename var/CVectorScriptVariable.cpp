@@ -39,7 +39,7 @@ namespace zetscript{
 
 
 	tStackElement *CVectorScriptVariable::push(){
-		tStackElement s={STK_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
+		tStackElement s={NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		m_variable.push_back(s);
 		return &m_variable[m_variable.size()-1];
 	}
@@ -58,7 +58,7 @@ namespace zetscript{
 
 
 	tStackElement * CVectorScriptVariable::pop(){
-		return_callc={STK_PROPERTY_TYPE_UNDEFINED ,NULL,NULL};
+		return_callc={NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		if(m_variable.size()>0){
 			return_callc=m_variable[m_variable.size()-1];
 			CScriptVariable *var = (CScriptVariable *)return_callc.varRef;

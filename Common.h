@@ -535,18 +535,28 @@ namespace zetscript{
 		OP_CODE op_code;
 		unsigned char index_op1;	// left and right respectively
 		intptr_t index_op2;
-		unsigned short instruction_properties;
-		short idxAstNode; // define ast node for give some information at run time
+		unsigned short properties;
+		//short idxAstNode; // define ast node for give some information at run time
+		tInstruction(OP_CODE _op_code
+					 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
+					 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
+					 ,unsigned short _properties=0
+					 ){
+			op_code=_op_code;
+			index_op1=_index_op1;
+			index_op2=_index_op2;
+			properties=_properties;
+
+		}
 	};
 
 	typedef tInstruction *PtrInstruction;
 
 	struct tStackElement {
 		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
-		unsigned short properties; // it tells its properties
 		void * stkValue; // operable value
 		void * varRef; // stack ref in case to assign new value.
-
+		unsigned short properties; // it tells its properties
 
 	};
 
@@ -563,9 +573,10 @@ namespace zetscript{
 		tFunctionSymbol() {
 			proxy_ptr = 0;
 			object= {
-				STK_PROPERTY_TYPE_UNDEFINED|STK_PROPERTY_IS_C_VAR, // undefined and c ?.
+
 				0,// 0 value
-				0// no var ref related
+				0,// no var ref related
+				STK_PROPERTY_TYPE_UNDEFINED|STK_PROPERTY_IS_C_VAR // undefined and c ?.
 			};
 			key_value="";
 

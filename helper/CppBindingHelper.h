@@ -18,7 +18,7 @@ namespace zetscript{
 	inline tStackElement var2stk(intptr_t var_trans, int idx_type){
 		//intptr_t var_trans = (intptr_t)input_var;
 			string s_return_value;
-			tStackElement callc_result={STK_PROPERTY_TYPE_UNDEFINED,0,0};
+			tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 			//int idx_type=GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_T).name());
 			// save return type ...
 			switch(idx_type){
@@ -26,12 +26,12 @@ namespace zetscript{
 				break;
 			 case IDX_TYPE_INT_PTR_C:
 				 if(var_trans==0) return callc_result;
-				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(*((intptr_t *)var_trans)),NULL};
+				 callc_result={(void *)(*((intptr_t *)var_trans)),NULL,STK_PROPERTY_TYPE_INTEGER};
 				 break;
 			 case IDX_TYPE_UNSIGNED_INT_C:
 			 case IDX_TYPE_INTPTR_T_C:
 			 case IDX_TYPE_INT_C:
-				 callc_result={STK_PROPERTY_TYPE_INTEGER,(void *)(((intptr_t)var_trans)),NULL};
+				 callc_result={(void *)(((intptr_t)var_trans)),NULL,STK_PROPERTY_TYPE_INTEGER};
 				 break;
 			 case IDX_TYPE_FLOAT_C:
 				 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
@@ -45,18 +45,18 @@ namespace zetscript{
 				 break;
 			 case IDX_TYPE_BOOL_PTR_C:
 				 if(var_trans==0) return callc_result;
-				 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(*((bool *)var_trans)),NULL};
+				 callc_result={(void *)(*((bool *)var_trans)),NULL,STK_PROPERTY_TYPE_BOOLEAN};
 				 break;
 			 case IDX_TYPE_BOOL_C:
-				 callc_result={STK_PROPERTY_TYPE_BOOLEAN,(void *)(((bool)var_trans)),NULL};
+				 callc_result={(void *)(((bool)var_trans)),NULL,STK_PROPERTY_TYPE_BOOLEAN};
 				 break;
 			 case IDX_TYPE_CONST_CHAR_PTR_C:
 				 if(var_trans==0) return callc_result;
-				 callc_result={STK_PROPERTY_TYPE_STRING,(void *)var_trans,NULL};//new string(*((string *)result))};
+				 callc_result={(void *)var_trans,NULL,STK_PROPERTY_TYPE_STRING};//new string(*((string *)result))};
 				 break;
 			 case IDX_TYPE_STRING_PTR_C:
 				 if(var_trans==0) return callc_result;
-				 callc_result={STK_PROPERTY_TYPE_STRING,(void *)((string *)var_trans)->c_str(),NULL};//new string(*((string *)result))};
+				 callc_result={(void *)((string *)var_trans)->c_str(),NULL,STK_PROPERTY_TYPE_STRING};//new string(*((string *)result))};
 				 break;
 			 case IDX_STACK_ELEMENT:
 				 if(var_trans==0) return callc_result;
@@ -64,7 +64,7 @@ namespace zetscript{
 				 break;
 			 default:
 				 if(var_trans==0) return callc_result;
-				 callc_result = {STK_PROPERTY_TYPE_SCRIPTVAR,NULL,INSTANCE_SCRIPT_VARIABLE_BY_IDX(idx_type,(void *)var_trans)};
+				 callc_result = {NULL,INSTANCE_SCRIPT_VARIABLE_BY_IDX(idx_type,(void *)var_trans),STK_PROPERTY_TYPE_SCRIPTVAR};
 				 break;
 			}
 

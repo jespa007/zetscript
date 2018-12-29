@@ -319,7 +319,7 @@ namespace zetscript{
 			n_args_to_find = getNumberArgsfromFunctionRefNode(ast_node);
 		}
 
-		unsigned int iao_scope = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
+		unsigned int iao_scope = GET_INS_PROPERTY_SCOPE_TYPE(iao->properties);
 
 		if(iao_scope & INS_PROPERTY_SUPER_SCOPE){ // try deduce local/global
 
@@ -348,11 +348,11 @@ namespace zetscript{
 				}
 
 				if(idx_super!= -1){
-					 REMOVE_SCOPES(iao->instruction_properties);
-					 iao->instruction_properties |= param_scope_type;
+					 REMOVE_SCOPES(iao->properties);
+					 iao->properties |= param_scope_type;
 					 iao->index_op1 = LOAD_TYPE_FUNCTION;
 					 iao->index_op2 = idx_super;
-					 iao->instruction_properties |= (is_c ? INS_PROPERTY_DEDUCE_C_CALL : 0);
+					 iao->properties |= (is_c ? INS_PROPERTY_DEDUCE_C_CALL : 0);
 					 //iao->idxFunction = idxFunction;
 					 return true;
 
@@ -374,8 +374,8 @@ namespace zetscript{
 				CScriptClass *sc=CScriptClass::getScriptClassByIdx(info_function->symbol_info.idxClass);
 
 				if(symbol_to_find == "this" && (iao_scope & INS_PROPERTY_THIS_SCOPE)){ // trivial is the first symbol we find...
-					 REMOVE_SCOPES(iao->instruction_properties);
-					 iao->instruction_properties |= INS_PROPERTY_THIS_SCOPE;
+					 REMOVE_SCOPES(iao->properties);
+					 iao->properties |= INS_PROPERTY_THIS_SCOPE;
 					 iao->index_op1 = LOAD_TYPE_VARIABLE;
 					 iao->index_op2 = ZS_THIS_IDX;
 					 return true;
@@ -405,8 +405,8 @@ namespace zetscript{
 				 symbol_to_find=CCompiler::makeSymbolRef(ast_node->symbol_value,idx_scope);
 
 				 if((idx=CScriptFunction::getIdxFunctionObject(info_function,symbol_to_find,n_args_to_find,false))!=-1){
-					 REMOVE_SCOPES(iao->instruction_properties);
-					 iao->instruction_properties |= param_scope_type;
+					 REMOVE_SCOPES(iao->properties);
+					 iao->properties |= param_scope_type;
 					 iao->index_op1 = LOAD_TYPE_FUNCTION;
 					 iao->index_op2 = idx;
 					 if((GET_FUNCTION_INFO(info_function->local_symbols.function[idx])->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // set as -1 to search the right signature ...
@@ -416,8 +416,8 @@ namespace zetscript{
 				 }else {
 
 					 if((idx=CScriptFunction::getIdxVariableSymbol(info_function,symbol_to_find, false))!=-1){
-						 REMOVE_SCOPES(iao->instruction_properties);
-						 iao->instruction_properties |= param_scope_type;
+						 REMOVE_SCOPES(iao->properties);
+						 iao->properties |= param_scope_type;
 						 iao->index_op1 = LOAD_TYPE_VARIABLE;
 						 iao->index_op2 = idx;
 						 return true;
@@ -578,7 +578,7 @@ namespace zetscript{
 							 string base_class = _belonging_class->symbol_info.symbol_ref;
 
 							 CCommonClassFunctionData *sfi=NULL;
-							 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->instruction_properties);
+							 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->properties);
 
 							 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
 								 iao->index_op1 = LOAD_TYPE_VARIABLE;
@@ -663,7 +663,7 @@ namespace zetscript{
 						 }else  if(iao->operator_type==OP_CODE::CALL){ // overrides variable type as function ...
 							 // check whether access scope ...
 							 if(info_function->asm_op[iao->index_op2].operator_type ==OP_CODE::LOAD  && // e
-								(GET_INS_PROPERTY_SCOPE_TYPE(info_function->asm_op[iao->index_op2].instruction_properties) & INS_PROPERTY_ACCESS_SCOPE)){
+								(GET_INS_PROPERTY_SCOPE_TYPE(info_function->asm_op[iao->index_op2].properties) & INS_PROPERTY_ACCESS_SCOPE)){
 
 								 info_function->asm_op[iao->index_op2].index_op1 = LOAD_TYPE_FUNCTION;
 								 info_function->asm_op[iao->index_op2].index_op2 = -1;

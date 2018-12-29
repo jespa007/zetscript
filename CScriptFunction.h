@@ -48,7 +48,7 @@ namespace zetscript{
 
 		//-----------
 		//  DEBUG
-		std::map<short,tInfoInstruction> debug_info; // map that gives info about current instruction
+		std::map<short,string> value_symbol; // map that gives info about current instruction
 		int 		 getLine(tInstruction * ins);
 		const char * getSymbol(tInstruction * ins);
 		const char * getFile();
