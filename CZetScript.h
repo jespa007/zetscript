@@ -106,7 +106,7 @@ using std::ostringstream;
 #include "eval/CEval.h"
 #include "CScope.h"
 #include "CScopeFactory.h"
-#include "CCommonClassFunctionData.h"
+#include "CCommonClassFunctionBase.h"
 #include "CScriptFunction.h"
 #include "CScriptFunctionFactory.h"
 #include "CScriptClass.h"

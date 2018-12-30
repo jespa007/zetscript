@@ -21,14 +21,10 @@
 
 namespace zetscript{
 
-	class  CScriptFunction:public CCommonClassFunctionData{
+	class  CScriptFunction:public CCommonClassFunctionBase{
 
 
 
-		/**
-		 * build scope variable block information
-		 */
-		void buildLutScopeSymbols();
 
 
 		string cfile; // file where function was compiled.
@@ -58,6 +54,7 @@ namespace zetscript{
 
 
 		int idxScriptFunction;
+		short idxLocalFunction;
 
 
 		tInfoVarScopeBlock *lut_scope_symbol;
@@ -71,6 +68,10 @@ namespace zetscript{
 		tVariableSymbolInfo *  registerVariable(const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 
 
+		/**
+		 * build scope variable block information
+		 */
+		void buildLutScopeSymbols();
 
 
 		virtual ~CScriptFunction();

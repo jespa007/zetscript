@@ -3,7 +3,7 @@
 namespace zetscript{
 
 
-	class CCommonClassFunctionData { // script function is shared by class and function ...
+	class CCommonClassFunctionBase { // script function is shared by class and function ...
 
 
 
@@ -23,7 +23,7 @@ namespace zetscript{
 
 
 
-		CCommonClassFunctionData(unsigned char _idxClass, short _idxScope);
+		CCommonClassFunctionBase(unsigned char _idxClass, short _idxScope);
 
 		/* Registers a function.
 		 * Desc: Inserts function at custom scope. It returns the idx vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]

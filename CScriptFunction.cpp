@@ -30,6 +30,12 @@ namespace zetscript{
 				return;
 			}
 
+			if(lut_scope_symbol != NULL){ // free if already allocated.
+				free(lut_scope_symbol);
+				lut_scope_symbol=NULL;
+				n_lut_scope_symbols=0;
+			}
+
 			/// PRE: base_class_irfs must be info of root class.
 			 bool is_main_function = idxScope == IDX_GLOBAL_SCOPE;
 
@@ -47,11 +53,11 @@ namespace zetscript{
 
 				 //ivsb.idxScope = list->at(i)->idxScope;
 
-				 for(unsigned v = 0;v < m_variable.size(); v++){ // register index var per scope ...
+				 for(unsigned idx_var = 0;idx_var < m_variable.size(); idx_var++){ // register index var per scope ...
 
 
-					map_scope_register[m_variable[v].idxScope].idxScope=m_variable[v].idxScope;
-					map_scope_register[m_variable[v].idxScope].var_index.push_back(v);
+					map_scope_register[m_variable[idx_var].idxScope].idxScope=m_variable[idx_var].idxScope;
+					map_scope_register[m_variable[idx_var].idxScope].var_index.push_back(idx_var);
 
 
 
@@ -88,12 +94,13 @@ namespace zetscript{
 		}
 
 
-	CScriptFunction::CScriptFunction(unsigned char _idxClass,short _idxScope):CCommonClassFunctionData(_idxClass,_idxScope){
+	CScriptFunction::CScriptFunction(unsigned char _idxClass,short _idxScope):CCommonClassFunctionBase(_idxClass,_idxScope){
 		idx_return_type = ZS_UNDEFINED_IDX;
 		idxScriptFunction = ZS_UNDEFINED_IDX;
 		instruction=NULL;
 		lut_scope_symbol=NULL;
 		n_lut_scope_symbols=0;
+		idxLocalFunction=ZS_UNDEFINED_IDX;
 
 	}
 
@@ -203,7 +210,7 @@ namespace zetscript{
 
 	tVariableSymbolInfo *	CScriptFunction::registerVariable(const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
-		tVariableSymbolInfo *vsi=CCommonClassFunctionData::registerVariable(this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
+		tVariableSymbolInfo *vsi=CCommonClassFunctionBase::registerVariable(this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 
 		tStackElement se = {0,0,STK_PROPERTY_TYPE_UNDEFINED};
 

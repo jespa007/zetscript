@@ -18,7 +18,7 @@ namespace zetscript{
 			return;\
 		}else{\
 			CScriptClass *sc=registerClass(STR(type_class),"");\
-			SCOPE_NODE(sc->idxScope)->is_c_node=true;\
+			GET_SCOPE(sc->idxScope)->is_c_node=true;\
 			vec_script_class_node.at(idx_class)->symbol_info.properties=SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;\
 			vec_script_class_node.at(idx_class)->classPtrType=(typeid(void).name());\
 		}

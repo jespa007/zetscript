@@ -231,7 +231,7 @@ namespace zetscript{
 		 mapTypeConversion = NULL;
 	 }*/
 
-	 CScriptClass::CScriptClass(unsigned char _idxClass, short _idxScope):CCommonClassFunctionData(_idxClass,_idxScope){
+	 CScriptClass::CScriptClass(unsigned char _idxClass, short _idxScope):CCommonClassFunctionBase(_idxClass,_idxScope){
 
 			classPtrType="";
 			c_destructor = NULL;
@@ -306,7 +306,7 @@ namespace zetscript{
 		return -1;
 	}*/
 #if 0
-	bool CScriptClass::searchVarFunctionSymbol(CCommonClassFunctionData * scope_info, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
+	bool CScriptClass::searchVarFunctionSymbol(CCommonClassFunctionBase * scope_info, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type){
 
 		int idx=0;
 		symbol_not_found = true;
@@ -425,7 +425,7 @@ namespace zetscript{
 				 }
 
 			 	if(idx_scope >= 0){ // var local or class member ?
-					 CScope *sc=SCOPE_NODE(idx_scope);
+					 CScope *sc=GET_SCOPE(idx_scope);
 				 	 idx_scope=sc->getIdxParent();
 			 	}
 
@@ -577,7 +577,7 @@ namespace zetscript{
 
 							 string base_class = _belonging_class->symbol_info.symbol_ref;
 
-							 CCommonClassFunctionData *sfi=NULL;
+							 CCommonClassFunctionBase *sfi=NULL;
 							 unsigned int scope_type = GET_INS_PROPERTY_SCOPE_TYPE(iao->properties);
 
 							 if(scope_type & INS_PROPERTY_ACCESS_SCOPE ){
@@ -734,7 +734,7 @@ namespace zetscript{
 			}
 
 
-			CCommonClassFunctionData *scope_info=&rc->scope_info;
+			CCommonClassFunctionBase *scope_info=&rc->scope_info;
 
 			tVariableSymbolInfo info_var;
 			info_var.idxClass = rc->symbol_info.idxClass;

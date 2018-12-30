@@ -7,7 +7,7 @@
 #define IDX_ANONYMOUSE_SCOPE			-3
 
 
-#define SCOPE_NODE(idx) 				zetscript::CScopeFactory::getInstance()->getScope(idx)
+#define GET_SCOPE(idx) 				zetscript::CScopeFactory::getInstance()->getScope(idx)
 #define MAIN_SCOPE						zetscript::CScopeFactory::getInstance()->getScope(IDX_GLOBAL_SCOPE)
 
 #define NEW_SCOPE						(zetscript::CScopeFactory::getInstance()->newScope)
@@ -16,9 +16,6 @@
 #define SCOPE_IN_MAIN_CLASS(idx)		((zetscript::CScopeFactory::getInstance()->getScope(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
 
 namespace zetscript{
-
-
-
 
 	class CScopeFactory{
 
@@ -34,13 +31,9 @@ namespace zetscript{
 			vector<CScope *> 	* 	getVectorScopeNode();
 			void clear();
 
-
-
 		private:
 
-
 			static CScopeFactory 		*	scope_factory_singleton;
-
 
 
 			/**
@@ -48,12 +41,8 @@ namespace zetscript{
 			 */
 			vector<CScope *> 				 vec_scope_node;
 
-
-
 			CScopeFactory();
 			~CScopeFactory();
-
-
 	};
 
 };

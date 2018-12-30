@@ -169,7 +169,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	CScope.cpp
 	CScopeFactory.cpp
 	CNativeFunction.cpp
-	CCommonClassFunctionData.cpp
+	CCommonClassFunctionBase.cpp
 	CScriptClass.cpp
 	CScriptClassFactory.cpp
 	CScriptFunction.cpp

@@ -36,7 +36,7 @@ namespace zetscript{
 
 
 
-	class  CScriptClass:public CCommonClassFunctionData{
+	class  CScriptClass:public CCommonClassFunctionBase{
 
 	public:
 
@@ -48,7 +48,7 @@ namespace zetscript{
 
 
 #if 0
-		 static bool searchVarFunctionSymbol(CCommonClassFunctionData * scope_info, tInstruction *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
+		 static bool searchVarFunctionSymbol(CCommonClassFunctionBase * scope_info, tInstruction *iao, int current_idx_function,bool & symbol_not_found, unsigned int scope_type=0);
 
 		 static void buildScopeVariablesBlock(CScriptFunction *root_class_irfs );
 		 static void unloadRecursiveFunctions(CScriptFunction * info_function);
@@ -62,7 +62,7 @@ namespace zetscript{
 
 
 
-		//CCommonClassFunctionData			scope_info;
+		//CCommonClassFunctionBase			scope_info;
 		//tVariableSymbolInfo symbol_info;
 		char  idx_function_member_constructor;
 		//int idxClass;

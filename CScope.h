@@ -20,8 +20,7 @@
 namespace zetscript{
 
 
-	#define NO_PARAMS_IS_VARIABLE	-1
-	#define NO_PARAMS_SYMBOL_ONLY	-2
+
 
 
 	class  CScope{
@@ -41,8 +40,8 @@ namespace zetscript{
 
 		//--------------------------------------------------------------------
 		// Register functions
-		vector<tScopeVar> m_registeredVariableFromBase; // vars registered from base.
-		vector<tScopeVar> m_registeredAnoymouseFunctionFromBase; // anonymous functions registered from base.
+		vector<tScopeVar> m_scopeVariable; // vars registered from base.
+		vector<tScopeVar> m_scopeAnonymousFunction; // anonymous functions registered from base.
 
 		/**
 		 * register/search symbol info

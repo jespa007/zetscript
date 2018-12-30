@@ -46,7 +46,7 @@ namespace zetscript{
 			idxBaseScope = _idx_this;
 			idxCurrentScopePointer=_idx_this;
 		}else{
-			idxBaseScope = SCOPE_NODE(_idx_parent)->getIdxBaseScope();
+			idxBaseScope = GET_SCOPE(_idx_parent)->getIdxBaseScope();
 		}
 	}
 
@@ -60,7 +60,7 @@ namespace zetscript{
 	}
 
 	CScriptClass * CScope::getScriptClass(){
-		return SCOPE_NODE(idxBaseScope)->script_class;
+		return GET_SCOPE(idxBaseScope)->script_class;
 	}
 
 	short CScope::getIdxBaseScope(){
@@ -72,33 +72,33 @@ namespace zetscript{
 	}
 
 	short CScope::getIdxCurrentScopePointer(){
-		return SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer;
+		return GET_SCOPE(idxBaseScope)->idxCurrentScopePointer;
 	}
 
 	CScope * CScope::getCurrentScopePointer(){
-		return SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);
+		return GET_SCOPE(GET_SCOPE(idxBaseScope)->idxCurrentScopePointer);
 	}
 
 
 	void CScope::resetScopePointer(){
-		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = idxBaseScope;
+		GET_SCOPE(idxBaseScope)->idxCurrentScopePointer = idxBaseScope;
 	}
 
 	CScope * CScope::pushScope(){
 
-		CScope *new_scope = NEW_SCOPE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
-		SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
-		SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
+		CScope *new_scope = NEW_SCOPE(GET_SCOPE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
+		GET_SCOPE(GET_SCOPE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
+		GET_SCOPE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
 		return new_scope;
 	}
 
 	CScope * CScope::popScope(){
 
-		CScope *current_scope = SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);
+		CScope *current_scope = GET_SCOPE(GET_SCOPE(idxBaseScope)->idxCurrentScopePointer);
 		if(current_scope->idxParentScope != ZS_UNDEFINED_IDX){
 
-			SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer = current_scope->idxParentScope;
-			return SCOPE_NODE(SCOPE_NODE(idxBaseScope)->idxCurrentScopePointer);
+			GET_SCOPE(idxBaseScope)->idxCurrentScopePointer = current_scope->idxParentScope;
+			return GET_SCOPE(GET_SCOPE(idxBaseScope)->idxCurrentScopePointer);
 		}
 
 		return NULL;
@@ -124,12 +124,13 @@ namespace zetscript{
 		irv.symbol_ref = symbol_ref;
 		irv.file = file;
 		irv.line = line;
+		irv.idxScope=IDX_GLOBAL_SCOPE;
 
-		CScope *base = SCOPE_NODE(idxBaseScope);
+		CScope *base = GET_SCOPE(idxBaseScope);
 
-		base->m_registeredVariableFromBase.push_back(irv);
+		base->m_scopeVariable.push_back(irv);
 
-		return &base->m_registeredVariableFromBase[base->m_registeredVariableFromBase.size()-1];
+		return &base->m_scopeVariable[base->m_scopeVariable.size()-1];
 	}
 
 	tScopeVar * CScope::registerSymbol(const string & file,int line,const string & var_name, int n_params){
@@ -152,8 +153,10 @@ namespace zetscript{
 			irv.symbol_ref = symbol_ref;
 			irv.file	 = file;
 			irv.line 	 = line;
-			m_registeredVariableFromBase.push_back(irv);
-			return &m_registeredVariableFromBase[m_registeredVariableFromBase.size()-1];// irv->idxScopeVar;
+			irv.idxScope=this->idxScope;
+
+			m_scopeVariable.push_back(irv);
+			return &m_scopeVariable[m_scopeVariable.size()-1];// irv->idxScopeVar;
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
@@ -168,20 +171,20 @@ namespace zetscript{
 	tScopeVar * CScope::existRegisteredSymbolRecursiveDownScope(const string & symbol_ref, int n_params){
 
 
-		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
-			string current_symbol_ref=m_registeredVariableFromBase[i].symbol_ref;
+		for(unsigned i = 0; i < m_scopeVariable.size(); i++){
+			string current_symbol_ref=m_scopeVariable[i].symbol_ref;
 			if(n_params==NO_PARAMS_SYMBOL_ONLY){
 				current_symbol_ref=CEval::getSymbolNameFromSymbolRef(current_symbol_ref);
 			}
 
 			if(current_symbol_ref==symbol_ref){
-				return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
+				return &m_scopeVariable[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
 
 		int parent =  getIdxParent();
 		if(parent != ZS_UNDEFINED_IDX){
-			return SCOPE_NODE(parent)->existRegisteredSymbolRecursiveDownScope(symbol_ref,n_params);
+			return GET_SCOPE(parent)->existRegisteredSymbolRecursiveDownScope(symbol_ref,n_params);
 		}
 
 		return NULL;//false;//-1;
@@ -193,21 +196,21 @@ namespace zetscript{
 		tScopeVar *sv=NULL;
 
 		// for each variable in current scope ...
-		for(unsigned i = 0; i < m_registeredVariableFromBase.size(); i++){
+		for(unsigned i = 0; i < m_scopeVariable.size(); i++){
 
-			string current_symbol_ref=m_registeredVariableFromBase[i].symbol_ref;
+			string current_symbol_ref=m_scopeVariable[i].symbol_ref;
 			if(n_params==NO_PARAMS_SYMBOL_ONLY){
 				current_symbol_ref=CEval::getSymbolNameFromSymbolRef(current_symbol_ref);
 			}
 
 			if(current_symbol_ref==symbol_ref){
-				return &m_registeredVariableFromBase[i];//.idxScopeVar; // ptr scope ?
+				return &m_scopeVariable[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
 
 		// ok lets iterate through current scope list
 		for(unsigned i = 0; i < m_localScopeList.size(); i++){
-			CScope *s=SCOPE_NODE(m_localScopeList[i]);
+			CScope *s=GET_SCOPE(m_localScopeList[i]);
 			sv=s->existRegisteredSymbolRecursiveUpScope(symbol_ref,n_params);
 
 			if(sv != NULL) return sv;

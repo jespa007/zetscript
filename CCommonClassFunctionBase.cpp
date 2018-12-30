@@ -4,7 +4,7 @@ namespace zetscript{
 
 
 
-	CCommonClassFunctionData::CCommonClassFunctionData(unsigned char _idxClass, short _idxScope) {
+	CCommonClassFunctionBase::CCommonClassFunctionBase(unsigned char _idxClass, short _idxScope) {
 		//n_statments=0;
 
 		//n_statment_op=0;
@@ -18,7 +18,7 @@ namespace zetscript{
 	 *  super.fun(1,2,3)*3; fun is evaluated pushing its args and then solve the function because we have the name and the args (is trivial)
 	 *
 	 *
-	bool CCommonClassFunctionData::searchVarFunctionSymbol(string symbol_to_find, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find){
+	bool CCommonClassFunctionBase::searchVarFunctionSymbol(string symbol_to_find, tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find){
 
 		int idx=0;
 		symbol_not_found = true;
@@ -134,7 +134,7 @@ namespace zetscript{
 				 }
 
 			 	if(idx_scope >= 0){ // var local or class member ?
-					 CScope *sc=SCOPE_NODE(idx_scope);
+					 CScope *sc=GET_SCOPE(idx_scope);
 				 	 idx_scope=sc->getIdxParent();
 			 	}
 
@@ -169,7 +169,7 @@ namespace zetscript{
 	}
 */
 
-	CScriptFunction * CCommonClassFunctionData::registerFunction(short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CCommonClassFunctionBase::registerFunction(short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 			string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
 			if(getFunctionByRef(symbol_ref,(char)args.size()) != NULL){
@@ -178,18 +178,18 @@ namespace zetscript{
 			}
 
 			CScriptFunction *sf =  NEW_SCRIPT_FUNCTION(idxClass,idxScope,  symbol_ref,  args,  idx_return_type,ref_ptr, properties);
-
+			sf->idxLocalFunction=m_function.size();
 			m_function.push_back(sf);
 
 			return sf;
 	}
 
-	CScriptFunction * CCommonClassFunctionData::registerFunction( const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CCommonClassFunctionBase::registerFunction( const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 		return registerFunction(this->idxScope, function_name,  args, idx_return_type,ref_ptr, properties);
 	}
 
-	CScriptFunction *	 CCommonClassFunctionData::getFunctionByRef(const string & function_ref, char n_args){
+	CScriptFunction *	 CCommonClassFunctionBase::getFunctionByRef(const string & function_ref, char n_args){
 
 		if(m_function.size()>0){
 
@@ -205,7 +205,7 @@ namespace zetscript{
 	}
 
 
-	CScriptFunction *	 CCommonClassFunctionData::getFunctionByName(const string & function_name, char n_args){
+	CScriptFunction *	 CCommonClassFunctionBase::getFunctionByName(const string & function_name, char n_args){
 
 		if(m_function.size()>0){
 
@@ -221,7 +221,7 @@ namespace zetscript{
 	}
 
 
-	tVariableSymbolInfo * CCommonClassFunctionData::registerVariable(short idxBlockScope,const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties){
+	tVariableSymbolInfo * CCommonClassFunctionBase::registerVariable(short idxBlockScope,const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties){
 		tVariableSymbolInfo irs;
 		string symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
 
@@ -242,12 +242,12 @@ namespace zetscript{
 		return &m_variable[m_variable.size()-1];
 	}
 
-	tVariableSymbolInfo *	CCommonClassFunctionData::registerVariable(const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
+	tVariableSymbolInfo *	CCommonClassFunctionBase::registerVariable(const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
 			return registerVariable(this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 	}
 
-	tVariableSymbolInfo *	 CCommonClassFunctionData::getVariableByRef(const string & var_ref){
+	tVariableSymbolInfo *	 CCommonClassFunctionBase::getVariableByRef(const string & var_ref){
 
 		if(m_variable.size()>0){
 
@@ -263,7 +263,7 @@ namespace zetscript{
 	}
 
 
-	tVariableSymbolInfo *	 CCommonClassFunctionData::getVariableByName(const string & var_name){
+	tVariableSymbolInfo *	 CCommonClassFunctionBase::getVariableByName(const string & var_name){
 
 		if(m_variable.size()>0){
 

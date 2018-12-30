@@ -67,13 +67,6 @@ namespace zetscript{
 
 		CURRENT_VM->clearGlobalVars();
 
-
-
-
-		//vector<CScriptFunction *> * vec_script_function_node = CScriptFunctionFactory::getInstance()->getVectorScriptFunctionNode();
-		//vector<CScope *> * vec_scope_node = CScopeFactory::getInstance()->getVectorScopeNode();
-		//vector<CScriptClass *> *vec_script_class_node = CScriptClassFactory::getInstance()->getVecScriptClassNode();
-
 		CScriptFunction * main_function = MAIN_FUNCTION;
 
 		// clean main functions ... remove script functions and leave c functions...
@@ -138,18 +131,17 @@ namespace zetscript{
 		CScriptFunctionFactory::destroySingleton();
 		CScriptClassFactory::destroySingleton();
 		CNativeFunction::destroySingleton();
-
+		CEval::destroySingleton();
 		//CASTNode::destroySingletons();
 	}
 
 
 	CZetScript::CZetScript(){
 		//idxMainScriptFunctionObject=ZS_UNDEFINED_IDX;
-		//m_mainObject = NULL;
-		//m_mainFunction = NULL;
+		m_mainObject = NULL;
+		m_mainFunction = NULL;
 		show_filename_on_error=true;
 		__init__ = false;
-
 		vm=NULL;
 	}
 
@@ -161,7 +153,7 @@ namespace zetscript{
 		CNativeFunction::getInstance();
 		CScriptFunctionFactory::getInstance();
 		CScriptClassFactory::getInstance();
-		CEval::initStaticVars();
+		CEval::getInstance();
 
 		//m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
 		//m_mainFunction = MAIN_FUNCTION;

@@ -8,7 +8,8 @@
 
 
 #define DEFAULT_NO_FILENAME					"no_file"
-#define register_C_Constant(s,v)			(zetscript::CEval::addConstant(s,(v)))
+#define register_C_Constant(s,v)			(zetscript::CEval::getInstance()->addConstant(s,(v)))
+
 
 namespace zetscript{
 
@@ -19,22 +20,20 @@ namespace zetscript{
 
 
 	public:
-		static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
-		static string 				makeSymbolRef(const string & symbol_var, int idxScope);
-		static tInfoConstantValue * addConstant(const string & const_name, int value);
+		 static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
+		 static string 				makeSymbolRef(const string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
+		 tInfoConstantValue 	* 	addConstant(const string & const_name, int value);
+
+		 static const char * 		getOpCodeStr(OP_CODE  op);
 
 
-
-		static const char * 		getOpCodeStr(OP_CODE  op);
-
-
-		static bool evalString(const string & expression);
-		static bool evalFile(const string & filename);
+		 static bool evalString(const string & expression);
+		 static bool evalFile(const string & filename);
 
 
-		static void	initStaticVars();
+		 static CEval * getInstance();
 
-		static void destroyStaticVars();
+		 static void destroySingleton();
 
 	private:
 
@@ -141,62 +140,6 @@ namespace zetscript{
 		};
 
 
-		/*struct tInstruction{
-			OP_CODE op_code;
-			unsigned char index_op1; 	// index/type/etc
-			intptr_t  index_op2; 		// usually a pointer or index
-			unsigned short var_type;
-			unsigned int pre_op_type;
-			unsigned int post_op_type;
-			unsigned int scope_type;
-			unsigned int runtime_prop;
-
-			tInstruction(){
-				op_code=OP_CODE::END_FUNCTION;
-				index_op1=ZS_UNDEFINED_IDX;
-				index_op2=ZS_UNDEFINED_IDX;
-
-				var_type=0;
-				pre_op_type=0;
-				post_op_type=0;
-				scope_type = 0;
-				runtime_prop = 0;
-			}
-
-			tInstruction(
-					OP_CODE	_op_code,
-					unsigned char _index_op1=ZS_UNDEFINED_IDX,
-					intptr_t _index_op2=ZS_UNDEFINED_IDX){
-
-				op_code=_op_code;
-				index_op1=_index_op1;
-				index_op2=_index_op2;
-
-				var_type=0;
-				pre_op_type=0;
-				post_op_type=0;
-				scope_type = 0;
-				runtime_prop = 0;
-			}
-
-		};*/
-
-		/*struct tTokenNodeAccessor {
-
-			ACCESSOR_TYPE accessor_type;
-			string value;
-
-			/// Only for function in order to match symbol in link process
-			unsigned char params;
-
-			vector<tInstruction> instruction;
-
-			tTokenNodeAccessor(){
-				accessor_type=ACCESSOR_TYPE::UNKNOWN_ACCESSOR_TYPE;
-				params=0;
-			}
-		};*/
-
 		struct tTokenNode{
 
 
@@ -252,22 +195,22 @@ namespace zetscript{
 
 			int idxInstruction;
 			short idxScriptFunction;
-			short scope;
+			short idxScope;
 			string value;
-			char params;
+			char n_params;
 
 			tLinkSymbol(
 					 int _idxScriptFunction
 					,short _idxInstruction
-					,short _scope
+					,short _idxScope
 					,const string & _value
-					,char _params=0
+					,char _n_params=0
 					){
 				idxScriptFunction=_idxScriptFunction;
 				idxInstruction=_idxInstruction;
-				scope=_scope;
+				idxScope=_idxScope;
 				value=_value;
-				params=_params;
+				n_params=_n_params;
 			}
 		};
 
@@ -277,11 +220,12 @@ namespace zetscript{
 			//char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
 		} tDirectiveInfo;
 
+		typedef std::function< char * (const char *, int &, CScope *, bool &)> tKeywordFunction;
 
 		typedef struct {
 			KEYWORD_TYPE id;
 			const char *str;
-			char * (* eval_fun)(const char *, int &, CScope *, bool &);
+			tKeywordFunction * eval_fun;
 		} tKeywordInfo;
 
 		typedef struct {
@@ -319,109 +263,109 @@ namespace zetscript{
 			//unsigned char *data;
 		} tInfoParsedSource;
 
+		static CEval *eval_singleton;
 
 
 		// singleton
-		static map<string,tInfoConstantValue *> *constant_pool;
+		 map<string,tInfoConstantValue *> 	 m_contantPool;
+		 vector<tInfoParsedSource> 			 m_parsedSource;
+
+		 const char * 	CURRENT_PARSING_FILENAME_STR;
+		 int 			CURRENT_PARSING_FILENAME_IDX;
+
+		 tOperatorInfo defined_operator[MAX_OPERATOR_TYPES];
+		 tPreOperatorInfo defined_pre_operator[MAX_PRE_OPERATOR_TYPES];
+		 tIdentityOperatorInfo defined_identity_operator[MAX_IDENTITY_OPERATOR_TYPES];
+		 tSeparatorInfo defined_separator[MAX_SEPARATOR_TYPES];
+		 tKeywordInfo defined_keyword[MAX_KEYWORD];
+		 tOpCodeInfo  defined_opcode[MAX_OP_CODES];
+		 tDirectiveInfo defined_directive[MAX_DIRECTIVES];
 
 
-		static vector<tInfoParsedSource> * m_parsedSource;
-		//static int getIdxParsedFilenameSource(const char *file);
+		 tFunctionInfo					*pCurrentFunctionInfo;
+		 vector<tFunctionInfo *> 		vFunctionInfo;
+		 vector<tLinkSymbol>			vLinkSymbol;
 
 
-		static const char * current_parsing_filename;
-		static int current_idx_parsing_filename;
-
-		static tOperatorInfo defined_operator[MAX_OPERATOR_TYPES];
-		static tPreOperatorInfo defined_pre_operator[MAX_PRE_OPERATOR_TYPES];
-		static tIdentityOperatorInfo defined_identity_operator[MAX_IDENTITY_OPERATOR_TYPES];
-		static tSeparatorInfo defined_separator[MAX_SEPARATOR_TYPES];
-		static tKeywordInfo defined_keyword[MAX_KEYWORD];
-		static tOpCodeInfo  defined_opcode[MAX_OP_CODES];
-		static tDirectiveInfo defined_directive[MAX_DIRECTIVES];
+		 CEval();
 
 
-		static tFunctionInfo				*pCurrentFunctionInfo;
-		static vector<tFunctionInfo *> 		*vFunctionInfo;
-		static vector<tLinkSymbol>			*vLinkSymbol;
-		static bool is_initialized;
+		 // CONSTANT TOOLS
 
-		// CONSTANT TOOLS
+		 tInfoConstantValue * getConstant(const string & const_name);
+		 tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned short properties);
 
-		static tInfoConstantValue * getConstant(const string & const_name);
-		static tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned short properties);
+		 int					getIdxScopeFromSymbolRef(const string & symbol_ref);
+		 void pushFunction(CScriptFunction *sf);
+		 void popFunction();
 
-		static int					getIdxScopeFromSymbolRef(const string & symbol_ref);
-		static void pushFunction(CScriptFunction *sf);
-		static void popFunction();
+		 KEYWORD_TYPE 	isKeyword(const char *c);
+		 DIRECTIVE_TYPE 	isDirective(const char *c);
 
-		static KEYWORD_TYPE 	isKeyword(const char *c);
-		static DIRECTIVE_TYPE 	isDirective(const char *c);
-
-		static char * evalLiteralNumber(const char *c, int & line, string & value, bool & error);
+		 char * evalLiteralNumber(const char *c, int & line, string & value, bool & error);
 
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
-		static bool isFilenameAlreadyParsed(const string & filename);
-		static const char * getParsedFilenameFromIdx(unsigned idx);
+		 bool isFilenameAlreadyParsed(const string & filename);
+		 const char * getParsedFilenameFromIdx(unsigned idx);
 
 		//-----------------------------------------------
 		// LINK
-		static void linkSymbols();
+		 void linkSymbols();
 
 
 
 		//-----------------------------------------------
 		//
-		//static char * 	 isClassMember(const char *s,int & line, string & _class_name, string & var_name, bool & error, KEYWORD_TYPE ikw);
+		// char * 	 isClassMember(const char *s,int & line, string & _class_name, string & var_name, bool & error, KEYWORD_TYPE ikw);
 
 		// string generic utils...
-		static bool 	isLiteral(const string & s);
-		static bool   	isIdentifierNameExpressionOk(const string & symbol, int line);
-		static char *  	getIdentifierToken(const char *s, string & symbol);
-		static bool	  	isEndSymbolToken(char *s,char pre=0);
-		static bool 	isAccessPunctuator(char *s);
-		static char * 	evalSymbol(const char *s, int line, CEval::tTokenNode *  token);
-		static bool     endExpression(const char * s);
+		 bool 	isLiteral(const string & s);
+		 bool   	isIdentifierNameExpressionOk(const string & symbol, int line);
+		 char *  	getIdentifierToken(const char *s, string & symbol);
+		 bool	  	isEndSymbolToken(char *s,char pre=0);
+		 bool 	isAccessPunctuator(char *s);
+		 char * 	evalSymbol(const char *s, int line, CEval::tTokenNode *  token);
+		 bool     endExpression(const char * s);
 
-		static SEPARATOR_TYPE  		evalSeparator(const char *s);
-		static OPERATOR_TYPE   		evalOperator(const char *s);
-		static PRE_OPERATOR_TYPE   	evalPreOperator(const char *s);
-		static IDENTITY_OPERATOR_TYPE   evalPrePostIdentityOperator(const char *s);
+		 SEPARATOR_TYPE  		evalSeparator(const char *s);
+		 OPERATOR_TYPE   		evalOperator(const char *s);
+		 PRE_OPERATOR_TYPE   	evalPreOperator(const char *s);
+		 IDENTITY_OPERATOR_TYPE   evalPrePostIdentityOperator(const char *s);
 
 		//------------------------------------------------------------------------------------------
 		//
 		// EXPRESSION FUNCTIONS
 
-		static void linkAccessorSymbol(tTokenNode & node);
+		 void linkAccessorSymbol(tTokenNode & node);
 
 		// AST core functions ...
 
 		/// Turn tokens into byte code throught semi AST algorithm ...
-		static OP_CODE puntuator2instruction(OPERATOR_TYPE op);
+		 OP_CODE puntuator2instruction(OPERATOR_TYPE op);
 
 		/// Make operator precedence from the AST of tokens built during evalExpression.
-		static bool  makeOperatorPrecedence(vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
+		 bool  makeOperatorPrecedence(vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
 
 		/// Turn expression in Tokens (with some byte code instructions inside)...
-		static char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstruction> 		*	instruction);
 
 
 		/// NEW EXPRESSION...
-		static char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
 
 		/// FUNCTION OBJECT...
-		static char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 	*	instruction);
+		 char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 	*	instruction);
 
 		/// STRUCT OBJECT...
-		static char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
 
 		/// VECTOR OBJECT...
-		static char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
 
 		/// GENERIC VECTOR/FUNCTION ARGS
-		static char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
 
 
 		// END EXPRESSION FUNCTION
@@ -429,31 +373,31 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------------
 		// Class
 
-		static char * isClassMember(const char *s,int & line, CScriptClass **sc,string & member_symbol, bool & error);
-		static char * evalKeywordClass(const char *s,int & line,  CScope *scope_info, bool & error);
+		 char * isClassMember(const char *s,int & line, CScriptClass **sc,string & member_symbol, bool & error);
+		 char * evalKeywordClass(const char *s,int & line,  CScope *scope_info, bool & error);
 
 		// eval block { }
-		static char * evalBlock(const char *s,int & line,  CScope *scope_info, bool & error);
+		 char * evalBlock(const char *s,int & line,  CScope *scope_info, bool & error);
 
 		//------------------------------------------------------------------------------------------
 		//
 		// KEYWORDS FUNCTIONS
 		//
 
-		static char * evalKeyword		(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalKeywordIf		(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalKeywordFor	(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalKeywordWhile	(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalKeywordDoWhile(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalBreak			(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalContinue		(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalDefaultCase	(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalKeywordSwitch	(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalKeywordVar	(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalKeywordReturn	(const char *s, int & line, CScope *scope_info, bool & error);
-		static char * evalKeywordDelete	(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalKeyword		(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalKeywordIf		(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalKeywordFor	(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalKeywordWhile	(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalKeywordDoWhile(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalBreak			(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalContinue		(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalDefaultCase	(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalKeywordSwitch	(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalKeywordVar	(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalKeywordReturn	(const char *s, int & line, CScope *scope_info, bool & error);
+		 char * evalKeywordDelete	(const char *s, int & line, CScope *scope_info, bool & error);
 
-		static char * evalKeywordFunction(const char *s,int & line,  CScope *scope_info, bool & error);
+		 char * evalKeywordFunction(const char *s,int & line,  CScope *scope_info, bool & error);
 
 
 		//
@@ -461,8 +405,14 @@ namespace zetscript{
 		//
 		//------------------------------------------------------------------------------------------
 
-		static char * eval(const char *s, bool & error);
-		static char * eval_Recursive(const char *s, int & line, CScope *scope_info, bool & error);
+		 bool evalStringInternal(const string & expression);
+		 bool evalFileInternal(const string & filename);
+
+
+		 char * eval(const char *s, bool & error);
+		 char * eval_Recursive(const char *s, int & line, CScope *scope_info, bool & error);
+
+		 ~CEval();
 
 
 	};

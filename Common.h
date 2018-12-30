@@ -20,8 +20,9 @@
 #define ZS_FUNCTION_NOT_FOUND_IDX	 	-2
 #define ZS_THIS_IDX						-3
 
-#define MAX_N_ARGS 			 6
-
+#define MAX_N_ARGS						 6
+#define NO_PARAMS_IS_VARIABLE			-1
+#define NO_PARAMS_SYMBOL_ONLY			-2
 
 
 enum NODE_TYPE
@@ -485,6 +486,7 @@ namespace zetscript{
 		string symbol_ref;
 		string file;
 		int line;
+		short idxScope;
 		//string name; // var name
 		//int idxScopeVar;
 		//int idxAstNode; // ast node info.
