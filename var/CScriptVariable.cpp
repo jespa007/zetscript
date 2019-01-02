@@ -30,7 +30,7 @@ namespace zetscript{
 
 			tVariableSymbolInfo * ir_var = &ir_class->m_variable[i];
 
-			se=addVariableSymbol(CEval::getSymbolNameFromSymbolRef(ir_var->symbol_ref));
+			se=addVariableSymbol(ir_var->symbol->name);
 
 			if(ir_var->properties & PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 			{ // we know the type object so we assign the pointer ...
@@ -45,7 +45,7 @@ namespace zetscript{
 		for ( unsigned i = 0; i < ir_class->m_function.size(); i++){
 			CScriptFunction * ir_fun  = ir_class->m_function[i];
 			 si =addFunctionSymbol(
-					 CEval::getSymbolNameFromSymbolRef( ir_fun->symbol_info.symbol_ref),
+					  ir_fun->symbol_info.symbol->name,
 
 					ir_fun
 
@@ -198,9 +198,9 @@ namespace zetscript{
 			return NULL;
 		}
 
-		string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+		//string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
-		if(getVariableSymbol(symbol_ref) != NULL){
+		if(getVariableSymbol(symbol_value) != NULL){
 			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
 			return NULL;
 		}
@@ -218,14 +218,14 @@ namespace zetscript{
 		}else{
 
 			si={
-					0,
-					0,
-					STK_PROPERTY_TYPE_UNDEFINED
+				0,
+				0,
+				STK_PROPERTY_TYPE_UNDEFINED
 			};
 		}
 
 		//si.idxAstNode = _idxAstNode;
-		string key_value = symbol_ref;
+		string key_value = symbol_value;
 		m_variable.push_back(si);
 		m_variableKey.push_back(key_value);
 
@@ -244,7 +244,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tStackElement * CScriptVariable::getVariableSymbol(const string & varname,bool only_var_name){
+	tStackElement * CScriptVariable::getVariableSymbol(const string & varname){//,bool only_var_name){
 
 		if(varname == "this"){
 			return &this_variable;
@@ -253,9 +253,9 @@ namespace zetscript{
 		for(unsigned int i = 0; i < this->m_variableKey.size(); i++){
 			string symbol = this->m_variableKey[i];
 
-			if(only_var_name){
+			/*if(only_var_name){
 				symbol=CEval::getSymbolNameFromSymbolRef(symbol);
-			}
+			}*/
 
 			if(varname == symbol){
 				return &m_variable[i];
@@ -274,31 +274,31 @@ namespace zetscript{
 				STK_PROPERTY_TYPE_FUNCTION  // dfine as function.
 		};
 
-		string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+		//string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(!ignore_duplicates){
-			if(getFunctionSymbol(symbol_ref) != NULL){
+			if(getFunctionSymbol(symbol_value) != NULL){
 				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(irv,NULL), "internal:symbol already exists");
 				return NULL;
 			}
 		}
 
 		// get super function ...
-		si.key_value = symbol_ref;
+		si.key_value = symbol_value;
 		//si.idxAstNode = _idxAstNode;
 		m_functionSymbol.push_back(si);
 
 		return &m_functionSymbol[m_functionSymbol.size()-1];
 	}
 
-	tFunctionSymbol * CScriptVariable::getFunctionSymbol(const string & varname,bool only_var_name){
+	tFunctionSymbol * CScriptVariable::getFunctionSymbol(const string & varname){
 		for(unsigned int i = 0; i < this->m_functionSymbol.size(); i++){
 
 			string symbol = this->m_functionSymbol[i].key_value;
 
-			if(only_var_name){
+			/*if(only_var_name){
 				symbol=CEval::getSymbolNameFromSymbolRef(symbol);
-			}
+			}*/
 
 			if(varname == symbol){
 				return &m_functionSymbol[i];
@@ -358,9 +358,9 @@ namespace zetscript{
 	}
 
 	bool CScriptVariable::removeVariableSymbolByName(const string & varname, const CScriptFunction *info_function){
-		string symbol_ref=CEval::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
+		//string symbol_ref=CEval::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
 		for(unsigned int i = 0; i < this->m_variableKey.size(); i++){
-			if(symbol_ref == this->m_variableKey[i]){
+			if(varname == this->m_variableKey[i]){
 				return removeVariableSymbolByIndex(i,true);
 			}
 		}
@@ -395,7 +395,7 @@ namespace zetscript{
 	}
 
 	const string & CScriptVariable::getClassName(){
-			return m_infoRegisteredClass->symbol_info.symbol_ref;
+			return m_infoRegisteredClass->symbol_info.symbol->name;
 		}
 
 		const string & CScriptVariable::getPointer_C_ClassName(){

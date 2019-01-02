@@ -24,17 +24,18 @@ namespace zetscript{
 	class  CScriptFunction:public CCommonClassFunctionBase{
 
 
-
-
-
-		string cfile; // file where function was compiled.
-
-
 	public:
 
-		typedef struct {
-				string value;
-		}tInfoInstruction;
+		struct tInstructionInfo {
+				short line;
+			    //tSymbol * _symbol;
+				string symbol_name;
+
+				tInstructionInfo(const string & _symbol_name="", short _line=-1){
+					symbol_name=_symbol_name;
+					line=_line;
+				}
+		};
 
 		// info related for function ONLY
 
@@ -43,11 +44,11 @@ namespace zetscript{
 		PtrInstruction instruction;
 
 		//-----------
-		//  DEBUG
-		std::map<short,string> value_symbol; // map that gives info about current instruction
-		int 		 getLine(tInstruction * ins);
-		const char * getSymbol(tInstruction * ins);
-		const char * getFile();
+		//  SYMBOL-INSTRUCTION
+		std::map<short,tInstructionInfo> instruction_info; // map that gives symbol with at instruction idx given
+		short 		 getInstructionLine(tInstruction * ins);
+		const char * getInstructionSymbolName(tInstruction * ins);
+		//const char * getInstructionFile();
 
 		//  DEBUG
 		//-----------
@@ -65,7 +66,7 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT CScriptFunction(unsigned char _idxClass,short _idxScope );
 
-		tVariableSymbolInfo *  registerVariable(const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
+		tVariableSymbolInfo *  registerVariable(const string & file, short line, const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 
 
 		/**
@@ -75,6 +76,17 @@ namespace zetscript{
 
 
 		virtual ~CScriptFunction();
+
+	private:
+
+
+		inline tInstructionInfo * getInstructionInfo(tInstruction *ins){
+			short idx= (this->instruction-ins)/sizeof(tInstruction *);
+			if(instruction_info.count(idx)==1){
+				return &instruction_info[idx];
+			}
+			return NULL;
+		}
 
 
 	};

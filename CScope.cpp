@@ -113,17 +113,18 @@ namespace zetscript{
 	//
 	// SCOPE VARIABLE MANAGEMENT
 	//
-	tScopeVar * CScope::registerAnonymouseFunction(const string & file, int line, int n_args){ // register anonymous function in the top of scope ...
+	/*tSymbol * CScope::registerAnonymouseFunction(const string & file, short line, char n_params){ // register anonymous function in the top of scope ...
 
-		tScopeVar irv;// = new tScopeVar;
-		string var_name ="_afun"+CZetScriptUtils::intToString(n_anonymouse_func++);
-		string symbol_ref = "@funp"+CZetScriptUtils::intToString(n_args)+"_"+var_name;
+		tSymbol irv;// = new tSymbol;
+		string function_name ="_afun"+CZetScriptUtils::intToString(n_anonymouse_func++);
+		//string symbol_ref = "@funp"+CZetScriptUtils::intToString(n_args)+"_"+var_name;
 
 
 
-		irv.symbol_ref = symbol_ref;
+		irv.name = function_name;
 		irv.file = file;
 		irv.line = line;
+		irv.n_params=n_params;
 		irv.idxScope=IDX_GLOBAL_SCOPE;
 
 		CScope *base = GET_SCOPE(idxBaseScope);
@@ -132,9 +133,9 @@ namespace zetscript{
 
 		return &base->m_scopeVariable[base->m_scopeVariable.size()-1];
 	}
-
-	tScopeVar * CScope::registerSymbol(const string & file,int line,const string & var_name, int n_params){
-		tScopeVar *p_irv=NULL;//idxAstNode=-1;// * irv;
+*/
+	tSymbol * CScope::registerSymbol(const string & file,short line,const string & var_name, char n_params){
+		tSymbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
 		if((p_irv = existRegisteredSymbol(var_name,n_params))==NULL){ // check whether is local var registered scope ...
@@ -142,18 +143,19 @@ namespace zetscript{
 			string symbol_ref = "";
 
 
-			if(n_params>=0){
+			/*if(n_params>=0){
 				symbol_ref="@funp"+CZetScriptUtils::intToString(n_params)+"_"+var_name;
 			}
 			else{
 				symbol_ref="@var_"+var_name;
-			}
+			}*/
 
-			tScopeVar irv;
-			irv.symbol_ref = symbol_ref;
+			tSymbol irv;
+			irv.name = symbol_ref;
 			irv.file	 = file;
 			irv.line 	 = line;
 			irv.idxScope=this->idxScope;
+			irv.n_params=n_params;
 
 			m_scopeVariable.push_back(irv);
 			return &m_scopeVariable[m_scopeVariable.size()-1];// irv->idxScopeVar;
@@ -168,7 +170,7 @@ namespace zetscript{
 		return NULL;//false;//-1;
 	}
 
-	tScopeVar * CScope::existRegisteredSymbolRecursiveDownScope(const string & symbol_ref, int n_params){
+	tSymbol * CScope::existRegisteredSymbolRecursiveDownScope(const string & symbol, int n_params){
 
 
 		for(unsigned i = 0; i < m_scopeVariable.size(); i++){
@@ -191,19 +193,14 @@ namespace zetscript{
 
 	}
 
-	tScopeVar * CScope::existRegisteredSymbolRecursiveUpScope(const string & symbol_ref, int n_params){
+	tSymbol * CScope::existRegisteredSymbolRecursiveUpScope(const string & symbol_name, int n_params){
 		// only blocks within functions...
-		tScopeVar *sv=NULL;
+		tSymbol *sv;
 
 		// for each variable in current scope ...
 		for(unsigned i = 0; i < m_scopeVariable.size(); i++){
 
-			string current_symbol_ref=m_scopeVariable[i].symbol_ref;
-			if(n_params==NO_PARAMS_SYMBOL_ONLY){
-				current_symbol_ref=CEval::getSymbolNameFromSymbolRef(current_symbol_ref);
-			}
-
-			if(current_symbol_ref==symbol_ref){
+			if(m_scopeVariable[i].name==symbol_name && m_scopeVariable[i].n_params == n_params){
 				return &m_scopeVariable[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
@@ -211,7 +208,7 @@ namespace zetscript{
 		// ok lets iterate through current scope list
 		for(unsigned i = 0; i < m_localScopeList.size(); i++){
 			CScope *s=GET_SCOPE(m_localScopeList[i]);
-			sv=s->existRegisteredSymbolRecursiveUpScope(symbol_ref,n_params);
+			sv=s->existRegisteredSymbolRecursiveUpScope(symbol_name,n_params);
 
 			if(sv != NULL) return sv;
 		}
@@ -220,10 +217,10 @@ namespace zetscript{
 
 	}
 
-	tScopeVar * CScope::existRegisteredSymbolRecursive(const string & var_name, int n_params){
+	bool CScope::existRegisteredSymbolRecursive(const string & var_name, char n_params){
 
-		string symbol_ref = "";
-		tScopeVar *sv=NULL;
+		/*string symbol_ref = "";
+		tSymbol *sv=NULL;
 
 		if(n_params>=0){
 			symbol_ref="@funp"+CZetScriptUtils::intToString(n_params)+"_"+var_name;
@@ -235,28 +232,30 @@ namespace zetscript{
 			else{ // else only symbol...
 				symbol_ref=var_name;
 			}
+		}*/
+
+//		tSymbol sv(var_name,n_params);
+
+		if(existRegisteredSymbolRecursiveDownScope(var_name,n_params)){
+			return true;
 		}
-
-		sv=existRegisteredSymbolRecursiveDownScope(symbol_ref,n_params);
-		if(sv!=NULL) return sv;
-
-		return existRegisteredSymbolRecursiveUpScope(symbol_ref,n_params);
+		return existRegisteredSymbolRecursiveUpScope(sv);
 
 	}
 
-	tScopeVar * CScope::existRegisteredSymbol(const string & var_name, int n_params){
+	tSymbol * CScope::existRegisteredSymbol(const string & var_name, char n_params){
 		return existRegisteredSymbolRecursive(var_name, n_params);
 	}
 
-	tScopeVar * CScope::getInfoRegisteredSymbol(const string & v, int n_params, bool print_msg){
-		tScopeVar *irv = existRegisteredSymbol(v,n_params);
+	/*tSymbol * CScope::getInfoRegisteredSymbol(const string & v, int n_params, bool print_msg){
+		tSymbol *irv = existRegisteredSymbol(v,n_params);
 		if(irv == NULL && print_msg){
 			THROW_RUNTIME_ERROR("%s not exist",v.c_str());
 			return NULL;
 		}
 
 		return irv;
-	}
+	}*/
 
 	//-----------------------------------------------------------------------------------------------------------
 	CScope::~CScope(){

@@ -105,16 +105,27 @@ namespace zetscript{
 	}
 
 
-	int 		 CScriptFunction::getLine(tInstruction * ins){
+	short 		 CScriptFunction::getInstructionLine(tInstruction * ins){
+		tInstructionInfo *info=getInstructionInfo(ins);
+
+		if(info!=NULL){
+			return info->line;
+		}
 		return -1;
 	}
 
-	const char * CScriptFunction::getSymbol(tInstruction * ins){
+	const char *  CScriptFunction::getInstructionSymbolName(tInstruction * ins){
+		tInstructionInfo *info=getInstructionInfo(ins);
+
+		if(info!=NULL){
+			return info->symbol_name.c_str();
+		}
 		return "unknown";
 	}
 
-	const char * CScriptFunction::getFile(){
-		return "unknown";
+	const char * CScriptFunction::getInstructionRegisteredFile(tInstruction * ins){
+
+		return this->symbol_info.symbol.file.c_str());
 	}
 
 
@@ -208,9 +219,9 @@ namespace zetscript{
 		return true;
 	}*/
 
-	tVariableSymbolInfo *	CScriptFunction::registerVariable(const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
+	tVariableSymbolInfo *	CScriptFunction::registerVariable(const string & file, short line, const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
-		tVariableSymbolInfo *vsi=CCommonClassFunctionBase::registerVariable(this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
+		tVariableSymbolInfo *vsi=CCommonClassFunctionBase::registerVariable(file,line,this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 
 		tStackElement se = {0,0,STK_PROPERTY_TYPE_UNDEFINED};
 

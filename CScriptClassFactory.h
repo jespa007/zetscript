@@ -9,22 +9,22 @@
 
 #define ZS_INVALID_CLASS						((unsigned char)ZS_UNDEFINED_IDX)
 
-#define register_C_Function(text,s) 			zetscript::CScriptClassFactory::getInstance()->register_C_FunctionInt(text,s)
-#define register_C_Variable(text,s) 			zetscript::CScriptClassFactory::getInstance()->register_C_VariableInt(text,&s,typeid(decltype(&s)).name())
+#define register_C_Function(text,s) 			zetscript::CScriptClassFactory::getInstance()->register_C_FunctionInt(__FILE__,__LINE__,text,s)
+#define register_C_Variable(text,s) 			zetscript::CScriptClassFactory::getInstance()->register_C_VariableInt(__FILE__,__LINE__,text,&s,typeid(decltype(&s)).name())
 
-#define getIdxGlobalVariable(s)  				zetscript::CScriptClassFactory::getInstance()->register_C_FunctionInt(STR(s),s)
-#define getIdxGlobalFunction(s)
+//#define getIdxGlobalVariable(s)  				zetscript::CScriptClassFactory::getInstance()->register_C_FunctionInt(__FILE__,__LINE__,STR(s),s)
+//#define getIdxGlobalFunction(s)
 
 
-#define register_C_Class 						zetscript::CScriptClassFactory::getInstance()->register_C_ClassInt
-#define register_C_SingletonClass				zetscript::CScriptClassFactory::getInstance()->register_C_SingletonClassInt
+#define register_C_Class 						zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_ClassInt
+#define register_C_SingletonClass				zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_SingletonClassInt
 
-#define register_C_VariableMember	 			zetscript::CScriptClassFactory::getInstance()->register_C_VariableMemberInt
-#define register_C_FunctionMember				zetscript::CScriptClassFactory::getInstance()->register_C_FunctionMemberInt //<o>(s,&f)
+#define register_C_VariableMember(text,v)		zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_VariableMemberInt
+#define register_C_FunctionMember(text,v)		zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_FunctionMemberInt //<o>(s,&f)
 #define class_C_baseof							zetscript::CScriptClassFactory::getInstance()->class_C_baseofInt //<o>(s,&f)
 
 
-#define register_C_StaticFunctionMember			zetscript::CScriptClassFactory::getInstance()->register_C_StaticFunctionMemberInt
+#define register_C_StaticFunctionMember(text,v)	zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_StaticFunctionMemberInt
 
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClassFactory::getInstance()->instanceScriptVariableByIdx(idx))
 
@@ -85,7 +85,8 @@ namespace zetscript{
 			static CScriptClassFactory * getInstance();
 			static void destroySingleton();
 
-			static tStackElement 									C_REF_InfoVariable_2_StackElement(tVariableSymbolInfo *ir_var, void *ptr_variable);
+			static void 				setFilenameLine(const char *file, short line);
+			static tStackElement 		C_REF_InfoVariable_2_StackElement(tVariableSymbolInfo *ir_var, void *ptr_variable);
 
 			//----
 
@@ -115,7 +116,8 @@ namespace zetscript{
 			ZETSCRIPT_MODULE_EXPORT const char * 				getMetamethod(METAMETHOD_OPERATOR op);
 			ZETSCRIPT_MODULE_EXPORT vector<CScriptClass *> * 	getVectorScriptClassNode();
 
-			CScriptClass 						* 				registerClass(const string & class_name, const string & base_class_name="");
+			/// register script class
+			CScriptClass 						* 				registerClass( const string & class_name, const string & base_class_name="");
 
 
 			ZETSCRIPT_MODULE_EXPORT CScriptClass * 				getScriptClass(unsigned char idx);
@@ -165,7 +167,7 @@ namespace zetscript{
 			 * Register C function
 			 */
 			template <typename F>
-			static bool register_C_FunctionInt(const char * function_name,F function_ptr);
+			static bool register_C_FunctionInt( const char * function_name,F function_ptr);
 
 			/**
 			 * Register C variable
@@ -213,6 +215,8 @@ namespace zetscript{
 		private:
 
 			static CScriptClassFactory *script_class_factory;
+			static const char * __registered_file__;
+			static int __registered_line__;
 
 			/**
 			 * Vector of script classes. This vector is removed when zetscript reevaluates all scrips.

@@ -40,7 +40,7 @@ namespace zetscript{
 
 
 	void CStructScriptVariable::add_attr(const char *attr_name, tStackElement  * v){
-		if(addVariableSymbol(string(attr_name),CURRENT_VM->getCurrent_C_FunctionCall(),NULL,v)==NULL){
+		if(addVariableSymbol(attr_name,CURRENT_VM->getCurrent_C_FunctionCall(),NULL,v)==NULL){
 			CURRENT_VM->cancelExecution();
 		}
 	}

@@ -289,7 +289,7 @@ namespace zetscript{
 	//
 	// SYMBOL  MANAGEMENT
 	//
-	string 		CEval::getSymbolNameFromSymbolRef(const string & ref_symbol){
+/*	string 		CEval::getSymbolNameFromSymbolRef(const string & ref_symbol){
 		string symbol_var="";
 
 		char * start_ptr=strchr((char *)ref_symbol.c_str(),'_');
@@ -314,7 +314,7 @@ namespace zetscript{
 		}
 
 		return string("@lnk"+CZetScriptUtils::intToString(idxScope)+"_p"+CZetScriptUtils::intToString(n_params)+"_"+symbol_var);
-	}
+	}*/
 
 	int	CEval::getIdxScopeFromSymbolRef(const string & symbol_ref){
 
@@ -1417,7 +1417,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						pCurrentFunctionInfo->function_info_object->value_symbol[symbol_token_node.instruction.size()]=accessor_value;
+						pCurrentFunctionInfo->function_info_object->instruction_info[symbol_token_node.instruction.size()]=CScriptFunction::tInstructionInfo(accessor_value,line);
 						symbol_token_node.instruction.push_back(tInstruction(OP_CODE::LOAD)); //--> must add symbol value instruction...
 
 						break;
@@ -1700,12 +1700,13 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		char *symbol_value,*end_var;
 		KEYWORD_TYPE key_w;
-		vector<string> arg;
+		vector<tArgumentInfo> arg;
 		string conditional_str;
 		CScriptClass *sc=NULL;
 
-		tScopeVar * irv=NULL;
+		tSymbol * irv=NULL;
 		string str_name,arg_value;
+		static int n_anonymous_function=0;
 		//string class_member,class_name,
 		string function_name="";
 
@@ -1791,19 +1792,21 @@ namespace zetscript{
 
 						// check if repeats...
 						for(unsigned k = 0; k < arg.size(); k++){
-							if(arg[k] == arg_value){
+							if(arg[k].arg_name == arg_value){
 								writeErrorMsg(CURRENT_PARSING_FILENAME_STR,line,"Repeated argument '%s' argument ",arg_value.c_str());
 								return NULL;
 							}
 						}
 
 						// check whether parameter name's matches with some global variable...
-						if((irv=body_scope->getInfoRegisteredSymbol(symbol_value,-1,false)) != NULL){
+						if((irv=body_scope->existRegisteredSymbol(symbol_value)) != NULL){
 							writeErrorMsg(CURRENT_PARSING_FILENAME_STR,line,"Ambiguous symbol argument \"%s\" name with var defined at %i", symbol_value, -1);
 							return NULL;
 						}
 							// ok register symbol into the object function ...
-						arg.push_back(symbol_value);
+						tArgumentInfo arg_info;
+						arg_info.arg_name=symbol_value;
+						arg.push_back(arg_info);
 
 						aux_p=end_var;
 						aux_p=IGNORE_BLANKS(aux_p,line);
@@ -1833,8 +1836,8 @@ namespace zetscript{
 							// register function symbol...
 							int n_params=arg.size();
 
-							if(named_function){ // register named function...
-								if((irv=GET_SCOPE(idxScope)->getInfoRegisteredSymbol(function_name,n_params,false)) != NULL){
+							/*if(named_function){ // register named function...
+								if((irv=GET_SCOPE(idxScope)->existRegisteredSymbol(function_name,n_params)) != NULL){
 
 									writeErrorMsg(CURRENT_PARSING_FILENAME_STR,line,"Function name \"%s\" is already defined with same args at %s:%i", function_name.c_str(),irv->file.c_str(),irv->line);
 									return NULL;
@@ -1845,8 +1848,22 @@ namespace zetscript{
 								}
 
 							}else{ // register anonymouse function at global scope...
-								irv=GET_SCOPE(IDX_GLOBAL_SCOPE)->registerAnonymouseFunction(CURRENT_PARSING_FILENAME_STR,line);
+								irv=GET_SCOPE(IDX_GLOBAL_SCOPE)->registerAnonymouseFunction(CURRENT_PARSING_FILENAME_STR,line,n_params);
+							}*/
+
+							if(!named_function){ // register named function...
+								function_name="_afun_"+CZetScriptUtils::intToString(n_anonymous_function++);
 							}
+							//--- OP
+							if(sc!=NULL){ // register as variable member...
+								sc->registerFunction(CURRENT_PARSING_FILENAME_STR, line, function_name,arg);
+							}
+							else{ // register as local variable in the function...
+								pCurrentFunctionInfo->function_info_object->registerFunction(CURRENT_PARSING_FILENAME_STR, line, function_name,arg);
+							}
+
+							//---
+
 
 							GET_SCOPE(idxScope)->popScope();
 							return aux_p;
@@ -2471,16 +2488,13 @@ namespace zetscript{
 							line = m_startLine;
 						}
 						 // define as many vars is declared within ','
-						if(!GET_SCOPE(idxScope)->registerSymbol(CURRENT_PARSING_FILENAME_STR,line,variable_name /*,var_node*/)){
-								return NULL;
-						}
 
 						//--- OP
 						if(sc!=NULL){ // register as variable member...
-							sc->registerVariable(variable_name);
+							sc->registerVariable(CURRENT_PARSING_FILENAME_STR, line, variable_name);
 						}
 						else{ // register as local variable in the function...
-							pCurrentFunctionInfo->function_info_object->registerVariable(variable_name);
+							pCurrentFunctionInfo->function_info_object->registerVariable(CURRENT_PARSING_FILENAME_STR, line, variable_name);
 						}
 
 						//---
@@ -2860,14 +2874,14 @@ namespace zetscript{
 			if(instruction->properties & INS_PROPERTY_THIS_SCOPE){ // trivial this.
 
 				if(ls.n_params==NO_PARAMS_IS_VARIABLE){
-					if((instruction->index_op2=(intptr_t)sc->getVariableByRef(CEval::makeSymbolRef(ls.value,sc->idxScope)))==0){
-						THROW_RUNTIME_ERROR("Cannot find variable %s::%s",sf->symbol_info.symbol_ref.c_str(),ls.value.c_str());
+					if((instruction->index_op2=(intptr_t)sc->getVariable(ls.value,sc->idxScope))==0){
+						THROW_RUNTIME_ERROR("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls.value.c_str());
 						return;
 					}
 				}
 				else{
-					if((instruction->index_op2=(intptr_t)sc->getFunctionByRef(CEval::makeSymbolRef(ls.value,sc->idxScope,ls.n_params)))==0){
-						THROW_RUNTIME_ERROR("Cannot find function %s::%s",sf->symbol_info.symbol_ref.c_str(),ls.value.c_str());
+					if((instruction->index_op2=(intptr_t)sc->getFunction(ls.value,sc->idxScope,ls.n_params))==0){
+						THROW_RUNTIME_ERROR("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls.value.c_str());
 						return;
 					}
 				}
@@ -2875,13 +2889,13 @@ namespace zetscript{
 			}else if(instruction->properties & INS_PROPERTY_SUPER_SCOPE){ // trivial super.
 
 				CScriptFunction *sf_found=NULL;
-				string symbol_name_to_find = CEval::getSymbolNameFromSymbolRef(sf->symbol_info.symbol_ref);
+				string symbol_name_to_find = sf->symbol_info.symbol->name;
 
 				for(int i = sf->idxLocalFunction-1; i >=0 && sf_found==NULL; i--){
 
 					if(
 							(sc->m_function[i]->m_arg.size() == ls.n_params)
-						&& (symbol_name_to_find == CEval::getSymbolNameFromSymbolRef(sc->m_function[i]->symbol_info.symbol_ref))
+						&& (symbol_name_to_find == sc->m_function[i]->symbol_info.symbol->name)
 						){
 						sf_found = sc->m_function[i];
 					}
@@ -2890,7 +2904,7 @@ namespace zetscript{
 				// ok get the super function...
 				if(sf_found == NULL){
 
-					THROW_RUNTIME_ERROR("Cannot find super function %s::%s",sf->symbol_info.symbol_ref.c_str(),ls.value.c_str());
+					THROW_RUNTIME_ERROR("Cannot find super function %s::%s",sf->symbol_info.symbol->name.c_str(),ls.value.c_str());
 					return;
 				}
 
@@ -2916,26 +2930,25 @@ namespace zetscript{
 				// starting scope ...
 				CScope *scope=GET_SCOPE(ls.idxScope);
 
-				tScopeVar * sc_var = scope->existRegisteredSymbol(ls.value, ls.n_params);
+				tSymbol * sc_var = scope->existRegisteredSymbol(ls.value, ls.n_params);
 				if(sc_var != NULL && sc->idxScope != sc_var->idxScope){
 					if(ls.n_params==NO_PARAMS_IS_VARIABLE){
-						result=(intptr_t)sf->getVariableByRef(CEval::makeSymbolRef(ls.value,sc_var->idxScope));
+						result=(intptr_t)sf->getVariable(ls.value,sc_var->idxScope);
 					}
 					else{
-						result=(intptr_t)sf->getFunctionByRef(CEval::makeSymbolRef(ls.value,sc_var->idxScope,ls.n_params));
+						result=(intptr_t)sf->getFunction(ls.value,sc_var->idxScope,ls.n_params);
 					}
-
 				}
 
 				if(result == 0){ // try global...
-					tScopeVar * sc_var = MAIN_SCOPE->existRegisteredSymbol(ls.value, ls.n_params);
+					tSymbol * sc_var = MAIN_SCOPE->existRegisteredSymbol(ls.value, ls.n_params);
 
 					if(sc_var != NULL){
 						if(ls.n_params==NO_PARAMS_IS_VARIABLE){
-							result=(intptr_t)MAIN_FUNCTION->getVariableByRef(CEval::makeSymbolRef(ls.value,sc_var->idxScope));
+							result=(intptr_t)MAIN_FUNCTION->getVariable(ls.value,sc_var->idxScope);
 						}
 						else{
-							result=(intptr_t)MAIN_FUNCTION->getFunctionByRef(CEval::makeSymbolRef(ls.value,sc_var->idxScope,ls.n_params));
+							result=(intptr_t)MAIN_FUNCTION->getFunction(ls.value,sc_var->idxScope,ls.n_params);
 						}
 					}
 				}

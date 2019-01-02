@@ -6,7 +6,6 @@
 
 namespace zetscript{
 
-	
 
 
 
@@ -755,9 +754,9 @@ namespace zetscript{
 	}*/
 
 
-	CScriptFunction * CScriptClass::registerFunctionMember(const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CScriptClass::registerFunctionMember(const string & file, short line, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
-		CScriptFunction * sf = registerFunction( function_name,  args,  idx_return_type, ref_ptr,  properties);
+		CScriptFunction * sf = registerFunction(file, line, function_name,  args,  idx_return_type, ref_ptr,  properties);
 		string class_name=symbol_info.symbol_ref;
 
 		if(function_name == class_name){

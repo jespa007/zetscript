@@ -23,7 +23,7 @@ namespace zetscript{
 	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const vector<CScriptVariable *> & param)>
 
 
-	#define GET_INSTRUCTION_FILE_LINE(info_function,instruction) ((CScriptFunction *)info_function)->getFile(), ((CScriptFunction *)info_function)->getLine(instruction)
+	#define GET_INSTRUCTION_FILE_LINE(info_function,instruction) ((CScriptFunction *)info_function)->symbol_info.symbol->file.c_str(), ((CScriptFunction *)info_function)->getInstructionLine(instruction)
 
 
 	class CScriptFunction;

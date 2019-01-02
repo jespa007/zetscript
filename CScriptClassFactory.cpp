@@ -25,6 +25,10 @@ namespace zetscript{
 
 	CScriptClassFactory * CScriptClassFactory::script_class_factory=NULL;
 
+	static const char * CScriptClassFactory::__registered_file__="NULL";
+	static int CScriptClassFactory::__registered_line__=0;
+
+
 
 	CScriptClassFactory * CScriptClassFactory::getInstance(){
 		if(script_class_factory ==NULL){
@@ -43,6 +47,12 @@ namespace zetscript{
 			script_class_factory = NULL;
 		}
 	}
+
+	void setFilenameLine(const char *file, short line){
+		__registered_file__ = file;
+		__registered_line__ = line;
+	}
+
 
 	tStackElement CScriptClassFactory::C_REF_InfoVariable_2_StackElement(tVariableSymbolInfo *ir_var, void *ptr_variable){
 
@@ -509,7 +519,7 @@ namespace zetscript{
 	}
 
 
-	CScriptClass * CScriptClassFactory::registerClass(const string & class_name, const string & base_class_name){
+	CScriptClass * CScriptClassFactory::registerClass(const string & file, short line,const string & class_name, const string & base_class_name){
 		unsigned char  index;
 		CScriptClass *sci=NULL;
 

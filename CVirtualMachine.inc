@@ -268,11 +268,11 @@ namespace zetscript{
 
 			if(m_functionSymbol != NULL){
 				irfs = (CScriptFunction *)m_functionSymbol->at(i).object.stkValue;
-				aux_string=CEval::getSymbolNameFromSymbolRef(m_functionSymbol->at(i).key_value);
+				aux_string=m_functionSymbol->at(i).key_value;
 
 			}else{
 				irfs=vec_global_functions->at(i);
-				aux_string=CEval::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
+				aux_string=irfs->symbol_info.symbol->name;//CEval::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
 			}
 
 			bool match_signature = metamethod_str != NULL;
@@ -440,7 +440,7 @@ namespace zetscript{
 					bool match_signature = metamethod_str != NULL;
 
 					if(!match_signature){
-						match_signature = irfs->symbol_info.symbol_ref == irfs->getSymbol(callAleInstruction);
+						match_signature = irfs->symbol_info.symbol->name == irfs->getInstructionSymbolName(callAleInstruction);
 					}
 
 					if(match_signature){
@@ -448,7 +448,7 @@ namespace zetscript{
 						if(n_candidates == 0){
 							str_candidates+="ttPossible candidates are:nn";
 						}
-						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+CEval::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref)+"(";
+						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+irfs->symbol_info.symbol->name+"(";
 
 						for(unsigned a = 0; a < irfs->m_arg.size(); a++){
 							if(a>0){
@@ -479,7 +479,7 @@ namespace zetscript{
 						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,callAleInstruction),"Cannot find %s \"%s%s(%s)\".\n\n",
 										is_constructor ? "constructor":"function",
 										calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-										info_function->getSymbol(callAleInstruction),
+										info_function->getInstructionSymbolName(callAleInstruction),
 										args_str.c_str()
 						);
 					}
@@ -489,14 +489,14 @@ namespace zetscript{
 						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,callAleInstruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-													CEval::getSymbolNameFromSymbolRef(vec_global_functions->at(0)->symbol_info.symbol_ref).c_str(),
+													vec_global_functions->at(0)->symbol_info.symbol->name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
 						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,callAleInstruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
 							calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-							info_function->getSymbol(callAleInstruction),
+							info_function->getInstructionSymbolName(callAleInstruction),
 							args_str.c_str(),
 							str_candidates.c_str());
 					}

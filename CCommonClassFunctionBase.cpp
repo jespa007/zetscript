@@ -169,7 +169,7 @@ namespace zetscript{
 	}
 */
 
-	CScriptFunction * CCommonClassFunctionBase::registerFunction(short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CCommonClassFunctionBase::registerFunction(const string & file, short line, short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 			string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
 			if(getFunctionByRef(symbol_ref,(char)args.size()) != NULL){
@@ -184,18 +184,23 @@ namespace zetscript{
 			return sf;
 	}
 
-	CScriptFunction * CCommonClassFunctionBase::registerFunction( const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CCommonClassFunctionBase::registerFunction(const string & file, short line, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
-		return registerFunction(this->idxScope, function_name,  args, idx_return_type,ref_ptr, properties);
+		return registerFunction(file, line,this->idxScope, function_name,  args, idx_return_type,ref_ptr, properties);
 	}
 
-	CScriptFunction *	 CCommonClassFunctionBase::getFunctionByRef(const string & function_ref, char n_args){
+	CScriptFunction *	 CCommonClassFunctionBase::getFunction(const string & function_name, short idxScope, char n_args){
 
 		if(m_function.size()>0){
 
 			// from lat value to first to get last override function...
 			for(int i = (int)(m_function.size()-1); i >= 0 ; i--){
-				if((m_function[i]->symbol_info.symbol_ref == function_ref) && (m_function[i]->m_arg.size() ==  n_args)){
+				if(
+						(m_function[i]->symbol_info->symbol.name == function_name)
+					 && (m_function[i]->m_arg.size() ==  n_args)
+					 && (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == m_function[i]->symbol_info->symbol.idxScope))
+					 ){
+
 					return m_function[i];
 				}
 			}
@@ -204,7 +209,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-
+/*
 	CScriptFunction *	 CCommonClassFunctionBase::getFunctionByName(const string & function_name, char n_args){
 
 		if(m_function.size()>0){
@@ -219,11 +224,18 @@ namespace zetscript{
 
 		return NULL;
 	}
+*/
 
-
-	tVariableSymbolInfo * CCommonClassFunctionBase::registerVariable(short idxBlockScope,const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties){
+	tVariableSymbolInfo * CCommonClassFunctionBase::registerVariable(const string & file, short line, short idxBlockScope,const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties){
 		tVariableSymbolInfo irs;
-		string symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
+		//string symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
+
+		tSymbol * symbol;
+
+		if((symbol=GET_SCOPE(idxBlockScope)->registerSymbol(file,line,variable_name /*,var_node*/))==NULL){
+				return NULL;
+		}
+
 
 		if(getVariableByRef(irs.symbol_ref) != NULL){
 			THROW_RUNTIME_ERROR("Variable \"%s\" already exist",variable_name.c_str());
@@ -231,7 +243,7 @@ namespace zetscript{
 		}
 
 		irs.ref_ptr =ref_ptr;
-		irs.symbol_ref=symbol_ref;
+		irs.symbol=symbol;
 		irs.c_type = c_type;
 		irs.properties = properties;
 
@@ -242,18 +254,20 @@ namespace zetscript{
 		return &m_variable[m_variable.size()-1];
 	}
 
-	tVariableSymbolInfo *	CCommonClassFunctionBase::registerVariable(const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
+	tVariableSymbolInfo *	CCommonClassFunctionBase::registerVariable(const string & file, short line, const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
 			return registerVariable(this->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 	}
 
-	tVariableSymbolInfo *	 CCommonClassFunctionBase::getVariableByRef(const string & var_ref){
+	tVariableSymbolInfo *	 CCommonClassFunctionBase::getVariable(const string & var_name, short idxScope){
 
 		if(m_variable.size()>0){
 
 			// from lat value to first to get last override function...
 			for(unsigned i = m_variable.size()-1; i >= 0 ; i--){
-				if(m_variable[i].symbol_ref == var_ref){
+				if((m_variable[i].symbol.name == var_name)
+				&& (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == m_variable[i]->symbol_info->symbol.idxScope))
+				  ){
 					return &m_variable[i];
 				}
 			}

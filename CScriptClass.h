@@ -79,7 +79,7 @@ namespace zetscript{
 
 		ZETSCRIPT_MODULE_EXPORT CScriptClass(unsigned char _idxClass, short _idxScope);
 
-		virtual CScriptFunction						*  			registerFunctionMember(const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		virtual CScriptFunction						*  			registerFunctionMember(const string & file, short line,const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
 
 		bool is_c_class();
 

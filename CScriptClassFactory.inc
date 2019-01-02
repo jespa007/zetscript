@@ -66,7 +66,7 @@ namespace zetscript{
 
 
 			// init struct...
-			mainFunctionInfo->registerFunction(function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+			mainFunctionInfo->registerFunction(__registered_file__,__registered_line__,function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 
 			zs_print_debug_cr("Registered function name: %s",function_name);
 			return true;
@@ -112,10 +112,11 @@ namespace zetscript{
 
 				unsigned char idxClass=(short)(vec_script_class_node.size());
 				CScope * scope = NEW_SCOPE(ZS_UNDEFINED_IDX,true);
+				tSymbol *symbol=scope->registerSymbol(__registered_file__,__registered_line__,class_name, NO_PARAMS_IS_CLASS);
 				CScriptClass *irc = new CScriptClass(idxClass,scope->idxScope);
 				scope->setScriptClass(irc);
 
-				irc->symbol_info.symbol_ref = class_name;
+				irc->symbol_info.symbol=symbol;
 
 				// in C there's no script constructor ...
 				irc->idx_function_member_constructor=-1;
@@ -147,7 +148,7 @@ namespace zetscript{
 		template<class _T>
 		CScriptClass * CScriptClassFactory::register_C_ClassInt(const string & class_name){//, const string & base_class_name=""){
 			CScriptClass *irc = NULL;
-			if((irc = register_C_SingletonClass<_T>(class_name))!=NULL){
+			if((irc = register_C_SingletonClassInt<_T>(class_name))!=NULL){
 
 				//put the constructor/destructor...
 				irc->c_constructor = new std::function<void *()>([=](){
@@ -248,7 +249,7 @@ namespace zetscript{
 					irs.ref_ptr=irs_source->ref_ptr;
 					irs.c_type = irs_source->c_type;
 					//irs.
-					irs.symbol_ref=irs_source->symbol_ref;
+					irs.symbol=irs_source->symbol;
 					irs.properties = derivated_properties;
 					irs.idxSymbol = (short)(irc_class->m_variable.size());
 					irc_class->m_variable.push_back(irs);
@@ -260,7 +261,9 @@ namespace zetscript{
 
 					CScriptFunction *irs_source = irc_base->m_function[i];
 					irc_class->registerFunction(
-							CEval::getSymbolNameFromSymbolRef(irs_source->symbol_info.symbol_ref),
+							irs_source->symbol_info.symbol->file,
+							irs_source->symbol_info.symbol->line,
+							irs_source->symbol_info.symbol->name,
 							irs_source->m_arg,
 							irs_source->idx_return_type,
 							irs_source->symbol_info.ref_ptr,
@@ -354,7 +357,7 @@ namespace zetscript{
 			//CScriptClass *sc = vec_script_class_node[idxRegisterdClass];
 
 			// register member function...
-			CScriptFunction *sf = sc->registerFunction(function_name,m_argInfo,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
+			CScriptFunction *sf = sc->registerFunction(CScriptClassFactory::__registered_file__,CScriptClassFactory::__registered_line__,function_name,m_argInfo,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
 
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_C).name()).c_str(), function_name);
 
@@ -440,7 +443,7 @@ namespace zetscript{
 			}
 
 			// register member function...
-			CScriptFunction * sf = c_class->registerFunction(function_name,m_argInfo, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+			CScriptFunction * sf = c_class->registerFunction(__registered_file__,__registered_line__,function_name,m_argInfo, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 			zs_print_debug_cr("Registered member function name %s::%s",demangle(typeid(_T).name()).c_str(), function_name);
 
 			// check whether is static metamethod...
@@ -518,14 +521,14 @@ namespace zetscript{
 			// check valid parameters ...
 			if(getIdxClassFromIts_C_Type(var_type) == -1){
 				THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-						,c_class->symbol_info.symbol_ref.c_str()
+						,c_class->symbol_info.symbol->name.c_str()
 						,var_name
 						,demangle(typeid(_R).name()).c_str());
 				return false;
 			}
 
 			// register variable...
-			c_class->registerVariable(var_name,var_type,ref_ptr,PROPERTY_C_OBJECT_REF);
+			c_class->registerVariable(__registered_file__,__registered_line__,var_name,var_type,ref_ptr,PROPERTY_C_OBJECT_REF);
 			return true;
 
 		}

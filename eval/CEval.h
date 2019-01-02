@@ -20,8 +20,8 @@ namespace zetscript{
 
 
 	public:
-		 static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
-		 static string 				makeSymbolRef(const string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
+//		 static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
+//		 static string 				makeSymbolRef(const string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
 		 tInfoConstantValue 	* 	addConstant(const string & const_name, int value);
 
 		 static const char * 		getOpCodeStr(OP_CODE  op);
