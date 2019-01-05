@@ -9,22 +9,18 @@
 
 #define ZS_INVALID_CLASS						((unsigned char)ZS_UNDEFINED_IDX)
 
-#define register_C_Function(text,s) 			zetscript::CScriptClassFactory::getInstance()->register_C_FunctionInt(__FILE__,__LINE__,text,s)
-#define register_C_Variable(text,s) 			zetscript::CScriptClassFactory::getInstance()->register_C_VariableInt(__FILE__,__LINE__,text,&s,typeid(decltype(&s)).name())
-
-//#define getIdxGlobalVariable(s)  				zetscript::CScriptClassFactory::getInstance()->register_C_FunctionInt(__FILE__,__LINE__,STR(s),s)
-//#define getIdxGlobalFunction(s)
-
+#define register_C_Function(text,s) 			zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_FunctionInt(text,s)
+#define register_C_Variable(text,s) 			zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_VariableInt(text,&s,typeid(decltype(&s)).name())
 
 #define register_C_Class 						zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_ClassInt
 #define register_C_SingletonClass				zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_SingletonClassInt
 
-#define register_C_VariableMember(text,v)		zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_VariableMemberInt
-#define register_C_FunctionMember(text,v)		zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_FunctionMemberInt //<o>(s,&f)
+#define register_C_VariableMember				zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_VariableMemberInt
+#define register_C_FunctionMember				zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_FunctionMemberInt //<o>(s,&f)
 #define class_C_baseof							zetscript::CScriptClassFactory::getInstance()->class_C_baseofInt //<o>(s,&f)
 
 
-#define register_C_StaticFunctionMember(text,v)	zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_StaticFunctionMemberInt
+#define register_C_StaticFunctionMember			zetscript::CScriptClassFactory::setFilenameLine(__FILE__, __LINE__);zetscript::CScriptClassFactory::getInstance()->register_C_StaticFunctionMemberInt
 
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClassFactory::getInstance()->instanceScriptVariableByIdx(idx))
 
@@ -117,7 +113,7 @@ namespace zetscript{
 			ZETSCRIPT_MODULE_EXPORT vector<CScriptClass *> * 	getVectorScriptClassNode();
 
 			/// register script class
-			CScriptClass 						* 				registerClass( const string & class_name, const string & base_class_name="");
+			CScriptClass 						* 				registerClass(const string & file, short line, const string & class_name, const string & base_class_name="");
 
 
 			ZETSCRIPT_MODULE_EXPORT CScriptClass * 				getScriptClass(unsigned char idx);
@@ -139,20 +135,6 @@ namespace zetscript{
 			 */
 			CScriptVariable 		 				* 			instanceScriptVariableByClassName(const string & class_name);
 			CScriptVariable 		 				* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
-
-
-
-			bool 												addArgumentFunctionSymbol(const string & class_name,const string & function_name,const string & arg_name);
-
-
-
-			// internal var types ...
-			/*CScriptClass *  									getClassUndefined();
-			CScriptClass *  									getClassStruct();
-			CScriptClass *  									getClassString();
-			CScriptClass *  									getClassVector();
-			CScriptClass *  									getClassFunctor();
-			CScriptClass *  									getClassNull();*/
 
 			intptr_t 											doCast(intptr_t obj, unsigned char src_class, unsigned char convert_class);
 
@@ -239,7 +221,7 @@ namespace zetscript{
 			// PRINT ASM INFO
 
 			string getStrMovVar(tInstruction * iao);
-			string getStrTypeLoadValue(PtrInstruction m_listStatements, int current_instruction);
+			string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
 
 			ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(CScriptFunction *sfo);
 

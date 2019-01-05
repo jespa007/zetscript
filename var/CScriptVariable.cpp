@@ -193,7 +193,7 @@ namespace zetscript{
 		}
 
 		if(error_symbol){
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
+			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			THROW_RUNTIME_ERROR("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			return NULL;
 		}
@@ -201,7 +201,7 @@ namespace zetscript{
 		//string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(getVariableSymbol(symbol_value) != NULL){
-			writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
+			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
 			return NULL;
 		}
 
@@ -278,7 +278,7 @@ namespace zetscript{
 
 		if(!ignore_duplicates){
 			if(getFunctionSymbol(symbol_value) != NULL){
-				writeErrorMsg(GET_INSTRUCTION_FILE_LINE(irv,NULL), "internal:symbol already exists");
+				writeErrorMsg(INSTRUCTION_GET_FILE_LINE(irv,NULL), "internal:symbol already exists");
 				return NULL;
 			}
 		}
@@ -364,7 +364,7 @@ namespace zetscript{
 				return removeVariableSymbolByIndex(i,true);
 			}
 		}
-		writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,NULL),"symbol %s doesn't exist",varname.c_str());
+		writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,NULL),"symbol %s doesn't exist",varname.c_str());
 		return false;
 	}
 
@@ -484,7 +484,7 @@ namespace zetscript{
 
 //#ifdef __ZETSCRIPT_DEBUG__
 		if(!deallocated && was_created_by_constructor){
-			printf("[%s:%i] Allocated C pointer not deallocated\n",GET_INSTRUCTION_FILE_LINE(info_function_new, instruction_new));
+			printf("[%s:%i] Allocated C pointer not deallocated\n",INSTRUCTION_GET_FILE_LINE(info_function_new, instruction_new));
 		}
 //#endif
 

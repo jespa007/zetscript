@@ -32,8 +32,6 @@ namespace zetscript{
 
 		error_line=line;
 		strcpy(error_description,output_text);
-
-
 	}
 
 	int getErrorLine(){
@@ -49,8 +47,6 @@ namespace zetscript{
 	}
 
 	CZetScript * CZetScript::m_instance = NULL;
-	//char CZetScript::str_error[MAX_BUFFER_STR_ERROR] = { 0 };
-
 
 	CZetScript * CZetScript::getInstance(){
 		if(m_instance==NULL){
@@ -100,18 +96,9 @@ namespace zetscript{
 		}
 
 		// remove scope vars...
-
-
-		//int i = vec_script_function_node->size()-1;
-
 		SCOPE_FACTORY->clear();
 		SCRIPT_FUNCTION_FACTORY->clear();
 		SCRIPT_CLASS_FACTORY->clear();
-
-
-
-
-
 
 	}
 
@@ -123,29 +110,22 @@ namespace zetscript{
 		if(m_instance!=NULL){
 			delete m_instance;
 		}
-
-		//CCompiler::destroySingletons();
-		//CState::destroySingletons();
 		
 		CScopeFactory::destroySingleton();
 		CScriptFunctionFactory::destroySingleton();
 		CScriptClassFactory::destroySingleton();
 		CNativeFunction::destroySingleton();
 		CEval::destroySingleton();
-		//CASTNode::destroySingletons();
 	}
 
 
 	CZetScript::CZetScript(){
-		//idxMainScriptFunctionObject=ZS_UNDEFINED_IDX;
 		m_mainObject = NULL;
 		m_mainFunction = NULL;
 		show_filename_on_error=true;
 		__init__ = false;
 		vm=NULL;
 	}
-
-
 
 	bool CZetScript::init(){
 
@@ -155,57 +135,12 @@ namespace zetscript{
 		CScriptClassFactory::getInstance();
 		CEval::getInstance();
 
-		//m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
-		//m_mainFunction = MAIN_FUNCTION;
-
 		vm = new CVirtualMachine();
 
-		// ok register CInteger through CScriptVariable...
-		//if((m_mainClassInfo = CScriptClass::getScriptClassByName(MAIN_SCRIPT_CLASS_NAME)) == NULL) return false;
-		//if(GET_SCRIPT_FUNCTION() (CScriptClass::ge getIdxScriptFunctionObjectByClassFunctionName(MAIN_SCRIPT_CLASS_NAME,MAIN_SCRIPT_FUNCTION_OBJECT_NAME)) == ZS_UNDEFINED_IDX) return false;
-
 		__init__=true;
-		// create compiler instance ...
-		//CCompiler::getInstance();
 
 		return true;
 	}
-
-	/*void CZetScript::parse_ast(const char   * s, int idx_filename){
-		int m_line = 1;
-		char *end;
-		bool error=false;
-		//PASTNode main_node = MAIN_AST_NODE;
-		const char *filename=NULL;
-
-		if(idx_filename>=0){
-			filename=m_parsedSource->at(idx_filename).filename.c_str();
-		}
-
-		SET_PARSING_FILENAME(idx_filename,filename);
-
-
-		if((end=CASTNode::generateAST_Recursive(
-				s,
-				m_line,
-				MAIN_SCOPE_NODE,
-				error,
-				main_node
-				)) == NULL){
-			return;
-		}
-
-
-
-
-		if(*end != 0){
-			writeErrorMsg(filename,m_line,"Unexpected \'%c\' ",*end);
-			return THROW_SCRIPT_ERROR();
-
-		}
-
-	}*/
-
 
 
 	int CZetScript::eval_int(const string & str_to_eval){
@@ -322,81 +257,6 @@ namespace zetscript{
 		return value;
 	}
 
-	/*void CZetScript::destroyMainFunction() {
-
-		if (m_mainObject != NULL) {
-			delete m_mainObject;
-		}
-		m_mainObject = NULL;
-	}
-
-	
-	ZETSCRIPT_MODULE_EXPORT void CZetScript::parse(const string & str_script,const char *filename_ref){
-		if(!__init__) {THROW_RUNTIME_ERROR("zetscript not initialized");return;}
-
-		int idx_file=-1;
-
-		if(filename_ref != NULL){
-			if(!isFilenameAlreadyParsed(filename_ref)){
-				tInfoParsedSource ps;
-				ps.filename = filename_ref;
-				m_parsedSource->push_back(ps);
-				idx_file=m_parsedSource->size()-1;
-			}else{
-				// already parsed
-				return;
-			}
-		}
-
-		//ZS_CLEAR_ERROR_MSG();
-		parse_ast(str_script.c_str(),idx_file);
-	}
-
-	void CZetScript::parse_file(const char * filename){
-
-		//ZS_CLEAR_ERROR_MSG();
-
-		bool status = false;
-		char *buf_tmp=NULL;
-		int n_bytes;
-
-		if((buf_tmp=CZetScriptUtils::readFile(filename, n_bytes))!=NULL){
-
-
-			try{
-				parse((char *)buf_tmp, filename);
-			}
-			catch(script_error & error){
-				free(buf_tmp);
-				THROW_EXCEPTION(error);
-			}
-
-			free(buf_tmp);
-		}
-
-	}
-
-	ZETSCRIPT_MODULE_EXPORT void CZetScript::compile(bool show_bytecode){
-		if(!__init__) {THROW_RUNTIME_ERROR("ZetScript not initialized"); return;}
-		//ZS_CLEAR_ERROR_MSG();
-
-		if(CCompiler::getInstance()->compile()){
-
-			// print generated asm ...
-			if(show_bytecode){
-				printGeneratedCodeAllClasses();
-			}
-
-			if(m_mainObject == NULL){
-				// creates the main entry function with compiled code. On every executing code, within "execute" function
-				// virtual machine is un charge of allocating space for all local variables...
-				m_mainObject = CScriptClass::instanceScriptVariableByClassName(MAIN_SCRIPT_CLASS_NAME);//new CScriptVariable(&m_structInfoMain);//CScriptClass::instanceScriptVariableByClassName("Main");
-			}
-
-		}
-		else THROW_SCRIPT_ERROR();
-
-	}*/
 
 	void CZetScript::execute(){
 
@@ -411,8 +271,6 @@ namespace zetscript{
 		if(error){
 			THROW_SCRIPT_ERROR();
 		}
-
-
 	}
 
 	bool CZetScript::evalString(const string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
@@ -420,12 +278,9 @@ namespace zetscript{
 
 		if(!__init__) {THROW_RUNTIME_ERROR("zetscript not initialized");return false;}
 
-
-
 		if(!CEval::evalString(expression)){
 			return false;
 		}
-
 
 		if(show_bytecode){
 			SCRIPT_CLASS_FACTORY->printGeneratedCode();
@@ -443,12 +298,8 @@ namespace zetscript{
 		if(!__init__) {THROW_RUNTIME_ERROR("zetscript not initialized");return false;}
 
 		char *buf_tmp=NULL;
-//		int n_bytes;
-
 
 		bool status = false;
-
-
 
 		try{
 			if(!CEval::evalFile(filename)){
@@ -489,15 +340,16 @@ namespace zetscript{
 		tStackElement *se=NULL;
 		*fun_obj=NULL;
 
-		// 1. accessing var scopes...
+		// 1. some variable in main function ...
 		if(access_var.size()>1){
 			for(unsigned i=0; i < access_var.size()-1; i++){
 
 				string symbol_to_find=access_var[i];
 				if(i==0){ // get variable through main_class.main_function (global element)
-					symbol_to_find=CEval::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
+					//symbol_to_find= CEval::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
 					for(unsigned j = 0; j < m_mainFunctionInfo->m_variable.size() && *calling_obj==NULL; j++){
-						if(m_mainFunctionInfo->m_variable[j].symbol_ref==symbol_to_find){
+						if(m_mainFunctionInfo->m_variable[j].symbol->name==symbol_to_find
+						&& m_mainFunctionInfo->m_variable[j].symbol->idxScope == IDX_GLOBAL_SCOPE){
 							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.variable[j].
 							if(stk!=NULL){
 								if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
@@ -517,7 +369,7 @@ namespace zetscript{
 					}
 
 				}else{ // we have got the calling_obj from last iteration ...
-					se = (*calling_obj)->getVariableSymbol(symbol_to_find,true);
+					se = (*calling_obj)->getVariableSymbol(symbol_to_find);
 
 					if(se!=NULL){
 
@@ -535,7 +387,7 @@ namespace zetscript{
 				}
 			}
 
-			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1],true);
+			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1]);
 			if(is!=NULL){
 				if(is->object.properties & STK_PROPERTY_TYPE_FUNCTION){
 					*fun_obj=(CScriptFunction *)is->object.stkValue;
@@ -546,12 +398,13 @@ namespace zetscript{
 				return false;
 			}
 
-		}else{ // function
+		}else{ // some function in main function
 			//*calling_obj = m_mainObject;
-			string symbol_to_find=CEval::makeSymbolRef(access_var[0],IDX_GLOBAL_SCOPE);
+			string symbol_to_find=access_var[0];
 			for(unsigned i = 0; i < m_mainFunctionInfo->m_function.size() && *fun_obj==NULL; i++){
 				CScriptFunction *aux_fun_obj=m_mainFunctionInfo->m_function[i];
-				if(aux_fun_obj->symbol_info.symbol_ref == symbol_to_find){
+				if(		aux_fun_obj->symbol_info.symbol->name  == symbol_to_find
+				  && aux_fun_obj->symbol_info.symbol->idxScope == IDX_GLOBAL_SCOPE){
 					*fun_obj=aux_fun_obj;
 				}
 			}
@@ -565,34 +418,12 @@ namespace zetscript{
 		return true;
 	}
 
-/*
-	int CZetScript::newGlobalFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0){
-
-	}
-
-	int CZetScript::getGlobalFunction(const string & function_ref,char n_args=0){
-
-	}
-
-	int CZetScript::newGlobalVariable(const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0){
-
-	}
-
-	int CZetScript::getGlobalVariable(const string & variable_ref){
-
-	}
-*/
 	CVirtualMachine * CZetScript::getVirtualMachine(){
 		return vm;
 	}
 
 	//-------------------------------------------------------------------------------------
 	CZetScript::~CZetScript(){
-		// unregister operators ...
-	/*	if (m_mainObject != NULL) {
-			delete m_mainObject;
-		}
-		m_mainObject = NULL;*/
 
 		delete vm;
 	}

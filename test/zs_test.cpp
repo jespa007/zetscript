@@ -699,86 +699,85 @@ int main(int argc, char * argv[]) {
 	//TEST_NUMBER_EXPR("4.0*4;",16.0);
 	//exit(-1);
 	//int i= 0+ +1;
-	if(!register_C_Class<CNumber>("CNumber")) return -1;
+	register_C_Class<CNumber>("CNumber");
 
-	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(float *)>(&CNumber::_set))) return -1;
-	if(!register_C_FunctionMember<CNumber>("toFloat",&CNumber::toFloat)) return -1;
-	if(!register_C_VariableMember<CNumber>("n",&CNumber::n)) return -1;
-
-
-	if(!register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_add))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_add))) return -1;
-
-	if(!register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mul))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mul))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mul))) return -1;
-
-	if(!register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_div))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_div))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_div))) return -1;
-
-	if(!register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mod))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mod))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mod))) return -1;
-
-	if(!register_C_StaticFunctionMember<CNumber>("_neg",static_cast<CNumber * (*)(CNumber *)>(&CNumber::_neg))) return -1;
-
-	if(!register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(float *)>(&CNumber::_set))) return -1;
-	if(!register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(CNumber *)>(&CNumber::_set))) return -1;
+	register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(float *)>(&CNumber::_set));
+	register_C_FunctionMember<CNumber>("toFloat",&CNumber::toFloat);
+	register_C_VariableMember<CNumber>("n",&CNumber::n);
 
 
+	register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_add));
+	register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add));
+	register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_add));
 
-	if(!register_C_Class<CInteger>("CInteger")) return -1;
-	if(!register_C_FunctionMember<CInteger>("CInteger",&CInteger::ScriptConstructor)) return -1;
-	if(!register_C_FunctionMember<CInteger>("toInt",&CInteger::toInt)) return -1;
-	if(!register_C_VariableMember<CInteger>("n",&CInteger::n)) return -1;
+	register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mul));
+	register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mul));
+	register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mul));
 
+	register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_div));
+	register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_div));
+	register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_div));
 
-	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add))) return -1;
+	register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mod));
+	register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mod));
+	register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mod));
 
-	if(!register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mul))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mul))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mul))) return -1;
+	register_C_StaticFunctionMember<CNumber>("_neg",static_cast<CNumber * (*)(CNumber *)>(&CNumber::_neg));
 
-	if(!register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_div))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_div))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_div))) return -1;
-
-	if(!register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mod))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mod))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mod))) return -1;
+	register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(float *)>(&CNumber::_set));
+	register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(CNumber *)>(&CNumber::_set));
 
 
-	if(!register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shr))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shr))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shr))) return -1;
+	register_C_Class<CInteger>("CInteger");
+	register_C_FunctionMember<CInteger>("CInteger",&CInteger::ScriptConstructor);
+	register_C_FunctionMember<CInteger>("toInt",&CInteger::toInt);
+	register_C_VariableMember<CInteger>("n",&CInteger::n);
 
 
-	if(!register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shl))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shl))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shl))) return -1;
+	register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add));
+	register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add));
+	register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add));
+
+	register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mul));
+	register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mul));
+	register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mul));
+
+	register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_div));
+	register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_div));
+	register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_div));
+
+	register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mod));
+	register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mod));
+	register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mod));
 
 
-	if(!register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_and))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_and))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_and))) return -1;
-
-	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_or))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or))) return -1;
-
-	if(!register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_xor))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_xor))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_xor))) return -1;
+	register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shr));
+	register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shr));
+	register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shr));
 
 
-	if(!register_C_StaticFunctionMember<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg))) return -1;
+	register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shl));
+	register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shl));
+	register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shl));
 
-	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set))) return -1;
-	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set))) return -1;
+
+	register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_and));
+	register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_and));
+	register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_and));
+
+	register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_or));
+	register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or));
+	register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or));
+
+	register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_xor));
+	register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_xor));
+	register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_xor));
+
+
+	register_C_StaticFunctionMember<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg));
+
+	register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set));
+	register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set));
 
 
 	// unsinged

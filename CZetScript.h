@@ -103,7 +103,6 @@ using std::ostringstream;
 #include "var/CVectorScriptVariable.h"
 #include "var/CFunctorScriptVariable.h"
 #include "var/CStructScriptVariable.h"
-#include "eval/CEval.h"
 #include "CScope.h"
 #include "CScopeFactory.h"
 #include "CCommonClassFunctionBase.h"
@@ -112,6 +111,7 @@ using std::ostringstream;
 #include "CScriptClass.h"
 #include "CScriptClassFactory.h"
 #include "CVirtualMachine.h"
+#include "eval/CEval.h"
 
 #define ZETSCRIPT_MAJOR_VERSION 2
 #define ZETSCRIPT_MINOR_VERSION 0
@@ -149,15 +149,7 @@ namespace zetscript{
 		bool __init__;
 		bool show_filename_on_error;
 
-
-
-
-
 		void parse_ast(const char *str, int idx_filename=-1);
-
-
-
-		//CScriptFunction m_structInfoMain;
 
 		bool init();
 		CZetScript();
@@ -169,17 +161,7 @@ namespace zetscript{
 	public:
 
 
-
-
 		ZETSCRIPT_MODULE_EXPORT static CZetScript * getInstance();
-		//ZETSCRIPT_MODULE_EXPORT static void setVectorInfoParsedFiles(vector<tInfoParsedSource> * parsedFiles);
-
-
-
-
-		//static void clearErrorMsg();
-		//static void writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
-		//ZETSCRIPT_MODULE_EXPORT static const char * getErrorMsg();
 
 		void	setUserCallbackOnError(tPrintFunctionCallback _fun);
 
@@ -189,44 +171,23 @@ namespace zetscript{
 		ZETSCRIPT_MODULE_EXPORT static string eval_string(const string & str_to_eval);
 
 
-
 		/**
 		 * Main bind function
 		 */
-
 		ZETSCRIPT_MODULE_EXPORT bool getScriptObjectFromFunctionAccess(const string &function_access_expression
 														  ,CScriptVariable **calling_obj
 														  ,CScriptFunction **fun_obj);
-		//----
-
-
-
-
-
-
 		ZETSCRIPT_MODULE_EXPORT CVirtualMachine * getVirtualMachine();
-		//ZETSCRIPT_MODULE_EXPORT CScriptVariable * getMainObject(){return m_mainObject;}
 
 
 		/**
 		 * Clear: Clear compile information.
 		 */
 		ZETSCRIPT_MODULE_EXPORT void clear();
-		//ZETSCRIPT_MODULE_EXPORT void parse(const string & string,const char *filename_ref=NULL);
-		//ZETSCRIPT_MODULE_EXPORT void parse_file(const char * filename);
-		//ZETSCRIPT_MODULE_EXPORT void compile(bool show_bytecode=false);
 		ZETSCRIPT_MODULE_EXPORT void execute();
 
 		ZETSCRIPT_MODULE_EXPORT bool evalString(const string & string, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
 		ZETSCRIPT_MODULE_EXPORT bool evalFile(const string & filename,bool execute=true,bool show_bytecode=false);
-
-		/*int newGlobalFunction( const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		int getGlobalFunction(const string & function_ref,char n_args=0);
-
-		int newGlobalVariable(const string & variable,const string & variable_ref, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
-		int getGlobalVariable(const string & variable_ref);
-*/
-
 		ZETSCRIPT_MODULE_EXPORT static void destroy();
 	};
 

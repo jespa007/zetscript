@@ -45,7 +45,7 @@ namespace zetscript{
 					return false;
 				}
 
-				if(idx_type ==-1){
+				if(idx_type ==ZS_INVALID_CLASS){
 					THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
 				}
@@ -113,7 +113,11 @@ namespace zetscript{
 				unsigned char idxClass=(short)(vec_script_class_node.size());
 				CScope * scope = NEW_SCOPE(ZS_UNDEFINED_IDX,true);
 				tSymbol *symbol=scope->registerSymbol(__registered_file__,__registered_line__,class_name, NO_PARAMS_IS_CLASS);
-				CScriptClass *irc = new CScriptClass(idxClass,scope->idxScope);
+				if(symbol == NULL){
+					return NULL;
+				}
+
+				CScriptClass *irc = new CScriptClass(idxClass);
 				scope->setScriptClass(irc);
 
 				irc->symbol_info.symbol=symbol;
@@ -333,7 +337,7 @@ namespace zetscript{
 					return false;
 				}
 
-				if(idx_type==-1){
+				if(idx_type==ZS_INVALID_CLASS){
 					THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
 				}
@@ -420,7 +424,7 @@ namespace zetscript{
 					return false;
 				}
 
-				if(idx_type==-1){
+				if(idx_type==ZS_INVALID_CLASS){
 					THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,demangle(m_arg[i]).c_str(),function_name);
 					return false;
 				}

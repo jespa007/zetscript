@@ -28,7 +28,7 @@ namespace zetscript{
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
-	int CScope::n_anonymouse_func=0;
+	//int CScope::n_anonymouse_func=0;
 
 
 	//------------------------------------------------------------------------------------------------
@@ -113,52 +113,22 @@ namespace zetscript{
 	//
 	// SCOPE VARIABLE MANAGEMENT
 	//
-	/*tSymbol * CScope::registerAnonymouseFunction(const string & file, short line, char n_params){ // register anonymous function in the top of scope ...
 
-		tSymbol irv;// = new tSymbol;
-		string function_name ="_afun"+CZetScriptUtils::intToString(n_anonymouse_func++);
-		//string symbol_ref = "@funp"+CZetScriptUtils::intToString(n_args)+"_"+var_name;
-
-
-
-		irv.name = function_name;
-		irv.file = file;
-		irv.line = line;
-		irv.n_params=n_params;
-		irv.idxScope=IDX_GLOBAL_SCOPE;
-
-		CScope *base = GET_SCOPE(idxBaseScope);
-
-		base->m_scopeVariable.push_back(irv);
-
-		return &base->m_scopeVariable[base->m_scopeVariable.size()-1];
-	}
-*/
 	tSymbol * CScope::registerSymbol(const string & file,short line,const string & var_name, char n_params){
 		tSymbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
-		if((p_irv = existRegisteredSymbol(var_name,n_params))==NULL){ // check whether is local var registered scope ...
+		if((p_irv = getSymbol(var_name,n_params))==NULL){ // check whether is local var registered scope ...
 
-			string symbol_ref = "";
+			tSymbol *irv = new tSymbol();
+			irv->name = var_name;
+			irv->file	 = file;
+			irv->line 	 = line;
+			irv->idxScope=this->idxScope;
+			irv->n_params=n_params;
 
-
-			/*if(n_params>=0){
-				symbol_ref="@funp"+CZetScriptUtils::intToString(n_params)+"_"+var_name;
-			}
-			else{
-				symbol_ref="@var_"+var_name;
-			}*/
-
-			tSymbol irv;
-			irv.name = symbol_ref;
-			irv.file	 = file;
-			irv.line 	 = line;
-			irv.idxScope=this->idxScope;
-			irv.n_params=n_params;
-
-			m_scopeVariable.push_back(irv);
-			return &m_scopeVariable[m_scopeVariable.size()-1];// irv->idxScopeVar;
+			m_scopeSymbol.push_back(irv);
+			return irv;
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
@@ -166,49 +136,47 @@ namespace zetscript{
 			}else{
 				writeErrorMsg(NULL,0," error var \"%s\" already registered as C++", var_name.c_str());
 			}
+
+			THROW_SCRIPT_ERROR();
 		}
-		return NULL;//false;//-1;
+		return NULL;
 	}
 
-	tSymbol * CScope::existRegisteredSymbolRecursiveDownScope(const string & symbol, int n_params){
+	tSymbol * CScope::getSymbolRecursiveDownScope(const string & symbol_name, char n_params){
 
 
-		for(unsigned i = 0; i < m_scopeVariable.size(); i++){
-			string current_symbol_ref=m_scopeVariable[i].symbol_ref;
-			if(n_params==NO_PARAMS_SYMBOL_ONLY){
-				current_symbol_ref=CEval::getSymbolNameFromSymbolRef(current_symbol_ref);
-			}
+		for(unsigned i = 0; i < m_scopeSymbol.size(); i++){
 
-			if(current_symbol_ref==symbol_ref){
-				return &m_scopeVariable[i];//.idxScopeVar; // ptr scope ?
+			if(m_scopeSymbol[i]->name==symbol_name && (m_scopeSymbol[i]->n_params >= 0 && n_params>=0 ?(m_scopeSymbol[i]->n_params == n_params):true)){
+					return m_scopeSymbol[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
 
 		int parent =  getIdxParent();
 		if(parent != ZS_UNDEFINED_IDX){
-			return GET_SCOPE(parent)->existRegisteredSymbolRecursiveDownScope(symbol_ref,n_params);
+			return GET_SCOPE(parent)->getSymbolRecursiveDownScope(symbol_name,n_params);
 		}
 
-		return NULL;//false;//-1;
+		return NULL;
 
 	}
 
-	tSymbol * CScope::existRegisteredSymbolRecursiveUpScope(const string & symbol_name, int n_params){
+	tSymbol * CScope::getSymbolRecursiveUpScope(const string & symbol_name, char n_params){
 		// only blocks within functions...
 		tSymbol *sv;
 
 		// for each variable in current scope ...
-		for(unsigned i = 0; i < m_scopeVariable.size(); i++){
+		for(unsigned i = 0; i < m_scopeSymbol.size(); i++){
 
-			if(m_scopeVariable[i].name==symbol_name && m_scopeVariable[i].n_params == n_params){
-				return &m_scopeVariable[i];//.idxScopeVar; // ptr scope ?
+			if(m_scopeSymbol[i]->name==symbol_name && (m_scopeSymbol[i]->n_params >= 0 && n_params>=0 ?(m_scopeSymbol[i]->n_params == n_params):true)){
+				return m_scopeSymbol[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
 
 		// ok lets iterate through current scope list
 		for(unsigned i = 0; i < m_localScopeList.size(); i++){
 			CScope *s=GET_SCOPE(m_localScopeList[i]);
-			sv=s->existRegisteredSymbolRecursiveUpScope(symbol_name,n_params);
+			sv=s->getSymbolRecursiveUpScope(symbol_name,n_params);
 
 			if(sv != NULL) return sv;
 		}
@@ -217,48 +185,22 @@ namespace zetscript{
 
 	}
 
-	bool CScope::existRegisteredSymbolRecursive(const string & var_name, char n_params){
+	tSymbol * CScope::getSymbol(const string & var_name, char n_params){
+		//return getSymbolRecursive(var_name, n_params);
+		tSymbol *sv;
 
-		/*string symbol_ref = "";
-		tSymbol *sv=NULL;
-
-		if(n_params>=0){
-			symbol_ref="@funp"+CZetScriptUtils::intToString(n_params)+"_"+var_name;
+		if((sv=getSymbolRecursiveDownScope(var_name,n_params))!=NULL){
+					return sv;
 		}
-		else{
-			if(n_params==NO_PARAMS_IS_VARIABLE){
-				symbol_ref="@var_"+var_name;
-			}
-			else{ // else only symbol...
-				symbol_ref=var_name;
-			}
-		}*/
-
-//		tSymbol sv(var_name,n_params);
-
-		if(existRegisteredSymbolRecursiveDownScope(var_name,n_params)){
-			return true;
-		}
-		return existRegisteredSymbolRecursiveUpScope(sv);
-
+		return getSymbolRecursiveUpScope(var_name, n_params);
 	}
-
-	tSymbol * CScope::existRegisteredSymbol(const string & var_name, char n_params){
-		return existRegisteredSymbolRecursive(var_name, n_params);
-	}
-
-	/*tSymbol * CScope::getInfoRegisteredSymbol(const string & v, int n_params, bool print_msg){
-		tSymbol *irv = existRegisteredSymbol(v,n_params);
-		if(irv == NULL && print_msg){
-			THROW_RUNTIME_ERROR("%s not exist",v.c_str());
-			return NULL;
-		}
-
-		return irv;
-	}*/
 
 	//-----------------------------------------------------------------------------------------------------------
 	CScope::~CScope(){
+		for(unsigned i = 0; i < m_scopeSymbol.size(); i++){
+			delete m_scopeSymbol[i];
+		}
 
+		m_scopeSymbol.clear();
 	}
 }

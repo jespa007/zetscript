@@ -151,10 +151,10 @@ namespace zetscript{
 			IDENTITY_OPERATOR_TYPE  pre_inline_operator_identity_type; // ++i,--i
 			IDENTITY_OPERATOR_TYPE  post_inline_operator_identity_type; // i++,i--
 
-			string value;
+			string value; // first access
 			int line;
-			vector<tInstruction> instruction; // byte code load literal/identifier(can be anonymous function), vector/struct.
-
+			vector<tInstructionEval> instruction; // byte code load literal/identifier(can be anonymous function), vector/struct.
+			//std::map<short,CScriptFunction::tInstructionInfo> instruction_info;
 			// access info like function call, vector access and variable memeber
 			//vector<tTokenNodeAccessor> accessor;
 
@@ -178,12 +178,12 @@ namespace zetscript{
 
 
 		typedef struct {
-			vector<tInstruction> instruction;
+			vector<tInstructionEval> instruction;
 		}tContinueInstructionScope,tBreakInstructionScope;
 
 		struct tFunctionInfo{
 
-			vector<tInstruction>	 		instruction;
+			vector<tInstructionEval>	 		instruction;
 			CScriptFunction 				*  	function_info_object;
 
 			tFunctionInfo(CScriptFunction	* _function_info_object){
@@ -191,28 +191,7 @@ namespace zetscript{
 			}
 		};
 
-		struct tLinkSymbol{
 
-			int idxInstruction;
-			short idxScriptFunction;
-			short idxScope;
-			string value;
-			char n_params;
-
-			tLinkSymbol(
-					 int _idxScriptFunction
-					,short _idxInstruction
-					,short _idxScope
-					,const string & _value
-					,char _n_params=0
-					){
-				idxScriptFunction=_idxScriptFunction;
-				idxInstruction=_idxInstruction;
-				idxScope=_idxScope;
-				value=_value;
-				n_params=_n_params;
-			}
-		};
 
 		typedef struct {
 			DIRECTIVE_TYPE id;
@@ -270,8 +249,8 @@ namespace zetscript{
 		 map<string,tInfoConstantValue *> 	 m_contantPool;
 		 vector<tInfoParsedSource> 			 m_parsedSource;
 
-		 const char * 	CURRENT_PARSING_FILENAME_STR;
-		 int 			CURRENT_PARSING_FILENAME_IDX;
+		 const char * 	CURRENT_PARSING_FILE_STR;
+		 int 			CURRENT_PARSING_FILE_IDX;
 
 		 tOperatorInfo defined_operator[MAX_OPERATOR_TYPES];
 		 tPreOperatorInfo defined_pre_operator[MAX_PRE_OPERATOR_TYPES];
@@ -282,9 +261,9 @@ namespace zetscript{
 		 tDirectiveInfo defined_directive[MAX_DIRECTIVES];
 
 
-		 tFunctionInfo					*pCurrentFunctionInfo;
-		 vector<tFunctionInfo *> 		vFunctionInfo;
-		 vector<tLinkSymbol>			vLinkSymbol;
+		 tFunctionInfo							*pCurrentFunctionInfo;
+		 vector<tFunctionInfo *> 				vFunctionInfo;
+		 //vector<tLinkSymbolFirstAccess>			vLinkSymbolFirstAccess;
 
 
 		 CEval();
@@ -295,7 +274,7 @@ namespace zetscript{
 		 tInfoConstantValue * getConstant(const string & const_name);
 		 tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned short properties);
 
-		 int					getIdxScopeFromSymbolRef(const string & symbol_ref);
+		 //int					getIdxScopeFromSymbolRef(const string & symbol_ref);
 		 void pushFunction(CScriptFunction *sf);
 		 void popFunction();
 
@@ -312,7 +291,7 @@ namespace zetscript{
 
 		//-----------------------------------------------
 		// LINK
-		 void linkSymbols();
+		 //void linkSymbols();
 
 
 
@@ -346,26 +325,26 @@ namespace zetscript{
 		 OP_CODE puntuator2instruction(OPERATOR_TYPE op);
 
 		/// Make operator precedence from the AST of tokens built during evalExpression.
-		 bool  makeOperatorPrecedence(vector<tTokenNode> * vExpressionTokens,int idx_start,int idx_end,bool & error);
+		 bool  makeOperatorPrecedence(vector<tTokenNode> * vExpressionTokens,vector<tInstructionEval> *instruction,int idx_start,int idx_end,bool & error);
 
 		/// Turn expression in Tokens (with some byte code instructions inside)...
-		 char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstructionEval> 		*	instruction);
 
 
 		/// NEW EXPRESSION...
-		 char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction);
 
 		/// FUNCTION OBJECT...
-		 char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 	*	instruction);
+		 char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 	*	instruction);
 
 		/// STRUCT OBJECT...
-		 char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction);
 
 		/// VECTOR OBJECT...
-		 char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction);
 
 		/// GENERIC VECTOR/FUNCTION ARGS
-		 char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInstruction> 		*	instruction);
+		 char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction);
 
 
 		// END EXPRESSION FUNCTION

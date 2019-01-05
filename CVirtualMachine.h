@@ -22,20 +22,13 @@ namespace zetscript{
 	#define NO_PARAMS vector<tStackElement>{}
 	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const vector<CScriptVariable *> & param)>
 
-
-	#define GET_INSTRUCTION_FILE_LINE(info_function,instruction) ((CScriptFunction *)info_function)->symbol_info.symbol->file.c_str(), ((CScriptFunction *)info_function)->getInstructionLine(instruction)
-
-
 	class CScriptFunction;
 	class  CVirtualMachine{
-
-
 
 	//===================================================================================================
 	//
 	// POINTER MANAGER ...
 	//
-
 
 		typedef struct {
 			PInfoSharedPointerNode first, last;
@@ -173,7 +166,7 @@ namespace zetscript{
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		 vector<tStackElement> global_var;
-		tStackElement *ptrCurrentOp;
+		tStackElement *stkCurrentData;
 
 
 		 tStackElement  call_C_function(
@@ -203,8 +196,8 @@ namespace zetscript{
 									,const string & symbol_to_find
 
 
-									,tStackElement *ptrResultInstructionOp1
-									,tStackElement *ptrResultInstructionOp2
+									,tStackElement *stkResultOp1
+									,tStackElement *stkResultOp2
 									,tStackElement *startArg
 									,unsigned char n_args
 									,const char * metamethod_str);
@@ -217,8 +210,8 @@ namespace zetscript{
 										,tInstruction *instruction
 										,const char *__OVERR_OP__
 										,METAMETHOD_OPERATOR __METAMETHOD__
-										,tStackElement *ptrResultInstructionOp1
-										,tStackElement *ptrResultInstructionOp2
+										,tStackElement *stkResultOp1
+										,tStackElement *stkResultOp2
 
 									);
 

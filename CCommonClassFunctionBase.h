@@ -18,20 +18,9 @@ namespace zetscript{
 
 		tVariableSymbolInfo symbol_info; // class/function symbol info ...
 
-		short idxScope; // idx function/class starting scope...
 		unsigned char idxClass; // wich idxClass class itself or function belongs to...
 
-
-
-		CCommonClassFunctionBase(unsigned char _idxClass, short _idxScope);
-
-		/* Registers a function.
-		 * Desc: Inserts function at custom scope. It returns the idx vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
-		 */
-		CScriptFunction * registerFunction(const string & file, short line,  short idxBlockScope, const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		CScriptFunction * registerFunction(const string & file, short line,  const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		CScriptFunction * getFunction(const string & symbol, short idxScope,char n_args=0);
-		//CScriptFunction * getFunctionByName(const string & function_name,char n_args=0);
+		CCommonClassFunctionBase(unsigned char _idxClass);
 
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.
@@ -39,10 +28,14 @@ namespace zetscript{
 		tVariableSymbolInfo *  registerVariable(const string & file, short line,  short idxBlockScope,const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 		tVariableSymbolInfo *  registerVariable(const string & file, short line, const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 		tVariableSymbolInfo *  getVariable(const string & symbol_ref, short idxScope);
-		//tVariableSymbolInfo *  getVariableByName(const string & var_name);
 
 
-
+		/* Registers a function.
+		 * Desc: Inserts function at custom scope. It returns the idx vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
+		 */
+		CScriptFunction * registerFunction(const string & file, short line,  short idxBlockScope, const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		CScriptFunction * registerFunction(const string & file, short line,  const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		CScriptFunction * getFunction(const string & symbol, short idxScope,char n_args=0);
 
 
 	};

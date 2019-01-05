@@ -32,7 +32,7 @@ namespace zetscript{
 		return &vec_script_function_node;
 	}
 
-	CScriptFunction *		 CScriptFunctionFactory::newScriptFunction(unsigned char idxClass, short idxScope, const string & function_ref, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction *		 CScriptFunctionFactory::newScriptFunction(const string & file, short line, unsigned char idxClass, short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 		if((properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 			if(vec_script_function_node.size() > 1){ // if greather than 1 check if node consecutive...
@@ -43,14 +43,19 @@ namespace zetscript{
 			}
 		}
 
-		CScriptFunction *irs = new CScriptFunction(idxScope,idxClass);
+		tSymbol *symbol;
+		if((symbol=GET_SCOPE(idxScope)->registerSymbol(file,line,function_name,args.size()))==NULL){
+				return NULL;
+		}
+
+		CScriptFunction *irs = new CScriptFunction(idxClass);
 
 		irs->m_arg = args;
 		irs->idx_return_type = idx_return_type;
 		irs->symbol_info.ref_ptr = ref_ptr;
 
 
-		irs->symbol_info.symbol_ref = function_ref; // <-- defined as global
+		irs->symbol_info.symbol = symbol;
 		irs->symbol_info.properties = properties;
 
 		irs->symbol_info.idxSymbol = (short)(irs->m_function.size());

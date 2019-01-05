@@ -19,7 +19,7 @@
 
 	#define ZS_ERROR						-1
 	#define ZS_UNDEFINED_IDX 				-1
-	#define ZS_FUNCTION_NOT_FOUND_IDX	 	-2
+	//#define ZS_FUNCTION_NOT_FOUND_IDX	 	-2
 	#define ZS_THIS_IDX						-3
 
 	#define MAX_N_ARGS						 6
@@ -356,6 +356,7 @@
 		BIT_DIRECT_CALL_RETURN,					// 0x400
 		BIT_DEDUCE_C_CALL,						// 0x800
 		BIT_CONSTRUCT_CALL,						// 0x1000
+		BIT_NO_FUNCTION_CALL,					// 0x2000
 		MAX_BIT_CALL_PROPERTIES,
 	};
 
@@ -383,11 +384,12 @@
 	#define INS_PROPERTY_DIRECT_CALL_RETURN		(0x1<<BIT_DIRECT_CALL_RETURN)
 	#define INS_PROPERTY_DEDUCE_C_CALL			(0x1<<BIT_DEDUCE_C_CALL)
 	#define INS_PROPERTY_CONSTRUCT_CALL			(0x1<<BIT_CONSTRUCT_CALL)
+	#define INS_PROPERTY_NO_FUNCTION_CALL		(0x1<<BIT_NO_FUNCTION_CALL)
 	#define MASK_CALL_TYPE						(((0x1<<(MAX_BIT_CALL_PROPERTIES-INS_PROPERTY_CALLING_OBJECT))-1)<<(INS_PROPERTY_CALLING_OBJECT))
 	#define GET_INS_PROPERTY_CALL_TYPE(prop)	((prop)&MASK_CALL_TYPE)
 
 	#define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"
-	//#define MAIN_SCRIPT_FUNCTION_OBJECT_NAME 	"__mainFunction__"
+	#define MAIN_SCRIPT_FUNCTION_NAME 			"__MainFunction__"
 
 
 
@@ -558,12 +560,12 @@
 			unsigned short properties; // SYMBOL_INFO_PROPERTY
 			string c_type; // In case is C, we need to know its type ...
 
-			tVariableSymbolInfo(tSymbol *_symbol) {
+			tVariableSymbolInfo() {
 				properties = 0;
 				c_type = "";
 				//idxScope = -1;
 				ref_ptr = 0;
-				symbol=_symbol;
+				symbol=NULL;
 				//class_info=NULL;
 
 				//idxClass = -1;
@@ -573,7 +575,6 @@
 		};
 
 		struct tInstruction {
-
 			OP_CODE op_code;
 			unsigned char index_op1;	// left and right respectively
 			intptr_t index_op2;
@@ -589,6 +590,66 @@
 				index_op2=_index_op2;
 				properties=_properties;
 
+			}
+		};
+
+		struct tInstructionInfo {
+				short line;
+				const char * file;
+			    //tSymbol * _symbol;
+				string symbol_name;
+
+				tInstructionInfo(){
+					symbol_name="unknow_symbol";
+					file="unknow_file";
+					line=-1;
+				}
+
+				tInstructionInfo(const string & _symbol_name, const char * _file, short _line){
+					symbol_name=_symbol_name;
+					file=_file;
+					line=_line;
+				}
+		};
+
+		struct tLinkSymbolFirstAccess{
+
+			short idxScriptFunction;
+			short idxScope;
+			string value;
+			char n_params;
+
+			tLinkSymbolFirstAccess(){
+
+				idxScriptFunction=ZS_UNDEFINED_IDX;
+				idxScope=ZS_UNDEFINED_IDX;
+				value = "";
+				n_params=ZS_UNDEFINED_IDX;
+			}
+
+			tLinkSymbolFirstAccess(
+					 int _idxScriptFunction
+					,short _idxScope
+					,const string & _value
+					,char _n_params=0
+					){
+				idxScriptFunction=_idxScriptFunction;
+				idxScope=_idxScope;
+				value=_value;
+				n_params=_n_params;
+			}
+		};
+
+		struct tInstructionEval:tInstruction{
+
+			tLinkSymbolFirstAccess 					 	linkSymbolFirstAccess;
+			tInstructionInfo 							instructionInfo;
+
+			tInstructionEval(OP_CODE _op_code
+						 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
+						 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
+						 ,unsigned short _properties=0
+						 ):tInstruction(_op_code,_index_op1,_index_op2,_properties){
 			}
 		};
 

@@ -27,7 +27,9 @@ namespace zetscript{
 			//static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec);
 			vector<CScriptFunction *> 	*	getVectorScriptFunctionNode();
 
-			ZETSCRIPT_MODULE_EXPORT CScriptFunction 			*	newScriptFunction(unsigned  char idxClass
+			ZETSCRIPT_MODULE_EXPORT CScriptFunction 			*	newScriptFunction(			const string & file
+																								, short line
+																								, unsigned  char idxClass
 																								, short idxScope
 																								, const string & function_name
 																								, vector<tArgumentInfo> args={}

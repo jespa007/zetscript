@@ -19,36 +19,24 @@
 
 namespace zetscript{
 
-
-
-
-
 	class  CScope{
 
 	public:
-
 
 		short idxScope;
 		bool is_c_node;
 		CScriptClass *script_class;
 
-		//---------------------------------
-		// Register functions
-
 		//--------------------------------------------------------------------
 		// Register functions
-		vector<tSymbol> m_scopeVariable; // vars registered from base.
-		vector<tSymbol> m_scopeAnonymousFunction; // anonymous functions registered from base.
+		vector<tSymbol *> m_scopeSymbol; // vars registered from base.
 
 		/**
 		 * register/search symbol info
 		 * @n_params:
 		 */
-		//tSymbol * getInfoRegisteredSymbol(const string & v, char n_params=NO_PARAMS_IS_VARIABLE);
-		//tSymbol * registerAnonymouseFunction(const string & file, short line,char n_params);
 		tSymbol * registerSymbol(const string & file, short line,const string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
-
-		tSymbol * existRegisteredSymbol(const string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
+		tSymbol * getSymbol(const string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
 
 
 		CScope(short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX,bool is_c_node=false);
@@ -72,15 +60,14 @@ namespace zetscript{
 		~CScope();
 
 	private:
-		static int n_anonymouse_func;
 		vector<short> m_localScopeList;
 
 		// The a parent scope ...
 		short idxParentScope, idxCurrentScopePointer, idxBaseScope;
 
-		tSymbol * existRegisteredSymbolRecursive(const string & var_name, int n_params=NO_PARAMS_IS_VARIABLE);
-		tSymbol * existRegisteredSymbolRecursiveDownScope(const string & ref_symbol, int n_params=NO_PARAMS_IS_VARIABLE);
-		tSymbol * existRegisteredSymbolRecursiveUpScope(const string & ref_symbol, int n_params=NO_PARAMS_IS_VARIABLE);
+		tSymbol * getSymbolRecursive(const string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
+		tSymbol * getSymbolRecursiveDownScope(const string & ref_symbol, char n_params=NO_PARAMS_IS_VARIABLE);
+		tSymbol * getSymbolRecursiveUpScope(const string & ref_symbol, char n_params=NO_PARAMS_IS_VARIABLE);
 
 
 	};

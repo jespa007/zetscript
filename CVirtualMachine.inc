@@ -14,19 +14,19 @@ namespace zetscript{
 
 		// general
 		#define PRINT_DUAL_ERROR_OP(c)\
-		string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),\
-			   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);\
+		string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1),\
+			   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp2);\
 		\
-		writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+		writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 				var_type1.c_str(),\
 				c,\
 				var_type2.c_str());
 
 
 		#define PRINT_ERROR_OP(c)\
-			string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1);\
+			string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1);\
 		\
-		writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+		writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 			c,\
 			var_type1.c_str());
 
@@ -116,8 +116,8 @@ namespace zetscript{
 										,tInstruction *instruction
 										,const char *__OVERR_OP__
 										,METAMETHOD_OPERATOR __METAMETHOD__
-										,tStackElement *ptrResultInstructionOp1
-										,tStackElement *ptrResultInstructionOp2
+										,tStackElement *stkResultOp1
+										,tStackElement *stkResultOp2
 
 										) {
 
@@ -130,44 +130,44 @@ namespace zetscript{
 						|| __METAMETHOD__ == NEG_METAMETHOD\
 						|| __METAMETHOD__ == SET_METAMETHOD\
 						   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);
-		tStackElement *mm_test_startArg = ptrCurrentOp+n_metam_args;
-		if(instruction->index_op2 ==ZS_UNDEFINED_IDX){ /* search for first time , else the function is stored in index_op2 */
+		tStackElement *mm_test_startArg = stkCurrentData+n_metam_args;
+		if(instruction->index_op2 ==0){ /* search for first time , else the function is stored in index_op2 */
 			CScriptClass *script_class_aux=NULL;
 
 			const char * symbol_to_find;
 			ptr_function_found=NULL;
 
 
-			if(((ptrResultInstructionOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){
-				script_var_object = (CScriptVariable *)(ptrResultInstructionOp1->varRef);
-				if(((ptrResultInstructionOp1->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
+			if(((stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){
+				script_var_object = (CScriptVariable *)(stkResultOp1->varRef);
+				if(((stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
 					script_var_object = (CScriptVariable *)(((tStackElement *)script_var_object))->varRef;
 				}
 				if(__METAMETHOD__ == SET_METAMETHOD){
 					idxOffsetFunctionMemberStart=1;
-					one_param = (CScriptVariable *)(ptrResultInstructionOp2->varRef);
-					if(((ptrResultInstructionOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
+					one_param = (CScriptVariable *)(stkResultOp2->varRef);
+					if(((stkResultOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
 						one_param = (CScriptVariable *)(((tStackElement *)one_param))->varRef;
 					}
 				}
-			}else if(((ptrResultInstructionOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
-				script_var_object = (CScriptVariable *)(ptrResultInstructionOp2->varRef);
-				if(((ptrResultInstructionOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
+			}else if(((stkResultOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
+				script_var_object = (CScriptVariable *)(stkResultOp2->varRef);
+				if(((stkResultOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
 					script_var_object = (CScriptVariable *)(((tStackElement *)script_var_object))->varRef;
 				}
 			}else{
 
-				string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp1),
+				string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1),
 						var_type2="";
 
 				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/
-					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							STR(__OVERR_OP),
 							var_type1.c_str()
 							);\
 				}else{ /* 2 args*/
-					var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ptrResultInstructionOp2);
-					writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp2);
+					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							var_type1.c_str(),
 							__OVERR_OP__,
 							var_type2.c_str());
@@ -195,8 +195,8 @@ namespace zetscript{
 					,false
 					,symbol_to_find
 
-					,ptrResultInstructionOp1
-					,ptrResultInstructionOp2
+					,stkResultOp1
+					,stkResultOp2
 					,startArgs
 					,n_args\
 					,__OVERR_OP__))==NULL)
@@ -214,7 +214,7 @@ namespace zetscript{
 		}
 
 		/* restore ptrCurretOp... */
-		ptrCurrentOp=mm_test_startArg-n_metam_args;
+		stkCurrentData=mm_test_startArg-n_metam_args;
 		/* if function is C must register pointer ! */
 
 		if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
@@ -227,7 +227,7 @@ namespace zetscript{
 			}
 		}
 		if(__METAMETHOD__ != SET_METAMETHOD){ /* Auto destroy C when ref == 0 */
-			*ptrCurrentOp++ = ret_obj;
+			*stkCurrentData++ = ret_obj;
 		}
 
 		return true;
@@ -245,8 +245,8 @@ namespace zetscript{
 			,bool is_constructor
 			,const string & symbol_to_find
 
-			,tStackElement *ptrResultInstructionOp1
-			,tStackElement *ptrResultInstructionOp2
+			,tStackElement *stkResultOp1
+			,tStackElement *stkResultOp2
 			,tStackElement *startArg
 			,unsigned char n_args
 			,const char *metamethod_str
@@ -360,11 +360,11 @@ namespace zetscript{
 								}
 							}
 							if(all_check){ /* we found the right function (set it up!) ... */
-								callAleInstruction->index_op2 = i;
+								callAleInstruction->index_op2 = (intptr_t)irfs;
 								ptr_function_found = irfs;
 							}
 				}else{ /* type script function  ... */
-					callAleInstruction->index_op2=i;
+					callAleInstruction->index_op2=(intptr_t)irfs;
 					ptr_function_found = irfs;
 				}
 			}
@@ -372,7 +372,7 @@ namespace zetscript{
 
 		if(ptr_function_found == NULL){
 			if(is_constructor && n_args == 0){ /* default constructor not found --> set as not found... */
-				callAleInstruction->index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+				callAleInstruction->properties = INS_PROPERTY_NO_FUNCTION_CALL;//index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
 			}
 			else{ // return error elaborate a error message...
 				int n_candidates=0;
@@ -440,7 +440,7 @@ namespace zetscript{
 					bool match_signature = metamethod_str != NULL;
 
 					if(!match_signature){
-						match_signature = irfs->symbol_info.symbol->name == irfs->getInstructionSymbolName(callAleInstruction);
+						match_signature = irfs->symbol_info.symbol->name == irfs->INSTRUCTION_getSymbolName(callAleInstruction);
 					}
 
 					if(match_signature){
@@ -476,27 +476,27 @@ namespace zetscript{
 
 						}
 					}else{
-						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,callAleInstruction),"Cannot find %s \"%s%s(%s)\".\n\n",
+						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find %s \"%s%s(%s)\".\n\n",
 										is_constructor ? "constructor":"function",
 										calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-										info_function->getInstructionSymbolName(callAleInstruction),
+										info_function->INSTRUCTION_getSymbolName(callAleInstruction),
 										args_str.c_str()
 						);
 					}
 				}
 				else{
 					if(metamethod_str!=NULL){
-						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,callAleInstruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
+						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 													vec_global_functions->at(0)->symbol_info.symbol->name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
-						writeErrorMsg(GET_INSTRUCTION_FILE_LINE(info_function,callAleInstruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
 							calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-							info_function->getInstructionSymbolName(callAleInstruction),
+							info_function->INSTRUCTION_getSymbolName(callAleInstruction),
 							args_str.c_str(),
 							str_candidates.c_str());
 					}
