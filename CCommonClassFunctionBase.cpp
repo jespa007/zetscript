@@ -10,14 +10,14 @@ namespace zetscript{
 		tVariableSymbolInfo irs;
 		//string symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
 
-		tSymbol * symbol;
+		tSymbol * symbol=NULL;
 
 		if((symbol=GET_SCOPE(idxBlockScope)->registerSymbol(file,line,variable_name /*,var_node*/))==NULL){
 				return NULL;
 		}
 
 
-		if(getVariable(irs.symbol->name,irs.symbol->idxScope) != NULL){
+		if(getVariable(symbol->name,symbol->idxScope) != NULL){
 			THROW_RUNTIME_ERROR("Variable \"%s\" already exist",variable_name.c_str());
 			return NULL;
 		}

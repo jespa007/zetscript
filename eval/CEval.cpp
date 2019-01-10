@@ -240,6 +240,7 @@ namespace zetscript{
 	CEval * CEval::getInstance(){
 		if(eval_singleton == NULL){
 			eval_singleton = new CEval();
+			eval_singleton->iniVars();
 		}
 
 		return eval_singleton;
@@ -327,7 +328,7 @@ namespace zetscript{
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 
-	CEval::CEval(){
+	void CEval::iniVars(){
 
 		using namespace std::placeholders;
 
@@ -336,6 +337,14 @@ namespace zetscript{
 		CURRENT_PARSING_FILE_STR=NULL;
 
 		// init operator punctuators...
+		memset(defined_operator,0,sizeof(defined_operator));
+		memset(defined_pre_operator,0,sizeof(defined_pre_operator));
+		memset(defined_identity_operator,0,sizeof(defined_identity_operator));
+		memset(defined_separator,0,sizeof(defined_separator));
+		memset(defined_keyword,0,sizeof(defined_keyword));
+		memset(defined_opcode,0,sizeof(defined_opcode));
+
+
 		defined_operator[UNKNOWN_OPERATOR]={UNKNOWN_OPERATOR, "none",NULL};
 
 		defined_operator[ADD_OPERATOR]={ADD_OPERATOR, "+",IS_ADD_OPERATOR};
@@ -396,7 +405,7 @@ namespace zetscript{
 
 
 
-		defined_keyword[KEYWORD_TYPE::UNKNOWN_KEYWORD] = {UNKNOWN_KEYWORD, "none",NULL};
+		defined_keyword[KEYWORD_TYPE::UNKNOWN_KEYWORD] = {UNKNOWN_KEYWORD, NULL,NULL};
 		defined_keyword[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",new tKeywordFunction(std::bind(&CEval::evalKeywordVar,eval_singleton,_1,_2,_3,_4))};
 		defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",new tKeywordFunction(std::bind(&CEval::evalKeywordIf,eval_singleton,_1,_2,_3,_4))};
 		defined_keyword[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else"};
@@ -480,6 +489,9 @@ namespace zetscript{
 		// init variables...
 	}
 
+	CEval::CEval(){
+	}
+
 	bool   CEval::endExpression(const char * s){
 		return *s==')' || *s==','||  *s==']' ||  *s==']' ||  *s==';' || *s == 0;
 	}
@@ -533,19 +545,21 @@ namespace zetscript{
 		char *aux=str;
 
 		for(int i = 0; i < MAX_KEYWORD; i++){
-			int size = strlen(defined_keyword[i].str);
-			char *aux = str+size;
-			if((strncmp(str,defined_keyword[i].str,size)==0) && (
-					*aux == 0  || // carry end
-					*aux == ' '  || // space
-					*aux == '\t'  || // tab
-					*aux == '('  || // ( // mostly if,for,while,switch
-					*aux == '{'  || // ( // mostly else,
-					*aux == '\n' || // carry return
+			if(defined_keyword[i].str!=NULL){
+				int size = strlen(defined_keyword[i].str);
+				char *aux = str+size;
+				if((strncmp(str,defined_keyword[i].str,size)==0) && (
+						*aux == 0  || // carry end
+						*aux == ' '  || // space
+						*aux == '\t'  || // tab
+						*aux == '('  || // ( // mostly if,for,while,switch
+						*aux == '{'  || // ( // mostly else,
+						*aux == '\n' || // carry return
 
-				   IS_START_BLOCK_COMMENT(aux)) //start block comment
-				   ){
-				return defined_keyword[i].id;
+					   IS_START_BLOCK_COMMENT(aux)) //start block comment
+					   ){
+					return defined_keyword[i].id;
+				}
 			}
 		}
 		return KEYWORD_TYPE::UNKNOWN_KEYWORD;
@@ -704,10 +718,10 @@ namespace zetscript{
 		 int i=0;
 		 bool error;
 		 bool start_digit = false;
-		 token_node->token_type = TOKEN_TYPE::LITERAL_TOKEN;
+		 token_node->token_type = TOKEN_TYPE::UNKNOWN_TOKEN;
 		 KEYWORD_TYPE kw=isKeyword(aux);
 		 int start_line = line;
-		 bool is_constant_string;
+		 bool is_constant_string=false;
 
 		 if((aux=evalLiteralNumber(start_word,line,v ,error))==NULL){ // if not number,integer, hex, bit then is a literal string, boolean or identifier...
 
@@ -807,8 +821,9 @@ namespace zetscript{
 				}else{
 					obj=addConstant(v,(void *)value,type);
 				}
-			}else{ // load identity ...
+			}else{ // it should be an identifier token  ...
 
+				token_node->token_type = TOKEN_TYPE::IDENTIFIER_TOKEN;
 				intptr_t idx_local_var=ZS_UNDEFINED_IDX;
 
 				for(unsigned i = 0; i < pCurrentFunctionInfo->function_info_object->m_arg.size() && idx_local_var == ZS_UNDEFINED_IDX; i++){
@@ -836,7 +851,7 @@ namespace zetscript{
 					}
 
 					// search local var into current function...
-					token_node->token_type = TOKEN_TYPE::IDENTIFIER_TOKEN;
+
 
 					// search global ...
 
@@ -1281,9 +1296,11 @@ namespace zetscript{
 				}
 
 				aux_p=IGNORE_BLANKS(aux_p,line);
+				is_first_access=false;
+				params=NO_PARAMS_IS_VARIABLE;
 
 				// check valid access punctuator...
-				if(isAccessPunctuator(aux_p) ){
+				if(isAccessPunctuator(aux_p) || symbol_token_node.token_type == TOKEN_TYPE::IDENTIFIER_TOKEN){
 
 					if(!(      symbol_token_node.token_type == TOKEN_TYPE::IDENTIFIER_TOKEN
 						  || ((symbol_token_node.token_type == TOKEN_TYPE::FUNCTION_OBJECT_TOKEN)&& *aux_p == '(')// cannot be a number/boolean or string and then accessor like . / ( / [
@@ -1297,7 +1314,7 @@ namespace zetscript{
 					}
 
 					is_first_access=true;
-					params=NO_PARAMS_IS_VARIABLE;
+
 					//instruction_first_access=0;//symbol_token_node.instruction.size()-1;
 					//instruction_identifier=instruction_first_access;
 
@@ -1388,6 +1405,7 @@ namespace zetscript{
 
 					}
 
+
 					// add info to solve symbols first access (we need to put here because we have to know n params if function related)
 					symbol_token_node.instruction[0].linkSymbolFirstAccess=tLinkSymbolFirstAccess(
 							pCurrentFunctionInfo->function_info_object->idxScriptFunction
@@ -1412,8 +1430,8 @@ namespace zetscript{
 					// pre/post operator...
 					symbol_token_node.pre_inline_operator_identity_type = pre_inline_operator_identity_type;
 					symbol_token_node.post_inline_operator_identity_type = post_inline_operator_identity_type;
-
 				}
+
 
 			}
 
@@ -2369,7 +2387,11 @@ namespace zetscript{
 		int m_startLine=0;
 
 		CScriptClass *sc=NULL;
-		CScriptClass *sc_come_from=scope_info->getScriptClass();//) { // NOT GLOBAL
+		CScriptClass *sc_come_from=NULL;
+
+		if(scope_info->idxScope!=IDX_GLOBAL_SCOPE){
+			sc_come_from=scope_info->getScriptClass();//) { // NOT GLOBAL
+		}
 		//is_class_member = scope_info->getIdxBaseScope() == scope_info->getCurrentScopePointer()->idxScope;
 
 		key_w = isKeyword(aux_p);
@@ -2393,8 +2415,8 @@ namespace zetscript{
 					sc=NULL;
 
 					if(sc_come_from != NULL){ // it comes from class declaration itself
-						idxScope=sc->symbol_info.symbol->idxScope;
 						sc=sc_come_from;
+						idxScope=sc->symbol_info.symbol->idxScope;
 						//is_class_member=true;
 
 					}

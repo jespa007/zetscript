@@ -266,6 +266,7 @@ namespace zetscript{
 		 //vector<tLinkSymbolFirstAccess>			vLinkSymbolFirstAccess;
 
 
+		 void iniVars();
 		 CEval();
 
 
