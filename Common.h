@@ -594,21 +594,23 @@
 		};
 
 		struct tInstructionInfo {
-				short line;
+
 				const char * file;
+				short line;
 			    //tSymbol * _symbol;
-				string symbol_name;
+				string * symbol_name;
 
 				tInstructionInfo(){
-					symbol_name="unknow_symbol";
+					symbol_name=NULL;
 					file="unknow_file";
 					line=-1;
 				}
 
-				tInstructionInfo(const string & _symbol_name, const char * _file, short _line){
-					symbol_name=_symbol_name;
+				tInstructionInfo(const char * _file, short _line,string *_symbol_name){
+
 					file=_file;
 					line=_line;
+					symbol_name=_symbol_name;
 				}
 		};
 

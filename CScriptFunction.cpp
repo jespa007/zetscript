@@ -86,7 +86,7 @@ namespace zetscript{
 		tInstructionInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL){
-			return info->symbol_name.c_str();
+			return info->symbol_name->c_str();
 		}
 		return "unknown";
 	}

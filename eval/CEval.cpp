@@ -328,6 +328,13 @@ namespace zetscript{
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 
+	string * CEval::getCompiledSymbol(const string & s){
+		if(this->m_compiledSymbolName.count(s)==0){
+			this->m_compiledSymbolName[s]=new string (s);
+		}
+		return this->m_compiledSymbolName[s];
+	}
+
 	void CEval::iniVars(){
 
 		using namespace std::placeholders;
@@ -490,6 +497,9 @@ namespace zetscript{
 	}
 
 	CEval::CEval(){
+		CURRENT_PARSING_FILE_IDX=-1;
+		CURRENT_PARSING_FILE_STR="";
+		pCurrentFunctionInfo=NULL;
 	}
 
 	bool   CEval::endExpression(const char * s){
@@ -1393,7 +1403,7 @@ namespace zetscript{
 
 						if(op_code==OP_CODE::LOAD){
 							//instruction_identifier=symbol_token_node.instruction.size();
-							symbol_token_node.instruction[instruction_identifier].instructionInfo= tInstructionInfo(symbol_token_node.value,CURRENT_PARSING_FILE_STR,line);
+							symbol_token_node.instruction[instruction_identifier].instructionInfo= tInstructionInfo(CURRENT_PARSING_FILE_STR,line,getCompiledSymbol(symbol_token_node.value));
 						}
 
 						tInstructionEval instruction_token=tInstructionEval(op_code);
@@ -1415,7 +1425,7 @@ namespace zetscript{
 					);
 
 					// add info to add as symbol value ...
-					symbol_token_node.instruction[0].instructionInfo = tInstructionInfo(symbol_token_node.value,CURRENT_PARSING_FILE_STR,line);
+					symbol_token_node.instruction[0].instructionInfo = tInstructionInfo(CURRENT_PARSING_FILE_STR,line,getCompiledSymbol(symbol_token_node.value));
 
 
 					if(IS_INC_OPERATOR(aux_p)){
@@ -2942,7 +2952,7 @@ namespace zetscript{
 
 
 			// symbol value to save at runtime ...
-			if(instruction->instructionInfo.symbol_name != ""){
+			if(instruction->instructionInfo.symbol_name != NULL){
 				pCurrentFunctionInfo->function_info_object->instruction_info[i]=instruction->instructionInfo;
 			}
 

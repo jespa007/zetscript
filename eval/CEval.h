@@ -247,6 +247,7 @@ namespace zetscript{
 
 		// singleton
 		 map<string,tInfoConstantValue *> 	 m_contantPool;
+		 map<string,string *>			 	 m_compiledSymbolName;
 		 vector<tInfoParsedSource> 			 m_parsedSource;
 
 		 const char * 	CURRENT_PARSING_FILE_STR;
@@ -268,6 +269,7 @@ namespace zetscript{
 
 		 void iniVars();
 		 CEval();
+
 
 
 		 // CONSTANT TOOLS
@@ -293,7 +295,7 @@ namespace zetscript{
 		//-----------------------------------------------
 		// LINK
 		 //void linkSymbols();
-
+		 string * getCompiledSymbol(const string & s);
 
 
 		//-----------------------------------------------
