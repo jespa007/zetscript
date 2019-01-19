@@ -9,8 +9,111 @@
 
 using namespace zetscript;
 
+class A{
+protected:
+	unsigned b;
+public:
+	A(){ this->b=10;}
+	virtual unsigned ret(unsigned i){ return i*this->b;}
+	virtual ~A(){};
+};
+
+class B:public A{
+public:
+	virtual unsigned ret(unsigned i){ return i*this->b;}
+};
+
+class C:public B{
+public:
+	virtual unsigned ret(unsigned i){ return i*this->b;}
+};
+
+class D:public C{
+public:
+	virtual unsigned ret(unsigned i){ return i*this->b;}
+};
+
+class E:public D{
+public:
+	virtual unsigned ret(unsigned i){ return i*this->b;}
+};
+
+class F:public E{
+public:
+	virtual unsigned ret(unsigned i){ return i*this->b;}
+};
+
+class F_A{
+protected:
+	unsigned b;
+	std::function<unsigned(unsigned)> *f;
+public:
+	F_A(){ this->b=10;this->f=NULL;}
+	unsigned ret(unsigned i){
+		if(f==NULL){
+			return i*this->b;
+		}else{
+			return (*f)(i);
+		}
+	}
+
+};
+
+class F_B:public F_A{
+public:
+	unsigned ret(unsigned i){ return i*this->b;}
+};
+
+class F_C:public F_B{
+public:
+	unsigned ret(unsigned i){ return i*this->b;}
+};
+
+class F_D:public F_C{
+public:
+	unsigned ret(unsigned i){ return i*this->b;}
+};
+
+class F_E:public F_D{
+public:
+	unsigned ret(unsigned i){ return i*this->b;}
+};
+
+
+// NEW_FUNCTION(f) new std::function<int(int)>([this](int i) { return this->ret(i); })
+#define NEW_RET_FUNCTION_1P(VAR,TYPE_RET,FUN,TYPE_P1) {if(VAR!=NULL){delete VAR;};VAR=new std::function<TYPE_RET(TYPE_P1)>([](TYPE_P1 i) { return this->FUN(i); });
+
+class F_F:public F_E{
+public:
+	F_F(){
+		//f=new std::function<int(int)>([]())   (std::bind(&F_F::ret, this,std::placeholders::_1));
+		NEW_RET_FUNCTION_1P(f,unsigned,ret,unsigned);
+	}
+	unsigned ret(unsigned i){ return i*this->b;}
+};
+
+
+unsigned b=10;
+
+unsigned ret(unsigned i){ return i*b;}
 
 int main(int argc, char * argv[]) {
+
+	F f;
+	F_F ff;
+	A *a = (A *)&f;
+	F_A *f_a=(F_A *)&ff;
+	unsigned kk=0;
+	for(unsigned i=0; i < 1000000000; i++){
+		//kk+=a->ret(i);
+		kk+=f_a->ret(i);
+		//kk+=ret(i);
+	}
+
+	printf("result:%i\n",kk);
+
+	return 0;
+
 
 	CZetScript *zetscript = CZetScript::getInstance();
 
