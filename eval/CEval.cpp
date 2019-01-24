@@ -1196,7 +1196,7 @@ namespace zetscript{
 					makeOperatorPrecedence(vExpressionTokens,instruction,idx_split+1,idx_end,error); // right branches...
 
 		if(result){ // if result was ok, push op_code...
-			pCurrentFunctionInfo->instruction.push_back(tInstructionEval(puntuator2instruction(split_node->operator_type)));
+			instruction->push_back(tInstructionEval(puntuator2instruction(split_node->operator_type)));
 		}
 
 		return result;
@@ -1247,6 +1247,12 @@ namespace zetscript{
 				if((aux_p=evalExpression(aux_p+1, line, scope_info, &instruction_inner))==NULL){
 					return NULL;
 				}
+
+				// concatenate instruction ...
+				instruction->insert(
+									  instruction->end()
+									, instruction_inner.begin()
+									, instruction_inner.end() );
 
 				if(*aux_p != ')'){
 					writeErrorMsg(CURRENT_PARSING_FILE_STR,line ,"Expected ')'");
