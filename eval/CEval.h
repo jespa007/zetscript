@@ -20,6 +20,14 @@ namespace zetscript{
 
 
 	public:
+
+		//===================================================================================================
+		//
+		// PRINT ASM INFO
+			static ZETSCRIPT_MODULE_EXPORT void printGeneratedCode();
+
+		// PRINT ASM INFO
+		//---------------------------------------------------------------------------------------------------------------------------------------
 //		 static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
 //		 static string 				makeSymbolRef(const string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
 		 tInfoConstantValue 	* 	addConstant(const string & const_name, int value);
@@ -285,6 +293,16 @@ namespace zetscript{
 		 DIRECTIVE_TYPE 	isDirective(const char *c);
 
 		 char * evalLiteralNumber(const char *c, int & line, string & value, bool & error);
+
+
+		//===================================================================================================
+		//
+		// PRINT ASM INFO
+		static string getStrMovVar(tInstruction * iao);
+		static string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
+		static ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(CScriptFunction *sfo);
+		//===================================================================================================
+
 
 
 		//---------------------------------------------------------------------------------------------------------------------------------------

@@ -44,7 +44,7 @@ namespace zetscript{
 		if(m_variable.size()>0){
 
 			// from lat value to first to get last override function...
-			for(unsigned i = m_variable.size()-1; i >= 0 ; i--){
+			for(int i = (int)m_variable.size()-1; i >= 0 ; i--){
 				if((m_variable[i].symbol->name == var_name)
 				&& (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == m_variable[i].symbol->idxScope))
 				  ){

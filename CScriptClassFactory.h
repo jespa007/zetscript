@@ -138,7 +138,7 @@ namespace zetscript{
 
 			intptr_t 											doCast(intptr_t obj, unsigned char src_class, unsigned char convert_class);
 
-			ZETSCRIPT_MODULE_EXPORT void printGeneratedCode();
+
 
 
 			/**
@@ -217,16 +217,7 @@ namespace zetscript{
 			static 									void  print(const char *s);
 			static 									void (* print_out_callback)(const char *);
 
-			//---------------
-			// PRINT ASM INFO
 
-			string getStrMovVar(tInstruction * iao);
-			string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
-
-			ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(CScriptFunction *sfo);
-
-			// PRINT ASM INFO
-			//---------------------------------------------------------------------------------------------------------------------------------------
 
 
 			unsigned char							getIdxScriptClass_Internal(const string & class_name);

@@ -80,7 +80,7 @@ namespace zetscript{
 		void unrefSharedScriptVar( PInfoSharedPointerNode _node, bool remove_if_0=false);
 		void removefSharedScriptVar( PInfoSharedPointerNode _node);
 
-	//===================================================================================================
+
 
 		//void iniStackVar(unsigned int pos,const tStackElement & stk);
 

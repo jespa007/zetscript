@@ -74,7 +74,7 @@ namespace zetscript{
 
 
 		inline tInstructionInfo * getInstructionInfo(tInstruction *ins){
-			short idx= (ins-this->instruction)/sizeof(tInstruction *);
+			short idx= (ins-this->instruction);///sizeof(tInstruction *);
 			if(instruction_info.count(idx)==1){
 				return &instruction_info[idx];
 			}

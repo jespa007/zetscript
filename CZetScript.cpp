@@ -283,7 +283,7 @@ namespace zetscript{
 		}
 
 		if(show_bytecode){
-			SCRIPT_CLASS_FACTORY->printGeneratedCode();
+			CEval::printGeneratedCode();
 		}
 
 		if(exec_vm){
@@ -311,7 +311,7 @@ namespace zetscript{
 		}
 
 		if(show_bytecode){
-			SCRIPT_CLASS_FACTORY->printGeneratedCode();
+			CEval::printGeneratedCode();
 		}
 
 		if(exec_vm){

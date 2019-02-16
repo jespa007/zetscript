@@ -17,6 +17,8 @@
 		#define ZETSCRIPT_MODULE_EXPORT
 	#endif
 
+
+	#define ZS_SOLVE_AT_RUNTIME				 0
 	#define ZS_ERROR						-1
 	#define ZS_UNDEFINED_IDX 				-1
 	//#define ZS_FUNCTION_NOT_FOUND_IDX	 	-2
@@ -550,7 +552,7 @@
 		#pragma pack(push, 1)
 
 		struct tVariableSymbolInfo { // it can be a variable or function
-			intptr_t ref_ptr; // pointer ref to C Var/Function
+			intptr_t ref_ptr; // pointer ref just in case is C var/function
 			tSymbol *symbol; // symbol name
 			//short idxClass; //CScriptClass		 *class_info;
 			//short idxScope;

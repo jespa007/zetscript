@@ -130,6 +130,8 @@ B <- [E;|K]* // A set of expressions ended with ; or Keyword
 
 namespace zetscript{
 
+	#define FORMAT_PRINT_INSTRUCTION "%04i"
+
 	void  		writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
 	CEval * CEval::eval_singleton = NULL;
@@ -236,6 +238,247 @@ namespace zetscript{
 
 		return "unknow_op";
 	}
+
+	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	 // PRINT ASM INFO
+
+
+	 string CEval::getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction){
+
+		 char print_aux_load_value[512] = {0};
+		 char object_access[512] = "";
+
+		 tInstruction * instruction =&m_listStatements[current_instruction];
+		 tInfoConstantValue *icv;
+		 string symbol_value=INSTRUCTION_GET_SYMBOL_NAME(current_function,instruction);
+		 if(instruction->op_code != LOAD){
+			 return "ERROR";
+		 }
+
+
+
+		 sprintf(print_aux_load_value,"UNDEFINED");
+
+		 if(instruction->properties & INS_PROPERTY_ACCESS_SCOPE){
+
+			 sprintf(object_access,
+					"[" FORMAT_PRINT_INSTRUCTION "]."
+
+					,(int)instruction->index_op2);
+		 }
+		 else if(instruction->properties & INS_PROPERTY_THIS_SCOPE){
+			sprintf(object_access,"this.");
+		 }
+
+		 switch(instruction->index_op1){
+
+			case LOAD_TYPE::LOAD_TYPE_CONSTANT:
+				icv=(tInfoConstantValue *)instruction->index_op2;
+				switch(icv->properties){
+				case STK_PROPERTY_TYPE_BOOLEAN:
+				case STK_PROPERTY_TYPE_INTEGER:
+					sprintf(print_aux_load_value,"CONST(%i)",(int)((intptr_t)icv->stkValue));
+					break;
+				case STK_PROPERTY_TYPE_NUMBER:
+					sprintf(print_aux_load_value,"CONST(%f)",*((float *)&icv->stkValue));
+					break;
+				case STK_PROPERTY_TYPE_STRING:
+					sprintf(print_aux_load_value,"CONST(%s)",((const char *)icv->stkValue));
+					break;
+
+				}
+				break;
+
+			case LOAD_TYPE::LOAD_TYPE_VARIABLE:
+				sprintf(print_aux_load_value,"%sVAR(%s)",object_access,symbol_value.c_str());
+				break;
+			case LOAD_TYPE::LOAD_TYPE_FUNCTION:
+
+				sprintf(print_aux_load_value,"%sFUN(%s)",object_access,symbol_value.c_str());
+				break;
+
+			case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
+				sprintf(print_aux_load_value,"ARG(%s)",symbol_value.c_str());
+				break;
+			default:
+
+				break;
+		}
+		return print_aux_load_value;
+	 }
+
+	 void CEval::printGeneratedCode(CScriptFunction *sfo){
+
+		// PRE: it should printed after compile and updateReferences.
+		string pre="";
+		string post="";
+
+		unsigned idx_instruction=0;
+		for(tInstruction * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
+
+			int n_ops=0;
+			int index_op1 = instruction->index_op1;
+			int index_op2 = instruction->index_op2;
+
+			if(index_op1 != -1)
+				n_ops++;
+
+			 if(index_op2 != -1)
+				 n_ops++;
+
+			 pre="";
+			 post="";
+
+				switch(GET_INS_PROPERTY_PRE_POST_OP(instruction->properties)){
+				case INS_PROPERTY_PRE_NEG:
+					pre="-";
+					break;
+				case INS_PROPERTY_PRE_INC:
+					pre="++";
+					break;
+				case INS_PROPERTY_PRE_DEC:
+					pre="--";
+					break;
+				case INS_PROPERTY_POST_INC:
+					post="++";
+					break;
+				case INS_PROPERTY_POST_DEC:
+					post="--";
+					break;
+				default:
+					// check whether is constant and numeric
+					if(instruction->op_code==OP_CODE::LOAD && instruction->index_op1==LOAD_TYPE_CONSTANT){
+						tInfoConstantValue *icv = (((tInfoConstantValue *)instruction->index_op2));
+						float n;
+
+						// change the sign
+						switch(icv->properties){
+						default:
+							break;
+						case STK_PROPERTY_TYPE_INTEGER:
+							if(((intptr_t)icv->stkValue)<0){
+								pre="-";
+							}
+							break;
+						case STK_PROPERTY_TYPE_NUMBER:
+							memcpy(&n,&icv->stkValue,sizeof(float));
+							if(n<0){
+								pre="-";
+							}
+							break;
+						}
+					}
+					break;
+
+				}
+			switch(instruction->op_code){
+
+			case  NEW:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,CEval::getOpCodeStr(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->index_op1):"???");
+				break;
+			case  LOAD:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s\n"
+						,idx_instruction,
+						CEval::getOpCodeStr(instruction->op_code),
+						pre.c_str(),
+						getStrTypeLoadValue(sfo,sfo->instruction,idx_instruction).c_str(),
+						post.c_str());
+				break;
+			case JNT:
+			case JT:
+			case JMP:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
+						,idx_instruction
+						,CEval::getOpCodeStr(instruction->op_code)
+						,(int)instruction->index_op2);
+				break;
+			case PUSH_SCOPE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
+						,idx_instruction
+						,CEval::getOpCodeStr(instruction->op_code)
+						,instruction->index_op1!=0?'(':' '
+						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+						,instruction->index_op1!=0?')':' '
+						);
+				break;
+			case POP_SCOPE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
+						,idx_instruction
+						,CEval::getOpCodeStr(instruction->op_code)
+						,instruction->index_op1!=0?'(':' '
+						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+						,instruction->index_op1!=0?')':' '
+						);
+				break;
+			default:
+
+				if(n_ops==0){
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,CEval::getOpCodeStr(instruction->op_code));
+				}else if(n_ops==1){
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
+							,idx_instruction
+							,CEval::getOpCodeStr(instruction->op_code)
+							,(instruction->properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
+							);
+				}else{
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
+							,idx_instruction
+							,CEval::getOpCodeStr(instruction->op_code)
+							);
+				}
+				break;
+			}
+		}
+
+
+		// and then print its functions ...
+		vector<CScriptFunction *> * m_vf = &sfo->m_function;
+
+		for(unsigned j =0; j < m_vf->size(); j++){
+
+			CScriptFunction *local_irfs = (*m_vf)[j];
+
+			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+				string symbol_ref="????";
+
+
+				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
+
+				if(local_irfs->idxClass!=ZS_INVALID_CLASS){
+					CScriptClass *sc = GET_SCRIPT_CLASS(local_irfs->idxClass);
+					if(sc->idxClass == IDX_CLASS_MAIN){
+						symbol_ref="Main";
+					}else{
+						symbol_ref=sfo->symbol_info.symbol->name+string("::")+string("????");
+					}
+				}
+
+				printf("-------------------------------------------------------\n");
+				printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
+				printGeneratedCode(m_vf->at(j));
+			}
+		}
+	 }
+
+	 void CEval::printGeneratedCode(){
+
+		 vector<CScriptClass *> *vec_script_class_node=CScriptClassFactory::getInstance()->getVectorScriptClassNode();
+		 // for all classes print code...
+		 for(unsigned i = 0; i < vec_script_class_node->size(); i++){
+			 CScriptClass *rc=vec_script_class_node->at(i);
+			 for(unsigned f = 0; f < rc->m_function.size(); f++){
+				 printGeneratedCode(rc->m_function[f]);
+			 }
+		 }
+	 }
+	 // PRINT ASM INFO
+	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 	CEval * CEval::getInstance(){
 		if(eval_singleton == NULL){
@@ -723,10 +966,9 @@ namespace zetscript{
 		char *start_str=(char *)start_word;
 		char *aux=(char *)start_word;
 		string v="";
-//		OPERATOR_TYPE sp;
 		 bool is_possible_number=false;
 		 int i=0;
-		 bool error;
+		 bool error=false;
 		 bool start_digit = false;
 		 token_node->token_type = TOKEN_TYPE::UNKNOWN_TOKEN;
 		 KEYWORD_TYPE kw=isKeyword(aux);
@@ -2847,9 +3089,10 @@ namespace zetscript{
 
 		for(unsigned i=0; i < pCurrentFunctionInfo->instruction.size(); i++){
 
-
+			tVariableSymbolInfo *vis=NULL;
 			tInstructionEval *instruction = &pCurrentFunctionInfo->instruction[i];
 			tLinkSymbolFirstAccess *ls=&instruction->linkSymbolFirstAccess;
+
 
 			if(ls->idxScriptFunction != ZS_UNDEFINED_IDX){ // solve first symbol first access...
 
@@ -2859,10 +3102,12 @@ namespace zetscript{
 				if(instruction->properties & INS_PROPERTY_THIS_SCOPE){ // trivial this.
 
 					if(ls->n_params==NO_PARAMS_IS_VARIABLE){
-						if((instruction->index_op2=(intptr_t)sc->getVariable(ls->value,sc->symbol_info.symbol->idxScope))==0){
+						if((vis=sc->getVariable(ls->value,sc->symbol_info.symbol->idxScope))==0){
 							THROW_RUNTIME_ERROR("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str());
 							return;
 						}
+
+						instruction->index_op2=vis->idxSymbol;
 					}
 					else{
 						if((instruction->index_op2=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idxScope,ls->n_params))==0){
@@ -2897,53 +3142,62 @@ namespace zetscript{
 
 
 				}else{ // find local/global var/function ...
-					bool found=false;
-					intptr_t result=0;
+					bool local_found=false;
 					LOAD_TYPE load_type=LOAD_TYPE::LOAD_TYPE_UNDEFINED;
 
-					// starting scope ...
+					// try find local symbol  ...
 					CScope *scope=GET_SCOPE(ls->idxScope);
-
 					tSymbol * sc_var = scope->getSymbol(ls->value, ls->n_params);
 					if(ls->n_params==NO_PARAMS_IS_VARIABLE){
-						load_type=LOAD_TYPE::LOAD_TYPE_VARIABLE;
-						result=(intptr_t)sf->getVariable(ls->value,sc_var->idxScope);
+						if((vis=sf->getVariable(ls->value,sc_var->idxScope))!=NULL){
+							load_type=LOAD_TYPE::LOAD_TYPE_VARIABLE;
+							instruction->index_op2=vis->idxSymbol;
+							local_found=true;
+						}
 					}
 					else{
-						load_type=LOAD_TYPE::LOAD_TYPE_FUNCTION;
-						result=(intptr_t)sf->getFunction(ls->value,sc_var->idxScope,ls->n_params);
 
+						if((instruction->index_op2=(intptr_t)sf->getFunction(ls->value,sc_var->idxScope,ls->n_params))!=0){
+							load_type=LOAD_TYPE::LOAD_TYPE_FUNCTION;
+							local_found =true;
+						}
 					}
 
-					if(result == 0){ // try global...
+					if(!local_found){ // try global...
 						tSymbol * sc_var = MAIN_SCOPE->getSymbol(ls->value, ls->n_params);
 
 						if(sc_var != NULL){
 							if(ls->n_params==NO_PARAMS_IS_VARIABLE){
+
+								if((vis=MAIN_FUNCTION->getVariable(ls->value,sc_var->idxScope))==NULL){
+									THROW_RUNTIME_ERROR("Cannot find variable \"%s\"",ls->value.c_str());
+									return;
+								}
+
 								load_type=LOAD_TYPE::LOAD_TYPE_VARIABLE;
-								result=(intptr_t)MAIN_FUNCTION->getVariable(ls->value,sc_var->idxScope);
+								instruction->index_op2=vis->idxSymbol;
 							}
 							else{
+
+								if((instruction->index_op2=(intptr_t)MAIN_FUNCTION->getFunction(ls->value,sc_var->idxScope,ls->n_params))==0){
+									THROW_RUNTIME_ERROR("Cannot find function \"%s\"",ls->value.c_str());
+									return;
+								}
+
 								load_type=LOAD_TYPE::LOAD_TYPE_FUNCTION;
-								result=(intptr_t)MAIN_FUNCTION->getFunction(ls->value,sc_var->idxScope,ls->n_params);
+
 							}
 						}
 					}
 
-					if(result == 0){
-						THROW_RUNTIME_ERROR("Cannot find symbol %s",ls->value.c_str());
-						return;
-					}
+
 
 					instruction->index_op1=load_type;
-					instruction->index_op2=result;
 
 					if(load_type==LOAD_TYPE::LOAD_TYPE_FUNCTION){
-						CScriptFunction *sf = ((CScriptFunction *)result);
-						//instruction->index_op2=sf->idxScriptFunction;
-
+						CScriptFunction *sf = ((CScriptFunction *)instruction->index_op2);
 						if((sf->symbol_info.properties & PROPERTY_C_OBJECT_REF) != 0){ // function will be solved at run time because it has to check param type
-							instruction->index_op2=0; // solve at runtime...
+							instruction->index_op2=ZS_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
 						}
 					}
 
@@ -3051,10 +3305,6 @@ namespace zetscript{
 			// already parsed
 			THROW_RUNTIME_ERROR("Filename \"%s\" already parsed",filename);
 			error=true;
-		}
-
-		if(!error){
-			CURRENT_VM->buildCache();
 		}
 
 		if(buf_tmp!=NULL){

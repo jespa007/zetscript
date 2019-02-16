@@ -15,6 +15,8 @@ namespace zetscript{
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
+
+
 	#define COPY_NUMBER(d,s)  memcpy((d),(s),sizeof(float))
 
 	#define LOAD_INT_OP(ptr_result_instruction) \
@@ -460,6 +462,8 @@ namespace zetscript{
 
 		idxCurrentStack=0;
 	}
+
+
 
 	CVirtualMachine::CVirtualMachine(){
 
