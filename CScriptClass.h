@@ -81,8 +81,8 @@ namespace zetscript{
 
 		static 	bool 	register_c_base_symbols;
 		static 			vector<CScriptClass *> 			* vec_script_class_node;
-		ZETSCRIPT_MODULE_EXPORT static vector<CScriptClass *> * getVecScriptClassNode();
-		ZETSCRIPT_MODULE_EXPORT static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
+		static vector<CScriptClass *> * getVecScriptClassNode();
+		static map<int, map<int, fntConversionType>>  *	 getMapTypeConversion();
 		static void  print(const char *s);
 		static void (* print_out_callback)(const char *);
 		//------------- VARIABLES STRUCT ---------------
@@ -103,9 +103,9 @@ namespace zetscript{
 		static string  *STACK_ELEMENT_PTR;//	typeid(bool).name()
 
 
-		ZETSCRIPT_MODULE_EXPORT static void setPrintOutCallback(void (*)(const char *));
+		static void setPrintOutCallback(void (*)(const char *));
 
-		ZETSCRIPT_MODULE_EXPORT static const char * getMetamethod(METAMETHOD_OPERATOR op);
+		static const char * getMetamethod(METAMETHOD_OPERATOR op);
 
 		CScriptFunctionObject	metadata_info;
 		unsigned char  idx_function_script_constructor;
@@ -122,7 +122,7 @@ namespace zetscript{
 
 		vector<int > metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
 
-		ZETSCRIPT_MODULE_EXPORT CScriptClass();
+		CScriptClass();
 
 		bool is_c_class();
 
@@ -163,20 +163,20 @@ namespace zetscript{
 
 
 		static CScriptClass 				* 		getScriptClassByIdx(unsigned char idx);
-		ZETSCRIPT_MODULE_EXPORT static CScriptClass 				* 		getScriptClassByName(const string & name, bool throw_if_not_found=true);
+		static CScriptClass 				* 		getScriptClassByName(const string & name, bool throw_if_not_found=true);
 		static CScriptClass 				* 		getScriptClassBy_C_ClassPtr(const string & class_type, bool throw_if_not_found=true);
 		static unsigned char						getIdxScriptClass_Internal(const string & class_name);
 		static unsigned char						getIdxScriptClass(const string & v);
 		static unsigned char						getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
-		ZETSCRIPT_MODULE_EXPORT static unsigned char	getIdxClassFromIts_C_Type(const string & s);
+		static unsigned char						getIdxClassFromIts_C_Type(const string & s);
 
 
-		ZETSCRIPT_MODULE_EXPORT static bool			isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
+		static bool			isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
 
 
 
 		//static BASIC_CLASS_TYPE			getIdxPrimitiveFromIts_C_TypeInternal(const string & c_type_str);
-		ZETSCRIPT_MODULE_EXPORT  static bool 								isClassRegistered(const string & v);
+		 static bool 								isClassRegistered(const string & v);
 
 
 
@@ -203,8 +203,8 @@ namespace zetscript{
 
 		static CScriptFunctionObject *  registerFunctionSymbol(const string & class_name, const string & name,short idxAstNode);
 		static int getIdxScriptFunctionObjectByClassFunctionName_Internal(CScriptClass *rc,const string & function_name);
-		ZETSCRIPT_MODULE_EXPORT static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
-		ZETSCRIPT_MODULE_EXPORT static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
+		static int getIdxScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
+		static CScriptFunctionObject * getScriptFunctionObjectByClassFunctionName(const string & class_name,const string & function_name);
 		static bool 				  functionSymbolExist(CScriptClass *rc,const string & symbolname_ref, int n_params);
 
 
@@ -330,8 +330,8 @@ namespace zetscript{
 		/**
 		 * Register C variable
 		 */
-		ZETSCRIPT_MODULE_EXPORT static bool register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
-		ZETSCRIPT_MODULE_EXPORT static unsigned char getIdx_C_RegisteredClass(const string & str_classPtr, bool throw_if_not_found=true);
+		static bool register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
+		static unsigned char getIdx_C_RegisteredClass(const string & str_classPtr, bool throw_if_not_found=true);
 
 
 
@@ -339,7 +339,7 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		ZETSCRIPT_MODULE_EXPORT static bool register_C_SingletonClassInt(const string & class_name){//, const string & base_class_name=""){
+		static bool register_C_SingletonClassInt(const string & class_name){//, const string & base_class_name=""){
 
 			// to make compatible MSVC shared library
 			vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();

@@ -22,12 +22,6 @@ ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
 # COMMON PARAMS
 #
 
-IF (NOT  (("${LINK}" STREQUAL "SHARED") OR ("${LINK}" STREQUAL "STATIC")))
-   SET ( LINK "SHARED" )
-ENDIF()
-
-message("-- Link: " ${LINK})
-
 include_directories (
 	${PROJECT_SOURCE_DIR}
 )
@@ -181,7 +175,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS}
 )
 
 # zetscriptlib
-add_library( zetscript${POST_NAME} ${LINK} ${ZETSCRIPT_LIB_SRCS} )
+add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
 if(MSVC)
 	#only for msvc...
 	set_target_properties(zetscript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)

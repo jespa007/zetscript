@@ -24,7 +24,7 @@ namespace zetscript{
 			LOG_DEBUG
 		};
 
-		ZETSCRIPT_MODULE_EXPORT static void  print_log(const  char  *file, int  line, int level, bool with_cr, const  char  *string_text, ...);
+		static void  print_log(const  char  *file, int  line, int level, bool with_cr, const  char  *string_text, ...);
 
 
 		//----------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ namespace zetscript{
 		static string toLower(const string & str);
 		static string toUpper(const string & str);
 		static std::wstring toWString(const std::string &s);
-		ZETSCRIPT_MODULE_EXPORT static string  sformat(const  char  *string_text, ...);
+		static string  sformat(const  char  *string_text, ...);
 
 		static bool endsWith(const string & fullString, const string & ending);
 
@@ -100,7 +100,7 @@ namespace zetscript{
 		static char * copyStringFromInterval(const char *p1, const char *p2);
 	};
 
-	ZETSCRIPT_MODULE_EXPORT std::string demangle(const string & name);
+	std::string demangle(const string & name);
 
 }
 

@@ -31,7 +31,7 @@ namespace zetscript{
 		void 			push(tStackElement  * v);
 		tStackElement * pop();
 
-		ZETSCRIPT_MODULE_EXPORT int size();
+		int size();
 
 		virtual void destroy();
 

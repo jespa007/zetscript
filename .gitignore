@@ -48,3 +48,6 @@
 /zs.vcxproj.filters
 /zs_test.vcxproj.user
 /zs.vcxproj.user
+/.metadata/
+/RemoteSystemsTempFiles/
+/zs.psess

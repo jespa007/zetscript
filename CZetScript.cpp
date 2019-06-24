@@ -549,7 +549,7 @@ namespace zetscript{
 		m_mainObject = NULL;
 	}
 
-	ZETSCRIPT_MODULE_EXPORT void CZetScript::parse(const string & str_script,const char *filename_ref){
+	void CZetScript::parse(const string & str_script,const char *filename_ref){
 		if(!__init__) {THROW_RUNTIME_ERROR("zetscript not initialized");return;}
 
 		int idx_file=-1;
@@ -594,7 +594,7 @@ namespace zetscript{
 
 	}
 
-	ZETSCRIPT_MODULE_EXPORT void CZetScript::compile(bool show_bytecode){
+	void CZetScript::compile(bool show_bytecode){
 		if(!__init__) {THROW_RUNTIME_ERROR("ZetScript not initialized"); return;}
 		//ZS_CLEAR_ERROR_MSG();
 

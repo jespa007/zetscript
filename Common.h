@@ -9,12 +9,6 @@
 #endif
 
 
-#ifdef  ZETSCRIPT_EXPORTS
-	#define ZETSCRIPT_MODULE_EXPORT __declspec(dllexport)
-#else
-	#define ZETSCRIPT_MODULE_EXPORT
-#endif
-
 #define ZS_ERROR						-1
 #define ZS_UNDEFINED_IDX 				-1
 #define ZS_FUNCTION_NOT_FOUND_IDX	 	-2

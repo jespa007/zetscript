@@ -42,12 +42,12 @@ namespace zetscript{
 	public:
 
 		static void init();
-		ZETSCRIPT_MODULE_EXPORT static bool  setState(int idx);
+		static bool  setState(int idx);
 
 		/**
 		 * Save current state
 		 */
-		ZETSCRIPT_MODULE_EXPORT static int   saveState();
+		static int   saveState();
 
 		static bool   restoreLastState();
 

@@ -110,7 +110,7 @@ namespace zetscript{
 		}
 
 
-		ZETSCRIPT_MODULE_EXPORT tStackElement execute(
+		tStackElement execute(
 					 CScriptFunctionObject *info_function,
 					 CScriptVariable *this_object,
 					 bool & error,
