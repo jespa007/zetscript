@@ -102,7 +102,7 @@ namespace zetscript{
 		void addGlobalVar(const tStackElement & stk);
 		void clearGlobalVars();
 
-		ZETSCRIPT_MODULE_EXPORT tStackElement execute(
+		 tStackElement execute(
 					 CScriptFunction *info_function,
 					 CScriptVariable *this_object,
 					 bool & error,

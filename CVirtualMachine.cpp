@@ -577,7 +577,7 @@ namespace zetscript{
 		bool move_to_shared_list=*n_shares==0;
 
 		if(*n_shares >= MAX_SHARES_VARIABLE){
-			THROW_RUNTIME_ERROR("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE));
 			return false;
 
 		}

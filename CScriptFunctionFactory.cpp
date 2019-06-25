@@ -83,7 +83,7 @@ namespace zetscript{
 
 				((vec_script_function_node)[size-1]->symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
 			){
-				THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",f);
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("function \"%s\" should register after C functions. Register after script functions is not allowed",f));
 				return false;
 			}
 

@@ -41,7 +41,7 @@ namespace zetscript{
 
 		vector<CScriptFunction * > metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
 
-		ZETSCRIPT_MODULE_EXPORT CScriptClass(unsigned char _idxClass);
+		 CScriptClass(unsigned char _idxClass);
 
 		virtual CScriptFunction						*  			registerFunctionMember(const string & file, short line,const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
 

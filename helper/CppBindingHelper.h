@@ -261,7 +261,7 @@ namespace zetscript{
 
 
 					if(!stk2var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 			}
@@ -336,7 +336,7 @@ namespace zetscript{
 					}
 
 					if(!stk2var(&stk,idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 			}
@@ -422,7 +422,7 @@ namespace zetscript{
 					}
 
 					if(!stk2var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 			}
@@ -512,7 +512,7 @@ namespace zetscript{
 				}
 
 				if(!stk2var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-					THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
 				}
 				return ret_value;
 			}
@@ -609,7 +609,7 @@ namespace zetscript{
 					}
 
 					if(!stk2var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 
@@ -716,7 +716,7 @@ namespace zetscript{
 				}
 
 				if(!stk2var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-					THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
 				}
 				return ret_value;
 			}
@@ -825,7 +825,7 @@ namespace zetscript{
 					}
 
 					if(!stk2var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 
@@ -878,13 +878,13 @@ namespace zetscript{
 
 			// 2. check valid parameters ...
 			if((idx_return_type=GET_IDX_CLASS_FROM_ITS_C_TYPE(return_type)) == -1){
-				THROW_RUNTIME_ERROR("Return type \"%s\" for bind function not registered",demangle(return_type).c_str());
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Return type \"%s\" for bind function not registered",demangle(return_type).c_str()));
 				return NULL;
 			}
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
 				if(GET_IDX_CLASS_FROM_ITS_C_TYPE(m_arg[i])==-1){
-					THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for bind function not registered",CZetScriptUtils::intToString(i),demangle(m_arg[i]).c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Argument (%i) type \"%s\" for bind function not registered",i,demangle(m_arg[i]).c_str()));
 					return NULL;
 				}
 			}
@@ -929,7 +929,7 @@ namespace zetscript{
 					case STK_PROPERTY_TYPE_BOOLEAN:
 					case STK_PROPERTY_TYPE_STRING:
 					case STK_PROPERTY_TYPE_FUNCTION:
-						THROW_RUNTIME_ERROR("type not implemented to cast. Sorry.");
+						THROW_RUNTIME_ERROR("type not implemented yet");
 						return v_out;
 						break;
 					case STK_PROPERTY_TYPE_INTEGER:

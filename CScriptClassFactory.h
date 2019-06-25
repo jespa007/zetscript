@@ -102,28 +102,28 @@ namespace zetscript{
 
 
 			tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
-			ZETSCRIPT_MODULE_EXPORT map<unsigned char, map<unsigned char, fntConversionType>> *  getMapTypeConversion();
+			 map<unsigned char, map<unsigned char, fntConversionType>> *  getMapTypeConversion();
 
 
 
 
-			ZETSCRIPT_MODULE_EXPORT unsigned char				getIdxClassFromIts_C_Type(const string & s);
-			ZETSCRIPT_MODULE_EXPORT void 						setPrintOutCallback(void (*)(const char *));
-			ZETSCRIPT_MODULE_EXPORT const char * 				getMetamethod(METAMETHOD_OPERATOR op);
-			ZETSCRIPT_MODULE_EXPORT vector<CScriptClass *> * 	getVectorScriptClassNode();
+			 unsigned char				getIdxClassFromIts_C_Type(const string & s);
+			 void 						setPrintOutCallback(void (*)(const char *));
+			 const char * 				getMetamethod(METAMETHOD_OPERATOR op);
+			 vector<CScriptClass *> * 	getVectorScriptClassNode();
 
 			/// register script class
 			CScriptClass 						* 				registerClass(const string & file, short line, const string & class_name, const string & base_class_name="");
 
 
-			ZETSCRIPT_MODULE_EXPORT CScriptClass * 				getScriptClass(unsigned char idx);
-			ZETSCRIPT_MODULE_EXPORT CScriptClass * 				getScriptClass(const string & name);
+			 CScriptClass * 				getScriptClass(unsigned char idx);
+			 CScriptClass * 				getScriptClass(const string & name);
 			CScriptClass 						* 				getScriptClassBy_C_ClassPtr(const string & class_type);
 			const char 							* 				getScriptClassName(unsigned char idx);
 
 
-			ZETSCRIPT_MODULE_EXPORT bool						isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
-			ZETSCRIPT_MODULE_EXPORT  bool 						isClassRegistered(const string & v);
+			 bool						isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
+			  bool 						isClassRegistered(const string & v);
 
 			void 												registerPrimitiveTypes();
 			void 												register_C_BaseSymbolsInt(bool );
@@ -154,15 +154,15 @@ namespace zetscript{
 			/**
 			 * Register C variable
 			 */
-			ZETSCRIPT_MODULE_EXPORT tVariableSymbolInfo * register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
-			ZETSCRIPT_MODULE_EXPORT unsigned char getIdx_C_RegisteredClass(const string & str_classPtr);
+			 tVariableSymbolInfo * register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
+			 unsigned char getIdx_C_RegisteredClass(const string & str_classPtr);
 
 
 			/**
 			 * Register C Class. Return index registered class
 			 */
 			template<class _T>
-			ZETSCRIPT_MODULE_EXPORT CScriptClass * register_C_SingletonClassInt(const string & class_name);
+			 CScriptClass * register_C_SingletonClassInt(const string & class_name);
 
 			/**
 			 * Register C Class. Return index registered class

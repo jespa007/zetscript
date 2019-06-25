@@ -548,7 +548,7 @@ namespace zetscript{
 			*info_ptr={obj,NULL,properties};
 			(m_contantPool)[const_name]=info_ptr;
 		}else{
-			THROW_RUNTIME_ERROR("internal:constant %s already exist",const_name.c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("internal:constant %s already exist",const_name.c_str()));
 		}
 
 		return info_ptr;
@@ -1389,7 +1389,7 @@ namespace zetscript{
 		}
 
 
-		THROW_RUNTIME_ERROR("operator %i not implemented",op);
+		THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("operator %i not implemented",op));
 		return OP_CODE::END_FUNCTION;
 	}
 
@@ -3103,7 +3103,7 @@ namespace zetscript{
 
 					if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 						if((vis=sc->getVariable(ls->value,sc->symbol_info.symbol->idxScope))==0){
-							THROW_RUNTIME_ERROR("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str());
+							THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 							return;
 						}
 
@@ -3111,7 +3111,7 @@ namespace zetscript{
 					}
 					else{
 						if((instruction->index_op2=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idxScope,ls->n_params))==0){
-							THROW_RUNTIME_ERROR("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str());
+							THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 							return;
 						}
 					}
@@ -3134,7 +3134,7 @@ namespace zetscript{
 					// ok get the super function...
 					if(sf_found == NULL){
 
-						THROW_RUNTIME_ERROR("Cannot find super function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str());
+						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Cannot find super function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 						return;
 					}
 
@@ -3170,7 +3170,7 @@ namespace zetscript{
 							if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 
 								if((vis=MAIN_FUNCTION->getVariable(ls->value,sc_var->idxScope))==NULL){
-									THROW_RUNTIME_ERROR("Cannot find variable \"%s\"",ls->value.c_str());
+									THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Cannot find variable \"%s\"",ls->value.c_str()));
 									return;
 								}
 
@@ -3180,7 +3180,7 @@ namespace zetscript{
 							else{
 
 								if((instruction->index_op2=(intptr_t)MAIN_FUNCTION->getFunction(ls->value,sc_var->idxScope,ls->n_params))==0){
-									THROW_RUNTIME_ERROR("Cannot find function \"%s\"",ls->value.c_str());
+									THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Cannot find function \"%s\"",ls->value.c_str()));
 									return;
 								}
 
@@ -3303,7 +3303,7 @@ namespace zetscript{
 
 		}else{
 			// already parsed
-			THROW_RUNTIME_ERROR("Filename \"%s\" already parsed",filename);
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Filename \"%s\" already parsed",filename.c_str()));
 			error=true;
 		}
 

@@ -53,7 +53,7 @@ namespace zetscript{
 			m_instance = new CZetScript();
 
 			if(!m_instance->init()){
-				THROW_RUNTIME_ERROR("Cannot instance ZetScript");
+				CZetScriptUtils::sformat("Cannot instance ZetScript");
 			}
 		}
 		return m_instance;
@@ -162,7 +162,7 @@ namespace zetscript{
 				return (int)((intptr_t)se->stkValue);
 			}
 			else{
-				THROW_RUNTIME_ERROR("eval_int(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("eval_int(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
@@ -191,7 +191,7 @@ namespace zetscript{
 				return (bool)((intptr_t)se->stkValue);
 
 			}else{
-				THROW_RUNTIME_ERROR("eval_bool(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("eval_bool(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
@@ -218,7 +218,7 @@ namespace zetscript{
 				return *f;
 			}
 			else{
-				THROW_RUNTIME_ERROR("eval_float(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				CZetScriptUtils::sformat("eval_float(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 
 			}
 		}
@@ -250,7 +250,7 @@ namespace zetscript{
 				value = ((const char *)se->stkValue);
 			}
 			else{
-				THROW_RUNTIME_ERROR("eval_string(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				CZetScriptUtils::sformat("eval_string(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 			}
 		}
 
@@ -276,7 +276,7 @@ namespace zetscript{
 	bool CZetScript::evalString(const string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
 
 
-		if(!__init__) {THROW_RUNTIME_ERROR("zetscript not initialized");return false;}
+		if(!__init__) {CZetScriptUtils::sformat("zetscript not initialized");return false;}
 
 		if(!CEval::evalString(expression)){
 			return false;
@@ -295,7 +295,7 @@ namespace zetscript{
 
 	bool CZetScript::evalFile(const string & filename, bool exec_vm, bool show_bytecode){
 
-		if(!__init__) {THROW_RUNTIME_ERROR("zetscript not initialized");return false;}
+		if(!__init__) {CZetScriptUtils::sformat("zetscript not initialized");return false;}
 
 		char *buf_tmp=NULL;
 
@@ -331,7 +331,7 @@ namespace zetscript{
 		CScriptFunction * m_mainFunctionInfo = MAIN_FUNCTION;
 
 		if(m_mainFunctionInfo == NULL){
-			THROW_RUNTIME_ERROR("m_mainFunctionInfo is not initialized");
+			CZetScriptUtils::sformat("m_mainFunctionInfo is not initialized");
 			return false;
 		}
 
@@ -357,14 +357,14 @@ namespace zetscript{
 								}
 							}
 							else{
-								THROW_RUNTIME_ERROR("cannot access i (%i)",j);
+								CZetScriptUtils::sformat("cannot access i (%i)",j);
 								return false;
 							}
 						}
 					}
 
 					if((*calling_obj) == NULL){
-						THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return false;
 					}
 
@@ -376,12 +376,12 @@ namespace zetscript{
 						if(se->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							*calling_obj=(CScriptVariable *)se->varRef;
 						}else{
-							THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
+							CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
 							return false;
 						}
 					}
 					else{
-						THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return false;
 					}
 				}
@@ -394,7 +394,7 @@ namespace zetscript{
 				}
 			}else{
 
-				THROW_RUNTIME_ERROR("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
+				CZetScriptUtils::sformat("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
 				return false;
 			}
 
@@ -411,7 +411,7 @@ namespace zetscript{
 		}
 
 		if(*fun_obj==NULL){
-			THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str());
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
 			return false;
 		}
 

@@ -57,7 +57,7 @@ namespace zetscript{
 		tInfoVarScopeBlock *lut_scope_symbol;
 		unsigned n_lut_scope_symbols;
 
-		ZETSCRIPT_MODULE_EXPORT CScriptFunction(unsigned char _idxClass );
+		 CScriptFunction(unsigned char _idxClass );
 
 		tVariableSymbolInfo *  registerVariable(const string & file, short line, const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 

@@ -24,7 +24,7 @@ namespace zetscript{
 		//===================================================================================================
 		//
 		// PRINT ASM INFO
-			static ZETSCRIPT_MODULE_EXPORT void printGeneratedCode();
+			static  void printGeneratedCode();
 
 		// PRINT ASM INFO
 		//---------------------------------------------------------------------------------------------------------------------------------------
@@ -300,7 +300,7 @@ namespace zetscript{
 		// PRINT ASM INFO
 		static string getStrMovVar(tInstruction * iao);
 		static string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
-		static ZETSCRIPT_MODULE_EXPORT void printGeneratedCode(CScriptFunction *sfo);
+		static  void printGeneratedCode(CScriptFunction *sfo);
 		//===================================================================================================
 
 

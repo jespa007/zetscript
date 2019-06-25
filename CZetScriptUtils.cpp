@@ -7,17 +7,17 @@
 namespace zetscript{
 
 	#define VAR_LOG(l) ((l) == CZetScriptUtils::LOG_ERROR?"ERR": (l)==CZetScriptUtils::LOG_WARNING?"WRN": (l) == CZetScriptUtils::LOG_INFO ? "INF" : (l) == CZetScriptUtils::LOG_DEBUG ? "DBG":"NAN" )
+	static char  _sformat_buffer[4096] = { 0 };
 
+	const char *  CZetScriptUtils::sformat(const  char  *input_text, ...){
 
-	string  CZetScriptUtils::sformat(const  char  *input_text, ...){
-		char  text[4096] = { 0 };
 
 		va_list  ap;
 		va_start(ap,  input_text);
-		vsprintf(text,  input_text,  ap);
+		vsprintf(_sformat_buffer,  input_text,  ap);
 		va_end(ap);
 
-		return string(text);
+		return _sformat_buffer;
 	}
 
 	//---------------------------------------------------------------------------------------------------------
@@ -111,16 +111,16 @@ namespace zetscript{
 				if(readed_elements != file_length) {
 
 					free(buffer);
-					THROW_RUNTIME_ERROR("number elements doesn't match with length file (%s)",filename.c_str());
+					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("number elements doesn't match with length file (%s)",filename.c_str()));
 
 				}
 
 				fclose(fp);
 				return buffer;
 			}
-			else  THROW_RUNTIME_ERROR("I can't read file \"%s\"",filename.c_str());
+			else  THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("I can't read file \"%s\"",filename.c_str()));
 		}
-		else  THROW_RUNTIME_ERROR("I can't open file \"%s\"",filename.c_str());
+		else  THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("I can't open file \"%s\"",filename.c_str()));
 
 
 		return NULL;
@@ -223,14 +223,14 @@ namespace zetscript{
 	char * CZetScriptUtils::copyStringFromInterval(const char *p1, const char *p2){
 
 		if(p1 == NULL || p2 == NULL){
-			THROW_RUNTIME_ERROR("NULL entry (%p %p)",p1,p2);
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("NULL entry (%p %p)",p1,p2));
 			return NULL;
 		}
 
 		int var_length=p2-p1;
 
 		if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
-			THROW_RUNTIME_ERROR("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length);
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
 			return NULL;
 		}
 

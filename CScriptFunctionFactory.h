@@ -27,7 +27,7 @@ namespace zetscript{
 			//static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec);
 			vector<CScriptFunction *> 	*	getVectorScriptFunctionNode();
 
-			ZETSCRIPT_MODULE_EXPORT CScriptFunction 			*	newScriptFunction(			const string & file
+			 CScriptFunction 			*	newScriptFunction(			const string & file
 																								, short line
 																								, unsigned  char idxClass
 																								, short idxScope
@@ -38,9 +38,9 @@ namespace zetscript{
 																								, unsigned short properties=0);
 
 
-			ZETSCRIPT_MODULE_EXPORT bool							checkCanRegister_C_Function(const char *f);
+			 bool							checkCanRegister_C_Function(const char *f);
 
-			ZETSCRIPT_MODULE_EXPORT CScriptFunction 			* 	getScriptFunction(int idx);
+			 CScriptFunction 			* 	getScriptFunction(int idx);
 
 			void clear();
 

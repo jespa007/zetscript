@@ -161,34 +161,34 @@ namespace zetscript{
 	public:
 
 
-		ZETSCRIPT_MODULE_EXPORT static CZetScript * getInstance();
+		 static CZetScript * getInstance();
 
 		void	setUserCallbackOnError(tPrintFunctionCallback _fun);
 
-		ZETSCRIPT_MODULE_EXPORT static int eval_int(const string & str_to_eval);
-		ZETSCRIPT_MODULE_EXPORT static bool eval_bool(const string & str_to_eval);
-		ZETSCRIPT_MODULE_EXPORT static float eval_float(const string & str_to_eval);
-		ZETSCRIPT_MODULE_EXPORT static string eval_string(const string & str_to_eval);
+		 static int eval_int(const string & str_to_eval);
+		 static bool eval_bool(const string & str_to_eval);
+		 static float eval_float(const string & str_to_eval);
+		 static string eval_string(const string & str_to_eval);
 
 
 		/**
 		 * Main bind function
 		 */
-		ZETSCRIPT_MODULE_EXPORT bool getScriptObjectFromFunctionAccess(const string &function_access_expression
+		 bool getScriptObjectFromFunctionAccess(const string &function_access_expression
 														  ,CScriptVariable **calling_obj
 														  ,CScriptFunction **fun_obj);
-		ZETSCRIPT_MODULE_EXPORT CVirtualMachine * getVirtualMachine();
+		 CVirtualMachine * getVirtualMachine();
 
 
 		/**
 		 * Clear: Clear compile information.
 		 */
-		ZETSCRIPT_MODULE_EXPORT void clear();
-		ZETSCRIPT_MODULE_EXPORT void execute();
+		 void clear();
+		 void execute();
 
-		ZETSCRIPT_MODULE_EXPORT bool evalString(const string & string, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
-		ZETSCRIPT_MODULE_EXPORT bool evalFile(const string & filename,bool execute=true,bool show_bytecode=false);
-		ZETSCRIPT_MODULE_EXPORT static void destroy();
+		 bool evalString(const string & string, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
+		 bool evalFile(const string & filename,bool execute=true,bool show_bytecode=false);
+		 static void destroy();
 	};
 
 
