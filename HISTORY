@@ -43,7 +43,8 @@ Date: XX-XX-2018
 #101 Adapt inheritance feature from 1.1.3
 #102 Bug: can use variable before define var itself
 
-> 103: Reworked parse + compile in one single optimized step 
+> #103: Reworked parse + compile in one single optimized step 
+> #113: Replace try/catch by getError
 
 Other: Lot of clean code up. 
 
