@@ -240,9 +240,9 @@ namespace zetscript{
 
 		static CNativeFunction *m_instance;
 
-		vector<tInfoProxyFunction>	c_int_function;
-		vector<tInfoProxyFunction>	 c_void_function;
-		vector<void *>	 class_function_member;
+		std::vector<tInfoProxyFunction>	c_int_function;
+		std::vector<tInfoProxyFunction>	 c_void_function;
+		std::vector<void *>	 class_function_member;
 
 	};
 

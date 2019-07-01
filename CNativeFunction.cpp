@@ -2,16 +2,16 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
 
 namespace zetscript{
 
 	CNativeFunction * CNativeFunction::m_instance=NULL;
 
 	CNativeFunction::CNativeFunction(){
-		/*c_void_function = new map<string,void *>();
-		c_int_function = new map<string,void *>();
-		class_function_member = new map<string,void *>();*/
+		/*c_void_function = new std::map<std::string,void *>();
+		c_int_function = new std::map<std::string,void *>();
+		class_function_member = new std::map<std::string,void *>();*/
 	}
 
 	CNativeFunction * CNativeFunction::getInstance(){

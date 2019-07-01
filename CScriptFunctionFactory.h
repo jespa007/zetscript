@@ -24,15 +24,15 @@ namespace zetscript{
 			/**
 			 * Set/Get CScriptClass Node by its idx, regarding current state.
 			 */
-			//static void 								setVectorScriptFunctionObjectNode(vector<CScriptFunction *> 	* set_vec);
-			vector<CScriptFunction *> 	*	getVectorScriptFunctionNode();
+			//static void 								setVectorScriptFunctionObjectNode(std::vector<CScriptFunction *> 	* set_vec);
+			std::vector<CScriptFunction *> 	*	getVectorScriptFunctionNode();
 
-			 CScriptFunction 			*	newScriptFunction(			const string & file
+			 CScriptFunction 			*	newScriptFunction(			const std::string & file
 																								, short line
 																								, unsigned  char idxClass
 																								, short idxScope
-																								, const string & function_name
-																								, vector<tArgumentInfo> args={}
+																								, const std::string & function_name
+																								, std::vector<tArgumentInfo> args={}
 																								, int idx_return_type=ZS_UNDEFINED_IDX
 																								, intptr_t ref_ptr=0
 																								, unsigned short properties=0);
@@ -48,7 +48,7 @@ namespace zetscript{
 
 			static CScriptFunctionFactory *script_function_factory_singleton;
 
-			vector<CScriptFunction *> 	vec_script_function_node;
+			std::vector<CScriptFunction *> 	vec_script_function_node;
 
 			CScriptFunctionFactory();
 			~CScriptFunctionFactory();

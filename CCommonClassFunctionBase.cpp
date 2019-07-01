@@ -1,4 +1,4 @@
-#include "CZetScript.h"
+#include "zetscript.h"
 
 namespace zetscript{
 
@@ -6,9 +6,9 @@ namespace zetscript{
 		idxClass=_idxClass;
 	}
 
-	tVariableSymbolInfo * CCommonClassFunctionBase::registerVariable(const string & file, short line, short idxBlockScope,const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties){
+	tVariableSymbolInfo * CCommonClassFunctionBase::registerVariable(const std::string & file, short line, short idxBlockScope,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties){
 		tVariableSymbolInfo irs;
-		//string symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
+		//std::string symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
 
 		tSymbol * symbol=NULL;
 
@@ -34,12 +34,12 @@ namespace zetscript{
 		return &m_variable[m_variable.size()-1];
 	}
 
-	tVariableSymbolInfo *	CCommonClassFunctionBase::registerVariable(const string & file, short line, const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
+	tVariableSymbolInfo *	CCommonClassFunctionBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
 			return registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 	}
 
-	tVariableSymbolInfo *	 CCommonClassFunctionBase::getVariable(const string & var_name, short idxScope){
+	tVariableSymbolInfo *	 CCommonClassFunctionBase::getVariable(const std::string & var_name, short idxScope){
 
 		if(m_variable.size()>0){
 
@@ -58,9 +58,9 @@ namespace zetscript{
 
 
 
-	CScriptFunction * CCommonClassFunctionBase::registerFunction(const string & file, short line, short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CCommonClassFunctionBase::registerFunction(const std::string & file, short line, short idxScope, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
-			//string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
+			//std::string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
 			if(getFunction(function_name,(char)args.size()) != NULL){
 				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Function \"%s\" already exist",function_name.c_str()));
 				return NULL;
@@ -74,12 +74,12 @@ namespace zetscript{
 			return sf;
 	}
 
-	CScriptFunction * CCommonClassFunctionBase::registerFunction(const string & file, short line, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CCommonClassFunctionBase::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 		return registerFunction(file, line,this->symbol_info.symbol->idxScope, function_name,  args, idx_return_type,ref_ptr, properties);
 	}
 
-	CScriptFunction *	 CCommonClassFunctionBase::getFunction(const string & function_name, short idxScope, char n_args){
+	CScriptFunction *	 CCommonClassFunctionBase::getFunction(const std::string & function_name, short idxScope, char n_args){
 
 		if(m_function.size()>0){
 

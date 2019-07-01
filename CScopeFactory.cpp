@@ -1,4 +1,4 @@
-#include "CZetScript.h"
+#include "zetscript.h"
 
 namespace zetscript{
 
@@ -54,7 +54,7 @@ namespace zetscript{
 		return vec_scope_node.at(idx);
 	}
 
-	vector<CScope *> 	*		CScopeFactory::getVectorScopeNode(){
+	std::vector<CScope *> 	*		CScopeFactory::getVectorScopeNode(){
 		return &vec_scope_node;
 	}
 

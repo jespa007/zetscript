@@ -19,8 +19,8 @@ namespace zetscript{
 	#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
 	#define SET_STRING_RETURN(s)  	CURRENT_VM->setStringReturnValue(s)
 
-	#define NO_PARAMS vector<tStackElement>{}
-	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const vector<CScriptVariable *> & param)>
+	#define NO_PARAMS std::vector<tStackElement>{}
+	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const std::vector<CScriptVariable *> & param)>
 
 	class CScriptFunction;
 	class  CVirtualMachine{
@@ -51,7 +51,7 @@ namespace zetscript{
 
 
 		float f_return_value;
-		string s_return_value;
+		std::string s_return_value;
 		tStackElement stk_aux;
 
 		tStackElement  execute_internal(
@@ -59,7 +59,7 @@ namespace zetscript{
 				CScriptVariable * this_object,
 				bool & error,
 				tStackElement 		  * _ptrStartOp=NULL,
-				string 		  		  * _ptrStartStr=NULL,
+				std::string 		  		  * _ptrStartStr=NULL,
 				unsigned char n_args=0,
 				tInstruction *calling_instruction = NULL);
 
@@ -86,14 +86,14 @@ namespace zetscript{
 
 		const CScriptFunction * getCurrent_C_FunctionCall();
 
-		string stk_C_TypeStr(const tStackElement & stk_v);
+		std::string stk_C_TypeStr(const tStackElement & stk_v);
 
 		inline float *setFloatReturnValue(float f){
 			f_return_value = f;
 			return &f_return_value;
 		}
 
-		inline string *setStringReturnValue(string s){
+		inline std::string *setStringReturnValue(std::string s){
 			s_return_value = s;
 			return &s_return_value;
 		}
@@ -106,7 +106,7 @@ namespace zetscript{
 					 CScriptFunction *info_function,
 					 CScriptVariable *this_object,
 					 bool & error,
-					const vector<tStackElement> &  argv=NO_PARAMS);
+					const std::vector<tStackElement> &  argv=NO_PARAMS);
 
 
 
@@ -136,36 +136,36 @@ namespace zetscript{
 		};
 
 		struct tForeachInfo{
-			tStackElement 		   *key; // iterator element can be string or integer...
-			CScriptVariable			*ptr; // can be struct or vector...
+			tStackElement 		   *key; // iterator element can be std::string or integer...
+			CScriptVariable			*ptr; // can be struct or std::vector...
 			unsigned int 		   idx_current;
 
 		};
 
 		char		str_aux[8192];
 		float 		f_aux_value1,f_aux_value2;
-		 string 	aux_string,symbol_to_find,error_str;
+		 std::string 	aux_string,symbol_to_find,error_str;
 		 tForeachInfo stkForeach[VM_MAX_FOREACH];
 		 tForeachInfo *current_foreach;
 
 
 
-		 string     aux_string_param[MAX_N_ARGS]; // for string params...
+		 std::string     aux_string_param[MAX_N_ARGS]; // for std::string params...
 
 		 tVM_ScopeInfo		*current_scope_info_ptr;
 		 tVM_ScopeInfo		scope_info[VM_MAX_SCOPES];
 		 tVM_ScopeInfo		*MAX_SCOPE_INFO;
 
 
-		string 				stkString[VM_MAX_AUX_STRINGS]; // aux values for string ...
-		string              *ptrLastStr;
-		string              *ptrCurrentStr;
+		std::string 				stkString[VM_MAX_AUX_STRINGS]; // aux values for std::string ...
+		std::string              *ptrLastStr;
+		std::string              *ptrCurrentStr;
 
 		 tStackElement     stack[VM_LOCAL_VAR_MAX_STACK];
 		 int n_globals;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
-		 vector<tStackElement> global_var;
+		 std::vector<tStackElement> global_var;
 		tStackElement *stkCurrentData;
 
 
@@ -189,11 +189,11 @@ namespace zetscript{
 									,tInstruction *instruction
 									,tInstruction * callAleInstruction
 
-				 	 	 	 	 	,vector<tFunctionSymbol> *m_functionSymbol
-									,vector<CScriptFunction *> *vec_global_functions
+				 	 	 	 	 	,std::vector<tFunctionSymbol> *m_functionSymbol
+									,std::vector<CScriptFunction *> *vec_global_functions
 
 									,bool is_constructor
-									,const string & symbol_to_find
+									,const std::string & symbol_to_find
 
 
 									,tStackElement *stkResultOp1

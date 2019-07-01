@@ -28,7 +28,7 @@ namespace zetscript{
 
 			CScope	    		*	newScope(short idx_parent_scope=ZS_UNDEFINED_IDX,bool is_c_node=false);
 			CScope 				* 	getScope(short idx);
-			vector<CScope *> 	* 	getVectorScopeNode();
+			std::vector<CScope *> 	* 	getVectorScopeNode();
 			void clear();
 
 		private:
@@ -37,9 +37,9 @@ namespace zetscript{
 
 
 			/**
-			 * Vector of script scopes. This vector is removed when zetscript reevaluates all scrips.
+			 * Vector of script scopes. This std::vector is removed when zetscript reevaluates all scrips.
 			 */
-			vector<CScope *> 				 vec_scope_node;
+			std::vector<CScope *> 				 vec_scope_node;
 
 			CScopeFactory();
 			~CScopeFactory();

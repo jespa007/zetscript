@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
 
 namespace zetscript{
 
@@ -28,11 +28,11 @@ namespace zetscript{
 
 		 struct tInfoVarScopeBlockRegister{
 			 int idxScope;
-			 vector<int> var_index;
+			 std::vector<int> var_index;
 		 };
 
-		 vector<CScope *> *list = CScopeFactory::getInstance()->getVectorScopeNode();
-		 vector<tInfoVarScopeBlockRegister> vec_ivsb;
+		 std::vector<CScope *> *list = CScopeFactory::getInstance()->getVectorScopeNode();
+		 std::vector<tInfoVarScopeBlockRegister> vec_ivsb;
 		 std::map<short,tInfoVarScopeBlockRegister> map_scope_register;
 
 		 for(unsigned idx_var = 0;idx_var < m_variable.size(); idx_var++){ // register index var per scope ...
@@ -102,7 +102,7 @@ namespace zetscript{
 	}
 
 
-	tVariableSymbolInfo *	CScriptFunction::registerVariable(const string & file, short line, const string & variable_name, const string & c_type, intptr_t ref_ptr, unsigned short properties)
+	tVariableSymbolInfo *	CScriptFunction::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
 		tVariableSymbolInfo *vsi=CCommonClassFunctionBase::registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 

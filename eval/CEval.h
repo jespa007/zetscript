@@ -28,15 +28,15 @@ namespace zetscript{
 
 		// PRINT ASM INFO
 		//---------------------------------------------------------------------------------------------------------------------------------------
-//		 static string 				getSymbolNameFromSymbolRef(const string & ref_symbol);
-//		 static string 				makeSymbolRef(const string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
-		 tInfoConstantValue 	* 	addConstant(const string & const_name, int value);
+//		 static std::string 				getSymbolNameFromSymbolRef(const std::string & ref_symbol);
+//		 static std::string 				makeSymbolRef(const std::string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
+		 tInfoConstantValue 	* 	addConstant(const std::string & const_name, int value);
 
 		 static const char * 		getOpCodeStr(OP_CODE  op);
 
 
-		 static bool evalString(const string & expression);
-		 static bool evalFile(const string & filename);
+		 static bool evalString(const std::string & expression);
+		 static bool evalFile(const std::string & filename);
 
 
 		 static CEval * getInstance();
@@ -159,12 +159,12 @@ namespace zetscript{
 			IDENTITY_OPERATOR_TYPE  pre_inline_operator_identity_type; // ++i,--i
 			IDENTITY_OPERATOR_TYPE  post_inline_operator_identity_type; // i++,i--
 
-			string value; // first access
+			std::string value; // first access
 			int line;
-			vector<tInstructionEval> instruction; // byte code load literal/identifier(can be anonymous function), vector/struct.
+			std::vector<tInstructionEval> instruction; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
 			//std::map<short,CScriptFunction::tInstructionInfo> instruction_info;
-			// access info like function call, vector access and variable memeber
-			//vector<tTokenNodeAccessor> accessor;
+			// access info like function call, std::vector access and variable memeber
+			//std::vector<tTokenNodeAccessor> accessor;
 
 			// AST info operator.
 			tTokenNode *left;
@@ -186,12 +186,12 @@ namespace zetscript{
 
 
 		typedef struct {
-			vector<tInstructionEval> instruction;
+			std::vector<tInstructionEval> instruction;
 		}tContinueInstructionScope,tBreakInstructionScope;
 
 		struct tFunctionInfo{
 
-			vector<tInstructionEval>	 		instruction;
+			std::vector<tInstructionEval>	 		instruction;
 			CScriptFunction 				*  	function_info_object;
 
 			tFunctionInfo(CScriptFunction	* _function_info_object){
@@ -246,7 +246,7 @@ namespace zetscript{
 		}tOpCodeInfo;
 
 		typedef struct {
-			string filename;
+			std::string filename;
 			//unsigned char *data;
 		} tInfoParsedSource;
 
@@ -254,9 +254,9 @@ namespace zetscript{
 
 
 		// singleton
-		 map<string,tInfoConstantValue *> 	 m_contantPool;
-		 map<string,string *>			 	 m_compiledSymbolName;
-		 vector<tInfoParsedSource> 			 m_parsedSource;
+		 std::map<std::string,tInfoConstantValue *> 	 m_contantPool;
+		 std::map<std::string,std::string *>			 	 m_compiledSymbolName;
+		 std::vector<tInfoParsedSource> 			 m_parsedSource;
 
 		 const char * 	CURRENT_PARSING_FILE_STR;
 		 int 			CURRENT_PARSING_FILE_IDX;
@@ -271,8 +271,8 @@ namespace zetscript{
 
 
 		 tFunctionInfo							*pCurrentFunctionInfo;
-		 vector<tFunctionInfo *> 				vFunctionInfo;
-		 //vector<tLinkSymbolFirstAccess>			vLinkSymbolFirstAccess;
+		 std::vector<tFunctionInfo *> 				vFunctionInfo;
+		 //std::vector<tLinkSymbolFirstAccess>			vLinkSymbolFirstAccess;
 
 
 		 void iniVars();
@@ -282,24 +282,24 @@ namespace zetscript{
 
 		 // CONSTANT TOOLS
 
-		 tInfoConstantValue * getConstant(const string & const_name);
-		 tInfoConstantValue * addConstant(const string & const_name, void *obj, unsigned short properties);
+		 tInfoConstantValue * getConstant(const std::string & const_name);
+		 tInfoConstantValue * addConstant(const std::string & const_name, void *obj, unsigned short properties);
 
-		 //int					getIdxScopeFromSymbolRef(const string & symbol_ref);
+		 //int					getIdxScopeFromSymbolRef(const std::string & symbol_ref);
 		 void pushFunction(CScriptFunction *sf);
 		 void popFunction();
 
 		 KEYWORD_TYPE 	isKeyword(const char *c);
 		 DIRECTIVE_TYPE 	isDirective(const char *c);
 
-		 char * evalLiteralNumber(const char *c, int & line, string & value, bool & error);
+		 char * evalLiteralNumber(const char *c, int & line, std::string & value, bool & error);
 
 
 		//===================================================================================================
 		//
 		// PRINT ASM INFO
-		static string getStrMovVar(tInstruction * iao);
-		static string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
+		static std::string getStrMovVar(tInstruction * iao);
+		static std::string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
 		static  void printGeneratedCode(CScriptFunction *sfo);
 		//===================================================================================================
 
@@ -307,23 +307,23 @@ namespace zetscript{
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
-		 bool isFilenameAlreadyParsed(const string & filename);
+		 bool isFilenameAlreadyParsed(const std::string & filename);
 		 const char * getParsedFilenameFromIdx(unsigned idx);
 
 		//-----------------------------------------------
 		// LINK
 		 //void linkSymbols();
-		 string * getCompiledSymbol(const string & s);
+		 std::string * getCompiledSymbol(const std::string & s);
 
 
 		//-----------------------------------------------
 		//
-		// char * 	 isClassMember(const char *s,int & line, string & _class_name, string & var_name, bool & error, KEYWORD_TYPE ikw);
+		// char * 	 isClassMember(const char *s,int & line, std::string & _class_name, std::string & var_name, bool & error, KEYWORD_TYPE ikw);
 
-		// string generic utils...
-		 bool 	isLiteral(const string & s);
-		 bool   	isIdentifierNameExpressionOk(const string & symbol, int line);
-		 char *  	getIdentifierToken(const char *s, string & symbol);
+		// std::string generic utils...
+		 bool 	isLiteral(const std::string & s);
+		 bool   	isIdentifierNameExpressionOk(const std::string & symbol, int line);
+		 char *  	getIdentifierToken(const char *s, std::string & symbol);
 		 bool	  	isEndSymbolToken(char *s,char pre=0);
 		 bool 	isAccessPunctuator(char *s);
 		 char * 	evalSymbol(const char *s, int line, CEval::tTokenNode *  token);
@@ -346,26 +346,26 @@ namespace zetscript{
 		 OP_CODE puntuator2instruction(OPERATOR_TYPE op);
 
 		/// Make operator precedence from the AST of tokens built during evalExpression.
-		 bool  makeOperatorPrecedence(vector<tTokenNode> * vExpressionTokens,vector<tInstructionEval> *instruction,int idx_start,int idx_end,bool & error);
+		 bool  makeOperatorPrecedence(std::vector<tTokenNode> * vExpressionTokens,std::vector<tInstructionEval> *instruction,int idx_start,int idx_end,bool & error);
 
 		/// Turn expression in Tokens (with some byte code instructions inside)...
-		 char * evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstructionEval> 		*	instruction);
+		 char * evalExpression(const char *s, int & line, CScope *scope_info, std::vector<tInstructionEval> 		*	instruction);
 
 
 		/// NEW EXPRESSION...
-		 char * evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction);
+		 char * evalNewObject(const char *s,int & line,  CScope *scope_info, std::vector<tInstructionEval> 		*	instruction);
 
 		/// FUNCTION OBJECT...
-		 char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 	*	instruction);
+		 char * evalFunctionObject(const char *s,int & line,  CScope *scope_info, std::vector<tInstructionEval> 	*	instruction);
 
 		/// STRUCT OBJECT...
-		 char * evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction);
+		 char * evalStructObject(const char *s,int & line,  CScope *scope_info, std::vector<tInstructionEval> 		*	instruction);
 
 		/// VECTOR OBJECT...
-		 char * evalVectorObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction);
+		 char * evalVectorObject(const char *s,int & line,  CScope *scope_info, std::vector<tInstructionEval> 		*	instruction);
 
 		/// GENERIC VECTOR/FUNCTION ARGS
-		 char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction);
+		 char * evalExpressionArgs(char c1, char c2,const char *s,int & line,  CScope *scope_info, std::vector<tInstructionEval> 		*	instruction);
 
 
 		// END EXPRESSION FUNCTION
@@ -373,7 +373,7 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------------
 		// Class
 
-		 char * isClassMember(const char *s,int & line, CScriptClass **sc,string & member_symbol, bool & error);
+		 char * isClassMember(const char *s,int & line, CScriptClass **sc,std::string & member_symbol, bool & error);
 		 char * evalKeywordClass(const char *s,int & line,  CScope *scope_info, bool & error);
 
 		// eval block { }
@@ -405,8 +405,8 @@ namespace zetscript{
 		//
 		//------------------------------------------------------------------------------------------
 
-		 bool evalStringInternal(const string & expression);
-		 bool evalFileInternal(const string & filename);
+		 bool evalStringInternal(const std::string & expression);
+		 bool evalFileInternal(const std::string & filename);
 
 
 		 char * eval(const char *s, bool & error);

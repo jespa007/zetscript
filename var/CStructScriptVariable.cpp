@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "../CZetScript.h"
+#include "../zetscript.h"
 
 namespace zetscript{
 
@@ -47,7 +47,7 @@ namespace zetscript{
 
 	void CStructScriptVariable::remove_attr(const char *attr_name){
 
-		if(!removeVariableSymbolByName(string(attr_name),CURRENT_VM->getCurrent_C_FunctionCall())){
+		if(!removeVariableSymbolByName(std::string(attr_name),CURRENT_VM->getCurrent_C_FunctionCall())){
 			CURRENT_VM->cancelExecution();
 		}
 	}

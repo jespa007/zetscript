@@ -16,11 +16,11 @@ int main(int argc, char * argv[]) {
 	if (argc > 1) {
 		bool execute=true;
 		bool show_bytecode=false;
-		string file="";
+		std::string file="";
 
 		for(int i=1; i < argc; i++){
 
-			vector<string> a=CZetScriptUtils::split(argv[i],'=');
+			std::vector<std::string> a=CZetScriptUtils::split(argv[i],'=');
 			switch(a.size()){
 			case 1:
 
@@ -73,7 +73,7 @@ int main(int argc, char * argv[]) {
 	else{
 
 		bool exit = false;
-		string expression;
+		std::string expression;
 		printf(ZETSCRIP_COPYRIGHT);
 		printf("\n");
 

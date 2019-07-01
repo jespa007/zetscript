@@ -15,14 +15,14 @@ int main(){
 	int 	int_var = 10;
 	float 	float_var = 0.5;
 	bool 	bool_var = true;
-	string	string_var = "in c++";
+	std::string	string_var = "in c++";
 
 	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
 
 	register_C_Variable("int_var",int_var); // it takes int *
 	register_C_Variable("float_var",float_var); // it takes float *
 	register_C_Variable("bool_var",bool_var); // it takes bool *
-	register_C_Variable("string_var",string_var); // it takes string *
+	register_C_Variable("string_var",string_var); // it takes std::string *
 
 	zs->evalString(
 		"int_var+=5;"

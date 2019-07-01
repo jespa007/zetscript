@@ -294,7 +294,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 #define TEST_ARITHMETIC_INT_OP(val1, op, val2) \
 { \
 	int aux_value=0; \
-	string str= STR(val1) \
+	std::string str= STR(val1) \
 				STR(op) \
 				STR(val2) \
 				";"; \
@@ -307,7 +307,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 #define TEST_ARITHMETIC_CINTEGER_OP(val1, op, val2) \
 { \
 	int aux_value=0; \
-	string str= "it1=("\
+	std::string str= "it1=("\
 				"(i1=new CInteger("\
 				STR(val1) \
 				"))"\
@@ -326,7 +326,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 { \
 	float expr=((float)(val1) op (float)(val2));\
 	float aux_value=0; \
-	string str= STR(val1) \
+	std::string str= STR(val1) \
 				STR(op) \
 				STR(val2) \
 				";"; \
@@ -340,7 +340,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 #define TEST_ARITHMETIC_FLOAT_MOD(val1, val2) \
 { \
 	float aux_value=0; \
-	string str= STR(val1) \
+	std::string str= STR(val1) \
 				"%" \
 				STR(val2) \
 				";"; \
@@ -355,7 +355,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 { \
 	float expr=((float)(val1) op (float)(val2));\
 	float aux_value=0; \
-	string str= "nt1=("\
+	std::string str= "nt1=("\
 				"(n1=new CNumber("\
 				STR(val1) \
 				"))"\
@@ -373,7 +373,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 #define TEST_ARITHMETIC_CNUMBER_MOD(val1, val2) \
 { \
 	float aux_value=0; \
-	string str= "nt1=("\
+	std::string str= "nt1=("\
 				"(n1=new CNumber("\
 				STR(val1) \
 				"))"\
@@ -391,12 +391,12 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_ARITHMETIC_STRING_OP(val1,op, val2) \
 { \
-	string aux_value=""; \
-	string str= STR(val1) \
+	std::string aux_value=""; \
+	std::string str= STR(val1) \
 				STR(op) \
 				val2\
 				";"; \
-	string expected_str = string(val1) op val2;\
+	std::string expected_str = std::string(val1) op val2;\
 	if((aux_value=CZetScript::eval_string(str))!=expected_str.c_str()){ \
 		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value.c_str()); \
 		exit(-1); \
@@ -530,7 +530,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 #define TEST_ARITHMETIC_OP(val1, op, val2) \
 { \
 	int aux_value=0; \
-	string str= STR(val1) \
+	std::string str= STR(val1) \
 				STR(op) \
 				STR(val2) \
 				";"; \
@@ -543,7 +543,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 #define TEST_ARITHMETIC_INT_EXPR(expr) \
 { \
 	int aux_value=0; \
-	string str_expr= STR(expr)";"; \
+	std::string str_expr= STR(expr)";"; \
 	\
 	if((aux_value=CZetScript::eval_int(str_expr))  != (expr)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,aux_value); \
@@ -584,7 +584,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 
 #define TEST_STRING_EXPR(expr, expected_value) \
 { \
-	string aux_value=""; \
+	std::string aux_value=""; \
 	\
 	if((aux_value=CZetScript::eval_string(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,expected_value,aux_value.c_str()); \
@@ -605,7 +605,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 #define TEST_ARITHMETIC_FLOAT_EXPR(expr) \
 { \
 	float aux_value=0; \
-	string str_expr= STR(expr)";"; \
+	std::string str_expr= STR(expr)";"; \
 	\
 	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str_expr)  , (expr))){ \
 		double error = fabs(fabs(aux_value)-fabs(expr));\
@@ -621,7 +621,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 #define TEST_ARITHMETIC_BOOL_EXPR(val1) \
 { \
 	bool aux_value=false; \
-	string str= STR(val1) \
+	std::string str= STR(val1) \
 				";"; \
 	if((aux_value=CZetScript::eval_bool(str)) != (val1)){ \
 		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",aux_value?"true":"false"); \
@@ -814,7 +814,7 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x5,0x4); // op1 > op2
 
 
-	printf("%i. testing string...\n",++n_test);
+	printf("%i. testing std::string...\n",++n_test);
 	TEST_ARITHMETIC_STRING_OP("test_",+,"100"); // concatenate int
 	TEST_ARITHMETIC_STRING_OP("test_",+,"-100"); // concatenate -int
 	TEST_ARITHMETIC_STRING_OP("test_",+,"100.000000"); // concatenate float
@@ -844,7 +844,7 @@ int main(int argc, char * argv[]) {
 	TEST_ARITHMETIC_BOOL_EXPR(!(true && !false) || false);
 	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
 
-	// test declare var int/bool/string/number
+	// test declare var int/bool/std::string/number
 	printf("%i. testing primitive var\n",++n_test);
 
 
@@ -875,7 +875,7 @@ int main(int argc, char * argv[]) {
 	//TEST_BOOL_EXPR("i=!i;",true);
 
 
-	/*printf("%i. testing vector var ...\n",++n_test);
+	/*printf("%i. testing std::vector var ...\n",++n_test);
 
 	TEST_INT_EXPR("var v=[3,true,2.0,\"is_a_string\"];v.size();",4); // <-- crash if no constructor defined new CInteger(x)!
 	TEST_INT_EXPR("v[0];",3);

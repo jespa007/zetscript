@@ -36,14 +36,14 @@ namespace zetscript{
 
 		std::function<void * ()> 			* 	c_constructor;
 		std::function<void (void *  p)> 	*	c_destructor;
-		string classPtrType; // type_id().name();
-		vector<unsigned char > idxBaseClass;
+		std::string classPtrType; // type_id().name();
+		std::vector<unsigned char > idxBaseClass;
 
-		vector<CScriptFunction * > metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
+		std::vector<CScriptFunction * > metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
 
 		 CScriptClass(unsigned char _idxClass);
 
-		virtual CScriptFunction						*  			registerFunctionMember(const string & file, short line,const string & function_name, vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		virtual CScriptFunction						*  			registerFunctionMember(const std::string & file, short line,const std::string & function_name, std::vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
 
 		bool is_c_class();
 

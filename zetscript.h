@@ -7,44 +7,8 @@
 
 #pragma once
 
-
-// MAIN INCLUDES....
-
-#include          <stdlib.h>
-#include          <memory.h>
-
-#include          <stdio.h>
-#include          <math.h>
-
-#include          <vector>
-#include          <stack>
-#include 			<regex>
-#include                  <new>
-#include           <iostream>
-#include <functional>
-#include 		<sstream>
-#include <string>
-#include <cstring>
-#include <list>
-#include <utility>
-#include <float.h>
-#include <cstdarg>
-#include <stdexcept>
-
-#include <typeinfo>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <string>
-#include <map>
-
-#include <sstream>
-#include <cstddef>
-
-#include <type_traits>
-
-#include <mutex>
+#include        <stdlib.h>
+#include        <stdio.h>
 
 #if defined(__GNUC__)
 	#include <cxxabi.h>
@@ -70,20 +34,31 @@
 
 #endif
 
+#include        <memory.h>
+#include        <math.h>
+#include        <vector>
+#include        <stack>
+#include		<regex>
+#include        <new>
+#include        <iostream>
+#include 		<functional>
+#include 		<sstream>
+#include 		<string>
+#include 		<cstring>
+#include 		<list>
+#include 		<utility>
+#include 		<float.h>
+#include 		<cstdarg>
+#include 		<stdexcept>
 
+#include 		<typeinfo>
+#include 		<string.h>
+#include 		<map>
+#include 		<cstddef>
 
+#include 		<type_traits>
+#include 		<mutex>
 
-
-using std::string;
-using std::vector;
-using std::map;
-using std::cout;
-using std::cerr;
-using std::endl;
-using std::string;
-using std::vector;
-using std::stack;
-using std::ostringstream;
 
 // Prototypes & structs
 #ifdef __MEMMANAGER__
@@ -96,8 +71,12 @@ using std::ostringstream;
 
 //#include "CSharedPointerManager.h"
 #include "Common.h"
-#include "zetscript_exception.h"
 #include "CZetScriptUtils.h"
+#include "exception.h"
+#include "functor.h"
+//#include "string_utils.h"
+//#include "io_utils.h"
+//#include "logger.h"
 #include "var/CScriptVariable.h"
 #include "var/CStringScriptVariable.h"
 #include "var/CVectorScriptVariable.h"
@@ -118,9 +97,7 @@ using std::ostringstream;
 #define ZETSCRIPT_PATCH_VERSION 0
 
 
-
 #define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
-
 
 
 //#define ZS_WRITE_ERROR_MSG 		writeErrorMsg
@@ -165,16 +142,16 @@ namespace zetscript{
 
 		void	setUserCallbackOnError(tPrintFunctionCallback _fun);
 
-		 static int eval_int(const string & str_to_eval);
-		 static bool eval_bool(const string & str_to_eval);
-		 static float eval_float(const string & str_to_eval);
-		 static string eval_string(const string & str_to_eval);
+		 static int eval_int(const std::string & str_to_eval);
+		 static bool eval_bool(const std::string & str_to_eval);
+		 static float eval_float(const std::string & str_to_eval);
+		 static std::string eval_string(const std::string & str_to_eval);
 
 
 		/**
 		 * Main bind function
 		 */
-		 bool getScriptObjectFromFunctionAccess(const string &function_access_expression
+		 bool getScriptObjectFromFunctionAccess(const std::string &function_access_expression
 														  ,CScriptVariable **calling_obj
 														  ,CScriptFunction **fun_obj);
 		 CVirtualMachine * getVirtualMachine();
@@ -186,8 +163,8 @@ namespace zetscript{
 		 void clear();
 		 void execute();
 
-		 bool evalString(const string & string, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
-		 bool evalFile(const string & filename,bool execute=true,bool show_bytecode=false);
+		 bool evalString(const std::string & expresion, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
+		 bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
 		 static void destroy();
 	};
 

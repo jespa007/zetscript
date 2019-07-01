@@ -118,7 +118,7 @@ namespace zetscript{
 	auto getArgTypes( std::vector<std::string> & params)
 		-> typename std::enable_if<argIdx == 1>::type
 	{
-		string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
+		std::string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
 		params.insert(params.begin()+0,parameter_type);
 	}
 
@@ -128,7 +128,7 @@ namespace zetscript{
 		-> typename std::enable_if<(argIdx > 1)>::type
 	{
 
-		string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
+		std::string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
 		params.insert(params.begin()+0,parameter_type);
 		getArgTypes<argIdx - 1,F, Args...>( params);
 	}
@@ -143,7 +143,7 @@ namespace zetscript{
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
+	auto getParamsFunction(int i,std::string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
 	-> typename std::enable_if<(_F::arity > 0)>::type
 	{
 		returnType = typeid(typename _F::return_type).name();
@@ -151,7 +151,7 @@ namespace zetscript{
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
+	auto getParamsFunction(int i,std::string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
 	-> typename std::enable_if<(_F::arity == 0)>::type
 	{
 		returnType = typeid(typename _F::return_type).name();

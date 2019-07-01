@@ -1,4 +1,4 @@
-#include "CZetScript.h"
+#include "zetscript.h"
 
 namespace zetscript{
 
@@ -28,11 +28,11 @@ namespace zetscript{
 
 	}
 
-	vector<CScriptFunction *> 	*CScriptFunctionFactory::getVectorScriptFunctionNode(){
+	std::vector<CScriptFunction *> 	*CScriptFunctionFactory::getVectorScriptFunctionNode(){
 		return &vec_script_function_node;
 	}
 
-	CScriptFunction *		 CScriptFunctionFactory::newScriptFunction(const string & file, short line, unsigned char idxClass, short idxScope, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction *		 CScriptFunctionFactory::newScriptFunction(const std::string & file, short line, unsigned char idxClass, short idxScope, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 		if((properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 			if(vec_script_function_node.size() > 1){ // if greather than 1 check if node consecutive...

@@ -5,7 +5,7 @@ namespace zetscript{
 		#define METAMETHOD_2_ARGS 2
 		#define METAMETHOD_1_ARGS 1
 		//CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
-		//vector<CVirtualMachine::CVirtualMachine> CVirtualMachine::ALE;
+		//std::vector<CVirtualMachine::CVirtualMachine> CVirtualMachine::ALE;
 		// static: only defined in this module...
 		#define IS_NUMBER_OR_INT(properties)\
 			(properties & (STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_TYPE_INTEGER))
@@ -14,7 +14,7 @@ namespace zetscript{
 
 		// general
 		#define PRINT_DUAL_ERROR_OP(c)\
-		string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1),\
+		std::string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1),\
 			   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp2);\
 		\
 		writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
@@ -24,7 +24,7 @@ namespace zetscript{
 
 
 		#define PRINT_ERROR_OP(c)\
-			string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1);\
+			std::string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1);\
 		\
 		writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 			c,\
@@ -157,7 +157,7 @@ namespace zetscript{
 				}
 			}else{
 
-				string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1),
+				std::string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1),
 						var_type2="";
 
 				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/
@@ -177,7 +177,7 @@ namespace zetscript{
 			}
 
 			script_class_aux=GET_SCRIPT_CLASS(script_var_object->idxClass);
-			vector<CScriptFunction *> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
+			std::vector<CScriptFunction *> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
 			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;
 
@@ -239,11 +239,11 @@ namespace zetscript{
 			,tInstruction *instruction
 			,tInstruction * callAleInstruction
 
-			,vector<tFunctionSymbol> *m_functionSymbol
-			,vector<CScriptFunction *> *vec_global_functions
+			,std::vector<tFunctionSymbol> *m_functionSymbol
+			,std::vector<CScriptFunction *> *vec_global_functions
 
 			,bool is_constructor
-			,const string & symbol_to_find
+			,const std::string & symbol_to_find
 
 			,tStackElement *stkResultOp1
 			,tStackElement *stkResultOp2
@@ -256,7 +256,7 @@ namespace zetscript{
 		int size_fun_vec=vec_global_functions->size()-1;
 		CScriptVariable *var_object = NULL;
 		CScriptFunction * ptr_function_found=NULL;
-		string aux_string;
+		std::string aux_string;
 
 		// if m_functionSymbol not NULL search over m_functionSymbols....
 		if(m_functionSymbol != NULL){
@@ -376,8 +376,8 @@ namespace zetscript{
 			}
 			else{ // return error elaborate a error message...
 				int n_candidates=0;
-				string str_candidates="";
-				string args_str = "";
+				std::string str_candidates="";
+				std::string args_str = "";
 				/* get arguments... */
 
 				for( unsigned k = 0; k < n_args;k++){

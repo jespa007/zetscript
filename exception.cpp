@@ -3,9 +3,10 @@
  *  See LICENSE file for details.
  */
 
-#include "CZetScript.h"
+#include "zetscript.h"
 
 namespace zetscript {
+	namespace exception{
 
 		void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 		int getErrorLine();
@@ -37,8 +38,10 @@ namespace zetscript {
 
 
 
-	void throw_script_error(){
-		throw script_error(getErrorFilename(),getErrorLine(),getErrorDescription());
+		void throw_script_error(){
+			throw script_error(getErrorFilename(),getErrorLine(),getErrorDescription());
+		}
+
 	}
 
 };

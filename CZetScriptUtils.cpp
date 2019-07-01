@@ -2,11 +2,12 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
+
+#define VAR_LOG(l) ((l) == zetscript::CZetScriptUtils::LOG_ERROR?"ERR": (l)==zetscript::CZetScriptUtils::LOG_WARNING?"WRN": (l) == zetscript::CZetScriptUtils::LOG_INFO ? "INF" : (l) == zetscript::CZetScriptUtils::LOG_DEBUG ? "DBG":"NAN" )
 
 namespace zetscript{
 
-	#define VAR_LOG(l) ((l) == CZetScriptUtils::LOG_ERROR?"ERR": (l)==CZetScriptUtils::LOG_WARNING?"WRN": (l) == CZetScriptUtils::LOG_INFO ? "INF" : (l) == CZetScriptUtils::LOG_DEBUG ? "DBG":"NAN" )
 	static char  _sformat_buffer[4096] = { 0 };
 
 	const char *  CZetScriptUtils::sformat(const  char  *input_text, ...){
@@ -25,7 +26,7 @@ namespace zetscript{
 		//FILE *log_std=stdout;
 
 		FILE *std_type = stdout;
-		string filename = "";
+		std::string filename = "";
 
 		switch (level)
 		{
@@ -69,18 +70,18 @@ namespace zetscript{
 
 	//--------------------------------------------------------------------------------------------------------------------
 	//  FILE
-	string  CZetScriptUtils::getFileName(const string & _path) {
+	std::string  CZetScriptUtils::getFileName(const std::string & _path) {
 	  size_t found;
-	  string ss=_path;
+	  std::string ss=_path;
 	  found=_path.find_last_of("/\\");
 	  if((int)found != -1)
 		  ss= _path.substr(found+1);
 	  return ss;
 	}
 
-	string  CZetScriptUtils::getFileNameWithoutExtension(const string & _path) {
+	std::string  CZetScriptUtils::getFileNameWithoutExtension(const std::string & _path) {
 
-		string file = getFileName(_path);
+		std::string file = getFileName(_path);
 
 
 		std::string fName(file);
@@ -94,7 +95,7 @@ namespace zetscript{
 			return fName.substr(0, pos);
 	}
 
-	char * CZetScriptUtils::readFile(const string &  filename, int & n_bytes_readed){
+	char * CZetScriptUtils::readFile(const std::string &  filename, int & n_bytes_readed){
 
 		int  file_length, readed_elements;
 		FILE  *fp;
@@ -126,7 +127,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	int  CZetScriptUtils::getFileLength(const  string & filename)
+	int  CZetScriptUtils::getFileLength(const  std::string & filename)
 	{
 		int  ini,  end;
 		FILE  *fp;
@@ -156,7 +157,7 @@ namespace zetscript{
 	unsigned char CZetScriptUtils::m_index_buffer=0;
 
 
-	int *  CZetScriptUtils::ParseInteger(const string & val){
+	int *  CZetScriptUtils::ParseInteger(const std::string & val){
 
 		int *n=NULL;
 		int type_number = CZetScriptUtils::isNumber(val);
@@ -166,7 +167,7 @@ namespace zetscript{
 		}else if(type_number == CZetScriptUtils::STRING_IS_HEXA){
 			numberValue=strtol(val.c_str(), NULL, 16);
 		}else if(CZetScriptUtils::isBinary(val)){
-			string binary = val.substr(0,val.size()-1);
+			std::string binary = val.substr(0,val.size()-1);
 			numberValue=strtol(binary.c_str(), NULL, 2);
 		}
 		else{
@@ -182,7 +183,7 @@ namespace zetscript{
 		return n;
 	}
 
-	bool * CZetScriptUtils::ParseBoolean(const string & s){
+	bool * CZetScriptUtils::ParseBoolean(const std::string & s){
 
 		if(CZetScriptUtils::toLower(s)=="true"){
 			bool *b=new bool;
@@ -199,7 +200,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	float *  CZetScriptUtils::ParseFloat(const string & s){
+	float *  CZetScriptUtils::ParseFloat(const std::string & s){
 		char *p;bool ok=true;
 		float *n=NULL;
 
@@ -246,47 +247,47 @@ namespace zetscript{
 	}
 
 
-	string CZetScriptUtils::intToString(int number){
+	std::string CZetScriptUtils::intToString(int number){
 
 	   std::stringstream ss;//create a stringstream
 	   ss << number;//add number to the stream
-	   return ss.str();//return a string with the contents of the stream
+	   return ss.str();//return a std::string with the contents of the stream
 	}
 
-	string CZetScriptUtils::floatToString(float number){
+	std::string CZetScriptUtils::floatToString(float number){
 
 		char buff[100];
 		sprintf(buff, "%f",number);
 
-		string ss = buff;
+		std::string ss = buff;
 		ss = CZetScriptUtils::replace(ss,',','.');
 
-	   return ss;//return a string with the contents of the stream
+	   return ss;//return a std::string with the contents of the stream
 	}
 
-	string CZetScriptUtils::doubleToString(double number){
+	std::string CZetScriptUtils::doubleToString(double number){
 
 		char buff[100];
 		sprintf(buff, "%f",number);
-		string ss=buff;
+		std::string ss=buff;
 
 		ss=CZetScriptUtils::replace(ss,',','.');
 
 
-	   return ss;//return a string with the contents of the stream
+	   return ss;//return a std::string with the contents of the stream
 	}
 
-	string CZetScriptUtils::toLower(const string & str){
+	std::string CZetScriptUtils::toLower(const std::string & str){
 
-		string ret = str;
+		std::string ret = str;
 		for(unsigned short l = 0; l < ret.size();l++)
 			ret[l] = tolower(ret[l]);
 		return ret;
 	}
 
-	string CZetScriptUtils::toUpper(const string & str){
+	std::string CZetScriptUtils::toUpper(const std::string & str){
 
-		string ret = str;
+		std::string ret = str;
 		for(unsigned short l = 0; l < ret.size();l++)
 			ret[l] = toupper(ret[l]);
 		return ret;
@@ -317,7 +318,7 @@ namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------------------------------
 
-	vector<string> CZetScriptUtils::split(const std::string &s, char delim, std::vector<std::string> &elems) {
+	std::vector<std::string> CZetScriptUtils::split(const std::string &s, char delim, std::vector<std::string> &elems) {
 		std::stringstream ss(s);
 		std::string item;
 		while (std::getline(ss, item, delim)) {
@@ -327,17 +328,17 @@ namespace zetscript{
 	}
 
 
-	vector<string> CZetScriptUtils::split(const std::string &s, char delim) {
+	std::vector<std::string> CZetScriptUtils::split(const std::string &s, char delim) {
 		std::vector<std::string> elems;
 		split(s, delim, elems);
 		return elems;
 	}
 
-	bool CZetScriptUtils::isEmpty(const string & str){
+	bool CZetScriptUtils::isEmpty(const std::string & str){
 		return str.empty();
 	}
 
-	bool CZetScriptUtils::endsWith(const string & fullString, const string & ending){
+	bool CZetScriptUtils::endsWith(const std::string & fullString, const std::string & ending){
 		if (fullString.length() >= ending.length()) {
 			return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
 		}
@@ -384,11 +385,11 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	bool CZetScriptUtils::isBinary(const string & test_str_number){
+	bool CZetScriptUtils::isBinary(const std::string & test_str_number){
 		return IS_BINARY((char *)test_str_number.c_str());
 	}
 
-	int CZetScriptUtils::isNumber(const string & test_str_number){
+	int CZetScriptUtils::isNumber(const std::string & test_str_number){
 		bool isHexa=false;
 		char *str = (char *)test_str_number.c_str();
 
@@ -453,8 +454,8 @@ namespace zetscript{
 
 	}
 
-	string  CZetScriptUtils::replace(const string & str_old, const char old_ch, char new_ch){
-		string str = str_old;
+	std::string  CZetScriptUtils::replace(const std::string & str_old, const char old_ch, char new_ch){
+		std::string str = str_old;
 		for (unsigned i = 0; i < str.length(); ++i) {
 			if (str[i] == old_ch)
 			  str[i] = new_ch;
@@ -463,7 +464,7 @@ namespace zetscript{
 		return str;
 	}
 
-	void CZetScriptUtils::replace(string & str_input, const string & toReplace, const string & replaceWith){
+	void CZetScriptUtils::replace(std::string & str_input, const std::string & toReplace, const std::string & replaceWith){
 
 		std::size_t found;;
 		while((found = str_input.find(toReplace)) != std::string::npos){
@@ -473,9 +474,9 @@ namespace zetscript{
 
 	}
 
-	string  CZetScriptUtils::remove(string & str_old, char ch_to_remove){
-		string str = str_old;
-		string str_new="";
+	std::string  CZetScriptUtils::remove(std::string & str_old, char ch_to_remove){
+		std::string str = str_old;
+		std::string str_new="";
 
 		for (unsigned i = 0; i < str_old.length(); ++i) {
 			if (str_old[i] != ch_to_remove)
@@ -485,7 +486,7 @@ namespace zetscript{
 		return str_new;
 	}
 
-	int CZetScriptUtils::count(const string & s,char c){
+	int CZetScriptUtils::count(const std::string & s,char c){
 		int n_items=0;
 
 		for(unsigned i=0; i < s.size(); i++)
@@ -495,30 +496,30 @@ namespace zetscript{
 		return n_items;
 	}
 
-	std::string demangle(const string & name) {
+	std::string demangle(const std::string & name) {
 
 	#ifdef _MSC_VER // visual studio doesn't support this.
 		return name;
 	#else
-		if(name == string(typeid(string *).name())){
-			return "string *";
+		if(name == std::string(typeid(std::string *).name())){
+			return "std::string *";
 		}
 
-		if(name == string(typeid(int *).name())){
+		if(name == std::string(typeid(int *).name())){
 				return "int *";
 			}
 
-		if(name == string(typeid(bool *).name())){
+		if(name == std::string(typeid(bool *).name())){
 				return "bool *";
 			}
 
-		if(name == string(typeid(float *).name())){
+		if(name == std::string(typeid(float *).name())){
 				return "float *";
 			}
 
 
-		if(name == string(typeid(string).name())){
-			return "string";
+		if(name == std::string(typeid(std::string).name())){
+			return "std::string";
 		}
 
 	    int status = -4; // some arbitrary value to eliminate the compiler warning

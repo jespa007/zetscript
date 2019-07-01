@@ -35,13 +35,13 @@ namespace zetscript{
 
 
 		// info related for function ONLY
-		vector<tArgumentInfo> m_arg; // tells var arg name or var type name (in of C )
+		std::vector<tArgumentInfo> m_arg; // tells var arg name or var type name (in of C )
 		int idx_return_type; // -1 not inicialized type return.
 		PtrInstruction instruction;
 
 		//-----------
 		//  SYMBOL-INSTRUCTION
-		std::map<short,tInstructionInfo> instruction_info; // map that gives symbol with at instruction idx given
+		std::map<short,tInstructionInfo> instruction_info; // std::map that gives symbol with at instruction idx given
 		short 		 INSTRUCTION_getLine(tInstruction * ins);
 		const char * INSTRUCTION_getSymbolName(tInstruction * ins);
 		const char * INSTRUCTION_getFile(tInstruction * ins);
@@ -59,7 +59,7 @@ namespace zetscript{
 
 		 CScriptFunction(unsigned char _idxClass );
 
-		tVariableSymbolInfo *  registerVariable(const string & file, short line, const string & variable, const string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
+		tVariableSymbolInfo *  registerVariable(const std::string & file, short line, const std::string & variable, const std::string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 
 
 		/**

@@ -7,9 +7,9 @@ namespace zetscript{
 		bool CScriptClassFactory::register_C_FunctionInt(const char * function_name,F function_ptr)
 		{
 			int idx_return_type=-1;
-			string return_type;
-			vector<string> m_arg;
-			vector<tArgumentInfo> m_infoArg;
+			std::string return_type;
+			std::vector<std::string> m_arg;
+			std::vector<tArgumentInfo> m_infoArg;
 			intptr_t ref_ptr=0;
 			CScriptFunction *irs=NULL;
 
@@ -77,10 +77,10 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		 CScriptClass * CScriptClassFactory::register_C_SingletonClassInt(const string & class_name){//, const string & base_class_name=""){
+		 CScriptClass * CScriptClassFactory::register_C_SingletonClassInt(const std::string & class_name){//, const std::string & base_class_name=""){
 
 			// to make compatible MSVC shared library
-			//vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
+			//std::vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
 			int size=vec_script_class_node.size();
 
 			if(size>=MAX_REGISTER_CLASSES){
@@ -103,7 +103,7 @@ namespace zetscript{
 
 			if(!isClassRegistered(class_name)){
 
-				string str_classPtr = typeid( _T *).name();
+				std::string str_classPtr = typeid( _T *).name();
 
 				if(getIdx_C_RegisteredClass(str_classPtr)!=ZS_INVALID_CLASS){
 					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("this %s is already registered",demangle(typeid( _T).name()).c_str()));
@@ -150,7 +150,7 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<class _T>
-		CScriptClass * CScriptClassFactory::register_C_ClassInt(const string & class_name){//, const string & base_class_name=""){
+		CScriptClass * CScriptClassFactory::register_C_ClassInt(const std::string & class_name){//, const std::string & base_class_name=""){
 			CScriptClass *irc = NULL;
 			if((irc = register_C_SingletonClassInt<_T>(class_name))!=NULL){
 
@@ -175,13 +175,13 @@ namespace zetscript{
 		bool CScriptClassFactory::class_C_baseofInt(){
 
 			// to make compatible MSVC shared library
-			//vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
+			//std::vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
 
 
-			string base_class_name=typeid(_B).name();
-			string base_class_name_ptr=typeid(_B *).name();
-			string class_name=typeid(_T).name();
-			string class_name_ptr=typeid(_T *).name();
+			std::string base_class_name=typeid(_B).name();
+			std::string base_class_name_ptr=typeid(_B *).name();
+			std::string class_name=typeid(_T).name();
+			std::string class_name_ptr=typeid(_T *).name();
 
 			int idx_base_class = getIdxClassFromIts_C_Type(base_class_name_ptr);
 			if(idx_base_class == -1) {
@@ -221,7 +221,7 @@ namespace zetscript{
 			CScriptClass *irc_class = vec_script_class_node[register_class];
 			irc_class->idxBaseClass.push_back(idx_base_class);
 
-			//map<int, map<int, fntConversionType>>  *	local_map_type_conversion=	getMapTypeConversion();
+			//std::map<int, std::map<int, fntConversionType>>  *	local_map_type_conversion=	getMapTypeConversion();
 			(mapTypeConversion)[irc_class->idxClass][idx_base_class]=[](intptr_t entry){ return (intptr_t)(_B *)((_T *)entry);};
 
 
@@ -230,7 +230,7 @@ namespace zetscript{
 				//
 				// DERIVATE STATE
 				//
-				// disabled for polymorphic classes because its function pointer map change at runtime)
+				// disabled for polymorphic classes because its function pointer std::map change at runtime)
 				// https://stackoverflow.com/questions/48572734/is-possible-do-a-later-function-binding-knowing-its-function-type-and-later-the
 				//
 
@@ -294,16 +294,16 @@ namespace zetscript{
 		{
 
 			// to make compatible MSVC shared library
-			//vector<CScriptClass *> * 	local_vec_script_class_node = getVecScriptClassNode();
+			//std::vector<CScriptClass *> * 	local_vec_script_class_node = getVecScriptClassNode();
 
-			string return_type;
-			//vector<string> params;
+			std::string return_type;
+			//std::vector<std::string> params;
 			CScriptFunction *irs=NULL;
-			vector<string> m_arg;
-			vector<tArgumentInfo> m_argInfo;
+			std::vector<std::string> m_arg;
+			std::vector<tArgumentInfo> m_argInfo;
 			int idx_return_type=-1;
 			intptr_t ref_ptr=0;
-			string str_classPtr = typeid( _C *).name();
+			std::string str_classPtr = typeid( _C *).name();
 
 			if(!CScriptFunctionFactory::getInstance()->checkCanRegister_C_Function(function_name)){
 				return false;
@@ -381,17 +381,17 @@ namespace zetscript{
 		bool CScriptClassFactory::register_C_StaticFunctionMemberInt(const char *function_name,_F function_type)
 		{
 			// to make compatible MSVC shared library
-			//vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
+			//std::vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
 
-			string return_type;
-			vector<string> params;
+			std::string return_type;
+			std::vector<std::string> params;
 			CScriptFunction *irs=NULL;
-			vector<string> m_arg;
-			vector<tArgumentInfo> m_argInfo;
+			std::vector<std::string> m_arg;
+			std::vector<tArgumentInfo> m_argInfo;
 			int idx_return_type=-1;
 			intptr_t ref_ptr=0;
-			string str_classPtr = typeid( _T *).name();
-			string function_class_name = demangle(typeid(_T).name())+"::"+function_name;
+			std::string str_classPtr = typeid( _T *).name();
+			std::string function_class_name = demangle(typeid(_T).name())+"::"+function_name;
 
 
 
@@ -506,12 +506,12 @@ namespace zetscript{
 		bool CScriptClassFactory::register_C_VariableMemberInt(const char *var_name, _R _T::*var_pointer) //unsigned int offset)
 		{
 			// to make compatible MSVC shared library
-			//vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
+			//std::vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
 
-			string var_type = typeid(_R *).name(); // we need the pointer type ...
-			string return_type;
-			//vector<string> params;
-			string str_classPtr = typeid( _C *).name();
+			std::string var_type = typeid(_R *).name(); // we need the pointer type ...
+			std::string return_type;
+			//std::vector<std::string> params;
+			std::string str_classPtr = typeid( _C *).name();
 			unsigned int ref_ptr=zetscript::offset_of<_C>(var_pointer);
 
 			CScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_classPtr);

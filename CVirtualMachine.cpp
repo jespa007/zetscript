@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
 
 #define RETURN_ERROR\
 	error=true;\
@@ -312,7 +312,7 @@ namespace zetscript{
 	#define ASSIGN_STACK_VAR(dst_ins, src_ins) \
 	{\
 		CScriptVariable *script_var=NULL;\
-		string *aux_str=NULL;\
+		std::string *aux_str=NULL;\
 		void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update stkValue on save) */\
 		void **src_ref=&src_ins->stkValue;\
 		void **dst_ref=&dst_ins->stkValue;\
@@ -362,10 +362,10 @@ namespace zetscript{
 						};\
 		}else if(type_var & STK_PROPERTY_TYPE_STRING){\
 			if(dst_ins->properties & STK_PROPERTY_IS_C_VAR){\
-				*((string *)dst_ins->varRef)=((const char *)src_ins->stkValue);/* Assign string */\
-				dst_ins->stkValue=(void *)(((string *)dst_ins->varRef)->c_str());/* Because string assignment implies reallocs ptr char it changes, so reassing const char pointer */\
+				*((std::string *)dst_ins->varRef)=((const char *)src_ins->stkValue);/* Assign std::string */\
+				dst_ins->stkValue=(void *)(((std::string *)dst_ins->varRef)->c_str());/* Because std::string assignment implies reallocs ptr char it changes, so reassing const char pointer */\
 			}else{\
-				if(((dst_ins->properties & STK_PROPERTY_TYPE_STRING)==0) || (dst_ins->varRef==NULL)){/* Generates a string var */  \
+				if(((dst_ins->properties & STK_PROPERTY_TYPE_STRING)==0) || (dst_ins->varRef==NULL)){/* Generates a std::string var */  \
 					script_var= NEW_STRING_VAR;\
 					dst_ins->varRef=script_var;\
 					aux_str=&(((CStringScriptVariable *)script_var)->m_strValue);\
@@ -373,7 +373,7 @@ namespace zetscript{
 					script_var->initSharedPtr(true);\
 				}\
 				(*aux_str)=((const char *)src_ins->stkValue);\
-				dst_ins->stkValue=(void *)aux_str->c_str();/* Because string assignment implies reallocs ptr char it changes, so reassing const char pointer */ \
+				dst_ins->stkValue=(void *)aux_str->c_str();/* Because std::string assignment implies reallocs ptr char it changes, so reassing const char pointer */ \
 			}\
 		}else if(type_var & STK_PROPERTY_TYPE_SCRIPTVAR){\
 			script_var=(CScriptVariable *)src_ins->varRef;\
@@ -439,7 +439,7 @@ namespace zetscript{
 		else if(IS_BOOLEAN(ptr_info_ale->properties))
 			result= "bool";
 		else if(IS_STRING(ptr_info_ale->properties))
-			result= "string";
+			result= "std::string";
 		else if(IS_FUNCTION(ptr_info_ale->properties))
 			result= "function";
 
@@ -498,7 +498,7 @@ namespace zetscript{
 
 		idx_laststatment=0;
 
-		ptrLastStr=&stkString[VM_MAX_AUX_STRINGS-1]; // aux values for string ...
+		ptrLastStr=&stkString[VM_MAX_AUX_STRINGS-1]; // aux values for std::string ...
 		ptrCurrentStr=NULL;
 
 		MAX_SCOPE_INFO = &scope_info[VM_MAX_SCOPES-1];
@@ -535,7 +535,7 @@ namespace zetscript{
 
 	//============================================================================================================================================
 	// POINTER MANANAGER
-	string stk_C_TypeStr(const tStackElement & stk_v){
+	std::string stk_C_TypeStr(const tStackElement & stk_v){
 		if(stk_v.properties & STK_PROPERTY_TYPE_INTEGER){
 			return demangle(typeid(int).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_NUMBER){
@@ -543,7 +543,7 @@ namespace zetscript{
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_BOOLEAN){
 			return demangle(typeid(bool).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_STRING){
-			return demangle(typeid(string).name());
+			return demangle(typeid(std::string).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 
@@ -966,7 +966,7 @@ namespace zetscript{
 		destroyCache();
 
 		main_function_object = MAIN_FUNCTION;
-		vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunctionFactory::getInstance()->getVectorScriptFunctionNode();
+		std::vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunctionFactory::getInstance()->getVectorScriptFunctionNode();
 		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
 		vec_script_function_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
 		for(unsigned i=0; i < size_vec_script_function_object_node; i++){
@@ -1044,7 +1044,7 @@ namespace zetscript{
 			 CScriptFunction *info_function,
 			 CScriptVariable *this_object,
 			 bool & error,
-			const vector<tStackElement> & arg
+			const std::vector<tStackElement> & arg
 			){
 
 
@@ -1108,21 +1108,21 @@ namespace zetscript{
 			CScriptVariable       	* this_object,
 			bool & error,
 			tStackElement 		  	* _ptrStartOp,
-			string 		  		  	* _ptrStartStr,
+			std::string 		  		  	* _ptrStartStr,
 			unsigned char n_args,
 			tInstruction *calling_instruction){
 
 		error=false;
 		tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
-		string *ptrStartStr;
+		std::string *ptrStartStr;
 		tStackElement *ptrStartOp;
 
 		if(info_function == NULL){
 			RETURN_ERROR;
 		}
 
-		vector<tVariableSymbolInfo> * local_var=&info_function->m_variable;
+		std::vector<tVariableSymbolInfo> * local_var=&info_function->m_variable;
 
 		ptrStartOp =_ptrStartOp;
 		ptrStartStr =_ptrStartStr;
@@ -1152,9 +1152,9 @@ namespace zetscript{
 		if(idxCurrentStack < MAX_FUNCTION_CALL){
 
 			/* tVM_ScopeInfo		scope_info[VM_LOCAL_VAR_MAX_STACK];
-			string 				stkString[VM_LOCAL_VAR_MAX_STACK]; // aux values for string ...
-			string              *ptrLastStr;
-			string              *ptrCurrentStr;
+			std::string 				stkString[VM_LOCAL_VAR_MAX_STACK]; // aux values for std::string ...
+			std::string              *ptrLastStr;
+			std::string              *ptrCurrentStr;
 
 			 tStackElement     stack[VM_LOCAL_VAR_MAX_STACK];*/
 
@@ -1322,26 +1322,26 @@ namespace zetscript{
 
 									// check indexes ...
 									if(v_index < 0){
-										writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Negative index vector (%i)",v_index);
+										writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Negative index std::vector (%i)",v_index);
 										RETURN_ERROR;
 									}
 
 									if(v_index >= (int)(vec->m_variable.size())){
-										writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Index vector out of bounds (%i)",v_index);
+										writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Index std::vector out of bounds (%i)",v_index);
 										RETURN_ERROR;
 									}
 
 									ldrVar = &vec->m_variable[v_index];;
 									ok = true;
 								}else{
-									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected vector-index as integer or string");
+									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected std::vector-index as integer or std::string");
 									RETURN_ERROR;
 								}
 							}
 						}
 
 						if(!ok){
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type vector",
+							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type std::vector",
 								INSTRUCTION_GET_SYMBOL_NAME(info_function,&info_function->instruction[instruction->index_op2])
 							);
 							RETURN_ERROR;
@@ -1541,7 +1541,7 @@ namespace zetscript{
 					unsigned short extra_flags=(instruction->properties&INS_PROPERTY_CONSTRUCT_CALL)?STK_PROPERTY_CONSTRUCTOR_FUNCTION:0;
 					extra_flags|=(instruction->properties&INS_PROPERTY_NO_FUNCTION_CALL) ?STK_PROPERTY_UNRESOLVED_FUNCTION:0;
 					//void *function_obj=NULL;
-					vector<CScriptFunction *> *vec_functions;
+					std::vector<CScriptFunction *> *vec_functions;
 					CScriptVariable * class_obj=NULL;
 					intptr_t function_obj =  instruction->index_op2;
 					intptr_t index_op2 = instruction->index_op2;
@@ -1659,7 +1659,7 @@ namespace zetscript{
 					bool push_value=true;
 
 					if(operator_type==VPUSH){
-						POP_ONE; // only pops the value, the last is the vector variable itself
+						POP_ONE; // only pops the value, the last is the std::vector variable itself
 						CScriptVariable *vec_obj = NULL;
 						if((stkCurrentData-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							vec_obj = (CScriptVariable *)(stkCurrentData-1)->varRef;
@@ -1672,7 +1672,7 @@ namespace zetscript{
 						}
 
 						if(!ok){
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected vector object");
+							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected std::vector object");
 							RETURN_ERROR;
 						}
 
@@ -1708,7 +1708,7 @@ namespace zetscript{
 									ok=true;
 								}
 								else{
-									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"internal error (operator2 is not string)");
+									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"internal error (operator2 is not std::string)");
 									RETURN_ERROR;
 								}
 							}else{
@@ -1786,7 +1786,7 @@ namespace zetscript{
 						case STK_PROPERTY_TYPE_BOOLEAN:
 						case STK_PROPERTY_TYPE_FUNCTION: // we aren't take care about nothing! :)
 							break;
-						case STK_PROPERTY_TYPE_STRING: // type string is really a string or variable ?!?!
+						case STK_PROPERTY_TYPE_STRING: // type std::string is really a std::string or variable ?!?!
 						case STK_PROPERTY_TYPE_SCRIPTVAR: // we are getting script vars ...
 							if(!(((old_dst_ins.properties & (STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR))==(STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR)))){
 								if(old_dst_ins.varRef!=NULL){ // it had a pointer (no constant)...
@@ -2171,7 +2171,7 @@ namespace zetscript{
 						// local vars as functions ...
 
 						// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
-						vector<tFunctionSymbol> *m_functionSymbol=NULL;
+						std::vector<tFunctionSymbol> *m_functionSymbol=NULL;
 						if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
 							calling_object = (CScriptVariable *)callAle->varRef;
 
@@ -2192,7 +2192,7 @@ namespace zetscript{
 						//bool all_check=true;
 						if((callAleInstruction->properties & INS_PROPERTY_NO_FUNCTION_CALL)==0)
 						{
-							vector<CScriptFunction *> *vec_global_functions=&(main_function_object->m_function);
+							std::vector<CScriptFunction *> *vec_global_functions=&(main_function_object->m_function);
 							//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
 							if((aux_function_info=FIND_FUNCTION(
 									 calling_object
@@ -2326,7 +2326,7 @@ namespace zetscript{
 						RETURN_ERROR;
 					}
 					continue;
-			 case DECL_VEC: // Create new vector object...
+			 case DECL_VEC: // Create new std::vector object...
 					svar=NEW_VECTOR_VAR;
 					//PUSH_VAR(svar,NULL,0,false);
 
@@ -2338,7 +2338,7 @@ namespace zetscript{
 
 					continue;
 
-			 case  DECL_STRUCT: // Create new vector object...
+			 case  DECL_STRUCT: // Create new std::vector object...
 				svar=NEW_STRUCT_VAR;
 				//PUSH_VAR(svar,NULL,0,false);
 
@@ -2412,7 +2412,7 @@ namespace zetscript{
 				continue;
 
 			 case IT_INI:
-				 POP_TWO; // op2:vector or struct op1:key iterator
+				 POP_TWO; // op2:std::vector or struct op1:key iterator
 
 
 				 if((stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) == 0){
@@ -2434,13 +2434,13 @@ namespace zetscript{
 					if(var_object->idxClass == IDX_CLASS_VECTOR){ // integer as iterator...
 						*current_foreach->key={0,0,STK_PROPERTY_TYPE_INTEGER};
 					}
-					else{ // struct -> string as iterator...
+					else{ // struct -> std::string as iterator...
 						*current_foreach->key={0,0,STK_PROPERTY_TYPE_STRING};
 					}
 
 					current_foreach->ptr = var_object;
 				}else{
-					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type vector or struct",
+					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type std::vector or struct",
 						INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction-1)
 					);
 					RETURN_ERROR;

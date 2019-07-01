@@ -30,11 +30,11 @@ namespace zetscript{
 		CScriptFunction *info_function_new;
 		tInstruction 	*instruction_new;
 		bool was_created_by_constructor;
-		vector<tStackElement> m_variable;
+		std::vector<tStackElement> m_variable;
 		//----------------------
 
 		// public vars ...
-		string m_strValue;
+		std::string m_strValue;
 		void *m_value;
 
 		// Construct ...
@@ -52,20 +52,20 @@ namespace zetscript{
 		bool itHasSetMetamethod();
 		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
 
-		virtual tStackElement * addVariableSymbol(const string & symbol_value, const CScriptFunction *info_function=NULL, tInstruction *src_instruction = NULL, tStackElement * sv=NULL);
-		tStackElement * getVariableSymbol(const string & varname);
+		virtual tStackElement * addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function=NULL, tInstruction *src_instruction = NULL, tStackElement * sv=NULL);
+		tStackElement * getVariableSymbol(const std::string & varname);
 		tStackElement * getVariableSymbolByIndex(unsigned int idx);
-		bool removeVariableSymbolByName(const string & symbol_value, const CScriptFunction *info_function=NULL);
+		bool removeVariableSymbolByName(const std::string & symbol_value, const CScriptFunction *info_function=NULL);
 		bool removeVariableSymbolByIndex(unsigned int idx, bool remove_vector=false);
-		vector<tStackElement> * getVectorVariable();
+		std::vector<tStackElement> * getVectorVariable();
 
 
-		virtual tFunctionSymbol * addFunctionSymbol(const string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates=false);
-		tFunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const string & funname);
+		virtual tFunctionSymbol * addFunctionSymbol(const std::string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates=false);
+		tFunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const std::string & funname);
 
-		tFunctionSymbol * getFunctionSymbol(const string & varname);
+		tFunctionSymbol * getFunctionSymbol(const std::string & varname);
 		tFunctionSymbol * getFunctionSymbolByIndex(unsigned int idx);
-		vector <tFunctionSymbol> * getVectorFunctionSymbol();
+		std::vector <tFunctionSymbol> * getVectorFunctionSymbol();
 
 		void * get_C_Object();
 		bool is_c_object();
@@ -74,11 +74,11 @@ namespace zetscript{
 		CScriptFunction *getConstructorFunction();
 
 
-		const string & getClassName();
+		const std::string & getClassName();
 
-		const string & getPointer_C_ClassName();
+		const std::string & getPointer_C_ClassName();
 
-		virtual string * toString();
+		virtual std::string * toString();
 		virtual bool initSharedPtr(bool is_assigned=false);
 		virtual bool unrefSharedPtr();
 
@@ -100,9 +100,9 @@ namespace zetscript{
 
 		virtual void setup();
 
-		//vector<tFunctionSymbol> m_variableSymbol;
+		//std::vector<tFunctionSymbol> m_variableSymbol;
 
-		vector<string> 		  m_variableKey;
+		std::vector<std::string> 		  m_variableKey;
 
 	private:
 
@@ -110,11 +110,11 @@ namespace zetscript{
 		void * created_object;
 		void * c_object;
 
-		string aux_string;
+		std::string aux_string;
 
 		void createSymbols(CScriptClass *irv);
 
-		vector<tFunctionSymbol> m_functionSymbol;
+		std::vector<tFunctionSymbol> m_functionSymbol;
 
 
 

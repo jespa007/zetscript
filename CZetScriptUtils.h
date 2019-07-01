@@ -4,13 +4,13 @@
  */
 #pragma once
 
+#define STR_EXPAND(tok) #tok
+#define STR(tok) STR_EXPAND(tok)
+#define STRCMP(a, R, b) (strcmp(a,b) R 0)
+#define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
+
 
 namespace zetscript{
-
-	#define STR_EXPAND(tok) #tok
-	#define STR(tok) STR_EXPAND(tok)
-	#define STRCMP(a, R, b) (strcmp(a,b) R 0)
-	#define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
 
 	class CZetScriptUtils
 	{
@@ -29,12 +29,12 @@ namespace zetscript{
 
 		//----------------------------------------------------------------------------------------------
 		// IO Utils
-		static string  getFileName(const string &  _path);
-		static string  getFileNameWithoutExtension(const string & _path);
-		static bool fileExists(const string & m_file);
-		//static bool readFile(const string & filename, char *buffer, int length);
-		static char * readFile(const string & filename, int & n_readed_bytes);
-		static int  getFileLength(const string & filename);
+		static std::string  getFileName(const std::string &  _path);
+		static std::string  getFileNameWithoutExtension(const std::string & _path);
+		static bool fileExists(const std::string & m_file);
+		//static bool readFile(const std::string & filename, char *buffer, int length);
+		static char * readFile(const std::string & filename, int & n_readed_bytes);
+		static int  getFileLength(const std::string & filename);
 
 		//----------------------------------------------------------------------------------------------
 		// STRING
@@ -61,46 +61,46 @@ namespace zetscript{
 		};
 
 
-		static bool  * ParseBoolean(const string & );
-		static int   * ParseInteger(const string & );
-		static float * ParseFloat(const string & );
+		static bool  * ParseBoolean(const std::string & );
+		static int   * ParseInteger(const std::string & );
+		static float * ParseFloat(const std::string & );
 
 
-		static string intToString(int number);
-		static string floatToString(float number);
-		static string doubleToString(double number);
-		static string toLower(const string & str);
-		static string toUpper(const string & str);
+		static std::string intToString(int number);
+		static std::string floatToString(float number);
+		static std::string doubleToString(double number);
+		static std::string toLower(const std::string & str);
+		static std::string toUpper(const std::string & str);
 		static std::wstring toWString(const std::string &s);
 		 static const char *  sformat(const  char  *string_text, ...);
 
-		static bool endsWith(const string & fullString, const string & ending);
+		static bool endsWith(const std::string & fullString, const std::string & ending);
 
-		 static vector<string> split(const string &s, char delim, vector<string> &elems);
-		 static vector<string> split(const string &s, char delim);
-		static bool isEmpty(const string & str);
+		 static std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
+		 static std::vector<std::string> split(const std::string &s, char delim);
+		static bool isEmpty(const std::string & str);
 
 		static bool isDigit(char c);
 		static bool isHexaDigit(char c);
-		static int isNumber(const string & test_number);
-		static bool isBinary(const string & test_str_number);
+		static int isNumber(const std::string & test_number);
+		static bool isBinary(const std::string & test_str_number);
 
-		static string replace(const string & str_old, const char old_ch, char new_ch);
-		static void replace(string & str_input, const string & old_word, const string & new_word);
+		static std::string replace(const std::string & str_old, const char old_ch, char new_ch);
+		static void replace(std::string & str_input, const std::string & old_word, const std::string & new_word);
 
-		static string remove(string & str_old, char ch_to_remove);
+		static std::string remove(std::string & str_old, char ch_to_remove);
 
-		static int count(const string & s,char c);
+		static int count(const std::string & s,char c);
 
 		/**
-		 * Given two pointers within that points within a string, this function copies string between its interval.
+		 * Given two pointers within that points within a std::string, this function copies std::string between its interval.
 		 * @p1:start pointer
 		 * @p2:end pointer
 		 */
 		static char * copyStringFromInterval(const char *p1, const char *p2);
 	};
 
-	 std::string demangle(const string & name);
+	 std::string demangle(const std::string & name);
 
 }
 

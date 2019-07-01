@@ -14,7 +14,7 @@ namespace zetscript{
 	public:
 
 		CStringScriptVariable();
-		CStringScriptVariable(const string & s);
+		CStringScriptVariable(const std::string & s);
 
 	protected:
 		virtual void setup();

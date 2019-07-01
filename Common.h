@@ -190,10 +190,10 @@
 
 		INVALID_OP=-1,
 		END_FUNCTION = 0,
-		LOAD, // primitive value like number/string or boolean...
-		VGET, // vector access after each index is processed...
+		LOAD, // primitive value like number/std::string or boolean...
+		VGET, // std::vector access after each index is processed...
 		STORE, // mov expression to var
-		VPUSH, // Value push for vector
+		VPUSH, // Value push for std::vector
 		PUSH_ATTR,
 		EQU,  // ==
 		NOT_EQU,  // !=
@@ -484,11 +484,11 @@
 
 		struct tSymbol {
 			//public:
-			string file;
+			std::string file;
 			short line;
 			short idxScope;
 
-			string name;
+			std::string name;
 
 			char n_params;
 
@@ -501,7 +501,7 @@
 				n_params = NO_PARAMS_IS_VARIABLE;
 			}
 
-			/*tSymbol(const string & _name, char _n_params= NO_PARAMS_IS_VARIABLE){
+			/*tSymbol(const std::string & _name, char _n_params= NO_PARAMS_IS_VARIABLE){
 				file=ZS_UNDEFINED_IDX;
 				line=-1;
 				idxScope = ZS_UNDEFINED_IDX;
@@ -524,7 +524,7 @@
 				return this->name == s1.name
 					  && this->n_params == s1.n_params;
 			}
-			//string name; // var name
+			//std::string name; // var name
 			//int idxScopeVar;
 			//int idxAstNode; // ast node info.
 		};
@@ -553,7 +553,7 @@
 			short idxSymbol; // idx of class function/variable symbol that keeps.
 
 			unsigned short properties; // SYMBOL_INFO_PROPERTY
-			string c_type; // In case is C, we need to know its type ...
+			std::string c_type; // In case is C, we need to know its type ...
 
 			tVariableSymbolInfo() {
 				properties = 0;
@@ -593,7 +593,7 @@
 				const char * file;
 				short line;
 			    //tSymbol * _symbol;
-				string * symbol_name;
+				std::string * symbol_name;
 
 				tInstructionInfo(){
 					symbol_name=NULL;
@@ -601,7 +601,7 @@
 					line=-1;
 				}
 
-				tInstructionInfo(const char * _file, short _line,string *_symbol_name){
+				tInstructionInfo(const char * _file, short _line,std::string *_symbol_name){
 
 					file=_file;
 					line=_line;
@@ -613,7 +613,7 @@
 
 			short idxScriptFunction;
 			short idxScope;
-			string value;
+			std::string value;
 			char n_params;
 
 			tLinkSymbolFirstAccess(){
@@ -627,7 +627,7 @@
 			tLinkSymbolFirstAccess(
 					 int _idxScriptFunction
 					,short _idxScope
-					,const string & _value
+					,const std::string & _value
 					,char _n_params=0
 					){
 				idxScriptFunction=_idxScriptFunction;
@@ -667,7 +667,7 @@
 			tStackElement object; // created object. undefined by default.
 			intptr_t  proxy_ptr; // for proxy functions...
 			//tFunctionSymbol *super_function; // only for functions ...
-			string key_value;
+			std::string key_value;
 			//short idxAstNode; // in case there's ast node...
 
 			tFunctionSymbol() {
@@ -717,7 +717,7 @@
 
 		typedef struct{
 			int idx_type;
-			string arg_name; //arg c++ type or arg name
+			std::string arg_name; //arg c++ type or arg name
 		}tArgumentInfo;
 
 		#pragma pack(pop)

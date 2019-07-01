@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
 
 namespace zetscript{
 
@@ -23,10 +23,10 @@ namespace zetscript{
 			idx_function_member_constructor =ZS_UNDEFINED_IDX;
 	}
 
-	CScriptFunction * CScriptClass::registerFunctionMember(const string & file, short line, const string & function_name, vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CScriptClass::registerFunctionMember(const std::string & file, short line, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 		CScriptFunction * sf = registerFunction(file, line, function_name,  args,  idx_return_type, ref_ptr,  properties);
-		string class_name=symbol_info.symbol->name;
+		std::string class_name=symbol_info.symbol->name;
 
 		if(function_name == class_name){
 			idx_function_member_constructor = (char)m_function.size();

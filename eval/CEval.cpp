@@ -28,7 +28,7 @@ S <=  [A-Za-Z ][A-Za-z0-9 ]*  --> token variable
 S <=  [0-9]*.[0-9]* | [e|E][-|+][0-9]*  --> token integer or number
 S <=  0x[0-9a-fA-F]* --> token hexadecimal
 S <=  [0-1]*b --> token binary
-S <= "[all characters]" --> token string
+S <= "[all characters]" --> token std::string
 
 
 Punctuator (P)
@@ -116,7 +116,7 @@ B <- [E;|K]* // A set of expressions ended with ; or Keyword
  *  See LICENSE file for details.
  */
 
-#include "CZetScript.h"
+#include "zetscript.h"
 
 
 
@@ -243,14 +243,14 @@ namespace zetscript{
 	 // PRINT ASM INFO
 
 
-	 string CEval::getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction){
+	 std::string CEval::getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction){
 
 		 char print_aux_load_value[512] = {0};
 		 char object_access[512] = "";
 
 		 tInstruction * instruction =&m_listStatements[current_instruction];
 		 tInfoConstantValue *icv;
-		 string symbol_value=INSTRUCTION_GET_SYMBOL_NAME(current_function,instruction);
+		 std::string symbol_value=INSTRUCTION_GET_SYMBOL_NAME(current_function,instruction);
 		 if(instruction->op_code != LOAD){
 			 return "ERROR";
 		 }
@@ -310,8 +310,8 @@ namespace zetscript{
 	 void CEval::printGeneratedCode(CScriptFunction *sfo){
 
 		// PRE: it should printed after compile and updateReferences.
-		string pre="";
-		string post="";
+		std::string pre="";
+		std::string post="";
 
 		unsigned idx_instruction=0;
 		for(tInstruction * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
@@ -436,14 +436,14 @@ namespace zetscript{
 
 
 		// and then print its functions ...
-		vector<CScriptFunction *> * m_vf = &sfo->m_function;
+		std::vector<CScriptFunction *> * m_vf = &sfo->m_function;
 
 		for(unsigned j =0; j < m_vf->size(); j++){
 
 			CScriptFunction *local_irfs = (*m_vf)[j];
 
 			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
-				string symbol_ref="????";
+				std::string symbol_ref="????";
 
 
 				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
@@ -453,7 +453,7 @@ namespace zetscript{
 					if(sc->idxClass == IDX_CLASS_MAIN){
 						symbol_ref="Main";
 					}else{
-						symbol_ref=sfo->symbol_info.symbol->name+string("::")+string("????");
+						symbol_ref=sfo->symbol_info.symbol->name+std::string("::")+std::string("????");
 					}
 				}
 
@@ -466,7 +466,7 @@ namespace zetscript{
 
 	 void CEval::printGeneratedCode(){
 
-		 vector<CScriptClass *> *vec_script_class_node=CScriptClassFactory::getInstance()->getVectorScriptClassNode();
+		 std::vector<CScriptClass *> *vec_script_class_node=CScriptClassFactory::getInstance()->getVectorScriptClassNode();
 		 // for all classes print code...
 		 for(unsigned i = 0; i < vec_script_class_node->size(); i++){
 			 CScriptClass *rc=vec_script_class_node->at(i);
@@ -496,11 +496,11 @@ namespace zetscript{
 		}
 	}
 
-	bool CEval::evalString(const string & expression){
+	bool CEval::evalString(const std::string & expression){
 		return getInstance()->evalStringInternal(expression);
 	}
 
-	bool CEval::evalFile(const string & filename){
+	bool CEval::evalFile(const std::string & filename){
 		return getInstance()->evalFileInternal(filename);
 	}
 
@@ -508,7 +508,7 @@ namespace zetscript{
 	 // FILE MANAGEMENT
 
 
-	bool CEval::isFilenameAlreadyParsed(const string & filename){
+	bool CEval::isFilenameAlreadyParsed(const std::string & filename){
 		for(unsigned i = 0; i < m_parsedSource.size(); i++){
 			if(m_parsedSource.at(i).filename==filename){
 				return true;
@@ -531,7 +531,7 @@ namespace zetscript{
 	//
 	// CONSTANT MANAGEMENT
 
-	tInfoConstantValue *CEval::getConstant(const string & const_name){
+	tInfoConstantValue *CEval::getConstant(const std::string & const_name){
 
 		if((m_contantPool).count(const_name) == 1){
 			return (m_contantPool)[const_name];
@@ -539,7 +539,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tInfoConstantValue * CEval::addConstant(const string & const_name, void *obj, unsigned short properties){
+	tInfoConstantValue * CEval::addConstant(const std::string & const_name, void *obj, unsigned short properties){
 
 		tInfoConstantValue * info_ptr=NULL;
 
@@ -554,7 +554,7 @@ namespace zetscript{
 		return info_ptr;
 	}
 
-	tInfoConstantValue * CEval::addConstant(const string & const_name, int _value){
+	tInfoConstantValue * CEval::addConstant(const std::string & const_name, int _value){
 		intptr_t value = _value;
 		unsigned short type=STK_PROPERTY_TYPE_INTEGER;
 		tStackElement *stk;
@@ -571,9 +571,9 @@ namespace zetscript{
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 
-	string * CEval::getCompiledSymbol(const string & s){
+	std::string * CEval::getCompiledSymbol(const std::string & s){
 		if(this->m_compiledSymbolName.count(s)==0){
-			this->m_compiledSymbolName[s]=new string (s);
+			this->m_compiledSymbolName[s]=new std::string (s);
 		}
 		return this->m_compiledSymbolName[s];
 	}
@@ -707,7 +707,7 @@ namespace zetscript{
 		defined_opcode[SHR]         ={SHR,"SHR"}; // shift right
 
 		defined_opcode[STORE]       ={STORE,"STORE"}; // mov expression to var
-		defined_opcode[LOAD]        ={LOAD,"LOAD"}; // primitive value like number/string or boolean...
+		defined_opcode[LOAD]        ={LOAD,"LOAD"}; // primitive value like number/std::string or boolean...
 
 		defined_opcode[JMP]         ={JMP,"JMP"}; // Unconditional jump.
 		defined_opcode[JNT]         ={JNT,"JNT"}; // goto if not true ... goes end to conditional.
@@ -716,12 +716,12 @@ namespace zetscript{
 		defined_opcode[CALL]={CALL,"CALL"}; // calling function after all of arguments are processed...
 
 
-		defined_opcode[VGET]={VGET,"VGET"}; // vector access after each index is processed...
+		defined_opcode[VGET]={VGET,"VGET"}; // std::vector access after each index is processed...
 
 		defined_opcode[DECL_VEC]={DECL_VEC,"DECL_VEC"}; // Vector object (CREATE)
 
-		defined_opcode[VPUSH]={VPUSH,"VPUSH"}; // Value push for vector
-		defined_opcode[RET]={RET,"RET"}; // Value pop for vector
+		defined_opcode[VPUSH]={VPUSH,"VPUSH"}; // Value push for std::vector
+		defined_opcode[RET]={RET,"RET"}; // Value pop for std::vector
 
 		defined_opcode[NEW]={NEW,"NEW"}; // New object (CREATE)
 		defined_opcode[DELETE_OP]={DELETE_OP,"DELETE_OP"};
@@ -836,12 +836,12 @@ namespace zetscript{
 	}
 
 
-	char * CEval::evalLiteralNumber(const char *c, int & line, string & value, bool & error){
-		// PRE: a string given...
+	char * CEval::evalLiteralNumber(const char *c, int & line, std::string & value, bool & error){
+		// PRE: a std::string given...
 		char *aux_p = IGNORE_BLANKS(c,line);
 		bool end=false;
 		int current_part=0;
-		string number_part[3];
+		std::string number_part[3];
 		value="";
 		bool is01s=true;
 		bool isInt=true;
@@ -955,7 +955,7 @@ namespace zetscript{
 			   || (*s=='\"' && pre!='\\');
 	}
 
-	// to string utils ...
+	// to std::string utils ...
 	char * CEval::evalSymbol(const char *start_word, int line,CEval::tTokenNode * token_node){
 		// PRE:
 		unsigned short type=STK_PROPERTY_TYPE_SCRIPTVAR;
@@ -965,7 +965,7 @@ namespace zetscript{
 		void *obj=NULL,*get_obj=NULL,*const_obj=NULL;
 		char *start_str=(char *)start_word;
 		char *aux=(char *)start_word;
-		string v="";
+		std::string v="";
 		 bool is_possible_number=false;
 		 int i=0;
 		 bool error=false;
@@ -975,14 +975,14 @@ namespace zetscript{
 		 int start_line = line;
 		 bool is_constant_string=false;
 
-		 if((aux=evalLiteralNumber(start_word,line,v ,error))==NULL){ // if not number,integer, hex, bit then is a literal string, boolean or identifier...
+		 if((aux=evalLiteralNumber(start_word,line,v ,error))==NULL){ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
 
 			 if(error){
 				 return NULL;
 			 }
 
 			 aux=(char *)start_word;
-			 // try eval identifier, boolean, string ...
+			 // try eval identifier, boolean, std::string ...
 			 token_node->token_type = TOKEN_TYPE::LITERAL_TOKEN;
 
 
@@ -1023,7 +1023,7 @@ namespace zetscript{
 
 				 }
 			}
-			 // add load string constant
+			 // add load std::string constant
 			// compile constant ...
 		 }
 
@@ -1119,7 +1119,7 @@ namespace zetscript{
 		// POST: token as literal or identifier
 	}
 
-	char *  CEval::getIdentifierToken(const char *s, string & symbol){
+	char *  CEval::getIdentifierToken(const char *s, std::string & symbol){
 
 		char *aux_p = (char *)s;
 		symbol="";
@@ -1147,11 +1147,11 @@ namespace zetscript{
 		return NULL;
 	}
 
-	bool CEval::isLiteral(const string & symbol){
+	bool CEval::isLiteral(const std::string & symbol){
 		return symbol=="true" || symbol == "false" || symbol=="undefined" || symbol == "null";
 	}
 
-	bool CEval::isIdentifierNameExpressionOk(const string & symbol, int line){
+	bool CEval::isIdentifierNameExpressionOk(const std::string & symbol, int line){
 
 		char *aux_p = (char *)symbol.c_str();
 		KEYWORD_TYPE kw;
@@ -1188,18 +1188,18 @@ namespace zetscript{
 		return true;
 	}
 	//------------------------------------------------------------------------------------------------------------
-	char * CEval::evalFunctionObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction){
+	char * CEval::evalFunctionObject(const char *s,int & line,  CScope *scope_info, std::vector<tInstructionEval> 		*	instruction){
 
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 
 		return NULL;
 	}
 
-	char * CEval::evalStructObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction){
+	char * CEval::evalStructObject(const char *s,int & line,  CScope *scope_info, std::vector<tInstructionEval> 		*	instruction){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
-			string symbol_value;
+			std::string symbol_value;
 			int lineSymbol;
 
 			if(*aux_p == '{'){ // go for final ...
@@ -1250,7 +1250,7 @@ namespace zetscript{
 	}
 
 
-	char * CEval::evalVectorObject(const char *s,int & line,  CScope *scope_info,  vector<tInstructionEval> *	instruction){
+	char * CEval::evalVectorObject(const char *s,int & line,  CScope *scope_info,  std::vector<tInstructionEval> *	instruction){
 
 		char * aux_p=IGNORE_BLANKS(s,line);
 
@@ -1284,10 +1284,10 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	char * CEval::evalNewObject(const char *s,int & line,  CScope *scope_info, vector<tInstructionEval> 		*	instruction){
+	char * CEval::evalNewObject(const char *s,int & line,  CScope *scope_info, std::vector<tInstructionEval> 		*	instruction){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		string symbol_value;
+		std::string symbol_value;
 
 		KEYWORD_TYPE key_w;
 
@@ -1394,7 +1394,7 @@ namespace zetscript{
 	}
 
 
-	bool CEval::makeOperatorPrecedence(vector<tTokenNode> * vExpressionTokens,vector<tInstructionEval> *instruction, int idx_start,int idx_end, bool & error){
+	bool CEval::makeOperatorPrecedence(std::vector<tTokenNode> * vExpressionTokens,std::vector<tInstructionEval> *instruction, int idx_start,int idx_end, bool & error){
 
 		OPERATOR_TYPE 	op_split=OPERATOR_TYPE::MAX_OPERATOR_TYPES;
 		int 			idx_split=-1;
@@ -1444,11 +1444,11 @@ namespace zetscript{
 		return result;
 	}
 
-	char * CEval::evalExpression(const char *s, int & line, CScope *scope_info, vector<tInstructionEval> 	* instruction){
-		// PRE: s is current string to eval. This function tries to eval an expression like i+1; and generates binary ast.
+	char * CEval::evalExpression(const char *s, int & line, CScope *scope_info, std::vector<tInstructionEval> 	* instruction){
+		// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
 
-		vector<tTokenNode> vExpressionTokens;
+		std::vector<tTokenNode> vExpressionTokens;
 		PRE_OPERATOR_TYPE pre_op = PRE_OPERATOR_TYPE::UNKNOWN_PRE_OPERATOR;
 		OPERATOR_TYPE op = OPERATOR_TYPE::UNKNOWN_OPERATOR;
 		KEYWORD_TYPE kw;
@@ -1485,7 +1485,7 @@ namespace zetscript{
 
 			// parenthesis (evals another expression)
 			if(*aux_p=='('){ // inner expression (priority)
-				vector<tInstructionEval> 	instruction_inner;
+				std::vector<tInstructionEval> 	instruction_inner;
 				if((aux_p=evalExpression(aux_p+1, line, scope_info, &instruction_inner))==NULL){
 					return NULL;
 				}
@@ -1523,7 +1523,7 @@ namespace zetscript{
 				// pre operator identifier ...
 
 				// first call..
-				if(*aux_p=='['){ // vector object...
+				if(*aux_p=='['){ // std::vector object...
 
 					if((aux_p=evalVectorObject(aux_p,line,scope_info,instruction)) == NULL){
 						return NULL;
@@ -1561,7 +1561,7 @@ namespace zetscript{
 				if(isAccessPunctuator(aux_p) || symbol_token_node.token_type == TOKEN_TYPE::IDENTIFIER_TOKEN){
 
 					if(!(      symbol_token_node.token_type == TOKEN_TYPE::IDENTIFIER_TOKEN
-						  || ((symbol_token_node.token_type == TOKEN_TYPE::FUNCTION_OBJECT_TOKEN)&& *aux_p == '(')// cannot be a number/boolean or string and then accessor like . / ( / [
+						  || ((symbol_token_node.token_type == TOKEN_TYPE::FUNCTION_OBJECT_TOKEN)&& *aux_p == '(')// cannot be a number/boolean or std::string and then accessor like . / ( / [
 						  || ((symbol_token_node.token_type == TOKEN_TYPE::VECTOR_OBJECT_TOKEN  )&& *aux_p == '[')// inline function object like this: 1+function(a,b){ return a+b;} + 0
 						  || ((symbol_token_node.token_type == TOKEN_TYPE::STRUCT_OBJECT_TOKEN  )&& *aux_p == '.')// inline struct object like this: 1+{"a":0,"b":1}.a + 0
 
@@ -1579,7 +1579,7 @@ namespace zetscript{
 					// eval accessor element (supose that was a preinsert a load instruction for identifier )...
 					while(isAccessPunctuator(aux_p)){
 						OP_CODE op_code=OP_CODE::INVALID_OP;
-						string accessor_value="";
+						std::string accessor_value="";
 
 						switch(*aux_p){
 						case '(': // function call
@@ -1616,7 +1616,7 @@ namespace zetscript{
 
 							aux_p++;
 							break;
-						case '[': // vector access
+						case '[': // std::vector access
 							if((aux_p = evalExpression(IGNORE_BLANKS(aux_p+1,line),line,scope_info,&symbol_token_node.instruction))==NULL){
 								return NULL;
 							}
@@ -1735,7 +1735,7 @@ namespace zetscript{
 	char * CEval::evalKeywordDelete(const char *s,int & line,  CScope *scope_info, bool & error){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		string symbol_value;
+		std::string symbol_value;
 		KEYWORD_TYPE key_w;
 
 		aux_p=IGNORE_BLANKS(aux_p,line);
@@ -1767,10 +1767,10 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * CEval::isClassMember(const char *s,int & line,CScriptClass **sc,string & member_symbol, bool & error){
+	char * CEval::isClassMember(const char *s,int & line,CScriptClass **sc,std::string & member_symbol, bool & error){
 
 		char *aux_p = (char *)s;
-		string class_name;
+		std::string class_name;
 		*sc=NULL;
 
 		error = false;
@@ -1809,8 +1809,8 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		CScope *class_scope_info=NULL;
 		int class_line;
-		string class_name;
-		string base_class_name="";
+		std::string class_name;
+		std::string base_class_name="";
 		CScriptClass *sc;
 		KEYWORD_TYPE key_w;
 		aux_p=IGNORE_BLANKS(aux_p,line);
@@ -1935,15 +1935,15 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		char *symbol_value,*end_var;
 		KEYWORD_TYPE key_w;
-		vector<tArgumentInfo> arg;
-		string conditional_str;
+		std::vector<tArgumentInfo> arg;
+		std::string conditional_str;
 		CScriptClass *sc=NULL;
 
 		tSymbol * irv=NULL;
-		string str_name,arg_value;
+		std::string str_name,arg_value;
 		static int n_anonymous_function=0;
-		//string class_member,class_name,
-		string function_name="";
+		//std::string class_member,class_name,
+		std::string function_name="";
 
 
 		int idxScope=ZS_UNDEFINED_IDX;
@@ -2119,7 +2119,7 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		KEYWORD_TYPE key_w;
-		string s_aux;
+		std::string s_aux;
 
 		key_w = isKeyword(aux_p);
 
@@ -2152,7 +2152,7 @@ namespace zetscript{
 		CScope *_currentScope=NULL;
 
 		//PASTNode conditional_expression=NULL, while_node=NULL;
-		string conditional_str;
+		std::string conditional_str;
 		error = false;
 
 		// check for keyword ...
@@ -2213,7 +2213,7 @@ namespace zetscript{
 		char *end_expr,*start_symbol;
 		KEYWORD_TYPE key_w;
 		CScope *_currentScope=NULL;
-		string conditional_str;
+		std::string conditional_str;
 		error = false;
 
 		// check for keyword ...
@@ -2291,7 +2291,7 @@ namespace zetscript{
 		char *end_expr,*start_symbol;
 		int dl=-1;
 		KEYWORD_TYPE key_w;
-		string conditional_str;
+		std::string conditional_str;
 		error = false;
 		int conditional_line;
 
@@ -2411,7 +2411,7 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		KEYWORD_TYPE key_w;
 		error=false;
-		string eval_for;
+		std::string eval_for;
 		CScope *_currentScope=NULL;
 
 		// check for keyword ...
@@ -2558,7 +2558,7 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		CScope *scope_case=NULL;
-		string val;
+		std::string val;
 		KEYWORD_TYPE key_w;//,key_w2;
 		CScope *currentScope=scope_info;
 
@@ -2635,7 +2635,7 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		KEYWORD_TYPE key_w;
 		char *start_var,*end_var;
-		string s_aux,variable_name;
+		std::string s_aux,variable_name;
 		//char *symbol_value;
 		bool end=false;
 		bool allow_for_in=true;
@@ -2846,10 +2846,10 @@ namespace zetscript{
 
 	char *CEval::evalDefaultCase(const char *s, int & line, CScope *scope_info,  bool & error){
 		char *aux_p=(char *)s;
-		string value_to_eval;
+		std::string value_to_eval;
 		tTokenNode token_node;
 
-		vector<tInstructionEval> *tokenCompiled = NULL;
+		std::vector<tInstructionEval> *tokenCompiled = NULL;
 
 		aux_p=IGNORE_BLANKS(aux_p, line);
 
@@ -2989,9 +2989,9 @@ namespace zetscript{
 						{
 
 							// save current file info...
-							string current_file_str=CEval::CURRENT_PARSING_FILE_STR;
+							std::string current_file_str=CEval::CURRENT_PARSING_FILE_STR;
 							int current_file_idx=CEval::CURRENT_PARSING_FILE_IDX;
-							string file_to_eval=symbol_name;
+							std::string file_to_eval=symbol_name;
 
 							if(isFilenameAlreadyParsed(file_to_eval.c_str())){
 								writeErrorMsg(CURRENT_PARSING_FILE_STR,line,"\"%s\" already evald",file_to_eval.c_str());
@@ -3001,7 +3001,7 @@ namespace zetscript{
 
 							try{
 								CZetScript::getInstance()->evalFile(file_to_eval);
-							}catch(script_error & error){
+							}catch(exception::script_error & error){
 								THROW_EXCEPTION(error);
 								return NULL;
 							}
@@ -3119,7 +3119,7 @@ namespace zetscript{
 				}else if(instruction->properties & INS_PROPERTY_SUPER_SCOPE){ // trivial super.
 
 					CScriptFunction *sf_found=NULL;
-					string symbol_name_to_find = sf->symbol_info.symbol->name;
+					std::string symbol_name_to_find = sf->symbol_info.symbol->name;
 
 					for(int i = sf->idxLocalFunction-1; i >=0 && sf_found==NULL; i--){
 
@@ -3255,7 +3255,7 @@ namespace zetscript{
 		return end_char;
 	}
 
-	bool CEval::evalStringInternal(const string & expression){
+	bool CEval::evalStringInternal(const std::string & expression){
 
 		bool error=false;
 		char *end_char=NULL;
@@ -3263,7 +3263,7 @@ namespace zetscript{
 		try{
 			eval(expression.c_str(),error);
 		}
-		catch(script_error & e)
+		catch(exception::script_error & e)
 		{
 			THROW_EXCEPTION(e);
 			error=true;
@@ -3272,7 +3272,7 @@ namespace zetscript{
 		return !error;
 	}
 
-	bool CEval::evalFileInternal(const string & filename){
+	bool CEval::evalFileInternal(const std::string & filename){
 		int idx_file=-1;
 		bool error=false;
 		char *buf_tmp=NULL;
@@ -3290,7 +3290,7 @@ namespace zetscript{
 				try{
 					eval(buf_tmp,error);
 				}
-				catch(script_error & e){
+				catch(exception::script_error & e){
 					free(buf_tmp);
 					buf_tmp=NULL;
 					THROW_EXCEPTION(e);
@@ -3321,7 +3321,7 @@ namespace zetscript{
 			}
 		}
 
-		for(map<string,tInfoConstantValue *>::iterator it=m_contantPool.begin();it!=m_contantPool.end();it++){
+		for(std::map<std::string,tInfoConstantValue *>::iterator it=m_contantPool.begin();it!=m_contantPool.end();it++){
 			tInfoConstantValue *icv=it->second;
 			switch(GET_INS_PROPERTY_VAR_TYPE(icv->properties)){
 			default:

@@ -1,4 +1,4 @@
-#include "CZetScript.h"
+#include "zetscript.h"
 
 namespace zetscript{
 
@@ -143,13 +143,13 @@ namespace zetscript{
 	}
 
 
-	int CZetScript::eval_int(const string & str_to_eval){
+	int CZetScript::eval_int(const std::string & str_to_eval){
 		CZetScript *zetscript= CZetScript::getInstance();
 
 		try{
 			zetscript->evalString(str_to_eval);
 		}
-		catch(script_error & error){
+		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
 		}
 
@@ -171,14 +171,14 @@ namespace zetscript{
 
 	}
 
-	bool CZetScript::eval_bool(const string & str_to_eval){
+	bool CZetScript::eval_bool(const std::string & str_to_eval){
 
 		CZetScript *zetscript= CZetScript::getInstance();
 
 		try{
 			zetscript->evalString(str_to_eval);
 		}
-		catch(script_error & error){
+		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
 			return false;
 		}
@@ -198,14 +198,14 @@ namespace zetscript{
 		return false;
 	}
 
-	float CZetScript::eval_float(const string & str_to_eval){
+	float CZetScript::eval_float(const std::string & str_to_eval){
 
 		CZetScript *zetscript= CZetScript::getInstance();
 
 		try{
 			zetscript->evalString(str_to_eval);
 		}
-		catch(script_error & error){
+		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
 		}
 
@@ -227,16 +227,16 @@ namespace zetscript{
 		return 0.0f;
 	}
 
-	string CZetScript::eval_string(const string & str_to_eval){
+	std::string CZetScript::eval_string(const std::string & str_to_eval){
 
-		string value="---";
+		std::string value="---";
 
 		CZetScript *zetscript= CZetScript::getInstance();
 
 		try{
 			zetscript->evalString(str_to_eval);
 		}
-		catch(script_error & error){
+		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
 			return "";
 		}
@@ -273,7 +273,7 @@ namespace zetscript{
 		}
 	}
 
-	bool CZetScript::evalString(const string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
+	bool CZetScript::evalString(const std::string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
 
 
 		if(!__init__) {CZetScriptUtils::sformat("zetscript not initialized");return false;}
@@ -293,7 +293,7 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CZetScript::evalFile(const string & filename, bool exec_vm, bool show_bytecode){
+	bool CZetScript::evalFile(const std::string & filename, bool exec_vm, bool show_bytecode){
 
 		if(!__init__) {CZetScriptUtils::sformat("zetscript not initialized");return false;}
 
@@ -305,7 +305,7 @@ namespace zetscript{
 			if(!CEval::evalFile(filename)){
 				return false;
 			}
-		}catch(script_error & e){
+		}catch(exception::script_error & e){
 			THROW_EXCEPTION(e);
 			return false;
 		}
@@ -322,12 +322,12 @@ namespace zetscript{
 
 	}
 
-	//CScriptFunction *getScriptObjectFromScriptFunctionAccessName(const string &function_access_expression)
-	bool CZetScript::getScriptObjectFromFunctionAccess(const string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
+	//CScriptFunction *getScriptObjectFromScriptFunctionAccessName(const std::string &function_access_expression)
+	bool CZetScript::getScriptObjectFromFunctionAccess(const std::string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
 
 		//ZS_CLEAR_ERROR_MSG();
 
-		vector<string> access_var = CZetScriptUtils::split(function_access,'.');
+		std::vector<std::string> access_var = CZetScriptUtils::split(function_access,'.');
 		CScriptFunction * m_mainFunctionInfo = MAIN_FUNCTION;
 
 		if(m_mainFunctionInfo == NULL){
@@ -344,7 +344,7 @@ namespace zetscript{
 		if(access_var.size()>1){
 			for(unsigned i=0; i < access_var.size()-1; i++){
 
-				string symbol_to_find=access_var[i];
+				std::string symbol_to_find=access_var[i];
 				if(i==0){ // get variable through main_class.main_function (global element)
 					//symbol_to_find= CEval::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
 					for(unsigned j = 0; j < m_mainFunctionInfo->m_variable.size() && *calling_obj==NULL; j++){
@@ -400,7 +400,7 @@ namespace zetscript{
 
 		}else{ // some function in main function
 			//*calling_obj = m_mainObject;
-			string symbol_to_find=access_var[0];
+			std::string symbol_to_find=access_var[0];
 			for(unsigned i = 0; i < m_mainFunctionInfo->m_function.size() && *fun_obj==NULL; i++){
 				CScriptFunction *aux_fun_obj=m_mainFunctionInfo->m_function[i];
 				if(		aux_fun_obj->symbol_info.symbol->name  == symbol_to_find

@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
 
 #define MAX_STATMENT_LENGTH 2096
 #define MAX_VAR_LENGTH 100
@@ -104,7 +104,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	vector<short> * CScope::getLocalScopeList(){
+	std::vector<short> * CScope::getLocalScopeList(){
 
 		return &m_localScopeList;
 	}
@@ -114,7 +114,7 @@ namespace zetscript{
 	// SCOPE VARIABLE MANAGEMENT
 	//
 
-	tSymbol * CScope::registerSymbol(const string & file,short line,const string & var_name, char n_params){
+	tSymbol * CScope::registerSymbol(const std::string & file,short line,const std::string & var_name, char n_params){
 		tSymbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
@@ -142,7 +142,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tSymbol * CScope::getSymbolRecursiveDownScope(const string & symbol_name, char n_params){
+	tSymbol * CScope::getSymbolRecursiveDownScope(const std::string & symbol_name, char n_params){
 
 
 		for(unsigned i = 0; i < m_scopeSymbol.size(); i++){
@@ -161,7 +161,7 @@ namespace zetscript{
 
 	}
 
-	tSymbol * CScope::getSymbolRecursiveUpScope(const string & symbol_name, char n_params){
+	tSymbol * CScope::getSymbolRecursiveUpScope(const std::string & symbol_name, char n_params){
 		// only blocks within functions...
 		tSymbol *sv;
 
@@ -185,7 +185,7 @@ namespace zetscript{
 
 	}
 
-	tSymbol * CScope::getSymbol(const string & var_name, char n_params){
+	tSymbol * CScope::getSymbol(const std::string & var_name, char n_params){
 		//return getSymbolRecursive(var_name, n_params);
 		tSymbol *sv;
 

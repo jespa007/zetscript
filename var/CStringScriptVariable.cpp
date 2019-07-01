@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "../CZetScript.h"
+#include "../zetscript.h"
 
 namespace zetscript{
 
@@ -18,7 +18,7 @@ namespace zetscript{
 		init(SCRIPT_CLASS_STRING, (void *)this);
 	}
 
-	CStringScriptVariable::CStringScriptVariable(const string & s){
+	CStringScriptVariable::CStringScriptVariable(const std::string & s){
 
 
 		init(SCRIPT_CLASS_STRING, (void *)this);

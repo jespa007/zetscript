@@ -43,8 +43,8 @@
 #define VOID_TYPE_STR							zetscript::CScriptClassFactory::getInstance()->m_VOID_TYPE_STR			// 	typeid(void).name()
 #define INT_PTR_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_INT_PTR_TYPE_STR			//	typeid(int *).name()
 #define FLOAT_PTR_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_FLOAT_PTR_TYPE_STR		//	typeid(float *).name()
-#define STRING_PTR_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_STRING_PTR_TYPE_STR		//	typeid(string *).name()
-#define CONST_CHAR_PTR_TYPE_STR					zetscript::CScriptClassFactory::getInstance()->m_CONST_CHAR_PTR_TYPE_STR	//	typeid(string *).name()
+#define STRING_PTR_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_STRING_PTR_TYPE_STR		//	typeid(std::string *).name()
+#define CONST_CHAR_PTR_TYPE_STR					zetscript::CScriptClassFactory::getInstance()->m_CONST_CHAR_PTR_TYPE_STR	//	typeid(std::string *).name()
 #define BOOL_PTR_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_BOOL_PTR_TYPE_STR		//	typeid(bool *).name()
 #define INT_TYPE_STR							zetscript::CScriptClassFactory::getInstance()->m_INT_TYPE_STR				//	typeid(int).name()
 #define UNSIGNED_INT_TYPE_STR					zetscript::CScriptClassFactory::getInstance()->m_UNSIGNED_INT_TYPE_STR	//	typeid(unsigned int).name()
@@ -74,7 +74,7 @@ namespace zetscript{
 
 			typedef struct{
 				tPrimitiveType 				*return_type;
-				vector<tPrimitiveType*>		params;
+				std::vector<tPrimitiveType*>		params;
 			}tRegisterFunction;
 
 
@@ -86,44 +86,44 @@ namespace zetscript{
 
 			//----
 
-			string  m_VOID_TYPE_STR;			// 	typeid(void).name()
-			string  m_INT_PTR_TYPE_STR;			//	typeid(int *).name()
-			string  m_FLOAT_PTR_TYPE_STR;		//	typeid(float *).name()
-			string  m_STRING_PTR_TYPE_STR;		//	typeid(string *).name()
-			string  m_CONST_CHAR_PTR_TYPE_STR;	//	typeid(string *).name()
-			string  m_BOOL_PTR_TYPE_STR;		//	typeid(bool *).name()
-			string  m_INT_TYPE_STR;				//	typeid(int).name()
-			string  m_UNSIGNED_INT_TYPE_STR;	//	typeid(unsigned int).name()
-			string  m_INTPTR_T_TYPE_STR;		//	typeid(intptr_t).name()
+			std::string  m_VOID_TYPE_STR;			// 	typeid(void).name()
+			std::string  m_INT_PTR_TYPE_STR;			//	typeid(int *).name()
+			std::string  m_FLOAT_PTR_TYPE_STR;		//	typeid(float *).name()
+			std::string  m_STRING_PTR_TYPE_STR;		//	typeid(std::string *).name()
+			std::string  m_CONST_CHAR_PTR_TYPE_STR;	//	typeid(std::string *).name()
+			std::string  m_BOOL_PTR_TYPE_STR;		//	typeid(bool *).name()
+			std::string  m_INT_TYPE_STR;				//	typeid(int).name()
+			std::string  m_UNSIGNED_INT_TYPE_STR;	//	typeid(unsigned int).name()
+			std::string  m_INTPTR_T_TYPE_STR;		//	typeid(intptr_t).name()
 
-			string  m_FLOAT_TYPE_STR;			//	typeid(int).name()
-			string  m_BOOL_TYPE_STR;			//	typeid(bool).name()
-			string  m_STACK_ELEMENT_STR;		//	typeid(bool).name()
-
-
-			tPrimitiveType *getPrimitiveTypeFromStr(const string & str);
-			 map<unsigned char, map<unsigned char, fntConversionType>> *  getMapTypeConversion();
+			std::string  m_FLOAT_TYPE_STR;			//	typeid(int).name()
+			std::string  m_BOOL_TYPE_STR;			//	typeid(bool).name()
+			std::string  m_STACK_ELEMENT_STR;		//	typeid(bool).name()
 
 
+			tPrimitiveType *getPrimitiveTypeFromStr(const std::string & str);
+			 std::map<unsigned char, std::map<unsigned char, fntConversionType>> *  getMapTypeConversion();
 
 
-			 unsigned char				getIdxClassFromIts_C_Type(const string & s);
+
+
+			 unsigned char				getIdxClassFromIts_C_Type(const std::string & s);
 			 void 						setPrintOutCallback(void (*)(const char *));
 			 const char * 				getMetamethod(METAMETHOD_OPERATOR op);
-			 vector<CScriptClass *> * 	getVectorScriptClassNode();
+			 std::vector<CScriptClass *> * 	getVectorScriptClassNode();
 
 			/// register script class
-			CScriptClass 						* 				registerClass(const string & file, short line, const string & class_name, const string & base_class_name="");
+			CScriptClass 						* 				registerClass(const std::string & file, short line, const std::string & class_name, const std::string & base_class_name="");
 
 
 			 CScriptClass * 				getScriptClass(unsigned char idx);
-			 CScriptClass * 				getScriptClass(const string & name);
-			CScriptClass 						* 				getScriptClassBy_C_ClassPtr(const string & class_type);
+			 CScriptClass * 				getScriptClass(const std::string & name);
+			CScriptClass 						* 				getScriptClassBy_C_ClassPtr(const std::string & class_type);
 			const char 							* 				getScriptClassName(unsigned char idx);
 
 
 			 bool						isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
-			  bool 						isClassRegistered(const string & v);
+			  bool 						isClassRegistered(const std::string & v);
 
 			void 												registerPrimitiveTypes();
 			void 												register_C_BaseSymbolsInt(bool );
@@ -133,7 +133,7 @@ namespace zetscript{
 			/**
 			 * Class name given this function creates the object and initializes all variables.
 			 */
-			CScriptVariable 		 				* 			instanceScriptVariableByClassName(const string & class_name);
+			CScriptVariable 		 				* 			instanceScriptVariableByClassName(const std::string & class_name);
 			CScriptVariable 		 				* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
 
 			intptr_t 											doCast(intptr_t obj, unsigned char src_class, unsigned char convert_class);
@@ -154,21 +154,21 @@ namespace zetscript{
 			/**
 			 * Register C variable
 			 */
-			 tVariableSymbolInfo * register_C_VariableInt(const string & var_str,void * var_ptr, const string & var_type);
-			 unsigned char getIdx_C_RegisteredClass(const string & str_classPtr);
+			 tVariableSymbolInfo * register_C_VariableInt(const std::string & var_str,void * var_ptr, const std::string & var_type);
+			 unsigned char getIdx_C_RegisteredClass(const std::string & str_classPtr);
 
 
 			/**
 			 * Register C Class. Return index registered class
 			 */
 			template<class _T>
-			 CScriptClass * register_C_SingletonClassInt(const string & class_name);
+			 CScriptClass * register_C_SingletonClassInt(const std::string & class_name);
 
 			/**
 			 * Register C Class. Return index registered class
 			 */
 			template<class _T>
-			CScriptClass * register_C_ClassInt(const string & class_name);
+			CScriptClass * register_C_ClassInt(const std::string & class_name);
 
 
 			template<class _T, class _B>
@@ -201,9 +201,9 @@ namespace zetscript{
 			static int __registered_line__;
 
 			/**
-			 * Vector of script classes. This vector is removed when zetscript reevaluates all scrips.
+			 * Vector of script classes. This std::vector is removed when zetscript reevaluates all scrips.
 			 */
-			vector<CScriptClass *> 			 		vec_script_class_node;
+			std::vector<CScriptClass *> 			 		vec_script_class_node;
 
 
 			/*
@@ -211,7 +211,7 @@ namespace zetscript{
 			 */
 			bool register_c_base_symbols;
 
-			map<unsigned char,map<unsigned char,fntConversionType>> 	mapTypeConversion;
+			std::map<unsigned char,std::map<unsigned char,fntConversionType>> 	mapTypeConversion;
 
 
 			static 									void  print(const char *s);
@@ -220,8 +220,8 @@ namespace zetscript{
 
 
 
-			unsigned char							getIdxScriptClass_Internal(const string & class_name);
-			unsigned char							getIdxClassFromIts_C_TypeInternal(const string & c_type_str);
+			unsigned char							getIdxScriptClass_Internal(const std::string & class_name);
+			unsigned char							getIdxClassFromIts_C_TypeInternal(const std::string & c_type_str);
 
 			void setup();
 

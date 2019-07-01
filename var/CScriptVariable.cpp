@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "../CZetScript.h"
+#include "../zetscript.h"
 
 namespace zetscript{
 
@@ -122,7 +122,7 @@ namespace zetscript{
 			c_scriptclass_info=irv;
 		}
 
-		// only create symbols if not string type to make it fast ...
+		// only create symbols if not std::string type to make it fast ...
 		if(idxClass >= BUILT_IN_TYPE::MAX_BUILT_IN_TYPES && idxClass !=IDX_CLASS_STRING){
 			createSymbols(irv);
 		}
@@ -160,7 +160,7 @@ namespace zetscript{
 		}
 	}
 
-	tStackElement * CScriptVariable::addVariableSymbol(const string & symbol_value, const CScriptFunction *info_function,tInstruction *src_instruction,tStackElement * sv){
+	tStackElement * CScriptVariable::addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function,tInstruction *src_instruction,tStackElement * sv){
 		tStackElement si;
 
 		bool error_symbol=false;
@@ -198,7 +198,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		//string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+		//std::string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(getVariableSymbol(symbol_value) != NULL){
 			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
@@ -225,7 +225,7 @@ namespace zetscript{
 		}
 
 		//si.idxAstNode = _idxAstNode;
-		string key_value = symbol_value;
+		std::string key_value = symbol_value;
 		m_variable.push_back(si);
 		m_variableKey.push_back(key_value);
 
@@ -235,7 +235,7 @@ namespace zetscript{
 	tStackElement * CScriptVariable::exist(const char *c){
 		for(unsigned i = 0; i < m_variableKey.size(); i++){
 			//CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
-			if(m_variableKey[i] == string(c)){
+			if(m_variableKey[i] == std::string(c)){
 				return &m_variable[i];
 			}
 
@@ -244,14 +244,14 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tStackElement * CScriptVariable::getVariableSymbol(const string & varname){//,bool only_var_name){
+	tStackElement * CScriptVariable::getVariableSymbol(const std::string & varname){//,bool only_var_name){
 
 		if(varname == "this"){
 			return &this_variable;
 		}
 
 		for(unsigned int i = 0; i < this->m_variableKey.size(); i++){
-			string symbol = this->m_variableKey[i];
+			std::string symbol = this->m_variableKey[i];
 
 			/*if(only_var_name){
 				symbol=CEval::getSymbolNameFromSymbolRef(symbol);
@@ -264,7 +264,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates){
+	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const std::string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates){
 		tFunctionSymbol si;
 		si.proxy_ptr=0;
 		si.object = {
@@ -274,7 +274,7 @@ namespace zetscript{
 				STK_PROPERTY_TYPE_FUNCTION  // dfine as function.
 		};
 
-		//string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+		//std::string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(!ignore_duplicates){
 			if(getFunctionSymbol(symbol_value) != NULL){
@@ -291,10 +291,10 @@ namespace zetscript{
 		return &m_functionSymbol[m_functionSymbol.size()-1];
 	}
 
-	tFunctionSymbol * CScriptVariable::getFunctionSymbol(const string & varname){
+	tFunctionSymbol * CScriptVariable::getFunctionSymbol(const std::string & varname){
 		for(unsigned int i = 0; i < this->m_functionSymbol.size(); i++){
 
-			string symbol = this->m_functionSymbol[i].key_value;
+			std::string symbol = this->m_functionSymbol[i].key_value;
 
 			/*if(only_var_name){
 				symbol=CEval::getSymbolNameFromSymbolRef(symbol);
@@ -308,7 +308,7 @@ namespace zetscript{
 	}
 
 
-	bool CScriptVariable::removeVariableSymbolByIndex(unsigned int idx, bool remove_vector){//onst string & varname){
+	bool CScriptVariable::removeVariableSymbolByIndex(unsigned int idx, bool remove_vector){//onst std::string & varname){
 
 		tStackElement *si;
 
@@ -344,7 +344,7 @@ namespace zetscript{
 				break;
 		}
 
-		// remove symbol on vector ...
+		// remove symbol on std::vector ...
 		if(remove_vector){
 			m_variable.erase(m_variable.begin()+idx);
 			m_variableKey.erase(m_variableKey.begin()+idx);
@@ -353,12 +353,12 @@ namespace zetscript{
 		return true;
 	}
 
-	vector<tStackElement> * CScriptVariable::getVectorVariable(){
+	std::vector<tStackElement> * CScriptVariable::getVectorVariable(){
 		return &m_variable;
 	}
 
-	bool CScriptVariable::removeVariableSymbolByName(const string & varname, const CScriptFunction *info_function){
-		//string symbol_ref=CEval::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
+	bool CScriptVariable::removeVariableSymbolByName(const std::string & varname, const CScriptFunction *info_function){
+		//std::string symbol_ref=CEval::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
 		for(unsigned int i = 0; i < this->m_variableKey.size(); i++){
 			if(varname == this->m_variableKey[i]){
 				return removeVariableSymbolByIndex(i,true);
@@ -383,7 +383,7 @@ namespace zetscript{
 		return &m_variable[idx];
 	}
 
-	tFunctionSymbol * CScriptVariable::getIdxScriptFunctionObjectByClassFunctionName(const string & varname){
+	tFunctionSymbol * CScriptVariable::getIdxScriptFunctionObjectByClassFunctionName(const std::string & varname){
 
 		// from lat value to first to get last override function...
 		for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){
@@ -394,15 +394,15 @@ namespace zetscript{
 		return NULL;
 	}
 
-	const string & CScriptVariable::getClassName(){
+	const std::string & CScriptVariable::getClassName(){
 			return m_infoRegisteredClass->symbol_info.symbol->name;
 		}
 
-		const string & CScriptVariable::getPointer_C_ClassName(){
+		const std::string & CScriptVariable::getPointer_C_ClassName(){
 			return m_infoRegisteredClass->classPtrType;
 		}
 
-		string * CScriptVariable::toString(){
+		std::string * CScriptVariable::toString(){
 			return &m_strValue;
 		}
 
@@ -448,7 +448,7 @@ namespace zetscript{
 		return &m_functionSymbol[idx];
 	}
 
-	vector<tFunctionSymbol> * CScriptVariable::getVectorFunctionSymbol(){
+	std::vector<tFunctionSymbol> * CScriptVariable::getVectorFunctionSymbol(){
 		return &m_functionSymbol;
 	}
 

@@ -1,0 +1,6 @@
+namespace zetscript{
+	namespace logger{
+
+
+	}
+}
