@@ -40,11 +40,16 @@ Date: XX-XX-2018
 #99 register C constant feature
 #100 Improved virtual machine speed (Improved ~ x1.4) 
 
-#101 Adapt inheritance feature from 1.1.3
+#101 Adapt inheritance feature developed on 1.1.3 version
 #102 Bug: can use variable before define var itself
+#116 CMakeLists: Make permament static link and add -DFCOMPILE
 
 > #103: Reworked parse + compile in one single optimized step 
 > #113: Replace try/catch by getError
+> #114 Turn CZetScript class into helper functions inside zetscript namespace enhancement feature
+> #115 Rename "zetscript" namespace to "zs"
+> #117 Make MACROS register_C_XXXX all uppercase 
+ 
 
 Other: Lot of clean code up. 
 
