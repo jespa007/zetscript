@@ -4,7 +4,7 @@
  */
 #include "../zetscript.h"
 
-namespace zetscript{
+namespace zs{
 
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);

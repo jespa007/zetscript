@@ -4,9 +4,9 @@
  */
 #include "zetscript.h"
 
-#define VAR_LOG(l) ((l) == zetscript::CZetScriptUtils::LOG_ERROR?"ERR": (l)==zetscript::CZetScriptUtils::LOG_WARNING?"WRN": (l) == zetscript::CZetScriptUtils::LOG_INFO ? "INF" : (l) == zetscript::CZetScriptUtils::LOG_DEBUG ? "DBG":"NAN" )
+#define VAR_LOG(l) ((l) == zs::CZetScriptUtils::LOG_ERROR?"ERR": (l)==zs::CZetScriptUtils::LOG_WARNING?"WRN": (l) == zs::CZetScriptUtils::LOG_INFO ? "INF" : (l) == zs::CZetScriptUtils::LOG_DEBUG ? "DBG":"NAN" )
 
-namespace zetscript{
+namespace zs{
 
 	static char  _sformat_buffer[4096] = { 0 };
 

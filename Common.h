@@ -4,7 +4,7 @@
  */
 #pragma once
 
-//namespace zetscript{
+//namespace zs{
 
 	#ifdef __ZETSCRIPT_DEBUG__ // incoment __ZETSCRIPT_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
 	#define __ZETSCRIPT_VERBOSE_MESSAGE__
@@ -439,7 +439,7 @@
 
 	};
 
-	namespace zetscript{
+	namespace zs{
 
 
 		//typedef CASTNode *PASTNode;

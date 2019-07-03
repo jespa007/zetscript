@@ -5,7 +5,7 @@
 
 #include "zetscript.h"
 
-namespace zetscript {
+namespace zs {
 	namespace exception{
 
 		void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);

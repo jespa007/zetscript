@@ -97,7 +97,7 @@
 #define ZETSCRIPT_PATCH_VERSION 0
 
 
-#define CURRENT_VM	CZetScript::getInstance()->getVirtualMachine()
+#define CURRENT_VM	zs::get_vm()
 
 
 //#define ZS_WRITE_ERROR_MSG 		writeErrorMsg
@@ -108,65 +108,28 @@
 #define MAX_BUFFER_AUX_TMP		4096
 
 
-namespace zetscript{
-
-	class CScriptVariable;
-	class  CZetScript{
+namespace zs{
 
 
-		//static char str_error[MAX_BUFFER_STR_ERROR];
-		static CZetScript * m_instance;
+	 void	set_callback_on_error(tPrintFunctionCallback _fun);
 
-		// calling C function with differnt parameters...
-		CScriptVariable		*		m_mainObject;
-		CScriptFunction 	*		m_mainFunction;
-		//int						 	idxMainScriptFunctionObject;
+	 int eval_int_value(const std::string & str_to_eval);
+	 bool eval_bool_value(const std::string & str_to_eval);
+	 float eval_float_value(const std::string & str_to_eval);
+	 std::string eval_string_value(const std::string & str_to_eval);
 
-		CVirtualMachine *vm;
-		bool __init__;
-		bool show_filename_on_error;
+	/**
+	 * Clear: Clear compile information.
+	 */
+	 void clear();
+	 void execute();
 
-		void parse_ast(const char *str, int idx_filename=-1);
+	 CVirtualMachine *get_vm();
 
-		bool init();
-		CZetScript();
+	 bool eval_string(const std::string & expresion, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
+	 bool eval_file(const std::string & filename,bool execute=true,bool show_bytecode=false);
+	 void destroy();
 
-
-		void destroyMainFunction();
-		~CZetScript();
-
-	public:
-
-
-		 static CZetScript * getInstance();
-
-		void	setUserCallbackOnError(tPrintFunctionCallback _fun);
-
-		 static int eval_int(const std::string & str_to_eval);
-		 static bool eval_bool(const std::string & str_to_eval);
-		 static float eval_float(const std::string & str_to_eval);
-		 static std::string eval_string(const std::string & str_to_eval);
-
-
-		/**
-		 * Main bind function
-		 */
-		 bool getScriptObjectFromFunctionAccess(const std::string &function_access_expression
-														  ,CScriptVariable **calling_obj
-														  ,CScriptFunction **fun_obj);
-		 CVirtualMachine * getVirtualMachine();
-
-
-		/**
-		 * Clear: Clear compile information.
-		 */
-		 void clear();
-		 void execute();
-
-		 bool evalString(const std::string & expresion, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
-		 bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
-		 static void destroy();
-	};
 
 
 

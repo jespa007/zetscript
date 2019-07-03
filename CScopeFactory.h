@@ -1,21 +1,21 @@
 #pragma once
 
-#define SCOPE_FACTORY					zetscript::CScopeFactory::getInstance()
+#define SCOPE_FACTORY					zs::CScopeFactory::getInstance()
 
 #define IDX_GLOBAL_SCOPE				0
 #define IDX_INVALID_SCOPE				ZS_UNDEFINED_IDX
 #define IDX_ANONYMOUSE_SCOPE			-3
 
 
-#define GET_SCOPE(idx) 				zetscript::CScopeFactory::getInstance()->getScope(idx)
-#define MAIN_SCOPE						zetscript::CScopeFactory::getInstance()->getScope(IDX_GLOBAL_SCOPE)
+#define GET_SCOPE(idx) 				zs::CScopeFactory::getInstance()->getScope(idx)
+#define MAIN_SCOPE						zs::CScopeFactory::getInstance()->getScope(IDX_GLOBAL_SCOPE)
 
-#define NEW_SCOPE						(zetscript::CScopeFactory::getInstance()->newScope)
+#define NEW_SCOPE						(zs::CScopeFactory::getInstance()->newScope)
 
 // if 0 is in main <> 0, else.
-#define SCOPE_IN_MAIN_CLASS(idx)		((zetscript::CScopeFactory::getInstance()->getScope(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
+#define SCOPE_IN_MAIN_CLASS(idx)		((zs::CScopeFactory::getInstance()->getScope(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
 
-namespace zetscript{
+namespace zs{
 
 	class CScopeFactory{
 

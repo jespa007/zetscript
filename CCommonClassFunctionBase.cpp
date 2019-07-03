@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-namespace zetscript{
+namespace zs{
 
 	CCommonClassFunctionBase::CCommonClassFunctionBase(unsigned char _idxClass) {
 		idxClass=_idxClass;

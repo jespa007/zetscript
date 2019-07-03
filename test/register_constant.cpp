@@ -1,7 +1,7 @@
 
 #include "CZetScript.h"
 
-using namespace zetscript;
+using namespace zs;
 
 int main(){
 
@@ -9,7 +9,7 @@ int main(){
 
 	register_C_Constant("MY_CONSTANT",10);
 
-	zs->evalString(
+	zs::eval_string(
 		"print(\"c:\"+MY_CONSTANT);"
 	);
 

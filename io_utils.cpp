@@ -1,4 +1,4 @@
-namespace zetscript{
+namespace zs{
 	namespace io_utils{
 
 

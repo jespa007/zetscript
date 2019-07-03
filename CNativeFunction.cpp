@@ -4,7 +4,7 @@
  */
 #include "zetscript.h"
 
-namespace zetscript{
+namespace zs{
 
 	CNativeFunction * CNativeFunction::m_instance=NULL;
 

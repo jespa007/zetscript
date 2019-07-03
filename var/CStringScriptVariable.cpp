@@ -4,7 +4,7 @@
  */
 #include "../zetscript.h"
 
-namespace zetscript{
+namespace zs{
 
 	void CStringScriptVariable::setup(){
 		m_value = &m_strValue;

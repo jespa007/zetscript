@@ -11,7 +11,7 @@
 
 
 
-namespace zetscript{
+namespace zs{
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
@@ -1170,7 +1170,7 @@ namespace zetscript{
 
 			if((info_function->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_IS_POLYMORPHIC)){ // cannot call...
 				writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
-						"1. Set register_C_baseSymbols(false) and  re-register the function using register_C_FunctionMember\n"
+						"1. Set register_C_baseSymbols(false) and  re-register the function using REGISTER_C_FUNCTION_MEMBER\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idxClass!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
 						,info_function->symbol_info.symbol->name.c_str());

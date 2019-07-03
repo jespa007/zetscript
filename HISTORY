@@ -46,10 +46,12 @@ Date: XX-XX-2018
 
 > #103: Reworked parse + compile in one single optimized step 
 > #113: Replace try/catch by getError
-> #114 Turn CZetScript class into helper functions inside zetscript namespace enhancement feature
-> #115 Rename "zetscript" namespace to "zs"
-> #117 Make MACROS register_C_XXXX all uppercase 
- 
+
+#114 Turn CZetScript class into helper functions inside zetscript namespace enhancement feature
+#115 Rename "zetscript" namespace to "zs"
+#117 Make MACROS register_C_XXXX all uppercase 
+#119 CEval as eval (all functions are C functions within zs member)
+#118 split CZetScriptUtils file in io_utils, path_utils, logger as static function
 
 Other: Lot of clean code up. 
 

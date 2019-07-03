@@ -2,15 +2,15 @@
 
 
 
+#define SCRIPT_FUNCTION_FACTORY									zs::CScriptFunctionFactory::getInstance()
 
-namespace zetscript{
+#define NEW_SCRIPT_FUNCTION										zs::CScriptFunctionFactory::getInstance()->newScriptFunction
+#define GET_SCRIPT_FUNCTION(idx) 								zs::CScriptFunctionFactory::getInstance()->getScriptFunction(idx)
+#define IDX_MAIN_FUNCTION										0
+#define MAIN_FUNCTION											GET_SCRIPT_FUNCTION(IDX_MAIN_FUNCTION)
 
-	#define SCRIPT_FUNCTION_FACTORY									zetscript::CScriptFunctionFactory::getInstance()
 
-	#define NEW_SCRIPT_FUNCTION										CScriptFunctionFactory::getInstance()->newScriptFunction
-	#define GET_SCRIPT_FUNCTION(idx) 								CScriptFunctionFactory::getInstance()->getScriptFunction(idx)
-	#define IDX_MAIN_FUNCTION										0
-	#define MAIN_FUNCTION											GET_SCRIPT_FUNCTION(IDX_MAIN_FUNCTION)
+namespace zs{
 
 
 	class CScriptFunctionFactory{

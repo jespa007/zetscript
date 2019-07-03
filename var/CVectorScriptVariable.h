@@ -6,7 +6,7 @@
 
 #define NEW_VECTOR_VAR (new CVectorScriptVariable()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new CVectorScriptVariable())))
 
-namespace zetscript{
+namespace zs{
 
 	class  CVectorScriptVariable: public CScriptVariable{
 

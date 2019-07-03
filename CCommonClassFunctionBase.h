@@ -1,6 +1,6 @@
 #pragma once
 
-namespace zetscript{
+namespace zs{
 
 
 	class CCommonClassFunctionBase { // script function is shared by class and function ...

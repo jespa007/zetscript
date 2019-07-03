@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-namespace zetscript{
+namespace zs{
 
 	CScriptFunctionFactory * CScriptFunctionFactory::script_function_factory_singleton=NULL;
 

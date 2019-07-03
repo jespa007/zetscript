@@ -1,12 +1,14 @@
 #include "zetscript.h"
 
-namespace zetscript{
+namespace zs{
 
 	// define prototype ...
 	int error_line;
 	char error_filename[512];
 	char error_description[1024];
 	const char *error_type="NA";
+	bool __init__=false;
+	CVirtualMachine *main_vm=NULL;
 
 
 
@@ -46,22 +48,12 @@ namespace zetscript{
 		return error_filename;
 	}
 
-	CZetScript * CZetScript::m_instance = NULL;
 
-	CZetScript * CZetScript::getInstance(){
-		if(m_instance==NULL){
-			m_instance = new CZetScript();
+	void clear(){
 
-			if(!m_instance->init()){
-				CZetScriptUtils::sformat("Cannot instance ZetScript");
-			}
-		}
-		return m_instance;
-	}
+		if(!__init__) {init();}
 
-	void CZetScript::clear(){
-
-		CURRENT_VM->clearGlobalVars();
+		main_vm->clearGlobalVars();
 
 		CScriptFunction * main_function = MAIN_FUNCTION;
 
@@ -102,32 +94,27 @@ namespace zetscript{
 
 	}
 
-	void CZetScript::destroy(){
+	void quit(){
 
 		CURRENT_VM->clearGlobalVars();
 
 		// clear globals...
-		if(m_instance!=NULL){
-			delete m_instance;
-		}
-		
 		CScopeFactory::destroySingleton();
 		CScriptFunctionFactory::destroySingleton();
 		CScriptClassFactory::destroySingleton();
 		CNativeFunction::destroySingleton();
 		CEval::destroySingleton();
-	}
 
-
-	CZetScript::CZetScript(){
 		m_mainObject = NULL;
 		m_mainFunction = NULL;
 		show_filename_on_error=true;
 		__init__ = false;
-		vm=NULL;
+		main_vm=NULL;
+
 	}
 
-	bool CZetScript::init(){
+
+	void init(){
 
 		CScopeFactory::getInstance();
 		CNativeFunction::getInstance();
@@ -135,19 +122,17 @@ namespace zetscript{
 		CScriptClassFactory::getInstance();
 		CEval::getInstance();
 
-		vm = new CVirtualMachine();
+		main_vm = new CVirtualMachine();
 
 		__init__=true;
-
-		return true;
 	}
 
 
-	int CZetScript::eval_int(const std::string & str_to_eval){
-		CZetScript *zetscript= CZetScript::getInstance();
+	int eval_int_value(const std::string & str_to_eval){
+
 
 		try{
-			zetscript->evalString(str_to_eval);
+			zs::eval_string(str_to_eval);
 		}
 		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
@@ -162,7 +147,7 @@ namespace zetscript{
 				return (int)((intptr_t)se->stkValue);
 			}
 			else{
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("eval_int(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("eval_int_value(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
@@ -171,12 +156,12 @@ namespace zetscript{
 
 	}
 
-	bool CZetScript::eval_bool(const std::string & str_to_eval){
+	bool eval_bool_value(const std::string & str_to_eval){
 
-		CZetScript *zetscript= CZetScript::getInstance();
+
 
 		try{
-			zetscript->evalString(str_to_eval);
+			zs::eval_string(str_to_eval);
 		}
 		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
@@ -191,19 +176,18 @@ namespace zetscript{
 				return (bool)((intptr_t)se->stkValue);
 
 			}else{
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("eval_bool(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("eval_bool_value(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
 		return false;
 	}
 
-	float CZetScript::eval_float(const std::string & str_to_eval){
+	float eval_float_value(const std::string & str_to_eval){
 
-		CZetScript *zetscript= CZetScript::getInstance();
 
 		try{
-			zetscript->evalString(str_to_eval);
+			zs::eval_string(str_to_eval);
 		}
 		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
@@ -218,7 +202,7 @@ namespace zetscript{
 				return *f;
 			}
 			else{
-				CZetScriptUtils::sformat("eval_float(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				CZetScriptUtils::sformat("eval_float_value(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 
 			}
 		}
@@ -227,14 +211,12 @@ namespace zetscript{
 		return 0.0f;
 	}
 
-	std::string CZetScript::eval_string(const std::string & str_to_eval){
+	std::string eval_string_value(const std::string & str_to_eval){
 
 		std::string value="---";
 
-		CZetScript *zetscript= CZetScript::getInstance();
-
 		try{
-			zetscript->evalString(str_to_eval);
+			zs::eval_string(str_to_eval);
 		}
 		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
@@ -250,7 +232,7 @@ namespace zetscript{
 				value = ((const char *)se->stkValue);
 			}
 			else{
-				CZetScriptUtils::sformat("eval_string(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				CZetScriptUtils::sformat("eval_string_value(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 			}
 		}
 
@@ -258,7 +240,7 @@ namespace zetscript{
 	}
 
 
-	void CZetScript::execute(){
+	void execute(){
 
 		if(!__init__) {THROW_RUNTIME_ERROR ("ZetScript not initialized"); return;}
 		//ZS_CLEAR_ERROR_MSG();
@@ -266,17 +248,17 @@ namespace zetscript{
 		bool error=false;
 
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		vm->execute(MAIN_FUNCTION, NULL,error,NO_PARAMS);
+		main_vm->execute(MAIN_FUNCTION, NULL,error,NO_PARAMS);
 
 		if(error){
 			THROW_SCRIPT_ERROR();
 		}
 	}
 
-	bool CZetScript::evalString(const std::string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
+	bool eval_string(const std::string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
 
 
-		if(!__init__) {CZetScriptUtils::sformat("zetscript not initialized");return false;}
+		if(!__init__) {init();}
 
 		if(!CEval::evalString(expression)){
 			return false;
@@ -293,9 +275,9 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CZetScript::evalFile(const std::string & filename, bool exec_vm, bool show_bytecode){
+	bool eval_file(const std::string & filename, bool exec_vm, bool show_bytecode){
 
-		if(!__init__) {CZetScriptUtils::sformat("zetscript not initialized");return false;}
+		if(!__init__) {init();}
 
 		char *buf_tmp=NULL;
 
@@ -322,109 +304,8 @@ namespace zetscript{
 
 	}
 
-	//CScriptFunction *getScriptObjectFromScriptFunctionAccessName(const std::string &function_access_expression)
-	bool CZetScript::getScriptObjectFromFunctionAccess(const std::string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
 
-		//ZS_CLEAR_ERROR_MSG();
 
-		std::vector<std::string> access_var = CZetScriptUtils::split(function_access,'.');
-		CScriptFunction * m_mainFunctionInfo = MAIN_FUNCTION;
 
-		if(m_mainFunctionInfo == NULL){
-			CZetScriptUtils::sformat("m_mainFunctionInfo is not initialized");
-			return false;
-		}
 
-		*calling_obj = NULL;
-		tFunctionSymbol *is=NULL;
-		tStackElement *se=NULL;
-		*fun_obj=NULL;
-
-		// 1. some variable in main function ...
-		if(access_var.size()>1){
-			for(unsigned i=0; i < access_var.size()-1; i++){
-
-				std::string symbol_to_find=access_var[i];
-				if(i==0){ // get variable through main_class.main_function (global element)
-					//symbol_to_find= CEval::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
-					for(unsigned j = 0; j < m_mainFunctionInfo->m_variable.size() && *calling_obj==NULL; j++){
-						if(m_mainFunctionInfo->m_variable[j].symbol->name==symbol_to_find
-						&& m_mainFunctionInfo->m_variable[j].symbol->idxScope == IDX_GLOBAL_SCOPE){
-							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.variable[j].
-							if(stk!=NULL){
-								if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-									*calling_obj=(CScriptVariable *)stk->varRef;
-								}
-							}
-							else{
-								CZetScriptUtils::sformat("cannot access i (%i)",j);
-								return false;
-							}
-						}
-					}
-
-					if((*calling_obj) == NULL){
-						CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
-						return false;
-					}
-
-				}else{ // we have got the calling_obj from last iteration ...
-					se = (*calling_obj)->getVariableSymbol(symbol_to_find);
-
-					if(se!=NULL){
-
-						if(se->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							*calling_obj=(CScriptVariable *)se->varRef;
-						}else{
-							CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
-							return false;
-						}
-					}
-					else{
-						CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
-						return false;
-					}
-				}
-			}
-
-			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1]);
-			if(is!=NULL){
-				if(is->object.properties & STK_PROPERTY_TYPE_FUNCTION){
-					*fun_obj=(CScriptFunction *)is->object.stkValue;
-				}
-			}else{
-
-				CZetScriptUtils::sformat("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
-				return false;
-			}
-
-		}else{ // some function in main function
-			//*calling_obj = m_mainObject;
-			std::string symbol_to_find=access_var[0];
-			for(unsigned i = 0; i < m_mainFunctionInfo->m_function.size() && *fun_obj==NULL; i++){
-				CScriptFunction *aux_fun_obj=m_mainFunctionInfo->m_function[i];
-				if(		aux_fun_obj->symbol_info.symbol->name  == symbol_to_find
-				  && aux_fun_obj->symbol_info.symbol->idxScope == IDX_GLOBAL_SCOPE){
-					*fun_obj=aux_fun_obj;
-				}
-			}
-		}
-
-		if(*fun_obj==NULL){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
-			return false;
-		}
-
-		return true;
-	}
-
-	CVirtualMachine * CZetScript::getVirtualMachine(){
-		return vm;
-	}
-
-	//-------------------------------------------------------------------------------------
-	CZetScript::~CZetScript(){
-
-		delete vm;
-	}
 }

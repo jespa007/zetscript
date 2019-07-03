@@ -1,4 +1,4 @@
-namespace zetscript{
+namespace zs{
 	namespace string_utils{
 
 

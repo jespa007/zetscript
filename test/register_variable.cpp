@@ -4,7 +4,7 @@
  */
 #include "CZetScript.h"
 
-using namespace zetscript;
+using namespace zs;
 
 void say_helloworld(){
 	printf("Hello World!");
@@ -19,12 +19,12 @@ int main(){
 
 	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
 
-	register_C_Variable("int_var",int_var); // it takes int *
-	register_C_Variable("float_var",float_var); // it takes float *
-	register_C_Variable("bool_var",bool_var); // it takes bool *
-	register_C_Variable("string_var",string_var); // it takes std::string *
+	REGISTER_C_VARIABLE("int_var",int_var); // it takes int *
+	REGISTER_C_VARIABLE("float_var",float_var); // it takes float *
+	REGISTER_C_VARIABLE("bool_var",bool_var); // it takes bool *
+	REGISTER_C_VARIABLE("string_var",string_var); // it takes std::string *
 
-	zs->evalString(
+	zs::eval_string(
 		"int_var+=5;"
 		"float_var+=5;"
 		"bool_var=!bool_var;"

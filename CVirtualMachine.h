@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace zetscript{
+namespace zs{
 
 
 	//#define MAX_PER_TYPE_OPERATIONS 32

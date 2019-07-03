@@ -4,7 +4,7 @@
  */
 #include "CZetScript.h"
 
-using namespace zetscript;
+using namespace zs;
 
 class MyClass{
 public:
@@ -39,21 +39,21 @@ int main(){
 
 	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
 
-	register_C_Class<MyClass>("MyClass"); // register MyClass with name MyClass in script side.
-	register_C_Class<MyClassExtend>("MyClassExtend"); // register MyClassExtend with name MyClassExtend in script side.
+	REGISTER_C_CLASS<MyClass>("MyClass"); // register MyClass with name MyClass in script side.
+	REGISTER_C_CLASS<MyClassExtend>("MyClassExtend"); // register MyClassExtend with name MyClassExtend in script side.
 
-	register_C_VariableMember<MyClass>("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
-	register_C_FunctionMember<MyClass>("function0",&MyClass::function0); // register function0 named function1 in script side as function member.
-	register_C_FunctionMember<MyClass>("function1",&MyClass::function1); // register function1 named function1 in script side as function member.
-
-
-	register_C_VariableMember<MyClassExtend>("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
-	register_C_FunctionMember<MyClassExtend>("function2",&MyClassExtend::function2); // register function2 named function2 in script side as function member.
+	REGISTER_C_VARIABLE_MEMBER<MyClass>("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
+	REGISTER_C_FUNCTION_MEMBER<MyClass>("function0",&MyClass::function0); // register function0 named function1 in script side as function member.
+	REGISTER_C_FUNCTION_MEMBER<MyClass>("function1",&MyClass::function1); // register function1 named function1 in script side as function member.
 
 
-	class_C_baseof<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
+	REGISTER_C_VARIABLE_MEMBER<MyClassExtend>("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
+	REGISTER_C_FUNCTION_MEMBER<MyClassExtend>("function2",&MyClassExtend::function2); // register function2 named function2 in script side as function member.
 
-	zs->evalString(
+
+	CLASS_C_BASEOF<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
+
+	zs::eval_string(
 		"class ScriptMyClassExtend:MyClassExtend{\n"
 		"	var data3;\n"
 		"	function function0(){\n"

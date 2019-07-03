@@ -4,7 +4,7 @@
  */
 #include "../zetscript.h"
 
-namespace zetscript{
+namespace zs{
 
 	CFunctorScriptVariable::CFunctorScriptVariable(){
 

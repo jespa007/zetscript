@@ -19,7 +19,7 @@
 		vec_script_class_node.at(idx_class)->classPtrType=(typeid(type_class).name());\
 	}
 
-namespace zetscript{
+namespace zs{
 
 
 	CScriptClassFactory * CScriptClassFactory::script_class_factory=NULL;
@@ -200,9 +200,9 @@ namespace zetscript{
 		// From here you defined all basic, start define hierarchy
 
 		// register custom functions ...
-		class_C_baseof<CVectorScriptVariable,CScriptVariable>();
-		class_C_baseof<CFunctorScriptVariable,CScriptVariable>();
-		class_C_baseof<CStructScriptVariable,CScriptVariable>();
+		CLASS_C_BASEOF<CVectorScriptVariable,CScriptVariable>();
+		CLASS_C_BASEOF<CFunctorScriptVariable,CScriptVariable>();
+		CLASS_C_BASEOF<CStructScriptVariable,CScriptVariable>();
 
 
 		//------------------------------------------------------------------------------------------------------------
@@ -212,18 +212,18 @@ namespace zetscript{
 		// MAIN FUNCTION (0)...
 		main_class->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 
-		register_C_Function("print",print);
+		REGISTER_C_FUNCTION("print",print);
 
-		register_C_Function("error",internal_print_error);
+		REGISTER_C_FUNCTION("error",internal_print_error);
 
-		register_C_FunctionMember<CVectorScriptVariable>("size",&CVectorScriptVariable::size);
-		register_C_FunctionMember<CVectorScriptVariable>("push",static_cast<void (CVectorScriptVariable:: *)(tStackElement *)>(&CVectorScriptVariable::push));
-		register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop);
+		REGISTER_C_FUNCTION_MEMBER<CVectorScriptVariable>("size",&CVectorScriptVariable::size);
+		REGISTER_C_FUNCTION_MEMBER<CVectorScriptVariable>("push",static_cast<void (CVectorScriptVariable:: *)(tStackElement *)>(&CVectorScriptVariable::push));
+		REGISTER_C_FUNCTION_MEMBER<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop);
 
 
-		register_C_FunctionMember<CStructScriptVariable>("add",&CStructScriptVariable::add_attr);
-		register_C_FunctionMember<CStructScriptVariable>("remove",&CStructScriptVariable::remove_attr);
-		register_C_FunctionMember<CStructScriptVariable>("size",&CStructScriptVariable::size);
+		REGISTER_C_FUNCTION_MEMBER<CStructScriptVariable>("add",&CStructScriptVariable::add_attr);
+		REGISTER_C_FUNCTION_MEMBER<CStructScriptVariable>("remove",&CStructScriptVariable::remove_attr);
+		REGISTER_C_FUNCTION_MEMBER<CStructScriptVariable>("size",&CStructScriptVariable::size);
 	 }
 
 
@@ -270,7 +270,7 @@ namespace zetscript{
 		return false;
 	}
 
-	void CScriptClassFactory::register_C_BaseSymbolsInt(bool _register){
+	void CScriptClassFactory::REGISTER_C_BASE_SYMBOLSInt(bool _register){
 		register_c_base_symbols = _register;
 	}
 

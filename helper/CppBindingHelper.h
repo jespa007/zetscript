@@ -4,16 +4,9 @@
  */
 
 
-namespace zetscript{
+namespace zs{
 
-
-
-
-
-// Helpers...
-
-
-
+	// Helpers...
 
 	inline tStackElement var2stk(intptr_t var_trans, int idx_type){
 		//intptr_t var_trans = (intptr_t)input_var;
@@ -194,7 +187,7 @@ namespace zetscript{
 					if(c_class->idxClass==idx_dst_type){
 						val_ret=(intptr_t)script_variable->get_C_Object();
 					}
-					else if((val_ret=zetscript::CScriptClassFactory::getInstance()->doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
+					else if((val_ret=zs::CScriptClassFactory::getInstance()->doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
 						error = "cannot convert "+demangle(script_variable->getPointer_C_ClassName())+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
@@ -853,6 +846,101 @@ namespace zetscript{
 	}
 
 
+	//CScriptFunction *getScriptObjectFromScriptFunctionAccessName(const std::string &function_access_expression)
+	bool get_script_object(const std::string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
+
+		//ZS_CLEAR_ERROR_MSG();
+
+		std::vector<std::string> access_var = CZetScriptUtils::split(function_access,'.');
+		CScriptFunction * m_mainFunctionInfo = MAIN_FUNCTION;
+
+		if(m_mainFunctionInfo == NULL){
+			CZetScriptUtils::sformat("m_mainFunctionInfo is not initialized");
+			return false;
+		}
+
+		*calling_obj = NULL;
+		tFunctionSymbol *is=NULL;
+		tStackElement *se=NULL;
+		*fun_obj=NULL;
+
+		// 1. some variable in main function ...
+		if(access_var.size()>1){
+			for(unsigned i=0; i < access_var.size()-1; i++){
+
+				std::string symbol_to_find=access_var[i];
+				if(i==0){ // get variable through main_class.main_function (global element)
+					//symbol_to_find= CEval::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
+					for(unsigned j = 0; j < m_mainFunctionInfo->m_variable.size() && *calling_obj==NULL; j++){
+						if(m_mainFunctionInfo->m_variable[j].symbol->name==symbol_to_find
+						&& m_mainFunctionInfo->m_variable[j].symbol->idxScope == IDX_GLOBAL_SCOPE){
+							tStackElement *stk = CURRENT_VM->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.variable[j].
+							if(stk!=NULL){
+								if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+									*calling_obj=(CScriptVariable *)stk->varRef;
+								}
+							}
+							else{
+								CZetScriptUtils::sformat("cannot access i (%i)",j);
+								return false;
+							}
+						}
+					}
+
+					if((*calling_obj) == NULL){
+						CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						return false;
+					}
+
+				}else{ // we have got the calling_obj from last iteration ...
+					se = (*calling_obj)->getVariableSymbol(symbol_to_find);
+
+					if(se!=NULL){
+
+						if(se->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+							*calling_obj=(CScriptVariable *)se->varRef;
+						}else{
+							CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
+							return false;
+						}
+					}
+					else{
+						CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						return false;
+					}
+				}
+			}
+
+			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1]);
+			if(is!=NULL){
+				if(is->object.properties & STK_PROPERTY_TYPE_FUNCTION){
+					*fun_obj=(CScriptFunction *)is->object.stkValue;
+				}
+			}else{
+
+				CZetScriptUtils::sformat("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
+				return false;
+			}
+
+		}else{ // some function in main function
+			//*calling_obj = m_mainObject;
+			std::string symbol_to_find=access_var[0];
+			for(unsigned i = 0; i < m_mainFunctionInfo->m_function.size() && *fun_obj==NULL; i++){
+				CScriptFunction *aux_fun_obj=m_mainFunctionInfo->m_function[i];
+				if(		aux_fun_obj->symbol_info.symbol->name  == symbol_to_find
+				  && aux_fun_obj->symbol_info.symbol->idxScope == IDX_GLOBAL_SCOPE){
+					*fun_obj=aux_fun_obj;
+				}
+			}
+		}
+
+		if(*fun_obj==NULL){
+			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
+			return false;
+		}
+
+		return true;
+	}
 
 
 	template <  typename _F>
@@ -869,7 +957,7 @@ namespace zetscript{
 		// get function symbol ref from global scope ...
 
 
-		if(CZetScript::getInstance()->getScriptObjectFromFunctionAccess(function_access,&calling_obj,&fun))
+		if(get_script_object(function_access,&calling_obj,&fun))
 		{
 
 			// 1. check all parameters ok.

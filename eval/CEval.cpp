@@ -128,7 +128,7 @@ B <- [E;|K]* // A set of expressions ended with ; or Keyword
 #endif
 
 
-namespace zetscript{
+namespace zs{
 
 	#define FORMAT_PRINT_INSTRUCTION "%04i"
 
@@ -1855,7 +1855,7 @@ namespace zetscript{
 
 
 				// register class
-				if((sc=zetscript::CScriptClassFactory::getInstance()->registerClass(__FILE__, __LINE__, class_name,base_class_name))==NULL){
+				if((sc=zs::CScriptClassFactory::getInstance()->registerClass(__FILE__, __LINE__, class_name,base_class_name))==NULL){
 					return NULL;
 				}
 

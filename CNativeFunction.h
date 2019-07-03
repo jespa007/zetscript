@@ -5,7 +5,7 @@
 #pragma once
 
 
-namespace zetscript{
+namespace zs{
 
 	class  CNativeFunction{
 
