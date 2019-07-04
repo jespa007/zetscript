@@ -1,7 +1,7 @@
 
 //----------------------------------------------------------
 Version: 2.0.0
-Date: XX-XX-2018
+Date: XX-XX-2019
 
  
 #64 Implement "include" preprocessor feature 
@@ -44,14 +44,16 @@ Date: XX-XX-2018
 #102 Bug: can use variable before define var itself
 #116 CMakeLists: Make permament static link and add -DFCOMPILE
 
-> #103: Reworked parse + compile in one single optimized step 
-> #113: Replace try/catch by getError
-
 #114 Turn CZetScript class into helper functions inside zetscript namespace enhancement feature
 #115 Rename "zetscript" namespace to "zs"
-#117 Make MACROS register_C_XXXX all uppercase 
-#119 CEval as eval (all functions are C functions within zs member)
-#118 split CZetScriptUtils file in io_utils, path_utils, logger as static function
+#117 Make MACROS register_C_XXXX all uppercase
+ 
+> #119 CEval as eval (all functions are C functions within zs member)
+> #118 split CZetScriptUtils file in io_utils, path_utils, logger as static function
+> #103 Reworked parse + compile in one single optimized step 
+> #113 Replace try/catch by getError
+> #120 Put all common function used by user in zs namespace and the rest in zs::core
+ 
 
 Other: Lot of clean code up. 
 
