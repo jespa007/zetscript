@@ -162,7 +162,7 @@ ELSE()
 		zetscript_exception.cpp
 	
 	    #-- Utils --
-		CZetScriptUtils.cpp
+		utils/.cpp
 		
 		#-- Variables --
 		var/CScriptVariable.cpp

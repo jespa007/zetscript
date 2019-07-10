@@ -7,7 +7,6 @@
 namespace zs{
 
 	// Helpers...
-
 	inline tStackElement var2stk(intptr_t var_trans, int idx_type){
 		//intptr_t var_trans = (intptr_t)input_var;
 			std::string s_return_value;

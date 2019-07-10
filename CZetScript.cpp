@@ -9,6 +9,7 @@ namespace zs{
 	const char *error_type="NA";
 	bool __init__=false;
 	CVirtualMachine *main_vm=NULL;
+	std::map<std::string,tInfoConstantValue *> 	 *constant_pool;
 
 
 

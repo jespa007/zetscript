@@ -1,6 +1,9 @@
-#include "CEvalParse.cpp"
-#include "CEvalCompile.cpp"
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 
+#include "zetscript.h"
 
 /*
 
@@ -111,12 +114,7 @@ B <- [E;|K]* // A set of expressions ended with ; or Keyword
 
 */
 
-/*
- *  This file is distributed under the MIT License.
- *  See LICENSE file for details.
- */
 
-#include "zetscript.h"
 
 
 

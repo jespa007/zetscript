@@ -2,7 +2,11 @@
 #include		"exception.cpp"
 
 //-- Utils --
-#include		"CZetScriptUtils.cpp"
+#include 		"string.cpp"
+#include 		"path.cpp"
+#include 		"io.cpp"
+#include 		"rtti.cpp"
+#include 		"log.cpp"
 
 //-- Variables --
 #include		"var/CScriptVariable.cpp"
@@ -12,7 +16,7 @@
 #include		"var/CFunctorScriptVariable.cpp"
 
 //-- Script Core --
-#include		"eval/CEval.cpp"
+#include		"eval.cpp"
 #include		"CScope.cpp"
 #include		"CScopeFactory.cpp"
 #include		"CNativeFunction.cpp"
