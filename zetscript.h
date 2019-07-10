@@ -84,7 +84,7 @@
 #include "var/CStructScriptVariable.h"
 #include "CScope.h"
 #include "CScopeFactory.h"
-#include "CCommonClassFunctionBase.h"
+#include "CScriptClassBase.h"
 #include "CScriptFunction.h"
 #include "CScriptFunctionFactory.h"
 #include "CScriptClass.h"

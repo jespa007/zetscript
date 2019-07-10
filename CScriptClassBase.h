@@ -3,7 +3,7 @@
 namespace zs{
 
 
-	class CCommonClassFunctionBase { // script function is shared by class and function ...
+	class CScriptClassBase { // script function is shared by class and function ...
 
 
 
@@ -20,7 +20,7 @@ namespace zs{
 
 		unsigned char idxClass; // wich idxClass class itself or function belongs to...
 
-		CCommonClassFunctionBase(unsigned char _idxClass);
+		CScriptClassBase(unsigned char _idxClass);
 
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.

@@ -53,7 +53,7 @@ Date: XX-XX-2019
 > #103 Reworked parse + compile in one single optimized step 
 > #113 Replace try/catch by getError
 > #120 Put all common function used by user in zs namespace and the rest in zs::core
- 
+> #121 CEval,CScriptClassFactory and CZetScript as instanceable 
 
 Other: Lot of clean code up. 
 

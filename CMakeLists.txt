@@ -177,7 +177,7 @@ ELSE()
 		CScope.cpp
 		CScopeFactory.cpp
 		CNativeFunction.cpp
-		CCommonClassFunctionBase.cpp
+		CScriptClassBase.cpp
 		CScriptClass.cpp
 		CScriptClassFactory.cpp
 		CScriptFunction.cpp

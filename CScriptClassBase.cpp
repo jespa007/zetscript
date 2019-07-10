@@ -2,11 +2,11 @@
 
 namespace zs{
 
-	CCommonClassFunctionBase::CCommonClassFunctionBase(unsigned char _idxClass) {
+	CScriptClassBase::CScriptClassBase(unsigned char _idxClass) {
 		idxClass=_idxClass;
 	}
 
-	tVariableSymbolInfo * CCommonClassFunctionBase::registerVariable(const std::string & file, short line, short idxBlockScope,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties){
+	tVariableSymbolInfo * CScriptClassBase::registerVariable(const std::string & file, short line, short idxBlockScope,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties){
 		tVariableSymbolInfo irs;
 		//std::string symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
 
@@ -34,12 +34,12 @@ namespace zs{
 		return &m_variable[m_variable.size()-1];
 	}
 
-	tVariableSymbolInfo *	CCommonClassFunctionBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
+	tVariableSymbolInfo *	CScriptClassBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
 			return registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 	}
 
-	tVariableSymbolInfo *	 CCommonClassFunctionBase::getVariable(const std::string & var_name, short idxScope){
+	tVariableSymbolInfo *	 CScriptClassBase::getVariable(const std::string & var_name, short idxScope){
 
 		if(m_variable.size()>0){
 
@@ -58,7 +58,7 @@ namespace zs{
 
 
 
-	CScriptFunction * CCommonClassFunctionBase::registerFunction(const std::string & file, short line, short idxScope, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CScriptClassBase::registerFunction(const std::string & file, short line, short idxScope, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 			//std::string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
 			if(getFunction(function_name,(char)args.size()) != NULL){
@@ -74,12 +74,12 @@ namespace zs{
 			return sf;
 	}
 
-	CScriptFunction * CCommonClassFunctionBase::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CScriptClassBase::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 		return registerFunction(file, line,this->symbol_info.symbol->idxScope, function_name,  args, idx_return_type,ref_ptr, properties);
 	}
 
-	CScriptFunction *	 CCommonClassFunctionBase::getFunction(const std::string & function_name, short idxScope, char n_args){
+	CScriptFunction *	 CScriptClassBase::getFunction(const std::string & function_name, short idxScope, char n_args){
 
 		if(m_function.size()>0){
 

@@ -62,7 +62,7 @@ namespace zs{
 	}
 
 
-	CScriptFunction::CScriptFunction(unsigned char _idxClass):CCommonClassFunctionBase(_idxClass){
+	CScriptFunction::CScriptFunction(unsigned char _idxClass):CScriptClassBase(_idxClass){
 		idx_return_type = ZS_UNDEFINED_IDX;
 		idxScriptFunction = ZS_UNDEFINED_IDX;
 		instruction=NULL;
@@ -104,7 +104,7 @@ namespace zs{
 
 	tVariableSymbolInfo *	CScriptFunction::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
-		tVariableSymbolInfo *vsi=CCommonClassFunctionBase::registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
+		tVariableSymbolInfo *vsi=CScriptClassBase::registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 
 		tStackElement se = {0,0,STK_PROPERTY_TYPE_UNDEFINED};
 

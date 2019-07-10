@@ -20,7 +20,7 @@
 #include		"CScope.cpp"
 #include		"CScopeFactory.cpp"
 #include		"CNativeFunction.cpp"
-#include		"CCommonClassFunctionBase.cpp"
+#include		"CScriptClassBase.cpp"
 #include		"CScriptClass.cpp"
 #include		"CScriptClassFactory.cpp"
 #include		"CScriptFunction.cpp"

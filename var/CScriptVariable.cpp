@@ -96,7 +96,7 @@ namespace zs{
 
 		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (c_scriptclass_info) to get needed info to destroy create the C++ object.
 
-			if(m_infoRegisteredClass->is_c_class()){
+			if(m_infoRegisteredClass->isToClass()){
 					c_scriptclass_info=m_infoRegisteredClass;
 					created_object = (*m_infoRegisteredClass->c_constructor)();
 					was_created_by_constructor=true;
@@ -107,7 +107,7 @@ namespace zs{
 				while( sc->idxBaseClass.size()>0 && c_scriptclass_info==NULL){
 
 					sc=GET_SCRIPT_CLASS(sc->idxBaseClass[0]); // get base class...
-					if(sc->is_c_class()){
+					if(sc->isToClass()){
 						c_scriptclass_info=sc;
 						created_object = (*sc->c_constructor)();
 						was_created_by_constructor=true;

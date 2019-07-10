@@ -27,7 +27,7 @@
 
 namespace zs{
 
-	class  CScriptFunction:public CCommonClassFunctionBase{
+	class  CScriptFunction:public CScriptClassBase{
 
 
 	public:

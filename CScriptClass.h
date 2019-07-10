@@ -27,7 +27,7 @@ namespace zs{
  * Stores the basic information to build a object through built AST structure
  */
 
-	class  CScriptClass:public CCommonClassFunctionBase{
+	class  CScriptClass:public CScriptClassBase{
 
 	public:
 
@@ -45,7 +45,7 @@ namespace zs{
 
 		virtual CScriptFunction						*  			registerFunctionMember(const std::string & file, short line,const std::string & function_name, std::vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
 
-		bool is_c_class();
+		bool isToClass();
 
 		virtual ~CScriptClass();
 	};

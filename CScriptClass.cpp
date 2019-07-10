@@ -9,13 +9,13 @@ namespace zs{
 
 	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
 
-	bool CScriptClass::is_c_class(){
+	bool CScriptClass::isToClass(){
 
 		 return ((symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != 0);
 	}
 	//------------------------------------------------------------
 
-	 CScriptClass::CScriptClass(unsigned char _idxClass):CCommonClassFunctionBase(_idxClass){
+	 CScriptClass::CScriptClass(unsigned char _idxClass):CScriptClassBase(_idxClass){
 
 			classPtrType="";
 			c_destructor = NULL;
