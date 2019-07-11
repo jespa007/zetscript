@@ -4,9 +4,9 @@
  */
 #include "../zetscript.h"
 
-namespace zs{
+namespace zetscript{
 
-	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+	void  write_error(const char *filename, int line, const  char  *string_text, ...);
 	int getErrorLine();
 	const char * getErrorDescription();
 	const char * getErrorFilename();
@@ -64,13 +64,13 @@ namespace zs{
 			CScriptVariable *var = (CScriptVariable *)return_callc.varRef;
 			if(var){
 				if(!var->unrefSharedPtr()){
-					writeErrorMsg(NULL,0,"pop(): error doing unref var");
+					write_error(NULL,0,"pop(): error doing unref var");
 				}
 			}
 
 			m_variable.pop_back();
 		}else{
-			writeErrorMsg(NULL,0,"pop(): error stack already empty");
+			write_error(NULL,0,"pop(): error stack already empty");
 		}
 
 		// due the call is void we are doing the operations behind...

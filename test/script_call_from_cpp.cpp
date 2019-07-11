@@ -1,13 +1,13 @@
 
 #include "CZetScript.h"
 
-using namespace zs;
+using namespace zetscript;
 
 int main(){
 
 	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
 
-	zs::eval_string(
+	zetscript::evalString(
 		"class Test{"
 		"	var data1;"
 		"	function function1(arg){"

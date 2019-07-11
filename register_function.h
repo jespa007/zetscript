@@ -3,7 +3,7 @@
  *  See LICENSE file for details.
  */
 
-namespace zs{
+namespace zetscript{
 
 
 
@@ -115,7 +115,7 @@ namespace zs{
 	// Dynaminc unpack parameter function ...
 	// template for last parameter argIdx == 1
 	template <size_t argIdx, typename F, typename... Args>
-	auto getArgTypes( std::vector<std::string> & params)
+	auto get_arg_types( std::vector<std::string> & params)
 		-> typename std::enable_if<argIdx == 1>::type
 	{
 		std::string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
@@ -124,38 +124,38 @@ namespace zs{
 
 	// template when parameters argIdx > 1
 	template <size_t argIdx, typename F, typename... Args>
-	auto getArgTypes(std::vector<std::string> & params)
+	auto get_arg_types(std::vector<std::string> & params)
 		-> typename std::enable_if<(argIdx > 1)>::type
 	{
 
 		std::string parameter_type=typeid(typename F::template argument<argIdx-1>::type).name();
 		params.insert(params.begin()+0,parameter_type);
-		getArgTypes<argIdx - 1,F, Args...>( params);
+		get_arg_types<argIdx - 1,F, Args...>( params);
 	}
 
 
 	// trivial case when parameters (argIdx == 0).
 	template <size_t argIdx, typename F>
-	auto getArgTypes(std::vector<std::string> & params)
+	auto get_arg_types(std::vector<std::string> & params)
 	-> typename std::enable_if<(argIdx == 0)>::type
 	{
 		 // NO ARGS CASE
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,std::string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
+	auto get_params_function(int i,std::string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
 	-> typename std::enable_if<(_F::arity > 0)>::type
 	{
 		returnType = typeid(typename _F::return_type).name();
-		getArgTypes<_F::arity, _F, typename _F::template argument<Is>::type...>(typeParams);
+		get_arg_types<_F::arity, _F, typename _F::template argument<Is>::type...>(typeParams);
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,std::string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
+	auto get_params_function(int i,std::string & returnType, std::vector<std::string> & typeParams, index_sequence<Is...>)
 	-> typename std::enable_if<(_F::arity == 0)>::type
 	{
 		returnType = typeid(typename _F::return_type).name();
-		getArgTypes<0, _F>(typeParams);
+		get_arg_types<0, _F>(typeParams);
 	}
 
 

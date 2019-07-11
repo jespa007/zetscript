@@ -4,7 +4,7 @@
  */
 #include "CZetScript.h"
 
-using namespace zs;
+using namespace zetscript;
 
 void say_helloworld(){
 	printf("Hello World!");
@@ -24,7 +24,7 @@ int main(){
 	REGISTER_C_VARIABLE("bool_var",bool_var); // it takes bool *
 	REGISTER_C_VARIABLE("string_var",string_var); // it takes std::string *
 
-	zs::eval_string(
+	zetscript::evalString(
 		"int_var+=5;"
 		"float_var+=5;"
 		"bool_var=!bool_var;"

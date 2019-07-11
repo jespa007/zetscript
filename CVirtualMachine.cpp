@@ -11,9 +11,9 @@
 
 
 
-namespace zs{
+namespace zetscript{
 
-	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+	void  write_error(const char *filename, int line, const  char  *string_text, ...);
 
 
 
@@ -130,7 +130,7 @@ namespace zs{
 	}
 
 	#define PUSH_STRING(init_value)\
-		if(ptrCurrentStr==ptrLastStr){writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Error stkString out-stack");RETURN_ERROR;}\
+		if(ptrCurrentStr==ptrLastStr){write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Error stkString out-stack");RETURN_ERROR;}\
 		*ptrCurrentStr++=init_value;\
 		*stkCurrentData++={(void *)((ptrCurrentStr-1)->c_str()),NULL,STK_PROPERTY_TYPE_STRING};\
 
@@ -302,7 +302,7 @@ namespace zs{
 				(*((float *)(ref)))__OPERATOR__;\
 				break;\
 		default:\
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction)," Cannot perform pre/post operator (%s)",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrOp));\
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction)," Cannot perform pre/post operator (%s)",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrOp));\
 			RETURN_ERROR;\
 			break;\
 		}\
@@ -323,7 +323,7 @@ namespace zs{
 			if(!IS_NUMBER_OR_INT(src_ins->properties) && IS_NUMBER_OR_INT(dst_ins->properties)){\
 				if(GET_INS_PROPERTY_VAR_TYPE(src_ins->properties) != GET_INS_PROPERTY_VAR_TYPE(dst_ins->properties)\
 				){\
-					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));\
+					write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));\
 					RETURN_ERROR;\
 				}else{\
 					if(\
@@ -384,7 +384,7 @@ namespace zs{
 				sharePointer(script_var->ptr_shared_pointer_node);\
 			}\
 		}else{\
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"(internal) cannot determine var type %i",GET_INS_PROPERTY_VAR_TYPE(src_ins->properties));\
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"(internal) cannot determine var type %i",GET_INS_PROPERTY_VAR_TYPE(src_ins->properties));\
 			RETURN_ERROR;\
 		}\
 		if(copy_aux!=NULL)dst_ins->properties|=STK_PROPERTY_IS_C_VAR;\
@@ -422,7 +422,7 @@ namespace zs{
 	}
 
 	#define PUSH_SCOPE(_index,_ptr_info_function, _ptr_local_var,_properties) {\
-		if(current_scope_info_ptr >=  MAX_SCOPE_INFO){writeErrorMsg(NULL,0,"reached max scope"); RETURN_ERROR;}\
+		if(current_scope_info_ptr >=  MAX_SCOPE_INFO){write_error(NULL,0,"reached max scope"); RETURN_ERROR;}\
 		*current_scope_info_ptr++={(short)(_index),_ptr_info_function,_ptr_local_var,_properties};\
 	}
 
@@ -577,7 +577,7 @@ namespace zs{
 		bool move_to_shared_list=*n_shares==0;
 
 		if(*n_shares >= MAX_SHARES_VARIABLE){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE));
+			THROW_RUNTIME_ERROR(string_utils::sformat("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE));
 			return false;
 
 		}
@@ -653,29 +653,29 @@ namespace zs{
 		//float aux_float=0;
 
 		if(n_args>MAX_N_ARGS){
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
+			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
 			RETURN_ERROR;
 		}
 
 
 		if((irfs->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) {
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function is not registered as C");
+			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function is not registered as C");
 			RETURN_ERROR;
 		}
 
 		if(fun_ptr==0){
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Null function");
+			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Null function");
 			//return &callc_result;//CScriptVariable::UndefinedSymbol;
 			RETURN_ERROR;
 		}
 
 		if((char)irfs->m_arg.size() != n_args){
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(irfs,ins),"C argument VS scrip argument doestn't match sizes");
+			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"C argument VS scrip argument doestn't match sizes");
 			RETURN_ERROR;
 		}
 
 		if(irfs->m_arg.size() > MAX_N_ARGS){
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_N_ARGS);
+			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_N_ARGS);
 			RETURN_ERROR;
 			//return &callc_result;//CScriptVariable::UndefinedSymbol;
 		}
@@ -685,8 +685,8 @@ namespace zs{
 
 			currentArg=&ptrArg[i];
 
-			if(!stk2var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
-				writeErrorMsg(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
+			if(!stk_2_var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
+				write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
 																irfs->symbol_info.symbol->name.c_str(),
 																i,
 																error_str.c_str(),
@@ -912,7 +912,7 @@ namespace zs{
 
 			}
 
-			callc_result=var2stk(result,irfs->idx_return_type);
+			callc_result=var_2_stk(result,irfs->idx_return_type);
 		}
 
 
@@ -934,7 +934,7 @@ namespace zs{
 
 	void CVirtualMachine::setError(const char *str){
 
-		writeErrorMsg("custom_user",-1,str);
+		write_error("custom_user",-1,str);
 
 		custom_error = str;
 		cancel_execution = true;
@@ -983,7 +983,7 @@ namespace zs{
 		if(n_globals < VM_LOCAL_VAR_MAX_STACK){
 			stack[n_globals++]=stk;
 		}else{
-			writeErrorMsg(NULL,-1,"Max stack element over limit (%i)",VM_LOCAL_VAR_MAX_STACK);
+			write_error(NULL,-1,"Max stack element over limit (%i)",VM_LOCAL_VAR_MAX_STACK);
 		}
 	}
 
@@ -1139,7 +1139,7 @@ namespace zs{
 		int idxBaseStk=(ptrStartOp-stack);//>>sizeof(tStackElement *);
 
 		if(idxBaseStk<n_args){
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Internal error (idxBaseStk<n_args) (%i<%i)",idxBaseStk,n_args);
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Internal error (idxBaseStk<n_args) (%i<%i)",idxBaseStk,n_args);
 			RETURN_ERROR;
 		}
 
@@ -1162,14 +1162,14 @@ namespace zs{
 			idxCurrentStack++;
 		}
 		else{
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Reached max stack");
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Reached max stack");
 			RETURN_ERROR;
 		}
 
 		if((info_function->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) ){ // C-Call
 
 			if((info_function->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_IS_POLYMORPHIC)){ // cannot call...
-				writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
+				write_error(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
 						"1. Set register_C_baseSymbols(false) and  re-register the function using REGISTER_C_FUNCTION_MEMBER\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idxClass!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
@@ -1192,7 +1192,7 @@ namespace zs{
 				idxCurrentStack--;
 			}
 			else{
-				writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Reached min stack");
+				write_error(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Reached min stack");
 				RETURN_ERROR;
 			}
 
@@ -1218,7 +1218,7 @@ namespace zs{
 		unsigned n_total_vars=n_args+size_local_var;
 
 		if((idxBaseStk+n_total_vars) >=  VM_LOCAL_VAR_MAX_STACK){
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Error MAXIMUM stack size reached");
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Error MAXIMUM stack size reached");
 			RETURN_ERROR;
 		}
 
@@ -1294,7 +1294,7 @@ namespace zs{
 
 			switch(operator_type){
 			//default:
-			//	writeErrorMsg(INSTRUCTION_GET_FILE_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
+			//	write_error(INSTRUCTION_GET_FILE_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
 			//	RETURN_ERROR;
 			case END_FUNCTION:
 				goto lbl_exit_function;
@@ -1322,26 +1322,26 @@ namespace zs{
 
 									// check indexes ...
 									if(v_index < 0){
-										writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Negative index std::vector (%i)",v_index);
+										write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Negative index std::vector (%i)",v_index);
 										RETURN_ERROR;
 									}
 
 									if(v_index >= (int)(vec->m_variable.size())){
-										writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Index std::vector out of bounds (%i)",v_index);
+										write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Index std::vector out of bounds (%i)",v_index);
 										RETURN_ERROR;
 									}
 
 									ldrVar = &vec->m_variable[v_index];;
 									ok = true;
 								}else{
-									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected std::vector-index as integer or std::string");
+									write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected std::vector-index as integer or std::string");
 									RETURN_ERROR;
 								}
 							}
 						}
 
 						if(!ok){
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type std::vector",
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type std::vector",
 								INSTRUCTION_GET_SYMBOL_NAME(info_function,&info_function->instruction[instruction->index_op2])
 							);
 							RETURN_ERROR;
@@ -1367,7 +1367,7 @@ namespace zs{
 								if((stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR)!= STK_PROPERTY_TYPE_SCRIPTVAR)
 								{
 
-									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"var \"%s\" is not scriptvariable",INSTRUCTION_GET_SYMBOL_NAME(info_function,previous_ins));
+									write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"var \"%s\" is not scriptvariable",INSTRUCTION_GET_SYMBOL_NAME(info_function,previous_ins));
 									RETURN_ERROR;
 								}
 
@@ -1383,20 +1383,20 @@ namespace zs{
 
 								if(base_var == NULL)
 								{
-									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"var \"%s\" is not scriptvariable",INSTRUCTION_GET_SYMBOL_NAME(info_function,previous_ins));
+									write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"var \"%s\" is not scriptvariable",INSTRUCTION_GET_SYMBOL_NAME(info_function,previous_ins));
 
 									RETURN_ERROR;
 								}
 
 								if((variable_stack_element = base_var->getVariableSymbol(INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction)))==NULL){
 
-									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" as type \"%s\" has not symbol \"%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,previous_ins),base_var->getClassName().c_str(), INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
+									write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" as type \"%s\" has not symbol \"%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,previous_ins),base_var->getClassName().c_str(), INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
 									RETURN_ERROR;
 								}
 							}
 							else{ // this scope ...
 								if((variable_stack_element = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
-									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find symbol \"this.%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
+									write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find symbol \"this.%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
 									RETURN_ERROR;
 								}
 							}
@@ -1409,7 +1409,7 @@ namespace zs{
 
 						if(instruction->properties&INS_CHECK_IS_FUNCTION){
 							if((ldrVar->properties & STK_PROPERTY_TYPE_FUNCTION) != STK_PROPERTY_TYPE_FUNCTION){
-								writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"\"%s\" expected function variable but is \"%s\""
+								write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"\"%s\" expected function variable but is \"%s\""
 										, INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction)
 										, STR_GET_TYPE_VAR_INDEX_INSTRUCTION(ldrVar));
 								RETURN_ERROR;
@@ -1471,7 +1471,7 @@ namespace zs{
 								stkCurrentData++;
 								break;
 							default:
-								writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"internal error:cannot perform pre operator - because is not number");
+								write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"internal error:cannot perform pre operator - because is not number");
 								RETURN_ERROR;
 							}
 							continue;
@@ -1529,7 +1529,7 @@ namespace zs{
 								COPY_NUMBER(&stkCurrentData->stkValue,&aux_float);
 								break;
 							default:
-								writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"internal error:cannot perform pre operator - constant because is not numeric");
+								write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"internal error:cannot perform pre operator - constant because is not numeric");
 								RETURN_ERROR;
 							}
 							break;
@@ -1574,7 +1574,7 @@ namespace zs{
 							//vec_functions=&sc->m_function;
 						}
 						else{
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Cannot access symbol \"%s\" (type of %s is %s)",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction),INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction-1),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Cannot access symbol \"%s\" (type of %s is %s)",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction),INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction-1),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
 							RETURN_ERROR;
 						}
 
@@ -1590,14 +1590,14 @@ namespace zs{
 
 						}
 						else{
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find symbol global \"%s\""
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find symbol global \"%s\""
 									,INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction)
 									);
 							RETURN_ERROR;
 						}*/
 					}/*else if(scope_type ==INS_PROPERTY_THIS_SCOPE){
 						if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find function \"this.%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find function \"this.%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
 							RETURN_ERROR;
 						}
 
@@ -1605,7 +1605,7 @@ namespace zs{
 
 					}else if(scope_type == INS_PROPERTY_SUPER_SCOPE){ // super scope ?
 						if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find function \"super.%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find function \"super.%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
 							RETURN_ERROR;
 						}
 						function_obj =(CScriptFunction *)si->object.stkValue;
@@ -1624,7 +1624,7 @@ namespace zs{
 
 						}
 						else{
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find symbol global \"%s\""
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find symbol global \"%s\""
 									,INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction)
 									);
 							RETURN_ERROR;
@@ -1644,7 +1644,7 @@ namespace zs{
 				}
 				else{
 
-					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"runtime error. Try to restart");
+					write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"runtime error. Try to restart");
 					RETURN_ERROR;
 
 				}
@@ -1672,7 +1672,7 @@ namespace zs{
 						}
 
 						if(!ok){
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected std::vector object");
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected std::vector object");
 							RETURN_ERROR;
 						}
 
@@ -1708,15 +1708,15 @@ namespace zs{
 									ok=true;
 								}
 								else{
-									writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"internal error (operator2 is not std::string)");
+									write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"internal error (operator2 is not std::string)");
 									RETURN_ERROR;
 								}
 							}else{
-								writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected struct object");
+								write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected struct object");
 								RETURN_ERROR;
 							}
 						}else{
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected scriptvar");
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected scriptvar");
 							RETURN_ERROR;
 						}
 						push_value=false;
@@ -1727,13 +1727,13 @@ namespace zs{
 						if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
 							dst_ins=(tStackElement *)stkResultOp1->varRef; // stkValue is expect to contents a stack variable
 						}else{
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected l-value on assignment ('=')");
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected l-value on assignment ('=')");
 							RETURN_ERROR;
 						}
 
 						if(current_foreach!=NULL){
 							if(dst_ins == current_foreach->key){
-								writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"for-in key value is read only");
+								write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"for-in key value is read only");
 								RETURN_ERROR;
 							}
 						}
@@ -1769,7 +1769,7 @@ namespace zs{
 					if(! assign_metamethod){
 
 						if(dst_ins->properties & STK_PROPERTY_IS_THIS_VAR){
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"\"this\" is not assignable");
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"\"this\" is not assignable");
 							RETURN_ERROR;
 						}
 
@@ -1872,7 +1872,7 @@ namespace zs{
 							,stkResultOp1
 							,stkResultOp2
 							)){
-						//writeErrorMsg(INSTRUCTION_GET_FILE_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
+						//write_error(INSTRUCTION_GET_FILE_LINE(instruction->idxAstNode),"Expected operands 1 as boolean!");
 						RETURN_ERROR;
 					}
 				}
@@ -1935,7 +1935,7 @@ namespace zs{
 						sprintf(str_aux,"%s%i",((const char *)stkResultOp1->stkValue),(int)((intptr_t)stkResultOp2->stkValue));
 						//PUSH_STRING(str_aux);
 						if(ptrCurrentStr==ptrLastStr){
-								writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Error stkString out-stack");RETURN_ERROR;}\
+								write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Error stkString out-stack");RETURN_ERROR;}\
 								*ptrCurrentStr++=str_aux;\
 								*stkCurrentData++={(void *)((ptrCurrentStr-1)->c_str()),NULL,STK_PROPERTY_TYPE_STRING};\
 
@@ -2231,7 +2231,7 @@ namespace zs{
 					if(aux_function_info !=NULL)
 					{
 						if(n_args > MAX_N_ARGS){
-							writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Max arguments reached function at line XXX");
+							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Max arguments reached function at line XXX");
 							RETURN_ERROR;
 						}
 
@@ -2268,7 +2268,7 @@ namespace zs{
 
 						if(cancel_execution) {
 							if(custom_error!=NULL){
-								writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),custom_error);
+								write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),custom_error);
 							}
 							RETURN_ERROR;
 						}
@@ -2322,7 +2322,7 @@ namespace zs{
 						}
 					}
 					else{
-						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"delete op: expected scriptvar var but it was \"%s\"",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1));
+						write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"delete op: expected scriptvar var but it was \"%s\"",STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1));
 						RETURN_ERROR;
 					}
 					continue;
@@ -2384,7 +2384,7 @@ namespace zs{
 
 				if(index_op1 & SCOPE_PROPERTY::FOR_IN){
 					if(current_foreach == &stkForeach[VM_MAX_FOREACH-1]){
-						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Max foreach reached");
+						write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Max foreach reached");
 						RETURN_ERROR;
 					}
 
@@ -2396,13 +2396,13 @@ namespace zs{
 				ptrCurrentStr=ptrStartStr; // reset op ptr
 				stkCurrentData=ptrStartOp;
 				if(!POP_SCOPE_CALL(idxCurrentStack,NULL,index_op1)){
-					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Error pop scope");
+					write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Error pop scope");
 					RETURN_ERROR;
 				}
 
 				if(index_op1 & SCOPE_PROPERTY::FOR_IN){
 					if(current_foreach == &stkForeach[0]){
-						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Min foreach reached");
+						write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Min foreach reached");
 						RETURN_ERROR;
 					}
 
@@ -2416,7 +2416,7 @@ namespace zs{
 
 
 				 if((stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) == 0){
-						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Internal error: Expected stackvar");
+						write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Internal error: Expected stackvar");
 						RETURN_ERROR;
 
 				 }
@@ -2440,21 +2440,21 @@ namespace zs{
 
 					current_foreach->ptr = var_object;
 				}else{
-					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type std::vector or struct",
+					write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type std::vector or struct",
 						INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction-1)
 					);
 					RETURN_ERROR;
 				}
 				 continue;
 			 case IT_SET_AND_NEXT:
-				 writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"TODOOOOO!",
+				 write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"TODOOOOO!",
 						 	 	 	 INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction)
 				 					);
 				 					RETURN_ERROR;
 				 //*((tStackElement *)current_foreach->key)=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector[current_foreach->idx_current++];
 				 continue;
 			 case IT_CHK_END:
-				 writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"TODOOOOO!",
+				 write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"TODOOOOO!",
 						 	 	 	 INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction)
 				 					);
 				 					RETURN_ERROR;
@@ -2473,7 +2473,7 @@ namespace zs{
 
 			}
 
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CEval::getOpCodeStr(instruction->op_code));
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CEval::getOpCodeStr(instruction->op_code));
 			RETURN_ERROR;
 
 

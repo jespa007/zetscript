@@ -19,13 +19,13 @@
 */
 
 
-#define INSTRUCTION_GET_FILE_LINE(__FUNC__,__INS__) 	((zs::CScriptFunction *)__FUNC__)->INSTRUCTION_getFile(__INS__), ((zs::CScriptFunction *)__FUNC__)->INSTRUCTION_getLine(__INS__)
-#define INSTRUCTION_GET_FILE(__FUNC__,__INS__) 			((zs::CScriptFunction *)__FUNC__)->INSTRUCTION_getFile(__INS__)
-#define INSTRUCTION_GET_LINE(__FUNC__,__INS__)			((zs::CScriptFunction *)__FUNC__)->INSTRUCTION_getLine(__INS__)
-#define INSTRUCTION_GET_SYMBOL_NAME(__FUNC__,__INS__)	((zs::CScriptFunction *)__FUNC__)->INSTRUCTION_getSymbolName(__INS__)
+#define INSTRUCTION_GET_FILE_LINE(__FUNC__,__INS__) 	((zetscript::CScriptFunction *)__FUNC__)->INSTRUCTION_getFile(__INS__), ((zetscript::CScriptFunction *)__FUNC__)->INSTRUCTION_getLine(__INS__)
+#define INSTRUCTION_GET_FILE(__FUNC__,__INS__) 			((zetscript::CScriptFunction *)__FUNC__)->INSTRUCTION_getFile(__INS__)
+#define INSTRUCTION_GET_LINE(__FUNC__,__INS__)			((zetscript::CScriptFunction *)__FUNC__)->INSTRUCTION_getLine(__INS__)
+#define INSTRUCTION_GET_SYMBOL_NAME(__FUNC__,__INS__)	((zetscript::CScriptFunction *)__FUNC__)->INSTRUCTION_getSymbolName(__INS__)
 
 
-namespace zs{
+namespace zetscript{
 
 	class  CScriptFunction:public CScriptClassBase{
 

@@ -17,7 +17,7 @@
 // 	 	__________________________________
 */
 
-namespace zs{
+namespace zetscript{
 
 	class  CScope{
 

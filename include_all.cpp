@@ -19,7 +19,7 @@
 #include		"eval.cpp"
 #include		"CScope.cpp"
 #include		"CScopeFactory.cpp"
-#include		"CNativeFunction.cpp"
+#include		"CNativeFunctionFactory.cpp"
 #include		"CScriptClassBase.cpp"
 #include		"CScriptClass.cpp"
 #include		"CScriptClassFactory.cpp"

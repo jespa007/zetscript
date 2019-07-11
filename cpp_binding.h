@@ -4,10 +4,10 @@
  */
 
 
-namespace zs{
+namespace zetscript{
 
 	// Helpers...
-	inline tStackElement var2stk(intptr_t var_trans, int idx_type){
+	inline tStackElement var_2_stk(intptr_t var_trans, int idx_type){
 		//intptr_t var_trans = (intptr_t)input_var;
 			std::string s_return_value;
 			tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
@@ -63,7 +63,7 @@ namespace zs{
 			return callc_result;
 	}
 
-	inline bool stk2var(tStackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error){
+	inline bool stk_2_var(tStackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error){
 		intptr_t val_ret=0;
 
 		CScriptVariable *script_variable=NULL;
@@ -186,7 +186,7 @@ namespace zs{
 					if(c_class->idxClass==idx_dst_type){
 						val_ret=(intptr_t)script_variable->get_C_Object();
 					}
-					else if((val_ret=zs::CScriptClassFactory::getInstance()->doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
+					else if((val_ret=zetscript::CScriptClassFactory::getInstance()->doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
 						error = "cannot convert "+demangle(script_variable->getPointer_C_ClassName())+" into "+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
@@ -252,8 +252,8 @@ namespace zs{
 					}
 
 
-					if(!stk2var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
+					if(!stk_2_var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
+						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 			}
@@ -280,7 +280,7 @@ namespace zs{
 
 				bool error=false;
 				std::vector<tStackElement> args={
-						 var2stk((intptr_t)p1,idx_param1)
+						 var_2_stk((intptr_t)p1,idx_param1)
 
 				};
 
@@ -314,7 +314,7 @@ namespace zs{
 					bool error=false;
 
 					std::vector<tStackElement> args={
-							 var2stk((intptr_t)p1,idx_param1)
+							 var_2_stk((intptr_t)p1,idx_param1)
 					};
 
 					tStackElement stk = CURRENT_VM->execute(
@@ -327,8 +327,8 @@ namespace zs{
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 					}
 
-					if(!stk2var(&stk,idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
+					if(!stk_2_var(&stk,idx_return, (intptr_t*)(&ret_value),error_str)){
+						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 			}
@@ -358,8 +358,8 @@ namespace zs{
 				bool error=false;
 
 				std::vector<tStackElement> args={
-						 var2stk((intptr_t)p1,idx_param1)
-						,var2stk((intptr_t)p2,idx_param2)
+						 var_2_stk((intptr_t)p1,idx_param1)
+						,var_2_stk((intptr_t)p2,idx_param2)
 
 				};
 
@@ -398,8 +398,8 @@ namespace zs{
 					bool error=false;
 
 					std::vector<tStackElement> args={
-							 var2stk((intptr_t)p1,idx_param1)
-							,var2stk((intptr_t)p2,idx_param2)
+							 var_2_stk((intptr_t)p1,idx_param1)
+							,var_2_stk((intptr_t)p2,idx_param2)
 
 					};
 
@@ -413,8 +413,8 @@ namespace zs{
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 					}
 
-					if(!stk2var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
+					if(!stk_2_var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
+						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 			}
@@ -449,9 +449,9 @@ namespace zs{
 				bool error=false;
 
 				std::vector<tStackElement> args={
-						 var2stk((intptr_t)p1,idx_param1)
-						,var2stk((intptr_t)p2,idx_param2)
-						,var2stk((intptr_t)p3,idx_param3)
+						 var_2_stk((intptr_t)p1,idx_param1)
+						,var_2_stk((intptr_t)p2,idx_param2)
+						,var_2_stk((intptr_t)p3,idx_param3)
 				};
 
 				CURRENT_VM->execute(
@@ -488,9 +488,9 @@ namespace zs{
 				bool error=false;
 
 				std::vector<tStackElement> args={
-						 var2stk((intptr_t)p1,idx_param1)
-						,var2stk((intptr_t)p2,idx_param2)
-						,var2stk((intptr_t)p3,idx_param3)
+						 var_2_stk((intptr_t)p1,idx_param1)
+						,var_2_stk((intptr_t)p2,idx_param2)
+						,var_2_stk((intptr_t)p3,idx_param3)
 				};
 
 				tStackElement stk = CURRENT_VM->execute(
@@ -503,8 +503,8 @@ namespace zs{
 					THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 				}
 
-				if(!stk2var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
+				if(!stk_2_var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
+					THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
 				}
 				return ret_value;
 			}
@@ -539,10 +539,10 @@ namespace zs{
 				bool error=false;
 
 				std::vector<tStackElement> args={
-						 var2stk((intptr_t)p1,idx_param1)
-						,var2stk((intptr_t)p2,idx_param2)
-						,var2stk((intptr_t)p3,idx_param3)
-						,var2stk((intptr_t)p4,idx_param4)
+						 var_2_stk((intptr_t)p1,idx_param1)
+						,var_2_stk((intptr_t)p2,idx_param2)
+						,var_2_stk((intptr_t)p3,idx_param3)
+						,var_2_stk((intptr_t)p4,idx_param4)
 
 				};
 
@@ -583,10 +583,10 @@ namespace zs{
 					std::string error_str;
 
 					std::vector<tStackElement> args={
-							 var2stk((intptr_t)p1,idx_param1)
-							,var2stk((intptr_t)p2,idx_param2)
-							,var2stk((intptr_t)p3,idx_param3)
-							,var2stk((intptr_t)p4,idx_param4)
+							 var_2_stk((intptr_t)p1,idx_param1)
+							,var_2_stk((intptr_t)p2,idx_param2)
+							,var_2_stk((intptr_t)p3,idx_param3)
+							,var_2_stk((intptr_t)p4,idx_param4)
 
 					};
 
@@ -600,8 +600,8 @@ namespace zs{
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 					}
 
-					if(!stk2var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
+					if(!stk_2_var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
+						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 
@@ -640,11 +640,11 @@ namespace zs{
 
 				bool error=false;
 				std::vector<tStackElement> args={
-						 var2stk((intptr_t)p1,idx_param1)
-						,var2stk((intptr_t)p2,idx_param2)
-						,var2stk((intptr_t)p3,idx_param3)
-						,var2stk((intptr_t)p4,idx_param4)
-						,var2stk((intptr_t)p5,idx_param5)
+						 var_2_stk((intptr_t)p1,idx_param1)
+						,var_2_stk((intptr_t)p2,idx_param2)
+						,var_2_stk((intptr_t)p3,idx_param3)
+						,var_2_stk((intptr_t)p4,idx_param4)
+						,var_2_stk((intptr_t)p5,idx_param5)
 
 				};
 
@@ -689,11 +689,11 @@ namespace zs{
 				std::string error_str;
 
 				std::vector<tStackElement> args={
-						 var2stk((intptr_t)p1,idx_param1)
-						,var2stk((intptr_t)p2,idx_param2)
-						,var2stk((intptr_t)p3,idx_param3)
-						,var2stk((intptr_t)p4,idx_param4)
-						,var2stk((intptr_t)p5,idx_param5)
+						 var_2_stk((intptr_t)p1,idx_param1)
+						,var_2_stk((intptr_t)p2,idx_param2)
+						,var_2_stk((intptr_t)p3,idx_param3)
+						,var_2_stk((intptr_t)p4,idx_param4)
+						,var_2_stk((intptr_t)p5,idx_param5)
 
 				};
 
@@ -707,8 +707,8 @@ namespace zs{
 					THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 				}
 
-				if(!stk2var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
+				if(!stk_2_var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
+					THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
 				}
 				return ret_value;
 			}
@@ -748,12 +748,12 @@ namespace zs{
 			[&,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
 				bool error=false;
 				std::vector<tStackElement> args={
-						 var2stk((intptr_t)p1,idx_param1)
-						,var2stk((intptr_t)p2,idx_param2)
-						,var2stk((intptr_t)p3,idx_param3)
-						,var2stk((intptr_t)p4,idx_param4)
-						,var2stk((intptr_t)p5,idx_param5)
-						,var2stk((intptr_t)p6,idx_param6)
+						 var_2_stk((intptr_t)p1,idx_param1)
+						,var_2_stk((intptr_t)p2,idx_param2)
+						,var_2_stk((intptr_t)p3,idx_param3)
+						,var_2_stk((intptr_t)p4,idx_param4)
+						,var_2_stk((intptr_t)p5,idx_param5)
+						,var_2_stk((intptr_t)p6,idx_param6)
 
 				};
 
@@ -798,12 +798,12 @@ namespace zs{
 					std::string error_str;
 
 					std::vector<tStackElement> args={
-							 var2stk((intptr_t)p1,idx_param1)
-							,var2stk((intptr_t)p2,idx_param2)
-							,var2stk((intptr_t)p3,idx_param3)
-							,var2stk((intptr_t)p4,idx_param4)
-							,var2stk((intptr_t)p5,idx_param5)
-							,var2stk((intptr_t)p6,idx_param6)
+							 var_2_stk((intptr_t)p1,idx_param1)
+							,var_2_stk((intptr_t)p2,idx_param2)
+							,var_2_stk((intptr_t)p3,idx_param3)
+							,var_2_stk((intptr_t)p4,idx_param4)
+							,var_2_stk((intptr_t)p5,idx_param5)
+							,var_2_stk((intptr_t)p6,idx_param6)
 					};
 
 					tStackElement stk = CURRENT_VM->execute(
@@ -816,8 +816,8 @@ namespace zs{
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 					}
 
-					if(!stk2var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("run-time error converting result value:%s",error_str.c_str()));
+					if(!stk_2_var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
+						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 
@@ -850,11 +850,11 @@ namespace zs{
 
 		//ZS_CLEAR_ERROR_MSG();
 
-		std::vector<std::string> access_var = CZetScriptUtils::split(function_access,'.');
+		std::vector<std::string> access_var = string_utilssplit(function_access,'.');
 		CScriptFunction * m_mainFunctionInfo = MAIN_FUNCTION;
 
 		if(m_mainFunctionInfo == NULL){
-			CZetScriptUtils::sformat("m_mainFunctionInfo is not initialized");
+			string_utils::sformat("m_mainFunctionInfo is not initialized");
 			return false;
 		}
 
@@ -880,14 +880,14 @@ namespace zs{
 								}
 							}
 							else{
-								CZetScriptUtils::sformat("cannot access i (%i)",j);
+								string_utils::sformat("cannot access i (%i)",j);
 								return false;
 							}
 						}
 					}
 
 					if((*calling_obj) == NULL){
-						CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						string_utils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return false;
 					}
 
@@ -899,12 +899,12 @@ namespace zs{
 						if(se->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							*calling_obj=(CScriptVariable *)se->varRef;
 						}else{
-							CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
+							string_utils::sformat("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
 							return false;
 						}
 					}
 					else{
-						CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						string_utils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return false;
 					}
 				}
@@ -917,7 +917,7 @@ namespace zs{
 				}
 			}else{
 
-				CZetScriptUtils::sformat("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
+				string_utils::sformat("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
 				return false;
 			}
 
@@ -934,7 +934,7 @@ namespace zs{
 		}
 
 		if(*fun_obj==NULL){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
+			THROW_RUNTIME_ERROR(string_utils::sformat("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
 			return false;
 		}
 
@@ -961,17 +961,17 @@ namespace zs{
 
 			// 1. check all parameters ok.
 			using Traits3 = function_traits<_F>;//decltype(function_type)>;
-			getParamsFunction<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
+			get_params_function<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
 
 			// 2. check valid parameters ...
 			if((idx_return_type=GET_IDX_CLASS_FROM_ITS_C_TYPE(return_type)) == -1){
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Return type \"%s\" for bind function not registered",demangle(return_type).c_str()));
+				THROW_RUNTIME_ERROR(string_utils::sformat("Return type \"%s\" for bind function not registered",demangle(return_type).c_str()));
 				return NULL;
 			}
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
 				if(GET_IDX_CLASS_FROM_ITS_C_TYPE(m_arg[i])==-1){
-					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Argument (%i) type \"%s\" for bind function not registered",i,demangle(m_arg[i]).c_str()));
+					THROW_RUNTIME_ERROR(string_utils::sformat("Argument (%i) type \"%s\" for bind function not registered",i,demangle(m_arg[i]).c_str()));
 					return NULL;
 				}
 			}
@@ -1034,17 +1034,16 @@ namespace zs{
 	}
 
 	template<typename _T>
-	CVectorScriptVariable * vector2vscript(const std::vector<_T> & v){
+	CVectorScriptVariable * vector_2_vscript(const std::vector<_T> & v){
 		CVectorScriptVariable *vsv = new CVectorScriptVariable();
 
 		for ( unsigned i = 0; i < v.size(); i++){
 			tStackElement *stk = vsv->push();
 			//intptr_t uvar = (intptr_t)(v[i]);
-			*stk = var2stk((intptr_t)(v[i]),GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_T).name()));
+			*stk = var_2_stk((intptr_t)(v[i]),GET_IDX_CLASS_FROM_ITS_C_TYPE(typeid(_T).name()));
 		}
 
 		return vsv;
 	}
-
 
 }

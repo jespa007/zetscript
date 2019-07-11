@@ -1,6 +1,6 @@
-namespace zs{
+namespace zetscript{
 	namespace path{
-		std::string  CZetScriptUtils::getFileName(const std::string & _path) {
+		std::string  string_utilsget_filename(const std::string & _path) {
 		  size_t found;
 		  std::string ss=_path;
 		  found=_path.find_last_of("/\\");
@@ -9,9 +9,9 @@ namespace zs{
 		  return ss;
 		}
 
-		std::string  CZetScriptUtils::getFileNameWithoutExtension(const std::string & _path) {
+		std::string  string_utilsget_filename_without_extension(const std::string & _path) {
 
-			std::string file = getFileName(_path);
+			std::string file = get_filename(_path);
 
 
 			std::string fName(file);

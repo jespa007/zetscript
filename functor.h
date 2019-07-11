@@ -1,22 +1,22 @@
 #pragma once
 
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_0(o,f)						(new zs::CFunctionMemberPointerVoidParam0Caller<o>(this,&o::f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_1(o,f,p1)						(new zs::CFunctionMemberPointerVoidParam1Caller<o,p1>(this,&o::f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_2(o,f,p1,p2)					(new zs::CFunctionMemberPointerVoidParam2Caller<o,p1,p2>(this,&o::f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_3(o,f,p1,p2,p3)				(new zs::CFunctionMemberPointerVoidParam3Caller<o,p1,p2,p3>(this,&o::f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_4(o,f,p1,p2,p3,p4)			(new zs::CFunctionMemberPointerVoidParam4Caller<o,p1,p2,p3,p4>(this,&o::f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_5(o,f,p1,p2,p3,p4,p5)			(new zs::CFunctionMemberPointerVoidParam5Caller<o,p1,p2,p3,p4,p5>(this,&o::f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_6(o,f,p1,p2,p3,p4,p5,p6)		(new zs::CFunctionMemberPointerVoidParam6Caller<o,p1,p2,p3,p4,p5,p6>(this,&o::f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_0(o,f)						(new zetscript::CFunctionMemberPointerVoidParam0Caller<o>(this,&o::f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_1(o,f,p1)						(new zetscript::CFunctionMemberPointerVoidParam1Caller<o,p1>(this,&o::f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_2(o,f,p1,p2)					(new zetscript::CFunctionMemberPointerVoidParam2Caller<o,p1,p2>(this,&o::f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_3(o,f,p1,p2,p3)				(new zetscript::CFunctionMemberPointerVoidParam3Caller<o,p1,p2,p3>(this,&o::f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_4(o,f,p1,p2,p3,p4)			(new zetscript::CFunctionMemberPointerVoidParam4Caller<o,p1,p2,p3,p4>(this,&o::f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_5(o,f,p1,p2,p3,p4,p5)			(new zetscript::CFunctionMemberPointerVoidParam5Caller<o,p1,p2,p3,p4,p5>(this,&o::f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_6(o,f,p1,p2,p3,p4,p5,p6)		(new zetscript::CFunctionMemberPointerVoidParam6Caller<o,p1,p2,p3,p4,p5,p6>(this,&o::f))
 
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_0(o,f)							(new zs::CFunctionMemberPointerRetParam0Caller<o>(this,&o::f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_1(o,f,p1)						(new zs::CFunctionMemberPointerRetParam1Caller<o,p1>(this,&o::f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_2(o,f,p1,p2)					(new zs::CFunctionMemberPointerRetParam2Caller<o,p1,p2>(this,&o::f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_3(o,f,p1,p2,p3)				(new zs::CFunctionMemberPointerRetParam3Caller<o,p1,p2,p3>(this,&o::f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_4(o,f,p1,p2,p3,p4)				(new zs::CFunctionMemberPointerRetParam4Caller<o,p1,p2,p3,p4>(this,&o::f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_5(o,f,p1,p2,p3,p4,p5)			(new zs::CFunctionMemberPointerRetParam5Caller<o,p1,p2,p3,p4,p5>(this,&o::f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_6(o,f,p1,p2,p3,p4,p5,p6)		(new zs::CFunctionMemberPointerRetParam6Caller<o,p1,p2,p3,p4,p5,p6>(this,&o::f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_0(o,f)							(new zetscript::CFunctionMemberPointerRetParam0Caller<o>(this,&o::f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_1(o,f,p1)						(new zetscript::CFunctionMemberPointerRetParam1Caller<o,p1>(this,&o::f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_2(o,f,p1,p2)					(new zetscript::CFunctionMemberPointerRetParam2Caller<o,p1,p2>(this,&o::f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_3(o,f,p1,p2,p3)				(new zetscript::CFunctionMemberPointerRetParam3Caller<o,p1,p2,p3>(this,&o::f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_4(o,f,p1,p2,p3,p4)				(new zetscript::CFunctionMemberPointerRetParam4Caller<o,p1,p2,p3,p4>(this,&o::f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_5(o,f,p1,p2,p3,p4,p5)			(new zetscript::CFunctionMemberPointerRetParam5Caller<o,p1,p2,p3,p4,p5>(this,&o::f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_6(o,f,p1,p2,p3,p4,p5,p6)		(new zetscript::CFunctionMemberPointerRetParam6Caller<o,p1,p2,p3,p4,p5,p6>(this,&o::f))
 
-namespace zs{
+namespace zetscript{
 
 
 

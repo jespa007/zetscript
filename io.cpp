@@ -1,58 +1,57 @@
-namespace zs{
+namespace zetscript{
 	namespace io{
 
-	char * CZetScriptUtils::readFile(const std::string &  filename, int & n_bytes_readed){
+		char * read_file(const std::string &  filename, int & n_bytes_readed){
 
-		int  file_length, readed_elements;
-		FILE  *fp;
+			int  file_length, readed_elements;
+			FILE  *fp;
 
-		if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)
-		{
-			if((file_length = getFileLength(filename)) != -1) {
+			if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)
+			{
+				if((file_length = file_length(filename)) != -1) {
 
-				n_bytes_readed=file_length+1;
-				char *buffer = (char *)malloc(n_bytes_readed);
-				memset(buffer,0,file_length+1 );
-				readed_elements = fread(buffer, 1, file_length, fp);
+					n_bytes_readed=file_length+1;
+					char *buffer = (char *)malloc(n_bytes_readed);
+					memset(buffer,0,file_length+1 );
+					readed_elements = fread(buffer, 1, file_length, fp);
 
-				if(readed_elements != file_length) {
+					if(readed_elements != file_length) {
 
-					free(buffer);
-					THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("number elements doesn't match with length file (%s)",filename.c_str()));
+						free(buffer);
+						THROW_RUNTIME_ERROR(string_utils::sformat("number elements doesn't match with length file (%s)",filename.c_str()));
+					}
 
+					fclose(fp);
+					return buffer;
 				}
+				else  THROW_RUNTIME_ERROR(string_utils::sformat("I can't read file \"%s\"",filename.c_str()));
+			}
+			else  THROW_RUNTIME_ERROR(string_utils::sformat("I can't open file \"%s\"",filename.c_str()));
+
+
+			return NULL;
+		}
+
+		int  file_length(const  std::string & filename)
+		{
+			int  ini,  end;
+			FILE  *fp;
+
+			if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)
+			{
+
+
+				fseek(fp,  0,SEEK_SET);
+				ini  =  ftell(fp);
+				fseek(fp,  0,SEEK_END);
+				end  =  ftell(fp);
 
 				fclose(fp);
-				return buffer;
+
+				return  (end  -  ini);
 			}
-			else  THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("I can't read file \"%s\"",filename.c_str()));
+
+			return    -1;
 		}
-		else  THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("I can't open file \"%s\"",filename.c_str()));
-
-
-		return NULL;
-	}
-
-	int  CZetScriptUtils::getFileLength(const  std::string & filename)
-	{
-		int  ini,  end;
-		FILE  *fp;
-
-		if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)
-		{
-
-
-			fseek(fp,  0,SEEK_SET);
-			ini  =  ftell(fp);
-			fseek(fp,  0,SEEK_END);
-			end  =  ftell(fp);
-
-			fclose(fp);
-
-			return  (end  -  ini);
-		}
-
-		return    -1;
-	}
 	}
 }

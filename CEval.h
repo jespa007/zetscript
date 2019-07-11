@@ -7,11 +7,7 @@
 
 
 
-#define DEFAULT_NO_FILENAME					"no_file"
-#define register_C_Constant(s,v)			(zs::CEval::getInstance()->addConstant(s,(v)))
-
-
-namespace zs{
+namespace zetscript{
 
 
 

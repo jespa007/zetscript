@@ -4,24 +4,25 @@
  */
 #pragma once
 
-//namespace zs{
 
-	#ifdef __ZETSCRIPT_DEBUG__ // incoment __ZETSCRIPT_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
-	#define __ZETSCRIPT_VERBOSE_MESSAGE__
-	#endif
+#ifdef __ZETSCRIPT_DEBUG__ // incoment __ZETSCRIPT_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
+#define __ZETSCRIPT_VERBOSE_MESSAGE__
+#endif
 
 
-	#define ZS_SOLVE_AT_RUNTIME				 0
-	#define ZS_ERROR						-1
-	#define ZS_UNDEFINED_IDX 				-1
-	//#define ZS_FUNCTION_NOT_FOUND_IDX	 	-2
-	#define ZS_THIS_IDX						-3
+#define ZS_SOLVE_AT_RUNTIME				 0
+#define ZS_ERROR						-1
+#define ZS_UNDEFINED_IDX 				-1
+//#define ZS_FUNCTION_NOT_FOUND_IDX	 	-2
+#define ZS_THIS_IDX						-3
 
-	#define MAX_N_ARGS						 6
-	#define NO_PARAMS_IS_VARIABLE			-1
-	//#define NO_PARAMS_SYMBOL_ONLY			-2
-	#define NO_PARAMS_IS_CLASS				-2
+#define MAX_N_ARGS						 6
+#define NO_PARAMS_IS_VARIABLE			-1
+//#define NO_PARAMS_SYMBOL_ONLY			-2
+#define NO_PARAMS_IS_CLASS				-2
+#define DEFAULT_NO_FILENAME				"no_file"
 
+namespace zetscript{
 
 
 	enum NODE_TYPE
@@ -439,7 +440,7 @@
 
 	};
 
-	namespace zs{
+	namespace zetscript{
 
 
 		//typedef CASTNode *PASTNode;
@@ -592,7 +593,7 @@
 
 				const char * file;
 				short line;
-			    //tSymbol * _symbol;
+				//tSymbol * _symbol;
 				std::string * symbol_name;
 
 				tInstructionInfo(){
@@ -724,4 +725,5 @@
 
 	}
 
-//}
+
+}

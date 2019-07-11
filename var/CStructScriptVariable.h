@@ -6,7 +6,7 @@
 
 #define NEW_STRUCT_VAR (new CStructScriptVariable()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassStruct())))
 
-namespace zs{
+namespace zetscript{
 
 	class  CStructScriptVariable:public CScriptVariable{
 

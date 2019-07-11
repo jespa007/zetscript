@@ -4,7 +4,7 @@
  */
 #include "CZetScript.h"
 
-using namespace zs;
+using namespace zetscript;
 
 class CNumber{
 public:
@@ -298,7 +298,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(op) \
 				STR(val2) \
 				";"; \
-	if((aux_value=CZetScript::eval_int_value(str)) != (val1 op val2)){ \
+	if((aux_value=CZetScript::evalIntValue(str)) != (val1 op val2)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
 		exit(-1); \
 	} \
@@ -316,7 +316,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");it2=it1.toInt();delete it1;delete i1;delete i2;it2;"; \
-	if((aux_value=CZetScript::eval_int_value(str)) != (val1 op val2)){ \
+	if((aux_value=CZetScript::evalIntValue(str)) != (val1 op val2)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
 		exit(-1); \
 	} \
@@ -330,7 +330,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(op) \
 				STR(val2) \
 				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float_value(str),expr)){ \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str),expr)){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
 		exit(-1); \
 	} \
@@ -344,7 +344,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				"%" \
 				STR(val2) \
 				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float_value(str)  , fmod(val1,val2))){ \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str)  , fmod(val1,val2))){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
 		exit(-1); \
 	} \
@@ -364,7 +364,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;nt2;"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float_value(str),expr)){ \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str),expr)){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
 		exit(-1); \
 	} \
@@ -382,7 +382,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");nt2=nt1.toFloat();delete n1; delete n2;delete nt1;nt2;"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float_value(str)  , fmod(val1,val2))){ \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str)  , fmod(val1,val2))){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
 		exit(-1); \
 	} \
@@ -397,7 +397,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				val2\
 				";"; \
 	std::string expected_str = std::string(val1) op val2;\
-	if((aux_value=CZetScript::eval_string_value(str))!=expected_str.c_str()){ \
+	if((aux_value=CZetScript::evalStringValue(str))!=expected_str.c_str()){ \
 		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value.c_str()); \
 		exit(-1); \
 	} \
@@ -545,7 +545,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 	int aux_value=0; \
 	std::string str_expr= STR(expr)";"; \
 	\
-	if((aux_value=CZetScript::eval_int_value(str_expr))  != (expr)){ \
+	if((aux_value=CZetScript::evalIntValue(str_expr))  != (expr)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,aux_value); \
 		exit(-1); \
 	} \
@@ -555,7 +555,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	int aux_value=0; \
 	\
-	if((aux_value=CZetScript::eval_int_value(expr))  != (expected_value)){ \
+	if((aux_value=CZetScript::evalIntValue(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
 		exit(-1); \
 	} \
@@ -566,7 +566,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	float aux_value=0; \
 	\
-	if((aux_value=CZetScript::eval_float_value(expr))  != (expected_value)){ \
+	if((aux_value=CZetScript::evalFloatValue(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,aux_value); \
 		exit(-1); \
 	} \
@@ -576,7 +576,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	bool aux_value=false; \
 	\
-	if((aux_value=CZetScript::eval_bool_value(expr))  != (expected_value)){ \
+	if((aux_value=CZetScript::evalBoolValue(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
 		exit(-1); \
 	} \
@@ -586,7 +586,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	std::string aux_value=""; \
 	\
-	if((aux_value=CZetScript::eval_string_value(expr))  != (expected_value)){ \
+	if((aux_value=CZetScript::evalStringValue(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,expected_value,aux_value.c_str()); \
 		exit(-1); \
 	} \
@@ -596,7 +596,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	float aux_value=0.0f; \
 	\
-	if((aux_value=CZetScript::eval_float_value(expr))  != (expected_value)){ \
+	if((aux_value=CZetScript::evalFloatValue(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,aux_value); \
 		exit(-1); \
 	} \
@@ -607,7 +607,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 	float aux_value=0; \
 	std::string str_expr= STR(expr)";"; \
 	\
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float_value(str_expr)  , (expr))){ \
+	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str_expr)  , (expr))){ \
 		double error = fabs(fabs(aux_value)-fabs(expr));\
 		if(error>0.001){ /* Only error if the difference is more than expected */\
 			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,aux_value); \
@@ -623,7 +623,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 	bool aux_value=false; \
 	std::string str= STR(val1) \
 				";"; \
-	if((aux_value=CZetScript::eval_bool_value(str)) != (val1)){ \
+	if((aux_value=CZetScript::evalBoolValue(str)) != (val1)){ \
 		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",aux_value?"true":"false"); \
 		exit(-1); \
 	} \

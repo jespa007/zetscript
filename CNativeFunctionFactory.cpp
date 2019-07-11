@@ -4,33 +4,15 @@
  */
 #include "zetscript.h"
 
-namespace zs{
+namespace zetscript{
 
-	CNativeFunction * CNativeFunction::m_instance=NULL;
 
-	CNativeFunction::CNativeFunction(){
-		/*c_void_function = new std::map<std::string,void *>();
-		c_int_function = new std::map<std::string,void *>();
-		class_function_member = new std::map<std::string,void *>();*/
-	}
+	CNativeFunctionFactory::CNativeFunctionFactory(){
 
-	CNativeFunction * CNativeFunction::getInstance(){
-
-		if(m_instance== NULL){
-			m_instance = new CNativeFunction();
-		}
-
-		return m_instance;
-	}
-
-	void  CNativeFunction::destroySingleton(){
-		delete m_instance;
 	}
 
 
-	CNativeFunction::~CNativeFunction(){
-
-
+	CNativeFunctionFactory::~CNativeFunctionFactory(){
 
 
 		for(unsigned i = 0; i < c_void_function.size(); i++){

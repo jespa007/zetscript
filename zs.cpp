@@ -7,11 +7,11 @@
 
 #define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2019 Jordi Espada\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION
 
-using namespace zs;
+using namespace zetscript;
 
 int main(int argc, char * argv[]) {
 
-	CZetScript *zetscript = CZetScript::getInstance();
+	CZetScript *zs = new CZetScript();
 
 	if (argc > 1) {
 		bool execute=true;
@@ -20,7 +20,7 @@ int main(int argc, char * argv[]) {
 
 		for(int i=1; i < argc; i++){
 
-			std::vector<std::string> a=CZetScriptUtils::split(argv[i],'=');
+			std::vector<std::string> a=string_utils::split(argv[i],'=');
 			switch(a.size()){
 			case 1:
 
@@ -60,14 +60,10 @@ int main(int argc, char * argv[]) {
 			exit(-1);
 		}
 
-		try{
 
-			zs::eval_file(file,execute,show_bytecode);
-		}catch(script_error & error){
-			fprintf(stderr,"%s\n",error.what());
-		}
-		catch(std::exception & error){
-			fprintf(stderr,"%s\n",error.what());
+
+		if(!zs->evalFile(file,execute,show_bytecode)){
+			fprintf(stderr,"%s\n",zs->getError());
 		}
 	}
 	else{
@@ -85,17 +81,16 @@ int main(int argc, char * argv[]) {
 
 			exit = expression=="exit" || expression=="quit";
 			if(!exit){ // evaluate expression
-				try{
-					zs::eval_string(expression);
-				}catch(script_error & ex){
-					fprintf(stderr,"%s\n",ex.what());
+
+				if(!zs->evalString(expression)){
+					fprintf(stderr,"%s\n",zs->getError());
 				}
 			}
 
 		}while(!exit);// && (instr[++idx_ptr] != NULL));
 	}
 
-	CZetScript::destroy();
+	delete zs;
 
 #ifdef __MEMMANAGER__
 	MEM_ViewStatus();

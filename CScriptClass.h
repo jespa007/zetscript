@@ -21,7 +21,7 @@
 
 
 
-namespace zs{
+namespace zetscript{
 
 /**
  * Stores the basic information to build a object through built AST structure

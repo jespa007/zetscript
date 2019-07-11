@@ -4,7 +4,7 @@
  */
 #include "CZetScript.h"
 
-using namespace zs;
+using namespace zetscript;
 
 void say_helloworld(){
 	printf("Hello World!\n");
@@ -12,14 +12,14 @@ void say_helloworld(){
 
 int main(){
 
-	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+	CZetScript *zs = new CZetScript();
 
-	REGISTER_C_FUNCTION("say_helloworld",say_helloworld);
+	REGISTER_C_FUNCTION(zs,"say_helloworld",say_helloworld);
 
-	zs::eval_string("say_helloworld();"); // Call c function and prints hello world!
+	zs->evalString("say_helloworld();"); // Call c function and prints hello world!
 
 
-	CZetScript::destroy();
+	delete zs;
 
 #ifdef __MEMMANAGER__
   MEM_ViewStatus();

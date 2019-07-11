@@ -9,7 +9,7 @@
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
 
-namespace zs{
+namespace zetscript{
 
 	class CScriptClass;
 

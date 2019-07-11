@@ -4,7 +4,7 @@
  */
 #include "CZetScript.h"
 
-using namespace zs;
+using namespace zetscript;
 
 int add(int op1, int op2){
 	return op1+op2;
@@ -27,7 +27,7 @@ int main(){
 
 
 
-	zs::eval_string(
+	zetscript::evalString(
 		"print(\"result 5+4:\"+add(5,4));"       // prints "result 5+4:9"
 		"print(\"result 0.5+4.6:\"+add(0.5,4.6));"       // prints "result 5+4:9"
 	);

@@ -1,19 +1,18 @@
 #include "zetscript.h"
 
-namespace zs{
+namespace zetscript{
 
 	// define prototype ...
 	int error_line;
 	char error_filename[512];
 	char error_description[1024];
 	const char *error_type="NA";
-	bool __init__=false;
 	CVirtualMachine *main_vm=NULL;
 	std::map<std::string,tInfoConstantValue *> 	 *constant_pool;
 
 
 
-	void  writeErrorMsg(const char *filename, int line, const  char  *input_text, ...){
+	void  write_error(const char *filename, int line, const  char  *input_text, ...){
 
 		char output_text[4096];
 
@@ -50,7 +49,7 @@ namespace zs{
 	}
 
 
-	void clear(){
+	void CZetScript::clear(){
 
 		if(!__init__) {init();}
 
@@ -95,45 +94,26 @@ namespace zs{
 
 	}
 
-	void quit(){
 
-		CURRENT_VM->clearGlobalVars();
-
-		// clear globals...
-		CScopeFactory::destroySingleton();
-		CScriptFunctionFactory::destroySingleton();
-		CScriptClassFactory::destroySingleton();
-		CNativeFunction::destroySingleton();
-		CEval::destroySingleton();
-
-		m_mainObject = NULL;
-		m_mainFunction = NULL;
-		show_filename_on_error=true;
-		__init__ = false;
-		main_vm=NULL;
-
-	}
-
-
-	void init(){
+	CZetScript::CZetScript(){
 
 		CScopeFactory::getInstance();
-		CNativeFunction::getInstance();
+		CNativeFunctionFactory::getInstance();
 		CScriptFunctionFactory::getInstance();
 		CScriptClassFactory::getInstance();
 		CEval::getInstance();
 
 		main_vm = new CVirtualMachine();
 
-		__init__=true;
+
 	}
 
 
-	int eval_int_value(const std::string & str_to_eval){
+	int CZetScript::evalIntValue(const std::string & str_to_eval){
 
 
 		try{
-			zs::eval_string(str_to_eval);
+			evalString(str_to_eval);
 		}
 		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
@@ -148,7 +128,7 @@ namespace zs{
 				return (int)((intptr_t)se->stkValue);
 			}
 			else{
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("eval_int_value(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(string_utils::sformat("evalIntValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
@@ -157,12 +137,12 @@ namespace zs{
 
 	}
 
-	bool eval_bool_value(const std::string & str_to_eval){
+	bool CZetScript::evalBoolValue(const std::string & str_to_eval){
 
 
 
 		try{
-			zs::eval_string(str_to_eval);
+			zetscript::evalString(str_to_eval);
 		}
 		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
@@ -177,18 +157,18 @@ namespace zs{
 				return (bool)((intptr_t)se->stkValue);
 
 			}else{
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("eval_bool_value(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(string_utils::sformat("evalBoolValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
 		return false;
 	}
 
-	float eval_float_value(const std::string & str_to_eval){
+	float CZetScript::evalFloatValue(const std::string & str_to_eval){
 
 
 		try{
-			zs::eval_string(str_to_eval);
+			evalString(str_to_eval);
 		}
 		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
@@ -203,7 +183,7 @@ namespace zs{
 				return *f;
 			}
 			else{
-				CZetScriptUtils::sformat("eval_float_value(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				string_utils::sformat("evalFloatValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 
 			}
 		}
@@ -212,12 +192,12 @@ namespace zs{
 		return 0.0f;
 	}
 
-	std::string eval_string_value(const std::string & str_to_eval){
+	std::string CZetScript::evalStringValue(const std::string & str_to_eval){
 
 		std::string value="---";
 
 		try{
-			zs::eval_string(str_to_eval);
+			zetscript::evalString(str_to_eval);
 		}
 		catch(exception::script_error & error){
 			THROW_EXCEPTION(error);
@@ -233,7 +213,7 @@ namespace zs{
 				value = ((const char *)se->stkValue);
 			}
 			else{
-				CZetScriptUtils::sformat("eval_string_value(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				string_utils::sformat("evalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 			}
 		}
 
@@ -241,7 +221,7 @@ namespace zs{
 	}
 
 
-	void execute(){
+	void CZetScript::execute(){
 
 		if(!__init__) {THROW_RUNTIME_ERROR ("ZetScript not initialized"); return;}
 		//ZS_CLEAR_ERROR_MSG();
@@ -256,7 +236,7 @@ namespace zs{
 		}
 	}
 
-	bool eval_string(const std::string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
+	bool CZetScript::evalString(const std::string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
 
 
 		if(!__init__) {init();}
@@ -276,7 +256,7 @@ namespace zs{
 		return true;
 	}
 
-	bool eval_file(const std::string & filename, bool exec_vm, bool show_bytecode){
+	bool CZetScript::evalFile(const std::string & filename, bool exec_vm, bool show_bytecode){
 
 		if(!__init__) {init();}
 
@@ -306,7 +286,24 @@ namespace zs{
 	}
 
 
+	CZetScript::~CZetScript(){
 
+		CURRENT_VM->clearGlobalVars();
+
+		// clear globals...
+		CScopeFactory::destroySingleton();
+		CScriptFunctionFactory::destroySingleton();
+		CScriptClassFactory::destroySingleton();
+		CNativeFunctionFactory::destroySingleton();
+		CEval::destroySingleton();
+
+		m_mainObject = NULL;
+		m_mainFunction = NULL;
+		show_filename_on_error=true;
+		__init__ = false;
+		main_vm=NULL;
+
+	}
 
 
 }

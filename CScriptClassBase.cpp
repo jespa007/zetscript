@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-namespace zs{
+namespace zetscript{
 
 	CScriptClassBase::CScriptClassBase(unsigned char _idxClass) {
 		idxClass=_idxClass;
@@ -18,7 +18,7 @@ namespace zs{
 
 
 		if(getVariable(symbol->name,symbol->idxScope) != NULL){
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Variable \"%s\" already exist",variable_name.c_str()));
+			THROW_RUNTIME_ERROR(string_utils::sformat("Variable \"%s\" already exist",variable_name.c_str()));
 			return NULL;
 		}
 
@@ -62,7 +62,7 @@ namespace zs{
 
 			//std::string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
 			if(getFunction(function_name,(char)args.size()) != NULL){
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("Function \"%s\" already exist",function_name.c_str()));
+				THROW_RUNTIME_ERROR(string_utils::sformat("Function \"%s\" already exist",function_name.c_str()));
 				return NULL;
 			}
 

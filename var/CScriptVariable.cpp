@@ -4,10 +4,10 @@
  */
 #include "../zetscript.h"
 
-namespace zs{
+namespace zetscript{
 
 
-	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+	void  write_error(const char *filename, int line, const  char  *string_text, ...);
 
 
 
@@ -188,20 +188,20 @@ namespace zs{
 				}
 		}else{
 			error_symbol=true;
-			//writeErrorMsg(CURRENT_PARSING_FILENAME,m_line," Symbol name cannot begin with %c", *aux_p);
+			//write_error(CURRENT_PARSING_FILENAME,m_line," Symbol name cannot begin with %c", *aux_p);
 			//return NULL;
 		}
 
 		if(error_symbol){
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
-			THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str()));
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
+			THROW_RUNTIME_ERROR(string_utils::sformat("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str()));
 			return NULL;
 		}
 
 		//std::string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(getVariableSymbol(symbol_value) != NULL){
-			writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
 			return NULL;
 		}
 
@@ -278,7 +278,7 @@ namespace zs{
 
 		if(!ignore_duplicates){
 			if(getFunctionSymbol(symbol_value) != NULL){
-				writeErrorMsg(INSTRUCTION_GET_FILE_LINE(irv,NULL), "internal:symbol already exists");
+				write_error(INSTRUCTION_GET_FILE_LINE(irv,NULL), "internal:symbol already exists");
 				return NULL;
 			}
 		}
@@ -314,7 +314,7 @@ namespace zs{
 
 
 		if(idx >= m_variable.size()){
-			writeErrorMsg(NULL,0,"idx out of bounds (%i>=%i)",idx,m_variable.size());
+			write_error(NULL,0,"idx out of bounds (%i>=%i)",idx,m_variable.size());
 			return false;
 		}
 
@@ -364,7 +364,7 @@ namespace zs{
 				return removeVariableSymbolByIndex(i,true);
 			}
 		}
-		writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,NULL),"symbol %s doesn't exist",varname.c_str());
+		write_error(INSTRUCTION_GET_FILE_LINE(info_function,NULL),"symbol %s doesn't exist",varname.c_str());
 		return false;
 	}
 
@@ -376,7 +376,7 @@ namespace zs{
 
 
 		if(idx >= m_variable.size()){
-			writeErrorMsg("unknow",-1,"idx symbol index out of bounds (%i)",idx);
+			write_error("unknow",-1,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
 
@@ -419,7 +419,7 @@ namespace zs{
 				return true;
 			}
 
-			writeErrorMsg("unknow",-1," shared ptr alrady registered");
+			write_error("unknow",-1," shared ptr alrady registered");
 			return false;
 		}
 
@@ -430,7 +430,7 @@ namespace zs{
 				return true;
 			}
 			else{
-				writeErrorMsg("unknow",-1,"shared ptr not registered");
+				write_error("unknow",-1,"shared ptr not registered");
 			}
 
 			return false;
@@ -442,7 +442,7 @@ namespace zs{
 
 	tFunctionSymbol *CScriptVariable::getFunctionSymbolByIndex(unsigned int idx){
 		if(idx >= m_functionSymbol.size()){
-			writeErrorMsg("unknow",-1,"idx symbol index out of bounds");
+			write_error("unknow",-1,"idx symbol index out of bounds");
 			return NULL;
 		}
 		return &m_functionSymbol[idx];

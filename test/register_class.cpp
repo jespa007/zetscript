@@ -4,7 +4,7 @@
  */
 #include "CZetScript.h"
 
-using namespace zs;
+using namespace zetscript;
 
 class MyClass{
 public:
@@ -53,7 +53,7 @@ int main(){
 
 	CLASS_C_BASEOF<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
 
-	zs::eval_string(
+	zetscript::evalString(
 		"class ScriptMyClassExtend:MyClassExtend{\n"
 		"	var data3;\n"
 		"	function function0(){\n"

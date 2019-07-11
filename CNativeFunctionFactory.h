@@ -5,18 +5,15 @@
 #pragma once
 
 
-namespace zs{
+namespace zetscript{
 
-	class  CNativeFunction{
+	class  CNativeFunctionFactory{
 
 	public:
 
-		CNativeFunction();
-		~CNativeFunction();
+		CNativeFunctionFactory();
 
-		 static CNativeFunction * getInstance();
-		
-		static void destroySingleton();
+
 
 
 		template <class _R, typename _F>
@@ -71,9 +68,6 @@ namespace zs{
 		template <class _R>
 		bool delete_proxy_function(unsigned int n_args, void *obj){
 			using namespace std::placeholders;
-
-
-
 
 			switch(n_args){
 			case 0:
@@ -227,9 +221,7 @@ namespace zs{
 			return c_function_builder;
 		}
 
-
-
-
+		~CNativeFunctionFactory();
 
 	private:
 
@@ -238,7 +230,7 @@ namespace zs{
 			void *fun_ptr;
 		}tInfoProxyFunction;
 
-		static CNativeFunction *m_instance;
+		static CNativeFunctionFactory *m_instance;
 
 		std::vector<tInfoProxyFunction>	c_int_function;
 		std::vector<tInfoProxyFunction>	 c_void_function;

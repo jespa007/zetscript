@@ -7,7 +7,7 @@
 #define NEW_STRING_VAR (new CStringScriptVariable()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassString()),NULL))
 
 
-namespace zs{
+namespace zetscript{
 
 	class  CStringScriptVariable: public CScriptVariable{
 

@@ -4,10 +4,10 @@
  */
 #include "zetscript.h"
 
-namespace zs{
+namespace zetscript{
 
 
-	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+	void  write_error(const char *filename, int line, const  char  *string_text, ...);
 
 	bool CScriptClass::isToClass(){
 
@@ -35,7 +35,7 @@ namespace zs{
 
 		// check if metamethod...
 		for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-			if(STRCMP(zs::CScriptClassFactory::getInstance()->getMetamethod((METAMETHOD_OPERATOR)i),==,function_name.c_str())){
+			if(STRCMP(zetscript::CScriptClassFactory::getInstance()->getMetamethod((METAMETHOD_OPERATOR)i),==,function_name.c_str())){
 
 				metamethod_operator[i].push_back(sf);
 

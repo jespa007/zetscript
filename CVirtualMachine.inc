@@ -1,6 +1,6 @@
 namespace zetscript{
 
-		void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+		void  write_error(const char *filename, int line, const  char  *string_text, ...);
 
 		#define METAMETHOD_2_ARGS 2
 		#define METAMETHOD_1_ARGS 1
@@ -17,7 +17,7 @@ namespace zetscript{
 		std::string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1),\
 			   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp2);\
 		\
-		writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+		write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 				var_type1.c_str(),\
 				c,\
 				var_type2.c_str());
@@ -26,7 +26,7 @@ namespace zetscript{
 		#define PRINT_ERROR_OP(c)\
 			std::string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1);\
 		\
-		writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+		write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 			c,\
 			var_type1.c_str());
 
@@ -161,13 +161,13 @@ namespace zetscript{
 						var_type2="";
 
 				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/
-					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							STR(__OVERR_OP),
 							var_type1.c_str()
 							);\
 				}else{ /* 2 args*/
 					var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp2);
-					writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							var_type1.c_str(),
 							__OVERR_OP__,
 							var_type2.c_str());
@@ -458,7 +458,7 @@ namespace zetscript{
 							if(irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF){
 								str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a].idx_type));
 							}else{ /* typic var ... */
-								str_candidates+="arg"+CZetScriptUtils::intToString(a+1);
+								str_candidates+="arg"+string_utilsint_2_string(a+1);
 							}
 						}
 						str_candidates+=");n";
@@ -476,7 +476,7 @@ namespace zetscript{
 
 						}
 					}else{
-						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find %s \"%s%s(%s)\".\n\n",
+						write_error(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find %s \"%s%s(%s)\".\n\n",
 										is_constructor ? "constructor":"function",
 										calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 										info_function->INSTRUCTION_getSymbolName(callAleInstruction),
@@ -486,14 +486,14 @@ namespace zetscript{
 				}
 				else{
 					if(metamethod_str!=NULL){
-						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
+						write_error(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 													vec_global_functions->at(0)->symbol_info.symbol->name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
-						writeErrorMsg(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+						write_error(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
 							calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 							info_function->INSTRUCTION_getSymbolName(callAleInstruction),

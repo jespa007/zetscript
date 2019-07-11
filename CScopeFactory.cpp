@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-namespace zs{
+namespace zetscript{
 
 	CScopeFactory * CScopeFactory::scope_factory_singleton=NULL;
 

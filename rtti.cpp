@@ -1,4 +1,4 @@
-namespace zs{
+namespace zetscript{
 	namespace rttir{
 		std::string demangle(const std::string & name) {
 

@@ -23,10 +23,10 @@
 */
 
 
-namespace zs{
+namespace zetscript{
 
 
-	void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+	void  write_error(const char *filename, int line, const  char  *string_text, ...);
 
 	//int CScope::n_anonymouse_func=0;
 
@@ -132,9 +132,9 @@ namespace zs{
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				writeErrorMsg(file.c_str(),line," error var \"%s\" already registered at %s:%i", var_name.c_str(),p_irv->file.c_str(),p_irv->line);
+				write_error(file.c_str(),line," error var \"%s\" already registered at %s:%i", var_name.c_str(),p_irv->file.c_str(),p_irv->line);
 			}else{
-				writeErrorMsg(NULL,0," error var \"%s\" already registered as C++", var_name.c_str());
+				write_error(NULL,0," error var \"%s\" already registered as C++", var_name.c_str());
 			}
 
 			THROW_SCRIPT_ERROR();

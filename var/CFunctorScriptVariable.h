@@ -4,7 +4,7 @@
  */
 #pragma once
 
-namespace zs{
+namespace zetscript{
 
 	#define NEW_FUNCTOR_VAR (new CFunctorScriptVariable()) //setFunctionSymbol(CScriptFunction *_irfs)fun_struct)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassFunctor()),fun_struct))
 

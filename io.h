@@ -1,11 +1,10 @@
-namespace zs{
+namespace zetscript{
 	namespace io{
 
 
-	static bool fileExists(const std::string & m_file);
-	//static bool readFile(const std::string & filename, char *buffer, int length);
-	static char * readFile(const std::string & filename, int & n_readed_bytes);
-	static int  getFileLength(const std::string & filename);
+		bool 	file_exists(const std::string & m_file);
+		char * 	read_file(const std::string & filename, int & n_readed_bytes);
+		int  	file_length(const std::string & filename);
 
 	}
 }

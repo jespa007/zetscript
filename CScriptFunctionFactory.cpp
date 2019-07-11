@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-namespace zs{
+namespace zetscript{
 
 	CScriptFunctionFactory * CScriptFunctionFactory::script_function_factory_singleton=NULL;
 
@@ -83,7 +83,7 @@ namespace zs{
 
 				((vec_script_function_node)[size-1]->symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
 			){
-				THROW_RUNTIME_ERROR(CZetScriptUtils::sformat("function \"%s\" should register after C functions. Register after script functions is not allowed",f));
+				THROW_RUNTIME_ERROR(string_utils::sformat("function \"%s\" should register after C functions. Register after script functions is not allowed",f));
 				return false;
 			}
 

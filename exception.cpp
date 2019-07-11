@@ -5,10 +5,10 @@
 
 #include "zetscript.h"
 
-namespace zs {
+namespace zetscript {
 	namespace exception{
 
-		void  writeErrorMsg(const char *filename, int line, const  char  *string_text, ...);
+		void  write_error(const char *filename, int line, const  char  *string_text, ...);
 		int getErrorLine();
 		const char * getErrorDescription();
 		const char * getErrorFilename();
@@ -28,7 +28,7 @@ namespace zs {
 		{
 
 	    	return (const char *)what_msg;
-	    	//return "["+file+":"+CZetJsonCppUtils::intToString(line)+"]"+error;
+	    	//return "["+file+":"+CZetJsonCppUtils::int_2_string(line)+"]"+error;
 		}
 
 

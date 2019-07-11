@@ -1,15 +1,15 @@
 
 #include "CZetScript.h"
 
-using namespace zs;
+using namespace zetscript;
 
 int main(){
 
 	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
 
-	register_C_Constant("MY_CONSTANT",10);
+	REGISTER_C_CONSTANT("MY_CONSTANT",10);
 
-	zs::eval_string(
+	zetscript::evalString(
 		"print(\"c:\"+MY_CONSTANT);"
 	);
 

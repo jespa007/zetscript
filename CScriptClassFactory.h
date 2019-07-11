@@ -1,57 +1,57 @@
 #pragma once
 
-#include "CNativeFunction.h"
+#include "CNativeFunctionFactory.h"
 #include "helper/RegisterFunctionHelper.h"
 
 #define MAX_REGISTER_CLASSES 100
 
-#define SCRIPT_CLASS_FACTORY					zs::CScriptClassFactory::getInstance()
+#define SCRIPT_CLASS_FACTORY					zetscript::CScriptClassFactory::getInstance()
 
 #define ZS_INVALID_CLASS						((unsigned char)ZS_UNDEFINED_IDX)
 
 
-#define CLASS_C_BASEOF							zs::CScriptClassFactory::getInstance()->class_C_BaseOfInt //<o>(s,&f)
+#define CLASS_C_BASEOF							zetscript::CScriptClassFactory::getInstance()->class_C_BaseOfInt //<o>(s,&f)
 
 
-#define NEW_CLASS_VAR_BY_IDX(idx) 				(zs::CScriptClassFactory::getInstance()->instanceScriptVariableByIdx(idx))
+#define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClassFactory::getInstance()->instanceScriptVariableByIdx(idx))
 
-#define GET_SCRIPT_CLASS(idx) 					(zs::CScriptClassFactory::getInstance()->getScriptClass(idx))
-#define GET_SCRIPT_CLASS_NAME(idx) 				(zs::CScriptClassFactory::getInstance()->getScriptClassName(idx))
+#define GET_SCRIPT_CLASS(idx) 					(zetscript::CScriptClassFactory::getInstance()->getScriptClass(idx))
+#define GET_SCRIPT_CLASS_NAME(idx) 				(zetscript::CScriptClassFactory::getInstance()->getScriptClassName(idx))
 
 
-#define SCRIPT_CLASS_MAIN						(zs::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_MAIN))    // 0 is the main class
-#define SCRIPT_CLASS_STRING						(zs::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_STRING))
-#define SCRIPT_CLASS_STRUCT						(zs::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_STRUCT))
-#define SCRIPT_CLASS_VECTOR						(zs::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_VECTOR))
-#define SCRIPT_CLASS_FUNCTOR					(zs::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_FUNCTOR))
+#define SCRIPT_CLASS_MAIN						(zetscript::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_MAIN))    // 0 is the main class
+#define SCRIPT_CLASS_STRING						(zetscript::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_STRING))
+#define SCRIPT_CLASS_STRUCT						(zetscript::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_STRUCT))
+#define SCRIPT_CLASS_VECTOR						(zetscript::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_VECTOR))
+#define SCRIPT_CLASS_FUNCTOR					(zetscript::CScriptClassFactory::getInstance()->getScriptClass(IDX_CLASS_FUNCTOR))
 
-#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(zs::CScriptClassFactory::getInstance()->getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
+#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)	(zetscript::CScriptClassFactory::getInstance()->getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
 
 #define GET_IDX_2_CLASS_C_STR(idx) 				(CScriptClassFactory::getInstance()->getScriptClass(idx)->classPtrType)
 
-#define REGISTER_C_BASE_SYMBOLS(o)		   		(zs::CScriptClassFactory::getInstance()->REGISTER_C_BASE_SYMBOLSInt(o))
+#define REGISTER_C_BASE_SYMBOLS(o)		   		(zetscript::CScriptClassFactory::getInstance()->REGISTER_C_BASE_SYMBOLSInt(o))
 
-#define VOID_TYPE_STR							zs::CScriptClassFactory::getInstance()->m_VOID_TYPE_STR			// 	typeid(void).name()
-#define INT_PTR_TYPE_STR						zs::CScriptClassFactory::getInstance()->m_INT_PTR_TYPE_STR			//	typeid(int *).name()
-#define FLOAT_PTR_TYPE_STR						zs::CScriptClassFactory::getInstance()->m_FLOAT_PTR_TYPE_STR		//	typeid(float *).name()
-#define STRING_PTR_TYPE_STR						zs::CScriptClassFactory::getInstance()->m_STRING_PTR_TYPE_STR		//	typeid(std::string *).name()
-#define CONST_CHAR_PTR_TYPE_STR					zs::CScriptClassFactory::getInstance()->m_CONST_CHAR_PTR_TYPE_STR	//	typeid(std::string *).name()
-#define BOOL_PTR_TYPE_STR						zs::CScriptClassFactory::getInstance()->m_BOOL_PTR_TYPE_STR		//	typeid(bool *).name()
-#define INT_TYPE_STR							zs::CScriptClassFactory::getInstance()->m_INT_TYPE_STR				//	typeid(int).name()
-#define UNSIGNED_INT_TYPE_STR					zs::CScriptClassFactory::getInstance()->m_UNSIGNED_INT_TYPE_STR	//	typeid(unsigned int).name()
-#define INTPTR_T_TYPE_STR						zs::CScriptClassFactory::getInstance()->m_INTPTR_T_TYPE_STR		//	typeid(intptr_t).name()
+#define VOID_TYPE_STR							zetscript::CScriptClassFactory::getInstance()->m_VOID_TYPE_STR			// 	typeid(void).name()
+#define INT_PTR_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_INT_PTR_TYPE_STR			//	typeid(int *).name()
+#define FLOAT_PTR_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_FLOAT_PTR_TYPE_STR		//	typeid(float *).name()
+#define STRING_PTR_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_STRING_PTR_TYPE_STR		//	typeid(std::string *).name()
+#define CONST_CHAR_PTR_TYPE_STR					zetscript::CScriptClassFactory::getInstance()->m_CONST_CHAR_PTR_TYPE_STR	//	typeid(std::string *).name()
+#define BOOL_PTR_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_BOOL_PTR_TYPE_STR		//	typeid(bool *).name()
+#define INT_TYPE_STR							zetscript::CScriptClassFactory::getInstance()->m_INT_TYPE_STR				//	typeid(int).name()
+#define UNSIGNED_INT_TYPE_STR					zetscript::CScriptClassFactory::getInstance()->m_UNSIGNED_INT_TYPE_STR	//	typeid(unsigned int).name()
+#define INTPTR_T_TYPE_STR						zetscript::CScriptClassFactory::getInstance()->m_INTPTR_T_TYPE_STR		//	typeid(intptr_t).name()
 
-#define FLOAT_TYPE_STR							zs::CScriptClassFactory::getInstance()->m_FLOAT_TYPE_STR			//	typeid(int).name()
-#define BOOL_TYPE_STR							zs::CScriptClassFactory::getInstance()->m_BOOL_TYPE_STR			//	typeid(bool).name()
-#define STACK_ELEMENT_STR						zs::CScriptClassFactory::getInstance()->m_STACK_ELEMENT_STR			//	typeid(bool).name()
+#define FLOAT_TYPE_STR							zetscript::CScriptClassFactory::getInstance()->m_FLOAT_TYPE_STR			//	typeid(int).name()
+#define BOOL_TYPE_STR							zetscript::CScriptClassFactory::getInstance()->m_BOOL_TYPE_STR			//	typeid(bool).name()
+#define STACK_ELEMENT_STR						zetscript::CScriptClassFactory::getInstance()->m_STACK_ELEMENT_STR			//	typeid(bool).name()
 
-#define DO_CAST									zs::CScriptClassFactory::getInstance()->doCast
-#define GET_IDX_CLASS_FROM_ITS_C_TYPE			zs::CScriptClassFactory::getInstance()->getIdxClassFromIts_C_Type
-#define INSTANCE_SCRIPT_VARIABLE_BY_IDX			zs::CScriptClassFactory::getInstance()->instanceScriptVariableByIdx
-#define GET_METAMETHOD							zs::CScriptClassFactory::getInstance()->getMetamethod
-#define IS_IDX_CLASS_INSTANCEOF					zs::CScriptClassFactory::getInstance()->isIdxClassInstanceOf
+#define DO_CAST									zetscript::CScriptClassFactory::getInstance()->doCast
+#define GET_IDX_CLASS_FROM_ITS_C_TYPE			zetscript::CScriptClassFactory::getInstance()->getIdxClassFromIts_C_Type
+#define INSTANCE_SCRIPT_VARIABLE_BY_IDX			zetscript::CScriptClassFactory::getInstance()->instanceScriptVariableByIdx
+#define GET_METAMETHOD							zetscript::CScriptClassFactory::getInstance()->getMetamethod
+#define IS_IDX_CLASS_INSTANCEOF					zetscript::CScriptClassFactory::getInstance()->isIdxClassInstanceOf
 
-namespace zs{
+namespace zetscript{
 
 	class CScriptClassFactory{
 

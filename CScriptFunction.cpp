@@ -4,7 +4,7 @@
  */
 #include "zetscript.h"
 
-namespace zs{
+namespace zetscript{
 
 	void CScriptFunction::buildLutScopeSymbols(){
 
