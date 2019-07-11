@@ -4,7 +4,6 @@
  */
 
 
-
 #pragma once
 
 #include        <stdlib.h>
@@ -59,9 +58,6 @@
 #include 		<type_traits>
 #include 		<mutex>
 
-#define ZETSCRIPT_MAJOR_VERSION 2
-#define ZETSCRIPT_MINOR_VERSION 0
-#define ZETSCRIPT_PATCH_VERSION 0
 
 // Prototypes & structs
 #ifdef __MEMMANAGER__
@@ -70,8 +66,15 @@
 
 #include "common.h"
 
+// utils
+#include "util/string.h"
+#include "util/io.h"
+#include "util/log.h"
+#include "util/rtti.h"
+#include "util/path.h"
+
 #include "exception.h"
-#include "functor.h"
+#include "CFunctionMemberPointer.h"
 
 #include "var/CScriptVariable.h"
 #include "var/CStringScriptVariable.h"
@@ -89,7 +92,9 @@
 #include "CEval.h"
 #include "CZetScript.h"
 
-
+#define ZETSCRIPT_MAJOR_VERSION 2
+#define ZETSCRIPT_MINOR_VERSION 0
+#define ZETSCRIPT_PATCH_VERSION 0
 
 
 

@@ -25,6 +25,19 @@
 namespace zetscript{
 
 
+
+
+
+	//typedef CASTNode *PASTNode;
+	class CScriptFunction;
+	class CScope;
+	class CScriptClass;
+	class CScriptVariable;
+	struct tSymbol;
+	struct tFunctionInfo;
+	struct tInfoVarScopeBlock;
+
+
 	enum NODE_TYPE
 		:unsigned char {
 		UNKNOWN_NODE = 0,
@@ -312,8 +325,8 @@ namespace zetscript{
 	#define MASK_VAR_PRIMITIVE_TYPES				((0x1<<BIT_TYPE_FUNCTION)-1)
 	#define GET_INS_PROPERTY_PRIMITIVE_TYPES(prop)	((prop)&MASK_VAR_PRIMITIVE_TYPES)
 
-	#define MASK_VAR_TYPE						((0x1<<MAX_BIT_VAR_TYPE)-1)
-	#define GET_INS_PROPERTY_VAR_TYPE(prop)		((prop)&MASK_VAR_TYPE)
+	#define MASK_VAR_TYPE							((0x1<<MAX_BIT_VAR_TYPE)-1)
+	#define GET_INS_PROPERTY_VAR_TYPE(prop)			((prop)&MASK_VAR_TYPE)
 
 	enum
 		:unsigned short {
@@ -440,290 +453,279 @@ namespace zetscript{
 
 	};
 
-	namespace zetscript{
+
+	typedef void  (* tPrintFunctionCallback)(const char *filename, int line, const  char  *string_text);
+
+	typedef intptr_t (*fntConversionType)(intptr_t);
+
+	/*typedef struct {
+		KEYWORD_TYPE id;
+		const char *str;
+		char * (*eval_fun)(const char *, int &, CScope *, PASTNode *);
+	} tKeywordInfo_Old;*/
 
 
-		//typedef CASTNode *PASTNode;
-		class CScriptFunction;
-		class CScope;
-		class CScriptClass;
-		class CScriptVariable;
-		struct tSymbol;
-		struct tFunctionInfo;
-		struct tInfoVarScopeBlock;
+	typedef struct {
+		DIRECTIVE_TYPE id;
+		const char *str;
+		//char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
+	} tDirectiveInfo;
 
-		typedef void  (* tPrintFunctionCallback)(const char *filename, int line, const  char  *string_text);
-
-		typedef intptr_t (*fntConversionType)(intptr_t);
-
-		/*typedef struct {
-			KEYWORD_TYPE id;
-			const char *str;
-			char * (*eval_fun)(const char *, int &, CScope *, PASTNode *);
-		} tKeywordInfo_Old;*/
-
-
-		typedef struct {
-			DIRECTIVE_TYPE id;
-			const char *str;
-			//char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
-		} tDirectiveInfo;
-
-		typedef struct {
-			__PUNCTUATOR_TYPE_OLD__ id;
-			const char *str;
-			bool (*eval_fun)(const char *);
-		} tPunctuatorInfo;
+	typedef struct {
+		__PUNCTUATOR_TYPE_OLD__ id;
+		const char *str;
+		bool (*eval_fun)(const char *);
+	} tPunctuatorInfo;
 
 
 
-		enum {
-			LEFT_NODE = 0, RIGHT_NODE
-		};
+	enum {
+		LEFT_NODE = 0, RIGHT_NODE
+	};
 
-		//-----------------------------
+	//-----------------------------
 
-		struct tSymbol {
-			//public:
-			std::string file;
+	struct tSymbol {
+		//public:
+		std::string file;
+		short line;
+		short idxScope;
+
+		std::string name;
+
+		char n_params;
+
+		tSymbol(){
+			file="";
+			line=-1;
+
+			idxScope = ZS_UNDEFINED_IDX;
+			name="";
+			n_params = NO_PARAMS_IS_VARIABLE;
+		}
+
+		/*tSymbol(const std::string & _name, char _n_params= NO_PARAMS_IS_VARIABLE){
+			file=ZS_UNDEFINED_IDX;
+			line=-1;
+			idxScope = ZS_UNDEFINED_IDX;
+
+			name=_name;
+			n_params=_n_params;
+		}*/
+
+		bool operator == (const tSymbol & s1){
+			return this->name == s1.name
+				  && this->idxScope == s1.idxScope
+				  && this->n_params == s1.n_params;
+		}
+
+		bool isFunction(){
+			return n_params != NO_PARAMS_IS_VARIABLE;
+		}
+
+		bool matchSymbol(const tSymbol & s1){
+			return this->name == s1.name
+				  && this->n_params == s1.n_params;
+		}
+		//std::string name; // var name
+		//int idxScopeVar;
+		//int idxAstNode; // ast node info.
+	};
+
+	//-----------------------------
+
+	typedef struct {
+		const char *op_str;
+		OP_CODE op_id;
+		int n_ops;
+	} tDefOperator;
+
+	/*
+	 enum ASM_PROPERTIES{
+
+	 };
+	 */
+	#pragma pack(push, 1)
+
+	struct tVariableSymbolInfo { // it can be a variable or function
+		intptr_t ref_ptr; // pointer ref just in case is C var/function
+		tSymbol *symbol; // symbol name
+		//short idxClass; //CScriptClass		 *class_info;
+		//short idxScope;
+
+		short idxSymbol; // idx of class function/variable symbol that keeps.
+
+		unsigned short properties; // SYMBOL_INFO_PROPERTY
+		std::string c_type; // In case is C, we need to know its type ...
+
+		tVariableSymbolInfo() {
+			properties = 0;
+			c_type = "";
+			//idxScope = -1;
+			ref_ptr = 0;
+			symbol=NULL;
+			//class_info=NULL;
+
+			//idxClass = -1;
+			//idxScopeVar=-1;
+			idxSymbol = -1;
+		}
+	};
+
+	struct tInstruction {
+		OP_CODE op_code;
+		unsigned char index_op1;	// left and right respectively
+		intptr_t index_op2;
+		unsigned short properties;
+		//short idxAstNode; // define ast node for give some information at run time
+		tInstruction(OP_CODE _op_code
+					 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
+					 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
+					 ,unsigned short _properties=0
+					 ){
+			op_code=_op_code;
+			index_op1=_index_op1;
+			index_op2=_index_op2;
+			properties=_properties;
+
+		}
+	};
+
+	struct tInstructionInfo {
+
+			const char * file;
 			short line;
-			short idxScope;
+			//tSymbol * _symbol;
+			std::string * symbol_name;
 
-			std::string name;
-
-			char n_params;
-
-			tSymbol(){
-				file="";
+			tInstructionInfo(){
+				symbol_name=NULL;
+				file="unknow_file";
 				line=-1;
-
-				idxScope = ZS_UNDEFINED_IDX;
-				name="";
-				n_params = NO_PARAMS_IS_VARIABLE;
 			}
 
-			/*tSymbol(const std::string & _name, char _n_params= NO_PARAMS_IS_VARIABLE){
-				file=ZS_UNDEFINED_IDX;
-				line=-1;
-				idxScope = ZS_UNDEFINED_IDX;
+			tInstructionInfo(const char * _file, short _line,std::string *_symbol_name){
 
-				name=_name;
-				n_params=_n_params;
-			}*/
-
-			bool operator == (const tSymbol & s1){
-				return this->name == s1.name
-					  && this->idxScope == s1.idxScope
-					  && this->n_params == s1.n_params;
+				file=_file;
+				line=_line;
+				symbol_name=_symbol_name;
 			}
+	};
 
-			bool isFunction(){
-				return n_params != NO_PARAMS_IS_VARIABLE;
-			}
+	struct tLinkSymbolFirstAccess{
 
-			bool matchSymbol(const tSymbol & s1){
-				return this->name == s1.name
-					  && this->n_params == s1.n_params;
-			}
-			//std::string name; // var name
-			//int idxScopeVar;
-			//int idxAstNode; // ast node info.
-		};
+		short idxScriptFunction;
+		short idxScope;
+		std::string value;
+		char n_params;
 
-		//-----------------------------
+		tLinkSymbolFirstAccess(){
 
-		typedef struct {
-			const char *op_str;
-			OP_CODE op_id;
-			int n_ops;
-		} tDefOperator;
+			idxScriptFunction=ZS_UNDEFINED_IDX;
+			idxScope=ZS_UNDEFINED_IDX;
+			value = "";
+			n_params=ZS_UNDEFINED_IDX;
+		}
 
-		/*
-		 enum ASM_PROPERTIES{
+		tLinkSymbolFirstAccess(
+				 int _idxScriptFunction
+				,short _idxScope
+				,const std::string & _value
+				,char _n_params=0
+				){
+			idxScriptFunction=_idxScriptFunction;
+			idxScope=_idxScope;
+			value=_value;
+			n_params=_n_params;
+		}
+	};
 
-		 };
-		 */
-		#pragma pack(push, 1)
+	struct tInstructionEval:tInstruction{
 
-		struct tVariableSymbolInfo { // it can be a variable or function
-			intptr_t ref_ptr; // pointer ref just in case is C var/function
-			tSymbol *symbol; // symbol name
-			//short idxClass; //CScriptClass		 *class_info;
-			//short idxScope;
+		tLinkSymbolFirstAccess 					 	linkSymbolFirstAccess;
+		tInstructionInfo 							instructionInfo;
 
-			short idxSymbol; // idx of class function/variable symbol that keeps.
+		tInstructionEval(OP_CODE _op_code
+					 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
+					 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
+					 ,unsigned short _properties=0
+					 ):tInstruction(_op_code,_index_op1,_index_op2,_properties){
+		}
+	};
 
-			unsigned short properties; // SYMBOL_INFO_PROPERTY
-			std::string c_type; // In case is C, we need to know its type ...
+	typedef tInstruction *PtrInstruction;
 
-			tVariableSymbolInfo() {
-				properties = 0;
-				c_type = "";
-				//idxScope = -1;
-				ref_ptr = 0;
-				symbol=NULL;
-				//class_info=NULL;
+	struct tStackElement {
+		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
+		void * stkValue; // operable value
+		void * varRef; // stack ref in case to assign new value.
+		unsigned short properties; // it tells its properties
 
-				//idxClass = -1;
-				//idxScopeVar=-1;
-				idxSymbol = -1;
-			}
-		};
+	};
 
-		struct tInstruction {
-			OP_CODE op_code;
-			unsigned char index_op1;	// left and right respectively
-			intptr_t index_op2;
-			unsigned short properties;
-			//short idxAstNode; // define ast node for give some information at run time
-			tInstruction(OP_CODE _op_code
-						 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
-						 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
-						 ,unsigned short _properties=0
-						 ){
-				op_code=_op_code;
-				index_op1=_index_op1;
-				index_op2=_index_op2;
-				properties=_properties;
+	typedef tStackElement tInfoConstantValue;
 
-			}
-		};
+	struct tFunctionSymbol {
 
-		struct tInstructionInfo {
+		tStackElement object; // created object. undefined by default.
+		intptr_t  proxy_ptr; // for proxy functions...
+		//tFunctionSymbol *super_function; // only for functions ...
+		std::string key_value;
+		//short idxAstNode; // in case there's ast node...
 
-				const char * file;
-				short line;
-				//tSymbol * _symbol;
-				std::string * symbol_name;
+		tFunctionSymbol() {
+			proxy_ptr = 0;
+			object= {
 
-				tInstructionInfo(){
-					symbol_name=NULL;
-					file="unknow_file";
-					line=-1;
-				}
+				0,// 0 value
+				0,// no var ref related
+				STK_PROPERTY_TYPE_UNDEFINED|STK_PROPERTY_IS_C_VAR // undefined and c ?.
+			};
+			key_value="";
 
-				tInstructionInfo(const char * _file, short _line,std::string *_symbol_name){
+			//idxAstNode = ZS_UNDEFINED_IDX;
+			//super_function = NULL;
+		}
 
-					file=_file;
-					line=_line;
-					symbol_name=_symbol_name;
-				}
-		};
+	};
 
-		struct tLinkSymbolFirstAccess{
-
-			short idxScriptFunction;
-			short idxScope;
-			std::string value;
-			char n_params;
-
-			tLinkSymbolFirstAccess(){
-
-				idxScriptFunction=ZS_UNDEFINED_IDX;
-				idxScope=ZS_UNDEFINED_IDX;
-				value = "";
-				n_params=ZS_UNDEFINED_IDX;
-			}
-
-			tLinkSymbolFirstAccess(
-					 int _idxScriptFunction
-					,short _idxScope
-					,const std::string & _value
-					,char _n_params=0
-					){
-				idxScriptFunction=_idxScriptFunction;
-				idxScope=_idxScope;
-				value=_value;
-				n_params=_n_params;
-			}
-		};
-
-		struct tInstructionEval:tInstruction{
-
-			tLinkSymbolFirstAccess 					 	linkSymbolFirstAccess;
-			tInstructionInfo 							instructionInfo;
-
-			tInstructionEval(OP_CODE _op_code
-						 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
-						 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
-						 ,unsigned short _properties=0
-						 ):tInstruction(_op_code,_index_op1,_index_op2,_properties){
-			}
-		};
-
-		typedef tInstruction *PtrInstruction;
-
-		struct tStackElement {
-			//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
-			void * stkValue; // operable value
-			void * varRef; // stack ref in case to assign new value.
-			unsigned short properties; // it tells its properties
-
-		};
-
-		typedef tStackElement tInfoConstantValue;
-
-		struct tFunctionSymbol {
-
-			tStackElement object; // created object. undefined by default.
-			intptr_t  proxy_ptr; // for proxy functions...
-			//tFunctionSymbol *super_function; // only for functions ...
-			std::string key_value;
-			//short idxAstNode; // in case there's ast node...
-
-			tFunctionSymbol() {
-				proxy_ptr = 0;
-				object= {
-
-					0,// 0 value
-					0,// no var ref related
-					STK_PROPERTY_TYPE_UNDEFINED|STK_PROPERTY_IS_C_VAR // undefined and c ?.
-				};
-				key_value="";
-
-				//idxAstNode = ZS_UNDEFINED_IDX;
-				//super_function = NULL;
-			}
-
-		};
-
-		//-------------------------------------------------------
+	//-------------------------------------------------------
 
 
-		/**
-		 * Scope register
-		 */
-		struct tInfoVarScopeBlock {
-			int *var_index;
-			char n_var_index;
-			short idxScope;
-		};
+	/**
+	 * Scope register
+	 */
+	struct tInfoVarScopeBlock {
+		int *var_index;
+		char n_var_index;
+		short idxScope;
+	};
 
-		typedef struct _tInfoSharedPointer *PInfoSharedPointer;
+	typedef struct _tInfoSharedPointer *PInfoSharedPointer;
 
-		typedef struct _tInfoSharedPointer {
-			CScriptVariable *shared_ptr;
-			unsigned char n_shares;
+	typedef struct _tInfoSharedPointer {
+		CScriptVariable *shared_ptr;
+		unsigned char n_shares;
 
-			//short idx_0_shares;
-			//PInfoSharedPointer next;
-		} tInfoSharedPointer;
+		//short idx_0_shares;
+		//PInfoSharedPointer next;
+	} tInfoSharedPointer;
 
-		typedef struct _tNode * PInfoSharedPointerNode;
-		typedef struct _tNode {
-			tInfoSharedPointer data;
-			unsigned short currentStack;
-			PInfoSharedPointerNode previous, next;
-		} tInfoSharedPointerNode;
+	typedef struct _tNode * PInfoSharedPointerNode;
+	typedef struct _tNode {
+		tInfoSharedPointer data;
+		unsigned short currentStack;
+		PInfoSharedPointerNode previous, next;
+	} tInfoSharedPointerNode;
 
-		typedef struct{
-			int idx_type;
-			std::string arg_name; //arg c++ type or arg name
-		}tArgumentInfo;
+	typedef struct{
+		int idx_type;
+		std::string arg_name; //arg c++ type or arg name
+	}tArgumentInfo;
 
-		#pragma pack(pop)
+	#pragma pack(pop)
 
-	}
+
 
 
 }

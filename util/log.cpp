@@ -20,7 +20,7 @@ namespace zetscript{
 			}
 
 			if (file != NULL)
-				filename = zetscript::io::get_filename(file);
+				filename = path::get_filename(file);
 
 			char  text[4096] = { 0 };
 

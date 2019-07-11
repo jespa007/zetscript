@@ -7,9 +7,6 @@ namespace zetscript{
 	char error_filename[512];
 	char error_description[1024];
 	const char *error_type="NA";
-	CVirtualMachine *main_vm=NULL;
-	std::map<std::string,tInfoConstantValue *> 	 *constant_pool;
-
 
 
 	void  write_error(const char *filename, int line, const  char  *input_text, ...){
@@ -51,21 +48,19 @@ namespace zetscript{
 
 	void CZetScript::clear(){
 
-		if(!__init__) {init();}
+		_virtual_machine->clearGlobalVars();
 
-		main_vm->clearGlobalVars();
-
-		CScriptFunction * main_function = MAIN_FUNCTION;
+		_main_function = this->_script_function_factory->getScriptFunction(IDX_MAIN_FUNCTION);
 
 		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
-			f < main_function->m_function.size()
+			f < _main_function->m_function.size()
 			;) {
 			// get function info
-			CScriptFunction * local_function = main_function->m_function[f];
+			CScriptFunction * local_function = _main_function->m_function[f];
 
 			if ((local_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
-				main_function->m_function.erase(main_function->m_function.begin() + f);
+				_main_function->m_function.erase(_main_function->m_function.begin() + f);
 			}
 			else {
 				f++;
@@ -75,11 +70,11 @@ namespace zetscript{
 
 		// remove c variables ...
 		for (unsigned v = 0;
-			v < main_function->m_variable.size(); ) {
+			v < _main_function->m_variable.size(); ) {
 
-			if ((main_function->m_variable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+			if ((_main_function->m_variable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
 
-				main_function->m_variable.erase(main_function->m_variable.begin() + v);
+				_main_function->m_variable.erase(_main_function->m_variable.begin() + v);
 
 			}
 			else {
@@ -88,148 +83,137 @@ namespace zetscript{
 		}
 
 		// remove scope vars...
-		SCOPE_FACTORY->clear();
-		SCRIPT_FUNCTION_FACTORY->clear();
-		SCRIPT_CLASS_FACTORY->clear();
+		_scope_factory->clear();
+		_script_function_factory->clear();
+		_script_class_factory->clear();
 
 	}
 
 
 	CZetScript::CZetScript(){
 
-		CScopeFactory::getInstance();
-		CNativeFunctionFactory::getInstance();
-		CScriptFunctionFactory::getInstance();
-		CScriptClassFactory::getInstance();
-		CEval::getInstance();
+		_scope_factory = new CScopeFactory();
+		_native_function_factory = new CNativeFunctionFactory();
+		_script_function_factory= new CScriptFunctionFactory();
+		_script_class_factory = new CScriptClassFactory();
+		_eval = new CEval();
 
-		main_vm = new CVirtualMachine();
+		_virtual_machine = new CVirtualMachine();
 
+		_main_object=NULL;
+		_main_function=NULL;
+
+		_eval_int=0;
+		_eval_float=0;
+		_eval_string="";
+		_eval_bool = false;
 
 	}
 
 
-	int CZetScript::evalIntValue(const std::string & str_to_eval){
+	int * CZetScript::evalIntValue(const std::string & str_to_eval){
 
 
-		try{
-			evalString(str_to_eval);
-		}
-		catch(exception::script_error & error){
-			THROW_EXCEPTION(error);
+		if(!evalString(str_to_eval)){
+			return NULL;
 		}
 
-		tStackElement *se=CURRENT_VM->getLastStackValue();
+		tStackElement *se=_virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
 			if(se->properties & STK_PROPERTY_TYPE_INTEGER){
 
-				return (int)((intptr_t)se->stkValue);
+				_eval_int=(int)((intptr_t)se->stkValue);
+				return &_eval_int;
 			}
 			else{
-				THROW_RUNTIME_ERROR(string_utils::sformat("evalIntValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(string::sformat("evalIntValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
-		return 0;
+		return NULL;
 
 
 	}
 
-	bool CZetScript::evalBoolValue(const std::string & str_to_eval){
+	bool * CZetScript::evalBoolValue(const std::string & str_to_eval){
 
-
-
-		try{
-			zetscript::evalString(str_to_eval);
-		}
-		catch(exception::script_error & error){
-			THROW_EXCEPTION(error);
-			return false;
+		if(!evalString(str_to_eval)){
+			return NULL;
 		}
 
-		tStackElement *se=CURRENT_VM->getLastStackValue();
+		tStackElement *se=_virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
 			if(se->properties & STK_PROPERTY_TYPE_BOOLEAN){
-				return (bool)((intptr_t)se->stkValue);
+				_eval_bool=(bool)((intptr_t)se->stkValue);
+				return &_eval_bool;
 
 			}else{
-				THROW_RUNTIME_ERROR(string_utils::sformat("evalBoolValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(string::sformat("evalBoolValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
-		return false;
+		return NULL;
 	}
 
-	float CZetScript::evalFloatValue(const std::string & str_to_eval){
+	float * CZetScript::evalFloatValue(const std::string & str_to_eval){
 
-
-		try{
-			evalString(str_to_eval);
-		}
-		catch(exception::script_error & error){
-			THROW_EXCEPTION(error);
+		if(!evalString(str_to_eval)){
+			return NULL;
 		}
 
-		tStackElement *se=CURRENT_VM->getLastStackValue();
+		tStackElement *se=_virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
 			if(se->properties & STK_PROPERTY_TYPE_NUMBER){
-				float *f = ((float *)(&se->stkValue));
-				return *f;
+				_eval_float = *((float *)(&se->stkValue));
+				return &_eval_float;
 			}
 			else{
-				string_utils::sformat("evalFloatValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				THROW_RUNTIME_ERROR(string::sformat("evalFloatValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 
 			}
 		}
 
 
-		return 0.0f;
+		return NULL;
 	}
 
-	std::string CZetScript::evalStringValue(const std::string & str_to_eval){
+	std::string * CZetScript::evalStringValue(const std::string & str_to_eval){
 
-		std::string value="---";
 
-		try{
-			zetscript::evalString(str_to_eval);
-		}
-		catch(exception::script_error & error){
-			THROW_EXCEPTION(error);
-			return "";
+		if(!evalString(str_to_eval)){
+			return NULL;
 		}
 
-		tStackElement *se=CURRENT_VM->getLastStackValue();
+		tStackElement *se=_virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
 			if(se->properties & STK_PROPERTY_TYPE_STRING){
 
-				value = ((const char *)se->stkValue);
+				_eval_string = ((const char *)se->stkValue);
+				return &_eval_string;
 			}
 			else{
-				string_utils::sformat("evalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				string::sformat("evalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 			}
 		}
 
-		return value;
+		return NULL;
 	}
 
 
 	void CZetScript::execute(){
 
-		if(!__init__) {THROW_RUNTIME_ERROR ("ZetScript not initialized"); return;}
-		//ZS_CLEAR_ERROR_MSG();
-
 		bool error=false;
 
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		main_vm->execute(MAIN_FUNCTION, NULL,error,NO_PARAMS);
+		_virtual_machine->execute(_main_function, NULL,error,NO_PARAMS);
 
 		if(error){
 			THROW_SCRIPT_ERROR();
@@ -238,8 +222,6 @@ namespace zetscript{
 
 	bool CZetScript::evalString(const std::string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
 
-
-		if(!__init__) {init();}
 
 		if(!CEval::evalString(expression)){
 			return false;
@@ -258,18 +240,12 @@ namespace zetscript{
 
 	bool CZetScript::evalFile(const std::string & filename, bool exec_vm, bool show_bytecode){
 
-		if(!__init__) {init();}
-
 		char *buf_tmp=NULL;
 
 		bool status = false;
 
-		try{
-			if(!CEval::evalFile(filename)){
-				return false;
-			}
-		}catch(exception::script_error & e){
-			THROW_EXCEPTION(e);
+
+		if(!CEval::evalFile(filename)){
 			return false;
 		}
 
@@ -282,26 +258,25 @@ namespace zetscript{
 		}
 
 		return true;
-
 	}
 
 
 	CZetScript::~CZetScript(){
 
-		CURRENT_VM->clearGlobalVars();
+		_virtual_machine->clearGlobalVars();
 
-		// clear globals...
-		CScopeFactory::destroySingleton();
-		CScriptFunctionFactory::destroySingleton();
-		CScriptClassFactory::destroySingleton();
-		CNativeFunctionFactory::destroySingleton();
-		CEval::destroySingleton();
+		// clear objects...
+		delete _scope_factory;
+		delete _script_function_factory;
+		delete _script_class_factory;
+		delete _native_function_factory;
+		delete _eval;
 
-		m_mainObject = NULL;
-		m_mainFunction = NULL;
-		show_filename_on_error=true;
-		__init__ = false;
-		main_vm=NULL;
+		_main_object = NULL;
+		_main_function = NULL;
+
+
+		_virtual_machine=NULL;
 
 	}
 

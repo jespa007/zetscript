@@ -1,5 +1,5 @@
 namespace zetscript{
-	namespace string_utils{
+	namespace string{
 
 		enum{
 			MAX_STRING_BUFFERS=256,
@@ -21,8 +21,6 @@ namespace zetscript{
 		char  _sformat_buffer[4096] = { 0 };
 
 		const char *  sformat(const  char  *input_text, ...){
-
-
 			va_list  ap;
 			va_start(ap,  input_text);
 			vsprintf(_sformat_buffer,  input_text,  ap);
@@ -30,9 +28,6 @@ namespace zetscript{
 
 			return _sformat_buffer;
 		}
-
-
-
 
 		int *  parse_intenger(const std::string & val){
 
@@ -48,7 +43,6 @@ namespace zetscript{
 				numberValue=strtol(binary.c_str(), NULL, 2);
 			}
 			else{
-
 				return NULL;
 			}
 
@@ -90,7 +84,6 @@ namespace zetscript{
 			if(ok){
 				n=new float;
 				*n = numberValue;
-
 			}
 
 			// TODO: develop exception handler.
@@ -229,7 +222,6 @@ namespace zetscript{
 
 		bool is_binary(const std::string & test_str_number){
 
-
 			char *start_p=(char *)test_str_number.c_str();
 			char *aux_p =start_p;
 
@@ -242,7 +234,6 @@ namespace zetscript{
 			}
 
 			return (*aux_p=='b' || *aux_p=='B') && (aux_p > start_p);
-
 		}
 
 		int is_number(const std::string & test_str_number){
@@ -324,8 +315,6 @@ namespace zetscript{
 			while((found = str_input.find(toReplace)) != std::string::npos){
 				str_input = (str_input.replace(found, toReplace.length(), replaceWith));
 			}
-
-
 		}
 
 		std::string  remove(std::string & str_old, char ch_to_remove){
@@ -336,7 +325,6 @@ namespace zetscript{
 				if (str_old[i] != ch_to_remove)
 						str_new+=str_old[i];
 			}
-
 			return str_new;
 		}
 

@@ -18,8 +18,8 @@ namespace zetscript{
 
 		public:
 
-			static CScriptFunctionFactory * getInstance();
-			static void destroySingleton();
+
+			CScriptFunctionFactory();
 
 			/**
 			 * Set/Get CScriptClass Node by its idx, regarding current state.
@@ -44,14 +44,15 @@ namespace zetscript{
 
 			void clear();
 
+			~CScriptFunctionFactory();
+
 		private:
 
 			static CScriptFunctionFactory *script_function_factory_singleton;
 
 			std::vector<CScriptFunction *> 	vec_script_function_node;
 
-			CScriptFunctionFactory();
-			~CScriptFunctionFactory();
+
 
 	};
 

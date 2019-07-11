@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CNativeFunctionFactory.h"
-#include "helper/RegisterFunctionHelper.h"
+#include "helper/register_function.h"
 
 #define MAX_REGISTER_CLASSES 100
 
@@ -10,7 +10,7 @@
 #define ZS_INVALID_CLASS						((unsigned char)ZS_UNDEFINED_IDX)
 
 
-#define CLASS_C_BASEOF							zetscript::CScriptClassFactory::getInstance()->class_C_BaseOfInt //<o>(s,&f)
+#define CLASS_C_BASEOF							zetscript::CScriptClassFactory::getInstance()->class_C_BaseOf //<o>(s,&f)
 
 
 #define NEW_CLASS_VAR_BY_IDX(idx) 				(zetscript::CScriptClassFactory::getInstance()->instanceScriptVariableByIdx(idx))
@@ -69,8 +69,6 @@ namespace zetscript{
 			}tRegisterFunction;
 
 
-			static CScriptClassFactory * getInstance();
-			static void destroySingleton();
 
 			static void 				setFilenameLine(const char *file, short line);
 			static tStackElement 		C_REF_InfoVariable_2_StackElement(tVariableSymbolInfo *ir_var, void *ptr_variable);
@@ -92,12 +90,14 @@ namespace zetscript{
 			std::string  m_STACK_ELEMENT_STR;		//	typeid(bool).name()
 
 
+			CScriptClassFactory();
+
 			tPrimitiveType *getPrimitiveTypeFromStr(const std::string & str);
 			 std::map<unsigned char, std::map<unsigned char, fntConversionType>> *  getMapTypeConversion();
 
 
 
-
+			 unsigned char getIdx_C_RegisteredClass(const std::string & str_classPtr);
 			 unsigned char				getIdxClassFromIts_C_Type(const std::string & s);
 			 void 						setPrintOutCallback(void (*)(const char *));
 			 const char * 				getMetamethod(METAMETHOD_OPERATOR op);
@@ -134,6 +134,8 @@ namespace zetscript{
 
 
 
+			~CScriptClassFactory();
+
 
 		private:
 
@@ -166,9 +168,7 @@ namespace zetscript{
 
 			void setup();
 
-			CScriptClassFactory();
 
-			~CScriptClassFactory();
 
 	};
 

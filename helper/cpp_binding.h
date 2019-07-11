@@ -253,7 +253,7 @@ namespace zetscript{
 
 
 					if(!stk_2_var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
+						THROW_RUNTIME_ERROR(stringsformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 			}
@@ -328,7 +328,7 @@ namespace zetscript{
 					}
 
 					if(!stk_2_var(&stk,idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
+						THROW_RUNTIME_ERROR(stringsformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 			}
@@ -414,7 +414,7 @@ namespace zetscript{
 					}
 
 					if(!stk_2_var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
+						THROW_RUNTIME_ERROR(stringsformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 			}
@@ -504,7 +504,7 @@ namespace zetscript{
 				}
 
 				if(!stk_2_var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-					THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
+					THROW_RUNTIME_ERROR(stringsformat("run-time error converting result value:%s",error_str.c_str()));
 				}
 				return ret_value;
 			}
@@ -601,7 +601,7 @@ namespace zetscript{
 					}
 
 					if(!stk_2_var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
+						THROW_RUNTIME_ERROR(stringsformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 
@@ -708,7 +708,7 @@ namespace zetscript{
 				}
 
 				if(!stk_2_var(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-					THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
+					THROW_RUNTIME_ERROR(stringsformat("run-time error converting result value:%s",error_str.c_str()));
 				}
 				return ret_value;
 			}
@@ -817,7 +817,7 @@ namespace zetscript{
 					}
 
 					if(!stk_2_var(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(string_utils::sformat("run-time error converting result value:%s",error_str.c_str()));
+						THROW_RUNTIME_ERROR(stringsformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 
@@ -854,7 +854,7 @@ namespace zetscript{
 		CScriptFunction * m_mainFunctionInfo = MAIN_FUNCTION;
 
 		if(m_mainFunctionInfo == NULL){
-			string_utils::sformat("m_mainFunctionInfo is not initialized");
+			stringsformat("m_mainFunctionInfo is not initialized");
 			return false;
 		}
 
@@ -880,14 +880,14 @@ namespace zetscript{
 								}
 							}
 							else{
-								string_utils::sformat("cannot access i (%i)",j);
+								stringsformat("cannot access i (%i)",j);
 								return false;
 							}
 						}
 					}
 
 					if((*calling_obj) == NULL){
-						string_utils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						stringsformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return false;
 					}
 
@@ -899,12 +899,12 @@ namespace zetscript{
 						if(se->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							*calling_obj=(CScriptVariable *)se->varRef;
 						}else{
-							string_utils::sformat("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
+							stringsformat("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
 							return false;
 						}
 					}
 					else{
-						string_utils::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						stringsformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return false;
 					}
 				}
@@ -917,7 +917,7 @@ namespace zetscript{
 				}
 			}else{
 
-				string_utils::sformat("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
+				stringsformat("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
 				return false;
 			}
 
@@ -934,7 +934,7 @@ namespace zetscript{
 		}
 
 		if(*fun_obj==NULL){
-			THROW_RUNTIME_ERROR(string_utils::sformat("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
+			THROW_RUNTIME_ERROR(stringsformat("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
 			return false;
 		}
 
@@ -965,13 +965,13 @@ namespace zetscript{
 
 			// 2. check valid parameters ...
 			if((idx_return_type=GET_IDX_CLASS_FROM_ITS_C_TYPE(return_type)) == -1){
-				THROW_RUNTIME_ERROR(string_utils::sformat("Return type \"%s\" for bind function not registered",demangle(return_type).c_str()));
+				THROW_RUNTIME_ERROR(stringsformat("Return type \"%s\" for bind function not registered",demangle(return_type).c_str()));
 				return NULL;
 			}
 
 			for(unsigned int i = 0; i < m_arg.size(); i++){
 				if(GET_IDX_CLASS_FROM_ITS_C_TYPE(m_arg[i])==-1){
-					THROW_RUNTIME_ERROR(string_utils::sformat("Argument (%i) type \"%s\" for bind function not registered",i,demangle(m_arg[i]).c_str()));
+					THROW_RUNTIME_ERROR(stringsformat("Argument (%i) type \"%s\" for bind function not registered",i,demangle(m_arg[i]).c_str()));
 					return NULL;
 				}
 			}

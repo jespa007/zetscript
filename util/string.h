@@ -4,7 +4,7 @@
 #define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
 
 namespace zetscript{
-	namespace string_utils{
+	namespace string{
 
 		 bool  * parse_boolean(const std::string & );
 		 int   * parse_intenger(const std::string & );
