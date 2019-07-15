@@ -87,7 +87,6 @@
 #include "CScriptFunction.h"
 #include "CScriptFunctionFactory.h"
 #include "CScriptClass.h"
-#include "CScriptClassFactory.h"
 #include "CVirtualMachine.h"
 #include "CEval.h"
 #include "CZetScript.h"

@@ -179,7 +179,6 @@ ELSE()
 		CNativeFunction.cpp
 		CScriptClassBase.cpp
 		CScriptClass.cpp
-		CScriptClassFactory.cpp
 		CScriptFunction.cpp
 		CScriptFunctionFactory.cpp
 		
@@ -208,7 +207,7 @@ ELSE()
 	SET(
 		HS
 		
-		eval/CEval.h
+		CEval.h
 		
 		var/CStringScriptVariable.h
 		var/CVectorScriptVariable.h
@@ -216,20 +215,23 @@ ELSE()
 		var/CStructScriptVariable.h
 		var/CScriptVariable.h
 		
-		helper/RegisterFunctionHelper.h
-		helper/CppBindingHelper.h
+		helper/register_function.h
+		helper/cpp_binding.h
 		Common.h
 		CScope.h
-		CCommonClassFunctionData.h
+		CScopeFactory.h
+		CScriptClassBase.h
 		CScriptClass.h
 		CScriptFunction.h
+		CScriptFunctionFactory.h
 		CVirtualMachine.h
-		CNativeFunction.h
+		CNativeFunctionFactory.h
 		
 		CZetScript.h
 		zetscript_exception.h
-		zetscript_utils.h
-		CVirtualMachine.hxx
+		
+		CVirtualMachine.inc
+		CZetScript.inc
 	)
 	
 	

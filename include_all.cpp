@@ -22,7 +22,6 @@
 #include		"CNativeFunctionFactory.cpp"
 #include		"CScriptClassBase.cpp"
 #include		"CScriptClass.cpp"
-#include		"CScriptClassFactory.cpp"
 #include		"CScriptFunction.cpp"
 #include		"CScriptFunctionFactory.cpp"
 
