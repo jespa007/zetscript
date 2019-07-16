@@ -465,7 +465,7 @@ namespace zetscript{
 
 
 
-	CVirtualMachine::CVirtualMachine(){
+	CVirtualMachine::CVirtualMachine(CZetScript *zs){
 
 		//-----------------------------------------------------------
 		// set memory manager
@@ -515,7 +515,7 @@ namespace zetscript{
 		current_foreach=NULL;
 		current_call_c_function = NULL;
 		n_globals=0;
-
+		_zs=zs;
 
 	}
 
@@ -535,22 +535,22 @@ namespace zetscript{
 
 	//============================================================================================================================================
 	// POINTER MANANAGER
-	std::string stk_C_TypeStr(const tStackElement & stk_v){
+	std::string CZetScript::stk_C_TypeStr(const tStackElement & stk_v){
 		if(stk_v.properties & STK_PROPERTY_TYPE_INTEGER){
-			return demangle(typeid(int).name());
+			return rtti::demangle(typeid(int).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_NUMBER){
-			return demangle(typeid(float).name());
+			return rtti::demangle(typeid(float).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_BOOLEAN){
-			return demangle(typeid(bool).name());
+			return rtti::demangle(typeid(bool).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_STRING){
-			return demangle(typeid(std::string).name());
+			return rtti::demangle(typeid(std::string).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 
 			CScriptClass *c = GET_SCRIPT_CLASS(((CScriptVariable *)(stk_v.varRef))->idxClass);
 
 			if(c!=NULL){
-				return demangle(c->classPtrType);
+				return rtti::demangle(c->classPtrType);
 			}
 		}
 		return "unknow";
@@ -577,7 +577,7 @@ namespace zetscript{
 		bool move_to_shared_list=*n_shares==0;
 
 		if(*n_shares >= MAX_SHARES_VARIABLE){
-			THROW_RUNTIME_ERROR(stringsformat("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE));
+			THROW_RUNTIME_ERROR(string::sformat("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE));
 			return false;
 
 		}
@@ -685,7 +685,7 @@ namespace zetscript{
 
 			currentArg=&ptrArg[i];
 
-			if(!stk_2_var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
+			if(!zs->stk_2_var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
 				write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
 																irfs->symbol_info.symbol->name.c_str(),
 																i,
@@ -966,7 +966,7 @@ namespace zetscript{
 		destroyCache();
 
 		main_function_object = MAIN_FUNCTION;
-		std::vector<CScriptFunction *> *vec_script_function_object_node_aux=CScriptFunctionFactory::getInstance()->getVectorScriptFunctionNode();
+		std::vector<CScriptFunction *> *vec_script_function_object_node_aux=_script_function_factory->getVectorScriptFunctionNode();
 		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
 		vec_script_function_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
 		for(unsigned i=0; i < size_vec_script_function_object_node; i++){

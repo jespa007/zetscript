@@ -2,12 +2,10 @@
 
 
 
-#define SCRIPT_FUNCTION_FACTORY									zetscript::CScriptFunctionFactory::getInstance()
 
-#define NEW_SCRIPT_FUNCTION										zetscript::CScriptFunctionFactory::getInstance()->newScriptFunction
-#define GET_SCRIPT_FUNCTION(idx) 								zetscript::CScriptFunctionFactory::getInstance()->getScriptFunction(idx)
+
 #define IDX_MAIN_FUNCTION										0
-#define MAIN_FUNCTION											GET_SCRIPT_FUNCTION(IDX_MAIN_FUNCTION)
+
 
 
 namespace zetscript{

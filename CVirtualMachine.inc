@@ -349,7 +349,7 @@ namespace zetscript{
 														(	arg_idx_type==IDX_TYPE_STRING_PTR_C && currentArg->varRef!=0)
 													  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
 											}else if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */
-												all_check=IS_IDX_CLASS_INSTANCEOF(c_class->idxClass,arg_idx_type);
+												all_check=IS_IDX_CLASS_INSTANCEOF(zs,c_class->idxClass,arg_idx_type);
 											}else{ /* fail ... */
 												all_check=false;
 											}
@@ -398,16 +398,16 @@ namespace zetscript{
 						aux_string="unknow";
 						break;
 					case STK_PROPERTY_TYPE_INTEGER:
-						aux_string=INT_TYPE_STR;
+						aux_string=zs->INT_TYPE_STR;
 						break;
 					case STK_PROPERTY_TYPE_NUMBER:
-						aux_string=FLOAT_TYPE_STR;
+						aux_string=zs->FLOAT_TYPE_STR;
 						break;
 					case STK_PROPERTY_TYPE_BOOLEAN:
-						aux_string=BOOL_TYPE_STR;
+						aux_string=zs->BOOL_TYPE_STR;
 						break;
 					case STK_PROPERTY_TYPE_STRING:
-						aux_string=STRING_PTR_TYPE_STR;
+						aux_string=zs->STRING_PTR_TYPE_STR;
 						if(currentArg->varRef==NULL){ /* is constant char */
 							aux_string=	CONST_CHAR_PTR_TYPE_STR;
 						}
@@ -419,7 +419,7 @@ namespace zetscript{
 						aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
 						break;
 					}
-					args_str+=demangle(aux_string);
+					args_str+=rtti::demangle(aux_string);
 
 					if(var_type == STK_PROPERTY_TYPE_INTEGER
 					||var_type == STK_PROPERTY_TYPE_NUMBER
@@ -456,9 +456,9 @@ namespace zetscript{
 							}
 
 							if(irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF){
-								str_candidates+=demangle(GET_IDX_2_CLASS_C_STR(irfs->m_arg[a].idx_type));
+								str_candidates+=rtti::demangle(GET_IDX_2_CLASS_C_STR(zs,irfs->m_arg[a].idx_type));
 							}else{ /* typic var ... */
-								str_candidates+="arg"+string_utilsint_2_string(a+1);
+								str_candidates+="arg"+string::int_2_string(a+1);
 							}
 						}
 						str_candidates+=");n";

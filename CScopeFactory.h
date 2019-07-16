@@ -7,13 +7,6 @@
 #define IDX_ANONYMOUSE_SCOPE			-3
 
 
-#define GET_SCOPE(idx) 				zetscript::CScopeFactory::getInstance()->getScope(idx)
-#define MAIN_SCOPE						zetscript::CScopeFactory::getInstance()->getScope(IDX_GLOBAL_SCOPE)
-
-#define NEW_SCOPE						(zetscript::CScopeFactory::getInstance()->newScope)
-
-// if 0 is in main <> 0, else.
-#define SCOPE_IN_MAIN_CLASS(idx)		((zetscript::CScopeFactory::getInstance()->getScope(idx))->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
 
 namespace zetscript{
 

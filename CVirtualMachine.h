@@ -23,6 +23,7 @@ namespace zetscript{
 	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const std::vector<CScriptVariable *> & param)>
 
 	class CScriptFunction;
+	class CZetScript;
 	class  CVirtualMachine{
 
 	//===================================================================================================
@@ -46,6 +47,7 @@ namespace zetscript{
 		int idxCurrentStack;
 		int idx_laststatment;
 		const CScriptFunction *current_call_c_function;
+		CZetScript *_zs;
 
 	//===================================================================================================
 

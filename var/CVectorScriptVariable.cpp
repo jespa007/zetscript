@@ -49,7 +49,7 @@ namespace zetscript{
 
 		// update n_refs +1
 		if(v->properties&STK_PROPERTY_TYPE_SCRIPTVAR){
-			if(!CURRENT_VM->sharePointer(((CScriptVariable *)(v->varRef))->ptr_shared_pointer_node)){
+			if(!info_function_new->virtual_machine->sharePointer(((CScriptVariable *)(v->varRef))->ptr_shared_pointer_node)){
 				return;
 			}
 		}

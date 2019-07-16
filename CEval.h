@@ -17,6 +17,8 @@ namespace zetscript{
 
 	public:
 
+		CEval(CZetScript *zs);
+
 		//===================================================================================================
 		//
 		// PRINT ASM INFO
@@ -34,10 +36,7 @@ namespace zetscript{
 		 static bool evalString(const std::string & expression);
 		 static bool evalFile(const std::string & filename);
 
-
-		 static CEval * getInstance();
-
-		 static void destroySingleton();
+		 ~CEval();
 
 	private:
 
@@ -246,7 +245,7 @@ namespace zetscript{
 			//unsigned char *data;
 		} tInfoParsedSource;
 
-		static CEval *eval_singleton;
+		 CZetScript * _zs;
 
 
 		// singleton
@@ -408,7 +407,7 @@ namespace zetscript{
 		 char * eval(const char *s, bool & error);
 		 char * eval_Recursive(const char *s, int & line, CScope *scope_info, bool & error);
 
-		 ~CEval();
+
 
 
 	};

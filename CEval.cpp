@@ -737,10 +737,11 @@ namespace zetscript{
 		// init variables...
 	}
 
-	CEval::CEval(){
+	CEval::CEval(CZetScript *zs){
 		CURRENT_PARSING_FILE_IDX=-1;
 		CURRENT_PARSING_FILE_STR="";
 		pCurrentFunctionInfo=NULL;
+		_zs=zs;
 	}
 
 	bool   CEval::endExpression(const char * s){

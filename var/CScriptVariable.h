@@ -11,13 +11,10 @@
 
 namespace zetscript{
 
+class CScriptClass;
 	class CScriptClass;
 
 	class  CScriptVariable{//: public CVariable{
-	protected:
-		tStackElement this_variable;
-
-		tStackElement * exist(const char *c);
 
 	public:
 
@@ -38,7 +35,7 @@ namespace zetscript{
 		void *m_value;
 
 		// Construct ...
-		CScriptVariable();
+		CScriptVariable(CZetScript *zs);
 
 		/**
 		 * info_registered_class: scriptclass info
@@ -88,6 +85,11 @@ namespace zetscript{
 		virtual ~CScriptVariable();
 
 	protected:
+
+
+		tStackElement this_variable;
+		tStackElement * exist(const char *c);
+
 
 		/**
 		 * This variable tells whether is pointer function or not.
