@@ -2,12 +2,17 @@
 
 namespace zetscript{
 
+	class CScriptFunctionFactory;
 	class CZetScript;
 	class CScriptClassBase { // script function is shared by class and function ...
 
 
 
 	public:
+
+		CZetScript *zs;
+		CScopeFactory *scope_factory;
+		CScriptFunctionFactory *script_function_factory;
 
 		bool searchVarFunctionSymbol( std::string symbol_to_find,tInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find=-1);
 
@@ -20,7 +25,7 @@ namespace zetscript{
 
 		unsigned char idxClass; // wich idxClass class itself or function belongs to...
 
-		CScriptClassBase(unsigned char _idxClass);
+		CScriptClassBase(unsigned char _idxClass, CZetScript *_zs);
 
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.

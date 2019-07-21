@@ -6,7 +6,7 @@
 
 #ifdef __EMSCRIPTEN__
 #define THROW_EXCEPTION					cerr <<
-#define THROW_RUNTIME_ERROR(s,...)		cerr << std::string(zetscript::stringsformat(s,__VA_ARGS__))
+#define THROW_RUNTIME_ERROR(s,...)		cerr << std::string(zetscript::string::sformat(s,__VA_ARGS__))
 //#define THROW_ERROR 					cerr <<
 //#define THROW_RUNTIME_ERROR 			cerr <<
 #define THROW_SCRIPT_ERROR 				cerr <<

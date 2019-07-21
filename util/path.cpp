@@ -1,3 +1,5 @@
+#include "../zetscript.h"
+
 namespace zetscript{
 	namespace path{
 		std::string  string_utilsget_filename(const std::string & _path) {

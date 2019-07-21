@@ -1,3 +1,5 @@
+#include "../zetscript.h"
+
 namespace zetscript{
 	namespace rttir{
 		std::string demangle(const std::string & name) {

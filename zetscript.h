@@ -87,9 +87,9 @@
 #include "CScriptFunction.h"
 #include "CScriptFunctionFactory.h"
 #include "CScriptClass.h"
-#include "CVirtualMachine.h"
-#include "CEval.h"
 #include "CZetScript.h"
+#include "CEval.h"
+
 
 #define ZETSCRIPT_MAJOR_VERSION 2
 #define ZETSCRIPT_MINOR_VERSION 0

@@ -47,7 +47,7 @@ namespace zetscript{
 		int idxCurrentStack;
 		int idx_laststatment;
 		const CScriptFunction *current_call_c_function;
-		CZetScript *_zs;
+		CZetScript *zs;
 
 	//===================================================================================================
 

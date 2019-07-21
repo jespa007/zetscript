@@ -176,12 +176,12 @@ namespace zetscript{
 				return false;
 			}
 
-			script_class_aux=GET_SCRIPT_CLASS(script_var_object->idxClass);
+			script_class_aux=GET_SCRIPT_CLASS(zs,script_var_object->idxClass);
 			std::vector<CScriptFunction *> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
 			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;
 
-			symbol_to_find=GET_METAMETHOD(__METAMETHOD__);
+			symbol_to_find=GET_METAMETHOD(zs,__METAMETHOD__);
 
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
 			if((ptr_function_found = FIND_FUNCTION(
@@ -409,7 +409,7 @@ namespace zetscript{
 					case STK_PROPERTY_TYPE_STRING:
 						aux_string=zs->STRING_PTR_TYPE_STR;
 						if(currentArg->varRef==NULL){ /* is constant char */
-							aux_string=	CONST_CHAR_PTR_TYPE_STR;
+							aux_string=	zs->CONST_CHAR_PTR_TYPE_STR;
 						}
 						break;
 					case STK_PROPERTY_TYPE_NULL:
@@ -456,7 +456,7 @@ namespace zetscript{
 							}
 
 							if(irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF){
-								str_candidates+=rtti::demangle(GET_IDX_2_CLASS_C_STR(zs,irfs->m_arg[a].idx_type));
+								str_candidates+=rtti::demangle(zs->getScriptClass(irfs->m_arg[a].idx_type));
 							}else{ /* typic var ... */
 								str_candidates+="arg"+string::int_2_string(a+1);
 							}

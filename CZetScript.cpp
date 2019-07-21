@@ -65,16 +65,6 @@ namespace zetscript{
 	}
 
 
-	const char * CZetScript::__registered_file__="NULL";
-	int CZetScript::__registered_line__=0;
-
-
-
-	void CZetScript::setFilenameLine(const char *file, short line){
-		__registered_file__ = file;
-		__registered_line__ = line;
-	}
-
 	tStackElement CZetScript::C_REF_InfoVariable_2_StackElement(tVariableSymbolInfo *ir_var, void *ptr_variable){
 
 		if(ir_var->properties & PROPERTY_C_OBJECT_REF){
@@ -146,7 +136,7 @@ namespace zetscript{
 
 
 	void  internal_print_error(const char *s){
-		 CURRENT_VM->setError(s);
+		 virtual_machine->setError(s);
 	}
 
 
@@ -223,37 +213,31 @@ namespace zetscript{
 		// From here you defined all basic, start define hierarchy
 
 		// register custom functions ...
-		CLASS_C_BASEOF<CVectorScriptVariable,CScriptVariable>();
-		CLASS_C_BASEOF<CFunctorScriptVariable,CScriptVariable>();
-		CLASS_C_BASEOF<CStructScriptVariable,CScriptVariable>();
+		class_C_BaseOf<CVectorScriptVariable,CScriptVariable>();
+		class_C_BaseOf<CFunctorScriptVariable,CScriptVariable>();
+		class_C_BaseOf<CStructScriptVariable,CScriptVariable>();
 
 
 		//------------------------------------------------------------------------------------------------------------
 		// Let's register functions,...
 		// register c function's
 
-		// MAIN FUNCTION (0)...
 		main_class->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 
-		REGISTER_C_FUNCTION(zs,"print",print);
+		register_C_Function(zs,"print",print);
 
-		REGISTER_C_FUNCTION(zs,"error",internal_print_error);
+		register_C_Function(zs,"error",internal_print_error);
 
-		REGISTER_C_FUNCTION_MEMBER<CVectorScriptVariable>(zs,"size",&CVectorScriptVariable::size);
-		REGISTER_C_FUNCTION_MEMBER<CVectorScriptVariable>(zs,"push",static_cast<void (CVectorScriptVariable:: *)(tStackElement *)>(&CVectorScriptVariable::push));
-		REGISTER_C_FUNCTION_MEMBER<CVectorScriptVariable>(zs,"pop",&CVectorScriptVariable::pop);
+		register_C_FunctionMember<CVectorScriptVariable>(zs,"size",&CVectorScriptVariable::size);
+		register_C_FunctionMember<CVectorScriptVariable>(zs,"push",static_cast<void (CVectorScriptVariable:: *)(tStackElement *)>(&CVectorScriptVariable::push));
+		register_C_FunctionMember<CVectorScriptVariable>(zs,"pop",&CVectorScriptVariable::pop);
 
 
-		REGISTER_C_FUNCTION_MEMBER<CStructScriptVariable>(zs,"add",&CStructScriptVariable::add_attr);
-		REGISTER_C_FUNCTION_MEMBER<CStructScriptVariable>(zs,"remove",&CStructScriptVariable::remove_attr);
-		REGISTER_C_FUNCTION_MEMBER<CStructScriptVariable>(zs,"size",&CStructScriptVariable::size);
+		register_C_FunctionMember<CStructScriptVariable>(zs,"add",&CStructScriptVariable::add_attr);
+		register_C_FunctionMember<CStructScriptVariable>(zs,"remove",&CStructScriptVariable::remove_attr);
+		register_C_FunctionMember<CStructScriptVariable>(zs,"size",&CStructScriptVariable::size);
 	 }
 
-
-	CZetScript::CScriptClassFactory(){
-
-		register_c_base_symbols=false;
-	}
 
 	void (* CZetScript::print_out_callback)(const char *) = NULL;
 
@@ -578,19 +562,19 @@ namespace zetscript{
 
 	void CZetScript::clear(){
 
-		_virtual_machine->clearGlobalVars();
+		virtual_machine->clearGlobalVars();
 
-		_main_function = this->_script_function_factory->getScriptFunction(IDX_MAIN_FUNCTION);
+		main_function = this->script_function_factory->getScriptFunction(IDX_MAIN_FUNCTION);
 
 		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
-			f < _main_function->m_function.size()
+			f < main_function->m_function.size()
 			;) {
 			// get function info
-			CScriptFunction * local_function = _main_function->m_function[f];
+			CScriptFunction * local_function = main_function->m_function[f];
 
 			if ((local_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
-				_main_function->m_function.erase(_main_function->m_function.begin() + f);
+				main_function->m_function.erase(main_function->m_function.begin() + f);
 			}
 			else {
 				f++;
@@ -600,11 +584,11 @@ namespace zetscript{
 
 		// remove c variables ...
 		for (unsigned v = 0;
-			v < _main_function->m_variable.size(); ) {
+			v < main_function->m_variable.size(); ) {
 
-			if ((_main_function->m_variable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+			if ((main_function->m_variable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
 
-				_main_function->m_variable.erase(_main_function->m_variable.begin() + v);
+				main_function->m_variable.erase(main_function->m_variable.begin() + v);
 
 			}
 			else {
@@ -614,7 +598,7 @@ namespace zetscript{
 
 		// remove scope vars...
 		_scope_factory->clear();
-		_script_function_factory->clear();
+		script_function_factory->clear();
 		_script_class_factory->clear();
 
 	}
@@ -624,19 +608,20 @@ namespace zetscript{
 
 		_scope_factory = new CScopeFactory();
 		_native_function_factory = new CNativeFunctionFactory();
-		_script_function_factory= new CScriptFunctionFactory();
+		script_function_factory= new CScriptFunctionFactory();
 		_script_class_factory = new CScriptClassFactory();
 		_eval = new CEval();
 
-		_virtual_machine = new CVirtualMachine();
+		virtual_machine = new CVirtualMachine();
 
-		_main_object=NULL;
-		_main_function=NULL;
+		main_object=NULL;
+		main_function=NULL;
 
-		_eval_int=0;
-		_eval_float=0;
-		_eval_string="";
+		eval_int=0;
+		eval_float=0;
+		eval_string="";
 		_eval_bool = false;
+		register_c_base_symbols=false;
 
 	}
 
@@ -648,14 +633,14 @@ namespace zetscript{
 			return NULL;
 		}
 
-		tStackElement *se=_virtual_machine->getLastStackValue();
+		tStackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
 			if(se->properties & STK_PROPERTY_TYPE_INTEGER){
 
-				_eval_int=(int)((intptr_t)se->stkValue);
-				return &_eval_int;
+				eval_int=(int)((intptr_t)se->stkValue);
+				return &eval_int;
 			}
 			else{
 				THROW_RUNTIME_ERROR(string::sformat("evalIntValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
@@ -673,7 +658,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		tStackElement *se=_virtual_machine->getLastStackValue();
+		tStackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
@@ -695,13 +680,13 @@ namespace zetscript{
 			return NULL;
 		}
 
-		tStackElement *se=_virtual_machine->getLastStackValue();
+		tStackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
 			if(se->properties & STK_PROPERTY_TYPE_NUMBER){
-				_eval_float = *((float *)(&se->stkValue));
-				return &_eval_float;
+				eval_float = *((float *)(&se->stkValue));
+				return &eval_float;
 			}
 			else{
 				THROW_RUNTIME_ERROR(string::sformat("evalFloatValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
@@ -720,14 +705,14 @@ namespace zetscript{
 			return NULL;
 		}
 
-		tStackElement *se=_virtual_machine->getLastStackValue();
+		tStackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
 			if(se->properties & STK_PROPERTY_TYPE_STRING){
 
-				_eval_string = ((const char *)se->stkValue);
-				return &_eval_string;
+				eval_string = ((const char *)se->stkValue);
+				return &eval_string;
 			}
 			else{
 				string::sformat("evalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
@@ -743,7 +728,7 @@ namespace zetscript{
 		bool error=false;
 
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		_virtual_machine->execute(_main_function, NULL,error,NO_PARAMS);
+		virtual_machine->execute(main_function, NULL,error,NO_PARAMS);
 
 		if(error){
 			THROW_SCRIPT_ERROR();
@@ -793,13 +778,13 @@ namespace zetscript{
 
 	CZetScript::~CZetScript(){
 
-		_virtual_machine->clearGlobalVars();
+		virtual_machine->clearGlobalVars();
 
 
 
 		// clear objects...
 		delete _scope_factory;
-		delete _script_function_factory;
+		delete script_function_factory;
 		delete _native_function_factory;
 		delete _eval;
 
@@ -811,11 +796,11 @@ namespace zetscript{
 
 		vec_script_class_node.clear();
 
-		_main_object = NULL;
-		_main_function = NULL;
+		main_object = NULL;
+		main_function = NULL;
 
 
-		_virtual_machine=NULL;
+		virtual_machine=NULL;
 
 	}
 

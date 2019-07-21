@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "../Common.h"
+#include "../common.h"
 
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
@@ -35,7 +35,7 @@ class CScriptClass;
 		void *m_value;
 
 		// Construct ...
-		CScriptVariable(CZetScript *zs);
+		CScriptVariable();
 
 		/**
 		 * info_registered_class: scriptclass info

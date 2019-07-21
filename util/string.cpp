@@ -1,3 +1,5 @@
+#include "../zetscript.h"
+
 namespace zetscript{
 	namespace string{
 

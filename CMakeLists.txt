@@ -159,10 +159,14 @@ ELSE()
 	set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	
 		#-- Exception --
-		zetscript_exception.cpp
+		exception.cpp
 	
 	    #-- Utils --
-		utils/.cpp
+		util/io.cpp
+		util/log.cpp
+		util/path.cpp
+		util/rtti.cpp
+		util/string.cpp
 		
 		#-- Variables --
 		var/CScriptVariable.cpp
@@ -173,10 +177,10 @@ ELSE()
 		var/CFunctorScriptVariable.cpp
 		
 		#-- Script Core --
-		eval/CEval.cpp
+		CEval.cpp
 		CScope.cpp
 		CScopeFactory.cpp
-		CNativeFunction.cpp
+		CNativeFunctionFactory.cpp
 		CScriptClassBase.cpp
 		CScriptClass.cpp
 		CScriptFunction.cpp

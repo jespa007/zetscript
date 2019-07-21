@@ -2,8 +2,14 @@
 
 namespace zetscript{
 
-	CScriptClassBase::CScriptClassBase(unsigned char _idxClass) {
+	CScriptClassBase::CScriptClassBase(unsigned char _idxClass, CZetScript * _zs) {
 		idxClass=_idxClass;
+		zs = _zs;
+		scope_factory = zs->getScopeFactory();
+		script_function_factory= zs->getScriptFunctionFactory();
+
+
+
 	}
 
 	tVariableSymbolInfo * CScriptClassBase::registerVariable(const std::string & file, short line, short idxBlockScope,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties){
@@ -18,7 +24,7 @@ namespace zetscript{
 
 
 		if(getVariable(symbol->name,symbol->idxScope) != NULL){
-			THROW_RUNTIME_ERROR(stringsformat("Variable \"%s\" already exist",variable_name.c_str()));
+			THROW_RUNTIME_ERROR(string::sformat("Variable \"%s\" already exist",variable_name.c_str()));
 			return NULL;
 		}
 
@@ -62,7 +68,7 @@ namespace zetscript{
 
 			//std::string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
 			if(getFunction(function_name,(char)args.size()) != NULL){
-				THROW_RUNTIME_ERROR(stringsformat("Function \"%s\" already exist",function_name.c_str()));
+				THROW_RUNTIME_ERROR(string::sformat("Function \"%s\" already exist",function_name.c_str()));
 				return NULL;
 			}
 

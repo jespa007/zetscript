@@ -10,7 +10,7 @@
 namespace zetscript{
 
 
-
+	class CScriptClassFactory;
 
 	class  CEval{
 
@@ -245,7 +245,10 @@ namespace zetscript{
 			//unsigned char *data;
 		} tInfoParsedSource;
 
-		 CZetScript * _zs;
+		 CZetScript * zs;
+		 CScopeFactory *scope_factory;
+		 CScriptClassFactory *script_class_factory;
+
 
 
 		// singleton

@@ -464,7 +464,7 @@ namespace zetscript{
 
 	 void CEval::printGeneratedCode(){
 
-		 std::vector<CScriptClass *> *vec_script_class_node=CScriptClassFactory::getInstance()->getVectorScriptClassNode();
+		 std::vector<CScriptClass *> *vec_script_class_node=script_class_factory->getVectorScriptClassNode();
 		 // for all classes print code...
 		 for(unsigned i = 0; i < vec_script_class_node->size(); i++){
 			 CScriptClass *rc=vec_script_class_node->at(i);
@@ -546,7 +546,7 @@ namespace zetscript{
 			*info_ptr={obj,NULL,properties};
 			(m_contantPool)[const_name]=info_ptr;
 		}else{
-			THROW_RUNTIME_ERROR(stringsformat("internal:constant %s already exist",const_name.c_str()));
+			THROW_RUNTIME_ERROR(string::sformat("internal:constant %s already exist",const_name.c_str()));
 		}
 
 		return info_ptr;
@@ -741,7 +741,9 @@ namespace zetscript{
 		CURRENT_PARSING_FILE_IDX=-1;
 		CURRENT_PARSING_FILE_STR="";
 		pCurrentFunctionInfo=NULL;
-		_zs=zs;
+		this->zs=zs;
+		scope_factory=zs->getScopeFactory();
+		script_class_factory=zs->getScriptClassFactory();
 	}
 
 	bool   CEval::endExpression(const char * s){
@@ -1038,13 +1040,13 @@ namespace zetscript{
 					type=STK_PROPERTY_TYPE_UNDEFINED;
 					load_type=LOAD_TYPE_UNDEFINED;
 					obj=NULL;// CScriptVariable::UndefinedSymbol;
-			}else if((const_obj=string_utilsparse_intenger(v))!=NULL){
+			}else if((const_obj=string::parse_intenger(v))!=NULL){
 				int value = *((int *)const_obj);
 				delete (int *)const_obj;
 				load_type=LOAD_TYPE_CONSTANT;
 				obj=addConstant(v,value);
 			}
-			else if((const_obj=string_utilsparse_float(v))!=NULL){
+			else if((const_obj=string::parse_float(v))!=NULL){
 				float value = *((float *)const_obj);
 				delete (float *)const_obj;
 				void *value_ptr;
@@ -1059,7 +1061,7 @@ namespace zetscript{
 					obj=addConstant(v,value_ptr,type);
 				}
 			}
-			else if((const_obj=string_utilsparse_boolean(v))!=NULL){
+			else if((const_obj=string::parse_boolean(v))!=NULL){
 
 				bool value = *((bool *)const_obj);
 				delete (bool *)const_obj;
@@ -1388,7 +1390,7 @@ namespace zetscript{
 		}
 
 
-		THROW_RUNTIME_ERROR(stringsformat("operator %i not implemented",op));
+		THROW_RUNTIME_ERROR(string::sformat("operator %i not implemented",op));
 		return OP_CODE::END_FUNCTION;
 	}
 
@@ -1854,7 +1856,7 @@ namespace zetscript{
 
 
 				// register class
-				if((sc=zetscript::CScriptClassFactory::getInstance()->registerClass(__FILE__, __LINE__, class_name,base_class_name))==NULL){
+				if((sc=zetscript::script_class_factory->registerClass(__FILE__, __LINE__, class_name,base_class_name))==NULL){
 					return NULL;
 				}
 
@@ -2086,7 +2088,7 @@ namespace zetscript{
 							}*/
 
 							if(!named_function){ // register named function...
-								function_name="_afun_"+string_utilsint_2_string(n_anonymous_function++);
+								function_name="_afun_"+string::int_2_string(n_anonymous_function++);
 							}
 							//--- OP
 							if(sc!=NULL){ // register as variable member...
@@ -2172,7 +2174,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						if((start_symbol = string_utilscopy_from_pointer_diff(aux_p+1, end_expr))==NULL){
+						if((start_symbol = string::copy_from_pointer_diff(aux_p+1, end_expr))==NULL){
 							return NULL;
 						}
 
@@ -2261,7 +2263,7 @@ namespace zetscript{
 									write_error(CURRENT_PARSING_FILE_STR,line,"Expected ')'");
 									return NULL;
 								}
-								if((start_symbol = string_utilscopy_from_pointer_diff(aux_p+1, end_expr))==NULL){
+								if((start_symbol = string::copy_from_pointer_diff(aux_p+1, end_expr))==NULL){
 									return NULL;
 								}
 							}else{
@@ -2327,7 +2329,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					if((start_symbol = string_utilscopy_from_pointer_diff(aux_p+1, end_expr))==NULL){
+					if((start_symbol = string::copy_from_pointer_diff(aux_p+1, end_expr))==NULL){
 						return NULL;
 					}
 
@@ -2978,7 +2980,7 @@ namespace zetscript{
 
 						end_var=aux;
 
-						if((symbol_name=string_utilscopy_from_pointer_diff(start_var,end_var)) == NULL){
+						if((symbol_name=string::copy_from_pointer_diff(start_var,end_var)) == NULL){
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
@@ -2999,7 +3001,7 @@ namespace zetscript{
 							}
 
 							try{
-								CZetScript::getInstance()->evalFile(file_to_eval);
+								zs->evalFile(file_to_eval);
 							}catch(exception::script_error & error){
 								THROW_EXCEPTION(error);
 								return NULL;
@@ -3102,7 +3104,7 @@ namespace zetscript{
 
 					if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 						if((vis=sc->getVariable(ls->value,sc->symbol_info.symbol->idxScope))==0){
-							THROW_RUNTIME_ERROR(stringsformat("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
+							THROW_RUNTIME_ERROR(string::sformat("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 							return;
 						}
 
@@ -3110,7 +3112,7 @@ namespace zetscript{
 					}
 					else{
 						if((instruction->index_op2=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idxScope,ls->n_params))==0){
-							THROW_RUNTIME_ERROR(stringsformat("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
+							THROW_RUNTIME_ERROR(string::sformat("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 							return;
 						}
 					}
@@ -3133,7 +3135,7 @@ namespace zetscript{
 					// ok get the super function...
 					if(sf_found == NULL){
 
-						THROW_RUNTIME_ERROR(stringsformat("Cannot find super function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
+						THROW_RUNTIME_ERROR(string::sformat("Cannot find super function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 						return;
 					}
 
@@ -3169,7 +3171,7 @@ namespace zetscript{
 							if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 
 								if((vis=MAIN_FUNCTION->getVariable(ls->value,sc_var->idxScope))==NULL){
-									THROW_RUNTIME_ERROR(stringsformat("Cannot find variable \"%s\"",ls->value.c_str()));
+									THROW_RUNTIME_ERROR(string::sformat("Cannot find variable \"%s\"",ls->value.c_str()));
 									return;
 								}
 
@@ -3179,7 +3181,7 @@ namespace zetscript{
 							else{
 
 								if((instruction->index_op2=(intptr_t)MAIN_FUNCTION->getFunction(ls->value,sc_var->idxScope,ls->n_params))==0){
-									THROW_RUNTIME_ERROR(stringsformat("Cannot find function \"%s\"",ls->value.c_str()));
+									THROW_RUNTIME_ERROR(string::sformat("Cannot find function \"%s\"",ls->value.c_str()));
 									return;
 								}
 
@@ -3283,7 +3285,7 @@ namespace zetscript{
 			idx_file=m_parsedSource.size()-1;
 			int n_bytes;
 
-			if((buf_tmp=string_utilsread_file(filename, n_bytes))!=NULL){
+			if((buf_tmp=io::read_file(filename, n_bytes))!=NULL){
 				CURRENT_PARSING_FILE_STR=filename.c_str();
 				CURRENT_PARSING_FILE_IDX=idx_file;
 				try{
@@ -3302,7 +3304,7 @@ namespace zetscript{
 
 		}else{
 			// already parsed
-			THROW_RUNTIME_ERROR(stringsformat("Filename \"%s\" already parsed",filename.c_str()));
+			THROW_RUNTIME_ERROR(string::sformat("Filename \"%s\" already parsed",filename.c_str()));
 			error=true;
 		}
 

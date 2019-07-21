@@ -21,7 +21,7 @@ namespace zetscript{
 			using namespace std::placeholders;
 			void *proxy_function=NULL;
 
-			tInfoProxyFunction ipf;
+			NativeFunction ipf;
 
 
 			switch(n_args){
@@ -228,12 +228,12 @@ namespace zetscript{
 		typedef struct{
 			int n_args;
 			void *fun_ptr;
-		}tInfoProxyFunction;
+		}NativeFunction;
 
 		static CNativeFunctionFactory *m_instance;
 
-		std::vector<tInfoProxyFunction>	c_int_function;
-		std::vector<tInfoProxyFunction>	 c_void_function;
+		std::vector<NativeFunction>	c_int_function;
+		std::vector<NativeFunction>	 c_void_function;
 		std::vector<void *>	 class_function_member;
 
 	};

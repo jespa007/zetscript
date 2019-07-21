@@ -13,11 +13,11 @@ namespace zetscript{
 			intptr_t ref_ptr=0;
 			CScriptFunction *irs=NULL;
 
-			if(!CScriptFunctionFactory::getInstance()->checkCanRegister_C_Function(function_name)){
+			if(!script_function_factory->checkCanRegister_C_Function(function_name)){
 				return false;
 			}
 
-			if(_main_function == NULL){
+			if(main_function == NULL){
 				THROW_RUNTIME_ERROR("main function is not created");
 				return false;
 			}
@@ -50,19 +50,19 @@ namespace zetscript{
 			}
 
 			if(idx_return_type == IDX_TYPE_VOID_C){
-				if((ref_ptr=(intptr_t)_native_function_factory->new_proxy_function<void>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<void>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
 					return false;
 				}
 			}
 			else{
-				if((ref_ptr=(intptr_t)_native_function_factory->new_proxy_function<intptr_t>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<intptr_t>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
 					return false;
 				}
 			}
 
 
 			// init struct...
-			_main_function->registerFunction(__registered_file__,__registered_line__,function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+			main_function->registerFunction(registered_file,registered_line,function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 
 			zs_print_debug_cr("Registered function name: %s",function_name);
 			return true;
@@ -108,8 +108,8 @@ namespace zetscript{
 				}
 
 				unsigned char idxClass=(short)(vec_script_class_node.size());
-				CScope * scope = _scope_factory->newScope(ZS_UNDEFINED_IDX,true);
-				tSymbol *symbol=scope->registerSymbol(__registered_file__,__registered_line__,class_name, NO_PARAMS_IS_CLASS);
+				CScope * scope = scope_factory->newScope(ZS_UNDEFINED_IDX,true);
+				tSymbol *symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_IS_CLASS);
 				if(symbol == NULL){
 					return NULL;
 				}
@@ -294,7 +294,12 @@ namespace zetscript{
 		 * Register C Member function Class
 		 */
 		template < typename _C, typename _R, class _T, typename..._A>
-		bool CZetScript::register_C_FunctionMember(const char *function_name,_R (_T:: *function_type)(_A...) , const char *registered_file,int registered_line)
+		bool CZetScript::register_C_FunctionMember(
+				const char *function_name
+				,_R (_T:: *function_type)(_A...)
+				, const char *registered_file
+				,int registered_line
+		)
 		{
 
 			// to make compatible MSVC shared library
@@ -309,11 +314,11 @@ namespace zetscript{
 			intptr_t ref_ptr=0;
 			std::string str_classPtr = typeid( _C *).name();
 
-			if(!CScriptFunctionFactory::getInstance()->checkCanRegister_C_Function(function_name)){
+			if(!script_function_factory->checkCanRegister_C_Function(function_name)){
 				return false;
 			}
 
-			CScriptClass * sc=GET_SCRIPT_CLASS(str_classPtr);
+			CScriptClass * sc=getScriptClass(str_classPtr);
 
 
 			if(sc == NULL){
@@ -353,11 +358,11 @@ namespace zetscript{
 			// ignores special type cast C++ member to ptr function
 			// create binding function class
 			if(idx_return_type == IDX_TYPE_VOID_C){
-				if((ref_ptr=((intptr_t)_native_function_factory->c_member_class_function_proxy<_C,_T, void>(m_arg.size(),function_type)))==0){
+				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<_C,_T, void>(m_arg.size(),function_type)))==0){
 					return false;
 				}
 			}else{
-				if((ref_ptr=((intptr_t)_native_function_factory->c_member_class_function_proxy<_C,_T, _R>(m_arg.size(),function_type)))==0){
+				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<_C,_T, _R>(m_arg.size(),function_type)))==0){
 					return false;
 				}
 			}
@@ -365,7 +370,7 @@ namespace zetscript{
 			//CScriptClass *sc = vec_script_class_node[idxRegisterdClass];
 
 			// register member function...
-			CScriptFunction *sf = sc->registerFunction(CScriptClassFactory::__registered_file__,CScriptClassFactory::__registered_line__,function_name,m_argInfo,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
+			CScriptFunction *sf = sc->registerFunction(registered_file,registered_line,function_name,m_argInfo,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
 
 			zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(_C).name()).c_str(), function_name);
 
@@ -399,7 +404,7 @@ namespace zetscript{
 
 
 
-			if(!CScriptFunctionFactory::getInstance()->checkCanRegister_C_Function(function_class_name.c_str())){
+			if(!script_function_factory->checkCanRegister_C_Function(function_class_name.c_str())){
 				return false;
 			}
 
@@ -440,18 +445,18 @@ namespace zetscript{
 			// ignores special type cast C++ member to ptr function
 			// create binding function class
 			if(idx_return_type == IDX_TYPE_VOID_C){
-				if((ref_ptr=(intptr_t)_native_function_factory->new_proxy_function<void>(m_arg.size(),function_type))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<void>(m_arg.size(),function_type))==0){//(int)function_ptr;
 					return false;
 				}
 			}
 			else{
-				if((ref_ptr=(intptr_t)_native_function_factory->new_proxy_function<int>(m_arg.size(),function_type))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<int>(m_arg.size(),function_type))==0){//(int)function_ptr;
 					return false;
 				}
 			}
 
 			// register member function...
-			CScriptFunction * sf = c_class->registerFunction(__registered_file__,__registered_line__,function_name,m_argInfo, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+			CScriptFunction * sf = c_class->registerFunction(registered_file,registered_line,function_name,m_argInfo, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 			zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(_T).name()).c_str(), function_name);
 
 			// check whether is static metamethod...
@@ -536,7 +541,7 @@ namespace zetscript{
 			}
 
 			// register variable...
-			c_class->registerVariable(__registered_file__,__registered_line__,var_name,var_type,ref_ptr,PROPERTY_C_OBJECT_REF);
+			c_class->registerVariable(registered_file,registered_line,var_name,var_type,ref_ptr,PROPERTY_C_OBJECT_REF);
 			return true;
 
 		}
@@ -592,7 +597,7 @@ namespace zetscript{
 					 break;
 				 default:
 					 if(var_trans==0) return callc_result;
-					 callc_result = {NULL,INSTANCE_SCRIPT_VARIABLE_BY_IDX(idx_type,(void *)var_trans),STK_PROPERTY_TYPE_SCRIPTVAR};
+					 callc_result = {NULL,instanceScriptVariableByIdx(idx_type,(void *)var_trans),STK_PROPERTY_TYPE_SCRIPTVAR};
 					 break;
 				}
 
@@ -621,7 +626,7 @@ namespace zetscript{
 					}else if(idx_dst_type == IDX_TYPE_BOOL_PTR_C){//*CScriptClass::BOOL_PTR_TYPE_STR){
 						val_ret=(intptr_t)(&stk_src->stkValue);
 					}else{
-						error="cannot convert "+demangle((STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
+						error="cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into %s"+rtti::demangle(getScriptClass(idx_dst_type)).c_str();
 
 						return false;
 					}
@@ -645,7 +650,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error="cannot convert "+demangle((STRING_PTR_TYPE_STR))+" into %s"+demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error="cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into %s"+rtti::demangle(getScriptClass(idx_dst_type));
 						return false;
 					}
 					break;
@@ -667,7 +672,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error= "cannot convert "+demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error= "cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(getScriptClass(idx_dst_type));
 						return false;
 					}
 					break;
@@ -685,7 +690,7 @@ namespace zetscript{
 					}else if (idx_dst_type == IDX_TYPE_CONST_CHAR_PTR_C){
 						val_ret=(intptr_t)(stk_src->stkValue);
 					}else{
-						error= "cannot convert "+demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error= "cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(getScriptClass(idx_dst_type));
 						return false;
 					}
 
@@ -722,8 +727,8 @@ namespace zetscript{
 						if(c_class->idxClass==idx_dst_type){
 							val_ret=(intptr_t)script_variable->get_C_Object();
 						}
-						else if((val_ret=zetscript::CScriptClassFactory::getInstance()->doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
-							error = "cannot convert "+demangle(script_variable->getPointer_C_ClassName())+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						else if((val_ret=doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
+							error = "cannot convert "+rtti::demangle(script_variable->getPointer_C_ClassName())+" into "+rtti::demangle(getScriptClass(idx_dst_type));
 							return false;
 						}
 					}else{ // CScriptVariable ?
@@ -752,7 +757,7 @@ namespace zetscript{
 			*f=((void *)(new std::function<void ()>(
 				[&,calling_obj,fun_obj](){
 					bool error=false;
-					_virtual_machine->execute(
+					virtual_machine->execute(
 										fun_obj,
 										calling_obj,
 										error);
@@ -777,7 +782,7 @@ namespace zetscript{
 						bool error=false;
 						_R ret_value;
 
-						tStackElement stk = _virtual_machine->execute(
+						tStackElement stk = virtual_machine->execute(
 								fun_obj,
 								calling_obj,
 								error);
@@ -820,7 +825,7 @@ namespace zetscript{
 
 					};
 
-					_virtual_machine->execute(
+					virtual_machine->execute(
 								fun_obj,
 								calling_obj,
 								error,
@@ -853,7 +858,7 @@ namespace zetscript{
 								 var_2_stk((intptr_t)p1,idx_param1)
 						};
 
-						tStackElement stk = _virtual_machine->execute(
+						tStackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -899,7 +904,7 @@ namespace zetscript{
 
 					};
 
-					_virtual_machine->execute(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -939,7 +944,7 @@ namespace zetscript{
 
 						};
 
-						tStackElement stk = _virtual_machine->execute(
+						tStackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -990,7 +995,7 @@ namespace zetscript{
 							,var_2_stk((intptr_t)p3,idx_param3)
 					};
 
-					_virtual_machine->execute(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -1029,7 +1034,7 @@ namespace zetscript{
 							,var_2_stk((intptr_t)p3,idx_param3)
 					};
 
-					tStackElement stk = _virtual_machine->execute(
+					tStackElement stk = virtual_machine->execute(
 												fun_obj,
 												calling_obj,
 												error,
@@ -1082,7 +1087,7 @@ namespace zetscript{
 
 					};
 
-					_virtual_machine->execute(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -1126,7 +1131,7 @@ namespace zetscript{
 
 						};
 
-						tStackElement stk = _virtual_machine->execute(
+						tStackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -1184,7 +1189,7 @@ namespace zetscript{
 
 					};
 
-					_virtual_machine->execute(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -1233,7 +1238,7 @@ namespace zetscript{
 
 					};
 
-					tStackElement stk = _virtual_machine->execute(
+					tStackElement stk = virtual_machine->execute(
 												fun_obj,
 												calling_obj,
 												error,
@@ -1293,7 +1298,7 @@ namespace zetscript{
 
 					};
 
-					_virtual_machine->execute(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -1342,7 +1347,7 @@ namespace zetscript{
 								,var_2_stk((intptr_t)p6,idx_param6)
 						};
 
-						tStackElement stk = _virtual_machine->execute(
+						tStackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -1382,15 +1387,15 @@ namespace zetscript{
 
 
 		//CScriptFunction *getScriptObjectFromScriptFunctionAccessName(const std::string &function_access_expression)
-		bool CZetScript::get_script_object(const std::string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
+		bool CZetScript::getScriptObject(const std::string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
 
 			//ZS_CLEAR_ERROR_MSG();
 
-			std::vector<std::string> access_var = string_utilssplit(function_access,'.');
-			//CScriptFunction * m_mainFunctionInfo = main_function;
+			std::vector<std::string> access_var = string::split(function_access,'.');
+			//CScriptFunction * main_function = main_function;
 
 			if(main_function == NULL){
-				string::sformat("m_mainFunctionInfo is not initialized");
+				string::sformat("main_function is not initialized");
 				return false;
 			}
 
@@ -1406,10 +1411,10 @@ namespace zetscript{
 					std::string symbol_to_find=access_var[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
 						//symbol_to_find= CEval::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
-						for(unsigned j = 0; j < m_mainFunctionInfo->m_variable.size() && *calling_obj==NULL; j++){
-							if(m_mainFunctionInfo->m_variable[j].symbol->name==symbol_to_find
-							&& m_mainFunctionInfo->m_variable[j].symbol->idxScope == IDX_GLOBAL_SCOPE){
-								tStackElement *stk = _virtual_machine->getStackElement(j); // m_mainFunctionInfo->object_info.local_symbols.variable[j].
+						for(unsigned j = 0; j < main_function->m_variable.size() && *calling_obj==NULL; j++){
+							if(main_function->m_variable[j].symbol->name==symbol_to_find
+							&& main_function->m_variable[j].symbol->idxScope == IDX_GLOBAL_SCOPE){
+								tStackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
 									if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 										*calling_obj=(CScriptVariable *)stk->varRef;
@@ -1460,8 +1465,8 @@ namespace zetscript{
 			}else{ // some function in main function
 				//*calling_obj = m_mainObject;
 				std::string symbol_to_find=access_var[0];
-				for(unsigned i = 0; i < m_mainFunctionInfo->m_function.size() && *fun_obj==NULL; i++){
-					CScriptFunction *aux_fun_obj=m_mainFunctionInfo->m_function[i];
+				for(unsigned i = 0; i < main_function->m_function.size() && *fun_obj==NULL; i++){
+					CScriptFunction *aux_fun_obj=main_function->m_function[i];
 					if(		aux_fun_obj->symbol_info.symbol->name  == symbol_to_find
 					  && aux_fun_obj->symbol_info.symbol->idxScope == IDX_GLOBAL_SCOPE){
 						*fun_obj=aux_fun_obj;
@@ -1492,7 +1497,7 @@ namespace zetscript{
 			// get function symbol ref from global scope ...
 
 
-			if(get_script_object(function_access,&calling_obj,&fun))
+			if(getScriptObject(function_access,&calling_obj,&fun))
 			{
 
 				// 1. check all parameters ok.

@@ -1,9 +1,10 @@
+#include "../zetscript.h"
 
 #define VAR_LOG(l) ((l) == LOG_ERROR?"ERR": (l)==LOG_WARNING?"WRN": (l) == LOG_INFO ? "INF" : (l) == LOG_DEBUG ? "DBG":"NAN" )
 
 namespace zetscript{
 	namespace log{
-		void  print_log(const  char  *file, int  line, int level, bool with_cr, const  char  *input_text, ...) {
+		void  print(const  char  *file, int  line, int level, bool with_cr, const  char  *input_text, ...) {
 			//FILE *log_std=stdout;
 
 			FILE *std_type = stdout;
