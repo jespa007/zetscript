@@ -27,10 +27,10 @@ namespace zetscript{
 
 			 CScriptFunction 			*	newScriptFunction(			const std::string & file
 																								, short line
-																								, unsigned  char idxClass
+																								, unsigned  char idx_class
 																								, short idxScope
 																								, const std::string & function_name
-																								, std::vector<tArgumentInfo> args={}
+																								, std::vector<ParamArgInfo> args={}
 																								, int idx_return_type=ZS_UNDEFINED_IDX
 																								, intptr_t ref_ptr=0
 																								, unsigned short properties=0);

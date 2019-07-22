@@ -9,7 +9,7 @@ namespace zetscript{
 			int idx_return_type=-1;
 			std::string return_type;
 			std::vector<std::string> m_arg;
-			std::vector<tArgumentInfo> m_infoArg;
+			std::vector<ParamArgInfo> m_infoArg;
 			intptr_t ref_ptr=0;
 			CScriptFunction *irs=NULL;
 
@@ -107,14 +107,14 @@ namespace zetscript{
 					return NULL;
 				}
 
-				unsigned char idxClass=(short)(vec_script_class_node.size());
+				unsigned char idx_class=(short)(vec_script_class_node.size());
 				CScope * scope = scope_factory->newScope(ZS_UNDEFINED_IDX,true);
-				tSymbol *symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_IS_CLASS);
+				Symbol *symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_IS_CLASS);
 				if(symbol == NULL){
 					return NULL;
 				}
 
-				CScriptClass *irc = new CScriptClass(idxClass);
+				CScriptClass *irc = new CScriptClass(idx_class);
 				scope->setScriptClass(irc);
 
 				irc->symbol_info.symbol=symbol;
@@ -131,7 +131,7 @@ namespace zetscript{
 				irc->c_destructor = NULL;
 				vec_script_class_node.push_back(irc);
 
-				irc->idxClass=(unsigned char)(vec_script_class_node.size()-1);
+				irc->idx_class=(unsigned char)(vec_script_class_node.size()-1);
 				zs_print_debug_cr("* C++ class \"%s\" registered as (%s).",class_name.c_str(),rtti::demangle(str_classPtr).c_str());
 
 				return true;
@@ -226,7 +226,7 @@ namespace zetscript{
 			irc_class->idxBaseClass.push_back(idx_base_class);
 
 			//std::map<int, std::map<int, fntConversionType>>  *	local_map_type_conversion=	getMapTypeConversion();
-			(mapTypeConversion)[irc_class->idxClass][idx_base_class]=[](intptr_t entry){ return (intptr_t)(_B *)((_T *)entry);};
+			(mapTypeConversion)[irc_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(_B *)((_T *)entry);};
 
 
 			if(register_c_base_symbols){
@@ -249,11 +249,11 @@ namespace zetscript{
 				// vars ...
 				for(unsigned i = 0; i < irc_base->m_variable.size(); i++){
 
-					tVariableSymbolInfo *irs_source = &irc_base->m_variable[i];
+					VariableSymbolInfo *irs_source = &irc_base->m_variable[i];
 
-					tVariableSymbolInfo irs;
+					VariableSymbolInfo irs;
 					// init struct...
-					//irs.idxClass = idx_base_class;
+					//irs.idx_class = idx_base_class;
 					irs.ref_ptr=irs_source->ref_ptr;
 					irs.c_type = irs_source->c_type;
 					//irs.
@@ -309,7 +309,7 @@ namespace zetscript{
 			//std::vector<std::string> params;
 			CScriptFunction *irs=NULL;
 			std::vector<std::string> m_arg;
-			std::vector<tArgumentInfo> m_argInfo;
+			std::vector<ParamArgInfo> m_argInfo;
 			int idx_return_type=-1;
 			intptr_t ref_ptr=0;
 			std::string str_classPtr = typeid( _C *).name();
@@ -396,7 +396,7 @@ namespace zetscript{
 			std::vector<std::string> params;
 			CScriptFunction *irs=NULL;
 			std::vector<std::string> m_arg;
-			std::vector<tArgumentInfo> m_argInfo;
+			std::vector<ParamArgInfo> m_argInfo;
 			int idx_return_type=-1;
 			intptr_t ref_ptr=0;
 			std::string str_classPtr = typeid( _T *).name();
@@ -548,10 +548,10 @@ namespace zetscript{
 
 
 		// Helpers...
-		inline tStackElement CZetScript::var_2_stk(intptr_t var_trans, int idx_type){
+		inline StackElement CZetScript::var_2_stk(intptr_t var_trans, int idx_type){
 			//intptr_t var_trans = (intptr_t)input_var;
 				std::string s_return_value;
-				tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
+				StackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 				//int idx_type=getIdxClassFromIts_C_Type(typeid(_T).name());
 				// save return type ...
 				switch(idx_type){
@@ -593,7 +593,7 @@ namespace zetscript{
 					 break;
 				 case IDX_STACK_ELEMENT:
 					 if(var_trans==0) return callc_result;
-					 callc_result=*((tStackElement *)var_trans);//{STK_PROPERTY_TYPE_STRING,(void *)((std::string *)var_trans)->c_str(),NULL};//new std::string(*((std::string *)result))};
+					 callc_result=*((StackElement *)var_trans);//{STK_PROPERTY_TYPE_STRING,(void *)((std::string *)var_trans)->c_str(),NULL};//new std::string(*((std::string *)result))};
 					 break;
 				 default:
 					 if(var_trans==0) return callc_result;
@@ -604,7 +604,7 @@ namespace zetscript{
 				return callc_result;
 		}
 
-		inline bool CZetScript::stk_2_var(tStackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error){
+		inline bool CZetScript::stk_2_var(StackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error){
 			intptr_t val_ret=0;
 
 			CScriptVariable *script_variable=NULL;
@@ -612,7 +612,7 @@ namespace zetscript{
 
 			// save return type ...
 			if(stk_src->properties & STK_PROPERTY_IS_STACKVAR){
-				stk_src=((tStackElement *)stk_src->varRef);
+				stk_src=((StackElement *)stk_src->varRef);
 			}
 
 			if(idx_dst_type == IDX_STACK_ELEMENT){//*CScriptClass::STACK_ELEMENT_PTR)){// && (stk_src->properties & STK_PROPERTY_IS_STACKVAR)){ // set directly stackvar
@@ -707,7 +707,7 @@ namespace zetscript{
 						return false;
 					}
 
-					if(script_variable->idxClass==IDX_CLASS_STRING){
+					if(script_variable->idx_class==IDX_CLASS_STRING){
 
 						val_ret=(intptr_t)(&script_variable->m_strValue);
 						if(idx_dst_type == IDX_TYPE_CONST_CHAR_PTR_C){
@@ -715,19 +715,19 @@ namespace zetscript{
 						}
 					}else if(
 
-					   (script_variable->idxClass==IDX_CLASS_VECTOR
-					|| script_variable->idxClass==IDX_CLASS_STRUCT)){
+					   (script_variable->idx_class==IDX_CLASS_VECTOR
+					|| script_variable->idx_class==IDX_CLASS_STRUCT)){
 
-						if(idx_dst_type==script_variable->idxClass){
+						if(idx_dst_type==script_variable->idx_class){
 							val_ret=(intptr_t)script_variable->get_C_Object();
 						}
 
 					}else if((c_class=script_variable->get_C_Class())!=NULL){ // get the pointer directly ...
 
-						if(c_class->idxClass==idx_dst_type){
+						if(c_class->idx_class==idx_dst_type){
 							val_ret=(intptr_t)script_variable->get_C_Object();
 						}
-						else if((val_ret=doCast((intptr_t)script_variable->get_C_Object(),c_class->idxClass,idx_dst_type))==0){//c_class->idxClass==idx_dst_type){
+						else if((val_ret=doCast((intptr_t)script_variable->get_C_Object(),c_class->idx_class,idx_dst_type))==0){//c_class->idx_class==idx_dst_type){
 							error = "cannot convert "+rtti::demangle(script_variable->getPointer_C_ClassName())+" into "+rtti::demangle(getScriptClass(idx_dst_type));
 							return false;
 						}
@@ -782,7 +782,7 @@ namespace zetscript{
 						bool error=false;
 						_R ret_value;
 
-						tStackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->execute(
 								fun_obj,
 								calling_obj,
 								error);
@@ -820,7 +820,7 @@ namespace zetscript{
 				[&,calling_obj,fun_obj, idx_param1](tParam1 p1){
 
 					bool error=false;
-					std::vector<tStackElement> args={
+					std::vector<StackElement> args={
 							 var_2_stk((intptr_t)p1,idx_param1)
 
 					};
@@ -854,11 +854,11 @@ namespace zetscript{
 						std::string error_str;
 						bool error=false;
 
-						std::vector<tStackElement> args={
+						std::vector<StackElement> args={
 								 var_2_stk((intptr_t)p1,idx_param1)
 						};
 
-						tStackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -898,7 +898,7 @@ namespace zetscript{
 
 					bool error=false;
 
-					std::vector<tStackElement> args={
+					std::vector<StackElement> args={
 							 var_2_stk((intptr_t)p1,idx_param1)
 							,var_2_stk((intptr_t)p2,idx_param2)
 
@@ -938,13 +938,13 @@ namespace zetscript{
 						std::string error_str;
 						bool error=false;
 
-						std::vector<tStackElement> args={
+						std::vector<StackElement> args={
 								 var_2_stk((intptr_t)p1,idx_param1)
 								,var_2_stk((intptr_t)p2,idx_param2)
 
 						};
 
-						tStackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -989,7 +989,7 @@ namespace zetscript{
 
 					bool error=false;
 
-					std::vector<tStackElement> args={
+					std::vector<StackElement> args={
 							 var_2_stk((intptr_t)p1,idx_param1)
 							,var_2_stk((intptr_t)p2,idx_param2)
 							,var_2_stk((intptr_t)p3,idx_param3)
@@ -1028,13 +1028,13 @@ namespace zetscript{
 					std::string error_str;
 					bool error=false;
 
-					std::vector<tStackElement> args={
+					std::vector<StackElement> args={
 							 var_2_stk((intptr_t)p1,idx_param1)
 							,var_2_stk((intptr_t)p2,idx_param2)
 							,var_2_stk((intptr_t)p3,idx_param3)
 					};
 
-					tStackElement stk = virtual_machine->execute(
+					StackElement stk = virtual_machine->execute(
 												fun_obj,
 												calling_obj,
 												error,
@@ -1079,7 +1079,7 @@ namespace zetscript{
 
 					bool error=false;
 
-					std::vector<tStackElement> args={
+					std::vector<StackElement> args={
 							 var_2_stk((intptr_t)p1,idx_param1)
 							,var_2_stk((intptr_t)p2,idx_param2)
 							,var_2_stk((intptr_t)p3,idx_param3)
@@ -1123,7 +1123,7 @@ namespace zetscript{
 						bool error=false;
 						std::string error_str;
 
-						std::vector<tStackElement> args={
+						std::vector<StackElement> args={
 								 var_2_stk((intptr_t)p1,idx_param1)
 								,var_2_stk((intptr_t)p2,idx_param2)
 								,var_2_stk((intptr_t)p3,idx_param3)
@@ -1131,7 +1131,7 @@ namespace zetscript{
 
 						};
 
-						tStackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -1180,7 +1180,7 @@ namespace zetscript{
 				[&,calling_obj,fun_obj,idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5){
 
 					bool error=false;
-					std::vector<tStackElement> args={
+					std::vector<StackElement> args={
 							 var_2_stk((intptr_t)p1,idx_param1)
 							,var_2_stk((intptr_t)p2,idx_param2)
 							,var_2_stk((intptr_t)p3,idx_param3)
@@ -1229,7 +1229,7 @@ namespace zetscript{
 					bool error=false;
 					std::string error_str;
 
-					std::vector<tStackElement> args={
+					std::vector<StackElement> args={
 							 var_2_stk((intptr_t)p1,idx_param1)
 							,var_2_stk((intptr_t)p2,idx_param2)
 							,var_2_stk((intptr_t)p3,idx_param3)
@@ -1238,7 +1238,7 @@ namespace zetscript{
 
 					};
 
-					tStackElement stk = virtual_machine->execute(
+					StackElement stk = virtual_machine->execute(
 												fun_obj,
 												calling_obj,
 												error,
@@ -1288,7 +1288,7 @@ namespace zetscript{
 			*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
 				[&,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
 					bool error=false;
-					std::vector<tStackElement> args={
+					std::vector<StackElement> args={
 							 var_2_stk((intptr_t)p1,idx_param1)
 							,var_2_stk((intptr_t)p2,idx_param2)
 							,var_2_stk((intptr_t)p3,idx_param3)
@@ -1338,7 +1338,7 @@ namespace zetscript{
 						bool error=false;
 						std::string error_str;
 
-						std::vector<tStackElement> args={
+						std::vector<StackElement> args={
 								 var_2_stk((intptr_t)p1,idx_param1)
 								,var_2_stk((intptr_t)p2,idx_param2)
 								,var_2_stk((intptr_t)p3,idx_param3)
@@ -1347,7 +1347,7 @@ namespace zetscript{
 								,var_2_stk((intptr_t)p6,idx_param6)
 						};
 
-						tStackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -1400,8 +1400,8 @@ namespace zetscript{
 			}
 
 			*calling_obj = NULL;
-			tFunctionSymbol *is=NULL;
-			tStackElement *se=NULL;
+			FunctionSymbol *is=NULL;
+			StackElement *se=NULL;
 			*fun_obj=NULL;
 
 			// 1. some variable in main function ...
@@ -1414,7 +1414,7 @@ namespace zetscript{
 						for(unsigned j = 0; j < main_function->m_variable.size() && *calling_obj==NULL; j++){
 							if(main_function->m_variable[j].symbol->name==symbol_to_find
 							&& main_function->m_variable[j].symbol->idxScope == IDX_GLOBAL_SCOPE){
-								tStackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
+								StackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
 									if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 										*calling_obj=(CScriptVariable *)stk->varRef;
@@ -1531,12 +1531,12 @@ namespace zetscript{
 			std::vector<_T> v_out;
 			const char * dst_convert_type = typeid(_T).name();
 			float aux_flt;
-			std::vector<tStackElement> * m_variable = v_in->getVectorVariable();
+			std::vector<StackElement> * m_variable = v_in->getVectorVariable();
 
 			if(v_in){
 				for(unsigned i = 0; i < m_variable->size(); i++){
 
-					tStackElement sv=m_variable->at(i);
+					StackElement sv=m_variable->at(i);
 
 					switch(sv.properties & MASK_VAR_PRIMITIVE_TYPES)
 					{
@@ -1579,7 +1579,7 @@ namespace zetscript{
 			CVectorScriptVariable *vsv = new CVectorScriptVariable();
 
 			for ( unsigned i = 0; i < v.size(); i++){
-				tStackElement *stk = vsv->push();
+				StackElement *stk = vsv->push();
 				//intptr_t uvar = (intptr_t)(v[i]);
 				*stk = var_2_stk((intptr_t)(v[i]),getIdxClassFromIts_C_Type(typeid(_T).name()));
 			}

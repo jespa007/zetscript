@@ -60,9 +60,9 @@ namespace zetscript{
 	class CScope;
 	class CScriptClass;
 	class CScriptVariable;
-	struct tSymbol;
+	struct Symbol;
 	struct tFunctionInfo;
-	struct tInfoVarScopeBlock;
+	struct ScopeVarInnerBlockInfo;
 
 
 	enum NODE_TYPE
@@ -481,7 +481,7 @@ namespace zetscript{
 	};
 
 
-	typedef void  (* tPrintFunctionCallback)(const char *filename, int line, const  char  *string_text);
+	typedef void  (* PrintFunctionCallback)(const char *filename, int line, const  char  *string_text);
 
 	typedef intptr_t (*fntConversionType)(intptr_t);
 
@@ -496,13 +496,13 @@ namespace zetscript{
 		DIRECTIVE_TYPE id;
 		const char *str;
 		//char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
-	} tDirectiveInfo;
+	} DirectiveInfo;
 
 	typedef struct {
 		__PUNCTUATOR_TYPE_OLD__ id;
 		const char *str;
 		bool (*eval_fun)(const char *);
-	} tPunctuatorInfo;
+	} PunctuatorInfo;
 
 
 
@@ -512,7 +512,7 @@ namespace zetscript{
 
 	//-----------------------------
 
-	struct tSymbol {
+	struct Symbol {
 		//public:
 		std::string file;
 		short line;
@@ -522,7 +522,7 @@ namespace zetscript{
 
 		char n_params;
 
-		tSymbol(){
+		Symbol(){
 			file="";
 			line=-1;
 
@@ -531,7 +531,7 @@ namespace zetscript{
 			n_params = NO_PARAMS_IS_VARIABLE;
 		}
 
-		/*tSymbol(const std::string & _name, char _n_params= NO_PARAMS_IS_VARIABLE){
+		/*Symbol(const std::string & _name, char _n_params= NO_PARAMS_IS_VARIABLE){
 			file=ZS_UNDEFINED_IDX;
 			line=-1;
 			idxScope = ZS_UNDEFINED_IDX;
@@ -540,7 +540,7 @@ namespace zetscript{
 			n_params=_n_params;
 		}*/
 
-		bool operator == (const tSymbol & s1){
+		bool operator == (const Symbol & s1){
 			return this->name == s1.name
 				  && this->idxScope == s1.idxScope
 				  && this->n_params == s1.n_params;
@@ -550,34 +550,21 @@ namespace zetscript{
 			return n_params != NO_PARAMS_IS_VARIABLE;
 		}
 
-		bool matchSymbol(const tSymbol & s1){
+		bool matchSymbol(const Symbol & s1){
 			return this->name == s1.name
 				  && this->n_params == s1.n_params;
 		}
-		//std::string name; // var name
-		//int idxScopeVar;
-		//int idxAstNode; // ast node info.
 	};
 
 	//-----------------------------
 
-	typedef struct {
-		const char *op_str;
-		OP_CODE op_id;
-		int n_ops;
-	} tDefOperator;
 
-	/*
-	 enum ASM_PROPERTIES{
-
-	 };
-	 */
 	#pragma pack(push, 1)
 
-	struct tVariableSymbolInfo { // it can be a variable or function
+	struct VariableSymbolInfo { // it can be a variable or function
 		intptr_t ref_ptr; // pointer ref just in case is C var/function
-		tSymbol *symbol; // symbol name
-		//short idxClass; //CScriptClass		 *class_info;
+		Symbol *symbol; // symbol name
+		//short idx_class; //CScriptClass		 *class_info;
 		//short idxScope;
 
 		short idxSymbol; // idx of class function/variable symbol that keeps.
@@ -585,7 +572,7 @@ namespace zetscript{
 		unsigned short properties; // SYMBOL_INFO_PROPERTY
 		std::string c_type; // In case is C, we need to know its type ...
 
-		tVariableSymbolInfo() {
+		VariableSymbolInfo() {
 			properties = 0;
 			c_type = "";
 			//idxScope = -1;
@@ -593,19 +580,19 @@ namespace zetscript{
 			symbol=NULL;
 			//class_info=NULL;
 
-			//idxClass = -1;
+			//idx_class = -1;
 			//idxScopeVar=-1;
 			idxSymbol = -1;
 		}
 	};
 
-	struct tInstruction {
+	struct OpCodeInstruction {
 		OP_CODE op_code;
 		unsigned char index_op1;	// left and right respectively
 		intptr_t index_op2;
 		unsigned short properties;
 		//short idxAstNode; // define ast node for give some information at run time
-		tInstruction(OP_CODE _op_code
+		OpCodeInstruction(OP_CODE _op_code
 					 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
 					 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
 					 ,unsigned short _properties=0
@@ -618,20 +605,20 @@ namespace zetscript{
 		}
 	};
 
-	struct tInstructionInfo {
+	struct OpCodeInstructionSourceInfo {
 
 			const char * file;
 			short line;
-			//tSymbol * _symbol;
+			//Symbol * _symbol;
 			std::string * symbol_name;
 
-			tInstructionInfo(){
+			OpCodeInstructionSourceInfo(){
 				symbol_name=NULL;
 				file="unknow_file";
 				line=-1;
 			}
 
-			tInstructionInfo(const char * _file, short _line,std::string *_symbol_name){
+			OpCodeInstructionSourceInfo(const char * _file, short _line,std::string *_symbol_name){
 
 				file=_file;
 				line=_line;
@@ -639,14 +626,14 @@ namespace zetscript{
 			}
 	};
 
-	struct tLinkSymbolFirstAccess{
+	struct LinkSymbolFirstAccess{
 
 		short idxScriptFunction;
 		short idxScope;
 		std::string value;
 		char n_params;
 
-		tLinkSymbolFirstAccess(){
+		LinkSymbolFirstAccess(){
 
 			idxScriptFunction=ZS_UNDEFINED_IDX;
 			idxScope=ZS_UNDEFINED_IDX;
@@ -654,7 +641,7 @@ namespace zetscript{
 			n_params=ZS_UNDEFINED_IDX;
 		}
 
-		tLinkSymbolFirstAccess(
+		LinkSymbolFirstAccess(
 				 int _idxScriptFunction
 				,short _idxScope
 				,const std::string & _value
@@ -667,22 +654,22 @@ namespace zetscript{
 		}
 	};
 
-	struct tInstructionEval:tInstruction{
+	struct OpCodeInstructionEval:OpCodeInstruction{
 
-		tLinkSymbolFirstAccess 					 	linkSymbolFirstAccess;
-		tInstructionInfo 							instructionInfo;
+		LinkSymbolFirstAccess 					 	linkSymbolFirstAccess;
+		OpCodeInstructionSourceInfo 							instructionInfo;
 
-		tInstructionEval(OP_CODE _op_code
+		OpCodeInstructionEval(OP_CODE _op_code
 					 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
 					 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
 					 ,unsigned short _properties=0
-					 ):tInstruction(_op_code,_index_op1,_index_op2,_properties){
+					 ):OpCodeInstruction(_op_code,_index_op1,_index_op2,_properties){
 		}
 	};
 
-	typedef tInstruction *PtrInstruction;
+	typedef OpCodeInstruction *PtrInstruction;
 
-	struct tStackElement {
+	struct StackElement {
 		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
 		void * stkValue; // operable value
 		void * varRef; // stack ref in case to assign new value.
@@ -690,17 +677,17 @@ namespace zetscript{
 
 	};
 
-	typedef tStackElement tInfoConstantValue;
+	typedef StackElement ConstantValueInfo;
 
-	struct tFunctionSymbol {
+	struct FunctionSymbol {
 
-		tStackElement object; // created object. undefined by default.
+		StackElement object; // created object. undefined by default.
 		intptr_t  proxy_ptr; // for proxy functions...
-		//tFunctionSymbol *super_function; // only for functions ...
+		//FunctionSymbol *super_function; // only for functions ...
 		std::string key_value;
 		//short idxAstNode; // in case there's ast node...
 
-		tFunctionSymbol() {
+		FunctionSymbol() {
 			proxy_ptr = 0;
 			object= {
 
@@ -722,25 +709,25 @@ namespace zetscript{
 	/**
 	 * Scope register
 	 */
-	struct tInfoVarScopeBlock {
+	struct ScopeVarInnerBlockInfo {
 		int *var_index;
 		char n_var_index;
 		short idxScope;
 	};
 
-	typedef struct _tInfoSharedPointer *PInfoSharedPointer;
+	typedef struct _SharedPointerInfo *PInfoSharedPointer;
 
-	typedef struct _tInfoSharedPointer {
+	typedef struct _SharedPointerInfo {
 		CScriptVariable *shared_ptr;
 		unsigned char n_shares;
 
 		//short idx_0_shares;
 		//PInfoSharedPointer next;
-	} tInfoSharedPointer;
+	} SharedPointerInfo;
 
 	typedef struct _tNode * PInfoSharedPointerNode;
 	typedef struct _tNode {
-		tInfoSharedPointer data;
+		SharedPointerInfo data;
 		unsigned short currentStack;
 		PInfoSharedPointerNode previous, next;
 	} tInfoSharedPointerNode;
@@ -748,7 +735,7 @@ namespace zetscript{
 	typedef struct{
 		int idx_type;
 		std::string arg_name; //arg c++ type or arg name
-	}tArgumentInfo;
+	}ParamArgInfo;
 
 	#pragma pack(pop)
 

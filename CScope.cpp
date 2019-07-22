@@ -114,13 +114,13 @@ namespace zetscript{
 	// SCOPE VARIABLE MANAGEMENT
 	//
 
-	tSymbol * CScope::registerSymbol(const std::string & file,short line,const std::string & var_name, char n_params){
-		tSymbol *p_irv=NULL;//idxAstNode=-1;// * irv;
+	Symbol * CScope::registerSymbol(const std::string & file,short line,const std::string & var_name, char n_params){
+		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
 		if((p_irv = getSymbol(var_name,n_params))==NULL){ // check whether is local var registered scope ...
 
-			tSymbol *irv = new tSymbol();
+			Symbol *irv = new Symbol();
 			irv->name = var_name;
 			irv->file	 = file;
 			irv->line 	 = line;
@@ -142,7 +142,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tSymbol * CScope::getSymbolRecursiveDownScope(const std::string & symbol_name, char n_params){
+	Symbol * CScope::getSymbolRecursiveDownScope(const std::string & symbol_name, char n_params){
 
 
 		for(unsigned i = 0; i < m_scopeSymbol.size(); i++){
@@ -161,9 +161,9 @@ namespace zetscript{
 
 	}
 
-	tSymbol * CScope::getSymbolRecursiveUpScope(const std::string & symbol_name, char n_params){
+	Symbol * CScope::getSymbolRecursiveUpScope(const std::string & symbol_name, char n_params){
 		// only blocks within functions...
-		tSymbol *sv;
+		Symbol *sv;
 
 		// for each variable in current scope ...
 		for(unsigned i = 0; i < m_scopeSymbol.size(); i++){
@@ -185,9 +185,9 @@ namespace zetscript{
 
 	}
 
-	tSymbol * CScope::getSymbol(const std::string & var_name, char n_params){
+	Symbol * CScope::getSymbol(const std::string & var_name, char n_params){
 		//return getSymbolRecursive(var_name, n_params);
-		tSymbol *sv;
+		Symbol *sv;
 
 		if((sv=getSymbolRecursiveDownScope(var_name,n_params))!=NULL){
 					return sv;

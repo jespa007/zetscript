@@ -43,7 +43,7 @@ namespace zetscript{
 
 		 CScriptClass(unsigned char _idxClass);
 
-		virtual CScriptFunction						*  			registerFunctionMember(const std::string & file, short line,const std::string & function_name, std::vector<tArgumentInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		virtual CScriptFunction						*  			registerFunctionMember(const std::string & file, short line,const std::string & function_name, std::vector<ParamArgInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
 
 		bool isToClass();
 

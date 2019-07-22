@@ -23,11 +23,12 @@ class CScriptClass;
 		//bool deallocatable;
 		//int idx_shared_ptr;
 		PInfoSharedPointerNode ptr_shared_pointer_node;
-		unsigned char idxClass;
+		unsigned char idx_class;
 		CScriptFunction *info_function_new;
-		tInstruction 	*instruction_new;
+		OpCodeInstruction 	*instruction_new;
 		bool was_created_by_constructor;
-		std::vector<tStackElement> m_variable;
+		std::vector<StackElement> m_variable;
+
 		//----------------------
 
 		// public vars ...
@@ -35,7 +36,7 @@ class CScriptClass;
 		void *m_value;
 
 		// Construct ...
-		CScriptVariable();
+		CScriptVariable(CVirtualMachine	*virtual_machine;
 
 		/**
 		 * info_registered_class: scriptclass info
@@ -49,20 +50,20 @@ class CScriptClass;
 		bool itHasSetMetamethod();
 		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
 
-		virtual tStackElement * addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function=NULL, tInstruction *src_instruction = NULL, tStackElement * sv=NULL);
-		tStackElement * getVariableSymbol(const std::string & varname);
-		tStackElement * getVariableSymbolByIndex(unsigned int idx);
+		virtual StackElement * addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function=NULL, OpCodeInstruction *src_instruction = NULL, StackElement * sv=NULL);
+		StackElement * getVariableSymbol(const std::string & varname);
+		StackElement * getVariableSymbolByIndex(unsigned int idx);
 		bool removeVariableSymbolByName(const std::string & symbol_value, const CScriptFunction *info_function=NULL);
 		bool removeVariableSymbolByIndex(unsigned int idx, bool remove_vector=false);
-		std::vector<tStackElement> * getVectorVariable();
+		std::vector<StackElement> * getVectorVariable();
 
 
-		virtual tFunctionSymbol * addFunctionSymbol(const std::string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates=false);
-		tFunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const std::string & funname);
+		virtual FunctionSymbol * addFunctionSymbol(const std::string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates=false);
+		FunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const std::string & funname);
 
-		tFunctionSymbol * getFunctionSymbol(const std::string & varname);
-		tFunctionSymbol * getFunctionSymbolByIndex(unsigned int idx);
-		std::vector <tFunctionSymbol> * getVectorFunctionSymbol();
+		FunctionSymbol * getFunctionSymbol(const std::string & varname);
+		FunctionSymbol * getFunctionSymbolByIndex(unsigned int idx);
+		std::vector <FunctionSymbol> * getVectorFunctionSymbol();
 
 		void * get_C_Object();
 		bool is_c_object();
@@ -87,9 +88,9 @@ class CScriptClass;
 	protected:
 
 
-		tStackElement this_variable;
-		tStackElement * exist(const char *c);
-
+		StackElement this_variable;
+		StackElement * exist(const char *c);
+		CVirtualMachine	*virtual_machine;
 
 		/**
 		 * This variable tells whether is pointer function or not.
@@ -102,7 +103,7 @@ class CScriptClass;
 
 		virtual void setup();
 
-		//std::vector<tFunctionSymbol> m_variableSymbol;
+		//std::vector<FunctionSymbol> m_variableSymbol;
 
 		std::vector<std::string> 		  m_variableKey;
 
@@ -116,7 +117,7 @@ class CScriptClass;
 
 		void createSymbols(CScriptClass *irv);
 
-		std::vector<tFunctionSymbol> m_functionSymbol;
+		std::vector<FunctionSymbol> m_functionSymbol;
 
 
 

@@ -29,14 +29,14 @@ namespace zetscript{
 
 		//--------------------------------------------------------------------
 		// Register functions
-		std::vector<tSymbol *> m_scopeSymbol; // vars registered from base.
+		std::vector<Symbol *> m_scopeSymbol; // vars registered from base.
 
 		/**
 		 * register/search symbol info
 		 * @n_params:
 		 */
-		tSymbol * registerSymbol(const std::string & file, short line,const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
-		tSymbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
+		Symbol * registerSymbol(const std::string & file, short line,const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
+		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
 
 
 		CScope(short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX,bool is_c_node=false);
@@ -50,7 +50,7 @@ namespace zetscript{
 		void setScriptClass(CScriptClass *sc);
 		CScriptClass * getScriptClass();
 
-		std::vector<tSymbol *> * getRegisteredVariableList();
+		std::vector<Symbol *> * getRegisteredVariableList();
 		std::vector<short> 	  * getLocalScopeList();
 
 		CScope * pushScope();
@@ -65,9 +65,9 @@ namespace zetscript{
 		// The a parent scope ...
 		short idxParentScope, idxCurrentScopePointer, idxBaseScope;
 
-		tSymbol * getSymbolRecursive(const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
-		tSymbol * getSymbolRecursiveDownScope(const std::string & ref_symbol, char n_params=NO_PARAMS_IS_VARIABLE);
-		tSymbol * getSymbolRecursiveUpScope(const std::string & ref_symbol, char n_params=NO_PARAMS_IS_VARIABLE);
+		Symbol * getSymbolRecursive(const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
+		Symbol * getSymbolRecursiveDownScope(const std::string & ref_symbol, char n_params=NO_PARAMS_IS_VARIABLE);
+		Symbol * getSymbolRecursiveUpScope(const std::string & ref_symbol, char n_params=NO_PARAMS_IS_VARIABLE);
 
 
 	};

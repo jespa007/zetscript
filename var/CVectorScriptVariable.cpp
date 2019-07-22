@@ -38,13 +38,13 @@ namespace zetscript{
 
 
 
-	tStackElement *CVectorScriptVariable::push(){
-		tStackElement s={NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
+	StackElement *CVectorScriptVariable::push(){
+		StackElement s={NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		m_variable.push_back(s);
 		return &m_variable[m_variable.size()-1];
 	}
 
-	void CVectorScriptVariable::push(tStackElement  * v){
+	void CVectorScriptVariable::push(StackElement  * v){
 		m_variable.push_back(*v);
 
 		// update n_refs +1
@@ -57,7 +57,7 @@ namespace zetscript{
 
 
 
-	tStackElement * CVectorScriptVariable::pop(){
+	StackElement * CVectorScriptVariable::pop(){
 		return_callc={NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		if(m_variable.size()>0){
 			return_callc=m_variable[m_variable.size()-1];
@@ -88,7 +88,7 @@ namespace zetscript{
 		for(unsigned i = 0; i < m_variable.size(); i++){
 			if(m_variable[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
-				tStackElement si=m_variable[i];
+				StackElement si=m_variable[i];
 
 				if((si.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 					if(si.varRef != NULL){

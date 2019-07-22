@@ -66,10 +66,10 @@ namespace zetscript{
 		{
 			CScriptFunction *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
 			int index         = (current_scope_info_ptr-1)->index;
-			tStackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;
+			StackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;
 			for(int i = 0; i < ptr_info_function->lut_scope_symbol[index].n_var_index; i++){
 				int idx_local_var = ptr_info_function->lut_scope_symbol[index].var_index[i];
-				tStackElement *ptr_ale =&ptr_local_var[idx_local_var];
+				StackElement *ptr_ale =&ptr_local_var[idx_local_var];
 				CScriptVariable *var = NULL;
 				switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 				case STK_PROPERTY_TYPE_STRING:
@@ -113,11 +113,11 @@ namespace zetscript{
 	inline bool CVirtualMachine::APPLY_METAMETHOD(
 										CScriptVariable *calling_object
 										,CScriptFunction *info_function
-										,tInstruction *instruction
+										,OpCodeInstruction *instruction
 										,const char *__OVERR_OP__
 										,METAMETHOD_OPERATOR __METAMETHOD__
-										,tStackElement *stkResultOp1
-										,tStackElement *stkResultOp2
+										,StackElement *stkResultOp1
+										,StackElement *stkResultOp2
 
 										) {
 
@@ -130,7 +130,7 @@ namespace zetscript{
 						|| __METAMETHOD__ == NEG_METAMETHOD\
 						|| __METAMETHOD__ == SET_METAMETHOD\
 						   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);
-		tStackElement *mm_test_startArg = stkCurrentData+n_metam_args;
+		StackElement *mm_test_startArg = stkCurrentData+n_metam_args;
 		if(instruction->index_op2 ==0){ /* search for first time , else the function is stored in index_op2 */
 			CScriptClass *script_class_aux=NULL;
 
@@ -141,19 +141,19 @@ namespace zetscript{
 			if(((stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){
 				script_var_object = (CScriptVariable *)(stkResultOp1->varRef);
 				if(((stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
-					script_var_object = (CScriptVariable *)(((tStackElement *)script_var_object))->varRef;
+					script_var_object = (CScriptVariable *)(((StackElement *)script_var_object))->varRef;
 				}
 				if(__METAMETHOD__ == SET_METAMETHOD){
 					idxOffsetFunctionMemberStart=1;
 					one_param = (CScriptVariable *)(stkResultOp2->varRef);
 					if(((stkResultOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
-						one_param = (CScriptVariable *)(((tStackElement *)one_param))->varRef;
+						one_param = (CScriptVariable *)(((StackElement *)one_param))->varRef;
 					}
 				}
 			}else if(((stkResultOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
 				script_var_object = (CScriptVariable *)(stkResultOp2->varRef);
 				if(((stkResultOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
-					script_var_object = (CScriptVariable *)(((tStackElement *)script_var_object))->varRef;
+					script_var_object = (CScriptVariable *)(((StackElement *)script_var_object))->varRef;
 				}
 			}else{
 
@@ -176,9 +176,9 @@ namespace zetscript{
 				return false;
 			}
 
-			script_class_aux=GET_SCRIPT_CLASS(zs,script_var_object->idxClass);
+			script_class_aux=GET_SCRIPT_CLASS(zs,script_var_object->idx_class);
 			std::vector<CScriptFunction *> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
-			tStackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
+			StackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;
 
 			symbol_to_find=GET_METAMETHOD(zs,__METAMETHOD__);
@@ -208,7 +208,7 @@ namespace zetscript{
 		}
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
-		tStackElement ret_obj=execute_internal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,ptrCurrentStr,n_metam_args);
+		StackElement ret_obj=execute_internal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,ptrCurrentStr,n_metam_args);
 		if(error){
 			return false;
 		}
@@ -236,18 +236,18 @@ namespace zetscript{
 	inline CScriptFunction * CVirtualMachine::FIND_FUNCTION(
 			CScriptVariable *calling_object
 			,CScriptFunction *info_function
-			,tInstruction *instruction
-			,tInstruction * callAleInstruction
+			,OpCodeInstruction *instruction
+			,OpCodeInstruction * callAleInstruction
 
-			,std::vector<tFunctionSymbol> *m_functionSymbol
+			,std::vector<FunctionSymbol> *m_functionSymbol
 			,std::vector<CScriptFunction *> *vec_global_functions
 
 			,bool is_constructor
 			,const std::string & symbol_to_find
 
-			,tStackElement *stkResultOp1
-			,tStackElement *stkResultOp2
-			,tStackElement *startArg
+			,StackElement *stkResultOp1
+			,StackElement *stkResultOp2
+			,StackElement *startArg
 			,unsigned char n_args
 			,const char *metamethod_str
 			) {
@@ -286,7 +286,7 @@ namespace zetscript{
 							int idx_type=-1;
 							int arg_idx_type=-1;
 							for( unsigned k = 0; k < n_args && all_check;k++){
-								tStackElement *currentArg=&startArg[k];
+								StackElement *currentArg=&startArg[k];
 								arg_idx_type=irfs->m_arg[k].idx_type;
 
 								if(arg_idx_type==IDX_STACK_ELEMENT){
@@ -294,7 +294,7 @@ namespace zetscript{
 								}
 								else{
 								if(currentArg->properties & STK_PROPERTY_IS_STACKVAR){
-									currentArg = (tStackElement *)currentArg->varRef;
+									currentArg = (StackElement *)currentArg->varRef;
 								}
 
 								unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);
@@ -349,7 +349,7 @@ namespace zetscript{
 														(	arg_idx_type==IDX_TYPE_STRING_PTR_C && currentArg->varRef!=0)
 													  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
 											}else if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */
-												all_check=IS_IDX_CLASS_INSTANCEOF(zs,c_class->idxClass,arg_idx_type);
+												all_check=IS_IDX_CLASS_INSTANCEOF(zs,c_class->idx_class,arg_idx_type);
 											}else{ /* fail ... */
 												all_check=false;
 											}
@@ -381,9 +381,9 @@ namespace zetscript{
 				/* get arguments... */
 
 				for( unsigned k = 0; k < n_args;k++){
-					tStackElement *currentArg=&startArg[k];
+					StackElement *currentArg=&startArg[k];
 					if(currentArg->properties & STK_PROPERTY_IS_STACKVAR){
-						currentArg = (tStackElement *)currentArg->varRef;
+						currentArg = (StackElement *)currentArg->varRef;
 					}
 
 					if(k>0){
@@ -448,7 +448,7 @@ namespace zetscript{
 						if(n_candidates == 0){
 							str_candidates+="ttPossible candidates are:nn";
 						}
-						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+irfs->symbol_info.symbol->name+"(";
+						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idx_class!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+irfs->symbol_info.symbol->name+"(";
 
 						for(unsigned a = 0; a < irfs->m_arg.size(); a++){
 							if(a>0){
@@ -478,7 +478,7 @@ namespace zetscript{
 					}else{
 						write_error(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find %s \"%s%s(%s)\".\n\n",
 										is_constructor ? "constructor":"function",
-										calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+										calling_object==NULL?"":calling_object->idx_class!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 										info_function->INSTRUCTION_getSymbolName(callAleInstruction),
 										args_str.c_str()
 						);
@@ -488,14 +488,14 @@ namespace zetscript{
 					if(metamethod_str!=NULL){
 						write_error(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
-													calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+													calling_object==NULL?"":calling_object->idx_class!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 													vec_global_functions->at(0)->symbol_info.symbol->name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
 						write_error(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
-							calling_object==NULL?"":calling_object->idxClass!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+							calling_object==NULL?"":calling_object->idx_class!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 							info_function->INSTRUCTION_getSymbolName(callAleInstruction),
 							args_str.c_str(),
 							str_candidates.c_str());

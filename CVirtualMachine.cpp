@@ -59,7 +59,7 @@ namespace zetscript{
 
 	#define IS_VECTOR(ptr_result_instruction) \
 	(( ptr_result_instruction->properties & STK_PROPERTY_TYPE_SCRIPTVAR) &&\
-	 (((CScriptVariable *)(ptr_result_instruction->stkValue))->idxClass==IDX_CLASS_VECTOR))
+	 (((CScriptVariable *)(ptr_result_instruction->stkValue))->idx_class==IDX_CLASS_VECTOR))
 
 	#define IS_GENERIC_NUMBER(properties) \
 	((properties & STK_PROPERTY_TYPE_INTEGER) ||\
@@ -430,7 +430,7 @@ namespace zetscript{
 	#define CALL_GC SHARED_LIST_DESTROY(zero_shares[idxCurrentStack])
 
 
-	const char * CVirtualMachine::STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement *ptr_info_ale){
+	const char * CVirtualMachine::STR_GET_TYPE_VAR_INDEX_INSTRUCTION(StackElement *ptr_info_ale){
 		const char * result="undefined";
 		if(IS_INT(ptr_info_ale->properties))
 			result= "int";
@@ -444,9 +444,9 @@ namespace zetscript{
 			result= "function";
 
 		else if(IS_VAR(ptr_info_ale->properties)){
-			tStackElement *var=ptr_info_ale;
+			StackElement *var=ptr_info_ale;
 			if(ptr_info_ale->properties & STK_PROPERTY_IS_STACKVAR){
-				var=(tStackElement *)var->varRef;
+				var=(StackElement *)var->varRef;
 			}
 			result=((CScriptVariable *)var->varRef)->getClassName().c_str();
 		}
@@ -474,7 +474,7 @@ namespace zetscript{
 		memset(shared_var,0,sizeof(shared_var));
 		//memset(stack,0,sizeof(stack));
 
-		tStackElement *aux=stack;
+		StackElement *aux=stack;
 
 		for(int i=0; i < VM_LOCAL_VAR_MAX_STACK;i++){
 			*aux++={0,NULL,STK_PROPERTY_TYPE_UNDEFINED};
@@ -535,7 +535,7 @@ namespace zetscript{
 
 	//============================================================================================================================================
 	// POINTER MANANAGER
-	std::string CZetScript::stk_C_TypeStr(const tStackElement & stk_v){
+	std::string CZetScript::stk_C_TypeStr(const StackElement & stk_v){
 		if(stk_v.properties & STK_PROPERTY_TYPE_INTEGER){
 			return rtti::demangle(typeid(int).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_NUMBER){
@@ -547,7 +547,7 @@ namespace zetscript{
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 
-			CScriptClass *c = GET_SCRIPT_CLASS(((CScriptVariable *)(stk_v.varRef))->idxClass);
+			CScriptClass *c = GET_SCRIPT_CLASS(((CScriptVariable *)(stk_v.varRef))->idx_class);
 
 			if(c!=NULL){
 				return rtti::demangle(c->classPtrType);
@@ -636,19 +636,19 @@ namespace zetscript{
 	}
 
 	//============================================================================================================================================
-	tStackElement  CVirtualMachine::call_C_function(
+	StackElement  CVirtualMachine::call_C_function(
 			intptr_t fun_ptr,
 			const CScriptFunction *irfs,
 			bool & error,
-			tStackElement *ptrArg,
+			StackElement *ptrArg,
 			unsigned char n_args,
-			tInstruction *ins){
+			OpCodeInstruction *ins){
 
-		tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
+		StackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
 		intptr_t converted_param[MAX_N_ARGS];
 		intptr_t result=0;
-		tStackElement *currentArg;
+		StackElement *currentArg;
 		current_call_c_function = irfs;
 		//float aux_float=0;
 
@@ -922,7 +922,7 @@ namespace zetscript{
 		return callc_result;
 	}
 
-	tStackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
+	StackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
 		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION(0);
 
 		if(idx_glb_element < main_function->m_variable.size()){
@@ -974,11 +974,11 @@ namespace zetscript{
 		}
 	}
 
-/*	void CVirtualMachine::addGlobalVar(tStackElement se){
+/*	void CVirtualMachine::addGlobalVar(StackElement se){
 		global_var.push_back(se);
 	}*/
 
-	void CVirtualMachine::addGlobalVar(const tStackElement & stk){
+	void CVirtualMachine::addGlobalVar(const StackElement & stk){
 
 		if(n_globals < VM_LOCAL_VAR_MAX_STACK){
 			stack[n_globals++]=stk;
@@ -1008,7 +1008,7 @@ namespace zetscript{
 			//case STK_PROPERTY_TYPE_STRING:
 			end=(main_function->m_variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;
 			if(!end){
-				tStackElement *ptr_ale =&stack[i];
+				StackElement *ptr_ale =&stack[i];
 				CScriptVariable *var = NULL;
 
 				if(ptr_ale->properties &STK_PROPERTY_TYPE_SCRIPTVAR){
@@ -1027,7 +1027,7 @@ namespace zetscript{
 
 
 		// clear all stack variables
-		tStackElement *aux=stack;
+		StackElement *aux=stack;
 		for(int i=0; i < VM_LOCAL_VAR_MAX_STACK;i++){
 			*aux++={0,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		}
@@ -1040,15 +1040,15 @@ namespace zetscript{
 		//int idxCurrentStack
 	}
 
-	tStackElement  CVirtualMachine::execute(
+	StackElement  CVirtualMachine::execute(
 			 CScriptFunction *info_function,
 			 CScriptVariable *this_object,
 			 bool & error,
-			const std::vector<tStackElement> & arg
+			const std::vector<StackElement> & arg
 			){
 
 
-		tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
+		StackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
 		if(info_function==NULL){
 			RETURN_ERROR;
@@ -1086,7 +1086,7 @@ namespace zetscript{
 		// Script function starts here.... later script function can call c++ function, but once in c++ function is not possible by now call script function again.
 
 
-		tStackElement info=execute_internal(
+		StackElement info=execute_internal(
 				info_function,
 				this_object,
 				error,
@@ -1103,26 +1103,26 @@ namespace zetscript{
 		return info;
 	}
 
-	tStackElement CVirtualMachine::execute_internal(
+	StackElement CVirtualMachine::execute_internal(
 			CScriptFunction 		* info_function,
 			CScriptVariable       	* this_object,
 			bool & error,
-			tStackElement 		  	* _ptrStartOp,
+			StackElement 		  	* _ptrStartOp,
 			std::string 		  		  	* _ptrStartStr,
 			unsigned char n_args,
-			tInstruction *calling_instruction){
+			OpCodeInstruction *calling_instruction){
 
 		error=false;
-		tStackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
+		StackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
 		std::string *ptrStartStr;
-		tStackElement *ptrStartOp;
+		StackElement *ptrStartOp;
 
 		if(info_function == NULL){
 			RETURN_ERROR;
 		}
 
-		std::vector<tVariableSymbolInfo> * local_var=&info_function->m_variable;
+		std::vector<VariableSymbolInfo> * local_var=&info_function->m_variable;
 
 		ptrStartOp =_ptrStartOp;
 		ptrStartStr =_ptrStartStr;
@@ -1131,12 +1131,12 @@ namespace zetscript{
 			ptrStartStr=stkString;
 		}
 
-		tStackElement *ptrLocalVar=NULL;
-		tStackElement *ptrArg=NULL;
+		StackElement *ptrLocalVar=NULL;
+		StackElement *ptrArg=NULL;
 		tVM_ScopeInfo * ptrStartScopeInfo=NULL;
 
 		zs_print_debug_cr("Executing function %s ...",info_function->symbol_info.symbol->name.c_str());
-		int idxBaseStk=(ptrStartOp-stack);//>>sizeof(tStackElement *);
+		int idxBaseStk=(ptrStartOp-stack);//>>sizeof(StackElement *);
 
 		if(idxBaseStk<n_args){
 			write_error(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Internal error (idxBaseStk<n_args) (%i<%i)",idxBaseStk,n_args);
@@ -1156,7 +1156,7 @@ namespace zetscript{
 			std::string              *ptrLastStr;
 			std::string              *ptrCurrentStr;
 
-			 tStackElement     stack[VM_LOCAL_VAR_MAX_STACK];*/
+			 StackElement     stack[VM_LOCAL_VAR_MAX_STACK];*/
 
 			//printf("call:%i left:%lu\n",idxCurrentStack,MAX_SCOPE_INFO-current_scope_info_ptr);// scope_info[VM_LOCAL_VAR_MAX_STACK-1]);
 			idxCurrentStack++;
@@ -1172,7 +1172,7 @@ namespace zetscript{
 				write_error(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
 						"1. Set register_C_baseSymbols(false) and  re-register the function using REGISTER_C_FUNCTION_MEMBER\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
-						,this_object==NULL?"":this_object->idxClass!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
+						,this_object==NULL?"":this_object->idx_class!=IDX_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
 						,info_function->symbol_info.symbol->name.c_str());
 				RETURN_ERROR;
 			}
@@ -1186,7 +1186,7 @@ namespace zetscript{
 				}
 			}
 
-			tStackElement se = call_C_function(fun_ptr,info_function,error,ptrArg,n_args, calling_instruction);
+			StackElement se = call_C_function(fun_ptr,info_function,error,ptrArg,n_args, calling_instruction);
 
 			if(idxCurrentStack > 0){
 				idxCurrentStack--;
@@ -1227,7 +1227,7 @@ namespace zetscript{
 
 
 			if(idxCurrentStack > 1){ // not global vars, then initialize variables as undefined...
-				tStackElement *ptr_aux = ptrLocalVar;
+				StackElement *ptr_aux = ptrLocalVar;
 				for(unsigned i = 0; i < size_local_var; i++){
 
 					// if C then pass its properties...
@@ -1250,7 +1250,7 @@ namespace zetscript{
 
 
 		CScriptFunction * aux_function_info=NULL;
-		tStackElement ret_obj;
+		StackElement ret_obj;
 
 		CScriptVariable *svar=NULL;
 		CScriptVariable *calling_object=NULL;
@@ -1258,23 +1258,23 @@ namespace zetscript{
 
 
 
-		tStackElement *stkResultOp1=NULL;
-		tStackElement *stkResultOp2=NULL;
-		tStackElement *ldrVar;
+		StackElement *stkResultOp1=NULL;
+		StackElement *stkResultOp2=NULL;
+		StackElement *ldrVar;
 		unsigned short pre_post_properties=0;
 		unsigned short properties=0;
-		tStackElement *variable_stack_element;
-		tFunctionSymbol *si;
+		StackElement *variable_stack_element;
+		FunctionSymbol *si;
 		CScriptVariable *var_object = NULL;
 
 		unsigned short scope_type=0;
 
-		tStackElement *dst_ins=NULL;
-		tStackElement *src_ins=NULL;
+		StackElement *dst_ins=NULL;
+		StackElement *src_ins=NULL;
 		bool ok=false;
 
-		tInstruction *start_it=info_function->instruction;
-		tInstruction *instruction_it=start_it;
+		OpCodeInstruction *start_it=info_function->instruction;
+		OpCodeInstruction *instruction_it=start_it;
 
 		ptrCurrentStr=ptrStartStr;
 		stkCurrentData=ptrStartOp;
@@ -1287,7 +1287,7 @@ namespace zetscript{
 
 		 for(;;){ // foreach asm instruction ...
 
-			tInstruction * instruction = instruction_it++;
+			OpCodeInstruction * instruction = instruction_it++;
 
 			const unsigned char operator_type=instruction->op_code;
 			const unsigned char index_op1=instruction->index_op1;
@@ -1309,11 +1309,11 @@ namespace zetscript{
 						POP_TWO;
 
 						if( (stkResultOp1->properties & (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)) == (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)){
-							var_object = (CScriptVariable *)(((tStackElement *)stkResultOp1->varRef)->varRef);
+							var_object = (CScriptVariable *)(((StackElement *)stkResultOp1->varRef)->varRef);
 						}
 
 						if(var_object != NULL){
-							if(var_object->idxClass == IDX_CLASS_VECTOR){
+							if(var_object->idx_class == IDX_CLASS_VECTOR){
 								CVectorScriptVariable * vec = (CVectorScriptVariable *)var_object;
 
 								if(IS_INT(stkResultOp2->properties)){
@@ -1362,7 +1362,7 @@ namespace zetscript{
 							if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 								POP_ONE; // get var op1 and symbol op2
 
-								tInstruction *previous_ins= (instruction-1);
+								OpCodeInstruction *previous_ins= (instruction-1);
 
 								if((stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR)!= STK_PROPERTY_TYPE_SCRIPTVAR)
 								{
@@ -1374,7 +1374,7 @@ namespace zetscript{
 
 								CScriptVariable  * base_var = (CScriptVariable  *)stkResultOp1->varRef;
 								if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) {
-									tStackElement *stk_ins=((tStackElement *)stkResultOp1->varRef);
+									StackElement *stk_ins=((StackElement *)stkResultOp1->varRef);
 
 									if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 										base_var=((CScriptVariable *)stk_ins->varRef);
@@ -1509,7 +1509,7 @@ namespace zetscript{
 					PUSH_UNDEFINED;
 					continue;
 				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_CONSTANT){
-					(*stkCurrentData)=*(((tInfoConstantValue *)instruction->index_op2));
+					(*stkCurrentData)=*(((ConstantValueInfo *)instruction->index_op2));
 
 					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction->properties);
 
@@ -1552,7 +1552,7 @@ namespace zetscript{
 						vec_functions=&info_function->m_function;
 					}else*/
 					if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
-						tStackElement *var=NULL;
+						StackElement *var=NULL;
 						if(properties & INS_PROPERTY_CONSTRUCT_CALL){
 							var=(stkCurrentData-1);
 						}else{
@@ -1560,9 +1560,9 @@ namespace zetscript{
 							var = stkResultOp1;
 						}
 
-						tStackElement *stk_ins=NULL;
+						StackElement *stk_ins=NULL;
 						if(var->properties & STK_PROPERTY_IS_STACKVAR) {
-							stk_ins=((tStackElement *)var->varRef);
+							stk_ins=((StackElement *)var->varRef);
 						}
 						else{
 							stk_ins=var;
@@ -1570,7 +1570,7 @@ namespace zetscript{
 
 						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							class_obj=(CScriptVariable *)(stk_ins->varRef);
-							CScriptClass *sc =GET_SCRIPT_CLASS(((CScriptVariable *)class_obj)->idxClass);
+							CScriptClass *sc =GET_SCRIPT_CLASS(((CScriptVariable *)class_obj)->idx_class);
 							//vec_functions=&sc->m_function;
 						}
 						else{
@@ -1663,7 +1663,7 @@ namespace zetscript{
 						CScriptVariable *vec_obj = NULL;
 						if((stkCurrentData-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							vec_obj = (CScriptVariable *)(stkCurrentData-1)->varRef;
-							if(vec_obj->idxClass == IDX_CLASS_VECTOR){ // push value ...
+							if(vec_obj->idx_class == IDX_CLASS_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								src_ins=stkResultOp1;
 								dst_ins=((CVectorScriptVariable *)vec_obj)->push();
@@ -1685,14 +1685,14 @@ namespace zetscript{
 						CScriptVariable *struct_obj = NULL;
 						if((stkCurrentData-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							struct_obj = (CScriptVariable *)(stkCurrentData-1)->varRef;
-							if(struct_obj->idxClass == IDX_CLASS_STRUCT){ // push value ...
+							if(struct_obj->idx_class == IDX_CLASS_STRUCT){ // push value ...
 								// op1 is now the src value ...
 								if(stkResultOp2->properties & STK_PROPERTY_TYPE_STRING){
-									tStackElement *se=NULL;
+									StackElement *se=NULL;
 									const char *str = (const char *)stkResultOp2->stkValue;
 									src_ins=stkResultOp1;
 									if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
-										tFunctionSymbol *si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str,NULL);
+										FunctionSymbol *si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str,NULL);
 										if(si!=NULL){
 											se=&si->object;;
 										}
@@ -1725,7 +1725,7 @@ namespace zetscript{
 						POP_TWO;
 
 						if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
-							dst_ins=(tStackElement *)stkResultOp1->varRef; // stkValue is expect to contents a stack variable
+							dst_ins=(StackElement *)stkResultOp1->varRef; // stkValue is expect to contents a stack variable
 						}else{
 							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected l-value on assignment ('=')");
 							RETURN_ERROR;
@@ -1742,7 +1742,7 @@ namespace zetscript{
 
 						// we need primitive stackelement in order to assign...
 						if(src_ins->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
-							src_ins=(tStackElement *)src_ins->varRef; // stkValue is expect to contents a stack variable
+							src_ins=(StackElement *)src_ins->varRef; // stkValue is expect to contents a stack variable
 
 						}
 
@@ -1773,7 +1773,7 @@ namespace zetscript{
 							RETURN_ERROR;
 						}
 
-						tStackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
+						StackElement old_dst_ins = *dst_ins; // save dst_var to check after assignment...
 
 						ASSIGN_STACK_VAR(dst_ins,src_ins);
 
@@ -2087,7 +2087,7 @@ namespace zetscript{
 				 POP_TWO;
 
 				if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
-					stkResultOp1=(tStackElement *)stkResultOp1->varRef; // stkValue is expect to contents a stack variable
+					stkResultOp1=(StackElement *)stkResultOp1->varRef; // stkValue is expect to contents a stack variable
 				}
 
 				switch((intptr_t)stkResultOp2->stkValue){
@@ -2108,7 +2108,7 @@ namespace zetscript{
 						break;
 					default:
 						if(stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							bool b = SCRIPT_CLASS_FACTORY->isIdxClassInstanceOf(((CScriptVariable *)(stkResultOp1->varRef))->idxClass, (intptr_t)stkResultOp2->stkValue);
+							bool b = SCRIPT_CLASS_FACTORY->isIdxClassInstanceOf(((CScriptVariable *)(stkResultOp1->varRef))->idx_class, (intptr_t)stkResultOp2->stkValue);
 							PUSH_BOOLEAN(b);
 						}else{
 							PUSH_BOOLEAN(false);
@@ -2139,8 +2139,8 @@ namespace zetscript{
 
 
 					bool is_c = false;
-					tStackElement *startArg=stkCurrentData;
-					tStackElement *callAle=NULL;
+					StackElement *startArg=stkCurrentData;
+					StackElement *callAle=NULL;
 
 					while(n_args <= MAX_N_ARGS && (((startArg-1)->properties&STK_PROPERTY_TYPE_FUNCTION)==0)){
 						startArg--;
@@ -2161,7 +2161,7 @@ namespace zetscript{
 
 					// try to find the function ...
 					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
-						tInstruction *callAleInstruction = (tInstruction *)(callAle)->stkValue;
+						OpCodeInstruction *callAleInstruction = (OpCodeInstruction *)(callAle)->stkValue;
 						//PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
 						symbol_to_find = INSTRUCTION_GET_SYMBOL_NAME(info_function,callAleInstruction);
@@ -2171,7 +2171,7 @@ namespace zetscript{
 						// local vars as functions ...
 
 						// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
-						std::vector<tFunctionSymbol> *m_functionSymbol=NULL;
+						std::vector<FunctionSymbol> *m_functionSymbol=NULL;
 						if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
 							calling_object = (CScriptVariable *)callAle->varRef;
 
@@ -2298,15 +2298,15 @@ namespace zetscript{
 					POP_ONE;
 					//svar
 					if(stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-						tStackElement *se=stkResultOp1;
+						StackElement *se=stkResultOp1;
 						if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR){
-							se=(tStackElement *)(stkResultOp1->varRef);
+							se=(StackElement *)(stkResultOp1->varRef);
 						}
 
 						svar = (CScriptVariable *)(se)->varRef;
-						if(svar->idxClass >= MAX_BUILT_IN_TYPES
-						 ||svar->idxClass==IDX_CLASS_VECTOR
-						 ||svar->idxClass==IDX_CLASS_STRUCT
+						if(svar->idx_class >= MAX_BUILT_IN_TYPES
+						 ||svar->idx_class==IDX_CLASS_VECTOR
+						 ||svar->idx_class==IDX_CLASS_STRUCT
 						)
 						{ // max ...
 							svar->unrefSharedPtr();
@@ -2359,7 +2359,7 @@ namespace zetscript{
 					// remove shared pointer if scriptvar ...
 					if(callc_result.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 						if(callc_result.properties & STK_PROPERTY_IS_STACKVAR){
-							callc_result=*((tStackElement *)((tStackElement *)callc_result.varRef));
+							callc_result=*((StackElement *)((StackElement *)callc_result.varRef));
 
 						}
 
@@ -2420,18 +2420,18 @@ namespace zetscript{
 						RETURN_ERROR;
 
 				 }
-				 current_foreach->key=(tStackElement *)stkResultOp1->varRef;
+				 current_foreach->key=(StackElement *)stkResultOp1->varRef;
 				 current_foreach->ptr=NULL;
 				 current_foreach->idx_current=0;
 
 				 var_object = (CScriptVariable *)stkResultOp2->varRef;
 				 if( (stkResultOp2->properties & (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)) == (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)){
-				 		var_object = (CScriptVariable *)(((tStackElement *)stkResultOp2->varRef)->varRef);
+				 		var_object = (CScriptVariable *)(((StackElement *)stkResultOp2->varRef)->varRef);
 				 }
 
-				if(var_object != NULL && (var_object->idxClass == IDX_CLASS_VECTOR || var_object->idxClass == IDX_CLASS_STRUCT)){
+				if(var_object != NULL && (var_object->idx_class == IDX_CLASS_VECTOR || var_object->idx_class == IDX_CLASS_STRUCT)){
 
-					if(var_object->idxClass == IDX_CLASS_VECTOR){ // integer as iterator...
+					if(var_object->idx_class == IDX_CLASS_VECTOR){ // integer as iterator...
 						*current_foreach->key={0,0,STK_PROPERTY_TYPE_INTEGER};
 					}
 					else{ // struct -> std::string as iterator...
@@ -2451,7 +2451,7 @@ namespace zetscript{
 						 	 	 	 INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction)
 				 					);
 				 					RETURN_ERROR;
-				 //*((tStackElement *)current_foreach->key)=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector[current_foreach->idx_current++];
+				 //*((StackElement *)current_foreach->key)=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector[current_foreach->idx_current++];
 				 continue;
 			 case IT_CHK_END:
 				 write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"TODOOOOO!",
@@ -2503,7 +2503,7 @@ namespace zetscript{
 	}
 
 
-	tStackElement  * CVirtualMachine::getLastStackValue(){
+	StackElement  * CVirtualMachine::getLastStackValue(){
 		return (stkCurrentData-1);
 	}
 

@@ -15,11 +15,11 @@ namespace zetscript{
 	void CScriptVariable::createSymbols(CScriptClass *ir_class){
 
 
-		tFunctionSymbol *si;
-		tStackElement *se;
+		FunctionSymbol *si;
+		StackElement *se;
 
 		// add extra symbol this itself if is a class typedef by user...
-		if(m_infoRegisteredClass->idxClass >=MAX_BUILT_IN_TYPES){
+		if(m_infoRegisteredClass->idx_class >=MAX_BUILT_IN_TYPES){
 			this_variable.varRef=this;
 			this_variable.properties=STK_PROPERTY_IS_THIS_VAR|STK_PROPERTY_TYPE_SCRIPTVAR;
 		}
@@ -28,7 +28,7 @@ namespace zetscript{
 		for ( unsigned i = 0; i < ir_class->m_variable.size(); i++){
 
 
-			tVariableSymbolInfo * ir_var = &ir_class->m_variable[i];
+			VariableSymbolInfo * ir_var = &ir_class->m_variable[i];
 
 			se=addVariableSymbol(ir_var->symbol->name);
 
@@ -72,7 +72,7 @@ namespace zetscript{
 		m_value = NULL;
 		was_created_by_constructor=false;
 		c_scriptclass_info=NULL;
-		idxClass = -1;
+		idx_class = -1;
 		aux_string ="";
 		delete_c_object = false; // --> user is responsible to delete C objects!
 		info_function_new=NULL;
@@ -80,8 +80,10 @@ namespace zetscript{
 		memset(&this_variable,0,sizeof(this_variable));
 	}
 
-	CScriptVariable::CScriptVariable(){
+	CScriptVariable::CScriptVariable(CVirtualMachine	*_virtual_machine){
 		setup();
+
+		virtual_machine = _virtual_machine;
 	}
 
 	void CScriptVariable::init(CScriptClass *irv, void * _c_object){
@@ -89,7 +91,7 @@ namespace zetscript{
 		setup();
 
 		this->m_infoRegisteredClass = irv;
-		idxClass = irv->idxClass;
+		idx_class = irv->idx_class;
 		c_object = _c_object;
 		
 		c_scriptclass_info=NULL;
@@ -123,7 +125,7 @@ namespace zetscript{
 		}
 
 		// only create symbols if not std::string type to make it fast ...
-		if(idxClass >= BUILT_IN_TYPE::MAX_BUILT_IN_TYPES && idxClass !=IDX_CLASS_STRING){
+		if(idx_class >= BUILT_IN_TYPE::MAX_BUILT_IN_TYPES && idx_class !=IDX_CLASS_STRING){
 			createSymbols(irv);
 		}
 	}
@@ -160,8 +162,8 @@ namespace zetscript{
 		}
 	}
 
-	tStackElement * CScriptVariable::addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function,tInstruction *src_instruction,tStackElement * sv){
-		tStackElement si;
+	StackElement * CScriptVariable::addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function,OpCodeInstruction *src_instruction,StackElement * sv){
+		StackElement si;
 
 		bool error_symbol=false;
 
@@ -232,7 +234,7 @@ namespace zetscript{
 		return &m_variable[m_variable.size()-1];
 	}
 
-	tStackElement * CScriptVariable::exist(const char *c){
+	StackElement * CScriptVariable::exist(const char *c){
 		for(unsigned i = 0; i < m_variableKey.size(); i++){
 			//CScriptVariable *var = (CScriptVariable *)m_variableSymbol[i].object.varRef;
 			if(m_variableKey[i] == std::string(c)){
@@ -244,7 +246,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tStackElement * CScriptVariable::getVariableSymbol(const std::string & varname){//,bool only_var_name){
+	StackElement * CScriptVariable::getVariableSymbol(const std::string & varname){//,bool only_var_name){
 
 		if(varname == "this"){
 			return &this_variable;
@@ -264,8 +266,8 @@ namespace zetscript{
 		return NULL;
 	}
 
-	tFunctionSymbol *CScriptVariable::addFunctionSymbol(const std::string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates){
-		tFunctionSymbol si;
+	FunctionSymbol *CScriptVariable::addFunctionSymbol(const std::string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates){
+		FunctionSymbol si;
 		si.proxy_ptr=0;
 		si.object = {
 
@@ -291,7 +293,7 @@ namespace zetscript{
 		return &m_functionSymbol[m_functionSymbol.size()-1];
 	}
 
-	tFunctionSymbol * CScriptVariable::getFunctionSymbol(const std::string & varname){
+	FunctionSymbol * CScriptVariable::getFunctionSymbol(const std::string & varname){
 		for(unsigned int i = 0; i < this->m_functionSymbol.size(); i++){
 
 			std::string symbol = this->m_functionSymbol[i].key_value;
@@ -310,7 +312,7 @@ namespace zetscript{
 
 	bool CScriptVariable::removeVariableSymbolByIndex(unsigned int idx, bool remove_vector){//onst std::string & varname){
 
-		tStackElement *si;
+		StackElement *si;
 
 
 		if(idx >= m_variable.size()){
@@ -353,7 +355,7 @@ namespace zetscript{
 		return true;
 	}
 
-	std::vector<tStackElement> * CScriptVariable::getVectorVariable(){
+	std::vector<StackElement> * CScriptVariable::getVectorVariable(){
 		return &m_variable;
 	}
 
@@ -368,7 +370,7 @@ namespace zetscript{
 		return false;
 	}
 
-	tStackElement * CScriptVariable::getVariableSymbolByIndex(unsigned int idx){
+	StackElement * CScriptVariable::getVariableSymbolByIndex(unsigned int idx){
 
 		if(idx==ZS_THIS_IDX){
 			return &this_variable;
@@ -383,7 +385,7 @@ namespace zetscript{
 		return &m_variable[idx];
 	}
 
-	tFunctionSymbol * CScriptVariable::getIdxScriptFunctionObjectByClassFunctionName(const std::string & varname){
+	FunctionSymbol * CScriptVariable::getIdxScriptFunctionObjectByClassFunctionName(const std::string & varname){
 
 		// from lat value to first to get last override function...
 		for(int i = this->m_functionSymbol.size()-1; i >= 0; i--){
@@ -440,7 +442,7 @@ namespace zetscript{
 			return (intptr_t)c_object;
 		}
 
-	tFunctionSymbol *CScriptVariable::getFunctionSymbolByIndex(unsigned int idx){
+	FunctionSymbol *CScriptVariable::getFunctionSymbolByIndex(unsigned int idx){
 		if(idx >= m_functionSymbol.size()){
 			write_error("unknow",-1,"idx symbol index out of bounds");
 			return NULL;
@@ -448,7 +450,7 @@ namespace zetscript{
 		return &m_functionSymbol[idx];
 	}
 
-	std::vector<tFunctionSymbol> * CScriptVariable::getVectorFunctionSymbol(){
+	std::vector<FunctionSymbol> * CScriptVariable::getVectorFunctionSymbol(){
 		return &m_functionSymbol;
 	}
 
@@ -474,7 +476,7 @@ namespace zetscript{
 	void CScriptVariable::destroy(){
 		bool deallocated = false;
 		if(created_object != 0){
-			if((this->idxClass<MAX_BUILT_IN_TYPES) || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
+			if((this->idx_class<MAX_BUILT_IN_TYPES) || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
 
 				(*c_scriptclass_info->c_destructor)(created_object);
 				deallocated=true;
@@ -489,7 +491,7 @@ namespace zetscript{
 //#endif
 
 		// remove vars & fundtions if class is C...
-		tFunctionSymbol *si;
+		FunctionSymbol *si;
 
 		for ( unsigned i = 0; i < m_variable.size(); i++){
 			removeVariableSymbolByIndex(i);

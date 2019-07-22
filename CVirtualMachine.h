@@ -19,7 +19,7 @@ namespace zetscript{
 	#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
 	#define SET_STRING_RETURN(s)  	CURRENT_VM->setStringReturnValue(s)
 
-	#define NO_PARAMS std::vector<tStackElement>{}
+	#define NO_PARAMS std::vector<StackElement>{}
 	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const std::vector<CScriptVariable *> & param)>
 
 	class CScriptFunction;
@@ -54,16 +54,16 @@ namespace zetscript{
 
 		float f_return_value;
 		std::string s_return_value;
-		tStackElement stk_aux;
+		StackElement stk_aux;
 
-		tStackElement  execute_internal(
+		StackElement  execute_internal(
 				CScriptFunction *info_function,
 				CScriptVariable * this_object,
 				bool & error,
-				tStackElement 		  * _ptrStartOp=NULL,
+				StackElement 		  * _ptrStartOp=NULL,
 				std::string 		  		  * _ptrStartStr=NULL,
 				unsigned char n_args=0,
-				tInstruction *calling_instruction = NULL);
+				OpCodeInstruction *calling_instruction = NULL);
 
 		bool cancel_execution;
 		const char *custom_error;
@@ -84,11 +84,11 @@ namespace zetscript{
 
 
 
-		//void iniStackVar(unsigned int pos,const tStackElement & stk);
+		//void iniStackVar(unsigned int pos,const StackElement & stk);
 
 		const CScriptFunction * getCurrent_C_FunctionCall();
 
-		std::string stk_C_TypeStr(const tStackElement & stk_v);
+		std::string stk_C_TypeStr(const StackElement & stk_v);
 
 		inline float *setFloatReturnValue(float f){
 			f_return_value = f;
@@ -101,19 +101,19 @@ namespace zetscript{
 		}
 
 
-		void addGlobalVar(const tStackElement & stk);
+		void addGlobalVar(const StackElement & stk);
 		void clearGlobalVars();
 
-		 tStackElement execute(
+		 StackElement execute(
 					 CScriptFunction *info_function,
 					 CScriptVariable *this_object,
 					 bool & error,
-					const std::vector<tStackElement> &  argv=NO_PARAMS);
+					const std::vector<StackElement> &  argv=NO_PARAMS);
 
 
 
-		tStackElement *getLastStackValue();
-		tStackElement * getStackElement(unsigned int idx_glb_element);
+		StackElement *getLastStackValue();
+		StackElement * getStackElement(unsigned int idx_glb_element);
 
 		//template<typename _T>
 
@@ -133,12 +133,12 @@ namespace zetscript{
 		struct tVM_ScopeInfo{
 			short					   index;
 			CScriptFunction *ptr_info_function;
-			tStackElement 		  *ptr_local_var;
+			StackElement 		  *ptr_local_var;
 			unsigned char properties;
 		};
 
 		struct tForeachInfo{
-			tStackElement 		   *key; // iterator element can be std::string or integer...
+			StackElement 		   *key; // iterator element can be std::string or integer...
 			CScriptVariable			*ptr; // can be struct or std::vector...
 			unsigned int 		   idx_current;
 
@@ -163,57 +163,57 @@ namespace zetscript{
 		std::string              *ptrLastStr;
 		std::string              *ptrCurrentStr;
 
-		 tStackElement     stack[VM_LOCAL_VAR_MAX_STACK];
+		 StackElement     stack[VM_LOCAL_VAR_MAX_STACK];
 		 int n_globals;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
-		 std::vector<tStackElement> global_var;
-		tStackElement *stkCurrentData;
+		 std::vector<StackElement> global_var;
+		StackElement *stkCurrentData;
 
 
-		 tStackElement  call_C_function(
+		 StackElement  call_C_function(
 				 intptr_t fun_ptr,
 				 const CScriptFunction *irfs,
 				 bool & error,
-				 tStackElement *ptrArg,
+				 StackElement *ptrArg,
 				 unsigned char n_args,
-				 tInstruction *ins);
+				 OpCodeInstruction *ins);
 
 		/**
 		 * Reserve for N vars. Return base pointer.
 		 */
 
-		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(tStackElement * index);
+		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(StackElement * index);
 		inline void  REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result);
 		inline CScriptFunction *  FIND_FUNCTION(
 									CScriptVariable *calling_object
 									,CScriptFunction *info_function
-									,tInstruction *instruction
-									,tInstruction * callAleInstruction
+									,OpCodeInstruction *instruction
+									,OpCodeInstruction * callAleInstruction
 
-				 	 	 	 	 	,std::vector<tFunctionSymbol> *m_functionSymbol
+				 	 	 	 	 	,std::vector<FunctionSymbol> *m_functionSymbol
 									,std::vector<CScriptFunction *> *vec_global_functions
 
 									,bool is_constructor
 									,const std::string & symbol_to_find
 
 
-									,tStackElement *stkResultOp1
-									,tStackElement *stkResultOp2
-									,tStackElement *startArg
+									,StackElement *stkResultOp1
+									,StackElement *stkResultOp2
+									,StackElement *startArg
 									,unsigned char n_args
 									,const char * metamethod_str);
-		inline bool ASSIGN_STACK_VAR(tStackElement *dst_ins, tStackElement *src_ins,tInstruction *instruction);
+		inline bool ASSIGN_STACK_VAR(StackElement *dst_ins, StackElement *src_ins,OpCodeInstruction *instruction);
 		inline bool POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties);
 
 		inline bool APPLY_METAMETHOD(
 										CScriptVariable *calling_object
 										,CScriptFunction *info_function
-										,tInstruction *instruction
+										,OpCodeInstruction *instruction
 										,const char *__OVERR_OP__
 										,METAMETHOD_OPERATOR __METAMETHOD__
-										,tStackElement *stkResultOp1
-										,tStackElement *stkResultOp2
+										,StackElement *stkResultOp1
+										,StackElement *stkResultOp2
 
 									);
 

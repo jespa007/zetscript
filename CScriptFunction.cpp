@@ -42,7 +42,7 @@ namespace zetscript{
 		 }
 
 
-		 lut_scope_symbol = (tInfoVarScopeBlock*)malloc(map_scope_register.size()*sizeof(tInfoVarScopeBlock));
+		 lut_scope_symbol = (ScopeVarInnerBlockInfo*)malloc(map_scope_register.size()*sizeof(ScopeVarInnerBlockInfo));
 		 n_lut_scope_symbols =map_scope_register.size();
 
 		 int i=0;
@@ -73,8 +73,8 @@ namespace zetscript{
 	}
 
 
-	short 		 CScriptFunction::INSTRUCTION_getLine(tInstruction * ins){
-		tInstructionInfo *info=getInstructionInfo(ins);
+	short 		 CScriptFunction::INSTRUCTION_getLine(OpCodeInstruction * ins){
+		OpCodeInstructionSourceInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL){
 			return info->line;
@@ -82,8 +82,8 @@ namespace zetscript{
 		return -1;
 	}
 
-	const char *  CScriptFunction::INSTRUCTION_getSymbolName(tInstruction * ins){
-		tInstructionInfo *info=getInstructionInfo(ins);
+	const char *  CScriptFunction::INSTRUCTION_getSymbolName(OpCodeInstruction * ins){
+		OpCodeInstructionSourceInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL){
 			return info->symbol_name->c_str();
@@ -91,9 +91,9 @@ namespace zetscript{
 		return "unknown";
 	}
 
-	const char * CScriptFunction::INSTRUCTION_getFile(tInstruction * ins){
+	const char * CScriptFunction::INSTRUCTION_getFile(OpCodeInstruction * ins){
 
-		tInstructionInfo *info=getInstructionInfo(ins);
+		OpCodeInstructionSourceInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL){
 			return info->file;
@@ -102,11 +102,11 @@ namespace zetscript{
 	}
 
 
-	tVariableSymbolInfo *	CScriptFunction::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
+	VariableSymbolInfo *	CScriptFunction::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
-		tVariableSymbolInfo *vsi=CScriptClassBase::registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
+		VariableSymbolInfo *vsi=CScriptClassBase::registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 
-		tStackElement se = {0,0,STK_PROPERTY_TYPE_UNDEFINED};
+		StackElement se = {0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
 		if(properties &  PROPERTY_C_OBJECT_REF) // convert c ref var into stack element. This should be consistent in the whole execution.
 			se=CScriptClassFactory::C_REF_InfoVariable_2_StackElement(

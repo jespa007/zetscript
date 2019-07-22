@@ -3,7 +3,7 @@
 namespace zetscript{
 
 	CScriptClassBase::CScriptClassBase(unsigned char _idxClass, CZetScript * _zs) {
-		idxClass=_idxClass;
+		idx_class=_idxClass;
 		zs = _zs;
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
@@ -12,11 +12,11 @@ namespace zetscript{
 
 	}
 
-	tVariableSymbolInfo * CScriptClassBase::registerVariable(const std::string & file, short line, short idxBlockScope,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties){
-		tVariableSymbolInfo irs;
+	VariableSymbolInfo * CScriptClassBase::registerVariable(const std::string & file, short line, short idxBlockScope,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties){
+		VariableSymbolInfo irs;
 		//std::string symbol_ref=CEval::makeSymbolRef(variable_name,idxBlockScope);
 
-		tSymbol * symbol=NULL;
+		Symbol * symbol=NULL;
 
 		if((symbol=GET_SCOPE(idxBlockScope)->registerSymbol(file,line,variable_name /*,var_node*/))==NULL){
 				return NULL;
@@ -40,12 +40,12 @@ namespace zetscript{
 		return &m_variable[m_variable.size()-1];
 	}
 
-	tVariableSymbolInfo *	CScriptClassBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
+	VariableSymbolInfo *	CScriptClassBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
 	{
 			return registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
 	}
 
-	tVariableSymbolInfo *	 CScriptClassBase::getVariable(const std::string & var_name, short idxScope){
+	VariableSymbolInfo *	 CScriptClassBase::getVariable(const std::string & var_name, short idxScope){
 
 		if(m_variable.size()>0){
 
@@ -64,7 +64,7 @@ namespace zetscript{
 
 
 
-	CScriptFunction * CScriptClassBase::registerFunction(const std::string & file, short line, short idxScope, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CScriptClassBase::registerFunction(const std::string & file, short line, short idxScope, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 			//std::string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
 			if(getFunction(function_name,(char)args.size()) != NULL){
@@ -72,15 +72,15 @@ namespace zetscript{
 				return NULL;
 			}
 
-			CScriptFunction *sf =  NEW_SCRIPT_FUNCTION(file,line,idxClass,idxScope,  function_name,  args,  idx_return_type,ref_ptr, properties);
-			sf->idxClass = this->idxClass;
+			CScriptFunction *sf =  NEW_SCRIPT_FUNCTION(file,line,idx_class,idxScope,  function_name,  args,  idx_return_type,ref_ptr, properties);
+			sf->idx_class = this->idx_class;
 			sf->idxLocalFunction=m_function.size();
 			m_function.push_back(sf);
 
 			return sf;
 	}
 
-	CScriptFunction * CScriptClassBase::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<tArgumentInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CScriptClassBase::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
 
 		return registerFunction(file, line,this->symbol_info.symbol->idxScope, function_name,  args, idx_return_type,ref_ptr, properties);
 	}

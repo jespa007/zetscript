@@ -35,16 +35,16 @@ namespace zetscript{
 
 
 		// info related for function ONLY
-		std::vector<tArgumentInfo> m_arg; // tells var arg name or var type name (in of C )
+		std::vector<ParamArgInfo> m_arg; // tells var arg name or var type name (in of C )
 		int idx_return_type; // -1 not inicialized type return.
 		PtrInstruction instruction;
 
 		//-----------
 		//  SYMBOL-INSTRUCTION
-		std::map<short,tInstructionInfo> instruction_info; // std::map that gives symbol with at instruction idx given
-		short 		 INSTRUCTION_getLine(tInstruction * ins);
-		const char * INSTRUCTION_getSymbolName(tInstruction * ins);
-		const char * INSTRUCTION_getFile(tInstruction * ins);
+		std::map<short,OpCodeInstructionSourceInfo> instruction_info; // std::map that gives symbol with at instruction idx given
+		short 		 INSTRUCTION_getLine(OpCodeInstruction * ins);
+		const char * INSTRUCTION_getSymbolName(OpCodeInstruction * ins);
+		const char * INSTRUCTION_getFile(OpCodeInstruction * ins);
 
 		//  DEBUG
 		//-----------
@@ -54,12 +54,12 @@ namespace zetscript{
 		short idxLocalFunction;
 
 
-		tInfoVarScopeBlock *lut_scope_symbol;
+		ScopeVarInnerBlockInfo *lut_scope_symbol;
 		unsigned n_lut_scope_symbols;
 
 		 CScriptFunction(unsigned char _idxClass );
 
-		tVariableSymbolInfo *  registerVariable(const std::string & file, short line, const std::string & variable, const std::string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
+		VariableSymbolInfo *  registerVariable(const std::string & file, short line, const std::string & variable, const std::string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 
 
 		/**
@@ -73,8 +73,8 @@ namespace zetscript{
 	private:
 
 
-		inline tInstructionInfo * getInstructionInfo(tInstruction *ins){
-			short idx= (ins-this->instruction);///sizeof(tInstruction *);
+		inline OpCodeInstructionSourceInfo * getInstructionInfo(OpCodeInstruction *ins){
+			short idx= (ins-this->instruction);///sizeof(OpCodeInstruction *);
 			if(instruction_info.count(idx)==1){
 				return &instruction_info[idx];
 			}

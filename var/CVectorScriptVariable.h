@@ -13,23 +13,23 @@ namespace zetscript{
 
 	public:
 
-		tStackElement return_callc;
+		StackElement return_callc;
 		//int _i_size;
 
-		//std::vector<tStackElement> m_objVector;
+		//std::vector<StackElement> m_objVector;
 
 		CVectorScriptVariable();
 
 		virtual bool unrefSharedPtr();
 
 
-		//tStackElement 		  * getValue(const std::string & s);
-		//virtual tStackElement * getValue(int idx);
+		//StackElement 		  * getValue(const std::string & s);
+		//virtual StackElement * getValue(int idx);
 
 
-		tStackElement * push();
-		void 			push(tStackElement  * v);
-		tStackElement * pop();
+		StackElement * push();
+		void 			push(StackElement  * v);
+		StackElement * pop();
 
 		 int size();
 

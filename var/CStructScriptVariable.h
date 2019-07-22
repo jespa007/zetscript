@@ -20,7 +20,7 @@ namespace zetscript{
 
 
 		int size();
-		void add_attr(const char *attr_name, tStackElement  * v);
+		void add_attr(const char *attr_name, StackElement  * v);
 		void remove_attr(const char *attr_name);
 
 

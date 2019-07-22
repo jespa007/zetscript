@@ -69,7 +69,7 @@ namespace zetscript{
 		inline CScriptFunction * getMainFunction() { return main_function;}
 		inline CScriptFunction * getMainObject() { return main_object;}
 
-		 void	set_callback_on_error(tPrintFunctionCallback _fun);
+		 void	set_callback_on_error(PrintFunctionCallback _fun);
 
 		 int * evalIntValue(const std::string & str_to_eval);
 		 bool * evalBoolValue(const std::string & str_to_eval);
@@ -109,7 +109,7 @@ namespace zetscript{
 		/**
 		 * Register C variable
 		 */
-		 tVariableSymbolInfo * register_C_Variable(const std::string & var_str,void * var_ptr, const std::string & var_type, const char *registered_file="",int registered_line=-1);
+		 VariableSymbolInfo * register_C_Variable(const std::string & var_str,void * var_ptr, const std::string & var_type, const char *registered_file="",int registered_line=-1);
 
 		/**
 		 * Register C Class. Return index registered class
@@ -148,8 +148,8 @@ namespace zetscript{
 
 		//cpp binding
 		// Helpers...
-		inline tStackElement var_2_stk(intptr_t var_trans, int idx_type);
-		inline bool stk_2_var(tStackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error);
+		inline StackElement var_2_stk(intptr_t var_trans, int idx_type);
+		inline bool stk_2_var(StackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error);
 
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -304,7 +304,7 @@ namespace zetscript{
 			std::vector<tPrimitiveType*>		params;
 		}tRegisterFunction;
 
-		static tStackElement 					C_REF_InfoVariable_2_StackElement(tVariableSymbolInfo *ir_var, void *ptr_variable);
+		static StackElement 					C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable);
 
 		//----
 
@@ -353,7 +353,7 @@ namespace zetscript{
 
 		// VARS
 
-		std::map<std::string,tInfoConstantValue *> 	 constant_pool;
+		std::map<std::string,ConstantValueInfo *> 	 constant_pool;
 
 		CEval * eval;
 		CVirtualMachine * virtual_machine;

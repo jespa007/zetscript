@@ -65,7 +65,7 @@ namespace zetscript{
 	}
 
 
-	tStackElement CZetScript::C_REF_InfoVariable_2_StackElement(tVariableSymbolInfo *ir_var, void *ptr_variable){
+	StackElement CZetScript::C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable){
 
 		if(ir_var->properties & PROPERTY_C_OBJECT_REF){
 
@@ -171,7 +171,7 @@ namespace zetscript{
 		UNSIGNED_INT_TYPE_STR =  typeid(unsigned int).name();
 		INTPTR_T_TYPE_STR =  typeid(intptr_t).name();
 		FLOAT_TYPE_STR =  typeid(float).name();
-		STACK_ELEMENT_STR=  typeid(tStackElement *).name();
+		STACK_ELEMENT_STR=  typeid(StackElement *).name();
 
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -197,7 +197,7 @@ namespace zetscript{
 		REGISTER_BUILT_IN_TYPE(bool,IDX_TYPE_BOOL_C);
 
 		// REGISTER BUILT IN CLASS TYPES
-		REGISTER_BUILT_IN_CLASS(tStackElement,IDX_STACK_ELEMENT);
+		REGISTER_BUILT_IN_CLASS(StackElement,IDX_STACK_ELEMENT);
 		REGISTER_BUILT_IN_CLASS(CScriptVariable,IDX_CLASS_SCRIPT_VAR);
 		REGISTER_BUILT_IN_CLASS(CStringScriptVariable,IDX_CLASS_STRING);
 		REGISTER_BUILT_IN_CLASS(CVectorScriptVariable,IDX_CLASS_VECTOR);
@@ -229,7 +229,7 @@ namespace zetscript{
 		register_C_Function(zs,"error",internal_print_error);
 
 		register_C_FunctionMember<CVectorScriptVariable>(zs,"size",&CVectorScriptVariable::size);
-		register_C_FunctionMember<CVectorScriptVariable>(zs,"push",static_cast<void (CVectorScriptVariable:: *)(tStackElement *)>(&CVectorScriptVariable::push));
+		register_C_FunctionMember<CVectorScriptVariable>(zs,"push",static_cast<void (CVectorScriptVariable:: *)(StackElement *)>(&CVectorScriptVariable::push));
 		register_C_FunctionMember<CVectorScriptVariable>(zs,"pop",&CVectorScriptVariable::pop);
 
 
@@ -308,11 +308,11 @@ namespace zetscript{
 		if((index = getIdxScriptClass_Internal(class_name))==ZS_INVALID_CLASS){ // check whether is local var registered scope ...
 
 			// NEW SCOPE C and register ...
-			//unsigned char idxClass=(unsigned char)vec_script_class_node.size()-1;
+			//unsigned char idx_class=(unsigned char)vec_script_class_node.size()-1;
 
 			CScope * scope = NEW_SCOPE();
 
-			tSymbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_IS_CLASS);
+			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_IS_CLASS);
 			if(symbol == NULL){
 				return NULL;
 			}
@@ -329,7 +329,7 @@ namespace zetscript{
 			vec_script_class_node.push_back(sci);
 
 			if(base_class != NULL){
-				sci->idxBaseClass.push_back(base_class->idxClass);
+				sci->idxBaseClass.push_back(base_class->idx_class);
 			}
 
 			return sci;
@@ -444,7 +444,7 @@ namespace zetscript{
 		 CScriptClass * rc = getScriptClass(class_name);
 
 		 if(rc != NULL){
-			 return instanceScriptVariableByIdx(rc->idxClass);
+			 return instanceScriptVariableByIdx(rc->idx_class);
 		 }
 
 		 return NULL;
@@ -460,7 +460,7 @@ namespace zetscript{
 		 if(rc != NULL){
 
 			 // Is a primitive ?
-			 switch(rc->idxClass){
+			 switch(rc->idx_class){
 
 			 case IDX_TYPE_VOID_C:
 			 case IDX_TYPE_INT_PTR_C:
@@ -487,10 +487,10 @@ namespace zetscript{
 	/**
 	 * Register C variable
 	 */
-	 tVariableSymbolInfo *  CZetScript::register_C_Variable(const std::string & var_name,void * var_ptr, const std::string & var_type)
+	 VariableSymbolInfo *  CZetScript::register_C_Variable(const std::string & var_name,void * var_ptr, const std::string & var_type)
 	{
 		//CScope *scope;
-		tVariableSymbolInfo *irs;
+		VariableSymbolInfo *irs;
 		//int idxVariable;
 
 		if(var_ptr==NULL){
@@ -532,7 +532,7 @@ namespace zetscript{
 	}
 
 
-	intptr_t CZetScript::doCast(intptr_t obj, unsigned char idx_src_class, unsigned char idx_convert_class){//c_class->idxClass,idx_return_type){
+	intptr_t CZetScript::doCast(intptr_t obj, unsigned char idx_src_class, unsigned char idx_convert_class){//c_class->idx_class,idx_return_type){
 
 		CScriptClass *src_class = getScriptClass(idx_src_class);
 		CScriptClass *convert_class = getScriptClass(idx_convert_class);
@@ -620,7 +620,7 @@ namespace zetscript{
 		eval_int=0;
 		eval_float=0;
 		eval_string="";
-		_eval_bool = false;
+		eval_bool = false;
 		register_c_base_symbols=false;
 
 	}
@@ -633,7 +633,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		tStackElement *se=virtual_machine->getLastStackValue();
+		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
@@ -658,13 +658,13 @@ namespace zetscript{
 			return NULL;
 		}
 
-		tStackElement *se=virtual_machine->getLastStackValue();
+		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
 			if(se->properties & STK_PROPERTY_TYPE_BOOLEAN){
-				_eval_bool=(bool)((intptr_t)se->stkValue);
-				return &_eval_bool;
+				eval_bool=(bool)((intptr_t)se->stkValue);
+				return &eval_bool;
 
 			}else{
 				THROW_RUNTIME_ERROR(string::sformat("evalBoolValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
@@ -680,7 +680,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		tStackElement *se=virtual_machine->getLastStackValue();
+		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
@@ -705,7 +705,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		tStackElement *se=virtual_machine->getLastStackValue();
+		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
