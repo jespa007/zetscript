@@ -13,8 +13,8 @@ namespace zetscript{
 
 	public:
 
-		CStringScriptVariable();
-		CStringScriptVariable(const std::string & s);
+		CStringScriptVariable(CZetScript *_zs);
+		CStringScriptVariable(CZetScript *_zs,const std::string & s);
 
 	protected:
 		virtual void setup();

@@ -65,6 +65,316 @@ namespace zetscript{
 	}
 
 
+	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	 // PRINT ASM INFO
+
+
+	 std::string CZetScript::getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction){
+
+		 char print_aux_load_value[512] = {0};
+		 char object_access[512] = "";
+
+		 OpCodeInstruction * instruction =&m_listStatements[current_instruction];
+		 ConstantValueInfo *icv;
+		 std::string symbol_value=INSTRUCTION_GET_SYMBOL_NAME(current_function,instruction);
+		 if(instruction->op_code != LOAD){
+			 return "ERROR";
+		 }
+
+
+
+		 sprintf(print_aux_load_value,"UNDEFINED");
+
+		 if(instruction->properties & INS_PROPERTY_ACCESS_SCOPE){
+
+			 sprintf(object_access,
+					"[" FORMAT_PRINT_INSTRUCTION "]."
+
+					,(int)instruction->index_op2);
+		 }
+		 else if(instruction->properties & INS_PROPERTY_THIS_SCOPE){
+			sprintf(object_access,"this.");
+		 }
+
+		 switch(instruction->index_op1){
+
+			case LOAD_TYPE::LOAD_TYPE_CONSTANT:
+				icv=(ConstantValueInfo *)instruction->index_op2;
+				switch(icv->properties){
+				case STK_PROPERTY_TYPE_BOOLEAN:
+				case STK_PROPERTY_TYPE_INTEGER:
+					sprintf(print_aux_load_value,"CONST(%i)",(int)((intptr_t)icv->stkValue));
+					break;
+				case STK_PROPERTY_TYPE_NUMBER:
+					sprintf(print_aux_load_value,"CONST(%f)",*((float *)&icv->stkValue));
+					break;
+				case STK_PROPERTY_TYPE_STRING:
+					sprintf(print_aux_load_value,"CONST(%s)",((const char *)icv->stkValue));
+					break;
+
+				}
+				break;
+
+			case LOAD_TYPE::LOAD_TYPE_VARIABLE:
+				sprintf(print_aux_load_value,"%sVAR(%s)",object_access,symbol_value.c_str());
+				break;
+			case LOAD_TYPE::LOAD_TYPE_FUNCTION:
+
+				sprintf(print_aux_load_value,"%sFUN(%s)",object_access,symbol_value.c_str());
+				break;
+
+			case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
+				sprintf(print_aux_load_value,"ARG(%s)",symbol_value.c_str());
+				break;
+			default:
+
+				break;
+		}
+		return print_aux_load_value;
+	 }
+
+	 void CZetScript::printGeneratedCode(CScriptFunction *sfo){
+
+		// PRE: it should printed after compile and updateReferences.
+		std::string pre="";
+		std::string post="";
+
+		unsigned idx_instruction=0;
+		for(OpCodeInstruction * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
+
+			int n_ops=0;
+			int index_op1 = instruction->index_op1;
+			int index_op2 = instruction->index_op2;
+
+			if(index_op1 != -1)
+				n_ops++;
+
+			 if(index_op2 != -1)
+				 n_ops++;
+
+			 pre="";
+			 post="";
+
+				switch(GET_INS_PROPERTY_PRE_POST_OP(instruction->properties)){
+				case INS_PROPERTY_PRE_NEG:
+					pre="-";
+					break;
+				case INS_PROPERTY_PRE_INC:
+					pre="++";
+					break;
+				case INS_PROPERTY_PRE_DEC:
+					pre="--";
+					break;
+				case INS_PROPERTY_POST_INC:
+					post="++";
+					break;
+				case INS_PROPERTY_POST_DEC:
+					post="--";
+					break;
+				default:
+					// check whether is constant and numeric
+					if(instruction->op_code==OP_CODE::LOAD && instruction->index_op1==LOAD_TYPE_CONSTANT){
+						ConstantValueInfo *icv = (((ConstantValueInfo *)instruction->index_op2));
+						float n;
+
+						// change the sign
+						switch(icv->properties){
+						default:
+							break;
+						case STK_PROPERTY_TYPE_INTEGER:
+							if(((intptr_t)icv->stkValue)<0){
+								pre="-";
+							}
+							break;
+						case STK_PROPERTY_TYPE_NUMBER:
+							memcpy(&n,&icv->stkValue,sizeof(float));
+							if(n<0){
+								pre="-";
+							}
+							break;
+						}
+					}
+					break;
+
+				}
+			switch(instruction->op_code){
+
+			case  NEW:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,virtual_machine->getOpCodeStr(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->index_op1):"???");
+				break;
+			case  LOAD:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s\n"
+						,idx_instruction,
+						virtual_machine->getOpCodeStr(instruction->op_code),
+						pre.c_str(),
+						getStrTypeLoadValue(sfo,sfo->instruction,idx_instruction).c_str(),
+						post.c_str());
+				break;
+			case JNT:
+			case JT:
+			case JMP:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
+						,idx_instruction
+						,CZetScript::virtual_machine->getOpCodeStr(instruction->op_code)
+						,(int)instruction->index_op2);
+				break;
+			case PUSH_SCOPE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
+						,idx_instruction
+						,virtual_machine->getOpCodeStr(instruction->op_code)
+						,instruction->index_op1!=0?'(':' '
+						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+						,instruction->index_op1!=0?')':' '
+						);
+				break;
+			case POP_SCOPE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
+						,idx_instruction
+						,virtual_machine->getOpCodeStr(instruction->op_code)
+						,instruction->index_op1!=0?'(':' '
+						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
+						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+						,instruction->index_op1!=0?')':' '
+						);
+				break;
+			default:
+
+				if(n_ops==0){
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,virtual_machine->getOpCodeStr(instruction->op_code));
+				}else if(n_ops==1){
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
+							,idx_instruction
+							,virtual_machine->getOpCodeStr(instruction->op_code)
+							,(instruction->properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
+							);
+				}else{
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
+							,idx_instruction
+							,virtual_machine->getOpCodeStr(instruction->op_code)
+							);
+				}
+				break;
+			}
+		}
+
+
+		// and then print its functions ...
+		std::vector<CScriptFunction *> * m_vf = &sfo->m_function;
+
+		for(unsigned j =0; j < m_vf->size(); j++){
+
+			CScriptFunction *local_irfs = (*m_vf)[j];
+
+			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+				std::string symbol_ref="????";
+
+
+				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
+
+				if(local_irfs->idx_class!=ZS_INVALID_CLASS){
+					CScriptClass *sc = GET_SCRIPT_CLASS(local_irfs->idx_class);
+					if(sc->idx_class == IDX_CLASS_MAIN){
+						symbol_ref="Main";
+					}else{
+						symbol_ref=sfo->symbol_info.symbol->name+std::string("::")+std::string("????");
+					}
+				}
+
+				printf("-------------------------------------------------------\n");
+				printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
+				printGeneratedCode(m_vf->at(j));
+			}
+		}
+	 }
+
+	 void CZetScript::printGeneratedCode(){
+
+		 std::vector<CScriptClass *> *vec_script_class_node=script_class_factory->getVectorScriptClassNode();
+		 // for all classes print code...
+		 for(unsigned i = 0; i < vec_script_class_node->size(); i++){
+			 CScriptClass *rc=vec_script_class_node->at(i);
+			 for(unsigned f = 0; f < rc->m_function.size(); f++){
+				 printGeneratedCode(rc->m_function[f]);
+			 }
+		 }
+	 }
+	 // PRINT ASM INFO
+	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+	//--------------------------------
+	 // FILE MANAGEMENT
+
+
+	bool CZetScript::isFilenameAlreadyParsed(const std::string & filename){
+		for(unsigned i = 0; i < m_parsedSource.size(); i++){
+			if(m_parsedSource.at(i).filename==filename){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	const char * CZetScript::getParsedFilenameFromIdx(unsigned idx){
+
+		if(idx >= m_parsedSource.size()){
+			THROW_RUNTIME_ERROR("out of bounds");
+			return DEFAULT_NO_FILENAME;
+		}
+
+		return m_parsedSource.at(idx).filename.c_str();
+	}
+
+	//-----------------------------------------------------------------------------------------------------------------------------------------
+	//
+	// CONSTANT MANAGEMENT
+
+	ConstantValueInfo *CZetScript::getConstant(const std::string & const_name){
+
+		if((m_contantPool).count(const_name) == 1){
+			return (m_contantPool)[const_name];
+		}
+		return NULL;
+	}
+
+	ConstantValueInfo * CZetScript::addConstant(const std::string & const_name, void *obj, unsigned short properties){
+
+		ConstantValueInfo * info_ptr=NULL;
+
+		if(getConstant(const_name) == NULL){
+			info_ptr=new ConstantValueInfo;
+			*info_ptr={obj,NULL,properties};
+			(m_contantPool)[const_name]=info_ptr;
+		}else{
+			THROW_RUNTIME_ERROR(string::sformat("internal:constant %s already exist",const_name.c_str()));
+		}
+
+		return info_ptr;
+	}
+
+	ConstantValueInfo * CZetScript::addConstant(const std::string & const_name, int _value){
+		intptr_t value = _value;
+		unsigned short type=STK_PROPERTY_TYPE_INTEGER;
+		StackElement *stk;
+
+		if((stk = getConstant(const_name))!=NULL){
+			return stk;
+		}
+
+		return addConstant(const_name,(void *)value,type);
+
+	}
+
+	// CONSTANT MANAGEMENT
+	//
+	//-----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 	StackElement CZetScript::C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable){
 
 		if(ir_var->properties & PROPERTY_C_OBJECT_REF){
@@ -111,7 +421,7 @@ namespace zetscript{
 				CScriptClass *info_registered_class = GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 				if(info_registered_class){
-					CScriptVariable *var = new CScriptVariable();
+					CScriptVariable *var = new CScriptVariable(this);
 					var->init(info_registered_class,ptr_variable);
 
 					return{
@@ -224,18 +534,17 @@ namespace zetscript{
 
 		main_class->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 
-		register_C_Function(zs,"print",print);
+		register_C_Function("print",print);
+		register_C_Function("error",internal_print_error);
 
-		register_C_Function(zs,"error",internal_print_error);
-
-		register_C_FunctionMember<CVectorScriptVariable>(zs,"size",&CVectorScriptVariable::size);
-		register_C_FunctionMember<CVectorScriptVariable>(zs,"push",static_cast<void (CVectorScriptVariable:: *)(StackElement *)>(&CVectorScriptVariable::push));
-		register_C_FunctionMember<CVectorScriptVariable>(zs,"pop",&CVectorScriptVariable::pop);
+		register_C_FunctionMember<CVectorScriptVariable>("size",&CVectorScriptVariable::size);
+		register_C_FunctionMember<CVectorScriptVariable>("push",static_cast<void (CVectorScriptVariable:: *)(StackElement *)>(&CVectorScriptVariable::push));
+		register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop);
 
 
-		register_C_FunctionMember<CStructScriptVariable>(zs,"add",&CStructScriptVariable::add_attr);
-		register_C_FunctionMember<CStructScriptVariable>(zs,"remove",&CStructScriptVariable::remove_attr);
-		register_C_FunctionMember<CStructScriptVariable>(zs,"size",&CStructScriptVariable::size);
+		register_C_FunctionMember<CStructScriptVariable>("add",&CStructScriptVariable::add_attr);
+		register_C_FunctionMember<CStructScriptVariable>("remove",&CStructScriptVariable::remove_attr);
+		register_C_FunctionMember<CStructScriptVariable>("size",&CStructScriptVariable::size);
 	 }
 
 
@@ -476,7 +785,7 @@ namespace zetscript{
 				 class_object = (CScriptVariable *)value_object;
 				 break;
 			 default:
-				 class_object = new CScriptVariable();
+				 class_object = new CScriptVariable(zs);
 				 class_object->init(rc, value_object);
 				 break;
 			 }
@@ -606,11 +915,10 @@ namespace zetscript{
 
 	CZetScript::CZetScript(){
 
-		_scope_factory = new CScopeFactory();
-		_native_function_factory = new CNativeFunctionFactory();
+		scope_factory = new CScopeFactory();
+		native_function_factory = new CNativeFunctionFactory();
 		script_function_factory= new CScriptFunctionFactory();
-		_script_class_factory = new CScriptClassFactory();
-		_eval = new CEval();
+		eval = new CEval();
 
 		virtual_machine = new CVirtualMachine();
 
@@ -622,6 +930,7 @@ namespace zetscript{
 		eval_string="";
 		eval_bool = false;
 		register_c_base_symbols=false;
+		zs=this;
 
 	}
 
@@ -738,12 +1047,16 @@ namespace zetscript{
 	bool CZetScript::evalString(const std::string & expression, bool exec_vm, const char *filename, bool show_bytecode)  {
 
 
-		if(!CEval::evalString(expression)){
+		if(!CZetScript::evalString(expression)){
 			return false;
 		}
 
+
+		virtual_machine->buildCache();
+
+
 		if(show_bytecode){
-			CEval::printGeneratedCode();
+			printGeneratedCode();
 		}
 
 		if(exec_vm){
@@ -754,25 +1067,48 @@ namespace zetscript{
 	}
 
 	bool CZetScript::evalFile(const std::string & filename, bool exec_vm, bool show_bytecode){
-
+		int idx_file=-1;
+		bool error=false;
 		char *buf_tmp=NULL;
 
-		bool status = false;
+		if(!isFilenameAlreadyParsed(filename)){
+			ParsedSourceInfo ps;
+			ps.filename = filename;
+			m_parsedSource.push_back(ps);
+			idx_file=m_parsedSource.size()-1;
+			int n_bytes;
 
+			if((buf_tmp=io::read_file(filename, n_bytes))!=NULL){
+				try{
+					eval->evalString(buf_tmp,error);
+				}
+				catch(exception::script_error & e){
+					free(buf_tmp);
+					buf_tmp=NULL;
+					THROW_EXCEPTION(e);
+					error=true;
+				}
+			}
 
-		if(!CEval::evalFile(filename)){
-			return false;
+		}else{
+			// already parsed
+			THROW_RUNTIME_ERROR(string::sformat("Filename \"%s\" already parsed",filename.c_str()));
+			error=true;
+		}
+
+		if(buf_tmp!=NULL){
+			free(buf_tmp);
 		}
 
 		if(show_bytecode){
-			CEval::printGeneratedCode();
+			printGeneratedCode();
 		}
 
 		if(exec_vm){
 			execute();
 		}
 
-		return true;
+		return !error;
 	}
 
 
@@ -783,10 +1119,10 @@ namespace zetscript{
 
 
 		// clear objects...
-		delete _scope_factory;
+		delete scope_factory;
 		delete script_function_factory;
-		delete _native_function_factory;
-		delete _eval;
+		delete native_function_factory;
+		delete eval;
 
 		// we have to destroy all allocated constructor/destructor ...
 		for (unsigned i = 0; i < vec_script_class_node.size(); i++) {
@@ -798,9 +1134,33 @@ namespace zetscript{
 
 		main_object = NULL;
 		main_function = NULL;
-
-
 		virtual_machine=NULL;
+
+
+		for(std::map<std::string,ConstantValueInfo *>::iterator it=m_contantPool.begin();it!=m_contantPool.end();it++){
+			ConstantValueInfo *icv=it->second;
+			switch(GET_INS_PROPERTY_VAR_TYPE(icv->properties)){
+			default:
+				break;
+			case STK_PROPERTY_TYPE_INTEGER:
+				//delete (int *)icv->varRef;
+				break;
+			case STK_PROPERTY_TYPE_BOOLEAN:
+				//delete (bool *)icv->stkValue;
+				break;
+			case STK_PROPERTY_TYPE_NUMBER:
+				//delete (float *)icv->stkValue;
+				break;
+			case STK_PROPERTY_TYPE_STRING:
+				delete (CStringScriptVariable *)icv->varRef;
+				break;
+
+			}
+
+			delete icv;
+		}
+
+		m_contantPool.clear();
 
 	}
 

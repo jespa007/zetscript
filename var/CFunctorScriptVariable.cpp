@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	CFunctorScriptVariable::CFunctorScriptVariable(){
+	CFunctorScriptVariable::CFunctorScriptVariable(CZetScript *_zs):CScriptVariable(_zs){
 
 	  //  m_classStr=typeid(CFunctorScriptVariable).name();
 	  //  m_pointerClassStr=typeid(CFunctorScriptVariable *).name();

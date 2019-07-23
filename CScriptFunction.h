@@ -35,7 +35,7 @@ namespace zetscript{
 
 
 		// info related for function ONLY
-		std::vector<ParamArgInfo> m_arg; // tells var arg name or var type name (in of C )
+		std::vector<ParamArgInfo> arg_info; // tells var arg name or var type name (in of C )
 		int idx_return_type; // -1 not inicialized type return.
 		PtrInstruction instruction;
 
@@ -57,7 +57,7 @@ namespace zetscript{
 		ScopeVarInnerBlockInfo *lut_scope_symbol;
 		unsigned n_lut_scope_symbols;
 
-		 CScriptFunction(unsigned char _idxClass );
+		 CScriptFunction(CZetScript * _zs,unsigned char _idxClass );
 
 		VariableSymbolInfo *  registerVariable(const std::string & file, short line, const std::string & variable, const std::string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
 

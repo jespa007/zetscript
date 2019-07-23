@@ -13,12 +13,12 @@ namespace zetscript{
 
 	}
 
-	CStringScriptVariable::CStringScriptVariable(){
+	CStringScriptVariable::CStringScriptVariable(CZetScript *_zs):CScriptVariable(_zs){
 		m_strValue = "";
 		init(SCRIPT_CLASS_STRING, (void *)this);
 	}
 
-	CStringScriptVariable::CStringScriptVariable(const std::string & s){
+	CStringScriptVariable::CStringScriptVariable(CZetScript *_zs, const std::string & s):CScriptVariable(_zs){
 
 
 		init(SCRIPT_CLASS_STRING, (void *)this);

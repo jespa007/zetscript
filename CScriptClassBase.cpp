@@ -2,12 +2,12 @@
 
 namespace zetscript{
 
-	CScriptClassBase::CScriptClassBase(unsigned char _idxClass, CZetScript * _zs) {
+	CScriptClassBase::CScriptClassBase(CZetScript * _zs,unsigned char _idxClass) {
 		idx_class=_idxClass;
 		zs = _zs;
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
-
+		virtual_machine = zs->getVirtualMachine();
 
 
 	}
@@ -93,7 +93,7 @@ namespace zetscript{
 			for(int i = (int)(m_function.size()-1); i >= 0 ; i--){
 				if(
 						(m_function[i]->symbol_info.symbol->name == function_name)
-					 && (m_function[i]->m_arg.size() ==  n_args)
+					 && (m_function[i]->arg_info.size() ==  n_args)
 					 && (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == m_function[i]->symbol_info.symbol->idxScope))
 					 ){
 

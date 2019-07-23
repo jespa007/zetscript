@@ -13,6 +13,8 @@ namespace zetscript{
 
 class CScriptClass;
 	class CScriptClass;
+	class CZetScript;
+	class CVirtualMachine;
 
 	class  CScriptVariable{//: public CVariable{
 
@@ -36,7 +38,7 @@ class CScriptClass;
 		void *m_value;
 
 		// Construct ...
-		CScriptVariable(CVirtualMachine	*virtual_machine;
+		CScriptVariable(CZetScript	*_zs);
 
 		/**
 		 * info_registered_class: scriptclass info
@@ -90,6 +92,7 @@ class CScriptClass;
 
 		StackElement this_variable;
 		StackElement * exist(const char *c);
+		CZetScript      *zs;
 		CVirtualMachine	*virtual_machine;
 
 		/**

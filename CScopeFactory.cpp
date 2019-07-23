@@ -2,30 +2,11 @@
 
 namespace zetscript{
 
-	CScopeFactory * CScopeFactory::scope_factory_singleton=NULL;
-
-
-	CScopeFactory * CScopeFactory::getInstance(){
-		if(scope_factory_singleton ==NULL){
-			scope_factory_singleton = new CScopeFactory();
-		}
-
-		return scope_factory_singleton;
-	}
-
-	void CScopeFactory::destroySingleton(){
-
-		if(scope_factory_singleton !=NULL){
-			delete scope_factory_singleton;
-			scope_factory_singleton = NULL;
-		}
-	}
-
 
 	//-----------
 
-	CScopeFactory::CScopeFactory(){
-
+	CScopeFactory::CScopeFactory(CZetScript *zs){
+		this->zs=zs;
 	}
 
 	CScope *	 CScopeFactory::newScope(short idxParentScope,bool is_c_node){
@@ -39,7 +20,7 @@ namespace zetscript{
 			}
 		}
 
-		CScope * scope_node = new CScope((short)vec_scope_node.size(), idxParentScope,is_c_node);
+		CScope * scope_node = new CScope(this->zs,(short)vec_scope_node.size(), idxParentScope,is_c_node);
 		vec_scope_node.push_back(scope_node);
 		return scope_node;
 	}

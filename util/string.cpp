@@ -10,12 +10,7 @@ namespace zetscript{
 		};
 
 
-		enum{
-			STRING_IS_INVALID_NUMBER=0,
-			STRING_IS_HEXA,
-			STRING_IS_INT,
-			STRING_IS_DOUBLE
-		};
+
 
 		char m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER]={{0}};
 		char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
@@ -31,14 +26,14 @@ namespace zetscript{
 			return _sformat_buffer;
 		}
 
-		int *  parse_intenger(const std::string & val){
+		int *  parse_integer(const std::string & val){
 
 			int *n=NULL;
-			int type_number = is_number(val);
+			NUMBER_TYPE number_type = is_number(val);
 			int numberValue=0;
-			if(type_number == STRING_IS_INT){
+			if(number_type == NUMBER_TYPE::INT){
 				numberValue=strtol(val.c_str(), NULL, 10);
-			}else if(type_number == STRING_IS_HEXA){
+			}else if(number_type == NUMBER_TYPE::HEXA){
 				numberValue=strtol(val.c_str(), NULL, 16);
 			}else if(is_binary(val)){
 				std::string binary = val.substr(0,val.size()-1);
@@ -238,7 +233,7 @@ namespace zetscript{
 			return (*aux_p=='b' || *aux_p=='B') && (aux_p > start_p);
 		}
 
-		int is_number(const std::string & test_str_number){
+		NUMBER_TYPE is_number(const std::string & test_str_number){
 			bool isHexa=false;
 			char *str = (char *)test_str_number.c_str();
 
@@ -259,9 +254,9 @@ namespace zetscript{
 			if(isHexa) {
 				str = advance_hexadigits(str);
 				if(str == start_str)
-					return STRING_IS_INVALID_NUMBER;
+					return NUMBER_TYPE::INVALID;
 
-				if(*str == ' ' || *str == 0) return STRING_IS_HEXA;
+				if(*str == ' ' || *str == 0) return NUMBER_TYPE::HEXA;
 			}else{
 
 				str = advance_digits(str);
@@ -272,7 +267,7 @@ namespace zetscript{
 
 					if(*str != 'e'){
 						if(*str == ' ' || *str == 0)
-							return STRING_IS_DOUBLE;
+							return NUMBER_TYPE::DOUBLE;
 					}
 				}
 
@@ -286,17 +281,17 @@ namespace zetscript{
 
 					str = advance_digits(str);
 					if(*str == ' ' || *str == 0)
-						return STRING_IS_DOUBLE;
+						return NUMBER_TYPE::DOUBLE;
 
-					return STRING_IS_INVALID_NUMBER;
+					return NUMBER_TYPE::INVALID;
 				}
 
 				if(*str == ' ' || *str == 0)
-					return STRING_IS_INT;
+					return NUMBER_TYPE::INT;
 
 			}
 
-			return STRING_IS_INVALID_NUMBER;
+			return NUMBER_TYPE::INVALID;
 
 
 		}

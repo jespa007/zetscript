@@ -17,7 +17,7 @@ namespace zetscript{
 		public:
 
 
-			CScriptFunctionFactory();
+			CScriptFunctionFactory(CZetScript *_zs);
 
 			/**
 			 * Set/Get CScriptClass Node by its idx, regarding current state.
@@ -46,8 +46,8 @@ namespace zetscript{
 
 		private:
 
-			static CScriptFunctionFactory *script_function_factory_singleton;
-
+			CZetScript * zs;
+			CScopeFactory * scope_factory;
 			std::vector<CScriptFunction *> 	vec_script_function_node;
 
 

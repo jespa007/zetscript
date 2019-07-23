@@ -37,15 +37,15 @@
 
 #define REGISTER_C_CONSTANT(zs,s,v)						(zs)->register_C_FunctionMember(s,f,__FILE__, __LINE__)
 
-#define NEW_SCRIPT_FUNCTION								(script_function_factory)->newScriptFunction
-#define GET_SCRIPT_FUNCTION(zs,idx) 					(zs)->getScriptFunction(idx)
-#define MAIN_FUNCTION(zs)								GET_SCRIPT_FUNCTION(zs,IDX_MAIN_FUNCTION)
 
 
 namespace zetscript{
 	class CVirtualMachine;
 	class CEval;
 	class CZetScript{
+
+
+
 	public:
 
 		std::string  VOID_TYPE_STR;				// 	typeid(void).name()
@@ -76,6 +76,26 @@ namespace zetscript{
 		 float * evalFloatValue(const std::string & str_to_eval);
 		 std::string * evalStringValue(const std::string & str_to_eval);
 
+		 bool evalString(const std::string & expresion, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
+		 bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
+
+			//===================================================================================================
+			//
+			// PRINT ASM INFO
+			std::string getStrMovVar(OpCodeInstruction * iao);
+			std::string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
+			 void printGeneratedCode(CScriptFunction *sfo);
+			//===================================================================================================
+
+
+
+			//---------------------------------------------------------------------------------------------------------------------------------------
+			// FILE MANAGEMENT
+			 bool isFilenameAlreadyParsed(const std::string & filename);
+			 const char * getParsedFilenameFromIdx(unsigned idx);
+
+			//-----------------------------------------------
+
 		/**
 		 * Clear: Clear compile information.
 		 */
@@ -84,8 +104,13 @@ namespace zetscript{
 
 
 
-		 bool evalString(const std::string & expresion, bool execute=true, const char *filename_ref=NULL,bool show_bytecode=false);
-		 bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
+
+		 /**
+		  * Class management region
+		  */
+
+			/// register script class
+			CScriptClass 						* 				registerClass(const std::string & file, short line, const std::string & class_name, const std::string & base_class_name="");
 
 		 CScriptClass * 				getScriptClass(unsigned char idx);
 		 CScriptClass * 				getScriptClass(const std::string & name);
@@ -94,11 +119,13 @@ namespace zetscript{
 		const char * 				getMetamethod(METAMETHOD_OPERATOR op);
 
 		bool						isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
-
+		StackElement 					C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable);
 
 		/**
-		 * REGISTER C Stuff
+		 * Register C region
 		 */
+		template<class _T, class _B>
+		bool class_C_Baseof();
 
 		/**
 		 * Register C function
@@ -157,12 +184,12 @@ namespace zetscript{
 		// 0 PARAMS
 		//
 		template <typename _R,typename _T>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		->typename std::enable_if<std::is_same<_R,void>::value>::type;
 
 
 		template <typename _R,typename _T>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<_R,void>::value>::type;
 
 
@@ -172,12 +199,12 @@ namespace zetscript{
 		//
 		// template for last parameter argIdx == 1
 		template<typename _R,typename _T,  typename... ArgTypes>
-		auto bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 1)>::type;
 
 
 		template<typename _R,typename _T,  typename... ArgTypes>
-		auto bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 1)>::type;
 
 
@@ -187,12 +214,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 2
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type;
 
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type;
 
 
@@ -202,12 +229,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 3
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type;
 
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type;
 
 
@@ -218,12 +245,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 4
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type;
 
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type;
 
 
@@ -233,13 +260,13 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 5
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type;
 
 
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type;
 
 
@@ -250,12 +277,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 6
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 6)>::type;
 
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type;
 
 
@@ -265,12 +292,12 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------
 
 		 template <typename _F, std::size_t... Is>
-		 auto bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
 		 -> typename std::enable_if<(_F::arity > 0)>::type;
 
 
 		 template <typename _F, std::size_t... Is>
-		 auto bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
 		 -> typename std::enable_if<(_F::arity == 0)>::type;
 
 
@@ -304,7 +331,13 @@ namespace zetscript{
 			std::vector<tPrimitiveType*>		params;
 		}tRegisterFunction;
 
-		static StackElement 					C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable);
+
+		typedef struct {
+			std::string filename;
+			//unsigned char *data;
+		} ParsedSourceInfo;
+
+
 
 		//----
 
@@ -312,7 +345,9 @@ namespace zetscript{
 
 		tPrimitiveType *getPrimitiveTypeFromStr(const std::string & str);
 		std::map<unsigned char, std::map<unsigned char, fntConversionType>> *  getMapTypeConversion();
-
+		// singleton
+		 std::map<std::string,ConstantValueInfo *> 	 m_contantPool;
+		 std::vector<ParsedSourceInfo> 			 m_parsedSource;
 
 
 		 unsigned char getIdx_C_RegisteredClass(const std::string & str_classPtr);
@@ -321,8 +356,6 @@ namespace zetscript{
 
 		 std::vector<CScriptClass *> * 	getVectorScriptClassNode();
 
-		/// register script class
-		CScriptClass 						* 				registerClass(const std::string & file, short line, const std::string & class_name, const std::string & base_class_name="");
 
 
 		bool 						isClassRegistered(const std::string & v);
@@ -362,6 +395,7 @@ namespace zetscript{
 		CScriptFunctionFactory *script_function_factory;
 		CScriptFunction * main_function;
 		CScriptFunction * main_object;
+		CZetScript 		*zs;
 
 		float eval_float;
 		int eval_int;

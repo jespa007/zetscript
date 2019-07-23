@@ -132,8 +132,6 @@ namespace zetscript{
 
 	void  		write_error(const char *filename, int line, const  char  *string_text, ...);
 
-	CEval * CEval::eval_singleton = NULL;
-
 
 	bool IS_TERNARY_IF_OPERATOR(const char *s)			{return ((*s=='?'));}
 	bool IS_TERNARY_ELSE_OPERATOR(const char *s)		{return ((*s==':'));}
@@ -228,322 +226,7 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	const char * 		CEval::getOpCodeStr(OP_CODE  op){
-		if(op < OP_CODE::MAX_OP_CODES){
-			return defined_opcode[op].str;
 
-		}
-
-		return "unknow_op";
-	}
-
-	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-	 // PRINT ASM INFO
-
-
-	 std::string CEval::getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction){
-
-		 char print_aux_load_value[512] = {0};
-		 char object_access[512] = "";
-
-		 OpCodeInstruction * instruction =&m_listStatements[current_instruction];
-		 ConstantValueInfo *icv;
-		 std::string symbol_value=INSTRUCTION_GET_SYMBOL_NAME(current_function,instruction);
-		 if(instruction->op_code != LOAD){
-			 return "ERROR";
-		 }
-
-
-
-		 sprintf(print_aux_load_value,"UNDEFINED");
-
-		 if(instruction->properties & INS_PROPERTY_ACCESS_SCOPE){
-
-			 sprintf(object_access,
-					"[" FORMAT_PRINT_INSTRUCTION "]."
-
-					,(int)instruction->index_op2);
-		 }
-		 else if(instruction->properties & INS_PROPERTY_THIS_SCOPE){
-			sprintf(object_access,"this.");
-		 }
-
-		 switch(instruction->index_op1){
-
-			case LOAD_TYPE::LOAD_TYPE_CONSTANT:
-				icv=(ConstantValueInfo *)instruction->index_op2;
-				switch(icv->properties){
-				case STK_PROPERTY_TYPE_BOOLEAN:
-				case STK_PROPERTY_TYPE_INTEGER:
-					sprintf(print_aux_load_value,"CONST(%i)",(int)((intptr_t)icv->stkValue));
-					break;
-				case STK_PROPERTY_TYPE_NUMBER:
-					sprintf(print_aux_load_value,"CONST(%f)",*((float *)&icv->stkValue));
-					break;
-				case STK_PROPERTY_TYPE_STRING:
-					sprintf(print_aux_load_value,"CONST(%s)",((const char *)icv->stkValue));
-					break;
-
-				}
-				break;
-
-			case LOAD_TYPE::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"%sVAR(%s)",object_access,symbol_value.c_str());
-				break;
-			case LOAD_TYPE::LOAD_TYPE_FUNCTION:
-
-				sprintf(print_aux_load_value,"%sFUN(%s)",object_access,symbol_value.c_str());
-				break;
-
-			case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
-				sprintf(print_aux_load_value,"ARG(%s)",symbol_value.c_str());
-				break;
-			default:
-
-				break;
-		}
-		return print_aux_load_value;
-	 }
-
-	 void CEval::printGeneratedCode(CScriptFunction *sfo){
-
-		// PRE: it should printed after compile and updateReferences.
-		std::string pre="";
-		std::string post="";
-
-		unsigned idx_instruction=0;
-		for(OpCodeInstruction * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
-
-			int n_ops=0;
-			int index_op1 = instruction->index_op1;
-			int index_op2 = instruction->index_op2;
-
-			if(index_op1 != -1)
-				n_ops++;
-
-			 if(index_op2 != -1)
-				 n_ops++;
-
-			 pre="";
-			 post="";
-
-				switch(GET_INS_PROPERTY_PRE_POST_OP(instruction->properties)){
-				case INS_PROPERTY_PRE_NEG:
-					pre="-";
-					break;
-				case INS_PROPERTY_PRE_INC:
-					pre="++";
-					break;
-				case INS_PROPERTY_PRE_DEC:
-					pre="--";
-					break;
-				case INS_PROPERTY_POST_INC:
-					post="++";
-					break;
-				case INS_PROPERTY_POST_DEC:
-					post="--";
-					break;
-				default:
-					// check whether is constant and numeric
-					if(instruction->op_code==OP_CODE::LOAD && instruction->index_op1==LOAD_TYPE_CONSTANT){
-						ConstantValueInfo *icv = (((ConstantValueInfo *)instruction->index_op2));
-						float n;
-
-						// change the sign
-						switch(icv->properties){
-						default:
-							break;
-						case STK_PROPERTY_TYPE_INTEGER:
-							if(((intptr_t)icv->stkValue)<0){
-								pre="-";
-							}
-							break;
-						case STK_PROPERTY_TYPE_NUMBER:
-							memcpy(&n,&icv->stkValue,sizeof(float));
-							if(n<0){
-								pre="-";
-							}
-							break;
-						}
-					}
-					break;
-
-				}
-			switch(instruction->op_code){
-
-			case  NEW:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,CEval::getOpCodeStr(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->index_op1):"???");
-				break;
-			case  LOAD:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s\n"
-						,idx_instruction,
-						CEval::getOpCodeStr(instruction->op_code),
-						pre.c_str(),
-						getStrTypeLoadValue(sfo,sfo->instruction,idx_instruction).c_str(),
-						post.c_str());
-				break;
-			case JNT:
-			case JT:
-			case JMP:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
-						,idx_instruction
-						,CEval::getOpCodeStr(instruction->op_code)
-						,(int)instruction->index_op2);
-				break;
-			case PUSH_SCOPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
-						,idx_instruction
-						,CEval::getOpCodeStr(instruction->op_code)
-						,instruction->index_op1!=0?'(':' '
-						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-						,instruction->index_op1!=0?')':' '
-						);
-				break;
-			case POP_SCOPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
-						,idx_instruction
-						,CEval::getOpCodeStr(instruction->op_code)
-						,instruction->index_op1!=0?'(':' '
-						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-						,instruction->index_op1!=0?')':' '
-						);
-				break;
-			default:
-
-				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,CEval::getOpCodeStr(instruction->op_code));
-				}else if(n_ops==1){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
-							,idx_instruction
-							,CEval::getOpCodeStr(instruction->op_code)
-							,(instruction->properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
-							);
-				}else{
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
-							,idx_instruction
-							,CEval::getOpCodeStr(instruction->op_code)
-							);
-				}
-				break;
-			}
-		}
-
-
-		// and then print its functions ...
-		std::vector<CScriptFunction *> * m_vf = &sfo->m_function;
-
-		for(unsigned j =0; j < m_vf->size(); j++){
-
-			CScriptFunction *local_irfs = (*m_vf)[j];
-
-			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
-				std::string symbol_ref="????";
-
-
-				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
-
-				if(local_irfs->idx_class!=ZS_INVALID_CLASS){
-					CScriptClass *sc = GET_SCRIPT_CLASS(local_irfs->idx_class);
-					if(sc->idx_class == IDX_CLASS_MAIN){
-						symbol_ref="Main";
-					}else{
-						symbol_ref=sfo->symbol_info.symbol->name+std::string("::")+std::string("????");
-					}
-				}
-
-				printf("-------------------------------------------------------\n");
-				printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
-				printGeneratedCode(m_vf->at(j));
-			}
-		}
-	 }
-
-	 void CEval::printGeneratedCode(){
-
-		 std::vector<CScriptClass *> *vec_script_class_node=script_class_factory->getVectorScriptClassNode();
-		 // for all classes print code...
-		 for(unsigned i = 0; i < vec_script_class_node->size(); i++){
-			 CScriptClass *rc=vec_script_class_node->at(i);
-			 for(unsigned f = 0; f < rc->m_function.size(); f++){
-				 printGeneratedCode(rc->m_function[f]);
-			 }
-		 }
-	 }
-	 // PRINT ASM INFO
-	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-	//--------------------------------
-	 // FILE MANAGEMENT
-
-
-	bool CEval::isFilenameAlreadyParsed(const std::string & filename){
-		for(unsigned i = 0; i < m_parsedSource.size(); i++){
-			if(m_parsedSource.at(i).filename==filename){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	const char * CEval::getParsedFilenameFromIdx(unsigned idx){
-
-		if(idx >= m_parsedSource.size()){
-			THROW_RUNTIME_ERROR("out of bounds");
-			return DEFAULT_NO_FILENAME;
-		}
-
-		return m_parsedSource.at(idx).filename.c_str();
-	}
-
-	//-----------------------------------------------------------------------------------------------------------------------------------------
-	//
-	// CONSTANT MANAGEMENT
-
-	ConstantValueInfo *CEval::getConstant(const std::string & const_name){
-
-		if((m_contantPool).count(const_name) == 1){
-			return (m_contantPool)[const_name];
-		}
-		return NULL;
-	}
-
-	ConstantValueInfo * CEval::addConstant(const std::string & const_name, void *obj, unsigned short properties){
-
-		ConstantValueInfo * info_ptr=NULL;
-
-		if(getConstant(const_name) == NULL){
-			info_ptr=new ConstantValueInfo;
-			*info_ptr={obj,NULL,properties};
-			(m_contantPool)[const_name]=info_ptr;
-		}else{
-			THROW_RUNTIME_ERROR(string::sformat("internal:constant %s already exist",const_name.c_str()));
-		}
-
-		return info_ptr;
-	}
-
-	ConstantValueInfo * CEval::addConstant(const std::string & const_name, int _value){
-		intptr_t value = _value;
-		unsigned short type=STK_PROPERTY_TYPE_INTEGER;
-		StackElement *stk;
-
-		if((stk = getConstant(const_name))!=NULL){
-			return stk;
-		}
-
-		return addConstant(const_name,(void *)value,type);
-
-	}
-
-	// CONSTANT MANAGEMENT
-	//
-	//-----------------------------------------------------------------------------------------------------------------------------------------
 
 	std::string * CEval::getCompiledSymbol(const std::string & s){
 		if(this->m_compiledSymbolName.count(s)==0){
@@ -567,70 +250,7 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR();
 			error=true;
 		}
-
-		if(!error){
-			CURRENT_VM->buildCache();
-		}
-
 		return end_char;
-	}
-
-	bool CEval::evalString(const std::string & expression){
-
-		bool error=false;
-		char *end_char=NULL;
-
-		try{
-			eval(expression.c_str(),error);
-		}
-		catch(exception::script_error & e)
-		{
-			THROW_EXCEPTION(e);
-			error=true;
-		}
-
-		return !error;
-	}
-
-	bool CEval::evalFile(const std::string & filename){
-		int idx_file=-1;
-		bool error=false;
-		char *buf_tmp=NULL;
-
-		if(!isFilenameAlreadyParsed(filename)){
-			ParsedSourceInfo ps;
-			ps.filename = filename;
-			m_parsedSource.push_back(ps);
-			idx_file=m_parsedSource.size()-1;
-			int n_bytes;
-
-			if((buf_tmp=io::read_file(filename, n_bytes))!=NULL){
-				CURRENT_PARSING_FILE_STR=filename.c_str();
-				CURRENT_PARSING_FILE_IDX=idx_file;
-				try{
-					eval(buf_tmp,error);
-				}
-				catch(exception::script_error & e){
-					free(buf_tmp);
-					buf_tmp=NULL;
-					THROW_EXCEPTION(e);
-					error=true;
-				}
-
-				CURRENT_PARSING_FILE_STR=NULL;
-				CURRENT_PARSING_FILE_IDX=-1;
-			}
-
-		}else{
-			// already parsed
-			THROW_RUNTIME_ERROR(string::sformat("Filename \"%s\" already parsed",filename.c_str()));
-			error=true;
-		}
-
-		if(buf_tmp!=NULL){
-			free(buf_tmp);
-		}
-		return !error;
 	}
 
 	void CEval::iniVars(){
@@ -647,7 +267,7 @@ namespace zetscript{
 		memset(defined_identity_operator,0,sizeof(defined_identity_operator));
 		memset(defined_separator,0,sizeof(defined_separator));
 		memset(defined_keyword,0,sizeof(defined_keyword));
-		memset(defined_opcode,0,sizeof(defined_opcode));
+
 
 
 		defined_operator[UNKNOWN_OPERATOR]={UNKNOWN_OPERATOR, "none",NULL};
@@ -711,20 +331,20 @@ namespace zetscript{
 
 
 		defined_keyword[KEYWORD_TYPE::UNKNOWN_KEYWORD] = {UNKNOWN_KEYWORD, NULL,NULL};
-		defined_keyword[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",new KeywordFunction(std::bind(&CEval::evalKeywordVar,eval_singleton,_1,_2,_3,_4))};
-		defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",new KeywordFunction(std::bind(&CEval::evalKeywordIf,eval_singleton,_1,_2,_3,_4))};
+		defined_keyword[KEYWORD_TYPE::VAR_KEYWORD] = {VAR_KEYWORD,"var",new KeywordFunction(std::bind(&CEval::evalKeywordVar,this,_1,_2,_3,_4))};
+		defined_keyword[KEYWORD_TYPE::IF_KEYWORD] = {IF_KEYWORD,"if",new KeywordFunction(std::bind(&CEval::evalKeywordIf,this,_1,_2,_3,_4))};
 		defined_keyword[KEYWORD_TYPE::ELSE_KEYWORD] = {ELSE_KEYWORD,"else"};
-		defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",new KeywordFunction(std::bind(&CEval::evalKeywordFor,eval_singleton,_1,_2,_3,_4))};
-		defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",new KeywordFunction(std::bind(&CEval::evalKeywordWhile,eval_singleton,_1,_2,_3,_4))};
-		defined_keyword[KEYWORD_TYPE::DO_WHILE_KEYWORD] = {DO_WHILE_KEYWORD,"do",new KeywordFunction(std::bind(&CEval::evalKeywordDoWhile,eval_singleton,_1,_2,_3,_4))}; // while is expected in the end ...
+		defined_keyword[KEYWORD_TYPE::FOR_KEYWORD] = {FOR_KEYWORD,"for",new KeywordFunction(std::bind(&CEval::evalKeywordFor,this,_1,_2,_3,_4))};
+		defined_keyword[KEYWORD_TYPE::WHILE_KEYWORD] = {WHILE_KEYWORD,"while",new KeywordFunction(std::bind(&CEval::evalKeywordWhile,this,_1,_2,_3,_4))};
+		defined_keyword[KEYWORD_TYPE::DO_WHILE_KEYWORD] = {DO_WHILE_KEYWORD,"do",new KeywordFunction(std::bind(&CEval::evalKeywordDoWhile,this,_1,_2,_3,_4))}; // while is expected in the end ...
 
-		defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",new KeywordFunction(std::bind(&CEval::evalKeywordSwitch,eval_singleton,_1,_2,_3,_4))};
+		defined_keyword[KEYWORD_TYPE::SWITCH_KEYWORD] = {SWITCH_KEYWORD,"switch",new KeywordFunction(std::bind(&CEval::evalKeywordSwitch,this,_1,_2,_3,_4))};
 		defined_keyword[KEYWORD_TYPE::CASE_KEYWORD] = {CASE_KEYWORD,"case",NULL};
 		defined_keyword[KEYWORD_TYPE::BREAK_KEYWORD] = {BREAK_KEYWORD,"break",NULL};
 		defined_keyword[KEYWORD_TYPE::CONTINUE_KEYWORD] = {CONTINUE_KEYWORD,"continue",NULL};
 		defined_keyword[KEYWORD_TYPE::DEFAULT_KEYWORD] = {DEFAULT_KEYWORD,"default",NULL};
 		defined_keyword[KEYWORD_TYPE::FUNCTION_KEYWORD] = {FUNCTION_KEYWORD,"function",NULL};
-		defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",new KeywordFunction(std::bind(&CEval::evalKeywordReturn,eval_singleton,_1,_2,_3,_4))};
+		defined_keyword[KEYWORD_TYPE::RETURN_KEYWORD] = {RETURN_KEYWORD,"return",new KeywordFunction(std::bind(&CEval::evalKeywordReturn,this,_1,_2,_3,_4))};
 		defined_keyword[KEYWORD_TYPE::THIS_KEYWORD] = {THIS_KEYWORD,"this", NULL};
 		defined_keyword[KEYWORD_TYPE::CLASS_KEYWORD] = {CLASS_KEYWORD,"class",NULL};
 		defined_keyword[KEYWORD_TYPE::NEW_KEYWORD] = {NEW_KEYWORD,"new", NULL};
@@ -735,72 +355,20 @@ namespace zetscript{
 		defined_directive[UNKNOWN_DIRECTIVE]={UNKNOWN_DIRECTIVE, NULL};
 		defined_directive[INCLUDE_DIRECTIVE]={INCLUDE_DIRECTIVE, "import"};
 
-		// OP CODES
-		//		VAR  			|	STR   | ID | NUM OP
-		//----------------------+---------+----+-------
 
-		defined_opcode[EQU]         ={EQU,"EQU" };  // ==
-		defined_opcode[INSTANCEOF]  ={INSTANCEOF,"INSTANCEOF"};  // ==
-		defined_opcode[NOT_EQU]     ={NOT_EQU,"NOT_EQU" };  // !=
-		defined_opcode[LT]          ={LT,"LT"  };  // <
-		defined_opcode[LTE]         ={LTE,"LTE"};  // <=
-		defined_opcode[NOT]         ={NOT,"NOT"}; // !
-		defined_opcode[GT]          ={GT,"GT"};  // >
-		defined_opcode[GTE]         ={GTE,"GTE"}; // >=
-		defined_opcode[NEG]         ={NEG,"NEG"}; // !
-		defined_opcode[ADD]         ={ADD,"ADD"}; // +
-		defined_opcode[LOGIC_AND]   ={LOGIC_AND,"LOGIC_AND"}; // &&
-		defined_opcode[LOGIC_OR]    ={LOGIC_OR,"LOGIC_OR"};  // ||
-		defined_opcode[DIV]         ={DIV,"DIV"}; // /
-		defined_opcode[MUL]         ={MUL,"MUL"}; // *
-		defined_opcode[MOD]         ={MOD,"MOD"};  // %
-
-		defined_opcode[AND]         ={AND,"AND"}; // bitwise logic and
-		defined_opcode[OR]          ={OR,"OR"}; // bitwise logic or
-		defined_opcode[XOR]         ={XOR,"XOR"}; // logic xor
-		defined_opcode[SHL]         ={SHL,"SHL"}; // shift left
-		defined_opcode[SHR]         ={SHR,"SHR"}; // shift right
-
-		defined_opcode[STORE]       ={STORE,"STORE"}; // mov expression to var
-		defined_opcode[LOAD]        ={LOAD,"LOAD"}; // primitive value like number/std::string or boolean...
-
-		defined_opcode[JMP]         ={JMP,"JMP"}; // Unconditional jump.
-		defined_opcode[JNT]         ={JNT,"JNT"}; // goto if not true ... goes end to conditional.
-		defined_opcode[JT]          ={JT,"JT"}; // goto if true ... goes end to conditional.
-
-		defined_opcode[CALL]={CALL,"CALL"}; // calling function after all of arguments are processed...
-
-
-		defined_opcode[VGET]={VGET,"VGET"}; // std::vector access after each index is processed...
-
-		defined_opcode[DECL_VEC]={DECL_VEC,"DECL_VEC"}; // Vector object (CREATE)
-
-		defined_opcode[VPUSH]={VPUSH,"VPUSH"}; // Value push for std::vector
-		defined_opcode[RET]={RET,"RET"}; // Value pop for std::vector
-
-		defined_opcode[NEW]={NEW,"NEW"}; // New object (CREATE)
-		defined_opcode[DELETE_OP]={DELETE_OP,"DELETE_OP"};
-
-		defined_opcode[POP_SCOPE]={POP_SCOPE,"POP_SCOPE"}; // New object (CREATE)
-		defined_opcode[PUSH_SCOPE]={PUSH_SCOPE,"PUSH_SCOPE"}; // New object (CREATE)
-		defined_opcode[PUSH_ATTR]={PUSH_ATTR,"PUSH_ATTR"}; // New object (CREATE)
-		defined_opcode[DECL_STRUCT]={DECL_STRUCT,"DECL_STRUCT"}; // New object (CREATE)
-
-		defined_opcode[IT_INI]={IT_INI,"IT_INI"}; // IT_INI
-		defined_opcode[IT_CHK_END]={IT_CHK_END,"IT_CHK_END"}; // IT_CHK_END
-		defined_opcode[IT_SET_AND_NEXT]={IT_SET_AND_NEXT,"IT_SET_AND_NEXT"}; // IT_SET_AND_NEXT
 
 		// create main ast management
 		// init variables...
 	}
 
-	CEval::CEval(CZetScript *zs){
+	CEval::CEval(CZetScript *_zs){
 		CURRENT_PARSING_FILE_IDX=-1;
 		CURRENT_PARSING_FILE_STR="";
 		pCurrentFunctionInfo=NULL;
-		this->zs=zs;
-		scope_factory=zs->getScopeFactory();
-		script_class_factory=zs->getScriptClassFactory();
+		this->zs=_zs;
+		this->script_function_factory=zs->getScriptFunctionFactory();
+		this->scope_factory=zs->getScopeFactory();
+
 	}
 
 	bool   CEval::endExpression(const char * s){
@@ -1074,7 +642,7 @@ namespace zetscript{
 					obj = get_obj;
 				}else{
 
-					CStringScriptVariable *s=new CStringScriptVariable(v);
+					CStringScriptVariable *s=new CStringScriptVariable(zs,v);
 					obj=addConstant(v,NULL,type);
 					((StackElement *)obj)->stkValue=((void *)(s->m_strValue.c_str()));
 					((StackElement *)obj)->varRef=s;
@@ -1097,7 +665,7 @@ namespace zetscript{
 					type=STK_PROPERTY_TYPE_UNDEFINED;
 					load_type=LOAD_TYPE_UNDEFINED;
 					obj=NULL;// CScriptVariable::UndefinedSymbol;
-			}else if((const_obj=string::parse_intenger(v))!=NULL){
+			}else if((const_obj=string::parse_integer(v))!=NULL){
 				int value = *((int *)const_obj);
 				delete (int *)const_obj;
 				load_type=LOAD_TYPE_CONSTANT;
@@ -1136,9 +704,9 @@ namespace zetscript{
 				token_node->token_type = TOKEN_TYPE::IDENTIFIER_TOKEN;
 				intptr_t idx_local_var=ZS_UNDEFINED_IDX;
 
-				for(unsigned i = 0; i < pCurrentFunctionInfo->function_info_object->m_arg.size() && idx_local_var == ZS_UNDEFINED_IDX; i++){
+				for(unsigned i = 0; i < pCurrentFunctionInfo->function_info_object->arg_info.size() && idx_local_var == ZS_UNDEFINED_IDX; i++){
 
-					if(pCurrentFunctionInfo->function_info_object->m_arg[i].arg_name == v){
+					if(pCurrentFunctionInfo->function_info_object->arg_info[i].arg_name == v){
 						idx_local_var=i;
 					}
 				}
@@ -1913,7 +1481,7 @@ namespace zetscript{
 
 
 				// register class
-				if((sc=zetscript::script_class_factory->registerClass(__FILE__, __LINE__, class_name,base_class_name))==NULL){
+				if((sc=zs->registerClass(__FILE__, __LINE__, class_name,base_class_name))==NULL){
 					return NULL;
 				}
 
@@ -3051,11 +2619,7 @@ namespace zetscript{
 							int current_file_idx=CEval::CURRENT_PARSING_FILE_IDX;
 							std::string file_to_eval=symbol_name;
 
-							if(isFilenameAlreadyParsed(file_to_eval.c_str())){
-								write_error(CURRENT_PARSING_FILE_STR,line,"\"%s\" already evald",file_to_eval.c_str());
-								THROW_SCRIPT_ERROR();
-								return NULL;
-							}
+
 
 							try{
 								zs->evalFile(file_to_eval);
@@ -3182,7 +2746,7 @@ namespace zetscript{
 					for(int i = sf->idxLocalFunction-1; i >=0 && sf_found==NULL; i--){
 
 						if(
-								(sc->m_function[i]->m_arg.size() == ls->n_params)
+								(sc->m_function[i]->arg_info.size() == ls->n_params)
 							&& (symbol_name_to_find == sc->m_function[i]->symbol_info.symbol->name)
 							){
 							sf_found = sc->m_function[i];
@@ -3300,30 +2864,7 @@ namespace zetscript{
 			}
 		}
 
-		for(std::map<std::string,ConstantValueInfo *>::iterator it=m_contantPool.begin();it!=m_contantPool.end();it++){
-			ConstantValueInfo *icv=it->second;
-			switch(GET_INS_PROPERTY_VAR_TYPE(icv->properties)){
-			default:
-				break;
-			case STK_PROPERTY_TYPE_INTEGER:
-				//delete (int *)icv->varRef;
-				break;
-			case STK_PROPERTY_TYPE_BOOLEAN:
-				//delete (bool *)icv->stkValue;
-				break;
-			case STK_PROPERTY_TYPE_NUMBER:
-				//delete (float *)icv->stkValue;
-				break;
-			case STK_PROPERTY_TYPE_STRING:
-				delete (CStringScriptVariable *)icv->varRef;
-				break;
 
-			}
-
-			delete icv;
-		}
-
-		m_contantPool.clear();
 	}
 
 }

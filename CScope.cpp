@@ -33,12 +33,14 @@ namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------
 
-	CScope::CScope( short _idx_this, short _idx_parent, bool _is_c_node){//, int _index){
+	CScope::CScope(CZetScript * _zs, short _idx_this, short _idx_parent, bool _is_c_node){//, int _index){
 		idxParentScope = _idx_parent;
 		idxCurrentScopePointer=ZS_UNDEFINED_IDX;
 		idxScope = _idx_this;
 		is_c_node = _is_c_node;
 		script_class=NULL;
+		zs=_zs;
+		scope_factory=_zs->getScopeFactory();
 
 
 		if(_idx_parent == ZS_UNDEFINED_IDX){ // first node...

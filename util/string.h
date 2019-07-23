@@ -6,8 +6,15 @@
 namespace zetscript{
 	namespace string{
 
+		typedef enum{
+			INVALID=0,
+			HEXA,
+			INT,
+			DOUBLE
+		}NUMBER_TYPE;
+
 		 bool  * parse_boolean(const std::string & );
-		 int   * parse_intenger(const std::string & );
+		 int   * parse_integer(const std::string & );
 		 float * parse_float(const std::string & );
 
 
@@ -24,6 +31,8 @@ namespace zetscript{
 		  std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
 		  std::vector<std::string> split(const std::string &s, char delim);
 		 bool is_empty(const std::string & str);
+		 NUMBER_TYPE is_number(const std::string & test_str);
+		 bool 		 is_binary(const std::string & test_str);
 
 		 std::string replace(const std::string & str_old, const char old_ch, char new_ch);
 		 void replace(std::string & str_input, const std::string & old_word, const std::string & new_word);

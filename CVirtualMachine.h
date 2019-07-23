@@ -35,9 +35,15 @@ namespace zetscript{
 			PInfoSharedPointerNode first, last;
 		}tInfoSharedList;
 
-
 		tInfoSharedList zero_shares[MAX_FUNCTION_CALL];
 		tInfoSharedList shared_var[MAX_FUNCTION_CALL];
+
+		//===================================================================================================
+
+		typedef struct{
+			OP_CODE op_code;
+			const char *str;
+		}OpCodeInfo;
 
 		CScriptFunction  *main_function_object;
 		CScriptFunction 	**vec_script_function_node;
@@ -49,12 +55,13 @@ namespace zetscript{
 		const CScriptFunction *current_call_c_function;
 		CZetScript *zs;
 
-	//===================================================================================================
+
 
 
 		float f_return_value;
 		std::string s_return_value;
 		StackElement stk_aux;
+		 OpCodeInfo  defined_opcode[MAX_OP_CODES];
 
 		StackElement  execute_internal(
 				CScriptFunction *info_function,
@@ -102,6 +109,7 @@ namespace zetscript{
 
 
 		void addGlobalVar(const StackElement & stk);
+		const char 	* 		getOpCodeStr(OP_CODE  op);
 		void clearGlobalVars();
 
 		 StackElement execute(

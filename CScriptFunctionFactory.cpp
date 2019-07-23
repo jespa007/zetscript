@@ -2,30 +2,10 @@
 
 namespace zetscript{
 
-	CScriptFunctionFactory * CScriptFunctionFactory::script_function_factory_singleton=NULL;
 
-
-
-	CScriptFunctionFactory * CScriptFunctionFactory::getInstance(){
-		if(script_function_factory_singleton ==NULL){
-			script_function_factory_singleton = new CScriptFunctionFactory();
-		}
-
-		return script_function_factory_singleton;
-	}
-
-	void CScriptFunctionFactory::destroySingleton(){
-
-		if(script_function_factory_singleton !=NULL){
-			delete script_function_factory_singleton;
-			script_function_factory_singleton = NULL;
-		}
-	}
-
-	//----
-
-	CScriptFunctionFactory::CScriptFunctionFactory(){
-
+	CScriptFunctionFactory::CScriptFunctionFactory(CZetScript *_zs){
+		zs = _zs;
+		scope_factory = _zs->getScopeFactory();
 	}
 
 	std::vector<CScriptFunction *> 	*CScriptFunctionFactory::getVectorScriptFunctionNode(){
@@ -48,9 +28,9 @@ namespace zetscript{
 				return NULL;
 		}
 
-		CScriptFunction *irs = new CScriptFunction(idx_class);
+		CScriptFunction *irs = new CScriptFunction(zs,idx_class);
 
-		irs->m_arg = args;
+		irs->arg_info = args;
 		irs->idx_return_type = idx_return_type;
 		irs->symbol_info.ref_ptr = ref_ptr;
 

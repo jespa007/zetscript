@@ -18,7 +18,7 @@
 */
 
 namespace zetscript{
-
+	class CScopeFactory;
 	class  CScope{
 
 	public:
@@ -39,7 +39,7 @@ namespace zetscript{
 		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
 
 
-		CScope(short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX,bool is_c_node=false);
+		CScope(CZetScript * _zs,short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX,bool is_c_node=false);
 
 		short 	 	getIdxBaseScope();
 		short	 	getIdxParent();
@@ -61,6 +61,8 @@ namespace zetscript{
 
 	private:
 		std::vector<short> m_localScopeList;
+		CZetScript *zs;
+		CScopeFactory *scope_factory;
 
 		// The a parent scope ...
 		short idxParentScope, idxCurrentScopePointer, idxBaseScope;

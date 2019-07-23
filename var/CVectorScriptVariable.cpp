@@ -12,7 +12,7 @@ namespace zetscript{
 	const char * getErrorFilename();
 
 
-	CVectorScriptVariable::CVectorScriptVariable(){
+	CVectorScriptVariable::CVectorScriptVariable(CZetScript *_zs):CScriptVariable(_zs){
 		this->init(SCRIPT_CLASS_VECTOR, (void *)this);
 	}
 
@@ -49,7 +49,7 @@ namespace zetscript{
 
 		// update n_refs +1
 		if(v->properties&STK_PROPERTY_TYPE_SCRIPTVAR){
-			if(!info_function_new->virtual_machine->sharePointer(((CScriptVariable *)(v->varRef))->ptr_shared_pointer_node)){
+			if(!virtual_machine->sharePointer(((CScriptVariable *)(v->varRef))->ptr_shared_pointer_node)){
 				return;
 			}
 		}
@@ -93,7 +93,7 @@ namespace zetscript{
 				if((si.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 					if(si.varRef != NULL){
 						// remove property if not referenced anymore
-						CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(si.varRef))->ptr_shared_pointer_node,true);
+						virtual_machine->unrefSharedScriptVar(((CScriptVariable *)(si.varRef))->ptr_shared_pointer_node,true);
 					}
 				}
 			}

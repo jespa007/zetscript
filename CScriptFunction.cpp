@@ -31,7 +31,7 @@ namespace zetscript{
 			 std::vector<int> var_index;
 		 };
 
-		 std::vector<CScope *> *list = CScopeFactory::getInstance()->getVectorScopeNode();
+		 std::vector<CScope *> *list = scope_factory->getVectorScopeNode();
 		 std::vector<tInfoVarScopeBlockRegister> vec_ivsb;
 		 std::map<short,tInfoVarScopeBlockRegister> map_scope_register;
 
@@ -62,7 +62,7 @@ namespace zetscript{
 	}
 
 
-	CScriptFunction::CScriptFunction(unsigned char _idxClass):CScriptClassBase(_idxClass){
+	CScriptFunction::CScriptFunction(CZetScript * _zs,unsigned char _idxClass):CScriptClassBase(_zs,_idxClass){
 		idx_return_type = ZS_UNDEFINED_IDX;
 		idxScriptFunction = ZS_UNDEFINED_IDX;
 		instruction=NULL;
@@ -109,11 +109,11 @@ namespace zetscript{
 		StackElement se = {0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
 		if(properties &  PROPERTY_C_OBJECT_REF) // convert c ref var into stack element. This should be consistent in the whole execution.
-			se=CScriptClassFactory::C_REF_InfoVariable_2_StackElement(
+			se=zs->C_REF_InfoVariable_2_StackElement(
 										 	vsi,
 											(void *)vsi->ref_ptr);
 
-		CURRENT_VM->addGlobalVar(se);
+		virtual_machine->addGlobalVar(se);
 
 		return vsi;
 

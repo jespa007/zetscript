@@ -30,7 +30,7 @@ namespace zetscript{
 //		 static std::string 				makeSymbolRef(const std::string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
 		 ConstantValueInfo 	* 		addConstant(const std::string & const_name, int value);
 
-		 static const char 	* 		getOpCodeStr(OP_CODE  op);
+
 
 
 		 bool evalString(const std::string & expression);
@@ -235,26 +235,17 @@ namespace zetscript{
 			bool (*eval_fun)(const char *);
 		} SeparatorInfo;
 
-		typedef struct{
-			OP_CODE op_code;
-			const char *str;
-		}OpCodeInfo;
 
-		typedef struct {
-			std::string filename;
-			//unsigned char *data;
-		} ParsedSourceInfo;
+
 
 		 CZetScript * zs;
 		 CScopeFactory *scope_factory;
-		 CScriptClassFactory *script_class_factory;
+		 CScriptFunctionFactory *script_function_factory;
 
 
 
-		// singleton
-		 std::map<std::string,ConstantValueInfo *> 	 m_contantPool;
 		 std::map<std::string,std::string *>			 	 m_compiledSymbolName;
-		 std::vector<ParsedSourceInfo> 			 m_parsedSource;
+
 
 		 const char * 	CURRENT_PARSING_FILE_STR;
 		 int 			CURRENT_PARSING_FILE_IDX;
@@ -264,7 +255,7 @@ namespace zetscript{
 		 IdentityOperatorInfo defined_identity_operator[MAX_IDENTITY_OPERATOR_TYPES];
 		 SeparatorInfo defined_separator[MAX_SEPARATOR_TYPES];
 		 KeywordInfo defined_keyword[MAX_KEYWORD];
-		 OpCodeInfo  defined_opcode[MAX_OP_CODES];
+
 		 DirectiveInfo defined_directive[MAX_DIRECTIVES];
 
 
@@ -293,22 +284,7 @@ namespace zetscript{
 		 char * evalLiteralNumber(const char *c, int & line, std::string & value, bool & error);
 
 
-		//===================================================================================================
-		//
-		// PRINT ASM INFO
-		static std::string getStrMovVar(OpCodeInstruction * iao);
-		static std::string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
-		static  void printGeneratedCode(CScriptFunction *sfo);
-		//===================================================================================================
 
-
-
-		//---------------------------------------------------------------------------------------------------------------------------------------
-		// FILE MANAGEMENT
-		 bool isFilenameAlreadyParsed(const std::string & filename);
-		 const char * getParsedFilenameFromIdx(unsigned idx);
-
-		//-----------------------------------------------
 		// LINK
 		 //void linkSymbols();
 		 std::string * getCompiledSymbol(const std::string & s);

@@ -8,8 +8,8 @@ namespace zetscript{
 		{
 			int idx_return_type=-1;
 			std::string return_type;
-			std::vector<std::string> m_arg;
-			std::vector<ParamArgInfo> m_infoArg;
+			std::vector<std::string> arg;
+			std::vector<ParamArgInfo> arg_info;
 			intptr_t ref_ptr=0;
 			CScriptFunction *irs=NULL;
 
@@ -24,45 +24,54 @@ namespace zetscript{
 
 			// 1. check all parameters ok.
 			using Traits3 = function_traits<decltype(function_ptr)>;
-			get_params_function<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
+			get_params_function<Traits3>(0,return_type, arg, make_index_sequence<Traits3::arity>{});
 
 
 			// check valid parameters ...
 			if((idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
-				THROW_RUNTIME_ERROR(string::sformat("Return type \"%s\" for function \"%s\" not registered",rtti::demangle(return_type).c_str(),function_name));
+				THROW_RUNTIME_ERROR(string::sformat("Return type \"%s\" for function \"%s\" not registered"
+						,rtti::demangle(return_type).c_str()
+						,function_name));
 				return false;
 			}
 
-			for(unsigned int i = 0; i < m_arg.size(); i++){
-				int idx_type = getIdxClassFromIts_C_Type(m_arg[i]);
+			for(unsigned int i = 0; i < arg.size(); i++){
+				int idx_type = getIdxClassFromIts_C_Type(arg[i]);
 
 				if(idx_type==IDX_TYPE_FLOAT_C || idx_type==IDX_TYPE_BOOL_C){
-					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,rtti::demangle(m_arg[i]).c_str(),function_name,rtti::demangle(m_arg[i]).c_str()));
+					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
+							,i
+							,rtti::demangle(arg[i]).c_str()
+							,function_name
+							,rtti::demangle(arg[i]).c_str()));
 					return false;
 				}
 
 				if(idx_type ==ZS_INVALID_CLASS){
-					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered",i,rtti::demangle(m_arg[i]).c_str(),function_name));
+					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered"
+							,i
+							,rtti::demangle(arg[i]).c_str()
+							,function_name));
 					return false;
 				}
 
-				m_infoArg.push_back({idx_type,m_arg[i]});
+				arg_info.push_back({idx_type,arg[i]});
 			}
 
 			if(idx_return_type == IDX_TYPE_VOID_C){
-				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<void>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<void>(arg.size(),function_ptr))==0){//(int)function_ptr;
 					return false;
 				}
 			}
 			else{
-				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<intptr_t>(m_arg.size(),function_ptr))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<intptr_t>(arg.size(),function_ptr))==0){//(int)function_ptr;
 					return false;
 				}
 			}
 
 
 			// init struct...
-			main_function->registerFunction(registered_file,registered_line,function_name,m_infoArg,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+			main_function->registerFunction(registered_file,registered_line,function_name,arg_info,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 
 			zs_print_debug_cr("Registered function name: %s",function_name);
 			return true;
@@ -114,7 +123,7 @@ namespace zetscript{
 					return NULL;
 				}
 
-				CScriptClass *irc = new CScriptClass(idx_class);
+				CScriptClass *irc = new CScriptClass(zs,idx_class);
 				scope->setScriptClass(irc);
 
 				irc->symbol_info.symbol=symbol;
@@ -214,7 +223,7 @@ namespace zetscript{
 			CScriptClass *sc=vec_script_class_node[register_class];
 			while( sc->idxBaseClass.size()>0){
 
-				sc=CScriptClassFactory::getScriptClass(sc->idxBaseClass[0]); // get base class...
+				sc=getScriptClass(sc->idxBaseClass[0]); // get base class...
 				if(sc->classPtrType ==base_class_name_ptr){
 					THROW_RUNTIME_ERROR(string::sformat("C++ class \"%s\" already base of \"%s\" ",rtti::demangle(class_name).c_str(), rtti::demangle(base_class_name).c_str()));
 					return false;
@@ -272,7 +281,7 @@ namespace zetscript{
 							irs_source->symbol_info.symbol->file,
 							irs_source->symbol_info.symbol->line,
 							irs_source->symbol_info.symbol->name,
-							irs_source->m_arg,
+							irs_source->arg_info,
 							irs_source->idx_return_type,
 							irs_source->symbol_info.ref_ptr,
 							derivated_properties
@@ -308,8 +317,8 @@ namespace zetscript{
 			std::string return_type;
 			//std::vector<std::string> params;
 			CScriptFunction *irs=NULL;
-			std::vector<std::string> m_arg;
-			std::vector<ParamArgInfo> m_argInfo;
+			std::vector<std::string> arg;
+			std::vector<ParamArgInfo> arg_info;
 			int idx_return_type=-1;
 			intptr_t ref_ptr=0;
 			std::string str_classPtr = typeid( _C *).name();
@@ -329,7 +338,7 @@ namespace zetscript{
 
 			// 1. check all parameters ok.
 			using Traits3 = function_traits<decltype(function_type)>;
-			get_params_function<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
+			get_params_function<Traits3>(0,return_type, arg, make_index_sequence<Traits3::arity>{});
 
 
 			// check valid parameters ...
@@ -338,31 +347,31 @@ namespace zetscript{
 				return false;
 			}
 
-			for(unsigned int i = 0; i < m_arg.size(); i++){
-				int idx_type=getIdxClassFromIts_C_Type(m_arg[i]);
+			for(unsigned int i = 0; i < arg.size(); i++){
+				int idx_type=getIdxClassFromIts_C_Type(arg[i]);
 
 				if(idx_type==IDX_TYPE_FLOAT_C || idx_type==IDX_TYPE_BOOL_C){
-					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,rtti::demangle(m_arg[i]).c_str(),function_name,rtti::demangle(m_arg[i]).c_str()));
+					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,rtti::demangle(arg[i]).c_str(),function_name,rtti::demangle(arg[i]).c_str()));
 					return false;
 				}
 
 				if(idx_type==ZS_INVALID_CLASS){
-					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered",i,rtti::demangle(m_arg[i]).c_str(),function_name));
+					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered",i,rtti::demangle(arg[i]).c_str(),function_name));
 					return false;
 				}
 
-				m_argInfo.push_back({idx_type,m_arg[i]});
+				arg_info.push_back({idx_type,arg[i]});
 
 			}
 
 			// ignores special type cast C++ member to ptr function
 			// create binding function class
 			if(idx_return_type == IDX_TYPE_VOID_C){
-				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<_C,_T, void>(m_arg.size(),function_type)))==0){
+				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<_C,_T, void>(arg.size(),function_type)))==0){
 					return false;
 				}
 			}else{
-				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<_C,_T, _R>(m_arg.size(),function_type)))==0){
+				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<_C,_T, _R>(arg.size(),function_type)))==0){
 					return false;
 				}
 			}
@@ -370,7 +379,7 @@ namespace zetscript{
 			//CScriptClass *sc = vec_script_class_node[idxRegisterdClass];
 
 			// register member function...
-			CScriptFunction *sf = sc->registerFunction(registered_file,registered_line,function_name,m_argInfo,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
+			CScriptFunction *sf = sc->registerFunction(registered_file,registered_line,function_name,arg_info,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
 
 			zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(_C).name()).c_str(), function_name);
 
@@ -395,8 +404,8 @@ namespace zetscript{
 			std::string return_type;
 			std::vector<std::string> params;
 			CScriptFunction *irs=NULL;
-			std::vector<std::string> m_arg;
-			std::vector<ParamArgInfo> m_argInfo;
+			std::vector<std::string> arg;
+			std::vector<ParamArgInfo> arg_info;
 			int idx_return_type=-1;
 			intptr_t ref_ptr=0;
 			std::string str_classPtr = typeid( _T *).name();
@@ -416,7 +425,7 @@ namespace zetscript{
 
 			// 1. check all parameters ok.
 			using Traits3 = function_traits<decltype(function_type)>;
-			get_params_function<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
+			get_params_function<Traits3>(0,return_type, arg, make_index_sequence<Traits3::arity>{});
 
 
 			// check valid parameters ...
@@ -425,38 +434,38 @@ namespace zetscript{
 				return false;
 			}
 
-			for(unsigned int i = 0; i < m_arg.size(); i++){
-				int idx_type = getIdxClassFromIts_C_Type(m_arg[i]);
+			for(unsigned int i = 0; i < arg.size(); i++){
+				int idx_type = getIdxClassFromIts_C_Type(arg[i]);
 
 				if(idx_type==IDX_TYPE_FLOAT_C || idx_type==IDX_TYPE_BOOL_C){
-					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,rtti::demangle(m_arg[i]).c_str(),function_name,rtti::demangle(m_arg[i]).c_str()));
+					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,rtti::demangle(arg[i]).c_str(),function_name,rtti::demangle(arg[i]).c_str()));
 					return false;
 				}
 
 				if(idx_type==ZS_INVALID_CLASS){
-					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered",i,rtti::demangle(m_arg[i]).c_str(),function_name));
+					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered",i,rtti::demangle(arg[i]).c_str(),function_name));
 					return false;
 				}
 
-				m_argInfo.push_back({idx_type,m_arg[i]});
+				arg_info.push_back({idx_type,arg[i]});
 
 			}
 
 			// ignores special type cast C++ member to ptr function
 			// create binding function class
 			if(idx_return_type == IDX_TYPE_VOID_C){
-				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<void>(m_arg.size(),function_type))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<void>(arg.size(),function_type))==0){//(int)function_ptr;
 					return false;
 				}
 			}
 			else{
-				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<int>(m_arg.size(),function_type))==0){//(int)function_ptr;
+				if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<int>(arg.size(),function_type))==0){//(int)function_ptr;
 					return false;
 				}
 			}
 
 			// register member function...
-			CScriptFunction * sf = c_class->registerFunction(registered_file,registered_line,function_name,m_argInfo, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+			CScriptFunction * sf = c_class->registerFunction(registered_file,registered_line,function_name,arg_info, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
 			zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(_T).name()).c_str(), function_name);
 
 			// check whether is static metamethod...
@@ -626,7 +635,7 @@ namespace zetscript{
 					}else if(idx_dst_type == IDX_TYPE_BOOL_PTR_C){//*CScriptClass::BOOL_PTR_TYPE_STR){
 						val_ret=(intptr_t)(&stk_src->stkValue);
 					}else{
-						error="cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into %s"+rtti::demangle(getScriptClass(idx_dst_type)).c_str();
+						error="cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into %s"+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
 
 						return false;
 					}
@@ -650,7 +659,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error="cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into %s"+rtti::demangle(getScriptClass(idx_dst_type));
+						error="cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into %s"+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 					break;
@@ -672,7 +681,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error= "cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(getScriptClass(idx_dst_type));
+						error= "cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 					break;
@@ -690,7 +699,7 @@ namespace zetscript{
 					}else if (idx_dst_type == IDX_TYPE_CONST_CHAR_PTR_C){
 						val_ret=(intptr_t)(stk_src->stkValue);
 					}else{
-						error= "cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(getScriptClass(idx_dst_type));
+						error= "cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 
@@ -728,7 +737,7 @@ namespace zetscript{
 							val_ret=(intptr_t)script_variable->get_C_Object();
 						}
 						else if((val_ret=doCast((intptr_t)script_variable->get_C_Object(),c_class->idx_class,idx_dst_type))==0){//c_class->idx_class==idx_dst_type){
-							error = "cannot convert "+rtti::demangle(script_variable->getPointer_C_ClassName())+" into "+rtti::demangle(getScriptClass(idx_dst_type));
+							error = "cannot convert "+rtti::demangle(script_variable->getPointer_C_ClassName())+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 							return false;
 						}
 					}else{ // CScriptVariable ?
@@ -749,7 +758,7 @@ namespace zetscript{
 		// 0 PARAMS
 		//
 		template <typename _R,typename _T>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		->typename std::enable_if<std::is_same<_R,void>::value>::type
 		{
 
@@ -771,7 +780,7 @@ namespace zetscript{
 		}
 
 		template <typename _R,typename _T>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<_R,void>::value>::type
 		{
 			int idx_return = getIdxClassFromIts_C_Type(typeid(_R).name());
@@ -808,7 +817,7 @@ namespace zetscript{
 		//
 		// template for last parameter argIdx == 1
 		template<typename _R,typename _T,  typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
 			//return NULL;
@@ -838,7 +847,7 @@ namespace zetscript{
 		}
 
 		template<typename _R,typename _T,  typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
 			using tParam1 = typename _T::template argument<0>::type;
@@ -882,7 +891,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 2
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
 
@@ -920,7 +929,7 @@ namespace zetscript{
 		}
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
 			using tParam1 = typename _T::template argument<0>::type;
@@ -970,7 +979,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 3
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
 
@@ -1010,7 +1019,7 @@ namespace zetscript{
 		}
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
 			using tParam1 = typename _T::template argument<0>::type;
@@ -1059,7 +1068,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 4
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
@@ -1102,7 +1111,7 @@ namespace zetscript{
 		}
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
@@ -1157,7 +1166,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 5
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
@@ -1204,7 +1213,7 @@ namespace zetscript{
 
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
@@ -1263,7 +1272,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 6
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 6)>::type
 		{
 
@@ -1313,7 +1322,7 @@ namespace zetscript{
 		}
 
 		template <typename _R,typename _T, typename... ArgTypes>
-		auto CZetScript::bind_script_function_builder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
+		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type
 		{
 			using tParam1 = typename _T::template argument<0>::type;
@@ -1372,17 +1381,17 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------
 
 		 template <typename _F, std::size_t... Is>
-		 auto CZetScript::bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
+		 auto CZetScript::bindScriptFunctionBuilderBase(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
 		 -> typename std::enable_if<(_F::arity > 0)>::type
 		{
-			 bind_script_function_builder<typename _F::return_type, _F,  typename _F::template argument<Is>::type...>(f,calling_obj,fun_obj);
+			 bindScriptFunctionBuilder<typename _F::return_type, _F,  typename _F::template argument<Is>::type...>(f,calling_obj,fun_obj);
 		}
 
 		 template <typename _F, std::size_t... Is>
-		 auto bind_script_function_builder_base(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
+		 auto CZetScript::bindScriptFunctionBuilderBase(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
 		 -> typename std::enable_if<(_F::arity == 0)>::type
 		{
-			 bind_script_function_builder<typename _F::return_type, _F>(f,calling_obj,fun_obj);
+			 bindScriptFunctionBuilder<typename _F::return_type, _F>(f,calling_obj,fun_obj);
 		}
 
 
@@ -1488,7 +1497,7 @@ namespace zetscript{
 		{
 			std::string return_type;
 			std::vector<std::string> params;
-			std::vector<std::string> m_arg;
+			std::vector<std::string> arg;
 			int idx_return_type=-1;
 			void *ptr;
 			CScriptFunction * fun=NULL;
@@ -1502,7 +1511,7 @@ namespace zetscript{
 
 				// 1. check all parameters ok.
 				using Traits3 = function_traits<_F>;//decltype(function_type)>;
-				get_params_function<Traits3>(0,return_type, m_arg, make_index_sequence<Traits3::arity>{});
+				get_params_function<Traits3>(0,return_type, arg, make_index_sequence<Traits3::arity>{});
 
 				// 2. check valid parameters ...
 				if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
@@ -1510,15 +1519,15 @@ namespace zetscript{
 					return NULL;
 				}
 
-				for(unsigned int i = 0; i < m_arg.size(); i++){
-					if(getIdxClassFromIts_C_Type(m_arg[i])==-1){
-						THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for bind function not registered",i,rtti::demangle(m_arg[i]).c_str()));
+				for(unsigned int i = 0; i < arg.size(); i++){
+					if(getIdxClassFromIts_C_Type(arg[i])==-1){
+						THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for bind function not registered",i,rtti::demangle(arg[i]).c_str()));
 						return NULL;
 					}
 				}
 
 				// 3. build custom function in function of parameter number ...
-				bind_script_function_builder_base<Traits3>(&ptr,calling_obj,fun,make_index_sequence<Traits3::arity>{});
+				bindScriptFunctionBuilderBase<Traits3>(&ptr,calling_obj,fun,make_index_sequence<Traits3::arity>{});
 				return (std::function<_F> *)ptr;
 
 			}
@@ -1576,7 +1585,7 @@ namespace zetscript{
 
 		template<typename _T>
 		CVectorScriptVariable * CZetScript::vector_2_vscript(const std::vector<_T> & v){
-			CVectorScriptVariable *vsv = new CVectorScriptVariable();
+			CVectorScriptVariable *vsv = new CVectorScriptVariable(this);
 
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->push();

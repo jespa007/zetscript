@@ -18,7 +18,7 @@ namespace zetscript{
 
 		//std::vector<StackElement> m_objVector;
 
-		CVectorScriptVariable();
+		CVectorScriptVariable(CZetScript *_zs);
 
 		virtual bool unrefSharedPtr();
 

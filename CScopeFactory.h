@@ -12,7 +12,7 @@ namespace zetscript{
 
 	class CScopeFactory{
 		public:
-			CScopeFactory();
+			CScopeFactory(CZetScript 					*zs);
 
 			CScope	    		*	newScope(short idx_parent_scope=ZS_UNDEFINED_IDX,bool is_c_node=false);
 			CScope 				* 	getScope(short idx);
@@ -23,9 +23,8 @@ namespace zetscript{
 
 		private:
 
-			static CScopeFactory 		*	scope_factory_singleton;
 
-
+			CZetScript 					*zs;
 			/**
 			 * Vector of script scopes. This std::vector is removed when zetscript reevaluates all scrips.
 			 */

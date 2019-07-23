@@ -12,7 +12,7 @@ namespace zetscript{
 	const char * getErrorFilename();
 
 
-	CStructScriptVariable::CStructScriptVariable(){//CScriptClass *info_registered_class):CScriptVariable(info_registered_class, this){
+	CStructScriptVariable::CStructScriptVariable(CZetScript *_zs):CScriptVariable(_zs){//CScriptClass *info_registered_class):CScriptVariable(info_registered_class, this){
 		init(SCRIPT_CLASS_STRUCT, (void *)this);
 	}
 
@@ -40,15 +40,15 @@ namespace zetscript{
 
 
 	void CStructScriptVariable::add_attr(const char *attr_name, StackElement  * v){
-		if(addVariableSymbol(attr_name,CURRENT_VM->getCurrent_C_FunctionCall(),NULL,v)==NULL){
-			CURRENT_VM->cancelExecution();
+		if(addVariableSymbol(attr_name,virtual_machine->getCurrent_C_FunctionCall(),NULL,v)==NULL){
+			virtual_machine->cancelExecution();
 		}
 	}
 
 	void CStructScriptVariable::remove_attr(const char *attr_name){
 
-		if(!removeVariableSymbolByName(std::string(attr_name),CURRENT_VM->getCurrent_C_FunctionCall())){
-			CURRENT_VM->cancelExecution();
+		if(!removeVariableSymbolByName(std::string(attr_name),virtual_machine->getCurrent_C_FunctionCall())){
+			virtual_machine->cancelExecution();
 		}
 	}
 
@@ -67,7 +67,7 @@ namespace zetscript{
 				if((m_variable[i].properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 					if(m_variable[i].varRef != NULL){
 						// remove property if not referenced anymore
-						CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(m_variable[i].varRef))->ptr_shared_pointer_node,true);
+						virtual_machine->unrefSharedScriptVar(((CScriptVariable *)(m_variable[i].varRef))->ptr_shared_pointer_node,true);
 					}
 				}
 

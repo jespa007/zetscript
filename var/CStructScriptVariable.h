@@ -13,7 +13,7 @@ namespace zetscript{
 
 
 	public:
-		CStructScriptVariable();
+		CStructScriptVariable(CZetScript *_zs);
 
 		virtual bool unrefSharedPtr();
 

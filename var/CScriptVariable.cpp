@@ -37,7 +37,7 @@ namespace zetscript{
 				// check if primitive type (only 4 no more no else)...
 				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
-				*se=CScriptClassFactory::C_REF_InfoVariable_2_StackElement(ir_var,ptr_variable);
+				*se=zs->C_REF_InfoVariable_2_StackElement(ir_var,ptr_variable);
 			}
 		}
 
@@ -80,10 +80,11 @@ namespace zetscript{
 		memset(&this_variable,0,sizeof(this_variable));
 	}
 
-	CScriptVariable::CScriptVariable(CVirtualMachine	*_virtual_machine){
+	CScriptVariable::CScriptVariable(CZetScript	*_zs){
 		setup();
 
-		virtual_machine = _virtual_machine;
+		zs=_zs;
+		virtual_machine = zs->getVirtualMachine();
 	}
 
 	void CScriptVariable::init(CScriptClass *irv, void * _c_object){
@@ -212,7 +213,7 @@ namespace zetscript{
 
 			// update n_refs +1
 			if(sv->properties&STK_PROPERTY_TYPE_SCRIPTVAR){
-				if(!CURRENT_VM->sharePointer(((CScriptVariable *)(sv->varRef))->ptr_shared_pointer_node)){
+				if(!virtual_machine->sharePointer(((CScriptVariable *)(sv->varRef))->ptr_shared_pointer_node)){
 					return NULL;
 				}
 			}
@@ -339,7 +340,7 @@ namespace zetscript{
 						&& ((si->properties & STK_PROPERTY_IS_THIS_VAR) != STK_PROPERTY_IS_THIS_VAR)){ // deallocate but not if is c or this ref
 						if(si->varRef != NULL){
 							// remove property if not referenced anymore
-							CURRENT_VM->unrefSharedScriptVar(((CScriptVariable *)(si->varRef))->ptr_shared_pointer_node,true);
+							virtual_machine->unrefSharedScriptVar(((CScriptVariable *)(si->varRef))->ptr_shared_pointer_node,true);
 						}
 					}
 				}
@@ -411,10 +412,10 @@ namespace zetscript{
 		bool CScriptVariable::initSharedPtr(bool is_assigned){
 
 			if(ptr_shared_pointer_node == NULL){
-				ptr_shared_pointer_node = CURRENT_VM->newSharedPointer(this);
+				ptr_shared_pointer_node = virtual_machine->newSharedPointer(this);
 
 				if(is_assigned){ // increment number shared pointers...
-					if(!CURRENT_VM->sharePointer(ptr_shared_pointer_node)){
+					if(!virtual_machine->sharePointer(ptr_shared_pointer_node)){
 						return NULL;
 					}
 				}
@@ -428,7 +429,7 @@ namespace zetscript{
 		bool CScriptVariable::unrefSharedPtr(){
 			if(ptr_shared_pointer_node!=NULL){
 
-				CURRENT_VM->unrefSharedScriptVar(ptr_shared_pointer_node);
+				virtual_machine->unrefSharedScriptVar(ptr_shared_pointer_node);
 				return true;
 			}
 			else{

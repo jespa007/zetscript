@@ -14,7 +14,7 @@ namespace zetscript{
 		//CScriptFunction *m_functorValue;
 
 		//CFunctorScriptVariable(){}
-		CFunctorScriptVariable();
+		CFunctorScriptVariable(CZetScript *_zs);
 		void setFunctionSymbol(CScriptFunction *_irfs);
 
 

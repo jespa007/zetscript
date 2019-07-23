@@ -23,30 +23,33 @@
 #define DEFAULT_NO_FILENAME				"no_file"
 
 // HELPER FUNCTIONS
-#define NEW_CLASS_VAR_BY_IDX(zs,idx) 					((zs)->instanceScriptVariableByIdx(idx))
-#define GET_SCRIPT_CLASS(zs,idx) 						((zs)->getScriptClass(idx))
-#define GET_SCRIPT_CLASS_NAME(zs,idx) 					((zs)->getScriptClassName(idx))
-#define SCRIPT_CLASS_MAIN(zs)							((zs)->getScriptClass(IDX_CLASS_MAIN))    // 0 is the main class
-#define SCRIPT_CLASS_STRING(zs)							((zs)->getScriptClass(IDX_CLASS_STRING))
-#define SCRIPT_CLASS_STRUCT(zs)							((zs)->getScriptClass(IDX_CLASS_STRUCT))
-#define SCRIPT_CLASS_VECTOR(zs)							((zs)->getScriptClass(IDX_CLASS_VECTOR))
-#define SCRIPT_CLASS_FUNCTOR(zs)						((zs)->getScriptClass(IDX_CLASS_FUNCTOR))
-#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(zs,s)		((zs)->getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
-#define GET_IDX_2_CLASS_C_STR(zs,idx) 					((zs)->getScriptClass(idx)->classPtrType)
-#define REGISTER_C_BASE_SYMBOLS(zs,o)		   			((zs)->register_C_BaseSymbols(o))
-#define GET_SCOPE						 				(scope_factory)->getScope
-#define MAIN_SCOPE										((scope_factory)->getScope(IDX_GLOBAL_SCOPE)
-#define NEW_SCOPE										(scope_factory)->newScope)
+#define NEW_CLASS_VAR_BY_IDX(idx)	 					((this->zs)->instanceScriptVariableByIdx(idx))
+#define GET_SCRIPT_CLASS(idx)	 						((this->zs)->getScriptClass(idx))
+#define GET_SCRIPT_CLASS_NAME(idx) 						((this->zs)->getScriptClassName(idx))
+#define SCRIPT_CLASS_MAIN								((this->zs)->getScriptClass(IDX_CLASS_MAIN))    // 0 is the main class
+#define SCRIPT_CLASS_STRING								((this->zs)->getScriptClass(IDX_CLASS_STRING))
+#define SCRIPT_CLASS_STRUCT								((this->zs)->getScriptClass(IDX_CLASS_STRUCT))
+#define SCRIPT_CLASS_VECTOR								((this->zs)->getScriptClass(IDX_CLASS_VECTOR))
+#define SCRIPT_CLASS_FUNCTOR							((this->zs)->getScriptClass(IDX_CLASS_FUNCTOR))
+#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)			((this->zs)->getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
+#define GET_IDX_2_CLASS_C_STR(idx) 						((this->zs)->getScriptClass(idx)->classPtrType)
+#define REGISTER_C_BASE_SYMBOLS(o)		   				((this->zs)->register_C_BaseSymbols(o))
+#define GET_SCOPE						 				((this->scope_factory))->getScope
+#define MAIN_SCOPE										((this->scope_factory))->getScope(IDX_GLOBAL_SCOPE)
+#define NEW_SCOPE										((this->scope_factory))->newScope
 
 // if 0 is in main <> 0, else.
-#define SCOPE_IN_MAIN_CLASS(idx)						((scope_factory)->getScope(idx)->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
+#define SCOPE_IN_MAIN_CLASS(idx)						((this->scope_factory)->getScope(idx)->getIdxBaseScope()==IDX_GLOBAL_SCOPE)
 
-#define DO_CAST(zs)										(zs)->doCast
-#define GET_IDX_CLASS_FROM_ITS_C_TYPE(zs)				(zs)->getIdxClassFromIts_C_Type
-#define INSTANCE_SCRIPT_VARIABLE_BY_IDX(zs)				(zs)->instanceScriptVariableByIdx
-#define GET_METAMETHOD(zs,m)							(zs)->getMetamethod(m)
-#define IS_IDX_CLASS_INSTANCEOF(zs,_class,_instance)	(zs)->isIdxClassInstanceOf(_class,_instance)
+#define DO_CAST											((this->zs))->doCast
+#define GET_IDX_CLASS_FROM_ITS_C_TYPE					((this->zs))->getIdxClassFromIts_C_Type
+#define INSTANCE_SCRIPT_VARIABLE_BY_IDX					((this->zs))->instanceScriptVariableByIdx
+#define GET_METAMETHOD(m)								((this->zs))->getMetamethod(m)
+#define IS_IDX_CLASS_INSTANCEOF(zs,_class,_instance)	((this->zs))->isIdxClassInstanceOf(_class,_instance)
 
+#define NEW_SCRIPT_FUNCTION								((this->script_function_factory))->newScriptFunction
+#define GET_SCRIPT_FUNCTION(idx)	 					((this->script_function_factory))->getScriptFunction(idx)
+#define MAIN_FUNCTION									GET_SCRIPT_FUNCTION(IDX_MAIN_FUNCTION)
 
 
 namespace zetscript{

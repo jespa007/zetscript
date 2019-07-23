@@ -15,7 +15,7 @@ namespace zetscript{
 					n_bytes_readed=length+1;
 					char *buffer = (char *)malloc(n_bytes_readed);
 					memset(buffer,0,length+1 );
-					readed_elements = fread(buffer, 1, file_length, fp);
+					readed_elements = fread(buffer, 1, length, fp);
 
 					if(readed_elements != length) {
 

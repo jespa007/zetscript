@@ -176,12 +176,12 @@ namespace zetscript{
 				return false;
 			}
 
-			script_class_aux=GET_SCRIPT_CLASS(zs,script_var_object->idx_class);
+			script_class_aux=GET_SCRIPT_CLASS(script_var_object->idx_class);
 			std::vector<CScriptFunction *> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
 			StackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;
 
-			symbol_to_find=GET_METAMETHOD(zs,__METAMETHOD__);
+			symbol_to_find=GET_METAMETHOD(__METAMETHOD__);
 
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
 			if((ptr_function_found = FIND_FUNCTION(
@@ -277,7 +277,7 @@ namespace zetscript{
 
 			bool match_signature = metamethod_str != NULL;
 			if(!match_signature){
-				match_signature = (aux_string == symbol_to_find && irfs->m_arg.size() == n_args);
+				match_signature = (aux_string == symbol_to_find && irfs->arg_info.size() == n_args);
 			}
 
 			if(match_signature){
@@ -287,7 +287,7 @@ namespace zetscript{
 							int arg_idx_type=-1;
 							for( unsigned k = 0; k < n_args && all_check;k++){
 								StackElement *currentArg=&startArg[k];
-								arg_idx_type=irfs->m_arg[k].idx_type;
+								arg_idx_type=irfs->arg_info[k].idx_type;
 
 								if(arg_idx_type==IDX_STACK_ELEMENT){
 									/* do nothing because is already trivial ! */
@@ -450,13 +450,13 @@ namespace zetscript{
 						}
 						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idx_class!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+irfs->symbol_info.symbol->name+"(";
 
-						for(unsigned a = 0; a < irfs->m_arg.size(); a++){
+						for(unsigned a = 0; a < irfs->arg_info.size(); a++){
 							if(a>0){
 								str_candidates+=",";
 							}
 
 							if(irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF){
-								str_candidates+=rtti::demangle(zs->getScriptClass(irfs->m_arg[a].idx_type));
+								str_candidates+=rtti::demangle(GET_IDX_2_CLASS_C_STR(irfs->arg_info[a].idx_type));
 							}else{ /* typic var ... */
 								str_candidates+="arg"+string::int_2_string(a+1);
 							}

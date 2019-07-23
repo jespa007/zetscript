@@ -15,7 +15,7 @@ namespace zetscript{
 	}
 	//------------------------------------------------------------
 
-	 CScriptClass::CScriptClass(unsigned char _idxClass):CScriptClassBase(_idxClass){
+	 CScriptClass::CScriptClass(CZetScript *_zs,unsigned char _idxClass):CScriptClassBase(_zs,_idxClass){
 
 			classPtrType="";
 			c_destructor = NULL;
@@ -35,7 +35,7 @@ namespace zetscript{
 
 		// check if metamethod...
 		for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-			if(STRCMP(zetscript::CScriptClassFactory::getInstance()->getMetamethod((METAMETHOD_OPERATOR)i),==,function_name.c_str())){
+			if(STRCMP(zs->getMetamethod((METAMETHOD_OPERATOR)i),==,function_name.c_str())){
 
 				metamethod_operator[i].push_back(sf);
 
