@@ -26,7 +26,7 @@ namespace zetscript{
 
 		unsigned char idx_class; // wich idx_class class itself or function belongs to...
 
-		CScriptClassBase(CZetScript *_zs,unsigned char _idxClass);
+		CScriptClassBase(CZetScript *_zs,unsigned char _idx_class);
 
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.

@@ -19,7 +19,7 @@ namespace zetscript{
 		StackElement *se;
 
 		// add extra symbol this itself if is a class typedef by user...
-		if(m_infoRegisteredClass->idx_class >=MAX_BUILT_IN_TYPES){
+		if(registered_class_info->idx_class >=MAX_BUILT_IN_TYPES){
 			this_variable.varRef=this;
 			this_variable.properties=STK_PROPERTY_IS_THIS_VAR|STK_PROPERTY_TYPE_SCRIPTVAR;
 		}
@@ -66,7 +66,7 @@ namespace zetscript{
 
 		ptr_shared_pointer_node = NULL;
 
-		m_infoRegisteredClass = NULL;
+		registered_class_info = NULL;
 		c_object = NULL;
 		created_object = NULL;
 		m_value = NULL;
@@ -91,7 +91,7 @@ namespace zetscript{
 
 		setup();
 
-		this->m_infoRegisteredClass = irv;
+		this->registered_class_info = irv;
 		idx_class = irv->idx_class;
 		c_object = _c_object;
 		
@@ -99,17 +99,17 @@ namespace zetscript{
 
 		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (c_scriptclass_info) to get needed info to destroy create the C++ object.
 
-			if(m_infoRegisteredClass->isToClass()){
-					c_scriptclass_info=m_infoRegisteredClass;
-					created_object = (*m_infoRegisteredClass->c_constructor)();
+			if(registered_class_info->isToClass()){
+					c_scriptclass_info=registered_class_info;
+					created_object = (*registered_class_info->c_constructor)();
 					was_created_by_constructor=true;
 					c_object = created_object;
 			}else {
 
-				CScriptClass *sc=m_infoRegisteredClass;
-				while( sc->idxBaseClass.size()>0 && c_scriptclass_info==NULL){
+				CScriptClass *sc=registered_class_info;
+				while( sc->idx_base_class.size()>0 && c_scriptclass_info==NULL){
 
-					sc=GET_SCRIPT_CLASS(sc->idxBaseClass[0]); // get base class...
+					sc=GET_SCRIPT_CLASS(sc->idx_base_class[0]); // get base class...
 					if(sc->isToClass()){
 						c_scriptclass_info=sc;
 						created_object = (*sc->c_constructor)();
@@ -133,8 +133,8 @@ namespace zetscript{
 
 	CScriptFunction *CScriptVariable::getConstructorFunction(){
 
-		if(m_infoRegisteredClass->idx_function_member_constructor != ZS_UNDEFINED_IDX){
-			return m_infoRegisteredClass->m_function[m_infoRegisteredClass->idx_function_member_constructor];
+		if(registered_class_info->idx_function_member_constructor != ZS_UNDEFINED_IDX){
+			return registered_class_info->m_function[registered_class_info->idx_function_member_constructor];
 		}
 
 		return NULL;
@@ -147,12 +147,12 @@ namespace zetscript{
 			return false;
 		}
 
-		m_infoRegisteredClass = _info_registered_class;
+		registered_class_info = _info_registered_class;
 		return true;
 	}
 
 	bool CScriptVariable::itHasSetMetamethod(){
-		return m_infoRegisteredClass->metamethod_operator[SET_METAMETHOD].size() > 0;
+		return registered_class_info->metamethod_operator[SET_METAMETHOD].size() > 0;
 
 	}
 
@@ -398,11 +398,11 @@ namespace zetscript{
 	}
 
 	const std::string & CScriptVariable::getClassName(){
-			return m_infoRegisteredClass->symbol_info.symbol->name;
+			return registered_class_info->symbol_info.symbol->name;
 		}
 
 		const std::string & CScriptVariable::getPointer_C_ClassName(){
-			return m_infoRegisteredClass->classPtrType;
+			return registered_class_info->str_class_ptr_type;
 		}
 
 		std::string * CScriptVariable::toString(){
@@ -471,7 +471,7 @@ namespace zetscript{
 
 	bool CScriptVariable::is_c_object(){
 
-		 return ((m_infoRegisteredClass->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != 0);
+		 return ((registered_class_info->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != 0);
 	}
 
 	void CScriptVariable::destroy(){

@@ -38,7 +38,9 @@ class CScriptClass;
 		void *m_value;
 
 		// Construct ...
+		CScriptVariable(){}
 		CScriptVariable(CZetScript	*_zs);
+
 
 		/**
 		 * info_registered_class: scriptclass info
@@ -98,7 +100,7 @@ class CScriptClass;
 		/**
 		 * This variable tells whether is pointer function or not.
 		 */
-		CScriptClass *m_infoRegisteredClass;
+		CScriptClass *registered_class_info;
 		CScriptClass *c_scriptclass_info;
 		bool delete_c_object;
 

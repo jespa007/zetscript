@@ -54,6 +54,7 @@ namespace zetscript{
 		int idx_laststatment;
 		const CScriptFunction *current_call_c_function;
 		CZetScript *zs;
+		CScriptFunctionFactory *script_function_factory;
 
 
 
@@ -131,7 +132,7 @@ namespace zetscript{
 		void cancelExecution();
 		void setError(const char *str);
 
-		CVirtualMachine();
+		CVirtualMachine(CZetScript * _zs);
 		~CVirtualMachine();
 
 

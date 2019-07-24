@@ -18,23 +18,9 @@ namespace zetscript{
 	public:
 
 		CEval(CZetScript *zs);
-
-		//===================================================================================================
-		//
-		// PRINT ASM INFO
-			static  void printGeneratedCode();
-
-		// PRINT ASM INFO
-		//---------------------------------------------------------------------------------------------------------------------------------------
-//		 static std::string 				getSymbolNameFromSymbolRef(const std::string & ref_symbol);
-//		 static std::string 				makeSymbolRef(const std::string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
-		 ConstantValueInfo 	* 		addConstant(const std::string & const_name, int value);
-
-
-
-
-		 bool evalString(const std::string & expression);
-		 bool evalFile(const std::string & filename);
+		bool eval(const char *s, const char *_filename=NULL, int _line=1);
+		 //bool evalString(const std::string & expression);
+		 //bool evalFile(const std::string & filename);
 
 		 ~CEval();
 
@@ -184,12 +170,12 @@ namespace zetscript{
 			std::vector<OpCodeInstructionEval> instruction;
 		}ContinueInstructionScope,BreakInstructionScope;
 
-		struct tFunctionInfo{
+		struct FunctionInfo{
 
 			std::vector<OpCodeInstructionEval>	 		instruction;
 			CScriptFunction 				*  	function_info_object;
 
-			tFunctionInfo(CScriptFunction	* _function_info_object){
+			FunctionInfo(CScriptFunction	* _function_info_object){
 				function_info_object = _function_info_object;
 			}
 		};
@@ -247,8 +233,8 @@ namespace zetscript{
 		 std::map<std::string,std::string *>			 	 m_compiledSymbolName;
 
 
-		 const char * 	CURRENT_PARSING_FILE_STR;
-		 int 			CURRENT_PARSING_FILE_IDX;
+		 const char * 	current_parsing_file;
+		 //int 			CURRENT_PARSING_FILE_IDX;
 
 		 OperatorInfo defined_operator[MAX_OPERATOR_TYPES];
 		 PreOperatorInfo defined_pre_operator[MAX_PRE_OPERATOR_TYPES];
@@ -258,21 +244,13 @@ namespace zetscript{
 
 		 DirectiveInfo defined_directive[MAX_DIRECTIVES];
 
-
-		 tFunctionInfo							*pCurrentFunctionInfo;
-		 std::vector<tFunctionInfo *> 				vFunctionInfo;
+		 FunctionInfo								*pCurrentFunctionInfo;
+		 std::vector<FunctionInfo *> 				vFunctionInfo;
 		 //std::vector<LinkSymbolFirstAccess>			vLinkSymbolFirstAccess;
 
 
 		 void iniVars();
 		 CEval();
-
-
-
-		 // CONSTANT TOOLS
-
-		 ConstantValueInfo * getConstant(const std::string & const_name);
-		 ConstantValueInfo * addConstant(const std::string & const_name, void *obj, unsigned short properties);
 
 		 //int					getIdxScopeFromSymbolRef(const std::string & symbol_ref);
 		 void pushFunction(CScriptFunction *sf);
@@ -282,8 +260,6 @@ namespace zetscript{
 		 DIRECTIVE_TYPE 	isDirective(const char *c);
 
 		 char * evalLiteralNumber(const char *c, int & line, std::string & value, bool & error);
-
-
 
 		// LINK
 		 //void linkSymbols();
@@ -373,7 +349,6 @@ namespace zetscript{
 
 		 char * evalKeywordFunction(const char *s,int & line,  CScope *scope_info, bool & error);
 
-
 		//
 		// KEYWORDS FUNCTIONS
 		//
@@ -381,11 +356,7 @@ namespace zetscript{
 
 
 
-		 char * eval(const char *s, bool & error);
 		 char * eval_Recursive(const char *s, int & line, CScope *scope_info, bool & error);
-
-
-
 
 	};
 }

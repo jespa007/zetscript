@@ -147,7 +147,7 @@
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-DTARGET=release -DFCOMPILE=ON</buildTarget>
+				<buildTarget>-DTARGET=release -DFCOMPILE=OFF</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

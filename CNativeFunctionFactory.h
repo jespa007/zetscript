@@ -11,7 +11,7 @@ namespace zetscript{
 
 	public:
 
-		CNativeFunctionFactory();
+		CNativeFunctionFactory(CZetScript *_zs);
 
 
 
@@ -230,7 +230,7 @@ namespace zetscript{
 			void *fun_ptr;
 		}NativeFunction;
 
-		static CNativeFunctionFactory *m_instance;
+		CZetScript *zs;
 
 		std::vector<NativeFunction>	c_int_function;
 		std::vector<NativeFunction>	 c_void_function;

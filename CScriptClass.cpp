@@ -17,7 +17,7 @@ namespace zetscript{
 
 	 CScriptClass::CScriptClass(CZetScript *_zs,unsigned char _idxClass):CScriptClassBase(_zs,_idxClass){
 
-			classPtrType="";
+			str_class_ptr_type="";
 			c_destructor = NULL;
 			c_constructor=NULL;
 			idx_function_member_constructor =ZS_UNDEFINED_IDX;

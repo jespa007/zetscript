@@ -81,10 +81,10 @@ namespace zetscript{
 		/**
 		 * Register C Class. Return index registered class
 		 */
-		template<class _T>
+		template<class T>
 		 bool CZetScript::register_C_SingletonClass(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
-			std::vector<CScriptClass *> vec_script_class_node=getVectorScriptClassNode();
+			//std::vector<CScriptClass *> vec_script_class_node=getVectorScriptClassNode();
 			// to make compatible MSVC shared library
 			//std::vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
 			int size=vec_script_class_node.size();
@@ -109,10 +109,10 @@ namespace zetscript{
 
 			if(!isClassRegistered(class_name)){
 
-				std::string str_classPtr = typeid( _T *).name();
+				std::string str_classPtr = typeid( T *).name();
 
 				if(getIdx_C_RegisteredClass(str_classPtr)!=ZS_INVALID_CLASS){
-					THROW_RUNTIME_ERROR(string::sformat("this %s is already registered",rtti::demangle(typeid( _T).name()).c_str()));
+					THROW_RUNTIME_ERROR(string::sformat("this %s is already registered",rtti::demangle(typeid( T).name()).c_str()));
 					return NULL;
 				}
 
@@ -132,7 +132,7 @@ namespace zetscript{
 				irc->idx_function_member_constructor=-1;
 				// allow dynamic constructor in function its parameters ...
 
-				irc->classPtrType=str_classPtr;
+				irc->str_class_ptr_type=str_classPtr;
 				irc->symbol_info.properties=PROPERTY_C_OBJECT_REF;
 
 
@@ -155,13 +155,19 @@ namespace zetscript{
 		/**
 		 * Register C Class. Return index registered class
 		 */
-		template<class _T>
+		template<typename T>
 		bool CZetScript::register_C_Class(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
-			if(register_C_SingletonClass<_T>(class_name)){
+			if(register_C_SingletonClass<T>(class_name)){
 
 				// get class...
 				CScriptClass *irc =getScriptClass(class_name);
+
+				if(irc->idx_class < MAX_BUILT_IN_TYPES){
+					THROW_RUNTIME_ERROR(string::sformat("The class to register \"%s\"  should NOT BE a built in class",irc->str_class_ptr_type.c_str()));
+					return false;
+
+				}
 
 				if(irc==NULL){
 					return false;
@@ -169,12 +175,50 @@ namespace zetscript{
 
 				//put the constructor/destructor...
 				irc->c_constructor = new std::function<void *()>([=](){
-					_T* t=new _T;
+					T *t=new T();
 					return t;
 				});
 
 				irc->c_destructor = new std::function<void (void *)>([=](void *p){
-					delete (_T *)p;
+					delete (T *)p;
+				});
+
+				return true;
+			}
+
+			return NULL;
+		}
+
+		/**
+		 * Register C Class. Return index registered class
+		 */
+		template<typename T>
+		bool CZetScript::register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
+
+			if(register_C_SingletonClass<T>(class_name)){
+				CScriptClass *irc =getScriptClass(class_name);
+
+				if(irc->idx_class >= MAX_BUILT_IN_TYPES){
+					THROW_RUNTIME_ERROR(string::sformat("The class to register \"%s\" should be a built in class",irc->str_class_ptr_type.c_str()));
+					return false;
+				}
+
+				// get class...
+
+
+				if(irc==NULL){
+					return false;
+				}
+
+				//put the constructor/destructor...
+				CZetScript *zs=this;
+				irc->c_constructor = new std::function<void *()>([zs](){
+					T* t=new T(zs);
+					return t;
+				});
+
+				irc->c_destructor = new std::function<void (void *)>([=](void *p){
+					delete (T *)p;
 				});
 
 				return true;
@@ -184,17 +228,17 @@ namespace zetscript{
 		}
 
 
-		template<class _T, class _B>
+		template<class T, class B>
 		bool CZetScript::class_C_Baseof(){
 
 			// to make compatible MSVC shared library
 			//std::vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
 
 
-			std::string base_class_name=typeid(_B).name();
-			std::string base_class_name_ptr=typeid(_B *).name();
-			std::string class_name=typeid(_T).name();
-			std::string class_name_ptr=typeid(_T *).name();
+			std::string base_class_name=typeid(B).name();
+			std::string base_class_name_ptr=typeid(B *).name();
+			std::string class_name=typeid(T).name();
+			std::string class_name_ptr=typeid(T *).name();
 
 			int idx_base_class = getIdxClassFromIts_C_Type(base_class_name_ptr);
 			if(idx_base_class == -1) {
@@ -215,16 +259,16 @@ namespace zetscript{
 			}
 
 			// check whether is in fact base of ...
-			if(!std::is_base_of<_B,_T>::value){
+			if(!std::is_base_of<B,T>::value){
 				THROW_RUNTIME_ERROR(string::sformat("C++ class \"%s\" is not base of \"%s\" ",rtti::demangle(class_name).c_str(), rtti::demangle(base_class_name).c_str()));
 				return false;
 			}
 
 			CScriptClass *sc=vec_script_class_node[register_class];
-			while( sc->idxBaseClass.size()>0){
+			while( sc->idx_base_class.size()>0){
 
-				sc=getScriptClass(sc->idxBaseClass[0]); // get base class...
-				if(sc->classPtrType ==base_class_name_ptr){
+				sc=getScriptClass(sc->idx_base_class[0]); // get base class...
+				if(sc->str_class_ptr_type ==base_class_name_ptr){
 					THROW_RUNTIME_ERROR(string::sformat("C++ class \"%s\" already base of \"%s\" ",rtti::demangle(class_name).c_str(), rtti::demangle(base_class_name).c_str()));
 					return false;
 				}
@@ -232,10 +276,10 @@ namespace zetscript{
 
 
 			CScriptClass *irc_class = vec_script_class_node[register_class];
-			irc_class->idxBaseClass.push_back(idx_base_class);
+			irc_class->idx_base_class.push_back(idx_base_class);
 
 			//std::map<int, std::map<int, fntConversionType>>  *	local_map_type_conversion=	getMapTypeConversion();
-			(mapTypeConversion)[irc_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(_B *)((_T *)entry);};
+			(mapTypeConversion)[irc_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(B *)((T *)entry);};
 
 
 			if(register_c_base_symbols){
@@ -250,7 +294,7 @@ namespace zetscript{
 				CScriptClass *irc_base = vec_script_class_node[idx_base_class];
 
 				unsigned short derivated_properties=PROPERTY_C_OBJECT_REF| PROPERTY_IS_DERIVATED;
-				if(std::is_polymorphic<_B>::value==true){
+				if(std::is_polymorphic<B>::value==true){
 					derivated_properties|=PROPERTY_IS_POLYMORPHIC;
 				}
 
@@ -302,10 +346,10 @@ namespace zetscript{
 		/**
 		 * Register C Member function Class
 		 */
-		template < typename _C, typename _R, class _T, typename..._A>
+		template < typename C, typename R, class T, typename..._A>
 		bool CZetScript::register_C_FunctionMember(
 				const char *function_name
-				,_R (_T:: *function_type)(_A...)
+				,R (T:: *function_type)(_A...)
 				, const char *registered_file
 				,int registered_line
 		)
@@ -321,7 +365,7 @@ namespace zetscript{
 			std::vector<ParamArgInfo> arg_info;
 			int idx_return_type=-1;
 			intptr_t ref_ptr=0;
-			std::string str_classPtr = typeid( _C *).name();
+			std::string str_classPtr = typeid( C *).name();
 
 			if(!script_function_factory->checkCanRegister_C_Function(function_name)){
 				return false;
@@ -367,11 +411,11 @@ namespace zetscript{
 			// ignores special type cast C++ member to ptr function
 			// create binding function class
 			if(idx_return_type == IDX_TYPE_VOID_C){
-				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<_C,_T, void>(arg.size(),function_type)))==0){
+				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<C,T, void>(arg.size(),function_type)))==0){
 					return false;
 				}
 			}else{
-				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<_C,_T, _R>(arg.size(),function_type)))==0){
+				if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<C,T, R>(arg.size(),function_type)))==0){
 					return false;
 				}
 			}
@@ -381,11 +425,11 @@ namespace zetscript{
 			// register member function...
 			CScriptFunction *sf = sc->registerFunction(registered_file,registered_line,function_name,arg_info,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
 
-			zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(_C).name()).c_str(), function_name);
+			zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(C).name()).c_str(), function_name);
 
 			if(STRCMP(getMetamethod(SET_METAMETHOD),==,function_name)){
 				sc->metamethod_operator[SET_METAMETHOD].push_back(sf);
-				zs_print_debug_cr("Registered metamethod %s::%s",rtti::demangle(typeid(_C).name()).c_str(), function_name);
+				zs_print_debug_cr("Registered metamethod %s::%s",rtti::demangle(typeid(C).name()).c_str(), function_name);
 			}
 
 			return true;
@@ -395,8 +439,8 @@ namespace zetscript{
 		/**
 		 * Register C Member function Class
 		 */
-		template <typename _T, typename _F>
-		bool CZetScript::register_C_StaticFunctionMember(const char *function_name,_F function_type, const char *registered_file,int registered_line)
+		template <typename T, typename F>
+		bool CZetScript::register_C_StaticFunctionMember(const char *function_name,F function_type, const char *registered_file,int registered_line)
 		{
 			// to make compatible MSVC shared library
 			//std::vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
@@ -408,8 +452,8 @@ namespace zetscript{
 			std::vector<ParamArgInfo> arg_info;
 			int idx_return_type=-1;
 			intptr_t ref_ptr=0;
-			std::string str_classPtr = typeid( _T *).name();
-			std::string function_class_name = rtti::demangle(typeid(_T).name())+"::"+function_name;
+			std::string str_classPtr = typeid( T *).name();
+			std::string function_class_name = rtti::demangle(typeid(T).name())+"::"+function_name;
 
 
 
@@ -466,7 +510,7 @@ namespace zetscript{
 
 			// register member function...
 			CScriptFunction * sf = c_class->registerFunction(registered_file,registered_line,function_name,arg_info, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
-			zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(_T).name()).c_str(), function_name);
+			zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(T).name()).c_str(), function_name);
 
 			// check whether is static metamethod...
 			if(STRCMP(getMetamethod(SET_METAMETHOD),!=,function_name)){
@@ -486,7 +530,7 @@ namespace zetscript{
 							// return type must be bool...
 							if(STRCMP(return_type.c_str(), != ,typeid(bool).name())){
 								THROW_RUNTIME_ERROR(string::sformat("error registering metamethod %s::%s. Expected return bool but it was %s",
-										rtti::demangle(typeid(_T).name()).c_str(),
+										rtti::demangle(typeid(T).name()).c_str(),
 										function_name,
 										rtti::demangle(return_type.c_str()).c_str()));
 								return false;
@@ -495,7 +539,7 @@ namespace zetscript{
 						}else if((return_type != str_classPtr) && (i!= SET_METAMETHOD)){
 
 							THROW_RUNTIME_ERROR(string::sformat("error registering metamethod %s::%s. Expected return %s but it was %s",
-									rtti::demangle(typeid(_T).name()).c_str(),
+									rtti::demangle(typeid(T).name()).c_str(),
 									function_name,
 									rtti::demangle(str_classPtr.c_str()).c_str(),
 									rtti::demangle(return_type.c_str()).c_str()));
@@ -504,7 +548,7 @@ namespace zetscript{
 
 						c_class->metamethod_operator[i].push_back(sf);
 
-						zs_print_debug_cr("Registered metamethod %s::%s",rtti::demangle(typeid(_T).name()).c_str(), function_name);
+						zs_print_debug_cr("Registered metamethod %s::%s",rtti::demangle(typeid(T).name()).c_str(), function_name);
 						break;
 					}
 				}
@@ -520,17 +564,17 @@ namespace zetscript{
 		 * Register C Member var
 		 */
 		//<o, decltype(o::s)>(STR(s),zetscript::offset_of(&o::s)) &CVar::mierda
-		template <typename _C, typename _R,typename _T>
-		bool CZetScript::register_C_VariableMember(const char *var_name, _R _T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
+		template <typename C, typename R,typename T>
+		bool CZetScript::register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
 		{
 			// to make compatible MSVC shared library
 			//std::vector<CScriptClass *> * local_vec_script_class_node = getVecScriptClassNode();
 
-			std::string var_type = typeid(_R *).name(); // we need the pointer type ...
+			std::string var_type = typeid(R *).name(); // we need the pointer type ...
 			std::string return_type;
 			//std::vector<std::string> params;
-			std::string str_classPtr = typeid( _C *).name();
-			unsigned int ref_ptr=offset_of<_C>(var_pointer);
+			std::string str_classPtr = typeid( C *).name();
+			unsigned int ref_ptr=offset_of<C>(var_pointer);
 
 			CScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_classPtr);
 
@@ -545,7 +589,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR(string::sformat("%s::%s has not valid type (%s)"
 						,c_class->symbol_info.symbol->name.c_str()
 						,var_name
-						,rtti::demangle(typeid(_R).name()).c_str()));
+						,rtti::demangle(typeid(R).name()).c_str()));
 				return false;
 			}
 
@@ -561,7 +605,7 @@ namespace zetscript{
 			//intptr_t var_trans = (intptr_t)input_var;
 				std::string s_return_value;
 				StackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
-				//int idx_type=getIdxClassFromIts_C_Type(typeid(_T).name());
+				//int idx_type=getIdxClassFromIts_C_Type(typeid(T).name());
 				// save return type ...
 				switch(idx_type){
 				 case IDX_TYPE_VOID_C:
@@ -757,9 +801,9 @@ namespace zetscript{
 		//
 		// 0 PARAMS
 		//
-		template <typename _R,typename _T>
+		template <typename R,typename T>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-		->typename std::enable_if<std::is_same<_R,void>::value>::type
+		->typename std::enable_if<std::is_same<R,void>::value>::type
 		{
 
 
@@ -779,17 +823,17 @@ namespace zetscript{
 			)));
 		}
 
-		template <typename _R,typename _T>
+		template <typename R,typename T>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-		->typename std::enable_if<!std::is_same<_R,void>::value>::type
+		->typename std::enable_if<!std::is_same<R,void>::value>::type
 		{
-			int idx_return = getIdxClassFromIts_C_Type(typeid(_R).name());
+			int idx_return = getIdxClassFromIts_C_Type(typeid(R).name());
 
-			*f=((void *)(new std::function<_R ()>(
+			*f=((void *)(new std::function<R ()>(
 				[&,calling_obj,fun_obj,idx_return](){
 						std::string error_str;
 						bool error=false;
-						_R ret_value;
+						R ret_value;
 
 						StackElement stk = virtual_machine->execute(
 								fun_obj,
@@ -816,13 +860,13 @@ namespace zetscript{
 		// 1 PARAMS
 		//
 		// template for last parameter argIdx == 1
-		template<typename _R,typename _T,  typename... ArgTypes>
+		template<typename R,typename T,  typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
+			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
 			//return NULL;
 
-			using tParam1 = typename _T::template argument<0>::type;
+			using tParam1 = typename T::template argument<0>::type;
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
 
 			*f=((void *)(new std::function<void (tParam1)>(
@@ -846,20 +890,20 @@ namespace zetscript{
 			)));
 		}
 
-		template<typename _R,typename _T,  typename... ArgTypes>
+		template<typename R,typename T,  typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f ,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(!std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
+			-> typename std::enable_if<(!std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
-			using tParam1 = typename _T::template argument<0>::type;
+			using tParam1 = typename T::template argument<0>::type;
 
-			int idx_return = getIdxClassFromIts_C_Type(typeid(_R).name());
+			int idx_return = getIdxClassFromIts_C_Type(typeid(R).name());
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
 
 
-			*f=((void *)(new std::function<_R (tParam1)>(
+			*f=((void *)(new std::function<R (tParam1)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1](tParam1 p1){
 
-						_R ret_value;
+						R ret_value;
 						std::string error_str;
 						bool error=false;
 
@@ -890,13 +934,13 @@ namespace zetscript{
 		// 2 PARAMS
 		//
 		// template when parameters argIdx == 2
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
+			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
 
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
 
 
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
@@ -928,22 +972,22 @@ namespace zetscript{
 			)));
 		}
 
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
+			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
 
 
-			int idx_return = getIdxClassFromIts_C_Type(typeid(_R).name());
+			int idx_return = getIdxClassFromIts_C_Type(typeid(R).name());
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
 			int idx_param2 = getIdxClassFromIts_C_Type(typeid(tParam2).name());
 
-			*f=((void *)(new std::function<_R (tParam1,tParam2)>(
+			*f=((void *)(new std::function<R (tParam1,tParam2)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2](tParam1 p1,tParam2 p2){
 
-						_R ret_value;
+						R ret_value;
 						std::string error_str;
 						bool error=false;
 
@@ -978,14 +1022,14 @@ namespace zetscript{
 		// 3 PARAMS
 		//
 		// template when parameters argIdx == 3
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
+			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
 
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
+			using tParam3 = typename T::template argument<2>::type;
 
 
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
@@ -1018,22 +1062,22 @@ namespace zetscript{
 			)));
 		}
 
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
+			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
+			using tParam3 = typename T::template argument<2>::type;
 
-			int idx_return = getIdxClassFromIts_C_Type(typeid(_R).name());
+			int idx_return = getIdxClassFromIts_C_Type(typeid(R).name());
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
 			int idx_param2 = getIdxClassFromIts_C_Type(typeid(tParam2).name());
 			int idx_param3 = getIdxClassFromIts_C_Type(typeid(tParam3).name());
 
-			*f=((void *)(new std::function<_R (tParam1,tParam2,tParam3)>(
+			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3](tParam1 p1,tParam2 p2,tParam3 p3){
-					_R ret_value;
+					R ret_value;
 					std::string error_str;
 					bool error=false;
 
@@ -1067,15 +1111,15 @@ namespace zetscript{
 		// 4 PARAMS
 		//
 		// template when parameters argIdx == 4
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
+			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-			using tParam4 = typename _T::template argument<3>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
+			using tParam3 = typename T::template argument<2>::type;
+			using tParam4 = typename T::template argument<3>::type;
 
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
 			int idx_param2 = getIdxClassFromIts_C_Type(typeid(tParam2).name());
@@ -1110,25 +1154,25 @@ namespace zetscript{
 			)));
 		}
 
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
+			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-			using tParam4 = typename _T::template argument<3>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
+			using tParam3 = typename T::template argument<2>::type;
+			using tParam4 = typename T::template argument<3>::type;
 
-			int idx_return = getIdxClassFromIts_C_Type(typeid(_R).name());
+			int idx_return = getIdxClassFromIts_C_Type(typeid(R).name());
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
 			int idx_param2 = getIdxClassFromIts_C_Type(typeid(tParam2).name());
 			int idx_param3 = getIdxClassFromIts_C_Type(typeid(tParam3).name());
 			int idx_param4 = getIdxClassFromIts_C_Type(typeid(tParam4).name());
 
-			*f=((void *)(new std::function<_R (tParam1,tParam2,tParam3,tParam4)>(
+			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3,tParam4)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4){
-						_R ret_value;
+						R ret_value;
 						bool error=false;
 						std::string error_str;
 
@@ -1165,16 +1209,16 @@ namespace zetscript{
 		// 5 PARAMS
 		//
 		// template when parameters argIdx == 5
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
+			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-			using tParam4 = typename _T::template argument<3>::type;
-			using tParam5 = typename _T::template argument<4>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
+			using tParam3 = typename T::template argument<2>::type;
+			using tParam4 = typename T::template argument<3>::type;
+			using tParam5 = typename T::template argument<4>::type;
 
 
 
@@ -1212,29 +1256,29 @@ namespace zetscript{
 		}
 
 
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
+			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-			using tParam4 = typename _T::template argument<3>::type;
-			using tParam5 = typename _T::template argument<4>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
+			using tParam3 = typename T::template argument<2>::type;
+			using tParam4 = typename T::template argument<3>::type;
+			using tParam5 = typename T::template argument<4>::type;
 
-			int idx_return = getIdxClassFromIts_C_Type(typeid(_R).name());
+			int idx_return = getIdxClassFromIts_C_Type(typeid(R).name());
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
 			int idx_param2 = getIdxClassFromIts_C_Type(typeid(tParam2).name());
 			int idx_param3 = getIdxClassFromIts_C_Type(typeid(tParam3).name());
 			int idx_param4 = getIdxClassFromIts_C_Type(typeid(tParam4).name());
 			int idx_param5 = getIdxClassFromIts_C_Type(typeid(tParam5).name());
 
-			*f=((void *)(new std::function<_R (tParam1,tParam2,tParam3,tParam4,tParam5)>(
+			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3,tParam4,tParam5)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5){
 
 
-					_R ret_value;
+					R ret_value;
 					bool error=false;
 					std::string error_str;
 
@@ -1271,17 +1315,17 @@ namespace zetscript{
 		// 6 PARAMS
 		//
 		// template when parameters argIdx == 6
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(std::is_same<_R,void>::value) && (sizeof...(ArgTypes) == 6)>::type
+			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 6)>::type
 		{
 
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-			using tParam4 = typename _T::template argument<3>::type;
-			using tParam5 = typename _T::template argument<4>::type;
-			using tParam6 = typename _T::template argument<5>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
+			using tParam3 = typename T::template argument<2>::type;
+			using tParam4 = typename T::template argument<3>::type;
+			using tParam5 = typename T::template argument<4>::type;
+			using tParam6 = typename T::template argument<5>::type;
 
 
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
@@ -1321,18 +1365,18 @@ namespace zetscript{
 			)));
 		}
 
-		template <typename _R,typename _T, typename... ArgTypes>
+		template <typename R,typename T, typename... ArgTypes>
 		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVariable *calling_obj,CScriptFunction *fun_obj)
-			-> typename std::enable_if<(!std::is_same<_R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type
+			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type
 		{
-			using tParam1 = typename _T::template argument<0>::type;
-			using tParam2 = typename _T::template argument<1>::type;
-			using tParam3 = typename _T::template argument<2>::type;
-			using tParam4 = typename _T::template argument<3>::type;
-			using tParam5 = typename _T::template argument<4>::type;
-			using tParam6 = typename _T::template argument<5>::type;
+			using tParam1 = typename T::template argument<0>::type;
+			using tParam2 = typename T::template argument<1>::type;
+			using tParam3 = typename T::template argument<2>::type;
+			using tParam4 = typename T::template argument<3>::type;
+			using tParam5 = typename T::template argument<4>::type;
+			using tParam6 = typename T::template argument<5>::type;
 
-			int idx_return = getIdxClassFromIts_C_Type(typeid(_R).name());
+			int idx_return = getIdxClassFromIts_C_Type(typeid(R).name());
 			int idx_param1 = getIdxClassFromIts_C_Type(typeid(tParam1).name());
 			int idx_param2 = getIdxClassFromIts_C_Type(typeid(tParam2).name());
 			int idx_param3 = getIdxClassFromIts_C_Type(typeid(tParam3).name());
@@ -1340,10 +1384,10 @@ namespace zetscript{
 			int idx_param5 = getIdxClassFromIts_C_Type(typeid(tParam5).name());
 			int idx_param6 = getIdxClassFromIts_C_Type(typeid(tParam6).name());
 
-			*f=((void *)(new std::function<_R (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
+			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
 
-						_R ret_value;
+						R ret_value;
 						bool error=false;
 						std::string error_str;
 
@@ -1380,18 +1424,18 @@ namespace zetscript{
 		//
 		//--------------------------------------------------------------------------------------------------------------------
 
-		 template <typename _F, std::size_t... Is>
+		 template <typename F, std::size_t... Is>
 		 auto CZetScript::bindScriptFunctionBuilderBase(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
-		 -> typename std::enable_if<(_F::arity > 0)>::type
+		 -> typename std::enable_if<(F::arity > 0)>::type
 		{
-			 bindScriptFunctionBuilder<typename _F::return_type, _F,  typename _F::template argument<Is>::type...>(f,calling_obj,fun_obj);
+			 bindScriptFunctionBuilder<typename F::return_type, F,  typename F::template argument<Is>::type...>(f,calling_obj,fun_obj);
 		}
 
-		 template <typename _F, std::size_t... Is>
+		 template <typename F, std::size_t... Is>
 		 auto CZetScript::bindScriptFunctionBuilderBase(void **f, CScriptVariable *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
-		 -> typename std::enable_if<(_F::arity == 0)>::type
+		 -> typename std::enable_if<(F::arity == 0)>::type
 		{
-			 bindScriptFunctionBuilder<typename _F::return_type, _F>(f,calling_obj,fun_obj);
+			 bindScriptFunctionBuilder<typename F::return_type, F>(f,calling_obj,fun_obj);
 		}
 
 
@@ -1492,8 +1536,8 @@ namespace zetscript{
 		}
 
 
-		template <  typename _F>
-		std::function<_F> * CZetScript::bind_function(const std::string & function_access)
+		template <  typename F>
+		std::function<F> * CZetScript::bind_function(const std::string & function_access)
 		{
 			std::string return_type;
 			std::vector<std::string> params;
@@ -1510,7 +1554,7 @@ namespace zetscript{
 			{
 
 				// 1. check all parameters ok.
-				using Traits3 = function_traits<_F>;//decltype(function_type)>;
+				using Traits3 = function_traits<F>;//decltype(function_type)>;
 				get_params_function<Traits3>(0,return_type, arg, make_index_sequence<Traits3::arity>{});
 
 				// 2. check valid parameters ...
@@ -1528,17 +1572,17 @@ namespace zetscript{
 
 				// 3. build custom function in function of parameter number ...
 				bindScriptFunctionBuilderBase<Traits3>(&ptr,calling_obj,fun,make_index_sequence<Traits3::arity>{});
-				return (std::function<_F> *)ptr;
+				return (std::function<F> *)ptr;
 
 			}
 
 			return NULL;
 		}
 
-		template<typename _T>
-		std::vector<_T> CZetScript::vscript2vector(CVectorScriptVariable *v_in){
-			std::vector<_T> v_out;
-			const char * dst_convert_type = typeid(_T).name();
+		template<typename T>
+		std::vector<T> CZetScript::vscript2vector(CVectorScriptVariable *v_in){
+			std::vector<T> v_out;
+			const char * dst_convert_type = typeid(T).name();
 			float aux_flt;
 			std::vector<StackElement> * m_variable = v_in->getVectorVariable();
 
@@ -1583,14 +1627,14 @@ namespace zetscript{
 			return v_out;
 		}
 
-		template<typename _T>
-		CVectorScriptVariable * CZetScript::vector_2_vscript(const std::vector<_T> & v){
+		template<typename T>
+		CVectorScriptVariable * CZetScript::vector_2_vscript(const std::vector<T> & v){
 			CVectorScriptVariable *vsv = new CVectorScriptVariable(this);
 
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->push();
 				//intptr_t uvar = (intptr_t)(v[i]);
-				*stk = var_2_stk((intptr_t)(v[i]),getIdxClassFromIts_C_Type(typeid(_T).name()));
+				*stk = var_2_stk((intptr_t)(v[i]),getIdxClassFromIts_C_Type(typeid(T).name()));
 			}
 
 			return vsv;

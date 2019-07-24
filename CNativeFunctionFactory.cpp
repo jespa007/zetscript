@@ -7,8 +7,8 @@
 namespace zetscript{
 
 
-	CNativeFunctionFactory::CNativeFunctionFactory(){
-
+	CNativeFunctionFactory::CNativeFunctionFactory(CZetScript *_zs){
+		this->zs=_zs;
 	}
 
 

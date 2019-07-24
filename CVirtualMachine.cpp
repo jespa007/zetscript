@@ -477,7 +477,7 @@ namespace zetscript{
 
 
 
-	CVirtualMachine::CVirtualMachine(CZetScript *zs){
+	CVirtualMachine::CVirtualMachine(CZetScript *_zs){
 
 		//-----------------------------------------------------------
 		// set memory manager
@@ -527,7 +527,8 @@ namespace zetscript{
 		current_foreach=NULL;
 		current_call_c_function = NULL;
 		n_globals=0;
-		_zs=zs;
+		zs=_zs;
+		script_function_factory=this->zs->getScriptFunctionFactory();
 
 		memset(defined_opcode,0,sizeof(defined_opcode));
 
@@ -605,7 +606,7 @@ namespace zetscript{
 
 	//============================================================================================================================================
 	// POINTER MANANAGER
-	std::string CZetScript::stk_C_TypeStr(const StackElement & stk_v){
+	std::string CVirtualMachine::stk_C_TypeStr(const StackElement & stk_v){
 		if(stk_v.properties & STK_PROPERTY_TYPE_INTEGER){
 			return rtti::demangle(typeid(int).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_NUMBER){
@@ -620,7 +621,7 @@ namespace zetscript{
 			CScriptClass *c = GET_SCRIPT_CLASS(((CScriptVariable *)(stk_v.varRef))->idx_class);
 
 			if(c!=NULL){
-				return rtti::demangle(c->classPtrType);
+				return rtti::demangle(c->str_class_ptr_type);
 			}
 		}
 		return "unknow";
@@ -739,13 +740,13 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		if((char)irfs->m_arg.size() != n_args){
+		if((char)irfs->arg_info.size() != n_args){
 			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"C argument VS scrip argument doestn't match sizes");
 			RETURN_ERROR;
 		}
 
-		if(irfs->m_arg.size() > MAX_N_ARGS){
-			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->m_arg.size(),MAX_N_ARGS);
+		if(irfs->arg_info.size() > MAX_N_ARGS){
+			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->arg_info.size(),MAX_N_ARGS);
 			RETURN_ERROR;
 			//return &callc_result;//CScriptVariable::UndefinedSymbol;
 		}
@@ -755,7 +756,7 @@ namespace zetscript{
 
 			currentArg=&ptrArg[i];
 
-			if(!zs->stk_2_var(currentArg,irfs->m_arg[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
+			if(!zs->stk_2_var(currentArg,irfs->arg_info[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
 				write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
 																irfs->symbol_info.symbol->name.c_str(),
 																i,
@@ -982,7 +983,7 @@ namespace zetscript{
 
 			}
 
-			callc_result=var_2_stk(result,irfs->idx_return_type);
+			callc_result=this->zs->var_2_stk(result,irfs->idx_return_type);
 		}
 
 
@@ -1036,7 +1037,7 @@ namespace zetscript{
 		destroyCache();
 
 		main_function_object = MAIN_FUNCTION;
-		std::vector<CScriptFunction *> *vec_script_function_object_node_aux=_script_function_factory->getVectorScriptFunctionNode();
+		std::vector<CScriptFunction *> *vec_script_function_object_node_aux=script_function_factory->getVectorScriptFunctionNode();
 		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
 		vec_script_function_node=(CScriptFunction **)malloc(sizeof(CScriptFunction *)*size_vec_script_function_object_node);
 		for(unsigned i=0; i < size_vec_script_function_object_node; i++){
@@ -2178,7 +2179,7 @@ namespace zetscript{
 						break;
 					default:
 						if(stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							bool b = SCRIPT_CLASS_FACTORY->isIdxClassInstanceOf(((CScriptVariable *)(stkResultOp1->varRef))->idx_class, (intptr_t)stkResultOp2->stkValue);
+							bool b = this->zs->isIdxClassInstanceOf(((CScriptVariable *)(stkResultOp1->varRef))->idx_class, (intptr_t)stkResultOp2->stkValue);
 							PUSH_BOOLEAN(b);
 						}else{
 							PUSH_BOOLEAN(false);
@@ -2306,7 +2307,7 @@ namespace zetscript{
 						}
 
 						if((aux_function_info->symbol_info.properties & PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
-							unsigned aux_function_info_m_arg_size=aux_function_info->m_arg.size();
+							unsigned aux_function_info_m_arg_size=aux_function_info->arg_info.size();
 							if( n_args < aux_function_info_m_arg_size){ // we must push undefined parameters ...
 								for(unsigned i = n_args; i < aux_function_info_m_arg_size; i++){
 									*stkCurrentData++={

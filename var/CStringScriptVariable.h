@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define NEW_STRING_VAR (new CStringScriptVariable()) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassString()),NULL))
+#define NEW_STRING_VAR (new CStringScriptVariable(this->zs)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassString()),NULL))
 
 
 namespace zetscript{
@@ -13,6 +13,7 @@ namespace zetscript{
 
 	public:
 
+		CStringScriptVariable(){}
 		CStringScriptVariable(CZetScript *_zs);
 		CStringScriptVariable(CZetScript *_zs,const std::string & s);
 

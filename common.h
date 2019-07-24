@@ -32,7 +32,7 @@
 #define SCRIPT_CLASS_VECTOR								((this->zs)->getScriptClass(IDX_CLASS_VECTOR))
 #define SCRIPT_CLASS_FUNCTOR							((this->zs)->getScriptClass(IDX_CLASS_FUNCTOR))
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)			((this->zs)->getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
-#define GET_IDX_2_CLASS_C_STR(idx) 						((this->zs)->getScriptClass(idx)->classPtrType)
+#define GET_IDX_2_CLASS_C_STR(idx) 						((this->zs)->getScriptClass(idx)->str_class_ptr_type)
 #define REGISTER_C_BASE_SYMBOLS(o)		   				((this->zs)->register_C_BaseSymbols(o))
 #define GET_SCOPE						 				((this->scope_factory))->getScope
 #define MAIN_SCOPE										((this->scope_factory))->getScope(IDX_GLOBAL_SCOPE)
@@ -64,11 +64,11 @@ namespace zetscript{
 	class CScriptClass;
 	class CScriptVariable;
 	struct Symbol;
-	struct tFunctionInfo;
+	struct FunctionInfo;
 	struct ScopeVarInnerBlockInfo;
 
 
-	enum NODE_TYPE
+	typedef enum
 		:unsigned char {
 		UNKNOWN_NODE = 0,
 		PUNCTUATOR_NODE,
@@ -99,9 +99,9 @@ namespace zetscript{
 		ACCESS_OBJECT_MEMBER_NODE,
 		STRUCT_NODE,
 		MAX_NODE_TYPE
-	};
+	}NODE_TYPE;
 
-	enum KEYWORD_TYPE
+	typedef enum
 		:unsigned char {
 		UNKNOWN_KEYWORD = 0,
 		IF_KEYWORD,
@@ -125,16 +125,16 @@ namespace zetscript{
 		NEW_KEYWORD,
 		DELETE_KEYWORD,
 		MAX_KEYWORD
-	};
+	}KEYWORD_TYPE;
 
-	enum DIRECTIVE_TYPE
+	typedef enum
 		:unsigned char {
 		UNKNOWN_DIRECTIVE = 0,
 		INCLUDE_DIRECTIVE,
 		MAX_DIRECTIVES
-	};
+	}DIRECTIVE_TYPE;
 
-	enum __PUNCTUATOR_TYPE_OLD__
+	/*enum __PUNCTUATOR_TYPE_OLD__
 		:unsigned char {
 
 		UNKNOWN_PUNCTUATOR = 0,
@@ -206,9 +206,9 @@ namespace zetscript{
 		MAX_SPECIAL_PUNCTUATORS,
 		MAX_PUNCTUATORS
 
-	};
+	};*/
 
-	enum LOAD_TYPE
+	typedef enum
 		:unsigned char {
 
 		LOAD_TYPE_NOT_DEFINED = 0,
@@ -218,17 +218,17 @@ namespace zetscript{
 		LOAD_TYPE_VARIABLE,
 		LOAD_TYPE_FUNCTION,
 		LOAD_TYPE_ARGUMENT
-	};
+	}LOAD_TYPE;
 
-	enum IDX_OBJ_SPECIAL_VALUE {
+	typedef enum {
 		IDX_INVALID = -1, IDX_THIS = -10
-	};
+	}IDX_OBJ_SPECIAL_VALUE;
 
-	enum PROXY_CREATOR {
+	typedef enum {
 		CREATE_FUNCTION = 0, DESTROY_FUNCTION
-	};
+	}PROXY_CREATOR;
 
-	enum OP_CODE:char {
+	typedef enum:char{
 
 		// ARITMETHIC OPERATORS.
 
@@ -275,11 +275,10 @@ namespace zetscript{
 		IT_CHK_END,
 		MAX_OP_CODES
 
-	};
+	}OP_CODE;
 
 
-	enum METAMETHOD_OPERATOR
-		:char {
+	typedef enum:char {
 			EQU_METAMETHOD=0,  // ==
 			NOT_EQU_METAMETHOD,  // !=
 			LT_METAMETHOD,  // <
@@ -300,7 +299,7 @@ namespace zetscript{
 			SET_METAMETHOD, // store '='
 
 			MAX_METAMETHOD_OPERATORS
-	};
+	}METAMETHOD_OPERATOR;
 
 	/*
 	 enum ASM_PRE_POST_OPERATORS:char{
@@ -314,8 +313,7 @@ namespace zetscript{
 	 */
 
 	// properties shared by compiler + VM
-	enum STACK_ELEMENT_PROPERTY
-		:unsigned char {
+	typedef enum:unsigned char {
 
 			//-- COMPILER/VM TYPE VAR
 		BIT_TYPE_UNDEFINED = 0,	// 0x1
@@ -337,7 +335,7 @@ namespace zetscript{
 		BIT_IS_THIS_VAR,				 // 0x4000
 		MAX_BIT_RUNTIME
 
-	};
+	}STACK_ELEMENT_PROPERTY;
 
 	enum
 		:unsigned short {
@@ -358,8 +356,7 @@ namespace zetscript{
 	#define MASK_VAR_TYPE							((0x1<<MAX_BIT_VAR_TYPE)-1)
 	#define GET_INS_PROPERTY_VAR_TYPE(prop)			((prop)&MASK_VAR_TYPE)
 
-	enum
-		:unsigned short {
+	enum:unsigned short {
 		STK_PROPERTY_IS_C_VAR = (0x1 << BIT_IS_C_VAR),
 		STK_PROPERTY_IS_STACKVAR = (0x1 << BIT_IS_STACKVAR),
 		STK_PROPERTY_IS_INSTRUCTIONVAR = (0x1 << BIT_IS_INSTRUCTIONVAR),
@@ -374,7 +371,7 @@ namespace zetscript{
 	#define GET_INS_PROPERTY_RUNTIME(prop)		((prop)&MASK_RUNTIME)
 
 	// properties shared by compiler + instruction ..
-	enum INSTRUCTION_PROPERTY{
+	typedef enum{
 		//-- PRE/POST OPERATORS (Byy default there's no operators involved)
 		BIT_PRE_INC = 0,	// 0x1
 		BIT_POST_INC,		// 0x2
@@ -397,7 +394,7 @@ namespace zetscript{
 		BIT_CONSTRUCT_CALL,						// 0x1000
 		BIT_NO_FUNCTION_CALL,					// 0x2000
 		MAX_BIT_CALL_PROPERTIES,
-	};
+	}INSTRUCTION_PROPERTY;
 
 	// PRE/POST OP
 	#define INS_PROPERTY_PRE_INC				(0x1<<BIT_PRE_INC) // ++
@@ -433,19 +430,19 @@ namespace zetscript{
 
 
 	//typedef tInfoStatementOp *PInfoStatementOp;
-	enum SYMBOL_INFO_PROPERTY {
+	typedef enum {
 		PROPERTY_C_OBJECT_REF 			= 0x1 << 0,
 		PROPERTY_IS_DERIVATED 			= 0x1 << 1,
 		PROPERTY_STATIC_REF 			= 0x1 << 2,
 		PROPERTY_IS_POLYMORPHIC			= 0x1 << 3
-	};
+	}SYMBOL_INFO_PROPERTY;
 
 	//typedef tInfoStatementOp *PInfoStatementOp;
 	/*enum ALE_INFO_PROPERTIES{
 	 PROPERTY_ARG_VAR = 0x1 <<0,
 	 };*/
 
-	enum BUILT_IN_TYPE {
+	typedef enum {
 
 		// built-in types...
 		IDX_CLASS_MAIN = 0, 	// Main class ...
@@ -472,16 +469,16 @@ namespace zetscript{
 		IDX_CLASS_STRUCT,
 
 		MAX_BUILT_IN_TYPES
-	};
+	}BUILT_IN_TYPE;
 
 
-	enum SCOPE_PROPERTY
+	typedef enum
 		:unsigned char{
 		 BREAK=0x1 << 0
 		,CONTINUE=0x1 << 1
 		,FOR_IN=0x1 << 2
 
-	};
+	}SCOPE_PROPERTY;
 
 
 	typedef void  (* PrintFunctionCallback)(const char *filename, int line, const  char  *string_text);
@@ -501,11 +498,11 @@ namespace zetscript{
 		//char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
 	} DirectiveInfo;
 
-	typedef struct {
+	/*typedef struct {
 		__PUNCTUATOR_TYPE_OLD__ id;
 		const char *str;
 		bool (*eval_fun)(const char *);
-	} PunctuatorInfo;
+	} PunctuatorInfo;*/
 
 
 
@@ -677,7 +674,6 @@ namespace zetscript{
 		void * stkValue; // operable value
 		void * varRef; // stack ref in case to assign new value.
 		unsigned short properties; // it tells its properties
-
 	};
 
 	typedef StackElement ConstantValueInfo;
