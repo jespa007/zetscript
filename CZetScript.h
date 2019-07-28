@@ -6,37 +6,15 @@
 #define 												MAX_REGISTER_CLASSES 100
 
 #define ZS_INVALID_CLASS								((unsigned char)ZS_UNDEFINED_IDX)
-
-
 #define CLASS_C_BASEOF(zs)								(zs)->class_C_BaseOf();
-
-//#define VOID_TYPE_STR									zetscript::CScriptClassFactory::getInstance()->m_VOID_TYPE_STR			// 	typeid(void).name()
-//#define INT_PTR_TYPE_STR								zetscript::CScriptClassFactory::getInstance()->m_INT_PTR_TYPE_STR			//	typeid(int *).name()
-//#define FLOAT_PTR_TYPE_STR								zetscript::CScriptClassFactory::getInstance()->m_FLOAT_PTR_TYPE_STR		//	typeid(float *).name()
-//#define STRING_PTR_TYPE_STR								zetscript::CScriptClassFactory::getInstance()->m_STRING_PTR_TYPE_STR		//	typeid(std::string *).name()
-//#define CONST_CHAR_PTR_TYPE_STR							zetscript::CScriptClassFactory::getInstance()->m_CONST_CHAR_PTR_TYPE_STR	//	typeid(std::string *).name()
-//#define BOOL_PTR_TYPE_STR								zetscript::CScriptClassFactory::getInstance()->m_BOOL_PTR_TYPE_STR		//	typeid(bool *).name()
-//#define INT_TYPE_STR									zetscript::CScriptClassFactory::getInstance()->m_INT_TYPE_STR				//	typeid(int).name()
-//#define UNSIGNED_INT_TYPE_STR							zetscript::CScriptClassFactory::getInstance()->m_UNSIGNED_INT_TYPE_STR	//	typeid(unsigned int).name()
-//#define INTPTR_T_TYPE_STR								zetscript::CScriptClassFactory::getInstance()->m_INTPTR_T_TYPE_STR		//	typeid(intptr_t).name()
-
-//#define FLOAT_TYPE_STR									zetscript::CScriptClassFactory::getInstance()->m_FLOAT_TYPE_STR			//	typeid(int).name()
-//#define BOOL_TYPE_STR									zetscript::CScriptClassFactory::getInstance()->m_BOOL_TYPE_STR			//	typeid(bool).name()
-//#define STACK_ELEMENT_STR								zetscript::CScriptClassFactory::getInstance()->m_STACK_ELEMENT_STR			//	typeid(bool).name()
-
-
 #define REGISTER_C_FUNCTION(zs,text,s) 					(zs)->register_C_Function(text,s,__FILE__, __LINE__)
 #define REGISTER_C_VARIABLE(zs,text,s) 					(zs)->register_C_Variable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
-
 #define REGISTER_C_CLASS(zs,class_type,s) 				(zs)->register_C_Class<class_type>(s,__FILE__, __LINE__)
 #define REGISTER_C_SINGLETON_CLASS(zs,class_type,s)		(zs)->register_C_SingletonClass<class_type>(s,__FILE__, __LINE__)
-
 #define REGISTER_C_VARIABLE_MEMBER(zs,s,v)				(zs)->register_C_VariableMember(s,v)
 #define REGISTER_C_STATIC_FUNCTION_MEMBER(zs,s,f)		(zs)->register_C_StaticFunctionMember(s,f,__FILE__, __LINE__)
 #define REGISTER_C_FUNCTION_MEMBER(zs,s,f)				(zs)->register_C_FunctionMember(s,f,__FILE__, __LINE__)
-
 #define REGISTER_C_CONSTANT(zs,s,v)						(zs)->register_C_FunctionMember(s,f,__FILE__, __LINE__)
-
 
 
 namespace zetscript{
@@ -48,19 +26,19 @@ namespace zetscript{
 
 	public:
 
-		std::string  VOID_TYPE_STR;				// 	typeid(void).name()
-		std::string  INT_PTR_TYPE_STR;			//	typeid(int *).name()
-		std::string  FLOAT_PTR_TYPE_STR;		//	typeid(float *).name()
-		std::string  STRING_PTR_TYPE_STR;		//	typeid(std::string *).name()
-		std::string  CONST_CHAR_PTR_TYPE_STR;	//	typeid(std::string *).name()
-		std::string  BOOL_PTR_TYPE_STR;			//	typeid(bool *).name()
-		std::string  INT_TYPE_STR;				//	typeid(int).name()
-		std::string  UNSIGNED_INT_TYPE_STR;		//	typeid(unsigned int).name()
-		std::string  INTPTR_T_TYPE_STR;			//	typeid(intptr_t).name()
+		std::string  STR_VOID_TYPE;				// 	typeid(void).name()
+		std::string  STR_INT_TYPE_PTR;			//	typeid(int *).name()
+		std::string  STR_FLOAT_TYPE_PTR;		//	typeid(float *).name()
+		std::string  STR_STRING_TYPE_PTR;		//	typeid(std::string *).name()
+		std::string  STR_CONST_CHAR_TYPE_PTR;	//	typeid(std::string *).name()
+		std::string  STR_BOOL_TYPE_PTR;			//	typeid(bool *).name()
+		std::string  STR_INT_TYPE;				//	typeid(int).name()
+		std::string  STR_UNSIGNED_INT_TYPE;		//	typeid(unsigned int).name()
+		std::string  STR_INTPTR_T_TYPE;			//	typeid(intptr_t).name()
 
-		std::string  FLOAT_TYPE_STR;			//	typeid(int).name()
-		std::string  BOOL_TYPE_STR;				//	typeid(bool).name()
-		std::string  STACK_ELEMENT_STR;			//	typeid(bool).name()
+		std::string  STR_FLOAT_TYPE;			//	typeid(int).name()
+		std::string  STR_BOOL_TYPE;				//	typeid(bool).name()
+		std::string  STR_STACK_ELEMENT_TYPE;			//	typeid(bool).name()
 
 		CZetScript();
 
@@ -68,6 +46,7 @@ namespace zetscript{
 		inline CNativeFunctionFactory * getNativeFunctionFactory() { return native_function_factory;}
 		inline CScopeFactory * getScopeFactory() { return scope_factory;}
 		inline CScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
+		inline CScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
 		inline CScriptFunction * getMainFunction() { return main_function;}
 		inline CScriptFunction * getMainObject() { return main_object;}
 
@@ -82,14 +61,7 @@ namespace zetscript{
 		 bool evalFile(const char * filename,bool execute=true,bool show_bytecode=false);
 
 
-				//===================================================================================================
-				//
-				// PRINT ASM INFO
-				void printGeneratedCode();
-
-				// PRINT ASM INFO
-				//---------------------------------------------------------------------------------------------------------------------------------------
-		//		 static std::string 				getSymbolNameFromSymbolRef(const std::string & ref_symbol);
+			//		 static std::string 				getSymbolNameFromSymbolRef(const std::string & ref_symbol);
 		//		 static std::string 				makeSymbolRef(const std::string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
 				 ConstantValueInfo 	* 		addConstant(const std::string & const_name, int value);
 
@@ -119,27 +91,10 @@ namespace zetscript{
 
 
 
-		 /**
-		  * Class management region
-		  */
-
-			/// register script class
-			CScriptClass 						* 				registerClass(const std::string & file, short line, const std::string & class_name, const std::string & base_class_name="");
-
-		 CScriptClass * 				getScriptClass(unsigned char idx);
-		 CScriptClass * 				getScriptClass(const std::string & name);
-		CScriptClass 						* 				getScriptClassBy_C_ClassPtr(const std::string & class_type);
-		const char 							* 				getScriptClassName(unsigned char idx);
-		const char * 				getMetamethod(METAMETHOD_OPERATOR op);
-
-		bool						isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
 		StackElement 					C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable);
 
-		/**
-		 * Class name given this function creates the object and initializes all variables.
-		 */
-		CScriptVariable 		 				* 			instanceScriptVariableByClassName(const std::string & class_name);
-		CScriptVariable 		 				* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
+
+		const char * getMetamethod(METAMETHOD_OPERATOR op);
 
 
 		/**
@@ -170,6 +125,10 @@ namespace zetscript{
 		 */
 		template<typename T>
 		bool register_C_Class(const std::string & class_name, const char *registered_file="",int registered_line=-1);
+
+
+		template<typename T>
+		bool register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1);
 
 
 		template<class T, class B>
@@ -323,7 +282,6 @@ namespace zetscript{
 
 
 
-		//CScriptFunction *getScriptObjectFromScriptFunctionAccessName(const std::string &function_access_expression)
 		bool getScriptObject(const std::string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj );
 
 
@@ -342,15 +300,7 @@ namespace zetscript{
 
 	private:
 
-		typedef struct{
-			const char *   type_str;
-			BUILT_IN_TYPE  id;
-		}tPrimitiveType;
 
-		typedef struct{
-			tPrimitiveType 				*return_type;
-			std::vector<tPrimitiveType*>		params;
-		}tRegisterFunction;
 
 
 		typedef struct {
@@ -359,67 +309,17 @@ namespace zetscript{
 		} ParsedSourceInfo;
 
 
-		//===================================================================================================
-			//
-			// PRINT ASM INFO
-			std::string getStrMovVar(OpCodeInstruction * iao);
-			std::string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
-			 void printGeneratedCode(CScriptFunction *sfo);
-
-		//----
-
-
-
-		tPrimitiveType *getPrimitiveTypeFromStr(const std::string & str);
-		std::map<unsigned char, std::map<unsigned char, fntConversionType>> *  getMapTypeConversion();
-		// singleton
-		 std::map<std::string,ConstantValueInfo *> 	 m_contantPool;
-		 std::vector<ParsedSourceInfo> 			 m_parsedSource;
-
-		template<typename T>
-		bool register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1);
-
-
-
-		 unsigned char getIdx_C_RegisteredClass(const std::string & str_classPtr);
-		 unsigned char				getIdxClassFromIts_C_Type(const std::string & s);
-		 void 						setPrintOutCallback(void (*)(const char *));
-
-		 std::vector<CScriptClass *> * 	getVectorScriptClassNode();
-
-
-
-		bool 						isClassRegistered(const std::string & v);
-
-		void 												registerPrimitiveTypes();
-		void 												register_C_BaseSymbols(bool );
-
-
-
-
-		intptr_t 											doCast(intptr_t obj, unsigned char src_class, unsigned char convert_class);
-
-
-
-		static 									void  print(const char *s);
-		static 									void (* print_out_callback)(const char *);
-
-		unsigned char							getIdxScriptClass_Internal(const std::string & class_name);
-		unsigned char							getIdxClassFromIts_C_TypeInternal(const std::string & c_type_str);
-
-		void setup();
-
-		void internal_print_error(const char *s);
-
+		//--------
 		// VARS
-
+		std::map<std::string,ConstantValueInfo *> 	 m_contantPool;
+		std::vector<ParsedSourceInfo> 			 m_parsedSource;
 		std::map<std::string,ConstantValueInfo *> 	 constant_pool;
-
 		CEval * eval;
 		CVirtualMachine * virtual_machine;
 		CNativeFunctionFactory * native_function_factory;
 		CScopeFactory * scope_factory;
 		CScriptFunctionFactory *script_function_factory;
+		CScriptClassFactory *script_class_factory;
 		CScriptFunction * main_function;
 		CScriptFunction * main_object;
 		CZetScript 		*zs;
@@ -429,14 +329,22 @@ namespace zetscript{
 		bool eval_bool;
 		std::string eval_string;
 
-		std::vector<CScriptClass *> 			 		vec_script_class_node;
+
 
 		/*
 		 * register_c_base_symbols it tells to register functions/variable member already registered on base classes. Only works if class is not polymorphic (i.e there's no any virtual functions involved)
 		 */
 		bool register_c_base_symbols;
 
-		std::map<unsigned char,std::map<unsigned char,fntConversionType>> 	mapTypeConversion;
+
+
+		// FUNCTIONS
+		static 									void  print(const char *s);
+		static 									void (* print_out_callback)(const char *);
+
+
+
+
 
 	};
 

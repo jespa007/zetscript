@@ -75,244 +75,26 @@ namespace zetscript{
 	}
 
 
-	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-	 // PRINT ASM INFO
+	CZetScript::CZetScript(){
 
+		scope_factory = new CScopeFactory(this);
+		native_function_factory = new CNativeFunctionFactory(this);
+		script_function_factory= new CScriptFunctionFactory(this);
+		eval = new CEval(this);
+		virtual_machine = new CVirtualMachine(this);
+		script_class_factory = new CScriptClassFactory(this);
 
-	 std::string CZetScript::getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction){
+		main_object=NULL;
+		main_function=NULL;
 
-		 char print_aux_load_value[512] = {0};
-		 char object_access[512] = "";
+		eval_int=0;
+		eval_float=0;
+		eval_string="";
+		eval_bool = false;
+		register_c_base_symbols=false;
+		zs=this;
 
-		 OpCodeInstruction * instruction =&m_listStatements[current_instruction];
-		 ConstantValueInfo *icv;
-		 std::string symbol_value=INSTRUCTION_GET_SYMBOL_NAME(current_function,instruction);
-		 if(instruction->op_code != LOAD){
-			 return "ERROR";
-		 }
-
-
-
-		 sprintf(print_aux_load_value,"UNDEFINED");
-
-		 if(instruction->properties & INS_PROPERTY_ACCESS_SCOPE){
-
-			 sprintf(object_access,
-					"[" FORMAT_PRINT_INSTRUCTION "]."
-
-					,(int)instruction->index_op2);
-		 }
-		 else if(instruction->properties & INS_PROPERTY_THIS_SCOPE){
-			sprintf(object_access,"this.");
-		 }
-
-		 switch(instruction->index_op1){
-
-			case LOAD_TYPE::LOAD_TYPE_CONSTANT:
-				icv=(ConstantValueInfo *)instruction->index_op2;
-				switch(icv->properties){
-				case STK_PROPERTY_TYPE_BOOLEAN:
-				case STK_PROPERTY_TYPE_INTEGER:
-					sprintf(print_aux_load_value,"CONST(%i)",(int)((intptr_t)icv->stkValue));
-					break;
-				case STK_PROPERTY_TYPE_NUMBER:
-					sprintf(print_aux_load_value,"CONST(%f)",*((float *)&icv->stkValue));
-					break;
-				case STK_PROPERTY_TYPE_STRING:
-					sprintf(print_aux_load_value,"CONST(%s)",((const char *)icv->stkValue));
-					break;
-
-				}
-				break;
-
-			case LOAD_TYPE::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"%sVAR(%s)",object_access,symbol_value.c_str());
-				break;
-			case LOAD_TYPE::LOAD_TYPE_FUNCTION:
-
-				sprintf(print_aux_load_value,"%sFUN(%s)",object_access,symbol_value.c_str());
-				break;
-
-			case LOAD_TYPE::LOAD_TYPE_ARGUMENT:
-				sprintf(print_aux_load_value,"ARG(%s)",symbol_value.c_str());
-				break;
-			default:
-
-				break;
-		}
-		return print_aux_load_value;
-	 }
-
-	 void CZetScript::printGeneratedCode(CScriptFunction *sfo){
-
-		// PRE: it should printed after compile and updateReferences.
-		std::string pre="";
-		std::string post="";
-
-		unsigned idx_instruction=0;
-		for(OpCodeInstruction * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
-
-			int n_ops=0;
-			int index_op1 = instruction->index_op1;
-			int index_op2 = instruction->index_op2;
-
-			if(index_op1 != -1)
-				n_ops++;
-
-			 if(index_op2 != -1)
-				 n_ops++;
-
-			 pre="";
-			 post="";
-
-				switch(GET_INS_PROPERTY_PRE_POST_OP(instruction->properties)){
-				case INS_PROPERTY_PRE_NEG:
-					pre="-";
-					break;
-				case INS_PROPERTY_PRE_INC:
-					pre="++";
-					break;
-				case INS_PROPERTY_PRE_DEC:
-					pre="--";
-					break;
-				case INS_PROPERTY_POST_INC:
-					post="++";
-					break;
-				case INS_PROPERTY_POST_DEC:
-					post="--";
-					break;
-				default:
-					// check whether is constant and numeric
-					if(instruction->op_code==OP_CODE::LOAD && instruction->index_op1==LOAD_TYPE_CONSTANT){
-						ConstantValueInfo *icv = (((ConstantValueInfo *)instruction->index_op2));
-						float n;
-
-						// change the sign
-						switch(icv->properties){
-						default:
-							break;
-						case STK_PROPERTY_TYPE_INTEGER:
-							if(((intptr_t)icv->stkValue)<0){
-								pre="-";
-							}
-							break;
-						case STK_PROPERTY_TYPE_NUMBER:
-							memcpy(&n,&icv->stkValue,sizeof(float));
-							if(n<0){
-								pre="-";
-							}
-							break;
-						}
-					}
-					break;
-
-				}
-			switch(instruction->op_code){
-
-			case  NEW:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,virtual_machine->getOpCodeStr(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->index_op1):"???");
-				break;
-			case  LOAD:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s\n"
-						,idx_instruction,
-						virtual_machine->getOpCodeStr(instruction->op_code),
-						pre.c_str(),
-						getStrTypeLoadValue(sfo,sfo->instruction,idx_instruction).c_str(),
-						post.c_str());
-				break;
-			case JNT:
-			case JT:
-			case JMP:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
-						,idx_instruction
-						,CZetScript::virtual_machine->getOpCodeStr(instruction->op_code)
-						,(int)instruction->index_op2);
-				break;
-			case PUSH_SCOPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
-						,idx_instruction
-						,virtual_machine->getOpCodeStr(instruction->op_code)
-						,instruction->index_op1!=0?'(':' '
-						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-						,instruction->index_op1!=0?')':' '
-						);
-				break;
-			case POP_SCOPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
-						,idx_instruction
-						,virtual_machine->getOpCodeStr(instruction->op_code)
-						,instruction->index_op1!=0?'(':' '
-						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-						,instruction->index_op1!=0?')':' '
-						);
-				break;
-			default:
-
-				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,virtual_machine->getOpCodeStr(instruction->op_code));
-				}else if(n_ops==1){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
-							,idx_instruction
-							,virtual_machine->getOpCodeStr(instruction->op_code)
-							,(instruction->properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
-							);
-				}else{
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
-							,idx_instruction
-							,virtual_machine->getOpCodeStr(instruction->op_code)
-							);
-				}
-				break;
-			}
-		}
-
-
-		// and then print its functions ...
-		std::vector<CScriptFunction *> * m_vf = &sfo->m_function;
-
-		for(unsigned j =0; j < m_vf->size(); j++){
-
-			CScriptFunction *local_irfs = (*m_vf)[j];
-
-			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
-				std::string symbol_ref="????";
-
-
-				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
-
-				if(local_irfs->idx_class!=ZS_INVALID_CLASS){
-					CScriptClass *sc = GET_SCRIPT_CLASS(local_irfs->idx_class);
-					if(sc->idx_class == IDX_CLASS_MAIN){
-						symbol_ref="Main";
-					}else{
-						symbol_ref=sfo->symbol_info.symbol->name+std::string("::")+std::string("????");
-					}
-				}
-
-				printf("-------------------------------------------------------\n");
-				printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
-				printGeneratedCode(m_vf->at(j));
-			}
-		}
-	 }
-
-	 void CZetScript::printGeneratedCode(){
-
-		 std::vector<CScriptClass *> *vec_script_class_node=getVectorScriptClassNode();
-		 // for all classes print code...
-		 for(unsigned i = 0; i < vec_script_class_node->size(); i++){
-			 CScriptClass *rc=vec_script_class_node->at(i);
-			 for(unsigned f = 0; f < rc->m_function.size(); f++){
-				 printGeneratedCode(rc->m_function[f]);
-			 }
-		 }
-	 }
-	 // PRINT ASM INFO
-	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	}
 
 
 
@@ -389,7 +171,7 @@ namespace zetscript{
 
 		if(ir_var->properties & PROPERTY_C_OBJECT_REF){
 
-			if(INT_PTR_TYPE_STR==ir_var->c_type){
+			if(STR_INT_TYPE_PTR==ir_var->c_type){
 				return {
 
 						0,
@@ -397,14 +179,14 @@ namespace zetscript{
 						STK_PROPERTY_TYPE_INTEGER|STK_PROPERTY_IS_C_VAR
 				};
 
-			}else if(FLOAT_PTR_TYPE_STR==ir_var->c_type){
+			}else if(STR_FLOAT_TYPE_PTR==ir_var->c_type){
 				return {
 
 						0,
 						ptr_variable,
 						STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_IS_C_VAR
 				};
-			}else if(CONST_CHAR_PTR_TYPE_STR==ir_var->c_type){
+			}else if(STR_CONST_CHAR_TYPE_PTR==ir_var->c_type){
 
 				return {
 
@@ -412,7 +194,7 @@ namespace zetscript{
 						0,
 						STK_PROPERTY_TYPE_STRING
 				};
-			}else if(STRING_PTR_TYPE_STR==ir_var->c_type){
+			}else if(STR_STRING_TYPE_PTR==ir_var->c_type){
 
 				return {
 
@@ -420,7 +202,7 @@ namespace zetscript{
 						ptr_variable,
 						STK_PROPERTY_TYPE_STRING|STK_PROPERTY_IS_C_VAR
 				};
-			}else if(BOOL_PTR_TYPE_STR==ir_var->c_type){
+			}else if(STR_BOOL_TYPE_PTR==ir_var->c_type){
 				return {
 
 						0,
@@ -478,26 +260,26 @@ namespace zetscript{
 		register_c_base_symbols=false;
 		//mapTypeConversion = new std::map<int, std::map<int, fntConversionType>>();
 
-		VOID_TYPE_STR = typeid(void).name();
-		INT_PTR_TYPE_STR = typeid(int *).name();
-		FLOAT_PTR_TYPE_STR = typeid(float *).name();
-		CONST_CHAR_PTR_TYPE_STR = typeid(const char *).name();
-		STRING_PTR_TYPE_STR = typeid(std::string *).name();
-		BOOL_PTR_TYPE_STR = typeid(bool *).name();
+		STR_VOID_TYPE = typeid(void).name();
+		STR_INT_TYPE_PTR = typeid(int *).name();
+		STR_FLOAT_TYPE_PTR = typeid(float *).name();
+		STR_CONST_CHAR_TYPE_PTR = typeid(const char *).name();
+		STR_STRING_TYPE_PTR = typeid(std::string *).name();
+		STR_BOOL_TYPE_PTR = typeid(bool *).name();
 
 		// particular case for return ... for not to force user returning pointer (this is the only vars allowed, sorry!)
-		BOOL_TYPE_STR =  typeid(bool).name();
-		INT_TYPE_STR =  typeid(int).name();
-		UNSIGNED_INT_TYPE_STR =  typeid(unsigned int).name();
-		INTPTR_T_TYPE_STR =  typeid(intptr_t).name();
-		FLOAT_TYPE_STR =  typeid(float).name();
-		STACK_ELEMENT_STR=  typeid(StackElement *).name();
+		STR_BOOL_TYPE =  typeid(bool).name();
+		STR_INT_TYPE =  typeid(int).name();
+		STR_UNSIGNED_INT_TYPE =  typeid(unsigned int).name();
+		STR_INTPTR_T_TYPE =  typeid(intptr_t).name();
+		STR_FLOAT_TYPE =  typeid(float).name();
+		STR_STACK_ELEMENT_TYPE=  typeid(StackElement *).name();
 
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 		// REGISTER BUILT IN SCRIPT TYPES
 		// MAIN CLASS (0)
-		main_class=registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
+		main_class=script_class_factory->registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
 		if(main_class->symbol_info.symbol->idxScope!=IDX_GLOBAL_SCOPE){
 			THROW_RUNTIME_ERROR("Error initializing global scope");
 			return;
@@ -522,7 +304,7 @@ namespace zetscript{
 		REGISTER_BUILT_IN_CLASS(CStringScriptVariable,IDX_CLASS_STRING);
 		REGISTER_BUILT_IN_CLASS(CVectorScriptVariable,IDX_CLASS_VECTOR);
 		REGISTER_BUILT_IN_CLASS(CFunctorScriptVariable,IDX_CLASS_FUNCTOR);
-		REGISTER_BUILT_IN_CLASS(CStructScriptVariable,IDX_CLASS_STRUCT);
+		REGISTER_BUILT_IN_CLASS(CDictionaryScriptVariable,IDX_CLASS_STRUCT);
 
 
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -535,7 +317,7 @@ namespace zetscript{
 		// register custom functions ...
 		class_C_BaseOf<CVectorScriptVariable,CScriptVariable>();
 		class_C_BaseOf<CFunctorScriptVariable,CScriptVariable>();
-		class_C_BaseOf<CStructScriptVariable,CScriptVariable>();
+		class_C_BaseOf<CDictionaryScriptVariable,CScriptVariable>();
 
 
 		//------------------------------------------------------------------------------------------------------------
@@ -552,113 +334,14 @@ namespace zetscript{
 		register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop);
 
 
-		register_C_FunctionMember<CStructScriptVariable>("add",&CStructScriptVariable::add_attr);
-		register_C_FunctionMember<CStructScriptVariable>("remove",&CStructScriptVariable::remove_attr);
-		register_C_FunctionMember<CStructScriptVariable>("size",&CStructScriptVariable::size);
+		register_C_FunctionMember<CDictionaryScriptVariable>("add",&CDictionaryScriptVariable::add_attr);
+		register_C_FunctionMember<CDictionaryScriptVariable>("remove",&CDictionaryScriptVariable::remove_attr);
+		register_C_FunctionMember<CDictionaryScriptVariable>("size",&CDictionaryScriptVariable::size);
 	 }
 
 
 	void (* CZetScript::print_out_callback)(const char *) = NULL;
 
-
-	unsigned char CZetScript::getIdxClassFromIts_C_TypeInternal(const std::string & c_type_str){
-
-		// 1. we have to handle primitives like void, (int *), (bool *),(float *) and (std::string *).
-		 // 2. Check for rest registered C classes...
-		 for(unsigned i = 0; i < vec_script_class_node.size(); i++){
-			 if(vec_script_class_node.at(i)->str_class_ptr_type==c_type_str)
-			 {
-				 return i;
-			 }
-		 }
-
-		 return ZS_INVALID_CLASS;
-	 }
-
-	unsigned char 			CZetScript::getIdxClassFromIts_C_Type(const std::string & c_type_str){
-		return CZetScript::getIdxClassFromIts_C_TypeInternal(c_type_str);
-	}
-
-	bool 	CZetScript::isIdxClassInstanceOf(unsigned char idxSrcClass, unsigned char class_idx){
-
-		if(idxSrcClass == class_idx){
-			return true;
-		}
-
-		CScriptClass * theClass = vec_script_class_node.at(idxSrcClass);
-
-		for(unsigned i=0; i < theClass->idx_base_class.size(); i++){
-			if(isIdxClassInstanceOf(theClass->idx_base_class[i],class_idx)){
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	void CZetScript::register_C_BaseSymbols(bool _register){
-		register_c_base_symbols = _register;
-	}
-
-
-	CScriptClass * CZetScript::registerClass(const std::string & file, short line,const std::string & class_name, const std::string & base_class_name){
-		unsigned char  index;
-		CScriptClass *sci=NULL;
-
-
-		if(vec_script_class_node.size()>=MAX_REGISTER_CLASSES){
-			THROW_RUNTIME_ERROR(string::sformat("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES));
-			return NULL;
-		}
-
-
-		if(class_name.empty()){
-			THROW_RUNTIME_ERROR("Class name empty");
-			return NULL;
-		}
-
-		CScriptClass *base_class=NULL;
-		if(base_class_name != ""){
-			if((base_class = getScriptClass(base_class_name)) == NULL){
-				return NULL;
-			}
-		}
-
-		if((index = getIdxScriptClass_Internal(class_name))==ZS_INVALID_CLASS){ // check whether is local var registered scope ...
-
-			// NEW SCOPE C and register ...
-			//unsigned char idx_class=(unsigned char)vec_script_class_node.size()-1;
-
-			CScope * scope = NEW_SCOPE();
-
-			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_IS_CLASS);
-			if(symbol == NULL){
-				return NULL;
-			}
-
-			sci = new CScriptClass(this,vec_script_class_node.size());
-
-			scope->setScriptClass(sci);
-
-
-			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
-
-			sci->symbol_info.symbol=symbol;
-
-			vec_script_class_node.push_back(sci);
-
-			if(base_class != NULL){
-				sci->idx_base_class.push_back(base_class->idx_class);
-			}
-
-			return sci;
-
-		}else{
-			THROW_RUNTIME_ERROR(string::sformat("class \"%s\" already registered",class_name.c_str()));
-		}
-
-		return NULL;
-	}
 
 	const char * CZetScript::getMetamethod(METAMETHOD_OPERATOR op){
 
@@ -689,102 +372,10 @@ namespace zetscript{
 		return "none";
 	}
 
-	std::vector<CScriptClass *> * CZetScript::getVectorScriptClassNode(){
-		return & vec_script_class_node;
+	void CZetScript::register_C_BaseSymbols(bool _register){
+		register_c_base_symbols = _register;
 	}
 
-	std::map<unsigned char, std::map<unsigned char, fntConversionType>>  *	 CZetScript::getMapTypeConversion() {
-		return & mapTypeConversion;
-	}
-
-	CScriptClass 	* CZetScript::getScriptClass(unsigned char idx){
-		if(idx == ZS_INVALID_CLASS){
-			THROW_RUNTIME_ERROR("CScriptClass node out of bound");
-			return NULL;
-		}
-
-		return vec_script_class_node.at(idx);
-	}
-
-	CScriptClass 	* CZetScript::getScriptClass(const std::string & class_name){
-		unsigned char index;
-		if((index = getIdxScriptClass_Internal(class_name))!=ZS_INVALID_CLASS){ // check whether is local var registered scope ...
-			return vec_script_class_node.at(index);
-		}
-
-		return NULL;
-	}
-
-	CScriptClass *CZetScript::getScriptClassBy_C_ClassPtr(const std::string & class_type){
-
-		for(unsigned i = 0; i < vec_script_class_node.size(); i++){
-			if(class_type == vec_script_class_node.at(i)->str_class_ptr_type){//metadata_info.object_info.symbol_info.c_type){
-				return vec_script_class_node.at(i);
-			}
-		}
-		return NULL;
-	}
-
-	unsigned char CZetScript::getIdxScriptClass_Internal(const std::string & class_name){
-
-		for(unsigned i = 0; i < vec_script_class_node.size(); i++){
-			if(class_name == vec_script_class_node.at(i)->symbol_info.symbol->name){
-				return i;
-			}
-		}
-		return ZS_INVALID_CLASS;
-	}
-
-	bool CZetScript::isClassRegistered(const std::string & v){
-		return getIdxScriptClass_Internal(v) != ZS_INVALID_CLASS;
-	}
-
-
-	CScriptVariable *		CZetScript::instanceScriptVariableByClassName(const std::string & class_name){
-
-		 // 0. Search class info ...
-		 CScriptClass * rc = getScriptClass(class_name);
-
-		 if(rc != NULL){
-			 return instanceScriptVariableByIdx(rc->idx_class);
-		 }
-
-		 return NULL;
-	 }
-
-	 CScriptVariable 		 * CZetScript::instanceScriptVariableByIdx(unsigned char idx_class, void * value_object){
-
-		 CScriptVariable *class_object=NULL;
-
-		 // 0. Search class info ...
-		 CScriptClass *rc = getScriptClass(idx_class);
-
-		 if(rc != NULL){
-
-			 // Is a primitive ?
-			 switch(rc->idx_class){
-
-			 case IDX_TYPE_VOID_C:
-			 case IDX_TYPE_INT_PTR_C:
-			 case IDX_TYPE_FLOAT_PTR_C:
-			 case IDX_TYPE_STRING_PTR_C:
-			 case IDX_TYPE_BOOL_PTR_C:
-				 THROW_RUNTIME_ERROR("Internal error");
-				 return NULL;
-				 break;
-
-			 case IDX_CLASS_VECTOR:
-			 case IDX_CLASS_STRUCT:
-				 class_object = (CScriptVariable *)value_object;
-				 break;
-			 default:
-				 class_object = new CScriptVariable(zs);
-				 class_object->init(rc, value_object);
-				 break;
-			 }
-		 }
-		 return class_object;
-	 }
 
 	/**
 	 * Register C variable
@@ -807,7 +398,7 @@ namespace zetscript{
 			return  NULL;
 		}
 
-		if(getIdxClassFromIts_C_Type(var_type) == ZS_INVALID_CLASS){
+		if(script_class_factory->getIdxClassFromIts_C_Type(var_type) == ZS_INVALID_CLASS){
 			THROW_RUNTIME_ERROR(string::sformat("%s has not valid type (%s)",var_name.c_str(),var_type.c_str()));
 			return  NULL;
 		}
@@ -823,42 +414,6 @@ namespace zetscript{
 		return NULL;
 	}
 
-	unsigned char CZetScript::getIdx_C_RegisteredClass(const std::string & str_classPtr){
-		// ok check c_type
-		for(unsigned i = 0; i < vec_script_class_node.size(); i++){
-			if(vec_script_class_node[i]->str_class_ptr_type == str_classPtr){
-				return i;
-			}
-		}
-		return ZS_INVALID_CLASS;
-	}
-
-
-	intptr_t CZetScript::doCast(intptr_t obj, unsigned char idx_src_class, unsigned char idx_convert_class){//c_class->idx_class,idx_return_type){
-
-		CScriptClass *src_class = getScriptClass(idx_src_class);
-		CScriptClass *convert_class = getScriptClass(idx_convert_class);
-
-		//local_map_type_conversion
-		if(mapTypeConversion.count(idx_src_class) == 0){
-			THROW_RUNTIME_ERROR(string::sformat("There's no type src conversion class \"%s\".",rtti::demangle(src_class->str_class_ptr_type).c_str()));
-			return 0;
-		}
-
-		if((mapTypeConversion)[idx_src_class].count(idx_convert_class) == 0){
-			THROW_RUNTIME_ERROR(string::sformat("There's no dest conversion class \"%s\".",rtti::demangle(convert_class->str_class_ptr_type).c_str()));
-			return 0;
-		}
-
-		return (mapTypeConversion)[idx_src_class][idx_convert_class](obj);
-	}
-
-	const char * CZetScript::getScriptClassName(unsigned char idx){
-		if(idx != ZS_INVALID_CLASS){
-			return vec_script_class_node[idx]->symbol_info.symbol->name.c_str();
-		}
-		 return "class_unknow";
-	}
 
 
 
@@ -870,13 +425,13 @@ namespace zetscript{
 
 		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
-			f < main_function->m_function.size()
+			f < main_function->local_function.size()
 			;) {
 			// get function info
-			CScriptFunction * local_function = main_function->m_function[f];
+			CScriptFunction * local_function = main_function->local_function[f];
 
 			if ((local_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
-				main_function->m_function.erase(main_function->m_function.begin() + f);
+				main_function->local_function.erase(main_function->local_function.begin() + f);
 			}
 			else {
 				f++;
@@ -884,13 +439,13 @@ namespace zetscript{
 
 		}
 
-		// remove c variables ...
+		// remove variables except c variables ...
 		for (unsigned v = 0;
-			v < main_function->m_variable.size(); ) {
+			v < main_function->variable.size(); ) {
 
-			if ((main_function->m_variable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+			if ((main_function->local_variable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
 
-				main_function->m_variable.erase(main_function->m_variable.begin() + v);
+				main_function->variable.erase(main_function->local_variable.begin() + v);
 
 			}
 			else {
@@ -901,45 +456,15 @@ namespace zetscript{
 		// remove scope vars...
 		scope_factory->clear();
 		script_function_factory->clear();
+		class_script_factory->clear();
 
-		bool end=false;
-		do{
-			CScriptClass * sc = vec_script_class_node.at(vec_script_class_node.size()-1);
-			end=(sc->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF;
 
-			if(!end){
-
-				delete sc;
-				vec_script_class_node.pop_back();
-
-			}
-
-		}while(!end);
 
 
 	}
 
 
-	CZetScript::CZetScript(){
 
-		scope_factory = new CScopeFactory(this);
-		native_function_factory = new CNativeFunctionFactory(this);
-		script_function_factory= new CScriptFunctionFactory(this);
-		eval = new CEval(this);
-
-		virtual_machine = new CVirtualMachine(this);
-
-		main_object=NULL;
-		main_function=NULL;
-
-		eval_int=0;
-		eval_float=0;
-		eval_string="";
-		eval_bool = false;
-		register_c_base_symbols=false;
-		zs=this;
-
-	}
 
 
 	int * CZetScript::evalIntValue(const std::string & str_to_eval){
@@ -1121,15 +646,10 @@ namespace zetscript{
 		delete scope_factory;
 		delete script_function_factory;
 		delete native_function_factory;
+		delete script_class_factory;
 		delete eval;
 
-		// we have to destroy all allocated constructor/destructor ...
-		for (unsigned i = 0; i < vec_script_class_node.size(); i++) {
 
-			delete vec_script_class_node.at(i);
-		}
-
-		vec_script_class_node.clear();
 
 		main_object = NULL;
 		main_function = NULL;

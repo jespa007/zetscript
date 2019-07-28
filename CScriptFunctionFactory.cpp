@@ -38,7 +38,7 @@ namespace zetscript{
 		irs->symbol_info.symbol = symbol;
 		irs->symbol_info.properties = properties;
 
-		irs->symbol_info.idxSymbol = (short)(irs->m_function.size());
+		irs->symbol_info.idxSymbol = (short)(irs->local_function.size());
 
 		vec_script_function_node.push_back(irs);
 		irs->idxScriptFunction = vec_script_function_node.size()-1;

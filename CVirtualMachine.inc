@@ -398,18 +398,18 @@ namespace zetscript{
 						aux_string="unknow";
 						break;
 					case STK_PROPERTY_TYPE_INTEGER:
-						aux_string=zs->INT_TYPE_STR;
+						aux_string=zs->STR_INT_TYPE;
 						break;
 					case STK_PROPERTY_TYPE_NUMBER:
-						aux_string=zs->FLOAT_TYPE_STR;
+						aux_string=zs->STR_FLOAT_TYPE;
 						break;
 					case STK_PROPERTY_TYPE_BOOLEAN:
-						aux_string=zs->BOOL_TYPE_STR;
+						aux_string=zs->STR_BOOL_TYPE;
 						break;
 					case STK_PROPERTY_TYPE_STRING:
-						aux_string=zs->STRING_PTR_TYPE_STR;
+						aux_string=zs->STR_STRING_TYPE_PTR;
 						if(currentArg->varRef==NULL){ /* is constant char */
-							aux_string=	zs->CONST_CHAR_PTR_TYPE_STR;
+							aux_string=	zs->STR_CONST_CHAR_TYPE_PTR;
 						}
 						break;
 					case STK_PROPERTY_TYPE_NULL:

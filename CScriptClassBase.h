@@ -19,8 +19,8 @@ namespace zetscript{
 
 
 		// local symbols for class or function...
-		std::vector<VariableSymbolInfo> m_variable; // member variables to be copied in every new instance
-		std::vector<CScriptFunction *>   m_function; // idx member functions (from main std::vector collection)
+		std::vector<VariableSymbolInfo> local_variable; // member variables to be copied in every new instance
+		std::vector<CScriptFunction *>   local_function; // idx member functions (from main std::vector collection)
 
 		VariableSymbolInfo symbol_info; // class/function symbol info ...
 

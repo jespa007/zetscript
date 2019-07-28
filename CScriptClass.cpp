@@ -29,7 +29,7 @@ namespace zetscript{
 		std::string class_name=symbol_info.symbol->name;
 
 		if(function_name == class_name){
-			idx_function_member_constructor = (char)m_function.size();
+			idx_function_member_constructor = (char)local_function.size();
 		}
 
 

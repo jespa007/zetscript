@@ -55,6 +55,7 @@ namespace zetscript{
 		const CScriptFunction *current_call_c_function;
 		CZetScript *zs;
 		CScriptFunctionFactory *script_function_factory;
+		CScriptClassFactory 	*script_class_factory;
 
 
 

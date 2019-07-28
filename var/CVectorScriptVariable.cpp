@@ -20,8 +20,8 @@ namespace zetscript{
 
 		if(CScriptVariable::unrefSharedPtr()){
 
-			for(unsigned i = 0; i < m_variable.size(); i++){
-				CScriptVariable *var = (CScriptVariable *)m_variable[i].varRef;
+			for(unsigned i = 0; i < variable.size(); i++){
+				CScriptVariable *var = (CScriptVariable *)variable[i].varRef;
 				if(var != NULL){
 
 					if(!var->unrefSharedPtr()){
@@ -40,12 +40,12 @@ namespace zetscript{
 
 	StackElement *CVectorScriptVariable::push(){
 		StackElement s={NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
-		m_variable.push_back(s);
-		return &m_variable[m_variable.size()-1];
+		variable.push_back(s);
+		return &variable[variable.size()-1];
 	}
 
 	void CVectorScriptVariable::push(StackElement  * v){
-		m_variable.push_back(*v);
+		variable.push_back(*v);
 
 		// update n_refs +1
 		if(v->properties&STK_PROPERTY_TYPE_SCRIPTVAR){
@@ -59,8 +59,8 @@ namespace zetscript{
 
 	StackElement * CVectorScriptVariable::pop(){
 		return_callc={NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
-		if(m_variable.size()>0){
-			return_callc=m_variable[m_variable.size()-1];
+		if(variable.size()>0){
+			return_callc=variable[variable.size()-1];
 			CScriptVariable *var = (CScriptVariable *)return_callc.varRef;
 			if(var){
 				if(!var->unrefSharedPtr()){
@@ -68,7 +68,7 @@ namespace zetscript{
 				}
 			}
 
-			m_variable.pop_back();
+			variable.pop_back();
 		}else{
 			write_error(NULL,0,"pop(): error stack already empty");
 		}
@@ -79,16 +79,16 @@ namespace zetscript{
 
 
 	int CVectorScriptVariable::size(){
-		return  m_variable.size();
+		return  variable.size();
 	}
 
 	void CVectorScriptVariable::destroy(){
 
 
-		for(unsigned i = 0; i < m_variable.size(); i++){
-			if(m_variable[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+		for(unsigned i = 0; i < variable.size(); i++){
+			if(variable[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
-				StackElement si=m_variable[i];
+				StackElement si=variable[i];
 
 				if((si.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 					if(si.varRef != NULL){

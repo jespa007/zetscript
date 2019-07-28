@@ -182,9 +182,10 @@ ELSE()
 		CScopeFactory.cpp
 		CNativeFunctionFactory.cpp
 		CScriptClassBase.cpp
-		CScriptClass.cpp
 		CScriptFunction.cpp
 		CScriptFunctionFactory.cpp
+		CScriptClass.cpp
+		CScriptClassFactory.cpp
 		
 		CVirtualMachine.cpp
 		
@@ -205,7 +206,11 @@ endif()
 
 
 IF ( "${FCOMPILE}" STREQUAL "ON")
-
+	# helloworld
+	add_executable(helloworld${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/helloworld.cpp
+	)
+	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
 ELSE()
 
 	SET(

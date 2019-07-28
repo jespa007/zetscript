@@ -28,7 +28,7 @@ namespace zetscript{
 
 
 			// check valid parameters ...
-			if((idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
+			if((idx_return_type=script_class_factory->getIdxClassFromIts_C_Type(return_type))==-1){
 				THROW_RUNTIME_ERROR(string::sformat("Return type \"%s\" for function \"%s\" not registered"
 						,rtti::demangle(return_type).c_str()
 						,function_name));
@@ -36,7 +36,7 @@ namespace zetscript{
 			}
 
 			for(unsigned int i = 0; i < arg.size(); i++){
-				int idx_type = getIdxClassFromIts_C_Type(arg[i]);
+				int idx_type = script_class_factory->getIdxClassFromIts_C_Type(arg[i]);
 
 				if(idx_type==IDX_TYPE_FLOAT_C || idx_type==IDX_TYPE_BOOL_C){
 					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
@@ -107,11 +107,11 @@ namespace zetscript{
 
 
 
-			if(!isClassRegistered(class_name)){
+			if(!script_class_factory->isClassRegistered(class_name)){
 
 				std::string str_classPtr = typeid( T *).name();
 
-				if(getIdx_C_RegisteredClass(str_classPtr)!=ZS_INVALID_CLASS){
+				if(script_class_factory->getIdx_C_RegisteredClass(str_classPtr)!=ZS_INVALID_CLASS){
 					THROW_RUNTIME_ERROR(string::sformat("this %s is already registered",rtti::demangle(typeid( T).name()).c_str()));
 					return NULL;
 				}
@@ -161,7 +161,7 @@ namespace zetscript{
 			if(register_C_SingletonClass<T>(class_name)){
 
 				// get class...
-				CScriptClass *irc =getScriptClass(class_name);
+				CScriptClass *irc =script_class_factory->getScriptClass(class_name);
 
 				if(irc->idx_class < MAX_BUILT_IN_TYPES){
 					THROW_RUNTIME_ERROR(string::sformat("The class to register \"%s\"  should NOT BE a built in class",irc->str_class_ptr_type.c_str()));
@@ -196,7 +196,7 @@ namespace zetscript{
 		bool CZetScript::register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
 			if(register_C_SingletonClass<T>(class_name)){
-				CScriptClass *irc =getScriptClass(class_name);
+				CScriptClass *irc =script_class_factory->getScriptClass(class_name);
 
 				if(irc->idx_class >= MAX_BUILT_IN_TYPES){
 					THROW_RUNTIME_ERROR(string::sformat("The class to register \"%s\" should be a built in class",irc->str_class_ptr_type.c_str()));
@@ -240,20 +240,20 @@ namespace zetscript{
 			std::string class_name=typeid(T).name();
 			std::string class_name_ptr=typeid(T *).name();
 
-			int idx_base_class = getIdxClassFromIts_C_Type(base_class_name_ptr);
+			int idx_base_class = script_class_factory->getIdxClassFromIts_C_Type(base_class_name_ptr);
 			if(idx_base_class == -1) {
 				THROW_RUNTIME_ERROR(string::sformat("base class %s not registered",base_class_name_ptr.c_str()));
 				return false;
 			}
 
 
-			int register_class = getIdxClassFromIts_C_Type(class_name_ptr);
+			int register_class = script_class_factory->getIdxClassFromIts_C_Type(class_name_ptr);
 			if(register_class == -1) {
 				THROW_RUNTIME_ERROR(string::sformat("class %s not registered",class_name_ptr.c_str()));
 				return false;
 			}
 
-			if(isIdxClassInstanceOf(register_class,idx_base_class)){
+			if(script_class_factory->isIdxClassInstanceOf(register_class,idx_base_class)){
 				THROW_RUNTIME_ERROR(string::sformat("C++ class \"%s\" is already registered as base of \"%s\" ",rtti::demangle(class_name).c_str(), rtti::demangle(base_class_name).c_str()));
 				return false;
 			}
@@ -267,7 +267,7 @@ namespace zetscript{
 			CScriptClass *sc=vec_script_class_node[register_class];
 			while( sc->idx_base_class.size()>0){
 
-				sc=getScriptClass(sc->idx_base_class[0]); // get base class...
+				sc=script_class_factory->getScriptClass(sc->idx_base_class[0]); // get base class...
 				if(sc->str_class_ptr_type ==base_class_name_ptr){
 					THROW_RUNTIME_ERROR(string::sformat("C++ class \"%s\" already base of \"%s\" ",rtti::demangle(class_name).c_str(), rtti::demangle(base_class_name).c_str()));
 					return false;
@@ -300,9 +300,9 @@ namespace zetscript{
 
 				// register all symbols function from base ...
 				// vars ...
-				for(unsigned i = 0; i < irc_base->m_variable.size(); i++){
+				for(unsigned i = 0; i < irc_base->local_variable.size(); i++){
 
-					VariableSymbolInfo *irs_source = &irc_base->m_variable[i];
+					VariableSymbolInfo *irs_source = &irc_base->local_variable[i];
 
 					VariableSymbolInfo irs;
 					// init struct...
@@ -312,15 +312,15 @@ namespace zetscript{
 					//irs.
 					irs.symbol=irs_source->symbol;
 					irs.properties = derivated_properties;
-					irs.idxSymbol = (short)(irc_class->m_variable.size());
-					irc_class->m_variable.push_back(irs);
+					irs.idxSymbol = (short)(irc_class->local_variable.size());
+					irc_class->local_variable.push_back(irs);
 
 				}
 
 				// functions ...
-				for(unsigned i = 0; i < irc_base->m_function.size(); i++){
+				for(unsigned i = 0; i < irc_base->local_function.size(); i++){
 
-					CScriptFunction *irs_source = irc_base->m_function[i];
+					CScriptFunction *irs_source = irc_base->local_function[i];
 					irc_class->registerFunction(
 							irs_source->symbol_info.symbol->file,
 							irs_source->symbol_info.symbol->line,
@@ -371,7 +371,7 @@ namespace zetscript{
 				return false;
 			}
 
-			CScriptClass * sc=getScriptClass(str_classPtr);
+			CScriptClass * sc=script_class_factory->getScriptClass(str_classPtr);
 
 
 			if(sc == NULL){
@@ -386,13 +386,13 @@ namespace zetscript{
 
 
 			// check valid parameters ...
-			if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
+			if((idx_return_type=script_class_factory->getIdxClassFromIts_C_Type(return_type)) == -1){
 				THROW_RUNTIME_ERROR(string::sformat("Return type \"%s\" for function \"%s\" not registered",rtti::demangle(return_type).c_str(),function_name));
 				return false;
 			}
 
 			for(unsigned int i = 0; i < arg.size(); i++){
-				int idx_type=getIdxClassFromIts_C_Type(arg[i]);
+				int idx_type=script_class_factory->getIdxClassFromIts_C_Type(arg[i]);
 
 				if(idx_type==IDX_TYPE_FLOAT_C || idx_type==IDX_TYPE_BOOL_C){
 					THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,rtti::demangle(arg[i]).c_str(),function_name,rtti::demangle(arg[i]).c_str()));
@@ -576,7 +576,7 @@ namespace zetscript{
 			std::string str_classPtr = typeid( C *).name();
 			unsigned int ref_ptr=offset_of<C>(var_pointer);
 
-			CScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_classPtr);
+			CScriptClass *c_class = script_class_factory->getScriptClassBy_C_ClassPtr(str_classPtr);
 
 			if(c_class == NULL){
 				return false;
@@ -585,7 +585,7 @@ namespace zetscript{
 			// 1. check all parameters ok.
 
 			// check valid parameters ...
-			if(getIdxClassFromIts_C_Type(var_type) == -1){
+			if(script_class_factory->getIdxClassFromIts_C_Type(var_type) == -1){
 				THROW_RUNTIME_ERROR(string::sformat("%s::%s has not valid type (%s)"
 						,c_class->symbol_info.symbol->name.c_str()
 						,var_name
@@ -650,7 +650,7 @@ namespace zetscript{
 					 break;
 				 default:
 					 if(var_trans==0) return callc_result;
-					 callc_result = {NULL,instanceScriptVariableByIdx(idx_type,(void *)var_trans),STK_PROPERTY_TYPE_SCRIPTVAR};
+					 callc_result = {NULL,script_class_factory->instanceScriptVariableByIdx(idx_type,(void *)var_trans),STK_PROPERTY_TYPE_SCRIPTVAR};
 					 break;
 				}
 
@@ -674,12 +674,12 @@ namespace zetscript{
 
 				switch(GET_INS_PROPERTY_VAR_TYPE(stk_src->properties)){
 				case STK_PROPERTY_TYPE_BOOLEAN:
-					if(idx_dst_type == IDX_TYPE_BOOL_C){// *CScriptClass::BOOL_TYPE_STR){
+					if(idx_dst_type == IDX_TYPE_BOOL_C){// *CScriptClass::STR_BOOL_TYPE){
 						val_ret=(intptr_t)(stk_src->stkValue);
-					}else if(idx_dst_type == IDX_TYPE_BOOL_PTR_C){//*CScriptClass::BOOL_PTR_TYPE_STR){
+					}else if(idx_dst_type == IDX_TYPE_BOOL_PTR_C){//*CScriptClass::STR_BOOL_TYPE_PTR){
 						val_ret=(intptr_t)(&stk_src->stkValue);
 					}else{
-						error="cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into %s"+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
+						error="cannot convert "+rtti::demangle((STR_STRING_TYPE_PTR))+" into %s"+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
 
 						return false;
 					}
@@ -703,7 +703,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error="cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into %s"+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error="cannot convert "+rtti::demangle((STR_STRING_TYPE_PTR))+" into %s"+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 					break;
@@ -725,7 +725,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error= "cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error= "cannot convert "+rtti::demangle((STR_STRING_TYPE_PTR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 					break;
@@ -743,7 +743,7 @@ namespace zetscript{
 					}else if (idx_dst_type == IDX_TYPE_CONST_CHAR_PTR_C){
 						val_ret=(intptr_t)(stk_src->stkValue);
 					}else{
-						error= "cannot convert "+rtti::demangle((STRING_PTR_TYPE_STR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error= "cannot convert "+rtti::demangle((STR_STRING_TYPE_PTR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 
@@ -1439,7 +1439,6 @@ namespace zetscript{
 		}
 
 
-		//CScriptFunction *getScriptObjectFromScriptFunctionAccessName(const std::string &function_access_expression)
 		bool CZetScript::getScriptObject(const std::string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
 
 			//ZS_CLEAR_ERROR_MSG();
@@ -1464,9 +1463,9 @@ namespace zetscript{
 					std::string symbol_to_find=access_var[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
 						//symbol_to_find= CEval::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
-						for(unsigned j = 0; j < main_function->m_variable.size() && *calling_obj==NULL; j++){
-							if(main_function->m_variable[j].symbol->name==symbol_to_find
-							&& main_function->m_variable[j].symbol->idxScope == IDX_GLOBAL_SCOPE){
+						for(unsigned j = 0; j < main_function->variable.size() && *calling_obj==NULL; j++){
+							if(main_function->variable[j].symbol->name==symbol_to_find
+							&& main_function->variable[j].symbol->idxScope == IDX_GLOBAL_SCOPE){
 								StackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
 									if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
@@ -1518,8 +1517,8 @@ namespace zetscript{
 			}else{ // some function in main function
 				//*calling_obj = m_mainObject;
 				std::string symbol_to_find=access_var[0];
-				for(unsigned i = 0; i < main_function->m_function.size() && *fun_obj==NULL; i++){
-					CScriptFunction *aux_fun_obj=main_function->m_function[i];
+				for(unsigned i = 0; i < main_function->local_function.size() && *fun_obj==NULL; i++){
+					CScriptFunction *aux_fun_obj=main_function->local_function[i];
 					if(		aux_fun_obj->symbol_info.symbol->name  == symbol_to_find
 					  && aux_fun_obj->symbol_info.symbol->idxScope == IDX_GLOBAL_SCOPE){
 						*fun_obj=aux_fun_obj;
@@ -1584,12 +1583,12 @@ namespace zetscript{
 			std::vector<T> v_out;
 			const char * dst_convert_type = typeid(T).name();
 			float aux_flt;
-			std::vector<StackElement> * m_variable = v_in->getVectorVariable();
+			std::vector<StackElement> * variable = v_in->getVectorVariable();
 
 			if(v_in){
-				for(unsigned i = 0; i < m_variable->size(); i++){
+				for(unsigned i = 0; i < variable->size(); i++){
 
-					StackElement sv=m_variable->at(i);
+					StackElement sv=variable->at(i);
 
 					switch(sv.properties & MASK_VAR_PRIMITIVE_TYPES)
 					{

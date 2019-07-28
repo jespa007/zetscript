@@ -11,7 +11,6 @@
 //-- Variables --
 #include		"var/CScriptVariable.cpp"
 #include		"var/CStringScriptVariable.cpp"
-#include		"var/CStructScriptVariable.cpp"
 #include		"var/CVectorScriptVariable.cpp"
 #include		"var/CFunctorScriptVariable.cpp"
 
@@ -21,14 +20,16 @@
 #include		"CScopeFactory.cpp"
 #include		"CNativeFunctionFactory.cpp"
 #include		"CScriptClassBase.cpp"
-#include		"CScriptClass.cpp"
 #include		"CScriptFunction.cpp"
 #include		"CScriptFunctionFactory.cpp"
+#include		"CScriptClass.cpp"
+#include		"CScriptClassFactory.cpp"
 
 #include		"CVirtualMachine.cpp"
 
 
 #include		"CZetScript.cpp"
+#include "var/CDictionaryScriptVariable.cpp"
 
 
 

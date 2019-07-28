@@ -29,7 +29,7 @@ class CScriptClass;
 		CScriptFunction *info_function_new;
 		OpCodeInstruction 	*instruction_new;
 		bool was_created_by_constructor;
-		std::vector<StackElement> m_variable;
+		std::vector<StackElement> variable;
 
 		//----------------------
 
@@ -38,7 +38,7 @@ class CScriptClass;
 		void *m_value;
 
 		// Construct ...
-		CScriptVariable(){}
+		CScriptVariable();
 		CScriptVariable(CZetScript	*_zs);
 
 

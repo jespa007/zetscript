@@ -2749,10 +2749,10 @@ namespace zetscript{
 					for(int i = sf->idxLocalFunction-1; i >=0 && sf_found==NULL; i--){
 
 						if(
-								(sc->m_function[i]->arg_info.size() == ls->n_params)
-							&& (symbol_name_to_find == sc->m_function[i]->symbol_info.symbol->name)
+								(sc->local_function[i]->arg_info.size() == ls->n_params)
+							&& (symbol_name_to_find == sc->local_function[i]->symbol_info.symbol->name)
 							){
-							sf_found = sc->m_function[i];
+							sf_found = sc->local_function[i];
 						}
 					}
 

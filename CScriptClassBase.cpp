@@ -33,11 +33,11 @@ namespace zetscript{
 		irs.c_type = c_type;
 		irs.properties = properties;
 
-		irs.idxSymbol = (short)m_variable.size();
+		irs.idxSymbol = (short)variable.size();
 
-		m_variable.push_back(irs);
+		variable.push_back(irs);
 
-		return &m_variable[m_variable.size()-1];
+		return &variable[variable.size()-1];
 	}
 
 	VariableSymbolInfo *	CScriptClassBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
@@ -47,14 +47,14 @@ namespace zetscript{
 
 	VariableSymbolInfo *	 CScriptClassBase::getVariable(const std::string & var_name, short idxScope){
 
-		if(m_variable.size()>0){
+		if(variable.size()>0){
 
 			// from lat value to first to get last override function...
-			for(int i = (int)m_variable.size()-1; i >= 0 ; i--){
-				if((m_variable[i].symbol->name == var_name)
-				&& (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == m_variable[i].symbol->idxScope))
+			for(int i = (int)variable.size()-1; i >= 0 ; i--){
+				if((variable[i].symbol->name == var_name)
+				&& (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == variable[i].symbol->idxScope))
 				  ){
-					return &m_variable[i];
+					return &variable[i];
 				}
 			}
 		}
@@ -74,8 +74,8 @@ namespace zetscript{
 
 			CScriptFunction *sf =  NEW_SCRIPT_FUNCTION(file,line,idx_class,idxScope,  function_name,  args,  idx_return_type,ref_ptr, properties);
 			sf->idx_class = this->idx_class;
-			sf->idxLocalFunction=m_function.size();
-			m_function.push_back(sf);
+			sf->idxLocalFunction=local_function.size();
+			local_function.push_back(sf);
 
 			return sf;
 	}
@@ -87,17 +87,17 @@ namespace zetscript{
 
 	CScriptFunction *	 CScriptClassBase::getFunction(const std::string & function_name, short idxScope, char n_args){
 
-		if(m_function.size()>0){
+		if(local_function.size()>0){
 
 			// from last value to first to get last override function...
-			for(int i = (int)(m_function.size()-1); i >= 0 ; i--){
+			for(int i = (int)(local_function.size()-1); i >= 0 ; i--){
 				if(
-						(m_function[i]->symbol_info.symbol->name == function_name)
-					 && (m_function[i]->arg_info.size() ==  n_args)
-					 && (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == m_function[i]->symbol_info.symbol->idxScope))
+						(local_function[i]->symbol_info.symbol->name == function_name)
+					 && (local_function[i]->arg_info.size() ==  n_args)
+					 && (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == local_function[i]->symbol_info.symbol->idxScope))
 					 ){
 
-					return m_function[i];
+					return local_function[i];
 				}
 			}
 		}

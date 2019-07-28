@@ -529,6 +529,7 @@ namespace zetscript{
 		n_globals=0;
 		zs=_zs;
 		script_function_factory=this->zs->getScriptFunctionFactory();
+		script_class_factory=this->zs->getScriptClassFactory();
 
 		memset(defined_opcode,0,sizeof(defined_opcode));
 
@@ -996,7 +997,7 @@ namespace zetscript{
 	StackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
 		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION(0);
 
-		if(idx_glb_element < main_function->m_variable.size()){
+		if(idx_glb_element < main_function->variable.size()){
 			return &stack[idx_glb_element];
 		}
 
@@ -1068,16 +1069,16 @@ namespace zetscript{
 
 
 
-		if(n_globals!=main_function->m_variable.size()){
+		if(n_globals!=main_function->variable.size()){
 			THROW_RUNTIME_ERROR("n_globals != main variables");
 			return;
 		}
 
 		bool end=false;
-		for(int i =  (int)(main_function->m_variable.size())-1; i >= 0 && !end; i--){
+		for(int i =  (int)(main_function->variable.size())-1; i >= 0 && !end; i--){
 			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 			//case STK_PROPERTY_TYPE_STRING:
-			end=(main_function->m_variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;
+			end=(main_function->variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;
 			if(!end){
 				StackElement *ptr_ale =&stack[i];
 				CScriptVariable *var = NULL;
@@ -1137,7 +1138,7 @@ namespace zetscript{
 			//*stkCurrentData={STK_PROPERTY_TYPE_UNDEFINED,0,0}; // ini first op
 
 			if(info_function->idxScriptFunction != 0){ // calls script function from C : preserve stack space for global vars
-				stkCurrentData=&stack[main_function_object->m_variable.size()];
+				stkCurrentData=&stack[main_function_object->variable.size()];
 			}
 
 			current_foreach=&stkForeach[0];
@@ -1193,7 +1194,7 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		std::vector<VariableSymbolInfo> * local_var=&info_function->m_variable;
+		std::vector<VariableSymbolInfo> * local_var=&info_function->variable;
 
 		ptrStartOp =_ptrStartOp;
 		ptrStartStr =_ptrStartStr;
@@ -1397,12 +1398,12 @@ namespace zetscript{
 										RETURN_ERROR;
 									}
 
-									if(v_index >= (int)(vec->m_variable.size())){
+									if(v_index >= (int)(vec->variable.size())){
 										write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Index std::vector out of bounds (%i)",v_index);
 										RETURN_ERROR;
 									}
 
-									ldrVar = &vec->m_variable[v_index];;
+									ldrVar = &vec->variable[v_index];;
 									ok = true;
 								}else{
 									write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected std::vector-index as integer or std::string");
@@ -1620,7 +1621,7 @@ namespace zetscript{
 					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(properties);
 
 					/*if(scope_type==INS_PROPERTY_LOCAL_SCOPE){ // local gets functions from info_function ...
-						vec_functions=&info_function->m_function;
+						vec_functions=&info_function->local_function;
 					}else*/
 					if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 						StackElement *var=NULL;
@@ -1642,7 +1643,7 @@ namespace zetscript{
 						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							class_obj=(CScriptVariable *)(stk_ins->varRef);
 							CScriptClass *sc =GET_SCRIPT_CLASS(((CScriptVariable *)class_obj)->idx_class);
-							//vec_functions=&sc->m_function;
+							//vec_functions=&sc->local_function;
 						}
 						else{
 							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Cannot access symbol \"%s\" (type of %s is %s)",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction),INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction-1),STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stk_ins));
@@ -1681,7 +1682,7 @@ namespace zetscript{
 						}
 						function_obj =(CScriptFunction *)si->object.stkValue;
 					}else{ // global
-						vec_functions = &(main_function_object->m_function);
+						vec_functions = &(main_function_object->local_function);
 					}
 
 
@@ -1763,12 +1764,12 @@ namespace zetscript{
 									const char *str = (const char *)stkResultOp2->stkValue;
 									src_ins=stkResultOp1;
 									if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
-										FunctionSymbol *si =((CStructScriptVariable *)struct_obj)->addFunctionSymbol(str,NULL);
+										FunctionSymbol *si =((CDictionaryScriptVariable *)struct_obj)->addFunctionSymbol(str,NULL);
 										if(si!=NULL){
 											se=&si->object;;
 										}
 									}else{
-										se =((CStructScriptVariable *)struct_obj)->addVariableSymbol(str);
+										se =((CDictionaryScriptVariable *)struct_obj)->addVariableSymbol(str);
 									}
 
 									if(se == NULL){
@@ -2263,7 +2264,7 @@ namespace zetscript{
 						//bool all_check=true;
 						if((callAleInstruction->properties & INS_PROPERTY_NO_FUNCTION_CALL)==0)
 						{
-							std::vector<CScriptFunction *> *vec_global_functions=&(main_function_object->m_function);
+							std::vector<CScriptFunction *> *vec_global_functions=&(main_function_object->local_function);
 							//#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)
 							if((aux_function_info=FIND_FUNCTION(
 									 calling_object
