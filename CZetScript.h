@@ -40,6 +40,16 @@ namespace zetscript{
 		std::string  STR_BOOL_TYPE;				//	typeid(bool).name()
 		std::string  STR_STACK_ELEMENT_TYPE;			//	typeid(bool).name()
 
+		//===================================================================================================
+			//
+			// PRINT ASM INFO
+			void printGeneratedCode();
+
+			// PRINT ASM INFO
+			//---------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 		CZetScript();
 
 		inline CVirtualMachine * getVirtualMachine() { return virtual_machine;}
@@ -48,7 +58,7 @@ namespace zetscript{
 		inline CScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
 		inline CScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
 		inline CScriptFunction * getMainFunction() { return main_function;}
-		inline CScriptFunction * getMainObject() { return main_object;}
+		inline CScriptClass * getMainObject() { return main_object;}
 
 		 void	set_callback_on_error(PrintFunctionCallback _fun);
 
@@ -88,14 +98,14 @@ namespace zetscript{
 		 void clear();
 		 void execute();
 
-
+		 void 						setPrintOutCallback(void (*)(const char *));
 
 
 		StackElement 					C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable);
 
 
 		const char * getMetamethod(METAMETHOD_OPERATOR op);
-
+		void 												register_C_BaseSymbols(bool );
 
 		/**
 		 * Register C region
@@ -309,6 +319,8 @@ namespace zetscript{
 		} ParsedSourceInfo;
 
 
+
+
 		//--------
 		// VARS
 		std::map<std::string,ConstantValueInfo *> 	 m_contantPool;
@@ -321,7 +333,7 @@ namespace zetscript{
 		CScriptFunctionFactory *script_function_factory;
 		CScriptClassFactory *script_class_factory;
 		CScriptFunction * main_function;
-		CScriptFunction * main_object;
+		CScriptClass * main_object;
 		CZetScript 		*zs;
 
 		float eval_float;
@@ -330,6 +342,14 @@ namespace zetscript{
 		std::string eval_string;
 
 
+		//===================================================================================================
+		//
+		// PRINT ASM INFO
+		std::string getStrMovVar(OpCodeInstruction * iao);
+		std::string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
+		void printGeneratedCode(CScriptFunction *sfo);
+
+		//----
 
 		/*
 		 * register_c_base_symbols it tells to register functions/variable member already registered on base classes. Only works if class is not polymorphic (i.e there's no any virtual functions involved)

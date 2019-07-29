@@ -997,7 +997,7 @@ namespace zetscript{
 	StackElement * CVirtualMachine::getStackElement(unsigned int idx_glb_element){
 		CScriptFunction  *main_function = GET_SCRIPT_FUNCTION(0);
 
-		if(idx_glb_element < main_function->variable.size()){
+		if(idx_glb_element < main_function->local_variable.size()){
 			return &stack[idx_glb_element];
 		}
 
@@ -1069,16 +1069,16 @@ namespace zetscript{
 
 
 
-		if(n_globals!=main_function->variable.size()){
+		if(n_globals!=main_function->local_variable.size()){
 			THROW_RUNTIME_ERROR("n_globals != main variables");
 			return;
 		}
 
 		bool end=false;
-		for(int i =  (int)(main_function->variable.size())-1; i >= 0 && !end; i--){
+		for(int i =  (int)(main_function->local_variable.size())-1; i >= 0 && !end; i--){
 			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 			//case STK_PROPERTY_TYPE_STRING:
-			end=(main_function->variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;
+			end=(main_function->local_variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;
 			if(!end){
 				StackElement *ptr_ale =&stack[i];
 				CScriptVariable *var = NULL;
@@ -1138,7 +1138,7 @@ namespace zetscript{
 			//*stkCurrentData={STK_PROPERTY_TYPE_UNDEFINED,0,0}; // ini first op
 
 			if(info_function->idxScriptFunction != 0){ // calls script function from C : preserve stack space for global vars
-				stkCurrentData=&stack[main_function_object->variable.size()];
+				stkCurrentData=&stack[main_function_object->local_variable.size()];
 			}
 
 			current_foreach=&stkForeach[0];
@@ -1194,7 +1194,7 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		std::vector<VariableSymbolInfo> * local_var=&info_function->variable;
+		std::vector<VariableSymbolInfo> * local_var=&info_function->local_variable;
 
 		ptrStartOp =_ptrStartOp;
 		ptrStartStr =_ptrStartStr;
@@ -1253,7 +1253,7 @@ namespace zetscript{
 
 			if((info_function->symbol_info.properties &  SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
 
-				if(this_object!= NULL){// && this_object != NULL){//CZetScript::getInstance()->getMainObject()){
+				if(this_object!= NULL){
 					fun_ptr = this_object->getFunctionSymbolByIndex(info_function->symbol_info.idxSymbol)->proxy_ptr;
 				}
 			}
@@ -1757,7 +1757,7 @@ namespace zetscript{
 						CScriptVariable *struct_obj = NULL;
 						if((stkCurrentData-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							struct_obj = (CScriptVariable *)(stkCurrentData-1)->varRef;
-							if(struct_obj->idx_class == IDX_CLASS_STRUCT){ // push value ...
+							if(struct_obj->idx_class == IDX_CLASS_DICTIONARY){ // push value ...
 								// op1 is now the src value ...
 								if(stkResultOp2->properties & STK_PROPERTY_TYPE_STRING){
 									StackElement *se=NULL;
@@ -2180,7 +2180,7 @@ namespace zetscript{
 						break;
 					default:
 						if(stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							bool b = this->zs->isIdxClassInstanceOf(((CScriptVariable *)(stkResultOp1->varRef))->idx_class, (intptr_t)stkResultOp2->stkValue);
+							bool b = this->script_class_factory->isIdxClassInstanceOf(((CScriptVariable *)(stkResultOp1->varRef))->idx_class, (intptr_t)stkResultOp2->stkValue);
 							PUSH_BOOLEAN(b);
 						}else{
 							PUSH_BOOLEAN(false);
@@ -2378,7 +2378,7 @@ namespace zetscript{
 						svar = (CScriptVariable *)(se)->varRef;
 						if(svar->idx_class >= MAX_BUILT_IN_TYPES
 						 ||svar->idx_class==IDX_CLASS_VECTOR
-						 ||svar->idx_class==IDX_CLASS_STRUCT
+						 ||svar->idx_class==IDX_CLASS_DICTIONARY
 						)
 						{ // max ...
 							svar->unrefSharedPtr();
@@ -2501,7 +2501,7 @@ namespace zetscript{
 				 		var_object = (CScriptVariable *)(((StackElement *)stkResultOp2->varRef)->varRef);
 				 }
 
-				if(var_object != NULL && (var_object->idx_class == IDX_CLASS_VECTOR || var_object->idx_class == IDX_CLASS_STRUCT)){
+				if(var_object != NULL && (var_object->idx_class == IDX_CLASS_VECTOR || var_object->idx_class == IDX_CLASS_DICTIONARY)){
 
 					if(var_object->idx_class == IDX_CLASS_VECTOR){ // integer as iterator...
 						*current_foreach->key={0,0,STK_PROPERTY_TYPE_INTEGER};

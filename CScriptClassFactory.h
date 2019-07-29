@@ -5,19 +5,13 @@ namespace zetscript{
 
 	class CScriptVariable;
 	class CScriptClass;
+	class CZetScript;
+	class CScopeFactory;
 	class CScriptClassFactory{
 
 	public:
 
-		CScriptClassFactory();
-
-		//===================================================================================================
-			//
-			// PRINT ASM INFO
-			void printGeneratedCode();
-
-			// PRINT ASM INFO
-			//---------------------------------------------------------------------------------------------------------------------------------------
+		CScriptClassFactory(CZetScript *_zs);
 
 
 		 /**
@@ -34,7 +28,18 @@ namespace zetscript{
 
 
 		bool						isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
+		unsigned char				getIdxClassFromIts_C_Type(const std::string & s);
+		unsigned char getIdx_C_RegisteredClass(const std::string & str_classPtr);
 
+		 std::vector<CScriptClass *> * 	getVectorScriptClassNode();
+
+
+
+		bool 						isClassRegistered(const std::string & v);
+
+
+
+		intptr_t 											doCast(intptr_t obj, unsigned char src_class, unsigned char convert_class);
 
 		void clear();
 
@@ -59,39 +64,22 @@ namespace zetscript{
 		}tRegisterFunction;
 
 		std::vector<CScriptClass *> 			 		vec_script_class_node;
+		CZetScript *zs;
+		CScopeFactory *scope_factory;
 
 
-		//===================================================================================================
-		//
-		// PRINT ASM INFO
-		std::string getStrMovVar(OpCodeInstruction * iao);
-		std::string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
-		void printGeneratedCode(CScriptFunction *sfo);
 
-		//----
-
-			PrimitiveType *gePrimitiveTypeFromStr(const std::string & str);
+			PrimitiveType *getPrimitiveTypeFromStr(const std::string & str);
 			std::map<unsigned char, std::map<unsigned char, fntConversionType>> *  getMapTypeConversion();
 
 
 
-			 unsigned char getIdx_C_RegisteredClass(const std::string & str_classPtr);
-			 unsigned char				getIdxClassFromIts_C_Type(const std::string & s);
-			 void 						setPrintOutCallback(void (*)(const char *));
 
-			 std::vector<CScriptClass *> * 	getVectorScriptClassNode();
-
-
-
-			bool 						isClassRegistered(const std::string & v);
-
-			void 												registerPrimitiveTypes();
-			void 												register_C_BaseSymbols(bool );
 
 
 
 
-			intptr_t 											doCast(intptr_t obj, unsigned char src_class, unsigned char convert_class);
+			void 												registerPrimitiveTypes();
 
 
 

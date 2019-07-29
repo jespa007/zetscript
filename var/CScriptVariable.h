@@ -15,7 +15,7 @@ class CScriptClass;
 	class CScriptClass;
 	class CZetScript;
 	class CVirtualMachine;
-
+	class CScriptClassFactory;
 	class  CScriptVariable{//: public CVariable{
 
 	public:
@@ -96,6 +96,7 @@ class CScriptClass;
 		StackElement * exist(const char *c);
 		CZetScript      *zs;
 		CVirtualMachine	*virtual_machine;
+		CScriptClassFactory *script_class_factory;
 
 		/**
 		 * This variable tells whether is pointer function or not.

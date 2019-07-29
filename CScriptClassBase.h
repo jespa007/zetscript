@@ -3,6 +3,7 @@
 namespace zetscript{
 
 	class CScriptFunctionFactory;
+	class CScriptClassFactory;
 	class CZetScript;
 	class CScriptClassBase { // script function is shared by class and function ...
 
@@ -14,6 +15,7 @@ namespace zetscript{
 		CScopeFactory *scope_factory;
 		CVirtualMachine *virtual_machine;
 		CScriptFunctionFactory *script_function_factory;
+		CScriptClassFactory *script_class_factory;
 
 		bool searchVarFunctionSymbol( std::string symbol_to_find,OpCodeInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find=-1);
 

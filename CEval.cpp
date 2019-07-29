@@ -371,6 +371,7 @@ namespace zetscript{
 		this->zs=_zs;
 		this->script_function_factory=zs->getScriptFunctionFactory();
 		this->scope_factory=zs->getScopeFactory();
+		this->script_class_factory=zs->getScriptClassFactory();
 
 	}
 
@@ -1484,7 +1485,7 @@ namespace zetscript{
 
 
 				// register class
-				if((sc=zs->registerClass(__FILE__, __LINE__, class_name,base_class_name))==NULL){
+				if((sc=this->script_class_factory->registerClass(__FILE__, __LINE__, class_name,base_class_name))==NULL){
 					return NULL;
 				}
 

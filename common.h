@@ -28,7 +28,7 @@
 #define GET_SCRIPT_CLASS_NAME(idx) 						((this->script_class_factory)->getScriptClassName(idx))
 #define SCRIPT_CLASS_MAIN								((this->script_class_factory)->getScriptClass(IDX_CLASS_MAIN))    // 0 is the main class
 #define SCRIPT_CLASS_STRING								((this->script_class_factory)->getScriptClass(IDX_CLASS_STRING))
-#define SCRIPT_CLASS_STRUCT								((this->script_class_factory)->getScriptClass(IDX_CLASS_STRUCT))
+#define SCRIPT_CLASS_DICTIONARY							((this->script_class_factory)->getScriptClass(IDX_CLASS_DICTIONARY))
 #define SCRIPT_CLASS_VECTOR								((this->script_class_factory)->getScriptClass(IDX_CLASS_VECTOR))
 #define SCRIPT_CLASS_FUNCTOR							((this->script_class_factory)->getScriptClass(IDX_CLASS_FUNCTOR))
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(s)			((this->script_class_factory)->getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
@@ -466,7 +466,7 @@ namespace zetscript{
 		IDX_CLASS_STRING,
 		IDX_CLASS_VECTOR,
 		IDX_CLASS_FUNCTOR,
-		IDX_CLASS_STRUCT,
+		IDX_CLASS_DICTIONARY,
 
 		MAX_BUILT_IN_TYPES
 	}BUILT_IN_TYPE;

@@ -227,6 +227,7 @@ namespace zetscript{
 		 CZetScript * zs;
 		 CScopeFactory *scope_factory;
 		 CScriptFunctionFactory *script_function_factory;
+		 CScriptClassFactory *script_class_factory;
 
 
 

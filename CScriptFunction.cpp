@@ -12,7 +12,7 @@ namespace zetscript{
 			return;
 		}
 
-		if(variable.size() == 0){ // no elements...
+		if(local_variable.size() == 0){ // no elements...
 			return;
 		}
 
@@ -35,10 +35,10 @@ namespace zetscript{
 		 std::vector<tInfoVarScopeBlockRegister> vec_ivsb;
 		 std::map<short,tInfoVarScopeBlockRegister> map_scope_register;
 
-		 for(unsigned idx_var = 0;idx_var < variable.size(); idx_var++){ // register index var per scope ...
+		 for(unsigned idx_var = 0;idx_var < local_variable.size(); idx_var++){ // register index var per scope ...
 
-			map_scope_register[variable[idx_var].symbol->idxScope].idxScope=variable[idx_var].symbol->idxScope;
-			map_scope_register[variable[idx_var].symbol->idxScope].var_index.push_back(idx_var);
+			map_scope_register[local_variable[idx_var].symbol->idxScope].idxScope=local_variable[idx_var].symbol->idxScope;
+			map_scope_register[local_variable[idx_var].symbol->idxScope].var_index.push_back(idx_var);
 		 }
 
 

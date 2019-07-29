@@ -25,10 +25,10 @@ namespace zetscript{
 		}
 
 		// Register variables...
-		for ( unsigned i = 0; i < ir_class->variable.size(); i++){
+		for ( unsigned i = 0; i < ir_class->local_variable.size(); i++){
 
 
-			VariableSymbolInfo * ir_var = &ir_class->variable[i];
+			VariableSymbolInfo * ir_var = &ir_class->local_variable[i];
 
 			se=addVariableSymbol(ir_var->symbol->name);
 
@@ -89,6 +89,7 @@ namespace zetscript{
 
 		zs=_zs;
 		virtual_machine = zs->getVirtualMachine();
+		script_class_factory = zs->getScriptClassFactory();
 	}
 
 	void CScriptVariable::init(CScriptClass *irv, void * _c_object){

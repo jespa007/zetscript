@@ -13,7 +13,7 @@ namespace zetscript{
 
 
 	CDictionaryScriptVariable::CDictionaryScriptVariable(CZetScript *_zs):CScriptVariable(_zs){//CScriptClass *info_registered_class):CScriptVariable(info_registered_class, this){
-		init(SCRIPT_CLASS_STRUCT, (void *)this);
+		init(SCRIPT_CLASS_DICTIONARY, (void *)this);
 	}
 
 

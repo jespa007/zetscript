@@ -8,6 +8,7 @@ namespace zetscript{
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
 		virtual_machine = zs->getVirtualMachine();
+		script_class_factory=zs->getScriptClassFactory();
 
 
 	}
@@ -33,11 +34,11 @@ namespace zetscript{
 		irs.c_type = c_type;
 		irs.properties = properties;
 
-		irs.idxSymbol = (short)variable.size();
+		irs.idxSymbol = (short)local_variable.size();
 
-		variable.push_back(irs);
+		local_variable.push_back(irs);
 
-		return &variable[variable.size()-1];
+		return &local_variable[local_variable.size()-1];
 	}
 
 	VariableSymbolInfo *	CScriptClassBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
@@ -47,14 +48,14 @@ namespace zetscript{
 
 	VariableSymbolInfo *	 CScriptClassBase::getVariable(const std::string & var_name, short idxScope){
 
-		if(variable.size()>0){
+		if(local_variable.size()>0){
 
 			// from lat value to first to get last override function...
-			for(int i = (int)variable.size()-1; i >= 0 ; i--){
-				if((variable[i].symbol->name == var_name)
-				&& (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == variable[i].symbol->idxScope))
+			for(int i = (int)local_variable.size()-1; i >= 0 ; i--){
+				if((local_variable[i].symbol->name == var_name)
+				&& (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == local_variable[i].symbol->idxScope))
 				  ){
-					return &variable[i];
+					return &local_variable[i];
 				}
 			}
 		}
