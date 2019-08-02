@@ -1,5 +1,9 @@
 #pragma once
 
+#include "CNativeFunctionFactory.h"
+
+
+
 
 namespace zetscript{
 
@@ -7,6 +11,8 @@ namespace zetscript{
 	class CScriptClass;
 	class CZetScript;
 	class CScopeFactory;
+
+
 	class CScriptClassFactory{
 
 	public:
@@ -42,12 +48,72 @@ namespace zetscript{
 		intptr_t 											doCast(intptr_t obj, unsigned char src_class, unsigned char convert_class);
 
 		void clear();
+		inline CScriptClass * getMainObject() { return main_object;}
+		inline CScriptFunction * getMainFunction() { return main_function;}
 
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
 		CScriptVariable 		 				* 			instanceScriptVariableByClassName(const std::string & class_name);
 		CScriptVariable 		 				* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
+
+
+		void register_C_BaseSymbols(bool _register);
+
+
+		/**
+		 * Register C variable
+		 */
+		 VariableSymbolInfo *  register_C_Variable(const std::string & var_name,void * var_ptr, const std::string & var_type, const char *registered_file,int registered_line);
+
+
+		/**
+		 * Register C function
+		 */
+		template <typename F>
+		bool register_C_Function( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1);
+
+
+
+		/**
+		 * Register C Class. Return index registered class
+		 */
+		template<typename T>
+		 bool register_C_SingletonClass(const std::string & class_name, const char *registered_file="",int registered_line=-1);
+
+		/**
+		 * Register C Class. Return index registered class
+		 */
+		template<typename T>
+		bool register_C_Class(const std::string & class_name, const char *registered_file="",int registered_line=-1);
+
+
+		template<typename T>
+		bool register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1);
+
+
+		template<class T, class B>
+		bool class_C_BaseOf();
+
+		/**
+		 * Register C Member function Class
+		 */
+		template < typename C, typename R, class T, typename..._A>
+		bool register_C_FunctionMember(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 );
+
+		/**
+		 * Register C Member function Class
+		 */
+		template <typename T, typename F>
+		bool register_C_StaticFunctionMember(const char *function_name,F function_type, const char *registered_file="",int registered_line=-1);
+
+
+		/**
+		 * Register C Member var
+		 */
+		template <typename C, typename R,typename T>
+		bool register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1);
+
 
 		~CScriptClassFactory();
 
@@ -66,6 +132,15 @@ namespace zetscript{
 		std::vector<CScriptClass *> 			 		vec_script_class_node;
 		CZetScript *zs;
 		CScopeFactory *scope_factory;
+		CScriptFunctionFactory *script_function_factory;
+		CNativeFunctionFactory *native_function_factory;
+		CScriptClass * main_object;
+		CScriptFunction * main_function;
+
+		/*
+			 * register_c_base_symbols it tells to register functions/variable member already registered on base classes. Only works if class is not polymorphic (i.e there's no any virtual functions involved)
+			 */
+			bool register_c_base_symbols;
 
 
 
@@ -98,3 +173,5 @@ namespace zetscript{
 	};
 
 }
+#include "helper/register_function.h"
+#include "CScriptClassFactory.inc"

@@ -63,7 +63,7 @@ namespace zetscript{
 		float f_return_value;
 		std::string s_return_value;
 		StackElement stk_aux;
-		 OpCodeInfo  defined_opcode[MAX_OP_CODES];
+
 
 		StackElement  execute_internal(
 				CScriptFunction *info_function,

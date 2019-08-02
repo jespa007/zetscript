@@ -128,6 +128,19 @@ namespace zetscript{
 			MAX_SEPARATOR_TYPES
 		};
 
+		struct OpCodeInstructionEval:OpCodeInstruction{
+
+			LinkSymbolFirstAccess 					 	linkSymbolFirstAccess;
+			OpCodeInstructionSourceInfo 							instructionInfo;
+
+			OpCodeInstructionEval(OP_CODE _op_code
+						 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
+						 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
+						 ,unsigned short _properties=0
+						 ):OpCodeInstruction(_op_code,_index_op1,_index_op2,_properties){
+			}
+		};
+
 
 		struct tTokenNode{
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CNativeFunctionFactory.h"
-#include "helper/register_function.h"
 
-#define 												MAX_REGISTER_CLASSES 100
 
-#define ZS_INVALID_CLASS								((unsigned char)ZS_UNDEFINED_IDX)
+
+
+
+
 #define CLASS_C_BASEOF(zs)								(zs)->class_C_BaseOf();
 #define REGISTER_C_FUNCTION(zs,text,s) 					(zs)->register_C_Function(text,s,__FILE__, __LINE__)
 #define REGISTER_C_VARIABLE(zs,text,s) 					(zs)->register_C_Variable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
@@ -57,8 +57,8 @@ namespace zetscript{
 		inline CScopeFactory * getScopeFactory() { return scope_factory;}
 		inline CScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
 		inline CScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
-		inline CScriptFunction * getMainFunction() { return main_function;}
-		inline CScriptClass * getMainObject() { return main_object;}
+
+
 
 		 void	set_callback_on_error(PrintFunctionCallback _fun);
 
@@ -142,7 +142,7 @@ namespace zetscript{
 
 
 		template<class T, class B>
-		bool class_C_BaseOf();
+		bool class_C_BaseOf(){ return script_class_factory->class_C_BaseOf<T,B>();}
 
 		/**
 		 * Register C Member function Class
@@ -332,8 +332,8 @@ namespace zetscript{
 		CScopeFactory * scope_factory;
 		CScriptFunctionFactory *script_function_factory;
 		CScriptClassFactory *script_class_factory;
-		CScriptFunction * main_function;
-		CScriptClass * main_object;
+
+
 		CZetScript 		*zs;
 
 		float eval_float;
@@ -351,10 +351,6 @@ namespace zetscript{
 
 		//----
 
-		/*
-		 * register_c_base_symbols it tells to register functions/variable member already registered on base classes. Only works if class is not polymorphic (i.e there's no any virtual functions involved)
-		 */
-		bool register_c_base_symbols;
 
 
 

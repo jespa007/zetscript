@@ -457,14 +457,7 @@ namespace zetscript{
 
 
 
-	const char * 		CVirtualMachine::getOpCodeStr(OP_CODE  op){
-		if(op < OP_CODE::MAX_OP_CODES){
-			return defined_opcode[op].str;
 
-		}
-
-		return "unknow_op";
-	}
 
 	void CVirtualMachine::stackDumped(){
 		// derefer all variables in all scopes (except main )...
@@ -530,64 +523,6 @@ namespace zetscript{
 		zs=_zs;
 		script_function_factory=this->zs->getScriptFunctionFactory();
 		script_class_factory=this->zs->getScriptClassFactory();
-
-		memset(defined_opcode,0,sizeof(defined_opcode));
-
-
-		// OP CODES
-		//		VAR  			|	STR   | ID | NUM OP
-		//----------------------+---------+----+-------
-
-		defined_opcode[EQU]         ={EQU,"EQU" };  // ==
-		defined_opcode[INSTANCEOF]  ={INSTANCEOF,"INSTANCEOF"};  // ==
-		defined_opcode[NOT_EQU]     ={NOT_EQU,"NOT_EQU" };  // !=
-		defined_opcode[LT]          ={LT,"LT"  };  // <
-		defined_opcode[LTE]         ={LTE,"LTE"};  // <=
-		defined_opcode[NOT]         ={NOT,"NOT"}; // !
-		defined_opcode[GT]          ={GT,"GT"};  // >
-		defined_opcode[GTE]         ={GTE,"GTE"}; // >=
-		defined_opcode[NEG]         ={NEG,"NEG"}; // !
-		defined_opcode[ADD]         ={ADD,"ADD"}; // +
-		defined_opcode[LOGIC_AND]   ={LOGIC_AND,"LOGIC_AND"}; // &&
-		defined_opcode[LOGIC_OR]    ={LOGIC_OR,"LOGIC_OR"};  // ||
-		defined_opcode[DIV]         ={DIV,"DIV"}; // /
-		defined_opcode[MUL]         ={MUL,"MUL"}; // *
-		defined_opcode[MOD]         ={MOD,"MOD"};  // %
-
-		defined_opcode[AND]         ={AND,"AND"}; // bitwise logic and
-		defined_opcode[OR]          ={OR,"OR"}; // bitwise logic or
-		defined_opcode[XOR]         ={XOR,"XOR"}; // logic xor
-		defined_opcode[SHL]         ={SHL,"SHL"}; // shift left
-		defined_opcode[SHR]         ={SHR,"SHR"}; // shift right
-
-		defined_opcode[STORE]       ={STORE,"STORE"}; // mov expression to var
-		defined_opcode[LOAD]        ={LOAD,"LOAD"}; // primitive value like number/std::string or boolean...
-
-		defined_opcode[JMP]         ={JMP,"JMP"}; // Unconditional jump.
-		defined_opcode[JNT]         ={JNT,"JNT"}; // goto if not true ... goes end to conditional.
-		defined_opcode[JT]          ={JT,"JT"}; // goto if true ... goes end to conditional.
-
-		defined_opcode[CALL]={CALL,"CALL"}; // calling function after all of arguments are processed...
-
-
-		defined_opcode[VGET]={VGET,"VGET"}; // std::vector access after each index is processed...
-
-		defined_opcode[DECL_VEC]={DECL_VEC,"DECL_VEC"}; // Vector object (CREATE)
-
-		defined_opcode[VPUSH]={VPUSH,"VPUSH"}; // Value push for std::vector
-		defined_opcode[RET]={RET,"RET"}; // Value pop for std::vector
-
-		defined_opcode[NEW]={NEW,"NEW"}; // New object (CREATE)
-		defined_opcode[DELETE_OP]={DELETE_OP,"DELETE_OP"};
-
-		defined_opcode[POP_SCOPE]={POP_SCOPE,"POP_SCOPE"}; // New object (CREATE)
-		defined_opcode[PUSH_SCOPE]={PUSH_SCOPE,"PUSH_SCOPE"}; // New object (CREATE)
-		defined_opcode[PUSH_ATTR]={PUSH_ATTR,"PUSH_ATTR"}; // New object (CREATE)
-		defined_opcode[DECL_STRUCT]={DECL_STRUCT,"DECL_STRUCT"}; // New object (CREATE)
-
-		defined_opcode[IT_INI]={IT_INI,"IT_INI"}; // IT_INI
-		defined_opcode[IT_CHK_END]={IT_CHK_END,"IT_CHK_END"}; // IT_CHK_END
-		defined_opcode[IT_SET_AND_NEXT]={IT_SET_AND_NEXT,"IT_SET_AND_NEXT"}; // IT_SET_AND_NEXT
 
 	}
 

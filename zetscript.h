@@ -64,7 +64,10 @@
 #include "MEM_ram.h"
 #endif
 
+
 #include "common.h"
+#include "OpCodeInstruction.h"
+
 
 // utils
 #include "util/string.h"

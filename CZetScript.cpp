@@ -2,32 +2,7 @@
 
 #define FORMAT_PRINT_INSTRUCTION "%04i"
 
-#define REGISTER_BUILT_IN_STRUCT(type_class, idx_class)\
-	if(vec_script_class_node.size()!=idx_class){\
-		THROW_RUNTIME_ERROR(string::sformat("Error: class built in type %s doesn't match its id",STR(type_class)));\
-		return;\
-	}\
-	register_C_Class<type_class>(STR(type_class));
 
-
-#define REGISTER_BUILT_IN_CLASS(type_class, idx_class)\
-	if(script_class_factory->getVectorScriptClassNode()->size()!=idx_class){\
-		THROW_RUNTIME_ERROR(string::sformat("Error: class built in type %s doesn't match its id",STR(type_class)));\
-		return;\
-	}\
-	register_C_ClassBuiltIn<type_class>(STR(type_class));
-
-
-#define REGISTER_BUILT_IN_TYPE(type_class, idx_class)\
-	if(script_class_factory->getVectorScriptClassNode()->size()!=idx_class){\
-		THROW_RUNTIME_ERROR(string::sformat("Error initializing C built in type: %s",STR(type_class)));\
-		return;\
-	}else{\
-		CScriptClass *sc=script_class_factory->registerClass(__FILE__,__LINE__,STR(type_class),"");\
-		GET_SCOPE(sc->symbol_info.symbol->idxScope)->is_c_node=true;\
-		sc->symbol_info.properties=SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;\
-		sc->str_class_ptr_type=(typeid(type_class).name());\
-	}
 
 namespace zetscript{
 
@@ -85,19 +60,14 @@ namespace zetscript{
 		script_class_factory = new CScriptClassFactory(this);
 
 
-		main_function=NULL;
-		main_object=NULL;
-
 		eval_int=0;
 		eval_float=0;
 		eval_string="";
 		eval_bool = false;
-		register_c_base_symbols=false;
+
 		zs=this;
 
 		//----
-
-		register_c_base_symbols=false;
 		//mapTypeConversion = new std::map<int, std::map<int, fntConversionType>>();
 
 		STR_VOID_TYPE = typeid(void).name();
@@ -115,68 +85,7 @@ namespace zetscript{
 		STR_FLOAT_TYPE =  typeid(float).name();
 		STR_STACK_ELEMENT_TYPE=  typeid(StackElement *).name();
 
-		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-		// REGISTER BUILT IN SCRIPT TYPES
-		// MAIN CLASS (0)
-		main_object=script_class_factory->registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
-		if(main_object->symbol_info.symbol->idxScope!=IDX_GLOBAL_SCOPE){
-			THROW_RUNTIME_ERROR("Error initializing global scope");
-			return;
-		}
-
-		// REGISTER BUILT IN C TYPES
-		REGISTER_BUILT_IN_TYPE(void,IDX_TYPE_VOID_C);
-		REGISTER_BUILT_IN_TYPE(int *,IDX_TYPE_INT_PTR_C);
-		REGISTER_BUILT_IN_TYPE(float *,IDX_TYPE_FLOAT_PTR_C);
-		REGISTER_BUILT_IN_TYPE(const char *,IDX_TYPE_CONST_CHAR_PTR_C);
-		REGISTER_BUILT_IN_TYPE(std::string *,IDX_TYPE_STRING_PTR_C);
-		REGISTER_BUILT_IN_TYPE(bool *,IDX_TYPE_BOOL_PTR_C);
-		REGISTER_BUILT_IN_TYPE(int,IDX_TYPE_INT_C);
-		REGISTER_BUILT_IN_TYPE(unsigned int,IDX_TYPE_UNSIGNED_INT_C);
-		REGISTER_BUILT_IN_TYPE(intptr_t,IDX_TYPE_INTPTR_T_C);
-		REGISTER_BUILT_IN_TYPE(float,IDX_TYPE_FLOAT_C);
-		REGISTER_BUILT_IN_TYPE(bool,IDX_TYPE_BOOL_C);
-
-		// REGISTER BUILT IN CLASS TYPES
-		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_STACK_ELEMENT);
-		REGISTER_BUILT_IN_CLASS(CScriptVariable,IDX_CLASS_SCRIPT_VAR);
-		REGISTER_BUILT_IN_CLASS(CStringScriptVariable,IDX_CLASS_STRING);
-		REGISTER_BUILT_IN_CLASS(CVectorScriptVariable,IDX_CLASS_VECTOR);
-		REGISTER_BUILT_IN_CLASS(CFunctorScriptVariable,IDX_CLASS_FUNCTOR);
-		REGISTER_BUILT_IN_CLASS(CDictionaryScriptVariable,IDX_CLASS_DICTIONARY);
-
-
-		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-		// rgister basic classes (Warning!!! must match idx !!! and the order is important!!!)
-
-		//----------------------------------------------------------------------
-		// From here you defined all basic, start define hierarchy
-
-		// register custom functions ...
-		class_C_BaseOf<CVectorScriptVariable,CScriptVariable>();
-		class_C_BaseOf<CFunctorScriptVariable,CScriptVariable>();
-		class_C_BaseOf<CDictionaryScriptVariable,CScriptVariable>();
-
-
-		//------------------------------------------------------------------------------------------------------------
-		// Let's register functions,...
-		// register c function's
-
-		main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
-
-		register_C_Function("print",print);
-		//register_C_Function("error",internal_print_error);
-
-		register_C_FunctionMember<CVectorScriptVariable>("size",&CVectorScriptVariable::size);
-		register_C_FunctionMember<CVectorScriptVariable>("push",static_cast<void (CVectorScriptVariable:: *)(StackElement *)>(&CVectorScriptVariable::push));
-		register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop);
-
-
-		register_C_FunctionMember<CDictionaryScriptVariable>("add",&CDictionaryScriptVariable::add_attr);
-		register_C_FunctionMember<CDictionaryScriptVariable>("remove",&CDictionaryScriptVariable::remove_attr);
-		register_C_FunctionMember<CDictionaryScriptVariable>("size",&CDictionaryScriptVariable::size);
 
 	}
 
@@ -568,90 +477,8 @@ namespace zetscript{
 	void CZetScript::setPrintOutCallback(void (* _printout_callback)(const char *)){
 		print_out_callback=_printout_callback;
 	}
-	 void  CZetScript::print(const char *s){
-
-		printf("%s\n",s);
-		fflush(stdout);
-
-		if(print_out_callback){
-			print_out_callback(s);
-		}
-	 }
 
 	void (* CZetScript::print_out_callback)(const char *) = NULL;
-
-
-	const char * CZetScript::getMetamethod(METAMETHOD_OPERATOR op){
-
-		switch (op) {
-		case	EQU_METAMETHOD:		return  "_equ";  // ==
-		case	NOT_EQU_METAMETHOD: return  "_nequ";  // !=,
-		case	LT_METAMETHOD:		return  "_lt";  // <
-		case	LTE_METAMETHOD:		return  "_lte";  // <=
-		case	NOT_METAMETHOD:		return  "_not"; // !
-		case	GT_METAMETHOD:		return  "_gt";  // >
-		case	GTE_METAMETHOD:		return  "_gte"; // >=
-
-		case	NEG_METAMETHOD:		return  "_neg"; // -a, !a
-		case	ADD_METAMETHOD:		return  "_add"; // +
-		case	DIV_METAMETHOD:		return  "_div"; // /
-		case	MUL_METAMETHOD:		return  "_mul"; // *
-		case	MOD_METAMETHOD:		return  "_mod";  // %
-		case	AND_METAMETHOD:		return  "_and"; // binary and
-		case	OR_METAMETHOD:		return  "_or"; //   binary or
-		case	XOR_METAMETHOD:		return  "_xor"; // binary xor
-		case	SHL_METAMETHOD:		return  "_shl"; // binary shift left
-		case	SHR_METAMETHOD:		return  "_shr"; // binary shift right
-		case	SET_METAMETHOD:		return  "_set"; // set
-		default:
-			return "none";
-		}
-
-		return "none";
-	}
-
-	void CZetScript::register_C_BaseSymbols(bool _register){
-		register_c_base_symbols = _register;
-	}
-
-
-	/**
-	 * Register C variable
-	 */
-	 VariableSymbolInfo *  CZetScript::register_C_Variable(const std::string & var_name,void * var_ptr, const std::string & var_type, const char *registered_file,int registered_line)
-	{
-		//CScope *scope;
-		VariableSymbolInfo *irs;
-		//int idxVariable;
-
-		if(var_ptr==NULL){
-			THROW_RUNTIME_ERROR(string::sformat("cannot register var \"%s\" with NULL reference value", var_name.c_str()));
-			return NULL;
-		}
-
-		CScriptFunction *main_function=MAIN_FUNCTION;
-
-		if(main_function == NULL){
-			THROW_RUNTIME_ERROR("main function is not created");
-			return  NULL;
-		}
-
-		if(script_class_factory->getIdxClassFromIts_C_Type(var_type) == ZS_INVALID_CLASS){
-			THROW_RUNTIME_ERROR(string::sformat("%s has not valid type (%s)",var_name.c_str(),var_type.c_str()));
-			return  NULL;
-		}
-
-
-		if((irs = main_function->registerVariable(registered_file,registered_line,var_name,var_type,(intptr_t)var_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF)) != NULL){
-
-			zs_print_debug_cr("Registered variable name: %s",var_name.c_str());
-
-			return irs;
-		}
-
-		return NULL;
-	}
-
 
 
 
@@ -659,7 +486,7 @@ namespace zetscript{
 
 		virtual_machine->clearGlobalVars();
 
-		main_function = this->script_function_factory->getScriptFunction(IDX_MAIN_FUNCTION);
+		CScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_MAIN_FUNCTION);
 
 		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
@@ -807,7 +634,7 @@ namespace zetscript{
 		bool error=false;
 
 		// the first code to execute is the main function that in fact is a special member function inside our main class
-		virtual_machine->execute(main_function, NULL,error,NO_PARAMS);
+		virtual_machine->execute(script_class_factory->getMainFunction(), NULL,error,NO_PARAMS);
 
 		if(error){
 			THROW_SCRIPT_ERROR();
@@ -887,10 +714,6 @@ namespace zetscript{
 		delete script_class_factory;
 		delete eval;
 
-
-
-		main_function = NULL;
-		main_object = NULL;
 		virtual_machine=NULL;
 
 

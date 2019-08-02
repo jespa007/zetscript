@@ -8,6 +8,9 @@ namespace zetscript{
 		scope_factory = _zs->getScopeFactory();
 	}
 
+
+
+
 	std::vector<CScriptFunction *> 	*CScriptFunctionFactory::getVectorScriptFunctionNode(){
 		return &vec_script_function_node;
 	}
