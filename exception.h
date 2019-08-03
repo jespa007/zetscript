@@ -34,6 +34,12 @@ namespace zetscript {
 				script_exception(const char *  _file, int _line, const char * _error_description, const char *_error_type);
 				virtual const char* what() const throw();
 
+				int getErrorLine();
+
+				const char * getErrorDescription();
+
+				const char * getErrorFilename();
+
 		};
 
 		class script_error: public script_exception{

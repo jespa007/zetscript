@@ -1,6 +1,8 @@
 //-- Exception --
 #include		"exception.cpp"
 
+#include		"OpCodeInstruction.cpp"
+
 //-- Utils --
 #include 		"util/string.cpp"
 #include 		"util/path.cpp"

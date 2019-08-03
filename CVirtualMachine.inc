@@ -181,7 +181,7 @@ namespace zetscript{
 			StackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;
 
-			symbol_to_find=GET_METAMETHOD(__METAMETHOD__);
+			symbol_to_find=metamethod_op_2_str(__METAMETHOD__);
 
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
 			if((ptr_function_found = FIND_FUNCTION(

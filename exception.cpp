@@ -6,12 +6,19 @@
 #include "zetscript.h"
 
 namespace zetscript {
+
+	int getErrorLine();
+	const char * getErrorDescription();
+	const char * getErrorFilename();
+
+
 	namespace exception{
 
+
 		void  write_error(const char *filename, int line, const  char  *string_text, ...);
-		int getErrorLine();
+		/*int getErrorLine();
 		const char * getErrorDescription();
-		const char * getErrorFilename();
+		const char * getErrorFilename();*/
 
 
 		script_exception::script_exception(const char *  _file, int _line, const char * _error_description, const char *_error_type){

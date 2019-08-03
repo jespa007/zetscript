@@ -86,11 +86,11 @@ namespace zetscript{
 		 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
 		 ,unsigned short _properties=0
 		 );
-
-
-		static const char * getOpCodeStr(OP_CODE  op);
-		static const char * getMetamethodOpStr(METAMETHOD_OPERATOR op);
 	};
+
+	const char * op_2_str(OP_CODE  op);
+	const char * metamethod_op_2_str(METAMETHOD_OPERATOR op);
+
 
 
 	typedef OpCodeInstruction *PtrInstruction;

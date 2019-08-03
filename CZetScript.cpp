@@ -50,6 +50,7 @@ namespace zetscript{
 	}
 
 
+
 	CZetScript::CZetScript(){
 
 		scope_factory = new CScopeFactory(this);
@@ -224,12 +225,12 @@ namespace zetscript{
 			switch(instruction->op_code){
 
 			case  NEW:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,virtual_machine->getOpCodeStr(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->index_op1):"???");
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,opcode_2_str(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->index_op1):"???");
 				break;
 			case  LOAD:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s\n"
 						,idx_instruction,
-						virtual_machine->getOpCodeStr(instruction->op_code),
+						opcode_2_str(instruction->op_code),
 						pre.c_str(),
 						getStrTypeLoadValue(sfo,sfo->instruction,idx_instruction).c_str(),
 						post.c_str());
@@ -239,13 +240,13 @@ namespace zetscript{
 			case JMP:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
 						,idx_instruction
-						,CZetScript::virtual_machine->getOpCodeStr(instruction->op_code)
+						,opcode_2_str(instruction->op_code)
 						,(int)instruction->index_op2);
 				break;
 			case PUSH_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
 						,idx_instruction
-						,virtual_machine->getOpCodeStr(instruction->op_code)
+						,opcode_2_str(instruction->op_code)
 						,instruction->index_op1!=0?'(':' '
 						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
 						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
@@ -256,7 +257,7 @@ namespace zetscript{
 			case POP_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
 						,idx_instruction
-						,virtual_machine->getOpCodeStr(instruction->op_code)
+						,opcode_2_str(instruction->op_code)
 						,instruction->index_op1!=0?'(':' '
 						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
 						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
@@ -267,17 +268,17 @@ namespace zetscript{
 			default:
 
 				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,virtual_machine->getOpCodeStr(instruction->op_code));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,opcode_2_str(instruction->op_code));
 				}else if(n_ops==1){
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
 							,idx_instruction
-							,virtual_machine->getOpCodeStr(instruction->op_code)
+							,opcode_2_str(instruction->op_code)
 							,(instruction->properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
 							);
 				}else{
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 							,idx_instruction
-							,virtual_machine->getOpCodeStr(instruction->op_code)
+							,opcode_2_str(instruction->op_code)
 							);
 				}
 				break;

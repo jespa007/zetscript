@@ -117,7 +117,9 @@ namespace zetscript{
 		 * Register C function
 		 */
 		template <typename F>
-		bool register_C_Function( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1);
+		bool register_C_Function( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
+			script_class_factory->register_C_Function( function_name,function_ptr, registered_file,registered_line);
+		}
 
 		/**
 		 * Register C variable
