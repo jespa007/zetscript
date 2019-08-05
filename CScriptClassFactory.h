@@ -17,6 +17,8 @@ namespace zetscript{
 
 	public:
 
+
+
 		CScriptClassFactory(CZetScript *_zs);
 
 

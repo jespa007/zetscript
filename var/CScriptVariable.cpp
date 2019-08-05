@@ -131,7 +131,7 @@ namespace zetscript{
 		}
 
 		// only create symbols if not std::string type to make it fast ...
-		if(idx_class >= BUILT_IN_TYPE::MAX_BUILT_IN_TYPES && idx_class !=IDX_CLASS_STRING){
+		if(idx_class >= MAX_BUILT_IN_TYPES && idx_class != IDX_CLASS_STRING){
 			createSymbols(irv);
 		}
 	}

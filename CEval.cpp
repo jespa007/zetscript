@@ -422,7 +422,7 @@ namespace zetscript{
 		return IDENTITY_OPERATOR_TYPE::UNKNOWN_IDENTITY_OPERATOR;
 	}
 
-	KEYWORD_TYPE CEval::isKeyword(const char *c){
+	CEval::KEYWORD_TYPE CEval::isKeyword(const char *c){
 		// PRE: The first char must be starting symbol.
 		char *str=(char *)c;
 		char *aux=str;
@@ -448,7 +448,7 @@ namespace zetscript{
 		return KEYWORD_TYPE::UNKNOWN_KEYWORD;
 	}
 
-	DIRECTIVE_TYPE CEval::isDirective(const char *c){
+	CEval::DIRECTIVE_TYPE CEval::isDirective(const char *c){
 		// PRE: The first char must be starting symbol.
 		char *str=(char *)c;
 

@@ -26,6 +26,77 @@ namespace zetscript{
 
 	private:
 
+		enum {
+			LEFT_NODE = 0, RIGHT_NODE
+		};
+
+
+		typedef enum
+			:unsigned char {
+			UNKNOWN_NODE = 0,
+			PUNCTUATOR_NODE,
+			EXPRESSION_NODE,
+			KEYWORD_NODE,
+			ARGS_DECL_NODE,
+			ARGS_PASS_NODE,
+			ARRAY_ACCESS_NODE,
+			ARRAY_INDEX_NODE,
+			ARRAY_OBJECT_NODE,
+			FUNCTION_OBJECT_NODE,
+			SYMBOL_NODE,
+			BODY_BLOCK_NODE,
+			GROUP_CASES_NODE,
+			GROUP_IF_NODES, // if, else-if
+			IF_NODE, // if-node (each one has a conditional + body )
+			CONDITIONAL_NODE,
+			PRE_FOR_NODE,
+			POST_FOR_NODE,
+			CLASS_VAR_COLLECTION_NODE,
+			CLASS_FUNCTION_COLLECTION_NODE,
+			BASE_CLASS_NODE,
+			CALLING_OBJECT_NODE,
+			ARRAY_REF_NODE,
+			FUNCTION_REF_NODE,
+			NEW_OBJECT_NODE,
+			DELETE_OBJECT_NODE,
+			ACCESS_OBJECT_MEMBER_NODE,
+			STRUCT_NODE,
+			MAX_NODE_TYPE
+		}NODE_TYPE;
+
+		typedef enum
+			:unsigned char {
+			UNKNOWN_KEYWORD = 0,
+			IF_KEYWORD,
+			ELSE_KEYWORD,
+			FOR_KEYWORD,
+			//FOREACH_KEYWORD,
+			IN_KEYWORD,
+			WHILE_KEYWORD,
+			DO_WHILE_KEYWORD,
+			VAR_KEYWORD,
+			SWITCH_KEYWORD,
+			CASE_KEYWORD,
+			DEFAULT_KEYWORD,
+			BREAK_KEYWORD,
+			CONTINUE_KEYWORD,
+			RETURN_KEYWORD,
+			FUNCTION_KEYWORD,
+			CLASS_KEYWORD,
+			THIS_KEYWORD,
+			//	SUPER_KEYWORD,
+			NEW_KEYWORD,
+			DELETE_KEYWORD,
+			MAX_KEYWORD
+		}KEYWORD_TYPE;
+
+		typedef enum
+			:unsigned char {
+			UNKNOWN_DIRECTIVE = 0,
+			INCLUDE_DIRECTIVE,
+			MAX_DIRECTIVES
+		}DIRECTIVE_TYPE;
+
     	// In a expression we can find three types of tokens: an identifier, a separator, an operator, a literal or object token.
 		enum TOKEN_TYPE:char{
 			UNKNOWN_TOKEN=0,

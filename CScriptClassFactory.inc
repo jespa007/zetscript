@@ -165,7 +165,7 @@ namespace zetscript{
 			// get class...
 			CScriptClass *irc =getScriptClass(class_name);
 
-			if(irc->idx_class < MAX_BUILT_IN_TYPES){
+			if(irc->idx_class < MAX_BUILT_IN_TYPES && irc->idx_class != IDX_STACK_ELEMENT){
 				THROW_RUNTIME_ERROR(string::sformat("The class to register \"%s\"  should NOT BE a built in class",irc->str_class_ptr_type.c_str()));
 				return false;
 

@@ -70,146 +70,6 @@ namespace zetscript{
 
 	typedef enum
 		:unsigned char {
-		UNKNOWN_NODE = 0,
-		PUNCTUATOR_NODE,
-		EXPRESSION_NODE,
-		KEYWORD_NODE,
-		ARGS_DECL_NODE,
-		ARGS_PASS_NODE,
-		ARRAY_ACCESS_NODE,
-		ARRAY_INDEX_NODE,
-		ARRAY_OBJECT_NODE,
-		FUNCTION_OBJECT_NODE,
-		SYMBOL_NODE,
-		BODY_BLOCK_NODE,
-		GROUP_CASES_NODE,
-		GROUP_IF_NODES, // if, else-if
-		IF_NODE, // if-node (each one has a conditional + body )
-		CONDITIONAL_NODE,
-		PRE_FOR_NODE,
-		POST_FOR_NODE,
-		CLASS_VAR_COLLECTION_NODE,
-		CLASS_FUNCTION_COLLECTION_NODE,
-		BASE_CLASS_NODE,
-		CALLING_OBJECT_NODE,
-		ARRAY_REF_NODE,
-		FUNCTION_REF_NODE,
-		NEW_OBJECT_NODE,
-		DELETE_OBJECT_NODE,
-		ACCESS_OBJECT_MEMBER_NODE,
-		STRUCT_NODE,
-		MAX_NODE_TYPE
-	}NODE_TYPE;
-
-	typedef enum
-		:unsigned char {
-		UNKNOWN_KEYWORD = 0,
-		IF_KEYWORD,
-		ELSE_KEYWORD,
-		FOR_KEYWORD,
-		//FOREACH_KEYWORD,
-		IN_KEYWORD,
-		WHILE_KEYWORD,
-		DO_WHILE_KEYWORD,
-		VAR_KEYWORD,
-		SWITCH_KEYWORD,
-		CASE_KEYWORD,
-		DEFAULT_KEYWORD,
-		BREAK_KEYWORD,
-		CONTINUE_KEYWORD,
-		RETURN_KEYWORD,
-		FUNCTION_KEYWORD,
-		CLASS_KEYWORD,
-		THIS_KEYWORD,
-		//	SUPER_KEYWORD,
-		NEW_KEYWORD,
-		DELETE_KEYWORD,
-		MAX_KEYWORD
-	}KEYWORD_TYPE;
-
-	typedef enum
-		:unsigned char {
-		UNKNOWN_DIRECTIVE = 0,
-		INCLUDE_DIRECTIVE,
-		MAX_DIRECTIVES
-	}DIRECTIVE_TYPE;
-
-	/*enum __PUNCTUATOR_TYPE_OLD__
-		:unsigned char {
-
-		UNKNOWN_PUNCTUATOR = 0,
-
-		//--------------------------------
-		// First OPERATORS 2 char size
-
-		SHIFT_LEFT_PUNCTUATOR = 1, // <<
-		SHIFT_RIGHT_PUNCTUATOR, // >>
-
-		LOGIC_AND_PUNCTUATOR, // &&
-		LOGIC_OR_PUNCTUATOR, // ||
-		LOGIC_EQUAL_PUNCTUATOR, // =
-		LOGIC_NOT_EQUAL_PUNCTUATOR, // !=
-		LOGIC_GTE_PUNCTUATOR, // >=
-		LOGIC_LTE_PUNCTUATOR, // <=
-		INSTANCEOF_PUNCTUATOR, // instanceof
-
-		PRE_INC_PUNCTUATOR, // ++
-		PRE_DEC_PUNCTUATOR, // --
-
-		POST_INC_PUNCTUATOR, // ++
-		POST_DEC_PUNCTUATOR, // --
-
-		// Then OPERATORS 1 char size
-		ADD_PUNCTUATOR, // a+b
-		SUB_PUNCTUATOR, // a+(-b)
-		MUL_PUNCTUATOR, // *
-		DIV_PUNCTUATOR, // /
-		MOD_PUNCTUATOR, // %
-
-		FIELD_PUNCTUATOR, // .
-
-		ASSIGN_PUNCTUATOR, // =
-		ADD_ASSIGN_PUNCTUATOR, // +=
-		SUB_ASSIGN_PUNCTUATOR, // -=
-		MUL_ASSIGN_PUNCTUATOR, // *=
-		DIV_ASSIGN_PUNCTUATOR, // /=
-		MOD_ASSIGN_PUNCTUATOR, // %=
-
-		BINARY_XOR_PUNCTUATOR, // ^
-		BINARY_AND_PUNCTUATOR, // &
-		BINARY_OR_PUNCTUATOR, // |
-
-		LOGIC_GT_PUNCTUATOR, // >
-		LOGIC_LT_PUNCTUATOR, // <
-		LOGIC_NOT_PUNCTUATOR, // !
-
-		TERNARY_IF_PUNCTUATOR, // ?
-		TERNARY_ELSE_PUNCTUATOR, // :
-
-		MAX_OPERATOR_PUNCTUATORS,
-
-		//---------------------------
-		// SPECIAL CHARACTERS
-		START_SPECIAL_PUNCTUATORS = MAX_OPERATOR_PUNCTUATORS,
-		COMA_PUNCTUATOR = START_SPECIAL_PUNCTUATORS,
-		SEMICOLON_PUNCTUATOR,
-
-		OPEN_PARENTHESIS_PUNCTUATOR,
-		CLOSE_PARENTHESIS_PUNCTUATOR,
-
-		OPEN_BRAKET_PUNCTUATOR,
-		CLOSE_BRAKET_PUNCTUATOR,
-
-		OPEN_SQUARE_BRAKET_PUNCTUATOR,
-		CLOSE_SQUARE_BRAKET_PUNCTUATOR,
-
-		MAX_SPECIAL_PUNCTUATORS,
-		MAX_PUNCTUATORS
-
-	};*/
-
-	typedef enum
-		:unsigned char {
 
 		LOAD_TYPE_NOT_DEFINED = 0,
 		LOAD_TYPE_NULL,
@@ -228,18 +88,6 @@ namespace zetscript{
 		CREATE_FUNCTION = 0, DESTROY_FUNCTION
 	}PROXY_CREATOR;
 
-
-
-	/*
-	 enum ASM_PRE_POST_OPERATORS:char{
-	 UNKNOW_PRE_POST_OPERATOR=0,
-	 PRE_INC, // ++
-	 POST_INC, // ++
-	 PRE_DEC, // --getIdxArgument
-	 POST_DEC, // --
-	 PRE_NEG
-	 };
-	 */
 
 	// properties shared by compiler + VM
 	typedef enum:unsigned char {
@@ -355,21 +203,6 @@ namespace zetscript{
 
 	#define MAIN_SCRIPT_FUNCTION_NAME 			"__MainFunction__"
 
-
-
-	//typedef tInfoStatementOp *PInfoStatementOp;
-	typedef enum {
-		PROPERTY_C_OBJECT_REF 			= 0x1 << 0,
-		PROPERTY_IS_DERIVATED 			= 0x1 << 1,
-		PROPERTY_STATIC_REF 			= 0x1 << 2,
-		PROPERTY_IS_POLYMORPHIC			= 0x1 << 3
-	}SYMBOL_INFO_PROPERTY;
-
-	//typedef tInfoStatementOp *PInfoStatementOp;
-	/*enum ALE_INFO_PROPERTIES{
-	 PROPERTY_ARG_VAR = 0x1 <<0,
-	 };*/
-
 	typedef enum {
 
 		// built-in types...
@@ -399,6 +232,14 @@ namespace zetscript{
 		MAX_BUILT_IN_TYPES
 	}BUILT_IN_TYPE;
 
+	//typedef tInfoStatementOp *PInfoStatementOp;
+	typedef enum {
+		PROPERTY_C_OBJECT_REF 			= 0x1 << 0,
+		PROPERTY_IS_DERIVATED 			= 0x1 << 1,
+		PROPERTY_STATIC_REF 			= 0x1 << 2,
+		PROPERTY_IS_POLYMORPHIC			= 0x1 << 3
+	}SYMBOL_INFO_PROPERTY;
+
 
 	typedef enum
 		:unsigned char{
@@ -413,30 +254,7 @@ namespace zetscript{
 
 	typedef intptr_t (*fntConversionType)(intptr_t);
 
-	/*typedef struct {
-		KEYWORD_TYPE id;
-		const char *str;
-		char * (*eval_fun)(const char *, int &, CScope *, PASTNode *);
-	} tKeywordInfo_Old;*/
 
-
-	typedef struct {
-		DIRECTIVE_TYPE id;
-		const char *str;
-		//char * (*parse_fun)(const char *, int &, CScope *, PASTNode *);
-	} DirectiveInfo;
-
-	/*typedef struct {
-		__PUNCTUATOR_TYPE_OLD__ id;
-		const char *str;
-		bool (*eval_fun)(const char *);
-	} PunctuatorInfo;*/
-
-
-
-	enum {
-		LEFT_NODE = 0, RIGHT_NODE
-	};
 
 	//-----------------------------
 
