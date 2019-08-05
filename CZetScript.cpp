@@ -225,12 +225,12 @@ namespace zetscript{
 			switch(instruction->op_code){
 
 			case  NEW:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,opcode_2_str(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->index_op1):"???");
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,OpCodeInstruction::opCodeToStr(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->index_op1):"???");
 				break;
 			case  LOAD:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s\n"
 						,idx_instruction,
-						opcode_2_str(instruction->op_code),
+						OpCodeInstruction::opCodeToStr(instruction->op_code),
 						pre.c_str(),
 						getStrTypeLoadValue(sfo,sfo->instruction,idx_instruction).c_str(),
 						post.c_str());
@@ -240,13 +240,13 @@ namespace zetscript{
 			case JMP:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
 						,idx_instruction
-						,opcode_2_str(instruction->op_code)
+						,OpCodeInstruction::opCodeToStr(instruction->op_code)
 						,(int)instruction->index_op2);
 				break;
 			case PUSH_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
 						,idx_instruction
-						,opcode_2_str(instruction->op_code)
+						,OpCodeInstruction::opCodeToStr(instruction->op_code)
 						,instruction->index_op1!=0?'(':' '
 						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
 						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
@@ -257,7 +257,7 @@ namespace zetscript{
 			case POP_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
 						,idx_instruction
-						,opcode_2_str(instruction->op_code)
+						,OpCodeInstruction::opCodeToStr(instruction->op_code)
 						,instruction->index_op1!=0?'(':' '
 						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
 						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
@@ -268,17 +268,17 @@ namespace zetscript{
 			default:
 
 				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,opcode_2_str(instruction->op_code));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,OpCodeInstruction::opCodeToStr(instruction->op_code));
 				}else if(n_ops==1){
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
 							,idx_instruction
-							,opcode_2_str(instruction->op_code)
+							,OpCodeInstruction::opCodeToStr(instruction->op_code)
 							,(instruction->properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
 							);
 				}else{
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 							,idx_instruction
-							,opcode_2_str(instruction->op_code)
+							,OpCodeInstruction::opCodeToStr(instruction->op_code)
 							);
 				}
 				break;
@@ -701,6 +701,100 @@ namespace zetscript{
 		return !error;
 	}
 
+	bool CZetScript::getScriptObject(const std::string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
+
+		//ZS_CLEAR_ERROR_MSG();
+
+		std::vector<std::string> access_var = string::split(function_access,'.');
+		//CScriptFunction * main_function = main_function;
+
+		/*if(main_function == NULL){
+			string::sformat("main_function is not initialized");
+			return false;
+		}*/
+		CScriptFunction * main_function = script_class_factory->getMainFunction();
+		*calling_obj = NULL;
+		FunctionSymbol *is=NULL;
+		StackElement *se=NULL;
+		*fun_obj=NULL;
+
+		// 1. some variable in main function ...
+		if(access_var.size()>1){
+			for(unsigned i=0; i < access_var.size()-1; i++){
+
+				std::string symbol_to_find=access_var[i];
+				if(i==0){ // get variable through main_class.main_function (global element)
+					//symbol_to_find= CEval::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
+					for(unsigned j = 0; j < main_function->local_variable.size() && *calling_obj==NULL; j++){
+						if(main_function->local_variable[j].symbol->name==symbol_to_find
+						&& main_function->local_variable[j].symbol->idxScope == IDX_GLOBAL_SCOPE){
+							StackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
+							if(stk!=NULL){
+								if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+									*calling_obj=(CScriptVariable *)stk->varRef;
+								}
+							}
+							else{
+								string::sformat("cannot access i (%i)",j);
+								return false;
+							}
+						}
+					}
+
+					if((*calling_obj) == NULL){
+						string::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						return false;
+					}
+
+				}else{ // we have got the calling_obj from last iteration ...
+					se = (*calling_obj)->getVariableSymbol(symbol_to_find);
+
+					if(se!=NULL){
+
+						if(se->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+							*calling_obj=(CScriptVariable *)se->varRef;
+						}else{
+							string::sformat("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
+							return false;
+						}
+					}
+					else{
+						string::sformat("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						return false;
+					}
+				}
+			}
+
+			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1]);
+			if(is!=NULL){
+				if(is->object.properties & STK_PROPERTY_TYPE_FUNCTION){
+					*fun_obj=(CScriptFunction *)is->object.stkValue;
+				}
+			}else{
+
+				string::sformat("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
+				return false;
+			}
+
+		}else{ // some function in main function
+			//*calling_obj = m_mainObject;
+			std::string symbol_to_find=access_var[0];
+			for(unsigned i = 0; i < main_function->local_function.size() && *fun_obj==NULL; i++){
+				CScriptFunction *aux_fun_obj=main_function->local_function[i];
+				if(		aux_fun_obj->symbol_info.symbol->name  == symbol_to_find
+				  && aux_fun_obj->symbol_info.symbol->idxScope == IDX_GLOBAL_SCOPE){
+					*fun_obj=aux_fun_obj;
+				}
+			}
+		}
+
+		if(*fun_obj==NULL){
+			THROW_RUNTIME_ERROR(string::sformat("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
+			return false;
+		}
+
+		return true;
+	}
 
 	CZetScript::~CZetScript(){
 

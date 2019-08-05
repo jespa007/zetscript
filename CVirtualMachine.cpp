@@ -2480,7 +2480,7 @@ namespace zetscript{
 
 			}
 
-			write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",getOpCodeStr(instruction->op_code));
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",OpCodeInstruction::opCodeToStr(instruction->op_code));
 			RETURN_ERROR;
 
 

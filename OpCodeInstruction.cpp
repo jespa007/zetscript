@@ -15,7 +15,7 @@ namespace zetscript{
 
 		}
 
-		const char * opcode_2_str(OP_CODE  op){
+		const char * OpCodeInstruction::opCodeToStr(OP_CODE  op){
 			switch(op){
 				case EQU:        return "EQU";  // ==
 				case INSTANCEOF:  return "INSTANCEOF";  // ==
@@ -73,7 +73,7 @@ namespace zetscript{
 			return "unknow_op";
 		}
 
-		const char * metamethod_op_2_str(METAMETHOD_OPERATOR op){
+		const char * OpCodeInstruction::metamethodOpCodeToStr(METAMETHOD_OP_CODE op){
 
 			switch (op) {
 				case	EQU_METAMETHOD:		return  "_equ";  // ==

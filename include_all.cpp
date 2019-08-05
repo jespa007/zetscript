@@ -31,7 +31,7 @@
 
 
 #include		"CZetScript.cpp"
-#include "var/CDictionaryScriptVariable.cpp"
+#include 		"var/CDictionaryScriptVariable.cpp"
 
 
 

@@ -1,11 +1,5 @@
 #pragma once
 
-
-
-
-
-
-
 #define CLASS_C_BASEOF(zs)								(zs)->class_C_BaseOf();
 #define REGISTER_C_FUNCTION(zs,text,s) 					(zs)->register_C_Function(text,s,__FILE__, __LINE__)
 #define REGISTER_C_VARIABLE(zs,text,s) 					(zs)->register_C_Variable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
@@ -104,7 +98,7 @@ namespace zetscript{
 		StackElement 					C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable);
 
 
-		const char * getMetamethod(METAMETHOD_OPERATOR op);
+		const char * getMetamethod(METAMETHOD_OP_CODE op);
 		void 												register_C_BaseSymbols(bool );
 
 		/**

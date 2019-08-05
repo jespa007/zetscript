@@ -73,7 +73,7 @@ namespace zetscript{
 			SET_METAMETHOD, // store '='
 
 			MAX_METAMETHOD_OPERATORS
-	}METAMETHOD_OPERATOR;
+	}METAMETHOD_OP_CODE;
 
 	struct OpCodeInstruction {
 		OP_CODE op_code;
@@ -86,10 +86,12 @@ namespace zetscript{
 		 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
 		 ,unsigned short _properties=0
 		 );
+
+		static const char * opCodeToStr(OP_CODE  op);
+		static const char * metamethodOpCodeToStr(METAMETHOD_OP_CODE op);
 	};
 
-	const char * op_2_str(OP_CODE  op);
-	const char * metamethod_op_2_str(METAMETHOD_OPERATOR op);
+
 
 
 

@@ -111,7 +111,7 @@ namespace zetscript{
 
 
 		void addGlobalVar(const StackElement & stk);
-		const char 	* 		getOpCodeStr(OP_CODE  op);
+
 		void clearGlobalVars();
 
 		 StackElement execute(
@@ -221,7 +221,7 @@ namespace zetscript{
 										,CScriptFunction *info_function
 										,OpCodeInstruction *instruction
 										,const char *__OVERR_OP__
-										,METAMETHOD_OPERATOR __METAMETHOD__
+										,METAMETHOD_OP_CODE __METAMETHOD__
 										,StackElement *stkResultOp1
 										,StackElement *stkResultOp2
 

@@ -231,6 +231,7 @@ ELSE()
 		CScopeFactory.h
 		CScriptClassBase.h
 		CScriptClass.h
+		CScriptClassFactory.h
 		CScriptFunction.h
 		CScriptFunctionFactory.h
 		CVirtualMachine.h
@@ -241,6 +242,7 @@ ELSE()
 		
 		CVirtualMachine.inc
 		CZetScript.inc
+		CScriptClassFactory.inc
 	)
 	
 	
