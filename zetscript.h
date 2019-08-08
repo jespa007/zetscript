@@ -77,7 +77,7 @@
 #include "util/path.h"
 
 #include "exception.h"
-#include "CFunctionMemberPointer.h"
+#include "CMemberFunctionPointer.h"
 
 #include "var/CScriptVariable.h"
 #include "var/CStringScriptVariable.h"

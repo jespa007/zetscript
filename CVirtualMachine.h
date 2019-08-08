@@ -109,7 +109,6 @@ namespace zetscript{
 			return &s_return_value;
 		}
 
-
 		void addGlobalVar(const StackElement & stk);
 
 		void clearGlobalVars();

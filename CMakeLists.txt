@@ -172,7 +172,7 @@ ELSE()
 		var/CScriptVariable.cpp
 	
 		var/CStringScriptVariable.cpp
-		var/CStructScriptVariable.cpp
+		var/CDictionaryScriptVariable.cpp
 		var/CVectorScriptVariable.cpp
 		var/CFunctorScriptVariable.cpp
 		
@@ -186,8 +186,8 @@ ELSE()
 		CScriptFunctionFactory.cpp
 		CScriptClass.cpp
 		CScriptClassFactory.cpp
-		
 		CVirtualMachine.cpp
+		OpCodeInstruction.cpp
 		
 	
 		#-- Script Core --
@@ -207,10 +207,10 @@ endif()
 
 IF ( "${FCOMPILE}" STREQUAL "ON")
 	# helloworld
-	add_executable(helloworld${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/helloworld.cpp
-	)
-	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
+	#add_executable(helloworld${POST_NAME}
+	#	${PROJECT_SOURCE_DIR}/test/helloworld.cpp
+	#)
+	#target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
 ELSE()
 
 	SET(

@@ -12,11 +12,11 @@ void say_helloworld(){
 
 int main(){
 
-	CZetScript zs;
+	CZetScript *zs = new CZetScript();
 
-	zs.register_C_Function("say_helloworld",say_helloworld);
+	zs->register_C_Function("say_helloworld",say_helloworld);
 
-	zs.evalString("say_helloworld();"); // Call c function and prints hello world!
+	zs->evalString("say_helloworld();"); // Call c function and prints hello world!
 
 
 

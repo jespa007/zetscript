@@ -349,7 +349,7 @@ namespace zetscript{
 	 * Register C Member function Class
 	 */
 	template < typename C, typename R, class T, typename..._A>
-	bool CScriptClassFactory::register_C_FunctionMember(
+	bool CScriptClassFactory::register_C_MemberFunction(
 			const char *function_name
 			,R (T:: *function_type)(_A...)
 			, const char *registered_file
@@ -442,7 +442,7 @@ namespace zetscript{
 	 * Register C Member function Class
 	 */
 	template <typename T, typename F>
-	bool CScriptClassFactory::register_C_StaticFunctionMember(const char *function_name,F function_type, const char *registered_file,int registered_line)
+	bool CScriptClassFactory::register_C_StaticMemberFunction(const char *function_name,F function_type, const char *registered_file,int registered_line)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<CScriptClass *> * vec_script_class_node = getVecScriptClassNode();
@@ -567,7 +567,7 @@ namespace zetscript{
 	 */
 	//<o, decltype(o::s)>(STR(s),zetscript::offset_of(&o::s)) &CVar::mierda
 	template <typename C, typename R,typename T>
-	bool CScriptClassFactory::register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
+	bool CScriptClassFactory::register_C_MemberVariable(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<CScriptClass *> * vec_script_class_node = getVecScriptClassNode();

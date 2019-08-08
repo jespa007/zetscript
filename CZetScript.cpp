@@ -358,7 +358,7 @@ namespace zetscript{
 	//
 	// CONSTANT MANAGEMENT
 
-	ConstantValueInfo *CZetScript::getConstant(const std::string & const_name){
+	ConstantValueInfo *CZetScript::getRegisteredConstantValue(const std::string & const_name){
 
 		if((m_contantPool).count(const_name) == 1){
 			return (m_contantPool)[const_name];
@@ -366,11 +366,11 @@ namespace zetscript{
 		return NULL;
 	}
 
-	ConstantValueInfo * CZetScript::addConstant(const std::string & const_name, void *obj, unsigned short properties){
+	ConstantValueInfo * CZetScript::registerConstantValue(const std::string & const_name, void *obj, unsigned short properties){
 
 		ConstantValueInfo * info_ptr=NULL;
 
-		if(getConstant(const_name) == NULL){
+		if(getRegisteredConstantValue(const_name) == NULL){
 			info_ptr=new ConstantValueInfo;
 			*info_ptr={obj,NULL,properties};
 			(m_contantPool)[const_name]=info_ptr;
@@ -381,16 +381,16 @@ namespace zetscript{
 		return info_ptr;
 	}
 
-	ConstantValueInfo * CZetScript::addConstant(const std::string & const_name, int _value){
+	ConstantValueInfo * CZetScript::registerConstantValue(const std::string & const_name, int _value){
 		intptr_t value = _value;
 		unsigned short type=STK_PROPERTY_TYPE_INTEGER;
 		StackElement *stk;
 
-		if((stk = getConstant(const_name))!=NULL){
+		if((stk = getRegisteredConstantValue(const_name))!=NULL){
 			return stk;
 		}
 
-		return addConstant(const_name,(void *)value,type);
+		return registerConstantValue(const_name,(void *)value,type);
 
 	}
 
@@ -642,10 +642,10 @@ namespace zetscript{
 		}
 	}
 
-	bool CZetScript::evalString(const char * expression, bool exec_vm, bool show_bytecode, const char * filename)  {
+	bool CZetScript::evalString(const std::string & expression, bool exec_vm, bool show_bytecode, const char * filename)  {
 
 
-		if(!eval->eval(expression,filename)){
+		if(!eval->eval(expression.c_str(),filename)){
 			return false;
 		}
 
@@ -664,7 +664,7 @@ namespace zetscript{
 		return true;
 	}
 
-	bool CZetScript::evalFile(const char * filename, bool exec_vm, bool show_bytecode){
+	bool CZetScript::evalFile(const std::string &  filename, bool exec_vm, bool show_bytecode){
 		int idx_file=-1;
 		bool error=false;
 		char *buf_tmp=NULL;
@@ -678,7 +678,7 @@ namespace zetscript{
 
 			if((buf_tmp=io::read_file(filename, n_bytes))!=NULL){
 				try{
-					evalString(buf_tmp, exec_vm, show_bytecode,filename);
+					evalString(buf_tmp, exec_vm, show_bytecode,filename.c_str());
 				}
 				catch(exception::script_error & e){
 					free(buf_tmp);

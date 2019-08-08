@@ -840,7 +840,7 @@ namespace zetscript{
 
 
 		template <  typename F>
-		std::function<F> * CZetScript::bind_function(const std::string & function_access)
+		std::function<F> * CZetScript::bindScriptFunction(const std::string & function_access)
 		{
 			std::string return_type;
 			std::vector<std::string> params;

@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
 
 using namespace zetscript;
 
@@ -18,21 +18,18 @@ float add(float *op1, float *op2){
 
 int main(){
 
-	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+	CZetScript *zs = new CZetScript(); // instance zetscript
 
-	// register add(int,int)
-	REGISTER_C_FUNCTION("add",static_cast<int (*)(int,int)>(add));
-	// register add(float,float)
-	REGISTER_C_FUNCTION("add",static_cast<float (*)(float *,float *)>(add));
+	zs->register_C_Function("add",static_cast<int (*)(int,int)>(add));
+	zs->register_C_Function("add",static_cast<float (*)(float *,float *)>(add));
 
 
-
-	zetscript::evalString(
+	zs->evalString(
 		"print(\"result 5+4:\"+add(5,4));"       // prints "result 5+4:9"
 		"print(\"result 0.5+4.6:\"+add(0.5,4.6));"       // prints "result 5+4:9"
 	);
 
-	CZetScript::destroy();
+	delete zs;
 
 #ifdef __MEMMANAGER__
   MEM_ViewStatus();

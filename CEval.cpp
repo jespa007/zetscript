@@ -235,7 +235,7 @@ namespace zetscript{
 		return this->m_compiledSymbolName[s];
 	}
 
-	bool CEval::eval(const char * str, const char * _filename, int _line){
+	bool CEval::eval(const char * str, const char *  _filename, int _line){
 		int line =_line;
 		current_parsing_file=_filename;
 		char *end_char = NULL;
@@ -366,7 +366,7 @@ namespace zetscript{
 
 	CEval::CEval(CZetScript *_zs){
 		//CURRENT_PARSING_FILE_IDX=-1;
-		current_parsing_file="";
+		current_parsing_file=NULL;
 		pCurrentFunctionInfo=NULL;
 		this->zs=_zs;
 		this->script_function_factory=zs->getScriptFunctionFactory();
@@ -504,6 +504,7 @@ namespace zetscript{
 						}
 					}
 					else{ // error
+
 						 write_error(current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
 						 error=true;
 						 return NULL;
@@ -642,12 +643,12 @@ namespace zetscript{
 				 load_type=LOAD_TYPE_CONSTANT;
 
 
-				if((get_obj = this->zs->getConstant(v))!=NULL){
+				if((get_obj = this->zs->getRegisteredConstantValue(v))!=NULL){
 					obj = get_obj;
 				}else{
 
 					CStringScriptVariable *s=new CStringScriptVariable(zs,v);
-					obj=this->zs->addConstant(v,NULL,type);
+					obj=this->zs->registerConstantValue(v,NULL,type);
 					((StackElement *)obj)->stkValue=((void *)(s->m_strValue.c_str()));
 					((StackElement *)obj)->varRef=s;
 
@@ -673,7 +674,7 @@ namespace zetscript{
 				int value = *((int *)const_obj);
 				delete (int *)const_obj;
 				load_type=LOAD_TYPE_CONSTANT;
-				obj=this->zs->addConstant(v,value);
+				obj=this->zs->registerConstantValue(v,value);
 			}
 			else if((const_obj=string::parse_float(v))!=NULL){
 				float value = *((float *)const_obj);
@@ -684,10 +685,10 @@ namespace zetscript{
 				type=STK_PROPERTY_TYPE_NUMBER;
 				load_type=LOAD_TYPE_CONSTANT;
 
-				if((get_obj = this->zs->getConstant(v))!=NULL){
+				if((get_obj = this->zs->getRegisteredConstantValue(v))!=NULL){
 					obj = get_obj;
 				}else{
-					obj=this->zs->addConstant(v,value_ptr,type);
+					obj=this->zs->registerConstantValue(v,value_ptr,type);
 				}
 			}
 			else if((const_obj=string::parse_boolean(v))!=NULL){
@@ -698,10 +699,10 @@ namespace zetscript{
 				type=STK_PROPERTY_TYPE_BOOLEAN;
 				load_type=LOAD_TYPE_CONSTANT;
 
-				if((get_obj = this->zs->getConstant(v))!=NULL){
+				if((get_obj = this->zs->getRegisteredConstantValue(v))!=NULL){
 					obj = get_obj;
 				}else{
-					obj=this->zs->addConstant(v,(void *)value,type);
+					obj=this->zs->registerConstantValue(v,(void *)value,type);
 				}
 			}else{ // it should be an identifier token  ...
 
@@ -723,7 +724,7 @@ namespace zetscript{
 					scope_type=INS_PROPERTY_SUPER_SCOPE;
 				}else if(v == "this"){
 					scope_type=INS_PROPERTY_THIS_SCOPE;
-				}else if((get_obj = this->zs->getConstant(v)) != NULL){  // check if symbol is constant ...
+				}else if((get_obj = this->zs->getRegisteredConstantValue(v)) != NULL){  // check if symbol is constant ...
 					obj=get_obj;
 					load_type=LOAD_TYPE_CONSTANT;
 				}else{

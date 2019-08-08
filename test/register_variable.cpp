@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
 
 using namespace zetscript;
 
@@ -17,14 +17,14 @@ int main(){
 	bool 	bool_var = true;
 	std::string	string_var = "in c++";
 
-	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+	CZetScript *zs = new CZetScript(); // instance zetscript
 
-	REGISTER_C_VARIABLE("int_var",int_var); // it takes int *
-	REGISTER_C_VARIABLE("float_var",float_var); // it takes float *
-	REGISTER_C_VARIABLE("bool_var",bool_var); // it takes bool *
-	REGISTER_C_VARIABLE("string_var",string_var); // it takes std::string *
+	zs->register_C_Variable("int_var",&int_var); // it takes int *
+	zs->register_C_Variable("float_var",&float_var); // it takes float *
+	zs->register_C_Variable("bool_var",&bool_var); // it takes bool *
+	zs->register_C_Variable("string_var",&string_var); // it takes std::string *
 
-	zetscript::evalString(
+	zs->evalString(
 		"int_var+=5;"
 		"float_var+=5;"
 		"bool_var=!bool_var;"
@@ -35,7 +35,7 @@ int main(){
 		"print(\"string_var:\"+string_var);" // prints "string_var:in c++ and in script"
 	);
 
-	CZetScript::destroy();
+	delete zs;
 
 #ifdef __MEMMANAGER__
   MEM_ViewStatus();

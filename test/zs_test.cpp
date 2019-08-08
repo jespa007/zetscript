@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
 
 using namespace zetscript;
 
@@ -293,20 +293,23 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_ARITHMETIC_INT_OP(val1, op, val2) \
 { \
-	int aux_value=0; \
+	int *aux_value=NULL; \
 	std::string str= STR(val1) \
 				STR(op) \
 				STR(val2) \
 				";"; \
-	if((aux_value=CZetScript::evalIntValue(str)) != (val1 op val2)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
-		exit(-1); \
+	aux_value=zs->evalIntValue(str); \
+	if(aux_value!=NULL){ \
+		if(*aux_value != (val1 op val2)){ \
+			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
 #define TEST_ARITHMETIC_CINTEGER_OP(val1, op, val2) \
 { \
-	int aux_value=0; \
+	int *aux_value=NULL; \
 	std::string str= "it1=("\
 				"(i1=new CInteger("\
 				STR(val1) \
@@ -316,37 +319,46 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");it2=it1.toInt();delete it1;delete i1;delete i2;it2;"; \
-	if((aux_value=CZetScript::evalIntValue(str)) != (val1 op val2)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
-		exit(-1); \
+	aux_value=zs->evalIntValue(str); \
+	if(aux_value!=NULL){ \
+		if( *aux_value != (val1 op val2)){ \
+			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
 #define TEST_ARITHMETIC_FLOAT_OP(val1, op, val2) \
 { \
 	float expr=((float)(val1) op (float)(val2));\
-	float aux_value=0; \
+	float * aux_value=NULL; \
 	std::string str= STR(val1) \
 				STR(op) \
 				STR(val2) \
 				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str),expr)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
-		exit(-1); \
+	aux_value=zs->evalFloatValue(str); \
+	if(aux_value!=NULL){ \
+		if(!FloatValuesAreAlmostTheSame(*aux_value,expr)){ \
+			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
 
 #define TEST_ARITHMETIC_FLOAT_MOD(val1, val2) \
 { \
-	float aux_value=0; \
+	float *aux_value=NULL; \
 	std::string str= STR(val1) \
 				"%" \
 				STR(val2) \
 				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str)  , fmod(val1,val2))){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
-		exit(-1); \
+	aux_value=zs->evalFloatValue(str); \
+	if(aux_value!=NULL){ \
+		if(!FloatValuesAreAlmostTheSame( *aux_value , fmod(val1,val2))){ \
+			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
@@ -354,7 +366,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 #define TEST_ARITHMETIC_CNUMBER_OP(val1, op, val2) \
 { \
 	float expr=((float)(val1) op (float)(val2));\
-	float aux_value=0; \
+	float *aux_value=NULL; \
 	std::string str= "nt1=("\
 				"(n1=new CNumber("\
 				STR(val1) \
@@ -364,15 +376,18 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;nt2;"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str),expr)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
-		exit(-1); \
+	aux_value=zs->evalFloatValue(str); \
+	if(aux_value!=NULL){ \
+		if(!FloatValuesAreAlmostTheSame(*aux_value,expr)){ \
+			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
 #define TEST_ARITHMETIC_CNUMBER_MOD(val1, val2) \
 { \
-	float aux_value=0; \
+	float *aux_value=NULL; \
 	std::string str= "nt1=("\
 				"(n1=new CNumber("\
 				STR(val1) \
@@ -382,24 +397,30 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");nt2=nt1.toFloat();delete n1; delete n2;delete nt1;nt2;"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str)  , fmod(val1,val2))){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
-		exit(-1); \
+	aux_value=zs->evalFloatValue(str);\
+	if(aux_value!=NULL){ \
+		if(!FloatValuesAreAlmostTheSame(*aux_value  , fmod(val1,val2))){ \
+			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
 
 #define TEST_ARITHMETIC_STRING_OP(val1,op, val2) \
 { \
-	std::string aux_value=""; \
+	std::string * aux_value=NULL; \
 	std::string str= STR(val1) \
 				STR(op) \
 				val2\
 				";"; \
 	std::string expected_str = std::string(val1) op val2;\
-	if((aux_value=CZetScript::evalStringValue(str))!=expected_str.c_str()){ \
-		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value.c_str()); \
-		exit(-1); \
+	aux_value=zs->evalStringValue(str);\
+	if(aux_value!=NULL){ \
+		if(*aux_value!=expected_str){ \
+			fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value->c_str()); \
+			exit(-1); \
+		} \
 	} \
 }
 
@@ -542,43 +563,55 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 
 #define TEST_ARITHMETIC_INT_EXPR(expr) \
 { \
-	int aux_value=0; \
+	int * aux_value=NULL; \
 	std::string str_expr= STR(expr)";"; \
 	\
-	if((aux_value=CZetScript::evalIntValue(str_expr))  != (expr)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,aux_value); \
-		exit(-1); \
+	aux_value=zs->evalIntValue(str_expr);\
+	if(aux_value != NULL){\
+		if(*aux_value != (expr)){ \
+			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
 #define TEST_INT_EXPR(expr, expected_value) \
 { \
-	int aux_value=0; \
+	int *aux_value=NULL; \
 	\
-	if((aux_value=CZetScript::evalIntValue(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
-		exit(-1); \
+	aux_value=zs->evalIntValue(expr);\
+	if(aux_value != NULL){\
+		if(*aux_value  != (expected_value)){ \
+			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
 
 #define TEST_FLOAT_EXPR(expr, expected_value) \
 { \
-	float aux_value=0; \
+	float * aux_value=NULL; \
 	\
-	if((aux_value=CZetScript::evalFloatValue(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,aux_value); \
-		exit(-1); \
+	aux_value=zs->evalFloatValue(expr); \
+	if(aux_value != NULL){ \
+		if(*aux_value  != (expected_value)){ \
+			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
 #define TEST_BOOL_EXPR(expr, expected_value) \
 { \
-	bool aux_value=false; \
+	bool *aux_value=NULL; \
 	\
-	if((aux_value=CZetScript::evalBoolValue(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
-		exit(-1); \
+	aux_value=zs->evalBoolValue(expr);\
+	if(aux_value != NULL){ \
+		if(*aux_value  != (expected_value)){ \
+			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
@@ -594,38 +627,47 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 
 #define TEST_NUMBER_EXPR(expr, expected_value) \
 { \
-	float aux_value=0.0f; \
+	float *aux_value=NULL; \
 	\
-	if((aux_value=CZetScript::evalFloatValue(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,aux_value); \
-		exit(-1); \
+	aux_value=zs->evalFloatValue(expr);\
+	if(aux_value != NULL){ \
+		if(*aux_value  != (expected_value)){ \
+			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
+			exit(-1); \
+		} \
 	} \
 }
 
 #define TEST_ARITHMETIC_FLOAT_EXPR(expr) \
 { \
-	float aux_value=0; \
+	float *aux_value=NULL; \
 	std::string str_expr= STR(expr)";"; \
 	\
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::evalFloatValue(str_expr)  , (expr))){ \
-		double error = fabs(fabs(aux_value)-fabs(expr));\
-		if(error>0.001){ /* Only error if the difference is more than expected */\
-			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,aux_value); \
-			exit(-1); \
-		}else{\
-			fprintf(stderr,"warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n",str_expr.c_str(),expr,aux_value); \
-		}\
+	aux_value=zs->evalFloatValue(str_expr); \
+	if(aux_value != NULL){ \
+		if(!FloatValuesAreAlmostTheSame(*aux_value  , (expr))){ \
+			double error = fabs(fabs(*aux_value)-fabs(expr));\
+			if(error>0.001){ /* Only error if the difference is more than expected */\
+				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,aux_value); \
+				exit(-1); \
+			}else{\
+				fprintf(stderr,"warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n",str_expr.c_str(),expr,*aux_value); \
+			}\
+		} \
 	} \
 }
 
 #define TEST_ARITHMETIC_BOOL_EXPR(val1) \
 { \
-	bool aux_value=false; \
+	bool *aux_value=NULL; \
 	std::string str= STR(val1) \
 				";"; \
-	if((aux_value=CZetScript::evalBoolValue(str)) != (val1)){ \
-		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",aux_value?"true":"false"); \
-		exit(-1); \
+	aux_value=zs->evalBoolValue(str);\
+	if(aux_value != NULL) { \
+		if(*aux_value != (val1)){ \
+			fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",*aux_value?"true":"false"); \
+			exit(-1); \
+		} \
 	} \
 }
 
@@ -672,7 +714,7 @@ int main(int argc, char * argv[]) {
 
 	int n_test=0;
 
-	CZetScript::getInstance();
+	CZetScript *zs=new CZetScript();
 
 /*	"test_arithmetic_operations.zs",
 	"test_binary_operations.zs",
@@ -699,85 +741,85 @@ int main(int argc, char * argv[]) {
 	//TEST_NUMBER_EXPR("4.0*4;",16.0);
 	//exit(-1);
 	//int i= 0+ +1;
-	REGISTER_C_CLASS<CNumber>("CNumber");
+	zs->register_C_Class<CNumber>("CNumber");
 
-	REGISTER_C_FUNCTION_MEMBER<CNumber>("CNumber",static_cast<void (CNumber::*)(float *)>(&CNumber::_set));
-	REGISTER_C_FUNCTION_MEMBER<CNumber>("toFloat",&CNumber::toFloat);
-	REGISTER_C_VARIABLE_MEMBER<CNumber>("n",&CNumber::n);
-
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_add",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_add));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_add));
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_mul",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mul));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mul));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mul));
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_div",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_div));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_div));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_div));
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_mod",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mod));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mod));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mod));
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CNumber>("_neg",static_cast<CNumber * (*)(CNumber *)>(&CNumber::_neg));
-
-	REGISTER_C_FUNCTION_MEMBER<CNumber>("_set",static_cast<void (CNumber::*)(float *)>(&CNumber::_set));
-	REGISTER_C_FUNCTION_MEMBER<CNumber>("_set",static_cast<void (CNumber::*)(CNumber *)>(&CNumber::_set));
+	zs->register_C_MemberFunction<CNumber>("CNumber",static_cast<void (CNumber::*)(float *)>(&CNumber::_set));
+	zs->register_C_MemberFunction<CNumber>("toFloat",&CNumber::toFloat);
+	zs->register_C_MemberVariable<CNumber>("n",&CNumber::n);
 
 
-	REGISTER_C_CLASS<CInteger>("CInteger");
-	REGISTER_C_FUNCTION_MEMBER<CInteger>("CInteger",&CInteger::ScriptConstructor);
-	REGISTER_C_FUNCTION_MEMBER<CInteger>("toInt",&CInteger::toInt);
-	REGISTER_C_VARIABLE_MEMBER<CInteger>("n",&CInteger::n);
+	zs->register_C_StaticMemberFunction<CNumber>("_add",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_add));
+	zs->register_C_StaticMemberFunction<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add));
+	zs->register_C_StaticMemberFunction<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_add));
+
+	zs->register_C_StaticMemberFunction<CNumber>("_mul",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mul));
+	zs->register_C_StaticMemberFunction<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mul));
+	zs->register_C_StaticMemberFunction<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mul));
+
+	zs->register_C_StaticMemberFunction<CNumber>("_div",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_div));
+	zs->register_C_StaticMemberFunction<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_div));
+	zs->register_C_StaticMemberFunction<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_div));
+
+	zs->register_C_StaticMemberFunction<CNumber>("_mod",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mod));
+	zs->register_C_StaticMemberFunction<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mod));
+	zs->register_C_StaticMemberFunction<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mod));
+
+	zs->register_C_StaticMemberFunction<CNumber>("_neg",static_cast<CNumber * (*)(CNumber *)>(&CNumber::_neg));
+
+	zs->register_C_MemberFunction<CNumber>("_set",static_cast<void (CNumber::*)(float *)>(&CNumber::_set));
+	zs->register_C_MemberFunction<CNumber>("_set",static_cast<void (CNumber::*)(CNumber *)>(&CNumber::_set));
 
 
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add));
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_mul",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mul));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mul));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mul));
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_div",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_div));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_div));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_div));
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_mod",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mod));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mod));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mod));
+	zs->register_C_Class<CInteger>("CInteger");
+	zs->register_C_MemberFunction<CInteger>("CInteger",&CInteger::ScriptConstructor);
+	zs->register_C_MemberFunction<CInteger>("toInt",&CInteger::toInt);
+	zs->register_C_MemberVariable<CInteger>("n",&CInteger::n);
 
 
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_shr",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shr));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shr));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shr));
+	zs->register_C_StaticMemberFunction<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add));
+	zs->register_C_StaticMemberFunction<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add));
+	zs->register_C_StaticMemberFunction<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add));
+
+	zs->register_C_StaticMemberFunction<CInteger>("_mul",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mul));
+	zs->register_C_StaticMemberFunction<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mul));
+	zs->register_C_StaticMemberFunction<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mul));
+
+	zs->register_C_StaticMemberFunction<CInteger>("_div",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_div));
+	zs->register_C_StaticMemberFunction<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_div));
+	zs->register_C_StaticMemberFunction<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_div));
+
+	zs->register_C_StaticMemberFunction<CInteger>("_mod",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mod));
+	zs->register_C_StaticMemberFunction<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mod));
+	zs->register_C_StaticMemberFunction<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mod));
 
 
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_shl",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shl));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shl));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shl));
+	zs->register_C_StaticMemberFunction<CInteger>("_shr",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shr));
+	zs->register_C_StaticMemberFunction<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shr));
+	zs->register_C_StaticMemberFunction<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shr));
 
 
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_and",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_and));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_and));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_and));
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_or",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_or));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or));
-
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_xor",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_xor));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_xor));
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_xor));
+	zs->register_C_StaticMemberFunction<CInteger>("_shl",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shl));
+	zs->register_C_StaticMemberFunction<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shl));
+	zs->register_C_StaticMemberFunction<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shl));
 
 
-	REGISTER_C_STATIC_FUNCTION_MEMBER<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg));
+	zs->register_C_StaticMemberFunction<CInteger>("_and",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_and));
+	zs->register_C_StaticMemberFunction<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_and));
+	zs->register_C_StaticMemberFunction<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_and));
 
-	REGISTER_C_FUNCTION_MEMBER<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set));
-	REGISTER_C_FUNCTION_MEMBER<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set));
+	zs->register_C_StaticMemberFunction<CInteger>("_or",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_or));
+	zs->register_C_StaticMemberFunction<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or));
+	zs->register_C_StaticMemberFunction<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or));
+
+	zs->register_C_StaticMemberFunction<CInteger>("_xor",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_xor));
+	zs->register_C_StaticMemberFunction<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_xor));
+	zs->register_C_StaticMemberFunction<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_xor));
+
+
+	zs->register_C_StaticMemberFunction<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg));
+
+	zs->register_C_MemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set));
+	zs->register_C_MemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set));
 
 
 	// unsinged
@@ -902,7 +944,7 @@ int main(int argc, char * argv[]) {
 	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}i;",10);
 	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);
 
-	CZetScript::getInstance()->evalString("var i1,i2,it1,it2,n1,n2,nt1,nt2;");
+	zs->evalString("var i1,i2,it1,it2,n1,n2,nt1,nt2;");
 
 	printf("%i. testing cinteger ops...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,4); // op1==op2
@@ -923,11 +965,11 @@ int main(int argc, char * argv[]) {
 
 	printf("%i. test consisten script-c-script calls ...\n",++n_test);
 	// test calling script-c-script-c
-	REGISTER_C_FUNCTION("test_function_1st_c_call",test_function_1st_c_call);
-	CZetScript::getInstance()->evalString("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
+	zs->register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
+	zs->evalString("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
 
-	std::function<void ()> * test_1st_script_call=bind_function<void ()>("test_1st_script_call");
-	test_2nd_script_call=bind_function<void ()>("test_2nd_script_call");
+	std::function<void ()> * test_1st_script_call=zs->bindScriptFunction<void ()>("test_1st_script_call");
+	test_2nd_script_call=zs->bindScriptFunction<void ()>("test_2nd_script_call");
 
 	if(test_1st_script_call){
 		(*test_1st_script_call)();
@@ -939,7 +981,7 @@ int main(int argc, char * argv[]) {
 
 	printf("All tests passed OK!\n");
 
-	CZetScript::destroy();
+	delete zs;
 
 #ifdef __MEMMANAGER__
   MEM_ViewStatus();

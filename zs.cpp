@@ -2,8 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
-#include <istream>
+#include "zetscript.h"
 
 #define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2019 Jordi Espada\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION
 
@@ -16,11 +15,11 @@ int main(int argc, char * argv[]) {
 	if (argc > 1) {
 		bool execute=true;
 		bool show_bytecode=false;
-		std::string file="";
+		const char * file=NULL;
 
 		for(int i=1; i < argc; i++){
 
-			std::vector<std::string> a=stringsplit(argv[i],'=');
+			std::vector<std::string> a=string::split(argv[i],'=');
 			switch(a.size()){
 			case 1:
 
@@ -55,15 +54,16 @@ int main(int argc, char * argv[]) {
 
 		}
 
-		if(file==""){
+		if(file==NULL){
 			fprintf(stderr,"Program with arguments you must specify file (i.e --file=filename )\n");
 			exit(-1);
 		}
 
 
-
-		if(!zs->evalFile(file,execute,show_bytecode)){
-			fprintf(stderr,"%s\n",zs->getError());
+		try{
+			zs->evalFile(file,execute,show_bytecode);
+		}catch(std::exception & ex){
+			fprintf(stderr,"%s\n",ex.what());
 		}
 	}
 	else{
@@ -73,8 +73,6 @@ int main(int argc, char * argv[]) {
 		printf(ZETSCRIP_COPYRIGHT);
 		printf("\n");
 
-
-
 		do{
 			printf("zs>");
 			std::getline(std::cin,expression);
@@ -82,8 +80,10 @@ int main(int argc, char * argv[]) {
 			exit = expression=="exit" || expression=="quit";
 			if(!exit){ // evaluate expression
 
-				if(!zs->evalString(expression)){
-					fprintf(stderr,"%s\n",zs->getError());
+				try{
+					zs->evalString(expression.c_str());
+				}catch(std::exception & ex){
+					fprintf(stderr,"%s\n",ex.what());
 				}
 			}
 

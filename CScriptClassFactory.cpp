@@ -97,19 +97,19 @@ namespace zetscript{
 		// Let's register functions,...
 		// register c function's
 
-		main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
+		main_object->registerMemberFunction(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 
 		register_C_Function("print",print);
 		//register_C_Function("error",internal_print_error);
 
-		register_C_FunctionMember<CVectorScriptVariable>("size",&CVectorScriptVariable::size);
-		register_C_FunctionMember<CVectorScriptVariable>("push",static_cast<void (CVectorScriptVariable:: *)(StackElement *)>(&CVectorScriptVariable::push));
-		register_C_FunctionMember<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop);
+		register_C_MemberFunction<CVectorScriptVariable>("size",&CVectorScriptVariable::size);
+		register_C_MemberFunction<CVectorScriptVariable>("push",static_cast<void (CVectorScriptVariable:: *)(StackElement *)>(&CVectorScriptVariable::push));
+		register_C_MemberFunction<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop);
 
 
-		register_C_FunctionMember<CDictionaryScriptVariable>("add",&CDictionaryScriptVariable::add_attr);
-		register_C_FunctionMember<CDictionaryScriptVariable>("remove",&CDictionaryScriptVariable::remove_attr);
-		register_C_FunctionMember<CDictionaryScriptVariable>("size",&CDictionaryScriptVariable::size);
+		register_C_MemberFunction<CDictionaryScriptVariable>("add",&CDictionaryScriptVariable::add_attr);
+		register_C_MemberFunction<CDictionaryScriptVariable>("remove",&CDictionaryScriptVariable::remove_attr);
+		register_C_MemberFunction<CDictionaryScriptVariable>("size",&CDictionaryScriptVariable::size);
 	}
 
 	void CScriptClassFactory::register_C_BaseSymbols(bool _register){

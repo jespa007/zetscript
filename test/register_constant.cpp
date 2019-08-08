@@ -1,21 +1,19 @@
 
-#include "CZetScript.h"
+#include "zetscript.h"
 
 using namespace zetscript;
 
 int main(){
 
-	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+	CZetScript *zs = new CZetScript(); // instance zetscript
 
-	REGISTER_C_CONSTANT("MY_CONSTANT",10);
+	zs->registerConstantValue("MY_CONSTANT",10);
 
-	zetscript::evalString(
+	zs->evalString(
 		"print(\"c:\"+MY_CONSTANT);"
 	);
 
-
-
-	CZetScript::destroy();
+	delete zs;
 
 #ifdef __MEMMANAGER__
   MEM_ViewStatus();

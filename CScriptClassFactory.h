@@ -101,20 +101,20 @@ namespace zetscript{
 		 * Register C Member function Class
 		 */
 		template < typename C, typename R, class T, typename..._A>
-		bool register_C_FunctionMember(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 );
+		bool register_C_MemberFunction(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 );
 
 		/**
 		 * Register C Member function Class
 		 */
 		template <typename T, typename F>
-		bool register_C_StaticFunctionMember(const char *function_name,F function_type, const char *registered_file="",int registered_line=-1);
+		bool register_C_StaticMemberFunction(const char *function_name,F function_type, const char *registered_file="",int registered_line=-1);
 
 
 		/**
 		 * Register C Member var
 		 */
 		template <typename C, typename R,typename T>
-		bool register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1);
+		bool register_C_MemberVariable(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1);
 
 
 		~CScriptClassFactory();
