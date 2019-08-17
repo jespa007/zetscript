@@ -73,7 +73,7 @@ namespace zetscript{
 	}
 
 
-	short 		 CScriptFunction::INSTRUCTION_getLine(OpCodeInstruction * ins){
+	short 		 CScriptFunction::INSTRUCTION_getLine(CByteCode * ins){
 		OpCodeInstructionSourceInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL){
@@ -82,7 +82,7 @@ namespace zetscript{
 		return -1;
 	}
 
-	const char *  CScriptFunction::INSTRUCTION_getSymbolName(OpCodeInstruction * ins){
+	const char *  CScriptFunction::INSTRUCTION_getSymbolName(CByteCode * ins){
 		OpCodeInstructionSourceInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL){
@@ -91,7 +91,7 @@ namespace zetscript{
 		return "unknown";
 	}
 
-	const char * CScriptFunction::INSTRUCTION_getFile(OpCodeInstruction * ins){
+	const char * CScriptFunction::INSTRUCTION_getFile(CByteCode * ins){
 
 		OpCodeInstructionSourceInfo *info=getInstructionInfo(ins);
 

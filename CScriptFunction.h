@@ -42,9 +42,9 @@ namespace zetscript{
 		//-----------
 		//  SYMBOL-INSTRUCTION
 		std::map<short,OpCodeInstructionSourceInfo> instruction_info; // std::map that gives symbol with at instruction idx given
-		short 		 INSTRUCTION_getLine(OpCodeInstruction * ins);
-		const char * INSTRUCTION_getSymbolName(OpCodeInstruction * ins);
-		const char * INSTRUCTION_getFile(OpCodeInstruction * ins);
+		short 		 INSTRUCTION_getLine(CByteCode * ins);
+		const char * INSTRUCTION_getSymbolName(CByteCode * ins);
+		const char * INSTRUCTION_getFile(CByteCode * ins);
 
 		//  DEBUG
 		//-----------
@@ -73,8 +73,8 @@ namespace zetscript{
 	private:
 
 
-		inline OpCodeInstructionSourceInfo * getInstructionInfo(OpCodeInstruction *ins){
-			short idx= (ins-this->instruction);///sizeof(OpCodeInstruction *);
+		inline OpCodeInstructionSourceInfo * getInstructionInfo(CByteCode *ins){
+			short idx= (ins-this->instruction);///sizeof(CByteCode *);
 			if(instruction_info.count(idx)==1){
 				return &instruction_info[idx];
 			}

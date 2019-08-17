@@ -99,7 +99,7 @@ namespace zetscript{
 		 char print_aux_load_value[512] = {0};
 		 char object_access[512] = "";
 
-		 OpCodeInstruction * instruction =&m_listStatements[current_instruction];
+		 CByteCode * instruction =&m_listStatements[current_instruction];
 		 ConstantValueInfo *icv;
 		 std::string symbol_value=INSTRUCTION_GET_SYMBOL_NAME(current_function,instruction);
 		 if(instruction->op_code != LOAD){
@@ -115,16 +115,16 @@ namespace zetscript{
 			 sprintf(object_access,
 					"[" FORMAT_PRINT_INSTRUCTION "]."
 
-					,(int)instruction->index_op2);
+					,(int)instruction->op2_value);
 		 }
 		 else if(instruction->properties & INS_PROPERTY_THIS_SCOPE){
 			sprintf(object_access,"this.");
 		 }
 
-		 switch(instruction->index_op1){
+		 switch(instruction->op1_value){
 
 			case LOAD_TYPE::LOAD_TYPE_CONSTANT:
-				icv=(ConstantValueInfo *)instruction->index_op2;
+				icv=(ConstantValueInfo *)instruction->op2_value;
 				switch(icv->properties){
 				case STK_PROPERTY_TYPE_BOOLEAN:
 				case STK_PROPERTY_TYPE_INTEGER:
@@ -165,16 +165,16 @@ namespace zetscript{
 		std::string post="";
 
 		unsigned idx_instruction=0;
-		for(OpCodeInstruction * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
+		for(CByteCode * instruction=sfo->instruction; instruction->op_code!= END_FUNCTION; instruction++,idx_instruction++){
 
 			int n_ops=0;
-			int index_op1 = instruction->index_op1;
-			int index_op2 = instruction->index_op2;
+			int op1_value = instruction->op1_value;
+			int op2_value = instruction->op2_value;
 
-			if(index_op1 != -1)
+			if(op1_value != -1)
 				n_ops++;
 
-			 if(index_op2 != -1)
+			 if(op2_value != -1)
 				 n_ops++;
 
 			 pre="";
@@ -198,8 +198,8 @@ namespace zetscript{
 					break;
 				default:
 					// check whether is constant and numeric
-					if(instruction->op_code==OP_CODE::LOAD && instruction->index_op1==LOAD_TYPE_CONSTANT){
-						ConstantValueInfo *icv = (((ConstantValueInfo *)instruction->index_op2));
+					if(instruction->op_code==OP_CODE::LOAD && instruction->op1_value==LOAD_TYPE_CONSTANT){
+						ConstantValueInfo *icv = (((ConstantValueInfo *)instruction->op2_value));
 						float n;
 
 						// change the sign
@@ -225,12 +225,12 @@ namespace zetscript{
 			switch(instruction->op_code){
 
 			case  NEW:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,OpCodeInstruction::opCodeToStr(instruction->op_code),instruction->index_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->index_op1):"???");
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,CByteCode::opCodeToStr(instruction->op_code),instruction->op1_value!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(instruction->op1_value):"???");
 				break;
 			case  LOAD:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s\n"
 						,idx_instruction,
-						OpCodeInstruction::opCodeToStr(instruction->op_code),
+						CByteCode::opCodeToStr(instruction->op_code),
 						pre.c_str(),
 						getStrTypeLoadValue(sfo,sfo->instruction,idx_instruction).c_str(),
 						post.c_str());
@@ -240,45 +240,45 @@ namespace zetscript{
 			case JMP:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
 						,idx_instruction
-						,OpCodeInstruction::opCodeToStr(instruction->op_code)
-						,(int)instruction->index_op2);
+						,CByteCode::opCodeToStr(instruction->op_code)
+						,(int)instruction->op2_value);
 				break;
 			case PUSH_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
 						,idx_instruction
-						,OpCodeInstruction::opCodeToStr(instruction->op_code)
-						,instruction->index_op1!=0?'(':' '
-						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-						,instruction->index_op1!=0?')':' '
+						,CByteCode::opCodeToStr(instruction->op_code)
+						,instruction->op1_value!=0?'(':' '
+						,instruction->op1_value&SCOPE_PROPERTY::BREAK?"BREAK":""
+						,instruction->op1_value&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+						,instruction->op1_value&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+						,instruction->op1_value!=0?')':' '
 						);
 				break;
 			case POP_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
 						,idx_instruction
-						,OpCodeInstruction::opCodeToStr(instruction->op_code)
-						,instruction->index_op1!=0?'(':' '
-						,instruction->index_op1&SCOPE_PROPERTY::BREAK?"BREAK":""
-						,instruction->index_op1&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
-						,instruction->index_op1&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
-						,instruction->index_op1!=0?')':' '
+						,CByteCode::opCodeToStr(instruction->op_code)
+						,instruction->op1_value!=0?'(':' '
+						,instruction->op1_value&SCOPE_PROPERTY::BREAK?"BREAK":""
+						,instruction->op1_value&SCOPE_PROPERTY::CONTINUE?" CONTINUE":""
+						,instruction->op1_value&SCOPE_PROPERTY::FOR_IN?" FOR_IN":""
+						,instruction->op1_value!=0?')':' '
 						);
 				break;
 			default:
 
 				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,OpCodeInstruction::opCodeToStr(instruction->op_code));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,CByteCode::opCodeToStr(instruction->op_code));
 				}else if(n_ops==1){
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
 							,idx_instruction
-							,OpCodeInstruction::opCodeToStr(instruction->op_code)
+							,CByteCode::opCodeToStr(instruction->op_code)
 							,(instruction->properties & STK_PROPERTY_READ_TWO_POP_ONE)?"_CS":""
 							);
 				}else{
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 							,idx_instruction
-							,OpCodeInstruction::opCodeToStr(instruction->op_code)
+							,CByteCode::opCodeToStr(instruction->op_code)
 							);
 				}
 				break;

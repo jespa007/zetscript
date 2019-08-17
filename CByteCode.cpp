@@ -3,19 +3,19 @@
 namespace zetscript{
 
 
-		OpCodeInstruction::OpCodeInstruction(OP_CODE _op_code
+		CByteCode::CByteCode(OP_CODE _op_code
 					 ,unsigned char _index_op1
 					 ,intptr_t _index_op2
 					 ,unsigned short _properties
 					 ){
 			op_code=_op_code;
-			index_op1=_index_op1;
-			index_op2=_index_op2;
+			op1_value=_index_op1;
+			op2_value=_index_op2;
 			properties=_properties;
 
 		}
 
-		const char * OpCodeInstruction::opCodeToStr(OP_CODE  op){
+		const char * CByteCode::opCodeToStr(OP_CODE  op){
 			switch(op){
 				case EQU:        return "EQU";  // ==
 				case INSTANCEOF:  return "INSTANCEOF";  // ==
@@ -73,7 +73,7 @@ namespace zetscript{
 			return "unknow_op";
 		}
 
-		const char * OpCodeInstruction::metamethodOpCodeToStr(METAMETHOD_OP_CODE op){
+		const char * CByteCode::metamethodOpCodeToStr(METAMETHOD_OP_CODE op){
 
 			switch (op) {
 				case	EQU_METAMETHOD:		return  "_equ";  // ==

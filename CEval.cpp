@@ -1257,7 +1257,7 @@ namespace zetscript{
 							}
 							aux_p=IGNORE_BLANKS(aux_p+1,line);
 
-							//symbol_token_node.instruction.push_back(OpCodeInstruction(OP_CODE::VGET));
+							//symbol_token_node.instruction.push_back(CByteCode(OP_CODE::VGET));
 							op_code=OP_CODE::VGET;
 							break;
 						case '.': // member access
@@ -1273,7 +1273,7 @@ namespace zetscript{
 
 							//save_symbol_name_value=true;
 							//pCurrentFunctionInfo->function_info_object->instruction_info[symbol_token_node.instruction.size()]=CScriptFunction::OpCodeInstructionSourceInfo(accessor_value,current_parsing_file,line);
-							//symbol_token_node.instruction.push_back(OpCodeInstruction(OP_CODE::LOAD)); //--> must add symbol value instruction...
+							//symbol_token_node.instruction.push_back(CByteCode(OP_CODE::LOAD)); //--> must add symbol value instruction...
 							op_code=OP_CODE::LOAD;
 							break;
 						}
@@ -2709,7 +2709,7 @@ namespace zetscript{
 
 
 		// get total size op + 1 ends with NULL
-		unsigned size = (pCurrentFunctionInfo->instruction.size() + 1) * sizeof(OpCodeInstruction);
+		unsigned size = (pCurrentFunctionInfo->instruction.size() + 1) * sizeof(CByteCode);
 		pCurrentFunctionInfo->function_info_object->instruction = (PtrInstruction)malloc(size);
 		memset(pCurrentFunctionInfo->function_info_object->instruction, 0, size);
 
@@ -2734,10 +2734,10 @@ namespace zetscript{
 							return;
 						}
 
-						instruction->index_op2=vis->idxSymbol;
+						instruction->op2_value=vis->idxSymbol;
 					}
 					else{
-						if((instruction->index_op2=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idxScope,ls->n_params))==0){
+						if((instruction->op2_value=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idxScope,ls->n_params))==0){
 							THROW_RUNTIME_ERROR(string::sformat("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 							return;
 						}
@@ -2765,7 +2765,7 @@ namespace zetscript{
 						return;
 					}
 
-					instruction->index_op2=(intptr_t)sf_found;
+					instruction->op2_value=(intptr_t)sf_found;
 
 
 				}else{ // find local/global var/function ...
@@ -2778,13 +2778,13 @@ namespace zetscript{
 					if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 						if((vis=sf->getVariable(ls->value,sc_var->idxScope))!=NULL){
 							load_type=LOAD_TYPE::LOAD_TYPE_VARIABLE;
-							instruction->index_op2=vis->idxSymbol;
+							instruction->op2_value=vis->idxSymbol;
 							local_found=true;
 						}
 					}
 					else{
 
-						if((instruction->index_op2=(intptr_t)sf->getFunction(ls->value,sc_var->idxScope,ls->n_params))!=0){
+						if((instruction->op2_value=(intptr_t)sf->getFunction(ls->value,sc_var->idxScope,ls->n_params))!=0){
 							load_type=LOAD_TYPE::LOAD_TYPE_FUNCTION;
 							local_found =true;
 						}
@@ -2802,11 +2802,11 @@ namespace zetscript{
 								}
 
 								load_type=LOAD_TYPE::LOAD_TYPE_VARIABLE;
-								instruction->index_op2=vis->idxSymbol;
+								instruction->op2_value=vis->idxSymbol;
 							}
 							else{
 
-								if((instruction->index_op2=(intptr_t)MAIN_FUNCTION->getFunction(ls->value,sc_var->idxScope,ls->n_params))==0){
+								if((instruction->op2_value=(intptr_t)MAIN_FUNCTION->getFunction(ls->value,sc_var->idxScope,ls->n_params))==0){
 									THROW_RUNTIME_ERROR(string::sformat("Cannot find function \"%s\"",ls->value.c_str()));
 									return;
 								}
@@ -2819,12 +2819,12 @@ namespace zetscript{
 
 
 
-					instruction->index_op1=load_type;
+					instruction->op1_value=load_type;
 
 					if(load_type==LOAD_TYPE::LOAD_TYPE_FUNCTION){
-						CScriptFunction *sf = ((CScriptFunction *)instruction->index_op2);
+						CScriptFunction *sf = ((CScriptFunction *)instruction->op2_value);
 						if((sf->symbol_info.properties & PROPERTY_C_OBJECT_REF) != 0){ // function will be solved at run time because it has to check param type
-							instruction->index_op2=ZS_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
+							instruction->op2_value=ZS_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
 						}
 					}
 
@@ -2833,8 +2833,8 @@ namespace zetscript{
 
 			// save instruction ...
 			pCurrentFunctionInfo->function_info_object->instruction[i].op_code = instruction->op_code;
-			pCurrentFunctionInfo->function_info_object->instruction[i].index_op1 = instruction->index_op1;
-			pCurrentFunctionInfo->function_info_object->instruction[i].index_op2 = instruction->index_op2;
+			pCurrentFunctionInfo->function_info_object->instruction[i].op1_value = instruction->op1_value;
+			pCurrentFunctionInfo->function_info_object->instruction[i].op2_value = instruction->op2_value;
 			pCurrentFunctionInfo->function_info_object->instruction[i].properties = instruction->properties;
 
 

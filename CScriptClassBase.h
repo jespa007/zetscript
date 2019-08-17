@@ -17,7 +17,7 @@ namespace zetscript{
 		CScriptFunctionFactory *script_function_factory;
 		CScriptClassFactory *script_class_factory;
 
-		bool searchVarFunctionSymbol( std::string symbol_to_find,OpCodeInstruction *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find=-1);
+		bool searchVarFunctionSymbol( std::string symbol_to_find,CByteCode *iao, int current_function, bool & symbol_not_found, unsigned int param_scope_type, int n_args_to_find=-1);
 
 
 		// local symbols for class or function...

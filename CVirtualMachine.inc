@@ -113,7 +113,7 @@ namespace zetscript{
 	inline bool CVirtualMachine::APPLY_METAMETHOD(
 										CScriptVariable *calling_object
 										,CScriptFunction *info_function
-										,OpCodeInstruction *instruction
+										,CByteCode *instruction
 										,const char *__OVERR_OP__
 										,METAMETHOD_OP_CODE __METAMETHOD__
 										,StackElement *stkResultOp1
@@ -131,7 +131,7 @@ namespace zetscript{
 						|| __METAMETHOD__ == SET_METAMETHOD\
 						   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);
 		StackElement *mm_test_startArg = stkCurrentData+n_metam_args;
-		if(instruction->index_op2 ==0){ /* search for first time , else the function is stored in index_op2 */
+		if(instruction->op2_value ==0){ /* search for first time , else the function is stored in op2_value */
 			CScriptClass *script_class_aux=NULL;
 
 			const char * symbol_to_find;
@@ -181,7 +181,7 @@ namespace zetscript{
 			StackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetMemberFunctionStart);
 			unsigned n_args=n_metam_args;
 
-			symbol_to_find=OpCodeInstruction::metamethodOpCodeToStr(__METAMETHOD__);
+			symbol_to_find=CByteCode::metamethodOpCodeToStr(__METAMETHOD__);
 
 			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
 			if((ptr_function_found = FIND_FUNCTION(
@@ -204,7 +204,7 @@ namespace zetscript{
 					return false;
 			}
 		}else{
-			ptr_function_found = (CScriptFunction *)instruction->index_op2;
+			ptr_function_found = (CScriptFunction *)instruction->op2_value;
 		}
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
@@ -236,8 +236,8 @@ namespace zetscript{
 	inline CScriptFunction * CVirtualMachine::FIND_FUNCTION(
 			CScriptVariable *calling_object
 			,CScriptFunction *info_function
-			,OpCodeInstruction *instruction
-			,OpCodeInstruction * callAleInstruction
+			,CByteCode *instruction
+			,CByteCode * callAleInstruction
 
 			,std::vector<FunctionSymbol> *m_functionSymbol
 			,std::vector<CScriptFunction *> *vec_global_functions
@@ -360,11 +360,11 @@ namespace zetscript{
 								}
 							}
 							if(all_check){ /* we found the right function (set it up!) ... */
-								callAleInstruction->index_op2 = (intptr_t)irfs;
+								callAleInstruction->op2_value = (intptr_t)irfs;
 								ptr_function_found = irfs;
 							}
 				}else{ /* type script function  ... */
-					callAleInstruction->index_op2=(intptr_t)irfs;
+					callAleInstruction->op2_value=(intptr_t)irfs;
 					ptr_function_found = irfs;
 				}
 			}
@@ -372,7 +372,7 @@ namespace zetscript{
 
 		if(ptr_function_found == NULL){
 			if(is_constructor && n_args == 0){ /* default constructor not found --> set as not found... */
-				callAleInstruction->properties = INS_PROPERTY_NO_FUNCTION_CALL;//index_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+				callAleInstruction->properties = INS_PROPERTY_NO_FUNCTION_CALL;//op2_value = ZS_FUNCTION_NOT_FOUND_IDX;
 			}
 			else{ // return error elaborate a error message...
 				int n_candidates=0;

@@ -187,7 +187,7 @@ ELSE()
 		CScriptClass.cpp
 		CScriptClassFactory.cpp
 		CVirtualMachine.cpp
-		OpCodeInstruction.cpp
+		CByteCode.cpp
 		
 	
 		#-- Script Core --
@@ -243,6 +243,7 @@ ELSE()
 		CVirtualMachine.inc
 		CZetScript.inc
 		CScriptClassFactory.inc
+		CByteCode.h
 	)
 	
 	

@@ -168,7 +168,7 @@ namespace zetscript{
 		}
 	}
 
-	StackElement * CScriptVariable::addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function,OpCodeInstruction *src_instruction,StackElement * sv){
+	StackElement * CScriptVariable::addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function,CByteCode *src_instruction,StackElement * sv){
 		StackElement si;
 
 		bool error_symbol=false;

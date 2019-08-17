@@ -1,7 +1,7 @@
 //-- Exception --
 #include		"exception.cpp"
 
-#include		"OpCodeInstruction.cpp"
+#include		"CByteCode.cpp"
 
 //-- Utils --
 #include 		"util/string.cpp"

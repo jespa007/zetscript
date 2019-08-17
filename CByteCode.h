@@ -75,13 +75,14 @@ namespace zetscript{
 			MAX_METAMETHOD_OPERATORS
 	}METAMETHOD_OP_CODE;
 
-	struct OpCodeInstruction {
+	class CByteCode {
+	public:
 		OP_CODE op_code;
-		unsigned char index_op1;	// left and right respectively
-		intptr_t index_op2;
+		unsigned char op1_value;
+		intptr_t op2_value;
 		unsigned short properties;
-		//short idxAstNode; // define ast node for give some information at run time
-		OpCodeInstruction(OP_CODE _op_code
+
+		CByteCode(OP_CODE _op_code
 		 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
 		 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
 		 ,unsigned short _properties=0
@@ -95,5 +96,5 @@ namespace zetscript{
 
 
 
-	typedef OpCodeInstruction *PtrInstruction;
+	typedef CByteCode *PtrInstruction;
 }

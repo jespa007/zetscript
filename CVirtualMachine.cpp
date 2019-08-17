@@ -649,7 +649,7 @@ namespace zetscript{
 			bool & error,
 			StackElement *ptrArg,
 			unsigned char n_args,
-			OpCodeInstruction *ins){
+			CByteCode *ins){
 
 		StackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
@@ -1117,7 +1117,7 @@ namespace zetscript{
 			StackElement 		  	* _ptrStartOp,
 			std::string 		  		  	* _ptrStartStr,
 			unsigned char n_args,
-			OpCodeInstruction *calling_instruction){
+			CByteCode *calling_instruction){
 
 		error=false;
 		StackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
@@ -1280,8 +1280,8 @@ namespace zetscript{
 		StackElement *src_ins=NULL;
 		bool ok=false;
 
-		OpCodeInstruction *start_it=info_function->instruction;
-		OpCodeInstruction *instruction_it=start_it;
+		CByteCode *start_it=info_function->instruction;
+		CByteCode *instruction_it=start_it;
 
 		ptrCurrentStr=ptrStartStr;
 		stkCurrentData=ptrStartOp;
@@ -1294,10 +1294,10 @@ namespace zetscript{
 
 		 for(;;){ // foreach asm instruction ...
 
-			OpCodeInstruction * instruction = instruction_it++;
+			CByteCode * instruction = instruction_it++;
 
 			const unsigned char operator_type=instruction->op_code;
-			const unsigned char index_op1=instruction->index_op1;
+			const unsigned char op1_value=instruction->op1_value;
 
 			switch(operator_type){
 			//default:
@@ -1308,7 +1308,7 @@ namespace zetscript{
 			case LOAD:
 			case VGET:
 
-				if(index_op1==LOAD_TYPE::LOAD_TYPE_VARIABLE || operator_type==VGET){
+				if(op1_value==LOAD_TYPE::LOAD_TYPE_VARIABLE || operator_type==VGET){
 					if(operator_type==VGET){
 
 						bool ok=false;
@@ -1349,7 +1349,7 @@ namespace zetscript{
 
 						if(!ok){
 							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Variable \"%s\" is not type std::vector",
-								INSTRUCTION_GET_SYMBOL_NAME(info_function,&info_function->instruction[instruction->index_op2])
+								INSTRUCTION_GET_SYMBOL_NAME(info_function,&info_function->instruction[instruction->op2_value])
 							);
 							RETURN_ERROR;
 						}
@@ -1361,7 +1361,7 @@ namespace zetscript{
 
 						switch(scope_type){
 						default: // global...
-							ldrVar = &stack[instruction->index_op2];
+							ldrVar = &stack[instruction->op2_value];
 							break;
 						case INS_PROPERTY_ACCESS_SCOPE:
 						case INS_PROPERTY_THIS_SCOPE:
@@ -1369,7 +1369,7 @@ namespace zetscript{
 							if(scope_type == INS_PROPERTY_ACCESS_SCOPE){
 								POP_ONE; // get var op1 and symbol op2
 
-								OpCodeInstruction *previous_ins= (instruction-1);
+								CByteCode *previous_ins= (instruction-1);
 
 								if((stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR)!= STK_PROPERTY_TYPE_SCRIPTVAR)
 								{
@@ -1402,7 +1402,7 @@ namespace zetscript{
 								}
 							}
 							else{ // this scope ...
-								if((variable_stack_element = this_object->getVariableSymbolByIndex(instruction->index_op2))==NULL){
+								if((variable_stack_element = this_object->getVariableSymbolByIndex(instruction->op2_value))==NULL){
 									write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find symbol \"this.%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
 									RETURN_ERROR;
 								}
@@ -1410,7 +1410,7 @@ namespace zetscript{
 							ldrVar=variable_stack_element;
 							break;
 						case INS_PROPERTY_LOCAL_SCOPE:
-							ldrVar = &ptrLocalVar[instruction->index_op2];
+							ldrVar = &ptrLocalVar[instruction->op2_value];
 							break;
 						}
 
@@ -1509,14 +1509,14 @@ namespace zetscript{
 
 					continue;
 
-				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_NULL){
+				}else if(op1_value==LOAD_TYPE::LOAD_TYPE_NULL){
 					PUSH_NULL;
 					continue;
-				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_UNDEFINED){
+				}else if(op1_value==LOAD_TYPE::LOAD_TYPE_UNDEFINED){
 					PUSH_UNDEFINED;
 					continue;
-				}else if(index_op1==LOAD_TYPE::LOAD_TYPE_CONSTANT){
-					(*stkCurrentData)=*(((ConstantValueInfo *)instruction->index_op2));
+				}else if(op1_value==LOAD_TYPE::LOAD_TYPE_CONSTANT){
+					(*stkCurrentData)=*(((ConstantValueInfo *)instruction->op2_value));
 
 					pre_post_properties = GET_INS_PROPERTY_PRE_POST_OP(instruction->properties);
 
@@ -1543,15 +1543,15 @@ namespace zetscript{
 					}
 					stkCurrentData++;
 					continue;
-				}else if(index_op1== LOAD_TYPE::LOAD_TYPE_FUNCTION){
+				}else if(op1_value== LOAD_TYPE::LOAD_TYPE_FUNCTION){
 
 					unsigned short extra_flags=(instruction->properties&INS_PROPERTY_CONSTRUCT_CALL)?STK_PROPERTY_CONSTRUCTOR_FUNCTION:0;
 					extra_flags|=(instruction->properties&INS_PROPERTY_NO_FUNCTION_CALL) ?STK_PROPERTY_UNRESOLVED_FUNCTION:0;
 					//void *function_obj=NULL;
 					std::vector<CScriptFunction *> *vec_functions;
 					CScriptVariable * class_obj=NULL;
-					intptr_t function_obj =  instruction->index_op2;
-					intptr_t index_op2 = instruction->index_op2;
+					intptr_t function_obj =  instruction->op2_value;
+					intptr_t op2_value = instruction->op2_value;
 					properties=instruction->properties;
 					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(properties);
 
@@ -1586,14 +1586,14 @@ namespace zetscript{
 						}
 
 
-						/*if(index_op2 == 0){//ZS_UNDEFINED_IDX || index_op2 == ZS_FUNCTION_NOT_FOUND_IDX){ // is will be processed after in CALL instruction ...
+						/*if(op2_value == 0){//ZS_UNDEFINED_IDX || op2_value == ZS_FUNCTION_NOT_FOUND_IDX){ // is will be processed after in CALL instruction ...
 							function_obj= 0;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
 						}else{
-							function_obj= index_op2;
+							function_obj= op2_value;
 						}*/
-						/*else if((index_op2<(int)vec_functions->size())) // get the function ...
+						/*else if((op2_value<(int)vec_functions->size())) // get the function ...
 						{
-							function_obj = (*vec_functions)[index_op2];
+							function_obj = (*vec_functions)[op2_value];
 
 						}
 						else{
@@ -1603,7 +1603,7 @@ namespace zetscript{
 							RETURN_ERROR;
 						}*/
 					}/*else if(scope_type ==INS_PROPERTY_THIS_SCOPE){
-						if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
+						if((si = this_object->getFunctionSymbolByIndex(op2_value))==NULL){
 							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find function \"this.%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
 							RETURN_ERROR;
 						}
@@ -1611,7 +1611,7 @@ namespace zetscript{
 						function_obj =(CScriptFunction *)si->object.stkValue;
 
 					}else if(scope_type == INS_PROPERTY_SUPER_SCOPE){ // super scope ?
-						if((si = this_object->getFunctionSymbolByIndex(index_op2))==NULL){
+						if((si = this_object->getFunctionSymbolByIndex(op2_value))==NULL){
 							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot find function \"super.%s\"",INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction));
 							RETURN_ERROR;
 						}
@@ -1623,11 +1623,11 @@ namespace zetscript{
 
 					if(!(scope_type == INS_PROPERTY_THIS_SCOPE || scope_type == INS_PROPERTY_SUPER_SCOPE)){
 
-						if(index_op2 == ZS_UNDEFINED_IDX || index_op2 == ZS_FUNCTION_NOT_FOUND_IDX){ // is will be processed after in CALL instruction ...
+						if(op2_value == ZS_UNDEFINED_IDX || op2_value == ZS_FUNCTION_NOT_FOUND_IDX){ // is will be processed after in CALL instruction ...
 							function_obj= NULL;//(void *)instruction; // saves current instruction in order to resolve its idx later (in call instruction)
-						}else if((index_op2<(int)vec_functions->size())) // get the function ...
+						}else if((op2_value<(int)vec_functions->size())) // get the function ...
 						{
-							function_obj = (*vec_functions)[index_op2];
+							function_obj = (*vec_functions)[op2_value];
 
 						}
 						else{
@@ -1638,15 +1638,15 @@ namespace zetscript{
 						}
 					}*/
 
-					if(index_op2 == 0){
+					if(op2_value == 0){
 						*stkCurrentData++={instruction,class_obj,(unsigned short)(STK_PROPERTY_IS_INSTRUCTIONVAR|STK_PROPERTY_TYPE_FUNCTION|extra_flags)};
 					}else{
-						PUSH_FUNCTION(index_op2,class_obj,extra_flags);
+						PUSH_FUNCTION(op2_value,class_obj,extra_flags);
 					}
 					continue;
 
-				}else if(index_op1== LOAD_TYPE::LOAD_TYPE_ARGUMENT){
-					*stkCurrentData++=ptrArg[instruction->index_op2]; // copy arg directly ...
+				}else if(op1_value== LOAD_TYPE::LOAD_TYPE_ARGUMENT){
+					*stkCurrentData++=ptrArg[instruction->op2_value]; // copy arg directly ...
 					continue;
 				}
 				else{
@@ -2088,7 +2088,7 @@ namespace zetscript{
 				PROCESS_BINARY_OPERATION(<<, SHL_METAMETHOD);
 				continue;
 			 case JMP:
-				instruction_it=&start_it[instruction->index_op2];
+				instruction_it=&start_it[instruction->op2_value];
 				continue;
 			 case INSTANCEOF: // check instance of ...
 				 POP_TWO;
@@ -2128,13 +2128,13 @@ namespace zetscript{
 			 case JNT: // goto if not true ... goes end to conditional.
 				POP_ONE;
 				if(stkResultOp1->stkValue == 0){
-					instruction_it=&start_it[instruction->index_op2];
+					instruction_it=&start_it[instruction->op2_value];
 				}
 				continue;
 			 case JT: // goto if true ... goes end to conditional.
 				POP_ONE;
 				if(stkResultOp1->stkValue != 0){
-					instruction_it=&start_it[instruction->index_op2];
+					instruction_it=&start_it[instruction->op2_value];
 				}
 				continue;
 			 case  CALL: // calling function after all of args are processed...
@@ -2168,7 +2168,7 @@ namespace zetscript{
 
 					// try to find the function ...
 					if(((callAle)->properties & STK_PROPERTY_IS_INSTRUCTIONVAR)){// || deduce_function){
-						OpCodeInstruction *callAleInstruction = (OpCodeInstruction *)(callAle)->stkValue;
+						CByteCode *callAleInstruction = (CByteCode *)(callAle)->stkValue;
 						//PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
 						symbol_to_find = INSTRUCTION_GET_SYMBOL_NAME(info_function,callAleInstruction);
@@ -2292,7 +2292,7 @@ namespace zetscript{
 			 	 }
 				continue;
 			 case  NEW:
-					svar=NEW_CLASS_VAR_BY_IDX(index_op1);
+					svar=NEW_CLASS_VAR_BY_IDX(op1_value);
 
 					if(!svar->initSharedPtr()){
 						RETURN_ERROR;
@@ -2387,9 +2387,9 @@ namespace zetscript{
 				goto lbl_exit_function;
 			 case PUSH_SCOPE:
 
-				PUSH_SCOPE(instruction->index_op2,info_function,ptrLocalVar,index_op1);
+				PUSH_SCOPE(instruction->op2_value,info_function,ptrLocalVar,op1_value);
 
-				if(index_op1 & SCOPE_PROPERTY::FOR_IN){
+				if(op1_value & SCOPE_PROPERTY::FOR_IN){
 					if(current_foreach == &stkForeach[VM_MAX_FOREACH-1]){
 						write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Max foreach reached");
 						RETURN_ERROR;
@@ -2402,12 +2402,12 @@ namespace zetscript{
 			 case POP_SCOPE:
 				ptrCurrentStr=ptrStartStr; // reset op ptr
 				stkCurrentData=ptrStartOp;
-				if(!POP_SCOPE_CALL(idxCurrentStack,NULL,index_op1)){
+				if(!POP_SCOPE_CALL(idxCurrentStack,NULL,op1_value)){
 					write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Error pop scope");
 					RETURN_ERROR;
 				}
 
-				if(index_op1 & SCOPE_PROPERTY::FOR_IN){
+				if(op1_value & SCOPE_PROPERTY::FOR_IN){
 					if(current_foreach == &stkForeach[0]){
 						write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Min foreach reached");
 						RETURN_ERROR;
@@ -2480,7 +2480,7 @@ namespace zetscript{
 
 			}
 
-			write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",OpCodeInstruction::opCodeToStr(instruction->op_code));
+			write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"operator type(%s) not implemented",CByteCode::opCodeToStr(instruction->op_code));
 			RETURN_ERROR;
 
 

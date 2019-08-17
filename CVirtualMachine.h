@@ -72,7 +72,7 @@ namespace zetscript{
 				StackElement 		  * _ptrStartOp=NULL,
 				std::string 		  		  * _ptrStartStr=NULL,
 				unsigned char n_args=0,
-				OpCodeInstruction *calling_instruction = NULL);
+				CByteCode *calling_instruction = NULL);
 
 		bool cancel_execution;
 		const char *custom_error;
@@ -186,7 +186,7 @@ namespace zetscript{
 				 bool & error,
 				 StackElement *ptrArg,
 				 unsigned char n_args,
-				 OpCodeInstruction *ins);
+				 CByteCode *ins);
 
 		/**
 		 * Reserve for N vars. Return base pointer.
@@ -197,8 +197,8 @@ namespace zetscript{
 		inline CScriptFunction *  FIND_FUNCTION(
 									CScriptVariable *calling_object
 									,CScriptFunction *info_function
-									,OpCodeInstruction *instruction
-									,OpCodeInstruction * callAleInstruction
+									,CByteCode *instruction
+									,CByteCode * callAleInstruction
 
 				 	 	 	 	 	,std::vector<FunctionSymbol> *m_functionSymbol
 									,std::vector<CScriptFunction *> *vec_global_functions
@@ -212,13 +212,13 @@ namespace zetscript{
 									,StackElement *startArg
 									,unsigned char n_args
 									,const char * metamethod_str);
-		inline bool ASSIGN_STACK_VAR(StackElement *dst_ins, StackElement *src_ins,OpCodeInstruction *instruction);
+		inline bool ASSIGN_STACK_VAR(StackElement *dst_ins, StackElement *src_ins,CByteCode *instruction);
 		inline bool POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties);
 
 		inline bool APPLY_METAMETHOD(
 										CScriptVariable *calling_object
 										,CScriptFunction *info_function
-										,OpCodeInstruction *instruction
+										,CByteCode *instruction
 										,const char *__OVERR_OP__
 										,METAMETHOD_OP_CODE __METAMETHOD__
 										,StackElement *stkResultOp1

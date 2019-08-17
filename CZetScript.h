@@ -353,7 +353,7 @@ namespace zetscript{
 		//===================================================================================================
 		//
 		// PRINT ASM INFO
-		std::string getStrMovVar(OpCodeInstruction * iao);
+		std::string getStrMovVar(CByteCode * iao);
 		std::string getStrTypeLoadValue(CScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
 		void printGeneratedCode(CScriptFunction *sfo);
 

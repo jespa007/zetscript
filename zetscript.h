@@ -66,7 +66,7 @@
 
 
 #include "common.h"
-#include "OpCodeInstruction.h"
+#include "CByteCode.h"
 
 
 // utils

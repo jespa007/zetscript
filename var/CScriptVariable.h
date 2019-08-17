@@ -27,7 +27,7 @@ class CScriptClass;
 		PInfoSharedPointerNode ptr_shared_pointer_node;
 		unsigned char idx_class;
 		CScriptFunction *info_function_new;
-		OpCodeInstruction 	*instruction_new;
+		CByteCode 	*instruction_new;
 		bool was_created_by_constructor;
 		std::vector<StackElement> variable;
 
@@ -54,7 +54,7 @@ class CScriptClass;
 		bool itHasSetMetamethod();
 		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
 
-		virtual StackElement * addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function=NULL, OpCodeInstruction *src_instruction = NULL, StackElement * sv=NULL);
+		virtual StackElement * addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function=NULL, CByteCode *src_instruction = NULL, StackElement * sv=NULL);
 		StackElement * getVariableSymbol(const std::string & varname);
 		StackElement * getVariableSymbolByIndex(unsigned int idx);
 		bool removeVariableSymbolByName(const std::string & symbol_value, const CScriptFunction *info_function=NULL);
