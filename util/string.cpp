@@ -121,29 +121,6 @@ namespace zetscript{
 		   return ss.str();//return a std::string with the contents of the stream
 		}
 
-		std::string float_2_string(float number){
-
-			char buff[100];
-			sprintf(buff, "%f",number);
-
-			std::string ss = buff;
-			ss = replace(ss,',','.');
-
-		   return ss;//return a std::string with the contents of the stream
-		}
-
-		std::string double_2_string(double number){
-
-			char buff[100];
-			sprintf(buff, "%f",number);
-			std::string ss=buff;
-
-			ss=replace(ss,',','.');
-
-
-		   return ss;//return a std::string with the contents of the stream
-		}
-
 		std::string to_lower(const std::string & str){
 
 			std::string ret = str;
@@ -294,24 +271,6 @@ namespace zetscript{
 			return NUMBER_TYPE::INVALID;
 
 
-		}
-
-		std::string  replace(const std::string & str_old, const char old_ch, char new_ch){
-			std::string str = str_old;
-			for (unsigned i = 0; i < str.length(); ++i) {
-				if (str[i] == old_ch)
-				  str[i] = new_ch;
-			}
-
-			return str;
-		}
-
-		void replace(std::string & str_input, const std::string & toReplace, const std::string & replaceWith){
-
-			std::size_t found;;
-			while((found = str_input.find(toReplace)) != std::string::npos){
-				str_input = (str_input.replace(found, toReplace.length(), replaceWith));
-			}
 		}
 
 		std::string  remove(std::string & str_old, char ch_to_remove){

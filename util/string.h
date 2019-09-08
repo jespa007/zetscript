@@ -19,8 +19,6 @@ namespace zetscript{
 
 
 		 std::string int_2_string(int number);
-		 std::string float_2_string(float number);
-		 std::string double_2_string(double number);
 		 std::string to_lower(const std::string & str);
 		 std::string to_upper(const std::string & str);
 		 std::wstring to_wstring(const std::string &s);
@@ -33,9 +31,6 @@ namespace zetscript{
 		 bool is_empty(const std::string & str);
 		 NUMBER_TYPE is_number(const std::string & test_str);
 		 bool 		 is_binary(const std::string & test_str);
-
-		 std::string replace(const std::string & str_old, const char old_ch, char new_ch);
-		 void replace(std::string & str_input, const std::string & old_word, const std::string & new_word);
 
 		 std::string remove(std::string & str_old, char ch_to_remove);
 
