@@ -33,7 +33,7 @@ namespace zetscript{
 
 
 			if (file == NULL
-	#ifndef __ZETSCRIPT_DEBUG__
+	#ifndef __DEBUG__
 					|| true  // because in release mode we don't put (file:line) information.
 	#endif
 					) {

@@ -490,7 +490,7 @@ namespace zetscript{
 			}
 		}
 
-//#ifdef __ZETSCRIPT_DEBUG__
+//#ifdef __DEBUG__
 		if(!deallocated && was_created_by_constructor){
 			printf("[%s:%i] Allocated C pointer not deallocated\n",INSTRUCTION_GET_FILE_LINE(info_function_new, instruction_new));
 		}
