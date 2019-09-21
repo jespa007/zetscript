@@ -14,7 +14,6 @@ namespace zetscript{
 		std::vector<std::string> arg;
 		std::vector<ParamArgInfo> arg_info;
 		intptr_t ref_ptr=0;
-		CScriptFunction *irs=NULL;
 
 		if(!script_function_factory->checkCanRegister_C_Function(function_name)){
 			return false;
