@@ -692,7 +692,7 @@ namespace zetscript{
 
 			currentArg=&ptrArg[i];
 
-			if(!zs->stk_2_var(currentArg,irfs->arg_info[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
+			if(!zs->stkToVar(currentArg,irfs->arg_info[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
 				write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
 																irfs->symbol_info.symbol->name.c_str(),
 																i,
@@ -919,7 +919,7 @@ namespace zetscript{
 
 			}
 
-			callc_result=this->zs->var_2_stk(result,irfs->idx_return_type);
+			callc_result=this->zs->varToStk(result,irfs->idx_return_type);
 		}
 
 

@@ -56,7 +56,7 @@ namespace zetscript{
 		scope_factory = new CScopeFactory(this);
 		native_function_factory = new CNativeFunctionFactory(this);
 		script_function_factory= new CScriptFunctionFactory(this);
-		eval = new CEval(this);
+		eval_obj = new CEval(this);
 		virtual_machine = new CVirtualMachine(this);
 		script_class_factory = new CScriptClassFactory(this);
 
@@ -536,7 +536,7 @@ namespace zetscript{
 	int * CZetScript::evalIntValue(const std::string & str_to_eval){
 
 
-		if(!evalString(str_to_eval.c_str())){
+		if(!eval(str_to_eval.c_str())){
 			return NULL;
 		}
 
@@ -561,7 +561,7 @@ namespace zetscript{
 
 	bool * CZetScript::evalBoolValue(const std::string & str_to_eval){
 
-		if(!evalString(str_to_eval.c_str())){
+		if(!eval(str_to_eval.c_str())){
 			return NULL;
 		}
 
@@ -583,7 +583,7 @@ namespace zetscript{
 
 	float * CZetScript::evalFloatValue(const std::string & str_to_eval){
 
-		if(!evalString(str_to_eval.c_str())){
+		if(!eval(str_to_eval.c_str())){
 			return NULL;
 		}
 
@@ -608,7 +608,7 @@ namespace zetscript{
 	std::string * CZetScript::evalStringValue(const std::string & str_to_eval){
 
 
-		if(!evalString(str_to_eval.c_str())){
+		if(!eval(str_to_eval.c_str())){
 			return NULL;
 		}
 
@@ -642,10 +642,10 @@ namespace zetscript{
 		}
 	}
 
-	bool CZetScript::evalString(const std::string & expression, bool exec_vm, bool show_bytecode, const char * filename)  {
+	bool CZetScript::eval(const std::string & expression, bool exec_vm, bool show_bytecode, const char * filename)  {
 
 
-		if(!eval->eval(expression.c_str(),filename)){
+		if(!eval_obj->eval(expression.c_str(),filename)){
 			return false;
 		}
 
@@ -678,7 +678,7 @@ namespace zetscript{
 
 			if((buf_tmp=io::read_file(filename, n_bytes))!=NULL){
 				try{
-					evalString(buf_tmp, exec_vm, show_bytecode,filename.c_str());
+					eval(buf_tmp, exec_vm, show_bytecode,filename.c_str());
 				}
 				catch(exception::script_error & e){
 					free(buf_tmp);
@@ -807,7 +807,7 @@ namespace zetscript{
 		delete script_function_factory;
 		delete native_function_factory;
 		delete script_class_factory;
-		delete eval;
+		delete eval_obj;
 
 		virtual_machine=NULL;
 

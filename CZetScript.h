@@ -61,7 +61,7 @@ namespace zetscript{
 		 float * evalFloatValue(const std::string & str_to_eval);
 		 std::string * evalStringValue(const std::string & str_to_eval);
 
-		 bool evalString(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
+		 bool eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
 		 bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
 
 
@@ -99,7 +99,9 @@ namespace zetscript{
 
 
 		const char * getMetamethod(METAMETHOD_OP_CODE op);
-		void 												register_C_BaseSymbols(bool );
+		void 												register_C_BaseSymbols(bool r){
+			script_class_factory->register_C_BaseSymbols(r);
+		}
 
 		/**
 		 * Register C function
@@ -173,8 +175,8 @@ namespace zetscript{
 
 		//cpp binding
 		// Helpers...
-		inline StackElement var_2_stk(intptr_t var_trans, int idx_type);
-		inline bool stk_2_var(StackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error);
+		inline StackElement varToStk(intptr_t var_trans, int idx_type);
+		inline bool stkToVar(StackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error);
 
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -307,10 +309,10 @@ namespace zetscript{
 		std::function<F> * bindScriptFunction(const std::string & function_access);
 
 		template<typename T>
-		std::vector<T> vscript2vector(CVectorScriptVariable *v_in);
+		std::vector<T> vscriptTovector(CVectorScriptVariable *v_in);
 
 		template<typename T>
-		CVectorScriptVariable * vector_2_vscript(const std::vector<T> & v);
+		CVectorScriptVariable * vectorTovscript(const std::vector<T> & v);
 
 
 
@@ -334,7 +336,7 @@ namespace zetscript{
 		std::map<std::string,ConstantValueInfo *> 	 m_contantPool;
 		std::vector<ParsedSourceInfo> 			 m_parsedSource;
 		std::map<std::string,ConstantValueInfo *> 	 constant_pool;
-		CEval * eval;
+		CEval * eval_obj;
 		CVirtualMachine * virtual_machine;
 		CNativeFunctionFactory * native_function_factory;
 		CScopeFactory * scope_factory;
