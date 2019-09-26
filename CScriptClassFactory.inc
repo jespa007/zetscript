@@ -361,7 +361,7 @@ namespace zetscript{
 
 		std::string return_type;
 		//std::vector<std::string> params;
-		CScriptFunction *irs=NULL;
+		//CScriptFunction *irs=NULL;
 		std::vector<std::string> arg;
 		std::vector<ParamArgInfo> arg_info;
 		int idx_return_type=-1;
