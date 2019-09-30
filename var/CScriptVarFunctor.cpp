@@ -6,10 +6,10 @@
 
 namespace zetscript{
 
-	CFunctorScriptVariable::CFunctorScriptVariable(CZetScript *_zs):CScriptVariable(_zs){
+	CScriptVarFunctor::CScriptVarFunctor(CZetScript *_zs):CScriptVar(_zs){
 
-	  //  m_classStr=typeid(CFunctorScriptVariable).name();
-	  //  m_pointerClassStr=typeid(CFunctorScriptVariable *).name();
+	  //  m_classStr=typeid(CScriptVarFunctor).name();
+	  //  m_pointerClassStr=typeid(CScriptVarFunctor *).name();
 
 
 		//m_varType =VAR_TYPE::FUNCTION;
@@ -17,7 +17,7 @@ namespace zetscript{
 		this->init(SCRIPT_CLASS_FUNCTOR, (void *)this);
 	}
 
-	void CFunctorScriptVariable::setFunctionSymbol(CScriptFunction *_irfs){
+	void CScriptVarFunctor::setFunctionSymbol(CScriptFunction *_irfs){
 		m_value=_irfs;
 	}
 

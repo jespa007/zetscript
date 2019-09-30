@@ -7,7 +7,7 @@
 
 namespace zetscript{
 
-	class CScriptVariable;
+	class CScriptVar;
 	class CScriptClass;
 	class CZetScript;
 	class CScopeFactory;
@@ -56,8 +56,8 @@ namespace zetscript{
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		CScriptVariable 		 				* 			instanceScriptVariableByClassName(const std::string & class_name);
-		CScriptVariable 		 				* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
+		CScriptVar 		 				* 			instanceScriptVariableByClassName(const std::string & class_name);
+		CScriptVar 		 				* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
 
 
 		void register_C_BaseSymbols(bool _register);

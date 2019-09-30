@@ -144,33 +144,33 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol * CScope::getSymbolRecursiveDownScope(const std::string & symbol_name, char n_params){
+	Symbol * CScope::getSymbolRecursiveDownScope(const std::string & str_symbol, char n_params){
 
 
 		for(unsigned i = 0; i < m_scopeSymbol.size(); i++){
 
-			if(m_scopeSymbol[i]->name==symbol_name && (m_scopeSymbol[i]->n_params >= 0 && n_params>=0 ?(m_scopeSymbol[i]->n_params == n_params):true)){
+			if(m_scopeSymbol[i]->name==str_symbol && (m_scopeSymbol[i]->n_params >= 0 && n_params>=0 ?(m_scopeSymbol[i]->n_params == n_params):true)){
 					return m_scopeSymbol[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
 
 		int parent =  getIdxParent();
 		if(parent != ZS_UNDEFINED_IDX){
-			return GET_SCOPE(parent)->getSymbolRecursiveDownScope(symbol_name,n_params);
+			return GET_SCOPE(parent)->getSymbolRecursiveDownScope(str_symbol,n_params);
 		}
 
 		return NULL;
 
 	}
 
-	Symbol * CScope::getSymbolRecursiveUpScope(const std::string & symbol_name, char n_params){
+	Symbol * CScope::getSymbolRecursiveUpScope(const std::string & str_symbol, char n_params){
 		// only blocks within functions...
 		Symbol *sv;
 
 		// for each variable in current scope ...
 		for(unsigned i = 0; i < m_scopeSymbol.size(); i++){
 
-			if(m_scopeSymbol[i]->name==symbol_name && (m_scopeSymbol[i]->n_params >= 0 && n_params>=0 ?(m_scopeSymbol[i]->n_params == n_params):true)){
+			if(m_scopeSymbol[i]->name==str_symbol && (m_scopeSymbol[i]->n_params >= 0 && n_params>=0 ?(m_scopeSymbol[i]->n_params == n_params):true)){
 				return m_scopeSymbol[i];//.idxScopeVar; // ptr scope ?
 			}
 		}
@@ -178,7 +178,7 @@ namespace zetscript{
 		// ok lets iterate through current scope list
 		for(unsigned i = 0; i < m_localScopeList.size(); i++){
 			CScope *s=GET_SCOPE(m_localScopeList[i]);
-			sv=s->getSymbolRecursiveUpScope(symbol_name,n_params);
+			sv=s->getSymbolRecursiveUpScope(str_symbol,n_params);
 
 			if(sv != NULL) return sv;
 		}

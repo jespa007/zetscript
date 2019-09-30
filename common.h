@@ -62,7 +62,7 @@ namespace zetscript{
 	class CScriptFunction;
 	class CScope;
 	class CScriptClass;
-	class CScriptVariable;
+	class CScriptVar;
 	struct Symbol;
 	struct FunctionInfo;
 	struct ScopeVarInnerBlockInfo;
@@ -313,7 +313,7 @@ namespace zetscript{
 		//short idx_class; //CScriptClass		 *class_info;
 		//short idxScope;
 
-		short idxSymbol; // idx of class function/variable symbol that keeps.
+		short idx_symbol; // idx of class function/variable symbol that keeps.
 
 		unsigned short properties; // SYMBOL_INFO_PROPERTY
 		std::string c_type; // In case is C, we need to know its type ...
@@ -328,7 +328,7 @@ namespace zetscript{
 
 			//idx_class = -1;
 			//idxScopeVar=-1;
-			idxSymbol = -1;
+			idx_symbol = -1;
 		}
 	};
 
@@ -339,19 +339,19 @@ namespace zetscript{
 			const char * file;
 			short line;
 			//Symbol * _symbol;
-			std::string * symbol_name;
+			std::string * str_symbol;
 
 			OpCodeInstructionSourceInfo(){
-				symbol_name=NULL;
+				str_symbol=NULL;
 				file="unknow_file";
 				line=-1;
 			}
 
-			OpCodeInstructionSourceInfo(const char * _file, short _line,std::string *_symbol_name){
+			OpCodeInstructionSourceInfo(const char * _file, short _line,std::string *_str_symbol){
 
 				file=_file;
 				line=_line;
-				symbol_name=_symbol_name;
+				str_symbol=_str_symbol;
 			}
 	};
 
@@ -435,7 +435,7 @@ namespace zetscript{
 	typedef struct _SharedPointerInfo *PInfoSharedPointer;
 
 	typedef struct _SharedPointerInfo {
-		CScriptVariable *shared_ptr;
+		CScriptVar *shared_ptr;
 		unsigned char n_shares;
 
 		//short idx_0_shares;

@@ -4,11 +4,11 @@
  */
 #pragma once
 
-#define NEW_VECTOR_VAR (new CVectorScriptVariable(this->zs)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new CVectorScriptVariable())))
+#define NEW_VECTOR_VAR (new CScriptVarVector(this->zs)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new CScriptVarVector())))
 
 namespace zetscript{
 
-	class  CVectorScriptVariable: public CScriptVariable{
+	class  CScriptVarVector: public CScriptVar{
 
 
 	public:
@@ -18,8 +18,8 @@ namespace zetscript{
 
 		//std::vector<StackElement> m_objVector;
 
-		CVectorScriptVariable(){}
-		CVectorScriptVariable(CZetScript *_zs);
+		CScriptVarVector(){}
+		CScriptVarVector(CZetScript *_zs);
 
 		virtual bool unrefSharedPtr();
 
@@ -36,7 +36,7 @@ namespace zetscript{
 
 		virtual void destroy();
 
-		virtual ~CVectorScriptVariable();
+		virtual ~CScriptVarVector();
 
 
 	};

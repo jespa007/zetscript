@@ -20,7 +20,7 @@ namespace zetscript{
 	#define SET_STRING_RETURN(s)  	CURRENT_VM->setStringReturnValue(s)
 
 	#define NO_PARAMS std::vector<StackElement>{}
-	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVariable * (const std::vector<CScriptVariable *> & param)>
+	#define ZS_VM_FUNCTION_TYPE std::function<CScriptVar * (const std::vector<CScriptVar *> & param)>
 
 	class CScriptFunction;
 	class CZetScript;
@@ -67,7 +67,7 @@ namespace zetscript{
 
 		StackElement  execute_internal(
 				CScriptFunction *info_function,
-				CScriptVariable * this_object,
+				CScriptVar * this_object,
 				bool & error,
 				StackElement 		  * _ptrStartOp=NULL,
 				std::string 		  		  * _ptrStartStr=NULL,
@@ -86,7 +86,7 @@ namespace zetscript{
 	// POINTER MANAGER ...
 	//
 
-		PInfoSharedPointerNode newSharedPointer(CScriptVariable *var_ptr);
+		PInfoSharedPointerNode newSharedPointer(CScriptVar *var_ptr);
 		bool sharePointer( PInfoSharedPointerNode _node);
 		void unrefSharedScriptVar( PInfoSharedPointerNode _node, bool remove_if_0=false);
 		void removefSharedScriptVar( PInfoSharedPointerNode _node);
@@ -115,7 +115,7 @@ namespace zetscript{
 
 		 StackElement execute(
 					 CScriptFunction *info_function,
-					 CScriptVariable *this_object,
+					 CScriptVar *this_object,
 					 bool & error,
 					const std::vector<StackElement> &  argv=NO_PARAMS);
 
@@ -148,7 +148,7 @@ namespace zetscript{
 
 		struct tForeachInfo{
 			StackElement 		   *key; // iterator element can be std::string or integer...
-			CScriptVariable			*ptr; // can be struct or std::vector...
+			CScriptVar			*ptr; // can be struct or std::vector...
 			unsigned int 		   idx_current;
 
 		};
@@ -195,7 +195,7 @@ namespace zetscript{
 		const char * STR_GET_TYPE_VAR_INDEX_INSTRUCTION(StackElement * index);
 		inline void  REMOVE_0_SHARED_POINTERS(int idxCurrentStack,void *ptr_callc_result);
 		inline CScriptFunction *  FIND_FUNCTION(
-									CScriptVariable *calling_object
+									CScriptVar *calling_object
 									,CScriptFunction *info_function
 									,CByteCode *instruction
 									,CByteCode * callAleInstruction
@@ -216,7 +216,7 @@ namespace zetscript{
 		inline bool POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties);
 
 		inline bool APPLY_METAMETHOD(
-										CScriptVariable *calling_object
+										CScriptVar *calling_object
 										,CScriptFunction *info_function
 										,CByteCode *instruction
 										,const char *__OVERR_OP__

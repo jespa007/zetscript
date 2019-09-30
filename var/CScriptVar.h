@@ -16,7 +16,7 @@ class CScriptClass;
 	class CZetScript;
 	class CVirtualMachine;
 	class CScriptClassFactory;
-	class  CScriptVariable{//: public CVariable{
+	class  CScriptVar{//: public CVariable{
 
 	public:
 
@@ -38,8 +38,8 @@ class CScriptClass;
 		void *m_value;
 
 		// Construct ...
-		CScriptVariable();
-		CScriptVariable(CZetScript	*_zs);
+		CScriptVar();
+		CScriptVar(CZetScript	*_zs);
 
 
 		/**
@@ -87,7 +87,7 @@ class CScriptClass;
 		intptr_t get_C_StructPtr();
 
 		virtual void destroy();
-		virtual ~CScriptVariable();
+		virtual ~CScriptVar();
 
 	protected:
 

@@ -4,18 +4,18 @@
  */
 #pragma once
 
-#define NEW_STRING_VAR (new CStringScriptVariable(this->zs)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassString()),NULL))
+#define NEW_STRING_VAR (new CScriptVarString(this->zs)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassString()),NULL))
 
 
 namespace zetscript{
 
-	class  CStringScriptVariable: public CScriptVariable{
+	class  CScriptVarString: public CScriptVar{
 
 	public:
 
-		CStringScriptVariable(){}
-		CStringScriptVariable(CZetScript *_zs);
-		CStringScriptVariable(CZetScript *_zs,const std::string & s);
+		CScriptVarString(){}
+		CScriptVarString(CZetScript *_zs);
+		CScriptVarString(CZetScript *_zs,const std::string & s);
 
 	protected:
 		virtual void setup();

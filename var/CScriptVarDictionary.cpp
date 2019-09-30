@@ -12,19 +12,19 @@ namespace zetscript{
 	const char * getErrorFilename();
 
 
-	CDictionaryScriptVariable::CDictionaryScriptVariable(CZetScript *_zs):CScriptVariable(_zs){//CScriptClass *info_registered_class):CScriptVariable(info_registered_class, this){
+	CScriptVarDictionary::CScriptVarDictionary(CZetScript *_zs):CScriptVar(_zs){//CScriptClass *info_registered_class):CScriptVar(info_registered_class, this){
 		init(SCRIPT_CLASS_DICTIONARY, (void *)this);
 	}
 
 
 
 
-	bool CDictionaryScriptVariable::unrefSharedPtr(){ // unref each element...
-		if(CScriptVariable::unrefSharedPtr()){
+	bool CScriptVarDictionary::unrefSharedPtr(){ // unref each element...
+		if(CScriptVar::unrefSharedPtr()){
 
 			for(unsigned i = 0; i < variable.size(); i++){
 				if(variable[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-					CScriptVariable *var = (CScriptVariable *)variable[i].varRef;
+					CScriptVar *var = (CScriptVar *)variable[i].varRef;
 					if(var){
 						if(!var->unrefSharedPtr()){
 							return false;
@@ -39,13 +39,13 @@ namespace zetscript{
 
 
 
-	void CDictionaryScriptVariable::add_attr(const char *attr_name, StackElement  * v){
+	void CScriptVarDictionary::add_attr(const char *attr_name, StackElement  * v){
 		if(addVariableSymbol(attr_name,virtual_machine->getCurrent_C_FunctionCall(),NULL,v)==NULL){
 			virtual_machine->cancelExecution();
 		}
 	}
 
-	void CDictionaryScriptVariable::remove_attr(const char *attr_name){
+	void CScriptVarDictionary::remove_attr(const char *attr_name){
 
 		if(!removeVariableSymbolByName(std::string(attr_name),virtual_machine->getCurrent_C_FunctionCall())){
 			virtual_machine->cancelExecution();
@@ -53,21 +53,21 @@ namespace zetscript{
 	}
 
 
-	int CDictionaryScriptVariable::size(){
+	int CScriptVarDictionary::size(){
 		return  this->variable.size();
 	}
 
-	void CDictionaryScriptVariable::destroy(){
+	void CScriptVarDictionary::destroy(){
 
 		for(unsigned i = 0; i < variable.size(); i++){
 			if(variable[i].properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-				//CScriptVariable *svar = (CScriptVariable *)m_variableSymbol[i].object.varRef;
+				//CScriptVar *svar = (CScriptVar *)m_variableSymbol[i].object.varRef;
 				//svar->unrefSharedPtr();
 
 				if((variable[i].properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 					if(variable[i].varRef != NULL){
 						// remove property if not referenced anymore
-						virtual_machine->unrefSharedScriptVar(((CScriptVariable *)(variable[i].varRef))->ptr_shared_pointer_node,true);
+						virtual_machine->unrefSharedScriptVar(((CScriptVar *)(variable[i].varRef))->ptr_shared_pointer_node,true);
 					}
 				}
 
@@ -75,7 +75,7 @@ namespace zetscript{
 		}
 	}
 
-	CDictionaryScriptVariable::~CDictionaryScriptVariable(){
+	CScriptVarDictionary::~CScriptVarDictionary(){
 		destroy();
 	}
 

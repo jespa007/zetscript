@@ -11,10 +11,10 @@
 #include 		"util/log.cpp"
 
 //-- Variables --
-#include		"var/CScriptVariable.cpp"
-#include		"var/CStringScriptVariable.cpp"
-#include		"var/CVectorScriptVariable.cpp"
-#include		"var/CFunctorScriptVariable.cpp"
+#include		"var/CScriptVar.cpp"
+#include		"var/CScriptVarString.cpp"
+#include		"var/CScriptVarVector.cpp"
+#include		"var/CScriptVarFunctor.cpp"
 
 //-- Script Core --
 #include		"CEval.cpp"
@@ -31,7 +31,7 @@
 
 
 #include		"CZetScript.cpp"
-#include 		"var/CDictionaryScriptVariable.cpp"
+#include 		"var/CScriptVarDictionary.cpp"
 
 
 

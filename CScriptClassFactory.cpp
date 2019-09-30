@@ -73,11 +73,11 @@ namespace zetscript{
 
 		// REGISTER BUILT IN CLASS TYPES
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_STACK_ELEMENT);
-		REGISTER_BUILT_IN_CLASS(CScriptVariable,IDX_CLASS_SCRIPT_VAR);
-		REGISTER_BUILT_IN_CLASS(CStringScriptVariable,IDX_CLASS_STRING);
-		REGISTER_BUILT_IN_CLASS(CVectorScriptVariable,IDX_CLASS_VECTOR);
-		REGISTER_BUILT_IN_CLASS(CFunctorScriptVariable,IDX_CLASS_FUNCTOR);
-		REGISTER_BUILT_IN_CLASS(CDictionaryScriptVariable,IDX_CLASS_DICTIONARY);
+		REGISTER_BUILT_IN_CLASS(CScriptVar,IDX_CLASS_SCRIPT_VAR);
+		REGISTER_BUILT_IN_CLASS(CScriptVarString,IDX_CLASS_STRING);
+		REGISTER_BUILT_IN_CLASS(CScriptVarVector,IDX_CLASS_VECTOR);
+		REGISTER_BUILT_IN_CLASS(CScriptVarFunctor,IDX_CLASS_FUNCTOR);
+		REGISTER_BUILT_IN_CLASS(CScriptVarDictionary,IDX_CLASS_DICTIONARY);
 
 
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -88,9 +88,9 @@ namespace zetscript{
 		// From here you defined all basic, start define hierarchy
 
 		// register custom functions ...
-		class_C_BaseOf<CVectorScriptVariable,CScriptVariable>();
-		class_C_BaseOf<CFunctorScriptVariable,CScriptVariable>();
-		class_C_BaseOf<CDictionaryScriptVariable,CScriptVariable>();
+		class_C_BaseOf<CScriptVarVector,CScriptVar>();
+		class_C_BaseOf<CScriptVarFunctor,CScriptVar>();
+		class_C_BaseOf<CScriptVarDictionary,CScriptVar>();
 
 
 		//------------------------------------------------------------------------------------------------------------
@@ -102,14 +102,14 @@ namespace zetscript{
 		register_C_Function("print",print);
 		//register_C_Function("error",internal_print_error);
 
-		register_C_MemberFunction<CVectorScriptVariable>("size",&CVectorScriptVariable::size);
-		register_C_MemberFunction<CVectorScriptVariable>("push",static_cast<void (CVectorScriptVariable:: *)(StackElement *)>(&CVectorScriptVariable::push));
-		register_C_MemberFunction<CVectorScriptVariable>("pop",&CVectorScriptVariable::pop);
+		register_C_MemberFunction<CScriptVarVector>("size",&CScriptVarVector::size);
+		register_C_MemberFunction<CScriptVarVector>("push",static_cast<void (CScriptVarVector:: *)(StackElement *)>(&CScriptVarVector::push));
+		register_C_MemberFunction<CScriptVarVector>("pop",&CScriptVarVector::pop);
 
 
-		register_C_MemberFunction<CDictionaryScriptVariable>("add",&CDictionaryScriptVariable::add_attr);
-		register_C_MemberFunction<CDictionaryScriptVariable>("remove",&CDictionaryScriptVariable::remove_attr);
-		register_C_MemberFunction<CDictionaryScriptVariable>("size",&CDictionaryScriptVariable::size);
+		register_C_MemberFunction<CScriptVarDictionary>("add",&CScriptVarDictionary::add_attr);
+		register_C_MemberFunction<CScriptVarDictionary>("remove",&CScriptVarDictionary::remove_attr);
+		register_C_MemberFunction<CScriptVarDictionary>("size",&CScriptVarDictionary::size);
 	}
 
 	void CScriptClassFactory::register_C_BaseSymbols(bool _register){
@@ -282,7 +282,7 @@ namespace zetscript{
 		return getIdxScriptClass_Internal(v) != ZS_INVALID_CLASS;
 	}
 
-	CScriptVariable *		CScriptClassFactory::instanceScriptVariableByClassName(const std::string & class_name){
+	CScriptVar *		CScriptClassFactory::instanceScriptVariableByClassName(const std::string & class_name){
 
 		 // 0. Search class info ...
 		 CScriptClass * rc = getScriptClass(class_name);
@@ -294,9 +294,9 @@ namespace zetscript{
 		 return NULL;
 	 }
 
-	 CScriptVariable 		 * CScriptClassFactory::instanceScriptVariableByIdx(unsigned char idx_class, void * value_object){
+	 CScriptVar 		 * CScriptClassFactory::instanceScriptVariableByIdx(unsigned char idx_class, void * value_object){
 
-		 CScriptVariable *class_object=NULL;
+		 CScriptVar *class_object=NULL;
 
 		 // 0. Search class info ...
 		 CScriptClass *rc = getScriptClass(idx_class);
@@ -317,10 +317,10 @@ namespace zetscript{
 
 			 case IDX_CLASS_VECTOR:
 			 case IDX_CLASS_DICTIONARY:
-				 class_object = (CScriptVariable *)value_object;
+				 class_object = (CScriptVar *)value_object;
 				 break;
 			 default:
-				 class_object = new CScriptVariable(zs);
+				 class_object = new CScriptVar(zs);
 				 class_object->init(rc, value_object);
 				 break;
 			 }

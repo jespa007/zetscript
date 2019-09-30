@@ -647,7 +647,7 @@ namespace zetscript{
 					obj = get_obj;
 				}else{
 
-					CStringScriptVariable *s=new CStringScriptVariable(zs,v);
+					CScriptVarString *s=new CScriptVarString(zs,v);
 					obj=this->zs->registerConstantValue(v,NULL,type);
 					((StackElement *)obj)->stkValue=((void *)(s->m_strValue.c_str()));
 					((StackElement *)obj)->varRef=s;
@@ -663,13 +663,13 @@ namespace zetscript{
 			if(v=="null"){
 				type=STK_PROPERTY_TYPE_NULL;
 				load_type=LOAD_TYPE_NULL;
-				obj=NULL;//CScriptVariable::NullSymbol;
+				obj=NULL;//CScriptVar::NullSymbol;
 
 
 			}else if(v=="undefined"){
 					type=STK_PROPERTY_TYPE_UNDEFINED;
 					load_type=LOAD_TYPE_UNDEFINED;
-					obj=NULL;// CScriptVariable::UndefinedSymbol;
+					obj=NULL;// CScriptVar::UndefinedSymbol;
 			}else if((const_obj=string::parse_integer(v))!=NULL){
 				int value = *((int *)const_obj);
 				delete (int *)const_obj;
@@ -1271,7 +1271,7 @@ namespace zetscript{
 								return NULL;
 							}
 
-							//save_symbol_name_value=true;
+							//save_str_symbol_value=true;
 							//pCurrentFunctionInfo->function_info_object->instruction_info[symbol_token_node.instruction.size()]=CScriptFunction::OpCodeInstructionSourceInfo(accessor_value,current_parsing_file,line);
 							//symbol_token_node.instruction.push_back(CByteCode(OP_CODE::LOAD)); //--> must add symbol value instruction...
 							op_code=OP_CODE::LOAD;
@@ -2586,7 +2586,7 @@ namespace zetscript{
 
 				// try directive ...
 				DIRECTIVE_TYPE directive = isDirective(aux);
-				char *start_var,* end_var,*symbol_name;
+				char *start_var,* end_var,*str_symbol;
 				if(directive != DIRECTIVE_TYPE::UNKNOWN_DIRECTIVE){
 					switch(directive){
 					case INCLUDE_DIRECTIVE:
@@ -2610,24 +2610,24 @@ namespace zetscript{
 
 						end_var=aux;
 
-						if((symbol_name=string::copy_from_pointer_diff(start_var,end_var)) == NULL){
+						if((str_symbol=string::copy_from_pointer_diff(start_var,end_var)) == NULL){
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
 
-						zs_print_debug_cr("include file: %s",symbol_name);
+						zs_print_debug_cr("include file: %s",str_symbol);
 
 						{
 
 							// save current file info...
 							std::string current_file_str=CEval::current_parsing_file;
 							//int current_file_idx=CEval::CURRENT_PARSING_FILE_IDX;
-							//std::string file_to_eval=symbol_name;
+							//std::string file_to_eval=str_symbol;
 
 
 
 							try{
-								zs->evalFile(symbol_name);
+								zs->evalFile(str_symbol);
 							}catch(exception::script_error & error){
 								THROW_EXCEPTION(error);
 								return NULL;
@@ -2734,7 +2734,7 @@ namespace zetscript{
 							return;
 						}
 
-						instruction->op2_value=vis->idxSymbol;
+						instruction->op2_value=vis->idx_symbol;
 					}
 					else{
 						if((instruction->op2_value=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idxScope,ls->n_params))==0){
@@ -2746,13 +2746,13 @@ namespace zetscript{
 				}else if(instruction->properties & INS_PROPERTY_SUPER_SCOPE){ // trivial super.
 
 					CScriptFunction *sf_found=NULL;
-					std::string symbol_name_to_find = sf->symbol_info.symbol->name;
+					std::string str_symbol_to_find = sf->symbol_info.symbol->name;
 
 					for(int i = sf->idxLocalFunction-1; i >=0 && sf_found==NULL; i--){
 
 						if(
 								(sc->local_function[i]->arg_info.size() == ls->n_params)
-							&& (symbol_name_to_find == sc->local_function[i]->symbol_info.symbol->name)
+							&& (str_symbol_to_find == sc->local_function[i]->symbol_info.symbol->name)
 							){
 							sf_found = sc->local_function[i];
 						}
@@ -2778,7 +2778,7 @@ namespace zetscript{
 					if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 						if((vis=sf->getVariable(ls->value,sc_var->idxScope))!=NULL){
 							load_type=LOAD_TYPE::LOAD_TYPE_VARIABLE;
-							instruction->op2_value=vis->idxSymbol;
+							instruction->op2_value=vis->idx_symbol;
 							local_found=true;
 						}
 					}
@@ -2802,7 +2802,7 @@ namespace zetscript{
 								}
 
 								load_type=LOAD_TYPE::LOAD_TYPE_VARIABLE;
-								instruction->op2_value=vis->idxSymbol;
+								instruction->op2_value=vis->idx_symbol;
 							}
 							else{
 
@@ -2839,7 +2839,7 @@ namespace zetscript{
 
 
 			// symbol value to save at runtime ...
-			if(instruction->instructionInfo.symbol_name != NULL){
+			if(instruction->instructionInfo.str_symbol != NULL){
 				pCurrentFunctionInfo->function_info_object->instruction_info[i]=instruction->instructionInfo;
 			}
 

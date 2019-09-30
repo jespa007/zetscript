@@ -6,19 +6,19 @@
 
 namespace zetscript{
 
-	void CStringScriptVariable::setup(){
+	void CScriptVarString::setup(){
 		m_value = &m_strValue;
 		m_strValue = "";
 
 
 	}
 
-	CStringScriptVariable::CStringScriptVariable(CZetScript *_zs):CScriptVariable(_zs){
+	CScriptVarString::CScriptVarString(CZetScript *_zs):CScriptVar(_zs){
 		m_strValue = "";
 		init(SCRIPT_CLASS_STRING, (void *)this);
 	}
 
-	CStringScriptVariable::CStringScriptVariable(CZetScript *_zs, const std::string & s):CScriptVariable(_zs){
+	CScriptVarString::CScriptVarString(CZetScript *_zs, const std::string & s):CScriptVar(_zs){
 
 
 		init(SCRIPT_CLASS_STRING, (void *)this);

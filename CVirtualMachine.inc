@@ -70,11 +70,11 @@ namespace zetscript{
 			for(int i = 0; i < ptr_info_function->lut_scope_symbol[index].n_var_index; i++){
 				int idx_local_var = ptr_info_function->lut_scope_symbol[index].var_index[i];
 				StackElement *ptr_ale =&ptr_local_var[idx_local_var];
-				CScriptVariable *var = NULL;
+				CScriptVar *var = NULL;
 				switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 				case STK_PROPERTY_TYPE_STRING:
 				case STK_PROPERTY_TYPE_SCRIPTVAR:
-					var =((CScriptVariable *)(ptr_ale->varRef));
+					var =((CScriptVar *)(ptr_ale->varRef));
 					if(var){
 						if(var->ptr_shared_pointer_node != NULL){
 							var->unrefSharedPtr();
@@ -111,7 +111,7 @@ namespace zetscript{
 
 
 	inline bool CVirtualMachine::APPLY_METAMETHOD(
-										CScriptVariable *calling_object
+										CScriptVar *calling_object
 										,CScriptFunction *info_function
 										,CByteCode *instruction
 										,const char *__OVERR_OP__
@@ -122,10 +122,10 @@ namespace zetscript{
 										) {
 
 		int idxOffsetMemberFunctionStart=0;
-		CScriptVariable *script_var_object = NULL;
+		CScriptVar *script_var_object = NULL;
 		CScriptFunction * ptr_function_found=NULL;
 
-		CScriptVariable *one_param = NULL;
+		CScriptVar *one_param = NULL;
 		int n_metam_args=((__METAMETHOD__ == NOT_METAMETHOD\
 						|| __METAMETHOD__ == NEG_METAMETHOD\
 						|| __METAMETHOD__ == SET_METAMETHOD\
@@ -139,21 +139,21 @@ namespace zetscript{
 
 
 			if(((stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){
-				script_var_object = (CScriptVariable *)(stkResultOp1->varRef);
+				script_var_object = (CScriptVar *)(stkResultOp1->varRef);
 				if(((stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
-					script_var_object = (CScriptVariable *)(((StackElement *)script_var_object))->varRef;
+					script_var_object = (CScriptVar *)(((StackElement *)script_var_object))->varRef;
 				}
 				if(__METAMETHOD__ == SET_METAMETHOD){
 					idxOffsetMemberFunctionStart=1;
-					one_param = (CScriptVariable *)(stkResultOp2->varRef);
+					one_param = (CScriptVar *)(stkResultOp2->varRef);
 					if(((stkResultOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
-						one_param = (CScriptVariable *)(((StackElement *)one_param))->varRef;
+						one_param = (CScriptVar *)(((StackElement *)one_param))->varRef;
 					}
 				}
 			}else if(((stkResultOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
-				script_var_object = (CScriptVariable *)(stkResultOp2->varRef);
+				script_var_object = (CScriptVar *)(stkResultOp2->varRef);
 				if(((stkResultOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
-					script_var_object = (CScriptVariable *)(((StackElement *)script_var_object))->varRef;
+					script_var_object = (CScriptVar *)(((StackElement *)script_var_object))->varRef;
 				}
 			}else{
 
@@ -219,11 +219,11 @@ namespace zetscript{
 
 		if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
-			if(!((CScriptVariable *)(ret_obj.varRef))->initSharedPtr()){
+			if(!((CScriptVar *)(ret_obj.varRef))->initSharedPtr()){
 				return false;
 			}
 			if(__METAMETHOD__ != SET_METAMETHOD){ /* Auto destroy C when ref == 0 */
-				((CScriptVariable *)(ret_obj.varRef))->setDelete_C_ObjectOnDestroy(true);
+				((CScriptVar *)(ret_obj.varRef))->setDelete_C_ObjectOnDestroy(true);
 			}
 		}
 		if(__METAMETHOD__ != SET_METAMETHOD){ /* Auto destroy C when ref == 0 */
@@ -234,7 +234,7 @@ namespace zetscript{
 	}
 
 	inline CScriptFunction * CVirtualMachine::FIND_FUNCTION(
-			CScriptVariable *calling_object
+			CScriptVar *calling_object
 			,CScriptFunction *info_function
 			,CByteCode *instruction
 			,CByteCode * callAleInstruction
@@ -254,7 +254,7 @@ namespace zetscript{
 
 		// by default search over global functions...
 		int size_fun_vec=vec_global_functions->size()-1;
-		CScriptVariable *var_object = NULL;
+		CScriptVar *var_object = NULL;
 		CScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
 
@@ -336,7 +336,7 @@ namespace zetscript{
 										break;
 									case STK_PROPERTY_TYPE_SCRIPTVAR:
 									case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:
-										var_object=((CScriptVariable *)currentArg->varRef);
+										var_object=((CScriptVar *)currentArg->varRef);
 										aux_string=var_object->getPointer_C_ClassName();
 
 										if(arg_idx_type==idx_type){
@@ -416,7 +416,7 @@ namespace zetscript{
 					case STK_PROPERTY_TYPE_UNDEFINED:
 					case STK_PROPERTY_TYPE_SCRIPTVAR:
 					case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:
-						aux_string = ((CScriptVariable *)currentArg->varRef)->getPointer_C_ClassName();
+						aux_string = ((CScriptVar *)currentArg->varRef)->getPointer_C_ClassName();
 						break;
 					}
 					args_str+=rtti::demangle(aux_string);

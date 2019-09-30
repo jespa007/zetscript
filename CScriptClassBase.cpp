@@ -34,7 +34,7 @@ namespace zetscript{
 		irs.c_type = c_type;
 		irs.properties = properties;
 
-		irs.idxSymbol = (short)local_variable.size();
+		irs.idx_symbol = (short)local_variable.size();
 
 		local_variable.push_back(irs);
 

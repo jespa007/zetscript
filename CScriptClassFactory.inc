@@ -313,7 +313,7 @@ namespace zetscript{
 				//irs.
 				irs.symbol=irs_source->symbol;
 				irs.properties = derivated_properties;
-				irs.idxSymbol = (short)(irc_class->local_variable.size());
+				irs.idx_symbol = (short)(irc_class->local_variable.size());
 				irc_class->local_variable.push_back(irs);
 
 			}

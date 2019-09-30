@@ -12,16 +12,16 @@ namespace zetscript{
 	const char * getErrorFilename();
 
 
-	CVectorScriptVariable::CVectorScriptVariable(CZetScript *_zs):CScriptVariable(_zs){
+	CScriptVarVector::CScriptVarVector(CZetScript *_zs):CScriptVar(_zs){
 		this->init(SCRIPT_CLASS_VECTOR, (void *)this);
 	}
 
-	bool CVectorScriptVariable::unrefSharedPtr(){
+	bool CScriptVarVector::unrefSharedPtr(){
 
-		if(CScriptVariable::unrefSharedPtr()){
+		if(CScriptVar::unrefSharedPtr()){
 
 			for(unsigned i = 0; i < variable.size(); i++){
-				CScriptVariable *var = (CScriptVariable *)variable[i].varRef;
+				CScriptVar *var = (CScriptVar *)variable[i].varRef;
 				if(var != NULL){
 
 					if(!var->unrefSharedPtr()){
@@ -38,18 +38,18 @@ namespace zetscript{
 
 
 
-	StackElement *CVectorScriptVariable::push(){
+	StackElement *CScriptVarVector::push(){
 		StackElement s={NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		variable.push_back(s);
 		return &variable[variable.size()-1];
 	}
 
-	void CVectorScriptVariable::push(StackElement  * v){
+	void CScriptVarVector::push(StackElement  * v){
 		variable.push_back(*v);
 
 		// update n_refs +1
 		if(v->properties&STK_PROPERTY_TYPE_SCRIPTVAR){
-			if(!virtual_machine->sharePointer(((CScriptVariable *)(v->varRef))->ptr_shared_pointer_node)){
+			if(!virtual_machine->sharePointer(((CScriptVar *)(v->varRef))->ptr_shared_pointer_node)){
 				return;
 			}
 		}
@@ -57,11 +57,11 @@ namespace zetscript{
 
 
 
-	StackElement * CVectorScriptVariable::pop(){
+	StackElement * CScriptVarVector::pop(){
 		return_callc={NULL,NULL,STK_PROPERTY_TYPE_UNDEFINED};
 		if(variable.size()>0){
 			return_callc=variable[variable.size()-1];
-			CScriptVariable *var = (CScriptVariable *)return_callc.varRef;
+			CScriptVar *var = (CScriptVar *)return_callc.varRef;
 			if(var){
 				if(!var->unrefSharedPtr()){
 					write_error(NULL,0,"pop(): error doing unref var");
@@ -78,11 +78,11 @@ namespace zetscript{
 	}
 
 
-	int CVectorScriptVariable::size(){
+	int CScriptVarVector::size(){
 		return  variable.size();
 	}
 
-	void CVectorScriptVariable::destroy(){
+	void CScriptVarVector::destroy(){
 
 
 		for(unsigned i = 0; i < variable.size(); i++){
@@ -93,14 +93,14 @@ namespace zetscript{
 				if((si.properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 					if(si.varRef != NULL){
 						// remove property if not referenced anymore
-						virtual_machine->unrefSharedScriptVar(((CScriptVariable *)(si.varRef))->ptr_shared_pointer_node,true);
+						virtual_machine->unrefSharedScriptVar(((CScriptVar *)(si.varRef))->ptr_shared_pointer_node,true);
 					}
 				}
 			}
 		}
 	}
 
-	CVectorScriptVariable::~CVectorScriptVariable(){
+	CScriptVarVector::~CScriptVarVector(){
 		destroy();
 	}
 }

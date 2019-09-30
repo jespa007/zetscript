@@ -446,7 +446,7 @@ namespace zetscript{
 				CScriptClass *info_registered_class = GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(ir_var->c_type);//  CScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 				if(info_registered_class){
-					CScriptVariable *var = new CScriptVariable(this);
+					CScriptVar *var = new CScriptVar(this);
 					var->init(info_registered_class,ptr_variable);
 
 					return{
@@ -701,7 +701,7 @@ namespace zetscript{
 		return !error;
 	}
 
-	bool CZetScript::getScriptObject(const std::string &function_access,CScriptVariable **calling_obj,CScriptFunction **fun_obj ){
+	bool CZetScript::getScriptObject(const std::string &function_access,CScriptVar **calling_obj,CScriptFunction **fun_obj ){
 
 		//ZS_CLEAR_ERROR_MSG();
 
@@ -731,7 +731,7 @@ namespace zetscript{
 							StackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
 							if(stk!=NULL){
 								if(stk->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-									*calling_obj=(CScriptVariable *)stk->varRef;
+									*calling_obj=(CScriptVar *)stk->varRef;
 								}
 							}
 							else{
@@ -752,7 +752,7 @@ namespace zetscript{
 					if(se!=NULL){
 
 						if(se->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							*calling_obj=(CScriptVariable *)se->varRef;
+							*calling_obj=(CScriptVar *)se->varRef;
 						}else{
 							string::sformat("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
 							return false;
@@ -827,7 +827,7 @@ namespace zetscript{
 				//delete (float *)icv->stkValue;
 				break;
 			case STK_PROPERTY_TYPE_STRING:
-				delete (CStringScriptVariable *)icv->varRef;
+				delete (CScriptVarString *)icv->varRef;
 				break;
 
 			}

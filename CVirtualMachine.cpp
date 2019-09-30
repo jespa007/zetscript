@@ -59,7 +59,7 @@ namespace zetscript{
 
 	#define IS_VECTOR(ptr_result_instruction) \
 	(( ptr_result_instruction->properties & STK_PROPERTY_TYPE_SCRIPTVAR) &&\
-	 (((CScriptVariable *)(ptr_result_instruction->stkValue))->idx_class==IDX_CLASS_VECTOR))
+	 (((CScriptVar *)(ptr_result_instruction->stkValue))->idx_class==IDX_CLASS_VECTOR))
 
 	#define IS_GENERIC_NUMBER(properties) \
 	((properties & STK_PROPERTY_TYPE_INTEGER) ||\
@@ -311,7 +311,7 @@ namespace zetscript{
 
 	#define ASSIGN_STACK_VAR(dst_ins, src_ins) \
 	{\
-		CScriptVariable *script_var=NULL;\
+		CScriptVar *script_var=NULL;\
 		std::string *aux_str=NULL;\
 		void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update stkValue on save) */\
 		void **src_ref=&src_ins->stkValue;\
@@ -368,7 +368,7 @@ namespace zetscript{
 				if(((dst_ins->properties & STK_PROPERTY_TYPE_STRING)==0) || (dst_ins->varRef==NULL)){/* Generates a std::string var */  \
 					script_var= NEW_STRING_VAR;\
 					dst_ins->varRef=script_var;\
-					aux_str=&(((CStringScriptVariable *)script_var)->m_strValue);\
+					aux_str=&(((CScriptVarString *)script_var)->m_strValue);\
 					dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_STRING | STK_PROPERTY_TYPE_SCRIPTVAR;\
 					script_var->initSharedPtr(true);\
 				}\
@@ -376,7 +376,7 @@ namespace zetscript{
 				dst_ins->stkValue=(void *)aux_str->c_str();/* Because std::string assignment implies reallocs ptr char it changes, so reassing const char pointer */ \
 			}\
 		}else if(type_var & STK_PROPERTY_TYPE_SCRIPTVAR){\
-			script_var=(CScriptVariable *)src_ins->varRef;\
+			script_var=(CScriptVar *)src_ins->varRef;\
 			dst_ins->properties=runtime_var | STK_PROPERTY_TYPE_SCRIPTVAR;\
 			dst_ins->stkValue=NULL;\
 			dst_ins->varRef=script_var;\
@@ -449,7 +449,7 @@ namespace zetscript{
 			if(ptr_info_ale->properties & STK_PROPERTY_IS_STACKVAR){
 				var=(StackElement *)var->varRef;
 			}
-			result=((CScriptVariable *)var->varRef)->getClassName().c_str();
+			result=((CScriptVar *)var->varRef)->getClassName().c_str();
 		}
 
 		return result;
@@ -554,7 +554,7 @@ namespace zetscript{
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 
-			CScriptClass *c = GET_SCRIPT_CLASS(((CScriptVariable *)(stk_v.varRef))->idx_class);
+			CScriptClass *c = GET_SCRIPT_CLASS(((CScriptVar *)(stk_v.varRef))->idx_class);
 
 			if(c!=NULL){
 				return rtti::demangle(c->str_class_ptr_type);
@@ -563,7 +563,7 @@ namespace zetscript{
 		return "unknow";
 	}
 
-	PInfoSharedPointerNode CVirtualMachine::newSharedPointer(CScriptVariable *_var_ptr){
+	PInfoSharedPointerNode CVirtualMachine::newSharedPointer(CScriptVar *_var_ptr){
 		//int index = CVirtualMachine::getFreeCell();
 		PInfoSharedPointerNode _node = (PInfoSharedPointerNode)malloc(sizeof(tInfoSharedPointerNode));
 		_node->data.n_shares=0;
@@ -672,7 +672,7 @@ namespace zetscript{
 
 		if(fun_ptr==0){
 			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Null function");
-			//return &callc_result;//CScriptVariable::UndefinedSymbol;
+			//return &callc_result;//CScriptVar::UndefinedSymbol;
 			RETURN_ERROR;
 		}
 
@@ -684,7 +684,7 @@ namespace zetscript{
 		if(irfs->arg_info.size() > MAX_N_ARGS){
 			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->arg_info.size(),MAX_N_ARGS);
 			RETURN_ERROR;
-			//return &callc_result;//CScriptVariable::UndefinedSymbol;
+			//return &callc_result;//CScriptVar::UndefinedSymbol;
 		}
 
 		// convert parameters script to c...
@@ -1016,10 +1016,10 @@ namespace zetscript{
 			end=(main_function->local_variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;
 			if(!end){
 				StackElement *ptr_ale =&stack[i];
-				CScriptVariable *var = NULL;
+				CScriptVar *var = NULL;
 
 				if(ptr_ale->properties &STK_PROPERTY_TYPE_SCRIPTVAR){
-					var =((CScriptVariable *)(ptr_ale->varRef));
+					var =((CScriptVar *)(ptr_ale->varRef));
 					if(var){
 						if(var->ptr_shared_pointer_node != NULL){
 							var->unrefSharedPtr();
@@ -1049,7 +1049,7 @@ namespace zetscript{
 
 	StackElement  CVirtualMachine::execute(
 			 CScriptFunction *info_function,
-			 CScriptVariable *this_object,
+			 CScriptVar *this_object,
 			 bool & error,
 			const std::vector<StackElement> & arg
 			){
@@ -1112,7 +1112,7 @@ namespace zetscript{
 
 	StackElement CVirtualMachine::execute_internal(
 			CScriptFunction 		* info_function,
-			CScriptVariable       	* this_object,
+			CScriptVar       	* this_object,
 			bool & error,
 			StackElement 		  	* _ptrStartOp,
 			std::string 		  		  	* _ptrStartStr,
@@ -1189,7 +1189,7 @@ namespace zetscript{
 			if((info_function->symbol_info.properties &  SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
 
 				if(this_object!= NULL){
-					fun_ptr = this_object->getFunctionSymbolByIndex(info_function->symbol_info.idxSymbol)->proxy_ptr;
+					fun_ptr = this_object->getFunctionSymbolByIndex(info_function->symbol_info.idx_symbol)->proxy_ptr;
 				}
 			}
 
@@ -1259,8 +1259,8 @@ namespace zetscript{
 		CScriptFunction * aux_function_info=NULL;
 		StackElement ret_obj;
 
-		CScriptVariable *svar=NULL;
-		CScriptVariable *calling_object=NULL;
+		CScriptVar *svar=NULL;
+		CScriptVar *calling_object=NULL;
 //		CScriptClass *script_class_aux;
 
 
@@ -1272,7 +1272,7 @@ namespace zetscript{
 		unsigned short properties=0;
 		StackElement *variable_stack_element;
 		FunctionSymbol *si;
-		CScriptVariable *var_object = NULL;
+		CScriptVar *var_object = NULL;
 
 		unsigned short scope_type=0;
 
@@ -1316,12 +1316,12 @@ namespace zetscript{
 						POP_TWO;
 
 						if( (stkResultOp1->properties & (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)) == (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)){
-							var_object = (CScriptVariable *)(((StackElement *)stkResultOp1->varRef)->varRef);
+							var_object = (CScriptVar *)(((StackElement *)stkResultOp1->varRef)->varRef);
 						}
 
 						if(var_object != NULL){
 							if(var_object->idx_class == IDX_CLASS_VECTOR){
-								CVectorScriptVariable * vec = (CVectorScriptVariable *)var_object;
+								CScriptVarVector * vec = (CScriptVarVector *)var_object;
 
 								if(IS_INT(stkResultOp2->properties)){
 									// determine object ...
@@ -1379,12 +1379,12 @@ namespace zetscript{
 								}
 
 
-								CScriptVariable  * base_var = (CScriptVariable  *)stkResultOp1->varRef;
+								CScriptVar  * base_var = (CScriptVar  *)stkResultOp1->varRef;
 								if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) {
 									StackElement *stk_ins=((StackElement *)stkResultOp1->varRef);
 
 									if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-										base_var=((CScriptVariable *)stk_ins->varRef);
+										base_var=((CScriptVar *)stk_ins->varRef);
 									}
 								}
 
@@ -1549,7 +1549,7 @@ namespace zetscript{
 					extra_flags|=(instruction->properties&INS_PROPERTY_NO_FUNCTION_CALL) ?STK_PROPERTY_UNRESOLVED_FUNCTION:0;
 					//void *function_obj=NULL;
 					std::vector<CScriptFunction *> *vec_functions;
-					CScriptVariable * class_obj=NULL;
+					CScriptVar * class_obj=NULL;
 					intptr_t function_obj =  instruction->op2_value;
 					intptr_t op2_value = instruction->op2_value;
 					properties=instruction->properties;
@@ -1576,8 +1576,8 @@ namespace zetscript{
 						}
 
 						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							class_obj=(CScriptVariable *)(stk_ins->varRef);
-							CScriptClass *sc =GET_SCRIPT_CLASS(((CScriptVariable *)class_obj)->idx_class);
+							class_obj=(CScriptVar *)(stk_ins->varRef);
+							CScriptClass *sc =GET_SCRIPT_CLASS(((CScriptVar *)class_obj)->idx_class);
 							//vec_functions=&sc->local_function;
 						}
 						else{
@@ -1667,13 +1667,13 @@ namespace zetscript{
 
 					if(operator_type==VPUSH){
 						POP_ONE; // only pops the value, the last is the std::vector variable itself
-						CScriptVariable *vec_obj = NULL;
+						CScriptVar *vec_obj = NULL;
 						if((stkCurrentData-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							vec_obj = (CScriptVariable *)(stkCurrentData-1)->varRef;
+							vec_obj = (CScriptVar *)(stkCurrentData-1)->varRef;
 							if(vec_obj->idx_class == IDX_CLASS_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								src_ins=stkResultOp1;
-								dst_ins=((CVectorScriptVariable *)vec_obj)->push();
+								dst_ins=((CScriptVarVector *)vec_obj)->push();
 								ok=true;
 							}
 						}
@@ -1689,9 +1689,9 @@ namespace zetscript{
 
 
 						POP_TWO; // first must be the value name and the other the variable name ...
-						CScriptVariable *struct_obj = NULL;
+						CScriptVar *struct_obj = NULL;
 						if((stkCurrentData-1)->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							struct_obj = (CScriptVariable *)(stkCurrentData-1)->varRef;
+							struct_obj = (CScriptVar *)(stkCurrentData-1)->varRef;
 							if(struct_obj->idx_class == IDX_CLASS_DICTIONARY){ // push value ...
 								// op1 is now the src value ...
 								if(stkResultOp2->properties & STK_PROPERTY_TYPE_STRING){
@@ -1699,12 +1699,12 @@ namespace zetscript{
 									const char *str = (const char *)stkResultOp2->stkValue;
 									src_ins=stkResultOp1;
 									if(src_ins->properties&STK_PROPERTY_TYPE_FUNCTION){
-										FunctionSymbol *si =((CDictionaryScriptVariable *)struct_obj)->addFunctionSymbol(str,NULL);
+										FunctionSymbol *si =((CScriptVarDictionary *)struct_obj)->addFunctionSymbol(str,NULL);
 										if(si!=NULL){
 											se=&si->object;;
 										}
 									}else{
-										se =((CDictionaryScriptVariable *)struct_obj)->addVariableSymbol(str);
+										se =((CScriptVarDictionary *)struct_obj)->addVariableSymbol(str);
 									}
 
 									if(se == NULL){
@@ -1731,7 +1731,7 @@ namespace zetscript{
 					else{ // pop two parameters nothing ...
 						POP_TWO;
 
-						if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
+						if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVar::VAR_TYPE::OBJECT){
 							dst_ins=(StackElement *)stkResultOp1->varRef; // stkValue is expect to contents a stack variable
 						}else{
 							write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"Expected l-value on assignment ('=')");
@@ -1748,7 +1748,7 @@ namespace zetscript{
 						src_ins=stkResultOp2; // store ptr instruction2 op as src_var_value
 
 						// we need primitive stackelement in order to assign...
-						if(src_ins->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
+						if(src_ins->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVar::VAR_TYPE::OBJECT){
 							src_ins=(StackElement *)src_ins->varRef; // stkValue is expect to contents a stack variable
 
 						}
@@ -1756,7 +1756,7 @@ namespace zetscript{
 						// ok load object pointer ...
 						if(dst_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
-							if(((CScriptVariable *)dst_ins->varRef)->itHasSetMetamethod()){
+							if(((CScriptVar *)dst_ins->varRef)->itHasSetMetamethod()){
 								if(!APPLY_METAMETHOD(
 										calling_object
 										,info_function
@@ -1798,7 +1798,7 @@ namespace zetscript{
 							if(!(((old_dst_ins.properties & (STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR))==(STK_PROPERTY_TYPE_STRING | STK_PROPERTY_IS_C_VAR)))){
 								if(old_dst_ins.varRef!=NULL){ // it had a pointer (no constant)...
 									if(old_dst_ins.varRef != dst_ins->varRef){ // unref pointer because new pointer has been attached...
-										unrefSharedScriptVar(((CScriptVariable  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
+										unrefSharedScriptVar(((CScriptVar  *)old_dst_ins.varRef)->ptr_shared_pointer_node);
 									}
 								}
 							}
@@ -2093,7 +2093,7 @@ namespace zetscript{
 			 case INSTANCEOF: // check instance of ...
 				 POP_TWO;
 
-				if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVariable::VAR_TYPE::OBJECT){
+				if(stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) {// == CScriptVar::VAR_TYPE::OBJECT){
 					stkResultOp1=(StackElement *)stkResultOp1->varRef; // stkValue is expect to contents a stack variable
 				}
 
@@ -2115,7 +2115,7 @@ namespace zetscript{
 						break;
 					default:
 						if(stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
-							bool b = this->script_class_factory->isIdxClassInstanceOf(((CScriptVariable *)(stkResultOp1->varRef))->idx_class, (intptr_t)stkResultOp2->stkValue);
+							bool b = this->script_class_factory->isIdxClassInstanceOf(((CScriptVar *)(stkResultOp1->varRef))->idx_class, (intptr_t)stkResultOp2->stkValue);
 							PUSH_BOOLEAN(b);
 						}else{
 							PUSH_BOOLEAN(false);
@@ -2157,7 +2157,7 @@ namespace zetscript{
 					callAle = ((startArg-1));
 					calling_object = this_object;
 					if(callAle->varRef!=NULL){
-						calling_object=(CScriptVariable *)callAle->varRef;
+						calling_object=(CScriptVar *)callAle->varRef;
 					}
 
 
@@ -2180,7 +2180,7 @@ namespace zetscript{
 						// registered symbols in case is INS_PROPERTY_ACCESS_SCOPE...
 						std::vector<FunctionSymbol> *m_functionSymbol=NULL;
 						if(scope_type==INS_PROPERTY_ACCESS_SCOPE){
-							calling_object = (CScriptVariable *)callAle->varRef;
+							calling_object = (CScriptVar *)callAle->varRef;
 
 							// we have to no to call default constructor...is implicit
 							if(is_constructor) {
@@ -2268,7 +2268,7 @@ namespace zetscript{
 						if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 							// if c pointer is not from application share ...
-							if(!((CScriptVariable *)(ret_obj.varRef))->initSharedPtr()){
+							if(!((CScriptVar *)(ret_obj.varRef))->initSharedPtr()){
 								RETURN_ERROR;
 							}
 						}
@@ -2310,7 +2310,7 @@ namespace zetscript{
 							se=(StackElement *)(stkResultOp1->varRef);
 						}
 
-						svar = (CScriptVariable *)(se)->varRef;
+						svar = (CScriptVar *)(se)->varRef;
 						if(svar->idx_class >= MAX_BUILT_IN_TYPES
 						 ||svar->idx_class==IDX_CLASS_VECTOR
 						 ||svar->idx_class==IDX_CLASS_DICTIONARY
@@ -2371,10 +2371,10 @@ namespace zetscript{
 						}
 
 						// unref pointer to be deallocated from gc...
-						//((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node->data.shared_ptr=NULL;
-						if(((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node!=NULL){
-							free(((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node);
-							((CScriptVariable *)callc_result.varRef)->ptr_shared_pointer_node=NULL;
+						//((CScriptVar *)callc_result.varRef)->ptr_shared_pointer_node->data.shared_ptr=NULL;
+						if(((CScriptVar *)callc_result.varRef)->ptr_shared_pointer_node!=NULL){
+							free(((CScriptVar *)callc_result.varRef)->ptr_shared_pointer_node);
+							((CScriptVar *)callc_result.varRef)->ptr_shared_pointer_node=NULL;
 						}
 						// share pointer  + 1
 					}
@@ -2431,9 +2431,9 @@ namespace zetscript{
 				 current_foreach->ptr=NULL;
 				 current_foreach->idx_current=0;
 
-				 var_object = (CScriptVariable *)stkResultOp2->varRef;
+				 var_object = (CScriptVar *)stkResultOp2->varRef;
 				 if( (stkResultOp2->properties & (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)) == (STK_PROPERTY_TYPE_SCRIPTVAR | STK_PROPERTY_IS_STACKVAR)){
-				 		var_object = (CScriptVariable *)(((StackElement *)stkResultOp2->varRef)->varRef);
+				 		var_object = (CScriptVar *)(((StackElement *)stkResultOp2->varRef)->varRef);
 				 }
 
 				if(var_object != NULL && (var_object->idx_class == IDX_CLASS_VECTOR || var_object->idx_class == IDX_CLASS_DICTIONARY)){
@@ -2458,7 +2458,7 @@ namespace zetscript{
 						 	 	 	 INSTRUCTION_GET_SYMBOL_NAME(info_function,instruction)
 				 					);
 				 					RETURN_ERROR;
-				 //*((StackElement *)current_foreach->key)=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector[current_foreach->idx_current++];
+				 //*((StackElement *)current_foreach->key)=((CScriptVarVector *)current_foreach->ptr)->m_objVector[current_foreach->idx_current++];
 				 continue;
 			 case IT_CHK_END:
 				 write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"TODOOOOO!",
@@ -2466,7 +2466,7 @@ namespace zetscript{
 				 					);
 				 					RETURN_ERROR;
 
-				 /*if(current_foreach->idx_current>=((CVectorScriptVariable *)current_foreach->ptr)->m_objVector.size()){ // set true...
+				 /*if(current_foreach->idx_current>=((CScriptVarVector *)current_foreach->ptr)->m_objVector.size()){ // set true...
 					 PUSH_BOOLEAN(true);
 				 }
 				 else{ // set false...

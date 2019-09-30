@@ -169,12 +169,12 @@ ELSE()
 		util/string.cpp
 		
 		#-- Variables --
-		var/CScriptVariable.cpp
+		var/CScriptVar.cpp
 	
-		var/CStringScriptVariable.cpp
-		var/CDictionaryScriptVariable.cpp
-		var/CVectorScriptVariable.cpp
-		var/CFunctorScriptVariable.cpp
+		var/CScriptVarString.cpp
+		var/CScriptVarDictionary.cpp
+		var/CScriptVarVector.cpp
+		var/CScriptVarFunctor.cpp
 		
 		#-- Script Core --
 		CEval.cpp
@@ -218,11 +218,11 @@ ELSE()
 		
 		CEval.h
 		
-		var/CStringScriptVariable.h
-		var/CVectorScriptVariable.h
-		var/CFunctorScriptVariable.h
+		var/CScriptVarString.h
+		var/CScriptVarVector.h
+		var/CScriptVarFunctor.h
 		var/CStructScriptVariable.h
-		var/CScriptVariable.h
+		var/CScriptVar.h
 		
 		helper/register_function.h
 		helper/cpp_binding.h

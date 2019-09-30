@@ -4,17 +4,17 @@
  */
 #pragma once
 
-#define NEW_STRUCT_VAR (new CDictionaryScriptVariable(this->zs)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassStruct())))
+#define NEW_STRUCT_VAR (new CScriptVarDictionary(this->zs)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassStruct())))
 
 namespace zetscript{
 
-	class  CDictionaryScriptVariable:public CScriptVariable{
+	class  CScriptVarDictionary:public CScriptVar{
 
 
 
 	public:
-		CDictionaryScriptVariable(){}
-		CDictionaryScriptVariable(CZetScript *_zs);
+		CScriptVarDictionary(){}
+		CScriptVarDictionary(CZetScript *_zs);
 
 		virtual bool unrefSharedPtr();
 
@@ -27,7 +27,7 @@ namespace zetscript{
 
 		virtual void destroy();
 
-		virtual ~CDictionaryScriptVariable();
+		virtual ~CScriptVarDictionary();
 	};
 
 }
