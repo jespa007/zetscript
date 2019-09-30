@@ -15,7 +15,15 @@ namespace zetscript{
 		return &vec_script_function_node;
 	}
 
-	CScriptFunction *		 CScriptFunctionFactory::newScriptFunction(const std::string & file, short line, unsigned char idx_class, short idxScope, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction *		 CScriptFunctionFactory::newScriptFunction(const std::string & file
+			, short line
+			, unsigned char idx_class
+			, short idxScope
+			, const std::string & function_name
+			, std::vector<ParamArgInfo> args
+			, int idx_return_type
+			,intptr_t ref_ptr
+			, unsigned short properties){
 
 		if((properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 			if(vec_script_function_node.size() > 1){ // if greather than 1 check if node consecutive...
@@ -31,7 +39,17 @@ namespace zetscript{
 				return NULL;
 		}
 
-		CScriptFunction *irs = new CScriptFunction(zs,idx_class);
+		CScriptFunction *irs = new CScriptFunction(
+				zs
+				,idx_class
+				,vec_script_function_node.size()
+				,args
+				,idx_return_type
+				,symbol_info_ref_ptr
+				,symbol_info_symbol
+				,symbol_info_properties
+				,symbol_info_idx_symbol
+		);
 
 		irs->arg_info = args;
 		irs->idx_return_type = idx_return_type;
@@ -41,10 +59,10 @@ namespace zetscript{
 		irs->symbol_info.symbol = symbol;
 		irs->symbol_info.properties = properties;
 
-		irs->symbol_info.idxSymbol = (short)(irs->local_function.size());
+		irs->symbol_info.idx_symbol = (short)(irs->local_function.size());
 
 		vec_script_function_node.push_back(irs);
-		irs->idxScriptFunction = vec_script_function_node.size()-1;
+		//irs->idxScriptFunction = vec_script_function_node.size()-1;
 		return irs;
 	}
 

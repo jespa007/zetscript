@@ -308,11 +308,7 @@ namespace zetscript{
 		template <  typename F>
 		std::function<F> * bindScriptFunction(const std::string & function_access);
 
-		template<typename T>
-		std::vector<T> vscriptTovector(CScriptVarVector *v_in);
 
-		template<typename T>
-		CScriptVarVector * vectorTovscript(const std::vector<T> & v);
 
 
 
