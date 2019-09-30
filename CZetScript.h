@@ -97,6 +97,10 @@ namespace zetscript{
 
 		StackElement 					C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable);
 
+		int getIdxClassFromIts_C_Type(const std::string & str_type){
+			return script_class_factory->getIdxClassFromIts_C_Type(str_type);
+		}
+
 
 		const char * getMetamethod(METAMETHOD_OP_CODE op);
 		void 												register_C_BaseSymbols(bool r){

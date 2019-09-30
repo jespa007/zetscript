@@ -42,13 +42,13 @@ namespace zetscript{
 		CScriptFunction *irs = new CScriptFunction(
 				zs
 				,idx_class
-				,vec_script_function_node.size()
+				/*,vec_script_function_node.size()
 				,args
 				,idx_return_type
 				,symbol_info_ref_ptr
 				,symbol_info_symbol
 				,symbol_info_properties
-				,symbol_info_idx_symbol
+				,symbol_info_idx_symbol*/
 		);
 
 		irs->arg_info = args;

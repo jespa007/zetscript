@@ -8,13 +8,14 @@
 
 namespace zetscript{
 
+	class CZetgine;
 	class  CScriptVarVector: public CScriptVar{
 
 
 	public:
 
 		template<typename T>
-		std::vector<T> toStdVector(CScriptVarVector *v_in){
+		static std::vector<T> toStdVector(CScriptVarVector *v_in){
 			std::vector<T> v_out;
 			const char * dst_convert_type = typeid(T).name();
 			float aux_flt;
@@ -62,13 +63,13 @@ namespace zetscript{
 		}
 
 		template<typename T>
-		CScriptVarVector * toScriptVar(CZetgine *instance, const std::vector<T> & v){
-			CScriptVarVector *vsv = new CScriptVarVector(instance);
+		static CScriptVarVector * newFromStdVector(const std::vector<T> & v,CZetScript *zs_instance){
+			CScriptVarVector *vsv = new CScriptVarVector(zs_instance);
 
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->push();
 				//intptr_t uvar = (intptr_t)(v[i]);
-				*stk = varToStk((intptr_t)(v[i]),script_class_factory->getIdxClassFromIts_C_Type(typeid(T).name()));
+				*stk = zs_instance->varToStk((intptr_t)(v[i]),zs_instance->getIdxClassFromIts_C_Type(typeid(T).name()));
 			}
 
 			return vsv;
