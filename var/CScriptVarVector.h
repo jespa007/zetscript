@@ -62,18 +62,7 @@ namespace zetscript{
 			return v_out;
 		}
 
-		template<typename T>
-		static CScriptVarVector * newFromStdVector(const std::vector<T> & v,CZetScript *zs_instance){
-			CScriptVarVector *vsv = new CScriptVarVector(zs_instance);
 
-			for ( unsigned i = 0; i < v.size(); i++){
-				StackElement *stk = vsv->push();
-				//intptr_t uvar = (intptr_t)(v[i]);
-				*stk = zs_instance->varToStk((intptr_t)(v[i]),zs_instance->getIdxClassFromIts_C_Type(typeid(T).name()));
-			}
-
-			return vsv;
-		}
 
 		StackElement return_callc;
 		//int _i_size;

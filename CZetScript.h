@@ -183,6 +183,19 @@ namespace zetscript{
 		inline bool stkToVar(StackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error);
 
 
+		template<typename T>
+		static CScriptVarVector * stdVectorToScriptVarVector(const std::vector<T> & v,CZetScript *zs_instance){
+			CScriptVarVector *vsv = new CScriptVarVector(zs_instance);
+
+			for ( unsigned i = 0; i < v.size(); i++){
+				StackElement *stk = vsv->push();
+				//intptr_t uvar = (intptr_t)(v[i]);
+				*stk = zs_instance->varToStk((intptr_t)(v[i]),zs_instance->getIdxClassFromIts_C_Type(typeid(T).name()));
+			}
+
+			return vsv;
+		}
+
 		//--------------------------------------------------------------------------------------------------------------------
 		//
 		// 0 PARAMS
