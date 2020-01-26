@@ -67,6 +67,8 @@ namespace zetscript{
 				case IT_INI:	 return "IT_INI"; // IT_INI
 				case IT_CHK_END: return "IT_CHK_END"; // IT_CHK_END
 				case IT_SET_AND_NEXT:return "IT_SET_AND_NEXT"; // IT_SET_AND_NEXT
+				default:
+					break;
 			}
 
 

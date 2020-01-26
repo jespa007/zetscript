@@ -376,14 +376,14 @@ namespace zetscript{
 		return false;
 	}
 
-	StackElement * CScriptVar::getVariableSymbolByIndex(unsigned int idx){
+	StackElement * CScriptVar::getVariableSymbolByIndex(int idx){
 
 		if(idx==ZS_THIS_IDX){
 			return &this_variable;
 		}
 
 
-		if(idx >= variable.size()){
+		if(idx >= (int)variable.size()){
 			write_error("unknow",-1,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}

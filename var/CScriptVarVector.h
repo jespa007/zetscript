@@ -32,10 +32,10 @@ namespace zetscript{
 						case STK_PROPERTY_TYPE_UNDEFINED:
 						case STK_PROPERTY_TYPE_NULL:
 						case STK_PROPERTY_TYPE_NUMBER:
-							if(STRCMP(dst_convert_type, ==,typeid(float).name())){
+							if(ZS_STRCMP(dst_convert_type, ==,typeid(float).name())){
 								memcpy(&aux_flt, &sv.stkValue, sizeof(float));
 								v_out.push_back(aux_flt);
-							}else if(STRCMP(dst_convert_type, ==,typeid(int).name())){
+							}else if(ZS_STRCMP(dst_convert_type, ==,typeid(int).name())){
 								v_out.push_back((intptr_t)sv.stkValue);
 							}else{
 								THROW_RUNTIME_ERROR("Error trying to cast element on std::vector<float>");
@@ -49,7 +49,7 @@ namespace zetscript{
 							return v_out;
 							break;
 						case STK_PROPERTY_TYPE_INTEGER:
-							if(STRCMP(dst_convert_type, ==,typeid(int).name()) || STRCMP(dst_convert_type, ==,typeid(float).name())){// typeid(int).name()) || ){
+							if(ZS_STRCMP(dst_convert_type, ==,typeid(int).name()) || ZS_STRCMP(dst_convert_type, ==,typeid(float).name())){// typeid(int).name()) || ){
 								v_out.push_back((intptr_t)sv.stkValue);
 							}else{
 								THROW_RUNTIME_ERROR("Error trying to cast element on std::vector<int>");

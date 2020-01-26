@@ -56,7 +56,7 @@ class CScriptClass;
 
 		virtual StackElement * addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function=NULL, CByteCode *src_instruction = NULL, StackElement * sv=NULL);
 		StackElement * getVariableSymbol(const std::string & varname);
-		StackElement * getVariableSymbolByIndex(unsigned int idx);
+		StackElement * getVariableSymbolByIndex(int idx);
 		bool removeVariableSymbolByName(const std::string & symbol_value, const CScriptFunction *info_function=NULL);
 		bool removeVariableSymbolByIndex(unsigned int idx, bool remove_vector=false);
 		std::vector<StackElement> * getVectorVariable();

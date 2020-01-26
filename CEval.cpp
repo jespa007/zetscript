@@ -425,7 +425,7 @@ namespace zetscript{
 	CEval::KEYWORD_TYPE CEval::isKeyword(const char *c){
 		// PRE: The first char must be starting symbol.
 		char *str=(char *)c;
-		char *aux=str;
+		//char *aux=str;
 
 		for(int i = 0; i < MAX_KEYWORD; i++){
 			if(defined_keyword[i].str!=NULL){
@@ -474,7 +474,7 @@ namespace zetscript{
 		std::string number_part[3];
 		value="";
 		bool is01s=true;
-		bool isInt=true;
+		//bool isInt=true;
 		bool isHexa=(*aux_p == 'x' || *aux_p == 'X') || ((*aux_p == '0' && *(aux_p+1) == 'X') || (*aux_p == '0' && *(aux_p+1) == 'x'));
 
 		if(!(('0'<=*aux_p&&*aux_p<='9') || isHexa || (*aux_p == '.'))){ // is no number directly
@@ -594,16 +594,16 @@ namespace zetscript{
 
 		unsigned int scope_type=0;
 		void *obj=NULL,*get_obj=NULL,*const_obj=NULL;
-		char *start_str=(char *)start_word;
+		//char *start_str=(char *)start_word;
 		char *aux=(char *)start_word;
 		std::string v="";
-		 bool is_possible_number=false;
-		 int i=0;
+		 //bool is_possible_number=false;
+		 //int i=0;
 		 bool error=false;
-		 bool start_digit = false;
+		 //bool start_digit = false;
 		 token_node->token_type = TOKEN_TYPE::UNKNOWN_TOKEN;
-		 KEYWORD_TYPE kw=isKeyword(aux);
-		 int start_line = line;
+		 //KEYWORD_TYPE kw=isKeyword(aux);
+		 //int start_line = line;
 		 bool is_constant_string=false;
 
 		 if((aux=evalLiteralNumber(start_word,line,v ,error))==NULL){ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
@@ -1502,7 +1502,7 @@ namespace zetscript{
 					// check for named functions or vars...
 					while(*aux_p != '}' && *aux_p != 0){
 
-						FunctionInfo *local_ifc=NULL;
+						//FunctionInfo *local_ifc=NULL;
 
 						// 1st. check whether eval a keyword...
 						key_w = isKeyword(aux_p);
@@ -1564,7 +1564,7 @@ namespace zetscript{
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		char *symbol_value,*end_var;
+		char *symbol_value=NULL,*end_var=NULL;
 		KEYWORD_TYPE key_w;
 		std::vector<ParamArgInfo> arg;
 		std::string conditional_str;
@@ -1650,7 +1650,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						int m_start_arg=line;
+						//int m_start_arg=line;
 						if((end_var=getIdentifierToken(aux_p,arg_value)) == NULL){
 							 write_error(current_parsing_file,line ,"Expected symbol");
 							 return NULL;
@@ -1700,7 +1700,7 @@ namespace zetscript{
 
 						if(!error){
 							// register function symbol...
-							int n_params=arg.size();
+							//int n_params=arg.size();
 
 							/*if(named_function){ // register named function...
 								if((irv=GET_SCOPE(idxScope)->getSymbol(function_name,n_params)) != NULL){
@@ -1924,7 +1924,7 @@ namespace zetscript{
 		KEYWORD_TYPE key_w;
 		std::string conditional_str;
 		error = false;
-		int conditional_line;
+		//int conditional_line=0;
 
 		// check for keyword ...
 		key_w = isKeyword(aux_p);
@@ -1942,7 +1942,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					conditional_line=line;
+					//conditional_line=line;
 
 					if((end_expr = evalExpression(aux_p+1,line,scope_info,&pCurrentFunctionInfo->instruction)) == NULL){
 						write_error(current_parsing_file,line,"Expected ')' if ");
@@ -2270,8 +2270,8 @@ namespace zetscript{
 		//char *symbol_value;
 		bool end=false;
 		bool allow_for_in=true;
-		short idxScopeClass=-1;
-		short idxScope=scope_info->getCurrentScopePointer()->idxScope;
+		//short idxScopeClass=-1;
+		//short idxScope=scope_info->getCurrentScopePointer()->idxScope;
 		//bool is_class_member=false;
 		int m_startLine=0;
 
@@ -2300,18 +2300,18 @@ namespace zetscript{
 					start_var=aux_p;
 					m_startLine = line;
 					//is_class_member=false;
-					idxScope=scope_info->getCurrentScopePointer()->idxScope;
+					//idxScope=scope_info->getCurrentScopePointer()->idxScope;
 					sc=NULL;
 
 					if(sc_come_from != NULL){ // it comes from class declaration itself
 						sc=sc_come_from;
-						idxScope=sc->symbol_info.symbol->idxScope;
+						//idxScope=sc->symbol_info.symbol->idxScope;
 						//is_class_member=true;
 
 					}
 					else{ // check if type var ClasS::v1 or v1
 						if((end_var=isClassMember(aux_p,line,&sc,variable_name, error))!=NULL){ // check if particular case extension attribute class
-							idxScope = idxScopeClass; // override scope info
+							//idxScope = idxScopeClass; // override scope info
 						}
 						else{ // causal variable
 							if(error){
@@ -2480,7 +2480,7 @@ namespace zetscript{
 		std::string value_to_eval;
 		tTokenNode token_node;
 
-		std::vector<OpCodeInstructionEval> *tokenCompiled = NULL;
+		//std::vector<OpCodeInstructionEval> *tokenCompiled = NULL;
 
 		aux_p=IGNORE_BLANKS(aux_p, line);
 
@@ -2514,8 +2514,8 @@ namespace zetscript{
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p= (char *)s;
-		FunctionInfo *ifc_new = NULL;
-		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD,keyw2nd=KEYWORD_TYPE::UNKNOWN_KEYWORD;
+		//FunctionInfo *ifc_new = NULL;
+		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD;//,keyw2nd=KEYWORD_TYPE::UNKNOWN_KEYWORD;
 
 		aux_p=IGNORE_BLANKS(aux_p, line);
 
@@ -2559,7 +2559,7 @@ namespace zetscript{
 
 		// PRE: *node_to_be_evaluated must be created (the pointer is only read mode)
 
-		KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD;
+		//KEYWORD_TYPE keyw=KEYWORD_TYPE::UNKNOWN_KEYWORD;
 		bool custom_quit = false;
 		char *aux = (char *)s;
 		char *end_expr=0;
@@ -2674,7 +2674,7 @@ namespace zetscript{
 							return NULL;
 						}
 						// 2nd. try expression
-						int starting_expression=line;
+						//int starting_expression=line;
 
 						if((end_expr = evalExpression(aux,line, scope_info,&pCurrentFunctionInfo->instruction)) == NULL){ // something wrong was happen.
 							THROW_SCRIPT_ERROR();
@@ -2751,7 +2751,7 @@ namespace zetscript{
 					for(int i = sf->idxLocalFunction-1; i >=0 && sf_found==NULL; i--){
 
 						if(
-								(sc->local_function[i]->arg_info.size() == ls->n_params)
+								(ls->n_params == (int)sc->local_function[i]->arg_info.size())
 							&& (str_symbol_to_find == sc->local_function[i]->symbol_info.symbol->name)
 							){
 							sf_found = sc->local_function[i];
