@@ -242,7 +242,7 @@ namespace zetscript{
 				PUSH_BOOLEAN(f_aux_value1 __OVERR_OP__ f_aux_value2);\
 		}\
 		else if((stkResultOp1->properties&stkResultOp2->properties) == STK_PROPERTY_TYPE_STRING){\
-			PUSH_BOOLEAN(STRCMP(LOAD_STRING_OP(stkResultOp1), __OVERR_OP__ ,LOAD_STRING_OP(stkResultOp2)));\
+			PUSH_BOOLEAN(ZS_STRCMP(LOAD_STRING_OP(stkResultOp1), __OVERR_OP__ ,LOAD_STRING_OP(stkResultOp2)));\
 		}else{\
 			if(!APPLY_METAMETHOD(\
 						 calling_object\

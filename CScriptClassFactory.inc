@@ -428,7 +428,7 @@ namespace zetscript{
 
 		zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(C).name()).c_str(), function_name);
 
-		if(STRCMP(CByteCode::metamethodOpCodeToStr(SET_METAMETHOD),==,function_name)){
+		if(ZS_STRCMP(CByteCode::metamethodOpCodeToStr(SET_METAMETHOD),==,function_name)){
 			sc->metamethod_operator[SET_METAMETHOD].push_back(sf);
 			zs_print_debug_cr("Registered metamethod %s::%s",rtti::demangle(typeid(C).name()).c_str(), function_name);
 		}
@@ -514,10 +514,10 @@ namespace zetscript{
 		zs_print_debug_cr("Registered member function name %s::%s",rtti::demangle(typeid(T).name()).c_str(), function_name);
 
 		// check whether is static metamethod...
-		if(STRCMP(CByteCode::metamethodOpCodeToStr(SET_METAMETHOD),!=,function_name)){
+		if(ZS_STRCMP(CByteCode::metamethodOpCodeToStr(SET_METAMETHOD),!=,function_name)){
 
 			for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-				if(STRCMP(CByteCode::metamethodOpCodeToStr((METAMETHOD_OP_CODE)i),==,function_name)){
+				if(ZS_STRCMP(CByteCode::metamethodOpCodeToStr((METAMETHOD_OP_CODE)i),==,function_name)){
 
 					// check if they are gte,gt,equ, not_equ, lt, lte
 					if(  i == EQU_METAMETHOD //STRCMP(function_name, == ,"_equ")
@@ -529,7 +529,7 @@ namespace zetscript{
 					  || i == NOT_METAMETHOD//STRCMP(function_name, ==, "_gte")
 					  ){
 						// return type must be bool...
-						if(STRCMP(return_type.c_str(), != ,typeid(bool).name())){
+						if(ZS_STRCMP(return_type.c_str(), != ,typeid(bool).name())){
 							THROW_RUNTIME_ERROR(string::sformat("error registering metamethod %s::%s. Expected return bool but it was %s",
 									rtti::demangle(typeid(T).name()).c_str(),
 									function_name,
