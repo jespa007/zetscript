@@ -23,7 +23,7 @@ namespace zetscript{
 		}
 
 		/// PRE: base_class_irfs must be info of root class.
-		 bool is_main_function = symbol_info.symbol->idxScope == IDX_GLOBAL_SCOPE;
+		 //bool is_main_function = symbol_info.symbol->idxScope == IDX_GLOBAL_SCOPE;
 
 
 		 struct tInfoVarScopeBlockRegister{
@@ -31,7 +31,7 @@ namespace zetscript{
 			 std::vector<int> var_index;
 		 };
 
-		 std::vector<CScope *> *list = scope_factory->getVectorScopeNode();
+		 //std::vector<CScope *> *list = scope_factory->getVectorScopeNode();
 		 std::vector<tInfoVarScopeBlockRegister> vec_ivsb;
 		 std::map<short,tInfoVarScopeBlockRegister> map_scope_register;
 

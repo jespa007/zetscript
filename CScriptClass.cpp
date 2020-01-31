@@ -35,7 +35,7 @@ namespace zetscript{
 
 		// check if metamethod...
 		for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-			if(STRCMP(CByteCode::metamethodOpCodeToStr((METAMETHOD_OP_CODE)i),==,function_name.c_str())){
+			if(ZS_STRCMP(CByteCode::metamethodOpCodeToStr((METAMETHOD_OP_CODE)i),==,function_name.c_str())){
 
 				metamethod_operator[i].push_back(sf);
 

@@ -665,7 +665,7 @@ namespace zetscript{
 	}
 
 	bool CZetScript::evalFile(const std::string &  filename, bool exec_vm, bool show_bytecode){
-		int idx_file=-1;
+		//int idx_file=-1;
 		bool error=false;
 		char *buf_tmp=NULL;
 
@@ -673,7 +673,7 @@ namespace zetscript{
 			ParsedSourceInfo ps;
 			ps.filename = filename;
 			m_parsedSource.push_back(ps);
-			idx_file=m_parsedSource.size()-1;
+			//idx_file=m_parsedSource.size()-1;
 			int n_bytes;
 
 			if((buf_tmp=io::read_file(filename, n_bytes))!=NULL){

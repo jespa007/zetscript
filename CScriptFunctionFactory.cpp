@@ -27,7 +27,7 @@ namespace zetscript{
 
 		if((properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
 			if(vec_script_function_node.size() > 1){ // if greather than 1 check if node consecutive...
-				if(!(vec_script_function_node.at(vec_script_function_node.size()-1)->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){ // non consecutive c node..
+				if(!((vec_script_function_node.at(vec_script_function_node.size()-1)->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
 						THROW_RUNTIME_ERROR("C Functions should be added after global scope and consecutuve C scope node.");
 						return NULL;
 				}

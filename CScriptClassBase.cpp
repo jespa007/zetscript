@@ -94,7 +94,7 @@ namespace zetscript{
 			for(int i = (int)(local_function.size()-1); i >= 0 ; i--){
 				if(
 						(local_function[i]->symbol_info.symbol->name == function_name)
-					 && (local_function[i]->arg_info.size() ==  n_args)
+					 && (n_args == (int)local_function[i]->arg_info.size())
 					 && (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == local_function[i]->symbol_info.symbol->idxScope))
 					 ){
 

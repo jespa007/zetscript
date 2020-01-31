@@ -242,7 +242,7 @@ namespace zetscript{
 				PUSH_BOOLEAN(f_aux_value1 __OVERR_OP__ f_aux_value2);\
 		}\
 		else if((stkResultOp1->properties&stkResultOp2->properties) == STK_PROPERTY_TYPE_STRING){\
-			PUSH_BOOLEAN(STRCMP(LOAD_STRING_OP(stkResultOp1), __OVERR_OP__ ,LOAD_STRING_OP(stkResultOp2)));\
+			PUSH_BOOLEAN(ZS_STRCMP(LOAD_STRING_OP(stkResultOp1), __OVERR_OP__ ,LOAD_STRING_OP(stkResultOp2)));\
 		}else{\
 			if(!APPLY_METAMETHOD(\
 						 calling_object\
@@ -1004,7 +1004,7 @@ namespace zetscript{
 
 
 
-		if(n_globals!=main_function->local_variable.size()){
+		if(n_globals!=(int)main_function->local_variable.size()){
 			THROW_RUNTIME_ERROR("n_globals != main variables");
 			return;
 		}
@@ -1271,7 +1271,7 @@ namespace zetscript{
 		unsigned short pre_post_properties=0;
 		unsigned short properties=0;
 		StackElement *variable_stack_element;
-		FunctionSymbol *si;
+		//FunctionSymbol *si;
 		CScriptVar *var_object = NULL;
 
 		unsigned short scope_type=0;
@@ -1548,9 +1548,9 @@ namespace zetscript{
 					unsigned short extra_flags=(instruction->properties&INS_PROPERTY_CONSTRUCT_CALL)?STK_PROPERTY_CONSTRUCTOR_FUNCTION:0;
 					extra_flags|=(instruction->properties&INS_PROPERTY_NO_FUNCTION_CALL) ?STK_PROPERTY_UNRESOLVED_FUNCTION:0;
 					//void *function_obj=NULL;
-					std::vector<CScriptFunction *> *vec_functions;
+					//std::vector<CScriptFunction *> *vec_functions;
 					CScriptVar * class_obj=NULL;
-					intptr_t function_obj =  instruction->op2_value;
+					//intptr_t function_obj =  instruction->op2_value;
 					intptr_t op2_value = instruction->op2_value;
 					properties=instruction->properties;
 					scope_type=GET_INS_PROPERTY_SCOPE_TYPE(properties);
@@ -1577,7 +1577,7 @@ namespace zetscript{
 
 						if(stk_ins->properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 							class_obj=(CScriptVar *)(stk_ins->varRef);
-							CScriptClass *sc =GET_SCRIPT_CLASS(((CScriptVar *)class_obj)->idx_class);
+							//CScriptClass *sc =GET_SCRIPT_CLASS(((CScriptVar *)class_obj)->idx_class);
 							//vec_functions=&sc->local_function;
 						}
 						else{
