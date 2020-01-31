@@ -61,7 +61,7 @@
 
 // Prototypes & structs
 #ifdef __MEMMANAGER__
-#include "MEM_ram.h"
+#include "memmgr.h"
 #endif
 
 
