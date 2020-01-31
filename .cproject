@@ -142,7 +142,8 @@
 		<buildTargets>
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
-				<buildTarget>-DTARGET=debug -DFCOMPILE=ON</buildTarget>
+				<buildArguments/>
+				<buildTarget>-DTARGET=debug -DFCOMPILE=ON -DMEMMANAGER=OFF</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
@@ -150,7 +151,7 @@
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-DTARGET=release -DFCOMPILE=ON</buildTarget>
+				<buildTarget>-DTARGET=release -DFCOMPILE=ON -DMEMMANAGER=OFF</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
