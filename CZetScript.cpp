@@ -297,7 +297,7 @@ namespace zetscript{
 				std::string symbol_ref="????";
 
 
-				//strcpy(symbol_ref,AST_SYMBOL_VALUE_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
+				//strcpy(symbol_ref,AST_SYMBOL_VALUEZJ_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
 
 				if(local_irfs->idx_class!=ZS_INVALID_CLASS){
 					CScriptClass *sc = GET_SCRIPT_CLASS(local_irfs->idx_class);
