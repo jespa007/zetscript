@@ -35,12 +35,12 @@ namespace zetscript{
 		std::string  STR_STACK_ELEMENT_TYPE;			//	typeid(bool).name()
 
 		//===================================================================================================
-			//
-			// PRINT ASM INFO
-			void printGeneratedCode();
+		//
+		// PRINT ASM INFO
+		void printGeneratedCode();
 
-			// PRINT ASM INFO
-			//---------------------------------------------------------------------------------------------------------------------------------------
+		// PRINT ASM INFO
+		//---------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -53,46 +53,36 @@ namespace zetscript{
 		inline CScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
 
 
+		void	set_callback_on_error(PrintFunctionCallback _fun);
 
-		 void	set_callback_on_error(PrintFunctionCallback _fun);
+		int * evalIntValue(const std::string & str_to_eval);
+		bool * evalBoolValue(const std::string & str_to_eval);
+		float * evalFloatValue(const std::string & str_to_eval);
+		std::string * evalStringValue(const std::string & str_to_eval);
 
-		 int * evalIntValue(const std::string & str_to_eval);
-		 bool * evalBoolValue(const std::string & str_to_eval);
-		 float * evalFloatValue(const std::string & str_to_eval);
-		 std::string * evalStringValue(const std::string & str_to_eval);
+		bool eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
+		bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
 
-		 bool eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
-		 bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
+		ConstantValueInfo 	* 		registerConstantValue(const std::string & const_name, int value);
 
+		// CONSTANT TOOLS
+		ConstantValueInfo * getRegisteredConstantValue(const std::string & const_name);
+		ConstantValueInfo * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
 
-			//		 static std::string 				getSymbolNameFromSymbolRef(const std::string & ref_symbol);
-		//		 static std::string 				makeSymbolRef(const std::string & symbol_var, short idxScope, char n_params=NO_PARAMS_IS_VARIABLE);
-				 ConstantValueInfo 	* 		registerConstantValue(const std::string & const_name, int value);
+		//---------------------------------------------------------------------------------------------------------------------------------------
+		// FILE MANAGEMENT
+		bool isFilenameAlreadyParsed(const std::string & filename);
+		const char * getParsedFilenameFromIdx(unsigned idx);
 
-				 // CONSTANT TOOLS
-
-				 ConstantValueInfo * getRegisteredConstantValue(const std::string & const_name);
-				 ConstantValueInfo * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
-
-
-			//===================================================================================================
-
-
-
-			//---------------------------------------------------------------------------------------------------------------------------------------
-			// FILE MANAGEMENT
-			 bool isFilenameAlreadyParsed(const std::string & filename);
-			 const char * getParsedFilenameFromIdx(unsigned idx);
-
-			//-----------------------------------------------
+		//-----------------------------------------------
 
 		/**
-		 * Clear: Clear compile information.
-		 */
-		 void clear();
-		 void execute();
+		* Clear: Clear compile information.
+		*/
+		void clear();
+		void execute();
 
-		 void 						setPrintOutCallback(void (*)(const char *));
+		void 						setPrintOutCallback(void (*)(const char *));
 
 
 		StackElement 					C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable);
