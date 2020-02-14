@@ -56,8 +56,6 @@
 #include 		<cstddef>
 
 #include 		<type_traits>
-#include 		<mutex>
-
 
 // Prototypes & structs
 #ifdef __MEMMANAGER__
