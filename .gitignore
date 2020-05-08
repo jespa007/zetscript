@@ -3,6 +3,7 @@
 /perf.data
 /perf.data.old
 /bin/
+/build/
 /.pydevproject
 /*.vcxproj
 /*.filters
@@ -12,7 +13,6 @@
 /*.sln
 /*.dir/
 /Win32/
-/build/
 /x64/
 /.vs/
 /Debug/
