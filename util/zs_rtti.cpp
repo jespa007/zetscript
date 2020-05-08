@@ -1,7 +1,7 @@
 #include "../zetscript.h"
 
 namespace zetscript{
-	namespace rtti{
+	namespace zs_rtti{
 		std::string demangle(const std::string & name) {
 
 		#ifdef _MSC_VER // visual studio doesn't support this.

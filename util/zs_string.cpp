@@ -1,7 +1,7 @@
 #include "../zetscript.h"
 
 namespace zetscript{
-	namespace string{
+	namespace zs_string{
 
 		enum{
 			MAX_STRING_BUFFERS=256,
@@ -17,13 +17,13 @@ namespace zetscript{
 		unsigned char m_index_buffer=0;
 		char  _sformat_buffer[4096] = { 0 };
 
-		const char *  sformat(const  char  *input_text, ...){
+		std::string  sformat(const  char  *input_text, ...){
 			va_list  ap;
 			va_start(ap,  input_text);
 			vsprintf(_sformat_buffer,  input_text,  ap);
 			va_end(ap);
 
-			return _sformat_buffer;
+			return std::string(_sformat_buffer);
 		}
 
 		int *  parse_integer(const std::string & val){

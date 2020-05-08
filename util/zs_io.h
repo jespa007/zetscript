@@ -1,5 +1,5 @@
 namespace zetscript{
-	namespace io{
+	namespace zs_io{
 
 
 		bool 	file_exists(const std::string & m_file);

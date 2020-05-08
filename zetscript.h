@@ -68,11 +68,11 @@
 
 
 // utils
-#include "util/string.h"
-#include "util/io.h"
-#include "util/log.h"
-#include "util/rtti.h"
-#include "util/path.h"
+#include "util/zs_string.h"
+#include "util/zs_io.h"
+#include "util/zs_log.h"
+#include "util/zs_rtti.h"
+#include "util/zs_path.h"
 
 #include "exception.h"
 #include "CMemberFunctionPointer.h"

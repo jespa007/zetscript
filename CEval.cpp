@@ -670,13 +670,13 @@ namespace zetscript{
 					type=STK_PROPERTY_TYPE_UNDEFINED;
 					load_type=LOAD_TYPE_UNDEFINED;
 					obj=NULL;// CScriptVar::UndefinedSymbol;
-			}else if((const_obj=string::parse_integer(v))!=NULL){
+			}else if((const_obj=zs_string::parse_integer(v))!=NULL){
 				int value = *((int *)const_obj);
 				delete (int *)const_obj;
 				load_type=LOAD_TYPE_CONSTANT;
 				obj=this->zs->registerConstantValue(v,value);
 			}
-			else if((const_obj=string::parse_float(v))!=NULL){
+			else if((const_obj=zs_string::parse_float(v))!=NULL){
 				float value = *((float *)const_obj);
 				delete (float *)const_obj;
 				void *value_ptr;
@@ -691,7 +691,7 @@ namespace zetscript{
 					obj=this->zs->registerConstantValue(v,value_ptr,type);
 				}
 			}
-			else if((const_obj=string::parse_boolean(v))!=NULL){
+			else if((const_obj=zs_string::parse_boolean(v))!=NULL){
 
 				bool value = *((bool *)const_obj);
 				delete (bool *)const_obj;
@@ -1020,7 +1020,7 @@ namespace zetscript{
 		}
 
 
-		THROW_RUNTIME_ERROR(string::sformat("operator %i not implemented",op));
+		THROW_RUNTIME_ERROR(zs_string::sformat("operator %i not implemented",op));
 		return OP_CODE::END_FUNCTION;
 	}
 
@@ -1718,7 +1718,7 @@ namespace zetscript{
 							}*/
 
 							if(!named_function){ // register named function...
-								function_name="_afun_"+string::int_2_string(n_anonymous_function++);
+								function_name="_afun_"+zs_string::int_2_string(n_anonymous_function++);
 							}
 							//--- OP
 							if(sc!=NULL){ // register as variable member...
@@ -1804,7 +1804,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						if((start_symbol = string::copy_from_pointer_diff(aux_p+1, end_expr))==NULL){
+						if((start_symbol = zs_string::copy_from_pointer_diff(aux_p+1, end_expr))==NULL){
 							return NULL;
 						}
 
@@ -1893,7 +1893,7 @@ namespace zetscript{
 									write_error(current_parsing_file,line,"Expected ')'");
 									return NULL;
 								}
-								if((start_symbol = string::copy_from_pointer_diff(aux_p+1, end_expr))==NULL){
+								if((start_symbol = zs_string::copy_from_pointer_diff(aux_p+1, end_expr))==NULL){
 									return NULL;
 								}
 							}else{
@@ -1959,7 +1959,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					if((start_symbol = string::copy_from_pointer_diff(aux_p+1, end_expr))==NULL){
+					if((start_symbol = zs_string::copy_from_pointer_diff(aux_p+1, end_expr))==NULL){
 						return NULL;
 					}
 
@@ -2610,7 +2610,7 @@ namespace zetscript{
 
 						end_var=aux;
 
-						if((str_symbol=string::copy_from_pointer_diff(start_var,end_var)) == NULL){
+						if((str_symbol=zs_string::copy_from_pointer_diff(start_var,end_var)) == NULL){
 							THROW_SCRIPT_ERROR();
 							return NULL;
 						}
@@ -2730,7 +2730,7 @@ namespace zetscript{
 
 					if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 						if((vis=sc->getVariable(ls->value,sc->symbol_info.symbol->idxScope))==0){
-							THROW_RUNTIME_ERROR(string::sformat("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
+							THROW_RUNTIME_ERROR(zs_string::sformat("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 							return;
 						}
 
@@ -2738,7 +2738,7 @@ namespace zetscript{
 					}
 					else{
 						if((instruction->op2_value=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idxScope,ls->n_params))==0){
-							THROW_RUNTIME_ERROR(string::sformat("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
+							THROW_RUNTIME_ERROR(zs_string::sformat("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 							return;
 						}
 					}
@@ -2761,7 +2761,7 @@ namespace zetscript{
 					// ok get the super function...
 					if(sf_found == NULL){
 
-						THROW_RUNTIME_ERROR(string::sformat("Cannot find super function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
+						THROW_RUNTIME_ERROR(zs_string::sformat("Cannot find super function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 						return;
 					}
 
@@ -2797,7 +2797,7 @@ namespace zetscript{
 							if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 
 								if((vis=MAIN_FUNCTION->getVariable(ls->value,sc_var->idxScope))==NULL){
-									THROW_RUNTIME_ERROR(string::sformat("Cannot find variable \"%s\"",ls->value.c_str()));
+									THROW_RUNTIME_ERROR(zs_string::sformat("Cannot find variable \"%s\"",ls->value.c_str()));
 									return;
 								}
 
@@ -2807,7 +2807,7 @@ namespace zetscript{
 							else{
 
 								if((instruction->op2_value=(intptr_t)MAIN_FUNCTION->getFunction(ls->value,sc_var->idxScope,ls->n_params))==0){
-									THROW_RUNTIME_ERROR(string::sformat("Cannot find function \"%s\"",ls->value.c_str()));
+									THROW_RUNTIME_ERROR(zs_string::sformat("Cannot find function \"%s\"",ls->value.c_str()));
 									return;
 								}
 

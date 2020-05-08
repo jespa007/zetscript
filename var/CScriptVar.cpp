@@ -202,7 +202,7 @@ namespace zetscript{
 
 		if(error_symbol){
 			write_error(INSTRUCTION_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
-			THROW_RUNTIME_ERROR(string::sformat("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str()));
+			THROW_RUNTIME_ERROR(zs_string::sformat("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str()));
 			return NULL;
 		}
 

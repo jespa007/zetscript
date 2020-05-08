@@ -419,7 +419,7 @@ namespace zetscript{
 						aux_string = ((CScriptVar *)currentArg->varRef)->getPointer_C_ClassName();
 						break;
 					}
-					args_str+=rtti::demangle(aux_string);
+					args_str+=zs_rtti::demangle(aux_string);
 
 					if(var_type == STK_PROPERTY_TYPE_INTEGER
 					||var_type == STK_PROPERTY_TYPE_NUMBER
@@ -456,9 +456,9 @@ namespace zetscript{
 							}
 
 							if(irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF){
-								str_candidates+=rtti::demangle(GET_IDX_2_CLASS_C_STR(irfs->arg_info[a].idx_type));
+								str_candidates+=zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(irfs->arg_info[a].idx_type));
 							}else{ /* typic var ... */
-								str_candidates+="arg"+string::int_2_string(a+1);
+								str_candidates+="arg"+zs_string::int_2_string(a+1);
 							}
 						}
 						str_candidates+=");n";

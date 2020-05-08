@@ -1,7 +1,7 @@
 #include "../zetscript.h"
 
 namespace zetscript{
-	namespace io{
+	namespace zs_io{
 
 		char * read_file(const std::string &  filename, int & n_bytes_readed){
 
@@ -20,15 +20,15 @@ namespace zetscript{
 					if(readed_elements != length) {
 
 						free(buffer);
-						THROW_RUNTIME_ERROR(string::sformat("number elements doesn't match with length file (%s)",filename.c_str()));
+						THROW_RUNTIME_ERROR(zs_string::sformat("number elements doesn't match with length file (%s)",filename.c_str()));
 					}
 
 					fclose(fp);
 					return buffer;
 				}
-				else  THROW_RUNTIME_ERROR(string::sformat("I can't read file \"%s\"",filename.c_str()));
+				else  THROW_RUNTIME_ERROR(zs_string::sformat("I can't read file \"%s\"",filename.c_str()));
 			}
-			else  THROW_RUNTIME_ERROR(string::sformat("I can't open file \"%s\"",filename.c_str()));
+			else  THROW_RUNTIME_ERROR(zs_string::sformat("I can't open file \"%s\"",filename.c_str()));
 
 			return NULL;
 		}

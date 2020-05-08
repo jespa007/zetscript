@@ -19,7 +19,7 @@ int main(int argc, char * argv[]) {
 
 		for(int i=1; i < argc; i++){
 
-			std::vector<std::string> a=string::split(argv[i],'=');
+			std::vector<std::string> a=zs_string::split(argv[i],'=');
 			switch(a.size()){
 			case 1:
 

@@ -544,20 +544,20 @@ namespace zetscript{
 	// POINTER MANANAGER
 	std::string CVirtualMachine::stk_C_TypeStr(const StackElement & stk_v){
 		if(stk_v.properties & STK_PROPERTY_TYPE_INTEGER){
-			return rtti::demangle(typeid(int).name());
+			return zs_rtti::demangle(typeid(int).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_NUMBER){
-			return rtti::demangle(typeid(float).name());
+			return zs_rtti::demangle(typeid(float).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_BOOLEAN){
-			return rtti::demangle(typeid(bool).name());
+			return zs_rtti::demangle(typeid(bool).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_STRING){
-			return rtti::demangle(typeid(std::string).name());
+			return zs_rtti::demangle(typeid(std::string).name());
 		}else if(stk_v.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
 
 
 			CScriptClass *c = GET_SCRIPT_CLASS(((CScriptVar *)(stk_v.varRef))->idx_class);
 
 			if(c!=NULL){
-				return rtti::demangle(c->str_class_ptr_type);
+				return zs_rtti::demangle(c->str_class_ptr_type);
 			}
 		}
 		return "unknow";
@@ -584,7 +584,7 @@ namespace zetscript{
 		bool move_to_shared_list=*n_shares==0;
 
 		if(*n_shares >= MAX_SHARES_VARIABLE){
-			THROW_RUNTIME_ERROR(string::sformat("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE));
+			THROW_RUNTIME_ERROR(zs_string::sformat("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE));
 			return false;
 
 		}

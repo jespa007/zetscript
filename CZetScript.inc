@@ -79,7 +79,7 @@ namespace zetscript{
 					}else if(idx_dst_type == IDX_TYPE_BOOL_PTR_C){//*CScriptClass::STR_BOOL_TYPE_PTR){
 						val_ret=(intptr_t)(&stk_src->stkValue);
 					}else{
-						error="cannot convert "+rtti::demangle((STR_STRING_TYPE_PTR))+" into %s"+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
+						error="cannot convert "+zs_rtti::demangle((STR_STRING_TYPE_PTR))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
 
 						return false;
 					}
@@ -103,7 +103,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error="cannot convert "+rtti::demangle((STR_STRING_TYPE_PTR))+" into %s"+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error="cannot convert "+zs_rtti::demangle((STR_STRING_TYPE_PTR))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 					break;
@@ -125,7 +125,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error= "cannot convert "+rtti::demangle((STR_STRING_TYPE_PTR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error= "cannot convert "+zs_rtti::demangle((STR_STRING_TYPE_PTR))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 					break;
@@ -143,7 +143,7 @@ namespace zetscript{
 					}else if (idx_dst_type == IDX_TYPE_CONST_CHAR_PTR_C){
 						val_ret=(intptr_t)(stk_src->stkValue);
 					}else{
-						error= "cannot convert "+rtti::demangle((STR_STRING_TYPE_PTR))+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error= "cannot convert "+zs_rtti::demangle((STR_STRING_TYPE_PTR))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 
@@ -181,11 +181,11 @@ namespace zetscript{
 							val_ret=(intptr_t)script_variable->get_C_Object();
 						}
 						else if((val_ret=script_class_factory->doCast((intptr_t)script_variable->get_C_Object(),c_class->idx_class,idx_dst_type))==0){//c_class->idx_class==idx_dst_type){
-							error = "cannot convert "+rtti::demangle(script_variable->getPointer_C_ClassName())+" into "+rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+							error = "cannot convert "+zs_rtti::demangle(script_variable->getPointer_C_ClassName())+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 							return false;
 						}
 					}else{ // CScriptVar ?
-						error = " Error calling function, no C-object parameter! Unexpected script variable ("+rtti::demangle(script_variable->getClassName())+")";
+						error = " Error calling function, no C-object parameter! Unexpected script variable ("+zs_rtti::demangle(script_variable->getClassName())+")";
 						return false;
 					}
 					break;
@@ -247,7 +247,7 @@ namespace zetscript{
 
 
 						if(!stkToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 				}
@@ -322,7 +322,7 @@ namespace zetscript{
 						}
 
 						if(!stkToVar(&stk,idx_return, (intptr_t*)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 				}
@@ -408,7 +408,7 @@ namespace zetscript{
 						}
 
 						if(!stkToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 				}
@@ -498,7 +498,7 @@ namespace zetscript{
 					}
 
 					if(!stkToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(string::sformat("run-time error converting result value:%s",error_str.c_str()));
+						THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 				}
@@ -595,7 +595,7 @@ namespace zetscript{
 						}
 
 						if(!stkToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 
@@ -702,7 +702,7 @@ namespace zetscript{
 					}
 
 					if(!stkToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(string::sformat("run-time error converting result value:%s",error_str.c_str()));
+						THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 				}
@@ -811,7 +811,7 @@ namespace zetscript{
 						}
 
 						if(!stkToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 
@@ -862,13 +862,13 @@ namespace zetscript{
 
 				// 2. check valid parameters ...
 				if((idx_return_type=script_class_factory->getIdxClassFromIts_C_Type(return_type)) == -1){
-					THROW_RUNTIME_ERROR(string::sformat("Return type \"%s\" for bind function not registered",rtti::demangle(return_type).c_str()));
+					THROW_RUNTIME_ERROR(zs_string::sformat("Return type \"%s\" for bind function not registered",zs_rtti::demangle(return_type).c_str()));
 					return NULL;
 				}
 
 				for(unsigned int i = 0; i < arg.size(); i++){
 					if(script_class_factory->getIdxClassFromIts_C_Type(arg[i])==-1){
-						THROW_RUNTIME_ERROR(string::sformat("Argument (%i) type \"%s\" for bind function not registered",i,rtti::demangle(arg[i]).c_str()));
+						THROW_RUNTIME_ERROR(zs_string::sformat("Argument (%i) type \"%s\" for bind function not registered",i,zs_rtti::demangle(arg[i]).c_str()));
 						return NULL;
 					}
 				}

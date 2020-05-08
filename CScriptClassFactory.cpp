@@ -4,7 +4,7 @@
 #define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"
 #define REGISTER_BUILT_IN_STRUCT(type_class, idx_class)\
 	if(vec_script_class_node.size()!=idx_class){\
-		THROW_RUNTIME_ERROR(string::sformat("Error: class built in type %s doesn't match its id",STR(type_class)));\
+		THROW_RUNTIME_ERROR(zs_string::sformat("Error: class built in type %s doesn't match its id",STR(type_class)));\
 		return;\
 	}\
 	register_C_Class<type_class>(STR(type_class));
@@ -12,7 +12,7 @@
 
 #define REGISTER_BUILT_IN_CLASS(type_class, idx_class)\
 	if(vec_script_class_node.size()!=idx_class){\
-		THROW_RUNTIME_ERROR(string::sformat("Error: class built in type %s doesn't match its id",STR(type_class)));\
+		THROW_RUNTIME_ERROR(zs_string::sformat("Error: class built in type %s doesn't match its id",STR(type_class)));\
 		return;\
 	}\
 	register_C_ClassBuiltIn<type_class>(STR(type_class));
@@ -20,7 +20,7 @@
 
 #define REGISTER_BUILT_IN_TYPE(type_class, idx_class)\
 	if(vec_script_class_node.size()!=idx_class){\
-		THROW_RUNTIME_ERROR(string::sformat("Error initializing C built in type: %s",STR(type_class)));\
+		THROW_RUNTIME_ERROR(zs_string::sformat("Error initializing C built in type: %s",STR(type_class)));\
 		return;\
 	}else{\
 		CScriptClass *sc=registerClass(__FILE__,__LINE__,STR(type_class),"");\
@@ -127,7 +127,7 @@ namespace zetscript{
 		//int idxVariable;
 
 		if(var_ptr==NULL){
-			THROW_RUNTIME_ERROR(string::sformat("cannot register var \"%s\" with NULL reference value", var_name.c_str()));
+			THROW_RUNTIME_ERROR(zs_string::sformat("cannot register var \"%s\" with NULL reference value", var_name.c_str()));
 			return NULL;
 		}
 
@@ -139,7 +139,7 @@ namespace zetscript{
 		}
 
 		if(getIdxClassFromIts_C_Type(var_type) == ZS_INVALID_CLASS){
-			THROW_RUNTIME_ERROR(string::sformat("%s has not valid type (%s)",var_name.c_str(),var_type.c_str()));
+			THROW_RUNTIME_ERROR(zs_string::sformat("%s has not valid type (%s)",var_name.c_str(),var_type.c_str()));
 			return  NULL;
 		}
 
@@ -177,7 +177,7 @@ namespace zetscript{
 
 
 		if(vec_script_class_node.size()>=MAX_REGISTER_CLASSES){
-			THROW_RUNTIME_ERROR(string::sformat("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES));
+			THROW_RUNTIME_ERROR(zs_string::sformat("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES));
 			return NULL;
 		}
 
@@ -224,7 +224,7 @@ namespace zetscript{
 			return sci;
 
 		}else{
-			THROW_RUNTIME_ERROR(string::sformat("class \"%s\" already registered",class_name.c_str()));
+			THROW_RUNTIME_ERROR(zs_string::sformat("class \"%s\" already registered",class_name.c_str()));
 		}
 
 		return NULL;
@@ -346,12 +346,12 @@ namespace zetscript{
 
 		//local_map_type_conversion
 		if(mapTypeConversion.count(idx_src_class) == 0){
-			THROW_RUNTIME_ERROR(string::sformat("There's no type src conversion class \"%s\".",rtti::demangle(src_class->str_class_ptr_type).c_str()));
+			THROW_RUNTIME_ERROR(zs_string::sformat("There's no type src conversion class \"%s\".",zs_rtti::demangle(src_class->str_class_ptr_type).c_str()));
 			return 0;
 		}
 
 		if((mapTypeConversion)[idx_src_class].count(idx_convert_class) == 0){
-			THROW_RUNTIME_ERROR(string::sformat("There's no dest conversion class \"%s\".",rtti::demangle(convert_class->str_class_ptr_type).c_str()));
+			THROW_RUNTIME_ERROR(zs_string::sformat("There's no dest conversion class \"%s\".",zs_rtti::demangle(convert_class->str_class_ptr_type).c_str()));
 			return 0;
 		}
 

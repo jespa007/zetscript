@@ -25,7 +25,7 @@ namespace zetscript{
 
 
 		if(getVariable(symbol->name,symbol->idxScope) != NULL){
-			THROW_RUNTIME_ERROR(string::sformat("Variable \"%s\" already exist",variable_name.c_str()));
+			THROW_RUNTIME_ERROR(zs_string::sformat("Variable \"%s\" already exist",variable_name.c_str()));
 			return NULL;
 		}
 
@@ -69,7 +69,7 @@ namespace zetscript{
 
 			//std::string symbol_ref = CEval::makeSymbolRef(function_name,idxScope);
 			if(getFunction(function_name,(char)args.size()) != NULL){
-				THROW_RUNTIME_ERROR(string::sformat("Function \"%s\" already exist",function_name.c_str()));
+				THROW_RUNTIME_ERROR(zs_string::sformat("Function \"%s\" already exist",function_name.c_str()));
 				return NULL;
 			}
 

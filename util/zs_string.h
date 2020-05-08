@@ -4,7 +4,7 @@
 #define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
 
 namespace zetscript{
-	namespace string{
+	namespace zs_string{
 
 		typedef enum{
 			INVALID=0,
@@ -22,7 +22,7 @@ namespace zetscript{
 		 std::string to_lower(const std::string & str);
 		 std::string to_upper(const std::string & str);
 		 std::wstring to_wstring(const std::string &s);
-		  const char *  sformat(const  char  *string_text, ...);
+		  std::string  sformat(const  char  *string_text, ...);
 
 		 bool ends_with(const std::string & fullString, const std::string & ending);
 

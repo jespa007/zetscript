@@ -4,13 +4,6 @@
 #include		"CByteCode.cpp"
 
 //-- Utils --
-#include 		"util/string.cpp"
-#include 		"util/path.cpp"
-#include 		"util/io.cpp"
-#include 		"util/rtti.cpp"
-#include 		"util/log.cpp"
-
-//-- Variables --
 #include		"var/CScriptVar.cpp"
 #include		"var/CScriptVarString.cpp"
 #include		"var/CScriptVarVector.cpp"
@@ -31,6 +24,11 @@
 
 
 #include		"CZetScript.cpp"
+#include "util/zs_io.cpp"
+#include "util/zs_log.cpp"
+#include "util/zs_path.cpp"
+#include "util/zs_rtti.cpp"
+#include "util/zs_string.cpp"
 #include 		"var/CScriptVarDictionary.cpp"
 
 
