@@ -10,8 +10,6 @@ namespace zetscript{
 		};
 
 
-
-
 		char m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER]={{0}};
 		char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
 		unsigned char m_index_buffer=0;
@@ -116,9 +114,11 @@ namespace zetscript{
 
 		std::string int_2_string(int number){
 
-		   std::stringstream ss;//create a stringstream
-		   ss << number;//add number to the stream
-		   return ss.str();//return a std::string with the contents of the stream
+			char int_str[100];
+
+			sprintf(int_str,"%i",number);
+
+		   return std::string(int_str);
 		}
 
 		std::string to_lower(const std::string & str){
