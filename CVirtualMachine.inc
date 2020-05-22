@@ -281,7 +281,7 @@ namespace zetscript{
 			}
 
 			if(match_signature){
-				if((irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF)){ /* C! Must match args...*/
+				if((irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF)){ /* C! Must match args...*/
 							bool all_check=true; /*  check arguments types ... */
 							int idx_type=-1;
 							int arg_idx_type=-1;
@@ -455,7 +455,7 @@ namespace zetscript{
 								str_candidates+=",";
 							}
 
-							if(irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF){
+							if(irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
 								str_candidates+=zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(irfs->arg_info[a].idx_type));
 							}else{ /* typic var ... */
 								str_candidates+="arg"+zs_string::int_2_string(a+1);

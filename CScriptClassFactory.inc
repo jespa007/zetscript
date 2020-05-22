@@ -28,6 +28,9 @@ namespace zetscript{
 		using Traits3 = function_traits<decltype(function_ptr)>;
 		get_params_function<Traits3>(0,return_type, arg, make_index_sequence<Traits3::arity>{});
 
+		if(arg.size()>6){
+			THROW_RUNTIME_ERROR("Max argyments reached");
+		}
 
 		// check valid parameters ...
 		if((idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
@@ -60,7 +63,13 @@ namespace zetscript{
 			arg_info.push_back({idx_type,arg[i]});
 		}
 
-		if(idx_return_type == IDX_TYPE_VOID_C){
+		// ignores special type cast C++ member to ptr function
+		// create binding function class
+
+
+		ref_ptr=(intptr_t)function_ptr;
+
+		/*if(idx_return_type == IDX_TYPE_VOID_C){
 			if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<void>(arg.size(),function_ptr))==0){//(int)function_ptr;
 				return false;
 			}
@@ -69,11 +78,11 @@ namespace zetscript{
 			if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<intptr_t>(arg.size(),function_ptr))==0){//(int)function_ptr;
 				return false;
 			}
-		}
+		}*/
 
 
 		// init struct...
-		main_function->registerFunction(registered_file,registered_line,function_name,arg_info,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+		main_function->registerFunction(registered_file,registered_line,function_name,arg_info,idx_return_type,ref_ptr,SYMBOL_INFO_PROPERTY_C_OBJECT_REF | SYMBOL_INFO_PROPERTY_STATIC_REF);
 
 		zs_print_debug_cr("Registered function name: %s",function_name);
 		return true;
@@ -99,7 +108,7 @@ namespace zetscript{
 		if(size > 1){ // because = 0 is reserved for main class and >= 1 is for C registered classes
 			if((
 
-				((vec_script_class_node[size-1]->symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
+				((vec_script_class_node[size-1]->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_C_OBJECT_REF)!=SYMBOL_INFO_PROPERTY_C_OBJECT_REF)
 			)){
 				THROW_RUNTIME_ERROR(zs_string::sformat("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str()));
 				return NULL;
@@ -134,7 +143,7 @@ namespace zetscript{
 			// allow dynamic constructor in function its parameters ...
 
 			irc->str_class_ptr_type=str_classPtr;
-			irc->symbol_info.properties=PROPERTY_C_OBJECT_REF;
+			irc->symbol_info.symbol_info_properties=SYMBOL_INFO_PROPERTY_C_OBJECT_REF;
 
 
 			irc->c_constructor = NULL;
@@ -294,9 +303,9 @@ namespace zetscript{
 
 			CScriptClass *irc_base = vec_script_class_node[idx_base_class];
 
-			unsigned short derivated_properties=PROPERTY_C_OBJECT_REF| PROPERTY_IS_DERIVATED;
+			unsigned short derivated_symbol_info_properties=SYMBOL_INFO_PROPERTY_C_OBJECT_REF| SYMBOL_INFO_PROPERTY_IS_DERIVATED;
 			if(std::is_polymorphic<B>::value==true){
-				derivated_properties|=PROPERTY_IS_POLYMORPHIC;
+				derivated_symbol_info_properties|=SYMBOL_INFO_PROPERTY_IS_POLYMORPHIC;
 			}
 
 			// register all symbols function from base ...
@@ -312,7 +321,7 @@ namespace zetscript{
 				irs.c_type = irs_source->c_type;
 				//irs.
 				irs.symbol=irs_source->symbol;
-				irs.properties = derivated_properties;
+				irs.symbol_info_properties = derivated_symbol_info_properties;
 				irs.idx_symbol = (short)(irc_class->local_variable.size());
 				irc_class->local_variable.push_back(irs);
 
@@ -329,7 +338,7 @@ namespace zetscript{
 						irs_source->arg_info,
 						irs_source->idx_return_type,
 						irs_source->symbol_info.ref_ptr,
-						derivated_properties
+						derivated_symbol_info_properties
 						);
 			}
 		}
@@ -411,20 +420,24 @@ namespace zetscript{
 
 		// ignores special type cast C++ member to ptr function
 		// create binding function class
-		if(idx_return_type == IDX_TYPE_VOID_C){
-			if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<C,T, void>(arg.size(),function_type)))==0){
-				return false;
-			}
-		}else{
-			if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<C,T, R>(arg.size(),function_type)))==0){
-				return false;
-			}
+
+
+
+		//if(idx_return_type == IDX_TYPE_VOID_C){
+		if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<C>(arg.size(),function_type)))==0){
+			return false;
 		}
+		/*}else{
+			if((ref_ptr=((intptr_t)native_function_factory->c_member_class_function_proxy<C,intptr_t>(function_type)))==0){
+				return false;
+			}
+		}*/
+
 
 		//CScriptClass *sc = vec_script_class_node[idxRegisterdClass];
 
 		// register member function...
-		CScriptFunction *sf = sc->registerFunction(registered_file,registered_line,function_name,arg_info,idx_return_type,ref_ptr,PROPERTY_C_OBJECT_REF);
+		CScriptFunction *sf = sc->registerFunction(registered_file,registered_line,function_name,arg_info,idx_return_type,ref_ptr,SYMBOL_INFO_PROPERTY_C_OBJECT_REF);
 
 		zs_print_debug_cr("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 
@@ -472,6 +485,9 @@ namespace zetscript{
 		using Traits3 = function_traits<decltype(function_type)>;
 		get_params_function<Traits3>(0,return_type, arg, make_index_sequence<Traits3::arity>{});
 
+		if(arg.size()>6){
+			THROW_RUNTIME_ERROR("Max argyments reached");
+		}
 
 		// check valid parameters ...
 		if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
@@ -496,9 +512,10 @@ namespace zetscript{
 
 		}
 
+		ref_ptr=(void *)function_type;
 		// ignores special type cast C++ member to ptr function
 		// create binding function class
-		if(idx_return_type == IDX_TYPE_VOID_C){
+		/*if(idx_return_type == IDX_TYPE_VOID_C){
 			if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<void>(arg.size(),function_type))==0){//(int)function_ptr;
 				return false;
 			}
@@ -507,10 +524,10 @@ namespace zetscript{
 			if((ref_ptr=(intptr_t)native_function_factory->new_proxy_function<int>(arg.size(),function_type))==0){//(int)function_ptr;
 				return false;
 			}
-		}
+		}*/
 
 		// register member function...
-		CScriptFunction * sf = c_class->registerFunction(registered_file,registered_line,function_name,arg_info, idx_return_type, ref_ptr, PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF);
+		CScriptFunction * sf = c_class->registerFunction(registered_file,registered_line,function_name,arg_info, idx_return_type, ref_ptr, SYMBOL_INFO_PROPERTY_C_OBJECT_REF | SYMBOL_INFO_PROPERTY_STATIC_REF);
 		zs_print_debug_cr("Registered member function name %s::%s",zs_rtti::demangle(typeid(T).name()).c_str(), function_name);
 
 		// check whether is static metamethod...
@@ -595,7 +612,7 @@ namespace zetscript{
 		}
 
 		// register variable...
-		c_class->registerVariable(registered_file,registered_line,var_name,var_type,ref_ptr,PROPERTY_C_OBJECT_REF);
+		c_class->registerVariable(registered_file,registered_line,var_name,var_type,ref_ptr,SYMBOL_INFO_PROPERTY_C_OBJECT_REF);
 		return true;
 
 	}

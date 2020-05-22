@@ -84,11 +84,6 @@ namespace zetscript{
 		IDX_INVALID = -1, IDX_THIS = -10
 	}IDX_OBJ_SPECIAL_VALUE;
 
-	typedef enum {
-		CREATE_FUNCTION = 0, DESTROY_FUNCTION
-	}PROXY_CREATOR;
-
-
 	// properties shared by compiler + VM
 	typedef enum:unsigned char {
 
@@ -234,10 +229,10 @@ namespace zetscript{
 
 	//typedef tInfoStatementOp *PInfoStatementOp;
 	typedef enum {
-		PROPERTY_C_OBJECT_REF 			= 0x1 << 0,
-		PROPERTY_IS_DERIVATED 			= 0x1 << 1,
-		PROPERTY_STATIC_REF 			= 0x1 << 2,
-		PROPERTY_IS_POLYMORPHIC			= 0x1 << 3
+		SYMBOL_INFO_PROPERTY_C_OBJECT_REF 			= 0x1 << 0,
+		SYMBOL_INFO_PROPERTY_IS_DERIVATED 			= 0x1 << 1,
+		SYMBOL_INFO_PROPERTY_STATIC_REF 			= 0x1 << 2, // C function or C++ static functions
+		SYMBOL_INFO_PROPERTY_IS_POLYMORPHIC			= 0x1 << 3
 	}SYMBOL_INFO_PROPERTY;
 
 
@@ -315,11 +310,11 @@ namespace zetscript{
 
 		short idx_symbol; // idx of class function/variable symbol that keeps.
 
-		unsigned short properties; // SYMBOL_INFO_PROPERTY
+		unsigned short symbol_info_properties; // SYMBOL_INFO_PROPERTY
 		std::string c_type; // In case is C, we need to know its type ...
 
 		VariableSymbolInfo() {
-			properties = 0;
+			symbol_info_properties = 0;
 			c_type = "";
 			//idxScope = -1;
 			ref_ptr = 0;

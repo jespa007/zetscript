@@ -642,6 +642,40 @@ namespace zetscript{
 		return current_call_c_function;
 	}
 
+	#define PTR_FUNCTION_VOID_PARAM0(f) ((void (*)())(f))
+	#define PTR_FUNCTION_VOID_PARAM1(f) ((void (*)(intptr_t))(f))
+	#define PTR_FUNCTION_VOID_PARAM2(f) ((void (*)(intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_VOID_PARAM3(f) ((void (*)(intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_VOID_PARAM4(f) ((void (*)(intptr_t,intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_VOID_PARAM5(f) ((void (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_VOID_PARAM6(f) ((void (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+
+	#define PTR_FUNCTION_RET_PARAM0(f) ((intptr_t (*)())(f))
+	#define PTR_FUNCTION_RET_PARAM1(f) ((intptr_t (*)(intptr_t))(f))
+	#define PTR_FUNCTION_RET_PARAM2(f) ((intptr_t (*)(intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_PARAM3(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_PARAM4(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_PARAM5(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_PARAM6(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+
+
+	#define PTR_FUNCTION_RET_FLOAT_PARAM0(f) ((float (*)())(f))
+	#define PTR_FUNCTION_RET_FLOAT_PARAM1(f) ((float (*)(intptr_t))(f))
+	#define PTR_FUNCTION_RET_FLOAT_PARAM2(f) ((float (*)(intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_FLOAT_PARAM3(f) ((float (*)(intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_FLOAT_PARAM4(f) ((float (*)(intptr_t,intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_FLOAT_PARAM5(f) ((float (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_FLOAT_PARAM6(f) ((float (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+
+	#define PTR_FUNCTION_RET_BOOL_PARAM0(f) ((bool (*)())(f))
+	#define PTR_FUNCTION_RET_BOOL_PARAM1(f) ((bool (*)(intptr_t))(f))
+	#define PTR_FUNCTION_RET_BOOL_PARAM2(f) ((bool (*)(intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_BOOL_PARAM3(f) ((bool (*)(intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_BOOL_PARAM4(f)	((bool (*)(intptr_t,intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_BOOL_PARAM5(f) ((bool (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+	#define PTR_FUNCTION_RET_BOOL_PARAM6(f) ((bool (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+
+
 	//============================================================================================================================================
 	StackElement  CVirtualMachine::call_C_function(
 			intptr_t fun_ptr,
@@ -657,6 +691,7 @@ namespace zetscript{
 		intptr_t result=0;
 		StackElement *currentArg;
 		current_call_c_function = irfs;
+		bool static_ref=irfs->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_STATIC_REF;
 		//float aux_float=0;
 
 		if(n_args>MAX_N_ARGS){
@@ -665,7 +700,7 @@ namespace zetscript{
 		}
 
 
-		if((irfs->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) {
+		if((irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF) {
 			write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function is not registered as C");
 			RETURN_ERROR;
 		}
@@ -709,222 +744,435 @@ namespace zetscript{
 
 			switch(n_args){
 			case 0:
-				(*((std::function<void ()> *)fun_ptr))();
+				if(static_ref){
+					PTR_FUNCTION_VOID_PARAM0(fun_ptr)();
+				}else{
+					(*((CMemberFunctionPointerVoidParam0 *)fun_ptr))();
+				}
 				break;
 			case 1:
-				(*((std::function<void (intptr_t)> *)fun_ptr))(converted_param[0]);
+				if(static_ref){
+					PTR_FUNCTION_VOID_PARAM1(
+						converted_param[0]
+					);
+				}else{
+					(*((CMemberFunctionPointerVoidParam1 *)fun_ptr))(
+						converted_param[0]
+					);
+				}
 				break;
 			case 2:
-				(*((std::function<void (intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1]
-										);
+				if(static_ref){
+					PTR_FUNCTION_VOID_PARAM2(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+					);
+				}else{
+					(*((CMemberFunctionPointerVoidParam2 *)fun_ptr))(
+						converted_param[0]
+						,converted_param[1]
+					);
+				}
 				break;
 			case 3:
-				(*((std::function<void (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2]
-										);
+				if(static_ref){
+					PTR_FUNCTION_VOID_PARAM3(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+					);
+				}else{
+					(*((CMemberFunctionPointerVoidParam3 *)fun_ptr))(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+					);
+				}
 				break;
 			case 4:
-				(*((std::function<void (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3]
-										);
+				if(static_ref){
+					PTR_FUNCTION_VOID_PARAM4(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+					);
+				}else{
+					(*((CMemberFunctionPointerVoidParam4 *)fun_ptr))(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+					);
+				}
 				break;
 			case 5:
-				(*((std::function<void (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3],
-						converted_param[4]
+				if(static_ref){
+					PTR_FUNCTION_VOID_PARAM5(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+				  );
+				}else{
+					(*((CMemberFunctionPointerVoidParam5 *)fun_ptr))(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
 					);
+				}
 				break;
 			case 6:
-				(*((std::function<void (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-						converted_param[0],
-						converted_param[1],
-						converted_param[2],
-						converted_param[3],
-						converted_param[4],
-						converted_param[5]
-										);
+				if(static_ref){
+					PTR_FUNCTION_VOID_PARAM6(fun_ptr)(
+						converted_param[0]
+						 ,converted_param[1]
+						 ,converted_param[2]
+						 ,converted_param[3]
+						 ,converted_param[4]
+						 ,converted_param[5]
+				  );
+				}else{
+					(*((CMemberFunctionPointerVoidParam6 *)fun_ptr))(
+						converted_param[0]
+						 ,converted_param[1]
+						 ,converted_param[2]
+						 ,converted_param[3]
+						 ,converted_param[4]
+						 ,converted_param[5]
+					);
+				}
 				break;
 			}
 
-		}else{
-
-			if(irfs->idx_return_type==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
-				switch(n_args){
-				case 0:
-					result=(*((std::function<bool ()> *)fun_ptr))();
-					break;
-				case 1:
-					result=(*((std::function<bool (intptr_t)> *)fun_ptr))(converted_param[0]);
-					break;
-				case 2:
-
-					result=(*((std::function<bool (intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1]
-											);
-					break;
-				case 3:
-					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2]
-											);
-					break;
-				case 4:
-					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3]
-											);
-					break;
-				case 5:
-					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3],
-							converted_param[4]
-						);
-					break;
-				case 6:
-					result=(*((std::function<bool (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3],
-							converted_param[4],
-							converted_param[5]
-											);
-					break;
-
+		}else if(irfs->idx_return_type==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
+			switch(n_args){
+			case 0:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_BOOL_PARAM0(fun_ptr)();
+				}else{
+					result=(*((CMemberFunctionPointerRetParam0 *)fun_ptr)).ret_bool();
 				}
-			}else if(irfs->idx_return_type==IDX_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
-					float aux_flt;
-					switch(n_args){
-					case 0:
-						aux_flt =(*((std::function<float ()> *)fun_ptr))();
-						break;
-					case 1:
-						aux_flt =(*((std::function<float (intptr_t)> *)fun_ptr))(converted_param[0]);
-						break;
-					case 2:
-
-						aux_flt =(*((std::function<float (intptr_t,intptr_t)> *)fun_ptr))(
-								converted_param[0],
-								converted_param[1]
-												);
-						break;
-					case 3:
-						aux_flt =(*((std::function<float (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-								converted_param[0],
-								converted_param[1],
-								converted_param[2]
-												);
-						break;
-					case 4:
-						aux_flt =(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-								converted_param[0],
-								converted_param[1],
-								converted_param[2],
-								converted_param[3]
-												);
-						break;
-					case 5:
-						aux_flt =(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-								converted_param[0],
-								converted_param[1],
-								converted_param[2],
-								converted_param[3],
-								converted_param[4]
-							);
-						break;
-					case 6:
-						aux_flt =(*((std::function<float (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-								converted_param[0],
-								converted_param[1],
-								converted_param[2],
-								converted_param[3],
-								converted_param[4],
-								converted_param[5]
-												);
-						break;
-
-					}
-
-					memcpy(&result, &aux_flt, sizeof(float));
-			}else{ // generic int
-
-				switch(n_args){
-				case 0:
-					result=(*((std::function<intptr_t ()> *)fun_ptr))();
-					break;
-				case 1:
-					result=(*((std::function<intptr_t (intptr_t)> *)fun_ptr))(converted_param[0]);
-					break;
-				case 2:
-
-					result=(*((std::function<intptr_t (intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1]
-											);
-					break;
-				case 3:
-					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2]
-											);
-					break;
-				case 4:
-					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3]
-											);
-					break;
-				case 5:
-					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3],
-							converted_param[4]
-						);
-					break;
-				case 6:
-					result=(*((std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)fun_ptr))(
-							converted_param[0],
-							converted_param[1],
-							converted_param[2],
-							converted_param[3],
-							converted_param[4],
-							converted_param[5]
-											);
-					break;
-
+				break;
+			case 1:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_BOOL_PARAM1(fun_ptr)(
+						converted_param[0]
+					);
+				}else{
+					result=(*((CMemberFunctionPointerRetParam1 *)fun_ptr)).ret_bool(
+						converted_param[0]
+					);
 				}
-
-
+				break;
+			case 2:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_BOOL_PARAM2(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+					);
+				}else{
+					result=(*((CMemberFunctionPointerRetParam2 *)fun_ptr)).ret_bool(
+						converted_param[0]
+						,converted_param[1]
+					);
+				}
+				break;
+			case 3:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_BOOL_PARAM3(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+					);
+				}else{
+					result=(*((CMemberFunctionPointerRetParam3 *)fun_ptr)).ret_bool(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+					);
+				}
+				break;
+			case 4:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_BOOL_PARAM4(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+					);
+				}else{
+					result=(*((CMemberFunctionPointerRetParam4 *)fun_ptr)).ret_bool(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+					);
+				}
+				break;
+			case 5:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_BOOL_PARAM5(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+				  );
+				}else{
+					result=(*((CMemberFunctionPointerRetParam5 *)fun_ptr)).ret_bool(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+					);
+				}
+				break;
+			case 6:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_BOOL_PARAM6(fun_ptr)(
+						converted_param[0]
+						 ,converted_param[1]
+						 ,converted_param[2]
+						 ,converted_param[3]
+						 ,converted_param[4]
+						 ,converted_param[5]
+				  );
+				}else{
+					result=(*((CMemberFunctionPointerRetParam6 *)fun_ptr))(
+						converted_param[0]
+						 ,converted_param[1]
+						 ,converted_param[2]
+						 ,converted_param[3]
+						 ,converted_param[4]
+						 ,converted_param[5]
+					);
+				}
+				break;
+			}
+		}else if(irfs->idx_return_type==IDX_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
+			float aux_flt;
+			switch(n_args){
+			case 0:
+				if(static_ref){
+					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();
+				}else{
+					aux_flt=(*((CMemberFunctionPointerRetParam0 *)fun_ptr)).ret_float();
+				}
+				break;
+			case 1:
+				if(static_ref){
+					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM1(fun_ptr)(
+						converted_param[0]
+					);
+				}else{
+					aux_flt=(*((CMemberFunctionPointerRetParam1 *)fun_ptr)).ret_float(
+						converted_param[0]
+					);
+				}
+				break;
+			case 2:
+				if(static_ref){
+					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM2(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+					);
+				}else{
+					aux_flt=(*((CMemberFunctionPointerRetParam2 *)fun_ptr)).ret_float(
+						converted_param[0]
+						,converted_param[1]
+					);
+				}
+				break;
+			case 3:
+				if(static_ref){
+					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM3(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+					);
+				}else{
+					aux_flt=(*((CMemberFunctionPointerRetParam3 *)fun_ptr)).ret_float(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+					);
+				}
+				break;
+			case 4:
+				if(static_ref){
+					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM4(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+					);
+				}else{
+					aux_flt=(*((CMemberFunctionPointerRetParam4 *)fun_ptr)).ret_float(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+					);
+				}
+				break;
+			case 5:
+				if(static_ref){
+					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM5(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+				  );
+				}else{
+					aux_flt=(*((CMemberFunctionPointerRetParam5 *)fun_ptr)).ret_float(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+					);
+				}
+				break;
+			case 6:
+				if(static_ref){
+					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM6(fun_ptr)(
+						converted_param[0]
+						 ,converted_param[1]
+						 ,converted_param[2]
+						 ,converted_param[3]
+						 ,converted_param[4]
+						 ,converted_param[5]
+				  );
+				}else{
+					aux_flt=(*((CMemberFunctionPointerRetParam6 *)fun_ptr))(
+						converted_param[0]
+						 ,converted_param[1]
+						 ,converted_param[2]
+						 ,converted_param[3]
+						 ,converted_param[4]
+						 ,converted_param[5]
+					);
+				}
+				break;
 			}
 
-			callc_result=this->zs->varToStk(result,irfs->idx_return_type);
+			memcpy(&result, &aux_flt, sizeof(float));
+		}else{ // generic pointer or int
+
+			switch(n_args){
+			case 0:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_PARAM0(fun_ptr)();
+				}else{
+					result=(*((CMemberFunctionPointerRetParam0 *)fun_ptr))();
+				}
+				break;
+			case 1:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_PARAM1(fun_ptr)(
+						converted_param[0]
+					);
+				}else{
+					result=(*((CMemberFunctionPointerRetParam1 *)fun_ptr))(
+						converted_param[0]
+					);
+				}
+				break;
+			case 2:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_PARAM2(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+					);
+				}else{
+					result=(*((CMemberFunctionPointerRetParam2 *)fun_ptr))(
+						converted_param[0]
+						,converted_param[1]
+					);
+				}
+				break;
+			case 3:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_PARAM3(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+					);
+				}else{
+					result=(*((CMemberFunctionPointerRetParam3 *)fun_ptr))(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+					);
+				}
+				break;
+			case 4:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_PARAM4(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+					);
+				}else{
+					result=(*((CMemberFunctionPointerRetParam4 *)fun_ptr))(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+					);
+				}
+				break;
+			case 5:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_PARAM5(fun_ptr)(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+				  );
+				}else{
+					result=(*((CMemberFunctionPointerRetParam5 *)fun_ptr))(
+						converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+					);
+				}
+				break;
+			case 6:
+				if(static_ref){
+					result=PTR_FUNCTION_RET_PARAM6(fun_ptr)(
+						converted_param[0]
+						 ,converted_param[1]
+						 ,converted_param[2]
+						 ,converted_param[3]
+						 ,converted_param[4]
+						 ,converted_param[5]
+				  );
+				}else{
+					result=(*((CMemberFunctionPointerRetParam6 *)fun_ptr))(
+						converted_param[0]
+						 ,converted_param[1]
+						 ,converted_param[2]
+						 ,converted_param[3]
+						 ,converted_param[4]
+						 ,converted_param[5]
+					);
+				}
+				break;
+			}
 		}
 
-
-
-
+		callc_result=this->zs->varToStk(result,irfs->idx_return_type);
 
 		return callc_result;
 	}
@@ -1013,7 +1261,7 @@ namespace zetscript{
 		for(int i =  (int)(main_function->local_variable.size())-1; i >= 0 && !end; i--){
 			//switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
 			//case STK_PROPERTY_TYPE_STRING:
-			end=(main_function->local_variable[i].properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;
+			end=(main_function->local_variable[i].symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF;
 			if(!end){
 				StackElement *ptr_ale =&stack[i];
 				CScriptVar *var = NULL;
@@ -1173,9 +1421,9 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		if((info_function->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) ){ // C-Call
+		if((info_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) ){ // C-Call
 
-			if((info_function->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_IS_POLYMORPHIC)){ // cannot call...
+			if((info_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
 				write_error(INSTRUCTION_GET_FILE_LINE(info_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
 						"1. Set register_C_baseSymbols(false) and  re-register the function using REGISTER_C_FUNCTION_MEMBER\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
@@ -1186,7 +1434,7 @@ namespace zetscript{
 
 			intptr_t  fun_ptr = info_function->symbol_info.ref_ptr;
 
-			if((info_function->symbol_info.properties &  SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
+			if((info_function->symbol_info.symbol_info_properties &  SYMBOL_INFO_PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
 
 				if(this_object!= NULL){
 					fun_ptr = this_object->getFunctionSymbolByIndex(info_function->symbol_info.idx_symbol)->proxy_ptr;
@@ -2242,7 +2490,7 @@ namespace zetscript{
 							RETURN_ERROR;
 						}
 
-						if((aux_function_info->symbol_info.properties & PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
+						if((aux_function_info->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
 							unsigned aux_function_info_m_arg_size=aux_function_info->arg_info.size();
 							if( n_args < aux_function_info_m_arg_size){ // we must push undefined parameters ...
 								for(unsigned i = n_args; i < aux_function_info_m_arg_size; i++){

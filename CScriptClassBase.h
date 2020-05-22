@@ -33,16 +33,16 @@ namespace zetscript{
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.
 		 */
-		VariableSymbolInfo *  registerVariable(const std::string & file, short line,  short idxBlockScope,const std::string & variable, const std::string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
-		VariableSymbolInfo *  registerVariable(const std::string & file, short line, const std::string & variable, const std::string & c_type="", intptr_t ref_ptr=0, unsigned short properties=0);
+		VariableSymbolInfo *  registerVariable(const std::string & file, short line,  short idxBlockScope,const std::string & variable, const std::string & c_type="", intptr_t ref_ptr=0, unsigned short symbol_info_properties=0);
+		VariableSymbolInfo *  registerVariable(const std::string & file, short line, const std::string & variable, const std::string & c_type="", intptr_t ref_ptr=0, unsigned short symbol_info_properties=0);
 		VariableSymbolInfo *  getVariable(const std::string & symbol_ref, short idxScope);
 
 
 		/* Registers a function.
 		 * Desc: Inserts function at custom scope. It returns the idx std::vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
 		 */
-		CScriptFunction * registerFunction(const std::string & file, short line,  short idxBlockScope, const std::string & function_name, std::vector<ParamArgInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
-		CScriptFunction * registerFunction(const std::string & file, short line,  const std::string & function_name, std::vector<ParamArgInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short properties=0);
+		CScriptFunction * registerFunction(const std::string & file, short line,  short idxBlockScope, const std::string & function_name, std::vector<ParamArgInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short symbol_info_properties=0);
+		CScriptFunction * registerFunction(const std::string & file, short line,  const std::string & function_name, std::vector<ParamArgInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short symbol_info_properties=0);
 		CScriptFunction * getFunction(const std::string & symbol, short idxScope,char n_args=0);
 
 

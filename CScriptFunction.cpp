@@ -102,13 +102,13 @@ namespace zetscript{
 	}
 
 
-	VariableSymbolInfo *	CScriptFunction::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short properties)
+	VariableSymbolInfo *	CScriptFunction::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties)
 	{
-		VariableSymbolInfo *vsi=CScriptClassBase::registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   properties);
+		VariableSymbolInfo *vsi=CScriptClassBase::registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   symbol_info_properties);
 
 		StackElement se = {0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
-		if(properties &  PROPERTY_C_OBJECT_REF) // convert c ref var into stack element. This should be consistent in the whole execution.
+		if(symbol_info_properties &  SYMBOL_INFO_PROPERTY_C_OBJECT_REF) // convert c ref var into stack element. This should be consistent in the whole execution.
 			se=zs->C_REF_InfoVariable_2_StackElement(
 										 	vsi,
 											(void *)vsi->ref_ptr);

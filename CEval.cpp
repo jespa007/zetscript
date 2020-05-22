@@ -674,7 +674,7 @@ namespace zetscript{
 				int value = *((int *)const_obj);
 				delete (int *)const_obj;
 				load_type=LOAD_TYPE_CONSTANT;
-				obj=this->zs->registerConstantValue(v,value);
+				obj=this->zs->registerConstantIntValue(v,value);
 			}
 			else if((const_obj=zs_string::parse_float(v))!=NULL){
 				float value = *((float *)const_obj);
@@ -2823,7 +2823,7 @@ namespace zetscript{
 
 					if(load_type==LOAD_TYPE::LOAD_TYPE_FUNCTION){
 						CScriptFunction *sf = ((CScriptFunction *)instruction->op2_value);
-						if((sf->symbol_info.properties & PROPERTY_C_OBJECT_REF) != 0){ // function will be solved at run time because it has to check param type
+						if((sf->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != 0){ // function will be solved at run time because it has to check param type
 							instruction->op2_value=ZS_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
 						}
 					}

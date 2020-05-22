@@ -32,7 +32,7 @@ namespace zetscript{
 
 			se=addVariableSymbol(ir_var->symbol->name);
 
-			if(ir_var->properties & PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
+			if(ir_var->symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 			{ // we know the type object so we assign the pointer ...
 				// check if primitive type (only 4 no more no else)...
 				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
@@ -50,13 +50,13 @@ namespace zetscript{
 					ir_fun
 
 					);
-			 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // create proxy function ...
+			 if((ir_fun->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF){ // create proxy function ...
 				 // static ref only get ref function ...
-				 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){
+				 if((ir_fun->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_STATIC_REF) == SYMBOL_INFO_PROPERTY_STATIC_REF){
 					 si->proxy_ptr = ir_fun->symbol_info.ref_ptr;
 				 }
-				 else{
-					 si->proxy_ptr = (intptr_t)(*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->symbol_info.ref_ptr))(c_object,PROXY_CREATOR::CREATE_FUNCTION);
+				 else{ // create function member
+					 si->proxy_ptr = (intptr_t)(*((std::function<void *(void *)> *)ir_fun->symbol_info.ref_ptr))(c_object);
 				 }
 			}
 		}
@@ -476,7 +476,7 @@ namespace zetscript{
 
 	bool CScriptVar::is_c_object(){
 
-		 return ((registered_class_info->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != 0);
+		 return ((registered_class_info->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
 	void CScriptVar::destroy(){
@@ -508,10 +508,9 @@ namespace zetscript{
 		for ( unsigned i = 0; i < m_functionSymbol.size(); i++){
 			si = &m_functionSymbol[i];
 			CScriptFunction * ir_fun  = (CScriptFunction *)(m_functionSymbol[i].object.stkValue);
-			 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF){ // create proxy function ...
-				 if((ir_fun->symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY::PROPERTY_STATIC_REF){
-
-					 (*((std::function<void *(void *,PROXY_CREATOR)> *)ir_fun->symbol_info.ref_ptr))((void *)si->proxy_ptr,PROXY_CREATOR::DESTROY_FUNCTION);
+			 if((ir_fun->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF){ // create proxy function ...
+				 if((ir_fun->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY_STATIC_REF){
+					 delete ((CMemberFunctionPointer *)si->proxy_ptr);
 				 }
 			}
 		}

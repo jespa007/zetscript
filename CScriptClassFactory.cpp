@@ -25,7 +25,7 @@
 	}else{\
 		CScriptClass *sc=registerClass(__FILE__,__LINE__,STR(type_class),"");\
 		GET_SCOPE(sc->symbol_info.symbol->idxScope)->is_c_node=true;\
-		sc->symbol_info.properties=SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF;\
+		sc->symbol_info.symbol_info_properties=SYMBOL_INFO_PROPERTY_C_OBJECT_REF;\
 		sc->str_class_ptr_type=(typeid(type_class).name());\
 	}
 
@@ -144,7 +144,7 @@ namespace zetscript{
 		}
 
 
-		if((irs = main_function->registerVariable(registered_file,registered_line,var_name,var_type,(intptr_t)var_ptr,PROPERTY_C_OBJECT_REF | PROPERTY_STATIC_REF)) != NULL){
+		if((irs = main_function->registerVariable(registered_file,registered_line,var_name,var_type,(intptr_t)var_ptr,SYMBOL_INFO_PROPERTY_C_OBJECT_REF | SYMBOL_INFO_PROPERTY_STATIC_REF)) != NULL){
 
 			zs_print_debug_cr("Registered variable name: %s",var_name.c_str());
 
@@ -158,7 +158,7 @@ namespace zetscript{
 		bool end=false;
 		do{
 			CScriptClass * sc = vec_script_class_node.at(vec_script_class_node.size()-1);
-			end=(sc->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF;
+			end=(sc->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF;
 
 			if(!end){
 

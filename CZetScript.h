@@ -1,14 +1,14 @@
 #pragma once
 
-#define CLASS_C_BASEOF(zs)								(zs)->class_C_BaseOf();
-#define REGISTER_C_FUNCTION(zs,text,s) 					(zs)->register_C_Function(text,s,__FILE__, __LINE__)
-#define REGISTER_C_VARIABLE(zs,text,s) 					(zs)->register_C_Variable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
-#define REGISTER_C_CLASS(zs,class_type,s) 				(zs)->register_C_Class<class_type>(s,__FILE__, __LINE__)
-#define REGISTER_C_SINGLETON_CLASS(zs,class_type,s)		(zs)->register_C_SingletonClass<class_type>(s,__FILE__, __LINE__)
-#define REGISTER_C_VARIABLE_MEMBER(zs,s,v)				(zs)->register_C_MemberVariable(s,v)
-#define REGISTER_C_STATIC_FUNCTION_MEMBER(zs,s,f)		(zs)->register_C_StaticMemberFunction(s,f,__FILE__, __LINE__)
-#define REGISTER_C_FUNCTION_MEMBER(zs,s,f)				(zs)->register_C_MemberFunction(s,f,__FILE__, __LINE__)
-#define REGISTER_C_CONSTANT(zs,s,v)						(zs)->register_C_MemberFunction(s,f,__FILE__, __LINE__)
+#define ZS_CLASS_C_BASEOF(zs)										(zs)->class_C_BaseOf();
+#define ZS_REGISTER_C_FUNCTION(zs,text,s) 							(zs)->register_C_Function(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_C_VARIABLE(zs,text,s) 							(zs)->register_C_Variable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
+#define ZS_REGISTER_C_CLASS(zs,class_type,s) 						(zs)->register_C_Class<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_C_SINGLETON_CLASS(zs,class_type,s)				(zs)->register_C_SingletonClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_C_MEMBER_VARIABLE(zs,class_type,s,v)			(zs)->register_C_MemberVariable<class_type>(s,v)
+#define ZS_REGISTER_C_STATIC_MEMBER_FUNCTION(zs,class_type,s,f)		(zs)->register_C_StaticMemberFunction<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_C_MEMBER_FUNCTION(zs,class_type,s,f)			(zs)->register_C_MemberFunction<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_C_CONSTANT_INT(zs,constant_name,v)				(zs)->registerConstantIntValue(constant_name,v)
 
 
 namespace zetscript{
@@ -32,7 +32,7 @@ namespace zetscript{
 
 		std::string  STR_FLOAT_TYPE;			//	typeid(int).name()
 		std::string  STR_BOOL_TYPE;				//	typeid(bool).name()
-		std::string  STR_STACK_ELEMENT_TYPE;			//	typeid(bool).name()
+		std::string  STR_STACK_ELEMENT_TYPE;	//	typeid(bool).name()
 
 		//===================================================================================================
 		//
@@ -63,7 +63,7 @@ namespace zetscript{
 		bool eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
 		bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
 
-		ConstantValueInfo 	* 		registerConstantValue(const std::string & const_name, int value);
+		ConstantValueInfo 	* 		registerConstantIntValue(const std::string & const_name, int value);
 
 		// CONSTANT TOOLS
 		ConstantValueInfo * getRegisteredConstantValue(const std::string & const_name);

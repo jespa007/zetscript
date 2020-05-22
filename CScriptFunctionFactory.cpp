@@ -23,11 +23,11 @@ namespace zetscript{
 			, std::vector<ParamArgInfo> args
 			, int idx_return_type
 			,intptr_t ref_ptr
-			, unsigned short properties){
+			, unsigned short symbol_info_properties){
 
-		if((properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF){
+		if((symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
 			if(vec_script_function_node.size() > 1){ // if greather than 1 check if node consecutive...
-				if(!((vec_script_function_node.at(vec_script_function_node.size()-1)->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
+				if(!((vec_script_function_node.at(vec_script_function_node.size()-1)->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
 						THROW_RUNTIME_ERROR("C Functions should be added after global scope and consecutuve C scope node.");
 						return NULL;
 				}
@@ -57,7 +57,7 @@ namespace zetscript{
 
 
 		irs->symbol_info.symbol = symbol;
-		irs->symbol_info.properties = properties;
+		irs->symbol_info.symbol_info_properties = symbol_info_properties;
 
 		irs->symbol_info.idx_symbol = (short)(irs->local_function.size());
 
@@ -82,7 +82,7 @@ namespace zetscript{
 		if(size>=3){ //0 is main function (reserved). We check when >= 3 to check previous one (i.e from 1)
 			if((
 
-				((vec_script_function_node)[size-1]->symbol_info.properties&PROPERTY_C_OBJECT_REF)!=PROPERTY_C_OBJECT_REF)
+				((vec_script_function_node)[size-1]->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_C_OBJECT_REF)!=SYMBOL_INFO_PROPERTY_C_OBJECT_REF)
 			){
 				THROW_RUNTIME_ERROR(zs_string::sformat("function \"%s\" should register after C functions. Register after script functions is not allowed",f));
 				return false;
@@ -97,7 +97,7 @@ namespace zetscript{
 		bool end=false;
 		do{
 			CScriptFunction * info_function = vec_script_function_node.at(vec_script_function_node.size()-1);
-			end=(info_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF || vec_script_function_node.size()==1;
+			end=(info_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF || vec_script_function_node.size()==1;
 
 			if(!end){
 

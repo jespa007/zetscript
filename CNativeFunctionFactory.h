@@ -14,226 +14,130 @@ namespace zetscript{
 		CNativeFunctionFactory(CZetScript *_zs);
 
 
+		//----------------------------------------
+		//
+		// VOID PROXY FUNCTIONS Member function C++
+		//
+		template <typename _C, typename _R, class _T, typename..._A>
+		auto  c_member_class_function_proxy(int nargs, _R (_T:: *fun_obj)(_A...))
+		->typename std::enable_if<(std::is_same<_R,void>::value==true)>::type *
+		{
 
-
-		template <class _R, typename _F>
-		void * new_proxy_function(unsigned int n_args, _F fun_obj){
-			using namespace std::placeholders;
-			void *proxy_function=NULL;
-
-			NativeFunction ipf;
-
-
-			switch(n_args){
+			std::function<void *(void *)> *c_function_builder=NULL;
+			switch(nargs){
 			case 0:
-				proxy_function=(void *)(new std::function<_R ()>(std::bind((_R (*)())fun_obj)));
-				break;
-			case 1:
-				proxy_function=(void *)( new std::function<_R (intptr_t)>(std::bind((_R (*)(intptr_t))fun_obj, _1)));
-				break;
-			case 2:
-				proxy_function=(void *)( new std::function<_R (intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t))fun_obj, _1,_2)));
-				break;
-			case 3:
-				proxy_function= (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t,intptr_t))fun_obj, _1,_2,_3)));
-				break;
-			case 4:
-				proxy_function=(void *)( new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t,intptr_t,intptr_t))fun_obj, _1,_2,_3,_4)));
-				break;
-			case 5:
-				proxy_function=(void *)( new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))fun_obj, _1,_2,_3,_4,_5)));
-				break;
-			case 6:
-				proxy_function=(void *)( new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))fun_obj, _1,_2, _3, _4, _5, _6)));
-				break;
-			default:
-				THROW_RUNTIME_ERROR("Max arguments reached");
-				break;
-
-			}
-
-
-			ipf.n_args=n_args;
-			ipf.fun_ptr=proxy_function;
-
-			if(typeid(_R) == typeid(void)){
-				c_void_function.push_back(ipf);
-			}else{
-				c_int_function.push_back(ipf);
-			}
-
-			return proxy_function;
-		}
-
-		template <class _R>
-		bool delete_proxy_function(unsigned int n_args, void *obj){
-			using namespace std::placeholders;
-
-			switch(n_args){
-			case 0:
-				delete (std::function<_R ()>*)obj;
-				break;
-			case 1:
-				delete (std::function<_R (intptr_t)>*)obj;
-				break;
-			case 2:
-				delete (std::function<_R (intptr_t,intptr_t)>*)obj;
-				break;
-			case 3:
-				delete (std::function<_R (intptr_t,intptr_t,intptr_t)>*)obj;
-				break;
-			case 4:
-				delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)>*)obj;
-				break;
-			case 5:
-				delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>*)obj;
-				break;
-			case 6:
-				delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>*)obj;
-				break;
-			default:
-				THROW_RUNTIME_ERROR("Max arguments reached");
-				return false;
-			}
-
-
-
-			return true;
-		}
-
-
-		template <typename _T, typename _S,typename _R,typename _F>
-		void * c_member_class_function_proxy(unsigned int n_args, _F fun_obj){
-			using namespace std::placeholders;
-			std::function<void *(void *,PROXY_CREATOR)> *c_function_builder=NULL;
-
-
-
-			switch(n_args){
-			case 0:
-				c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-					void *return_val=NULL;
-
-					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val= (void *)(new std::function<_R ()>(std::bind((_R (_S::*)())(fun_obj), (_T *)obj)));
-					}
-					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-						delete (std::function<_R ()> *)obj;
-					}
-					return return_val;
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerVoidParam0Caller<_C,_T>((_C *)obj,(void (_T::*)())(fun_obj)));
 				});
 				break;
 			case 1:
-				c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-					void *return_val=NULL;
-
-					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t)>(std::bind((_R (_S::*)(intptr_t))(fun_obj), (_T *)obj, _1)));
-					}
-					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-						delete (std::function<_R (intptr_t)> *)obj;
-					}
-					return return_val;
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj ){
+					return (void *)(new CMemberFunctionPointerVoidParam1Caller<_C,_T>((_C *)obj,(void (_T::*)(intptr_t))(fun_obj)));
 				});
 				break;
 			case 2:
-				c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-					void *return_val=NULL;
-
-					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2)));
-					}
-					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-						delete (std::function<_R (intptr_t,intptr_t)> *)obj;
-					}
-					return return_val;
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerVoidParam2Caller<_C,_T>((_C *)obj,(void (_T::*)(intptr_t,intptr_t))(fun_obj)));
 				});
 				break;
 			case 3:
-				c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-					void *return_val=NULL;
-
-					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3)));
-					}
-					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-						delete (std::function<_R (intptr_t,intptr_t,intptr_t)> *)obj;
-					}
-					return return_val;
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerVoidParam3Caller<_C,_T>((_C *)obj,(void (_T::*)(intptr_t,intptr_t,intptr_t))(fun_obj)));
 				});
 				break;
 			case 4:
-				c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-					void *return_val=NULL;
-
-					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4)));
-					}
-					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-						delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t)> *)obj;
-					}
-					return return_val;
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerVoidParam4Caller<_C,_T>((_C *)obj,(void (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
 				});
-
 				break;
 			case 5:
-				c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-					void *return_val=NULL;
-
-					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val=  (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5)));
-					}
-					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-						delete (std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)obj;
-					}
-					return return_val;
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerVoidParam5Caller<_C,_T>((_C *)obj,(void (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
 				});
-
 				break;
 			case 6:
-				c_function_builder = new std::function<void *(void *,PROXY_CREATOR)> ([fun_obj](void *obj,PROXY_CREATOR proxy_creator){
-
-					void *return_val=NULL;
-
-					if(proxy_creator == PROXY_CREATOR::CREATE_FUNCTION){
-						return_val= (void *)(new std::function<_R (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)>(std::bind((_R (_S::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj), (_T *)obj, _1,_2,_3,_4,_5,_6)));
-					}
-					else if(proxy_creator == PROXY_CREATOR::DESTROY_FUNCTION){
-						delete (std::function<intptr_t (intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)obj;
-					}
-					return return_val;
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerVoidParam6Caller<_C,_T>((_C *)obj,(void (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
 				});
 				break;
 			default:
 				THROW_RUNTIME_ERROR("Max argyments reached");
-
+				break;
 			}
 
 			class_function_member.push_back(c_function_builder);
 
-
-			return c_function_builder;
+			return (void *)c_function_builder;
 		}
+
+
+		//----------------------------------------
+		//
+		// RET PROXY FUNCTIONS Member function C++
+		//
+
+		template <typename _C, typename _R, class _T, typename..._A>
+		auto  c_member_class_function_proxy(int nargs, _R (_T:: *fun_obj)(_A...))
+		->typename std::enable_if<(std::is_same<_R,void>::value==false)>::type *
+		{
+			std::function<void *(void *)> *c_function_builder=NULL;
+
+			switch(nargs){
+			case 0:
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerRetParam0Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)())(fun_obj)));
+				});
+				break;
+			case 1:
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerRetParam1Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t))(fun_obj)));
+				});
+				break;
+			case 2:
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerRetParam2Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t))(fun_obj)));
+				});
+				break;
+			case 3:
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerRetParam3Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t))(fun_obj)));
+				});
+				break;
+			case 4:
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerRetParam4Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
+				});
+				break;
+			case 5:
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerRetParam5Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
+				});
+				break;
+			case 6:
+				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
+					return (void *)(new CMemberFunctionPointerRetParam6Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
+				});
+				break;
+			default:
+				THROW_RUNTIME_ERROR("Max argyments reached");
+				break;
+			}
+
+			class_function_member.push_back(c_function_builder);
+
+			return (void *) c_function_builder;
+		}
+
 
 		~CNativeFunctionFactory();
 
 	private:
 
-		typedef struct{
-			int n_args;
-			void *fun_ptr;
-		}NativeFunction;
+
 
 		CZetScript *zs;
 
-		std::vector<NativeFunction>	c_int_function;
-		std::vector<NativeFunction>	 c_void_function;
+
 		std::vector<void *>	 class_function_member;
 
 	};

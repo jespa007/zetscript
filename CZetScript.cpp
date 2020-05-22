@@ -293,7 +293,7 @@ namespace zetscript{
 
 			CScriptFunction *local_irfs = (*m_vf)[j];
 
-			if(( local_irfs->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF){
+			if(( local_irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
 				std::string symbol_ref="????";
 
 
@@ -381,7 +381,7 @@ namespace zetscript{
 		return info_ptr;
 	}
 
-	ConstantValueInfo * CZetScript::registerConstantValue(const std::string & const_name, int _value){
+	ConstantValueInfo * CZetScript::registerConstantIntValue(const std::string & const_name, int _value){
 		intptr_t value = _value;
 		unsigned short type=STK_PROPERTY_TYPE_INTEGER;
 		StackElement *stk;
@@ -402,7 +402,7 @@ namespace zetscript{
 
 	StackElement CZetScript::C_REF_InfoVariable_2_StackElement(VariableSymbolInfo *ir_var, void *ptr_variable){
 
-		if(ir_var->properties & PROPERTY_C_OBJECT_REF){
+		if(ir_var->symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
 
 			if(STR_INT_TYPE_PTR==ir_var->c_type){
 				return {
@@ -496,7 +496,7 @@ namespace zetscript{
 			// get function info
 			CScriptFunction * local_function = main_function->local_function[f];
 
-			if ((local_function->symbol_info.properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+			if ((local_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF) {
 				main_function->local_function.erase(main_function->local_function.begin() + f);
 			}
 			else {
@@ -509,7 +509,7 @@ namespace zetscript{
 		for (unsigned v = 0;
 			v < main_function->local_variable.size(); ) {
 
-			if ((main_function->local_variable[v].properties & PROPERTY_C_OBJECT_REF) != PROPERTY_C_OBJECT_REF) {
+			if ((main_function->local_variable[v].symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF) {
 
 				main_function->local_variable.erase(main_function->local_variable.begin() + v);
 

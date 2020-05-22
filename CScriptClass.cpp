@@ -11,7 +11,7 @@ namespace zetscript{
 
 	bool CScriptClass::isToClass(){
 
-		 return ((symbol_info.properties & SYMBOL_INFO_PROPERTY::PROPERTY_C_OBJECT_REF) != 0);
+		 return ((symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != 0);
 	}
 	//------------------------------------------------------------
 
@@ -23,9 +23,9 @@ namespace zetscript{
 			idx_function_member_constructor =ZS_UNDEFINED_IDX;
 	}
 
-	CScriptFunction * CScriptClass::registerMemberFunction(const std::string & file, short line, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short properties){
+	CScriptFunction * CScriptClass::registerMemberFunction(const std::string & file, short line, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
 
-		CScriptFunction * sf = registerFunction(file, line, function_name,  args,  idx_return_type, ref_ptr,  properties);
+		CScriptFunction * sf = registerFunction(file, line, function_name,  args,  idx_return_type, ref_ptr,  symbol_info_properties);
 		std::string class_name=symbol_info.symbol->name;
 
 		if(function_name == class_name){
@@ -50,7 +50,7 @@ namespace zetscript{
 
 	CScriptClass::~CScriptClass(){
 
-		if ((symbol_info.properties & PROPERTY_C_OBJECT_REF) == PROPERTY_C_OBJECT_REF) {
+		if ((symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF) {
 
 			if (c_constructor !=NULL) {
 				delete c_constructor;
