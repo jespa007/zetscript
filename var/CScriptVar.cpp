@@ -510,7 +510,7 @@ namespace zetscript{
 			CScriptFunction * ir_fun  = (CScriptFunction *)(m_functionSymbol[i].object.stkValue);
 			 if((ir_fun->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF){ // create proxy function ...
 				 if((ir_fun->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY_STATIC_REF){
-					 delete ((CMemberFunctionPointer *)si->proxy_ptr);
+					 delete ((CFunctionMemberPointer *)si->proxy_ptr);
 				 }
 			}
 		}

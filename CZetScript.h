@@ -5,9 +5,9 @@
 #define ZS_REGISTER_C_VARIABLE(zs,text,s) 							(zs)->register_C_Variable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
 #define ZS_REGISTER_C_CLASS(zs,class_type,s) 						(zs)->register_C_Class<class_type>(s,__FILE__, __LINE__)
 #define ZS_REGISTER_C_SINGLETON_CLASS(zs,class_type,s)				(zs)->register_C_SingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_C_MEMBER_VARIABLE(zs,class_type,s,v)			(zs)->register_C_MemberVariable<class_type>(s,v)
-#define ZS_REGISTER_C_STATIC_MEMBER_FUNCTION(zs,class_type,s,f)		(zs)->register_C_StaticMemberFunction<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_C_MEMBER_FUNCTION(zs,class_type,s,f)			(zs)->register_C_MemberFunction<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_C_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->register_C_VariableMember<class_type>(s,v)
+#define ZS_REGISTER_C_STATIC_FUNCTION_MEMBER(zs,class_type,s,f)		(zs)->register_C_FunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_C_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->register_C_FunctionMember<class_type>(s,f,__FILE__, __LINE__)
 #define ZS_REGISTER_C_CONSTANT_INT(zs,constant_name,v)				(zs)->registerConstantIntValue(constant_name,v)
 
 
@@ -142,20 +142,29 @@ namespace zetscript{
 		}
 
 		/**
-		 * Register C Member function Class
+		 * Register Function Member Class
 		 */
 		template < typename C, typename R, class T, typename..._A>
-		bool register_C_MemberFunction(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 ){
-			return script_class_factory->register_C_MemberFunction<C>(function_name,function_type, registered_file,registered_line );
+		bool register_C_FunctionMember(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 ){
+			return script_class_factory->register_C_FunctionMember<C>(function_name,function_type, registered_file,registered_line );
+		}
+
+
+		/**
+		 * Register Static Function Member Class
+		 */
+		template <typename _F>
+		bool register_C_FunctionMemberStatic(const char *function_name,_F fun, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->register_C_FunctionMemberStatic(function_name,fun, registered_file, registered_line);
+
 		}
 
 		/**
-		 * Register C Member function Class
+		 * Register C function as function member
 		 */
-		template <typename C, typename F>
-		bool register_C_StaticMemberFunction(const char *function_name,F function_type, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->register_C_StaticMemberFunction<C>(function_name,function_type, registered_file, registered_line);
-
+		template <typename F>
+		bool register_C_FunctionAsFunctionMember( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->register_C_FunctionAsFunctionMember( function_name,function_ptr, registered_file,registered_line);
 		}
 
 
@@ -163,8 +172,8 @@ namespace zetscript{
 		 * Register C Member var
 		 */
 		template <typename C, typename R,typename T>
-		bool register_C_MemberVariable(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->register_C_MemberVariable<C>(var_name,var_pointer,registered_file,registered_line);
+		bool register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->register_C_VariableMember<C>(var_name,var_pointer,registered_file,registered_line);
 		}
 
 		//cpp binding

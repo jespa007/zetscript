@@ -36,7 +36,7 @@ namespace zetscript{
 																								, unsigned short properties=0);
 
 
-			 bool							checkCanRegister_C_Function(const char *f);
+			 bool							checkCanRegister_C_Function(const std::string & function_name);
 
 			 CScriptFunction 			* 	getScriptFunction(int idx);
 

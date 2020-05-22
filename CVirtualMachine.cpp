@@ -683,7 +683,9 @@ namespace zetscript{
 			bool & error,
 			StackElement *ptrArg,
 			unsigned char n_args,
-			CByteCode *ins){
+			CByteCode *ins,
+			CScriptVar  * this_object
+			){
 
 		StackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
 
@@ -725,16 +727,31 @@ namespace zetscript{
 		// convert parameters script to c...
 		for(unsigned char  i = 0; i < n_args;i++){
 
-			currentArg=&ptrArg[i];
+			if( i==0 && (irfs->symbol_info.symbol_info_properties&(SYMBOL_INFO_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))){
+				if(!static_ref){
+					write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Internal error: Cannot set parameter as this object due is not static");
+					RETURN_ERROR;
+				}
 
-			if(!zs->stkToVar(currentArg,irfs->arg_info[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
-				write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
-																irfs->symbol_info.symbol->name.c_str(),
-																i,
-																error_str.c_str(),
-																irfs->symbol_info.symbol->name.c_str()
-																);
-				RETURN_ERROR;
+				if(this_object==NULL){
+					write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Internal error: Cannot set parameter as this object due this object is NULL");
+					RETURN_ERROR;
+				}
+
+				converted_param[0]=(intptr_t)this_object->get_C_Object();
+			}
+			else{
+				currentArg=&ptrArg[i];
+
+				if(!zs->stkToVar(currentArg,irfs->arg_info[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
+					write_error(INSTRUCTION_GET_FILE_LINE(irfs,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
+																	irfs->symbol_info.symbol->name.c_str(),
+																	i,
+																	error_str.c_str(),
+																	irfs->symbol_info.symbol->name.c_str()
+																	);
+					RETURN_ERROR;
+				}
 			}
 		}
 
@@ -747,7 +764,7 @@ namespace zetscript{
 				if(static_ref){
 					PTR_FUNCTION_VOID_PARAM0(fun_ptr)();
 				}else{
-					(*((CMemberFunctionPointerVoidParam0 *)fun_ptr))();
+					(*((CFunctionMemberPointerVoidParam0 *)fun_ptr))();
 				}
 				break;
 			case 1:
@@ -756,7 +773,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					(*((CMemberFunctionPointerVoidParam1 *)fun_ptr))(
+					(*((CFunctionMemberPointerVoidParam1 *)fun_ptr))(
 						converted_param[0]
 					);
 				}
@@ -768,7 +785,7 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					(*((CMemberFunctionPointerVoidParam2 *)fun_ptr))(
+					(*((CFunctionMemberPointerVoidParam2 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 					);
@@ -782,7 +799,7 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					(*((CMemberFunctionPointerVoidParam3 *)fun_ptr))(
+					(*((CFunctionMemberPointerVoidParam3 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -798,7 +815,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					(*((CMemberFunctionPointerVoidParam4 *)fun_ptr))(
+					(*((CFunctionMemberPointerVoidParam4 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -816,7 +833,7 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					(*((CMemberFunctionPointerVoidParam5 *)fun_ptr))(
+					(*((CFunctionMemberPointerVoidParam5 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -836,7 +853,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					(*((CMemberFunctionPointerVoidParam6 *)fun_ptr))(
+					(*((CFunctionMemberPointerVoidParam6 *)fun_ptr))(
 						converted_param[0]
 						 ,converted_param[1]
 						 ,converted_param[2]
@@ -854,7 +871,7 @@ namespace zetscript{
 				if(static_ref){
 					result=PTR_FUNCTION_RET_BOOL_PARAM0(fun_ptr)();
 				}else{
-					result=(*((CMemberFunctionPointerRetParam0 *)fun_ptr)).ret_bool();
+					result=(*((CFunctionMemberPointerRetParam0 *)fun_ptr)).ret_bool();
 				}
 				break;
 			case 1:
@@ -863,7 +880,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					result=(*((CMemberFunctionPointerRetParam1 *)fun_ptr)).ret_bool(
+					result=(*((CFunctionMemberPointerRetParam1 *)fun_ptr)).ret_bool(
 						converted_param[0]
 					);
 				}
@@ -875,7 +892,7 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					result=(*((CMemberFunctionPointerRetParam2 *)fun_ptr)).ret_bool(
+					result=(*((CFunctionMemberPointerRetParam2 *)fun_ptr)).ret_bool(
 						converted_param[0]
 						,converted_param[1]
 					);
@@ -889,7 +906,7 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					result=(*((CMemberFunctionPointerRetParam3 *)fun_ptr)).ret_bool(
+					result=(*((CFunctionMemberPointerRetParam3 *)fun_ptr)).ret_bool(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -905,7 +922,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					result=(*((CMemberFunctionPointerRetParam4 *)fun_ptr)).ret_bool(
+					result=(*((CFunctionMemberPointerRetParam4 *)fun_ptr)).ret_bool(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -923,7 +940,7 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					result=(*((CMemberFunctionPointerRetParam5 *)fun_ptr)).ret_bool(
+					result=(*((CFunctionMemberPointerRetParam5 *)fun_ptr)).ret_bool(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -943,7 +960,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					result=(*((CMemberFunctionPointerRetParam6 *)fun_ptr))(
+					result=(*((CFunctionMemberPointerRetParam6 *)fun_ptr))(
 						converted_param[0]
 						 ,converted_param[1]
 						 ,converted_param[2]
@@ -961,7 +978,7 @@ namespace zetscript{
 				if(static_ref){
 					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();
 				}else{
-					aux_flt=(*((CMemberFunctionPointerRetParam0 *)fun_ptr)).ret_float();
+					aux_flt=(*((CFunctionMemberPointerRetParam0 *)fun_ptr)).ret_float();
 				}
 				break;
 			case 1:
@@ -970,7 +987,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					aux_flt=(*((CMemberFunctionPointerRetParam1 *)fun_ptr)).ret_float(
+					aux_flt=(*((CFunctionMemberPointerRetParam1 *)fun_ptr)).ret_float(
 						converted_param[0]
 					);
 				}
@@ -982,7 +999,7 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					aux_flt=(*((CMemberFunctionPointerRetParam2 *)fun_ptr)).ret_float(
+					aux_flt=(*((CFunctionMemberPointerRetParam2 *)fun_ptr)).ret_float(
 						converted_param[0]
 						,converted_param[1]
 					);
@@ -996,7 +1013,7 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					aux_flt=(*((CMemberFunctionPointerRetParam3 *)fun_ptr)).ret_float(
+					aux_flt=(*((CFunctionMemberPointerRetParam3 *)fun_ptr)).ret_float(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -1012,7 +1029,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					aux_flt=(*((CMemberFunctionPointerRetParam4 *)fun_ptr)).ret_float(
+					aux_flt=(*((CFunctionMemberPointerRetParam4 *)fun_ptr)).ret_float(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -1030,7 +1047,7 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					aux_flt=(*((CMemberFunctionPointerRetParam5 *)fun_ptr)).ret_float(
+					aux_flt=(*((CFunctionMemberPointerRetParam5 *)fun_ptr)).ret_float(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -1050,7 +1067,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					aux_flt=(*((CMemberFunctionPointerRetParam6 *)fun_ptr))(
+					aux_flt=(*((CFunctionMemberPointerRetParam6 *)fun_ptr))(
 						converted_param[0]
 						 ,converted_param[1]
 						 ,converted_param[2]
@@ -1070,7 +1087,7 @@ namespace zetscript{
 				if(static_ref){
 					result=PTR_FUNCTION_RET_PARAM0(fun_ptr)();
 				}else{
-					result=(*((CMemberFunctionPointerRetParam0 *)fun_ptr))();
+					result=(*((CFunctionMemberPointerRetParam0 *)fun_ptr))();
 				}
 				break;
 			case 1:
@@ -1079,7 +1096,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					result=(*((CMemberFunctionPointerRetParam1 *)fun_ptr))(
+					result=(*((CFunctionMemberPointerRetParam1 *)fun_ptr))(
 						converted_param[0]
 					);
 				}
@@ -1091,7 +1108,7 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					result=(*((CMemberFunctionPointerRetParam2 *)fun_ptr))(
+					result=(*((CFunctionMemberPointerRetParam2 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 					);
@@ -1105,7 +1122,7 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					result=(*((CMemberFunctionPointerRetParam3 *)fun_ptr))(
+					result=(*((CFunctionMemberPointerRetParam3 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -1121,7 +1138,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					result=(*((CMemberFunctionPointerRetParam4 *)fun_ptr))(
+					result=(*((CFunctionMemberPointerRetParam4 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -1139,7 +1156,7 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					result=(*((CMemberFunctionPointerRetParam5 *)fun_ptr))(
+					result=(*((CFunctionMemberPointerRetParam5 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -1159,7 +1176,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					result=(*((CMemberFunctionPointerRetParam6 *)fun_ptr))(
+					result=(*((CFunctionMemberPointerRetParam6 *)fun_ptr))(
 						converted_param[0]
 						 ,converted_param[1]
 						 ,converted_param[2]
@@ -1360,10 +1377,10 @@ namespace zetscript{
 
 	StackElement CVirtualMachine::execute_internal(
 			CScriptFunction 		* info_function,
-			CScriptVar       	* this_object,
+			CScriptVar       		* this_object,
 			bool & error,
 			StackElement 		  	* _ptrStartOp,
-			std::string 		  		  	* _ptrStartStr,
+			std::string 		  	* _ptrStartStr,
 			unsigned char n_args,
 			CByteCode *calling_instruction){
 
@@ -1434,14 +1451,22 @@ namespace zetscript{
 
 			intptr_t  fun_ptr = info_function->symbol_info.ref_ptr;
 
-			if((info_function->symbol_info.symbol_info_properties &  SYMBOL_INFO_PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY_STATIC_REF){ // if not static then is function depends of object ...
+			if((info_function->symbol_info.symbol_info_properties &  SYMBOL_INFO_PROPERTY_STATIC_REF) == 0){ // if not static then is function depends of object ...
 
 				if(this_object!= NULL){
 					fun_ptr = this_object->getFunctionSymbolByIndex(info_function->symbol_info.idx_symbol)->proxy_ptr;
 				}
 			}
 
-			StackElement se = call_C_function(fun_ptr,info_function,error,ptrArg,n_args, calling_instruction);
+			StackElement se = call_C_function(
+					fun_ptr
+					,info_function
+					,error
+					,ptrArg
+					,n_args
+					, calling_instruction
+					,this_object
+			);
 
 			if(idxCurrentStack > 0){
 				idxCurrentStack--;

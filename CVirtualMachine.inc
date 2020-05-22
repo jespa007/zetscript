@@ -121,7 +121,7 @@ namespace zetscript{
 
 										) {
 
-		int idxOffsetMemberFunctionStart=0;
+		int idxOffsetFunctionMemberStart=0;
 		CScriptVar *script_var_object = NULL;
 		CScriptFunction * ptr_function_found=NULL;
 
@@ -144,7 +144,7 @@ namespace zetscript{
 					script_var_object = (CScriptVar *)(((StackElement *)script_var_object))->varRef;
 				}
 				if(__METAMETHOD__ == SET_METAMETHOD){
-					idxOffsetMemberFunctionStart=1;
+					idxOffsetFunctionMemberStart=1;
 					one_param = (CScriptVar *)(stkResultOp2->varRef);
 					if(((stkResultOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
 						one_param = (CScriptVar *)(((StackElement *)one_param))->varRef;
@@ -178,7 +178,7 @@ namespace zetscript{
 
 			script_class_aux=GET_SCRIPT_CLASS(script_var_object->idx_class);
 			std::vector<CScriptFunction *> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
-			StackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetMemberFunctionStart);
+			StackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;
 
 			symbol_to_find=CByteCode::metamethodOpCodeToStr(__METAMETHOD__);
@@ -208,7 +208,7 @@ namespace zetscript{
 		}
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
-		StackElement ret_obj=execute_internal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetMemberFunctionStart,ptrCurrentStr,n_metam_args);
+		StackElement ret_obj=execute_internal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,ptrCurrentStr,n_metam_args);
 		if(error){
 			return false;
 		}

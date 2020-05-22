@@ -1,43 +1,43 @@
 #pragma once
 
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_0(class_type,o,f)	(new zetscript::CMemberFunctionPointerVoidParam0Caller<class_type>(o,f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_1(class_type,o,f)	(new zetscript::CMemberFunctionPointerVoidParam1Caller<class_type>(o,f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_2(class_type,o,f)	(new zetscript::CMemberFunctionPointerVoidParam2Caller<class_type>(o,f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_3(class_type,o,f)	(new zetscript::CMemberFunctionPointerVoidParam3Caller<class_type>(o,f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_4(class_type,o,f)	(new zetscript::CMemberFunctionPointerVoidParam4Caller<class_type>(o,f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_5(class_type,o,f)	(new zetscript::CMemberFunctionPointerVoidParam5Caller<class_type>(o,f))
-#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_6(class_type,o,f)	(new zetscript::CMemberFunctionPointerVoidParam6Caller<class_type>(o,f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_0(class_type,o,f)	(new zetscript::CFunctionMemberPointerVoidParam0Caller<class_type>(o,f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_1(class_type,o,f)	(new zetscript::CFunctionMemberPointerVoidParam1Caller<class_type>(o,f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_2(class_type,o,f)	(new zetscript::CFunctionMemberPointerVoidParam2Caller<class_type>(o,f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_3(class_type,o,f)	(new zetscript::CFunctionMemberPointerVoidParam3Caller<class_type>(o,f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_4(class_type,o,f)	(new zetscript::CFunctionMemberPointerVoidParam4Caller<class_type>(o,f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_5(class_type,o,f)	(new zetscript::CFunctionMemberPointerVoidParam5Caller<class_type>(o,f))
+#define ZS_NEW_VOID_FUNCTION_MEMBER_POINTER_PARAM_6(class_type,o,f)	(new zetscript::CFunctionMemberPointerVoidParam6Caller<class_type>(o,f))
 
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_0(class_type,o,f)	(new zetscript::CMemberFunctionPointerRetParam0Caller<class_type>(o,f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_1(class_type,o,f)	(new zetscript::CMemberFunctionPointerRetParam1Caller<class_type>(o,f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_2(class_type,o,f)	(new zetscript::CMemberFunctionPointerRetParam2Caller<class_type>(o,f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_3(class_type,o,f)	(new zetscript::CMemberFunctionPointerRetParam3Caller<class_type>(o,f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_4(class_type,o,f)	(new zetscript::CMemberFunctionPointerRetParam4Caller<class_type>(o,f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_5(class_type,o,f)	(new zetscript::CMemberFunctionPointerRetParam5Caller<class_type>(o,f))
-#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_6(class_type,o,f)	(new zetscript::CMemberFunctionPointerRetParam6Caller<class_type>(o,f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_0(class_type,o,f)	(new zetscript::CFunctionMemberPointerRetParam0Caller<class_type>(o,f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_1(class_type,o,f)	(new zetscript::CFunctionMemberPointerRetParam1Caller<class_type>(o,f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_2(class_type,o,f)	(new zetscript::CFunctionMemberPointerRetParam2Caller<class_type>(o,f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_3(class_type,o,f)	(new zetscript::CFunctionMemberPointerRetParam3Caller<class_type>(o,f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_4(class_type,o,f)	(new zetscript::CFunctionMemberPointerRetParam4Caller<class_type>(o,f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_5(class_type,o,f)	(new zetscript::CFunctionMemberPointerRetParam5Caller<class_type>(o,f))
+#define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_6(class_type,o,f)	(new zetscript::CFunctionMemberPointerRetParam6Caller<class_type>(o,f))
 
 namespace zetscript{
 
 
-	class CMemberFunctionPointer{
+	class CFunctionMemberPointer{
 	};
 
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM0
-	class CMemberFunctionPointerVoidParam0:public CMemberFunctionPointer{
+	class CFunctionMemberPointerVoidParam0:public CFunctionMemberPointer{
 		public:
 			virtual void operator()()=0;
-			virtual ~CMemberFunctionPointerVoidParam0(){}
+			virtual ~CFunctionMemberPointerVoidParam0(){}
 	};
 
 	// Pointer member function
 	template <class _T,class _S>
-	class CMemberFunctionPointerVoidParam0Caller: public CMemberFunctionPointerVoidParam0{
+	class CFunctionMemberPointerVoidParam0Caller: public CFunctionMemberPointerVoidParam0{
 
 		void (_S::* m_func) ( );
 		_T *ptr;
 	public:
-		CMemberFunctionPointerVoidParam0Caller(_T *obj,void (_S::* _func) ())
+		CFunctionMemberPointerVoidParam0Caller(_T *obj,void (_S::* _func) ())
 		{
 			m_func =_func;
 			ptr = obj;
@@ -47,7 +47,7 @@ namespace zetscript{
 			((*ptr).*m_func) ();
 		}
 
-		virtual ~CMemberFunctionPointerVoidParam0Caller(){}
+		virtual ~CFunctionMemberPointerVoidParam0Caller(){}
 	};
 
 
@@ -55,20 +55,20 @@ namespace zetscript{
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM1
 
-	class CMemberFunctionPointerVoidParam1:public CMemberFunctionPointer{
+	class CFunctionMemberPointerVoidParam1:public CFunctionMemberPointer{
 		public:
 			virtual void operator()(intptr_t p1)=0;
 
-			virtual ~CMemberFunctionPointerVoidParam1(){}
+			virtual ~CFunctionMemberPointerVoidParam1(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerVoidParam1Caller: public CMemberFunctionPointerVoidParam1{
+	class CFunctionMemberPointerVoidParam1Caller: public CFunctionMemberPointerVoidParam1{
 
 		void (_S::* m_func) (intptr_t p1);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerVoidParam1Caller(_T *obj,void (_S::* _func) ( intptr_t p1))
+		CFunctionMemberPointerVoidParam1Caller(_T *obj,void (_S::* _func) ( intptr_t p1))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -79,25 +79,25 @@ namespace zetscript{
 			((*ptr).*m_func) (p1);
 		}
 
-		virtual ~CMemberFunctionPointerVoidParam1Caller(){}
+		virtual ~CFunctionMemberPointerVoidParam1Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM2
 
-	class CMemberFunctionPointerVoidParam2:public CMemberFunctionPointer{
+	class CFunctionMemberPointerVoidParam2:public CFunctionMemberPointer{
 		public:
 			virtual void operator()(intptr_t p1, intptr_t p2)=0;
 
-			virtual ~CMemberFunctionPointerVoidParam2(){}
+			virtual ~CFunctionMemberPointerVoidParam2(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerVoidParam2Caller: public CMemberFunctionPointerVoidParam2{
+	class CFunctionMemberPointerVoidParam2Caller: public CFunctionMemberPointerVoidParam2{
 
 		void (_S::* m_func) (intptr_t p1,intptr_t p2);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerVoidParam2Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2))
+		CFunctionMemberPointerVoidParam2Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -108,26 +108,26 @@ namespace zetscript{
 			((*ptr).*m_func) (p1,p2);
 		}
 
-		virtual ~CMemberFunctionPointerVoidParam2Caller(){}
+		virtual ~CFunctionMemberPointerVoidParam2Caller(){}
 	};
 
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM3
 
-	class CMemberFunctionPointerVoidParam3:public CMemberFunctionPointer{
+	class CFunctionMemberPointerVoidParam3:public CFunctionMemberPointer{
 		public:
 			virtual void operator()(intptr_t p1, intptr_t p2, intptr_t p3)=0;
 
-			virtual ~CMemberFunctionPointerVoidParam3(){}
+			virtual ~CFunctionMemberPointerVoidParam3(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerVoidParam3Caller: public CMemberFunctionPointerVoidParam3{
+	class CFunctionMemberPointerVoidParam3Caller: public CFunctionMemberPointerVoidParam3{
 
 		void (_S::* m_func) (intptr_t p1,intptr_t p2,intptr_t p3);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerVoidParam3Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3))
+		CFunctionMemberPointerVoidParam3Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -138,25 +138,25 @@ namespace zetscript{
 			((*ptr).*m_func) (p1,p2,p3);
 		}
 
-		virtual ~CMemberFunctionPointerVoidParam3Caller(){}
+		virtual ~CFunctionMemberPointerVoidParam3Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM4
 
-	class CMemberFunctionPointerVoidParam4:public CMemberFunctionPointer{
+	class CFunctionMemberPointerVoidParam4:public CFunctionMemberPointer{
 		public:
 			virtual void operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4)=0;
 
-			virtual ~CMemberFunctionPointerVoidParam4(){}
+			virtual ~CFunctionMemberPointerVoidParam4(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerVoidParam4Caller: public CMemberFunctionPointerVoidParam4{
+	class CFunctionMemberPointerVoidParam4Caller: public CFunctionMemberPointerVoidParam4{
 
 		void (_S::* m_func) (intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerVoidParam4Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4))
+		CFunctionMemberPointerVoidParam4Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -167,24 +167,24 @@ namespace zetscript{
 			((*ptr).*m_func) (p1,p2,p3,p4);
 		}
 
-		virtual ~CMemberFunctionPointerVoidParam4Caller(){}
+		virtual ~CFunctionMemberPointerVoidParam4Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM5
-	class CMemberFunctionPointerVoidParam5:public CMemberFunctionPointer{
+	class CFunctionMemberPointerVoidParam5:public CFunctionMemberPointer{
 		public:
 			virtual void operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5)=0;
 
-			virtual ~CMemberFunctionPointerVoidParam5(){}
+			virtual ~CFunctionMemberPointerVoidParam5(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerVoidParam5Caller: public CMemberFunctionPointerVoidParam5{
+	class CFunctionMemberPointerVoidParam5Caller: public CFunctionMemberPointerVoidParam5{
 
 		void (_S::* m_func) (intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerVoidParam5Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5))
+		CFunctionMemberPointerVoidParam5Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -195,24 +195,24 @@ namespace zetscript{
 			((*ptr).*m_func) (p1,p2,p3,p4,p5);
 		}
 
-		virtual ~CMemberFunctionPointerVoidParam5Caller(){}
+		virtual ~CFunctionMemberPointerVoidParam5Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM6
-	class CMemberFunctionPointerVoidParam6:public CMemberFunctionPointer{
+	class CFunctionMemberPointerVoidParam6:public CFunctionMemberPointer{
 		public:
 			virtual void operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6)=0;
 
-			virtual ~CMemberFunctionPointerVoidParam6(){}
+			virtual ~CFunctionMemberPointerVoidParam6(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerVoidParam6Caller: public CMemberFunctionPointerVoidParam6 {
+	class CFunctionMemberPointerVoidParam6Caller: public CFunctionMemberPointerVoidParam6 {
 
 		void (_S::* m_func) (intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerVoidParam6Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6))
+		CFunctionMemberPointerVoidParam6Caller(_T *obj,void (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -223,28 +223,28 @@ namespace zetscript{
 			((*ptr).*m_func) (p1,p2,p3,p4,p5,p6);
 		}
 
-		virtual ~CMemberFunctionPointerVoidParam6Caller(){}
+		virtual ~CFunctionMemberPointerVoidParam6Caller(){}
 	};
 
 	//-------------------------------------------------------------------------------------------------
 	// RET PARAM0
 
-	class CMemberFunctionPointerRetParam0:public CMemberFunctionPointer{
+	class CFunctionMemberPointerRetParam0:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()()=0;
 			virtual bool ret_bool()=0;
 			virtual float ret_float()=0;
 
-			virtual ~CMemberFunctionPointerRetParam0(){}
+			virtual ~CFunctionMemberPointerRetParam0(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerRetParam0Caller: public CMemberFunctionPointerRetParam0{
+	class CFunctionMemberPointerRetParam0Caller: public CFunctionMemberPointerRetParam0{
 
 		intptr_t (_S::* m_func) ( );
 		_T *ptr;
 	public:
-		CMemberFunctionPointerRetParam0Caller(_T *obj,intptr_t (_S::* _func) ())
+		CFunctionMemberPointerRetParam0Caller(_T *obj,intptr_t (_S::* _func) ())
 		{
 			m_func =_func;
 			ptr = obj;
@@ -266,27 +266,27 @@ namespace zetscript{
 
 		}
 
-		virtual ~CMemberFunctionPointerRetParam0Caller(){}
+		virtual ~CFunctionMemberPointerRetParam0Caller(){}
 	};
 
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM1
-	class CMemberFunctionPointerRetParam1:public CMemberFunctionPointer{
+	class CFunctionMemberPointerRetParam1:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1)=0;
 			virtual bool ret_bool(intptr_t p1)=0;
 			virtual float ret_float(intptr_t p1)=0;
 
-			virtual ~CMemberFunctionPointerRetParam1(){}
+			virtual ~CFunctionMemberPointerRetParam1(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerRetParam1Caller: public CMemberFunctionPointerRetParam1{
+	class CFunctionMemberPointerRetParam1Caller: public CFunctionMemberPointerRetParam1{
 
 		intptr_t (_S::* m_func) (intptr_t p1);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerRetParam1Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1))
+		CFunctionMemberPointerRetParam1Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -310,11 +310,11 @@ namespace zetscript{
 		}
 
 
-		virtual ~CMemberFunctionPointerRetParam1Caller(){}
+		virtual ~CFunctionMemberPointerRetParam1Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM2
-	class CMemberFunctionPointerRetParam2:public CMemberFunctionPointer{
+	class CFunctionMemberPointerRetParam2:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2)=0;
 			virtual bool ret_bool(intptr_t p1, intptr_t p2)=0;
@@ -322,16 +322,16 @@ namespace zetscript{
 
 
 
-			virtual ~CMemberFunctionPointerRetParam2(){}
+			virtual ~CFunctionMemberPointerRetParam2(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerRetParam2Caller: public CMemberFunctionPointerRetParam2{
+	class CFunctionMemberPointerRetParam2Caller: public CFunctionMemberPointerRetParam2{
 
 		intptr_t (_S::* m_func) (intptr_t p1,intptr_t p2);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerRetParam2Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2))
+		CFunctionMemberPointerRetParam2Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -354,29 +354,29 @@ namespace zetscript{
 
 		}
 
-		virtual ~CMemberFunctionPointerRetParam2Caller(){}
+		virtual ~CFunctionMemberPointerRetParam2Caller(){}
 	};
 
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM3
-	class CMemberFunctionPointerRetParam3:public CMemberFunctionPointer{
+	class CFunctionMemberPointerRetParam3:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2, intptr_t p3)=0;
 			virtual bool ret_bool(intptr_t p1, intptr_t p2, intptr_t p3)=0;
 			virtual float ret_float(intptr_t p1, intptr_t p2, intptr_t p3)=0;
 
 
-			virtual ~CMemberFunctionPointerRetParam3(){}
+			virtual ~CFunctionMemberPointerRetParam3(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerRetParam3Caller: public CMemberFunctionPointerRetParam3{
+	class CFunctionMemberPointerRetParam3Caller: public CFunctionMemberPointerRetParam3{
 
 		intptr_t (_S::* m_func) (intptr_t p1,intptr_t p2,intptr_t p3);
 
 		_T *ptr;
 	public:
-		CMemberFunctionPointerRetParam3Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3))
+		CFunctionMemberPointerRetParam3Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -399,27 +399,27 @@ namespace zetscript{
 
 		}
 
-		virtual ~CMemberFunctionPointerRetParam3Caller(){}
+		virtual ~CFunctionMemberPointerRetParam3Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM4
-	class CMemberFunctionPointerRetParam4:public CMemberFunctionPointer{
+	class CFunctionMemberPointerRetParam4:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4)=0;
 			virtual bool ret_bool(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4)=0;
 			virtual float ret_float(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4)=0;
 
 
-			virtual ~CMemberFunctionPointerRetParam4(){}
+			virtual ~CFunctionMemberPointerRetParam4(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerRetParam4Caller: public CMemberFunctionPointerRetParam4{
+	class CFunctionMemberPointerRetParam4Caller: public CFunctionMemberPointerRetParam4{
 
 		intptr_t (_S::* m_func) (intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerRetParam4Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4))
+		CFunctionMemberPointerRetParam4Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -442,27 +442,27 @@ namespace zetscript{
 
 		}
 
-		virtual ~CMemberFunctionPointerRetParam4Caller(){}
+		virtual ~CFunctionMemberPointerRetParam4Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM5
-	class CMemberFunctionPointerRetParam5:public CMemberFunctionPointer{
+	class CFunctionMemberPointerRetParam5:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5)=0;
 			virtual bool ret_bool(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5)=0;
 			virtual float ret_float(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5)=0;
 
 
-			virtual ~CMemberFunctionPointerRetParam5(){}
+			virtual ~CFunctionMemberPointerRetParam5(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerRetParam5Caller: public CMemberFunctionPointerRetParam5{
+	class CFunctionMemberPointerRetParam5Caller: public CFunctionMemberPointerRetParam5{
 
 		intptr_t (_S::* m_func) (intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerRetParam5Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5))
+		CFunctionMemberPointerRetParam5Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -485,27 +485,27 @@ namespace zetscript{
 
 		}
 
-		virtual ~CMemberFunctionPointerRetParam5Caller(){}
+		virtual ~CFunctionMemberPointerRetParam5Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
 	// VOID/RET PARAM6
-	class CMemberFunctionPointerRetParam6:public CMemberFunctionPointer{
+	class CFunctionMemberPointerRetParam6:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6)=0;
 			virtual bool ret_bool(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6)=0;
 			virtual float ret_float(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6)=0;
 
 
-			virtual ~CMemberFunctionPointerRetParam6(){}
+			virtual ~CFunctionMemberPointerRetParam6(){}
 	};
 
 	template <class _T,class _S>
-	class CMemberFunctionPointerRetParam6Caller: public CMemberFunctionPointerRetParam6{
+	class CFunctionMemberPointerRetParam6Caller: public CFunctionMemberPointerRetParam6{
 
 		intptr_t (_S::* m_func) (intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6);
 		_T *ptr;
 	public:
-		CMemberFunctionPointerRetParam6Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6))
+		CFunctionMemberPointerRetParam6Caller(_T *obj,intptr_t (_S::* _func) ( intptr_t p1,intptr_t p2,intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6))
 		{
 			m_func =_func;
 			ptr = obj;
@@ -528,7 +528,7 @@ namespace zetscript{
 
 		}
 
-		virtual ~CMemberFunctionPointerRetParam6Caller(){}
+		virtual ~CFunctionMemberPointerRetParam6Caller(){}
 	};
 
 }

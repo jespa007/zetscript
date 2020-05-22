@@ -23,7 +23,7 @@ namespace zetscript{
 			idx_function_member_constructor =ZS_UNDEFINED_IDX;
 	}
 
-	CScriptFunction * CScriptClass::registerMemberFunction(const std::string & file, short line, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
+	CScriptFunction * CScriptClass::registerFunctionMember(const std::string & file, short line, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
 
 		CScriptFunction * sf = registerFunction(file, line, function_name,  args,  idx_return_type, ref_ptr,  symbol_info_properties);
 		std::string class_name=symbol_info.symbol->name;

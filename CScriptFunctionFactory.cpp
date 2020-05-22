@@ -75,7 +75,7 @@ namespace zetscript{
 		return vec_script_function_node.at(idx);
 	}
 
-	bool CScriptFunctionFactory::checkCanRegister_C_Function(const char *f){
+	bool CScriptFunctionFactory::checkCanRegister_C_Function(const std::string &function_name){
 
 		int size = vec_script_function_node.size();
 
@@ -84,7 +84,7 @@ namespace zetscript{
 
 				((vec_script_function_node)[size-1]->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_C_OBJECT_REF)!=SYMBOL_INFO_PROPERTY_C_OBJECT_REF)
 			){
-				THROW_RUNTIME_ERROR(zs_string::sformat("function \"%s\" should register after C functions. Register after script functions is not allowed",f));
+				THROW_RUNTIME_ERROR(zs_string::sformat("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name.c_str()));
 				return false;
 			}
 

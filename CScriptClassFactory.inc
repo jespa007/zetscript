@@ -357,7 +357,7 @@ namespace zetscript{
 	 * Register C Member function Class
 	 */
 	template < typename C, typename R, class T, typename..._A>
-	bool CScriptClassFactory::register_C_MemberFunction(
+	bool CScriptClassFactory::register_C_FunctionMember(
 			const char *function_name
 			,R (T:: *function_type)(_A...)
 			, const char *registered_file
@@ -453,15 +453,14 @@ namespace zetscript{
 	/**
 	 * Register C Member function Class
 	 */
-	template <typename T, typename F>
-	bool CScriptClassFactory::register_C_StaticMemberFunction(const char *function_name,F function_type, const char *registered_file,int registered_line)
+	template <typename R, class T, typename..._A>
+	bool CScriptClassFactory::register_C_FunctionMemberStatic(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file,int registered_line)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<CScriptClass *> * vec_script_class_node = getVecScriptClassNode();
 
 		std::string return_type;
 		std::vector<std::string> params;
-		CScriptFunction *irs=NULL;
 		std::vector<std::string> arg;
 		std::vector<ParamArgInfo> arg_info;
 		int idx_return_type=-1;
@@ -471,7 +470,7 @@ namespace zetscript{
 
 
 
-		if(!script_function_factory->checkCanRegister_C_Function(function_class_name.c_str())){
+		if(!script_function_factory->checkCanRegister_C_Function(function_class_name)){
 			return false;
 		}
 
@@ -512,7 +511,7 @@ namespace zetscript{
 
 		}
 
-		ref_ptr=(void *)function_type;
+		ref_ptr=(intptr_t)function_type;
 		// ignores special type cast C++ member to ptr function
 		// create binding function class
 		/*if(idx_return_type == IDX_TYPE_VOID_C){
@@ -578,12 +577,94 @@ namespace zetscript{
 		return true;
 	}
 
+	template <typename F>
+	bool CScriptClassFactory::register_C_FunctionAsFunctionMember(const char *function_name,F function_type, const char *registered_file,int registered_line){
+		// to make compatible MSVC shared library
+		//std::vector<CScriptClass *> * vec_script_class_node = getVecScriptClassNode();
+
+		std::string return_type;
+		std::vector<std::string> params;
+		std::vector<std::string> arg;
+		std::vector<ParamArgInfo> arg_info;
+		int idx_return_type=-1;
+		intptr_t ref_ptr=0;
+		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+
+		// 1. check all parameters ok.
+		using Traits3 = function_traits<decltype(function_type)>;
+		get_params_function<Traits3>(0,return_type, arg, make_index_sequence<Traits3::arity>{});
+
+		if(arg.size()>6){
+			THROW_RUNTIME_ERROR("Max argyments reached");
+		}
+
+		if(arg.size()==0){
+			THROW_RUNTIME_ERROR(zs_string::sformat("register_C_FunctionAsFunctionMember at least need first parameter that defines the object to add function %s",function_name));
+		}
+
+
+		CScriptClass * c_class=	getScriptClassBy_C_ClassPtr(arg[0]);
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR(zs_string::sformat("class %s is not registered",arg[0].c_str()));
+			return false;
+		}
+
+
+		function_class_name = c_class->symbol_info.symbol->name+"::"+function_name;
+
+
+		if(!script_function_factory->checkCanRegister_C_Function(function_class_name)){
+			return false;
+		}
+
+
+		// check valid parameters ...
+		if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
+			THROW_RUNTIME_ERROR(zs_string::sformat("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name));
+			return false;
+		}
+
+		for(unsigned int i = 0; i < arg.size(); i++){
+			int idx_type = getIdxClassFromIts_C_Type(arg[i]);
+
+			if(idx_type==IDX_TYPE_FLOAT_C || idx_type==IDX_TYPE_BOOL_C){
+				THROW_RUNTIME_ERROR(zs_string::sformat("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str()));
+				return false;
+			}
+
+			if(idx_type==ZS_INVALID_CLASS){
+				THROW_RUNTIME_ERROR(zs_string::sformat("Argument (%i) type \"%s\" for function \"%s\" not registered",i,zs_rtti::demangle(arg[i]).c_str(),function_name));
+				return false;
+			}
+
+			arg_info.push_back({idx_type,arg[i]});
+
+		}
+
+		ref_ptr=(intptr_t)function_type;
+
+		// register member function...
+		c_class->registerFunction(
+				registered_file
+				,registered_line
+				,function_name
+				,arg_info
+				, idx_return_type
+				, ref_ptr
+				, SYMBOL_INFO_PROPERTY_C_OBJECT_REF | SYMBOL_INFO_PROPERTY_STATIC_REF | SYMBOL_INFO_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
+		);
+		zs_print_debug_cr("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str());
+
+		return true;
+
+	}
+
 	/**
 	 * Register C Member var
 	 */
 	//<o, decltype(o::s)>(STR(s),zetscript::offset_of(&o::s)) &CVar::mierda
 	template <typename C, typename R,typename T>
-	bool CScriptClassFactory::register_C_MemberVariable(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
+	bool CScriptClassFactory::register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<CScriptClass *> * vec_script_class_node = getVecScriptClassNode();

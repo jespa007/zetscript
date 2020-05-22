@@ -229,10 +229,11 @@ namespace zetscript{
 
 	//typedef tInfoStatementOp *PInfoStatementOp;
 	typedef enum {
-		SYMBOL_INFO_PROPERTY_C_OBJECT_REF 			= 0x1 << 0,
-		SYMBOL_INFO_PROPERTY_IS_DERIVATED 			= 0x1 << 1,
-		SYMBOL_INFO_PROPERTY_STATIC_REF 			= 0x1 << 2, // C function or C++ static functions
-		SYMBOL_INFO_PROPERTY_IS_POLYMORPHIC			= 0x1 << 3
+		SYMBOL_INFO_PROPERTY_C_OBJECT_REF 					= 0x1 << 0,
+		SYMBOL_INFO_PROPERTY_IS_DERIVATED 					= 0x1 << 1,
+		SYMBOL_INFO_PROPERTY_STATIC_REF 					= 0x1 << 2, // C function or C++ static functions
+		SYMBOL_INFO_PROPERTY_IS_POLYMORPHIC					= 0x1 << 3,
+		SYMBOL_INFO_PROPERTY_SET_FIRST_PARAMETER_AS_THIS	= 0x1 << 4  // will pass object this as first parameter
 	}SYMBOL_INFO_PROPERTY;
 
 

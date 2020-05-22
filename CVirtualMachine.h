@@ -186,7 +186,8 @@ namespace zetscript{
 				 bool & error,
 				 StackElement *ptrArg,
 				 unsigned char n_args,
-				 CByteCode *ins);
+				 CByteCode *ins,
+				 CScriptVar  * this_object);
 
 		/**
 		 * Reserve for N vars. Return base pointer.

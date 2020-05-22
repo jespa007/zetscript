@@ -75,7 +75,7 @@
 #include "util/zs_path.h"
 
 #include "exception.h"
-#include "CMemberFunctionPointer.h"
+#include "CFunctionMemberPointer.h"
 
 #include "var/CScriptVar.h"
 #include "var/CScriptVarString.h"
