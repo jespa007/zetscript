@@ -1,11 +1,11 @@
 
-#include "zetscript.h"
+#include "ZetScript.h"
 
-using namespace zetscript;
+using namespace ZetScript;
 
 int main(){
 
-	CZetScript *zs = new CZetScript(); // instance zetscript
+	ZetScript *zs = new ZetScript(); // instance ZetScript
 
 	zs->evalString(
 		"class Test{"

@@ -2,15 +2,15 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "zetscript.h"
+#include "ZetScript.h"
 
 #define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2019 Jordi Espada\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION
 
-using namespace zetscript;
+using namespace ZetScript;
 
 int main(int argc, char * argv[]) {
 
-	CZetScript *zs = new CZetScript();
+	ZetScript *zs = new ZetScript();
 
 	if (argc > 1) {
 		bool execute=true;
@@ -19,7 +19,7 @@ int main(int argc, char * argv[]) {
 
 		for(int i=1; i < argc; i++){
 
-			std::vector<std::string> a=zs_string::split(argv[i],'=');
+			std::vector<std::string> a=ZS_StrUtils::Split(argv[i],'=');
 			switch(a.size()){
 			case 1:
 

@@ -3,9 +3,9 @@
  *  See LICENSE file for details.
  */
 
-#include "zetscript.h"
+#include "ZetScript.h"
 
-namespace zetscript {
+namespace ZetScript {
 
 	int getErrorLine();
 	const char * getErrorDescription();

@@ -4,18 +4,18 @@
  */
 #pragma once
 
-namespace zetscript{
+namespace ZetScript{
 
-	#define NEW_FUNCTOR_VAR (new CScriptVarFunctor()) //setFunctionSymbol(CScriptFunction *_irfs)fun_struct)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassFunctor()),fun_struct))
+	#define NEW_FUNCTOR_VAR (new CScriptVarFunctor()) //setFunctionSymbol(ScriptFunction *_irfs)fun_struct)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassFunctor()),fun_struct))
 
 	class  CScriptVarFunctor:public CScriptVar{
 
 	public:
-		//CScriptFunction *m_functorValue;
+		//ScriptFunction *m_functorValue;
 
 		CScriptVarFunctor(){}
-		CScriptVarFunctor(CZetScript *_zs);
-		void setFunctionSymbol(CScriptFunction *_irfs);
+		CScriptVarFunctor(ZetScript *_zs);
+		void setFunctionSymbol(ScriptFunction *_irfs);
 
 
 	};

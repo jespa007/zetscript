@@ -62,6 +62,7 @@ Date: XX-XX-2019
 
 #126 Save pure c function instead of std::function for speed improvement  
 #128 Implement register_c_function_as_member 
+> #129 Migrate new C++ coding style 
  
 
 Other: Lot of clean code up. 

@@ -9,13 +9,13 @@
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
 
-namespace zetscript{
+namespace ZetScript{
 
-class CScriptClass;
-	class CScriptClass;
-	class CZetScript;
+class ScriptClass;
+	class ScriptClass;
+	class ZetScript;
 	class CVirtualMachine;
-	class CScriptClassFactory;
+	class ScriptClassFactory;
 	class  CScriptVar{//: public CVariable{
 
 	public:
@@ -26,8 +26,8 @@ class CScriptClass;
 		//int idx_shared_ptr;
 		PInfoSharedPointerNode ptr_shared_pointer_node;
 		unsigned char idx_class;
-		CScriptFunction *info_function_new;
-		CByteCode 	*instruction_new;
+		ScriptFunction *info_function_new;
+		ByteCode 	*instruction_new;
 		bool was_created_by_constructor;
 		std::vector<StackElement> variable;
 
@@ -39,14 +39,14 @@ class CScriptClass;
 
 		// Construct ...
 		CScriptVar();
-		CScriptVar(CZetScript	*_zs);
+		CScriptVar(ZetScript	*_zs);
 
 
 		/**
 		 * info_registered_class: scriptclass info
 		 * _c_object: pass C object reference (is not delete_c_object by default)
 		 */
-		void init(CScriptClass *info_registered_class, void *  _c_object);
+		void init(ScriptClass *info_registered_class, void *  _c_object);
 
 
 		bool isCreatedByContructor();
@@ -54,15 +54,15 @@ class CScriptClass;
 		bool itHasSetMetamethod();
 		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
 
-		virtual StackElement * addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function=NULL, CByteCode *src_instruction = NULL, StackElement * sv=NULL);
+		virtual StackElement * addVariableSymbol(const std::string & symbol_value, const ScriptFunction *info_function=NULL, ByteCode *src_instruction = NULL, StackElement * sv=NULL);
 		StackElement * getVariableSymbol(const std::string & varname);
 		StackElement * getVariableSymbolByIndex(int idx);
-		bool removeVariableSymbolByName(const std::string & symbol_value, const CScriptFunction *info_function=NULL);
+		bool removeVariableSymbolByName(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 		bool removeVariableSymbolByIndex(unsigned int idx, bool remove_vector=false);
 		std::vector<StackElement> * getVectorVariable();
 
 
-		virtual FunctionSymbol * addFunctionSymbol(const std::string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates=false);
+		virtual FunctionSymbol * addFunctionSymbol(const std::string & symbol_value,const ScriptFunction *irv, bool ignore_duplicates=false);
 		FunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const std::string & funname);
 
 		FunctionSymbol * getFunctionSymbol(const std::string & varname);
@@ -71,9 +71,9 @@ class CScriptClass;
 
 		void * get_C_Object();
 		bool is_c_object();
-		CScriptClass *get_C_Class();
+		ScriptClass *get_C_Class();
 
-		CScriptFunction *getConstructorFunction();
+		ScriptFunction *getConstructorFunction();
 
 
 		const std::string & getClassName();
@@ -94,15 +94,15 @@ class CScriptClass;
 
 		StackElement this_variable;
 		StackElement * exist(const char *c);
-		CZetScript      *zs;
+		ZetScript      *zs;
 		CVirtualMachine	*virtual_machine;
-		CScriptClassFactory *script_class_factory;
+		ScriptClassFactory *script_class_factory;
 
 		/**
 		 * This variable tells whether is pointer function or not.
 		 */
-		CScriptClass *registered_class_info;
-		CScriptClass *c_scriptclass_info;
+		ScriptClass *registered_class_info;
+		ScriptClass *c_scriptclass_info;
 		bool delete_c_object;
 
 
@@ -121,7 +121,7 @@ class CScriptClass;
 
 		std::string aux_string;
 
-		void createSymbols(CScriptClass *irv);
+		void createSymbols(ScriptClass *irv);
 
 		std::vector<FunctionSymbol> m_functionSymbol;
 

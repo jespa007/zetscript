@@ -1,7 +1,7 @@
 //-- Exception --
 #include		"exception.cpp"
 
-#include		"CByteCode.cpp"
+#include		"ByteCode.cpp"
 
 //-- Utils --
 #include		"var/CScriptVar.cpp"
@@ -10,25 +10,25 @@
 #include		"var/CScriptVarFunctor.cpp"
 
 //-- Script Core --
-#include		"CEval.cpp"
-#include		"CScope.cpp"
-#include		"CScopeFactory.cpp"
-#include		"CNativeFunctionFactory.cpp"
-#include		"CScriptClassBase.cpp"
-#include		"CScriptFunction.cpp"
-#include		"CScriptFunctionFactory.cpp"
-#include		"CScriptClass.cpp"
-#include		"CScriptClassFactory.cpp"
+#include		"ScriptEval.cpp"
+#include		"Scope.cpp"
+#include		"ScopeFactory.cpp"
+#include		"NativeFunctionFactory.cpp"
+#include		"ScriptClassBase.cpp"
+#include		"ScriptFunction.cpp"
+#include		"ScriptFunctionFactory.cpp"
+#include		"ScriptClass.cpp"
+#include		"ScriptClassFactory.cpp"
 
 #include		"CVirtualMachine.cpp"
 
 
-#include		"CZetScript.cpp"
+#include		"ZetScript.cpp"
 #include "util/zs_io.cpp"
-#include "util/zs_log.cpp"
-#include "util/zs_path.cpp"
+#include "util/ZS_Log.cpp"
+#include "util/ZS_Path.cpp"
 #include "util/zs_rtti.cpp"
-#include "util/zs_string.cpp"
+#include "util/ZS_StrUtils.cpp"
 #include 		"var/CScriptVarDictionary.cpp"
 
 

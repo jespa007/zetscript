@@ -2,11 +2,11 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "../zetscript.h"
+#include "../ZetScript.h"
 
-namespace zetscript{
+namespace ZetScript{
 
-	CScriptVarFunctor::CScriptVarFunctor(CZetScript *_zs):CScriptVar(_zs){
+	CScriptVarFunctor::CScriptVarFunctor(ZetScript *_zs):CScriptVar(_zs){
 
 	  //  m_classStr=typeid(CScriptVarFunctor).name();
 	  //  m_pointerClassStr=typeid(CScriptVarFunctor *).name();
@@ -17,7 +17,7 @@ namespace zetscript{
 		this->init(SCRIPT_CLASS_FUNCTOR, (void *)this);
 	}
 
-	void CScriptVarFunctor::setFunctionSymbol(CScriptFunction *_irfs){
+	void CScriptVarFunctor::setFunctionSymbol(ScriptFunction *_irfs){
 		m_value=_irfs;
 	}
 

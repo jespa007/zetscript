@@ -2,9 +2,9 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "zetscript.h"
+#include "ZetScript.h"
 
-using namespace zetscript;
+using namespace ZetScript;
 
 void say_helloworld(){
 	printf("Hello World!");
@@ -17,12 +17,12 @@ int main(){
 	bool 	bool_var = true;
 	std::string	string_var = "in c++";
 
-	CZetScript *zs = new CZetScript(); // instance zetscript
+	ZetScript *zs = new ZetScript(); // instance ZetScript
 
-	zs->register_C_Variable("int_var",&int_var); // it takes int *
-	zs->register_C_Variable("float_var",&float_var); // it takes float *
-	zs->register_C_Variable("bool_var",&bool_var); // it takes bool *
-	zs->register_C_Variable("string_var",&string_var); // it takes std::string *
+	zs->Register_C_Variable("int_var",&int_var); // it takes int *
+	zs->Register_C_Variable("float_var",&float_var); // it takes float *
+	zs->Register_C_Variable("bool_var",&bool_var); // it takes bool *
+	zs->Register_C_Variable("string_var",&string_var); // it takes std::string *
 
 	zs->evalString(
 		"int_var+=5;"

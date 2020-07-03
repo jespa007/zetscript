@@ -2,9 +2,9 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "../zetscript.h"
+#include "../ZetScript.h"
 
-namespace zetscript{
+namespace ZetScript{
 
 
 	void  write_error(const char *filename, int line, const  char  *string_text, ...);
@@ -12,7 +12,7 @@ namespace zetscript{
 
 
 
-	void CScriptVar::createSymbols(CScriptClass *ir_class){
+	void CScriptVar::createSymbols(ScriptClass *ir_class){
 
 
 		FunctionSymbol *si;
@@ -43,7 +43,7 @@ namespace zetscript{
 
 		// Register functions...
 		for ( unsigned i = 0; i < ir_class->local_function.size(); i++){
-			CScriptFunction * ir_fun  = ir_class->local_function[i];
+			ScriptFunction * ir_fun  = ir_class->local_function[i];
 			 si =addFunctionSymbol(
 					  ir_fun->symbol_info.symbol->name,
 
@@ -84,7 +84,7 @@ namespace zetscript{
 		setup();
 	}
 
-	CScriptVar::CScriptVar(CZetScript	*_zs){
+	CScriptVar::CScriptVar(ZetScript	*_zs){
 		setup();
 
 		zs=_zs;
@@ -92,7 +92,7 @@ namespace zetscript{
 		script_class_factory = zs->getScriptClassFactory();
 	}
 
-	void CScriptVar::init(CScriptClass *irv, void * _c_object){
+	void CScriptVar::init(ScriptClass *irv, void * _c_object){
 
 		setup();
 
@@ -111,7 +111,7 @@ namespace zetscript{
 					c_object = created_object;
 			}else {
 
-				CScriptClass *sc=registered_class_info;
+				ScriptClass *sc=registered_class_info;
 				while( sc->idx_base_class.size()>0 && c_scriptclass_info==NULL){
 
 					sc=GET_SCRIPT_CLASS(sc->idx_base_class[0]); // get base class...
@@ -136,7 +136,7 @@ namespace zetscript{
 		}
 	}
 
-	CScriptFunction *CScriptVar::getConstructorFunction(){
+	ScriptFunction *CScriptVar::getConstructorFunction(){
 
 		if(registered_class_info->idx_function_member_constructor != ZS_UNDEFINED_IDX){
 			return registered_class_info->local_function[registered_class_info->idx_function_member_constructor];
@@ -146,7 +146,7 @@ namespace zetscript{
 	}
 
 	bool CScriptVar::setIdxClass(unsigned char idx){
-		CScriptClass *_info_registered_class =  GET_SCRIPT_CLASS(idx);//CScriptClass::getInstance()->getRegisteredClassByIdx(idx);
+		ScriptClass *_info_registered_class =  GET_SCRIPT_CLASS(idx);//ScriptClass::getInstance()->getRegisteredClassByIdx(idx);
 
 		if(_info_registered_class == NULL){
 			return false;
@@ -168,7 +168,7 @@ namespace zetscript{
 		}
 	}
 
-	StackElement * CScriptVar::addVariableSymbol(const std::string & symbol_value, const CScriptFunction *info_function,CByteCode *src_instruction,StackElement * sv){
+	StackElement * CScriptVar::addVariableSymbol(const std::string & symbol_value, const ScriptFunction *info_function,ByteCode *src_instruction,StackElement * sv){
 		StackElement si;
 
 		bool error_symbol=false;
@@ -202,11 +202,11 @@ namespace zetscript{
 
 		if(error_symbol){
 			write_error(INSTRUCTION_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
-			THROW_RUNTIME_ERROR(zs_string::sformat("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str()));
+			THROW_RUNTIME_ERROR(ZS_StrUtils::sformat("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str()));
 			return NULL;
 		}
 
-		//std::string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+		//std::string symbol_ref=ScriptEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(getVariableSymbol(symbol_value) != NULL){
 			write_error(INSTRUCTION_GET_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
@@ -262,7 +262,7 @@ namespace zetscript{
 			std::string symbol = this->m_variableKey[i];
 
 			/*if(only_var_name){
-				symbol=CEval::getSymbolNameFromSymbolRef(symbol);
+				symbol=ScriptEval::getSymbolNameFromSymbolRef(symbol);
 			}*/
 
 			if(varname == symbol){
@@ -272,7 +272,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	FunctionSymbol *CScriptVar::addFunctionSymbol(const std::string & symbol_value,const CScriptFunction *irv, bool ignore_duplicates){
+	FunctionSymbol *CScriptVar::addFunctionSymbol(const std::string & symbol_value,const ScriptFunction *irv, bool ignore_duplicates){
 		FunctionSymbol si;
 		si.proxy_ptr=0;
 		si.object = {
@@ -282,7 +282,7 @@ namespace zetscript{
 				STK_PROPERTY_TYPE_FUNCTION  // dfine as function.
 		};
 
-		//std::string symbol_ref=CEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
+		//std::string symbol_ref=ScriptEval::makeSymbolRef(symbol_value,IDX_ANONYMOUSE_SCOPE);
 
 		if(!ignore_duplicates){
 			if(getFunctionSymbol(symbol_value) != NULL){
@@ -305,7 +305,7 @@ namespace zetscript{
 			std::string symbol = this->m_functionSymbol[i].key_value;
 
 			/*if(only_var_name){
-				symbol=CEval::getSymbolNameFromSymbolRef(symbol);
+				symbol=ScriptEval::getSymbolNameFromSymbolRef(symbol);
 			}*/
 
 			if(varname == symbol){
@@ -344,7 +344,7 @@ namespace zetscript{
 					if(((si->properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR)
 						&& ((si->properties & STK_PROPERTY_IS_THIS_VAR) != STK_PROPERTY_IS_THIS_VAR)){ // deallocate but not if is c or this ref
 						if(si->varRef != NULL){
-							// remove property if not referenced anymore
+							// Remove property if not referenced anymore
 							virtual_machine->unrefSharedScriptVar(((CScriptVar *)(si->varRef))->ptr_shared_pointer_node,true);
 						}
 					}
@@ -352,7 +352,7 @@ namespace zetscript{
 				break;
 		}
 
-		// remove symbol on std::vector ...
+		// Remove symbol on std::vector ...
 		if(remove_vector){
 			variable.erase(variable.begin()+idx);
 			m_variableKey.erase(m_variableKey.begin()+idx);
@@ -365,8 +365,8 @@ namespace zetscript{
 		return &variable;
 	}
 
-	bool CScriptVar::removeVariableSymbolByName(const std::string & varname, const CScriptFunction *info_function){
-		//std::string symbol_ref=CEval::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
+	bool CScriptVar::removeVariableSymbolByName(const std::string & varname, const ScriptFunction *info_function){
+		//std::string symbol_ref=ScriptEval::makeSymbolRef(varname,IDX_ANONYMOUSE_SCOPE);
 		for(unsigned int i = 0; i < this->m_variableKey.size(); i++){
 			if(varname == this->m_variableKey[i]){
 				return removeVariableSymbolByIndex(i,true);
@@ -469,7 +469,7 @@ namespace zetscript{
 		return was_created_by_constructor;
 	}
 
-	CScriptClass * CScriptVar::get_C_Class(){
+	ScriptClass * CScriptVar::get_C_Class(){
 
 		 return c_scriptclass_info;
 	}
@@ -496,7 +496,7 @@ namespace zetscript{
 		}
 //#endif
 
-		// remove vars & fundtions if class is C...
+		// Remove vars & fundtions if class is C...
 		FunctionSymbol *si;
 
 		for ( unsigned i = 0; i < variable.size(); i++){
@@ -507,7 +507,7 @@ namespace zetscript{
 		// deallocate function member ...
 		for ( unsigned i = 0; i < m_functionSymbol.size(); i++){
 			si = &m_functionSymbol[i];
-			CScriptFunction * ir_fun  = (CScriptFunction *)(m_functionSymbol[i].object.stkValue);
+			ScriptFunction * ir_fun  = (ScriptFunction *)(m_functionSymbol[i].object.stkValue);
 			 if((ir_fun->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF){ // create proxy function ...
 				 if((ir_fun->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_STATIC_REF) != SYMBOL_INFO_PROPERTY_STATIC_REF){
 					 delete ((CFunctionMemberPointer *)si->proxy_ptr);

@@ -4,7 +4,7 @@
  */
 
 
-namespace zetscript{
+namespace ZetScript{
 
 
 

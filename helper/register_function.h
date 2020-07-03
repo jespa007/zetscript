@@ -3,7 +3,7 @@
  *  See LICENSE file for details.
  */
 
-namespace zetscript{
+namespace ZetScript{
 
 
 

@@ -2,9 +2,9 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "zetscript.h"
+#include "ZetScript.h"
 
-using namespace zetscript;
+using namespace ZetScript;
 
 int add(int op1, int op2){
 	return op1+op2;
@@ -18,10 +18,10 @@ float add(float *op1, float *op2){
 
 int main(){
 
-	CZetScript *zs = new CZetScript(); // instance zetscript
+	ZetScript *zs = new ZetScript(); // instance ZetScript
 
-	zs->register_C_Function("add",static_cast<int (*)(int,int)>(add));
-	zs->register_C_Function("add",static_cast<float (*)(float *,float *)>(add));
+	zs->Register_C_Function("add",static_cast<int (*)(int,int)>(add));
+	zs->Register_C_Function("add",static_cast<float (*)(float *,float *)>(add));
 
 
 	zs->evalString(

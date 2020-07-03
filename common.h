@@ -52,16 +52,16 @@
 #define MAIN_FUNCTION									GET_SCRIPT_FUNCTION(IDX_MAIN_FUNCTION)
 
 
-namespace zetscript{
+namespace ZetScript{
 
 
 
 
 
 	//typedef CASTNode *PASTNode;
-	class CScriptFunction;
-	class CScope;
-	class CScriptClass;
+	class ScriptFunction;
+	class Scope;
+	class ScriptClass;
 	class CScriptVar;
 	struct Symbol;
 	struct FunctionInfo;
@@ -306,7 +306,7 @@ namespace zetscript{
 	struct VariableSymbolInfo { // it can be a variable or function
 		intptr_t ref_ptr; // pointer ref just in case is C var/function
 		Symbol *symbol; // symbol name
-		//short idx_class; //CScriptClass		 *class_info;
+		//short idx_class; //ScriptClass		 *class_info;
 		//short idxScope;
 
 		short idx_symbol; // idx of class function/variable symbol that keeps.

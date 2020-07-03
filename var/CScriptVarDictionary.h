@@ -4,9 +4,9 @@
  */
 #pragma once
 
-#define NEW_STRUCT_VAR (new CScriptVarDictionary(this->zs)) //CScriptClass::getInstance()->getRegisteredClassByIdx(CScriptClass::getInstance()->getIdxClassStruct())))
+#define NEW_STRUCT_VAR (new CScriptVarDictionary(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassStruct())))
 
-namespace zetscript{
+namespace ZetScript{
 
 	class  CScriptVarDictionary:public CScriptVar{
 
@@ -14,7 +14,7 @@ namespace zetscript{
 
 	public:
 		CScriptVarDictionary(){}
-		CScriptVarDictionary(CZetScript *_zs);
+		CScriptVarDictionary(ZetScript *_zs);
 
 		virtual bool unrefSharedPtr();
 

@@ -2,9 +2,9 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "../zetscript.h"
+#include "../ZetScript.h"
 
-namespace zetscript{
+namespace ZetScript{
 
 	void  write_error(const char *filename, int line, const  char  *string_text, ...);
 	int getErrorLine();
@@ -12,7 +12,7 @@ namespace zetscript{
 	const char * getErrorFilename();
 
 
-	CScriptVarDictionary::CScriptVarDictionary(CZetScript *_zs):CScriptVar(_zs){//CScriptClass *info_registered_class):CScriptVar(info_registered_class, this){
+	CScriptVarDictionary::CScriptVarDictionary(ZetScript *_zs):CScriptVar(_zs){//ScriptClass *info_registered_class):CScriptVar(info_registered_class, this){
 		init(SCRIPT_CLASS_DICTIONARY, (void *)this);
 	}
 
@@ -66,7 +66,7 @@ namespace zetscript{
 
 				if((variable[i].properties & STK_PROPERTY_IS_C_VAR) != STK_PROPERTY_IS_C_VAR){ // deallocate but not if is c ref
 					if(variable[i].varRef != NULL){
-						// remove property if not referenced anymore
+						// Remove property if not referenced anymore
 						virtual_machine->unrefSharedScriptVar(((CScriptVar *)(variable[i].varRef))->ptr_shared_pointer_node,true);
 					}
 				}
