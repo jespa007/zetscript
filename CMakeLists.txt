@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
  
-project(zetscript)
+project(ZetScript)
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -12,7 +12,7 @@ MACRO(INSTALL_HEADERS_WITH_DIRECTORY HEADER_LIST)
 
     FOREACH(HEADER ${${HEADER_LIST}})
         get_filename_component(DIR ${HEADER} DIRECTORY)
-        INSTALL(FILES ${HEADER} DESTINATION include/zetscript/${DIR})
+        INSTALL(FILES ${HEADER} DESTINATION include/ZetScript/${DIR})
     ENDFOREACH(HEADER)
 
 ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
@@ -169,12 +169,12 @@ ELSE()
 		util/string.cpp
 		
 		#-- Variables --
-		var/CScriptVar.cpp
+		var/ScriptVar.cpp
 	
-		var/CScriptVarString.cpp
-		var/CScriptVarDictionary.cpp
-		var/CScriptVarVector.cpp
-		var/CScriptVarFunctor.cpp
+		var/ScriptVarString.cpp
+		var/ScriptVarDictionary.cpp
+		var/ScriptVarVector.cpp
+		var/ScriptVarFunctor.cpp
 		
 		#-- Script Core --
 		CEval.cpp
@@ -182,25 +182,25 @@ ELSE()
 		CScopeFactory.cpp
 		CNativeFunctionFactory.cpp
 		CScriptClassBase.cpp
-		CScriptFunction.cpp
+		ScriptFunction.cpp
 		CScriptFunctionFactory.cpp
 		CScriptClass.cpp
 		CScriptClassFactory.cpp
-		CVirtualMachine.cpp
+		VirtualMachine.cpp
 		CByteCode.cpp
 		
 	
 		#-- Script Core --
-		CZetScript.cpp	
+		ZetScript.cpp	
 	
 	)
 ENDIF()
 
 # zetscriptlib
-add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
+add_library( ZetScript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
 if(MSVC)
 	#only for msvc...
-	set_target_properties(zetscript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)
+	set_target_properties(ZetScript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)
 endif()
 
 
@@ -210,38 +210,34 @@ IF ( "${FCOMPILE}" STREQUAL "ON")
 	#add_executable(helloworld${POST_NAME}
 	#	${PROJECT_SOURCE_DIR}/test/helloworld.cpp
 	#)
-	#target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
+	#target_link_libraries(helloworld${POST_NAME} ZetScript${POST_NAME})
 ELSE()
 
 	SET(
 		HS
 		
-		CEval.h
-		
-		var/CScriptVarString.h
-		var/CScriptVarVector.h
-		var/CScriptVarFunctor.h
-		var/CStructScriptVariable.h
-		var/CScriptVar.h
-		
+		var/ScriptVarString.h
+		var/ScriptVarVector.h
+		var/ScriptVarFunctor.h
+		var/ScriptVarDictionary.h
+		var/ScriptVar.h
+		factory/ScopeFactory.h
+		factory/ScriptClassFactory.h
+		factory/ScriptFunctionFactory.h
+		factory/NativeFunctionFactory.h
 		helper/register_function.h
 		helper/cpp_binding.h
 		Common.h
-		CScope.h
-		CScopeFactory.h
-		CScriptClassBase.h
-		CScriptClass.h
-		CScriptClassFactory.h
-		CScriptFunction.h
-		CScriptFunctionFactory.h
-		CVirtualMachine.h
-		CNativeFunctionFactory.h
-		
-		CZetScript.h
+		Scope.h
+		ScriptClassBase.h
+		ScriptClass.h
+		ScriptFunction.h
+		VirtualMachine.h
+		ZetScript.h
 		zetscript_exception.h
 		
-		CVirtualMachine.inc
-		CZetScript.inc
+		VirtualMachine.inc
+		ZetScript.inc
 		CScriptClassFactory.inc
 		CByteCode.h
 	)
@@ -255,49 +251,49 @@ ELSE()
 		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
 	
-	target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(zs${POST_NAME} ZetScript${POST_NAME})
 	
 	# zs_test
 	add_executable(zs_test${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
 	)
 	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(zs_test${POST_NAME} ZetScript${POST_NAME})
 	
 	# helloworld
 	add_executable(helloworld${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/helloworld.cpp
 	)
 	
-	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(helloworld${POST_NAME} ZetScript${POST_NAME})
 	
 	# register_variables
 	add_executable(register_variable${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/register_variable.cpp
 	)	
 	
-	target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(register_variable${POST_NAME} ZetScript${POST_NAME})
 	
 	# register_functions
 	add_executable(register_function${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/register_function.cpp
 	)	
 	
-	target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(register_function${POST_NAME} ZetScript${POST_NAME})
 	
 	# register_class
 	add_executable(register_class${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/register_class.cpp
 	)	
 	
-	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(register_class${POST_NAME} ZetScript${POST_NAME})
 	
 	# function_script_call
 	add_executable(script_call_from_cpp${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/script_call_from_cpp.cpp
 	)
 	
-	target_link_libraries(script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(script_call_from_cpp${POST_NAME} ZetScript${POST_NAME})
 	
 	
 	# register_constants
@@ -305,9 +301,9 @@ ELSE()
 		${PROJECT_SOURCE_DIR}/test/register_constant.cpp
 	)
 	
-	target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(register_constant${POST_NAME} ZetScript${POST_NAME})
 	
-	INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
+	INSTALL(TARGETS ZetScript${POST_NAME} zs${POST_NAME}
 		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
 		RUNTIME DESTINATION  	${CMAKE_INSTALL_PREFIX}/bin
     	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib

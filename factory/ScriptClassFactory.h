@@ -5,9 +5,9 @@
 
 
 
-namespace ZetScript{
+namespace zetscript{
 
-	class CScriptVar;
+	class ScriptVar;
 	class ScriptClass;
 	class ZetScript;
 	class ScopeFactory;
@@ -36,7 +36,7 @@ namespace ZetScript{
 
 
 		bool						isIdxClassInstanceOf(unsigned char  theClass,unsigned char  class_idx);
-		unsigned char				getIdxClassFromIts_C_Type(const std::string & s);
+		unsigned char				GetIdxClassFromIts_C_Type(const std::string & s);
 		unsigned char getIdx_C_RegisteredClass(const std::string & str_classPtr);
 
 		 std::vector<ScriptClass *> * 	getVectorScriptClassNode();
@@ -56,8 +56,8 @@ namespace ZetScript{
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		CScriptVar 		 				* 			instanceScriptVariableByClassName(const std::string & class_name);
-		CScriptVar 		 				* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
+		ScriptVar 		 				* 			instanceScriptVariableByClassName(const std::string & class_name);
+		ScriptVar 		 				* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
 
 
 		void register_C_BaseSymbols(bool _register);
@@ -66,7 +66,7 @@ namespace ZetScript{
 		/**
 		 * Register C variable
 		 */
-		 VariableSymbolInfo *  Register_C_Variable(const std::string & var_name,void * var_ptr, const std::string & var_type, const char *registered_file,int registered_line);
+		 SymbolInfo *  Register_C_Variable(const std::string & var_name,void * var_ptr, const std::string & var_type, const char *registered_file,int registered_line);
 
 
 		/**
@@ -128,7 +128,7 @@ namespace ZetScript{
 
 		typedef struct{
 			const char *   type_str;
-			BUILT_IN_TYPE  id;
+			IdxBuiltInType  id;
 		}PrimitiveType;
 
 		typedef struct{
@@ -136,7 +136,7 @@ namespace ZetScript{
 			std::vector<PrimitiveType*>		params;
 		}tRegisterFunction;
 
-		std::vector<ScriptClass *> 			 		vec_script_class_node;
+		std::vector<ScriptClass *> 			 		script_classes;
 		ZetScript *zs;
 		ScopeFactory *scope_factory;
 		ScriptFunctionFactory *script_function_factory;
@@ -152,31 +152,21 @@ namespace ZetScript{
 
 
 			PrimitiveType *getPrimitiveTypeFromStr(const std::string & str);
-			std::map<unsigned char, std::map<unsigned char, fntConversionType>> *  getMapTypeConversion();
+			std::map<unsigned char, std::map<unsigned char, ConversionType>> *  GetConversionTypes();
+
+
+			void 												RegisterPrimitiveTypes();
+
+			unsigned char							GetIdxScriptClassInternal(const std::string & class_name);
+			unsigned char							GetIdxScriptInternalFrom_C_Type(const std::string & c_type_str);
+
+			void Setup();
+
+			void InternalPrintError(const char *s);
 
 
 
-
-
-
-
-
-			void 												registerPrimitiveTypes();
-
-
-
-
-
-			unsigned char							getIdxScriptClass_Internal(const std::string & class_name);
-			unsigned char							getIdxClassFromIts_C_TypeInternal(const std::string & c_type_str);
-
-			void setup();
-
-			void internal_print_error(const char *s);
-
-
-
-			std::map<unsigned char,std::map<unsigned char,fntConversionType>> 	mapTypeConversion;
+			std::map<unsigned char,std::map<unsigned char,ConversionType>> 	conversion_types;
 	};
 
 }

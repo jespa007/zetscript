@@ -9,14 +9,14 @@
 
 #define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
 
-namespace ZetScript{
+namespace zetscript{
 
 class ScriptClass;
 	class ScriptClass;
 	class ZetScript;
-	class CVirtualMachine;
+	class VirtualMachine;
 	class ScriptClassFactory;
-	class  CScriptVar{//: public CVariable{
+	class  ScriptVar{//: public CVariable{
 
 	public:
 
@@ -27,7 +27,7 @@ class ScriptClass;
 		PInfoSharedPointerNode ptr_shared_pointer_node;
 		unsigned char idx_class;
 		ScriptFunction *info_function_new;
-		ByteCode 	*instruction_new;
+		Instruction 	*instruction_new;
 		bool was_created_by_constructor;
 		std::vector<StackElement> variable;
 
@@ -38,8 +38,8 @@ class ScriptClass;
 		void *m_value;
 
 		// Construct ...
-		CScriptVar();
-		CScriptVar(ZetScript	*_zs);
+		ScriptVar();
+		ScriptVar(ZetScript	*_zs);
 
 
 		/**
@@ -54,7 +54,7 @@ class ScriptClass;
 		bool itHasSetMetamethod();
 		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
 
-		virtual StackElement * addVariableSymbol(const std::string & symbol_value, const ScriptFunction *info_function=NULL, ByteCode *src_instruction = NULL, StackElement * sv=NULL);
+		virtual StackElement * addVariableSymbol(const std::string & symbol_value, const ScriptFunction *info_function=NULL, Instruction *src_instruction = NULL, StackElement * sv=NULL);
 		StackElement * getVariableSymbol(const std::string & varname);
 		StackElement * getVariableSymbolByIndex(int idx);
 		bool removeVariableSymbolByName(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
@@ -76,7 +76,7 @@ class ScriptClass;
 		ScriptFunction *getConstructorFunction();
 
 
-		const std::string & getClassName();
+		const std::string & GetClassName();
 
 		const std::string & getPointer_C_ClassName();
 
@@ -87,7 +87,7 @@ class ScriptClass;
 		intptr_t get_C_StructPtr();
 
 		virtual void destroy();
-		virtual ~CScriptVar();
+		virtual ~ScriptVar();
 
 	protected:
 
@@ -95,7 +95,7 @@ class ScriptClass;
 		StackElement this_variable;
 		StackElement * exist(const char *c);
 		ZetScript      *zs;
-		CVirtualMachine	*virtual_machine;
+		VirtualMachine	*virtual_machine;
 		ScriptClassFactory *script_class_factory;
 
 		/**
@@ -107,7 +107,7 @@ class ScriptClass;
 
 
 
-		virtual void setup();
+		virtual void Setup();
 
 		//std::vector<FunctionSymbol> m_variableSymbol;
 
@@ -123,7 +123,7 @@ class ScriptClass;
 
 		void createSymbols(ScriptClass *irv);
 
-		std::vector<FunctionSymbol> m_functionSymbol;
+		std::vector<FunctionSymbol> function_symbol;
 
 
 

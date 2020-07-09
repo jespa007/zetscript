@@ -1,149 +1,149 @@
-namespace ZetScript{
+namespace zetscript{
 
 		// Helpers...
-		inline StackElement CZetScript::varToStk(intptr_t var_trans, int idx_type){
+		inline StackElement ZetScript::varToStk(intptr_t var_trans, int idx_type){
 			//intptr_t var_trans = (intptr_t)input_var;
 				std::string s_return_value;
-				StackElement callc_result={0,0,STK_PROPERTY_TYPE_UNDEFINED};
-				//int idx_type=getIdxClassFromIts_C_Type(typeid(T).name());
+				StackElement callc_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+				//int idx_type=GetIdxClassFromIts_C_Type(typeid(T).name());
 				// save return type ...
 				switch(idx_type){
-				 case IDX_TYPE_VOID_C:
+				 case IDX_BUILTIN_TYPE_VOID_C:
 					break;
-				 case IDX_TYPE_INT_PTR_C:
+				 case IDX_BUILTIN_TYPE_INT_PTR_C:
 					 if(var_trans==0) return callc_result;
-					 callc_result={(void *)(*((intptr_t *)var_trans)),NULL,STK_PROPERTY_TYPE_INTEGER};
+					 callc_result={(void *)(*((intptr_t *)var_trans)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
 					 break;
-				 case IDX_TYPE_UNSIGNED_INT_C:
-				 case IDX_TYPE_INTPTR_T_C:
-				 case IDX_TYPE_INT_C:
-					 callc_result={(void *)(((intptr_t)var_trans)),NULL,STK_PROPERTY_TYPE_INTEGER};
+				 case IDX_BUILTIN_TYPE_UNSIGNED_INT_C:
+				 case IDX_BUILTIN_TYPE_INTPTR_T_C:
+				 case IDX_BUILTIN_TYPE_INT_C:
+					 callc_result={(void *)(((intptr_t)var_trans)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
 					 break;
-				 case IDX_TYPE_FLOAT_C:
-					 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
-					 memcpy(&callc_result.stkValue,&var_trans,sizeof(float));
+				 case IDX_BUILTIN_TYPE_FLOAT_C:
+					 callc_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
+					 memcpy(&callc_result.stk_value,&var_trans,sizeof(float));
 
 					 break;
-				 case IDX_TYPE_FLOAT_PTR_C:
+				 case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
 					 if(var_trans==0) return callc_result;
-					 callc_result.properties=STK_PROPERTY_TYPE_NUMBER;//{};
-					 memcpy(&callc_result.stkValue,&(*(float *)var_trans),sizeof(float));
+					 callc_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
+					 memcpy(&callc_result.stk_value,&(*(float *)var_trans),sizeof(float));
 					 break;
-				 case IDX_TYPE_BOOL_PTR_C:
+				 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
 					 if(var_trans==0) return callc_result;
-					 callc_result={(void *)(*((bool *)var_trans)),NULL,STK_PROPERTY_TYPE_BOOLEAN};
+					 callc_result={(void *)(*((bool *)var_trans)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
 					 break;
-				 case IDX_TYPE_BOOL_C:
-					 callc_result={(void *)(((bool)var_trans)),NULL,STK_PROPERTY_TYPE_BOOLEAN};
+				 case IDX_BUILTIN_TYPE_BOOL_C:
+					 callc_result={(void *)(((bool)var_trans)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
 					 break;
-				 case IDX_TYPE_CONST_CHAR_PTR_C:
+				 case IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C:
 					 if(var_trans==0) return callc_result;
-					 callc_result={(void *)var_trans,NULL,STK_PROPERTY_TYPE_STRING};//new std::string(*((std::string *)result))};
+					 callc_result={(void *)var_trans,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
 					 break;
-				 case IDX_TYPE_STRING_PTR_C:
+				 case IDX_BUILTIN_TYPE_STRING_PTR_C:
 					 if(var_trans==0) return callc_result;
-					 callc_result={(void *)((std::string *)var_trans)->c_str(),NULL,STK_PROPERTY_TYPE_STRING};//new std::string(*((std::string *)result))};
+					 callc_result={(void *)((std::string *)var_trans)->c_str(),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
 					 break;
-				 case IDX_STACK_ELEMENT:
+				 case IDX_BUILTIN_TYPE_STACK_ELEMENT:
 					 if(var_trans==0) return callc_result;
-					 callc_result=*((StackElement *)var_trans);//{STK_PROPERTY_TYPE_STRING,(void *)((std::string *)var_trans)->c_str(),NULL};//new std::string(*((std::string *)result))};
+					 callc_result=*((StackElement *)var_trans);//{MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING,(void *)((std::string *)var_trans)->c_str(),NULL};//new std::string(*((std::string *)result))};
 					 break;
 				 default:
 					 if(var_trans==0) return callc_result;
-					 callc_result = {NULL,script_class_factory->instanceScriptVariableByIdx(idx_type,(void *)var_trans),STK_PROPERTY_TYPE_SCRIPTVAR};
+					 callc_result = {NULL,script_class_factory->instanceScriptVariableByIdx(idx_type,(void *)var_trans),MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
 					 break;
 				}
 
 				return callc_result;
 		}
 
-		inline bool CZetScript::stkToVar(StackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error){
+		inline bool ZetScript::stkToVar(StackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error){
 			intptr_t val_ret=0;
 
-			CScriptVar *script_variable=NULL;
+			ScriptVar *script_variable=NULL;
 
 
 			// save return type ...
-			if(stk_src->properties & STK_PROPERTY_IS_STACKVAR){
-				stk_src=((StackElement *)stk_src->varRef);
+			if(stk_src->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+				stk_src=((StackElement *)stk_src->var_ref);
 			}
 
-			if(idx_dst_type == IDX_STACK_ELEMENT){//*ScriptClass::STACK_ELEMENT_PTR)){// && (stk_src->properties & STK_PROPERTY_IS_STACKVAR)){ // set directly stackvar
+			if(idx_dst_type == IDX_BUILTIN_TYPE_STACK_ELEMENT){//*ScriptClass::STACK_ELEMENT_PTR)){// && (stk_src->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT)){ // set directly stackvar
 				val_ret=(intptr_t)stk_src;
 			}else{
 
-				switch(GET_INS_PROPERTY_VAR_TYPE(stk_src->properties)){
-				case STK_PROPERTY_TYPE_BOOLEAN:
-					if(idx_dst_type == IDX_TYPE_BOOL_C){// *ScriptClass::STR_BOOL_TYPE){
-						val_ret=(intptr_t)(stk_src->stkValue);
-					}else if(idx_dst_type == IDX_TYPE_BOOL_PTR_C){//*ScriptClass::STR_BOOL_TYPE_PTR){
-						val_ret=(intptr_t)(&stk_src->stkValue);
+				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties)){
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+					if(idx_dst_type == IDX_BUILTIN_TYPE_BOOL_C){// *ScriptClass::str_bool_type){
+						val_ret=(intptr_t)(stk_src->stk_value);
+					}else if(idx_dst_type == IDX_BUILTIN_TYPE_BOOL_PTR_C){//*ScriptClass::str_bool_type_ptr){
+						val_ret=(intptr_t)(&stk_src->stk_value);
 					}else{
-						error="cannot convert "+zs_rtti::demangle((STR_STRING_TYPE_PTR))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
+						error="cannot convert "+zs_rtti::Demangle((str_string_type_ptr))+" into %s"+zs_rtti::Demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type)).c_str();
 
 						return false;
 					}
 
 					break;
-				case STK_PROPERTY_TYPE_NUMBER:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 					switch(idx_dst_type){
-					case IDX_TYPE_FLOAT_C:
-						memcpy(&val_ret,&stk_src->stkValue,sizeof(float));
+					case IDX_BUILTIN_TYPE_FLOAT_C:
+						memcpy(&val_ret,&stk_src->stk_value,sizeof(float));
 						break;
-					case IDX_TYPE_FLOAT_PTR_C:
-						val_ret=(intptr_t)(&stk_src->stkValue);
+					case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
+						val_ret=(intptr_t)(&stk_src->stk_value);
 						break;
-					case IDX_TYPE_UNSIGNED_INT_C:
-					case IDX_TYPE_INTPTR_T_C:
-					case IDX_TYPE_INT_C:
+					case IDX_BUILTIN_TYPE_UNSIGNED_INT_C:
+					case IDX_BUILTIN_TYPE_INTPTR_T_C:
+					case IDX_BUILTIN_TYPE_INT_C:
 						{
 							int *aux_dst = ((int *)&val_ret);
-							float *aux_src=(float *)&stk_src->stkValue;
+							float *aux_src=(float *)&stk_src->stk_value;
 							*aux_dst=(int)(*aux_src);
 						}
 						break;
 					default:
-						error="cannot convert "+zs_rtti::demangle((STR_STRING_TYPE_PTR))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error="cannot convert "+zs_rtti::Demangle((str_string_type_ptr))+" into %s"+zs_rtti::Demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 					break;
-				case STK_PROPERTY_TYPE_INTEGER:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
 					switch(idx_dst_type){
-					case IDX_TYPE_UNSIGNED_INT_C:
-					case IDX_TYPE_INTPTR_T_C:
-					case IDX_TYPE_INT_C:
-						val_ret=(intptr_t)(stk_src->stkValue);
+					case IDX_BUILTIN_TYPE_UNSIGNED_INT_C:
+					case IDX_BUILTIN_TYPE_INTPTR_T_C:
+					case IDX_BUILTIN_TYPE_INT_C:
+						val_ret=(intptr_t)(stk_src->stk_value);
 						break;
-					case IDX_TYPE_INT_PTR_C:
-						val_ret=(intptr_t)(&stk_src->stkValue);
+					case IDX_BUILTIN_TYPE_INT_PTR_C:
+						val_ret=(intptr_t)(&stk_src->stk_value);
 						break;
-					case IDX_TYPE_FLOAT_C:
+					case IDX_BUILTIN_TYPE_FLOAT_C:
 						{
 							float *aux_dst = ((float *)&val_ret);
-							int *aux_src=(int *)&stk_src->stkValue;
+							int *aux_src=(int *)&stk_src->stk_value;
 							*aux_dst = (float)(*aux_src);
 						}
 						break;
 					default:
-						error= "cannot convert "+zs_rtti::demangle((STR_STRING_TYPE_PTR))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error= "cannot convert "+zs_rtti::Demangle((str_string_type_ptr))+" into "+zs_rtti::Demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 					break;
 
-				case STK_PROPERTY_TYPE_STRING:
-					if(idx_dst_type == IDX_TYPE_STRING_PTR_C){
-						if(stk_src->varRef != 0){
-							val_ret=(intptr_t)(&((CScriptVarString *)(stk_src->varRef))->m_strValue);
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+					if(idx_dst_type == IDX_BUILTIN_TYPE_STRING_PTR_C){
+						if(stk_src->var_ref != 0){
+							val_ret=(intptr_t)(&((ScriptVarString *)(stk_src->var_ref))->m_strValue);
 						}
 						else{ // pass param std::string ...
-							error= "(std::string *)Expected varRef not NULL";
+							error= "(std::string *)Expected var_ref not NULL";
 							return false;
 						}
 
-					}else if (idx_dst_type == IDX_TYPE_CONST_CHAR_PTR_C){
-						val_ret=(intptr_t)(stk_src->stkValue);
+					}else if (idx_dst_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
+						val_ret=(intptr_t)(stk_src->stk_value);
 					}else{
-						error= "cannot convert "+zs_rtti::demangle((STR_STRING_TYPE_PTR))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+						error= "cannot convert "+zs_rtti::Demangle((str_string_type_ptr))+" into "+zs_rtti::Demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 						return false;
 					}
 
@@ -151,7 +151,7 @@ namespace ZetScript{
 					break;
 				default: // script variable by default ...
 
-					script_variable=(CScriptVar *)stk_src->varRef;
+					script_variable=(ScriptVar *)stk_src->var_ref;
 					ScriptClass *c_class=NULL;
 
 					if(script_variable==NULL){
@@ -160,16 +160,16 @@ namespace ZetScript{
 						return false;
 					}
 
-					if(script_variable->idx_class==IDX_CLASS_STRING){
+					if(script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_STRING){
 
 						val_ret=(intptr_t)(&script_variable->m_strValue);
-						if(idx_dst_type == IDX_TYPE_CONST_CHAR_PTR_C){
+						if(idx_dst_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
 							val_ret=(intptr_t)script_variable->m_strValue.c_str();
 						}
 					}else if(
 
-					   (script_variable->idx_class==IDX_CLASS_VECTOR
-					|| script_variable->idx_class==IDX_CLASS_DICTIONARY)){
+					   (script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_VECTOR
+					|| script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_DICTIONARY)){
 
 						if(idx_dst_type==script_variable->idx_class){
 							val_ret=(intptr_t)script_variable->get_C_Object();
@@ -181,11 +181,11 @@ namespace ZetScript{
 							val_ret=(intptr_t)script_variable->get_C_Object();
 						}
 						else if((val_ret=script_class_factory->doCast((intptr_t)script_variable->get_C_Object(),c_class->idx_class,idx_dst_type))==0){//c_class->idx_class==idx_dst_type){
-							error = "cannot convert "+zs_rtti::demangle(script_variable->getPointer_C_ClassName())+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
+							error = "cannot convert "+zs_rtti::Demangle(script_variable->getPointer_C_ClassName())+" into "+zs_rtti::Demangle(GET_IDX_2_CLASS_C_STR(idx_dst_type));
 							return false;
 						}
-					}else{ // CScriptVar ?
-						error = " Error calling function, no C-object parameter! Unexpected script variable ("+zs_rtti::demangle(script_variable->getClassName())+")";
+					}else{ // ScriptVar ?
+						error = " Error calling function, no C-object parameter! Unexpected script variable ("+zs_rtti::Demangle(script_variable->GetClassName())+")";
 						return false;
 					}
 					break;
@@ -202,7 +202,7 @@ namespace ZetScript{
 		// 0 PARAMS
 		//
 		template <typename R,typename T>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<std::is_same<R,void>::value>::type
 		{
 
@@ -210,7 +210,7 @@ namespace ZetScript{
 			*f=((void *)(new std::function<void ()>(
 				[&,calling_obj,fun_obj](){
 					bool error=false;
-					virtual_machine->execute(
+					virtual_machine->Execute(
 										fun_obj,
 										calling_obj,
 										error);
@@ -224,10 +224,10 @@ namespace ZetScript{
 		}
 
 		template <typename R,typename T>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<R,void>::value>::type
 		{
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
+			int idx_return = script_class_factory->GetIdxClassFromIts_C_Type(typeid(R).name());
 
 			*f=((void *)(new std::function<R ()>(
 				[&,calling_obj,fun_obj,idx_return](){
@@ -235,7 +235,7 @@ namespace ZetScript{
 						bool error=false;
 						R ret_value;
 
-						StackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->Execute(
 								fun_obj,
 								calling_obj,
 								error);
@@ -247,7 +247,7 @@ namespace ZetScript{
 
 
 						if(!stkToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_strutils::Format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 				}
@@ -261,13 +261,13 @@ namespace ZetScript{
 		//
 		// template for last parameter argIdx == 1
 		template<typename R,typename T,  typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f ,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f ,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
 			//return NULL;
 
 			using tParam1 = typename T::template argument<0>::type;
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
 
 			*f=((void *)(new std::function<void (tParam1)>(
 				[&,calling_obj,fun_obj, idx_param1](tParam1 p1){
@@ -278,7 +278,7 @@ namespace ZetScript{
 
 					};
 
-					virtual_machine->execute(
+					virtual_machine->Execute(
 								fun_obj,
 								calling_obj,
 								error,
@@ -291,13 +291,13 @@ namespace ZetScript{
 		}
 
 		template<typename R,typename T,  typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f ,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f ,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
 			using tParam1 = typename T::template argument<0>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_return = script_class_factory->GetIdxClassFromIts_C_Type(typeid(R).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
 
 
 			*f=((void *)(new std::function<R (tParam1)>(
@@ -311,7 +311,7 @@ namespace ZetScript{
 								 varToStk((intptr_t)p1,idx_param1)
 						};
 
-						StackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->Execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -322,7 +322,7 @@ namespace ZetScript{
 						}
 
 						if(!stkToVar(&stk,idx_return, (intptr_t*)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_strutils::Format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 				}
@@ -335,7 +335,7 @@ namespace ZetScript{
 		//
 		// template when parameters argIdx == 2
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
 
@@ -343,8 +343,8 @@ namespace ZetScript{
 			using tParam2 = typename T::template argument<1>::type;
 
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
 
 			*f=((void *)(new std::function<void (tParam1,tParam2)>(
 				[&,calling_obj,fun_obj, idx_param1, idx_param2](tParam1 p1,tParam2 p2){
@@ -357,7 +357,7 @@ namespace ZetScript{
 
 					};
 
-					virtual_machine->execute(
+					virtual_machine->Execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -373,16 +373,16 @@ namespace ZetScript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
 			using tParam1 = typename T::template argument<0>::type;
 			using tParam2 = typename T::template argument<1>::type;
 
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_return = script_class_factory->GetIdxClassFromIts_C_Type(typeid(R).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2](tParam1 p1,tParam2 p2){
@@ -397,7 +397,7 @@ namespace ZetScript{
 
 						};
 
-						StackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->Execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -408,7 +408,7 @@ namespace ZetScript{
 						}
 
 						if(!stkToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_strutils::Format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 				}
@@ -423,7 +423,7 @@ namespace ZetScript{
 		//
 		// template when parameters argIdx == 3
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
 
@@ -432,9 +432,9 @@ namespace ZetScript{
 			using tParam3 = typename T::template argument<2>::type;
 
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam3).name());
 
 
 			*f=((void *)(new std::function<void (tParam1,tParam2,tParam3)>(
@@ -448,7 +448,7 @@ namespace ZetScript{
 							,varToStk((intptr_t)p3,idx_param3)
 					};
 
-					virtual_machine->execute(
+					virtual_machine->Execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -463,17 +463,17 @@ namespace ZetScript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
 			using tParam1 = typename T::template argument<0>::type;
 			using tParam2 = typename T::template argument<1>::type;
 			using tParam3 = typename T::template argument<2>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_return = script_class_factory->GetIdxClassFromIts_C_Type(typeid(R).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam3).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3](tParam1 p1,tParam2 p2,tParam3 p3){
@@ -487,7 +487,7 @@ namespace ZetScript{
 							,varToStk((intptr_t)p3,idx_param3)
 					};
 
-					StackElement stk = virtual_machine->execute(
+					StackElement stk = virtual_machine->Execute(
 												fun_obj,
 												calling_obj,
 												error,
@@ -498,7 +498,7 @@ namespace ZetScript{
 					}
 
 					if(!stkToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
+						THROW_RUNTIME_ERROR(zs_strutils::Format("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 				}
@@ -512,7 +512,7 @@ namespace ZetScript{
 		//
 		// template when parameters argIdx == 4
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
@@ -521,10 +521,10 @@ namespace ZetScript{
 			using tParam3 = typename T::template argument<2>::type;
 			using tParam4 = typename T::template argument<3>::type;
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam4).name());
 
 
 			*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4)>(
@@ -540,7 +540,7 @@ namespace ZetScript{
 
 					};
 
-					virtual_machine->execute(
+					virtual_machine->Execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -555,7 +555,7 @@ namespace ZetScript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
@@ -564,11 +564,11 @@ namespace ZetScript{
 			using tParam3 = typename T::template argument<2>::type;
 			using tParam4 = typename T::template argument<3>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
+			int idx_return = script_class_factory->GetIdxClassFromIts_C_Type(typeid(R).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam4).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3,tParam4)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4){
@@ -584,7 +584,7 @@ namespace ZetScript{
 
 						};
 
-						StackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->Execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -595,7 +595,7 @@ namespace ZetScript{
 						}
 
 						if(!stkToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_strutils::Format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 
@@ -610,7 +610,7 @@ namespace ZetScript{
 		//
 		// template when parameters argIdx == 5
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
@@ -622,11 +622,11 @@ namespace ZetScript{
 
 
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
-			int idx_param5 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam5).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam4).name());
+			int idx_param5 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam5).name());
 
 
 			*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4,tParam5)>(
@@ -642,7 +642,7 @@ namespace ZetScript{
 
 					};
 
-					virtual_machine->execute(
+					virtual_machine->Execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -657,7 +657,7 @@ namespace ZetScript{
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
@@ -667,12 +667,12 @@ namespace ZetScript{
 			using tParam4 = typename T::template argument<3>::type;
 			using tParam5 = typename T::template argument<4>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
-			int idx_param5 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam5).name());
+			int idx_return = script_class_factory->GetIdxClassFromIts_C_Type(typeid(R).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam4).name());
+			int idx_param5 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam5).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3,tParam4,tParam5)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5){
@@ -691,7 +691,7 @@ namespace ZetScript{
 
 					};
 
-					StackElement stk = virtual_machine->execute(
+					StackElement stk = virtual_machine->Execute(
 												fun_obj,
 												calling_obj,
 												error,
@@ -702,7 +702,7 @@ namespace ZetScript{
 					}
 
 					if(!stkToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
+						THROW_RUNTIME_ERROR(zs_strutils::Format("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
 				}
@@ -716,7 +716,7 @@ namespace ZetScript{
 		//
 		// template when parameters argIdx == 6
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 6)>::type
 		{
 
@@ -728,12 +728,12 @@ namespace ZetScript{
 			using tParam6 = typename T::template argument<5>::type;
 
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
-			int idx_param5 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam5).name());
-			int idx_param6 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam6).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam4).name());
+			int idx_param5 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam5).name());
+			int idx_param6 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam6).name());
 
 
 
@@ -751,7 +751,7 @@ namespace ZetScript{
 
 					};
 
-					virtual_machine->execute(
+					virtual_machine->Execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -766,7 +766,7 @@ namespace ZetScript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto CZetScript::bindScriptFunctionBuilder(void **f,CScriptVar *calling_obj,CScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type
 		{
 			using tParam1 = typename T::template argument<0>::type;
@@ -776,13 +776,13 @@ namespace ZetScript{
 			using tParam5 = typename T::template argument<4>::type;
 			using tParam6 = typename T::template argument<5>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
-			int idx_param5 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam5).name());
-			int idx_param6 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam6).name());
+			int idx_return = script_class_factory->GetIdxClassFromIts_C_Type(typeid(R).name());
+			int idx_param1 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam4).name());
+			int idx_param5 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam5).name());
+			int idx_param6 = script_class_factory->GetIdxClassFromIts_C_Type(typeid(tParam6).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
@@ -800,7 +800,7 @@ namespace ZetScript{
 								,varToStk((intptr_t)p6,idx_param6)
 						};
 
-						StackElement stk = virtual_machine->execute(
+						StackElement stk = virtual_machine->Execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -811,7 +811,7 @@ namespace ZetScript{
 						}
 
 						if(!stkToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR(zs_string::sformat("run-time error converting result value:%s",error_str.c_str()));
+							THROW_RUNTIME_ERROR(zs_strutils::Format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
 
@@ -825,14 +825,14 @@ namespace ZetScript{
 		//--------------------------------------------------------------------------------------------------------------------
 
 		 template <typename F, std::size_t... Is>
-		 auto CZetScript::bindScriptFunctionBuilderBase(void **f, CScriptVar *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
+		 auto ZetScript::BindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity > 0)>::type
 		{
 			 bindScriptFunctionBuilder<typename F::return_type, F,  typename F::template argument<Is>::type...>(f,calling_obj,fun_obj);
 		}
 
 		 template <typename F, std::size_t... Is>
-		 auto CZetScript::bindScriptFunctionBuilderBase(void **f, CScriptVar *calling_obj,CScriptFunction *fun_obj,index_sequence<Is...>)
+		 auto ZetScript::BindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity == 0)>::type
 		{
 			 bindScriptFunctionBuilder<typename F::return_type, F>(f,calling_obj,fun_obj);
@@ -840,41 +840,41 @@ namespace ZetScript{
 
 
 		template <  typename F>
-		std::function<F> * CZetScript::bindScriptFunction(const std::string & function_access)
+		std::function<F> * ZetScript::BindScriptFunction(const std::string & function_access)
 		{
 			std::string return_type;
 			std::vector<std::string> params;
 			std::vector<std::string> arg;
 			int idx_return_type=-1;
 			void *ptr;
-			CScriptFunction * fun=NULL;
-			CScriptVar *calling_obj=NULL;
+			ScriptFunction * fun=NULL;
+			ScriptVar *calling_obj=NULL;
 
 			// get function symbol ref from global scope ...
 
 
-			if(getScriptObject(function_access,&calling_obj,&fun))
+			if(GetScriptObject(function_access,&calling_obj,&fun))
 			{
 
 				// 1. check all parameters ok.
-				using Traits3 = function_traits<F>;//decltype(function_type)>;
-				get_params_function<Traits3>(0,return_type, arg, make_index_sequence<Traits3::arity>{});
+				using Traits3 = FunctionTraits<F>;//decltype(function_type)>;
+				get_params_function<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
 
 				// 2. check valid parameters ...
-				if((idx_return_type=script_class_factory->getIdxClassFromIts_C_Type(return_type)) == -1){
-					THROW_RUNTIME_ERROR(zs_string::sformat("Return type \"%s\" for bind function not registered",zs_rtti::demangle(return_type).c_str()));
+				if((idx_return_type=script_class_factory->GetIdxClassFromIts_C_Type(return_type)) == -1){
+					THROW_RUNTIME_ERROR(zs_strutils::Format("Return type \"%s\" for bind function not registered",zs_rtti::Demangle(return_type).c_str()));
 					return NULL;
 				}
 
 				for(unsigned int i = 0; i < arg.size(); i++){
-					if(script_class_factory->getIdxClassFromIts_C_Type(arg[i])==-1){
-						THROW_RUNTIME_ERROR(zs_string::sformat("Argument (%i) type \"%s\" for bind function not registered",i,zs_rtti::demangle(arg[i]).c_str()));
+					if(script_class_factory->GetIdxClassFromIts_C_Type(arg[i])==-1){
+						THROW_RUNTIME_ERROR(zs_strutils::Format("Argument (%i) type \"%s\" for bind function not registered",i,zs_rtti::Demangle(arg[i]).c_str()));
 						return NULL;
 					}
 				}
 
 				// 3. build custom function in function of parameter number ...
-				bindScriptFunctionBuilderBase<Traits3>(&ptr,calling_obj,fun,make_index_sequence<Traits3::arity>{});
+				BindScriptFunctionBuilderBase<Traits3>(&ptr,calling_obj,fun,MakeIndexSequence<Traits3::arity>{});
 				return (std::function<F> *)ptr;
 
 			}

@@ -4,7 +4,7 @@
  */
 #include "ZetScript.h"
 
-using namespace ZetScript;
+using namespace zetscript;
 
 class MyClass{
 public:

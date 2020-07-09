@@ -6,14 +6,12 @@
 
 
 
-namespace ZetScript{
+namespace zetscript{
 
 
 	class ScriptFunctionFactory{
 
-
 		public:
-
 
 			ScriptFunctionFactory(ZetScript *_zs);
 
@@ -21,12 +19,12 @@ namespace ZetScript{
 			 * Set/Get ScriptClass Node by its idx, regarding current state.
 			 */
 			//static void 								setVectorScriptFunctionObjectNode(std::vector<ScriptFunction *> 	* set_vec);
-			std::vector<ScriptFunction *> 	*	getVectorScriptFunctionNode();
+			std::vector<ScriptFunction *> 	*	GetScriptFunctions();
 
-			 ScriptFunction 			*	newScriptFunction(			const std::string & file
+			ScriptFunction 			*	newScriptFunction(			const std::string & file
 																								, short line
 																								, unsigned  char idx_class
-																								, short idxScope
+																								, short idx_scope
 																								, const std::string & function_name
 																								, std::vector<ParamArgInfo> args={}
 																								, int idx_return_type=ZS_UNDEFINED_IDX
@@ -34,11 +32,11 @@ namespace ZetScript{
 																								, unsigned short properties=0);
 
 
-			 bool							checkCanRegister_C_Function(const std::string & function_name);
+			 bool							CheckCanRegister_C_Function(const std::string & function_name);
 
-			 ScriptFunction 			* 	getScriptFunction(int idx);
+			 ScriptFunction 			* 	GetScriptFunction(int idx);
 
-			void clear();
+			void Clear();
 
 			~ScriptFunctionFactory();
 
@@ -46,9 +44,7 @@ namespace ZetScript{
 
 			ZetScript * zs;
 			ScopeFactory * scope_factory;
-			std::vector<ScriptFunction *> 	vec_script_function_node;
-
-
+			std::vector<ScriptFunction *> 	script_functions;
 
 	};
 

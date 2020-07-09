@@ -1,38 +1,36 @@
-namespace ZetScript{
+namespace zetscript{
 
-		void  write_error(const char *filename, int line, const  char  *string_text, ...);
+		void  WriteError(const char *filename, int line, const  char  *string_text, ...);
 
 		#define METAMETHOD_2_ARGS 2
 		#define METAMETHOD_1_ARGS 1
-		//CVirtualMachine * CVirtualMachine::m_virtualMachine = NULL;
-		//std::vector<CVirtualMachine::CVirtualMachine> CVirtualMachine::ALE;
+		//VirtualMachine * VirtualMachine::m_virtualMachine = NULL;
+		//std::vector<VirtualMachine::VirtualMachine> VirtualMachine::ALE;
 		// static: only defined in this module...
 		#define IS_NUMBER_OR_INT(properties)\
-			(properties & (STK_PROPERTY_TYPE_NUMBER|STK_PROPERTY_TYPE_INTEGER))
-
-
+			(properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER))
 
 		// general
 		#define PRINT_DUAL_ERROR_OP(c)\
-		std::string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1),\
-			   var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp2);\
+		std::string var_type1=IndexInstructionVarTypeToStr(stk_result_op1),\
+			   var_type2=IndexInstructionVarTypeToStr(stk_result_op2);\
 		\
-		write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+		WriteError(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 				var_type1.c_str(),\
 				c,\
 				var_type2.c_str());
 
 
 		#define PRINT_ERROR_OP(c)\
-			std::string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1);\
+			std::string var_type1=IndexInstructionVarTypeToStr(stk_result_op1);\
 		\
-		write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+		WriteError(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 			c,\
 			var_type1.c_str());
 
 
-	inline void CVirtualMachine::REMOVE_0_SHARED_POINTERS(int idx_stack,void *ptr_callc_result){
-		tInfoSharedList *list = &zero_shares[idx_stack];
+	inline void VirtualMachine::RemoveEmptySharedPointers(int idx_stack,void *ptr_callc_result){
+		InfoSharedList *list = &zero_shares[idx_stack];
 		PInfoSharedPointerNode first_node,current;
 		first_node=current=list->first;
 		if(current != NULL){
@@ -58,23 +56,22 @@ namespace ZetScript{
 	}
 
 
-	inline bool CVirtualMachine::POP_SCOPE_CALL(int idx_stack,void * ptr_callc_result, unsigned char properties) {
+	inline bool VirtualMachine::PopScopeCall(int idx_stack,void * ptr_callc_result, unsigned char properties) {
 		bool search=true;
-
 
 		while((scope_info<current_scope_info_ptr) && search)
 		{
-			CScriptFunction *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
+			ScriptFunction *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
 			int index         = (current_scope_info_ptr-1)->index;
 			StackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;
 			for(int i = 0; i < ptr_info_function->lut_scope_symbol[index].n_var_index; i++){
 				int idx_local_var = ptr_info_function->lut_scope_symbol[index].var_index[i];
 				StackElement *ptr_ale =&ptr_local_var[idx_local_var];
-				CScriptVar *var = NULL;
-				switch(GET_INS_PROPERTY_VAR_TYPE(ptr_ale->properties)){
-				case STK_PROPERTY_TYPE_STRING:
-				case STK_PROPERTY_TYPE_SCRIPTVAR:
-					var =((CScriptVar *)(ptr_ale->varRef));
+				ScriptVar *var = NULL;
+				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(ptr_ale->properties)){
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
+					var =((ScriptVar *)(ptr_ale->var_ref));
 					if(var){
 						if(var->ptr_shared_pointer_node != NULL){
 							var->unrefSharedPtr();
@@ -84,19 +81,19 @@ namespace ZetScript{
 				*ptr_ale={
 					0,
 					0,
-					STK_PROPERTY_TYPE_UNDEFINED
+					MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
 				};
 			}
 
-			REMOVE_0_SHARED_POINTERS(idx_stack,ptr_callc_result);
+			RemoveEmptySharedPointers(idx_stack,ptr_callc_result);
 
 			search=false;
-			if((properties & SCOPE_PROPERTY::BREAK)!=0){
-				search=((current_scope_info_ptr-1)->properties & SCOPE_PROPERTY::BREAK) != SCOPE_PROPERTY::BREAK;
+			if((properties & ScopeProperty::BREAK)!=0){
+				search=((current_scope_info_ptr-1)->properties & ScopeProperty::BREAK) != ScopeProperty::BREAK;
 			}
 
-			if((properties & SCOPE_PROPERTY::CONTINUE)!=0){
-				search=((current_scope_info_ptr-1)->properties & SCOPE_PROPERTY::CONTINUE) != SCOPE_PROPERTY::CONTINUE;
+			if((properties & ScopeProperty::CONTINUE)!=0){
+				search=((current_scope_info_ptr-1)->properties & ScopeProperty::CONTINUE) != ScopeProperty::CONTINUE;
 			}
 
 
@@ -110,27 +107,27 @@ namespace ZetScript{
 	}
 
 
-	inline bool CVirtualMachine::APPLY_METAMETHOD(
-										CScriptVar *calling_object
-										,CScriptFunction *info_function
-										,ByteCode *instruction
+	inline bool VirtualMachine::ApplyMetamethod(
+										ScriptVar *calling_object
+										,ScriptFunction *info_function
+										,Instruction *instruction
 										,const char *__OVERR_OP__
-										,METAMETHOD_OP_CODE __METAMETHOD__
-										,StackElement *stkResultOp1
-										,StackElement *stkResultOp2
+										,ByteCodeMetamethod __METAMETHOD__
+										,StackElement *stk_result_op1
+										,StackElement *stk_result_op2
 
 										) {
 
 		int idxOffsetFunctionMemberStart=0;
-		CScriptVar *script_var_object = NULL;
-		CScriptFunction * ptr_function_found=NULL;
+		ScriptVar *script_var_object = NULL;
+		ScriptFunction * ptr_function_found=NULL;
 
-		CScriptVar *one_param = NULL;
-		int n_metam_args=((__METAMETHOD__ == NOT_METAMETHOD\
-						|| __METAMETHOD__ == NEG_METAMETHOD\
-						|| __METAMETHOD__ == SET_METAMETHOD\
+		ScriptVar *one_param = NULL;
+		int n_metam_args=((__METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT\
+						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_NEG\
+						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_SET\
 						   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);
-		StackElement *mm_test_startArg = stkCurrentData+n_metam_args;
+		StackElement *mm_test_startArg = stk_current_data+n_metam_args;
 		if(instruction->op2_value ==0){ /* search for first time , else the function is stored in op2_value */
 			ScriptClass *script_class_aux=NULL;
 
@@ -138,36 +135,36 @@ namespace ZetScript{
 			ptr_function_found=NULL;
 
 
-			if(((stkResultOp1->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR))){
-				script_var_object = (CScriptVar *)(stkResultOp1->varRef);
-				if(((stkResultOp1->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
-					script_var_object = (CScriptVar *)(((StackElement *)script_var_object))->varRef;
+			if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR))){
+				script_var_object = (ScriptVar *)(stk_result_op1->var_ref);
+				if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) == (MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT))){
+					script_var_object = (ScriptVar *)(((StackElement *)script_var_object))->var_ref;
 				}
-				if(__METAMETHOD__ == SET_METAMETHOD){
+				if(__METAMETHOD__ == BYTE_CODE_METAMETHOD_SET){
 					idxOffsetFunctionMemberStart=1;
-					one_param = (CScriptVar *)(stkResultOp2->varRef);
-					if(((stkResultOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
-						one_param = (CScriptVar *)(((StackElement *)one_param))->varRef;
+					one_param = (ScriptVar *)(stk_result_op2->var_ref);
+					if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) == (MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT))){
+						one_param = (ScriptVar *)(((StackElement *)one_param))->var_ref;
 					}
 				}
-			}else if(((stkResultOp2->properties & STK_PROPERTY_TYPE_SCRIPTVAR) == (STK_PROPERTY_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
-				script_var_object = (CScriptVar *)(stkResultOp2->varRef);
-				if(((stkResultOp2->properties & STK_PROPERTY_IS_STACKVAR) == (STK_PROPERTY_IS_STACKVAR))){
-					script_var_object = (CScriptVar *)(((StackElement *)script_var_object))->varRef;
+			}else if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
+				script_var_object = (ScriptVar *)(stk_result_op2->var_ref);
+				if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) == (MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT))){
+					script_var_object = (ScriptVar *)(((StackElement *)script_var_object))->var_ref;
 				}
 			}else{
 
-				std::string var_type1=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp1),
+				std::string var_type1=IndexInstructionVarTypeToStr(stk_result_op1),
 						var_type2="";
 
 				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/
-					write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					WriteError(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							STR(__OVERR_OP),
 							var_type1.c_str()
 							);\
 				}else{ /* 2 args*/
-					var_type2=STR_GET_TYPE_VAR_INDEX_INSTRUCTION(stkResultOp2);
-					write_error(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					var_type2=IndexInstructionVarTypeToStr(stk_result_op2);
+					WriteError(INSTRUCTION_GET_FILE_LINE(info_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							var_type1.c_str(),
 							__OVERR_OP__,
 							var_type2.c_str());
@@ -177,26 +174,26 @@ namespace ZetScript{
 			}
 
 			script_class_aux=GET_SCRIPT_CLASS(script_var_object->idx_class);
-			std::vector<CScriptFunction *> *vec_global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
+			std::vector<ScriptFunction *> *global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
 			StackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
 			unsigned n_args=n_metam_args;
 
-			symbol_to_find=ByteCode::metamethodOpCodeToStr(__METAMETHOD__);
+			symbol_to_find=Instruction::ByteCodeOpMetamethodToStr(__METAMETHOD__);
 
-			/*#define FIND_FUNCTION(iao, is_constructor, symbol_to_find,size_fun_vec,vec_global_functions,startArgs, n_args,scope_type)*/ \
-			if((ptr_function_found = FIND_FUNCTION(
+			/*#define FindFunction(iao, is_constructor, symbol_to_find,size_fun_vec,global_functions,startArgs, n_args,scope_type)*/ \
+			if((ptr_function_found = FindFunction(
 					 calling_object
 					,info_function
 					,instruction
 					,instruction
 					,NULL
-					,vec_global_functions
+					,global_functions
 
 					,false
 					,symbol_to_find
 
-					,stkResultOp1
-					,stkResultOp2
+					,stk_result_op1
+					,stk_result_op2
 					,startArgs
 					,n_args\
 					,__OVERR_OP__))==NULL)
@@ -204,74 +201,74 @@ namespace ZetScript{
 					return false;
 			}
 		}else{
-			ptr_function_found = (CScriptFunction *)instruction->op2_value;
+			ptr_function_found = (ScriptFunction *)instruction->op2_value;
 		}
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
-		StackElement ret_obj=execute_internal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,ptrCurrentStr,n_metam_args);
+		StackElement ret_obj=ExecuteInternal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,ptr_current_str,n_metam_args);
 		if(error){
 			return false;
 		}
 
 		/* restore ptrCurretOp... */
-		stkCurrentData=mm_test_startArg-n_metam_args;
+		stk_current_data=mm_test_startArg-n_metam_args;
 		/* if function is C must register pointer ! */
 
-		if(ret_obj.properties & STK_PROPERTY_TYPE_SCRIPTVAR){
+		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 
-			if(!((CScriptVar *)(ret_obj.varRef))->initSharedPtr()){
+			if(!((ScriptVar *)(ret_obj.var_ref))->initSharedPtr()){
 				return false;
 			}
-			if(__METAMETHOD__ != SET_METAMETHOD){ /* Auto destroy C when ref == 0 */
-				((CScriptVar *)(ret_obj.varRef))->setDelete_C_ObjectOnDestroy(true);
+			if(__METAMETHOD__ != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
+				((ScriptVar *)(ret_obj.var_ref))->setDelete_C_ObjectOnDestroy(true);
 			}
 		}
-		if(__METAMETHOD__ != SET_METAMETHOD){ /* Auto destroy C when ref == 0 */
-			*stkCurrentData++ = ret_obj;
+		if(__METAMETHOD__ != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
+			*stk_current_data++ = ret_obj;
 		}
 
 		return true;
 	}
 
-	inline CScriptFunction * CVirtualMachine::FIND_FUNCTION(
-			CScriptVar *calling_object
-			,CScriptFunction *info_function
-			,ByteCode *instruction
-			,ByteCode * callAleInstruction
+	inline ScriptFunction * VirtualMachine::FindFunction(
+			ScriptVar *calling_object
+			,ScriptFunction *script_function
+			,Instruction *instruction
+			,Instruction * call_ale_instruction
 
-			,std::vector<FunctionSymbol> *m_functionSymbol
-			,std::vector<CScriptFunction *> *vec_global_functions
+			,std::vector<FunctionSymbol> *function_symbol
+			,std::vector<ScriptFunction *> *global_functions
 
 			,bool is_constructor
 			,const std::string & symbol_to_find
 
-			,StackElement *stkResultOp1
-			,StackElement *stkResultOp2
-			,StackElement *startArg
+			,StackElement *stk_result_op1
+			,StackElement *stk_result_op2
+			,StackElement *start_arg
 			,unsigned char n_args
 			,const char *metamethod_str
 			) {
 
 		// by default search over global functions...
-		int size_fun_vec=vec_global_functions->size()-1;
-		CScriptVar *var_object = NULL;
-		CScriptFunction * ptr_function_found=NULL;
+		int size_fun_vec=global_functions->size()-1;
+		ScriptVar *var_object = NULL;
+		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
 
-		// if m_functionSymbol not NULL search over m_functionSymbols....
-		if(m_functionSymbol != NULL){
-			size_fun_vec=m_functionSymbol->size()-1;
+		// if function_symbol not NULL search over m_functionSymbols....
+		if(function_symbol != NULL){
+			size_fun_vec=function_symbol->size()-1;
 		}
 
 		for(int i = size_fun_vec; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-			CScriptFunction *irfs = NULL;
+			ScriptFunction *irfs = NULL;
 
-			if(m_functionSymbol != NULL){
-				irfs = (CScriptFunction *)m_functionSymbol->at(i).object.stkValue;
-				aux_string=m_functionSymbol->at(i).key_value;
+			if(function_symbol != NULL){
+				irfs = (ScriptFunction *)function_symbol->at(i).object.stk_value;
+				aux_string=function_symbol->at(i).key_value;
 
 			}else{
-				irfs=vec_global_functions->at(i);
+				irfs=global_functions->at(i);
 				aux_string=irfs->symbol_info.symbol->name;//CEval::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
 			}
 
@@ -286,57 +283,57 @@ namespace ZetScript{
 							int idx_type=-1;
 							int arg_idx_type=-1;
 							for( unsigned k = 0; k < n_args && all_check;k++){
-								StackElement *currentArg=&startArg[k];
+								StackElement *current_arg=&start_arg[k];
 								arg_idx_type=irfs->arg_info[k].idx_type;
 
-								if(arg_idx_type==IDX_STACK_ELEMENT){
+								if(arg_idx_type==IDX_BUILTIN_TYPE_STACK_ELEMENT){
 									/* do nothing because is already trivial ! */
 								}
 								else{
-								if(currentArg->properties & STK_PROPERTY_IS_STACKVAR){
-									currentArg = (StackElement *)currentArg->varRef;
+								if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+									current_arg = (StackElement *)current_arg->var_ref;
 								}
 
-								unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);
+								unsigned short var_type = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(current_arg->properties);
 
 								switch(var_type){
 									default:
 										aux_string="unknow";
 										all_check=false;
 										break;
-									case STK_PROPERTY_TYPE_INTEGER:
-										idx_type=IDX_TYPE_INT_PTR_C;
+									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
+										idx_type=IDX_BUILTIN_TYPE_INT_PTR_C;
 										all_check=
-												arg_idx_type==IDX_TYPE_INT_PTR_C
-											  ||arg_idx_type==IDX_TYPE_INT_C
-											  ||arg_idx_type==IDX_TYPE_UNSIGNED_INT_C
-											  ||arg_idx_type==IDX_TYPE_INTPTR_T_C;
+												arg_idx_type==IDX_BUILTIN_TYPE_INT_PTR_C
+											  ||arg_idx_type==IDX_BUILTIN_TYPE_INT_C
+											  ||arg_idx_type==IDX_BUILTIN_TYPE_UNSIGNED_INT_C
+											  ||arg_idx_type==IDX_BUILTIN_TYPE_INTPTR_T_C;
 										break;
-									case STK_PROPERTY_TYPE_NUMBER:
-										idx_type=IDX_TYPE_FLOAT_PTR_C;
-										all_check=arg_idx_type==IDX_TYPE_FLOAT_PTR_C
-												||arg_idx_type==IDX_TYPE_FLOAT_C;
+									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+										idx_type=IDX_BUILTIN_TYPE_FLOAT_PTR_C;
+										all_check=arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C
+												||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_C;
 										break;
-									case STK_PROPERTY_TYPE_BOOLEAN:
-										idx_type=IDX_TYPE_BOOL_PTR_C;
+									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+										idx_type=IDX_BUILTIN_TYPE_BOOL_PTR_C;
 										all_check=
-												arg_idx_type==IDX_TYPE_BOOL_PTR_C
-											  ||arg_idx_type==IDX_TYPE_BOOL_C;
+												arg_idx_type==IDX_BUILTIN_TYPE_BOOL_PTR_C
+											  ||arg_idx_type==IDX_BUILTIN_TYPE_BOOL_C;
 
 										break;
-									case STK_PROPERTY_TYPE_STRING:
-										idx_type=IDX_TYPE_STRING_PTR_C;
+									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+										idx_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
 
 										all_check =
-												(	arg_idx_type==IDX_TYPE_STRING_PTR_C && currentArg->varRef!=0)
-											  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
+												(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
+											  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
 										break;
-									case STK_PROPERTY_TYPE_NULL:
-									case STK_PROPERTY_TYPE_UNDEFINED:
+									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
+									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
 										break;
-									case STK_PROPERTY_TYPE_SCRIPTVAR:
-									case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:
-										var_object=((CScriptVar *)currentArg->varRef);
+									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
+									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+										var_object=((ScriptVar *)current_arg->var_ref);
 										aux_string=var_object->getPointer_C_ClassName();
 
 										if(arg_idx_type==idx_type){
@@ -344,12 +341,12 @@ namespace ZetScript{
 										}
 										else{
 											ScriptClass *c_class=NULL;
-											if(var_type & STK_PROPERTY_TYPE_STRING){
+											if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
 												all_check =
-														(	arg_idx_type==IDX_TYPE_STRING_PTR_C && currentArg->varRef!=0)
-													  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
+														(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
+													  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
 											}else if((c_class=var_object->get_C_Class())!=NULL){ /* check whether the base is ok... */
-												all_check=IS_IDX_CLASS_INSTANCEOF(zs,c_class->idx_class,arg_idx_type);
+												all_check=IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,c_class->idx_class,arg_idx_type);
 											}else{ /* fail ... */
 												all_check=false;
 											}
@@ -360,11 +357,11 @@ namespace ZetScript{
 								}
 							}
 							if(all_check){ /* we found the right function (set it up!) ... */
-								callAleInstruction->op2_value = (intptr_t)irfs;
+								call_ale_instruction->op2_value = (intptr_t)irfs;
 								ptr_function_found = irfs;
 							}
 				}else{ /* type script function  ... */
-					callAleInstruction->op2_value=(intptr_t)irfs;
+					call_ale_instruction->op2_value=(intptr_t)irfs;
 					ptr_function_found = irfs;
 				}
 			}
@@ -372,7 +369,7 @@ namespace ZetScript{
 
 		if(ptr_function_found == NULL){
 			if(is_constructor && n_args == 0){ /* default constructor not found --> set as not found... */
-				callAleInstruction->properties = INS_PROPERTY_NO_FUNCTION_CALL;//op2_value = ZS_FUNCTION_NOT_FOUND_IDX;
+				call_ale_instruction->properties = MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL;//op2_value = ZS_FUNCTION_NOT_FOUND_IDX;
 			}
 			else{ // return error elaborate a error message...
 				int n_candidates=0;
@@ -381,66 +378,66 @@ namespace ZetScript{
 				/* get arguments... */
 
 				for( unsigned k = 0; k < n_args;k++){
-					StackElement *currentArg=&startArg[k];
-					if(currentArg->properties & STK_PROPERTY_IS_STACKVAR){
-						currentArg = (StackElement *)currentArg->varRef;
+					StackElement *current_arg=&start_arg[k];
+					if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+						current_arg = (StackElement *)current_arg->var_ref;
 					}
 
 					if(k>0){
 						args_str+=",";
 					}
 
-					unsigned short var_type = GET_INS_PROPERTY_VAR_TYPE(currentArg->properties);
+					unsigned short var_type = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(current_arg->properties);
 
 					switch(var_type){
 
 					default:
 						aux_string="unknow";
 						break;
-					case STK_PROPERTY_TYPE_INTEGER:
-						aux_string=zs->STR_INT_TYPE;
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
+						aux_string=zs->str_int_type;
 						break;
-					case STK_PROPERTY_TYPE_NUMBER:
-						aux_string=zs->STR_FLOAT_TYPE;
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+						aux_string=zs->str_float_type;
 						break;
-					case STK_PROPERTY_TYPE_BOOLEAN:
-						aux_string=zs->STR_BOOL_TYPE;
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+						aux_string=zs->str_bool_type;
 						break;
-					case STK_PROPERTY_TYPE_STRING:
-						aux_string=zs->STR_STRING_TYPE_PTR;
-						if(currentArg->varRef==NULL){ /* is constant char */
-							aux_string=	zs->STR_CONST_CHAR_TYPE_PTR;
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+						aux_string=zs->str_string_type_ptr;
+						if(current_arg->var_ref==NULL){ /* is constant char */
+							aux_string=	zs->str_const_char_type_ptr;
 						}
 						break;
-					case STK_PROPERTY_TYPE_NULL:
-					case STK_PROPERTY_TYPE_UNDEFINED:
-					case STK_PROPERTY_TYPE_SCRIPTVAR:
-					case STK_PROPERTY_TYPE_SCRIPTVAR|STK_PROPERTY_TYPE_STRING:
-						aux_string = ((CScriptVar *)currentArg->varRef)->getPointer_C_ClassName();
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+						aux_string = ((ScriptVar *)current_arg->var_ref)->getPointer_C_ClassName();
 						break;
 					}
-					args_str+=zs_rtti::demangle(aux_string);
+					args_str+=zs_rtti::Demangle(aux_string);
 
-					if(var_type == STK_PROPERTY_TYPE_INTEGER
-					||var_type == STK_PROPERTY_TYPE_NUMBER
-					||var_type == STK_PROPERTY_TYPE_BOOLEAN
+					if(var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER
+					||var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT
+					||var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN
 					){
 						args_str+=" [*] ";
 					}
 				}
 
 				for(int i = size_fun_vec; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-					CScriptFunction *irfs = NULL;
-					if(m_functionSymbol!=NULL){
-						irfs = (CScriptFunction *)m_functionSymbol->at(i).object.stkValue;
+					ScriptFunction *irfs = NULL;
+					if(function_symbol!=NULL){
+						irfs = (ScriptFunction *)function_symbol->at(i).object.stk_value;
 					}else{
-						irfs=vec_global_functions->at(i);
+						irfs=global_functions->at(i);
 					}
 
 					bool match_signature = metamethod_str != NULL;
 
 					if(!match_signature){
-						match_signature = irfs->symbol_info.symbol->name == irfs->INSTRUCTION_getSymbolName(callAleInstruction);
+						match_signature = irfs->symbol_info.symbol->name == irfs->GetInstructionSymbolName(call_ale_instruction);
 					}
 
 					if(match_signature){
@@ -448,7 +445,7 @@ namespace ZetScript{
 						if(n_candidates == 0){
 							str_candidates+="ttPossible candidates are:nn";
 						}
-						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idx_class!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+irfs->symbol_info.symbol->name+"(";
+						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->GetClassName()+"::"):"")+irfs->symbol_info.symbol->name+"(";
 
 						for(unsigned a = 0; a < irfs->arg_info.size(); a++){
 							if(a>0){
@@ -456,9 +453,9 @@ namespace ZetScript{
 							}
 
 							if(irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
-								str_candidates+=zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(irfs->arg_info[a].idx_type));
+								str_candidates+=zs_rtti::Demangle(GET_IDX_2_CLASS_C_STR(irfs->arg_info[a].idx_type));
 							}else{ /* typic var ... */
-								str_candidates+="arg"+zs_string::int_2_string(a+1);
+								str_candidates+="arg"+zs_strutils::IntToString(a+1);
 							}
 						}
 						str_candidates+=");n";
@@ -476,27 +473,27 @@ namespace ZetScript{
 
 						}
 					}else{
-						write_error(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find %s \"%s%s(%s)\".\n\n",
+						WriteError(INSTRUCTION_GET_FILE_LINE(script_function,call_ale_instruction),"Cannot find %s \"%s%s(%s)\".\n\n",
 										is_constructor ? "constructor":"function",
-										calling_object==NULL?"":calling_object->idx_class!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-										info_function->INSTRUCTION_getSymbolName(callAleInstruction),
+										calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->GetClassName()+"::").c_str():"",
+												script_function->GetInstructionSymbolName(call_ale_instruction),
 										args_str.c_str()
 						);
 					}
 				}
 				else{
 					if(metamethod_str!=NULL){
-						write_error(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
+						WriteError(INSTRUCTION_GET_FILE_LINE(info_function,call_ale_instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
-													calling_object==NULL?"":calling_object->idx_class!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-													vec_global_functions->at(0)->symbol_info.symbol->name.c_str(),
+													calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->GetClassName()+"::").c_str():"",
+													global_functions->at(0)->symbol_info.symbol->name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
-						write_error(INSTRUCTION_GET_FILE_LINE(info_function,callAleInstruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+						WriteError(INSTRUCTION_GET_FILE_LINE(info_function,call_ale_instruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
-							calling_object==NULL?"":calling_object->idx_class!=IDX_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-							info_function->INSTRUCTION_getSymbolName(callAleInstruction),
+							calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->GetClassName()+"::").c_str():"",
+							info_function->GetInstructionSymbolName(call_ale_instruction),
 							args_str.c_str(),
 							str_candidates.c_str());
 					}

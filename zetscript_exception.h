@@ -6,7 +6,7 @@
 
 #ifdef __EMSCRIPTEN__
 #define THROW_EXCEPTION					cerr <<
-#define THROW_RUNTIME_ERROR(s,...)		cerr << std::string(ZetScript::ZS_StrUtils::sformat(s,__VA_ARGS__))
+#define THROW_RUNTIME_ERROR(s,...)		cerr << std::string(ZetScript::zs_strutils::Format(s,__VA_ARGS__))
 //#define THROW_ERROR 					cerr <<
 //#define THROW_RUNTIME_ERROR 			cerr <<
 #define THROW_SCRIPT_ERROR 				cerr <<
@@ -17,11 +17,11 @@
 #define THROW_SCRIPT_ERROR 				ZetScript::exception::throw_script_error
 #endif
 
-namespace ZetScript {
+namespace zetscript {
 
 	namespace exception{
 
-		class script_exception: public std::exception{
+		class ScriptException: public std::exception{
 				const char *error_type;
 
 				std::string file;
@@ -31,21 +31,21 @@ namespace ZetScript {
 				char what_msg[4096];
 			public:
 
-				script_exception(const char *  _file, int _line, const char * _error_description, const char *_error_type);
+				ScriptException(const char *  _file, int _line, const char * _error_description, const char *_error_type);
 				virtual const char* what() const throw();
 
-				int getErrorLine();
+				int GetErrorLine();
 
-				const char * getErrorDescription();
+				const char * GetErrorDescription();
 
-				const char * getErrorFilename();
+				const char * GetErrorSourceFilename();
 
 		};
 
-		class script_error: public script_exception{
+		class ScriptExceptionError: public ScriptException{
 		public:
 
-			script_error(const char *  _file, int _line, const char * _error);
+			ScriptExceptionError(const char *  _file, int _line, const char * _error);
 		};
 
 		void throw_script_error();

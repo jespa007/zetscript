@@ -1,6 +1,6 @@
 #include "ZetScript.h"
 
-namespace ZetScript{
+namespace zetscript{
 
 
 	//-----------

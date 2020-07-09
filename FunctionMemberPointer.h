@@ -16,14 +16,14 @@
 #define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_5(class_type,o,f)	(new ZetScript::CFunctionMemberPointerRetParam5Caller<class_type>(o,f))
 #define ZS_NEW_RET_FUNCTION_MEMBER_POINTER_PARAM_6(class_type,o,f)	(new ZetScript::CFunctionMemberPointerRetParam6Caller<class_type>(o,f))
 
-namespace ZetScript{
+namespace zetscript{
 
 
 	class CFunctionMemberPointer{
 	};
 
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM0
+	// VOID/BYTE_CODE_RET PARAM0
 	class CFunctionMemberPointerVoidParam0:public CFunctionMemberPointer{
 		public:
 			virtual void operator()()=0;
@@ -53,7 +53,7 @@ namespace ZetScript{
 
 
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM1
+	// VOID/BYTE_CODE_RET PARAM1
 
 	class CFunctionMemberPointerVoidParam1:public CFunctionMemberPointer{
 		public:
@@ -82,7 +82,7 @@ namespace ZetScript{
 		virtual ~CFunctionMemberPointerVoidParam1Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM2
+	// VOID/BYTE_CODE_RET PARAM2
 
 	class CFunctionMemberPointerVoidParam2:public CFunctionMemberPointer{
 		public:
@@ -112,7 +112,7 @@ namespace ZetScript{
 	};
 
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM3
+	// VOID/BYTE_CODE_RET PARAM3
 
 	class CFunctionMemberPointerVoidParam3:public CFunctionMemberPointer{
 		public:
@@ -141,7 +141,7 @@ namespace ZetScript{
 		virtual ~CFunctionMemberPointerVoidParam3Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM4
+	// VOID/BYTE_CODE_RET PARAM4
 
 	class CFunctionMemberPointerVoidParam4:public CFunctionMemberPointer{
 		public:
@@ -170,7 +170,7 @@ namespace ZetScript{
 		virtual ~CFunctionMemberPointerVoidParam4Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM5
+	// VOID/BYTE_CODE_RET PARAM5
 	class CFunctionMemberPointerVoidParam5:public CFunctionMemberPointer{
 		public:
 			virtual void operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5)=0;
@@ -198,7 +198,7 @@ namespace ZetScript{
 		virtual ~CFunctionMemberPointerVoidParam5Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM6
+	// VOID/BYTE_CODE_RET PARAM6
 	class CFunctionMemberPointerVoidParam6:public CFunctionMemberPointer{
 		public:
 			virtual void operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6)=0;
@@ -227,7 +227,7 @@ namespace ZetScript{
 	};
 
 	//-------------------------------------------------------------------------------------------------
-	// RET PARAM0
+	// BYTE_CODE_RET PARAM0
 
 	class CFunctionMemberPointerRetParam0:public CFunctionMemberPointer{
 		public:
@@ -270,7 +270,7 @@ namespace ZetScript{
 	};
 
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM1
+	// VOID/BYTE_CODE_RET PARAM1
 	class CFunctionMemberPointerRetParam1:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1)=0;
@@ -313,7 +313,7 @@ namespace ZetScript{
 		virtual ~CFunctionMemberPointerRetParam1Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM2
+	// VOID/BYTE_CODE_RET PARAM2
 	class CFunctionMemberPointerRetParam2:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2)=0;
@@ -358,7 +358,7 @@ namespace ZetScript{
 	};
 
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM3
+	// VOID/BYTE_CODE_RET PARAM3
 	class CFunctionMemberPointerRetParam3:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2, intptr_t p3)=0;
@@ -402,7 +402,7 @@ namespace ZetScript{
 		virtual ~CFunctionMemberPointerRetParam3Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM4
+	// VOID/BYTE_CODE_RET PARAM4
 	class CFunctionMemberPointerRetParam4:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4)=0;
@@ -445,7 +445,7 @@ namespace ZetScript{
 		virtual ~CFunctionMemberPointerRetParam4Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM5
+	// VOID/BYTE_CODE_RET PARAM5
 	class CFunctionMemberPointerRetParam5:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5)=0;
@@ -488,7 +488,7 @@ namespace ZetScript{
 		virtual ~CFunctionMemberPointerRetParam5Caller(){}
 	};
 	//-------------------------------------------------------------------------------------------------
-	// VOID/RET PARAM6
+	// VOID/BYTE_CODE_RET PARAM6
 	class CFunctionMemberPointerRetParam6:public CFunctionMemberPointer{
 		public:
 			virtual intptr_t operator()(intptr_t p1, intptr_t p2, intptr_t p3,intptr_t p4,intptr_t p5,intptr_t p6)=0;

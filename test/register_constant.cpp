@@ -1,7 +1,7 @@
 
 #include "ZetScript.h"
 
-using namespace ZetScript;
+using namespace zetscript;
 
 int main(){
 

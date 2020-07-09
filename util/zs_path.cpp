@@ -1,7 +1,7 @@
 #include "../ZetScript.h"
 
-namespace ZetScript{
-	namespace ZS_Path{
+namespace zetscript{
+	namespace zs_path{
 		std::string  get_filename(const std::string & _path) {
 		  size_t found;
 		  std::string ss=_path;

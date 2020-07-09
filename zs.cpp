@@ -6,25 +6,25 @@
 
 #define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2019 Jordi Espada\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION
 
-using namespace ZetScript;
+using namespace zetscript;
 
 int main(int argc, char * argv[]) {
 
 	ZetScript *zs = new ZetScript();
 
 	if (argc > 1) {
-		bool execute=true;
+		bool Execute=true;
 		bool show_bytecode=false;
 		const char * file=NULL;
 
 		for(int i=1; i < argc; i++){
 
-			std::vector<std::string> a=ZS_StrUtils::Split(argv[i],'=');
+			std::vector<std::string> a=zs_strutils::Split(argv[i],'=');
 			switch(a.size()){
 			case 1:
 
 				if(strcmp(argv[i],"--no_execute")==0){
-					execute = false;
+					Execute = false;
 				}else if(strcmp(argv[i],"--show_bytecode")==0){
 					show_bytecode=true;
 
@@ -61,7 +61,7 @@ int main(int argc, char * argv[]) {
 
 
 		try{
-			zs->evalFile(file,execute,show_bytecode);
+			zs->evalFile(file,Execute,show_bytecode);
 		}catch(std::exception & ex){
 			fprintf(stderr,"%s\n",ex.what());
 		}

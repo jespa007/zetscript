@@ -21,7 +21,7 @@
 
 
 
-namespace ZetScript{
+namespace zetscript{
 
 /**
  * Stores the basic information to build a object through built AST structure
@@ -39,7 +39,7 @@ namespace ZetScript{
 		std::string str_class_ptr_type; // type_id().name();
 		std::vector<unsigned char > idx_base_class;
 
-		std::vector<ScriptFunction * > metamethod_operator[MAX_METAMETHOD_OPERATORS]; // overrided metamethod
+		std::vector<ScriptFunction * > metamethod_operator[BYTE_CODE_METAMETHOD_MAX]; // overrided metamethod
 
 		 ScriptClass(ZetScript *_zs,unsigned char _idx_class);
 

@@ -4,7 +4,7 @@
  */
 #include "ZetScript.h"
 
-using namespace ZetScript;
+using namespace zetscript;
 
 int add(int op1, int op2){
 	return op1+op2;

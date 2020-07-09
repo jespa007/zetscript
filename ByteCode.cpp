@@ -1,107 +1,94 @@
 #include "ZetScript.h"
 
-namespace ZetScript{
+namespace zetscript{
+
+	const char * ByteCodeToStr(ByteCode _op_code){
+		switch(_op_code){
+			case BYTE_CODE_EQU:        return "BYTE_CODE_EQU";  // ==
+			case BYTE_CODE_INSTANCEOF:  return "BYTE_CODE_INSTANCEOF";  // ==
+			case BYTE_CODE_NOT_EQU:     return "BYTE_CODE_NOT_EQU" ;  // !=
+			case BYTE_CODE_LT:          return "BYTE_CODE_LT"  ;  // <
+			case BYTE_CODE_LTE:         return "BYTE_CODE_LTE";  // <=
+			case BYTE_CODE_NOT:         return "BYTE_CODE_NOT"; // !
+			case BYTE_CODE_GT:          return "BYTE_CODE_GT";  // >
+			case BYTE_CODE_GTE:         return "BYTE_CODE_GTE"; // >=
+			case BYTE_CODE_NEG:         return "BYTE_CODE_NEG"; // !
+			case BYTE_CODE_ADD:         return "BYTE_CODE_ADD"; // +
+			case BYTE_CODE_LOGIC_AND:   return "BYTE_CODE_LOGIC_AND"; // &&
+			case BYTE_CODE_LOGIC_OR:    return "BYTE_CODE_LOGIC_OR";  // ||
+			case BYTE_CODE_DIV:         return "BYTE_CODE_DIV"; // /
+			case BYTE_CODE_MUL:         return "BYTE_CODE_MUL"; // *
+			case BYTE_CODE_MOD:         return "BYTE_CODE_MOD";  // %
+
+			case BYTE_CODE_AND:         return "BYTE_CODE_AND"; // bitwise logic and
+			case BYTE_CODE_OR:         return "BYTE_CODE_OR"; // bitwise logic or
+			case BYTE_CODE_XOR:         return "BYTE_CODE_XOR"; // logic xor
+			case BYTE_CODE_SHL:         return "BYTE_CODE_SHL"; // shift left
+			case BYTE_CODE_SHR:         return "BYTE_CODE_SHR"; // shift right
+
+			case BYTE_CODE_STORE:       return "BYTE_CODE_STORE"; // mov expression to var
+			case BYTE_CODE_LOAD:        return "BYTE_CODE_LOAD"; // primitive value like number/stdstring or boolean...
+
+			case BYTE_CODE_JMP:         return "BYTE_CODE_JMP"; // Unconditional jump.
+			case BYTE_CODE_JNT:         return "BYTE_CODE_JNT"; // goto if not true ... goes end to conditional.
+			case BYTE_CODE_JT:          return "BYTE_CODE_JT"; // goto if true ... goes end to conditional.
+
+			case BYTE_CODE_CALL: return "BYTE_CODE_CALL"; // calling function after all of arguments are processed...
 
 
-		ByteCode::ByteCode(OP_CODE _op_code
-					 ,unsigned char _index_op1
-					 ,intptr_t _index_op2
-					 ,unsigned short _properties
-					 ){
-			op_code=_op_code;
-			op1_value=_index_op1;
-			op2_value=_index_op2;
-			properties=_properties;
+			case BYTE_CODE_VGET: return "BYTE_CODE_VGET"; // stdvector access after each index is processed...
 
+			case BYTE_CODE_DECL_VEC: return "BYTE_CODE_DECL_VEC"; // Vector object (CREATE)
+
+			case BYTE_CODE_VPUSH: return "BYTE_CODE_VPUSH"; // Value push for stdvector
+			case BYTE_CODE_RET: return "BYTE_CODE_RET"; // Value pop for stdvector
+
+			case BYTE_CODE_NEW: return "BYTE_CODE_NEW"; // New object (CREATE)
+			case BYTE_CODE_DELETE:return "BYTE_CODE_DELETE";
+
+			case BYTE_CODE_POP_SCOPE: return "BYTE_CODE_POP_SCOPE"; // New object (CREATE)
+			case BYTE_CODE_PUSH_SCOPE: return "BYTE_CODE_PUSH_SCOPE"; // New object (CREATE)
+			case BYTE_CODE_PUSH_ATTR: return "BYTE_CODE_PUSH_ATTR"; // New object (CREATE)
+			case BYTE_CODE_DECL_DICTIONARY: return "BYTE_CODE_DECL_DICTIONARY"; // New object (CREATE)
+
+			case BYTE_CODE_IT_INI:	 return "BYTE_CODE_IT_INI"; // BYTE_CODE_IT_INI
+			case BYTE_CODE_IT_CHK_END: return "BYTE_CODE_IT_CHK_END"; // BYTE_CODE_IT_CHK_END
+			case BYTE_CODE_SET_AND_NEXT:return "BYTE_CODE_SET_AND_NEXT"; // BYTE_CODE_SET_AND_NEXT
+			default:
+				break;
 		}
 
-		const char * ByteCode::opCodeToStr(OP_CODE  op){
-			switch(op){
-				case EQU:        return "EQU";  // ==
-				case INSTANCEOF:  return "INSTANCEOF";  // ==
-				case NOT_EQU:     return "NOT_EQU" ;  // !=
-				case LT:          return "LT"  ;  // <
-				case LTE:         return "LTE";  // <=
-				case NOT:         return "NOT"; // !
-				case GT:          return "GT";  // >
-				case GTE:         return "GTE"; // >=
-				case NEG:         return "NEG"; // !
-				case ADD:         return "ADD"; // +
-				case LOGIC_AND:   return "LOGIC_AND"; // &&
-				case LOGIC_OR:    return "LOGIC_OR";  // ||
-				case DIV:         return "DIV"; // /
-				case MUL:         return "MUL"; // *
-				case MOD:         return "MOD";  // %
 
-				case AND:         return "AND"; // bitwise logic and
-				case OR:         return "OR"; // bitwise logic or
-				case XOR:         return "XOR"; // logic xor
-				case SHL:         return "SHL"; // shift left
-				case SHR:         return "SHR"; // shift right
+		return "unknow_op";
+	}
 
-				case STORE:       return "STORE"; // mov expression to var
-				case LOAD:        return "LOAD"; // primitive value like number/stdstring or boolean...
+	const char * ByteCodeMetamethodToStr(ByteCodeMetamethod op){
 
-				case JMP:         return "JMP"; // Unconditional jump.
-				case JNT:         return "JNT"; // goto if not true ... goes end to conditional.
-				case JT:          return "JT"; // goto if true ... goes end to conditional.
+		switch (op) {
+			case	BYTE_CODE_METAMETHOD_EQU:		return  "_equ";  // ==
+			case	BYTE_CODE_METAMETHOD_NOT_EQU: return  "_nequ";  // !=,
+			case	BYTE_CODE_METAMETHOD_LT:		return  "_lt";  // <
+			case	BYTE_CODE_METAMETHOD_LTE:		return  "_lte";  // <=
+			case	BYTE_CODE_METAMETHOD_NOT:		return  "_not"; // !
+			case	BYTE_CODE_METAMETHOD_GT:		return  "_gt";  // >
+			case	BYTE_CODE_METAMETHOD_GTE:		return  "_gte"; // >=
 
-				case CALL: return "CALL"; // calling function after all of arguments are processed...
-
-
-				case VGET: return "VGET"; // stdvector access after each index is processed...
-
-				case DECL_VEC: return "DECL_VEC"; // Vector object (CREATE)
-
-				case VPUSH: return "VPUSH"; // Value push for stdvector
-				case RET: return "RET"; // Value pop for stdvector
-
-				case NEW: return "NEW"; // New object (CREATE)
-				case DELETE_OP:return "DELETE_OP";
-
-				case POP_SCOPE: return "POP_SCOPE"; // New object (CREATE)
-				case PUSH_SCOPE: return "PUSH_SCOPE"; // New object (CREATE)
-				case PUSH_ATTR: return "PUSH_ATTR"; // New object (CREATE)
-				case DECL_STRUCT: return "DECL_STRUCT"; // New object (CREATE)
-
-				case IT_INI:	 return "IT_INI"; // IT_INI
-				case IT_CHK_END: return "IT_CHK_END"; // IT_CHK_END
-				case IT_SET_AND_NEXT:return "IT_SET_AND_NEXT"; // IT_SET_AND_NEXT
-				default:
-					break;
-			}
-
-
-			return "unknow_op";
+			case	BYTE_CODE_METAMETHOD_NEG:		return  "_neg"; // -a, !a
+			case	BYTE_CODE_METAMETHOD_ADD:		return  "_add"; // +
+			case	BYTE_CODE_METAMETHOD_DIV:		return  "_div"; // /
+			case	BYTE_CODE_METAMETHOD_MUL:		return  "_mul"; // *
+			case	BYTE_CODE_METAMETHOD_MOD:		return  "_mod";  // %
+			case	BYTE_CODE_METAMETHOD_AND:		return  "_and"; // binary and
+			case	BYTE_CODE_METAMETHOD_OR:		return  "_or"; //   binary or
+			case	BYTE_CODE_METAMETHOD_XOR:		return  "_xor"; // binary xor
+			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; // binary shift left
+			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; // binary shift right
+			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; // set
+			default:
+				return "none";
 		}
 
-		const char * ByteCode::metamethodOpCodeToStr(METAMETHOD_OP_CODE op){
-
-			switch (op) {
-				case	EQU_METAMETHOD:		return  "_equ";  // ==
-				case	NOT_EQU_METAMETHOD: return  "_nequ";  // !=,
-				case	LT_METAMETHOD:		return  "_lt";  // <
-				case	LTE_METAMETHOD:		return  "_lte";  // <=
-				case	NOT_METAMETHOD:		return  "_not"; // !
-				case	GT_METAMETHOD:		return  "_gt";  // >
-				case	GTE_METAMETHOD:		return  "_gte"; // >=
-
-				case	NEG_METAMETHOD:		return  "_neg"; // -a, !a
-				case	ADD_METAMETHOD:		return  "_add"; // +
-				case	DIV_METAMETHOD:		return  "_div"; // /
-				case	MUL_METAMETHOD:		return  "_mul"; // *
-				case	MOD_METAMETHOD:		return  "_mod";  // %
-				case	AND_METAMETHOD:		return  "_and"; // binary and
-				case	OR_METAMETHOD:		return  "_or"; //   binary or
-				case	XOR_METAMETHOD:		return  "_xor"; // binary xor
-				case	SHL_METAMETHOD:		return  "_shl"; // binary shift left
-				case	SHR_METAMETHOD:		return  "_shr"; // binary shift right
-				case	SET_METAMETHOD:		return  "_set"; // set
-				default:
-					return "none";
-			}
-
-			return "none";
-		}
+		return "none";
+	}
 
 }

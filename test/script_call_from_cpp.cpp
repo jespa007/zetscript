@@ -1,7 +1,7 @@
 
 #include "ZetScript.h"
 
-using namespace ZetScript;
+using namespace zetscript;
 
 int main(){
 
@@ -24,8 +24,8 @@ int main(){
 	);
 
 
-	std::function<void()>  * delete_test=zs->bindScriptFunction<void ()>("delete_test"); // instance function delete_test function.
-	std::function<void(int)> * test_function1=zs->bindScriptFunction<void (int)>("test.function1"); // instance member function test.function1.
+	std::function<void()>  * delete_test=zs->BindScriptFunction<void ()>("delete_test"); // instance function delete_test function.
+	std::function<void(int)> * test_function1=zs->BindScriptFunction<void (int)>("test.function1"); // instance member function test.function1.
 
 	(*test_function1)(10); // it calls "test.function" member function with 10 as parameter.
 	(*delete_test)(); // it calls "delete_test" function with no parameters

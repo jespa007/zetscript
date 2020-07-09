@@ -1,20 +1,20 @@
 #include "ZetScript.h"
 
-namespace ZetScript{
+namespace zetscript{
 
 	ScriptClassBase::ScriptClassBase(ZetScript * _zs,unsigned char _idxClass) {
 		idx_class=_idxClass;
 		zs = _zs;
-		scope_factory = zs->getScopeFactory();
-		script_function_factory= zs->getScriptFunctionFactory();
-		virtual_machine = zs->getVirtualMachine();
-		script_class_factory=zs->getScriptClassFactory();
+		scope_factory = zs->GetScopeFactory();
+		script_function_factory= zs->GetScriptFunctionFactory();
+		virtual_machine = zs->GetVirtualMachine();
+		script_class_factory=zs->GetScriptClassFactory();
 
 
 	}
 
-	VariableSymbolInfo * ScriptClassBase::registerVariable(const std::string & file, short line, short idxBlockScope,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties){
-		VariableSymbolInfo irs;
+	SymbolInfo * ScriptClassBase::RegisterVariable(const std::string & file, short line, short idxBlockScope,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties){
+		SymbolInfo irs;
 		//std::string symbol_ref=ScriptEval::makeSymbolRef(variable_name,idxBlockScope);
 
 		Symbol * symbol=NULL;
@@ -24,8 +24,8 @@ namespace ZetScript{
 		}
 
 
-		if(getVariable(symbol->name,symbol->idxScope) != NULL){
-			THROW_RUNTIME_ERROR(zs_string::sformat("Variable \"%s\" already exist",variable_name.c_str()));
+		if(getVariable(symbol->name,symbol->idx_scope) != NULL){
+			THROW_RUNTIME_ERROR(zs_strutils::Format("Variable \"%s\" already exist",variable_name.c_str()));
 			return NULL;
 		}
 
@@ -41,19 +41,19 @@ namespace ZetScript{
 		return &local_variable[local_variable.size()-1];
 	}
 
-	VariableSymbolInfo *	ScriptClassBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties)
+	SymbolInfo *	ScriptClassBase::RegisterVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties)
 	{
-			return registerVariable(file,line,this->symbol_info.symbol->idxScope,  variable_name,  c_type,  ref_ptr,   symbol_info_properties);
+			return RegisterVariable(file,line,this->symbol_info.symbol->idx_scope,  variable_name,  c_type,  ref_ptr,   symbol_info_properties);
 	}
 
-	VariableSymbolInfo *	 ScriptClassBase::getVariable(const std::string & var_name, short idxScope){
+	SymbolInfo *	 ScriptClassBase::getVariable(const std::string & var_name, short idx_scope){
 
 		if(local_variable.size()>0){
 
 			// from lat value to first to get last override function...
 			for(int i = (int)local_variable.size()-1; i >= 0 ; i--){
 				if((local_variable[i].symbol->name == var_name)
-				&& (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == local_variable[i].symbol->idxScope))
+				&& (idx_scope ==  ZS_UNDEFINED_IDX?true:(idx_scope == local_variable[i].symbol->idx_scope))
 				  ){
 					return &local_variable[i];
 				}
@@ -65,17 +65,17 @@ namespace ZetScript{
 
 
 
-	ScriptFunction * ScriptClassBase::registerFunction(const std::string & file, short line, short idxScope, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
+	ScriptFunction * ScriptClassBase::registerFunction(const std::string & file, short line, short idx_scope, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
 
-			//std::string symbol_ref = ScriptEval::makeSymbolRef(function_name,idxScope);
+			//std::string symbol_ref = ScriptEval::makeSymbolRef(function_name,idx_scope);
 			if(getFunction(function_name,(char)args.size()) != NULL){
-				THROW_RUNTIME_ERROR(zs_string::sformat("Function \"%s\" already exist",function_name.c_str()));
+				THROW_RUNTIME_ERROR(zs_strutils::Format("Function \"%s\" already exist",function_name.c_str()));
 				return NULL;
 			}
 
-			ScriptFunction *sf =  NEW_SCRIPT_FUNCTION(file,line,idx_class,idxScope,  function_name,  args,  idx_return_type,ref_ptr, symbol_info_properties);
+			ScriptFunction *sf =  NEW_SCRIPT_FUNCTION(file,line,idx_class,idx_scope,  function_name,  args,  idx_return_type,ref_ptr, symbol_info_properties);
 			sf->idx_class = this->idx_class;
-			sf->idxLocalFunction=local_function.size();
+			sf->idx_local_function=local_function.size();
 			local_function.push_back(sf);
 
 			return sf;
@@ -83,10 +83,10 @@ namespace ZetScript{
 
 	ScriptFunction * ScriptClassBase::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
 
-		return registerFunction(file, line,this->symbol_info.symbol->idxScope, function_name,  args, idx_return_type,ref_ptr, symbol_info_properties);
+		return registerFunction(file, line,this->symbol_info.symbol->idx_scope, function_name,  args, idx_return_type,ref_ptr, symbol_info_properties);
 	}
 
-	ScriptFunction *	 ScriptClassBase::getFunction(const std::string & function_name, short idxScope, char n_args){
+	ScriptFunction *	 ScriptClassBase::getFunction(const std::string & function_name, short idx_scope, char n_args){
 
 		if(local_function.size()>0){
 
@@ -95,7 +95,7 @@ namespace ZetScript{
 				if(
 						(local_function[i]->symbol_info.symbol->name == function_name)
 					 && (n_args == (int)local_function[i]->arg_info.size())
-					 && (idxScope ==  ZS_UNDEFINED_IDX?true:(idxScope == local_function[i]->symbol_info.symbol->idxScope))
+					 && (idx_scope ==  ZS_UNDEFINED_IDX?true:(idx_scope == local_function[i]->symbol_info.symbol->idx_scope))
 					 ){
 
 					return local_function[i];

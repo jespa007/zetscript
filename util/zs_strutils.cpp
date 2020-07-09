@@ -1,7 +1,7 @@
 #include "../ZetScript.h"
 
-namespace ZetScript{
-	namespace zs_string{
+namespace zetscript{
+	namespace zs_strutils{
 
 		enum{
 			MAX_STRING_BUFFERS=256,
@@ -15,7 +15,7 @@ namespace ZetScript{
 		unsigned char m_index_buffer=0;
 		char  _sformat_buffer[4096] = { 0 };
 
-		std::string  sformat(const  char  *input_text, ...){
+		std::string  Format(const  char  *input_text, ...){
 			va_list  ap;
 			va_start(ap,  input_text);
 			vsprintf(_sformat_buffer,  input_text,  ap);
@@ -24,16 +24,16 @@ namespace ZetScript{
 			return std::string(_sformat_buffer);
 		}
 
-		int *  parse_integer(const std::string & val){
+		int *  ParseInteger(const std::string & val){
 
 			int *n=NULL;
-			NUMBER_TYPE number_type = is_number(val);
+			NumberType number_type = IsNumber(val);
 			int numberValue=0;
-			if(number_type == NUMBER_TYPE::INT){
+			if(number_type == NumberType::INT){
 				numberValue=strtol(val.c_str(), NULL, 10);
-			}else if(number_type == NUMBER_TYPE::HEXA){
+			}else if(number_type == NumberType::HEXA){
 				numberValue=strtol(val.c_str(), NULL, 16);
-			}else if(is_binary(val)){
+			}else if(IsBinary(val)){
 				std::string binary = val.substr(0,val.size()-1);
 				numberValue=strtol(binary.c_str(), NULL, 2);
 			}
@@ -49,14 +49,14 @@ namespace ZetScript{
 			return n;
 		}
 
-		bool * parse_boolean(const std::string & s){
+		bool * ParseBoolean(const std::string & s){
 
-			if(to_lower(s)=="true"){
+			if(ToLower(s)=="true"){
 				bool *b=new bool;
 				*b=true;
 				return b;
 
-			}else if(to_lower(s)=="false"){
+			}else if(ToLower(s)=="false"){
 				bool *b=new bool;
 				*b=false;
 				return b;
@@ -66,7 +66,7 @@ namespace ZetScript{
 			return NULL;
 		}
 
-		float *  parse_float(const std::string & s){
+		float *  ParseFloat(const std::string & s){
 			char *p;bool ok=true;
 			float *n=NULL;
 
@@ -86,17 +86,17 @@ namespace ZetScript{
 		}
 
 
-		char * copy_from_pointer_diff(const char *p1, const char *p2){
+		char * CopyFromPointerDiff(const char *p1, const char *p2){
 
 			if(p1 == NULL || p2 == NULL){
-				THROW_RUNTIME_ERROR(sformat("NULL entry (%p %p)",p1,p2));
+				THROW_RUNTIME_ERROR(Format("NULL entry (%p %p)",p1,p2));
 				return NULL;
 			}
 
 			int var_length=p2-p1;
 
 			if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
-				THROW_RUNTIME_ERROR(sformat("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
+				THROW_RUNTIME_ERROR(Format("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
 				return NULL;
 			}
 
@@ -112,7 +112,7 @@ namespace ZetScript{
 		}
 
 
-		std::string int_2_string(int number){
+		std::string IntToString(int number){
 
 			char int_str[100];
 
@@ -121,7 +121,7 @@ namespace ZetScript{
 		   return std::string(int_str);
 		}
 
-		std::string to_lower(const std::string & str){
+		std::string ToLower(const std::string & str){
 
 			std::string ret = str;
 			for(unsigned short l = 0; l < ret.size();l++)
@@ -129,7 +129,7 @@ namespace ZetScript{
 			return ret;
 		}
 
-		std::string to_upper(const std::string & str){
+		std::string ToUpper(const std::string & str){
 
 			std::string ret = str;
 			for(unsigned short l = 0; l < ret.size();l++)
@@ -164,7 +164,7 @@ namespace ZetScript{
 			return str.empty();
 		}
 
-		bool ends_with(const std::string & fullString, const std::string & ending){
+		bool EndsWith(const std::string & fullString, const std::string & ending){
 			if (fullString.length() >= ending.length()) {
 				return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
 			}
@@ -194,7 +194,7 @@ namespace ZetScript{
 			return aux_p;
 		}
 
-		bool is_binary(const std::string & test_str_number){
+		bool IsBinary(const std::string & test_str_number){
 
 			char *start_p=(char *)test_str_number.c_str();
 			char *aux_p =start_p;
@@ -210,7 +210,7 @@ namespace ZetScript{
 			return (*aux_p=='b' || *aux_p=='B') && (aux_p > start_p);
 		}
 
-		NUMBER_TYPE is_number(const std::string & test_str_number){
+		NumberType IsNumber(const std::string & test_str_number){
 			bool isHexa=false;
 			char *str = (char *)test_str_number.c_str();
 
@@ -231,9 +231,9 @@ namespace ZetScript{
 			if(isHexa) {
 				str = advance_hexadigits(str);
 				if(str == start_str)
-					return NUMBER_TYPE::INVALID;
+					return NumberType::NUMBER_TYPE_INVALID;
 
-				if(*str == ' ' || *str == 0) return NUMBER_TYPE::HEXA;
+				if(*str == ' ' || *str == 0) return NumberType::NUMBER_TYPE_HEXA;
 			}else{
 
 				str = advance_digits(str);
@@ -244,7 +244,7 @@ namespace ZetScript{
 
 					if(*str != 'e'){
 						if(*str == ' ' || *str == 0)
-							return NUMBER_TYPE::DOUBLE;
+							return NumberType::NUMBER_TYPE_DOUBLE;
 					}
 				}
 
@@ -258,17 +258,17 @@ namespace ZetScript{
 
 					str = advance_digits(str);
 					if(*str == ' ' || *str == 0)
-						return NUMBER_TYPE::DOUBLE;
+						return NumberType::NUMBER_TYPE_DOUBLE;
 
-					return NUMBER_TYPE::INVALID;
+					return NumberType::NUMBER_TYPE_INVALID;
 				}
 
 				if(*str == ' ' || *str == 0)
-					return NUMBER_TYPE::INT;
+					return NumberType::NUMBER_TYPE_INT;
 
 			}
 
-			return NUMBER_TYPE::INVALID;
+			return NumberType::NUMBER_TYPE_INVALID;
 
 
 		}
@@ -284,7 +284,7 @@ namespace ZetScript{
 			return str_new;
 		}
 
-		int count(const std::string & s,char c){
+		int Count(const std::string & s,char c){
 			int n_items=0;
 
 			for(unsigned i=0; i < s.size(); i++)

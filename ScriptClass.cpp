@@ -4,10 +4,10 @@
  */
 #include "ZetScript.h"
 
-namespace ZetScript{
+namespace zetscript{
 
 
-	void  write_error(const char *filename, int line, const  char  *string_text, ...);
+	void  WriteError(const char *filename, int line, const  char  *string_text, ...);
 
 	bool ScriptClass::isToClass(){
 
@@ -34,12 +34,12 @@ namespace ZetScript{
 
 
 		// check if metamethod...
-		for(int i = 0; i < MAX_METAMETHOD_OPERATORS; i++){
-			if(ZS_STRCMP(ByteCode::metamethodOpCodeToStr((METAMETHOD_OP_CODE)i),==,function_name.c_str())){
+		for(int i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
+			if(ZS_STRCMP(Instruction::ByteCodeOpMetamethodToStr((ByteCodeMetamethod)i),==,function_name.c_str())){
 
 				metamethod_operator[i].push_back(sf);
 
-				zs_print_debug_cr("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());
+				ZS_PRINT_DEBUG("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());
 				break;
 			}
 		}

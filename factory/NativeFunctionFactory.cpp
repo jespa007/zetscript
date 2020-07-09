@@ -4,7 +4,7 @@
  */
 #include "ZetScript.h"
 
-namespace ZetScript{
+namespace zetscript{
 
 
 	NativeFunctionFactory::NativeFunctionFactory(ZetScript *_zs){

@@ -4,18 +4,18 @@
  */
 #pragma once
 
-#define NEW_VECTOR_VAR (new CScriptVarVector(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new CScriptVarVector())))
+#define NEW_VECTOR_VAR (new ScriptVarVector(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new ScriptVarVector())))
 
-namespace ZetScript{
+namespace zetscript{
 
 	class CZetgine;
-	class  CScriptVarVector: public CScriptVar{
+	class  ScriptVarVector: public ScriptVar{
 
 
 	public:
 
 		template<typename T>
-		static std::vector<T> toStdVector(CScriptVarVector *v_in){
+		static std::vector<T> toStdVector(ScriptVarVector *v_in){
 			std::vector<T> v_out;
 			const char * dst_convert_type = typeid(T).name();
 			float aux_flt;
@@ -26,31 +26,31 @@ namespace ZetScript{
 
 					StackElement sv=variable->at(i);
 
-					switch(sv.properties & MASK_VAR_PRIMITIVE_TYPES)
+					switch(sv.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES)
 					{
 						default:
-						case STK_PROPERTY_TYPE_UNDEFINED:
-						case STK_PROPERTY_TYPE_NULL:
-						case STK_PROPERTY_TYPE_NUMBER:
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 							if(ZS_STRCMP(dst_convert_type, ==,typeid(float).name())){
-								memcpy(&aux_flt, &sv.stkValue, sizeof(float));
+								memcpy(&aux_flt, &sv.stk_value, sizeof(float));
 								v_out.push_back(aux_flt);
 							}else if(ZS_STRCMP(dst_convert_type, ==,typeid(int).name())){
-								v_out.push_back((intptr_t)sv.stkValue);
+								v_out.push_back((intptr_t)sv.stk_value);
 							}else{
 								THROW_RUNTIME_ERROR("Error trying to cast element on std::vector<float>");
 								return v_out;
 							}
 							break;
-						case STK_PROPERTY_TYPE_BOOLEAN:
-						case STK_PROPERTY_TYPE_STRING:
-						case STK_PROPERTY_TYPE_FUNCTION:
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
 							THROW_RUNTIME_ERROR("type not implemented yet");
 							return v_out;
 							break;
-						case STK_PROPERTY_TYPE_INTEGER:
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
 							if(ZS_STRCMP(dst_convert_type, ==,typeid(int).name()) || ZS_STRCMP(dst_convert_type, ==,typeid(float).name())){// typeid(int).name()) || ){
-								v_out.push_back((intptr_t)sv.stkValue);
+								v_out.push_back((intptr_t)sv.stk_value);
 							}else{
 								THROW_RUNTIME_ERROR("Error trying to cast element on std::vector<int>");
 								return v_out;
@@ -69,8 +69,8 @@ namespace ZetScript{
 
 		//std::vector<StackElement> m_objVector;
 
-		CScriptVarVector(){}
-		CScriptVarVector(ZetScript *_zs);
+		ScriptVarVector(){}
+		ScriptVarVector(ZetScript *_zs);
 
 		virtual bool unrefSharedPtr();
 
@@ -87,7 +87,7 @@ namespace ZetScript{
 
 		virtual void destroy();
 
-		virtual ~CScriptVarVector();
+		virtual ~ScriptVarVector();
 
 
 	};

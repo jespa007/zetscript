@@ -4,7 +4,7 @@
  */
 #include "ZetScript.h"
 
-using namespace ZetScript;
+using namespace zetscript;
 
 class CNumber{
 public:
@@ -298,7 +298,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(op) \
 				STR(val2) \
 				";"; \
-	aux_value=zs->evalIntValue(str); \
+	aux_value=zs->EvalIntValue(str); \
 	if(aux_value!=NULL){ \
 		if(*aux_value != (val1 op val2)){ \
 			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
@@ -319,7 +319,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");it2=it1.toInt();delete it1;delete i1;delete i2;it2;"; \
-	aux_value=zs->evalIntValue(str); \
+	aux_value=zs->EvalIntValue(str); \
 	if(aux_value!=NULL){ \
 		if( *aux_value != (val1 op val2)){ \
 			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
@@ -336,7 +336,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(op) \
 				STR(val2) \
 				";"; \
-	aux_value=zs->evalFloatValue(str); \
+	aux_value=zs->EvalFloatValue(str); \
 	if(aux_value!=NULL){ \
 		if(!FloatValuesAreAlmostTheSame(*aux_value,expr)){ \
 			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
@@ -353,7 +353,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				"%" \
 				STR(val2) \
 				";"; \
-	aux_value=zs->evalFloatValue(str); \
+	aux_value=zs->EvalFloatValue(str); \
 	if(aux_value!=NULL){ \
 		if(!FloatValuesAreAlmostTheSame( *aux_value , fmod(val1,val2))){ \
 			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
@@ -376,7 +376,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;nt2;"; \
-	aux_value=zs->evalFloatValue(str); \
+	aux_value=zs->EvalFloatValue(str); \
 	if(aux_value!=NULL){ \
 		if(!FloatValuesAreAlmostTheSame(*aux_value,expr)){ \
 			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
@@ -397,7 +397,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");nt2=nt1.toFloat();delete n1; delete n2;delete nt1;nt2;"; \
-	aux_value=zs->evalFloatValue(str);\
+	aux_value=zs->EvalFloatValue(str);\
 	if(aux_value!=NULL){ \
 		if(!FloatValuesAreAlmostTheSame(*aux_value  , fmod(val1,val2))){ \
 			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
@@ -415,7 +415,7 @@ bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				val2\
 				";"; \
 	std::string expected_str = std::string(val1) op val2;\
-	aux_value=zs->evalStringValue(str);\
+	aux_value=zs->EvalStringValue(str);\
 	if(aux_value!=NULL){ \
 		if(*aux_value!=expected_str){ \
 			fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value->c_str()); \
@@ -566,7 +566,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 	int * aux_value=NULL; \
 	std::string str_expr= STR(expr)";"; \
 	\
-	aux_value=zs->evalIntValue(str_expr);\
+	aux_value=zs->EvalIntValue(str_expr);\
 	if(aux_value != NULL){\
 		if(*aux_value != (expr)){ \
 			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,*aux_value); \
@@ -579,7 +579,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	int *aux_value=NULL; \
 	\
-	aux_value=zs->evalIntValue(expr);\
+	aux_value=zs->EvalIntValue(expr);\
 	if(aux_value != NULL){\
 		if(*aux_value  != (expected_value)){ \
 			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
@@ -593,7 +593,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	float * aux_value=NULL; \
 	\
-	aux_value=zs->evalFloatValue(expr); \
+	aux_value=zs->EvalFloatValue(expr); \
 	if(aux_value != NULL){ \
 		if(*aux_value  != (expected_value)){ \
 			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
@@ -606,7 +606,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	bool *aux_value=NULL; \
 	\
-	aux_value=zs->evalBoolValue(expr);\
+	aux_value=zs->EvalBoolValue(expr);\
 	if(aux_value != NULL){ \
 		if(*aux_value  != (expected_value)){ \
 			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
@@ -619,7 +619,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	std::string aux_value=""; \
 	\
-	if((aux_value=ZetScript::evalStringValue(expr))  != (expected_value)){ \
+	if((aux_value=ZetScript::EvalStringValue(expr))  != (expected_value)){ \
 		fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,expected_value,aux_value.c_str()); \
 		exit(-1); \
 	} \
@@ -629,7 +629,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 { \
 	float *aux_value=NULL; \
 	\
-	aux_value=zs->evalFloatValue(expr);\
+	aux_value=zs->EvalFloatValue(expr);\
 	if(aux_value != NULL){ \
 		if(*aux_value  != (expected_value)){ \
 			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
@@ -643,7 +643,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 	float *aux_value=NULL; \
 	std::string str_expr= STR(expr)";"; \
 	\
-	aux_value=zs->evalFloatValue(str_expr); \
+	aux_value=zs->EvalFloatValue(str_expr); \
 	if(aux_value != NULL){ \
 		if(!FloatValuesAreAlmostTheSame(*aux_value  , (expr))){ \
 			double error = fabs(fabs(*aux_value)-fabs(expr));\
@@ -662,7 +662,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 	bool *aux_value=NULL; \
 	std::string str= STR(val1) \
 				";"; \
-	aux_value=zs->evalBoolValue(str);\
+	aux_value=zs->EvalBoolValue(str);\
 	if(aux_value != NULL) { \
 		if(*aux_value != (val1)){ \
 			fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",*aux_value?"true":"false"); \
@@ -710,7 +710,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 int main(int argc, char * argv[]) {
 
 
-	printf("vm:%lu\n",sizeof(CVirtualMachine));
+	printf("vm:%lu\n",sizeof(VirtualMachine));
 
 	int n_test=0;
 
@@ -968,8 +968,8 @@ int main(int argc, char * argv[]) {
 	zs->Register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
 	zs->evalString("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
 
-	std::function<void ()> * test_1st_script_call=zs->bindScriptFunction<void ()>("test_1st_script_call");
-	test_2nd_script_call=zs->bindScriptFunction<void ()>("test_2nd_script_call");
+	std::function<void ()> * test_1st_script_call=zs->BindScriptFunction<void ()>("test_1st_script_call");
+	test_2nd_script_call=zs->BindScriptFunction<void ()>("test_2nd_script_call");
 
 	if(test_1st_script_call){
 		(*test_1st_script_call)();

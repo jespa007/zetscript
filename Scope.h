@@ -17,13 +17,13 @@
 // 	 	__________________________________
 */
 
-namespace ZetScript{
+namespace zetscript{
 	class ScopeFactory;
 	class  Scope{
 
 	public:
 
-		short idxScope;
+		short idx_scope;
 		bool is_c_node;
 		ScriptClass *script_class;
 

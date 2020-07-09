@@ -23,10 +23,10 @@
 */
 
 
-namespace ZetScript{
+namespace zetscript{
 
 
-	void  write_error(const char *filename, int line, const  char  *string_text, ...);
+	void  WriteError(const char *filename, int line, const  char  *string_text, ...);
 
 	//int Scope::n_anonymouse_func=0;
 
@@ -36,11 +36,11 @@ namespace ZetScript{
 	Scope::Scope(ZetScript * _zs, short _idx_this, short _idx_parent, bool _is_c_node){//, int _index){
 		idxParentScope = _idx_parent;
 		idxCurrentScopePointer=ZS_UNDEFINED_IDX;
-		idxScope = _idx_this;
+		idx_scope = _idx_this;
 		is_c_node = _is_c_node;
 		script_class=NULL;
 		zs=_zs;
-		scope_factory=_zs->getScopeFactory();
+		scope_factory=_zs->GetScopeFactory();
 
 
 		if(_idx_parent == ZS_UNDEFINED_IDX){ // first node...
@@ -89,8 +89,8 @@ namespace ZetScript{
 	Scope * Scope::pushScope(){
 
 		Scope *new_scope = NEW_SCOPE(GET_SCOPE(idxBaseScope)->idxCurrentScopePointer);//, m_baseScope->incTotalScopes());
-		GET_SCOPE(GET_SCOPE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idxScope);
-		GET_SCOPE(idxBaseScope)->idxCurrentScopePointer = new_scope->idxScope;
+		GET_SCOPE(GET_SCOPE(idxBaseScope)->idxCurrentScopePointer)->m_localScopeList.push_back(new_scope->idx_scope);
+		GET_SCOPE(idxBaseScope)->idxCurrentScopePointer = new_scope->idx_scope;
 		return new_scope;
 	}
 
@@ -126,7 +126,7 @@ namespace ZetScript{
 			irv->name = var_name;
 			irv->file	 = file;
 			irv->line 	 = line;
-			irv->idxScope=this->idxScope;
+			irv->idx_scope=this->idx_scope;
 			irv->n_params=n_params;
 
 			m_scopeSymbol.push_back(irv);
@@ -134,9 +134,9 @@ namespace ZetScript{
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				write_error(file.c_str(),line," error var \"%s\" already registered at %s:%i", var_name.c_str(),p_irv->file.c_str(),p_irv->line);
+				WriteError(file.c_str(),line," error var \"%s\" already registered at %s:%i", var_name.c_str(),p_irv->file.c_str(),p_irv->line);
 			}else{
-				write_error(NULL,0," error var \"%s\" already registered as C++", var_name.c_str());
+				WriteError(NULL,0," error var \"%s\" already registered as C++", var_name.c_str());
 			}
 
 			THROW_SCRIPT_ERROR();

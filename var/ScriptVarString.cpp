@@ -4,21 +4,21 @@
  */
 #include "../ZetScript.h"
 
-namespace ZetScript{
+namespace zetscript{
 
-	void CScriptVarString::setup(){
+	void ScriptVarString::Setup(){
 		m_value = &m_strValue;
 		m_strValue = "";
 
 
 	}
 
-	CScriptVarString::CScriptVarString(ZetScript *_zs):CScriptVar(_zs){
+	ScriptVarString::ScriptVarString(ZetScript *_zs):ScriptVar(_zs){
 		m_strValue = "";
 		init(SCRIPT_CLASS_STRING, (void *)this);
 	}
 
-	CScriptVarString::CScriptVarString(ZetScript *_zs, const std::string & s):CScriptVar(_zs){
+	ScriptVarString::ScriptVarString(ZetScript *_zs, const std::string & s):ScriptVar(_zs){
 
 
 		init(SCRIPT_CLASS_STRING, (void *)this);

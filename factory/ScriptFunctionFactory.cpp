@@ -1,24 +1,24 @@
 #include "ZetScript.h"
 
-namespace ZetScript{
+namespace zetscript{
 
 
 	ScriptFunctionFactory::ScriptFunctionFactory(ZetScript *_zs){
 		zs = _zs;
-		scope_factory = _zs->getScopeFactory();
+		scope_factory = _zs->GetScopeFactory();
 	}
 
 
 
 
-	std::vector<ScriptFunction *> 	*ScriptFunctionFactory::getVectorScriptFunctionNode(){
-		return &vec_script_function_node;
+	std::vector<ScriptFunction *> 	*ScriptFunctionFactory::GetScriptFunctions(){
+		return &script_functions;
 	}
 
 	ScriptFunction *		 ScriptFunctionFactory::newScriptFunction(const std::string & file
 			, short line
 			, unsigned char idx_class
-			, short idxScope
+			, short idx_scope
 			, const std::string & function_name
 			, std::vector<ParamArgInfo> args
 			, int idx_return_type
@@ -26,8 +26,8 @@ namespace ZetScript{
 			, unsigned short symbol_info_properties){
 
 		if((symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
-			if(vec_script_function_node.size() > 1){ // if greather than 1 check if node consecutive...
-				if(!((vec_script_function_node.at(vec_script_function_node.size()-1)->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
+			if(script_functions.size() > 1){ // if greather than 1 check if node consecutive...
+				if(!((script_functions.at(script_functions.size()-1)->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
 						THROW_RUNTIME_ERROR("C Functions should be added after global scope and consecutuve C scope node.");
 						return NULL;
 				}
@@ -35,14 +35,14 @@ namespace ZetScript{
 		}
 
 		Symbol *symbol;
-		if((symbol=GET_SCOPE(idxScope)->registerSymbol(file,line,function_name,args.size()))==NULL){
+		if((symbol=GET_SCOPE(idx_scope)->registerSymbol(file,line,function_name,args.size()))==NULL){
 				return NULL;
 		}
 
 		ScriptFunction *irs = new ScriptFunction(
 				zs
 				,idx_class
-				/*,vec_script_function_node.size()
+				/*,script_functions.size()
 				,args
 				,idx_return_type
 				,symbol_info_ref_ptr
@@ -61,30 +61,30 @@ namespace ZetScript{
 
 		irs->symbol_info.idx_symbol = (short)(irs->local_function.size());
 
-		vec_script_function_node.push_back(irs);
-		//irs->idxScriptFunction = vec_script_function_node.size()-1;
+		script_functions.push_back(irs);
+		//irs->idx_script_function = script_functions.size()-1;
 		return irs;
 	}
 
-	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){
-		if(idx < 0 || (unsigned)idx >= vec_script_function_node.size()){
+	ScriptFunction 	* ScriptFunctionFactory::GetScriptFunction(int idx){
+		if(idx < 0 || (unsigned)idx >= script_functions.size()){
 			THROW_RUNTIME_ERROR("ScriptFunction node out of bound");
 			return NULL;
 		}
 
-		return vec_script_function_node.at(idx);
+		return script_functions.at(idx);
 	}
 
-	bool ScriptFunctionFactory::checkCanRegister_C_Function(const std::string &function_name){
+	bool ScriptFunctionFactory::CheckCanRegister_C_Function(const std::string &function_name){
 
-		int size = vec_script_function_node.size();
+		int size = script_functions.size();
 
 		if(size>=3){ //0 is main function (reserved). We check when >= 3 to check previous one (i.e from 1)
 			if((
 
-				((vec_script_function_node)[size-1]->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_C_OBJECT_REF)!=SYMBOL_INFO_PROPERTY_C_OBJECT_REF)
+				((script_functions)[size-1]->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_C_OBJECT_REF)!=SYMBOL_INFO_PROPERTY_C_OBJECT_REF)
 			){
-				THROW_RUNTIME_ERROR(zs_string::sformat("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name.c_str()));
+				THROW_RUNTIME_ERROR(zs_strutils::Format("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name.c_str()));
 				return false;
 			}
 
@@ -93,11 +93,11 @@ namespace ZetScript{
 		return true;
 	}
 
-	void ScriptFunctionFactory::clear(){
+	void ScriptFunctionFactory::Clear(){
 		bool end=false;
 		do{
-			ScriptFunction * info_function = vec_script_function_node.at(vec_script_function_node.size()-1);
-			end=(info_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF || vec_script_function_node.size()==1;
+			ScriptFunction * info_function = script_functions.at(script_functions.size()-1);
+			end=(info_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF || script_functions.size()==1;
 
 			if(!end){
 
@@ -121,7 +121,7 @@ namespace ZetScript{
 					info_function->lut_scope_symbol=NULL;
 				}
 
-				vec_script_function_node.pop_back();
+				script_functions.pop_back();
 				delete info_function;
 
 			}
@@ -132,9 +132,9 @@ namespace ZetScript{
 
 
 	ScriptFunctionFactory::~ScriptFunctionFactory(){
-		for(unsigned i = 0;i < vec_script_function_node.size();i++){
-				//zs_print_debug_cr("* Erasing function %s...", vec_script_function_node.at(i)->object_info.symbol_info.symbol_ref.c_str());
-				ScriptFunction * info_function = vec_script_function_node.at(i);
+		for(unsigned i = 0;i < script_functions.size();i++){
+				//ZS_PRINT_DEBUG("* Erasing function %s...", script_functions.at(i)->object_info.symbol_info.symbol_ref.c_str());
+				ScriptFunction * info_function = script_functions.at(i);
 
 				if (info_function->instruction != NULL) {
 
@@ -155,7 +155,7 @@ namespace ZetScript{
 				delete info_function;
 			}
 
-			vec_script_function_node.clear();
+			script_functions.clear();
 	}
 
 };

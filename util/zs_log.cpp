@@ -2,8 +2,8 @@
 
 #define VAR_LOG(l) ((l) == LOG_ERROR?"ERR": (l)==LOG_WARNING?"WRN": (l) == LOG_INFO ? "INF" : (l) == LOG_DEBUG ? "DBG":"NAN" )
 
-namespace ZetScript{
-	namespace ZS_Log{
+namespace zetscript{
+	namespace zs_log{
 		void  print(const  char  *file, int  line, int level, bool with_cr, const  char  *input_text, ...) {
 			//FILE *log_std=stdout;
 
@@ -21,7 +21,7 @@ namespace ZetScript{
 			}
 
 			if (file != NULL)
-				filename = ZS_Path::get_filename(file);
+				filename = zs_path::get_filename(file);
 
 			char  text[4096] = { 0 };
 

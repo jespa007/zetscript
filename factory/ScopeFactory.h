@@ -8,7 +8,7 @@
 
 
 
-namespace ZetScript{
+namespace zetscript{
 
 	class ScopeFactory{
 		public:

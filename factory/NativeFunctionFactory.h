@@ -5,7 +5,7 @@
 #pragma once
 
 
-namespace ZetScript{
+namespace zetscript{
 
 	class  NativeFunctionFactory{
 
@@ -73,7 +73,7 @@ namespace ZetScript{
 
 		//----------------------------------------
 		//
-		// RET PROXY FUNCTIONS Member function C++
+		// BYTE_CODE_RET PROXY FUNCTIONS Member function C++
 		//
 
 		template <typename _C, typename _R, class _T, typename..._A>
