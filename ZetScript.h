@@ -65,31 +65,35 @@
 #include "util/zs_path.h"
 
 #include "common.h"
+#include "ByteCode.h"
 #include "Instruction.h"
 #include "StackElement.h"
 #include "SymbolInfo.h"
-#include "Instruction.h"
+#include "exception.h"
 
-#include "var/ScriptVarString.h"
-#include "var/ScriptVarVector.h"
-#include "var/ScriptVarFunctor.h"
-#include "var/ScriptVarDictionary.h"
+#include "function/FunctionSymbol.h"
+#include "function/FunctionTraits.h"
+#include "function/FunctionMemberPointer.h"
+#include "function/FunctionProxyFactory.h"
 
-#include "zetscript_exception.h"
-#include "FunctionMemberPointer.h"
+#include "scope/Scope.h"
+#include "scope/ScopeFactory.h"
+
+#include "script/ScriptVar.h"
+#include "script/ScriptVarString.h"
+#include "script/ScriptVarVector.h"
+#include "script/ScriptVarFunctor.h"
+#include "script/ScriptVarDictionary.h"
+#include "script/ScriptClassBase.h"
+#include "script/ScriptClass.h"
+#include "script/ScriptFunction.h"
+#include "script/ScriptFunctionFactory.h"
+#include "script/ScriptClassFactory.h"
 
 
-#include "Instruction.h"
-#include "StackElement.h"
-#include "Scope.h"
-#include "ScopeFactory.h"
-#include "ScriptClassBase.h"
-#include "ScriptFunction.h"
-#include "ScriptFunctionFactory.h"
-#include "ScriptClass.h"
-#include "ScriptClassFactory.h"
+
+#include "eval/eval.h"
 #include "ZetScript.h"
-
 
 
 #define ZETSCRIPT_MAJOR_VERSION 2
@@ -98,44 +102,46 @@
 
 
 #define ZS_CLASS_C_BASEOF(zs)										(zs)->class_C_BaseOf();
-#define ZS_REGISTER_C_FUNCTION(zs,text,s) 							(zs)->Register_C_Function(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_C_VARIABLE(zs,text,s) 							(zs)->Register_C_Variable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
-#define ZS_REGISTER_C_CLASS(zs,class_type,s) 						(zs)->Register_C_Class<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_C_FUNCTION(zs,text,s) 							(zs)->register_C_Function(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_C_VARIABLE(zs,text,s) 							(zs)->register_C_Variable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
+#define ZS_REGISTER_C_CLASS(zs,class_type,s) 						(zs)->register_C_Class<class_type>(s,__FILE__, __LINE__)
 #define ZS_REGISTER_C_SINGLETON_CLASS(zs,class_type,s)				(zs)->register_C_SingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_C_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->Register_C_VariableMember<class_type>(s,v)
-#define ZS_REGISTER_C_STATIC_FUNCTION_MEMBER(zs,class_type,s,f)		(zs)->Register_C_FunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_C_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->register_C_VariableMember<class_type>(s,v)
+#define ZS_REGISTER_C_STATIC_FUNCTION_MEMBER(zs,class_type,s,f)		(zs)->register_C_FunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
 #define ZS_REGISTER_C_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->register_C_FunctionMember<class_type>(s,f,__FILE__, __LINE__)
 #define ZS_REGISTER_C_CONSTANT_INT(zs,constant_name,v)				(zs)->registerConstantIntValue(constant_name,v)
 
 
 namespace zetscript{
 
+
+	extern const char *	str_void_type;				// 	typeid(void).name()
+	extern const char * str_int_type_ptr;			//	typeid(int *).name()
+	extern const char * str_float_type_ptr;			//	typeid(float *).name()
+	extern const char * str_string_type_ptr;		//	typeid(std::string *).name()
+	extern const char * str_const_char_type_ptr;	//	typeid(std::string *).name()
+	extern const char * str_bool_type_ptr;			//	typeid(bool *).name()
+	extern const char * str_int_type;				//	typeid(int).name()
+	extern const char * str_unsigned_int_type;		//	typeid(unsigned int).name()
+	extern const char *	str_intptr_t_type;			//	typeid(intptr_t).name()
+
+	extern const char * str_float_type;				//	typeid(int).name()
+	extern const char * str_bool_type;				//	typeid(bool).name()
+	extern const char * str_stack_element_type;		//	typeid(bool).name()
+
+
+
 	class VirtualMachine;
 	class ScriptEval;
 	class ZetScript{
 
-
-
 	public:
 
-		std::string  str_void_type;				// 	typeid(void).name()
-		std::string  str_int_type_ptr;			//	typeid(int *).name()
-		std::string  str_float_type_ptr;		//	typeid(float *).name()
-		std::string  str_string_type_ptr;		//	typeid(std::string *).name()
-		std::string  str_const_char_type_ptr;	//	typeid(std::string *).name()
-		std::string  str_bool_type_ptr;			//	typeid(bool *).name()
-		std::string  str_int_type;				//	typeid(int).name()
-		std::string  str_unsigned_int_type;		//	typeid(unsigned int).name()
-		std::string  str_intptr_t_type;			//	typeid(intptr_t).name()
-
-		std::string  str_float_type;			//	typeid(int).name()
-		std::string  str_bool_type;				//	typeid(bool).name()
-		std::string  str_stack_element_type;	//	typeid(bool).name()
 
 		//===================================================================================================
 		//
 		// PRINT ASM INFO
-		void PrintGeneratedCode();
+		void printGeneratedCode();
 
 		// PRINT ASM INFO
 		//---------------------------------------------------------------------------------------------------------------------------------------
@@ -144,53 +150,49 @@ namespace zetscript{
 
 		ZetScript();
 
-		inline VirtualMachine * GetVirtualMachine() { return virtual_machine;}
-		inline NativeFunctionFactory * GetNativeFunctionFactory() { return native_function_factory;}
-		inline ScopeFactory * GetScopeFactory() { return scope_factory;}
-		inline ScriptFunctionFactory *GetScriptFunctionFactory() { return script_function_factory;}
-		inline ScriptClassFactory *GetScriptClassFactory() { return script_class_factory;}
+		inline VirtualMachine * getVirtualMachine() { return virtual_machine;}
+		inline FunctionProxyFactory * GetProxyFunctionFactory() { return proxy_function_factory;}
+		inline ScopeFactory * getScopeFactory() { return scope_factory;}
+		inline ScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
+		inline ScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
 
 
-		void	SetCallbackOnError(PrintFunctionCallback _fun);
+		void	setCallbackOnError(PrintFunctionCallback _fun);
 
-		int * EvalIntValue(const std::string & str_to_eval);
-		bool * EvalBoolValue(const std::string & str_to_eval);
-		float * EvalFloatValue(const std::string & str_to_eval);
-		std::string * EvalStringValue(const std::string & str_to_eval);
+		int * evalIntValue(const std::string & str_to_eval);
+		bool * evalBoolValue(const std::string & str_to_eval);
+		float * evalFloatValue(const std::string & str_to_eval);
+		std::string * evalStringValue(const std::string & str_to_eval);
 
-		bool Eval(const std::string & expresion, bool Execute=true,bool show_bytecode=false, const char * filename="");
-		bool EvalFile(const std::string & filename,bool Execute=true,bool show_bytecode=false);
+		bool eval(const std::string & expresion, bool callFunction=true,bool show_bytecode=false, const char * filename="");
+		bool evalFile(const std::string & filename,bool callFunction=true,bool show_bytecode=false);
 
-		ConstantValueInfo 	* 		registerConstantIntValue(const std::string & const_name, int value);
+		ConstantValue 	* 		registerConstantIntValue(const std::string & const_name, int value);
 
 		// CONSTANT TOOLS
-		ConstantValueInfo * getRegisteredConstantValue(const std::string & const_name);
-		ConstantValueInfo * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
+		ConstantValue * getRegisteredConstantValue(const std::string & const_name);
+		ConstantValue * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
-		bool IsFilenameAlreadyParsed(const std::string & filename);
-		const char * GetParsedFilenameFromIdx(unsigned idx);
+		bool isFilenameAlreadyParsed(const std::string & filename);
+		const char * getParsedFilenameFromIdx(unsigned idx);
 
 		//-----------------------------------------------
 
 		/**
-		* Clear: Clear compile information.
+		* clear: clear compile information.
 		*/
-		void Clear();
-		void Execute();
+		void clear();
+		void callFunction();
 
-		void 						SetPrintOutCallback(void (*)(const char *));
+		void 						setPrintOutCallback(void (*)(const char *));
 
-
-		StackElement 					C_REF_InfoVariable_2_StackElement(SymbolInfo *ir_var, void *ptr_variable);
-
-		int GetIdxClassFromIts_C_Type(const std::string & str_type){
-			return script_class_factory->GetIdxClassFromIts_C_Type(str_type);
+		int getIdxClassFromIts_C_Type(const std::string & str_type){
+			return script_class_factory->getIdxClassFromIts_C_Type(str_type);
 		}
 
 
-		const char * getMetamethod(ByteCodeMetamethod op);
 		void 												register_C_BaseSymbols(bool r){
 			script_class_factory->register_C_BaseSymbols(r);
 		}
@@ -199,16 +201,16 @@ namespace zetscript{
 		 * Register C function
 		 */
 		template <typename F>
-		bool Register_C_Function( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->Register_C_Function( function_name,function_ptr, registered_file,registered_line);
+		bool register_C_Function( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->register_C_Function( function_name,function_ptr, registered_file,registered_line);
 		}
 
 		/**
 		 * Register C variable
 		 */
 		template <typename V>
-		 SymbolInfo * Register_C_Variable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
-			 return script_class_factory->Register_C_Variable(var_str,var_ptr, typeid(V).name(), registered_file, registered_line);
+		 SymbolInfo * register_C_Variable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
+			 return script_class_factory->register_C_Variable(var_str,var_ptr, typeid(V).name(), registered_file, registered_line);
 		 }
 
 		/**
@@ -223,14 +225,14 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		bool Register_C_Class(const std::string & class_name, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->Register_C_Class<C>(class_name, registered_file,registered_line);
+		bool register_C_Class(const std::string & class_name, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->register_C_Class<C>(class_name, registered_file,registered_line);
 		}
 
 
 		template<typename C>
-		bool Register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1){
-			return script_class_factory->Register_C_ClassBuiltIn<C>(class_name, registered_file, registered_line);
+		bool register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1){
+			return script_class_factory->register_C_ClassBuiltIn<C>(class_name, registered_file, registered_line);
 		}
 
 
@@ -252,8 +254,8 @@ namespace zetscript{
 		 * Register Static Function Member Class
 		 */
 		template <typename _F>
-		bool Register_C_FunctionMemberStatic(const char *function_name,_F fun, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->Register_C_FunctionMemberStatic(function_name,fun, registered_file, registered_line);
+		bool register_C_FunctionMemberStatic(const char *function_name,_F fun, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->register_C_FunctionMemberStatic(function_name,fun, registered_file, registered_line);
 
 		}
 
@@ -261,8 +263,8 @@ namespace zetscript{
 		 * Register C function as function member
 		 */
 		template <typename F>
-		bool Register_C_FunctionAsFunctionMember( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->Register_C_FunctionAsFunctionMember( function_name,function_ptr, registered_file,registered_line);
+		bool register_C_FunctionAsFunctionMember( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->register_C_FunctionAsFunctionMember( function_name,function_ptr, registered_file,registered_line);
 		}
 
 
@@ -270,15 +272,14 @@ namespace zetscript{
 		 * Register C Member var
 		 */
 		template <typename C, typename R,typename T>
-		bool Register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->Register_C_VariableMember<C>(var_name,var_pointer,registered_file,registered_line);
+		bool register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->register_C_VariableMember<C>(var_name,var_pointer,registered_file,registered_line);
 		}
 
 		//cpp binding
 		// Helpers...
-		inline StackElement varToStk(intptr_t var_trans, int idx_type);
-		inline bool stkToVar(StackElement *stk_src, int idx_dst_type, intptr_t *result, std::string & error);
-
+		inline StackElement varToStackElement(intptr_t var_trans, int idx_builtin_type);
+		inline bool stackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error);
 
 		template<typename T>
 		static ScriptVarVector * stdVectorToScriptVarVector(const std::vector<T> & v,ZetScript *zs_instance){
@@ -287,7 +288,7 @@ namespace zetscript{
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->push();
 				//intptr_t uvar = (intptr_t)(v[i]);
-				*stk = zs_instance->varToStk((intptr_t)(v[i]),zs_instance->GetIdxClassFromIts_C_Type(typeid(T).name()));
+				*stk = zs_instance->varToStackElement((intptr_t)(v[i]),zs_instance->getIdxClassFromIts_C_Type(typeid(T).name()));
 			}
 
 			return vsv;
@@ -406,21 +407,21 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------
 
 		 template <typename F, std::size_t... Is>
-		 auto BindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity > 0)>::type;
 
 
 		 template <typename F, std::size_t... Is>
-		 auto BindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity == 0)>::type;
 
 
 
-		bool GetScriptObject(const std::string &function_access,ScriptVar **calling_obj,ScriptFunction **fun_obj );
+		bool getScriptObject(const std::string &function_access,ScriptVar **calling_obj,ScriptFunction **fun_obj );
 
 
 		template <  typename F>
-		std::function<F> * BindScriptFunction(const std::string & function_access);
+		std::function<F> * bindScriptFunction(const std::string & function_access);
 
 
 		 ~ZetScript();
@@ -430,23 +431,22 @@ namespace zetscript{
 		typedef struct {
 			std::string filename;
 			//unsigned char *data;
-		} ParsedSourceInfo;
+		} ParsedFile;
 
 
 		//--------
 		// VARS
-		std::map<std::string,ConstantValueInfo *> 	 m_contantPool;
-		std::vector<ParsedSourceInfo> 			 m_parsedSource;
-		std::map<std::string,ConstantValueInfo *> 	 constant_pool;
-		ScriptEval * eval_obj;
+		std::map<std::string,ConstantValue *> 	 	constant_values;
+		std::vector<ParsedFile> 			 		parsed_files;
+
+		//ScriptEval * eval_obj;
 		VirtualMachine * virtual_machine;
-		NativeFunctionFactory * native_function_factory;
+		FunctionProxyFactory * proxy_function_factory;
 		ScopeFactory * scope_factory;
 		ScriptFunctionFactory *script_function_factory;
 		ScriptClassFactory *script_class_factory;
 
-
-		ZetScript 		*zs;
+		//ZetScript 		*zs;
 
 		float eval_float;
 		int eval_int;
@@ -457,9 +457,9 @@ namespace zetscript{
 		//===================================================================================================
 		//
 		// PRINT ASM INFO
-		std::string getStrMovVar(Instruction * iao);
-		std::string getStrTypeLoadValue(ScriptFunction *current_function,PtrInstruction m_listStatements, int current_instruction);
-		void PrintGeneratedCode(ScriptFunction *sfo);
+//		std::string getStrMovVar(Instruction * iao);
+
+		//void printGeneratedCode(ScriptFunction *sfo);
 
 		//----
 
@@ -471,6 +471,6 @@ namespace zetscript{
 
 }
 
-#include "VirtualMachine.h"
-#include "ZetScript.inc"
-#include "FunctionTraits.h"
+#include	"vm/VirtualMachine.h"
+#include 	"ZetScript.inc"
+

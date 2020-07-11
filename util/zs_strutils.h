@@ -1,3 +1,6 @@
+#pragma once
+
+
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 #define ZS_STRCMP(a, R, b) (strcmp(a,b) R 0)
@@ -13,34 +16,34 @@ namespace zetscript{
 			NUMBER_TYPE_DOUBLE
 		}NumberType;
 
-		 bool  * ParseBoolean(const std::string & );
-		 int   * ParseInteger(const std::string & );
-		 float * ParseFloat(const std::string & );
+		 bool  * parseBoolean(const std::string & );
+		 int   * parseInteger(const std::string & );
+		 float * parseFloat(const std::string & );
 
 
-		 std::string IntToString(int number);
-		 std::string ToLower(const std::string & str);
-		 std::string ToUpper(const std::string & str);
-		 std::wstring ToWString(const std::string &s);
-		  std::string  Format(const  char  *string_text, ...);
+		 std::string intToString(int number);
+		 std::string toLower(const std::string & str);
+		 std::string toUpper(const std::string & str);
+		 std::wstring toWString(const std::string &s);
+		  std::string  format(const  char  *string_text, ...);
 
-		 bool EndsWith(const std::string & fullString, const std::string & ending);
+		 bool endsWith(const std::string & fullString, const std::string & ending);
 
-		  std::vector<std::string> Split(const std::string &s, char delim, std::vector<std::string> &elems);
-		  std::vector<std::string> Split(const std::string &s, char delim);
+		  std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
+		  std::vector<std::string> split(const std::string &s, char delim);
 		 bool is_empty(const std::string & str);
-		 NumberType IsNumber(const std::string & test_str);
-		 bool 		 IsBinary(const std::string & test_str);
+		 NumberType isNumber(const std::string & test_str);
+		 bool 		 isBinary(const std::string & test_str);
 
-		 std::string Remove(std::string & str_old, char ch_to_remove);
+		 std::string remove(std::string & str_old, char ch_to_remove);
 
-		 int Count(const std::string & s,char c);
+		 int count(const std::string & s,char c);
 
 		/**
 		 * Given two pointers within that points within a std::string, this function copies std::string between its interval.
 		 * @p1:start pointer
 		 * @p2:end pointer
 		 */
-		 char * CopyFromPointerDiff(const char *p1, const char *p2);
+		 char * copyFromPointerDiff(const char *p1, const char *p2);
 	}
 }

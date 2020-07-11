@@ -1,10 +1,19 @@
 #include "ZetScript.h"
 
-#define FORMAT_PRINT_INSTRUCTION "%04i"
-
-#include "ZetScript_eval.cpp"
-
 namespace zetscript{
+
+	const char * str_void_type =typeid(void).name();
+	const char * str_int_type_ptr=typeid(int *).name();
+	const char * str_float_type_ptr=typeid(float *).name();
+	const char * str_string_type_ptr=typeid(std::string *).name();
+	const char * str_const_char_type_ptr=typeid(std::string *).name();
+	const char * str_bool_type_ptr=typeid(bool *).name();
+	const char * str_int_type=typeid(int).name();
+	const char * str_unsigned_int_type=typeid(unsigned int).name();
+	const char * str_intptr_t_type=typeid(intptr_t).name();
+	const char * str_float_type=typeid(int).name();
+	const char * str_bool_type=typeid(bool).name();
+	const char * str_stack_element_type=typeid(bool).name();
 
 	// define prototype ...
 	int error_line;
@@ -12,7 +21,7 @@ namespace zetscript{
 	char error_description[1024];
 	const char *error_type="NA";
 
-	void  WriteError(const char *filename, int line, const  char  *input_text, ...){
+	void  writeError(const char *filename, int line, const  char  *input_text, ...){
 
 		char output_text[4096];
 
@@ -20,7 +29,6 @@ namespace zetscript{
 		va_start(ap,  input_text);
 		vsprintf(output_text,  input_text,  ap);
 		va_end(ap);
-
 
 		memset(error_filename,0,sizeof(error_filename));
 
@@ -36,24 +44,25 @@ namespace zetscript{
 		strcpy(error_description,output_text);
 	}
 
-	int GetErrorLine(){
+	int getErrorLine(){
 		return error_line;
 	}
 
-	const char * GetErrorDescription(){
+	const char * getErrorDescription(){
 		return error_description;
 	}
 
-	const char * GetErrorSourceFilename(){
+	const char * getErrorSourceFilename(){
 		return error_filename;
 	}
 
 	ZetScript::ZetScript(){
 
+		eval::initEval();
 		scope_factory = new ScopeFactory(this);
-		native_function_factory = new NativeFunctionFactory(this);
+		proxy_function_factory = new FunctionProxyFactory();
 		script_function_factory= new ScriptFunctionFactory(this);
-		eval_obj = new ScriptEval(this);
+		//eval_obj = new ScriptEval(this);
 		virtual_machine = new VirtualMachine(this);
 		script_class_factory = new ScriptClassFactory(this);
 
@@ -62,8 +71,7 @@ namespace zetscript{
 		eval_string="";
 		eval_bool = false;
 
-		zs=this;
-
+		//zs=this;
 		//----
 		//conversion_types = new std::map<int, std::map<int, ConversionType>>();
 
@@ -81,143 +89,74 @@ namespace zetscript{
 		str_intptr_t_type =  typeid(intptr_t).name();
 		str_float_type =  typeid(float).name();
 		str_stack_element_type=  typeid(StackElement *).name();
-
-
-
 	}
 
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
 
-	 std::string ZetScript::getStrTypeLoadValue(ScriptFunction *current_function,PtrInstruction list_statements, int current_instruction){
 
-		 char print_aux_load_value[512] = {0};
-		 char object_access[512] = "";
-
-		 Instruction * instruction =&list_statements[current_instruction];
-		 ConstantValueInfo *icv;
-		 std::string symbol_value=INSTRUCTION_GET_SYMBOL_NAME(current_function,instruction);
-		 if(instruction->byte_code_op != BYTE_CODE_LOAD){
-			 return "ERROR";
-		 }
-
-		 sprintf(print_aux_load_value,"UNDEFINED");
-
-		 if(instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
-
-			 sprintf(object_access,
-					"[" FORMAT_PRINT_INSTRUCTION "]."
-
-					,(int)instruction->op2_value);
-		 }
-		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){
-			sprintf(object_access,"this.");
-		 }
-
-		 switch(instruction->op1_value){
-
-			case LoadType::LOAD_TYPE_CONSTANT:
-				icv=(ConstantValueInfo *)instruction->op2_value;
-				switch(icv->properties){
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-					sprintf(print_aux_load_value,"CONST(%i)",(int)((intptr_t)icv->stk_value));
-					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-					sprintf(print_aux_load_value,"CONST(%f)",*((float *)&icv->stk_value));
-					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-					sprintf(print_aux_load_value,"CONST(%s)",((const char *)icv->stk_value));
-					break;
-
-				}
-				break;
-
-			case LoadType::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"%sVAR(%s)",object_access,symbol_value.c_str());
-				break;
-			case LoadType::LOAD_TYPE_FUNCTION:
-
-				sprintf(print_aux_load_value,"%sFUN(%s)",object_access,symbol_value.c_str());
-				break;
-
-			case LoadType::LOAD_TYPE_ARGUMENT:
-				sprintf(print_aux_load_value,"ARG(%s)",symbol_value.c_str());
-				break;
-			default:
-
-				break;
-		}
-		return print_aux_load_value;
-	 }
-
-	 void ZetScript::PrintGeneratedCode(){
+	 void ZetScript::printGeneratedCode(){
 
 		 std::vector<ScriptClass *> *script_classes=script_class_factory->getVectorScriptClassNode();
 		 // for all classes print code...
 		 for(unsigned i = 0; i < script_classes->size(); i++){
 			 ScriptClass *rc=script_classes->at(i);
 			 for(unsigned f = 0; f < rc->local_function.size(); f++){
-				 PrintGeneratedCode(rc->local_function[f]);
+				 ScriptFunction::printGeneratedCode(rc->local_function[f]);
 			 }
 		 }
 	 }
 	 // PRINT ASM INFO
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
 	//--------------------------------
 	 // FILE MANAGEMENT
-
-
-	bool ZetScript::IsFilenameAlreadyParsed(const std::string & filename){
-		for(unsigned i = 0; i < m_parsedSource.size(); i++){
-			if(m_parsedSource.at(i).filename==filename){
+	bool ZetScript::isFilenameAlreadyParsed(const std::string & filename){
+		for(unsigned i = 0; i < parsed_files.size(); i++){
+			if(parsed_files.at(i).filename==filename){
 				return true;
 			}
 		}
 		return false;
 	}
 
-	const char * ZetScript::GetParsedFilenameFromIdx(unsigned idx){
+	const char * ZetScript::getParsedFilenameFromIdx(unsigned idx){
 
-		if(idx >= m_parsedSource.size()){
+		if(idx >= parsed_files.size()){
 			THROW_RUNTIME_ERROR("out of bounds");
 			return DEFAULT_NO_FILENAME;
 		}
-
-		return m_parsedSource.at(idx).filename.c_str();
+		return parsed_files.at(idx).filename.c_str();
 	}
 
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 	//
 	// CONSTANT MANAGEMENT
 
-	ConstantValueInfo *ZetScript::getRegisteredConstantValue(const std::string & const_name){
+	ConstantValue *ZetScript::getRegisteredConstantValue(const std::string & const_name){
 
-		if((m_contantPool).count(const_name) == 1){
-			return (m_contantPool)[const_name];
+		if((constant_values).count(const_name) == 1){
+			return (constant_values)[const_name];
 		}
 		return NULL;
 	}
 
-	ConstantValueInfo * ZetScript::registerConstantValue(const std::string & const_name, void *obj, unsigned short properties){
+	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, void *obj, unsigned short properties){
 
-		ConstantValueInfo * info_ptr=NULL;
+		ConstantValue * info_ptr=NULL;
 
 		if(getRegisteredConstantValue(const_name) == NULL){
-			info_ptr=new ConstantValueInfo;
+			info_ptr=new ConstantValue;
 			*info_ptr={obj,NULL,properties};
-			(m_contantPool)[const_name]=info_ptr;
+			(constant_values)[const_name]=info_ptr;
 		}else{
-			THROW_RUNTIME_ERROR(zs_strutils::Format("internal:constant %s already exist",const_name.c_str()));
+			THROW_RUNTIME_ERROR(zs_strutils::format("internal:constant %s already exist",const_name.c_str()));
 		}
 
 		return info_ptr;
 	}
 
-	ConstantValueInfo * ZetScript::registerConstantIntValue(const std::string & const_name, int _value){
+	ConstantValue * ZetScript::registerConstantIntValue(const std::string & const_name, int _value){
 		intptr_t value = _value;
 		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER;
 		StackElement *stk;
@@ -236,30 +175,24 @@ namespace zetscript{
 
 
 
-
-
-
-
-	/*void  ZetScript::InternalPrintError(const char *s){
+	/*void  ZetScript::internalPrintError(const char *s){
 		 virtual_machine->SetError(s);
 	}*/
 
 
-	void ZetScript::SetPrintOutCallback(void (* _printout_callback)(const char *)){
+	void ZetScript::setPrintOutCallback(void (* _printout_callback)(const char *)){
 		print_out_callback=_printout_callback;
 	}
 
 	void (* ZetScript::print_out_callback)(const char *) = NULL;
 
-
-
 	void ZetScript::clear(){
 
-		virtual_machine->ClearGlobalVars();
+		virtual_machine->clearGlobalVars();
 
-		ScriptFunction * main_function = this->script_function_factory->GetScriptFunction(IDX_MAIN_FUNCTION);
+		ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_MAIN_FUNCTION);
 
-		// clean main functions ... Remove script functions and leave c functions...
+		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
 			f < main_function->local_function.size()
 			;) {
@@ -272,10 +205,9 @@ namespace zetscript{
 			else {
 				f++;
 			}
-
 		}
 
-		// Remove variables except c variables ...
+		// remove variables except c variables ...
 		for (unsigned v = 0;
 			v < main_function->local_variable.size(); ) {
 
@@ -289,20 +221,19 @@ namespace zetscript{
 			}
 		}
 
-		// Remove scope vars...
+		// remove scope vars...
 		scope_factory->clear();
 		script_function_factory->clear();
 		script_class_factory->clear();
 	}
 
-	int * ZetScript::EvalIntValue(const std::string & str_to_eval){
-
+	int * ZetScript::evalIntValue(const std::string & str_to_eval){
 
 		if(!eval(str_to_eval.c_str())){
 			return NULL;
 		}
 
-		StackElement *se=virtual_machine->GetLastStackValue();
+		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
@@ -312,22 +243,20 @@ namespace zetscript{
 				return &eval_int;
 			}
 			else{
-				THROW_RUNTIME_ERROR(zs_strutils::Format("EvalIntValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(zs_strutils::format("EvalIntValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
 		return NULL;
-
-
 	}
 
-	bool * ZetScript::EvalBoolValue(const std::string & str_to_eval){
+	bool * ZetScript::evalBoolValue(const std::string & str_to_eval){
 
 		if(!eval(str_to_eval.c_str())){
 			return NULL;
 		}
 
-		StackElement *se=virtual_machine->GetLastStackValue();
+		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
@@ -336,20 +265,20 @@ namespace zetscript{
 				return &eval_bool;
 
 			}else{
-				THROW_RUNTIME_ERROR(zs_strutils::Format("EvalBoolValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(zs_strutils::format("EvalBoolValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
 		return NULL;
 	}
 
-	float * ZetScript::EvalFloatValue(const std::string & str_to_eval){
+	float * ZetScript::evalFloatValue(const std::string & str_to_eval){
 
 		if(!eval(str_to_eval.c_str())){
 			return NULL;
 		}
 
-		StackElement *se=virtual_machine->GetLastStackValue();
+		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
@@ -358,23 +287,19 @@ namespace zetscript{
 				return &eval_float;
 			}
 			else{
-				THROW_RUNTIME_ERROR(zs_strutils::Format("EvalFloatValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
-
+				THROW_RUNTIME_ERROR(zs_strutils::format("EvalFloatValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
-
-
 		return NULL;
 	}
 
-	std::string * ZetScript::EvalStringValue(const std::string & str_to_eval){
-
+	std::string * ZetScript::evalStringValue(const std::string & str_to_eval){
 
 		if(!eval(str_to_eval.c_str())){
 			return NULL;
 		}
 
-		StackElement *se=virtual_machine->GetLastStackValue();
+		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
 
@@ -384,20 +309,19 @@ namespace zetscript{
 				return &eval_string;
 			}
 			else{
-				zs_strutils::Format("EvalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				zs_strutils::format("EvalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 			}
 		}
 
 		return NULL;
 	}
 
-
-	void ZetScript::Execute(){
+	void ZetScript::callFunction(){
 
 		bool error=false;
 
-		// the first code to Execute is the main function that in fact is a special member function inside our main class
-		virtual_machine->Execute(script_class_factory->getMainFunction(), NULL,error,NO_PARAMS);
+		// the first code to callFunction is the main function that in fact is a special member function inside our main class
+		virtual_machine->callFunction(script_class_factory->getMainFunction(), NULL,error,NO_PARAMS);
 
 		if(error){
 			THROW_SCRIPT_ERROR();
@@ -406,21 +330,18 @@ namespace zetscript{
 
 	bool ZetScript::eval(const std::string & expression, bool exec_vm, bool show_bytecode, const char * filename)  {
 
-
-		if(!eval_obj->eval(expression.c_str(),filename)){
+		if(!eval::eval(this,expression.c_str(),filename)){
 			return false;
 		}
 
-
 		virtual_machine->buildCache();
 
-
 		if(show_bytecode){
-			PrintGeneratedCode();
+			printGeneratedCode();
 		}
 
 		if(exec_vm){
-			Execute();
+			callFunction();
 		}
 
 		return true;
@@ -431,14 +352,14 @@ namespace zetscript{
 		bool error=false;
 		char *buf_tmp=NULL;
 
-		if(!IsFilenameAlreadyParsed(filename)){
-			ParsedSourceInfo ps;
+		if(!isFilenameAlreadyParsed(filename)){
+			ParsedFile ps;
 			ps.filename = filename;
-			m_parsedSource.push_back(ps);
-			//idx_file=m_parsedSource.size()-1;
+			parsed_files.push_back(ps);
+			//idx_file=parsed_files.size()-1;
 			int n_bytes;
 
-			if((buf_tmp=zs_io::ReadFile(filename, n_bytes))!=NULL){
+			if((buf_tmp=zs_io::readFile(filename, n_bytes))!=NULL){
 				try{
 					eval(buf_tmp, exec_vm, show_bytecode,filename.c_str());
 				}
@@ -452,7 +373,7 @@ namespace zetscript{
 
 		}else{
 			// already parsed
-			THROW_RUNTIME_ERROR(zs_strutils::Format("Filename \"%s\" already parsed",filename));
+			THROW_RUNTIME_ERROR(zs_strutils::format("Filename \"%s\" already parsed",filename));
 			error=true;
 		}
 
@@ -463,15 +384,15 @@ namespace zetscript{
 		return !error;
 	}
 
-	bool ZetScript::GetScriptObject(const std::string &function_access,ScriptVar **calling_obj,ScriptFunction **fun_obj ){
+	bool ZetScript::getScriptObject(const std::string &function_access,ScriptVar **calling_obj,ScriptFunction **fun_obj ){
 
 		//ZS_CLEAR_ERROR_MSG();
 
-		std::vector<std::string> access_var = zs_strutils::Split(function_access,'.');
+		std::vector<std::string> access_var = zs_strutils::split(function_access,'.');
 		//ScriptFunction * main_function = main_function;
 
 		/*if(main_function == NULL){
-			zs_strutils::Format("main_function is not initialized");
+			zs_strutils::format("main_function is not initialized");
 			return false;
 		}*/
 		ScriptFunction * main_function = script_class_factory->getMainFunction();
@@ -490,21 +411,21 @@ namespace zetscript{
 					for(unsigned j = 0; j < main_function->local_variable.size() && *calling_obj==NULL; j++){
 						if(main_function->local_variable[j].symbol->name==symbol_to_find
 						&& main_function->local_variable[j].symbol->idx_scope == IDX_GLOBAL_SCOPE){
-							StackElement *stk = virtual_machine->GetStackElement(j); // main_function->object_info.local_symbols.variable[j].
+							StackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
 							if(stk!=NULL){
 								if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 									*calling_obj=(ScriptVar *)stk->var_ref;
 								}
 							}
 							else{
-								zs_strutils::Format("cannot access i (%i)",j);
+								zs_strutils::format("cannot access i (%i)",j);
 								return false;
 							}
 						}
 					}
 
 					if((*calling_obj) == NULL){
-						zs_strutils::Format("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						zs_strutils::format("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return false;
 					}
 
@@ -516,12 +437,12 @@ namespace zetscript{
 						if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 							*calling_obj=(ScriptVar *)se->var_ref;
 						}else{
-							zs_strutils::Format("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
+							zs_strutils::format("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
 							return false;
 						}
 					}
 					else{
-						zs_strutils::Format("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+						zs_strutils::format("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						return false;
 					}
 				}
@@ -534,7 +455,7 @@ namespace zetscript{
 				}
 			}else{
 
-				zs_strutils::Format("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
+				zs_strutils::format("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
 				return false;
 			}
 
@@ -551,31 +472,26 @@ namespace zetscript{
 		}
 
 		if(*fun_obj==NULL){
-			THROW_RUNTIME_ERROR(zs_strutils::Format("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
+			THROW_RUNTIME_ERROR(zs_strutils::format("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str()));
 			return false;
 		}
-
 		return true;
 	}
 
 	ZetScript::~ZetScript(){
 
-		virtual_machine->ClearGlobalVars();
-
-
+		virtual_machine->clearGlobalVars();
 
 		// clear objects...
 		delete scope_factory;
 		delete script_function_factory;
-		delete native_function_factory;
+		delete proxy_function_factory;
 		delete script_class_factory;
-		delete eval_obj;
 
 		virtual_machine=NULL;
 
-
-		for(std::map<std::string,ConstantValueInfo *>::iterator it=m_contantPool.begin();it!=m_contantPool.end();it++){
-			ConstantValueInfo *icv=it->second;
+		for(std::map<std::string,ConstantValue *>::iterator it=constant_values.begin();it!=constant_values.end();it++){
+			ConstantValue *icv=it->second;
 			switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(icv->properties)){
 			default:
 				break;
@@ -591,16 +507,9 @@ namespace zetscript{
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 				delete (ScriptVarString *)icv->var_ref;
 				break;
-
 			}
-
 			delete icv;
 		}
-
-		m_contantPool.clear();
-
+		constant_values.clear();
 	}
-
 }
-
-

@@ -158,40 +158,43 @@ ELSE()
 
 	set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	
-		#-- Exception --
-		exception.cpp
-	
-	    #-- Utils --
-		util/io.cpp
-		util/log.cpp
-		util/path.cpp
-		util/rtti.cpp
-		util/string.cpp
+		# Utils
+ 		util/zs_io.cpp
+ 		util/zs_log.cpp
+ 		util/zs_path.cpp
+ 		util/zs_rtti.cpp
+ 		util/zs_strutils.cpp
+ 		
+ 		# VM
+ 		vm/VirtualMachine.cpp
+ 		
+		# Eval		
+		eval/eval.cpp
 		
-		#-- Variables --
-		var/ScriptVar.cpp
-	
-		var/ScriptVarString.cpp
-		var/ScriptVarDictionary.cpp
-		var/ScriptVarVector.cpp
-		var/ScriptVarFunctor.cpp
-		
-		#-- Script Core --
-		CEval.cpp
-		CScope.cpp
-		CScopeFactory.cpp
-		CNativeFunctionFactory.cpp
-		CScriptClassBase.cpp
-		ScriptFunction.cpp
-		CScriptFunctionFactory.cpp
-		CScriptClass.cpp
-		CScriptClassFactory.cpp
-		VirtualMachine.cpp
-		CByteCode.cpp
-		
-	
-		#-- Script Core --
-		ZetScript.cpp	
+		# Function
+		function/FunctionProxyFactory.cpp 		
+ 		
+ 		# Scope
+ 		scope/Scope.cpp
+		scope/ScopeFactory.cpp
+				
+		 # Script
+		script/ScriptVar.cpp
+		script/ScriptVarString.cpp
+		script/ScriptVarVector.cpp
+		script/ScriptVarFunctor.cpp
+ 		script/ScriptVarDictionary.cpp
+		script/ScriptClassBase.cpp
+		script/ScriptClass.cpp
+		script/ScriptFunction.cpp
+		script/ScriptFunctionFactory.cpp
+		script/ScriptClassFactory.cpp
+		 		 		
+ 		# Core
+ 		exception.cpp
+ 		Scope.cpp
+ 		SymbolInfo.cpp
+		ZetScript.cpp
 	
 	)
 ENDIF()
@@ -202,7 +205,6 @@ if(MSVC)
 	#only for msvc...
 	set_target_properties(ZetScript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)
 endif()
-
 
 
 IF ( "${FCOMPILE}" STREQUAL "ON")
@@ -216,30 +218,31 @@ ELSE()
 	SET(
 		HS
 		
-		var/ScriptVarString.h
-		var/ScriptVarVector.h
-		var/ScriptVarFunctor.h
-		var/ScriptVarDictionary.h
-		var/ScriptVar.h
+		script/ScriptVarString.h
+		script/ScriptVarVector.h
+		script/ScriptVarFunctor.h
+		script/ScriptVarDictionary.h
+		script/ScriptVar.h
+		script/ScriptClassBase.h
+		script/ScriptClass.h
+		script/ScriptFunction.h
+		
 		factory/ScopeFactory.h
 		factory/ScriptClassFactory.h
 		factory/ScriptFunctionFactory.h
-		factory/NativeFunctionFactory.h
-		helper/register_function.h
-		helper/cpp_binding.h
-		Common.h
+		factory/FunctionProxyFactory.h
+		
+		
+		common.h
 		Scope.h
-		ScriptClassBase.h
-		ScriptClass.h
-		ScriptFunction.h
 		VirtualMachine.h
 		ZetScript.h
-		zetscript_exception.h
+		exception.h
 		
 		VirtualMachine.inc
 		ZetScript.inc
-		CScriptClassFactory.inc
-		CByteCode.h
+		ScriptClassFactory.inc
+		ByteCode.h
 	)
 	
 	

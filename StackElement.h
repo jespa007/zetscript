@@ -62,6 +62,55 @@ enum:unsigned short {
 #define MSK_STACK_ELEMENT_PROPERTY_RUNTIME					(((0x1<<(MAX_BIT_RUNTIME-BIT_STACK_ELEMENT_PROPERTY_IS_VAR_C))-1)<<(BIT_STACK_ELEMENT_PROPERTY_IS_VAR_C))
 #define GET_MSK_STACK_ELEMENT_PROPERTY_RUNTIME(prop)		((prop)&MSK_STACK_ELEMENT_PROPERTY_RUNTIME)
 
+
+#define STK_VALUE_IS_FLOAT_OR_INT(stk)\
+	(stk->properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER))
+
+// Check types
+#define STK_VALUE_IS_FLOAT(stk) \
+(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)
+
+
+#define STK_VALUE_IS_INT(stk) \
+(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER)
+
+
+#define STK_VALUE_IS_STRING(stk) \
+(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)
+
+#define STK_VALUE_IS_CHAR_PTR(stk) \
+(stk->properties & STK_PROPERTY_TYPE_CHAR_PTR)
+
+#define STK_VALUE_IS_BOOLEAN(stk) \
+(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN)
+
+#define STK_VALUE_IS_UNDEFINED(stk) \
+(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED)
+
+#define STK_VALUE_IS_FUNCTION(stk) \
+(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)
+
+#define STK_VALUE_IS_SCRIPT_VAR(stk) \
+(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
+
+#define STK_VALUE_IS_VECTOR(stk) \
+(( stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR) &&\
+ (((ScriptVar *)(stk->stk_value))->idx_class==IDX_BUILTIN_TYPE_CLASS_VECTOR))
+
+/*#define STK_VALUE_IS_INT_OR_FLOAT(properties) \
+((properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER) ||\
+(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT))*/
+
+#define STK_VALUE_TO_INT(ptr_result_instruction) \
+		((int)((intptr_t)(ptr_result_instruction->stk_value)))
+
+#define STK_VALUE_TO_BOOL(ptr_result_instruction) \
+		(((bool)(ptr_result_instruction->stk_value)))
+
+
+#define STK_VALUE_TO_STRING(ptr_result_instruction) \
+		(((const char *)(ptr_result_instruction->stk_value)))
+
 namespace zetscript{
 
 	#pragma pack(push, 1)
@@ -72,11 +121,19 @@ namespace zetscript{
 		void * var_ref; // stack ref in case to assign new value.
 		unsigned short properties; // it tells its properties
 
-		const char *VarToStr();
+		std::string VarTypeToStr();
+
+		//inline StackElement varToStackElement(intptr_t var_trans, int idx_builtin_type);
+		//inline bool stackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error);
+
 	};
 
 	#pragma pack(pop)
 
-	typedef StackElement ConstantValueInfo;
+
+	typedef StackElement ConstantValue;
+
+	const char * indexInstructionVarTypeToStr(StackElement *ptr_info_ale);
+
 
 }

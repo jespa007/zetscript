@@ -2,8 +2,8 @@
 
 namespace zetscript{
 
-	const char * ByteCodeToStr(ByteCode _op_code){
-		switch(_op_code){
+	const char * ByteCodeToStr(ByteCode _byte_code){
+		switch(_byte_code){
 			case BYTE_CODE_EQU:        return "BYTE_CODE_EQU";  // ==
 			case BYTE_CODE_INSTANCEOF:  return "BYTE_CODE_INSTANCEOF";  // ==
 			case BYTE_CODE_NOT_EQU:     return "BYTE_CODE_NOT_EQU" ;  // !=

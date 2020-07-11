@@ -13,18 +13,18 @@ int main(int argc, char * argv[]) {
 	ZetScript *zs = new ZetScript();
 
 	if (argc > 1) {
-		bool Execute=true;
+		bool callFunction=true;
 		bool show_bytecode=false;
 		const char * file=NULL;
 
 		for(int i=1; i < argc; i++){
 
-			std::vector<std::string> a=zs_strutils::Split(argv[i],'=');
+			std::vector<std::string> a=zs_strutils::split(argv[i],'=');
 			switch(a.size()){
 			case 1:
 
 				if(strcmp(argv[i],"--no_execute")==0){
-					Execute = false;
+					callFunction = false;
 				}else if(strcmp(argv[i],"--show_bytecode")==0){
 					show_bytecode=true;
 
@@ -61,7 +61,7 @@ int main(int argc, char * argv[]) {
 
 
 		try{
-			zs->evalFile(file,Execute,show_bytecode);
+			zs->evalFile(file,callFunction,show_bytecode);
 		}catch(std::exception & ex){
 			fprintf(stderr,"%s\n",ex.what());
 		}

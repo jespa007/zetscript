@@ -39,15 +39,15 @@ int main(){
 
 	ZetScript *zs=new ZetScript();
 
-	zs->Register_C_Class<MyClass>("MyClass"); // register MyClass with name MyClass in script side.
-	zs->Register_C_Class<MyClassExtend>("MyClassExtend"); // register MyClassExtend with name MyClassExtend in script side.
+	zs->register_C_Class<MyClass>("MyClass"); // register MyClass with name MyClass in script side.
+	zs->register_C_Class<MyClassExtend>("MyClassExtend"); // register MyClassExtend with name MyClassExtend in script side.
 
-	zs->Register_C_VariableMember<MyClass>("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
+	zs->register_C_VariableMember<MyClass>("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
 	zs->register_C_FunctionMember<MyClass>("function0",&MyClass::function0); // register function0 named function1 in script side as function member.
 	zs->register_C_FunctionMember<MyClass>("function1",&MyClass::function1); // register function1 named function1 in script side as function member.
 
 
-	zs->Register_C_VariableMember<MyClassExtend>("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
+	zs->register_C_VariableMember<MyClassExtend>("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
 	zs->register_C_FunctionMember<MyClassExtend>("function2",&MyClassExtend::function2); // register function2 named function2 in script side as function member.
 
 

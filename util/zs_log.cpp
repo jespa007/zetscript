@@ -1,6 +1,6 @@
 #include "../ZetScript.h"
 
-#define VAR_LOG(l) ((l) == LOG_ERROR?"ERR": (l)==LOG_WARNING?"WRN": (l) == LOG_INFO ? "INF" : (l) == LOG_DEBUG ? "DBG":"NAN" )
+#define VAR_LOG(l) ((l) == ZS_LOG_LEVEL_ERROR?"ERR": (l)==ZS_LOG_LEVEL_WARNING?"WRN": (l) == ZS_LOG_LEVEL_INFO ? "INF" : (l) == ZS_LOG_LEVEL_DEBUG ? "DBG":"NAN" )
 
 namespace zetscript{
 	namespace zs_log{
@@ -12,8 +12,8 @@ namespace zetscript{
 
 			switch (level)
 			{
-			case LOG_WARNING:
-			case LOG_ERROR:
+			case ZS_LOG_LEVEL_WARNING:
+			case ZS_LOG_LEVEL_ERROR:
 				//std_type=stderr;
 				break;
 			default:
@@ -21,7 +21,7 @@ namespace zetscript{
 			}
 
 			if (file != NULL)
-				filename = zs_path::get_filename(file);
+				filename = zs_path::getFilename(file);
 
 			char  text[4096] = { 0 };
 

@@ -7,30 +7,36 @@
 #include 		"util/zs_rtti.cpp"
 #include 		"util/zs_strutils.cpp"
 
-#include		"zetscript_exception.cpp"
-#include		"Instruction.cpp"
-#include		"StackElement.cpp"
+#include		"exception.cpp"
 #include 		"SymbolInfo.cpp"
-#include 		"Instruction.cpp"
 
-//-- Utils --
-#include		"var/ScriptVar.cpp"
-#include		"var/ScriptVarString.cpp"
-#include		"var/ScriptVarVector.cpp"
-#include		"var/ScriptVarFunctor.cpp"
-#include 		"var/ScriptVarDictionary.cpp"
 
-//-- Script Core --
-#include		"Scope.cpp"
-#include		"ScopeFactory.cpp"
-#include		"NativeFunctionFactory.cpp"
-#include		"ScriptClassBase.cpp"
-#include		"ScriptFunction.cpp"
-#include		"ScriptFunctionFactory.cpp"
-#include		"ScriptClass.cpp"
-#include		"ScriptClassFactory.cpp"
-#include		"VirtualMachine.cpp"
+//-- Script --
+#include		"script/ScriptVar.cpp"
+#include		"script/ScriptVarString.cpp"
+#include		"script/ScriptVarVector.cpp"
+#include		"script/ScriptVarFunctor.cpp"
+#include 		"script/ScriptVarDictionary.cpp"
+#include		"script/ScriptFunctionFactory.cpp"
+#include		"script/ScriptClassFactory.cpp"
+#include		"script/ScriptClassBase.cpp"
+#include		"script/ScriptFunction.cpp"
+#include		"script/ScriptClass.cpp"
 
+
+//-- Scope --
+#include		"scope/Scope.cpp"
+#include		"scope/ScopeFactory.cpp"
+
+
+//-- Function --
+#include		"function/FunctionProxyFactory.cpp"
+
+//-- VM --
+#include		"vm/VirtualMachine.cpp"
+
+// -- Eval
+#include		"eval/eval.cpp"
 
 #include		"ZetScript.cpp"
 

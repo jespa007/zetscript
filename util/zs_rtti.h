@@ -1,6 +1,8 @@
+#pragma once
+
 namespace zetscript{
 	namespace zs_rtti{
-		std::string Demangle(const std::string & name);
+		std::string demangle(const std::string & name);
 
 	}
 }

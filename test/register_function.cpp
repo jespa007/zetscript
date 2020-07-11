@@ -20,8 +20,8 @@ int main(){
 
 	ZetScript *zs = new ZetScript(); // instance ZetScript
 
-	zs->Register_C_Function("add",static_cast<int (*)(int,int)>(add));
-	zs->Register_C_Function("add",static_cast<float (*)(float *,float *)>(add));
+	zs->register_C_Function("add",static_cast<int (*)(int,int)>(add));
+	zs->register_C_Function("add",static_cast<float (*)(float *,float *)>(add));
 
 
 	zs->evalString(

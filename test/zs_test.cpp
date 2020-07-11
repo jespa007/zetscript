@@ -741,82 +741,82 @@ int main(int argc, char * argv[]) {
 	//TEST_NUMBER_EXPR("4.0*4;",16.0);
 	//exit(-1);
 	//int i= 0+ +1;
-	zs->Register_C_Class<CNumber>("CNumber");
+	zs->register_C_Class<CNumber>("CNumber");
 
 	zs->register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(float *)>(&CNumber::_set));
 	zs->register_C_FunctionMember<CNumber>("toFloat",&CNumber::toFloat);
-	zs->Register_C_VariableMember<CNumber>("n",&CNumber::n);
+	zs->register_C_VariableMember<CNumber>("n",&CNumber::n);
 
 
-	zs->Register_C_FunctionMemberStatic<CNumber>("_add",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_add));
-	zs->Register_C_FunctionMemberStatic<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add));
-	zs->Register_C_FunctionMemberStatic<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_add));
+	zs->register_C_FunctionMemberStatic<CNumber>("_add",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_add));
+	zs->register_C_FunctionMemberStatic<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add));
+	zs->register_C_FunctionMemberStatic<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_add));
 
-	zs->Register_C_FunctionMemberStatic<CNumber>("_mul",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mul));
-	zs->Register_C_FunctionMemberStatic<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mul));
-	zs->Register_C_FunctionMemberStatic<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mul));
+	zs->register_C_FunctionMemberStatic<CNumber>("_mul",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mul));
+	zs->register_C_FunctionMemberStatic<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mul));
+	zs->register_C_FunctionMemberStatic<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mul));
 
-	zs->Register_C_FunctionMemberStatic<CNumber>("_div",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_div));
-	zs->Register_C_FunctionMemberStatic<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_div));
-	zs->Register_C_FunctionMemberStatic<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_div));
+	zs->register_C_FunctionMemberStatic<CNumber>("_div",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_div));
+	zs->register_C_FunctionMemberStatic<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_div));
+	zs->register_C_FunctionMemberStatic<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_div));
 
-	zs->Register_C_FunctionMemberStatic<CNumber>("_mod",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mod));
-	zs->Register_C_FunctionMemberStatic<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mod));
-	zs->Register_C_FunctionMemberStatic<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mod));
+	zs->register_C_FunctionMemberStatic<CNumber>("_mod",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mod));
+	zs->register_C_FunctionMemberStatic<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mod));
+	zs->register_C_FunctionMemberStatic<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mod));
 
-	zs->Register_C_FunctionMemberStatic<CNumber>("_neg",static_cast<CNumber * (*)(CNumber *)>(&CNumber::_neg));
+	zs->register_C_FunctionMemberStatic<CNumber>("_neg",static_cast<CNumber * (*)(CNumber *)>(&CNumber::_neg));
 
 	zs->register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(float *)>(&CNumber::_set));
 	zs->register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(CNumber *)>(&CNumber::_set));
 
 
-	zs->Register_C_Class<CInteger>("CInteger");
+	zs->register_C_Class<CInteger>("CInteger");
 	zs->register_C_FunctionMember<CInteger>("CInteger",&CInteger::ScriptConstructor);
 	zs->register_C_FunctionMember<CInteger>("toInt",&CInteger::toInt);
-	zs->Register_C_VariableMember<CInteger>("n",&CInteger::n);
+	zs->register_C_VariableMember<CInteger>("n",&CInteger::n);
 
 
-	zs->Register_C_FunctionMemberStatic<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add));
+	zs->register_C_FunctionMemberStatic<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add));
+	zs->register_C_FunctionMemberStatic<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add));
+	zs->register_C_FunctionMemberStatic<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add));
 
-	zs->Register_C_FunctionMemberStatic<CInteger>("_mul",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mul));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mul));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mul));
+	zs->register_C_FunctionMemberStatic<CInteger>("_mul",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mul));
+	zs->register_C_FunctionMemberStatic<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mul));
+	zs->register_C_FunctionMemberStatic<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mul));
 
-	zs->Register_C_FunctionMemberStatic<CInteger>("_div",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_div));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_div));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_div));
+	zs->register_C_FunctionMemberStatic<CInteger>("_div",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_div));
+	zs->register_C_FunctionMemberStatic<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_div));
+	zs->register_C_FunctionMemberStatic<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_div));
 
-	zs->Register_C_FunctionMemberStatic<CInteger>("_mod",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mod));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mod));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mod));
-
-
-	zs->Register_C_FunctionMemberStatic<CInteger>("_shr",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shr));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shr));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shr));
+	zs->register_C_FunctionMemberStatic<CInteger>("_mod",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mod));
+	zs->register_C_FunctionMemberStatic<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mod));
+	zs->register_C_FunctionMemberStatic<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mod));
 
 
-	zs->Register_C_FunctionMemberStatic<CInteger>("_shl",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shl));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shl));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shl));
+	zs->register_C_FunctionMemberStatic<CInteger>("_shr",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shr));
+	zs->register_C_FunctionMemberStatic<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shr));
+	zs->register_C_FunctionMemberStatic<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shr));
 
 
-	zs->Register_C_FunctionMemberStatic<CInteger>("_and",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_and));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_and));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_and));
-
-	zs->Register_C_FunctionMemberStatic<CInteger>("_or",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_or));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or));
-
-	zs->Register_C_FunctionMemberStatic<CInteger>("_xor",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_xor));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_xor));
-	zs->Register_C_FunctionMemberStatic<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_xor));
+	zs->register_C_FunctionMemberStatic<CInteger>("_shl",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shl));
+	zs->register_C_FunctionMemberStatic<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shl));
+	zs->register_C_FunctionMemberStatic<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shl));
 
 
-	zs->Register_C_FunctionMemberStatic<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg));
+	zs->register_C_FunctionMemberStatic<CInteger>("_and",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_and));
+	zs->register_C_FunctionMemberStatic<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_and));
+	zs->register_C_FunctionMemberStatic<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_and));
+
+	zs->register_C_FunctionMemberStatic<CInteger>("_or",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_or));
+	zs->register_C_FunctionMemberStatic<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or));
+	zs->register_C_FunctionMemberStatic<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or));
+
+	zs->register_C_FunctionMemberStatic<CInteger>("_xor",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_xor));
+	zs->register_C_FunctionMemberStatic<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_xor));
+	zs->register_C_FunctionMemberStatic<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_xor));
+
+
+	zs->register_C_FunctionMemberStatic<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg));
 
 	zs->register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set));
 	zs->register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set));
@@ -965,11 +965,11 @@ int main(int argc, char * argv[]) {
 
 	printf("%i. test consisten script-c-script calls ...\n",++n_test);
 	// test calling script-c-script-c
-	zs->Register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
+	zs->register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
 	zs->evalString("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
 
-	std::function<void ()> * test_1st_script_call=zs->BindScriptFunction<void ()>("test_1st_script_call");
-	test_2nd_script_call=zs->BindScriptFunction<void ()>("test_2nd_script_call");
+	std::function<void ()> * test_1st_script_call=zs->bindScriptFunction<void ()>("test_1st_script_call");
+	test_2nd_script_call=zs->bindScriptFunction<void ()>("test_2nd_script_call");
 
 	if(test_1st_script_call){
 		(*test_1st_script_call)();

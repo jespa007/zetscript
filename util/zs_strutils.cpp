@@ -15,7 +15,7 @@ namespace zetscript{
 		unsigned char m_index_buffer=0;
 		char  _sformat_buffer[4096] = { 0 };
 
-		std::string  Format(const  char  *input_text, ...){
+		std::string  format(const  char  *input_text, ...){
 			va_list  ap;
 			va_start(ap,  input_text);
 			vsprintf(_sformat_buffer,  input_text,  ap);
@@ -24,16 +24,16 @@ namespace zetscript{
 			return std::string(_sformat_buffer);
 		}
 
-		int *  ParseInteger(const std::string & val){
+		int *  parseInteger(const std::string & val){
 
 			int *n=NULL;
-			NumberType number_type = IsNumber(val);
+			NumberType number_type = isNumber(val);
 			int numberValue=0;
-			if(number_type == NumberType::INT){
+			if(number_type == NumberType::NUMBER_TYPE_INT){
 				numberValue=strtol(val.c_str(), NULL, 10);
-			}else if(number_type == NumberType::HEXA){
+			}else if(number_type == NumberType::NUMBER_TYPE_HEXA){
 				numberValue=strtol(val.c_str(), NULL, 16);
-			}else if(IsBinary(val)){
+			}else if(isBinary(val)){
 				std::string binary = val.substr(0,val.size()-1);
 				numberValue=strtol(binary.c_str(), NULL, 2);
 			}
@@ -49,14 +49,14 @@ namespace zetscript{
 			return n;
 		}
 
-		bool * ParseBoolean(const std::string & s){
+		bool * parseBoolean(const std::string & s){
 
-			if(ToLower(s)=="true"){
+			if(toLower(s)=="true"){
 				bool *b=new bool;
 				*b=true;
 				return b;
 
-			}else if(ToLower(s)=="false"){
+			}else if(toLower(s)=="false"){
 				bool *b=new bool;
 				*b=false;
 				return b;
@@ -66,7 +66,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		float *  ParseFloat(const std::string & s){
+		float *  parseFloat(const std::string & s){
 			char *p;bool ok=true;
 			float *n=NULL;
 
@@ -86,17 +86,17 @@ namespace zetscript{
 		}
 
 
-		char * CopyFromPointerDiff(const char *p1, const char *p2){
+		char * copyFromPointerDiff(const char *p1, const char *p2){
 
 			if(p1 == NULL || p2 == NULL){
-				THROW_RUNTIME_ERROR(Format("NULL entry (%p %p)",p1,p2));
+				THROW_RUNTIME_ERROR(format("NULL entry (%p %p)",p1,p2));
 				return NULL;
 			}
 
 			int var_length=p2-p1;
 
 			if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
-				THROW_RUNTIME_ERROR(Format("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
+				THROW_RUNTIME_ERROR(format("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
 				return NULL;
 			}
 
@@ -112,7 +112,7 @@ namespace zetscript{
 		}
 
 
-		std::string IntToString(int number){
+		std::string intToString(int number){
 
 			char int_str[100];
 
@@ -121,7 +121,7 @@ namespace zetscript{
 		   return std::string(int_str);
 		}
 
-		std::string ToLower(const std::string & str){
+		std::string toLower(const std::string & str){
 
 			std::string ret = str;
 			for(unsigned short l = 0; l < ret.size();l++)
@@ -129,7 +129,7 @@ namespace zetscript{
 			return ret;
 		}
 
-		std::string ToUpper(const std::string & str){
+		std::string toUpper(const std::string & str){
 
 			std::string ret = str;
 			for(unsigned short l = 0; l < ret.size();l++)
@@ -137,14 +137,14 @@ namespace zetscript{
 			return ret;
 		}
 
-		std::wstring ToWString(const std::string& s)
+		std::wstring toWString(const std::string& s)
 		{
 			std::wstring wsTmp(s.begin(), s.end());
 			return wsTmp;
 		}
 		//------------------------------------------------------------------------------------------------------------------------
 
-		std::vector<std::string> Split(const std::string &s, char delim, std::vector<std::string> &elems) {
+		std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems) {
 			std::stringstream ss(s);
 			std::string item;
 			while (std::getline(ss, item, delim)) {
@@ -154,9 +154,9 @@ namespace zetscript{
 		}
 
 
-		std::vector<std::string> Split(const std::string &s, char delim) {
+		std::vector<std::string> split(const std::string &s, char delim) {
 			std::vector<std::string> elems;
-			Split(s, delim, elems);
+			split(s, delim, elems);
 			return elems;
 		}
 
@@ -164,7 +164,7 @@ namespace zetscript{
 			return str.empty();
 		}
 
-		bool EndsWith(const std::string & fullString, const std::string & ending){
+		bool endsWith(const std::string & fullString, const std::string & ending){
 			if (fullString.length() >= ending.length()) {
 				return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
 			}
@@ -194,7 +194,7 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		bool IsBinary(const std::string & test_str_number){
+		bool isBinary(const std::string & test_str_number){
 
 			char *start_p=(char *)test_str_number.c_str();
 			char *aux_p =start_p;
@@ -210,7 +210,7 @@ namespace zetscript{
 			return (*aux_p=='b' || *aux_p=='B') && (aux_p > start_p);
 		}
 
-		NumberType IsNumber(const std::string & test_str_number){
+		NumberType isNumber(const std::string & test_str_number){
 			bool isHexa=false;
 			char *str = (char *)test_str_number.c_str();
 
@@ -273,7 +273,7 @@ namespace zetscript{
 
 		}
 
-		std::string  Remove(std::string & str_old, char ch_to_remove){
+		std::string  remove(std::string & str_old, char ch_to_remove){
 			std::string str = str_old;
 			std::string str_new="";
 
@@ -284,7 +284,7 @@ namespace zetscript{
 			return str_new;
 		}
 
-		int Count(const std::string & s,char c){
+		int count(const std::string & s,char c){
 			int n_items=0;
 
 			for(unsigned i=0; i < s.size(); i++)
