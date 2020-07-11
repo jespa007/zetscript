@@ -40,7 +40,7 @@
 // -- Eval
 #include		"eval/eval.cpp"
 
-#include		"ZetScript.cpp"
+#include		"zetscript.cpp"
 
 
 

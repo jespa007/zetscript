@@ -134,7 +134,8 @@ namespace zetscript{
 			SEPARATOR_TYPE_MAX
 		}SeparatorType;
 
-		struct EvaluatedInstruction:Instruction{
+		struct EvaluatedInstruction{
+			Instruction 					vm_instruction;
 
 			LinkSymbolFirstAccess			link_symbol_first_access;
 			InstructionSourceInfo 			instruction_source_info;
@@ -143,7 +144,8 @@ namespace zetscript{
 						 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
 						 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
 						 ,unsigned short _properties=0
-						 ):Instruction(_byte_code,_index_op1,_index_op2,_properties){
+						 ){
+				vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);
 			}
 		};
 
@@ -158,9 +160,6 @@ namespace zetscript{
 			std::string value; // first access
 			int line;
 			std::vector<EvaluatedInstruction> evaluated_instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
-			//std::map<short,ScriptFunction::InstructionSourceInfo> instruction_source_info;
-			// access info like function call, std::vector access and variable memeber
-			//std::vector<tTokenNodeAccessor> accessor;
 
 			// AST info operator.
 			TokenNode *token_node_left;
@@ -183,6 +182,7 @@ namespace zetscript{
 		}ContinueInstructionScope,BreakInstructionScope;
 
 		struct EvaluatedFunction{
+		public:
 
 			std::vector<EvaluatedInstruction>	 	evaluated_instructions;
 			ScriptFunction 						*  	script_function;

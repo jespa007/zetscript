@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "ZetScript.h"
+#include "zetscript.h"
 
 #define MAX_STATMENT_LENGTH 2096
 #define MAX_VAR_LENGTH 100

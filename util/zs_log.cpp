@@ -1,4 +1,4 @@
-#include "../ZetScript.h"
+#include "../zetscript.h"
 
 #define VAR_LOG(l) ((l) == ZS_LOG_LEVEL_ERROR?"ERR": (l)==ZS_LOG_LEVEL_WARNING?"WRN": (l) == ZS_LOG_LEVEL_INFO ? "INF" : (l) == ZS_LOG_LEVEL_DEBUG ? "DBG":"NAN" )
 

@@ -68,6 +68,13 @@ namespace zetscript{
 		intptr_t value_op2;
 		unsigned short properties;
 
+		Instruction(){
+			byte_code=ByteCode::BYTE_CODE_INVALID;
+			value_op1=ZS_UNDEFINED_IDX;
+			value_op2=ZS_UNDEFINED_IDX;
+			properties=0;
+		}
+
 		Instruction(ByteCode _byte_code
 		 ,unsigned char _value_op1=ZS_UNDEFINED_IDX
 		 ,intptr_t _value_op2=ZS_UNDEFINED_IDX

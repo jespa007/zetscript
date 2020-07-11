@@ -1,4 +1,4 @@
-#include "ZetScript.h"
+#include "zetscript.h"
 
 
 #define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"

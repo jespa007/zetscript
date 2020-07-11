@@ -138,7 +138,7 @@
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-H. -Bbuild -DTARGET=debug -DFCOMPILE=ON -DMEMMANAGER=ON</buildTarget>
+				<buildTarget>-H. -Bbuild -DTARGET=debug -DFCOMPILE=ON -DMEMMANAGER=OFF</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

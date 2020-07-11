@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "ZetScript.h"
+#include "zetscript.h"
 
 #define FORMAT_PRINT_INSTRUCTION "%04i"
 

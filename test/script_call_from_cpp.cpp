@@ -1,5 +1,5 @@
 
-#include "ZetScript.h"
+#include "zetscript.h"
 
 using namespace zetscript;
 

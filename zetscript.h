@@ -93,7 +93,7 @@
 
 
 #include "eval/eval.h"
-#include "ZetScript.h"
+#include "zetscript.h"
 
 
 #define ZETSCRIPT_MAJOR_VERSION 2
@@ -475,5 +475,5 @@ namespace zetscript{
 }
 
 #include	"vm/VirtualMachine.h"
-#include 	"ZetScript.inc"
+#include 	"zetscript.inc"
 

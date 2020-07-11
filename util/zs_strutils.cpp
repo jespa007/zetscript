@@ -1,4 +1,4 @@
-#include "../ZetScript.h"
+#include "../zetscript.h"
 
 namespace zetscript{
 	namespace zs_strutils{

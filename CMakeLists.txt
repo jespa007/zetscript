@@ -45,7 +45,7 @@ if(MSVC)
 
 else()
 
-	SET( COMMON_PARAMS " ${COMMON_PARAMS} -D__STDC_CONSTANT_MACROS -std=c++1y -I -Wall")
+	SET( COMMON_PARAMS " ${COMMON_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )
@@ -195,13 +195,13 @@ ELSE()
  		ByteCode.cpp
  		exception.cpp
  		SymbolInfo.cpp
-		ZetScript.cpp
+		zetscript.cpp
 	
 	)
 ENDIF()
 
 # zetscriptlib
-add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
+add_library( zetscript${POST_NAME} SHARED ${ZETSCRIPT_LIB_SRCS} )
 if(MSVC)
 	#only for msvc...
 	set_target_properties(zetscript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)
@@ -237,11 +237,11 @@ ELSE()
 		common.h
 		Scope.h
 		VirtualMachine.h
-		ZetScript.h
+		zetscript.h
 		exception.h
 		
 		VirtualMachine.inc
-		ZetScript.inc
+		zetscript.inc
 		ScriptClassFactory.inc
 		ByteCode.h
 	)

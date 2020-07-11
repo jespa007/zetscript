@@ -3,9 +3,9 @@
  *  See LICENSE file for details.
  */
 
-#include "ZetScript.h"
+#include "zetscript.h"
 
-//#include "ZetScript.h"
+//#include "zetscript.h"
 
 /*
 
@@ -354,7 +354,7 @@ namespace zetscript{
 			eval_data->evaluated_function_current->script_function->instruction=NULL;
 
 			// get total size op + 1 ends with NULL
-			unsigned size = (eval_data->evaluated_function_current->evaluated_instructions.size() + 1) * sizeof(Instruction);
+			size_t size = (eval_data->evaluated_function_current->evaluated_instructions.size() + 1) * sizeof(Instruction);
 			eval_data->evaluated_function_current->script_function->instruction = (PtrInstruction)malloc(size);
 			memset(eval_data->evaluated_function_current->script_function->instruction, 0, size);
 
@@ -364,30 +364,28 @@ namespace zetscript{
 				EvaluatedInstruction *evaluated_instruction = &eval_data->evaluated_function_current->evaluated_instructions[i];
 				LinkSymbolFirstAccess *ls=&evaluated_instruction->link_symbol_first_access;
 
-
 				if(ls->idx_script_function != ZS_UNDEFINED_IDX){ // solve first symbol first access...
 
 					ScriptFunction *sf=GET_SCRIPT_FUNCTION(eval_data,ls->idx_script_function);
 					ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
-					if(evaluated_instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
+					if(evaluated_instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
 
 						if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 							if((vis=sc->getVariable(ls->value,sc->symbol_info.symbol->idx_scope))==0){
 								THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 								return;
 							}
-
-							evaluated_instruction->value_op2=vis->idx_symbol;
+							evaluated_instruction->vm_instruction.value_op2=vis->idx_symbol;
 						}
 						else{
-							if((evaluated_instruction->value_op2=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idx_scope,ls->n_params))==0){
+							if((evaluated_instruction->vm_instruction.value_op2=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idx_scope,ls->n_params))==0){
 								THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 								return;
 							}
 						}
 
-					}else if(evaluated_instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER){ // trivial super.
+					}else if(evaluated_instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER){ // trivial super.
 
 						ScriptFunction *sf_found=NULL;
 						std::string str_symbol_to_find = sf->symbol_info.symbol->name;
@@ -404,13 +402,10 @@ namespace zetscript{
 
 						// ok get the super function...
 						if(sf_found == NULL){
-
 							THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find super function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 							return;
 						}
-
-						evaluated_instruction->value_op2=(intptr_t)sf_found;
-
+						evaluated_instruction->vm_instruction.value_op2=(intptr_t)sf_found;
 
 					}else{ // find local/global var/function ...
 						bool local_found=false;
@@ -422,13 +417,13 @@ namespace zetscript{
 						if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 							if((vis=sf->getVariable(ls->value,sc_var->idx_scope))!=NULL){
 								load_type=LoadType::LOAD_TYPE_VARIABLE;
-								evaluated_instruction->value_op2=vis->idx_symbol;
+								evaluated_instruction->vm_instruction.value_op2=vis->idx_symbol;
 								local_found=true;
 							}
 						}
 						else{
 
-							if((evaluated_instruction->value_op2=(intptr_t)sf->getFunction(ls->value,sc_var->idx_scope,ls->n_params))!=0){
+							if((evaluated_instruction->vm_instruction.value_op2=(intptr_t)sf->getFunction(ls->value,sc_var->idx_scope,ls->n_params))!=0){
 								load_type=LoadType::LOAD_TYPE_FUNCTION;
 								local_found =true;
 							}
@@ -446,11 +441,11 @@ namespace zetscript{
 									}
 
 									load_type=LoadType::LOAD_TYPE_VARIABLE;
-									evaluated_instruction->value_op2=vis->idx_symbol;
+									evaluated_instruction->vm_instruction.value_op2=vis->idx_symbol;
 								}
 								else{
 
-									if((evaluated_instruction->value_op2=(intptr_t)MAIN_FUNCTION(eval_data)->getFunction(ls->value,sc_var->idx_scope,ls->n_params))==0){
+									if((evaluated_instruction->vm_instruction.value_op2=(intptr_t)MAIN_FUNCTION(eval_data)->getFunction(ls->value,sc_var->idx_scope,ls->n_params))==0){
 										THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find function \"%s\"",ls->value.c_str()));
 										return;
 									}
@@ -460,22 +455,20 @@ namespace zetscript{
 							}
 						}
 
-						evaluated_instruction->value_op1=load_type;
+						evaluated_instruction->vm_instruction.value_op1=load_type;
 
 						if(load_type==LoadType::LOAD_TYPE_FUNCTION){
-							ScriptFunction *sf = ((ScriptFunction *)evaluated_instruction->value_op2);
+							ScriptFunction *sf = ((ScriptFunction *)evaluated_instruction->vm_instruction.value_op2);
 							if((sf->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != 0){ // function will be solved at run time because it has to check param type
-								evaluated_instruction->value_op2=ZS_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
+								evaluated_instruction->vm_instruction.value_op2=ZS_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
 							}
 						}
 					}
 				}
 
 				// save instruction ...
-				eval_data->evaluated_function_current->script_function->instruction[i].byte_code = evaluated_instruction->byte_code;
-				eval_data->evaluated_function_current->script_function->instruction[i].value_op1 = evaluated_instruction->value_op1;
-				eval_data->evaluated_function_current->script_function->instruction[i].value_op2 = evaluated_instruction->value_op2;
-				eval_data->evaluated_function_current->script_function->instruction[i].properties = evaluated_instruction->properties;
+
+				eval_data->evaluated_function_current->script_function->instruction[i]=evaluated_instruction->vm_instruction;
 
 
 				// symbol value to save at runtime ...
@@ -487,7 +480,7 @@ namespace zetscript{
 			eval_data->evaluated_function_current->script_function->buildLutScopeSymbols();
 
 			// delete and popback function information...
-			delete(eval_data->evaluated_function_current);
+			delete eval_data->evaluated_function_current;
 			eval_data->evaluated_functions.pop_back();
 
 			eval_data->evaluated_function_current = NULL;
