@@ -6,34 +6,34 @@ StackElement symbolInfoToStackElement(ZetScript * zs, SymbolInfo *symbol,void *p
 
 		if(symbol->symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
 
-			if(str_int_type_ptr==symbol->c_type){
+			if(k_str_int_type_ptr==symbol->c_type){
 				return {
 						0,
 						ptr_variable,
 						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C
 				};
 
-			}else if(str_float_type_ptr==symbol->c_type){
+			}else if(k_str_float_type_ptr==symbol->c_type){
 				return {
 						0,
 						ptr_variable,
 						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C
 				};
-			}else if(str_const_char_type_ptr==symbol->c_type){
+			}else if(k_str_const_char_type_ptr==symbol->c_type){
 
 				return {
 						ptr_variable,
 						0,
 						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING
 				};
-			}else if(str_string_type_ptr==symbol->c_type){
+			}else if(k_str_string_type_ptr==symbol->c_type){
 
 				return {
 						(void *)((std::string *)ptr_variable)->c_str(),
 						ptr_variable,
 						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C
 				};
-			}else if(str_bool_type_ptr==symbol->c_type){
+			}else if(k_str_bool_type_ptr==symbol->c_type){
 				return {
 
 						0,

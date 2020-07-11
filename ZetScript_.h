@@ -115,19 +115,19 @@
 namespace zetscript{
 
 
-	extern const char *	str_void_type;				// 	typeid(void).name()
-	extern const char * str_int_type_ptr;			//	typeid(int *).name()
-	extern const char * str_float_type_ptr;			//	typeid(float *).name()
-	extern const char * str_string_type_ptr;		//	typeid(std::string *).name()
-	extern const char * str_const_char_type_ptr;	//	typeid(std::string *).name()
-	extern const char * str_bool_type_ptr;			//	typeid(bool *).name()
-	extern const char * str_int_type;				//	typeid(int).name()
-	extern const char * str_unsigned_int_type;		//	typeid(unsigned int).name()
-	extern const char *	str_intptr_t_type;			//	typeid(intptr_t).name()
+	extern const char *	k_str_void_type;				// 	typeid(void).name()
+	extern const char * k_str_int_type_ptr;			//	typeid(int *).name()
+	extern const char * k_str_float_type_ptr;			//	typeid(float *).name()
+	extern const char * k_str_string_type_ptr;		//	typeid(std::string *).name()
+	extern const char * k_str_const_char_type_ptr;	//	typeid(std::string *).name()
+	extern const char * k_str_bool_type_ptr;			//	typeid(bool *).name()
+	extern const char * k_str_int_type;				//	typeid(int).name()
+	extern const char * k_str_unsigned_int_type;		//	typeid(unsigned int).name()
+	extern const char *	k_str_intptr_t_type;			//	typeid(intptr_t).name()
 
-	extern const char * str_float_type;				//	typeid(int).name()
-	extern const char * str_bool_type;				//	typeid(bool).name()
-	extern const char * str_stack_element_type;		//	typeid(bool).name()
+	extern const char * k_str_float_type;				//	typeid(int).name()
+	extern const char * k_str_bool_type;				//	typeid(bool).name()
+	extern const char * k_str_stack_element_type;		//	typeid(bool).name()
 
 
 

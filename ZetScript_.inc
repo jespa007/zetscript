@@ -73,12 +73,12 @@ namespace zetscript{
 
 				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stack_element->properties)){
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
-					if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_C){// *ScriptClass::str_bool_type){
+					if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_C){// *ScriptClass::k_str_bool_type){
 						val_ret=(intptr_t)(stack_element->stk_value);
-					}else if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_PTR_C){//*ScriptClass::str_bool_type_ptr){
+					}else if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_PTR_C){//*ScriptClass::k_str_bool_type_ptr){
 						val_ret=(intptr_t)(&stack_element->stk_value);
 					}else{
-						error="cannot convert "+zs_rtti::demangle((str_string_type_ptr))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)).c_str();
+						error="cannot convert "+zs_rtti::demangle((k_str_string_type_ptr))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)).c_str();
 
 						return false;
 					}
@@ -102,7 +102,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error="cannot convert "+zs_rtti::demangle((str_string_type_ptr))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
+						error="cannot convert "+zs_rtti::demangle((k_str_string_type_ptr))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
 						return false;
 					}
 					break;
@@ -124,7 +124,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error= "cannot convert "+zs_rtti::demangle((str_string_type_ptr))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
+						error= "cannot convert "+zs_rtti::demangle((k_str_string_type_ptr))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
 						return false;
 					}
 					break;
@@ -142,7 +142,7 @@ namespace zetscript{
 					}else if (idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
 						val_ret=(intptr_t)(stack_element->stk_value);
 					}else{
-						error= "cannot convert "+zs_rtti::demangle((str_string_type_ptr))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
+						error= "cannot convert "+zs_rtti::demangle((k_str_string_type_ptr))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
 						return false;
 					}
 

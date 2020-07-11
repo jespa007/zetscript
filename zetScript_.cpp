@@ -2,18 +2,18 @@
 
 namespace zetscript{
 
-	const char * str_void_type =typeid(void).name();
-	const char * str_int_type_ptr=typeid(int *).name();
-	const char * str_float_type_ptr=typeid(float *).name();
-	const char * str_string_type_ptr=typeid(std::string *).name();
-	const char * str_const_char_type_ptr=typeid(std::string *).name();
-	const char * str_bool_type_ptr=typeid(bool *).name();
-	const char * str_int_type=typeid(int).name();
-	const char * str_unsigned_int_type=typeid(unsigned int).name();
-	const char * str_intptr_t_type=typeid(intptr_t).name();
-	const char * str_float_type=typeid(int).name();
-	const char * str_bool_type=typeid(bool).name();
-	const char * str_stack_element_type=typeid(bool).name();
+	const char * k_str_void_type =typeid(void).name();
+	const char * k_str_int_type_ptr=typeid(int *).name();
+	const char * k_str_float_type_ptr=typeid(float *).name();
+	const char * k_str_string_type_ptr=typeid(std::string *).name();
+	const char * k_str_const_char_type_ptr=typeid(std::string *).name();
+	const char * k_str_bool_type_ptr=typeid(bool *).name();
+	const char * k_str_int_type=typeid(int).name();
+	const char * k_str_unsigned_int_type=typeid(unsigned int).name();
+	const char * k_str_intptr_t_type=typeid(intptr_t).name();
+	const char * k_str_float_type=typeid(int).name();
+	const char * k_str_bool_type=typeid(bool).name();
+	const char * k_str_stack_element_type=typeid(bool).name();
 
 	// define prototype ...
 	int error_line;
@@ -75,24 +75,6 @@ namespace zetscript{
 		eval_string="";
 		eval_bool = false;
 
-		//zs=this;
-		//----
-		//conversion_types = new std::map<int, std::map<int, ConversionType>>();
-
-		str_void_type = typeid(void).name();
-		str_int_type_ptr = typeid(int *).name();
-		str_float_type_ptr = typeid(float *).name();
-		str_const_char_type_ptr = typeid(const char *).name();
-		str_string_type_ptr = typeid(std::string *).name();
-		str_bool_type_ptr = typeid(bool *).name();
-
-		// particular case for return ... for not to force user returning pointer (this is the only vars allowed, sorry!)
-		str_bool_type =  typeid(bool).name();
-		str_int_type =  typeid(int).name();
-		str_unsigned_int_type =  typeid(unsigned int).name();
-		str_intptr_t_type =  typeid(intptr_t).name();
-		str_float_type =  typeid(float).name();
-		str_stack_element_type=  typeid(StackElement *).name();
 	}
 
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------

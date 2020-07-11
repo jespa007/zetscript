@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
  
-project(ZetScript)
+project(zetscript)
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -12,7 +12,7 @@ MACRO(INSTALL_HEADERS_WITH_DIRECTORY HEADER_LIST)
 
     FOREACH(HEADER ${${HEADER_LIST}})
         get_filename_component(DIR ${HEADER} DIRECTORY)
-        INSTALL(FILES ${HEADER} DESTINATION include/ZetScript/${DIR})
+        INSTALL(FILES ${HEADER} DESTINATION include/zetscript/${DIR})
     ENDFOREACH(HEADER)
 
 ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
@@ -201,19 +201,19 @@ ELSE()
 ENDIF()
 
 # zetscriptlib
-add_library( ZetScript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
+add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
 if(MSVC)
 	#only for msvc...
-	set_target_properties(ZetScript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)
+	set_target_properties(zetscript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)
 endif()
 
 
 IF ( "${FCOMPILE}" STREQUAL "ON")
 	# helloworld
-	#add_executable(helloworld${POST_NAME}
-	#	${PROJECT_SOURCE_DIR}/test/helloworld.cpp
-	#)
-	#target_link_libraries(helloworld${POST_NAME} ZetScript${POST_NAME})
+	add_executable(helloworld${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/helloworld.cpp
+	)
+	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
 ELSE()
 
 	SET(
@@ -255,49 +255,49 @@ ELSE()
 		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
 	
-	target_link_libraries(zs${POST_NAME} ZetScript${POST_NAME})
+	target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
 	
 	# zs_test
 	add_executable(zs_test${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
 	)
 	
-	target_link_libraries(zs_test${POST_NAME} ZetScript${POST_NAME})
+	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 	
 	# helloworld
 	add_executable(helloworld${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/helloworld.cpp
 	)
 	
-	target_link_libraries(helloworld${POST_NAME} ZetScript${POST_NAME})
+	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
 	
 	# register_variables
 	add_executable(register_variable${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/register_variable.cpp
 	)	
 	
-	target_link_libraries(register_variable${POST_NAME} ZetScript${POST_NAME})
+	target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
 	
 	# register_functions
 	add_executable(register_function${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/register_function.cpp
 	)	
 	
-	target_link_libraries(register_function${POST_NAME} ZetScript${POST_NAME})
+	target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})
 	
 	# register_class
 	add_executable(register_class${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/register_class.cpp
 	)	
 	
-	target_link_libraries(register_class${POST_NAME} ZetScript${POST_NAME})
+	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
 	
 	# function_script_call
 	add_executable(script_call_from_cpp${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/script_call_from_cpp.cpp
 	)
 	
-	target_link_libraries(script_call_from_cpp${POST_NAME} ZetScript${POST_NAME})
+	target_link_libraries(script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
 	
 	
 	# register_constants
@@ -305,9 +305,9 @@ ELSE()
 		${PROJECT_SOURCE_DIR}/test/register_constant.cpp
 	)
 	
-	target_link_libraries(register_constant${POST_NAME} ZetScript${POST_NAME})
+	target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
 	
-	INSTALL(TARGETS ZetScript${POST_NAME} zs${POST_NAME}
+	INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
 		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
 		RUNTIME DESTINATION  	${CMAKE_INSTALL_PREFIX}/bin
     	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib

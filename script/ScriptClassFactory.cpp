@@ -96,7 +96,7 @@ namespace zetscript{
 		// Let's register functions,...
 		// register c function's
 
-		main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
+		main_function=main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 
 		register_C_Function("print",print);
 		//register_C_Function("error",internalPrintError);

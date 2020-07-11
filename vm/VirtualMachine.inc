@@ -388,18 +388,18 @@ namespace zetscript{
 						aux_string="unknow";
 						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-						aux_string=str_int_type;
+						aux_string=k_str_int_type;
 						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-						aux_string=str_float_type;
+						aux_string=k_str_float_type;
 						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
-						aux_string=str_bool_type;
+						aux_string=k_str_bool_type;
 						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-						aux_string=str_string_type_ptr;
+						aux_string=k_str_string_type_ptr;
 						if(current_arg->var_ref==NULL){ /* is constant char */
-							aux_string=	str_const_char_type_ptr;
+							aux_string=	k_str_const_char_type_ptr;
 						}
 						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
