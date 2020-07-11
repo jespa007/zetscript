@@ -123,8 +123,9 @@ namespace zetscript{
 
 		std::string VarTypeToStr();
 
-		//inline StackElement varToStackElement(intptr_t var_trans, int idx_builtin_type);
-		//inline bool stackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error);
+		const char * toString();
+		//inline StackElement convertVarToStackElement(intptr_t var_ptr, int idx_builtin_type);
+		//inline bool convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error);
 
 	};
 
@@ -132,8 +133,6 @@ namespace zetscript{
 
 
 	typedef StackElement ConstantValue;
-
-	const char * indexInstructionVarTypeToStr(StackElement *ptr_info_ale);
 
 
 }

@@ -172,6 +172,7 @@ namespace zetscript{
 		// CONSTANT TOOLS
 		ConstantValue * getRegisteredConstantValue(const std::string & const_name);
 		ConstantValue * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
+		ConstantValue * registerConstantValue(const std::string & const_name, int  value);
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
@@ -253,9 +254,9 @@ namespace zetscript{
 		/**
 		 * Register Static Function Member Class
 		 */
-		template <typename _F>
-		bool register_C_FunctionMemberStatic(const char *function_name,_F fun, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->register_C_FunctionMemberStatic(function_name,fun, registered_file, registered_line);
+		template <typename C,typename F>
+		bool register_C_FunctionMemberStatic(const char *function_name,F fun, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->register_C_FunctionMemberStatic<C>(function_name,fun, registered_file, registered_line);
 
 		}
 
@@ -278,8 +279,8 @@ namespace zetscript{
 
 		//cpp binding
 		// Helpers...
-		inline StackElement varToStackElement(intptr_t var_trans, int idx_builtin_type);
-		inline bool stackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error);
+		inline StackElement convertVarToStackElement(intptr_t var_ptr, int idx_builtin_type);
+		inline bool convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error);
 
 		template<typename T>
 		static ScriptVarVector * stdVectorToScriptVarVector(const std::vector<T> & v,ZetScript *zs_instance){
@@ -288,7 +289,7 @@ namespace zetscript{
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->push();
 				//intptr_t uvar = (intptr_t)(v[i]);
-				*stk = zs_instance->varToStackElement((intptr_t)(v[i]),zs_instance->getIdxClassFromIts_C_Type(typeid(T).name()));
+				*stk = zs_instance->convertVarToStackElement((intptr_t)(v[i]),zs_instance->getIdxClassFromIts_C_Type(typeid(T).name()));
 			}
 
 			return vsv;
@@ -462,9 +463,11 @@ namespace zetscript{
 		//void printGeneratedCode(ScriptFunction *sfo);
 
 		//----
+		bool evalInternal(const char * code, bool exec_vm, bool show_bytecode, const char * filename);
 
 		// FUNCTIONS
 		static 									void  print(const char *s);
+
 		static 									void (* print_out_callback)(const char *);
 
 	};

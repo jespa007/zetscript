@@ -9,6 +9,8 @@
 
 #include		"exception.cpp"
 #include 		"SymbolInfo.cpp"
+#include 		"StackElement.cpp"
+#include 		"ByteCode.cpp"
 
 
 //-- Script --

@@ -16,7 +16,7 @@ int main(){
 
 	zs->register_C_Function("say_helloworld",say_helloworld);
 
-	zs->evalString("say_helloworld();"); // Call c function and prints hello world!
+	zs->eval("say_helloworld();"); // Call c function and prints hello world!
 
 
 

@@ -7,7 +7,7 @@ int main(){
 
 	ZetScript *zs = new ZetScript(); // instance ZetScript
 
-	zs->evalString(
+	zs->eval(
 		"class Test{"
 		"	var data1;"
 		"	function function1(arg){"
@@ -38,6 +38,6 @@ int main(){
 	delete zs;
 
 #ifdef __MEMMANAGER__
-  MEM_ViewStatus();
+	MEMMGR_print_status();
 #endif
 }

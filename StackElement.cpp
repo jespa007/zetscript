@@ -1,31 +1,34 @@
+#include "ZetScript.h"
+
 namespace zetscript{
 
-	const char * indexInstructionVarTypeToStr(StackElement *ptr_info_ale){
+	const char * StackElement::toString(){
+		StackElement *stk=this;
 		const char * result="undefined";
-		if(STK_VALUE_IS_INT(ptr_info_ale->properties))
+		if(STK_VALUE_IS_INT(stk))
 			result= "int";
-		else if(STK_VALUE_IS_FLOAT(ptr_info_ale->properties))
+		else if(STK_VALUE_IS_FLOAT(stk))
 			result= "float";
-		else if(STK_VALUE_IS_BOOLEAN(ptr_info_ale->properties))
+		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= "bool";
-		else if(STK_VALUE_IS_STRING(ptr_info_ale->properties))
+		else if(STK_VALUE_IS_STRING(stk))
 			result= "std::string";
-		else if(STK_VALUE_IS_FUNCTION(ptr_info_ale->properties))
+		else if(STK_VALUE_IS_FUNCTION(stk))
 			result= "function";
 
-		else if(STK_VALUE_IS_SCRIPT_VAR(ptr_info_ale->properties)){
-			StackElement *var=ptr_info_ale;
-			if(ptr_info_ale->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
-				var=(StackElement *)var->var_ref;
+		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
+
+			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+				stk=(StackElement *)stk->var_ref;
 			}
-			result=((ScriptVar *)var->var_ref)->getClassName().c_str();
+			result=((ScriptVar *)stk->var_ref)->getClassName().c_str();
 		}
 
 		return result;
 	}
 
 
-	inline	std::string StackElementVarTypeToStr(StackElement stk_v){
+	/*inline	std::string convertStackElementVarTypeToStr(StackElement stk_v){
 			if(stk_v.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
 				return zs_rtti::demangle(typeid(int).name());
 			}else if(stk_v.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
@@ -43,6 +46,6 @@ namespace zetscript{
 				}
 			}
 			return "unknow";
-		}
+		}*/
 
 }

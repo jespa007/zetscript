@@ -99,8 +99,8 @@ namespace zetscript{
 		/**
 		 * Register C Member function static Class
 		 */
-		template <typename R, class T, typename..._A>
-		bool 							register_C_FunctionMemberStatic(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1);
+		template <typename C, typename F>
+		bool 							register_C_FunctionMemberStatic(const char *function_name,F ptr_function, const char *registered_file="",int registered_line=-1);
 
 		/**
 		 * Register C function as function member

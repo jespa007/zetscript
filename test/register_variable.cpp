@@ -24,7 +24,7 @@ int main(){
 	zs->register_C_Variable("bool_var",&bool_var); // it takes bool *
 	zs->register_C_Variable("string_var",&string_var); // it takes std::string *
 
-	zs->evalString(
+	zs->eval(
 		"int_var+=5;"
 		"float_var+=5;"
 		"bool_var=!bool_var;"
@@ -38,7 +38,7 @@ int main(){
 	delete zs;
 
 #ifdef __MEMMANAGER__
-  MEM_ViewStatus();
+	MEMMGR_print_status();
 #endif
 
 	return 0;

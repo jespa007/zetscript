@@ -56,6 +56,10 @@ namespace zetscript{
 		return error_filename;
 	}
 
+	namespace eval{
+		void initEval();
+	}
+
 	ZetScript::ZetScript(){
 
 		eval::initEval();
@@ -156,7 +160,7 @@ namespace zetscript{
 		return info_ptr;
 	}
 
-	ConstantValue * ZetScript::registerConstantIntValue(const std::string & const_name, int _value){
+	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, int _value){
 		intptr_t value = _value;
 		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER;
 		StackElement *stk;
@@ -243,7 +247,7 @@ namespace zetscript{
 				return &eval_int;
 			}
 			else{
-				THROW_RUNTIME_ERROR(zs_strutils::format("EvalIntValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(zs_strutils::format("evalIntValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
@@ -265,7 +269,7 @@ namespace zetscript{
 				return &eval_bool;
 
 			}else{
-				THROW_RUNTIME_ERROR(zs_strutils::format("EvalBoolValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(zs_strutils::format("evalBoolValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 
@@ -287,7 +291,7 @@ namespace zetscript{
 				return &eval_float;
 			}
 			else{
-				THROW_RUNTIME_ERROR(zs_strutils::format("EvalFloatValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
+				THROW_RUNTIME_ERROR(zs_strutils::format("evalFloatValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties));
 			}
 		}
 		return NULL;
@@ -309,7 +313,7 @@ namespace zetscript{
 				return &eval_string;
 			}
 			else{
-				zs_strutils::format("EvalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
+				zs_strutils::format("evalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 			}
 		}
 
@@ -328,9 +332,8 @@ namespace zetscript{
 		}
 	}
 
-	bool ZetScript::eval(const std::string & expression, bool exec_vm, bool show_bytecode, const char * filename)  {
-
-		if(!eval::eval(this,expression.c_str(),filename)){
+	bool ZetScript::evalInternal(const char * code, bool exec_vm, bool show_bytecode, const char * filename)  {
+		if(!eval::eval(this,code,filename)){
 			return false;
 		}
 
@@ -347,6 +350,12 @@ namespace zetscript{
 		return true;
 	}
 
+	bool ZetScript::eval(const std::string & code, bool exec_vm, bool show_bytecode, const char * filename)  {
+
+		return evalInternal(code.c_str(), exec_vm, show_bytecode, filename);
+
+	}
+
 	bool ZetScript::evalFile(const std::string &  filename, bool exec_vm, bool show_bytecode){
 		//int idx_file=-1;
 		bool error=false;
@@ -361,7 +370,7 @@ namespace zetscript{
 
 			if((buf_tmp=zs_io::readFile(filename, n_bytes))!=NULL){
 				try{
-					eval(buf_tmp, exec_vm, show_bytecode,filename.c_str());
+					evalInternal(buf_tmp, exec_vm, show_bytecode,filename.c_str());
 				}
 				catch(exception::ScriptExceptionError & e){
 					free(buf_tmp);

@@ -81,7 +81,7 @@ int main(int argc, char * argv[]) {
 			if(!exit){ // evaluate expression
 
 				try{
-					zs->evalString(expression.c_str());
+					zs->eval(expression.c_str());
 				}catch(std::exception & ex){
 					fprintf(stderr,"%s\n",ex.what());
 				}
@@ -93,7 +93,7 @@ int main(int argc, char * argv[]) {
 	delete zs;
 
 #ifdef __MEMMANAGER__
-	MEM_ViewStatus();
+	MEMMGR_print_status();
 #endif
 
 	return 0;

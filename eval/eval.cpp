@@ -322,7 +322,7 @@ namespace zetscript{
 									,aux
 									,line
 									, scope_info
-									,&eval_data->evaluated_function_current->evaluated_instruction
+									,&eval_data->evaluated_function_current->evaluated_instructions
 							)) == NULL){ // something wrong was happen.
 								THROW_SCRIPT_ERROR();
 								return NULL;
@@ -354,14 +354,14 @@ namespace zetscript{
 			eval_data->evaluated_function_current->script_function->instruction=NULL;
 
 			// get total size op + 1 ends with NULL
-			unsigned size = (eval_data->evaluated_function_current->evaluated_instruction.size() + 1) * sizeof(Instruction);
+			unsigned size = (eval_data->evaluated_function_current->evaluated_instructions.size() + 1) * sizeof(Instruction);
 			eval_data->evaluated_function_current->script_function->instruction = (PtrInstruction)malloc(size);
 			memset(eval_data->evaluated_function_current->script_function->instruction, 0, size);
 
-			for(unsigned i=0; i < eval_data->evaluated_function_current->evaluated_instruction.size(); i++){
+			for(unsigned i=0; i < eval_data->evaluated_function_current->evaluated_instructions.size(); i++){
 
 				SymbolInfo *vis=NULL;
-				EvaluatedInstruction *evaluated_instruction = &eval_data->evaluated_function_current->evaluated_instruction[i];
+				EvaluatedInstruction *evaluated_instruction = &eval_data->evaluated_function_current->evaluated_instructions[i];
 				LinkSymbolFirstAccess *ls=&evaluated_instruction->link_symbol_first_access;
 
 

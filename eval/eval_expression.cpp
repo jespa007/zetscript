@@ -150,7 +150,7 @@ namespace zetscript{
 					int value = *((int *)const_obj);
 					delete (int *)const_obj;
 					load_type=LOAD_TYPE_CONSTANT;
-					obj=eval_data->zs->registerConstantIntValue(v,value);
+					obj=eval_data->zs->registerConstantValue(v,value);
 				}
 				else if((const_obj=zs_strutils::parseFloat(v))!=NULL){
 					float value = *((float *)const_obj);
@@ -216,7 +216,7 @@ namespace zetscript{
 				}
 			 }
 			token_node->value = v;
-			token_node->instruction.push_back(EvaluatedInstruction(ByteCode::BYTE_CODE_LOAD,load_type,(intptr_t)obj,scope_type));
+			token_node->evaluated_instructions.push_back(EvaluatedInstruction(ByteCode::BYTE_CODE_LOAD,load_type,(intptr_t)obj,scope_type));
 
 			return aux;
 			// POST: token as literal or identifier
@@ -234,8 +234,8 @@ namespace zetscript{
 				// concatenate instructions ...
 				instruction->insert(
 						  instruction->end()
-						, expression_tokens->at(idx_start).instruction.begin()
-						, expression_tokens->at(idx_start).instruction.end() );
+						, expression_tokens->at(idx_start).evaluated_instructions.begin()
+						, expression_tokens->at(idx_start).evaluated_instructions.end() );
 
 				return true;
 			}
@@ -418,7 +418,13 @@ namespace zetscript{
 									do{
 
 
-										if((aux_p = evalExpression(eval_data,aux_p,line,scope_info,&symbol_token_node.instruction))==NULL){
+										if((aux_p = evalExpression(
+												eval_data
+												,aux_p
+												,line
+												,scope_info
+												,&symbol_token_node.evaluated_instructions
+										))==NULL){
 											return NULL;
 										}
 
@@ -444,7 +450,12 @@ namespace zetscript{
 								aux_p++;
 								break;
 							case '[': // std::vector access
-								if((aux_p = evalExpression(eval_data,ignoreBlanks(aux_p+1,line),line,scope_info,&symbol_token_node.instruction))==NULL){
+								if((aux_p = evalExpression(
+										eval_data
+										,ignoreBlanks(aux_p+1,line)
+										,line,scope_info
+										,&symbol_token_node.evaluated_instructions
+								))==NULL){
 									return NULL;
 								}
 								if(*aux_p != ']'){
@@ -476,7 +487,7 @@ namespace zetscript{
 
 							if(byte_code==ByteCode::BYTE_CODE_LOAD){
 								//instruction_identifier=symbol_token_node.instruction.size();
-								symbol_token_node.instruction[instruction_identifier].instruction_source_info= InstructionSourceInfo(
+								symbol_token_node.evaluated_instructions[instruction_identifier].instruction_source_info= InstructionSourceInfo(
 									eval_data->current_parsing_file
 									,line
 									,getCompiledSymbol(eval_data,symbol_token_node.value)
@@ -484,13 +495,13 @@ namespace zetscript{
 							}
 
 							EvaluatedInstruction instruction_token=EvaluatedInstruction(byte_code);
-							symbol_token_node.instruction.push_back(instruction_token);
+							symbol_token_node.evaluated_instructions.push_back(instruction_token);
 
 							aux_p=ignoreBlanks(aux_p,line);
 						}
 
 						// add info to solve symbols first access (we need to put here because we have to know n params if function related)
-						symbol_token_node.instruction[0].link_symbol_first_access=LinkSymbolFirstAccess(
+						symbol_token_node.evaluated_instructions[0].link_symbol_first_access=LinkSymbolFirstAccess(
 								eval_data->evaluated_function_current->script_function->idx_script_function
 								,scope_info->idx_scope
 								,symbol_token_node.value
@@ -498,7 +509,7 @@ namespace zetscript{
 						);
 
 						// add info to add as symbol value ...
-						symbol_token_node.instruction[0].instruction_source_info = InstructionSourceInfo(
+						symbol_token_node.evaluated_instructions[0].instruction_source_info = InstructionSourceInfo(
 							eval_data->current_parsing_file
 							,line
 							,getCompiledSymbol(eval_data,symbol_token_node.value)

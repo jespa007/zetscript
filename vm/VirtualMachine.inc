@@ -7,19 +7,19 @@ namespace zetscript{
 
 		// general
 		#define PRINT_DUAL_ERROR_OP(c)\
-		std::string var_type1=indexInstructionVarTypeToStr(stk_result_op1),\
-			   var_type2=indexInstructionVarTypeToStr(stk_result_op2);\
+		std::string var_type1=stk_result_op1->toString(),\
+			   var_type2=stk_result_op2->toString();\
 		\
-		writeError(SFI_GET_FILE_LINE(calling_script_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+		writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 				var_type1.c_str(),\
 				c,\
 				var_type2.c_str());
 
 
 		#define PRINT_ERROR_OP(c)\
-			std::string var_type1=indexInstructionVarTypeToStr(stk_result_op1);\
+			std::string var_type1=stk_result_op1->toString();\
 		\
-		writeError(SFI_GET_FILE_LINE(calling_script_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+		writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 			c,\
 			var_type1.c_str());
 
@@ -104,7 +104,7 @@ namespace zetscript{
 
 	inline bool VirtualMachine::applyMetamethod(
 										ScriptVar *calling_object
-										,ScriptFunction *calling_script_function
+										,ScriptFunction *calling_function
 										,Instruction *instruction
 										,const char *__OVERR_OP__
 										,ByteCodeMetamethod __METAMETHOD__
@@ -122,7 +122,7 @@ namespace zetscript{
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_NEG\
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_SET\
 						   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);
-		StackElement *mm_test_startArg = stk_current_data+n_metam_args;
+		StackElement *mm_test_startArg = stk_current+n_metam_args;
 		if(instruction->value_op2 ==0){ /* search for first time , else the function is stored in value_op2 */
 			ScriptClass *script_class_aux=NULL;
 
@@ -149,17 +149,17 @@ namespace zetscript{
 				}
 			}else{
 
-				std::string var_type1=indexInstructionVarTypeToStr(stk_result_op1),
+				std::string var_type1=stk_result_op1->toString(),
 						var_type2="";
 
 				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/
-					writeError(SFI_GET_FILE_LINE(calling_script_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							STR(__OVERR_OP),
 							var_type1.c_str()
 							);\
 				}else{ /* 2 args*/
-					var_type2=indexInstructionVarTypeToStr(stk_result_op2);
-					writeError(SFI_GET_FILE_LINE(calling_script_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					var_type2=stk_result_op2->toString();
+					writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 							var_type1.c_str(),
 							__OVERR_OP__,
 							var_type2.c_str());
@@ -177,7 +177,7 @@ namespace zetscript{
 
 			if((ptr_function_found = findFunction(
 					 calling_object
-					,calling_script_function
+					,calling_function
 					,instruction
 					,instruction
 					,NULL
@@ -199,13 +199,13 @@ namespace zetscript{
 		}
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
-		StackElement ret_obj=callFunctionInternal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,ptr_current_str,n_metam_args);
+		StackElement ret_obj=callFunctionInternal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,str_current,n_metam_args);
 		if(error){
 			return false;
 		}
 
 		/* restore ptrCurretOp... */
-		stk_current_data=mm_test_startArg-n_metam_args;
+		stk_current=mm_test_startArg-n_metam_args;
 		/* if function is C must register pointer ! */
 
 		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
@@ -218,7 +218,7 @@ namespace zetscript{
 			}
 		}
 		if(__METAMETHOD__ != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
-			*stk_current_data++ = ret_obj;
+			*stk_current++ = ret_obj;
 		}
 
 		return true;
@@ -226,7 +226,7 @@ namespace zetscript{
 
 	inline ScriptFunction * VirtualMachine::findFunction(
 			ScriptVar *calling_object
-			,ScriptFunction *calling_script_function
+			,ScriptFunction *calling_function
 			,Instruction *instruction
 			,Instruction * call_ale_instruction
 
@@ -466,27 +466,27 @@ namespace zetscript{
 
 						}
 					}else{
-						writeError(SFI_GET_FILE_LINE(calling_script_function,call_ale_instruction),"Cannot find %s \"%s%s(%s)\".\n\n",
+						writeError(SFI_GET_FILE_LINE(calling_function,call_ale_instruction),"Cannot find %s \"%s%s(%s)\".\n\n",
 										is_constructor ? "constructor":"function",
 										calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-												calling_script_function->getInstructionSymbolName(call_ale_instruction),
+												calling_function->getInstructionSymbolName(call_ale_instruction),
 										args_str.c_str()
 						);
 					}
 				}
 				else{
 					if(metamethod_str!=NULL){
-						writeError(SFI_GET_FILE_LINE(calling_script_function,call_ale_instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
+						writeError(SFI_GET_FILE_LINE(calling_function,call_ale_instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 													global_functions->at(0)->symbol_info.symbol->name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
-						writeError(SFI_GET_FILE_LINE(calling_script_function,call_ale_instruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+						writeError(SFI_GET_FILE_LINE(calling_function,call_ale_instruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
 							calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-									calling_script_function->getInstructionSymbolName(call_ale_instruction),
+									calling_function->getInstructionSymbolName(call_ale_instruction),
 							args_str.c_str(),
 							str_candidates.c_str());
 					}

@@ -433,7 +433,7 @@ namespace zetscript{
 							,aux_p
 							, line
 							, scope_info
-							,&eval_data->evaluated_function_current->evaluated_instruction
+							,&eval_data->evaluated_function_current->evaluated_instructions
 					))!= NULL){
 
 						if(*aux_p!=';'){
@@ -476,7 +476,7 @@ namespace zetscript{
 								,aux_p+1
 								,line
 								,_currentScope
-								,&eval_data->evaluated_function_current->evaluated_instruction
+								,&eval_data->evaluated_function_current->evaluated_instructions
 						)) != NULL){
 
 							if(*end_expr != ')'){
@@ -575,7 +575,7 @@ namespace zetscript{
 										,aux_p+1
 										,line
 										,_currentScope
-										,&eval_data->evaluated_function_current->evaluated_instruction
+										,&eval_data->evaluated_function_current->evaluated_instructions
 								)) != NULL){
 									if(*end_expr != ')'){
 										writeError(eval_data->current_parsing_file,line,"Expected ')'");
@@ -635,7 +635,7 @@ namespace zetscript{
 								,aux_p+1
 								,line
 								,scope_info
-								,&eval_data->evaluated_function_current->evaluated_instruction
+								,&eval_data->evaluated_function_current->evaluated_instructions
 						)) == NULL){
 							writeError(eval_data->current_parsing_file,line,"Expected ')' if ");
 							return NULL;
@@ -794,7 +794,7 @@ namespace zetscript{
 									,(const char *)aux_p
 									,line
 									,_currentScope
-									,&eval_data->evaluated_function_current->evaluated_instruction
+									,&eval_data->evaluated_function_current->evaluated_instructions
 							)) == NULL){
 								return NULL;
 							}
@@ -818,7 +818,7 @@ namespace zetscript{
 											,(const char *)aux_p
 											,line
 											,_currentScope
-											,&eval_data->evaluated_function_current->evaluated_instruction
+											,&eval_data->evaluated_function_current->evaluated_instructions
 									)) == NULL){
 										return NULL;
 									}
@@ -847,7 +847,7 @@ namespace zetscript{
 											,aux_p
 											,line
 											,_currentScope
-											,&eval_data->evaluated_function_current->evaluated_instruction
+											,&eval_data->evaluated_function_current->evaluated_instructions
 									))==NULL){
 										return NULL;
 									}
@@ -927,7 +927,7 @@ namespace zetscript{
 								,aux_p
 								,line
 								,scope_info
-								,&eval_data->evaluated_function_current->evaluated_instruction
+								,&eval_data->evaluated_function_current->evaluated_instructions
 							))==NULL){
 								return NULL;
 							}
@@ -1076,7 +1076,7 @@ namespace zetscript{
 									,start_var
 									,start_line
 									,scope_info
-									,&eval_data->evaluated_function_current->evaluated_instruction
+									,&eval_data->evaluated_function_current->evaluated_instructions
 								)) == NULL){
 									return NULL;
 								}

@@ -6,7 +6,7 @@
 
 #define RETURN_ERROR\
 	error=true;\
-	return callc_result;
+	return stk_result;
 
 
 
@@ -33,7 +33,7 @@
 	else{\
 		if(!applyMetamethod(\
 						 calling_object\
-						,calling_script_function\
+						,calling_function\
 						,instruction\
 						,STR(%)\
 						,BYTE_CODE_METAMETHOD_MOD\
@@ -68,7 +68,7 @@
 	else{\
 		if(!applyMetamethod(\
 						calling_object\
-						,calling_script_function\
+						,calling_function\
 						,instruction\
 						,STR(__OVERR_OP__)\
 						,__METAMETHOD__\
@@ -108,7 +108,7 @@
 	}else{\
 		if(!applyMetamethod(\
 					 calling_object\
-					,calling_script_function\
+					,calling_function\
 					,instruction\
 					,STR(__OVERR_OP__)\
 					, __METAMETHOD__\
@@ -138,7 +138,7 @@
 	}else{\
 		if(!applyMetamethod(\
 						 calling_object\
-						,calling_script_function\
+						,calling_function\
 						,instruction\
 						,STR(__OVERR_OP__)\
 						, __METAMETHOD__\
@@ -150,13 +150,13 @@
 	}\
 }
 
-#define PERFORM_PRE_POST_OPERATOR(ldrOp, __OPERATOR__) \
+#define PERFORM_PRE_POST_OPERATOR(stk_var, __OPERATOR__) \
 {\
-	void **ref=(void **)(&((ldrOp)->stk_value));\
-	if(ldrOp->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){\
-		ref=(void **)((ldrOp)->var_ref);\
+	void **ref=(void **)(&((stk_var)->stk_value));\
+	if(stk_var->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){\
+		ref=(void **)((stk_var)->var_ref);\
 	}\
-	switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES((ldrOp)->properties)){\
+	switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES((stk_var)->properties)){\
 	case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:\
 			(*((int *)(ref)))__OPERATOR__;\
 			break;\
@@ -164,7 +164,7 @@
 			(*((float *)(ref)))__OPERATOR__;\
 			break;\
 	default:\
-		writeError(SFI_GET_FILE_LINE(calling_script_function,instruction)," Cannot perform pre/post operator (%s)",indexInstructionVarTypeToStr(ldrOp));\
+		writeError(SFI_GET_FILE_LINE(calling_function,instruction)," Cannot perform pre/post operator (%s)",stk_var->toString());\
 		RETURN_ERROR;\
 		break;\
 	}\
@@ -185,7 +185,7 @@
 		if(!STK_VALUE_IS_FLOAT_OR_INT(stk_src) && STK_VALUE_IS_FLOAT_OR_INT(stk_dst)){\
 			if(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties) != GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_dst->properties)\
 			){\
-				writeError(SFI_GET_FILE_LINE(calling_script_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_script_function,instruction));\
+				writeError(SFI_GET_FILE_LINE(calling_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));\
 				RETURN_ERROR;\
 			}else{\
 				if(\
@@ -246,7 +246,7 @@
 			sharePointer(script_var->ptr_shared_pointer_node);\
 		}\
 	}else{\
-		writeError(SFI_GET_FILE_LINE(calling_script_function,instruction),"(internal) cannot determine var type %i",GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties));\
+		writeError(SFI_GET_FILE_LINE(calling_function,instruction),"(internal) cannot determine var type %i",GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties));\
 		RETURN_ERROR;\
 	}\
 	if(copy_aux!=NULL)stk_dst->properties|=MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;\
@@ -327,7 +327,7 @@ namespace zetscript{
 
 		cancel_execution=false;
 
-		stk_current_data=NULL;
+		stk_current=NULL;
 		current_scope_info_ptr = scope_info;
 
 		f_aux_value1=0;
@@ -337,8 +337,8 @@ namespace zetscript{
 
 		idx_last_statment=0;
 
-		ptr_last_str=&stk_string[VM_MAX_AUX_STRINGS-1]; // aux values for std::string ...
-		ptr_current_str=NULL;
+		str_last=&stk_string[VM_MAX_AUX_STRINGS-1]; // aux values for std::string ...
+		str_current=NULL;
 
 		max_scope_info = &scope_info[VM_MAX_SCOPES-1];
 
@@ -535,15 +535,15 @@ namespace zetscript{
 	}
 
 	StackElement  VirtualMachine::callFunction(
-			 ScriptFunction *calling_script_function,
+			 ScriptFunction *calling_function,
 			 ScriptVar *this_object,
 			 bool & error,
 			const std::vector<StackElement> & arg
 			){
 
-		StackElement callc_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
-		if(calling_script_function==NULL){
+		if(calling_function==NULL){
 			RETURN_ERROR;
 		}
 
@@ -554,11 +554,11 @@ namespace zetscript{
 			}
 			cancel_execution=false;
 
-			stk_current_data=stack;
-			//*stk_current_data={MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED,0,0}; // ini first op
+			stk_current=stack;
+			//*stk_current={MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED,0,0}; // ini first op
 
-			if(calling_script_function->idx_script_function != 0){ // calls script function from C : preserve stack space for global vars
-				stk_current_data=&stack[main_function_object->local_variable.size()];
+			if(calling_function->idx_script_function != 0){ // calls script function from C : preserve stack space for global vars
+				stk_current=&stack[main_function_object->local_variable.size()];
 			}
 			current_foreach=&stk_foreach[0];
 		}
@@ -567,7 +567,7 @@ namespace zetscript{
 		if(arg.size()>0){ // pass parameters...
 
 			for(unsigned i = 0; i < arg.size(); i++){
-				*stk_current_data++=arg[i];
+				*stk_current++=arg[i];
 			}
 			//advance idxBaseStk...
 			n_arg=arg.size();
@@ -575,10 +575,10 @@ namespace zetscript{
 
 		// Script function starts here.... later script function can call c++ function, but once in c++ function is not possible by now call script function again.
 		StackElement info=callFunctionInternal(
-				calling_script_function,
+				calling_function,
 				this_object,
 				error,
-				stk_current_data,
+				stk_current,
 				NULL,
 				n_arg);
 
@@ -590,7 +590,7 @@ namespace zetscript{
 	}
 
 	StackElement  * VirtualMachine::getLastStackValue(){
-		return (stk_current_data-1);
+		return (stk_current-1);
 	}
 
 

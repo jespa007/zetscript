@@ -99,9 +99,9 @@ namespace zetscript{
 
 		if(!isClassRegistered(class_name)){
 
-			std::string str_classPtr = typeid( T *).name();
+			std::string str_class_name_ptr = typeid( T *).name();
 
-			if(getIdx_C_RegisteredClass(str_classPtr)!=ZS_INVALID_CLASS){
+			if(getIdx_C_RegisteredClass(str_class_name_ptr)!=ZS_INVALID_CLASS){
 				THROW_RUNTIME_ERROR(zs_strutils::format("this %s is already registered",zs_rtti::demangle(typeid( T).name()).c_str()));
 				return NULL;
 			}
@@ -122,7 +122,7 @@ namespace zetscript{
 			irc->idx_function_member_constructor=-1;
 			// allow dynamic constructor in function its parameters ...
 
-			irc->str_class_ptr_type=str_classPtr;
+			irc->str_class_ptr_type=str_class_name_ptr;
 			irc->symbol_info.symbol_info_properties=SYMBOL_INFO_PROPERTY_C_OBJECT_REF;
 
 			irc->c_constructor = NULL;
@@ -130,7 +130,7 @@ namespace zetscript{
 			script_classes.push_back(irc);
 
 			irc->idx_class=(unsigned char)(script_classes.size()-1);
-			ZS_PRINT_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_classPtr).c_str());
+			ZS_PRINT_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
 			return true;
 		}
@@ -337,13 +337,13 @@ namespace zetscript{
 		std::vector<ParamArgInfo> arg_info;
 		int idx_return_type=-1;
 		intptr_t ref_ptr=0;
-		std::string str_classPtr = typeid( C *).name();
+		std::string str_class_name_ptr = typeid( C *).name();
 
 		if(!script_function_factory->checkCanregister_C_Function(function_name)){
 			return false;
 		}
 
-		ScriptClass * sc=getScriptClass(str_classPtr);
+		ScriptClass * sc=getScriptClass(str_class_name_ptr);
 
 		if(sc == NULL){
 			return false;
@@ -396,8 +396,8 @@ namespace zetscript{
 	/**
 	 * Register C Member function Class
 	 */
-	template <typename R, class T, typename..._A>
-	bool ScriptClassFactory::register_C_FunctionMemberStatic(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file,int registered_line)
+	template <typename C, typename F>
+	bool ScriptClassFactory::register_C_FunctionMemberStatic(const char *function_name,F function_ptr, const char *registered_file,int registered_line)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
@@ -408,22 +408,22 @@ namespace zetscript{
 		std::vector<ParamArgInfo> arg_info;
 		int idx_return_type=-1;
 		intptr_t ref_ptr=0;
-		std::string str_classPtr = typeid( T *).name();
-		std::string function_class_name = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		std::string str_class_name_ptr = typeid( C *).name();
+		std::string function_class_name = zs_rtti::demangle(typeid(C).name())+"::"+function_name;
 
 
 		if(!script_function_factory->checkCanregister_C_Function(function_class_name)){
 			return false;
 		}
 
-		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_classPtr);
+		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_class_name_ptr);
 
 		if(c_class == NULL){
 			return false;
 		}
 
 		// 1. check all parameters ok.
-		using Traits3 = FunctionTraits<decltype(function_type)>;
+		using Traits3 = FunctionTraits<decltype(function_ptr)>;
 		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
 
 		if(arg.size()>6){
@@ -452,7 +452,7 @@ namespace zetscript{
 			arg_info.push_back({idx_type,arg[i]});
 		}
 
-		ref_ptr=(intptr_t)function_type;
+		ref_ptr=(intptr_t)function_ptr;
 
 		// register member function...
 		ScriptFunction * sf = c_class->registerFunction(registered_file,registered_line,function_name,arg_info, idx_return_type, ref_ptr, SYMBOL_INFO_PROPERTY_C_OBJECT_REF | SYMBOL_INFO_PROPERTY_STATIC_REF);
@@ -476,18 +476,18 @@ namespace zetscript{
 						// return type must be bool...
 						if(ZS_STRCMP(return_type.c_str(), != ,typeid(bool).name())){
 							THROW_RUNTIME_ERROR(zs_strutils::format("error registering metamethod %s::%s. Expected return bool but it was %s",
-									zs_rtti::demangle(typeid(T).name()).c_str(),
+									zs_rtti::demangle(typeid(C).name()).c_str(),
 									function_name,
 									zs_rtti::demangle(return_type.c_str()).c_str()));
 							return false;
 
 						}
-					}else if((return_type != str_classPtr) && (i!= BYTE_CODE_METAMETHOD_SET)){
+					}else if((return_type != str_class_name_ptr) && (i!= BYTE_CODE_METAMETHOD_SET)){
 
 						THROW_RUNTIME_ERROR(zs_strutils::format("error registering metamethod %s::%s. Expected return %s but it was %s",
-								zs_rtti::demangle(typeid(T).name()).c_str(),
+								zs_rtti::demangle(typeid(C).name()).c_str(),
 								function_name,
-								zs_rtti::demangle(str_classPtr.c_str()).c_str(),
+								zs_rtti::demangle(str_class_name_ptr.c_str()).c_str(),
 								zs_rtti::demangle(return_type.c_str()).c_str()));
 						return false;
 					}
@@ -594,10 +594,10 @@ namespace zetscript{
 		std::string var_type = typeid(R *).name(); // we need the pointer type ...
 		std::string return_type;
 		//std::vector<std::string> params;
-		std::string str_classPtr = typeid( C *).name();
+		std::string str_class_name_ptr = typeid( C *).name();
 		unsigned int ref_ptr=offsetOf<C>(var_pointer);
 
-		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_classPtr);
+		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_class_name_ptr);
 
 		if(c_class == NULL){
 			return false;

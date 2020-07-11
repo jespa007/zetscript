@@ -157,7 +157,7 @@ namespace zetscript{
 
 			std::string value; // first access
 			int line;
-			std::vector<EvaluatedInstruction> instruction; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
+			std::vector<EvaluatedInstruction> evaluated_instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
 			//std::map<short,ScriptFunction::InstructionSourceInfo> instruction_source_info;
 			// access info like function call, std::vector access and variable memeber
 			//std::vector<tTokenNodeAccessor> accessor;
@@ -184,7 +184,7 @@ namespace zetscript{
 
 		struct EvaluatedFunction{
 
-			std::vector<EvaluatedInstruction>	 	evaluated_instruction;
+			std::vector<EvaluatedInstruction>	 	evaluated_instructions;
 			ScriptFunction 						*  	script_function;
 
 			EvaluatedFunction(ScriptFunction	* _script_function){

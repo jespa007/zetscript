@@ -35,76 +35,75 @@ namespace zetscript{
 
 	StackElement  VirtualMachine::callFunction_C(
 			intptr_t fun_ptr,
-			const ScriptFunction *irfs,
+			const ScriptFunction *calling_function,
 			bool & error,
-			StackElement *ptrArg,
+			StackElement *stk_arg_calling_function,
 			unsigned char n_args,
 			Instruction *ins,
 			ScriptVar  * this_object
 			){
 
-		StackElement callc_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
 		intptr_t converted_param[MAX_N_ARGS];
 		intptr_t result=0;
-		StackElement *currentArg;
-		current_call_c_function = irfs;
-		bool static_ref=irfs->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_STATIC_REF;
+		StackElement *stk_arg_current;
+		current_call_c_function = calling_function;
+		bool static_ref=calling_function->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_STATIC_REF;
 		//float aux_float=0;
 
 		if(n_args>MAX_N_ARGS){
-			writeError(SFI_GET_FILE_LINE(irfs,ins),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
+			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
 			RETURN_ERROR;
 		}
 
-
-		if((irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF) {
-			writeError(SFI_GET_FILE_LINE(irfs,ins),"Function is not registered as C");
+		if((calling_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF) {
+			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Function is not registered as C");
 			RETURN_ERROR;
 		}
 
 		if(fun_ptr==0){
-			writeError(SFI_GET_FILE_LINE(irfs,ins),"Null function");
-			//return &callc_result;//ScriptVar::UndefinedSymbol;
+			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Null function");
+			//return &stk_result;//ScriptVar::UndefinedSymbol;
 			RETURN_ERROR;
 		}
 
-		if((char)irfs->arg_info.size() != n_args){
-			writeError(SFI_GET_FILE_LINE(irfs,ins),"C argument VS scrip argument doestn't match sizes");
+		if((char)calling_function->arg_info.size() != n_args){
+			writeError(SFI_GET_FILE_LINE(calling_function,ins),"C argument VS scrip argument doestn't match sizes");
 			RETURN_ERROR;
 		}
 
-		if(irfs->arg_info.size() > MAX_N_ARGS){
-			writeError(SFI_GET_FILE_LINE(irfs,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",irfs->arg_info.size(),MAX_N_ARGS);
+		if(calling_function->arg_info.size() > MAX_N_ARGS){
+			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->arg_info.size(),MAX_N_ARGS);
 			RETURN_ERROR;
-			//return &callc_result;//ScriptVar::UndefinedSymbol;
+			//return &stk_result;//ScriptVar::UndefinedSymbol;
 		}
 
 		// convert parameters script to c...
 		for(unsigned char  i = 0; i < n_args;i++){
 
-			if( i==0 && (irfs->symbol_info.symbol_info_properties&(SYMBOL_INFO_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))){
+			if( i==0 && (calling_function->symbol_info.symbol_info_properties&(SYMBOL_INFO_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))){
 				if(!static_ref){
-					writeError(SFI_GET_FILE_LINE(irfs,ins),"Internal error: Cannot set parameter as this object due is not static");
+					writeError(SFI_GET_FILE_LINE(calling_function,ins),"Internal error: Cannot set parameter as this object due is not static");
 					RETURN_ERROR;
 				}
 
 				if(this_object==NULL){
-					writeError(SFI_GET_FILE_LINE(irfs,ins),"Internal error: Cannot set parameter as this object due this object is NULL");
+					writeError(SFI_GET_FILE_LINE(calling_function,ins),"Internal error: Cannot set parameter as this object due this object is NULL");
 					RETURN_ERROR;
 				}
 
 				converted_param[0]=(intptr_t)this_object->Get_C_Object();
 			}
 			else{
-				currentArg=&ptrArg[i];
+				stk_arg_current=&stk_arg_calling_function[i];
 
-				if(!zs->stackElementToVar(currentArg,irfs->arg_info[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
-					writeError(SFI_GET_FILE_LINE(irfs,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
-																	irfs->symbol_info.symbol->name.c_str(),
+				if(!zs->convertStackElementToVar(stk_arg_current,calling_function->arg_info[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
+					writeError(SFI_GET_FILE_LINE(calling_function,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
+																	calling_function->symbol_info.symbol->name.c_str(),
 																	i,
 																	error_str.c_str(),
-																	irfs->symbol_info.symbol->name.c_str()
+																	calling_function->symbol_info.symbol->name.c_str()
 																	);
 					RETURN_ERROR;
 				}
@@ -113,7 +112,7 @@ namespace zetscript{
 
 		ZS_PRINT_DEBUG("pre_call %i",n_args);
 
-		if(irfs->idx_return_type == IDX_BUILTIN_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
+		if(calling_function->idx_return_type == IDX_BUILTIN_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){
 			case 0:
@@ -221,7 +220,7 @@ namespace zetscript{
 				break;
 			}
 
-		}else if(irfs->idx_return_type==IDX_BUILTIN_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
+		}else if(calling_function->idx_return_type==IDX_BUILTIN_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
 			switch(n_args){
 			case 0:
 				if(static_ref){
@@ -327,7 +326,7 @@ namespace zetscript{
 				}
 				break;
 			}
-		}else if(irfs->idx_return_type==IDX_BUILTIN_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(calling_function->idx_return_type==IDX_BUILTIN_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
 			float aux_flt;
 			switch(n_args){
 			case 0:
@@ -545,8 +544,8 @@ namespace zetscript{
 			}
 		}
 
-		callc_result=this->zs->varToStackElement(result,irfs->idx_return_type);
+		stk_result=this->zs->convertVarToStackElement(result,calling_function->idx_return_type);
 
-		return callc_result;
+		return stk_result;
 	}
 }

@@ -24,7 +24,7 @@ int main(){
 	zs->register_C_Function("add",static_cast<float (*)(float *,float *)>(add));
 
 
-	zs->evalString(
+	zs->eval(
 		"print(\"result 5+4:\"+add(5,4));"       // prints "result 5+4:9"
 		"print(\"result 0.5+4.6:\"+add(0.5,4.6));"       // prints "result 5+4:9"
 	);
@@ -32,7 +32,7 @@ int main(){
 	delete zs;
 
 #ifdef __MEMMANAGER__
-  MEM_ViewStatus();
+	MEMMGR_print_status();
 #endif
 
 	return 0;

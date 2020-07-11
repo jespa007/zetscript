@@ -1,63 +1,63 @@
 namespace zetscript{
 
 		// Helpers...
-		 StackElement ZetScript::varToStackElement(intptr_t var_trans, int idx_builtin_type){
-			//intptr_t var_trans = (intptr_t)input_var;
+		 StackElement ZetScript::convertVarToStackElement(intptr_t ptr_var, int idx_builtin_type_var){
+			//intptr_t ptr_var = (intptr_t)input_var;
 				std::string s_return_value;
-				StackElement callc_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+				StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 				//int idx_builtin_type=getIdxClassFromIts_C_Type(typeid(T).name());
 				// save return type ...
-				switch(idx_builtin_type){
+				switch(idx_builtin_type_var){
 				 case IDX_BUILTIN_TYPE_VOID_C:
 					break;
 				 case IDX_BUILTIN_TYPE_INT_PTR_C:
-					 if(var_trans==0) return callc_result;
-					 callc_result={(void *)(*((intptr_t *)var_trans)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
+					 if(ptr_var==0) return stk_result;
+					 stk_result={(void *)(*((intptr_t *)ptr_var)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
 					 break;
 				 case IDX_BUILTIN_TYPE_UNSIGNED_INT_C:
 				 case IDX_BUILTIN_TYPE_INTPTR_T_C:
 				 case IDX_BUILTIN_TYPE_INT_C:
-					 callc_result={(void *)(((intptr_t)var_trans)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
+					 stk_result={(void *)(((intptr_t)ptr_var)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_C:
-					 callc_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
-					 memcpy(&callc_result.stk_value,&var_trans,sizeof(float));
+					 stk_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
+					 memcpy(&stk_result.stk_value,&ptr_var,sizeof(float));
 
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
-					 if(var_trans==0) return callc_result;
-					 callc_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
-					 memcpy(&callc_result.stk_value,&(*(float *)var_trans),sizeof(float));
+					 if(ptr_var==0) return stk_result;
+					 stk_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
+					 memcpy(&stk_result.stk_value,&(*(float *)ptr_var),sizeof(float));
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
-					 if(var_trans==0) return callc_result;
-					 callc_result={(void *)(*((bool *)var_trans)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
+					 if(ptr_var==0) return stk_result;
+					 stk_result={(void *)(*((bool *)ptr_var)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_C:
-					 callc_result={(void *)(((bool)var_trans)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
+					 stk_result={(void *)(((bool)ptr_var)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
 					 break;
 				 case IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C:
-					 if(var_trans==0) return callc_result;
-					 callc_result={(void *)var_trans,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
+					 if(ptr_var==0) return stk_result;
+					 stk_result={(void *)ptr_var,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
 					 break;
 				 case IDX_BUILTIN_TYPE_STRING_PTR_C:
-					 if(var_trans==0) return callc_result;
-					 callc_result={(void *)((std::string *)var_trans)->c_str(),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
+					 if(ptr_var==0) return stk_result;
+					 stk_result={(void *)((std::string *)ptr_var)->c_str(),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
 					 break;
 				 case IDX_BUILTIN_TYPE_STACK_ELEMENT:
-					 if(var_trans==0) return callc_result;
-					 callc_result=*((StackElement *)var_trans);//{MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING,(void *)((std::string *)var_trans)->c_str(),NULL};//new std::string(*((std::string *)result))};
+					 if(ptr_var==0) return stk_result;
+					 stk_result=*((StackElement *)ptr_var);//{MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING,(void *)((std::string *)ptr_var)->c_str(),NULL};//new std::string(*((std::string *)result))};
 					 break;
 				 default:
-					 if(var_trans==0) return callc_result;
-					 callc_result = {NULL,script_class_factory->instanceScriptVariableByIdx(idx_builtin_type,(void *)var_trans),MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
+					 if(ptr_var==0) return stk_result;
+					 stk_result = {NULL,script_class_factory->instanceScriptVariableByIdx(idx_builtin_type_var,(void *)ptr_var),MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
 					 break;
 				}
 
-				return callc_result;
+				return stk_result;
 		}
 
-		bool ZetScript::stackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error){
+		bool ZetScript::convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *ptr_var, std::string & error){
 			intptr_t val_ret=0;
 
 			ScriptVar *script_variable=NULL;
@@ -191,7 +191,7 @@ namespace zetscript{
 				}
 			}
 
-			*result = val_ret;
+			*ptr_var = val_ret;
 
 			return true;
 		}
@@ -245,7 +245,7 @@ namespace zetscript{
 						}
 
 
-						if(!stackElementToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
+						if(!convertStackElementToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR(zs_strutils::format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
@@ -265,7 +265,7 @@ namespace zetscript{
 		{
 			//return NULL;
 
-			using tParam1 = typename T::template argument<0>::type;
+			using tParam1 = typename T::template Argument<0>::type;
 			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
 
 			*f=((void *)(new std::function<void (tParam1)>(
@@ -273,7 +273,7 @@ namespace zetscript{
 
 					bool error=false;
 					std::vector<StackElement> args={
-							 varToStackElement((intptr_t)p1,idx_param1)
+							 convertVarToStackElement((intptr_t)p1,idx_param1)
 
 					};
 
@@ -307,7 +307,7 @@ namespace zetscript{
 						bool error=false;
 
 						std::vector<StackElement> args={
-								 varToStackElement((intptr_t)p1,idx_param1)
+								 convertVarToStackElement((intptr_t)p1,idx_param1)
 						};
 
 						StackElement stk = virtual_machine->callFunction(
@@ -320,7 +320,7 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 						}
 
-						if(!stackElementToVar(&stk,idx_return, (intptr_t*)(&ret_value),error_str)){
+						if(!convertStackElementToVar(&stk,idx_return, (intptr_t*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR(zs_strutils::format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
@@ -351,8 +351,8 @@ namespace zetscript{
 					bool error=false;
 
 					std::vector<StackElement> args={
-							 varToStackElement((intptr_t)p1,idx_param1)
-							,varToStackElement((intptr_t)p2,idx_param2)
+							 convertVarToStackElement((intptr_t)p1,idx_param1)
+							,convertVarToStackElement((intptr_t)p2,idx_param2)
 
 					};
 
@@ -391,8 +391,8 @@ namespace zetscript{
 						bool error=false;
 
 						std::vector<StackElement> args={
-								 varToStackElement((intptr_t)p1,idx_param1)
-								,varToStackElement((intptr_t)p2,idx_param2)
+								 convertVarToStackElement((intptr_t)p1,idx_param1)
+								,convertVarToStackElement((intptr_t)p2,idx_param2)
 
 						};
 
@@ -406,7 +406,7 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 						}
 
-						if(!stackElementToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
+						if(!convertStackElementToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR(zs_strutils::format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
@@ -442,9 +442,9 @@ namespace zetscript{
 					bool error=false;
 
 					std::vector<StackElement> args={
-							 varToStackElement((intptr_t)p1,idx_param1)
-							,varToStackElement((intptr_t)p2,idx_param2)
-							,varToStackElement((intptr_t)p3,idx_param3)
+							 convertVarToStackElement((intptr_t)p1,idx_param1)
+							,convertVarToStackElement((intptr_t)p2,idx_param2)
+							,convertVarToStackElement((intptr_t)p3,idx_param3)
 					};
 
 					virtual_machine->callFunction(
@@ -481,9 +481,9 @@ namespace zetscript{
 					bool error=false;
 
 					std::vector<StackElement> args={
-							 varToStackElement((intptr_t)p1,idx_param1)
-							,varToStackElement((intptr_t)p2,idx_param2)
-							,varToStackElement((intptr_t)p3,idx_param3)
+							 convertVarToStackElement((intptr_t)p1,idx_param1)
+							,convertVarToStackElement((intptr_t)p2,idx_param2)
+							,convertVarToStackElement((intptr_t)p3,idx_param3)
 					};
 
 					StackElement stk = virtual_machine->callFunction(
@@ -496,7 +496,7 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 					}
 
-					if(!stackElementToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
+					if(!convertStackElementToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
 						THROW_RUNTIME_ERROR(zs_strutils::format("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
@@ -532,10 +532,10 @@ namespace zetscript{
 					bool error=false;
 
 					std::vector<StackElement> args={
-							 varToStackElement((intptr_t)p1,idx_param1)
-							,varToStackElement((intptr_t)p2,idx_param2)
-							,varToStackElement((intptr_t)p3,idx_param3)
-							,varToStackElement((intptr_t)p4,idx_param4)
+							 convertVarToStackElement((intptr_t)p1,idx_param1)
+							,convertVarToStackElement((intptr_t)p2,idx_param2)
+							,convertVarToStackElement((intptr_t)p3,idx_param3)
+							,convertVarToStackElement((intptr_t)p4,idx_param4)
 
 					};
 
@@ -576,10 +576,10 @@ namespace zetscript{
 						std::string error_str;
 
 						std::vector<StackElement> args={
-								 varToStackElement((intptr_t)p1,idx_param1)
-								,varToStackElement((intptr_t)p2,idx_param2)
-								,varToStackElement((intptr_t)p3,idx_param3)
-								,varToStackElement((intptr_t)p4,idx_param4)
+								 convertVarToStackElement((intptr_t)p1,idx_param1)
+								,convertVarToStackElement((intptr_t)p2,idx_param2)
+								,convertVarToStackElement((intptr_t)p3,idx_param3)
+								,convertVarToStackElement((intptr_t)p4,idx_param4)
 
 						};
 
@@ -593,7 +593,7 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 						}
 
-						if(!stackElementToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
+						if(!convertStackElementToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR(zs_strutils::format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
@@ -633,11 +633,11 @@ namespace zetscript{
 
 					bool error=false;
 					std::vector<StackElement> args={
-							 varToStackElement((intptr_t)p1,idx_param1)
-							,varToStackElement((intptr_t)p2,idx_param2)
-							,varToStackElement((intptr_t)p3,idx_param3)
-							,varToStackElement((intptr_t)p4,idx_param4)
-							,varToStackElement((intptr_t)p5,idx_param5)
+							 convertVarToStackElement((intptr_t)p1,idx_param1)
+							,convertVarToStackElement((intptr_t)p2,idx_param2)
+							,convertVarToStackElement((intptr_t)p3,idx_param3)
+							,convertVarToStackElement((intptr_t)p4,idx_param4)
+							,convertVarToStackElement((intptr_t)p5,idx_param5)
 
 					};
 
@@ -682,11 +682,11 @@ namespace zetscript{
 					std::string error_str;
 
 					std::vector<StackElement> args={
-							 varToStackElement((intptr_t)p1,idx_param1)
-							,varToStackElement((intptr_t)p2,idx_param2)
-							,varToStackElement((intptr_t)p3,idx_param3)
-							,varToStackElement((intptr_t)p4,idx_param4)
-							,varToStackElement((intptr_t)p5,idx_param5)
+							 convertVarToStackElement((intptr_t)p1,idx_param1)
+							,convertVarToStackElement((intptr_t)p2,idx_param2)
+							,convertVarToStackElement((intptr_t)p3,idx_param3)
+							,convertVarToStackElement((intptr_t)p4,idx_param4)
+							,convertVarToStackElement((intptr_t)p5,idx_param5)
 
 					};
 
@@ -700,7 +700,7 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 					}
 
-					if(!stackElementToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
+					if(!convertStackElementToVar(&stk, idx_return, (intptr_t*)(&ret_value),error_str)){
 						THROW_RUNTIME_ERROR(zs_strutils::format("run-time error converting result value:%s",error_str.c_str()));
 					}
 					return ret_value;
@@ -741,12 +741,12 @@ namespace zetscript{
 				[&,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
 					bool error=false;
 					std::vector<StackElement> args={
-							 varToStackElement((intptr_t)p1,idx_param1)
-							,varToStackElement((intptr_t)p2,idx_param2)
-							,varToStackElement((intptr_t)p3,idx_param3)
-							,varToStackElement((intptr_t)p4,idx_param4)
-							,varToStackElement((intptr_t)p5,idx_param5)
-							,varToStackElement((intptr_t)p6,idx_param6)
+							 convertVarToStackElement((intptr_t)p1,idx_param1)
+							,convertVarToStackElement((intptr_t)p2,idx_param2)
+							,convertVarToStackElement((intptr_t)p3,idx_param3)
+							,convertVarToStackElement((intptr_t)p4,idx_param4)
+							,convertVarToStackElement((intptr_t)p5,idx_param5)
+							,convertVarToStackElement((intptr_t)p6,idx_param6)
 
 					};
 
@@ -791,12 +791,12 @@ namespace zetscript{
 						std::string error_str;
 
 						std::vector<StackElement> args={
-								 varToStackElement((intptr_t)p1,idx_param1)
-								,varToStackElement((intptr_t)p2,idx_param2)
-								,varToStackElement((intptr_t)p3,idx_param3)
-								,varToStackElement((intptr_t)p4,idx_param4)
-								,varToStackElement((intptr_t)p5,idx_param5)
-								,varToStackElement((intptr_t)p6,idx_param6)
+								 convertVarToStackElement((intptr_t)p1,idx_param1)
+								,convertVarToStackElement((intptr_t)p2,idx_param2)
+								,convertVarToStackElement((intptr_t)p3,idx_param3)
+								,convertVarToStackElement((intptr_t)p4,idx_param4)
+								,convertVarToStackElement((intptr_t)p5,idx_param5)
+								,convertVarToStackElement((intptr_t)p6,idx_param6)
 						};
 
 						StackElement stk = virtual_machine->callFunction(
@@ -809,7 +809,7 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 						}
 
-						if(!stackElementToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
+						if(!convertStackElementToVar(&stk, idx_return, (intptr_t *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR(zs_strutils::format("run-time error converting result value:%s",error_str.c_str()));
 						}
 						return ret_value;
@@ -827,7 +827,7 @@ namespace zetscript{
 		 auto ZetScript::bindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity > 0)>::type
 		{
-			 bindScriptFunctionBuilder<typename F::return_type, F,  typename F::template argument<Is>::type...>(f,calling_obj,fun_obj);
+			 bindScriptFunctionBuilder<typename F::return_type, F,  typename F::template Argument<Is>::type...>(f,calling_obj,fun_obj);
 		}
 
 		 template <typename F, std::size_t... Is>

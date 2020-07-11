@@ -191,8 +191,9 @@ ELSE()
 		script/ScriptClassFactory.cpp
 		 		 		
  		# Core
+ 		StackElement.cpp
+ 		ByteCode.cpp
  		exception.cpp
- 		Scope.cpp
  		SymbolInfo.cpp
 		ZetScript.cpp
 	

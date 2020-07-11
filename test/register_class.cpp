@@ -53,7 +53,7 @@ int main(){
 
 	zs->class_C_BaseOf<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
 
-	zs->evalString(
+	zs->eval(
 		"class ScriptMyClassExtend:MyClassExtend{\n"
 		"	var data3;\n"
 		"	function function0(){\n"
@@ -83,7 +83,7 @@ int main(){
 	delete zs;
 
 #ifdef __MEMMANAGER__
-  MEM_ViewStatus();
+	MEMMGR_print_status();
 #endif
 
 	return 0;

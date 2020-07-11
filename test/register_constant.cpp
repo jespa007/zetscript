@@ -9,13 +9,13 @@ int main(){
 
 	zs->registerConstantValue("MY_CONSTANT",10);
 
-	zs->evalString(
+	zs->eval(
 		"print(\"c:\"+MY_CONSTANT);"
 	);
 
 	delete zs;
 
 #ifdef __MEMMANAGER__
-  MEM_ViewStatus();
+	MEMMGR_print_status();
 #endif
 }

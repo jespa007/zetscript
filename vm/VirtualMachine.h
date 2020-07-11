@@ -153,22 +153,22 @@ namespace zetscript{
 
 
 		std::string			stk_string[VM_MAX_AUX_STRINGS]; // aux values for std::string ...
-		std::string			*ptr_last_str;
-		std::string			*ptr_current_str;
+		std::string			*str_last;
+		std::string			*str_current;
 
 		 StackElement     	stack[VM_LOCAL_VAR_MAX_STACK];
 		 int n_globals;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		 std::vector<StackElement> global_var;
-		StackElement *stk_current_data;
+		StackElement *stk_current;
 
 
 		 StackElement  callFunction_C(
 				 intptr_t fun_ptr,
-				 const ScriptFunction *irfs,
+				 const ScriptFunction *calling_function,
 				 bool & error,
-				 StackElement *ptrArg,
+				 StackElement *stk_arg_calling_function,
 				 unsigned char n_args,
 				 Instruction *ins,
 				 ScriptVar  * this_object);
@@ -177,9 +177,9 @@ namespace zetscript{
 		 * Reserve for N vars. Return base pointer.
 		 */
 
-		//const char * indexInstructionVarTypeToStr(StackElement * index);
+		//const char * toString(StackElement * index);
 		inline void  removeEmptySharedPointers(int idx_current_stack,void *ptr_callc_result);
-		//std::string  StackElementVarTypeToStr(StackElement stk_v)
+		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
 		inline ScriptFunction *  findFunction(
 									ScriptVar *calling_object
