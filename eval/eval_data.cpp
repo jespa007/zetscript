@@ -141,8 +141,8 @@ namespace zetscript{
 			InstructionSourceInfo 			instruction_source_info;
 
 			EvaluatedInstruction(ByteCode _byte_code
-						 ,unsigned char _index_op1=ZS_UNDEFINED_IDX
-						 ,intptr_t _index_op2=ZS_UNDEFINED_IDX
+						 ,unsigned char _index_op1=ZS_IDX_UNDEFINED
+						 ,intptr_t _index_op2=ZS_IDX_UNDEFINED
 						 ,unsigned short _properties=0
 						 ){
 				vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);
@@ -151,13 +151,13 @@ namespace zetscript{
 
 		struct TokenNode{
 
-			TokenType	  		token_type; // can be operator, literal, identifier, object. (separator are not take account)
-			PreOperatorType   	pre_operator_type; // !,+,-
-			OperatorType  		operator_type;
-			IdentityOperatorType  identity_pre_operator_type; // ++i,--i
-			IdentityOperatorType  identity_post_operator_type; // i++,i--
+			TokenType	  			token_type; // can be operator, literal, identifier, object. (separator are not take account)
+			PreOperatorType   		pre_operator_type; // !,+,-
+			OperatorType  			operator_type;
+			IdentityOperatorType  	identity_pre_operator_type; // ++i,--i
+			IdentityOperatorType  	identity_post_operator_type; // i++,i--
 
-			std::string value; // first access
+			std::string 			value; // token value content
 			int line;
 			std::vector<EvaluatedInstruction> evaluated_instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
 

@@ -210,10 +210,10 @@ endif()
 
 IF ( "${FCOMPILE}" STREQUAL "ON")
 	# helloworld
-	add_executable(helloworld${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/helloworld.cpp
+	add_executable(zs${POST_NAME}
+		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
-	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
 ELSE()
 
 	SET(

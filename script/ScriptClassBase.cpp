@@ -2,8 +2,8 @@
 
 namespace zetscript{
 
-	ScriptClassBase::ScriptClassBase(ZetScript * _zs,unsigned char _idxClass) {
-		idx_class=_idxClass;
+	ScriptClassBase::ScriptClassBase(ZetScript * _zs,unsigned char _idx_class) {
+		idx_class=_idx_class;
 		zs = _zs;
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
@@ -43,7 +43,15 @@ namespace zetscript{
 
 	SymbolInfo *	ScriptClassBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties)
 	{
-			return registerVariable(file,line,this->symbol_info.symbol->idx_scope,  variable_name,  c_type,  ref_ptr,   symbol_info_properties);
+			return registerVariable(
+					file
+					,line
+					,this->symbol_info.symbol->idx_scope
+					,  variable_name
+					,  c_type
+					,  ref_ptr
+					,   symbol_info_properties
+			);
 	}
 
 	SymbolInfo *	 ScriptClassBase::getVariable(const std::string & var_name, short idx_scope){
@@ -53,7 +61,7 @@ namespace zetscript{
 			// from lat value to first to get last override function...
 			for(int i = (int)local_variable.size()-1; i >= 0 ; i--){
 				if((local_variable[i].symbol->name == var_name)
-				&& (idx_scope ==  ZS_UNDEFINED_IDX?true:(idx_scope == local_variable[i].symbol->idx_scope))
+				&& (idx_scope ==  ZS_IDX_UNDEFINED?true:(idx_scope == local_variable[i].symbol->idx_scope))
 				  ){
 					return &local_variable[i];
 				}
@@ -73,9 +81,19 @@ namespace zetscript{
 				return NULL;
 			}
 
-			ScriptFunction *sf =  script_function_factory->newScriptFunction(file,line,idx_class,idx_scope,  function_name,  args,  idx_return_type,ref_ptr, symbol_info_properties);
-			sf->idx_class = this->idx_class;
-			sf->idx_local_function=local_function.size();
+			ScriptFunction *sf =  script_function_factory->newScriptFunction(
+					file
+					,line
+					,idx_class
+					,idx_scope
+					,local_function.size() // idx_symbol
+					,function_name
+					,args
+					,idx_return_type
+					,ref_ptr
+					, symbol_info_properties
+			);
+
 			local_function.push_back(sf);
 
 			return sf;
@@ -95,7 +113,7 @@ namespace zetscript{
 				if(
 						(local_function[i]->symbol_info.symbol->name == function_name)
 					 && (n_args == (int)local_function[i]->arg_info.size())
-					 && (idx_scope ==  ZS_UNDEFINED_IDX?true:(idx_scope == local_function[i]->symbol_info.symbol->idx_scope))
+					 && (idx_scope ==  ZS_IDX_UNDEFINED?true:(idx_scope == local_function[i]->symbol_info.symbol->idx_scope))
 					 ){
 
 					return local_function[i];

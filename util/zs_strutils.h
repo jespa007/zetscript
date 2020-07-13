@@ -31,7 +31,7 @@ namespace zetscript{
 
 		  std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
 		  std::vector<std::string> split(const std::string &s, char delim);
-		 bool is_empty(const std::string & str);
+		 bool isEmpty(const std::string & str);
 		 NumberType isNumber(const std::string & test_str);
 		 bool 		 isBinary(const std::string & test_str);
 
@@ -39,11 +39,5 @@ namespace zetscript{
 
 		 int count(const std::string & s,char c);
 
-		/**
-		 * Given two pointers within that points within a std::string, this function copies std::string between its interval.
-		 * @p1:start pointer
-		 * @p2:end pointer
-		 */
-		 char * copyFromPointerDiff(const char *p1, const char *p2);
 	}
 }

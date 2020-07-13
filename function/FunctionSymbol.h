@@ -22,7 +22,7 @@ namespace zetscript{
 			};
 			key_value="";
 
-			//idxAstNode = ZS_UNDEFINED_IDX;
+			//idxAstNode = ZS_IDX_UNDEFINED;
 			//super_function = NULL;
 		}
 

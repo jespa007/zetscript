@@ -134,7 +134,7 @@ namespace zetscript{
 
 	ScriptFunction *ScriptVar::getConstructorFunction(){
 
-		if(registered_class_info->idx_function_member_constructor != ZS_UNDEFINED_IDX){
+		if(registered_class_info->idx_function_member_constructor != ZS_IDX_UNDEFINED){
 			return registered_class_info->local_function[registered_class_info->idx_function_member_constructor];
 		}
 
@@ -372,7 +372,7 @@ namespace zetscript{
 
 	StackElement * ScriptVar::getVariableSymbolByIndex(int idx){
 
-		if(idx==ZS_THIS_IDX){
+		if(idx==ZS_IDX_SYMBOL_THIS){
 			return &this_variable;
 		}
 

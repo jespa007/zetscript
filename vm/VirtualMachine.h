@@ -5,9 +5,9 @@ namespace zetscript{
 
 	//#define MAX_PER_TYPE_OPERATIONS 32
 
-	#define VM_LOCAL_VAR_MAX_STACK				256
-	#define VM_MAX_SCOPES						64
-	#define VM_MAX_FOREACH						64
+	#define VM_STACK_LOCAL_VAR_MAX				256
+	#define VM_SCOPE_MAX						64
+	#define VM_FOREACH_MAX						64
 	#define MAX_FUNCTION_CALL 					128
 	#define VM_MAX_AUX_STRINGS					128
 	#define MAX_SHARES_VARIABLE 				64
@@ -49,7 +49,7 @@ namespace zetscript{
 		unsigned				size_vec_script_function_object_node;
 
 
-		int idx_current_stack;
+		int idx_stk_current;
 		int idx_last_statment;
 		const ScriptFunction *current_call_c_function;
 		ZetScript *zs;
@@ -123,14 +123,14 @@ namespace zetscript{
 
 	private:
 
-		struct VM_ScopeInfo{
+		struct VM_Scope{
 			short				index;
-			ScriptFunction 		*ptr_info_function;
-			StackElement 		*ptr_local_var;
+			ScriptFunction 		*script_function;
+			StackElement 		*stk_local_vars;
 			unsigned char 		properties;
 		};
 
-		struct ForeachInfo{
+		struct VM_Foreach{
 			StackElement 		   	*key; // iterator element can be std::string or integer...
 			ScriptVar				*ptr; // can be struct or std::vector...
 			unsigned int 		   	idx_current;
@@ -140,23 +140,23 @@ namespace zetscript{
 		char				str_aux[8192];
 		float 				f_aux_value1,f_aux_value2;
 		 std::string 		aux_string,symbol_to_find,error_str;
-		 ForeachInfo 		stk_foreach[VM_MAX_FOREACH];
-		 ForeachInfo 		*current_foreach;
+		 VM_Foreach 		vm_foreach[VM_FOREACH_MAX];
+		 VM_Foreach 		*vm_foreach_current;
 
 
 
 		 std::string		aux_string_param[MAX_N_ARGS]; // for std::string params...
 
-		 VM_ScopeInfo		*current_scope_info_ptr;
-		 VM_ScopeInfo		scope_info[VM_MAX_SCOPES];
-		 VM_ScopeInfo		*max_scope_info;
+		 VM_Scope		*vm_scope_current;
+		 VM_Scope		vm_scope[VM_SCOPE_MAX];
+		 VM_Scope		*vm_scope_max;
 
 
-		std::string			stk_string[VM_MAX_AUX_STRINGS]; // aux values for std::string ...
-		std::string			*str_last;
-		std::string			*str_current;
+		std::string			vm_str[VM_MAX_AUX_STRINGS]; // aux values for std::string ...
+		std::string			*vm_str_last;
+		std::string			*vm_str_current;
 
-		 StackElement     	stack[VM_LOCAL_VAR_MAX_STACK];
+		 StackElement     	vm_stack[VM_STACK_LOCAL_VAR_MAX];
 		 int n_globals;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
@@ -165,53 +165,58 @@ namespace zetscript{
 
 
 		 StackElement  callFunction_C(
-				 intptr_t fun_ptr,
-				 const ScriptFunction *calling_function,
-				 bool & error,
-				 StackElement *stk_arg_calling_function,
-				 unsigned char n_args,
-				 Instruction *ins,
-				 ScriptVar  * this_object);
+			 intptr_t fun_ptr,
+			 const ScriptFunction *calling_function,
+			 bool & error,
+			 StackElement *stk_arg_calling_function,
+			 unsigned char n_args,
+			 Instruction *ins,
+			 ScriptVar  * this_object
+		);
 
 		/**
 		 * Reserve for N vars. Return base pointer.
 		 */
 
 		//const char * toString(StackElement * index);
-		inline void  removeEmptySharedPointers(int idx_current_stack,void *ptr_callc_result);
+		inline void  removeEmptySharedPointers(int idx_stk_current,void *ptr_callc_result);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
 		inline ScriptFunction *  findFunction(
-									ScriptVar *calling_object
-									,ScriptFunction *info_function
-									,Instruction *instruction
-									,Instruction * call_ale_instruction
+			ScriptVar *calling_object
+			,ScriptFunction *info_function
+			,Instruction *instruction
+			,Instruction * call_ale_instruction
 
-				 	 	 	 	 	,std::vector<FunctionSymbol> *function_symbol
-									,std::vector<ScriptFunction *> *global_functions
+			,std::vector<FunctionSymbol> *function_symbol
+			,std::vector<ScriptFunction *> *global_functions
 
-									,bool is_constructor
-									,const std::string & symbol_to_find
+			,bool is_constructor
+			,const std::string & symbol_to_find
 
 
-									,StackElement *stk_result_op1
-									,StackElement *stk_result_op2
-									,StackElement *start_arg
-									,unsigned char n_args
-									,const char * metamethod_str);
-		inline bool assignStackVar(StackElement *dst_ins, StackElement *src_ins,Instruction *instruction);
-		inline bool popScopeCall(int idx_stack,void * ptr_callc_result, unsigned char properties);
+			,StackElement *stk_result_op1
+			,StackElement *stk_result_op2
+			,StackElement *start_arg
+			,unsigned char n_args
+			,const char * metamethod_str
+		);
+
+		//inline bool assignStackVar(StackElement *dst_ins, StackElement *src_ins,Instruction *instruction);
+
+
+		inline bool popVmScope(int idx_stack,void * ptr_callc_result, unsigned char properties);
 
 		inline bool applyMetamethod(
-										ScriptVar *calling_object
-										,ScriptFunction *info_function
-										,Instruction *instruction
-										,const char *op_code_str
-										,ByteCodeMetamethod op_code_methamethod
-										,StackElement *stk_result_op1
-										,StackElement *stk_result_op2
+			ScriptVar *calling_object
+			,ScriptFunction *info_function
+			,Instruction *instruction
+			,const char *op_code_str
+			,ByteCodeMetamethod op_code_methamethod
+			,StackElement *stk_result_op1
+			,StackElement *stk_result_op2
 
-									);
+		);
 
 		void 				doStackDump();
 

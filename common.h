@@ -10,11 +10,10 @@
 #endif
 
 
-#define ZS_SOLVE_AT_RUNTIME				 0
-#define ZS_ERROR						-1
-#define ZS_UNDEFINED_IDX 				-1
-//#define ZS_FUNCTION_NOT_FOUND_IDX	 	-2
-#define ZS_THIS_IDX						-3
+#define ZS_IDX_SYMBOL_SOLVE_AT_RUNTIME		 0
+#define ZS_IDX_UNDEFINED 					-1
+//#define ZS_FUNCTION_NOT_FOUND_IDX	 		-2
+#define ZS_IDX_SYMBOL_THIS					-3
 
 #define MAX_N_ARGS						 6
 #define NO_PARAMS_IS_VARIABLE			-1
@@ -47,7 +46,7 @@ namespace zetscript{
 	class ScriptVar;
 	struct Symbol;
 
-	struct ScopeVarInnerBlockInfo;
+	struct ScopeBlockVars;
 
 
 	typedef enum
@@ -139,15 +138,15 @@ namespace zetscript{
 			file="";
 			line=-1;
 
-			idx_scope = ZS_UNDEFINED_IDX;
+			idx_scope = ZS_IDX_UNDEFINED;
 			name="";
 			n_params = NO_PARAMS_IS_VARIABLE;
 		}
 
 		/*Symbol(const std::string & _name, char _n_params= NO_PARAMS_IS_VARIABLE){
-			file=ZS_UNDEFINED_IDX;
+			file=ZS_IDX_UNDEFINED;
 			line=-1;
-			idx_scope = ZS_UNDEFINED_IDX;
+			idx_scope = ZS_IDX_UNDEFINED;
 
 			name=_name;
 			n_params=_n_params;
@@ -186,20 +185,20 @@ namespace zetscript{
 
 		LinkSymbolFirstAccess(){
 
-			idx_script_function=ZS_UNDEFINED_IDX;
-			idx_scope=ZS_UNDEFINED_IDX;
+			idx_script_function=ZS_IDX_UNDEFINED;
+			idx_scope=ZS_IDX_UNDEFINED;
 			value = "";
-			n_params=ZS_UNDEFINED_IDX;
+			n_params=ZS_IDX_UNDEFINED;
 		}
 
 		LinkSymbolFirstAccess(
-				 int _idxScriptFunction
-				,short _idxScope
+				 int _idx_script_function
+				,short _idx_scope
 				,const std::string & _value
 				,char _n_params=0
 				){
-			idx_script_function=_idxScriptFunction;
-			idx_scope=_idxScope;
+			idx_script_function=_idx_script_function;
+			idx_scope=_idx_scope;
 			value=_value;
 			n_params=_n_params;
 		}
@@ -215,10 +214,10 @@ namespace zetscript{
 	/**
 	 * Scope register
 	 */
-	struct ScopeVarInnerBlockInfo {
-		int *var_index;
-		char n_var_index;
-		short idx_scope;
+	struct ScopeBlockVars {
+		int *		idx_local_var;
+		uint8_t 	n_local_vars;
+		short 		idx_scope;
 	};
 
 	typedef struct _SharedPointerInfo *PInfoSharedPointer;

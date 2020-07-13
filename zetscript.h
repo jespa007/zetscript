@@ -185,7 +185,6 @@ namespace zetscript{
 		* clear: clear compile information.
 		*/
 		void clear();
-		void callFunction();
 
 		void 						setPrintOutCallback(void (*)(const char *));
 
@@ -283,11 +282,11 @@ namespace zetscript{
 		inline bool convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error);
 
 		template<typename T>
-		static ScriptVarVector * stdVectorToScriptVarVector(const std::vector<T> & v,ZetScript *zs_instance){
+		static ScriptVarVector * convertStdVectorToScriptVarVector(const std::vector<T> & v,ZetScript *zs_instance){
 			ScriptVarVector *vsv = new ScriptVarVector(zs_instance);
 
 			for ( unsigned i = 0; i < v.size(); i++){
-				StackElement *stk = vsv->push();
+				StackElement *stk = vsv->newSlot();
 				//intptr_t uvar = (intptr_t)(v[i]);
 				*stk = zs_instance->convertVarToStackElement((intptr_t)(v[i]),zs_instance->getIdxClassFromIts_C_Type(typeid(T).name()));
 			}

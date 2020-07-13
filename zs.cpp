@@ -4,7 +4,7 @@
  */
 #include "zetscript.h"
 
-#define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2019 Jordi Espada\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION
+#define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2020 Jordi Espada\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION
 
 using namespace zetscript;
 
@@ -13,9 +13,9 @@ int main(int argc, char * argv[]) {
 	ZetScript *zs = new ZetScript();
 
 	if (argc > 1) {
-		bool callFunction=true;
+		bool vm_execute=true;
 		bool show_bytecode=false;
-		const char * file=NULL;
+		std::string file;
 
 		for(int i=1; i < argc; i++){
 
@@ -24,8 +24,8 @@ int main(int argc, char * argv[]) {
 			case 1:
 
 				if(strcmp(argv[i],"--no_execute")==0){
-					callFunction = false;
-				}else if(strcmp(argv[i],"--show_bytecode")==0){
+					vm_execute = false;
+				}else if(strcmp(argv[i],"--show_byte_code")==0){
 					show_bytecode=true;
 
 				}else if(strcmp(argv[i],"--version")==0){
@@ -39,7 +39,7 @@ int main(int argc, char * argv[]) {
 			case 2:
 
 				if(strcmp(a[0].c_str(),"--file")==0){
-					file=a[1].c_str();
+					file=a[1];
 				}
 				else{
 					fprintf(stderr,"invalid argument %s\n",argv[i]);
@@ -54,14 +54,14 @@ int main(int argc, char * argv[]) {
 
 		}
 
-		if(file==NULL){
+		if(zs_strutils::isEmpty(file)){
 			fprintf(stderr,"Program with arguments you must specify file (i.e --file=filename )\n");
 			exit(-1);
 		}
 
 
 		try{
-			zs->evalFile(file,callFunction,show_bytecode);
+			zs->evalFile(file,vm_execute,show_bytecode);
 		}catch(std::exception & ex){
 			fprintf(stderr,"%s\n",ex.what());
 		}

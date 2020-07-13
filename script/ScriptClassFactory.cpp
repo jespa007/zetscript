@@ -101,14 +101,14 @@ namespace zetscript{
 		register_C_Function("print",print);
 		//register_C_Function("error",internalPrintError);
 
-		register_C_FunctionMember<ScriptVarVector>("size",&ScriptVarVector::size);
-		register_C_FunctionMember<ScriptVarVector>("push",static_cast<void (ScriptVarVector:: *)(StackElement *)>(&ScriptVarVector::push));
-		register_C_FunctionMember<ScriptVarVector>("pop",&ScriptVarVector::pop);
+		register_C_FunctionAsFunctionMember("size",&ScriptVarVector::sizeSf);
+		register_C_FunctionAsFunctionMember("push",&ScriptVarVector::pushSf);
+		register_C_FunctionAsFunctionMember("pop",&ScriptVarVector::popSf);
 
 
-		register_C_FunctionMember<ScriptVarDictionary>("add",&ScriptVarDictionary::addAttr);
-		register_C_FunctionMember<ScriptVarDictionary>("remove",&ScriptVarDictionary::removeAttr);
-		register_C_FunctionMember<ScriptVarDictionary>("size",&ScriptVarDictionary::size);
+		register_C_FunctionAsFunctionMember("add",&ScriptVarDictionary::addAttrSf);
+		register_C_FunctionAsFunctionMember("remove",&ScriptVarDictionary::removeAttrSf);
+		register_C_FunctionAsFunctionMember("size",&ScriptVarDictionary::sizeSf);
 	}
 
 	void ScriptClassFactory::register_C_BaseSymbols(bool _register){
@@ -198,7 +198,7 @@ namespace zetscript{
 			// BYTE_CODE_NEW SCOPE C and register ...
 			//unsigned char idx_class=(unsigned char)script_classes.size()-1;
 
-			Scope * scope = NEW_SCOPE(this,ZS_UNDEFINED_IDX);
+			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED);
 
 			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_IS_CLASS);
 			if(symbol == NULL){
@@ -231,7 +231,7 @@ namespace zetscript{
 
 
 
-	std::vector<ScriptClass *> * ScriptClassFactory::getVectorScriptClassNode(){
+	std::vector<ScriptClass *> * ScriptClassFactory::getScriptClasses(){
 		return & script_classes;
 	}
 

@@ -1,5 +1,5 @@
 #define 				MAX_REGISTER_CLASSES 	100
-#define 				ZS_INVALID_CLASS		((unsigned char)ZS_UNDEFINED_IDX)
+#define 				ZS_INVALID_CLASS		((unsigned char)ZS_IDX_UNDEFINED)
 
 namespace zetscript{
 
@@ -78,7 +78,7 @@ namespace zetscript{
 	template<class T>
 	 bool ScriptClassFactory::register_C_SingletonClass(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
-		//std::vector<ScriptClass *> script_classes=getVectorScriptClassNode();
+		//std::vector<ScriptClass *> script_classes=getScriptClasses();
 		// to make compatible MSVC shared library
 		int size=script_classes.size();
 
@@ -107,7 +107,7 @@ namespace zetscript{
 			}
 
 			unsigned char idx_class=(short)(script_classes.size());
-			Scope * scope = scope_factory->newScope(ZS_UNDEFINED_IDX,true);
+			Scope * scope = scope_factory->newScope(ZS_IDX_UNDEFINED,true);
 			Symbol *symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_IS_CLASS);
 			if(symbol == NULL){
 				return NULL;
@@ -381,7 +381,15 @@ namespace zetscript{
 			return false;
 		}
 		// register member function...
-		ScriptFunction *sf = sc->registerFunction(registered_file,registered_line,function_name,arg_info,idx_return_type,ref_ptr,SYMBOL_INFO_PROPERTY_C_OBJECT_REF);
+		ScriptFunction *sf = sc->registerFunction(
+				registered_file
+				,registered_line
+				,function_name
+				,arg_info
+				,idx_return_type
+				,ref_ptr
+				,SYMBOL_INFO_PROPERTY_C_OBJECT_REF
+		);
 
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 

@@ -9,7 +9,6 @@ namespace zetscript{
 	class ScriptClassBase { // script function is shared by class and function ...
 
 
-
 	public:
 
 		ZetScript *zs;
@@ -69,7 +68,7 @@ namespace zetscript{
 				, short idx_scope_block
 				, const std::string & function_name
 				, std::vector<ParamArgInfo> args={}
-				, int idx_return_type=ZS_UNDEFINED_IDX
+				, int idx_return_type=ZS_IDX_UNDEFINED
 				,intptr_t ref_ptr=0
 				, unsigned short symbol_info_properties=0
 		);
@@ -79,7 +78,7 @@ namespace zetscript{
 				, short line
 				,  const std::string & function_name
 				, std::vector<ParamArgInfo> args={}
-				, int idx_return_type=ZS_UNDEFINED_IDX
+				, int idx_return_type=ZS_IDX_UNDEFINED
 				,intptr_t ref_ptr=0
 				, unsigned short symbol_info_properties=0
 		);

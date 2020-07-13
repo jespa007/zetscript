@@ -40,13 +40,13 @@ namespace zetscript{
 				switch(icv->properties){
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-					sprintf(print_aux_load_value,"CONST(%i)",(int)((intptr_t)icv->stk_value));
+					sprintf(print_aux_load_value,"CONST %i",(int)((intptr_t)icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-					sprintf(print_aux_load_value,"CONST(%f)",*((float *)&icv->stk_value));
+					sprintf(print_aux_load_value,"CONST %f",*((float *)&icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-					sprintf(print_aux_load_value,"CONST(%s)",((const char *)icv->stk_value));
+					sprintf(print_aux_load_value,"CONST \"%s\"",((const char *)icv->stk_value));
 					break;
 
 				}
@@ -75,6 +75,14 @@ namespace zetscript{
 		// PRE: it should printed after compile and updateReferences.
 		std::string pre="";
 		std::string post="";
+
+		if(sfo->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
+			return;
+		}
+
+		/*if(sfo->instruction==NULL){
+			return;
+		}*/
 
 		unsigned idx_instruction=0;
 		for(Instruction * instruction=sfo->instruction; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
@@ -230,55 +238,55 @@ namespace zetscript{
 	 }
 
 
-	void ScriptFunction::buildLutScopeSymbols(){
+	void ScriptFunction::linkScopeBlockVars(){
 
-		if(symbol_info.symbol->idx_scope < 0){ // it could be undefined or C
+		 struct ScopeBlockVarsRegisterHelper{
+			 int idx_scope;
+			 std::vector<int> idx_local_var;
+		 };
+
+		if(symbol_info.symbol->idx_scope < 0){ // just ignore. it could be undefined or C
 			return;
 		}
 
-		if(local_variable.size() == 0){ // no elements...
+		if(local_variable.size() == 0){ // no elements, return...
 			return;
 		}
 
-		if(lut_scope_symbol != NULL){ // free if already allocated.
-			free(lut_scope_symbol);
-			lut_scope_symbol=NULL;
-			n_lut_scope_symbols=0;
+		if(scope_block_vars != NULL){ // free if already allocated.
+			free(scope_block_vars);
+			scope_block_vars=NULL;
+			n_scope_block_vars=0;
 		}
 
 		/// PRE: base_class_irfs must be info of root class.
 		 //bool is_main_function = symbol_info.symbol->idx_scope == IDX_GLOBAL_SCOPE;
 
-
-		 struct tInfoVarScopeBlockRegister{
-			 int idx_scope;
-			 std::vector<int> var_index;
-		 };
-
 		 //std::vector<Scope *> *list = scope_factory->getScopes();
-		 std::vector<tInfoVarScopeBlockRegister> vec_ivsb;
-		 std::map<short,tInfoVarScopeBlockRegister> map_scope_register;
+		 std::vector<ScopeBlockVarsRegisterHelper> vec_ivsb;
+		 std::map<short,ScopeBlockVarsRegisterHelper> map_scope_register;
 
-		 for(unsigned idx_var = 0;idx_var < local_variable.size(); idx_var++){ // register index var per scope ...
+		 for(unsigned idx_local_var = 0;idx_local_var < local_variable.size(); idx_local_var++){ // register index var per scope ...
 
-			map_scope_register[local_variable[idx_var].symbol->idx_scope].idx_scope=local_variable[idx_var].symbol->idx_scope;
-			map_scope_register[local_variable[idx_var].symbol->idx_scope].var_index.push_back(idx_var);
+			map_scope_register[local_variable[idx_local_var].symbol->idx_scope].idx_scope=local_variable[idx_local_var].symbol->idx_scope;
+			map_scope_register[local_variable[idx_local_var].symbol->idx_scope].idx_local_var.push_back(idx_local_var);
 		 }
 
 
-		 lut_scope_symbol = (ScopeVarInnerBlockInfo*)malloc(map_scope_register.size()*sizeof(ScopeVarInnerBlockInfo));
-		 n_lut_scope_symbols =map_scope_register.size();
+		 scope_block_vars = (ScopeBlockVars*)malloc(map_scope_register.size()*sizeof(ScopeBlockVars));
+		 memset(scope_block_vars,0,map_scope_register.size()*sizeof(ScopeBlockVars));
+		 n_scope_block_vars =map_scope_register.size();
 
 		 int i=0;
-		 for(std::map<short,tInfoVarScopeBlockRegister>::iterator e = map_scope_register.begin(); e != map_scope_register.end(); e++){
+		 for(std::map<short,ScopeBlockVarsRegisterHelper>::iterator e = map_scope_register.begin(); e != map_scope_register.end(); e++){
 
-			 tInfoVarScopeBlockRegister ivs = map_scope_register[e->first];
+			 ScopeBlockVarsRegisterHelper ivs = map_scope_register[e->first];
 
-			 lut_scope_symbol[i].idx_scope = ivs.idx_scope;
-			 lut_scope_symbol[i].n_var_index = (char)ivs.var_index.size();
-			 lut_scope_symbol[i].var_index = (int *)malloc(sizeof(int)*ivs.var_index.size());
-			 for(unsigned j = 0; j < ivs.var_index.size(); j++){
-				 lut_scope_symbol[i].var_index[j] = ivs.var_index[j];
+			 scope_block_vars[i].idx_scope = ivs.idx_scope;
+			 scope_block_vars[i].n_local_vars = (char)ivs.idx_local_var.size();
+			 scope_block_vars[i].idx_local_var = (int *)malloc(sizeof(int)*ivs.idx_local_var.size());
+			 for(unsigned j = 0; j < ivs.idx_local_var.size(); j++){
+				 scope_block_vars[i].idx_local_var[j] = ivs.idx_local_var[j];
 			 }
 			 i++;
 		 }
@@ -287,12 +295,12 @@ namespace zetscript{
 
 
 	ScriptFunction::ScriptFunction(ZetScript * _zs,unsigned char _idxClass):ScriptClassBase(_zs,_idxClass){
-		idx_return_type = ZS_UNDEFINED_IDX;
-		idx_script_function = ZS_UNDEFINED_IDX;
+		idx_return_type = ZS_IDX_UNDEFINED;
+		idx_script_function = ZS_IDX_UNDEFINED;
 		instruction=NULL;
-		lut_scope_symbol=NULL;
-		n_lut_scope_symbols=0;
-		idx_local_function=ZS_UNDEFINED_IDX;
+		scope_block_vars=NULL;
+		n_scope_block_vars=0;
+		//idx_local_function=ZS_IDX_UNDEFINED;
 
 	}
 

@@ -38,7 +38,7 @@ namespace zetscript{
 
 
 
-	StackElement *ScriptVarVector::push(){
+	StackElement *ScriptVarVector::newSlot(){
 		StackElement s={NULL,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		variable.push_back(s);
 		return &variable[variable.size()-1];

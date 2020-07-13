@@ -8,9 +8,6 @@ namespace zetscript{
 		scope_factory = _zs->getScopeFactory();
 	}
 
-
-
-
 	std::vector<ScriptFunction *> 	*ScriptFunctionFactory::getScriptFunctions(){
 		return &script_functions;
 	}
@@ -19,6 +16,7 @@ namespace zetscript{
 			, short line
 			, unsigned char idx_class
 			, short idx_scope
+			, short idx_symbol
 			, const std::string & function_name
 			, std::vector<ParamArgInfo> args
 			, int idx_return_type
@@ -54,15 +52,14 @@ namespace zetscript{
 		irs->arg_info = args;
 		irs->idx_return_type = idx_return_type;
 		irs->symbol_info.ref_ptr = ref_ptr;
-
-
+		irs->symbol_info.idx_symbol = idx_symbol;
 		irs->symbol_info.symbol = symbol;
 		irs->symbol_info.symbol_info_properties = symbol_info_properties;
 
-		irs->symbol_info.idx_symbol = (short)(irs->local_function.size());
 
+		irs->idx_script_function=script_functions.size();
 		script_functions.push_back(irs);
-		//irs->idx_script_function = script_functions.size()-1;
+
 		return irs;
 	}
 
@@ -112,13 +109,13 @@ namespace zetscript{
 				}
 
 				// unloading scope ...
-				if (info_function->lut_scope_symbol != NULL) {
-					for (unsigned j = 0; j < info_function->n_lut_scope_symbols; j++) {
-						free(info_function->lut_scope_symbol[j].var_index);
+				if (info_function->scope_block_vars != NULL) {
+					for (unsigned j = 0; j < info_function->n_scope_block_vars; j++) {
+						free(info_function->scope_block_vars[j].idx_local_var);
 					}
 
-					free(info_function->lut_scope_symbol);
-					info_function->lut_scope_symbol=NULL;
+					free(info_function->scope_block_vars);
+					info_function->scope_block_vars=NULL;
 				}
 
 				script_functions.pop_back();
@@ -143,13 +140,13 @@ namespace zetscript{
 				}
 
 				// unloading scope ...
-				if (info_function->lut_scope_symbol != NULL) {
-					for (unsigned j = 0; j < info_function->n_lut_scope_symbols; j++) {
-						free(info_function->lut_scope_symbol[j].var_index);
+				if (info_function->scope_block_vars != NULL) {
+					for (unsigned j = 0; j < info_function->n_scope_block_vars; j++) {
+						free(info_function->scope_block_vars[j].idx_local_var);
 					}
 
-					free(info_function->lut_scope_symbol);
-					info_function->lut_scope_symbol=NULL;
+					free(info_function->scope_block_vars);
+					info_function->scope_block_vars=NULL;
 				}
 
 				delete info_function;

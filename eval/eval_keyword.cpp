@@ -1,6 +1,7 @@
 namespace zetscript{
 	namespace eval{
 
+
 		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
 		char * evalRecursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error);
 
@@ -91,7 +92,7 @@ namespace zetscript{
 
 				if(key_w == KeywordType::KEYWORD_TYPE_CLASS){
 
-					if(scope_info->getIdxScopeParent()!=ZS_UNDEFINED_IDX){
+					if(scope_info->getIdxScopeParent()!=ZS_IDX_UNDEFINED){
 						writeError(eval_data->current_parsing_file,line,"class keyword is not allowed");
 						return NULL;
 					}
@@ -224,7 +225,7 @@ namespace zetscript{
 			std::string function_name="";
 
 
-			int idx_scope=ZS_UNDEFINED_IDX;
+			int idx_scope=ZS_IDX_UNDEFINED;
 			Scope *body_scope=NULL;
 
 			idx_scope=scope_info->idx_scope;
@@ -484,7 +485,7 @@ namespace zetscript{
 								return NULL;
 							}
 
-							if((start_symbol = zs_strutils::copyFromPointerDiff(aux_p+1, end_expr))==NULL){
+							if((start_symbol = copyFromPointerDiff(aux_p+1, end_expr))==NULL){
 								return NULL;
 							}
 
@@ -581,7 +582,7 @@ namespace zetscript{
 										writeError(eval_data->current_parsing_file,line,"Expected ')'");
 										return NULL;
 									}
-									if((start_symbol = zs_strutils::copyFromPointerDiff(aux_p+1, end_expr))==NULL){
+									if((start_symbol = copyFromPointerDiff(aux_p+1, end_expr))==NULL){
 										return NULL;
 									}
 								}else{
@@ -651,7 +652,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						if((start_symbol = zs_strutils::copyFromPointerDiff(aux_p+1, end_expr))==NULL){
+						if((start_symbol = copyFromPointerDiff(aux_p+1, end_expr))==NULL){
 							return NULL;
 						}
 

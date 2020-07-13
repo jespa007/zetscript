@@ -2,6 +2,14 @@ namespace zetscript{
 
 	namespace eval{
 
+		/**
+		 * Given two pointers within that points within a std::string, this function copies std::string between its interval.
+		 * @p1:start pointer
+		 * @p2:end pointer
+		 */
+		char * copyFromPointerDiff(const char *p1, const char *p2);
+
+
 
 		ByteCode convertOperatorTypeToByteCode(OperatorType op){
 
@@ -71,7 +79,7 @@ namespace zetscript{
 			void *obj=NULL,*get_obj=NULL,*const_obj=NULL;
 			//char *start_str=(char *)start_word;
 			char *aux=(char *)start_word;
-			std::string v="";
+			std::string str_value="";
 			 //bool is_possible_number=false;
 			 //int i=0;
 			 bool error=false;
@@ -85,7 +93,7 @@ namespace zetscript{
 					 eval_data
 					 ,start_word
 					 ,line
-					 ,v
+					 ,str_value
 					 ,error
 			))==NULL){ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
 
@@ -100,33 +108,36 @@ namespace zetscript{
 				char pre=0;
 				if(*aux=='\"'){
 					is_constant_string = true;
-					aux++;
-				}
-				while(!isEndSymbolToken(aux,pre)){
-					pre=*aux;
-					v += (*aux++);
+					do{
+						aux++;
+					}while(!((*aux=='\"' && *(aux-1)!= '\\')|| *aux==0 || *aux=='\n'));
+				}else{ // identifier
+					while(!isEndSymbolToken(aux,pre)){
+						pre=*aux;
+						str_value += (*aux++);
+					}
 				}
 
 				if(*aux==0){
 					return NULL;
 				}
 
-				if(*aux=='\"'){
+				if(*aux=='\"'){ // register constant string
 					 if(!is_constant_string){
 						 writeError(eval_data->current_parsing_file,line ,"Unexpected '\"'");
 						 return NULL;
 					 }
+					 str_value=copyFromPointerDiff(start_word+1,aux);
 					 aux++;
 
 					 type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
 					 load_type=LOAD_TYPE_CONSTANT;
 
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(v))!=NULL){
+					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
 						obj = get_obj;
 					}else{
-
-						ScriptVarString *s=new ScriptVarString(eval_data->zs,v);
-						obj=eval_data->zs->registerConstantValue(v,NULL,type);
+						ScriptVarString *s=new ScriptVarString(eval_data->zs,str_value);
+						obj=eval_data->zs->registerConstantValue(str_value,NULL,type);
 						((StackElement *)obj)->stk_value=((void *)(s->str_value.c_str()));
 						((StackElement *)obj)->var_ref=s;
 					 }
@@ -137,22 +148,22 @@ namespace zetscript{
 
 			 if(!is_constant_string){
 				 // try parse value...
-				if(v=="null"){
+				if(str_value=="null"){
 					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL;
 					load_type=LOAD_TYPE_NULL;
 					obj=NULL;//ScriptVar::NullSymbol;
 
-				}else if(v=="undefined"){
+				}else if(str_value=="undefined"){
 						type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
 						load_type=LOAD_TYPE_UNDEFINED;
 						obj=NULL;// ScriptVar::UndefinedSymbol;
-				}else if((const_obj=zs_strutils::parseInteger(v))!=NULL){
+				}else if((const_obj=zs_strutils::parseInteger(str_value))!=NULL){
 					int value = *((int *)const_obj);
 					delete (int *)const_obj;
 					load_type=LOAD_TYPE_CONSTANT;
-					obj=eval_data->zs->registerConstantValue(v,value);
+					obj=eval_data->zs->registerConstantValue(str_value,value);
 				}
-				else if((const_obj=zs_strutils::parseFloat(v))!=NULL){
+				else if((const_obj=zs_strutils::parseFloat(str_value))!=NULL){
 					float value = *((float *)const_obj);
 					delete (float *)const_obj;
 					void *value_ptr;
@@ -161,13 +172,13 @@ namespace zetscript{
 					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
 					load_type=LOAD_TYPE_CONSTANT;
 
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(v))!=NULL){
+					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
 						obj = get_obj;
 					}else{
-						obj=eval_data->zs->registerConstantValue(v,value_ptr,type);
+						obj=eval_data->zs->registerConstantValue(str_value,value_ptr,type);
 					}
 				}
-				else if((const_obj=zs_strutils::parseBoolean(v))!=NULL){
+				else if((const_obj=zs_strutils::parseBoolean(str_value))!=NULL){
 
 					bool value = *((bool *)const_obj);
 					delete (bool *)const_obj;
@@ -175,39 +186,39 @@ namespace zetscript{
 					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN;
 					load_type=LOAD_TYPE_CONSTANT;
 
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(v))!=NULL){
+					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
 						obj = get_obj;
 					}else{
-						obj=eval_data->zs->registerConstantValue(v,(void *)value,type);
+						obj=eval_data->zs->registerConstantValue(str_value,(void *)value,type);
 					}
 				}else{ // it should be an identifier token  ...
 
 					token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
-					intptr_t idx_local_var=ZS_UNDEFINED_IDX;
+					intptr_t idx_local_var=ZS_IDX_UNDEFINED;
 
-					for(unsigned i = 0; i < eval_data->evaluated_function_current->script_function->arg_info.size() && idx_local_var == ZS_UNDEFINED_IDX; i++){
+					for(unsigned i = 0; i < eval_data->evaluated_function_current->script_function->arg_info.size() && idx_local_var == ZS_IDX_UNDEFINED; i++){
 
-						if(eval_data->evaluated_function_current->script_function->arg_info[i].arg_name == v){
+						if(eval_data->evaluated_function_current->script_function->arg_info[i].arg_name == str_value){
 							idx_local_var=i;
 						}
 					}
 
-					if(idx_local_var!=ZS_UNDEFINED_IDX){ // is arg...
+					if(idx_local_var!=ZS_IDX_UNDEFINED){ // is arg...
 						load_type=LOAD_TYPE_ARGUMENT;
 						obj=(void *)idx_local_var;
 					}
-					else if(v == "super"){
+					else if(str_value == "super"){
 						scope_type=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER;
-					}else if(v == "this"){
+					}else if(str_value == "this"){
 						scope_type=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS;
-					}else if((get_obj = eval_data->zs->getRegisteredConstantValue(v)) != NULL){  // check if symbol is constant ...
+					}else if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value)) != NULL){  // check if symbol is constant ...
 						obj=get_obj;
 						load_type=LOAD_TYPE_CONSTANT;
 					}else{
 						// should be an identifier...
 						if(!isIdentifierNameExpressionOk(
 							eval_data
-							,v
+							,str_value
 							,line
 						)){
 							return NULL;
@@ -215,7 +226,7 @@ namespace zetscript{
 					}
 				}
 			 }
-			token_node->value = v;
+			token_node->value = str_value;
 			token_node->evaluated_instructions.push_back(EvaluatedInstruction(ByteCode::BYTE_CODE_LOAD,load_type,(intptr_t)obj,scope_type));
 
 			return aux;
@@ -278,7 +289,7 @@ namespace zetscript{
 			std::vector<TokenNode> expression_tokens;
 			PreOperatorType pre_op = PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
 			OperatorType op = OperatorType::OPERATOR_TYPE_UNKNOWN;
-			KeywordType kw;
+			KeywordType keyword;
 			bool error=false;
 
 			bool is_first_access=false;
@@ -293,7 +304,7 @@ namespace zetscript{
 
 				TokenNode 	symbol_token_node
 							,operator_token_node;
-				kw=KeywordType::KEYWORD_TYPE_UNKNOWN;
+				keyword=KeywordType::KEYWORD_TYPE_UNKNOWN;
 
 				// check pre operator (-,+,!)...
 				switch(pre_op=isPreOperatorType(aux_p)){
@@ -308,7 +319,7 @@ namespace zetscript{
 				}
 
 				aux_p=ignoreBlanks(aux_p,line);
-				kw=isKeywordType(aux_p);
+				keyword=isKeywordType(aux_p);
 
 				// parenthesis (evals another expression)
 				if(*aux_p=='('){ // inner expression (priority)
@@ -319,9 +330,10 @@ namespace zetscript{
 
 					// concatenate instruction ...
 					instruction->insert(
-										  instruction->end()
-										, instruction_inner.begin()
-										, instruction_inner.end() );
+						  instruction->end()
+						, instruction_inner.begin()
+						, instruction_inner.end()
+					);
 
 					if(*aux_p != ')'){
 						writeError(eval_data->current_parsing_file,line ,"Expected ')'");
@@ -363,14 +375,14 @@ namespace zetscript{
 							return NULL;
 						}
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_DICTIONARY;
-					}else if(kw == KeywordType::KEYWORD_TYPE_NEW){
+					}else if(keyword == KeywordType::KEYWORD_TYPE_NEW){
 
 						if((aux_p=evalNewObject(eval_data,aux_p,line,scope_info,instruction)) == NULL){
 							return NULL;
 						}
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_NEW_OBJECT;
 
-					}else if(kw == KeywordType::KEYWORD_TYPE_FUNCTION){ // can be after instanceof or a function object..
+					}else if(keyword == KeywordType::KEYWORD_TYPE_FUNCTION){ // can be after instanceof or a function object..
 						if((aux_p=evalFunctionObject(eval_data,aux_p,line,scope_info,instruction)) == NULL){
 							return NULL;
 						}

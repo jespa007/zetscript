@@ -35,7 +35,7 @@ namespace zetscript{
 
 	Scope::Scope(ZetScript * _zs, short _idx_this, short _idx_parent, bool _is_c_node){//, int _index){
 		idx_scope_parent = _idx_parent;
-		idx_scope_ptr_current=ZS_UNDEFINED_IDX;
+		idx_scope_ptr_current=ZS_IDX_UNDEFINED;
 		idx_scope = _idx_this;
 		is_c_node = _is_c_node;
 		script_class=NULL;
@@ -43,7 +43,7 @@ namespace zetscript{
 		scope_factory=_zs->getScopeFactory();
 
 
-		if(_idx_parent == ZS_UNDEFINED_IDX){ // first node...
+		if(_idx_parent == ZS_IDX_UNDEFINED){ // first node...
 
 			idx_scope_base = _idx_this;
 			idx_scope_ptr_current=_idx_this;
@@ -53,7 +53,7 @@ namespace zetscript{
 	}
 
 	void Scope::setScriptClass(ScriptClass *sc){
-		if(idx_scope_parent != ZS_UNDEFINED_IDX){
+		if(idx_scope_parent != ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("set scriptclass must when scope is root");
 			return;
 		}
@@ -97,7 +97,7 @@ namespace zetscript{
 	Scope * Scope::popScope(){
 
 		Scope *current_scope = GET_SCOPE(this,GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current);
-		if(current_scope->idx_scope_parent != ZS_UNDEFINED_IDX){
+		if(current_scope->idx_scope_parent != ZS_IDX_UNDEFINED){
 
 			GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current = current_scope->idx_scope_parent;
 			return GET_SCOPE(this,GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current);
@@ -155,7 +155,7 @@ namespace zetscript{
 		}
 
 		int parent =  getIdxScopeParent();
-		if(parent != ZS_UNDEFINED_IDX){
+		if(parent != ZS_IDX_UNDEFINED){
 			return GET_SCOPE(this,parent)->getSymbolRecursiveDownScope(str_symbol,n_params);
 		}
 

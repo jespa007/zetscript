@@ -42,7 +42,7 @@ namespace zetscript{
 		bool							class_C_BaseOf(unsigned char  theClass,unsigned char  class_idx);
 		unsigned char					getIdxClassFromIts_C_Type(const std::string & s);
 		unsigned char 					getIdx_C_RegisteredClass(const std::string & str_classPtr);
-		std::vector<ScriptClass *>	* 	getVectorScriptClassNode();
+		std::vector<ScriptClass *>	* 	getScriptClasses();
 
 		bool 							isClassRegistered(const std::string & v);
 
@@ -106,7 +106,7 @@ namespace zetscript{
 		 * Register C function as function member
 		 */
 		template <typename F>
-		bool 							register_C_FunctionAsFunctionMember(const char *function_name,F function_type, const char *registered_file,int registered_line);
+		bool 							register_C_FunctionAsFunctionMember(const char *function_name,F function_type, const char *registered_file="",int registered_line=-1);
 
 		/**
 		 * Register C Member var

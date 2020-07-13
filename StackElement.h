@@ -121,11 +121,8 @@ namespace zetscript{
 		void * var_ref; // stack ref in case to assign new value.
 		unsigned short properties; // it tells its properties
 
-		std::string VarTypeToStr();
 
 		const char * toString();
-		//inline StackElement convertVarToStackElement(intptr_t var_ptr, int idx_builtin_type);
-		//inline bool convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error);
 
 	};
 

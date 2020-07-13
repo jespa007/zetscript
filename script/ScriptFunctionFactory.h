@@ -28,9 +28,10 @@ namespace zetscript{
 				, short line
 				, unsigned  char idx_class
 				, short idx_scope
+				, short idx_symbol
 				, const std::string & function_name
 				, std::vector<ParamArgInfo> args={}
-				, int idx_return_type=ZS_UNDEFINED_IDX
+				, int idx_return_type=ZS_IDX_UNDEFINED
 				, intptr_t ref_ptr=0
 				, unsigned short properties=0
 			);

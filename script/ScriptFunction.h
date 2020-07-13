@@ -37,9 +37,8 @@ namespace zetscript{
 		PtrInstruction instruction;
 
 		int idx_script_function;
-		short idx_local_function;
-		ScopeVarInnerBlockInfo *lut_scope_symbol;
-		unsigned n_lut_scope_symbols;
+		ScopeBlockVars *scope_block_vars;
+		unsigned n_scope_block_vars;
 
 
 		//-----------
@@ -68,9 +67,9 @@ namespace zetscript{
 		);
 
 		/**
-		 * build scope variable block information
+		 * Given all local variables in the function, it links each variables on each scope block information.
 		 */
-		void buildLutScopeSymbols();
+		void linkScopeBlockVars();
 
 
 		virtual ~ScriptFunction();

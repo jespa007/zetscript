@@ -19,9 +19,13 @@ namespace zetscript{
 
 
 		int size();
-		void addAttr(const char *attr_name, StackElement  * v);
-		void removeAttr(const char *attr_name);
+		static int sizeSf(ScriptVarDictionary *dic){ return dic->size();}
+		void 			addAttr(const char *attr_name, StackElement  * stk);
+		static void     addAttrSf(ScriptVarDictionary *dic, const char *attr_name, StackElement  * stk){ dic->addAttr(attr_name,stk);}
 
+
+		void removeAttr(const char *attr_name);
+		static void removeAttrSf(ScriptVarDictionary *dic,const char *attr_name){ dic->removeAttr(attr_name);}
 
 		virtual void destroy();
 

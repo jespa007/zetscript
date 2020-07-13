@@ -26,7 +26,7 @@ namespace zetscript{
 
 		 ScriptClass(ZetScript *_zs,unsigned char _idx_class);
 
-		virtual ScriptFunction				* 	registerFunctionMember(const std::string & file, short line,const std::string & function_name, std::vector<ParamArgInfo> args={}, int idx_return_type=ZS_UNDEFINED_IDX,intptr_t ref_ptr=0, unsigned short symbol_info_properties=0);
+		virtual ScriptFunction				* 	registerFunctionMember(const std::string & file, short line,const std::string & function_name, std::vector<ParamArgInfo> args={}, int idx_return_type=ZS_IDX_UNDEFINED,intptr_t ref_ptr=0, unsigned short symbol_info_properties=0);
 
 		bool isToClass();
 

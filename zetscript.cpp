@@ -83,12 +83,14 @@ namespace zetscript{
 
 	 void ZetScript::printGeneratedCode(){
 
-		 std::vector<ScriptClass *> *script_classes=script_class_factory->getVectorScriptClassNode();
+		 std::vector<ScriptClass *> *script_classes=script_class_factory->getScriptClasses();
 		 // for all classes print code...
 		 for(unsigned i = 0; i < script_classes->size(); i++){
 			 ScriptClass *rc=script_classes->at(i);
 			 for(unsigned f = 0; f < rc->local_function.size(); f++){
+
 				 ScriptFunction::printGeneratedCode(rc->local_function[f]);
+
 			 }
 		 }
 	 }
@@ -302,19 +304,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	void ZetScript::callFunction(){
-
-		bool error=false;
-
-		// the first code to callFunction is the main function that in fact is a special member function inside our main class
-		virtual_machine->callFunction(script_class_factory->getMainFunction(), NULL,error,NO_PARAMS);
-
-		if(error){
-			THROW_SCRIPT_ERROR();
-		}
-	}
-
-	bool ZetScript::evalInternal(const char * code, bool exec_vm, bool show_bytecode, const char * filename)  {
+	bool ZetScript::evalInternal(const char * code, bool vm_exec, bool show_bytecode, const char * filename)  {
 		if(!eval::eval(this,code,filename)){
 			return false;
 		}
@@ -325,8 +315,15 @@ namespace zetscript{
 			printGeneratedCode();
 		}
 
-		if(exec_vm){
-			callFunction();
+		if(vm_exec){
+			bool error=false;
+
+			// the first code to callFunction is the main function that in fact is a special member function inside our main class
+			virtual_machine->callFunction(script_class_factory->getMainFunction(), NULL,error,NO_PARAMS);
+
+			if(error){
+				THROW_SCRIPT_ERROR();
+			}
 		}
 
 		return true;
@@ -338,7 +335,7 @@ namespace zetscript{
 
 	}
 
-	bool ZetScript::evalFile(const std::string &  filename, bool exec_vm, bool show_bytecode){
+	bool ZetScript::evalFile(const std::string &  filename, bool vm_exec, bool show_bytecode){
 		//int idx_file=-1;
 		bool error=false;
 		char *buf_tmp=NULL;
@@ -352,7 +349,7 @@ namespace zetscript{
 
 			if((buf_tmp=zs_io::readFile(filename, n_bytes))!=NULL){
 				try{
-					evalInternal(buf_tmp, exec_vm, show_bytecode,filename.c_str());
+					evalInternal(buf_tmp, vm_exec, show_bytecode,filename.c_str());
 				}
 				catch(exception::ScriptExceptionError & e){
 					free(buf_tmp);

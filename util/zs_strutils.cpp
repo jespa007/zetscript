@@ -6,16 +6,16 @@ namespace zetscript{
 		enum{
 			MAX_STRING_BUFFERS=256,
 			MAX_LENGTH_BUFFER=512,
-			MAX_BUFFER_COPY_FROM_INTERVAL=4096
 		};
 
 
-		char m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER]={{0}};
-		char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
-		unsigned char m_index_buffer=0;
-		char  _sformat_buffer[4096] = { 0 };
+		//char m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER]={{0}};
+		//char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
+		//unsigned char m_index_buffer=0;
+		//char  _sformat_buffer[4096] = { 0 };
 
 		std::string  format(const  char  *input_text, ...){
+			char  _sformat_buffer[4096] = { 0 };
 			va_list  ap;
 			va_start(ap,  input_text);
 			vsprintf(_sformat_buffer,  input_text,  ap);
@@ -85,33 +85,6 @@ namespace zetscript{
 			return n;
 		}
 
-
-		char * copyFromPointerDiff(const char *p1, const char *p2){
-
-			if(p1 == NULL || p2 == NULL){
-				THROW_RUNTIME_ERROR(format("NULL entry (%p %p)",p1,p2));
-				return NULL;
-			}
-
-			int var_length=p2-p1;
-
-			if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
-				THROW_RUNTIME_ERROR(format("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
-				return NULL;
-			}
-
-			if(p1 == p2){
-				THROW_RUNTIME_ERROR("Nothing to copy");
-				return NULL;
-			}
-
-			memset(aux_str_copy,0,sizeof(aux_str_copy));
-			strncpy(aux_str_copy,p1,var_length);
-
-			return aux_str_copy;
-		}
-
-
 		std::string intToString(int number){
 
 			char int_str[100];
@@ -160,7 +133,7 @@ namespace zetscript{
 			return elems;
 		}
 
-		bool is_empty(const std::string & str){
+		bool isEmpty(const std::string & str){
 			return str.empty();
 		}
 
@@ -173,24 +146,24 @@ namespace zetscript{
 		}
 
 
-		bool IsDigit(char c){
+		bool isDigit(char c){
 			return (('0' <= c) && (c<='9'));
 		}
 
 
-		bool is_hexa_digit(char c){
+		bool isHexaDigit(char c){
 			return ((('0' <= c) && (c<='9')) || ('a'<=(tolower(c))&&(tolower(c)<='f')));
 		}
 
-		char *advance_digits(char *aux_p){
+		char *advanceDigits(char *aux_p){
 
-			while(IsDigit(*aux_p))	aux_p++;
+			while(isDigit(*aux_p))	aux_p++;
 			return aux_p;
 		}
 
-		char *advance_hexadigits(char *aux_p){
+		char *advanceHexaDigits(char *aux_p){
 
-			while(is_hexa_digit(*aux_p))	aux_p++;
+			while(isHexaDigit(*aux_p))	aux_p++;
 			return aux_p;
 		}
 
@@ -199,7 +172,7 @@ namespace zetscript{
 			char *start_p=(char *)test_str_number.c_str();
 			char *aux_p =start_p;
 
-			while(IsDigit(*aux_p)){
+			while(isDigit(*aux_p)){
 				if(!(*aux_p=='0' || *aux_p=='1')){
 					break;
 				}else{
@@ -229,18 +202,18 @@ namespace zetscript{
 
 			char *start_str = str; // saves position...
 			if(isHexa) {
-				str = advance_hexadigits(str);
+				str = advanceHexaDigits(str);
 				if(str == start_str)
 					return NumberType::NUMBER_TYPE_INVALID;
 
 				if(*str == ' ' || *str == 0) return NumberType::NUMBER_TYPE_HEXA;
 			}else{
 
-				str = advance_digits(str);
+				str = advanceDigits(str);
 				if(*str=='.') { // is candidate to double
 
 					str++;
-					str = advance_digits(str);
+					str = advanceDigits(str);
 
 					if(*str != 'e'){
 						if(*str == ' ' || *str == 0)
@@ -256,7 +229,7 @@ namespace zetscript{
 						str++;
 					}
 
-					str = advance_digits(str);
+					str = advanceDigits(str);
 					if(*str == ' ' || *str == 0)
 						return NumberType::NUMBER_TYPE_DOUBLE;
 

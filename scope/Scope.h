@@ -27,7 +27,7 @@ namespace zetscript{
 		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
 
 
-		Scope(ZetScript * _zs,short idx_this=ZS_UNDEFINED_IDX, short idx_parent=ZS_UNDEFINED_IDX,bool is_c_node=false);
+		Scope(ZetScript * _zs,short idx_this=ZS_IDX_UNDEFINED, short idx_parent=ZS_IDX_UNDEFINED,bool is_c_node=false);
 
 		short 	 	getIdxScopeBase();
 		short	 	getIdxScopeParent();

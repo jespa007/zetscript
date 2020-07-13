@@ -57,47 +57,51 @@ namespace zetscript{
 		list->first=list->last=NULL;
 	}
 
-
-	inline bool VirtualMachine::popScopeCall(int idx_stack,void * ptr_callc_result, unsigned char properties) {
+	inline bool VirtualMachine::popVmScope(int idx_stack,void * ptr_callc_result, unsigned char properties) {
 		bool search=true;
 
-		while((scope_info<current_scope_info_ptr) && search)
+		while((vm_scope<vm_scope_current) && search)
 		{
-			ScriptFunction *ptr_info_function=(current_scope_info_ptr-1)->ptr_info_function;
-			int index         = (current_scope_info_ptr-1)->index;
-			StackElement         *ptr_local_var=(current_scope_info_ptr-1)->ptr_local_var;
-			for(int i = 0; i < ptr_info_function->lut_scope_symbol[index].n_var_index; i++){
-				int idx_local_var = ptr_info_function->lut_scope_symbol[index].var_index[i];
-				StackElement *ptr_ale =&ptr_local_var[idx_local_var];
-				ScriptVar *var = NULL;
-				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(ptr_ale->properties)){
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
-					var =((ScriptVar *)(ptr_ale->var_ref));
-					if(var){
-						if(var->ptr_shared_pointer_node != NULL){
-							var->unrefSharedPtr();
+			ScriptFunction *scope_info_function=(vm_scope_current-1)->script_function;
+			int index         = (vm_scope_current-1)->index;
+			StackElement         *stk_local_vars=(vm_scope_current-1)->stk_local_vars;
+			ScopeBlockVars   *scope_block_vars=&scope_info_function->scope_block_vars[index];
+
+			if(scope_block_vars!=NULL){
+
+				for(uint8_t i = 0; i < scope_block_vars->n_local_vars; i++){
+					int idx_local_var = scope_block_vars->idx_local_var[i];
+					StackElement *stk_local_var =&stk_local_vars[idx_local_var];
+					ScriptVar *var = NULL;
+					switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_local_var->properties)){
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
+						var =((ScriptVar *)(stk_local_var->var_ref));
+						if(var){
+							if(var->ptr_shared_pointer_node != NULL){
+								var->unrefSharedPtr();
+							}
 						}
 					}
+					*stk_local_var={
+						0,
+						0,
+						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
+					};
 				}
-				*ptr_ale={
-					0,
-					0,
-					MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
-				};
 			}
 			removeEmptySharedPointers(idx_stack,ptr_callc_result);
 
 			search=false;
 			if((properties & ScopeProperty::SCOPE_PROPERTY_BREAK)!=0){
-				search=((current_scope_info_ptr-1)->properties & ScopeProperty::SCOPE_PROPERTY_BREAK) != ScopeProperty::SCOPE_PROPERTY_BREAK;
+				search=((vm_scope_current-1)->properties & ScopeProperty::SCOPE_PROPERTY_BREAK) != ScopeProperty::SCOPE_PROPERTY_BREAK;
 			}
 
 			if((properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE)!=0){
-				search=((current_scope_info_ptr-1)->properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE) != ScopeProperty::SCOPE_PROPERTY_CONTINUE;
+				search=((vm_scope_current-1)->properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE) != ScopeProperty::SCOPE_PROPERTY_CONTINUE;
 			}
 			// pop current var
-			--current_scope_info_ptr;
+			--vm_scope_current;
 		}
 		return true;
 	}
@@ -199,7 +203,7 @@ namespace zetscript{
 		}
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
-		StackElement ret_obj=callFunctionInternal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,str_current,n_metam_args);
+		StackElement ret_obj=callFunctionInternal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,vm_str_current,n_metam_args);
 		if(error){
 			return false;
 		}

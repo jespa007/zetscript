@@ -20,7 +20,7 @@ namespace zetscript{
 			str_class_ptr_type="";
 			c_destructor = NULL;
 			c_constructor=NULL;
-			idx_function_member_constructor =ZS_UNDEFINED_IDX;
+			idx_function_member_constructor =ZS_IDX_UNDEFINED;
 	}
 
 	ScriptFunction * ScriptClass::registerFunctionMember(const std::string & file, short line, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){

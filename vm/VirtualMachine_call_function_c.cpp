@@ -124,7 +124,7 @@ namespace zetscript{
 				break;
 			case 1:
 				if(static_ref){
-					PTR_FUNCTION_VOID_PARAM1(
+					PTR_FUNCTION_VOID_PARAM1(fun_ptr)(
 						converted_param[0]
 					);
 				}else{

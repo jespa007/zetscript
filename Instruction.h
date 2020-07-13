@@ -70,14 +70,14 @@ namespace zetscript{
 
 		Instruction(){
 			byte_code=ByteCode::BYTE_CODE_INVALID;
-			value_op1=ZS_UNDEFINED_IDX;
-			value_op2=ZS_UNDEFINED_IDX;
+			value_op1=ZS_IDX_UNDEFINED;
+			value_op2=ZS_IDX_UNDEFINED;
 			properties=0;
 		}
 
 		Instruction(ByteCode _byte_code
-		 ,unsigned char _value_op1=ZS_UNDEFINED_IDX
-		 ,intptr_t _value_op2=ZS_UNDEFINED_IDX
+		 ,unsigned char _value_op1=ZS_IDX_UNDEFINED
+		 ,intptr_t _value_op2=ZS_IDX_UNDEFINED
 		 ,unsigned short _properties=0
 		 ){
 			byte_code=_byte_code;

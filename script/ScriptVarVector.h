@@ -78,12 +78,14 @@ namespace zetscript{
 		//StackElement 		  * getValue(const std::string & s);
 		//virtual StackElement * getValue(int idx);
 
-
-		StackElement * push();
-		void 			push(StackElement  * v);
+		StackElement *		newSlot();
+		void 			push(StackElement  * stk);
+		static void    pushSf(ScriptVarVector *sv,StackElement  * stk){return sv->push(stk);}
 		StackElement * pop();
+		static StackElement *  popSf(ScriptVarVector *sv){return sv->pop();}
 
 		 int size();
+		 static int sizeSf(ScriptVarVector *sv){return sv->size();}
 
 		virtual void destroy();
 

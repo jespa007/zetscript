@@ -131,11 +131,18 @@ B <- [E;|K]* // A set of expressions ended with ; or KeywordType
 #include "eval_expression.cpp"
 #include "eval_keyword.cpp"
 
+#define			MAX_BUFFER_COPY_FROM_INTERVAL 4096
+
+
+
+
 namespace zetscript{
 
 	void  writeError(const char *filename, int line, const  char  *string_text, ...);
 
 	namespace eval{
+
+		char g_aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
 
 		void pushFunction(EvalData *eval_data,ScriptFunction *sf);
 		void popFunction(EvalData *eval_data);
@@ -254,7 +261,7 @@ namespace zetscript{
 
 							end_var=aux;
 
-							if((str_symbol=zs_strutils::copyFromPointerDiff(start_var,end_var)) == NULL){
+							if((str_symbol=copyFromPointerDiff(start_var,end_var)) == NULL){
 								THROW_SCRIPT_ERROR();
 								return NULL;
 							}
@@ -346,6 +353,32 @@ namespace zetscript{
 			return aux;
 		}
 
+		char * copyFromPointerDiff(const char *p1, const char *p2){
+
+
+			if(p1 == NULL || p2 == NULL){
+				THROW_RUNTIME_ERROR(zs_strutils::format("NULL entry (%p %p)",p1,p2));
+				return NULL;
+			}
+
+			int var_length=p2-p1;
+
+			if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
+				THROW_RUNTIME_ERROR(zs_strutils::format("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
+				return NULL;
+			}
+
+			if(p1 == p2){
+				THROW_RUNTIME_ERROR("Nothing to copy");
+				return NULL;
+			}
+
+			memset(g_aux_str_copy,0,sizeof(g_aux_str_copy));
+			strncpy(g_aux_str_copy,p1,var_length);
+
+			return g_aux_str_copy;
+		}
+
 		void pushFunction(EvalData *eval_data,ScriptFunction *sf){
 			eval_data->evaluated_functions.push_back(eval_data->evaluated_function_current=new EvaluatedFunction(sf));
 		}
@@ -364,7 +397,7 @@ namespace zetscript{
 				EvaluatedInstruction *evaluated_instruction = &eval_data->evaluated_function_current->evaluated_instructions[i];
 				LinkSymbolFirstAccess *ls=&evaluated_instruction->link_symbol_first_access;
 
-				if(ls->idx_script_function != ZS_UNDEFINED_IDX){ // solve first symbol first access...
+				if(ls->idx_script_function != ZS_IDX_UNDEFINED){ // solve first symbol first access...
 
 					ScriptFunction *sf=GET_SCRIPT_FUNCTION(eval_data,ls->idx_script_function);
 					ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
@@ -390,7 +423,7 @@ namespace zetscript{
 						ScriptFunction *sf_found=NULL;
 						std::string str_symbol_to_find = sf->symbol_info.symbol->name;
 
-						for(int i = sf->idx_local_function-1; i >=0 && sf_found==NULL; i--){
+						for(int i = sf->symbol_info.idx_symbol-1; i >=0 && sf_found==NULL; i--){
 
 							if(
 									(ls->n_params == (int)sc->local_function[i]->arg_info.size())
@@ -460,7 +493,7 @@ namespace zetscript{
 						if(load_type==LoadType::LOAD_TYPE_FUNCTION){
 							ScriptFunction *sf = ((ScriptFunction *)evaluated_instruction->vm_instruction.value_op2);
 							if((sf->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != 0){ // function will be solved at run time because it has to check param type
-								evaluated_instruction->vm_instruction.value_op2=ZS_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
+								evaluated_instruction->vm_instruction.value_op2=ZS_IDX_SYMBOL_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
 							}
 						}
 					}
@@ -477,7 +510,7 @@ namespace zetscript{
 				}
 			}
 
-			eval_data->evaluated_function_current->script_function->buildLutScopeSymbols();
+			eval_data->evaluated_function_current->script_function->linkScopeBlockVars();
 
 			// delete and popback function information...
 			delete eval_data->evaluated_function_current;
