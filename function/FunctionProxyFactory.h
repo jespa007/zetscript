@@ -84,37 +84,37 @@ namespace zetscript{
 			switch(nargs){
 			case 0:
 				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new CFunctionMemberPointerRetParam0Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)())(fun_obj)));
+					return (void *)(new FunctionMemberPointerRetParam0Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)())(fun_obj)));
 				});
 				break;
 			case 1:
 				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new CFunctionMemberPointerRetParam1Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t))(fun_obj)));
+					return (void *)(new FunctionMemberPointerRetParam1Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t))(fun_obj)));
 				});
 				break;
 			case 2:
 				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new CFunctionMemberPointerRetParam2Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t))(fun_obj)));
+					return (void *)(new FunctionMemberPointerRetParam2Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t))(fun_obj)));
 				});
 				break;
 			case 3:
 				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new CFunctionMemberPointerRetParam3Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t))(fun_obj)));
+					return (void *)(new FunctionMemberPointerRetParam3Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t))(fun_obj)));
 				});
 				break;
 			case 4:
 				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new CFunctionMemberPointerRetParam4Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
+					return (void *)(new FunctionMemberPointerRetParam4Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
 				});
 				break;
 			case 5:
 				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new CFunctionMemberPointerRetParam5Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
+					return (void *)(new FunctionMemberPointerRetParam5Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
 				});
 				break;
 			case 6:
 				c_function_builder= new std::function<void *(void *)> ([fun_obj](void *obj){
-					return (void *)(new CFunctionMemberPointerRetParam6Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
+					return (void *)(new FunctionMemberPointerRetParam6Caller<_C,_T>((_C *)obj,(intptr_t (_T::*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(fun_obj)));
 				});
 				break;
 			default:

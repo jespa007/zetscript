@@ -226,7 +226,7 @@ namespace zetscript{
 				if(static_ref){
 					result=PTR_FUNCTION_RET_BOOL_PARAM0(fun_ptr)();
 				}else{
-					result=(*((CFunctionMemberPointerRetParam0 *)fun_ptr)).ret_bool();
+					result=(*((FunctionMemberPointerRetParam0 *)fun_ptr)).ret_bool();
 				}
 				break;
 			case 1:
@@ -235,7 +235,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					result=(*((CFunctionMemberPointerRetParam1 *)fun_ptr)).ret_bool(
+					result=(*((FunctionMemberPointerRetParam1 *)fun_ptr)).ret_bool(
 						converted_param[0]
 					);
 				}
@@ -247,7 +247,7 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					result=(*((CFunctionMemberPointerRetParam2 *)fun_ptr)).ret_bool(
+					result=(*((FunctionMemberPointerRetParam2 *)fun_ptr)).ret_bool(
 						converted_param[0]
 						,converted_param[1]
 					);
@@ -261,7 +261,7 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					result=(*((CFunctionMemberPointerRetParam3 *)fun_ptr)).ret_bool(
+					result=(*((FunctionMemberPointerRetParam3 *)fun_ptr)).ret_bool(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -277,7 +277,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					result=(*((CFunctionMemberPointerRetParam4 *)fun_ptr)).ret_bool(
+					result=(*((FunctionMemberPointerRetParam4 *)fun_ptr)).ret_bool(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -295,7 +295,7 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					result=(*((CFunctionMemberPointerRetParam5 *)fun_ptr)).ret_bool(
+					result=(*((FunctionMemberPointerRetParam5 *)fun_ptr)).ret_bool(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -315,7 +315,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					result=(*((CFunctionMemberPointerRetParam6 *)fun_ptr))(
+					result=(*((FunctionMemberPointerRetParam6 *)fun_ptr))(
 						converted_param[0]
 						 ,converted_param[1]
 						 ,converted_param[2]
@@ -333,7 +333,7 @@ namespace zetscript{
 				if(static_ref){
 					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();
 				}else{
-					aux_flt=(*((CFunctionMemberPointerRetParam0 *)fun_ptr)).ret_float();
+					aux_flt=(*((FunctionMemberPointerRetParam0 *)fun_ptr)).ret_float();
 				}
 				break;
 			case 1:
@@ -342,7 +342,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					aux_flt=(*((CFunctionMemberPointerRetParam1 *)fun_ptr)).ret_float(
+					aux_flt=(*((FunctionMemberPointerRetParam1 *)fun_ptr)).ret_float(
 						converted_param[0]
 					);
 				}
@@ -354,7 +354,7 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					aux_flt=(*((CFunctionMemberPointerRetParam2 *)fun_ptr)).ret_float(
+					aux_flt=(*((FunctionMemberPointerRetParam2 *)fun_ptr)).ret_float(
 						converted_param[0]
 						,converted_param[1]
 					);
@@ -368,7 +368,7 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					aux_flt=(*((CFunctionMemberPointerRetParam3 *)fun_ptr)).ret_float(
+					aux_flt=(*((FunctionMemberPointerRetParam3 *)fun_ptr)).ret_float(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -384,7 +384,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					aux_flt=(*((CFunctionMemberPointerRetParam4 *)fun_ptr)).ret_float(
+					aux_flt=(*((FunctionMemberPointerRetParam4 *)fun_ptr)).ret_float(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -402,7 +402,7 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					aux_flt=(*((CFunctionMemberPointerRetParam5 *)fun_ptr)).ret_float(
+					aux_flt=(*((FunctionMemberPointerRetParam5 *)fun_ptr)).ret_float(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -422,7 +422,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					aux_flt=(*((CFunctionMemberPointerRetParam6 *)fun_ptr))(
+					aux_flt=(*((FunctionMemberPointerRetParam6 *)fun_ptr))(
 						converted_param[0]
 						 ,converted_param[1]
 						 ,converted_param[2]
@@ -442,7 +442,7 @@ namespace zetscript{
 				if(static_ref){
 					result=PTR_FUNCTION_RET_PARAM0(fun_ptr)();
 				}else{
-					result=(*((CFunctionMemberPointerRetParam0 *)fun_ptr))();
+					result=(*((FunctionMemberPointerRetParam0 *)fun_ptr))();
 				}
 				break;
 			case 1:
@@ -451,7 +451,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					result=(*((CFunctionMemberPointerRetParam1 *)fun_ptr))(
+					result=(*((FunctionMemberPointerRetParam1 *)fun_ptr))(
 						converted_param[0]
 					);
 				}
@@ -463,7 +463,7 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					result=(*((CFunctionMemberPointerRetParam2 *)fun_ptr))(
+					result=(*((FunctionMemberPointerRetParam2 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 					);
@@ -477,7 +477,7 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					result=(*((CFunctionMemberPointerRetParam3 *)fun_ptr))(
+					result=(*((FunctionMemberPointerRetParam3 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -493,7 +493,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					result=(*((CFunctionMemberPointerRetParam4 *)fun_ptr))(
+					result=(*((FunctionMemberPointerRetParam4 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -511,7 +511,7 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					result=(*((CFunctionMemberPointerRetParam5 *)fun_ptr))(
+					result=(*((FunctionMemberPointerRetParam5 *)fun_ptr))(
 						converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
@@ -531,7 +531,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					result=(*((CFunctionMemberPointerRetParam6 *)fun_ptr))(
+					result=(*((FunctionMemberPointerRetParam6 *)fun_ptr))(
 						converted_param[0]
 						 ,converted_param[1]
 						 ,converted_param[2]

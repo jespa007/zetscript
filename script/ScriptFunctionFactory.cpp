@@ -51,13 +51,15 @@ namespace zetscript{
 
 		irs->arg_info = args;
 		irs->idx_return_type = idx_return_type;
-		irs->symbol_info.ref_ptr = ref_ptr;
-		irs->symbol_info.idx_symbol = idx_symbol;
-		irs->symbol_info.symbol = symbol;
+
+		// sets local function information...
+		irs->symbol_info.ref_ptr = ref_ptr;		  // ptr function
+		irs->symbol_info.idx_symbol = idx_symbol; // idx local/member function
+		irs->symbol_info.symbol = symbol;		  // registered scope symbol
 		irs->symbol_info.symbol_info_properties = symbol_info_properties;
 
 
-		irs->idx_script_function=script_functions.size();
+		irs->idx_script_function=script_functions.size(); // idx script function ref
 		script_functions.push_back(irs);
 
 		return irs;
