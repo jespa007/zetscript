@@ -27,7 +27,7 @@
 
 namespace zetscript{
 
-	class  ScriptFunction:public ScriptClassBase{
+	class  ScriptFunction:public ScriptContext{
 
 	public:
 
@@ -65,6 +65,8 @@ namespace zetscript{
 				, intptr_t ref_ptr=0
 				, unsigned short properties=0
 		);
+
+		int existArgumentName(const std::string & arg_name);
 
 		/**
 		 * Given all local variables in the function, it links each variables on each scope block information.

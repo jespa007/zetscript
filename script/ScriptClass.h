@@ -10,7 +10,7 @@ namespace zetscript{
  * Stores the basic information to build a object through built AST structure
  */
 
-	class  ScriptClass:public ScriptClassBase{
+	class  ScriptClass:public ScriptContext{
 
 	public:
 

@@ -184,7 +184,7 @@ ELSE()
 		script/ScriptVarVector.cpp
 		script/ScriptVarFunctor.cpp
  		script/ScriptVarDictionary.cpp
-		script/ScriptClassBase.cpp
+		script/ScriptContext.cpp
 		script/ScriptClass.cpp
 		script/ScriptFunction.cpp
 		script/ScriptFunctionFactory.cpp
@@ -224,7 +224,7 @@ ELSE()
 		script/ScriptVarFunctor.h
 		script/ScriptVarDictionary.h
 		script/ScriptVar.h
-		script/ScriptClassBase.h
+		script/ScriptContext.h
 		script/ScriptClass.h
 		script/ScriptFunction.h
 		

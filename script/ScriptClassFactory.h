@@ -129,13 +129,13 @@ namespace zetscript{
 			std::vector<PrimitiveType*>	params;
 		}tregisterFunction;
 
-		std::vector<ScriptClass *> 		script_classes;
-		ZetScript *zs;
-		ScopeFactory *scope_factory;
-		ScriptFunctionFactory *			script_function_factory;
-		FunctionProxyFactory *proxy_function_factory;
-		ScriptClass * main_object;
-		ScriptFunction 	* 				main_function;
+		std::vector<ScriptClass *> 			script_classes;
+		ZetScript 						*	zs;
+		ScopeFactory 					*	scope_factory;
+		ScriptFunctionFactory 			*	script_function_factory;
+		FunctionProxyFactory 			*	proxy_function_factory;
+		ScriptClass 					* 	main_object;
+		ScriptFunction 					* 	main_function;
 		std::map<unsigned char,std::map<unsigned char,ConversionType>> 	conversion_types;
 
 		/*

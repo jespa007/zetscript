@@ -1,12 +1,16 @@
 #include "../zetscript.h"
 
+#define			MAX_BUFFER_COPY_FROM_INTERVAL 4096
+
 namespace zetscript{
 	namespace zs_strutils{
 
-		enum{
+		/*enum{
 			MAX_STRING_BUFFERS=256,
 			MAX_LENGTH_BUFFER=512,
-		};
+		};*/
+
+
 
 
 		//char m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER]={{0}};
@@ -266,7 +270,33 @@ namespace zetscript{
 
 			return n_items;
 		}
+
+		bool copyFromPointerDiff(std::string & str_dst,const char *p1, const char *p2){
+
+			char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
+
+			if(p1 == NULL || p2 == NULL){
+				THROW_RUNTIME_ERROR(zs_strutils::format("NULL entry (%p %p)",p1,p2));
+				return false;
+			}
+
+			int var_length=p2-p1;
+
+			if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
+				THROW_RUNTIME_ERROR(zs_strutils::format("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
+				return false;
+			}
+
+			if(p1 == p2){
+				THROW_RUNTIME_ERROR("Nothing to copy");
+				return false;
+			}
+
+			strncpy(aux_str_copy,p1,var_length);
+
+			str_dst=aux_str_copy;
+
+			return true;
+		}
 	}
-
-
 }

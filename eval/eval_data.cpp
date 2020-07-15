@@ -188,7 +188,7 @@ namespace zetscript{
 			ScriptFunction 						*  	script_function;
 
 			EvaluatedFunction(ScriptFunction	* _script_function){
-				script_function = _script_function;
+				script_function=_script_function;
 			}
 		};
 

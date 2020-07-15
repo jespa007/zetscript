@@ -39,5 +39,12 @@ namespace zetscript{
 
 		 int count(const std::string & s,char c);
 
+		/**
+		 * Given two pointers within that points within a std::string, this function copies std::string between its interval.
+		 * @p1:start pointer
+		 * @p2:end pointer
+		 */
+		bool copyFromPointerDiff(std::string & str_dst,const char *p1, const char *p2);
+
 	}
 }

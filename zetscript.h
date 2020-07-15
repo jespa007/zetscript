@@ -84,7 +84,7 @@
 #include "script/ScriptVarVector.h"
 #include "script/ScriptVarFunctor.h"
 #include "script/ScriptVarDictionary.h"
-#include "script/ScriptClassBase.h"
+#include "script/ScriptContext.h"
 #include "script/ScriptClass.h"
 #include "script/ScriptFunction.h"
 #include "script/ScriptFunctionFactory.h"

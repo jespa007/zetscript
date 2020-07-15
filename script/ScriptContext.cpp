@@ -2,7 +2,7 @@
 
 namespace zetscript{
 
-	ScriptClassBase::ScriptClassBase(ZetScript * _zs,unsigned char _idx_class) {
+	ScriptContext::ScriptContext(ZetScript * _zs,unsigned char _idx_class) {
 		idx_class=_idx_class;
 		zs = _zs;
 		scope_factory = zs->getScopeFactory();
@@ -13,7 +13,7 @@ namespace zetscript{
 
 	}
 
-	SymbolInfo * ScriptClassBase::registerVariable(const std::string & file, short line, short idx_scope_block,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties){
+	SymbolInfo * ScriptContext::registerVariable(const std::string & file, short line, short idx_scope_block,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties){
 		SymbolInfo irs;
 		//std::string symbol_ref=ScriptEval::makeSymbolRef(variable_name,idx_scope_block);
 
@@ -41,7 +41,7 @@ namespace zetscript{
 		return &local_variable[local_variable.size()-1];
 	}
 
-	SymbolInfo *	ScriptClassBase::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties)
+	SymbolInfo *	ScriptContext::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties)
 	{
 			return registerVariable(
 					file
@@ -54,7 +54,7 @@ namespace zetscript{
 			);
 	}
 
-	SymbolInfo *	 ScriptClassBase::getVariable(const std::string & var_name, short idx_scope){
+	SymbolInfo *	 ScriptContext::getVariable(const std::string & var_name, short idx_scope){
 
 		if(local_variable.size()>0){
 
@@ -73,7 +73,7 @@ namespace zetscript{
 
 
 
-	ScriptFunction * ScriptClassBase::registerFunction(const std::string & file, short line, short idx_scope, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
+	ScriptFunction * ScriptContext::registerFunction(const std::string & file, short line, short idx_scope, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
 
 			//std::string symbol_ref = ScriptEval::makeSymbolRef(function_name,idx_scope);
 			if(getFunction(function_name,(char)args.size()) != NULL){
@@ -99,12 +99,12 @@ namespace zetscript{
 			return sf;
 	}
 
-	ScriptFunction * ScriptClassBase::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
+	ScriptFunction * ScriptContext::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<ParamArgInfo> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_info_properties){
 
 		return registerFunction(file, line,this->symbol_info.symbol->idx_scope, function_name,  args, idx_return_type,ref_ptr, symbol_info_properties);
 	}
 
-	ScriptFunction *	 ScriptClassBase::getFunction(const std::string & function_name, short idx_scope, char n_args){
+	ScriptFunction *	 ScriptContext::getFunction(const std::string & function_name, short idx_scope, char n_args){
 
 		if(local_function.size()>0){
 

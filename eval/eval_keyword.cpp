@@ -1,11 +1,12 @@
 namespace zetscript{
 	namespace eval{
 
-
+		void pushFunction(EvalData *eval_data,ScriptFunction *sf);
+		void popFunction(EvalData *eval_data);
 		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
 		char * evalRecursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error);
 
-		char * isClassMember(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol, bool & error){
+		char * isClassMemberExtension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol, bool & error){
 
 			char *aux_p = (char *)s;
 			std::string class_name;
@@ -212,22 +213,24 @@ namespace zetscript{
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
-			char *symbol_value=NULL,*end_var=NULL;
+			char *end_var=NULL;
 			KeywordType key_w;
-			std::vector<ParamArgInfo> arg;
+			std::vector<ParamArgInfo> args;
 			std::string conditional_str;
 			ScriptClass *sc=NULL;
+			ScriptFunction *sf=NULL;
 
 			Symbol * irv=NULL;
-			std::string str_name,arg_value;
+
 			static int n_anonymous_function=0;
 			//std::string class_member,class_name,
 			std::string function_name="";
 
 
 			int idx_scope=ZS_IDX_UNDEFINED;
-			Scope *body_scope=NULL;
+			//Scope *local_scope=NULL;
 
+			// set current scope
 			idx_scope=scope_info->idx_scope;
 
 			// check for keyword ...
@@ -245,7 +248,7 @@ namespace zetscript{
 
 					if(named_function){ // is named function..
 
-						if((end_var=isClassMember(
+						if((end_var=isClassMemberExtension( // is function class extensions (example A::function1(){ return 0;} )
 								eval_data
 								,aux_p
 								,line
@@ -253,27 +256,34 @@ namespace zetscript{
 								,function_name
 								,error
 						))!=NULL){ // check if particular case extension attribute class
+							// current scope is changed by class scope...
 							idx_scope = sc->symbol_info.symbol->idx_scope;
 							//symbol_value = (char *)class_member.c_str();
 						}
-						else{
-							if(error){
-								return NULL;
-							}
-							else{ // get normal name...
 
+						if(error){ // isClassMemberExtension error
+							return NULL;
+						}
+
+						if(end_var == NULL){ // global function
 								// check whwther the function is anonymous with a previous arithmetic operation ....
 
-								if((end_var=getIdentifierToken(
-										eval_data
-										,aux_p
-										,function_name
-								)) == NULL){
-									 writeError(eval_data->current_parsing_file,line ,"Expected symbol");
-									 return NULL;
-								}
+							if((end_var=getIdentifierToken(
+									eval_data
+									,aux_p
+									,function_name
+							)) == NULL){
+								 writeError(eval_data->current_parsing_file,line ,"Expected symbol");
+								 return NULL;
 							}
+
 						}
+
+						// copy value
+						if(!zs_strutils::copyFromPointerDiff(function_name,aux_p,end_var)){
+								return NULL;
+						}
+
 						aux_p=end_var;
 						aux_p=ignoreBlanks(aux_p,line);
 					}
@@ -287,12 +297,16 @@ namespace zetscript{
 
 						aux_p++;
 						aux_p=ignoreBlanks(aux_p,line);
+						std::string arg_value;
+						ParamArgInfo arg_info;
 
 						// grab words separated by ,
 						while(*aux_p != 0 && *aux_p != ')'){
 							aux_p=ignoreBlanks(aux_p,line);
+							char *arg_name;
 
-							if(arg.size()>0){
+
+							if(args.size()>0){
 								if(*aux_p != ','){
 									writeError(eval_data->current_parsing_file,line,"Expected ',' ");
 									return NULL;
@@ -305,6 +319,9 @@ namespace zetscript{
 								return NULL;
 							}
 
+							// capture line where argument is...
+							arg_info.line=line;
+
 							//int m_start_arg=line;
 							if((end_var=getIdentifierToken(
 									 eval_data
@@ -315,30 +332,35 @@ namespace zetscript{
 								 return NULL;
 							}
 
+							// copy value
+							if(!zs_strutils::copyFromPointerDiff(arg_value,aux_p,end_var)){
+									return NULL;
+							}
+
+
 							// check if repeats...
-							for(unsigned k = 0; k < arg.size(); k++){
-								if(arg[k].arg_name == arg_value){
+							for(unsigned k = 0; k < args.size(); k++){
+								if(args[k].arg_name == arg_value){
 									writeError(eval_data->current_parsing_file,line,"Repeated argument '%s' argument ",arg_value.c_str());
 									return NULL;
 								}
 							}
 
 							// check whether parameter name's matches with some global variable...
-							if((irv=body_scope->getSymbol(symbol_value)) != NULL){
-								writeError(eval_data->current_parsing_file,line,"Ambiguous symbol argument \"%s\" name with var defined at %i", symbol_value, -1);
+							if((irv=GET_SCOPE(eval_data,idx_scope)->getSymbol(arg_value.c_str())) != NULL){
+								writeError(eval_data->current_parsing_file,line,"Ambiguous symbol argument \"%s\" name with var defined at %i", arg_value.c_str(), -1);
 								return NULL;
 							}
 								// ok register symbol into the object function ...
-							ParamArgInfo arg_info;
-							arg_info.arg_name=symbol_value;
-							arg.push_back(arg_info);
+
+
+							arg_info.arg_name=arg_value;
+							args.push_back(arg_info);
+
 
 							aux_p=end_var;
 							aux_p=ignoreBlanks(aux_p,line);
 
-							if(*aux_p != ')'){
-
-							}
 						}
 
 						aux_p++;
@@ -349,61 +371,39 @@ namespace zetscript{
 							return NULL;
 						}
 
-						// ok let's go to body..
-						if((aux_p = evalBlock(
-								eval_data,
-								aux_p,
-								line,
-								GET_SCOPE(eval_data,idx_scope),
-								error
-						)) != NULL){
-
-							if(!error){
-								// register function symbol...
-								//int n_params=arg.size();
-
-								/*if(named_function){ // register named function...
-									if((irv=GET_SCOPE(idx_scope)->getSymbol(function_name,n_params)) != NULL){
-
-										writeError(current_parsing_file,line,"Function name \"%s\" is already defined with same args at %s:%i", function_name.c_str(),irv->file.c_str(),irv->line);
-										return NULL;
-									}
-
-									if((irv=GET_SCOPE(idx_scope)->registerSymbol(current_parsing_file,line,function_name,n_params))==NULL){
-										return NULL;
-									}
-
-								}else{ // register anonymouse function at global scope...
-									irv=GET_SCOPE(IDX_GLOBAL_SCOPE)->registerAnonymouseFunction(current_parsing_file,line,n_params);
-								}*/
-
-								if(!named_function){ // register named function...
-									function_name="_afun_"+zs_strutils::intToString(n_anonymous_function++);
-								}
-								//--- OP
-								if(sc!=NULL){ // register as variable member...
-									sc->registerFunction(
-											eval_data->current_parsing_file
-											, line
-											, function_name,arg
-									);
-								}
-								else{ // register as local variable in the function...
-									eval_data->evaluated_function_current->script_function->registerFunction(
-											eval_data->current_parsing_file
-											, line
-											, function_name
-											,arg
-									);
-								}
-
-								//---
-
-
-								GET_SCOPE(eval_data,idx_scope)->popScope();
-								return aux_p;
-							}
+						// register function ...
+						if(!named_function){ // register named function...
+							function_name="_afun_"+zs_strutils::intToString(n_anonymous_function++);
 						}
+						//--- OP
+						if(sc!=NULL){ // register as variable member...
+							sf=sc->registerFunction(
+									eval_data->current_parsing_file
+									, line
+									, function_name
+									,args
+							);
+						}
+						else{ // register as local variable in the function...
+							sf=eval_data->evaluated_function_current->script_function->registerFunction(
+									eval_data->current_parsing_file
+									, line
+									, function_name
+									,args
+							);
+						}
+
+						pushFunction(eval_data,sf);
+
+						// ok let's go to body..
+						aux_p = evalBlock(
+								eval_data
+								,aux_p
+								,line
+								,GET_SCOPE(eval_data,idx_scope)
+								,error);
+
+						popFunction(eval_data);
 					}
 					else{
 						writeError(eval_data->current_parsing_file,line," Expected '('");
@@ -412,7 +412,7 @@ namespace zetscript{
 					writeError(eval_data->current_parsing_file,line,"Expected operator or function operator");
 				}
 			}
-			return NULL;
+			return aux_p;
 		}
 
 		char *  evalKeywordTypeReturn(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error){
@@ -453,7 +453,8 @@ namespace zetscript{
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
-			char *end_expr,*start_symbol;
+			char *end_expr;
+			std::string start_symbol;
 			KeywordType key_w;
 			Scope *_currentScope=NULL;
 
@@ -485,7 +486,7 @@ namespace zetscript{
 								return NULL;
 							}
 
-							if((start_symbol = copyFromPointerDiff(aux_p+1, end_expr))==NULL){
+							if(!zs_strutils::copyFromPointerDiff(start_symbol,aux_p+1, end_expr)){
 								return NULL;
 							}
 
@@ -524,7 +525,8 @@ namespace zetscript{
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
-			char *end_expr,*start_symbol;
+			char *end_expr;
+			std::string start_symbol;
 			KeywordType key_w;
 			Scope *_currentScope=NULL;
 			std::string conditional_str;
@@ -582,7 +584,7 @@ namespace zetscript{
 										writeError(eval_data->current_parsing_file,line,"Expected ')'");
 										return NULL;
 									}
-									if((start_symbol = copyFromPointerDiff(aux_p+1, end_expr))==NULL){
+									if(!zs_strutils::copyFromPointerDiff(start_symbol,aux_p+1, end_expr)){
 										return NULL;
 									}
 								}else{
@@ -652,11 +654,9 @@ namespace zetscript{
 							return NULL;
 						}
 
-						if((start_symbol = copyFromPointerDiff(aux_p+1, end_expr))==NULL){
+						if(!zs_strutils::copyFromPointerDiff(conditional_str,aux_p+1, end_expr)){
 							return NULL;
 						}
-
-						conditional_str=start_symbol;
 
 						aux_p=ignoreBlanks(end_expr+1,line);
 						if(*aux_p != '{'){
@@ -1022,7 +1022,7 @@ namespace zetscript{
 							sc=sc_come_from;
 						}
 						else{ // check if type var ClasS::v1 or v1
-							if((end_var=isClassMember(
+							if((end_var=isClassMemberExtension(
 									eval_data,
 									aux_p,
 									line,

@@ -81,6 +81,7 @@ namespace zetscript{
 		}
 
 		/*if(sfo->instruction==NULL){
+			ZS_PRINT_WARNING("No instructions for function \"%s\"",sfo->symbol_info.symbol->name);
 			return;
 		}*/
 
@@ -294,7 +295,7 @@ namespace zetscript{
 	}
 
 
-	ScriptFunction::ScriptFunction(ZetScript * _zs,unsigned char _idxClass):ScriptClassBase(_zs,_idxClass){
+	ScriptFunction::ScriptFunction(ZetScript * _zs,unsigned char _idxClass):ScriptContext(_zs,_idxClass){
 		idx_return_type = ZS_IDX_UNDEFINED;
 		idx_script_function = ZS_IDX_UNDEFINED;
 		instruction=NULL;
@@ -332,10 +333,24 @@ namespace zetscript{
 		return "unknown";
 	}
 
+	int ScriptFunction::existArgumentName(const std::string & arg_name){
+		int idx_arg=ZS_IDX_UNDEFINED;
+
+		for(unsigned i = 0; i < this->arg_info.size() && idx_arg == ZS_IDX_UNDEFINED; i++){
+
+			if(this->arg_info[i].arg_name == arg_name){
+				idx_arg=i;
+			}
+		}
+
+		return idx_arg;
+
+	}
+
 
 	SymbolInfo *	ScriptFunction::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties)
 	{
-		SymbolInfo *vsi=ScriptClassBase::registerVariable(file,line,this->symbol_info.symbol->idx_scope,  variable_name,  c_type,  ref_ptr,   symbol_info_properties);
+		SymbolInfo *vsi=ScriptContext::registerVariable(file,line,this->symbol_info.symbol->idx_scope,  variable_name,  c_type,  ref_ptr,   symbol_info_properties);
 
 		StackElement se = {0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 

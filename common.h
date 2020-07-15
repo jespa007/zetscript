@@ -240,6 +240,7 @@ namespace zetscript{
 	typedef struct{
 		int idx_type;
 		std::string arg_name; //arg c++ type or arg name
+		int line;
 	}ParamArgInfo;
 
 	#pragma pack(pop)

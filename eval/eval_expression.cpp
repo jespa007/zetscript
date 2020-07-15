@@ -2,15 +2,6 @@ namespace zetscript{
 
 	namespace eval{
 
-		/**
-		 * Given two pointers within that points within a std::string, this function copies std::string between its interval.
-		 * @p1:start pointer
-		 * @p2:end pointer
-		 */
-		char * copyFromPointerDiff(const char *p1, const char *p2);
-
-
-
 		ByteCode convertOperatorTypeToByteCode(OperatorType op){
 
 			switch(op){
@@ -67,6 +58,10 @@ namespace zetscript{
 				eval_data->compiled_symbol_name[s]=new std::string (s);
 			}
 			return eval_data->compiled_symbol_name[s];
+		}
+
+		int isSymbolArgument(const std::string symbol_name){
+
 		}
 
 		// to std::string utils ...
@@ -127,7 +122,9 @@ namespace zetscript{
 						 writeError(eval_data->current_parsing_file,line ,"Unexpected '\"'");
 						 return NULL;
 					 }
-					 str_value=copyFromPointerDiff(start_word+1,aux);
+					 if(!zs_strutils::copyFromPointerDiff(str_value,start_word+1,aux)){
+						 return NULL;
+					 }
 					 aux++;
 
 					 type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
@@ -194,14 +191,8 @@ namespace zetscript{
 				}else{ // it should be an identifier token  ...
 
 					token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
-					intptr_t idx_local_var=ZS_IDX_UNDEFINED;
+					intptr_t idx_local_var=	eval_data->evaluated_function_current->script_function->existArgumentName(str_value);
 
-					for(unsigned i = 0; i < eval_data->evaluated_function_current->script_function->arg_info.size() && idx_local_var == ZS_IDX_UNDEFINED; i++){
-
-						if(eval_data->evaluated_function_current->script_function->arg_info[i].arg_name == str_value){
-							idx_local_var=i;
-						}
-					}
 
 					if(idx_local_var!=ZS_IDX_UNDEFINED){ // is arg...
 						load_type=LOAD_TYPE_ARGUMENT;

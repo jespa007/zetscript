@@ -6,7 +6,12 @@ namespace zetscript{
 	class ScriptClassFactory;
 	class ScopeFactory;
 	class ZetScript;
-	class ScriptClassBase { // script function is shared by class and function ...
+
+	/**
+	 * Script context refers to class or function context. A function can contain local variables and local functions, the same happens with
+	 * to class context that has variables/functions members.
+	 */
+	class ScriptContext { // script function is shared by class and function ...
 
 
 	public:
@@ -26,7 +31,7 @@ namespace zetscript{
 
 		unsigned char idx_class; // wich idx_class class itself or function belongs to...
 
-		ScriptClassBase(ZetScript *_zs,unsigned char _idx_class);
+		ScriptContext(ZetScript *_zs,unsigned char _idx_class);
 
 		bool searchVarFunctionSymbol(
 				std::string symbol_to_find,Instruction *iao

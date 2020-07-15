@@ -131,7 +131,7 @@ B <- [E;|K]* // A set of expressions ended with ; or KeywordType
 #include "eval_expression.cpp"
 #include "eval_keyword.cpp"
 
-#define			MAX_BUFFER_COPY_FROM_INTERVAL 4096
+
 
 
 
@@ -142,10 +142,8 @@ namespace zetscript{
 
 	namespace eval{
 
-		char g_aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
 
-		void pushFunction(EvalData *eval_data,ScriptFunction *sf);
-		void popFunction(EvalData *eval_data);
+
 		char * evalRecursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error);
 
 
@@ -237,7 +235,8 @@ namespace zetscript{
 
 					// try directive ...
 					DirectiveType directive = isDirectiveType(aux);
-					char *start_var,* end_var,*str_symbol;
+					char *start_var,* end_var;
+					std::string str_symbol;
 					if(directive != DirectiveType::DIRECTIVE_TYPE_UNKNOWN){
 						switch(directive){
 						case DIRECTIVE_TYPE_INCLUDE:
@@ -261,7 +260,7 @@ namespace zetscript{
 
 							end_var=aux;
 
-							if((str_symbol=copyFromPointerDiff(start_var,end_var)) == NULL){
+							if(!zs_strutils::copyFromPointerDiff(str_symbol,start_var,end_var)){
 								THROW_SCRIPT_ERROR();
 								return NULL;
 							}
@@ -353,34 +352,8 @@ namespace zetscript{
 			return aux;
 		}
 
-		char * copyFromPointerDiff(const char *p1, const char *p2){
-
-
-			if(p1 == NULL || p2 == NULL){
-				THROW_RUNTIME_ERROR(zs_strutils::format("NULL entry (%p %p)",p1,p2));
-				return NULL;
-			}
-
-			int var_length=p2-p1;
-
-			if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
-				THROW_RUNTIME_ERROR(zs_strutils::format("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
-				return NULL;
-			}
-
-			if(p1 == p2){
-				THROW_RUNTIME_ERROR("Nothing to copy");
-				return NULL;
-			}
-
-			memset(g_aux_str_copy,0,sizeof(g_aux_str_copy));
-			strncpy(g_aux_str_copy,p1,var_length);
-
-			return g_aux_str_copy;
-		}
-
-		void pushFunction(EvalData *eval_data,ScriptFunction *sf){
-			eval_data->evaluated_functions.push_back(eval_data->evaluated_function_current=new EvaluatedFunction(sf));
+		void pushFunction(EvalData *eval_data,ScriptFunction *script_function){
+			eval_data->evaluated_functions.push_back(eval_data->evaluated_function_current=new EvaluatedFunction(script_function));
 		}
 
 		void popFunction(EvalData *eval_data){
@@ -440,13 +413,20 @@ namespace zetscript{
 						}
 						evaluated_instruction->vm_instruction.value_op2=(intptr_t)sf_found;
 
-					}else{ // find local/global var/function ...
+					}else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // not argument ...
+						// trivial super.else{ // find local/global/argument var/function ...
 						bool local_found=false;
 						LoadType load_type=LoadType::LOAD_TYPE_UNDEFINED;
 
 						// try find local symbol  ...
 						Scope *scope=GET_SCOPE(eval_data,ls->idx_scope);
 						Symbol * sc_var = scope->getSymbol(ls->value, ls->n_params);
+						if(sc_var == NULL){
+							THROW_RUNTIME_ERROR(zs_strutils::format("Symbol \"%s\" not found at function \"%s\""
+									,ls->value.c_str()
+									,sf->symbol_info.symbol->name.c_str()));
+							return;
+						}
 						if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 							if((vis=sf->getVariable(ls->value,sc_var->idx_scope))!=NULL){
 								load_type=LoadType::LOAD_TYPE_VARIABLE;

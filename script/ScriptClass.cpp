@@ -15,7 +15,7 @@ namespace zetscript{
 	}
 	//------------------------------------------------------------
 
-	 ScriptClass::ScriptClass(ZetScript *_zs,unsigned char _idxClass):ScriptClassBase(_zs,_idxClass){
+	 ScriptClass::ScriptClass(ZetScript *_zs,unsigned char _idxClass):ScriptContext(_zs,_idxClass){
 
 			str_class_ptr_type="";
 			c_destructor = NULL;

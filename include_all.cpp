@@ -21,7 +21,7 @@
 #include 		"script/ScriptVarDictionary.cpp"
 #include		"script/ScriptFunctionFactory.cpp"
 #include		"script/ScriptClassFactory.cpp"
-#include		"script/ScriptClassBase.cpp"
+#include		"script/ScriptContext.cpp"
 #include		"script/ScriptFunction.cpp"
 #include		"script/ScriptClass.cpp"
 
