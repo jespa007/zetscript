@@ -3,7 +3,7 @@ namespace zetscript{
 
 		void pushFunction(EvalData *eval_data,ScriptFunction *sf);
 		void popFunction(EvalData *eval_data);
-		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
+		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error, bool function_entry=false);
 		char * evalRecursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error);
 
 		char * isClassMemberExtension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol, bool & error){
@@ -401,7 +401,8 @@ namespace zetscript{
 								,aux_p
 								,line
 								,GET_SCOPE(eval_data,idx_scope)
-								,error);
+								,error
+								,true);
 
 						popFunction(eval_data);
 					}
@@ -434,13 +435,16 @@ namespace zetscript{
 							,aux_p
 							, line
 							, scope_info
-							,&eval_data->evaluated_function_current->evaluated_instructions
+							,&eval_data->evaluated_function_current->instructions
 					))!= NULL){
 
 						if(*aux_p!=';'){
 							writeError(eval_data->current_parsing_file,line,"Expected ';'");
 							return NULL;
 						}
+
+						eval_data->evaluated_function_current->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_RET));
+
 						aux_p=ignoreBlanks(aux_p+1,line);
 						return aux_p;
 					}
@@ -478,7 +482,7 @@ namespace zetscript{
 								,aux_p+1
 								,line
 								,_currentScope
-								,&eval_data->evaluated_function_current->evaluated_instructions
+								,&eval_data->evaluated_function_current->instructions
 						)) != NULL){
 
 							if(*end_expr != ')'){
@@ -578,7 +582,7 @@ namespace zetscript{
 										,aux_p+1
 										,line
 										,_currentScope
-										,&eval_data->evaluated_function_current->evaluated_instructions
+										,&eval_data->evaluated_function_current->instructions
 								)) != NULL){
 									if(*end_expr != ')'){
 										writeError(eval_data->current_parsing_file,line,"Expected ')'");
@@ -615,6 +619,8 @@ namespace zetscript{
 			KeywordType key_w;
 			std::string conditional_str;
 			error = false;
+			std::vector<EvaluatedInstruction *> ei_jmps;
+			//EvaluatedInstruction ei_jmp_else_if;
 			//int conditional_line=0;
 
 			// check for keyword ...
@@ -633,12 +639,13 @@ namespace zetscript{
 							return NULL;
 						}
 
+						// eval conditional expression
 						if((end_expr = evalExpression(
 								eval_data
 								,aux_p+1
 								,line
 								,scope_info
-								,&eval_data->evaluated_function_current->evaluated_instructions
+								,&eval_data->evaluated_function_current->instructions
 						)) == NULL){
 							writeError(eval_data->current_parsing_file,line,"Expected ')' if ");
 							return NULL;
@@ -684,6 +691,10 @@ namespace zetscript{
 						}
 
 						if(else_key){
+
+							// we should insert jmp to end conditional chain if/else...
+							eval_data->evaluated_function_current->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_JMP));
+
 							aux_p += strlen(eval_info_keywords[key_w].str);
 
 							if(*aux_p != '{'){
@@ -697,13 +708,14 @@ namespace zetscript{
 								if_key = (key_w == KeywordType::KEYWORD_TYPE_IF);
 							}
 
-							if(!if_key){
+							if(!if_key){ // not if, only else
 
 								if(*aux_p != '{'){
 									writeError(eval_data->current_parsing_file,line,"Expected else-block open block ('{')");
 									return NULL;
 								}
 
+								// eval else block
 								if((aux_p=evalBlock(
 										eval_data
 										,aux_p
@@ -795,7 +807,7 @@ namespace zetscript{
 									,(const char *)aux_p
 									,line
 									,_currentScope
-									,&eval_data->evaluated_function_current->evaluated_instructions
+									,&eval_data->evaluated_function_current->instructions
 							)) == NULL){
 								return NULL;
 							}
@@ -819,7 +831,7 @@ namespace zetscript{
 											,(const char *)aux_p
 											,line
 											,_currentScope
-											,&eval_data->evaluated_function_current->evaluated_instructions
+											,&eval_data->evaluated_function_current->instructions
 									)) == NULL){
 										return NULL;
 									}
@@ -848,7 +860,7 @@ namespace zetscript{
 											,aux_p
 											,line
 											,_currentScope
-											,&eval_data->evaluated_function_current->evaluated_instructions
+											,&eval_data->evaluated_function_current->instructions
 									))==NULL){
 										return NULL;
 									}
@@ -928,7 +940,7 @@ namespace zetscript{
 								,aux_p
 								,line
 								,scope_info
-								,&eval_data->evaluated_function_current->evaluated_instructions
+								,&eval_data->evaluated_function_current->instructions
 							))==NULL){
 								return NULL;
 							}
@@ -1077,7 +1089,7 @@ namespace zetscript{
 									,start_var
 									,start_line
 									,scope_info
-									,&eval_data->evaluated_function_current->evaluated_instructions
+									,&eval_data->evaluated_function_current->instructions
 								)) == NULL){
 									return NULL;
 								}

@@ -1,15 +1,15 @@
 namespace zetscript{
 	namespace eval{
 
-		char *evalExpression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvaluatedInstruction> 	* instruction);
+		char *evalExpression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvaluatedInstruction *> 	* instructions);
 
-		char * evalFunctionObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvaluatedInstruction> 		*	instruction){
+		char * evalFunctionObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvaluatedInstruction *> 		*	instructions){
 			// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 
 			return NULL;
 		}
 
-		char * evalDictionaryObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvaluatedInstruction> 		*	instruction){
+		char * evalDictionaryObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvaluatedInstruction *> 		*	instructions){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 				char *aux_p = (char *)s;
@@ -73,7 +73,7 @@ namespace zetscript{
 		}
 
 
-		char * evalVectorObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvaluatedInstruction> *	instruction){
+		char * evalVectorObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvaluatedInstruction *> *	instruction){
 
 			char * aux_p=ignoreBlanks(s,line);
 
@@ -105,7 +105,7 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		char * evalNewObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvaluatedInstruction> 		*	instruction){
+		char * evalNewObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvaluatedInstruction *> 		*	instruction){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			std::string symbol_value;

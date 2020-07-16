@@ -29,7 +29,7 @@ namespace zetscript{
 	public:
 
 		ScriptClassFactory(ZetScript *_zs);
-
+		void init();
 
 		 /**
 		  * Class management region

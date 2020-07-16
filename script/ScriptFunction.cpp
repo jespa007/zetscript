@@ -53,15 +53,15 @@ namespace zetscript{
 				break;
 
 			case LoadType::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"%sVAR(%s)",object_access,symbol_value.c_str());
+				sprintf(print_aux_load_value,"%sVAR   %s",object_access,symbol_value.c_str());
 				break;
 			case LoadType::LOAD_TYPE_FUNCTION:
 
-				sprintf(print_aux_load_value,"%sFUN(%s)",object_access,symbol_value.c_str());
+				sprintf(print_aux_load_value,"%sFUN   %s",object_access,symbol_value.c_str());
 				break;
 
 			case LoadType::LOAD_TYPE_ARGUMENT:
-				sprintf(print_aux_load_value,"ARG(%s)",symbol_value.c_str());
+				sprintf(print_aux_load_value,"ARG   %s",symbol_value.c_str());
 				break;
 			default:
 
@@ -76,9 +76,39 @@ namespace zetscript{
 		std::string pre="";
 		std::string post="";
 
+		// first print functions  ...
+		std::vector<ScriptFunction *> * m_vf = &sfo->local_function;
+
+		for(unsigned j =0; j < m_vf->size(); j++){
+
+			ScriptFunction *local_irfs = (*m_vf)[j];
+
+			if(( local_irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
+				printGeneratedCode(m_vf->at(j));
+			}
+		}
+
 		if(sfo->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
 		}
+
+		std::string symbol_ref="????";
+
+		//strcpy(symbol_ref,AST_SYMBOL_VALUEZJ_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
+
+		if(sfo->idx_class!=ZS_INVALID_CLASS){
+			ScriptClass *sc = GET_SCRIPT_CLASS(sfo,sfo->idx_class);
+			if(sc->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
+				symbol_ref=sfo->symbol_info.symbol->name;
+			}else{
+				symbol_ref=sfo->symbol_info.symbol->name+std::string("::")+std::string("????");
+			}
+		}
+
+
+		printf("-------------------------------------------------------\n");
+		printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
+
 
 		/*if(sfo->instruction==NULL){
 			ZS_PRINT_WARNING("No instructions for function \"%s\"",sfo->symbol_info.symbol->name);
@@ -210,32 +240,7 @@ namespace zetscript{
 		}
 
 
-		// and then print its functions ...
-		std::vector<ScriptFunction *> * m_vf = &sfo->local_function;
 
-		for(unsigned j =0; j < m_vf->size(); j++){
-
-			ScriptFunction *local_irfs = (*m_vf)[j];
-
-			if(( local_irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
-				std::string symbol_ref="????";
-
-				//strcpy(symbol_ref,AST_SYMBOL_VALUEZJ_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
-
-				if(local_irfs->idx_class!=ZS_INVALID_CLASS){
-					ScriptClass *sc = GET_SCRIPT_CLASS(sfo,local_irfs->idx_class);
-					if(sc->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
-						symbol_ref="Main";
-					}else{
-						symbol_ref=sfo->symbol_info.symbol->name+std::string("::")+std::string("????");
-					}
-				}
-
-				printf("-------------------------------------------------------\n");
-				printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
-				printGeneratedCode(m_vf->at(j));
-			}
-		}
 	 }
 
 

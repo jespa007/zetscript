@@ -159,7 +159,7 @@ namespace zetscript{
 
 			std::string 			value; // token value content
 			int line;
-			std::vector<EvaluatedInstruction> evaluated_instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
+			std::vector<EvaluatedInstruction *> instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
 
 			// AST info operator.
 			TokenNode *token_node_left;
@@ -184,7 +184,7 @@ namespace zetscript{
 		struct EvaluatedFunction{
 		public:
 
-			std::vector<EvaluatedInstruction>	 	evaluated_instructions;
+			std::vector<EvaluatedInstruction *>	 	instructions;
 			ScriptFunction 						*  	script_function;
 
 			EvaluatedFunction(ScriptFunction	* _script_function){

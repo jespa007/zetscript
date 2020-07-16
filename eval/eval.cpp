@@ -169,7 +169,7 @@ namespace zetscript{
 			return !error;
 		}
 
-		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error){
+		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error, bool entry_function){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 
@@ -183,6 +183,10 @@ namespace zetscript{
 
 				current_scope =scope_info->getScopePtrCurrent();
 				current_scope = scope_info->pushScope(); // special case... ast is created later ...
+
+				if(entry_function==false){
+					eval_data->evaluated_function_current->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_PUSH_SCOPE));
+				}
 
 				if((aux_p = evalRecursive(
 						eval_data
@@ -200,7 +204,12 @@ namespace zetscript{
 						return NULL;
 					}
 
-					scope_info->popScope();
+
+						scope_info->popScope();
+
+					if(entry_function==false){
+						eval_data->evaluated_function_current->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_POP_SCOPE));
+					}
 					return aux_p+1;
 				}
 			}
@@ -328,7 +337,7 @@ namespace zetscript{
 									,aux
 									,line
 									, scope_info
-									,&eval_data->evaluated_function_current->evaluated_instructions
+									,&eval_data->evaluated_function_current->instructions
 							)) == NULL){ // something wrong was happen.
 								THROW_SCRIPT_ERROR();
 								return NULL;
@@ -360,14 +369,14 @@ namespace zetscript{
 			eval_data->evaluated_function_current->script_function->instruction=NULL;
 
 			// get total size op + 1 ends with NULL
-			size_t size = (eval_data->evaluated_function_current->evaluated_instructions.size() + 1) * sizeof(Instruction);
+			size_t size = (eval_data->evaluated_function_current->instructions.size() + 1) * sizeof(Instruction);
 			eval_data->evaluated_function_current->script_function->instruction = (PtrInstruction)malloc(size);
 			memset(eval_data->evaluated_function_current->script_function->instruction, 0, size);
 
-			for(unsigned i=0; i < eval_data->evaluated_function_current->evaluated_instructions.size(); i++){
+			for(unsigned i=0; i < eval_data->evaluated_function_current->instructions.size(); i++){
 
 				SymbolInfo *vis=NULL;
-				EvaluatedInstruction *evaluated_instruction = &eval_data->evaluated_function_current->evaluated_instructions[i];
+				EvaluatedInstruction *evaluated_instruction = eval_data->evaluated_function_current->instructions[i];
 				LinkSymbolFirstAccess *ls=&evaluated_instruction->link_symbol_first_access;
 
 				if(ls->idx_script_function != ZS_IDX_UNDEFINED){ // solve first symbol first access...

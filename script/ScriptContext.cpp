@@ -9,8 +9,6 @@ namespace zetscript{
 		script_function_factory= zs->getScriptFunctionFactory();
 		virtual_machine = zs->getVirtualMachine();
 		script_class_factory=zs->getScriptClassFactory();
-
-
 	}
 
 	SymbolInfo * ScriptContext::registerVariable(const std::string & file, short line, short idx_scope_block,const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties){

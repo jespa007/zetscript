@@ -48,6 +48,12 @@ namespace zetscript{
 		script_function_factory= this->zs->getScriptFunctionFactory();
 		proxy_function_factory= this->zs->GetProxyFunctionFactory();
 		register_c_base_symbols=false;
+		main_function=NULL;
+		main_object=NULL;
+	}
+
+	void ScriptClassFactory::init(){
+
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		// REGISTER BUILT IN SCRIPT TYPES
 		// MAIN CLASS (0)

@@ -7,7 +7,7 @@ namespace zetscript{
 			case BYTE_CODE_EQU:        return "EQU";  // ==
 			case BYTE_CODE_INSTANCEOF:  return "INSTANCEOF";  // ==
 			case BYTE_CODE_NOT_EQU:     return "NOT_EQU" ;  // !=
-			case BYTE_CODE_LT:          return "LT"  ;  // <
+			case BYTE_CODE_LT:          return "LT";  // <
 			case BYTE_CODE_LTE:         return "LTE";  // <=
 			case BYTE_CODE_NOT:         return "NOT"; // !
 			case BYTE_CODE_GT:          return "GT";  // >

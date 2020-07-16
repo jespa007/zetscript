@@ -60,10 +60,6 @@ namespace zetscript{
 			return eval_data->compiled_symbol_name[s];
 		}
 
-		int isSymbolArgument(const std::string symbol_name){
-
-		}
-
 		// to std::string utils ...
 		char * evalSymbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node){
 			// PRE:
@@ -72,16 +68,10 @@ namespace zetscript{
 
 			unsigned int scope_type=0;
 			void *obj=NULL,*get_obj=NULL,*const_obj=NULL;
-			//char *start_str=(char *)start_word;
 			char *aux=(char *)start_word;
 			std::string str_value="";
-			 //bool is_possible_number=false;
-			 //int i=0;
 			 bool error=false;
-			 //bool start_digit = false;
 			 token_node->token_type = TokenType::TOKEN_TYPE_UNKNOWN;
-			 //KeywordType kw=isKeywordType(aux);
-			 //int start_line = line;
 			 bool is_constant_string=false;
 
 			 if((aux=parseLiteralNumber(
@@ -218,13 +208,13 @@ namespace zetscript{
 				}
 			 }
 			token_node->value = str_value;
-			token_node->evaluated_instructions.push_back(EvaluatedInstruction(ByteCode::BYTE_CODE_LOAD,load_type,(intptr_t)obj,scope_type));
+			token_node->instructions.push_back(new EvaluatedInstruction(ByteCode::BYTE_CODE_LOAD,load_type,(intptr_t)obj,scope_type));
 
 			return aux;
 			// POST: token as literal or identifier
 		}
 
-		bool makeOperatorPrecedence(EvalData *eval_data,std::vector<TokenNode> * expression_tokens,std::vector<EvaluatedInstruction> *instruction, int idx_start,int idx_end, bool & error){
+		bool makeOperatorPrecedence(EvalData *eval_data,std::vector<TokenNode> * expression_tokens,std::vector<EvaluatedInstruction *> *instructions, int idx_start,int idx_end, bool & error){
 
 			OperatorType 	op_split=OperatorType::OPERATOR_TYPE_MAX;
 			int 			idx_split=-1;
@@ -234,10 +224,10 @@ namespace zetscript{
 			if(idx_start>=idx_end){
 
 				// concatenate instructions ...
-				instruction->insert(
-						  instruction->end()
-						, expression_tokens->at(idx_start).evaluated_instructions.begin()
-						, expression_tokens->at(idx_start).evaluated_instructions.end() );
+				instructions->insert(
+						  instructions->end()
+						, expression_tokens->at(idx_start).instructions.begin()
+						, expression_tokens->at(idx_start).instructions.end() );
 
 				return true;
 			}
@@ -262,18 +252,18 @@ namespace zetscript{
 			// split left/right by operator precedence...
 			split_node=&expression_tokens->at(idx_split);
 
-			bool result= makeOperatorPrecedence(eval_data,expression_tokens,instruction,idx_start,idx_split-1, error) // left branches...
+			bool result= makeOperatorPrecedence(eval_data,expression_tokens,instructions,idx_start,idx_split-1, error) // left branches...
 										&&
-						makeOperatorPrecedence(eval_data,expression_tokens,instruction,idx_split+1,idx_end,error); // right branches...
+						makeOperatorPrecedence(eval_data,expression_tokens,instructions,idx_split+1,idx_end,error); // right branches...
 
 			if(result){ // if result was ok, push byte_code...
-				instruction->push_back(EvaluatedInstruction(convertOperatorTypeToByteCode(split_node->operator_type)));
+				instructions->push_back(new EvaluatedInstruction(convertOperatorTypeToByteCode(split_node->operator_type)));
 			}
 
 			return result;
 		}
 
-		char * evalExpression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvaluatedInstruction> 	* instruction){
+		char * evalExpression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvaluatedInstruction *> 	* instructions){
 			// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 			// If this functions finds ';' then the function will generate ast.
 
@@ -314,14 +304,14 @@ namespace zetscript{
 
 				// parenthesis (evals another expression)
 				if(*aux_p=='('){ // inner expression (priority)
-					std::vector<EvaluatedInstruction> 	instruction_inner;
+					std::vector<EvaluatedInstruction *> 	instruction_inner;
 					if((aux_p=evalExpression(eval_data,aux_p+1, line, scope_info, &instruction_inner))==NULL){
 						return NULL;
 					}
 
 					// concatenate instruction ...
-					instruction->insert(
-						  instruction->end()
+					instructions->insert(
+						  instructions->end()
 						, instruction_inner.begin()
 						, instruction_inner.end()
 					);
@@ -332,12 +322,10 @@ namespace zetscript{
 					}
 
 					aux_p=ignoreBlanks(aux_p+1,line);
-
 					operator_token_node.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
 
 				}
 				else{
-
 					IdentityOperatorType identity_pre_operator_type=IdentityOperatorType::IDENTITY_OPERATOR_TYPE_UNKNOWN;
 					IdentityOperatorType identity_post_operator_type=IdentityOperatorType::IDENTITY_OPERATOR_TYPE_UNKNOWN;
 
@@ -351,30 +339,29 @@ namespace zetscript{
 					}
 
 					// pre operator identifier ...
-
 					// first call..
 					if(*aux_p=='['){ // std::vector object...
 
-						if((aux_p=evalVectorObject(eval_data,aux_p,line,scope_info,instruction)) == NULL){
+						if((aux_p=evalVectorObject(eval_data,aux_p,line,scope_info,instructions)) == NULL){
 							return NULL;
 						}
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_VECTOR;
 
 					}else if(*aux_p=='{'){ // struct object ...
 
-						if((aux_p=evalDictionaryObject(eval_data,aux_p,line,scope_info,instruction)) == NULL){
+						if((aux_p=evalDictionaryObject(eval_data,aux_p,line,scope_info,instructions)) == NULL){
 							return NULL;
 						}
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_DICTIONARY;
 					}else if(keyword == KeywordType::KEYWORD_TYPE_NEW){
 
-						if((aux_p=evalNewObject(eval_data,aux_p,line,scope_info,instruction)) == NULL){
+						if((aux_p=evalNewObject(eval_data,aux_p,line,scope_info,instructions)) == NULL){
 							return NULL;
 						}
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_NEW_OBJECT;
 
 					}else if(keyword == KeywordType::KEYWORD_TYPE_FUNCTION){ // can be after instanceof or a function object..
-						if((aux_p=evalFunctionObject(eval_data,aux_p,line,scope_info,instruction)) == NULL){
+						if((aux_p=evalFunctionObject(eval_data,aux_p,line,scope_info,instructions)) == NULL){
 							return NULL;
 						}
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_FUNCTION_OBJECT;
@@ -403,9 +390,6 @@ namespace zetscript{
 
 						is_first_access=true;
 
-						//instruction_first_access=0;//symbol_token_node.instruction.size()-1;
-						//instruction_identifier=instruction_first_access;
-
 						// eval accessor element (supose that was a preinsert a load instruction for identifier )...
 						while(isAccessPunctuator(aux_p)){
 							ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
@@ -419,14 +403,12 @@ namespace zetscript{
 								aux_p = ignoreBlanks(aux_p+1,line);
 								if(*aux_p != ')'){
 									do{
-
-
 										if((aux_p = evalExpression(
 												eval_data
 												,aux_p
 												,line
 												,scope_info
-												,&symbol_token_node.evaluated_instructions
+												,&symbol_token_node.instructions
 										))==NULL){
 											return NULL;
 										}
@@ -457,7 +439,7 @@ namespace zetscript{
 										eval_data
 										,ignoreBlanks(aux_p+1,line)
 										,line,scope_info
-										,&symbol_token_node.evaluated_instructions
+										,&symbol_token_node.instructions
 								))==NULL){
 									return NULL;
 								}
@@ -490,21 +472,21 @@ namespace zetscript{
 
 							if(byte_code==ByteCode::BYTE_CODE_LOAD){
 								//instruction_identifier=symbol_token_node.instruction.size();
-								symbol_token_node.evaluated_instructions[instruction_identifier].instruction_source_info= InstructionSourceInfo(
+								symbol_token_node.instructions[instruction_identifier]->instruction_source_info= InstructionSourceInfo(
 									eval_data->current_parsing_file
 									,line
 									,getCompiledSymbol(eval_data,symbol_token_node.value)
 								);
 							}
 
-							EvaluatedInstruction instruction_token=EvaluatedInstruction(byte_code);
-							symbol_token_node.evaluated_instructions.push_back(instruction_token);
+							EvaluatedInstruction *instruction_token=new EvaluatedInstruction(byte_code);
+							symbol_token_node.instructions.push_back(instruction_token);
 
 							aux_p=ignoreBlanks(aux_p,line);
 						}
 
 						// add info to solve symbols first access (we need to put here because we have to know n params if function related)
-						symbol_token_node.evaluated_instructions[0].link_symbol_first_access=LinkSymbolFirstAccess(
+						symbol_token_node.instructions[0]->link_symbol_first_access=LinkSymbolFirstAccess(
 								eval_data->evaluated_function_current->script_function->idx_script_function
 								,scope_info->idx_scope
 								,symbol_token_node.value
@@ -512,7 +494,7 @@ namespace zetscript{
 						);
 
 						// add info to add as symbol value ...
-						symbol_token_node.evaluated_instructions[0].instruction_source_info = InstructionSourceInfo(
+						symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
 							eval_data->current_parsing_file
 							,line
 							,getCompiledSymbol(eval_data,symbol_token_node.value)
@@ -563,7 +545,7 @@ namespace zetscript{
 
 
 			// make operator precedence from the AST built before...
-			if(!makeOperatorPrecedence(eval_data,&expression_tokens,instruction,0,expression_tokens.size()-1,error)){
+			if(!makeOperatorPrecedence(eval_data,&expression_tokens,instructions,0,expression_tokens.size()-1,error)){
 				return NULL;
 			}
 

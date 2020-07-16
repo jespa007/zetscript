@@ -30,8 +30,6 @@ STK_VALUE_IS_INT_OR_FLOAT(stk_result_op1->type_var)
 		(stk_result_op1->stk_value == VM_NULL) && \
 		(stk_result_op2->stk_value == VM_NULL)
 
-
-
 #define OP1_OR_OP2_IS_UNDEFINED \
 		(stk_result_op1->stk_value == VM_UNDEFINED) || \
 		(stk_result_op2->stk_value == VM_UNDEFINED)
@@ -760,8 +758,6 @@ namespace zetscript{
 						}
 
 						StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
-						
-						
 						{
 							ScriptVar *script_var=NULL;
 							std::string *aux_str=NULL;
@@ -1163,33 +1159,33 @@ namespace zetscript{
 					unsigned char n_args=0;
 
 					bool is_c = false;
-					StackElement *start_arg=stk_current;
-					StackElement *callAle=NULL;
+					StackElement *stk_start_arg_call=stk_current;
+					StackElement *stk_function_ref=NULL;
 
-					while(n_args <= MAX_N_ARGS && (((start_arg-1)->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)==0)){
-						start_arg--;
+					while(n_args <= MAX_N_ARGS && (((stk_start_arg_call-1)->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)==0)){
+						stk_start_arg_call--;
 						n_args++;
 					}
 
-					callAle = ((start_arg-1));
+					stk_function_ref = ((stk_start_arg_call-1));
 					calling_object = this_object;
-					if(callAle->var_ref!=NULL){
-						calling_object=(ScriptVar *)callAle->var_ref;
+					if(stk_function_ref->var_ref!=NULL){
+						calling_object=(ScriptVar *)stk_function_ref->var_ref;
 					}
 
 
-					aux_function_info = NULL;//(ScriptFunction *)callAle->stk_value;
+					aux_function_info = NULL;//(ScriptFunction *)stk_function_ref->stk_value;
 
 
-					bool is_constructor = (callAle->properties & MSK_STACK_ELEMENT_PROPERTY_CONSTRUCTOR_FUNCTION)!=0;
+					bool is_constructor = (stk_function_ref->properties & MSK_STACK_ELEMENT_PROPERTY_CONSTRUCTOR_FUNCTION)!=0;
 
 					// try to find the function ...
-					if(((callAle)->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_INSTRUCTION)){// || deduce_function){
-						Instruction *callAleInstruction = (Instruction *)(callAle)->stk_value;
+					if(((stk_function_ref)->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_INSTRUCTION)){// || deduce_function){
+						Instruction *instruction_function_ref = (Instruction *)(stk_function_ref)->stk_value;
 						//PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
 
-						symbol_to_find = SFI_GET_SYMBOL_NAME(calling_function,callAleInstruction);
-						unsigned short scope_type = GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(callAleInstruction->properties);
+						symbol_to_find = SFI_GET_SYMBOL_NAME(calling_function,instruction_function_ref);
+						unsigned short scope_type = GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction_function_ref->properties);
 
 
 						// local vars as functions ...
@@ -1197,7 +1193,7 @@ namespace zetscript{
 						// registered symbols in case is MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS...
 						std::vector<FunctionSymbol> *function_symbol=NULL;
 						if(scope_type==MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
-							calling_object = (ScriptVar *)callAle->var_ref;
+							calling_object = (ScriptVar *)stk_function_ref->var_ref;
 
 							// we have to no to call default constructor...is implicit
 							if(is_constructor) {
@@ -1206,7 +1202,7 @@ namespace zetscript{
 
 								if(n_args == 0 && is_c){
 									aux_function_info = NULL;
-									callAleInstruction->properties |= MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL;
+									instruction_function_ref->properties |= MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL;
 								}
 							}
 
@@ -1214,14 +1210,14 @@ namespace zetscript{
 						}
 
 						//bool all_check=true;
-						if((callAleInstruction->properties & MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL)==0)
+						if((instruction_function_ref->properties & MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL)==0)
 						{
 							std::vector<ScriptFunction *> *global_functions=&(main_function_object->local_function);
 							if((aux_function_info=findFunction(
 									 calling_object
 									,calling_function
 									,instruction
-									,callAleInstruction
+									,instruction_function_ref
 
 									,function_symbol
 									,global_functions
@@ -1229,25 +1225,25 @@ namespace zetscript{
 									,symbol_to_find
 									,stk_result_op1
 									,stk_result_op2
-									,start_arg
+									,stk_start_arg_call
 									,n_args
 									,NULL))==NULL){
 
-								if((callAleInstruction->properties & MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL)==0){
+								if((instruction_function_ref->properties & MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL)==0){
 									RETURN_ERROR;
 								}
 							}
 
 
 							// saves function pointer found ...
-							callAle->stk_value=aux_function_info;
+							stk_function_ref->stk_value=aux_function_info;
 
 						}
 
 					}
 					else{
-						if(((callAle)->properties & MSK_STACK_ELEMENT_PROPERTY_UNRESOLVED_FUNCTION)==0){
-							aux_function_info=(ScriptFunction *) (callAle->stk_value);
+						if(((stk_function_ref)->properties & MSK_STACK_ELEMENT_PROPERTY_UNRESOLVED_FUNCTION)==0){
+							aux_function_info=(ScriptFunction *) (stk_function_ref->stk_value);
 						}
 					}
 
@@ -1298,7 +1294,7 @@ namespace zetscript{
 					}
 
 					// reset stack (function+instruction (-1 op less))...
-					stk_current=start_arg-1;
+					stk_current=stk_start_arg_call-1;
 
 					// ... and push result if not function constructor...
 					if(!is_constructor){

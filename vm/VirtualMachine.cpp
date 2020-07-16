@@ -45,32 +45,32 @@
 	}\
 }
 
-#define PROCESS_ARITHMETIC_OPERATION(__OVERR_OP__, __METAMETHOD__)\
+#define PROCESS_ARITHMETIC_OPERATION(__C_OP__, __METAMETHOD__)\
 {\
 	unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){\
-			PUSH_INTEGER(STK_VALUE_TO_INT(stk_result_op1) __OVERR_OP__ STK_VALUE_TO_INT(stk_result_op2));\
+			PUSH_INTEGER(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
 	}\
 	else if(properties == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){\
 			if (STK_VALUE_IS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
 				COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-				PUSH_FLOAT(STK_VALUE_TO_INT(stk_result_op1) __OVERR_OP__ f_aux_value2);\
+				PUSH_FLOAT(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ f_aux_value2);\
 			}else{\
 				COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-				PUSH_FLOAT(f_aux_value1 __OVERR_OP__ STK_VALUE_TO_INT(stk_result_op2));\
+				PUSH_FLOAT(f_aux_value1 __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
 			}\
 	}\
 	else if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){\
 			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
 			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-			PUSH_FLOAT(f_aux_value1 __OVERR_OP__ f_aux_value2);\
+			PUSH_FLOAT(f_aux_value1 __C_OP__ f_aux_value2);\
 	}\
 	else{\
 		if(!applyMetamethod(\
 						calling_object\
 						,calling_function\
 						,instruction\
-						,STR(__OVERR_OP__)\
+						,STR(__C_OP__)\
 						,__METAMETHOD__\
 						,stk_result_op1\
 						,stk_result_op2\
@@ -80,37 +80,37 @@
 	}\
 }
 
-#define PROCESS_COMPARE_OPERATION(__OVERR_OP__, __METAMETHOD__)\
+#define PROCESS_COMPARE_OPERATION(__C_OP__, __METAMETHOD__)\
 {\
 	unsigned short properties = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){\
-			PUSH_BOOLEAN(STK_VALUE_TO_INT(stk_result_op1) __OVERR_OP__ STK_VALUE_TO_INT(stk_result_op2));\
+			PUSH_BOOLEAN(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
 	}\
 	else if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN){\
-		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __OVERR_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
+		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}\
 	else if(properties == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){\
 			if (STK_VALUE_IS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
 				COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-				PUSH_BOOLEAN(STK_VALUE_TO_INT(stk_result_op1) __OVERR_OP__ f_aux_value2);\
+				PUSH_BOOLEAN(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ f_aux_value2);\
 			}else{\
 				COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-				PUSH_BOOLEAN(f_aux_value1 __OVERR_OP__ STK_VALUE_TO_INT(stk_result_op2));\
+				PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
 			}\
 	}\
 	else if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){\
 			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
 			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-			PUSH_BOOLEAN(f_aux_value1 __OVERR_OP__ f_aux_value2);\
+			PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
 	}\
 	else if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){\
-		PUSH_BOOLEAN(ZS_STRCMP(STK_VALUE_TO_STRING(stk_result_op1), __OVERR_OP__ ,STK_VALUE_TO_STRING(stk_result_op2)));\
+		PUSH_BOOLEAN(ZS_STRCMP(STK_VALUE_TO_STRING(stk_result_op1), __C_OP__ ,STK_VALUE_TO_STRING(stk_result_op2)));\
 	}else{\
 		if(!applyMetamethod(\
 					 calling_object\
 					,calling_function\
 					,instruction\
-					,STR(__OVERR_OP__)\
+					,STR(__C_OP__)\
 					, __METAMETHOD__\
 					,stk_result_op1\
 					,stk_result_op2\
@@ -120,27 +120,27 @@
 	}\
 }
 
-#define PROCESS_LOGIC_OPERATION(__OVERR_OP__)\
+#define PROCESS_LOGIC_OPERATION(__C_OP__)\
 {\
 	unsigned short properties = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN){\
-		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __OVERR_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
+		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
-		PRINT_DUAL_ERROR_OP(STR(__OVERR_OP__));\
+		PRINT_DUAL_ERROR_OP(STR(__C_OP__));\
 	}\
 }
 
-#define PROCESS_BINARY_OPERATION(__OVERR_OP__, __METAMETHOD__)\
+#define PROCESS_BINARY_OPERATION(__C_OP__, __METAMETHOD__)\
 {\
 	unsigned short properties = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){\
-		PUSH_INTEGER(STK_VALUE_TO_INT(stk_result_op1) __OVERR_OP__ STK_VALUE_TO_INT(stk_result_op2));\
+		PUSH_INTEGER(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
 	}else{\
 		if(!applyMetamethod(\
 						 calling_object\
 						,calling_function\
 						,instruction\
-						,STR(__OVERR_OP__)\
+						,STR(__C_OP__)\
 						, __METAMETHOD__\
 						,stk_result_op1\
 						,stk_result_op2\
