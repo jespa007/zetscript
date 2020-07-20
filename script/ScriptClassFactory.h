@@ -7,7 +7,7 @@
 
 
 #define NEW_CLASS_VAR_BY_IDX(data,idx)					((data->script_class_factory)->instanceScriptVariableByIdx(idx))
-#define GET_SCRIPT_CLASS(data,idx)	 					((data->script_class_factory)->getScriptClass(idx))
+#define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_class_factory)->getScriptClass(idx_or_name))
 #define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_class_factory)->getScriptClassName(idx))
 #define SCRIPT_CLASS_MAIN(data)							((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_MAIN))    // 0 is the main class
 #define SCRIPT_CLASS_STRING(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_STRING))

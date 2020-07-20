@@ -186,11 +186,49 @@ namespace zetscript{
 
 			std::vector<EvaluatedInstruction *>	 	instructions;
 			ScriptFunction 						*  	script_function;
+			bool									last_byte_code_was_pop_scope;
 
 			EvaluatedFunction(ScriptFunction	* _script_function){
+				last_byte_code_was_pop_scope=false;
 				script_function=_script_function;
 			}
+
+			/*bool lastInstructionRet(){
+				if(instructions.size() > 0){
+					return instructions[instructions.size()-1]->vm_instruction.byte_code==BYTE_CODE_RET;
+				}
+				return false;
+			}
+
+			bool canInsertInstructions(){
+				return !lastInstructionRet() || last_byte_code_was_pop_scope;
+			}
+
+			EvaluatedInstruction * insertInstruction(ByteCode _byte_code
+					 ,unsigned char _index_op1=ZS_IDX_UNDEFINED
+					 ,intptr_t _index_op2=ZS_IDX_UNDEFINED
+					 ,unsigned short _properties=0){
+				EvaluatedInstruction *ei=NULL;
+				if(canInsertInstructions()){ // not emit byte code if last instruction was ret...
+					instructions.push_back(ei=new EvaluatedInstruction(_byte_code
+							 ,_index_op1
+							 ,_index_op2
+							 , _properties));
+				}
+				if(_byte_code==BYTE_CODE_POP_SCOPE){
+					last_byte_code_was_pop_scope=true;
+				}else{
+					last_byte_code_was_pop_scope=false;
+				}
+				return ei;
+			}*/
+			~EvaluatedFunction(){
+				for(unsigned i=0; i< instructions.size(); i++){
+					delete instructions[i];
+				}
+			}
 		};
+
 
 		typedef struct {
 			DirectiveType id;
@@ -253,7 +291,13 @@ namespace zetscript{
 				error_str="";
 
 			}
+			~EvalData(){
+				for(auto it=compiled_symbol_name.begin();it!=compiled_symbol_name.end() ;it++){
+					delete it->second;
+				}
+			}
 		};
+
 
 		EvalInfoOperator eval_info_operators[OPERATOR_TYPE_MAX];
 		EvalInfoPreOperator eval_info_pre_operators[PRE_OPERATOR_TYPE_MAX];
@@ -264,6 +308,7 @@ namespace zetscript{
 
 		bool g_init_eval=false;
 
+		char * 	evalKeywordTypeDelete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
 		char * 	evalKeywordTypeFunction(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
 		char * 	evalKeywordTypeVar(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
 		char * 	evalKeywordTypeIf(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
@@ -369,11 +414,6 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		bool  isLiteral(const std::string & symbol){
-			return symbol=="true" || symbol == "false" || symbol=="undefined" || symbol == "null";
-		}
-
-
 		SeparatorType   isSeparatorType(const char *s){
 			for(unsigned char i = 1; i < SEPARATOR_TYPE_MAX; i++){
 				if(*eval_info_separators[i].str == *s){
@@ -476,11 +516,17 @@ namespace zetscript{
 				return false;
 			}
 
-			if( isLiteral(symbol)){
+			// avoid special literal words
+			if(symbol=="true"
+				|| symbol == "false"
+				|| symbol=="undefined"
+				|| symbol == "null"
+			){
 				writeError(eval_data->current_parsing_file,line," Unexpected \"%s\"", aux_p);
 				return false;
 			}
 
+			// the rest is checked here...
 			if(*aux_p!=0 && (
 			   ('a' <= *aux_p && *aux_p <='z') ||
 			   ('A' <= *aux_p && *aux_p <='Z') ||
@@ -715,18 +761,18 @@ namespace zetscript{
 			eval_info_keywords[KEYWORD_TYPE_WHILE] = {KEYWORD_TYPE_WHILE,"while",evalKeywordTypeWhile};
 			eval_info_keywords[KEYWORD_TYPE_DO_WHILE] = {KEYWORD_TYPE_DO_WHILE,"do",evalKeywordTypeDoWhile}; // while is expected in the end ...
 
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_SWITCH] = {KEYWORD_TYPE_SWITCH,"switch",evalKeywordTypeSwitch};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_CASE] = {KEYWORD_TYPE_CASE,"case",NULL};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_BREAK] = {KEYWORD_TYPE_BREAK,"break",NULL};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_CONTINUE] = {KEYWORD_TYPE_CONTINUE,"continue",NULL};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_DEFAULT] = {KEYWORD_TYPE_DEFAULT,"default",NULL};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_FUNCTION] = {KEYWORD_TYPE_FUNCTION,"function",NULL};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_RETURN] = {KEYWORD_TYPE_RETURN,"return",evalKeywordTypeReturn};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_THIS] = {KEYWORD_TYPE_THIS,"this", NULL};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_CLASS] = {KEYWORD_TYPE_CLASS,"class",NULL};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_NEW] = {KEYWORD_TYPE_NEW,"new", NULL};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_DELETE] = {KEYWORD_TYPE_DELETE,"delete",NULL};
-			eval_info_keywords[KeywordType::KEYWORD_TYPE_IN] = {KEYWORD_TYPE_IN,"in",NULL};
+			eval_info_keywords[KEYWORD_TYPE_SWITCH] = {KEYWORD_TYPE_SWITCH,"switch",evalKeywordTypeSwitch};
+			eval_info_keywords[KEYWORD_TYPE_CASE] = {KEYWORD_TYPE_CASE,"case",NULL};
+			eval_info_keywords[KEYWORD_TYPE_BREAK] = {KEYWORD_TYPE_BREAK,"break",NULL};
+			eval_info_keywords[KEYWORD_TYPE_CONTINUE] = {KEYWORD_TYPE_CONTINUE,"continue",NULL};
+			eval_info_keywords[KEYWORD_TYPE_DEFAULT] = {KEYWORD_TYPE_DEFAULT,"default",NULL};
+			eval_info_keywords[KEYWORD_TYPE_FUNCTION] = {KEYWORD_TYPE_FUNCTION,"function",NULL};
+			eval_info_keywords[KEYWORD_TYPE_RETURN] = {KEYWORD_TYPE_RETURN,"return",evalKeywordTypeReturn};
+			eval_info_keywords[KEYWORD_TYPE_THIS] = {KEYWORD_TYPE_THIS,"this", NULL};
+			eval_info_keywords[KEYWORD_TYPE_CLASS] = {KEYWORD_TYPE_CLASS,"class",NULL};
+			eval_info_keywords[KEYWORD_TYPE_NEW] = {KEYWORD_TYPE_NEW,"new", NULL};
+			eval_info_keywords[KEYWORD_TYPE_DELETE] = {KEYWORD_TYPE_DELETE,"delete",evalKeywordTypeDelete};
+			eval_info_keywords[KEYWORD_TYPE_IN] = {KEYWORD_TYPE_IN,"in",NULL};
 
 			// DIRECTIVES
 			eval_info_directives[DIRECTIVE_TYPE_UNKNOWN]={DIRECTIVE_TYPE_UNKNOWN, NULL};

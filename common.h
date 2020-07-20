@@ -35,8 +35,6 @@
 #define IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,_class,_instance)	((this->script_class_factory))->class_C_BaseOf(_class,_instance)
 
 
-
-
 namespace zetscript{
 
 	//typedef CASTNode *PASTNode;
@@ -47,7 +45,6 @@ namespace zetscript{
 	struct Symbol;
 
 	struct ScopeBlockVars;
-
 
 	typedef enum
 		:unsigned char {
@@ -112,16 +109,11 @@ namespace zetscript{
 		 SCOPE_PROPERTY_BREAK=0x1 << 0
 		,SCOPE_PROPERTY_CONTINUE=0x1 << 1
 		,SCOPE_PROPERTY_FOR_IN=0x1 << 2
-
 	}ScopeProperty;
-
 
 	typedef void  (* PrintFunctionCallback)(const char *filename, int line, const  char  *string_text);
 
 	typedef intptr_t (*ConversionType)(intptr_t);
-
-
-
 	//-----------------------------
 
 	struct Symbol {
@@ -167,14 +159,8 @@ namespace zetscript{
 				  && this->n_params == s1.n_params;
 		}
 	};
-
 	//-----------------------------
-
-
 	#pragma pack(push, 1)
-
-
-
 
 	struct LinkSymbolFirstAccess{
 
@@ -204,12 +190,7 @@ namespace zetscript{
 		}
 	};
 
-
-
-
-
 	//-------------------------------------------------------
-
 
 	/**
 	 * Scope register

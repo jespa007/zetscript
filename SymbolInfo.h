@@ -13,7 +13,7 @@ namespace zetscript{
 	struct	SymbolInfo { // it can be a variable or function
 		intptr_t ref_ptr; // pointer ref just in case is C var/function
 		Symbol *symbol; // symbol name
-		short idx_symbol; // idx of class function/variable symbol that keeps.
+		short idx_symbol; // idx local variable/function or idx member variable/function.
 
 		unsigned short symbol_info_properties; // SymbolInfoProperty
 		std::string c_type; // In case is C, we need to know its type ...
@@ -27,7 +27,7 @@ namespace zetscript{
 		}
 	};
 
-	StackElement symbolInfoToStackElement(ZetScript * zs, SymbolInfo *symbol,void *ptr_variable);
+	StackElement convertSymbolInfoToStackElement(ZetScript * zs, SymbolInfo *symbol,void *ptr_variable);
 
 	#pragma pack(pop)
 

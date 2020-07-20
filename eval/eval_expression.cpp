@@ -120,37 +120,41 @@ namespace zetscript{
 					 type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
 					 load_type=LOAD_TYPE_CONSTANT;
 
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
+					 std::string key_value="\""+str_value+"\"";
+
+					if((get_obj = eval_data->zs->getRegisteredConstantValue(key_value))!=NULL){
 						obj = get_obj;
 					}else{
 						ScriptVarString *s=new ScriptVarString(eval_data->zs,str_value);
-						obj=eval_data->zs->registerConstantValue(str_value,NULL,type);
+						obj=eval_data->zs->registerConstantValue(key_value,NULL,type);
 						((StackElement *)obj)->stk_value=((void *)(s->str_value.c_str()));
 						((StackElement *)obj)->var_ref=s;
 					 }
 				}
 				 // add load std::string constant
 				// compile constant ...
+			 }else{
+				 token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
 			 }
 
 			 if(!is_constant_string){
 				 // try parse value...
-				if(str_value=="null"){
+				if(str_value=="null"){ // null literal
 					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL;
 					load_type=LOAD_TYPE_NULL;
 					obj=NULL;//ScriptVar::NullSymbol;
 
-				}else if(str_value=="undefined"){
+				}else if(str_value=="undefined"){ // undefined literal
 						type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
 						load_type=LOAD_TYPE_UNDEFINED;
 						obj=NULL;// ScriptVar::UndefinedSymbol;
-				}else if((const_obj=zs_strutils::parseInteger(str_value))!=NULL){
+				}else if((const_obj=zs_strutils::parseInteger(str_value))!=NULL){ // int literal
 					int value = *((int *)const_obj);
 					delete (int *)const_obj;
 					load_type=LOAD_TYPE_CONSTANT;
 					obj=eval_data->zs->registerConstantValue(str_value,value);
 				}
-				else if((const_obj=zs_strutils::parseFloat(str_value))!=NULL){
+				else if((const_obj=zs_strutils::parseFloat(str_value))!=NULL){ // float literal
 					float value = *((float *)const_obj);
 					delete (float *)const_obj;
 					void *value_ptr;
@@ -165,7 +169,7 @@ namespace zetscript{
 						obj=eval_data->zs->registerConstantValue(str_value,value_ptr,type);
 					}
 				}
-				else if((const_obj=zs_strutils::parseBoolean(str_value))!=NULL){
+				else if((const_obj=zs_strutils::parseBoolean(str_value))!=NULL){ // bool literal
 
 					bool value = *((bool *)const_obj);
 					delete (bool *)const_obj;
@@ -275,7 +279,7 @@ namespace zetscript{
 
 			bool is_first_access=false;
 			//int instruction_first_access=-1;
-			int instruction_identifier=-1;
+			int instruction_identifier=ZS_IDX_UNDEFINED;;
 			unsigned char params=0;
 
 			//PASTNode ast_node_to_be_evaluated=NULL;
@@ -311,10 +315,11 @@ namespace zetscript{
 
 					// concatenate instruction ...
 					instructions->insert(
-						  instructions->end()
-						, instruction_inner.begin()
-						, instruction_inner.end()
+							instructions->end()
+							, instruction_inner.begin()
+							, instruction_inner.end()
 					);
+
 
 					if(*aux_p != ')'){
 						writeError(eval_data->current_parsing_file,line ,"Expected ')'");
@@ -470,17 +475,20 @@ namespace zetscript{
 								break;
 							}
 
+							EvaluatedInstruction *instruction_token=new EvaluatedInstruction(byte_code);
+							symbol_token_node.instructions.push_back(instruction_token);
+
+							// generate source info in case byte code load...
 							if(byte_code==ByteCode::BYTE_CODE_LOAD){
-								//instruction_identifier=symbol_token_node.instruction.size();
-								symbol_token_node.instructions[instruction_identifier]->instruction_source_info= InstructionSourceInfo(
+
+								symbol_token_node.instructions[symbol_token_node.instructions.size()-1]->instruction_source_info= InstructionSourceInfo(
 									eval_data->current_parsing_file
 									,line
 									,getCompiledSymbol(eval_data,symbol_token_node.value)
 								);
+
 							}
 
-							EvaluatedInstruction *instruction_token=new EvaluatedInstruction(byte_code);
-							symbol_token_node.instructions.push_back(instruction_token);
 
 							aux_p=ignoreBlanks(aux_p,line);
 						}
@@ -492,6 +500,7 @@ namespace zetscript{
 								,symbol_token_node.value
 								,params // only if first access is a function...
 						);
+
 
 						// add info to add as symbol value ...
 						symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
@@ -543,10 +552,11 @@ namespace zetscript{
 				return NULL;
 			}
 
-
 			// make operator precedence from the AST built before...
-			if(!makeOperatorPrecedence(eval_data,&expression_tokens,instructions,0,expression_tokens.size()-1,error)){
-				return NULL;
+			if(expression_tokens.size()>0){
+				if(!makeOperatorPrecedence(eval_data,&expression_tokens,instructions,0,expression_tokens.size()-1,error)){
+					return NULL;
+				}
 			}
 
 			// last character is a separator so it return increments by 1

@@ -2,7 +2,7 @@
 
 namespace zetscript{
 
-StackElement symbolInfoToStackElement(ZetScript * zs, SymbolInfo *symbol,void *ptr_variable){
+StackElement convertSymbolInfoToStackElement(ZetScript * zs, SymbolInfo *symbol,void *ptr_variable){
 
 		if(symbol->symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
 

@@ -33,7 +33,7 @@ namespace zetscript{
 				// check if primitive type (only 4 no more no else)...
 				void *ptr_variable = (void*) ((unsigned long long) c_object + ir_var->ref_ptr);
 
-				*se=symbolInfoToStackElement(this->zs,ir_var,ptr_variable);
+				*se=convertSymbolInfoToStackElement(this->zs,ir_var,ptr_variable);
 			}
 		}
 

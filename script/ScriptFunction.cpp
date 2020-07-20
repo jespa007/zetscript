@@ -360,7 +360,7 @@ namespace zetscript{
 		StackElement se = {0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
 		if(symbol_info_properties &  SYMBOL_INFO_PROPERTY_C_OBJECT_REF) // convert c ref var into stack element. This should be consistent in the whole execution.
-			se=symbolInfoToStackElement(
+			se=convertSymbolInfoToStackElement(
 				this->zs,
 			 	vsi,
 				(void *)vsi->ref_ptr

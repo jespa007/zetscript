@@ -1,8 +1,16 @@
-var i=1;
-{
-	var b=2;
+;;;;;;;
+class A{
+	constructor(){
+		this.a=1;
+	}
+	fun1(){
+		print("1");
+	}
 }
-//var i="res:"+((5+10.0*2)+3);
-print("hola"+"kk"+i);
-//print("hola"+"kk");
-//print("hola");
+
+new A()
+//print("1");
+
+/*var i= 5+4+5+6+7+8+8
+10*20+80+60
+60*/ 

@@ -1,35 +1,29 @@
+
+#define METAMETHOD_2_ARGS 2
+#define METAMETHOD_1_ARGS 1
+
+// general
+#define PRINT_DUAL_ERROR_OP(c)\
+std::string var_type1=stk_result_op1->toString(),\
+	   var_type2=stk_result_op2->toString();\
+\
+writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+		var_type1.c_str(),\
+		c,\
+		var_type2.c_str());
+
+#define PRINT_ERROR_OP(c)\
+	std::string var_type1=stk_result_op1->toString();\
+\
+writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+	c,\
+	var_type1.c_str());
+
+#define COPY_FLOAT(d,s)  memcpy((d),(s),sizeof(float))
+
 namespace zetscript{
 
-		void  writeError(const char *filename, int line, const  char  *string_text, ...);
-
-		#define METAMETHOD_2_ARGS 2
-		#define METAMETHOD_1_ARGS 1
-
-		// general
-		#define PRINT_DUAL_ERROR_OP(c)\
-		std::string var_type1=stk_result_op1->toString(),\
-			   var_type2=stk_result_op2->toString();\
-		\
-		writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
-				var_type1.c_str(),\
-				c,\
-				var_type2.c_str());
-
-
-		#define PRINT_ERROR_OP(c)\
-			std::string var_type1=stk_result_op1->toString();\
-		\
-		writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
-			c,\
-			var_type1.c_str());
-
-		#define COPY_FLOAT(d,s)  memcpy((d),(s),sizeof(float))
-
-		//VirtualMachine * VirtualMachine::m_virtualMachine = NULL;
-		//std::vector<VirtualMachine::VirtualMachine> VirtualMachine::ALE;
-		// static: only defined in this module...
-
-
+	void  writeError(const char *filename, int line, const  char  *string_text, ...);
 
 	inline void VirtualMachine::removeEmptySharedPointers(int idx_stack,void *ptr_callc_result){
 		InfoSharedList *list = &zero_shares[idx_stack];
@@ -277,87 +271,86 @@ namespace zetscript{
 
 			if(match_signature){
 				if((irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF)){ /* C! Must match args...*/
-							bool all_check=true; /*  check arguments types ... */
-							int idx_type=-1;
-							int arg_idx_type=-1;
-							for( unsigned k = 0; k < n_args && all_check;k++){
-								StackElement *current_arg=&start_arg[k];
-								arg_idx_type=irfs->arg_info[k].idx_type;
+					bool all_check=true; /*  check arguments types ... */
+					int idx_type=-1;
+					int arg_idx_type=-1;
+					for( unsigned k = 0; k < n_args && all_check;k++){
+						StackElement *current_arg=&start_arg[k];
+						arg_idx_type=irfs->arg_info[k].idx_type;
 
-								if(arg_idx_type==IDX_BUILTIN_TYPE_STACK_ELEMENT){
-									/* do nothing because is already trivial ! */
-								}
-								else{
-								if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
-									current_arg = (StackElement *)current_arg->var_ref;
-								}
+						if(arg_idx_type==IDX_BUILTIN_TYPE_STACK_ELEMENT){
 
-								unsigned short var_type = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(current_arg->properties);
+							if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+								current_arg = (StackElement *)current_arg->var_ref;
+							}
 
-								switch(var_type){
-									default:
-										aux_string="unknow";
-										all_check=false;
-										break;
-									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-										idx_type=IDX_BUILTIN_TYPE_INT_PTR_C;
-										all_check=
-												arg_idx_type==IDX_BUILTIN_TYPE_INT_PTR_C
-											  ||arg_idx_type==IDX_BUILTIN_TYPE_INT_C
-											  ||arg_idx_type==IDX_BUILTIN_TYPE_UNSIGNED_INT_C
-											  ||arg_idx_type==IDX_BUILTIN_TYPE_INTPTR_T_C;
-										break;
-									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-										idx_type=IDX_BUILTIN_TYPE_FLOAT_PTR_C;
-										all_check=arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C
-												||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_C;
-										break;
-									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
-										idx_type=IDX_BUILTIN_TYPE_BOOL_PTR_C;
-										all_check=
-												arg_idx_type==IDX_BUILTIN_TYPE_BOOL_PTR_C
-											  ||arg_idx_type==IDX_BUILTIN_TYPE_BOOL_C;
+							unsigned short var_type = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(current_arg->properties);
 
-										break;
-									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-										idx_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
+							switch(var_type){
+								default:
+									aux_string="unknow";
+									all_check=false;
+									break;
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
+									idx_type=IDX_BUILTIN_TYPE_INT_PTR_C;
+									all_check=
+											arg_idx_type==IDX_BUILTIN_TYPE_INT_PTR_C
+										  ||arg_idx_type==IDX_BUILTIN_TYPE_INT_C
+										  ||arg_idx_type==IDX_BUILTIN_TYPE_UNSIGNED_INT_C
+										  ||arg_idx_type==IDX_BUILTIN_TYPE_INTPTR_T_C;
+									break;
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+									idx_type=IDX_BUILTIN_TYPE_FLOAT_PTR_C;
+									all_check=arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C
+											||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_C;
+									break;
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+									idx_type=IDX_BUILTIN_TYPE_BOOL_PTR_C;
+									all_check=
+											arg_idx_type==IDX_BUILTIN_TYPE_BOOL_PTR_C
+										  ||arg_idx_type==IDX_BUILTIN_TYPE_BOOL_C;
 
-										all_check =
-												(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
-											  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
-										break;
-									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
-									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
-										break;
-									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
-									case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-										var_object=((ScriptVar *)current_arg->var_ref);
-										aux_string=var_object->getPointer_C_ClassName();
+									break;
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+									idx_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
 
-										if(arg_idx_type==idx_type){
-											all_check=true;
-										}
-										else{
-											ScriptClass *c_class=NULL;
-											if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
-												all_check =
-														(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
-													  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
-											}else if((c_class=var_object->Get_C_Class())!=NULL){ /* check whether the base is ok... */
-												all_check=IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,c_class->idx_class,arg_idx_type);
-											}else{ /* fail ... */
-												all_check=false;
-											}
-										}
+									all_check =
+											(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
+										  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
+									break;
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
+									break;
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+									var_object=((ScriptVar *)current_arg->var_ref);
+									aux_string=var_object->getPointer_C_ClassName();
 
-										break;
+									if(arg_idx_type==idx_type){
+										all_check=true;
 									}
-								}
+									else{
+										ScriptClass *c_class=NULL;
+										if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+											all_check =
+													(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
+												  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
+										}else if((c_class=var_object->Get_C_Class())!=NULL){ /* check whether the base is ok... */
+											all_check=IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,c_class->idx_class,arg_idx_type);
+										}else{ /* fail ... */
+											all_check=false;
+										}
+									}
+
+									break;
 							}
-							if(all_check){ /* we found the right function (set it up!) ... */
-								call_ale_instruction->value_op2 = (intptr_t)irfs;
-								ptr_function_found = irfs;
-							}
+						}
+					}
+
+					if(all_check){ /* we found the right function (set it up!) ... */
+						call_ale_instruction->value_op2 = (intptr_t)irfs;
+						ptr_function_found = irfs;
+					}
 				}else{ /* type script function  ... */
 					call_ale_instruction->value_op2=(intptr_t)irfs;
 					ptr_function_found = irfs;

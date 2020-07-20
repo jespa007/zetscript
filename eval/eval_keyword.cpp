@@ -78,7 +78,7 @@ namespace zetscript{
 		char * evalKeywordTypeClass(EvalData *eval_data,const char *s,int & line, Scope *scope_info, bool & error){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
-			Scope *class_scope_info=NULL;
+			//Scope *class_scope_info=NULL;
 			int class_line;
 			std::string class_name;
 			std::string base_class_name="";
@@ -109,12 +109,11 @@ namespace zetscript{
 					// try to register class...
 					class_line = line;
 
-
 					aux_p=ignoreBlanks(aux_p,line);
 
-					if(*aux_p == ':' ){
+					if(strncmp(aux_p, "extends",7)==0 ){ // extension class detected
 
-						aux_p=ignoreBlanks(aux_p+1,line);
+						aux_p=ignoreBlanks(aux_p+7,line);
 
 						if((aux_p=getIdentifierToken(eval_data,aux_p,base_class_name))==NULL){
 							 writeError(eval_data->current_parsing_file,line ,"Expected symbol");
@@ -126,7 +125,12 @@ namespace zetscript{
 
 
 					// register class
-					if((sc=eval_data->script_class_factory->registerClass(__FILE__, __LINE__, class_name,base_class_name))==NULL){
+					if((sc=eval_data->script_class_factory->registerClass(
+							__FILE__
+							, __LINE__
+							, class_name
+							,base_class_name
+					))==NULL){
 						return NULL;
 					}
 
@@ -143,24 +147,24 @@ namespace zetscript{
 
 							// 1st. check whether eval a keyword...
 							key_w = isKeywordType(aux_p);
-							if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
-								switch(key_w){
+							if(key_w == KeywordType::KEYWORD_TYPE_UNKNOWN){ // only expects function name
+								/*switch(key_w){
 								default:
 									writeError(eval_data->current_parsing_file,line,"Expected \"var\" or \"function\" keyword");
 									return NULL;
 									break;
-								case KeywordType::KEYWORD_TYPE_FUNCTION:
+								case KeywordType::KEYWORD_TYPE_FUNCTION:*/
 
 									if((aux_p = evalKeywordTypeFunction(
 											eval_data
 											,aux_p
 											, line
-											,class_scope_info
+											,GET_SCOPE(eval_data,sc->symbol_info.symbol->idx_scope)
 											,error
 									)) == NULL){
 										return NULL;
 									}
-									break;
+								/*	break;
 								case KeywordType::KEYWORD_TYPE_VAR:
 									if((aux_p = evalKeywordTypeVar(
 											eval_data
@@ -172,9 +176,9 @@ namespace zetscript{
 										return NULL;
 									}
 									break;
-								}
+								}*/
 							}else{
-								writeError(eval_data->current_parsing_file,line,"Expected \"var\" or \"function\" keyword");
+								writeError(eval_data->current_parsing_file,line,"unexpected \"%s\"",eval_info_keywords[key_w].str);
 								return NULL;
 							}
 							aux_p=ignoreBlanks(aux_p,line);
@@ -185,12 +189,12 @@ namespace zetscript{
 							return NULL;
 						}
 
-						aux_p=ignoreBlanks(aux_p+1,line);
+						/*aux_p=ignoreBlanks(aux_p+1,line);
 
 						if(*aux_p != ';'){
 							writeError(eval_data->current_parsing_file,class_line ,"class \"%s\" not end with ;",class_name.c_str());
 							return NULL;
-						}
+						}*/
 
 						return aux_p+1;
 
@@ -209,7 +213,14 @@ namespace zetscript{
 		//  KEYWORDS
 		//
 
-		char * evalKeywordTypeFunction(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error){
+		char * evalKeywordTypeFunction(
+				EvalData *eval_data
+				, const char *s
+				, int & line
+				, Scope *scope_info
+				, bool & error
+//				, ScriptClass *sc
+			){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
@@ -222,33 +233,46 @@ namespace zetscript{
 
 			Symbol * irv=NULL;
 
+			// we deduce we are in class whether is not main class and scope idx is pointing at scope base
+			bool is_class=
+					scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+					&& scope_info->getIdxScopeBase() == scope_info->idx_scope
+					;
+
 			static int n_anonymous_function=0;
 			//std::string class_member,class_name,
 			std::string function_name="";
 
-
 			int idx_scope=ZS_IDX_UNDEFINED;
-			//Scope *local_scope=NULL;
+			int advance_chars=0;
 
 			// set current scope
 			idx_scope=scope_info->idx_scope;
 
 			// check for keyword ...
-			key_w = isKeywordType(aux_p);
+			if(is_class){ // within class supposes is a function already
+				key_w = KeywordType::KEYWORD_TYPE_FUNCTION;
+			}
+			else{
+				key_w = isKeywordType(aux_p);
+				advance_chars=strlen(eval_info_keywords[key_w].str);
+			}
 
 			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
 
 				if(key_w == KeywordType::KEYWORD_TYPE_FUNCTION){
 
 					// advance keyword...
-					aux_p += strlen(eval_info_keywords[key_w].str);
+					aux_p += advance_chars;
 					aux_p=ignoreBlanks(aux_p,line);
 
 					bool named_function = *aux_p!='(';
 
 					if(named_function){ // is named function..
 
-						if((end_var=isClassMemberExtension( // is function class extensions (example A::function1(){ return 0;} )
+						if(is_class){
+							sc=scope_info->script_class;
+						}else if((end_var=isClassMemberExtension( // is function class extensions (example A::function1(){ return 0;} )
 								eval_data
 								,aux_p
 								,line
@@ -259,6 +283,10 @@ namespace zetscript{
 							// current scope is changed by class scope...
 							idx_scope = sc->symbol_info.symbol->idx_scope;
 							//symbol_value = (char *)class_member.c_str();
+						}else{
+							if(is_class){ // get class from idx_scope
+
+							}
 						}
 
 						if(error){ // isClassMemberExtension error
@@ -266,8 +294,7 @@ namespace zetscript{
 						}
 
 						if(end_var == NULL){ // global function
-								// check whwther the function is anonymous with a previous arithmetic operation ....
-
+							// check whwther the function is anonymous with a previous arithmetic operation ....
 							if((end_var=getIdentifierToken(
 									eval_data
 									,aux_p
@@ -617,9 +644,10 @@ namespace zetscript{
 			char *end_expr,*start_symbol;
 			int dl=-1;
 			KeywordType key_w;
-			std::string conditional_str;
+			//std::string conditional_str;
 			error = false;
 			std::vector<EvaluatedInstruction *> ei_jmps;
+			EvaluatedInstruction *ei_aux;
 			//EvaluatedInstruction ei_jmp_else_if;
 			//int conditional_line=0;
 
@@ -656,14 +684,19 @@ namespace zetscript{
 							return NULL;
 						}
 
-						if(ignoreBlanks(aux_p+1,dl)==end_expr){
+
+						// insert instruction if evaluated expression
+						eval_data->evaluated_function_current->instructions.push_back(ei_aux=new EvaluatedInstruction(BYTE_CODE_JNT));
+						ei_jmps.push_back(ei_aux);
+
+						/*if(ignoreBlanks(aux_p+1,dl)==end_expr){
 							writeError(eval_data->current_parsing_file,line,"no conditional expression");
 							return NULL;
 						}
 
 						if(!zs_strutils::copyFromPointerDiff(conditional_str,aux_p+1, end_expr)){
 							return NULL;
-						}
+						}*/
 
 						aux_p=ignoreBlanks(end_expr+1,line);
 						if(*aux_p != '{'){
@@ -693,7 +726,8 @@ namespace zetscript{
 						if(else_key){
 
 							// we should insert jmp to end conditional chain if/else...
-							eval_data->evaluated_function_current->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_JMP));
+							eval_data->evaluated_function_current->instructions.push_back(ei_aux=new EvaluatedInstruction(BYTE_CODE_JMP));
+							ei_jmps.push_back(ei_aux);
 
 							aux_p += strlen(eval_info_keywords[key_w].str);
 
@@ -733,7 +767,14 @@ namespace zetscript{
 									return NULL;
 								}
 							} // else keep up parsing if nodes case ...
-						}else{
+						}else{ // end if expression
+
+							// update all collected jump/jnt to current instruction...
+							for(unsigned i=0; i < ei_jmps.size(); i++){
+								// insert instruction if evaluated expression
+								ei_jmps[i]->vm_instruction.value_op2=eval_data->evaluated_function_current->instructions.size();
+							}
+
 							return aux_p;
 						}
 					}while(true); // loop
@@ -1007,12 +1048,12 @@ namespace zetscript{
 			//bool is_class_member=false;
 			int start_line=0;
 
-			ScriptClass *sc=NULL;
-			ScriptClass *sc_come_from=NULL;
+			//ScriptClass *sc=NULL;
+			//ScriptClass *sc_come_from=NULL;
 
-			if(scope_info->idx_scope!=IDX_GLOBAL_SCOPE){
+			/*if(scope_info->idx_scope!=IDX_GLOBAL_SCOPE){
 				sc_come_from=scope_info->getScriptClass();//) { // BYTE_CODE_NOT GLOBAL
-			}
+			}*/
 			//is_class_member = scope_info->getIdxScopeBase() == scope_info->getScopePtrCurrent()->idx_scope;
 
 			key_w = isKeywordType(aux_p);
@@ -1028,9 +1069,9 @@ namespace zetscript{
 						aux_p=ignoreBlanks(aux_p,line);
 						start_var=aux_p;
 						start_line = line;
-						sc=NULL;
+						//sc=NULL;
 
-						if(sc_come_from != NULL){ // it comes from class declaration itself
+						/*if(sc_come_from != NULL){ // it comes from class declaration itself
 							sc=sc_come_from;
 						}
 						else{ // check if type var ClasS::v1 or v1
@@ -1045,7 +1086,7 @@ namespace zetscript{
 								if(error){
 									return NULL;
 								}
-								else{ // get normal name...
+								else{*/ // get normal name...
 
 									line = start_line;
 
@@ -1058,9 +1099,9 @@ namespace zetscript{
 										writeError(eval_data->current_parsing_file,line,"Expected symbol");
 										return NULL;
 									}
-								}
-							}
-						}
+								//}
+							//}
+						//}
 
 						KeywordType keyw = isKeywordType(variable_name.c_str());
 
@@ -1073,10 +1114,10 @@ namespace zetscript{
 						aux_p=ignoreBlanks(aux_p,line);
 						//}
 						bool ok_char=*aux_p == ';' || *aux_p == ',' || *aux_p == '=' ;
-						if(sc!=NULL && *aux_p == '='){
+						/*if(sc!=NULL && *aux_p == '='){
 							writeError(eval_data->current_parsing_file,line,"Variable member is not assignable on its declaration. Should be initialized within constructor.");
 							return NULL;
-						}
+						}*/
 
 						if(ok_char){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
 							allow_for_in=false;
@@ -1098,16 +1139,16 @@ namespace zetscript{
 							 // define as many vars is declared within ','
 
 							//--- OP
-							if(sc!=NULL){ // register as variable member...
+							/*if(sc!=NULL){ // register as variable member...
 								sc->registerVariable(eval_data->current_parsing_file, line, variable_name);
 							}
-							else{ // register as local variable in the function...
+							else{ */// register as local variable in the function...
 								eval_data->evaluated_function_current->script_function->registerVariable(
 										eval_data->current_parsing_file
 										, line
 										, variable_name
 								);
-							}
+							//}
 							//---
 							ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
 						}
@@ -1122,6 +1163,7 @@ namespace zetscript{
 								end=true;
 							}
 							else{
+								error=true;
 								writeError(eval_data->current_parsing_file,line,"unexpected '%c'", *aux_p);
 								return NULL;
 							}
@@ -1253,7 +1295,12 @@ namespace zetscript{
 					}
 					error = true;
 					return NULL;
-
+				case KEYWORD_TYPE_NEW:
+					if((aux_p = evalNewObject(eval_data,s,line,scope_info,&eval_data->evaluated_function_current->instructions)) != NULL){
+						return aux_p;
+					}
+					error = true;
+					return NULL;
 				default:
 					if(eval_info_keywords[keyw].eval_fun != NULL){
 						return  (*eval_info_keywords[keyw].eval_fun)(eval_data,s,line,scope_info,error);

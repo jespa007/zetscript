@@ -384,14 +384,16 @@ namespace zetscript{
 					ScriptFunction *sf=GET_SCRIPT_FUNCTION(eval_data,ls->idx_script_function);
 					ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
+
 					if(evaluated_instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
 
+						// is automatically created on vm...
 						if(ls->n_params==NO_PARAMS_IS_VARIABLE){
-							if((vis=sc->getVariable(ls->value,sc->symbol_info.symbol->idx_scope))==0){
+							/*if((vis=sc->getVariable(ls->value,sc->symbol_info.symbol->idx_scope))==0){
 								THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 								return;
-							}
-							evaluated_instruction->vm_instruction.value_op2=vis->idx_symbol;
+							}*/
+							evaluated_instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED;//vis->idx_symbol;
 						}
 						else{
 							if((evaluated_instruction->vm_instruction.value_op2=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idx_scope,ls->n_params))==0){
@@ -430,24 +432,22 @@ namespace zetscript{
 						// try find local symbol  ...
 						Scope *scope=GET_SCOPE(eval_data,ls->idx_scope);
 						Symbol * sc_var = scope->getSymbol(ls->value, ls->n_params);
-						if(sc_var == NULL){
-							THROW_RUNTIME_ERROR(zs_strutils::format("Symbol \"%s\" not found at function \"%s\""
-									,ls->value.c_str()
-									,sf->symbol_info.symbol->name.c_str()));
-							return;
-						}
-						if(ls->n_params==NO_PARAMS_IS_VARIABLE){
-							if((vis=sf->getVariable(ls->value,sc_var->idx_scope))!=NULL){
-								load_type=LoadType::LOAD_TYPE_VARIABLE;
-								evaluated_instruction->vm_instruction.value_op2=vis->idx_symbol;
-								local_found=true;
-							}
-						}
-						else{
 
-							if((evaluated_instruction->vm_instruction.value_op2=(intptr_t)sf->getFunction(ls->value,sc_var->idx_scope,ls->n_params))!=0){
-								load_type=LoadType::LOAD_TYPE_FUNCTION;
-								local_found =true;
+						// search for local
+						if(sc_var != NULL){
+							if(ls->n_params==NO_PARAMS_IS_VARIABLE){
+								if((vis=sf->getVariable(ls->value,sc_var->idx_scope))!=NULL){
+									load_type=LoadType::LOAD_TYPE_VARIABLE;
+									evaluated_instruction->vm_instruction.value_op2=vis->idx_symbol;
+									local_found=true;
+								}
+							}
+							else{
+
+								if((evaluated_instruction->vm_instruction.value_op2=(intptr_t)sf->getFunction(ls->value,sc_var->idx_scope,ls->n_params))!=0){
+									load_type=LoadType::LOAD_TYPE_FUNCTION;
+									local_found =true;
+								}
 							}
 						}
 

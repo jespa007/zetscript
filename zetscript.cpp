@@ -18,7 +18,7 @@ namespace zetscript{
 	// define prototype ...
 	int error_line;
 	char error_filename[512];
-	char error_description[1024];
+	char error_description[4096];
 	const char *error_type="NA";
 
 	void  writeError(const char *filename, int line, const  char  *input_text, ...){
@@ -33,7 +33,7 @@ namespace zetscript{
 		memset(error_filename,0,sizeof(error_filename));
 
 #ifdef __DEBUG__
-		fprintf(stderr,"[ERR %s:%i] %s",filename,line,output_text);
+		fprintf(stderr,"\n[ERR %s:%i] %s",filename,line,output_text);
 #endif
 
 		if(filename){
@@ -76,13 +76,9 @@ namespace zetscript{
 		eval_float=0;
 		eval_string="";
 		eval_bool = false;
-
 	}
-
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
-
-
 	 void ZetScript::printGeneratedCode(){
 
 		 std::vector<ScriptClass *> *script_classes=script_class_factory->getScriptClasses();
@@ -142,7 +138,6 @@ namespace zetscript{
 		}else{
 			THROW_RUNTIME_ERROR(zs_strutils::format("internal:constant %s already exist",const_name.c_str()));
 		}
-
 		return info_ptr;
 	}
 
@@ -154,22 +149,16 @@ namespace zetscript{
 		if((stk = getRegisteredConstantValue(const_name))!=NULL){
 			return stk;
 		}
-
 		return registerConstantValue(const_name,(void *)value,type);
-
 	}
 
 	// CONSTANT MANAGEMENT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 
-
-
 	/*void  ZetScript::internalPrintError(const char *s){
 		 virtual_machine->SetError(s);
 	}*/
-
-
 	void ZetScript::setPrintOutCallback(void (* _printout_callback)(const char *)){
 		print_out_callback=_printout_callback;
 	}
