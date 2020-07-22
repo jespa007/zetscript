@@ -46,7 +46,7 @@ namespace zetscript{
 		BYTE_CODE_NEW, // new operator...
 		BYTE_CODE_DELETE,
 		BYTE_CODE_DECL_VEC, // Vector object
-		BYTE_CODE_DECL_DICTIONARY,
+		BYTE_CODE_DECL_DICT,
 		BYTE_CODE_RET, // ret instruction ..
 		BYTE_CODE_PUSH_SCOPE,
 		BYTE_CODE_POP_SCOPE,
@@ -68,6 +68,7 @@ namespace zetscript{
 			BYTE_CODE_METAMETHOD_GTE, // >=
 			BYTE_CODE_METAMETHOD_NEG, // -a
 			BYTE_CODE_METAMETHOD_ADD, // +
+			BYTE_CODE_METAMETHOD_SUB, // -
 			BYTE_CODE_METAMETHOD_DIV, // /
 			BYTE_CODE_METAMETHOD_MUL, // *
 			BYTE_CODE_METAMETHOD_MOD,  // %

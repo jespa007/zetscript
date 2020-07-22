@@ -970,8 +970,8 @@ namespace zetscript{
 							COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
 							PUSH_FLOAT(f_aux_value1 + STK_VALUE_TO_INT(stk_result_op2));
 						}
-					}
-					else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
+					// TODO: Given 2 StackElement try to convert their values and return new stack element string
+					/*else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
 						if (STK_VALUE_IS_STRING(stk_result_op1) && STK_VALUE_IS_INT(stk_result_op2)){
 							sprintf(str_aux,"%s%i",((const char *)stk_result_op1->stk_value),(int)((intptr_t)stk_result_op2->stk_value));
 							//PUSH_STRING(str_aux);
@@ -1015,6 +1015,7 @@ namespace zetscript{
 					}else if (mask_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
 							sprintf(str_aux,"%s%s",((const char *)stk_result_op1->stk_value),((const char *)(stk_result_op2->stk_value)));
 							PUSH_STRING(str_aux);
+					}*/
 					}else if(mask_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
 						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
 						COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
@@ -1036,6 +1037,48 @@ namespace zetscript{
 					}
 				}
 				continue;
+			case BYTE_CODE_SUB: // -
+				{
+					if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+						READ_TWO_POP_ONE;
+					}else{
+						POP_TWO;
+					}
+
+					unsigned short mask_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
+					unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);
+					if(mask_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
+						PUSH_INTEGER(STK_VALUE_TO_INT(stk_result_op1) - STK_VALUE_TO_INT(stk_result_op2));
+					}else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){
+						if (STK_VALUE_IS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){
+							COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
+							PUSH_FLOAT(STK_VALUE_TO_INT(stk_result_op1) - f_aux_value2);
+						}else{
+							COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
+							PUSH_FLOAT(f_aux_value1 - STK_VALUE_TO_INT(stk_result_op2));
+						}
+					}
+					else if(mask_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
+						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
+						COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
+						PUSH_FLOAT(f_aux_value1 - f_aux_value2);
+					}
+					else{ // try metamethod ...
+
+						if(!applyMetamethod(
+								 calling_object
+								,calling_function
+								,instruction
+								,"-"
+								,BYTE_CODE_METAMETHOD_SUB
+								,stk_result_op1
+								,stk_result_op2
+								)){
+							RETURN_ERROR;
+						}
+					}
+				}
+				continue;				
 			case BYTE_CODE_MUL: // *
 				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
@@ -1356,7 +1399,7 @@ namespace zetscript{
 
 					continue;
 
-			 case  BYTE_CODE_DECL_DICTIONARY: // Create new std::vector object...
+			 case  BYTE_CODE_DECL_DICT: // Create new std::vector object...
 				script_var=NEW_STRUCT_VAR;
 				//PUSH_VAR(script_var,NULL,0,false);
 

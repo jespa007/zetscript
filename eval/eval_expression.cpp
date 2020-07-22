@@ -385,26 +385,25 @@ namespace zetscript{
 						return NULL;
 					}
 
-					// concatenate instruction ...
-					instructions->insert(
-							instructions->end()
-							, instruction_inner.begin()
-							, instruction_inner.end()
-					);
-
-
 					if(*aux_p != ')'){
 						writeError(eval_data->current_parsing_file,line ,"Expected ')'");
 						return NULL;
 					}
 
-					if(pre_operator_type==PreOperatorType::PRE_OPERATOR_TYPE_NEG || pre_operator_type==PreOperatorType::PRE_OPERATOR_TYPE_NOT){
-						eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(ByteCode::BYTE_CODE_NEG));
-					}
-
 					aux_p=ignoreBlanks(aux_p+1,line);
-					operator_token_node.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
 
+					// concatenate instruction ...
+					symbol_token_node.instructions.insert(
+							symbol_token_node.instructions.end()
+							, instruction_inner.begin()
+							, instruction_inner.end()
+					);
+
+					if(pre_operator_type==PreOperatorType::PRE_OPERATOR_TYPE_NEG || pre_operator_type==PreOperatorType::PRE_OPERATOR_TYPE_NOT){
+						symbol_token_node.instructions.push_back(new EvaluatedInstruction(ByteCode::BYTE_CODE_NEG));
+					}
+					
+					symbol_token_node.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
 				}
 				else{
 
