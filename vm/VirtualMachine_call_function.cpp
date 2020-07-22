@@ -424,7 +424,7 @@ namespace zetscript{
 							(*stk_current++)=*stk_var;
 							PERFORM_PRE_POST_OPERATOR(stk_var,++);
 							continue;
-					case MSK_INSTRUCTION_PROPERTY_PRE_NOT:
+					case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
 							switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_var->properties)){
 							case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
 								if(stk_var->properties& MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){
@@ -499,7 +499,7 @@ namespace zetscript{
 
 					// all preoperators makes load var as constant ...
 					switch(pre_post_properties){
-					case MSK_INSTRUCTION_PROPERTY_PRE_NOT:
+					case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
 							switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_current->properties)){
 							case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
 								stk_current->stk_value=(void *)(-((intptr_t)stk_current->stk_value));

@@ -185,7 +185,7 @@ namespace zetscript{
 				current_scope = scope_info->pushScope(); // special case... ast is created later ...
 
 				if(entry_function==false){
-					eval_data->evaluated_function_current->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_PUSH_SCOPE));
+					eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_PUSH_SCOPE));
 				}
 
 				if((aux_p = evalRecursive(
@@ -208,7 +208,7 @@ namespace zetscript{
 						scope_info->popScope();
 
 					if(entry_function==false){
-						eval_data->evaluated_function_current->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_POP_SCOPE));
+						eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_POP_SCOPE));
 					}
 					return aux_p+1;
 				}
@@ -337,7 +337,7 @@ namespace zetscript{
 									,aux
 									,line
 									, scope_info
-									,&eval_data->evaluated_function_current->instructions
+									,&eval_data->current_evaluated_function->instructions
 							)) == NULL){ // something wrong was happen.
 								THROW_SCRIPT_ERROR();
 								return NULL;
@@ -362,21 +362,21 @@ namespace zetscript{
 		}
 
 		void pushFunction(EvalData *eval_data,ScriptFunction *script_function){
-			eval_data->evaluated_functions.push_back(eval_data->evaluated_function_current=new EvaluatedFunction(script_function));
+			eval_data->evaluated_functions.push_back(eval_data->current_evaluated_function=new EvaluatedFunction(script_function));
 		}
 
 		void popFunction(EvalData *eval_data){
-			eval_data->evaluated_function_current->script_function->instruction=NULL;
+			eval_data->current_evaluated_function->script_function->instruction=NULL;
 
 			// get total size op + 1 ends with NULL
-			size_t size = (eval_data->evaluated_function_current->instructions.size() + 1) * sizeof(Instruction);
-			eval_data->evaluated_function_current->script_function->instruction = (PtrInstruction)malloc(size);
-			memset(eval_data->evaluated_function_current->script_function->instruction, 0, size);
+			size_t size = (eval_data->current_evaluated_function->instructions.size() + 1) * sizeof(Instruction);
+			eval_data->current_evaluated_function->script_function->instruction = (PtrInstruction)malloc(size);
+			memset(eval_data->current_evaluated_function->script_function->instruction, 0, size);
 
-			for(unsigned i=0; i < eval_data->evaluated_function_current->instructions.size(); i++){
+			for(unsigned i=0; i < eval_data->current_evaluated_function->instructions.size(); i++){
 
 				SymbolInfo *vis=NULL;
-				EvaluatedInstruction *evaluated_instruction = eval_data->evaluated_function_current->instructions[i];
+				EvaluatedInstruction *evaluated_instruction = eval_data->current_evaluated_function->instructions[i];
 				LinkSymbolFirstAccess *ls=&evaluated_instruction->link_symbol_first_access;
 
 				if(ls->idx_script_function != ZS_IDX_UNDEFINED){ // solve first symbol first access...
@@ -490,24 +490,24 @@ namespace zetscript{
 
 				// save instruction ...
 
-				eval_data->evaluated_function_current->script_function->instruction[i]=evaluated_instruction->vm_instruction;
+				eval_data->current_evaluated_function->script_function->instruction[i]=evaluated_instruction->vm_instruction;
 
 
 				// symbol value to save at runtime ...
 				if(evaluated_instruction->instruction_source_info.str_symbol != NULL){
-					eval_data->evaluated_function_current->script_function->instruction_source_info[i]=evaluated_instruction->instruction_source_info;
+					eval_data->current_evaluated_function->script_function->instruction_source_info[i]=evaluated_instruction->instruction_source_info;
 				}
 			}
 
-			eval_data->evaluated_function_current->script_function->linkScopeBlockVars();
+			eval_data->current_evaluated_function->script_function->linkScopeBlockVars();
 
 			// delete and popback function information...
-			delete eval_data->evaluated_function_current;
+			delete eval_data->current_evaluated_function;
 			eval_data->evaluated_functions.pop_back();
 
-			eval_data->evaluated_function_current = NULL;
+			eval_data->current_evaluated_function = NULL;
 			if(eval_data->evaluated_functions.size() > 0){
-				eval_data->evaluated_function_current = eval_data->evaluated_functions.at(eval_data->evaluated_functions.size()-1);
+				eval_data->current_evaluated_function = eval_data->evaluated_functions.at(eval_data->evaluated_functions.size()-1);
 			}
 		}
 	}

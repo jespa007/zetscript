@@ -152,6 +152,18 @@ namespace zetscript{
 		return registerConstantValue(const_name,(void *)value,type);
 	}
 
+	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, float _value){
+		intptr_t value;// = _value;
+		*((float *)&value)=_value;
+		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
+		StackElement *stk;
+
+		if((stk = getRegisteredConstantValue(const_name))!=NULL){
+			return stk;
+		}
+		return registerConstantValue(const_name,(void *)value,type);
+	}
+
 	// CONSTANT MANAGEMENT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------

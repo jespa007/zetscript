@@ -225,4 +225,4 @@ namespace zetscript{
 }
 
 
-#include "VirtualMachine.inc"
+#include "VirtualMachine.tcc"

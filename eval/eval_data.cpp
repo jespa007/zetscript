@@ -110,27 +110,27 @@ namespace zetscript{
 
 		typedef enum :unsigned char {
 			PRE_OPERATOR_TYPE_UNKNOWN=0,
-			PRE_OPERATOR_TYPE_NOT, 				// !
-			PRE_OPERATOR_TYPE_ADD, 				// -
-			PRE_OPERATOR_TYPE_SUB	, 			// +
+			PRE_OPERATOR_TYPE_NOT, 		// !
+			PRE_OPERATOR_TYPE_POS, 		// + (just ignore)
+			PRE_OPERATOR_TYPE_NEG	, 	// -
 			PRE_OPERATOR_TYPE_MAX
 		}PreOperatorType;
 
 		typedef enum :unsigned char {
-			IDENTITY_OPERATOR_TYPE_UNKNOWN=0,
-			IDENTITY_OPERATOR_TYPE_INC,	// ++
-			IDENTITY_OPERATOR_TYPE_DEC,	// --
-			IDENTITY_OPERATOR_TYPE_MAX
-		}IdentityOperatorType;
+			PRE_POST_SELF_OPERATION_TYPE_UNKNOWN=0,
+			PRE_POST_SELF_OPERATION_TYPE_INC,	// ++
+			PRE_POST_SELF_OPERATION_TYPE_DEC,	// --
+			PRE_POST_SELF_OPERATION_TYPE_MAX
+		}PrePostSelfOperationType;
 
 		typedef enum :unsigned char {
 			SEPARATOR_TYPE_UNKNOWN=0,
-			SEPARATOR_TYPE_COMA,					// ,
+			SEPARATOR_TYPE_COMA,				// ,
 			SEPARATOR_TYPE_SEMICOLON,    		// ;
 			SEPARATOR_TYPE_PARENTHESIS_OPEN, 	// (
 			SEPARATOR_TYPE_PARENTHESIS_CLOSE, 	// )
 			SEPARATOR_TYPE_SQUARE_BRAKET_OPEN, 	// [
-			SEPARATOR_TYPE_SQUARE_BRAKET_CLOSE, 	// ]
+			SEPARATOR_TYPE_SQUARE_BRAKET_CLOSE, // ]
 			SEPARATOR_TYPE_MAX
 		}SeparatorType;
 
@@ -154,8 +154,8 @@ namespace zetscript{
 			TokenType	  			token_type; // can be operator, literal, identifier, object. (separator are not take account)
 			PreOperatorType   		pre_operator_type; // !,+,-
 			OperatorType  			operator_type;
-			IdentityOperatorType  	identity_pre_operator_type; // ++i,--i
-			IdentityOperatorType  	identity_post_operator_type; // i++,i--
+			PrePostSelfOperationType  	pre_self_operation_type; // ++i,--i
+			PrePostSelfOperationType  	post_self_operation_type; // i++,i--
 
 			std::string 			value; // token value content
 			int line;
@@ -172,8 +172,8 @@ namespace zetscript{
 				operator_type=OperatorType::OPERATOR_TYPE_UNKNOWN;
 				token_node_left=token_node_right=NULL;
 				pre_operator_type=PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
-				identity_pre_operator_type=IdentityOperatorType::IDENTITY_OPERATOR_TYPE_UNKNOWN;
-				identity_post_operator_type=IdentityOperatorType::IDENTITY_OPERATOR_TYPE_UNKNOWN;
+				pre_self_operation_type=PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN;
+				post_self_operation_type=PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN;
 			}
 		};
 
@@ -256,7 +256,7 @@ namespace zetscript{
 		} EvalInfoPreOperator;
 
 		typedef struct {
-			IdentityOperatorType id;
+			PrePostSelfOperationType id;
 			const char *str;
 			bool (*eval_fun)(const char *);
 		} EvalInfoIdentityOperator;
@@ -273,7 +273,7 @@ namespace zetscript{
 			ScopeFactory 					* 		scope_factory;
 			ScriptFunctionFactory 			* 		script_function_factory;
 			ScriptClassFactory 				* 		script_class_factory;
-			EvaluatedFunction				* 		evaluated_function_current;
+			EvaluatedFunction				* 		current_evaluated_function;
 			std::vector<EvaluatedFunction *> 	  	evaluated_functions;
 			const char 						* 		current_parsing_file;
 			std::map<std::string,std::string *>	 	compiled_symbol_name;
@@ -282,7 +282,7 @@ namespace zetscript{
 
 			EvalData(ZetScript * _zs){
 				current_parsing_file=NULL;
-				evaluated_function_current=NULL;
+				current_evaluated_function=NULL;
 				this->zs=_zs;
 				this->script_function_factory=zs->getScriptFunctionFactory();
 				this->scope_factory=zs->getScopeFactory();
@@ -301,7 +301,7 @@ namespace zetscript{
 
 		EvalInfoOperator eval_info_operators[OPERATOR_TYPE_MAX];
 		EvalInfoPreOperator eval_info_pre_operators[PRE_OPERATOR_TYPE_MAX];
-		EvalInfoIdentityOperator eval_info_identity_operators[IDENTITY_OPERATOR_TYPE_MAX];
+		EvalInfoIdentityOperator eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_TYPE_MAX];
 		EvalInfoSeparator eval_info_separators[SEPARATOR_TYPE_MAX];
 		EvalInfoKeyword eval_info_keywords[KEYWORD_TYPE_MAX];
 		EvalInfoDirective eval_info_directives[DIRECTIVE_TYPE_MAX];
@@ -351,8 +351,8 @@ namespace zetscript{
 		bool 	isOperatorTypeLogicGte(const char *s)			{return ((*s=='>') && (*(s+1)=='='));}
 		bool 	isOperatorTypeLogicLte(const char *s)			{return ((*s=='<') && (*(s+1)=='='));}
 		bool 	isOperatorTypeLogicNot(const char *s)			{return ((*s=='!') && (*(s+1)!='='));}
-		bool 	isOperatorTypeInc(const char *s)				{return ((*s=='+') && (*(s+1)=='+'));}
-		bool 	isOperatorTypeDec(const char *s)				{return ((*s=='-') && (*(s+1)=='-'));}
+		bool 	isPrePostSelfOperationInc(const char *s)		{return ((*s=='+') && (*(s+1)=='+'));}
+		bool 	isPrePostSelfOperationDec(const char *s)		{return ((*s=='-') && (*(s+1)=='-'));}
 		bool 	isCommentSingleLine(char *s)					{return	((*s=='/') && (*(s+1)=='/'));}
 		bool 	isCommentBlockStart(char *s)					{return ((*s=='/') && (*(s+1)=='*'));}
 		bool 	isCommentBlockEnd(char *s)						{return ((*s=='*') && (*(s+1)=='/'));}
@@ -441,13 +441,15 @@ namespace zetscript{
 			return PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
 		}
 
-		IdentityOperatorType   isIdentityOperatorType(const char *s){
-			for(unsigned char i = 1; i < IDENTITY_OPERATOR_TYPE_MAX; i++){
-				if(*eval_info_identity_operators[i].str == *s){
-					return eval_info_identity_operators[i].id;
-				}
+		PrePostSelfOperationType   isPrePostSelfOperationType(const char *s){
+			if(isPrePostSelfOperationInc(s)){
+				return PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_INC;
+
+			}else if(isPrePostSelfOperationDec(s)){
+				return PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_DEC;
 			}
-			return IdentityOperatorType::IDENTITY_OPERATOR_TYPE_UNKNOWN;
+
+			return PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN;
 		}
 
 		KeywordType isKeywordType(const char *c){
@@ -503,6 +505,8 @@ namespace zetscript{
 				   || *s=='.' // to separate access identifiers.
 				   || *s==' '
 				   || *s==0
+				   || *s=='\r'
+				   || *s=='\n'
 				   || (*s=='\"' && pre!='\\');
 		}
 
@@ -691,7 +695,7 @@ namespace zetscript{
 			// Init operator punctuators...
 			memset(eval_info_operators,0,sizeof(eval_info_operators));
 			memset(eval_info_pre_operators,0,sizeof(eval_info_pre_operators));
-			memset(eval_info_identity_operators,0,sizeof(eval_info_identity_operators));
+			memset(eval_info_pre_post_self_operations,0,sizeof(eval_info_pre_post_self_operations));
 			memset(eval_info_separators,0,sizeof(eval_info_separators));
 			memset(eval_info_keywords,0,sizeof(eval_info_keywords));
 
@@ -734,12 +738,12 @@ namespace zetscript{
 
 
 			eval_info_pre_operators[PRE_OPERATOR_TYPE_NOT]={PRE_OPERATOR_TYPE_NOT, "!",isOperatorTypeLogicNot};
-			eval_info_pre_operators[PRE_OPERATOR_TYPE_ADD]={PRE_OPERATOR_TYPE_ADD, "+",isOperatorAdd};
-			eval_info_pre_operators[PRE_OPERATOR_TYPE_SUB]={PRE_OPERATOR_TYPE_SUB, "-",isOperatorTypeSub};
+			eval_info_pre_operators[PRE_OPERATOR_TYPE_POS]={PRE_OPERATOR_TYPE_POS, "+",isOperatorAdd};
+			eval_info_pre_operators[PRE_OPERATOR_TYPE_NEG]={PRE_OPERATOR_TYPE_NEG, "-",isOperatorTypeSub};
 
 
-			eval_info_identity_operators[IDENTITY_OPERATOR_TYPE_INC]={IDENTITY_OPERATOR_TYPE_INC, "++",isOperatorTypeInc};
-			eval_info_identity_operators[IDENTITY_OPERATOR_TYPE_DEC]={IDENTITY_OPERATOR_TYPE_DEC, "--",isOperatorTypeDec};
+			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_TYPE_INC]={PRE_POST_SELF_OPERATION_TYPE_INC, "++",isPrePostSelfOperationInc};
+			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_TYPE_DEC]={PRE_POST_SELF_OPERATION_TYPE_DEC, "--",isPrePostSelfOperationDec};
 
 
 			// special punctuators...

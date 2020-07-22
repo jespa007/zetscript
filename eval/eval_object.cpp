@@ -126,7 +126,7 @@ namespace zetscript{
 					aux_p=ignoreBlanks(aux_p+strlen(eval_info_keywords[key_w].str),line);
 					// try get symbol ...++++
 
-					eval_data->evaluated_function_current->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_NEW));
+					eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_NEW));
 
 					if((aux_p=getIdentifierToken(
 							eval_data
@@ -186,7 +186,7 @@ namespace zetscript{
 					 // if constructor function found insert call function...
 					 if(constructor_function != NULL){
 
-						 eval_data->evaluated_function_current->instructions.push_back(
+						 eval_data->current_evaluated_function->instructions.push_back(
 								 new EvaluatedInstruction(
 										 BYTE_CODE_CALL
 										 ,ZS_IDX_UNDEFINED

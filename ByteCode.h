@@ -29,6 +29,7 @@ namespace zetscript{
 		BYTE_CODE_NOT, // !
 		BYTE_CODE_NEG, // -a
 		BYTE_CODE_ADD, // +
+		BYTE_CODE_SUB, // +
 		BYTE_CODE_MUL, // *
 		BYTE_CODE_DIV, // /
 		BYTE_CODE_MOD,  // %

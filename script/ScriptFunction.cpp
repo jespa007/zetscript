@@ -132,7 +132,7 @@ namespace zetscript{
 			 post="";
 
 				switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction->properties)){
-				case MSK_INSTRUCTION_PROPERTY_PRE_NOT:
+				case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
 					pre="-";
 					break;
 				case MSK_INSTRUCTION_PROPERTY_PRE_INC:
@@ -148,28 +148,6 @@ namespace zetscript{
 					post="--";
 					break;
 				default:
-					// check whether is constant and numeric
-					if(instruction->byte_code==ByteCode::BYTE_CODE_LOAD && instruction->value_op1==LOAD_TYPE_CONSTANT){
-						ConstantValue *icv = (((ConstantValue *)instruction->value_op2));
-						float n;
-
-						// change the sign
-						switch(icv->properties){
-						default:
-							break;
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-							if(((intptr_t)icv->stk_value)<0){
-								pre="-";
-							}
-							break;
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-							memcpy(&n,&icv->stk_value,sizeof(float));
-							if(n<0){
-								pre="-";
-							}
-							break;
-						}
-					}
 					break;
 
 				}

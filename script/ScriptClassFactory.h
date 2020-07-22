@@ -161,5 +161,5 @@ namespace zetscript{
 	};
 
 }
-#include "ScriptClassFactory.inc"
+#include "ScriptClassFactory.tcc"
 

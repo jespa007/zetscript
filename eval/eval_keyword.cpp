@@ -412,7 +412,7 @@ namespace zetscript{
 							);
 						}
 						else{ // register as local variable in the function...
-							sf=eval_data->evaluated_function_current->script_function->registerFunction(
+							sf=eval_data->current_evaluated_function->script_function->registerFunction(
 									eval_data->current_parsing_file
 									, line
 									, function_name
@@ -462,7 +462,7 @@ namespace zetscript{
 							,aux_p
 							, line
 							, scope_info
-							,&eval_data->evaluated_function_current->instructions
+							,&eval_data->current_evaluated_function->instructions
 					))!= NULL){
 
 						if(*aux_p!=';'){
@@ -470,7 +470,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						eval_data->evaluated_function_current->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_RET));
+						eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_RET));
 
 						aux_p=ignoreBlanks(aux_p+1,line);
 						return aux_p;
@@ -509,7 +509,7 @@ namespace zetscript{
 								,aux_p+1
 								,line
 								,_currentScope
-								,&eval_data->evaluated_function_current->instructions
+								,&eval_data->current_evaluated_function->instructions
 						)) != NULL){
 
 							if(*end_expr != ')'){
@@ -609,7 +609,7 @@ namespace zetscript{
 										,aux_p+1
 										,line
 										,_currentScope
-										,&eval_data->evaluated_function_current->instructions
+										,&eval_data->current_evaluated_function->instructions
 								)) != NULL){
 									if(*end_expr != ')'){
 										writeError(eval_data->current_parsing_file,line,"Expected ')'");
@@ -673,7 +673,7 @@ namespace zetscript{
 								,aux_p+1
 								,line
 								,scope_info
-								,&eval_data->evaluated_function_current->instructions
+								,&eval_data->current_evaluated_function->instructions
 						)) == NULL){
 							writeError(eval_data->current_parsing_file,line,"Expected ')' if ");
 							return NULL;
@@ -686,7 +686,7 @@ namespace zetscript{
 
 
 						// insert instruction if evaluated expression
-						eval_data->evaluated_function_current->instructions.push_back(ei_aux=new EvaluatedInstruction(BYTE_CODE_JNT));
+						eval_data->current_evaluated_function->instructions.push_back(ei_aux=new EvaluatedInstruction(BYTE_CODE_JNT));
 						ei_jmps.push_back(ei_aux);
 
 						/*if(ignoreBlanks(aux_p+1,dl)==end_expr){
@@ -726,7 +726,7 @@ namespace zetscript{
 						if(else_key){
 
 							// we should insert jmp to end conditional chain if/else...
-							eval_data->evaluated_function_current->instructions.push_back(ei_aux=new EvaluatedInstruction(BYTE_CODE_JMP));
+							eval_data->current_evaluated_function->instructions.push_back(ei_aux=new EvaluatedInstruction(BYTE_CODE_JMP));
 							ei_jmps.push_back(ei_aux);
 
 							aux_p += strlen(eval_info_keywords[key_w].str);
@@ -772,7 +772,7 @@ namespace zetscript{
 							// update all collected jump/jnt to current instruction...
 							for(unsigned i=0; i < ei_jmps.size(); i++){
 								// insert instruction if evaluated expression
-								ei_jmps[i]->vm_instruction.value_op2=eval_data->evaluated_function_current->instructions.size();
+								ei_jmps[i]->vm_instruction.value_op2=eval_data->current_evaluated_function->instructions.size();
 							}
 
 							return aux_p;
@@ -848,7 +848,7 @@ namespace zetscript{
 									,(const char *)aux_p
 									,line
 									,_currentScope
-									,&eval_data->evaluated_function_current->instructions
+									,&eval_data->current_evaluated_function->instructions
 							)) == NULL){
 								return NULL;
 							}
@@ -872,7 +872,7 @@ namespace zetscript{
 											,(const char *)aux_p
 											,line
 											,_currentScope
-											,&eval_data->evaluated_function_current->instructions
+											,&eval_data->current_evaluated_function->instructions
 									)) == NULL){
 										return NULL;
 									}
@@ -901,7 +901,7 @@ namespace zetscript{
 											,aux_p
 											,line
 											,_currentScope
-											,&eval_data->evaluated_function_current->instructions
+											,&eval_data->current_evaluated_function->instructions
 									))==NULL){
 										return NULL;
 									}
@@ -981,7 +981,7 @@ namespace zetscript{
 								,aux_p
 								,line
 								,scope_info
-								,&eval_data->evaluated_function_current->instructions
+								,&eval_data->current_evaluated_function->instructions
 							))==NULL){
 								return NULL;
 							}
@@ -1130,7 +1130,7 @@ namespace zetscript{
 									,start_var
 									,start_line
 									,scope_info
-									,&eval_data->evaluated_function_current->instructions
+									,&eval_data->current_evaluated_function->instructions
 								)) == NULL){
 									return NULL;
 								}
@@ -1143,7 +1143,7 @@ namespace zetscript{
 								sc->registerVariable(eval_data->current_parsing_file, line, variable_name);
 							}
 							else{ */// register as local variable in the function...
-								eval_data->evaluated_function_current->script_function->registerVariable(
+								eval_data->current_evaluated_function->script_function->registerVariable(
 										eval_data->current_parsing_file
 										, line
 										, variable_name
@@ -1296,7 +1296,7 @@ namespace zetscript{
 					error = true;
 					return NULL;
 				case KEYWORD_TYPE_NEW:
-					if((aux_p = evalNewObject(eval_data,s,line,scope_info,&eval_data->evaluated_function_current->instructions)) != NULL){
+					if((aux_p = evalNewObject(eval_data,s,line,scope_info,&eval_data->current_evaluated_function->instructions)) != NULL){
 						return aux_p;
 					}
 					error = true;

@@ -173,6 +173,7 @@ namespace zetscript{
 		ConstantValue * getRegisteredConstantValue(const std::string & const_name);
 		ConstantValue * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
 		ConstantValue * registerConstantValue(const std::string & const_name, int  value);
+		ConstantValue * registerConstantValue(const std::string & const_name, float  value);
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
@@ -474,5 +475,5 @@ namespace zetscript{
 }
 
 #include	"vm/VirtualMachine.h"
-#include 	"zetscript.inc"
+#include 	"zetscript.tcc"
 

@@ -8,7 +8,7 @@ namespace zetscript{
 			default:
 				break;
 			case OperatorType::OPERATOR_TYPE_SUB:
-				return ByteCode::BYTE_CODE_NEG;
+				return ByteCode::BYTE_CODE_SUB;
 			case OperatorType::OPERATOR_TYPE_ADD:
 				return ByteCode::BYTE_CODE_ADD;
 			case OperatorType::OPERATOR_TYPE_MUL:
@@ -65,6 +65,7 @@ namespace zetscript{
 			// PRE:
 			unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
 			LoadType load_type=LOAD_TYPE_NOT_DEFINED;
+			bool is_constant_number=false, is_constant_boolean=false;
 
 			unsigned int scope_type=0;
 			void *obj=NULL,*get_obj=NULL,*const_obj=NULL;
@@ -137,6 +138,19 @@ namespace zetscript{
 				 token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
 			 }
 
+			 std::string str_number_value=str_value,str_boolean_value=str_value;
+
+			// if preoperator type neg the value itself and reset token pre operator...
+			if(token_node->pre_operator_type == PreOperatorType::PRE_OPERATOR_TYPE_NEG){
+				str_number_value="-"+str_value;
+			}
+
+			// if preoperator type neg the value itself and reset token pre operator...
+			if(token_node->pre_operator_type == PreOperatorType::PRE_OPERATOR_TYPE_NOT){
+				str_boolean_value="!"+str_value;
+				token_node->pre_operator_type =PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
+			}
+
 			 if(!is_constant_string){
 				 // try parse value...
 				if(str_value=="null"){ // null literal
@@ -148,13 +162,14 @@ namespace zetscript{
 						type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
 						load_type=LOAD_TYPE_UNDEFINED;
 						obj=NULL;// ScriptVar::UndefinedSymbol;
-				}else if((const_obj=zs_strutils::parseInteger(str_value))!=NULL){ // int literal
+				}else if((const_obj=zs_strutils::parseInteger(str_number_value))!=NULL){ // int literal
 					int value = *((int *)const_obj);
 					delete (int *)const_obj;
 					load_type=LOAD_TYPE_CONSTANT;
-					obj=eval_data->zs->registerConstantValue(str_value,value);
+					obj=eval_data->zs->registerConstantValue(str_number_value,value);
+					is_constant_number=true;
 				}
-				else if((const_obj=zs_strutils::parseFloat(str_value))!=NULL){ // float literal
+				else if((const_obj=zs_strutils::parseFloat(str_number_value))!=NULL){ // float literal
 					float value = *((float *)const_obj);
 					delete (float *)const_obj;
 					void *value_ptr;
@@ -163,13 +178,14 @@ namespace zetscript{
 					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
 					load_type=LOAD_TYPE_CONSTANT;
 
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
+					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_number_value))!=NULL){
 						obj = get_obj;
 					}else{
-						obj=eval_data->zs->registerConstantValue(str_value,value_ptr,type);
+						obj=eval_data->zs->registerConstantValue(str_number_value,value_ptr,type);
 					}
+					is_constant_number=true;
 				}
-				else if((const_obj=zs_strutils::parseBoolean(str_value))!=NULL){ // bool literal
+				else if((const_obj=zs_strutils::parseBoolean(str_boolean_value))!=NULL){ // bool literal
 
 					bool value = *((bool *)const_obj);
 					delete (bool *)const_obj;
@@ -177,15 +193,16 @@ namespace zetscript{
 					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN;
 					load_type=LOAD_TYPE_CONSTANT;
 
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
+					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_boolean_value))!=NULL){
 						obj = get_obj;
 					}else{
-						obj=eval_data->zs->registerConstantValue(str_value,(void *)value,type);
+						obj=eval_data->zs->registerConstantValue(str_boolean_value,(void *)value,type);
 					}
+					is_constant_boolean=true;
 				}else{ // it should be an identifier token  ...
 
 					token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
-					intptr_t idx_local_var=	eval_data->evaluated_function_current->script_function->existArgumentName(str_value);
+					intptr_t idx_local_var=	eval_data->current_evaluated_function->script_function->existArgumentName(str_value);
 
 
 					if(idx_local_var!=ZS_IDX_UNDEFINED){ // is arg...
@@ -211,6 +228,42 @@ namespace zetscript{
 					}
 				}
 			 }
+
+			 // check pre self operation (only allowed on indentifiers...
+			 if(
+					 token_node->pre_self_operation_type != PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN
+					 && token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER
+			){
+					writeError(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers ",eval_info_pre_post_self_operations[ token_node->pre_self_operation_type].str);
+					return NULL;
+			 }
+
+			 // check pre operators...
+			 if((   token_node->pre_operator_type == PreOperatorType::PRE_OPERATOR_TYPE_NEG
+			    || token_node->pre_operator_type == PreOperatorType::PRE_OPERATOR_TYPE_POS)
+			     )
+			 {
+				  if(is_constant_number){
+					  token_node->pre_operator_type =PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
+				  }else if(token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
+					writeError(eval_data->current_parsing_file,line ,"+/- pre operator not allowed before \"%s\". Only allowed on constants numbers or identifiers",str_value.c_str(),eval_info_pre_operators[ token_node->pre_self_operation_type].str);
+					return NULL;
+				  }
+			 }
+
+			 if((   token_node->pre_operator_type == PreOperatorType::PRE_OPERATOR_TYPE_NEG
+			    || token_node->pre_operator_type == PreOperatorType::PRE_OPERATOR_TYPE_POS)
+			     )
+			 {
+
+				  if(is_constant_boolean){ // consume pre operator
+					  token_node->pre_operator_type =PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
+				  }else if(token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
+					writeError(eval_data->current_parsing_file,line ,"+/- pre operator not allowed before \"%s\". only allowed on constants booleans or identifiers ",str_value.c_str(),eval_info_pre_operators[ token_node->pre_self_operation_type].str);
+					return NULL;
+				  }
+			 }
+
 			token_node->value = str_value;
 			token_node->instructions.push_back(new EvaluatedInstruction(ByteCode::BYTE_CODE_LOAD,load_type,(intptr_t)obj,scope_type));
 
@@ -272,9 +325,11 @@ namespace zetscript{
 			// If this functions finds ';' then the function will generate ast.
 
 			std::vector<TokenNode> expression_tokens;
-			PreOperatorType pre_op = PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
-			OperatorType op = OperatorType::OPERATOR_TYPE_UNKNOWN;
-			KeywordType keyword;
+			PreOperatorType pre_operator_type = PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
+			PrePostSelfOperationType pre_self_operation_type=PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN;
+			PrePostSelfOperationType post_self_operation_type=PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN;
+			OperatorType operator_type = OperatorType::OPERATOR_TYPE_UNKNOWN;
+			KeywordType keyword_type;
 			bool error=false;
 
 			bool is_first_access=false;
@@ -289,25 +344,42 @@ namespace zetscript{
 
 				TokenNode 	symbol_token_node
 							,operator_token_node;
-				keyword=KeywordType::KEYWORD_TYPE_UNKNOWN;
+				keyword_type=KeywordType::KEYWORD_TYPE_UNKNOWN;
 
-				// check pre operator (-,+,!)...
-				switch(pre_op=isPreOperatorType(aux_p)){
+				if((pre_self_operation_type=isPrePostSelfOperationType(aux_p)) != PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN){
+					switch(pre_self_operation_type){
+						default:
+							break;
+						case PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_DEC:
+						case PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_INC:
+							aux_p+=strlen(eval_info_pre_post_self_operations[pre_self_operation_type].str);
+							break;
+					}
+				}else{
 
-					default:
-						break;
-					case PreOperatorType::PRE_OPERATOR_TYPE_SUB:
-					case PreOperatorType::PRE_OPERATOR_TYPE_ADD:
-					case PreOperatorType::PRE_OPERATOR_TYPE_NOT:
-						aux_p+=strlen(eval_info_operators[pre_op].str);
-						break;
+					// check pre operator (-,+,!)...
+					switch(pre_operator_type=isPreOperatorType(aux_p)){
+						default:
+							break;
+						case PreOperatorType::PRE_OPERATOR_TYPE_NEG:
+						case PreOperatorType::PRE_OPERATOR_TYPE_POS:
+						case PreOperatorType::PRE_OPERATOR_TYPE_NOT:
+							aux_p+=strlen(eval_info_pre_operators[pre_operator_type].str);
+							break;
+					}
 				}
 
 				aux_p=ignoreBlanks(aux_p,line);
-				keyword=isKeywordType(aux_p);
+				keyword_type=isKeywordType(aux_p);
 
 				// parenthesis (evals another expression)
 				if(*aux_p=='('){ // inner expression (priority)
+
+					if(pre_self_operation_type != PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN){
+						writeError(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
+						return NULL;
+					}
+
 					std::vector<EvaluatedInstruction *> 	instruction_inner;
 					if((aux_p=evalExpression(eval_data,aux_p+1, line, scope_info, &instruction_inner))==NULL){
 						return NULL;
@@ -326,24 +398,19 @@ namespace zetscript{
 						return NULL;
 					}
 
+					if(pre_operator_type==PreOperatorType::PRE_OPERATOR_TYPE_NEG || pre_operator_type==PreOperatorType::PRE_OPERATOR_TYPE_NOT){
+						eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(ByteCode::BYTE_CODE_NEG));
+					}
+
 					aux_p=ignoreBlanks(aux_p+1,line);
 					operator_token_node.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
 
 				}
 				else{
-					IdentityOperatorType identity_pre_operator_type=IdentityOperatorType::IDENTITY_OPERATOR_TYPE_UNKNOWN;
-					IdentityOperatorType identity_post_operator_type=IdentityOperatorType::IDENTITY_OPERATOR_TYPE_UNKNOWN;
 
-					if(isOperatorTypeInc(aux_p)){
-						identity_pre_operator_type=IDENTITY_OPERATOR_TYPE_INC;
-						aux_p=ignoreBlanks(aux_p+2,line);
-					}
-					else if(isOperatorTypeDec(aux_p)){
-						identity_pre_operator_type=IDENTITY_OPERATOR_TYPE_DEC;
-						aux_p=ignoreBlanks(aux_p+2,line);
-					}
 
 					// pre operator identifier ...
+
 					// first call..
 					if(*aux_p=='['){ // std::vector object...
 
@@ -358,21 +425,28 @@ namespace zetscript{
 							return NULL;
 						}
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_DICTIONARY;
-					}else if(keyword == KeywordType::KEYWORD_TYPE_NEW){
+					}else if(keyword_type == KeywordType::KEYWORD_TYPE_NEW){
 
 						if((aux_p=evalNewObject(eval_data,aux_p,line,scope_info,instructions)) == NULL){
 							return NULL;
 						}
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_NEW_OBJECT;
 
-					}else if(keyword == KeywordType::KEYWORD_TYPE_FUNCTION){ // can be after instanceof or a function object..
+					}else if(keyword_type == KeywordType::KEYWORD_TYPE_FUNCTION){ // can be after instanceof or a function object..
 						if((aux_p=evalFunctionObject(eval_data,aux_p,line,scope_info,instructions)) == NULL){
 							return NULL;
 						}
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_FUNCTION_OBJECT;
 					}
-					else if((aux_p = evalSymbol(eval_data,aux_p,line,&symbol_token_node))==NULL){ // finally try EvalSymbol (it should be an identifier or literal)
+					else {
+						symbol_token_node.pre_self_operation_type=pre_self_operation_type;
+						symbol_token_node.pre_operator_type=pre_operator_type;
+						if((aux_p = evalSymbol(eval_data,aux_p,line,&symbol_token_node))==NULL){ // finally try EvalSymbol (it should be an identifier or literal)
 							return NULL;
+						}/*else{
+							// derefer preoperator...
+							pre_operator_type=PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
+						}*/
 					}
 
 					aux_p=ignoreBlanks(aux_p,line);
@@ -469,7 +543,7 @@ namespace zetscript{
 								}
 
 								//save_str_symbol_value=true;
-								//evaluated_function_current->script_function->instruction_source_info[symbol_token_node.instruction.size()]=ScriptFunction::InstructionSourceInfo(accessor_value,current_parsing_file,line);
+								//current_evaluated_function->script_function->instruction_source_info[symbol_token_node.instruction.size()]=ScriptFunction::InstructionSourceInfo(accessor_value,current_parsing_file,line);
 								//symbol_token_node.instruction.push_back(Instruction(ByteCode::BYTE_CODE_LOAD)); //--> must add symbol value instruction...
 								byte_code=ByteCode::BYTE_CODE_LOAD;
 								break;
@@ -495,7 +569,7 @@ namespace zetscript{
 
 						// add info to solve symbols first access (we need to put here because we have to know n params if function related)
 						symbol_token_node.instructions[0]->link_symbol_first_access=LinkSymbolFirstAccess(
-								eval_data->evaluated_function_current->script_function->idx_script_function
+								eval_data->current_evaluated_function->script_function->idx_script_function
 								,scope_info->idx_scope
 								,symbol_token_node.value
 								,params // only if first access is a function...
@@ -509,19 +583,15 @@ namespace zetscript{
 							,getCompiledSymbol(eval_data,symbol_token_node.value)
 						);
 
+						if((post_self_operation_type=isPrePostSelfOperationType(aux_p))!= PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN){
+							aux_p+=strlen(eval_info_pre_post_self_operations[post_self_operation_type].str);
+						}
 
-						if(isOperatorTypeInc(aux_p)){
-							identity_post_operator_type=IDENTITY_OPERATOR_TYPE_INC;
-							aux_p=ignoreBlanks(aux_p+2,line);
-						}
-						else if(isOperatorTypeDec(aux_p)){
-							identity_post_operator_type=IDENTITY_OPERATOR_TYPE_DEC;
-							aux_p=ignoreBlanks(aux_p+2,line);
-						}
+						ignoreBlanks(aux_p,line);
 
 						// pre/post operator...
-						symbol_token_node.identity_pre_operator_type = identity_pre_operator_type;
-						symbol_token_node.identity_post_operator_type = identity_post_operator_type;
+						symbol_token_node.pre_self_operation_type = pre_self_operation_type;
+						symbol_token_node.post_self_operation_type = post_self_operation_type;
 					}
 				}
 
@@ -530,18 +600,18 @@ namespace zetscript{
 				aux_p=ignoreBlanks(aux_p,line);
 
 				if(!isEndExpression(aux_p)){ // if not end expression then a operator is expected...
-					op=isOperatorType(aux_p);
+					operator_type=isOperatorType(aux_p);
 
-					if(op==OperatorType::OPERATOR_TYPE_UNKNOWN){
+					if(operator_type==OperatorType::OPERATOR_TYPE_UNKNOWN){
 						writeError(eval_data->current_parsing_file,line ,"Expected operator");
 						return NULL;
 					}
 
-					operator_token_node.operator_type=op;
+					operator_token_node.operator_type=operator_type;
 					operator_token_node.token_type=TokenType::TOKEN_TYPE_OPERATOR;
 
 					expression_tokens.push_back(operator_token_node);
-					aux_p+=strlen(eval_info_operators[op].str);
+					aux_p+=strlen(eval_info_operators[operator_type].str);
 				}
 
 				aux_p=ignoreBlanks(aux_p,line);

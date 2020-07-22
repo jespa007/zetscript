@@ -17,7 +17,7 @@ Date: XX-XX-2019
 #74 vectors are not deallocated if they are initialized on functions and declared as global (may be it has to deallocate on clearGlobalVariables ?)
 #75 create vars within for/while scope gives memory leaks and there's no control about nomber of open/close claudators on main function 
 #76 Fix print parent variable on access member error
- 
+#78 Allow N instances of zetscript instead of single one 
 #80 initialize vars within class doesn't tell any error or warning 
 #81 Fixed final parentesis/claudator lack detector 
 #82 Allow "this" do assign or pass parameter as well as any object 
@@ -42,28 +42,35 @@ Date: XX-XX-2019
 
 #101 Adapt inheritance feature developed on 1.1.3 version
 #102 Bug: can use variable before define var itself
-> #103 Reworked parse + compile in one single optimized step
+> #103 Adapt foreach to for(.. in .. )
+#105 Get rid AST Node limitation
+#106 Study whether is posible parse + compile in single step 
+> #107 Way to get the symbol_value at run time without ASTNode 
+#108 Wayt to get filename + line without AST_NODE 
+#109 Optimize parseExpression 
 #110 Change concept structure by dictionary
+#112 replace std::bind 
 #116 CMakeLists: Make permament static link and add -DFCOMPILE
 
 #114 Turn CZetScript class into helper functions inside zetscript namespace enhancement feature
 #115 Rename "zetscript" namespace to "zs"
 #117 Make MACROS register_C_XXXX all uppercase
  
-> #119 CEval as eval (all functions are C functions within zs member)
+#119 CEval as eval (all functions are C functions within zs member)
 #118 split CZetScriptUtils file in io_utils, path_utils, logger as static function
 
- 
- 
 #113 Replace try/catch by getError (canceled)
-> #120 Put all common function used by user in zs namespace and the rest in zs::core
-> #121 CEval,CScriptClassFactory and CZetScript as instanceable
-> #122 Restore CScriptClassFactory
+#120 Put all common function used by user in zs namespace and the rest in zs::core
+#121 CEval,CScriptClassFactory and CZetScript as instanceable
+#122 Restore CScriptClassFactory
 
+> #125 Implement String class with string function utils and string methods (PART1)
 #126 Save pure c function instead of std::function for speed improvement  
 #128 Implement register_c_function_as_member 
-> #129 Migrate new C++ coding style 
- 
+#129 Migrate new C++ coding style 
+> #133 Perform SUB instead of NEG+ADD
+> #134 Implement Math class with math function utils (PART1)
+> #135 eval negative identifier and constants tokens and perform LOAD with negative option or load negative constants instead of doing NEG.
 
 Other: Lot of clean code up. 
 
