@@ -68,9 +68,9 @@ Date: XX-XX-2019
 #126 Save pure c function instead of std::function for speed improvement  
 #128 Implement register_c_function_as_member 
 #129 Migrate new C++ coding style 
-> #133 Perform SUB instead of NEG+ADD
+#133 Perform SUB instead of NEG+ADD
 > #134 Implement Math class with math function utils (PART1)
-> #135 eval negative identifier and constants tokens and perform LOAD with negative option or load negative constants instead of doing NEG.
+#135 eval negative identifier and constants tokens and perform LOAD with negative option or load negative constants instead of doing NEG.
 
 Other: Lot of clean code up. 
 
