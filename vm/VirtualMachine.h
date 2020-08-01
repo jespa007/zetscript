@@ -25,60 +25,7 @@ namespace zetscript{
 	class ZetScript;
 	class  VirtualMachine{
 
-		//===================================================================================================
-		//
-		// POINTER MANAGER ...
-		//
-
-		typedef struct {
-			PInfoSharedPointerNode first, last;
-		}InfoSharedList;
-
-		InfoSharedList zero_shares[MAX_FUNCTION_CALL];
-		InfoSharedList shared_var[MAX_FUNCTION_CALL];
-
-		//===================================================================================================
-
-		typedef struct{
-			ByteCode byte_code;
-			const char *str;
-		}OpCodeInfo;
-
-		ScriptFunction  *main_function_object;
-		ScriptFunction 	**script_functions;
-		unsigned				size_vec_script_function_object_node;
-
-
-		int idx_stk_current;
-		int idx_last_statment;
-		const ScriptFunction *current_call_c_function;
-		ZetScript *zs;
-		ScriptFunctionFactory *script_function_factory;
-		ScriptClassFactory 	*script_class_factory;
-
-		float f_return_value;
-		std::string s_return_value;
-		StackElement stk_aux;
-
-		StackElement  callFunctionInternal(
-				ScriptFunction *info_function,
-				ScriptVar * this_object,
-				bool & error,
-				StackElement 		  * _ptrStartOp=NULL,
-				std::string 		  		  * _ptrStartStr=NULL,
-				unsigned char n_args=0,
-				Instruction *calling_instruction = NULL);
-
-		bool cancel_execution;
-		const char *custom_error;
-
-
 	public:
-
-		//===================================================================================================
-		//
-		// POINTER MANAGER ...
-		//
 
 		PInfoSharedPointerNode newSharedPointer(ScriptVar *var_ptr);
 		bool sharePointer( PInfoSharedPointerNode _node);
@@ -103,17 +50,18 @@ namespace zetscript{
 		void clearGlobalVars();
 
 		 StackElement callFunction(
-			 ScriptFunction *script_function,
-			 ScriptVar *this_object,
-			 bool & error,
-			const std::vector<StackElement> &  argv=NO_PARAMS
+			 ScriptFunction *script_function
+			 ,ScriptVar *this_object
+			 ,bool & error
+			 ,StackElement *  stk_params=NULL
+			 ,short			n_stk_params=0
 		);
 
 		StackElement *getLastStackValue();
 		StackElement * getStackElement(unsigned int idx_glb_element);
 
-		void buildCache();
-		void destroyCache();
+		//void buildCache();
+		//void destroyCache();
 
 		void cancelExecution();
 		void setError(const char *str);
@@ -123,8 +71,28 @@ namespace zetscript{
 
 	private:
 
+		//===================================================================================================
+		//
+		// POINTER MANAGER ...
+		//
+
+		typedef struct {
+			PInfoSharedPointerNode first, last;
+		}InfoSharedList;
+
+		InfoSharedList zero_shares[MAX_FUNCTION_CALL];
+		InfoSharedList shared_var[MAX_FUNCTION_CALL];
+
+		//===================================================================================================
+
+		typedef struct{
+			ByteCode byte_code;
+			const char *str;
+		}OpCodeInfo;
+
+
 		struct VM_Scope{
-			short				index;
+			Scope				*scope;
 			ScriptFunction 		*script_function;
 			StackElement 		*stk_local_vars;
 			unsigned char 		properties;
@@ -147,7 +115,7 @@ namespace zetscript{
 
 		 std::string		aux_string_param[MAX_N_ARGS]; // for std::string params...
 
-		 VM_Scope		*vm_scope_current;
+		 VM_Scope		*vm_current_scope;
 		 VM_Scope		vm_scope[VM_SCOPE_MAX];
 		 VM_Scope		*vm_scope_max;
 
@@ -160,8 +128,38 @@ namespace zetscript{
 		 int n_globals;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
-		 std::vector<StackElement> global_var;
+		 //zs_vector *stk_globals;
 		StackElement *stk_current;
+
+
+		ScriptFunction  *main_function_object;
+		ScriptFunction 	**script_functions;
+		unsigned				size_vec_script_function_object_node;
+
+
+		int idx_stk_current;
+		int idx_last_statment;
+		const ScriptFunction *current_call_c_function;
+		ZetScript *zs;
+		ScriptFunctionFactory *script_function_factory;
+		ScriptClassFactory 	*script_class_factory;
+
+		float f_return_value;
+		std::string s_return_value;
+		StackElement stk_aux;
+
+		bool cancel_execution;
+		const char *custom_error;
+
+
+		StackElement  callFunctionInternal(
+				ScriptFunction *info_function,
+				ScriptVar * this_object,
+				bool & error,
+				StackElement 		  * _ptrStartOp=NULL,
+				std::string 		  		  * _ptrStartStr=NULL,
+				unsigned char n_args=0,
+				Instruction *calling_instruction = NULL);
 
 
 		 StackElement  callFunction_C(
@@ -188,8 +186,8 @@ namespace zetscript{
 			,Instruction *instruction
 			,Instruction * call_ale_instruction
 
-			,std::vector<FunctionSymbol> *function_symbol
-			,std::vector<ScriptFunction *> *global_functions
+			,zs_vector *function_symbols // list of function symbols...
+			,zs_vector *global_functions // list of script functions...
 
 			,bool is_constructor
 			,const std::string & symbol_to_find

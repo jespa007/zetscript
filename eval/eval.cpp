@@ -125,16 +125,10 @@ B <- [E;|K]* // A set of expressions ended with ; or KeywordType
 #define print_eval_cr(s,...)
 #endif
 
-#include "eval_parser.cpp"
 #include "eval_data.cpp"
 #include "eval_object.cpp"
 #include "eval_expression.cpp"
 #include "eval_keyword.cpp"
-
-
-
-
-
 
 namespace zetscript{
 
@@ -169,30 +163,70 @@ namespace zetscript{
 			return !error;
 		}
 
+		Scope * evalNewScope(EvalData *eval_data, Scope *scope_parent, bool entry_function){
+			Scope *new_scope = NEW_SCOPE(eval_data,scope_parent);
+			scope_parent->registered_scopes->push_back((intptr_t)new_scope);
+
+			if(entry_function==false){
+				new_scope->tmp_idx_instruction_push_scope=eval_data->current_function->instructions.size();
+			}
+			//new_scope->eval_scope_tmp = new EvalScope(new_scope);
+			return new_scope;//(EvalScope *)new_scope->eval_scope_tmp;
+		}
+
+		void evalCheckScope(EvalData *eval_data, Scope *scope){
+			if(scope->registered_symbols->count > 0){ // if there's local symbols insert push/pop scope for there symbols
+				if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
+					eval_data->current_function->instructions.insert(
+							eval_data->current_function->instructions.begin()+scope->tmp_idx_instruction_push_scope
+							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE)
+					);
+
+					// update all jmp instructions + 1 (because push scope instruction has inserted)
+					for(unsigned i=0; eval_data->current_function->jmp_instructions.size(); i++){
+						eval_data->current_function->jmp_instructions[i]->vm_instruction.value_op2++;
+					}
+
+					// and finally insert pop scope
+					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE));
+				}
+			}
+			else{ // remove scope
+				scope->markAsUnusued();
+			}
+		}
+
+		/*Scope * popScope(EvalData *eval_data, Scope *current_scope){
+
+			//Scope *current_scope = scope_info->idx_scope_base)->idx_scope_ptr_current);
+			if(current_scope->scope_parent != NULL){
+				return GET_SCOPE(eval_data,GET_SCOPE(eval_data,scope_info->idx_scope_base)->idx_scope_ptr_current);
+			}
+
+			return NULL;
+		}*/
+
 		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error, bool entry_function){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 
 			//Scope *_localScope =  scope_info != NULL ? scope_info->symbol_info.ast->scope_info_ptr: NULL;
-			Scope *current_scope=  NULL;
+			Scope *new_scope_info=  NULL;
 			aux_p=ignoreBlanks(aux_p,line);
 
 			// check for keyword ...
 			if(*aux_p == '{'){
 				aux_p++;
 
-				current_scope =scope_info->getScopePtrCurrent();
-				current_scope = scope_info->pushScope(); // special case... ast is created later ...
-
-				if(entry_function==false){
-					eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_PUSH_SCOPE));
-				}
+				//current_scope = getScopePtrCurrent(eval_data,scope_info);
+				new_scope_info = evalNewScope(eval_data,scope_info,entry_function); // special case... ast is created later ...
 
 				if((aux_p = evalRecursive(
 						eval_data
 						,aux_p
 						, line
-						, current_scope,error
+						, new_scope_info
+						,error
 				)) != NULL){
 					if(error){
 						return NULL;
@@ -204,12 +238,11 @@ namespace zetscript{
 						return NULL;
 					}
 
-
-						scope_info->popScope();
-
 					if(entry_function==false){
-						eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_POP_SCOPE));
+						evalCheckScope(eval_data,new_scope_info);
 					}
+
+					//scope_info->popScope();
 					return aux_p+1;
 				}
 			}
@@ -337,7 +370,7 @@ namespace zetscript{
 									,aux
 									,line
 									, scope_info
-									,&eval_data->current_evaluated_function->instructions
+									,&eval_data->current_function->instructions
 							)) == NULL){ // something wrong was happen.
 								THROW_SCRIPT_ERROR();
 								return NULL;
@@ -362,22 +395,22 @@ namespace zetscript{
 		}
 
 		void pushFunction(EvalData *eval_data,ScriptFunction *script_function){
-			eval_data->evaluated_functions.push_back(eval_data->current_evaluated_function=new EvaluatedFunction(script_function));
+			eval_data->functions.push_back(eval_data->current_function=new EvalFunction(script_function));
 		}
 
 		void popFunction(EvalData *eval_data){
-			eval_data->current_evaluated_function->script_function->instruction=NULL;
+			eval_data->current_function->script_function->instructions=NULL;
 
 			// get total size op + 1 ends with NULL
-			size_t size = (eval_data->current_evaluated_function->instructions.size() + 1) * sizeof(Instruction);
-			eval_data->current_evaluated_function->script_function->instruction = (PtrInstruction)malloc(size);
-			memset(eval_data->current_evaluated_function->script_function->instruction, 0, size);
+			size_t size = (eval_data->current_function->instructions.size() + 1) * sizeof(Instruction);
+			eval_data->current_function->script_function->instructions = (PtrInstruction)malloc(size);
+			memset(eval_data->current_function->script_function->instructions, 0, size);
 
-			for(unsigned i=0; i < eval_data->current_evaluated_function->instructions.size(); i++){
+			for(unsigned i=0; i < eval_data->current_function->instructions.size(); i++){
 
-				SymbolInfo *vis=NULL;
-				EvaluatedInstruction *evaluated_instruction = eval_data->current_evaluated_function->instructions[i];
-				LinkSymbolFirstAccess *ls=&evaluated_instruction->link_symbol_first_access;
+				Symbol *vis=NULL;
+				EvalInstruction *instruction = eval_data->current_function->instructions[i];
+				LinkSymbolFirstAccess *ls=&instruction->link_symbol_first_access;
 
 				if(ls->idx_script_function != ZS_IDX_UNDEFINED){ // solve first symbol first access...
 
@@ -385,7 +418,7 @@ namespace zetscript{
 					ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
 
-					if(evaluated_instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
+					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
 
 						// is automatically created on vm...
 						if(ls->n_params==NO_PARAMS_IS_VARIABLE){
@@ -393,36 +426,36 @@ namespace zetscript{
 								THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find variable %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
 								return;
 							}*/
-							evaluated_instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED;//vis->idx_symbol;
+							instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED;//vis->idx_symbol;
 						}
 						else{
-							if((evaluated_instruction->vm_instruction.value_op2=(intptr_t)sc->getFunction(ls->value,sc->symbol_info.symbol->idx_scope,ls->n_params))==0){
-								THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
+							if((instruction->vm_instruction.value_op2=(intptr_t)sc->getFunctionMember(ls->value,ls->n_params))==0){
+								THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find function %s::%s",sf->symbol.name.c_str(),ls->value.c_str()));
 								return;
 							}
 						}
 
-					}else if(evaluated_instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER){ // trivial super.
+					}else if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER){ // trivial super.
 
 						ScriptFunction *sf_found=NULL;
-						std::string str_symbol_to_find = sf->symbol_info.symbol->name;
+						std::string str_symbol_to_find = sf->symbol.name;
 
-						for(int i = sf->symbol_info.idx_symbol-1; i >=0 && sf_found==NULL; i--){
-
+						for(int i = sf->symbol.idx_position-1; i >=0 && sf_found==NULL; i--){
+							ScriptFunction *function_member = (ScriptFunction *)sc->function_members->items[i];
 							if(
-									(ls->n_params == (int)sc->local_function[i]->arg_info.size())
-								&& (str_symbol_to_find == sc->local_function[i]->symbol_info.symbol->name)
+									(ls->n_params == function_member->function_params->count)
+								&& (str_symbol_to_find == function_member->symbol.name)
 								){
-								sf_found = sc->local_function[i];
+								sf_found = function_member;
 							}
 						}
 
 						// ok get the super function...
 						if(sf_found == NULL){
-							THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find super function %s::%s",sf->symbol_info.symbol->name.c_str(),ls->value.c_str()));
+							THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find super function %s::%s",sf->symbol.name.c_str(),ls->value.c_str()));
 							return;
 						}
-						evaluated_instruction->vm_instruction.value_op2=(intptr_t)sf_found;
+						instruction->vm_instruction.value_op2=(intptr_t)sf_found;
 
 					}else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // not argument ...
 						// trivial super.else{ // find local/global/argument var/function ...
@@ -430,21 +463,21 @@ namespace zetscript{
 						LoadType load_type=LoadType::LOAD_TYPE_UNDEFINED;
 
 						// try find local symbol  ...
-						Scope *scope=GET_SCOPE(eval_data,ls->idx_scope);
+						Scope *scope=ls->scope;
 						Symbol * sc_var = scope->getSymbol(ls->value, ls->n_params);
 
 						// search for local
 						if(sc_var != NULL){
 							if(ls->n_params==NO_PARAMS_IS_VARIABLE){
-								if((vis=sf->getVariable(ls->value,sc_var->idx_scope))!=NULL){
+								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
 									load_type=LoadType::LOAD_TYPE_VARIABLE;
-									evaluated_instruction->vm_instruction.value_op2=vis->idx_symbol;
+									instruction->vm_instruction.value_op2=vis->idx_position;
 									local_found=true;
 								}
 							}
 							else{
 
-								if((evaluated_instruction->vm_instruction.value_op2=(intptr_t)sf->getFunction(ls->value,sc_var->idx_scope,ls->n_params))!=0){
+								if((instruction->vm_instruction.value_op2=(intptr_t)sf->getFunction(sc_var->scope,ls->value,ls->n_params))!=0){
 									load_type=LoadType::LOAD_TYPE_FUNCTION;
 									local_found =true;
 								}
@@ -457,17 +490,17 @@ namespace zetscript{
 							if(sc_var != NULL){
 								if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 
-									if((vis=MAIN_FUNCTION(eval_data)->getVariable(ls->value,sc_var->idx_scope))==NULL){
+									if((vis=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value))==NULL){
 										THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find variable \"%s\"",ls->value.c_str()));
 										return;
 									}
 
 									load_type=LoadType::LOAD_TYPE_VARIABLE;
-									evaluated_instruction->vm_instruction.value_op2=vis->idx_symbol;
+									instruction->vm_instruction.value_op2=vis->idx_position;
 								}
 								else{
 
-									if((evaluated_instruction->vm_instruction.value_op2=(intptr_t)MAIN_FUNCTION(eval_data)->getFunction(ls->value,sc_var->idx_scope,ls->n_params))==0){
+									if((instruction->vm_instruction.value_op2=(intptr_t)MAIN_FUNCTION(eval_data)->getFunction(sc_var->scope,ls->value,ls->n_params))==0){
 										THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find function \"%s\"",ls->value.c_str()));
 										return;
 									}
@@ -477,41 +510,36 @@ namespace zetscript{
 							}
 						}
 
-						evaluated_instruction->vm_instruction.value_op1=load_type;
+						instruction->vm_instruction.value_op1=load_type;
 
 						if(load_type==LoadType::LOAD_TYPE_FUNCTION){
-							ScriptFunction *sf = ((ScriptFunction *)evaluated_instruction->vm_instruction.value_op2);
-							if((sf->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != 0){ // function will be solved at run time because it has to check param type
-								evaluated_instruction->vm_instruction.value_op2=ZS_IDX_SYMBOL_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
+							ScriptFunction *sf = ((ScriptFunction *)instruction->vm_instruction.value_op2);
+							if((sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0){ // function will be solved at run time because it has to check param type
+								instruction->vm_instruction.value_op2=ZS_IDX_SYMBOL_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
 							}
 						}
 					}
 				}
 
 				// save instruction ...
-
-				eval_data->current_evaluated_function->script_function->instruction[i]=evaluated_instruction->vm_instruction;
-
+				eval_data->current_function->script_function->instructions[i]=instruction->vm_instruction;
 
 				// symbol value to save at runtime ...
-				if(evaluated_instruction->instruction_source_info.str_symbol != NULL){
-					eval_data->current_evaluated_function->script_function->instruction_source_info[i]=evaluated_instruction->instruction_source_info;
+				if(instruction->instruction_source_info.str_symbol != NULL){
+					eval_data->current_function->script_function->instruction_source_info[i]=instruction->instruction_source_info;
 				}
 			}
 
-			eval_data->current_evaluated_function->script_function->linkScopeBlockVars();
+			//eval_data->current_function->script_function->linkScopeBlockVars();
 
 			// delete and popback function information...
-			delete eval_data->current_evaluated_function;
-			eval_data->evaluated_functions.pop_back();
+			delete eval_data->current_function;
+			eval_data->functions.pop_back();
 
-			eval_data->current_evaluated_function = NULL;
-			if(eval_data->evaluated_functions.size() > 0){
-				eval_data->current_evaluated_function = eval_data->evaluated_functions.at(eval_data->evaluated_functions.size()-1);
+			eval_data->current_function = NULL;
+			if(eval_data->functions.size() > 0){
+				eval_data->current_function = eval_data->functions.at(eval_data->functions.size()-1);
 			}
 		}
 	}
-
 }
-
-

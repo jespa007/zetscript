@@ -1,15 +1,15 @@
 namespace zetscript{
 	namespace eval{
 
-		char *evalExpression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvaluatedInstruction *> 	* instructions);
+		char *evalExpression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions);
 
-		char * evalFunctionObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvaluatedInstruction *> 		*	instructions){
+		char * evalFunctionObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
 			// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 
 			return NULL;
 		}
 
-		char * evalDictionaryObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvaluatedInstruction *> 		*	instructions){
+		char * evalDictionaryObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 				char *aux_p = (char *)s;
@@ -73,7 +73,7 @@ namespace zetscript{
 		}
 
 
-		char * evalVectorObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvaluatedInstruction *> *	instruction){
+		char * evalVectorObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvalInstruction *> *	instruction){
 
 			char * aux_p=ignoreBlanks(s,line);
 
@@ -105,7 +105,7 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		char * evalNewObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvaluatedInstruction *> 		*	instruction){
+		char * evalNewObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instruction){
 
 			char *aux_p = (char *)s;
 			std::string symbol_value;
@@ -126,7 +126,7 @@ namespace zetscript{
 					aux_p=ignoreBlanks(aux_p+strlen(eval_info_keywords[key_w].str),line);
 					// try get symbol ...++++
 
-					eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_NEW));
+					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_NEW));
 
 					if((aux_p=getIdentifierToken(
 							eval_data
@@ -181,16 +181,16 @@ namespace zetscript{
 					 }
 
 					 // get constructor function
-					 constructor_function=sc->getFunction("constructor",sc->symbol_info.symbol->idx_scope,n_args);
+					 constructor_function=sc->getFunctionMember(FUNCTION_MEMBER_CONSTRUCTOR_NAME,n_args);
 
 					 // if constructor function found insert call function...
 					 if(constructor_function != NULL){
 
-						 eval_data->current_evaluated_function->instructions.push_back(
-								 new EvaluatedInstruction(
+						 eval_data->current_function->instructions.push_back(
+								 new EvalInstruction(
 										 BYTE_CODE_CALL
 										 ,ZS_IDX_UNDEFINED
-										 ,constructor_function->symbol_info.idx_symbol // idx function member
+										 ,constructor_function->symbol.idx_position // idx function member
 										// ,MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL
 								)
 						 );

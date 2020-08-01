@@ -1,6 +1,8 @@
 function fibR(n)
 {
-    if (n < 2) { 
+	var b=0;
+    if (n < 2) {
+		var i=0;
      	return n; 
     }
 

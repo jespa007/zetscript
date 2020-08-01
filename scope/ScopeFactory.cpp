@@ -7,9 +7,10 @@ namespace zetscript{
 
 	ScopeFactory::ScopeFactory(ZetScript *zs){
 		this->zs=zs;
+		main_scope = newScope(NULL,false);
 	}
 
-	Scope *	 ScopeFactory::newScope(short idx_scope_parent,bool is_c_node){
+	Scope *	 ScopeFactory::newScope(Scope * scope_parent,bool is_c_node){
 
 		if(is_c_node){
 			if(scopes.size() > 1){ // if greather than 1 check if node consecutive...
@@ -20,20 +21,12 @@ namespace zetscript{
 			}
 		}
 
-		Scope * scope_node = new Scope(this->zs,(short)scopes.size(), idx_scope_parent,is_c_node);
+		Scope * scope_node = new Scope(this->zs,scope_parent,is_c_node);
 		scopes.push_back(scope_node);
 		return scope_node;
 	}
 
 
-	Scope 		* ScopeFactory::getScope(short idx){
-		if(idx < 0 || (unsigned)idx >= scopes.size()){
-			THROW_RUNTIME_ERROR("Scope node out of bound");
-			return NULL;
-		}
-
-		return scopes.at(idx);
-	}
 
 	std::vector<Scope *> 	*		ScopeFactory::getScopes(){
 		return &scopes;
@@ -46,11 +39,8 @@ namespace zetscript{
 			end=info_scope->is_c_node || scopes.size()==1;
 
 			if(!end){
-
-
 				scopes.pop_back();
 				delete info_scope;
-
 			}
 
 		}while(!end);

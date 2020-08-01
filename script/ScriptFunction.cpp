@@ -1,12 +1,42 @@
-/*
- *  This file is distributed under the MIT License.
- *  See LICENSE file for details.
- */
 #include "zetscript.h"
 
 #define FORMAT_PRINT_INSTRUCTION "%04i"
 
 namespace zetscript{
+
+	ScriptFunction::ScriptFunction(
+			ZetScript * _zs
+			,unsigned char _idx_class
+			,short _idx_script_function
+			, std::vector<FunctionParam> _function_params
+			,int _idx_return_type
+			,Symbol *_symbol
+		) {
+		// function data...
+		idx_class=_idx_class;
+		idx_script_function=_idx_script_function;
+		idx_return_type = _idx_return_type;
+
+		instructions=NULL;
+
+		symbol=*_symbol;
+
+		// local symbols for class or function...
+		registered_symbols=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
+		registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
+		function_params = new zs_vector();
+		for(unsigned i = 0; i < _function_params.size(); i++){
+			FunctionParam *script_param = new FunctionParam();
+			*script_param=_function_params[i];
+			function_params->push_back((intptr_t)script_param);
+		}
+
+		// factories
+		zs = _zs;
+		scope_factory = zs->getScopeFactory();
+		script_function_factory= zs->getScriptFunctionFactory();
+		script_class_factory=zs->getScriptClassFactory();
+	}
 
 	std::string ScriptFunction::formatInstructionLoadType(ScriptFunction *current_function,PtrInstruction list_statements, int current_instruction){
 
@@ -77,18 +107,18 @@ namespace zetscript{
 		std::string post="";
 
 		// first print functions  ...
-		std::vector<ScriptFunction *> * m_vf = &sfo->local_function;
+		zs_vector * m_vf = sfo->registered_functions;
 
-		for(unsigned j =0; j < m_vf->size(); j++){
+		for(unsigned j =0; j < m_vf->count; j++){
 
-			ScriptFunction *local_irfs = (*m_vf)[j];
+			ScriptFunction *local_irfs = (ScriptFunction *)m_vf->items[j];
 
-			if(( local_irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
-				printGeneratedCode(m_vf->at(j));
+			if(( local_irfs->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+				printGeneratedCode((ScriptFunction *)m_vf->items[j]);
 			}
 		}
 
-		if(sfo->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
+		if(sfo->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
 		}
 
@@ -98,10 +128,10 @@ namespace zetscript{
 
 		if(sfo->idx_class!=ZS_INVALID_CLASS){
 			ScriptClass *sc = GET_SCRIPT_CLASS(sfo,sfo->idx_class);
-			if(sc->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
-				symbol_ref=sfo->symbol_info.symbol->name;
+			if(sc->idx_class == ZS_IDX_UNDEFINED){ // no class is a function on a global scope
+				symbol_ref=sfo->symbol.name;
 			}else{
-				symbol_ref=sfo->symbol_info.symbol->name+std::string("::")+std::string("????");
+				symbol_ref=sfo->symbol.name+std::string("::")+std::string("????");
 			}
 		}
 
@@ -116,7 +146,7 @@ namespace zetscript{
 		}*/
 
 		unsigned idx_instruction=0;
-		for(Instruction * instruction=sfo->instruction; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
+		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
 
 			int n_ops=0;
 			int value_op1 = instruction->value_op1;
@@ -164,7 +194,7 @@ namespace zetscript{
 						,idx_instruction,
 						ByteCodeToStr(instruction->byte_code),
 						pre.c_str(),
-						formatInstructionLoadType(sfo,sfo->instruction,idx_instruction).c_str(),
+						formatInstructionLoadType(sfo,(Instruction *)sfo->instructions,idx_instruction).c_str(),
 						post.c_str());
 				break;
 			case BYTE_CODE_JNT:
@@ -216,78 +246,7 @@ namespace zetscript{
 				break;
 			}
 		}
-
-
-
 	 }
-
-
-	void ScriptFunction::linkScopeBlockVars(){
-
-		 struct ScopeBlockVarsRegisterHelper{
-			 int idx_scope;
-			 std::vector<int> idx_local_var;
-		 };
-
-		if(symbol_info.symbol->idx_scope < 0){ // just ignore. it could be undefined or C
-			return;
-		}
-
-		if(local_variable.size() == 0){ // no elements, return...
-			return;
-		}
-
-		if(scope_block_vars != NULL){ // free if already allocated.
-			free(scope_block_vars);
-			scope_block_vars=NULL;
-			n_scope_block_vars=0;
-		}
-
-		/// PRE: base_class_irfs must be info of root class.
-		 //bool is_main_function = symbol_info.symbol->idx_scope == IDX_GLOBAL_SCOPE;
-
-		 //std::vector<Scope *> *list = scope_factory->getScopes();
-		 std::vector<ScopeBlockVarsRegisterHelper> vec_ivsb;
-		 std::map<short,ScopeBlockVarsRegisterHelper> map_scope_register;
-
-		 for(unsigned idx_local_var = 0;idx_local_var < local_variable.size(); idx_local_var++){ // register index var per scope ...
-
-			map_scope_register[local_variable[idx_local_var].symbol->idx_scope].idx_scope=local_variable[idx_local_var].symbol->idx_scope;
-			map_scope_register[local_variable[idx_local_var].symbol->idx_scope].idx_local_var.push_back(idx_local_var);
-		 }
-
-
-		 scope_block_vars = (ScopeBlockVars*)malloc(map_scope_register.size()*sizeof(ScopeBlockVars));
-		 memset(scope_block_vars,0,map_scope_register.size()*sizeof(ScopeBlockVars));
-		 n_scope_block_vars =map_scope_register.size();
-
-		 int i=0;
-		 for(std::map<short,ScopeBlockVarsRegisterHelper>::iterator e = map_scope_register.begin(); e != map_scope_register.end(); e++){
-
-			 ScopeBlockVarsRegisterHelper ivs = map_scope_register[e->first];
-
-			 scope_block_vars[i].idx_scope = ivs.idx_scope;
-			 scope_block_vars[i].n_local_vars = (char)ivs.idx_local_var.size();
-			 scope_block_vars[i].idx_local_var = (int *)malloc(sizeof(int)*ivs.idx_local_var.size());
-			 for(unsigned j = 0; j < ivs.idx_local_var.size(); j++){
-				 scope_block_vars[i].idx_local_var[j] = ivs.idx_local_var[j];
-			 }
-			 i++;
-		 }
-
-	}
-
-
-	ScriptFunction::ScriptFunction(ZetScript * _zs,unsigned char _idxClass):ScriptContext(_zs,_idxClass){
-		idx_return_type = ZS_IDX_UNDEFINED;
-		idx_script_function = ZS_IDX_UNDEFINED;
-		instruction=NULL;
-		scope_block_vars=NULL;
-		n_scope_block_vars=0;
-		//idx_local_function=ZS_IDX_UNDEFINED;
-
-	}
-
 
 	short 		 ScriptFunction::getInstructionLine(Instruction * ins){
 		InstructionSourceInfo *info=getInstructionInfo(ins);
@@ -319,9 +278,9 @@ namespace zetscript{
 	int ScriptFunction::existArgumentName(const std::string & arg_name){
 		int idx_arg=ZS_IDX_UNDEFINED;
 
-		for(unsigned i = 0; i < this->arg_info.size() && idx_arg == ZS_IDX_UNDEFINED; i++){
-
-			if(this->arg_info[i].arg_name == arg_name){
+		for(unsigned i = 0; i < this->function_params->count && idx_arg == ZS_IDX_UNDEFINED; i++){
+			FunctionParam *function_param=(FunctionParam *)this->function_params->items[i];
+			if(function_param->arg_name == arg_name){
 				idx_arg=i;
 			}
 		}
@@ -330,28 +289,164 @@ namespace zetscript{
 
 	}
 
+	Symbol * ScriptFunction::addSymbol(
+			 Scope * scope_block
+			, const std::string & file
+			, short line
+			, const std::string & symbol_name
+			, const std::string & c_type
+			, intptr_t ref_ptr
+			, unsigned short symbol_properties
+	){
+		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
-	SymbolInfo *	ScriptFunction::registerVariable(const std::string & file, short line, const std::string & variable_name, const std::string & c_type, intptr_t ref_ptr, unsigned short symbol_info_properties)
+		Symbol * symbol=NULL;
+		short idx_position=(short)registered_symbols->count;
+
+		if((symbol=scope_block->registerSymbol(file,line, symbol_name /*,var_node*/))==NULL){
+				return NULL;
+		}
+
+
+		/*if(getVariable(scope_symbol->name,scope_symbol->scope) != NULL){
+			THROW_RUNTIME_ERROR(zs_strutils::format("Variable \"%s\" already exist",variable_name.c_str()));
+			return NULL;
+		}*/
+
+		symbol->ref_ptr =ref_ptr;
+		//scope_symbol->symbol=scope_symbol;
+		symbol->c_type = c_type;
+		symbol->symbol_properties = symbol_properties;
+
+		symbol->idx_position = idx_position;
+
+		registered_symbols->push_back((intptr_t)symbol);
+
+		return symbol;
+	}
+
+	/*ScopeSymbolInfo *	ScriptFunction::registerVariable(
+			const std::string & file
+			, short line
+			, const std::string & variable_name
+			, const std::string & c_type
+			, intptr_t ref_ptr
+			, unsigned short symbol_properties)
 	{
-		SymbolInfo *vsi=ScriptContext::registerVariable(file,line,this->symbol_info.symbol->idx_scope,  variable_name,  c_type,  ref_ptr,   symbol_info_properties);
+			return registerVariable(
+					file
+					,line
+					,this->symbol_info.symbol->idx_scope
+					,  variable_name
+					,  c_type
+					,  ref_ptr
+					,   symbol_properties
+			);
+	}*/
 
-		StackElement se = {0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+	Symbol *	 ScriptFunction::getSymbol(Scope *scope,const std::string & symbol_name){
 
-		if(symbol_info_properties &  SYMBOL_INFO_PROPERTY_C_OBJECT_REF) // convert c ref var into stack element. This should be consistent in the whole execution.
-			se=convertSymbolInfoToStackElement(
-				this->zs,
-			 	vsi,
-				(void *)vsi->ref_ptr
+		if(registered_symbols->count>0){
+
+			// from lat value to first to get last override function...
+			for(int i = (int)registered_symbols->count-1; i >= 0 ; i--){
+				Symbol *symbol=(Symbol *)registered_symbols->items[i];
+				if((symbol->name == symbol_name)
+				&& (scope ==  NULL?true:(scope == symbol->scope))
+				  ){
+					return symbol;
+				}
+			}
+		}
+
+		return NULL;
+	}
+
+
+
+	ScriptFunction * ScriptFunction::addFunction(
+			 Scope * scope_block
+			,const std::string & file
+			, short line
+			, const std::string & function_name
+			, std::vector<FunctionParam> args
+			, int idx_return_type
+			,intptr_t ref_ptr
+			, unsigned short symbol_properties
+		){
+
+			if(getFunction(scope_block,function_name,(char)args.size()) != NULL){
+				THROW_RUNTIME_ERROR(zs_strutils::format("Function \"%s\" already exist",function_name.c_str()));
+				return NULL;
+			}
+
+			ScriptFunction *sf =  script_function_factory->newScriptFunction(
+					//---- Register data
+					 scope_block
+					,file
+					,line
+					//---- Function data
+					,idx_class 				// idx class which belongs to...
+					,registered_functions->count // idx symbol ...
+					,function_name
+					,args
+					,idx_return_type
+					,ref_ptr
+					,symbol_properties
 			);
 
-		virtual_machine->addGlobalVar(se);
+			registered_functions->push_back((intptr_t)sf);
 
-		return vsi;
-
+			return sf;
 	}
+
+	/*ScriptFunction * ScriptFunction::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<FunctionParam> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_properties){
+
+		return registerFunction(file, line,this->symbol_info.symbol->idx_scope, function_name,  args, idx_return_type,ref_ptr, symbol_properties);
+	}
+*/
+	ScriptFunction *	 ScriptFunction::getFunction(Scope * scope,const std::string & function_name,  char n_args){
+
+		if(registered_functions->count>0){
+
+			// from last value to first to get last override function...
+			for(unsigned i = (int)(registered_functions->count-1); i >= 0 ; i--){
+				ScriptFunction *sf=(ScriptFunction *)registered_functions->items[i];
+				if(
+						(sf->symbol.name == function_name)
+					 && (n_args == (int)sf->function_params->count)
+					 && (scope ==  NULL?true:(scope == sf->symbol.scope))
+					 ){
+
+					return sf;
+				}
+			}
+		}
+
+		return NULL;
+	}
+
 
 	ScriptFunction::~ScriptFunction(){
 
+		// delete local functions...
+		registered_functions->free_all_items_and_clear();
+		delete registered_functions;
+
+		// delete local variables...
+		for(unsigned i=0; i < registered_symbols->count; i++){
+			delete (Symbol *)registered_symbols->items[i];
+		}
+		delete registered_symbols;
+
+		// delete arg info variables...
+		for(unsigned i=0; i < function_params->count; i++){
+			delete (FunctionParam *)function_params->items[i];
+		}
+		delete function_params;
+
+		// delete arg info variables...
+		free(instructions);
 	}
 
 }

@@ -202,9 +202,9 @@
 		}\
 }
 
-#define PUSH_VM_SCOPE(_index,_ptr_info_function, _ptr_local_var,_properties) {\
-	if(vm_scope_current >=  vm_scope_max){writeError(NULL,0,"reached max scope"); RETURN_ERROR;}\
-	*vm_scope_current++={(short)(_index),_ptr_info_function,_ptr_local_var,_properties};\
+#define PUSH_VM_SCOPE(_scope,_ptr_info_function, _ptr_local_var,_properties) {\
+	if(vm_current_scope >=  vm_scope_max){writeError(NULL,0,"reached max scope"); RETURN_ERROR;}\
+	*vm_current_scope++={(Scope *)_scope,_ptr_info_function,_ptr_local_var,_properties};\
 }
 
 #define CALL_GC SHARED_LIST_DESTROY(zero_shares[idx_stk_current])
@@ -216,7 +216,7 @@ namespace zetscript{
 
 	void VirtualMachine::doStackDump(){
 		// derefer all variables in all scopes (except main )...
-		while(vm_scope<(vm_scope_current)){
+		while(vm_scope<(vm_current_scope)){
 			popVmScope(idx_stk_current,NULL,0);
 		}
 		idx_stk_current=0;
@@ -246,7 +246,7 @@ namespace zetscript{
 		cancel_execution=false;
 
 		stk_current=NULL;
-		vm_scope_current = vm_scope;
+		vm_current_scope = vm_scope;
 
 		f_aux_value1=0;
 		f_aux_value2=0;
@@ -275,6 +275,8 @@ namespace zetscript{
 		zs=_zs;
 		script_function_factory=this->zs->getScriptFunctionFactory();
 		script_class_factory=this->zs->getScriptClassFactory();
+		main_function_object = MAIN_FUNCTION(this);
+		//stk_globals=NULL;
 
 	}
 
@@ -357,7 +359,7 @@ namespace zetscript{
 
 	StackElement * VirtualMachine::getStackElement(unsigned int idx_glb_element){
 		ScriptFunction  *main_function = MAIN_FUNCTION(this);//GET_SCRIPT_FUNCTION(this,0);
-		if(idx_glb_element < main_function->local_variable.size()){
+		if(idx_glb_element < main_function->registered_symbols->count){
 			return &vm_stack[idx_glb_element];
 		}
 
@@ -375,7 +377,7 @@ namespace zetscript{
 		cancel_execution = true;
 	}
 
-	void VirtualMachine::destroyCache(){
+	/*void VirtualMachine::destroyCache(){
 		main_function_object=NULL;
 		if(script_functions!= NULL){
 			free(script_functions);
@@ -395,7 +397,7 @@ namespace zetscript{
 		for(unsigned i=0; i < size_vec_script_function_object_node; i++){
 			script_functions[i]=vec_script_function_object_node_aux->at(i);
 		}
-	}
+	}*/
 
 	void VirtualMachine::addGlobalVar(const StackElement & stk){
 
@@ -414,16 +416,17 @@ namespace zetscript{
 			return;
 		}
 
-		if(n_globals!=(int)main_function->local_variable.size()){
+		if(n_globals!=(int)main_function->registered_symbols->count){
 			THROW_RUNTIME_ERROR("n_globals != main variables");
 			return;
 		}
 
 		bool end=false;
-		for(int i =  (int)(main_function->local_variable.size())-1; i >= 0 && !end; i--){
+		for(int i =  (int)(main_function->registered_symbols->count)-1; i >= 0 && !end; i--){
 			//switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(ptr_ale->properties)){
 			//case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-			end=(main_function->local_variable[i].symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF;
+			Symbol *symbol = (Symbol *)main_function->registered_symbols->items[i];
+			end=(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF;
 			if(!end){
 				StackElement *ptr_ale =&vm_stack[i];
 				ScriptVar *var = NULL;
@@ -453,10 +456,11 @@ namespace zetscript{
 	}
 
 	StackElement  VirtualMachine::callFunction(
-			 ScriptFunction *calling_function,
-			 ScriptVar *this_object,
-			 bool & error,
-			const std::vector<StackElement> & arg
+			 ScriptFunction *calling_function
+			 ,ScriptVar *this_object
+			 ,bool & error
+			 ,StackElement *  stk_params
+			 ,short			n_stk_params
 			){
 
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
@@ -467,28 +471,23 @@ namespace zetscript{
 
 		if(idx_stk_current==0){ // set stack and Init vars for first call...
 
-			if(main_function_object->instruction == NULL){ // no statments
+			if(main_function_object->instructions == NULL){ // no statments
 				RETURN_ERROR;
 			}
 			cancel_execution=false;
 
 			stk_current=vm_stack;
-			//*stk_current={MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED,0,0}; // ini first op
 
-			if(calling_function->idx_script_function != 0){ // calls script function from C : preserve stack space for global vars
-				stk_current=&vm_stack[main_function_object->local_variable.size()];
+			// calls script function from C : preserve stack space for global vars
+			if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
+				stk_current=&vm_stack[main_function_object->registered_symbols->count];
 			}
 			vm_foreach_current=&vm_foreach[0];
 		}
 
-		int n_arg=0;
-		if(arg.size()>0){ // pass parameters...
-
-			for(unsigned i = 0; i < arg.size(); i++){
-				*stk_current++=arg[i];
-			}
-			//advance idxBaseStk...
-			n_arg=arg.size();
+		// push param stack elements...
+		for(unsigned i = 0; i < n_stk_params; i++){
+			*stk_current++=stk_params[i];
 		}
 
 		// Script function starts here.... later script function can call c++ function, but once in c++ function is not possible by now call script function again.
@@ -498,7 +497,7 @@ namespace zetscript{
 				error,
 				stk_current,
 				NULL,
-				n_arg);
+				n_stk_params);
 
 		if(error){ // it was error so reset stack and stop execution ? ...
 			doStackDump();
@@ -513,7 +512,7 @@ namespace zetscript{
 
 
 	VirtualMachine::~VirtualMachine(){
-		destroyCache();
+		//destroyCache();
 	}
 }
 

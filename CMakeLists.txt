@@ -164,6 +164,8 @@ ELSE()
  		util/zs_path.cpp
  		util/zs_rtti.cpp
  		util/zs_strutils.cpp
+ 		util/zs_vector.cpp
+ 		util/zs_map.cpp
  		
  		# VM
  		vm/VirtualMachine.cpp
@@ -184,7 +186,6 @@ ELSE()
 		script/ScriptVarVector.cpp
 		script/ScriptVarFunctor.cpp
  		script/ScriptVarDictionary.cpp
-		script/ScriptContext.cpp
 		script/ScriptClass.cpp
 		script/ScriptFunction.cpp
 		script/ScriptFunctionFactory.cpp
@@ -194,14 +195,14 @@ ELSE()
  		StackElement.cpp
  		ByteCode.cpp
  		exception.cpp
- 		SymbolInfo.cpp
+ 		Symbol.cpp
 		zetscript.cpp
 	
 	)
 ENDIF()
 
 # zetscriptlib
-add_library( zetscript${POST_NAME} SHARED ${ZETSCRIPT_LIB_SRCS} )
+add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
 if(MSVC)
 	#only for msvc...
 	set_target_properties(zetscript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)

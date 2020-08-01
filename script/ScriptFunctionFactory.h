@@ -4,10 +4,10 @@
  */
 #pragma once
 
-#define IDX_MAIN_FUNCTION				0
+#define IDX_SCRIPT_FUNCTION_MAIN				0
 #define NEW_SCRIPT_FUNCTION(data)		((data->script_function_factory))->newScriptFunction
 #define GET_SCRIPT_FUNCTION(data,idx)	((data->script_function_factory))->getScriptFunction(idx)
-#define MAIN_FUNCTION(data)				GET_SCRIPT_FUNCTION(data,IDX_MAIN_FUNCTION)
+#define MAIN_FUNCTION(data)				GET_SCRIPT_FUNCTION(data,IDX_SCRIPT_FUNCTION_MAIN)
 
 namespace zetscript{
 	class ScopeFactory;
@@ -21,16 +21,18 @@ namespace zetscript{
 			 * Set/Get ScriptClass Node by its idx, regarding current state.
 			 */
 			//static void 								setVectorScriptFunctionObjectNode(std::vector<ScriptFunction *> 	* set_vec);
-			std::vector<ScriptFunction *> 	*	getScriptFunctions();
+			zs_vector 	*	getScriptFunctions();
 
 			ScriptFunction 			*	newScriptFunction(
-				const std::string & file
+				//--- Register information
+				  Scope *scope
+				, const std::string & file
 				, short line
-				, unsigned  char idx_class
-				, short idx_scope
-				, short idx_symbol
+				//--- Function data
+			    , unsigned  char idx_class
+				, short idx_local_function
 				, const std::string & function_name
-				, std::vector<ParamArgInfo> args={}
+				, std::vector<FunctionParam> args={}
 				, int idx_return_type=ZS_IDX_UNDEFINED
 				, intptr_t ref_ptr=0
 				, unsigned short properties=0
@@ -47,7 +49,7 @@ namespace zetscript{
 		private:
 			ZetScript 						* 	zs;
 			ScopeFactory 					* 	scope_factory;
-			std::vector<ScriptFunction *> 		script_functions;
+			zs_vector 						*   script_functions;
 	};
 
 };

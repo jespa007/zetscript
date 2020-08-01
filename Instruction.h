@@ -94,7 +94,6 @@ namespace zetscript{
 
 			const char * file;
 			short line;
-			//Symbol * _symbol;
 			std::string * str_symbol;
 
 			InstructionSourceInfo(){

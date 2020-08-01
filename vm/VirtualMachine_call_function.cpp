@@ -109,7 +109,7 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		std::vector<SymbolInfo> * local_var=&calling_function->local_variable;
+		zs_vector *registered_symbols=calling_function->registered_symbols;
 
 		stk_start =_stk_start;
 		str_start =_str_start;
@@ -145,7 +145,7 @@ namespace zetscript{
 
 			 StackElement     stack[VM_STACK_LOCAL_VAR_MAX];*/
 
-			//printf("call:%i left:%lu\n",idx_stk_current,scope_info_max-vm_scope_current);// scope_info[VM_STACK_LOCAL_VAR_MAX-1]);
+			//printf("call:%i left:%lu\n",idx_stk_current,scope_info_max-vm_current_scope);// scope_info[VM_STACK_LOCAL_VAR_MAX-1]);
 			idx_stk_current++;
 		}
 		else{
@@ -153,23 +153,23 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		if((calling_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) ){ // C-Call
+		if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) ){ // C-Call
 
-			if((calling_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
+			if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
 				writeError(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
 						"1. Set register_C_baseSymbols(false) and  re-register the function using REGISTER_C_FUNCTION_MEMBER\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
-						,calling_function->symbol_info.symbol->name.c_str());
+						,calling_function->symbol.name.c_str());
 				RETURN_ERROR;
 			}
 
-			intptr_t  fun_ptr = calling_function->symbol_info.ref_ptr;
+			intptr_t  fun_ptr = calling_function->symbol.ref_ptr;
 
-			if((calling_function->symbol_info.symbol_info_properties &  SYMBOL_INFO_PROPERTY_STATIC_REF) == 0){ // if not static then is function depends of object ...
+			if((calling_function->symbol.symbol_properties &  SYMBOL_PROPERTY_STATIC_REF) == 0){ // if not static then is function depends of object ...
 
 				if(this_object!= NULL){
-					fun_ptr = this_object->getFunctionSymbolByIndex(calling_function->symbol_info.idx_symbol)->proxy_ptr;
+					fun_ptr = this_object->getFunction(calling_function->symbol.idx_position)->proxy_ptr;
 				}
 			}
 
@@ -193,12 +193,15 @@ namespace zetscript{
 			return se;
 		}
 
-		short scope_index = calling_function->symbol_info.symbol->idx_scope;// ast->idx_scope;
+		Scope * scope = calling_function->symbol.scope;// ast->idx_scope;
 
-		if(calling_function->idx_script_function != 0){
+		if(calling_function->idx_script_function != 0){ // push scope only if not main function
 
-			PUSH_VM_SCOPE(scope_index,calling_function,stk_local_var,0);
-			vm_scope_start = vm_scope_current;
+			if(registered_symbols->count > 0){ // if there's some local variables
+				PUSH_VM_SCOPE(scope,calling_function,stk_local_var,0);
+			}
+
+			vm_scope_start = vm_current_scope;
 		}
 
 		stk_result ={ NULL,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
@@ -206,8 +209,8 @@ namespace zetscript{
 		//=========================================
 		// PUSH STACK
 		// reserve vars and assign argv vars ...
-		unsigned size_local_var=local_var->size();
-		unsigned n_total_vars=n_args+size_local_var;
+		unsigned symbols_count=registered_symbols->count;
+		unsigned n_total_vars=n_args+symbols_count;
 
 		if((idx_stk_base+n_total_vars) >=  VM_STACK_LOCAL_VAR_MAX){
 			writeError(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Error MAXIMUM stack size reached");
@@ -215,12 +218,12 @@ namespace zetscript{
 		}
 
 		// Init local vars ...
-		if(calling_function->idx_script_function != 0){ // is not main function, so we have to initialize vars.
+		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){ // is not main function, so we have to initialize vars.
 
 
 			if(idx_stk_current > 1){ // not global vars, then initialize variables as undefined...
 				StackElement *ptr_aux = stk_local_var;
-				for(unsigned i = 0; i < size_local_var; i++){
+				for(unsigned i = 0; i < symbols_count; i++){
 
 					// if C then pass its properties...
 					*ptr_aux++={
@@ -232,7 +235,8 @@ namespace zetscript{
 			}
 		}
 
-		stk_start=&stk_local_var[size_local_var];
+		// advance stack from total registered symbols...
+		stk_start=&stk_local_var[symbols_count];
 
 		// PUSH STACK
 		//=========================================
@@ -258,8 +262,8 @@ namespace zetscript{
 		StackElement *stk_src=NULL;
 		bool ok=false;
 
-		Instruction *start_it=calling_function->instruction;
-		Instruction *instruction_it=start_it;
+		Instruction *instructions=calling_function->instructions; // starting instruction
+		Instruction *instruction_it=instructions;
 
 		vm_str_current=str_start;
 		stk_current=stk_start;
@@ -309,12 +313,12 @@ namespace zetscript{
 										RETURN_ERROR;
 									}
 
-									if(v_index >= (int)(script_var_vectors->variable.size())){
+									if(v_index >= (int)(script_var_vectors->stk_properties->count)){
 										writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Index std::vector out of bounds (%i)",v_index);
 										RETURN_ERROR;
 									}
 
-									stk_var = &script_var_vectors->variable[v_index];;
+									stk_var = (StackElement *)script_var_vectors->stk_properties->items[v_index];
 									ok = true;
 								}else{
 									writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Expected std::vector-index as integer or std::string");
@@ -325,7 +329,7 @@ namespace zetscript{
 
 						if(!ok){
 							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Variable \"%s\" is not type std::vector",
-								SFI_GET_SYMBOL_NAME(calling_function,&calling_function->instruction[instruction->value_op2])
+								SFI_GET_SYMBOL_NAME(calling_function,instructions+instruction->value_op2)
 							);
 							RETURN_ERROR;
 						}
@@ -371,7 +375,7 @@ namespace zetscript{
 									RETURN_ERROR;
 								}
 
-								if((variable_stack_element = base_var->getVariableSymbol(SFI_GET_SYMBOL_NAME(calling_function,instruction)))==NULL){
+								if((variable_stack_element = base_var->getProperty(SFI_GET_SYMBOL_NAME(calling_function,instruction)))==NULL){
 
 									writeError(SFI_GET_FILE_LINE(calling_function,instruction)
 											,"Variable \"%s\" as type \"%s\" has not symbol \"%s\""
@@ -382,7 +386,7 @@ namespace zetscript{
 								}
 							}
 							else{ // this scope ...
-								if((variable_stack_element = this_object->getVariableSymbolByIndex(instruction->value_op2))==NULL){
+								if((variable_stack_element = this_object->getProperty(instruction->value_op2))==NULL){
 									writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find symbol \"this.%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 									RETURN_ERROR;
 								}
@@ -524,16 +528,13 @@ namespace zetscript{
 
 					unsigned short extra_flags=(instruction->properties&MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL)?MSK_STACK_ELEMENT_PROPERTY_CONSTRUCTOR_FUNCTION:0;
 					extra_flags|=(instruction->properties&MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL) ?MSK_STACK_ELEMENT_PROPERTY_UNRESOLVED_FUNCTION:0;
-					//void *function_obj=NULL;
-					//std::vector<ScriptFunction *> *vec_functions;
 					ScriptVar * class_obj=NULL;
-					//intptr_t function_obj =  instruction->value_op2;
 					intptr_t value_op2 = instruction->value_op2;
 					properties=instruction->properties;
 					scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(properties);
 
 					/*if(scope_type==MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // local gets functions from calling_function ...
-						vec_functions=&calling_function->local_function;
+						vec_functions=&calling_function->local_functions;
 					}else*/
 					if(scope_type == MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
 						StackElement *stk_access_var=NULL;
@@ -555,7 +556,7 @@ namespace zetscript{
 						if(stk_access_var->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 							class_obj=(ScriptVar *)(stk_access_var->var_ref);
 							//ScriptClass *sc =GET_SCRIPT_CLASS(((ScriptVar *)class_obj)->idx_class);
-							//vec_functions=&sc->local_function;
+							//vec_functions=&sc->local_functions;
 						}
 						else{
 							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot access symbol \"%s\" (type of %s is %s)",SFI_GET_SYMBOL_NAME(calling_function,instruction),SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_access_var->toString());
@@ -580,7 +581,7 @@ namespace zetscript{
 							RETURN_ERROR;
 						}*/
 					}/*else if(scope_type ==MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){
-						if((si = this_object->getFunctionSymbolByIndex(value_op2))==NULL){
+						if((si = this_object->getFunction(value_op2))==NULL){
 							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find function \"this.%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 							RETURN_ERROR;
 						}
@@ -588,13 +589,13 @@ namespace zetscript{
 						function_obj =(ScriptFunction *)si->object.stk_value;
 
 					}else if(scope_type == MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER){ // super scope ?
-						if((si = this_object->getFunctionSymbolByIndex(value_op2))==NULL){
+						if((si = this_object->getFunction(value_op2))==NULL){
 							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find function \"super.%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 							RETURN_ERROR;
 						}
 						function_obj =(ScriptFunction *)si->object.stk_value;
 					}else{ // global
-						vec_functions = &(main_function_object->local_function);
+						vec_functions = &(main_function_object->local_functions);
 					}
 
 
@@ -676,12 +677,12 @@ namespace zetscript{
 									const char *str = (const char *)stk_result_op2->stk_value;
 									stk_src=stk_result_op1;
 									if(stk_src->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
-										FunctionSymbol *si =((ScriptVarDictionary *)struct_obj)->addFunctionSymbol(str,NULL);
+										FunctionSymbol *si =((ScriptVarDictionary *)struct_obj)->addFunction(str,NULL);
 										if(si!=NULL){
 											se=&si->object;;
 										}
 									}else{
-										se =((ScriptVarDictionary *)struct_obj)->addVariableSymbol(str);
+										se =((ScriptVarDictionary *)struct_obj)->addProperty(str);
 									}
 
 									if(se == NULL){
@@ -1148,7 +1149,7 @@ namespace zetscript{
 				PROCESS_BINARY_OPERATION(<<, BYTE_CODE_METAMETHOD_SHL);
 				continue;
 			 case BYTE_CODE_JMP:
-				instruction_it=&start_it[instruction->value_op2];
+				instruction_it=instructions+instruction->value_op2;
 				continue;
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
 				 POP_TWO;
@@ -1185,13 +1186,13 @@ namespace zetscript{
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				POP_ONE;
 				if(stk_result_op1->stk_value == 0){
-					instruction_it=&start_it[instruction->value_op2];
+					instruction_it=instructions+instruction->value_op2;
 				}
 				continue;
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				POP_ONE;
 				if(stk_result_op1->stk_value != 0){
-					instruction_it=&start_it[instruction->value_op2];
+					instruction_it=instructions+instruction->value_op2;
 				}
 				continue;
 			 case  BYTE_CODE_CALL: // calling function after all of args are processed...
@@ -1234,7 +1235,7 @@ namespace zetscript{
 						// local vars as functions ...
 
 						// registered symbols in case is MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS...
-						std::vector<FunctionSymbol> *function_symbol=NULL;
+						zs_vector *function_symbols=NULL;
 						if(scope_type==MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
 							calling_object = (ScriptVar *)stk_function_ref->var_ref;
 
@@ -1249,20 +1250,20 @@ namespace zetscript{
 								}
 							}
 
-							function_symbol=calling_object->getVectorFunctionSymbol();
+							function_symbols=calling_object->getFunctions();
 						}
 
 						//bool all_check=true;
 						if((instruction_function_ref->properties & MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL)==0)
 						{
-							std::vector<ScriptFunction *> *global_functions=&(main_function_object->local_function);
+							zs_vector *global_functions=main_function_object->registered_functions;
 							if((aux_function_info=findFunction(
 									 calling_object
 									,calling_function
 									,instruction
 									,instruction_function_ref
 
-									,function_symbol
+									,function_symbols
 									,global_functions
 									,is_constructor
 									,symbol_to_find
@@ -1297,19 +1298,19 @@ namespace zetscript{
 							RETURN_ERROR;
 						}
 
-						if((aux_function_info->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
-							unsigned aux_function_info_m_arg_size=aux_function_info->arg_info.size();
-							if( n_args < aux_function_info_m_arg_size){ // we must push undefined parameters ...
-								for(unsigned i = n_args; i < aux_function_info_m_arg_size; i++){
-									*stk_current++={
+						if((aux_function_info->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
+							//unsigned aux_function_info_m_arg_size=aux_function_info->arg_info.size();
+							//if( n_args < aux_function_info->function_params->count){ // we must push undefined parameters ...
+							for(unsigned i = n_args; i < aux_function_info->function_params->count; i++){
+								*stk_current++={
 
-										0,							 // no value assigned.
-										NULL,			     // no varref related.
-										MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED // starts undefined.
-									};
-									n_args++;
-								}
+									0,							 // no value assigned.
+									NULL,			     // no varref related.
+									MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED // starts undefined.
+								};
+								n_args++;
 							}
+							//}
 						}
 
 						// by default virtual machine gets main object class in order to run functions ...
@@ -1533,12 +1534,18 @@ namespace zetscript{
 
 		//=========================
 		// POP STACK
-		if(calling_function->idx_script_function == 0){ // if main function only remove 0s and preserve variables!)
+		if(calling_function->idx_script_function == IDX_SCRIPT_FUNCTION_MAIN){ // if main function only remove empty shared pointers but preserve global variables!)
 			removeEmptySharedPointers(idx_stk_current,NULL);
 		}
 		else{
-			while(vm_scope_start<=(vm_scope_current)){
-				popVmScope(idx_stk_current,stk_result.var_ref,0);
+			while(vm_scope_start<=(vm_current_scope)){
+				if(vm_scope_start==vm_current_scope){ // if there's some registered symbols
+					if(registered_symbols->count > 0){ // if there're registered symbols on this function, pop scope
+						popVmScope(idx_stk_current,stk_result.var_ref,0);
+					}
+				}else{// pop scope
+					popVmScope(idx_stk_current,stk_result.var_ref,0);
+				}
 			}
 		}
 

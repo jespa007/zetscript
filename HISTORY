@@ -71,6 +71,8 @@ Date: XX-XX-2019
 #133 Perform SUB instead of NEG+ADD
 > #134 Implement Math class with math function utils (PART1)
 #135 eval negative identifier and constants tokens and perform LOAD with negative option or load negative constants instead of doing NEG.
+> #136 Clear unusued scopes
+ 
 
 Other: Lot of clean code up. 
 

@@ -9,10 +9,6 @@ namespace zetscript{
 			MAX_STRING_BUFFERS=256,
 			MAX_LENGTH_BUFFER=512,
 		};*/
-
-
-
-
 		//char m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER]={{0}};
 		//char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
 		//unsigned char m_index_buffer=0;

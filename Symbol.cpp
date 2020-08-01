@@ -2,9 +2,9 @@
 
 namespace zetscript{
 
-StackElement convertSymbolInfoToStackElement(ZetScript * zs, SymbolInfo *symbol,void *ptr_variable){
+StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *ptr_variable){
 
-		if(symbol->symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
+		if(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 
 			if(k_str_int_type_ptr==symbol->c_type){
 				return {
@@ -45,7 +45,7 @@ StackElement convertSymbolInfoToStackElement(ZetScript * zs, SymbolInfo *symbol,
 
 				if(info_registered_class){
 					ScriptVar *var = new ScriptVar(zs);
-					var->Init(info_registered_class,ptr_variable);
+					var->init(info_registered_class,ptr_variable);
 
 					return{
 
@@ -56,7 +56,7 @@ StackElement convertSymbolInfoToStackElement(ZetScript * zs, SymbolInfo *symbol,
 				}
 		}
 		}else{
-			THROW_RUNTIME_ERROR(zs_strutils::format("Variable %s is not c referenced as C symbol",symbol->symbol->name.c_str()));
+			THROW_RUNTIME_ERROR(zs_strutils::format("Variable %s is not c referenced as C symbol",symbol->name.c_str()));
 		}
 
 		return{

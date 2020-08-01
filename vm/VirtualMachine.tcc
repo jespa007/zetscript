@@ -51,51 +51,52 @@ namespace zetscript{
 		list->first=list->last=NULL;
 	}
 
+	// defer all local vars
 	inline bool VirtualMachine::popVmScope(int idx_stack,void * ptr_callc_result, unsigned char properties) {
 		bool search=true;
 
-		while((vm_scope<vm_scope_current) && search)
+		while((vm_scope<vm_current_scope) && search)
 		{
-			ScriptFunction *scope_info_function=(vm_scope_current-1)->script_function;
-			int index         = (vm_scope_current-1)->index;
-			StackElement         *stk_local_vars=(vm_scope_current-1)->stk_local_vars;
-			ScopeBlockVars   *scope_block_vars=&scope_info_function->scope_block_vars[index];
+			ScriptFunction *scope_info_function=(vm_current_scope-1)->script_function;
+			Scope *scope         = (vm_current_scope-1)->scope;
+			StackElement         * stk_local_vars=(vm_current_scope-1)->stk_local_vars;
+			zs_vector			 * scope_symbols=scope->registered_symbols;
+			//ScopeBlockVars   *scope_block_vars=&scope_info_function->scope_block_vars[index];
 
-			if(scope_block_vars!=NULL){
-
-				for(uint8_t i = 0; i < scope_block_vars->n_local_vars; i++){
-					int idx_local_var = scope_block_vars->idx_local_var[i];
-					StackElement *stk_local_var =&stk_local_vars[idx_local_var];
-					ScriptVar *var = NULL;
-					switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_local_var->properties)){
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
-						var =((ScriptVar *)(stk_local_var->var_ref));
-						if(var){
-							if(var->ptr_shared_pointer_node != NULL){
-								var->unrefSharedPtr();
-							}
+			for(uint8_t i = 0; i < scope_symbols->count; i++){
+				Symbol *scope_symbol=(Symbol *)scope_symbols->items[i];
+				StackElement *stk_local_var =&stk_local_vars[scope_symbol->idx_position]; // position where symbol is located on stack
+				ScriptVar *var = NULL;
+				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_local_var->properties)){
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
+					var =((ScriptVar *)(stk_local_var->var_ref));
+					if(var){
+						if(var->ptr_shared_pointer_node != NULL){
+							var->unrefSharedPtr();
 						}
 					}
-					*stk_local_var={
-						0,
-						0,
-						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
-					};
 				}
+				*stk_local_var={
+					0,
+					0,
+					MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
+				};
 			}
+			
+			// remove deferred shared pointers...
 			removeEmptySharedPointers(idx_stack,ptr_callc_result);
 
 			search=false;
 			if((properties & ScopeProperty::SCOPE_PROPERTY_BREAK)!=0){
-				search=((vm_scope_current-1)->properties & ScopeProperty::SCOPE_PROPERTY_BREAK) != ScopeProperty::SCOPE_PROPERTY_BREAK;
+				search=((vm_current_scope-1)->properties & ScopeProperty::SCOPE_PROPERTY_BREAK) != ScopeProperty::SCOPE_PROPERTY_BREAK;
 			}
 
 			if((properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE)!=0){
-				search=((vm_scope_current-1)->properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE) != ScopeProperty::SCOPE_PROPERTY_CONTINUE;
+				search=((vm_current_scope-1)->properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE) != ScopeProperty::SCOPE_PROPERTY_CONTINUE;
 			}
 			// pop current var
-			--vm_scope_current;
+			--vm_current_scope;
 		}
 		return true;
 	}
@@ -111,7 +112,7 @@ namespace zetscript{
 
 										) {
 
-		int idxOffsetFunctionMemberStart=0;
+		int idx_offset_function_member_start=0;
 		ScriptVar *script_var_object = NULL;
 		ScriptFunction * ptr_function_found=NULL;
 
@@ -134,7 +135,7 @@ namespace zetscript{
 					script_var_object = (ScriptVar *)(((StackElement *)script_var_object))->var_ref;
 				}
 				if(__METAMETHOD__ == BYTE_CODE_METAMETHOD_SET){
-					idxOffsetFunctionMemberStart=1;
+					idx_offset_function_member_start=1;
 					one_param = (ScriptVar *)(stk_result_op2->var_ref);
 					if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) == (MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT))){
 						one_param = (ScriptVar *)(((StackElement *)one_param))->var_ref;
@@ -167,9 +168,9 @@ namespace zetscript{
 			}
 
 			script_class_aux=GET_SCRIPT_CLASS(this,script_var_object->idx_class);
-			std::vector<ScriptFunction *> *global_functions=&script_class_aux->metamethod_operator[__METAMETHOD__];
-			StackElement *startArgs=(mm_test_startArg-n_metam_args+idxOffsetFunctionMemberStart);
-			unsigned n_args=n_metam_args;
+			zs_vector *global_functions=script_class_aux->metamethod_operator[__METAMETHOD__];
+			StackElement *stk_args=(mm_test_startArg-n_metam_args+idx_offset_function_member_start);
+			unsigned n_stk_args=n_metam_args;
 
 			symbol_to_find=ByteCodeMetamethodToStr(__METAMETHOD__);
 
@@ -186,8 +187,8 @@ namespace zetscript{
 
 					,stk_result_op1
 					,stk_result_op2
-					,startArgs
-					,n_args\
+					,stk_args
+					,n_stk_args
 					,__OVERR_OP__))==NULL)
 			{
 					return false;
@@ -197,7 +198,13 @@ namespace zetscript{
 		}
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
-		StackElement ret_obj=callFunctionInternal(ptr_function_found,script_var_object,error,mm_test_startArg+idxOffsetFunctionMemberStart,vm_str_current,n_metam_args);
+		StackElement ret_obj=callFunctionInternal(
+				ptr_function_found
+				,script_var_object
+				,error
+				,mm_test_startArg+idx_offset_function_member_start
+				,vm_str_current
+				,n_metam_args);
 		if(error){
 			return false;
 		}
@@ -228,8 +235,8 @@ namespace zetscript{
 			,Instruction *instruction
 			,Instruction * call_ale_instruction
 
-			,std::vector<FunctionSymbol> *function_symbol
-			,std::vector<ScriptFunction *> *global_functions
+			,zs_vector *function_symbols
+			,zs_vector *global_functions
 
 			,bool is_constructor
 			,const std::string & symbol_to_find
@@ -242,41 +249,42 @@ namespace zetscript{
 			) {
 
 		// by default search over global functions...
-		int size_fun_vec=global_functions->size()-1;
+		int size_fun_vec=global_functions->count-1;
 		ScriptVar *var_object = NULL;
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
 
-		// if function_symbol not NULL search over m_functionSymbols....
-		if(function_symbol != NULL){
-			size_fun_vec=function_symbol->size()-1;
+		// if function_symbols not NULL search over m_functionSymbols....
+		if(function_symbols != NULL){
+			size_fun_vec=function_symbols->count-1;
 		}
 
 		for(int i = size_fun_vec; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 			ScriptFunction *irfs = NULL;
 
-			if(function_symbol != NULL){
-				irfs = (ScriptFunction *)function_symbol->at(i).object.stk_value;
-				aux_string=function_symbol->at(i).key_value;
+			if(function_symbols != NULL){
+				FunctionSymbol *fs=(FunctionSymbol *)function_symbols->items[i];
+				irfs = (ScriptFunction *)fs->object.stk_value;
+				aux_string=fs->key_value;
 
 			}else{
-				irfs=global_functions->at(i);
-				aux_string=irfs->symbol_info.symbol->name;//CEval::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
+				irfs=(ScriptFunction *)global_functions->items[i];
+				aux_string=irfs->symbol.name;//CEval::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
 			}
 
 			bool match_signature = metamethod_str != NULL;
 			if(!match_signature){
-				match_signature = (aux_string == symbol_to_find && irfs->arg_info.size() == n_args);
+				match_signature = (aux_string == symbol_to_find && irfs->function_params->count == n_args);
 			}
 
 			if(match_signature){
-				if((irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF)){ /* C! Must match args...*/
+				if((irfs->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
 					int arg_idx_type=-1;
 					for( unsigned k = 0; k < n_args && all_check;k++){
 						StackElement *current_arg=&start_arg[k];
-						arg_idx_type=irfs->arg_info[k].idx_type;
+						arg_idx_type=((FunctionParam *)irfs->function_params->items[k])->idx_type;
 
 						if(arg_idx_type==IDX_BUILTIN_TYPE_STACK_ELEMENT){
 
@@ -418,16 +426,16 @@ namespace zetscript{
 
 				for(int i = size_fun_vec; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 					ScriptFunction *irfs = NULL;
-					if(function_symbol!=NULL){
-						irfs = (ScriptFunction *)function_symbol->at(i).object.stk_value;
+					if(function_symbols!=NULL){
+						irfs = (ScriptFunction *)((FunctionSymbol *)function_symbols->items[i])->object.stk_value;
 					}else{
-						irfs=global_functions->at(i);
+						irfs=(ScriptFunction *)global_functions->items[i];
 					}
 
 					bool match_signature = metamethod_str != NULL;
 
 					if(!match_signature){
-						match_signature = irfs->symbol_info.symbol->name == irfs->getInstructionSymbolName(call_ale_instruction);
+						match_signature = irfs->symbol.name == irfs->getInstructionSymbolName(call_ale_instruction);
 					}
 
 					if(match_signature){
@@ -435,15 +443,19 @@ namespace zetscript{
 						if(n_candidates == 0){
 							str_candidates+="ttPossible candidates are:nn";
 						}
-						str_candidates+="\t\t-"+(calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::"):"")+irfs->symbol_info.symbol->name+"(";
+						str_candidates+="\t\t-"+(calling_object==NULL?""
+								:calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::")
+								:"")+irfs->symbol.name+"(";
 
-						for(unsigned a = 0; a < irfs->arg_info.size(); a++){
+						for(unsigned a = 0; a < irfs->function_params->count; a++){
 							if(a>0){
 								str_candidates+=",";
 							}
 
-							if(irfs->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF){
-								str_candidates+=zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,irfs->arg_info[a].idx_type));
+							if(irfs->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+								str_candidates+=zs_rtti::demangle(
+										GET_IDX_2_CLASS_C_STR(this,((FunctionParam *)irfs->function_params->items[a])->idx_type
+								));
 							}else{ /* typic var ... */
 								str_candidates+="arg"+zs_strutils::intToString(a+1);
 							}
@@ -476,7 +488,7 @@ namespace zetscript{
 						writeError(SFI_GET_FILE_LINE(calling_function,call_ale_instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-													global_functions->at(0)->symbol_info.symbol->name.c_str(),
+													((ScriptFunction *)global_functions->items[0])->symbol.name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{

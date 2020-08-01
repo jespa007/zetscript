@@ -202,7 +202,7 @@ namespace zetscript{
 				}else{ // it should be an identifier token  ...
 
 					token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
-					intptr_t idx_local_var=	eval_data->current_evaluated_function->script_function->existArgumentName(str_value);
+					intptr_t idx_local_var=	eval_data->current_function->script_function->existArgumentName(str_value);
 
 
 					if(idx_local_var!=ZS_IDX_UNDEFINED){ // is arg...
@@ -265,13 +265,13 @@ namespace zetscript{
 			 }
 
 			token_node->value = str_value;
-			token_node->instructions.push_back(new EvaluatedInstruction(ByteCode::BYTE_CODE_LOAD,load_type,(intptr_t)obj,scope_type));
+			token_node->instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_LOAD,load_type,(intptr_t)obj,scope_type));
 
 			return aux;
 			// POST: token as literal or identifier
 		}
 
-		bool makeOperatorPrecedence(EvalData *eval_data,std::vector<TokenNode> * expression_tokens,std::vector<EvaluatedInstruction *> *instructions, int idx_start,int idx_end, bool & error){
+		bool makeOperatorPrecedence(EvalData *eval_data,std::vector<TokenNode> * expression_tokens,std::vector<EvalInstruction *> *instructions, int idx_start,int idx_end, bool & error){
 
 			OperatorType 	op_split=OperatorType::OPERATOR_TYPE_MAX;
 			int 			idx_split=-1;
@@ -314,13 +314,13 @@ namespace zetscript{
 						makeOperatorPrecedence(eval_data,expression_tokens,instructions,idx_split+1,idx_end,error); // right branches...
 
 			if(result){ // if result was ok, push byte_code...
-				instructions->push_back(new EvaluatedInstruction(convertOperatorTypeToByteCode(split_node->operator_type)));
+				instructions->push_back(new EvalInstruction(convertOperatorTypeToByteCode(split_node->operator_type)));
 			}
 
 			return result;
 		}
 
-		char * evalExpression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvaluatedInstruction *> 	* instructions){
+		char * evalExpression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions){
 			// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 			// If this functions finds ';' then the function will generate ast.
 
@@ -380,7 +380,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					std::vector<EvaluatedInstruction *> 	instruction_inner;
+					std::vector<EvalInstruction *> 	instruction_inner;
 					if((aux_p=evalExpression(eval_data,aux_p+1, line, scope_info, &instruction_inner))==NULL){
 						return NULL;
 					}
@@ -400,7 +400,7 @@ namespace zetscript{
 					);
 
 					if(pre_operator_type==PreOperatorType::PRE_OPERATOR_TYPE_NEG || pre_operator_type==PreOperatorType::PRE_OPERATOR_TYPE_NOT){
-						symbol_token_node.instructions.push_back(new EvaluatedInstruction(ByteCode::BYTE_CODE_NEG));
+						symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
 					}
 					
 					symbol_token_node.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
@@ -542,13 +542,13 @@ namespace zetscript{
 								}
 
 								//save_str_symbol_value=true;
-								//current_evaluated_function->script_function->instruction_source_info[symbol_token_node.instruction.size()]=ScriptFunction::InstructionSourceInfo(accessor_value,current_parsing_file,line);
+								//current_function->script_function->instruction_source_info[symbol_token_node.instruction.size()]=ScriptFunction::InstructionSourceInfo(accessor_value,current_parsing_file,line);
 								//symbol_token_node.instruction.push_back(Instruction(ByteCode::BYTE_CODE_LOAD)); //--> must add symbol value instruction...
 								byte_code=ByteCode::BYTE_CODE_LOAD;
 								break;
 							}
 
-							EvaluatedInstruction *instruction_token=new EvaluatedInstruction(byte_code);
+							EvalInstruction *instruction_token=new EvalInstruction(byte_code);
 							symbol_token_node.instructions.push_back(instruction_token);
 
 							// generate source info in case byte code load...
@@ -568,8 +568,8 @@ namespace zetscript{
 
 						// add info to solve symbols first access (we need to put here because we have to know n params if function related)
 						symbol_token_node.instructions[0]->link_symbol_first_access=LinkSymbolFirstAccess(
-								eval_data->current_evaluated_function->script_function->idx_script_function
-								,scope_info->idx_scope
+								eval_data->current_function->script_function->idx_script_function
+								,scope_info
 								,symbol_token_node.value
 								,params // only if first access is a function...
 						);

@@ -1,45 +1,46 @@
-/*
- *  This file is distributed under the MIT License.
- *  See LICENSE file for details.
- */
 #pragma once
-
-/*
-//	 _____           _       _    ______                _   _
-//	/  ___|         (_)     | |   |  ___|              | | (_)
-//	\ `--.  ___ _ __ _ _ __ | |_  | |_ _   _ _ __   ___| |_ _  ___  _ __
-//	 `--. \/ __| '__| | '_ \| __| |  _| | | | '_ \ / __| __| |/ _ \| '_ \
-//	/\__/ / (__| |  | | |_) | |_  | | | |_| | | | | (__| |_| | (_) | | | |
-//	\____/ \___|_|  |_| .__/ \__| \_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|
-//                    | |
-//                    |_|
-// 	_________________________________________________
-//  	__________________________________
-//
-*/
-
 
 #define SFI_GET_FILE_LINE(__FUNC__,__INS__) 	((zetscript::ScriptFunction *)__FUNC__)->getInstructionSourceFile(__INS__), ((zetscript::ScriptFunction *)__FUNC__)->getInstructionLine(__INS__)
 #define SFI_GET_FILE(__FUNC__,__INS__) 			((zetscript::ScriptFunction *)__FUNC__)->getInstructionSourceFile(__INS__)
 #define SFI_GET_LINE(__FUNC__,__INS__)			((zetscript::ScriptFunction *)__FUNC__)->getInstructionLine(__INS__)
 #define SFI_GET_SYMBOL_NAME(__FUNC__,__INS__)	((zetscript::ScriptFunction *)__FUNC__)->getInstructionSymbolName(__INS__)
 
-
 namespace zetscript{
 
-	class  ScriptFunction:public ScriptContext{
+	class ScriptFunctionFactory;
+	class ScriptClassFactory;
+	class ScopeFactory;
+	class ZetScript;
 
+	/**
+	 * Script context refers to function context. A function can contain local variables and local functions
+	 */
+	class ScriptFunction {
 	public:
 
-		// info related for function ONLY
-		std::vector<ParamArgInfo> arg_info; // tells var arg name or var type name (in of C )
-		int idx_return_type; // -1 not inicialized type return.
-		PtrInstruction instruction;
+		Symbol 	  		symbol;	 		// function registered by scope
+		unsigned char idx_class; 		// which class belongs to...
+		short idx_script_function;		// idx_script_function from factory
+		int idx_return_type; 			// idx return type
 
-		int idx_script_function;
-		ScopeBlockVars *scope_block_vars;
-		unsigned n_scope_block_vars;
+		zs_vector * function_params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
 
+		PtrInstruction  instructions; // The set of byte code instructions that executes the function
+
+
+		// local symbols for class or function...
+		zs_vector   *	registered_symbols; // registered symbols
+		zs_vector   *	registered_functions; // registered functions
+
+
+		ScriptFunction(
+				ZetScript *_zs
+				,unsigned char _idx_class
+				,short _idx_script_function
+				, std::vector<FunctionParam> function_params
+				,int  idx_return_type
+				, Symbol *symbol
+		);
 
 		//-----------
 		//  SYMBOL-INSTRUCTION
@@ -54,37 +55,81 @@ namespace zetscript{
 
 		static void printGeneratedCode(ScriptFunction *sfo);
 
-		ScriptFunction(ZetScript * _zs,unsigned char _idxClass );
+		int existArgumentName(const std::string & arg_name);
+		/*bool searchVarFunctionSymbol(
+				std::string symbol_to_find,Instruction *iao
+				, int current_function
+				, bool & symbol_not_found
+				, unsigned int param_scope_type
+				, int n_args_to_find=-1
+		);*/
 
+		/* Registers local variable
+		 * Desc: Inserts variable at scope some block scope or by scope info itself.
+		 */
+		Symbol *  addSymbol(
+				 Scope * scope_block
+				, const std::string & file
+				, short line
+				, const std::string & symbol_name
+				, const std::string & c_type=""
+				, intptr_t ref_ptr=0
+				, unsigned short symbol_properties=0
+		);
 
-		SymbolInfo *  registerVariable(
+		/*ScopeSymbolInfo *  registerVariable(
 				const std::string & file
 				, short line
 				, const std::string & variable
 				, const std::string & c_type=""
 				, intptr_t ref_ptr=0
-				, unsigned short properties=0
+				, unsigned short symbol_properties=0
+		);*/
+
+		Symbol *  getSymbol(Scope *scope,const std::string & symbol_name);
+
+		/* Registers a function.
+		 * Desc: Inserts function at custom scope. It returns the idx std::vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
+		 */
+		ScriptFunction * addFunction(
+				  Scope * scope_block
+				, const std::string & file
+				, short line
+				, const std::string & function_name
+				, std::vector<FunctionParam> args={}
+				, int idx_return_type=ZS_IDX_UNDEFINED
+				, intptr_t ref_ptr=0
+				, unsigned short symbol_properties=0
 		);
 
-		int existArgumentName(const std::string & arg_name);
+		/*ScriptFunction * registerFunction(
+				const std::string & file
+				, short line
+				,  const std::string & function_name
+				, std::vector<FunctionParam> args={}
+				, int idx_return_type=ZS_IDX_UNDEFINED
+				,intptr_t ref_ptr=0
+				, unsigned short symbol_properties=0
+		);*/
 
-		/**
-		 * Given all local variables in the function, it links each variables on each scope block information.
-		 */
-		void linkScopeBlockVars();
-
-
-		virtual ~ScriptFunction();
+		ScriptFunction * getFunction(Scope * scope,const std::string & symbol, char n_args=0);
+		~ScriptFunction();
 
 	private:
+		ZetScript 				*zs;
+		ScriptFunctionFactory 	*script_function_factory;
+		ScriptClassFactory 		*script_class_factory;
+		ScopeFactory 			*scope_factory;	// reference scope_factory
+
+
 		static std::string formatInstructionLoadType(ScriptFunction *current_function,PtrInstruction list_statements, int current_instruction);
 		inline InstructionSourceInfo * getInstructionInfo(Instruction *ins){
-			short idx= (ins-this->instruction);///sizeof(Instruction *);
+			short idx= (ins-this->instructions);///sizeof(Instruction *);
 			if(instruction_source_info.count(idx)==1){
 				return &instruction_source_info[idx];
 			}
 			return NULL;
 		}
-	};
 
+	};
 }

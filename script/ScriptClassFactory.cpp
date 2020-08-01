@@ -24,8 +24,8 @@
 		return;\
 	}else{\
 		ScriptClass *sc=registerClass(__FILE__,__LINE__,STR(type_class),"");\
-		GET_SCOPE(this,sc->symbol_info.symbol->idx_scope)->is_c_node=true;\
-		sc->symbol_info.symbol_info_properties=SYMBOL_INFO_PROPERTY_C_OBJECT_REF;\
+		sc->symbol.scope->is_c_node=true;\
+		sc->symbol.symbol_properties=SYMBOL_PROPERTY_C_OBJECT_REF;\
 		sc->str_class_ptr_type=(typeid(type_class).name());\
 	}
 
@@ -58,7 +58,7 @@ namespace zetscript{
 		// REGISTER BUILT IN SCRIPT TYPES
 		// MAIN CLASS (0)
 		main_object=registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
-		if(main_object->symbol_info.symbol->idx_scope!=IDX_GLOBAL_SCOPE){
+		if(main_object->symbol.scope!=MAIN_SCOPE(this)){
 			THROW_RUNTIME_ERROR("Error initializing global scope");
 			return;
 		}
@@ -125,45 +125,58 @@ namespace zetscript{
 	/**
 	 * Register C variable
 	 */
-	 SymbolInfo *  ScriptClassFactory::register_C_Variable(const std::string & var_name,void * var_ptr, const std::string & var_type, const char *registered_file,int registered_line)
+	 bool  ScriptClassFactory::register_C_Variable(
+			 const std::string & var_name
+			 ,void * var_ptr
+			 , const std::string & var_type
+			 , const char *registered_file
+			 ,int registered_line)
 	{
 		//Scope *scope;
-		SymbolInfo *irs;
+		Symbol *irs;
 		//int idxVariable;
 
 		if(var_ptr==NULL){
 			THROW_RUNTIME_ERROR(zs_strutils::format("cannot register var \"%s\" with NULL reference value", var_name.c_str()));
-			return NULL;
+			return false;
 		}
 
 		ScriptFunction *main_function=MAIN_FUNCTION(this);
 
 		if(main_function == NULL){
 			THROW_RUNTIME_ERROR("main function is not created");
-			return  NULL;
+			return false;
 		}
 
 		if(getIdxClassFromIts_C_Type(var_type) == ZS_INVALID_CLASS){
 			THROW_RUNTIME_ERROR(zs_strutils::format("%s has not valid type (%s)",var_name.c_str(),var_type.c_str()));
-			return  NULL;
+			return false;
 		}
 
 
-		if((irs = main_function->registerVariable(registered_file,registered_line,var_name,var_type,(intptr_t)var_ptr,SYMBOL_INFO_PROPERTY_C_OBJECT_REF | SYMBOL_INFO_PROPERTY_STATIC_REF)) != NULL){
+		if((irs = main_function->addSymbol(
+				MAIN_SCOPE(this)
+				,registered_file
+				,registered_line
+				,var_name
+				,var_type
+				,(intptr_t)var_ptr
+				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC_REF)) != NULL
+		){
 
 			ZS_PRINT_DEBUG("Registered variable name: %s",var_name.c_str());
 
-			return irs;
+			return true;
 		}
 
-		return NULL;
+		return false;
 	}
 	void ScriptClassFactory::clear(){
 
 		bool end=false;
 		do{
 			ScriptClass * sc = script_classes.at(script_classes.size()-1);
-			end=(sc->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) == SYMBOL_INFO_PROPERTY_C_OBJECT_REF;
+			end=(sc->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF;
 
 			if(!end){
 
@@ -176,16 +189,19 @@ namespace zetscript{
 
 	}
 
-	ScriptClass * ScriptClassFactory::registerClass(const std::string & file, short line,const std::string & class_name, const std::string & base_class_name){
+	ScriptClass * ScriptClassFactory::registerClass(
+			const std::string & file
+			, short line
+			,const std::string & class_name
+			, const std::string & base_class_name
+	){
 		unsigned char  index;
 		ScriptClass *sci=NULL;
-
 
 		if(script_classes.size()>=MAX_REGISTER_CLASSES){
 			THROW_RUNTIME_ERROR(zs_strutils::format("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES));
 			return NULL;
 		}
-
 
 		if(class_name.empty()){
 			THROW_RUNTIME_ERROR("Class name empty");
@@ -204,8 +220,9 @@ namespace zetscript{
 			// BYTE_CODE_NEW SCOPE C and register ...
 			//unsigned char idx_class=(unsigned char)script_classes.size()-1;
 
-			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED);
+			Scope * scope = NEW_SCOPE(this,NULL);
 
+			// register symbol on main scope...
 			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_IS_CLASS);
 			if(symbol == NULL){
 				return NULL;
@@ -217,13 +234,12 @@ namespace zetscript{
 
 
 			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
-
-			sci->symbol_info.symbol=symbol;
+			sci->symbol=*symbol;
 
 			script_classes.push_back(sci);
 
 			if(base_class != NULL){
-				sci->idx_base_class.push_back(base_class->idx_class);
+				sci->idx_base_classes->push_back((intptr_t)base_class->idx_class);
 			}
 
 			return sci;
@@ -276,7 +292,7 @@ namespace zetscript{
 	unsigned char ScriptClassFactory::getIdxScriptClassInternal(const std::string & class_name){
 
 		for(unsigned i = 0; i < script_classes.size(); i++){
-			if(class_name == script_classes.at(i)->symbol_info.symbol->name){
+			if(class_name == script_classes.at(i)->symbol.name){
 				return i;
 			}
 		}
@@ -326,7 +342,7 @@ namespace zetscript{
 				 break;
 			 default:
 				 class_object = new ScriptVar(zs);
-				 class_object->Init(rc, value_object);
+				 class_object->init(rc, value_object);
 				 break;
 			 }
 		 }
@@ -365,7 +381,7 @@ namespace zetscript{
 
 	const char * ScriptClassFactory::getScriptClassName(unsigned char idx){
 		if(idx != ZS_INVALID_CLASS){
-			return script_classes[idx]->symbol_info.symbol->name.c_str();
+			return script_classes[idx]->symbol.name.c_str();
 		}
 		 return "class_unknow";
 	}
@@ -390,16 +406,17 @@ namespace zetscript{
 	}
 
 
-	bool 	ScriptClassFactory::class_C_BaseOf(unsigned char idxSrcClass, unsigned char class_idx){
+	bool 	ScriptClassFactory::class_C_BaseOf(unsigned char idx_src_class, unsigned char idx_class){
 
-		if(idxSrcClass == class_idx){
+		if(idx_src_class == idx_class){
 			return true;
 		}
 
-		ScriptClass * theClass = script_classes.at(idxSrcClass);
+		ScriptClass * the_class = script_classes.at(idx_src_class);
 
-		for(unsigned i=0; i < theClass->idx_base_class.size(); i++){
-			if(class_C_BaseOf(theClass->idx_base_class[i],class_idx)){
+		for(unsigned i=0; i < the_class->idx_base_classes->count; i++){
+			intptr_t idx_class_base=the_class->idx_base_classes->items[i];
+			if(class_C_BaseOf(idx_class_base,idx_class)){
 				return true;
 			}
 		}

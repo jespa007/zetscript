@@ -62,13 +62,24 @@ namespace zetscript{
 		/**
 		 * Register C variable
 		 */
-		 SymbolInfo *  					register_C_Variable(const std::string & var_name,void * var_ptr, const std::string & var_type, const char *registered_file,int registered_line);
+		 bool register_C_Variable(
+			 const std::string & var_name
+			 ,void * var_ptr
+			 , const std::string & var_type
+			 , const char *registered_file
+			 ,int registered_line
+		);
 
 		/**
 		 * Register C function
 		 */
 		 template <typename F>
-		 bool 							register_C_Function( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1);
+		 bool register_C_Function(
+			 const char * function_name
+			 ,F function_ptr
+			 , const char *registered_file=""
+			,int registered_line=-1
+		);
 
 		/**
 		 * Register C Class. Return index registered class

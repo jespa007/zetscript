@@ -5,6 +5,9 @@ namespace zetscript{
 		void popFunction(EvalData *eval_data);
 		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error, bool function_entry=false);
 		char * evalRecursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error);
+		Scope * evalNewScope(EvalData *eval_data, Scope *scope_parent,bool entry_function=false);
+		void evalCheckScope(EvalData *eval_data, Scope *scope);
+		//Scope * evalPopScope(EvalData *eval_data, Scope *current_scope);
 
 		char * isClassMemberExtension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol, bool & error){
 
@@ -93,7 +96,7 @@ namespace zetscript{
 
 				if(key_w == KeywordType::KEYWORD_TYPE_CLASS){
 
-					if(scope_info->getIdxScopeParent()!=ZS_IDX_UNDEFINED){
+					if(scope_info->scope_parent!=NULL){
 						writeError(eval_data->current_parsing_file,line,"class keyword is not allowed");
 						return NULL;
 					}
@@ -159,7 +162,7 @@ namespace zetscript{
 											eval_data
 											,aux_p
 											, line
-											,GET_SCOPE(eval_data,sc->symbol_info.symbol->idx_scope)
+											,sc->symbol.scope // pass class scope
 											,error
 									)) == NULL){
 										return NULL;
@@ -226,7 +229,7 @@ namespace zetscript{
 			char *aux_p = (char *)s;
 			char *end_var=NULL;
 			KeywordType key_w;
-			std::vector<ParamArgInfo> args;
+			std::vector<FunctionParam> args;
 			std::string conditional_str;
 			ScriptClass *sc=NULL;
 			ScriptFunction *sf=NULL;
@@ -236,18 +239,14 @@ namespace zetscript{
 			// we deduce we are in class whether is not main class and scope idx is pointing at scope base
 			bool is_class=
 					scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-					&& scope_info->getIdxScopeBase() == scope_info->idx_scope
+					&& scope_info->scope_base == scope_info
 					;
 
 			static int n_anonymous_function=0;
-			//std::string class_member,class_name,
 			std::string function_name="";
-
-			int idx_scope=ZS_IDX_UNDEFINED;
+			Scope *scope=scope_info;
 			int advance_chars=0;
 
-			// set current scope
-			idx_scope=scope_info->idx_scope;
 
 			// check for keyword ...
 			if(is_class){ // within class supposes is a function already
@@ -281,7 +280,7 @@ namespace zetscript{
 								,error
 						))!=NULL){ // check if particular case extension attribute class
 							// current scope is changed by class scope...
-							idx_scope = sc->symbol_info.symbol->idx_scope;
+							scope = sc->symbol.scope;
 							//symbol_value = (char *)class_member.c_str();
 						}else{
 							if(is_class){ // get class from idx_scope
@@ -325,7 +324,7 @@ namespace zetscript{
 						aux_p++;
 						aux_p=ignoreBlanks(aux_p,line);
 						std::string arg_value;
-						ParamArgInfo arg_info;
+						FunctionParam arg_info;
 
 						// grab words separated by ,
 						while(*aux_p != 0 && *aux_p != ')'){
@@ -374,7 +373,7 @@ namespace zetscript{
 							}
 
 							// check whether parameter name's matches with some global variable...
-							if((irv=GET_SCOPE(eval_data,idx_scope)->getSymbol(arg_value.c_str())) != NULL){
+							if((irv=scope->getSymbol(arg_value.c_str())) != NULL){
 								writeError(eval_data->current_parsing_file,line,"Ambiguous symbol argument \"%s\" name with var defined at %i", arg_value.c_str(), -1);
 								return NULL;
 							}
@@ -404,16 +403,17 @@ namespace zetscript{
 						}
 						//--- OP
 						if(sc!=NULL){ // register as variable member...
-							sf=sc->registerFunction(
-									eval_data->current_parsing_file
-									, line
-									, function_name
+							sf=sc->registerFunctionMember(
+									 eval_data->current_parsing_file
+									,line
+									,function_name
 									,args
 							);
 						}
 						else{ // register as local variable in the function...
-							sf=eval_data->current_evaluated_function->script_function->registerFunction(
-									eval_data->current_parsing_file
+							sf=eval_data->current_function->script_function->addFunction(
+									scope_info
+									, eval_data->current_parsing_file
 									, line
 									, function_name
 									,args
@@ -427,7 +427,7 @@ namespace zetscript{
 								eval_data
 								,aux_p
 								,line
-								,GET_SCOPE(eval_data,idx_scope)
+								,scope
 								,error
 								,true);
 
@@ -462,7 +462,7 @@ namespace zetscript{
 							,aux_p
 							, line
 							, scope_info
-							,&eval_data->current_evaluated_function->instructions
+							,&eval_data->current_function->instructions
 					))!= NULL){
 
 						if(*aux_p!=';'){
@@ -470,7 +470,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						eval_data->current_evaluated_function->instructions.push_back(new EvaluatedInstruction(BYTE_CODE_RET));
+						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RET));
 
 						aux_p=ignoreBlanks(aux_p+1,line);
 						return aux_p;
@@ -487,9 +487,6 @@ namespace zetscript{
 			char *end_expr;
 			std::string start_symbol;
 			KeywordType key_w;
-			Scope *_currentScope=NULL;
-
-			//PASTNode conditional_expression=NULL, while_node=NULL;
 			std::string conditional_str;
 			error = false;
 
@@ -508,8 +505,8 @@ namespace zetscript{
 								eval_data
 								,aux_p+1
 								,line
-								,_currentScope
-								,&eval_data->current_evaluated_function->instructions
+								,scope_info
+								,&eval_data->current_function->instructions
 						)) != NULL){
 
 							if(*end_expr != ')'){
@@ -530,11 +527,10 @@ namespace zetscript{
 									eval_data
 									,aux_p
 									,line
-									,_currentScope
+									,scope_info
 									,error
 							))!= NULL){
 								if(!error){
-									scope_info->popScope();
 									return aux_p;
 								}
 							}
@@ -559,7 +555,6 @@ namespace zetscript{
 			char *end_expr;
 			std::string start_symbol;
 			KeywordType key_w;
-			Scope *_currentScope=NULL;
 			std::string conditional_str;
 			error = false;
 
@@ -582,7 +577,7 @@ namespace zetscript{
 							eval_data
 							,aux_p
 							,line
-							,_currentScope
+							,scope_info
 							,error
 					))!= NULL){
 						if(!error){
@@ -608,8 +603,8 @@ namespace zetscript{
 										eval_data
 										,aux_p+1
 										,line
-										,_currentScope
-										,&eval_data->current_evaluated_function->instructions
+										,scope_info
+										,&eval_data->current_function->instructions
 								)) != NULL){
 									if(*end_expr != ')'){
 										writeError(eval_data->current_parsing_file,line,"Expected ')'");
@@ -628,7 +623,6 @@ namespace zetscript{
 								return NULL;
 							}
 
-							scope_info->popScope();
 							return end_expr+1;
 						}
 					}
@@ -646,9 +640,9 @@ namespace zetscript{
 			KeywordType key_w;
 			//std::string conditional_str;
 			error = false;
-			std::vector<EvaluatedInstruction *> ei_jmps;
-			EvaluatedInstruction *ei_aux;
-			//EvaluatedInstruction ei_jmp_else_if;
+			std::vector<EvalInstruction *> ei_jmps;
+			EvalInstruction *ei_aux;
+			//EvalInstruction ei_jmp_else_if;
 			//int conditional_line=0;
 
 			// check for keyword ...
@@ -673,7 +667,7 @@ namespace zetscript{
 								,aux_p+1
 								,line
 								,scope_info
-								,&eval_data->current_evaluated_function->instructions
+								,&eval_data->current_function->instructions
 						)) == NULL){
 							writeError(eval_data->current_parsing_file,line,"Expected ')' if ");
 							return NULL;
@@ -686,7 +680,7 @@ namespace zetscript{
 
 
 						// insert instruction if evaluated expression
-						eval_data->current_evaluated_function->instructions.push_back(ei_aux=new EvaluatedInstruction(BYTE_CODE_JNT));
+						eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
 						ei_jmps.push_back(ei_aux);
 
 						/*if(ignoreBlanks(aux_p+1,dl)==end_expr){
@@ -726,7 +720,7 @@ namespace zetscript{
 						if(else_key){
 
 							// we should insert jmp to end conditional chain if/else...
-							eval_data->current_evaluated_function->instructions.push_back(ei_aux=new EvaluatedInstruction(BYTE_CODE_JMP));
+							eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JMP));
 							ei_jmps.push_back(ei_aux);
 
 							aux_p += strlen(eval_info_keywords[key_w].str);
@@ -772,8 +766,15 @@ namespace zetscript{
 							// update all collected jump/jnt to current instruction...
 							for(unsigned i=0; i < ei_jmps.size(); i++){
 								// insert instruction if evaluated expression
-								ei_jmps[i]->vm_instruction.value_op2=eval_data->current_evaluated_function->instructions.size();
+								ei_jmps[i]->vm_instruction.value_op2=eval_data->current_function->instructions.size();
 							}
+
+							// concatenate collected jmps
+							eval_data->current_function->jmp_instructions.insert(
+									   eval_data->current_function->jmp_instructions.end()
+									,  ei_jmps.begin()
+									, ei_jmps.end()
+							);
 
 							return aux_p;
 						}
@@ -790,7 +791,7 @@ namespace zetscript{
 			KeywordType key_w;
 			error=false;
 			std::string eval_for;
-			Scope *_currentScope=NULL;
+
 
 			// check for keyword ...
 			key_w = isKeywordType(aux_p);
@@ -804,7 +805,7 @@ namespace zetscript{
 					if(*aux_p == '('){ // ready ...
 
 						// save scope pointer ...
-						_currentScope =scope_info->pushScope(); // push current scope
+						Scope *new_scope =evalNewScope(eval_data,scope_info); // push current scope
 
 
 						aux_p=ignoreBlanks(aux_p+1,line);
@@ -818,8 +819,7 @@ namespace zetscript{
 										eval_data
 										,aux_p
 										,line
-										,
-										_currentScope
+										,new_scope
 										,error
 								))==NULL){
 									return NULL;
@@ -847,8 +847,8 @@ namespace zetscript{
 									eval_data
 									,(const char *)aux_p
 									,line
-									,_currentScope
-									,&eval_data->current_evaluated_function->instructions
+									,new_scope
+									,&eval_data->current_function->instructions
 							)) == NULL){
 								return NULL;
 							}
@@ -871,8 +871,8 @@ namespace zetscript{
 											eval_data
 											,(const char *)aux_p
 											,line
-											,_currentScope
-											,&eval_data->current_evaluated_function->instructions
+											,new_scope
+											,&eval_data->current_function->instructions
 									)) == NULL){
 										return NULL;
 									}
@@ -900,8 +900,8 @@ namespace zetscript{
 											eval_data
 											,aux_p
 											,line
-											,_currentScope
-											,&eval_data->current_evaluated_function->instructions
+											,new_scope
+											,&eval_data->current_function->instructions
 									))==NULL){
 										return NULL;
 									}
@@ -935,11 +935,11 @@ namespace zetscript{
 								eval_data
 								,aux_p
 								,line
-								,_currentScope
+								,new_scope
 								,error
 						))!= NULL){ // true: We treat declared variables into for as another scope.
 							if(!error){
-								scope_info->popScope(); // push current scope
+								evalCheckScope(eval_data,new_scope);
 								return aux_p;
 							}
 						}
@@ -959,7 +959,6 @@ namespace zetscript{
 			Scope *scope_case=NULL;
 			std::string val;
 			KeywordType key_w;//,key_w2;
-			Scope *current_scope=scope_info;
 
 			error=false;
 			// check for keyword ...
@@ -968,20 +967,18 @@ namespace zetscript{
 			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
 				if(key_w == KeywordType::KEYWORD_TYPE_SWITCH){
 
-					current_scope=scope_info->pushScope();
-
 					aux_p += strlen(eval_info_keywords[key_w].str);
 					aux_p=ignoreBlanks(aux_p,line);
 
 					if(*aux_p == '('){
 							aux_p=ignoreBlanks(aux_p+1,line);
-							// evaluate switch vale expression ...
+							// evaluate switch condition expression ...
 							if((aux_p = evalExpression(
 								eval_data
 								,aux_p
 								,line
 								,scope_info
-								,&eval_data->current_evaluated_function->instructions
+								,&eval_data->current_function->instructions
 							))==NULL){
 								return NULL;
 							}
@@ -1002,7 +999,7 @@ namespace zetscript{
 									eval_data
 									,aux_p
 									, line
-									, current_scope
+									, scope_info
 									, error))==NULL
 								){
 									return NULL;
@@ -1015,7 +1012,6 @@ namespace zetscript{
 									return NULL;
 								}
 
-								scope_info->popScope();
 								return aux_p+1;
 							}
 							else{
@@ -1040,21 +1036,9 @@ namespace zetscript{
 			KeywordType key_w;
 			char *start_var,*end_var;
 			std::string s_aux,variable_name;
-			//char *symbol_value;
 			bool end=false;
 			bool allow_for_in=true;
-			//short idxScopeClass=-1;
-			//short idx_scope=scope_info->getScopePtrCurrent()->idx_scope;
-			//bool is_class_member=false;
 			int start_line=0;
-
-			//ScriptClass *sc=NULL;
-			//ScriptClass *sc_come_from=NULL;
-
-			/*if(scope_info->idx_scope!=IDX_GLOBAL_SCOPE){
-				sc_come_from=scope_info->getScriptClass();//) { // BYTE_CODE_NOT GLOBAL
-			}*/
-			//is_class_member = scope_info->getIdxScopeBase() == scope_info->getScopePtrCurrent()->idx_scope;
 
 			key_w = isKeywordType(aux_p);
 
@@ -1130,7 +1114,7 @@ namespace zetscript{
 									,start_var
 									,start_line
 									,scope_info
-									,&eval_data->current_evaluated_function->instructions
+									,&eval_data->current_function->instructions
 								)) == NULL){
 									return NULL;
 								}
@@ -1143,8 +1127,9 @@ namespace zetscript{
 								sc->registerVariable(eval_data->current_parsing_file, line, variable_name);
 							}
 							else{ */// register as local variable in the function...
-								eval_data->current_evaluated_function->script_function->registerVariable(
-										eval_data->current_parsing_file
+								eval_data->current_function->script_function->addSymbol(
+										scope_info
+										,eval_data->current_parsing_file
 										, line
 										, variable_name
 								);
@@ -1229,7 +1214,7 @@ namespace zetscript{
 			std::string value_to_eval;
 			TokenNode token_node;
 
-			//std::vector<EvaluatedInstruction> *tokenCompiled = NULL;
+			//std::vector<EvalInstruction> *tokenCompiled = NULL;
 
 			aux_p=ignoreBlanks(aux_p, line);
 
@@ -1296,7 +1281,7 @@ namespace zetscript{
 					error = true;
 					return NULL;
 				case KEYWORD_TYPE_NEW:
-					if((aux_p = evalNewObject(eval_data,s,line,scope_info,&eval_data->current_evaluated_function->instructions)) != NULL){
+					if((aux_p = evalNewObject(eval_data,s,line,scope_info,&eval_data->current_function->instructions)) != NULL){
 						return aux_p;
 					}
 					error = true;

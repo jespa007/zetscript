@@ -134,13 +134,13 @@ namespace zetscript{
 			SEPARATOR_TYPE_MAX
 		}SeparatorType;
 
-		struct EvaluatedInstruction{
+		struct EvalInstruction{
 			Instruction 					vm_instruction;
 
 			LinkSymbolFirstAccess			link_symbol_first_access;
 			InstructionSourceInfo 			instruction_source_info;
 
-			EvaluatedInstruction(ByteCode _byte_code
+			EvalInstruction(ByteCode _byte_code
 						 ,unsigned char _index_op1=ZS_IDX_UNDEFINED
 						 ,intptr_t _index_op2=ZS_IDX_UNDEFINED
 						 ,unsigned short _properties=0
@@ -159,7 +159,7 @@ namespace zetscript{
 
 			std::string 			value; // token value content
 			int line;
-			std::vector<EvaluatedInstruction *> instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
+			std::vector<EvalInstruction *> instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
 
 			// AST info operator.
 			TokenNode *token_node_left;
@@ -178,18 +178,18 @@ namespace zetscript{
 		};
 
 		typedef struct {
-			std::vector<EvaluatedInstruction> evaluated_instruction;
+			std::vector<EvalInstruction> evaluated_instruction;
 		}ContinueInstructionScope,BreakInstructionScope;
 
-		struct EvaluatedFunction{
-		public:
+		struct EvalFunction{
 
-			std::vector<EvaluatedInstruction *>	 	instructions;
+			std::vector<EvalInstruction *>	 		instructions;
 			ScriptFunction 						*  	script_function;
-			bool									last_byte_code_was_pop_scope;
 
-			EvaluatedFunction(ScriptFunction	* _script_function){
-				last_byte_code_was_pop_scope=false;
+			// a set of instructions that relates with jmps instructions in current scope, just in case we have to insert push instruction later
+			std::vector<EvalInstruction *>	 		jmp_instructions;
+
+			EvalFunction(ScriptFunction	* _script_function){
 				script_function=_script_function;
 			}
 
@@ -204,13 +204,13 @@ namespace zetscript{
 				return !lastInstructionRet() || last_byte_code_was_pop_scope;
 			}
 
-			EvaluatedInstruction * insertInstruction(ByteCode _byte_code
+			EvalInstruction * insertInstruction(ByteCode _byte_code
 					 ,unsigned char _index_op1=ZS_IDX_UNDEFINED
 					 ,intptr_t _index_op2=ZS_IDX_UNDEFINED
 					 ,unsigned short _properties=0){
-				EvaluatedInstruction *ei=NULL;
+				EvalInstruction *ei=NULL;
 				if(canInsertInstructions()){ // not emit byte code if last instruction was ret...
-					instructions.push_back(ei=new EvaluatedInstruction(_byte_code
+					instructions.push_back(ei=new EvalInstruction(_byte_code
 							 ,_index_op1
 							 ,_index_op2
 							 , _properties));
@@ -222,7 +222,7 @@ namespace zetscript{
 				}
 				return ei;
 			}*/
-			~EvaluatedFunction(){
+			~EvalFunction(){
 				for(unsigned i=0; i< instructions.size(); i++){
 					delete instructions[i];
 				}
@@ -234,47 +234,47 @@ namespace zetscript{
 			DirectiveType id;
 			const char *str;
 			//char * (*parse_fun)(const char *, int &, Scope *, PASTNode *);
-		} EvalInfoDirective;
+		} EvalDirective;
 
 
 		typedef struct {
 			KeywordType id;
 			const char *str;
 			char * (* eval_fun)(EvalData *eval_data,const char *, int &, Scope *, bool &);
-		} EvalInfoKeyword;
+		} EvalKeyword;
 
 		typedef struct {
 			OperatorType id;
 			const char *str;
 			bool (*eval_fun)(const char *);
-		} EvalInfoOperator;
+		} EvalOperator;
 
 		typedef struct {
 			PreOperatorType id;
 			const char *str;
 			bool (*eval_fun)(const char *);
-		} EvalInfoPreOperator;
+		} EvalPreOperator;
 
 		typedef struct {
 			PrePostSelfOperationType id;
 			const char *str;
 			bool (*eval_fun)(const char *);
-		} EvalInfoIdentityOperator;
+		} EvalIdentityOperator;
 
 
 		typedef struct {
 			SeparatorType id;
 			const char *str;
 			bool (*eval_fun)(const char *);
-		} EvalInfoSeparator;
+		} EvalSeparator;
 
 		struct EvalData{
 			ZetScript 						* 		zs;
 			ScopeFactory 					* 		scope_factory;
 			ScriptFunctionFactory 			* 		script_function_factory;
 			ScriptClassFactory 				* 		script_class_factory;
-			EvaluatedFunction				* 		current_evaluated_function;
-			std::vector<EvaluatedFunction *> 	  	evaluated_functions;
+			EvalFunction					* 		current_function;
+			std::vector<EvalFunction *> 	  		functions;
 			const char 						* 		current_parsing_file;
 			std::map<std::string,std::string *>	 	compiled_symbol_name;
 			bool							  		error;
@@ -282,7 +282,7 @@ namespace zetscript{
 
 			EvalData(ZetScript * _zs){
 				current_parsing_file=NULL;
-				current_evaluated_function=NULL;
+				current_function=NULL;
 				this->zs=_zs;
 				this->script_function_factory=zs->getScriptFunctionFactory();
 				this->scope_factory=zs->getScopeFactory();
@@ -299,12 +299,12 @@ namespace zetscript{
 		};
 
 
-		EvalInfoOperator eval_info_operators[OPERATOR_TYPE_MAX];
-		EvalInfoPreOperator eval_info_pre_operators[PRE_OPERATOR_TYPE_MAX];
-		EvalInfoIdentityOperator eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_TYPE_MAX];
-		EvalInfoSeparator eval_info_separators[SEPARATOR_TYPE_MAX];
-		EvalInfoKeyword eval_info_keywords[KEYWORD_TYPE_MAX];
-		EvalInfoDirective eval_info_directives[DIRECTIVE_TYPE_MAX];
+		EvalOperator eval_info_operators[OPERATOR_TYPE_MAX];
+		EvalPreOperator eval_info_pre_operators[PRE_OPERATOR_TYPE_MAX];
+		EvalIdentityOperator eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_TYPE_MAX];
+		EvalSeparator eval_info_separators[SEPARATOR_TYPE_MAX];
+		EvalKeyword eval_info_keywords[KEYWORD_TYPE_MAX];
+		EvalDirective eval_info_directives[DIRECTIVE_TYPE_MAX];
 
 		bool g_init_eval=false;
 

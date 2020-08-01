@@ -49,7 +49,7 @@ namespace zetscript{
 		intptr_t result=0;
 		StackElement *stk_arg_current;
 		current_call_c_function = calling_function;
-		bool static_ref=calling_function->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_STATIC_REF;
+		bool static_ref=calling_function->symbol.symbol_properties&SYMBOL_PROPERTY_STATIC_REF;
 		//float aux_float=0;
 
 		if(n_args>MAX_N_ARGS){
@@ -57,7 +57,7 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		if((calling_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF) {
+		if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
 			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Function is not registered as C");
 			RETURN_ERROR;
 		}
@@ -68,13 +68,13 @@ namespace zetscript{
 			RETURN_ERROR;
 		}
 
-		if((char)calling_function->arg_info.size() != n_args){
+		if((char)calling_function->function_params->count != n_args){
 			writeError(SFI_GET_FILE_LINE(calling_function,ins),"C argument VS scrip argument doestn't match sizes");
 			RETURN_ERROR;
 		}
 
-		if(calling_function->arg_info.size() > MAX_N_ARGS){
-			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->arg_info.size(),MAX_N_ARGS);
+		if(calling_function->function_params->count > MAX_N_ARGS){
+			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->function_params->count,MAX_N_ARGS);
 			RETURN_ERROR;
 			//return &stk_result;//ScriptVar::UndefinedSymbol;
 		}
@@ -82,7 +82,7 @@ namespace zetscript{
 		// convert parameters script to c...
 		for(unsigned char  i = 0; i < n_args;i++){
 
-			if( i==0 && (calling_function->symbol_info.symbol_info_properties&(SYMBOL_INFO_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))){
+			if( i==0 && (calling_function->symbol.symbol_properties&(SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))){
 				if(!static_ref){
 					writeError(SFI_GET_FILE_LINE(calling_function,ins),"Internal error: Cannot set parameter as this object due is not static");
 					RETURN_ERROR;
@@ -97,13 +97,14 @@ namespace zetscript{
 			}
 			else{
 				stk_arg_current=&stk_arg_calling_function[i];
+				FunctionParam *function_param=(FunctionParam *)calling_function->function_params->items[i];
 
-				if(!zs->convertStackElementToVar(stk_arg_current,calling_function->arg_info[i].idx_type,(intptr_t *)&converted_param[i],error_str)){
+				if(!zs->convertStackElementToVar(stk_arg_current,function_param->idx_type,(intptr_t *)&converted_param[i],error_str)){
 					writeError(SFI_GET_FILE_LINE(calling_function,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
-																	calling_function->symbol_info.symbol->name.c_str(),
+																	calling_function->symbol.name.c_str(),
 																	i,
 																	error_str.c_str(),
-																	calling_function->symbol_info.symbol->name.c_str()
+																	calling_function->symbol.name.c_str()
 																	);
 					RETURN_ERROR;
 				}

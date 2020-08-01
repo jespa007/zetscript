@@ -272,7 +272,7 @@ namespace zetscript{
 				[&,calling_obj,fun_obj, idx_param1](tParam1 p1){
 
 					bool error=false;
-					std::vector<StackElement> args={
+					StackElement args[1]={
 							 convertVarToStackElement((intptr_t)p1,idx_param1)
 
 					};
@@ -281,7 +281,8 @@ namespace zetscript{
 								fun_obj,
 								calling_obj,
 								error,
-								args);
+								args,
+								1);
 					if(error){
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 					}
@@ -306,7 +307,7 @@ namespace zetscript{
 						std::string error_str;
 						bool error=false;
 
-						std::vector<StackElement> args={
+						StackElement args[1]={
 								 convertVarToStackElement((intptr_t)p1,idx_param1)
 						};
 
@@ -314,7 +315,8 @@ namespace zetscript{
 													fun_obj,
 													calling_obj,
 													error,
-													args);
+													args,
+													1);
 
 						if(error){
 							THROW_SCRIPT_ERROR();//(std::string("run-time error"));
@@ -350,7 +352,7 @@ namespace zetscript{
 
 					bool error=false;
 
-					std::vector<StackElement> args={
+					StackElement args[2]={
 							 convertVarToStackElement((intptr_t)p1,idx_param1)
 							,convertVarToStackElement((intptr_t)p2,idx_param2)
 
@@ -360,7 +362,8 @@ namespace zetscript{
 									fun_obj,
 									calling_obj,
 									error,
-									args);
+									args,
+									2);
 
 
 					if(error){
@@ -390,7 +393,7 @@ namespace zetscript{
 						std::string error_str;
 						bool error=false;
 
-						std::vector<StackElement> args={
+						StackElement args[2]={
 								 convertVarToStackElement((intptr_t)p1,idx_param1)
 								,convertVarToStackElement((intptr_t)p2,idx_param2)
 
@@ -400,7 +403,8 @@ namespace zetscript{
 													fun_obj,
 													calling_obj,
 													error,
-													args);
+													args,
+													2);
 
 						if(error){
 							THROW_SCRIPT_ERROR();//(std::string("run-time error"));
@@ -441,7 +445,7 @@ namespace zetscript{
 
 					bool error=false;
 
-					std::vector<StackElement> args={
+					StackElement args[3]={
 							 convertVarToStackElement((intptr_t)p1,idx_param1)
 							,convertVarToStackElement((intptr_t)p2,idx_param2)
 							,convertVarToStackElement((intptr_t)p3,idx_param3)
@@ -451,7 +455,8 @@ namespace zetscript{
 									fun_obj,
 									calling_obj,
 									error,
-									args);
+									args,
+									3);
 
 					if(error){
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
@@ -480,7 +485,7 @@ namespace zetscript{
 					std::string error_str;
 					bool error=false;
 
-					std::vector<StackElement> args={
+					StackElement args[3]={
 							 convertVarToStackElement((intptr_t)p1,idx_param1)
 							,convertVarToStackElement((intptr_t)p2,idx_param2)
 							,convertVarToStackElement((intptr_t)p3,idx_param3)
@@ -490,7 +495,8 @@ namespace zetscript{
 												fun_obj,
 												calling_obj,
 												error,
-												args);
+												args,
+												3);
 
 					if(error){
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
@@ -531,7 +537,7 @@ namespace zetscript{
 
 					bool error=false;
 
-					std::vector<StackElement> args={
+					StackElement args[4]={
 							 convertVarToStackElement((intptr_t)p1,idx_param1)
 							,convertVarToStackElement((intptr_t)p2,idx_param2)
 							,convertVarToStackElement((intptr_t)p3,idx_param3)
@@ -543,7 +549,8 @@ namespace zetscript{
 									fun_obj,
 									calling_obj,
 									error,
-									args);
+									args,
+									4);
 
 					if(error){
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
@@ -575,7 +582,7 @@ namespace zetscript{
 						bool error=false;
 						std::string error_str;
 
-						std::vector<StackElement> args={
+						StackElement args[4]={
 								 convertVarToStackElement((intptr_t)p1,idx_param1)
 								,convertVarToStackElement((intptr_t)p2,idx_param2)
 								,convertVarToStackElement((intptr_t)p3,idx_param3)
@@ -587,7 +594,8 @@ namespace zetscript{
 													fun_obj,
 													calling_obj,
 													error,
-													args);
+													args,
+													4);
 
 						if(error){
 							THROW_SCRIPT_ERROR();//(std::string("run-time error"));
@@ -632,7 +640,7 @@ namespace zetscript{
 				[&,calling_obj,fun_obj,idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5){
 
 					bool error=false;
-					std::vector<StackElement> args={
+					StackElement args[5]={
 							 convertVarToStackElement((intptr_t)p1,idx_param1)
 							,convertVarToStackElement((intptr_t)p2,idx_param2)
 							,convertVarToStackElement((intptr_t)p3,idx_param3)
@@ -645,7 +653,8 @@ namespace zetscript{
 									fun_obj,
 									calling_obj,
 									error,
-									args);
+									args,
+									5);
 					if(error){
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
 					}
@@ -681,7 +690,7 @@ namespace zetscript{
 					bool error=false;
 					std::string error_str;
 
-					std::vector<StackElement> args={
+					StackElement args[5]={
 							 convertVarToStackElement((intptr_t)p1,idx_param1)
 							,convertVarToStackElement((intptr_t)p2,idx_param2)
 							,convertVarToStackElement((intptr_t)p3,idx_param3)
@@ -694,7 +703,8 @@ namespace zetscript{
 												fun_obj,
 												calling_obj,
 												error,
-												args);
+												args,
+												5);
 
 					if(error){
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
@@ -740,7 +750,7 @@ namespace zetscript{
 			*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
 				[&,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
 					bool error=false;
-					std::vector<StackElement> args={
+					StackElement args[6]={
 							 convertVarToStackElement((intptr_t)p1,idx_param1)
 							,convertVarToStackElement((intptr_t)p2,idx_param2)
 							,convertVarToStackElement((intptr_t)p3,idx_param3)
@@ -754,7 +764,8 @@ namespace zetscript{
 									fun_obj,
 									calling_obj,
 									error,
-									args);
+									args,
+									6);
 					if(error){
 
 						THROW_SCRIPT_ERROR();//(std::string("run-time error"));
@@ -790,7 +801,7 @@ namespace zetscript{
 						bool error=false;
 						std::string error_str;
 
-						std::vector<StackElement> args={
+						StackElement args[6]={
 								 convertVarToStackElement((intptr_t)p1,idx_param1)
 								,convertVarToStackElement((intptr_t)p2,idx_param2)
 								,convertVarToStackElement((intptr_t)p3,idx_param3)
@@ -803,7 +814,8 @@ namespace zetscript{
 													fun_obj,
 													calling_obj,
 													error,
-													args);
+													args,
+													6);
 
 						if(error){
 							THROW_SCRIPT_ERROR();//(std::string("run-time error"));

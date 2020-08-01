@@ -14,20 +14,18 @@
 #define ZS_IDX_UNDEFINED 					-1
 //#define ZS_FUNCTION_NOT_FOUND_IDX	 		-2
 #define ZS_IDX_SYMBOL_THIS					-3
+#define ZS_IDX_SYMBOL_CLASS					-4
 
 #define MAX_N_ARGS						 6
-#define NO_PARAMS_IS_VARIABLE			-1
-//#define NO_PARAMS_SYMBOL_ONLY			-2
-#define NO_PARAMS_IS_CLASS				-2
-#define DEFAULT_NO_FILENAME				"no_file"
 
-// HELPER FUNCTIONS
+#define DEFAULT_NO_FILENAME				"no_file"
+#define FUNCTION_MEMBER_CONSTRUCTOR_NAME "constructor"
+
+// HELPER FUNCTIONSs
 
 #define REGISTER_C_BASE_SYMBOLS(script_class_factory,o)		   			(zs)->register_C_BaseSymbols(o))
 
 // if 0 is in main <> 0, else.
-#define SCOPE_IN_MAIN_CLASS(idx)						((this->scope_factory)->getScope(idx)->getIdxScopeBase()==IDX_GLOBAL_SCOPE)
-
 #define DO_CAST											((this->zs))->doCast
 #define GET_IDX_BUILTIN_TYPE_CLASS_FROM_ITS_C_TYPE		((this->zs))->getIdxClassFromIts_C_Type
 #define INSTANCE_SCRIPT_VARIABLE_BY_IDX					((this->zs))->instanceScriptVariableByIdx
@@ -44,7 +42,7 @@ namespace zetscript{
 	class ScriptVar;
 	struct Symbol;
 
-	struct ScopeBlockVars;
+	//struct ScopeBlockVars;
 
 	typedef enum
 		:unsigned char {
@@ -96,12 +94,12 @@ namespace zetscript{
 
 	//typedef tInfoStatementOp *PInfoStatementOp;
 	typedef enum {
-		SYMBOL_INFO_PROPERTY_C_OBJECT_REF 					= 0x1 << 0,
-		SYMBOL_INFO_PROPERTY_IS_DERIVATED 					= 0x1 << 1,
-		SYMBOL_INFO_PROPERTY_STATIC_REF 					= 0x1 << 2, // C function or C++ static functions
-		SYMBOL_INFO_PROPERTY_IS_POLYMORPHIC					= 0x1 << 3,
-		SYMBOL_INFO_PROPERTY_SET_FIRST_PARAMETER_AS_THIS	= 0x1 << 4  // will pass object this as first parameter
-	}SymbolInfoProperty;
+		SYMBOL_PROPERTY_C_OBJECT_REF 					= 0x1 << 0,
+		SYMBOL_PROPERTY_IS_DERIVATED 					= 0x1 << 1,
+		SYMBOL_PROPERTY_STATIC_REF 						= 0x1 << 2, // C function or C++ static functions
+		SYMBOL_PROPERTY_IS_POLYMORPHIC					= 0x1 << 3,
+		SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS		= 0x1 << 4  // will pass object this as first parameter
+	}SymbolProperty;
 
 
 	typedef enum
@@ -116,75 +114,33 @@ namespace zetscript{
 	typedef intptr_t (*ConversionType)(intptr_t);
 	//-----------------------------
 
-	struct Symbol {
-		//public:
-		std::string file;
-		short line;
-		short idx_scope;
 
-		std::string name;
-
-		char n_params;
-
-		Symbol(){
-			file="";
-			line=-1;
-
-			idx_scope = ZS_IDX_UNDEFINED;
-			name="";
-			n_params = NO_PARAMS_IS_VARIABLE;
-		}
-
-		/*Symbol(const std::string & _name, char _n_params= NO_PARAMS_IS_VARIABLE){
-			file=ZS_IDX_UNDEFINED;
-			line=-1;
-			idx_scope = ZS_IDX_UNDEFINED;
-
-			name=_name;
-			n_params=_n_params;
-		}*/
-
-		bool operator == (const Symbol & s1){
-			return this->name == s1.name
-				  && this->idx_scope == s1.idx_scope
-				  && this->n_params == s1.n_params;
-		}
-
-		bool isFunction(){
-			return n_params != NO_PARAMS_IS_VARIABLE;
-		}
-
-		bool matchSymbol(const Symbol & s1){
-			return this->name == s1.name
-				  && this->n_params == s1.n_params;
-		}
-	};
 	//-----------------------------
 	#pragma pack(push, 1)
 
 	struct LinkSymbolFirstAccess{
 
 		short idx_script_function;
-		short idx_scope;
+		Scope *scope;
 		std::string value;
 		char n_params;
 
 		LinkSymbolFirstAccess(){
 
 			idx_script_function=ZS_IDX_UNDEFINED;
-			idx_scope=ZS_IDX_UNDEFINED;
+			scope=NULL;
 			value = "";
 			n_params=ZS_IDX_UNDEFINED;
 		}
 
 		LinkSymbolFirstAccess(
 				 int _idx_script_function
-				,short _idx_scope
+				,Scope *_scope
 				,const std::string & _value
 				,char _n_params=0
 				){
 			idx_script_function=_idx_script_function;
-			idx_scope=_idx_scope;
+			scope=_scope;
 			value=_value;
 			n_params=_n_params;
 		}
@@ -195,11 +151,11 @@ namespace zetscript{
 	/**
 	 * Scope register
 	 */
-	struct ScopeBlockVars {
+	/*struct ScopeBlockVars {
 		int *		idx_local_var;
 		uint8_t 	n_local_vars;
-		short 		idx_scope;
-	};
+		Scope 	 *	scope;
+	};*/
 
 	typedef struct _SharedPointerInfo *PInfoSharedPointer;
 
@@ -222,7 +178,7 @@ namespace zetscript{
 		int idx_type;
 		std::string arg_name; //arg c++ type or arg name
 		int line;
-	}ParamArgInfo;
+	}FunctionParam;
 
 	#pragma pack(pop)
 

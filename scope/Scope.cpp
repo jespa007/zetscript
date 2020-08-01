@@ -8,135 +8,79 @@
 #define MAX_VAR_LENGTH 100
 
 
-
-/*
-//	 _____                        _____       __
-//	/  ___|                      |_   _|     / _|
-//	\ `--.  ___ ___  _ __   ___    | | _ __ | |_ ___
-//	 `--. \/ __/ _ \| '_ \ / _ \   | || '_ \|  _/ _ \
-//	/\__/ / (_| (_) | |_) |  __/  _| || | | | || (_) |
-//	\____/ \___\___/| .__/ \___|  \___/_| |_|_| \___/
-//               | |
-//               |_|
-// _________________________________________________
-//  __________________________________
-*/
-
-
 namespace zetscript{
 
 
 	void  writeError(const char *filename, int line, const  char  *string_text, ...);
 
-	//int Scope::n_anonymouse_func=0;
-
-
 	//------------------------------------------------------------------------------------------------
-
-	Scope::Scope(ZetScript * _zs, short _idx_this, short _idx_parent, bool _is_c_node){//, int _index){
-		idx_scope_parent = _idx_parent;
-		idx_scope_ptr_current=ZS_IDX_UNDEFINED;
-		idx_scope = _idx_this;
+	Scope::Scope(ZetScript * _zs, Scope * _scope_parent, bool _is_c_node){
+		scope_parent = _scope_parent;
 		is_c_node = _is_c_node;
 		script_class=NULL;
+		unusued=false;
 		zs=_zs;
+		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
 		scope_factory=_zs->getScopeFactory();
+		registered_scopes=new zs_vector;
+		registered_symbols=new zs_vector;
 
-
-		if(_idx_parent == ZS_IDX_UNDEFINED){ // first node...
-
-			idx_scope_base = _idx_this;
-			idx_scope_ptr_current=_idx_this;
+		if(_scope_parent == NULL){ // first node...
+			scope_base = this;
 		}else{
-			idx_scope_base = GET_SCOPE(this,_idx_parent)->getIdxScopeBase();
+			scope_base = scope_parent->scope_base;
 		}
 	}
 
 	void Scope::setScriptClass(ScriptClass *sc){
-		if(idx_scope_parent != ZS_IDX_UNDEFINED){
-			THROW_RUNTIME_ERROR("set scriptclass must when scope is root");
+		if(scope_parent != NULL){
+			THROW_RUNTIME_ERROR("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
 			return;
 		}
-
 		script_class=sc;
 	}
 
 	ScriptClass * Scope::getScriptClass(){
-		return GET_SCOPE(this,idx_scope_base)->script_class;
+		return scope_base->script_class;
 	}
 
-	short Scope::getIdxScopeBase(){
-		return idx_scope_base;
-	}
+	void						   Scope::markAsUnusued(){
 
-	short Scope::getIdxScopeParent(){
-		return idx_scope_parent;
-	}
-
-	short Scope::getIdxScopePtrCurrent(){
-		return GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current;
-	}
-
-	Scope * Scope::getScopePtrCurrent(){
-		return GET_SCOPE(this,GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current);
-	}
-
-
-	void Scope::resetScopePointer(){
-		GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current = idx_scope_base;
-	}
-
-	Scope * Scope::pushScope(){
-
-		Scope *new_scope = NEW_SCOPE(this,GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current);//, m_baseScope->incTotalScopes());
-		GET_SCOPE(this,GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current)->idx_local_scopes.push_back(new_scope->idx_scope);
-		GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current = new_scope->idx_scope;
-		return new_scope;
-	}
-
-	Scope * Scope::popScope(){
-
-		Scope *current_scope = GET_SCOPE(this,GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current);
-		if(current_scope->idx_scope_parent != ZS_IDX_UNDEFINED){
-
-			GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current = current_scope->idx_scope_parent;
-			return GET_SCOPE(this,GET_SCOPE(this,idx_scope_base)->idx_scope_ptr_current);
+		// link parent to its childs
+		for(unsigned i=0;registered_scopes->count; i++){
+			Scope *scope_child=(Scope *)registered_scopes->items[i];
+			scope_child->scope_parent=scope_parent;
 		}
 
-		return NULL;
-	}
-
-	std::vector<short> * Scope::getLocalScopeList(){
-
-		return &idx_local_scopes;
+		// mark as unused, late we can remove safely check unusued flag...
+		unusued=true;
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
 	//
 	// SCOPE VARIABLE MANAGEMENT
 	//
-
-	Symbol * Scope::registerSymbol(const std::string & file,short line,const std::string & var_name, char n_params){
+	Symbol * Scope::registerSymbol(const std::string & file,short line, const std::string & symbol_name, char n_params){
 		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
-		if((p_irv = getSymbol(var_name,n_params))==NULL){ // check whether is local var registered scope ...
+		if((p_irv = getSymbol(symbol_name,n_params))==NULL){ // check whether symbol is already registered ...
 
 			Symbol *irv = new Symbol();
-			irv->name = var_name;
+			irv->name = symbol_name;
 			irv->file	 = file;
 			irv->line 	 = line;
-			irv->idx_scope=this->idx_scope;
+			irv->scope=  this;
 			irv->n_params=n_params;
 
-			scope_symbols.push_back(irv);
+			registered_symbols->push_back((intptr_t)irv);
 			return irv;
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				writeError(file.c_str(),line," error var \"%s\" already registered at %s:%i", var_name.c_str(),p_irv->file.c_str(),p_irv->line);
+				writeError(file.c_str(),line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file.c_str(),p_irv->line);
 			}else{
-				writeError(NULL,0," error var \"%s\" already registered as C++", var_name.c_str());
+				writeError(NULL,0," error symbol \"%s\" already registered as C++", symbol_name.c_str());
 			}
 
 			THROW_SCRIPT_ERROR();
@@ -146,39 +90,33 @@ namespace zetscript{
 
 	Symbol * Scope::getSymbolRecursiveDownScope(const std::string & str_symbol, char n_params){
 
-
-		for(unsigned i = 0; i < scope_symbols.size(); i++){
-
-			if(scope_symbols[i]->name==str_symbol && (scope_symbols[i]->n_params >= 0 && n_params>=0 ?(scope_symbols[i]->n_params == n_params):true)){
-					return scope_symbols[i];//.idxScopeVar; // ptr scope ?
+		for(unsigned i = 0; i < registered_symbols->count; i++){
+			Symbol *local_symbol = (Symbol *)registered_symbols->items[i];
+			if(local_symbol->name==str_symbol && (local_symbol->n_params >= 0 && n_params>=0 ?(local_symbol->n_params == n_params):true)){
+					return local_symbol;//.idxScopeVar; // ptr scope ?
 			}
 		}
 
-		int parent =  getIdxScopeParent();
-		if(parent != ZS_IDX_UNDEFINED){
-			return GET_SCOPE(this,parent)->getSymbolRecursiveDownScope(str_symbol,n_params);
+		if(this->scope_parent != NULL){
+			return this->scope_parent->getSymbolRecursiveDownScope(str_symbol,n_params);
 		}
 
 		return NULL;
-
 	}
 
 	Symbol * Scope::getSymbolRecursiveUpScope(const std::string & str_symbol, char n_params){
-		// only blocks within functions...
-		Symbol *sv;
-
 		// for each variable in current scope ...
-		for(unsigned i = 0; i < scope_symbols.size(); i++){
-
-			if(scope_symbols[i]->name==str_symbol && (scope_symbols[i]->n_params >= 0 && n_params>=0 ?(scope_symbols[i]->n_params == n_params):true)){
-				return scope_symbols[i];//.idxScopeVar; // ptr scope ?
+		for(unsigned i = 0; i < registered_symbols->count; i++){
+			Symbol *local_symbol=(Symbol *)registered_symbols->items[i];
+			if(local_symbol->name==str_symbol && (local_symbol->n_params >= 0 && n_params>=0 ?(local_symbol->n_params == n_params):true)){
+				return local_symbol;
 			}
 		}
 
 		// ok lets iterate through current scope list
-		for(unsigned i = 0; i < idx_local_scopes.size(); i++){
-			Scope *s=GET_SCOPE(this,idx_local_scopes[i]);
-			sv=s->getSymbolRecursiveUpScope(str_symbol,n_params);
+		for(unsigned i = 0; i < registered_scopes->count; i++){
+			Scope *s=(Scope *)registered_scopes->items[i];
+			Symbol *sv=s->getSymbolRecursiveUpScope(str_symbol,n_params);
 
 			if(sv != NULL) return sv;
 		}
@@ -192,17 +130,24 @@ namespace zetscript{
 		Symbol *sv;
 
 		if((sv=getSymbolRecursiveDownScope(var_name,n_params))!=NULL){
-					return sv;
+			return sv;
 		}
 		return getSymbolRecursiveUpScope(var_name, n_params);
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
 	Scope::~Scope(){
-		for(unsigned i = 0; i < scope_symbols.size(); i++){
-			delete scope_symbols[i];
-		}
 
-		scope_symbols.clear();
+		// delete scope found
+		for(unsigned i = 0; i < registered_scopes->count; i++){
+			delete (Scope *)registered_scopes->items[i];
+		}
+		delete registered_scopes;
+
+		// delete local local_symbols found...
+		for(unsigned i = 0; i < registered_symbols->count; i++){
+			delete (Symbol *)registered_symbols->items[i];
+		}
+		delete registered_symbols;
 	}
 }

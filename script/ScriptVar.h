@@ -25,10 +25,11 @@ class ScriptClass;
 		//int idx_shared_ptr;
 		PInfoSharedPointerNode 	ptr_shared_pointer_node;
 		unsigned char	 		idx_class;
-		ScriptFunction *		info_function_new;
-		Instruction 	*		instruction_new;
+		ScriptFunction 		*	info_function_new;
+		Instruction 		*	instruction_new;
 		bool 					was_created_by_constructor;
-		std::vector<StackElement> variable;
+		zs_vector				*	stk_properties; // vector of stack elements
+		zs_map				*	properties_keys; // to search faster each property by its name
 
 		//----------------------
 
@@ -45,7 +46,7 @@ class ScriptClass;
 		 * info_registered_class: scriptclass info
 		 * _c_object: pass C object reference (is not delete_c_object by default)
 		 */
-		void Init(ScriptClass *info_registered_class, void *  _c_object);
+		void init(ScriptClass *info_registered_class, void *  _c_object);
 
 
 		bool isCreatedByContructor();
@@ -53,20 +54,30 @@ class ScriptClass;
 		bool itHasSetMetamethod();
 		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
 
-		virtual StackElement * addVariableSymbol(const std::string & symbol_value, const ScriptFunction *info_function=NULL, Instruction *src_instruction = NULL, StackElement * sv=NULL);
-		StackElement * getVariableSymbol(const std::string & varname);
-		StackElement * getVariableSymbolByIndex(int idx);
-		bool removeVariableSymbolByName(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
-		bool removeVariableSymbolByIndex(unsigned int idx, bool remove_vector=false);
-		std::vector<StackElement> * getVectorVariable();
+		virtual StackElement * addProperty(
+				const std::string & symbol_value
+				, const ScriptFunction *info_function=NULL
+				, Instruction *src_instruction = NULL
+				, StackElement * sv=NULL
+		);
+		StackElement * getProperty(const std::string & varname);
+		StackElement * getProperty(short idx);
+		bool eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
+
+		zs_vector * getProperties();
 
 
-		virtual FunctionSymbol * addFunctionSymbol(const std::string & symbol_value,const ScriptFunction *irv, bool ignore_duplicates=false);
-		FunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const std::string & funname);
+		virtual FunctionSymbol * addFunction(
+				const std::string & function_name
+				,const ScriptFunction *irv
+				, bool ignore_duplicates=false
+		);
 
-		FunctionSymbol * getFunctionSymbol(const std::string & varname);
-		FunctionSymbol * getFunctionSymbolByIndex(unsigned int idx);
-		std::vector <FunctionSymbol> * getVectorFunctionSymbol();
+		//FunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const std::string & funname);
+
+		FunctionSymbol 	* getFunction(const std::string & varname);
+		FunctionSymbol 	* getFunction(unsigned int idx);
+		zs_vector			* getFunctions();
 
 		void * Get_C_Object();
 		bool Is_C_Object();
@@ -105,9 +116,8 @@ class ScriptClass;
 
 		virtual void setup();
 
-		//std::vector<FunctionSymbol> m_variableSymbol;
 
-		std::vector<std::string> 		  variable_key;
+		//zs_vector 		  *variable_key; // std::vector<char *>
 
 	private:
 
@@ -116,12 +126,10 @@ class ScriptClass;
 		void * c_object;
 
 		std::string aux_string;
-		std::vector<FunctionSymbol> function_symbol;
+		zs_vector * functions; // std::vector<FunctionSymbol>
 
-		void CreateSymbols(ScriptClass *irv);
-
-
-
+		void createSymbols(ScriptClass *irv);
+		bool eraseProperty(short idx, bool remove_vector=false);
 
 	};
 

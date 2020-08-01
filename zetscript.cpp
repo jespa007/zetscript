@@ -85,9 +85,9 @@ namespace zetscript{
 		 // for all classes print code...
 		 for(unsigned i = 0; i < script_classes->size(); i++){
 			 ScriptClass *rc=script_classes->at(i);
-			 for(unsigned f = 0; f < rc->local_function.size(); f++){
+			 for(unsigned f = 0; f < rc->function_members->count; f++){
 
-				 ScriptFunction::printGeneratedCode(rc->local_function[f]);
+				 ScriptFunction::printGeneratedCode((ScriptFunction *)rc->function_members->items[f]);
 
 			 }
 		 }
@@ -181,17 +181,17 @@ namespace zetscript{
 
 		virtual_machine->clearGlobalVars();
 
-		ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_MAIN_FUNCTION);
+		ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 
 		// clean main functions ... remove script functions and leave c functions...
 		for (unsigned f = 0;
-			f < main_function->local_function.size()
+			f < main_function->registered_functions->count
 			;) {
 			// get function info
-			ScriptFunction * local_function = main_function->local_function[f];
+			ScriptFunction * script_function = (ScriptFunction *)main_function->registered_functions->items[f];
 
-			if ((local_function->symbol_info.symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF) {
-				main_function->local_function.erase(main_function->local_function.begin() + f);
+			if ((script_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
+				main_function->registered_functions->erase(f);
 			}
 			else {
 				f++;
@@ -200,12 +200,10 @@ namespace zetscript{
 
 		// remove variables except c variables ...
 		for (unsigned v = 0;
-			v < main_function->local_variable.size(); ) {
-
-			if ((main_function->local_variable[v].symbol_info_properties & SYMBOL_INFO_PROPERTY_C_OBJECT_REF) != SYMBOL_INFO_PROPERTY_C_OBJECT_REF) {
-
-				main_function->local_variable.erase(main_function->local_variable.begin() + v);
-
+			v < main_function->registered_symbols->count; ) {
+			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
+			if ((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
+				main_function->registered_symbols->erase(v);
 			}
 			else {
 				v++;
@@ -312,7 +310,7 @@ namespace zetscript{
 			return false;
 		}
 
-		virtual_machine->buildCache();
+		//virtual_machine->buildCache();
 
 		if(show_bytecode){
 			printGeneratedCode();
@@ -322,7 +320,7 @@ namespace zetscript{
 			bool error=false;
 
 			// the first code to callFunction is the main function that in fact is a special member function inside our main class
-			virtual_machine->callFunction(script_class_factory->getMainFunction(), NULL,error,NO_PARAMS);
+			virtual_machine->callFunction(script_class_factory->getMainFunction(), NULL,error);
 
 			if(error){
 				THROW_SCRIPT_ERROR();
@@ -398,10 +396,10 @@ namespace zetscript{
 
 				std::string symbol_to_find=access_var[i];
 				if(i==0){ // get variable through main_class.main_function (global element)
-					//symbol_to_find= ScriptEval::makeSymbolRef(symbol_to_find,IDX_GLOBAL_SCOPE);
-					for(unsigned j = 0; j < main_function->local_variable.size() && *calling_obj==NULL; j++){
-						if(main_function->local_variable[j].symbol->name==symbol_to_find
-						&& main_function->local_variable[j].symbol->idx_scope == IDX_GLOBAL_SCOPE){
+					for(unsigned j = 0; j < main_function->registered_symbols->count && *calling_obj==NULL; j++){
+						Symbol * registered_symbol=(Symbol *)main_function->registered_symbols->items[j];
+						if(registered_symbol->name==symbol_to_find
+						&& registered_symbol->scope == MAIN_SCOPE(this)){
 							StackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
 							if(stk!=NULL){
 								if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
@@ -421,7 +419,7 @@ namespace zetscript{
 					}
 
 				}else{ // we have got the calling_obj from last iteration ...
-					se = (*calling_obj)->getVariableSymbol(symbol_to_find);
+					se = (*calling_obj)->getProperty(symbol_to_find);
 
 					if(se!=NULL){
 
@@ -439,7 +437,7 @@ namespace zetscript{
 				}
 			}
 
-			is=(*calling_obj)->getFunctionSymbol(access_var[access_var.size()-1]);
+			is=(*calling_obj)->getFunction(access_var[access_var.size()-1]);
 			if(is!=NULL){
 				if(is->object.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
 					*fun_obj=(ScriptFunction *)is->object.stk_value;
@@ -453,10 +451,10 @@ namespace zetscript{
 		}else{ // some function in main function
 			//*calling_obj = m_mainObject;
 			std::string symbol_to_find=access_var[0];
-			for(unsigned i = 0; i < main_function->local_function.size() && *fun_obj==NULL; i++){
-				ScriptFunction *aux_fun_obj=main_function->local_function[i];
-				if(		aux_fun_obj->symbol_info.symbol->name  == symbol_to_find
-				  && aux_fun_obj->symbol_info.symbol->idx_scope == IDX_GLOBAL_SCOPE){
+			for(unsigned i = 0; i < main_function->registered_functions->count && *fun_obj==NULL; i++){
+				ScriptFunction *aux_fun_obj=(ScriptFunction *)main_function->registered_functions->items[i];
+				if(		aux_fun_obj->symbol.name  == symbol_to_find
+				  && aux_fun_obj->symbol.scope == MAIN_SCOPE(this)){
 					*fun_obj=aux_fun_obj;
 				}
 			}

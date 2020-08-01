@@ -4,13 +4,8 @@
  */
 #pragma once
 
-#define IDX_GLOBAL_SCOPE				0
-#define IDX_INVALID_SCOPE				ZS_IDX_UNDEFINED
-#define IDX_ANONYMOUSE_SCOPE			-3
-
-#define GET_SCOPE(data,idx)				((data->scope_factory))->getScope(idx)
-#define MAIN_SCOPE(data)				((data->scope_factory))->getScope(IDX_GLOBAL_SCOPE)
-#define NEW_SCOPE(data,idx)				((data->scope_factory))->newScope(idx)
+#define MAIN_SCOPE(data)				((data->scope_factory))->getMainScope()
+#define NEW_SCOPE(data,scope_parent)	((data->scope_factory))->newScope(scope_parent)
 
 
 namespace zetscript{
@@ -19,21 +14,23 @@ namespace zetscript{
 		public:
 			ScopeFactory(ZetScript 		*zs);
 
-			Scope	    				*	newScope(short idx_scope_parent=ZS_IDX_UNDEFINED,bool is_c_node=false);
-			Scope 						* 	getScope(short idx);
+			Scope	    				*	newScope(Scope * scope_parent=NULL,bool is_c_node=false);
+
+
+			Scope 						* 	getMainScope(){return main_scope;}
 			std::vector<Scope *> 		* 	getScopes();
 			void clear();
 
 			~ScopeFactory();
 
 		private:
-
-
 			ZetScript 					*zs;
+
 			/**
 			 * Vector of script scopes. This std::vector is removed when ZetScript reevaluates all scrips.
 			 */
 			std::vector<Scope *> 		 scopes;
+			Scope *main_scope;
 
 	};
 

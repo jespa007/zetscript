@@ -13,15 +13,16 @@ namespace zetscript{
 
 
 	ScriptVarVector::ScriptVarVector(ZetScript *_zs):ScriptVar(_zs){
-		this->Init(SCRIPT_CLASS_VECTOR(this), (void *)this);
+		this->init(SCRIPT_CLASS_VECTOR(this), (void *)this);
 	}
 
 	bool ScriptVarVector::unrefSharedPtr(){
 
 		if(ScriptVar::unrefSharedPtr()){
 
-			for(unsigned i = 0; i < variable.size(); i++){
-				ScriptVar *var = (ScriptVar *)variable[i].var_ref;
+			for(unsigned i = 0; i < stk_properties->count; i++){
+				StackElement *stk=(StackElement *)stk_properties->items[i];
+				ScriptVar *var = (ScriptVar *)stk->var_ref;
 				if(var != NULL){
 
 					if(!var->unrefSharedPtr()){
@@ -39,17 +40,20 @@ namespace zetscript{
 
 
 	StackElement *ScriptVarVector::newSlot(){
-		StackElement s={NULL,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
-		variable.push_back(s);
-		return &variable[variable.size()-1];
+		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
+		*stk={NULL,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+		stk_properties->push_back((intptr_t)stk);
+		return stk;
 	}
 
-	void ScriptVarVector::push(StackElement  * v){
-		variable.push_back(*v);
+	void ScriptVarVector::push(StackElement  * _stk){
+		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
+		*new_stk=*_stk;
+		stk_properties->push_back((intptr_t)new_stk);
 
 		// update n_refs +1
-		if(v->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-			if(!virtual_machine->sharePointer(((ScriptVar *)(v->var_ref))->ptr_shared_pointer_node)){
+		if(_stk->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+			if(!virtual_machine->sharePointer(((ScriptVar *)(_stk->var_ref))->ptr_shared_pointer_node)){
 				return;
 			}
 		}
@@ -57,8 +61,8 @@ namespace zetscript{
 
 	StackElement * ScriptVarVector::pop(){
 		return_callc={NULL,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
-		if(variable.size()>0){
-			return_callc=variable[variable.size()-1];
+		if(stk_properties->count>0){
+			return_callc=*((StackElement *)stk_properties->items[stk_properties->count-1]);
 			ScriptVar *var = (ScriptVar *)return_callc.var_ref;
 			if(var){
 				if(!var->unrefSharedPtr()){
@@ -66,7 +70,8 @@ namespace zetscript{
 				}
 			}
 
-			variable.pop_back();
+			StackElement *stk=(StackElement *)stk_properties->pop_back();
+			free(stk);
 		}else{
 			writeError(NULL,0,"pop(): error stack already empty");
 		}
@@ -77,21 +82,18 @@ namespace zetscript{
 
 
 	int ScriptVarVector::size(){
-		return  variable.size();
+		return  stk_properties->count;
 	}
 
 	void ScriptVarVector::destroy(){
 
-
-		for(unsigned i = 0; i < variable.size(); i++){
-			if(variable[i].properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-
-				StackElement si=variable[i];
-
-				if((si.properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){ // deallocate but not if is c ref
-					if(si.var_ref != NULL){
+		for(unsigned i = 0; i < stk_properties->count; i++){
+			StackElement *si=(StackElement *)stk_properties->items[i];
+			if(si->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+				if((si->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){ // deallocate but not if is c ref
+					if(si->var_ref != NULL){
 						// remove property if not referenced anymore
-						virtual_machine->unrefSharedScriptVar(((ScriptVar *)(si.var_ref))->ptr_shared_pointer_node,true);
+						virtual_machine->unrefSharedScriptVar(((ScriptVar *)(si->var_ref))->ptr_shared_pointer_node,true);
 					}
 				}
 			}

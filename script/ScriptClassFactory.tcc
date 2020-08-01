@@ -12,7 +12,7 @@ namespace zetscript{
 		int idx_return_type=-1;
 		std::string return_type;
 		std::vector<std::string> arg;
-		std::vector<ParamArgInfo> arg_info;
+		std::vector<FunctionParam> arg_info;
 		intptr_t ref_ptr=0;
 
 		if(!script_function_factory->checkCanregister_C_Function(function_name)){
@@ -66,7 +66,16 @@ namespace zetscript{
 		ref_ptr=(intptr_t)function_ptr;
 
 		// Init struct...
-		main_function->registerFunction(registered_file,registered_line,function_name,arg_info,idx_return_type,ref_ptr,SYMBOL_INFO_PROPERTY_C_OBJECT_REF | SYMBOL_INFO_PROPERTY_STATIC_REF);
+		main_function->addFunction(
+				 MAIN_SCOPE(this)
+				,registered_file
+				,registered_line
+				,function_name
+				,arg_info
+				,idx_return_type
+				,ref_ptr
+				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC_REF
+			);
 
 		ZS_PRINT_DEBUG("Registered function name: %s",function_name);
 		return true;
@@ -90,7 +99,7 @@ namespace zetscript{
 		// after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
 		if(size > 1){ // because = 0 is reserved for main class and >= 1 is for C registered classes
 			if((
-				((script_classes[size-1]->symbol_info.symbol_info_properties&SYMBOL_INFO_PROPERTY_C_OBJECT_REF)!=SYMBOL_INFO_PROPERTY_C_OBJECT_REF)
+				((script_classes[size-1]->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF )!=SYMBOL_PROPERTY_C_OBJECT_REF)
 			)){
 				THROW_RUNTIME_ERROR(zs_strutils::format("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str()));
 				return NULL;
@@ -107,7 +116,7 @@ namespace zetscript{
 			}
 
 			unsigned char idx_class=(short)(script_classes.size());
-			Scope * scope = scope_factory->newScope(ZS_IDX_UNDEFINED,true);
+			Scope * scope = scope_factory->newScope(NULL,true);
 			Symbol *symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_IS_CLASS);
 			if(symbol == NULL){
 				return NULL;
@@ -116,14 +125,14 @@ namespace zetscript{
 			ScriptClass *irc = new ScriptClass(zs,idx_class);
 			scope->setScriptClass(irc);
 
-			irc->symbol_info.symbol=symbol;
+			irc->symbol=*symbol;
 
 			// in C there's no script constructor ...
 			irc->idx_function_member_constructor=-1;
 			// allow dynamic constructor in function its parameters ...
 
 			irc->str_class_ptr_type=str_class_name_ptr;
-			irc->symbol_info.symbol_info_properties=SYMBOL_INFO_PROPERTY_C_OBJECT_REF;
+			irc->symbol.symbol_properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
 
 			irc->c_constructor = NULL;
 			irc->c_destructor = NULL;
@@ -243,9 +252,9 @@ namespace zetscript{
 		}
 
 		ScriptClass *sc=script_classes[register_class];
-		while( sc->idx_base_class.size()>0){
+		while( sc->idx_base_classes->count>0){
 
-			sc=getScriptClass(sc->idx_base_class[0]); // get base class...
+			sc=getScriptClass(sc->idx_base_classes->items[0]); // get base class...
 			if(sc->str_class_ptr_type ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR(zs_strutils::format("C++ class \"%s\" already base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str()));
 				return false;
@@ -253,11 +262,11 @@ namespace zetscript{
 		}
 
 
-		ScriptClass *irc_class = script_classes[register_class];
-		irc_class->idx_base_class.push_back(idx_base_class);
+		ScriptClass *this_class = script_classes[register_class];
+		this_class->idx_base_classes->push_back(idx_base_class);
 
-		//std::map<int, std::map<int, ConversionType>>  *	local_map_type_conversion=	getConversionTypes();
-		(conversion_types)[irc_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(B *)((T *)entry);};
+		// add conversion type for this class
+		conversion_types[this_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(B *)((T *)entry);};
 
 
 		if(register_c_base_symbols){
@@ -269,45 +278,45 @@ namespace zetscript{
 			// https://stackoverflow.com/questions/48572734/is-possible-do-a-later-function-binding-knowing-its-function-type-and-later-the
 			//
 
-			ScriptClass *irc_base = script_classes[idx_base_class];
+			ScriptClass *base_class = script_classes[idx_base_class];
 
-			unsigned short derivated_symbol_info_properties=SYMBOL_INFO_PROPERTY_C_OBJECT_REF| SYMBOL_INFO_PROPERTY_IS_DERIVATED;
+			unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF| SYMBOL_PROPERTY_IS_DERIVATED;
 			if(std::is_polymorphic<B>::value==true){
-				derivated_symbol_info_properties|=SYMBOL_INFO_PROPERTY_IS_POLYMORPHIC;
+				derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC;
 			}
 
-			// register all symbols function from base ...
-			// vars ...
-			for(unsigned i = 0; i < irc_base->local_variable.size(); i++){
+			// register all c vars symbols ...
+			for(unsigned i = 0; i < base_class->symbol_c_variable_members->count; i++){
 
-				SymbolInfo *irs_source = &irc_base->local_variable[i];
+				Symbol *symbol_src = (Symbol *)base_class->symbol_c_variable_members->items[i];
 
-				SymbolInfo irs;
-				// Init struct...
-				//irs.idx_class = idx_base_class;
-				irs.ref_ptr=irs_source->ref_ptr;
-				irs.c_type = irs_source->c_type;
-				//irs.
-				irs.symbol=irs_source->symbol;
-				irs.symbol_info_properties = derivated_symbol_info_properties;
-				irs.idx_symbol = (short)(irc_class->local_variable.size());
-				irc_class->local_variable.push_back(irs);
-
+				Symbol *symbol_dst=new Symbol();
+				symbol_dst->ref_ptr=symbol_src->ref_ptr;
+				symbol_dst->c_type = symbol_src->c_type;
+				symbol_dst->scope=symbol_src->scope;
+				symbol_dst->symbol_properties = derivated_symbol_info_properties;
+				symbol_dst->idx_position = (short)(this_class->symbol_c_variable_members->count);
+				this_class->symbol_c_variable_members->push_back((intptr_t)symbol_dst);
 			}
 
-			// functions ...
-			for(unsigned i = 0; i < irc_base->local_function.size(); i++){
-
-				ScriptFunction *irs_source = irc_base->local_function[i];
-				irc_class->registerFunction(
-						irs_source->symbol_info.symbol->file,
-						irs_source->symbol_info.symbol->line,
-						irs_source->symbol_info.symbol->name,
-						irs_source->arg_info,
-						irs_source->idx_return_type,
-						irs_source->symbol_info.ref_ptr,
-						derivated_symbol_info_properties
-						);
+			// register all functions ...
+			for(unsigned i = 0; i < base_class->function_members->count; i++){
+				ScriptFunction *script_function = (ScriptFunction *)base_class->function_members->items[i];
+				// build params...
+				std::vector<FunctionParam> function_params;
+				for(unsigned j=0; j < script_function->function_params->count;j++){
+					function_params.push_back(*((FunctionParam *) script_function->function_params->items[j]));
+				}
+				
+				this_class->registerFunctionMember(
+					script_function->symbol.file,
+					script_function->symbol.line,
+					script_function->symbol.name,
+					function_params,
+					script_function->idx_return_type,
+					script_function->symbol.ref_ptr,
+					derivated_symbol_info_properties
+				);
 			}
 		}
 
@@ -315,7 +324,6 @@ namespace zetscript{
 		// DERIVATE STATE
 		//
 		//----------------------------
-		// finally maps object type ...
 		return true;
 	}
 
@@ -334,7 +342,7 @@ namespace zetscript{
 		// to make compatible MSVC shared library
 		std::string return_type;
 		std::vector<std::string> arg;
-		std::vector<ParamArgInfo> arg_info;
+		std::vector<FunctionParam> arg_info;
 		int idx_return_type=-1;
 		intptr_t ref_ptr=0;
 		std::string str_class_name_ptr = typeid( C *).name();
@@ -381,20 +389,20 @@ namespace zetscript{
 			return false;
 		}
 		// register member function...
-		ScriptFunction *sf = sc->registerFunction(
-				registered_file
+		ScriptFunction *sf = sc->registerFunctionMember(
+				 registered_file
 				,registered_line
 				,function_name
 				,arg_info
 				,idx_return_type
 				,ref_ptr
-				,SYMBOL_INFO_PROPERTY_C_OBJECT_REF
+				,SYMBOL_PROPERTY_C_OBJECT_REF
 		);
 
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 
 		if(ZS_STRCMP(ByteCodeMetamethodToStr(BYTE_CODE_METAMETHOD_SET),==,function_name)){
-			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET].push_back(sf);
+			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->push_back((intptr_t)sf);
 			ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 		}
 		return true;
@@ -413,7 +421,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<std::string> arg;
-		std::vector<ParamArgInfo> arg_info;
+		std::vector<FunctionParam> arg_info;
 		int idx_return_type=-1;
 		intptr_t ref_ptr=0;
 		std::string str_class_name_ptr = typeid( C *).name();
@@ -463,7 +471,15 @@ namespace zetscript{
 		ref_ptr=(intptr_t)function_ptr;
 
 		// register member function...
-		ScriptFunction * sf = c_class->registerFunction(registered_file,registered_line,function_name,arg_info, idx_return_type, ref_ptr, SYMBOL_INFO_PROPERTY_C_OBJECT_REF | SYMBOL_INFO_PROPERTY_STATIC_REF);
+		ScriptFunction * sf = c_class->registerFunctionMember(
+				 registered_file
+				,registered_line
+				,function_name
+				,arg_info
+				, idx_return_type
+				, ref_ptr
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC_REF
+		);
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(T).name()).c_str(), function_name);
 
 		// check whether is static metamethod...
@@ -500,7 +516,7 @@ namespace zetscript{
 						return false;
 					}
 
-					c_class->metamethod_operator[i].push_back(sf);
+					c_class->metamethod_operator[i]->push_back((intptr_t)sf);
 
 					ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(T).name()).c_str(), function_name);
 					break;
@@ -514,14 +530,19 @@ namespace zetscript{
 	}
 
 	template <typename F>
-	bool ScriptClassFactory::register_C_FunctionAsFunctionMember(const char *function_name,F function_type, const char *registered_file,int registered_line){
+	bool ScriptClassFactory::register_C_FunctionAsFunctionMember(
+			const char *function_name
+			,F function_type
+			, const char *registered_file
+			,int registered_line
+	){
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
 
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<std::string> arg;
-		std::vector<ParamArgInfo> arg_info;
+		std::vector<FunctionParam> arg_info;
 		int idx_return_type=-1;
 		intptr_t ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
@@ -544,7 +565,7 @@ namespace zetscript{
 			return false;
 		}
 
-		function_class_name = c_class->symbol_info.symbol->name+"::"+function_name;
+		function_class_name = c_class->symbol.name+"::"+function_name;
 
 		if(!script_function_factory->checkCanregister_C_Function(function_class_name)){
 			return false;
@@ -575,14 +596,14 @@ namespace zetscript{
 		ref_ptr=(intptr_t)function_type;
 
 		// register member function...
-		c_class->registerFunction(
-				registered_file
-				,registered_line
-				,function_name
-				,arg_info
+		c_class->registerFunctionMember(
+				  registered_file
+				, registered_line
+				, function_name
+				, arg_info
 				, idx_return_type
 				, ref_ptr
-				, SYMBOL_INFO_PROPERTY_C_OBJECT_REF | SYMBOL_INFO_PROPERTY_STATIC_REF | SYMBOL_INFO_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC_REF | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
 		);
 		ZS_PRINT_DEBUG("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str());
 
@@ -615,14 +636,21 @@ namespace zetscript{
 		// check valid parameters ...
 		if(getIdxClassFromIts_C_Type(var_type) == -1){
 			THROW_RUNTIME_ERROR(zs_strutils::format("%s::%s has not valid type (%s)"
-					,c_class->symbol_info.symbol->name.c_str()
+					,c_class->symbol.name.c_str()
 					,var_name
 					,zs_rtti::demangle(typeid(R).name()).c_str()));
 			return false;
 		}
 
 		// register variable...
-		c_class->registerVariable(registered_file,registered_line,var_name,var_type,ref_ptr,SYMBOL_INFO_PROPERTY_C_OBJECT_REF);
+		c_class->register_C_SymbolVariableMember(
+				 registered_file
+				,registered_line
+				,var_name
+				,var_type
+				,ref_ptr
+				,SYMBOL_PROPERTY_C_OBJECT_REF
+		);
 		return true;
 
 	}

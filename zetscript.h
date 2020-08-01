@@ -63,12 +63,15 @@
 #include "util/zs_log.h"
 #include "util/zs_rtti.h"
 #include "util/zs_path.h"
+#include "util/zs_vector.h"
+#include "util/zs_string.h"
+#include "util/zs_map.h"
 
 #include "common.h"
 #include "ByteCode.h"
 #include "Instruction.h"
 #include "StackElement.h"
-#include "SymbolInfo.h"
+#include "Symbol.h"
 #include "exception.h"
 
 #include "function/FunctionSymbol.h"
@@ -84,13 +87,11 @@
 #include "script/ScriptVarVector.h"
 #include "script/ScriptVarFunctor.h"
 #include "script/ScriptVarDictionary.h"
-#include "script/ScriptContext.h"
+//#include "script/ScriptContext.h"
 #include "script/ScriptClass.h"
 #include "script/ScriptFunction.h"
 #include "script/ScriptFunctionFactory.h"
 #include "script/ScriptClassFactory.h"
-
-
 
 #include "eval/eval.h"
 #include "zetscript.h"
@@ -210,7 +211,7 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		template <typename V>
-		 SymbolInfo * register_C_Variable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
+		 Symbol * register_C_Variable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
 			 return script_class_factory->register_C_Variable(var_str,var_ptr, typeid(V).name(), registered_file, registered_line);
 		 }
 
