@@ -7,7 +7,7 @@ namespace zetscript{
 	 * Register C function
 	 */
 	template <typename F>
-	bool ScriptClassFactory::register_C_Function(const char * function_name,F function_ptr, const char *registered_file,int registered_line)
+	bool ScriptClassFactory::registerNativeFunction(const char * function_name,F function_ptr, const char *registered_file,int registered_line)
 	{
 		int idx_return_type=-1;
 		std::string return_type;
@@ -15,7 +15,7 @@ namespace zetscript{
 		std::vector<FunctionParam> arg_info;
 		intptr_t ref_ptr=0;
 
-		if(!script_function_factory->checkCanregister_C_Function(function_name)){
+		if(!script_function_factory->checkCanregisterNativeFunction(function_name)){
 			return false;
 		}
 
@@ -85,7 +85,7 @@ namespace zetscript{
 	 * Register C Class. Return index registered class
 	 */
 	template<class T>
-	 bool ScriptClassFactory::register_C_SingletonClass(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
+	 bool ScriptClassFactory::registerNativeSingletonClass(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
 		//std::vector<ScriptClass *> script_classes=getScriptClasses();
 		// to make compatible MSVC shared library
@@ -153,9 +153,9 @@ namespace zetscript{
 	 * Register C Class. Return index registered class
 	 */
 	template<typename T>
-	bool ScriptClassFactory::register_C_Class(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
+	bool ScriptClassFactory::registerNativeClass(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
-		if(register_C_SingletonClass<T>(class_name)){
+		if(registerNativeSingletonClass<T>(class_name)){
 			// get class...
 			ScriptClass *irc =getScriptClass(class_name);
 
@@ -187,9 +187,9 @@ namespace zetscript{
 	 * Register C Class. Return index registered class
 	 */
 	template<typename T>
-	bool ScriptClassFactory::register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
+	bool ScriptClassFactory::registerNativeClassBuiltIn(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
-		if(register_C_SingletonClass<T>(class_name)){
+		if(registerNativeSingletonClass<T>(class_name)){
 			ScriptClass *irc =getScriptClass(class_name);
 
 			if(irc->idx_class >= IDX_BUILTIN_TYPE_MAX){
@@ -286,17 +286,17 @@ namespace zetscript{
 			}
 
 			// register all c vars symbols ...
-			for(unsigned i = 0; i < base_class->symbol_c_variable_members->count; i++){
+			for(unsigned i = 0; i < base_class->symbol_native_variable_members->count; i++){
 
-				Symbol *symbol_src = (Symbol *)base_class->symbol_c_variable_members->items[i];
+				Symbol *symbol_src = (Symbol *)base_class->symbol_native_variable_members->items[i];
 
 				Symbol *symbol_dst=new Symbol();
 				symbol_dst->ref_ptr=symbol_src->ref_ptr;
 				symbol_dst->c_type = symbol_src->c_type;
 				symbol_dst->scope=symbol_src->scope;
 				symbol_dst->symbol_properties = derivated_symbol_info_properties;
-				symbol_dst->idx_position = (short)(this_class->symbol_c_variable_members->count);
-				this_class->symbol_c_variable_members->push_back((intptr_t)symbol_dst);
+				symbol_dst->idx_position = (short)(this_class->symbol_native_variable_members->count);
+				this_class->symbol_native_variable_members->push_back((intptr_t)symbol_dst);
 			}
 
 			// register all functions ...
@@ -332,7 +332,7 @@ namespace zetscript{
 	 * Register C Member function Class
 	 */
 	template < typename C, typename R, class T, typename..._A>
-	bool ScriptClassFactory::register_C_FunctionMember(
+	bool ScriptClassFactory::registerNativeFunctionMember(
 			const char *function_name
 			,R (T:: *function_type)(_A...)
 			, const char *registered_file
@@ -347,7 +347,7 @@ namespace zetscript{
 		intptr_t ref_ptr=0;
 		std::string str_class_name_ptr = typeid( C *).name();
 
-		if(!script_function_factory->checkCanregister_C_Function(function_name)){
+		if(!script_function_factory->checkCanregisterNativeFunction(function_name)){
 			return false;
 		}
 
@@ -413,7 +413,7 @@ namespace zetscript{
 	 * Register C Member function Class
 	 */
 	template <typename C, typename F>
-	bool ScriptClassFactory::register_C_FunctionMemberStatic(const char *function_name,F function_ptr, const char *registered_file,int registered_line)
+	bool ScriptClassFactory::registerNativeFunctionMemberStatic(const char *function_name,F function_ptr, const char *registered_file,int registered_line)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
@@ -428,7 +428,7 @@ namespace zetscript{
 		std::string function_class_name = zs_rtti::demangle(typeid(C).name())+"::"+function_name;
 
 
-		if(!script_function_factory->checkCanregister_C_Function(function_class_name)){
+		if(!script_function_factory->checkCanregisterNativeFunction(function_class_name)){
 			return false;
 		}
 
@@ -530,7 +530,7 @@ namespace zetscript{
 	}
 
 	template <typename F>
-	bool ScriptClassFactory::register_C_FunctionAsFunctionMember(
+	bool ScriptClassFactory::registerNativeFunctionMember(
 			const char *function_name
 			,F function_type
 			, const char *registered_file
@@ -556,7 +556,7 @@ namespace zetscript{
 		}
 
 		if(arg.size()==0){
-			THROW_RUNTIME_ERROR(zs_strutils::format("register_C_FunctionAsFunctionMember at least need first parameter that defines the object to add function %s",function_name));
+			THROW_RUNTIME_ERROR(zs_strutils::format("registerNativeFunctionMember at least need first parameter that defines the object to add function %s",function_name));
 		}
 
 		ScriptClass * c_class=	getScriptClassBy_C_ClassPtr(arg[0]);
@@ -567,7 +567,7 @@ namespace zetscript{
 
 		function_class_name = c_class->symbol.name+"::"+function_name;
 
-		if(!script_function_factory->checkCanregister_C_Function(function_class_name)){
+		if(!script_function_factory->checkCanregisterNativeFunction(function_class_name)){
 			return false;
 		}
 
@@ -615,7 +615,7 @@ namespace zetscript{
 	 */
 	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
 	template <typename C, typename R,typename T>
-	bool ScriptClassFactory::register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
+	bool ScriptClassFactory::registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
@@ -643,7 +643,7 @@ namespace zetscript{
 		}
 
 		// register variable...
-		c_class->register_C_SymbolVariableMember(
+		c_class->registerNativeSymbolVariableMember(
 				 registered_file
 				,registered_line
 				,var_name

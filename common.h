@@ -23,7 +23,7 @@
 
 // HELPER FUNCTIONSs
 
-#define REGISTER_C_BASE_SYMBOLS(script_class_factory,o)		   			(zs)->register_C_BaseSymbols(o))
+#define REGISTER_C_BASE_SYMBOLS(script_class_factory,o)		   			(zs)->registerNativeBaseSymbols(o))
 
 // if 0 is in main <> 0, else.
 #define DO_CAST											((this->zs))->doCast

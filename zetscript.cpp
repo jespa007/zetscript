@@ -346,9 +346,9 @@ namespace zetscript{
 			ps.filename = filename;
 			parsed_files.push_back(ps);
 			//idx_file=parsed_files.size()-1;
-			int n_bytes;
+			size_t n_bytes;
 
-			if((buf_tmp=zs_io::readFile(filename, n_bytes))!=NULL){
+			if((buf_tmp=zs_file::read(filename, n_bytes))!=NULL){
 				try{
 					evalInternal(buf_tmp, vm_exec, show_bytecode,filename.c_str());
 				}

@@ -1,7 +1,7 @@
 namespace zetscript{
 	namespace eval{
 
-		class EvalData;
+		struct EvalData;
 
 		typedef enum
 			:unsigned char {
@@ -459,7 +459,7 @@ namespace zetscript{
 
 			for(int i = 0; i < KEYWORD_TYPE_MAX; i++){
 				if(eval_info_keywords[i].str!=NULL){
-					int size = strlen(eval_info_keywords[i].str);
+					size_t size = strlen(eval_info_keywords[i].str);
 					char *aux = str+size;
 					if((strncmp(str,eval_info_keywords[i].str,size)==0) && (
 							*aux == 0  || // carry end
@@ -484,7 +484,7 @@ namespace zetscript{
 
 			for(int i = 0; i < DIRECTIVE_TYPE_MAX; i++){
 				if(eval_info_directives[i].str){
-					int size = strlen(eval_info_directives[i].str);
+					size_t size = strlen(eval_info_directives[i].str);
 
 					if(strncmp(str,eval_info_directives[i].str,size)==0)
 					{

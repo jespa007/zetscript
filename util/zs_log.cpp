@@ -21,7 +21,7 @@ namespace zetscript{
 			}
 
 			if (file != NULL)
-				filename = zs_path::getFilename(file);
+				filename = zs_path::get_file_name(file);
 
 			char  text[4096] = { 0 };
 

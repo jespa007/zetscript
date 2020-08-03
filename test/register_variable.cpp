@@ -19,10 +19,10 @@ int main(){
 
 	ZetScript *zs = new ZetScript(); // instance ZetScript
 
-	zs->register_C_Variable("int_var",&int_var); // it takes int *
-	zs->register_C_Variable("float_var",&float_var); // it takes float *
-	zs->register_C_Variable("bool_var",&bool_var); // it takes bool *
-	zs->register_C_Variable("string_var",&string_var); // it takes std::string *
+	zs->registerNativeVariable("int_var",&int_var); // it takes int *
+	zs->registerNativeVariable("float_var",&float_var); // it takes float *
+	zs->registerNativeVariable("bool_var",&bool_var); // it takes bool *
+	zs->registerNativeVariable("string_var",&string_var); // it takes std::string *
 
 	zs->eval(
 		"int_var+=5;"

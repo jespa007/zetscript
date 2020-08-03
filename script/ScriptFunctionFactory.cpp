@@ -90,7 +90,7 @@ namespace zetscript{
 		return (ScriptFunction 	*)script_functions->items[idx];
 	}
 
-	bool ScriptFunctionFactory::checkCanregister_C_Function(const std::string &function_name){
+	bool ScriptFunctionFactory::checkCanregisterNativeFunction(const std::string &function_name){
 
 		int size = script_functions->count;
 

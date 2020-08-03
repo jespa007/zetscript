@@ -157,7 +157,7 @@ namespace zetscript{
 
 			if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
 				writeError(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
-						"1. Set register_C_baseSymbols(false) and  re-register the function using REGISTER_C_FUNCTION_MEMBER\n"
+						"1. Set registerNativebaseSymbols(false) and  re-register the function using REGISTER_C_FUNCTION_MEMBER\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
 						,calling_function->symbol.name.c_str());
@@ -173,7 +173,7 @@ namespace zetscript{
 				}
 			}
 
-			StackElement se = callFunction_C(
+			StackElement se = callFunctionNative(
 					fun_ptr
 					,calling_function
 					,error

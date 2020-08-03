@@ -245,7 +245,7 @@ namespace zetscript{
 			static int n_anonymous_function=0;
 			std::string function_name="";
 			Scope *scope=scope_info;
-			int advance_chars=0;
+			size_t advance_chars=0;
 
 
 			// check for keyword ...
@@ -306,7 +306,7 @@ namespace zetscript{
 						}
 
 						// copy value
-						if(!zs_strutils::copyFromPointerDiff(function_name,aux_p,end_var)){
+						if(!zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var)){
 								return NULL;
 						}
 
@@ -329,7 +329,7 @@ namespace zetscript{
 						// grab words separated by ,
 						while(*aux_p != 0 && *aux_p != ')'){
 							aux_p=ignoreBlanks(aux_p,line);
-							char *arg_name;
+							//char *arg_name;
 
 
 							if(args.size()>0){
@@ -359,7 +359,7 @@ namespace zetscript{
 							}
 
 							// copy value
-							if(!zs_strutils::copyFromPointerDiff(arg_value,aux_p,end_var)){
+							if(!zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var)){
 									return NULL;
 							}
 
@@ -399,7 +399,7 @@ namespace zetscript{
 
 						// register function ...
 						if(!named_function){ // register named function...
-							function_name="_afun_"+zs_strutils::intToString(n_anonymous_function++);
+							function_name="_afun_"+zs_strutils::int_to_str(n_anonymous_function++);
 						}
 						//--- OP
 						if(sc!=NULL){ // register as variable member...
@@ -514,7 +514,7 @@ namespace zetscript{
 								return NULL;
 							}
 
-							if(!zs_strutils::copyFromPointerDiff(start_symbol,aux_p+1, end_expr)){
+							if(!zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr)){
 								return NULL;
 							}
 
@@ -610,7 +610,7 @@ namespace zetscript{
 										writeError(eval_data->current_parsing_file,line,"Expected ')'");
 										return NULL;
 									}
-									if(!zs_strutils::copyFromPointerDiff(start_symbol,aux_p+1, end_expr)){
+									if(!zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr)){
 										return NULL;
 									}
 								}else{
@@ -635,7 +635,7 @@ namespace zetscript{
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
-			char *end_expr,*start_symbol;
+			char *end_expr;//,*start_symbol;
 			int dl=-1;
 			KeywordType key_w;
 			//std::string conditional_str;
@@ -688,7 +688,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						if(!zs_strutils::copyFromPointerDiff(conditional_str,aux_p+1, end_expr)){
+						if(!zs_strutils::copy_from_ptr_diff(conditional_str,aux_p+1, end_expr)){
 							return NULL;
 						}*/
 

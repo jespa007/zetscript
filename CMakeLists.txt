@@ -159,7 +159,7 @@ ELSE()
 	set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	
 		# Utils
- 		util/zs_io.cpp
+ 		util/zs_file.cpp
  		util/zs_log.cpp
  		util/zs_path.cpp
  		util/zs_rtti.cpp

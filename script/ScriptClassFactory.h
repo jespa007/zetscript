@@ -57,12 +57,12 @@ namespace zetscript{
 		ScriptVar 			* 			instanceScriptVariableByClassName(const std::string & class_name);
 		ScriptVar 			* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
 
-		void 							register_C_BaseSymbols(bool _register);
+		void 							registerNativeBaseSymbols(bool _register);
 
 		/**
 		 * Register C variable
 		 */
-		 bool register_C_Variable(
+		 bool registerNativeVariable(
 			 const std::string & var_name
 			 ,void * var_ptr
 			 , const std::string & var_type
@@ -74,7 +74,7 @@ namespace zetscript{
 		 * Register C function
 		 */
 		 template <typename F>
-		 bool register_C_Function(
+		 bool registerNativeFunction(
 			 const char * function_name
 			 ,F function_ptr
 			 , const char *registered_file=""
@@ -85,17 +85,17 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		 template<typename T>
-		 bool 							register_C_SingletonClass(const std::string & class_name, const char *registered_file="",int registered_line=-1);
+		 bool 							registerNativeSingletonClass(const std::string & class_name, const char *registered_file="",int registered_line=-1);
 
 		/**
 		 * Register C Class. Return index registered class
 		 */
 		template<typename T>
-		bool 							register_C_Class(const std::string & class_name, const char *registered_file="",int registered_line=-1);
+		bool 							registerNativeClass(const std::string & class_name, const char *registered_file="",int registered_line=-1);
 
 
 		template<typename T>
-		bool 							register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1);
+		bool 							registerNativeClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1);
 
 
 		template<class T, class B>
@@ -105,25 +105,25 @@ namespace zetscript{
 		 * Register C Member function Class
 		 */
 		template < typename C, typename R, class T, typename..._A>
-		bool 							register_C_FunctionMember(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 );
+		bool 							registerNativeFunctionMember(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 );
 
 		/**
 		 * Register C Member function static Class
 		 */
 		template <typename C, typename F>
-		bool 							register_C_FunctionMemberStatic(const char *function_name,F ptr_function, const char *registered_file="",int registered_line=-1);
+		bool 							registerNativeFunctionMemberStatic(const char *function_name,F ptr_function, const char *registered_file="",int registered_line=-1);
 
 		/**
 		 * Register C function as function member
 		 */
 		template <typename F>
-		bool 							register_C_FunctionAsFunctionMember(const char *function_name,F function_type, const char *registered_file="",int registered_line=-1);
+		bool 							registerNativeFunctionMember(const char *function_name,F function_type, const char *registered_file="",int registered_line=-1);
 
 		/**
 		 * Register C Member var
 		 */
 		template <typename C, typename R,typename T>
-		bool 							register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1);
+		bool 							registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1);
 
 
 		~ScriptClassFactory();

@@ -457,7 +457,7 @@ namespace zetscript{
 										GET_IDX_2_CLASS_C_STR(this,((FunctionParam *)irfs->function_params->items[a])->idx_type
 								));
 							}else{ /* typic var ... */
-								str_candidates+="arg"+zs_strutils::intToString(a+1);
+								str_candidates+="arg"+zs_strutils::int_to_str(a+1);
 							}
 						}
 						str_candidates+=");\n";

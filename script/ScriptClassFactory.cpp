@@ -7,7 +7,7 @@
 		THROW_RUNTIME_ERROR(zs_strutils::format("Error: class built in type %s doesn't match its id",STR(type_class)));\
 		return;\
 	}\
-	register_C_Class<type_class>(STR(type_class));
+	registerNativeClass<type_class>(STR(type_class));
 
 
 #define REGISTER_BUILT_IN_CLASS(type_class, idx_class)\
@@ -15,7 +15,7 @@
 		THROW_RUNTIME_ERROR(zs_strutils::format("Error: class built in type %s doesn't match its id",STR(type_class)));\
 		return;\
 	}\
-	register_C_ClassBuiltIn<type_class>(STR(type_class));
+	registerNativeClassBuiltIn<type_class>(STR(type_class));
 
 
 #define REGISTER_BUILT_IN_TYPE(type_class, idx_class)\
@@ -104,20 +104,20 @@ namespace zetscript{
 
 		main_function=main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 
-		register_C_Function("print",print);
-		//register_C_Function("error",internalPrintError);
+		registerNativeFunction("print",print);
+		//registerNativeFunction("error",internalPrintError);
 
-		register_C_FunctionAsFunctionMember("size",&ScriptVarVector::sizeSf);
-		register_C_FunctionAsFunctionMember("push",&ScriptVarVector::pushSf);
-		register_C_FunctionAsFunctionMember("pop",&ScriptVarVector::popSf);
+		registerNativeFunctionMember("size",&ScriptVarVector::sizeSf);
+		registerNativeFunctionMember("push",&ScriptVarVector::pushSf);
+		registerNativeFunctionMember("pop",&ScriptVarVector::popSf);
 
 
-		register_C_FunctionAsFunctionMember("add",&ScriptVarDictionary::addAttrSf);
-		register_C_FunctionAsFunctionMember("remove",&ScriptVarDictionary::removeAttrSf);
-		register_C_FunctionAsFunctionMember("size",&ScriptVarDictionary::sizeSf);
+		registerNativeFunctionMember("add",&ScriptVarDictionary::addAttrSf);
+		registerNativeFunctionMember("remove",&ScriptVarDictionary::removeAttrSf);
+		registerNativeFunctionMember("size",&ScriptVarDictionary::sizeSf);
 	}
 
-	void ScriptClassFactory::register_C_BaseSymbols(bool _register){
+	void ScriptClassFactory::registerNativeBaseSymbols(bool _register){
 		register_c_base_symbols = _register;
 	}
 
@@ -125,7 +125,7 @@ namespace zetscript{
 	/**
 	 * Register C variable
 	 */
-	 bool  ScriptClassFactory::register_C_Variable(
+	 bool  ScriptClassFactory::registerNativeVariable(
 			 const std::string & var_name
 			 ,void * var_ptr
 			 , const std::string & var_type

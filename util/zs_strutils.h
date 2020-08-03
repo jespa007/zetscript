@@ -16,24 +16,24 @@ namespace zetscript{
 			NUMBER_TYPE_DOUBLE
 		}NumberType;
 
-		 bool  * parseBoolean(const std::string & );
-		 int   * parseInteger(const std::string & );
-		 float * parseFloat(const std::string & );
+		 bool  * parse_bool(const std::string & );
+		 int   * parse_int(const std::string & );
+		 float * parse_float(const std::string & );
 
 
-		 std::string intToString(int number);
-		 std::string toLower(const std::string & str);
-		 std::string toUpper(const std::string & str);
-		 std::wstring toWString(const std::string &s);
+		 std::string int_to_str(int number);
+		 std::string to_lower(const std::string & str);
+		 std::string to_upper(const std::string & str);
+		 std::wstring to_wstring(const std::string &s);
 		  std::string  format(const  char  *string_text, ...);
 
-		 bool endsWith(const std::string & fullString, const std::string & ending);
+		 bool ends_with(const std::string & fullString, const std::string & ending);
 
 		  std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
 		  std::vector<std::string> split(const std::string &s, char delim);
 		 bool isEmpty(const std::string & str);
-		 NumberType isNumber(const std::string & test_str);
-		 bool 		 isBinary(const std::string & test_str);
+		 NumberType is_number(const std::string & test_str);
+		 bool 		 is_binary(const std::string & test_str);
 
 		 std::string remove(std::string & str_old, char ch_to_remove);
 
@@ -44,7 +44,7 @@ namespace zetscript{
 		 * @p1:start pointer
 		 * @p2:end pointer
 		 */
-		bool copyFromPointerDiff(std::string & str_dst,const char *p1, const char *p2);
+		bool copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2);
 
 	}
 }

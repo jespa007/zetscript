@@ -168,7 +168,7 @@ namespace zetscript{
 			scope_parent->registered_scopes->push_back((intptr_t)new_scope);
 
 			if(entry_function==false){
-				new_scope->tmp_idx_instruction_push_scope=eval_data->current_function->instructions.size();
+				new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->instructions.size();
 			}
 			//new_scope->eval_scope_tmp = new EvalScope(new_scope);
 			return new_scope;//(EvalScope *)new_scope->eval_scope_tmp;
@@ -302,7 +302,7 @@ namespace zetscript{
 
 							end_var=aux;
 
-							if(!zs_strutils::copyFromPointerDiff(str_symbol,start_var,end_var)){
+							if(!zs_strutils::copy_from_ptr_diff(str_symbol,start_var,end_var)){
 								THROW_SCRIPT_ERROR();
 								return NULL;
 							}

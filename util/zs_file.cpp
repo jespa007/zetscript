@@ -1,16 +1,16 @@
 #include "../zetscript.h"
 
 namespace zetscript{
-	namespace zs_io{
+	namespace zs_file{
 
-		char * readFile(const std::string &  filename, int & n_bytes_readed){
+		char * read(const std::string &  filename, size_t & n_bytes_readed){
 
-			int  length, readed_elements;
+			size_t  length, readed_elements;
 			FILE  *fp;
 
 			if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)
 			{
-				if((length = fileLength(filename)) != -1) {
+				if((length = size(filename)) != -1) {
 
 					n_bytes_readed=length+1;
 					char *buffer = (char *)malloc(n_bytes_readed);
@@ -33,7 +33,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		int  fileLength(const  std::string & filename)
+		int  size(const  std::string & filename)
 		{
 			int  ini,  end;
 			FILE  *fp;

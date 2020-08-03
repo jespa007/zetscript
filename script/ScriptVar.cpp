@@ -22,10 +22,10 @@ namespace zetscript{
 		}
 
 		// Register c vars...
-		for ( unsigned i = 0; i < ir_class->symbol_c_variable_members->count; i++){
+		for ( unsigned i = 0; i < ir_class->symbol_native_variable_members->count; i++){
 
 
-			Symbol * symbol = (Symbol *)ir_class->symbol_c_variable_members->items[i];
+			Symbol * symbol = (Symbol *)ir_class->symbol_native_variable_members->items[i];
 
 			se=addProperty(symbol->name);
 

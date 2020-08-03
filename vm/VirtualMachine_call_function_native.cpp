@@ -33,7 +33,7 @@
 
 namespace zetscript{
 
-	StackElement  VirtualMachine::callFunction_C(
+	StackElement  VirtualMachine::callFunctionNative(
 			intptr_t fun_ptr,
 			const ScriptFunction *calling_function,
 			bool & error,

@@ -35,7 +35,7 @@ namespace zetscript {
 		{
 
 	    	return (const char *)what_msg;
-	    	//return "["+file+":"+CZetJsonCppUtils::intToString(line)+"]"+error;
+	    	//return "["+file+":"+CZetJsonCppUtils::int_to_str(line)+"]"+error;
 		}
 
 

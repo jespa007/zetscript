@@ -11,7 +11,7 @@ namespace zetscript{
 
 	class zs_map{
 	public:
-		int count;
+		uint16_t count;
 		zs_map_node **list;
 
 		zs_map();

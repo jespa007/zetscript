@@ -59,7 +59,7 @@
 
 // utils
 #include "util/zs_strutils.h"
-#include "util/zs_io.h"
+#include "util/zs_file.h"
 #include "util/zs_log.h"
 #include "util/zs_rtti.h"
 #include "util/zs_path.h"
@@ -103,13 +103,13 @@
 
 
 #define ZS_CLASS_C_BASEOF(zs)										(zs)->class_C_BaseOf();
-#define ZS_REGISTER_C_FUNCTION(zs,text,s) 							(zs)->register_C_Function(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_C_VARIABLE(zs,text,s) 							(zs)->register_C_Variable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
-#define ZS_REGISTER_C_CLASS(zs,class_type,s) 						(zs)->register_C_Class<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_C_SINGLETON_CLASS(zs,class_type,s)				(zs)->register_C_SingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_C_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->register_C_VariableMember<class_type>(s,v)
-#define ZS_REGISTER_C_STATIC_FUNCTION_MEMBER(zs,class_type,s,f)		(zs)->register_C_FunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_C_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->register_C_FunctionMember<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_C_FUNCTION(zs,text,s) 							(zs)->registerNativeFunction(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_C_VARIABLE(zs,text,s) 							(zs)->registerNativeVariable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
+#define ZS_REGISTER_C_CLASS(zs,class_type,s) 						(zs)->registerNativeClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_C_SINGLETON_CLASS(zs,class_type,s)				(zs)->registerNativeSingletonClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_C_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->registerNativeVariableMember<class_type>(s,v)
+#define ZS_REGISTER_C_STATIC_FUNCTION_MEMBER(zs,class_type,s,f)		(zs)->registerNativeFunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_C_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->registerNativeFunctionMember<class_type>(s,f,__FILE__, __LINE__)
 #define ZS_REGISTER_C_CONSTANT_INT(zs,constant_name,v)				(zs)->registerConstantIntValue(constant_name,v)
 
 
@@ -190,56 +190,56 @@ namespace zetscript{
 
 		void 						setPrintOutCallback(void (*)(const char *));
 
-		int getIdxClassFromIts_C_Type(const std::string & str_type){
+		/*int getIdxClassFromIts_C_Type(const std::string & str_type){
 			return script_class_factory->getIdxClassFromIts_C_Type(str_type);
-		}
+		}*/
 
 
-		void 												register_C_BaseSymbols(bool r){
-			script_class_factory->register_C_BaseSymbols(r);
+		void 												registerNativeBaseSymbols(bool r){
+			script_class_factory->registerNativeBaseSymbols(r);
 		}
 
 		/**
 		 * Register C function
 		 */
 		template <typename F>
-		bool register_C_Function( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->register_C_Function( function_name,function_ptr, registered_file,registered_line);
+		bool registerFunction( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->registerNativeFunction( function_name,function_ptr, registered_file,registered_line);
 		}
 
 		/**
 		 * Register C variable
 		 */
 		template <typename V>
-		 Symbol * register_C_Variable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
-			 return script_class_factory->register_C_Variable(var_str,var_ptr, typeid(V).name(), registered_file, registered_line);
+		 Symbol * registerVariable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
+			 return script_class_factory->registerNativeVariable(var_str,var_ptr, typeid(V).name(), registered_file, registered_line);
 		 }
 
 		/**
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		 bool register_C_SingletonClass(const std::string & class_name, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->register_C_SingletonClass<C>(class_name, registered_file, registered_line);
+		 bool registerSingletonClass(const std::string & class_name, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->registerNativeSingletonClass<C>(class_name, registered_file, registered_line);
 		}
 
 		/**
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		bool register_C_Class(const std::string & class_name, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->register_C_Class<C>(class_name, registered_file,registered_line);
+		bool registerClass(const std::string & class_name, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->registerNativeClass<C>(class_name, registered_file,registered_line);
 		}
 
 
-		template<typename C>
-		bool register_C_ClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1){
-			return script_class_factory->register_C_ClassBuiltIn<C>(class_name, registered_file, registered_line);
-		}
+		/*template<typename C>
+		bool registerNativeClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1){
+			return script_class_factory->registerNativeClassBuiltIn<C>(class_name, registered_file, registered_line);
+		}*/
 
 
 		template<class C, class B>
-		bool class_C_BaseOf(){
+		bool classBaseOf(){
 			return script_class_factory->class_C_BaseOf<C,B>();
 		}
 
@@ -247,35 +247,33 @@ namespace zetscript{
 		 * Register Function Member Class
 		 */
 		template < typename C, typename R, class T, typename..._A>
-		bool register_C_FunctionMember(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 ){
-			return script_class_factory->register_C_FunctionMember<C>(function_name,function_type, registered_file,registered_line );
-		}
-
-
-		/**
-		 * Register Static Function Member Class
-		 */
-		template <typename C,typename F>
-		bool register_C_FunctionMemberStatic(const char *function_name,F fun, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->register_C_FunctionMemberStatic<C>(function_name,fun, registered_file, registered_line);
-
+		bool bindFunctionMember(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 ){
+			return script_class_factory->registerNativeFunctionMember<C>(function_name,function_type, registered_file,registered_line );
 		}
 
 		/**
 		 * Register C function as function member
 		 */
 		template <typename F>
-		bool register_C_FunctionAsFunctionMember( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->register_C_FunctionAsFunctionMember( function_name,function_ptr, registered_file,registered_line);
+		bool bindFunctionMember( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->registerNativeFunctionMember( function_name,function_ptr, registered_file,registered_line);
 		}
 
+		/**
+		 * Register Static Function Member Class
+		 */
+		template <typename C,typename F>
+		bool registerFunctionMemberStatic(const char *function_name,F fun, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->registerNativeFunctionMemberStatic<C>(function_name,fun, registered_file, registered_line);
+
+		}
 
 		/**
 		 * Register C Member var
 		 */
 		template <typename C, typename R,typename T>
-		bool register_C_VariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->register_C_VariableMember<C>(var_name,var_pointer,registered_file,registered_line);
+		bool registerVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->registerNativeVariableMember<C>(var_name,var_pointer,registered_file,registered_line);
 		}
 
 		//cpp binding
@@ -290,7 +288,7 @@ namespace zetscript{
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->newSlot();
 				//intptr_t uvar = (intptr_t)(v[i]);
-				*stk = zs_instance->convertVarToStackElement((intptr_t)(v[i]),zs_instance->getIdxClassFromIts_C_Type(typeid(T).name()));
+				*stk = zs_instance->convertVarToStackElement((intptr_t)(v[i]),zs_instance->script_class_factory->getIdxClassFromIts_C_Type(typeid(T).name()));
 			}
 
 			return vsv;

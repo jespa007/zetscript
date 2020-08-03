@@ -27,7 +27,7 @@ namespace zetscript{
 				metamethod_operator[i]=new zs_vector();
 			}
 
-			symbol_c_variable_members=new zs_vector();
+			symbol_native_variable_members=new zs_vector();
 			function_members=new zs_vector();
 			idx_base_classes=new zs_vector();
 
@@ -57,7 +57,7 @@ namespace zetscript{
 		return NULL;
 	 }
 
-		Symbol				* 	ScriptClass::register_C_SymbolVariableMember(
+		Symbol				* 	ScriptClass::registerNativeSymbolVariableMember(
 				const std::string & file
 				, short line
 				,const std::string & symbol_name
@@ -72,14 +72,14 @@ namespace zetscript{
 				//*symbol=this->symbol;
 				symbol->file=file;
 				symbol->line=line;
-				symbol->idx_position=symbol_c_variable_members->count;
+				symbol->idx_position=symbol_native_variable_members->count;
 				symbol->n_params=NO_PARAMS_IS_VARIABLE;
 				symbol->ref_ptr=ref_ptr;
 				symbol->name=symbol_name;
 				symbol->c_type = c_type;
 				symbol->symbol_properties=symbol_properties;
 
-				symbol_c_variable_members->push_back((intptr_t)symbol);
+				symbol_native_variable_members->push_back((intptr_t)symbol);
 				return symbol;
 			}
 
@@ -88,8 +88,8 @@ namespace zetscript{
 
 		Symbol *	 ScriptClass::get_C_SymbolVariableMember(const std::string & symbol_name){
 			// from lat value to first to get last override function...
-			for(int i = (int)symbol_c_variable_members->count-1; i >= 0 ; i--){
-				Symbol *symbol=(Symbol *)symbol_c_variable_members->items[i];
+			for(int i = (int)symbol_native_variable_members->count-1; i >= 0 ; i--){
+				Symbol *symbol=(Symbol *)symbol_native_variable_members->items[i];
 				if(symbol->name == symbol_name){
 					return symbol;
 				}
@@ -175,10 +175,10 @@ namespace zetscript{
 
 		}
 
-		for(unsigned i = 0; i < symbol_c_variable_members->count; i++){
-			delete (Symbol *)symbol_c_variable_members->items[i];
+		for(unsigned i = 0; i < symbol_native_variable_members->count; i++){
+			delete (Symbol *)symbol_native_variable_members->items[i];
 		}
-		delete symbol_c_variable_members;
+		delete symbol_native_variable_members;
 	}
 }
 

@@ -113,7 +113,7 @@ namespace zetscript{
 						 writeError(eval_data->current_parsing_file,line ,"Unexpected '\"'");
 						 return NULL;
 					 }
-					 if(!zs_strutils::copyFromPointerDiff(str_value,start_word+1,aux)){
+					 if(!zs_strutils::copy_from_ptr_diff(str_value,start_word+1,aux)){
 						 return NULL;
 					 }
 					 aux++;
@@ -162,14 +162,14 @@ namespace zetscript{
 						type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
 						load_type=LOAD_TYPE_UNDEFINED;
 						obj=NULL;// ScriptVar::UndefinedSymbol;
-				}else if((const_obj=zs_strutils::parseInteger(str_number_value))!=NULL){ // int literal
+				}else if((const_obj=zs_strutils::parse_int(str_number_value))!=NULL){ // int literal
 					int value = *((int *)const_obj);
 					delete (int *)const_obj;
 					load_type=LOAD_TYPE_CONSTANT;
 					obj=eval_data->zs->registerConstantValue(str_number_value,value);
 					is_constant_number=true;
 				}
-				else if((const_obj=zs_strutils::parseFloat(str_number_value))!=NULL){ // float literal
+				else if((const_obj=zs_strutils::parse_float(str_number_value))!=NULL){ // float literal
 					float value = *((float *)const_obj);
 					delete (float *)const_obj;
 					void *value_ptr;
@@ -185,7 +185,7 @@ namespace zetscript{
 					}
 					is_constant_number=true;
 				}
-				else if((const_obj=zs_strutils::parseBoolean(str_boolean_value))!=NULL){ // bool literal
+				else if((const_obj=zs_strutils::parse_bool(str_boolean_value))!=NULL){ // bool literal
 
 					bool value = *((bool *)const_obj);
 					delete (bool *)const_obj;
@@ -623,7 +623,13 @@ namespace zetscript{
 
 			// make operator precedence from the AST built before...
 			if(expression_tokens.size()>0){
-				if(!makeOperatorPrecedence(eval_data,&expression_tokens,instructions,0,expression_tokens.size()-1,error)){
+				if(!makeOperatorPrecedence(
+					eval_data
+					,&expression_tokens
+					,instructions
+					,0
+					,(int)(expression_tokens.size()-1)
+					,error)){
 					return NULL;
 				}
 			}

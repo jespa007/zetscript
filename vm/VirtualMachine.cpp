@@ -460,7 +460,7 @@ namespace zetscript{
 			 ,ScriptVar *this_object
 			 ,bool & error
 			 ,StackElement *  stk_params
-			 ,short			n_stk_params
+			 ,unsigned	char  n_stk_params
 			){
 
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
@@ -517,5 +517,5 @@ namespace zetscript{
 }
 
 
-#include "VirtualMachine_call_function_c.cpp"
+#include "VirtualMachine_call_function_native.cpp"
 #include "VirtualMachine_call_function.cpp"

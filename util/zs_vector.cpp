@@ -56,7 +56,7 @@ namespace zetscript{
 
 		this->items[idx] = 0;
 
-		for (unsigned i = idx; i < (this->count-1); i++) {
+		for (uint16_t i = idx; i < (this->count-1); i++) {
 			this->items[i] = this->items[i+1];
 		}
 

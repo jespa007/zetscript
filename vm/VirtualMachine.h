@@ -54,7 +54,7 @@ namespace zetscript{
 			 ,ScriptVar *this_object
 			 ,bool & error
 			 ,StackElement *  stk_params=NULL
-			 ,short			n_stk_params=0
+			 ,unsigned char			n_stk_params=0
 		);
 
 		StackElement *getLastStackValue();
@@ -162,7 +162,7 @@ namespace zetscript{
 				Instruction *calling_instruction = NULL);
 
 
-		 StackElement  callFunction_C(
+		 StackElement  callFunctionNative(
 			 intptr_t fun_ptr,
 			 const ScriptFunction *calling_function,
 			 bool & error,
