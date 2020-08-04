@@ -395,18 +395,6 @@ namespace zetscript{
 		return (StackElement *)stk_properties->items[idx];
 	}
 
-	/*FunctionSymbol * ScriptVar::getIdxScriptFunctionObjectByClassFunctionName(const std::string & varname){
-
-		// from lat value to first to get last override function...
-		for(unsigned i = this->functions->count-1; i >= 0; i--){
-			FunctionSymbol *si=(FunctionSymbol *)this->function_symbols->items[i];
-			if(varname == si->key_value){
-				return si;
-			}
-		}
-		return NULL;
-	}*/
-
 	const std::string & ScriptVar::getClassName(){
 		return registered_class_info->symbol.name;
 	}
@@ -517,7 +505,10 @@ namespace zetscript{
 		destroy();
 
 		// delete all free items and clear();
-		stk_properties->free_all_items_and_clear();
+		for(unsigned i =0;i < stk_properties->count; i++){
+			free((void *)stk_properties->items[i]);
+		}
+
 		delete stk_properties;
 
 		// delete search support...
@@ -528,5 +519,6 @@ namespace zetscript{
 			delete ((FunctionSymbol *)functions->items[i]);
 		}
 		functions->clear();
+		delete functions;
 	}
 }

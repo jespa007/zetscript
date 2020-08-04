@@ -125,7 +125,7 @@ namespace zetscript{
 		std::string			*vm_str_current;
 
 		 StackElement     	vm_stack[VM_STACK_LOCAL_VAR_MAX];
-		 int n_globals;
+		// int n_globals;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		 //zs_vector *stk_globals;

@@ -58,10 +58,14 @@ namespace zetscript{
 		// REGISTER BUILT IN SCRIPT TYPES
 		// MAIN CLASS (0)
 		main_object=registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
-		if(main_object->symbol.scope!=MAIN_SCOPE(this)){
+
+		// init main scope...
+		MAIN_SCOPE(this)->script_class=main_object;
+
+		/*if(main_object->symbol.scope!=MAIN_SCOPE(this)){
 			THROW_RUNTIME_ERROR("Error initializing global scope");
 			return;
-		}
+		}*/
 
 		// REGISTER BUILT IN C TYPES
 		REGISTER_BUILT_IN_TYPE(void,IDX_BUILTIN_TYPE_VOID_C);
@@ -103,6 +107,7 @@ namespace zetscript{
 		// register c function's
 
 		main_function=main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
+
 
 		registerNativeFunction("print",print);
 		//registerNativeFunction("error",internalPrintError);

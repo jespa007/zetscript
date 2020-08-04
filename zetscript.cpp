@@ -476,7 +476,7 @@ namespace zetscript{
 		delete script_function_factory;
 		delete proxy_function_factory;
 		delete script_class_factory;
-
+		delete virtual_machine;
 		virtual_machine=NULL;
 
 		for(std::map<std::string,ConstantValue *>::iterator it=constant_values.begin();it!=constant_values.end();it++){
@@ -500,5 +500,7 @@ namespace zetscript{
 			delete icv;
 		}
 		constant_values.clear();
+
+
 	}
 }

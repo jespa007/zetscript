@@ -42,7 +42,7 @@ namespace zetscript{
 	 ScriptFunction				* 	ScriptClass::getFunctionMember(const std::string & function_name, unsigned int n_args){
 		 if(function_members->count>0){
 			// from last value to first to get last override function...
-			for(unsigned i = (int)(function_members->count-1); i >= 0 ; i--){
+			for(int i = (int)(function_members->count-1); i >= 0 ; i--){
 				ScriptFunction *sf=(ScriptFunction *)function_members->items[i];
 				if(
 						(sf->symbol.name == function_name)
@@ -112,6 +112,8 @@ namespace zetscript{
 			return NULL;
 		}
 
+		int idx_position=function_members->count;
+
 		ScriptFunction *sf =  script_function_factory->newScriptFunction(
 				//---- Register data
 				symbol.scope
@@ -119,7 +121,7 @@ namespace zetscript{
 				,line
 				//---- Function data
 				,idx_class 				// idx class which belongs to...
-				,function_members->count // idx position ...
+				,idx_position // idx position ...
 				,function_name
 				,function_params
 				,idx_return_type
@@ -137,10 +139,11 @@ namespace zetscript{
 		);*/
 
 		//std::string class_name=symbol.name;
+		this->function_members->push_back((intptr_t)sf);
 
 		// constructor...
 		if(function_name == FUNCTION_MEMBER_CONSTRUCTOR_NAME){
-			idx_function_member_constructor = (char)function_members->count;
+			idx_function_member_constructor = idx_position;
 		}
 		else{
 			// check if metamethod...
@@ -175,10 +178,28 @@ namespace zetscript{
 
 		}
 
+		// delete symbol native variable members...
 		for(unsigned i = 0; i < symbol_native_variable_members->count; i++){
 			delete (Symbol *)symbol_native_variable_members->items[i];
 		}
 		delete symbol_native_variable_members;
+		symbol_native_variable_members=NULL;
+
+		for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
+			zs_vector *vec=(zs_vector *)metamethod_operator[i];
+			delete vec;
+		}
+		memset(metamethod_operator,0,sizeof(metamethod_operator));
+
+
+		// idx base classes only stores int (no free)
+		delete idx_base_classes;
+		idx_base_classes=NULL;
+
+		// delete function members only stores pointers (no free)
+		delete function_members;
+		function_members=NULL;
+
 	}
 }
 

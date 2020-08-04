@@ -122,7 +122,7 @@ namespace zetscript{
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
 
-		static std::string formatInstructionLoadType(ScriptFunction *current_function,PtrInstruction list_statements, int current_instruction);
+		static std::string formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
 		inline InstructionSourceInfo * getInstructionInfo(Instruction *ins){
 			short idx= (ins-this->instructions);///sizeof(Instruction *);
 			if(instruction_source_info.count(idx)==1){

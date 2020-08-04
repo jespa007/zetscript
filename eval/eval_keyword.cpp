@@ -17,7 +17,7 @@ namespace zetscript{
 
 			error = false;
 
-			aux_p=ignoreBlanks(aux_p,line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			// check whwther the function is anonymous or not.
 			if((aux_p=getIdentifierToken(eval_data,aux_p,class_name))==NULL){
@@ -25,7 +25,7 @@ namespace zetscript{
 				 return NULL;
 			}
 
-			aux_p=ignoreBlanks(aux_p,line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 
@@ -49,7 +49,7 @@ namespace zetscript{
 			std::string symbol_value;
 			KeywordType key_w;
 
-			aux_p=ignoreBlanks(aux_p,line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			// check for keyword ...
 			key_w = isKeywordType(aux_p);
@@ -57,7 +57,7 @@ namespace zetscript{
 			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
 				if(key_w == KeywordType::KEYWORD_TYPE_DELETE){
 
-					aux_p=ignoreBlanks(aux_p+strlen(eval_info_keywords[key_w].str),line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
 
 
 					if((aux_p=getIdentifierToken(eval_data,aux_p,symbol_value))==NULL){
@@ -65,7 +65,7 @@ namespace zetscript{
 						 return NULL;
 					}
 
-					 aux_p=ignoreBlanks(aux_p,line);
+					 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					 if(*aux_p != ';'){
 						 writeError(eval_data->current_parsing_file,line,"Expected ;");
@@ -87,7 +87,7 @@ namespace zetscript{
 			std::string base_class_name="";
 			ScriptClass *sc;
 			KeywordType key_w;
-			aux_p=ignoreBlanks(aux_p,line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			// check for keyword ...
 			key_w = isKeywordType(aux_p);
@@ -101,7 +101,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					aux_p=ignoreBlanks(aux_p+strlen(eval_info_keywords[key_w].str),line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
 
 					// check for symbol's name
 					if((aux_p=getIdentifierToken(eval_data,aux_p,class_name))==NULL){
@@ -112,18 +112,18 @@ namespace zetscript{
 					// try to register class...
 					class_line = line;
 
-					aux_p=ignoreBlanks(aux_p,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					if(strncmp(aux_p, "extends",7)==0 ){ // extension class detected
 
-						aux_p=ignoreBlanks(aux_p+7,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+7,line);
 
 						if((aux_p=getIdentifierToken(eval_data,aux_p,base_class_name))==NULL){
 							 writeError(eval_data->current_parsing_file,line ,"Expected symbol");
 							 return NULL;
 						}
 
-						aux_p=ignoreBlanks(aux_p, line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
 					}
 
 
@@ -141,7 +141,7 @@ namespace zetscript{
 
 					if(*aux_p == '{' ){
 
-						aux_p=ignoreBlanks(aux_p+1,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 						// TODO: Register class and baseof
 						// register info class ...
@@ -184,7 +184,7 @@ namespace zetscript{
 								writeError(eval_data->current_parsing_file,line,"unexpected \"%s\"",eval_info_keywords[key_w].str);
 								return NULL;
 							}
-							aux_p=ignoreBlanks(aux_p,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 						}
 
 						if(*aux_p != '}'){
@@ -192,7 +192,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						/*aux_p=ignoreBlanks(aux_p+1,line);
+						/*aux_p=IGNORE_BLANKS(eval_data,aux_p+1,line);
 
 						if(*aux_p != ';'){
 							writeError(eval_data->current_parsing_file,class_line ,"class \"%s\" not end with ;",class_name.c_str());
@@ -263,7 +263,7 @@ namespace zetscript{
 
 					// advance keyword...
 					aux_p += advance_chars;
-					aux_p=ignoreBlanks(aux_p,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					bool named_function = *aux_p!='(';
 
@@ -311,7 +311,7 @@ namespace zetscript{
 						}
 
 						aux_p=end_var;
-						aux_p=ignoreBlanks(aux_p,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					}
 					else{ //function node
 						// TODO manage function object
@@ -322,13 +322,13 @@ namespace zetscript{
 					if(*aux_p == '('){ // push arguments...
 
 						aux_p++;
-						aux_p=ignoreBlanks(aux_p,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 						std::string arg_value;
 						FunctionParam arg_info;
 
 						// grab words separated by ,
 						while(*aux_p != 0 && *aux_p != ')'){
-							aux_p=ignoreBlanks(aux_p,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 							//char *arg_name;
 
 
@@ -337,7 +337,7 @@ namespace zetscript{
 									writeError(eval_data->current_parsing_file,line,"Expected ',' ");
 									return NULL;
 								}
-								aux_p=ignoreBlanks(aux_p+1,line);
+								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 							}
 
 							if(*aux_p == ')' || *aux_p == ','){
@@ -385,12 +385,12 @@ namespace zetscript{
 
 
 							aux_p=end_var;
-							aux_p=ignoreBlanks(aux_p,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						}
 
 						aux_p++;
-						aux_p=ignoreBlanks(aux_p,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						if(*aux_p != '{'){
 							writeError(eval_data->current_parsing_file,line,"Expected '{'");
@@ -456,7 +456,7 @@ namespace zetscript{
 				if(key_w == KeywordType::KEYWORD_TYPE_RETURN){ // possible variable...
 					//PASTNode child_node=NULL;
 					aux_p += strlen(eval_info_keywords[key_w].str);
-					aux_p=ignoreBlanks(aux_p,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					if((aux_p = evalExpression(
 							eval_data
 							,aux_p
@@ -472,7 +472,7 @@ namespace zetscript{
 
 						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RET));
 
-						aux_p=ignoreBlanks(aux_p+1,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 						return aux_p;
 					}
 				}
@@ -498,7 +498,7 @@ namespace zetscript{
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
 					// evaluate conditional line ...
-					aux_p=ignoreBlanks(aux_p,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					if(*aux_p == '('){
 
 						if((end_expr = evalExpression(
@@ -518,7 +518,7 @@ namespace zetscript{
 								return NULL;
 							}
 
-							aux_p=ignoreBlanks(end_expr+1,line);
+							IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
 							if(*aux_p != '{'){
 								writeError(eval_data->current_parsing_file,line,"Expected while-block open block ('{') ");
 								return NULL;
@@ -568,7 +568,7 @@ namespace zetscript{
 					aux_p += strlen(eval_info_keywords[key_w].str);
 
 					//1st evaluate body ..
-					aux_p=ignoreBlanks(aux_p,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					if(*aux_p != '{'){
 						writeError(eval_data->current_parsing_file,line,"Expected open block ('{') in do-while expression");
 						return NULL;
@@ -583,7 +583,7 @@ namespace zetscript{
 						if(!error){
 
 							// Finally evaluate conditional line ...
-							aux_p=ignoreBlanks(aux_p,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 							// check for keyword ...
 							key_w = isKeywordType(aux_p);
@@ -595,7 +595,7 @@ namespace zetscript{
 
 							aux_p += strlen(eval_info_keywords[key_w].str);
 
-							aux_p=ignoreBlanks(aux_p,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 							if(*aux_p == '('){
 
@@ -654,7 +654,7 @@ namespace zetscript{
 					do{
 
 						aux_p += strlen(eval_info_keywords[key_w].str);
-						aux_p=ignoreBlanks(aux_p,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						if(*aux_p != '('){
 							writeError(eval_data->current_parsing_file,line,"Expected '(' if");
@@ -683,7 +683,7 @@ namespace zetscript{
 						eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
 						ei_jmps.push_back(ei_aux);
 
-						/*if(ignoreBlanks(aux_p+1,dl)==end_expr){
+						/*if(IGNORE_BLANKS(eval_data,aux_p+1,dl)==end_expr){
 							writeError(eval_data->current_parsing_file,line,"no conditional expression");
 							return NULL;
 						}
@@ -692,7 +692,7 @@ namespace zetscript{
 							return NULL;
 						}*/
 
-						aux_p=ignoreBlanks(end_expr+1,line);
+						IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
 						if(*aux_p != '{'){
 							writeError(eval_data->current_parsing_file,line,"Expected if-block open block ('{')");
 							return NULL;
@@ -710,7 +710,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						aux_p=ignoreBlanks(aux_p,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						bool else_key = false;
 						if((key_w = isKeywordType(aux_p)) != KeywordType::KEYWORD_TYPE_UNKNOWN){
@@ -729,7 +729,7 @@ namespace zetscript{
 								aux_p++;
 							}
 
-							aux_p=ignoreBlanks(aux_p,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 							bool if_key = false;
 							if((key_w = isKeywordType(aux_p)) != KeywordType::KEYWORD_TYPE_UNKNOWN){
@@ -800,7 +800,7 @@ namespace zetscript{
 				if(key_w == KeywordType::KEYWORD_TYPE_FOR){
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
-					aux_p=ignoreBlanks(aux_p,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					if(*aux_p == '('){ // ready ...
 
@@ -808,7 +808,7 @@ namespace zetscript{
 						Scope *new_scope =evalNewScope(eval_data,scope_info); // push current scope
 
 
-						aux_p=ignoreBlanks(aux_p+1,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 						if(*aux_p != ';'){ // there's some var Init...
 							// Init node ...
@@ -833,14 +833,14 @@ namespace zetscript{
 							}
 						}
 
-						aux_p=ignoreBlanks(aux_p,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						key_w = isKeywordType(aux_p);
 						if(key_w == KeywordType::KEYWORD_TYPE_IN){
 
 							//PASTNode node_for_in_right_op_expression=NULL;
 
-							aux_p=ignoreBlanks(aux_p+strlen(eval_info_keywords[KeywordType::KEYWORD_TYPE_IN].str),line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KeywordType::KEYWORD_TYPE_IN].str),line);
 
 
 							if((aux_p = evalExpression(
@@ -860,10 +860,11 @@ namespace zetscript{
 
 							}
 
-							aux_p=ignoreBlanks(aux_p+1,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 							if(*aux_p != ';'){ // conditional...
-								char * end_p=ignoreBlanks(aux_p+1,line);
+								char * end_p=NULL;
+								IGNORE_BLANKS(end_p,eval_data,aux_p+1,line);
 
 								if(*end_p != ';'){// there's some condition if not, then is like for(X;true;X)
 
@@ -879,14 +880,14 @@ namespace zetscript{
 								}
 							}
 
-							aux_p=ignoreBlanks(aux_p,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 							if(*aux_p != ';'){
 								writeError(eval_data->current_parsing_file,line,"Expected ';'");
 								return NULL;
 
 							}
-							aux_p=ignoreBlanks(aux_p+1,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 							if(*aux_p != ')' ){ // finally do post op...
 
@@ -907,7 +908,7 @@ namespace zetscript{
 									}
 
 									if(*aux_p == ',' ){
-										aux_p=ignoreBlanks(aux_p+1,line);
+										IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 									}else{
 										if(*aux_p != ')' ){
 											writeError(eval_data->current_parsing_file,line,"Expected ')'");
@@ -924,7 +925,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						aux_p=ignoreBlanks(aux_p+1,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 						if(*aux_p != '{'){
 							writeError(eval_data->current_parsing_file,line,"Expected '{' for-block");
 							return NULL;
@@ -968,10 +969,10 @@ namespace zetscript{
 				if(key_w == KeywordType::KEYWORD_TYPE_SWITCH){
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
-					aux_p=ignoreBlanks(aux_p,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					if(*aux_p == '('){
-							aux_p=ignoreBlanks(aux_p+1,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 							// evaluate switch condition expression ...
 							if((aux_p = evalExpression(
 								eval_data
@@ -989,7 +990,7 @@ namespace zetscript{
 								return NULL;
 							}
 
-							aux_p=ignoreBlanks(aux_p+1,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 							if(*aux_p == '{'){
 
@@ -1005,7 +1006,7 @@ namespace zetscript{
 									return NULL;
 								}
 
-								aux_p=ignoreBlanks(aux_p,line);
+								IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 								if(*aux_p != '}'){
 									writeError(eval_data->current_parsing_file,line,"Expected '}' switch");
@@ -1046,11 +1047,11 @@ namespace zetscript{
 				if(key_w == KeywordType::KEYWORD_TYPE_VAR){ // possible variable...
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
-					aux_p=ignoreBlanks(aux_p,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					while(*aux_p != ';' && *aux_p != 0 && !end){ // JE: added multivar feature.
 
-						aux_p=ignoreBlanks(aux_p,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 						start_var=aux_p;
 						start_line = line;
 						//sc=NULL;
@@ -1095,7 +1096,7 @@ namespace zetscript{
 						}
 
 						aux_p=end_var;
-						aux_p=ignoreBlanks(aux_p,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 						//}
 						bool ok_char=*aux_p == ';' || *aux_p == ',' || *aux_p == '=' ;
 						/*if(sc!=NULL && *aux_p == '='){
@@ -1107,7 +1108,7 @@ namespace zetscript{
 							allow_for_in=false;
 							if(*aux_p == '='){ // only for variables (not class members)
 								// try to evaluate expression...
-								aux_p=ignoreBlanks(aux_p,line);
+								IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 								if((aux_p = evalExpression(
 									eval_data
@@ -1216,13 +1217,13 @@ namespace zetscript{
 
 			//std::vector<EvalInstruction> *tokenCompiled = NULL;
 
-			aux_p=ignoreBlanks(aux_p, line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
 
 			KeywordType keyw = isKeywordType(aux_p);
 
 			if(keyw == KeywordType::KEYWORD_TYPE_CASE){ // a keyword was detected...
 
-				aux_p=ignoreBlanks(aux_p,line);
+				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				// get the symbol...
 				if(*aux_p=='-'){
@@ -1240,7 +1241,7 @@ namespace zetscript{
 				if(aux_p==NULL){ return NULL;}
 			}
 
-			aux_p=ignoreBlanks(aux_p,line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if(*aux_p != ':'){
 				writeError(eval_data->current_parsing_file,line,"Expected  ':' ");
@@ -1256,7 +1257,7 @@ namespace zetscript{
 
 			KeywordType keyw=KeywordType::KEYWORD_TYPE_UNKNOWN;//,keyw2nd=KeywordType::KEYWORD_TYPE_UNKNOWN;
 
-			aux_p=ignoreBlanks(aux_p, line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
 
 			// check if condition...
 			keyw = isKeywordType(aux_p);

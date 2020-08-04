@@ -382,7 +382,10 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		char *ignoreBlanks(const char *str, int &line) {
+#define IGNORE_BLANKS(aux_p,eval_data,s,line) if((aux_p=ignoreBlanks(eval_data,(s),line)) == NULL) return NULL;
+
+
+		char *ignoreBlanks(EvalData *eval_data,const char *str, int &line) {
 			char *aux_p = (char *)str;
 			bool end = false;
 			while(!end){
@@ -400,6 +403,9 @@ namespace zetscript{
 						aux_p+=2;
 
 					end=false;
+				}else if( isCommentBlockEnd(aux_p)){
+					writeError(eval_data->current_parsing_file,line," Unexpected end comment block");
+					return NULL;
 				}
 				// make compatible windows format...
 				if(*aux_p == '\r')
@@ -555,7 +561,9 @@ namespace zetscript{
 
 		char * parseLiteralNumber(EvalData *eval_data,const char *c, int & line, std::string & value, bool & error){
 			// PRE: a std::string given...
-			char *aux_p = ignoreBlanks(c,line);
+			char *aux_p = NULL;
+			IGNORE_BLANKS(aux_p,eval_data,c,line);
+
 			bool end=false;
 			int current_part=0;
 			std::string number_part[3];
@@ -584,10 +592,11 @@ namespace zetscript{
 						if(current_part==0 || current_part==1){
 							current_part=2;
 							number_part[current_part]+=*aux_p;
-							aux_p=ignoreBlanks(aux_p+1,line);
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
 							if(*(aux_p)=='+' || *(aux_p)=='-'){
 								number_part[current_part]+=*aux_p;
-								aux_p=ignoreBlanks(aux_p+1,line);
+								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 							}
 						}
 						else{ // error

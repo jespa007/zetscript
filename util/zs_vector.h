@@ -27,7 +27,7 @@ namespace zetscript{
 		void 		clear();
 		intptr_t    pop_back();
 
-		void		free_all_items_and_clear();
+		//void		free_all_items_and_clear();
 		/**
 		 * Deletes list and its elements.
 		 */

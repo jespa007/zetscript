@@ -212,7 +212,7 @@ namespace zetscript{
 
 			//Scope *_localScope =  scope_info != NULL ? scope_info->symbol_info.ast->scope_info_ptr: NULL;
 			Scope *new_scope_info=  NULL;
-			aux_p=ignoreBlanks(aux_p,line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			// check for keyword ...
 			if(*aux_p == '{'){
@@ -256,7 +256,7 @@ namespace zetscript{
 			char *end_expr=0;
 			bool processed_directive=false;
 
-			aux=ignoreBlanks(aux, line);
+			IGNORE_BLANKS(aux,eval_data,aux, line);
 
 			while(*aux != 0 && !custom_quit){
 
@@ -264,7 +264,7 @@ namespace zetscript{
 				//children = NULL;
 				// ignore all ;
 				while(*aux==';' && *aux != 0){
-					aux =ignoreBlanks(aux+1, line);
+					IGNORE_BLANKS(aux,eval_data,aux+1, line);
 				}
 
 				if(*aux==0){ // custom case exit..
@@ -283,7 +283,7 @@ namespace zetscript{
 						switch(directive){
 						case DIRECTIVE_TYPE_INCLUDE:
 							aux += strlen(eval_info_directives[directive].str);
-							aux = ignoreBlanks(aux,line);
+							IGNORE_BLANKS(aux,eval_data,aux,line);
 							if(*aux != '\"'){
 								writeError(eval_data->current_parsing_file,line,"expected starting \" directive");
 								THROW_SCRIPT_ERROR();
@@ -383,13 +383,13 @@ namespace zetscript{
 								return NULL;
 							}
 
-							end_expr=ignoreBlanks(end_expr+1, line);
+							IGNORE_BLANKS(end_expr,eval_data,end_expr+1, line);
 						}
 					}
 				}
 
 				aux=end_expr;
-				aux=ignoreBlanks(aux, line);
+				IGNORE_BLANKS(aux,eval_data,aux, line);
 			}
 			return aux;
 		}

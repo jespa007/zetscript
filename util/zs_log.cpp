@@ -25,12 +25,10 @@ namespace zetscript{
 
 			char  text[4096] = { 0 };
 
-
 			va_list  ap;
 			va_start(ap,  input_text);
 			vsprintf(text,  input_text,  ap);
 			va_end(ap);
-
 
 			if (file == NULL
 	#ifndef __DEBUG__

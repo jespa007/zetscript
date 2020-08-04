@@ -19,7 +19,7 @@ namespace zetscript{
 				if(*aux_p == '{'){ // go for final ...
 
 					// this solve problem void structs...
-					aux_p=ignoreBlanks(aux_p+1,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 					while (*aux_p != '}' && *aux_p != 0){
 
@@ -34,7 +34,7 @@ namespace zetscript{
 							 return NULL;
 						}
 
-						 aux_p=ignoreBlanks(aux_p,line);
+						 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						 if(*aux_p != ':'){ // expected : ...
 							 writeError(eval_data->current_parsing_file,line,"Expected ':'");
@@ -50,15 +50,15 @@ namespace zetscript{
 								 ,line
 								 ,scope_info
 								 ,NULL
-						)) == NULL){  //ignoreBlanks(aux_p+1,line);
+						)) == NULL){  //IGNORE_BLANKS(eval_data,aux_p+1,line);
 							 return NULL;
 						 }
 
 						 // for each attribute we stack to items SYMBOL_NODE and EXPRESSION_NODE ...
-						 aux_p=ignoreBlanks(aux_p,line);
+						 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						 if(*aux_p == ','){
-							 aux_p=ignoreBlanks(aux_p+1,line);
+							 IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 						 }
 						 else if(*aux_p != '}' ){
 							 writeError(eval_data->current_parsing_file,line,"expected '}' or ','");
@@ -75,19 +75,20 @@ namespace zetscript{
 
 		char * evalVectorObject(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvalInstruction *> *	instruction){
 
-			char * aux_p=ignoreBlanks(s,line);
+			char * aux_p=NULL;
+			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 			if(*aux_p != '['){
 				writeError(eval_data->current_parsing_file,line,"Expected '['");
 				return NULL;
 			}
 
-			aux_p=ignoreBlanks(aux_p+1,line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			unsigned v_elements=0;
 
 			while(*aux_p!=0 && *aux_p != ']'){
 
-				aux_p=ignoreBlanks(aux_p,line);
+				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				// expression expected ...
 				if(v_elements > 0){
@@ -96,7 +97,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					aux_p=ignoreBlanks(aux_p+1,line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 				}
 				aux_p=evalExpression(eval_data,aux_p,line,scope_info,NULL);
 				v_elements++;
@@ -115,7 +116,7 @@ namespace zetscript{
 
 			KeywordType key_w;
 
-			aux_p=ignoreBlanks(aux_p,line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			// check for keyword ...
 			key_w = isKeywordType(aux_p);
@@ -123,7 +124,7 @@ namespace zetscript{
 			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
 
 				if(key_w == KeywordType::KEYWORD_TYPE_NEW){
-					aux_p=ignoreBlanks(aux_p+strlen(eval_info_keywords[key_w].str),line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
 					// try get symbol ...++++
 
 					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_NEW));
@@ -144,7 +145,7 @@ namespace zetscript{
 						 return NULL;
 					}
 
-					 aux_p=ignoreBlanks(aux_p,line);
+					 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					 if(*aux_p != '('){
 						 writeError(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_info_keywords[key_w].str);
@@ -153,12 +154,12 @@ namespace zetscript{
 
 					 n_args=0;
 
-					 //aux_p=ignoreBlanks(aux_p+1,line);
+					 //aux_p=IGNORE_BLANKS(eval_data,aux_p+1,line);
 
 					 // foreach constructor argument
 					  do{
 
-						  aux_p=ignoreBlanks(aux_p+1,line);
+						  IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 						  if(*aux_p!=')'){ // be sure that counts as argument for empty args
 							  // eval expression
 							  if((aux_p = evalExpression(eval_data,aux_p,line,scope_info,instruction))==NULL){

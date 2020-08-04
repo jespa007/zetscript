@@ -56,7 +56,7 @@ namespace zetscript{
 
 		this->items[idx] = 0;
 
-		for (uint16_t i = idx; i < (this->count-1); i++) {
+		for (int i = idx; i < (int)((this->count-1)); i++) {
 			this->items[i] = this->items[i+1];
 		}
 
@@ -119,15 +119,19 @@ namespace zetscript{
 		this->_size=0;
 	}
 
-	void 		zs_vector::free_all_items_and_clear(){
-		for(unsigned i=0; i < this->count; i++){
-			free((void *)this->items[i]);
+	/*void 		zs_vector::free_all_items_and_clear(){
+		if(this->items!=NULL){
+			for(unsigned i=0; i < this->count; i++){
+				free((void *)this->items[i]);
+			}
+			this->clear();
 		}
-		this->clear();
-	}
+	}*/
 
 	zs_vector::~zs_vector(){
-		free(this->items);
+		if(this->items!=NULL){
+			free(this->items);
+		}
 	}
 
 	/*void deleteAndFreeAllItems(zs_vector *v){

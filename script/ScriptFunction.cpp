@@ -38,17 +38,39 @@ namespace zetscript{
 		script_class_factory=zs->getScriptClassFactory();
 	}
 
-	std::string ScriptFunction::formatInstructionLoadType(ScriptFunction *current_function,PtrInstruction list_statements, int current_instruction){
+	std::string ScriptFunction::formatInstructionLoadType(ScriptFunction *function,Instruction *instruction){
 
 		 char print_aux_load_value[512] = {0};
 		 char object_access[512] = "";
+		 const char *pre="",*post="";
 
-		 Instruction * instruction =&list_statements[current_instruction];
+		 //Instruction * instruction =&list_statements[current_instruction];
 		 ConstantValue *icv;
-		 std::string symbol_value=SFI_GET_SYMBOL_NAME(current_function,instruction);
+		 std::string symbol_value=SFI_GET_SYMBOL_NAME(function,instruction);
 		 if(instruction->byte_code != BYTE_CODE_LOAD){
 			 return "ERROR";
 		 }
+
+		switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction->properties)){
+			case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
+				pre="-";
+				break;
+			case MSK_INSTRUCTION_PROPERTY_PRE_INC:
+				pre="++";
+				break;
+			case MSK_INSTRUCTION_PROPERTY_PRE_DEC:
+				pre="--";
+				break;
+			case MSK_INSTRUCTION_PROPERTY_POST_INC:
+				post="++";
+				break;
+			case MSK_INSTRUCTION_PROPERTY_POST_DEC:
+				post="--";
+				break;
+			default:
+				break;
+
+		}
 
 		 sprintf(print_aux_load_value,"UNDEFINED");
 
@@ -70,10 +92,10 @@ namespace zetscript{
 				switch(icv->properties){
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-					sprintf(print_aux_load_value,"CONST %i",(int)((intptr_t)icv->stk_value));
+					sprintf(print_aux_load_value,"CONST %s%i",pre,(int)((intptr_t)icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-					sprintf(print_aux_load_value,"CONST %f",*((float *)&icv->stk_value));
+					sprintf(print_aux_load_value,"CONST %s%f",pre,*((float *)&icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 					sprintf(print_aux_load_value,"CONST \"%s\"",((const char *)icv->stk_value));
@@ -83,7 +105,7 @@ namespace zetscript{
 				break;
 
 			case LoadType::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"%sVAR   %s",object_access,symbol_value.c_str());
+				sprintf(print_aux_load_value,"%sVAR   %s%s%s",object_access,pre,symbol_value.c_str(),post);
 				break;
 			case LoadType::LOAD_TYPE_FUNCTION:
 
@@ -91,7 +113,7 @@ namespace zetscript{
 				break;
 
 			case LoadType::LOAD_TYPE_ARGUMENT:
-				sprintf(print_aux_load_value,"ARG   %s",symbol_value.c_str());
+				sprintf(print_aux_load_value,"ARG   %s%s",pre,symbol_value.c_str());
 				break;
 			default:
 
@@ -103,9 +125,6 @@ namespace zetscript{
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo){
 
 		// PRE: it should printed after compile and updateReferences.
-		std::string pre="";
-		std::string post="";
-
 		// first print functions  ...
 		zs_vector * m_vf = sfo->registered_functions;
 
@@ -131,19 +150,13 @@ namespace zetscript{
 			if(sc->idx_class == ZS_IDX_UNDEFINED){ // no class is a function on a global scope
 				symbol_ref=sfo->symbol.name;
 			}else{
-				symbol_ref=sfo->symbol.name+std::string("::")+std::string("????");
+				symbol_ref=sfo->symbol.name;//+std::string("::")+std::string("????");
 			}
 		}
 
 
 		printf("-------------------------------------------------------\n");
 		printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
-
-
-		/*if(sfo->instruction==NULL){
-			ZS_PRINT_WARNING("No instructions for function \"%s\"",sfo->symbol_info.symbol->name);
-			return;
-		}*/
 
 		unsigned idx_instruction=0;
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
@@ -158,7 +171,7 @@ namespace zetscript{
 			 if(value_op2 != -1)
 				 n_ops++;
 
-			 pre="";
+			 /*pre="";
 			 post="";
 
 				switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction->properties)){
@@ -180,7 +193,7 @@ namespace zetscript{
 				default:
 					break;
 
-				}
+				}*/
 			switch(instruction->byte_code){
 
 			case  BYTE_CODE_NEW:
@@ -190,12 +203,11 @@ namespace zetscript{
 						,instruction->value_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???");
 				break;
 			case  BYTE_CODE_LOAD:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 						,idx_instruction,
 						ByteCodeToStr(instruction->byte_code),
-						pre.c_str(),
-						formatInstructionLoadType(sfo,(Instruction *)sfo->instructions,idx_instruction).c_str(),
-						post.c_str());
+						formatInstructionLoadType(sfo,instruction).c_str()
+						);
 				break;
 			case BYTE_CODE_JNT:
 			case BYTE_CODE_JT:
@@ -325,25 +337,6 @@ namespace zetscript{
 		return symbol;
 	}
 
-	/*ScopeSymbolInfo *	ScriptFunction::registerVariable(
-			const std::string & file
-			, short line
-			, const std::string & variable_name
-			, const std::string & c_type
-			, intptr_t ref_ptr
-			, unsigned short symbol_properties)
-	{
-			return registerVariable(
-					file
-					,line
-					,this->symbol_info.symbol->idx_scope
-					,  variable_name
-					,  c_type
-					,  ref_ptr
-					,   symbol_properties
-			);
-	}*/
-
 	Symbol *	 ScriptFunction::getSymbol(Scope *scope,const std::string & symbol_name){
 
 		if(registered_symbols->count>0){
@@ -358,11 +351,8 @@ namespace zetscript{
 				}
 			}
 		}
-
 		return NULL;
 	}
-
-
 
 	ScriptFunction * ScriptFunction::addFunction(
 			 Scope * scope_block
@@ -400,17 +390,12 @@ namespace zetscript{
 			return sf;
 	}
 
-	/*ScriptFunction * ScriptFunction::registerFunction(const std::string & file, short line, const std::string & function_name, std::vector<FunctionParam> args, int idx_return_type,intptr_t ref_ptr, unsigned short symbol_properties){
-
-		return registerFunction(file, line,this->symbol_info.symbol->idx_scope, function_name,  args, idx_return_type,ref_ptr, symbol_properties);
-	}
-*/
 	ScriptFunction *	 ScriptFunction::getFunction(Scope * scope,const std::string & function_name,  char n_args){
 
 		if(registered_functions->count>0){
 
 			// from last value to first to get last override function...
-			for(unsigned i = (int)(registered_functions->count-1); i >= 0 ; i--){
+			for(int i = (int)(registered_functions->count-1); i >= 0 ; i--){
 				ScriptFunction *sf=(ScriptFunction *)registered_functions->items[i];
 				if(
 						(sf->symbol.name == function_name)
@@ -422,31 +407,30 @@ namespace zetscript{
 				}
 			}
 		}
-
 		return NULL;
 	}
 
-
 	ScriptFunction::~ScriptFunction(){
 
-		// delete local functions...
-		registered_functions->free_all_items_and_clear();
+		// delete functions refs from ScriptFunctionFactory...
 		delete registered_functions;
+		registered_functions=NULL;
 
-		// delete local variables...
-		for(unsigned i=0; i < registered_symbols->count; i++){
-			delete (Symbol *)registered_symbols->items[i];
-		}
+		// delete symbols refs from scope...
 		delete registered_symbols;
+		registered_symbols=NULL;
 
 		// delete arg info variables...
 		for(unsigned i=0; i < function_params->count; i++){
 			delete (FunctionParam *)function_params->items[i];
 		}
 		delete function_params;
+		function_params=NULL;
 
 		// delete arg info variables...
-		free(instructions);
+		if(instructions != NULL){
+			free(instructions);
+		}
 	}
 
 }

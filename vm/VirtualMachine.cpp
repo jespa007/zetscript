@@ -271,11 +271,11 @@ namespace zetscript{
 		//size_vec_ast_node = 0;
 		vm_foreach_current=NULL;
 		current_call_c_function = NULL;
-		n_globals=0;
+		//n_globals=0;
 		zs=_zs;
 		script_function_factory=this->zs->getScriptFunctionFactory();
 		script_class_factory=this->zs->getScriptClassFactory();
-		main_function_object = MAIN_FUNCTION(this);
+
 		//stk_globals=NULL;
 
 	}
@@ -399,14 +399,14 @@ namespace zetscript{
 		}
 	}*/
 
-	void VirtualMachine::addGlobalVar(const StackElement & stk){
+	/*void VirtualMachine::addGlobalVar(const StackElement & stk){
 
 		if(n_globals < VM_STACK_LOCAL_VAR_MAX){
 			vm_stack[n_globals++]=stk;
 		}else{
 			writeError(NULL,-1,"Max stack element over limit (%i)",VM_STACK_LOCAL_VAR_MAX);
 		}
-	}
+	}*/
 
 	void VirtualMachine::clearGlobalVars(){
 		ScriptFunction  *main_function = MAIN_FUNCTION(this);
@@ -416,10 +416,10 @@ namespace zetscript{
 			return;
 		}
 
-		if(n_globals!=(int)main_function->registered_symbols->count){
+		/*if(n_globals!=(int)main_function->registered_symbols->count){
 			THROW_RUNTIME_ERROR("n_globals != main variables");
 			return;
-		}
+		}*/
 
 		bool end=false;
 		for(int i =  (int)(main_function->registered_symbols->count)-1; i >= 0 && !end; i--){
@@ -463,6 +463,7 @@ namespace zetscript{
 			 ,unsigned	char  n_stk_params
 			){
 
+		main_function_object = MAIN_FUNCTION(this);
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
 		if(calling_function==NULL){

@@ -7,7 +7,7 @@ namespace zetscript{
 
 	ScopeFactory::ScopeFactory(ZetScript *zs){
 		this->zs=zs;
-		main_scope = newScope(NULL,false);
+		main_scope = newScope(NULL,false); // create global scope (scope 0)
 	}
 
 	Scope *	 ScopeFactory::newScope(Scope * scope_parent,bool is_c_node){

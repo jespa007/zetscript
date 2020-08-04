@@ -139,15 +139,17 @@ namespace zetscript{
 	Scope::~Scope(){
 
 		// delete scope found
-		for(unsigned i = 0; i < registered_scopes->count; i++){
+		/*for(unsigned i = 0; i < registered_scopes->count; i++){
 			delete (Scope *)registered_scopes->items[i];
-		}
+		}*/
 		delete registered_scopes;
+		registered_scopes=NULL;
 
 		// delete local local_symbols found...
 		for(unsigned i = 0; i < registered_symbols->count; i++){
 			delete (Symbol *)registered_symbols->items[i];
 		}
 		delete registered_symbols;
+		registered_symbols=NULL;
 	}
 }

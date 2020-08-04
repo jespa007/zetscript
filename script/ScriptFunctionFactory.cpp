@@ -83,7 +83,7 @@ namespace zetscript{
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){
 		if(idx < 0 || (unsigned)idx >= script_functions->count){
-			THROW_RUNTIME_ERROR("ScriptFunction node out of bound");
+			THROW_RUNTIME_ERROR("script function idx node out of bound");
 			return NULL;
 		}
 
@@ -148,31 +148,34 @@ namespace zetscript{
 
 	ScriptFunctionFactory::~ScriptFunctionFactory(){
 		for(unsigned i = 0;i < script_functions->count;i++){
-				//ZS_PRINT_DEBUG("* Erasing function %s...", script_functions.at(i)->object_info.symbol_info.symbol_ref.c_str());
-				ScriptFunction * info_function = (ScriptFunction *)script_functions->items[i];
+			//ZS_PRINT_DEBUG("* Erasing function %s...", script_functions.at(i)->object_info.symbol_info.symbol_ref.c_str());
+			ScriptFunction * info_function = (ScriptFunction *)script_functions->items[i];
 
-				if (info_function->instructions != NULL) {
+			if (info_function->instructions != NULL) {
 
-					free(info_function->instructions);
-					info_function->instructions=NULL;
-				}
-
-				// unloading scope ...
-				/*if (info_function->scope_block_vars != NULL) {
-					for (unsigned j = 0; j < info_function->n_scope_block_vars; j++) {
-						free(info_function->scope_block_vars[j].idx_local_var);
-					}
-
-					free(info_function->scope_block_vars);
-					info_function->scope_block_vars=NULL;
-				}*/
-
-				delete info_function;
+				free(info_function->instructions);
+				info_function->instructions=NULL;
 			}
 
-			script_functions->clear();
+			// unloading scope ...
+			/*if (info_function->scope_block_vars != NULL) {
+				for (unsigned j = 0; j < info_function->n_scope_block_vars; j++) {
+					free(info_function->scope_block_vars[j].idx_local_var);
+				}
 
+				free(info_function->scope_block_vars);
+				info_function->scope_block_vars=NULL;
+			}*/
+
+			delete info_function;
+		}
+
+		script_functions->clear();
+
+		delete script_functions;
+		script_functions=NULL;
 
 	}
+
 
 };
