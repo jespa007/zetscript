@@ -319,8 +319,8 @@ namespace zetscript{
 		if(vm_exec){
 			bool error=false;
 
-			// the first code to callFunction is the main function that in fact is a special member function inside our main class
-			virtual_machine->callFunction(script_class_factory->getMainFunction(), NULL,error);
+			// the first code to execute is the main function that in fact is a special member function inside our main class
+			virtual_machine->execute(script_class_factory->getMainFunction(), NULL,error);
 
 			if(error){
 				THROW_SCRIPT_ERROR();

@@ -2,6 +2,32 @@
 
 namespace zetscript{
 
+	const char * StackElement::typeStr(){
+		StackElement *stk=this;
+		const char * result="undefined";
+		if(STK_VALUE_IS_INT(stk))
+			result= "int";
+		else if(STK_VALUE_IS_FLOAT(stk))
+			result= "float";
+		else if(STK_VALUE_IS_BOOLEAN(stk))
+			result= "bool";
+		else if(STK_VALUE_IS_STRING(stk))
+			result= "std::string";
+		else if(STK_VALUE_IS_FUNCTION(stk))
+			result= "function";
+
+		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
+
+			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+				stk=(StackElement *)stk->var_ref;
+			}
+			result=((ScriptVar *)stk->var_ref)->getClassName().c_str();
+		}
+
+		return result;
+	}
+
+
 	const char * StackElement::toString(){
 		StackElement *stk=this;
 		const char * result="undefined";

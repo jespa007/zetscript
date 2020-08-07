@@ -209,7 +209,7 @@ namespace zetscript{
 			*f=((void *)(new std::function<void ()>(
 				[&,calling_obj,fun_obj](){
 					bool error=false;
-					virtual_machine->callFunction(
+					virtual_machine->execute(
 										fun_obj,
 										calling_obj,
 										error);
@@ -234,7 +234,7 @@ namespace zetscript{
 						bool error=false;
 						R ret_value;
 
-						StackElement stk = virtual_machine->callFunction(
+						StackElement stk = virtual_machine->execute(
 								fun_obj,
 								calling_obj,
 								error);
@@ -277,7 +277,7 @@ namespace zetscript{
 
 					};
 
-					virtual_machine->callFunction(
+					virtual_machine->execute(
 								fun_obj,
 								calling_obj,
 								error,
@@ -311,7 +311,7 @@ namespace zetscript{
 								 convertVarToStackElement((intptr_t)p1,idx_param1)
 						};
 
-						StackElement stk = virtual_machine->callFunction(
+						StackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -358,7 +358,7 @@ namespace zetscript{
 
 					};
 
-					virtual_machine->callFunction(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -399,7 +399,7 @@ namespace zetscript{
 
 						};
 
-						StackElement stk = virtual_machine->callFunction(
+						StackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -451,7 +451,7 @@ namespace zetscript{
 							,convertVarToStackElement((intptr_t)p3,idx_param3)
 					};
 
-					virtual_machine->callFunction(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -491,7 +491,7 @@ namespace zetscript{
 							,convertVarToStackElement((intptr_t)p3,idx_param3)
 					};
 
-					StackElement stk = virtual_machine->callFunction(
+					StackElement stk = virtual_machine->execute(
 												fun_obj,
 												calling_obj,
 												error,
@@ -545,7 +545,7 @@ namespace zetscript{
 
 					};
 
-					virtual_machine->callFunction(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -590,7 +590,7 @@ namespace zetscript{
 
 						};
 
-						StackElement stk = virtual_machine->callFunction(
+						StackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,
@@ -649,7 +649,7 @@ namespace zetscript{
 
 					};
 
-					virtual_machine->callFunction(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -699,7 +699,7 @@ namespace zetscript{
 
 					};
 
-					StackElement stk = virtual_machine->callFunction(
+					StackElement stk = virtual_machine->execute(
 												fun_obj,
 												calling_obj,
 												error,
@@ -760,7 +760,7 @@ namespace zetscript{
 
 					};
 
-					virtual_machine->callFunction(
+					virtual_machine->execute(
 									fun_obj,
 									calling_obj,
 									error,
@@ -810,7 +810,7 @@ namespace zetscript{
 								,convertVarToStackElement((intptr_t)p6,idx_param6)
 						};
 
-						StackElement stk = virtual_machine->callFunction(
+						StackElement stk = virtual_machine->execute(
 													fun_obj,
 													calling_obj,
 													error,

@@ -198,7 +198,7 @@ namespace zetscript{
 		}
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
-		StackElement ret_obj=callFunctionInternal(
+		StackElement ret_obj=callFunctionScript(
 				ptr_function_found
 				,script_var_object
 				,error

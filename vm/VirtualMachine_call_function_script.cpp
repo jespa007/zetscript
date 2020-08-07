@@ -90,7 +90,7 @@ stk_result_op1=--stk_current;
 
 namespace zetscript{
 
-	StackElement VirtualMachine::callFunctionInternal(
+	StackElement VirtualMachine::callFunctionScript(
 			ScriptFunction 			* calling_function,
 			ScriptVar       		* this_object,
 			bool & error,
@@ -961,7 +961,7 @@ namespace zetscript{
 
 					unsigned short mask_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
 					unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);
-					if(mask_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
+					if(mask_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){ // fast operation
 						PUSH_INTEGER(STK_VALUE_TO_INT(stk_result_op1) + STK_VALUE_TO_INT(stk_result_op2));
 					}else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){
 						if (STK_VALUE_IS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){
@@ -972,7 +972,7 @@ namespace zetscript{
 							PUSH_FLOAT(f_aux_value1 + STK_VALUE_TO_INT(stk_result_op2));
 						}
 					// TODO: Given 2 StackElement try to convert their values and return new stack element string
-					/*else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
+					}else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
 						if (STK_VALUE_IS_STRING(stk_result_op1) && STK_VALUE_IS_INT(stk_result_op2)){
 							sprintf(str_aux,"%s%i",((const char *)stk_result_op1->stk_value),(int)((intptr_t)stk_result_op2->stk_value));
 							//PUSH_STRING(str_aux);
@@ -1016,13 +1016,11 @@ namespace zetscript{
 					}else if (mask_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
 							sprintf(str_aux,"%s%s",((const char *)stk_result_op1->stk_value),((const char *)(stk_result_op2->stk_value)));
 							PUSH_STRING(str_aux);
-					}*/
 					}else if(mask_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
 						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
 						COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
 						PUSH_FLOAT(f_aux_value1 + f_aux_value2);
-					}
-					else{ // try metamethod ...
+					}else{ // try metamethod ...
 
 						if(!applyMetamethod(
 								 calling_object
@@ -1293,14 +1291,14 @@ namespace zetscript{
 
 					if(aux_function_info !=NULL)
 					{
-						if(n_args > MAX_N_ARGS){
+						/*if(n_args > MAX_N_ARGS){
 							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Max arguments reached function at line XXX");
 							RETURN_ERROR;
-						}
+						}*/
 
-						if((aux_function_info->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // is function script ...
-							//unsigned aux_function_info_m_arg_size=aux_function_info->arg_info.size();
-							//if( n_args < aux_function_info->function_params->count){ // we must push undefined parameters ...
+						if((aux_function_info->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
+
+							// we must set the rest of parameters as undefined in case user put less params as original function ...
 							for(unsigned i = n_args; i < aux_function_info->function_params->count; i++){
 								*stk_current++={
 
@@ -1314,7 +1312,7 @@ namespace zetscript{
 						}
 
 						// by default virtual machine gets main object class in order to run functions ...
-						ret_obj=callFunctionInternal(aux_function_info,calling_object,error,stk_current,vm_str_current,n_args,instruction);
+						ret_obj=callFunctionScript(aux_function_info,calling_object,error,stk_current,vm_str_current,n_args,instruction);
 
 						if(error)
 						{
@@ -1434,7 +1432,7 @@ namespace zetscript{
 						// share pointer  + 1
 					}
 					else{ // remove all involved inforamtion
-						stk_result.properties&=~MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT; // remove stack var if any...
+						stk_result.properties&=~MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT; // now is not an scriptvar anymore (if it was)
 						stk_result.var_ref =NULL;
 					}
 				}
@@ -1538,15 +1536,16 @@ namespace zetscript{
 			removeEmptySharedPointers(idx_stk_current,NULL);
 		}
 		else{
-			while(vm_scope_start<=(vm_current_scope)){
-				if(vm_scope_start==vm_current_scope){ // if there's some registered symbols
-					if(registered_symbols->count > 0){ // if there're registered symbols on this function, pop scope
-						popVmScope(idx_stk_current,stk_result.var_ref,0);
-					}
-				}else{// pop scope
-					popVmScope(idx_stk_current,stk_result.var_ref,0);
-				}
+			// pop all scopes
+			while(vm_scope_start<(vm_current_scope)){
+				popVmScope(idx_stk_current,stk_result.var_ref,0);
 			}
+
+			// pop last scope (function scope) just in case there's local variables defined...
+			if(registered_symbols->count > 0){ // if there're registered symbols on this function, pop scope
+				popVmScope(idx_stk_current,stk_result.var_ref,0);
+			}
+
 		}
 
 		idx_stk_current--;

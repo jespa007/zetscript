@@ -165,8 +165,8 @@ namespace zetscript{
 		float * evalFloatValue(const std::string & str_to_eval);
 		std::string * evalStringValue(const std::string & str_to_eval);
 
-		bool eval(const std::string & expresion, bool callFunction=true,bool show_bytecode=false, const char * filename="");
-		bool evalFile(const std::string & filename,bool callFunction=true,bool show_bytecode=false);
+		bool eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
+		bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
 
 		ConstantValue 	* 		registerConstantIntValue(const std::string & const_name, int value);
 

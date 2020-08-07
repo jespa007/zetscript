@@ -122,6 +122,9 @@ namespace zetscript{
 		unsigned short properties; // it tells its properties
 
 
+		// it returns its type...
+		const char * typeStr();
+		// it gives stackelement as string (the result should be deleted)
 		const char * toString();
 
 	};

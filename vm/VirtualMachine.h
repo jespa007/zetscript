@@ -49,7 +49,7 @@ namespace zetscript{
 
 		void clearGlobalVars();
 
-		 StackElement callFunction(
+		 StackElement execute(
 			 ScriptFunction *script_function
 			 ,ScriptVar *this_object
 			 ,bool & error
@@ -152,7 +152,7 @@ namespace zetscript{
 		const char *custom_error;
 
 
-		StackElement  callFunctionInternal(
+		StackElement  callFunctionScript(
 				ScriptFunction *info_function,
 				ScriptVar * this_object,
 				bool & error,

@@ -377,37 +377,6 @@ namespace zetscript{
 		cancel_execution = true;
 	}
 
-	/*void VirtualMachine::destroyCache(){
-		main_function_object=NULL;
-		if(script_functions!= NULL){
-			free(script_functions);
-			script_functions=NULL;
-			size_vec_script_function_object_node=0;
-		}
-	}
-
-	void VirtualMachine::buildCache(){
-
-		destroyCache();
-
-		main_function_object = MAIN_FUNCTION(this);
-		std::vector<ScriptFunction *> *vec_script_function_object_node_aux=script_function_factory->getScriptFunctions();
-		size_vec_script_function_object_node=vec_script_function_object_node_aux->size();
-		script_functions=(ScriptFunction **)malloc(sizeof(ScriptFunction *)*size_vec_script_function_object_node);
-		for(unsigned i=0; i < size_vec_script_function_object_node; i++){
-			script_functions[i]=vec_script_function_object_node_aux->at(i);
-		}
-	}*/
-
-	/*void VirtualMachine::addGlobalVar(const StackElement & stk){
-
-		if(n_globals < VM_STACK_LOCAL_VAR_MAX){
-			vm_stack[n_globals++]=stk;
-		}else{
-			writeError(NULL,-1,"Max stack element over limit (%i)",VM_STACK_LOCAL_VAR_MAX);
-		}
-	}*/
-
 	void VirtualMachine::clearGlobalVars(){
 		ScriptFunction  *main_function = MAIN_FUNCTION(this);
 
@@ -415,11 +384,6 @@ namespace zetscript{
 		if(zero_shares == NULL){
 			return;
 		}
-
-		/*if(n_globals!=(int)main_function->registered_symbols->count){
-			THROW_RUNTIME_ERROR("n_globals != main variables");
-			return;
-		}*/
 
 		bool end=false;
 		for(int i =  (int)(main_function->registered_symbols->count)-1; i >= 0 && !end; i--){
@@ -455,7 +419,7 @@ namespace zetscript{
 		idx_stk_current=0;
 	}
 
-	StackElement  VirtualMachine::callFunction(
+	StackElement  VirtualMachine::execute(
 			 ScriptFunction *calling_function
 			 ,ScriptVar *this_object
 			 ,bool & error
@@ -491,8 +455,8 @@ namespace zetscript{
 			*stk_current++=stk_params[i];
 		}
 
-		// Script function starts here.... later script function can call c++ function, but once in c++ function is not possible by now call script function again.
-		StackElement info=callFunctionInternal(
+		// byte code executing starts here. Later script function can call c++ function, but once in c++ function is not possible by now call script function again.
+		StackElement info=callFunctionScript(
 				calling_function,
 				this_object,
 				error,
@@ -519,4 +483,4 @@ namespace zetscript{
 
 
 #include "VirtualMachine_call_function_native.cpp"
-#include "VirtualMachine_call_function.cpp"
+#include "VirtualMachine_call_function_script.cpp"

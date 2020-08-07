@@ -3,6 +3,9 @@
  *  See LICENSE file for details.
  */
 #include "zetscript.h"
+#include <chrono>
+
+using namespace std::chrono;
 
 #define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2020 Jordi Espada\n",ZETSCRIPT_MAJOR_VERSION,ZETSCRIPT_MINOR_VERSION,ZETSCRIPT_PATCH_VERSION
 
@@ -61,7 +64,11 @@ int main(int argc, char * argv[]) {
 
 
 		try{
+			high_resolution_clock::time_point t1 = high_resolution_clock::now();
 			zs->evalFile(file,vm_execute,show_bytecode);
+			high_resolution_clock::time_point t2 = high_resolution_clock::now();
+			duration<double, std::milli> time_span=t2-t1;
+			printf("executed %s %.0fms\n", zs_path::get_file_name(file).c_str(),time_span.count());
 		}catch(std::exception & ex){
 			fprintf(stderr,"%s\n",ex.what());
 		}
