@@ -7,7 +7,6 @@
 #include 		"util/zs_rtti.cpp"
 #include 		"util/zs_strutils.cpp"
 #include 		"util/zs_vector.cpp"
-#include 		"util/zs_string.cpp"
 #include 		"util/zs_map.cpp"
 
 #include		"exception.cpp"

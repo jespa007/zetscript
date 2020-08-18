@@ -120,7 +120,7 @@ namespace zetscript{
 
 		StackElement *stk_local_var=NULL;
 		StackElement *stk_arg=NULL;
-		VM_Scope * vm_scope_start=NULL;
+		VM_Scope * vm_scope_start=vm_current_scope;
 
 		ZS_PRINT_DEBUG("Executing function %s ...",calling_function->symbol_info.symbol->name.c_str());
 		int idx_stk_base=(stk_start-vm_stack);//>>sizeof(StackElement *);
@@ -195,14 +195,14 @@ namespace zetscript{
 
 		Scope * scope = calling_function->symbol.scope;// ast->idx_scope;
 
-		if(calling_function->idx_script_function != 0){ // push scope only if not main function
+		/*if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){ // push scope only if not main function
 
 			if(registered_symbols->count > 0){ // if there's some local variables
 				PUSH_VM_SCOPE(scope,calling_function,stk_local_var,0);
 			}
 
 			vm_scope_start = vm_current_scope;
-		}
+		}*/
 
 		stk_result ={ NULL,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
@@ -1535,16 +1535,16 @@ namespace zetscript{
 		if(calling_function->idx_script_function == IDX_SCRIPT_FUNCTION_MAIN){ // if main function only remove empty shared pointers but preserve global variables!)
 			removeEmptySharedPointers(idx_stk_current,NULL);
 		}
-		else{
+		else{ // else any other script function pop all scopes...
 			// pop all scopes
 			while(vm_scope_start<(vm_current_scope)){
 				popVmScope(idx_stk_current,stk_result.var_ref,0);
 			}
 
 			// pop last scope (function scope) just in case there's local variables defined...
-			if(registered_symbols->count > 0){ // if there're registered symbols on this function, pop scope
+			/*if(registered_symbols->count > 0){ // if there're registered symbols on this function, pop scope
 				popVmScope(idx_stk_current,stk_result.var_ref,0);
-			}
+			}*/
 
 		}
 

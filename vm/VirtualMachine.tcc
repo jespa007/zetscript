@@ -102,15 +102,15 @@ namespace zetscript{
 	}
 
 	inline bool VirtualMachine::applyMetamethod(
-										ScriptVar *calling_object
-										,ScriptFunction *calling_function
-										,Instruction *instruction
-										,const char *__OVERR_OP__
-										,ByteCodeMetamethod __METAMETHOD__
-										,StackElement *stk_result_op1
-										,StackElement *stk_result_op2
-
-										) {
+		ScriptVar *calling_object
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		,const char *__OVERR_OP__
+		,ByteCodeMetamethod __METAMETHOD__
+		,StackElement *stk_result_op1
+		,StackElement *stk_result_op2
+	
+	) {
 
 		int idx_offset_function_member_start=0;
 		ScriptVar *script_var_object = NULL;
@@ -233,7 +233,7 @@ namespace zetscript{
 			ScriptVar *calling_object
 			,ScriptFunction *calling_function
 			,Instruction *instruction
-			,Instruction * call_ale_instruction
+			,Instruction * call_instruction
 
 			,zs_vector *function_symbols
 			,zs_vector *global_functions
@@ -356,11 +356,11 @@ namespace zetscript{
 					}
 
 					if(all_check){ /* we found the right function (set it up!) ... */
-						call_ale_instruction->value_op2 = (intptr_t)irfs;
+						call_instruction->value_op2 = (intptr_t)irfs;
 						ptr_function_found = irfs;
 					}
 				}else{ /* type script function  ... */
-					call_ale_instruction->value_op2=(intptr_t)irfs;
+					call_instruction->value_op2=(intptr_t)irfs;
 					ptr_function_found = irfs;
 				}
 			}
@@ -368,7 +368,7 @@ namespace zetscript{
 
 		if(ptr_function_found == NULL){
 			if(is_constructor && n_args == 0){ /* default constructor not found --> set as not found... */
-				call_ale_instruction->properties = MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL;//value_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+				call_instruction->properties = MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL;//value_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
 			}
 			else{ // return error elaborate a error message...
 				int n_candidates=0;
@@ -435,7 +435,7 @@ namespace zetscript{
 					bool match_signature = metamethod_str != NULL;
 
 					if(!match_signature){
-						match_signature = irfs->symbol.name == irfs->getInstructionSymbolName(call_ale_instruction);
+						match_signature = irfs->symbol.name == irfs->getInstructionSymbolName(call_instruction);
 					}
 
 					if(match_signature){
@@ -475,27 +475,28 @@ namespace zetscript{
 
 						}
 					}else{
-						writeError(SFI_GET_FILE_LINE(calling_function,call_ale_instruction),"Cannot find %s \"%s%s(%s)\".\n\n",
-										is_constructor ? "constructor":"function",
-										calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-												calling_function->getInstructionSymbolName(call_ale_instruction),
-										args_str.c_str()
+						
+						writeError(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot find %s \"%s%s(%s)\".\n\n",
+								is_constructor ? "constructor":"function",
+								calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+										calling_function->getInstructionSymbolName(call_instruction),
+								args_str.c_str()
 						);
 					}
 				}
 				else{
 					if(metamethod_str!=NULL){
-						writeError(SFI_GET_FILE_LINE(calling_function,call_ale_instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
+						writeError(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 													((ScriptFunction *)global_functions->items[0])->symbol.name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
-						writeError(SFI_GET_FILE_LINE(calling_function,call_ale_instruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+						writeError(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
 							calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-									calling_function->getInstructionSymbolName(call_ale_instruction),
+									calling_function->getInstructionSymbolName(call_instruction),
 							args_str.c_str(),
 							str_candidates.c_str());
 					}

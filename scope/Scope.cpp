@@ -47,7 +47,7 @@ namespace zetscript{
 	void						   Scope::markAsUnusued(){
 
 		// link parent to its childs
-		for(unsigned i=0;registered_scopes->count; i++){
+		for(unsigned i=0;i < registered_scopes->count; i++){
 			Scope *scope_child=(Scope *)registered_scopes->items[i];
 			scope_child->scope_parent=scope_parent;
 		}

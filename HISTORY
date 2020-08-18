@@ -65,14 +65,22 @@ Date: XX-XX-2019
 #122 Restore CScriptClassFactory
 
 > #125 Implement String class with string function utils and string methods (PART1)
-#126 Save pure c function instead of std::function for speed improvement  
+#126 Save pure c function instead of std::function for speed improvement
+> #127 Implement zs_string   
 #128 Implement register_c_function_as_member 
-#129 Migrate new C++ coding style 
+#129 Migrate new C++ coding style
+> #130 Feature add variables into instanced class 
+> #131 Adapt language to ECMA-6 
 #133 Perform SUB instead of NEG+ADD
 > #134 Implement Math class with math function utils (PART1)
+ 
 #135 eval negative identifier and constants tokens and perform LOAD with negative option or load negative constants instead of doing NEG.
 > #136 Clear unusued scopes
- 
+> #137 Callback function support 
+> #139 Implement const operator 
+> #141 limit n params only for c functions 
+> #142 Try to optimize bind function member
+> #144 Implement IO helper utils PART1 
 
 Other: Lot of clean code up. 
 

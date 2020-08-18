@@ -390,24 +390,35 @@ namespace zetscript{
 			return sf;
 	}
 
-	ScriptFunction *	 ScriptFunction::getFunction(Scope * scope,const std::string & function_name,  char n_args){
+	ScriptFunction *	 ScriptFunction::getFunction(Scope * scope,const std::string & function_name,  char n_args, int * n_symbols_found){
 
+		if(n_symbols_found != NULL){
+			*n_symbols_found=0;
+		}
+		ScriptFunction *sf_found=NULL;
 		if(registered_functions->count>0){
 
 			// from last value to first to get last override function...
 			for(int i = (int)(registered_functions->count-1); i >= 0 ; i--){
-				ScriptFunction *sf=(ScriptFunction *)registered_functions->items[i];
+				ScriptFunction *current_sf=(ScriptFunction *)registered_functions->items[i];
 				if(
-						(sf->symbol.name == function_name)
-					 && (n_args == (int)sf->function_params->count)
-					 && (scope ==  NULL?true:(scope == sf->symbol.scope))
+						(current_sf->symbol.name == function_name)
+					 //&& (n_args == (int)sf->function_params->count)
+					 && (scope ==  NULL?true:(scope == current_sf->symbol.scope))
 					 ){
+					// set first script function found...
+					if(sf_found==NULL){
+						sf_found=current_sf;
+					}
 
-					return sf;
+					if(n_symbols_found != NULL){
+						(*n_symbols_found)++;
+					}
+
 				}
 			}
 		}
-		return NULL;
+		return sf_found;
 	}
 
 	ScriptFunction::~ScriptFunction(){

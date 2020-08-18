@@ -32,9 +32,10 @@ namespace zetscript{
 
 		memset(error_filename,0,sizeof(error_filename));
 
+		/*
 #ifdef __DEBUG__
-		fprintf(stderr,"\n[ERR %s:%i] %s",filename,line,output_text);
-#endif
+		fprintf(stderr,"[ERR %s:%i] %s\n",filename,line,output_text);
+#endif*/
 
 		if(filename){
 			strcpy(error_filename,filename);

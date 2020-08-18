@@ -112,7 +112,7 @@ namespace zetscript{
 				, unsigned short symbol_properties=0
 		);*/
 
-		ScriptFunction * getFunction(Scope * scope,const std::string & symbol, char n_args=0);
+		ScriptFunction * getFunction(Scope * scope,const std::string & symbol, char n_args=0, int * n_symbols_found=NULL);
 		~ScriptFunction();
 
 	private:

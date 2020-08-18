@@ -3,9 +3,9 @@ namespace zetscript{
 
 		void pushFunction(EvalData *eval_data,ScriptFunction *sf);
 		void popFunction(EvalData *eval_data);
-		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error, bool function_entry=false);
+		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
 		char * evalRecursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error);
-		Scope * evalNewScope(EvalData *eval_data, Scope *scope_parent,bool entry_function=false);
+		Scope * evalNewScope(EvalData *eval_data, Scope *scope_parent);
 		void evalCheckScope(EvalData *eval_data, Scope *scope);
 		//Scope * evalPopScope(EvalData *eval_data, Scope *current_scope);
 
@@ -428,8 +428,7 @@ namespace zetscript{
 								,aux_p
 								,line
 								,scope
-								,error
-								,true);
+								,error);
 
 						popFunction(eval_data);
 					}

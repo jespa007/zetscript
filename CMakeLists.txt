@@ -45,7 +45,7 @@ if(MSVC)
 
 else()
 
-	SET( COMMON_PARAMS " ${COMMON_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall")
+	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )
@@ -54,7 +54,7 @@ else()
 		set(CMAKE_LEGACY_MINGW_WIN32 0)
 		set(CMAKE_PREFIX_PATH "$ENV{MINGWDIR}/local32/lib")
  
-		SET( COMMON_PARAMS " ${COMMON_PARAMS} ")
+		SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} ")
   
 	elseif(GNU)
     	MESSAGE ("-- Plataform: GNU" )
@@ -64,7 +64,7 @@ else()
 	
 	IF (MEMMANAGER)
 		message("-- Memmanager: ON (Warning execution time could be slow)")
-		SET( COMMON_PARAMS " ${COMMON_PARAMS} -D__MEMMANAGER__")
+		SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__MEMMANAGER__")
 		include_directories (
 			../memmgr
 		)
@@ -101,7 +101,7 @@ ENDIF()
 MESSAGE ("-- Target : " ${TARGET})
 
 IF ( "${TARGET}" STREQUAL "debug")
-	SET( COMMON_PARAMS " ${COMMON_PARAMS} -D__DEBUG__ ")
+	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__DEBUG__ ")
 ENDIF()
 
 
@@ -109,22 +109,21 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 	MESSAGE ("-- Toolchain : GNU")
 
-	set(TARGET_FLAGS " -O2 ")
+	set(COMPILE_TARGET_FLAGS " -O2 -fomit-frame-pointer ")
 
 	IF ( "${TARGET}" STREQUAL "debug")
-		set(TARGET_FLAGS " -O0 ")
-		set(TARGET_FLAGS " ${TARGET_FLAGS} -g -fomit-frame-pointer ")
+		set(COMPILE_TARGET_FLAGS " -O0 -g ")
 	ENDIF ()
 	
 	IF ( "${32BIT}" STREQUAL "ON")
 		MESSAGE ("-- Compile 32bit : ON")
-		set(TARGET_FLAGS " ${TARGET_FLAGS} -m32 ")
+		set(COMPILE_TARGET_FLAGS " ${COMPILE_TARGET_FLAGS} -m32 ")
 	ELSE ()
 		MESSAGE ("-- Compile 32bit : OFF")
 	ENDIF()
 
 	SET(CMAKE_C_FLAGS " ")
-	SET(CMAKE_CXX_FLAGS   " ${TARGET_FLAGS} ${COMMON_PARAMS}  " )
+	SET(CMAKE_CXX_FLAGS   " ${COMPILE_TARGET_FLAGS} ${COMPILE_COMMON_FLAGS}  " )
 	
 
 	#Redefine output dir ...
