@@ -6,9 +6,6 @@
 
 namespace zetscript{
 
-	void  writeError(const char *filename, int line, const  char  *string_text, ...);
-	void  writeWarning(const char *filename, int line, const  char  *string_text, ...);
-
 	void ScriptVar::createSymbols(ScriptClass *ir_class){
 
 
@@ -23,7 +20,6 @@ namespace zetscript{
 
 		// Register c vars...
 		for ( unsigned i = 0; i < ir_class->symbol_native_variable_members->count; i++){
-
 
 			Symbol * symbol = (Symbol *)ir_class->symbol_native_variable_members->items[i];
 
@@ -105,17 +101,14 @@ namespace zetscript{
 		c_scriptclass_info=NULL;
 
 		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (c_scriptclass_info) to get needed info to destroy create the C++ object.
-
 			if(registered_class_info->is_C_Class()){
-					c_scriptclass_info=registered_class_info;
-					created_object = (*registered_class_info->c_constructor)();
-					was_created_by_constructor=true;
-					c_object = created_object;
+				c_scriptclass_info=registered_class_info;
+				created_object = (*registered_class_info->c_constructor)();
+				was_created_by_constructor=true;
+				c_object = created_object;
 			}else {
-
 				ScriptClass *sc=registered_class_info;
 				while( sc->idx_base_classes->count>0 && c_scriptclass_info==NULL){
-
 					sc=GET_SCRIPT_CLASS(this,sc->idx_base_classes->items[0]); // get base class...
 					if(sc->is_C_Class()){
 						c_scriptclass_info=sc;
@@ -123,17 +116,17 @@ namespace zetscript{
 						was_created_by_constructor=true;
 						c_object = created_object;
 					}
-
 				}
-
 			}
 
 		}else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
 			c_scriptclass_info=irv;
 		}
 
-		// only create symbols if not std::string type to make it fast ...
-		if(idx_class >= IDX_BUILTIN_TYPE_MAX && idx_class != IDX_BUILTIN_TYPE_CLASS_STRING){
+		// only create symbols if not std::string or std::vector type to make it fast ...
+		if(idx_class >= IDX_BUILTIN_TYPE_MAX
+			|| idx_class != IDX_BUILTIN_TYPE_CLASS_STRING
+			|| idx_class != IDX_BUILTIN_TYPE_CLASS_VECTOR){
 			createSymbols(irv);
 		}
 	}
@@ -200,19 +193,14 @@ namespace zetscript{
 				}
 		}else{
 			error_symbol=true;
-			//writeError(CURRENT_PARSING_FILENAME,m_line," Symbol name cannot begin with %c", *aux_p);
-			//return NULL;
 		}
 
 		if(error_symbol){
-			writeError(SFI_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
-			THROW_RUNTIME_ERROR(zs_strutils::format("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str()));
-			return NULL;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 		}
 
 		if(getProperty(symbol_value) != NULL){
-			writeError(SFI_GET_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
-			return NULL;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
 		}
 
 		if(sv != NULL){
@@ -220,9 +208,7 @@ namespace zetscript{
 
 			// update n_refs +1
 			if(sv->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-				if(!virtual_machine->sharePointer(((ScriptVar *)(sv->var_ref))->ptr_shared_pointer_node)){
-					return NULL;
-				}
+				virtual_machine->sharePointer(((ScriptVar *)(sv->var_ref))->ptr_shared_pointer_node);
 			}
 
 		}else{
@@ -284,8 +270,7 @@ namespace zetscript{
 
 		if(!ignore_duplicates){
 			if(getFunction(symbol_value) != NULL){
-				writeError(SFI_GET_FILE_LINE(irv,NULL), "internal:symbol already exists");
-				return NULL;
+				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(irv,NULL), "internal:symbol already exists");
 			}
 		}
 
@@ -311,14 +296,12 @@ namespace zetscript{
 	}
 
 
-	bool ScriptVar::eraseProperty(short idx, bool remove_vector){//onst std::string & varname){
+	void ScriptVar::eraseProperty(short idx, bool remove_vector){//onst std::string & varname){
 
 		StackElement *si;
 
-
 		if(idx >= stk_properties->count){
-			writeError(NULL,0,"idx out of bounds (%i>=%i)",idx,stk_properties->count);
-			return false;
+			THROW_RUNTIME_ERROR("idx out of bounds (%i>=%i)",idx,stk_properties->count);
 		}
 
 		si=(StackElement *)stk_properties->items[idx];
@@ -352,26 +335,25 @@ namespace zetscript{
 			stk_properties->erase(idx);
 		}
 
-		return true;
 	}
 
 	zs_vector * ScriptVar::getProperties(){ // return list of stack elements
 		return stk_properties;
 	}
 
-	bool ScriptVar::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
-		try{
-			intptr_t idx_property = properties_keys->get(property_name.c_str());
-		 	 eraseProperty(idx_property,true);
-		 	 properties_keys->erase(property_name.c_str()); // erase also property key
-		 	 return true;
+	void ScriptVar::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
+		//try{
+		intptr_t idx_property = properties_keys->get(property_name.c_str());
+		 eraseProperty(idx_property,true);
+		 properties_keys->erase(property_name.c_str()); // erase also property key
+		 	// return true;
 
-		}catch(std::exception & ex){
+		/*}catch(std::exception & ex){
 			writeError(SFI_GET_FILE_LINE(info_function,NULL),"%s",ex.what());
 
-		}
+		}*/
 
-		return false;
+		//return false;
 		/*for(unsigned int i = 0; i < this->properties_keys->count; i++){
 			if(strcmp(property_name.c_str(),(const char *)this->properties_keys->items[i])==0){
 				return eraseProperty(i,true);
@@ -388,8 +370,7 @@ namespace zetscript{
 		}
 
 		if(idx >= (int)stk_properties->count){
-			writeError("unknow",-1,"idx symbol index out of bounds (%i)",idx);
-			return NULL;
+			THROW_RUNTIME_ERROR("idx symbol index out of bounds (%i)",idx);
 		}
 
 		return (StackElement *)stk_properties->items[idx];
@@ -399,7 +380,7 @@ namespace zetscript{
 		return registered_class_info->symbol.name;
 	}
 
-	const std::string & ScriptVar::getPointer_C_ClassName(){
+	const std::string & ScriptVar::getNativePointerClassName(){
 		return registered_class_info->str_class_ptr_type;
 	}
 
@@ -407,40 +388,31 @@ namespace zetscript{
 		return &str_value;
 	}
 
-	bool ScriptVar::initSharedPtr(bool is_assigned){
+	void ScriptVar::initSharedPtr(bool is_assigned){
 
 		if(ptr_shared_pointer_node == NULL){
 			ptr_shared_pointer_node = virtual_machine->newSharedPointer(this);
-
 			if(is_assigned){ // increment number shared pointers...
-				if(!virtual_machine->sharePointer(ptr_shared_pointer_node)){
-					return NULL;
-				}
+				virtual_machine->sharePointer(ptr_shared_pointer_node);
 			}
-			return true;
-		}
-
-		writeError("unknow",-1," shared ptr alrady registered");
-		return false;
-	}
-
-	bool ScriptVar::unrefSharedPtr(){
-		if(ptr_shared_pointer_node!=NULL){
-
-			virtual_machine->unrefSharedScriptVar(ptr_shared_pointer_node);
-			return true;
 		}
 		else{
-			writeError("unknow",-1,"shared ptr not registered");
+			THROW_RUNTIME_ERROR(" shared ptr alrady registered");
 		}
+	}
 
-		return false;
+	void ScriptVar::unrefSharedPtr(){
+		if(ptr_shared_pointer_node!=NULL){
+			virtual_machine->unrefSharedScriptVar(ptr_shared_pointer_node);
+		}
+		else{
+			THROW_RUNTIME_ERROR("shared ptr not registered");
+		}
 	}
 
 	FunctionSymbol *ScriptVar::getFunction(unsigned int idx){
 		if(idx >= functions->count){
-			writeError("unknow",-1,"idx symbol index out of bounds");
-			return NULL;
+			THROW_RUNTIME_ERROR("idx symbol index out of bounds");
 		}
 		return (FunctionSymbol *)functions->items[idx];
 	}
@@ -449,7 +421,7 @@ namespace zetscript{
 		return functions;
 	}
 
-	void * ScriptVar::Get_C_Object(){
+	void * ScriptVar::getNativeObject(){
 		return c_object;
 	}
 
@@ -457,12 +429,12 @@ namespace zetscript{
 		return was_created_by_constructor;
 	}
 
-	ScriptClass * ScriptVar::Get_C_Class(){
+	ScriptClass * ScriptVar::getNativeClass(){
 
 		 return c_scriptclass_info;
 	}
 
-	bool ScriptVar::Is_C_Object(){
+	bool ScriptVar::isNativeObject(){
 		 return ((registered_class_info->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
 	}
 

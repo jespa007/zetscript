@@ -3,9 +3,18 @@
 
 using namespace zetscript;
 
+std::function<std::string * (*float, *int, *bool)> *callback = NULL;
+
+std::function<std::string * (*float, *int, *bool)> * create_callback(ZetScript *zs, ScriptVarFunction *script_function){
+	return zs->bindScriptFunction<std::string * (*float, *int, *bool)>(script_function->)
+}
+
+
 int main(){
 
 	ZetScript *zs = new ZetScript(); // instance ZetScript
+
+	zs->bindFunctionMember(create_callback,"create_callback");
 
 	zs->eval(
 		"class Test{"
@@ -21,6 +30,8 @@ int main(){
 		"}"
 		""
 		"var test=new Test();"
+		"create_callback(function(a,b,c){return \"result a:\"+a+\"b:\"+b+\"c:\"+c);})"
+		""
 	);
 
 

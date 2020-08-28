@@ -122,6 +122,8 @@ namespace zetscript{
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
 
+		static const char *instructionPropertyPreOperationToStr(unsigned int properties);
+		static const char *instructionPropertyPostOperationToStr(unsigned int properties);
 		static std::string formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
 		inline InstructionSourceInfo * getInstructionInfo(Instruction *ins){
 			short idx= (ins-this->instructions);///sizeof(Instruction *);

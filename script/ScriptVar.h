@@ -15,20 +15,18 @@ class ScriptClass;
 	class ZetScript;
 	class VirtualMachine;
 	class ScriptClassFactory;
-	class  ScriptVar{//: public CVariable{
+	class  ScriptVar{
 
 	public:
 
 		//----------------------
 		// MEM MANNAGER RELATED
-		//bool deallocatable;
-		//int idx_shared_ptr;
 		PInfoSharedPointerNode 	ptr_shared_pointer_node;
 		unsigned char	 		idx_class;
 		ScriptFunction 		*	info_function_new;
 		Instruction 		*	instruction_new;
 		bool 					was_created_by_constructor;
-		zs_vector				*	stk_properties; // vector of stack elements
+		zs_vector			*	stk_properties; // vector of stack elements
 		zs_map				*	properties_keys; // to search faster each property by its name
 
 		//----------------------
@@ -40,7 +38,6 @@ class ScriptClass;
 		// Construct ...
 		ScriptVar();
 		ScriptVar(ZetScript	*_zs);
-
 
 		/**
 		 * info_registered_class: scriptclass info
@@ -62,7 +59,7 @@ class ScriptClass;
 		);
 		StackElement * getProperty(const std::string & varname);
 		StackElement * getProperty(short idx);
-		bool eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
+		void eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
 		zs_vector * getProperties();
 
@@ -79,20 +76,20 @@ class ScriptClass;
 		FunctionSymbol 	* getFunction(unsigned int idx);
 		zs_vector			* getFunctions();
 
-		void * Get_C_Object();
-		bool Is_C_Object();
-		ScriptClass *Get_C_Class();
+		void * getNativeObject();
+		bool isNativeObject();
+		ScriptClass *getNativeClass();
 
 		ScriptFunction *getConstructorFunction();
 
 
 		const std::string & getClassName();
 
-		const std::string & getPointer_C_ClassName();
+		const std::string & getNativePointerClassName();
 
 		virtual std::string * toString();
-		virtual bool initSharedPtr(bool is_assigned=false);
-		virtual bool unrefSharedPtr();
+		virtual void initSharedPtr(bool is_assigned=false);
+		virtual void unrefSharedPtr();
 
 		virtual void destroy();
 		virtual ~ScriptVar();
@@ -112,15 +109,8 @@ class ScriptClass;
 		ScriptClass *c_scriptclass_info;
 		bool delete_c_object;
 
-
-
 		virtual void setup();
-
-
-		//zs_vector 		  *variable_key; // std::vector<char *>
-
 	private:
-
 
 		void * created_object;
 		void * c_object;
@@ -129,7 +119,7 @@ class ScriptClass;
 		zs_vector * functions; // std::vector<FunctionSymbol>
 
 		void createSymbols(ScriptClass *irv);
-		bool eraseProperty(short idx, bool remove_vector=false);
+		void eraseProperty(short idx, bool remove_vector=false);
 
 	};
 

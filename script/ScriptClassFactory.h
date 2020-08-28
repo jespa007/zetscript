@@ -125,6 +125,8 @@ namespace zetscript{
 		template <typename C, typename R,typename T>
 		bool 							registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1);
 
+		template <typename C, typename R>
+		bool registerNativeStaticConstMember(const char *var_name, const R *var_pointer, const char *registered_file="",int registered_line=-1);
 
 		~ScriptClassFactory();
 

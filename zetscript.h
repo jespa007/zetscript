@@ -43,6 +43,7 @@
 #include 		<float.h>
 #include 		<cstdarg>
 #include 		<stdexcept>
+#include 		<chrono>
 
 #include 		<typeinfo>
 #include 		<string.h>
@@ -81,10 +82,13 @@
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
 
+#include "builtin/MathBuiltIn.h"
+#include "builtin/IoBuiltIn.h"
+
 #include "script/ScriptVar.h"
 #include "script/ScriptVarString.h"
 #include "script/ScriptVarVector.h"
-#include "script/ScriptVarFunctor.h"
+#include "script/ScriptVarFunction.h"
 #include "script/ScriptVarDictionary.h"
 //#include "script/ScriptContext.h"
 #include "script/ScriptClass.h"
@@ -164,13 +168,14 @@ namespace zetscript{
 		float * evalFloatValue(const std::string & str_to_eval);
 		std::string * evalStringValue(const std::string & str_to_eval);
 
-		bool eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
-		bool evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
+		void eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
+		void evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
 
 		ConstantValue 	* 		registerConstantIntValue(const std::string & const_name, int value);
 
 		// CONSTANT TOOLS
 		ConstantValue * getRegisteredConstantValue(const std::string & const_name);
+		ConstantValue *	registerConstantValue(const std::string & const_name, ConstantValue constant_value);
 		ConstantValue * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
 		ConstantValue * registerConstantValue(const std::string & const_name, int  value);
 		ConstantValue * registerConstantValue(const std::string & const_name, float  value);
@@ -414,10 +419,7 @@ namespace zetscript{
 		 auto bindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity == 0)>::type;
 
-
-
-		bool getScriptObject(const std::string &function_access,ScriptVar **calling_obj,ScriptFunction **fun_obj );
-
+		void getScriptObject(const std::string &function_access,ScriptVar **calling_obj,ScriptFunction **fun_obj );
 
 		template <  typename F>
 		std::function<F> * bindScriptFunction(const std::string & function_access);

@@ -38,15 +38,16 @@ namespace zetscript{
 		BYTE_CODE_XOR, // logic xor
 		BYTE_CODE_SHL, // shift left
 		BYTE_CODE_SHR, // shift right
-		BYTE_CODE_JMP,
 		BYTE_CODE_INSTANCEOF,
+		BYTE_CODE_JMP,
 		BYTE_CODE_JNT, // goto if not true ... goes end to conditional.
+		BYTE_CODE_JE, //
 		BYTE_CODE_JT, // goto if true ... goes end to conditional.
 		BYTE_CODE_CALL, // call function...
 		BYTE_CODE_NEW, // new operator...
 		BYTE_CODE_DELETE,
-		BYTE_CODE_DECL_VEC, // Vector object
-		BYTE_CODE_DECL_DICT,
+		BYTE_CODE_INST_VEC, // Vector object
+		BYTE_CODE_INST_DICT,
 		BYTE_CODE_RET, // ret instruction ..
 		BYTE_CODE_PUSH_SCOPE,
 		BYTE_CODE_POP_SCOPE,

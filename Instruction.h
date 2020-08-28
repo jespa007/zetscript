@@ -57,6 +57,9 @@ typedef enum{
 #define MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL				(0x1<<BIT_INSTRUCTION_PROPERTY_CONSTRUCT_CALL)
 #define MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL			(0x1<<BIT_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL)
 
+#define INSTRUCTION_NO_VALUE_OP1 ZS_IDX_UNDEFINED
+#define INSTRUCTION_NO_VALUE_OP2 0
+
 namespace zetscript{
 
 	#pragma pack(push, 1)
@@ -92,23 +95,24 @@ namespace zetscript{
 
 	struct InstructionSourceInfo {
 
-			const char * file;
-			short line;
-			std::string * str_symbol;
+		const char * file;
+		short line;
+		std::string * str_symbol; // should be deallocated
 
-			InstructionSourceInfo(){
-				str_symbol=NULL;
-				file="unknow_file";
-				line=-1;
-			}
+		InstructionSourceInfo(){
+			str_symbol=NULL;
+			file="unknow_file";
+			line=-1;
+		}
 
-			InstructionSourceInfo(const char * _file, short _line,std::string *_str_symbol){
+		InstructionSourceInfo(const char * _file, short _line,std::string *_str_symbol){
 
-				file=_file;
-				line=_line;
-				str_symbol=_str_symbol;
-			}
+			file=_file;
+			line=_line;
+			str_symbol=_str_symbol;
+		}
 	};
+
 
 	typedef Instruction *PtrInstruction;
 

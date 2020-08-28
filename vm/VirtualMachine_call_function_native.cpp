@@ -36,7 +36,6 @@ namespace zetscript{
 	StackElement  VirtualMachine::callFunctionNative(
 			intptr_t fun_ptr,
 			const ScriptFunction *calling_function,
-			bool & error,
 			StackElement *stk_arg_calling_function,
 			unsigned char n_args,
 			Instruction *ins,
@@ -53,30 +52,23 @@ namespace zetscript{
 		//float aux_float=0;
 
 		if(n_args>MAX_N_ARGS){
-			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
-			RETURN_ERROR;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Max run-time args! (Max:%i Provided:%i)",MAX_N_ARGS,n_args);
 		}
 
 		if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
-			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Function is not registered as C");
-			RETURN_ERROR;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Function is not registered as C");
 		}
 
 		if(fun_ptr==0){
-			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Null function");
-			//return &stk_result;//ScriptVar::UndefinedSymbol;
-			RETURN_ERROR;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Null function");
 		}
 
 		if((char)calling_function->function_params->count != n_args){
-			writeError(SFI_GET_FILE_LINE(calling_function,ins),"C argument VS scrip argument doestn't match sizes");
-			RETURN_ERROR;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"C argument VS scrip argument doestn't match sizes");
 		}
 
 		if(calling_function->function_params->count > MAX_N_ARGS){
-			writeError(SFI_GET_FILE_LINE(calling_function,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->function_params->count,MAX_N_ARGS);
-			RETURN_ERROR;
-			//return &stk_result;//ScriptVar::UndefinedSymbol;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->function_params->count,MAX_N_ARGS);
 		}
 
 		// convert parameters script to c...
@@ -84,29 +76,26 @@ namespace zetscript{
 
 			if( i==0 && (calling_function->symbol.symbol_properties&(SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))){
 				if(!static_ref){
-					writeError(SFI_GET_FILE_LINE(calling_function,ins),"Internal error: Cannot set parameter as this object due is not static");
-					RETURN_ERROR;
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Internal error: Cannot set parameter as this object due is not static");
 				}
 
 				if(this_object==NULL){
-					writeError(SFI_GET_FILE_LINE(calling_function,ins),"Internal error: Cannot set parameter as this object due this object is NULL");
-					RETURN_ERROR;
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Internal error: Cannot set parameter as this object due this object is NULL");
 				}
 
-				converted_param[0]=(intptr_t)this_object->Get_C_Object();
+				converted_param[0]=(intptr_t)this_object->getNativeObject();
 			}
 			else{
 				stk_arg_current=&stk_arg_calling_function[i];
 				FunctionParam *function_param=(FunctionParam *)calling_function->function_params->items[i];
 
 				if(!zs->convertStackElementToVar(stk_arg_current,function_param->idx_type,(intptr_t *)&converted_param[i],error_str)){
-					writeError(SFI_GET_FILE_LINE(calling_function,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
 																	calling_function->symbol.name.c_str(),
 																	i,
 																	error_str.c_str(),
 																	calling_function->symbol.name.c_str()
 																	);
-					RETURN_ERROR;
 				}
 			}
 		}

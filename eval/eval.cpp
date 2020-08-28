@@ -85,7 +85,7 @@ E <= (S|O)(E1,E2,..,En) // function call
 E(t)<= E; | E,
 
 
-KeywordType (K)
+Keyword (K)
 -------------
 
 - var S=E;
@@ -112,7 +112,7 @@ Body (B)
 
 Starts with '{' and ends with '}'
 
-B <- [E;|K]* // A set of expressions ended with ; or KeywordType
+B <- [E;|K]* // A set of expressions ended with ; or Keyword
 
 */
 
@@ -132,35 +132,27 @@ B <- [E;|K]* // A set of expressions ended with ; or KeywordType
 
 namespace zetscript{
 
-	void  writeError(const char *filename, int line, const  char  *string_text, ...);
-
 	namespace eval{
 
-		char * evalRecursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error);
-
-		bool eval(ZetScript *zs,const char * str, const char *  _filename, int _line){
+		void eval(ZetScript *zs,const char * str, const char *  _filename, int _line){
 			EvalData *eval_data=new EvalData(zs);
-			bool error=false;
 			int line =_line;
 			eval_data->current_parsing_file=_filename;
 			char *end_char = NULL;
 
-			pushFunction(eval_data,MAIN_FUNCTION(eval_data));
-			end_char=evalRecursive(eval_data,str,line,MAIN_SCOPE(eval_data),error);
-			popFunction(eval_data);
+			push_function(eval_data,MAIN_FUNCTION(eval_data));
+			end_char=eval_recursive(eval_data,str,line,MAIN_SCOPE(eval_data));
+			pop_function(eval_data);
 
 			delete eval_data;
 
 			if(*end_char != 0){
-				writeError(eval_data->current_parsing_file,line,"Unexpected \'%c\' ",*end_char);
-				THROW_SCRIPT_ERROR();
-				return false;
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Unexpected \'%c\' ",*end_char);
 			}
 
-			return !error;
 		}
 
-		Scope * evalNewScope(EvalData *eval_data, Scope *scope_parent){
+		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent){
 			Scope *new_scope = NEW_SCOPE(eval_data,scope_parent);
 			scope_parent->registered_scopes->push_back((intptr_t)new_scope);
 
@@ -169,7 +161,29 @@ namespace zetscript{
 			return new_scope;
 		}
 
-		void evalCheckScope(EvalData *eval_data, Scope *scope){
+		void inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value){
+
+			if(idx_end_instruction>eval_data->current_function->instructions.size()){
+				THROW_RUNTIME_ERROR("idx_end_instruction out of bounds ");
+			}
+			EvalInstruction **it=&eval_data->current_function->instructions[idx_start_instruction];
+			EvalInstruction **end=&eval_data->current_function->instructions[idx_end_instruction-1];
+
+			for(; it != end; it++){
+				switch((*it)->vm_instruction.byte_code){
+				case BYTE_CODE_JMP:
+				case BYTE_CODE_JNT:
+				case BYTE_CODE_JE:
+				case BYTE_CODE_JT:
+					(*it)->vm_instruction.value_op2+=inc_value;
+					break;
+				default: // ignore
+					break;
+				}
+			}
+		}
+
+		void eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start){
 			if(scope->registered_symbols->count > 0){ // if there's local symbols insert push/pop scope for there symbols
 				if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 					eval_data->current_function->instructions.insert(
@@ -177,10 +191,7 @@ namespace zetscript{
 							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0)
 					);
 
-					// update all jmp instructions + 1 (because push scope instruction has inserted)
-					for(unsigned i=0; i < eval_data->current_function->jmp_instructions.size(); i++){
-						eval_data->current_function->jmp_instructions[i]->vm_instruction.value_op2++;
-					}
+					inc_jmp_codes(eval_data,idx_instruction_start,eval_data->current_function->instructions.size(),1);
 
 					// and finally insert pop scope
 					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE,0));
@@ -191,17 +202,7 @@ namespace zetscript{
 			}
 		}
 
-		/*Scope * popScope(EvalData *eval_data, Scope *current_scope){
-
-			//Scope *current_scope = scope_info->idx_scope_base)->idx_scope_ptr_current);
-			if(current_scope->scope_parent != NULL){
-				return GET_SCOPE(eval_data,GET_SCOPE(eval_data,scope_info->idx_scope_base)->idx_scope_ptr_current);
-			}
-
-			return NULL;
-		}*/
-
-		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error){
+		char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 
@@ -210,47 +211,44 @@ namespace zetscript{
 
 			// check for keyword ...
 			if(*aux_p == '{'){
+
+				unsigned idx_instruction_start_block=eval_data->current_function->instructions.size();
+
 				aux_p++;
 
-				new_scope_info = evalNewScope(eval_data,scope_info); // special case... ast is created later ...
+				new_scope_info = eval_new_scope(eval_data,scope_info); // special case... ast is created later ...
 
-				if((aux_p = evalRecursive(
+
+				if((aux_p = eval_recursive(
 						eval_data
 						,aux_p
 						, line
 						, new_scope_info
-						,error
 				)) != NULL){
-					if(error){
-						return NULL;
-					}
 
 					if(*aux_p != '}'){
-						error = true;
-						writeError(eval_data->current_parsing_file,line,"Expected } ");
-						return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected } ");
 					}
 
-					evalCheckScope(eval_data,new_scope_info);
+					eval_check_scope(eval_data,new_scope_info,idx_instruction_start_block);
 					return aux_p+1;
 				}
 			}
 			return NULL;
 		}
 
-		char * evalRecursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error){
+		char * eval_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case){
 			// PRE: *node_to_be_evaluated must be created (the pointer is only read mode)
 			bool custom_quit = false;
 			char *aux = (char *)s;
 			char *end_expr=0;
 			bool processed_directive=false;
+			Keyword keyw;
 
 			IGNORE_BLANKS(aux,eval_data,aux, line);
 
 			while(*aux != 0 && !custom_quit){
-
 				processed_directive=false;
-				//children = NULL;
 				// ignore all ;
 				while(*aux==';' && *aux != 0){
 					IGNORE_BLANKS(aux,eval_data,aux+1, line);
@@ -265,18 +263,16 @@ namespace zetscript{
 				}else{
 
 					// try directive ...
-					DirectiveType directive = isDirectiveType(aux);
+					Directive directive = is_directive(aux);
 					char *start_var,* end_var;
 					std::string str_symbol;
-					if(directive != DirectiveType::DIRECTIVE_TYPE_UNKNOWN){
+					if(directive != Directive::DIRECTIVE_UNKNOWN){
 						switch(directive){
-						case DIRECTIVE_TYPE_INCLUDE:
+						case DIRECTIVE_INCLUDE:
 							aux += strlen(eval_info_directives[directive].str);
 							IGNORE_BLANKS(aux,eval_data,aux,line);
 							if(*aux != '\"'){
-								writeError(eval_data->current_parsing_file,line,"expected starting \" directive");
-								THROW_SCRIPT_ERROR();
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected starting \" directive");
 							}
 							aux++;
 							start_var=aux;
@@ -284,34 +280,22 @@ namespace zetscript{
 							while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
 
 							if(*aux != '\"'){
-								writeError(eval_data->current_parsing_file,line,"expected end \" directive");
-								THROW_SCRIPT_ERROR();
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected end \" directive");
 							}
 
 							end_var=aux;
 
-							if(!zs_strutils::copy_from_ptr_diff(str_symbol,start_var,end_var)){
-								THROW_SCRIPT_ERROR();
-								return NULL;
-							}
+							zs_strutils::copy_from_ptr_diff(str_symbol,start_var,end_var);
 
 							ZS_PRINT_DEBUG("include file: %s",str_symbol);
 
-							{
-								// save current file info...
-								try{
-									eval_data->zs->evalFile(str_symbol);
-								}catch(exception::ScriptExceptionError & error){
-									THROW_EXCEPTION(error);
-									return NULL;
-								}
-							}
+							// save current file info...
+							eval_data->zs->evalFile(str_symbol);
 
 							aux++;// advance ..
 							break;
 						default:
-							writeError(eval_data->current_parsing_file,line,"directive \"%s\" not supported",eval_info_directives[directive].str);
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"directive \"%s\" not supported",eval_info_directives[directive].str);
 							break;
 						}
 
@@ -323,53 +307,41 @@ namespace zetscript{
 				// 0st special case member class extension ...
 				if(!processed_directive){ // not processed yet ...
 					// 1st. check whether eval a keyword...
-					if((end_expr = evalKeywordType(
+					if(((is_keyword(aux) == Keyword::KEYWORD_BREAK) || (is_keyword(aux) == Keyword::KEYWORD_CASE)) && return_on_break_or_case){ // it cuts current expression to link breaks...
+						return end_expr;
+					}
+
+					if((end_expr = eval_keyword(
 						eval_data
 						,aux
 						, line
 						, scope_info
-						, error
+						, keyw
 					)) == NULL){
-
 						// If was unsuccessful then try to eval expression.
-						if(error){
-
-							THROW_SCRIPT_ERROR();
-							return NULL;
-						}
 						// 2nd. check whether eval a block
-						if((end_expr = evalBlock(
+						if((end_expr = eval_block(
 								eval_data
 								,aux
 								,line
 								, scope_info
-								, error
 								))==NULL){
 
-							// If was unsuccessful then try to eval expression.
-							if(error){
-								THROW_SCRIPT_ERROR();
-								return NULL;
-							}
 							// 2nd. try expression
 							//int starting_expression=line;
 
-							if((end_expr = evalExpression(
+							if((end_expr = eval_expression(
 									eval_data
 									,aux
 									,line
 									, scope_info
 									,&eval_data->current_function->instructions
 							)) == NULL){ // something wrong was happen.
-								THROW_SCRIPT_ERROR();
-								return NULL;
+								THROW_RUNTIME_ERROR("eval_expression: unexpected NULL expression");
 							}
 
 							if(*end_expr != ';'){
-
-								writeError(eval_data->current_parsing_file,line,"expected end ;");
-								THROW_SCRIPT_ERROR();
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected end ;");
 							}
 
 							IGNORE_BLANKS(end_expr,eval_data,end_expr+1, line);
@@ -383,11 +355,11 @@ namespace zetscript{
 			return aux;
 		}
 
-		void pushFunction(EvalData *eval_data,ScriptFunction *script_function){
+		void push_function(EvalData *eval_data,ScriptFunction *script_function){
 			eval_data->functions.push_back(eval_data->current_function=new EvalFunction(script_function));
 		}
 
-		void popFunction(EvalData *eval_data){
+		void pop_function(EvalData *eval_data){
 			eval_data->current_function->script_function->instructions=NULL;
 
 			// get total size op + 1 ends with NULL
@@ -419,7 +391,7 @@ namespace zetscript{
 						}
 						else{
 							if((instruction->vm_instruction.value_op2=(intptr_t)sc->getFunctionMember(ls->value,ls->n_params))==0){
-								THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find function %s::%s",sf->symbol.name.c_str(),ls->value.c_str()));
+								THROW_RUNTIME_ERROR("Cannot find function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
 								return;
 							}
 						}
@@ -441,7 +413,7 @@ namespace zetscript{
 
 						// ok get the super function...
 						if(sf_found == NULL){
-							THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find super function %s::%s",sf->symbol.name.c_str(),ls->value.c_str()));
+							THROW_RUNTIME_ERROR("Cannot find super function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
 							return;
 						}
 						instruction->vm_instruction.value_op2=(intptr_t)sf_found;
@@ -481,7 +453,7 @@ namespace zetscript{
 								if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 
 									if((vis=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value))==NULL){
-										THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find variable \"%s\"",ls->value.c_str()));
+										THROW_RUNTIME_ERROR("Cannot find variable \"%s\"",ls->value.c_str());
 										return;
 									}
 
@@ -491,7 +463,7 @@ namespace zetscript{
 								else{
 
 									if((instruction->vm_instruction.value_op2=(intptr_t)MAIN_FUNCTION(eval_data)->getFunction(sc_var->scope,ls->value,ls->n_params))==0){
-										THROW_RUNTIME_ERROR(zs_strutils::format("Cannot find function \"%s\"",ls->value.c_str()));
+										THROW_RUNTIME_ERROR("Cannot find function \"%s\"",ls->value.c_str());
 										return;
 									}
 
@@ -514,15 +486,17 @@ namespace zetscript{
 				// save instruction ...
 				eval_data->current_function->script_function->instructions[i]=instruction->vm_instruction;
 
+				//------------------------------------
 				// symbol value to save at runtime ...
+				InstructionSourceInfo instruction_info=instruction->instruction_source_info;
+
+				// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 				if(instruction->instruction_source_info.str_symbol != NULL){
-					InstructionSourceInfo instruction_info=instruction->instruction_source_info;
-
-					// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 					instruction_info.str_symbol=new std::string(*instruction->instruction_source_info.str_symbol);
-
-					eval_data->current_function->script_function->instruction_source_info[i]=instruction_info;
 				}
+
+				eval_data->current_function->script_function->instruction_source_info[i]=instruction_info;
+
 			}
 
 			//eval_data->current_function->script_function->linkScopeBlockVars();

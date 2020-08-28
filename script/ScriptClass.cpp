@@ -6,9 +6,6 @@
 
 namespace zetscript{
 
-
-	void  writeError(const char *filename, int line, const  char  *string_text, ...);
-
 	bool ScriptClass::is_C_Class(){
 
 		 return ((symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
@@ -83,7 +80,7 @@ namespace zetscript{
 				return symbol;
 			}
 
-			THROW_RUNTIME_ERROR(zs_strutils::format("Variable \"%s\" already registered",symbol_name.c_str()));
+			THROW_RUNTIME_ERROR("Variable \"%s\" already registered",symbol_name.c_str());
 		}
 
 		Symbol *	 ScriptClass::get_C_SymbolVariableMember(const std::string & symbol_name){
@@ -108,7 +105,7 @@ namespace zetscript{
 		){
 
 		if(getFunctionMember(function_name,(char)function_params.size()) != NULL){
-			THROW_RUNTIME_ERROR(zs_strutils::format("Function \"%s\" already exist",function_name.c_str()));
+			THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
 			return NULL;
 		}
 

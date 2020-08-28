@@ -6,10 +6,10 @@
 
 namespace zetscript{
 
-	ScriptVarFunctor::ScriptVarFunctor(ZetScript *_zs):ScriptVar(_zs){
+	ScriptVarFunction::ScriptVarFunction(ZetScript *_zs):ScriptVar(_zs){
 
-	  //  m_classStr=typeid(ScriptVarFunctor).name();
-	  //  m_pointerClassStr=typeid(ScriptVarFunctor *).name();
+	  //  m_classStr=typeid(ScriptVarFunction).name();
+	  //  m_pointerClassStr=typeid(ScriptVarFunction *).name();
 
 
 		//m_varType =VAR_TYPE::FUNCTION;
@@ -17,7 +17,7 @@ namespace zetscript{
 		this->init(SCRIPT_CLASS_FUNCTOR(this), (void *)this);
 	}
 
-	void ScriptVarFunctor::setFunctionSymbol(ScriptFunction *_irfs){
+	void ScriptVarFunction::setFunctionSymbol(ScriptFunction *_irfs){
 		value=_irfs;
 	}
 

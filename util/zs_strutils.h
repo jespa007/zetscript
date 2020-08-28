@@ -5,6 +5,18 @@
 #define STR(tok) STR_EXPAND(tok)
 #define ZS_STRCMP(a, R, b) (strcmp(a,b) R 0)
 #define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
+#define ZS_MAX_VARG_OUTPUT_STRING	4096
+
+#define ZS_CAPTURE_VARIABLE_ARGS(text_out, text_in)\
+{va_list  ap;\
+va_start(ap,  text_in);\
+int n=vsnprintf(text_out,ZS_MAX_VARG_OUTPUT_STRING,text_in,  ap);\
+if(n==4096){\
+	text_out[sizeof(text_out)-2]='.';\
+	text_out[sizeof(text_out)-3]='.';\
+	text_out[sizeof(text_out)-4]='.';\
+}\
+va_end(ap);}
 
 namespace zetscript{
 	namespace zs_strutils{
@@ -44,7 +56,7 @@ namespace zetscript{
 		 * @p1:start pointer
 		 * @p2:end pointer
 		 */
-		bool copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2);
+		void copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2);
 
 	}
 }

@@ -10,9 +10,6 @@
 
 namespace zetscript{
 
-
-	void  writeError(const char *filename, int line, const  char  *string_text, ...);
-
 	//------------------------------------------------------------------------------------------------
 	Scope::Scope(ZetScript * _zs, Scope * _scope_parent, bool _is_c_node){
 		scope_parent = _scope_parent;
@@ -78,12 +75,11 @@ namespace zetscript{
 		}else{
 
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				writeError(file.c_str(),line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file.c_str(),p_irv->line);
+				THROW_SCRIPT_ERROR(file.c_str(),line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file.c_str(),p_irv->line);
 			}else{
-				writeError(NULL,0," error symbol \"%s\" already registered as C++", symbol_name.c_str());
+				THROW_RUNTIME_ERROR(" error symbol \"%s\" already registered as C++", symbol_name.c_str());
 			}
 
-			THROW_SCRIPT_ERROR();
 		}
 		return NULL;
 	}

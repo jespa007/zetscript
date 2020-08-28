@@ -267,32 +267,28 @@ namespace zetscript{
 			return n_items;
 		}
 
-		bool copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2){
+		void copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2){
 
 			char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
 
 			if(p1 == NULL || p2 == NULL){
-				THROW_RUNTIME_ERROR(zs_strutils::format("NULL entry (%p %p)",p1,p2));
-				return false;
+				THROW_RUNTIME_ERROR("NULL entry (%p %p)",p1,p2);
 			}
 
 			int var_length=p2-p1;
 
 			if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
-				THROW_RUNTIME_ERROR(zs_strutils::format("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length));
-				return false;
+				THROW_RUNTIME_ERROR("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length);
 			}
 
 			if(p1 == p2){
 				THROW_RUNTIME_ERROR("Nothing to copy");
-				return false;
 			}
 
 			strncpy(aux_str_copy,p1,var_length);
 
 			str_dst=aux_str_copy;
 
-			return true;
 		}
 	}
 }

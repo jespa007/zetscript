@@ -38,11 +38,40 @@ namespace zetscript{
 		script_class_factory=zs->getScriptClassFactory();
 	}
 
+	const char * ScriptFunction::instructionPropertyPreOperationToStr(unsigned int properties){
+		switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(properties)){
+			case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
+				return "-";
+			case MSK_INSTRUCTION_PROPERTY_PRE_INC:
+				return "++";
+			case MSK_INSTRUCTION_PROPERTY_PRE_DEC:
+				return "--";
+			default:
+				break;
+		}
+
+		return "";
+	}
+
+	const char * ScriptFunction::instructionPropertyPostOperationToStr(unsigned int properties){
+		switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(properties)){
+			case MSK_INSTRUCTION_PROPERTY_POST_INC:
+					return "++";
+				case MSK_INSTRUCTION_PROPERTY_POST_DEC:
+					return "--";
+				default:
+					break;
+		}
+
+		return "";
+	}
+
 	std::string ScriptFunction::formatInstructionLoadType(ScriptFunction *function,Instruction *instruction){
 
 		 char print_aux_load_value[512] = {0};
 		 char object_access[512] = "";
-		 const char *pre="",*post="";
+		 const char *pre=instructionPropertyPreOperationToStr(instruction->properties)
+				 ,*post=instructionPropertyPostOperationToStr(instruction->properties);
 
 		 //Instruction * instruction =&list_statements[current_instruction];
 		 ConstantValue *icv;
@@ -51,7 +80,7 @@ namespace zetscript{
 			 return "ERROR";
 		 }
 
-		switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction->properties)){
+		/*switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction->properties)){
 			case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
 				pre="-";
 				break;
@@ -70,16 +99,15 @@ namespace zetscript{
 			default:
 				break;
 
-		}
+		}*/
 
 		 sprintf(print_aux_load_value,"UNDEFINED");
 
 		 if(instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
 
 			 sprintf(object_access,
-					"[" FORMAT_PRINT_INSTRUCTION "]."
-
-					,(int)instruction->value_op2);
+					"."
+					);
 		 }
 		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){
 			sprintf(object_access,"this.");
@@ -105,11 +133,11 @@ namespace zetscript{
 				break;
 
 			case LoadType::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"%sVAR   %s%s%s",object_access,pre,symbol_value.c_str(),post);
+				sprintf(print_aux_load_value,"VAR   %s%s%s%s",pre,object_access,symbol_value.c_str(),post);
 				break;
 			case LoadType::LOAD_TYPE_FUNCTION:
 
-				sprintf(print_aux_load_value,"%sFUN   %s",object_access,symbol_value.c_str());
+				sprintf(print_aux_load_value,"FUN   %s%s",object_access,symbol_value.c_str());
 				break;
 
 			case LoadType::LOAD_TYPE_ARGUMENT:
@@ -127,6 +155,7 @@ namespace zetscript{
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
 		zs_vector * m_vf = sfo->registered_functions;
+
 
 		for(unsigned j =0; j < m_vf->count; j++){
 
@@ -162,38 +191,15 @@ namespace zetscript{
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
 
 			int n_ops=0;
-			int value_op1 = instruction->value_op1;
+			unsigned char value_op1 = instruction->value_op1;
 			int value_op2 = instruction->value_op2;
 
-			if(value_op1 != -1)
+			if((char)value_op1 != INSTRUCTION_NO_VALUE_OP1)
 				n_ops++;
 
-			 if(value_op2 != -1)
+			 if(value_op2 != INSTRUCTION_NO_VALUE_OP2)
 				 n_ops++;
 
-			 /*pre="";
-			 post="";
-
-				switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction->properties)){
-				case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
-					pre="-";
-					break;
-				case MSK_INSTRUCTION_PROPERTY_PRE_INC:
-					pre="++";
-					break;
-				case MSK_INSTRUCTION_PROPERTY_PRE_DEC:
-					pre="--";
-					break;
-				case MSK_INSTRUCTION_PROPERTY_POST_INC:
-					post="++";
-					break;
-				case MSK_INSTRUCTION_PROPERTY_POST_DEC:
-					post="--";
-					break;
-				default:
-					break;
-
-				}*/
 			switch(instruction->byte_code){
 
 			case  BYTE_CODE_NEW:
@@ -242,7 +248,12 @@ namespace zetscript{
 			default:
 
 				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n",idx_instruction,ByteCodeToStr(instruction->byte_code));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+							idx_instruction
+							,instructionPropertyPreOperationToStr(instruction->properties)
+							,ByteCodeToStr(instruction->byte_code)
+							,instructionPropertyPostOperationToStr(instruction->properties)
+						);
 				}else if(n_ops==1){
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
 							,idx_instruction
@@ -271,7 +282,7 @@ namespace zetscript{
 	const char *  ScriptFunction::getInstructionSymbolName(Instruction * ins){
 		InstructionSourceInfo *info=getInstructionInfo(ins);
 
-		if(info!=NULL){
+		if(info!=NULL && info->str_symbol!=NULL){
 			return info->str_symbol->c_str();
 		}
 		return "unknown";
@@ -321,7 +332,7 @@ namespace zetscript{
 
 
 		/*if(getVariable(scope_symbol->name,scope_symbol->scope) != NULL){
-			THROW_RUNTIME_ERROR(zs_strutils::format("Variable \"%s\" already exist",variable_name.c_str()));
+			THROW_RUNTIME_ERROR("Variable \"%s\" already exist",variable_name.c_str()));
 			return NULL;
 		}*/
 
@@ -366,7 +377,7 @@ namespace zetscript{
 		){
 
 			if(getFunction(scope_block,function_name,(char)args.size()) != NULL){
-				THROW_RUNTIME_ERROR(zs_strutils::format("Function \"%s\" already exist",function_name.c_str()));
+				THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
 				return NULL;
 			}
 
@@ -435,6 +446,14 @@ namespace zetscript{
 		for(unsigned i=0; i < function_params->count; i++){
 			delete (FunctionParam *)function_params->items[i];
 		}
+
+		// delete all symbols...
+		for(auto it=this->instruction_source_info.begin();it!=this->instruction_source_info.end();it++){
+			if(it->second.str_symbol!=NULL){
+				delete it->second.str_symbol;
+			}
+		}
+
 		delete function_params;
 		function_params=NULL;
 

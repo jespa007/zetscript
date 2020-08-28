@@ -1,75 +1,76 @@
 namespace zetscript{
 	namespace eval{
 
-		void pushFunction(EvalData *eval_data,ScriptFunction *sf);
-		void popFunction(EvalData *eval_data);
-		char * evalBlock(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
-		char * evalRecursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error);
-		Scope * evalNewScope(EvalData *eval_data, Scope *scope_parent);
-		void evalCheckScope(EvalData *eval_data, Scope *scope);
+		void push_function(EvalData *eval_data,ScriptFunction *sf);
+		void pop_function(EvalData *eval_data);
+		char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * eval_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,bool return_on_break_or_continue_keyword = false);
+		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent);
+		void eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start);
+		void inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value);
 		//Scope * evalPopScope(EvalData *eval_data, Scope *current_scope);
 
-		char * isClassMemberExtension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol, bool & error){
+		char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol){
 
 			char *aux_p = (char *)s;
 			std::string class_name;
 			*sc=NULL;
 
-			error = false;
-
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			// check whwther the function is anonymous or not.
-			if((aux_p=getIdentifierToken(eval_data,aux_p,class_name))==NULL){
-				 writeError(eval_data->current_parsing_file,line ,"Expected class symbol");
-				 return NULL;
-			}
+			aux_p=get_identifier_token(
+					eval_data
+					,aux_p
+					,line
+					,class_name);
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 
 				if((*sc=GET_SCRIPT_CLASS(eval_data,class_name)) != NULL){
-
-					if((aux_p=getIdentifierToken(eval_data,aux_p+2,member_symbol))==NULL){
-						 writeError(eval_data->current_parsing_file,line ,"Expected class member symbol");
-						 return NULL;
-					}
+					aux_p=get_identifier_token(
+							eval_data
+							,aux_p+2
+							,line
+							,member_symbol
+					);
 					return aux_p;
 				}else{
-					error=true;
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"class %s not found",class_name.c_str());
 				}
 			}
 			return NULL;
 		}
 
-		char * evalKeywordTypeDelete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error){
+		char * eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			std::string symbol_value;
-			KeywordType key_w;
+			Keyword key_w;
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			// check for keyword ...
-			key_w = isKeywordType(aux_p);
+			key_w = is_keyword(aux_p);
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
-				if(key_w == KeywordType::KEYWORD_TYPE_DELETE){
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
+				if(key_w == Keyword::KEYWORD_DELETE){
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
 
-
-					if((aux_p=getIdentifierToken(eval_data,aux_p,symbol_value))==NULL){
-						 writeError(eval_data->current_parsing_file,line ,"Expected symbol");
-						 return NULL;
-					}
+					aux_p=get_identifier_token(
+							eval_data
+							,aux_p
+							,line
+							,symbol_value
+					);
 
 					 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					 if(*aux_p != ';'){
-						 writeError(eval_data->current_parsing_file,line,"Expected ;");
-						 return NULL;
+						 THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ;");
 					 }
 
 					return aux_p;
@@ -78,7 +79,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		char * evalKeywordTypeClass(EvalData *eval_data,const char *s,int & line, Scope *scope_info, bool & error){
+		char * eval_keyword_class(EvalData *eval_data,const char *s,int & line, Scope *scope_info){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			//Scope *class_scope_info=NULL;
@@ -86,28 +87,29 @@ namespace zetscript{
 			std::string class_name;
 			std::string base_class_name="";
 			ScriptClass *sc;
-			KeywordType key_w;
+			Keyword key_w;
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			// check for keyword ...
-			key_w = isKeywordType(aux_p);
+			key_w = is_keyword(aux_p);
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
 
-				if(key_w == KeywordType::KEYWORD_TYPE_CLASS){
+				if(key_w == Keyword::KEYWORD_CLASS){
 
 					if(scope_info->scope_parent!=NULL){
-						writeError(eval_data->current_parsing_file,line,"class keyword is not allowed");
-						return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"class keyword is not allowed");
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
 
 					// check for symbol's name
-					if((aux_p=getIdentifierToken(eval_data,aux_p,class_name))==NULL){
-						 writeError(eval_data->current_parsing_file,line ,"Expected symbol");
-						 return NULL;
-					}
+					aux_p=get_identifier_token(
+							eval_data
+							,aux_p
+							,line
+							,class_name
+					);
 
 					// try to register class...
 					class_line = line;
@@ -115,27 +117,23 @@ namespace zetscript{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					if(strncmp(aux_p, "extends",7)==0 ){ // extension class detected
-
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+7,line);
-
-						if((aux_p=getIdentifierToken(eval_data,aux_p,base_class_name))==NULL){
-							 writeError(eval_data->current_parsing_file,line ,"Expected symbol");
-							 return NULL;
-						}
-
+						aux_p=get_identifier_token(
+								eval_data
+								,aux_p
+								,line
+								,base_class_name
+						);
 						IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
 					}
 
-
 					// register class
-					if((sc=eval_data->script_class_factory->registerClass(
+					sc=eval_data->script_class_factory->registerClass(
 							__FILE__
 							, __LINE__
 							, class_name
 							,base_class_name
-					))==NULL){
-						return NULL;
-					}
+					);
 
 					ZS_PRINT_DEBUG("registered class \"%s\" line %i ",class_name.c_str(), class_line);
 
@@ -149,86 +147,51 @@ namespace zetscript{
 						while(*aux_p != '}' && *aux_p != 0){
 
 							// 1st. check whether eval a keyword...
-							key_w = isKeywordType(aux_p);
-							if(key_w == KeywordType::KEYWORD_TYPE_UNKNOWN){ // only expects function name
-								/*switch(key_w){
-								default:
-									writeError(eval_data->current_parsing_file,line,"Expected \"var\" or \"function\" keyword");
-									return NULL;
-									break;
-								case KeywordType::KEYWORD_TYPE_FUNCTION:*/
-
-									if((aux_p = evalKeywordTypeFunction(
+							key_w = is_keyword(aux_p);
+							if(key_w == Keyword::KEYWORD_UNKNOWN){ // only expects function name
+									aux_p = eval_keyword_function(
 											eval_data
 											,aux_p
 											, line
 											,sc->symbol.scope // pass class scope
-											,error
-									)) == NULL){
-										return NULL;
-									}
-								/*	break;
-								case KeywordType::KEYWORD_TYPE_VAR:
-									if((aux_p = evalKeywordTypeVar(
-											eval_data
-											,aux_p
-											, line
-											,class_scope_info
-											,error
-									)) == NULL){
-										return NULL;
-									}
-									break;
-								}*/
+
+									);
 							}else{
-								writeError(eval_data->current_parsing_file,line,"unexpected \"%s\"",eval_info_keywords[key_w].str);
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"unexpected keyword \"%s\"",eval_info_keywords[key_w].str);
 							}
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 						}
 
 						if(*aux_p != '}'){
-							writeError(eval_data->current_parsing_file,class_line ,"class \"%s\" declared is not closed ",class_name.c_str());
-							return NULL;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,class_line ,"class \"%s\" declared is not closed ",class_name.c_str());
 						}
-
-						/*aux_p=IGNORE_BLANKS(eval_data,aux_p+1,line);
-
-						if(*aux_p != ';'){
-							writeError(eval_data->current_parsing_file,class_line ,"class \"%s\" not end with ;",class_name.c_str());
-							return NULL;
-						}*/
 
 						return aux_p+1;
 
 					}else{
-						writeError(eval_data->current_parsing_file,line,"Expected '{'");
-						return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{'");
 					}
 				}
 			}
 			return NULL;
 		}
-
 		//
 		//--------------------------------------------------------------------------------------------------------------------------------------------------------
 		//
 		//  KEYWORDS
 		//
-
-		char * evalKeywordTypeFunction(
+		char * eval_keyword_function(
 				EvalData *eval_data
 				, const char *s
 				, int & line
 				, Scope *scope_info
-				, bool & error
-//				, ScriptClass *sc
+
 			){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			char *end_var=NULL;
-			KeywordType key_w;
+			Keyword key_w;
 			std::vector<FunctionParam> args;
 			std::string conditional_str;
 			ScriptClass *sc=NULL;
@@ -250,16 +213,16 @@ namespace zetscript{
 
 			// check for keyword ...
 			if(is_class){ // within class supposes is a function already
-				key_w = KeywordType::KEYWORD_TYPE_FUNCTION;
+				key_w = Keyword::KEYWORD_FUNCTION;
 			}
 			else{
-				key_w = isKeywordType(aux_p);
+				key_w = is_keyword(aux_p);
 				advance_chars=strlen(eval_info_keywords[key_w].str);
 			}
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
 
-				if(key_w == KeywordType::KEYWORD_TYPE_FUNCTION){
+				if(key_w == Keyword::KEYWORD_FUNCTION){
 
 					// advance keyword...
 					aux_p += advance_chars;
@@ -271,13 +234,12 @@ namespace zetscript{
 
 						if(is_class){
 							sc=scope_info->script_class;
-						}else if((end_var=isClassMemberExtension( // is function class extensions (example A::function1(){ return 0;} )
+						}else if((end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
 								eval_data
 								,aux_p
 								,line
 								,&sc
 								,function_name
-								,error
 						))!=NULL){ // check if particular case extension attribute class
 							// current scope is changed by class scope...
 							scope = sc->symbol.scope;
@@ -288,27 +250,19 @@ namespace zetscript{
 							}
 						}
 
-						if(error){ // isClassMemberExtension error
-							return NULL;
-						}
-
 						if(end_var == NULL){ // global function
 							// check whwther the function is anonymous with a previous arithmetic operation ....
-							if((end_var=getIdentifierToken(
+							end_var=get_identifier_token(
 									eval_data
 									,aux_p
+									,line
 									,function_name
-							)) == NULL){
-								 writeError(eval_data->current_parsing_file,line ,"Expected symbol");
-								 return NULL;
-							}
+							);
 
 						}
 
 						// copy value
-						if(!zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var)){
-								return NULL;
-						}
+						zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
 
 						aux_p=end_var;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -334,48 +288,39 @@ namespace zetscript{
 
 							if(args.size()>0){
 								if(*aux_p != ','){
-									writeError(eval_data->current_parsing_file,line,"Expected ',' ");
-									return NULL;
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ',' ");
 								}
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 							}
 
 							if(*aux_p == ')' || *aux_p == ','){
-								writeError(eval_data->current_parsing_file,line,"Expected arg");
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected arg");
 							}
 
 							// capture line where argument is...
 							arg_info.line=line;
 
 							//int m_start_arg=line;
-							if((end_var=getIdentifierToken(
+							end_var=get_identifier_token(
 									 eval_data
 									,aux_p
+									,line
 									,arg_value
-							)) == NULL){
-								 writeError(eval_data->current_parsing_file,line ,"Expected symbol");
-								 return NULL;
-							}
+							);
 
 							// copy value
-							if(!zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var)){
-									return NULL;
-							}
-
+							zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
 
 							// check if repeats...
 							for(unsigned k = 0; k < args.size(); k++){
 								if(args[k].arg_name == arg_value){
-									writeError(eval_data->current_parsing_file,line,"Repeated argument '%s' argument ",arg_value.c_str());
-									return NULL;
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Repeated argument '%s' argument ",arg_value.c_str());
 								}
 							}
 
 							// check whether parameter name's matches with some global variable...
 							if((irv=scope->getSymbol(arg_value.c_str())) != NULL){
-								writeError(eval_data->current_parsing_file,line,"Ambiguous symbol argument \"%s\" name with var defined at %i", arg_value.c_str(), -1);
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Ambiguous symbol argument \"%s\" name with var defined at %i", arg_value.c_str(), -1);
 							}
 								// ok register symbol into the object function ...
 
@@ -386,15 +331,13 @@ namespace zetscript{
 
 							aux_p=end_var;
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
 						}
 
 						aux_p++;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						if(*aux_p != '{'){
-							writeError(eval_data->current_parsing_file,line,"Expected '{'");
-							return NULL;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{'");
 						}
 
 						// register function ...
@@ -420,43 +363,42 @@ namespace zetscript{
 							);
 						}
 
-						pushFunction(eval_data,sf);
+						push_function(eval_data,sf);
 
 						// ok let's go to body..
-						aux_p = evalBlock(
+						aux_p = eval_block(
 								eval_data
 								,aux_p
 								,line
-								,scope
-								,error);
+								,scope);
 
-						popFunction(eval_data);
+						pop_function(eval_data);
 					}
 					else{
-						writeError(eval_data->current_parsing_file,line," Expected '('");
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Expected '('");
 					}
 				}else{
-					writeError(eval_data->current_parsing_file,line,"Expected operator or function operator");
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected operator or function operator");
 				}
 			}
 			return aux_p;
 		}
 
-		char *  evalKeywordTypeReturn(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error){
+		char *  eval_keyword_return(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
-			KeywordType key_w;
+			Keyword key_w;
 			std::string s_aux;
 
-			key_w = isKeywordType(aux_p);
+			key_w = is_keyword(aux_p);
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
 
-				if(key_w == KeywordType::KEYWORD_TYPE_RETURN){ // possible variable...
+				if(key_w == Keyword::KEYWORD_RETURN){ // possible variable...
 					//PASTNode child_node=NULL;
 					aux_p += strlen(eval_info_keywords[key_w].str);
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-					if((aux_p = evalExpression(
+					if((aux_p = eval_expression(
 							eval_data
 							,aux_p
 							, line
@@ -465,8 +407,7 @@ namespace zetscript{
 					))!= NULL){
 
 						if(*aux_p!=';'){
-							writeError(eval_data->current_parsing_file,line,"Expected ';'");
-							return NULL;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ';'");
 						}
 
 						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RET));
@@ -479,176 +420,218 @@ namespace zetscript{
 			return NULL;
 		}
 
-		char * evalKeywordTypeWhile(EvalData *eval_data,const char *s,int & line, Scope *scope_info,  bool & error){
+		void link_breaks(EvalData *eval_data){
+			// capture breaks and link jmp positions...
+			if(eval_data->break_jmp_instructions.size() > 0){ // capture break_jmp_instructions...
+				unsigned idx_instruction = eval_data->current_function->instructions.size();
+				for(unsigned i=0; i < eval_data->break_jmp_instructions.size(); i++){
+					eval_data->break_jmp_instructions[i]->vm_instruction.value_op2=idx_instruction;
+					delete eval_data->break_jmp_instructions[i]; // delete because is not needed anymore
+				}
+
+				eval_data->break_jmp_instructions.clear();
+			}
+		}
+
+		void link_continues(EvalData *eval_data, unsigned idx_instruction){
+			// capture breaks and link jmp positions...
+			if(eval_data->continue_jmp_instructions.size() > 0){ // capture breaks...
+				for(unsigned i=0; i < eval_data->continue_jmp_instructions.size(); i++){
+					eval_data->continue_jmp_instructions[i]->vm_instruction.value_op2=idx_instruction;
+					delete eval_data->continue_jmp_instructions[i]; // delete because is not needed anymore
+				}
+
+				eval_data->continue_jmp_instructions.clear();
+			}
+		}
+
+		char * eval_keyword_while(EvalData *eval_data,const char *s,int & line, Scope *scope_info){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			char *end_expr;
 			std::string start_symbol;
-			KeywordType key_w;
-			std::string conditional_str;
-			error = false;
+			Keyword key_w;
+			unsigned int idx_instruction_conditional_while;
+			EvalInstruction *ei_jnt; // conditional to end block
+
 
 			// check for keyword ...
-			key_w = isKeywordType(aux_p);
+			key_w = is_keyword(aux_p);
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
-				if(key_w == KeywordType::KEYWORD_TYPE_WHILE){
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
+				if(key_w == Keyword::KEYWORD_WHILE){
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
-					// evaluate conditional line ...
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					// evaluate conditional line ...
 					if(*aux_p == '('){
 
-						if((end_expr = evalExpression(
+						// save current instruction to use later...
+						idx_instruction_conditional_while=eval_data->current_function->instructions.size();
+
+
+						end_expr = eval_expression(
 								eval_data
 								,aux_p+1
 								,line
 								,scope_info
 								,&eval_data->current_function->instructions
-						)) != NULL){
+						);
 
-							if(*end_expr != ')'){
-								writeError(eval_data->current_parsing_file,line,"Expected ')'");
-								return NULL;
-							}
-
-							if(!zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr)){
-								return NULL;
-							}
-
-							IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
-							if(*aux_p != '{'){
-								writeError(eval_data->current_parsing_file,line,"Expected while-block open block ('{') ");
-								return NULL;
-							}
-							if((aux_p=evalBlock(
-									eval_data
-									,aux_p
-									,line
-									,scope_info
-									,error
-							))!= NULL){
-								if(!error){
-									return aux_p;
-								}
-							}
-						}else{
-							writeError(eval_data->current_parsing_file,line,"Expected ')' while ");
-							return NULL;
+						if(*end_expr != ')'){
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')'");
 						}
 
+						// insert instruction if evaluated expression
+						eval_data->current_function->instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JNT));
+
+
+						zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
+
+						IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
+
+						if(*aux_p != '{'){
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected while-block open block ('{') ");
+						}
+
+						aux_p=eval_block(
+								eval_data
+								,aux_p
+								,line
+								,scope_info
+						);
+
 					}else{
-						writeError(eval_data->current_parsing_file,line,"Expected '(' while ");
-						return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '(' while ");
 					}
+
+					// insert jmp instruction to begin condition while...
+					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JMP,ZS_IDX_UNDEFINED,idx_instruction_conditional_while));
+
+					// update jnt instruction to jmp after jmp instruction...
+					ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size();
+
+					// catch all breaks in the while...
+					link_breaks(eval_data);
+
+					// catch all breaks in the while...
+					link_continues(eval_data,idx_instruction_conditional_while);
+
+
+					return aux_p;
 				}
 			}
 			return NULL;
 		}
 
-		char * evalKeywordTypeDoWhile(EvalData *eval_data,const char *s,int & line, Scope *scope_info,  bool & error){
+		char * eval_keyword_do_while(EvalData *eval_data,const char *s,int & line, Scope *scope_info){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			char *end_expr;
 			std::string start_symbol;
-			KeywordType key_w;
-			std::string conditional_str;
-			error = false;
+			Keyword key_w;
+			unsigned int idx_do_while_start;
+			unsigned int idx_do_while_conditional;
+
 
 			// check for keyword ...
-			key_w = isKeywordType(aux_p);
+			key_w = is_keyword(aux_p);
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
-				if(key_w == KeywordType::KEYWORD_TYPE_DO_WHILE){
-
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
+				if(key_w == Keyword::KEYWORD_DO_WHILE){
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
 
 					//1st evaluate body ..
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					// save current instruction to use later...
+					idx_do_while_start=eval_data->current_function->instructions.size();
+
+
 					if(*aux_p != '{'){
-						writeError(eval_data->current_parsing_file,line,"Expected open block ('{') in do-while expression");
-						return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected open block ('{') in do-while expression");
 					}
-					if((aux_p=evalBlock(
+					if((aux_p=eval_block(
 							eval_data
 							,aux_p
 							,line
 							,scope_info
-							,error
 					))!= NULL){
-						if(!error){
 
-							// Finally evaluate conditional line ...
-							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+						// Finally evaluate conditional line ...
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-							// check for keyword ...
-							key_w = isKeywordType(aux_p);
+						// check for keyword ...
+						key_w = is_keyword(aux_p);
 
-							if(key_w!=KEYWORD_TYPE_WHILE){
-								writeError(eval_data->current_parsing_file,line,"expected while keyword");
-								return NULL;
-							}
+						if(key_w!=KEYWORD_WHILE){
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected while keyword");
+						}
 
-							aux_p += strlen(eval_info_keywords[key_w].str);
+						aux_p += strlen(eval_info_keywords[key_w].str);
 
-							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-							if(*aux_p == '('){
+						if(*aux_p == '('){
 
-								if((end_expr = evalExpression(
-										eval_data
-										,aux_p+1
-										,line
-										,scope_info
-										,&eval_data->current_function->instructions
-								)) != NULL){
-									if(*end_expr != ')'){
-										writeError(eval_data->current_parsing_file,line,"Expected ')'");
-										return NULL;
-									}
-									if(!zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr)){
-										return NULL;
-									}
-								}else{
-									writeError(eval_data->current_parsing_file,line,"Expected ')' do-while expression");
-									return NULL;
+							idx_do_while_conditional=eval_data->current_function->instructions.size();
+
+							if((end_expr = eval_expression(
+									eval_data
+									,aux_p+1
+									,line
+									,scope_info
+									,&eval_data->current_function->instructions
+							)) != NULL){
+								if(*end_expr != ')'){
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')'");
 								}
 
+								zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
+
 							}else{
-								writeError(eval_data->current_parsing_file,line,"Expected '(' do-while expression");
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')' do-while expression");
 							}
 
-							return end_expr+1;
+						}else{
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '(' do-while expression");
 						}
+
+						// insert jmp instruction to begin condition while...
+						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JT,ZS_IDX_UNDEFINED,idx_do_while_start));
+
+						// catch all breaks in the while...
+						link_breaks(eval_data);
+
+						// catch all continues and evaluates bottom...
+						link_continues(eval_data,idx_do_while_conditional);
+
+
+						return end_expr+1;
 					}
 				}
 			}
 			return NULL;
 		}
 
-		char * evalKeywordTypeIf(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error){
+		char * eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			char *end_expr;//,*start_symbol;
-			int dl=-1;
-			KeywordType key_w;
-			//std::string conditional_str;
-			error = false;
+			Keyword key_w;
 			std::vector<EvalInstruction *> ei_jmps;
 			EvalInstruction *ei_aux;
-			//EvalInstruction ei_jmp_else_if;
-			//int conditional_line=0;
 
 			// check for keyword ...
-			key_w = isKeywordType(aux_p);
+			key_w = is_keyword(aux_p);
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
-				if(key_w == KeywordType::KEYWORD_TYPE_IF){
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
+				if(key_w == Keyword::KEYWORD_IF){
 
 					do{
 
@@ -656,25 +639,20 @@ namespace zetscript{
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						if(*aux_p != '('){
-							writeError(eval_data->current_parsing_file,line,"Expected '(' if");
-							return NULL;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '(' if");
 						}
 
 						// eval conditional expression
-						if((end_expr = evalExpression(
+						end_expr = eval_expression(
 								eval_data
 								,aux_p+1
 								,line
 								,scope_info
 								,&eval_data->current_function->instructions
-						)) == NULL){
-							writeError(eval_data->current_parsing_file,line,"Expected ')' if ");
-							return NULL;
-						}
+						);
 
 						if(*end_expr != ')'){
-							writeError(eval_data->current_parsing_file,line,"Expected ')'");
-							return NULL;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')'");
 						}
 
 
@@ -682,38 +660,22 @@ namespace zetscript{
 						eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
 						ei_jmps.push_back(ei_aux);
 
-						/*if(IGNORE_BLANKS(eval_data,aux_p+1,dl)==end_expr){
-							writeError(eval_data->current_parsing_file,line,"no conditional expression");
-							return NULL;
-						}
-
-						if(!zs_strutils::copy_from_ptr_diff(conditional_str,aux_p+1, end_expr)){
-							return NULL;
-						}*/
-
 						IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
 						if(*aux_p != '{'){
-							writeError(eval_data->current_parsing_file,line,"Expected if-block open block ('{')");
-							return NULL;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected if-block open block ('{')");
+
 						}
 
-						if((aux_p=evalBlock(eval_data,aux_p
-								,line
-								,scope_info
-								,error
-								))== NULL){
-							return NULL;
-						}
-
-						if(error){
-							return NULL;
-						}
+						aux_p=eval_block(eval_data,aux_p
+							,line
+							,scope_info
+						);
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						bool else_key = false;
-						if((key_w = isKeywordType(aux_p)) != KeywordType::KEYWORD_TYPE_UNKNOWN){
-							else_key = (key_w == KeywordType::KEYWORD_TYPE_ELSE);
+						if((key_w = is_keyword(aux_p)) != Keyword::KEYWORD_UNKNOWN){
+							else_key = (key_w == Keyword::KEYWORD_ELSE);
 						}
 
 						if(else_key){
@@ -731,34 +693,25 @@ namespace zetscript{
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 							bool if_key = false;
-							if((key_w = isKeywordType(aux_p)) != KeywordType::KEYWORD_TYPE_UNKNOWN){
-								if_key = (key_w == KeywordType::KEYWORD_TYPE_IF);
+							if((key_w = is_keyword(aux_p)) != Keyword::KEYWORD_UNKNOWN){
+								if_key = (key_w == Keyword::KEYWORD_IF);
 							}
 
 							if(!if_key){ // not if, only else
 
 								if(*aux_p != '{'){
-									writeError(eval_data->current_parsing_file,line,"Expected else-block open block ('{')");
-									return NULL;
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected else-block open block ('{')");
 								}
 
 								// eval else block
-								if((aux_p=evalBlock(
+								aux_p=eval_block(
 										eval_data
 										,aux_p
 										,line
 										,scope_info
-										,error
-								))!= NULL){
-										if(!error){
-											return aux_p;
-										}
-										else{
-											return NULL;
-										}
-								}else{
-									return NULL;
-								}
+								);
+
+								return aux_p;
 							} // else keep up parsing if nodes case ...
 						}else{ // end if expression
 
@@ -768,13 +721,6 @@ namespace zetscript{
 								ei_jmps[i]->vm_instruction.value_op2=eval_data->current_function->instructions.size();
 							}
 
-							// concatenate collected jmps
-							eval_data->current_function->jmp_instructions.insert(
-									   eval_data->current_function->jmp_instructions.end()
-									,  ei_jmps.begin()
-									, ei_jmps.end()
-							);
-
 							return aux_p;
 						}
 					}while(true); // loop
@@ -783,80 +729,75 @@ namespace zetscript{
 			return NULL;
 		}
 
-		char * evalKeywordTypeFor(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  bool & error){
+		char * eval_keyword_for(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
-			KeywordType key_w;
-			error=false;
-			std::string eval_for;
+			Keyword key_w;
+			unsigned int idx_instruction_for_start;
+			EvalInstruction *ei_jnt; // conditional to end block
+			std::vector<EvalInstruction *> post_operations;
 
 
 			// check for keyword ...
-			key_w = isKeywordType(aux_p);
+			key_w = is_keyword(aux_p);
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
-				if(key_w == KeywordType::KEYWORD_TYPE_FOR){
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
+				if(key_w == Keyword::KEYWORD_FOR){
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					if(*aux_p == '('){ // ready ...
 
+						unsigned idx_instruction_start_for=eval_data->current_function->instructions.size();
+
 						// save scope pointer ...
-						Scope *new_scope =evalNewScope(eval_data,scope_info); // push current scope
+						Scope *new_scope =eval_new_scope(eval_data,scope_info); // push current scope
 
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
+						// 1. Iterator ...
 						if(*aux_p != ';'){ // there's some var Init...
 							// Init node ...
-							KeywordType key_w = isKeywordType(aux_p);
+							Keyword key_w = is_keyword(aux_p);
 
-							if(key_w == KEYWORD_TYPE_VAR){
-								if((aux_p = evalKeywordTypeVar(
+							if(key_w == KEYWORD_VAR){
+								aux_p = eval_keyword_var_or_const(
 										eval_data
 										,aux_p
 										,line
 										,new_scope
-										,error
-								))==NULL){
-									return NULL;
-								}
+								);
 								aux_p = aux_p - 1; // redirect aux_p to ';'
 							}
 							else{
-
-								writeError(eval_data->current_parsing_file,line,"Expected 'var' keyword");
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected 'var' keyword");
 							}
 						}
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-						key_w = isKeywordType(aux_p);
-						if(key_w == KeywordType::KEYWORD_TYPE_IN){
+						key_w = is_keyword(aux_p);
+						if(key_w == Keyword::KEYWORD_IN){
 
-							//PASTNode node_for_in_right_op_expression=NULL;
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[Keyword::KEYWORD_IN].str),line);
 
-							IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KeywordType::KEYWORD_TYPE_IN].str),line);
-
-
-							if((aux_p = evalExpression(
+							aux_p = eval_expression(
 									eval_data
 									,(const char *)aux_p
 									,line
 									,new_scope
 									,&eval_data->current_function->instructions
-							)) == NULL){
-								return NULL;
-							}
+							);
+
+							// init it and vector/dictionary
+							eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_IT_INI));
 						}
 						else{ // expects conditional and post (i.e for(;;) )
 							if(*aux_p != ';'){
-								writeError(eval_data->current_parsing_file,line,"Expected ';'");
-								return NULL;
-
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ';'");
 							}
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -867,23 +808,24 @@ namespace zetscript{
 
 								if(*end_p != ';'){// there's some condition if not, then is like for(X;true;X)
 
-									if((aux_p = evalExpression(
+									idx_instruction_for_start=eval_data->current_function->instructions.size();
+
+									aux_p = eval_expression(
 											eval_data
 											,(const char *)aux_p
 											,line
 											,new_scope
 											,&eval_data->current_function->instructions
-									)) == NULL){
-										return NULL;
-									}
+									);
+
+									eval_data->current_function->instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JNT));
 								}
 							}
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 							if(*aux_p != ';'){
-								writeError(eval_data->current_parsing_file,line,"Expected ';'");
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ';'");
 
 							}
 							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -891,27 +833,23 @@ namespace zetscript{
 							if(*aux_p != ')' ){ // finally do post op...
 
 								if(*aux_p == ',' ){
-									writeError(eval_data->current_parsing_file,line,"Unexpected ) ");
-									return NULL;
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Unexpected ) ");
 								}
 
 								do{
-									if((aux_p = evalExpression(
+									aux_p = eval_expression(
 											eval_data
 											,aux_p
 											,line
 											,new_scope
-											,&eval_data->current_function->instructions
-									))==NULL){
-										return NULL;
-									}
+											,&post_operations
+									);
 
 									if(*aux_p == ',' ){
 										IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 									}else{
 										if(*aux_p != ')' ){
-											writeError(eval_data->current_parsing_file,line,"Expected ')'");
-											return NULL;
+											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')'");
 										}
 									}
 
@@ -920,52 +858,71 @@ namespace zetscript{
 						}
 
 						if(*aux_p != ')'){
-							writeError(eval_data->current_parsing_file,line,"Expected ')'");
-							return NULL;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')'");
 						}
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 						if(*aux_p != '{'){
-							writeError(eval_data->current_parsing_file,line,"Expected '{' for-block");
-							return NULL;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' for-block");
 						}
 
 						// eval block ...
-						if((aux_p=evalBlock(
+						aux_p=eval_block(
 								eval_data
 								,aux_p
 								,line
 								,new_scope
-								,error
-						))!= NULL){ // true: We treat declared variables into for as another scope.
-							if(!error){
-								evalCheckScope(eval_data,new_scope);
-								return aux_p;
-							}
-						}
+						);
+
+						// insert post operations...
+						eval_data->current_function->instructions.insert(
+							eval_data->current_function->instructions.end()
+							,post_operations.begin()
+							,post_operations.end()
+						);
+
+						// insert jmp instruction to begin condition for...
+						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JMP,ZS_IDX_UNDEFINED,idx_instruction_for_start));
+
+						// update jnt instruction to jmp after jmp instruction...
+						ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size();
+
+						// catch all breaks in the while...
+						link_breaks(eval_data);
+
+						// catch all continues and evaluates bottom...
+						link_continues(eval_data,idx_instruction_for_start);
+
+
+						// true: We treat declared variables into for as another scope.
+						eval_check_scope(eval_data,new_scope,idx_instruction_start_for);
+						return aux_p;
+
 					}else{
-						writeError(eval_data->current_parsing_file,line,"Expected '(' for");
-						return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '(' for");
 					}
 				}
 			}
 			return NULL;
 		}
 
-		char * evalKeywordTypeSwitch(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  bool & error){
+		char * eval_keyword_switch(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			Scope *scope_case=NULL;
 			std::string val;
-			KeywordType key_w;//,key_w2;
+			Keyword key_w;//,key_w2;
+			unsigned idx_start_switch;
+			std::vector<EvalInstruction *> 	ei_cases; // stores all conditional instructions at begin
+			//std::vector<EvalInstruction *> 	ei_jt; // holds instructions to set jmps on each case
+			std::vector<EvalInstruction *>  ei_break_jmps; // breaks or if condition not satisfies nothing (there's no default)
 
-			error=false;
 			// check for keyword ...
-			key_w = isKeywordType(aux_p);
+			key_w = is_keyword(aux_p);
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
-				if(key_w == KeywordType::KEYWORD_TYPE_SWITCH){
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
+				if(key_w == Keyword::KEYWORD_SWITCH){
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -973,243 +930,340 @@ namespace zetscript{
 					if(*aux_p == '('){
 							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 							// evaluate switch condition expression ...
-							if((aux_p = evalExpression(
+							aux_p = eval_expression(
 								eval_data
 								,aux_p
 								,line
 								,scope_info
 								,&eval_data->current_function->instructions
-							))==NULL){
-								return NULL;
-							}
+							);
 
 							if(*aux_p != ')'){
-								writeError(eval_data->current_parsing_file,line,"Expected ')' switch");
-								error = true;
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')' switch");
 							}
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 							if(*aux_p == '{'){
 
-								aux_p++;
+								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-								if((aux_p=evalRecursive(
-									eval_data
-									,aux_p
-									, line
-									, scope_info
-									, error))==NULL
-								){
-									return NULL;
+								idx_start_switch = eval_data->current_function->instructions.size();
+								int n_default=0;
+
+								while(*aux_p != '}' && *aux_p != 0){
+
+									bool is_default=false;
+									// search for case or default...
+									key_w = is_keyword(aux_p);
+									if(key_w == KEYWORD_CASE){
+
+										TokenNode token_node;
+										int idx_current_instruction=eval_data->current_function->instructions.size();
+										std::vector<EvalInstruction *> case_instructions=std::vector<EvalInstruction *>{
+											 token_node.instructions[0]		// load value to compare
+											,new EvalInstruction(
+													BYTE_CODE_JE
+													,ZS_IDX_UNDEFINED
+													,idx_current_instruction
+											) // je instruction...
+										};
+
+										IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+
+										// capture constant value (should not be identifier in any case)
+										aux_p=eval_symbol(
+											eval_data
+											,aux_p
+											,line
+											,&token_node
+											,PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
+										);
+
+										if(token_node.token_type != TOKEN_TYPE_LITERAL){
+											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"'case' only accepts literals");
+										}
+
+										// insert a pair of instructions...
+										ei_cases.insert(
+												ei_cases.end(),
+												case_instructions.begin(),
+												case_instructions.end()
+										);
+
+									}else if(key_w == KEYWORD_DEFAULT){
+										if(n_default > 0){
+											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"there's an already 'default' case");
+										}
+
+										is_default=true;
+										n_default++;
+										IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+
+									}else{
+										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected 'case' or 'default' keyword");
+									}
+
+									if(*aux_p!=':'){
+										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ':' ");
+									}
+
+									// ignore :
+									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line)
+
+									aux_p=eval_recursive(
+										eval_data
+										,aux_p
+										, line
+										, scope_info
+										, true // cancel eval when break or case is found...
+									);
+
+									if((is_keyword(aux_p) == Keyword::KEYWORD_BREAK)){ // it cuts current expression to link breaks...
+										EvalInstruction *ei_break_jmp=new EvalInstruction(BYTE_CODE_JMP);
+										eval_data->current_function->instructions.push_back(ei_break_jmp);
+										ei_break_jmps.push_back(ei_break_jmp);
+									}else if(is_default){
+										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"'default' case needs to have a 'break' at the end");
+									}
+
+									IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
 								}
 
-								IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+								unsigned idx_current_instruction=eval_data->current_function->instructions.size();
 
 								if(*aux_p != '}'){
-									writeError(eval_data->current_parsing_file,line,"Expected '}' switch");
-									return NULL;
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '}' switch");
 								}
+
+								// insert all cases found first
+								eval_data->current_function->instructions.insert(
+										eval_data->current_function->instructions.begin()+idx_start_switch,
+										ei_cases.begin(),
+										ei_cases.end()
+								);
+
+								for(unsigned i=0; i < ei_break_jmps.size(); i++){
+									ei_break_jmps[i]->vm_instruction.value_op2=idx_current_instruction;
+								}
+
+
+								// update all jmp acording number of cases found...
+								inc_jmp_codes(eval_data, idx_start_switch, idx_current_instruction, ei_cases.size());
+
+
+
 
 								return aux_p+1;
 							}
 							else{
-								writeError(eval_data->current_parsing_file,line,"Expected '{' switch");
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' switch");
 							}
 					}
 					else{
-						writeError(eval_data->current_parsing_file,line,"Expected '(' switch ");
-						return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '(' switch ");
 					}
 				}
 			}
 			return NULL;
 		}
 
-		char * evalKeywordTypeVar(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error){
+		char * eval_keyword_var_or_const(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 
 			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
 
 			char *aux_p = (char *)s;
-			KeywordType key_w;
+			Keyword key_w;
 			char *start_var,*end_var;
 			std::string s_aux,variable_name;
-			bool end=false;
+			//bool end=false;
 			bool allow_for_in=true;
 			int start_line=0;
 
-			key_w = isKeywordType(aux_p);
+			key_w = is_keyword(aux_p);
 
-			if(key_w != KeywordType::KEYWORD_TYPE_UNKNOWN){
-				if(key_w == KeywordType::KEYWORD_TYPE_VAR){ // possible variable...
+			if(key_w != Keyword::KEYWORD_UNKNOWN){
+				if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
+					bool is_constant = key_w == Keyword::KEYWORD_CONST;
+					if(is_constant){ // scope_info will be global scope...
+						scope_info = MAIN_SCOPE(eval_data);
+					}
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-					while(*aux_p != ';' && *aux_p != 0 && !end){ // JE: added multivar feature.
+					while(*aux_p != ';' && *aux_p != 0){ // JE: added multivar feature.
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 						start_var=aux_p;
 						start_line = line;
-						//sc=NULL;
 
-						/*if(sc_come_from != NULL){ // it comes from class declaration itself
-							sc=sc_come_from;
-						}
-						else{ // check if type var ClasS::v1 or v1
-							if((end_var=isClassMemberExtension(
-									eval_data,
-									aux_p,
-									line,
-									&sc,
-									variable_name,
-									error
-							))==NULL){ // causal variable
-								if(error){
-									return NULL;
-								}
-								else{*/ // get normal name...
+						line = start_line;
 
-									line = start_line;
+						// check whwther the function is anonymous with a previous arithmetic operation ....
+						end_var=get_identifier_token(
+								eval_data,
+								aux_p,
+								line,
+								variable_name
+						);
 
-									// check whwther the function is anonymous with a previous arithmetic operation ....
-									if((end_var=getIdentifierToken(
-											eval_data,
-											aux_p,
-											variable_name
-									))==NULL){
-										writeError(eval_data->current_parsing_file,line,"Expected symbol");
-										return NULL;
-									}
-								//}
-							//}
-						//}
+						Keyword keyw = is_keyword(variable_name.c_str());
 
-						KeywordType keyw = isKeywordType(variable_name.c_str());
-
-						if(keyw != KeywordType::KEYWORD_TYPE_UNKNOWN){ // a keyword was detected...
-							writeError(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_info_keywords[keyw].str);
-							return NULL;
+						if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_info_keywords[keyw].str);
 						}
 
 						aux_p=end_var;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-						//}
+
 						bool ok_char=*aux_p == ';' || *aux_p == ',' || *aux_p == '=' ;
-						/*if(sc!=NULL && *aux_p == '='){
-							writeError(eval_data->current_parsing_file,line,"Variable member is not assignable on its declaration. Should be initialized within constructor.");
-							return NULL;
-						}*/
+
 
 						if(ok_char){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
 							allow_for_in=false;
+
+							// register symbol...
+							eval_data->current_function->script_function->addSymbol(
+									scope_info
+									,eval_data->current_parsing_file
+									, line
+									, variable_name
+							);
+
+							// if = then eval expression
 							if(*aux_p == '='){ // only for variables (not class members)
+								std::vector<EvalInstruction *>	 		constant_instructions;
 								// try to evaluate expression...
 								IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-								if((aux_p = evalExpression(
+								aux_p = eval_expression(
 									eval_data
-									,start_var
+									,is_constant?(aux_p+1):start_var
 									,start_line
 									,scope_info
-									,&eval_data->current_function->instructions
-								)) == NULL){
-									return NULL;
+									,is_constant?&constant_instructions:&eval_data->current_function->instructions
+								);
+
+								if(is_constant){ // resolve constant_expression
+									StackElement result;
+
+									THROW_RUNTIME_ERROR("const expression not implemented");
+									/*try{
+										ConstantValue result=
+										eval_data->zs->registerConstantValue(variable_name,result);
+									}catch(std::exception & ex){
+										THROW_RUNTIME_ERROR("error evaluating constant expression");
+									}*/
+
+									for(unsigned i=0; i < constant_instructions.size();i++){
+										delete constant_instructions[i];
+									}
 								}
+
 								line = start_line;
 							}
-							 // define as many vars is declared within ','
-
-							//--- OP
-							/*if(sc!=NULL){ // register as variable member...
-								sc->registerVariable(eval_data->current_parsing_file, line, variable_name);
-							}
-							else{ */// register as local variable in the function...
-								eval_data->current_function->script_function->addSymbol(
-										scope_info
-										,eval_data->current_parsing_file
-										, line
-										, variable_name
-								);
-							//}
 							//---
 							ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
 						}
 						else{
 
-							KeywordType keyw = isKeywordType(variable_name.c_str());
-							if(keyw == KeywordType::KEYWORD_TYPE_IN){ // in keyword was detected (return to evalr)...
+							Keyword keyw = is_keyword(aux_p);
+							if(keyw == Keyword::KEYWORD_IN){ // in keyword was detected (return to evalr)...
 								if(!allow_for_in){
-									writeError(eval_data->current_parsing_file,line,"'in' keyword should be used with an uninitialized variable (example: for ( var e in v) {...} )", *aux_p);
-									return NULL;
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"'in' keyword should be used within for (example: for ( var e in v) {...} )", *aux_p);
 								}
-								end=true;
+
+								return aux_p; // return in
 							}
 							else{
-								error=true;
-								writeError(eval_data->current_parsing_file,line,"unexpected '%c'", *aux_p);
-								return NULL;
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"unexpected char '%c'", *aux_p);
 							}
 						}
 
 						// ignores ';' or ','
-						if(*aux_p == ',')
+						if(*aux_p == ','){
 							aux_p++;
+						}
 					}
 
-					if(*aux_p == ';'){
-						aux_p++;
+					if(*aux_p != ';'){
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ';'");
 					}
-					else{
-						writeError(eval_data->current_parsing_file,line,"Expected ';'");
-						return NULL;
-					}
-					return aux_p;
+
+					return aux_p+1;
 				}
 			}
 			return NULL;
 		}
 
-		char *evalKeywordTypeBreak(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool & error){
-			// TODO: "find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n"
-			char *aux_p=(char *)s;
+		char *eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
+			char *aux_p = (char *)s;
+			Keyword key_w;
 
-			fprintf(stderr,"find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n");
+			key_w = is_keyword(aux_p);
 
-			{ // ok break is valid in current scope...
+			if(key_w == Keyword::KEYWORD_BREAK){
 
-				writeError(eval_data->current_parsing_file,line,"\"break\" allowed within loop or case-switch statements");
-				error = true;
-				return NULL;
+				int last_line_ok = line;
+				EvalInstruction *jmp_instruction;
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+
+				// insert jmp instruction
+				eval_data->current_function->instructions.push_back(
+					jmp_instruction=new EvalInstruction(BYTE_CODE_JMP)
+				);
+
+				// remmember jmp break...
+				eval_data->break_jmp_instructions.push_back(
+					jmp_instruction
+				);
+
+
+				if(*aux_p != ';'){
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok,"Expected ';'");
+				}
+
 			}
 
-			if(*aux_p != ';'){
-				writeError(eval_data->current_parsing_file,line,"expected ';'");
-				error = true;
-				return NULL;
-			}
+			return aux_p;
 		}
 
-		char *evalKeywordTypeContinue(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool & error){
-			// TODO: "find findConditionForBreak if current stackBreakForWhileSwitch.size() > 0\n"
-			char *aux_p=(char*)s;
-			{ // ok break is valid in current scope...
+		char *eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
+			char *aux_p = (char *)s;
+			Keyword key_w;
 
-				writeError(eval_data->current_parsing_file,line,"\"continue\" allowed within loop or case-switch statements");
-				error = true;
-				return NULL;
+			key_w = is_keyword(aux_p);
+
+			if(key_w == Keyword::KEYWORD_CONTINUE){
+
+				int last_line_ok = line;
+				EvalInstruction *jmp_instruction;
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+
+				// insert jmp instruction
+				eval_data->current_function->instructions.push_back(
+					jmp_instruction=new EvalInstruction(BYTE_CODE_JMP)
+				);
+
+				// remmember jmp break...
+				eval_data->continue_jmp_instructions.push_back(
+					jmp_instruction
+				);
+
+				if(*aux_p != ';'){
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok,"Expected ';'");
+				}
 			}
 
-			if(*aux_p != ';'){
-				writeError(eval_data->current_parsing_file,line,"expected ';'");
-				error = true;
-				return NULL;
-			}
+			return aux_p;
+
 		}
 
-		char *evalKeywordTypeDefault(EvalData *eval_data,const char *s, int & line, Scope *scope_info,  bool & error){
+		/*char *eval_keyword_default(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
 			char *aux_p=(char *)s;
 			std::string value_to_eval;
 			TokenNode token_node;
@@ -1218,9 +1272,9 @@ namespace zetscript{
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
 
-			KeywordType keyw = isKeywordType(aux_p);
+			Keyword keyw = is_keyword(aux_p);
 
-			if(keyw == KeywordType::KEYWORD_TYPE_CASE){ // a keyword was detected...
+			if(keyw == Keyword::KEYWORD_CASE){ // a keyword was detected...
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -1230,72 +1284,61 @@ namespace zetscript{
 				}
 				aux_p++;
 
-				aux_p=evalSymbol(
+				aux_p=eval_symbol(
 					eval_data
 					,aux_p
 					,line
 					,&token_node
+					,PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 				);
-
-				if(aux_p==NULL){ return NULL;}
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if(*aux_p != ':'){
-				writeError(eval_data->current_parsing_file,line,"Expected  ':' ");
-				return NULL;
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected  ':' ");
 			}
 			return aux_p+1;
-		}
+		}*/
 
-		char *evalKeywordType(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool & error){
+		char *eval_keyword(EvalData *eval_data,const char *s, int & line, Scope *scope_info, Keyword & keyw){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p= (char *)s;
 
-			KeywordType keyw=KeywordType::KEYWORD_TYPE_UNKNOWN;//,keyw2nd=KeywordType::KEYWORD_TYPE_UNKNOWN;
+			keyw=Keyword::KEYWORD_UNKNOWN;//,keyw2nd=Keyword::KEYWORD_UNKNOWN;
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
 
 			// check if condition...
-			keyw = isKeywordType(aux_p);
+			keyw = is_keyword(aux_p);
 
-			if(keyw != KeywordType::KEYWORD_TYPE_UNKNOWN){ // a keyword was detected...
+			if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
 
 				switch(keyw){
-				case KEYWORD_TYPE_CASE:
-				case KEYWORD_TYPE_DEFAULT:
-					return evalKeywordTypeDefault(eval_data,s,line,scope_info,error);
-
-				case KEYWORD_TYPE_FUNCTION:
-					if((aux_p = evalKeywordTypeFunction(eval_data,s,line,scope_info,error)) != NULL){
-						return aux_p;
-					}
-					error = true;
-					return NULL;
-				case KEYWORD_TYPE_CLASS:
-					if((aux_p = evalKeywordTypeClass(eval_data,s,line,scope_info,error)) != NULL){
-						return aux_p;
-					}
-					error = true;
-					return NULL;
-				case KEYWORD_TYPE_NEW:
-					if((aux_p = evalNewObject(eval_data,s,line,scope_info,&eval_data->current_function->instructions)) != NULL){
-						return aux_p;
-					}
-					error = true;
-					return NULL;
+				/*case KEYWORD_CASE:
+				case KEYWORD_DEFAULT:
+					return eval_keyword_default(eval_data,s,line,scope_info);
+					break;*/
+				case KEYWORD_FUNCTION:
+					return  eval_keyword_function(eval_data,s,line,scope_info);
+					break;
+				case KEYWORD_CLASS:
+					return  eval_keyword_class(eval_data,s,line,scope_info);
+					break;
+				case KEYWORD_NEW:
+					return  eval_object_new(eval_data,s,line,scope_info,&eval_data->current_function->instructions);
+					break;
 				default:
 					if(eval_info_keywords[keyw].eval_fun != NULL){
-						return  (*eval_info_keywords[keyw].eval_fun)(eval_data,s,line,scope_info,error);
+						return (*eval_info_keywords[keyw].eval_fun)(eval_data,s,line,scope_info);
+					}else{
+						THROW_RUNTIME_ERROR("Not implemented");
 					}
-					writeError(eval_data->current_parsing_file,line,"Not implemented");
-					error = true;
-					return NULL;
+					break;
 				}
 			}
-			return NULL;
+			return NULL; // is not keyword
 		}
 
 	}

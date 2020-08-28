@@ -60,7 +60,7 @@ STK_VALUE_IS_INT_OR_FLOAT(stk_result_op1->type_var)
 }
 
 #define PUSH_STRING(init_value)\
-if(vm_str_current==vm_str_last){writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Error vm_str out-stack");RETURN_ERROR;}\
+if(vm_str_current==vm_str_last){THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Error vm_str out-stack");}\
 *vm_str_current++=init_value;\
 *stk_current++={(void *)((vm_str_current-1)->c_str()),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};\
 
@@ -93,20 +93,18 @@ namespace zetscript{
 	StackElement VirtualMachine::callFunctionScript(
 			ScriptFunction 			* calling_function,
 			ScriptVar       		* this_object,
-			bool & error,
 			StackElement 		  	* _stk_start,
 			std::string 		  	* _str_start,
 			unsigned char 			n_args,
 			Instruction 			*calling_instruction){
 
-		error=false;
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
 		std::string *str_start;
 		StackElement *stk_start;
 
 		if(calling_function == NULL){
-			RETURN_ERROR;
+			THROW_RUNTIME_ERROR("calling function null");
 		}
 
 		zs_vector *registered_symbols=calling_function->registered_symbols;
@@ -126,8 +124,7 @@ namespace zetscript{
 		int idx_stk_base=(stk_start-vm_stack);//>>sizeof(StackElement *);
 
 		if(idx_stk_base<n_args){
-			writeError(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Internal error (idx_stk_base<n_args) (%i<%i)",idx_stk_base,n_args);
-			RETURN_ERROR;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Internal error (idx_stk_base<n_args) (%i<%i)",idx_stk_base,n_args);
 		}
 
 		if(n_args>0){
@@ -149,19 +146,17 @@ namespace zetscript{
 			idx_stk_current++;
 		}
 		else{
-			writeError(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Reached max stack");
-			RETURN_ERROR;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Reached max stack");
 		}
 
 		if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) ){ // C-Call
 
 			if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
-				writeError(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
+				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
 						"1. Set registerNativebaseSymbols(false) and  re-register the function using REGISTER_C_FUNCTION_MEMBER\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
 						,calling_function->symbol.name.c_str());
-				RETURN_ERROR;
 			}
 
 			intptr_t  fun_ptr = calling_function->symbol.ref_ptr;
@@ -176,7 +171,6 @@ namespace zetscript{
 			StackElement se = callFunctionNative(
 					fun_ptr
 					,calling_function
-					,error
 					,stk_arg
 					,n_args
 					, calling_instruction
@@ -187,8 +181,7 @@ namespace zetscript{
 				idx_stk_current--;
 			}
 			else{
-				writeError(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Reached min stack");
-				RETURN_ERROR;
+				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Reached min stack");
 			}
 			return se;
 		}
@@ -213,8 +206,7 @@ namespace zetscript{
 		unsigned n_total_vars=n_args+symbols_count;
 
 		if((idx_stk_base+n_total_vars) >=  VM_STACK_LOCAL_VAR_MAX){
-			writeError(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Error MAXIMUM stack size reached");
-			RETURN_ERROR;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Error MAXIMUM stack size reached");
 		}
 
 		// Init local vars ...
@@ -280,9 +272,6 @@ namespace zetscript{
 			const unsigned char value_op1=instruction->value_op1;
 
 			switch(operator_type){
-			//default:
-			//	writeError(SFI_GET_FILE_LINE(instruction->idxAstNode),"operator type(%s) not implemented",CCompiler::def_operator[instruction->operator_type].op_str);
-			//	RETURN_ERROR;
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
 			case BYTE_CODE_LOAD:
@@ -309,29 +298,25 @@ namespace zetscript{
 
 									// check indexes ...
 									if(v_index < 0){
-										writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Negative index std::vector (%i)",v_index);
-										RETURN_ERROR;
+										THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Negative index std::vector (%i)",v_index);
 									}
 
 									if(v_index >= (int)(script_var_vectors->stk_properties->count)){
-										writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Index std::vector out of bounds (%i)",v_index);
-										RETURN_ERROR;
+										THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Index std::vector out of bounds (%i)",v_index);
 									}
 
 									stk_var = (StackElement *)script_var_vectors->stk_properties->items[v_index];
 									ok = true;
 								}else{
-									writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Expected std::vector-index as integer or std::string");
-									RETURN_ERROR;
+									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected std::vector-index as integer or std::string");
 								}
 							}
 						}
 
 						if(!ok){
-							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Variable \"%s\" is not type std::vector",
+							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Variable \"%s\" is not type std::vector",
 								SFI_GET_SYMBOL_NAME(calling_function,instructions+instruction->value_op2)
 							);
-							RETURN_ERROR;
 						}
 
 					}else{ // load variable ...
@@ -353,9 +338,7 @@ namespace zetscript{
 
 								if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)!= MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
 								{
-
-									writeError(SFI_GET_FILE_LINE(calling_function,instruction),"var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(calling_function,previous_ins));
-									RETURN_ERROR;
+									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(calling_function,previous_ins));
 								}
 
 
@@ -370,25 +353,21 @@ namespace zetscript{
 
 								if(base_var == NULL)
 								{
-									writeError(SFI_GET_FILE_LINE(calling_function,instruction),"var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(calling_function,previous_ins));
-
-									RETURN_ERROR;
+									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(calling_function,previous_ins));
 								}
 
 								if((variable_stack_element = base_var->getProperty(SFI_GET_SYMBOL_NAME(calling_function,instruction)))==NULL){
 
-									writeError(SFI_GET_FILE_LINE(calling_function,instruction)
+									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction)
 											,"Variable \"%s\" as type \"%s\" has not symbol \"%s\""
 											,SFI_GET_SYMBOL_NAME(calling_function,previous_ins)
 											,base_var->getClassName().c_str()
 											, SFI_GET_SYMBOL_NAME(calling_function,instruction));
-									RETURN_ERROR;
 								}
 							}
 							else{ // this scope ...
 								if((variable_stack_element = this_object->getProperty(instruction->value_op2))==NULL){
-									writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find symbol \"this.%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction));
-									RETURN_ERROR;
+									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find symbol \"this.%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 								}
 							}
 							stk_var=variable_stack_element;
@@ -400,10 +379,9 @@ namespace zetscript{
 
 						if(instruction->properties&MSK_INSTRUCTION_PROPERTY_CHECK_IS_FUNCTION){
 							if((stk_var->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION) != MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
-								writeError(SFI_GET_FILE_LINE(calling_function,instruction),"\"%s\" expected function variable but is \"%s\""
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"\"%s\" expected function variable but is \"%s\""
 										, SFI_GET_SYMBOL_NAME(calling_function,instruction)
 										, stk_var->toString());
-								RETURN_ERROR;
 							}
 						}
 					}
@@ -462,8 +440,7 @@ namespace zetscript{
 								stk_current++;
 								break;
 							default:
-								writeError(SFI_GET_FILE_LINE(calling_function,instruction),"internal error:cannot perform pre operator - because is not number");
-								RETURN_ERROR;
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal error:cannot perform pre operator - because is not number");
 							}
 							continue;
 					default:
@@ -517,8 +494,7 @@ namespace zetscript{
 								COPY_FLOAT(&stk_current->stk_value,&aux_float);
 								break;
 							default:
-								writeError(SFI_GET_FILE_LINE(calling_function,instruction),"internal error:cannot perform pre operator - constant because is not numeric");
-								RETURN_ERROR;
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal error:cannot perform pre operator - constant because is not numeric");
 							}
 							break;
 					}
@@ -559,8 +535,7 @@ namespace zetscript{
 							//vec_functions=&sc->local_functions;
 						}
 						else{
-							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot access symbol \"%s\" (type of %s is %s)",SFI_GET_SYMBOL_NAME(calling_function,instruction),SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_access_var->toString());
-							RETURN_ERROR;
+							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot access symbol \"%s\" (type of %s is %s)",SFI_GET_SYMBOL_NAME(calling_function,instruction),SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_access_var->toString());
 						}
 
 
@@ -628,10 +603,7 @@ namespace zetscript{
 					continue;
 				}
 				else{
-
-					writeError(SFI_GET_FILE_LINE(calling_function,instruction),"BYTE_CODE_VGET/BYTE_CODE_VLOAD: unknow value op1 loadtype: %i",value_op1);
-					RETURN_ERROR;
-
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"BYTE_CODE_VGET/BYTE_CODE_VLOAD: unknow value op1 loadtype: %i",value_op1);
 				}
 				continue;
 
@@ -657,8 +629,7 @@ namespace zetscript{
 						}
 
 						if(!ok){
-							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Expected std::vector object");
-							RETURN_ERROR;
+							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected std::vector object");
 						}
 
 						push_value=false;
@@ -666,7 +637,7 @@ namespace zetscript{
 					}else if(operator_type==BYTE_CODE_PUSH_ATTR){
 
 
-						POP_TWO; // first must be the value name and the other the variable name ...
+						POP_TWO; // first must be a string that describes variable name and the other the variable itself ...
 						ScriptVar *struct_obj = NULL;
 						if((stk_current-1)->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 							struct_obj = (ScriptVar *)(stk_current-1)->var_ref;
@@ -686,23 +657,20 @@ namespace zetscript{
 									}
 
 									if(se == NULL){
-										RETURN_ERROR;
+										throw "internal error se==NULL";
 									}
 
 									stk_dst=se;
 									ok=true;
 								}
 								else{
-									writeError(SFI_GET_FILE_LINE(calling_function,instruction),"internal error (operator2 is not std::string)");
-									RETURN_ERROR;
+									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal error (operator2 is not std::string)");
 								}
 							}else{
-								writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Expected struct object");
-								RETURN_ERROR;
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected dictionary object");
 							}
 						}else{
-							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Expected scriptvar");
-							RETURN_ERROR;
+							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected scriptvar");
 						}
 						push_value=false;
 					}
@@ -712,14 +680,12 @@ namespace zetscript{
 						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) {// == ScriptVar::VAR_TYPE::OBJECT){
 							stk_dst=(StackElement *)stk_result_op1->var_ref; // stk_value is expect to contents a stack variable
 						}else{
-							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Expected l-value on assignment ('=')");
-							RETURN_ERROR;
+							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected l-value on assignment ('=')");
 						}
 
 						if(vm_foreach_current!=NULL){
 							if(stk_dst == vm_foreach_current->key){
-								writeError(SFI_GET_FILE_LINE(calling_function,instruction),"for-in key value is read only");
-								RETURN_ERROR;
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"for-in key value is read only");
 							}
 						}
 
@@ -744,7 +710,7 @@ namespace zetscript{
 										,stk_result_op1
 										,stk_result_op2
 								)){
-									RETURN_ERROR;
+									THROW_RUNTIME_ERROR("cannot perform operation '='");\
 								}
 								assign_metamethod=true;
 							}
@@ -754,8 +720,7 @@ namespace zetscript{
 					if(! assign_metamethod){
 
 						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_THIS){
-							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"\"this\" is not assignable");
-							RETURN_ERROR;
+							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"\"this\" is not assignable");
 						}
 
 						StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
@@ -772,14 +737,12 @@ namespace zetscript{
 								if(!STK_VALUE_IS_FLOAT_OR_INT(stk_src) && STK_VALUE_IS_FLOAT_OR_INT(stk_dst)){
 									if(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties) != GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_dst->properties)
 									){
-										writeError(SFI_GET_FILE_LINE(calling_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
-										RETURN_ERROR;
+										THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 									}else{
 										if(
 											(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties) == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
 										){
-												ZS_PRINT_INFO("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.");
-												RETURN_ERROR;
+											throw "Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.";
 										}
 									}
 								}
@@ -833,8 +796,7 @@ namespace zetscript{
 									sharePointer(script_var->ptr_shared_pointer_node);
 								}
 							}else{
-								writeError(SFI_GET_FILE_LINE(calling_function,instruction),"(internal) cannot determine var type %i",GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties));
-								RETURN_ERROR;
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"(internal) cannot determine var type %i",GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties));
 							}
 							if(copy_aux!=NULL)stk_dst->properties|=MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
 						}
@@ -868,11 +830,7 @@ namespace zetscript{
 				}
 				continue;
 			case BYTE_CODE_EQU:  // ==
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE;
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
 				continue;
 			case BYTE_CODE_NOT_EQU:  // !=
@@ -925,7 +883,7 @@ namespace zetscript{
 							,stk_result_op1
 							,stk_result_op2
 							)){
-						RETURN_ERROR;
+						THROW_RUNTIME_ERROR("cannot perform operation '!'");
 					}
 				}
 				continue;
@@ -946,7 +904,7 @@ namespace zetscript{
 							,stk_result_op1
 							,stk_result_op2
 					)){
-						RETURN_ERROR;
+						THROW_RUNTIME_ERROR("cannot perform operation '-'");
 					}
 
 				}
@@ -977,9 +935,10 @@ namespace zetscript{
 							sprintf(str_aux,"%s%i",((const char *)stk_result_op1->stk_value),(int)((intptr_t)stk_result_op2->stk_value));
 							//PUSH_STRING(str_aux);
 							if(vm_str_current==vm_str_last){
-									writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Error vm_str out-stack");RETURN_ERROR;}\
-									*vm_str_current++=str_aux;\
-									*stk_current++={(void *)((vm_str_current-1)->c_str()),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};\
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Error vm_str out-stack");
+							}
+							*vm_str_current++=str_aux;\
+							*stk_current++={(void *)((vm_str_current-1)->c_str()),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};\
 
 						}else{
 							sprintf(str_aux,"%i%s",(int)((intptr_t)stk_result_op1->stk_value),((const char *)stk_result_op2->stk_value));
@@ -1031,7 +990,7 @@ namespace zetscript{
 								,stk_result_op1
 								,stk_result_op2
 								)){
-							RETURN_ERROR;
+							THROW_RUNTIME_ERROR("cannot perform operation '+'");
 						}
 					}
 				}
@@ -1073,7 +1032,7 @@ namespace zetscript{
 								,stk_result_op1
 								,stk_result_op2
 								)){
-							RETURN_ERROR;
+							THROW_RUNTIME_ERROR("cannot perform operation '-'");
 						}
 					}
 				}
@@ -1193,6 +1152,15 @@ namespace zetscript{
 					instruction_it=instructions+instruction->value_op2;
 				}
 				continue;
+			case BYTE_CODE_JE:  // especial j for switch
+				READ_TWO_POP_ONE;
+				PROCESS_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
+				POP_ONE; // retrieve result...
+				if(stk_result_op1->stk_value != 0){ // if true goto
+					instruction_it=instructions+instruction->value_op2;
+				}
+				continue;
+
 			 case  BYTE_CODE_CALL: // calling function after all of args are processed...
 				// check whether signatures matches or not ...
 				// 1. get function object ...
@@ -1240,7 +1208,7 @@ namespace zetscript{
 							// we have to no to call default constructor...is implicit
 							if(is_constructor) {
 
-								is_c=calling_object->Is_C_Object();
+								is_c=calling_object->isNativeObject();
 
 								if(n_args == 0 && is_c){
 									aux_function_info = NULL;
@@ -1272,7 +1240,7 @@ namespace zetscript{
 									,NULL))==NULL){
 
 								if((instruction_function_ref->properties & MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL)==0){
-									RETURN_ERROR;
+									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find function \"%s\"",symbol_to_find.c_str());
 								}
 							}
 
@@ -1312,26 +1280,17 @@ namespace zetscript{
 						}
 
 						// by default virtual machine gets main object class in order to run functions ...
-						ret_obj=callFunctionScript(aux_function_info,calling_object,error,stk_current,vm_str_current,n_args,instruction);
-
-						if(error)
-						{
-							RETURN_ERROR;
-						}
+						ret_obj=callFunctionScript(aux_function_info,calling_object,stk_current,vm_str_current,n_args,instruction);
 
 						if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-
 							// if c pointer is not from application share ...
-							if(!((ScriptVar *)(ret_obj.var_ref))->initSharedPtr()){
-								RETURN_ERROR;
-							}
+							((ScriptVar *)(ret_obj.var_ref))->initSharedPtr();
 						}
 
 						if(cancel_execution) {
 							if(custom_error!=NULL){
-								writeError(SFI_GET_FILE_LINE(calling_function,instruction),custom_error);
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),custom_error);
 							}
-							RETURN_ERROR;
 						}
 					}
 
@@ -1347,9 +1306,7 @@ namespace zetscript{
 			 case  BYTE_CODE_NEW:
 					script_var=NEW_CLASS_VAR_BY_IDX(this,value_op1);
 
-					if(!script_var->initSharedPtr()){
-						RETURN_ERROR;
-					}
+					script_var->initSharedPtr();
 					script_var->info_function_new=calling_function;
 					script_var->instruction_new=instruction;
 					(*stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
@@ -1382,29 +1339,24 @@ namespace zetscript{
 						}
 					}
 					else{
-						writeError(SFI_GET_FILE_LINE(calling_function,instruction),"delete op: expected scriptvar var but it was \"%s\"",stk_result_op1->toString());
-						RETURN_ERROR;
+						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"delete op: expected scriptvar var but it was \"%s\"",stk_result_op1->toString());
 					}
 					continue;
-			 case BYTE_CODE_DECL_VEC: // Create new std::vector object...
+			 case BYTE_CODE_INST_VEC: // Create new std::vector object...
 					script_var=NEW_VECTOR_VAR;
 					//PUSH_VAR(script_var,NULL,0,false);
 
-					if(!script_var->initSharedPtr()){
-						RETURN_ERROR;
-					}
+					script_var->initSharedPtr();
 
 					(*stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
 
 					continue;
 
-			 case  BYTE_CODE_DECL_DICT: // Create new std::vector object...
+			 case  BYTE_CODE_INST_DICT: // Create new std::vector object...
 				script_var=NEW_STRUCT_VAR;
 				//PUSH_VAR(script_var,NULL,0,false);
 
-				if(!script_var->initSharedPtr()){
-					RETURN_ERROR;
-				}
+				script_var->initSharedPtr();
 
 				(*stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
 
@@ -1444,8 +1396,7 @@ namespace zetscript{
 
 				if(value_op1 & ScopeProperty::SCOPE_PROPERTY_FOR_IN){
 					if(vm_foreach_current == &vm_foreach[VM_FOREACH_MAX-1]){
-						writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Max foreach reached");
-						RETURN_ERROR;
+						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Max foreach reached");
 					}
 
 					vm_foreach_current++;
@@ -1456,14 +1407,12 @@ namespace zetscript{
 				vm_str_current=str_start; // reset op ptr
 				stk_current=stk_start;
 				if(!popVmScope(idx_stk_current,NULL,value_op1)){
-					writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Error pop scope");
-					RETURN_ERROR;
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Error pop scope");
 				}
 
 				if(value_op1 & ScopeProperty::SCOPE_PROPERTY_FOR_IN){
 					if(vm_foreach_current == &vm_foreach[0]){
-						writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Min foreach reached");
-						RETURN_ERROR;
+						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Min foreach reached");
 					}
 
 					memset(vm_foreach_current,0,sizeof(VM_Foreach));
@@ -1476,9 +1425,7 @@ namespace zetscript{
 
 
 				 if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) == 0){
-						writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Internal error: Expected stackvar");
-						RETURN_ERROR;
-
+					 THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Internal error: Expected stackvar");
 				 }
 				 vm_foreach_current->key=(StackElement *)stk_result_op1->var_ref;
 				 vm_foreach_current->ptr=NULL;
@@ -1500,32 +1447,28 @@ namespace zetscript{
 
 					vm_foreach_current->ptr = var_object;
 				}else{
-					writeError(SFI_GET_FILE_LINE(calling_function,instruction),"Variable \"%s\" is not type std::vector or struct",
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Variable \"%s\" is not type std::vector or struct",
 						SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 					);
-					RETURN_ERROR;
 				}
 				 continue;
 			 case BYTE_CODE_SET_AND_NEXT:
-				 writeError(SFI_GET_FILE_LINE(calling_function,instruction),"TODOOOOO!",
+				 THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"BYTE_CODE_SET_AND_NEXT TODOOOOO!",
 									 SFI_GET_SYMBOL_NAME(calling_function,instruction)
 									);
-									RETURN_ERROR;
 				 //*((StackElement *)vm_foreach_current->key)=((ScriptVarVector *)vm_foreach_current->ptr)->m_objVector[vm_foreach_current->idx_current++];
 				 continue;
 			 case BYTE_CODE_IT_CHK_END:
-				 writeError(SFI_GET_FILE_LINE(calling_function,instruction),"TODOOOOO!",
+				 THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"BYTE_CODE_IT_CHK_END TODOOOOO!",
 									 SFI_GET_SYMBOL_NAME(calling_function,instruction)
 									);
-									RETURN_ERROR;
 				 continue;
 			//
 			// END OPERATOR MANAGEMENT
 			//
 			//-----------------------------------------------------------------------------------------------------------------------
 			}
-			writeError(SFI_GET_FILE_LINE(calling_function,instruction),"operator type(%s) not implemented",ByteCodeToStr(instruction->byte_code));
-			RETURN_ERROR;
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"operator type(%s) not implemented",ByteCodeToStr(instruction->byte_code));
 		 }
 
 	lbl_exit_function:

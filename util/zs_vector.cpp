@@ -95,7 +95,7 @@ namespace zetscript{
 
 	void 		zs_vector::insert(uint16_t idx, intptr_t e){
 		if(idx > (this->count+1)){
-			THROW_RUNTIME_ERROR(zs_strutils::format("idx should be 0 to %i",this->count+1));
+			THROW_RUNTIME_ERROR("idx should be 0 to %i",this->count+1);
 			return;
 		}
 

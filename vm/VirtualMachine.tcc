@@ -7,7 +7,7 @@
 std::string var_type1=stk_result_op1->toString(),\
 	   var_type2=stk_result_op2->toString();\
 \
-writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 		var_type1.c_str(),\
 		c,\
 		var_type2.c_str());
@@ -15,7 +15,7 @@ writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform opera
 #define PRINT_ERROR_OP(c)\
 	std::string var_type1=stk_result_op1->toString();\
 \
-writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 	c,\
 	var_type1.c_str());
 
@@ -23,7 +23,6 @@ writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform preop
 
 namespace zetscript{
 
-	void  writeError(const char *filename, int line, const  char  *string_text, ...);
 
 	inline void VirtualMachine::removeEmptySharedPointers(int idx_stack,void *ptr_callc_result){
 		InfoSharedList *list = &zero_shares[idx_stack];
@@ -152,13 +151,13 @@ namespace zetscript{
 						var_type2="";
 
 				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/
-					writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
 							STR(__OVERR_OP),
 							var_type1.c_str()
-							);\
+							);
 				}else{ /* 2 args*/
 					var_type2=stk_result_op2->toString();
-					writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
 							var_type1.c_str(),
 							__OVERR_OP__,
 							var_type2.c_str());
@@ -201,13 +200,9 @@ namespace zetscript{
 		StackElement ret_obj=callFunctionScript(
 				ptr_function_found
 				,script_var_object
-				,error
 				,mm_test_startArg+idx_offset_function_member_start
 				,vm_str_current
 				,n_metam_args);
-		if(error){
-			return false;
-		}
 
 		/* restore ptrCurretOp... */
 		stk_current=mm_test_startArg-n_metam_args;
@@ -215,9 +210,8 @@ namespace zetscript{
 
 		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 
-			if(!((ScriptVar *)(ret_obj.var_ref))->initSharedPtr()){
-				return false;
-			}
+			((ScriptVar *)(ret_obj.var_ref))->initSharedPtr();
+
 			if(__METAMETHOD__ != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
 				((ScriptVar *)(ret_obj.var_ref))->setDelete_C_ObjectOnDestroy(true);
 			}
@@ -332,7 +326,7 @@ namespace zetscript{
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 									var_object=((ScriptVar *)current_arg->var_ref);
-									aux_string=var_object->getPointer_C_ClassName();
+									aux_string=var_object->getNativePointerClassName();
 
 									if(arg_idx_type==idx_type){
 										all_check=true;
@@ -343,7 +337,7 @@ namespace zetscript{
 											all_check =
 													(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
 												  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
-										}else if((c_class=var_object->Get_C_Class())!=NULL){ /* check whether the base is ok... */
+										}else if((c_class=var_object->getNativeClass())!=NULL){ /* check whether the base is ok... */
 											all_check=IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,c_class->idx_class,arg_idx_type);
 										}else{ /* fail ... */
 											all_check=false;
@@ -411,7 +405,7 @@ namespace zetscript{
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-						aux_string = ((ScriptVar *)current_arg->var_ref)->getPointer_C_ClassName();
+						aux_string = ((ScriptVar *)current_arg->var_ref)->getNativePointerClassName();
 						break;
 					}
 					args_str+=zs_rtti::demangle(aux_string);
@@ -476,7 +470,7 @@ namespace zetscript{
 						}
 					}else{
 						
-						writeError(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot find %s \"%s%s(%s)\".\n\n",
+						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot find %s \"%s%s(%s)\".\n\n",
 								is_constructor ? "constructor":"function",
 								calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 										calling_function->getInstructionSymbolName(call_instruction),
@@ -486,14 +480,14 @@ namespace zetscript{
 				}
 				else{
 					if(metamethod_str!=NULL){
-						writeError(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
+						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 													((ScriptFunction *)global_functions->items[0])->symbol.name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{
-						writeError(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
 							is_constructor ? "constructor":"function",
 							calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 									calling_function->getInstructionSymbolName(call_instruction),
@@ -501,7 +495,6 @@ namespace zetscript{
 							str_candidates.c_str());
 					}
 				}
-				return NULL;
 			}
 		}
 

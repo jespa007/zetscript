@@ -4,11 +4,6 @@
  */
 #include "zetscript.h"
 
-#define RETURN_ERROR\
-	error=true;\
-	return stk_result;
-
-
 
 #define PROCESS_MOD_OPERATION \
 { \
@@ -40,7 +35,7 @@
 						,stk_result_op1\
 						,stk_result_op2\
 		)){\
-			RETURN_ERROR;\
+			THROW_RUNTIME_ERROR("cannot perform operation %");\
 		}\
 	}\
 }
@@ -75,7 +70,7 @@
 						,stk_result_op1\
 						,stk_result_op2\
 		)){\
-			RETURN_ERROR;\
+			THROW_RUNTIME_ERROR("cannot perform operation '%c'",STR(__C_OP__));\
 		}\
 	}\
 }
@@ -115,7 +110,7 @@
 					,stk_result_op1\
 					,stk_result_op2\
 		)){\
-			RETURN_ERROR;\
+			THROW_RUNTIME_ERROR("cannot perform operation '%c'",STR(__C_OP__));\
 		}\
 	}\
 }
@@ -145,7 +140,7 @@
 						,stk_result_op1\
 						,stk_result_op2\
 		)){\
-			RETURN_ERROR;\
+			THROW_RUNTIME_ERROR("cannot perform operation '%c'",STR(__C_OP__));\
 		}\
 	}\
 }
@@ -164,8 +159,7 @@
 			(*((float *)(ref)))__OPERATOR__;\
 			break;\
 	default:\
-		writeError(SFI_GET_FILE_LINE(calling_function,instruction)," Cannot perform pre/post operator (%s)",stk_var->toString());\
-		RETURN_ERROR;\
+		THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction)," Cannot perform pre/post operator (%s)",stk_var->toString());\
 		break;\
 	}\
 }
@@ -203,15 +197,13 @@
 }
 
 #define PUSH_VM_SCOPE(_scope,_ptr_info_function, _ptr_local_var,_properties) {\
-	if(vm_current_scope >=  vm_scope_max){writeError(NULL,0,"reached max scope"); RETURN_ERROR;}\
+	if(vm_current_scope >=  vm_scope_max){THROW_RUNTIME_ERROR("reached max scope");}\
 	*vm_current_scope++={(Scope *)_scope,_ptr_info_function,_ptr_local_var,_properties};\
 }
 
 #define CALL_GC SHARED_LIST_DESTROY(zero_shares[idx_stk_current])
 
 namespace zetscript{
-
-	void  writeError(const char *filename, int line, const  char  *string_text, ...);
 
 
 	void VirtualMachine::doStackDump(){
@@ -305,16 +297,14 @@ namespace zetscript{
 	}
 
 
-	bool VirtualMachine::sharePointer(PInfoSharedPointerNode _node){
+	void VirtualMachine::sharePointer(PInfoSharedPointerNode _node){
 
 		unsigned char *n_shares = &_node->data.n_shares;
 
 		bool move_to_shared_list=*n_shares==0;
 
 		if(*n_shares >= MAX_SHARES_VARIABLE){
-			THROW_RUNTIME_ERROR(zs_strutils::format("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE));
-			return false;
-
+			THROW_RUNTIME_ERROR("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
 		}
 
 		(*n_shares)++;
@@ -327,9 +317,6 @@ namespace zetscript{
 			_node->currentStack=idx_stk_current;
 			SHARE_LIST_INSERT(shared_var[idx_stk_current],_node);
 		}
-
-		return true;
-
 	}
 
 	void VirtualMachine::unrefSharedScriptVar(PInfoSharedPointerNode _node, bool remove_if_0){
@@ -367,7 +354,7 @@ namespace zetscript{
 	}
 
 	void VirtualMachine::setError(const char *str){
-		writeError("custom_user",-1,str);
+		//writeError("custom_user",-1,str);
 		custom_error = str;
 		cancel_execution = true;
 	}
@@ -422,22 +409,22 @@ namespace zetscript{
 	StackElement  VirtualMachine::execute(
 			 ScriptFunction *calling_function
 			 ,ScriptVar *this_object
-			 ,bool & error
 			 ,StackElement *  stk_params
 			 ,unsigned	char  n_stk_params
 			){
 
 		main_function_object = MAIN_FUNCTION(this);
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+		StackElement info={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
 		if(calling_function==NULL){
-			RETURN_ERROR;
+			throw "calling function NULL";
 		}
 
 		if(idx_stk_current==0){ // set stack and Init vars for first call...
 
 			if(main_function_object->instructions == NULL){ // no statments
-				RETURN_ERROR;
+				throw "instructions NULL";
 			}
 			cancel_execution=false;
 
@@ -456,16 +443,18 @@ namespace zetscript{
 		}
 
 		// byte code executing starts here. Later script function can call c++ function, but once in c++ function is not possible by now call script function again.
-		StackElement info=callFunctionScript(
+		try{
+			info=callFunctionScript(
 				calling_function,
 				this_object,
-				error,
 				stk_current,
 				NULL,
 				n_stk_params);
-
-		if(error){ // it was error so reset stack and stop execution ? ...
+		}catch(std::exception & ex){
+			// it was error so reset stack and stop execution ? ...
 			doStackDump();
+
+			throw std::runtime_error(ex.what());
 		}
 
 		return info;

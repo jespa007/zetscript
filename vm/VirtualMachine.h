@@ -28,7 +28,7 @@ namespace zetscript{
 	public:
 
 		PInfoSharedPointerNode newSharedPointer(ScriptVar *var_ptr);
-		bool sharePointer( PInfoSharedPointerNode _node);
+		void sharePointer( PInfoSharedPointerNode _node);
 		void unrefSharedScriptVar( PInfoSharedPointerNode _node, bool remove_if_0=false);
 		void removeSharedScriptVar( PInfoSharedPointerNode _node);
 
@@ -52,7 +52,6 @@ namespace zetscript{
 		 StackElement execute(
 			 ScriptFunction *script_function
 			 ,ScriptVar *this_object
-			 ,bool & error
 			 ,StackElement *  stk_params=NULL
 			 ,unsigned char			n_stk_params=0
 		);
@@ -155,7 +154,6 @@ namespace zetscript{
 		StackElement  callFunctionScript(
 				ScriptFunction *info_function,
 				ScriptVar * this_object,
-				bool & error,
 				StackElement 		  * _ptrStartOp=NULL,
 				std::string 		  		  * _ptrStartStr=NULL,
 				unsigned char n_args=0,
@@ -165,7 +163,6 @@ namespace zetscript{
 		 StackElement  callFunctionNative(
 			 intptr_t fun_ptr,
 			 const ScriptFunction *calling_function,
-			 bool & error,
 			 StackElement *stk_arg_calling_function,
 			 unsigned char n_args,
 			 Instruction *ins,

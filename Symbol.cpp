@@ -56,7 +56,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 				}
 		}
 		}else{
-			THROW_RUNTIME_ERROR(zs_strutils::format("Variable %s is not c referenced as C symbol",symbol->name.c_str()));
+			THROW_RUNTIME_ERROR("Variable %s is not c referenced as C symbol",symbol->name.c_str());
 		}
 
 		return{

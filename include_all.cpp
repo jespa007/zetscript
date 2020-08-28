@@ -19,13 +19,15 @@
 #include		"script/ScriptVar.cpp"
 #include		"script/ScriptVarString.cpp"
 #include		"script/ScriptVarVector.cpp"
-#include		"script/ScriptVarFunctor.cpp"
+#include		"script/ScriptVarFunction.cpp"
 #include 		"script/ScriptVarDictionary.cpp"
 #include		"script/ScriptFunctionFactory.cpp"
 #include		"script/ScriptClassFactory.cpp"
 //#include		"script/ScriptContext.cpp"
 #include		"script/ScriptFunction.cpp"
 #include		"script/ScriptClass.cpp"
+
+#include		"builtin/MathBuiltIn.cpp"
 
 
 //-- Scope --

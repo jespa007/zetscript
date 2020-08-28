@@ -15,7 +15,7 @@ namespace zetscript{
 		ScriptVarDictionary(){}
 		ScriptVarDictionary(ZetScript *_zs);
 
-		virtual bool unrefSharedPtr();
+		virtual void unrefSharedPtr();
 
 
 		int size();

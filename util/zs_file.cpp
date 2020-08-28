@@ -20,15 +20,19 @@ namespace zetscript{
 					if(readed_elements != length) {
 
 						free(buffer);
-						THROW_RUNTIME_ERROR(zs_strutils::format("number elements doesn't match with length file (%s)",filename.c_str()));
+						THROW_RUNTIME_ERROR("number elements doesn't match with length file (%s)",filename.c_str());
 					}
 
 					fclose(fp);
 					return buffer;
 				}
-				else  THROW_RUNTIME_ERROR(zs_strutils::format("I can't read file \"%s\"",filename.c_str()));
+				else  {
+					THROW_RUNTIME_ERROR("I can't read file \"%s\"",filename.c_str());
+				}
 			}
-			else  THROW_RUNTIME_ERROR(zs_strutils::format("I can't open file \"%s\"",filename.c_str()));
+			else  {
+				THROW_RUNTIME_ERROR("I can't open file \"%s\"",filename.c_str());
+			}
 
 			return NULL;
 		}
@@ -40,8 +44,6 @@ namespace zetscript{
 
 			if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)
 			{
-
-
 				fseek(fp,  0,SEEK_SET);
 				ini  =  ftell(fp);
 				fseek(fp,  0,SEEK_END);

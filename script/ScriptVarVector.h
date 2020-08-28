@@ -10,9 +10,8 @@ namespace zetscript{
 
 	class CZetgine;
 	class  ScriptVarVector: public ScriptVar{
-
-
 	public:
+		StackElement return_callc;
 
 		template<typename T>
 		static std::vector<T> toStdVector(ScriptVarVector *v_in){
@@ -62,36 +61,22 @@ namespace zetscript{
 			return v_out;
 		}
 
-
-
-		StackElement return_callc;
-		//int _i_size;
-
-		//std::vector<StackElement> m_objVector;
+		static void    			pushSf(ScriptVarVector *sv,StackElement  * stk){return sv->push(stk);}
+		static StackElement *  	popSf(ScriptVarVector *sv){return sv->pop();}
+		static int 				sizeSf(ScriptVarVector *sv){return sv->size();}
 
 		ScriptVarVector(){}
 		ScriptVarVector(ZetScript *_zs);
 
-		virtual bool unrefSharedPtr();
-
-
-		//StackElement 		  * getValue(const std::string & s);
-		//virtual StackElement * getValue(int idx);
+		virtual void unrefSharedPtr();
 
 		StackElement *		newSlot();
-		void 			push(StackElement  * stk);
-		static void    pushSf(ScriptVarVector *sv,StackElement  * stk){return sv->push(stk);}
-		StackElement * pop();
-		static StackElement *  popSf(ScriptVarVector *sv){return sv->pop();}
-
-		 int size();
-		 static int sizeSf(ScriptVarVector *sv){return sv->size();}
+		void 				push(StackElement  * stk);
+		StackElement *		pop();
+		int size();
 
 		virtual void destroy();
-
 		virtual ~ScriptVarVector();
-
-
 	};
 
 }

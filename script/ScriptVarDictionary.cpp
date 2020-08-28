@@ -6,33 +6,21 @@
 
 namespace zetscript{
 
-	void  writeError(const char *filename, int line, const  char  *string_text, ...);
-	int getErrorLine();
-	const char * getErrorDescription();
-	const char * getErrorSourceFilename();
-
-
 	ScriptVarDictionary::ScriptVarDictionary(ZetScript *_zs):ScriptVar(_zs){//ScriptClass *info_registered_class):ScriptVar(info_registered_class, this){
 		init(SCRIPT_CLASS_DICTIONARY(this), (void *)this);
 	}
 
-	bool ScriptVarDictionary::unrefSharedPtr(){ // unref each element...
-		if(ScriptVar::unrefSharedPtr()){
-
-			for(unsigned i = 0; i < stk_properties->count; i++){
-				StackElement *stk=(StackElement *)stk_properties->items[i];
-				if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-					ScriptVar *var = (ScriptVar *)stk->var_ref;
-					if(var){
-						if(!var->unrefSharedPtr()){
-							return false;
-						}
-					}
+	void ScriptVarDictionary::unrefSharedPtr(){ // unref each element...
+		ScriptVar::unrefSharedPtr();
+		for(unsigned i = 0; i < stk_properties->count; i++){
+			StackElement *stk=(StackElement *)stk_properties->items[i];
+			if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+				ScriptVar *var = (ScriptVar *)stk->var_ref;
+				if(var){
+					var->unrefSharedPtr();
 				}
 			}
-			return true;
 		}
-		return false;
 	}
 
 	void ScriptVarDictionary::addAttr(const char *attr_name, StackElement  * v){
@@ -42,9 +30,11 @@ namespace zetscript{
 	}
 
 	void ScriptVarDictionary::removeAttr(const char *attr_name){
-
-		if(!eraseProperty(std::string(attr_name),virtual_machine->getCurrent_C_FunctionCall())){
+		try{
+			eraseProperty(std::string(attr_name),virtual_machine->getCurrent_C_FunctionCall());
+		}catch(std::exception & ex){
 			virtual_machine->cancelExecution();
+			throw ex.what();
 		}
 	}
 

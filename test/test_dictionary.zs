@@ -1,5 +1,11 @@
-
-class A{
+var dictionary={ // structure
+	i: 10,
+	f: 0.5,
+	s: "a string",
+	b: true,
+	v: [1,0.5, "a string", true]
+};
+/*class A{
 	
 	var j;
 	
@@ -41,7 +47,7 @@ s.add("b","dadas");
 print("s.a.j:"+s.a.j);
 
 s.remove("a");
-s.remove("b");
+s.remove("b");*/
 
 
 

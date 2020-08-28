@@ -79,7 +79,7 @@ namespace zetscript{
 			return node->val;
 		}
 
-		THROW_RUNTIME_ERROR(zs_strutils::format("Element %s not exist",key));
+		THROW_RUNTIME_ERROR("Element %s not exist",key);
 		return 0;
 	}
 
@@ -87,7 +87,7 @@ namespace zetscript{
 		zs_map_node * node=lookup_node(key);
 
 		if(node != NULL){
-			THROW_RUNTIME_ERROR(zs_strutils::format("Element %s not exist",key));
+			THROW_RUNTIME_ERROR("Element %s not exist",key);
 			return;
 		}
 

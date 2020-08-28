@@ -1,6 +1,11 @@
 var vv=["George",0,true];
 
-vv[1]++; // increments 0 to 1...
+vv[0]++;
+
+/*var i=0;
+i++;*/
+
+/*vv[1]++; // increments 0 to 1...
 
 vv.pop(); // pops true
 
@@ -11,4 +16,4 @@ foreach(var e in vv){
 	print("e: "+e);
 }
 
-print("vv[\"grow\"]="+vv["grow"]);
+print("vv[\"grow\"]="+vv["grow"]);*/

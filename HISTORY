@@ -1,7 +1,9 @@
 
+> #142 Try to optimize bind function member
+
 //----------------------------------------------------------
 Version: 2.0.0
-Date: XX-XX-2019
+Date: XX-09-2020
 
  
 #64 Implement "include" preprocessor feature 
@@ -66,21 +68,36 @@ Date: XX-XX-2019
 
 > #125 Implement String class with string function utils and string methods (PART1)
 #126 Save pure c function instead of std::function for speed improvement
-> #127 Implement zs_string   
 #128 Implement register_c_function_as_member 
 #129 Migrate new C++ coding style
-> #130 Feature add variables into instanced class 
+> #130 Feature add variables into instanced class (i.e this.a=0;)
 > #131 Adapt language to ECMA-6 
 #133 Perform SUB instead of NEG+ADD
 > #134 Implement Math class with math function utils (PART1)
  
 #135 eval negative identifier and constants tokens and perform LOAD with negative option or load negative constants instead of doing NEG.
-> #136 Clear unusued scopes
-> #137 Callback function support 
+#136 Clear unusued scopes
+> #137 Callback function support
 > #139 Implement const operator 
 > #141 limit n params only for c functions 
-> #142 Try to optimize bind function member
-> #144 Implement IO helper utils PART1 
+
+> #144 Implement IO helper utils PART1
+> #145 Implement eval Vector object
+> #146 Implement eval Dictionary object
+#147 Implement bind class const static variable
+#148 replace all writeError functions by throw and remove error param 
+> #150 Improve print (does not crash put a integer, vector, etc.) also vector and dictionary does a pretty print.
+> #154 Fix continue, break keyword 
+> #153 fix DO-WHILE keyword
+> #152 fix WHILE keyword
+> #151 fix FOR keyword 
+> #155 Check compile Visual Studio 2015, 2019 
+> #157 Fix assign [+,-,/ etc] operator
+> #159 Update manual ZetScript 2.0  
+> #158 Update doc CodeProject ZetScript 2.0 
+> #160 Update Invader ZetScript 2.0 
+> #161 Merge symbol+functions in one container !!!
+> #162 Implement eval Function object 
 
 Other: Lot of clean code up. 
 

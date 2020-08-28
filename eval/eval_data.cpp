@@ -1,3 +1,6 @@
+
+#define IGNORE_BLANKS(aux_p,eval_data,s,line) aux_p=zetscript::eval::ignore_blanks(eval_data,(s),line);
+
 namespace zetscript{
 	namespace eval{
 
@@ -5,36 +8,37 @@ namespace zetscript{
 
 		typedef enum
 			:unsigned char {
-			KEYWORD_TYPE_UNKNOWN = 0,
-			KEYWORD_TYPE_IF,
-			KEYWORD_TYPE_ELSE,
-			KEYWORD_TYPE_FOR,
+			KEYWORD_UNKNOWN = 0,
+			KEYWORD_IF,
+			KEYWORD_ELSE,
+			KEYWORD_FOR,
 			//FOREACH_KEYWORD,
-			KEYWORD_TYPE_IN,
-			KEYWORD_TYPE_WHILE,
-			KEYWORD_TYPE_DO_WHILE,
-			KEYWORD_TYPE_VAR,
-			KEYWORD_TYPE_SWITCH,
-			KEYWORD_TYPE_CASE,
-			KEYWORD_TYPE_DEFAULT,
-			KEYWORD_TYPE_BREAK,
-			KEYWORD_TYPE_CONTINUE,
-			KEYWORD_TYPE_RETURN,
-			KEYWORD_TYPE_FUNCTION,
-			KEYWORD_TYPE_CLASS,
-			KEYWORD_TYPE_THIS,
+			KEYWORD_IN,
+			KEYWORD_WHILE,
+			KEYWORD_DO_WHILE,
+			KEYWORD_VAR,
+			KEYWORD_CONST,
+			KEYWORD_SWITCH,
+			KEYWORD_CASE,
+			KEYWORD_DEFAULT,
+			KEYWORD_BREAK,
+			KEYWORD_CONTINUE,
+			KEYWORD_RETURN,
+			KEYWORD_FUNCTION,
+			KEYWORD_CLASS,
+			KEYWORD_THIS,
 			//	SUPER_KEYWORD,
-			KEYWORD_TYPE_NEW,
-			KEYWORD_TYPE_DELETE,
-			KEYWORD_TYPE_MAX
-		}KeywordType;
+			KEYWORD_NEW,
+			KEYWORD_DELETE,
+			KEYWORD_MAX
+		}Keyword;
 
 		typedef enum
 			:unsigned char {
-			DIRECTIVE_TYPE_UNKNOWN = 0,
-			DIRECTIVE_TYPE_INCLUDE,
-			DIRECTIVE_TYPE_MAX
-		}DirectiveType;
+			DIRECTIVE_UNKNOWN = 0,
+			DIRECTIVE_INCLUDE,
+			DIRECTIVE_MAX
+		}Directive;
 
 		// In a expression we can find three types of tokens: an identifier, a separator, an operator, a literal or object token.
 		typedef enum :char{
@@ -52,87 +56,87 @@ namespace zetscript{
 
 
 		typedef enum:char{
-			ACCESSOR_TYPE_UNKNOWN=0,
-			ACCESSOR_TYPE_CALL, // v(1)
-			ACCESSOR_TYPE_VECTOR, // v[0]
-			ACCESSOR_TYPE_MEMBER, // a.b.c
-			ACCESSOR_TYPE_MAX
+			ACCESSOR_UNKNOWN=0,
+			ACCESSOR_CALL, // v(1)
+			ACCESSOR_VECTOR, // v[0]
+			ACCESSOR_MEMBER, // a.b.c
+			ACCESSOR_MAX
 		}AccessorType;
 
 		typedef enum :unsigned char {
 
-			OPERATOR_TYPE_UNKNOWN = 0,
+			OPERATOR_UNKNOWN = 0,
 
 			// ASSIGN
-			OPERATOR_TYPE_ASSIGN, 				// =
-			OPERATOR_TYPE_ASSIGN_ADD, 			// +=
-			OPERATOR_TYPE_ASSIGN_SUB, 			// -=
-			OPERATOR_TYPE_ASSIGN_MUL, 			// *=
-			OPERATOR_TYPE_ASSIGN_DIV, 			// /=
-			OPERATOR_TYPE_ASSIGN_MOD, 			// %=
-			OPERATOR_TYPE_ASSIGN_BINARY_XOR,	// ^=
-			OPERATOR_TYPE_ASSIGN_BINARY_AND,	// &=
-			OPERATOR_TYPE_ASSIGN_BINARY_OR,  	// |=
-			OPERATOR_TYPE_ASSIGN_SHIFT_LEFT, 	// <<=
-			OPERATOR_TYPE_ASSIGN_SHIFT_RIGHT, 	// >>=
+			OPERATOR_ASSIGN, 				// =
+			OPERATOR_ASSIGN_ADD, 			// +=
+			OPERATOR_ASSIGN_SUB, 			// -=
+			OPERATOR_ASSIGN_MUL, 			// *=
+			OPERATOR_ASSIGN_DIV, 			// /=
+			OPERATOR_ASSIGN_MOD, 			// %=
+			OPERATOR_ASSIGN_BINARY_XOR,	// ^=
+			OPERATOR_ASSIGN_BINARY_AND,	// &=
+			OPERATOR_ASSIGN_BINARY_OR,  	// |=
+			OPERATOR_ASSIGN_SHIFT_LEFT, 	// <<=
+			OPERATOR_ASSIGN_SHIFT_RIGHT, 	// >>=
 
 			// LOGIC
-			OPERATOR_TYPE_LOGIC_AND, 			// &&
-			OPERATOR_TYPE_LOGIC_OR, 			// ||
+			OPERATOR_LOGIC_AND, 			// &&
+			OPERATOR_LOGIC_OR, 			// ||
 
 			// RELATIONAL
-			OPERATOR_TYPE_LOGIC_EQUAL, 			// ==
-			OPERATOR_TYPE_LOGIC_NOT_EQUAL, 		// !=
-			OPERATOR_TYPE_LOGIC_GTE, 			// >=
-			OPERATOR_TYPE_LOGIC_LTE, 			// <=
-			OPERATOR_TYPE_LOGIC_GT, 			// >
-			OPERATOR_TYPE_LOGIC_LT, 			// <
+			OPERATOR_LOGIC_EQUAL, 			// ==
+			OPERATOR_LOGIC_NOT_EQUAL, 		// !=
+			OPERATOR_LOGIC_GTE, 			// >=
+			OPERATOR_LOGIC_LTE, 			// <=
+			OPERATOR_LOGIC_GT, 			// >
+			OPERATOR_LOGIC_LT, 			// <
 
 			// ARITHMETIC
-			OPERATOR_TYPE_ADD, 					// +
-			OPERATOR_TYPE_OR, 			// |
-			OPERATOR_TYPE_XOR, 			// ^
-			OPERATOR_TYPE_SUB, 					// -
-			OPERATOR_TYPE_MUL, 					// *
-			OPERATOR_TYPE_BINARY_AND, 			// &
-			OPERATOR_TYPE_DIV, 					// /
-			OPERATOR_TYPE_MOD, 					// %
-			OPERATOR_TYPE_SHIFT_LEFT, 			// <<
-			OPERATOR_TYPE_SHIFT_RIGHT, 			// >>
+			OPERATOR_ADD, 					// +
+			OPERATOR_OR, 			// |
+			OPERATOR_XOR, 			// ^
+			OPERATOR_SUB, 					// -
+			OPERATOR_MUL, 					// *
+			OPERATOR_BINARY_AND, 			// &
+			OPERATOR_DIV, 					// /
+			OPERATOR_MOD, 					// %
+			OPERATOR_SHIFT_LEFT, 			// <<
+			OPERATOR_SHIFT_RIGHT, 			// >>
 
-			OPERATOR_TYPE_INSTANCEOF, 			// instanceof
+			OPERATOR_INSTANCEOF, 			// instanceof
 
-			OPERATOR_TYPE_TERNARY_IF, 			// ?
-			OPERATOR_TYPE_TERNARY_ELSE, 		// :
-			OPERATOR_TYPE_MAX
-		}OperatorType;
+			OPERATOR_TERNARY_IF, 			// ?
+			OPERATOR_TERNARY_ELSE, 		// :
+			OPERATOR_MAX
+		}Operator;
 
-
-		typedef enum :unsigned char {
-			PRE_OPERATOR_TYPE_UNKNOWN=0,
-			PRE_OPERATOR_TYPE_NOT, 		// !
-			PRE_OPERATOR_TYPE_POS, 		// + (just ignore)
-			PRE_OPERATOR_TYPE_NEG	, 	// -
-			PRE_OPERATOR_TYPE_MAX
-		}PreOperatorType;
 
 		typedef enum :unsigned char {
-			PRE_POST_SELF_OPERATION_TYPE_UNKNOWN=0,
-			PRE_POST_SELF_OPERATION_TYPE_INC,	// ++
-			PRE_POST_SELF_OPERATION_TYPE_DEC,	// --
-			PRE_POST_SELF_OPERATION_TYPE_MAX
-		}PrePostSelfOperationType;
+			PRE_OPERATOR_UNKNOWN=0,
+			PRE_OPERATOR_NOT, 		// !
+			PRE_OPERATOR_POS, 		// + (just ignore)
+			PRE_OPERATOR_NEG	, 	// -
+			PRE_OPERATOR_MAX
+		}PreOperator;
 
 		typedef enum :unsigned char {
-			SEPARATOR_TYPE_UNKNOWN=0,
-			SEPARATOR_TYPE_COMA,				// ,
-			SEPARATOR_TYPE_SEMICOLON,    		// ;
-			SEPARATOR_TYPE_PARENTHESIS_OPEN, 	// (
-			SEPARATOR_TYPE_PARENTHESIS_CLOSE, 	// )
-			SEPARATOR_TYPE_SQUARE_BRAKET_OPEN, 	// [
-			SEPARATOR_TYPE_SQUARE_BRAKET_CLOSE, // ]
-			SEPARATOR_TYPE_MAX
-		}SeparatorType;
+			PRE_POST_SELF_OPERATION_UNKNOWN=0,
+			PRE_POST_SELF_OPERATION_INC,	// ++
+			PRE_POST_SELF_OPERATION_DEC,	// --
+			PRE_POST_SELF_OPERATION_MAX
+		}PrePostSelfOperation;
+
+		typedef enum :unsigned char {
+			SEPARATOR_UNKNOWN=0,
+			SEPARATOR_COMA,				// ,
+			SEPARATOR_SEMICOLON,    		// ;
+			SEPARATOR_PARENTHESIS_OPEN, 	// (
+			SEPARATOR_PARENTHESIS_CLOSE, 	// )
+			SEPARATOR_SQUARE_BRAKET_OPEN, 	// [
+			SEPARATOR_SQUARE_BRAKET_CLOSE, // ]
+			SEPARATOR_MAX
+		}Separator;
 
 		struct EvalInstruction{
 			Instruction 					vm_instruction;
@@ -140,40 +144,30 @@ namespace zetscript{
 			LinkSymbolFirstAccess			link_symbol_first_access;
 			InstructionSourceInfo 			instruction_source_info;
 
-			EvalInstruction(ByteCode _byte_code
-						 ,unsigned char _index_op1=ZS_IDX_UNDEFINED
-						 ,intptr_t _index_op2=0
-						 ,unsigned short _properties=0
-						 ){
+			EvalInstruction(
+				ByteCode _byte_code
+				,unsigned char _index_op1=INSTRUCTION_NO_VALUE_OP1
+				,intptr_t _index_op2=INSTRUCTION_NO_VALUE_OP2
+				,unsigned short _properties=0
+			 ){
 				vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);
 			}
 		};
 
 		struct TokenNode{
-
-			TokenType	  			token_type; // can be operator, literal, identifier, object. (separator are not take account)
-			PreOperatorType   		pre_operator_type; // !,+,-
-			OperatorType  			operator_type;
-			PrePostSelfOperationType  	pre_self_operation_type; // ++i,--i
-			PrePostSelfOperationType  	post_self_operation_type; // i++,i--
+			TokenType	  		token_type; // can be operator, literal, identifier, object. (separator are not take account)
+			PreOperator   		pre_operator; // !,+,-
+			Operator  			operator_type;
 
 			std::string 			value; // token value content
 			int line;
 			std::vector<EvalInstruction *> instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
 
-			// AST info operator.
-			TokenNode *token_node_left;
-			TokenNode *token_node_right;
-
 			TokenNode(){
 				line=-1;
-
 				token_type=TokenType::TOKEN_TYPE_UNKNOWN;
-				operator_type=OperatorType::OPERATOR_TYPE_UNKNOWN;
-				token_node_left=token_node_right=NULL;
-				pre_operator_type=PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
-				pre_self_operation_type=PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN;
-				post_self_operation_type=PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN;
+				operator_type=Operator::OPERATOR_UNKNOWN;
+				pre_operator=PreOperator::PRE_OPERATOR_UNKNOWN;
 			}
 		};
 
@@ -187,41 +181,12 @@ namespace zetscript{
 			ScriptFunction 						*  	script_function;
 
 			// a set of instructions that relates with jmps instructions in current scope, just in case we have to insert push instruction later
-			std::vector<EvalInstruction *>	 		jmp_instructions;
+			//std::vector<EvalInstruction *>	 		jmp_instructions;
 
 			EvalFunction(ScriptFunction	* _script_function){
 				script_function=_script_function;
 			}
 
-			/*bool lastInstructionRet(){
-				if(instructions.size() > 0){
-					return instructions[instructions.size()-1]->vm_instruction.byte_code==BYTE_CODE_RET;
-				}
-				return false;
-			}
-
-			bool canInsertInstructions(){
-				return !lastInstructionRet() || last_byte_code_was_pop_scope;
-			}
-
-			EvalInstruction * insertInstruction(ByteCode _byte_code
-					 ,unsigned char _index_op1=ZS_IDX_UNDEFINED
-					 ,intptr_t _index_op2=ZS_IDX_UNDEFINED
-					 ,unsigned short _properties=0){
-				EvalInstruction *ei=NULL;
-				if(canInsertInstructions()){ // not emit byte code if last instruction was ret...
-					instructions.push_back(ei=new EvalInstruction(_byte_code
-							 ,_index_op1
-							 ,_index_op2
-							 , _properties));
-				}
-				if(_byte_code==BYTE_CODE_POP_SCOPE){
-					last_byte_code_was_pop_scope=true;
-				}else{
-					last_byte_code_was_pop_scope=false;
-				}
-				return ei;
-			}*/
 			~EvalFunction(){
 				for(unsigned i=0; i< instructions.size(); i++){
 					delete instructions[i];
@@ -231,39 +196,38 @@ namespace zetscript{
 
 
 		typedef struct {
-			DirectiveType id;
+			Directive id;
 			const char *str;
 			//char * (*parse_fun)(const char *, int &, Scope *, PASTNode *);
 		} EvalDirective;
 
 
 		typedef struct {
-			KeywordType id;
+			Keyword id;
 			const char *str;
-			char * (* eval_fun)(EvalData *eval_data,const char *, int &, Scope *, bool &);
+			char * (* eval_fun)(EvalData *eval_data,const char *, int &, Scope *);
 		} EvalKeyword;
 
 		typedef struct {
-			OperatorType id;
+			Operator id;
 			const char *str;
 			bool (*eval_fun)(const char *);
 		} EvalOperator;
 
 		typedef struct {
-			PreOperatorType id;
+			PreOperator id;
 			const char *str;
 			bool (*eval_fun)(const char *);
 		} EvalPreOperator;
 
 		typedef struct {
-			PrePostSelfOperationType id;
+			PrePostSelfOperation id;
 			const char *str;
 			bool (*eval_fun)(const char *);
 		} EvalIdentityOperator;
 
-
 		typedef struct {
-			SeparatorType id;
+			Separator id;
 			const char *str;
 			bool (*eval_fun)(const char *);
 		} EvalSeparator;
@@ -275,6 +239,8 @@ namespace zetscript{
 			ScriptClassFactory 				* 		script_class_factory;
 			EvalFunction					* 		current_function;
 			std::vector<EvalFunction *> 	  		functions;
+			std::vector<EvalInstruction *>			break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
+			std::vector<EvalInstruction *>			continue_jmp_instructions; // number of continue_jmp_instructions collected (should managed only on loops)
 			const char 						* 		current_parsing_file;
 			std::map<std::string,std::string *>	 	compiled_symbol_name;
 			bool							  		error;
@@ -289,7 +255,6 @@ namespace zetscript{
 				this->script_class_factory=zs->getScriptClassFactory();
 				error=false;
 				error_str="";
-
 			}
 			~EvalData(){
 				for(auto it=compiled_symbol_name.begin();it!=compiled_symbol_name.end() ;it++){
@@ -298,75 +263,76 @@ namespace zetscript{
 			}
 		};
 
-
-		EvalOperator eval_info_operators[OPERATOR_TYPE_MAX];
-		EvalPreOperator eval_info_pre_operators[PRE_OPERATOR_TYPE_MAX];
-		EvalIdentityOperator eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_TYPE_MAX];
-		EvalSeparator eval_info_separators[SEPARATOR_TYPE_MAX];
-		EvalKeyword eval_info_keywords[KEYWORD_TYPE_MAX];
-		EvalDirective eval_info_directives[DIRECTIVE_TYPE_MAX];
+		EvalOperator eval_info_operators[OPERATOR_MAX];
+		EvalPreOperator eval_info_pre_operators[PRE_OPERATOR_MAX];
+		EvalIdentityOperator eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_MAX];
+		EvalSeparator eval_info_separators[SEPARATOR_MAX];
+		EvalKeyword eval_info_keywords[KEYWORD_MAX];
+		EvalDirective eval_info_directives[DIRECTIVE_MAX];
 
 		bool g_init_eval=false;
 
-		char * 	evalKeywordTypeDelete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
-		char * 	evalKeywordTypeFunction(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
-		char * 	evalKeywordTypeVar(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
-		char * 	evalKeywordTypeIf(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
-		char * 	evalKeywordTypeWhile(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
-		char * 	evalKeywordTypeDoWhile(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
-		char * 	evalKeywordTypeReturn(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
-		char * 	evalKeywordTypeSwitch(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
-		char * 	evalKeywordTypeFor(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool & error);
+		char * 	eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_var_or_const(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_while(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_do_while(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_return(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_switch(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_for(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char *	eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
+		char *	eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
 
 
-		bool	isOperatorTypeTernaryIf(const char *s)			{return ((*s=='?'));}
-		bool 	isOperatorTypeTernaryElse(const char *s)		{return ((*s==':'));}
-		bool 	isOperatorAdd(const char *s)					{return	((*s=='+') && (*(s+1)!='+') && (*(s+1)!='='));}
-		bool 	isOperatorTypeSub(const char *s)				{return	((*s=='-') && (*(s+1)!='-') && (*(s+1)!='='));}
-		bool 	isOperatorTypeMul(const char *s)				{return ((*s=='*') && (*(s+1)!='='));}
-		bool 	isOperatorTypeDiv(const char *s)				{return ((*s=='/') && (*(s+1)!='='));}
-		bool 	isOperatorTypeMod(const char *s)				{return ((*s=='%') && (*(s+1)!='='));}
-		bool 	isOperatorTypeAssign(const char *s)				{return	((*s=='=') && (*(s+1)!='='));}
-		bool 	isOperatorTypeAssignAdd(const char *s)			{return ((*s=='+') && (*(s+1)=='='));}
-		bool 	isOperatorTypeAssignSub(const char *s)			{return ((*s=='-') && (*(s+1)=='='));}
-		bool 	isOperatorTypeAssignMul(const char *s)			{return ((*s=='*') && (*(s+1)=='='));}
-		bool 	isOperatorTypeAssignDiv(const char *s)			{return ((*s=='/') && (*(s+1)=='='));}
-		bool 	isOperatorTypeAssignMod(const char *s)			{return ((*s=='%') && (*(s+1)=='='));}
-		bool 	isOperatorTypeAssignXor(const char *s)			{return ((*s=='^') && (*(s+1)=='='));}		// ^=
-		bool 	isOperatorTypeAssignBinaryAnd(const char *s)	{return ((*s=='&') && (*(s+1)=='='));}		// &=
-		bool 	isOperatorTypeAssignBinaryOr(const char *s)		{return ((*s=='|') && (*(s+1)=='='));}  	// |=
-		bool 	isOperatorTypeAssignShiftLeft(const char *s)	{return ((*s=='<') && (*(s+1)=='<')&& (*(s+2)=='='));} 	// <<=
-		bool 	isOperatorTypeAssignShiftRight(const char *s)	{return ((*s=='>') && (*(s+1)=='>')&& (*(s+2)=='='));} 	// >>=
-		bool 	isOperatorTypeXor(const char *s)				{return ((*s=='^') && (*(s+1)!='='));}
-		bool 	isOperatorTypeBinaryAnd(const char *s)			{return ((*s=='&') && (*(s+1)!='&') && (*(s+1)!='='));}
-		bool 	isOperatorTypeBinaryOr(const char *s)			{return ((*s=='|') && (*(s+1)!='|') && (*(s+1)!='='));}
-		bool 	isOperatorTypeShiftLeft(const char *s)			{return ((*s=='<') && (*(s+1)=='<') && (*(s+2)!='='));}
-		bool 	isOperatorTypeShiftRight(const char *s)			{return	((*s=='>') && (*(s+1)=='>') && (*(s+2)!='='));}
-		bool 	isOperatorTypeLogicAnd(const char *s)			{return ((*s=='&') && (*(s+1)=='&'));}
-		bool 	isOperatorTypeLogicOr(const char *s)			{return ((*s=='|') && (*(s+1)=='|'));}
-		bool 	isOperatorTypeLogicEqual(const char *s) 		{return ((*s=='=') && (*(s+1)=='='));}
-		bool 	isOperatorTypeLogicNotEqual(const char *s)		{return ((*s=='!') && (*(s+1)=='='));}
-		bool 	isOperatorTypeLogicGt(const char *s)			{return ((*s=='>') && (*(s+1)!='>'));}
-		bool 	isOperatorTypeLogicLt(const char *s)			{return ((*s=='<') && (*(s+1)!='<'));}
-		bool 	isOperatorTypeLogicGte(const char *s)			{return ((*s=='>') && (*(s+1)=='='));}
-		bool 	isOperatorTypeLogicLte(const char *s)			{return ((*s=='<') && (*(s+1)=='='));}
-		bool 	isOperatorTypeLogicNot(const char *s)			{return ((*s=='!') && (*(s+1)!='='));}
-		bool 	isPrePostSelfOperationInc(const char *s)		{return ((*s=='+') && (*(s+1)=='+'));}
-		bool 	isPrePostSelfOperationDec(const char *s)		{return ((*s=='-') && (*(s+1)=='-'));}
-		bool 	isCommentSingleLine(char *s)					{return	((*s=='/') && (*(s+1)=='/'));}
-		bool 	isCommentBlockStart(char *s)					{return ((*s=='/') && (*(s+1)=='*'));}
-		bool 	isCommentBlockEnd(char *s)						{return ((*s=='*') && (*(s+1)=='/'));}
-		bool 	isOperatorTypeInstanceOf(const char *s)			{return strncmp("instanceof",s,10) == 0;}
-		bool    isEndExpression(const char * s){
-			return *s==')' || *s==','||  *s==']' ||  *s==']' ||  *s==';' || *s == 0;
+		bool	is_operator_ternary_if(const char *s)			{return ((*s=='?'));}
+		bool 	is_operator_ternary_else(const char *s)		{return ((*s==':'));}
+		bool 	is_operator_add(const char *s)					{return	((*s=='+') && (*(s+1)!='+') && (*(s+1)!='='));}
+		bool 	is_operator_sub(const char *s)				{return	((*s=='-') && (*(s+1)!='-') && (*(s+1)!='='));}
+		bool 	is_operator_mul(const char *s)				{return ((*s=='*') && (*(s+1)!='='));}
+		bool 	is_operator_div(const char *s)				{return ((*s=='/') && (*(s+1)!='='));}
+		bool 	is_operator_mod(const char *s)				{return ((*s=='%') && (*(s+1)!='='));}
+		bool 	is_operator_assign(const char *s)				{return	((*s=='=') && (*(s+1)!='='));}
+		bool 	is_operator_assign_add(const char *s)			{return ((*s=='+') && (*(s+1)=='='));}
+		bool 	is_operator_assign_sub(const char *s)			{return ((*s=='-') && (*(s+1)=='='));}
+		bool 	is_operator_assign_mul(const char *s)			{return ((*s=='*') && (*(s+1)=='='));}
+		bool 	is_operator_assign_div(const char *s)			{return ((*s=='/') && (*(s+1)=='='));}
+		bool 	is_operator_assign_mod(const char *s)			{return ((*s=='%') && (*(s+1)=='='));}
+		bool 	is_operator_assign_xor(const char *s)			{return ((*s=='^') && (*(s+1)=='='));}		// ^=
+		bool 	is_operator_assign_binary_and(const char *s)	{return ((*s=='&') && (*(s+1)=='='));}		// &=
+		bool 	is_operator_assign_binary_or(const char *s)		{return ((*s=='|') && (*(s+1)=='='));}  	// |=
+		bool 	is_operator_assign_shift_left(const char *s)	{return ((*s=='<') && (*(s+1)=='<')&& (*(s+2)=='='));} 	// <<=
+		bool 	is_operator_assign_shift_right(const char *s)	{return ((*s=='>') && (*(s+1)=='>')&& (*(s+2)=='='));} 	// >>=
+		bool 	is_operator_xor(const char *s)				{return ((*s=='^') && (*(s+1)!='='));}
+		bool 	is_operator_binari_and(const char *s)			{return ((*s=='&') && (*(s+1)!='&') && (*(s+1)!='='));}
+		bool 	is_operator_binari_or(const char *s)			{return ((*s=='|') && (*(s+1)!='|') && (*(s+1)!='='));}
+		bool 	is_operator_shift_left(const char *s)			{return ((*s=='<') && (*(s+1)=='<') && (*(s+2)!='='));}
+		bool 	is_operator_shift_right(const char *s)			{return	((*s=='>') && (*(s+1)=='>') && (*(s+2)!='='));}
+		bool 	is_operator_logic_and(const char *s)			{return ((*s=='&') && (*(s+1)=='&'));}
+		bool 	is_operator_logic_or(const char *s)			{return ((*s=='|') && (*(s+1)=='|'));}
+		bool 	is_operator_logic_equal(const char *s) 		{return ((*s=='=') && (*(s+1)=='='));}
+		bool 	is_operator_logic_not_equal(const char *s)		{return ((*s=='!') && (*(s+1)=='='));}
+		bool 	is_operator_logic_gt(const char *s)			{return ((*s=='>') && (*(s+1)!='>'));}
+		bool 	is_operator_logic_lt(const char *s)			{return ((*s=='<') && (*(s+1)!='<'));}
+		bool 	is_operator_logic_gte(const char *s)			{return ((*s=='>') && (*(s+1)=='='));}
+		bool 	is_operator_logic_lte(const char *s)			{return ((*s=='<') && (*(s+1)=='='));}
+		bool 	is_operator_logic_not(const char *s)			{return ((*s=='!') && (*(s+1)!='='));}
+		bool 	is_pre_post_self_operation_inc(const char *s)		{return ((*s=='+') && (*(s+1)=='+'));}
+		bool 	is_pre_post_self_operation_dec(const char *s)		{return ((*s=='-') && (*(s+1)=='-'));}
+		bool 	is_comment_single_line(char *s)					{return	((*s=='/') && (*(s+1)=='/'));}
+		bool 	is_comment_block_start(char *s)					{return ((*s=='/') && (*(s+1)=='*'));}
+		bool 	is_comment_block_end(char *s)						{return ((*s=='*') && (*(s+1)=='/'));}
+		bool 	is_operator_instanceof(const char *s)			{return strncmp("instanceof",s,10) == 0;}
+		bool    is_end_expression(const char * s){
+			return *s==')' || *s==','||  *s==']' ||  *s==']' ||  *s==';' || *s == 0 || *s=='}';
 		}
 
-		char *advanceToEndBlockComment(char *aux_p, int &line){
+		char *advance_to_end_block_comment(char *aux_p, int &line){
 
-			if( isCommentBlockStart(aux_p)){
+			if( is_comment_block_start(aux_p)){
 				aux_p+=2; //advance first
 				bool end = false;
-				while(*aux_p != 0  && !end){//! isCommentBlockEnd(aux_p) && *aux_p != 0){
+				while(*aux_p != 0  && !end){//! is_comment_block_end(aux_p) && *aux_p != 0){
 
 					if(*aux_p == '*' && *(aux_p+1) == '/') {
 						end=true;
@@ -382,30 +348,26 @@ namespace zetscript{
 			return aux_p;
 		}
 
-#define IGNORE_BLANKS(aux_p,eval_data,s,line) if((aux_p=ignoreBlanks(eval_data,(s),line)) == NULL) return NULL;
-
-
-		char *ignoreBlanks(EvalData *eval_data,const char *str, int &line) {
+		char *ignore_blanks(EvalData *eval_data,const char *str, int &line) {
 			char *aux_p = (char *)str;
 			bool end = false;
 			while(!end){
 				end = true;
 				while(*aux_p!=0 && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p++;
 
-				if( isCommentSingleLine(aux_p)) // ignore line
+				if( is_comment_single_line(aux_p)) // ignore line
 					while(*aux_p!=0 && *aux_p!='\n') aux_p++;
 
-				else if( isCommentBlockStart(aux_p)){
+				else if( is_comment_block_start(aux_p)){
 					// ignore until get the end of the comment...
-					aux_p = advanceToEndBlockComment(aux_p, line);
+					aux_p = advance_to_end_block_comment(aux_p, line);
 
-					if( isCommentBlockEnd(aux_p))
+					if( is_comment_block_end(aux_p))
 						aux_p+=2;
 
 					end=false;
-				}else if( isCommentBlockEnd(aux_p)){
-					writeError(eval_data->current_parsing_file,line," Unexpected end comment block");
-					return NULL;
+				}else if( is_comment_block_end(aux_p)){
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Unexpected end comment block");
 				}
 				// make compatible windows format...
 				if(*aux_p == '\r')
@@ -420,50 +382,50 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		SeparatorType   isSeparatorType(const char *s){
-			for(unsigned char i = 1; i < SEPARATOR_TYPE_MAX; i++){
+		Separator   is_separator(const char *s){
+			for(unsigned char i = 1; i < SEPARATOR_MAX; i++){
 				if(*eval_info_separators[i].str == *s){
 					return eval_info_separators[i].id;
 				}
 			}
-			return SeparatorType::SEPARATOR_TYPE_UNKNOWN;
+			return Separator::SEPARATOR_UNKNOWN;
 		}
 
-		OperatorType   isOperatorType(const char *s){
-			for(unsigned char i = 1; i < OPERATOR_TYPE_MAX; i++){
+		Operator   is_operator(const char *s){
+			for(unsigned char i = 1; i < OPERATOR_MAX; i++){
 				if(eval_info_operators[i].eval_fun(s)){
 					return eval_info_operators[i].id;
 				}
 			}
-			return OperatorType::OPERATOR_TYPE_UNKNOWN;
+			return Operator::OPERATOR_UNKNOWN;
 		}
 
-		PreOperatorType   	isPreOperatorType(const char *s){
-			for(unsigned char i = 1; i < PRE_OPERATOR_TYPE_MAX; i++){
+		PreOperator   	is_pre_operator_type(const char *s){
+			for(unsigned char i = 1; i < PRE_OPERATOR_MAX; i++){
 				if(*eval_info_pre_operators[i].str == *s){
 					return eval_info_pre_operators[i].id;
 				}
 			}
-			return PreOperatorType::PRE_OPERATOR_TYPE_UNKNOWN;
+			return PreOperator::PRE_OPERATOR_UNKNOWN;
 		}
 
-		PrePostSelfOperationType   isPrePostSelfOperationType(const char *s){
-			if(isPrePostSelfOperationInc(s)){
-				return PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_INC;
+		PrePostSelfOperation   is_pre_post_self_operation(const char *s){
+			if(is_pre_post_self_operation_inc(s)){
+				return PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC;
 
-			}else if(isPrePostSelfOperationDec(s)){
-				return PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_DEC;
+			}else if(is_pre_post_self_operation_dec(s)){
+				return PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC;
 			}
 
-			return PrePostSelfOperationType::PRE_POST_SELF_OPERATION_TYPE_UNKNOWN;
+			return PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN;
 		}
 
-		KeywordType isKeywordType(const char *c){
+		Keyword is_keyword(const char *c){
 			// PRE: The first char must be starting symbol.
 			char *str=(char *)c;
 			//char *aux=str;
 
-			for(int i = 0; i < KEYWORD_TYPE_MAX; i++){
+			for(int i = 0; i < KEYWORD_MAX; i++){
 				if(eval_info_keywords[i].str!=NULL){
 					size_t size = strlen(eval_info_keywords[i].str);
 					char *aux = str+size;
@@ -474,21 +436,22 @@ namespace zetscript{
 							*aux == '('  || // ( // mostly if,for,while,switch
 							*aux == '{'  || // ( // mostly else,
 							*aux == '\n' || // carry return
+							*aux == ';' || // continue/break
 
-						   isCommentBlockStart(aux)) //start block comment
+						   is_comment_block_start(aux)) //start block comment
 						   ){
 						return eval_info_keywords[i].id;
 					}
 				}
 			}
-			return KeywordType::KEYWORD_TYPE_UNKNOWN;
+			return Keyword::KEYWORD_UNKNOWN;
 		}
 
-		DirectiveType isDirectiveType(const char *c){
+		Directive is_directive(const char *c){
 			// PRE: The first char must be starting symbol.
 			char *str=(char *)c;
 
-			for(int i = 0; i < DIRECTIVE_TYPE_MAX; i++){
+			for(int i = 0; i < DIRECTIVE_MAX; i++){
 				if(eval_info_directives[i].str){
 					size_t size = strlen(eval_info_directives[i].str);
 
@@ -498,16 +461,17 @@ namespace zetscript{
 					}
 				}
 			}
-			return DirectiveType::DIRECTIVE_TYPE_UNKNOWN;
+			return Directive::DIRECTIVE_UNKNOWN;
 		}
 
-		bool  isAccessPunctuator(char *s){
+		bool  is_access_punctuator(char *s){
 			return *s=='.' || *s=='[' || *s=='(';
 		}
 
-		bool  isEndSymbolToken(char *s, char pre=0){
-			return isOperatorType(s)!=OperatorType::OPERATOR_TYPE_UNKNOWN
-				   || isSeparatorType(s)!=SeparatorType::SEPARATOR_TYPE_UNKNOWN
+		bool  is_end_symbol_token(char *s, char pre=0){
+			return is_operator(s)!=Operator::OPERATOR_UNKNOWN
+				   || is_pre_post_self_operation(s)!=PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
+				   || is_separator(s)!=Separator::SEPARATOR_UNKNOWN
 				   || *s=='.' // to separate access identifiers.
 				   || *s==' '
 				   || *s==0
@@ -516,14 +480,13 @@ namespace zetscript{
 				   || (*s=='\"' && pre!='\\');
 		}
 
-		bool  isIdentifierNameExpressionOk(EvalData *eval_data,const std::string & symbol, int line){
+		void  check_identifier_name_expression_ok(EvalData *eval_data,const std::string & symbol, int line){
 
 			char *aux_p = (char *)symbol.c_str();
-			KeywordType kw;
+			Keyword kw;
 
-			if((kw=isKeywordType(aux_p))!=KeywordType::KEYWORD_TYPE_UNKNOWN){
-				writeError(eval_data->current_parsing_file,line," Unexpected \"%s\" keyword", aux_p);
-				return false;
+			if((kw=is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Unexpected \"%s\" keyword", aux_p);
 			}
 
 			// avoid special literal words
@@ -532,8 +495,7 @@ namespace zetscript{
 				|| symbol=="undefined"
 				|| symbol == "null"
 			){
-				writeError(eval_data->current_parsing_file,line," Unexpected \"%s\"", aux_p);
-				return false;
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Unexpected \"%s\"", aux_p);
 			}
 
 			// the rest is checked here...
@@ -552,14 +514,11 @@ namespace zetscript{
 					aux_p++;
 				}
 			}else{
-				writeError(eval_data->current_parsing_file,line," identifier cannot begin with %c", *aux_p);
-				return false;
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," expected symbol");
 			}
-
-			return true;
 		}
 
-		char * parseLiteralNumber(EvalData *eval_data,const char *c, int & line, std::string & value, bool & error){
+		char * parse_literal_number(EvalData *eval_data,const char *c, int & line, std::string & value){
 			// PRE: a std::string given...
 			char *aux_p = NULL;
 			IGNORE_BLANKS(aux_p,eval_data,c,line);
@@ -583,9 +542,8 @@ namespace zetscript{
 					number_part[current_part]+=*aux_p;
 				}
 				else if(('a'<=*aux_p&& *aux_p<='f') || ('A'<=*aux_p && *aux_p<='F')){ // hexa ?
-
 					if(isHexa){
-							number_part[current_part]+=*aux_p;
+						number_part[current_part]+=*aux_p;
 					}
 					else if(*aux_p == 'e' || *aux_p == 'E'){ // exponencial part ?
 
@@ -600,25 +558,17 @@ namespace zetscript{
 							}
 						}
 						else{ // error
-
-							 writeError(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
-							 error=true;
-							 return NULL;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
 						}
 					}
 					else{ // error
-						 writeError(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
-						 error=true;
-						 return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
 					}
-
 				}
 				else if(*aux_p == '.'){ // fraccional part ?
 
 					if(isHexa){
-						 writeError(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
-							 error=true;
-							 return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
 					}
 
 					if(current_part==0){
@@ -626,49 +576,40 @@ namespace zetscript{
 						number_part[current_part]+=".";
 					}
 					else{ // error
-						 writeError(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
-						 error=true;
-						 return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
 					}
 				}
 
 				else if(*aux_p == 'b'){ // is end binary format?
 					if(!is01s || (current_part != 0)){
-						 writeError(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
-						 error=true;
-						 return NULL;
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
 					}
 
 					number_part[current_part]+=*aux_p;
 					end=true;
 				}
 				else{
-					 writeError(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
-					 error=true;
-					 return NULL;
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
 				}
 
 				is01s&=(('0'==*aux_p) || ('1'==*aux_p));
 
 				aux_p++;
 
-
-				//if(evalSpecialPunctuator(aux)==OperatorType::FIELD_OPERATOR);
-			}while(!end && !( isEndSymbolToken(aux_p)&&!(*aux_p=='.')));
+				//if(evalSpecialPunctuator(aux)==Operator::FIELD_OPERATOR);
+			}while(!end && !( is_end_symbol_token(aux_p)&&!(*aux_p=='.')));
 
 			// check and eval token ?
 			value = number_part[0]+number_part[1]+number_part[2];
 
-			if( isEndSymbolToken(aux_p)){
+			if( is_end_symbol_token(aux_p)){
 				return aux_p;
 			}
-
 			return NULL;
-
 			// POST: detects integer/binary/fractional/hexa
 		}
 
-		char *  getIdentifierToken(EvalData *eval_data,const char *s, std::string & symbol){
+		char *  get_identifier_token(EvalData *eval_data,const char *s, int line, std::string & symbol){
 
 			char *aux_p = (char *)s;
 			symbol="";
@@ -691,13 +632,13 @@ namespace zetscript{
 
 					return aux_p;
 			}else{
-				writeError(eval_data->current_parsing_file,-1," identifier cannot begin with %c", *aux_p);
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected symbol", *aux_p);
 			}
 			return NULL;
 		}
 
 		// PROTOTYPES
-		void initEval(){
+		void init_eval(){
 
 			if(g_init_eval) return;
 
@@ -708,88 +649,89 @@ namespace zetscript{
 			memset(eval_info_separators,0,sizeof(eval_info_separators));
 			memset(eval_info_keywords,0,sizeof(eval_info_keywords));
 
-			eval_info_operators[OPERATOR_TYPE_UNKNOWN]={OPERATOR_TYPE_UNKNOWN, "none",NULL};
+			eval_info_operators[OPERATOR_UNKNOWN]={OPERATOR_UNKNOWN, "none",NULL};
 
-			eval_info_operators[OPERATOR_TYPE_ADD]={OPERATOR_TYPE_ADD, "+",isOperatorAdd};
-			eval_info_operators[OPERATOR_TYPE_SUB]={OPERATOR_TYPE_SUB, "-",isOperatorTypeSub};
-			eval_info_operators[OPERATOR_TYPE_MUL]={OPERATOR_TYPE_MUL, "*",isOperatorTypeMul};
-			eval_info_operators[OPERATOR_TYPE_DIV]={OPERATOR_TYPE_DIV, "/",isOperatorTypeDiv};
-			eval_info_operators[OPERATOR_TYPE_MOD]={OPERATOR_TYPE_MOD, "%",isOperatorTypeMod};
+			eval_info_operators[OPERATOR_ADD]={OPERATOR_ADD, "+",is_operator_add};
+			eval_info_operators[OPERATOR_SUB]={OPERATOR_SUB, "-",is_operator_sub};
+			eval_info_operators[OPERATOR_MUL]={OPERATOR_MUL, "*",is_operator_mul};
+			eval_info_operators[OPERATOR_DIV]={OPERATOR_DIV, "/",is_operator_div};
+			eval_info_operators[OPERATOR_MOD]={OPERATOR_MOD, "%",is_operator_mod};
 
-			eval_info_operators[OPERATOR_TYPE_TERNARY_IF]={OPERATOR_TYPE_TERNARY_IF, "?",isOperatorTypeTernaryIf};
-			eval_info_operators[OPERATOR_TYPE_TERNARY_ELSE]={OPERATOR_TYPE_TERNARY_ELSE, ":",isOperatorTypeTernaryElse};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN]={OPERATOR_TYPE_ASSIGN, "=",isOperatorTypeAssign};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_ADD]={OPERATOR_TYPE_ASSIGN_ADD, "+=",isOperatorTypeAssignAdd};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_SUB]={OPERATOR_TYPE_ASSIGN_SUB, "-=",isOperatorTypeAssignSub};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_MUL]={OPERATOR_TYPE_ASSIGN_MUL, "*=",isOperatorTypeAssignMul};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_DIV]={OPERATOR_TYPE_ASSIGN_DIV, "/=",isOperatorTypeAssignDiv};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_MOD]={OPERATOR_TYPE_ASSIGN_MOD, "%=",isOperatorTypeAssignMod};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_BINARY_XOR]={OPERATOR_TYPE_ASSIGN_BINARY_XOR,"^=",isOperatorTypeAssignXor};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_BINARY_AND]={OPERATOR_TYPE_ASSIGN_BINARY_AND,"&=",isOperatorTypeAssignBinaryAnd};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_BINARY_OR]={OPERATOR_TYPE_ASSIGN_BINARY_OR,"|=",isOperatorTypeAssignBinaryOr};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_SHIFT_LEFT]={OPERATOR_TYPE_ASSIGN_SHIFT_LEFT,"<<=",isOperatorTypeAssignShiftLeft};
-			eval_info_operators[OPERATOR_TYPE_ASSIGN_SHIFT_RIGHT]={OPERATOR_TYPE_ASSIGN_SHIFT_RIGHT,">>=",isOperatorTypeAssignShiftRight};
+			eval_info_operators[OPERATOR_TERNARY_IF]={OPERATOR_TERNARY_IF, "?",is_operator_ternary_if};
+			eval_info_operators[OPERATOR_TERNARY_ELSE]={OPERATOR_TERNARY_ELSE, ":",is_operator_ternary_else};
+			eval_info_operators[OPERATOR_ASSIGN]={OPERATOR_ASSIGN, "=",is_operator_assign};
+			eval_info_operators[OPERATOR_ASSIGN_ADD]={OPERATOR_ASSIGN_ADD, "+=",is_operator_assign_add};
+			eval_info_operators[OPERATOR_ASSIGN_SUB]={OPERATOR_ASSIGN_SUB, "-=",is_operator_assign_sub};
+			eval_info_operators[OPERATOR_ASSIGN_MUL]={OPERATOR_ASSIGN_MUL, "*=",is_operator_assign_mul};
+			eval_info_operators[OPERATOR_ASSIGN_DIV]={OPERATOR_ASSIGN_DIV, "/=",is_operator_assign_div};
+			eval_info_operators[OPERATOR_ASSIGN_MOD]={OPERATOR_ASSIGN_MOD, "%=",is_operator_assign_mod};
+			eval_info_operators[OPERATOR_ASSIGN_BINARY_XOR]={OPERATOR_ASSIGN_BINARY_XOR,"^=",is_operator_assign_xor};
+			eval_info_operators[OPERATOR_ASSIGN_BINARY_AND]={OPERATOR_ASSIGN_BINARY_AND,"&=",is_operator_assign_binary_and};
+			eval_info_operators[OPERATOR_ASSIGN_BINARY_OR]={OPERATOR_ASSIGN_BINARY_OR,"|=",is_operator_assign_binary_or};
+			eval_info_operators[OPERATOR_ASSIGN_SHIFT_LEFT]={OPERATOR_ASSIGN_SHIFT_LEFT,"<<=",is_operator_assign_shift_left};
+			eval_info_operators[OPERATOR_ASSIGN_SHIFT_RIGHT]={OPERATOR_ASSIGN_SHIFT_RIGHT,">>=",is_operator_assign_shift_right};
 
-			eval_info_operators[OPERATOR_TYPE_XOR]={OPERATOR_TYPE_XOR, "^",isOperatorTypeXor};
-			eval_info_operators[OPERATOR_TYPE_BINARY_AND]={OPERATOR_TYPE_BINARY_AND, "&",isOperatorTypeBinaryAnd};
-			eval_info_operators[OPERATOR_TYPE_OR]={OPERATOR_TYPE_OR, "|",isOperatorTypeBinaryOr};
-			eval_info_operators[OPERATOR_TYPE_SHIFT_LEFT]={OPERATOR_TYPE_SHIFT_LEFT, "<<",isOperatorTypeShiftLeft};
-			eval_info_operators[OPERATOR_TYPE_SHIFT_RIGHT]={OPERATOR_TYPE_SHIFT_RIGHT, ">>",isOperatorTypeShiftRight};
-			eval_info_operators[OPERATOR_TYPE_LOGIC_AND]={OPERATOR_TYPE_LOGIC_AND, "&&",isOperatorTypeLogicAnd};
-			eval_info_operators[OPERATOR_TYPE_LOGIC_OR]={OPERATOR_TYPE_LOGIC_OR, "||",isOperatorTypeLogicOr};
-			eval_info_operators[OPERATOR_TYPE_LOGIC_EQUAL]={OPERATOR_TYPE_LOGIC_EQUAL, "==",isOperatorTypeLogicEqual};
-			eval_info_operators[OPERATOR_TYPE_LOGIC_NOT_EQUAL]={OPERATOR_TYPE_LOGIC_NOT_EQUAL, "!=",isOperatorTypeLogicNotEqual};
-			eval_info_operators[OPERATOR_TYPE_LOGIC_GT]={OPERATOR_TYPE_LOGIC_GT, ">",isOperatorTypeLogicGt};
-			eval_info_operators[OPERATOR_TYPE_LOGIC_LT]={OPERATOR_TYPE_LOGIC_LT, "<",isOperatorTypeLogicLt};
-			eval_info_operators[OPERATOR_TYPE_LOGIC_GTE]={OPERATOR_TYPE_LOGIC_GTE, ">=",isOperatorTypeLogicGte};
-			eval_info_operators[OPERATOR_TYPE_LOGIC_LTE]={OPERATOR_TYPE_LOGIC_LTE, "<=",isOperatorTypeLogicLte};
-			eval_info_operators[OPERATOR_TYPE_INSTANCEOF]={OPERATOR_TYPE_INSTANCEOF, "instanceof",isOperatorTypeInstanceOf};
-
-
-			eval_info_pre_operators[PRE_OPERATOR_TYPE_NOT]={PRE_OPERATOR_TYPE_NOT, "!",isOperatorTypeLogicNot};
-			eval_info_pre_operators[PRE_OPERATOR_TYPE_POS]={PRE_OPERATOR_TYPE_POS, "+",isOperatorAdd};
-			eval_info_pre_operators[PRE_OPERATOR_TYPE_NEG]={PRE_OPERATOR_TYPE_NEG, "-",isOperatorTypeSub};
+			eval_info_operators[OPERATOR_XOR]={OPERATOR_XOR, "^",is_operator_xor};
+			eval_info_operators[OPERATOR_BINARY_AND]={OPERATOR_BINARY_AND, "&",is_operator_binari_and};
+			eval_info_operators[OPERATOR_OR]={OPERATOR_OR, "|",is_operator_binari_or};
+			eval_info_operators[OPERATOR_SHIFT_LEFT]={OPERATOR_SHIFT_LEFT, "<<",is_operator_shift_left};
+			eval_info_operators[OPERATOR_SHIFT_RIGHT]={OPERATOR_SHIFT_RIGHT, ">>",is_operator_shift_right};
+			eval_info_operators[OPERATOR_LOGIC_AND]={OPERATOR_LOGIC_AND, "&&",is_operator_logic_and};
+			eval_info_operators[OPERATOR_LOGIC_OR]={OPERATOR_LOGIC_OR, "||",is_operator_logic_or};
+			eval_info_operators[OPERATOR_LOGIC_EQUAL]={OPERATOR_LOGIC_EQUAL, "==",is_operator_logic_equal};
+			eval_info_operators[OPERATOR_LOGIC_NOT_EQUAL]={OPERATOR_LOGIC_NOT_EQUAL, "!=",is_operator_logic_not_equal};
+			eval_info_operators[OPERATOR_LOGIC_GT]={OPERATOR_LOGIC_GT, ">",is_operator_logic_gt};
+			eval_info_operators[OPERATOR_LOGIC_LT]={OPERATOR_LOGIC_LT, "<",is_operator_logic_lt};
+			eval_info_operators[OPERATOR_LOGIC_GTE]={OPERATOR_LOGIC_GTE, ">=",is_operator_logic_gte};
+			eval_info_operators[OPERATOR_LOGIC_LTE]={OPERATOR_LOGIC_LTE, "<=",is_operator_logic_lte};
+			eval_info_operators[OPERATOR_INSTANCEOF]={OPERATOR_INSTANCEOF, "instanceof",is_operator_instanceof};
 
 
-			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_TYPE_INC]={PRE_POST_SELF_OPERATION_TYPE_INC, "++",isPrePostSelfOperationInc};
-			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_TYPE_DEC]={PRE_POST_SELF_OPERATION_TYPE_DEC, "--",isPrePostSelfOperationDec};
+			eval_info_pre_operators[PRE_OPERATOR_NOT]={PRE_OPERATOR_NOT, "!",is_operator_logic_not};
+			eval_info_pre_operators[PRE_OPERATOR_POS]={PRE_OPERATOR_POS, "+",is_operator_add};
+			eval_info_pre_operators[PRE_OPERATOR_NEG]={PRE_OPERATOR_NEG, "-",is_operator_sub};
+
+
+			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_INC]={PRE_POST_SELF_OPERATION_INC, "++",is_pre_post_self_operation_inc};
+			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_DEC]={PRE_POST_SELF_OPERATION_DEC, "--",is_pre_post_self_operation_dec};
 
 
 			// special punctuators...
-			eval_info_separators[SEPARATOR_TYPE_COMA]={SEPARATOR_TYPE_COMA, ",",NULL};
-			eval_info_separators[SEPARATOR_TYPE_SEMICOLON]={SEPARATOR_TYPE_SEMICOLON, ";",NULL};
-			eval_info_separators[SEPARATOR_TYPE_PARENTHESIS_OPEN]={SEPARATOR_TYPE_PARENTHESIS_OPEN, "(",NULL};
-			eval_info_separators[SEPARATOR_TYPE_PARENTHESIS_CLOSE]={SEPARATOR_TYPE_PARENTHESIS_CLOSE, ")",NULL};
-			eval_info_separators[SEPARATOR_TYPE_SQUARE_BRAKET_OPEN]={SEPARATOR_TYPE_SQUARE_BRAKET_OPEN, "[",NULL};
-			eval_info_separators[SEPARATOR_TYPE_SQUARE_BRAKET_CLOSE]={SEPARATOR_TYPE_SQUARE_BRAKET_CLOSE, "]",NULL};
+			eval_info_separators[SEPARATOR_COMA]={SEPARATOR_COMA, ",",NULL};
+			eval_info_separators[SEPARATOR_SEMICOLON]={SEPARATOR_SEMICOLON, ";",NULL};
+			eval_info_separators[SEPARATOR_PARENTHESIS_OPEN]={SEPARATOR_PARENTHESIS_OPEN, "(",NULL};
+			eval_info_separators[SEPARATOR_PARENTHESIS_CLOSE]={SEPARATOR_PARENTHESIS_CLOSE, ")",NULL};
+			eval_info_separators[SEPARATOR_SQUARE_BRAKET_OPEN]={SEPARATOR_SQUARE_BRAKET_OPEN, "[",NULL};
+			eval_info_separators[SEPARATOR_SQUARE_BRAKET_CLOSE]={SEPARATOR_SQUARE_BRAKET_CLOSE, "]",NULL};
 
 			// Init special punctuators...
 			// Init keywords...
 
-			eval_info_keywords[KEYWORD_TYPE_UNKNOWN] = {KEYWORD_TYPE_UNKNOWN, NULL,NULL};
-			eval_info_keywords[KEYWORD_TYPE_VAR] = {KEYWORD_TYPE_VAR,"var",evalKeywordTypeVar};
-			eval_info_keywords[KEYWORD_TYPE_IF] = {KEYWORD_TYPE_IF,"if",evalKeywordTypeIf};
-			eval_info_keywords[KEYWORD_TYPE_ELSE] = {KEYWORD_TYPE_ELSE,"else"};
-			eval_info_keywords[KEYWORD_TYPE_FOR] = {KEYWORD_TYPE_FOR,"for",evalKeywordTypeFor};
-			eval_info_keywords[KEYWORD_TYPE_WHILE] = {KEYWORD_TYPE_WHILE,"while",evalKeywordTypeWhile};
-			eval_info_keywords[KEYWORD_TYPE_DO_WHILE] = {KEYWORD_TYPE_DO_WHILE,"do",evalKeywordTypeDoWhile}; // while is expected in the end ...
+			eval_info_keywords[KEYWORD_UNKNOWN] = {KEYWORD_UNKNOWN, NULL,NULL};
+			eval_info_keywords[KEYWORD_VAR] = {KEYWORD_VAR,"var",eval_keyword_var_or_const};
+			eval_info_keywords[KEYWORD_CONST] = {KEYWORD_CONST,"const",eval_keyword_var_or_const};
+			eval_info_keywords[KEYWORD_IF] = {KEYWORD_IF,"if",eval_keyword_if_else};
+			eval_info_keywords[KEYWORD_ELSE] = {KEYWORD_ELSE,"else"};
+			eval_info_keywords[KEYWORD_FOR] = {KEYWORD_FOR,"for",eval_keyword_for};
+			eval_info_keywords[KEYWORD_WHILE] = {KEYWORD_WHILE,"while",eval_keyword_while};
+			eval_info_keywords[KEYWORD_DO_WHILE] = {KEYWORD_DO_WHILE,"do",eval_keyword_do_while}; // while is expected in the end ...
 
-			eval_info_keywords[KEYWORD_TYPE_SWITCH] = {KEYWORD_TYPE_SWITCH,"switch",evalKeywordTypeSwitch};
-			eval_info_keywords[KEYWORD_TYPE_CASE] = {KEYWORD_TYPE_CASE,"case",NULL};
-			eval_info_keywords[KEYWORD_TYPE_BREAK] = {KEYWORD_TYPE_BREAK,"break",NULL};
-			eval_info_keywords[KEYWORD_TYPE_CONTINUE] = {KEYWORD_TYPE_CONTINUE,"continue",NULL};
-			eval_info_keywords[KEYWORD_TYPE_DEFAULT] = {KEYWORD_TYPE_DEFAULT,"default",NULL};
-			eval_info_keywords[KEYWORD_TYPE_FUNCTION] = {KEYWORD_TYPE_FUNCTION,"function",NULL};
-			eval_info_keywords[KEYWORD_TYPE_RETURN] = {KEYWORD_TYPE_RETURN,"return",evalKeywordTypeReturn};
-			eval_info_keywords[KEYWORD_TYPE_THIS] = {KEYWORD_TYPE_THIS,"this", NULL};
-			eval_info_keywords[KEYWORD_TYPE_CLASS] = {KEYWORD_TYPE_CLASS,"class",NULL};
-			eval_info_keywords[KEYWORD_TYPE_NEW] = {KEYWORD_TYPE_NEW,"new", NULL};
-			eval_info_keywords[KEYWORD_TYPE_DELETE] = {KEYWORD_TYPE_DELETE,"delete",evalKeywordTypeDelete};
-			eval_info_keywords[KEYWORD_TYPE_IN] = {KEYWORD_TYPE_IN,"in",NULL};
+			eval_info_keywords[KEYWORD_SWITCH] = {KEYWORD_SWITCH,"switch",eval_keyword_switch};
+			eval_info_keywords[KEYWORD_CASE] = {KEYWORD_CASE,"case",NULL};
+			eval_info_keywords[KEYWORD_DEFAULT] = {KEYWORD_DEFAULT,"default",NULL};
+			eval_info_keywords[KEYWORD_BREAK] = {KEYWORD_BREAK,"break",eval_keyword_break};
+			eval_info_keywords[KEYWORD_CONTINUE] = {KEYWORD_CONTINUE,"continue",eval_keyword_continue};
+			eval_info_keywords[KEYWORD_FUNCTION] = {KEYWORD_FUNCTION,"function",NULL};
+			eval_info_keywords[KEYWORD_RETURN] = {KEYWORD_RETURN,"return",eval_keyword_return};
+			eval_info_keywords[KEYWORD_THIS] = {KEYWORD_THIS,"this", NULL};
+			eval_info_keywords[KEYWORD_CLASS] = {KEYWORD_CLASS,"class",NULL};
+			eval_info_keywords[KEYWORD_NEW] = {KEYWORD_NEW,"new", NULL};
+			eval_info_keywords[KEYWORD_DELETE] = {KEYWORD_DELETE,"delete",eval_keyword_delete};
+			eval_info_keywords[KEYWORD_IN] = {KEYWORD_IN,"in",NULL};
 
 			// DIRECTIVES
-			eval_info_directives[DIRECTIVE_TYPE_UNKNOWN]={DIRECTIVE_TYPE_UNKNOWN, NULL};
-			eval_info_directives[DIRECTIVE_TYPE_INCLUDE]={DIRECTIVE_TYPE_INCLUDE, "import"};
+			eval_info_directives[DIRECTIVE_UNKNOWN]={DIRECTIVE_UNKNOWN, NULL};
+			eval_info_directives[DIRECTIVE_INCLUDE]={DIRECTIVE_INCLUDE, "import"};
 
 			g_init_eval=true;
 		}

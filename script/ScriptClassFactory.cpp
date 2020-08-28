@@ -4,7 +4,7 @@
 #define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"
 #define REGISTER_BUILT_IN_STRUCT(type_class, idx_class)\
 	if(script_classes.size()!=idx_class){\
-		THROW_RUNTIME_ERROR(zs_strutils::format("Error: class built in type %s doesn't match its id",STR(type_class)));\
+		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
 		return;\
 	}\
 	registerNativeClass<type_class>(STR(type_class));
@@ -12,7 +12,7 @@
 
 #define REGISTER_BUILT_IN_CLASS(type_class, idx_class)\
 	if(script_classes.size()!=idx_class){\
-		THROW_RUNTIME_ERROR(zs_strutils::format("Error: class built in type %s doesn't match its id",STR(type_class)));\
+		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
 		return;\
 	}\
 	registerNativeClassBuiltIn<type_class>(STR(type_class));
@@ -20,7 +20,7 @@
 
 #define REGISTER_BUILT_IN_TYPE(type_class, idx_class)\
 	if(script_classes.size()!=idx_class){\
-		THROW_RUNTIME_ERROR(zs_strutils::format("Error initializing C built in type: %s",STR(type_class)));\
+		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",STR(type_class));\
 		return;\
 	}else{\
 		ScriptClass *sc=registerClass(__FILE__,__LINE__,STR(type_class),"");\
@@ -85,7 +85,7 @@ namespace zetscript{
 		REGISTER_BUILT_IN_CLASS(ScriptVar,IDX_BUILTIN_TYPE_CLASS_SCRIPT_VAR);
 		REGISTER_BUILT_IN_CLASS(ScriptVarString,IDX_BUILTIN_TYPE_CLASS_STRING);
 		REGISTER_BUILT_IN_CLASS(ScriptVarVector,IDX_BUILTIN_TYPE_CLASS_VECTOR);
-		REGISTER_BUILT_IN_CLASS(ScriptVarFunctor,IDX_BUILTIN_TYPE_CLASS_FUNCTOR);
+		REGISTER_BUILT_IN_CLASS(ScriptVarFunction,IDX_BUILTIN_TYPE_CLASS_FUNCTOR);
 		REGISTER_BUILT_IN_CLASS(ScriptVarDictionary,IDX_BUILTIN_TYPE_CLASS_DICTIONARY);
 
 
@@ -98,7 +98,7 @@ namespace zetscript{
 
 		// register custom functions ...
 		class_C_BaseOf<ScriptVarVector,ScriptVar>();
-		class_C_BaseOf<ScriptVarFunctor,ScriptVar>();
+		class_C_BaseOf<ScriptVarFunction,ScriptVar>();
 		class_C_BaseOf<ScriptVarDictionary,ScriptVar>();
 
 
@@ -120,6 +120,18 @@ namespace zetscript{
 		registerNativeFunctionMember("add",&ScriptVarDictionary::addAttrSf);
 		registerNativeFunctionMember("remove",&ScriptVarDictionary::removeAttrSf);
 		registerNativeFunctionMember("size",&ScriptVarDictionary::sizeSf);
+
+		//-------------------------
+		// Register built in extra
+		registerNativeSingletonClass<MathBuiltIn>("Math");
+		registerNativeStaticConstMember<MathBuiltIn>("PI",&MathBuiltIn::PI);
+		registerNativeFunctionMemberStatic<MathBuiltIn>("sin",MathBuiltIn::sin);
+		registerNativeFunctionMemberStatic<MathBuiltIn>("cos",MathBuiltIn::cos);
+		registerNativeFunctionMemberStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
+		registerNativeFunctionMemberStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
+		registerNativeFunctionMemberStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
+
+
 	}
 
 	void ScriptClassFactory::registerNativeBaseSymbols(bool _register){
@@ -142,7 +154,7 @@ namespace zetscript{
 		//int idxVariable;
 
 		if(var_ptr==NULL){
-			THROW_RUNTIME_ERROR(zs_strutils::format("cannot register var \"%s\" with NULL reference value", var_name.c_str()));
+			THROW_RUNTIME_ERROR("cannot register var \"%s\" with NULL reference value", var_name.c_str());
 			return false;
 		}
 
@@ -154,7 +166,7 @@ namespace zetscript{
 		}
 
 		if(getIdxClassFromIts_C_Type(var_type) == ZS_INVALID_CLASS){
-			THROW_RUNTIME_ERROR(zs_strutils::format("%s has not valid type (%s)",var_name.c_str(),var_type.c_str()));
+			THROW_RUNTIME_ERROR("%s has not valid type (%s)",var_name.c_str(),var_type.c_str());
 			return false;
 		}
 
@@ -204,7 +216,7 @@ namespace zetscript{
 		ScriptClass *sci=NULL;
 
 		if(script_classes.size()>=MAX_REGISTER_CLASSES){
-			THROW_RUNTIME_ERROR(zs_strutils::format("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES));
+			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
 			return NULL;
 		}
 
@@ -250,7 +262,7 @@ namespace zetscript{
 			return sci;
 
 		}else{
-			THROW_RUNTIME_ERROR(zs_strutils::format("class \"%s\" already registered",class_name.c_str()));
+			THROW_RUNTIME_ERROR("class \"%s\" already registered",class_name.c_str());
 		}
 
 		return NULL;
@@ -372,12 +384,12 @@ namespace zetscript{
 
 		//local_map_type_conversion
 		if(conversion_types.count(idx_src_class) == 0){
-			THROW_RUNTIME_ERROR(zs_strutils::format("There's no type src conversion class \"%s\".",zs_rtti::demangle(src_class->str_class_ptr_type).c_str()));
+			THROW_RUNTIME_ERROR("There's no type src conversion class \"%s\".",zs_rtti::demangle(src_class->str_class_ptr_type).c_str());
 			return 0;
 		}
 
 		if((conversion_types)[idx_src_class].count(idx_convert_class) == 0){
-			THROW_RUNTIME_ERROR(zs_strutils::format("There's no dest conversion class \"%s\".",zs_rtti::demangle(convert_class->str_class_ptr_type).c_str()));
+			THROW_RUNTIME_ERROR("There's no dest conversion class \"%s\".",zs_rtti::demangle(convert_class->str_class_ptr_type).c_str());
 			return 0;
 		}
 
