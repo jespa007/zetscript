@@ -200,7 +200,7 @@ namespace zetscript{
 			}; //assign var
 
 		// if ignore duplicate was true, map resets idx to the last function...
-		properties_keys_built_in->set(key_value.c_str(),(intptr_t)stk_properties->count);
+		properties_keys_built_in->set(key_value.c_str(),(intptr_t)new_stk);
 
 		stk_properties_built_in->push_back((intptr_t)new_stk);
 
@@ -266,7 +266,7 @@ namespace zetscript{
 		*new_stk=si; //assign var
 
 		// if ignore duplicate was true, map resets idx to the last function...
-		properties_keys->set(key_value.c_str(),(intptr_t)stk_properties->count);
+		properties_keys->set(key_value.c_str(),(intptr_t)new_stk);
 
 		stk_properties->push_back((intptr_t)new_stk);
 
@@ -274,86 +274,43 @@ namespace zetscript{
 		return new_stk;
 	}
 
-	/*StackElement * ScriptVar::PropertyExist(const char *c){
-		for(unsigned i = 0; i < properties_keys.size(); i++){
-			//ScriptVar *var = (ScriptVar *)m_variableSymbol[i].object.var_ref;
-			if(properties_keys[i] == std::string(c)){
-				return &properties[i];
-			}
-		}
-		return NULL;
-	}*/
-
-	StackElement * ScriptVar::getPropertyBuiltIn(const std::string & property_name){
-		bool exists;
-		if(property_name == "this"){
-			return &this_variable;
-		}
-
-
-		intptr_t idx_property=this->properties_keys_built_in->get(property_name.c_str(),exists);
-		if(exists){
-			return (StackElement *)this->stk_properties_built_in->items[idx_property];
-		}
-
-		return NULL;
-	}
-
 	StackElement * ScriptVar::getProperty(const std::string & property_name){//,bool only_var_name){
 
 		bool exists;
 
 
-		intptr_t idx_property=this->properties_keys->get(property_name.c_str(),exists);
+		// try built-in
+		intptr_t stk_element=this->properties_keys_built_in->get(property_name.c_str(),exists);
 		if(exists){
-			return (StackElement *)this->stk_properties->items[idx_property];
+			return (StackElement *)stk_element;
 		}
+
+		//try user props
+		stk_element=this->properties_keys->get(property_name.c_str(),exists);
+		if(exists){
+			return (StackElement *)stk_element;
+		}
+
 
 		return NULL;
-		/*for(unsigned int i = 0; i < this->properties_keys->count; i++){
-			if(strcmp(property_name.c_str(),(const char *)this->properties_keys->items[i])==0){
-				return (StackElement *)stk_properties->items[i];
-			}
-		}
-		return NULL;*/
+
 	}
 
-	/*FunctionSymbol *ScriptVar::addFunction(const std::string & symbol_value,const ScriptFunction *irv, bool ignore_duplicates){
-		FunctionSymbol *si=new FunctionSymbol();
-		si->proxy_ptr=0;
-		si->object = {
-			(void *)irv,				// function struct pointer.
-			NULL,						// no var ref releated.
-			MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION  // dfine as function.
-		};
+	StackElement * ScriptVar::getProperty(short idx){
 
-		if(!ignore_duplicates){
-			if(getFunction(symbol_value) != NULL){
-				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(irv,NULL), "internal:symbol already exists");
-			}
+		if(idx==ZS_IDX_SYMBOL_THIS){
+			return &this_variable;
 		}
 
-		// get super function ...
-		si->key_value=symbol_value;
-		//si.idxAstNode = _idxAstNode;
-		functions->push_back((intptr_t)si);
+		if(idx >= (int)stk_properties_built_in->count){
+			if(idx >= (int)stk_properties_built_in->count+stk_properties->count){
+				THROW_RUNTIME_ERROR("idx symbol index out of bounds (%i)",idx);
+			}
+			idx-=stk_properties_built_in->count;
+		}
 
-		return si;
+		return (StackElement *)stk_properties->items[idx];
 	}
-
-	FunctionSymbol * ScriptVar::getFunction(const std::string & varname){
-		for(unsigned int i = 0; i < this->functions->count; i++){
-
-			FunctionSymbol *fs=(FunctionSymbol *)this->functions->items[i];
-			std::string symbol = fs->key_value;
-
-			if(varname == symbol){
-				return (FunctionSymbol * )functions->items[i];
-			}
-		}
-		return NULL;
-	}*/
-
 
 	void ScriptVar::eraseProperty(short idx, bool remove_vector){//onst std::string & varname){
 
@@ -410,7 +367,6 @@ namespace zetscript{
 	}
 
 	void ScriptVar::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
-		//try{
 		bool exists=false;
 		intptr_t idx_property = properties_keys->get(property_name.c_str(),exists);
 		if(!exists){
@@ -418,48 +374,6 @@ namespace zetscript{
 		}
 		eraseProperty(idx_property,true);
 		properties_keys->erase(property_name.c_str()); // erase also property key
-
-		 	// return true;
-
-		/*}catch(std::exception & ex){
-			writeError(SFI_GET_FILE_LINE(info_function,NULL),"%s",ex.what());
-
-		}*/
-
-		//return false;
-		/*for(unsigned int i = 0; i < this->properties_keys->count; i++){
-			if(strcmp(property_name.c_str(),(const char *)this->properties_keys->items[i])==0){
-				return eraseProperty(i,true);
-			}
-		}*/
-		//writeError(SFI_GET_FILE_LINE(info_function,NULL),"symbol %s doesn't exist",varname.c_str());
-		//return false;
-	}
-
-	StackElement * ScriptVar::getPropertyBuiltIn(short idx){
-
-		if(idx==ZS_IDX_SYMBOL_THIS){
-			return &this_variable;
-		}
-
-		if(idx >= (int)stk_properties_built_in->count){
-			THROW_RUNTIME_ERROR("idx symbol index out of bounds (%i)",idx);
-		}
-
-		return (StackElement *)stk_properties_built_in->items[idx];
-	}
-
-	StackElement * ScriptVar::getProperty(short idx){
-
-		if(idx==ZS_IDX_SYMBOL_THIS){
-			return &this_variable;
-		}
-
-		if(idx >= (int)stk_properties->count){
-			THROW_RUNTIME_ERROR("idx symbol index out of bounds (%i)",idx);
-		}
-
-		return (StackElement *)stk_properties->items[idx];
 	}
 
 	const std::string & ScriptVar::getClassName(){

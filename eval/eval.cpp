@@ -167,9 +167,9 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("idx_end_instruction out of bounds ");
 			}
 			EvalInstruction **it=&eval_data->current_function->instructions[idx_start_instruction];
-			EvalInstruction **end=&eval_data->current_function->instructions[idx_end_instruction-1];
+			unsigned size = eval_data->current_function->instructions.size();
 
-			for(; it != end; it++){
+			for(unsigned i=0; i < size; i++,it++){
 				switch((*it)->vm_instruction.byte_code){
 				case BYTE_CODE_JMP:
 				case BYTE_CODE_JNT:
@@ -388,7 +388,7 @@ namespace zetscript{
 						else{
 							Symbol *symbol_function=sc->getSymbol(ls->value,ls->n_params);
 							if(symbol_function==NULL){
-								THROW_RUNTIME_ERROR("Cannot find function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
+								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
 								return;
 							}
 
@@ -416,7 +416,7 @@ namespace zetscript{
 
 						// ok get the super function...
 						if(symbol_sf_foundf == NULL){
-							THROW_RUNTIME_ERROR("Cannot find super function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
+							THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find super function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
 							return;
 						}
 						instruction->vm_instruction.value_op2=symbol_sf_foundf->ref_ptr;
@@ -457,17 +457,17 @@ namespace zetscript{
 								if(ls->n_params==NO_PARAMS_IS_VARIABLE){
 
 									if((vis=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value))==NULL){
-										THROW_RUNTIME_ERROR("Cannot find variable \"%s\"",ls->value.c_str());
+										THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find variable \"%s\"",ls->value.c_str());
 										return;
 									}
 
 									load_type=LoadType::LOAD_TYPE_VARIABLE;
 									instruction->vm_instruction.value_op2=vis->idx_position;
 								}
-								else{
+								else{ // function
 									Symbol *symbol_sf;
 									if((symbol_sf=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params))==0){
-										THROW_RUNTIME_ERROR("Cannot find function \"%s\"",ls->value.c_str());
+										THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find function \"%s\"",ls->value.c_str());
 										return;
 									}
 
@@ -476,6 +476,8 @@ namespace zetscript{
 
 									load_type=LoadType::LOAD_TYPE_FUNCTION;
 								}
+							}else{
+								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find symbol \"%s\"",ls->value.c_str());
 							}
 						}
 

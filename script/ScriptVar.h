@@ -62,9 +62,8 @@ class ScriptClass;
 				const std::string & symbol_value
 		);
 		StackElement * getProperty(const std::string & varname);
-		StackElement * getPropertyBuiltIn(const std::string & varname);
 		StackElement * getProperty(short idx);
-		StackElement * getPropertyBuiltIn(short idx);
+
 		void eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
 		zs_vector * getProperties();

@@ -1069,6 +1069,72 @@ namespace zetscript{
 			return NULL;
 		}
 
+		ConstantValue * perform_const_operation(const char *file, int line,ByteCode byte_code,ConstantValue *stk_op1, ConstantValue *stk_op2){
+
+			float op2=0;
+			float result_op=0;
+			ConstantValue *stk_int_calc_result=NULL;
+
+			if(stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
+				result_op=((intptr_t)stk_op1->stk_value);
+			}else if(stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
+				result_op=*((float *)(&stk_op1->stk_value));
+			}else{
+				THROW_SCRIPT_ERROR(file,line,"Constant operations should be number");
+			}
+
+			if(stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
+				op2=((intptr_t)stk_op2->stk_value);
+			}else if(stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
+				op2=*(float *)((intptr_t)stk_op2->stk_value);
+			}else{
+				THROW_SCRIPT_ERROR(file,line,"Constant operations should be number");
+			}
+
+
+			stk_int_calc_result=(ConstantValue *)malloc(sizeof(ConstantValue));
+
+			// which operation ?
+			switch(byte_code){
+			case BYTE_CODE_NOT:
+				result_op=-result_op;
+				break;
+			case BYTE_CODE_ADD:
+				result_op+=op2;
+				break;
+			case BYTE_CODE_MUL:
+				result_op*=op2;
+				break;
+			case BYTE_CODE_DIV:
+				if(op2==0){
+					THROW_SCRIPT_ERROR(file,line,"divide by 0");
+				}
+				result_op/=op2;
+				break;
+			case BYTE_CODE_MOD:
+				if(op2==0){
+					THROW_SCRIPT_ERROR(file,line,"divide by 0");
+				}
+				result_op=fmod(result_op,op2);
+				break;
+			default:
+				THROW_SCRIPT_ERROR(file,line,"const instruction %i not implemented",byte_code);
+				break;
+
+			}
+
+
+			if((stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER) && (stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER)){
+				*stk_int_calc_result={(void *)((intptr_t)result_op),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
+			} // float
+			if((stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT) || (stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){
+				memcpy(&stk_int_calc_result->stk_value,&result_op,sizeof(float));
+				stk_int_calc_result->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
+			}
+
+			return stk_int_calc_result;
+		}
+
 		char * eval_keyword_var_or_const(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 
 			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
@@ -1125,12 +1191,14 @@ namespace zetscript{
 							allow_for_in=false;
 
 							// register symbol...
-							eval_data->current_function->script_function->registerVariable(
-									scope_info
-									,eval_data->current_parsing_file
-									, line
-									, variable_name
-							);
+							if(is_constant == false){ // do not register as variable...
+								eval_data->current_function->script_function->registerVariable(
+										scope_info
+										,eval_data->current_parsing_file
+										, line
+										, variable_name
+								);
+							}
 
 							// if = then eval expression
 							if(*aux_p == '='){ // only for variables (not class members)
@@ -1147,9 +1215,68 @@ namespace zetscript{
 								);
 
 								if(is_constant){ // resolve constant_expression
-									StackElement result;
 
-									THROW_RUNTIME_ERROR("const expression not implemented");
+									ConstantValue *stk_op1,*stk_op2,*stk_int_calc_result;
+									std::vector<intptr_t> stack; // constant/vectors or dictionaries...
+									std::vector<intptr_t> inter_calc_stack; // constant/vectors or dictionaries...
+
+
+									// let's fun evalute, an expression throught its op codes...
+									EvalInstruction **it=&constant_instructions[0];
+									unsigned size=constant_instructions.size();
+									for(unsigned i=0; i < size; i++,it++){
+										Instruction *instruction=&(*it)->vm_instruction;
+										if(instruction->byte_code == BYTE_CODE_LOAD){
+											if(instruction->value_op1 != LOAD_TYPE_CONSTANT){
+												THROW_SCRIPT_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"expected constant value",instruction->byte_code);
+											}
+											stack.push_back(instruction->value_op2);
+
+										}else{ // expect operation ?
+
+											if(stack.size()<2){
+												THROW_SCRIPT_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error expected >= 3 stacks for constant");
+											}
+
+											stk_op1=(ConstantValue *)stack[stack.size()-2];
+											stk_op2=(ConstantValue *)stack[stack.size()-1];
+											stack.pop_back(); // op2
+											stack.pop_back(); // op1
+
+											stk_int_calc_result=perform_const_operation(
+													eval_data->current_parsing_file
+													,(*it)->instruction_source_info.line
+													,instruction->byte_code
+													,stk_op1
+													,stk_op2
+													);
+
+											stack.push_back((intptr_t)stk_int_calc_result);
+											inter_calc_stack.push_back((intptr_t)stk_int_calc_result);
+
+										}
+
+									}
+
+									if(stack.size()!=1){
+										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error: final stack should be 1");
+									}
+
+									stk_int_calc_result = (ConstantValue *)stack[0];
+
+									if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
+										printf("constant %i\n",(intptr_t)stk_int_calc_result->stk_value);
+									}
+
+									if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
+										printf("constant %f\n",*((float *)&stk_int_calc_result->stk_value));
+									}
+
+									if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+										printf("constant %s\n",((std::string *)stk_int_calc_result)->c_str());
+									}
+
+
 									/*try{
 										ConstantValue result=
 										eval_data->zs->registerConstantValue(variable_name,result);
@@ -1159,6 +1286,10 @@ namespace zetscript{
 
 									for(unsigned i=0; i < constant_instructions.size();i++){
 										delete constant_instructions[i];
+									}
+
+									for(unsigned i=0; i < inter_calc_stack.size();i++){
+										free((void *)inter_calc_stack[i]);
 									}
 								}
 

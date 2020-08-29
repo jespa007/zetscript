@@ -164,7 +164,7 @@ namespace zetscript{
 			if((calling_function->symbol.symbol_properties &  SYMBOL_PROPERTY_STATIC_REF) == 0){ // if not static then is function depends of object ...
 
 				if(this_object!= NULL){
-					StackElement *stk_prop_fun = this_object->getPropertyBuiltIn(calling_function->symbol.idx_position);
+					StackElement *stk_prop_fun = this_object->getProperty(calling_function->symbol.idx_position);
 					fun_ptr=(intptr_t)stk_prop_fun->var_ref; // var ref holds function ptr
 				}
 			}
@@ -257,6 +257,8 @@ namespace zetscript{
 
 		Instruction *instructions=calling_function->instructions; // starting instruction
 		Instruction *instruction_it=instructions;
+		Instruction *calling_object_instruction;
+		const char * symbol_access_str;
 
 		vm_str_current=str_start;
 		stk_current=stk_start;
@@ -343,44 +345,51 @@ namespace zetscript{
 								}
 
 
-								ScriptVar  * base_var = (ScriptVar  *)stk_result_op1->var_ref;
+								calling_object = (ScriptVar  *)stk_result_op1->var_ref;
 								if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) {
 									StackElement *stk_ins=((StackElement *)stk_result_op1->var_ref);
 
 									if(stk_ins->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-										base_var=((ScriptVar *)stk_ins->var_ref);
+										calling_object=((ScriptVar *)stk_ins->var_ref);
 									}
 								}
 
-								if(base_var == NULL)
+								if(calling_object == NULL)
 								{
 									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(calling_function,previous_ins));
 								}
 
-								if((variable_stack_element = base_var->getPropertyBuiltIn(SFI_GET_SYMBOL_NAME(calling_function,instruction)))==NULL){
+								calling_object_instruction=previous_ins;
 
-									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction)
-											,"Variable \"%s\" as type \"%s\" has not symbol \"%s\""
-											,SFI_GET_SYMBOL_NAME(calling_function,previous_ins)
-											,base_var->getClassName().c_str()
-											, SFI_GET_SYMBOL_NAME(calling_function,instruction));
-								}
-
-								calling_object = base_var;
-								// push_variable_sta
-								//variable_stack_element->var_ref=base_var;
 							}
 							else{ // this scope ...
+								calling_object_instruction=instruction;
 								calling_object=this_object;
-								if((variable_stack_element = this_object->getPropertyBuiltIn(instruction->value_op2))==NULL){
-									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find symbol \"this.%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction));
-								}
 							}
-							stk_var=variable_stack_element;
 
-							// update stack and set its calling object...
-							*stk_current++={variable_stack_element,calling_object,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
-							continue;
+							symbol_access_str=SFI_GET_SYMBOL_NAME(calling_function,instruction);
+
+							if((variable_stack_element = calling_object->getProperty(symbol_access_str))==NULL){
+
+								// not exist, create new one undefined...
+								variable_stack_element=calling_object->addProperty(symbol_access_str);
+
+								/*THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction)
+										,"Variable \"%s\" has not symbol \"%s\""
+										,SFI_GET_SYMBOL_NAME(calling_function,calling_object_instruction)
+										//,base_var->getClassName().c_str()
+										, SFI_GET_SYMBOL_NAME(calling_function,instruction));*/
+							}
+
+							// do calling from objects we have to store calling object too and go to next instruction
+							if(variable_stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
+								*stk_current++={variable_stack_element,calling_object,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+								continue;
+							}
+
+							// normal symbol
+							stk_var=variable_stack_element;
+							break;
 						case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL:
 							stk_var = &stk_local_var[instruction->value_op2];
 							break;

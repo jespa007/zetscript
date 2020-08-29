@@ -349,7 +349,7 @@ namespace zetscript{
 					}
 
 				}else{ // we have got the calling_obj from last iteration ...
-					se = (*calling_obj)->getPropertyBuiltIn(symbol_to_find);
+					se = (*calling_obj)->getProperty(symbol_to_find);
 					if(se!=NULL){
 						if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 							*calling_obj=(ScriptVar *)se->var_ref;
@@ -363,7 +363,7 @@ namespace zetscript{
 				}
 			}
 
-			is=(*calling_obj)->getPropertyBuiltIn(access_var[access_var.size()-1]);
+			is=(*calling_obj)->getProperty(access_var[access_var.size()-1]);
 			if(is!=NULL){
 				if(is->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
 					*fun_obj=(ScriptFunction *)is->stk_value;
