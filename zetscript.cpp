@@ -44,9 +44,11 @@ namespace zetscript{
 		 // for all classes print code...
 		 for(unsigned i = 0; i < script_classes->size(); i++){
 			 ScriptClass *rc=script_classes->at(i);
-			 for(unsigned f = 0; f < rc->function_members->count; f++){
-
-				 ScriptFunction::printGeneratedCode((ScriptFunction *)rc->function_members->items[f]);
+			 for(unsigned f = 0; f < rc->symbol_members->count; f++){
+				 Symbol *symbol=(Symbol *)rc->symbol_members->items[f];
+				 if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
+					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr);
+				 }
 
 			 }
 		 }
@@ -144,7 +146,7 @@ namespace zetscript{
 		ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 
 		// clean main functions ... remove script functions and leave c functions...
-		for (unsigned f = 0;
+		/*for (unsigned f = 0;
 			f < main_function->registered_functions->count
 			;) {
 			// get function info
@@ -156,13 +158,14 @@ namespace zetscript{
 			else {
 				f++;
 			}
-		}
+		}*/
 
-		// remove variables except c variables ...
+		// remove variables except c variables/functions ...
 		for (unsigned v = 0;
 			v < main_function->registered_symbols->count; ) {
 			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
-			if ((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
+			if (((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF)
+			) {
 				main_function->registered_symbols->erase(v);
 			}
 			else {
@@ -306,9 +309,7 @@ namespace zetscript{
 	}
 
 	void ZetScript::getScriptObject(const std::string &function_access,ScriptVar **calling_obj,ScriptFunction **fun_obj ){
-
 		//ZS_CLEAR_ERROR_MSG();
-
 		std::vector<std::string> access_var = zs_strutils::split(function_access,'.');
 		//ScriptFunction * main_function = main_function;
 
@@ -318,14 +319,13 @@ namespace zetscript{
 		}*/
 		ScriptFunction * main_function = script_class_factory->getMainFunction();
 		*calling_obj = NULL;
-		FunctionSymbol *is=NULL;
 		StackElement *se=NULL;
+		StackElement *is;
 		*fun_obj=NULL;
 
 		// 1. some variable in main function ...
 		if(access_var.size()>1){
 			for(unsigned i=0; i < access_var.size()-1; i++){
-
 				std::string symbol_to_find=access_var[i];
 				if(i==0){ // get variable through main_class.main_function (global element)
 					for(unsigned j = 0; j < main_function->registered_symbols->count && *calling_obj==NULL; j++){
@@ -349,7 +349,7 @@ namespace zetscript{
 					}
 
 				}else{ // we have got the calling_obj from last iteration ...
-					se = (*calling_obj)->getProperty(symbol_to_find);
+					se = (*calling_obj)->getPropertyBuiltIn(symbol_to_find);
 					if(se!=NULL){
 						if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 							*calling_obj=(ScriptVar *)se->var_ref;
@@ -363,10 +363,10 @@ namespace zetscript{
 				}
 			}
 
-			is=(*calling_obj)->getFunction(access_var[access_var.size()-1]);
+			is=(*calling_obj)->getPropertyBuiltIn(access_var[access_var.size()-1]);
 			if(is!=NULL){
-				if(is->object.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
-					*fun_obj=(ScriptFunction *)is->object.stk_value;
+				if(is->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
+					*fun_obj=(ScriptFunction *)is->stk_value;
 				}
 			}else{
 				THROW_RUNTIME_ERROR("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
@@ -375,11 +375,14 @@ namespace zetscript{
 		}else{ // some function in main function
 			//*calling_obj = m_mainObject;
 			std::string symbol_to_find=access_var[0];
-			for(unsigned i = 0; i < main_function->registered_functions->count && *fun_obj==NULL; i++){
-				ScriptFunction *aux_fun_obj=(ScriptFunction *)main_function->registered_functions->items[i];
-				if(		aux_fun_obj->symbol.name  == symbol_to_find
-				  && aux_fun_obj->symbol.scope == MAIN_SCOPE(this)){
-					*fun_obj=aux_fun_obj;
+			for(unsigned i = 0; i < main_function->registered_symbols->count && *fun_obj==NULL; i++){
+				Symbol *symbol=(Symbol *)main_function->registered_symbols->items[i];
+				if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
+					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
+					if(		aux_fun_obj->symbol.name  == symbol_to_find
+					  && aux_fun_obj->symbol.scope == MAIN_SCOPE(this)){
+						*fun_obj=aux_fun_obj;
+					}
 				}
 			}
 		}

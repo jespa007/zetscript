@@ -7,8 +7,6 @@ namespace zetscript{
 			switch(op){
 			default:
 				break;
-			case Operator::OPERATOR_SUB:
-				return ByteCode::BYTE_CODE_SUB;
 			case Operator::OPERATOR_ADD:
 				return ByteCode::BYTE_CODE_ADD;
 			case Operator::OPERATOR_MUL:
@@ -49,7 +47,7 @@ namespace zetscript{
 				return ByteCode::BYTE_CODE_INSTANCEOF;
 			}
 
-			THROW_RUNTIME_ERROR("operator %i not implemented",op);
+			THROW_RUNTIME_ERROR("Convert %i to byte code not implemented",op);
 			return ByteCode::BYTE_CODE_END_FUNCTION;
 		}
 
@@ -642,7 +640,7 @@ namespace zetscript{
 					if(operator_type==Operator::OPERATOR_UNKNOWN){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected operator");
 					}else {
-						// sub operators in vm it has different operations and to have solve this issue we do add of negative values.
+						// sub operators in vm it has different operations and to have solve this issue we do add of negative values on next operation.
 						if(operator_type==Operator::OPERATOR_SUB){
 							operator_type=Operator::OPERATOR_ADD;
 						}else{

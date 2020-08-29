@@ -1,6 +1,7 @@
 //-- Exception --
 
 
+
 #include 		"util/zs_file.cpp"
 #include 		"util/zs_log.cpp"
 #include 		"util/zs_path.cpp"
@@ -15,6 +16,7 @@
 #include 		"ByteCode.cpp"
 
 
+#include 		"built_in/MathBuiltIn.cpp"
 //-- Script --
 #include		"script/ScriptVar.cpp"
 #include		"script/ScriptVarString.cpp"
@@ -27,10 +29,6 @@
 #include		"script/ScriptFunction.cpp"
 #include		"script/ScriptClass.cpp"
 
-#include		"builtin/MathBuiltIn.cpp"
-
-
-//-- Scope --
 #include		"scope/Scope.cpp"
 #include		"scope/ScopeFactory.cpp"
 

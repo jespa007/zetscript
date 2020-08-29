@@ -57,24 +57,30 @@ class ScriptClass;
 				, Instruction *src_instruction = NULL
 				, StackElement * sv=NULL
 		);
+
+		virtual StackElement * addPropertyBuiltIn(
+				const std::string & symbol_value
+		);
 		StackElement * getProperty(const std::string & varname);
+		StackElement * getPropertyBuiltIn(const std::string & varname);
 		StackElement * getProperty(short idx);
+		StackElement * getPropertyBuiltIn(short idx);
 		void eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
 		zs_vector * getProperties();
 
 
-		virtual FunctionSymbol * addFunction(
+		/*virtual FunctionSymbol * addFunction(
 				const std::string & function_name
 				,const ScriptFunction *irv
 				, bool ignore_duplicates=false
-		);
+		);*/
 
 		//FunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const std::string & funname);
 
-		FunctionSymbol 	* getFunction(const std::string & varname);
-		FunctionSymbol 	* getFunction(unsigned int idx);
-		zs_vector			* getFunctions();
+		//FunctionSymbol 	* getFunction(const std::string & varname);
+		//FunctionSymbol 	* getFunction(unsigned int idx);
+		//zs_vector		* getFunctions();
 
 		void * getNativeObject();
 		bool isNativeObject();
@@ -116,7 +122,8 @@ class ScriptClass;
 		void * c_object;
 
 		std::string aux_string;
-		zs_vector * functions; // std::vector<FunctionSymbol>
+		zs_vector * stk_properties_built_in; // std::vector<FunctionSymbol>
+		zs_map	  *	properties_keys_built_in; // to search faster each property by its name
 
 		void createSymbols(ScriptClass *irv);
 		void eraseProperty(short idx, bool remove_vector=false);

@@ -11,11 +11,13 @@ namespace zetscript{
 			, std::vector<FunctionParam> _function_params
 			,int _idx_return_type
 			,Symbol *_symbol
+			, intptr_t _ref_native_function_ptr
 		) {
 		// function data...
 		idx_class=_idx_class;
 		idx_script_function=_idx_script_function;
 		idx_return_type = _idx_return_type;
+		ref_native_function_ptr=_ref_native_function_ptr;
 
 		instructions=NULL;
 
@@ -23,7 +25,7 @@ namespace zetscript{
 
 		// local symbols for class or function...
 		registered_symbols=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
-		registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
+		//registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
 		function_params = new zs_vector();
 		for(unsigned i = 0; i < _function_params.size(); i++){
 			FunctionParam *script_param = new FunctionParam();
@@ -154,15 +156,19 @@ namespace zetscript{
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
-		zs_vector * m_vf = sfo->registered_functions;
+		zs_vector * m_vf = sfo->registered_symbols;
 
 
 		for(unsigned j =0; j < m_vf->count; j++){
+			Symbol *symbol=(Symbol *)m_vf->items[j];
 
-			ScriptFunction *local_irfs = (ScriptFunction *)m_vf->items[j];
+			if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
 
-			if(( local_irfs->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
-				printGeneratedCode((ScriptFunction *)m_vf->items[j]);
+				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
+
+				if(( local_sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+					printGeneratedCode(local_sf);
+				}
 			}
 		}
 
@@ -312,7 +318,7 @@ namespace zetscript{
 
 	}
 
-	Symbol * ScriptFunction::addSymbol(
+	Symbol * ScriptFunction::registerVariable(
 			 Scope * scope_block
 			, const std::string & file
 			, short line
@@ -348,7 +354,7 @@ namespace zetscript{
 		return symbol;
 	}
 
-	Symbol *	 ScriptFunction::getSymbol(Scope *scope,const std::string & symbol_name){
+	/*Symbol *	 ScriptFunction::getVariable(Scope *scope,const std::string & symbol_name){
 
 		if(registered_symbols->count>0){
 
@@ -363,9 +369,9 @@ namespace zetscript{
 			}
 		}
 		return NULL;
-	}
+	}*/
 
-	ScriptFunction * ScriptFunction::addFunction(
+	Symbol * ScriptFunction::registerFunction(
 			 Scope * scope_block
 			,const std::string & file
 			, short line
@@ -376,19 +382,19 @@ namespace zetscript{
 			, unsigned short symbol_properties
 		){
 
-			if(getFunction(scope_block,function_name,(char)args.size()) != NULL){
+			if(getSymbol(scope_block,function_name,(char)args.size()) != NULL){
 				THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
 				return NULL;
 			}
 
-			ScriptFunction *sf =  script_function_factory->newScriptFunction(
+			Symbol *symbol =  script_function_factory->newScriptFunction(
 					//---- Register data
 					 scope_block
 					,file
 					,line
 					//---- Function data
 					,idx_class 				// idx class which belongs to...
-					,registered_functions->count // idx symbol ...
+					,registered_symbols->count // idx symbol ...
 					,function_name
 					,args
 					,idx_return_type
@@ -396,47 +402,56 @@ namespace zetscript{
 					,symbol_properties
 			);
 
-			registered_functions->push_back((intptr_t)sf);
+			registered_symbols->push_back((intptr_t)symbol);
 
-			return sf;
+			return symbol;
 	}
 
-	ScriptFunction *	 ScriptFunction::getFunction(Scope * scope,const std::string & function_name,  char n_args, int * n_symbols_found){
+	Symbol *	 ScriptFunction::getSymbol(Scope * scope,const std::string & symbol_name,  char n_params, int * n_symbols_found){
 
 		if(n_symbols_found != NULL){
 			*n_symbols_found=0;
 		}
-		ScriptFunction *sf_found=NULL;
-		if(registered_functions->count>0){
+		Symbol *symbol_found=NULL;
+		bool is_function = n_params!=NO_PARAMS_IS_VARIABLE;
+		if(registered_symbols->count>0){
 
 			// from last value to first to get last override function...
-			for(int i = (int)(registered_functions->count-1); i >= 0 ; i--){
-				ScriptFunction *current_sf=(ScriptFunction *)registered_functions->items[i];
-				if(
-						(current_sf->symbol.name == function_name)
-					 //&& (n_args == (int)sf->function_params->count)
-					 && (scope ==  NULL?true:(scope == current_sf->symbol.scope))
-					 ){
-					// set first script function found...
-					if(sf_found==NULL){
-						sf_found=current_sf;
+			for(int i = (int)(registered_symbols->count-1); i >= 0 ; i--){
+				Symbol *symbol=(Symbol *)registered_symbols->items[i];
+				if(is_function){
+					if((symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION)==0){
+						continue;
 					}
+					ScriptFunction *current_sf=(ScriptFunction *)symbol->ref_ptr;
+					if(
+							(current_sf->symbol.name == symbol_name)
+						 //&& (n_args == (int)sf->function_params->count)
+						 && (scope ==  NULL?true:(scope == current_sf->symbol.scope))
+						 ){
+						// set first script function found...
+						if(symbol_found==NULL){
+							symbol_found=symbol;
+						}
 
-					if(n_symbols_found != NULL){
-						(*n_symbols_found)++;
+						if(n_symbols_found != NULL){
+							(*n_symbols_found)++;
+						}
+
 					}
-
+				}else{ // variable
+					if((symbol->name == symbol_name)
+						&& (scope ==  NULL?true:(scope == symbol->scope))
+						  ){
+							return symbol;
+						}
 				}
 			}
 		}
-		return sf_found;
+		return symbol_found;
 	}
 
 	ScriptFunction::~ScriptFunction(){
-
-		// delete functions refs from ScriptFunctionFactory...
-		delete registered_functions;
-		registered_functions=NULL;
 
 		// delete symbols refs from scope...
 		delete registered_symbols;

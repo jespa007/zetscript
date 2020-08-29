@@ -49,7 +49,7 @@ namespace zetscript{
 			StackElement *stk = (StackElement *)stk_properties->items[i];
 			if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 				if((stk->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){ // deallocate but not if is c ref
-					if(stk->var_ref != NULL){
+					if(stk->var_ref != 0){
 						// remove property if not referenced anymore
 						virtual_machine->unrefSharedScriptVar(((ScriptVar *)(stk->var_ref))->ptr_shared_pointer_node,true);
 					}

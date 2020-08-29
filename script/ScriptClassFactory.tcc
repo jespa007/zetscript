@@ -66,7 +66,7 @@ namespace zetscript{
 		ref_ptr=(intptr_t)function_ptr;
 
 		// Init struct...
-		main_function->addFunction(
+		main_function->registerFunction(
 				 MAIN_SCOPE(this)
 				,registered_file
 				,registered_line
@@ -286,38 +286,41 @@ namespace zetscript{
 			}
 
 			// register all c vars symbols ...
-			for(unsigned i = 0; i < base_class->symbol_native_variable_members->count; i++){
+			for(unsigned i = 0; i < base_class->symbol_members->count; i++){
 
-				Symbol *symbol_src = (Symbol *)base_class->symbol_native_variable_members->items[i];
+				Symbol *symbol_src = (Symbol *)base_class->symbol_members->items[i];
 
-				Symbol *symbol_dst=new Symbol();
-				symbol_dst->ref_ptr=symbol_src->ref_ptr;
-				symbol_dst->c_type = symbol_src->c_type;
-				symbol_dst->scope=symbol_src->scope;
-				symbol_dst->symbol_properties = derivated_symbol_info_properties;
-				symbol_dst->idx_position = (short)(this_class->symbol_native_variable_members->count);
-				this_class->symbol_native_variable_members->push_back((intptr_t)symbol_dst);
-			}
+				if(symbol_src->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){ // is function
+					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
+					// build params...
+					std::vector<FunctionParam> function_params;
+					for(unsigned j=0; j < script_function->function_params->count;j++){
+						function_params.push_back(*((FunctionParam *) script_function->function_params->items[j]));
+					}
 
-			// register all functions ...
-			for(unsigned i = 0; i < base_class->function_members->count; i++){
-				ScriptFunction *script_function = (ScriptFunction *)base_class->function_members->items[i];
-				// build params...
-				std::vector<FunctionParam> function_params;
-				for(unsigned j=0; j < script_function->function_params->count;j++){
-					function_params.push_back(*((FunctionParam *) script_function->function_params->items[j]));
+					this_class->registerFunctionMember(
+						script_function->symbol.file,
+						script_function->symbol.line,
+						script_function->symbol.name,
+						function_params,
+						script_function->idx_return_type,
+						script_function->symbol.ref_ptr,
+						derivated_symbol_info_properties
+					);
+
+				}else{ // register built-in variable member
+
+					this_class->registerNativeVariableMember(
+							symbol_src->file
+							, symbol_src->line
+							,symbol_src->name
+							,symbol_src->c_type
+							,symbol_src->ref_ptr
+							, derivated_symbol_info_properties
+					);
 				}
-				
-				this_class->registerFunctionMember(
-					script_function->symbol.file,
-					script_function->symbol.line,
-					script_function->symbol.name,
-					function_params,
-					script_function->idx_return_type,
-					script_function->symbol.ref_ptr,
-					derivated_symbol_info_properties
-				);
 			}
+
 		}
 
 		//
@@ -471,7 +474,7 @@ namespace zetscript{
 		ref_ptr=(intptr_t)function_ptr;
 
 		// register member function...
-		ScriptFunction * sf = c_class->registerFunctionMember(
+		Symbol * symbol_sf = c_class->registerFunctionMember(
 				 registered_file
 				,registered_line
 				,function_name
@@ -516,7 +519,7 @@ namespace zetscript{
 						return false;
 					}
 
-					c_class->metamethod_operator[i]->push_back((intptr_t)sf);
+					c_class->metamethod_operator[i]->push_back((intptr_t)symbol_sf);
 
 					ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(T).name()).c_str(), function_name);
 					break;
@@ -643,7 +646,7 @@ namespace zetscript{
 		}
 
 		// register variable...
-		c_class->registerNativeSymbolVariableMember(
+		c_class->registerNativeVariableMember(
 				 registered_file
 				,registered_line
 				,var_name
@@ -690,7 +693,7 @@ namespace zetscript{
 		
 		
 		// register variable...
-		c_class->registerNativeSymbolVariableMember(
+		c_class->registerNativeVariableMember(
 				 registered_file
 				,registered_line
 				,var_name

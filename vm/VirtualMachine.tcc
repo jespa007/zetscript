@@ -167,7 +167,7 @@ namespace zetscript{
 			}
 
 			script_class_aux=GET_SCRIPT_CLASS(this,script_var_object->idx_class);
-			zs_vector *global_functions=script_class_aux->metamethod_operator[__METAMETHOD__];
+			zs_vector *global_symbols=script_class_aux->metamethod_operator[__METAMETHOD__];
 			StackElement *stk_args=(mm_test_startArg-n_metam_args+idx_offset_function_member_start);
 			unsigned n_stk_args=n_metam_args;
 
@@ -179,7 +179,7 @@ namespace zetscript{
 					,instruction
 					,instruction
 					,NULL
-					,global_functions
+					,global_symbols
 
 					,false
 					,symbol_to_find
@@ -229,8 +229,8 @@ namespace zetscript{
 			,Instruction *instruction
 			,Instruction * call_instruction
 
-			,zs_vector *function_symbols
-			,zs_vector *global_functions
+			,zs_vector *local_symbols // vector of properties
+			,zs_vector *global_symbols
 
 			,bool is_constructor
 			,const std::string & symbol_to_find
@@ -243,28 +243,27 @@ namespace zetscript{
 			) {
 
 		// by default search over global functions...
-		int size_fun_vec=global_functions->count-1;
+		int size_fun_vec=global_symbols->count-1;
 		ScriptVar *var_object = NULL;
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
+		zs_vector *symbols=global_symbols;
 
 		// if function_symbols not NULL search over m_functionSymbols....
-		if(function_symbols != NULL){
-			size_fun_vec=function_symbols->count-1;
+		if(local_symbols != NULL){
+			size_fun_vec=local_symbols->count-1;
+			symbols=global_symbols;
 		}
 
 		for(int i = size_fun_vec; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-			ScriptFunction *irfs = NULL;
+			Symbol *symbol=(Symbol *)symbols->items[i];
 
-			if(function_symbols != NULL){
-				FunctionSymbol *fs=(FunctionSymbol *)function_symbols->items[i];
-				irfs = (ScriptFunction *)fs->object.stk_value;
-				aux_string=fs->key_value;
-
-			}else{
-				irfs=(ScriptFunction *)global_functions->items[i];
-				aux_string=irfs->symbol.name;//CEval::getSymbolNameFromSymbolRef(irfs->symbol_info.symbol_ref);
+			if((symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION) == 0){
+				continue;
 			}
+
+			ScriptFunction *irfs = (ScriptFunction *)symbol->ref_ptr;
+			aux_string=irfs->symbol.name;
 
 			bool match_signature = metamethod_str != NULL;
 			if(!match_signature){
@@ -397,7 +396,7 @@ namespace zetscript{
 						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 						aux_string=k_str_string_type_ptr;
-						if(current_arg->var_ref==NULL){ /* is constant char */
+						if(current_arg->var_ref==0){ /* is constant char */
 							aux_string=	k_str_const_char_type_ptr;
 						}
 						break;
@@ -419,17 +418,18 @@ namespace zetscript{
 				}
 
 				for(int i = size_fun_vec; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-					ScriptFunction *irfs = NULL;
-					if(function_symbols!=NULL){
-						irfs = (ScriptFunction *)((FunctionSymbol *)function_symbols->items[i])->object.stk_value;
-					}else{
-						irfs=(ScriptFunction *)global_functions->items[i];
+					Symbol *symbol = (Symbol *)symbols->items[i];
+					if((symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION)== 0){
+						continue;
 					}
+
+					ScriptFunction *irfs = (ScriptFunction *)symbol->ref_ptr;
+
 
 					bool match_signature = metamethod_str != NULL;
 
 					if(!match_signature){
-						match_signature = irfs->symbol.name == irfs->getInstructionSymbolName(call_instruction);
+						match_signature = symbol->name == irfs->getInstructionSymbolName(call_instruction);
 					}
 
 					if(match_signature){
@@ -439,7 +439,7 @@ namespace zetscript{
 						}
 						str_candidates+="\t\t-"+(calling_object==NULL?""
 								:calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::")
-								:"")+irfs->symbol.name+"(";
+								:"")+symbol->name+"(";
 
 						for(unsigned a = 0; a < irfs->function_params->count; a++){
 							if(a>0){
@@ -483,7 +483,7 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,call_instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
 													metamethod_str,
 													calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-													((ScriptFunction *)global_functions->items[0])->symbol.name.c_str(),
+													((ScriptFunction *)global_symbols->items[0])->symbol.name.c_str(),
 													args_str.c_str(),
 													str_candidates.c_str());
 					}else{

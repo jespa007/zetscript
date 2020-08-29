@@ -22,6 +22,7 @@ namespace zetscript{
 		unsigned char idx_class; 		// which class belongs to...
 		short idx_script_function;		// idx_script_function from factory
 		int idx_return_type; 			// idx return type
+		intptr_t ref_native_function_ptr;
 
 		zs_vector * function_params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
 
@@ -30,7 +31,7 @@ namespace zetscript{
 
 		// local symbols for class or function...
 		zs_vector   *	registered_symbols; // registered symbols
-		zs_vector   *	registered_functions; // registered functions
+		//zs_vector   *	registered_functions; // registered functions
 
 
 		ScriptFunction(
@@ -40,6 +41,7 @@ namespace zetscript{
 				, std::vector<FunctionParam> function_params
 				,int  idx_return_type
 				, Symbol *symbol
+				, intptr_t _ref_native_function_ptr
 		);
 
 		//-----------
@@ -67,7 +69,7 @@ namespace zetscript{
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.
 		 */
-		Symbol *  addSymbol(
+		Symbol *  registerVariable(
 				 Scope * scope_block
 				, const std::string & file
 				, short line
@@ -86,12 +88,12 @@ namespace zetscript{
 				, unsigned short symbol_properties=0
 		);*/
 
-		Symbol *  getSymbol(Scope *scope,const std::string & symbol_name);
+		Symbol *  getSymbol(Scope *scope,const std::string & symbol_name, char n_params=NO_PARAMS_IS_VARIABLE, int * n_symbols_found=NULL);
 
 		/* Registers a function.
 		 * Desc: Inserts function at custom scope. It returns the idx std::vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
 		 */
-		ScriptFunction * addFunction(
+		Symbol * registerFunction(
 				  Scope * scope_block
 				, const std::string & file
 				, short line
@@ -112,7 +114,7 @@ namespace zetscript{
 				, unsigned short symbol_properties=0
 		);*/
 
-		ScriptFunction * getFunction(Scope * scope,const std::string & symbol, char n_args=0, int * n_symbols_found=NULL);
+		//Symbol * getFunction(Scope * scope,const std::string & symbol, char n_args=0, int * n_symbols_found=NULL);
 		~ScriptFunction();
 
 	private:

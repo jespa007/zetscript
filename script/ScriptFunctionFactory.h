@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define IDX_SCRIPT_FUNCTION_MAIN				0
+#define IDX_SCRIPT_FUNCTION_MAIN		0
 #define NEW_SCRIPT_FUNCTION(data)		((data->script_function_factory))->newScriptFunction
 #define GET_SCRIPT_FUNCTION(data,idx)	((data->script_function_factory))->getScriptFunction(idx)
 #define MAIN_FUNCTION(data)				GET_SCRIPT_FUNCTION(data,IDX_SCRIPT_FUNCTION_MAIN)
@@ -23,7 +23,7 @@ namespace zetscript{
 			//static void 								setVectorScriptFunctionObjectNode(std::vector<ScriptFunction *> 	* set_vec);
 			zs_vector 	*	getScriptFunctions();
 
-			ScriptFunction 			*	newScriptFunction(
+			Symbol 			*	newScriptFunction(
 				//--- Register information
 				  Scope *scope
 				, const std::string & file
@@ -34,7 +34,7 @@ namespace zetscript{
 				, const std::string & function_name
 				, std::vector<FunctionParam> args={}
 				, int idx_return_type=ZS_IDX_UNDEFINED
-				, intptr_t ref_ptr=0
+				, intptr_t ref_native_function_ptr=0
 				, unsigned short properties=0
 			);
 

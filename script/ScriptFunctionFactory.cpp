@@ -13,7 +13,7 @@ namespace zetscript{
 		return script_functions;
 	}
 
-	ScriptFunction *		 ScriptFunctionFactory::newScriptFunction(
+	Symbol *		 ScriptFunctionFactory::newScriptFunction(
 			//--- Register data
 			  Scope *scope
 			, const std::string & file
@@ -24,7 +24,7 @@ namespace zetscript{
 			, const std::string & function_name
 			, std::vector<FunctionParam> args
 			, int idx_return_type
-			, intptr_t ref_ptr
+			, intptr_t ref_native_function_ptr
 			, unsigned short symbol_properties
 		){
 
@@ -33,7 +33,6 @@ namespace zetscript{
 				ScriptFunction *sc = (ScriptFunction *)script_functions->items[script_functions->count-1];
 				if(!((sc->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
 						THROW_RUNTIME_ERROR("C Functions should be added after global scope and consecutuve C scope node.");
-						return NULL;
 				}
 			}
 		}
@@ -51,9 +50,9 @@ namespace zetscript{
 		short idx_script_function = script_functions->count;
 
 		// sets local function information...
-		symbol->ref_ptr = ref_ptr;		  // ptr function
+
 		symbol->idx_position = _idx_position; // idx local/member function
-		symbol->symbol_properties = symbol_properties;
+		symbol->symbol_properties = symbol_properties | SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION;
 
 		ScriptFunction *script_function = new ScriptFunction(
 				zs
@@ -62,6 +61,7 @@ namespace zetscript{
 				,args
 				,idx_return_type
 				,symbol
+				,ref_native_function_ptr
 				/*,script_functions.size()
 				,args
 				,idx_return_type
@@ -71,14 +71,14 @@ namespace zetscript{
 				,symbol_info_idx_symbol*/
 		);
 
-
+		symbol->ref_ptr = (intptr_t)script_function;		  // ptr function
 
 		//irs->symbol=symbol;
 
 		//irs->idx_script_function=script_functions.size(); // idx script function ref
 		script_functions->push_back((intptr_t)script_function);
 
-		return script_function;
+		return symbol;
 	}
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){
@@ -110,38 +110,27 @@ namespace zetscript{
 
 	void ScriptFunctionFactory::clear(){
 		bool end=false;
-		do{
-			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[script_functions->count-1];
-			end=(info_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF || script_functions->count==1;
+		for(unsigned i=1; i < script_functions->count;){ // starts from > 0 to avoid evaluate main function...
 
-			if(!end){
+			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[i];
+			if((info_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) //--> erase
+			{
 
 				if (info_function->instructions != NULL) {
-					//for (PtrInstruction stat = info_function->object_info.instruction; *stat != NULL; stat++) {
-
-						//free(*stat);
-					//}
-
 					free(info_function->instructions);
 					info_function->instructions=NULL;
 				}
 
-				// unloading scope ...
-				/*if (info_function->scope_block_vars != NULL) {
-					for (unsigned j = 0; j < info_function->n_scope_block_vars; j++) {
-						free(info_function->scope_block_vars[j].idx_local_var);
-					}
-
-					free(info_function->scope_block_vars);
-					info_function->scope_block_vars=NULL;
-				}*/
-
-				script_functions->pop_back();
+				script_functions->erase(i);
 				delete info_function;
 
 			}
+			else{ // keep and next...
+				i++;
+			}
 
-		}while(!end);
+
+		}
 
 	}
 

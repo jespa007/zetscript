@@ -373,12 +373,12 @@ namespace zetscript{
 		}
 
 		bool end=false;
-		for(int i =  (int)(main_function->registered_symbols->count)-1; i >= 0 && !end; i--){
+		for(int i = 0; i < main_function->registered_symbols->count;){
 			//switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(ptr_ale->properties)){
 			//case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 			Symbol *symbol = (Symbol *)main_function->registered_symbols->items[i];
-			end=(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF;
-			if(!end){
+			if((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+
 				StackElement *ptr_ale =&vm_stack[i];
 				ScriptVar *var = NULL;
 
@@ -390,6 +390,11 @@ namespace zetscript{
 						}
 					}
 				}
+
+				main_function->registered_symbols->erase(i);
+			}
+			else{
+				i++;
 			}
 		}
 

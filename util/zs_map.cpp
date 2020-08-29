@@ -72,14 +72,15 @@ namespace zetscript{
 		node->val = val;
 	}
 
-	intptr_t 	zs_map::get(const char * key){
+	intptr_t 	zs_map::get(const char * key, bool & exists){
 		zs_map_node * node=lookup_node(key);
+		exists=false;
 
 		if(node != NULL){
+			exists=true;
 			return node->val;
 		}
 
-		THROW_RUNTIME_ERROR("Element %s not exist",key);
 		return 0;
 	}
 

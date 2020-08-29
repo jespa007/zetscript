@@ -112,7 +112,7 @@ namespace zetscript{
 
 
 
-		 std::string		aux_string_param[MAX_N_ARGS]; // for std::string params...
+		 std::string		aux_string_param[MAX_NATIVE_FUNCTION_ARGS]; // for std::string params...
 
 		 VM_Scope		*vm_current_scope;
 		 VM_Scope		vm_scope[VM_SCOPE_MAX];
@@ -183,8 +183,8 @@ namespace zetscript{
 			,Instruction *instruction
 			,Instruction * call_ale_instruction
 
-			,zs_vector *function_symbols // list of function symbols...
-			,zs_vector *global_functions // list of script functions...
+			,zs_vector *local_symbols // list of function symbols...
+			,zs_vector *global_symbols // list of script functions...
 
 			,bool is_constructor
 			,const std::string & symbol_to_find

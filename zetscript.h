@@ -74,7 +74,6 @@
 #include "Symbol.h"
 #include "exception.h"
 
-#include "function/FunctionSymbol.h"
 #include "function/FunctionTraits.h"
 #include "function/FunctionMemberPointer.h"
 #include "function/FunctionProxyFactory.h"
@@ -82,8 +81,8 @@
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
 
-#include "builtin/MathBuiltIn.h"
-#include "builtin/IoBuiltIn.h"
+#include "built_in/MathBuiltIn.h"
+#include "built_in/IoBuiltIn.h"
 
 #include "script/ScriptVar.h"
 #include "script/ScriptVarString.h"
@@ -276,7 +275,7 @@ namespace zetscript{
 		 * Register C Member var
 		 */
 		template <typename C, typename R,typename T>
-		bool registerVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
+		bool registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
 			return script_class_factory->registerNativeVariableMember<C>(var_name,var_pointer,registered_file,registered_line);
 		}
 

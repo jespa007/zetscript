@@ -18,7 +18,7 @@ namespace zetscript{
 
 		bool		exist(const char * key);
 		void 		set(const char * key,intptr_t val);
-		intptr_t 	get(const char * key);
+		intptr_t 	get(const char * key, bool & exists);
 		void  		erase(const char * key);
 
 		~zs_map();

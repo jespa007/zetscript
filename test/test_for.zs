@@ -2,8 +2,8 @@
 	print("i"+i);
 }*/
 
-var v=[];//0,1,2,3,4,5,6,7,8,9,10];
-v.size();
+var v=[1];//0,1,2,3,4,5,6,7,8,9,10];
+print("size:"+v.size());
 //var a=0;
 
 /*
@@ -16,8 +16,8 @@ for(var i=0; i<v.size();i++){
 	}
 	print("v["+i+"]:"+v[i]);
 	
-}
-
+}*/
+/*
 // k as iterator
 for(var k in v){
 

@@ -16,7 +16,7 @@
 #define ZS_IDX_SYMBOL_THIS					-3
 #define ZS_IDX_SYMBOL_CLASS					-4
 
-#define MAX_N_ARGS						 6
+#define MAX_NATIVE_FUNCTION_ARGS						 6
 
 #define DEFAULT_NO_FILENAME				"no_file"
 #define FUNCTION_MEMBER_CONSTRUCTOR_NAME "constructor"
@@ -91,17 +91,6 @@ namespace zetscript{
 
 		IDX_BUILTIN_TYPE_MAX
 	}IdxBuiltInType;
-
-	//typedef tInfoStatementOp *PInfoStatementOp;
-	typedef enum {
-		SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION				= 0x1 << 0, // ref_ptr holds script function ptr
-		SYMBOL_PROPERTY_C_OBJECT_REF 					= 0x1 << 1,
-		SYMBOL_PROPERTY_IS_DERIVATED 					= 0x1 << 2,
-		SYMBOL_PROPERTY_STATIC_REF 						= 0x1 << 3, // C function or C++ static functions
-		SYMBOL_PROPERTY_CONST 							= 0x1 << 4, // This symbol is not assignable
-		SYMBOL_PROPERTY_IS_POLYMORPHIC					= 0x1 << 5,
-		SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS		= 0x1 << 6  // will pass object this as first parameter
-	}SymbolProperty;
 
 
 	typedef enum

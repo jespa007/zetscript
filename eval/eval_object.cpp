@@ -154,7 +154,7 @@ namespace zetscript{
 			std::string symbol_value;
 			ScriptClass *sc=NULL;
 			int n_args=0;
-			ScriptFunction *constructor_function=NULL;
+			Symbol *constructor_function=NULL;
 
 			Keyword key_w;
 
@@ -215,7 +215,7 @@ namespace zetscript{
 					 }while(*aux_p != ')');
 
 					 // get constructor function
-					 constructor_function=sc->getFunctionMember(FUNCTION_MEMBER_CONSTRUCTOR_NAME,n_args);
+					 constructor_function=sc->getSymbol(FUNCTION_MEMBER_CONSTRUCTOR_NAME,n_args);
 
 					 // if constructor function found insert call function...
 					 if(constructor_function != NULL){
@@ -224,7 +224,7 @@ namespace zetscript{
 							 new EvalInstruction(
 									 BYTE_CODE_CALL
 									 ,ZS_IDX_UNDEFINED
-									 ,constructor_function->symbol.idx_position // idx function member
+									 ,constructor_function->idx_position // idx function member
 									// ,MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL
 							)
 						 );

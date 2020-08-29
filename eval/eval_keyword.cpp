@@ -195,7 +195,7 @@ namespace zetscript{
 			std::vector<FunctionParam> args;
 			std::string conditional_str;
 			ScriptClass *sc=NULL;
-			ScriptFunction *sf=NULL;
+			Symbol *symbol_sf=NULL;
 
 			Symbol * irv=NULL;
 
@@ -346,7 +346,7 @@ namespace zetscript{
 						}
 						//--- OP
 						if(sc!=NULL){ // register as variable member...
-							sf=sc->registerFunctionMember(
+							symbol_sf=sc->registerFunctionMember(
 									 eval_data->current_parsing_file
 									,line
 									,function_name
@@ -354,7 +354,7 @@ namespace zetscript{
 							);
 						}
 						else{ // register as local variable in the function...
-							sf=eval_data->current_function->script_function->addFunction(
+							symbol_sf=eval_data->current_function->script_function->registerFunction(
 									scope_info
 									, eval_data->current_parsing_file
 									, line
@@ -363,7 +363,7 @@ namespace zetscript{
 							);
 						}
 
-						push_function(eval_data,sf);
+						push_function(eval_data,(ScriptFunction *)symbol_sf->ref_ptr);
 
 						// ok let's go to body..
 						aux_p = eval_block(
@@ -1125,7 +1125,7 @@ namespace zetscript{
 							allow_for_in=false;
 
 							// register symbol...
-							eval_data->current_function->script_function->addSymbol(
+							eval_data->current_function->script_function->registerVariable(
 									scope_info
 									,eval_data->current_parsing_file
 									, line

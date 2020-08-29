@@ -9,7 +9,7 @@ namespace zetscript{
 	void ScriptVar::createSymbols(ScriptClass *ir_class){
 
 
-		FunctionSymbol *si;
+		//FunctionSymbol *si;
 		StackElement *se;
 
 		// add extra symbol this itself if is a class typedef by user...
@@ -19,25 +19,50 @@ namespace zetscript{
 		}
 
 		// Register c vars...
-		for ( unsigned i = 0; i < ir_class->symbol_native_variable_members->count; i++){
+		for ( unsigned i = 0; i < ir_class->symbol_members->count; i++){
 
-			Symbol * symbol = (Symbol *)ir_class->symbol_native_variable_members->items[i];
+			Symbol * symbol = (Symbol *)ir_class->symbol_members->items[i];
+			bool is_script_function=symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION;
+			bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
 
-			se=addProperty(symbol->name);
+			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
+			se=addPropertyBuiltIn(
+					symbol->name
+				);
 
-			if(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
-			{ // we know the type object so we assign the pointer ...
-				// check if primitive type (only 4 no more no else)...
-				void *ptr_variable = (void*) ((unsigned long long) c_object + symbol->ref_ptr);
+			if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
 
-				*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
-			}else{
-				THROW_RUNTIME_ERROR("symbol should be c var");
+				ScriptFunction * ir_fun  = (ScriptFunction *)symbol->ref_ptr;
+				se->stk_value=ir_fun;
+				se->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; // tell stack element that is a function
+
+
+				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
+					 // static ref only get ref function ...
+					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_STATIC_REF) == SYMBOL_PROPERTY_STATIC_REF){
+						 se->var_ref = (void *)ir_fun->ref_native_function_ptr;
+					 }
+					 else{ // hard way: create function member ptr through proxy
+						 se->var_ref = (*((std::function<void *(void *)> *)ir_fun->ref_native_function_ptr))(c_object);
+					 }
+				}
+			}
+			else{ // var... should be native in principle ?
+
+				if(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
+				{ // we know the type object so we assign the pointer ...
+					// check if primitive type (only 4 no more no else)...
+					void *ptr_variable = (void*) ((unsigned long long) c_object + symbol->ref_ptr);
+
+					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
+				}else{
+					THROW_RUNTIME_ERROR("symbol should be c var");
+				}
 			}
 		}
 
 		// Register functions...
-		for ( unsigned i = 0; i < ir_class->function_members->count; i++){
+		/*for ( unsigned i = 0; i < ir_class->function_members->count; i++){
 			ScriptFunction * ir_fun  = (ScriptFunction *)ir_class->function_members->items[i];
 			 si =addFunction(
 					  ir_fun->symbol.name,
@@ -54,7 +79,7 @@ namespace zetscript{
 					 si->proxy_ptr = (intptr_t)(*((std::function<void *(void *)> *)ir_fun->symbol.ref_ptr))(c_object);
 				 }
 			}
-		}
+		}*/
 	}
 
 	void ScriptVar::setup(){
@@ -75,7 +100,11 @@ namespace zetscript{
 		memset(&this_variable,0,sizeof(this_variable));
 		stk_properties=new zs_vector();
 		properties_keys=new zs_map();
-		functions=new zs_vector();
+
+		stk_properties_built_in=new zs_vector();
+		properties_keys_built_in=new zs_map();
+
+
 	}
 
 	ScriptVar::ScriptVar(){
@@ -91,8 +120,6 @@ namespace zetscript{
 	}
 
 	void ScriptVar::init(ScriptClass *irv, void * _c_object){
-
-		setup();
 
 		this->registered_class_info = irv;
 		idx_class = irv->idx_class;
@@ -134,7 +161,7 @@ namespace zetscript{
 	ScriptFunction *ScriptVar::getConstructorFunction(){
 
 		if(registered_class_info->idx_function_member_constructor != ZS_IDX_UNDEFINED){
-			return (ScriptFunction *)registered_class_info->function_members->items[registered_class_info->idx_function_member_constructor];
+			return (ScriptFunction *)registered_class_info->symbol_members->items[registered_class_info->idx_function_member_constructor];
 		}
 
 		return NULL;
@@ -161,6 +188,23 @@ namespace zetscript{
 		if((this->delete_c_object = _delete_on_destroy)==true){
 			created_object=c_object;
 		}
+	}
+
+	StackElement * ScriptVar::addPropertyBuiltIn(const std::string & symbol_value){
+		std::string key_value = symbol_value;
+		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
+		*new_stk={
+				0,
+				0,
+				MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
+			}; //assign var
+
+		// if ignore duplicate was true, map resets idx to the last function...
+		properties_keys_built_in->set(key_value.c_str(),(intptr_t)stk_properties->count);
+
+		stk_properties_built_in->push_back((intptr_t)new_stk);
+
+  	    return new_stk;
 	}
 
 	StackElement * ScriptVar::addProperty(
@@ -199,10 +243,6 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 		}
 
-		if(getProperty(symbol_value) != NULL){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function,src_instruction),"internal:symbol \"%s\" already exists",symbol_value.c_str());
-		}
-
 		if(sv != NULL){
 			si = *sv;
 
@@ -225,6 +265,7 @@ namespace zetscript{
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
 		*new_stk=si; //assign var
 
+		// if ignore duplicate was true, map resets idx to the last function...
 		properties_keys->set(key_value.c_str(),(intptr_t)stk_properties->count);
 
 		stk_properties->push_back((intptr_t)new_stk);
@@ -243,14 +284,32 @@ namespace zetscript{
 		return NULL;
 	}*/
 
-	StackElement * ScriptVar::getProperty(const std::string & property_name){//,bool only_var_name){
-
+	StackElement * ScriptVar::getPropertyBuiltIn(const std::string & property_name){
+		bool exists;
 		if(property_name == "this"){
 			return &this_variable;
 		}
 
-		intptr_t idx_property=this->properties_keys->get(property_name.c_str());
-		return (StackElement *)this->stk_properties->items[idx_property];
+
+		intptr_t idx_property=this->properties_keys_built_in->get(property_name.c_str(),exists);
+		if(exists){
+			return (StackElement *)this->stk_properties_built_in->items[idx_property];
+		}
+
+		return NULL;
+	}
+
+	StackElement * ScriptVar::getProperty(const std::string & property_name){//,bool only_var_name){
+
+		bool exists;
+
+
+		intptr_t idx_property=this->properties_keys->get(property_name.c_str(),exists);
+		if(exists){
+			return (StackElement *)this->stk_properties->items[idx_property];
+		}
+
+		return NULL;
 		/*for(unsigned int i = 0; i < this->properties_keys->count; i++){
 			if(strcmp(property_name.c_str(),(const char *)this->properties_keys->items[i])==0){
 				return (StackElement *)stk_properties->items[i];
@@ -259,7 +318,7 @@ namespace zetscript{
 		return NULL;*/
 	}
 
-	FunctionSymbol *ScriptVar::addFunction(const std::string & symbol_value,const ScriptFunction *irv, bool ignore_duplicates){
+	/*FunctionSymbol *ScriptVar::addFunction(const std::string & symbol_value,const ScriptFunction *irv, bool ignore_duplicates){
 		FunctionSymbol *si=new FunctionSymbol();
 		si->proxy_ptr=0;
 		si->object = {
@@ -293,12 +352,13 @@ namespace zetscript{
 			}
 		}
 		return NULL;
-	}
+	}*/
 
 
 	void ScriptVar::eraseProperty(short idx, bool remove_vector){//onst std::string & varname){
 
 		StackElement *si;
+		ScriptFunction * ir_fun;
 
 		if(idx >= stk_properties->count){
 			THROW_RUNTIME_ERROR("idx out of bounds (%i>=%i)",idx,stk_properties->count);
@@ -313,15 +373,23 @@ namespace zetscript{
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+				break;
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
+
+				 ir_fun  = (ScriptFunction *)(si->stk_value);
+				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
+					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_STATIC_REF) != SYMBOL_PROPERTY_STATIC_REF){
+						 delete ((CFunctionMemberPointer *)si->var_ref);
+					 }
+				}
 				break;
 			default: // properties ...
 
 				if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 					if(((si->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)
 						&& ((si->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_THIS) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_THIS)){ // deallocate but not if is c or this ref
-						if(si->var_ref != NULL){
+						if(si->var_ref != 0){
 							// remove property if not referenced anymore
 							virtual_machine->unrefSharedScriptVar(((ScriptVar *)(si->var_ref))->ptr_shared_pointer_node,true);
 						}
@@ -343,9 +411,14 @@ namespace zetscript{
 
 	void ScriptVar::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
 		//try{
-		intptr_t idx_property = properties_keys->get(property_name.c_str());
-		 eraseProperty(idx_property,true);
-		 properties_keys->erase(property_name.c_str()); // erase also property key
+		bool exists=false;
+		intptr_t idx_property = properties_keys->get(property_name.c_str(),exists);
+		if(!exists){
+			THROW_RUNTIME_ERROR("Property %s not exist",property_name.c_str());
+		}
+		eraseProperty(idx_property,true);
+		properties_keys->erase(property_name.c_str()); // erase also property key
+
 		 	// return true;
 
 		/*}catch(std::exception & ex){
@@ -361,6 +434,19 @@ namespace zetscript{
 		}*/
 		//writeError(SFI_GET_FILE_LINE(info_function,NULL),"symbol %s doesn't exist",varname.c_str());
 		//return false;
+	}
+
+	StackElement * ScriptVar::getPropertyBuiltIn(short idx){
+
+		if(idx==ZS_IDX_SYMBOL_THIS){
+			return &this_variable;
+		}
+
+		if(idx >= (int)stk_properties_built_in->count){
+			THROW_RUNTIME_ERROR("idx symbol index out of bounds (%i)",idx);
+		}
+
+		return (StackElement *)stk_properties_built_in->items[idx];
 	}
 
 	StackElement * ScriptVar::getProperty(short idx){
@@ -410,7 +496,7 @@ namespace zetscript{
 		}
 	}
 
-	FunctionSymbol *ScriptVar::getFunction(unsigned int idx){
+	/*FunctionSymbol *ScriptVar::getFunction(unsigned int idx){
 		if(idx >= functions->count){
 			THROW_RUNTIME_ERROR("idx symbol index out of bounds");
 		}
@@ -419,7 +505,7 @@ namespace zetscript{
 
 	zs_vector * ScriptVar::getFunctions(){ // return list of functions
 		return functions;
-	}
+	}*/
 
 	void * ScriptVar::getNativeObject(){
 		return c_object;
@@ -461,7 +547,7 @@ namespace zetscript{
 		stk_properties->clear();
 
 		// deallocate function member ...
-		for ( unsigned i = 0; i < functions->count; i++){
+		/*for ( unsigned i = 0; i < functions->count; i++){
 			FunctionSymbol *si = (FunctionSymbol *)functions->items[i];
 			ScriptFunction * ir_fun  = (ScriptFunction *)(si->object.stk_value);
 			 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
@@ -469,28 +555,36 @@ namespace zetscript{
 					 delete ((CFunctionMemberPointer *)si->proxy_ptr);
 				 }
 			}
-		}
+		}*/
 	}
 
 	ScriptVar::~ScriptVar(){
 
 		destroy();
 
-		// delete all free items and clear();
+		//-----------------------------------
+		// BUILT-IN destroy built-in elements...
+		for(unsigned i =0;i < stk_properties_built_in->count; i++){
+			free((void *)stk_properties_built_in->items[i]);
+		}
+
+		delete stk_properties_built_in;
+		delete properties_keys_built_in;
+		//-----------------------------------
+		// USER delete all free items and clear();
 		for(unsigned i =0;i < stk_properties->count; i++){
 			free((void *)stk_properties->items[i]);
 		}
 
 		delete stk_properties;
-
-		// delete search support...
 		delete properties_keys;
+		//-----------------------------------
 
 
-		for(unsigned i=0; i < functions->count;i++){
+		/*for(unsigned i=0; i < functions->count;i++){
 			delete ((FunctionSymbol *)functions->items[i]);
 		}
 		functions->clear();
-		delete functions;
+		delete functions;*/
 	}
 }

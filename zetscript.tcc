@@ -12,12 +12,12 @@ namespace zetscript{
 					break;
 				 case IDX_BUILTIN_TYPE_INT_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)(*((intptr_t *)ptr_var)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
+					 stk_result={(void *)(*((intptr_t *)ptr_var)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
 					 break;
 				 case IDX_BUILTIN_TYPE_UNSIGNED_INT_C:
 				 case IDX_BUILTIN_TYPE_INTPTR_T_C:
 				 case IDX_BUILTIN_TYPE_INT_C:
-					 stk_result={(void *)(((intptr_t)ptr_var)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
+					 stk_result={(void *)(((intptr_t)ptr_var)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_C:
 					 stk_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
@@ -31,18 +31,18 @@ namespace zetscript{
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)(*((bool *)ptr_var)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
+					 stk_result={(void *)(*((bool *)ptr_var)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_C:
-					 stk_result={(void *)(((bool)ptr_var)),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
+					 stk_result={(void *)(((bool)ptr_var)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN};
 					 break;
 				 case IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)ptr_var,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
+					 stk_result={(void *)ptr_var,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
 					 break;
 				 case IDX_BUILTIN_TYPE_STRING_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)((std::string *)ptr_var)->c_str(),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
+					 stk_result={(void *)((std::string *)ptr_var)->c_str(),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
 					 break;
 				 case IDX_BUILTIN_TYPE_STACK_ELEMENT:
 					 if(ptr_var==0) return stk_result;

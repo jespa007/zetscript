@@ -61,7 +61,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 
 		return{
 			0,
-			NULL,
+			0,
 			MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 	}
 

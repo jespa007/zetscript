@@ -105,8 +105,8 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------------------------------
 		// Let's register functions,...
 		// register c function's
-
-		main_function=main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
+		Symbol *symbol_main_function=main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
+		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 
 
 		registerNativeFunction("print",print);
@@ -171,7 +171,7 @@ namespace zetscript{
 		}
 
 
-		if((irs = main_function->addSymbol(
+		if((irs = main_function->registerVariable(
 				MAIN_SCOPE(this)
 				,registered_file
 				,registered_line
