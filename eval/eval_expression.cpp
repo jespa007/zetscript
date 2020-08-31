@@ -492,7 +492,13 @@ namespace zetscript{
 							std::string accessor_value="";
 
 							switch(*aux_p){
-							case '(': // function call
+							case '(': // is a function call
+
+								// set info that symbol value is function call (its existence is mandatory in vm)
+								symbol_token_node.instructions[
+								   symbol_token_node.instructions.size()-1
+								]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
+
 								if(is_first_access){
 									params=0;
 								}
@@ -528,6 +534,10 @@ namespace zetscript{
 								aux_p++;
 								break;
 							case '[': // std::vector access
+								symbol_token_node.instructions[
+								   symbol_token_node.instructions.size()-1
+								]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;
+
 								aux_p = eval_expression(
 										eval_data
 										,aux_p+1

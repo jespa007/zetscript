@@ -3,7 +3,7 @@
 
 #define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"
 #define REGISTER_BUILT_IN_STRUCT(type_class, idx_class)\
-	if(script_classes.size()!=idx_class){\
+	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
 		return;\
 	}\
@@ -11,7 +11,7 @@
 
 
 #define REGISTER_BUILT_IN_CLASS(type_class, idx_class)\
-	if(script_classes.size()!=idx_class){\
+	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
 		return;\
 	}\
@@ -19,7 +19,7 @@
 
 
 #define REGISTER_BUILT_IN_TYPE(type_class, idx_class)\
-	if(script_classes.size()!=idx_class){\
+	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",STR(type_class));\
 		return;\
 	}else{\
@@ -50,6 +50,7 @@ namespace zetscript{
 		register_c_base_symbols=false;
 		main_function=NULL;
 		main_object=NULL;
+		script_classes=new zs_vector;
 	}
 
 	void ScriptClassFactory::init(){
@@ -112,7 +113,7 @@ namespace zetscript{
 		registerNativeFunction("print",print);
 		//registerNativeFunction("error",internalPrintError);
 
-		registerNativeFunctionMember("size",&ScriptVarVector::sizeSf);
+		//registerNativeFunctionMember("size",&ScriptVarVector::sizeSf);
 		registerNativeFunctionMember("push",&ScriptVarVector::pushSf);
 		registerNativeFunctionMember("pop",&ScriptVarVector::popSf);
 
@@ -123,87 +124,41 @@ namespace zetscript{
 
 		//-------------------------
 		// Register built in extra
-		registerNativeSingletonClass<MathBuiltIn>("Math");
+		// Math
+		registerNativeSingletonClass<MathBuiltIn>("MathBuiltIn");
 		registerNativeStaticConstMember<MathBuiltIn>("PI",&MathBuiltIn::PI);
 		registerNativeFunctionMemberStatic<MathBuiltIn>("sin",MathBuiltIn::sin);
 		registerNativeFunctionMemberStatic<MathBuiltIn>("cos",MathBuiltIn::cos);
 		registerNativeFunctionMemberStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
 		registerNativeFunctionMemberStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
 		registerNativeFunctionMemberStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
+		ZS_REGISTER_NATIVE_VARIABLE(zs,"Math",&math_built_in);
 
-
+		// Io
+		registerNativeSingletonClass<IoBuiltIn>("IoBuiltIn");
+		registerNativeFunctionMemberStatic<IoBuiltIn>("clock",IoBuiltIn::clock);
+		ZS_REGISTER_NATIVE_VARIABLE(zs,"IO",&io_built_in);
 	}
 
 	void ScriptClassFactory::registerNativeBaseSymbols(bool _register){
 		register_c_base_symbols = _register;
 	}
 
-
-	/**
-	 * Register C variable
-	 */
-	 bool  ScriptClassFactory::registerNativeVariable(
-			 const std::string & var_name
-			 ,void * var_ptr
-			 , const std::string & var_type
-			 , const char *registered_file
-			 ,int registered_line)
-	{
-		//Scope *scope;
-		Symbol *irs;
-		//int idxVariable;
-
-		if(var_ptr==NULL){
-			THROW_RUNTIME_ERROR("cannot register var \"%s\" with NULL reference value", var_name.c_str());
-			return false;
-		}
-
-		ScriptFunction *main_function=MAIN_FUNCTION(this);
-
-		if(main_function == NULL){
-			THROW_RUNTIME_ERROR("main function is not created");
-			return false;
-		}
-
-		if(getIdxClassFromIts_C_Type(var_type) == ZS_INVALID_CLASS){
-			THROW_RUNTIME_ERROR("%s has not valid type (%s)",var_name.c_str(),var_type.c_str());
-			return false;
-		}
-
-
-		if((irs = main_function->registerVariable(
-				MAIN_SCOPE(this)
-				,registered_file
-				,registered_line
-				,var_name
-				,var_type
-				,(intptr_t)var_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC_REF)) != NULL
-		){
-
-			ZS_PRINT_DEBUG("Registered variable name: %s",var_name.c_str());
-
-			return true;
-		}
-
-		return false;
-	}
 	void ScriptClassFactory::clear(){
 
 		bool end=false;
-		do{
-			ScriptClass * sc = script_classes.at(script_classes.size()-1);
-			end=(sc->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF;
+		for(int v=script_classes->count-1;
+				v>=1; // avoid main class
+				v--){
 
-			if(!end){
-
+			ScriptClass * sc = (ScriptClass *)script_classes->get(v);
+			if((sc->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){ //script class
 				delete sc;
-				script_classes.pop_back();
-
+				script_classes->pop_back();
+			}else{
+				break;
 			}
-
-		}while(!end);
-
+		}
 	}
 
 	ScriptClass * ScriptClassFactory::registerClass(
@@ -215,7 +170,7 @@ namespace zetscript{
 		unsigned char  index;
 		ScriptClass *sci=NULL;
 
-		if(script_classes.size()>=MAX_REGISTER_CLASSES){
+		if(script_classes->count>=MAX_REGISTER_CLASSES){
 			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
 			return NULL;
 		}
@@ -245,15 +200,14 @@ namespace zetscript{
 				return NULL;
 			}
 
-			sci = new ScriptClass(this->zs,script_classes.size());
+			sci = new ScriptClass(this->zs,script_classes->count);
 
 			scope->setScriptClass(sci);
-
 
 			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
 			sci->symbol=*symbol;
 
-			script_classes.push_back(sci);
+			script_classes->push_back((intptr_t)sci);
 
 			if(base_class != NULL){
 				sci->idx_base_classes->push_back((intptr_t)base_class->idx_class);
@@ -268,10 +222,8 @@ namespace zetscript{
 		return NULL;
 	}
 
-
-
-	std::vector<ScriptClass *> * ScriptClassFactory::getScriptClasses(){
-		return & script_classes;
+	zs_vector * ScriptClassFactory::getScriptClasses(){
+		return script_classes;
 	}
 
 	std::map<unsigned char, std::map<unsigned char, ConversionType>>  *	 ScriptClassFactory::getConversionTypes() {
@@ -284,23 +236,23 @@ namespace zetscript{
 			return NULL;
 		}
 
-		return script_classes.at(idx);
+		return (ScriptClass *)script_classes->get(idx);
 	}
 
 	ScriptClass 	* ScriptClassFactory::getScriptClass(const std::string & class_name){
-		unsigned char index;
-		if((index = getIdxScriptClassInternal(class_name))!=ZS_INVALID_CLASS){ // check whether is local var registered scope ...
-			return script_classes.at(index);
+		unsigned char idx;
+		if((idx = getIdxScriptClassInternal(class_name))!=ZS_INVALID_CLASS){ // check whether is local var registered scope ...
+			return (ScriptClass *)script_classes->get(idx);
 		}
-
 		return NULL;
 	}
 
 	ScriptClass *ScriptClassFactory::getScriptClassBy_C_ClassPtr(const std::string & class_type){
 
-		for(unsigned i = 0; i < script_classes.size(); i++){
-			if(class_type == script_classes.at(i)->str_class_ptr_type){//metadata_info.object_info.symbol_info.c_type){
-				return script_classes.at(i);
+		for(unsigned i = 0; i < script_classes->count; i++){
+			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
+			if(class_type == sc->str_class_ptr_type){//metadata_info.object_info.symbol_info.c_type){
+				return sc;
 			}
 		}
 		return NULL;
@@ -308,8 +260,9 @@ namespace zetscript{
 
 	unsigned char ScriptClassFactory::getIdxScriptClassInternal(const std::string & class_name){
 
-		for(unsigned i = 0; i < script_classes.size(); i++){
-			if(class_name == script_classes.at(i)->symbol.name){
+		for(unsigned i = 0; i < script_classes->count; i++){
+			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
+			if(class_name == sc->symbol.name){
 				return i;
 			}
 		}
@@ -321,14 +274,12 @@ namespace zetscript{
 	}
 
 	ScriptVar *		ScriptClassFactory::instanceScriptVariableByClassName(const std::string & class_name){
-
 		 // 0. Search class info ...
 		 ScriptClass * rc = getScriptClass(class_name);
 
 		 if(rc != NULL){
 			 return instanceScriptVariableByIdx(rc->idx_class);
 		 }
-
 		 return NULL;
 	 }
 
@@ -368,14 +319,14 @@ namespace zetscript{
 
 	unsigned char ScriptClassFactory::getIdx_C_RegisteredClass(const std::string & str_classPtr){
 		// ok check c_type
-		for(unsigned i = 0; i < script_classes.size(); i++){
-			if(script_classes[i]->str_class_ptr_type == str_classPtr){
+		for(unsigned i = 0; i < script_classes->count; i++){
+			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
+			if(sc->str_class_ptr_type == str_classPtr){
 				return i;
 			}
 		}
 		return ZS_INVALID_CLASS;
 	}
-
 
 	intptr_t ScriptClassFactory::doCast(intptr_t obj, unsigned char idx_src_class, unsigned char idx_convert_class){//c_class->idx_class,idx_return_type){
 
@@ -398,18 +349,18 @@ namespace zetscript{
 
 	const char * ScriptClassFactory::getScriptClassName(unsigned char idx){
 		if(idx != ZS_INVALID_CLASS){
-			return script_classes[idx]->symbol.name.c_str();
+			return ((ScriptClass *)script_classes->get(idx))->symbol.name.c_str();
 		}
 		 return "class_unknow";
 	}
-
 
 	unsigned char ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const std::string & c_type_str){
 
 		// 1. we have to handle primitives like void, (int *), (bool *),(float *) and (std::string *).
 		 // 2. Check for rest registered C classes...
-		 for(unsigned i = 0; i < script_classes.size(); i++){
-			 if(script_classes.at(i)->str_class_ptr_type==c_type_str)
+		 for(unsigned i = 0; i < script_classes->count; i++){
+			 ScriptClass * sc=(ScriptClass *)script_classes->get(i);
+			 if(sc->str_class_ptr_type==c_type_str)
 			 {
 				 return i;
 			 }
@@ -418,10 +369,9 @@ namespace zetscript{
 		 return ZS_INVALID_CLASS;
 	 }
 
-	unsigned char 			ScriptClassFactory::getIdxClassFromIts_C_Type(const std::string & c_type_str){
+	unsigned char 			ScriptClassFactory::getIdxClassFromItsNativeType(const std::string & c_type_str){
 		return getIdxScriptInternalFrom_C_Type(c_type_str);
 	}
-
 
 	bool 	ScriptClassFactory::class_C_BaseOf(unsigned char idx_src_class, unsigned char idx_class){
 
@@ -429,7 +379,7 @@ namespace zetscript{
 			return true;
 		}
 
-		ScriptClass * the_class = script_classes.at(idx_src_class);
+		ScriptClass * the_class = (ScriptClass *)script_classes->get(idx_src_class);
 
 		for(unsigned i=0; i < the_class->idx_base_classes->count; i++){
 			intptr_t idx_class_base=the_class->idx_base_classes->items[i];
@@ -437,18 +387,15 @@ namespace zetscript{
 				return true;
 			}
 		}
-
 		return false;
 	}
 
 	ScriptClassFactory::~ScriptClassFactory(){
 		// we have to destroy all allocated constructor/destructor ...
-		for (unsigned i = 0; i < script_classes.size(); i++) {
+		for (unsigned i = 0; i < script_classes->count; i++) {
 
-			delete script_classes.at(i);
+			delete (ScriptClass *)script_classes->get(i);
 		}
-
-		script_classes.clear();
+		script_classes->clear();
 	}
-
 }

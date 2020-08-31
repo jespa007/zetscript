@@ -23,11 +23,11 @@
 
 // HELPER FUNCTIONSs
 
-#define REGISTER_C_BASE_SYMBOLS(script_class_factory,o)		   			(zs)->registerNativeBaseSymbols(o))
+#define REGISTER_NATIVE_BASE_SYMBOLS(script_class_factory,o)		   			(zs)->registerNativeBaseSymbols(o))
 
 // if 0 is in main <> 0, else.
 #define DO_CAST											((this->zs))->doCast
-#define GET_IDX_BUILTIN_TYPE_CLASS_FROM_ITS_C_TYPE		((this->zs))->getIdxClassFromIts_C_Type
+#define GET_IDX_BUILTIN_TYPE_CLASS_FROM_ITS_C_TYPE		((this->zs))->getIdxClassFromItsNativeType
 #define INSTANCE_SCRIPT_VARIABLE_BY_IDX					((this->zs))->instanceScriptVariableByIdx
 #define GET_METAMETHOD(m)								((this->zs))->getMetamethod(m)
 #define IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,_class,_instance)	((this->script_class_factory))->class_C_BaseOf(_class,_instance)

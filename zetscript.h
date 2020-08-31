@@ -104,15 +104,15 @@
 #define ZETSCRIPT_PATCH_VERSION 0
 
 
-#define ZS_CLASS_C_BASEOF(zs)										(zs)->class_C_BaseOf();
-#define ZS_REGISTER_C_FUNCTION(zs,text,s) 							(zs)->registerNativeFunction(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_C_VARIABLE(zs,text,s) 							(zs)->registerNativeVariable(text,&s,typeid(decltype(&s)).name(),__FILE__, __LINE__)
-#define ZS_REGISTER_C_CLASS(zs,class_type,s) 						(zs)->registerNativeClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_C_SINGLETON_CLASS(zs,class_type,s)				(zs)->registerNativeSingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_C_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->registerNativeVariableMember<class_type>(s,v)
-#define ZS_REGISTER_C_STATIC_FUNCTION_MEMBER(zs,class_type,s,f)		(zs)->registerNativeFunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_C_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->registerNativeFunctionMember<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_C_CONSTANT_INT(zs,constant_name,v)				(zs)->registerConstantIntValue(constant_name,v)
+#define ZS_CLASS_C_BASEOF(zs)											(zs)->class_C_BaseOf();
+#define ZS_REGISTER_NATIVE_FUNCTION(zs,text,s) 							(zs)->registerNativeFunction(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_NATIVE_VARIABLE(zs,text,s) 							(zs)->registerNativeVariable(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_NATIVE_CLASS(zs,class_type,s) 						(zs)->registerNativeClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_NATIVE_SINGLETON_CLASS(zs,class_type,s)				(zs)->registerNativeSingletonClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_NATIVE_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->registerNativeVariableMember<class_type>(s,v)
+#define ZS_REGISTER_NATIVE_STATIC_FUNCTION_MEMBER(zs,class_type,s,f)	(zs)->registerNativeFunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_NATIVE_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->registerNativeFunctionMember<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_NATIVE_CONSTANT_INT(zs,constant_name,v)				(zs)->registerConstantIntValue(constant_name,v)
 
 
 namespace zetscript{
@@ -193,14 +193,22 @@ namespace zetscript{
 
 		void 						setPrintOutCallback(void (*)(const char *));
 
-		/*int getIdxClassFromIts_C_Type(const std::string & str_type){
-			return script_class_factory->getIdxClassFromIts_C_Type(str_type);
+		/*int getIdxClassFromItsNativeType(const std::string & str_type){
+			return script_class_factory->getIdxClassFromItsNativeType(str_type);
 		}*/
 
 
 		void 												registerNativeBaseSymbols(bool r){
 			script_class_factory->registerNativeBaseSymbols(r);
 		}
+
+		/**
+		 * Register C variable
+		 */
+		template <typename V>
+		 bool registerNativeVariable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
+			 return script_class_factory->registerNativeVariable(var_str,var_ptr, registered_file, registered_line);
+		 }
 
 		/**
 		 * Register C function
@@ -210,13 +218,7 @@ namespace zetscript{
 			return script_class_factory->registerNativeFunction( function_name,function_ptr, registered_file,registered_line);
 		}
 
-		/**
-		 * Register C variable
-		 */
-		template <typename V>
-		 Symbol * registerVariable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
-			 return script_class_factory->registerNativeVariable(var_str,var_ptr, typeid(V).name(), registered_file, registered_line);
-		 }
+
 
 		/**
 		 * Register C Class. Return index registered class
@@ -291,7 +293,7 @@ namespace zetscript{
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->newSlot();
 				//intptr_t uvar = (intptr_t)(v[i]);
-				*stk = zs_instance->convertVarToStackElement((intptr_t)(v[i]),zs_instance->script_class_factory->getIdxClassFromIts_C_Type(typeid(T).name()));
+				*stk = zs_instance->convertVarToStackElement((intptr_t)(v[i]),zs_instance->script_class_factory->getIdxClassFromItsNativeType(typeid(T).name()));
 			}
 
 			return vsv;

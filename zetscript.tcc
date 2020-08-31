@@ -5,7 +5,7 @@ namespace zetscript{
 			//intptr_t ptr_var = (intptr_t)input_var;
 				std::string s_return_value;
 				StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
-				//int idx_builtin_type=getIdxClassFromIts_C_Type(typeid(T).name());
+				//int idx_builtin_type=getIdxClassFromItsNativeType(typeid(T).name());
 				// save return type ...
 				switch(idx_builtin_type_var){
 				 case IDX_BUILTIN_TYPE_VOID_C:
@@ -221,7 +221,7 @@ namespace zetscript{
 		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<R,void>::value>::type
 		{
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
+			int idx_return = script_class_factory->getIdxClassFromItsNativeType(typeid(R).name());
 
 			*f=((void *)(new std::function<R ()>(
 				[&,calling_obj,fun_obj,idx_return](){
@@ -253,7 +253,7 @@ namespace zetscript{
 			//return NULL;
 
 			using tParam1 = typename T::template Argument<0>::type;
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
 
 			*f=((void *)(new std::function<void (tParam1)>(
 				[&,calling_obj,fun_obj, idx_param1](tParam1 p1){
@@ -277,8 +277,8 @@ namespace zetscript{
 		{
 			using tParam1 = typename T::template argument<0>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
+			int idx_return = script_class_factory->getIdxClassFromItsNativeType(typeid(R).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
 
 
 			*f=((void *)(new std::function<R (tParam1)>(
@@ -319,8 +319,8 @@ namespace zetscript{
 			using tParam2 = typename T::template argument<1>::type;
 
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
 
 			*f=((void *)(new std::function<void (tParam1,tParam2)>(
 				[&,calling_obj,fun_obj, idx_param1, idx_param2](tParam1 p1,tParam2 p2){
@@ -350,9 +350,9 @@ namespace zetscript{
 			using tParam2 = typename T::template argument<1>::type;
 
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
+			int idx_return = script_class_factory->getIdxClassFromItsNativeType(typeid(R).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2](tParam1 p1,tParam2 p2){
@@ -397,9 +397,9 @@ namespace zetscript{
 			using tParam3 = typename T::template argument<2>::type;
 
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam3).name());
 
 
 			*f=((void *)(new std::function<void (tParam1,tParam2,tParam3)>(
@@ -431,10 +431,10 @@ namespace zetscript{
 			using tParam2 = typename T::template argument<1>::type;
 			using tParam3 = typename T::template argument<2>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
+			int idx_return = script_class_factory->getIdxClassFromItsNativeType(typeid(R).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam3).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3](tParam1 p1,tParam2 p2,tParam3 p3){
@@ -477,10 +477,10 @@ namespace zetscript{
 			using tParam3 = typename T::template argument<2>::type;
 			using tParam4 = typename T::template argument<3>::type;
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam4).name());
 
 
 			*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4)>(
@@ -514,11 +514,11 @@ namespace zetscript{
 			using tParam3 = typename T::template argument<2>::type;
 			using tParam4 = typename T::template argument<3>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
+			int idx_return = script_class_factory->getIdxClassFromItsNativeType(typeid(R).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam4).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3,tParam4)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4){
@@ -565,11 +565,11 @@ namespace zetscript{
 
 
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
-			int idx_param5 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam5).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam4).name());
+			int idx_param5 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam5).name());
 
 
 			*f=((void *)(new std::function<void (tParam1,tParam2,tParam3,tParam4,tParam5)>(
@@ -606,12 +606,12 @@ namespace zetscript{
 			using tParam4 = typename T::template argument<3>::type;
 			using tParam5 = typename T::template argument<4>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
-			int idx_param5 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam5).name());
+			int idx_return = script_class_factory->getIdxClassFromItsNativeType(typeid(R).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam4).name());
+			int idx_param5 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam5).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3,tParam4,tParam5)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5){
@@ -661,12 +661,12 @@ namespace zetscript{
 			using tParam6 = typename T::template argument<5>::type;
 
 
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
-			int idx_param5 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam5).name());
-			int idx_param6 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam6).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam4).name());
+			int idx_param5 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam5).name());
+			int idx_param6 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam6).name());
 
 
 
@@ -704,13 +704,13 @@ namespace zetscript{
 			using tParam5 = typename T::template argument<4>::type;
 			using tParam6 = typename T::template argument<5>::type;
 
-			int idx_return = script_class_factory->getIdxClassFromIts_C_Type(typeid(R).name());
-			int idx_param1 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam1).name());
-			int idx_param2 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam2).name());
-			int idx_param3 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam3).name());
-			int idx_param4 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam4).name());
-			int idx_param5 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam5).name());
-			int idx_param6 = script_class_factory->getIdxClassFromIts_C_Type(typeid(tParam6).name());
+			int idx_return = script_class_factory->getIdxClassFromItsNativeType(typeid(R).name());
+			int idx_param1 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam1).name());
+			int idx_param2 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam2).name());
+			int idx_param3 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam3).name());
+			int idx_param4 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam4).name());
+			int idx_param5 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam5).name());
+			int idx_param6 = script_class_factory->getIdxClassFromItsNativeType(typeid(tParam6).name());
 
 			*f=((void *)(new std::function<R (tParam1,tParam2,tParam3,tParam4,tParam5,tParam6)>(
 				[&,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](tParam1 p1,tParam2 p2,tParam3 p3,tParam4 p4,tParam5 p5,tParam6 p6){
@@ -784,13 +784,13 @@ namespace zetscript{
 				getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
 
 				// 2. check valid parameters ...
-				if((idx_return_type=script_class_factory->getIdxClassFromIts_C_Type(return_type)) == -1){
+				if((idx_return_type=script_class_factory->getIdxClassFromItsNativeType(return_type)) == -1){
 					THROW_RUNTIME_ERROR("Return type \"%s\" for bind function not registered",zs_rtti::demangle(return_type).c_str());
 					return NULL;
 				}
 
 				for(unsigned int i = 0; i < arg.size(); i++){
-					if(script_class_factory->getIdxClassFromIts_C_Type(arg[i])==-1){
+					if(script_class_factory->getIdxClassFromItsNativeType(arg[i])==-1){
 						THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for bind function not registered",i,zs_rtti::demangle(arg[i]).c_str());
 						return NULL;
 					}

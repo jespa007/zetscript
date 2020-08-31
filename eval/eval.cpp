@@ -169,7 +169,7 @@ namespace zetscript{
 			EvalInstruction **it=&eval_data->current_function->instructions[idx_start_instruction];
 			unsigned size = eval_data->current_function->instructions.size();
 
-			for(unsigned i=0; i < size; i++,it++){
+			for(unsigned i=idx_start_instruction; i < size; i++,it++){
 				switch((*it)->vm_instruction.byte_code){
 				case BYTE_CODE_JMP:
 				case BYTE_CODE_JNT:

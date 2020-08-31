@@ -56,6 +56,8 @@ namespace zetscript{
 			 ,unsigned char			n_stk_params=0
 		);
 
+		 void setStackElement(unsigned int idx, StackElement stk);
+
 		StackElement *getLastStackValue();
 		StackElement * getStackElement(unsigned int idx_glb_element);
 

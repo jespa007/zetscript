@@ -31,7 +31,7 @@ namespace zetscript{
 		_size=0;
 	}
 
-	void zs_vector::set(uint16_t idx, intptr_t e){
+	void zs_vector::set(unsigned int idx, intptr_t e){
 		if (idx >= this->count) {
 			THROW_RUNTIME_ERROR("idx out of bounds");
 			return;
@@ -39,7 +39,7 @@ namespace zetscript{
 		this->items[idx] = e;
 	}
 
-	intptr_t zs_vector::get(uint16_t idx){
+	intptr_t zs_vector::get(unsigned int  idx){
 		if (idx >= this->count) {
 			THROW_RUNTIME_ERROR("idx out of bounds");
 			return 0;
@@ -48,7 +48,7 @@ namespace zetscript{
 		return this->items[idx];
 	}
 
-	void zs_vector::erase(uint16_t idx){
+	void zs_vector::erase(unsigned int  idx){
 		if (idx >= this->count) {
 			THROW_RUNTIME_ERROR("idx out of bounds");
 			return;
@@ -93,7 +93,7 @@ namespace zetscript{
 		}
 	}
 
-	void 		zs_vector::insert(uint16_t idx, intptr_t e){
+	void 		zs_vector::insert(unsigned int  idx, intptr_t e){
 		if(idx > (this->count+1)){
 			THROW_RUNTIME_ERROR("idx should be 0 to %i",this->count+1);
 			return;

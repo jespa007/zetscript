@@ -361,7 +361,7 @@ namespace zetscript{
 
 		if(ptr_function_found == NULL){
 			if(is_constructor && n_args == 0){ /* default constructor not found --> set as not found... */
-				call_instruction->properties = MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL;//value_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+				call_instruction->properties = MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL;//value_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
 			}
 			else{ // return error elaborate a error message...
 				int n_candidates=0;

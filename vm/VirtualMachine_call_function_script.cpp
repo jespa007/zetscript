@@ -153,7 +153,7 @@ namespace zetscript{
 
 			if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
 				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
-						"1. Set registerNativebaseSymbols(false) and  re-register the function using REGISTER_C_FUNCTION_MEMBER\n"
+						"1. Set registerNativebaseSymbols(false) and  re-register the function using REGISTER_NATIVE_FUNCTION_MEMBER\n"
 						"2. Adapt all virtual functions/classes to no non-virtual\n"
 						,this_object==NULL?"":this_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
 						,calling_function->symbol.name.c_str());
@@ -245,8 +245,8 @@ namespace zetscript{
 		StackElement *stk_var;
 		//StackElement stk_access_value_aux;
 		unsigned short pre_post_properties=0;
-		unsigned short properties=0;
-		StackElement *variable_stack_element;
+		unsigned short instruction_properties=0;
+		StackElement *stk_variable_stack_element=NULL;
 		ScriptVar *var_object = NULL;
 
 		unsigned short scope_type=0;
@@ -324,8 +324,8 @@ namespace zetscript{
 
 					}else{ // load variable ...
 
-						properties=instruction->properties;
-						scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(properties);
+						instruction_properties=instruction->properties;
+						scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction_properties);
 
 						switch(scope_type){
 						default: // global...
@@ -334,6 +334,7 @@ namespace zetscript{
 						case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS:
 						case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS:
 
+							stk_variable_stack_element=NULL;
 							if(scope_type == MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
 								POP_ONE; // get var op1 and symbol op2
 
@@ -365,46 +366,68 @@ namespace zetscript{
 							else{ // this scope ...
 								calling_object_instruction=instruction;
 								calling_object=this_object;
+								if(instruction->value_op2!=ZS_IDX_UNDEFINED){ // not undefined load...
+									stk_variable_stack_element=calling_object->getProperty(instruction->value_op2);
+								}
 							}
 
-							symbol_access_str=SFI_GET_SYMBOL_NAME(calling_function,instruction);
+							if(stk_variable_stack_element == NULL){
 
-							if((variable_stack_element = calling_object->getProperty(symbol_access_str))==NULL){
+								symbol_access_str=SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
-								// not exist, create new one undefined...
-								variable_stack_element=calling_object->addProperty(symbol_access_str);
+								// symbol not exist, create new one undefined...
+								if((stk_variable_stack_element = calling_object->getProperty(symbol_access_str))==NULL){
+									if(instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL){
+										if(calling_object==this_object){ // this
+											THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),
+																		"function member \"%s\" not exist",
+																		symbol_access_str);
+										}
+										else{ // any element...
+											THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),
+													"Element %s has no function \"%s\"",
+													SFI_GET_SYMBOL_NAME(calling_function,instruction-1),
+													symbol_access_str);
 
-								/*THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction)
-										,"Variable \"%s\" has not symbol \"%s\""
-										,SFI_GET_SYMBOL_NAME(calling_function,calling_object_instruction)
-										//,base_var->getClassName().c_str()
-										, SFI_GET_SYMBOL_NAME(calling_function,instruction));*/
+										}
+
+									}
+
+									stk_variable_stack_element=calling_object->addProperty(symbol_access_str);
+
+									if(calling_object==this_object){ //this, it save idx intruction to fast look up next time...
+										instruction->value_op2=calling_object->getPropertyIdx(symbol_access_str);
+									}
+								}
 							}
 
 							// do calling from objects we have to store calling object too and go to next instruction
-							if(variable_stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
-								*stk_current++={variable_stack_element,calling_object,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+							if(stk_variable_stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
+								*stk_current++={stk_variable_stack_element,calling_object,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
 								continue;
 							}
 
 							// normal symbol
-							stk_var=variable_stack_element;
+							stk_var=stk_variable_stack_element;
 							break;
 						case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL:
 							stk_var = &stk_local_var[instruction->value_op2];
 							break;
 						}
 
-						/*if(instruction->properties&MSK_INSTRUCTION_PROPERTY_CHECK_IS_FUNCTION){
-							if((stk_var->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION) != MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
-								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"\"%s\" expected function variable but is \"%s\""
-										, SFI_GET_SYMBOL_NAME(calling_function,instruction)
-										, stk_var->toString());
-							}
-						}*/
 					}
 
-					pre_post_properties = GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(properties);
+					pre_post_properties = GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction_properties);
+
+					if(HAS_PRE_POST_INC_DEC_OP(instruction_properties)
+							&&
+						((stk_var->properties & MSK_STACK_ELEMENT_PROPERTY_READ_ONLY)!=0)){
+						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),
+							"Cannot perform self operations on constant elements",
+							SFI_GET_SYMBOL_NAME(calling_function,instruction),
+							symbol_access_str);
+					}
+
 
 					/* all preoperators makes load var as constant ... */
 					switch(pre_post_properties){
@@ -521,18 +544,18 @@ namespace zetscript{
 				}else if(value_op1== LoadType::LOAD_TYPE_FUNCTION){
 
 					unsigned short extra_flags=(instruction->properties&MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL)?MSK_STACK_ELEMENT_PROPERTY_CONSTRUCTOR_FUNCTION:0;
-					extra_flags|=(instruction->properties&MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL) ?MSK_STACK_ELEMENT_PROPERTY_UNRESOLVED_FUNCTION:0;
+					extra_flags|=(instruction->properties&MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL) ?MSK_STACK_ELEMENT_PROPERTY_UNRESOLVED_FUNCTION:0;
 					ScriptVar * class_obj=NULL;
 					intptr_t value_op2 = instruction->value_op2;
-					properties=instruction->properties;
-					scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(properties);
+					instruction_properties=instruction->properties;
+					scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction_properties);
 
 					/*if(scope_type==MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // local gets functions from calling_function ...
 						vec_functions=&calling_function->local_functions;
 					}else*/
 					if(scope_type == MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
 						StackElement *stk_access_var=NULL;
-						if(properties & MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL){
+						if(instruction_properties & MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL){
 							stk_access_var=(stk_current-1);
 						}else{
 							POP_ONE;
@@ -734,6 +757,10 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"\"this\" is not assignable");
 						}
 
+						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_READ_ONLY){
+							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Assign to constant element is not allowed ");
+						}
+
 						StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 						{
 							ScriptVar *script_var=NULL;
@@ -753,7 +780,7 @@ namespace zetscript{
 										if(
 											(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties) == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
 										){
-											throw "Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.";
+											THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.");
 										}
 									}
 								}
@@ -1181,7 +1208,7 @@ namespace zetscript{
 
 								if(n_args == 0 && is_c){
 									aux_function_info = NULL;
-									instruction_function_ref->properties |= MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL;
+									instruction_function_ref->properties |= MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL;
 								}
 							}
 
@@ -1189,7 +1216,7 @@ namespace zetscript{
 						}
 
 						//bool all_check=true;
-						if((instruction_function_ref->properties & MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL)==0)
+						if((instruction_function_ref->properties & MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL)==0)
 						{
 							zs_vector *global_symbols=main_function_object->registered_symbols;
 							if((aux_function_info=findFunction(
@@ -1208,7 +1235,7 @@ namespace zetscript{
 									,n_args
 									,NULL))==NULL){
 
-								if((instruction_function_ref->properties & MSK_INSTRUCTION_PROPERTY_NO_FUNCTION_CALL)==0){
+								if((instruction_function_ref->properties & MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL)==0){
 									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find function \"%s\"",symbol_to_find.c_str());
 								}
 							}

@@ -372,14 +372,13 @@ namespace zetscript{
 			return;
 		}
 
-		bool end=false;
-		for(int i = 0; i < main_function->registered_symbols->count;){
-			//switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(ptr_ale->properties)){
-			//case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-			Symbol *symbol = (Symbol *)main_function->registered_symbols->items[i];
+		for (int v = main_function->registered_symbols->count-1
+					 ;v>=0
+					 ;v--) {
+			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
 			if((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
 
-				StackElement *ptr_ale =&vm_stack[i];
+				StackElement *ptr_ale =&vm_stack[v];
 				ScriptVar *var = NULL;
 
 				if(ptr_ale->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
@@ -391,10 +390,10 @@ namespace zetscript{
 					}
 				}
 
-				main_function->registered_symbols->erase(i);
+				main_function->registered_symbols->pop_back();
 			}
 			else{
-				i++;
+				break;
 			}
 		}
 
@@ -463,6 +462,14 @@ namespace zetscript{
 		}
 
 		return info;
+	}
+
+	void VirtualMachine::setStackElement(unsigned int idx, StackElement stk){
+		if(idx >= VM_STACK_LOCAL_VAR_MAX){
+			throw "setStackElement: out of bounds";
+		}
+
+		vm_stack[idx]=stk;
 	}
 
 	StackElement  * VirtualMachine::getLastStackValue(){

@@ -18,7 +18,7 @@ namespace zetscript{
 
 
 			Scope 						* 	getMainScope(){return main_scope;}
-			std::vector<Scope *> 		* 	getScopes();
+			zs_vector 					* 	getScopes();
 			void clear();
 
 			~ScopeFactory();
@@ -29,7 +29,7 @@ namespace zetscript{
 			/**
 			 * Vector of script scopes. This std::vector is removed when ZetScript reevaluates all scrips.
 			 */
-			std::vector<Scope *> 		 scopes;
+			zs_vector 		 *scopes;
 			Scope *main_scope;
 
 	};

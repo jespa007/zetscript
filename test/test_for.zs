@@ -2,20 +2,18 @@
 	print("i"+i);
 }*/
 
-var v=[1];//0,1,2,3,4,5,6,7,8,9,10];
-print("size:"+v.size());
-//print("a:"+v.a);
+Math.sin(0);
+
+/*var v=[1+1+2+3+4];//0,1,2,3,4,5,6,7,8,9,10];
+print("size:"+v.length);
+print("sin:"+Math.sin(0));
+print("size:"+v[0]);*/
+/*print("a:"+v.a);
 v.a=1;
-print("a:"+v.a);
+print("a:"+v.a);*/
 
-for(var i=0; i<10;i++){
-	
-}
-//var a=0;
-
-/*
 // using i as idx
-for(var i=0; i<v.size();i++){
+/*for(var i=0; i<v.length;i++){
 
 	// ignores first element...
 	if(i==0) {

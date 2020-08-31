@@ -4,6 +4,55 @@
 namespace zetscript{
 
 	/**
+	 * Register C variable
+	 */
+	template<typename V>
+	 bool  ScriptClassFactory::registerNativeVariable(
+			 const std::string & var_name
+			 ,V var_ptr
+			 , const char *registered_file
+			 ,int registered_line)
+	{
+		//Scope *scope;
+		std::string var_type = typeid(V).name(); // we need the pointer type ...
+		Symbol *irs;
+		//int idxVariable;
+
+		if(var_ptr==NULL){
+			THROW_RUNTIME_ERROR("cannot register var \"%s\" with NULL reference value", var_name.c_str());
+			return false;
+		}
+
+		ScriptFunction *main_function=MAIN_FUNCTION(this);
+
+		if(main_function == NULL){
+			THROW_RUNTIME_ERROR("main function is not created");
+			return false;
+		}
+
+		if(getIdxClassFromItsNativeType(var_type) == ZS_INVALID_CLASS){
+			THROW_RUNTIME_ERROR("%s has not valid type (%s)",var_name.c_str(),var_type.c_str());
+			return false;
+		}
+
+		if((irs = main_function->registerVariable(
+				MAIN_SCOPE(this)
+				,registered_file
+				,registered_line
+				,var_name
+				,var_type
+				,(intptr_t)var_ptr
+				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC_REF)) != NULL
+		){
+			ZS_PRINT_DEBUG("Registered variable name: %s",var_name.c_str());
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Register C function
 	 */
 	template <typename F>
@@ -33,7 +82,7 @@ namespace zetscript{
 		}
 
 		// check valid parameters ...
-		if((idx_return_type=getIdxClassFromIts_C_Type(return_type))==-1){
+		if((idx_return_type=getIdxClassFromItsNativeType(return_type))==-1){
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered"
 					,zs_rtti::demangle(return_type).c_str()
 					,function_name);
@@ -41,7 +90,7 @@ namespace zetscript{
 		}
 
 		for(unsigned int i = 0; i < arg.size(); i++){
-			int idx_type = getIdxClassFromIts_C_Type(arg[i]);
+			int idx_type = getIdxClassFromItsNativeType(arg[i]);
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
@@ -89,7 +138,7 @@ namespace zetscript{
 
 		//std::vector<ScriptClass *> script_classes=getScriptClasses();
 		// to make compatible MSVC shared library
-		int size=script_classes.size();
+		int size=script_classes->count;
 
 		if(size>=MAX_REGISTER_CLASSES){
 			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
@@ -99,7 +148,7 @@ namespace zetscript{
 		// after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
 		if(size > 1){ // because = 0 is reserved for main class and >= 1 is for C registered classes
 			if((
-				((script_classes[size-1]->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF )!=SYMBOL_PROPERTY_C_OBJECT_REF)
+				((((ScriptClass *)script_classes->get(size-1))->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF )!=SYMBOL_PROPERTY_C_OBJECT_REF)
 			)){
 				THROW_RUNTIME_ERROR("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str());
 				return NULL;
@@ -115,7 +164,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			unsigned char idx_class=(short)(script_classes.size());
+			unsigned char idx_class=(short)(script_classes->count);
 			Scope * scope = scope_factory->newScope(NULL,true);
 			Symbol *symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_IS_CLASS);
 			if(symbol == NULL){
@@ -136,9 +185,9 @@ namespace zetscript{
 
 			irc->c_constructor = NULL;
 			irc->c_destructor = NULL;
-			script_classes.push_back(irc);
+			script_classes->push_back((intptr_t)irc);
 
-			irc->idx_class=(unsigned char)(script_classes.size()-1);
+			irc->idx_class=(unsigned char)(script_classes->count-1);
 			ZS_PRINT_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
 			return true;
@@ -227,20 +276,20 @@ namespace zetscript{
 		std::string class_name=typeid(T).name();
 		std::string class_name_ptr=typeid(T *).name();
 
-		int idx_base_class = getIdxClassFromIts_C_Type(base_class_name_ptr);
+		int idx_base_class = getIdxClassFromItsNativeType(base_class_name_ptr);
 		if(idx_base_class == -1) {
 			THROW_RUNTIME_ERROR("base class %s not registered",base_class_name_ptr.c_str());
 			return false;
 		}
 
 
-		int register_class = getIdxClassFromIts_C_Type(class_name_ptr);
-		if(register_class == -1) {
+		int idx_register_class = getIdxClassFromItsNativeType(class_name_ptr);
+		if(idx_register_class == ZS_IDX_UNDEFINED) {
 			THROW_RUNTIME_ERROR("class %s not registered",class_name_ptr.c_str());
 			return false;
 		}
 
-		if(class_C_BaseOf(register_class,idx_base_class)){
+		if(class_C_BaseOf(idx_register_class,idx_base_class)){
 			THROW_RUNTIME_ERROR("C++ class \"%s\" is already registered as base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 			return false;
 		}
@@ -251,7 +300,7 @@ namespace zetscript{
 			return false;
 		}
 
-		ScriptClass *sc=script_classes[register_class];
+		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_register_class);
 		while( sc->idx_base_classes->count>0){
 
 			sc=getScriptClass(sc->idx_base_classes->items[0]); // get base class...
@@ -262,7 +311,7 @@ namespace zetscript{
 		}
 
 
-		ScriptClass *this_class = script_classes[register_class];
+		ScriptClass *this_class = (ScriptClass *)script_classes->get(idx_register_class);
 		this_class->idx_base_classes->push_back(idx_base_class);
 
 		// add conversion type for this class
@@ -278,7 +327,7 @@ namespace zetscript{
 			// https://stackoverflow.com/questions/48572734/is-possible-do-a-later-function-binding-knowing-its-function-type-and-later-the
 			//
 
-			ScriptClass *base_class = script_classes[idx_base_class];
+			ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
 
 			unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF| SYMBOL_PROPERTY_IS_DERIVATED;
 			if(std::is_polymorphic<B>::value==true){
@@ -320,7 +369,6 @@ namespace zetscript{
 					);
 				}
 			}
-
 		}
 
 		//
@@ -330,6 +378,98 @@ namespace zetscript{
 		return true;
 	}
 
+
+	/**
+	 * Register C Member var
+	 */
+	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
+	template <typename C, typename R,typename T>
+	bool ScriptClassFactory::registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
+	{
+		// to make compatible MSVC shared library
+		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
+
+		std::string var_type = typeid(R *).name(); // we need the pointer type ...
+		std::string return_type;
+		//std::vector<std::string> params;
+		std::string str_class_name_ptr = typeid( C *).name();
+		unsigned int ref_ptr=offsetOf<C>(var_pointer);
+
+		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			return false;
+		}
+
+		// 1. check all parameters ok.
+		// check valid parameters ...
+		if(getIdxClassFromItsNativeType(var_type) == -1){
+			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
+					,c_class->symbol.name.c_str()
+					,var_name
+					,zs_rtti::demangle(typeid(R).name()).c_str());
+			return false;
+		}
+
+		// register variable...
+		c_class->registerNativeVariableMember(
+				 registered_file
+				,registered_line
+				,var_name
+				,var_type
+				,ref_ptr
+				,SYMBOL_PROPERTY_C_OBJECT_REF
+		);
+		return true;
+
+	}
+
+	/**
+	 * Register C Member var
+	 */
+	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
+	template <typename C, typename R>
+	bool ScriptClassFactory::registerNativeStaticConstMember(const char *var_name, const R var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
+	{
+		// to make compatible MSVC shared library
+		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
+
+		std::string var_type = typeid(R *).name(); // we need the pointer type ...
+		std::string return_type;
+		//std::vector<std::string> params;
+		std::string str_class_name_ptr = typeid( C *).name();
+
+
+		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			return false;
+		}
+
+		// 1. check all parameters ok.
+		// check valid parameters ...
+		if(getIdxClassFromItsNativeType(var_type) == -1){
+			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
+					,c_class->symbol.name.c_str()
+					,var_name
+					,zs_rtti::demangle(typeid(R).name()).c_str());
+			return false;
+		}
+
+
+
+		// register variable...
+		c_class->registerNativeVariableMember(
+				 registered_file
+				,registered_line
+				,var_name
+				,var_type
+				,(intptr_t)var_pointer
+				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC_REF | SYMBOL_PROPERTY_CONST
+		);
+		return true;
+
+	}
 
 	/**
 	 * Register C Member function Class
@@ -366,13 +506,13 @@ namespace zetscript{
 
 
 		// check valid parameters ...
-		if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
+		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
 			return false;
 		}
 
 		for(unsigned int i = 0; i < arg.size(); i++){
-			int idx_type=getIdxClassFromIts_C_Type(arg[i]);
+			int idx_type=getIdxClassFromItsNativeType(arg[i]);
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
@@ -450,13 +590,13 @@ namespace zetscript{
 		}
 
 		// check valid parameters ...
-		if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
+		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
 			return false;
 		}
 
 		for(unsigned int i = 0; i < arg.size(); i++){
-			int idx_type = getIdxClassFromIts_C_Type(arg[i]);
+			int idx_type = getIdxClassFromItsNativeType(arg[i]);
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
@@ -575,13 +715,13 @@ namespace zetscript{
 		}
 
 		// check valid parameters ...
-		if((idx_return_type=getIdxClassFromIts_C_Type(return_type)) == -1){
+		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
 			return false;
 		}
 
 		for(unsigned int i = 0; i < arg.size(); i++){
-			int idx_type = getIdxClassFromIts_C_Type(arg[i]);
+			int idx_type = getIdxClassFromItsNativeType(arg[i]);
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
@@ -613,96 +753,6 @@ namespace zetscript{
 		return true;
 	}
 
-	/**
-	 * Register C Member var
-	 */
-	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
-	template <typename C, typename R,typename T>
-	bool ScriptClassFactory::registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
-	{
-		// to make compatible MSVC shared library
-		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
 
-		std::string var_type = typeid(R *).name(); // we need the pointer type ...
-		std::string return_type;
-		//std::vector<std::string> params;
-		std::string str_class_name_ptr = typeid( C *).name();
-		unsigned int ref_ptr=offsetOf<C>(var_pointer);
-
-		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_class_name_ptr);
-
-		if(c_class == NULL){
-			return false;
-		}
-
-		// 1. check all parameters ok.
-		// check valid parameters ...
-		if(getIdxClassFromIts_C_Type(var_type) == -1){
-			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-					,c_class->symbol.name.c_str()
-					,var_name
-					,zs_rtti::demangle(typeid(R).name()).c_str());
-			return false;
-		}
-
-		// register variable...
-		c_class->registerNativeVariableMember(
-				 registered_file
-				,registered_line
-				,var_name
-				,var_type
-				,ref_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF
-		);
-		return true;
-
-	}
-	
-	/**
-	 * Register C Member var
-	 */
-	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
-	template <typename C, typename R>
-	bool ScriptClassFactory::registerNativeStaticConstMember(const char *var_name, const R *var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
-	{
-		// to make compatible MSVC shared library
-		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
-
-		std::string var_type = typeid(R *).name(); // we need the pointer type ...
-		std::string return_type;
-		//std::vector<std::string> params;
-		std::string str_class_name_ptr = typeid( C *).name();
-
-
-		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_class_name_ptr);
-
-		if(c_class == NULL){
-			return false;
-		}
-
-		// 1. check all parameters ok.
-		// check valid parameters ...
-		if(getIdxClassFromIts_C_Type(var_type) == -1){
-			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-					,c_class->symbol.name.c_str()
-					,var_name
-					,zs_rtti::demangle(typeid(R).name()).c_str());
-			return false;
-		}
-
-		
-		
-		// register variable...
-		c_class->registerNativeVariableMember(
-				 registered_file
-				,registered_line
-				,var_name
-				,var_type
-				,(intptr_t)var_pointer
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC_REF | SYMBOL_PROPERTY_CONST
-		);
-		return true;
-
-	}	
 
 }

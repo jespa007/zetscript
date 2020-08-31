@@ -58,11 +58,11 @@ class ScriptClass;
 				, StackElement * sv=NULL
 		);
 
-		virtual StackElement * addPropertyBuiltIn(
-				const std::string & symbol_value
-		);
+
+		int			   getPropertyIdx(const std::string & varname);
 		StackElement * getProperty(const std::string & varname);
 		StackElement * getProperty(short idx);
+		const char *getSymbolNameFromPropertyPtr(StackElement *stk);
 
 		void eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
@@ -119,6 +119,7 @@ class ScriptClass;
 
 		void * created_object;
 		void * c_object;
+		short start_property_idx;
 
 		std::string aux_string;
 		zs_vector * stk_properties_built_in; // std::vector<FunctionSymbol>
@@ -126,6 +127,9 @@ class ScriptClass;
 
 		void createSymbols(ScriptClass *irv);
 		void eraseProperty(short idx, bool remove_vector=false);
+		StackElement * addPropertyBuiltIn(
+				const std::string & symbol_value
+		);
 
 	};
 

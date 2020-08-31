@@ -40,10 +40,10 @@ namespace zetscript{
 	 // PRINT ASM INFO
 	 void ZetScript::printGeneratedCode(){
 
-		 std::vector<ScriptClass *> *script_classes=script_class_factory->getScriptClasses();
+		 zs_vector *script_classes=script_class_factory->getScriptClasses();
 		 // for all classes print code...
-		 for(unsigned i = 0; i < script_classes->size(); i++){
-			 ScriptClass *rc=script_classes->at(i);
+		 for(unsigned i = 0; i < script_classes->count; i++){
+			 ScriptClass *rc=(ScriptClass *)script_classes->get(i);
 			 for(unsigned f = 0; f < rc->symbol_members->count; f++){
 				 Symbol *symbol=(Symbol *)rc->symbol_members->items[f];
 				 if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
@@ -105,7 +105,7 @@ namespace zetscript{
 
 	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, int _value){
 		intptr_t value = _value;
-		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER;
+		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
 		StackElement *stk;
 
 		if((stk = getRegisteredConstantValue(const_name))!=NULL){
@@ -117,7 +117,7 @@ namespace zetscript{
 	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, float _value){
 		intptr_t value;// = _value;
 		*((float *)&value)=_value;
-		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
+		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
 		StackElement *stk;
 
 		if((stk = getRegisteredConstantValue(const_name))!=NULL){
@@ -143,37 +143,23 @@ namespace zetscript{
 
 		virtual_machine->clearGlobalVars();
 
-		ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
+		/*ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 
-		// clean main functions ... remove script functions and leave c functions...
-		/*for (unsigned f = 0;
-			f < main_function->registered_functions->count
-			;) {
-			// get function info
-			ScriptFunction * script_function = (ScriptFunction *)main_function->registered_functions->items[f];
-
-			if ((script_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
-				main_function->registered_functions->erase(f);
-			}
-			else {
-				f++;
-			}
-		}*/
-
-		// remove variables except c variables/functions ...
-		for (unsigned v = 0;
-			v < main_function->registered_symbols->count; ) {
+		// clear all symbols except c variables/functions ...
+		for (int v = main_function->registered_symbols->count-1
+			 ;v>=0
+			 ;v--) {
 			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
 			if (((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF)
 			) {
-				main_function->registered_symbols->erase(v);
+				main_function->registered_symbols->pop_back();
 			}
 			else {
-				v++;
+				break; // c symbol found so finish
 			}
-		}
+		}*/
 
-		// remove scope vars...
+		// clear all script artifacts excepts C ones and global/main function/scope...
 		scope_factory->clear();
 		script_function_factory->clear();
 		script_class_factory->clear();

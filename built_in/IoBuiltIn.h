@@ -5,7 +5,7 @@
 class IoBuiltIn{
 public:
 	// clock
-	intptr_t clock(){
+	static intptr_t clock(){
 #ifdef _WIN32
 		SYSTEMTIME time;
 		GetSystemTime(&time);

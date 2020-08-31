@@ -115,11 +115,14 @@ namespace zetscript{
 			sprintf(object_access,"this.");
 		 }
 
+		 bool is_function_call=instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
+		 bool is_vector_access=instruction->properties & MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;
+
 		 switch(instruction->value_op1){
 
 			case LoadType::LOAD_TYPE_CONSTANT:
 				icv=(ConstantValue *)instruction->value_op2;
-				switch(icv->properties){
+				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
 					sprintf(print_aux_load_value,"CONST %s%i",pre,(int)((intptr_t)icv->stk_value));
@@ -135,10 +138,9 @@ namespace zetscript{
 				break;
 
 			case LoadType::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"VAR   %s%s%s%s",pre,object_access,symbol_value.c_str(),post);
+				sprintf(print_aux_load_value,"VAR   %s%s%s%s%s",pre,object_access,symbol_value.c_str(),post,is_function_call?"(function call)":is_vector_access?"(vector access)":"");
 				break;
 			case LoadType::LOAD_TYPE_FUNCTION:
-
 				sprintf(print_aux_load_value,"FUN   %s%s",object_access,symbol_value.c_str());
 				break;
 
@@ -331,23 +333,32 @@ namespace zetscript{
 
 		Symbol * symbol=NULL;
 		short idx_position=(short)registered_symbols->count;
+		StackElement *se=NULL;
 
 		if((symbol=scope_block->registerSymbol(file,line, symbol_name /*,var_node*/))==NULL){
 				return NULL;
 		}
 
+		symbol->ref_ptr =ref_ptr;
+		//scope_symbol->symbol=scope_symbol;
+		symbol->c_type = c_type;
+		symbol->symbol_properties = symbol_properties;
+		symbol->idx_position = idx_position;
+
+
+		if(scope_block == MAIN_SCOPE(this)) { // is main funciton so set ref as global var...
+			zs->getVirtualMachine()->setStackElement(idx_position,convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr));
+		}
 
 		/*if(getVariable(scope_symbol->name,scope_symbol->scope) != NULL){
 			THROW_RUNTIME_ERROR("Variable \"%s\" already exist",variable_name.c_str()));
 			return NULL;
 		}*/
 
-		symbol->ref_ptr =ref_ptr;
-		//scope_symbol->symbol=scope_symbol;
-		symbol->c_type = c_type;
-		symbol->symbol_properties = symbol_properties;
 
-		symbol->idx_position = idx_position;
+
+
+
 
 		registered_symbols->push_back((intptr_t)symbol);
 

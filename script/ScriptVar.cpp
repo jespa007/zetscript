@@ -27,8 +27,8 @@ namespace zetscript{
 
 			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
 			se=addPropertyBuiltIn(
-					symbol->name
-				);
+				symbol->name
+			);
 
 			if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
 
@@ -61,25 +61,16 @@ namespace zetscript{
 			}
 		}
 
-		// Register functions...
-		/*for ( unsigned i = 0; i < ir_class->function_members->count; i++){
-			ScriptFunction * ir_fun  = (ScriptFunction *)ir_class->function_members->items[i];
-			 si =addFunction(
-					  ir_fun->symbol.name,
+		// register custom built-in vars
+		se=addPropertyBuiltIn(
+			"length"
+		);
 
-					ir_fun
+		se->var_ref=&stk_properties->count;
+		se->properties=(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY);
 
-					);
-			 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
-				 // static ref only get ref function ...
-				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_STATIC_REF) == SYMBOL_PROPERTY_STATIC_REF){
-					 si->proxy_ptr = ir_fun->symbol.ref_ptr;
-				 }
-				 else{ // create function member
-					 si->proxy_ptr = (intptr_t)(*((std::function<void *(void *)> *)ir_fun->symbol.ref_ptr))(c_object);
-				 }
-			}
-		}*/
+		// start property idx starts  from last built-in property...
+		start_property_idx=properties_keys_built_in->count;
 	}
 
 	void ScriptVar::setup(){
@@ -190,6 +181,7 @@ namespace zetscript{
 		}
 	}
 
+	// only for initialized
 	StackElement * ScriptVar::addPropertyBuiltIn(const std::string & symbol_value){
 		std::string key_value = symbol_value;
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
@@ -266,12 +258,34 @@ namespace zetscript{
 		*new_stk=si; //assign var
 
 		// if ignore duplicate was true, map resets idx to the last function...
-		properties_keys->set(key_value.c_str(),(intptr_t)new_stk);
+		properties_keys->set(key_value.c_str(),stk_properties->count + start_property_idx);
 
 		stk_properties->push_back((intptr_t)new_stk);
 
 
 		return new_stk;
+	}
+
+	int  ScriptVar::getPropertyIdx(const std::string & property_name){//,bool only_var_name){
+
+		bool exists;
+
+
+		// try built-in
+		int idx_stk_element=this->properties_keys_built_in->get(property_name.c_str(),exists);
+		if(exists){
+			return idx_stk_element;
+		}
+
+		//try user props
+		idx_stk_element=this->properties_keys->get(property_name.c_str(),exists);
+		if(exists){
+			return idx_stk_element+start_property_idx;
+		}
+
+
+		return ZS_IDX_UNDEFINED;
+
 	}
 
 	StackElement * ScriptVar::getProperty(const std::string & property_name){//,bool only_var_name){
@@ -310,6 +324,10 @@ namespace zetscript{
 		}
 
 		return (StackElement *)stk_properties->items[idx];
+	}
+
+	const char * getSymbolNameFromPropertyPtr(StackElement *stk){
+
 	}
 
 	void ScriptVar::eraseProperty(short idx, bool remove_vector){//onst std::string & varname){

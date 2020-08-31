@@ -109,24 +109,19 @@ namespace zetscript{
 	}
 
 	void ScriptFunctionFactory::clear(){
-		bool end=false;
-		for(unsigned i=1; i < script_functions->count;){ // starts from > 0 to avoid evaluate main function...
+		for(unsigned v=script_functions->count-1;
+				v >= 1; // avoid delete main function
+				v--){
 
-			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[i];
-			if((info_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) //--> erase
+			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[v];
+			if((info_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) //
 			{
 
-				if (info_function->instructions != NULL) {
-					free(info_function->instructions);
-					info_function->instructions=NULL;
-				}
-
-				script_functions->erase(i);
+				script_functions->pop_back();
 				delete info_function;
-
 			}
-			else{ // keep and next...
-				i++;
+			else{
+				break;
 			}
 
 
@@ -136,8 +131,8 @@ namespace zetscript{
 
 
 	ScriptFunctionFactory::~ScriptFunctionFactory(){
+		// erases all functions...
 		for(unsigned i = 0;i < script_functions->count;i++){
-			//ZS_PRINT_DEBUG("* Erasing function %s...", script_functions.at(i)->object_info.symbol_info.symbol_ref.c_str());
 			ScriptFunction * info_function = (ScriptFunction *)script_functions->items[i];
 
 			if (info_function->instructions != NULL) {
@@ -145,16 +140,6 @@ namespace zetscript{
 				free(info_function->instructions);
 				info_function->instructions=NULL;
 			}
-
-			// unloading scope ...
-			/*if (info_function->scope_block_vars != NULL) {
-				for (unsigned j = 0; j < info_function->n_scope_block_vars; j++) {
-					free(info_function->scope_block_vars[j].idx_local_var);
-				}
-
-				free(info_function->scope_block_vars);
-				info_function->scope_block_vars=NULL;
-			}*/
 
 			delete info_function;
 		}
