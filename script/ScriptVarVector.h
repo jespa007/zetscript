@@ -63,20 +63,22 @@ namespace zetscript{
 
 		static void    			pushSf(ScriptVarVector *sv,StackElement  * stk){return sv->push(stk);}
 		static StackElement *  	popSf(ScriptVarVector *sv){return sv->pop();}
-		static int 				sizeSf(ScriptVarVector *sv){return sv->size();}
+		//static int 				sizeSf(ScriptVarVector *sv){return sv->size();}
+
 
 		ScriptVarVector(){}
 		ScriptVarVector(ZetScript *_zs);
 
-		virtual void unrefSharedPtr();
+		void 					push(StackElement  * stk);
+		StackElement *			pop();
 
-		StackElement *		newSlot();
-		void 				push(StackElement  * stk);
-		StackElement *		pop();
-		int size();
 
-		virtual void destroy();
-		virtual ~ScriptVarVector();
+		//virtual void unrefSharedPtr();
+
+		//int size();
+
+		//virtual void destroy();
+		//virtual ~ScriptVarVector();
 	};
 
 }

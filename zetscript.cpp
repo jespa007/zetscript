@@ -143,22 +143,6 @@ namespace zetscript{
 
 		virtual_machine->clearGlobalVars();
 
-		/*ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
-
-		// clear all symbols except c variables/functions ...
-		for (int v = main_function->registered_symbols->count-1
-			 ;v>=0
-			 ;v--) {
-			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
-			if (((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF)
-			) {
-				main_function->registered_symbols->pop_back();
-			}
-			else {
-				break; // c symbol found so finish
-			}
-		}*/
-
 		// clear all script artifacts excepts C ones and global/main function/scope...
 		scope_factory->clear();
 		script_function_factory->clear();
@@ -243,7 +227,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	bool ZetScript::evalInternal(const char * code, bool vm_exec, bool show_bytecode, const char * filename)  {
+	void ZetScript::evalInternal(const char * code, bool vm_exec, bool show_bytecode, const char * filename)  {
 		eval::eval(this,code,filename);
 
 		if(show_bytecode){
@@ -273,14 +257,24 @@ namespace zetscript{
 			size_t n_bytes;
 
 			if((buf_tmp=zs_file::read(filename, n_bytes))!=NULL){
+				bool error;
+				std::string error_str;
 				try{
 					evalInternal(buf_tmp, vm_exec, show_bytecode,filename.c_str());
 				}
-				catch(exception::script_exception_error & e){
-					free(buf_tmp);
-					buf_tmp=NULL;
-					THROW_EXCEPTION(e.what());
+				catch(std::exception & e){
+					error=true;
+					error_str=e.what();
 				}
+
+				// deallocate before throw errors...
+				free(buf_tmp);
+				buf_tmp=NULL;
+
+				if(error){
+					THROW_EXCEPTION(error_str.c_str());
+				}
+
 			}
 
 		}else{
@@ -383,12 +377,15 @@ namespace zetscript{
 		virtual_machine->clearGlobalVars();
 
 		// clear objects...
+		delete virtual_machine;
 		delete scope_factory;
 		delete script_function_factory;
 		delete proxy_function_factory;
 		delete script_class_factory;
-		delete virtual_machine;
+
 		virtual_machine=NULL;
+
+
 
 		for(std::map<std::string,ConstantValue *>::iterator it=constant_values.begin();it!=constant_values.end();it++){
 			ConstantValue *icv=it->second;

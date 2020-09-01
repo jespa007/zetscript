@@ -33,7 +33,7 @@ namespace zetscript{
 
 		std::string name; 	// symbol name
 		intptr_t ref_ptr; 	// pointer ref just in case is C var/function
-		std::string c_type; // In case is C, we need to know its type ...
+		std::string str_native_type; // In case is C, we need to know its type ...
 
 		char n_params; // max params in case of function
 
@@ -46,7 +46,7 @@ namespace zetscript{
 			name="";
 			n_params = NO_PARAMS_IS_VARIABLE;
 			symbol_properties = 0;
-			c_type = "";
+			str_native_type = "";
 			ref_ptr = 0;
 		}
 

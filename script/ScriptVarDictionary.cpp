@@ -10,9 +10,9 @@ namespace zetscript{
 		init(SCRIPT_CLASS_DICTIONARY(this), (void *)this);
 	}
 
-	void ScriptVarDictionary::unrefSharedPtr(){ // unref each element...
+	/*void ScriptVarDictionary::unrefSharedPtr(){ // unref each element...
 		ScriptVar::unrefSharedPtr();
-		for(unsigned i = 0; i < stk_properties->count; i++){
+		for(unsigned i = idx_start_user_properties; i < stk_properties->count; i++){
 			StackElement *stk=(StackElement *)stk_properties->items[i];
 			if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 				ScriptVar *var = (ScriptVar *)stk->var_ref;
@@ -21,7 +21,7 @@ namespace zetscript{
 				}
 			}
 		}
-	}
+	}*/
 
 	void ScriptVarDictionary::addAttr(const char *attr_name, StackElement  * v){
 		if(addProperty(attr_name,virtual_machine->getCurrent_C_FunctionCall(),NULL,v)==NULL){
@@ -39,11 +39,11 @@ namespace zetscript{
 	}
 
 
-	int ScriptVarDictionary::size(){
+	/*int ScriptVarDictionary::size(){
 		return  this->stk_properties->count;
-	}
+	}*/
 
-	void ScriptVarDictionary::destroy(){
+	/*void ScriptVarDictionary::destroy(){
 
 		for(unsigned i = 0; i < stk_properties->count; i++){
 			StackElement *stk = (StackElement *)stk_properties->items[i];
@@ -56,9 +56,9 @@ namespace zetscript{
 				}
 			}
 		}
-	}
+	}*/
 
-	ScriptVarDictionary::~ScriptVarDictionary(){
+	/*ScriptVarDictionary::~ScriptVarDictionary(){
 		destroy();
-	}
+	}*/
 }

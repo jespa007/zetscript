@@ -61,5 +61,7 @@ namespace zetscript{
 		}
 		scopes->clear();
 
+		delete scopes;
+
 	}
 };

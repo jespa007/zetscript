@@ -120,7 +120,7 @@ namespace zetscript{
 
 		registerNativeFunctionMember("add",&ScriptVarDictionary::addAttrSf);
 		registerNativeFunctionMember("remove",&ScriptVarDictionary::removeAttrSf);
-		registerNativeFunctionMember("size",&ScriptVarDictionary::sizeSf);
+		//registerNativeFunctionMember("size",&ScriptVarDictionary::sizeSf);
 
 		//-------------------------
 		// Register built in extra
@@ -251,7 +251,7 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
-			if(class_type == sc->str_class_ptr_type){//metadata_info.object_info.symbol_info.c_type){
+			if(class_type == sc->str_class_ptr_type){//metadata_info.object_info.symbol_info.str_native_type){
 				return sc;
 			}
 		}
@@ -318,7 +318,7 @@ namespace zetscript{
 	 }
 
 	unsigned char ScriptClassFactory::getIdx_C_RegisteredClass(const std::string & str_classPtr){
-		// ok check c_type
+		// ok check str_native_type
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
 			if(sc->str_class_ptr_type == str_classPtr){
@@ -354,13 +354,13 @@ namespace zetscript{
 		 return "class_unknow";
 	}
 
-	unsigned char ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const std::string & c_type_str){
+	unsigned char ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const std::string & str_native_type){
 
 		// 1. we have to handle primitives like void, (int *), (bool *),(float *) and (std::string *).
 		 // 2. Check for rest registered C classes...
 		 for(unsigned i = 0; i < script_classes->count; i++){
 			 ScriptClass * sc=(ScriptClass *)script_classes->get(i);
-			 if(sc->str_class_ptr_type==c_type_str)
+			 if(sc->str_class_ptr_type==str_native_type)
 			 {
 				 return i;
 			 }
@@ -369,8 +369,8 @@ namespace zetscript{
 		 return ZS_INVALID_CLASS;
 	 }
 
-	unsigned char 			ScriptClassFactory::getIdxClassFromItsNativeType(const std::string & c_type_str){
-		return getIdxScriptInternalFrom_C_Type(c_type_str);
+	unsigned char 			ScriptClassFactory::getIdxClassFromItsNativeType(const std::string & str_native_type){
+		return getIdxScriptInternalFrom_C_Type(str_native_type);
 	}
 
 	bool 	ScriptClassFactory::class_C_BaseOf(unsigned char idx_src_class, unsigned char idx_class){
@@ -397,5 +397,7 @@ namespace zetscript{
 			delete (ScriptClass *)script_classes->get(i);
 		}
 		script_classes->clear();
+
+		delete script_classes;
 	}
 }

@@ -74,7 +74,7 @@ namespace zetscript{
 				, const std::string & file
 				, short line
 				, const std::string & symbol_name
-				, const std::string & c_type=""
+				, const std::string & str_native_type=""
 				, intptr_t ref_ptr=0
 				, unsigned short symbol_properties=0
 		);
@@ -83,7 +83,7 @@ namespace zetscript{
 				const std::string & file
 				, short line
 				, const std::string & variable
-				, const std::string & c_type=""
+				, const std::string & str_native_type=""
 				, intptr_t ref_ptr=0
 				, unsigned short symbol_properties=0
 		);*/
@@ -127,13 +127,7 @@ namespace zetscript{
 		static const char *instructionPropertyPreOperationToStr(unsigned int properties);
 		static const char *instructionPropertyPostOperationToStr(unsigned int properties);
 		static std::string formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
-		inline InstructionSourceInfo * getInstructionInfo(Instruction *ins){
-			short idx= (ins-this->instructions);///sizeof(Instruction *);
-			if(instruction_source_info.count(idx)==1){
-				return &instruction_source_info[idx];
-			}
-			return NULL;
-		}
+		InstructionSourceInfo * getInstructionInfo(Instruction *instruction);
 
 	};
 }

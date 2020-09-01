@@ -22,7 +22,6 @@ namespace zetscript{
 				 case IDX_BUILTIN_TYPE_FLOAT_C:
 					 stk_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
 					 memcpy(&stk_result.stk_value,&ptr_var,sizeof(float));
-
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
 					 if(ptr_var==0) return stk_result;
@@ -78,7 +77,7 @@ namespace zetscript{
 					}else if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_PTR_C){//*ScriptClass::k_str_bool_type_ptr){
 						val_ret=(intptr_t)(&stack_element->stk_value);
 					}else{
-						error="cannot convert "+zs_rtti::demangle((k_str_string_type_ptr))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)).c_str();
+						error="cannot convert \""+zs_rtti::demangle((k_str_bool_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 
 						return false;
 					}
@@ -102,7 +101,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error="cannot convert "+zs_rtti::demangle((k_str_string_type_ptr))+" into %s"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
+						error="cannot convert \""+zs_rtti::demangle((k_str_float_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 						return false;
 					}
 					break;
@@ -116,15 +115,18 @@ namespace zetscript{
 					case IDX_BUILTIN_TYPE_INT_PTR_C:
 						val_ret=(intptr_t)(&stack_element->stk_value);
 						break;
-					case IDX_BUILTIN_TYPE_FLOAT_C:
+					case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
 						{
-							float *aux_dst = ((float *)&val_ret);
-							int *aux_src=(int *)&stack_element->stk_value;
-							*aux_dst = (float)(*aux_src);
+							float aux_tr=((intptr_t)stack_element->stk_value);
+							//float *aux_dst = ((float *)&val_ret);
+							memcpy((float *)&val_ret,&aux_tr,sizeof(float));
+							//int *aux_src=(int *)&stack_element->stk_value;
+							//*aux_dst = (float)(*aux_src);
 						}
 						break;
+
 					default:
-						error= "cannot convert "+zs_rtti::demangle((k_str_string_type_ptr))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
+						error= "cannot convert \"int\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 						return false;
 					}
 					break;
@@ -142,7 +144,7 @@ namespace zetscript{
 					}else if (idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
 						val_ret=(intptr_t)(stack_element->stk_value);
 					}else{
-						error= "cannot convert "+zs_rtti::demangle((k_str_string_type_ptr))+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
+						error= "cannot convert \""+zs_rtti::demangle((k_str_string_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 						return false;
 					}
 
@@ -154,13 +156,11 @@ namespace zetscript{
 					ScriptClass *c_class=NULL;
 
 					if(script_variable==NULL){
-
 						error="Variable is not defined";
 						return false;
 					}
 
 					if(script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_STRING){
-
 						val_ret=(intptr_t)(&script_variable->str_value);
 						if(idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
 							val_ret=(intptr_t)script_variable->str_value.c_str();
@@ -180,7 +180,7 @@ namespace zetscript{
 							val_ret=(intptr_t)script_variable->getNativeObject();
 						}
 						else if((val_ret=script_class_factory->doCast((intptr_t)script_variable->getNativeObject(),c_class->idx_class,idx_builtin_type))==0){//c_class->idx_class==idx_builtin_type){
-							error = "cannot convert "+zs_rtti::demangle(script_variable->getNativePointerClassName())+" into "+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type));
+							error = "cannot convert \""+zs_rtti::demangle(script_variable->getNativePointerClassName())+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 							return false;
 						}
 					}else{ // ScriptVar ?

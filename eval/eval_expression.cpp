@@ -334,6 +334,8 @@ namespace zetscript{
 			Operator operator_type = Operator::OPERATOR_UNKNOWN;
 			Keyword keyword_type;
 			int last_line_ok=0;
+			int last_accessor_line=0;
+			std::string last_accessor_value="";
 
 			bool is_first_access=false;
 			//int instruction_first_access=-1;
@@ -406,6 +408,8 @@ namespace zetscript{
 					symbol_token_node.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
 				}
 				else{
+					last_accessor_line=0;
+					last_accessor_value="";
 					if(*aux_p=='['){ // std::vector object...
 						aux_p=eval_object_vector(
 							eval_data
@@ -452,12 +456,15 @@ namespace zetscript{
 					}
 					else {
 						symbol_token_node.pre_operator=pre_operator;
+						last_accessor_line=line;
 						aux_p = eval_symbol(eval_data
 								,aux_p
 								,line
 								,&symbol_token_node
 								,pre_self_operation_type
-							);
+						);
+
+						last_accessor_value=symbol_token_node.value;
 					}
 
 					last_line_ok=line;
@@ -486,6 +493,22 @@ namespace zetscript{
 
 						is_first_access=true;
 
+						// add info to solve symbols first access (we need to put here because we have to know n params if function related)
+						symbol_token_node.instructions[0]->link_symbol_first_access=LinkSymbolFirstAccess(
+								eval_data->current_function->script_function->idx_script_function
+								,scope_info
+								,symbol_token_node.value
+								,params // only if first access is a function...
+						);
+
+						// add info to add as symbol value ...
+						symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
+							eval_data->current_parsing_file
+							,line
+							,get_compiled_symbol(eval_data,symbol_token_node.value)
+						);
+
+
 						// eval accessor element (supose that was a preinsert a load instruction for identifier )...
 						while(is_access_punctuator(aux_p)){
 							ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
@@ -498,6 +521,12 @@ namespace zetscript{
 								symbol_token_node.instructions[
 								   symbol_token_node.instructions.size()-1
 								]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
+
+								/*symbol_token_node.instructions[symbol_token_node.instructions.size()-1]->instruction_source_info= InstructionSourceInfo(
+									eval_data->current_parsing_file
+									,line
+									,get_compiled_symbol(eval_data,symbol_token_node.value.c_str())
+								);*/
 
 								if(is_first_access){
 									params=0;
@@ -557,6 +586,7 @@ namespace zetscript{
 							case '.': // member access
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 								accessor_value="";
+								last_accessor_line=line;
 								while(!is_end_symbol_token(aux_p)){ // get name...
 									accessor_value += (*aux_p++);
 								}
@@ -576,32 +606,27 @@ namespace zetscript{
 								instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
 								instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS;
 
-								symbol_token_node.instructions[symbol_token_node.instructions.size()-1]->instruction_source_info= InstructionSourceInfo(
+								instruction_token->instruction_source_info= InstructionSourceInfo(
 									eval_data->current_parsing_file
 									,line
 									,get_compiled_symbol(eval_data,accessor_value)
 								);
 							}
 
+							if(byte_code == ByteCode::BYTE_CODE_CALL){
+								instruction_token->instruction_source_info= InstructionSourceInfo(
+									eval_data->current_parsing_file
+									,last_accessor_line
+									,get_compiled_symbol(eval_data,last_accessor_value)
+								);
+							}
+
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 							is_first_access=false; // not first access anymore...
+
+							last_accessor_value=accessor_value;
+							//last_accessor_line=accessor_line;
 						}
-
-						// add info to solve symbols first access (we need to put here because we have to know n params if function related)
-						symbol_token_node.instructions[0]->link_symbol_first_access=LinkSymbolFirstAccess(
-								eval_data->current_function->script_function->idx_script_function
-								,scope_info
-								,symbol_token_node.value
-								,params // only if first access is a function...
-						);
-
-
-						// add info to add as symbol value ...
-						symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
-							eval_data->current_parsing_file
-							,line
-							,get_compiled_symbol(eval_data,symbol_token_node.value)
-						);
 
 						if((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
 							aux_p+=strlen(eval_info_pre_post_self_operations[post_self_operation_type].str);

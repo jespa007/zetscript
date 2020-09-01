@@ -205,7 +205,7 @@ namespace zetscript{
 		void 							registerPrimitiveTypes();
 
 		unsigned char					getIdxScriptClassInternal(const std::string & class_name);
-		unsigned char					getIdxScriptInternalFrom_C_Type(const std::string & c_type_str);
+		unsigned char					getIdxScriptInternalFrom_C_Type(const std::string & str_native_type);
 
 		void 							setup();
 		void 							internalPrintError(const char *s);

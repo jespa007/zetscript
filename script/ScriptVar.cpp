@@ -66,11 +66,12 @@ namespace zetscript{
 			"length"
 		);
 
-		se->var_ref=&stk_properties->count;
+		se->var_ref=&lenght_user_properties;
 		se->properties=(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY);
 
 		// start property idx starts  from last built-in property...
-		start_property_idx=properties_keys_built_in->count;
+		idx_start_user_properties=properties_keys->count;
+		lenght_user_properties=0;
 	}
 
 	void ScriptVar::setup(){
@@ -92,8 +93,8 @@ namespace zetscript{
 		stk_properties=new zs_vector();
 		properties_keys=new zs_map();
 
-		stk_properties_built_in=new zs_vector();
-		properties_keys_built_in=new zs_map();
+		//stk_properties_built_in=new zs_vector();
+		//properties_keys_built_in=new zs_map();
 
 
 	}
@@ -143,8 +144,10 @@ namespace zetscript{
 
 		// only create symbols if not std::string or std::vector type to make it fast ...
 		if(idx_class >= IDX_BUILTIN_TYPE_MAX
-			|| idx_class != IDX_BUILTIN_TYPE_CLASS_STRING
-			|| idx_class != IDX_BUILTIN_TYPE_CLASS_VECTOR){
+			|| idx_class == IDX_BUILTIN_TYPE_CLASS_STRING
+			|| idx_class == IDX_BUILTIN_TYPE_CLASS_VECTOR
+			|| idx_class == IDX_BUILTIN_TYPE_CLASS_DICTIONARY
+		){
 			createSymbols(irv);
 		}
 	}
@@ -181,10 +184,18 @@ namespace zetscript{
 		}
 	}
 
+	StackElement *ScriptVar::newSlot(){
+		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
+		*stk={NULL,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+		stk_properties->push_back((intptr_t)stk);
+		lenght_user_properties=properties_keys->count-idx_start_user_properties;
+		return stk;
+	}
+
 	// only for initialized
 	StackElement * ScriptVar::addPropertyBuiltIn(const std::string & symbol_value){
 		std::string key_value = symbol_value;
-		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
+		StackElement *new_stk=newSlot();
 		*new_stk={
 				0,
 				0,
@@ -192,11 +203,23 @@ namespace zetscript{
 			}; //assign var
 
 		// if ignore duplicate was true, map resets idx to the last function...
-		properties_keys_built_in->set(key_value.c_str(),(intptr_t)new_stk);
-
-		stk_properties_built_in->push_back((intptr_t)new_stk);
-
+		properties_keys->set(key_value.c_str(),stk_properties->count);
   	    return new_stk;
+	}
+
+
+
+	StackElement *ScriptVar::popUserProperty(){
+		if(stk_properties->count<=idx_start_user_properties){
+			THROW_RUNTIME_ERROR("pop(): error stack already empty");
+		}
+
+		StackElement *stk_element=((StackElement *)stk_properties->items[stk_properties->count-1]);
+
+		eraseProperty(stk_properties->count-1,true);
+
+		return stk_element;
+
 	}
 
 	StackElement * ScriptVar::addProperty(
@@ -254,60 +277,32 @@ namespace zetscript{
 
 		//si.idxAstNode = _idxAstNode;
 		std::string key_value = symbol_value;
-		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
+		StackElement *new_stk=newSlot();//(StackElement *)malloc(sizeof(StackElement));
 		*new_stk=si; //assign var
 
 		// if ignore duplicate was true, map resets idx to the last function...
-		properties_keys->set(key_value.c_str(),stk_properties->count + start_property_idx);
-
-		stk_properties->push_back((intptr_t)new_stk);
-
-
+		properties_keys->set(key_value.c_str(),stk_properties->count);
 		return new_stk;
 	}
 
 	int  ScriptVar::getPropertyIdx(const std::string & property_name){//,bool only_var_name){
 
 		bool exists;
-
-
-		// try built-in
-		int idx_stk_element=this->properties_keys_built_in->get(property_name.c_str(),exists);
+		int idx_stk_element=this->properties_keys->get(property_name.c_str(),exists);
 		if(exists){
 			return idx_stk_element;
 		}
-
-		//try user props
-		idx_stk_element=this->properties_keys->get(property_name.c_str(),exists);
-		if(exists){
-			return idx_stk_element+start_property_idx;
-		}
-
-
 		return ZS_IDX_UNDEFINED;
-
 	}
 
 	StackElement * ScriptVar::getProperty(const std::string & property_name){//,bool only_var_name){
 
 		bool exists;
-
-
-		// try built-in
-		intptr_t stk_element=this->properties_keys_built_in->get(property_name.c_str(),exists);
+		intptr_t stk_element=this->properties_keys->get(property_name.c_str(),exists);
 		if(exists){
 			return (StackElement *)stk_element;
 		}
-
-		//try user props
-		stk_element=this->properties_keys->get(property_name.c_str(),exists);
-		if(exists){
-			return (StackElement *)stk_element;
-		}
-
-
 		return NULL;
-
 	}
 
 	StackElement * ScriptVar::getProperty(short idx){
@@ -316,18 +311,16 @@ namespace zetscript{
 			return &this_variable;
 		}
 
-		if(idx >= (int)stk_properties_built_in->count){
-			if(idx >= (int)stk_properties_built_in->count+stk_properties->count){
-				THROW_RUNTIME_ERROR("idx symbol index out of bounds (%i)",idx);
-			}
+		/*if(idx >= (int)stk_properties_built_in->count){
+
 			idx-=stk_properties_built_in->count;
+		}*/
+
+		if(idx >= (int)stk_properties->count){
+			THROW_RUNTIME_ERROR("idx symbol index out of bounds (%i)",idx);
 		}
 
 		return (StackElement *)stk_properties->items[idx];
-	}
-
-	const char * getSymbolNameFromPropertyPtr(StackElement *stk){
-
 	}
 
 	void ScriptVar::eraseProperty(short idx, bool remove_vector){//onst std::string & varname){
@@ -376,6 +369,7 @@ namespace zetscript{
 		// remove symbol on std::vector ...
 		if(remove_vector){
 			stk_properties->erase(idx);
+			lenght_user_properties=properties_keys->count-idx_start_user_properties;
 		}
 
 	}
@@ -392,6 +386,7 @@ namespace zetscript{
 		}
 		eraseProperty(idx_property,true);
 		properties_keys->erase(property_name.c_str()); // erase also property key
+
 	}
 
 	const std::string & ScriptVar::getClassName(){
@@ -476,6 +471,7 @@ namespace zetscript{
 		for ( unsigned i = 0; i < stk_properties->count; i++){
 			eraseProperty(i);
 		}
+
 		stk_properties->clear();
 
 		// deallocate function member ...
@@ -496,12 +492,12 @@ namespace zetscript{
 
 		//-----------------------------------
 		// BUILT-IN destroy built-in elements...
-		for(unsigned i =0;i < stk_properties_built_in->count; i++){
+		/*for(unsigned i =0;i < stk_properties_built_in->count; i++){
 			free((void *)stk_properties_built_in->items[i]);
 		}
 
 		delete stk_properties_built_in;
-		delete properties_keys_built_in;
+		delete properties_keys_built_in;*/
 		//-----------------------------------
 		// USER delete all free items and clear();
 		for(unsigned i =0;i < stk_properties->count; i++){

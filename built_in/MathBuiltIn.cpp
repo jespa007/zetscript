@@ -5,4 +5,4 @@
 
 #include "zetscript.h"
 
-const float MathBuiltIn::PI=3.14159265359f;
+const float MathBuiltIn::PI=M_PI;

@@ -68,6 +68,14 @@ namespace zetscript{
 		return "";
 	}
 
+	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
+		short idx= (instruction-this->instructions);///sizeof(Instruction *);
+		if(instruction_source_info.count(idx)==1){
+			return &instruction_source_info[idx];
+		}
+		return NULL;
+	}
+
 	std::string ScriptFunction::formatInstructionLoadType(ScriptFunction *function,Instruction *instruction){
 
 		 char print_aux_load_value[512] = {0};
@@ -325,7 +333,7 @@ namespace zetscript{
 			, const std::string & file
 			, short line
 			, const std::string & symbol_name
-			, const std::string & c_type
+			, const std::string & str_native_type
 			, intptr_t ref_ptr
 			, unsigned short symbol_properties
 	){
@@ -341,7 +349,7 @@ namespace zetscript{
 
 		symbol->ref_ptr =ref_ptr;
 		//scope_symbol->symbol=scope_symbol;
-		symbol->c_type = c_type;
+		symbol->str_native_type = str_native_type;
 		symbol->symbol_properties = symbol_properties;
 		symbol->idx_position = idx_position;
 

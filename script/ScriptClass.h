@@ -41,7 +41,7 @@ namespace zetscript{
 				const std::string & file
 				, short line
 				,const std::string & var_name
-				,const std::string & c_type
+				,const std::string & str_native_type
 				,intptr_t ref_ptr // it should pass reference always because is built-in
 				, unsigned short symbol_properties
 		);

@@ -38,13 +38,14 @@ namespace zetscript{
 			const ScriptFunction *calling_function,
 			StackElement *stk_arg_calling_function,
 			unsigned char n_args,
-			Instruction *ins,
+			Instruction *instruction,
 			ScriptVar  * this_object
 			){
 
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
 		intptr_t converted_param[MAX_NATIVE_FUNCTION_ARGS];
+		float 	 float_converted_param[MAX_NATIVE_FUNCTION_ARGS];
 		int this_arg=(calling_function->symbol.symbol_properties&SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS)?1:0;
 		intptr_t result=0;
 		StackElement *stk_arg_current;
@@ -55,23 +56,23 @@ namespace zetscript{
 		n_args=n_args+this_arg;
 
 		if(n_args>MAX_NATIVE_FUNCTION_ARGS){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
 		}
 
 		if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Function is not registered as C");
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function is not registered as C");
 		}
 
 		if(fun_ptr==0){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Null function");
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Null function");
 		}
 
 		if((char)calling_function->function_params->count != (n_args)){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"C argument VS scrip argument doestn't match sizes");
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"C argument VS scrip argument doestn't match sizes");
 		}
 
 		if(calling_function->function_params->count > MAX_NATIVE_FUNCTION_ARGS){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->function_params->count,MAX_NATIVE_FUNCTION_ARGS);
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->function_params->count,MAX_NATIVE_FUNCTION_ARGS);
 		}
 
 		// convert parameters script to c...
@@ -79,11 +80,11 @@ namespace zetscript{
 
 			if( i==0 && this_arg==1){ // pass this...
 				if(!static_ref){
-					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Internal error: Cannot set parameter as this object due is not static");
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Internal error: Cannot set parameter as this object due is not static");
 				}
 
 				if(this_object==NULL){
-					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Internal error: Cannot set parameter as this object due this object is NULL");
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Internal error: Cannot set parameter as this object due this object is NULL");
 				}
 
 				if(this_object->idx_class>=IDX_BUILTIN_TYPE_MAX){
@@ -97,12 +98,19 @@ namespace zetscript{
 				FunctionParam *function_param=(FunctionParam *)calling_function->function_params->items[i];
 
 				if(!zs->convertStackElementToVar(stk_arg_current,function_param->idx_type,(intptr_t *)&converted_param[i],error_str)){
-					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,ins),"Function %s, param %i: %s. The function C %s that was found for first time it has different argument types now.",
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function \"%s\", param %i: %s. Native function \"%s\" that was found for first time it has different argument types now.",
 																	calling_function->symbol.name.c_str(),
 																	i,
 																	error_str.c_str(),
 																	calling_function->symbol.name.c_str()
 																	);
+				}
+
+				if(function_param->idx_type == IDX_BUILTIN_TYPE_FLOAT_PTR_C){
+					float *ptr=&float_converted_param[i];
+					*ptr = *((float *)&converted_param[i]);
+					converted_param[i]=(intptr_t)ptr;
+
 				}
 			}
 		}

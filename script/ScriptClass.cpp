@@ -41,7 +41,7 @@ namespace zetscript{
 				const std::string & file
 				, short line
 				,const std::string & symbol_name
-				,const std::string & c_type
+				,const std::string & str_native_type
 				,intptr_t ref_ptr
 				, unsigned short symbol_properties
 		){
@@ -59,7 +59,7 @@ namespace zetscript{
 			symbol->n_params=NO_PARAMS_IS_VARIABLE;
 			symbol->ref_ptr=ref_ptr;
 			symbol->name=symbol_name;
-			symbol->c_type = c_type;
+			symbol->str_native_type = str_native_type;
 			symbol->symbol_properties=symbol_properties | SYMBOL_PROPERTY_C_OBJECT_REF;
 
 			symbol_members->push_back((intptr_t)symbol);
@@ -159,8 +159,9 @@ namespace zetscript{
 			// check if metamethod...
 			for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 				if(ZS_STRCMP(ByteCodeMetamethodToStr((ByteCodeMetamethod)i),==,function_name.c_str())){
-
-					metamethod_operator[i]->push_back((intptr_t)function_symbol);
+					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
+					*stk_element = {0,(void *)function_symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+					metamethod_operator[i]->push_back((intptr_t)stk_element);
 
 					ZS_PRINT_DEBUG("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());
 					break;
@@ -200,6 +201,10 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 			zs_vector *vec=(zs_vector *)metamethod_operator[i];
+			for(unsigned j = 0; j < vec->count; j++){
+				free((void *)vec->items[j]);
+			}
+
 			delete vec;
 		}
 		memset(metamethod_operator,0,sizeof(metamethod_operator));

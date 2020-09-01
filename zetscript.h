@@ -464,7 +464,7 @@ namespace zetscript{
 		//void printGeneratedCode(ScriptFunction *sfo);
 
 		//----
-		bool evalInternal(const char * code, bool exec_vm, bool show_bytecode, const char * filename);
+		void evalInternal(const char * code, bool exec_vm, bool show_bytecode, const char * filename);
 
 		// FUNCTIONS
 		static 									void  print(const char *s);

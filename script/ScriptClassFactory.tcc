@@ -363,7 +363,7 @@ namespace zetscript{
 							symbol_src->file
 							, symbol_src->line
 							,symbol_src->name
-							,symbol_src->c_type
+							,symbol_src->str_native_type
 							,symbol_src->ref_ptr
 							, derivated_symbol_info_properties
 					);
@@ -545,7 +545,10 @@ namespace zetscript{
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 
 		if(ZS_STRCMP(ByteCodeMetamethodToStr(BYTE_CODE_METAMETHOD_SET),==,function_name)){
-			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->push_back((intptr_t)sf);
+			StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
+			*stk_element = {0,sf,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+
+			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->push_back((intptr_t)stk_element);
 			ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 		}
 		return true;
@@ -659,7 +662,11 @@ namespace zetscript{
 						return false;
 					}
 
-					c_class->metamethod_operator[i]->push_back((intptr_t)symbol_sf);
+					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
+					*stk_element = {0,(void *)symbol_sf->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+
+
+					c_class->metamethod_operator[i]->push_back((intptr_t)stk_element);
 
 					ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(T).name()).c_str(), function_name);
 					break;

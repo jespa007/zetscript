@@ -26,8 +26,6 @@ class ScriptClass;
 		ScriptFunction 		*	info_function_new;
 		Instruction 		*	instruction_new;
 		bool 					was_created_by_constructor;
-		zs_vector			*	stk_properties; // vector of stack elements
-		zs_map				*	properties_keys; // to search faster each property by its name
 
 		//----------------------
 
@@ -59,6 +57,9 @@ class ScriptClass;
 		);
 
 
+		StackElement *		newSlot();
+
+
 		int			   getPropertyIdx(const std::string & varname);
 		StackElement * getProperty(const std::string & varname);
 		StackElement * getProperty(short idx);
@@ -67,19 +68,6 @@ class ScriptClass;
 		void eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
 		zs_vector * getProperties();
-
-
-		/*virtual FunctionSymbol * addFunction(
-				const std::string & function_name
-				,const ScriptFunction *irv
-				, bool ignore_duplicates=false
-		);*/
-
-		//FunctionSymbol * getIdxScriptFunctionObjectByClassFunctionName(const std::string & funname);
-
-		//FunctionSymbol 	* getFunction(const std::string & varname);
-		//FunctionSymbol 	* getFunction(unsigned int idx);
-		//zs_vector		* getFunctions();
 
 		void * getNativeObject();
 		bool isNativeObject();
@@ -115,15 +103,20 @@ class ScriptClass;
 		bool delete_c_object;
 
 		virtual void setup();
+		StackElement *popUserProperty();
 	private:
 
 		void * created_object;
 		void * c_object;
-		short start_property_idx;
+		zs_vector			*	stk_properties; // vector of stack elements
+		zs_map				*	properties_keys; // to search faster each property by its name
+		int lenght_user_properties;
+		short idx_start_user_properties;
+
 
 		std::string aux_string;
-		zs_vector * stk_properties_built_in; // std::vector<FunctionSymbol>
-		zs_map	  *	properties_keys_built_in; // to search faster each property by its name
+		//zs_vector * stk_properties_built_in; // std::vector<FunctionSymbol>
+		//zs_map	  *	properties_keys_built_in; // to search faster each property by its name
 
 		void createSymbols(ScriptClass *irv);
 		void eraseProperty(short idx, bool remove_vector=false);

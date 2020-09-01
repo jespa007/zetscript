@@ -66,9 +66,9 @@ if(vm_str_current==vm_str_last){THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_fun
 
 
 
-#define PUSH_FUNCTION(fun_obj,class_obj,function_prop) \
+/*#define PUSH_FUNCTION(fun_obj,class_obj,function_prop) \
 *stk_current++={(void *)(fun_obj),class_obj,(unsigned short)(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION|function_prop)};
-
+*/
 #define PUSH_SCRIPTVAR(var_ref) \
 *stk_current++={NULL,var_ref,INS_PROPERTY_SCRIPTVAR};
 
@@ -267,7 +267,7 @@ namespace zetscript{
 		//
 		// EXECUTE INSTRUCTION HERE
 		//
-		 for(;;){ // foreach asm instruction ...
+		 for(;;){ // foreach byte code instruction ...
 
 			Instruction * instruction = instruction_it++;
 
@@ -294,6 +294,7 @@ namespace zetscript{
 						if(var_object != NULL){
 							if(var_object->idx_class == IDX_BUILTIN_TYPE_CLASS_VECTOR){
 								ScriptVarVector * script_var_vectors = (ScriptVarVector *)var_object;
+								zs_vector * stk_properties=script_var_vectors->getProperties();
 
 								if(STK_VALUE_IS_INT(stk_result_op2)){
 									// determine object ...
@@ -304,11 +305,11 @@ namespace zetscript{
 										THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Negative index std::vector (%i)",v_index);
 									}
 
-									if(v_index >= (int)(script_var_vectors->stk_properties->count)){
+									if(v_index >= (int)(stk_properties->count)){
 										THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Index std::vector out of bounds (%i)",v_index);
 									}
 
-									stk_var = (StackElement *)script_var_vectors->stk_properties->items[v_index];
+									stk_var = (StackElement *)stk_properties->items[v_index];
 									ok = true;
 								}else{
 									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected std::vector-index as integer or std::string");
@@ -371,27 +372,14 @@ namespace zetscript{
 								}
 							}
 
-							if(stk_variable_stack_element == NULL){
+							if(instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL){ // pass instruction to deduce symbol on call instruction
 
-								symbol_access_str=SFI_GET_SYMBOL_NAME(calling_function,instruction);
-
-								// symbol not exist, create new one undefined...
-								if((stk_variable_stack_element = calling_object->getProperty(symbol_access_str))==NULL){
-									if(instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL){
-										if(calling_object==this_object){ // this
-											THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),
-																		"function member \"%s\" not exist",
-																		symbol_access_str);
-										}
-										else{ // any element...
-											THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),
-													"Element %s has no function \"%s\"",
-													SFI_GET_SYMBOL_NAME(calling_function,instruction-1),
-													symbol_access_str);
-
-										}
-
-									}
+								// do calling from objects we have to store calling object too and go to next instruction
+								*stk_current++={instruction,calling_object,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+								continue;
+							}else{ // is a property
+								if(stk_variable_stack_element == NULL){
+									symbol_access_str=SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
 									stk_variable_stack_element=calling_object->addProperty(symbol_access_str);
 
@@ -400,13 +388,6 @@ namespace zetscript{
 									}
 								}
 							}
-
-							// do calling from objects we have to store calling object too and go to next instruction
-							if(stk_variable_stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
-								*stk_current++={stk_variable_stack_element,calling_object,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
-								continue;
-							}
-
 							// normal symbol
 							stk_var=stk_variable_stack_element;
 							break;
@@ -414,7 +395,6 @@ namespace zetscript{
 							stk_var = &stk_local_var[instruction->value_op2];
 							break;
 						}
-
 					}
 
 					pre_post_properties = GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction_properties);
@@ -543,18 +523,21 @@ namespace zetscript{
 					continue;
 				}else if(value_op1== LoadType::LOAD_TYPE_FUNCTION){
 
-					unsigned short extra_flags=(instruction->properties&MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL)?MSK_STACK_ELEMENT_PROPERTY_CONSTRUCTOR_FUNCTION:0;
+					*stk_current++={instruction,calling_object,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+					continue;
+					/*unsigned short extra_flags=(instruction->properties&MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL)?MSK_STACK_ELEMENT_PROPERTY_CONSTRUCTOR_FUNCTION:0;
 					extra_flags|=(instruction->properties&MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL) ?MSK_STACK_ELEMENT_PROPERTY_UNRESOLVED_FUNCTION:0;
 					ScriptVar * class_obj=NULL;
 					intptr_t value_op2 = instruction->value_op2;
 					instruction_properties=instruction->properties;
-					scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction_properties);
+					scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction_properties);*/
 
 					/*if(scope_type==MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // local gets functions from calling_function ...
 						vec_functions=&calling_function->local_functions;
 					}else*/
-					if(scope_type == MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
-						StackElement *stk_access_var=NULL;
+					//if(scope_type == MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
+
+						/*StackElement *stk_access_var=NULL;
 						if(instruction_properties & MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL){
 							stk_access_var=(stk_current-1);
 						}else{
@@ -565,19 +548,19 @@ namespace zetscript{
 						//StackElement *stk_ins=NULL;
 						if(stk_access_var->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) {
 							stk_access_var=((StackElement *)stk_access_var->var_ref);
-						}
+						}*/
 						/*else{
 							stk_ins=stk_property_var;
 						}*/
 
-						if(stk_access_var->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+						/*if(stk_access_var->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 							class_obj=(ScriptVar *)(stk_access_var->var_ref);
 							//ScriptClass *sc =GET_SCRIPT_CLASS(((ScriptVar *)class_obj)->idx_class);
 							//vec_functions=&sc->local_functions;
 						}
 						else{
 							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot access symbol \"%s\" (type of %s is %s)",SFI_GET_SYMBOL_NAME(calling_function,instruction),SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_access_var->toString());
-						}
+						}*/
 
 
 						/*if(value_op2 == 0){//ZS_IDX_UNDEFINED || value_op2 == ZS_FUNCTION_NOT_FOUND_IDX){ // is will be processed after in BYTE_CODE_CALL instruction ...
@@ -596,7 +579,7 @@ namespace zetscript{
 									);
 							RETURN_ERROR;
 						}*/
-					}/*else if(scope_type ==MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){
+					/*}else if(scope_type ==MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){
 						if((si = this_object->getFunction(value_op2))==NULL){
 							writeError(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find function \"this.%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 							RETURN_ERROR;
@@ -632,12 +615,12 @@ namespace zetscript{
 						}
 					}*/
 
-					if(value_op2 == 0){ // it will find out the function in function of parameters passed on stack on the call instruction ...
+					/*if(value_op2 == 0){ // it will find out the function in function of parameters passed on stack on the call instruction ...
 						*stk_current++={instruction,class_obj,(unsigned short)(MSK_STACK_ELEMENT_PROPERTY_IS_VAR_INSTRUCTION|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION|extra_flags)};
 					}else{
 						PUSH_FUNCTION(value_op2,class_obj,extra_flags);
-					}
-					continue;
+					}*/
+					//continue;
 
 				}else if(value_op1== LoadType::LOAD_TYPE_ARGUMENT){
 					*stk_current++=stk_arg[instruction->value_op2]; // copy arg directly ...
@@ -1166,6 +1149,8 @@ namespace zetscript{
 					bool is_c = false;
 					StackElement *stk_start_arg_call=stk_current;
 					StackElement *stk_function_ref=NULL;
+					Instruction *instruction_function_ref=NULL;
+
 
 					while(/*n_args <= MAX_NATIVE_FUNCTION_ARGS && */((stk_start_arg_call-1)->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)==0){
 						stk_start_arg_call--;
@@ -1175,58 +1160,54 @@ namespace zetscript{
 					stk_function_ref = ((stk_start_arg_call-1));
 					calling_object = this_object;
 
-					if(stk_function_ref->var_ref != NULL ){
-						calling_object = (ScriptVar *)stk_function_ref->var_ref; // get calling object first
-						stk_function_ref=(StackElement *)stk_function_ref->stk_value; // get property function symbol
+					if(stk_function_ref->var_ref!=NULL){
+						calling_object=(ScriptVar *)stk_function_ref->var_ref;
 					}
 
+					// get instruction calling symbol
+					instruction_function_ref = (Instruction *)(stk_function_ref)->stk_value;
 					aux_function_info = NULL;//(ScriptFunction *)stk_function_ref->stk_value;
 
 
 					bool is_constructor = (stk_function_ref->properties & MSK_STACK_ELEMENT_PROPERTY_CONSTRUCTOR_FUNCTION)!=0;
 
 					// try to find the function ...
-					if(((stk_function_ref)->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_INSTRUCTION)){// || deduce_function){
-						Instruction *instruction_function_ref = (Instruction *)(stk_function_ref)->stk_value;
-						//PASTNode ast_node_call_ale = vec_ast_node[iao->idxAstNode];
+					if(instruction_function_ref->value_op2 == ZS_IDX_UNDEFINED) // symbol not found find...
+					{
+						StackElement *stk_element_ptr=vm_stack;
+						int stk_element_len = main_function_object->registered_symbols->count;
+						bool stk_element_are_ptr = false;
 
 						symbol_to_find = SFI_GET_SYMBOL_NAME(calling_function,instruction_function_ref);
 						unsigned short scope_type = GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction_function_ref->properties);
 
-
-						// local vars as functions ...
-
-						// registered symbols in case is MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS...
-						zs_vector *local_symbols=NULL;
-						if(scope_type==MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
-							calling_object = (ScriptVar *)stk_function_ref->var_ref;
-
+						// load local symbol from calling object (just in case is a class)
+						if(
+							scope_type&(MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS|MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS)
+						){
 							// we have to no to call default constructor...is implicit
-							if(is_constructor) {
-
-								is_c=calling_object->isNativeObject();
-
-								if(n_args == 0 && is_c){
-									aux_function_info = NULL;
-									instruction_function_ref->properties |= MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL;
-								}
+							if(is_constructor && calling_object->isNativeObject() && n_args==0) {
+								aux_function_info = NULL;
+								instruction_function_ref->properties |= MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL;
 							}
 
-							local_symbols=calling_object->getProperties();//getFunctions();
+							zs_vector * list_props=calling_object->getProperties();//getFunctions();
+							stk_element_ptr=(StackElement *)list_props->items;
+							stk_element_len=list_props->count;
+							stk_element_are_ptr=true;
 						}
 
-						//bool all_check=true;
 						if((instruction_function_ref->properties & MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL)==0)
 						{
-							zs_vector *global_symbols=main_function_object->registered_symbols;
+							//zs_vector *global_symbols=main_function_object->registered_symbols;
 							if((aux_function_info=findFunction(
 									 calling_object
 									,calling_function
 									,instruction
 									,instruction_function_ref
-
-									,local_symbols
-									,global_symbols
+									,stk_element_ptr
+									,stk_element_len
+									,stk_element_are_ptr
 									,is_constructor
 									,symbol_to_find
 									,stk_result_op1
@@ -1240,12 +1221,11 @@ namespace zetscript{
 								}
 							}
 
-
-							// saves function pointer found ...
-							stk_function_ref->stk_value=aux_function_info;
+							if((scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS) == 0){ // we can save function ref, else no because on each scope access can have different calling objects
+								instruction_function_ref->value_op2=(intptr_t)aux_function_info;
+							}
 
 						}
-
 					}
 					else{
 						if(((stk_function_ref)->properties & MSK_STACK_ELEMENT_PROPERTY_UNRESOLVED_FUNCTION)==0){

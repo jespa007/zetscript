@@ -518,6 +518,8 @@ namespace zetscript{
 			}
 		}
 
+#define RESULT_LITERAL_VALUE 	(number_part[0]+number_part[1]+number_part[2]).c_str()
+
 		char * parse_literal_number(EvalData *eval_data,const char *c, int & line, std::string & value){
 			// PRE: a std::string given...
 			char *aux_p = NULL;
@@ -526,7 +528,7 @@ namespace zetscript{
 			bool end=false;
 			int current_part=0;
 			std::string number_part[3];
-			value="";
+			//value="";
 			bool is01s=true;
 			//bool isInt=true;
 			bool isHexa=(*aux_p == 'x' || *aux_p == 'X') || ((*aux_p == '0' && *(aux_p+1) == 'X') || (*aux_p == '0' && *(aux_p+1) == 'x'));
@@ -558,17 +560,20 @@ namespace zetscript{
 							}
 						}
 						else{ // error
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
+							number_part[current_part]+=*aux_p; // save conflicting character
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 						}
 					}
 					else{ // error
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
+						number_part[current_part]+=*aux_p; // save conflicting character
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 				}
 				else if(*aux_p == '.'){ // fraccional part ?
 
-					if(isHexa){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
+					if(isHexa){ // error
+						number_part[current_part]+=*aux_p; // save conflicting character
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 
 					if(current_part==0){
@@ -576,20 +581,23 @@ namespace zetscript{
 						number_part[current_part]+=".";
 					}
 					else{ // error
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
+						number_part[current_part]+=*aux_p; // save conflicting character
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 				}
 
 				else if(*aux_p == 'b'){ // is end binary format?
 					if(!is01s || (current_part != 0)){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
+						number_part[current_part]+=*aux_p; // save conflicting character
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 
 					number_part[current_part]+=*aux_p;
 					end=true;
 				}
 				else{
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",value.c_str());
+					number_part[current_part]+=*aux_p; // save conflicting character
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 				}
 
 				is01s&=(('0'==*aux_p) || ('1'==*aux_p));

@@ -15,11 +15,11 @@ namespace zetscript{
 		ScriptVarDictionary(){}
 		ScriptVarDictionary(ZetScript *_zs);
 
-		virtual void unrefSharedPtr();
+		//virtual void unrefSharedPtr();
 
 
-		int size();
-		static int sizeSf(ScriptVarDictionary *dic){ return dic->size();}
+		//int size();
+		//static int sizeSf(ScriptVarDictionary *dic){ return dic->size();}
 		void 			addAttr(const char *attr_name, StackElement  * stk);
 		static void     addAttrSf(ScriptVarDictionary *dic, const char *attr_name, StackElement  * stk){ dic->addAttr(attr_name,stk);}
 
@@ -27,9 +27,9 @@ namespace zetscript{
 		void removeAttr(const char *attr_name);
 		static void removeAttrSf(ScriptVarDictionary *dic,const char *attr_name){ dic->removeAttr(attr_name);}
 
-		virtual void destroy();
+		//virtual void destroy();
 
-		virtual ~ScriptVarDictionary();
+		//virtual ~ScriptVarDictionary();
 	};
 
 }

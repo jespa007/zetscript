@@ -372,38 +372,40 @@ namespace zetscript{
 			return;
 		}
 
-		for (int v = main_function->registered_symbols->count-1
-					 ;v>=0
-					 ;v--) {
-			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
-			if((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+		if(main_function->registered_symbols->count > 0){
+			// set global top stack element
+			StackElement *vm_stk_element=&vm_stack[main_function->registered_symbols->count-1];
 
-				StackElement *ptr_ale =&vm_stack[v];
-				ScriptVar *var = NULL;
+			for (int v = main_function->registered_symbols->count-1
+						 ;v>=0
+						 ;v--) {
+				Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
+				if((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
 
-				if(ptr_ale->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-					var =((ScriptVar *)(ptr_ale->var_ref));
-					if(var){
-						if(var->ptr_shared_pointer_node != NULL){
-							var->unrefSharedPtr();
+					StackElement *ptr_ale =&vm_stack[v];
+					ScriptVar *var = NULL;
+
+					if(ptr_ale->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+						var =((ScriptVar *)(ptr_ale->var_ref));
+						if(var){
+							if(var->ptr_shared_pointer_node != NULL){
+								var->unrefSharedPtr();
+							}
 						}
 					}
-				}
 
-				main_function->registered_symbols->pop_back();
-			}
-			else{
-				break;
+					main_function->registered_symbols->pop_back();
+
+					// clear global function/variable
+					*vm_stk_element--={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+				}
+				else{
+					break;
+				}
 			}
 		}
 
 		removeEmptySharedPointers(0,NULL);
-
-		// clear all stack variables
-		StackElement *aux=vm_stack;
-		for(int i=0; i < VM_STACK_LOCAL_VAR_MAX;i++){
-			*aux++={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
-		}
 
 		memset(zero_shares,0,sizeof(zero_shares));
 		memset(shared_var,0,sizeof(shared_var));
@@ -478,6 +480,37 @@ namespace zetscript{
 
 
 	VirtualMachine::~VirtualMachine(){
+		// destroy c variable scripts
+		ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
+
+		// clear all symbols except c variables/functions ...
+		for (int v = 0;
+			 v<main_function->registered_symbols->count;
+			 v++) {
+			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
+			if (((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)
+			) {
+				// if is variable we should delete
+				//main_function->registered_symbols->pop_back();
+				StackElement *stk=&vm_stack[v];
+				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk->properties)){
+				default:
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+					delete (ScriptVarString *)stk->var_ref;
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
+					delete (ScriptVar *)stk->var_ref;
+					break;
+
+				}
+			}
+		}
+
 		//destroyCache();
 	}
 }
