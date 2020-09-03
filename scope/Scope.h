@@ -35,6 +35,7 @@ namespace zetscript{
 		 * register/search symbol info
 		 * @n_params:
 		 */
+		Symbol * registerNativeFunctionSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params);
 		Symbol * registerSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_IS_VARIABLE);
 		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
 

@@ -354,7 +354,7 @@ namespace zetscript{
 							);
 						}
 						else{ // register as local variable in the function...
-							symbol_sf=eval_data->current_function->script_function->registerFunction(
+							symbol_sf=eval_data->current_function->script_function->registerLocalFunction(
 									scope_info
 									, eval_data->current_parsing_file
 									, line
@@ -1192,7 +1192,7 @@ namespace zetscript{
 
 							// register symbol...
 							if(is_constant == false){ // do not register as variable...
-								eval_data->current_function->script_function->registerVariable(
+								eval_data->current_function->script_function->registerLocalVariable(
 										scope_info
 										,eval_data->current_parsing_file
 										, line

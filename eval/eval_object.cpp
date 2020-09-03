@@ -51,7 +51,6 @@ namespace zetscript{
 						,symbol_value
 				);
 
-
 				 key_value="\""+symbol_value+"\"";
 
 				 // register constant...
@@ -96,10 +95,8 @@ namespace zetscript{
 				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected }");
 			}
 
-
 			return aux_p+1;
 		}
-
 
 		char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvalInstruction *> *	instructions){
 
@@ -125,7 +122,6 @@ namespace zetscript{
 					if(*aux_p != ','){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected , on vector element");
 					}
-
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 				}
 				aux_p=eval_expression(
@@ -222,10 +218,10 @@ namespace zetscript{
 
 						 instructions->push_back(
 							 new EvalInstruction(
-									 BYTE_CODE_CALL
-									 ,ZS_IDX_UNDEFINED
-									 ,constructor_function->idx_position // idx function member
-									// ,MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL
+								 BYTE_CODE_CALL
+								 ,ZS_IDX_UNDEFINED
+								 ,constructor_function->idx_position // idx function member
+								// ,MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL
 							)
 						 );
 					 }

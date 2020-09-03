@@ -7,8 +7,6 @@
 namespace zetscript{
 
 	void ScriptVar::createSymbols(ScriptClass *ir_class){
-
-
 		//FunctionSymbol *si;
 		StackElement *se;
 
@@ -39,7 +37,7 @@ namespace zetscript{
 
 				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
 					 // static ref only get ref function ...
-					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_STATIC_REF) == SYMBOL_PROPERTY_STATIC_REF){
+					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) == SYMBOL_PROPERTY_C_STATIC_REF){
 						 se->var_ref = (void *)ir_fun->ref_native_function_ptr;
 					 }
 					 else{ // hard way: create function member ptr through proxy
@@ -52,7 +50,11 @@ namespace zetscript{
 				if(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 				{ // we know the type object so we assign the pointer ...
 					// check if primitive type (only 4 no more no else)...
-					void *ptr_variable = (void*) ((unsigned long long) c_object + symbol->ref_ptr);
+					void *ptr_variable = (void *)symbol->ref_ptr;
+
+					if((symbol->symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF)==0){ // this symbol is not static so, let's assign ptr according its offset
+						ptr_variable = (void*) ((unsigned long long) c_object + symbol->ref_ptr);
+					}
 
 					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
 				}else{
@@ -92,11 +94,6 @@ namespace zetscript{
 		memset(&this_variable,0,sizeof(this_variable));
 		stk_properties=new zs_vector();
 		properties_keys=new zs_map();
-
-		//stk_properties_built_in=new zs_vector();
-		//properties_keys_built_in=new zs_map();
-
-
 	}
 
 	ScriptVar::ScriptVar(){
@@ -195,6 +192,11 @@ namespace zetscript{
 	// only for initialized
 	StackElement * ScriptVar::addPropertyBuiltIn(const std::string & symbol_value){
 		std::string key_value = symbol_value;
+
+		// if ignore duplicate was true, map resets idx to the last function...
+		properties_keys->set(key_value.c_str(),stk_properties->count);
+
+
 		StackElement *new_stk=newSlot();
 		*new_stk={
 				0,
@@ -202,12 +204,8 @@ namespace zetscript{
 				MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
 			}; //assign var
 
-		// if ignore duplicate was true, map resets idx to the last function...
-		properties_keys->set(key_value.c_str(),stk_properties->count);
   	    return new_stk;
 	}
-
-
 
 	StackElement *ScriptVar::popUserProperty(){
 		if(stk_properties->count<=idx_start_user_properties){
@@ -219,7 +217,6 @@ namespace zetscript{
 		eraseProperty(stk_properties->count-1,true);
 
 		return stk_element;
-
 	}
 
 	StackElement * ScriptVar::addProperty(
@@ -227,7 +224,8 @@ namespace zetscript{
 			, const ScriptFunction *info_function
 			,Instruction *src_instruction
 			,StackElement * sv
-	){
+			,int * idx_stk_element
+		){
 		StackElement si;
 		bool error_symbol=false;
 
@@ -258,6 +256,10 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 		}
 
+		if(properties_keys->exist(symbol_value.c_str())){
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function, src_instruction),"\"%s\" symbol already exists",symbol_value.c_str());
+		}
+
 		if(sv != NULL){
 			si = *sv;
 
@@ -275,13 +277,18 @@ namespace zetscript{
 			};
 		}
 
+		if(idx_stk_element != NULL){
+			*idx_stk_element=stk_properties->count;
+		}
+
 		//si.idxAstNode = _idxAstNode;
 		std::string key_value = symbol_value;
-		StackElement *new_stk=newSlot();//(StackElement *)malloc(sizeof(StackElement));
+
+		properties_keys->set(key_value.c_str(),stk_properties->count);
+
+		StackElement *new_stk=newSlot();
 		*new_stk=si; //assign var
 
-		// if ignore duplicate was true, map resets idx to the last function...
-		properties_keys->set(key_value.c_str(),stk_properties->count);
 		return new_stk;
 	}
 
@@ -295,13 +302,17 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	StackElement * ScriptVar::getProperty(const std::string & property_name){//,bool only_var_name){
+	StackElement * ScriptVar::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
 		bool exists;
-		intptr_t stk_element=this->properties_keys->get(property_name.c_str(),exists);
+		intptr_t idx_stk_element=this->properties_keys->get(property_name.c_str(),exists);
 		if(exists){
-			return (StackElement *)stk_element;
+			if(idx!=NULL){
+				*idx=idx_stk_element;
+			}
+			return (StackElement *)stk_properties->items[idx_stk_element];
 		}
+
 		return NULL;
 	}
 
@@ -347,7 +358,7 @@ namespace zetscript{
 
 				 ir_fun  = (ScriptFunction *)(si->stk_value);
 				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
-					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_STATIC_REF) != SYMBOL_PROPERTY_STATIC_REF){
+					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) != SYMBOL_PROPERTY_C_STATIC_REF){
 						 delete ((CFunctionMemberPointer *)si->var_ref);
 					 }
 				}
@@ -479,7 +490,7 @@ namespace zetscript{
 			FunctionSymbol *si = (FunctionSymbol *)functions->items[i];
 			ScriptFunction * ir_fun  = (ScriptFunction *)(si->object.stk_value);
 			 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
-				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_STATIC_REF) != SYMBOL_PROPERTY_STATIC_REF){
+				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) != SYMBOL_PROPERTY_C_STATIC_REF){
 					 delete ((CFunctionMemberPointer *)si->proxy_ptr);
 				 }
 			}

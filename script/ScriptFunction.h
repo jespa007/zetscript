@@ -24,7 +24,7 @@ namespace zetscript{
 		int idx_return_type; 			// idx return type
 		intptr_t ref_native_function_ptr;
 
-		zs_vector * function_params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
+		zs_vector * params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
 
@@ -38,7 +38,7 @@ namespace zetscript{
 				ZetScript *_zs
 				,unsigned char _idx_class
 				,short _idx_script_function
-				, std::vector<FunctionParam> function_params
+				, std::vector<FunctionParam> _params
 				,int  idx_return_type
 				, Symbol *symbol
 				, intptr_t _ref_native_function_ptr
@@ -69,7 +69,7 @@ namespace zetscript{
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.
 		 */
-		Symbol *  registerVariable(
+		Symbol *  registerLocalVariable(
 				 Scope * scope_block
 				, const std::string & file
 				, short line
@@ -79,21 +79,12 @@ namespace zetscript{
 				, unsigned short symbol_properties=0
 		);
 
-		/*ScopeSymbolInfo *  registerVariable(
-				const std::string & file
-				, short line
-				, const std::string & variable
-				, const std::string & str_native_type=""
-				, intptr_t ref_ptr=0
-				, unsigned short symbol_properties=0
-		);*/
-
 		Symbol *  getSymbol(Scope *scope,const std::string & symbol_name, char n_params=NO_PARAMS_IS_VARIABLE, int * n_symbols_found=NULL);
 
 		/* Registers a function.
 		 * Desc: Inserts function at custom scope. It returns the idx std::vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
 		 */
-		Symbol * registerFunction(
+		Symbol * registerLocalFunction(
 				  Scope * scope_block
 				, const std::string & file
 				, short line
@@ -104,17 +95,6 @@ namespace zetscript{
 				, unsigned short symbol_properties=0
 		);
 
-		/*ScriptFunction * registerFunction(
-				const std::string & file
-				, short line
-				,  const std::string & function_name
-				, std::vector<FunctionParam> args={}
-				, int idx_return_type=ZS_IDX_UNDEFINED
-				,intptr_t ref_ptr=0
-				, unsigned short symbol_properties=0
-		);*/
-
-		//Symbol * getFunction(Scope * scope,const std::string & symbol, char n_args=0, int * n_symbols_found=NULL);
 		~ScriptFunction();
 
 	private:

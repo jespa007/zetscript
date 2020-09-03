@@ -406,7 +406,7 @@ namespace zetscript{
 							if(symbol_member->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
 								ScriptFunction *sf=(ScriptFunction *)symbol_member->ref_ptr;
 								if(
-										(ls->n_params == sf->function_params->count)
+										(ls->n_params == sf->params->count)
 									&& (str_symbol_to_find == symbol_member->name)
 									){
 									symbol_sf_foundf = symbol_member;
@@ -433,19 +433,28 @@ namespace zetscript{
 
 						// search for local
 						if(sc_var != NULL){
-							if(ls->n_params==NO_PARAMS_IS_VARIABLE){
-								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
-									load_type=LoadType::LOAD_TYPE_VARIABLE;
-									instruction->vm_instruction.value_op2=vis->idx_position;
-									local_found=true;
-								}
+
+							if((sc_var->n_params >= 0) && ((sc_var->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)){
+								load_type=LoadType::LOAD_TYPE_FUNCTION;
+								instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
+								local_found =true;
 							}
 							else{
-								Symbol *function_symbol=sf->getSymbol(sc_var->scope,ls->value,ls->n_params,&n_symbols_found);
-								if(function_symbol!=NULL){
-									instruction->vm_instruction.value_op2=function_symbol->ref_ptr;
-									load_type=LoadType::LOAD_TYPE_FUNCTION;
-									local_found =true;
+
+								if(ls->n_params==NO_PARAMS_IS_VARIABLE){
+									if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
+										load_type=LoadType::LOAD_TYPE_VARIABLE;
+										instruction->vm_instruction.value_op2=vis->idx_position;
+										local_found=true;
+									}
+								}
+								else{
+									Symbol *function_symbol=sf->getSymbol(sc_var->scope,ls->value,ls->n_params,&n_symbols_found);
+									if(function_symbol!=NULL){
+										instruction->vm_instruction.value_op2=function_symbol->ref_ptr;
+										load_type=LoadType::LOAD_TYPE_FUNCTION;
+										local_found =true;
+									}
 								}
 							}
 						}
@@ -484,9 +493,11 @@ namespace zetscript{
 						instruction->vm_instruction.value_op1=load_type;
 
 						if(load_type==LoadType::LOAD_TYPE_FUNCTION){
-							ScriptFunction *sf = ((ScriptFunction *)instruction->vm_instruction.value_op2);
-							if((sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0 && n_symbols_found>1){ // function will be solved at run time because it has to check param type
-								instruction->vm_instruction.value_op2=ZS_IDX_SYMBOL_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
+							if(instruction->vm_instruction.value_op2 != ZS_IDX_UNDEFINED){
+								ScriptFunction *sf = ((ScriptFunction *)instruction->vm_instruction.value_op2);
+								if((sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0 && n_symbols_found>1){ // function will be solved at run time because it has to check param type
+									instruction->vm_instruction.value_op2=ZS_IDX_SYMBOL_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
+								}
 							}
 						}
 					}

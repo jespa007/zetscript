@@ -89,7 +89,7 @@ namespace zetscript{
 						ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 						if(
 							(symbol->name == symbol_name)
-						 && (n_params == (int)sf->function_params->count)
+						 && (n_params == (int)sf->params->count)
 						 ){
 
 							return symbol;
@@ -109,13 +109,13 @@ namespace zetscript{
 			const std::string & file
 			, short line
 			, const std::string & function_name
-			, std::vector<FunctionParam> function_params
+			, std::vector<FunctionParam> params
 			, int idx_return_type
 			,intptr_t ref_ptr
 			, unsigned short symbol_properties
 		){
 
-		if(getSymbol(function_name,(char)function_params.size()) != NULL){
+		if(getSymbol(function_name,(char)params.size()) != NULL){
 			THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
 			return NULL;
 		}
@@ -131,25 +131,14 @@ namespace zetscript{
 				,idx_class 				// idx class which belongs to...
 				,idx_position // idx position ...
 				,function_name
-				,function_params
+				,params
 				,idx_return_type
 				,ref_ptr
 				,symbol_properties|SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION
-		);/*registerFunction(
-				 this->symbol.scope
-				, file
-				, line
-				, function_name
-				, args
-				, idx_return_type
-				, ref_ptr
-				, symbol_properties
-		);*/
+		);
 
 		// register
 		symbol_members->push_back((intptr_t)function_symbol);
-		//std::string class_name=symbol.name;
-		//this->function_members->push_back((intptr_t)sf);
 
 		// constructor...
 		if(function_name == FUNCTION_MEMBER_CONSTRUCTOR_NAME){

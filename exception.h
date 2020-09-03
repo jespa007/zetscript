@@ -12,7 +12,7 @@
 #define THROW_SCRIPT_ERROR 				cerr <<
 #else*/
 //#define THROW_EXCEPTION					throw
-#define THROW_RUNTIME_ERROR(s,...)		zetscript::exception::throw_runtime_error(__FILE__,__LINE__,s, ##__VA_ARGS__)
+#define THROW_RUNTIME_ERROR(s,...)		zetscript::exception::throw_runtime_error(__FILENAME__,__LINE__,s, ##__VA_ARGS__)
 //#define THROW_RUNTIME_ERROR 			throw std::runtime_error
 #define THROW_SCRIPT_ERROR 				zetscript::exception::throw_script_error
 #define THROW_EXCEPTION(s)				throw std::runtime_error(s)

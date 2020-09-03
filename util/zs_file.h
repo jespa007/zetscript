@@ -1,6 +1,5 @@
 #pragma once
 
-
 namespace zetscript{
 	namespace zs_file{
 

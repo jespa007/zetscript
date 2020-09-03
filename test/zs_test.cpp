@@ -963,7 +963,7 @@ int main(int argc, char * argv[]) {
 
 	printf("%i. test consisten script-c-script calls ...\n",++n_test);
 	// test calling script-c-script-c
-	zs->registerNativeFunction("test_function_1st_c_call",test_function_1st_c_call);
+	zs->registerNativeGlobalFunction("test_function_1st_c_call",test_function_1st_c_call);
 	zs->eval("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
 
 	std::function<void ()> * test_1st_script_call=zs->bindScriptFunction<void ()>("test_1st_script_call");

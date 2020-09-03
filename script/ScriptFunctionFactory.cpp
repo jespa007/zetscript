@@ -2,7 +2,6 @@
 
 namespace zetscript{
 
-
 	ScriptFunctionFactory::ScriptFunctionFactory(ZetScript *_zs){
 		zs = _zs;
 		scope_factory = _zs->getScopeFactory();
@@ -37,8 +36,40 @@ namespace zetscript{
 			}
 		}
 
-		Symbol *symbol;
-		if((symbol=scope->registerSymbol(
+		ScriptFunction *found_match=NULL;
+
+		// check there's no collisions with same symbol and signature...
+		for(unsigned i=0; i < script_functions->count && found_match==NULL;i++){
+			ScriptFunction *function1=(ScriptFunction *)script_functions->items[i];
+
+			if(function1->symbol.name == function_name){
+				if(function1->params->count == args.size()){
+					bool equal=true;
+					for(unsigned p=0; p < function1->params->count && equal;p++){
+						FunctionParam *fp1=(FunctionParam *)function1->params->items[p];
+						FunctionParam *fp2=&args[p];
+						equal = (fp1->arg_name == fp2->arg_name);
+					}
+
+					if(equal){
+						found_match = function1;
+					}
+				}
+			}
+		}
+
+		if(found_match!=NULL){
+			THROW_RUNTIME_ERROR(" trying to register a C function \"%s\" at [%s:%i] was already registered at [%s:%i]"
+					,function_name.c_str()
+					,zs_path::get_file_name(file.c_str()).c_str()
+					,line
+					,zs_path::get_file_name(found_match->symbol.file.c_str()).c_str()
+					,found_match->symbol.line
+			);
+		}
+
+		Symbol *symbol=NULL;
+		if((symbol=scope->registerNativeFunctionSymbol(
 				file
 				,line
 				,function_name
@@ -50,7 +81,6 @@ namespace zetscript{
 		short idx_script_function = script_functions->count;
 
 		// sets local function information...
-
 		symbol->idx_position = _idx_position; // idx local/member function
 		symbol->symbol_properties = symbol_properties | SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION;
 
@@ -62,22 +92,10 @@ namespace zetscript{
 				,idx_return_type
 				,symbol
 				,ref_native_function_ptr
-				/*,script_functions.size()
-				,args
-				,idx_return_type
-				,symbol_info_ref_ptr
-				,symbol_info_symbol
-				,symbol_properties
-				,symbol_info_idx_symbol*/
 		);
 
 		symbol->ref_ptr = (intptr_t)script_function;		  // ptr function
-
-		//irs->symbol=symbol;
-
-		//irs->idx_script_function=script_functions.size(); // idx script function ref
 		script_functions->push_back((intptr_t)script_function);
-
 		return symbol;
 	}
 
@@ -86,7 +104,6 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("script function idx node out of bound");
 			return NULL;
 		}
-
 		return (ScriptFunction 	*)script_functions->items[idx];
 	}
 
@@ -102,9 +119,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name.c_str());
 				return false;
 			}
-
 		}
-
 		return true;
 	}
 
@@ -116,19 +131,14 @@ namespace zetscript{
 			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[v];
 			if((info_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) //
 			{
-
 				script_functions->pop_back();
 				delete info_function;
 			}
 			else{
 				break;
 			}
-
-
 		}
-
 	}
-
 
 	ScriptFunctionFactory::~ScriptFunctionFactory(){
 		// erases all functions...
@@ -148,8 +158,5 @@ namespace zetscript{
 
 		delete script_functions;
 		script_functions=NULL;
-
 	}
-
-
 };

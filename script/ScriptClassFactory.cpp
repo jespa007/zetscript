@@ -31,11 +31,20 @@
 
 namespace zetscript{
 
-	static void  print(const char *s){
+	void  print(const char *s){
 
 		printf("%s\n",s);
 		fflush(stdout);
 
+		/*if(print_out_callback){
+			print_out_callback(s);
+		}*/
+	}
+
+	void  print(int s){
+
+		printf("FFDFD: %i\n",s);
+		fflush(stdout);
 		/*if(print_out_callback){
 			print_out_callback(s);
 		}*/
@@ -86,7 +95,7 @@ namespace zetscript{
 		REGISTER_BUILT_IN_CLASS(ScriptVar,IDX_BUILTIN_TYPE_CLASS_SCRIPT_VAR);
 		REGISTER_BUILT_IN_CLASS(ScriptVarString,IDX_BUILTIN_TYPE_CLASS_STRING);
 		REGISTER_BUILT_IN_CLASS(ScriptVarVector,IDX_BUILTIN_TYPE_CLASS_VECTOR);
-		REGISTER_BUILT_IN_CLASS(ScriptVarFunction,IDX_BUILTIN_TYPE_CLASS_FUNCTOR);
+		REGISTER_BUILT_IN_CLASS(ScriptVarFunction,IDX_BUILTIN_TYPE_CLASS_FUNCTION);
 		REGISTER_BUILT_IN_CLASS(ScriptVarDictionary,IDX_BUILTIN_TYPE_CLASS_DICTIONARY);
 
 
@@ -98,9 +107,9 @@ namespace zetscript{
 		// From here you defined all basic, start define hierarchy
 
 		// register custom functions ...
-		class_C_BaseOf<ScriptVarVector,ScriptVar>();
-		class_C_BaseOf<ScriptVarFunction,ScriptVar>();
-		class_C_BaseOf<ScriptVarDictionary,ScriptVar>();
+		nativeClassBaseOf<ScriptVarVector,ScriptVar>();
+		nativeClassBaseOf<ScriptVarFunction,ScriptVar>();
+		nativeClassBaseOf<ScriptVarDictionary,ScriptVar>();
 
 
 		//------------------------------------------------------------------------------------------------------------
@@ -109,9 +118,11 @@ namespace zetscript{
 		Symbol *symbol_main_function=main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 
+		ZS_REGISTER_GLOBAL_FUNCTION(this,"print",static_cast<void (*)(const char *)>(print));
+		ZS_REGISTER_GLOBAL_FUNCTION(this,"print",static_cast<void (*)(int)>(print));
 
-		registerNativeFunction("print",print);
-		//registerNativeFunction("error",internalPrintError);
+
+		//registerNativeGlobalFunction("error",internalPrintError);
 
 		//registerNativeFunctionMember("size",&ScriptVarVector::sizeSf);
 		registerNativeFunctionMember("push",&ScriptVarVector::pushSf);
@@ -132,12 +143,12 @@ namespace zetscript{
 		registerNativeFunctionMemberStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
 		registerNativeFunctionMemberStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
 		registerNativeFunctionMemberStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
-		ZS_REGISTER_NATIVE_VARIABLE(zs,"Math",&math_built_in);
+		ZS_REGISTER_GLOBAL_VARIABLE(zs,"Math",&math_built_in);
 
 		// Io
 		registerNativeSingletonClass<IoBuiltIn>("IoBuiltIn");
 		registerNativeFunctionMemberStatic<IoBuiltIn>("clock",IoBuiltIn::clock);
-		ZS_REGISTER_NATIVE_VARIABLE(zs,"IO",&io_built_in);
+		ZS_REGISTER_GLOBAL_VARIABLE(zs,"IO",&io_built_in);
 	}
 
 	void ScriptClassFactory::registerNativeBaseSymbols(bool _register){
@@ -373,7 +384,7 @@ namespace zetscript{
 		return getIdxScriptInternalFrom_C_Type(str_native_type);
 	}
 
-	bool 	ScriptClassFactory::class_C_BaseOf(unsigned char idx_src_class, unsigned char idx_class){
+	bool 	ScriptClassFactory::nativeClassBaseOf(unsigned char idx_src_class, unsigned char idx_class){
 
 		if(idx_src_class == idx_class){
 			return true;
@@ -383,7 +394,7 @@ namespace zetscript{
 
 		for(unsigned i=0; i < the_class->idx_base_classes->count; i++){
 			intptr_t idx_class_base=the_class->idx_base_classes->items[i];
-			if(class_C_BaseOf(idx_class_base,idx_class)){
+			if(nativeClassBaseOf(idx_class_base,idx_class)){
 				return true;
 			}
 		}

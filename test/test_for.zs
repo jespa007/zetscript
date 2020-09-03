@@ -2,10 +2,11 @@
 	print("i"+i);
 }*/
 
+//Math.PI;
 print("pi="+Math.PI);
-var f=Math.sin(0);
+/*var f=Math.sin(0);
 print("sin()="+f);
-//Math.sin(0);
+//Math.sin(0);*/
 
 /*var v=[1+1+2+3+4];//0,1,2,3,4,5,6,7,8,9,10];
 print("size:"+v.length);

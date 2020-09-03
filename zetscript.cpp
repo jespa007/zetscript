@@ -4,16 +4,20 @@ namespace zetscript{
 
 	const char * k_str_void_type =typeid(void).name();
 	const char * k_str_int_type_ptr=typeid(int *).name();
+	const char * k_str_const_int_type_ptr=typeid(const int *).name();
 	const char * k_str_float_type_ptr=typeid(float *).name();
+	const char * k_str_const_float_type_ptr=typeid(const float *).name();
 	const char * k_str_string_type_ptr=typeid(std::string *).name();
-	const char * k_str_const_char_type_ptr=typeid(std::string *).name();
+	const char * k_str_char_type_ptr=typeid(char *).name();
+	const char * k_str_const_char_type_ptr=typeid(const char *).name();
 	const char * k_str_bool_type_ptr=typeid(bool *).name();
+	const char * k_str_const_bool_type_ptr=typeid(const bool *).name();
 	const char * k_str_int_type=typeid(int).name();
 	const char * k_str_unsigned_int_type=typeid(unsigned int).name();
 	const char * k_str_intptr_t_type=typeid(intptr_t).name();
-	const char * k_str_float_type=typeid(int).name();
+	const char * k_str_float_type=typeid(float).name();
 	const char * k_str_bool_type=typeid(bool).name();
-	const char * k_str_stack_element_type=typeid(bool).name();
+	const char * k_str_stack_element_type=typeid(StackElement).name();
 
 	namespace eval{
 		void init_eval();
@@ -25,11 +29,15 @@ namespace zetscript{
 		scope_factory = new ScopeFactory(this);
 		proxy_function_factory = new FunctionProxyFactory();
 		script_function_factory= new ScriptFunctionFactory(this);
-		//eval_obj = new ScriptEval(this);
+
 		virtual_machine = new VirtualMachine(this);
 		script_class_factory = new ScriptClassFactory(this);
 
 		script_class_factory->init();
+		virtual_machine->init();
+
+
+
 
 		eval_int=0;
 		eval_float=0;
@@ -346,7 +354,7 @@ namespace zetscript{
 			is=(*calling_obj)->getProperty(access_var[access_var.size()-1]);
 			if(is!=NULL){
 				if(is->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
-					*fun_obj=(ScriptFunction *)is->stk_value;
+					*fun_obj=(ScriptFunction *)is->var_ref;
 				}
 			}else{
 				THROW_RUNTIME_ERROR("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());

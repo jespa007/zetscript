@@ -53,6 +53,18 @@ namespace zetscript{
 		unusued=true;
 	}
 
+	Symbol *  Scope::registerNativeFunctionSymbol(const std::string & file,short line, const std::string & symbol_name, char n_params){
+		Symbol *irv = new Symbol();
+		irv->name = symbol_name;
+		irv->file	 = file;
+		irv->line 	 = line;
+		irv->scope=  this;
+		irv->n_params=n_params;
+
+		registered_symbols->push_back((intptr_t)irv);
+		return irv;
+	}
+
 	//-----------------------------------------------------------------------------------------------------------
 	//
 	// SCOPE VARIABLE MANAGEMENT

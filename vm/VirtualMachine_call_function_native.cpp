@@ -50,7 +50,7 @@ namespace zetscript{
 		intptr_t result=0;
 		StackElement *stk_arg_current;
 		current_call_c_function = calling_function;
-		bool static_ref=calling_function->symbol.symbol_properties&SYMBOL_PROPERTY_STATIC_REF;
+		bool static_ref=calling_function->symbol.symbol_properties&SYMBOL_PROPERTY_C_STATIC_REF;
 		//float aux_float=0;
 
 		n_args=n_args+this_arg;
@@ -67,12 +67,12 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Null function");
 		}
 
-		if((char)calling_function->function_params->count != (n_args)){
+		if((char)calling_function->params->count != (n_args)){
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"C argument VS scrip argument doestn't match sizes");
 		}
 
-		if(calling_function->function_params->count > MAX_NATIVE_FUNCTION_ARGS){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->function_params->count,MAX_NATIVE_FUNCTION_ARGS);
+		if(calling_function->params->count > MAX_NATIVE_FUNCTION_ARGS){
+			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->params->count,MAX_NATIVE_FUNCTION_ARGS);
 		}
 
 		// convert parameters script to c...
@@ -95,7 +95,7 @@ namespace zetscript{
 			}
 			else{
 				stk_arg_current=&stk_arg_calling_function[i];
-				FunctionParam *function_param=(FunctionParam *)calling_function->function_params->items[i];
+				FunctionParam *function_param=(FunctionParam *)calling_function->params->items[i];
 
 				if(!zs->convertStackElementToVar(stk_arg_current,function_param->idx_type,(intptr_t *)&converted_param[i],error_str)){
 					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function \"%s\", param %i: %s. Native function \"%s\" that was found for first time it has different argument types now.",

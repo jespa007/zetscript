@@ -215,14 +215,11 @@ namespace zetscript{
 	}
 
 	VirtualMachine::VirtualMachine(ZetScript *_zs){
-
 		//-----------------------------------------------------------
 		// set memory manager
 
 		memset(zero_shares,0,sizeof(zero_shares));
 		memset(shared_var,0,sizeof(shared_var));
-		//memset(stack,0,sizeof(stack));
-
 		StackElement *aux=vm_stack;
 
 		for(int i=0; i < VM_STACK_LOCAL_VAR_MAX;i++){
@@ -252,24 +249,15 @@ namespace zetscript{
 
 		vm_scope_max = &vm_scope[VM_SCOPE_MAX-1];
 
-		//current_ast_node_call_c_function=-1;
-
 		main_function_object = NULL;
+		main_class_object=NULL;
 
-		script_functions = NULL;
-		//vec_ast_node = NULL;
-
-		size_vec_script_function_object_node = 0;
-		//size_vec_ast_node = 0;
 		vm_foreach_current=NULL;
 		current_call_c_function = NULL;
-		//n_globals=0;
 		zs=_zs;
-		script_function_factory=this->zs->getScriptFunctionFactory();
-		script_class_factory=this->zs->getScriptClassFactory();
 
-		//stk_globals=NULL;
-
+		script_function_factory=NULL;
+		script_class_factory=NULL;
 	}
 
 	#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
@@ -280,12 +268,21 @@ namespace zetscript{
 	#endif
 
 
+	void VirtualMachine::init(){
+		script_function_factory=this->zs->getScriptFunctionFactory();
+		script_class_factory=this->zs->getScriptClassFactory();
+		main_function_object = MAIN_FUNCTION(this);
+		main_class_object = SCRIPT_CLASS_MAIN(this);
+
+	}
+
+
 	//============================================================================================================================================
 	// POINTER MANANAGER
 
 	PInfoSharedPointerNode VirtualMachine::newSharedPointer(ScriptVar *_var_ptr){
 		//int index = VirtualMachine::getFreeCell();
-		PInfoSharedPointerNode _node = (PInfoSharedPointerNode)malloc(sizeof(tInfoSharedPointerNode));
+		PInfoSharedPointerNode _node = (PInfoSharedPointerNode)malloc(sizeof(InfoSharedPointerNode));
 		_node->data.n_shares=0;
 		_node->data.shared_ptr=_var_ptr;
 		_node->currentStack = idx_stk_current;
@@ -295,7 +292,6 @@ namespace zetscript{
 		//zero_shares[idx_stk_current].InsertNode(_node);
 		return _node;
 	}
-
 
 	void VirtualMachine::sharePointer(PInfoSharedPointerNode _node){
 
@@ -345,11 +341,10 @@ namespace zetscript{
 	}
 
 	StackElement * VirtualMachine::getStackElement(unsigned int idx_glb_element){
-		ScriptFunction  *main_function = MAIN_FUNCTION(this);//GET_SCRIPT_FUNCTION(this,0);
-		if(idx_glb_element < main_function->registered_symbols->count){
+
+		if(idx_glb_element < main_function_object->registered_symbols->count){
 			return &vm_stack[idx_glb_element];
 		}
-
 		return NULL;
 	}
 
@@ -365,21 +360,21 @@ namespace zetscript{
 	}
 
 	void VirtualMachine::clearGlobalVars(){
-		ScriptFunction  *main_function = MAIN_FUNCTION(this);
+
 
 		// zero shares have a late loading so it can be null at first time...
 		if(zero_shares == NULL){
 			return;
 		}
 
-		if(main_function->registered_symbols->count > 0){
+		if(main_function_object->registered_symbols->count > 0){
 			// set global top stack element
-			StackElement *vm_stk_element=&vm_stack[main_function->registered_symbols->count-1];
+			StackElement *vm_stk_element=&vm_stack[main_function_object->registered_symbols->count-1];
 
-			for (int v = main_function->registered_symbols->count-1
+			for (int v = main_function_object->registered_symbols->count-1
 						 ;v>=0
 						 ;v--) {
-				Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
 				if((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
 
 					StackElement *ptr_ale =&vm_stack[v];
@@ -394,7 +389,7 @@ namespace zetscript{
 						}
 					}
 
-					main_function->registered_symbols->pop_back();
+					main_function_object->registered_symbols->pop_back();
 
 					// clear global function/variable
 					*vm_stk_element--={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
@@ -419,7 +414,6 @@ namespace zetscript{
 			 ,unsigned	char  n_stk_params
 			){
 
-		main_function_object = MAIN_FUNCTION(this);
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		StackElement info={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 

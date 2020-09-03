@@ -8,7 +8,7 @@ namespace zetscript{
 			ZetScript * _zs
 			,unsigned char _idx_class
 			,short _idx_script_function
-			, std::vector<FunctionParam> _function_params
+			, std::vector<FunctionParam> _params
 			,int _idx_return_type
 			,Symbol *_symbol
 			, intptr_t _ref_native_function_ptr
@@ -26,11 +26,11 @@ namespace zetscript{
 		// local symbols for class or function...
 		registered_symbols=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		//registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
-		function_params = new zs_vector();
-		for(unsigned i = 0; i < _function_params.size(); i++){
+		params = new zs_vector();
+		for(unsigned i = 0; i < _params.size(); i++){
 			FunctionParam *script_param = new FunctionParam();
-			*script_param=_function_params[i];
-			function_params->push_back((intptr_t)script_param);
+			*script_param=_params[i];
+			params->push_back((intptr_t)script_param);
 		}
 
 		// factories
@@ -317,8 +317,8 @@ namespace zetscript{
 	int ScriptFunction::existArgumentName(const std::string & arg_name){
 		int idx_arg=ZS_IDX_UNDEFINED;
 
-		for(unsigned i = 0; i < this->function_params->count && idx_arg == ZS_IDX_UNDEFINED; i++){
-			FunctionParam *function_param=(FunctionParam *)this->function_params->items[i];
+		for(unsigned i = 0; i < this->params->count && idx_arg == ZS_IDX_UNDEFINED; i++){
+			FunctionParam *function_param=(FunctionParam *)this->params->items[i];
 			if(function_param->arg_name == arg_name){
 				idx_arg=i;
 			}
@@ -328,7 +328,7 @@ namespace zetscript{
 
 	}
 
-	Symbol * ScriptFunction::registerVariable(
+	Symbol * ScriptFunction::registerLocalVariable(
 			 Scope * scope_block
 			, const std::string & file
 			, short line
@@ -358,39 +358,12 @@ namespace zetscript{
 			zs->getVirtualMachine()->setStackElement(idx_position,convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr));
 		}
 
-		/*if(getVariable(scope_symbol->name,scope_symbol->scope) != NULL){
-			THROW_RUNTIME_ERROR("Variable \"%s\" already exist",variable_name.c_str()));
-			return NULL;
-		}*/
-
-
-
-
-
-
 		registered_symbols->push_back((intptr_t)symbol);
 
 		return symbol;
 	}
 
-	/*Symbol *	 ScriptFunction::getVariable(Scope *scope,const std::string & symbol_name){
-
-		if(registered_symbols->count>0){
-
-			// from lat value to first to get last override function...
-			for(int i = (int)registered_symbols->count-1; i >= 0 ; i--){
-				Symbol *symbol=(Symbol *)registered_symbols->items[i];
-				if((symbol->name == symbol_name)
-				&& (scope ==  NULL?true:(scope == symbol->scope))
-				  ){
-					return symbol;
-				}
-			}
-		}
-		return NULL;
-	}*/
-
-	Symbol * ScriptFunction::registerFunction(
+	Symbol * ScriptFunction::registerLocalFunction(
 			 Scope * scope_block
 			,const std::string & file
 			, short line
@@ -401,10 +374,7 @@ namespace zetscript{
 			, unsigned short symbol_properties
 		){
 
-			if(getSymbol(scope_block,function_name,(char)args.size()) != NULL){
-				THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
-				return NULL;
-			}
+			short idx_position=(short)registered_symbols->count;
 
 			Symbol *symbol =  script_function_factory->newScriptFunction(
 					//---- Register data
@@ -420,6 +390,12 @@ namespace zetscript{
 					,ref_ptr
 					,symbol_properties
 			);
+
+			symbol->idx_position=idx_position;
+
+			if(scope_block == MAIN_SCOPE(this)) { // is main funciton so set ref as global function...
+				zs->getVirtualMachine()->setStackElement(idx_position,(StackElement){0,(void *)symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION});
+			}
 
 			registered_symbols->push_back((intptr_t)symbol);
 
@@ -445,7 +421,7 @@ namespace zetscript{
 					ScriptFunction *current_sf=(ScriptFunction *)symbol->ref_ptr;
 					if(
 							(current_sf->symbol.name == symbol_name)
-						 //&& (n_args == (int)sf->function_params->count)
+						 //&& (n_args == (int)sf->params->count)
 						 && (scope ==  NULL?true:(scope == current_sf->symbol.scope))
 						 ){
 						// set first script function found...
@@ -477,8 +453,8 @@ namespace zetscript{
 		registered_symbols=NULL;
 
 		// delete arg info variables...
-		for(unsigned i=0; i < function_params->count; i++){
-			delete (FunctionParam *)function_params->items[i];
+		for(unsigned i=0; i < params->count; i++){
+			delete (FunctionParam *)params->items[i];
 		}
 
 		// delete all symbols...
@@ -488,8 +464,8 @@ namespace zetscript{
 			}
 		}
 
-		delete function_params;
-		function_params=NULL;
+		delete params;
+		params=NULL;
 
 		// delete arg info variables...
 		if(instructions != NULL){

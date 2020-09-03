@@ -104,27 +104,31 @@
 #define ZETSCRIPT_PATCH_VERSION 0
 
 
-#define ZS_CLASS_C_BASEOF(zs)											(zs)->class_C_BaseOf();
-#define ZS_REGISTER_NATIVE_FUNCTION(zs,text,s) 							(zs)->registerNativeFunction(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_NATIVE_VARIABLE(zs,text,s) 							(zs)->registerNativeVariable(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_NATIVE_CLASS(zs,class_type,s) 						(zs)->registerNativeClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_NATIVE_SINGLETON_CLASS(zs,class_type,s)				(zs)->registerNativeSingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_NATIVE_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->registerNativeVariableMember<class_type>(s,v)
-#define ZS_REGISTER_NATIVE_STATIC_FUNCTION_MEMBER(zs,class_type,s,f)	(zs)->registerNativeFunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_NATIVE_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->registerNativeFunctionMember<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_NATIVE_CONSTANT_INT(zs,constant_name,v)				(zs)->registerConstantIntValue(constant_name,v)
+#define ZS_CLASS_BASE_OF(zs,a,b)								(zs)->nativeClassBaseOf<a,b>()
+#define ZS_REGISTER_GLOBAL_FUNCTION(zs,text,s) 					(zs)->registerNativeGlobalFunction(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_GLOBAL_VARIABLE(zs,text,s) 					(zs)->registerNativeGlobalVariable(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_CLASS(zs,class_type,s) 						(zs)->registerNativeClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)			(zs)->registerNativeSingletonClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->registerNativeVariableMember<class_type>(s,v)
+#define ZS_REGISTER_STATIC_FUNCTION_MEMBER(zs,class_type,s,f)	(zs)->registerNativeFunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->registerNativeFunctionMember<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_CONSTANT_INT(zs,constant_name,v)			(zs)->registerConstantIntValue(constant_name,v)
 
 
 namespace zetscript{
 
 
 	extern const char *	k_str_void_type;				// 	typeid(void).name()
-	extern const char * k_str_int_type_ptr;			//	typeid(int *).name()
+	extern const char * k_str_int_type_ptr;				//	typeid(int *).name()
+	extern const char * k_str_const_int_type_ptr;		//	typeid(int *).name()
 	extern const char * k_str_float_type_ptr;			//	typeid(float *).name()
-	extern const char * k_str_string_type_ptr;		//	typeid(std::string *).name()
-	extern const char * k_str_const_char_type_ptr;	//	typeid(std::string *).name()
+	extern const char * k_str_const_float_type_ptr;		//	typeid(float *).name()
+	extern const char * k_str_string_type_ptr;			//	typeid(std::string *).name()
+	extern const char * k_str_char_type_ptr;			//	typeid(std::string *).name()
+	extern const char * k_str_const_char_type_ptr;		//	typeid(std::string *).name()
 	extern const char * k_str_bool_type_ptr;			//	typeid(bool *).name()
-	extern const char * k_str_int_type;				//	typeid(int).name()
+	extern const char * k_str_const_bool_type_ptr;		//	typeid(bool *).name()
+	extern const char * k_str_int_type;					//	typeid(int).name()
 	extern const char * k_str_unsigned_int_type;		//	typeid(unsigned int).name()
 	extern const char *	k_str_intptr_t_type;			//	typeid(intptr_t).name()
 
@@ -206,16 +210,16 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		template <typename V>
-		 bool registerNativeVariable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
-			 return script_class_factory->registerNativeVariable(var_str,var_ptr, registered_file, registered_line);
+		 bool registerNativeGlobalVariable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
+			 return script_class_factory->registerNativeGlobalVariable(var_str,var_ptr, registered_file, registered_line);
 		 }
 
 		/**
 		 * Register C function
 		 */
 		template <typename F>
-		bool registerFunction( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
-			return script_class_factory->registerNativeFunction( function_name,function_ptr, registered_file,registered_line);
+		bool registerLocalFunction( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
+			return script_class_factory->registerNativeGlobalFunction( function_name,function_ptr, registered_file,registered_line);
 		}
 
 
@@ -245,7 +249,7 @@ namespace zetscript{
 
 		template<class C, class B>
 		bool classBaseOf(){
-			return script_class_factory->class_C_BaseOf<C,B>();
+			return script_class_factory->nativeClassBaseOf<C,B>();
 		}
 
 		/**

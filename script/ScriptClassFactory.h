@@ -13,7 +13,7 @@
 #define SCRIPT_CLASS_STRING(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_STRING))
 #define SCRIPT_CLASS_DICTIONARY(data)					((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_DICTIONARY))
 #define SCRIPT_CLASS_VECTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_VECTOR))
-#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_FUNCTOR))
+#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_FUNCTION))
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_class_factory)->getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
 #define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_class_factory)->getScriptClass(idx)->str_class_ptr_type)
 
@@ -39,7 +39,7 @@ namespace zetscript{
 		ScriptClass * 					getScriptClass(const std::string & name);
 		ScriptClass * 					getScriptClassBy_C_ClassPtr(const std::string & class_type);
 		const char 	* 					getScriptClassName(unsigned char idx);
-		bool							class_C_BaseOf(unsigned char  theClass,unsigned char  class_idx);
+		bool							nativeClassBaseOf(unsigned char  theClass,unsigned char  class_idx);
 		unsigned char					getIdxClassFromItsNativeType(const std::string & s);
 		unsigned char 					getIdx_C_RegisteredClass(const std::string & str_classPtr);
 		zs_vector	* 					getScriptClasses();
@@ -63,7 +63,7 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		template <typename V>
-		 bool registerNativeVariable(
+		 bool registerNativeGlobalVariable(
 			 const std::string & var_name
 			 ,V var_ptr
 			 , const char *registered_file=""
@@ -74,7 +74,7 @@ namespace zetscript{
 		 * Register C function
 		 */
 		 template <typename F>
-		 bool registerNativeFunction(
+		 bool registerNativeGlobalFunction(
 			 const char * function_name
 			 ,F function_ptr
 			 , const char *registered_file=""
@@ -111,7 +111,7 @@ namespace zetscript{
 
 
 		template<class T, class B>
-		bool 							class_C_BaseOf();
+		bool 							nativeClassBaseOf();
 
 		/**
 		 * Register C Member var
@@ -177,8 +177,8 @@ namespace zetscript{
 
 		typedef struct{
 			PrimitiveType 				*return_type;
-			std::vector<PrimitiveType*>	params;
-		}tregisterFunction;
+			zs_vector					params;
+		}RegisterFunction;
 
 		zs_vector 						*   script_classes;
 		ZetScript 						*	zs;

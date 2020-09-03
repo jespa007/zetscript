@@ -26,11 +26,11 @@
 #define REGISTER_NATIVE_BASE_SYMBOLS(script_class_factory,o)		   			(zs)->registerNativeBaseSymbols(o))
 
 // if 0 is in main <> 0, else.
-#define DO_CAST											((this->zs))->doCast
-#define GET_IDX_BUILTIN_TYPE_CLASS_FROM_ITS_C_TYPE		((this->zs))->getIdxClassFromItsNativeType
-#define INSTANCE_SCRIPT_VARIABLE_BY_IDX					((this->zs))->instanceScriptVariableByIdx
-#define GET_METAMETHOD(m)								((this->zs))->getMetamethod(m)
-#define IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,_class,_instance)	((this->script_class_factory))->class_C_BaseOf(_class,_instance)
+#define DO_CAST														((this->zs))->doCast
+#define GET_IDX_BUILTIN_TYPE_CLASS_FROM_ITS_C_TYPE					((this->zs))->getIdxClassFromItsNativeType
+#define INSTANCE_SCRIPT_VARIABLE_BY_IDX								((this->zs))->instanceScriptVariableByIdx
+#define GET_METAMETHOD(m)											((this->zs))->getMetamethod(m)
+#define IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,_class,_instance)	((this->script_class_factory))->nativeClassBaseOf(_class,_instance)
 
 
 namespace zetscript{
@@ -86,7 +86,7 @@ namespace zetscript{
 		IDX_BUILTIN_TYPE_CLASS_SCRIPT_VAR,
 		IDX_BUILTIN_TYPE_CLASS_STRING,
 		IDX_BUILTIN_TYPE_CLASS_VECTOR,
-		IDX_BUILTIN_TYPE_CLASS_FUNCTOR,
+		IDX_BUILTIN_TYPE_CLASS_FUNCTION,
 		IDX_BUILTIN_TYPE_CLASS_DICTIONARY,
 
 		IDX_BUILTIN_TYPE_MAX
@@ -139,23 +139,11 @@ namespace zetscript{
 
 	//-------------------------------------------------------
 
-	/**
-	 * Scope register
-	 */
-	/*struct ScopeBlockVars {
-		int *		idx_local_var;
-		uint8_t 	n_local_vars;
-		Scope 	 *	scope;
-	};*/
-
 	typedef struct _SharedPointerInfo *PInfoSharedPointer;
 
 	typedef struct _SharedPointerInfo {
 		ScriptVar *shared_ptr;
 		unsigned char n_shares;
-
-		//short idx_0_shares;
-		//PInfoSharedPointer next;
 	} SharedPointerInfo;
 
 	typedef struct _tNode * PInfoSharedPointerNode;
@@ -163,7 +151,7 @@ namespace zetscript{
 		SharedPointerInfo data;
 		unsigned short currentStack;
 		PInfoSharedPointerNode previous, next;
-	} tInfoSharedPointerNode;
+	} InfoSharedPointerNode;
 
 	typedef struct{
 		int idx_type;

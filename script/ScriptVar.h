@@ -49,19 +49,20 @@ class ScriptClass;
 		bool itHasSetMetamethod();
 		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
 
-		virtual StackElement * addProperty(
+		StackElement * addProperty(
 				const std::string & symbol_value
-				, const ScriptFunction *info_function=NULL
-				, Instruction *src_instruction = NULL
-				, StackElement * sv=NULL
+				, const ScriptFunction *info_function
+				, Instruction *src_instruction
+				,StackElement * stk_element = NULL
+				,int * idx_stk_element = NULL
+
 		);
 
 
 		StackElement *		newSlot();
 
-
 		int			   getPropertyIdx(const std::string & varname);
-		StackElement * getProperty(const std::string & varname);
+		StackElement * getProperty(const std::string & varname, int * idx=NULL);
 		StackElement * getProperty(short idx);
 		const char *getSymbolNameFromPropertyPtr(StackElement *stk);
 

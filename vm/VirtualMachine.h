@@ -27,6 +27,9 @@ namespace zetscript{
 
 	public:
 
+
+		VirtualMachine(ZetScript *_zs);
+
 		PInfoSharedPointerNode newSharedPointer(ScriptVar *var_ptr);
 		void sharePointer( PInfoSharedPointerNode _node);
 		void unrefSharedScriptVar( PInfoSharedPointerNode _node, bool remove_if_0=false);
@@ -34,6 +37,8 @@ namespace zetscript{
 
 		const ScriptFunction * getCurrent_C_FunctionCall();
 
+
+		void init();
 
 		inline float *setFloatReturnValue(float f){
 			f_return_value = f;
@@ -61,13 +66,9 @@ namespace zetscript{
 		StackElement *getLastStackValue();
 		StackElement * getStackElement(unsigned int idx_glb_element);
 
-		//void buildCache();
-		//void destroyCache();
-
 		void cancelExecution();
 		void setError(const char *str);
 
-		VirtualMachine(ZetScript * _zs);
 		~VirtualMachine();
 
 	private:
@@ -134,16 +135,15 @@ namespace zetscript{
 
 
 		ScriptFunction  *main_function_object;
-		ScriptFunction 	**script_functions;
-		unsigned				size_vec_script_function_object_node;
+		ScriptClass *main_class_object;
 
 
 		int idx_stk_current;
 		int idx_last_statment;
 		const ScriptFunction *current_call_c_function;
-		ZetScript *zs;
-		ScriptFunctionFactory *script_function_factory;
+		ZetScript *zs;		ScriptFunctionFactory *script_function_factory;
 		ScriptClassFactory 	*script_class_factory;
+
 
 		float f_return_value;
 		std::string s_return_value;
@@ -182,26 +182,17 @@ namespace zetscript{
 		inline ScriptFunction *  findFunction(
 			ScriptVar *calling_object
 			,ScriptFunction *info_function
-			,Instruction *instruction
-			,Instruction * call_ale_instruction
-
-			,void *stk_elements_ptr // list of function symbols...
-			,int stk_elements_len // vector of properties
-			,bool stk_elements_are_ptr
-			//,zs_vector *global_symbols // list of script functions...
-
+			,Instruction * instruction
+			,void *stk_elements_ptr // can be **stack_element from ScriptVar stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
+			,int stk_elements_len // length of stk_elements
 			,bool is_constructor
 			,const std::string & symbol_to_find
-
-
-			,StackElement *stk_result_op1
-			,StackElement *stk_result_op2
-			,StackElement *start_arg
+			,StackElement *stk_arg
 			,unsigned char n_args
-			,const char * metamethod_str
+			,StackElement *stk_result_op1=NULL
+			,StackElement *stk_result_op2=NULL
+			,const char * metamethod_str=NULL
 		);
-
-		//inline bool assignStackVar(StackElement *dst_ins, StackElement *src_ins,Instruction *instruction);
 
 
 		inline bool popVmScope(int idx_stack,void * ptr_callc_result, unsigned char properties);
