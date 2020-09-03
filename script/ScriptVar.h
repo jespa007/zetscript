@@ -120,7 +120,7 @@ class ScriptClass;
 		//zs_map	  *	properties_keys_built_in; // to search faster each property by its name
 
 		void createSymbols(ScriptClass *irv);
-		void eraseProperty(short idx, bool remove_vector=false);
+		void eraseProperty(short idx);
 		StackElement * addPropertyBuiltIn(
 				const std::string & symbol_value
 		);

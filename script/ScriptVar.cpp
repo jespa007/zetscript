@@ -189,9 +189,23 @@ namespace zetscript{
 		return stk;
 	}
 
-	// only for initialized
+	StackElement *ScriptVar::popUserProperty(){
+		if(stk_properties->count<=idx_start_user_properties){
+			THROW_RUNTIME_ERROR("pop(): error stack already empty");
+		}
+
+		StackElement *stk_element=((StackElement *)stk_properties->items[stk_properties->count-1]);
+		eraseProperty(stk_properties->count-1);
+		return stk_element;
+	}
+
+	// built-in only for initialized
 	StackElement * ScriptVar::addPropertyBuiltIn(const std::string & symbol_value){
 		std::string key_value = symbol_value;
+
+		if(idx_start_user_properties != 0){
+			THROW_RUNTIME_ERROR("internal error: addPropertyBuiltIn should be used only one time within ScriptVar::createSymbols");
+		}
 
 		// if ignore duplicate was true, map resets idx to the last function...
 		properties_keys->set(key_value.c_str(),stk_properties->count);
@@ -205,18 +219,6 @@ namespace zetscript{
 			}; //assign var
 
   	    return new_stk;
-	}
-
-	StackElement *ScriptVar::popUserProperty(){
-		if(stk_properties->count<=idx_start_user_properties){
-			THROW_RUNTIME_ERROR("pop(): error stack already empty");
-		}
-
-		StackElement *stk_element=((StackElement *)stk_properties->items[stk_properties->count-1]);
-
-		eraseProperty(stk_properties->count-1,true);
-
-		return stk_element;
 	}
 
 	StackElement * ScriptVar::addProperty(
@@ -281,14 +283,10 @@ namespace zetscript{
 			*idx_stk_element=stk_properties->count;
 		}
 
-		//si.idxAstNode = _idxAstNode;
 		std::string key_value = symbol_value;
-
 		properties_keys->set(key_value.c_str(),stk_properties->count);
-
 		StackElement *new_stk=newSlot();
 		*new_stk=si; //assign var
-
 		return new_stk;
 	}
 
@@ -322,11 +320,6 @@ namespace zetscript{
 			return &this_variable;
 		}
 
-		/*if(idx >= (int)stk_properties_built_in->count){
-
-			idx-=stk_properties_built_in->count;
-		}*/
-
 		if(idx >= (int)stk_properties->count){
 			THROW_RUNTIME_ERROR("idx symbol index out of bounds (%i)",idx);
 		}
@@ -334,7 +327,7 @@ namespace zetscript{
 		return (StackElement *)stk_properties->items[idx];
 	}
 
-	void ScriptVar::eraseProperty(short idx, bool remove_vector){//onst std::string & varname){
+	void ScriptVar::eraseProperty(short idx){//onst std::string & varname){
 
 		StackElement *si;
 		ScriptFunction * ir_fun;
@@ -378,11 +371,15 @@ namespace zetscript{
 		}
 
 		// remove symbol on std::vector ...
-		if(remove_vector){
-			stk_properties->erase(idx);
+		free((void *)stk_properties->items[idx]);
+		stk_properties->erase(idx);
+
+		if(properties_keys->count<idx_start_user_properties){
+			lenght_user_properties=0; // invalidate any user property
+		}
+		else{
 			lenght_user_properties=properties_keys->count-idx_start_user_properties;
 		}
-
 	}
 
 	zs_vector * ScriptVar::getProperties(){ // return list of stack elements
@@ -395,7 +392,7 @@ namespace zetscript{
 		if(!exists){
 			THROW_RUNTIME_ERROR("Property %s not exist",property_name.c_str());
 		}
-		eraseProperty(idx_property,true);
+		eraseProperty(idx_property);
 		properties_keys->erase(property_name.c_str()); // erase also property key
 
 	}
@@ -434,17 +431,6 @@ namespace zetscript{
 		}
 	}
 
-	/*FunctionSymbol *ScriptVar::getFunction(unsigned int idx){
-		if(idx >= functions->count){
-			THROW_RUNTIME_ERROR("idx symbol index out of bounds");
-		}
-		return (FunctionSymbol *)functions->items[idx];
-	}
-
-	zs_vector * ScriptVar::getFunctions(){ // return list of functions
-		return functions;
-	}*/
-
 	void * ScriptVar::getNativeObject(){
 		return c_object;
 	}
@@ -454,7 +440,6 @@ namespace zetscript{
 	}
 
 	ScriptClass * ScriptVar::getNativeClass(){
-
 		 return c_scriptclass_info;
 	}
 
@@ -463,6 +448,7 @@ namespace zetscript{
 	}
 
 	void ScriptVar::destroy(){
+
 		bool deallocated = false;
 		if(created_object != 0){
 			if((this->idx_class<IDX_BUILTIN_TYPE_MAX) || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
@@ -477,53 +463,16 @@ namespace zetscript{
 		}
 //#endif
 		// remove vars & fundtions if class is C...
-
-
-		for ( unsigned i = 0; i < stk_properties->count; i++){
-			eraseProperty(i);
+		while ( stk_properties->count!=0){
+			eraseProperty(0);
 		}
 
 		stk_properties->clear();
-
-		// deallocate function member ...
-		/*for ( unsigned i = 0; i < functions->count; i++){
-			FunctionSymbol *si = (FunctionSymbol *)functions->items[i];
-			ScriptFunction * ir_fun  = (ScriptFunction *)(si->object.stk_value);
-			 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
-				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) != SYMBOL_PROPERTY_C_STATIC_REF){
-					 delete ((CFunctionMemberPointer *)si->proxy_ptr);
-				 }
-			}
-		}*/
 	}
 
 	ScriptVar::~ScriptVar(){
-
 		destroy();
-
-		//-----------------------------------
-		// BUILT-IN destroy built-in elements...
-		/*for(unsigned i =0;i < stk_properties_built_in->count; i++){
-			free((void *)stk_properties_built_in->items[i]);
-		}
-
-		delete stk_properties_built_in;
-		delete properties_keys_built_in;*/
-		//-----------------------------------
-		// USER delete all free items and clear();
-		for(unsigned i =0;i < stk_properties->count; i++){
-			free((void *)stk_properties->items[i]);
-		}
-
 		delete stk_properties;
 		delete properties_keys;
-		//-----------------------------------
-
-
-		/*for(unsigned i=0; i < functions->count;i++){
-			delete ((FunctionSymbol *)functions->items[i]);
-		}
-		functions->clear();
-		delete functions;*/
 	}
 }

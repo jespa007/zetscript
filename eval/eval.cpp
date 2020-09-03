@@ -188,7 +188,7 @@ namespace zetscript{
 				if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 					eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()+scope->tmp_idx_instruction_push_scope
-							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0)
+							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,ZS_IDX_UNDEFINED,(intptr_t)scope)
 					);
 
 					inc_jmp_codes(eval_data,idx_instruction_start,eval_data->current_function->instructions.size(),1);
