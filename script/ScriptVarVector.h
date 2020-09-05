@@ -18,7 +18,7 @@ namespace zetscript{
 			std::vector<T> v_out;
 			const char * dst_convert_type = typeid(T).name();
 			float aux_flt;
-			std::vector<StackElement> * variable = v_in->getProperties();
+			std::vector<StackElement> * variable = v_in->getAllProperties();
 
 			if(v_in){
 				for(unsigned i = 0; i < variable->size(); i++){

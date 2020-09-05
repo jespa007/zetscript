@@ -131,7 +131,7 @@ namespace zetscript{
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		 //zs_vector *stk_globals;
-		StackElement *stk_current;
+		StackElement *vm_stk_current;
 
 
 		ScriptFunction  *main_function_object;

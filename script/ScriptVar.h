@@ -68,7 +68,8 @@ class ScriptClass;
 
 		void eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
-		zs_vector * getProperties();
+		zs_vector * getAllProperties();
+		StackElement *getUserProperty(int idx);
 
 		void * getNativeObject();
 		bool isNativeObject();
@@ -110,9 +111,9 @@ class ScriptClass;
 		void * created_object;
 		void * c_object;
 		zs_vector			*	stk_properties; // vector of stack elements
-		zs_map				*	properties_keys; // to search faster each property by its name
+		zs_map				*	map_property_keys; // to search faster each property by its name
 		int lenght_user_properties;
-		short idx_start_user_properties;
+		int idx_start_user_properties;
 
 
 		std::string aux_string;

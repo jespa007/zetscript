@@ -6,4 +6,6 @@ function fibR(n)
     return fibR(n-2)+fibR(n-1);
 }
 
-print("fib: " + (fibR(34)) );
+var start=IO.clock();
+print("fib: " + (fibR(34)) +" time:"+(IO.clock()-start));
+

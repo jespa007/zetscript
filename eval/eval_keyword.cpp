@@ -426,7 +426,6 @@ namespace zetscript{
 				unsigned idx_instruction = eval_data->current_function->instructions.size();
 				for(unsigned i=0; i < eval_data->break_jmp_instructions.size(); i++){
 					eval_data->break_jmp_instructions[i]->vm_instruction.value_op2=idx_instruction;
-					delete eval_data->break_jmp_instructions[i]; // delete because is not needed anymore
 				}
 
 				eval_data->break_jmp_instructions.clear();
@@ -438,7 +437,6 @@ namespace zetscript{
 			if(eval_data->continue_jmp_instructions.size() > 0){ // capture breaks...
 				for(unsigned i=0; i < eval_data->continue_jmp_instructions.size(); i++){
 					eval_data->continue_jmp_instructions[i]->vm_instruction.value_op2=idx_instruction;
-					delete eval_data->continue_jmp_instructions[i]; // delete because is not needed anymore
 				}
 
 				eval_data->continue_jmp_instructions.clear();
@@ -874,12 +872,16 @@ namespace zetscript{
 								,new_scope
 						);
 
+						// catch all continues and set all jmps after processing block but before post operation...
+						link_continues(eval_data,eval_data->current_function->instructions.size());
+
 						// insert post operations...
 						eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.end()
 							,post_operations.begin()
 							,post_operations.end()
 						);
+
 
 						// insert jmp instruction to begin condition for...
 						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JMP,ZS_IDX_UNDEFINED,idx_instruction_for_start));
@@ -890,8 +892,7 @@ namespace zetscript{
 						// catch all breaks in the while...
 						link_breaks(eval_data);
 
-						// catch all continues and evaluates bottom...
-						link_continues(eval_data,idx_instruction_for_start);
+
 
 
 						// true: We treat declared variables into for as another scope.
@@ -1457,8 +1458,8 @@ namespace zetscript{
 				case KEYWORD_CLASS:
 					return  eval_keyword_class(eval_data,s,line,scope_info);
 					break;
-				case KEYWORD_NEW:
-					return  eval_object_new(eval_data,s,line,scope_info,&eval_data->current_function->instructions);
+				case KEYWORD_NEW: // ignore new because is processed on expression
+					//return  eval_object_new(eval_data,s,line,scope_info,&eval_data->current_function->instructions);
 					break;
 				default:
 					if(eval_info_keywords[keyw].eval_fun != NULL){

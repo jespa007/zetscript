@@ -31,17 +31,17 @@ namespace zetscript{
 			if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
 
 				ScriptFunction * ir_fun  = (ScriptFunction *)symbol->ref_ptr;
-				se->stk_value=ir_fun;
+				se->var_ref=ir_fun;
 				se->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; // tell stack element that is a function
 
 
 				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
 					 // static ref only get ref function ...
 					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) == SYMBOL_PROPERTY_C_STATIC_REF){
-						 se->var_ref = (void *)ir_fun->ref_native_function_ptr;
+						 se->stk_value = (void *)ir_fun->ref_native_function_ptr;
 					 }
 					 else{ // hard way: create function member ptr through proxy
-						 se->var_ref = (*((std::function<void *(void *)> *)ir_fun->ref_native_function_ptr))(c_object);
+						 se->stk_value = (*((std::function<void *(void *)> *)ir_fun->ref_native_function_ptr))(c_object);
 					 }
 				}
 			}
@@ -72,7 +72,7 @@ namespace zetscript{
 		se->properties=(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY);
 
 		// start property idx starts  from last built-in property...
-		idx_start_user_properties=properties_keys->count;
+		idx_start_user_properties=stk_properties->count;
 		lenght_user_properties=0;
 	}
 
@@ -93,7 +93,7 @@ namespace zetscript{
 		instruction_new=NULL;
 		memset(&this_variable,0,sizeof(this_variable));
 		stk_properties=new zs_vector();
-		properties_keys=new zs_map();
+		map_property_keys=new zs_map();
 	}
 
 	ScriptVar::ScriptVar(){
@@ -185,7 +185,7 @@ namespace zetscript{
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk={NULL,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		stk_properties->push_back((intptr_t)stk);
-		lenght_user_properties=properties_keys->count-idx_start_user_properties;
+		lenght_user_properties=(int)stk_properties->count-idx_start_user_properties;
 		return stk;
 	}
 
@@ -208,7 +208,7 @@ namespace zetscript{
 		}
 
 		// if ignore duplicate was true, map resets idx to the last function...
-		properties_keys->set(key_value.c_str(),stk_properties->count);
+		map_property_keys->set(key_value.c_str(),stk_properties->count);
 
 
 		StackElement *new_stk=newSlot();
@@ -258,7 +258,7 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 		}
 
-		if(properties_keys->exist(symbol_value.c_str())){
+		if(map_property_keys->exist(symbol_value.c_str())){
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function, src_instruction),"\"%s\" symbol already exists",symbol_value.c_str());
 		}
 
@@ -284,7 +284,7 @@ namespace zetscript{
 		}
 
 		std::string key_value = symbol_value;
-		properties_keys->set(key_value.c_str(),stk_properties->count);
+		map_property_keys->set(key_value.c_str(),stk_properties->count);
 		StackElement *new_stk=newSlot();
 		*new_stk=si; //assign var
 		return new_stk;
@@ -293,7 +293,7 @@ namespace zetscript{
 	int  ScriptVar::getPropertyIdx(const std::string & property_name){//,bool only_var_name){
 
 		bool exists;
-		int idx_stk_element=this->properties_keys->get(property_name.c_str(),exists);
+		int idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
 		if(exists){
 			return idx_stk_element;
 		}
@@ -303,7 +303,7 @@ namespace zetscript{
 	StackElement * ScriptVar::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
 		bool exists;
-		intptr_t idx_stk_element=this->properties_keys->get(property_name.c_str(),exists);
+		intptr_t idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
 		if(exists){
 			if(idx!=NULL){
 				*idx=idx_stk_element;
@@ -374,26 +374,40 @@ namespace zetscript{
 		free((void *)stk_properties->items[idx]);
 		stk_properties->erase(idx);
 
-		if(properties_keys->count<idx_start_user_properties){
+		if(stk_properties->count<idx_start_user_properties){
 			lenght_user_properties=0; // invalidate any user property
 		}
 		else{
-			lenght_user_properties=properties_keys->count-idx_start_user_properties;
+			lenght_user_properties=stk_properties->count-idx_start_user_properties;
 		}
 	}
 
-	zs_vector * ScriptVar::getProperties(){ // return list of stack elements
+	StackElement * ScriptVar::getUserProperty(int v_index){ // return list of stack elements
+
+		// check indexes ...
+		if(v_index < 0){
+			throw std::runtime_error(zs_strutils::format("Negative index std::vector (%i)",v_index));
+		}
+
+		if(v_index >= this->lenght_user_properties){
+			throw std::runtime_error(zs_strutils::format("Index std::vector out of bounds (%i)",v_index));
+		}
+
+		return (StackElement *)this->stk_properties->items[v_index+this->idx_start_user_properties];
+	}
+
+	zs_vector * ScriptVar::getAllProperties(){ // return list of stack elements
 		return stk_properties;
 	}
 
 	void ScriptVar::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
 		bool exists=false;
-		intptr_t idx_property = properties_keys->get(property_name.c_str(),exists);
+		intptr_t idx_property = map_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
 			THROW_RUNTIME_ERROR("Property %s not exist",property_name.c_str());
 		}
 		eraseProperty(idx_property);
-		properties_keys->erase(property_name.c_str()); // erase also property key
+		map_property_keys->erase(property_name.c_str()); // erase also property key
 
 	}
 
@@ -473,6 +487,6 @@ namespace zetscript{
 	ScriptVar::~ScriptVar(){
 		destroy();
 		delete stk_properties;
-		delete properties_keys;
+		delete map_property_keys;
 	}
 }

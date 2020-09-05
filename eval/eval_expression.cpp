@@ -323,7 +323,7 @@ namespace zetscript{
 
 		}
 
-		char * eval_expression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions){
+		char * eval_expression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions, int level){
 			// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 			// If this functions finds ';' then the function will generate ast.
 
@@ -345,6 +345,8 @@ namespace zetscript{
 			//PASTNode ast_node_to_be_evaluated=NULL;
 			char *aux_p=NULL;
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
+
+			int idx_instruction_start_expression=eval_data->current_function->instructions.size();
 
 			while(!is_end_expression(aux_p)){
 
@@ -386,7 +388,7 @@ namespace zetscript{
 					}
 
 					//std::vector<EvalInstruction *> 	instruction_inner;
-					aux_p=eval_expression(eval_data,aux_p+1, line, scope_info, &symbol_token_node.instructions);
+					aux_p=eval_expression(eval_data,aux_p+1, line, scope_info, &symbol_token_node.instructions,level+1);
 
 					if(*aux_p != ')'){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ')'");
@@ -417,6 +419,7 @@ namespace zetscript{
 							,line
 							,scope_info
 							,&symbol_token_node.instructions
+							,level
 						);
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_VECTOR;
 					}else if(*aux_p=='{'){ // struct object ...
@@ -427,6 +430,7 @@ namespace zetscript{
 							,line
 							,scope_info
 							,&symbol_token_node.instructions
+							,level
 						);
 
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_DICTIONARY;
@@ -438,6 +442,7 @@ namespace zetscript{
 							,line
 							,scope_info
 							,&symbol_token_node.instructions
+							,level
 						);
 
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_NEW_OBJECT;
@@ -450,6 +455,7 @@ namespace zetscript{
 							,line
 							,scope_info
 							,&symbol_token_node.instructions
+							,level
 						);
 
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_FUNCTION_OBJECT;
@@ -540,6 +546,7 @@ namespace zetscript{
 												,line
 												,scope_info
 												,&symbol_token_node.instructions
+												,level+1
 										);
 
 										if(*aux_p != ',' && *aux_p != ')'){
@@ -573,6 +580,7 @@ namespace zetscript{
 										,line
 										,scope_info
 										,&symbol_token_node.instructions
+										,level+1
 								);
 
 								if(*aux_p != ']'){
@@ -707,6 +715,10 @@ namespace zetscript{
 					,0
 					,(int)(expression_tokens.size()-1)
 				);
+
+				if(level == 0 && eval_data->current_function->instructions.size()>idx_instruction_start_expression){ // set instruction as start statment...
+					eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
+				}
 			}
 
 			// last character is a separator so it return increments by 1

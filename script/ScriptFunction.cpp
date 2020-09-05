@@ -207,6 +207,7 @@ namespace zetscript{
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
 
 			int n_ops=0;
+			const char *start_expression=(instruction->properties & MSK_INSTRUCTION_PROPERTY_START_EXPRESSION)?"{start expression}":"";
 			unsigned char value_op1 = instruction->value_op1;
 			int value_op2 = instruction->value_op2;
 
@@ -219,16 +220,19 @@ namespace zetscript{
 			switch(instruction->byte_code){
 
 			case  BYTE_CODE_NEW:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s\n"
 						,idx_instruction
 						,ByteCodeToStr(instruction->byte_code)
-						,instruction->value_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???");
+						,instruction->value_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
+						,start_expression
+								);
 				break;
 			case  BYTE_CODE_LOAD:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s\n"
 						,idx_instruction,
 						ByteCodeToStr(instruction->byte_code),
-						formatInstructionLoadType(sfo,instruction).c_str()
+						formatInstructionLoadType(sfo,instruction).c_str(),
+						start_expression
 						);
 				break;
 			case BYTE_CODE_JNT:
@@ -237,7 +241,8 @@ namespace zetscript{
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
 						,idx_instruction
 						,ByteCodeToStr(instruction->byte_code)
-						,(int)instruction->value_op2);
+						,(int)instruction->value_op2
+						);
 				break;
 			case BYTE_CODE_PUSH_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%c%s%s%s%c\n"
@@ -264,22 +269,25 @@ namespace zetscript{
 			default:
 
 				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 							idx_instruction
 							,instructionPropertyPreOperationToStr(instruction->properties)
 							,ByteCodeToStr(instruction->byte_code)
 							,instructionPropertyPostOperationToStr(instruction->properties)
+							,start_expression
 						);
 				}else if(n_ops==1){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
 							,idx_instruction
 							,ByteCodeToStr(instruction->byte_code)
 							,(instruction->properties & MSK_STACK_ELEMENT_PROPERTY_POP_ONE)?"_CS":""
+							,start_expression
 							);
 				}else{
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
 							,idx_instruction
 							,ByteCodeToStr(instruction->byte_code)
+							,start_expression
 							);
 				}
 				break;

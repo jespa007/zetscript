@@ -243,7 +243,7 @@ namespace zetscript{
 
 		/*template<typename C>
 		bool registerNativeClassBuiltIn(const std::string & class_name, const char *registered_file=NULL,int registered_line=-1){
-			return script_class_factory->registerNativeClassBuiltIn<C>(class_name, registered_file, registered_line);
+			return script_clfactory->registerNativeClassBuiltIn<C>(class_name, registered_file, registered_line);
 		}*/
 
 

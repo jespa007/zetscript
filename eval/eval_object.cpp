@@ -1,15 +1,15 @@
 namespace zetscript{
 	namespace eval{
 
-		char *eval_expression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions);
+		char *eval_expression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions,int level=0);
 
-		char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
+		char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions,int level){
 			// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 
 			return NULL;
 		}
 
-		char * eval_object_dictionary(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
+		char * eval_object_dictionary(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions,int level){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
@@ -83,6 +83,7 @@ namespace zetscript{
 						 ,line
 						 ,scope_info
 						 ,instructions
+						 ,level+1
 				);
 
 				 // push attr (push a element pair)
@@ -98,7 +99,7 @@ namespace zetscript{
 			return aux_p+1;
 		}
 
-		char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvalInstruction *> *	instructions){
+		char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvalInstruction *> *	instructions, int level){
 
 			char * aux_p=NULL;
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
@@ -129,7 +130,8 @@ namespace zetscript{
 						,aux_p
 						,line
 						,scope_info
-						,instructions);
+						,instructions
+						,level+1);
 
 				// vpush
 				instructions->push_back(new EvalInstruction(BYTE_CODE_VPUSH));
@@ -144,7 +146,7 @@ namespace zetscript{
 			return aux_p+1;
 		}
 
-		char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
+		char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions, int level){
 
 			char *aux_p = (char *)s;
 			std::string symbol_value;
@@ -200,6 +202,7 @@ namespace zetscript{
 									  ,line
 									  ,scope_info
 									  ,instructions
+									  ,level+1
 							);
 							  n_args++;
 						  }

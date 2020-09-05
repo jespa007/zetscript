@@ -124,7 +124,7 @@ namespace zetscript{
 	}
 
 	void ScriptFunctionFactory::clear(){
-		for(unsigned v=script_functions->count-1;
+		for(int v=script_functions->count-1;
 				v >= 1; // avoid delete main function
 				v--){
 
@@ -152,6 +152,7 @@ namespace zetscript{
 			}
 
 			delete info_function;
+
 		}
 
 		script_functions->clear();

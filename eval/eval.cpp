@@ -188,7 +188,7 @@ namespace zetscript{
 				if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 					eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()+scope->tmp_idx_instruction_push_scope
-							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,ZS_IDX_UNDEFINED,(intptr_t)scope)
+							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(intptr_t)scope)
 					);
 
 					inc_jmp_codes(eval_data,idx_instruction_start,eval_data->current_function->instructions.size(),1);
@@ -329,6 +329,8 @@ namespace zetscript{
 
 							// 2nd. try expression
 							//int starting_expression=line;
+
+							//EvalInstruction *current_instruction=eval_data->current_function->instructions[eval_data->current_function->instructions.size()-1];
 
 							if((end_expr = eval_expression(
 									eval_data
@@ -518,8 +520,6 @@ namespace zetscript{
 				eval_data->current_function->script_function->instruction_source_info[i]=instruction_info;
 
 			}
-
-			//eval_data->current_function->script_function->linkScopeBlockVars();
 
 			// delete and popback function information...
 			delete eval_data->current_function;

@@ -234,7 +234,7 @@ namespace zetscript{
 
 		cancel_execution=false;
 
-		stk_current=NULL;
+		vm_stk_current=NULL;
 		vm_current_scope = vm_scope;
 
 		f_aux_value1=0;
@@ -428,18 +428,18 @@ namespace zetscript{
 			}
 			cancel_execution=false;
 
-			stk_current=vm_stack;
+			vm_stk_current=vm_stack;
 
 			// calls script function from C : preserve stack space for global vars
 			if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
-				stk_current=&vm_stack[main_function_object->registered_symbols->count];
+				vm_stk_current=&vm_stack[main_function_object->registered_symbols->count];
 			}
 			vm_foreach_current=&vm_foreach[0];
 		}
 
 		// push param stack elements...
 		for(unsigned i = 0; i < n_stk_params; i++){
-			*stk_current++=stk_params[i];
+			*vm_stk_current++=stk_params[i];
 		}
 
 		// byte code executing starts here. Later script function can call c++ function, but once in c++ function is not possible by now call script function again.
@@ -447,7 +447,7 @@ namespace zetscript{
 			info=callFunctionScript(
 				calling_function,
 				this_object,
-				stk_current,
+				vm_stk_current,
 				NULL,
 				n_stk_params);
 		}catch(std::exception & ex){
@@ -469,7 +469,7 @@ namespace zetscript{
 	}
 
 	StackElement  * VirtualMachine::getLastStackValue(){
-		return (stk_current-1);
+		return (vm_stk_current-1);
 	}
 
 

@@ -120,7 +120,7 @@ namespace zetscript{
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_NEG\
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_SET\
 						   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);
-		StackElement *mm_test_startArg = stk_current+n_metam_args;
+		StackElement *mm_test_startArg = vm_stk_current+n_metam_args;
 		if(instruction->value_op2 ==0){ /* search for first time , else the function is stored in value_op2 */
 			ScriptClass *script_class_aux=NULL;
 
@@ -202,7 +202,7 @@ namespace zetscript{
 				,n_metam_args);
 
 		/* restore ptrCurretOp... */
-		stk_current=mm_test_startArg-n_metam_args;
+		vm_stk_current=mm_test_startArg-n_metam_args;
 		/* if function is C must register pointer ! */
 
 		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
@@ -214,7 +214,7 @@ namespace zetscript{
 			}
 		}
 		if(__METAMETHOD__ != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
-			*stk_current++ = ret_obj;
+			*vm_stk_current++ = ret_obj;
 		}
 
 		return true;

@@ -393,8 +393,6 @@ namespace zetscript{
 
 		virtual_machine=NULL;
 
-
-
 		for(std::map<std::string,ConstantValue *>::iterator it=constant_values.begin();it!=constant_values.end();it++){
 			ConstantValue *icv=it->second;
 			switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(icv->properties)){
