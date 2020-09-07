@@ -63,6 +63,7 @@ namespace zetscript{
 			ACCESSOR_MAX
 		}AccessorType;
 
+		// operator enumerated as its precedence
 		typedef enum :unsigned char {
 
 			OPERATOR_UNKNOWN = 0,
@@ -74,28 +75,28 @@ namespace zetscript{
 			OPERATOR_ASSIGN_MUL, 			// *=
 			OPERATOR_ASSIGN_DIV, 			// /=
 			OPERATOR_ASSIGN_MOD, 			// %=
-			OPERATOR_ASSIGN_BINARY_XOR,	// ^=
-			OPERATOR_ASSIGN_BINARY_AND,	// &=
+			OPERATOR_ASSIGN_BINARY_XOR,		// ^=
+			OPERATOR_ASSIGN_BINARY_AND,		// &=
 			OPERATOR_ASSIGN_BINARY_OR,  	// |=
 			OPERATOR_ASSIGN_SHIFT_LEFT, 	// <<=
 			OPERATOR_ASSIGN_SHIFT_RIGHT, 	// >>=
 
 			// LOGIC
 			OPERATOR_LOGIC_AND, 			// &&
-			OPERATOR_LOGIC_OR, 			// ||
+			OPERATOR_LOGIC_OR, 				// ||
 
 			// RELATIONAL
 			OPERATOR_LOGIC_EQUAL, 			// ==
 			OPERATOR_LOGIC_NOT_EQUAL, 		// !=
 			OPERATOR_LOGIC_GTE, 			// >=
 			OPERATOR_LOGIC_LTE, 			// <=
-			OPERATOR_LOGIC_GT, 			// >
-			OPERATOR_LOGIC_LT, 			// <
+			OPERATOR_LOGIC_GT, 				// >
+			OPERATOR_LOGIC_LT, 				// <
 
 			// ARITHMETIC
 			OPERATOR_ADD, 					// +
-			OPERATOR_OR, 			// |
-			OPERATOR_XOR, 			// ^
+			OPERATOR_OR, 					// |
+			OPERATOR_XOR, 					// ^
 			OPERATOR_SUB, 					// -
 			OPERATOR_MUL, 					// *
 			OPERATOR_BINARY_AND, 			// &
@@ -107,7 +108,7 @@ namespace zetscript{
 			OPERATOR_INSTANCEOF, 			// instanceof
 
 			OPERATOR_TERNARY_IF, 			// ?
-			OPERATOR_TERNARY_ELSE, 		// :
+			OPERATOR_TERNARY_ELSE, 			// :
 			OPERATOR_MAX
 		}Operator;
 
