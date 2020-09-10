@@ -185,7 +185,8 @@ namespace zetscript{
 				, const char *s
 				, int & line
 				, Scope *scope_info
-
+				, bool check_anonymous_function
+				, std::string * resulted_function_name
 			){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
@@ -232,6 +233,10 @@ namespace zetscript{
 
 					if(named_function){ // is named function..
 
+						if(check_anonymous_function){
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected anonymous function");
+						}
+
 						if(is_class){
 							sc=scope_info->script_class;
 						}else if((end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
@@ -267,10 +272,12 @@ namespace zetscript{
 						aux_p=end_var;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					}
-					else{ //function node
-						// TODO manage function object
-						printf("TODO manage function object\n");
+					else{ // name anonymous function
+						if(check_anonymous_function==false){
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Anonymous functions should be used on expression");
+						}
 					}
+
 
 					// eval function args...
 					if(*aux_p == '('){ // push arguments...
@@ -342,8 +349,14 @@ namespace zetscript{
 
 						// register function ...
 						if(!named_function){ // register named function...
-							function_name="_afun_"+zs_strutils::int_to_str(n_anonymous_function++);
+							function_name="_@afun_"+zs_strutils::int_to_str(n_anonymous_function++);
 						}
+
+
+						if(resulted_function_name!=NULL){ // save function...
+							*resulted_function_name=function_name;
+						}
+
 						//--- OP
 						if(sc!=NULL){ // register as variable member...
 							symbol_sf=sc->registerFunctionMember(

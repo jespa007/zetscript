@@ -423,9 +423,9 @@ namespace zetscript{
 						}
 						instruction->vm_instruction.value_op2=symbol_sf_foundf->ref_ptr;
 
-					}else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // not argument ...
-						// trivial super.else{ // find local/global/argument var/function ...
+					}else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // not argument, try find local ...
 						bool local_found=false;
+						ScriptFunction *script_function_found=NULL;
 						LoadType load_type=LoadType::LOAD_TYPE_UNDEFINED;
 						int n_symbols_found=0;
 
@@ -433,72 +433,71 @@ namespace zetscript{
 						Scope *scope=ls->scope;
 						Symbol * sc_var = scope->getSymbol(ls->value, ls->n_params);
 
-						// search for local
-						if(sc_var != NULL){
+						if(sc_var != NULL){ // local symbol found
 
-							if((sc_var->n_params >= 0) && ((sc_var->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)){
+							instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL;
+
+							/*if((sc_var->n_params >= 0) && ((sc_var->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)){
 								load_type=LoadType::LOAD_TYPE_FUNCTION;
-								instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
+								instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED; // set undefined, will be resolved at runtime...
 								local_found =true;
 							}
-							else{
+							else{*/
 
-								if(ls->n_params==NO_PARAMS_IS_VARIABLE){
-									if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
-										load_type=LoadType::LOAD_TYPE_VARIABLE;
-										instruction->vm_instruction.value_op2=vis->idx_position;
-										local_found=true;
-									}
-								}
-								else{
-									Symbol *function_symbol=sf->getSymbol(sc_var->scope,ls->value,ls->n_params,&n_symbols_found);
-									if(function_symbol!=NULL){
-										instruction->vm_instruction.value_op2=function_symbol->ref_ptr;
-										load_type=LoadType::LOAD_TYPE_FUNCTION;
-										local_found =true;
-									}
+							if(ls->n_params==NO_PARAMS_IS_VARIABLE){ // symbol is variable...
+								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
+									load_type=LoadType::LOAD_TYPE_VARIABLE;
+									instruction->vm_instruction.value_op2=vis->idx_position;
+									local_found=true;
 								}
 							}
+							else{ // symbol is function...
+								Symbol *function_symbol=sf->getSymbol(sc_var->scope,ls->value,ls->n_params,&n_symbols_found);
+								if(function_symbol!=NULL){
+									script_function_found=(ScriptFunction *)function_symbol->ref_ptr;
+									instruction->vm_instruction.value_op2=function_symbol->idx_position; // store script function
+									load_type=LoadType::LOAD_TYPE_FUNCTION;
+									local_found =true;
+								}
+							}
+							//}
 						}
 
 						if(!local_found){ // try global...
-							Symbol * sc_var = MAIN_SCOPE(eval_data)->getSymbol(ls->value, ls->n_params);
+							// try symbol as var...
+							Symbol * sc_var = MAIN_SCOPE(eval_data)->getSymbol(ls->value, NO_PARAMS_IS_VARIABLE);
 
 							if(sc_var != NULL){
-								if(ls->n_params==NO_PARAMS_IS_VARIABLE){
-
-									if((vis=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value))==NULL){
-										THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find variable \"%s\"",ls->value.c_str());
-										return;
-									}
-
-									load_type=LoadType::LOAD_TYPE_VARIABLE;
-									instruction->vm_instruction.value_op2=vis->idx_position;
+								if((vis=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value))==NULL){
+									THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find variable \"%s\"",ls->value.c_str());
+									return;
 								}
-								else{ // function
-									Symbol *symbol_sf;
-									if((symbol_sf=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params))==0){
-										THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find function \"%s\"",ls->value.c_str());
-										return;
-									}
 
+								load_type=LoadType::LOAD_TYPE_VARIABLE;
+								instruction->vm_instruction.value_op2=vis->idx_position;
+
+							}else if((sc_var = MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params))!=NULL){ // function
 									// assign script function ...
-									instruction->vm_instruction.value_op2=symbol_sf->ref_ptr;
+									script_function_found=(ScriptFunction *)sc_var->ref_ptr;
+									instruction->vm_instruction.value_op2=sc_var->idx_position;
 
 									load_type=LoadType::LOAD_TYPE_FUNCTION;
-								}
 							}else{
 								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find symbol \"%s\"",ls->value.c_str());
 							}
 						}
 
-						instruction->vm_instruction.value_op1=load_type;
+						if(instruction->vm_instruction.byte_code == BYTE_CODE_LOAD){
+							instruction->vm_instruction.value_op1=load_type;
+						}
 
-						if(load_type==LoadType::LOAD_TYPE_FUNCTION){
-							if(instruction->vm_instruction.value_op2 != ZS_IDX_UNDEFINED){
-								ScriptFunction *sf = ((ScriptFunction *)instruction->vm_instruction.value_op2);
-								if((sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0 && n_symbols_found>1){ // function will be solved at run time because it has to check param type
-									instruction->vm_instruction.value_op2=ZS_IDX_SYMBOL_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
+
+						// determine or not to solve at runtime for calling c functions with same symbol and different signatures
+						if(instruction->vm_instruction.byte_code == BYTE_CODE_CALL){
+							if(script_function_found != NULL){//instruction->vm_instruction.value_op2 != ZS_IDX_UNDEFINED){
+
+								if((script_function_found->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0 && n_symbols_found>1){ // function will be solved at run time because it has to check param type
+									instruction->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
 								}
 							}
 						}

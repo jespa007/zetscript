@@ -124,7 +124,7 @@ namespace zetscript{
 		 }
 
 		 bool is_function_call=instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
-		 bool is_vector_access=instruction->properties & MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;
+		 //bool is_vector_access=instruction->properties & MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;
 
 		 switch(instruction->value_op1){
 
@@ -146,7 +146,13 @@ namespace zetscript{
 				break;
 
 			case LoadType::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"VAR   %s%s%s%s%s",pre,object_access,symbol_value.c_str(),post,is_function_call?"(function call)":is_vector_access?"(vector access)":"");
+				sprintf(print_aux_load_value,"VAR   %s%s%s%s"
+					,pre
+					,object_access
+					,symbol_value.c_str()
+					,post
+					,is_function_call?"(function call)":""//is_vector_access?"(vector access)":""
+				);
 				break;
 			case LoadType::LOAD_TYPE_FUNCTION:
 				sprintf(print_aux_load_value,"FUN   %s%s",object_access,symbol_value.c_str());
@@ -277,16 +283,19 @@ namespace zetscript{
 							,start_expression
 						);
 				}else if(n_ops==1){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\t\%i%s\n"
 							,idx_instruction
 							,ByteCodeToStr(instruction->byte_code)
 							,(instruction->properties & MSK_STACK_ELEMENT_PROPERTY_POP_ONE)?"_CS":""
+							,instruction->value_op1
 							,start_expression
 							);
-				}else{
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\n"
+				}else{ //2 ops
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i,%i%s\n"
 							,idx_instruction
 							,ByteCodeToStr(instruction->byte_code)
+							,instruction->value_op1
+							,instruction->value_op2
 							,start_expression
 							);
 				}

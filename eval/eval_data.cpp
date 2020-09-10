@@ -274,7 +274,7 @@ namespace zetscript{
 		bool g_init_eval=false;
 
 		char * 	eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char * 	eval_keyword_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool check_anonymous_function=false, std::string * function_name_result=NULL);
 		char * 	eval_keyword_var_or_const(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * 	eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * 	eval_keyword_while(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);

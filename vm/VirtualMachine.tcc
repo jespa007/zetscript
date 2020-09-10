@@ -254,6 +254,19 @@ namespace zetscript{
 				continue;
 			}
 
+			// get value from instruction value...
+			if((stk_element->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)==0){ // is variable...
+				//Instruction *intruction_stk=(Instruction *)stk_element->stk_value;
+				StackElement *var_symbol=NULL;//&vm_stack[instruction_function_ref->value_op2]; // load variable ...
+				//idx_function = (intptr_t)var_symbol->var_ref; // ... and get function idx
+				intptr_t idx_symbol = (intptr_t)stk_element->var_ref;
+				if(stk_element_are_ptr){
+					stk_element=((StackElement **)stk_elements_ptr)[idx_symbol];//(StackElement *)list_symbols->items[i];
+				}else{
+					stk_element=&((StackElement *)stk_elements_ptr)[idx_symbol];
+				}
+			}
+
 			ScriptFunction *irfs = (ScriptFunction *)stk_element->var_ref;
 			aux_string=irfs->symbol.name;
 
@@ -357,10 +370,10 @@ namespace zetscript{
 		}
 
 		if(ptr_function_found == NULL){
-			if(is_constructor && n_args == 0){ /* default constructor not found --> set as not found... */
+			/*if(is_constructor && n_args == 0){ // default constructor not found --> set as not found...
 				instruction->properties = MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL;//value_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
 			}
-			else{ // return error elaborate a error message...
+			else{*/ // return error elaborate a error message...
 				int n_candidates=0;
 				std::string str_candidates="";
 				std::string args_str = "";
@@ -497,7 +510,7 @@ namespace zetscript{
 							str_candidates.c_str());
 					}
 				}
-			}
+			/*}*/
 		}
 
 		return ptr_function_found;

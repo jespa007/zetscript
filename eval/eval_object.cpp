@@ -1,12 +1,42 @@
 namespace zetscript{
 	namespace eval{
+		int n_anonymouse_function=0;
 
-		char *eval_expression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions,int level=0);
+		//std::string * 	get_compiled_symbol(EvalData *eval_data,const std::string * symbol_name);
+		std::string * get_compiled_symbol(EvalData *eval_data,const std::string & s);
+		char 		*	eval_expression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions, int level=0);
 
-		char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions,int level){
+		char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, TokenNode *token_node){
 			// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
+			EvalInstruction *eval_instruction;
+			std::vector<EvalInstruction *> 	* instructions=&token_node->instructions;
+			char *aux_p = (char *)s;
 
-			return NULL;
+			instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_LOAD,LoadType::LOAD_TYPE_FUNCTION));
+
+			aux_p=eval_keyword_function(
+				eval_data
+				,aux_p
+				,line
+				,scope_info
+				,true
+				,&token_node->value
+			);
+
+			eval_instruction->link_symbol_first_access=LinkSymbolFirstAccess(
+					eval_data->current_function->script_function->idx_script_function
+					,scope_info
+					,token_node->value
+			);
+
+			eval_instruction->instruction_source_info= InstructionSourceInfo(
+				eval_data->current_parsing_file
+				,line
+				,get_compiled_symbol(eval_data,token_node->value)
+			);
+
+
+			return aux_p;
 		}
 
 		char * eval_object_dictionary(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions,int level){

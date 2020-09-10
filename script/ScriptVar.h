@@ -6,7 +6,8 @@
 
 #include "common.h"
 
-#define TYPE_SCRIPT_VARIABLE "__ScriptVar__"
+#define TYPE_SCRIPT_VARIABLE 						"__ScriptVar__"
+#define ZS_IDX_SCRIPTVAR_PROPERTY_IS_THIS			-1
 
 namespace zetscript{
 

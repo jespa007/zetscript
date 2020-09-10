@@ -1,6 +1,18 @@
-function fun(){}
+/*function fun(){}
 
-fun();
+fun();*/
+
+/*function p(a){
+	print("a"+a);
+}*/
+
+//var a=function(){ print("hello world");};
+//a();
+function p(f){
+	f();
+}
+
+p(function(){return 0;},2+3*4);
 
 /*
 

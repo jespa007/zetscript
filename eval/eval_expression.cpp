@@ -337,10 +337,10 @@ namespace zetscript{
 			int last_accessor_line=0;
 			std::string last_accessor_value="";
 
-			bool is_first_access=false;
+			//bool is_first_access=false;
 			//int instruction_first_access=-1;
 			int instruction_identifier=ZS_IDX_UNDEFINED;
-			unsigned char params=0;
+			//unsigned char params=0;
 
 			//PASTNode ast_node_to_be_evaluated=NULL;
 			char *aux_p=NULL;
@@ -454,8 +454,7 @@ namespace zetscript{
 							,aux_p
 							,line
 							,scope_info
-							,&symbol_token_node.instructions
-							,level
+							,&symbol_token_node
 						);
 
 						symbol_token_node.token_type = TokenType::TOKEN_TYPE_FUNCTION_OBJECT;
@@ -481,8 +480,8 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok ,"Expected ';'");
 					}
 
-					is_first_access=false;
-					params=NO_PARAMS_IS_VARIABLE;
+					//is_first_access=false;
+					//params=NO_PARAMS_IS_VARIABLE;
 
 					// check valid access punctuator...
 					if(is_access_punctuator(aux_p) || symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
@@ -497,15 +496,20 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c' after literal",*aux_p);
 						}
 
-						is_first_access=true;
+						char n_params=0;
+
+						//is_first_access=true;
+						LinkSymbolFirstAccess *link_symbol_first_access=NULL;
 
 						// add info to solve symbols first access (we need to put here because we have to know n params if function related)
 						symbol_token_node.instructions[0]->link_symbol_first_access=LinkSymbolFirstAccess(
 								eval_data->current_function->script_function->idx_script_function
 								,scope_info
 								,symbol_token_node.value
-								,params // only if first access is a function...
+								,NO_PARAMS_IS_VARIABLE // only if first access is a function...
 						);
+
+						link_symbol_first_access=&symbol_token_node.instructions[0]->link_symbol_first_access;
 
 						// add info to add as symbol value ...
 						symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
@@ -523,6 +527,7 @@ namespace zetscript{
 							switch(*aux_p){
 							case '(': // is a function call
 
+								n_params=0;
 								// set info that symbol value is function call (its existence is mandatory in vm)
 								symbol_token_node.instructions[
 								   symbol_token_node.instructions.size()-1
@@ -534,8 +539,8 @@ namespace zetscript{
 									,get_compiled_symbol(eval_data,symbol_token_node.value.c_str())
 								);*/
 
-								if(is_first_access){
-									params=0;
+								if(link_symbol_first_access !=NULL){
+									link_symbol_first_access->n_params=0;
 								}
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 								if(*aux_p != ')'){
@@ -557,22 +562,24 @@ namespace zetscript{
 											IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 										}
 
-										if(is_first_access){
-											params++;
+										if(link_symbol_first_access != NULL){
+											link_symbol_first_access->n_params++;
 										}
+
+										n_params++;
 
 									}while(*aux_p != ')');
 								}
-								//accessor_token.params=params;
-								byte_code=ByteCode::BYTE_CODE_CALL;
-								is_first_access=false;
 
+								byte_code=ByteCode::BYTE_CODE_CALL;
+								//is_first_access=false;
+								//link_symbol_first_access=NULL;
 								aux_p++;
 								break;
 							case '[': // std::vector access
-								symbol_token_node.instructions[
+								/*symbol_token_node.instructions[
 								   symbol_token_node.instructions.size()-1
-								]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;
+								]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;*/
 
 								aux_p = eval_expression(
 										eval_data
@@ -622,6 +629,21 @@ namespace zetscript{
 							}
 
 							if(byte_code == ByteCode::BYTE_CODE_CALL){
+								// save total parameters on this call
+								instruction_token->vm_instruction.value_op1=n_params;
+								/*if(link_symbol_first_access==NULL){ // it should find symbol everytime
+									instruction_token->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME;
+								}*/
+
+								// insert link symbol to solve call if possible on pop_function ....
+								instruction_token->link_symbol_first_access=LinkSymbolFirstAccess(
+										eval_data->current_function->script_function->idx_script_function
+										,scope_info
+										,*get_compiled_symbol(eval_data,last_accessor_value)
+										,n_params
+								);
+
+								// also insert source file/line/symbol info to get info of this call...
 								instruction_token->instruction_source_info= InstructionSourceInfo(
 									eval_data->current_parsing_file
 									,last_accessor_line
@@ -630,7 +652,8 @@ namespace zetscript{
 							}
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-							is_first_access=false; // not first access anymore...
+							//is_first_access=false; // not first access anymore...
+							link_symbol_first_access=NULL;
 
 							last_accessor_value=accessor_value;
 							//last_accessor_line=accessor_line;

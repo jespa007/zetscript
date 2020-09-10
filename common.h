@@ -10,11 +10,9 @@
 #endif
 
 
-#define ZS_IDX_SYMBOL_SOLVE_AT_RUNTIME		 0
-#define ZS_IDX_UNDEFINED 					-1
-//#define ZS_FUNCTION_NOT_FOUND_IDX	 		-2
-#define ZS_IDX_SYMBOL_THIS					-3
-#define ZS_IDX_SYMBOL_CLASS					-4
+#define ZS_IDX_UNDEFINED 							-1
+//#define ZS_FUNCTION_NOT_FOUND_IDX	 				-2
+
 
 #define MAX_NATIVE_FUNCTION_ARGS						 6
 
