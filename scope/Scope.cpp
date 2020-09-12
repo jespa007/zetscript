@@ -100,7 +100,7 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < registered_symbols->count; i++){
 			Symbol *local_symbol = (Symbol *)registered_symbols->items[i];
-			if(local_symbol->name==str_symbol && (local_symbol->n_params >= 0 && n_params>=0 ?(local_symbol->n_params == n_params):true)){
+			if(local_symbol->name==str_symbol && (local_symbol->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY)){
 					return local_symbol;//.idxScopeVar; // ptr scope ?
 			}
 		}
@@ -116,7 +116,7 @@ namespace zetscript{
 		// for each variable in current scope ...
 		for(unsigned i = 0; i < registered_symbols->count; i++){
 			Symbol *local_symbol=(Symbol *)registered_symbols->items[i];
-			if(local_symbol->name==str_symbol && (local_symbol->n_params >= 0 && n_params>=0 ?(local_symbol->n_params == n_params):true)){
+			if(local_symbol->name==str_symbol && (local_symbol->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY)){
 				return local_symbol;
 			}
 		}

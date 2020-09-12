@@ -634,6 +634,9 @@ namespace zetscript{
 								/*if(link_symbol_first_access==NULL){ // it should find symbol everytime
 									instruction_token->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME;
 								}*/
+								if(link_symbol_first_access == NULL){ // access scope
+									instruction_token->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS;
+								}
 
 								// insert link symbol to solve call if possible on pop_function ....
 								instruction_token->link_symbol_first_access=LinkSymbolFirstAccess(

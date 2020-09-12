@@ -7,9 +7,6 @@ function fibR(n)
 }
 
 var start=IO.clock();
-print("start:"+start);
 var f=fibR(34);
-var end=IO.clock();
-print("end:"+end);
-print("fib: " + f +" time:"+(end-start)+"ms");
+print("fib: " + f +" time:"+(IO.clock()-start)+"ms");
 

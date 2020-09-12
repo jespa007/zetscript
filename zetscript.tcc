@@ -62,11 +62,11 @@ namespace zetscript{
 			ScriptVar *script_variable=NULL;
 
 			// save return type ...
-			if(stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+			if(stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 				stack_element=((StackElement *)stack_element->var_ref);
 			}
 
-			if(idx_builtin_type == IDX_BUILTIN_TYPE_STACK_ELEMENT){//*ScriptClass::STACK_ELEMENT_PTR)){// && (stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT)){ // set directly stackvar
+			if(idx_builtin_type == IDX_BUILTIN_TYPE_STACK_ELEMENT){//*ScriptClass::STACK_ELEMENT_PTR)){// && (stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK)){ // set directly stackvar
 				val_ret=(intptr_t)stack_element;
 			}else{
 

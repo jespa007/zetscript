@@ -31,6 +31,7 @@ namespace zetscript{
 			if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
 
 				ScriptFunction * ir_fun  = (ScriptFunction *)symbol->ref_ptr;
+				se->stk_value=this;
 				se->var_ref=ir_fun;
 				se->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; // tell stack element that is a function
 
@@ -47,8 +48,6 @@ namespace zetscript{
 
 						 se->stk_value=stk_new;
 					 }
-
-
 				}
 			}
 			else{ // var... should be native in principle ?

@@ -130,19 +130,19 @@ namespace zetscript{
 
 			if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR))){
 				script_var_object = (ScriptVar *)(stk_result_op1->var_ref);
-				if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) == (MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT))){
+				if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) == (MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
 					script_var_object = (ScriptVar *)(((StackElement *)script_var_object))->var_ref;
 				}
 				if(__METAMETHOD__ == BYTE_CODE_METAMETHOD_SET){
 					idx_offset_function_member_start=1;
 					one_param = (ScriptVar *)(stk_result_op2->var_ref);
-					if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) == (MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT))){
+					if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) == (MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
 						one_param = (ScriptVar *)(((StackElement *)one_param))->var_ref;
 					}
 				}
 			}else if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
 				script_var_object = (ScriptVar *)(stk_result_op2->var_ref);
-				if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT) == (MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT))){
+				if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) == (MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
 					script_var_object = (ScriptVar *)(((StackElement *)script_var_object))->var_ref;
 				}
 			}else{
@@ -254,28 +254,11 @@ namespace zetscript{
 				continue;
 			}
 
-			// get value from instruction value...
-			if((stk_element->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)==0){ // is variable...
-				//Instruction *intruction_stk=(Instruction *)stk_element->stk_value;
-				StackElement *var_symbol=NULL;//&vm_stack[instruction_function_ref->value_op2]; // load variable ...
-				//idx_function = (intptr_t)var_symbol->var_ref; // ... and get function idx
-				intptr_t idx_symbol = (intptr_t)stk_element->var_ref;
-				if(stk_element_are_ptr){
-					stk_element=((StackElement **)stk_elements_ptr)[idx_symbol];//(StackElement *)list_symbols->items[i];
-				}else{
-					stk_element=&((StackElement *)stk_elements_ptr)[idx_symbol];
-				}
-			}
 
 			ScriptFunction *irfs = (ScriptFunction *)stk_element->var_ref;
 			aux_string=irfs->symbol.name;
 
-			bool match_signature = metamethod_str != NULL;
-			if(!match_signature){
-				match_signature = (aux_string == symbol_to_find && irfs->params->count == n_args);
-			}
-
-			if(match_signature){
+			if(metamethod_str != NULL || (aux_string == symbol_to_find && irfs->params->count == n_args)){
 				if((irfs->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
@@ -286,7 +269,7 @@ namespace zetscript{
 
 						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT){
 
-							if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+							if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 								current_arg = (StackElement *)current_arg->var_ref;
 							}
 
@@ -330,7 +313,10 @@ namespace zetscript{
 										  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
 									break;
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
+									all_check=false;
+									break;
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
+									all_check=false;
 									break;
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
@@ -381,7 +367,7 @@ namespace zetscript{
 
 				for( unsigned k = 0; k < n_args;k++){
 					StackElement *current_arg=&stk_arg[k];
-					if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+					if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 						current_arg = (StackElement *)current_arg->var_ref;
 					}
 
@@ -411,7 +397,11 @@ namespace zetscript{
 						}
 						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
+						aux_string="NULL";
+						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
+						aux_string="undefined";
+						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 						aux_string = ((ScriptVar *)current_arg->var_ref)->getNativePointerClassName();
@@ -441,16 +431,10 @@ namespace zetscript{
 					ScriptFunction *irfs = (ScriptFunction *)stk_element->var_ref;
 
 
-					bool match_signature = metamethod_str != NULL;
-
-					if(!match_signature){
-						match_signature = irfs->symbol.name == irfs->getInstructionSymbolName(instruction);
-					}
-
-					if(match_signature){
+					if(metamethod_str != NULL || (irfs->symbol.name == symbol_to_find)){
 
 						if(n_candidates == 0){
-							str_candidates+="ttPossible candidates are:nn";
+							str_candidates+="\tPossible candidates are:\n\n";
 						}
 						str_candidates+="\t\t-"+(calling_object==NULL?""
 								:calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::")

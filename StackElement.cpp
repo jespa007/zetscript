@@ -18,7 +18,7 @@ namespace zetscript{
 
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
-			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->var_ref;
 			}
 			result=((ScriptVar *)stk->var_ref)->getClassName().c_str();
@@ -44,7 +44,7 @@ namespace zetscript{
 
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
-			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_STACK_ELEMENT){
+			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->var_ref;
 			}
 			result=((ScriptVar *)stk->var_ref)->getClassName().c_str();

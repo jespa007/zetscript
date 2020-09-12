@@ -8,11 +8,24 @@ fun();*/
 
 //var a=function(){ print("hello world");};
 //a();
-function p(f){
+
+//print("dadas");
+
+/*function a(s){
+	print(s);
+}
+
+var b=a;
+
+b("hello world! 1");
+b(100);*/
+IO.clock();
+
+/*function p(f){
 	f();
 }
 
-p(function(){return 0;},2+3*4);
+p(function(){return 0;},2+3*4);*/
 
 /*
 

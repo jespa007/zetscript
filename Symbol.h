@@ -6,8 +6,8 @@
 #pragma once
 
 #define NO_PARAMS_IS_VARIABLE			-1
-//#define NO_PARAMS_SYMBOL_ONLY			-2
-#define NO_PARAMS_IS_CLASS				-2
+#define NO_PARAMS_SYMBOL_ONLY			-2
+#define NO_PARAMS_IS_CLASS				-3
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 typedef enum {

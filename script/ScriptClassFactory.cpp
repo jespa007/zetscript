@@ -32,22 +32,13 @@
 namespace zetscript{
 
 	void  print(const char *s){
-
 		printf("%s\n",s);
 		fflush(stdout);
-
-		/*if(print_out_callback){
-			print_out_callback(s);
-		}*/
 	}
 
 	void  print(int s){
-
-		printf("FFDFD: %i\n",s);
+		printf("print integer test: %i\n",s);
 		fflush(stdout);
-		/*if(print_out_callback){
-			print_out_callback(s);
-		}*/
 	}
 
 

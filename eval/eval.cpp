@@ -380,8 +380,11 @@ namespace zetscript{
 					ScriptFunction *sf=GET_SCRIPT_FUNCTION(eval_data,ls->idx_script_function);
 					ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
-
-					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
+					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // nothing to do...
+						if(instruction->vm_instruction.byte_code==BYTE_CODE_CALL){
+							instruction->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME;
+						}
+					}else if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
 
 						// is automatically created on vm...
 						if(ls->n_params==NO_PARAMS_IS_VARIABLE){ // it will search at runtime
@@ -395,7 +398,7 @@ namespace zetscript{
 							}
 
 							// it stores the script function in the op...
-							instruction->vm_instruction.value_op2=symbol_function->ref_ptr;
+							instruction->vm_instruction.value_op2=symbol_function->idx_position;
 						}
 
 					}else if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER){ // trivial super.
@@ -437,12 +440,6 @@ namespace zetscript{
 
 							instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL;
 
-							/*if((sc_var->n_params >= 0) && ((sc_var->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)){
-								load_type=LoadType::LOAD_TYPE_FUNCTION;
-								instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED; // set undefined, will be resolved at runtime...
-								local_found =true;
-							}
-							else{*/
 
 							if(ls->n_params==NO_PARAMS_IS_VARIABLE){ // symbol is variable...
 								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
@@ -465,23 +462,27 @@ namespace zetscript{
 
 						if(!local_found){ // try global...
 							// try symbol as var...
-							Symbol * sc_var = MAIN_SCOPE(eval_data)->getSymbol(ls->value, NO_PARAMS_IS_VARIABLE);
+							Symbol * sc_var = MAIN_SCOPE(eval_data)->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY);
 
 							if(sc_var != NULL){
-								if((vis=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value))==NULL){
-									THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find variable \"%s\"",ls->value.c_str());
-									return;
-								}
 
-								load_type=LoadType::LOAD_TYPE_VARIABLE;
-								instruction->vm_instruction.value_op2=vis->idx_position;
-
-							}else if((sc_var = MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params))!=NULL){ // function
+								if(sc_var->n_params==NO_PARAMS_IS_VARIABLE){
+									load_type=LoadType::LOAD_TYPE_VARIABLE;
+									instruction->vm_instruction.value_op2=sc_var->idx_position;
+								}else{ // function if((sc_var = MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params))!=NULL){ // function
 									// assign script function ...
+									if(sc_var->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // get number symbols matching parameters
+										sc_var=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params,&n_symbols_found);
+									}
+
+									if(sc_var == NULL){
+										THROW_RUNTIME_ERROR("internal error expected symbol");
+									}
+
 									script_function_found=(ScriptFunction *)sc_var->ref_ptr;
 									instruction->vm_instruction.value_op2=sc_var->idx_position;
-
 									load_type=LoadType::LOAD_TYPE_FUNCTION;
+								}
 							}else{
 								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find symbol \"%s\"",ls->value.c_str());
 							}
