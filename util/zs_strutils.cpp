@@ -133,7 +133,7 @@ namespace zetscript{
 			return elems;
 		}
 
-		bool isEmpty(const std::string & str){
+		bool is_empty(const std::string & str){
 			return str.empty();
 		}
 

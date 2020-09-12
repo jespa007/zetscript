@@ -38,6 +38,9 @@ namespace zetscript{
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_class_factory=zs->getScriptClassFactory();
+
+		//num_native_functions=new zs_map;
+		function_should_be_deduced_at_runtime=false;
 	}
 
 	const char * ScriptFunction::instructionPropertyPreOperationToStr(unsigned int properties){
@@ -217,10 +220,10 @@ namespace zetscript{
 			unsigned char value_op1 = instruction->value_op1;
 			int value_op2 = instruction->value_op2;
 
-			if((char)value_op1 != INSTRUCTION_NO_VALUE_OP1)
+			if((char)value_op1 != ZS_IDX_INSTRUCTION_OP2_UNDEFINED)
 				n_ops++;
 
-			 if(value_op2 != INSTRUCTION_NO_VALUE_OP2)
+			 if(value_op2 != ZS_IDX_INSTRUCTION_OP2_UNDEFINED)
 				 n_ops++;
 
 			switch(instruction->byte_code){
@@ -411,7 +414,20 @@ namespace zetscript{
 			symbol->idx_position=idx_position;
 
 			if(scope_block == MAIN_SCOPE(this)) {
-				zs->getVirtualMachine()->setStackElement(idx_position,(StackElement){0,(void *)symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION});
+				// set global stk var...
+				zs->getVirtualMachine()->setStackElement(
+						idx_position
+						,(StackElement){0,(void *)symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION}
+				);
+			}
+
+			// register num symbols only for c symbols...
+			if(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+				Symbol *symbol_repeat=NULL;
+				if((symbol_repeat=getSymbol(scope_block,symbol->name,args.size()))!=NULL){ // there's one or more name with same args --> mark
+					((ScriptFunction *)symbol_repeat->ref_ptr)->function_should_be_deduced_at_runtime=true; // mark the function found (only matters for first time)
+					((ScriptFunction *)symbol->ref_ptr)->function_should_be_deduced_at_runtime=true;
+				}
 			}
 
 			registered_symbols->push_back((intptr_t)symbol);
@@ -419,48 +435,40 @@ namespace zetscript{
 			return symbol;
 	}
 
-	Symbol *	 ScriptFunction::getSymbol(Scope * scope,const std::string & symbol_name,  char n_params, int * n_symbols_found){
-
-		if(n_symbols_found != NULL){
-			*n_symbols_found=0;
+	/*unsigned ScriptFunction::getNumNativeFunctions(const std::string & function_name){
+		unsigned num=0;
+		bool exists=false;
+		num=num_native_functions->get(function_name.c_str(),exists);
+		if(exists){
+			return num;
 		}
-		Symbol *symbol_found=NULL;
-		bool is_function = n_params!=NO_PARAMS_IS_VARIABLE;
-		if(registered_symbols->count>0){
+		return 0;
+	}*/
 
-			// from last value to first to get last override function...
-			for(int i = (int)(registered_symbols->count-1); i >= 0 ; i--){
-				Symbol *symbol=(Symbol *)registered_symbols->items[i];
-				if(is_function){
-					if((symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION)==0){
-						continue;
-					}
+	Symbol *	 ScriptFunction::getSymbol(Scope * scope,const std::string & symbol_name,  char n_params){
+
+		bool only_symbol=n_params<0;
+		// from last value to first to get last override function...
+		for(int i = (int)(registered_symbols->count-1); i >= 0 ; i--){
+			Symbol *symbol=(Symbol *)registered_symbols->items[i];
+			if(symbol->name == symbol_name){
+				if(only_symbol){
+					return symbol;
+				}else if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
 					ScriptFunction *current_sf=(ScriptFunction *)symbol->ref_ptr;
 					if(
-							(current_sf->symbol.name == symbol_name)
-						 //&& (n_args == (int)sf->params->count)
-						 && (scope ==  NULL?true:(scope == current_sf->symbol.scope))
-						 ){
-						// set first script function found...
-						if(symbol_found==NULL){
-							symbol_found=symbol;
-						}
 
-						if(n_symbols_found != NULL){
-							(*n_symbols_found)++;
-						}
-
+					 (n_params == (int)current_sf->params->count)
+					 && (scope ==  NULL?true:(scope == current_sf->symbol.scope))
+					 ){
+					// set first script function found...
+						return symbol;
 					}
-				}else{ // variable
-					if((symbol->name == symbol_name)
-						&& (scope ==  NULL?true:(scope == symbol->scope))
-						  ){
-							return symbol;
-						}
 				}
 			}
 		}
-		return symbol_found;
+
+		return NULL;
 	}
 
 	ScriptFunction::~ScriptFunction(){
@@ -488,6 +496,8 @@ namespace zetscript{
 		if(instructions != NULL){
 			free(instructions);
 		}
+
+		//delete num_native_functions;
 	}
 
 }

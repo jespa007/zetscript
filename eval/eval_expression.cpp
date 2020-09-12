@@ -633,18 +633,18 @@ namespace zetscript{
 								instruction_token->vm_instruction.value_op1=n_params;
 								/*if(link_symbol_first_access==NULL){ // it should find symbol everytime
 									instruction_token->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME;
-								}*/
+								}
 								if(link_symbol_first_access == NULL){ // access scope
 									instruction_token->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS;
-								}
+								}*/
 
 								// insert link symbol to solve call if possible on pop_function ....
-								instruction_token->link_symbol_first_access=LinkSymbolFirstAccess(
+								/*instruction_token->link_symbol_first_access=LinkSymbolFirstAccess(
 										eval_data->current_function->script_function->idx_script_function
 										,scope_info
 										,*get_compiled_symbol(eval_data,last_accessor_value)
 										,n_params
-								);
+								);*/
 
 								// also insert source file/line/symbol info to get info of this call...
 								instruction_token->instruction_source_info= InstructionSourceInfo(

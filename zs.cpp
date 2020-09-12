@@ -54,7 +54,7 @@ int main(int argc, char * argv[]) {
 
 		}
 
-		if(zs_strutils::isEmpty(file)){
+		if(zs_strutils::is_empty(file)){
 			fprintf(stderr,"Program with arguments you must specify file (i.e --file=filename )\n");
 			exit(-1);
 		}

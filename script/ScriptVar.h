@@ -79,6 +79,7 @@ class ScriptClass;
 		ScriptFunction *getConstructorFunction();
 
 
+		ScriptClass *getScriptClass();
 		const std::string & getClassName();
 
 		const std::string & getNativePointerClassName();

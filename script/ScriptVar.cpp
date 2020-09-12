@@ -122,22 +122,25 @@ namespace zetscript{
 		c_scriptclass_info=NULL;
 
 		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (c_scriptclass_info) to get needed info to destroy create the C++ object.
-			if(registered_class_info->is_C_Class()){
+			if(registered_class_info->isNativeClass()){
 				c_scriptclass_info=registered_class_info;
 				created_object = (*registered_class_info->c_constructor)();
 				was_created_by_constructor=true;
 				c_object = created_object;
 			}else {
 				ScriptClass *sc=registered_class_info;
-				while( sc->idx_base_classes->count>0 && c_scriptclass_info==NULL){
-					sc=GET_SCRIPT_CLASS(this,sc->idx_base_classes->items[0]); // get base class...
-					if(sc->is_C_Class()){
-						c_scriptclass_info=sc;
-						created_object = (*sc->c_constructor)();
-						was_created_by_constructor=true;
-						c_object = created_object;
+				// get first class with c inheritance...
+				 if(sc->idx_base_classes->count>0){
+					while(c_scriptclass_info==NULL){
+						sc=GET_SCRIPT_CLASS(this,sc->idx_base_classes->items[0]); // get base class...
+						if(sc->isNativeClass()){
+							c_scriptclass_info=sc;
+							created_object = (*sc->c_constructor)();
+							was_created_by_constructor=true;
+							c_object = created_object;
+						}
 					}
-				}
+				 }
 			}
 
 		}else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
@@ -176,7 +179,6 @@ namespace zetscript{
 
 	bool ScriptVar::itHasSetMetamethod(){
 		return registered_class_info->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->count > 0;
-
 	}
 
 	void ScriptVar::setDelete_C_ObjectOnDestroy(bool _delete_on_destroy){
@@ -209,7 +211,7 @@ namespace zetscript{
 		std::string key_value = symbol_value;
 
 		if(idx_start_user_properties != 0){
-			THROW_RUNTIME_ERROR("internal error: addPropertyBuiltIn should be used only one time within ScriptVar::createSymbols");
+			THROW_RUNTIME_ERROR("internal error: addPropertyBuiltIn should be used within ScriptVar::createSymbols");
 		}
 
 		// if ignore duplicate was true, map resets idx to the last function...
@@ -315,7 +317,6 @@ namespace zetscript{
 			}
 			return (StackElement *)stk_properties->items[idx_stk_element];
 		}
-
 		return NULL;
 	}
 
@@ -393,11 +394,11 @@ namespace zetscript{
 
 		// check indexes ...
 		if(v_index < 0){
-			throw std::runtime_error(zs_strutils::format("Negative index std::vector (%i)",v_index));
+			THROW_RUNTIME_ERROR("Negative index std::vector (%i)",v_index);
 		}
 
 		if(v_index >= this->lenght_user_properties){
-			throw std::runtime_error(zs_strutils::format("Index std::vector out of bounds (%i)",v_index));
+			THROW_RUNTIME_ERROR("Index std::vector out of bounds (%i)",v_index);
 		}
 
 		return (StackElement *)this->stk_properties->items[v_index+this->idx_start_user_properties];
@@ -416,6 +417,10 @@ namespace zetscript{
 		eraseProperty(idx_property);
 		map_property_keys->erase(property_name.c_str()); // erase also property key
 
+	}
+
+	ScriptClass * ScriptVar::getScriptClass(){
+		return registered_class_info;
 	}
 
 	const std::string & ScriptVar::getClassName(){

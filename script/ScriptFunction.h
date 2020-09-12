@@ -23,6 +23,7 @@ namespace zetscript{
 		short idx_script_function;		// idx_script_function from factory
 		int idx_return_type; 			// idx return type
 		intptr_t ref_native_function_ptr;
+		bool function_should_be_deduced_at_runtime; // look-up for solve function on vm
 
 		zs_vector * params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
 
@@ -79,7 +80,8 @@ namespace zetscript{
 				, unsigned short symbol_properties=0
 		);
 
-		Symbol *  getSymbol(Scope *scope,const std::string & symbol_name, char n_params=NO_PARAMS_IS_VARIABLE, int * n_symbols_found=NULL);
+
+		Symbol *  getSymbol(Scope *scope,const std::string & symbol_name, char n_params=NO_PARAMS_IS_VARIABLE);
 
 		/* Registers a function.
 		 * Desc: Inserts function at custom scope. It returns the idx std::vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
@@ -102,7 +104,7 @@ namespace zetscript{
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
-
+		//zs_map					*num_native_functions;
 
 		static const char *instructionPropertyPreOperationToStr(unsigned int properties);
 		static const char *instructionPropertyPostOperationToStr(unsigned int properties);

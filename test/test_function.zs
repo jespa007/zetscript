@@ -11,15 +11,34 @@ fun();*/
 
 //print("dadas");
 
-/*function a(s){
+function a(s){
 	print(s);
 }
 
 var b=a;
-
 b("hello world! 1");
-b(100);*/
-IO.clock();
+b(100);
+
+var v=[
+	function(){ return "hello_word";}
+	,function(a){ return "hello_word"+a;}
+	,function(a){ return 100+a;}
+];
+
+for(var i=0; i < v.length; i++){
+	print("v["+i+"]="+v[i](i,1,2,3,4,5,6,7,8,10,11,12,13));
+}
+
+/*var v=[
+	function(){print("dadas");}
+	,function(){print(10);}
+];
+v[0]();
+v[1]();*/
+//var a=function(){};
+//a();
+
+//IO.clock();
 
 /*function p(f){
 	f();

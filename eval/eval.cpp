@@ -380,11 +380,12 @@ namespace zetscript{
 					ScriptFunction *sf=GET_SCRIPT_FUNCTION(eval_data,ls->idx_script_function);
 					ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
-					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // nothing to do...
+					/*if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // nothing to do...
 						if(instruction->vm_instruction.byte_code==BYTE_CODE_CALL){
 							instruction->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME;
 						}
-					}else if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
+					}else*/
+					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
 
 						// is automatically created on vm...
 						if(ls->n_params==NO_PARAMS_IS_VARIABLE){ // it will search at runtime
@@ -430,7 +431,7 @@ namespace zetscript{
 						bool local_found=false;
 						ScriptFunction *script_function_found=NULL;
 						LoadType load_type=LoadType::LOAD_TYPE_UNDEFINED;
-						int n_symbols_found=0;
+						//int n_symbols_found=0;
 
 						// try find local symbol  ...
 						Scope *scope=ls->scope;
@@ -449,7 +450,7 @@ namespace zetscript{
 								}
 							}
 							else{ // symbol is function...
-								Symbol *function_symbol=sf->getSymbol(sc_var->scope,ls->value,ls->n_params,&n_symbols_found);
+								Symbol *function_symbol=sf->getSymbol(sc_var->scope,ls->value,ls->n_params);
 								if(function_symbol!=NULL){
 									script_function_found=(ScriptFunction *)function_symbol->ref_ptr;
 									instruction->vm_instruction.value_op2=function_symbol->idx_position; // store script function
@@ -472,7 +473,7 @@ namespace zetscript{
 								}else{ // function if((sc_var = MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params))!=NULL){ // function
 									// assign script function ...
 									if(sc_var->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // get number symbols matching parameters
-										sc_var=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params,&n_symbols_found);
+										sc_var=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params);
 									}
 
 									if(sc_var == NULL){
@@ -494,14 +495,14 @@ namespace zetscript{
 
 
 						// determine or not to solve at runtime for calling c functions with same symbol and different signatures
-						if(instruction->vm_instruction.byte_code == BYTE_CODE_CALL){
+						/*if(instruction->vm_instruction.byte_code == BYTE_CODE_CALL){
 							if(script_function_found != NULL){//instruction->vm_instruction.value_op2 != ZS_IDX_UNDEFINED){
 
 								if((script_function_found->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0 && n_symbols_found>1){ // function will be solved at run time because it has to check param type
 									instruction->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
 								}
 							}
-						}
+						}*/
 					}
 				}
 

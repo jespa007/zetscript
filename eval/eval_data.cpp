@@ -147,8 +147,8 @@ namespace zetscript{
 
 			EvalInstruction(
 				ByteCode _byte_code
-				,unsigned char _index_op1=INSTRUCTION_NO_VALUE_OP1
-				,intptr_t _index_op2=INSTRUCTION_NO_VALUE_OP2
+				,unsigned char _index_op1=ZS_IDX_INSTRUCTION_OP2_UNDEFINED
+				,intptr_t _index_op2=ZS_IDX_INSTRUCTION_OP2_UNDEFINED
 				,unsigned short _properties=0
 			 ){
 				vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);

@@ -1045,6 +1045,7 @@ namespace zetscript{
 					intptr_t idx_function=ZS_IDX_UNDEFINED;
 					ScriptVarFunction *script_var_function=NULL;
 					bool is_constructor=(char)instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR;
+					bool solve_function=false;
 
 					StackElement *stk_start_arg_call=(vm_stk_current-n_args);
 					stk_function_ref = ((stk_start_arg_call-1));
@@ -1061,22 +1062,31 @@ namespace zetscript{
 
 					sf=(ScriptFunction *)stk_function_ref->var_ref;
 
+					if(sf == NULL){
+						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal error ScriptFunction null");
+					}
+
 					switch(scope_type){
 					case 0: // global and local gets the function directly
 					case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS:
 					case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL:
+						if((sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0){ // is c symbol
+							// if there's more than 1 symbol with same number of parameters have to get the right one...
+							solve_function = sf->function_should_be_deduced_at_runtime;
+						}
 						break;
 					case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS: // should expect a script var instead because we have to find function...
 
 						// if is function member ...
 						if((sf->symbol.symbol_properties & 	   SYMBOL_PROPERTY_C_OBJECT_REF)!=0){ // is c symbol
-
 						   if((sf->symbol.symbol_properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0){ // is not static, so load its object on its embedded stk ptr
 							   StackElement *stk_aux=(StackElement *)stk_function_ref->stk_value;
 							   calling_object=(ScriptVar *)stk_aux->stk_value;
-						   }else{
-							   is_static=true;
 						   }
+
+						   // if there's more than 1 symbol with same number of parameters have to get the right one...
+						   solve_function = sf->function_should_be_deduced_at_runtime;
+
 						}else{ // script access
 							calling_object=(ScriptVar *)stk_function_ref->stk_value;
 						}
@@ -1087,9 +1097,13 @@ namespace zetscript{
 						break;
 					}
 
+
+
+
+
 					// try to find the function ...
-					if((sf == NULL || (instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME)) && !is_static) // Script function not found, let's try solve this issue at run time...
-					{
+					if(solve_function){ //instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME) // Script function not found, let's try solve this issue at run time...
+					//{
 						StackElement *stk_element_ptr=vm_stack;
 						int stk_element_len = main_function_object->registered_symbols->count;
 						bool ignore_call=false;

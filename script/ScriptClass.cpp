@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	bool ScriptClass::is_C_Class(){
+	bool ScriptClass::isNativeClass(){
 
 		 return ((symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
 	}
@@ -34,6 +34,7 @@ namespace zetscript{
 			scope_factory = zs->getScopeFactory();
 			script_function_factory= zs->getScriptFunctionFactory();
 			script_class_factory=zs->getScriptClassFactory();
+
 
 	}
 
@@ -77,27 +78,32 @@ namespace zetscript{
 				}
 			}
 			return NULL;
+		}
+		unsigned 	ScriptClass::getNumNativeFunctions(const std::string & function_name){
+			unsigned num=0;
+			bool exists=false;
+			num=num_native_functions->get(function_name.c_str(),exists);
+			if(exists){
+				return num;
+			}
+			return 0;
 		}*/
 
 		 Symbol				* 	ScriptClass::getSymbol(const std::string & symbol_name, char n_params){
-			 bool is_function=n_params != NO_PARAMS_IS_VARIABLE;
+			 bool only_symbol=n_params<0;
 
 			for(int i = (int)(symbol_members->count-1); i >= 0 ; i--){
 				Symbol *symbol=(Symbol *)symbol_members->items[i];
-				if(is_function){
+				if(symbol->name == symbol_name){
+					if(only_symbol){
+						return symbol;
+					}
 					if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
 						ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-						if(
-							(symbol->name == symbol_name)
-						 && (n_params == (int)sf->params->count)
+						if(((int)n_params==sf->params->count)
 						 ){
-
 							return symbol;
 						}
-					}
-				}else{ // other
-					if(symbol->name == symbol_name){
-						return symbol;
 					}
 				}
 			}
@@ -115,9 +121,11 @@ namespace zetscript{
 			, unsigned short symbol_properties
 		){
 
-		if(getSymbol(function_name,(char)params.size()) != NULL){
-			THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
-			return NULL;
+		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we allow repeated symbols on native functions...
+			if(getSymbol(function_name,(char)params.size()) != NULL){
+				THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
+				return NULL;
+			}
 		}
 
 		int idx_position=symbol_members->count;
@@ -136,6 +144,29 @@ namespace zetscript{
 				,ref_ptr
 				,symbol_properties|SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION
 		);
+
+		// register num symbols only for c symbols...
+		/*if(function_symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+			unsigned n_symbols=0;
+			bool exists=false;
+			n_symbols=num_native_functions->get(function_name.c_str(),exists);
+
+			if(!exists){
+				n_symbols=0;
+			}
+
+			n_symbols++;
+			num_native_functions->set(function_name.c_str(),n_symbols);
+		}*/
+		// register num symbols only for c symbols...
+		// register num symbols only for c symbols...
+		if(function_symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+			Symbol *symbol_repeat=NULL;
+			if((symbol_repeat=getSymbol(function_symbol->name,params.size()))!=NULL){ // there's one or more name with same args --> mark
+				((ScriptFunction *)symbol_repeat->ref_ptr)->function_should_be_deduced_at_runtime=true; // mark the function found (only matters for first time)
+				((ScriptFunction *)function_symbol->ref_ptr)->function_should_be_deduced_at_runtime=true;
+			}
+		}
 
 		// register
 		symbol_members->push_back((intptr_t)function_symbol);
@@ -202,10 +233,6 @@ namespace zetscript{
 		// idx base classes only stores int (no free)
 		delete idx_base_classes;
 		idx_base_classes=NULL;
-
-		// delete function members only stores pointers (no free)
-		//delete function_members;
-		//function_members=NULL;
 
 	}
 }

@@ -47,7 +47,7 @@ namespace zetscript{
 		);
 
 		Symbol *	 getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_IS_VARIABLE);
-
+		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
 		Symbol				* 	registerFunctionMember(
 				const std::string & file
@@ -60,13 +60,7 @@ namespace zetscript{
 		);
 
 		//Symbol				* 	getFunctionMember(const std::string & function_name, unsigned int n_args);
-
-
-
-
-
-
-		bool is_C_Class();
+		bool isNativeClass();
 
 		virtual ~ScriptClass();
 
@@ -75,6 +69,7 @@ namespace zetscript{
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
+		//zs_map *num_native_functions;
 	};
 }
 

@@ -47,6 +47,7 @@ namespace zetscript{
 			int lineSymbol;
 			std::string key_value;
 			ConstantValue *constant_value;
+			Keyword keyw;
 
 			if(*aux_p != '{'){ // go for final ...
 				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{'");
@@ -66,7 +67,7 @@ namespace zetscript{
 				// expression expected ...
 				if(v_elements > 0){
 					if(*aux_p != ','){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected , on dictionary attribute");
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ',' for dictionary property");
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -74,12 +75,20 @@ namespace zetscript{
 
 				lineSymbol = line;
 
+				if((keyw=eval::is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: \"%s\" keyword is not allowed as property name",eval::eval_info_keywords[keyw].str);
+				}
+
 				aux_p=get_identifier_token(
 						eval_data
 						,aux_p
 						,line
 						,symbol_value
 				);
+
+				if(zs_strutils::is_empty(symbol_value)){
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected property name");
+				}
 
 				 key_value="\""+symbol_value+"\"";
 
@@ -101,7 +110,7 @@ namespace zetscript{
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				 if(*aux_p != ':'){ // expected : ...
-					 THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ':'");
+					 THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ':' after property name");
 				 }
 
 				 aux_p++;
@@ -123,7 +132,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != '}'){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected }");
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected '}'");
 			}
 
 			return aux_p+1;
@@ -135,7 +144,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 			if(*aux_p != '['){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '['");
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"vector: expected '['");
 			}
 
 			// declare vector ...
@@ -151,7 +160,7 @@ namespace zetscript{
 				// expression expected ...
 				if(v_elements > 0){
 					if(*aux_p != ','){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected , on vector element");
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"vector: expected ',' before element");
 					}
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 				}
@@ -170,7 +179,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != ']'){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected ]");
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"vector: expected ']'");
 			}
 
 			return aux_p+1;
