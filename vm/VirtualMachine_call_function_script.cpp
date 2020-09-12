@@ -818,7 +818,6 @@ namespace zetscript{
 					)){
 						THROW_RUNTIME_ERROR("cannot perform operation '-'");
 					}
-
 				}
 				continue;
 			case BYTE_CODE_ADD: // +
@@ -1122,7 +1121,6 @@ namespace zetscript{
 									,symbol_to_find
 									,stk_start_arg_call
 									,n_args))==NULL){
-
 
 								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find function \"%s\"",symbol_to_find.c_str());
 							}

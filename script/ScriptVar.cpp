@@ -354,7 +354,7 @@ namespace zetscript{
 				break;
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
 
-				 ir_fun  = (ScriptFunction *)(si->stk_value);
+				 ir_fun  = (ScriptFunction *)(si->var_ref);
 				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
 					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) != SYMBOL_PROPERTY_C_STATIC_REF){ // delete function pointer
 						 StackElement *stk_element=(StackElement *)si->stk_value;
@@ -485,7 +485,7 @@ namespace zetscript{
 //#endif
 		// remove vars & fundtions if class is C...
 		while ( stk_properties->count!=0){
-			eraseProperty(0);
+			eraseProperty(stk_properties->count-1);
 		}
 
 		stk_properties->clear();
