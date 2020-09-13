@@ -1028,22 +1028,28 @@ namespace zetscript{
 				 {
 					ScriptFunction *sf = NULL;
 					unsigned char n_args=instruction->value_op1;
-
-
 					StackElement *stk_function_ref=NULL;
-					bool is_static=false;
-					//Instruction *instruction_call_ref=instruction;
 					unsigned short scope_type=0;
-					//bool is_constructor = false;
 					intptr_t idx_function=ZS_IDX_UNDEFINED;
 					ScriptVarFunction *script_var_function=NULL;
 					bool is_constructor=(char)instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR;
-					bool solve_function=false;
 
 					StackElement *stk_start_arg_call=(vm_stk_current-n_args);
 					stk_function_ref = ((stk_start_arg_call-1));
-					calling_object = this_object;
+
 					scope_type = GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction->properties);
+					calling_object = this_object;
+
+					if(scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // fetch calling object
+						if( 	(sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)
+							&&  ((sf->symbol.symbol_properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0) // is not static, so load its object on its embedded stk ptr
+						  ){ // is c symbol
+						   StackElement *stk_aux=(StackElement *)stk_function_ref->stk_value;
+						   calling_object=(ScriptVar *)stk_aux->stk_value;
+						}else{
+							calling_object=(ScriptVar *)stk_function_ref->stk_value;
+						}
+					}
 
 					if(stk_function_ref->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 						stk_function_ref=(StackElement *)stk_function_ref->var_ref;
@@ -1059,44 +1065,19 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal error ScriptFunction null");
 					}
 
-					switch(scope_type){
-					case 0: // global and local gets the function directly
-					case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS:
-					case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL:
-						if((sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0){ // is c symbol
-							// if there's more than 1 symbol with same number of parameters have to get the right one...
-							solve_function = sf->function_should_be_deduced_at_runtime;
-						}
-						break;
-					case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS: // should expect a script var instead because we have to find function...
 
-						// if is function member ...
-						if((sf->symbol.symbol_properties & 	   SYMBOL_PROPERTY_C_OBJECT_REF)!=0){ // is c symbol
+					if(sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // is c symbol
+						if(scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
 						   if((sf->symbol.symbol_properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0){ // is not static, so load its object on its embedded stk ptr
 							   StackElement *stk_aux=(StackElement *)stk_function_ref->stk_value;
 							   calling_object=(ScriptVar *)stk_aux->stk_value;
 						   }
-
-						   // if there's more than 1 symbol with same number of parameters have to get the right one...
-						   solve_function = sf->function_should_be_deduced_at_runtime;
-
-						}else{ // script access
-							calling_object=(ScriptVar *)stk_function_ref->stk_value;
 						}
-
-						break;
-					default:
-						THROW_RUNTIME_ERROR("Unexpected scope");
-						break;
 					}
 
+					   // if there's more than 1 symbol with same number of parameters have to get the right one...
+					if(sf->function_should_be_deduced_at_runtime){
 
-
-
-
-					// try to find the function ...
-					if(solve_function){ //instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME) // Script function not found, let's try solve this issue at run time...
-					//{
 						StackElement *stk_element_ptr=vm_stack;
 						int stk_element_len = main_function_object->registered_symbols->count;
 						bool ignore_call=false;

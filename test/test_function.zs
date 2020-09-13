@@ -21,7 +21,7 @@ b(100);
 
 var v=[
 	function(){ return "hello_word";}
-	,function(c,d,e,f){ return "hello_word"+b;}
+	,function(c,d,e,f){ return "hello_word"+b;} // <-- it takes function and tries to add into string...
 	//,function(c){ return 100+a;}
 ];
 
