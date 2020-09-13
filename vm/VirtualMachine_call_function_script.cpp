@@ -1110,7 +1110,6 @@ namespace zetscript{
 						}
 					}
 
-
 					// call function
 					if(sf !=NULL)
 					{
@@ -1118,7 +1117,6 @@ namespace zetscript{
 							// we must set the rest of parameters as undefined in case user put less params as original function ...
 							for(unsigned i = n_args; i < sf->params->count; i++){
 								*vm_stk_current++={
-
 									0,							 // no value assigned.
 									NULL,			     // no varref related.
 									MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED // starts undefined.
