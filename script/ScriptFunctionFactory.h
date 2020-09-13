@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#define MAIN_SCRIPT_FUNCTION_NAME 		"@MainFunction"
 #define IDX_SCRIPT_FUNCTION_MAIN		0
 #define NEW_SCRIPT_FUNCTION(data)		((data->script_function_factory))->newScriptFunction
 #define GET_SCRIPT_FUNCTION(data,idx)	((data->script_function_factory))->getScriptFunction(idx)

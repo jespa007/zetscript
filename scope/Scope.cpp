@@ -100,8 +100,8 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < registered_symbols->count; i++){
 			Symbol *local_symbol = (Symbol *)registered_symbols->items[i];
-			if(local_symbol->name==str_symbol && (local_symbol->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY)){
-					return local_symbol;//.idxScopeVar; // ptr scope ?
+			if(local_symbol->name==str_symbol && (n_params == NO_PARAMS_SYMBOL_ONLY?true:local_symbol->n_params == n_params)){
+				return local_symbol;//.idxScopeVar; // ptr scope ?
 			}
 		}
 

@@ -388,7 +388,7 @@ namespace zetscript{
 					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
 
 						// is automatically created on vm...
-						if(ls->n_params==NO_PARAMS_IS_VARIABLE){ // it will search at runtime
+						if(ls->n_params==NO_PARAMS_SYMBOL_ONLY){ // it will search at runtime
 							instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED;//vis->idx_symbol;
 						}
 						else{
@@ -442,7 +442,7 @@ namespace zetscript{
 							instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL;
 
 
-							if(ls->n_params==NO_PARAMS_IS_VARIABLE){ // symbol is variable...
+							if(ls->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
 								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
 									load_type=LoadType::LOAD_TYPE_VARIABLE;
 									instruction->vm_instruction.value_op2=vis->idx_position;
@@ -467,7 +467,7 @@ namespace zetscript{
 
 							if(sc_var != NULL){
 
-								if(sc_var->n_params==NO_PARAMS_IS_VARIABLE){
+								if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){
 									load_type=LoadType::LOAD_TYPE_VARIABLE;
 									instruction->vm_instruction.value_op2=sc_var->idx_position;
 								}else{ // function if((sc_var = MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params))!=NULL){ // function

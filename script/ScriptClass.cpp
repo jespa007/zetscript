@@ -35,7 +35,6 @@ namespace zetscript{
 			script_function_factory= zs->getScriptFunctionFactory();
 			script_class_factory=zs->getScriptClassFactory();
 
-
 	}
 
 		Symbol				* 	ScriptClass::registerNativeVariableMember(
@@ -57,7 +56,7 @@ namespace zetscript{
 			symbol->file=file;
 			symbol->line=line;
 			symbol->idx_position=symbol_members->count;
-			symbol->n_params=NO_PARAMS_IS_VARIABLE;
+			symbol->n_params=NO_PARAMS_SYMBOL_ONLY;
 			symbol->ref_ptr=ref_ptr;
 			symbol->name=symbol_name;
 			symbol->str_native_type = str_native_type;
@@ -68,26 +67,6 @@ namespace zetscript{
 			return symbol;
 
 		}
-
-		/*Symbol *	 ScriptClass::getVariableMember(const std::string & symbol_name){
-			// from lat value to first to get last override function...
-			for(int i = (int)symbol_members->count-1; i >= 0 ; i--){
-				Symbol *symbol=(Symbol *)symbol_members->items[i];
-				if(symbol->name == symbol_name){
-					return symbol;
-				}
-			}
-			return NULL;
-		}
-		unsigned 	ScriptClass::getNumNativeFunctions(const std::string & function_name){
-			unsigned num=0;
-			bool exists=false;
-			num=num_native_functions->get(function_name.c_str(),exists);
-			if(exists){
-				return num;
-			}
-			return 0;
-		}*/
 
 		 Symbol				* 	ScriptClass::getSymbol(const std::string & symbol_name, char n_params){
 			 bool only_symbol=n_params<0;
@@ -121,7 +100,7 @@ namespace zetscript{
 			, unsigned short symbol_properties
 		){
 
-		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we allow repeated symbols on native functions...
+		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 			if(getSymbol(function_name,(char)params.size()) != NULL){
 				THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
 				return NULL;
@@ -145,24 +124,10 @@ namespace zetscript{
 				,symbol_properties|SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION
 		);
 
-		// register num symbols only for c symbols...
-		/*if(function_symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
-			unsigned n_symbols=0;
-			bool exists=false;
-			n_symbols=num_native_functions->get(function_name.c_str(),exists);
-
-			if(!exists){
-				n_symbols=0;
-			}
-
-			n_symbols++;
-			num_native_functions->set(function_name.c_str(),n_symbols);
-		}*/
-		// register num symbols only for c symbols...
-		// register num symbols only for c symbols...
+		// register num function symbols only for c symbols...
 		if(function_symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
-			if((symbol_repeat=getSymbol(function_symbol->name,params.size()))!=NULL){ // there's one or more name with same args --> mark
+			if((symbol_repeat=getSymbol(function_symbol->name,NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark
 				((ScriptFunction *)symbol_repeat->ref_ptr)->function_should_be_deduced_at_runtime=true; // mark the function found (only matters for first time)
 				((ScriptFunction *)function_symbol->ref_ptr)->function_should_be_deduced_at_runtime=true;
 			}

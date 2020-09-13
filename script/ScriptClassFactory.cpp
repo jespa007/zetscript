@@ -1,7 +1,8 @@
 #include "zetscript.h"
 
 
-#define MAIN_SCRIPT_CLASS_NAME 				"__MainClass__"
+#define MAIN_SCRIPT_CLASS_NAME 				"@MainClass"
+
 #define REGISTER_BUILT_IN_STRUCT(type_class, idx_class)\
 	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
@@ -192,12 +193,10 @@ namespace zetscript{
 		if((index = getIdxScriptClassInternal(class_name))==ZS_INVALID_CLASS){ // check whether is local var registered scope ...
 
 			// BYTE_CODE_NEW SCOPE C and register ...
-			//unsigned char idx_class=(unsigned char)script_classes.size()-1;
-
 			Scope * scope = NEW_SCOPE(this,NULL);
 
 			// register symbol on main scope...
-			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_IS_CLASS);
+			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_SYMBOL_ONLY);
 			if(symbol == NULL){
 				return NULL;
 			}
@@ -214,13 +213,10 @@ namespace zetscript{
 			if(base_class != NULL){
 				sci->idx_base_classes->push_back((intptr_t)base_class->idx_class);
 			}
-
 			return sci;
-
 		}else{
 			THROW_RUNTIME_ERROR("class \"%s\" already registered",class_name.c_str());
 		}
-
 		return NULL;
 	}
 
@@ -237,7 +233,6 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("ScriptClass node out of bound");
 			return NULL;
 		}
-
 		return (ScriptClass *)script_classes->get(idx);
 	}
 

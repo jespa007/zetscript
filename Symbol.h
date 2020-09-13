@@ -5,9 +5,7 @@
 
 #pragma once
 
-#define NO_PARAMS_IS_VARIABLE			-1
-#define NO_PARAMS_SYMBOL_ONLY			-2
-#define NO_PARAMS_IS_CLASS				-3
+#define NO_PARAMS_SYMBOL_ONLY			-1
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 typedef enum {
@@ -44,7 +42,7 @@ namespace zetscript{
 
 			scope = NULL;
 			name="";
-			n_params = NO_PARAMS_IS_VARIABLE;
+			n_params = NO_PARAMS_SYMBOL_ONLY;
 			symbol_properties = 0;
 			str_native_type = "";
 			ref_ptr = 0;

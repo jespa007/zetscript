@@ -631,10 +631,6 @@ namespace zetscript{
 
 					if(! assign_metamethod){
 
-						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_THIS){
-							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"\"this\" is not assignable");
-						}
-
 						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_READ_ONLY){
 							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Assign to constant element is not allowed ");
 						}
@@ -705,9 +701,6 @@ namespace zetscript{
 								stk_dst->properties=runtime_var | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
 								stk_dst->stk_value=NULL;
 								stk_dst->var_ref=script_var;
-								if((stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_THIS) !=  MSK_STACK_ELEMENT_PROPERTY_IS_VAR_THIS){
-									sharePointer(script_var->ptr_shared_pointer_node);
-								}
 							}else{
 								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"(internal) cannot determine var type %i",GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties));
 							}
@@ -1107,11 +1100,6 @@ namespace zetscript{
 						StackElement *stk_element_ptr=vm_stack;
 						int stk_element_len = main_function_object->registered_symbols->count;
 						bool ignore_call=false;
-						// load local symbol from calling object (just in case is a class)
-
-						if(!is_constructor){
-							symbol_to_find = SFI_GET_SYMBOL_NAME(calling_function,instruction);
-						}
 
 						if(
 							scope_type&(MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS|MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS)
@@ -1132,7 +1120,7 @@ namespace zetscript{
 									,stk_element_ptr
 									,stk_element_len
 									,is_constructor
-									,symbol_to_find
+									,sf->symbol.name
 									,stk_start_arg_call
 									,n_args))==NULL){
 

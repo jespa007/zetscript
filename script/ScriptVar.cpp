@@ -11,9 +11,9 @@ namespace zetscript{
 		StackElement *se;
 
 		// add extra symbol this itself if is a class typedef by user...
-		if(registered_class_info->idx_class >=IDX_BUILTIN_TYPE_MAX){
+		if(registered_class_info->idx_class >=IDX_BUILTIN_TYPE_MAX){ // put as read only and cannot assign
 			this_variable.var_ref=this;
-			this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_IS_VAR_THIS|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
+			this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR | MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
 		}
 
 		// Register c vars...
@@ -368,11 +368,13 @@ namespace zetscript{
 
 				if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 					if(((si->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)
-						&& ((si->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_THIS) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_THIS)){ // deallocate but not if is c or this ref
-						if(si->var_ref != 0){
-							// remove property if not referenced anymore
-							virtual_machine->unrefSharedScriptVar(((ScriptVar *)(si->var_ref))->ptr_shared_pointer_node,true);
-						}
+						&& (this_variable.var_ref != this)
+						&& si->var_ref != 0
+					  ){ // deallocate but not if is c or this ref
+
+						// remove property if not referenced anymore
+						virtual_machine->unrefSharedScriptVar(((ScriptVar *)(si->var_ref))->ptr_shared_pointer_node,true);
+
 					}
 				}
 				break;

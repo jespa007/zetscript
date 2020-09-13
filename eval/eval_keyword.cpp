@@ -327,7 +327,11 @@ namespace zetscript{
 
 							// check whether parameter name's matches with some global variable...
 							if((irv=scope->getSymbol(arg_value.c_str())) != NULL){
-								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Ambiguous symbol argument \"%s\" name with var defined at %i", arg_value.c_str(), -1);
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line
+										,"Ambiguity: Argument \"%s\" with same name as variable defined at [%s:%i]"
+										, arg_value.c_str()
+										, irv->file.c_str()
+										,irv->line);
 							}
 								// ok register symbol into the object function ...
 

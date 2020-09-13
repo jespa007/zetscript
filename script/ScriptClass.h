@@ -46,7 +46,7 @@ namespace zetscript{
 				, unsigned short symbol_properties
 		);
 
-		Symbol *	 getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_IS_VARIABLE);
+		Symbol *	 getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
 		Symbol				* 	registerFunctionMember(

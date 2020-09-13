@@ -343,9 +343,7 @@ namespace zetscript{
 				idx_arg=i;
 			}
 		}
-
 		return idx_arg;
-
 	}
 
 	Symbol * ScriptFunction::registerLocalVariable(
@@ -435,16 +433,6 @@ namespace zetscript{
 			return symbol;
 	}
 
-	/*unsigned ScriptFunction::getNumNativeFunctions(const std::string & function_name){
-		unsigned num=0;
-		bool exists=false;
-		num=num_native_functions->get(function_name.c_str(),exists);
-		if(exists){
-			return num;
-		}
-		return 0;
-	}*/
-
 	Symbol *	 ScriptFunction::getSymbol(Scope * scope,const std::string & symbol_name,  char n_params){
 
 		bool only_symbol=n_params<0;
@@ -467,7 +455,6 @@ namespace zetscript{
 				}
 			}
 		}
-
 		return NULL;
 	}
 

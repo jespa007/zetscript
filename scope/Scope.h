@@ -36,8 +36,8 @@ namespace zetscript{
 		 * @n_params:
 		 */
 		Symbol * registerNativeFunctionSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params);
-		Symbol * registerSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_IS_VARIABLE);
-		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
+		Symbol * registerSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
 
 		void						    markAsUnusued();
 
@@ -52,9 +52,9 @@ namespace zetscript{
 		ZetScript *zs;
 		ScopeFactory *scope_factory;
 
-		Symbol * getSymbolRecursive(const std::string & var_name, char n_params=NO_PARAMS_IS_VARIABLE);
-		Symbol * getSymbolRecursiveDownScope(const std::string & ref_symbol, char n_params=NO_PARAMS_IS_VARIABLE);
-		Symbol * getSymbolRecursiveUpScope(const std::string & ref_symbol, char n_params=NO_PARAMS_IS_VARIABLE);
+		Symbol * getSymbolRecursive(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		Symbol * getSymbolRecursiveDownScope(const std::string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		Symbol * getSymbolRecursiveUpScope(const std::string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
 
 
 	};

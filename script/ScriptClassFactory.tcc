@@ -166,7 +166,7 @@ namespace zetscript{
 
 			unsigned char idx_class=(short)(script_classes->count);
 			Scope * scope = scope_factory->newScope(NULL,true);
-			Symbol *symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_IS_CLASS);
+			Symbol *symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_SYMBOL_ONLY);
 			if(symbol == NULL){
 				return NULL;
 			}

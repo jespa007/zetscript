@@ -15,18 +15,18 @@ function a(s){
 	print(s);
 }
 
-var b=a;
+var b=print;
 b("hello world! 1");
 b(100);
 
 var v=[
 	function(){ return "hello_word";}
-	,function(a){ return "hello_word"+a;}
-	,function(a){ return 100+a;}
+	,function(c,d,e,f){ return "hello_word"+b;}
+	//,function(c){ return 100+a;}
 ];
 
 for(var i=0; i < v.length; i++){
-	print("v["+i+"]="+v[i](i,1,2,3,4,5,6,7,8,10,11,12,13));
+	print("v["+i+"]="+v[i](i));
 }
 
 /*var v=[

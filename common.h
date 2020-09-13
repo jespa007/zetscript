@@ -55,12 +55,6 @@ namespace zetscript{
 	}LoadType;
 
 
-
-	//#define MSK_INSTRUCTION_PROPERTY_CALL_TYPE					(((0x1<<(BIT_INSTRUCTION_PROPERTY_MAX-INS_PROPERTY_CALLING_OBJECT))-1)<<(INS_PROPERTY_CALLING_OBJECT))
-	//#define GET_MSK_INSTRUCTION_PROPERTY_CALL_TYPE(prop)		((prop)&MSK_INSTRUCTION_PROPERTY_CALL_TYPE)
-
-	#define MAIN_SCRIPT_FUNCTION_NAME 			"__MainFunction__"
-
 	typedef enum {
 
 		// built-in types...

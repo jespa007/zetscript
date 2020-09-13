@@ -481,7 +481,7 @@ namespace zetscript{
 					}
 
 					//is_first_access=false;
-					//params=NO_PARAMS_IS_VARIABLE;
+					//params=NO_PARAMS_SYMBOL_ONLY;
 
 					// check valid access punctuator...
 					if(is_access_punctuator(aux_p) || symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
@@ -506,7 +506,7 @@ namespace zetscript{
 								eval_data->current_function->script_function->idx_script_function
 								,scope_info
 								,symbol_token_node.value
-								,NO_PARAMS_IS_VARIABLE // only if first access is a function...
+								,NO_PARAMS_SYMBOL_ONLY // only if first access is a function...
 						);
 
 						link_symbol_first_access=&symbol_token_node.instructions[0]->link_symbol_first_access;
