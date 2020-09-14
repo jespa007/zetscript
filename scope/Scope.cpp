@@ -73,27 +73,23 @@ namespace zetscript{
 		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 
-		if((p_irv = getSymbol(symbol_name,n_params))==NULL){ // check whether symbol is already registered ...
-
-			Symbol *irv = new Symbol();
-			irv->name = symbol_name;
-			irv->file	 = file;
-			irv->line 	 = line;
-			irv->scope=  this;
-			irv->n_params=n_params;
-
-			registered_symbols->push_back((intptr_t)irv);
-			return irv;
-		}else{
-
+		if((p_irv = getSymbol(symbol_name,n_params))!=NULL){ // check whether symbol is already registered ...
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
 				THROW_SCRIPT_ERROR(file.c_str(),line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file.c_str(),p_irv->line);
 			}else{
 				THROW_RUNTIME_ERROR(" error symbol \"%s\" already registered as C++", symbol_name.c_str());
 			}
-
 		}
-		return NULL;
+
+		Symbol *irv = new Symbol();
+		irv->name = symbol_name;
+		irv->file	 = file;
+		irv->line 	 = line;
+		irv->scope=  this;
+		irv->n_params=n_params;
+
+		registered_symbols->push_back((intptr_t)irv);
+		return irv;
 	}
 
 	Symbol * Scope::getSymbolRecursiveDownScope(const std::string & str_symbol, char n_params){

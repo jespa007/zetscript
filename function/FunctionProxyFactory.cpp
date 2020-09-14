@@ -8,14 +8,16 @@ namespace zetscript{
 
 
 	FunctionProxyFactory::FunctionProxyFactory(){
-
+		function_proxies=new std::vector<FunctionProxyData *>;
 	}
 
 
 	FunctionProxyFactory::~FunctionProxyFactory(){
 
-		for(unsigned i = 0; i < class_function_member.size(); i++){
-			delete ((std::function<void *(void *)> *)	class_function_member[i]);
+		for(unsigned i = 0; i < function_proxies->size(); i++){
+			delete function_proxies->at(i);
 		}
+
+		delete function_proxies;
 	}
 }

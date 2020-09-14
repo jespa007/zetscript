@@ -18,6 +18,17 @@ namespace zetscript{
 		// VOID PROXY FUNCTIONS Member function C++
 		//
 		template <typename _C, typename _R, class _T, typename..._A>
+			auto newProxyFunctionMember(int nargs, _R (_T:: *fun_obj)(_A...))
+			->typename std::enable_if<(std::is_same<_R,void>::value==true)>::type *;
+
+		template <typename _C, typename _R, class _T, typename..._A>
+			auto newProxyFunctionMember(int nargs, _R (_T:: *fun_obj)(_A...))
+			->typename std::enable_if<(std::is_same<_R,void>::value==false)>::type *;
+		//----------------------------------------
+		//
+		// VOID PROXY FUNCTIONS Member function C++
+		//
+		/*template <typename _C, typename _R, class _T, typename..._A>
 		auto  newProxyFunctionMember(int nargs, _R (_T:: *fun_obj)(_A...))
 		->typename std::enable_if<(std::is_same<_R,void>::value==true)>::type *
 		{
@@ -125,17 +136,82 @@ namespace zetscript{
 			class_function_member.push_back(c_function_builder);
 
 			return (void *) c_function_builder;
-		}
+		}*/
 
 		~FunctionProxyFactory();
 
 	private:
 
+		struct FunctionProxyData{
+			unsigned char n_args;
+			void *function_ptr;
+			bool is_void;
 
+			FunctionProxyData(void *_function_ptr,unsigned char _n_args, bool _is_void)
+			{
+				function_ptr = _function_ptr;
+				n_args= _n_args;
+				is_void=_is_void;
+			}
 
+			~FunctionProxyData(){
+				if(is_void){
+					switch(n_args){
+					case 0:
+						delete ((std::function<void(intptr_t)> *)function_ptr);
+						break;
+					case 1:
+						delete ((std::function<void(intptr_t,intptr_t)> *)function_ptr);
+						break;
+					case 2:
+						delete ((std::function<void(intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						break;
+					case 3:
+						delete ((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						break;
+					case 4:
+						delete ((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						break;
+					case 5:
+						delete ((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						break;
+					case 6:
+						delete ((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						break;
+					}
+				}
+				else{
+					switch(n_args){
+						case 0:
+							delete ((std::function<intptr_t(intptr_t)> *)function_ptr);
+							break;
+						case 1:
+							delete ((std::function<intptr_t(intptr_t,intptr_t)> *)function_ptr);
+							break;
+						case 2:
+							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							break;
+						case 3:
+							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							break;
+						case 4:
+							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							break;
+						case 5:
+							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							break;
+						case 6:
+							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							break;
+						}
+				}
+			}
+		};
 
-		std::vector<void *>	 class_function_member;
+		std::vector<FunctionProxyData *>	 *function_proxies;
 
 	};
 
 }
+
+#include "FunctionProxyFactory.tcc"

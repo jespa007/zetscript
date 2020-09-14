@@ -116,10 +116,10 @@ namespace zetscript{
 			if(
 					(info_function->symbol.symbol_properties&SYMBOL_PROPERTY_C_OBJECT_REF)!=SYMBOL_PROPERTY_C_OBJECT_REF
 			){
-				THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name.c_str());
 				return false;
 			}
 		}
+
 		return true;
 	}
 

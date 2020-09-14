@@ -47,7 +47,7 @@ namespace zetscript{
 		zs = _zs;
 		scope_factory = this->zs->getScopeFactory();
 		script_function_factory= this->zs->getScriptFunctionFactory();
-		proxy_function_factory= this->zs->GetProxyFunctionFactory();
+		function_proxy_factory= this->zs->getFunctionProxyFactory();
 		register_c_base_symbols=false;
 		main_function=NULL;
 		main_object=NULL;
@@ -116,7 +116,8 @@ namespace zetscript{
 
 		//registerNativeGlobalFunction("error",internalPrintError);
 
-		//registerNativeFunctionMember("size",&ScriptVarVector::sizeSf);
+		//ZS_REGISTER_FUNCTION_MEMBER(this->zs,ScriptVarVector,"size",&ScriptVarVector::size);
+
 		registerNativeFunctionMember("push",&ScriptVarVector::pushSf);
 		registerNativeFunctionMember("pop",&ScriptVarVector::popSf);
 
@@ -244,7 +245,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	ScriptClass *ScriptClassFactory::getScriptClassBy_C_ClassPtr(const std::string & class_type){
+	ScriptClass *ScriptClassFactory::getScriptClassByNativeClassPtr(const std::string & class_type){
 
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);

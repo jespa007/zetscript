@@ -14,7 +14,7 @@
 #define SCRIPT_CLASS_DICTIONARY(data)					((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_DICTIONARY))
 #define SCRIPT_CLASS_VECTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_VECTOR))
 #define SCRIPT_CLASS_FUNCTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_FUNCTION))
-#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_class_factory)->getScriptClassBy_C_ClassPtr(s))    // 0 is the main class
+#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_class_factory)->getScriptClassByNativeClassPtr(s))    // 0 is the main class
 #define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_class_factory)->getScriptClass(idx)->str_class_ptr_type)
 
 namespace zetscript{
@@ -37,7 +37,7 @@ namespace zetscript{
 		ScriptClass * 					registerClass(const std::string & file, short line, const std::string & class_name, const std::string & base_class_name="");
 		ScriptClass * 					getScriptClass(unsigned char idx);
 		ScriptClass * 					getScriptClass(const std::string & name);
-		ScriptClass * 					getScriptClassBy_C_ClassPtr(const std::string & class_type);
+		ScriptClass * 					getScriptClassByNativeClassPtr(const std::string & class_type);
 		const char 	* 					getScriptClassName(unsigned char idx);
 		bool							nativeClassBaseOf(unsigned char  theClass,unsigned char  class_idx);
 		unsigned char					getIdxClassFromItsNativeType(const std::string & s);
@@ -63,7 +63,7 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		template <typename V>
-		 bool registerNativeGlobalVariable(
+		void registerNativeGlobalVariable(
 			 const std::string & var_name
 			 ,V var_ptr
 			 , const char *registered_file=""
@@ -74,7 +74,7 @@ namespace zetscript{
 		 * Register C function
 		 */
 		 template <typename F>
-		 bool registerNativeGlobalFunction(
+		 void registerNativeGlobalFunction(
 			 const char * function_name
 			 ,F function_ptr
 			 , const char *registered_file=""
@@ -85,7 +85,7 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		 template<typename T>
-		 bool 							registerNativeSingletonClass(
+		 ScriptClass *  registerNativeSingletonClass(
 				 const std::string & class_name
 				 , const char *registered_file=""
 				,int registered_line=-1
@@ -95,7 +95,7 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<typename T>
-		bool 							registerNativeClass(
+		void registerNativeClass(
 				const std::string & class_name
 				 , const char *registered_file=""
 				,int registered_line=-1
@@ -103,7 +103,7 @@ namespace zetscript{
 
 
 		template<typename T>
-		bool 							registerNativeClassBuiltIn(
+		void registerNativeClassBuiltIn(
 				const std::string & class_name
 				 , const char *registered_file=""
 				,int registered_line=-1
@@ -111,13 +111,13 @@ namespace zetscript{
 
 
 		template<class T, class B>
-		bool 							nativeClassBaseOf();
+		void nativeClassBaseOf();
 
 		/**
 		 * Register C Member var
 		 */
 		template <typename C, typename R,typename T>
-		bool 							registerNativeVariableMember(
+		void registerNativeVariableMember(
 				const char *var_name
 				, R T::*var_pointer
 				 , const char *registered_file=""
@@ -125,7 +125,7 @@ namespace zetscript{
 		);
 
 		template <typename C, typename R>
-		bool registerNativeStaticConstMember(
+		void registerNativeStaticConstMember(
 				const char *var_name
 				, const R var_pointer
 				 , const char *registered_file=""
@@ -136,7 +136,7 @@ namespace zetscript{
 		 * Register C Member function Class
 		 */
 		template < typename C, typename R, class T, typename..._A>
-		bool 							registerNativeFunctionMember(
+		void registerNativeFunctionMember(
 				const char *function_name
 				,R (T:: *function_type)(_A...)
 				 , const char *registered_file=""
@@ -147,7 +147,7 @@ namespace zetscript{
 		 * Register C Member function static Class
 		 */
 		template <typename C, typename F>
-		bool 							registerNativeFunctionMemberStatic(
+		void registerNativeFunctionMemberStatic(
 				const char *function_name
 				,F ptr_function
 				, const char *registered_file=""
@@ -157,7 +157,7 @@ namespace zetscript{
 		 * Register C function as function member
 		 */
 		template <typename F>
-		bool 							registerNativeFunctionMember(
+		void	registerNativeFunctionMember(
 				const char *function_name
 				,F function_type
 				 , const char *registered_file=""
@@ -184,7 +184,7 @@ namespace zetscript{
 		ZetScript 						*	zs;
 		ScopeFactory 					*	scope_factory;
 		ScriptFunctionFactory 			*	script_function_factory;
-		FunctionProxyFactory 			*	proxy_function_factory;
+		FunctionProxyFactory 			*	function_proxy_factory;
 		ScriptClass 					* 	main_object;
 		ScriptFunction 					* 	main_function;
 		std::map<unsigned char,std::map<unsigned char,ConversionType>> 	conversion_types;

@@ -7,7 +7,7 @@ namespace zetscript{
 	 * Register C variable
 	 */
 	template<typename V>
-	 bool  ScriptClassFactory::registerNativeGlobalVariable(
+	 void  ScriptClassFactory::registerNativeGlobalVariable(
 			 const std::string & var_name
 			 ,V var_ptr
 			 , const char *registered_file
@@ -20,19 +20,16 @@ namespace zetscript{
 
 		if(var_ptr==NULL){
 			THROW_RUNTIME_ERROR("cannot register var \"%s\" with NULL reference value", var_name.c_str());
-			return false;
 		}
 
 		ScriptFunction *main_function=MAIN_FUNCTION(this);
 
 		if(main_function == NULL){
 			THROW_RUNTIME_ERROR("main function is not created");
-			return false;
 		}
 
 		if(getIdxClassFromItsNativeType(var_type) == ZS_INVALID_CLASS){
 			THROW_RUNTIME_ERROR("%s has not valid type (%s)",var_name.c_str(),var_type.c_str());
-			return false;
 		}
 
 		if((irs = main_function->registerLocalVariable(
@@ -45,18 +42,15 @@ namespace zetscript{
 				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF)) != NULL
 		){
 			ZS_PRINT_DEBUG("Registered variable name: %s",var_name.c_str());
-
-			return true;
 		}
 
-		return false;
 	}
 
 	/**
 	 * Register C function
 	 */
 	template <typename F>
-	bool ScriptClassFactory::registerNativeGlobalFunction(const char * function_name,F function_ptr, const char *registered_file,int registered_line)
+	void ScriptClassFactory::registerNativeGlobalFunction(const char * function_name,F function_ptr, const char *registered_file,int registered_line)
 	{
 		int idx_return_type=-1;
 		std::string return_type;
@@ -65,19 +59,18 @@ namespace zetscript{
 		intptr_t ref_ptr=0;
 
 		if(!script_function_factory->checkCanregisterNativeFunction(function_name)){
-			return false;
+			THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name);
 		}
 
 		if(main_function == NULL){
 			THROW_RUNTIME_ERROR("main function is not created");
-			return false;
 		}
 
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(function_ptr)>;
 		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
 
-		if(arg.size()>6){
+		if(arg.size()>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_RUNTIME_ERROR("Max argyments reached");
 		}
 
@@ -86,7 +79,6 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered"
 					,zs_rtti::demangle(return_type).c_str()
 					,function_name);
-			return false;
 		}
 
 		for(unsigned int i = 0; i < arg.size(); i++){
@@ -98,7 +90,6 @@ namespace zetscript{
 						,zs_rtti::demangle(arg[i]).c_str()
 						,function_name
 						,zs_rtti::demangle(arg[i]).c_str());
-				return false;
 			}
 
 			if(idx_type ==ZS_INVALID_CLASS){
@@ -106,7 +97,6 @@ namespace zetscript{
 						,i
 						,zs_rtti::demangle(arg[i]).c_str()
 						,function_name);
-				return false;
 			}
 
 			arg_info.push_back({idx_type,arg[i]});
@@ -127,22 +117,23 @@ namespace zetscript{
 			);
 
 		ZS_PRINT_DEBUG("Registered function name: %s",function_name);
-		return true;
 	}
 
 	/**
 	 * Register C Class. Return index registered class
 	 */
 	template<class T>
-	 bool ScriptClassFactory::registerNativeSingletonClass(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
+	ScriptClass * ScriptClassFactory::registerNativeSingletonClass(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
-		//std::vector<ScriptClass *> script_classes=getScriptClasses();
-		// to make compatible MSVC shared library
+		ScriptClass *irc=NULL;
+		std::string str_class_name_ptr = typeid( T *).name();
 		int size=script_classes->count;
+		unsigned char idx_class=ZS_IDX_UNDEFINED;
+		Scope * scope = NULL;
+		Symbol *symbol=NULL;
 
 		if(size>=MAX_REGISTER_CLASSES){
 			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
-			return NULL;
 		}
 
 		// after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
@@ -151,126 +142,96 @@ namespace zetscript{
 				((((ScriptClass *)script_classes->get(size-1))->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF )!=SYMBOL_PROPERTY_C_OBJECT_REF)
 			)){
 				THROW_RUNTIME_ERROR("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str());
-				return NULL;
 			}
 		}
 
-		if(!isClassRegistered(class_name)){
-
-			std::string str_class_name_ptr = typeid( T *).name();
-
-			if(getIdx_C_RegisteredClass(str_class_name_ptr)!=ZS_INVALID_CLASS){
-				THROW_RUNTIME_ERROR("this %s is already registered",zs_rtti::demangle(typeid( T).name()).c_str());
-				return NULL;
-			}
-
-			unsigned char idx_class=(short)(script_classes->count);
-			Scope * scope = scope_factory->newScope(NULL,true);
-			Symbol *symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_SYMBOL_ONLY);
-			if(symbol == NULL){
-				return NULL;
-			}
-
-			ScriptClass *irc = new ScriptClass(zs,idx_class);
-			scope->setScriptClass(irc);
-
-			irc->symbol=*symbol;
-
-			// in C there's no script constructor ...
-			irc->idx_function_member_constructor=-1;
-			// allow dynamic constructor in function its parameters ...
-
-			irc->str_class_ptr_type=str_class_name_ptr;
-			irc->symbol.symbol_properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
-
-			irc->c_constructor = NULL;
-			irc->c_destructor = NULL;
-			script_classes->push_back((intptr_t)irc);
-
-			irc->idx_class=(unsigned char)(script_classes->count-1);
-			ZS_PRINT_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
-
-			return true;
-		}
-		else{
+		if(isClassRegistered(class_name)){
 			THROW_RUNTIME_ERROR("%s already exist", class_name.c_str());
 		}
-		return false;
+
+
+		if(getIdx_C_RegisteredClass(str_class_name_ptr)!=ZS_INVALID_CLASS){
+			THROW_RUNTIME_ERROR("this %s is already registered",zs_rtti::demangle(typeid( T).name()).c_str());
+		}
+
+		idx_class=(short)(script_classes->count);
+		scope = scope_factory->newScope(NULL,true);
+		symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_SYMBOL_ONLY);
+
+		irc = new ScriptClass(zs,idx_class);
+		scope->setScriptClass(irc);
+
+		irc->symbol=*symbol;
+
+		// in C there's no script constructor ...
+		irc->idx_function_member_constructor=-1;
+		// allow dynamic constructor in function its parameters ...
+
+		irc->str_class_ptr_type=str_class_name_ptr;
+		irc->symbol.symbol_properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
+
+		irc->c_constructor = NULL;
+		irc->c_destructor = NULL;
+		script_classes->push_back((intptr_t)irc);
+
+		irc->idx_class=(unsigned char)(script_classes->count-1);
+		ZS_PRINT_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
+
+		return irc;
 	}
 
 	/**
 	 * Register C Class. Return index registered class
 	 */
 	template<typename T>
-	bool ScriptClassFactory::registerNativeClass(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
+	void ScriptClassFactory::registerNativeClass(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
-		if(registerNativeSingletonClass<T>(class_name)){
-			// get class...
-			ScriptClass *irc =getScriptClass(class_name);
+		ScriptClass *irc =registerNativeSingletonClass<T>(class_name);
+		// get class...
 
-			if(irc->idx_class < IDX_BUILTIN_TYPE_MAX && irc->idx_class != IDX_BUILTIN_TYPE_STACK_ELEMENT){
-				THROW_RUNTIME_ERROR("The class to register \"%s\"  should BYTE_CODE_NOT BE a built in class",irc->str_class_ptr_type.c_str());
-				return false;
-			}
 
-			if(irc==NULL){
-				return false;
-			}
-
-			//put the constructor/destructor...
-			irc->c_constructor = new std::function<void *()>([=](){
-				T *t=new T();
-				return t;
-			});
-
-			irc->c_destructor = new std::function<void (void *)>([=](void *p){
-				delete (T *)p;
-			});
-
-			return true;
+		if(irc->idx_class < IDX_BUILTIN_TYPE_MAX && irc->idx_class != IDX_BUILTIN_TYPE_STACK_ELEMENT){
+			THROW_RUNTIME_ERROR("The class to register \"%s\"  should BYTE_CODE_NOT BE a built in class",irc->str_class_ptr_type.c_str());
 		}
-		return NULL;
+
+
+		//put the constructor/destructor...
+		irc->c_constructor = new std::function<void *()>([=](){
+			T *t=new T();
+			return t;
+		});
+
+		irc->c_destructor = new std::function<void (void *)>([=](void *p){
+			delete (T *)p;
+		});
 	}
 
 	/**
 	 * Register C Class. Return index registered class
 	 */
 	template<typename T>
-	bool ScriptClassFactory::registerNativeClassBuiltIn(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
+	void ScriptClassFactory::registerNativeClassBuiltIn(const std::string & class_name, const char *registered_file,int registered_line){//, const std::string & base_class_name=""){
 
-		if(registerNativeSingletonClass<T>(class_name)){
-			ScriptClass *irc =getScriptClass(class_name);
+		ScriptClass *irc =registerNativeSingletonClass<T>(class_name);
 
-			if(irc->idx_class >= IDX_BUILTIN_TYPE_MAX){
-				THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",irc->str_class_ptr_type.c_str());
-				return false;
-			}
-
-			// get class...
-			if(irc==NULL){
-				return false;
-			}
-
-			//put the constructor/destructor...
-			ZetScript *_zs=zs;
-			irc->c_constructor = new std::function<void *()>([_zs](){
-				T* t=new T(_zs);
-				return t;
-			});
-
-			irc->c_destructor = new std::function<void (void *)>([=](void *p){
-				delete (T *)p;
-			});
-
-			return true;
+		if(irc->idx_class >= IDX_BUILTIN_TYPE_MAX){
+			THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",irc->str_class_ptr_type.c_str());
 		}
 
-		return NULL;
-	}
+		//put the constructor/destructor...
+		ZetScript *_zs=zs;
+		irc->c_constructor = new std::function<void *()>([_zs](){
+			T* t=new T(_zs);
+			return t;
+		});
 
+		irc->c_destructor = new std::function<void (void *)>([=](void *p){
+			delete (T *)p;
+		});
+	}
 
 	template<class T, class B>
-	bool ScriptClassFactory::nativeClassBaseOf(){
+	void ScriptClassFactory::nativeClassBaseOf(){
 		std::string base_class_name=typeid(B).name();
 		std::string base_class_name_ptr=typeid(B *).name();
 		std::string class_name=typeid(T).name();
@@ -279,25 +240,21 @@ namespace zetscript{
 		int idx_base_class = getIdxClassFromItsNativeType(base_class_name_ptr);
 		if(idx_base_class == -1) {
 			THROW_RUNTIME_ERROR("base class %s not registered",base_class_name_ptr.c_str());
-			return false;
 		}
 
 
 		int idx_register_class = getIdxClassFromItsNativeType(class_name_ptr);
 		if(idx_register_class == ZS_IDX_UNDEFINED) {
 			THROW_RUNTIME_ERROR("class %s not registered",class_name_ptr.c_str());
-			return false;
 		}
 
 		if(nativeClassBaseOf(idx_register_class,idx_base_class)){
 			THROW_RUNTIME_ERROR("C++ class \"%s\" is already registered as base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
-			return false;
 		}
 
 		// check whether is in fact base of ...
 		if(!std::is_base_of<B,T>::value){
 			THROW_RUNTIME_ERROR("C++ class \"%s\" is not base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
-			return false;
 		}
 
 		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_register_class);
@@ -306,7 +263,6 @@ namespace zetscript{
 			sc=getScriptClass(sc->idx_base_classes->items[0]); // get base class...
 			if(sc->str_class_ptr_type ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
-				return false;
 			}
 		}
 
@@ -375,7 +331,6 @@ namespace zetscript{
 		// DERIVATE STATE
 		//
 		//----------------------------
-		return true;
 	}
 
 
@@ -384,7 +339,7 @@ namespace zetscript{
 	 */
 	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
 	template <typename C, typename R,typename T>
-	bool ScriptClassFactory::registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
+	void ScriptClassFactory::registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
@@ -395,10 +350,10 @@ namespace zetscript{
 		std::string str_class_name_ptr = typeid( C *).name();
 		unsigned int ref_ptr=offsetOf<C>(var_pointer);
 
-		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_class_name_ptr);
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
 		if(c_class == NULL){
-			return false;
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
 		// 1. check all parameters ok.
@@ -408,7 +363,6 @@ namespace zetscript{
 					,c_class->symbol.name.c_str()
 					,var_name
 					,zs_rtti::demangle(typeid(R).name()).c_str());
-			return false;
 		}
 
 		// register variable...
@@ -420,8 +374,6 @@ namespace zetscript{
 				,ref_ptr
 				,SYMBOL_PROPERTY_C_OBJECT_REF
 		);
-		return true;
-
 	}
 
 	/**
@@ -429,7 +381,7 @@ namespace zetscript{
 	 */
 	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
 	template <typename C, typename R>
-	bool ScriptClassFactory::registerNativeStaticConstMember(const char *var_name, const R var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
+	void ScriptClassFactory::registerNativeStaticConstMember(const char *var_name, const R var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
@@ -440,10 +392,10 @@ namespace zetscript{
 		std::string str_class_name_ptr = typeid( C *).name();
 
 
-		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_class_name_ptr);
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
 		if(c_class == NULL){
-			return false;
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
 		// 1. check all parameters ok.
@@ -453,7 +405,6 @@ namespace zetscript{
 					,c_class->symbol.name.c_str()
 					,var_name
 					,zs_rtti::demangle(typeid(R).name()).c_str());
-			return false;
 		}
 
 
@@ -467,15 +418,13 @@ namespace zetscript{
 				,(intptr_t)var_pointer
 				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF | SYMBOL_PROPERTY_CONST
 		);
-		return true;
-
 	}
 
 	/**
 	 * Register C Member function Class
 	 */
 	template < typename C, typename R, class T, typename..._A>
-	bool ScriptClassFactory::registerNativeFunctionMember(
+	void ScriptClassFactory::registerNativeFunctionMember(
 			const char *function_name
 			,R (T:: *function_type)(_A...)
 			, const char *registered_file
@@ -491,13 +440,13 @@ namespace zetscript{
 		std::string str_class_name_ptr = typeid( C *).name();
 
 		if(!script_function_factory->checkCanregisterNativeFunction(function_name)){
-			return false;
+			THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name);
 		}
 
 		ScriptClass * sc=getScriptClass(str_class_name_ptr);
 
 		if(sc == NULL){
-			return false;
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
 		// 1. check all parameters ok.
@@ -508,7 +457,6 @@ namespace zetscript{
 		// check valid parameters ...
 		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
-			return false;
 		}
 
 		for(unsigned int i = 0; i < arg.size(); i++){
@@ -516,23 +464,18 @@ namespace zetscript{
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
-				return false;
 			}
 
 			if(idx_type==ZS_INVALID_CLASS){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,zs_rtti::demangle(arg[i]).c_str(),function_name);
-				return false;
 			}
-
 			arg_info.push_back({idx_type,arg[i]});
-
 		}
 
-		if((ref_ptr=((intptr_t)proxy_function_factory->newProxyFunctionMember<C>(arg.size(),function_type)))==0){
-			return false;
-		}
+		ref_ptr=((intptr_t)function_proxy_factory->newProxyFunctionMember<C>(arg.size(),function_type));
+
 		// register member function...
-		ScriptFunction *sf = sc->registerFunctionMember(
+		Symbol *symbol = sc->registerFunctionMember(
 				 registered_file
 				,registered_line
 				,function_name
@@ -546,12 +489,11 @@ namespace zetscript{
 
 		if(ZS_STRCMP(ByteCodeMetamethodToStr(BYTE_CODE_METAMETHOD_SET),==,function_name)){
 			StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
-			*stk_element = {0,sf,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+			*stk_element = {0,(ScriptFunction *)symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
 
 			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->push_back((intptr_t)stk_element);
 			ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 		}
-		return true;
 	}
 
 
@@ -559,7 +501,7 @@ namespace zetscript{
 	 * Register C Member function Class
 	 */
 	template <typename C, typename F>
-	bool ScriptClassFactory::registerNativeFunctionMemberStatic(const char *function_name,F function_ptr, const char *registered_file,int registered_line)
+	void ScriptClassFactory::registerNativeFunctionMemberStatic(const char *function_name,F function_ptr, const char *registered_file,int registered_line)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
@@ -575,27 +517,26 @@ namespace zetscript{
 
 
 		if(!script_function_factory->checkCanregisterNativeFunction(function_class_name)){
-			return false;
+			THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name);
 		}
 
-		ScriptClass *c_class = getScriptClassBy_C_ClassPtr(str_class_name_ptr);
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
 		if(c_class == NULL){
-			return false;
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(function_ptr)>;
 		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
 
-		if(arg.size()>6){
+		if(arg.size()>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_RUNTIME_ERROR("Max argyments reached");
 		}
 
 		// check valid parameters ...
 		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
-			return false;
 		}
 
 		for(unsigned int i = 0; i < arg.size(); i++){
@@ -603,12 +544,10 @@ namespace zetscript{
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
-				return false;
 			}
 
 			if(idx_type==ZS_INVALID_CLASS){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,zs_rtti::demangle(arg[i]).c_str(),function_name);
-				return false;
 			}
 
 			arg_info.push_back({idx_type,arg[i]});
@@ -649,8 +588,6 @@ namespace zetscript{
 									zs_rtti::demangle(typeid(C).name()).c_str(),
 									function_name,
 									zs_rtti::demangle(return_type.c_str()).c_str());
-							return false;
-
 						}
 					}else if((return_type != str_class_name_ptr) && (i!= BYTE_CODE_METAMETHOD_SET)){
 
@@ -659,12 +596,10 @@ namespace zetscript{
 								function_name,
 								zs_rtti::demangle(str_class_name_ptr.c_str()).c_str(),
 								zs_rtti::demangle(return_type.c_str()).c_str());
-						return false;
 					}
 
 					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
 					*stk_element = {0,(void *)symbol_sf->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
-
 
 					c_class->metamethod_operator[i]->push_back((intptr_t)stk_element);
 
@@ -674,13 +609,11 @@ namespace zetscript{
 			}
 		}else{
 			THROW_RUNTIME_ERROR("error! cannot register metamethod set on static function. Must be member function");
-			return false;
 		}
-		return true;
 	}
 
 	template <typename F>
-	bool ScriptClassFactory::registerNativeFunctionMember(
+	void ScriptClassFactory::registerNativeFunctionMember(
 			const char *function_name
 			,F function_type
 			, const char *registered_file
@@ -701,7 +634,7 @@ namespace zetscript{
 		using Traits3 = FunctionTraits<decltype(function_type)>;
 		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
 
-		if(arg.size()>6){
+		if(arg.size()>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_RUNTIME_ERROR("Max argyments reached");
 		}
 
@@ -709,22 +642,20 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("registerNativeFunctionMember at least need first parameter that defines the object to add function %s",function_name);
 		}
 
-		ScriptClass * c_class=	getScriptClassBy_C_ClassPtr(arg[0]);
+		ScriptClass * c_class=	getScriptClassByNativeClassPtr(arg[0]);
 		if(c_class == NULL){
 			THROW_RUNTIME_ERROR("class %s is not registered",arg[0].c_str());
-			return false;
 		}
 
 		function_class_name = c_class->symbol.name+"::"+function_name;
 
 		if(!script_function_factory->checkCanregisterNativeFunction(function_class_name)){
-			return false;
+			THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name);
 		}
 
 		// check valid parameters ...
 		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
-			return false;
 		}
 
 		for(unsigned int i = 0; i < arg.size(); i++){
@@ -732,12 +663,10 @@ namespace zetscript{
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
-				return false;
 			}
 
 			if(idx_type==ZS_INVALID_CLASS){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,zs_rtti::demangle(arg[i]).c_str(),function_name);
-				return false;
 			}
 
 			arg_info.push_back({idx_type,arg[i]});
@@ -753,13 +682,8 @@ namespace zetscript{
 				, arg_info
 				, idx_return_type
 				, ref_ptr
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF
 		);
 		ZS_PRINT_DEBUG("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str());
-
-		return true;
 	}
-
-
-
 }

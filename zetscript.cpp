@@ -27,7 +27,7 @@ namespace zetscript{
 
 		eval::init_eval();
 		scope_factory = new ScopeFactory(this);
-		proxy_function_factory = new FunctionProxyFactory();
+		function_proxy_factory = new FunctionProxyFactory();
 		script_function_factory= new ScriptFunctionFactory(this);
 
 		virtual_machine = new VirtualMachine(this);
@@ -35,9 +35,6 @@ namespace zetscript{
 
 		script_class_factory->init();
 		virtual_machine->init();
-
-
-
 
 		eval_int=0;
 		eval_float=0;
@@ -388,7 +385,7 @@ namespace zetscript{
 		delete virtual_machine;
 		delete scope_factory;
 		delete script_function_factory;
-		delete proxy_function_factory;
+		delete function_proxy_factory;
 		delete script_class_factory;
 
 		virtual_machine=NULL;

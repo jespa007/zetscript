@@ -46,14 +46,26 @@ namespace zetscript{
 
 		intptr_t converted_param[MAX_NATIVE_FUNCTION_ARGS];
 		float 	 float_converted_param[MAX_NATIVE_FUNCTION_ARGS];
-		int this_arg=(calling_function->symbol.symbol_properties&SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS)?1:0;
 		intptr_t result=0;
 		StackElement *stk_arg_current;
 		current_call_c_function = calling_function;
 		bool static_ref=calling_function->symbol.symbol_properties&SYMBOL_PROPERTY_C_STATIC_REF;
-		//float aux_float=0;
+		int this_param=0;
+		intptr_t param_this_object=0;
 
-		n_args=n_args+this_arg;
+		if(static_ref==false){
+			this_param=1;
+
+			if(this_object==NULL){
+				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Internal error: Cannot set parameter as this object due this object is NULL");
+			}
+
+			if(this_object->idx_class>=IDX_BUILTIN_TYPE_MAX){
+				param_this_object=(intptr_t)this_object->getNativeObject(); // pass c object
+			}else{ // pass script var
+				param_this_object=(intptr_t)this_object; // pass c object
+			}
+		}
 
 		if(n_args>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
@@ -67,7 +79,7 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Null function");
 		}
 
-		if((char)calling_function->params->count != (n_args)){
+		if((char)calling_function->params->count != (n_args-this_param)){
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"C argument VS scrip argument doestn't match sizes");
 		}
 
@@ -75,44 +87,29 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->params->count,MAX_NATIVE_FUNCTION_ARGS);
 		}
 
+
 		// convert parameters script to c...
 		for(unsigned char  i = 0; i < n_args;i++){
 
-			if( i==0 && this_arg==1){ // pass this...
-				if(!static_ref){
-					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Internal error: Cannot set parameter as this object due is not static");
-				}
+			stk_arg_current=&stk_arg_calling_function[i];
+			FunctionParam *function_param=(FunctionParam *)calling_function->params->items[i];
 
-				if(this_object==NULL){
-					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Internal error: Cannot set parameter as this object due this object is NULL");
-				}
-
-				if(this_object->idx_class>=IDX_BUILTIN_TYPE_MAX){
-					converted_param[0]=(intptr_t)this_object->getNativeObject(); // pass c object
-				}else{ // pass script var
-					converted_param[0]=(intptr_t)this_object; // pass c object
-				}
+			if(!zs->convertStackElementToVar(stk_arg_current,function_param->idx_type,(intptr_t *)&converted_param[i],error_str)){
+				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function \"%s\", param %i: %s. Native function \"%s\" that was found for first time it has different argument types now.",
+																calling_function->symbol.name.c_str(),
+																i,
+																error_str.c_str(),
+																calling_function->symbol.name.c_str()
+																);
 			}
-			else{
-				stk_arg_current=&stk_arg_calling_function[i];
-				FunctionParam *function_param=(FunctionParam *)calling_function->params->items[i];
 
-				if(!zs->convertStackElementToVar(stk_arg_current,function_param->idx_type,(intptr_t *)&converted_param[i],error_str)){
-					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function \"%s\", param %i: %s. Native function \"%s\" that was found for first time it has different argument types now.",
-																	calling_function->symbol.name.c_str(),
-																	i,
-																	error_str.c_str(),
-																	calling_function->symbol.name.c_str()
-																	);
-				}
+			if(function_param->idx_type == IDX_BUILTIN_TYPE_FLOAT_PTR_C){
+				float *ptr=&float_converted_param[i];
+				*ptr = *((float *)&converted_param[i]);
+				converted_param[start_param_idx+i]=(intptr_t)ptr;
 
-				if(function_param->idx_type == IDX_BUILTIN_TYPE_FLOAT_PTR_C){
-					float *ptr=&float_converted_param[i];
-					*ptr = *((float *)&converted_param[i]);
-					converted_param[i]=(intptr_t)ptr;
-
-				}
 			}
+
 		}
 
 		ZS_PRINT_DEBUG("pre_call %i",n_args);
@@ -124,7 +121,11 @@ namespace zetscript{
 				if(static_ref){
 					PTR_FUNCTION_VOID_PARAM0(fun_ptr)();
 				}else{
-					(*((CFunctionMemberPointerVoidParam0 *)fun_ptr))();
+					(*((std::function<void(
+							intptr_t // object
+					)> *)fun_ptr))(
+							param_this_object
+					);
 				}
 				break;
 			case 1:
@@ -133,8 +134,12 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					(*((CFunctionMemberPointerVoidParam1 *)fun_ptr))(
-						converted_param[0]
+					(*((std::function<void(
+							intptr_t  // object
+							,intptr_t // param1
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 					);
 				}
 				break;
@@ -145,8 +150,13 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					(*((CFunctionMemberPointerVoidParam2 *)fun_ptr))(
-						converted_param[0]
+					(*((std::function<void(
+							intptr_t  // object
+							,intptr_t // param2
+							,intptr_t // param2
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 					);
 				}
@@ -159,8 +169,14 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					(*((CFunctionMemberPointerVoidParam3 *)fun_ptr))(
-						converted_param[0]
+					(*((std::function<void(
+							intptr_t  // object
+							,intptr_t // param2
+							,intptr_t // param2
+							,intptr_t // param3
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 					);
@@ -175,8 +191,15 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					(*((CFunctionMemberPointerVoidParam4 *)fun_ptr))(
-						converted_param[0]
+					(*((std::function<void(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
@@ -193,8 +216,16 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					(*((CFunctionMemberPointerVoidParam5 *)fun_ptr))(
-						converted_param[0]
+					(*((std::function<void(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+							,intptr_t // param5
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
@@ -213,13 +244,22 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					(*((CFunctionMemberPointerVoidParam6 *)fun_ptr))(
-						converted_param[0]
-						 ,converted_param[1]
-						 ,converted_param[2]
-						 ,converted_param[3]
-						 ,converted_param[4]
-						 ,converted_param[5]
+					(*((std::function<void(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+							,intptr_t // param5
+							,intptr_t // param6
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+						,converted_param[5]
 					);
 				}
 				break;
@@ -231,7 +271,11 @@ namespace zetscript{
 				if(static_ref){
 					result=PTR_FUNCTION_RET_BOOL_PARAM0(fun_ptr)();
 				}else{
-					result=(*((FunctionMemberPointerRetParam0 *)fun_ptr)).ret_bool();
+					result=(*((std::function<bool(
+							intptr_t  // object
+					)> *)fun_ptr))(
+						param_this_object
+					);
 				}
 				break;
 			case 1:
@@ -240,8 +284,12 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					result=(*((FunctionMemberPointerRetParam1 *)fun_ptr)).ret_bool(
-						converted_param[0]
+					result=(*((std::function<bool(
+							intptr_t  // object
+							,intptr_t // param1
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 					);
 				}
 				break;
@@ -252,8 +300,13 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					result=(*((FunctionMemberPointerRetParam2 *)fun_ptr)).ret_bool(
-						converted_param[0]
+					result=(*((std::function<bool(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 					);
 				}
@@ -266,8 +319,14 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					result=(*((FunctionMemberPointerRetParam3 *)fun_ptr)).ret_bool(
-						converted_param[0]
+					result=(*((std::function<bool(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 					);
@@ -282,8 +341,15 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					result=(*((FunctionMemberPointerRetParam4 *)fun_ptr)).ret_bool(
-						converted_param[0]
+					result=(*((std::function<bool(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
@@ -300,12 +366,22 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					result=(*((FunctionMemberPointerRetParam5 *)fun_ptr)).ret_bool(
-						converted_param[0]
+					result=(*((std::function<bool(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+							,intptr_t // param5
+
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
 						,converted_param[4]
+
 					);
 				}
 				break;
@@ -320,13 +396,22 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					result=(*((FunctionMemberPointerRetParam6 *)fun_ptr))(
-						converted_param[0]
-						 ,converted_param[1]
-						 ,converted_param[2]
-						 ,converted_param[3]
-						 ,converted_param[4]
-						 ,converted_param[5]
+					result=(*((std::function<bool(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+							,intptr_t // param5
+							,intptr_t // param6
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+						,converted_param[5]
 					);
 				}
 				break;
@@ -338,7 +423,11 @@ namespace zetscript{
 				if(static_ref){
 					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();
 				}else{
-					aux_flt=(*((FunctionMemberPointerRetParam0 *)fun_ptr)).ret_float();
+					aux_flt=(*((std::function<float(
+							intptr_t  // object
+					)> *)fun_ptr))(
+						param_this_object
+					);
 				}
 				break;
 			case 1:
@@ -347,8 +436,13 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					aux_flt=(*((FunctionMemberPointerRetParam1 *)fun_ptr)).ret_float(
-						converted_param[0]
+					aux_flt=(*((std::function<float(
+							intptr_t  // object
+							,intptr_t // param1
+
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 					);
 				}
 				break;
@@ -359,9 +453,16 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					aux_flt=(*((FunctionMemberPointerRetParam2 *)fun_ptr)).ret_float(
-						converted_param[0]
+					aux_flt=(*((std::function<float(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
+
 					);
 				}
 				break;
@@ -373,10 +474,17 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					aux_flt=(*((FunctionMemberPointerRetParam3 *)fun_ptr)).ret_float(
-						converted_param[0]
+					aux_flt=(*((std::function<float(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
+
 					);
 				}
 				break;
@@ -389,8 +497,15 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					aux_flt=(*((FunctionMemberPointerRetParam4 *)fun_ptr)).ret_float(
-						converted_param[0]
+					aux_flt=(*((std::function<float(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
@@ -407,12 +522,21 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					aux_flt=(*((FunctionMemberPointerRetParam5 *)fun_ptr)).ret_float(
-						converted_param[0]
+					aux_flt=(*((std::function<float(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+							,intptr_t // param5
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
 						,converted_param[4]
+
 					);
 				}
 				break;
@@ -427,13 +551,22 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					aux_flt=(*((FunctionMemberPointerRetParam6 *)fun_ptr))(
-						converted_param[0]
-						 ,converted_param[1]
-						 ,converted_param[2]
-						 ,converted_param[3]
-						 ,converted_param[4]
-						 ,converted_param[5]
+					aux_flt=(*((std::function<float(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+							,intptr_t // param5
+							,intptr_t // param6
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+						,converted_param[5]
 					);
 				}
 				break;
@@ -447,7 +580,12 @@ namespace zetscript{
 				if(static_ref){
 					result=PTR_FUNCTION_RET_PARAM0(fun_ptr)();
 				}else{
-					result=(*((FunctionMemberPointerRetParam0 *)fun_ptr))();
+					result=(*((std::function<intptr_t(
+							intptr_t  // object
+					)> *)fun_ptr))(
+						param_this_object
+
+					);
 				}
 				break;
 			case 1:
@@ -456,8 +594,14 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					result=(*((FunctionMemberPointerRetParam1 *)fun_ptr))(
-						converted_param[0]
+					result=(*((std::function<intptr_t(
+							intptr_t  // object
+							,intptr_t // param1
+
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
+
 					);
 				}
 				break;
@@ -468,9 +612,16 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					result=(*((FunctionMemberPointerRetParam2 *)fun_ptr))(
-						converted_param[0]
+					result=(*((std::function<intptr_t(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
+
 					);
 				}
 				break;
@@ -482,10 +633,18 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					result=(*((FunctionMemberPointerRetParam3 *)fun_ptr))(
-						converted_param[0]
+					result=(*((std::function<intptr_t(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
+
 					);
 				}
 				break;
@@ -498,11 +657,20 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					result=(*((FunctionMemberPointerRetParam4 *)fun_ptr))(
-						converted_param[0]
+					result=(*((std::function<intptr_t(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
+
 					);
 				}
 				break;
@@ -516,12 +684,22 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					result=(*((FunctionMemberPointerRetParam5 *)fun_ptr))(
-						converted_param[0]
+					result=(*((std::function<intptr_t(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+							,intptr_t // param5
+
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
 						,converted_param[4]
+
 					);
 				}
 				break;
@@ -536,13 +714,22 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					result=(*((FunctionMemberPointerRetParam6 *)fun_ptr))(
-						converted_param[0]
-						 ,converted_param[1]
-						 ,converted_param[2]
-						 ,converted_param[3]
-						 ,converted_param[4]
-						 ,converted_param[5]
+					result=(*((std::function<intptr_t(
+							intptr_t  // object
+							,intptr_t // param1
+							,intptr_t // param2
+							,intptr_t // param3
+							,intptr_t // param4
+							,intptr_t // param5
+							,intptr_t // param6
+					)> *)fun_ptr))(
+						param_this_object
+						,converted_param[0]
+						,converted_param[1]
+						,converted_param[2]
+						,converted_param[3]
+						,converted_param[4]
+						,converted_param[5]
 					);
 				}
 				break;

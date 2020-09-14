@@ -68,7 +68,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY
 				};
 			}else{
-				ScriptClass *info_registered_class = zs->getScriptClassFactory()->getScriptClassBy_C_ClassPtr(symbol->str_native_type);//  ScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+				ScriptClass *info_registered_class = zs->getScriptClassFactory()->getScriptClassByNativeClassPtr(symbol->str_native_type);//  ScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 				if(info_registered_class){
 					ScriptVar *var = new ScriptVar(zs);
