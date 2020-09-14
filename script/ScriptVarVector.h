@@ -74,8 +74,7 @@ namespace zetscript{
 
 
 		//virtual void unrefSharedPtr();
-
-		int size(){return 0;}
+		//int size(){return 0;}
 
 		//virtual void destroy();
 		//virtual ~ScriptVarVector();

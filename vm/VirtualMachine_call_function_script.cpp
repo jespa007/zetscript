@@ -157,14 +157,18 @@ namespace zetscript{
 				if(this_object!= NULL){
 					StackElement *stk_prop_fun = this_object->getProperty(calling_function->symbol.idx_position);
 
+					/*if((stk_prop_fun->properties & )== 0){
+
+					}*/
+
 					// it suposes the var is a packed stackelement where stk_value it holds function ptr and var_ref the it self object.
-					stk_prop_fun=(StackElement *)((StackElement *)stk_prop_fun->stk_value)->stk_value;
+					/*stk_prop_fun=(StackElement *)((StackElement *)stk_prop_fun->stk_value)->stk_value;
 
 					if(this_object != stk_prop_fun->var_ref){
 						THROW_RUNTIME_ERROR("Internal error: var_ref should match this_object");
-					}
+					}*/
 
-					fun_ptr=(intptr_t)stk_prop_fun->stk_value; // var ref holds function ptr
+					fun_ptr=((ScriptFunction *)stk_prop_fun->var_ref)->ref_native_function_ptr; // var ref holds function ptr
 				}else{
 					THROW_RUNTIME_ERROR("Internal error: expected object for function member");
 				}
@@ -1041,14 +1045,14 @@ namespace zetscript{
 					calling_object = this_object;
 
 					if(scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // fetch calling object
-						if( 	(sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)
+						/*if( 	(sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)
 							&&  ((sf->symbol.symbol_properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0) // is not static, so load its object on its embedded stk ptr
 						  ){ // is c symbol
 						   StackElement *stk_aux=(StackElement *)stk_function_ref->stk_value;
 						   calling_object=(ScriptVar *)stk_aux->stk_value;
-						}else{
+						}else{*/
 							calling_object=(ScriptVar *)stk_function_ref->stk_value;
-						}
+						//}
 					}
 
 					if(stk_function_ref->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
@@ -1066,14 +1070,14 @@ namespace zetscript{
 					}
 
 
-					if(sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // is c symbol
+					/*if(sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // is c symbol
 						if(scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
 						   if((sf->symbol.symbol_properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0){ // is not static, so load its object on its embedded stk ptr
 							   StackElement *stk_aux=(StackElement *)stk_function_ref->stk_value;
 							   calling_object=(ScriptVar *)stk_aux->stk_value;
 						   }
 						}
-					}
+					}*/
 
 					   // if there's more than 1 symbol with same number of parameters have to get the right one...
 					if(sf->function_should_be_deduced_at_runtime){

@@ -106,7 +106,7 @@ namespace zetscript{
 			if(function_param->idx_type == IDX_BUILTIN_TYPE_FLOAT_PTR_C){
 				float *ptr=&float_converted_param[i];
 				*ptr = *((float *)&converted_param[i]);
-				converted_param[start_param_idx+i]=(intptr_t)ptr;
+				converted_param[i]=(intptr_t)ptr;
 
 			}
 

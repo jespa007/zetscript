@@ -75,7 +75,6 @@
 #include "exception.h"
 
 #include "function/FunctionTraits.h"
-#include "function/FunctionMemberPointer.h"
 #include "function/FunctionProxyFactory.h"
 
 #include "scope/Scope.h"

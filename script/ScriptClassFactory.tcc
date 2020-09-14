@@ -612,6 +612,9 @@ namespace zetscript{
 		}
 	}
 
+	/*
+	 * register registerNativeFunctionMember as function member
+	 */
 	template <typename F>
 	void ScriptClassFactory::registerNativeFunctionMember(
 			const char *function_name

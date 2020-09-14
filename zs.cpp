@@ -8,48 +8,9 @@
 
 using namespace zetscript;
 
-class Object{
-public:
-	void size(){
-		printf("size");
-	}
-
-	int size2(int i){
-		return -1*i;
-	}
-
-	/*int size3(Object *o, int i, int j, int k){
-		return o->size()*i*j*k;
-	}*/
-};
-
-template<typename _C, typename _R, class _T, typename..._A>
-std::function<void (void *)> * new_function(_R (_T:: *fun_obj)(_A...)){
-	 return  new std::function<void (void *)> ([fun_obj](void *obj){
-		 (((_C *)obj)->* ((void (_T    ::*)())fun_obj)) ();
-	 });
-}
-
-
 int main(int argc, char * argv[]) {
 
-	//auto f=new_function<Object>(&Object::size);
-	//FunctionProxyFactory *fpf=new FunctionProxyFactory();
-	//fpf->newProxyFunctionMember<Object>(0,&Object::size);
-	/*fpf->newProxyFunctionMember<Object>(0,&Object::size2);
-	fpf->newProxyFunctionMember<Object>(0,&Object::size3);*/
-	//return 0;
-
 	ZetScript *zs = new ZetScript();
-
-	FunctionProxyFactory *spf=zs->getFunctionProxyFactory();
-
-	auto *v1=spf->newProxyFunctionMember<Object>(0,&Object::size);
-	auto *v2=spf->newProxyFunctionMember<Object>(0,&Object::size2);
-
-//	delete (std::function *)v1;
-//	delete (std::function *)v2;
-
 
 	if (argc > 1) {
 		bool vm_execute=true;

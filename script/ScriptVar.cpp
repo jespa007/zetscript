@@ -35,20 +35,19 @@ namespace zetscript{
 				se->var_ref=ir_fun;
 				se->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; // tell stack element that is a function
 
-				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
+				 /*if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
 
 					 // static ref only get ref function ...
-					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) == SYMBOL_PROPERTY_C_STATIC_REF){
+					 /*if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) == SYMBOL_PROPERTY_C_STATIC_REF){
 						 se->stk_value = (void *)ir_fun->ref_native_function_ptr; // easy way to call!
 					 }
-					 else{ // else: hard way -> create function member ptr through proxy (more memory, slow, etc)
+					 else{ // else: we need three vars (script function, this object) hard way -> create function member ptr through proxy (more memory, slow, etc)
 						 StackElement *stk_new=(StackElement *)malloc(sizeof(StackElement));
-						 stk_new->var_ref=this; // --> set belonging object...
-						 stk_new->stk_value = (*((std::function<void *(void *)> *)ir_fun->ref_native_function_ptr))(c_object);
-
+						 stk_new->var_ref=this; // we need va set belonging object...
+						 stk_new->stk_value = (void *)ir_fun->ref_native_function_ptr;//(*((std::function<void *(void *)> *)ir_fun->ref_native_function_ptr))(c_object);
 						 se->stk_value=stk_new;
 					 }
-				}
+				}*/
 			}
 			else{ // var... should be native in principle ?
 
@@ -356,13 +355,13 @@ namespace zetscript{
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
 
 				 ir_fun  = (ScriptFunction *)(si->var_ref);
-				 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
+				 /*if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
 					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) != SYMBOL_PROPERTY_C_STATIC_REF){ // delete function pointer
 						 StackElement *stk_element=(StackElement *)si->stk_value;
 						 delete ((CFunctionMemberPointer *)stk_element->stk_value);
 						 free(si->stk_value);
 					 }
-				}
+				}*/
 				break;
 			default: // properties ...
 
