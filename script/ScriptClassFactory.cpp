@@ -26,7 +26,7 @@
 	}else{\
 		ScriptClass *sc=registerClass(__FILE__,__LINE__,STR(type_class),"");\
 		sc->symbol.scope->is_c_node=true;\
-		sc->symbol.symbol_properties=SYMBOL_PROPERTY_C_OBJECT_REF;\
+		sc->symbol.properties=SYMBOL_PROPERTY_C_OBJECT_REF;\
 		sc->str_class_ptr_type=(typeid(type_class).name());\
 	}
 
@@ -156,7 +156,7 @@ namespace zetscript{
 				v--){
 
 			ScriptClass * sc = (ScriptClass *)script_classes->get(v);
-			if((sc->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){ //script class
+			if((sc->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){ //script class
 				delete sc;
 				script_classes->pop_back();
 			}else{

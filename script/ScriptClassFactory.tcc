@@ -139,7 +139,7 @@ namespace zetscript{
 		// after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
 		if(size > 1){ // because = 0 is reserved for main class and >= 1 is for C registered classes
 			if((
-				((((ScriptClass *)script_classes->get(size-1))->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF )!=SYMBOL_PROPERTY_C_OBJECT_REF)
+				((((ScriptClass *)script_classes->get(size-1))->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF )!=SYMBOL_PROPERTY_C_OBJECT_REF)
 			)){
 				THROW_RUNTIME_ERROR("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str());
 			}
@@ -168,7 +168,7 @@ namespace zetscript{
 		// allow dynamic constructor in function its parameters ...
 
 		irc->str_class_ptr_type=str_class_name_ptr;
-		irc->symbol.symbol_properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
+		irc->symbol.properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
 
 		irc->c_constructor = NULL;
 		irc->c_destructor = NULL;
@@ -274,7 +274,7 @@ namespace zetscript{
 		conversion_types[this_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(B *)((T *)entry);};
 
 
-		//if(register_c_base_symbols){
+		if(register_c_base_symbols){ // by default is disabled. User has to re-register! --> increases time and binary!!!
 			//----------------------------
 			//
 			// DERIVATE STATE
@@ -285,17 +285,26 @@ namespace zetscript{
 
 			ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
 
-			/*unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF| SYMBOL_PROPERTY_IS_DERIVATED;
+			unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF;//| SYMBOL_PROPERTY_IS_DERIVATED;
 			if(std::is_polymorphic<B>::value==true){
-				derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC;
-			}*/
+
+				//if((calling_function->symbol.properties & SYMBOL_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
+				THROW_RUNTIME_ERROR("class \"%s\" is polymorphic and cannot be processed due function/variable pointer it changes at runtime and could crash your application. You have two options:\n"
+						"1. Set registerNativeBaseSymbols(false) and  re-register the function using REGISTER_NATIVE_FUNCTION_MEMBER\n"
+						"2. Rewrite all virtual functions/classes to no non-virtual and do virtual operation through C function pointers\n"
+						,(class_name+"::").c_str()
+				);
+			}
+
+				//derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC; // set as polymorphic and show error if you try to call a polymorphic function
+
 
 			// register all c vars symbols ...
 			for(unsigned i = 0; i < base_class->symbol_members->count; i++){
 
 				Symbol *symbol_src = (Symbol *)base_class->symbol_members->items[i];
 
-				if(symbol_src->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){ // is function
+				if(symbol_src->properties & SYMBOL_PROPERTY_IS_FUNCTION){ // is function
 					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
 					// build params...
 					std::vector<FunctionParam> params;
@@ -310,7 +319,7 @@ namespace zetscript{
 						params,
 						script_function->idx_return_type,
 						script_function->symbol.ref_ptr, // it contains script function pointer
-						script_function->symbol.symbol_properties //derivated_symbol_info_properties
+						script_function->symbol.properties //derivated_symbol_info_properties
 					);
 
 				}else{ // register built-in variable member
@@ -321,12 +330,13 @@ namespace zetscript{
 							,symbol_src->name
 							,symbol_src->str_native_type
 							,symbol_src->ref_ptr // it has a pointer to function that returns the right offset according initialized object
-							,symbol_src->symbol_properties
+							,symbol_src->properties
 							//, //derivated_symbol_info_properties
 					);
 				}
 			}
-		//}
+
+		}
 
 		//
 		// DERIVATE STATE

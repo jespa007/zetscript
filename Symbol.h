@@ -9,12 +9,12 @@
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 typedef enum {
-	SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION				= 0x1 << 0, // ref_ptr holds script function ptr
+	SYMBOL_PROPERTY_IS_FUNCTION				= 0x1 << 0, // ref_ptr holds script function ptr
 	SYMBOL_PROPERTY_C_OBJECT_REF 					= 0x1 << 1,
-	SYMBOL_PROPERTY_IS_DERIVATED 					= 0x1 << 2,
+	//SYMBOL_PROPERTY_IS_DERIVATED 					= 0x1 << 2,
 	SYMBOL_PROPERTY_C_STATIC_REF 					= 0x1 << 3, // C function or C++ static functions
 	SYMBOL_PROPERTY_CONST 							= 0x1 << 4, // This symbol is not assignable
-	SYMBOL_PROPERTY_IS_POLYMORPHIC					= 0x1 << 5,
+	//SYMBOL_PROPERTY_IS_POLYMORPHIC					= 0x1 << 5,
 	SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS		= 0x1 << 6  // will pass object this as first parameter
 }SymbolProperty;
 
@@ -27,7 +27,7 @@ namespace zetscript{
 		short  idx_position;  // used as position where local var/function is located VM (VM reserves space required for all vars)
 
 		Scope *scope;		// scope where symbol was registered
-		unsigned short symbol_properties; // symbol properties using SymbolProperty bits
+		unsigned short properties; // symbol properties using SymbolProperty bits
 
 		std::string name; 	// symbol name
 		intptr_t ref_ptr; 	// pointer ref just in case is C var/function
@@ -43,7 +43,7 @@ namespace zetscript{
 			scope = NULL;
 			name="";
 			n_params = NO_PARAMS_SYMBOL_ONLY;
-			symbol_properties = 0;
+			properties = 0;
 			str_native_type = "";
 			ref_ptr = 0;
 		}

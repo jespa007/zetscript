@@ -51,7 +51,7 @@ namespace zetscript{
 			 ScriptClass *rc=(ScriptClass *)script_classes->get(i);
 			 for(unsigned f = 0; f < rc->symbol_members->count; f++){
 				 Symbol *symbol=(Symbol *)rc->symbol_members->items[f];
-				 if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
+				 if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
 					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr);
 				 }
 
@@ -362,7 +362,7 @@ namespace zetscript{
 			std::string symbol_to_find=access_var[0];
 			for(unsigned i = 0; i < main_function->registered_symbols->count && *fun_obj==NULL; i++){
 				Symbol *symbol=(Symbol *)main_function->registered_symbols->items[i];
-				if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
+				if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
 					if(		aux_fun_obj->symbol.name  == symbol_to_find
 					  && aux_fun_obj->symbol.scope == MAIN_SCOPE(this)){

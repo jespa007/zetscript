@@ -375,7 +375,7 @@ namespace zetscript{
 						 ;v>=0
 						 ;v--) {
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
-				if((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+				if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
 
 					StackElement *ptr_ale =&vm_stack[v];
 					ScriptVar *var = NULL;
@@ -482,7 +482,7 @@ namespace zetscript{
 			 v<main_function->registered_symbols->count;
 			 v++) {
 			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
-			if (((symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)
+			if (((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)
 			) {
 				// if is variable we should delete
 				//main_function->registered_symbols->pop_back();

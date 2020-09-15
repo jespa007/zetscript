@@ -17,12 +17,12 @@ namespace zetscript{
 		std::function<void * (void *)> * newProxyMemberVariable(_R (_C:: *ptr_member_var));
 
 
-		template <typename _C, typename _R, typename..._A>
-			auto newProxyMemberFunction(int nargs, _R (_C:: *ptr_member_fun)(_A...))
+		template <typename _C, typename _R, typename _T, typename..._A>
+			auto newProxyMemberFunction(int nargs, _R (_T:: *ptr_member_fun)(_A...))
 			->typename std::enable_if<(std::is_same<_R,void>::value==true)>::type *;
 
-		template <typename _C, typename _R, typename..._A>
-			auto newProxyMemberFunction(int nargs, _R (_C:: *ptr_member_fun)(_A...))
+		template <typename _C, typename _R,  typename _T, typename..._A>
+			auto newProxyMemberFunction(int nargs, _R (_T:: *ptr_member_fun)(_A...))
 			->typename std::enable_if<(std::is_same<_R,void>::value==false)>::type *;
 
 		~FunctionProxyFactory();

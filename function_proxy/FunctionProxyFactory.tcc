@@ -17,8 +17,8 @@ namespace zetscript{
 		member_variable_proxies->push_back(fun_ptr);
 	}
 
-	template <typename _C, typename _R, typename..._A>
-	auto FunctionProxyFactory::newProxyMemberFunction(int nargs, _R (_C:: *ptr_member_fun)(_A...))
+	template <typename _C, typename _R, typename _T, typename..._A>
+	auto FunctionProxyFactory::newProxyMemberFunction(int nargs, _R (_T:: *ptr_member_fun)(_A...))
 	->typename std::enable_if<(std::is_same<_R,void>::value==true)>::type *
 	{
 		void *fun_ptr=NULL;
@@ -35,7 +35,7 @@ namespace zetscript{
 				[ptr_member_fun](
 					intptr_t obj
 				){
-					(((_C *)obj)->* ((void (_C    ::*)())ptr_member_fun)) (
+					(((_C *)obj)->* ((void (_T    ::*)())ptr_member_fun)) (
 					);
 				}
 			));
@@ -49,7 +49,7 @@ namespace zetscript{
 					intptr_t obj
 					,intptr_t param1
 				){
-					(((_C *)obj)->* ((void (_C    ::*)(
+					(((_C *)obj)->* ((void (_T    ::*)(
 							intptr_t
 					))ptr_member_fun)) (
 						param1
@@ -68,7 +68,7 @@ namespace zetscript{
 					,intptr_t param1
 					, intptr_t param2
 				){
-					(((_C *)obj)->* ((void (_C    ::*)(
+					(((_C *)obj)->* ((void (_T    ::*)(
 						 intptr_t
 						,intptr_t
 					))ptr_member_fun)) (
@@ -91,7 +91,7 @@ namespace zetscript{
 					, intptr_t param2
 					, intptr_t param3
 				){
-					(((_C *)obj)->* ((void (_C    ::*)(
+					(((_C *)obj)->* ((void (_T    ::*)(
 							intptr_t
 							,intptr_t
 							,intptr_t
@@ -118,7 +118,7 @@ namespace zetscript{
 					, intptr_t param3
 					, intptr_t param4
 				){
-					(((_C *)obj)->* ((void (_C    ::*)(
+					(((_C *)obj)->* ((void (_T    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
@@ -149,7 +149,7 @@ namespace zetscript{
 					,intptr_t param4
 					,intptr_t param5
 				){
-					(((_C *)obj)->* ((void (_C    ::*)(
+					(((_C *)obj)->* ((void (_T    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
@@ -184,7 +184,7 @@ namespace zetscript{
 					, intptr_t param5
 					, intptr_t param6
 				){
-					(((_C *)obj)->* ((void (_C    ::*)(
+					(((_C *)obj)->* ((void (_T    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
@@ -223,8 +223,8 @@ namespace zetscript{
 	//
 	// BYTE_CODE_RET PROXY FUNCTIONS Member function C++
 	//
-	template <typename _C, typename _R, typename..._A>
-	auto FunctionProxyFactory::newProxyMemberFunction(int nargs, _R (_C:: *ptr_member_fun)(_A...))
+	template <typename _C, typename _R, typename _T, typename..._A>
+	auto FunctionProxyFactory::newProxyMemberFunction(int nargs, _R (_T:: *ptr_member_fun)(_A...))
 	->typename std::enable_if<(std::is_same<_R,void>::value==false)>::type *
 	{
 		void *fun_ptr=NULL;
@@ -241,7 +241,7 @@ namespace zetscript{
 				[ptr_member_fun](
 					intptr_t obj
 				){
-					return (((_C *)obj)->* ((intptr_t (_C    ::*)())ptr_member_fun)) (
+					return (((_C *)obj)->* ((intptr_t (_T    ::*)())ptr_member_fun)) (
 					);
 				}
 			));
@@ -255,7 +255,7 @@ namespace zetscript{
 					intptr_t obj
 					,intptr_t param1
 				){
-				return  (((_C *)obj)->* ((intptr_t (_C    ::*)(
+				return  (((_C *)obj)->* ((intptr_t (_T    ::*)(
 							intptr_t
 					))ptr_member_fun)) (
 						param1
@@ -274,7 +274,7 @@ namespace zetscript{
 					,intptr_t param1
 					, intptr_t param2
 				){
-				return  (((_C *)obj)->* ((intptr_t (_C    ::*)(
+				return  (((_C *)obj)->* ((intptr_t (_T    ::*)(
 						 intptr_t
 						,intptr_t
 					))ptr_member_fun)) (
@@ -297,7 +297,7 @@ namespace zetscript{
 					, intptr_t param2
 					, intptr_t param3
 				){
-				return  (((_C *)obj)->* ((intptr_t (_C    ::*)(
+				return  (((_C *)obj)->* ((intptr_t (_T    ::*)(
 							intptr_t
 							,intptr_t
 							,intptr_t
@@ -324,7 +324,7 @@ namespace zetscript{
 					, intptr_t param3
 					, intptr_t param4
 				){
-				return (((_C *)obj)->* ((intptr_t (_C    ::*)(
+				return (((_C *)obj)->* ((intptr_t (_T    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
@@ -355,7 +355,7 @@ namespace zetscript{
 					,intptr_t param4
 					,intptr_t param5
 				){
-				return (((_C *)obj)->* ((intptr_t (_C    ::*)(
+				return (((_C *)obj)->* ((intptr_t (_T    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
@@ -390,7 +390,7 @@ namespace zetscript{
 					, intptr_t param5
 					, intptr_t param6
 				){
-				return (((_C *)obj)->* ((intptr_t (_C    ::*)(
+				return (((_C *)obj)->* ((intptr_t (_T    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t

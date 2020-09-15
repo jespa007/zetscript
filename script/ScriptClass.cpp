@@ -8,7 +8,7 @@ namespace zetscript{
 
 	bool ScriptClass::isNativeClass(){
 
-		 return ((symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
+		 return ((symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
 	}
 	//------------------------------------------------------------
 
@@ -43,7 +43,7 @@ namespace zetscript{
 				,const std::string & symbol_name
 				,const std::string & str_native_type
 				,intptr_t ref_ptr
-				, unsigned short symbol_properties
+				, unsigned short properties
 		){
 			if(getSymbol(symbol_name)!=NULL){
 				THROW_RUNTIME_ERROR("Variable \"%s\" already registered",symbol_name.c_str());
@@ -60,7 +60,7 @@ namespace zetscript{
 			symbol->ref_ptr=ref_ptr;
 			symbol->name=symbol_name;
 			symbol->str_native_type = str_native_type;
-			symbol->symbol_properties=symbol_properties | SYMBOL_PROPERTY_C_OBJECT_REF;
+			symbol->properties=properties | SYMBOL_PROPERTY_C_OBJECT_REF;
 
 			symbol_members->push_back((intptr_t)symbol);
 			symbol_members_built_in->push_back((intptr_t)symbol);
@@ -77,7 +77,7 @@ namespace zetscript{
 					if(only_symbol){
 						return symbol;
 					}
-					if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
+					if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
 						ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 						if(((int)n_params==sf->params->count)
 						 ){
@@ -97,10 +97,10 @@ namespace zetscript{
 			, std::vector<FunctionParam> params
 			, int idx_return_type
 			,intptr_t ref_ptr
-			, unsigned short symbol_properties
+			, unsigned short properties
 		){
 
-		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
+		if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 			if(getSymbol(function_name,(char)params.size()) != NULL){
 				THROW_RUNTIME_ERROR("Function \"%s\" already exist",function_name.c_str());
 				return NULL;
@@ -121,11 +121,11 @@ namespace zetscript{
 				,params
 				,idx_return_type
 				,ref_ptr
-				,symbol_properties|SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION
+				,properties|SYMBOL_PROPERTY_IS_FUNCTION
 		);
 
 		// register num function symbols only for c symbols...
-		if(function_symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+		if(function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
 			if((symbol_repeat=getSymbol(function_symbol->name,NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark
 				((ScriptFunction *)symbol_repeat->ref_ptr)->function_should_be_deduced_at_runtime=true; // mark the function found (only matters for first time)
@@ -160,7 +160,7 @@ namespace zetscript{
 
 	ScriptClass::~ScriptClass(){
 
-		if ((symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF) {
+		if ((symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF) {
 
 			if (c_constructor !=NULL) {
 				delete c_constructor;

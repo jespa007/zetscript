@@ -181,17 +181,17 @@ namespace zetscript{
 		for(unsigned j =0; j < m_vf->count; j++){
 			Symbol *symbol=(Symbol *)m_vf->items[j];
 
-			if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
+			if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
 
 				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
 
-				if(( local_sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+				if(( local_sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
 					printGeneratedCode(local_sf);
 				}
 			}
 		}
 
-		if(sfo->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
+		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
 		}
 
@@ -353,7 +353,7 @@ namespace zetscript{
 			, const std::string & symbol_name
 			, const std::string & str_native_type
 			, intptr_t ref_ptr
-			, unsigned short symbol_properties
+			, unsigned short properties
 	){
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
@@ -368,11 +368,11 @@ namespace zetscript{
 		symbol->ref_ptr =ref_ptr;
 		//scope_symbol->symbol=scope_symbol;
 		symbol->str_native_type = str_native_type;
-		symbol->symbol_properties = symbol_properties;
+		symbol->properties = properties;
 		symbol->idx_position = idx_position;
 
 
-		if(scope_block == MAIN_SCOPE(this) && ((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)) { // is variable C set its pointer at stack...
+		if(scope_block == MAIN_SCOPE(this) && ((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)) { // is variable C set its pointer at stack...
 			zs->getVirtualMachine()->setStackElement(idx_position,convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr));
 		}
 
@@ -389,7 +389,7 @@ namespace zetscript{
 			, std::vector<FunctionParam> args
 			, int idx_return_type
 			,intptr_t ref_ptr
-			, unsigned short symbol_properties
+			, unsigned short properties
 		){
 
 			short idx_position=(short)registered_symbols->count;
@@ -406,7 +406,7 @@ namespace zetscript{
 					,args
 					,idx_return_type
 					,ref_ptr
-					,symbol_properties
+					,properties
 			);
 
 			symbol->idx_position=idx_position;
@@ -420,7 +420,7 @@ namespace zetscript{
 			}
 
 			// register num symbols only for c symbols...
-			if(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+			if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 				Symbol *symbol_repeat=NULL;
 				if((symbol_repeat=getSymbol(scope_block,symbol->name,args.size()))!=NULL){ // there's one or more name with same args --> mark
 					((ScriptFunction *)symbol_repeat->ref_ptr)->function_should_be_deduced_at_runtime=true; // mark the function found (only matters for first time)
@@ -442,7 +442,7 @@ namespace zetscript{
 			if(symbol->name == symbol_name){
 				if(only_symbol){
 					return symbol;
-				}else if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
+				}else if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
 					ScriptFunction *current_sf=(ScriptFunction *)symbol->ref_ptr;
 					if(
 

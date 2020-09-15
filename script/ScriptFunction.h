@@ -77,7 +77,7 @@ namespace zetscript{
 				, const std::string & symbol_name
 				, const std::string & str_native_type=""
 				, intptr_t ref_ptr=0
-				, unsigned short symbol_properties=0
+				, unsigned short properties=0
 		);
 
 
@@ -94,7 +94,7 @@ namespace zetscript{
 				, std::vector<FunctionParam> args={}
 				, int idx_return_type=ZS_IDX_UNDEFINED
 				, intptr_t ref_ptr=0
-				, unsigned short symbol_properties=0
+				, unsigned short properties=0
 		);
 
 		~ScriptFunction();

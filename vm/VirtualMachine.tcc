@@ -259,7 +259,7 @@ namespace zetscript{
 			aux_string=irfs->symbol.name;
 
 			if(metamethod_str != NULL || (aux_string == symbol_to_find && irfs->params->count == n_args)){
-				if((irfs->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
+				if((irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
 					int arg_idx_type=-1;
@@ -445,7 +445,7 @@ namespace zetscript{
 								str_candidates+=",";
 							}
 
-							if(irfs->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+							if(irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 								str_candidates+=zs_rtti::demangle(
 										GET_IDX_2_CLASS_C_STR(this,((FunctionParam *)irfs->params->items[a])->idx_type
 								));

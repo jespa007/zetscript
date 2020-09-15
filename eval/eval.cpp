@@ -409,7 +409,7 @@ namespace zetscript{
 
 						for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
 							Symbol *symbol_member = (Symbol *)sc->symbol_members->items[i];
-							if(symbol_member->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
+							if(symbol_member->properties & SYMBOL_PROPERTY_IS_FUNCTION){
 								ScriptFunction *sf=(ScriptFunction *)symbol_member->ref_ptr;
 								if(
 										(ls->n_params == sf->params->count)
@@ -472,7 +472,7 @@ namespace zetscript{
 									instruction->vm_instruction.value_op2=sc_var->idx_position;
 								}else{ // function if((sc_var = MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params))!=NULL){ // function
 									// assign script function ...
-									if(sc_var->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // get number symbols matching parameters
+									if(sc_var->properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // get number symbols matching parameters
 										sc_var=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params);
 									}
 
@@ -498,7 +498,7 @@ namespace zetscript{
 						/*if(instruction->vm_instruction.byte_code == BYTE_CODE_CALL){
 							if(script_function_found != NULL){//instruction->vm_instruction.value_op2 != ZS_IDX_UNDEFINED){
 
-								if((script_function_found->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0 && n_symbols_found>1){ // function will be solved at run time because it has to check param type
+								if((script_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0 && n_symbols_found>1){ // function will be solved at run time because it has to check param type
 									instruction->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
 								}
 							}

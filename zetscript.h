@@ -181,6 +181,7 @@ namespace zetscript{
 		ConstantValue * registerConstantValue(const std::string & const_name, int  value);
 		ConstantValue * registerConstantValue(const std::string & const_name, float  value);
 
+
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
 		bool isFilenameAlreadyParsed(const std::string & filename);
@@ -194,10 +195,6 @@ namespace zetscript{
 		void clear();
 
 		void 						setPrintOutCallback(void (*)(const char *));
-
-		void 												registerNativeBaseSymbols(bool r){
-			script_class_factory->registerNativeBaseSymbols(r);
-		}
 
 		/**
 		 * Register C variable
@@ -214,8 +211,6 @@ namespace zetscript{
 		void registerLocalFunction( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
 			script_class_factory->registerNativeGlobalFunction( function_name,function_ptr, registered_file,registered_line);
 		}
-
-
 
 		/**
 		 * Register C Class. Return index registered class
@@ -237,6 +232,11 @@ namespace zetscript{
 		void classBaseOf(){
 			script_class_factory->nativeClassBaseOf<C,B>();
 		}
+
+		void	registerNativeBaseSymbols(bool r){
+			script_class_factory->registerNativeBaseSymbols(r);
+		}
+
 
 		/**
 		 * Register Function Member Class

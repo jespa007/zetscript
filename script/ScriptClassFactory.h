@@ -113,6 +113,8 @@ namespace zetscript{
 		template<class T, class B>
 		void nativeClassBaseOf();
 
+		void registerNativeMemberSymbols();
+
 		/**
 		 * Register C Member var
 		 */

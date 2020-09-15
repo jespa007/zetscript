@@ -49,7 +49,7 @@ namespace zetscript{
 		intptr_t result=0;
 		StackElement *stk_arg_current;
 		current_call_c_function = calling_function;
-		bool static_ref=calling_function->symbol.symbol_properties&SYMBOL_PROPERTY_C_STATIC_REF;
+		bool static_ref=calling_function->symbol.properties&SYMBOL_PROPERTY_C_STATIC_REF;
 		int this_param=0;
 		intptr_t param_this_object=0;
 
@@ -71,7 +71,7 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
 		}
 
-		if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
+		if((calling_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function is not registered as C");
 		}
 

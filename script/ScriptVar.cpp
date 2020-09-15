@@ -20,7 +20,7 @@ namespace zetscript{
 		for ( unsigned i = 0; i < ir_class->symbol_members->count; i++){
 
 			Symbol * symbol = (Symbol *)ir_class->symbol_members->items[i];
-			bool is_script_function=symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION;
+			bool is_script_function=symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION;
 			bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
 
 			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
@@ -28,7 +28,7 @@ namespace zetscript{
 				symbol->name
 			);
 
-			if(symbol->symbol_properties & SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION){
+			if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
 
 				ScriptFunction * ir_fun  = (ScriptFunction *)symbol->ref_ptr;
 				se->stk_value=this;
@@ -37,7 +37,7 @@ namespace zetscript{
 			}
 			else{ // var... should be native in principle ?
 
-				if(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
+				if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 				{
 					// we know the type object so we assign the pointer ...
 					*se=convertSymbolToStackElement(this->zs,symbol,(void *)symbol->ref_ptr, this->c_object);
@@ -335,8 +335,8 @@ namespace zetscript{
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
 
 				 ir_fun  = (ScriptFunction *)(si->var_ref);
-				 /*if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
-					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) != SYMBOL_PROPERTY_C_STATIC_REF){ // delete function pointer
+				 /*if((ir_fun->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
+					 if((ir_fun->symbol.properties & SYMBOL_PROPERTY_C_STATIC_REF) != SYMBOL_PROPERTY_C_STATIC_REF){ // delete function pointer
 						 StackElement *stk_element=(StackElement *)si->stk_value;
 						 delete ((CMemberFunctionPointer *)stk_element->stk_value);
 						 free(si->stk_value);
@@ -451,7 +451,7 @@ namespace zetscript{
 	}
 
 	bool ScriptVar::isNativeObject(){
-		 return ((registered_class_info->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
+		 return ((registered_class_info->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
 	void ScriptVar::destroy(){

@@ -24,13 +24,13 @@ namespace zetscript{
 			, std::vector<FunctionParam> args
 			, int idx_return_type
 			, intptr_t ref_native_function_ptr
-			, unsigned short symbol_properties
+			, unsigned short properties
 		){
 
-		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){
+		if((properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){
 			if(script_functions->count > 1){ // if greather than 1 check if node consecutive...
 				ScriptFunction *sc = (ScriptFunction *)script_functions->items[script_functions->count-1];
-				if(!((sc->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
+				if(!((sc->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
 						THROW_RUNTIME_ERROR("C Functions should be added after global scope and consecutuve C scope node.");
 				}
 			}
@@ -82,7 +82,7 @@ namespace zetscript{
 
 		// sets local function information...
 		symbol->idx_position = _idx_position; // idx local/member function
-		symbol->symbol_properties = symbol_properties | SYMBOL_PROPERTY_IS_SCRIPT_FUNCTION;
+		symbol->properties = properties | SYMBOL_PROPERTY_IS_FUNCTION;
 
 		ScriptFunction *script_function = new ScriptFunction(
 				zs
@@ -114,7 +114,7 @@ namespace zetscript{
 		if(size>=3){ //0 is main function (reserved). We check when >= 3 to check previous one (i.e from 1)
 			ScriptFunction * info_function =(ScriptFunction *)script_functions->items[script_functions->count-1];
 			if(
-					(info_function->symbol.symbol_properties&SYMBOL_PROPERTY_C_OBJECT_REF)!=SYMBOL_PROPERTY_C_OBJECT_REF
+					(info_function->symbol.properties&SYMBOL_PROPERTY_C_OBJECT_REF)!=SYMBOL_PROPERTY_C_OBJECT_REF
 			){
 				return false;
 			}
@@ -129,7 +129,7 @@ namespace zetscript{
 				v--){
 
 			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[v];
-			if((info_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) //
+			if((info_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) //
 			{
 				script_functions->pop_back();
 				delete info_function;

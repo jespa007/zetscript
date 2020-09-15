@@ -139,19 +139,11 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Reached max stack");
 		}
 
-		if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) ){ // C-Call
-
-			if((calling_function->symbol.symbol_properties & SYMBOL_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
-				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Function \"%s%s\" derives from polymorphic class and cannot be executed due pointer changes at runtime. You have two options:\n"
-						"1. Set registerNativebaseSymbols(false) and  re-register the function using REGISTER_NATIVE_FUNCTION_MEMBER\n"
-						"2. Adapt all virtual functions/classes to no non-virtual\n"
-						,this_object==NULL?"":this_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(this_object->getClassName()+"::").c_str():""
-						,calling_function->symbol.name.c_str());
-			}
+		if((calling_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) ){ // C-Call
 
 			intptr_t  fun_ptr = calling_function->ref_native_function_ptr;
 
-			if((calling_function->symbol.symbol_properties &  SYMBOL_PROPERTY_C_STATIC_REF) == 0){
+			if((calling_function->symbol.properties &  SYMBOL_PROPERTY_C_STATIC_REF) == 0){
 				// is function member  ...
 
 				if(this_object!= NULL){
@@ -1045,8 +1037,8 @@ namespace zetscript{
 					calling_object = this_object;
 
 					if(scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // fetch calling object
-						/*if( 	(sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)
-							&&  ((sf->symbol.symbol_properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0) // is not static, so load its object on its embedded stk ptr
+						/*if( 	(sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)
+							&&  ((sf->symbol.properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0) // is not static, so load its object on its embedded stk ptr
 						  ){ // is c symbol
 						   StackElement *stk_aux=(StackElement *)stk_function_ref->stk_value;
 						   calling_object=(ScriptVar *)stk_aux->stk_value;
@@ -1070,9 +1062,9 @@ namespace zetscript{
 					}
 
 
-					/*if(sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // is c symbol
+					/*if(sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // is c symbol
 						if(scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
-						   if((sf->symbol.symbol_properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0){ // is not static, so load its object on its embedded stk ptr
+						   if((sf->symbol.properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0){ // is not static, so load its object on its embedded stk ptr
 							   StackElement *stk_aux=(StackElement *)stk_function_ref->stk_value;
 							   calling_object=(ScriptVar *)stk_aux->stk_value;
 						   }
@@ -1117,7 +1109,7 @@ namespace zetscript{
 					// call function
 					if(sf !=NULL)
 					{
-						if((sf->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
+						if((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 							// we must set the rest of parameters as undefined in case user put less params as original function ...
 							for(unsigned i = n_args; i < sf->params->count; i++){
 								*vm_stk_current++={
