@@ -359,7 +359,7 @@ namespace zetscript{
 		std::string return_type;
 		//std::vector<std::string> params;
 		std::string str_class_name_ptr = typeid( C *).name();
-		intptr_t ref_ptr=((intptr_t)function_proxy_factory->newProxyMemberVariable<C>(var_pointer)); // offsetOf<C>(var_pointer);
+		intptr_t ref_ptr=offsetOf<C>(var_pointer);
 
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 

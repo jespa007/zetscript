@@ -40,7 +40,9 @@ namespace zetscript{
 				if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 				{
 					// we know the type object so we assign the pointer ...
-					*se=convertSymbolToStackElement(this->zs,symbol,(void *)symbol->ref_ptr, this->c_object);
+					void *ptr_variable=(void *)((intptr_t)this->c_object + symbol->ref_ptr);
+
+					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
 				}else{
 					THROW_RUNTIME_ERROR("symbol should be c var");
 				}

@@ -50,6 +50,6 @@ namespace zetscript{
 
 	};
 
-	StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *ptr_variable, void *object=NULL);
+	StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *ptr_variable);
 
 }
