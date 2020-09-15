@@ -49,7 +49,7 @@ namespace zetscript{
 		Symbol *	 getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
-		Symbol				* 	registerFunctionMember(
+		Symbol				* 	registerMemberFunction(
 				const std::string & file
 				, short line
 				,const std::string & function_name
@@ -59,7 +59,7 @@ namespace zetscript{
 				, unsigned short symbol_properties=0
 		);
 
-		//Symbol				* 	getFunctionMember(const std::string & function_name, unsigned int n_args);
+		//Symbol				* 	getMemberFunction(const std::string & function_name, unsigned int n_args);
 		bool isNativeClass();
 
 		virtual ~ScriptClass();

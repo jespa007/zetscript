@@ -363,7 +363,7 @@ namespace zetscript{
 
 						//--- OP
 						if(sc!=NULL){ // register as variable member...
-							symbol_sf=sc->registerFunctionMember(
+							symbol_sf=sc->registerMemberFunction(
 									 eval_data->current_parsing_file
 									,line
 									,function_name

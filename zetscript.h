@@ -74,8 +74,8 @@
 #include "Symbol.h"
 #include "exception.h"
 
-#include "function/FunctionTraits.h"
-#include "function/FunctionProxyFactory.h"
+#include "function_proxy/FunctionTraits.h"
+#include "function_proxy/FunctionProxyFactory.h"
 
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
@@ -109,8 +109,8 @@
 #define ZS_REGISTER_CLASS(zs,class_type,s) 						(zs)->registerNativeClass<class_type>(s,__FILE__, __LINE__)
 #define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)			(zs)->registerNativeSingletonClass<class_type>(s,__FILE__, __LINE__)
 #define ZS_REGISTER_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->registerNativeVariableMember<class_type>(s,v)
-#define ZS_REGISTER_FUNCTION_MEMBER_STATIC(zs,class_type,s,f)	(zs)->registerNativeFunctionMemberStatic<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->registerNativeFunctionMember<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_FUNCTION_MEMBER_STATIC(zs,class_type,s,f)	(zs)->registerNativeMemberFunctionStatic<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->registerNativeMemberFunction<class_type>(s,f,__FILE__, __LINE__)
 #define ZS_REGISTER_CONSTANT_INT(zs,constant_name,v)			(zs)->registerConstantIntValue(constant_name,v)
 
 
@@ -242,16 +242,16 @@ namespace zetscript{
 		 * Register Function Member Class
 		 */
 		template < typename C, typename R, class T, typename..._A>
-		void registerNativeFunctionMember(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 ){
-			script_class_factory->registerNativeFunctionMember<C>(function_name,function_type, registered_file,registered_line );
+		void registerNativeMemberFunction(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 ){
+			script_class_factory->registerNativeMemberFunction<C>(function_name,function_type, registered_file,registered_line );
 		}
 
 		/**
 		 * Register Static Function Member Class
 		 */
 		template <typename C,typename F>
-		void registerFunctionMemberStatic(const char *function_name,F fun, const char *registered_file="",int registered_line=-1){
-			script_class_factory->registerNativeFunctionMemberStatic<C>(function_name,fun, registered_file, registered_line);
+		void registerMemberFunctionStatic(const char *function_name,F fun, const char *registered_file="",int registered_line=-1){
+			script_class_factory->registerNativeMemberFunctionStatic<C>(function_name,fun, registered_file, registered_line);
 
 		}
 

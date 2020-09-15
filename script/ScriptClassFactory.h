@@ -136,7 +136,7 @@ namespace zetscript{
 		 * Register C Member function Class
 		 */
 		template < typename C, typename R, class T, typename..._A>
-		void registerNativeFunctionMember(
+		void registerNativeMemberFunction(
 				const char *function_name
 				,R (T:: *function_type)(_A...)
 				 , const char *registered_file=""
@@ -147,7 +147,7 @@ namespace zetscript{
 		 * Register C Member function static Class
 		 */
 		template <typename C, typename F>
-		void registerNativeFunctionMemberStatic(
+		void registerNativeMemberFunctionStatic(
 				const char *function_name
 				,F ptr_function
 				, const char *registered_file=""
@@ -157,7 +157,7 @@ namespace zetscript{
 		 * Register C function as function member
 		 */
 		template <typename F>
-		void	registerNativeFunctionMember(
+		void	registerNativeMemberFunction(
 				const char *function_name
 				,F function_type
 				 , const char *registered_file=""

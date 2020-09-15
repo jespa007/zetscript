@@ -90,7 +90,7 @@ namespace zetscript{
 			return NULL;
 		 }
 
-	Symbol * ScriptClass::registerFunctionMember(
+	Symbol * ScriptClass::registerMemberFunction(
 			const std::string & file
 			, short line
 			, const std::string & function_name

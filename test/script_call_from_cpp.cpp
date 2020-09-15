@@ -14,7 +14,7 @@ int main(){
 
 	ZetScript *zs = new ZetScript(); // instance ZetScript
 
-	zs->bindFunctionMember(create_callback,"create_callback");
+	zs->bindMemberFunction(create_callback,"create_callback");
 
 	zs->eval(
 		"class Test{"

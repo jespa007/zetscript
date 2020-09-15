@@ -274,7 +274,7 @@ namespace zetscript{
 		conversion_types[this_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(B *)((T *)entry);};
 
 
-		if(register_c_base_symbols){
+		//if(register_c_base_symbols){
 			//----------------------------
 			//
 			// DERIVATE STATE
@@ -285,10 +285,10 @@ namespace zetscript{
 
 			ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
 
-			unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF| SYMBOL_PROPERTY_IS_DERIVATED;
+			/*unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF| SYMBOL_PROPERTY_IS_DERIVATED;
 			if(std::is_polymorphic<B>::value==true){
 				derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC;
-			}
+			}*/
 
 			// register all c vars symbols ...
 			for(unsigned i = 0; i < base_class->symbol_members->count; i++){
@@ -303,29 +303,30 @@ namespace zetscript{
 						params.push_back(*((FunctionParam *) script_function->params->items[j]));
 					}
 
-					this_class->registerFunctionMember(
+					this_class->registerMemberFunction(
 						script_function->symbol.file,
 						script_function->symbol.line,
 						script_function->symbol.name,
 						params,
 						script_function->idx_return_type,
-						script_function->symbol.ref_ptr,
-						derivated_symbol_info_properties
+						script_function->symbol.ref_ptr, // it contains script function pointer
+						script_function->symbol.symbol_properties //derivated_symbol_info_properties
 					);
 
 				}else{ // register built-in variable member
 
 					this_class->registerNativeVariableMember(
 							symbol_src->file
-							, symbol_src->line
+							,symbol_src->line
 							,symbol_src->name
 							,symbol_src->str_native_type
-							,symbol_src->ref_ptr
-							, derivated_symbol_info_properties
+							,symbol_src->ref_ptr // it has a pointer to function that returns the right offset according initialized object
+							,symbol_src->symbol_properties
+							//, //derivated_symbol_info_properties
 					);
 				}
 			}
-		}
+		//}
 
 		//
 		// DERIVATE STATE
@@ -348,7 +349,7 @@ namespace zetscript{
 		std::string return_type;
 		//std::vector<std::string> params;
 		std::string str_class_name_ptr = typeid( C *).name();
-		unsigned int ref_ptr=offsetOf<C>(var_pointer);
+		intptr_t ref_ptr=((intptr_t)function_proxy_factory->newProxyMemberVariable<C>(var_pointer)); // offsetOf<C>(var_pointer);
 
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
@@ -424,7 +425,7 @@ namespace zetscript{
 	 * Register C Member function Class
 	 */
 	template < typename C, typename R, class T, typename..._A>
-	void ScriptClassFactory::registerNativeFunctionMember(
+	void ScriptClassFactory::registerNativeMemberFunction(
 			const char *function_name
 			,R (T:: *function_type)(_A...)
 			, const char *registered_file
@@ -472,17 +473,17 @@ namespace zetscript{
 			arg_info.push_back({idx_type,arg[i]});
 		}
 
-		ref_ptr=((intptr_t)function_proxy_factory->newProxyFunctionMember<C>(arg.size(),function_type));
+		ref_ptr=((intptr_t)function_proxy_factory->newProxyMemberFunction<C>(arg.size(),function_type));
 
 		// register member function...
-		Symbol *symbol = sc->registerFunctionMember(
+		Symbol *symbol = sc->registerMemberFunction(
 				 registered_file
 				,registered_line
 				,function_name
 				,arg_info
 				,idx_return_type
 				,ref_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF
+				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
 		);
 
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
@@ -499,9 +500,10 @@ namespace zetscript{
 
 	/**
 	 * Register C Member function Class
+	 * like register function c but is added to member function list according type C
 	 */
 	template <typename C, typename F>
-	void ScriptClassFactory::registerNativeFunctionMemberStatic(const char *function_name,F function_ptr, const char *registered_file,int registered_line)
+	void ScriptClassFactory::registerNativeMemberFunctionStatic(const char *function_name,F function_ptr, const char *registered_file,int registered_line)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
@@ -556,7 +558,7 @@ namespace zetscript{
 		ref_ptr=(intptr_t)function_ptr;
 
 		// register member function...
-		Symbol * symbol_sf = c_class->registerFunctionMember(
+		Symbol * symbol_sf = c_class->registerMemberFunction(
 				 registered_file
 				,registered_line
 				,function_name
@@ -613,10 +615,11 @@ namespace zetscript{
 	}
 
 	/*
-	 * register registerNativeFunctionMember as function member
+	 * register static function registerNativeMemberFunction as function member
+	 * Is automatically added in function member list according first parameter type of function_type
 	 */
 	template <typename F>
-	void ScriptClassFactory::registerNativeFunctionMember(
+	void ScriptClassFactory::registerNativeMemberFunction(
 			const char *function_name
 			,F function_type
 			, const char *registered_file
@@ -642,7 +645,7 @@ namespace zetscript{
 		}
 
 		if(arg.size()==0){
-			THROW_RUNTIME_ERROR("registerNativeFunctionMember at least need first parameter that defines the object to add function %s",function_name);
+			THROW_RUNTIME_ERROR("registerNativeMemberFunction at least need first parameter that defines the object to add function %s",function_name);
 		}
 
 		ScriptClass * c_class=	getScriptClassByNativeClassPtr(arg[0]);
@@ -678,14 +681,14 @@ namespace zetscript{
 		ref_ptr=(intptr_t)function_type;
 
 		// register member function...
-		c_class->registerFunctionMember(
+		c_class->registerMemberFunction(
 				  registered_file
 				, registered_line
 				, function_name
 				, arg_info
 				, idx_return_type
 				, ref_ptr
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
 		);
 		ZS_PRINT_DEBUG("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str());
 	}

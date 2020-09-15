@@ -2,9 +2,17 @@
 
 namespace zetscript{
 
-StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *ptr_variable){
+StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *ptr_variable, void *object){
 
 		if(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+
+			if((symbol->symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF)==0){ // if NOT static ptr_variable contains the function that gives the right offset
+				if(object == NULL){
+					THROW_RUNTIME_ERROR("Internal error: Non static variable \"%s\" should expect object",symbol->name.c_str());
+				}
+
+				ptr_variable=(*((std::function<void *(void *)> *)ptr_variable))(object);
+			}
 
 			if(k_str_int_type_ptr==symbol->str_native_type){
 				return {

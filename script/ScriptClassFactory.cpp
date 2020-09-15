@@ -107,7 +107,7 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------------------------------
 		// Let's register functions,...
 		// register c function's
-		Symbol *symbol_main_function=main_object->registerFunctionMember(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
+		Symbol *symbol_main_function=main_object->registerMemberFunction(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 
 		ZS_REGISTER_GLOBAL_FUNCTION(this,"print",static_cast<void (*)(const char *)>(print));
@@ -118,29 +118,29 @@ namespace zetscript{
 
 		//ZS_REGISTER_FUNCTION_MEMBER(this->zs,ScriptVarVector,"size",&ScriptVarVector::size);
 
-		registerNativeFunctionMember("push",&ScriptVarVector::pushSf);
-		registerNativeFunctionMember("pop",&ScriptVarVector::popSf);
+		registerNativeMemberFunction("push",&ScriptVarVector::pushSf);
+		registerNativeMemberFunction("pop",&ScriptVarVector::popSf);
 
 
-		registerNativeFunctionMember("add",&ScriptVarDictionary::addAttrSf);
-		registerNativeFunctionMember("remove",&ScriptVarDictionary::removeAttrSf);
-		//registerNativeFunctionMember("size",&ScriptVarDictionary::sizeSf);
+		registerNativeMemberFunction("add",&ScriptVarDictionary::addAttrSf);
+		registerNativeMemberFunction("remove",&ScriptVarDictionary::removeAttrSf);
+		//registerNativeMemberFunction("size",&ScriptVarDictionary::sizeSf);
 
 		//-------------------------
 		// Register built in extra
 		// Math
 		registerNativeSingletonClass<MathBuiltIn>("MathBuiltIn");
 		registerNativeStaticConstMember<MathBuiltIn>("PI",&MathBuiltIn::PI);
-		registerNativeFunctionMemberStatic<MathBuiltIn>("sin",MathBuiltIn::sin);
-		registerNativeFunctionMemberStatic<MathBuiltIn>("cos",MathBuiltIn::cos);
-		registerNativeFunctionMemberStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
-		registerNativeFunctionMemberStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
-		registerNativeFunctionMemberStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
+		registerNativeMemberFunctionStatic<MathBuiltIn>("sin",MathBuiltIn::sin);
+		registerNativeMemberFunctionStatic<MathBuiltIn>("cos",MathBuiltIn::cos);
+		registerNativeMemberFunctionStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
+		registerNativeMemberFunctionStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
+		registerNativeMemberFunctionStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
 		ZS_REGISTER_GLOBAL_VARIABLE(zs,"Math",&math_built_in);
 
 		// Io
 		registerNativeSingletonClass<IoBuiltIn>("IoBuiltIn");
-		registerNativeFunctionMemberStatic<IoBuiltIn>("clock",IoBuiltIn::clock);
+		registerNativeMemberFunctionStatic<IoBuiltIn>("clock",IoBuiltIn::clock);
 		ZS_REGISTER_GLOBAL_VARIABLE(zs,"IO",&io_built_in);
 	}
 

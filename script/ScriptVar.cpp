@@ -34,33 +34,13 @@ namespace zetscript{
 				se->stk_value=this;
 				se->var_ref=ir_fun;
 				se->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; // tell stack element that is a function
-
-				 /*if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
-
-					 // static ref only get ref function ...
-					 /*if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) == SYMBOL_PROPERTY_C_STATIC_REF){
-						 se->stk_value = (void *)ir_fun->ref_native_function_ptr; // easy way to call!
-					 }
-					 else{ // else: we need three vars (script function, this object) hard way -> create function member ptr through proxy (more memory, slow, etc)
-						 StackElement *stk_new=(StackElement *)malloc(sizeof(StackElement));
-						 stk_new->var_ref=this; // we need va set belonging object...
-						 stk_new->stk_value = (void *)ir_fun->ref_native_function_ptr;//(*((std::function<void *(void *)> *)ir_fun->ref_native_function_ptr))(c_object);
-						 se->stk_value=stk_new;
-					 }
-				}*/
 			}
 			else{ // var... should be native in principle ?
 
 				if(symbol->symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
-				{ // we know the type object so we assign the pointer ...
-					// check if primitive type (only 4 no more no else)...
-					void *ptr_variable = (void *)symbol->ref_ptr;
-
-					if((symbol->symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF)==0){ // this symbol is not static so, let's assign ptr according its offset
-						ptr_variable = (void*) ((unsigned long long) c_object + symbol->ref_ptr);
-					}
-
-					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
+				{
+					// we know the type object so we assign the pointer ...
+					*se=convertSymbolToStackElement(this->zs,symbol,(void *)symbol->ref_ptr, this->c_object);
 				}else{
 					THROW_RUNTIME_ERROR("symbol should be c var");
 				}
@@ -358,7 +338,7 @@ namespace zetscript{
 				 /*if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
 					 if((ir_fun->symbol.symbol_properties & SYMBOL_PROPERTY_C_STATIC_REF) != SYMBOL_PROPERTY_C_STATIC_REF){ // delete function pointer
 						 StackElement *stk_element=(StackElement *)si->stk_value;
-						 delete ((CFunctionMemberPointer *)stk_element->stk_value);
+						 delete ((CMemberFunctionPointer *)stk_element->stk_value);
 						 free(si->stk_value);
 					 }
 				}*/

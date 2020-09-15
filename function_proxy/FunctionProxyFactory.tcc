@@ -2,8 +2,23 @@
 
 namespace zetscript{
 
-	template <typename _C, typename _R, class _T, typename..._A>
-	auto FunctionProxyFactory::newProxyFunctionMember(int nargs, _R (_T:: *fun_obj)(_A...))
+	template <typename _C, typename _R>
+	std::function<void * (void *)> * FunctionProxyFactory::newProxyMemberVariable(_R (_C:: *ptr_member_var)){
+		std::function<void * (void *)> * fun_ptr=(void *)(new std::function<void * (
+				void *
+		)> (
+			[ptr_member_var](
+					void * obj
+			){
+				return &((((_C *)obj)->*ptr_member_var));
+			}
+		));
+
+		member_variable_proxies->push_back(fun_ptr);
+	}
+
+	template <typename _C, typename _R, typename..._A>
+	auto FunctionProxyFactory::newProxyMemberFunction(int nargs, _R (_C:: *ptr_member_fun)(_A...))
 	->typename std::enable_if<(std::is_same<_R,void>::value==true)>::type *
 	{
 		void *fun_ptr=NULL;
@@ -17,10 +32,10 @@ namespace zetscript{
 			fun_ptr=(void *)(new std::function<void (
 				intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 				){
-					(((_C *)obj)->* ((void (_T    ::*)())fun_obj)) (
+					(((_C *)obj)->* ((void (_C    ::*)())ptr_member_fun)) (
 					);
 				}
 			));
@@ -30,13 +45,13 @@ namespace zetscript{
 				intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 				){
-					(((_C *)obj)->* ((void (_T    ::*)(
+					(((_C *)obj)->* ((void (_C    ::*)(
 							intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 					);
 				}
@@ -48,15 +63,15 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					, intptr_t param2
 				){
-					(((_C *)obj)->* ((void (_T    ::*)(
+					(((_C *)obj)->* ((void (_C    ::*)(
 						 intptr_t
 						,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 					);
@@ -70,17 +85,17 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					, intptr_t param2
 					, intptr_t param3
 				){
-					(((_C *)obj)->* ((void (_T    ::*)(
+					(((_C *)obj)->* ((void (_C    ::*)(
 							intptr_t
 							,intptr_t
 							,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 						,param3
@@ -96,19 +111,19 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					, intptr_t param2
 					, intptr_t param3
 					, intptr_t param4
 				){
-					(((_C *)obj)->* ((void (_T    ::*)(
+					(((_C *)obj)->* ((void (_C    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 						,param3
@@ -126,7 +141,7 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					,intptr_t param2
@@ -134,13 +149,13 @@ namespace zetscript{
 					,intptr_t param4
 					,intptr_t param5
 				){
-					(((_C *)obj)->* ((void (_T    ::*)(
+					(((_C *)obj)->* ((void (_C    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 						,param3
@@ -160,7 +175,7 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					, intptr_t param2
@@ -169,14 +184,14 @@ namespace zetscript{
 					, intptr_t param5
 					, intptr_t param6
 				){
-					(((_C *)obj)->* ((void (_T    ::*)(
+					(((_C *)obj)->* ((void (_C    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 						,param3
@@ -193,7 +208,7 @@ namespace zetscript{
 		}
 
 
-		function_proxies->push_back(
+		member_function_proxies->push_back(
 			new FunctionProxyData(
 					fun_ptr
 					,nargs
@@ -208,8 +223,8 @@ namespace zetscript{
 	//
 	// BYTE_CODE_RET PROXY FUNCTIONS Member function C++
 	//
-	template <typename _C, typename _R, class _T, typename..._A>
-	auto FunctionProxyFactory::newProxyFunctionMember(int nargs, _R (_T:: *fun_obj)(_A...))
+	template <typename _C, typename _R, typename..._A>
+	auto FunctionProxyFactory::newProxyMemberFunction(int nargs, _R (_C:: *ptr_member_fun)(_A...))
 	->typename std::enable_if<(std::is_same<_R,void>::value==false)>::type *
 	{
 		void *fun_ptr=NULL;
@@ -223,10 +238,10 @@ namespace zetscript{
 			fun_ptr=(void *)(new std::function<intptr_t (
 				intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 				){
-					return (((_C *)obj)->* ((intptr_t (_T    ::*)())fun_obj)) (
+					return (((_C *)obj)->* ((intptr_t (_C    ::*)())ptr_member_fun)) (
 					);
 				}
 			));
@@ -236,13 +251,13 @@ namespace zetscript{
 				intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 				){
-				return  (((_C *)obj)->* ((intptr_t (_T    ::*)(
+				return  (((_C *)obj)->* ((intptr_t (_C    ::*)(
 							intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 					);
 				}
@@ -254,15 +269,15 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					, intptr_t param2
 				){
-				return  (((_C *)obj)->* ((intptr_t (_T    ::*)(
+				return  (((_C *)obj)->* ((intptr_t (_C    ::*)(
 						 intptr_t
 						,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 					);
@@ -276,17 +291,17 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					, intptr_t param2
 					, intptr_t param3
 				){
-				return  (((_C *)obj)->* ((intptr_t (_T    ::*)(
+				return  (((_C *)obj)->* ((intptr_t (_C    ::*)(
 							intptr_t
 							,intptr_t
 							,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 						,param3
@@ -302,19 +317,19 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					, intptr_t param2
 					, intptr_t param3
 					, intptr_t param4
 				){
-				return (((_C *)obj)->* ((intptr_t (_T    ::*)(
+				return (((_C *)obj)->* ((intptr_t (_C    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 						,param3
@@ -332,7 +347,7 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					,intptr_t param2
@@ -340,13 +355,13 @@ namespace zetscript{
 					,intptr_t param4
 					,intptr_t param5
 				){
-				return (((_C *)obj)->* ((intptr_t (_T    ::*)(
+				return (((_C *)obj)->* ((intptr_t (_C    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 						,param3
@@ -366,7 +381,7 @@ namespace zetscript{
 				,intptr_t
 				,intptr_t
 			)> (
-				[fun_obj](
+				[ptr_member_fun](
 					intptr_t obj
 					,intptr_t param1
 					, intptr_t param2
@@ -375,14 +390,14 @@ namespace zetscript{
 					, intptr_t param5
 					, intptr_t param6
 				){
-				return (((_C *)obj)->* ((intptr_t (_T    ::*)(
+				return (((_C *)obj)->* ((intptr_t (_C    ::*)(
 						intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
 						,intptr_t
-					))fun_obj)) (
+					))ptr_member_fun)) (
 						param1
 						,param2
 						,param3
@@ -395,7 +410,7 @@ namespace zetscript{
 			break;
 		}
 
-		function_proxies->push_back(
+		member_function_proxies->push_back(
 			new FunctionProxyData(
 				fun_ptr
 				,nargs

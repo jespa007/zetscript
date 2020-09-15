@@ -34,7 +34,7 @@
 
 
 //-- Function --
-#include		"function/FunctionProxyFactory.cpp"
+#include		"function_proxy/FunctionProxyFactory.cpp"
 
 //-- VM --
 #include		"vm/VirtualMachine.cpp"
