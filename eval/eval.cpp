@@ -430,7 +430,10 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find parent function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
 							return;
 						}
+						instruction->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
 						instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
+
+						instruction->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,str_symbol_to_find);
 
 					}else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // not argument, try find local ...
 						bool local_found=false;

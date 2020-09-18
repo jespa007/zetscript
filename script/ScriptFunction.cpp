@@ -125,6 +125,9 @@ namespace zetscript{
 		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){
 			sprintf(object_access,"this.");
 		 }
+		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER){
+			sprintf(object_access,"super.");
+		 }
 
 		 //bool is_function_call=instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
 		 //bool is_vector_access=instruction->properties & MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;
@@ -196,6 +199,7 @@ namespace zetscript{
 		}
 
 		std::string symbol_ref="????";
+		std::string class_str="";
 
 		//strcpy(symbol_ref,AST_SYMBOL_VALUEZJ_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
 
@@ -203,14 +207,17 @@ namespace zetscript{
 			ScriptClass *sc = GET_SCRIPT_CLASS(sfo,sfo->idx_class);
 			if(sc->idx_class == ZS_IDX_UNDEFINED){ // no class is a function on a global scope
 				symbol_ref=sfo->symbol.name;
-			}else{
+			}else{ // is a class
 				symbol_ref=sfo->symbol.name;//+std::string("::")+std::string("????");
+				if(sc->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN){
+					class_str=sc->symbol.name+"::";
+				}
 			}
 		}
 
 
 		printf("-------------------------------------------------------\n");
-		printf("\nCode for function \"%s\"\n\n",symbol_ref.c_str());
+		printf("\nCode for function \"%s%s\"\n\n",class_str.c_str(),symbol_ref.c_str());
 
 		unsigned idx_instruction=0;
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
@@ -237,7 +244,7 @@ namespace zetscript{
 								);
 				break;
 			case  BYTE_CODE_LOAD:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s %s\n"
 						,idx_instruction,
 						ByteCodeToStr(instruction->byte_code),
 						formatInstructionLoadType(sfo,instruction).c_str(),
@@ -278,15 +285,16 @@ namespace zetscript{
 			default:
 
 				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s %s %s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 							idx_instruction
 							,instructionPropertyPreOperationToStr(instruction->properties)
 							,ByteCodeToStr(instruction->byte_code)
 							,instructionPropertyPostOperationToStr(instruction->properties)
 							,start_expression
+							,instruction->properties & MSK_INSTRUCTION_PROPERTY_POP_ONE ? "{pop one}":""
 						);
 				}else if(n_ops==1){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\t\%i%s\n"
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\t\%i %s\n"
 							,idx_instruction
 							,ByteCodeToStr(instruction->byte_code)
 							,(instruction->properties & MSK_INSTRUCTION_PROPERTY_POP_ONE)?"_CS":""
@@ -294,7 +302,7 @@ namespace zetscript{
 							,start_expression
 							);
 				}else{ //2 ops
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i,%i%s\n"
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i,%i %s\n"
 							,idx_instruction
 							,ByteCodeToStr(instruction->byte_code)
 							,instruction->value_op1

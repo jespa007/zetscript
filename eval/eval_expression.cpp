@@ -577,11 +577,12 @@ namespace zetscript{
 							,get_compiled_symbol(eval_data,symbol_token_node.value)
 						);
 
-
 						// eval accessor element (supose that was a preinsert a load instruction for identifier )...
 						while(is_access_punctuator(aux_p)){
 							ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 							std::string accessor_value="";
+							bool this_symbol_access=false;
+							EvalInstruction *instruction_token=NULL;
 
 							switch(*aux_p){
 							case '(': // is a function call
@@ -668,51 +669,73 @@ namespace zetscript{
 								}
 
 								check_identifier_name_expression_ok(eval_data,accessor_value,line);
+
+								if(accessor_value == "this"){
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"this cannot allowed as member name");
+								}
+
+								if(link_symbol_first_access !=NULL){ // check first symbol at first...
+									if(symbol_token_node.value == "this"){ // if first symbol was this then the symbol
+
+										instruction_token= symbol_token_node.instructions[0];// get the first instruction....
+										// replace symbol
+										instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+										symbol_token_node.instructions[0]->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,accessor_value);
+									}
+								}
+
+
 								byte_code=ByteCode::BYTE_CODE_LOAD;
 								break;
 							}
 
-							EvalInstruction *instruction_token=new EvalInstruction(byte_code);
-							symbol_token_node.instructions.push_back(instruction_token);
 
-							// generate source info in case accessor load...
-							if(byte_code==ByteCode::BYTE_CODE_LOAD){
 
-								// mark as accessor
-								instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
-								instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS;
 
-								instruction_token->instruction_source_info= InstructionSourceInfo(
-									eval_data->current_parsing_file
-									,line
-									,get_compiled_symbol(eval_data,accessor_value)
-								);
-							}
+							if(instruction_token==NULL){
+								instruction_token=new EvalInstruction(byte_code);
+								symbol_token_node.instructions.push_back(instruction_token);
 
-							if(byte_code == ByteCode::BYTE_CODE_CALL){
-								// save total parameters on this call
-								instruction_token->vm_instruction.value_op1=n_params;
-								/*if(link_symbol_first_access==NULL){ // it should find symbol everytime
-									instruction_token->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME;
+
+								// generate source info in case accessor load...
+								if(byte_code==ByteCode::BYTE_CODE_LOAD){
+
+									// mark as accessor
+									instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+									instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS;
+
+									instruction_token->instruction_source_info= InstructionSourceInfo(
+										eval_data->current_parsing_file
+										,line
+										,get_compiled_symbol(eval_data,accessor_value)
+									);
 								}
-								if(link_symbol_first_access == NULL){ // access scope
-									instruction_token->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS;
-								}*/
 
-								// insert link symbol to solve call if possible on pop_function ....
-								/*instruction_token->link_symbol_first_access=LinkSymbolFirstAccess(
-										eval_data->current_function->script_function->idx_script_function
-										,scope_info
-										,*get_compiled_symbol(eval_data,last_accessor_value)
-										,n_params
-								);*/
+								if(byte_code == ByteCode::BYTE_CODE_CALL){
+									// save total parameters on this call
+									instruction_token->vm_instruction.value_op1=n_params;
+									/*if(link_symbol_first_access==NULL){ // it should find symbol everytime
+										instruction_token->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME;
+									}
+									if(link_symbol_first_access == NULL){ // access scope
+										instruction_token->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS;
+									}*/
 
-								// also insert source file/line/symbol info to get info of this call...
-								instruction_token->instruction_source_info= InstructionSourceInfo(
-									eval_data->current_parsing_file
-									,last_accessor_line
-									,get_compiled_symbol(eval_data,last_accessor_value)
-								);
+									// insert link symbol to solve call if possible on pop_function ....
+									/*instruction_token->link_symbol_first_access=LinkSymbolFirstAccess(
+											eval_data->current_function->script_function->idx_script_function
+											,scope_info
+											,*get_compiled_symbol(eval_data,last_accessor_value)
+											,n_params
+									);*/
+
+									// also insert source file/line/symbol info to get info of this call...
+									instruction_token->instruction_source_info= InstructionSourceInfo(
+										eval_data->current_parsing_file
+										,last_accessor_line
+										,get_compiled_symbol(eval_data,last_accessor_value)
+									);
+								}
 							}
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);

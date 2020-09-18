@@ -224,6 +224,7 @@ namespace zetscript{
 					Symbol *new_symbol=new Symbol();
 					*new_symbol = *symbol;
 					sci->symbol_members->push_back((intptr_t)new_symbol);
+					sci->symbol_members_built_in->push_back((intptr_t)new_symbol);
 				}
 
 				// set idx starting member
