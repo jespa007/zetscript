@@ -19,10 +19,10 @@ namespace zetscript{
 	public:
 
 		Symbol 	  		symbol;	 		// function registered by scope
-		unsigned char idx_class; 		// which class belongs to...
-		short idx_script_function;		// idx_script_function from factory
-		int idx_return_type; 			// idx return type
-		intptr_t ref_native_function_ptr;
+		ClassTypeIdx	idx_class; 		// which class belongs to...
+		short 			idx_script_function;		// idx_script_function from factory
+		int 			idx_return_type; 			// idx return type
+		intptr_t 		ref_native_function_ptr;
 		bool function_should_be_deduced_at_runtime; // look-up for solve function on vm
 
 		zs_vector * params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
@@ -37,7 +37,7 @@ namespace zetscript{
 
 		ScriptFunction(
 				ZetScript *_zs
-				,unsigned char _idx_class
+				,ClassTypeIdx _idx_class
 				,short _idx_script_function
 				, std::vector<FunctionParam> _params
 				,int  idx_return_type

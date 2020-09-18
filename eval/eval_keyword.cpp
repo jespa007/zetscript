@@ -124,6 +124,7 @@ namespace zetscript{
 								,line
 								,base_class_name
 						);
+
 						IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
 					}
 
@@ -200,12 +201,6 @@ namespace zetscript{
 
 			Symbol * irv=NULL;
 
-			// we deduce we are in class whether is not main class and scope idx is pointing at scope base
-			bool is_class=
-					scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-					&& scope_info->scope_base == scope_info
-					;
-
 			static int n_anonymous_function=0;
 			std::string function_name="";
 			Scope *scope=scope_info;
@@ -213,8 +208,10 @@ namespace zetscript{
 
 
 			// check for keyword ...
-			if(is_class){ // within class supposes is a function already
+			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+				&& scope_info->scope_base == scope_info){ // is registering from class so function keyword is not needed
 				key_w = Keyword::KEYWORD_FUNCTION;
+				sc=scope_info->script_class;
 			}
 			else{
 				key_w = is_keyword(aux_p);
@@ -237,24 +234,17 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected anonymous function");
 						}
 
-						if(is_class){
-							sc=scope_info->script_class;
-						}else if((end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
+						if(sc==NULL){ // check if function member declaration
+						   end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
 								eval_data
 								,aux_p
 								,line
 								,&sc
 								,function_name
-						))!=NULL){ // check if particular case extension attribute class
-							// current scope is changed by class scope...
-							scope = sc->symbol.scope;
-							//symbol_value = (char *)class_member.c_str();
-						}else{
-							if(is_class){ // get class from idx_scope
-
-							}
+						   );
 						}
 
+						// not member function, so is normal function ...
 						if(end_var == NULL){ // global function
 							// check whwther the function is anonymous with a previous arithmetic operation ....
 							end_var=get_identifier_token(
@@ -264,10 +254,11 @@ namespace zetscript{
 									,function_name
 							);
 
+							// copy value
+							zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
+
 						}
 
-						// copy value
-						zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
 
 						aux_p=end_var;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -415,17 +406,16 @@ namespace zetscript{
 					//PASTNode child_node=NULL;
 					aux_p += strlen(eval_info_keywords[key_w].str);
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					// save starting point before process the expression...
 					if((aux_p = eval_expression(
 							eval_data
 							,aux_p
 							, line
 							, scope_info
 							,&eval_data->current_function->instructions
+							,';'
 					))!= NULL){
-
-						if(*aux_p!=';'){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ';'");
-						}
 
 						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RET));
 
@@ -493,11 +483,8 @@ namespace zetscript{
 								,line
 								,scope_info
 								,&eval_data->current_function->instructions
+								,')'
 						);
-
-						if(*end_expr != ')'){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')'");
-						}
 
 						// insert instruction if evaluated expression
 						eval_data->current_function->instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JNT));
@@ -1230,6 +1217,7 @@ namespace zetscript{
 									,start_line
 									,scope_info
 									,is_constant?&constant_instructions:&eval_data->current_function->instructions
+									,';'
 								);
 
 								if(is_constant){ // resolve constant_expression

@@ -24,11 +24,11 @@
 #define REGISTER_NATIVE_BASE_SYMBOLS(script_class_factory,o)		   			(zs)->registerNativeBaseSymbols(o))
 
 // if 0 is in main <> 0, else.
-#define DO_CAST														((this->zs))->doCast
-#define GET_IDX_BUILTIN_TYPE_CLASS_FROM_ITS_C_TYPE					((this->zs))->getIdxClassFromItsNativeType
-#define INSTANCE_SCRIPT_VARIABLE_BY_IDX								((this->zs))->instanceScriptVariableByIdx
-#define GET_METAMETHOD(m)											((this->zs))->getMetamethod(m)
-#define IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,_class,_instance)	((this->script_class_factory))->nativeClassBaseOf(_class,_instance)
+#define DO_CAST																	((this->zs))->doCast
+#define GET_IDX_BUILTIN_TYPE_CLASS_FROM_ITS_C_TYPE								((this->zs))->getIdxClassFromItsNativeType
+#define INSTANCE_SCRIPT_VARIABLE_BY_IDX											((this->zs))->instanceScriptVariableByIdx
+#define GET_METAMETHOD(m)														((this->zs))->getMetamethod(m)
+#define IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,idx_class,idx_class_instance)	((this->script_class_factory))->isClassInheritsFrom(idx_class,idx_class_instance)
 
 
 namespace zetscript{
@@ -41,6 +41,7 @@ namespace zetscript{
 	struct Symbol;
 
 	//struct ScopeBlockVars;
+	typedef unsigned char 									ClassTypeIdx;
 
 	typedef enum
 		:unsigned char {
@@ -55,7 +56,7 @@ namespace zetscript{
 	}LoadType;
 
 
-	typedef enum {
+	typedef enum:ClassTypeIdx{
 
 		// built-in types...
 		IDX_BUILTIN_TYPE_CLASS_MAIN = 0, 	// Main class ...
@@ -75,10 +76,10 @@ namespace zetscript{
 
 		// built in classes...
 		IDX_BUILTIN_TYPE_STACK_ELEMENT,
+		IDX_BUILTIN_TYPE_FUNCTION,
 		IDX_BUILTIN_TYPE_CLASS_SCRIPT_VAR,
 		IDX_BUILTIN_TYPE_CLASS_STRING,
 		IDX_BUILTIN_TYPE_CLASS_VECTOR,
-		IDX_BUILTIN_TYPE_CLASS_FUNCTION,
 		IDX_BUILTIN_TYPE_CLASS_DICTIONARY,
 
 		IDX_BUILTIN_TYPE_MAX

@@ -53,7 +53,7 @@ namespace zetscript{
 		unusued=true;
 	}
 
-	Symbol *  Scope::registerNativeFunctionSymbol(const std::string & file,short line, const std::string & symbol_name, char n_params){
+	Symbol *  Scope::registerFunctionSymbol(const std::string & file,short line, const std::string & symbol_name, char n_params){
 		Symbol *irv = new Symbol();
 		irv->name = symbol_name;
 		irv->file	 = file;
@@ -129,14 +129,20 @@ namespace zetscript{
 
 	}
 
-	Symbol * Scope::getSymbol(const std::string & var_name, char n_params){
+	Symbol * Scope::getSymbol(const std::string & var_name, char n_params, ScopeDirection scope_direction){
 		//return getSymbolRecursive(var_name, n_params);
-		Symbol *sv;
+		Symbol *sv=NULL;
 
-		if((sv=getSymbolRecursiveDownScope(var_name,n_params))!=NULL){
-			return sv;
+
+		if(scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction==ScopeDirection::SCOPE_DIRECTION_DOWN){
+			sv=getSymbolRecursiveDownScope(var_name,n_params);
 		}
-		return getSymbolRecursiveUpScope(var_name, n_params);
+
+		if(sv == NULL && (scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction==ScopeDirection::SCOPE_DIRECTION_UP)){
+			sv=getSymbolRecursiveUpScope(var_name, n_params);
+		}
+
+		return sv;
 	}
 
 	//-----------------------------------------------------------------------------------------------------------

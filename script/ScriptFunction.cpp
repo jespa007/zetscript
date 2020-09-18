@@ -6,7 +6,7 @@ namespace zetscript{
 
 	ScriptFunction::ScriptFunction(
 			ZetScript * _zs
-			,unsigned char _idx_class
+			,ClassTypeIdx _idx_class
 			,short _idx_script_function
 			, std::vector<FunctionParam> _params
 			,int _idx_return_type
@@ -126,7 +126,7 @@ namespace zetscript{
 			sprintf(object_access,"this.");
 		 }
 
-		 bool is_function_call=instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
+		 //bool is_function_call=instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
 		 //bool is_vector_access=instruction->properties & MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;
 
 		 switch(instruction->value_op1){
@@ -149,12 +149,12 @@ namespace zetscript{
 				break;
 
 			case LoadType::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"VAR   %s%s%s%s"
+				sprintf(print_aux_load_value,"VAR   %s%s%s"
 					,pre
 					,object_access
 					,symbol_value.c_str()
 					,post
-					,is_function_call?"(function call)":""//is_vector_access?"(vector access)":""
+					//,is_function_call?"(function call)":""//is_vector_access?"(vector access)":""
 				);
 				break;
 			case LoadType::LOAD_TYPE_FUNCTION:
@@ -289,7 +289,7 @@ namespace zetscript{
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\t\%i%s\n"
 							,idx_instruction
 							,ByteCodeToStr(instruction->byte_code)
-							,(instruction->properties & MSK_STACK_ELEMENT_PROPERTY_POP_ONE)?"_CS":""
+							,(instruction->properties & MSK_INSTRUCTION_PROPERTY_POP_ONE)?"_CS":""
 							,instruction->value_op1
 							,start_expression
 							);
@@ -386,11 +386,25 @@ namespace zetscript{
 			,const std::string & file
 			, short line
 			, const std::string & function_name
-			, std::vector<FunctionParam> args
+			, std::vector<FunctionParam> params
 			, int idx_return_type
 			,intptr_t ref_ptr
 			, unsigned short properties
 		){
+
+			if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
+				Symbol *existing_symbol;
+				if((existing_symbol=getSymbol(scope_block, function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
+
+					THROW_RUNTIME_ERROR("Function \"%s\" declared at [%s:%i] it conflicts symbol with same name at [%s:%i]"
+						,function_name.c_str()
+						,zs_path::get_file_name(file.c_str()).c_str()
+						,line
+						,zs_path::get_file_name(existing_symbol->file.c_str()).c_str()
+						,existing_symbol->line
+					);
+				}
+			}
 
 			short idx_position=(short)registered_symbols->count;
 
@@ -403,7 +417,7 @@ namespace zetscript{
 					,idx_class 				// idx class which belongs to...
 					,registered_symbols->count // idx symbol ...
 					,function_name
-					,args
+					,params
 					,idx_return_type
 					,ref_ptr
 					,properties
@@ -422,7 +436,7 @@ namespace zetscript{
 			// register num symbols only for c symbols...
 			if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 				Symbol *symbol_repeat=NULL;
-				if((symbol_repeat=getSymbol(scope_block,symbol->name,args.size()))!=NULL){ // there's one or more name with same args --> mark
+				if((symbol_repeat=getSymbol(scope_block,symbol->name,params.size()))!=NULL){ // there's one or more name with same args --> mark
 					((ScriptFunction *)symbol_repeat->ref_ptr)->function_should_be_deduced_at_runtime=true; // mark the function found (only matters for first time)
 					((ScriptFunction *)symbol->ref_ptr)->function_should_be_deduced_at_runtime=true;
 				}

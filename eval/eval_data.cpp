@@ -69,46 +69,48 @@ namespace zetscript{
 			OPERATOR_UNKNOWN = 0,
 
 			// ASSIGN
-			OPERATOR_ASSIGN, 				// =
-			OPERATOR_ASSIGN_ADD, 			// +=
-			OPERATOR_ASSIGN_SUB, 			// -=
-			OPERATOR_ASSIGN_MUL, 			// *=
-			OPERATOR_ASSIGN_DIV, 			// /=
-			OPERATOR_ASSIGN_MOD, 			// %=
-			OPERATOR_ASSIGN_BINARY_XOR,		// ^=
-			OPERATOR_ASSIGN_BINARY_AND,		// &=
-			OPERATOR_ASSIGN_BINARY_OR,  	// |=
-			OPERATOR_ASSIGN_SHIFT_LEFT, 	// <<=
-			OPERATOR_ASSIGN_SHIFT_RIGHT, 	// >>=
+			OPERATOR_ASSIGN, 									// =
+			OPERATOR_ASSIGN_FIRST,
+			OPERATOR_ASSIGN_ADD=OPERATOR_ASSIGN_FIRST, 			// +=
+			OPERATOR_ASSIGN_SUB, 								// -=
+			OPERATOR_ASSIGN_MUL, 								// *=
+			OPERATOR_ASSIGN_DIV, 								// /=
+			OPERATOR_ASSIGN_MOD, 								// %=
+			OPERATOR_ASSIGN_XOR,								// ^=
+			OPERATOR_ASSIGN_BINARY_AND,							// &=
+			OPERATOR_ASSIGN_BINARY_OR,  						// |=
+			OPERATOR_ASSIGN_SHIFT_LEFT, 						// <<=
+			OPERATOR_ASSIGN_SHIFT_RIGHT, 						// >>=
+			OPERATOR_ASSIGN_LAST,
 
 			// LOGIC
-			OPERATOR_LOGIC_AND, 			// &&
-			OPERATOR_LOGIC_OR, 				// ||
+			OPERATOR_LOGIC_AND=OPERATOR_ASSIGN_LAST, 			// &&
+			OPERATOR_LOGIC_OR, 									// ||
 
 			// RELATIONAL
-			OPERATOR_LOGIC_EQUAL, 			// ==
-			OPERATOR_LOGIC_NOT_EQUAL, 		// !=
-			OPERATOR_LOGIC_GTE, 			// >=
-			OPERATOR_LOGIC_LTE, 			// <=
-			OPERATOR_LOGIC_GT, 				// >
-			OPERATOR_LOGIC_LT, 				// <
+			OPERATOR_LOGIC_EQUAL, 								// ==
+			OPERATOR_LOGIC_NOT_EQUAL, 							// !=
+			OPERATOR_LOGIC_GTE, 								// >=
+			OPERATOR_LOGIC_LTE, 								// <=
+			OPERATOR_LOGIC_GT, 									// >
+			OPERATOR_LOGIC_LT, 									// <
 
 			// ARITHMETIC
-			OPERATOR_ADD, 					// +
-			OPERATOR_OR, 					// |
-			OPERATOR_XOR, 					// ^
-			OPERATOR_SUB, 					// -
-			OPERATOR_MUL, 					// *
-			OPERATOR_BINARY_AND, 			// &
-			OPERATOR_DIV, 					// /
-			OPERATOR_MOD, 					// %
-			OPERATOR_SHIFT_LEFT, 			// <<
-			OPERATOR_SHIFT_RIGHT, 			// >>
+			OPERATOR_ADD, 										// +
+			OPERATOR_OR, 										// |
+			OPERATOR_XOR, 										// ^
+			OPERATOR_SUB, 										// -
+			OPERATOR_MUL, 										// *
+			OPERATOR_BINARY_AND, 								// &
+			OPERATOR_DIV, 										// /
+			OPERATOR_MOD, 										// %
+			OPERATOR_SHIFT_LEFT, 								// <<
+			OPERATOR_SHIFT_RIGHT, 								// >>
 
-			OPERATOR_INSTANCEOF, 			// instanceof
+			OPERATOR_INSTANCEOF, 								// instanceof
 
-			OPERATOR_TERNARY_IF, 			// ?
-			OPERATOR_TERNARY_ELSE, 			// :
+			OPERATOR_TERNARY_IF, 								// ?
+			OPERATOR_TERNARY_ELSE, 								// :
 			OPERATOR_MAX
 		}Operator;
 
@@ -123,8 +125,9 @@ namespace zetscript{
 
 		typedef enum :unsigned char {
 			PRE_POST_SELF_OPERATION_UNKNOWN=0,
-			PRE_POST_SELF_OPERATION_INC,	// ++
-			PRE_POST_SELF_OPERATION_DEC,	// --
+			PRE_POST_SELF_OPERATION_INC,		// ++
+			PRE_POST_SELF_OPERATION_DEC,		// --
+			PRE_POST_SELF_OPERATION_INVALID,	// +- or -+
 			PRE_POST_SELF_OPERATION_MAX
 		}PrePostSelfOperation;
 
@@ -288,8 +291,8 @@ namespace zetscript{
 
 		bool	is_operator_ternary_if(const char *s)			{return ((*s=='?'));}
 		bool 	is_operator_ternary_else(const char *s)		{return ((*s==':'));}
-		bool 	is_operator_add(const char *s)					{return	((*s=='+') && (*(s+1)!='+') && (*(s+1)!='='));}
-		bool 	is_operator_sub(const char *s)				{return	((*s=='-') && (*(s+1)!='-') && (*(s+1)!='='));}
+		bool 	is_operator_add(const char *s)					{return	(*s=='+'); }// && (*(s+1)!='+') && (*(s+1)!='='));}
+		bool 	is_operator_sub(const char *s)				{return	(*s=='-');}// && (*(s+1)!='-') && (*(s+1)!='='));}
 		bool 	is_operator_mul(const char *s)				{return ((*s=='*') && (*(s+1)!='='));}
 		bool 	is_operator_div(const char *s)				{return ((*s=='/') && (*(s+1)!='='));}
 		bool 	is_operator_mod(const char *s)				{return ((*s=='%') && (*(s+1)!='='));}
@@ -320,6 +323,7 @@ namespace zetscript{
 		bool 	is_operator_logic_not(const char *s)			{return ((*s=='!') && (*(s+1)!='='));}
 		bool 	is_pre_post_self_operation_inc(const char *s)		{return ((*s=='+') && (*(s+1)=='+'));}
 		bool 	is_pre_post_self_operation_dec(const char *s)		{return ((*s=='-') && (*(s+1)=='-'));}
+		bool 	is_pre_post_self_operation_invalid(const char *s)		{return ((*s=='-') && (*(s+1)=='+')) || ((*s=='+') && (*(s+1)=='-'));}
 		bool 	is_comment_single_line(char *s)					{return	((*s=='/') && (*(s+1)=='/'));}
 		bool 	is_comment_block_start(char *s)					{return ((*s=='/') && (*(s+1)=='*'));}
 		bool 	is_comment_block_end(char *s)						{return ((*s=='*') && (*(s+1)=='/'));}
@@ -416,6 +420,9 @@ namespace zetscript{
 
 			}else if(is_pre_post_self_operation_dec(s)){
 				return PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC;
+			}
+			else if(is_pre_post_self_operation_invalid(s)){
+				return PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID;
 			}
 
 			return PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN;
@@ -674,7 +681,7 @@ namespace zetscript{
 			eval_info_operators[OPERATOR_ASSIGN_MUL]={OPERATOR_ASSIGN_MUL, "*=",is_operator_assign_mul};
 			eval_info_operators[OPERATOR_ASSIGN_DIV]={OPERATOR_ASSIGN_DIV, "/=",is_operator_assign_div};
 			eval_info_operators[OPERATOR_ASSIGN_MOD]={OPERATOR_ASSIGN_MOD, "%=",is_operator_assign_mod};
-			eval_info_operators[OPERATOR_ASSIGN_BINARY_XOR]={OPERATOR_ASSIGN_BINARY_XOR,"^=",is_operator_assign_xor};
+			eval_info_operators[OPERATOR_ASSIGN_XOR]={OPERATOR_ASSIGN_XOR,"^=",is_operator_assign_xor};
 			eval_info_operators[OPERATOR_ASSIGN_BINARY_AND]={OPERATOR_ASSIGN_BINARY_AND,"&=",is_operator_assign_binary_and};
 			eval_info_operators[OPERATOR_ASSIGN_BINARY_OR]={OPERATOR_ASSIGN_BINARY_OR,"|=",is_operator_assign_binary_or};
 			eval_info_operators[OPERATOR_ASSIGN_SHIFT_LEFT]={OPERATOR_ASSIGN_SHIFT_LEFT,"<<=",is_operator_assign_shift_left};
@@ -703,7 +710,7 @@ namespace zetscript{
 
 			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_INC]={PRE_POST_SELF_OPERATION_INC, "++",is_pre_post_self_operation_inc};
 			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_DEC]={PRE_POST_SELF_OPERATION_DEC, "--",is_pre_post_self_operation_dec};
-
+			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_INVALID]={PRE_POST_SELF_OPERATION_INVALID, "+-",is_pre_post_self_operation_invalid};
 
 			// special punctuators...
 			eval_info_separators[SEPARATOR_COMA]={SEPARATOR_COMA, ",",NULL};

@@ -18,7 +18,7 @@ namespace zetscript{
 			, const std::string & file
 			, short line
 			//--- Function data
-			, unsigned char idx_class
+			, ClassTypeIdx idx_class
 			, short _idx_position
 			, const std::string & function_name
 			, std::vector<FunctionParam> args
@@ -36,40 +36,8 @@ namespace zetscript{
 			}
 		}
 
-		ScriptFunction *found_match=NULL;
-
-		// check there's no collisions with same symbol and signature...
-		for(unsigned i=0; i < script_functions->count && found_match==NULL;i++){
-			ScriptFunction *function1=(ScriptFunction *)script_functions->items[i];
-
-			if(function1->symbol.name == function_name){
-				if(function1->params->count == args.size()){
-					bool equal=true;
-					for(unsigned p=0; p < function1->params->count && equal;p++){
-						FunctionParam *fp1=(FunctionParam *)function1->params->items[p];
-						FunctionParam *fp2=&args[p];
-						equal = (fp1->arg_name == fp2->arg_name);
-					}
-
-					if(equal){
-						found_match = function1;
-					}
-				}
-			}
-		}
-
-		if(found_match!=NULL){
-			THROW_RUNTIME_ERROR(" trying to register a C function \"%s\" at [%s:%i] was already registered at [%s:%i]"
-					,function_name.c_str()
-					,zs_path::get_file_name(file.c_str()).c_str()
-					,line
-					,zs_path::get_file_name(found_match->symbol.file.c_str()).c_str()
-					,found_match->symbol.line
-			);
-		}
-
 		Symbol *symbol=NULL;
-		if((symbol=scope->registerNativeFunctionSymbol(
+		if((symbol=scope->registerFunctionSymbol(
 				file
 				,line
 				,function_name

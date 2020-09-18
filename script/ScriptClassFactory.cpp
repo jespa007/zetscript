@@ -18,6 +18,12 @@
 	}\
 	registerNativeClassBuiltIn<type_class>(STR(type_class));
 
+#define REGISTER_BUILT_IN_CLASS_SINGLETON(type_class, idx_class)\
+	if(script_classes->count!=idx_class){\
+		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
+		return;\
+	}\
+	registerNativeSingletonClass<type_class>(STR(type_class));
 
 #define REGISTER_BUILT_IN_TYPE(type_class, idx_class)\
 	if(script_classes->count!=idx_class){\
@@ -84,10 +90,10 @@ namespace zetscript{
 
 		// REGISTER BUILT IN CLASS TYPES
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
+		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
 		REGISTER_BUILT_IN_CLASS(ScriptVar,IDX_BUILTIN_TYPE_CLASS_SCRIPT_VAR);
 		REGISTER_BUILT_IN_CLASS(ScriptVarString,IDX_BUILTIN_TYPE_CLASS_STRING);
 		REGISTER_BUILT_IN_CLASS(ScriptVarVector,IDX_BUILTIN_TYPE_CLASS_VECTOR);
-		REGISTER_BUILT_IN_CLASS(ScriptVarFunction,IDX_BUILTIN_TYPE_CLASS_FUNCTION);
 		REGISTER_BUILT_IN_CLASS(ScriptVarDictionary,IDX_BUILTIN_TYPE_CLASS_DICTIONARY);
 
 
@@ -99,9 +105,8 @@ namespace zetscript{
 		// From here you defined all basic, start define hierarchy
 
 		// register custom functions ...
-		nativeClassBaseOf<ScriptVarVector,ScriptVar>();
-		nativeClassBaseOf<ScriptVarFunction,ScriptVar>();
-		nativeClassBaseOf<ScriptVarDictionary,ScriptVar>();
+		nativeClassInheritsFrom<ScriptVarVector,ScriptVar>();
+		nativeClassInheritsFrom<ScriptVarDictionary,ScriptVar>();
 
 
 		//------------------------------------------------------------------------------------------------------------
@@ -212,7 +217,20 @@ namespace zetscript{
 			script_classes->push_back((intptr_t)sci);
 
 			if(base_class != NULL){
-				sci->idx_base_classes->push_back((intptr_t)base_class->idx_class);
+
+				// 1. extend all symbols from base class
+				for(int i=0; i < base_class->symbol_members->count; i++){
+					Symbol *symbol=(Symbol *)base_class->symbol_members->items[i];
+					Symbol *new_symbol=new Symbol();
+					*new_symbol = *symbol;
+					sci->symbol_members->push_back((intptr_t)new_symbol);
+				}
+
+				// set idx starting member
+				sci->idx_starting_this_members=sci->symbol_members->count;
+
+				// 2. set idx base class...
+				sci->idx_base_class=base_class->idx_class;
 			}
 			return sci;
 		}else{
@@ -281,7 +299,7 @@ namespace zetscript{
 		 return NULL;
 	 }
 
-	 ScriptVar 		 * ScriptClassFactory::instanceScriptVariableByIdx(unsigned char idx_class, void * value_object){
+	 ScriptVar 		 * ScriptClassFactory::instanceScriptVariableByIdx(ClassTypeIdx idx_class, void * value_object){
 
 		 ScriptVar *class_object=NULL;
 
@@ -326,26 +344,26 @@ namespace zetscript{
 		return ZS_INVALID_CLASS;
 	}
 
-	intptr_t ScriptClassFactory::doCast(intptr_t obj, unsigned char idx_src_class, unsigned char idx_convert_class){//c_class->idx_class,idx_return_type){
+	intptr_t ScriptClassFactory::doCast(intptr_t obj, ClassTypeIdx idx_class_src, ClassTypeIdx idx_class_dst){//c_class->idx_class,idx_return_type){
 
-		ScriptClass *src_class = getScriptClass(idx_src_class);
-		ScriptClass *convert_class = getScriptClass(idx_convert_class);
+		ScriptClass *class_src = getScriptClass(idx_class_src);
+		ScriptClass *class_dst = getScriptClass(idx_class_dst);
 
 		//local_map_type_conversion
-		if(conversion_types.count(idx_src_class) == 0){
-			THROW_RUNTIME_ERROR("There's no type src conversion class \"%s\".",zs_rtti::demangle(src_class->str_class_ptr_type).c_str());
+		if(conversion_types.count(idx_class_src) == 0){
+			THROW_RUNTIME_ERROR("There's no type src conversion class \"%s\".",zs_rtti::demangle(class_src->str_class_ptr_type).c_str());
 			return 0;
 		}
 
-		if((conversion_types)[idx_src_class].count(idx_convert_class) == 0){
-			THROW_RUNTIME_ERROR("There's no dest conversion class \"%s\".",zs_rtti::demangle(convert_class->str_class_ptr_type).c_str());
+		if((conversion_types)[idx_class_src].count(idx_class_dst) == 0){
+			THROW_RUNTIME_ERROR("There's no dest conversion class \"%s\".",zs_rtti::demangle(class_dst->str_class_ptr_type).c_str());
 			return 0;
 		}
 
-		return (conversion_types)[idx_src_class][idx_convert_class](obj);
+		return (conversion_types)[idx_class_src][idx_class_dst](obj);
 	}
 
-	const char * ScriptClassFactory::getScriptClassName(unsigned char idx){
+	const char * ScriptClassFactory::getScriptClassName(ClassTypeIdx idx){
 		if(idx != ZS_INVALID_CLASS){
 			return ((ScriptClass *)script_classes->get(idx))->symbol.name.c_str();
 		}
@@ -371,21 +389,13 @@ namespace zetscript{
 		return getIdxScriptInternalFrom_C_Type(str_native_type);
 	}
 
-	bool 	ScriptClassFactory::nativeClassBaseOf(unsigned char idx_src_class, unsigned char idx_class){
+	bool 	ScriptClassFactory::isClassInheritsFrom(ClassTypeIdx idx_class,ClassTypeIdx idx_base_class){
 
-		if(idx_src_class == idx_class){
-			return true;
+		while((idx_class != ZS_INVALID_CLASS) && idx_class != idx_base_class){
+			ScriptClass *sc=(ScriptClass *)script_classes->get(idx_class);
+			idx_class=sc->idx_base_class;
 		}
-
-		ScriptClass * the_class = (ScriptClass *)script_classes->get(idx_src_class);
-
-		for(unsigned i=0; i < the_class->idx_base_classes->count; i++){
-			intptr_t idx_class_base=the_class->idx_base_classes->items[i];
-			if(nativeClassBaseOf(idx_class_base,idx_class)){
-				return true;
-			}
-		}
-		return false;
+		return idx_class == idx_base_class;
 	}
 
 	ScriptClassFactory::~ScriptClassFactory(){

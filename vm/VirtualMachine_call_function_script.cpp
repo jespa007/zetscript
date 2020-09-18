@@ -84,9 +84,9 @@ stk_result_op1=(vm_stk_current-1);
 #define POP_ONE \
 stk_result_op1=--vm_stk_current;
 
-#define STK_IS_SCRIPT_VAR_FUNCTION(stk)\
+/*#define STK_IS_SCRIPT_VAR_FUNCTION(stk)\
 		(((stk)->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR) && (((ScriptVar *)(stk)->var_ref)->idx_class==IDX_BUILTIN_TYPE_CLASS_FUNCTION))
-
+*/
 namespace zetscript{
 
 	StackElement VirtualMachine::callFunctionScript(
@@ -148,18 +148,6 @@ namespace zetscript{
 
 				if(this_object!= NULL){
 					StackElement *stk_prop_fun = this_object->getProperty(calling_function->symbol.idx_position);
-
-					/*if((stk_prop_fun->properties & )== 0){
-
-					}*/
-
-					// it suposes the var is a packed stackelement where stk_value it holds function ptr and var_ref the it self object.
-					/*stk_prop_fun=(StackElement *)((StackElement *)stk_prop_fun->stk_value)->stk_value;
-
-					if(this_object != stk_prop_fun->var_ref){
-						THROW_RUNTIME_ERROR("Internal error: var_ref should match this_object");
-					}*/
-
 					fun_ptr=((ScriptFunction *)stk_prop_fun->var_ref)->ref_native_function_ptr; // var ref holds function ptr
 				}else{
 					THROW_RUNTIME_ERROR("Internal error: expected object for function member");
@@ -176,6 +164,9 @@ namespace zetscript{
 			);
 
 			if(idx_stk_current > 0){
+				// remove tmp variables created...
+				removeEmptySharedPointers(idx_stk_current,NULL);
+
 				idx_stk_current--;
 			}
 			else{
@@ -558,10 +549,10 @@ namespace zetscript{
 							struct_obj = (ScriptVar *)(vm_stk_current-1)->var_ref;
 							if(struct_obj->idx_class == IDX_BUILTIN_TYPE_CLASS_DICTIONARY){ // push value ...
 								// op1 is now the src value ...
-								if(stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+								if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
 									StackElement *se=NULL;
-									const char *str = (const char *)stk_result_op2->stk_value;
-									stk_src=stk_result_op1;
+									const char *str = (const char *)stk_result_op1->stk_value;
+									stk_src=stk_result_op2;
 									se =((ScriptVarDictionary *)struct_obj)->addProperty(str,calling_function,instruction);
 
 									if(se == NULL){
@@ -687,7 +678,8 @@ namespace zetscript{
 										stk_dst->var_ref=script_var;
 										aux_str=&(((ScriptVarString *)script_var)->str_value);
 										stk_dst->properties=runtime_var | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
-										script_var->initSharedPtr(true);
+										script_var->initSharedPtr();
+										sharePointer(script_var->ptr_shared_pointer_node);
 									}
 									(*aux_str)=((const char *)stk_src->stk_value);
 									stk_dst->stk_value=(void *)aux_str->c_str();/* Because std::string assignment implies reallocs ptr char it changes, so reassing const char pointer */
@@ -697,6 +689,7 @@ namespace zetscript{
 								stk_dst->properties=runtime_var | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
 								stk_dst->stk_value=NULL;
 								stk_dst->var_ref=script_var;
+								sharePointer(script_var->ptr_shared_pointer_node);
 							}else{
 								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"(internal) cannot determine var type %i",GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties));
 							}
@@ -755,7 +748,7 @@ namespace zetscript{
 				PROCESS_COMPARE_OPERATION(>=,BYTE_CODE_METAMETHOD_GTE);
 				continue;
 			case BYTE_CODE_LOGIC_AND:  // &&
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE;
 				}else{
 					POP_TWO;
@@ -763,7 +756,7 @@ namespace zetscript{
 				PROCESS_LOGIC_OPERATION(&&);
 				continue;
 			case BYTE_CODE_LOGIC_OR:  // ||
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE;
 				}else{
 					POP_TWO;
@@ -811,7 +804,7 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_ADD: // +
 				{
-					if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+					if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 						READ_TWO_POP_ONE;
 					}else{
 						POP_TWO;
@@ -896,7 +889,7 @@ namespace zetscript{
 				}
 				continue;
 			case BYTE_CODE_MUL: // *
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -904,7 +897,7 @@ namespace zetscript{
 				PROCESS_ARITHMETIC_OPERATION(*,BYTE_CODE_METAMETHOD_MUL);
 				continue;
 			case BYTE_CODE_DIV: // /
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -913,7 +906,7 @@ namespace zetscript{
 				continue;
 
 			 case BYTE_CODE_MOD: // /
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -921,7 +914,7 @@ namespace zetscript{
 				PROCESS_MOD_OPERATION;
 				continue;
 			 case BYTE_CODE_AND: // &
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -929,7 +922,7 @@ namespace zetscript{
 				PROCESS_BINARY_OPERATION(&, BYTE_CODE_METAMETHOD_AND);
 				continue;
 			 case BYTE_CODE_OR: // *
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -937,7 +930,7 @@ namespace zetscript{
 				PROCESS_BINARY_OPERATION(|, BYTE_CODE_METAMETHOD_OR);
 				continue;
 			 case BYTE_CODE_XOR: // ^
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -946,7 +939,7 @@ namespace zetscript{
 				continue;
 
 			 case BYTE_CODE_SHR: // >>
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -955,7 +948,7 @@ namespace zetscript{
 				continue;
 
 			 case BYTE_CODE_SHL: // <<
-				if(instruction->properties&MSK_STACK_ELEMENT_PROPERTY_POP_ONE){
+				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
 				}else{
 					POP_TWO;
@@ -984,12 +977,15 @@ namespace zetscript{
 					case IDX_BUILTIN_TYPE_STRING_PTR_C:
 						PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)!=0);
 						break;
-					case IDX_BUILTIN_TYPE_CLASS_FUNCTION:
+					case IDX_BUILTIN_TYPE_FUNCTION:
 						PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)!=0);
 						break;
 					default:
 						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-							bool b = this->script_class_factory->nativeClassBaseOf(((ScriptVar *)(stk_result_op1->var_ref))->idx_class, (intptr_t)stk_result_op2->stk_value);
+							bool b = this->script_class_factory->isClassInheritsFrom(			//
+									((ScriptVar *)(stk_result_op1->var_ref))->idx_class // A
+									, (intptr_t)stk_result_op2->stk_value				// B
+							);
 							PUSH_BOOLEAN(b);
 						}else{
 							PUSH_BOOLEAN(false);
@@ -1027,7 +1023,6 @@ namespace zetscript{
 					StackElement *stk_function_ref=NULL;
 					unsigned short scope_type=0;
 					intptr_t idx_function=ZS_IDX_UNDEFINED;
-					ScriptVarFunction *script_var_function=NULL;
 					bool is_constructor=(char)instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR;
 
 					StackElement *stk_start_arg_call=(vm_stk_current-n_args);
@@ -1071,7 +1066,7 @@ namespace zetscript{
 						}
 					}*/
 
-					   // if there's more than 1 symbol with same number of parameters have to get the right one...
+					// if there's more than 1 symbol with same number of parameters have to get the right one...
 					if(sf->function_should_be_deduced_at_runtime){
 
 						StackElement *stk_element_ptr=vm_stack;

@@ -30,7 +30,7 @@ namespace zetscript{
 				, const std::string & file
 				, short line
 				//--- Function data
-			    , unsigned  char idx_class
+			    , ClassTypeIdx idx_class
 				, short idx_local_function
 				, const std::string & function_name
 				, std::vector<FunctionParam> args

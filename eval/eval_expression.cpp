@@ -7,26 +7,45 @@ namespace zetscript{
 			switch(op){
 			default:
 				break;
-			case Operator::OPERATOR_ADD:
-				return ByteCode::BYTE_CODE_ADD;
-			case Operator::OPERATOR_MUL:
-				return ByteCode::BYTE_CODE_MUL;
-			case Operator::OPERATOR_DIV:
-				return ByteCode::BYTE_CODE_DIV;
-			case Operator::OPERATOR_MOD:
-				return ByteCode::BYTE_CODE_MOD;
 			case Operator::OPERATOR_ASSIGN:
 				return ByteCode::BYTE_CODE_STORE;
+
+			// operators and assignments
+			case Operator::OPERATOR_ADD:
+			case Operator::OPERATOR_ASSIGN_ADD:
+			case Operator::OPERATOR_ASSIGN_SUB:
+				return ByteCode::BYTE_CODE_ADD;
+
+			case Operator::OPERATOR_MUL:
+			case Operator::OPERATOR_ASSIGN_MUL:
+				return ByteCode::BYTE_CODE_MUL;
+
+			case Operator::OPERATOR_ASSIGN_DIV:
+			case Operator::OPERATOR_DIV:
+				return ByteCode::BYTE_CODE_DIV;
+
+			case Operator::OPERATOR_ASSIGN_MOD:
+			case Operator::OPERATOR_MOD:
+				return ByteCode::BYTE_CODE_MOD;
+
+			case Operator::OPERATOR_ASSIGN_XOR:
 			case Operator::OPERATOR_XOR:
 				return ByteCode::BYTE_CODE_XOR;
+
+			case Operator::OPERATOR_ASSIGN_BINARY_AND:
 			case Operator::OPERATOR_BINARY_AND:
 				return ByteCode::BYTE_CODE_AND;
-			case Operator::OPERATOR_OR:
-				return ByteCode::BYTE_CODE_OR;
+
+			case Operator::OPERATOR_ASSIGN_SHIFT_LEFT:
 			case Operator::OPERATOR_SHIFT_LEFT:
 				return ByteCode::BYTE_CODE_SHL;
+
+			case Operator::OPERATOR_ASSIGN_SHIFT_RIGHT:
 			case Operator::OPERATOR_SHIFT_RIGHT:
 				return ByteCode::BYTE_CODE_SHR;
+
+			case Operator::OPERATOR_OR:
+				return ByteCode::BYTE_CODE_OR;
 			case Operator::OPERATOR_LOGIC_AND:
 				return ByteCode::BYTE_CODE_LOGIC_AND;
 			case Operator::OPERATOR_LOGIC_OR:
@@ -321,9 +340,40 @@ namespace zetscript{
 					,NULL
 			);
 
+			// insert an additional byte code
+			if(split_node->operator_type>=OPERATOR_ASSIGN_FIRST && split_node->operator_type<OPERATOR_ASSIGN_LAST){
+
+				instruction->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_POP_ONE; // only pops first op1 to do the operation but keeps the variable to store on the top
+
+				if(split_node->operator_type==OPERATOR_SUB){ // insert neg to negate the value after add operation
+					instructions->push_back(instruction=new EvalInstruction(ByteCode::BYTE_CODE_NEG));
+					instruction->instruction_source_info= InstructionSourceInfo(
+							eval_data->current_parsing_file
+							,split_node->line
+							,NULL
+					);
+				}
+
+				instructions->push_back(instruction=new EvalInstruction(ByteCode::BYTE_CODE_STORE));
+				instruction->instruction_source_info= InstructionSourceInfo(
+						eval_data->current_parsing_file
+						,split_node->line
+						,NULL
+				);
+			}
+
 		}
 
-		char * eval_expression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions, int level){
+		char * eval_expression(
+				EvalData *eval_data
+				,const char *s
+				, int & line
+				, Scope *scope_info
+				, std::vector<EvalInstruction *> 	* instructions
+				, char expected_ending_char
+				, int level
+
+			){
 			// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 			// If this functions finds ';' then the function will generate ast.
 
@@ -336,6 +386,8 @@ namespace zetscript{
 			int last_line_ok=0;
 			int last_accessor_line=0;
 			std::string last_accessor_value="";
+			const char *start_expression_str=NULL;
+			int start_expression_line=-1;
 
 			//bool is_first_access=false;
 			//int instruction_first_access=-1;
@@ -345,6 +397,10 @@ namespace zetscript{
 			//PASTNode ast_node_to_be_evaluated=NULL;
 			char *aux_p=NULL;
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
+
+			start_expression_str=aux_p;
+			start_expression_line=line;
+
 
 			int idx_instruction_start_expression=eval_data->current_function->instructions.size();
 
@@ -361,6 +417,9 @@ namespace zetscript{
 						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
 						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
 							aux_p+=strlen(eval_info_pre_post_self_operations[pre_self_operation_type].str);
+							break;
+						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID:
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
 							break;
 					}
 				}else{
@@ -388,7 +447,7 @@ namespace zetscript{
 					}
 
 					//std::vector<EvalInstruction *> 	instruction_inner;
-					aux_p=eval_expression(eval_data,aux_p+1, line, scope_info, &symbol_token_node.instructions,level+1);
+					aux_p=eval_expression(eval_data,aux_p+1, line, scope_info, &symbol_token_node.instructions,0,level+1);
 
 					if(*aux_p != ')'){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ')'");
@@ -529,9 +588,9 @@ namespace zetscript{
 
 								n_params=0;
 								// set info that symbol value is function call (its existence is mandatory in vm)
-								symbol_token_node.instructions[
+								/*symbol_token_node.instructions[
 								   symbol_token_node.instructions.size()-1
-								]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
+								]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;*/
 
 								/*symbol_token_node.instructions[symbol_token_node.instructions.size()-1]->instruction_source_info= InstructionSourceInfo(
 									eval_data->current_parsing_file
@@ -551,6 +610,7 @@ namespace zetscript{
 												,line
 												,scope_info
 												,&symbol_token_node.instructions
+												,0
 												,level+1
 										);
 
@@ -587,6 +647,7 @@ namespace zetscript{
 										,line
 										,scope_info
 										,&symbol_token_node.instructions
+										,0
 										,level+1
 								);
 
@@ -703,6 +764,7 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if(!is_end_expression(aux_p)){ // if not end expression then a operator is expected...
+
 					operator_type=is_operator(aux_p);
 					size_t inc_p=0;
 
@@ -726,6 +788,13 @@ namespace zetscript{
 				}
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+			}
+
+			if(expected_ending_char != 0) { // throw error...
+				if(*aux_p!=expected_ending_char){
+					size_t len=aux_p-start_expression_str;
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,start_expression_line,"Expected '%c' at the end of expression %10s...",expected_ending_char,zs_strutils::substring(start_expression_str,0,len).c_str());
+				}
 			}
 
 			if(aux_p==0){

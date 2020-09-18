@@ -15,7 +15,8 @@ namespace zetscript{
 
 	public:
 
-		unsigned char idx_class; 	// registered class idx
+		int				idx_starting_this_members;
+		ClassTypeIdx 	idx_class; 	// registered class idx
 
 		Symbol symbol; 				// info symbol class
 
@@ -25,17 +26,17 @@ namespace zetscript{
 		//zs_vector *function_members; // a list of function members (script as well as registered native functions) to be registered on create any scriptvar, see ScriptVar::createSymbols)
 
 		//------------- VARIABLES STRUCT ---------------
-		char  idx_function_member_constructor;
+		unsigned char							idx_function_member_constructor;
 
 		std::function<void * ()>			* 	c_constructor;
 		std::function<void (void *  p)> 	*	c_destructor;
 		std::string 							str_class_ptr_type; // type_id().name();
-		zs_vector 							*   idx_base_classes; // list of idx of classes base
+		unsigned char						    idx_base_class; // list of idx of classes base
 
 
 		zs_vector 			*metamethod_operator[BYTE_CODE_METAMETHOD_MAX]; // overrided metamethod
 
-		 ScriptClass(ZetScript *_zs,unsigned char _idx_class);
+		 ScriptClass(ZetScript *_zs,ClassTypeIdx _idx_class);
 
 		Symbol				* 	registerNativeVariableMember(
 				const std::string & file
@@ -46,7 +47,8 @@ namespace zetscript{
 				, unsigned short properties
 		);
 
-		Symbol *	 getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		Symbol *	getSuperFunctionSymbol(Symbol *symbol);
+		Symbol *    getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
 		Symbol				* 	registerMemberFunction(

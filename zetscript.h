@@ -103,7 +103,7 @@
 #define ZETSCRIPT_PATCH_VERSION 0
 
 
-#define ZS_CLASS_BASE_OF(zs,a,b)								(zs)->nativeClassBaseOf<a,b>()
+#define ZS_CLASS_INHERITS_FROM(zs,C,B)							(zs)->nativeClassInheritsFrom<C,B>()
 #define ZS_REGISTER_GLOBAL_FUNCTION(zs,text,s) 					(zs)->registerNativeGlobalFunction(text,s,__FILE__, __LINE__)
 #define ZS_REGISTER_GLOBAL_VARIABLE(zs,text,s) 					(zs)->registerNativeGlobalVariable(text,s,__FILE__, __LINE__)
 #define ZS_REGISTER_CLASS(zs,class_type,s) 						(zs)->registerNativeClass<class_type>(s,__FILE__, __LINE__)
@@ -229,8 +229,8 @@ namespace zetscript{
 		}
 
 		template<class C, class B>
-		void classBaseOf(){
-			script_class_factory->nativeClassBaseOf<C,B>();
+		void classInheritsFrom(){
+			script_class_factory->nativeClassInheritsFrom<C,B>();
 		}
 
 		void	registerNativeBaseSymbols(bool r){
@@ -406,6 +406,9 @@ namespace zetscript{
 
 		template <  typename F>
 		std::function<F> * bindScriptFunction(const std::string & function_access);
+
+		template <  typename F>
+		std::function<F> * bindScriptFunction(ScriptFunction *sf, ScriptVar *calling_object=NULL);
 
 
 		 ~ZetScript();

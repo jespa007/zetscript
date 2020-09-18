@@ -5,6 +5,13 @@
 #pragma once
 
 namespace zetscript{
+
+	typedef enum{
+		SCOPE_DIRECTION_DOWN=0,
+		SCOPE_DIRECTION_UP,
+		SCOPE_DIRECTION_BOTH
+	}ScopeDirection;
+
 	class ScopeFactory;
 	class ZetScript;
 	class  Scope{
@@ -35,9 +42,9 @@ namespace zetscript{
 		 * register/search symbol info
 		 * @n_params:
 		 */
-		Symbol * registerNativeFunctionSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params);
+		Symbol * registerFunctionSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params);
 		Symbol * registerSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
-		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction=ScopeDirection::SCOPE_DIRECTION_BOTH);
 
 		void						    markAsUnusued();
 

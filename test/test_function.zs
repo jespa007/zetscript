@@ -11,14 +11,14 @@ fun();*/
 
 //print("dadas");
 
-function a(s){
-	print(s);
+function a(a,b,c,d,e,f,g,h,i,j){
+	print(a+b+c+d+e+f+g+h+i+j);
 }
 
-var b=print;
-b("hello world! 1");
-b(100);
-
+var b=a;
+//b("hello world! 1");
+b("ds",0,1,2,3,4,5,6,7);
+/*
 var v=[
 	function(){ return "hello_word";}
 	,function(c,d,e,f){ return "hello_word"+b;} // <-- it takes function and tries to add into string...
@@ -27,7 +27,7 @@ var v=[
 
 for(var i=0; i < v.length; i++){
 	print("v["+i+"]="+v[i](i));
-}
+}*/
 
 /*var v=[
 	function(){print("dadas");}

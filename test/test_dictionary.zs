@@ -5,6 +5,16 @@ var dictionary={ // structure
 	b: true,
 	v: [1,0.5, "a string", true]
 };
+
+
+// add property test
+dictionary.k=false;
+
+print("dictionary.k:"+dictionary.k);
+
+/*for(var k in dictionary){
+	
+}*/
 /*class A{
 	
 	var j;

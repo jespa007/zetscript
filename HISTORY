@@ -1,5 +1,4 @@
 
-> #142 Try to optimize bind function member
 
 //----------------------------------------------------------
 Version: 2.0.0
@@ -45,6 +44,7 @@ Date: XX-09-2020
 #101 Adapt inheritance feature developed on 1.1.3 version
 #102 Bug: can use variable before define var itself
 > #103 Adapt foreach to for(.. in .. )
+#104 optimize embeded container ScriptVariable 
 #105 Get rid AST Node limitation
 #106 Study whether is posible parse + compile in single step 
 > #107 Way to get the symbol_value at run time without ASTNode 
@@ -77,29 +77,32 @@ Date: XX-09-2020
  
 #135 eval negative identifier and constants tokens and perform LOAD with negative option or load negative constants instead of doing NEG.
 #136 Clear unusued scopes
-> #137 Callback function support
+#137 Callback function support
 > #139 Implement const operator 
-> #141 limit n params only for c functions 
-
+#141 limit n params only for c functions 
+#142 Try to optimize bind function member 
 > #144 Implement IO helper utils PART1
 #145 Implement eval Vector object
-> #146 Implement eval Dictionary object
+#146 Implement eval Dictionary object
 #147 Implement bind class const static variable
 #148 replace all writeError functions by throw and remove error param 
 > #150 Improve print (does not crash put a integer, vector, etc.) also vector and dictionary does a pretty print.
-> #154 Fix continue, break keyword 
-> #153 fix DO-WHILE keyword
-> #152 fix WHILE keyword
-> #151 fix FOR keyword 
+#154 Fix continue, break keyword 
+#153 fix DO-WHILE keyword
+#152 fix WHILE keyword
+#151 fix FOR keyword 
 > #155 Check compile Visual Studio 2015, 2019 
-> #157 Fix assign [+,-,/ etc] operator
+> #157 Fix +=,-=,/= etc operator
 > #159 Update manual ZetScript 2.0  
 > #158 Update doc CodeProject ZetScript 2.0 
 > #160 Update Invader ZetScript 2.0 
-> #161 Merge symbol+functions in one container !!!
-> #162 Implement eval Function object 
-> #164 implement length property built-in for get length of vector dictionary instead of call size() 
+#161 Merge symbol+functions in one container !!!
+#162 Implement eval Function object 
+#164 implement length property built-in for get length of vector dictionary instead of call size() 
 > #165 try eval expressions as constant 
+#168 When semicolon is missing it shows wrong filename 
+#169 Fix/Check metamethods 
+#170 Fix class 
 
 Other: Lot of clean code up. 
 

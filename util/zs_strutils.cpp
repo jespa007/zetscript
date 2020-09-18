@@ -290,5 +290,19 @@ namespace zetscript{
 			str_dst=aux_str_copy;
 
 		}
+
+		std::string substring(const std::string & str, size_t start_idx, size_t end_idx){
+			if(end_idx > str.length()){
+				THROW_RUNTIME_ERROR("substring: end end_idx out of bounds");
+			}
+
+			if(start_idx >= end_idx){
+				THROW_RUNTIME_ERROR("substring: start_idx >= end_idx");
+			}
+
+			return str.substr(start_idx,end_idx);
+
+
+		}
 	}
 }

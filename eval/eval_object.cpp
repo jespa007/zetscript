@@ -4,7 +4,14 @@ namespace zetscript{
 
 		//std::string * 	get_compiled_symbol(EvalData *eval_data,const std::string * symbol_name);
 		std::string * get_compiled_symbol(EvalData *eval_data,const std::string & s);
-		char 		*	eval_expression(EvalData *eval_data,const char *s, int & line, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions, int level=0);
+		char 		*	eval_expression(
+				EvalData *eval_data
+				,const char *s
+				, int & line
+				, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions
+				, char expected_ending_char=0 // expecting ending char when expression finish (by default not check or 0)
+				, int level=0
+				);
 
 		char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, TokenNode *token_node){
 			// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
@@ -122,6 +129,7 @@ namespace zetscript{
 						 ,line
 						 ,scope_info
 						 ,instructions
+						 ,0
 						 ,level+1
 				);
 
@@ -132,7 +140,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != '}'){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected '}'");
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ending '}'");
 			}
 
 			return aux_p+1;
@@ -170,6 +178,7 @@ namespace zetscript{
 						,line
 						,scope_info
 						,instructions
+						,0
 						,level+1);
 
 				// vpush
@@ -179,7 +188,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != ']'){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"vector: expected ']'");
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"vector: expected ending ']'");
 			}
 
 			return aux_p+1;
@@ -203,10 +212,11 @@ namespace zetscript{
 			if(key_w != Keyword::KEYWORD_UNKNOWN){
 
 				if(key_w == Keyword::KEYWORD_NEW){
+					EvalInstruction *eval_instruction = NULL;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
 					// try get symbol ...++++
 
-					instructions->push_back(new EvalInstruction(BYTE_CODE_NEW));
+					instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW));
 
 					aux_p=get_identifier_token(
 							eval_data
@@ -220,6 +230,8 @@ namespace zetscript{
 					if(sc==NULL){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"class '%s' not defined",symbol_value.c_str());
 					}
+
+					eval_instruction->vm_instruction.value_op1=sc->idx_class;
 
 					 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -241,6 +253,7 @@ namespace zetscript{
 									  ,line
 									  ,scope_info
 									  ,instructions
+									  ,0
 									  ,level+1
 							);
 							  n_args++;

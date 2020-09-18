@@ -227,7 +227,7 @@ namespace zetscript{
 				)) != NULL){
 
 					if(*aux_p != '}'){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected } ");
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '}' ");
 					}
 
 					eval_check_scope(eval_data,new_scope_info,idx_instruction_start_block);
@@ -258,9 +258,13 @@ namespace zetscript{
 					return aux;
 				}
 
-				if(*aux == '}'){ // trivial cases...
+				if(*aux == '}'){ // ending block trivial cases...
 					return aux;
 				}else{
+
+					if(is_end_expression(aux)){
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Unexpected '%c'",*aux);
+					}
 
 					// try directive ...
 					Directive directive = is_directive(aux);
@@ -411,9 +415,10 @@ namespace zetscript{
 							Symbol *symbol_member = (Symbol *)sc->symbol_members->items[i];
 							if(symbol_member->properties & SYMBOL_PROPERTY_IS_FUNCTION){
 								ScriptFunction *sf=(ScriptFunction *)symbol_member->ref_ptr;
+								bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?str_symbol_to_find == symbol_member->name:true);
 								if(
-										(ls->n_params == sf->params->count)
-									&& (str_symbol_to_find == symbol_member->name)
+										(sf->symbol.name == str_symbol_to_find)
+									&& (match_params)
 									){
 									symbol_sf_foundf = symbol_member;
 								}
@@ -422,10 +427,10 @@ namespace zetscript{
 
 						// ok get the super function...
 						if(symbol_sf_foundf == NULL){
-							THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find super function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
+							THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find parent function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
 							return;
 						}
-						instruction->vm_instruction.value_op2=symbol_sf_foundf->ref_ptr;
+						instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
 
 					}else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // not argument, try find local ...
 						bool local_found=false;
@@ -435,12 +440,11 @@ namespace zetscript{
 
 						// try find local symbol  ...
 						Scope *scope=ls->scope;
-						Symbol * sc_var = scope->getSymbol(ls->value, ls->n_params);
+						Symbol * sc_var = scope->getSymbol(ls->value, ls->n_params,ScopeDirection::SCOPE_DIRECTION_DOWN);
 
 						if(sc_var != NULL){ // local symbol found
 
 							instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL;
-
 
 							if(ls->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
 								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
@@ -458,12 +462,11 @@ namespace zetscript{
 									local_found =true;
 								}
 							}
-							//}
 						}
 
 						if(!local_found){ // try global...
 							// try symbol as var...
-							Symbol * sc_var = MAIN_SCOPE(eval_data)->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY);
+							Symbol * sc_var = MAIN_SCOPE(eval_data)->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY, ScopeDirection::SCOPE_DIRECTION_DOWN);
 
 							if(sc_var != NULL){
 
@@ -485,7 +488,7 @@ namespace zetscript{
 									load_type=LoadType::LOAD_TYPE_FUNCTION;
 								}
 							}else{
-								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find symbol \"%s\"",ls->value.c_str());
+								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Symbol \"%s\" is not defined",ls->value.c_str());
 							}
 						}
 

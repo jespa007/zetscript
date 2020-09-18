@@ -43,7 +43,6 @@ namespace zetscript{
 		){
 			ZS_PRINT_DEBUG("Registered variable name: %s",var_name.c_str());
 		}
-
 	}
 
 	/**
@@ -128,7 +127,7 @@ namespace zetscript{
 		ScriptClass *irc=NULL;
 		std::string str_class_name_ptr = typeid( T *).name();
 		int size=script_classes->count;
-		unsigned char idx_class=ZS_IDX_UNDEFINED;
+		ClassTypeIdx idx_class=ZS_IDX_UNDEFINED;
 		Scope * scope = NULL;
 		Symbol *symbol=NULL;
 
@@ -154,7 +153,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("this %s is already registered",zs_rtti::demangle(typeid( T).name()).c_str());
 		}
 
-		idx_class=(short)(script_classes->count);
+		idx_class=(ClassTypeIdx)(script_classes->count);
 		scope = scope_factory->newScope(NULL,true);
 		symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_SYMBOL_ONLY);
 
@@ -174,7 +173,7 @@ namespace zetscript{
 		irc->c_destructor = NULL;
 		script_classes->push_back((intptr_t)irc);
 
-		irc->idx_class=(unsigned char)(script_classes->count-1);
+		irc->idx_class=(ClassTypeIdx)(script_classes->count-1);
 		ZS_PRINT_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
 		return irc;
@@ -230,12 +229,12 @@ namespace zetscript{
 		});
 	}
 
-	template<class T, class B>
-	void ScriptClassFactory::nativeClassBaseOf(){
+	template<class C,class B>
+	void ScriptClassFactory::nativeClassInheritsFrom(){
 		std::string base_class_name=typeid(B).name();
 		std::string base_class_name_ptr=typeid(B *).name();
-		std::string class_name=typeid(T).name();
-		std::string class_name_ptr=typeid(T *).name();
+		std::string class_name=typeid(C).name();
+		std::string class_name_ptr=typeid(C *).name();
 
 		int idx_base_class = getIdxClassFromItsNativeType(base_class_name_ptr);
 		if(idx_base_class == -1) {
@@ -248,30 +247,36 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("class %s not registered",class_name_ptr.c_str());
 		}
 
-		if(nativeClassBaseOf(idx_register_class,idx_base_class)){
+		if(isClassInheritsFrom(idx_register_class,idx_base_class)){
 			THROW_RUNTIME_ERROR("C++ class \"%s\" is already registered as base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 		}
 
 		// check whether is in fact base of ...
-		if(!std::is_base_of<B,T>::value){
+		if(!std::is_base_of<B,C>::value){
 			THROW_RUNTIME_ERROR("C++ class \"%s\" is not base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 		}
 
+		// now only allows one inheritance!
 		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_register_class);
-		while( sc->idx_base_classes->count>0){
+		if(sc->idx_base_class != ZS_INVALID_CLASS){
+			ScriptClass * base_class=getScriptClass(sc->idx_base_class);
+			THROW_RUNTIME_ERROR("C++ class \"%s\" already is inherited from \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class->str_class_ptr_type).c_str());
+		}
 
-			sc=getScriptClass(sc->idx_base_classes->items[0]); // get base class...
+		/*while( sc->idx_base_class!=ZS_INVALID_CLASS){
+
+			sc=getScriptClass(sc->idx_base_class); // get base class...
 			if(sc->str_class_ptr_type ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 			}
-		}
+		}*/
 
 
 		ScriptClass *this_class = (ScriptClass *)script_classes->get(idx_register_class);
-		this_class->idx_base_classes->push_back(idx_base_class);
+		this_class->idx_base_class=idx_base_class;
 
 		// add conversion type for this class
-		conversion_types[this_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(B *)((T *)entry);};
+		conversion_types[this_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(B *)((C *)entry);};
 
 
 		if(register_c_base_symbols){ // by default is disabled. User has to re-register! --> increases time and binary!!!
@@ -296,9 +301,7 @@ namespace zetscript{
 				);
 			}
 
-				//derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC; // set as polymorphic and show error if you try to call a polymorphic function
-
-
+			//derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC; // set as polymorphic and show error if you try to call a polymorphic function
 			// register all c vars symbols ...
 			for(unsigned i = 0; i < base_class->symbol_members->count; i++){
 

@@ -72,7 +72,7 @@ namespace zetscript{
 		value = NULL;
 		was_created_by_constructor=false;
 		c_scriptclass_info=NULL;
-		idx_class = -1;
+		idx_class = ZS_INVALID_CLASS;
 		aux_string ="";
 		delete_c_object = false; // --> user is responsible to delete C objects!
 		info_function_new=NULL;
@@ -111,17 +111,17 @@ namespace zetscript{
 			}else {
 				ScriptClass *sc=registered_class_info;
 				// get first class with c inheritance...
-				 if(sc->idx_base_classes->count>0){
-					while(c_scriptclass_info==NULL){
-						sc=GET_SCRIPT_CLASS(this,sc->idx_base_classes->items[0]); // get base class...
-						if(sc->isNativeClass()){
+				if(sc->idx_base_class != ZS_INVALID_CLASS){
+					do{
+						sc=GET_SCRIPT_CLASS(this,sc->idx_base_class); // get base class...
+						if(sc->isNativeClass()){ // we found the native script class!
 							c_scriptclass_info=sc;
 							created_object = (*sc->c_constructor)();
 							was_created_by_constructor=true;
 							c_object = created_object;
 						}
-					}
-				 }
+					}while((sc->idx_base_class!=ZS_INVALID_CLASS) && (c_scriptclass_info==NULL));
+				}
 			}
 
 		}else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
@@ -418,13 +418,11 @@ namespace zetscript{
 		return &str_value;
 	}
 
-	void ScriptVar::initSharedPtr(bool is_assigned){
+	void ScriptVar::initSharedPtr(){
+		// is assigned means that when is created is assigned immediately ?
 
 		if(ptr_shared_pointer_node == NULL){
 			ptr_shared_pointer_node = virtual_machine->newSharedPointer(this);
-			if(is_assigned){ // increment number shared pointers...
-				virtual_machine->sharePointer(ptr_shared_pointer_node);
-			}
 		}
 		else{
 			THROW_RUNTIME_ERROR(" shared ptr alrady registered");

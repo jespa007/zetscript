@@ -13,7 +13,7 @@
 #define SCRIPT_CLASS_STRING(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_STRING))
 #define SCRIPT_CLASS_DICTIONARY(data)					((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_DICTIONARY))
 #define SCRIPT_CLASS_VECTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_VECTOR))
-#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_FUNCTION))
+//#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_FUNCTION))
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_class_factory)->getScriptClassByNativeClassPtr(s))    // 0 is the main class
 #define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_class_factory)->getScriptClass(idx)->str_class_ptr_type)
 
@@ -38,15 +38,16 @@ namespace zetscript{
 		ScriptClass * 					getScriptClass(unsigned char idx);
 		ScriptClass * 					getScriptClass(const std::string & name);
 		ScriptClass * 					getScriptClassByNativeClassPtr(const std::string & class_type);
-		const char 	* 					getScriptClassName(unsigned char idx);
-		bool							nativeClassBaseOf(unsigned char  theClass,unsigned char  class_idx);
+		const char 	* 					getScriptClassName(ClassTypeIdx idx);
+		void							classInheritsFrom(const std::string & the_class,const std::string & the_base_class);
+		bool							isClassInheritsFrom(ClassTypeIdx idx_class,ClassTypeIdx idx_base_class);
 		unsigned char					getIdxClassFromItsNativeType(const std::string & s);
 		unsigned char 					getIdx_C_RegisteredClass(const std::string & str_classPtr);
 		zs_vector	* 					getScriptClasses();
 
 		bool 							isClassRegistered(const std::string & v);
 
-		intptr_t						doCast(intptr_t obj, unsigned char src_class, unsigned char convert_class);
+		intptr_t						doCast(intptr_t obj, ClassTypeIdx idx_class_src, ClassTypeIdx idx_class_dst);
 		void 							clear();
 		inline ScriptClass * 			getMainObject() { return main_object;}
 		inline ScriptFunction * 		getMainFunction() { return main_function;}
@@ -55,7 +56,7 @@ namespace zetscript{
 		 * Class name given this function creates the object and initializes all variables.
 		 */
 		ScriptVar 			* 			instanceScriptVariableByClassName(const std::string & class_name);
-		ScriptVar 			* 			instanceScriptVariableByIdx(unsigned char  idx_class, void * value_object = NULL);
+		ScriptVar 			* 			instanceScriptVariableByIdx(ClassTypeIdx  idx_class, void * value_object = NULL);
 
 		void 							registerNativeBaseSymbols(bool _register);
 
@@ -110,8 +111,8 @@ namespace zetscript{
 		);
 
 
-		template<class T, class B>
-		void nativeClassBaseOf();
+		template<class C, class B>
+		void nativeClassInheritsFrom();
 
 		void registerNativeMemberSymbols();
 

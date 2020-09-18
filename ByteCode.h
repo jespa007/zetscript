@@ -10,7 +10,6 @@ namespace zetscript{
 	typedef enum:char{
 
 		// ARITMETHIC OPERATORS.
-
 		BYTE_CODE_INVALID=-1,
 		BYTE_CODE_END_FUNCTION = 0,
 		BYTE_CODE_LOAD, // primitive value like number/std::string or boolean...

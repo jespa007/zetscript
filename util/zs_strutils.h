@@ -58,5 +58,7 @@ namespace zetscript{
 		 */
 		void copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2);
 
+		std::string substring(const std::string & str, size_t start_idx, size_t end_idx);
+
 	}
 }

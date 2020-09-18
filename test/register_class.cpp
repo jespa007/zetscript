@@ -51,7 +51,7 @@ int main(){
 	zs->registerNativeMemberFunction<MyClassExtend>("function2",&MyClassExtend::function2); // register function2 named function2 in script side as function member.
 
 
-	zs->nativeClassBaseOf<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
+	zs->nativeClassInheritsFrom<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
 
 	zs->eval(
 		"class ScriptMyClassExtend:MyClassExtend{\n"

@@ -17,4 +17,5 @@ class A{
 10*20+80+60
 60*/ 
 
-Math.sin(0);
+//Math.sin(0);
+var a=1+-2

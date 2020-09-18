@@ -361,12 +361,7 @@ namespace zetscript{
 
 	void VirtualMachine::clearGlobalVars(){
 
-
-		// zero shares have a late loading so it can be null at first time...
-		if(zero_shares == NULL){
-			return;
-		}
-
+		// remove all shared 0 pointers
 		if(main_function_object->registered_symbols->count > 0){
 			// set global top stack element
 			StackElement *vm_stk_element=&vm_stack[main_function_object->registered_symbols->count-1];
