@@ -47,7 +47,7 @@ Date: XX-09-2020
 #104 optimize embeded container ScriptVariable 
 #105 Get rid AST Node limitation
 #106 Study whether is posible parse + compile in single step 
-> #107 Way to get the symbol_value at run time without ASTNode 
+#107 Way to get the symbol_value at run time without ASTNode
 #108 Wayt to get filename + line without AST_NODE 
 #109 Optimize parseExpression 
 #110 Change concept structure by dictionary
