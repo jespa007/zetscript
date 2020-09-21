@@ -190,13 +190,17 @@ namespace zetscript{
 		}
 
 		// Init local vars ...
-		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){ // is not main function, so we have to initialize vars.
-
-
-			if(idx_stk_current > 1){ // not global vars, then initialize variables as undefined...
-				StackElement *ptr_aux = stk_local_var;
-				for(unsigned i = 0; i < symbols_count; i++){
-
+		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (idx_stk_current > 1)){
+			StackElement *ptr_aux = stk_local_var;
+			for(unsigned i = 0; i < symbols_count; i++){
+				Symbol *symbol=(Symbol *)registered_symbols->items[i];
+				if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+					*ptr_aux++={
+						 0
+						,(void *)symbol->ref_ptr
+						,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION // starts undefined.
+					};
+				}else{
 					// if C then pass its properties...
 					*ptr_aux++={
 						0,							 // no value assigned.
@@ -309,10 +313,17 @@ namespace zetscript{
 						case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS:
 
 							stk_var=NULL;
-							if(scope_type == MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
-								POP_ONE; // get var op1 and symbol op2
+							if(scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
 
 								Instruction *previous_ins= (instruction-1);
+
+								if(previous_ins->byte_code == BYTE_CODE_NEW){
+									stk_result_op1=(vm_stk_current-1);
+								}
+								else{
+									POP_ONE; // get var op1 and symbol op2
+								}
+
 
 								if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)!= MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
 								{
@@ -346,7 +357,12 @@ namespace zetscript{
 
 							if(stk_var == NULL){ // try to get one...
 								int idx_stk_element=ZS_IDX_UNDEFINED;
-								symbol_access_str=SFI_GET_SYMBOL_NAME(calling_function,instruction);
+
+								if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR){
+									symbol_access_str=FUNCTION_MEMBER_CONSTRUCTOR_NAME;
+								}else{
+									symbol_access_str=SFI_GET_SYMBOL_NAME(calling_function,instruction);
+								}
 
 								stk_var=calling_object->getProperty(symbol_access_str, &idx_stk_element);
 
@@ -498,8 +514,8 @@ namespace zetscript{
 						stk_var = &stk_local_var[instruction->value_op2];
 						break;
 					default:
-					case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS:
 					case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS:
+					case MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS:
 						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal error: load function only contemplates global/local scope");
 						break;
 					}
@@ -1031,15 +1047,8 @@ namespace zetscript{
 					scope_type = GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction->properties);
 					calling_object = this_object;
 
-					if(scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // fetch calling object
-						/*if( 	(sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)
-							&&  ((sf->symbol.properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0) // is not static, so load its object on its embedded stk ptr
-						  ){ // is c symbol
-						   StackElement *stk_aux=(StackElement *)stk_function_ref->stk_value;
-						   calling_object=(ScriptVar *)stk_aux->stk_value;
-						}else{*/
-							calling_object=(ScriptVar *)stk_function_ref->stk_value;
-						//}
+					if(stk_function_ref->stk_value != NULL){ // expects calling object
+						calling_object=(ScriptVar *)stk_function_ref->stk_value;
 					}
 
 					if(stk_function_ref->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
@@ -1055,16 +1064,6 @@ namespace zetscript{
 					if(sf == NULL){
 						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal error ScriptFunction null");
 					}
-
-
-					/*if(sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // is c symbol
-						if(scope_type & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
-						   if((sf->symbol.properties &	SYMBOL_PROPERTY_C_STATIC_REF)==0){ // is not static, so load its object on its embedded stk ptr
-							   StackElement *stk_aux=(StackElement *)stk_function_ref->stk_value;
-							   calling_object=(ScriptVar *)stk_aux->stk_value;
-						   }
-						}
-					}*/
 
 					// if there's more than 1 symbol with same number of parameters have to get the right one...
 					if(sf->function_should_be_deduced_at_runtime){
@@ -1104,6 +1103,10 @@ namespace zetscript{
 					// call function
 					if(sf !=NULL)
 					{
+						if((sf->symbol.properties & SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS) && ((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)== 0)){
+
+						}
+
 						if((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 							// we must set the rest of parameters as undefined in case user put less params as original function ...
 							for(unsigned i = n_args; i < sf->params->count; i++){

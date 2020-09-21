@@ -122,12 +122,13 @@ namespace zetscript{
 					"."
 					);
 		 }
+		 else if(symbol_value.c_str() == SYMBOL_VALUE_SUPER){
+			sprintf(object_access,"super.");
+		 }
 		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){
 			sprintf(object_access,"this.");
 		 }
-		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER){
-			sprintf(object_access,"super.");
-		 }
+
 
 		 //bool is_function_call=instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
 		 //bool is_vector_access=instruction->properties & MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;
@@ -174,25 +175,11 @@ namespace zetscript{
 		return print_aux_load_value;
 	 }
 
-	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo){
+	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
 		zs_vector * m_vf = sfo->registered_symbols;
-
-
-		for(unsigned j =0; j < m_vf->count; j++){
-			Symbol *symbol=(Symbol *)m_vf->items[j];
-
-			if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
-
-				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
-
-				if(( local_sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
-					printGeneratedCode(local_sf);
-				}
-			}
-		}
 
 		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -201,18 +188,11 @@ namespace zetscript{
 		std::string symbol_ref="????";
 		std::string class_str="";
 
-		//strcpy(symbol_ref,AST_SYMBOL_VALUEZJ_CONST_CHAR(local_irfs->symbol_info.idxAstNode));
-
-		if(sfo->idx_class!=ZS_INVALID_CLASS){
-			ScriptClass *sc = GET_SCRIPT_CLASS(sfo,sfo->idx_class);
-			if(sc->idx_class == ZS_IDX_UNDEFINED){ // no class is a function on a global scope
-				symbol_ref=sfo->symbol.name;
-			}else{ // is a class
-				symbol_ref=sfo->symbol.name;//+std::string("::")+std::string("????");
-				if(sc->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN){
-					class_str=sc->symbol.name+"::";
-				}
-			}
+		if(sc==NULL){ // no class is a function on a global scope
+			symbol_ref=sfo->symbol.name;
+		}else{ // is a class
+			symbol_ref=sfo->symbol.name;//+std::string("::")+std::string("????");
+			class_str=sc->symbol.name+"::";
 		}
 
 

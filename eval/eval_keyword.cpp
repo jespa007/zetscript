@@ -5,7 +5,7 @@ namespace zetscript{
 		void pop_function(EvalData *eval_data);
 		char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * eval_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,bool return_on_break_or_continue_keyword = false);
-		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent);
+		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_child);
 		void eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start);
 		void inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value);
 		//Scope * evalPopScope(EvalData *eval_data, Scope *current_scope);
@@ -97,7 +97,7 @@ namespace zetscript{
 
 				if(key_w == Keyword::KEYWORD_CLASS){
 
-					if(scope_info->scope_parent!=NULL){
+					if(scope_info->scope_child!=NULL){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"class keyword is not allowed");
 					}
 
@@ -196,7 +196,7 @@ namespace zetscript{
 			Keyword key_w;
 			std::vector<FunctionParam> args;
 			std::string conditional_str;
-			ScriptClass *sc=NULL;
+			ScriptClass *sc=NULL; // if NULL it suposes is the main
 			Symbol *symbol_sf=NULL;
 
 			Symbol * irv=NULL;
@@ -205,11 +205,14 @@ namespace zetscript{
 			std::string function_name="";
 			Scope *scope=scope_info;
 			size_t advance_chars=0;
+			bool is_anonymous=false;
 
 
 			// check for keyword ...
 			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-				&& scope_info->scope_base == scope_info){ // is registering from class so function keyword is not needed
+				&& scope_info->scope_base == scope_info
+				&& scope_info->scope_child == NULL // is function member
+				){
 				key_w = Keyword::KEYWORD_FUNCTION;
 				sc=scope_info->script_class;
 			}
@@ -234,6 +237,11 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected anonymous function");
 						}
 
+						// function cannot be declared within main scope
+						if(scope_info != MAIN_SCOPE(eval_data) && sc == NULL){ // function within a function (not function member)
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"named functions are only allowed in main scope. You can only use anonymous functions");
+						}
+
 						if(sc==NULL){ // check if function member declaration
 						   end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
 								eval_data
@@ -253,13 +261,9 @@ namespace zetscript{
 									,line
 									,function_name
 							);
-
 							// copy value
 							zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
-
 						}
-
-
 						aux_p=end_var;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					}
@@ -267,8 +271,16 @@ namespace zetscript{
 						if(check_anonymous_function==false){
 							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Anonymous functions should be used on expression");
 						}
-					}
 
+						is_anonymous=true;
+
+						if(
+								scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)
+							 && scope_info->scope_child != NULL
+						){
+							sc=scope_info->script_class;
+						}
+					}
 
 					// eval function args...
 					if(*aux_p == '('){ // push arguments...
@@ -281,9 +293,6 @@ namespace zetscript{
 						// grab words separated by ,
 						while(*aux_p != 0 && *aux_p != ')'){
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-							//char *arg_name;
-
-
 							if(args.size()>0){
 								if(*aux_p != ','){
 									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ',' ");
@@ -324,13 +333,9 @@ namespace zetscript{
 										, irv->file.c_str()
 										,irv->line);
 							}
-								// ok register symbol into the object function ...
-
-
+							// ok register symbol into the object function ...
 							arg_info.arg_name=arg_value;
 							args.push_back(arg_info);
-
-
 							aux_p=end_var;
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 						}
@@ -343,8 +348,8 @@ namespace zetscript{
 						}
 
 						// register function ...
-						if(!named_function){ // register named function...
-							function_name="_@afun_"+zs_strutils::int_to_str(n_anonymous_function++);
+						if(is_anonymous){ // register named function...
+							function_name="_@afun_"+(scope_info->script_class!=SCRIPT_CLASS_MAIN(eval_data)?scope_info->script_class->symbol.name:"")+"_"+zs_strutils::int_to_str(n_anonymous_function++);
 						}
 
 
@@ -363,15 +368,22 @@ namespace zetscript{
 						}
 						else{ // register as local variable in the function...
 							symbol_sf=eval_data->current_function->script_function->registerLocalFunction(
-									scope_info
-									, eval_data->current_parsing_file
-									, line
-									, function_name
-									,args
+								  scope_info
+								, eval_data->current_parsing_file
+								, line
+								, function_name
+								, args
 							);
+
+							if(scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
+								symbol_sf->properties|=SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS;
+							}
+
 						}
 
 						push_function(eval_data,(ScriptFunction *)symbol_sf->ref_ptr);
+
+
 
 						// ok let's go to body..
 						aux_p = eval_block(
@@ -434,7 +446,6 @@ namespace zetscript{
 				for(unsigned i=0; i < eval_data->break_jmp_instructions.size(); i++){
 					eval_data->break_jmp_instructions[i]->vm_instruction.value_op2=idx_instruction;
 				}
-
 				eval_data->break_jmp_instructions.clear();
 			}
 		}
@@ -445,7 +456,6 @@ namespace zetscript{
 				for(unsigned i=0; i < eval_data->continue_jmp_instructions.size(); i++){
 					eval_data->continue_jmp_instructions[i]->vm_instruction.value_op2=idx_instruction;
 				}
-
 				eval_data->continue_jmp_instructions.clear();
 			}
 		}
@@ -459,7 +469,6 @@ namespace zetscript{
 			Keyword key_w;
 			unsigned int idx_instruction_conditional_while;
 			EvalInstruction *ei_jnt; // conditional to end block
-
 
 			// check for keyword ...
 			key_w = is_keyword(aux_p);

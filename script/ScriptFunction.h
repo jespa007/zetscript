@@ -23,8 +23,7 @@ namespace zetscript{
 		short 			idx_script_function;		// idx_script_function from factory
 		int 			idx_return_type; 			// idx return type
 		intptr_t 		ref_native_function_ptr;
-		bool function_should_be_deduced_at_runtime; // look-up for solve function on vm
-
+		bool 			function_should_be_deduced_at_runtime; // look-up for solve function on vm
 		zs_vector * params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
@@ -56,7 +55,7 @@ namespace zetscript{
 		//  DEBUG
 		//-----------
 
-		static void printGeneratedCode(ScriptFunction *sfo);
+		static void printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc=NULL);
 
 		int existArgumentName(const std::string & arg_name);
 		/*bool searchVarFunctionSymbol(

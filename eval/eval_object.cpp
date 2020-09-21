@@ -18,8 +18,21 @@ namespace zetscript{
 			EvalInstruction *eval_instruction;
 			std::vector<EvalInstruction *> 	* instructions=&token_node->instructions;
 			char *aux_p = (char *)s;
+			unsigned short scope=0; // global by default ...
 
-			instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_LOAD,LoadType::LOAD_TYPE_FUNCTION));
+			if(scope_info->scope_child!=NULL){// is within function ?
+				scope=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL;
+				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN){ // is within function member ?
+					scope=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS;
+				}
+			}
+
+			instructions->push_back(eval_instruction=new EvalInstruction(
+					BYTE_CODE_LOAD
+					,scope & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS?LoadType::LOAD_TYPE_VARIABLE:LoadType::LOAD_TYPE_FUNCTION
+					,ZS_IDX_UNDEFINED
+					,scope
+			));
 
 			aux_p=eval_keyword_function(
 				eval_data
@@ -215,9 +228,6 @@ namespace zetscript{
 					EvalInstruction *eval_instruction = NULL;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
 					// try get symbol ...++++
-
-					instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW));
-
 					aux_p=get_identifier_token(
 							eval_data
 							,aux_p
@@ -231,9 +241,33 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"class '%s' not defined",symbol_value.c_str());
 					}
 
-					eval_instruction->vm_instruction.value_op1=sc->idx_class;
+					instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW));
 
-					 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					eval_instruction->vm_instruction.value_op1=sc->idx_class;
+        			 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+        			 // call function if there's any constructor function
+					 // get constructor function
+					 constructor_function=sc->getSymbol(FUNCTION_MEMBER_CONSTRUCTOR_NAME);
+
+					 // insert load function ...
+					 if(constructor_function != NULL){
+						 instructions->push_back(
+							eval_instruction=new EvalInstruction(
+								 BYTE_CODE_LOAD
+								 ,LoadType::LOAD_TYPE_VARIABLE
+								 ,ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
+								 ,MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS
+							)
+						 );
+
+						 eval_instruction->instruction_source_info=InstructionSourceInfo(
+							 eval_data->current_parsing_file
+							 ,line
+							 ,get_compiled_symbol(eval_data,FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+						);
+					 }
+
 
 					 if(*aux_p != '('){
 						 THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_info_keywords[key_w].str);
@@ -265,8 +299,6 @@ namespace zetscript{
 
 					 }while(*aux_p != ')');
 
-					 // get constructor function
-					 constructor_function=sc->getSymbol(FUNCTION_MEMBER_CONSTRUCTOR_NAME,n_args);
 
 					 // if constructor function found insert call function...
 					 if(constructor_function != NULL){
@@ -274,9 +306,9 @@ namespace zetscript{
 						 instructions->push_back(
 							 new EvalInstruction(
 								 BYTE_CODE_CALL
-								 ,ZS_IDX_UNDEFINED
-								 ,constructor_function->idx_position // idx function member
-								// ,MSK_INSTRUCTION_PROPERTY_CONSTRUCT_CALL
+								 ,n_args
+								 ,ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
+								 ,MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS
 							)
 						 );
 					 }

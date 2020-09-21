@@ -11,8 +11,8 @@
 namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------
-	Scope::Scope(ZetScript * _zs, Scope * _scope_parent, bool _is_c_node){
-		scope_parent = _scope_parent;
+	Scope::Scope(ZetScript * _zs, Scope * _scope_child, bool _is_c_node){
+		scope_child = _scope_child;
 		is_c_node = _is_c_node;
 		script_class=NULL;
 		unusued=false;
@@ -22,16 +22,19 @@ namespace zetscript{
 		registered_scopes=new zs_vector;
 		registered_symbols=new zs_vector;
 
-		if(_scope_parent == NULL){ // first node...
+		if(_scope_child == NULL){ // first node...
 			scope_base = this;
 		}else{
-			scope_base = scope_parent->scope_base;
+			scope_base = scope_child->scope_base;
+			script_class=scope_child->script_class; // propagate script class
 		}
+
+		n_registered_symbols_as_variables=0;
 	}
 
 	void Scope::setScriptClass(ScriptClass *sc){
-		if(scope_parent != NULL){
-			THROW_RUNTIME_ERROR("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
+		if(scope_child != NULL){
+			THROW_RUNTIME_ERROR("Internal error setScriptclass scope_child should NULL (i.e scope should be root)");
 			return;
 		}
 		script_class=sc;
@@ -46,20 +49,24 @@ namespace zetscript{
 		// link parent to its childs
 		for(unsigned i=0;i < registered_scopes->count; i++){
 			Scope *scope_child=(Scope *)registered_scopes->items[i];
-			scope_child->scope_parent=scope_parent;
+			scope_child->scope_child=scope_child;
 		}
 
 		// mark as unused, late we can remove safely check unusued flag...
 		unusued=true;
 	}
 
-	Symbol *  Scope::registerFunctionSymbol(const std::string & file,short line, const std::string & symbol_name, char n_params){
+	Symbol *  Scope::registerSymbolNoCheck(const std::string & file,short line, const std::string & symbol_name, char n_params){
 		Symbol *irv = new Symbol();
 		irv->name = symbol_name;
 		irv->file	 = file;
 		irv->line 	 = line;
 		irv->scope=  this;
 		irv->n_params=n_params;
+
+		if(irv->n_params == NO_PARAMS_SYMBOL_ONLY){
+			n_registered_symbols_as_variables++;
+		}
 
 		registered_symbols->push_back((intptr_t)irv);
 		return irv;
@@ -81,15 +88,7 @@ namespace zetscript{
 			}
 		}
 
-		Symbol *irv = new Symbol();
-		irv->name = symbol_name;
-		irv->file	 = file;
-		irv->line 	 = line;
-		irv->scope=  this;
-		irv->n_params=n_params;
-
-		registered_symbols->push_back((intptr_t)irv);
-		return irv;
+		return registerSymbolNoCheck(file, line, symbol_name, n_params);
 	}
 
 	Symbol * Scope::getSymbolRecursiveDownScope(const std::string & str_symbol, char n_params){
@@ -101,8 +100,10 @@ namespace zetscript{
 			}
 		}
 
-		if(this->scope_parent != NULL){
-			return this->scope_parent->getSymbolRecursiveDownScope(str_symbol,n_params);
+		if(this->scope_child != NULL				 // it says that is the end of scopes
+			&& this->scope_child != MAIN_SCOPE(this) // avoid symbols to global scope to get right idx in global instead of local
+				){
+			return this->scope_child->getSymbolRecursiveDownScope(str_symbol,n_params);
 		}
 
 		return NULL;
@@ -143,6 +144,17 @@ namespace zetscript{
 		}
 
 		return sv;
+	}
+
+	unsigned int Scope::numRegisteredSymbolsAsVariable(){
+		unsigned int n_registered_symbols_as_variables=0;
+		for(unsigned i=0; i < this->registered_symbols->count; i++){
+			Symbol *symbol = (Symbol *)this->registered_symbols->items[i];
+
+		}
+
+		return n_registered_symbols_as_variables;
+
 	}
 
 	//-----------------------------------------------------------------------------------------------------------

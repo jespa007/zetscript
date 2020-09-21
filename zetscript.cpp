@@ -47,12 +47,28 @@ namespace zetscript{
 
 		 zs_vector *script_classes=script_class_factory->getScriptClasses();
 		 // for all classes print code...
-		 for(unsigned i = 0; i < script_classes->count; i++){
+		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
+
+		 for(unsigned j =0; j < sf_main->registered_symbols->count; j++){
+			Symbol *symbol=(Symbol *)sf_main->registered_symbols->items[j];
+
+			if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+
+				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
+
+				if(( local_sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+					ScriptFunction::printGeneratedCode(local_sf);
+				}
+			}
+		}
+
+		 for(unsigned i = 1; i < script_classes->count; i++){
 			 ScriptClass *rc=(ScriptClass *)script_classes->get(i);
+
 			 for(unsigned f = 0; f < rc->symbol_members->count; f++){
 				 Symbol *symbol=(Symbol *)rc->symbol_members->items[f];
 				 if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
-					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr);
+					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,rc);
 				 }
 
 			 }

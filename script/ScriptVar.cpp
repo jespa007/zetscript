@@ -111,17 +111,17 @@ namespace zetscript{
 			}else {
 				ScriptClass *sc=registered_class_info;
 				// get first class with c inheritance...
-				if(sc->idx_base_class != ZS_INVALID_CLASS){
-					do{
-						sc=GET_SCRIPT_CLASS(this,sc->idx_base_class); // get base class...
-						if(sc->isNativeClass()){ // we found the native script class!
-							c_scriptclass_info=sc;
-							created_object = (*sc->c_constructor)();
-							was_created_by_constructor=true;
-							c_object = created_object;
-						}
-					}while((sc->idx_base_class!=ZS_INVALID_CLASS) && (c_scriptclass_info==NULL));
+
+				while((sc->idx_base_classes->count>0) && (c_scriptclass_info==NULL)){
+					sc=GET_SCRIPT_CLASS(this,sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
+					if(sc->isNativeClass()){ // we found the native script class!
+						c_scriptclass_info=sc;
+						created_object = (*sc->c_constructor)();
+						was_created_by_constructor=true;
+						c_object = created_object;
+					}
 				}
+
 			}
 
 		}else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...

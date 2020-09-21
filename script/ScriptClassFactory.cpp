@@ -189,13 +189,6 @@ namespace zetscript{
 			return NULL;
 		}
 
-		ScriptClass *base_class=NULL;
-		if(base_class_name != ""){
-			if((base_class = getScriptClass(base_class_name)) == NULL){
-				return NULL;
-			}
-		}
-
 		if((index = getIdxScriptClassInternal(class_name))==ZS_INVALID_CLASS){ // check whether is local var registered scope ...
 
 			// BYTE_CODE_NEW SCOPE C and register ...
@@ -203,12 +196,8 @@ namespace zetscript{
 
 			// register symbol on main scope...
 			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_SYMBOL_ONLY);
-			if(symbol == NULL){
-				return NULL;
-			}
 
 			sci = new ScriptClass(this->zs,script_classes->count);
-
 			scope->setScriptClass(sci);
 
 			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
@@ -216,7 +205,19 @@ namespace zetscript{
 
 			script_classes->push_back((intptr_t)sci);
 
-			if(base_class != NULL){
+			if(base_class_name != ""){
+
+				ScriptClass *base_class=NULL;
+
+				if(sci->idx_base_classes->count > 0){
+					ScriptClass *match_class=getScriptClass(sci->idx_base_classes->items[0]);
+					THROW_RUNTIME_ERROR("Class \"%s\" already is inherited from \"%s\"",class_name.c_str(),match_class->symbol.name.c_str());
+				}
+
+				if((base_class = getScriptClass(base_class_name)) == NULL){
+					THROW_RUNTIME_ERROR("Class %s not registered",base_class_name.c_str());
+				}
+
 
 				// 1. extend all symbols from base class
 				for(int i=0; i < base_class->symbol_members->count; i++){
@@ -231,7 +232,7 @@ namespace zetscript{
 				sci->idx_starting_this_members=sci->symbol_members->count;
 
 				// 2. set idx base class...
-				sci->idx_base_class=base_class->idx_class;
+				sci->idx_base_classes->push_back(base_class->idx_class);
 			}
 			return sci;
 		}else{
@@ -392,11 +393,19 @@ namespace zetscript{
 
 	bool 	ScriptClassFactory::isClassInheritsFrom(ClassTypeIdx idx_class,ClassTypeIdx idx_base_class){
 
-		while((idx_class != ZS_INVALID_CLASS) && idx_class != idx_base_class){
-			ScriptClass *sc=(ScriptClass *)script_classes->get(idx_class);
-			idx_class=sc->idx_base_class;
+		if(idx_class == idx_base_class){
+			return true;
 		}
-		return idx_class == idx_base_class;
+
+		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_class);
+
+		for(unsigned i=0; i < sc->idx_base_classes->count; i++){
+			if(isClassInheritsFrom(sc->idx_base_classes->items[i],idx_base_class)){
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	ScriptClassFactory::~ScriptClassFactory(){

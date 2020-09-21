@@ -37,7 +37,7 @@ namespace zetscript{
 		}
 
 		Symbol *symbol=NULL;
-		if((symbol=scope->registerFunctionSymbol(
+		if((symbol=scope->registerSymbolNoCheck(
 				file
 				,line
 				,function_name

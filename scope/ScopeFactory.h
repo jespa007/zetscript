@@ -5,7 +5,7 @@
 #pragma once
 
 #define MAIN_SCOPE(data)				((data->scope_factory))->getMainScope()
-#define NEW_SCOPE(data,scope_parent)	((data->scope_factory))->newScope(scope_parent)
+#define NEW_SCOPE(data,scope_child)	((data->scope_factory))->newScope(scope_child)
 
 
 namespace zetscript{
@@ -14,7 +14,7 @@ namespace zetscript{
 		public:
 			ScopeFactory(ZetScript 		*zs);
 
-			Scope	    				*	newScope(Scope * scope_parent=NULL,bool is_c_node=false);
+			Scope	    				*	newScope(Scope * scope_child=NULL,bool is_c_node=false);
 
 
 			Scope 						* 	getMainScope(){return main_scope;}

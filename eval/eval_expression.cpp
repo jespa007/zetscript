@@ -3,7 +3,6 @@ namespace zetscript{
 	namespace eval{
 
 		ByteCode convert_operator_to_byte_code(Operator op){
-
 			switch(op){
 			default:
 				break;
@@ -83,6 +82,7 @@ namespace zetscript{
 			unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
 			LoadType load_type=LOAD_TYPE_NOT_DEFINED;
 			bool is_constant_number=false, is_constant_boolean=false;
+			EvalInstruction *instruction=NULL;
 
 			//unsigned int scope_type=0;
 			void *obj=NULL,*get_obj=NULL,*const_obj=NULL;
@@ -92,7 +92,7 @@ namespace zetscript{
 			 token_node->token_type = TokenType::TOKEN_TYPE_UNKNOWN;
 			 bool is_constant_string=false;
 			 unsigned short instruction_properties=0;
-
+			 bool is_is_symbol_super_method=false;
 
 			 if((aux=parse_literal_number(
 					 eval_data
@@ -157,17 +157,6 @@ namespace zetscript{
 
 			 std::string str_number_value=str_value,str_boolean_value=str_value;
 
-			// if preoperator type neg the value itself and reset token pre operator...
-			/*if(token_node->pre_operator == PreOperator::PRE_OPERATOR_NEG){
-				str_number_value="-"+str_value;
-			}
-
-			// if preoperator type neg the value itself and reset token pre operator...
-			if(token_node->pre_operator == PreOperator::PRE_OPERATOR_NOT){
-				str_boolean_value="!"+str_value;
-				token_node->pre_operator =PreOperator::PRE_OPERATOR_UNKNOWN;
-			}*/
-
 			 if(!is_constant_string){
 				 // try parse value...
 				if(str_value=="null"){ // null literal
@@ -223,10 +212,13 @@ namespace zetscript{
 					if(idx_local_var!=ZS_IDX_UNDEFINED){ // is arg...
 						load_type=LOAD_TYPE_ARGUMENT;
 						obj=(void *)idx_local_var;
-					}else if(str_value == "super"){
-						instruction_properties=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER;
-					}else if(str_value == "this"){
+					}else if(str_value == SYMBOL_VALUE_THIS || str_value == SYMBOL_VALUE_SUPER){
+						if(str_value == SYMBOL_VALUE_SUPER){
+							is_is_symbol_super_method=true;
+						}
+
 						instruction_properties=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS;
+
 					}else if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value)) != NULL){  // check if symbol is constant ...
 						obj=get_obj;
 						load_type=LOAD_TYPE_CONSTANT;
@@ -237,13 +229,6 @@ namespace zetscript{
 							,str_value
 							,line
 						);
-
-						// add global var on vm if we are in main function
-						/*if(eval_data->current_function->script_function->symbol.scope == MAIN_SCOPE(eval_data)){
-							VirtualMachine *vm=eval_data->zs->getVirtualMachine();
-							vm->addGlobalVar({});
-						}*/
-
 					}
 				}
 			 }
@@ -279,11 +264,15 @@ namespace zetscript{
 
 			token_node->value = str_value;
 			token_node->instructions.push_back(
-					new EvalInstruction(ByteCode::BYTE_CODE_LOAD
+					instruction=new EvalInstruction(ByteCode::BYTE_CODE_LOAD
 							,load_type
 							,(intptr_t)obj
 							,instruction_properties
 					));
+
+			if(is_is_symbol_super_method){
+				instruction->is_symbol_super_method=true;
+			}
 
 			return aux;
 			// POST: token as literal or identifier
@@ -539,9 +528,6 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok ,"Expected ';'");
 					}
 
-					//is_first_access=false;
-					//params=NO_PARAMS_SYMBOL_ONLY;
-
 					// check valid access punctuator...
 					if(is_access_punctuator(aux_p) || symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
 
@@ -670,12 +656,12 @@ namespace zetscript{
 
 								check_identifier_name_expression_ok(eval_data,accessor_value,line);
 
-								if(accessor_value == "this"){
+								if(accessor_value == SYMBOL_VALUE_THIS){
 									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"this cannot allowed as member name");
 								}
 
 								if(link_symbol_first_access !=NULL){ // check first symbol at first...
-									if(symbol_token_node.value == "this"){ // if first symbol was this then the symbol
+									if(symbol_token_node.value == SYMBOL_VALUE_THIS){ // if first symbol was this then the symbol
 
 										instruction_token= symbol_token_node.instructions[0];// get the first instruction....
 										// replace symbol
@@ -689,13 +675,9 @@ namespace zetscript{
 								break;
 							}
 
-
-
-
 							if(instruction_token==NULL){
 								instruction_token=new EvalInstruction(byte_code);
 								symbol_token_node.instructions.push_back(instruction_token);
-
 
 								// generate source info in case accessor load...
 								if(byte_code==ByteCode::BYTE_CODE_LOAD){
@@ -714,20 +696,6 @@ namespace zetscript{
 								if(byte_code == ByteCode::BYTE_CODE_CALL){
 									// save total parameters on this call
 									instruction_token->vm_instruction.value_op1=n_params;
-									/*if(link_symbol_first_access==NULL){ // it should find symbol everytime
-										instruction_token->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME;
-									}
-									if(link_symbol_first_access == NULL){ // access scope
-										instruction_token->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS;
-									}*/
-
-									// insert link symbol to solve call if possible on pop_function ....
-									/*instruction_token->link_symbol_first_access=LinkSymbolFirstAccess(
-											eval_data->current_function->script_function->idx_script_function
-											,scope_info
-											,*get_compiled_symbol(eval_data,last_accessor_value)
-											,n_params
-									);*/
 
 									// also insert source file/line/symbol info to get info of this call...
 									instruction_token->instruction_source_info= InstructionSourceInfo(
@@ -767,7 +735,6 @@ namespace zetscript{
 						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
 							symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_DEC;
 							break;
-
 						}
 
 						switch(post_self_operation_type){
@@ -777,7 +744,6 @@ namespace zetscript{
 						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
 							symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_DEC;
 							break;
-
 						}
 					}
 				}

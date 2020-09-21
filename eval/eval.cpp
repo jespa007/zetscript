@@ -152,9 +152,9 @@ namespace zetscript{
 
 		}
 
-		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent){
-			Scope *new_scope = NEW_SCOPE(eval_data,scope_parent);
-			scope_parent->registered_scopes->push_back((intptr_t)new_scope);
+		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_child){
+			Scope *new_scope = NEW_SCOPE(eval_data,scope_child);
+			scope_child->registered_scopes->push_back((intptr_t)new_scope);
 
 			new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->instructions.size();
 
@@ -184,7 +184,7 @@ namespace zetscript{
 		}
 
 		void eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start){
-			if(scope->registered_symbols->count > 0){ // if there's local symbols insert push/pop scope for there symbols
+			if(scope->n_registered_symbols_as_variables > 0){ // if there's local symbols insert push/pop scope for there symbols
 				if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 					eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()+scope->tmp_idx_instruction_push_scope
@@ -384,72 +384,68 @@ namespace zetscript{
 					ScriptFunction *sf=GET_SCRIPT_FUNCTION(eval_data,ls->idx_script_function);
 					ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
-					/*if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){ // nothing to do...
-						if(instruction->vm_instruction.byte_code==BYTE_CODE_CALL){
-							instruction->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME;
-						}
-					}else*/
-					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // trivial this.
+					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // search the symbol within class.
 
-						// is automatically created on vm...
-						if(ls->n_params==NO_PARAMS_SYMBOL_ONLY){ // it will search at runtime
-							instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED;//vis->idx_symbol;
-						}
-						else{
-							Symbol *symbol_function=sc->getSymbol(ls->value,ls->n_params);
-							if(symbol_function==NULL){
-								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
-								return;
-							}
+						if(instruction->is_symbol_super_method){ // trivial super.
+							Symbol *symbol_sf_foundf=NULL;
+							std::string str_symbol_to_find = sf->symbol.name;
 
-							// it stores the script function in the op...
-							instruction->vm_instruction.value_op2=symbol_function->idx_position;
-						}
-
-					}else if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_SUPER){ // trivial super.
-
-						Symbol *symbol_sf_foundf=NULL;
-						std::string str_symbol_to_find = sf->symbol.name;
-
-						for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
-							Symbol *symbol_member = (Symbol *)sc->symbol_members->items[i];
-							if(symbol_member->properties & SYMBOL_PROPERTY_IS_FUNCTION){
-								ScriptFunction *sf=(ScriptFunction *)symbol_member->ref_ptr;
-								bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?str_symbol_to_find == symbol_member->name:true);
-								if(
-										(sf->symbol.name == str_symbol_to_find)
-									&& (match_params)
-									){
-									symbol_sf_foundf = symbol_member;
+							for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
+								Symbol *symbol_member = (Symbol *)sc->symbol_members->items[i];
+								if(symbol_member->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+									ScriptFunction *sf=(ScriptFunction *)symbol_member->ref_ptr;
+									bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?str_symbol_to_find == symbol_member->name:true);
+									if(
+											(sf->symbol.name == str_symbol_to_find)
+										&& (match_params)
+										){
+										symbol_sf_foundf = symbol_member;
+									}
 								}
 							}
+
+							// ok get the super function...
+							if(symbol_sf_foundf == NULL){
+								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find parent function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
+								return;
+							}
+							instruction->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+							instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
+							instruction->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,str_symbol_to_find);
+							instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS;
+
+						}else{ // this symbol
+
+							// is automatically created on vm...
+							if(ls->n_params==NO_PARAMS_SYMBOL_ONLY){ // it will search at runtime
+								instruction->vm_instruction.value_op2=ZS_IDX_UNDEFINED;//vis->idx_symbol;
+							}
+							else{
+								Symbol *symbol_function=sc->getSymbol(ls->value,NO_PARAMS_SYMBOL_ONLY);
+								if(symbol_function==NULL){
+									THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find function %s::%s",sc->symbol.name.c_str(),ls->value.c_str());
+									return;
+								}
+
+								// it stores the script function in the op...
+								instruction->vm_instruction.value_op2=symbol_function->idx_position;
+							}
 						}
-
-						// ok get the super function...
-						if(symbol_sf_foundf == NULL){
-							THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find parent function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
-							return;
-						}
-						instruction->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
-						instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
-
-						instruction->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,str_symbol_to_find);
-
-					}else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // not argument, try find local ...
+					}else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // search symbol within local or global  ...
 						bool local_found=false;
 						ScriptFunction *script_function_found=NULL;
 						LoadType load_type=LoadType::LOAD_TYPE_UNDEFINED;
-						//int n_symbols_found=0;
+						std::string symbol_to_find = ls->value;
 
 						// try find local symbol  ...
 						Scope *scope=ls->scope;
-						Symbol * sc_var = scope->getSymbol(ls->value, ls->n_params,ScopeDirection::SCOPE_DIRECTION_DOWN);
+						Symbol * sc_var = scope->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN);
 
 						if(sc_var != NULL){ // local symbol found
 
 							instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL;
 
-							if(ls->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
+							if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
 								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
 									load_type=LoadType::LOAD_TYPE_VARIABLE;
 									instruction->vm_instruction.value_op2=vis->idx_position;
@@ -457,7 +453,7 @@ namespace zetscript{
 								}
 							}
 							else{ // symbol is function...
-								Symbol *function_symbol=sf->getSymbol(sc_var->scope,ls->value,ls->n_params);
+								Symbol *function_symbol=sf->getSymbol(sc_var->scope,ls->value,NO_PARAMS_SYMBOL_ONLY);
 								if(function_symbol!=NULL){
 									script_function_found=(ScriptFunction *)function_symbol->ref_ptr;
 									instruction->vm_instruction.value_op2=function_symbol->idx_position; // store script function

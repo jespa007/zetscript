@@ -27,8 +27,8 @@ namespace zetscript{
 
 		symbol_members=new zs_vector();
 		symbol_members_built_in=new zs_vector();
-		//function_members=new zs_vector();
-		idx_base_class=ZS_INVALID_CLASS;
+		idx_base_classes=new zs_vector;
+
 
 		// factories
 		zs = _zs;
@@ -219,6 +219,8 @@ namespace zetscript{
 			delete vec;
 		}
 		memset(metamethod_operator,0,sizeof(metamethod_operator));
+
+		delete idx_base_classes;
 
 	}
 }

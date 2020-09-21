@@ -70,8 +70,8 @@ Date: XX-09-2020
 #126 Save pure c function instead of std::function for speed improvement
 #128 Implement register_c_function_as_member 
 #129 Migrate new C++ coding style
-> #130 Feature add variables into instanced class (i.e this.a=0;)
-> #131 Adapt language to ECMA-6 
+#130 Feature add variables into instanced class (i.e this.a=0;)
+#131 Adapt language to ECMA-6 
 #133 Perform SUB instead of NEG+ADD
 #134 Implement Math class with math function utils (PART1)
  
@@ -91,8 +91,9 @@ Date: XX-09-2020
 #153 fix DO-WHILE keyword
 #152 fix WHILE keyword
 #151 fix FOR keyword 
-> #155 Check compile Visual Studio 2015, 2019 
-> #157 Fix +=,-=,/= etc operator
+> #155 Check compile Visual Studio 2015, 2019
+> #156 Fix SWITCH  
+#157 Fix +=,-=,/= etc operator
 > #159 Update manual ZetScript 2.0  
 > #158 Update doc CodeProject ZetScript 2.0 
 > #160 Update Invader ZetScript 2.0 
@@ -100,9 +101,12 @@ Date: XX-09-2020
 #162 Implement eval Function object 
 #164 implement length property built-in for get length of vector dictionary instead of call size() 
 > #165 try eval expressions as constant 
-#168 When semicolon is missing it shows wrong filename 
-#169 Fix/Check metamethods 
+#168 When semicolon on expression is missing it shows wrong filename 
+> #169 Fix/Check metamethods 
 #170 Fix class 
+> #171 test returns stack var with 0 refs 
+#172 get rid super scope
+#173 Manage this context automatically on anonymouse function created on class 
 
 Other: Lot of clean code up. 
 

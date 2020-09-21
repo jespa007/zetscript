@@ -11,7 +11,7 @@ namespace zetscript{
 		main_scope = newScope(NULL,false); // create global scope (scope 0)
 	}
 
-	Scope *	 ScopeFactory::newScope(Scope * scope_parent,bool is_c_node){
+	Scope *	 ScopeFactory::newScope(Scope * scope_child,bool is_c_node){
 
 		if(is_c_node){
 			if(scopes->count > 1){ // if greather than 1 check if node consecutive...
@@ -23,7 +23,7 @@ namespace zetscript{
 			}
 		}
 
-		Scope * scope_node = new Scope(this->zs,scope_parent,is_c_node);
+		Scope * scope_node = new Scope(this->zs,scope_child,is_c_node);
 		scopes->push_back((intptr_t)scope_node);
 		return scope_node;
 	}

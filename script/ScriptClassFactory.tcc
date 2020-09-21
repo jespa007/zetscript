@@ -257,23 +257,23 @@ namespace zetscript{
 		}
 
 		// now only allows one inheritance!
-		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_register_class);
+		/*
 		if(sc->idx_base_class != ZS_INVALID_CLASS){
 			ScriptClass * base_class=getScriptClass(sc->idx_base_class);
 			THROW_RUNTIME_ERROR("C++ class \"%s\" already is inherited from \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class->str_class_ptr_type).c_str());
-		}
+		}*/
+		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_register_class);
 
-		/*while( sc->idx_base_class!=ZS_INVALID_CLASS){
-
-			sc=getScriptClass(sc->idx_base_class); // get base class...
+		for(unsigned i=0; i < sc->idx_base_classes->count; i++){
+			sc=getScriptClass(sc->idx_base_classes->items[i]); // get base class...
 			if(sc->str_class_ptr_type ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 			}
-		}*/
+		}
 
 
 		ScriptClass *this_class = (ScriptClass *)script_classes->get(idx_register_class);
-		this_class->idx_base_class=idx_base_class;
+		this_class->idx_base_classes->push_back(idx_base_class);
 
 		// add conversion type for this class
 		conversion_types[this_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(B *)((C *)entry);};

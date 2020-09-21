@@ -18,7 +18,7 @@ namespace zetscript{
 		int				idx_starting_this_members;
 		ClassTypeIdx 	idx_class; 	// registered class idx
 
-		Symbol symbol; 				// info symbol class
+		Symbol 			symbol;		// info symbol class
 
 
 		zs_vector *symbol_members; // a list of pre-registered C symbols to be added as stack element properties when class is instanced through scriptvar ( see ScriptVar::createSymbols)
@@ -31,7 +31,7 @@ namespace zetscript{
 		std::function<void * ()>			* 	c_constructor;
 		std::function<void (void *  p)> 	*	c_destructor;
 		std::string 							str_class_ptr_type; // type_id().name();
-		unsigned char						    idx_base_class; // list of idx of classes base
+		zs_vector						   	*   idx_base_classes; // list of idx of classes base
 
 
 		zs_vector 			*metamethod_operator[BYTE_CODE_METAMETHOD_MAX]; // overrided metamethod
