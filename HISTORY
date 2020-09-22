@@ -78,6 +78,7 @@ Date: XX-09-2020
 #135 eval negative identifier and constants tokens and perform LOAD with negative option or load negative constants instead of doing NEG.
 #136 Clear unusued scopes
 #137 Callback function support
+#138 remove all std::vector and std::string access on VM 
 > #139 Implement const operator 
 #141 limit n params only for c functions 
 #142 Try to optimize bind function member 
@@ -91,7 +92,7 @@ Date: XX-09-2020
 #153 fix DO-WHILE keyword
 #152 fix WHILE keyword
 #151 fix FOR keyword 
-> #155 Check compile Visual Studio 2015, 2019
+#155 Check compile Visual Studio 2015, 2019
 > #156 Fix SWITCH  
 #157 Fix +=,-=,/= etc operator
 > #159 Update manual ZetScript 2.0  

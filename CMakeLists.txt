@@ -97,6 +97,12 @@ else()
 endif()
 
 
+#set library generation as static by default
+set( LIBRARY_TYPE_CREATION "STATIC" )
+if(BUILD_SHARED_LIBS)
+	set( LIBRARY_TYPE_CREATION "SHARED" )
+endif()
+message("-- Library type: " ${LIBRARY_TYPE_CREATION})
 
 #
 # COMMON PARAMS
@@ -217,12 +223,6 @@ ELSE()
 	
 	)
 ENDIF()
-
-#set library generation as static by default
-set( LIBRARY_TYPE_CREATION "STATIC" )
-if( ${BUILD_SHARED_LIBS} EQUAL true )
-	set( LIBRARY_TYPE_CREATION "SHARED" )
-endif()
 
 # zetscriptlib
 add_library( zetscript${POST_NAME} ${LIBRARY_TYPE_CREATION} ${ZETSCRIPT_LIB_SRCS} )
