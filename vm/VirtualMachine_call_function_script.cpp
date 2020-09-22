@@ -93,13 +93,13 @@ namespace zetscript{
 			ScriptFunction 			* calling_function,
 			ScriptVar       		* this_object,
 			StackElement 		  	* _stk_start,
-			std::string 		  	* _str_start,
+			//std::string 		  	* _str_start,
 			unsigned char 			n_args,
 			Instruction 			*calling_instruction){
 
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
-		std::string *str_start;
+		//std::string *str_start;
 		StackElement *stk_start;
 
 		if(calling_function == NULL){
@@ -109,11 +109,11 @@ namespace zetscript{
 		zs_vector *registered_symbols=calling_function->registered_symbols;
 
 		stk_start =_stk_start;
-		str_start =_str_start;
+		/*str_start =_str_start;
 
 		if(str_start == NULL){
 			str_start=vm_str;
-		}
+		}*/
 
 		StackElement *stk_local_var=NULL;
 		StackElement *stk_arg=NULL;
@@ -243,7 +243,7 @@ namespace zetscript{
 		Instruction *calling_object_instruction;
 		const char * symbol_access_str;
 
-		vm_str_current=str_start;
+		//vm_str_current=str_start;
 		vm_stk_current=stk_start;
 
 		//-----------------------------------------------------------------------------------------------------------------------
@@ -258,7 +258,7 @@ namespace zetscript{
 			const unsigned char value_op1=instruction->value_op1;
 
 			if(instruction->properties & MSK_INSTRUCTION_PROPERTY_START_EXPRESSION){
-				vm_str_current=str_start; // reset op ptr
+				//vm_str_current=str_start; // reset op ptr
 				vm_stk_current=stk_start;
 			}
 
@@ -826,68 +826,21 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					unsigned short mask_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
-					unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);
-					if(mask_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){ // fast operation
+					unsigned short mask_and_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
+					if(mask_and_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){ // fast operation
 						PUSH_INTEGER(STK_VALUE_TO_INT(stk_result_op1) + STK_VALUE_TO_INT(stk_result_op2));
-					}else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){
-						if (STK_VALUE_IS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){
-							COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
-							PUSH_FLOAT(STK_VALUE_TO_INT(stk_result_op1) + f_aux_value2);
-						}else{
-							COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
-							PUSH_FLOAT(f_aux_value1 + STK_VALUE_TO_INT(stk_result_op2));
-						}
-					// TODO: Given 2 StackElement try to convert their values and return new stack element string
-					}else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
-						if (STK_VALUE_IS_STRING(stk_result_op1) && STK_VALUE_IS_INT(stk_result_op2)){
-							sprintf(str_aux,"%s%i",((const char *)stk_result_op1->stk_value),(int)((intptr_t)stk_result_op2->stk_value));
-							//PUSH_STRING(str_aux);
-							if(vm_str_current==vm_str_last){
-								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Error vm_str out-stack");
-							}
-							*vm_str_current++=str_aux;\
-							*vm_stk_current++={(void *)((vm_str_current-1)->c_str()),NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};\
-
-						}else{
-							sprintf(str_aux,"%i%s",(int)((intptr_t)stk_result_op1->stk_value),((const char *)stk_result_op2->stk_value));
-							PUSH_STRING(str_aux);
-						}
-					}else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
-						if (STK_VALUE_IS_STRING(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){
-							COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
-							sprintf(str_aux,"%s%f",((const char *)stk_result_op1->stk_value),f_aux_value2);
-							PUSH_STRING(str_aux);
-
-						}else{
-							COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
-							sprintf(str_aux,"%f%s",f_aux_value1,((const char *)stk_result_op2->stk_value));
-							PUSH_STRING(str_aux);
-						}
-					}else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
-						if (STK_VALUE_IS_STRING(stk_result_op1) && STK_VALUE_IS_UNDEFINED(stk_result_op2)){
-							sprintf(str_aux,"%s%s",((const char *)stk_result_op1->stk_value),"undefined");
-							PUSH_STRING(str_aux);
-						}else{
-							sprintf(str_aux,"%s%s","undefined",((const char *)stk_result_op2->stk_value));
-							PUSH_STRING(str_aux);
-						}
-
-					}else if(properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
-						if (STK_VALUE_IS_STRING(stk_result_op1) && STK_VALUE_IS_BOOLEAN(stk_result_op2)){
-							sprintf(str_aux,"%s%s",((const char *)stk_result_op1->stk_value),((bool)(stk_result_op2->stk_value))?"true":"false");
-							PUSH_STRING(str_aux);
-						}else{
-							sprintf(str_aux,"%s%s",((bool)(stk_result_op1->stk_value))?"true":"false",((const char *)stk_result_op2->stk_value));
-							PUSH_STRING(str_aux);
-						}
-					}else if (mask_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
-							sprintf(str_aux,"%s%s",((const char *)stk_result_op1->stk_value),((const char *)(stk_result_op2->stk_value)));
-							PUSH_STRING(str_aux);
-					}else if(mask_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
+					}else if(mask_and_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
 						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
 						COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
 						PUSH_FLOAT(f_aux_value1 + f_aux_value2);
+					}else if (STK_VALUE_IS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){ //if(mask_or_properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){
+						COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
+						PUSH_FLOAT(STK_VALUE_TO_INT(stk_result_op1) + f_aux_value2);
+					}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_INT(stk_result_op2)){
+						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
+						PUSH_FLOAT(f_aux_value1 + STK_VALUE_TO_INT(stk_result_op2));
+					}else if((stk_result_op1->properties | stk_result_op2->properties) ==  MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+						// TODO: Given 2 StackElement try to convert their values and return new stack element string
 					}else{ // try metamethod ...
 
 						if(!applyMetamethod(
@@ -1091,11 +1044,11 @@ namespace zetscript{
 									,stk_element_ptr
 									,stk_element_len
 									,is_constructor
-									,sf->symbol.name
+									,sf->symbol.name // symbol to find
 									,stk_start_arg_call
 									,n_args))==NULL){
 
-								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find function \"%s\"",symbol_to_find.c_str());
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot find function \"%s\"",sf->symbol.name.c_str());
 							}
 						}
 					}
@@ -1120,7 +1073,13 @@ namespace zetscript{
 						}
 
 						// by default virtual machine gets main object class in order to run functions ...
-						ret_obj=callFunctionScript(sf,calling_object,vm_stk_current,vm_str_current,n_args,instruction);
+						ret_obj=callFunctionScript(
+								sf
+								,calling_object
+								,vm_stk_current
+								//,vm_str_current
+								,n_args
+								,instruction);
 
 						if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 							// if c pointer is not from application share ...
@@ -1228,7 +1187,7 @@ namespace zetscript{
 				continue;
 
 			 case BYTE_CODE_POP_SCOPE:
-				vm_str_current=str_start; // reset op ptr
+				//vm_str_current=str_start; // reset op ptr
 				vm_stk_current=stk_start;
 				if(!popVmScope(idx_stk_current,NULL,value_op1)){
 					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Error pop scope");

@@ -163,7 +163,7 @@ namespace zetscript{
 
 		void inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value){
 
-			if(idx_end_instruction>eval_data->current_function->instructions.size()){
+			if(idx_end_instruction>(int)eval_data->current_function->instructions.size()){
 				THROW_RUNTIME_ERROR("idx_end_instruction out of bounds ");
 			}
 			EvalInstruction **it=&eval_data->current_function->instructions[idx_start_instruction];
@@ -439,7 +439,7 @@ namespace zetscript{
 
 						// try find local symbol  ...
 						Scope *scope=ls->scope;
-						Symbol * sc_var = scope->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN);
+						Symbol * sc_var = scope->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_BOTH);
 
 						if(sc_var != NULL){ // local symbol found
 
@@ -465,7 +465,7 @@ namespace zetscript{
 
 						if(!local_found){ // try global...
 							// try symbol as var...
-							Symbol * sc_var = MAIN_SCOPE(eval_data)->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY, ScopeDirection::SCOPE_DIRECTION_DOWN);
+							Symbol * sc_var = MAIN_SCOPE(eval_data)->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY, ScopeDirection::SCOPE_DIRECTION_BOTH);
 
 							if(sc_var != NULL){
 

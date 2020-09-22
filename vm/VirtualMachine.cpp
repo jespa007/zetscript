@@ -229,8 +229,8 @@ namespace zetscript{
 		idx_stk_current=0;
 		//------------------
 
-		f_return_value=0;
-		s_return_value="unknow";
+		//f_return_value=0;
+		//s_return_value="unknow";
 
 		cancel_execution=false;
 
@@ -244,8 +244,8 @@ namespace zetscript{
 
 		idx_last_statment=0;
 
-		vm_str_last=&vm_str[VM_MAX_AUX_STRINGS-1]; // aux values for std::string ...
-		vm_str_current=NULL;
+		//vm_str_last=&vm_str[VM_MAX_AUX_STRINGS-1]; // aux values for std::string ...
+		//vm_str_current=NULL;
 
 		vm_scope_max = &vm_scope[VM_SCOPE_MAX-1];
 
@@ -443,7 +443,7 @@ namespace zetscript{
 				calling_function,
 				this_object,
 				vm_stk_current,
-				NULL,
+				//NULL,
 				n_stk_params);
 		}catch(std::exception & ex){
 			// it was error so reset stack and stop execution ? ...

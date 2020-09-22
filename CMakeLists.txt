@@ -1,3 +1,21 @@
+# CMakeLists.txt
+#
+# Copyright 2020 by
+# Jordi Espada
+#
+# Say
+#
+#   cmake CMakeLists.txt
+#
+# to create a Makefile that builds a static version of the library.  For a
+# dynamic library, use
+#
+#   cmake CMakeLists.txt -DBUILD_SHARED_LIBS:BOOL=true
+#
+# instead.  Please refer to the cmake manual for further options, in
+# particular, how to modify compilation and linking parameters.
+#
+
 cmake_minimum_required(VERSION 2.8)
  
 project(zetscript)
@@ -173,7 +191,7 @@ ELSE()
 		eval/eval.cpp
 		
 		# Function
-		function/FunctionProxyFactory.cpp 		
+		function_proxy/FunctionProxyFactory.cpp 		
  		
  		# Scope
  		scope/Scope.cpp
@@ -200,8 +218,14 @@ ELSE()
 	)
 ENDIF()
 
+#set library generation as static by default
+set( LIBRARY_TYPE_CREATION "STATIC" )
+if( ${BUILD_SHARED_LIBS} EQUAL true )
+	set( LIBRARY_TYPE_CREATION "SHARED" )
+endif()
+
 # zetscriptlib
-add_library( zetscript${POST_NAME} STATIC ${ZETSCRIPT_LIB_SRCS} )
+add_library( zetscript${POST_NAME} ${LIBRARY_TYPE_CREATION} ${ZETSCRIPT_LIB_SRCS} )
 if(MSVC)
 	#only for msvc...
 	set_target_properties(zetscript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)

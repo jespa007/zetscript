@@ -41,7 +41,7 @@ namespace zetscript{
 				file
 				,line
 				,function_name
-				,args.size()
+				,(char)args.size()
 		))==NULL){
 			return NULL;
 		}

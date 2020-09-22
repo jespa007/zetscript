@@ -326,7 +326,7 @@ namespace zetscript{
 							}
 
 							// check whether parameter name's matches with some global variable...
-							if((irv=scope->getSymbol(arg_value.c_str())) != NULL){
+							if((irv=scope->getSymbol(arg_value.c_str(),NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN)) != NULL){
 								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line
 										,"Ambiguity: Argument \"%s\" with same name as variable defined at [%s:%i]"
 										, arg_value.c_str()

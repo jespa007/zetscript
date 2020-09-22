@@ -56,7 +56,11 @@ namespace zetscript{
 		unusued=true;
 	}
 
-	Symbol *  Scope::registerSymbolNoCheck(const std::string & file,short line, const std::string & symbol_name, char n_params){
+	Symbol *  Scope::registerSymbolNoCheck(
+		const std::string & file
+		,short line
+		, const std::string & symbol_name
+		, char n_params){
 		Symbol *irv = new Symbol();
 		irv->name = symbol_name;
 		irv->file	 = file;
@@ -101,7 +105,7 @@ namespace zetscript{
 		}
 
 		if(this->scope_child != NULL				 // it says that is the end of scopes
-			&& this->scope_child != MAIN_SCOPE(this) // avoid symbols to global scope to get right idx in global instead of local
+			//&& this->scope_child != MAIN_SCOPE(this) // avoid symbols to global scope to get right idx in global instead of local
 				){
 			return this->scope_child->getSymbolRecursiveDownScope(str_symbol,n_params);
 		}

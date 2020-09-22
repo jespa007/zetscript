@@ -16,7 +16,7 @@ namespace zetscript{
 	#define SET_INTEGER_RETURN(i)	CURRENT_VM->setIntegerReturnValue(i)
 	#define SET_BOOLEAN_RETURN(b) 	CURRENT_VM->setBooleanReturnValue(b)
 	#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
-	#define SET_STRING_RETURN(s)  	CURRENT_VM->setStringReturnValue(s)
+	//#define SET_STRING_RETURN(s)  	CURRENT_VM->setStringReturnValue(s)
 
 	#define NO_PARAMS std::vector<StackElement>{}
 	#define ZS_VM_FUNCTION_TYPE std::function<ScriptVar * (const std::vector<ScriptVar *> & param)>
@@ -40,7 +40,7 @@ namespace zetscript{
 
 		void init();
 
-		inline float *setFloatReturnValue(float f){
+		/*inline float *setFloatReturnValue(float f){
 			f_return_value = f;
 			return &f_return_value;
 		}
@@ -48,7 +48,7 @@ namespace zetscript{
 		inline std::string *setStringReturnValue(std::string s){
 			s_return_value = s;
 			return &s_return_value;
-		}
+		}*/
 
 		void addGlobalVar(const StackElement & stk);
 
@@ -107,24 +107,25 @@ namespace zetscript{
 
 		};
 
-		char				str_aux[8192];
+		//char				str_aux[8192];
 		float 				f_aux_value1,f_aux_value2;
-		 std::string 		aux_string,symbol_to_find,error_str;
+		std::string 		error_str;
+		// std::string 		aux_string,symbol_to_find,error_str;
 		 VM_Foreach 		vm_foreach[VM_FOREACH_MAX];
 		 VM_Foreach 		*vm_foreach_current;
 
 
 
-		 std::string		aux_string_param[MAX_NATIVE_FUNCTION_ARGS]; // for std::string params...
+		 //std::string		aux_string_param[MAX_NATIVE_FUNCTION_ARGS]; // for std::string params...
 
 		 VM_Scope		*vm_current_scope;
 		 VM_Scope		vm_scope[VM_SCOPE_MAX];
 		 VM_Scope		*vm_scope_max;
 
 
-		std::string			vm_str[VM_MAX_AUX_STRINGS]; // aux values for std::string ...
-		std::string			*vm_str_last;
-		std::string			*vm_str_current;
+		//std::string			vm_str[VM_MAX_AUX_STRINGS]; // aux values for std::string ...
+		//std::string			*vm_str_last;
+		//std::string			*vm_str_current;
 
 		 StackElement     	vm_stack[VM_STACK_LOCAL_VAR_MAX];
 		// int n_globals;
@@ -145,8 +146,8 @@ namespace zetscript{
 		ScriptClassFactory 	*script_class_factory;
 
 
-		float f_return_value;
-		std::string s_return_value;
+		//float f_return_value;
+		//std::string s_return_value;
 		StackElement stk_aux;
 
 		bool cancel_execution;
@@ -157,7 +158,7 @@ namespace zetscript{
 				ScriptFunction *info_function,
 				ScriptVar * this_object,
 				StackElement 		  * _ptrStartOp=NULL,
-				std::string 		  		  * _ptrStartStr=NULL,
+				//std::string 		  		  * _ptrStartStr=NULL,
 				unsigned char n_args=0,
 				Instruction *calling_instruction = NULL);
 

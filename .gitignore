@@ -1,4 +1,5 @@
 /.vscode/
 /.settings/
 /bin/
-/build/
+/build_gcc/
+/build_vc/

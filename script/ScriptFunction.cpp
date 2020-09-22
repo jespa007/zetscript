@@ -153,7 +153,7 @@ namespace zetscript{
 				break;
 
 			case LoadType::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"VAR   %s%s%s"
+				sprintf(print_aux_load_value,"VAR   %s%s%s%s"
 					,pre
 					,object_access
 					,symbol_value.c_str()
@@ -274,7 +274,7 @@ namespace zetscript{
 							,instruction->properties & MSK_INSTRUCTION_PROPERTY_POP_ONE ? "{pop one}":""
 						);
 				}else if(n_ops==1){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\t\%i %s\n"
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\t%i %s\n"
 							,idx_instruction
 							,ByteCodeToStr(instruction->byte_code)
 							,(instruction->properties & MSK_INSTRUCTION_PROPERTY_POP_ONE)?"_CS":""
@@ -416,15 +416,22 @@ namespace zetscript{
 			if(scope_block == MAIN_SCOPE(this)) {
 				// set global stk var...
 				zs->getVirtualMachine()->setStackElement(
-						idx_position
-						,(StackElement){0,(void *)symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION}
+					idx_position
+					,{
+						NULL
+						,(void *)symbol->ref_ptr
+						,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION
+					}
 				);
 			}
 
 			// register num symbols only for c symbols...
 			if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 				Symbol *symbol_repeat=NULL;
-				if((symbol_repeat=getSymbol(scope_block,symbol->name,params.size()))!=NULL){ // there's one or more name with same args --> mark
+				if((symbol_repeat=getSymbol(
+					scope_block
+					,symbol->name
+					,(char)params.size()))!=NULL){ // there's one or more name with same args --> mark
 					((ScriptFunction *)symbol_repeat->ref_ptr)->function_should_be_deduced_at_runtime=true; // mark the function found (only matters for first time)
 					((ScriptFunction *)symbol->ref_ptr)->function_should_be_deduced_at_runtime=true;
 				}

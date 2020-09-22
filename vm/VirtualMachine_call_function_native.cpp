@@ -94,7 +94,12 @@ namespace zetscript{
 			stk_arg_current=&stk_arg_calling_function[i];
 			FunctionParam *function_param=(FunctionParam *)calling_function->params->items[i];
 
-			if(!zs->convertStackElementToVar(stk_arg_current,function_param->idx_type,(intptr_t *)&converted_param[i],error_str)){
+			if(!zs->convertStackElementToVar(
+					stk_arg_current
+					,function_param->idx_type
+					,(intptr_t *)&converted_param[i]
+					,error_str
+			)){
 				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function \"%s\", param %i: %s. Native function \"%s\" that was found for first time it has different argument types now.",
 																calling_function->symbol.name.c_str(),
 																i,

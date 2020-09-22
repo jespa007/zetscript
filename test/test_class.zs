@@ -13,6 +13,7 @@ class Test{
 
 // post-include function member Test::function2
 function Test::function2(a){
+	var a=5;
 	this.function1(a+5); // it calls Test::function1(a+5)
 	this.a+=a;
 	print("Test::function2, this.a:"+this.a);
@@ -40,4 +41,4 @@ class TestExtended extends Test{
 };
 
 var t=new TestExtended(); 	// instances TestExtended class
-t.function3(20); 
+t.function3(20);

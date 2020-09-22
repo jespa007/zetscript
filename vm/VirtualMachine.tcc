@@ -198,7 +198,7 @@ namespace zetscript{
 				ptr_function_found
 				,script_var_object
 				,mm_test_startArg+idx_offset_function_member_start
-				,vm_str_current
+				//,vm_str_current
 				,n_metam_args);
 
 		/* restore ptrCurretOp... */

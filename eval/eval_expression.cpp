@@ -800,7 +800,7 @@ namespace zetscript{
 					,(int)(expression_tokens.size()-1)
 				);
 
-				if(level == 0 && eval_data->current_function->instructions.size()>idx_instruction_start_expression){ // set instruction as start statment...
+				if(level == 0 && (int)eval_data->current_function->instructions.size()>idx_instruction_start_expression){ // set instruction as start statment...
 					eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
 				}
 			}
