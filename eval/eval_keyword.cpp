@@ -974,18 +974,11 @@ namespace zetscript{
 
 										TokenNode token_node;
 										int idx_current_instruction=eval_data->current_function->instructions.size();
-										std::vector<EvalInstruction *> case_instructions=std::vector<EvalInstruction *>{
-											 token_node.instructions[0]		// load value to compare
-											,new EvalInstruction(
-													BYTE_CODE_JE
-													,ZS_IDX_UNDEFINED
-													,idx_current_instruction
-											) // je instruction...
-										};
 
+										// ignore case
 										IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
 
-										// capture constant value (should not be identifier in any case)
+										// capture constant value (should be a constant -not a identifier in any case-)
 										aux_p=eval_symbol(
 											eval_data
 											,aux_p
@@ -998,12 +991,22 @@ namespace zetscript{
 											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"'case' only accepts literals");
 										}
 
+										std::vector<EvalInstruction *> case_instructions={
+												token_node.instructions[0]
+												,new EvalInstruction(
+												BYTE_CODE_JE
+												,ZS_IDX_UNDEFINED
+												,idx_current_instruction
+										)};
+
+
 										// insert a pair of instructions...
-										ei_cases.insert(
-												ei_cases.end(),
-												case_instructions.begin(),
-												case_instructions.end()
-										);
+										ei_cases.push_back(token_node.instructions[0]);
+										ei_cases.push_back(new EvalInstruction(
+												BYTE_CODE_JE
+												,ZS_IDX_UNDEFINED
+												,idx_current_instruction
+										));
 
 									}else if(key_w == KEYWORD_DEFAULT){
 										if(n_default > 0){
@@ -1025,6 +1028,10 @@ namespace zetscript{
 									// ignore :
 									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line)
 
+									if((is_keyword(aux_p) == Keyword::KEYWORD_CASE)){ // another case ...
+										continue;
+									}
+
 									aux_p=eval_recursive(
 										eval_data
 										,aux_p
@@ -1033,7 +1040,13 @@ namespace zetscript{
 										, true // cancel eval when break or case is found...
 									);
 
+
 									if((is_keyword(aux_p) == Keyword::KEYWORD_BREAK)){ // it cuts current expression to link breaks...
+										IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[Keyword::KEYWORD_BREAK].str),line);
+										if(*aux_p != ';'){
+											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected ';' after break");
+										}
+										aux_p++;
 										EvalInstruction *ei_break_jmp=new EvalInstruction(BYTE_CODE_JMP);
 										eval_data->current_function->instructions.push_back(ei_break_jmp);
 										ei_break_jmps.push_back(ei_break_jmp);

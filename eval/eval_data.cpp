@@ -446,6 +446,7 @@ namespace zetscript{
 							*aux == '('  || // ( // mostly if,for,while,switch
 							*aux == '{'  || // ( // mostly else,
 							*aux == '\n' || // carry return
+							*aux == ':' ||  // mostly after case/default
 							*aux == ';' || // continue/break
 
 						   is_comment_block_start(aux)) //start block comment
