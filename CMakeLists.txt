@@ -323,11 +323,11 @@ ELSE()
 	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
 	
 	# function_script_call
-	add_executable(script_call_from_cpp${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/script_call_from_cpp.cpp
+	add_executable(test_script_call${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/test_script_call.cpp
 	)
 	
-	target_link_libraries(script_call_from_cpp${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
 	
 	
 	# register_constants
