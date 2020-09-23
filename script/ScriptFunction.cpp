@@ -93,31 +93,9 @@ namespace zetscript{
 			 return "ERROR";
 		 }
 
-		/*switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction->properties)){
-			case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
-				pre="-";
-				break;
-			case MSK_INSTRUCTION_PROPERTY_PRE_INC:
-				pre="++";
-				break;
-			case MSK_INSTRUCTION_PROPERTY_PRE_DEC:
-				pre="--";
-				break;
-			case MSK_INSTRUCTION_PROPERTY_POST_INC:
-				post="++";
-				break;
-			case MSK_INSTRUCTION_PROPERTY_POST_DEC:
-				post="--";
-				break;
-			default:
-				break;
 
-		}*/
-
-		 sprintf(print_aux_load_value,"UNDEFINED");
 
 		 if(instruction->properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS){
-
 			 sprintf(object_access,
 					"."
 					);
@@ -129,12 +107,7 @@ namespace zetscript{
 			sprintf(object_access,"this.");
 		 }
 
-
-		 //bool is_function_call=instruction->properties & MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;
-		 //bool is_vector_access=instruction->properties & MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;
-
 		 switch(instruction->value_op1){
-
 			case LoadType::LOAD_TYPE_CONSTANT:
 				icv=(ConstantValue *)instruction->value_op2;
 				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
@@ -151,7 +124,15 @@ namespace zetscript{
 
 				}
 				break;
-
+			case LoadType::LOAD_TYPE_UNDEFINED:
+				sprintf(print_aux_load_value,"???   %s%s%s%s"
+					,pre
+					,object_access
+					,symbol_value.c_str()
+					,post
+					//,is_function_call?"(function call)":""//is_vector_access?"(vector access)":""
+				);
+				break;
 			case LoadType::LOAD_TYPE_VARIABLE:
 				sprintf(print_aux_load_value,"VAR   %s%s%s%s"
 					,pre
@@ -163,10 +144,6 @@ namespace zetscript{
 				break;
 			case LoadType::LOAD_TYPE_FUNCTION:
 				sprintf(print_aux_load_value,"FUN   %s%s",object_access,symbol_value.c_str());
-				break;
-
-			case LoadType::LOAD_TYPE_ARGUMENT:
-				sprintf(print_aux_load_value,"ARG   %s%s",pre,symbol_value.c_str());
 				break;
 			default:
 
@@ -322,7 +299,7 @@ namespace zetscript{
 		return "unknown";
 	}
 
-	int ScriptFunction::existArgumentName(const std::string & arg_name){
+	/*int ScriptFunction::existArgumentName(const std::string & arg_name){
 		int idx_arg=ZS_IDX_UNDEFINED;
 
 		for(unsigned i = 0; i < this->params->count && idx_arg == ZS_IDX_UNDEFINED; i++){
@@ -332,7 +309,7 @@ namespace zetscript{
 			}
 		}
 		return idx_arg;
-	}
+	}*/
 
 	Symbol * ScriptFunction::registerLocalVariable(
 			 Scope * scope_block

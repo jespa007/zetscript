@@ -207,12 +207,7 @@ namespace zetscript{
 					is_constant_boolean=true;
 				}else{ // it should be an identifier token  ...
 					token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
-					intptr_t idx_local_var=	eval_data->current_function->script_function->existArgumentName(str_value);
-
-					if(idx_local_var!=ZS_IDX_UNDEFINED){ // is arg...
-						load_type=LOAD_TYPE_ARGUMENT;
-						obj=(void *)idx_local_var;
-					}else if(str_value == SYMBOL_VALUE_THIS || str_value == SYMBOL_VALUE_SUPER){
+					if(str_value == SYMBOL_VALUE_THIS || str_value == SYMBOL_VALUE_SUPER){
 						if(str_value == SYMBOL_VALUE_SUPER){
 							is_is_symbol_super_method=true;
 						}
@@ -264,11 +259,11 @@ namespace zetscript{
 
 			token_node->value = str_value;
 			token_node->instructions.push_back(
-					instruction=new EvalInstruction(ByteCode::BYTE_CODE_LOAD
-							,load_type
-							,(intptr_t)obj
-							,instruction_properties
-					));
+				instruction=new EvalInstruction(ByteCode::BYTE_CODE_LOAD
+						,load_type
+						,(intptr_t)obj
+						,instruction_properties
+			));
 
 			if(is_is_symbol_super_method){
 				instruction->is_symbol_super_method=true;
@@ -293,7 +288,6 @@ namespace zetscript{
 						  instructions->end()
 						, expression_tokens->at(idx_start).instructions.begin()
 						, expression_tokens->at(idx_start).instructions.end() );
-
 				return;
 			}
 
@@ -350,7 +344,6 @@ namespace zetscript{
 						,NULL
 				);
 			}
-
 		}
 
 		char * eval_expression(
@@ -365,7 +358,6 @@ namespace zetscript{
 			){
 			// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 			// If this functions finds ';' then the function will generate ast.
-
 			std::vector<TokenNode> expression_tokens;
 			PreOperator pre_operator = PreOperator::PRE_OPERATOR_UNKNOWN;
 			PrePostSelfOperation pre_self_operation_type=PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN;
@@ -377,19 +369,12 @@ namespace zetscript{
 			std::string last_accessor_value="";
 			const char *start_expression_str=NULL;
 			int start_expression_line=-1;
-
-			//bool is_first_access=false;
-			//int instruction_first_access=-1;
 			int instruction_identifier=ZS_IDX_UNDEFINED;
-			//unsigned char params=0;
-
-			//PASTNode ast_node_to_be_evaluated=NULL;
 			char *aux_p=NULL;
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 			start_expression_str=aux_p;
 			start_expression_line=line;
-
 
 			int idx_instruction_start_expression=eval_data->current_function->instructions.size();
 
@@ -435,7 +420,6 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
 					}
 
-					//std::vector<EvalInstruction *> 	instruction_inner;
 					aux_p=eval_expression(eval_data,aux_p+1, line, scope_info, &symbol_token_node.instructions,0,level+1);
 
 					if(*aux_p != ')'){
@@ -443,13 +427,6 @@ namespace zetscript{
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-
-					// concatenate instruction ...
-					/*symbol_token_node.instructions.insert(
-							symbol_token_node.instructions.end()
-							, instruction_inner.begin()
-							, instruction_inner.end()
-					);*/
 
 					if(pre_operator==PreOperator::PRE_OPERATOR_NEG || pre_operator==PreOperator::PRE_OPERATOR_NOT){
 						symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
@@ -535,7 +512,6 @@ namespace zetscript{
 							  || ((symbol_token_node.token_type == TokenType::TOKEN_TYPE_FUNCTION_OBJECT)&& *aux_p == '(')// cannot be a number/boolean or std::string and then accessor like . / ( / [
 							  || ((symbol_token_node.token_type == TokenType::TOKEN_TYPE_VECTOR  )&& *aux_p == '[')// inline function object like this: 1+function(a,b){ return a+b;} + 0
 							  || ((symbol_token_node.token_type == TokenType::TOKEN_TYPE_DICTIONARY  )&& *aux_p == '.')// inline struct object like this: 1+{"a":0,"b":1}.a + 0
-
 							))
 						{
 							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c' after literal",*aux_p);
@@ -574,16 +550,6 @@ namespace zetscript{
 							case '(': // is a function call
 
 								n_params=0;
-								// set info that symbol value is function call (its existence is mandatory in vm)
-								/*symbol_token_node.instructions[
-								   symbol_token_node.instructions.size()-1
-								]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_FUNCTION_CALL;*/
-
-								/*symbol_token_node.instructions[symbol_token_node.instructions.size()-1]->instruction_source_info= InstructionSourceInfo(
-									eval_data->current_parsing_file
-									,line
-									,get_compiled_symbol(eval_data,symbol_token_node.value.c_str())
-								);*/
 
 								if(link_symbol_first_access !=NULL){
 									link_symbol_first_access->n_params=0;
@@ -619,15 +585,9 @@ namespace zetscript{
 								}
 
 								byte_code=ByteCode::BYTE_CODE_CALL;
-								//is_first_access=false;
-								//link_symbol_first_access=NULL;
 								aux_p++;
 								break;
 							case '[': // std::vector access
-								/*symbol_token_node.instructions[
-								   symbol_token_node.instructions.size()-1
-								]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_VECTOR_ACCESS;*/
-
 								aux_p = eval_expression(
 										eval_data
 										,aux_p+1
@@ -642,8 +602,6 @@ namespace zetscript{
 									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
 								}
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-
-								//symbol_token_node.instruction.push_back(Instruction(ByteCode::BYTE_CODE_VGET));
 								byte_code=ByteCode::BYTE_CODE_VGET;
 								break;
 							case '.': // member access
@@ -669,7 +627,6 @@ namespace zetscript{
 										symbol_token_node.instructions[0]->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,accessor_value);
 									}
 								}
-
 
 								byte_code=ByteCode::BYTE_CODE_LOAD;
 								break;
@@ -709,9 +666,7 @@ namespace zetscript{
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 							//is_first_access=false; // not first access anymore...
 							link_symbol_first_access=NULL;
-
 							last_accessor_value=accessor_value;
-							//last_accessor_line=accessor_line;
 						}
 
 						if((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
@@ -775,7 +730,6 @@ namespace zetscript{
 					expression_tokens.push_back(operator_token_node);
 					aux_p+=inc_p;
 				}
-
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 			}
 
@@ -804,7 +758,6 @@ namespace zetscript{
 					eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
 				}
 			}
-
 			// last character is a separator so it return increments by 1
 			return aux_p;
 		}

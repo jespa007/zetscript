@@ -258,6 +258,7 @@ namespace zetscript{
 
 		script_function_factory=NULL;
 		script_class_factory=NULL;
+		scope_factory=NULL;
 	}
 
 	#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
@@ -271,8 +272,10 @@ namespace zetscript{
 	void VirtualMachine::init(){
 		script_function_factory=this->zs->getScriptFunctionFactory();
 		script_class_factory=this->zs->getScriptClassFactory();
+		scope_factory = this->zs->getScopeFactory();
 		main_function_object = MAIN_FUNCTION(this);
 		main_class_object = SCRIPT_CLASS_MAIN(this);
+
 
 	}
 

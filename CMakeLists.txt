@@ -47,7 +47,7 @@ include_directories (
 
 file(GLOB_RECURSE INCS "*.h")
 
-message("-- Dest.dir: " ${CMAKE_INSTALL_PREFIX})
+message("-- Install drectory: " ${CMAKE_INSTALL_PREFIX})
 
 set(ZETSCRIPT_LIB_SRCS "")
 
@@ -122,7 +122,7 @@ IF ( "${TARGET}" STREQUAL "debug")
 	set( POST_NAME "_d")
 ENDIF()
  
-MESSAGE ("-- Target : " ${TARGET})
+MESSAGE ("-- Target: " ${TARGET})
 
 IF ( "${TARGET}" STREQUAL "debug")
 	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__DEBUG__ ")
@@ -131,7 +131,7 @@ ENDIF()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
-	MESSAGE ("-- Toolchain : GNU")
+	MESSAGE ("-- Toolchain: GNU")
 
 	set(COMPILE_TARGET_FLAGS " -O2 -fomit-frame-pointer ")
 
@@ -140,10 +140,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	ENDIF ()
 	
 	IF ( "${32BIT}" STREQUAL "ON")
-		MESSAGE ("-- Compile 32bit : ON")
+		MESSAGE ("-- Architecture: 32bit")
 		set(COMPILE_TARGET_FLAGS " ${COMPILE_TARGET_FLAGS} -m32 ")
 	ELSE ()
-		MESSAGE ("-- Compile 32bit : OFF")
+		MESSAGE ("-- Architecture: 64bit")
 	ENDIF()
 
 	SET(CMAKE_C_FLAGS " ")
@@ -170,7 +170,7 @@ endif()
 # Library
 IF ( "${FCOMPILE}" STREQUAL "ON")
 
-	MESSAGE ("-- Fast compile: ON (Only generates library | Install process is disabled)" )
+	MESSAGE ("-- Fast compile: ON" )
 
 	set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 		include_all.cpp

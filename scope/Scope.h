@@ -18,13 +18,14 @@ namespace zetscript{
 	public:
 
 		bool is_c_node;
+		bool is_scope_function; // this will ignore symbols within scopes where functions starts to avoid conflicts with global functions...
 		ScriptClass *script_class;
 		int tmp_idx_instruction_push_scope;
 		unsigned int n_registered_symbols_as_variables;
 		// This flag is used to remove usign eraseUnusedScopes...
 		bool unusued;
 		//void		*eval_scope_tmp; // aux variable used on evaluation
-		Scope 		*scope_child, *scope_base;
+		Scope 		*scope_parent, *scope_base;
 
 		zs_vector				*registered_scopes;  // local scopes from starting block { }
 		zs_vector				*registered_symbols; // local symbols from starting block { }
@@ -35,7 +36,7 @@ namespace zetscript{
 		//--------------------------------------------------------------------
 		// Functions
 
-		Scope(ZetScript * _zs, Scope * _scope_child=NULL,bool is_c_node=false);
+		Scope(ZetScript * _zs, Scope * _scope_parent=NULL,bool is_c_node=false);
 
 		//--------------------------------------------------------------------
 		// Register functions
@@ -44,7 +45,7 @@ namespace zetscript{
 		 * register/search symbol info
 		 * @n_params:
 		 */
-		Symbol * registerSymbolNoCheck(const std::string & file, short line,const std::string & symbol_name, char n_params);
+		Symbol * addSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params);
 		Symbol * registerSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction=ScopeDirection::SCOPE_DIRECTION_BOTH);
 

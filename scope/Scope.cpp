@@ -11,8 +11,8 @@
 namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------
-	Scope::Scope(ZetScript * _zs, Scope * _scope_child, bool _is_c_node){
-		scope_child = _scope_child;
+	Scope::Scope(ZetScript * _zs, Scope * _scope_parent, bool _is_c_node){
+		scope_parent = _scope_parent;
 		is_c_node = _is_c_node;
 		script_class=NULL;
 		unusued=false;
@@ -22,19 +22,20 @@ namespace zetscript{
 		registered_scopes=new zs_vector;
 		registered_symbols=new zs_vector;
 
-		if(_scope_child == NULL){ // first node...
+		if(_scope_parent == NULL){ // first node...
 			scope_base = this;
 		}else{
-			scope_base = scope_child->scope_base;
-			script_class=scope_child->script_class; // propagate script class
+			scope_base = scope_parent->scope_base;
+			script_class=scope_parent->script_class; // propagate script class
 		}
 
 		n_registered_symbols_as_variables=0;
+		is_scope_function=false;
 	}
 
 	void Scope::setScriptClass(ScriptClass *sc){
-		if(scope_child != NULL){
-			THROW_RUNTIME_ERROR("Internal error setScriptclass scope_child should NULL (i.e scope should be root)");
+		if(scope_parent != NULL){
+			THROW_RUNTIME_ERROR("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
 			return;
 		}
 		script_class=sc;
@@ -48,15 +49,15 @@ namespace zetscript{
 
 		// link parent to its childs
 		for(unsigned i=0;i < registered_scopes->count; i++){
-			Scope *scope_child=(Scope *)registered_scopes->items[i];
-			scope_child->scope_child=scope_child;
+			Scope *scope_parent=(Scope *)registered_scopes->items[i];
+			scope_parent->scope_parent=scope_parent;
 		}
 
 		// mark as unused, late we can remove safely check unusued flag...
 		unusued=true;
 	}
 
-	Symbol *  Scope::registerSymbolNoCheck(
+	Symbol *  Scope::addSymbol(
 		const std::string & file
 		,short line
 		, const std::string & symbol_name
@@ -83,7 +84,6 @@ namespace zetscript{
 	Symbol * Scope::registerSymbol(const std::string & file,short line, const std::string & symbol_name, char n_params){
 		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
-
 		if((p_irv = getSymbol(symbol_name,n_params))!=NULL){ // check whether symbol is already registered ...
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
 				THROW_SCRIPT_ERROR(file.c_str(),line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file.c_str(),p_irv->line);
@@ -92,22 +92,27 @@ namespace zetscript{
 			}
 		}
 
-		return registerSymbolNoCheck(file, line, symbol_name, n_params);
+		return addSymbol(file, line, symbol_name, n_params);
 	}
 
 	Symbol * Scope::getSymbolRecursiveDownScope(const std::string & str_symbol, char n_params){
 
+		// find local symbols
 		for(unsigned i = 0; i < registered_symbols->count; i++){
 			Symbol *local_symbol = (Symbol *)registered_symbols->items[i];
-			if(local_symbol->name==str_symbol && (n_params == NO_PARAMS_SYMBOL_ONLY?true:local_symbol->n_params == n_params)){
+			if(
+				   ( local_symbol->name == str_symbol )
+				&& ( local_symbol->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY )
+			){
 				return local_symbol;//.idxScopeVar; // ptr scope ?
 			}
 		}
 
-		if(this->scope_child != NULL				 // it says that is the end of scopes
-			//&& this->scope_child != MAIN_SCOPE(this) // avoid symbols to global scope to get right idx in global instead of local
-				){
-			return this->scope_child->getSymbolRecursiveDownScope(str_symbol,n_params);
+		if(
+				this->scope_parent != NULL			 	 // it says that is the end of scopes
+				&& this->scope_parent != MAIN_SCOPE(this) // avoid find symbols to global scope. If not found in local it will try link global on eval_pop_function
+		){
+			return this->scope_parent->getSymbolRecursiveDownScope(str_symbol,n_params);
 		}
 
 		return NULL;
@@ -117,7 +122,10 @@ namespace zetscript{
 		// for each variable in current scope ...
 		for(unsigned i = 0; i < registered_symbols->count; i++){
 			Symbol *local_symbol=(Symbol *)registered_symbols->items[i];
-			if(local_symbol->name==str_symbol && (local_symbol->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY)){
+			if(
+				   ( local_symbol->name == str_symbol )
+			   &&  ( local_symbol->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY )
+			){
 				return local_symbol;
 			}
 		}
@@ -125,12 +133,18 @@ namespace zetscript{
 		// ok lets iterate through current scope list
 		for(unsigned i = 0; i < registered_scopes->count; i++){
 			Scope *s=(Scope *)registered_scopes->items[i];
-			Symbol *sv=s->getSymbolRecursiveUpScope(str_symbol,n_params);
 
-			if(sv != NULL) return sv;
+			if(s->is_scope_function == false){ // avoid local scope functions ...
+				Symbol *sv=s->getSymbolRecursiveUpScope(str_symbol,n_params);
+
+				if(sv != NULL) {
+					return sv;
+				}
+			}
+
 		}
 
-		return NULL;//false;//-1;
+		return NULL;
 
 	}
 

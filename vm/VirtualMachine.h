@@ -27,7 +27,6 @@ namespace zetscript{
 
 	public:
 
-
 		VirtualMachine(ZetScript *_zs);
 
 		PInfoSharedPointerNode newSharedPointer(ScriptVar *var_ptr);
@@ -36,7 +35,6 @@ namespace zetscript{
 		void removeSharedScriptVar( PInfoSharedPointerNode _node);
 
 		const ScriptFunction * getCurrent_C_FunctionCall();
-
 
 		void init();
 
@@ -142,8 +140,9 @@ namespace zetscript{
 		int idx_stk_current;
 		int idx_last_statment;
 		const ScriptFunction *current_call_c_function;
-		ZetScript *zs;		ScriptFunctionFactory *script_function_factory;
-		ScriptClassFactory 	*script_class_factory;
+		ZetScript *zs;		ScriptFunctionFactory 	*script_function_factory;
+		ScriptClassFactory 		*script_class_factory;
+		ScopeFactory 			*scope_factory;
 
 
 		//float f_return_value;
@@ -155,11 +154,11 @@ namespace zetscript{
 
 
 		StackElement  callFunctionScript(
-				ScriptFunction *info_function,
-				ScriptVar * this_object,
-				StackElement 		  * _ptrStartOp=NULL,
+				ScriptFunction 	*	info_function,
+				ScriptVar 		* 	this_object,
+				StackElement 	* 	_ptrStartOp=NULL,
 				//std::string 		  		  * _ptrStartStr=NULL,
-				unsigned char n_args=0,
+				unsigned char 		n_args=0,
 				Instruction *calling_instruction = NULL);
 
 

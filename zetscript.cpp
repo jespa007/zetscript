@@ -49,6 +49,10 @@ namespace zetscript{
 		 // for all classes print code...
 		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
 
+		 // print main function
+		 ScriptFunction::printGeneratedCode(sf_main);
+
+		 // print defined functions in main function
 		 for(unsigned j =0; j < sf_main->registered_symbols->count; j++){
 			Symbol *symbol=(Symbol *)sf_main->registered_symbols->items[j];
 

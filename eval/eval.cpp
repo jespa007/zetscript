@@ -152,10 +152,10 @@ namespace zetscript{
 
 		}
 
-		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_child){
-			Scope *new_scope = NEW_SCOPE(eval_data,scope_child);
-			scope_child->registered_scopes->push_back((intptr_t)new_scope);
-
+		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function){
+			Scope *new_scope = NEW_SCOPE(eval_data,scope_parent);
+			scope_parent->registered_scopes->push_back((intptr_t)new_scope);
+			new_scope->is_scope_function=is_function;
 			new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->instructions.size();
 
 			return new_scope;
@@ -217,7 +217,6 @@ namespace zetscript{
 				aux_p++;
 
 				new_scope_info = eval_new_scope(eval_data,scope_info); // special case... ast is created later ...
-
 
 				if((aux_p = eval_recursive(
 						eval_data
@@ -431,7 +430,7 @@ namespace zetscript{
 								instruction->vm_instruction.value_op2=symbol_function->idx_position;
 							}
 						}
-					}else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // search symbol within local or global  ...
+					}else{ // find locally, if not will be resolved at runt-time //else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // search symbol within local or global  ...
 						bool local_found=false;
 						ScriptFunction *script_function_found=NULL;
 						LoadType load_type=LoadType::LOAD_TYPE_UNDEFINED;
@@ -439,7 +438,7 @@ namespace zetscript{
 
 						// try find local symbol  ...
 						Scope *scope=ls->scope;
-						Symbol * sc_var = scope->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_BOTH);
+						Symbol * sc_var = scope->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN);
 
 						if(sc_var != NULL){ // local symbol found
 
@@ -463,48 +462,9 @@ namespace zetscript{
 							}
 						}
 
-						if(!local_found){ // try global...
-							// try symbol as var...
-							Symbol * sc_var = MAIN_SCOPE(eval_data)->getSymbol(ls->value, NO_PARAMS_SYMBOL_ONLY, ScopeDirection::SCOPE_DIRECTION_BOTH);
-
-							if(sc_var != NULL){
-
-								if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){
-									load_type=LoadType::LOAD_TYPE_VARIABLE;
-									instruction->vm_instruction.value_op2=sc_var->idx_position;
-								}else{ // function if((sc_var = MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params))!=NULL){ // function
-									// assign script function ...
-									if(sc_var->properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // get number symbols matching parameters
-										sc_var=MAIN_FUNCTION(eval_data)->getSymbol(sc_var->scope,ls->value,ls->n_params);
-									}
-
-									if(sc_var == NULL){
-										THROW_RUNTIME_ERROR("internal error expected symbol");
-									}
-
-									script_function_found=(ScriptFunction *)sc_var->ref_ptr;
-									instruction->vm_instruction.value_op2=sc_var->idx_position;
-									load_type=LoadType::LOAD_TYPE_FUNCTION;
-								}
-							}else{
-								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Symbol \"%s\" is not defined",ls->value.c_str());
-							}
-						}
-
 						if(instruction->vm_instruction.byte_code == BYTE_CODE_LOAD){
 							instruction->vm_instruction.value_op1=load_type;
 						}
-
-
-						// determine or not to solve at runtime for calling c functions with same symbol and different signatures
-						/*if(instruction->vm_instruction.byte_code == BYTE_CODE_CALL){
-							if(script_function_found != NULL){//instruction->vm_instruction.value_op2 != ZS_IDX_UNDEFINED){
-
-								if((script_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0 && n_symbols_found>1){ // function will be solved at run time because it has to check param type
-									instruction->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME; // late binding, solve at runtime...
-								}
-							}
-						}*/
 					}
 				}
 
@@ -521,7 +481,6 @@ namespace zetscript{
 				}
 
 				eval_data->current_function->script_function->instruction_source_info[i]=instruction_info;
-
 			}
 
 			// delete and popback function information...

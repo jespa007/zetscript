@@ -52,7 +52,6 @@ namespace zetscript{
 		LOAD_TYPE_CONSTANT,
 		LOAD_TYPE_VARIABLE,
 		LOAD_TYPE_FUNCTION,
-		LOAD_TYPE_ARGUMENT
 	}LoadType;
 
 

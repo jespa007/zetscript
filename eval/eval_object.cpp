@@ -20,7 +20,7 @@ namespace zetscript{
 			char *aux_p = (char *)s;
 			unsigned short scope=0; // global by default ...
 
-			if(scope_info->scope_child!=NULL){// is within function ?
+			if(scope_info->scope_parent!=NULL){// is within function ?
 				scope=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL;
 				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN){ // is within function member ?
 					scope=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS;

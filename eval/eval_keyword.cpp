@@ -5,7 +5,7 @@ namespace zetscript{
 		void pop_function(EvalData *eval_data);
 		char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * eval_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,bool return_on_break_or_continue_keyword = false);
-		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_child);
+		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function=false);
 		void eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start);
 		void inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value);
 		//Scope * evalPopScope(EvalData *eval_data, Scope *current_scope);
@@ -97,7 +97,7 @@ namespace zetscript{
 
 				if(key_w == Keyword::KEYWORD_CLASS){
 
-					if(scope_info->scope_child!=NULL){
+					if(scope_info->scope_parent!=NULL){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"class keyword is not allowed");
 					}
 
@@ -203,7 +203,7 @@ namespace zetscript{
 
 			static int n_anonymous_function=0;
 			std::string function_name="";
-			Scope *scope=scope_info;
+			//Scope *scope=scope_info;
 			size_t advance_chars=0;
 			bool is_anonymous=false;
 
@@ -211,7 +211,7 @@ namespace zetscript{
 			// check for keyword ...
 			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
 				&& scope_info->scope_base == scope_info
-				&& scope_info->scope_child == NULL // is function member
+				&& scope_info->scope_parent == NULL // is function member
 				){
 				key_w = Keyword::KEYWORD_FUNCTION;
 				sc=scope_info->script_class;
@@ -224,6 +224,9 @@ namespace zetscript{
 			if(key_w != Keyword::KEYWORD_UNKNOWN){
 
 				if(key_w == Keyword::KEYWORD_FUNCTION){
+
+					Scope *scope_function =eval_new_scope(eval_data,scope_info,true); // push current scope
+					ScriptFunction *sf=NULL;
 
 					// advance keyword...
 					aux_p += advance_chars;
@@ -276,7 +279,7 @@ namespace zetscript{
 
 						if(
 								scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)
-							 && scope_info->scope_child != NULL
+							 && scope_info->scope_parent != NULL
 						){
 							sc=scope_info->script_class;
 						}
@@ -318,21 +321,6 @@ namespace zetscript{
 							// copy value
 							zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
 
-							// check if repeats...
-							for(unsigned k = 0; k < args.size(); k++){
-								if(args[k].arg_name == arg_value){
-									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Repeated argument '%s' argument ",arg_value.c_str());
-								}
-							}
-
-							// check whether parameter name's matches with some global variable...
-							if((irv=scope->getSymbol(arg_value.c_str(),NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN)) != NULL){
-								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line
-										,"Ambiguity: Argument \"%s\" with same name as variable defined at [%s:%i]"
-										, arg_value.c_str()
-										, irv->file.c_str()
-										,irv->line);
-							}
 							// ok register symbol into the object function ...
 							arg_info.arg_name=arg_value;
 							args.push_back(arg_info);
@@ -368,7 +356,7 @@ namespace zetscript{
 						}
 						else{ // register as local variable in the function...
 							symbol_sf=eval_data->current_function->script_function->registerLocalFunction(
-								  scope_info
+								 scope_info
 								, eval_data->current_parsing_file
 								, line
 								, function_name
@@ -381,8 +369,19 @@ namespace zetscript{
 
 						}
 
-						push_function(eval_data,(ScriptFunction *)symbol_sf->ref_ptr);
+						sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
+						// register args as part of stack...
+						for(unsigned i=0; i < args.size(); i++){
+							sf->registerLocalVariable(
+									scope_function
+									,eval_data->current_parsing_file
+									,args[i].line
+									,args[i].arg_name
+							);
+						}
+
+						push_function(eval_data,sf);
 
 
 						// ok let's go to body..
@@ -390,9 +389,11 @@ namespace zetscript{
 								eval_data
 								,aux_p
 								,line
-								,scope);
+								,scope_function);
 
 						pop_function(eval_data);
+
+
 					}
 					else{
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Expected '('");
