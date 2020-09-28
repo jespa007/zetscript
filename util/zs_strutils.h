@@ -34,6 +34,7 @@ namespace zetscript{
 
 
 		 std::string int_to_str(int number);
+		 std::string float_to_str(float number);
 		 std::string to_lower(const std::string & str);
 		 std::string to_upper(const std::string & str);
 		 std::wstring to_wstring(const std::string &s);

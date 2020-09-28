@@ -156,14 +156,13 @@ namespace zetscript{
 		StackElement  callFunctionScript(
 				ScriptFunction 	*	info_function,
 				ScriptVar 		* 	this_object,
-				StackElement 	* 	_ptrStartOp=NULL,
+				StackElement 	* 	_stk_start_args=NULL,
 				//std::string 		  		  * _ptrStartStr=NULL,
 				unsigned char 		n_args=0,
 				Instruction *calling_instruction = NULL);
 
 
 		 StackElement  callFunctionNative(
-			 intptr_t fun_ptr,
 			 const ScriptFunction *calling_function,
 			 StackElement *stk_arg_calling_function,
 			 unsigned char n_args,
@@ -183,9 +182,9 @@ namespace zetscript{
 			ScriptVar *calling_object
 			,ScriptFunction *info_function
 			,Instruction * instruction
+			,bool is_constructor
 			,void *stk_elements_ptr // can be **stack_element from ScriptVar stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
 			,int stk_elements_len // length of stk_elements
-			,bool is_constructor
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
@@ -207,6 +206,8 @@ namespace zetscript{
 			,StackElement *stk_result_op2
 
 		);
+
+		inline StackElement performAddString(StackElement *stk_result_op1,StackElement *stk_result_op2);
 
 		void 				doStackDump();
 

@@ -212,7 +212,7 @@ namespace zetscript{
 							is_is_symbol_super_method=true;
 						}
 
-						instruction_properties=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS;
+						instruction_properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 
 					}else if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value)) != NULL){  // check if symbol is constant ...
 						obj=get_obj;
@@ -352,7 +352,7 @@ namespace zetscript{
 				, int & line
 				, Scope *scope_info
 				, std::vector<EvalInstruction *> 	* instructions
-				, char expected_ending_char
+				, std::vector<char> expected_ending_char
 				, int level
 
 			){
@@ -367,6 +367,7 @@ namespace zetscript{
 			int last_line_ok=0;
 			int last_accessor_line=0;
 			std::string last_accessor_value="";
+			std::string identifier_value="";
 			const char *start_expression_str=NULL;
 			int start_expression_line=-1;
 			int instruction_identifier=ZS_IDX_UNDEFINED;
@@ -420,7 +421,14 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
 					}
 
-					aux_p=eval_expression(eval_data,aux_p+1, line, scope_info, &symbol_token_node.instructions,0,level+1);
+					aux_p=eval_expression(
+							eval_data
+							,aux_p+1
+							, line
+							, scope_info
+							, &symbol_token_node.instructions
+							,std::vector<char>{}
+							,level+1);
 
 					if(*aux_p != ')'){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ')'");
@@ -544,6 +552,7 @@ namespace zetscript{
 							ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 							std::string accessor_value="";
 							bool this_symbol_access=false;
+							bool vector_access=false;
 							EvalInstruction *instruction_token=NULL;
 
 							switch(*aux_p){
@@ -557,13 +566,15 @@ namespace zetscript{
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 								if(*aux_p != ')'){
 									do{
+										// check if ref identifier...
+
 										aux_p = eval_expression(
 												eval_data
 												,aux_p
 												,line
 												,scope_info
 												,&symbol_token_node.instructions
-												,0
+												,std::vector<char>{}
 												,level+1
 										);
 
@@ -594,7 +605,7 @@ namespace zetscript{
 										,line
 										,scope_info
 										,&symbol_token_node.instructions
-										,0
+										,std::vector<char>{}
 										,level+1
 								);
 
@@ -602,7 +613,8 @@ namespace zetscript{
 									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
 								}
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-								byte_code=ByteCode::BYTE_CODE_VGET;
+								vector_access=true;
+								byte_code=ByteCode::BYTE_CODE_LOAD;
 								break;
 							case '.': // member access
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -641,7 +653,12 @@ namespace zetscript{
 
 									// mark as accessor
 									instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
-									instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS;
+
+									if(vector_access){
+										instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
+									}else{
+										instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
+									}
 
 									instruction_token->instruction_source_info= InstructionSourceInfo(
 										eval_data->current_parsing_file
@@ -733,11 +750,29 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 			}
 
-			if(expected_ending_char != 0) { // throw error...
-				if(*aux_p!=expected_ending_char){
-					size_t len=aux_p-start_expression_str;
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,start_expression_line,"Expected '%c' at the end of expression %10s...",expected_ending_char,zs_strutils::substring(start_expression_str,0,len).c_str());
+			if(expected_ending_char.size() > 0) { // throw error...
+				std::string expected_ending_str="Expected ";
+				bool found=false;
+
+				for(unsigned i=0; i < expected_ending_char.size() && found==false; i++){
+
+					if(*aux_p!=expected_ending_char[i]){
+						if(i>0){
+							expected_ending_str+=",";
+						}
+
+						expected_ending_str+=expected_ending_char[i];
+					}
+					else {
+						found=true;
+					}
 				}
+
+				if(found == false){
+					size_t len=aux_p-start_expression_str;
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
+				}
+
 			}
 
 			if(aux_p==0){

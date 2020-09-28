@@ -22,4 +22,8 @@ namespace zetscript{
 		str_value = s;
 	}
 
+	std::string ScriptVarString::toString(){
+		return str_value;
+	}
+
 }

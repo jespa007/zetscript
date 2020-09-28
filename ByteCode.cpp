@@ -31,7 +31,6 @@ namespace zetscript{
 			case BYTE_CODE_JNT:         return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          return "JT"; // goto if true ... goes end to conditional.
 			case BYTE_CODE_CALL: 		return "CALL"; // calling function after all of arguments are processed...
-			case BYTE_CODE_VGET: 		return "VGET"; // stdvector access after each index is processed...
 			case BYTE_CODE_INST_VEC: 	return "DECL_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_VPUSH: 		return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 		return "RET"; // Value pop for stdvector

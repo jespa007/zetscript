@@ -383,7 +383,7 @@ namespace zetscript{
 					ScriptFunction *sf=GET_SCRIPT_FUNCTION(eval_data,ls->idx_script_function);
 					ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
-					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS){ // search the symbol within class.
+					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS){ // search the symbol within class.
 
 						if(instruction->is_symbol_super_method){ // trivial super.
 							Symbol *symbol_sf_foundf=NULL;
@@ -411,7 +411,7 @@ namespace zetscript{
 							instruction->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
 							instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
 							instruction->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,str_symbol_to_find);
-							instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS;
+							instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 
 						}else{ // this symbol
 
@@ -442,7 +442,7 @@ namespace zetscript{
 
 						if(sc_var != NULL){ // local symbol found
 
-							instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL;
+							instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
 
 							if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
 								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){

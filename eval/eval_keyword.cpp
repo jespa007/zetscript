@@ -170,7 +170,7 @@ namespace zetscript{
 						return aux_p+1;
 
 					}else{
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{'");
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' after declare class \"%s\"",class_name.c_str());
 					}
 				}
 			}
@@ -295,6 +295,7 @@ namespace zetscript{
 
 						// grab words separated by ,
 						while(*aux_p != 0 && *aux_p != ')'){
+							arg_info.by_ref=false;
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 							if(args.size()>0){
 								if(*aux_p != ','){
@@ -309,6 +310,12 @@ namespace zetscript{
 
 							// capture line where argument is...
 							arg_info.line=line;
+
+							if(is_keyword(aux_p)==KEYWORD_REF){
+								IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
+								arg_info.by_ref =true;
+							}
+
 
 							//int m_start_arg=line;
 							end_var=get_identifier_token(
@@ -332,7 +339,7 @@ namespace zetscript{
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 						if(*aux_p != '{'){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{'");
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' as function block");
 						}
 
 						// register function ...
@@ -393,7 +400,6 @@ namespace zetscript{
 
 						pop_function(eval_data);
 
-
 					}
 					else{
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Expected '('");
@@ -427,7 +433,7 @@ namespace zetscript{
 							, line
 							, scope_info
 							,&eval_data->current_function->instructions
-							,';'
+							,std::vector<char>{';'}
 					))!= NULL){
 
 						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RET));
@@ -493,7 +499,7 @@ namespace zetscript{
 								,line
 								,scope_info
 								,&eval_data->current_function->instructions
-								,')'
+								,std::vector<char>{')'}
 						);
 
 						// insert instruction if evaluated expression
@@ -875,7 +881,7 @@ namespace zetscript{
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 						if(*aux_p != '{'){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' for-block");
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' for begin block");
 						}
 
 						// eval block ...
@@ -1086,7 +1092,7 @@ namespace zetscript{
 								return aux_p+1;
 							}
 							else{
-								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' switch");
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' begin switch block");
 							}
 					}
 					else{
@@ -1240,7 +1246,7 @@ namespace zetscript{
 									,start_line
 									,scope_info
 									,is_constant?&constant_instructions:&eval_data->current_function->instructions
-									,';'
+									,std::vector<char>{';',','}
 								);
 
 								if(is_constant){ // resolve constant_expression
@@ -1422,44 +1428,6 @@ namespace zetscript{
 			return aux_p;
 
 		}
-
-		/*char *eval_keyword_default(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
-			char *aux_p=(char *)s;
-			std::string value_to_eval;
-			TokenNode token_node;
-
-			//std::vector<EvalInstruction> *tokenCompiled = NULL;
-
-			IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
-
-			Keyword keyw = is_keyword(aux_p);
-
-			if(keyw == Keyword::KEYWORD_CASE){ // a keyword was detected...
-
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-				// get the symbol...
-				if(*aux_p=='-'){
-					// INSERT NEGATE OP.
-				}
-				aux_p++;
-
-				aux_p=eval_symbol(
-					eval_data
-					,aux_p
-					,line
-					,&token_node
-					,PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
-				);
-			}
-
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-			if(*aux_p != ':'){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected  ':' ");
-			}
-			return aux_p+1;
-		}*/
 
 		char *eval_keyword(EvalData *eval_data,const char *s, int & line, Scope *scope_info, Keyword & keyw){
 

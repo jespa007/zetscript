@@ -169,9 +169,9 @@ namespace zetscript{
 					}
 
 					if(script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_STRING){
-						val_ret=(intptr_t)(&script_variable->str_value);
+						val_ret=(intptr_t)(&((ScriptVarString *)script_variable)->str_value);
 						if(idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
-							val_ret=(intptr_t)script_variable->str_value.c_str();
+							val_ret=(intptr_t)((ScriptVarString *)script_variable)->str_value.c_str();
 						}
 					}else if(
 

@@ -24,7 +24,7 @@ namespace zetscript{
 		int 			idx_return_type; 			// idx return type
 		intptr_t 		ref_native_function_ptr;
 		bool 			function_should_be_deduced_at_runtime; // look-up for solve function on vm
-		zs_vector * params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
+		zs_vector 	* 	params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
 

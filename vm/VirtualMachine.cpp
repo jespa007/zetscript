@@ -433,11 +433,11 @@ namespace zetscript{
 				vm_stk_current=&vm_stack[main_function_object->registered_symbols->count];
 			}
 			vm_foreach_current=&vm_foreach[0];
-		}
-
-		// push param stack elements...
-		for(unsigned i = 0; i < n_stk_params; i++){
-			*vm_stk_current++=stk_params[i];
+		}else{ // Not main function -> allow params for other functions
+			// push param stack elements...
+			for(unsigned i = 0; i < n_stk_params; i++){
+				*vm_stk_current++=stk_params[i];
+			}
 		}
 
 		// byte code executing starts here. Later script function can call c++ function, but once in c++ function is not possible by now call script function again.
@@ -446,7 +446,6 @@ namespace zetscript{
 				calling_function,
 				this_object,
 				vm_stk_current,
-				//NULL,
 				n_stk_params);
 		}catch(std::exception & ex){
 			// it was error so reset stack and stop execution ? ...

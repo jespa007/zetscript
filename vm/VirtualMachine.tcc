@@ -86,14 +86,14 @@ namespace zetscript{
 			// remove deferred shared pointers...
 			removeEmptySharedPointers(idx_stack,ptr_callc_result);
 
-			search=false;
+			/*search=false;
 			if((properties & ScopeProperty::SCOPE_PROPERTY_BREAK)!=0){
 				search=((vm_current_scope-1)->properties & ScopeProperty::SCOPE_PROPERTY_BREAK) != ScopeProperty::SCOPE_PROPERTY_BREAK;
 			}
 
 			if((properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE)!=0){
 				search=((vm_current_scope-1)->properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE) != ScopeProperty::SCOPE_PROPERTY_CONTINUE;
-			}
+			}*/
 			// pop current var
 			--vm_current_scope;
 		}
@@ -177,9 +177,9 @@ namespace zetscript{
 					 calling_object
 					,calling_function
 					,instruction
+					,false
 					,(void *)stk_elements->items
 					,stk_elements->count
-					,false
 					,symbol_to_find
 					,stk_args
 					,n_stk_args
@@ -224,9 +224,9 @@ namespace zetscript{
 			ScriptVar *calling_object
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
+			,bool is_constructor
 			,void *stk_elements_ptr // vector of properties
 			,int stk_elements_len // vector of properties
-			,bool is_constructor
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
@@ -498,5 +498,81 @@ namespace zetscript{
 		}
 
 		return ptr_function_found;
+	}
+
+	inline StackElement VirtualMachine::performAddString(StackElement *stk_result_op1,StackElement *stk_result_op2){
+		// we have to create an new string variable
+
+		std::string *str;
+		ScriptVarString *script_var_string = NEW_STRING_VAR;
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
+		script_var_string->initSharedPtr();
+
+		std::string str1;
+		std::string str2;
+
+		std::string * str_dst[]={
+			   &str1,
+			   &str2
+		};
+
+		StackElement * stk_src[]={
+			   stk_result_op1,
+			   stk_result_op2
+		};
+
+		std::string ** str_dst_it=str_dst;
+		StackElement ** stk_src_it=stk_src;
+
+		// str1
+		for(unsigned i=0; i < 2; i++){
+			StackElement *stk_src_item=(*stk_src_it);
+			if(stk_src_item->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+				stk_src_item=(StackElement *)stk_src_item->var_ref;
+			}
+
+			switch(GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
+				*(*str_dst_it)="undefined";
+				break;
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
+				*(*str_dst_it)="null";
+				break;
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
+				*(*str_dst_it)=zs_strutils::int_to_str((intptr_t)(stk_src_item)->stk_value);
+				break;
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+				*(*str_dst_it)=zs_strutils::float_to_str(*((float *)&((stk_src_item)->stk_value)));
+				break;
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+				*(*str_dst_it)=(stk_src_item)->stk_value == 0?"false":"true";
+				break;
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+				*(*str_dst_it)=(const char *)(stk_src_item)->stk_value;
+				break;
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
+				*(*str_dst_it)="function";
+				break;
+			default:
+				if(stk_src_item->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+					*(*str_dst_it)=((ScriptVar *)(stk_src_item)->var_ref)->toString();
+				}
+				else{
+					*(*str_dst_it)="unknow";
+				}
+
+				break;
+			}
+
+			str_dst_it++;
+			stk_src_it++;
+
+		}
+
+		// save result
+		script_var_string->str_value=str1+str2;
+		stk_element.stk_value=(void *)script_var_string->str_value.c_str();
+
+		return stk_element;
 	}
 }

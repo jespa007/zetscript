@@ -34,7 +34,6 @@
 namespace zetscript{
 
 	StackElement  VirtualMachine::callFunctionNative(
-			intptr_t fun_ptr,
 			const ScriptFunction *calling_function,
 			StackElement *stk_arg_calling_function,
 			unsigned char n_args,
@@ -43,6 +42,27 @@ namespace zetscript{
 			){
 
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+
+
+		if(idx_stk_current < MAX_FUNCTION_CALL){
+			idx_stk_current++;
+		}
+		else{
+			THROW_RUNTIME_ERROR("Reached max stack");
+		}
+
+		intptr_t  fun_ptr = calling_function->ref_native_function_ptr;
+
+		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_C_STATIC_REF) == 0){
+			// is function member  ...
+
+			if(this_object!= NULL){
+				StackElement *stk_prop_fun = this_object->getProperty(calling_function->symbol.idx_position);
+				fun_ptr=((ScriptFunction *)stk_prop_fun->var_ref)->ref_native_function_ptr; // var ref holds function ptr
+			}else{
+				THROW_RUNTIME_ERROR("Internal error: expected object for function member");
+			}
+		}
 
 		intptr_t converted_param[MAX_NATIVE_FUNCTION_ARGS];
 		float 	 float_converted_param[MAX_NATIVE_FUNCTION_ARGS];
@@ -743,6 +763,17 @@ namespace zetscript{
 
 		stk_result=this->zs->convertVarToStackElement(result,calling_function->idx_return_type);
 
+		if(idx_stk_current > 0){
+			// remove tmp variables created...
+			removeEmptySharedPointers(idx_stk_current,NULL);
+
+			idx_stk_current--;
+		}
+		else{
+			THROW_RUNTIME_ERROR("Reached min stack");
+		}
 		return stk_result;
+
+
 	}
 }

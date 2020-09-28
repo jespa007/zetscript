@@ -12,10 +12,13 @@ namespace zetscript{
 	class  ScriptVarString: public ScriptVar{
 
 	public:
+		std::string str_value;
 
 		ScriptVarString(){}
 		ScriptVarString(ZetScript *_zs);
 		ScriptVarString(ZetScript *_zs,const std::string & s);
+
+		virtual std::string toString();
 
 	protected:
 		virtual void setup();

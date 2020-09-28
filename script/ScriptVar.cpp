@@ -414,8 +414,8 @@ namespace zetscript{
 		return registered_class_info->str_class_ptr_type;
 	}
 
-	std::string * ScriptVar::toString(){
-		return &str_value;
+	std::string ScriptVar::toString(){
+		return "@Class:"+registered_class_info->symbol.name;
 	}
 
 	void ScriptVar::initSharedPtr(){

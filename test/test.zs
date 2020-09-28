@@ -4,12 +4,22 @@ var d=10;
 f(d);
 
 
-function f(d){
-	d=2;
-	print(d);
+function f(d)
+{
+	if(d==10)
+	{
+		{
+			print(10);
+			
+			d=20;
+		}
+	}
 }
 
+
 print(d);
+
+//print(d);
 /*class A{
 	
 	f(d){

@@ -12,7 +12,6 @@ namespace zetscript{
 			KEYWORD_IF,
 			KEYWORD_ELSE,
 			KEYWORD_FOR,
-			//FOREACH_KEYWORD,
 			KEYWORD_IN,
 			KEYWORD_WHILE,
 			KEYWORD_DO_WHILE,
@@ -27,9 +26,9 @@ namespace zetscript{
 			KEYWORD_FUNCTION,
 			KEYWORD_CLASS,
 			KEYWORD_THIS,
-			//	SUPER_KEYWORD,
 			KEYWORD_NEW,
 			KEYWORD_DELETE,
+			KEYWORD_REF,
 			KEYWORD_MAX
 		}Keyword;
 
@@ -747,6 +746,7 @@ namespace zetscript{
 			eval_info_keywords[KEYWORD_NEW] = {KEYWORD_NEW,"new", NULL};
 			eval_info_keywords[KEYWORD_DELETE] = {KEYWORD_DELETE,"delete",eval_keyword_delete};
 			eval_info_keywords[KEYWORD_IN] = {KEYWORD_IN,"in",NULL};
+			eval_info_keywords[KEYWORD_REF] = {KEYWORD_REF,"ref",NULL};
 
 			// DIRECTIVES
 			eval_info_directives[DIRECTIVE_UNKNOWN]={DIRECTIVE_UNKNOWN, NULL};

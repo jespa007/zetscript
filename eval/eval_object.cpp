@@ -9,7 +9,7 @@ namespace zetscript{
 				,const char *s
 				, int & line
 				, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions
-				, char expected_ending_char=0 // expecting ending char when expression finish (by default not check or 0)
+				, std::vector<char>expected_ending_char={} // expecting ending char when expression finish (by default not check or 0)
 				, int level=0
 				);
 
@@ -21,15 +21,15 @@ namespace zetscript{
 			unsigned short scope=0; // global by default ...
 
 			if(scope_info->scope_parent!=NULL){// is within function ?
-				scope=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_LOCAL;
+				scope=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
 				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN){ // is within function member ?
-					scope=MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS;
+					scope=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 				}
 			}
 
 			instructions->push_back(eval_instruction=new EvalInstruction(
 					BYTE_CODE_LOAD
-					,scope & MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_THIS?LoadType::LOAD_TYPE_VARIABLE:LoadType::LOAD_TYPE_FUNCTION
+					,scope & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS?LoadType::LOAD_TYPE_VARIABLE:LoadType::LOAD_TYPE_FUNCTION
 					,ZS_IDX_UNDEFINED
 					,scope
 			));
@@ -142,7 +142,7 @@ namespace zetscript{
 						 ,line
 						 ,scope_info
 						 ,instructions
-						 ,0
+						 ,std::vector<char>{}
 						 ,level+1
 				);
 
@@ -191,7 +191,7 @@ namespace zetscript{
 						,line
 						,scope_info
 						,instructions
-						,0
+						,std::vector<char>{}
 						,level+1);
 
 				// vpush
@@ -257,7 +257,7 @@ namespace zetscript{
 								 BYTE_CODE_LOAD
 								 ,LoadType::LOAD_TYPE_VARIABLE
 								 ,ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
-								 ,MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS
+								 ,MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD
 							)
 						 );
 
@@ -287,7 +287,7 @@ namespace zetscript{
 									  ,line
 									  ,scope_info
 									  ,instructions
-									  ,0
+									  ,std::vector<char>{}
 									  ,level+1
 							);
 							  n_args++;
@@ -308,7 +308,7 @@ namespace zetscript{
 								 BYTE_CODE_CALL
 								 ,n_args
 								 ,ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
-								 ,MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE_ACCESS
+								 ,MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD
 							)
 						 );
 					 }

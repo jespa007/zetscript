@@ -94,6 +94,15 @@ namespace zetscript{
 		   return std::string(int_str);
 		}
 
+		std::string float_to_str(float number){
+
+			char float_str[100];
+
+			sprintf(float_str,"%f",number);
+
+		   return std::string(float_str);
+		}
+
 		std::string to_lower(const std::string & str){
 
 			std::string ret = str;

@@ -31,7 +31,7 @@ class ScriptClass;
 		//----------------------
 
 		// public vars ...
-		std::string str_value;
+		//std::string str_value;
 		void *value;
 
 		// Construct ...
@@ -84,7 +84,7 @@ class ScriptClass;
 
 		const std::string & getNativePointerClassName();
 
-		virtual std::string * toString();
+		virtual std::string toString();
 		virtual void initSharedPtr();
 		virtual void unrefSharedPtr();
 

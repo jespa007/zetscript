@@ -85,12 +85,12 @@ namespace zetscript{
 	}IdxBuiltInType;
 
 
-	typedef enum
+	/*typedef enum
 		:unsigned char{
 		 SCOPE_PROPERTY_BREAK		=0x1 << 0
 		,SCOPE_PROPERTY_CONTINUE	=0x1 << 1
 		,SCOPE_PROPERTY_FOR_IN		=0x1 << 2
-	}ScopeProperty;
+	}ScopeProperty;*/
 
 	typedef void  (* PrintFunctionCallback)(const char *filename, int line, const  char  *string_text);
 
@@ -149,6 +149,7 @@ namespace zetscript{
 		int idx_type;
 		std::string arg_name; //arg c++ type or arg name
 		int line;
+		bool by_ref;
 	}FunctionParam;
 
 	#pragma pack(pop)

@@ -47,10 +47,15 @@ namespace zetscript{
 
 	void						   Scope::markAsUnusued(){
 
-		// link parent to its childs
-		for(unsigned i=0;i < registered_scopes->count; i++){
-			Scope *scope_parent=(Scope *)registered_scopes->items[i];
-			scope_parent->scope_parent=scope_parent;
+		// because no variables in there...
+		if(scope_parent != NULL){
+			for(unsigned i=0;i < registered_scopes->count; i++){
+				Scope *current_scope=(Scope *)registered_scopes->items[i];
+				scope_parent->registered_scopes->push_back((intptr_t)current_scope);
+				current_scope->scope_parent = scope_parent;
+			}
+
+			registered_scopes->clear();
 		}
 
 		// mark as unused, late we can remove safely check unusued flag...
