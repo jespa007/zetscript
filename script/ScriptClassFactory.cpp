@@ -327,6 +327,7 @@ namespace zetscript{
 				 class_object = (ScriptVar *)value_object;
 				 break;
 			 default:
+				 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
 				 class_object = new ScriptVar(zs);
 				 class_object->init(rc, value_object);
 				 break;

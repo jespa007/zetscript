@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define NEW_STRUCT_VAR (new ScriptVarDictionary(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassStruct())))
+#define NEW_DICTIONARY_VAR (new ScriptVarDictionary(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassStruct())))
 
 namespace zetscript{
 

@@ -223,190 +223,194 @@ namespace zetscript{
 
 			if(key_w != Keyword::KEYWORD_UNKNOWN){
 
-				if(key_w == Keyword::KEYWORD_FUNCTION){
-
-					Scope *scope_function =eval_new_scope(eval_data,scope_info,true); // push current scope
-					ScriptFunction *sf=NULL;
-
-					// advance keyword...
-					aux_p += advance_chars;
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-					bool named_function = *aux_p!='(';
-
-					if(named_function){ // is named function..
-
-						if(check_anonymous_function){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected anonymous function");
-						}
-
-						// function cannot be declared within main scope
-						if(scope_info != MAIN_SCOPE(eval_data) && sc == NULL){ // function within a function (not function member)
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"named functions are only allowed in main scope. You can only use anonymous functions");
-						}
-
-						if(sc==NULL){ // check if function member declaration
-						   end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
-								eval_data
-								,aux_p
-								,line
-								,&sc
-								,function_name
-						   );
-						}
-
-						// not member function, so is normal function ...
-						if(end_var == NULL){ // global function
-							// check whwther the function is anonymous with a previous arithmetic operation ....
-							end_var=get_identifier_token(
-									eval_data
-									,aux_p
-									,line
-									,function_name
-							);
-							// copy value
-							zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
-						}
-						aux_p=end_var;
-						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-					}
-					else{ // name anonymous function
-						if(check_anonymous_function==false){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Anonymous functions should be used on expression");
-						}
-
-						is_anonymous=true;
-
-						if(
-								scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)
-							 && scope_info->scope_parent != NULL
-						){
-							sc=scope_info->script_class;
-						}
-					}
-
-					// eval function args...
-					if(*aux_p == '('){ // push arguments...
-
-						aux_p++;
-						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-						std::string arg_value;
-						FunctionParam arg_info;
-
-						// grab words separated by ,
-						while(*aux_p != 0 && *aux_p != ')'){
-							arg_info.by_ref=false;
-							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-							if(args.size()>0){
-								if(*aux_p != ','){
-									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ',' ");
-								}
-								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-							}
-
-							if(*aux_p == ')' || *aux_p == ','){
-								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected arg");
-							}
-
-							// capture line where argument is...
-							arg_info.line=line;
-
-							if(is_keyword(aux_p)==KEYWORD_REF){
-								IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
-								arg_info.by_ref =true;
-							}
-
-
-							//int m_start_arg=line;
-							end_var=get_identifier_token(
-									 eval_data
-									,aux_p
-									,line
-									,arg_value
-							);
-
-							// copy value
-							zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
-
-							// ok register symbol into the object function ...
-							arg_info.arg_name=arg_value;
-							args.push_back(arg_info);
-							aux_p=end_var;
-							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-						}
-
-						aux_p++;
-						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-						if(*aux_p != '{'){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' as function block");
-						}
-
-						// register function ...
-						if(is_anonymous){ // register named function...
-							function_name="_@afun_"+(scope_info->script_class!=SCRIPT_CLASS_MAIN(eval_data)?scope_info->script_class->symbol.name:"")+"_"+zs_strutils::int_to_str(n_anonymous_function++);
-						}
-
-
-						if(resulted_function_name!=NULL){ // save function...
-							*resulted_function_name=function_name;
-						}
-
-						//--- OP
-						if(sc!=NULL){ // register as variable member...
-							symbol_sf=sc->registerMemberFunction(
-									 eval_data->current_parsing_file
-									,line
-									,function_name
-									,args
-							);
-						}
-						else{ // register as local variable in the function...
-							symbol_sf=eval_data->current_function->script_function->registerLocalFunction(
-								 scope_info
-								, eval_data->current_parsing_file
-								, line
-								, function_name
-								, args
-							);
-
-							if(scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
-								symbol_sf->properties|=SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS;
-							}
-
-						}
-
-						sf=(ScriptFunction *)symbol_sf->ref_ptr;
-
-						// register args as part of stack...
-						for(unsigned i=0; i < args.size(); i++){
-							sf->registerLocalVariable(
-									scope_function
-									,eval_data->current_parsing_file
-									,args[i].line
-									,args[i].arg_name
-							);
-						}
-
-						push_function(eval_data,sf);
-
-
-						// ok let's go to body..
-						aux_p = eval_block(
-								eval_data
-								,aux_p
-								,line
-								,scope_function);
-
-						pop_function(eval_data);
-
-					}
-					else{
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Expected '('");
-					}
-				}else{
+				if(key_w != Keyword::KEYWORD_FUNCTION){
 					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected operator or function operator");
 				}
+
+				std::string arg_value;
+				FunctionParam arg_info;
+
+				Scope *scope_function =eval_new_scope(eval_data,scope_info,true); // push current scope
+				ScriptFunction *sf=NULL;
+
+				// advance keyword...
+				aux_p += advance_chars;
+				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+				bool named_function = *aux_p!='(';
+
+				if(named_function){ // is named function..
+
+					if(check_anonymous_function){
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected anonymous function");
+					}
+
+					// function cannot be declared within main scope
+					if(scope_info != MAIN_SCOPE(eval_data) && sc == NULL){ // function within a function (not function member)
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"named functions are only allowed in main scope. You can only use anonymous functions");
+					}
+
+					if(sc==NULL){ // check if function member declaration
+					   end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
+							eval_data
+							,aux_p
+							,line
+							,&sc
+							,function_name
+					   );
+					}
+
+					// not member function, so is normal function ...
+					if(end_var == NULL){ // global function
+						// check whwther the function is anonymous with a previous arithmetic operation ....
+						end_var=get_identifier_token(
+								eval_data
+								,aux_p
+								,line
+								,function_name
+						);
+						// copy value
+						zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
+					}
+					aux_p=end_var;
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				}
+				else{ // name anonymous function
+					if(check_anonymous_function==false){
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Anonymous functions should be used on expression");
+					}
+
+					is_anonymous=true;
+
+					if(
+							scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)
+						 && scope_info->scope_parent != NULL
+					){
+						sc=scope_info->script_class;
+					}
+				}
+
+				// eval function args...
+				if(*aux_p != '('){ // push arguments...
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected open '(' for function");
+				}
+
+				// save scope pointer for function args ...
+				aux_p++;
+				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+				// grab words separated by ,
+				while(*aux_p != 0 && *aux_p != ')'){
+					arg_info.by_ref=false;
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					if(args.size()>0){
+						if(*aux_p != ','){
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ',' ");
+						}
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+					}
+
+					if(*aux_p == ')' || *aux_p == ','){
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected arg");
+					}
+
+					// capture line where argument is...
+					arg_info.line=line;
+
+					if(is_keyword(aux_p)==KEYWORD_REF){
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
+						arg_info.by_ref =true;
+					}
+
+
+					//int m_start_arg=line;
+					end_var=get_identifier_token(
+							 eval_data
+							,aux_p
+							,line
+							,arg_value
+					);
+
+					// copy value
+					zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
+
+					// ok register symbol into the object function ...
+					arg_info.arg_name=arg_value;
+					args.push_back(arg_info);
+					aux_p=end_var;
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				}
+
+				aux_p++;
+				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+				if(*aux_p != '{'){
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' as function block");
+				}
+
+				// register function ...
+				if(is_anonymous){ // register named function...
+					function_name="_@afun_"+(scope_info->script_class!=SCRIPT_CLASS_MAIN(eval_data)?scope_info->script_class->symbol.name:"")+"_"+zs_strutils::int_to_str(n_anonymous_function++);
+				}
+
+
+				if(resulted_function_name!=NULL){ // save function...
+					*resulted_function_name=function_name;
+				}
+
+				//--- OP
+				if(sc!=NULL){ // register as variable member...
+					symbol_sf=sc->registerMemberFunction(
+							 eval_data->current_parsing_file
+							,line
+							,function_name
+							,args
+					);
+				}
+				else{ // register as local variable in the function...
+					symbol_sf=eval_data->current_function->script_function->registerLocalFunction(
+						 scope_info
+						, eval_data->current_parsing_file
+						, line
+						, function_name
+						, args
+					);
+
+					if(scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
+						symbol_sf->properties|=SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS;
+					}
+
+				}
+
+				sf=(ScriptFunction *)symbol_sf->ref_ptr;
+
+				// register args as part of stack...
+				for(unsigned i=0; i < args.size(); i++){
+					sf->registerLocalVariable(
+							scope_function
+							,eval_data->current_parsing_file
+							,args[i].line
+							,args[i].arg_name
+					);
+				}
+
+
+				push_function(eval_data,sf);
+
+
+				// ok let's go to body..
+				aux_p = eval_block(
+						eval_data
+						,aux_p
+						,line
+						,scope_function);
+
+				eval_check_scope(eval_data,scope_function,0); // --> first instruction
+
+				pop_function(eval_data);
+
+
+
 			}
 			return aux_p;
 		}

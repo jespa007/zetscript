@@ -156,7 +156,12 @@ namespace zetscript{
 			Scope *new_scope = NEW_SCOPE(eval_data,scope_parent);
 			scope_parent->registered_scopes->push_back((intptr_t)new_scope);
 			new_scope->is_scope_function=is_function;
-			new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->instructions.size();
+			if(is_function){
+				new_scope->tmp_idx_instruction_push_scope=0;
+			}
+			else{
+				new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->instructions.size();
+			}
 
 			return new_scope;
 		}

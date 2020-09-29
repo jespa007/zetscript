@@ -166,10 +166,11 @@
 
 
 #define SHARE_LIST_INSERT(list,_node){\
-		if(list.first == NULL){\
+		if(_node->next != NULL || _node->previous!=NULL) THROW_RUNTIME_ERROR(" Internal error expected node not in list");\
+		if(list.first == NULL){ /*one  node: trivial ?*/ \
 			_node->previous=_node->next= list.last = list.first =_node;\
 		}\
-		else{\
+		else{ /* >1 node add to the end */ \
 			list.last->next=_node;\
 			_node->previous=list.last;\
 			list.last=_node;\
@@ -180,20 +181,14 @@
 
 #define SHARE_LIST_DEATTACH(list,_node) \
 {\
-		if(_node->next == _node){/*one  node: trivial ?*/\
-			list.first = list.last = _node->next = _node->previous=NULL;\
+		if(_node->next == NULL || _node->previous==NULL) THROW_RUNTIME_ERROR(" Internal error expected node in list");\
+		if(list.first==_node && list.first == list.last){/*one  node: trivial ?*/\
+			list.first = list.last = NULL;\
 		}else{/* >1 node */\
-			PInfoSharedPointerNode previous=_node->previous;\
-			PInfoSharedPointerNode next=_node->next;\
-			if(_node==list.first){\
-				list.first = next;\
-			}\
-			else if(_node==list.last){\
-				list.last = previous;\
-			}\
-			previous->next = next;\
-			next->previous = previous;\
+			_node->previous->next = _node->next;\
+			_node->next->previous = _node->previous;\
 		}\
+		_node->next = _node->previous=NULL;\
 }
 
 #define PUSH_VM_SCOPE(_scope,_ptr_info_function, _ptr_local_var,_properties) {\
@@ -209,8 +204,10 @@ namespace zetscript{
 	void VirtualMachine::doStackDump(){
 		// derefer all variables in all scopes (except main )...
 		while(vm_scope<(vm_current_scope)){
-			popVmScope(idx_stk_current,NULL,0);
+			popVmScope(false);
 		}
+
+		removeEmptySharedPointers(NULL);
 		idx_stk_current=0;
 	}
 
@@ -218,8 +215,8 @@ namespace zetscript{
 		//-----------------------------------------------------------
 		// set memory manager
 
-		memset(zero_shares,0,sizeof(zero_shares));
-		memset(shared_var,0,sizeof(shared_var));
+		memset(&zero_shares,0,sizeof(zero_shares));
+		memset(&shared_var,0,sizeof(shared_var));
 		StackElement *aux=vm_stack;
 
 		for(int i=0; i < VM_STACK_LOCAL_VAR_MAX;i++){
@@ -252,7 +249,7 @@ namespace zetscript{
 		main_function_object = NULL;
 		main_class_object=NULL;
 
-		vm_foreach_current=NULL;
+		//vm_foreach_current=NULL;
 		current_call_c_function = NULL;
 		zs=_zs;
 
@@ -288,10 +285,10 @@ namespace zetscript{
 		PInfoSharedPointerNode _node = (PInfoSharedPointerNode)malloc(sizeof(InfoSharedPointerNode));
 		_node->data.n_shares=0;
 		_node->data.shared_ptr=_var_ptr;
-		_node->currentStack = idx_stk_current;
+		//_node->currentStack = idx_stk_current;
 
 		// insert node into shared nodes ...
-		SHARE_LIST_INSERT(zero_shares[idx_stk_current],_node);
+		SHARE_LIST_INSERT(zero_shares,_node);
 		//zero_shares[idx_stk_current].InsertNode(_node);
 		return _node;
 	}
@@ -311,10 +308,10 @@ namespace zetscript{
 		if(move_to_shared_list){
 
 			// Mov to shared pointer...
-			SHARE_LIST_DEATTACH(zero_shares[_node->currentStack],_node);
+			SHARE_LIST_DEATTACH(zero_shares,_node);
 			// update current stack due different levels from functions!
-			_node->currentStack=idx_stk_current;
-			SHARE_LIST_INSERT(shared_var[idx_stk_current],_node);
+			//_node->currentStack=idx_stk_current;
+			SHARE_LIST_INSERT(shared_var,_node);
 		}
 	}
 
@@ -324,7 +321,7 @@ namespace zetscript{
 		if(*n_shares > 0){
 			if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
 
-				SHARE_LIST_DEATTACH(shared_var[_node->currentStack],_node);
+				SHARE_LIST_DEATTACH(shared_var,_node);
 
 				if(remove_if_0){ // remove node and data instead...
 					delete _node->data.shared_ptr;
@@ -332,8 +329,8 @@ namespace zetscript{
 				}
 				else{ // insert into zero array.. if not referenced anymore will be removed by REMOVE_0_SHARED
 					// update current stack due different levels from functions!
-					_node->currentStack=idx_stk_current;
-					SHARE_LIST_INSERT(zero_shares[idx_stk_current],_node);
+					//_node->currentStack=idx_stk_current;
+					SHARE_LIST_INSERT(zero_shares,_node);
 				}
 			}
 		}
@@ -398,10 +395,10 @@ namespace zetscript{
 			}
 		}
 
-		removeEmptySharedPointers(0,NULL);
+		removeEmptySharedPointers(NULL);
 
-		memset(zero_shares,0,sizeof(zero_shares));
-		memset(shared_var,0,sizeof(shared_var));
+		memset(&zero_shares,0,sizeof(zero_shares));
+		memset(&shared_var,0,sizeof(shared_var));
 		idx_stk_current=0;
 	}
 
@@ -432,7 +429,7 @@ namespace zetscript{
 			if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
 				vm_stk_current=&vm_stack[main_function_object->registered_symbols->count];
 			}
-			vm_foreach_current=&vm_foreach[0];
+			//vm_foreach_current=&vm_foreach[0];
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
 			for(unsigned i = 0; i < n_stk_params; i++){

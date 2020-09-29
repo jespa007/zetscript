@@ -1,3 +1,4 @@
+// STATIC REFERENCES
 #define PTR_FUNCTION_VOID_PARAM0(f) ((void (*)())(f))
 #define PTR_FUNCTION_VOID_PARAM1(f) ((void (*)(intptr_t))(f))
 #define PTR_FUNCTION_VOID_PARAM2(f) ((void (*)(intptr_t,intptr_t))(f))
@@ -13,7 +14,6 @@
 #define PTR_FUNCTION_RET_PARAM4(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t,intptr_t))(f))
 #define PTR_FUNCTION_RET_PARAM5(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
 #define PTR_FUNCTION_RET_PARAM6(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
-
 
 #define PTR_FUNCTION_RET_FLOAT_PARAM0(f) ((float (*)())(f))
 #define PTR_FUNCTION_RET_FLOAT_PARAM1(f) ((float (*)(intptr_t))(f))
@@ -31,6 +31,39 @@
 #define PTR_FUNCTION_RET_BOOL_PARAM5(f) ((bool (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
 #define PTR_FUNCTION_RET_BOOL_PARAM6(f) ((bool (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
 
+// MEMBER REFERENCES
+#define PTR_FUNCTION_MEMBER_VOID_PARAM0(f) (*((std::function<void(intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM1(f) (*((std::function<void(intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM2(f) (*((std::function<void(intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM3(f) (*((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM4(f) (*((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM5(f) (*((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM6(f) (*((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+
+#define PTR_FUNCTION_MEMBER_RET_PARAM0(f) (*((std::function<intptr_t(intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM1(f) (*((std::function<intptr_t(intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM2(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM3(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM4(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM5(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM6(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM0(f) (*((std::function<float(intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM1(f) (*((std::function<float(intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM2(f) (*((std::function<float(intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM3(f) (*((std::function<float(intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM4(f) (*((std::function<float(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM5(f) (*((std::function<float(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM6(f) (*((std::function<float(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM0(f) (*((std::function<bool(intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM1(f) (*((std::function<bool(intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM2(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM3(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM4(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM5(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM6(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+
 namespace zetscript{
 
 	StackElement  VirtualMachine::callFunctionNative(
@@ -41,21 +74,9 @@ namespace zetscript{
 			ScriptVar  * this_object
 			){
 
-		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
-
-
-		if(idx_stk_current < MAX_FUNCTION_CALL){
-			idx_stk_current++;
-		}
-		else{
-			THROW_RUNTIME_ERROR("Reached max stack");
-		}
-
 		intptr_t  fun_ptr = calling_function->ref_native_function_ptr;
 
-		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_C_STATIC_REF) == 0){
-			// is function member  ...
-
+		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_C_STATIC_REF) == 0){ // is function member  ...
 			if(this_object!= NULL){
 				StackElement *stk_prop_fun = this_object->getProperty(calling_function->symbol.idx_position);
 				fun_ptr=((ScriptFunction *)stk_prop_fun->var_ref)->ref_native_function_ptr; // var ref holds function ptr
@@ -107,7 +128,6 @@ namespace zetscript{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->params->count,MAX_NATIVE_FUNCTION_ARGS);
 		}
 
-
 		// convert parameters script to c...
 		for(unsigned char  i = 0; i < n_args;i++){
 
@@ -146,10 +166,8 @@ namespace zetscript{
 				if(static_ref){
 					PTR_FUNCTION_VOID_PARAM0(fun_ptr)();
 				}else{
-					(*((std::function<void(
-							intptr_t // object
-					)> *)fun_ptr))(
-							param_this_object
+					PTR_FUNCTION_MEMBER_VOID_PARAM0(fun_ptr)(
+						param_this_object
 					);
 				}
 				break;
@@ -159,10 +177,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					(*((std::function<void(
-							intptr_t  // object
-							,intptr_t // param1
-					)> *)fun_ptr))(
+					PTR_FUNCTION_MEMBER_VOID_PARAM1(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 					);
@@ -175,11 +190,7 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					(*((std::function<void(
-							intptr_t  // object
-							,intptr_t // param2
-							,intptr_t // param2
-					)> *)fun_ptr))(
+					PTR_FUNCTION_MEMBER_VOID_PARAM2(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -194,12 +205,7 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					(*((std::function<void(
-							intptr_t  // object
-							,intptr_t // param2
-							,intptr_t // param2
-							,intptr_t // param3
-					)> *)fun_ptr))(
+					PTR_FUNCTION_MEMBER_VOID_PARAM3(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -216,13 +222,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					(*((std::function<void(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-					)> *)fun_ptr))(
+					PTR_FUNCTION_MEMBER_VOID_PARAM4(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -234,21 +234,14 @@ namespace zetscript{
 			case 5:
 				if(static_ref){
 					PTR_FUNCTION_VOID_PARAM5(fun_ptr)(
-						converted_param[0]
+						 converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
 						,converted_param[4]
 				  );
 				}else{
-					(*((std::function<void(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-							,intptr_t // param5
-					)> *)fun_ptr))(
+					PTR_FUNCTION_MEMBER_VOID_PARAM5(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -269,15 +262,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					(*((std::function<void(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-							,intptr_t // param5
-							,intptr_t // param6
-					)> *)fun_ptr))(
+					PTR_FUNCTION_MEMBER_VOID_PARAM6(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -296,9 +281,7 @@ namespace zetscript{
 				if(static_ref){
 					result=PTR_FUNCTION_RET_BOOL_PARAM0(fun_ptr)();
 				}else{
-					result=(*((std::function<bool(
-							intptr_t  // object
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_BOOL_PARAM0(fun_ptr)(
 						param_this_object
 					);
 				}
@@ -309,10 +292,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					result=(*((std::function<bool(
-							intptr_t  // object
-							,intptr_t // param1
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_BOOL_PARAM1(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 					);
@@ -325,11 +305,7 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					result=(*((std::function<bool(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_BOOL_PARAM2(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -344,12 +320,7 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					result=(*((std::function<bool(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_BOOL_PARAM3(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -366,13 +337,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					result=(*((std::function<bool(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_BOOL_PARAM4(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -391,22 +356,13 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					result=(*((std::function<bool(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-							,intptr_t // param5
-
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_BOOL_PARAM5(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
 						,converted_param[4]
-
 					);
 				}
 				break;
@@ -421,15 +377,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					result=(*((std::function<bool(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-							,intptr_t // param5
-							,intptr_t // param6
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_BOOL_PARAM6(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -448,9 +396,7 @@ namespace zetscript{
 				if(static_ref){
 					aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();
 				}else{
-					aux_flt=(*((std::function<float(
-							intptr_t  // object
-					)> *)fun_ptr))(
+					aux_flt=PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM0(fun_ptr)(
 						param_this_object
 					);
 				}
@@ -461,11 +407,7 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					aux_flt=(*((std::function<float(
-							intptr_t  // object
-							,intptr_t // param1
-
-					)> *)fun_ptr))(
+					aux_flt=PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM1(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 					);
@@ -478,16 +420,10 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					aux_flt=(*((std::function<float(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-
-					)> *)fun_ptr))(
+					aux_flt=PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM2(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
-
 					);
 				}
 				break;
@@ -499,17 +435,11 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					aux_flt=(*((std::function<float(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-					)> *)fun_ptr))(
+					aux_flt=PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM3(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
-
 					);
 				}
 				break;
@@ -522,13 +452,7 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					aux_flt=(*((std::function<float(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-					)> *)fun_ptr))(
+					aux_flt=PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM4(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -547,21 +471,13 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					aux_flt=(*((std::function<float(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-							,intptr_t // param5
-					)> *)fun_ptr))(
+					aux_flt=PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM5(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
 						,converted_param[4]
-
 					);
 				}
 				break;
@@ -576,15 +492,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					aux_flt=(*((std::function<float(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-							,intptr_t // param5
-							,intptr_t // param6
-					)> *)fun_ptr))(
+					aux_flt=PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM6(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -605,11 +513,8 @@ namespace zetscript{
 				if(static_ref){
 					result=PTR_FUNCTION_RET_PARAM0(fun_ptr)();
 				}else{
-					result=(*((std::function<intptr_t(
-							intptr_t  // object
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_PARAM0(fun_ptr)(
 						param_this_object
-
 					);
 				}
 				break;
@@ -619,14 +524,9 @@ namespace zetscript{
 						converted_param[0]
 					);
 				}else{
-					result=(*((std::function<intptr_t(
-							intptr_t  // object
-							,intptr_t // param1
-
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_PARAM1(fun_ptr)(
 						param_this_object
 						,converted_param[0]
-
 					);
 				}
 				break;
@@ -637,16 +537,10 @@ namespace zetscript{
 						,converted_param[1]
 					);
 				}else{
-					result=(*((std::function<intptr_t(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_PARAM2(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
-
 					);
 				}
 				break;
@@ -658,18 +552,11 @@ namespace zetscript{
 						,converted_param[2]
 					);
 				}else{
-					result=(*((std::function<intptr_t(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_PARAM3(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
-
 					);
 				}
 				break;
@@ -682,20 +569,12 @@ namespace zetscript{
 						,converted_param[3]
 					);
 				}else{
-					result=(*((std::function<intptr_t(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_PARAM4(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
-
 					);
 				}
 				break;
@@ -709,22 +588,13 @@ namespace zetscript{
 						,converted_param[4]
 				  );
 				}else{
-					result=(*((std::function<intptr_t(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-							,intptr_t // param5
-
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_PARAM5(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
 						,converted_param[2]
 						,converted_param[3]
 						,converted_param[4]
-
 					);
 				}
 				break;
@@ -739,15 +609,7 @@ namespace zetscript{
 						 ,converted_param[5]
 				  );
 				}else{
-					result=(*((std::function<intptr_t(
-							intptr_t  // object
-							,intptr_t // param1
-							,intptr_t // param2
-							,intptr_t // param3
-							,intptr_t // param4
-							,intptr_t // param5
-							,intptr_t // param6
-					)> *)fun_ptr))(
+					result=PTR_FUNCTION_MEMBER_RET_PARAM6(fun_ptr)(
 						param_this_object
 						,converted_param[0]
 						,converted_param[1]
@@ -761,19 +623,6 @@ namespace zetscript{
 			}
 		}
 
-		stk_result=this->zs->convertVarToStackElement(result,calling_function->idx_return_type);
-
-		if(idx_stk_current > 0){
-			// remove tmp variables created...
-			removeEmptySharedPointers(idx_stk_current,NULL);
-
-			idx_stk_current--;
-		}
-		else{
-			THROW_RUNTIME_ERROR("Reached min stack");
-		}
-		return stk_result;
-
-
+		return this->zs->convertVarToStackElement(result,calling_function->idx_return_type);
 	}
 }

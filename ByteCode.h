@@ -44,8 +44,8 @@ namespace zetscript{
 		BYTE_CODE_CALL, // call function...
 		BYTE_CODE_NEW, // new operator...
 		BYTE_CODE_DELETE,
-		BYTE_CODE_INST_VEC, // Vector object
-		BYTE_CODE_INST_DICT,
+		BYTE_CODE_NEW_VECTOR, // Vector object
+		BYTE_CODE_NEW_DICTIONARY,
 		BYTE_CODE_RET, // ret instruction ..
 		BYTE_CODE_PUSH_SCOPE,
 		BYTE_CODE_POP_SCOPE,

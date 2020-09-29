@@ -24,8 +24,8 @@ THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perfo
 namespace zetscript{
 
 
-	inline void VirtualMachine::removeEmptySharedPointers(int idx_stack,void *ptr_callc_result){
-		InfoSharedList *list = &zero_shares[idx_stack];
+	inline void VirtualMachine::removeEmptySharedPointers(void *ptr_callc_result){
+		InfoSharedList *list = &zero_shares;
 		PInfoSharedPointerNode first_node,current;
 		first_node=current=list->first;
 		if(current != NULL){
@@ -39,22 +39,40 @@ namespace zetscript{
 						delete_node=false;
 					}
 				}
+
 				if(delete_node){
+					if(current->previous == current->next){ // 1 single node...
+						list->last=list->first=NULL;
+					}
+					else{ // dettach and attach next...
+						// [1]<->[2]<-> ...[P]<->[C]<->[N]...[M-1]<->[M]
+						if(current == first_node){
+							first_node=current->next;
+						}
+
+
+						current->previous->next=current->next;
+						current->next->previous=current->previous;
+
+					}
+
 					delete current->data.shared_ptr;
 					current->data.shared_ptr=NULL;
+					free(current);
+
 				}
-				free(current);
+
 				current=next_node;
+
 			}while(!finish);
 		}
-		list->first=list->last=NULL;
+		//list->first=list->last=NULL;
 	}
 
 	// defer all local vars
-	inline bool VirtualMachine::popVmScope(int idx_stack,void * ptr_callc_result, unsigned char properties) {
-		bool search=true;
+	inline void VirtualMachine::popVmScope(bool check_empty_shared_pointers) {
 
-		while((vm_scope<vm_current_scope) && search)
+		if(vm_scope<vm_current_scope) // pop 1 scope
 		{
 			ScriptFunction *scope_info_function=(vm_current_scope-1)->script_function;
 			Scope *scope         = (vm_current_scope-1)->scope;
@@ -65,6 +83,11 @@ namespace zetscript{
 			for(uint8_t i = 0; i < scope_symbols->count; i++){
 				Symbol *scope_symbol=(Symbol *)scope_symbols->items[i];
 				StackElement *stk_local_var =&stk_local_vars[scope_symbol->idx_position]; // position where symbol is located on stack
+
+				if(stk_local_var->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+					stk_local_var=(StackElement *)stk_local_var->var_ref;
+				}
+
 				ScriptVar *var = NULL;
 				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_local_var->properties)){
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
@@ -83,21 +106,17 @@ namespace zetscript{
 				};
 			}
 			
-			// remove deferred shared pointers...
-			removeEmptySharedPointers(idx_stack,ptr_callc_result);
-
-			/*search=false;
-			if((properties & ScopeProperty::SCOPE_PROPERTY_BREAK)!=0){
-				search=((vm_current_scope-1)->properties & ScopeProperty::SCOPE_PROPERTY_BREAK) != ScopeProperty::SCOPE_PROPERTY_BREAK;
+			// remove deferred shared pointers except for return value...
+			if(check_empty_shared_pointers){
+				removeEmptySharedPointers();
 			}
 
-			if((properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE)!=0){
-				search=((vm_current_scope-1)->properties & ScopeProperty::SCOPE_PROPERTY_CONTINUE) != ScopeProperty::SCOPE_PROPERTY_CONTINUE;
-			}*/
 			// pop current var
 			--vm_current_scope;
+		}else{
+			THROW_RUNTIME_ERROR("internal error: trying to pop at the bottom");
 		}
-		return true;
+
 	}
 
 	inline bool VirtualMachine::applyMetamethod(

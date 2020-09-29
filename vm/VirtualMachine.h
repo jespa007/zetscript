@@ -2,21 +2,15 @@
 
 namespace zetscript{
 
-
-	//#define MAX_PER_TYPE_OPERATIONS 32
-
 	#define VM_STACK_LOCAL_VAR_MAX				256
 	#define VM_SCOPE_MAX						64
-	#define VM_FOREACH_MAX						64
 	#define MAX_FUNCTION_CALL 					128
-	#define VM_MAX_AUX_STRINGS					128
 	#define MAX_SHARES_VARIABLE 				64
 
 
 	#define SET_INTEGER_RETURN(i)	CURRENT_VM->setIntegerReturnValue(i)
 	#define SET_BOOLEAN_RETURN(b) 	CURRENT_VM->setBooleanReturnValue(b)
 	#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
-	//#define SET_STRING_RETURN(s)  	CURRENT_VM->setStringReturnValue(s)
 
 	#define NO_PARAMS std::vector<StackElement>{}
 	#define ZS_VM_FUNCTION_TYPE std::function<ScriptVar * (const std::vector<ScriptVar *> & param)>
@@ -80,8 +74,8 @@ namespace zetscript{
 			PInfoSharedPointerNode first, last;
 		}InfoSharedList;
 
-		InfoSharedList zero_shares[MAX_FUNCTION_CALL];
-		InfoSharedList shared_var[MAX_FUNCTION_CALL];
+		InfoSharedList zero_shares;
+		InfoSharedList shared_var;
 
 		//===================================================================================================
 
@@ -109,8 +103,8 @@ namespace zetscript{
 		float 				f_aux_value1,f_aux_value2;
 		std::string 		error_str;
 		// std::string 		aux_string,symbol_to_find,error_str;
-		 VM_Foreach 		vm_foreach[VM_FOREACH_MAX];
-		 VM_Foreach 		*vm_foreach_current;
+		 //VM_Foreach 		vm_foreach[VM_FOREACH_MAX];
+		 //VM_Foreach 		*vm_foreach_current;
 
 
 
@@ -175,7 +169,7 @@ namespace zetscript{
 		 */
 
 		//const char * toString(StackElement * index);
-		inline void  removeEmptySharedPointers(int idx_stk_current,void *ptr_callc_result);
+		inline void  removeEmptySharedPointers(void *ptr_callc_result=NULL);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
 		inline ScriptFunction *  findFunction(
@@ -194,7 +188,7 @@ namespace zetscript{
 		);
 
 
-		inline bool popVmScope(int idx_stack,void * ptr_callc_result, unsigned char properties);
+		inline void popVmScope(bool check_empty_shared_pointers=true);
 
 		inline bool applyMetamethod(
 			ScriptVar *calling_object

@@ -74,7 +74,7 @@ namespace zetscript{
 			}
 
 			// declare dictionary ...
-			instructions->push_back(new EvalInstruction(BYTE_CODE_INST_DICT));
+			instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_DICTIONARY));
 
 			// this solve problem void structs...
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -169,7 +169,7 @@ namespace zetscript{
 			}
 
 			// declare vector ...
-			instructions->push_back(new EvalInstruction(BYTE_CODE_INST_VEC));
+			instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_VECTOR));
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			unsigned v_elements=0;

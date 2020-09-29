@@ -141,7 +141,7 @@ namespace zetscript{
 	typedef struct _tNode * PInfoSharedPointerNode;
 	typedef struct _tNode {
 		SharedPointerInfo data;
-		unsigned short currentStack;
+//		unsigned short currentStack;
 		PInfoSharedPointerNode previous, next;
 	} InfoSharedPointerNode;
 
