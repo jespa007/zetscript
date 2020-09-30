@@ -22,7 +22,7 @@ class ScriptClass;
 
 		//----------------------
 		// MEM MANNAGER RELATED
-		PInfoSharedPointerNode 	ptr_shared_pointer_node;
+		InfoSharedPointerNode 	* ptr_shared_pointer_node;
 		ClassTypeIdx	 		idx_class;
 		ScriptFunction 		*	info_function_new;
 		Instruction 		*	instruction_new;

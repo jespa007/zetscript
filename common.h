@@ -131,18 +131,15 @@ namespace zetscript{
 
 	//-------------------------------------------------------
 
-	typedef struct _SharedPointerInfo *PInfoSharedPointer;
-
 	typedef struct _SharedPointerInfo {
 		ScriptVar *shared_ptr;
 		unsigned char n_shares;
 	} SharedPointerInfo;
 
-	typedef struct _tNode * PInfoSharedPointerNode;
-	typedef struct _tNode {
+	typedef struct _InfoSharedPointerNode{
 		SharedPointerInfo data;
 //		unsigned short currentStack;
-		PInfoSharedPointerNode previous, next;
+		_InfoSharedPointerNode *previous, *next;
 	} InfoSharedPointerNode;
 
 	typedef struct{

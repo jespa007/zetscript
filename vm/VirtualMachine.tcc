@@ -23,16 +23,56 @@ THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perfo
 
 namespace zetscript{
 
+	inline void VirtualMachine::insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node){
+		if(_node->next != NULL || _node->previous!=NULL) {
+			THROW_RUNTIME_ERROR(" Internal error expected node not in list");
+		}
+
+		if(list->first == NULL){ /*one  node: trivial ?*/
+			_node->previous=_node->next= list->last = list->first =_node;
+		}
+		else{ /* >1 node add to the end */
+			// attach last-previous
+			_node->previous=list->last;
+			list->last->next=_node;
+			list->last=_node;
+
+			// attach next
+			_node->next=list->first;
+			list->first->previous=_node;
+		}
+	}
+
+	inline void VirtualMachine::deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node){
+
+		if(_node->next == NULL || _node->previous == NULL){
+			THROW_RUNTIME_ERROR(" An already deattached node");
+		}
+
+		if((_node->previous == _node) && (_node->next == _node)){ // 1 single node...
+			list->last=list->first=NULL;
+		}
+		else{ // dettach and attach next...
+			// [1]<->[2]<-> ...[P]<->[C]<->[N]...[M-1]<->[M]
+			if(_node == list->first){
+				list->first=_node->next;
+			}
+			_node->previous->next=_node->next;
+			_node->next->previous=_node->previous;
+
+		}
+		_node->previous = _node->next = NULL;
+	}
+
 
 	inline void VirtualMachine::removeEmptySharedPointers(void *ptr_callc_result){
-		InfoSharedList *list = &zero_shares;
-		PInfoSharedPointerNode first_node,current;
-		first_node=current=list->first;
+		InfoSharedPointerNode *next_node=NULL,*current=zero_shares.first;
+
 		if(current != NULL){
 			bool finish=false;
 			do{
-				PInfoSharedPointerNode next_node=current->next;
-				finish=next_node ==first_node;
+				next_node=current->next;
+				finish=next_node ==zero_shares.first;
 				bool delete_node=true;
 				if(ptr_callc_result!=NULL){
 					if(ptr_callc_result==current->data.shared_ptr){
@@ -41,20 +81,9 @@ namespace zetscript{
 				}
 
 				if(delete_node){
-					if(current->previous == current->next){ // 1 single node...
-						list->last=list->first=NULL;
-					}
-					else{ // dettach and attach next...
-						// [1]<->[2]<-> ...[P]<->[C]<->[N]...[M-1]<->[M]
-						if(current == first_node){
-							first_node=current->next;
-						}
 
 
-						current->previous->next=current->next;
-						current->next->previous=current->previous;
-
-					}
+					deattachShareNode(&zero_shares,current);
 
 					delete current->data.shared_ptr;
 					current->data.shared_ptr=NULL;
@@ -66,7 +95,6 @@ namespace zetscript{
 
 			}while(!finish);
 		}
-		//list->first=list->last=NULL;
 	}
 
 	// defer all local vars

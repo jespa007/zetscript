@@ -165,31 +165,9 @@
 }
 
 
-#define SHARE_LIST_INSERT(list,_node){\
-		if(_node->next != NULL || _node->previous!=NULL) THROW_RUNTIME_ERROR(" Internal error expected node not in list");\
-		if(list.first == NULL){ /*one  node: trivial ?*/ \
-			_node->previous=_node->next= list.last = list.first =_node;\
-		}\
-		else{ /* >1 node add to the end */ \
-			list.last->next=_node;\
-			_node->previous=list.last;\
-			list.last=_node;\
-			list.first->previous=list.last;\
-			list.last->next=list.first;\
-		}\
-	}
 
-#define SHARE_LIST_DEATTACH(list,_node) \
-{\
-		if(_node->next == NULL || _node->previous==NULL) THROW_RUNTIME_ERROR(" Internal error expected node in list");\
-		if(list.first==_node && list.first == list.last){/*one  node: trivial ?*/\
-			list.first = list.last = NULL;\
-		}else{/* >1 node */\
-			_node->previous->next = _node->next;\
-			_node->next->previous = _node->previous;\
-		}\
-		_node->next = _node->previous=NULL;\
-}
+
+
 
 #define PUSH_VM_SCOPE(_scope,_ptr_info_function, _ptr_local_var,_properties) {\
 	if(vm_current_scope >=  vm_scope_max){THROW_RUNTIME_ERROR("reached max scope");}\
@@ -216,7 +194,7 @@ namespace zetscript{
 		// set memory manager
 
 		memset(&zero_shares,0,sizeof(zero_shares));
-		memset(&shared_var,0,sizeof(shared_var));
+		memset(&shared_vars,0,sizeof(shared_vars));
 		StackElement *aux=vm_stack;
 
 		for(int i=0; i < VM_STACK_LOCAL_VAR_MAX;i++){
@@ -280,20 +258,21 @@ namespace zetscript{
 	//============================================================================================================================================
 	// POINTER MANANAGER
 
-	PInfoSharedPointerNode VirtualMachine::newSharedPointer(ScriptVar *_var_ptr){
+	InfoSharedPointerNode * VirtualMachine::newSharedPointer(ScriptVar *_var_ptr){
 		//int index = VirtualMachine::getFreeCell();
-		PInfoSharedPointerNode _node = (PInfoSharedPointerNode)malloc(sizeof(InfoSharedPointerNode));
+		InfoSharedPointerNode *_node = (InfoSharedPointerNode *)malloc(sizeof(InfoSharedPointerNode));
+		// init
+		_node->previous=NULL;
+		_node->next=NULL;
 		_node->data.n_shares=0;
 		_node->data.shared_ptr=_var_ptr;
-		//_node->currentStack = idx_stk_current;
 
 		// insert node into shared nodes ...
-		SHARE_LIST_INSERT(zero_shares,_node);
-		//zero_shares[idx_stk_current].InsertNode(_node);
+		insertShareNode(&zero_shares,_node);
 		return _node;
 	}
 
-	void VirtualMachine::sharePointer(PInfoSharedPointerNode _node){
+	void VirtualMachine::sharePointer(InfoSharedPointerNode *_node){
 
 		unsigned char *n_shares = &_node->data.n_shares;
 
@@ -308,20 +287,20 @@ namespace zetscript{
 		if(move_to_shared_list){
 
 			// Mov to shared pointer...
-			SHARE_LIST_DEATTACH(zero_shares,_node);
+			deattachShareNode(&zero_shares,_node);
 			// update current stack due different levels from functions!
 			//_node->currentStack=idx_stk_current;
-			SHARE_LIST_INSERT(shared_var,_node);
+			insertShareNode(&shared_vars,_node);
 		}
 	}
 
-	void VirtualMachine::unrefSharedScriptVar(PInfoSharedPointerNode _node, bool remove_if_0){
+	void VirtualMachine::unrefSharedScriptVar(InfoSharedPointerNode *_node, bool remove_if_0){
 
 		unsigned char *n_shares = &_node->data.n_shares;
 		if(*n_shares > 0){
 			if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
 
-				SHARE_LIST_DEATTACH(shared_var,_node);
+				deattachShareNode(&shared_vars,_node);
 
 				if(remove_if_0){ // remove node and data instead...
 					delete _node->data.shared_ptr;
@@ -330,7 +309,7 @@ namespace zetscript{
 				else{ // insert into zero array.. if not referenced anymore will be removed by REMOVE_0_SHARED
 					// update current stack due different levels from functions!
 					//_node->currentStack=idx_stk_current;
-					SHARE_LIST_INSERT(zero_shares,_node);
+					insertShareNode(&zero_shares,_node);
 				}
 			}
 		}
@@ -398,7 +377,7 @@ namespace zetscript{
 		removeEmptySharedPointers(NULL);
 
 		memset(&zero_shares,0,sizeof(zero_shares));
-		memset(&shared_var,0,sizeof(shared_var));
+		memset(&shared_vars,0,sizeof(shared_vars));
 		idx_stk_current=0;
 	}
 

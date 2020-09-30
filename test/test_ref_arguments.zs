@@ -1,9 +1,9 @@
 class A{
-	/*_toString(){
+	_toString(){
 		return "custom string";
-	}*/
+	}
 };
-/*
+
 
 
 var functions=[
@@ -35,7 +35,7 @@ for(var i=0; i < functions.length; i++)
 	
 	print("after call a:"+a+" b:"+b+" c:"+c);
 }
-*/
+
 
 function f(ref a,ref b, ref c){
 	// overwrite value refs
@@ -69,3 +69,5 @@ function f(ref a,ref b, ref c){
 	print("after call a:"+a+" b:"+b+" c:"+c);
 
 }
+
+print("dasds "+0+" dasdas");

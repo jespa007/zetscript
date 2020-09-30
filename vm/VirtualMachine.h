@@ -23,10 +23,10 @@ namespace zetscript{
 
 		VirtualMachine(ZetScript *_zs);
 
-		PInfoSharedPointerNode newSharedPointer(ScriptVar *var_ptr);
-		void sharePointer( PInfoSharedPointerNode _node);
-		void unrefSharedScriptVar( PInfoSharedPointerNode _node, bool remove_if_0=false);
-		void removeSharedScriptVar( PInfoSharedPointerNode _node);
+		InfoSharedPointerNode *newSharedPointer(ScriptVar *var_ptr);
+		void sharePointer( InfoSharedPointerNode *_node);
+		void unrefSharedScriptVar( InfoSharedPointerNode *_node, bool remove_if_0=false);
+		void removeSharedScriptVar( InfoSharedPointerNode *_node);
 
 		const ScriptFunction * getCurrent_C_FunctionCall();
 
@@ -71,11 +71,11 @@ namespace zetscript{
 		//
 
 		typedef struct {
-			PInfoSharedPointerNode first, last;
+			InfoSharedPointerNode *first, *last;
 		}InfoSharedList;
 
 		InfoSharedList zero_shares;
-		InfoSharedList shared_var;
+		InfoSharedList shared_vars;
 
 		//===================================================================================================
 
@@ -170,6 +170,8 @@ namespace zetscript{
 
 		//const char * toString(StackElement * index);
 		inline void  removeEmptySharedPointers(void *ptr_callc_result=NULL);
+		inline void insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
+		inline void deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
 		inline ScriptFunction *  findFunction(
