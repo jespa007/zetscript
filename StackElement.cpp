@@ -15,7 +15,8 @@ namespace zetscript{
 			result= "std::string";
 		else if(STK_VALUE_IS_FUNCTION(stk))
 			result= "function";
-
+		else if(STK_VALUE_IS_NULL(stk))
+			result= "null";
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
 			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){

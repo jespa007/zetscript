@@ -174,7 +174,7 @@
 	*vm_current_scope++={(Scope *)_scope,_ptr_info_function,_ptr_local_var,_properties};\
 }
 
-#define CALL_GC SHARED_LIST_DESTROY(zero_shares[idx_stk_current])
+#define CALL_GC SHARED_LIST_DESTROY(zero_shares[idx_current_call])
 
 namespace zetscript{
 
@@ -185,8 +185,8 @@ namespace zetscript{
 			popVmScope(false);
 		}
 
-		removeEmptySharedPointers(NULL);
-		idx_stk_current=0;
+		removeEmptySharedPointers();
+		idx_current_call=0;
 	}
 
 	VirtualMachine::VirtualMachine(ZetScript *_zs){
@@ -201,7 +201,7 @@ namespace zetscript{
 			*aux++={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		}
 
-		idx_stk_current=0;
+		idx_current_call=0;
 		//------------------
 
 		//f_return_value=0;
@@ -250,8 +250,6 @@ namespace zetscript{
 		scope_factory = this->zs->getScopeFactory();
 		main_function_object = MAIN_FUNCTION(this);
 		main_class_object = SCRIPT_CLASS_MAIN(this);
-
-
 	}
 
 
@@ -266,9 +264,10 @@ namespace zetscript{
 		_node->next=NULL;
 		_node->data.n_shares=0;
 		_node->data.shared_ptr=_var_ptr;
+		_node->data.zero_shares=&zero_shares[idx_current_call];
 
 		// insert node into shared nodes ...
-		insertShareNode(&zero_shares,_node);
+		insertShareNode(_node->data.zero_shares,_node);
 		return _node;
 	}
 
@@ -287,29 +286,33 @@ namespace zetscript{
 		if(move_to_shared_list){
 
 			// Mov to shared pointer...
-			deattachShareNode(&zero_shares,_node);
+			deattachShareNode(_node->data.zero_shares,_node);
 			// update current stack due different levels from functions!
-			//_node->currentStack=idx_stk_current;
+			//_node->currentStack=idx_current_call;
 			insertShareNode(&shared_vars,_node);
+
+			// node is not in list of zero refs anymore...
+			_node->data.zero_shares=NULL;
 		}
 	}
 
 	void VirtualMachine::unrefSharedScriptVar(InfoSharedPointerNode *_node, bool remove_if_0){
 
 		unsigned char *n_shares = &_node->data.n_shares;
-		if(*n_shares > 0){
+		if(*n_shares > 0){ // already zero
 			if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
 
 				deattachShareNode(&shared_vars,_node);
 
-				if(remove_if_0){ // remove node and data instead...
+				if(remove_if_0){ // force remove node and data ...
 					delete _node->data.shared_ptr;
 					free(_node);
 				}
 				else{ // insert into zero array.. if not referenced anymore will be removed by REMOVE_0_SHARED
 					// update current stack due different levels from functions!
-					//_node->currentStack=idx_stk_current;
-					insertShareNode(&zero_shares,_node);
+					_node->data.zero_shares=&zero_shares[idx_current_call];
+					insertShareNode(_node->data.zero_shares,_node);
+
 				}
 			}
 		}
@@ -374,11 +377,11 @@ namespace zetscript{
 			}
 		}
 
-		removeEmptySharedPointers(NULL);
+		removeEmptySharedPointers();
 
 		memset(&zero_shares,0,sizeof(zero_shares));
 		memset(&shared_vars,0,sizeof(shared_vars));
-		idx_stk_current=0;
+		idx_current_call=0;
 	}
 
 	StackElement  VirtualMachine::execute(
@@ -395,7 +398,7 @@ namespace zetscript{
 			throw "calling function NULL";
 		}
 
-		if(idx_stk_current==0){ // set stack and Init vars for first call...
+		if(idx_current_call==0){ // set stack and Init vars for first call...
 
 			if(main_function_object->instructions == NULL){ // no statments
 				throw "instructions NULL";

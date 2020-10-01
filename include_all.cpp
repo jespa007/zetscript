@@ -16,8 +16,6 @@
 #include 		"ByteCode.cpp"
 
 
-#include 		"built_in/MathBuiltIn.cpp"
-//-- Script --
 #include		"script/ScriptVar.cpp"
 #include		"script/ScriptVarString.cpp"
 #include		"script/ScriptVarVector.cpp"
@@ -41,6 +39,7 @@
 
 // -- Eval
 #include		"eval/eval.cpp"
+#include 		"extra/MathBuiltIn.cpp"
 
 #include		"zetscript.cpp"
 

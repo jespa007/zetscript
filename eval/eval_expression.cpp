@@ -548,142 +548,164 @@ namespace zetscript{
 						);
 
 						// eval accessor element (supose that was a preinsert a load instruction for identifier )...
-						while(is_access_punctuator(aux_p)){
-							ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
-							std::string accessor_value="";
-							bool this_symbol_access=false;
-							bool vector_access=false;
-							EvalInstruction *instruction_token=NULL;
+						if(is_access_punctuator(aux_p)){
+							do{
+								ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
+								std::string accessor_value="";
+								bool this_symbol_access=false;
+								bool vector_access=false;
+								EvalInstruction *instruction_token=NULL;
 
-							switch(*aux_p){
-							case '(': // is a function call
+								switch(*aux_p){
+								case '(': // is a function call
 
-								n_params=0;
+									n_params=0;
 
-								if(link_symbol_first_access !=NULL){
-									link_symbol_first_access->n_params=0;
+									if(link_symbol_first_access !=NULL){
+										link_symbol_first_access->n_params=0;
+									}
+									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+									if(*aux_p != ')'){
+										do{
+											// check if ref identifier...
+
+											aux_p = eval_expression(
+													eval_data
+													,aux_p
+													,line
+													,scope_info
+													,&symbol_token_node.instructions
+													,std::vector<char>{}
+													,level+1
+											);
+
+											if(*aux_p != ',' && *aux_p != ')'){
+												THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ',' or ')'");
+											}
+
+											if(*aux_p == ','){
+												IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+											}
+
+											if(link_symbol_first_access != NULL){
+												link_symbol_first_access->n_params++;
+											}
+
+											n_params++;
+
+										}while(*aux_p != ')');
+									}
+
+									byte_code=ByteCode::BYTE_CODE_CALL;
+									aux_p++;
+									break;
+								case '[': // std::vector access
+									aux_p = eval_expression(
+											eval_data
+											,aux_p+1
+											,line
+											,scope_info
+											,&symbol_token_node.instructions
+											,std::vector<char>{}
+											,level+1
+									);
+
+									if(*aux_p != ']'){
+										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
+									}
+									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+									vector_access=true;
+									byte_code=ByteCode::BYTE_CODE_LOAD;
+									break;
+								case '.': // member access
+									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+									accessor_value="";
+									last_accessor_line=line;
+									while(!is_end_symbol_token(aux_p)){ // get name...
+										accessor_value += (*aux_p++);
+									}
+
+									check_identifier_name_expression_ok(eval_data,accessor_value,line);
+
+									if(accessor_value == SYMBOL_VALUE_THIS){
+										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"this cannot allowed as member name");
+									}
+
+									if(link_symbol_first_access !=NULL){ // check first symbol at first...
+										if(symbol_token_node.value == SYMBOL_VALUE_THIS){ // if first symbol was this then the symbol
+
+											instruction_token= symbol_token_node.instructions[0];// get the first instruction....
+											// replace symbol
+											instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+											instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
+
+											// override symbol "this" by symbol to search (in properties already has access scope)...
+											symbol_token_node.instructions[0]->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,accessor_value);
+										}
+									}
+
+									byte_code=ByteCode::BYTE_CODE_LOAD;
+									break;
 								}
-								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-								if(*aux_p != ')'){
-									do{
-										// check if ref identifier...
 
-										aux_p = eval_expression(
-												eval_data
-												,aux_p
-												,line
-												,scope_info
-												,&symbol_token_node.instructions
-												,std::vector<char>{}
-												,level+1
+								if(instruction_token==NULL){
+									instruction_token=new EvalInstruction(byte_code);
+									symbol_token_node.instructions.push_back(instruction_token);
+
+									// generate source info in case accessor load...
+									if(byte_code==ByteCode::BYTE_CODE_LOAD){
+
+										// mark as accessor
+										instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+
+										if(vector_access){
+											instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
+										}else{
+											instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
+										}
+
+										instruction_token->instruction_source_info= InstructionSourceInfo(
+											eval_data->current_parsing_file
+											,line
+											,get_compiled_symbol(eval_data,accessor_value)
 										);
+									}
 
-										if(*aux_p != ',' && *aux_p != ')'){
-											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ',' or ')'");
-										}
+									if(byte_code == ByteCode::BYTE_CODE_CALL){
+										// save total parameters on this call
+										instruction_token->vm_instruction.value_op1=n_params;
 
-										if(*aux_p == ','){
-											IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-										}
-
-										if(link_symbol_first_access != NULL){
-											link_symbol_first_access->n_params++;
-										}
-
-										n_params++;
-
-									}while(*aux_p != ')');
+										// also insert source file/line/symbol info to get info of this call...
+										instruction_token->instruction_source_info= InstructionSourceInfo(
+											eval_data->current_parsing_file
+											,last_accessor_line
+											,get_compiled_symbol(eval_data,last_accessor_value)
+										);
+									}
 								}
 
-								byte_code=ByteCode::BYTE_CODE_CALL;
-								aux_p++;
-								break;
-							case '[': // std::vector access
-								aux_p = eval_expression(
-										eval_data
-										,aux_p+1
-										,line
-										,scope_info
-										,&symbol_token_node.instructions
-										,std::vector<char>{}
-										,level+1
+								IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+								//is_first_access=false; // not first access anymore...
+								link_symbol_first_access=NULL;
+								last_accessor_value=accessor_value;
+
+							}while(is_access_punctuator(aux_p));
+						}else{
+							if(symbol_token_node.value==SYMBOL_VALUE_THIS){
+								if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
+								}
+
+								symbol_token_node.instructions[0]->instruction_source_info= InstructionSourceInfo(
+									eval_data->current_parsing_file
+									,last_accessor_line
+									,get_compiled_symbol(eval_data,SYMBOL_VALUE_THIS)
 								);
 
-								if(*aux_p != ']'){
-									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
-								}
-								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-								vector_access=true;
-								byte_code=ByteCode::BYTE_CODE_LOAD;
-								break;
-							case '.': // member access
-								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-								accessor_value="";
-								last_accessor_line=line;
-								while(!is_end_symbol_token(aux_p)){ // get name...
-									accessor_value += (*aux_p++);
-								}
-
-								check_identifier_name_expression_ok(eval_data,accessor_value,line);
-
-								if(accessor_value == SYMBOL_VALUE_THIS){
-									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"this cannot allowed as member name");
-								}
-
-								if(link_symbol_first_access !=NULL){ // check first symbol at first...
-									if(symbol_token_node.value == SYMBOL_VALUE_THIS){ // if first symbol was this then the symbol
-
-										instruction_token= symbol_token_node.instructions[0];// get the first instruction....
-										// replace symbol
-										instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
-										symbol_token_node.instructions[0]->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,accessor_value);
-									}
-								}
-
-								byte_code=ByteCode::BYTE_CODE_LOAD;
-								break;
+								symbol_token_node.instructions[0]->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+								symbol_token_node.instructions[0]->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
+								symbol_token_node.instructions[0]->vm_instruction.properties=0;
 							}
-
-							if(instruction_token==NULL){
-								instruction_token=new EvalInstruction(byte_code);
-								symbol_token_node.instructions.push_back(instruction_token);
-
-								// generate source info in case accessor load...
-								if(byte_code==ByteCode::BYTE_CODE_LOAD){
-
-									// mark as accessor
-									instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
-
-									if(vector_access){
-										instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
-									}else{
-										instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
-									}
-
-									instruction_token->instruction_source_info= InstructionSourceInfo(
-										eval_data->current_parsing_file
-										,line
-										,get_compiled_symbol(eval_data,accessor_value)
-									);
-								}
-
-								if(byte_code == ByteCode::BYTE_CODE_CALL){
-									// save total parameters on this call
-									instruction_token->vm_instruction.value_op1=n_params;
-
-									// also insert source file/line/symbol info to get info of this call...
-									instruction_token->instruction_source_info= InstructionSourceInfo(
-										eval_data->current_parsing_file
-										,last_accessor_line
-										,get_compiled_symbol(eval_data,last_accessor_value)
-									);
-								}
-							}
-
-							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-							//is_first_access=false; // not first access anymore...
-							link_symbol_first_access=NULL;
-							last_accessor_value=accessor_value;
 						}
 
 						if((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
@@ -719,6 +741,7 @@ namespace zetscript{
 						}
 					}
 				}
+
 
 				expression_tokens.push_back(symbol_token_node);
 

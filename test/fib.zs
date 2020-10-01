@@ -1,3 +1,4 @@
+// best timing 1220ms - 1250ms
 function fibR(n)
 {
     if (n < 2) {
@@ -7,6 +8,5 @@ function fibR(n)
 }
 
 var start=IO.clock();
-var f=fibR(34);
-print("fib: " + f +" time:"+(IO.clock()-start)+"ms");
+print("fib: " + fibR(34) +" time:"+(IO.clock()-start)+"ms");
 

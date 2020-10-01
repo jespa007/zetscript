@@ -71,6 +71,7 @@ class ScriptClass;
 
 		zs_vector * getAllProperties();
 		StackElement *getUserProperty(int idx);
+		StackElement *getThisProperty();
 
 		void * getNativeObject();
 		bool isNativeObject();

@@ -59,6 +59,10 @@ STK_VALUE_IS_INT_OR_FLOAT(stk_result_op1->type_var)
 	vm_stk_current++;\
 }
 
+
+// explains whether stk is this or not. Warning should be given as value and not as ptr
+#define STK_IS_THIS(stk) (this_object != NULL && (stk)->var_ref == this_object)
+
 //#define PUSH_INTEGER(init_value) \
 //*vm_stk_current++={(void *)((intptr_t)(init_value)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
 
@@ -111,8 +115,8 @@ namespace zetscript{
 
 		Scope * scope = calling_function->symbol.scope;// ast->idx_scope;
 
-		if(idx_stk_current < MAX_FUNCTION_CALL){
-			idx_stk_current++;
+		if(idx_current_call < MAX_FUNCTION_CALL){
+			idx_current_call++;
 		}
 		else{
 			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Reached max stack");
@@ -141,7 +145,7 @@ namespace zetscript{
 		}
 
 		// Init local vars ...
-		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (idx_stk_current > 1)){
+		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (idx_current_call > 1)){
 			StackElement *ptr_aux = _stk_local_var+n_args;
 			for(unsigned i = n_args; i < (symbols_count); i++){
 				Symbol *symbol=(Symbol *)registered_symbols->items[i];
@@ -217,10 +221,9 @@ namespace zetscript{
 
 				instruction_properties=instruction->properties;
 
-				if(value_op1==LoadType::LOAD_TYPE_UNDEFINED){ // try to load solve as global symbol...
+				if(value_op1==LoadType::LOAD_TYPE_NOT_DEFINED){ // try to load solve as global symbol...
 
 					symbol_access_str=SFI_GET_SYMBOL_NAME(calling_function,instruction);
-
 					Symbol * sc_var = main_function_object->getSymbol(MAIN_SCOPE(this),symbol_access_str);//, NO_PARAMS_SYMBOL_ONLY, ScopeDirection::SCOPE_DIRECTION_DOWN);
 
 					if(sc_var != NULL){
@@ -235,6 +238,7 @@ namespace zetscript{
 					}else{ // load undefined as default!
 						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Symbol \"%s\" is not defined",symbol_access_str);
 					}
+
 				}
 
 				if(value_op1==LoadType::LOAD_TYPE_VARIABLE) { // load variable ...
@@ -243,7 +247,11 @@ namespace zetscript{
 
 					switch(scope_type){
 					default: // global...
-						stk_var = &vm_stack[instruction->value_op2];
+						if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_THIS){
+							stk_var = this_object->getThisProperty();
+						}else{
+							stk_var = &vm_stack[instruction->value_op2];
+						}
 						break;
 					case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:
 						stk_var = &_stk_local_var[instruction->value_op2];
@@ -295,7 +303,7 @@ namespace zetscript{
 
 							if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)!= MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
 							{
-								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(calling_function,previous_ins));
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Trying to access symbol ( %s : %s )",SFI_GET_SYMBOL_NAME(calling_function,previous_ins),stk_result_op1->typeStr());
 							}
 
 							calling_object = (ScriptVar  *)stk_result_op1->var_ref;
@@ -601,6 +609,10 @@ namespace zetscript{
 								}
 								assign_metamethod=true;
 							}
+
+							if(STK_IS_THIS(stk_dst)){
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"\"this\" is not assignable");
+							}
 						}
 					}
 
@@ -681,7 +693,9 @@ namespace zetscript{
 								stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
 								stk_dst->stk_value=NULL;
 								stk_dst->var_ref=script_var;
-								sharePointer(script_var->ptr_shared_pointer_node);
+								if(!STK_IS_THIS(stk_src)){ // do not share this!
+									sharePointer(script_var->ptr_shared_pointer_node);
+								}
 							}else{
 								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"(internal) cannot determine var type %i",GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties));
 							}
@@ -702,7 +716,11 @@ namespace zetscript{
 						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR: // we are getting script vars ...
 							if((old_stk_dst.properties & (MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C))==(MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)==0){ // is not C class
 								if(old_stk_dst.var_ref!=NULL){ // it had a pointer (no constant)...
-									if(old_stk_dst.var_ref != stk_dst->var_ref){ // unref pointer because new pointer has been attached...
+									//ScriptVar *old_script_dst_var_ref=(ScriptVar *)(old_stk_dst.var_ref);
+									if(
+										old_stk_dst.var_ref != stk_dst->var_ref  // not same ref ...
+									&&  STK_IS_THIS(&old_stk_dst)  // ... or this, do not share/unshare
+									){ // unref pointer because new pointer has been attached...
 										unrefSharedScriptVar(((ScriptVar  *)old_stk_dst.var_ref)->ptr_shared_pointer_node);
 									}
 								}
@@ -882,7 +900,6 @@ namespace zetscript{
 				}
 				PROCESS_BINARY_OPERATION(^, BYTE_CODE_METAMETHOD_XOR);
 				continue;
-
 			 case BYTE_CODE_SHR: // >>
 				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
@@ -891,7 +908,6 @@ namespace zetscript{
 				}
 				PROCESS_BINARY_OPERATION(>>,BYTE_CODE_METAMETHOD_SHR);
 				continue;
-
 			 case BYTE_CODE_SHL: // <<
 				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 					READ_TWO_POP_ONE
@@ -910,34 +926,34 @@ namespace zetscript{
 					stk_result_op1=(StackElement *)stk_result_op1->var_ref; // stk_value is expect to contents a stack variable
 				}
 				switch((intptr_t)stk_result_op2->stk_value){
-					case IDX_BUILTIN_TYPE_INT_PTR_C:
-						PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER)!=0);
-						break;
-					case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
-						PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)!=0);
-						break;
-					case IDX_BUILTIN_TYPE_BOOL_PTR_C:
-						PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN)!=0);
-						break;
-					case IDX_BUILTIN_TYPE_STRING_PTR_C:
-						PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)!=0);
-						break;
-					case IDX_BUILTIN_TYPE_FUNCTION:
-						PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)!=0);
-						break;
-					default:
-						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-							bool b = this->script_class_factory->isClassInheritsFrom(			//
-									((ScriptVar *)(stk_result_op1->var_ref))->idx_class // A
-									, (intptr_t)stk_result_op2->stk_value				// B
-							);
-							PUSH_BOOLEAN(b);
-						}else{
-							PUSH_BOOLEAN(false);
-						}
-						break;
+				case IDX_BUILTIN_TYPE_INT_PTR_C:
+					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER)!=0);
+					break;
+				case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
+					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)!=0);
+					break;
+				case IDX_BUILTIN_TYPE_BOOL_PTR_C:
+					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN)!=0);
+					break;
+				case IDX_BUILTIN_TYPE_STRING_PTR_C:
+					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)!=0);
+					break;
+				case IDX_BUILTIN_TYPE_FUNCTION:
+					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)!=0);
+					break;
+				default:
+					if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+						bool b = this->script_class_factory->isClassInheritsFrom(			//
+								((ScriptVar *)(stk_result_op1->var_ref))->idx_class // A
+								, (intptr_t)stk_result_op2->stk_value				// B
+						);
+						PUSH_BOOLEAN(b);
+					}else{
+						PUSH_BOOLEAN(false);
 					}
-				 continue;
+					break;
+				}
+				continue;
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				POP_ONE;
 				if(stk_result_op1->stk_value == 0){
@@ -1048,11 +1064,11 @@ namespace zetscript{
 									}
 								}
 
-								if((stk_arg->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
+								/*if((stk_arg->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
 								 && ((stk_arg->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK)==0)){ // increments ref
 									ScriptVar *sv=(ScriptVar *)stk_arg->var_ref;
 									sharePointer(sv->ptr_shared_pointer_node); //--> inc number shared pointers
-								}
+								}*/
 
 								stk_arg++;
 								function_param++;
@@ -1076,6 +1092,13 @@ namespace zetscript{
 								,n_args
 								,instruction);
 
+						// if a scriptvar --> init shared
+						if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+							ScriptVar *sv=(ScriptVar *)ret_obj.var_ref;
+							if(sv->ptr_shared_pointer_node == NULL){ // if return this, it holds ptr_shared_pointer
+								sv->initSharedPtr();
+							}
+						}
 					}
 					else{ // C function
 						ret_obj= callFunctionNative(
@@ -1093,7 +1116,6 @@ namespace zetscript{
 						}
 					}
 
-
 					// reset stack (function+instruction (-1 op less))...
 					vm_stk_current=stk_start_arg_call-1;
 
@@ -1103,6 +1125,28 @@ namespace zetscript{
 					}
 				 }
 				continue;
+			 case  BYTE_CODE_RET:
+				if(vm_stk_current>stk_start){ // can return something. value is +1 from stack
+					stk_result=*(vm_stk_current-1);
+					if(stk_result.properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+						stk_result=*((StackElement *)stk_result.var_ref); // unpack
+					}
+
+					// if scriptvariable and in the zeros list, deattach
+					if(stk_result.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+						if(!STK_IS_THIS(&stk_result)){
+							ScriptVar *script_var=(ScriptVar *)stk_result.var_ref;
+
+							// deattach from zero shares if exist...
+							deattachShareNode(script_var->ptr_shared_pointer_node->data.zero_shares,script_var->ptr_shared_pointer_node);
+
+							// and free
+							free(script_var->ptr_shared_pointer_node);
+							script_var->ptr_shared_pointer_node=NULL;
+						}
+					}
+				}
+				goto lbl_exit_function;
 			 case  BYTE_CODE_NEW:
 					script_var=NEW_CLASS_VAR_BY_IDX(this,value_op1);
 
@@ -1152,14 +1196,6 @@ namespace zetscript{
 				script_var->initSharedPtr();
 				(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
 				continue;
-			 case  BYTE_CODE_RET:
-				if(vm_stk_current>stk_start){ // can return something. value is +1 from stack
-					stk_result=*(vm_stk_current-1);
-					if(stk_result.properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
-						stk_result=*((StackElement *)stk_result.var_ref); // unpack
-					}
-				}
-				goto lbl_exit_function;
 			 case BYTE_CODE_PUSH_SCOPE:
 				PUSH_VM_SCOPE(instruction->value_op2,calling_function,_stk_local_var,value_op1);
 				continue;
@@ -1231,12 +1267,10 @@ namespace zetscript{
 				popVmScope(false); // do not check removeEmptySharedPointers to have better performance
 			}
 
-			removeEmptySharedPointers(stk_result.var_ref);
+			removeEmptySharedPointers();
 		}
 
-
-
-		idx_stk_current--;
+		idx_current_call--;
 		// POP STACK
 		//=========================
 		return stk_result;

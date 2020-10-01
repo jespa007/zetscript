@@ -29,6 +29,7 @@ for(var i=0; i < functions.length; i++)
 {
 	var a=10,b=10,c=new A();
 	
+	print("----");
 	print("before call a:"+a+" b:"+b+" c:"+c);
 	
 	functions[i](a,b,c);
@@ -37,37 +38,4 @@ for(var i=0; i < functions.length; i++)
 }
 
 
-function f(ref a,ref b, ref c){
-	// overwrite value refs
-	print("function passing args by ref");
-	a=0;
-	b=0;
-	c=0;
-	print("in function post a:"+a+" b:"+b+" c:"+c);
-}
 
-
-
-{
-	var a=10,b=10,c=new A();
-	
-	print("before call a:"+a+" b:"+b+" c:"+c);
-	
-	f(a,b,c);
-	
-	print("after call a:"+a+" b:"+b+" c:"+c);
-
-}
-
-{
-	var a=10,b=10,c=new A();
-	
-	print("before call a:"+a+" b:"+b+" c:"+c);
-	
-	f(a,b,c);
-	
-	print("after call a:"+a+" b:"+b+" c:"+c);
-
-}
-
-print("dasds "+0+" dasdas");

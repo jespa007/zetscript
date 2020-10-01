@@ -405,8 +405,6 @@ namespace zetscript{
 						,line
 						,scope_function);
 
-				eval_check_scope(eval_data,scope_function,0); // --> first instruction
-
 				pop_function(eval_data);
 
 

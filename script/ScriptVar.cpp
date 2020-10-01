@@ -10,11 +10,15 @@ namespace zetscript{
 		//FunctionSymbol *si;
 		StackElement *se;
 
+		memset(&this_variable,0,sizeof(this_variable));
+
+		//this_variable.properties|=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
+
 		// add extra symbol this itself if is a class typedef by user...
-		if(registered_class_info->idx_class >=IDX_BUILTIN_TYPE_MAX){ // put as read only and cannot assign
-			this_variable.var_ref=this;
-			this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR | MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
-		}
+		//if(registered_class_info->idx_class >=IDX_BUILTIN_TYPE_MAX){ // put as read only and cannot assign
+		this_variable.var_ref=this;
+		this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
+		//}
 
 		// Register c vars...
 		for ( unsigned i = 0; i < ir_class->symbol_members->count; i++){
@@ -349,8 +353,8 @@ namespace zetscript{
 
 				if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
 					if(((si->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)
-						&& (this_variable.var_ref != this)
-						&& si->var_ref != 0
+						&& (si->var_ref != this) // ensure that property don't holds its same var.
+						&& (si->var_ref != 0)
 					  ){ // deallocate but not if is c or this ref
 
 						// remove property if not referenced anymore
@@ -385,6 +389,10 @@ namespace zetscript{
 		}
 
 		return (StackElement *)this->stk_properties->items[v_index+this->idx_start_user_properties];
+	}
+
+	StackElement *ScriptVar::getThisProperty(){
+		return &this->this_variable;
 	}
 
 	zs_vector * ScriptVar::getAllProperties(){ // return list of stack elements
@@ -425,7 +433,7 @@ namespace zetscript{
 			ptr_shared_pointer_node = virtual_machine->newSharedPointer(this);
 		}
 		else{
-			THROW_RUNTIME_ERROR(" shared ptr alrady registered");
+			THROW_RUNTIME_ERROR(" shared ptr already registered");
 		}
 	}
 

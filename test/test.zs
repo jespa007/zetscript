@@ -1,63 +1,58 @@
+class B{};
 
-var d=10;
-
-f(d);
-
-
-function f(d)
-{
-	if(d==10)
-	{
-		{
-			print(10);
-			
-			d=20;
-		}
-	}
-}
-
-
-print(d);
-
-//print(d);
-/*class A{
-	
-	f(d){
-		print(d);
-		d*=3;
-	}
-}
-
-//print(a);
-var b=new A();
-var c=10;
-b.f(c);
-print(c);
-
-var a=0;
-
-print(a);*/
-
-
-
-//3.5/-(-5+6-7);
-
-/*;;;;;;;
 class A{
 	constructor(){
-		this.a=1;
+		//this=0;
+		this.a=this; //<-- this_variable
+		//this.b=1; //<-- this_variable
+		
+		//print("c:"+this.c.a);
+		//this.c=0;
+		//this.b="hola";
+		//this.c=this;
+		//this=0;
+		//this.c.b=0;
+		/*this.a=function(c){
+			return this.b+c;			
+		};*/
 	}
-	fun1(){
-		print("1");
+	
+	f(){
+		return this;
 	}
-}
 
-//new A()
-//print("1");
-*/
-/*var i= 5+4+5+6+7+8+8
-10*20+80+60
-60*/ 
+	/*toString(){
+		return "mierda";
+	}*/
+};
+/*
+function f(a){
+	return a;
+}*/
+/*
 
-//Math.sin(0);
-//var a=1+-2
+var a=undefined;
+
+function f(){
+	var g=new A();
+	a=g;
+	//a=0;
+}*/
+var a=new A();
+a.f();
+print("a:"+a.a);
+//print("a:"+a);
+
+//f();
+
+//print("a:"+a.a);
+
+//a=a.c;
+//a.toString();
+
+/*var d=f(
+		g
+		.a(10)
+);*/
+
+//print(d);

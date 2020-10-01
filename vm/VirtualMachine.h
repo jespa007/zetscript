@@ -47,10 +47,10 @@ namespace zetscript{
 		void clearGlobalVars();
 
 		 StackElement execute(
-			 ScriptFunction *script_function
-			 ,ScriptVar *this_object
-			 ,StackElement *  stk_params=NULL
-			 ,unsigned char			n_stk_params=0
+			 ScriptFunction *	script_function
+			 ,ScriptVar 	*	this_object
+			 ,StackElement 	*  	stk_params=NULL
+			 ,unsigned char		n_stk_params=0
 		);
 
 		 void setStackElement(unsigned int idx, StackElement stk);
@@ -70,12 +70,8 @@ namespace zetscript{
 		// POINTER MANAGER ...
 		//
 
-		typedef struct {
-			InfoSharedPointerNode *first, *last;
-		}InfoSharedList;
-
-		InfoSharedList zero_shares;
-		InfoSharedList shared_vars;
+		InfoSharedList zero_shares[MAX_FUNCTION_CALL]; // each function contains the number of local scriptvars vars that should or not removed.
+		InfoSharedList shared_vars; // global vector
 
 		//===================================================================================================
 
@@ -131,7 +127,7 @@ namespace zetscript{
 		ScriptClass *main_class_object;
 
 
-		int idx_stk_current;
+		int idx_current_call;
 		int idx_last_statment;
 		const ScriptFunction *current_call_c_function;
 		ZetScript *zs;		ScriptFunctionFactory 	*script_function_factory;
@@ -169,7 +165,7 @@ namespace zetscript{
 		 */
 
 		//const char * toString(StackElement * index);
-		inline void  removeEmptySharedPointers(void *ptr_callc_result=NULL);
+		inline void  removeEmptySharedPointers();
 		inline void insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		inline void deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)

@@ -51,6 +51,7 @@ namespace zetscript{
 		LOAD_TYPE_UNDEFINED,
 		LOAD_TYPE_CONSTANT,
 		LOAD_TYPE_VARIABLE,
+		LOAD_TYPE_ARGUMENT,
 		LOAD_TYPE_FUNCTION,
 	}LoadType;
 
@@ -131,16 +132,23 @@ namespace zetscript{
 
 	//-------------------------------------------------------
 
+	struct _InfoSharedList;
+
 	typedef struct _SharedPointerInfo {
-		ScriptVar *shared_ptr;
-		unsigned char n_shares;
+		ScriptVar 		*shared_ptr;
+		unsigned char 	n_shares;
+		_InfoSharedList *zero_shares;
 	} SharedPointerInfo;
 
 	typedef struct _InfoSharedPointerNode{
 		SharedPointerInfo data;
-//		unsigned short currentStack;
+	//		unsigned short currentStack;
 		_InfoSharedPointerNode *previous, *next;
 	} InfoSharedPointerNode;
+
+	typedef struct _InfoSharedList{
+		InfoSharedPointerNode *first, *last;
+	}InfoSharedList;
 
 	typedef struct{
 		int idx_type;

@@ -80,8 +80,8 @@
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
 
-#include "built_in/MathBuiltIn.h"
-#include "built_in/IoBuiltIn.h"
+#include "extra/MathBuiltIn.h"
+#include "extra/IoBuiltIn.h"
 
 #include "script/ScriptVar.h"
 #include "script/ScriptVarString.h"

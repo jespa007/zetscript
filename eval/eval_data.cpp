@@ -288,6 +288,7 @@ namespace zetscript{
 		char * 	eval_keyword_for(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char *	eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
 		char *	eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
+		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PrePostSelfOperation pre_self_operation);
 
 
 		bool	is_operator_ternary_if(const char *s)			{return ((*s=='?'));}

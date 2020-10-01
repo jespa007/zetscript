@@ -125,7 +125,7 @@ namespace zetscript{
 
 				}
 				break;
-			case LoadType::LOAD_TYPE_UNDEFINED:
+			case LoadType::LOAD_TYPE_NOT_DEFINED:
 				sprintf(print_aux_load_value,"???   %s%s%s%s"
 					,pre
 					,object_access

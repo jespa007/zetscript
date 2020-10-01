@@ -45,6 +45,8 @@ namespace zetscript{
 
 	inline void VirtualMachine::deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node){
 
+		if(list == NULL) return;
+
 		if(_node->next == NULL || _node->previous == NULL){
 			THROW_RUNTIME_ERROR(" An already deattached node");
 		}
@@ -65,31 +67,22 @@ namespace zetscript{
 	}
 
 
-	inline void VirtualMachine::removeEmptySharedPointers(void *ptr_callc_result){
-		InfoSharedPointerNode *next_node=NULL,*current=zero_shares.first;
+	inline void VirtualMachine::removeEmptySharedPointers(){
+		InfoSharedList *list=&zero_shares[this->idx_current_call];
+		InfoSharedPointerNode *next_node=NULL,*current=list->first;
+
 
 		if(current != NULL){
 			bool finish=false;
 			do{
 				next_node=current->next;
-				finish=next_node ==zero_shares.first;
-				bool delete_node=true;
-				if(ptr_callc_result!=NULL){
-					if(ptr_callc_result==current->data.shared_ptr){
-						delete_node=false;
-					}
-				}
+				finish=next_node ==list->first;
 
-				if(delete_node){
+				deattachShareNode(list,current);
 
-
-					deattachShareNode(&zero_shares,current);
-
-					delete current->data.shared_ptr;
-					current->data.shared_ptr=NULL;
-					free(current);
-
-				}
+				delete current->data.shared_ptr;
+				current->data.shared_ptr=NULL;
+				free(current);
 
 				current=next_node;
 

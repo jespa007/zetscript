@@ -383,7 +383,9 @@ namespace zetscript{
 				EvalInstruction *instruction = eval_data->current_function->instructions[i];
 				LinkSymbolFirstAccess *ls=&instruction->link_symbol_first_access;
 
-				if(ls->idx_script_function != ZS_IDX_UNDEFINED){ // solve first symbol first access...
+				if(  (ls->idx_script_function != ZS_IDX_UNDEFINED)
+				  && (instruction->vm_instruction.value_op1 == LoadType::LOAD_TYPE_NOT_DEFINED) // try to define...
+				){ // solve first symbol first access...
 
 					ScriptFunction *sf=GET_SCRIPT_FUNCTION(eval_data,ls->idx_script_function);
 					ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
@@ -436,9 +438,10 @@ namespace zetscript{
 							}
 						}
 					}else{ // find locally, if not will be resolved at runt-time //else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // search symbol within local or global  ...
+
 						bool local_found=false;
 						ScriptFunction *script_function_found=NULL;
-						LoadType load_type=LoadType::LOAD_TYPE_UNDEFINED;
+						LoadType load_type=LoadType::LOAD_TYPE_NOT_DEFINED;
 						std::string symbol_to_find = ls->value;
 
 						// try find local symbol  ...
