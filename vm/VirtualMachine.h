@@ -46,7 +46,7 @@ namespace zetscript{
 
 		void clearGlobalVars();
 
-		 StackElement execute(
+		StackElement execute(
 			 ScriptFunction *	script_function
 			 ,ScriptVar 	*	this_object
 			 ,StackElement 	*  	stk_params=NULL
@@ -209,3 +209,4 @@ namespace zetscript{
 
 
 #include "VirtualMachine.tcc"
+//#include "VirtualMachine_call_function_script.tcc"
