@@ -84,6 +84,7 @@ namespace zetscript{
 		memset(&this_variable,0,sizeof(this_variable));
 		stk_properties=new zs_vector();
 		map_property_keys=new zs_map();
+		idx_start_user_properties = 0;
 	}
 
 	ScriptVar::ScriptVar(){

@@ -1056,7 +1056,7 @@ namespace zetscript{
 							StackElement *stk_arg=stk_start_arg_call;
 							intptr_t *function_param=&sf->params->items[0];
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
-							for(unsigned i = 0; i < effective_args; i++){
+							for(unsigned i = 0; i < (unsigned)effective_args; i++){
 
 								if(stk_arg->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 									if(((FunctionParam *)(*function_param))->by_ref == false){

@@ -270,9 +270,9 @@ ELSE()
 		zetscript.h
 		exception.h
 		
-		VirtualMachine.inc
-		zetscript.inc
-		ScriptClassFactory.inc
+		vm/VirtualMachine.tcc
+		ZetScript.tcc
+		script/ScriptClassFactory.tcc
 		ByteCode.h
 	)
 	

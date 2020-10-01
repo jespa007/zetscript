@@ -282,7 +282,7 @@ namespace zetscript{
 			size_t n_bytes;
 
 			if((buf_tmp=zs_file::read(filename, n_bytes))!=NULL){
-				bool error;
+				bool error=false;
 				std::string error_str;
 				try{
 					evalInternal(buf_tmp, vm_exec, show_bytecode,filename.c_str());

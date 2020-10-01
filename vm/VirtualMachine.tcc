@@ -543,7 +543,7 @@ namespace zetscript{
 	inline StackElement VirtualMachine::performAddString(StackElement *stk_result_op1,StackElement *stk_result_op2){
 		// we have to create an new string variable
 
-		std::string *str;
+		//std::string *str;
 		ScriptVarString *script_var_string = NEW_STRING_VAR;
 		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
 		script_var_string->initSharedPtr();
