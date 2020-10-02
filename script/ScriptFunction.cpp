@@ -174,8 +174,9 @@ namespace zetscript{
 			if((char)value_op1 != ZS_IDX_INSTRUCTION_OP2_UNDEFINED)
 				n_ops++;
 
-			 if(value_op2 != ZS_IDX_INSTRUCTION_OP2_UNDEFINED)
+			 if(value_op2 != ZS_IDX_INSTRUCTION_OP2_UNDEFINED){
 				 n_ops++;
+			 }
 
 			switch(instruction->byte_code){
 
