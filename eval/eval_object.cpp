@@ -122,8 +122,8 @@ namespace zetscript{
 
 				// add instruction...
 				instructions->push_back(
-						new EvalInstruction(ByteCode::BYTE_CODE_LOAD
-						,LOAD_TYPE_CONSTANT
+						new EvalInstruction(ByteCode::BYTE_CODE_LOAD_CONSTANT
+						,ZS_IDX_UNDEFINED
 						,(intptr_t)constant_value
 				));
 

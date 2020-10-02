@@ -13,6 +13,7 @@ namespace zetscript{
 		BYTE_CODE_INVALID=-1,
 		BYTE_CODE_END_FUNCTION = 0,
 		BYTE_CODE_LOAD, // primitive value like number/std::string or boolean...
+		BYTE_CODE_LOAD_CONSTANT,
 		BYTE_CODE_STORE, // mov expression to var
 		BYTE_CODE_VPUSH, // Value push for std::vector
 		BYTE_CODE_PUSH_ATTR,

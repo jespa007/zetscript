@@ -77,7 +77,12 @@ namespace zetscript{
 		}
 
 		// to std::string utils ...
-		char * eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PrePostSelfOperation pre_self_operation){
+		char * eval_symbol(EvalData *eval_data
+				,const char *start_word
+				, int line,TokenNode * token_node
+				, PreOperator pre_operator
+				, PrePostSelfOperation pre_self_operation
+		){
 			// PRE:
 			unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
 			LoadType load_type=LOAD_TYPE_NOT_DEFINED;
@@ -89,21 +94,23 @@ namespace zetscript{
 			char *aux=(char *)start_word;
 			std::string str_value="";
 			 bool error=false;
-			 token_node->token_type = TokenType::TOKEN_TYPE_UNKNOWN;
+			 //token_node->token_type = TokenType::TOKEN_TYPE_UNKNOWN;
 			 bool is_constant_string=false;
 			 unsigned short instruction_properties=0;
 			 bool is_is_symbol_super_method=false;
+			 token_node->token_type = TokenType::TOKEN_TYPE_UNKNOWN;
 
 			 if((aux=parse_literal_number(
 					 eval_data
 					 ,start_word
 					 ,line
 					 ,str_value
-			))==NULL){ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
+			))!=NULL){
+				 token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
+			 }else{// if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
 
 				 aux=(char *)start_word;
 				 // try eval identifier, boolean, std::string ...
-				 token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
 
 				char pre=0;
 				if(*aux=='\"'){
@@ -129,6 +136,7 @@ namespace zetscript{
 				}
 
 				if(*aux=='\"'){ // register constant string
+					 token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
 
 					 if((start_word+1)<aux){ // copy string without double quotes...
 						 zs_strutils::copy_from_ptr_diff(str_value,start_word+1,aux);
@@ -136,7 +144,6 @@ namespace zetscript{
 					 aux++;
 
 					 type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
-					 load_type=LOAD_TYPE_CONSTANT;
 
 					 std::string key_value="\""+str_value+"\"";
 
@@ -151,8 +158,6 @@ namespace zetscript{
 				}
 				 // add load std::string constant
 				// compile constant ...
-			 }else{
-				 token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
 			 }
 
 			 std::string str_number_value=str_value,str_boolean_value=str_value;
@@ -170,19 +175,30 @@ namespace zetscript{
 						obj=NULL;// ScriptVar::UndefinedSymbol;
 				}else if((const_obj=zs_strutils::parse_int(str_number_value))!=NULL){ // int literal
 					int value = *((int *)const_obj);
+					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
+						value=-value;
+						str_number_value="-"+str_number_value;
+					}
+
 					delete (int *)const_obj;
-					load_type=LOAD_TYPE_CONSTANT;
+					//load_type=LOAD_TYPE_CONSTANT;
 					obj=eval_data->zs->registerConstantValue(str_number_value,value);
 					is_constant_number=true;
 				}
 				else if((const_obj=zs_strutils::parse_float(str_number_value))!=NULL){ // float literal
 					float value = *((float *)const_obj);
+
+					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
+						value=-value;
+						str_number_value="-"+str_number_value;
+					}
+
 					delete (float *)const_obj;
 					void *value_ptr;
 					memcpy(&value_ptr,&value,sizeof(float));
 
 					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
-					load_type=LOAD_TYPE_CONSTANT;
+					//load_type=LOAD_TYPE_CONSTANT;
 
 					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_number_value))!=NULL){
 						obj = get_obj;
@@ -194,10 +210,15 @@ namespace zetscript{
 				else if((const_obj=zs_strutils::parse_bool(str_boolean_value))!=NULL){ // bool literal
 
 					bool value = *((bool *)const_obj);
+					if(pre_operator==PreOperator::PRE_OPERATOR_NOT){
+						value=!value;
+						str_boolean_value="!"+str_boolean_value;
+					}
+
 					delete (bool *)const_obj;
 
 					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN;
-					load_type=LOAD_TYPE_CONSTANT;
+					//load_type=LOAD_TYPE_CONSTANT;
 
 					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_boolean_value))!=NULL){
 						obj = get_obj;
@@ -216,7 +237,7 @@ namespace zetscript{
 
 					}else if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value)) != NULL){  // check if symbol is constant ...
 						obj=get_obj;
-						load_type=LOAD_TYPE_CONSTANT;
+						//load_type=LOAD_TYPE_CONSTANT;
 					}else{
 						// should be an identifier...
 						check_identifier_name_expression_ok(
@@ -259,7 +280,10 @@ namespace zetscript{
 
 			token_node->value = str_value;
 			token_node->instructions.push_back(
-				instruction=new EvalInstruction(ByteCode::BYTE_CODE_LOAD
+				instruction=new EvalInstruction(
+						token_node->token_type == TokenType::TOKEN_TYPE_LITERAL
+								? ByteCode::BYTE_CODE_LOAD_CONSTANT
+								: ByteCode::BYTE_CODE_LOAD
 						,load_type
 						,(intptr_t)obj
 						,instruction_properties
@@ -316,7 +340,9 @@ namespace zetscript{
 			make_operator_precedence(eval_data,expression_tokens,instructions,idx_split+1,idx_end);
 
 			// push operator byte code...
-			instructions->push_back(instruction=new EvalInstruction(convert_operator_to_byte_code(split_node->operator_type)));
+			instructions->push_back(instruction=new EvalInstruction(
+					convert_operator_to_byte_code(split_node->operator_type))
+			);
 			instruction->instruction_source_info= InstructionSourceInfo(
 					eval_data->current_parsing_file
 					,split_node->line
@@ -499,6 +525,7 @@ namespace zetscript{
 								,aux_p
 								,line
 								,&symbol_token_node
+								,pre_operator
 								,pre_self_operation_type
 						);
 

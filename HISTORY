@@ -51,6 +51,7 @@ Date: XX-09-2020
 #108 Wayt to get filename + line without AST_NODE 
 #109 Optimize parseExpression 
 #110 Change concept structure by dictionary
+#111 C stuff in the global scope when is reevaluated 
 #112 replace std::bind 
 #116 CMakeLists: Make permament static link and add -DFCOMPILE
 

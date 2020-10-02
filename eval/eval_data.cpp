@@ -116,7 +116,7 @@ namespace zetscript{
 
 		typedef enum :unsigned char {
 			PRE_OPERATOR_UNKNOWN=0,
-			PRE_OPERATOR_NOT, 		// !
+			PRE_OPERATOR_NOT, 		// ! (for boolean)
 			PRE_OPERATOR_POS, 		// + (just ignore)
 			PRE_OPERATOR_NEG	, 	// -
 			PRE_OPERATOR_MAX
@@ -176,9 +176,6 @@ namespace zetscript{
 			}
 		};
 
-		typedef struct {
-			std::vector<EvalInstruction> evaluated_instruction;
-		}ContinueInstructionScope,BreakInstructionScope;
 
 		struct EvalFunction{
 
@@ -288,7 +285,7 @@ namespace zetscript{
 		char * 	eval_keyword_for(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char *	eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
 		char *	eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
-		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PrePostSelfOperation pre_self_operation);
+		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PreOperator pre_operator, PrePostSelfOperation pre_self_operation);
 
 
 		bool	is_operator_ternary_if(const char *s)			{return ((*s=='?'));}

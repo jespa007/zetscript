@@ -214,12 +214,12 @@ namespace zetscript{
 		idx_current_call=0;
 	}
 
-	inline StackElement  VirtualMachine::execute(
-			 ScriptFunction *calling_function
-			 ,ScriptVar *this_object
-			 ,StackElement *  stk_params
-			 ,unsigned	char  n_stk_params
-			){
+	StackElement  VirtualMachine::execute(
+			 ScriptFunction 	*	calling_function
+			 ,ScriptVar 		*	this_object
+			 ,StackElement 		*  	stk_params
+			 ,unsigned	char  		n_stk_params
+	){
 
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		StackElement info={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};

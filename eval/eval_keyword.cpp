@@ -993,6 +993,7 @@ namespace zetscript{
 											,aux_p
 											,line
 											,&token_node
+											,PreOperator::PRE_OPERATOR_UNKNOWN
 											,PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 										);
 
@@ -1263,12 +1264,8 @@ namespace zetscript{
 									unsigned size=constant_instructions.size();
 									for(unsigned i=0; i < size; i++,it++){
 										Instruction *instruction=&(*it)->vm_instruction;
-										if(instruction->byte_code == BYTE_CODE_LOAD){
-											if(instruction->value_op1 != LOAD_TYPE_CONSTANT){
-												THROW_SCRIPT_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"expected constant value",instruction->byte_code);
-											}
+										if(instruction->byte_code == BYTE_CODE_LOAD_CONSTANT){
 											stack.push_back(instruction->value_op2);
-
 										}else{ // expect operation ?
 
 											if(stack.size()<2){

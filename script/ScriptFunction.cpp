@@ -109,22 +109,7 @@ namespace zetscript{
 		 }
 
 		 switch(instruction->value_op1){
-			case LoadType::LOAD_TYPE_CONSTANT:
-				icv=(ConstantValue *)instruction->value_op2;
-				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-					sprintf(print_aux_load_value,"CONST %s%i",pre,(int)((intptr_t)icv->stk_value));
-					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-					sprintf(print_aux_load_value,"CONST %s%f",pre,*((float *)&icv->stk_value));
-					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-					sprintf(print_aux_load_value,"CONST \"%s\"",((const char *)icv->stk_value));
-					break;
 
-				}
-				break;
 			case LoadType::LOAD_TYPE_NOT_DEFINED:
 				sprintf(print_aux_load_value,"???   %s%s%s%s"
 					,pre
@@ -158,6 +143,7 @@ namespace zetscript{
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
 		zs_vector * m_vf = sfo->registered_symbols;
+		ConstantValue *icv=NULL;
 
 		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -200,6 +186,23 @@ namespace zetscript{
 					,instruction->value_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
 					,start_expression
 				);
+				break;
+			case BYTE_CODE_LOAD_CONSTANT:
+				icv=(ConstantValue *)instruction->value_op2;
+				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD\tCONST\t%i\n",idx_instruction,(int)((intptr_t)icv->stk_value));
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD\tCONST\t%f\n",idx_instruction,*((float *)&icv->stk_value));
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD\tCONST\t\"%s\"\n",idx_instruction,((const char *)icv->stk_value));
+					break;
+				default:
+					THROW_RUNTIME_ERROR("internal error: no literal defined");
+				}
 				break;
 			case  BYTE_CODE_LOAD:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s %s\n"
