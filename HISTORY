@@ -1,4 +1,13 @@
 
+//----------------------------------------------------------
+Version: 2.1.0
+Date: XX-09-2020
+
+
+> #165 try eval expressions as constant 
+> #139 Implement const operator 
+> #176 Add shared version 
+> #174 eval constant values and optimize expressions 
 
 //----------------------------------------------------------
 Version: 2.0.0
@@ -80,10 +89,9 @@ Date: XX-09-2020
 #136 Clear unusued scopes
 #137 Callback function support
 #138 remove all std::vector and std::string access on VM 
-> #139 Implement const operator 
 #141 limit n params only for c functions 
 #142 Try to optimize bind function member 
-> #144 Implement IO helper utils PART1
+> #144 Implement System helper utils PART1
 #145 Implement eval Vector object
 #146 Implement eval Dictionary object
 #147 Implement bind class const static variable
@@ -102,7 +110,7 @@ Date: XX-09-2020
 #161 Merge symbol+functions in one container !!!
 #162 Implement eval Function object 
 #164 implement length property built-in for get length of vector dictionary instead of call size() 
-> #165 try eval expressions as constant 
+
 #168 When semicolon on expression is missing it shows wrong filename 
 > #169 Fix/Check metamethods 
 #170 Fix class 
@@ -110,6 +118,8 @@ Date: XX-09-2020
 #172 get rid super scope
 #173 Manage this context automatically on anonymouse function created on class 
 #175 Arguments as E/S 
+> #177 Fix set/restore state 
+#179 Bug if-else fails {max scope reached} 
 
 Other: Lot of clean code up. 
 

@@ -365,7 +365,6 @@ namespace zetscript{
 			unsigned char value_op1=instruction->value_op1;
 
 			if(instruction->properties & MSK_INSTRUCTION_PROPERTY_START_EXPRESSION){
-				//vm_str_current=str_start; // reset op ptr
 				vm_stk_current=stk_start;
 			}
 

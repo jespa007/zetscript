@@ -7,13 +7,12 @@ class Test{
 	function1(a){
 		this.a+=10+a;
 		print("Test::function1, this.a:"+this.a);
+		this.function0();
 	}
-	
 };
 
 // post-include function member Test::function2
 function Test::function2(a){
-	var a=5;
 	this.function1(a+5); // it calls Test::function1(a+5)
 	this.a+=a;
 	print("Test::function2, this.a:"+this.a);
