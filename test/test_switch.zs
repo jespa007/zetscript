@@ -5,9 +5,10 @@ function test_switch(a){
 	default:
 		print("default ("+a+")");
 		break;
+	case -1:
 	case 0:
 	case 1:
-		print("case 01");
+		print("case 01 or -1");
 	case 2:
 		print("case 2");
 	case 3:
@@ -23,6 +24,7 @@ function test_switch(a){
 	
 }
 
+test_switch(-2)
 test_switch(-1);
 print("--");
 test_switch(0);

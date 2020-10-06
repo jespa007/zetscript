@@ -82,6 +82,7 @@ Date: XX-09-2020
 #129 Migrate new C++ coding style
 #130 Feature add variables into instanced class (i.e this.a=0;)
 #131 Adapt language to ECMA-6 
+> #132 do not requires ; char as end expression 
 #133 Perform SUB instead of NEG+ADD
 #134 Implement Math class with math function utils (PART1)
  
