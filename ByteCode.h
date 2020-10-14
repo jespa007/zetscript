@@ -85,4 +85,6 @@ namespace zetscript{
 	const char * ByteCodeToStr(ByteCode  op);
 	const char * ByteCodeMetamethodToStr(ByteCodeMetamethod op);
 
+
+
 }

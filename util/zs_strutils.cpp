@@ -146,12 +146,30 @@ namespace zetscript{
 			return str.empty();
 		}
 
-		bool ends_with(const std::string & fullString, const std::string & ending){
-			if (fullString.length() >= ending.length()) {
-				return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+		bool ends_with(const std::string & str, const std::string & ending){
+			if (str.length() >= ending.length()) {
+				return (0 == str.compare (str.length() - ending.length(), ending.length(), ending));
 			}
 
 			return false;
+		}
+
+		bool starts_with(const std::string & str, const std::string & starting){
+			if (str.length() >= starting.length()) {
+				return (0 == str.compare (0+starting.length(), starting.length(), starting));
+			}
+			return false;
+		}
+
+		std::string replace(const std::string & input_str, const std::string & str_old, const std::string & str_new){
+			std::string str = input_str;
+			size_t start_pos = 0;
+			while((start_pos = str.find(str_old, start_pos)) != std::string::npos) {
+				str.replace(start_pos, str_old.length(), str_new);
+				start_pos += str_new.length(); // Handles case where 'str_new' is a substring of 'str_old'
+			}
+
+			return str;
 		}
 
 

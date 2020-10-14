@@ -69,9 +69,10 @@ namespace zetscript{
 
 					 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-					 if(*aux_p != ';'){
-						 THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ;");
-					 }
+					 /*if(*aux_p == ';'){
+						 aux_p++;
+						 //THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ;");
+					 }*/
 
 					return aux_p;
 				}
@@ -435,12 +436,12 @@ namespace zetscript{
 							, line
 							, scope_info
 							,&eval_data->current_function->instructions
-							,std::vector<char>{';'}
+							//,std::vector<char>{';'}
 					))!= NULL){
 
 						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RET));
 
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 						return aux_p;
 					}
 				}
@@ -606,10 +607,11 @@ namespace zetscript{
 									,line
 									,scope_info
 									,&eval_data->current_function->instructions
+									,std::vector<char>{')'}
 							)) != NULL){
-								if(*end_expr != ')'){
+								/*if(*end_expr != ')'){
 									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')'");
-								}
+								}*/
 
 								zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
 
@@ -669,11 +671,12 @@ namespace zetscript{
 								,line
 								,scope_info
 								,&eval_data->current_function->instructions
+								,std::vector<char>{')'}
 						);
 
-						if(*end_expr != ')'){
+						/*if(*end_expr != ')'){
 							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')'");
-						}
+						}*/
 
 
 						// insert instruction if evaluated expression
@@ -959,11 +962,12 @@ namespace zetscript{
 								,line
 								,scope_info
 								,&eval_data->current_function->instructions
+								,std::vector<char>{')'}
 							);
 
-							if(*aux_p != ')'){
+							/*if(*aux_p != ')'){
 								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ')' switch");
-							}
+							}*/
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
@@ -1053,10 +1057,10 @@ namespace zetscript{
 
 									if((is_keyword(aux_p) == Keyword::KEYWORD_BREAK)){ // it cuts current expression to link breaks...
 										IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[Keyword::KEYWORD_BREAK].str),line);
-										if(*aux_p != ';'){
+										/*if(*aux_p != ';'){
 											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected ';' after break");
-										}
-										aux_p++;
+										}*/
+										//aux_p++;
 										EvalInstruction *ei_break_jmp=new EvalInstruction(BYTE_CODE_JMP);
 										eval_data->current_function->instructions.push_back(ei_break_jmp);
 										ei_break_jmps.push_back(ei_break_jmp);
@@ -1195,8 +1199,10 @@ namespace zetscript{
 
 					aux_p += strlen(eval_info_keywords[key_w].str);
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					bool new_variable=false;
 
-					while(*aux_p != ';' && *aux_p != 0){ // JE: added multivar feature.
+
+					do{ // JE: added multivar feature.
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 						start_var=aux_p;
@@ -1212,19 +1218,19 @@ namespace zetscript{
 								variable_name
 						);
 
+						ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
+
 						Keyword keyw = is_keyword(variable_name.c_str());
 
 						if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
 							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_info_keywords[keyw].str);
 						}
 
+						// advance identifier length chars
 						aux_p=end_var;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-						bool ok_char=*aux_p == ';' || *aux_p == ',' || *aux_p == '=' ;
-
-
-						if(ok_char){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
+						if(*aux_p == '='){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
 							allow_for_in=false;
 
 							// register symbol...
@@ -1238,7 +1244,7 @@ namespace zetscript{
 							}
 
 							// if = then eval expression
-							if(*aux_p == '='){ // only for variables (not class members)
+							//if(*aux_p == '='){ // only for variables (not class members)
 								std::vector<EvalInstruction *>	 		constant_instructions;
 								// try to evaluate expression...
 								IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -1249,7 +1255,7 @@ namespace zetscript{
 									,start_line
 									,scope_info
 									,is_constant?&constant_instructions:&eval_data->current_function->instructions
-									,std::vector<char>{';',','}
+									//,std::vector<char>{','}
 								);
 
 								if(is_constant){ // resolve constant_expression
@@ -1328,11 +1334,13 @@ namespace zetscript{
 								}
 
 								line = start_line;
-							}
+							/*}else{ // is , ignore
+								aux_p++;
+							}*/
 							//---
-							ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
+
 						}
-						else{
+						/*else{
 
 							Keyword keyw = is_keyword(aux_p);
 							if(keyw == Keyword::KEYWORD_IN){ // in keyword was detected (return to evalr)...
@@ -1345,19 +1353,23 @@ namespace zetscript{
 							else{
 								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"unexpected char '%c'", *aux_p);
 							}
-						}
+						}*/
 
+						//continue_register=*aux_p == ',';// || ; // if = or , continue registering vars
 						// ignores ';' or ','
+						new_variable=false;
 						if(*aux_p == ','){
+							new_variable=true;
 							aux_p++;
 						}
-					}
+					}while(new_variable);
 
-					if(*aux_p != ';'){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ';'");
-					}
+					/*if(*aux_p == ';'){
+						aux_p++;
+						//THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected ';'");
+					}*/
 
-					return aux_p+1;
+					return aux_p;
 				}
 			}
 			return NULL;
@@ -1387,9 +1399,10 @@ namespace zetscript{
 				);
 
 
-				if(*aux_p != ';'){
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok,"Expected ';'");
-				}
+				/*if(*aux_p == ';'){
+					aux_p++;
+					//THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok,"Expected ';'");
+				}*/
 
 			}
 
@@ -1419,9 +1432,10 @@ namespace zetscript{
 					jmp_instruction
 				);
 
-				if(*aux_p != ';'){
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok,"Expected ';'");
-				}
+				/*if(*aux_p == ';'){
+					aux_p++;
+					//THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok,"Expected ';'");
+				}*/
 			}
 
 			return aux_p;

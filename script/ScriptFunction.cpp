@@ -95,7 +95,6 @@ namespace zetscript{
 		 }
 
 
-
 		 if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD){
 			 sprintf(object_access,
 					"."
@@ -106,6 +105,9 @@ namespace zetscript{
 		 }
 		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS){
 			sprintf(object_access,"this.");
+		 }
+		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR){
+			 sprintf(object_access,"{vector element}");
 		 }
 
 		 switch(instruction->value_op1){

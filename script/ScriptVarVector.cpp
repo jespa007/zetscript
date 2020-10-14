@@ -6,14 +6,21 @@
 
 namespace zetscript{
 
+	void    			ScriptVarVector::pushSf(ScriptVarVector *sv,StackElement  * stk){
+		return sv->push(stk);
+	}
+
+	StackElement *  	ScriptVarVector::popSf(ScriptVarVector *sv){
+		return sv->pop();
+	}
+
 	ScriptVarVector::ScriptVarVector(ZetScript *_zs):ScriptVar(_zs){
 		this->init(SCRIPT_CLASS_VECTOR(this), (void *)this);
 	}
 
-
 	void ScriptVarVector::push(StackElement  * _stk){
 
-		StackElement *new_stk=newSlot();//(StackElement *)malloc(sizeof(StackElement));
+		StackElement *new_stk=newSlot();
 		*new_stk=*_stk;
 
 		// update n_refs +1
@@ -26,14 +33,4 @@ namespace zetscript{
 		return popUserProperty();
 	}
 
-
-	/*int ScriptVarVector::size(){
-		return  stk_properties->count;
-	}*/
-
-
-
-	/*ScriptVarVector::~ScriptVarVector(){
-		destroy();
-	}*/
 }

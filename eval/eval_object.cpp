@@ -287,15 +287,15 @@ namespace zetscript{
 									  ,line
 									  ,scope_info
 									  ,instructions
-									  ,std::vector<char>{}
+									  ,std::vector<char>{',',')'}
 									  ,level+1
 							);
 							  n_args++;
 						  }
 
-						if(*aux_p != ',' && *aux_p != ')'){
+						/*if(*aux_p != ',' && *aux_p != ')'){
 							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ',' or ')'");
-						}
+						}*/
 
 					 }while(*aux_p != ')');
 

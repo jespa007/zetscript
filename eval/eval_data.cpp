@@ -327,9 +327,7 @@ namespace zetscript{
 		bool 	is_comment_block_start(char *s)					{return ((*s=='/') && (*(s+1)=='*'));}
 		bool 	is_comment_block_end(char *s)						{return ((*s=='*') && (*(s+1)=='/'));}
 		bool 	is_operator_instanceof(const char *s)			{return strncmp("instanceof",s,10) == 0;}
-		bool    is_end_expression(const char * s){
-			return *s==')' || *s==','||  *s==']' ||  *s==']' ||  *s==';' || *s == 0 || *s=='}';
-		}
+		Keyword is_keyword(const char *c);
 
 		char *advance_to_end_block_comment(char *aux_p, int &line){
 
@@ -752,5 +750,7 @@ namespace zetscript{
 
 			g_init_eval=true;
 		}
+
+
 	}
 }

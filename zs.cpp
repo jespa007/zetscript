@@ -26,7 +26,7 @@ int main(int argc, char * argv[]) {
 
 				if(strcmp(argv[i],"--no_execute")==0){
 					vm_execute = false;
-				}else if(strcmp(argv[i],"--show_byte_code")==0){
+				}else if(strcmp(argv[i],"--show_code")==0){
 					show_bytecode=true;
 
 				}else if(strcmp(argv[i],"--version")==0){

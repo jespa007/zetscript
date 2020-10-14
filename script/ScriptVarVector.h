@@ -61,23 +61,14 @@ namespace zetscript{
 			return v_out;
 		}
 
-		static void    			pushSf(ScriptVarVector *sv,StackElement  * stk){return sv->push(stk);}
-		static StackElement *  	popSf(ScriptVarVector *sv){return sv->pop();}
-		//static int 				sizeSf(ScriptVarVector *sv){return sv->size();}
-
+		static void    			pushSf(ScriptVarVector *sv,StackElement  * stk);
+		static StackElement *  	popSf(ScriptVarVector *sv);
 
 		ScriptVarVector(){}
 		ScriptVarVector(ZetScript *_zs);
 
 		void 					push(StackElement  * stk);
 		StackElement *			pop();
-
-
-		//virtual void unrefSharedPtr();
-		//int size(){return 0;}
-
-		//virtual void destroy();
-		//virtual ~ScriptVarVector();
 	};
 
 }

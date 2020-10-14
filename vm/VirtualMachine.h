@@ -200,6 +200,7 @@ namespace zetscript{
 		);
 
 		inline StackElement performAddString(StackElement *stk_result_op1,StackElement *stk_result_op2);
+		inline StackElement performSubString(StackElement *stk_result_op1,StackElement *stk_result_op2);
 
 		void 				doStackDump();
 

@@ -1,6 +1,11 @@
-var vv=["George",0,true];
+var v1d=["George",0,true]
 
-vv[0]++;
+var v2d=[
+	 [0,1,2,3]
+	,[0,1,2,3]
+]
+
+//vv[0]++;
 
 /*var i=0;
 i++;*/

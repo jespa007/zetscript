@@ -12,8 +12,11 @@ namespace zetscript{
 			// operators and assignments
 			case Operator::OPERATOR_ADD:
 			case Operator::OPERATOR_ASSIGN_ADD:
-			case Operator::OPERATOR_ASSIGN_SUB:
 				return ByteCode::BYTE_CODE_ADD;
+
+			case Operator::OPERATOR_SUB:
+			case Operator::OPERATOR_ASSIGN_SUB:
+				return ByteCode::BYTE_CODE_SUB;
 
 			case Operator::OPERATOR_MUL:
 			case Operator::OPERATOR_ASSIGN_MUL:
@@ -372,6 +375,16 @@ namespace zetscript{
 			}
 		}
 
+		bool is_end_expression(const char *s){
+			 return *s==')' || *s==','||  *s==']' ||  *s==']' ||  *s==';' || *s == 0 || *s=='}';
+		}
+
+		bool    is_end_expression_or_keyword(const char * s){
+			Keyword op=is_keyword(s);
+			return is_end_expression(s) || !(op==Keyword::KEYWORD_UNKNOWN || op==Keyword::KEYWORD_NEW);
+
+		}
+
 		char * eval_expression(
 				EvalData *eval_data
 				,const char *s
@@ -397,7 +410,8 @@ namespace zetscript{
 			const char *start_expression_str=NULL;
 			int start_expression_line=-1;
 			int instruction_identifier=ZS_IDX_UNDEFINED;
-			char *aux_p=NULL;
+			char *aux_p=NULL,*test_s=NULL;
+			bool new_line_break=false;
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 			start_expression_str=aux_p;
@@ -405,196 +419,206 @@ namespace zetscript{
 
 			int idx_instruction_start_expression=eval_data->current_function->instructions.size();
 
-			while(!is_end_expression(aux_p)){
+			if(is_end_expression(aux_p) && *aux_p != ';'){
+				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
+			}
 
-				TokenNode 	symbol_token_node
-							,operator_token_node;
-				keyword_type=Keyword::KEYWORD_UNKNOWN;
+			if(!is_end_expression_or_keyword(aux_p)){
 
-				if((pre_self_operation_type=is_pre_post_self_operation(aux_p)) != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-					switch(pre_self_operation_type){
-						default:
-							break;
-						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
-						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-							aux_p+=strlen(eval_info_pre_post_self_operations[pre_self_operation_type].str);
-							break;
-						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID:
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
-							break;
+				for(;;){ // it eats identifier/constant operator, etc
+
+					TokenNode 	symbol_token_node
+								,operator_token_node;
+					keyword_type=Keyword::KEYWORD_UNKNOWN;
+
+					if((pre_self_operation_type=is_pre_post_self_operation(aux_p)) != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
+						switch(pre_self_operation_type){
+							default:
+								break;
+							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
+							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
+								aux_p+=strlen(eval_info_pre_post_self_operations[pre_self_operation_type].str);
+								break;
+							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID:
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
+								break;
+						}
+					}else{
+
+						// check pre operator (-,+,!)...
+						switch(pre_operator=is_pre_operator_type(aux_p)){
+							default:
+								break;
+							case PreOperator::PRE_OPERATOR_NEG:
+							case PreOperator::PRE_OPERATOR_POS:
+							case PreOperator::PRE_OPERATOR_NOT:
+								aux_p+=strlen(eval_info_pre_operators[pre_operator].str);
+								break;
+						}
 					}
-				}else{
-
-					// check pre operator (-,+,!)...
-					switch(pre_operator=is_pre_operator_type(aux_p)){
-						default:
-							break;
-						case PreOperator::PRE_OPERATOR_NEG:
-						case PreOperator::PRE_OPERATOR_POS:
-						case PreOperator::PRE_OPERATOR_NOT:
-							aux_p+=strlen(eval_info_pre_operators[pre_operator].str);
-							break;
-					}
-				}
-
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-				keyword_type=is_keyword(aux_p);
-
-				// parenthesis (evals another expression)
-				if(*aux_p=='('){ // inner expression (priority)
-
-					if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
-					}
-
-					aux_p=eval_expression(
-							eval_data
-							,aux_p+1
-							, line
-							, scope_info
-							, &symbol_token_node.instructions
-							,std::vector<char>{}
-							,level+1);
-
-					if(*aux_p != ')'){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ')'");
-					}
-
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-
-					if(pre_operator==PreOperator::PRE_OPERATOR_NEG || pre_operator==PreOperator::PRE_OPERATOR_NOT){
-						symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
-					}
-					
-					symbol_token_node.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
-				}
-				else{
-					last_accessor_line=0;
-					last_accessor_value="";
-					if(*aux_p=='['){ // std::vector object...
-						aux_p=eval_object_vector(
-							eval_data
-							,aux_p
-							,line
-							,scope_info
-							,&symbol_token_node.instructions
-							,level
-						);
-						symbol_token_node.token_type = TokenType::TOKEN_TYPE_VECTOR;
-					}else if(*aux_p=='{'){ // struct object ...
-
-						aux_p=eval_object_dictionary(
-							eval_data
-							,aux_p
-							,line
-							,scope_info
-							,&symbol_token_node.instructions
-							,level
-						);
-
-						symbol_token_node.token_type = TokenType::TOKEN_TYPE_DICTIONARY;
-					}else if(keyword_type == Keyword::KEYWORD_NEW){
-
-						aux_p=eval_object_new(
-							eval_data
-							,aux_p
-							,line
-							,scope_info
-							,&symbol_token_node.instructions
-							,level
-						);
-
-						symbol_token_node.token_type = TokenType::TOKEN_TYPE_NEW_OBJECT;
-
-					}else if(keyword_type == Keyword::KEYWORD_FUNCTION){ // can be after instanceof or a function object..
-
-						aux_p=eval_object_function(
-							eval_data
-							,aux_p
-							,line
-							,scope_info
-							,&symbol_token_node
-						);
-
-						symbol_token_node.token_type = TokenType::TOKEN_TYPE_FUNCTION_OBJECT;
-					}
-					else {
-						symbol_token_node.pre_operator=pre_operator;
-						last_accessor_line=line;
-						aux_p = eval_symbol(eval_data
-								,aux_p
-								,line
-								,&symbol_token_node
-								,pre_operator
-								,pre_self_operation_type
-						);
-
-						last_accessor_value=symbol_token_node.value;
-					}
-
-					last_line_ok=line;
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					keyword_type=is_keyword(aux_p);
 
-					if((keyword_type=is_keyword(aux_p))!=KEYWORD_UNKNOWN){ // unexpected key word... programmer forgot ;
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok ,"Expected ';'");
-					}
+					// parenthesis (evals another expression)
+					if(*aux_p=='('){ // inner expression (priority)
 
-					// check valid access punctuator...
-					if(is_access_punctuator(aux_p) || symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
-
-						if(!(      symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER
-							  || ((symbol_token_node.token_type == TokenType::TOKEN_TYPE_FUNCTION_OBJECT)&& *aux_p == '(')// cannot be a number/boolean or std::string and then accessor like . / ( / [
-							  || ((symbol_token_node.token_type == TokenType::TOKEN_TYPE_VECTOR  )&& *aux_p == '[')// inline function object like this: 1+function(a,b){ return a+b;} + 0
-							  || ((symbol_token_node.token_type == TokenType::TOKEN_TYPE_DICTIONARY  )&& *aux_p == '.')// inline struct object like this: 1+{"a":0,"b":1}.a + 0
-							))
-						{
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c' after literal",*aux_p);
+						if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
 						}
 
-						char n_params=0;
+						aux_p=eval_expression(
+								eval_data
+								,aux_p+1
+								, line
+								, scope_info
+								, &symbol_token_node.instructions
+								,std::vector<char>{}
+								,level+1);
 
-						//is_first_access=true;
-						LinkSymbolFirstAccess *link_symbol_first_access=NULL;
+						if(*aux_p != ')'){
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ')'");
+						}
 
-						// add info to solve symbols first access (we need to put here because we have to know n params if function related)
-						symbol_token_node.instructions[0]->link_symbol_first_access=LinkSymbolFirstAccess(
-								eval_data->current_function->script_function->idx_script_function
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
+						if(pre_operator==PreOperator::PRE_OPERATOR_NEG || pre_operator==PreOperator::PRE_OPERATOR_NOT){
+							symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
+						}
+
+						symbol_token_node.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
+					}
+					else{
+						last_accessor_line=0;
+						last_accessor_value="";
+						if(*aux_p=='['){ // std::vector object...
+							aux_p=eval_object_vector(
+								eval_data
+								,aux_p
+								,line
 								,scope_info
-								,symbol_token_node.value
-								,NO_PARAMS_SYMBOL_ONLY // only if first access is a function...
-						);
+								,&symbol_token_node.instructions
+								,level
+							);
+							symbol_token_node.token_type = TokenType::TOKEN_TYPE_VECTOR;
+						}else if(*aux_p=='{'){ // struct object ...
 
-						link_symbol_first_access=&symbol_token_node.instructions[0]->link_symbol_first_access;
+							aux_p=eval_object_dictionary(
+								eval_data
+								,aux_p
+								,line
+								,scope_info
+								,&symbol_token_node.instructions
+								,level
+							);
 
-						// add info to add as symbol value ...
-						symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
-							eval_data->current_parsing_file
-							,line
-							,get_compiled_symbol(eval_data,symbol_token_node.value)
-						);
+							symbol_token_node.token_type = TokenType::TOKEN_TYPE_DICTIONARY;
+						}else if(keyword_type == Keyword::KEYWORD_NEW){
 
-						// eval accessor element (supose that was a preinsert a load instruction for identifier )...
-						if(is_access_punctuator(aux_p)){
-							do{
-								ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
-								std::string accessor_value="";
-								bool this_symbol_access=false;
-								bool vector_access=false;
-								EvalInstruction *instruction_token=NULL;
+							aux_p=eval_object_new(
+								eval_data
+								,aux_p
+								,line
+								,scope_info
+								,&symbol_token_node.instructions
+								,level
+							);
 
-								switch(*aux_p){
-								case '(': // is a function call
+							symbol_token_node.token_type = TokenType::TOKEN_TYPE_NEW_OBJECT;
 
-									n_params=0;
+						}else if(keyword_type == Keyword::KEYWORD_FUNCTION){ // can be after instanceof or a function object..
 
-									if(link_symbol_first_access !=NULL){
-										link_symbol_first_access->n_params=0;
-									}
-									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-									if(*aux_p != ')'){
-										do{
-											// check if ref identifier...
+							aux_p=eval_object_function(
+								eval_data
+								,aux_p
+								,line
+								,scope_info
+								,&symbol_token_node
+							);
+
+							symbol_token_node.token_type = TokenType::TOKEN_TYPE_FUNCTION_OBJECT;
+						}
+						else { // symbol
+							symbol_token_node.pre_operator=pre_operator;
+							last_accessor_line=line;
+							aux_p = eval_symbol(eval_data
+									,aux_p
+									,line
+									,&symbol_token_node
+									,pre_operator
+									,pre_self_operation_type
+							);
+
+							last_accessor_value=symbol_token_node.value;
+						}
+
+						last_line_ok=line;
+
+						IGNORE_BLANKS(test_s,eval_data,aux_p,line);
+
+						/*if((keyword_type=is_keyword(aux_p))!=KEYWORD_UNKNOWN){ // unexpected key word... programmer forgot ;
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok ,"Expected ';'");
+						}*/
+
+						// check valid access punctuator...
+						if(is_access_punctuator(test_s) || symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
+
+							aux_p=test_s;
+
+							char n_params=0;
+
+							//is_first_access=true;
+							LinkSymbolFirstAccess *link_symbol_first_access=NULL;
+
+							// add info to solve symbols first access (we need to put here because we have to know n params if function related)
+							symbol_token_node.instructions[0]->link_symbol_first_access=LinkSymbolFirstAccess(
+									eval_data->current_function->script_function->idx_script_function
+									,scope_info
+									,symbol_token_node.value
+									,NO_PARAMS_SYMBOL_ONLY // only if first access is a function...
+							);
+
+							link_symbol_first_access=&symbol_token_node.instructions[0]->link_symbol_first_access;
+
+							// add info to add as symbol value ...
+							symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
+								eval_data->current_parsing_file
+								,line
+								,get_compiled_symbol(eval_data,symbol_token_node.value)
+							);
+
+							// eval accessor element (supose that was a preinsert a load instruction for identifier )...
+							if(is_access_punctuator(aux_p)){
+								do{
+									ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
+									std::string accessor_value="";
+									bool this_symbol_access=false;
+									bool vector_access=false;
+									EvalInstruction *instruction_token=NULL;
+
+									aux_p=test_s;
+
+									switch(*aux_p){
+									case '(': // is a function call
+
+										n_params=0;
+
+										if(link_symbol_first_access !=NULL){
+											link_symbol_first_access->n_params=0;
+										}
+
+										IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
+										while(*aux_p != ')'){
+											//do{
+												// check if ref identifier...
+											if(n_params>0){
+												if(*aux_p != ','){
+													THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ','");
+												}
+
+												aux_p++;
+											}
 
 											aux_p = eval_expression(
 													eval_data
@@ -606,198 +630,197 @@ namespace zetscript{
 													,level+1
 											);
 
-											if(*aux_p != ',' && *aux_p != ')'){
-												THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ',' or ')'");
-											}
-
-											if(*aux_p == ','){
-												IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-											}
-
 											if(link_symbol_first_access != NULL){
 												link_symbol_first_access->n_params++;
 											}
-
 											n_params++;
+										}
 
-										}while(*aux_p != ')');
+										byte_code=ByteCode::BYTE_CODE_CALL;
+										aux_p++;
+										break;
+									case '[': // std::vector access
+										aux_p = eval_expression(
+												eval_data
+												,aux_p+1
+												,line
+												,scope_info
+												,&symbol_token_node.instructions
+												,std::vector<char>{}
+												,level+1
+										);
+
+										if(*aux_p != ']'){
+											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
+										}
+										aux_p++;
+										vector_access=true;
+										byte_code=ByteCode::BYTE_CODE_LOAD;
+										break;
+									case '.': // member access
+										IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+										accessor_value="";
+										last_accessor_line=line;
+										while(!is_end_symbol_token(aux_p)){ // get name...
+											accessor_value += (*aux_p++);
+										}
+
+										check_identifier_name_expression_ok(eval_data,accessor_value,line);
+
+										if(accessor_value == SYMBOL_VALUE_THIS){
+											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"this cannot allowed as member name");
+										}
+
+										if(link_symbol_first_access !=NULL){ // check first symbol at first...
+											if(symbol_token_node.value == SYMBOL_VALUE_THIS){ // if first symbol was this then the symbol
+
+												instruction_token= symbol_token_node.instructions[0];// get the first instruction....
+												// replace symbol
+												instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+												instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
+
+												// override symbol "this" by symbol to search (in properties already has access scope)...
+												symbol_token_node.instructions[0]->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,accessor_value);
+											}
+										}
+
+										byte_code=ByteCode::BYTE_CODE_LOAD;
+										break;
 									}
 
-									byte_code=ByteCode::BYTE_CODE_CALL;
-									aux_p++;
-									break;
-								case '[': // std::vector access
-									aux_p = eval_expression(
-											eval_data
-											,aux_p+1
-											,line
-											,scope_info
-											,&symbol_token_node.instructions
-											,std::vector<char>{}
-											,level+1
+									if(instruction_token==NULL){
+										instruction_token=new EvalInstruction(byte_code);
+										symbol_token_node.instructions.push_back(instruction_token);
+
+										// generate source info in case accessor load...
+										if(byte_code==ByteCode::BYTE_CODE_LOAD){
+
+											// mark as accessor
+											instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+
+											if(vector_access){
+												instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
+											}else{
+												instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
+											}
+
+											instruction_token->instruction_source_info= InstructionSourceInfo(
+												eval_data->current_parsing_file
+												,line
+												,get_compiled_symbol(eval_data,accessor_value)
+											);
+										}
+
+										if(byte_code == ByteCode::BYTE_CODE_CALL){
+											// save total parameters on this call
+											instruction_token->vm_instruction.value_op1=n_params;
+
+											// also insert source file/line/symbol info to get info of this call...
+											instruction_token->instruction_source_info= InstructionSourceInfo(
+												eval_data->current_parsing_file
+												,last_accessor_line
+												,get_compiled_symbol(eval_data,last_accessor_value)
+											);
+										}
+									}
+
+
+									//is_first_access=false; // not first access anymore...
+									link_symbol_first_access=NULL;
+									last_accessor_value=accessor_value;
+
+									test_s=aux_p;
+
+								}while(is_access_punctuator(aux_p));
+							}else{
+								if(symbol_token_node.value==SYMBOL_VALUE_THIS){
+									if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
+										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
+									}
+
+									symbol_token_node.instructions[0]->instruction_source_info= InstructionSourceInfo(
+										eval_data->current_parsing_file
+										,last_accessor_line
+										,get_compiled_symbol(eval_data,SYMBOL_VALUE_THIS)
 									);
 
-									if(*aux_p != ']'){
-										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
-									}
-									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-									vector_access=true;
-									byte_code=ByteCode::BYTE_CODE_LOAD;
-									break;
-								case '.': // member access
-									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-									accessor_value="";
-									last_accessor_line=line;
-									while(!is_end_symbol_token(aux_p)){ // get name...
-										accessor_value += (*aux_p++);
-									}
-
-									check_identifier_name_expression_ok(eval_data,accessor_value,line);
-
-									if(accessor_value == SYMBOL_VALUE_THIS){
-										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"this cannot allowed as member name");
-									}
-
-									if(link_symbol_first_access !=NULL){ // check first symbol at first...
-										if(symbol_token_node.value == SYMBOL_VALUE_THIS){ // if first symbol was this then the symbol
-
-											instruction_token= symbol_token_node.instructions[0];// get the first instruction....
-											// replace symbol
-											instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
-											instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
-
-											// override symbol "this" by symbol to search (in properties already has access scope)...
-											symbol_token_node.instructions[0]->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,accessor_value);
-										}
-									}
-
-									byte_code=ByteCode::BYTE_CODE_LOAD;
-									break;
+									symbol_token_node.instructions[0]->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+									symbol_token_node.instructions[0]->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
+									symbol_token_node.instructions[0]->vm_instruction.properties=0;
 								}
+							}
 
-								if(instruction_token==NULL){
-									instruction_token=new EvalInstruction(byte_code);
-									symbol_token_node.instructions.push_back(instruction_token);
+							if((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
+								aux_p+=strlen(eval_info_pre_post_self_operations[post_self_operation_type].str);
+							}
 
-									// generate source info in case accessor load...
-									if(byte_code==ByteCode::BYTE_CODE_LOAD){
+							if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
+							&& post_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
+							}
 
-										// mark as accessor
-										instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+							unsigned last_instruction=symbol_token_node.instructions.size()-1;
 
-										if(vector_access){
-											instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
-										}else{
-											instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
-										}
+							// pre/post operator...
+							switch(pre_self_operation_type){
+							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
+								symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_INC;
+								break;
+							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
+								symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_DEC;
+								break;
+							}
 
-										instruction_token->instruction_source_info= InstructionSourceInfo(
-											eval_data->current_parsing_file
-											,line
-											,get_compiled_symbol(eval_data,accessor_value)
-										);
-									}
-
-									if(byte_code == ByteCode::BYTE_CODE_CALL){
-										// save total parameters on this call
-										instruction_token->vm_instruction.value_op1=n_params;
-
-										// also insert source file/line/symbol info to get info of this call...
-										instruction_token->instruction_source_info= InstructionSourceInfo(
-											eval_data->current_parsing_file
-											,last_accessor_line
-											,get_compiled_symbol(eval_data,last_accessor_value)
-										);
-									}
-								}
-
-								IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-								//is_first_access=false; // not first access anymore...
-								link_symbol_first_access=NULL;
-								last_accessor_value=accessor_value;
-
-							}while(is_access_punctuator(aux_p));
-						}else{
-							if(symbol_token_node.value==SYMBOL_VALUE_THIS){
-								if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
-									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
-								}
-
-								symbol_token_node.instructions[0]->instruction_source_info= InstructionSourceInfo(
-									eval_data->current_parsing_file
-									,last_accessor_line
-									,get_compiled_symbol(eval_data,SYMBOL_VALUE_THIS)
-								);
-
-								symbol_token_node.instructions[0]->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
-								symbol_token_node.instructions[0]->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
-								symbol_token_node.instructions[0]->vm_instruction.properties=0;
+							switch(post_self_operation_type){
+							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
+								symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_INC;
+								break;
+							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
+								symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_DEC;
+								break;
 							}
 						}
-
-						if((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-							aux_p+=strlen(eval_info_pre_post_self_operations[post_self_operation_type].str);
-						}
-
-						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-						if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
-						&& post_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
-						}
-
-						unsigned last_instruction=symbol_token_node.instructions.size()-1;
-
-						// pre/post operator...
-						switch(pre_self_operation_type){
-						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-							symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_INC;
-							break;
-						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
-							symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_DEC;
-							break;
-						}
-
-						switch(post_self_operation_type){
-						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-							symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_INC;
-							break;
-						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
-							symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_DEC;
-							break;
-						}
 					}
-				}
+
+					// push symbol
+					expression_tokens.push_back(symbol_token_node);
 
 
-				expression_tokens.push_back(symbol_token_node);
 
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					new_line_break=false;
+					// cases that can ending and expression
+					if(    *aux_p == '\n'
+						|| *aux_p == ' '
+						|| *aux_p == '\r'
+						|| *aux_p == '\t'
+						|| is_comment_single_line(aux_p)
+						|| is_comment_block_start(aux_p)){
+						if(strchr(aux_p,'\n')!=NULL){ // new line is like ';'
+							new_line_break=true;
+						}
 
-				if(!is_end_expression(aux_p)){ // if not end expression then a operator is expected...
-
+					}
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					operator_type=is_operator(aux_p);
-					size_t inc_p=0;
+
+					if(is_end_expression_or_keyword(aux_p) || ( new_line_break && operator_type==Operator::OPERATOR_UNKNOWN)){ // if not operator and carry return found is behaves as end expression
+						break;
+					}
 
 					if(operator_type==Operator::OPERATOR_UNKNOWN){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected operator");
-					}else {
-						// sub operators in vm it has different operations and to have solve this issue we do add of negative values on next operation.
-						if(operator_type==Operator::OPERATOR_SUB){
-							operator_type=Operator::OPERATOR_ADD;
-						}else{
-							inc_p=strlen(eval_info_operators[operator_type].str);
-						}
 					}
+
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_operators[operator_type].str),line);
+
 
 					operator_token_node.line=line;
 					operator_token_node.operator_type=operator_type;
 					operator_token_node.token_type=TokenType::TOKEN_TYPE_OPERATOR;
 
+					// push operator token
 					expression_tokens.push_back(operator_token_node);
-					aux_p+=inc_p;
 				}
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 			}
 
 			if(expected_ending_char.size() > 0) { // throw error...
@@ -810,7 +833,6 @@ namespace zetscript{
 						if(i>0){
 							expected_ending_str+=",";
 						}
-
 						expected_ending_str+=expected_ending_char[i];
 					}
 					else {
@@ -822,7 +844,6 @@ namespace zetscript{
 					size_t len=aux_p-start_expression_str;
 					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
 				}
-
 			}
 
 			if(aux_p==0){

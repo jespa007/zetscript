@@ -266,9 +266,6 @@ namespace zetscript{
 					return aux;
 				}else{
 
-					if(is_end_expression(aux)){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Unexpected '%c'",*aux);
-					}
 
 					// try directive ...
 					Directive directive = is_directive(aux);
@@ -350,11 +347,12 @@ namespace zetscript{
 								THROW_RUNTIME_ERROR("eval_expression: unexpected NULL expression");
 							}
 
-							if(*end_expr != ';'){
-								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected end ;");
-							}
+/*							if(*end_expr == ';'){
+								end_expr++;
+//								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected end ;");
+							}*/
 
-							IGNORE_BLANKS(end_expr,eval_data,end_expr+1, line);
+							IGNORE_BLANKS(end_expr,eval_data,end_expr, line);
 						}
 					}
 				}
@@ -450,12 +448,11 @@ namespace zetscript{
 
 						if(sc_var != NULL){ // local symbol found
 
-							instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
-
 							if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
 								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
 									load_type=LoadType::LOAD_TYPE_VARIABLE;
 									instruction->vm_instruction.value_op2=vis->idx_position;
+									instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
 									local_found=true;
 								}
 							}
@@ -464,6 +461,7 @@ namespace zetscript{
 								if(function_symbol!=NULL){
 									script_function_found=(ScriptFunction *)function_symbol->ref_ptr;
 									instruction->vm_instruction.value_op2=function_symbol->idx_position; // store script function
+									instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
 									load_type=LoadType::LOAD_TYPE_FUNCTION;
 									local_found =true;
 								}

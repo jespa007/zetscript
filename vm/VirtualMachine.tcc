@@ -561,7 +561,7 @@ namespace zetscript{
 			   stk_result_op2
 		};
 
-		std::string ** str_dst_it=str_dst;
+		std::string  ** str_dst_it=str_dst;
 		StackElement ** stk_src_it=stk_src;
 
 		// str1
@@ -615,4 +615,25 @@ namespace zetscript{
 
 		return stk_element;
 	}
+
+	inline StackElement VirtualMachine::performSubString(StackElement *stk_result_op1,StackElement *stk_result_op2){
+		// we have to create an new string variable
+		if((stk_result_op1->properties & stk_result_op1->properties) != MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+			THROW_RUNTIME_ERROR("Expected both operants as string var");
+		}
+
+		//std::string *str;
+		ScriptVarString *script_var_string = NEW_STRING_VAR;
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
+		script_var_string->initSharedPtr();
+
+
+		script_var_string->str_value=(const char *)stk_result_op1->stk_value;
+		script_var_string->str_value=zs_strutils::replace(script_var_string->str_value,(const char *)stk_result_op2->stk_value,"");
+
+		stk_element.stk_value=(void *)script_var_string->str_value.c_str();
+
+		return stk_element;
+	}
+
 }

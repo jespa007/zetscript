@@ -40,7 +40,10 @@ namespace zetscript{
 		 std::wstring to_wstring(const std::string &s);
 		  std::string  format(const  char  *string_text, ...);
 
-		 bool ends_with(const std::string & fullString, const std::string & ending);
+		 bool ends_with(const std::string & str, const std::string & ending);
+		 bool starts_with(const std::string & str, const std::string & starting);
+		 std::string replace(const std::string & str_input, const std::string & old_word, const std::string & new_word);
+
 
 		  std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
 		  std::vector<std::string> split(const std::string &s, char delim);

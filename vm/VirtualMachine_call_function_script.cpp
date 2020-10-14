@@ -433,10 +433,12 @@ namespace zetscript{
 								}
 							}
 						}
-						if(stk_var == NULL){
-							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Variable \"%s\" is not type std::vector",
+						if(stk_var == NULL){ // push undefined
+							PUSH_UNDEFINED;
+							continue;
+							/*THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Variable \"%s\" is not type std::vector",
 								SFI_GET_SYMBOL_NAME(calling_function,instructions+instruction->value_op2)
-							);
+							);*/
 						}
 						break;
 					case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD:
@@ -457,7 +459,7 @@ namespace zetscript{
 
 							if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)!= MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
 							{
-								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Trying to access symbol ( %s : %s )",SFI_GET_SYMBOL_NAME(calling_function,previous_ins),stk_result_op1->typeStr());
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot read property \"%s\" of %s",SFI_GET_SYMBOL_NAME(calling_function,instruction),stk_result_op1->typeStr());
 							}
 
 							calling_object = (ScriptVar  *)stk_result_op1->var_ref;
@@ -662,7 +664,6 @@ namespace zetscript{
 				{
 					bool assign_metamethod=false;
 					bool push_value=true;
-					bool is_vector=false;
 
 					if(operator_type==BYTE_CODE_VPUSH){
 						POP_ONE; // only pops the value, the last is the std::vector variable itself
@@ -672,12 +673,15 @@ namespace zetscript{
 							if(vec_obj->idx_class == IDX_BUILTIN_TYPE_CLASS_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								stk_src=stk_result_op1;
+								if(stk_src->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+									stk_src=(StackElement *)stk_result_op1->var_ref;
+								}
+
 								stk_dst=((ScriptVarVector *)vec_obj)->newSlot();
-								is_vector=true;
 							}
 						}
 
-						if(!is_vector){
+						if(vec_obj==NULL){
 							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected std::vector object");
 						}
 
@@ -698,7 +702,7 @@ namespace zetscript{
 									se =((ScriptVarDictionary *)struct_obj)->addProperty(str,calling_function,instruction);
 
 									if(se == NULL){
-										throw "internal error se==NULL";
+										THROW_RUNTIME_ERROR("internal error se==NULL");
 									}
 
 									stk_dst=se;
@@ -946,7 +950,7 @@ namespace zetscript{
 							,stk_result_op1
 							,stk_result_op2
 					)){
-						THROW_RUNTIME_ERROR("cannot perform operation '-'");
+						THROW_RUNTIME_ERROR("cannot perform pre neg '-'");
 					}
 				}
 				continue;
@@ -971,7 +975,7 @@ namespace zetscript{
 					}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_INT(stk_result_op2)){
 						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
 						PUSH_FLOAT(f_aux_value1 + STK_VALUE_TO_INT(stk_result_op2));
-					}else if((stk_result_op1->properties | stk_result_op2->properties) &  MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+					}else if((stk_result_op1->properties | stk_result_op2->properties) &  MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){ // replace all string from stk2 to empty
 						*vm_stk_current++=performAddString(stk_result_op1,stk_result_op2);
 					}else{ // try metamethod ...
 
@@ -985,6 +989,45 @@ namespace zetscript{
 								,stk_result_op2
 								)){
 							THROW_RUNTIME_ERROR("cannot perform operation '+'");
+						}
+					}
+				}
+				continue;
+			case BYTE_CODE_SUB: // -
+				{
+					if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
+						READ_TWO_POP_ONE;
+					}else{
+						POP_TWO;
+					}
+
+					unsigned short mask_and_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
+					if(mask_and_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){ // fast operation
+						PUSH_INTEGER(STK_VALUE_TO_INT(stk_result_op1) - STK_VALUE_TO_INT(stk_result_op2));
+					}else if(mask_and_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
+						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
+						COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
+						PUSH_FLOAT(f_aux_value1 - f_aux_value2);
+					}else if (STK_VALUE_IS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){ //if(mask_or_properties==(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){
+						COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);
+						PUSH_FLOAT(STK_VALUE_TO_INT(stk_result_op1) - f_aux_value2);
+					}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_INT(stk_result_op2)){
+						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
+						PUSH_FLOAT(f_aux_value1 - STK_VALUE_TO_INT(stk_result_op2));
+					}else if(mask_and_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+						*vm_stk_current++=performSubString(stk_result_op1,stk_result_op2);
+					}else{ // try metamethod ...
+
+						if(!applyMetamethod(
+								 calling_object
+								,calling_function
+								,instruction
+								,"-"
+								,BYTE_CODE_METAMETHOD_SUB
+								,stk_result_op1
+								,stk_result_op2
+								)){
+							THROW_RUNTIME_ERROR("cannot perform operation '-'");
 						}
 					}
 				}
