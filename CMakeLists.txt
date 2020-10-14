@@ -74,8 +74,8 @@ else()
  
 		SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} ")
   
-	elseif(GNU)
-    	MESSAGE ("-- Plataform: GNU" )
+	elseif(UNIX)
+    	MESSAGE ("-- Plataform: UNIX" )
     else()
     	MESSAGE ("-- Plataform: Unknown" )
 	endif()

@@ -260,7 +260,7 @@ namespace zetscript{
 						,idx_instruction
 						,ByteCodeToStr(instruction->byte_code)
 						,instruction->value_op1
-						,instruction->value_op2
+						,(int)instruction->value_op2
 						,start_expression
 					);
 				}

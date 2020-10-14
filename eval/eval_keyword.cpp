@@ -1305,7 +1305,7 @@ namespace zetscript{
 									stk_int_calc_result = (ConstantValue *)stack[0];
 
 									if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
-										printf("constant %i\n",(intptr_t)stk_int_calc_result->stk_value);
+										printf("constant %i\n",(int)((intptr_t)stk_int_calc_result->stk_value));
 									}
 
 									if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
