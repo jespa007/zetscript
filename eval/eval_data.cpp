@@ -97,8 +97,8 @@ namespace zetscript{
 			// ARITHMETIC
 			OPERATOR_ADD, 										// +
 			OPERATOR_OR, 										// |
-			OPERATOR_XOR, 										// ^
 			OPERATOR_SUB, 										// -
+			OPERATOR_XOR, 										// ^
 			OPERATOR_MUL, 										// *
 			OPERATOR_BINARY_AND, 								// &
 			OPERATOR_DIV, 										// /

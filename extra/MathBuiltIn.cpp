@@ -5,4 +5,7 @@
 
 #include "zetscript.h"
 
-const float MathBuiltIn::PI=M_PI;
+namespace zetscript{
+
+	const float MathBuiltIn::PI=M_PI;
+}

@@ -88,6 +88,7 @@ class ScriptClass;
 		virtual std::string toString();
 		virtual void initSharedPtr();
 		virtual void unrefSharedPtr();
+		ZetScript      * getZetScript() { return zs;}
 
 		virtual void destroy();
 		virtual ~ScriptVar();

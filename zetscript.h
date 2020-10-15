@@ -81,7 +81,10 @@
 #include "scope/ScopeFactory.h"
 
 #include "extra/MathBuiltIn.h"
-#include "extra/IoBuiltIn.h"
+#include "extra/SystemBuiltIn.h"
+#include "extra/StringBuiltIn.h"
+#include "extra/ConsoleBuiltIn.h"
+
 
 #include "script/ScriptVar.h"
 #include "script/ScriptVarString.h"

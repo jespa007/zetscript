@@ -2,6 +2,12 @@ namespace zetscript{
 
 	namespace eval{
 
+		typedef struct{
+			EvalInstruction *	instruction_symbol; // affected symbol
+			Operator			assign_operator; // operator
+			TokenNode			*token_node;
+		}AssignTokenInformation;
+
 		ByteCode convert_operator_to_byte_code(Operator op){
 			switch(op){
 			default:
@@ -82,7 +88,8 @@ namespace zetscript{
 		// to std::string utils ...
 		char * eval_symbol(EvalData *eval_data
 				,const char *start_word
-				, int line,TokenNode * token_node
+				, int line
+				,TokenNode * token_node
 				, PreOperator pre_operator
 				, PrePostSelfOperation pre_self_operation
 		){
@@ -300,26 +307,47 @@ namespace zetscript{
 			// POST: token as literal or identifier
 		}
 
-		void make_operator_precedence(EvalData *eval_data,std::vector<TokenNode> * expression_tokens,std::vector<EvalInstruction *> *instructions, int idx_start,int idx_end){
-
+		void eval_operators_recursive(
+				  EvalData *eval_data
+				, std::vector<TokenNode> * expression_tokens
+				, std::vector<EvalInstruction *> *instructions
+				, int idx_start
+				, int idx_end
+				, std::vector<AssignTokenInformation> *assing_tokens
+				, Operator parent_operator=Operator::OPERATOR_UNKNOWN
+				, int level_recursive = 0
+		){
 			Operator 	op_split=Operator::OPERATOR_MAX;
 			EvalInstruction *instruction;
 			int 			idx_split=-1;
 			TokenNode      *split_node;
 
+
 			// trivial case (no operator left, append byte code )...
 			if(idx_start>=idx_end){
 
-				// concatenate instructions ...
-				instructions->insert(
-						  instructions->end()
-						, expression_tokens->at(idx_start).instructions.begin()
-						, expression_tokens->at(idx_start).instructions.end() );
+				if((
+						parent_operator==OPERATOR_ASSIGN
+					||	(parent_operator>=OPERATOR_ASSIGN_FIRST && parent_operator<OPERATOR_ASSIGN_LAST)
+					)){
+					AssignTokenInformation assign_token_info;
+					assign_token_info.assign_operator=parent_operator;
+					assign_token_info.instruction_symbol=expression_tokens->at(idx_start).instructions[0];
+					assign_token_info.token_node=&expression_tokens->at(idx_start);
+
+					assing_tokens->push_back(assign_token_info);
+				}else{
+					// concatenate instructions ...
+					instructions->insert(
+							  instructions->end()
+							, expression_tokens->at(idx_start).instructions.begin()
+							, expression_tokens->at(idx_start).instructions.end() );
+				}
 				return;
 			}
 
-			// search for the most priority operator...
-			for(int i=idx_start; i < idx_end; i++){
+			// search from higher to lower priority operator...
+			for(int i=idx_end-1; i >= idx_start; i--){
 
 				if( (expression_tokens->at(i).token_type == TokenType::TOKEN_TYPE_OPERATOR)
 					&& (expression_tokens->at(i).operator_type < op_split))
@@ -336,42 +364,97 @@ namespace zetscript{
 			// split left/right by operator precedence...
 			split_node=&expression_tokens->at(idx_split);
 
+
 			// perform left side op...
-			make_operator_precedence(eval_data,expression_tokens,instructions,idx_start,idx_split-1);
+			eval_operators_recursive(
+				eval_data
+				,expression_tokens
+				,instructions
+				,idx_start
+				,idx_split-1
+				,assing_tokens
+				,split_node->operator_type
+				,level_recursive+1
+			);
 
 			// perform right side op...
-			make_operator_precedence(eval_data,expression_tokens,instructions,idx_split+1,idx_end);
-
-			// push operator byte code...
-			instructions->push_back(instruction=new EvalInstruction(
-					convert_operator_to_byte_code(split_node->operator_type))
+			eval_operators_recursive(
+				eval_data
+				,expression_tokens
+				,instructions
+				,idx_split+1
+				,idx_end
+				,assing_tokens
+				,level_recursive==0?Operator::OPERATOR_UNKNOWN:split_node->operator_type
+				,level_recursive+1
 			);
-			instruction->instruction_source_info= InstructionSourceInfo(
-					eval_data->current_parsing_file
-					,split_node->line
-					,NULL
-			);
 
-			// insert an additional byte code
-			if(split_node->operator_type>=OPERATOR_ASSIGN_FIRST && split_node->operator_type<OPERATOR_ASSIGN_LAST){
+			// do not insert assign ops to insert them till final...
+			if(!(
+					split_node->operator_type==OPERATOR_ASSIGN
+				||	(split_node->operator_type>=OPERATOR_ASSIGN_FIRST && split_node->operator_type<OPERATOR_ASSIGN_LAST)
+				)
+			){
 
-				instruction->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_POP_ONE; // only pops first op1 to do the operation but keeps the variable to store on the top
-
-				if(split_node->operator_type==OPERATOR_SUB){ // insert neg to negate the value after add operation
-					instructions->push_back(instruction=new EvalInstruction(ByteCode::BYTE_CODE_NEG));
-					instruction->instruction_source_info= InstructionSourceInfo(
-							eval_data->current_parsing_file
-							,split_node->line
-							,NULL
-					);
-				}
-
-				instructions->push_back(instruction=new EvalInstruction(ByteCode::BYTE_CODE_STORE));
+				// push operator byte code...
+				instructions->push_back(instruction=new EvalInstruction(
+						convert_operator_to_byte_code(split_node->operator_type))
+				);
 				instruction->instruction_source_info= InstructionSourceInfo(
 						eval_data->current_parsing_file
 						,split_node->line
 						,NULL
 				);
+			}
+
+		}
+
+		void eval_operators(
+				EvalData *eval_data
+				, std::vector<TokenNode> * expression_tokens
+				, std::vector<EvalInstruction *> *instructions
+			){
+			std::vector<AssignTokenInformation> assing_tokens;
+			eval_operators_recursive(
+					 eval_data
+					, expression_tokens
+					, instructions
+					, 0
+					, (int)(expression_tokens->size()-1)
+					, &assing_tokens
+			);
+
+			// finally set assign operators...
+			// insert an additional byte code
+			for(unsigned i=0; i < assing_tokens.size(); i++){
+				EvalInstruction *instruction=NULL;
+
+				// load variable...
+				instructions->push_back(assing_tokens[i].instruction_symbol);
+
+				if(assing_tokens[i].assign_operator>=OPERATOR_ASSIGN_FIRST && assing_tokens[i].assign_operator<OPERATOR_ASSIGN_LAST){
+
+					// push operator byte code...
+					instructions->push_back(instruction=new EvalInstruction(
+							convert_operator_to_byte_code(assing_tokens[i].assign_operator))
+					);
+
+					instruction->instruction_source_info= InstructionSourceInfo(
+							eval_data->current_parsing_file
+							,assing_tokens[i].token_node->line
+							,NULL
+					);
+
+					instruction->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_POP_ONE; // only pops first op1 to do the operation but keeps the variable to store on the top
+				}
+
+				instructions->push_back(instruction=new EvalInstruction(ByteCode::BYTE_CODE_STORE));
+				instruction->instruction_source_info= InstructionSourceInfo(
+						eval_data->current_parsing_file
+						,assing_tokens[i].token_node->line
+						,NULL
+				);
+
 			}
 		}
 
@@ -852,12 +935,10 @@ namespace zetscript{
 
 			// make operator precedence from the AST built before...
 			if(expression_tokens.size()>0){
-				make_operator_precedence(
+				eval_operators(
 					eval_data
 					,&expression_tokens
 					,instructions
-					,0
-					,(int)(expression_tokens.size()-1)
 				);
 
 				if(level == 0 && (int)eval_data->current_function->instructions.size()>idx_instruction_start_expression){ // set instruction as start statment...

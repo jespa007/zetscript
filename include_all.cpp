@@ -39,7 +39,11 @@
 
 // -- Eval
 #include		"eval/eval.cpp"
+
 #include 		"extra/MathBuiltIn.cpp"
+#include 		"extra/ConsoleBuiltIn.cpp"
+#include 		"extra/SystemBuiltIn.cpp"
+#include 		"extra/StringBuiltIn.cpp"
 
 #include		"zetscript.cpp"
 
