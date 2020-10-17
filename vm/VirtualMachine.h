@@ -13,7 +13,7 @@ namespace zetscript{
 	#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
 
 	#define NO_PARAMS std::vector<StackElement>{}
-	#define ZS_VM_FUNCTION_TYPE std::function<ScriptVar * (const std::vector<ScriptVar *> & param)>
+	#define ZS_VM_FUNCTION_TYPE std::function<ScriptObject * (const std::vector<ScriptObject *> & param)>
 
 	class ScriptFunction;
 	class ZetScript;
@@ -23,10 +23,10 @@ namespace zetscript{
 
 		VirtualMachine(ZetScript *_zs);
 
-		InfoSharedPointerNode *newSharedPointer(ScriptVar *var_ptr);
+		InfoSharedPointerNode *newSharedPointer(ScriptObject *var_ptr);
 		void sharePointer( InfoSharedPointerNode *_node);
-		void unrefSharedScriptVar( InfoSharedPointerNode *_node, bool remove_if_0=false);
-		void removeSharedScriptVar( InfoSharedPointerNode *_node);
+		void unrefSharedScriptObject( InfoSharedPointerNode *_node, bool remove_if_0=false);
+		void removeSharedScriptObject( InfoSharedPointerNode *_node);
 
 		const ScriptFunction * getCurrent_C_FunctionCall();
 
@@ -48,7 +48,7 @@ namespace zetscript{
 
 		StackElement execute(
 			 ScriptFunction *	script_function
-			 ,ScriptVar 	*	this_object
+			 ,ScriptObject 	*	this_object
 			 ,StackElement 	*  	stk_params=NULL
 			 ,unsigned char		n_stk_params=0
 		);
@@ -90,7 +90,7 @@ namespace zetscript{
 
 		struct VM_Foreach{
 			StackElement 		   	*key; // iterator element can be std::string or integer...
-			ScriptVar				*ptr; // can be struct or std::vector...
+			ScriptObject				*ptr; // can be struct or std::vector...
 			unsigned int 		   	idx_current;
 
 		};
@@ -145,7 +145,7 @@ namespace zetscript{
 
 		StackElement  callFunctionScript(
 				ScriptFunction 	*	info_function,
-				ScriptVar 		* 	this_object,
+				ScriptObject 		* 	this_object,
 				StackElement 	* 	_stk_start_args=NULL,
 				//std::string 		  		  * _ptrStartStr=NULL,
 				unsigned char 		n_args=0,
@@ -157,7 +157,7 @@ namespace zetscript{
 			 StackElement *stk_arg_calling_function,
 			 unsigned char n_args,
 			 Instruction *ins,
-			 ScriptVar  * this_object
+			 ScriptObject  * this_object
 		);
 
 		/**
@@ -171,11 +171,11 @@ namespace zetscript{
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
 		inline ScriptFunction *  findFunction(
-			ScriptVar *calling_object
+			ScriptObject *calling_object
 			,ScriptFunction *info_function
 			,Instruction * instruction
 			,bool is_constructor
-			,void *stk_elements_ptr // can be **stack_element from ScriptVar stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
+			,void *stk_elements_ptr // can be **stack_element from ScriptObject stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
 			,int stk_elements_len // length of stk_elements
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
@@ -189,7 +189,7 @@ namespace zetscript{
 		inline void popVmScope(bool check_empty_shared_pointers=true);
 
 		inline bool applyMetamethod(
-			ScriptVar *calling_object
+			ScriptObject *calling_object
 			,ScriptFunction *info_function
 			,Instruction *instruction
 			,const char *op_code_str

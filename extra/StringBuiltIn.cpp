@@ -2,8 +2,8 @@
 
 namespace zetscript{
 
-	ScriptVarString * StringBuiltIn::format(ScriptVarString *str, ScriptVarVector *args){
-		ScriptVarString *str_out=new ScriptVarString(str->getZetScript());
+	ScriptObjectString * StringBuiltIn::format(ScriptObjectString *str, ScriptObjectVector *args){
+		ScriptObjectString *str_out=new ScriptObjectString(str->getZetScript());
 		str_out->str_value=str->str_value;
 		return str_out;
 	}

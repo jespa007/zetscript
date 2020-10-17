@@ -97,7 +97,7 @@ Date: XX-09-2020
 #146 Implement eval Dictionary object
 #147 Implement bind class const static variable
 #148 replace all writeError functions by throw and remove error param 
-> #150 print: argument input does not crash put a integer, vector, etc. also vector and dictionary does a pretty print. If stack element is a scriptvar it uses _toString metamethod
+> #150 String operator + with any stackelement
 #154 Fix continue, break keyword 
 #153 fix DO-WHILE keyword
 #152 fix WHILE keyword
@@ -129,10 +129,18 @@ Date: XX-09-2020
 > #185 parser char as integer
 > #186 Implement StriptVarString methods  
 > #187 Implement Console helper class 
-> #190 eval_expression operator fails 
-> #192 Fix multiassigment 
+#190 eval_expression operator fails 
+#192 Fix multiassigment 
 > #193 Check fix ternari
-> #194 Detect literal or assigments within literals  
+#194 Detect literal or assigments within literals  
+#195 Change ScriptVar by ScriptObject and remove ScriptVarDictionnary
+> #196 Do not extend property when it access 
+> #197 Avoid vector to add properties through string 
+> #198 Avoid string to add properties through string 
+> #199 Check fix instanceof 
+> #200 Fix ambiguos length variable 
+> #201 System.print: convert any stackelement in string if argument itself is not string var  
+> #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
 
 Other: 
 

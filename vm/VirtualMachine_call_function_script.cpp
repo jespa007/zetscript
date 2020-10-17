@@ -255,7 +255,7 @@ namespace zetscript{
 
 	StackElement VirtualMachine::callFunctionScript(
 			ScriptFunction 			* calling_function,
-			ScriptVar       		* this_object,
+			ScriptObject       		* this_object,
 			StackElement 		  	* _stk_local_var,
 			//std::string 		  	* _str_start,
 			unsigned char 			n_args,
@@ -327,8 +327,8 @@ namespace zetscript{
 
 		//ScriptFunction * aux_function_info=NULL;
 		StackElement ret_obj;
-		ScriptVar *script_var=NULL;
-		ScriptVar *calling_object=NULL; // used on call instruction
+		ScriptObject *script_var=NULL;
+		ScriptObject *calling_object=NULL; // used on call instruction
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
 		StackElement *stk_var;
@@ -337,7 +337,7 @@ namespace zetscript{
 		unsigned short pre_post_properties=0;
 		//unsigned short instruction_properties=0;
 		//StackElement *stk_variable_stack_element=NULL;
-		ScriptVar *var_object = NULL;
+		ScriptObject *var_object = NULL;
 
 		unsigned short scope_type=0;
 
@@ -412,15 +412,15 @@ namespace zetscript{
 						break;
 					case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR:
 						POP_TWO;
-						if( (stk_result_op1->properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)){
-							var_object = (ScriptVar *)(((StackElement *)stk_result_op1->var_ref)->var_ref);
+						if( (stk_result_op1->properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)){
+							var_object = (ScriptObject *)(((StackElement *)stk_result_op1->var_ref)->var_ref);
 						}
 
 						stk_var=NULL;
 
 						if(var_object != NULL){
-							if(var_object->idx_class == IDX_BUILTIN_TYPE_CLASS_VECTOR){
-								ScriptVarVector * var_vector = (ScriptVarVector *)var_object;
+							if(var_object->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){
+								ScriptObjectVector * var_vector = (ScriptObjectVector *)var_object;
 								if(STK_VALUE_IS_INT(stk_result_op2)){
 									// determine object ...
 									try{
@@ -457,17 +457,17 @@ namespace zetscript{
 							}
 
 
-							if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)!= MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
+							if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT)!= MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT)
 							{
 								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot read property \"%s\" of %s",SFI_GET_SYMBOL_NAME(calling_function,instruction),stk_result_op1->typeStr());
 							}
 
-							calling_object = (ScriptVar  *)stk_result_op1->var_ref;
+							calling_object = (ScriptObject  *)stk_result_op1->var_ref;
 							if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {
 								StackElement *stk_ins=((StackElement *)stk_result_op1->var_ref);
 
-								if(stk_ins->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-									calling_object=((ScriptVar *)stk_ins->var_ref);
+								if(stk_ins->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+									calling_object=((ScriptObject *)stk_ins->var_ref);
 								}
 							}
 
@@ -658,26 +658,26 @@ namespace zetscript{
 				(*vm_stk_current++)=*(((ConstantValue *)instruction->value_op2));
 				continue;
 			case BYTE_CODE_STORE:
-			case BYTE_CODE_VPUSH:
-			case BYTE_CODE_PUSH_ATTR:
+			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
+			case BYTE_CODE_PUSH_OBJECT_ELEMENT:
 
 				{
 					bool assign_metamethod=false;
-					bool push_value=true;
 
-					if(operator_type==BYTE_CODE_VPUSH){
+
+					if(operator_type==BYTE_CODE_PUSH_VECTOR_ELEMENT){
 						POP_ONE; // only pops the value, the last is the std::vector variable itself
-						ScriptVar *vec_obj = NULL;
-						if((vm_stk_current-1)->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-							vec_obj = (ScriptVar *)(vm_stk_current-1)->var_ref;
-							if(vec_obj->idx_class == IDX_BUILTIN_TYPE_CLASS_VECTOR){ // push value ...
+						ScriptObject *vec_obj = NULL;
+						if((vm_stk_current-1)->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+							vec_obj = (ScriptObject *)(vm_stk_current-1)->var_ref;
+							if(vec_obj->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								stk_src=stk_result_op1;
 								if(stk_src->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 									stk_src=(StackElement *)stk_result_op1->var_ref;
 								}
 
-								stk_dst=((ScriptVarVector *)vec_obj)->newSlot();
+								stk_dst=((ScriptObjectVector *)vec_obj)->newSlot();
 							}
 						}
 
@@ -685,21 +685,22 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected std::vector object");
 						}
 
-						push_value=false;
 
-					}else if(operator_type==BYTE_CODE_PUSH_ATTR){
+
+					}else if(operator_type==BYTE_CODE_PUSH_OBJECT_ELEMENT){
 
 						POP_TWO; // first must be a string that describes variable name and the other the variable itself ...
-						ScriptVar *struct_obj = NULL;
-						if((vm_stk_current-1)->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-							struct_obj = (ScriptVar *)(vm_stk_current-1)->var_ref;
-							if(struct_obj->idx_class == IDX_BUILTIN_TYPE_CLASS_DICTIONARY){ // push value ...
+						ScriptObject *obj = NULL;
+						StackElement *stk_object=(vm_stk_current-1);
+						if(stk_object->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+							obj = (ScriptObject *)stk_object->var_ref;
+							if(obj->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT){ // push value ...
 								// op1 is now the src value ...
 								if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
 									StackElement *se=NULL;
 									const char *str = (const char *)stk_result_op1->stk_value;
 									stk_src=stk_result_op2;
-									se =((ScriptVarDictionary *)struct_obj)->addProperty(str,calling_function,instruction);
+									se =((ScriptObject *)obj)->addProperty(str,calling_function,instruction);
 
 									if(se == NULL){
 										THROW_RUNTIME_ERROR("internal error se==NULL");
@@ -711,17 +712,16 @@ namespace zetscript{
 									THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal error (operator2 is not std::string)");
 								}
 							}else{
-								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected dictionary object");
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected object but is type ");
 							}
 						}else{
-							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected scriptvar");
+							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected object but is type ");
 						}
-						push_value=false;
 					}
 					else{ // pop two parameters nothing ...
-						POP_TWO;
+						POP_TWO; // op1:dst / op2:src
 
-						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {// == ScriptVar::VAR_TYPE::OBJECT){
+						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {// == ScriptObject::VAR_TYPE::OBJECT){
 							stk_dst=(StackElement *)stk_result_op1->var_ref; // stk_value is expect to contents a stack variable
 						}else{
 							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected l-value on assignment ('=')");
@@ -730,22 +730,22 @@ namespace zetscript{
 						stk_src=stk_result_op2; // store ptr instruction2 op as src_var_value
 
 						// we need primitive stackelement in order to assign...
-						if(stk_src->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {// == ScriptVar::VAR_TYPE::OBJECT){
+						if(stk_src->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {// == ScriptObject::VAR_TYPE::OBJECT){
 							stk_src=(StackElement *)stk_src->var_ref; // stk_value is expect to contents a stack variable
 						}
 
 						// ok load object pointer ...
-						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
 
-							if(((ScriptVar *)stk_dst->var_ref)->itHasSetMetamethod()){
+							if(((ScriptObject *)stk_dst->var_ref)->itHasSetMetamethod()){
 								if(!applyMetamethod(
 										calling_object
 										,calling_function
 										,instruction
 										,"="
 										,BYTE_CODE_METAMETHOD_SET
-										,stk_result_op1
-										,stk_result_op2
+										,stk_result_op2 // it contents variable to be assigned
+										,stk_result_op1 // it contects the result of expression or whatever
 								)){
 									THROW_RUNTIME_ERROR("cannot perform operation '='");\
 								}
@@ -766,7 +766,7 @@ namespace zetscript{
 
 						StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 						{
-							ScriptVar *script_var=NULL;
+							ScriptObject *script_var=NULL;
 							std::string *aux_str=NULL;
 							void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update stk_value on save) */
 							void **stk_src_ref=&stk_src->stk_value;
@@ -781,7 +781,7 @@ namespace zetscript{
 										THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 									}else{
 										if(
-											(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties) == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
+											(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties) == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT)
 										){
 											THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.");
 										}
@@ -822,17 +822,17 @@ namespace zetscript{
 									if(((stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)==0) || (stk_dst->var_ref==NULL)){/* Generates a std::string var */
 										script_var= NEW_STRING_VAR;
 										stk_dst->var_ref=script_var;
-										aux_str=&(((ScriptVarString *)script_var)->str_value);
-										stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
+										aux_str=&(((ScriptObjectString *)script_var)->str_value);
+										stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT;
 										script_var->initSharedPtr();
 										sharePointer(script_var->ptr_shared_pointer_node);
 									}
 									(*aux_str)=((const char *)stk_src->stk_value);
 									stk_dst->stk_value=(void *)aux_str->c_str();/* Because std::string assignment implies reallocs ptr char it changes, so reassing const char pointer */
 								}
-							}else if(type_var & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-								script_var=(ScriptVar *)stk_src->var_ref;
-								stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
+							}else if(type_var & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+								script_var=(ScriptObject *)stk_src->var_ref;
+								stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT;
 								stk_dst->stk_value=NULL;
 								stk_dst->var_ref=script_var;
 								if(!STK_IS_THIS(stk_src)){ // do not share this!
@@ -855,24 +855,23 @@ namespace zetscript{
 						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION: // we aren't take care about nothing! :)
 							break;
 						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING: // type std::string is really a std::string or variable ?!?!
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR: // we are getting script vars ...
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT: // we are getting script vars ...
 							if((old_stk_dst.properties & (MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C))==(MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)==0){ // is not C class
 								if(old_stk_dst.var_ref!=NULL){ // it had a pointer (no constant)...
-									//ScriptVar *old_script_dst_var_ref=(ScriptVar *)(old_stk_dst.var_ref);
+									//ScriptObject *old_script_dst_var_ref=(ScriptObject *)(old_stk_dst.var_ref);
 									if(
 										old_stk_dst.var_ref != stk_dst->var_ref  // not same ref ...
 									&&  STK_IS_THIS(&old_stk_dst)  // ... or this, do not share/unshare
 									){ // unref pointer because new pointer has been attached...
-										unrefSharedScriptVar(((ScriptVar  *)old_stk_dst.var_ref)->ptr_shared_pointer_node);
+										unrefSharedScriptObject(((ScriptObject  *)old_stk_dst.var_ref)->ptr_shared_pointer_node);
 									}
 								}
 							}
 							break;
 						}
 					}
-					if(push_value){ // to be able to do multiple assigns like a=b=c=1 (1 will be pushed in each store instruction)
-						*vm_stk_current++=*stk_src;
-					}
+					// to be able to do multiple assigns like a=b+=c=1 (1 will be pushed in each store instruction)
+					*vm_stk_current++=*stk_dst;
 				}
 				continue;
 			case BYTE_CODE_EQU:  // ==
@@ -1103,7 +1102,7 @@ namespace zetscript{
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
 				 POP_TWO;
 
-				if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {// == ScriptVar::VAR_TYPE::OBJECT){
+				if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {// == ScriptObject::VAR_TYPE::OBJECT){
 					stk_result_op1=(StackElement *)stk_result_op1->var_ref; // stk_value is expect to contents a stack variable
 				}
 				switch((intptr_t)stk_result_op2->stk_value){
@@ -1123,9 +1122,9 @@ namespace zetscript{
 					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)!=0);
 					break;
 				default:
-					if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+					if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
 						bool b = this->script_class_factory->isClassInheritsFrom(			//
-								((ScriptVar *)(stk_result_op1->var_ref))->idx_class // A
+								((ScriptObject *)(stk_result_op1->var_ref))->idx_class // A
 								, (intptr_t)stk_result_op2->stk_value				// B
 						);
 						PUSH_BOOLEAN(b);
@@ -1172,7 +1171,7 @@ namespace zetscript{
 					calling_object = this_object;
 
 					if(stk_function_ref->stk_value != NULL){ // expects calling object
-						calling_object=(ScriptVar *)stk_function_ref->stk_value;
+						calling_object=(ScriptObject *)stk_function_ref->stk_value;
 					}
 
 					if(stk_function_ref->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
@@ -1245,9 +1244,9 @@ namespace zetscript{
 									}
 								}
 
-								/*if((stk_arg->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)
+								/*if((stk_arg->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT)
 								 && ((stk_arg->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK)==0)){ // increments ref
-									ScriptVar *sv=(ScriptVar *)stk_arg->var_ref;
+									ScriptObject *sv=(ScriptObject *)stk_arg->var_ref;
 									sharePointer(sv->ptr_shared_pointer_node); //--> inc number shared pointers
 								}*/
 
@@ -1270,8 +1269,8 @@ namespace zetscript{
 								,instruction);
 
 						// if a scriptvar --> init shared
-						if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-							ScriptVar *sv=(ScriptVar *)ret_obj.var_ref;
+						if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+							ScriptObject *sv=(ScriptObject *)ret_obj.var_ref;
 							if(sv->ptr_shared_pointer_node == NULL){ // if return this, it holds ptr_shared_pointer
 								sv->initSharedPtr();
 							}
@@ -1310,9 +1309,9 @@ namespace zetscript{
 					}
 
 					// if scriptvariable and in the zeros list, deattach
-					if(stk_result.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+					if(stk_result.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
 						if(!STK_IS_THIS(&stk_result)){
-							ScriptVar *script_var=(ScriptVar *)stk_result.var_ref;
+							ScriptObject *script_var=(ScriptObject *)stk_result.var_ref;
 
 							// deattach from zero shares if exist...
 							deattachShareNode(script_var->ptr_shared_pointer_node->data.zero_shares,script_var->ptr_shared_pointer_node);
@@ -1330,21 +1329,21 @@ namespace zetscript{
 					script_var->initSharedPtr();
 					script_var->info_function_new=calling_function;
 					script_var->instruction_new=instruction;
-					(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
+					(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT};
 					continue;
 			 case  BYTE_CODE_DELETE:
 					POP_ONE;
 					//script_var
-					if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+					if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
 						StackElement *se=stk_result_op1;
 						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 							se=(StackElement *)(stk_result_op1->var_ref);
 						}
 
-						script_var = (ScriptVar *)(se)->var_ref;
+						script_var = (ScriptObject *)(se)->var_ref;
 						if(script_var->idx_class >= IDX_BUILTIN_TYPE_MAX
-						 ||script_var->idx_class==IDX_BUILTIN_TYPE_CLASS_VECTOR
-						 ||script_var->idx_class==IDX_BUILTIN_TYPE_CLASS_DICTIONARY
+						 ||script_var->idx_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR
+						 ||script_var->idx_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT
 						)
 						{ // max ...
 							script_var->unrefSharedPtr();
@@ -1365,13 +1364,13 @@ namespace zetscript{
 			 case BYTE_CODE_NEW_VECTOR: // Create new std::vector object...
 					script_var=NEW_VECTOR_VAR;
 					script_var->initSharedPtr();
-					(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
+					(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT};
 					continue;
 
-			 case  BYTE_CODE_NEW_DICTIONARY: // Create new std::vector object...
-				script_var=NEW_DICTIONARY_VAR;
+			 case  BYTE_CODE_NEW_OBJECT: // Create new std::vector object...
+				script_var=new ScriptObject(this->zs);
 				script_var->initSharedPtr();
-				(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
+				(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT};
 				continue;
 			 case BYTE_CODE_PUSH_SCOPE:
 				PUSH_VM_SCOPE(instruction->value_op2,calling_function,_stk_local_var,value_op1);
@@ -1391,14 +1390,16 @@ namespace zetscript{
 				 //vm_foreach_current->ptr=NULL;
 				 //vm_foreach_current->idx_current=0;
 
-				 var_object = (ScriptVar *)stk_result_op2->var_ref;
-				 if( (stk_result_op2->properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)){
-						var_object = (ScriptVar *)(((StackElement *)stk_result_op2->var_ref)->var_ref);
+				 var_object = (ScriptObject *)stk_result_op2->var_ref;
+				 if( (stk_result_op2->properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)){
+						var_object = (ScriptObject *)(((StackElement *)stk_result_op2->var_ref)->var_ref);
 				 }
 
-				if(var_object != NULL && (var_object->idx_class == IDX_BUILTIN_TYPE_CLASS_VECTOR || var_object->idx_class == IDX_BUILTIN_TYPE_CLASS_DICTIONARY)){
+				if(var_object != NULL && (
+						var_object->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR
+					|| 	var_object->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT)){
 
-					/*if(var_object->idx_class == IDX_BUILTIN_TYPE_CLASS_VECTOR){ // integer as iterator...
+					/*if(var_object->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){ // integer as iterator...
 						*vm_foreach_current->key={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
 					}
 					else{ // struct -> std::string as iterator...
@@ -1416,7 +1417,7 @@ namespace zetscript{
 				 THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"BYTE_CODE_SET_AND_NEXT TODOOOOO!",
 									 SFI_GET_SYMBOL_NAME(calling_function,instruction)
 									);
-				 //*((StackElement *)vm_foreach_current->key)=((ScriptVarVector *)vm_foreach_current->ptr)->m_objVector[vm_foreach_current->idx_current++];
+				 //*((StackElement *)vm_foreach_current->key)=((ScriptObjectVector *)vm_foreach_current->ptr)->m_objVector[vm_foreach_current->idx_current++];
 				 continue;
 			 case BYTE_CODE_IT_CHK_END:
 				 THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"BYTE_CODE_IT_CHK_END TODOOOOO!",

@@ -91,11 +91,9 @@ namespace zetscript{
 		// REGISTER BUILT IN CLASS TYPES
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
-		REGISTER_BUILT_IN_CLASS(ScriptVar,IDX_BUILTIN_TYPE_CLASS_SCRIPT_VAR);
-		REGISTER_BUILT_IN_CLASS(ScriptVarString,IDX_BUILTIN_TYPE_CLASS_STRING);
-		REGISTER_BUILT_IN_CLASS(ScriptVarVector,IDX_BUILTIN_TYPE_CLASS_VECTOR);
-		REGISTER_BUILT_IN_CLASS(ScriptVarDictionary,IDX_BUILTIN_TYPE_CLASS_DICTIONARY);
-
+		REGISTER_BUILT_IN_CLASS(ScriptObject,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT);
+		REGISTER_BUILT_IN_CLASS(ScriptObjectString,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING);
+		REGISTER_BUILT_IN_CLASS(ScriptObjectVector,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR);
 
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -105,8 +103,8 @@ namespace zetscript{
 		// From here you defined all basic, start define hierarchy
 
 		// register custom functions ...
-		nativeClassInheritsFrom<ScriptVarVector,ScriptVar>();
-		nativeClassInheritsFrom<ScriptVarDictionary,ScriptVar>();
+		nativeClassInheritsFrom<ScriptObjectVector,ScriptObject>();
+		//nativeClassInheritsFrom<ScriptObjectDictionary,ScriptObject>();
 
 
 		//------------------------------------------------------------------------------------------------------------
@@ -121,18 +119,18 @@ namespace zetscript{
 
 		//registerNativeGlobalFunction("error",internalPrintError);
 
-		//ZS_REGISTER_FUNCTION_MEMBER(this->zs,ScriptVarVector,"size",&ScriptVarVector::size);
+		//ZS_REGISTER_FUNCTION_MEMBER(this->zs,ScriptObjectVector,"size",&ScriptObjectVector::size);
 
-		registerNativeMemberFunction("push",&ScriptVarVector::pushSf);
-		registerNativeMemberFunction("pop",&ScriptVarVector::popSf);
-
-
-		registerNativeMemberFunction("add",&ScriptVarDictionary::addAttrSf);
-		registerNativeMemberFunction("remove",&ScriptVarDictionary::removeAttrSf);
-		//registerNativeMemberFunction("size",&ScriptVarDictionary::sizeSf);
+		registerNativeMemberFunction("push",&ScriptObjectVector::pushSf);
+		registerNativeMemberFunction("pop",&ScriptObjectVector::popSf);
 
 		//-------------------------
 		// Register built in extra
+		// String
+		registerNativeSingletonClass<StringBuiltIn>("StringBuiltIn");
+		registerNativeMemberFunctionStatic<StringBuiltIn>("format",StringBuiltIn::format);
+		ZS_REGISTER_GLOBAL_VARIABLE(zs,"String",&string_built_in);
+
 		// Math
 		registerNativeSingletonClass<MathBuiltIn>("MathBuiltIn");
 		registerNativeStaticConstMember<MathBuiltIn>("PI",&MathBuiltIn::PI);
@@ -143,10 +141,11 @@ namespace zetscript{
 		registerNativeMemberFunctionStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
 		ZS_REGISTER_GLOBAL_VARIABLE(zs,"Math",&math_built_in);
 
-		// Io
-		registerNativeSingletonClass<IoBuiltIn>("IoBuiltIn");
-		registerNativeMemberFunctionStatic<IoBuiltIn>("clock",IoBuiltIn::clock);
-		ZS_REGISTER_GLOBAL_VARIABLE(zs,"IO",&io_built_in);
+		// System
+		registerNativeSingletonClass<SystemBuiltIn>("SystemBuiltIn");
+		registerNativeMemberFunctionStatic<SystemBuiltIn>("clock",SystemBuiltIn::clock);
+		registerNativeMemberFunctionStatic<SystemBuiltIn>("print",SystemBuiltIn::print);
+		ZS_REGISTER_GLOBAL_VARIABLE(zs,"System",&system_built_in);
 	}
 
 	void ScriptClassFactory::registerNativeBaseSymbols(bool _register){
@@ -291,19 +290,19 @@ namespace zetscript{
 		return getIdxScriptClassInternal(v) != ZS_INVALID_CLASS;
 	}
 
-	ScriptVar *		ScriptClassFactory::instanceScriptVariableByClassName(const std::string & class_name){
+	ScriptObject *		ScriptClassFactory::instanceScriptObjectiableByClassName(const std::string & class_name){
 		 // 0. Search class info ...
 		 ScriptClass * rc = getScriptClass(class_name);
 
 		 if(rc != NULL){
-			 return instanceScriptVariableByIdx(rc->idx_class);
+			 return instanceScriptObjectiableByIdx(rc->idx_class);
 		 }
 		 return NULL;
 	 }
 
-	 ScriptVar 		 * ScriptClassFactory::instanceScriptVariableByIdx(ClassTypeIdx idx_class, void * value_object){
+	 ScriptObject 		 * ScriptClassFactory::instanceScriptObjectiableByIdx(ClassTypeIdx idx_class, void * value_object){
 
-		 ScriptVar *class_object=NULL;
+		 ScriptObject *class_object=NULL;
 
 		 // 0. Search class info ...
 		 ScriptClass *rc = getScriptClass(idx_class);
@@ -322,13 +321,13 @@ namespace zetscript{
 				 return NULL;
 				 break;
 
-			 case IDX_BUILTIN_TYPE_CLASS_VECTOR:
-			 case IDX_BUILTIN_TYPE_CLASS_DICTIONARY:
-				 class_object = (ScriptVar *)value_object;
+			 case IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR:
+			 case IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT:
+				 class_object = (ScriptObject *)value_object;
 				 break;
 			 default:
 				 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
-				 class_object = new ScriptVar(zs);
+				 class_object = new ScriptObject(zs);
 				 class_object->init(rc, value_object);
 				 break;
 			 }

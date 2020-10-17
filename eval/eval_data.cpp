@@ -68,48 +68,48 @@ namespace zetscript{
 			OPERATOR_UNKNOWN = 0,
 
 			// ASSIGN
-			OPERATOR_ASSIGN, 									// =
-			OPERATOR_ASSIGN_FIRST,
-			OPERATOR_ASSIGN_ADD=OPERATOR_ASSIGN_FIRST, 			// +=
-			OPERATOR_ASSIGN_SUB, 								// -=
-			OPERATOR_ASSIGN_MUL, 								// *=
-			OPERATOR_ASSIGN_DIV, 								// /=
-			OPERATOR_ASSIGN_MOD, 								// %=
-			OPERATOR_ASSIGN_XOR,								// ^=
-			OPERATOR_ASSIGN_BINARY_AND,							// &=
-			OPERATOR_ASSIGN_BINARY_OR,  						// |=
-			OPERATOR_ASSIGN_SHIFT_LEFT, 						// <<=
-			OPERATOR_ASSIGN_SHIFT_RIGHT, 						// >>=
-			OPERATOR_ASSIGN_LAST,
+			OPERATOR_ASSIGN, 										// =
+			OPERATOR_ARITHMETIC_ASSIGN_FIRST,
+			OPERATOR_ASSIGN_ADD=OPERATOR_ARITHMETIC_ASSIGN_FIRST,	// +=
+			OPERATOR_ASSIGN_SUB, 									// -=
+			OPERATOR_ASSIGN_MUL, 									// *=
+			OPERATOR_ASSIGN_DIV, 									// /=
+			OPERATOR_ASSIGN_MOD, 									// %=
+			OPERATOR_ASSIGN_XOR,									// ^=
+			OPERATOR_ASSIGN_BINARY_AND,								// &=
+			OPERATOR_ASSIGN_BINARY_OR,  							// |=
+			OPERATOR_ASSIGN_SHIFT_LEFT, 							// <<=
+			OPERATOR_ASSIGN_SHIFT_RIGHT, 							// >>=
+			OPERATOR_ARITHMETIC_ASSIGN_LAST,
 
 			// LOGIC
-			OPERATOR_LOGIC_AND=OPERATOR_ASSIGN_LAST, 			// &&
-			OPERATOR_LOGIC_OR, 									// ||
+			OPERATOR_LOGIC_AND=OPERATOR_ARITHMETIC_ASSIGN_LAST,		// &&
+			OPERATOR_LOGIC_OR, 										// ||
 
 			// RELATIONAL
-			OPERATOR_LOGIC_EQUAL, 								// ==
-			OPERATOR_LOGIC_NOT_EQUAL, 							// !=
-			OPERATOR_LOGIC_GTE, 								// >=
-			OPERATOR_LOGIC_LTE, 								// <=
-			OPERATOR_LOGIC_GT, 									// >
-			OPERATOR_LOGIC_LT, 									// <
+			OPERATOR_LOGIC_EQUAL, 									// ==
+			OPERATOR_LOGIC_NOT_EQUAL, 								// !=
+			OPERATOR_LOGIC_GTE, 									// >=
+			OPERATOR_LOGIC_LTE, 									// <=
+			OPERATOR_LOGIC_GT, 										// >
+			OPERATOR_LOGIC_LT, 										// <
 
 			// ARITHMETIC
-			OPERATOR_ADD, 										// +
-			OPERATOR_OR, 										// |
-			OPERATOR_SUB, 										// -
-			OPERATOR_XOR, 										// ^
-			OPERATOR_MUL, 										// *
-			OPERATOR_BINARY_AND, 								// &
-			OPERATOR_DIV, 										// /
-			OPERATOR_MOD, 										// %
-			OPERATOR_SHIFT_LEFT, 								// <<
-			OPERATOR_SHIFT_RIGHT, 								// >>
+			OPERATOR_ADD, 											// +
+			OPERATOR_OR, 											// |
+			OPERATOR_SUB, 											// -
+			OPERATOR_XOR, 											// ^
+			OPERATOR_MUL, 											// *
+			OPERATOR_BINARY_AND, 									// &
+			OPERATOR_DIV, 											// /
+			OPERATOR_MOD, 											// %
+			OPERATOR_SHIFT_LEFT, 									// <<
+			OPERATOR_SHIFT_RIGHT, 									// >>
 
-			OPERATOR_INSTANCEOF, 								// instanceof
+			OPERATOR_INSTANCEOF, 									// instanceof
 
-			OPERATOR_TERNARY_IF, 								// ?
-			OPERATOR_TERNARY_ELSE, 								// :
+			OPERATOR_TERNARY_IF, 									// ?
+			OPERATOR_TERNARY_ELSE, 									// :
 			OPERATOR_MAX
 		}Operator;
 

@@ -26,7 +26,7 @@
 // if 0 is in main <> 0, else.
 #define DO_CAST																	((this->zs))->doCast
 #define GET_IDX_BUILTIN_TYPE_CLASS_FROM_ITS_C_TYPE								((this->zs))->getIdxClassFromItsNativeType
-#define INSTANCE_SCRIPT_VARIABLE_BY_IDX											((this->zs))->instanceScriptVariableByIdx
+#define INSTANCE_SCRIPT_VARIABLE_BY_IDX											((this->zs))->instanceScriptObjectiableByIdx
 #define GET_METAMETHOD(m)														((this->zs))->getMetamethod(m)
 #define IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,idx_class,idx_class_instance)	((this->script_class_factory))->isClassInheritsFrom(idx_class,idx_class_instance)
 
@@ -37,7 +37,7 @@ namespace zetscript{
 	class ScriptFunction;
 	class Scope;
 	class ScriptClass;
-	class ScriptVar;
+	class ScriptObject;
 	struct Symbol;
 
 	//struct ScopeBlockVars;
@@ -77,10 +77,9 @@ namespace zetscript{
 		// built in classes...
 		IDX_BUILTIN_TYPE_STACK_ELEMENT,
 		IDX_BUILTIN_TYPE_FUNCTION,
-		IDX_BUILTIN_TYPE_CLASS_SCRIPT_VAR,
-		IDX_BUILTIN_TYPE_CLASS_STRING,
-		IDX_BUILTIN_TYPE_CLASS_VECTOR,
-		IDX_BUILTIN_TYPE_CLASS_DICTIONARY,
+		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT,
+		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING,
+		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR,
 
 		IDX_BUILTIN_TYPE_MAX
 	}IdxBuiltInType;
@@ -135,7 +134,7 @@ namespace zetscript{
 	struct _InfoSharedList;
 
 	typedef struct _SharedPointerInfo {
-		ScriptVar 		*shared_ptr;
+		ScriptObject 		*shared_ptr;
 		unsigned char 	n_shares;
 		_InfoSharedList *zero_shares;
 	} SharedPointerInfo;

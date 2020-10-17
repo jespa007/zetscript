@@ -74,7 +74,7 @@ namespace zetscript{
 			}
 
 			// declare dictionary ...
-			instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_DICTIONARY));
+			instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_OBJECT));
 
 			// this solve problem void structs...
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -114,7 +114,7 @@ namespace zetscript{
 
 				 // register constant...
 				if((constant_value = eval_data->zs->getRegisteredConstantValue(key_value))==NULL){
-					ScriptVarString *s=new ScriptVarString(eval_data->zs,symbol_value);
+					ScriptObjectString *s=new ScriptObjectString(eval_data->zs,symbol_value);
 					constant_value=eval_data->zs->registerConstantValue(key_value,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING);
 					constant_value->stk_value=((void *)(s->str_value.c_str()));
 					constant_value->var_ref=s;
@@ -147,7 +147,7 @@ namespace zetscript{
 				);
 
 				 // push attr (push a element pair)
-				 instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_ATTR));
+				 instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_OBJECT_ELEMENT));
 
 				 v_elements++;
 			}
@@ -195,7 +195,7 @@ namespace zetscript{
 						,level+1);
 
 				// vpush
-				instructions->push_back(new EvalInstruction(BYTE_CODE_VPUSH));
+				instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_VECTOR_ELEMENT));
 
 				v_elements++;
 			}

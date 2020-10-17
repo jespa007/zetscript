@@ -16,11 +16,11 @@
 #include 		"ByteCode.cpp"
 
 
-#include		"script/ScriptVar.cpp"
-#include		"script/ScriptVarString.cpp"
-#include		"script/ScriptVarVector.cpp"
-#include		"script/ScriptVarFunction.cpp"
-#include 		"script/ScriptVarDictionary.cpp"
+#include		"script/ScriptObject.cpp"
+#include		"script/ScriptObjectString.cpp"
+#include		"script/ScriptObjectVector.cpp"
+#include		"script/ScriptObjectFunction.cpp"
+
 #include		"script/ScriptFunctionFactory.cpp"
 #include		"script/ScriptClassFactory.cpp"
 //#include		"script/ScriptContext.cpp"
@@ -41,7 +41,6 @@
 #include		"eval/eval.cpp"
 
 #include 		"extra/MathBuiltIn.cpp"
-#include 		"extra/ConsoleBuiltIn.cpp"
 #include 		"extra/SystemBuiltIn.cpp"
 #include 		"extra/StringBuiltIn.cpp"
 

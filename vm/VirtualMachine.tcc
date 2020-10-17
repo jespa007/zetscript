@@ -109,11 +109,11 @@ namespace zetscript{
 					stk_local_var=(StackElement *)stk_local_var->var_ref;
 				}
 
-				ScriptVar *var = NULL;
+				ScriptObject *var = NULL;
 				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_local_var->properties)){
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
-					var =((ScriptVar *)(stk_local_var->var_ref));
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT:
+					var =((ScriptObject *)(stk_local_var->var_ref));
 					if(var){
 						if(var->ptr_shared_pointer_node != NULL){
 							var->unrefSharedPtr();
@@ -141,7 +141,7 @@ namespace zetscript{
 	}
 
 	inline bool VirtualMachine::applyMetamethod(
-		ScriptVar *calling_object
+		ScriptObject *calling_object
 		,ScriptFunction *calling_function
 		,Instruction *instruction
 		,const char *__OVERR_OP__
@@ -152,38 +152,38 @@ namespace zetscript{
 	) {
 
 		int idx_offset_function_member_start=0;
-		ScriptVar *script_var_object = NULL;
+		ScriptObject *script_var_object = NULL;
 		ScriptFunction * ptr_function_found=NULL;
 
-		ScriptVar *one_param = NULL;
+		ScriptObject *one_param = NULL;
 		int n_metam_args=((__METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT\
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_NEG\
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_SET\
 						   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);
 		StackElement *mm_test_startArg = vm_stk_current+n_metam_args;
-		if(instruction->value_op2 ==0){ /* search for first time , else the function is stored in value_op2 */
+		if((intptr_t)instruction->value_op2 == ZS_IDX_UNDEFINED){ /* search for first time , else the function is stored in value_op2 */
 			ScriptClass *script_class_aux=NULL;
 
 			const char * symbol_to_find;
 			ptr_function_found=NULL;
 
 
-			if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR))){
-				script_var_object = (ScriptVar *)(stk_result_op1->var_ref);
+			if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT))){
+				script_var_object = (ScriptObject *)(stk_result_op1->var_ref);
 				if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) == (MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
-					script_var_object = (ScriptVar *)(((StackElement *)script_var_object))->var_ref;
+					script_var_object = (ScriptObject *)(((StackElement *)script_var_object))->var_ref;
 				}
 				if(__METAMETHOD__ == BYTE_CODE_METAMETHOD_SET){
 					idx_offset_function_member_start=1;
-					one_param = (ScriptVar *)(stk_result_op2->var_ref);
+					one_param = (ScriptObject *)(stk_result_op2->var_ref);
 					if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) == (MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
-						one_param = (ScriptVar *)(((StackElement *)one_param))->var_ref;
+						one_param = (ScriptObject *)(((StackElement *)one_param))->var_ref;
 					}
 				}
-			}else if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR)) && (n_metam_args==METAMETHOD_2_ARGS)){\
-				script_var_object = (ScriptVar *)(stk_result_op2->var_ref);
+			}else if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT)) && (n_metam_args==METAMETHOD_2_ARGS)){\
+				script_var_object = (ScriptObject *)(stk_result_op2->var_ref);
 				if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) == (MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
-					script_var_object = (ScriptVar *)(((StackElement *)script_var_object))->var_ref;
+					script_var_object = (ScriptObject *)(((StackElement *)script_var_object))->var_ref;
 				}
 			}else{
 
@@ -245,12 +245,12 @@ namespace zetscript{
 		vm_stk_current=mm_test_startArg-n_metam_args;
 		/* if function is C must register pointer ! */
 
-		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
 
-			((ScriptVar *)(ret_obj.var_ref))->initSharedPtr();
+			((ScriptObject *)(ret_obj.var_ref))->initSharedPtr();
 
 			if(__METAMETHOD__ != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
-				((ScriptVar *)(ret_obj.var_ref))->setDelete_C_ObjectOnDestroy(true);
+				((ScriptObject *)(ret_obj.var_ref))->setDelete_C_ObjectOnDestroy(true);
 			}
 		}
 		if(__METAMETHOD__ != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
@@ -261,7 +261,7 @@ namespace zetscript{
 	}
 
 	inline ScriptFunction * VirtualMachine::findFunction(
-			ScriptVar *calling_object
+			ScriptObject *calling_object
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
@@ -276,7 +276,7 @@ namespace zetscript{
 			) {
 
 		// by default search over global functions...
-		ScriptVar *var_object = NULL;
+		ScriptObject *var_object = NULL;
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
 		bool stk_element_are_ptr=stk_elements_ptr!=vm_stack;
@@ -358,9 +358,9 @@ namespace zetscript{
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
 									all_check=false;
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-									var_object=((ScriptVar *)current_arg->var_ref);
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT:
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+									var_object=((ScriptObject *)current_arg->var_ref);
 									aux_string=var_object->getNativePointerClassName();
 
 									if(arg_idx_type==idx_type){
@@ -442,9 +442,9 @@ namespace zetscript{
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
 						aux_string="undefined";
 						break;
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-						aux_string = ((ScriptVar *)current_arg->var_ref)->getNativePointerClassName();
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT:
+					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+						aux_string = ((ScriptObject *)current_arg->var_ref)->getNativePointerClassName();
 						break;
 					}
 					args_str+=zs_rtti::demangle(aux_string);
@@ -544,8 +544,8 @@ namespace zetscript{
 		// we have to create an new string variable
 
 		//std::string *str;
-		ScriptVarString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
+		ScriptObjectString *script_var_string = NEW_STRING_VAR;
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT};
 		script_var_string->initSharedPtr();
 
 		std::string str1;
@@ -594,8 +594,8 @@ namespace zetscript{
 				*(*str_dst_it)="function";
 				break;
 			default:
-				if(stk_src_item->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-					*(*str_dst_it)=((ScriptVar *)(stk_src_item)->var_ref)->toString();
+				if(stk_src_item->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+					*(*str_dst_it)=((ScriptObject *)(stk_src_item)->var_ref)->toString();
 				}
 				else{
 					*(*str_dst_it)="unknow";
@@ -623,8 +623,8 @@ namespace zetscript{
 		}
 
 		//std::string *str;
-		ScriptVarString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
+		ScriptObjectString *script_var_string = NEW_STRING_VAR;
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT};
 		script_var_string->initSharedPtr();
 
 

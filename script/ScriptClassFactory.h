@@ -6,20 +6,20 @@
 
 
 
-#define NEW_CLASS_VAR_BY_IDX(data,idx)					((data->script_class_factory)->instanceScriptVariableByIdx(idx))
+#define NEW_CLASS_VAR_BY_IDX(data,idx)					((data->script_class_factory)->instanceScriptObjectiableByIdx(idx))
 #define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_class_factory)->getScriptClass(idx_or_name))
 #define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_class_factory)->getScriptClassName(idx))
 #define SCRIPT_CLASS_MAIN(data)							((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_MAIN))    // 0 is the main class
-#define SCRIPT_CLASS_STRING(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_STRING))
-#define SCRIPT_CLASS_DICTIONARY(data)					((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_DICTIONARY))
-#define SCRIPT_CLASS_VECTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_VECTOR))
+#define SCRIPT_CLASS_STRING(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING))
+//#define SCRIPT_CLASS_DICTIONARY(data)					((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_DICTIONARY))
+#define SCRIPT_CLASS_VECTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR))
 //#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_FUNCTION))
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_class_factory)->getScriptClassByNativeClassPtr(s))    // 0 is the main class
 #define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_class_factory)->getScriptClass(idx)->str_class_ptr_type)
 
 namespace zetscript{
 
-	class ScriptVar;
+	class ScriptObject;
 	class ScriptClass;
 	class ZetScript;
 
@@ -55,8 +55,8 @@ namespace zetscript{
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		ScriptVar 			* 			instanceScriptVariableByClassName(const std::string & class_name);
-		ScriptVar 			* 			instanceScriptVariableByIdx(ClassTypeIdx  idx_class, void * value_object = NULL);
+		ScriptObject 			* 			instanceScriptObjectiableByClassName(const std::string & class_name);
+		ScriptObject 			* 			instanceScriptObjectiableByIdx(ClassTypeIdx  idx_class, void * value_object = NULL);
 
 		void 							registerNativeBaseSymbols(bool _register);
 
@@ -197,7 +197,8 @@ namespace zetscript{
 			 */
 		bool register_c_base_symbols;
 		MathBuiltIn math_built_in;
-		IoBuiltIn 	io_built_in;
+		SystemBuiltIn 	system_built_in;
+		StringBuiltIn 	string_built_in;
 
 
 		PrimitiveType *					getPrimitiveTypeFromStr(const std::string & str);

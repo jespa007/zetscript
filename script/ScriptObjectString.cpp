@@ -7,22 +7,22 @@
 
 namespace zetscript{
 
-	void ScriptVarString::setup(){
+	void ScriptObjectString::setup(){
 		value = &str_value;
 		str_value = "";
 	}
 
-	ScriptVarString::ScriptVarString(ZetScript *_zs):ScriptVar(_zs){
+	ScriptObjectString::ScriptObjectString(ZetScript *_zs):ScriptObject(_zs){
 		str_value = "";
 		init(SCRIPT_CLASS_STRING(this), (void *)this);
 	}
 
-	ScriptVarString::ScriptVarString(ZetScript *_zs, const std::string & s):ScriptVar(_zs){
+	ScriptObjectString::ScriptObjectString(ZetScript *_zs, const std::string & s):ScriptObject(_zs){
 		init(SCRIPT_CLASS_STRING(this), (void *)this);
 		str_value = s;
 	}
 
-	std::string ScriptVarString::toString(){
+	std::string ScriptObjectString::toString(){
 		return str_value;
 	}
 

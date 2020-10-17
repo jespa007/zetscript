@@ -49,7 +49,7 @@ namespace zetscript{
 					 break;
 				 default:
 					 if(ptr_var==0) return stk_result;
-					 stk_result = {NULL,script_class_factory->instanceScriptVariableByIdx(idx_builtin_type_var,(void *)ptr_var),MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR};
+					 stk_result = {NULL,script_class_factory->instanceScriptObjectiableByIdx(idx_builtin_type_var,(void *)ptr_var),MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT};
 					 break;
 				}
 
@@ -59,7 +59,7 @@ namespace zetscript{
 		bool ZetScript::convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *ptr_var, std::string & error){
 			intptr_t val_ret=0;
 
-			ScriptVar *script_variable=NULL;
+			ScriptObject *script_variable=NULL;
 
 			// save return type ...
 			if(stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
@@ -133,10 +133,10 @@ namespace zetscript{
 
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 					if(idx_builtin_type == IDX_BUILTIN_TYPE_STRING_PTR_C){
-						ScriptVarString *str_var_ref=(ScriptVarString *)stack_element->var_ref;
+						ScriptObjectString *str_var_ref=(ScriptObjectString *)stack_element->var_ref;
 						if(stack_element->var_ref == 0){ // if not created try to create a tmp scriptvar it will be removed...
 							if(stack_element->stk_value != NULL){
-								str_var_ref= new ScriptVarString(this);
+								str_var_ref= new ScriptObjectString(this);
 								str_var_ref->str_value=(const char *)stack_element->stk_value;
 								str_var_ref->initSharedPtr(); // init but not assigned so it can be removed...
 							}else
@@ -160,7 +160,7 @@ namespace zetscript{
 					break;
 				default: // script variable by default ...
 
-					script_variable=(ScriptVar *)stack_element->var_ref;
+					script_variable=(ScriptObject *)stack_element->var_ref;
 					ScriptClass *c_class=NULL;
 
 					if(script_variable==NULL){
@@ -168,15 +168,15 @@ namespace zetscript{
 						return false;
 					}
 
-					if(script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_STRING){
-						val_ret=(intptr_t)(&((ScriptVarString *)script_variable)->str_value);
+					if(script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING){
+						val_ret=(intptr_t)(&((ScriptObjectString *)script_variable)->str_value);
 						if(idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
-							val_ret=(intptr_t)((ScriptVarString *)script_variable)->str_value.c_str();
+							val_ret=(intptr_t)((ScriptObjectString *)script_variable)->str_value.c_str();
 						}
 					}else if(
 
-					   (script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_VECTOR
-					|| script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_DICTIONARY)){
+					   (script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR
+					|| script_variable->idx_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT)){
 
 						if(idx_builtin_type==script_variable->idx_class){
 							val_ret=(intptr_t)script_variable->getNativeObject();
@@ -191,7 +191,7 @@ namespace zetscript{
 							error = "cannot convert \""+zs_rtti::demangle(script_variable->getNativePointerClassName())+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 							return false;
 						}
-					}else{ // ScriptVar ?
+					}else{ // ScriptObject ?
 						error = " Error calling function, no C-object parameter! Unexpected script variable ("+zs_rtti::demangle(script_variable->getClassName())+")";
 						return false;
 					}
@@ -209,7 +209,7 @@ namespace zetscript{
 		// 0 PARAMS
 		//
 		template <typename R,typename T>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<std::is_same<R,void>::value>::type
 		{
 
@@ -226,7 +226,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<R,void>::value>::type
 		{
 			int idx_return = script_class_factory->getIdxClassFromItsNativeType(typeid(R).name());
@@ -255,7 +255,7 @@ namespace zetscript{
 		//
 		// template for last parameter argIdx == 1
 		template<typename R,typename T,  typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f ,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f ,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
 			//return NULL;
@@ -280,7 +280,7 @@ namespace zetscript{
 		}
 
 		template<typename R,typename T,  typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f ,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f ,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
 			using Param1 = typename T::template Argument<0>::type;
@@ -319,7 +319,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 2
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
 
@@ -351,7 +351,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
 			using Param1 = typename T::template Argument<0>::type;
@@ -396,7 +396,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 3
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
 
@@ -432,7 +432,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
 			using Param1 = typename T::template Argument<0>::type;
@@ -476,7 +476,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 4
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
@@ -513,7 +513,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
@@ -561,7 +561,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 5
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
@@ -604,7 +604,7 @@ namespace zetscript{
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
@@ -657,7 +657,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 6
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 6)>::type
 		{
 
@@ -702,7 +702,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptVar *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type
 		{
 			using Param1 = typename T::template Argument<0>::type;
@@ -756,7 +756,7 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------
 
 		 template <typename F, std::size_t... Is>
-		 auto ZetScript::bindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto ZetScript::bindScriptFunctionBuilderBase(void **f, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity > 0)>::type
 		{
 			 bindScriptFunctionBuilder<typename F::return_type, F,  typename F::template Argument<Is>::type...>(f,calling_obj,fun_obj);
@@ -765,14 +765,14 @@ namespace zetscript{
 
 
 		 template <typename F, std::size_t... Is>
-		 auto ZetScript::bindScriptFunctionBuilderBase(void **f, ScriptVar *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto ZetScript::bindScriptFunctionBuilderBase(void **f, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity == 0)>::type
 		{
 			 bindScriptFunctionBuilder<typename F::return_type, F>(f,calling_obj,fun_obj);
 		}
 
 		template <  typename F>
-		std::function<F> * ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptVar *calling_obj){
+		std::function<F> * ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptObject *calling_obj){
 
 			std::string return_type;
 			std::vector<std::string> params;
@@ -809,7 +809,7 @@ namespace zetscript{
 		std::function<F> * ZetScript::bindScriptFunction(const std::string & function_access)
 		{
 			ScriptFunction * fun_obj=NULL;
-			ScriptVar *calling_obj=NULL;
+			ScriptObject *calling_obj=NULL;
 			std::vector<std::string> access_var = zs_strutils::split(function_access,'.');
 			ScriptFunction * main_function = script_class_factory->getMainFunction();
 			StackElement *se=NULL;
@@ -827,8 +827,8 @@ namespace zetscript{
 							&& registered_symbol->scope == MAIN_SCOPE(this)){
 								StackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
-									if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-										calling_obj=(ScriptVar *)stk->var_ref;
+									if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+										calling_obj=(ScriptObject *)stk->var_ref;
 									}
 								}
 								else{
@@ -844,8 +844,8 @@ namespace zetscript{
 					}else{ // we have got the calling_obj from last iteration ...
 						se = calling_obj->getProperty(symbol_to_find);
 						if(se!=NULL){
-							if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-								calling_obj=(ScriptVar *)se->var_ref;
+							if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+								calling_obj=(ScriptObject *)se->var_ref;
 							}else{
 								THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
 							}

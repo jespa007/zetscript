@@ -6,7 +6,7 @@
 
 #include "common.h"
 
-#define TYPE_SCRIPT_VARIABLE 						"__ScriptVar__"
+#define TYPE_SCRIPT_VARIABLE 						"__ScriptObject__"
 #define ZS_IDX_SCRIPTVAR_PROPERTY_IS_THIS			-1
 
 namespace zetscript{
@@ -16,7 +16,7 @@ class ScriptClass;
 	class ZetScript;
 	class VirtualMachine;
 	class ScriptClassFactory;
-	class  ScriptVar{
+	class  ScriptObject{
 
 	public:
 
@@ -35,8 +35,8 @@ class ScriptClass;
 		void *value;
 
 		// Construct ...
-		ScriptVar();
-		ScriptVar(ZetScript	*_zs);
+		ScriptObject();
+		ScriptObject(ZetScript	*_zs);
 
 		/**
 		 * info_registered_class: scriptclass info
@@ -91,7 +91,7 @@ class ScriptClass;
 		ZetScript      * getZetScript() { return zs;}
 
 		virtual void destroy();
-		virtual ~ScriptVar();
+		virtual ~ScriptObject();
 
 	protected:
 

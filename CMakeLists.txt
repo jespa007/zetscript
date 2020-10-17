@@ -204,11 +204,11 @@ ELSE()
 		scope/ScopeFactory.cpp
 				
 		 # Script
-		script/ScriptVar.cpp
-		script/ScriptVarString.cpp
-		script/ScriptVarVector.cpp
-		script/ScriptVarFunction.cpp
- 		script/ScriptVarDictionary.cpp
+		script/ScriptObject.cpp
+		script/ScriptObjectString.cpp
+		script/ScriptObjectVector.cpp
+		script/ScriptObjectFunction.cpp
+ 		script/ScriptObjectDictionary.cpp
 		script/ScriptClass.cpp
 		script/ScriptFunction.cpp
 		script/ScriptFunctionFactory.cpp
@@ -249,11 +249,11 @@ ELSE()
 	SET(
 		HS
 		
-		script/ScriptVarString.h
-		script/ScriptVarVector.h
-		script/ScriptVarFunction.h
-		script/ScriptVarDictionary.h
-		script/ScriptVar.h
+		script/ScriptObjectString.h
+		script/ScriptObjectVector.h
+		script/ScriptObjectFunction.h
+		script/ScriptObjectDictionary.h
+		script/ScriptObject.h
 		script/ScriptContext.h
 		script/ScriptClass.h
 		script/ScriptFunction.h

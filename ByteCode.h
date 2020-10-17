@@ -15,8 +15,8 @@ namespace zetscript{
 		BYTE_CODE_LOAD, // primitive value like number/std::string or boolean...
 		BYTE_CODE_LOAD_CONSTANT,
 		BYTE_CODE_STORE, // mov expression to var
-		BYTE_CODE_VPUSH, // Value push for std::vector
-		BYTE_CODE_PUSH_ATTR,
+		BYTE_CODE_PUSH_VECTOR_ELEMENT, // Value push for std::vector
+		BYTE_CODE_PUSH_OBJECT_ELEMENT,
 		BYTE_CODE_EQU,  // ==
 		BYTE_CODE_NOT_EQU,  // !=
 		BYTE_CODE_LT,  // <
@@ -46,7 +46,7 @@ namespace zetscript{
 		BYTE_CODE_NEW, // new operator...
 		BYTE_CODE_DELETE,
 		BYTE_CODE_NEW_VECTOR, // Vector object
-		BYTE_CODE_NEW_DICTIONARY,
+		BYTE_CODE_NEW_OBJECT,
 		BYTE_CODE_RET, // ret instruction ..
 		BYTE_CODE_PUSH_SCOPE,
 		BYTE_CODE_POP_SCOPE,

@@ -313,7 +313,7 @@ namespace zetscript{
 
 	}
 
-	void ZetScript::getScriptObject(const std::string &function_access,ScriptVar **calling_obj,ScriptFunction **fun_obj ){
+	void ZetScript::getScriptObject(const std::string &function_access,ScriptObject **calling_obj,ScriptFunction **fun_obj ){
 
 	}
 
@@ -340,7 +340,7 @@ namespace zetscript{
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 				break;
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-				delete (ScriptVarString *)icv->var_ref;
+				delete (ScriptObjectString *)icv->var_ref;
 				break;
 			}
 			delete icv;

@@ -1226,6 +1226,16 @@ namespace zetscript{
 							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_info_keywords[keyw].str);
 						}
 
+						// register symbol...
+						if(is_constant == false){ // do not register as variable...
+							eval_data->current_function->script_function->registerLocalVariable(
+									scope_info
+									,eval_data->current_parsing_file
+									, line
+									, variable_name
+							);
+						}
+
 						// advance identifier length chars
 						aux_p=end_var;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -1233,111 +1243,99 @@ namespace zetscript{
 						if(*aux_p == '='){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
 							allow_for_in=false;
 
-							// register symbol...
-							if(is_constant == false){ // do not register as variable...
-								eval_data->current_function->script_function->registerLocalVariable(
-										scope_info
-										,eval_data->current_parsing_file
-										, line
-										, variable_name
-								);
-							}
+							std::vector<EvalInstruction *>	 		constant_instructions;
+							// try to evaluate expression...
+							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-							// if = then eval expression
-							//if(*aux_p == '='){ // only for variables (not class members)
-								std::vector<EvalInstruction *>	 		constant_instructions;
-								// try to evaluate expression...
-								IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+							aux_p = eval_expression(
+								eval_data
+								,is_constant?(aux_p+1):start_var
+								,start_line
+								,scope_info
+								,is_constant?&constant_instructions:&eval_data->current_function->instructions
+								//,std::vector<char>{','}
+							);
 
-								aux_p = eval_expression(
-									eval_data
-									,is_constant?(aux_p+1):start_var
-									,start_line
-									,scope_info
-									,is_constant?&constant_instructions:&eval_data->current_function->instructions
-									//,std::vector<char>{','}
-								);
+							if(is_constant){ // resolve constant_expression
 
-								if(is_constant){ // resolve constant_expression
-
-									ConstantValue *stk_op1,*stk_op2,*stk_int_calc_result;
-									std::vector<intptr_t> stack; // constant/vectors or dictionaries...
-									std::vector<intptr_t> inter_calc_stack; // constant/vectors or dictionaries...
+								ConstantValue *stk_op1,*stk_op2,*stk_int_calc_result;
+								std::vector<intptr_t> stack; // constant/vectors or dictionaries...
+								std::vector<intptr_t> inter_calc_stack; // constant/vectors or dictionaries...
 
 
-									// let's fun evalute, an expression throught its op codes...
-									EvalInstruction **it=&constant_instructions[0];
-									unsigned size=constant_instructions.size();
-									for(unsigned i=0; i < size; i++,it++){
-										Instruction *instruction=&(*it)->vm_instruction;
-										if(instruction->byte_code == BYTE_CODE_LOAD_CONSTANT){
-											stack.push_back(instruction->value_op2);
-										}else{ // expect operation ?
+								// let's fun evalute, an expression throught its op codes...
+								EvalInstruction **it=&constant_instructions[0];
+								unsigned size=constant_instructions.size();
+								for(unsigned i=0; i < size; i++,it++){
+									Instruction *instruction=&(*it)->vm_instruction;
+									if(instruction->byte_code == BYTE_CODE_LOAD_CONSTANT){
+										stack.push_back(instruction->value_op2);
+									}else{ // expect operation ?
 
-											if(stack.size()<2){
-												THROW_SCRIPT_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error expected >= 3 stacks for constant");
-											}
-
-											stk_op1=(ConstantValue *)stack[stack.size()-2];
-											stk_op2=(ConstantValue *)stack[stack.size()-1];
-											stack.pop_back(); // op2
-											stack.pop_back(); // op1
-
-											stk_int_calc_result=perform_const_operation(
-													eval_data->current_parsing_file
-													,(*it)->instruction_source_info.line
-													,instruction->byte_code
-													,stk_op1
-													,stk_op2
-													);
-
-											stack.push_back((intptr_t)stk_int_calc_result);
-											inter_calc_stack.push_back((intptr_t)stk_int_calc_result);
-
+										if(stack.size()<2){
+											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error expected >= 3 stacks for constant");
 										}
 
+										stk_op1=(ConstantValue *)stack[stack.size()-2];
+										stk_op2=(ConstantValue *)stack[stack.size()-1];
+										stack.pop_back(); // op2
+										stack.pop_back(); // op1
+
+										stk_int_calc_result=perform_const_operation(
+												eval_data->current_parsing_file
+												,(*it)->instruction_source_info.line
+												,instruction->byte_code
+												,stk_op1
+												,stk_op2
+												);
+
+										stack.push_back((intptr_t)stk_int_calc_result);
+										inter_calc_stack.push_back((intptr_t)stk_int_calc_result);
+
 									}
 
-									if(stack.size()!=1){
-										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error: final stack should be 1");
-									}
-
-									stk_int_calc_result = (ConstantValue *)stack[0];
-
-									if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
-										printf("constant %i\n",(int)((intptr_t)stk_int_calc_result->stk_value));
-									}
-
-									if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
-										printf("constant %f\n",*((float *)&stk_int_calc_result->stk_value));
-									}
-
-									if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
-										printf("constant %s\n",((std::string *)stk_int_calc_result)->c_str());
-									}
-
-
-									/*try{
-										ConstantValue result=
-										eval_data->zs->registerConstantValue(variable_name,result);
-									}catch(std::exception & ex){
-										THROW_RUNTIME_ERROR("error evaluating constant expression");
-									}*/
-
-									for(unsigned i=0; i < constant_instructions.size();i++){
-										delete constant_instructions[i];
-									}
-
-									for(unsigned i=0; i < inter_calc_stack.size();i++){
-										free((void *)inter_calc_stack[i]);
-									}
 								}
 
-								line = start_line;
-							/*}else{ // is , ignore
-								aux_p++;
-							}*/
-							//---
+								if(stack.size()!=1){
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error: final stack should be 1");
+								}
+
+								stk_int_calc_result = (ConstantValue *)stack[0];
+
+								if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
+									printf("constant %i\n",(int)((intptr_t)stk_int_calc_result->stk_value));
+								}
+
+								if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
+									printf("constant %f\n",*((float *)&stk_int_calc_result->stk_value));
+								}
+
+								if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+									printf("constant %s\n",((std::string *)stk_int_calc_result)->c_str());
+								}
+
+
+								/*try{
+									ConstantValue result=
+									eval_data->zs->registerConstantValue(variable_name,result);
+								}catch(std::exception & ex){
+									THROW_RUNTIME_ERROR("error evaluating constant expression");
+								}*/
+
+								for(unsigned i=0; i < constant_instructions.size();i++){
+									delete constant_instructions[i];
+								}
+
+								for(unsigned i=0; i < inter_calc_stack.size();i++){
+									free((void *)inter_calc_stack[i]);
+								}
+							}
+
+							line = start_line;
+						/*}else{ // is , ignore
+							aux_p++;
+						}*/
+						//---
 
 						}
 						/*else{

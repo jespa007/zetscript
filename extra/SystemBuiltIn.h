@@ -2,12 +2,13 @@
 
 namespace zetscript{
 
-	class IoBuiltIn{
+	class ScriptObjectString;
+	class ScriptObjectVector;
+	class SystemBuiltIn{
 	public:
 		// clock
-		static intptr_t clock(){
-			return std::clock()*(1000.0f/CLOCKS_PER_SEC);
-		}
+		static intptr_t clock();
+		static void print(ScriptObjectString *str, ScriptObjectVector *args);
 	};
 
 }

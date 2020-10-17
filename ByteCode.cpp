@@ -32,14 +32,14 @@ namespace zetscript{
 			case BYTE_CODE_JT:          return "JT"; // goto if true ... goes end to conditional.
 			case BYTE_CODE_CALL: 		return "CALL"; // calling function after all of arguments are processed...
 			case BYTE_CODE_NEW_VECTOR: 	return "DECL_VEC"; // Vector object (CREATE)
-			case BYTE_CODE_VPUSH: 		return "VPUSH"; // Value push for stdvector
+			case BYTE_CODE_PUSH_VECTOR_ELEMENT: 		return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 		return "RET"; // Value pop for stdvector
 			case BYTE_CODE_NEW: 		return "NEW"; // New object (CREATE)
 			case BYTE_CODE_DELETE:		return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 	return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 	return "PUSH_SCOPE"; // New object (CREATE)
-			case BYTE_CODE_PUSH_ATTR: 	return "PUSH_ATTR"; // New object (CREATE)
-			case BYTE_CODE_NEW_DICTIONARY: 	return "DECL_DICT"; // New object (CREATE)
+			case BYTE_CODE_PUSH_OBJECT_ELEMENT: 	return "PUSH_ATTR"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT: 	return "DECL_DICT"; // New object (CREATE)
 			case BYTE_CODE_IT_INI:	 	return "IT_INI"; // BYTE_CODE_IT_INI
 			case BYTE_CODE_IT_CHK_END: 	return "IT_CHK_END"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_SET_AND_NEXT:return "SET_AND_NEXT"; // BYTE_CODE_SET_AND_NEXT

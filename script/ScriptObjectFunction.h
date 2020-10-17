@@ -6,12 +6,12 @@
 /*
 namespace zetscript{
 
-	class  ScriptVarFunction:public ScriptVar{
+	class  ScriptObjectFunction:public ScriptObject{
 
 	public:
 
-		ScriptVarFunction(){}
-		ScriptVarFunction(ZetScript *_zs);
+		ScriptObjectFunction(){}
+		ScriptObjectFunction(ZetScript *_zs);
 		void setFunctionSymbol(ScriptFunction *_irfs);
 	};
 

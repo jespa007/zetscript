@@ -22,7 +22,7 @@ namespace zetscript{
 			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->var_ref;
 			}
-			result=((ScriptVar *)stk->var_ref)->getClassName().c_str();
+			result=((ScriptObject *)stk->var_ref)->getClassName().c_str();
 		}
 
 		return result;
@@ -48,7 +48,7 @@ namespace zetscript{
 			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->var_ref;
 			}
-			result=((ScriptVar *)stk->var_ref)->getClassName().c_str();
+			result=((ScriptObject *)stk->var_ref)->getClassName().c_str();
 		}
 
 		return result;
@@ -64,9 +64,9 @@ namespace zetscript{
 				return zs_rtti::demangle(typeid(bool).name());
 			}else if(stk_v.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
 				return zs_rtti::demangle(typeid(std::string).name());
-			}else if(stk_v.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+			}else if(stk_v.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
 
-				ScriptClass *c = GET_SCRIPT_CLASS(this,((ScriptVar *)(stk_v.var_ref))->idx_class);
+				ScriptClass *c = GET_SCRIPT_CLASS(this,((ScriptObject *)(stk_v.var_ref))->idx_class);
 
 				if(c!=NULL){
 					return zs_rtti::demangle(c->str_class_ptr_type);

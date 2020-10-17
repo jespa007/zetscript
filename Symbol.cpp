@@ -71,14 +71,14 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 				ScriptClass *info_registered_class = zs->getScriptClassFactory()->getScriptClassByNativeClassPtr(symbol->str_native_type);//  ScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 				if(info_registered_class){
-					ScriptVar *var = new ScriptVar(zs);
+					ScriptObject *var = new ScriptObject(zs);
 					var->init(info_registered_class,ptr_variable);
 
 					return{
 
 							NULL,
 							var,
-							MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C
+							MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C
 					};
 				}else{
 					THROW_RUNTIME_ERROR("Native symbol \"%s\" has type \"%s\" that is not registered",symbol->name.c_str(),symbol->str_native_type.c_str());

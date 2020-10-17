@@ -3,11 +3,11 @@
 
 namespace zetscript{
 
-	class ScriptVarString;
-	class ScriptVarVector;
+	class ScriptObjectString;
+	class ScriptObjectVector;
 	class StringBuiltIn{
 	public:
-		static ScriptVarString * format(ScriptVarString *str, ScriptVarVector *args);
+		static ScriptObjectString * format(ScriptObjectString *str, ScriptObjectVector *args);
 	};
 
 }

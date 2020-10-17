@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	void ScriptVar::createSymbols(ScriptClass *ir_class){
+	void ScriptObject::createSymbols(ScriptClass *ir_class){
 		//FunctionSymbol *si;
 		StackElement *se;
 
@@ -17,7 +17,7 @@ namespace zetscript{
 		// add extra symbol this itself if is a class typedef by user...
 		//if(registered_class_info->idx_class >=IDX_BUILTIN_TYPE_MAX){ // put as read only and cannot assign
 		this_variable.var_ref=this;
-		this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR;
+		this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT;
 		//}
 
 		// Register c vars...
@@ -66,7 +66,7 @@ namespace zetscript{
 		lenght_user_properties=0;
 	}
 
-	void ScriptVar::setup(){
+	void ScriptObject::setup(){
 
 		ptr_shared_pointer_node = NULL;
 
@@ -87,11 +87,11 @@ namespace zetscript{
 		idx_start_user_properties = 0;
 	}
 
-	ScriptVar::ScriptVar(){
+	ScriptObject::ScriptObject(){
 		setup();
 	}
 
-	ScriptVar::ScriptVar(ZetScript	*_zs){
+	ScriptObject::ScriptObject(ZetScript	*_zs){
 		setup();
 
 		zs=_zs;
@@ -99,7 +99,7 @@ namespace zetscript{
 		script_class_factory = zs->getScriptClassFactory();
 	}
 
-	void ScriptVar::init(ScriptClass *irv, void * _c_object){
+	void ScriptObject::init(ScriptClass *irv, void * _c_object){
 
 		this->registered_class_info = irv;
 		idx_class = irv->idx_class;
@@ -135,15 +135,15 @@ namespace zetscript{
 
 		// only create symbols if not std::string or std::vector type to make it fast ...
 		if(idx_class >= IDX_BUILTIN_TYPE_MAX
-			|| idx_class == IDX_BUILTIN_TYPE_CLASS_STRING
-			|| idx_class == IDX_BUILTIN_TYPE_CLASS_VECTOR
-			|| idx_class == IDX_BUILTIN_TYPE_CLASS_DICTIONARY
+			|| idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING
+			|| idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR
+			|| idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT
 		){
 			createSymbols(irv);
 		}
 	}
 
-	ScriptFunction *ScriptVar::getConstructorFunction(){
+	ScriptFunction *ScriptObject::getConstructorFunction(){
 
 		if(registered_class_info->idx_function_member_constructor != ZS_IDX_UNDEFINED){
 			return (ScriptFunction *)registered_class_info->symbol_members->items[registered_class_info->idx_function_member_constructor];
@@ -152,7 +152,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	bool ScriptVar::setIdxClass(unsigned char idx){
+	bool ScriptObject::setIdxClass(unsigned char idx){
 		ScriptClass *_info_registered_class =  GET_SCRIPT_CLASS(this,idx);//ScriptClass::getInstance()->getRegisteredClassByIdx(idx);
 
 		if(_info_registered_class == NULL){
@@ -163,18 +163,18 @@ namespace zetscript{
 		return true;
 	}
 
-	bool ScriptVar::itHasSetMetamethod(){
+	bool ScriptObject::itHasSetMetamethod(){
 		return registered_class_info->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->count > 0;
 	}
 
-	void ScriptVar::setDelete_C_ObjectOnDestroy(bool _delete_on_destroy){
+	void ScriptObject::setDelete_C_ObjectOnDestroy(bool _delete_on_destroy){
 		created_object=NULL;
 		if((this->delete_c_object = _delete_on_destroy)==true){
 			created_object=c_object;
 		}
 	}
 
-	StackElement *ScriptVar::newSlot(){
+	StackElement *ScriptObject::newSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk={NULL,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		stk_properties->push_back((intptr_t)stk);
@@ -182,7 +182,7 @@ namespace zetscript{
 		return stk;
 	}
 
-	StackElement *ScriptVar::popUserProperty(){
+	StackElement *ScriptObject::popUserProperty(){
 		if(stk_properties->count<=idx_start_user_properties){
 			THROW_RUNTIME_ERROR("pop(): error stack already empty");
 		}
@@ -193,11 +193,11 @@ namespace zetscript{
 	}
 
 	// built-in only for initialized
-	StackElement * ScriptVar::addPropertyBuiltIn(const std::string & symbol_value){
+	StackElement * ScriptObject::addPropertyBuiltIn(const std::string & symbol_value){
 		std::string key_value = symbol_value;
 
 		if(idx_start_user_properties != 0){
-			THROW_RUNTIME_ERROR("internal error: addPropertyBuiltIn should be used within ScriptVar::createSymbols");
+			THROW_RUNTIME_ERROR("internal error: addPropertyBuiltIn should be used within ScriptObject::createSymbols");
 		}
 
 		// if ignore duplicate was true, map resets idx to the last function...
@@ -214,7 +214,7 @@ namespace zetscript{
   	    return new_stk;
 	}
 
-	StackElement * ScriptVar::addProperty(
+	StackElement * ScriptObject::addProperty(
 			const std::string & symbol_value
 			, const ScriptFunction *info_function
 			,Instruction *src_instruction
@@ -259,8 +259,8 @@ namespace zetscript{
 			si = *sv;
 
 			// update n_refs +1
-			if(sv->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-				virtual_machine->sharePointer(((ScriptVar *)(sv->var_ref))->ptr_shared_pointer_node);
+			if(sv->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+				virtual_machine->sharePointer(((ScriptObject *)(sv->var_ref))->ptr_shared_pointer_node);
 			}
 
 		}else{
@@ -283,7 +283,7 @@ namespace zetscript{
 		return new_stk;
 	}
 
-	int  ScriptVar::getPropertyIdx(const std::string & property_name){//,bool only_var_name){
+	int  ScriptObject::getPropertyIdx(const std::string & property_name){//,bool only_var_name){
 
 		bool exists;
 		int idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
@@ -293,7 +293,7 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	StackElement * ScriptVar::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
+	StackElement * ScriptObject::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
 		bool exists;
 		intptr_t idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
@@ -306,7 +306,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	StackElement * ScriptVar::getProperty(short idx){
+	StackElement * ScriptObject::getProperty(short idx){
 
 		if(idx==ZS_IDX_SCRIPTVAR_PROPERTY_IS_THIS){
 			return &this_variable;
@@ -319,7 +319,7 @@ namespace zetscript{
 		return (StackElement *)stk_properties->items[idx];
 	}
 
-	void ScriptVar::eraseProperty(short idx){//onst std::string & varname){
+	void ScriptObject::eraseProperty(short idx){//onst std::string & varname){
 
 		StackElement *si;
 		ScriptFunction * ir_fun;
@@ -352,14 +352,14 @@ namespace zetscript{
 				break;
 			default: // properties ...
 
-				if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
+				if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
 					if(((si->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)
 						&& (si->var_ref != this) // ensure that property don't holds its same var.
 						&& (si->var_ref != 0)
 					  ){ // deallocate but not if is c or this ref
 
 						// remove property if not referenced anymore
-						virtual_machine->unrefSharedScriptVar(((ScriptVar *)(si->var_ref))->ptr_shared_pointer_node,true);
+						virtual_machine->unrefSharedScriptObject(((ScriptObject *)(si->var_ref))->ptr_shared_pointer_node,true);
 
 					}
 				}
@@ -378,7 +378,7 @@ namespace zetscript{
 		}
 	}
 
-	StackElement * ScriptVar::getUserProperty(int v_index){ // return list of stack elements
+	StackElement * ScriptObject::getUserProperty(int v_index){ // return list of stack elements
 
 		// check indexes ...
 		if(v_index < 0){
@@ -392,15 +392,15 @@ namespace zetscript{
 		return (StackElement *)this->stk_properties->items[v_index+this->idx_start_user_properties];
 	}
 
-	StackElement *ScriptVar::getThisProperty(){
+	StackElement *ScriptObject::getThisProperty(){
 		return &this->this_variable;
 	}
 
-	zs_vector * ScriptVar::getAllProperties(){ // return list of stack elements
+	zs_vector * ScriptObject::getAllProperties(){ // return list of stack elements
 		return stk_properties;
 	}
 
-	void ScriptVar::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
+	void ScriptObject::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
 		bool exists=false;
 		intptr_t idx_property = map_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
@@ -411,23 +411,23 @@ namespace zetscript{
 
 	}
 
-	ScriptClass * ScriptVar::getScriptClass(){
+	ScriptClass * ScriptObject::getScriptClass(){
 		return registered_class_info;
 	}
 
-	const std::string & ScriptVar::getClassName(){
+	const std::string & ScriptObject::getClassName(){
 		return registered_class_info->symbol.name;
 	}
 
-	const std::string & ScriptVar::getNativePointerClassName(){
+	const std::string & ScriptObject::getNativePointerClassName(){
 		return registered_class_info->str_class_ptr_type;
 	}
 
-	std::string ScriptVar::toString(){
+	std::string ScriptObject::toString(){
 		return "@Class:"+registered_class_info->symbol.name;
 	}
 
-	void ScriptVar::initSharedPtr(){
+	void ScriptObject::initSharedPtr(){
 		// is assigned means that when is created is assigned immediately ?
 
 		if(ptr_shared_pointer_node == NULL){
@@ -438,32 +438,32 @@ namespace zetscript{
 		}
 	}
 
-	void ScriptVar::unrefSharedPtr(){
+	void ScriptObject::unrefSharedPtr(){
 		if(ptr_shared_pointer_node!=NULL){
-			virtual_machine->unrefSharedScriptVar(ptr_shared_pointer_node);
+			virtual_machine->unrefSharedScriptObject(ptr_shared_pointer_node);
 		}
 		else{
 			THROW_RUNTIME_ERROR("shared ptr not registered");
 		}
 	}
 
-	void * ScriptVar::getNativeObject(){
+	void * ScriptObject::getNativeObject(){
 		return c_object;
 	}
 
-	bool ScriptVar::isCreatedByContructor(){
+	bool ScriptObject::isCreatedByContructor(){
 		return was_created_by_constructor;
 	}
 
-	ScriptClass * ScriptVar::getNativeClass(){
+	ScriptClass * ScriptObject::getNativeClass(){
 		 return c_scriptclass_info;
 	}
 
-	bool ScriptVar::isNativeObject(){
+	bool ScriptObject::isNativeObject(){
 		 return ((registered_class_info->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
-	void ScriptVar::destroy(){
+	void ScriptObject::destroy(){
 
 		bool deallocated = false;
 		if(created_object != 0){
@@ -486,7 +486,7 @@ namespace zetscript{
 		stk_properties->clear();
 	}
 
-	ScriptVar::~ScriptVar(){
+	ScriptObject::~ScriptObject(){
 		destroy();
 		delete stk_properties;
 		delete map_property_keys;

@@ -6,11 +6,11 @@
 /*
 namespace zetscript{
 
-	ScriptVarFunction::ScriptVarFunction(ZetScript *_zs):ScriptVar(_zs){
+	ScriptObjectFunction::ScriptObjectFunction(ZetScript *_zs):ScriptObject(_zs){
 		this->init(SCRIPT_CLASS_FUNCTOR(this), (void *)this);
 	}
 
-	void ScriptVarFunction::setFunctionSymbol(ScriptFunction *_irfs){
+	void ScriptObjectFunction::setFunctionSymbol(ScriptFunction *_irfs){
 		value=_irfs;
 	}
 

@@ -86,7 +86,7 @@ namespace zetscript{
 	//============================================================================================================================================
 	// POINTER MANANAGER
 
-	InfoSharedPointerNode * VirtualMachine::newSharedPointer(ScriptVar *_var_ptr){
+	InfoSharedPointerNode * VirtualMachine::newSharedPointer(ScriptObject *_var_ptr){
 		//int index = VirtualMachine::getFreeCell();
 		InfoSharedPointerNode *_node = (InfoSharedPointerNode *)malloc(sizeof(InfoSharedPointerNode));
 		// init
@@ -126,7 +126,7 @@ namespace zetscript{
 		}
 	}
 
-	void VirtualMachine::unrefSharedScriptVar(InfoSharedPointerNode *_node, bool remove_if_0){
+	void VirtualMachine::unrefSharedScriptObject(InfoSharedPointerNode *_node, bool remove_if_0){
 
 		unsigned char *n_shares = &_node->data.n_shares;
 		if(*n_shares > 0){ // already zero
@@ -185,10 +185,10 @@ namespace zetscript{
 				if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
 
 					StackElement *ptr_ale =&vm_stack[v];
-					ScriptVar *var = NULL;
+					ScriptObject *var = NULL;
 
-					if(ptr_ale->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR){
-						var =((ScriptVar *)(ptr_ale->var_ref));
+					if(ptr_ale->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+						var =((ScriptObject *)(ptr_ale->var_ref));
 						if(var){
 							if(var->ptr_shared_pointer_node != NULL){
 								var->unrefSharedPtr();
@@ -216,7 +216,7 @@ namespace zetscript{
 
 	StackElement  VirtualMachine::execute(
 			 ScriptFunction 	*	calling_function
-			 ,ScriptVar 		*	this_object
+			 ,ScriptObject 		*	this_object
 			 ,StackElement 		*  	stk_params
 			 ,unsigned	char  		n_stk_params
 	){
@@ -301,10 +301,10 @@ namespace zetscript{
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-					delete (ScriptVarString *)stk->var_ref;
+					delete (ScriptObjectString *)stk->var_ref;
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPTVAR:
-					delete (ScriptVar *)stk->var_ref;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT:
+					delete (ScriptObject *)stk->var_ref;
 					break;
 
 				}

@@ -4,17 +4,17 @@
  */
 #pragma once
 
-#define NEW_VECTOR_VAR (new ScriptVarVector(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new ScriptVarVector())))
+#define NEW_VECTOR_VAR (new ScriptObjectVector(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new ScriptObjectVector())))
 
 namespace zetscript{
 
 	class CZetgine;
-	class  ScriptVarVector: public ScriptVar{
+	class  ScriptObjectVector: public ScriptObject{
 	public:
 		StackElement return_callc;
 
 		template<typename T>
-		static std::vector<T> toStdVector(ScriptVarVector *v_in){
+		static std::vector<T> toStdVector(ScriptObjectVector *v_in){
 			std::vector<T> v_out;
 			const char * dst_convert_type = typeid(T).name();
 			float aux_flt;
@@ -61,11 +61,11 @@ namespace zetscript{
 			return v_out;
 		}
 
-		static void    			pushSf(ScriptVarVector *sv,StackElement  * stk);
-		static StackElement *  	popSf(ScriptVarVector *sv);
+		static void    			pushSf(ScriptObjectVector *sv,StackElement  * stk);
+		static StackElement *  	popSf(ScriptObjectVector *sv);
 
-		ScriptVarVector(){}
-		ScriptVarVector(ZetScript *_zs);
+		ScriptObjectVector(){}
+		ScriptObjectVector(ZetScript *_zs);
 
 		void 					push(StackElement  * stk);
 		StackElement *			pop();
