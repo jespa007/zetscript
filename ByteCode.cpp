@@ -30,6 +30,7 @@ namespace zetscript{
 			case BYTE_CODE_JMP:         return "JMP"; // Unconditional jump.
 			case BYTE_CODE_JNT:         return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          return "JT"; // goto if true ... goes end to conditional.
+			case BYTE_CODE_JE:			return "JE"; // goto if equal ... goes end to conditional.
 			case BYTE_CODE_CALL: 		return "CALL"; // calling function after all of arguments are processed...
 			case BYTE_CODE_NEW_VECTOR: 	return "DECL_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT: 		return "VPUSH"; // Value push for stdvector

@@ -190,6 +190,11 @@ ELSE()
  		util/zs_vector.cpp
  		util/zs_map.cpp
  		
+ 		# extra
+ 		extra/MathBuiltIn.cpp
+		extra/StringBuiltIn.cpp
+		extra/SystemBuiltIn.cpp
+ 		
  		# VM
  		vm/VirtualMachine.cpp
  		
@@ -198,7 +203,7 @@ ELSE()
 		
 		# Function
 		function_proxy/FunctionProxyFactory.cpp 		
- 		
+		
  		# Scope
  		scope/Scope.cpp
 		scope/ScopeFactory.cpp
@@ -208,7 +213,6 @@ ELSE()
 		script/ScriptObjectString.cpp
 		script/ScriptObjectVector.cpp
 		script/ScriptObjectFunction.cpp
- 		script/ScriptObjectDictionary.cpp
 		script/ScriptClass.cpp
 		script/ScriptFunction.cpp
 		script/ScriptFunctionFactory.cpp
@@ -252,7 +256,6 @@ ELSE()
 		script/ScriptObjectString.h
 		script/ScriptObjectVector.h
 		script/ScriptObjectFunction.h
-		script/ScriptObjectDictionary.h
 		script/ScriptObject.h
 		script/ScriptContext.h
 		script/ScriptClass.h

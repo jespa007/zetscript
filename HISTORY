@@ -103,7 +103,7 @@ Date: XX-09-2020
 #152 fix WHILE keyword
 #151 fix FOR keyword 
 #155 Check compile Visual Studio 2015, 2019
-> #156 Fix SWITCH  
+#156 Fix SWITCH  
 #157 Fix +=,-=,/= etc operator
 > #159 Update manual ZetScript 2.0  
 > #158 Update doc CodeProject ZetScript 2.0 

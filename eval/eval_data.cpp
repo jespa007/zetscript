@@ -372,8 +372,9 @@ namespace zetscript{
 					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Unexpected end comment block");
 				}
 				// make compatible windows format...
-				if(*aux_p == '\r')
+				if(*aux_p == '\r'){
 					aux_p++;
+				}
 
 				if(*aux_p == '\n') {
 					line=line+1;
@@ -402,7 +403,7 @@ namespace zetscript{
 			return Operator::OPERATOR_UNKNOWN;
 		}
 
-		PreOperator   	is_pre_operator_type(const char *s){
+		PreOperator   	is_pre_operator(const char *s){
 			for(unsigned char i = 1; i < PRE_OPERATOR_MAX; i++){
 				if(*eval_info_pre_operators[i].str == *s){
 					return eval_info_pre_operators[i].id;
@@ -441,6 +442,7 @@ namespace zetscript{
 							*aux == '('  || // ( // mostly if,for,while,switch
 							*aux == '{'  || // ( // mostly else,
 							*aux == '\n' || // carry return
+							*aux == '\r' || // compatible windows format
 							*aux == ':' ||  // mostly after case/default
 							*aux == ';' || // continue/break
 
@@ -481,7 +483,7 @@ namespace zetscript{
 				   || *s=='.' // to separate access identifiers.
 				   || *s==' '
 				   || *s==0
-				   || *s=='\r'
+				   || *s=='\r' // compatible windows format
 				   || *s=='\n'
 				   || (*s=='\"' && pre!='\\');
 		}

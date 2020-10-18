@@ -218,6 +218,7 @@ namespace zetscript{
 			case BYTE_CODE_JNT:
 			case BYTE_CODE_JT:
 			case BYTE_CODE_JMP:
+			case BYTE_CODE_JE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
 						,idx_instruction
 						,ByteCodeToStr(instruction->byte_code)

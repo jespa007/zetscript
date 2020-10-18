@@ -481,7 +481,7 @@ namespace zetscript{
 			for(int i=assign_instructions_post_expression.size()-1; i >=0 ;i--){
 
 				// insert assign instruction...
-				for(int j=0; j < assign_instructions_post_expression[i].size() ;j++){
+				for(unsigned j=0; j < assign_instructions_post_expression[i].size() ;j++){
 					instructions->push_back(assign_instructions_post_expression[i][j]);
 				}
 			}
@@ -558,7 +558,7 @@ namespace zetscript{
 					}else{
 
 						// check pre operator (-,+,!)...
-						switch(pre_operator=is_pre_operator_type(aux_p)){
+						switch(pre_operator=is_pre_operator(aux_p)){
 							default:
 								break;
 							case PreOperator::PRE_OPERATOR_NEG:
@@ -897,13 +897,11 @@ namespace zetscript{
 					// push symbol
 					expression_tokens.push_back(symbol_token_node);
 
-
-
 					new_line_break=false;
 					// cases that can ending and expression
 					if(    *aux_p == '\n'
 						|| *aux_p == ' '
-						|| *aux_p == '\r'
+						|| *aux_p == '\r' // compatible windows format
 						|| *aux_p == '\t'
 						|| is_comment_single_line(aux_p)
 						|| is_comment_block_start(aux_p)){

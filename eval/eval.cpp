@@ -246,13 +246,14 @@ namespace zetscript{
 			bool custom_quit = false;
 			char *aux = (char *)s;
 			char *end_expr=0;
-			bool processed_directive=false;
+
 			Keyword keyw;
+			Directive directive;
 
 			IGNORE_BLANKS(aux,eval_data,aux, line);
 
 			while(*aux != 0 && !custom_quit){
-				processed_directive=false;
+
 				// ignore all ;
 				while(*aux==';' && *aux != 0){
 					IGNORE_BLANKS(aux,eval_data,aux+1, line);
@@ -264,11 +265,22 @@ namespace zetscript{
 
 				if(*aux == '}'){ // ending block trivial cases...
 					return aux;
-				}else{
+				}else if((keyw=is_keyword(aux)) != Keyword::KEYWORD_UNKNOWN){ // it cuts current expression to link breaks...
 
+					if(((keyw == Keyword::KEYWORD_BREAK) || (keyw == Keyword::KEYWORD_CASE)) && return_on_break_or_case){
+						return aux;
+					}
 
+					end_expr = eval_keyword(
+						eval_data
+						,aux
+						, line
+						, scope_info
+						, keyw
+					);
+
+				}else if((directive = is_directive(aux)) != Directive::DIRECTIVE_UNKNOWN){ // eval directive
 					// try directive ...
-					Directive directive = is_directive(aux);
 					char *start_var,* end_var;
 					std::string str_symbol;
 					if(directive != Directive::DIRECTIVE_UNKNOWN){
@@ -304,57 +316,27 @@ namespace zetscript{
 							break;
 						}
 
-						processed_directive = true;
 						end_expr=aux;
 					}
-				}
+				}else if(*aux == '{') { // eval block
 
-				// 0st special case member class extension ...
-				if(!processed_directive){ // not processed yet ...
-					// 1st. check whether eval a keyword...
-					if(((is_keyword(aux) == Keyword::KEYWORD_BREAK) || (is_keyword(aux) == Keyword::KEYWORD_CASE)) && return_on_break_or_case){ // it cuts current expression to link breaks...
-						return end_expr;
-					}
-
-					if((end_expr = eval_keyword(
+					// 2nd. check whether eval a block
+					end_expr = eval_block(
 						eval_data
 						,aux
-						, line
+						,line
 						, scope_info
-						, keyw
-					)) == NULL){
-						// If was unsuccessful then try to eval expression.
-						// 2nd. check whether eval a block
-						if((end_expr = eval_block(
-								eval_data
-								,aux
-								,line
-								, scope_info
-								))==NULL){
+					);
 
-							// 2nd. try expression
-							//int starting_expression=line;
+				}else{ // eval expression
 
-							//EvalInstruction *current_instruction=eval_data->current_function->instructions[eval_data->current_function->instructions.size()-1];
-
-							if((end_expr = eval_expression(
-									eval_data
-									,aux
-									,line
-									, scope_info
-									,&eval_data->current_function->instructions
-							)) == NULL){ // something wrong was happen.
-								THROW_RUNTIME_ERROR("eval_expression: unexpected NULL expression");
-							}
-
-/*							if(*end_expr == ';'){
-								end_expr++;
-//								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected end ;");
-							}*/
-
-							IGNORE_BLANKS(end_expr,eval_data,end_expr, line);
-						}
-					}
+					end_expr = eval_expression(
+						eval_data
+						,aux
+						,line
+						, scope_info
+						,&eval_data->current_function->instructions
+					);
 				}
 
 				aux=end_expr;
