@@ -126,7 +126,7 @@ Date: XX-09-2020
 > #182 Make ScriptVarStringr iterable like Vector 
 > #183 Implement Dictionary helper class 
 > #184 Implement + for Vector 
-> #185 parser char as integer
+#185 parser char as integer
 > #186 Implement StriptVarString methods  
 > #187 Implement Console helper class 
 #190 eval_expression operator fails 

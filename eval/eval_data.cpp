@@ -539,7 +539,57 @@ namespace zetscript{
 			//value="";
 			bool is01s=true;
 			//bool isInt=true;
+			bool isChar=false;
 			bool isHexa=(*aux_p == 'x' || *aux_p == 'X') || ((*aux_p == '0' && *(aux_p+1) == 'X') || (*aux_p == '0' && *(aux_p+1) == 'x'));
+
+			if(*aux_p == '\''){ // is char
+				int i_char=0;
+				aux_p++;
+				if(*aux_p == '\\'){ // is special char
+					aux_p++;
+					switch(*aux_p){
+					default:
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"unknown special char \\%c",*aux_p);
+						break;
+					case 'n':
+						i_char='\n';
+						break;
+					case 'r':
+						i_char='\r';
+						break;
+					case 't':
+						i_char='\t';
+						break;
+					}
+
+				}else if(*aux_p != '\''){
+
+					if(*aux_p==0){
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unterminated char \'");
+					}
+
+					i_char=*aux_p;
+				}else{
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"empty character constant");
+				}
+
+				aux_p++;
+				if(*aux_p != '\''){
+					while(*aux_p!=0 && *aux_p!='\n' && *aux_p!='\'' ) aux_p++;
+
+					if(*aux_p == '\''){
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"multi-character character constant");
+					}else{
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unterminated char \'");
+					}
+				}
+
+				aux_p++;
+
+				// convert i_char to value...
+				value=zs_strutils::int_to_str(i_char);
+				return aux_p;
+			}
 
 			if(!(('0'<=*aux_p&&*aux_p<='9') || isHexa || (*aux_p == '.'))){ // is no number directly
 				return NULL;
