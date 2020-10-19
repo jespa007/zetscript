@@ -28,8 +28,8 @@ namespace zetscript{
 			}
 
 			instructions->push_back(eval_instruction=new EvalInstruction(
-					BYTE_CODE_LOAD
-					,scope & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS?LoadType::LOAD_TYPE_VARIABLE:LoadType::LOAD_TYPE_FUNCTION
+					scope & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS?BYTE_CODE_LOAD_TYPE_VARIABLE:BYTE_CODE_LOAD_TYPE_FUNCTION
+					,ZS_IDX_UNDEFINED
 					,ZS_IDX_UNDEFINED
 					,scope
 			));
@@ -59,7 +59,7 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		char * eval_object_dictionary(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions,int level){
+		char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions,int level){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
@@ -122,7 +122,7 @@ namespace zetscript{
 
 				// add instruction...
 				instructions->push_back(
-						new EvalInstruction(ByteCode::BYTE_CODE_LOAD_CONSTANT
+						new EvalInstruction(ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT
 						,ZS_IDX_UNDEFINED
 						,(intptr_t)constant_value
 				));
@@ -254,8 +254,8 @@ namespace zetscript{
 					 if(constructor_function != NULL){
 						 instructions->push_back(
 							eval_instruction=new EvalInstruction(
-								 BYTE_CODE_LOAD
-								 ,LoadType::LOAD_TYPE_VARIABLE
+								 BYTE_CODE_LOAD_TYPE_VARIABLE
+								 ,ZS_IDX_UNDEFINED
 								 ,ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
 								 ,MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD
 							)

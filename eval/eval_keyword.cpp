@@ -771,10 +771,9 @@ namespace zetscript{
 										,line
 										,new_scope
 								);
-								aux_p = aux_p - 1; // redirect aux_p to ';'
 							}
 							else{
-								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected 'var' keyword");
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected For 'var' keyword");
 							}
 						}
 
@@ -1229,7 +1228,7 @@ namespace zetscript{
 								unsigned size=constant_instructions.size();
 								for(unsigned i=0; i < size; i++,it++){
 									Instruction *instruction=&(*it)->vm_instruction;
-									if(instruction->byte_code == BYTE_CODE_LOAD_CONSTANT){
+									if(instruction->byte_code == BYTE_CODE_LOAD_TYPE_CONSTANT){
 										stack.push_back(instruction->value_op2);
 									}else{ // expect operation ?
 

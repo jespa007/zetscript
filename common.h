@@ -43,7 +43,7 @@ namespace zetscript{
 	//struct ScopeBlockVars;
 	typedef unsigned char 									ClassTypeIdx;
 
-	typedef enum
+	/*typedef enum
 		:unsigned char {
 
 		LOAD_TYPE_NOT_DEFINED = 0,
@@ -53,7 +53,7 @@ namespace zetscript{
 		LOAD_TYPE_VARIABLE,
 		LOAD_TYPE_ARGUMENT,
 		LOAD_TYPE_FUNCTION,
-	}LoadType;
+	}LoadType;*/
 
 
 	typedef enum:ClassTypeIdx{

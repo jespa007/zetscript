@@ -12,8 +12,13 @@ namespace zetscript{
 		// ARITMETHIC OPERATORS.
 		BYTE_CODE_INVALID=-1,
 		BYTE_CODE_END_FUNCTION = 0,
-		BYTE_CODE_LOAD, // primitive value like number/std::string or boolean...
-		BYTE_CODE_LOAD_CONSTANT,
+		BYTE_CODE_LOAD_TYPE_FIND,
+		BYTE_CODE_LOAD_TYPE_VARIABLE, // primitive value like number/std::string or boolean...
+		BYTE_CODE_LOAD_TYPE_FUNCTION,
+		BYTE_CODE_LOAD_TYPE_UNDEFINED,
+		BYTE_CODE_LOAD_TYPE_NULL,
+		BYTE_CODE_LOAD_TYPE_CONSTANT,
+
 		BYTE_CODE_STORE, // mov expression to var
 		BYTE_CODE_PUSH_VECTOR_ELEMENT, // Value push for std::vector
 		BYTE_CODE_PUSH_OBJECT_ELEMENT,
@@ -53,6 +58,7 @@ namespace zetscript{
 		BYTE_CODE_IT_INI,
 		BYTE_CODE_SET_AND_NEXT,
 		BYTE_CODE_IT_CHK_END,
+		BYTE_CODE_RESET_STACK,
 		BYTE_CODE_MAX
 
 	}ByteCode;

@@ -95,9 +95,12 @@ namespace zetscript{
 		){
 			// PRE:
 			unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT;
-			LoadType load_type=LOAD_TYPE_NOT_DEFINED;
+			//LoadType load_type=LOAD_TYPE_NOT_DEFINED;
 			bool is_constant_number=false, is_constant_boolean=false;
 			EvalInstruction *instruction=NULL;
+			ByteCode byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
+			token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
+
 
 			//unsigned int scope_type=0;
 			void *obj=NULL,*get_obj=NULL,*const_obj=NULL;
@@ -115,9 +118,7 @@ namespace zetscript{
 					 ,start_word
 					 ,line
 					 ,str_value
-			))!=NULL){
-				 token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
-			 }else{// if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
+			))==NULL){ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
 
 				 aux=(char *)start_word;
 				 // try eval identifier, boolean, std::string ...
@@ -146,7 +147,6 @@ namespace zetscript{
 				}
 
 				if(*aux=='\"'){ // register constant string
-					 token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
 
 					 if((start_word+1)<aux){ // copy string without double quotes...
 						 zs_strutils::copy_from_ptr_diff(str_value,start_word+1,aux);
@@ -176,12 +176,12 @@ namespace zetscript{
 				 // try parse value...
 				if(str_value=="null"){ // null literal
 					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL;
-					load_type=LOAD_TYPE_NULL;
+					byte_code=BYTE_CODE_LOAD_TYPE_NULL;
 					obj=NULL;//ScriptObject::NullSymbol;
 
 				}else if(str_value=="undefined"){ // undefined literal
 						type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
-						load_type=LOAD_TYPE_UNDEFINED;
+						byte_code=BYTE_CODE_LOAD_TYPE_UNDEFINED;
 						obj=NULL;// ScriptObject::UndefinedSymbol;
 				}else if((const_obj=zs_strutils::parse_int(str_number_value))!=NULL){ // int literal
 					int value = *((int *)const_obj);
@@ -238,6 +238,8 @@ namespace zetscript{
 					is_constant_boolean=true;
 				}else{ // it should be an identifier token  ...
 					token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
+					byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
+
 					if(str_value == SYMBOL_VALUE_THIS || str_value == SYMBOL_VALUE_SUPER){
 						if(str_value == SYMBOL_VALUE_SUPER){
 							is_is_symbol_super_method=true;
@@ -246,10 +248,14 @@ namespace zetscript{
 						instruction_properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 
 					}else if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value)) != NULL){  // check if symbol is constant ...
+						byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
 						obj=get_obj;
 						//load_type=LOAD_TYPE_CONSTANT;
 					}else{
-						// should be an identifier...
+						// should be an identifier and should be find after eval function or at runtime...
+
+						byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_FIND;
+
 						check_identifier_name_expression_ok(
 							eval_data
 							,str_value
@@ -291,10 +297,8 @@ namespace zetscript{
 			token_node->value = str_value;
 			token_node->instructions.push_back(
 				instruction=new EvalInstruction(
-						token_node->token_type == TokenType::TOKEN_TYPE_LITERAL
-								? ByteCode::BYTE_CODE_LOAD_CONSTANT
-								: ByteCode::BYTE_CODE_LOAD
-						,load_type
+						byte_code
+						,ZS_IDX_UNDEFINED
 						,(intptr_t)obj
 						,instruction_properties
 			));
@@ -615,7 +619,7 @@ namespace zetscript{
 							symbol_token_node.token_type = TokenType::TOKEN_TYPE_VECTOR;
 						}else if(*aux_p=='{'){ // struct object ...
 
-							aux_p=eval_object_dictionary(
+							aux_p=eval_object(
 								eval_data
 								,aux_p
 								,line
@@ -767,7 +771,7 @@ namespace zetscript{
 										}
 										aux_p++;
 										vector_access=true;
-										byte_code=ByteCode::BYTE_CODE_LOAD;
+										byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
 										break;
 									case '.': // member access
 										IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -788,7 +792,7 @@ namespace zetscript{
 
 												instruction_token= symbol_token_node.instructions[0];// get the first instruction....
 												// replace symbol
-												instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+												//instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
 												instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
 
 												// override symbol "this" by symbol to search (in properties already has access scope)...
@@ -796,7 +800,7 @@ namespace zetscript{
 											}
 										}
 
-										byte_code=ByteCode::BYTE_CODE_LOAD;
+										byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
 										break;
 									}
 
@@ -805,10 +809,10 @@ namespace zetscript{
 										symbol_token_node.instructions.push_back(instruction_token);
 
 										// generate source info in case accessor load...
-										if(byte_code==ByteCode::BYTE_CODE_LOAD){
+										if(byte_code==ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE){
 
 											// mark as accessor
-											instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+											//instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
 
 											if(vector_access){
 												instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
@@ -856,7 +860,7 @@ namespace zetscript{
 										,get_compiled_symbol(eval_data,SYMBOL_VALUE_THIS)
 									);
 
-									symbol_token_node.instructions[0]->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+									//symbol_token_node.instructions[0]->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
 									symbol_token_node.instructions[0]->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
 									symbol_token_node.instructions[0]->vm_instruction.properties=0;
 								}
@@ -969,7 +973,11 @@ namespace zetscript{
 				);
 
 				if(level == 0 && (int)eval_data->current_function->instructions.size()>idx_instruction_start_expression){ // set instruction as start statment...
-					eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
+					eval_data->current_function->instructions.insert(
+							eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
+							new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
+					);
+					//eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
 				}
 			}
 			// last character is a separator so it return increments by 1

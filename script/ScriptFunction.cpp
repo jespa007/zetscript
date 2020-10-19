@@ -83,56 +83,22 @@ namespace zetscript{
 	std::string ScriptFunction::formatInstructionLoadType(ScriptFunction *function,Instruction *instruction){
 
 		 char print_aux_load_value[512] = {0};
-		 char object_access[512] = "";
-		 const char *pre=instructionPropertyPreOperationToStr(instruction->properties)
-				 ,*post=instructionPropertyPostOperationToStr(instruction->properties);
+
+
 
 		 //Instruction * instruction =&list_statements[current_instruction];
-		 ConstantValue *icv;
-		 std::string symbol_value=SFI_GET_SYMBOL_NAME(function,instruction);
-		 if(instruction->byte_code != BYTE_CODE_LOAD){
+		 //ConstantValue *icv;
+
+		 /*if(instruction->byte_code != BYTE_CODE_LOAD){
 			 return "ERROR";
-		 }
+		 }*/
 
 
-		 if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD){
-			 sprintf(object_access,
-					"."
-					);
-		 }
-		 else if(symbol_value.c_str() == SYMBOL_VALUE_SUPER){
-			sprintf(object_access,"super.");
-		 }
-		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS){
-			sprintf(object_access,"this.");
-		 }
-		 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR){
-			 sprintf(object_access,"{vector element}");
-		 }
 
-		 switch(instruction->value_op1){
 
-			case LoadType::LOAD_TYPE_NOT_DEFINED:
-				sprintf(print_aux_load_value,"???   %s%s%s%s"
-					,pre
-					,object_access
-					,symbol_value.c_str()
-					,post
-					//,is_function_call?"(function call)":""//is_vector_access?"(vector access)":""
-				);
-				break;
-			case LoadType::LOAD_TYPE_VARIABLE:
-				sprintf(print_aux_load_value,"VAR   %s%s%s%s"
-					,pre
-					,object_access
-					,symbol_value.c_str()
-					,post
-					//,is_function_call?"(function call)":""//is_vector_access?"(vector access)":""
-				);
-				break;
-			case LoadType::LOAD_TYPE_FUNCTION:
-				sprintf(print_aux_load_value,"FUN   %s%s",object_access,symbol_value.c_str());
-				break;
+		 switch(instruction->byte_code){
+
+
 			default:
 
 				break;
@@ -153,6 +119,7 @@ namespace zetscript{
 
 		std::string symbol_ref="????";
 		std::string class_str="";
+		std::string symbol_value="";
 
 		if(sc==NULL){ // no class is a function on a global scope
 			symbol_ref=sfo->symbol.name;
@@ -169,31 +136,52 @@ namespace zetscript{
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
 
 			int n_ops=0;
-			const char *start_expression=(instruction->properties & MSK_INSTRUCTION_PROPERTY_START_EXPRESSION)?"{start expression}":"";
+			//const char *start_expression=(instruction->properties & MSK_INSTRUCTION_PROPERTY_START_EXPRESSION)?"{start expression}":"";
 			unsigned char value_op1 = instruction->value_op1;
 			int value_op2 = instruction->value_op2;
+			symbol_value=SFI_GET_SYMBOL_NAME(sfo,instruction);
+			char object_access[512] = "";
+			const char *pre=instructionPropertyPreOperationToStr(instruction->properties)
+					 ,*post=instructionPropertyPostOperationToStr(instruction->properties);
 
-			if((char)value_op1 != ZS_IDX_INSTRUCTION_OP2_UNDEFINED)
+			if((char)value_op1 != ZS_IDX_UNDEFINED){
 				n_ops++;
+			}
 
-			 if(value_op2 != ZS_IDX_INSTRUCTION_OP2_UNDEFINED){
+			 if(value_op2 != ZS_IDX_UNDEFINED){
 				 n_ops++;
+			 }
+
+			 if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD){
+				 sprintf(object_access,
+						"."
+						);
+			 }
+			 else if(symbol_value.c_str() == SYMBOL_VALUE_SUPER){
+				sprintf(object_access,"super.");
+			 }
+			 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS){
+				sprintf(object_access,"this.");
+			 }
+			 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR){
+				 sprintf(object_access,"{vector element}");
 			 }
 
 			switch(instruction->byte_code){
 
 			case  BYTE_CODE_NEW:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
 					,instruction->value_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
-					,start_expression
 				);
 				break;
-			case BYTE_CODE_LOAD_CONSTANT:
+			case BYTE_CODE_LOAD_TYPE_CONSTANT:
 				icv=(ConstantValue *)instruction->value_op2;
 				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD\tCONST\t%s\n",idx_instruction,(int)((intptr_t)icv->stk_value)==0?"false":"true");
+					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD\tCONST\t%i\n",idx_instruction,(int)((intptr_t)icv->stk_value));
 					break;
@@ -207,12 +195,32 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR("internal error: no literal defined");
 				}
 				break;
-			case  BYTE_CODE_LOAD:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s %s\n"
-					,idx_instruction,
-					ByteCodeToStr(instruction->byte_code),
-					formatInstructionLoadType(sfo,instruction).c_str(),
-					start_expression
+			case BYTE_CODE_LOAD_TYPE_FIND:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s   %s%s%s%s\n"
+					,idx_instruction
+					,ByteCodeToStr(instruction->byte_code)
+					,pre
+					,object_access
+					,symbol_value.c_str()
+					,post
+				);
+				break;
+			case BYTE_CODE_LOAD_TYPE_VARIABLE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s   %s%s%s%s\n"
+					,idx_instruction
+					,ByteCodeToStr(instruction->byte_code)
+					,pre
+					,object_access
+					,symbol_value.c_str()
+					,post
+				);
+				break;
+			case BYTE_CODE_LOAD_TYPE_FUNCTION:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s   %s%s\n"
+					,idx_instruction
+					,ByteCodeToStr(instruction->byte_code)
+					,object_access
+					,symbol_value.c_str()
 				);
 				break;
 			case BYTE_CODE_JNT:
@@ -238,31 +246,27 @@ namespace zetscript{
 				);
 				break;
 			default:
-
 				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s %s %s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s %s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 						idx_instruction
 						,instructionPropertyPreOperationToStr(instruction->properties)
 						,ByteCodeToStr(instruction->byte_code)
 						,instructionPropertyPostOperationToStr(instruction->properties)
-						,start_expression
 						,instruction->properties & MSK_INSTRUCTION_PROPERTY_POP_ONE ? "{pop one}":""
 					);
 				}else if(n_ops==1){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\t%i %s\n"
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\t%i\n"
 						,idx_instruction
 						,ByteCodeToStr(instruction->byte_code)
 						,(instruction->properties & MSK_INSTRUCTION_PROPERTY_POP_ONE)?"_CS":""
 						,instruction->value_op1
-						,start_expression
 					);
 				}else{ //2 ops
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i,%i %s\n"
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i,%i\n"
 						,idx_instruction
 						,ByteCodeToStr(instruction->byte_code)
 						,instruction->value_op1
 						,(int)instruction->value_op2
-						,start_expression
 					);
 				}
 				break;

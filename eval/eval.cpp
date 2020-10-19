@@ -364,7 +364,7 @@ namespace zetscript{
 				LinkSymbolFirstAccess *ls=&instruction->link_symbol_first_access;
 
 				if(  (ls->idx_script_function != ZS_IDX_UNDEFINED)
-				  && (instruction->vm_instruction.value_op1 == LoadType::LOAD_TYPE_NOT_DEFINED) // try to define...
+				  && (instruction->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_FIND) // try to define...
 				){ // solve first symbol first access...
 
 					ScriptFunction *sf=GET_SCRIPT_FUNCTION(eval_data,ls->idx_script_function);
@@ -395,7 +395,7 @@ namespace zetscript{
 								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find parent function %s::%s",sf->symbol.name.c_str(),ls->value.c_str());
 								return;
 							}
-							instruction->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
 							instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
 							instruction->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,str_symbol_to_find);
 							instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
@@ -421,7 +421,7 @@ namespace zetscript{
 
 						bool local_found=false;
 						ScriptFunction *script_function_found=NULL;
-						LoadType load_type=LoadType::LOAD_TYPE_NOT_DEFINED;
+						//LoadType load_type=LoadType::LOAD_TYPE_NOT_DEFINED;
 						std::string symbol_to_find = ls->value;
 
 						// try find local symbol  ...
@@ -432,7 +432,7 @@ namespace zetscript{
 
 							if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
 								if((vis=sf->getSymbol(sc_var->scope,ls->value))!=NULL){
-									load_type=LoadType::LOAD_TYPE_VARIABLE;
+									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
 									instruction->vm_instruction.value_op2=vis->idx_position;
 									instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
 									local_found=true;
@@ -442,17 +442,14 @@ namespace zetscript{
 								Symbol *function_symbol=sf->getSymbol(sc_var->scope,ls->value,NO_PARAMS_SYMBOL_ONLY);
 								if(function_symbol!=NULL){
 									script_function_found=(ScriptFunction *)function_symbol->ref_ptr;
+									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_FUNCTION;
 									instruction->vm_instruction.value_op2=function_symbol->idx_position; // store script function
 									instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
-									load_type=LoadType::LOAD_TYPE_FUNCTION;
 									local_found =true;
 								}
 							}
 						}
 
-						if(instruction->vm_instruction.byte_code == BYTE_CODE_LOAD){
-							instruction->vm_instruction.value_op1=load_type;
-						}
 					}
 				}
 
