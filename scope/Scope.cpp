@@ -146,11 +146,8 @@ namespace zetscript{
 					return sv;
 				}
 			}
-
 		}
-
 		return NULL;
-
 	}
 
 	Symbol * Scope::getSymbol(const std::string & var_name, char n_params, ScopeDirection scope_direction){
