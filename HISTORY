@@ -127,9 +127,9 @@ Date: XX-09-2020
 > #183 Implement Dictionary helper class 
 > #184 Implement + for Vector 
 #185 parser char as integer
-> #186 Implement StriptVarString methods  
-> #187 Implement Console helper class 
-#190 eval_expression operator fails 
+> #186 Implement StriptVarString methods
+> #187 Implement Console helper class
+#190 eval_expression operator fails
 #192 Fix multiassigment 
 > #193 Check fix ternari
 #194 Detect literal or assigments within literals  
@@ -144,7 +144,7 @@ Date: XX-09-2020
 > #203 ScriptObject: Implement concatenate operator (+) feature
 > #204 Implement indexs as ScriptObjectVector in ScriptObject 
 #205 desglosse BYTE_LOAD to BYTE_LOAD_XXXX 
- 
+#206 Override global functions 
 
 Other: 
 

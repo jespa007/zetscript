@@ -27,7 +27,9 @@ namespace zetscript{
 			, unsigned short properties
 		){
 
-		if((properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){
+		Symbol *symbol=NULL;
+
+		if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)){
 			if(script_functions->count > 1){ // if greather than 1 check if node consecutive...
 				ScriptFunction *sc = (ScriptFunction *)script_functions->items[script_functions->count-1];
 				if(!((sc->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
@@ -36,7 +38,7 @@ namespace zetscript{
 			}
 		}
 
-		Symbol *symbol=NULL;
+
 		if((symbol=scope->addSymbol(
 				file
 				,line
@@ -65,6 +67,14 @@ namespace zetscript{
 		symbol->ref_ptr = (intptr_t)script_function;		  // ptr function
 		script_functions->push_back((intptr_t)script_function);
 		return symbol;
+	}
+
+	void	ScriptFunctionFactory::setScriptFunction(short idx, ScriptFunction *sf){
+		if(idx < 0 || (unsigned)idx >= script_functions->count){
+			THROW_RUNTIME_ERROR("script function idx node out of bound");
+		}
+
+		script_functions->items[idx]=(intptr_t)sf;
 	}
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){

@@ -96,9 +96,16 @@ namespace zetscript{
 				, unsigned short properties=0
 		);
 
+
+
 		~ScriptFunction();
 
+	protected:
+		void updateParams(std::vector<FunctionParam> args);
+		void clear();
 	private:
+
+
 		ZetScript 				*zs;
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptClassFactory 		*script_class_factory;

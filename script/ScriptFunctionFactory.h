@@ -42,6 +42,7 @@ namespace zetscript{
 			 bool							checkCanregisterNativeFunction(const std::string & function_name);
 
 			 ScriptFunction 			* 	getScriptFunction(int idx);
+			 void	setScriptFunction(short idx, ScriptFunction *sf);
 
 			void clear();
 

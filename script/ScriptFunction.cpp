@@ -28,11 +28,7 @@ namespace zetscript{
 		//registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
 		params = new zs_vector();
 
-		for(unsigned i = 0; i < _params.size(); i++){
-			FunctionParam *script_param = new FunctionParam();
-			*script_param=_params[i];
-			params->push_back((intptr_t)script_param);
-		}
+		updateParams(_params);
 
 		// factories
 		zs = _zs;
@@ -357,25 +353,53 @@ namespace zetscript{
 			, int idx_return_type
 			,intptr_t ref_ptr
 			, unsigned short properties
-		){
+	){
+		Symbol *symbol_found=NULL,*symbol=NULL;
 
-			if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
-				Symbol *existing_symbol;
-				if((existing_symbol=getSymbol(scope_block, function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
+		if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // is script function
+			//Symbol *existing_symbol;
+			if((symbol_found=getSymbol(scope_block, function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
 
-					THROW_RUNTIME_ERROR("Function \"%s\" declared at [%s:%i] it conflicts symbol with same name at [%s:%i]"
+				if(symbol_found->scope != scope_block){
+
+					THROW_RUNTIME_ERROR("Symbol \"%s\" defined at [%s:%i] is already defined at [%s:%i]"
 						,function_name.c_str()
 						,zs_path::get_file_name(file.c_str()).c_str()
 						,line
-						,zs_path::get_file_name(existing_symbol->file.c_str()).c_str()
-						,existing_symbol->line
+						,zs_path::get_file_name(symbol_found->file.c_str()).c_str()
+						,symbol_found->line
 					);
 				}
 			}
+		}
 
+		if(symbol_found != NULL){ // recreate function
+			symbol_found->n_params=NO_PARAMS_SYMBOL_ONLY;
+			ScriptFunction *sf = (ScriptFunction *)symbol_found->ref_ptr;
+			sf->clear();
+			sf->updateParams(params);
+			/*idx_script_function=sf->idx_script_function;
+			delete sf;
+			sf = new ScriptFunction(
+					zs
+					,idx_class
+					,idx_script_function
+					,params
+					,idx_return_type
+					,symbol
+					,ref_ptr
+			);*/
+
+			//script_function_factory->setScriptFunction(idx_script_function,sf);
+			//symbol_found->ref_ptr=(intptr_t)sf;
+			symbol_found->n_params=params.size();
+
+			symbol=symbol_found;
+		}
+		else{
 			short idx_position=(short)registered_symbols->count;
 
-			Symbol *symbol =  script_function_factory->newScriptFunction(
+			symbol =  script_function_factory->newScriptFunction(
 					//---- Register data
 					 scope_block
 					,file
@@ -417,8 +441,9 @@ namespace zetscript{
 			}
 
 			registered_symbols->push_back((intptr_t)symbol);
+		}
 
-			return symbol;
+		return symbol;
 	}
 
 	Symbol *	 ScriptFunction::getSymbol(Scope * scope,const std::string & symbol_name,  char n_params){
@@ -446,11 +471,25 @@ namespace zetscript{
 		return NULL;
 	}
 
-	ScriptFunction::~ScriptFunction(){
+	void ScriptFunction::updateParams(std::vector<FunctionParam> _params){
+		// delete existing args...
+		for(unsigned i=0; i < params->count; i++){
+			delete (FunctionParam *)params->items[i];
+		}
 
+		params->clear();
+
+		// insert new args...
+		for(unsigned i = 0; i < _params.size(); i++){
+			FunctionParam *script_param = new FunctionParam();
+			*script_param=_params[i];
+			params->push_back((intptr_t)script_param);
+		}
+	}
+
+	void ScriptFunction::clear(){
 		// delete symbols refs from scope...
-		delete registered_symbols;
-		registered_symbols=NULL;
+		registered_symbols->clear();
 
 		// delete arg info variables...
 		for(unsigned i=0; i < params->count; i++){
@@ -464,13 +503,26 @@ namespace zetscript{
 			}
 		}
 
-		delete params;
-		params=NULL;
 
 		// delete arg info variables...
 		if(instructions != NULL){
 			free(instructions);
 		}
+
+		instructions=NULL;
+	}
+
+	ScriptFunction::~ScriptFunction(){
+
+
+		clear();
+
+		delete params;
+		params=NULL;
+
+		delete registered_symbols;
+		registered_symbols=NULL;
+
 
 		//delete num_native_functions;
 	}
