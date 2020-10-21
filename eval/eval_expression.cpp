@@ -496,19 +496,25 @@ namespace zetscript{
 			);
 
 			if(token_ternary_if_else!=NULL){ // process expressions...
-				instructions->push_back(new EvalInstruction(BYTE_CODE_JNT));
+				EvalInstruction *node_if=NULL,*node_else=NULL;
+				instructions->push_back(node_if=new EvalInstruction(BYTE_CODE_JNT));
 				instructions->insert(
 						instructions->end()
 						,token_ternary_if_else->instructions.begin()
 						,token_ternary_if_else->instructions.end()
 						);
-				instructions->push_back(new EvalInstruction(BYTE_CODE_JMP));
+
+				node_if->vm_instruction.value_op2=instructions->size();
+
+				instructions->push_back(node_else=new EvalInstruction(BYTE_CODE_JMP));
 
 				instructions->insert(
 						instructions->end()
 						,token_ternary_if_else->aux_node->instructions.begin()
 						,token_ternary_if_else->aux_node->instructions.end()
 						);
+
+				node_else->vm_instruction.value_op2=instructions->size();
 
 			}
 
@@ -570,6 +576,14 @@ namespace zetscript{
 
 			if(is_end_expression(aux_p) && *aux_p != ';'){
 				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
+			}
+
+			if(level == 0){ // set instruction as start statment...
+				eval_data->current_function->instructions.insert(
+						eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
+						new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
+				);
+				//eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
 			}
 
 			if(!is_end_expression_or_keyword(aux_p)){
@@ -970,7 +984,8 @@ namespace zetscript{
 					expression_tokens.push_back(operator_token_node);
 
 					if(operator_type == Operator::OPERATOR_TERNARY_IF){
-						operator_token_node.aux_node = new TokenNode();
+						TokenNode *token_ternary_if_else=&expression_tokens[expression_tokens.size()-1];
+						token_ternary_if_else->aux_node = new TokenNode();
 						//expression_tokens.push_back(operator_token_node);
 
 						aux_p=eval_expression(
@@ -978,7 +993,7 @@ namespace zetscript{
 								,aux_p
 								, line
 								, scope_info
-								, &operator_token_node.instructions
+								, &token_ternary_if_else->instructions
 								,std::vector<char>{}
 								,level+1);
 
@@ -988,9 +1003,9 @@ namespace zetscript{
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-						operator_token_node.aux_node->line=line;
-						operator_token_node.aux_node->operator_type=Operator::OPERATOR_TERNARY_ELSE;
-						operator_token_node.aux_node->token_type=TokenType::TOKEN_TYPE_OPERATOR;
+						token_ternary_if_else->aux_node->line=line;
+						token_ternary_if_else->aux_node->operator_type=Operator::OPERATOR_TERNARY_ELSE;
+						token_ternary_if_else->aux_node->token_type=TokenType::TOKEN_TYPE_OPERATOR;
 
 
 						aux_p=eval_expression(
@@ -998,7 +1013,7 @@ namespace zetscript{
 							,aux_p
 							, line
 							, scope_info
-							, &operator_token_node.aux_node->instructions
+							, &token_ternary_if_else->aux_node->instructions
 							,std::vector<char>{}
 							,level+1
 						);
@@ -1039,19 +1054,12 @@ namespace zetscript{
 
 
 			if(expression_tokens.size()>0){
+
 				eval_operators(
 					eval_data
 					,&expression_tokens
 					,instructions
 				);
-
-				if(level == 0 && (int)eval_data->current_function->instructions.size()>idx_instruction_start_expression){ // set instruction as start statment...
-					eval_data->current_function->instructions.insert(
-							eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
-							new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
-					);
-					//eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
-				}
 			}
 
 			// last character is a separator so it return increments by 1
