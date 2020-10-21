@@ -176,23 +176,23 @@ namespace zetscript{
 				icv=(ConstantValue *)instruction->value_op2;
 				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD\tCONST\t%s\n",idx_instruction,(int)((intptr_t)icv->stk_value)==0?"false":"true");
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,ByteCodeToStr(instruction->byte_code),(int)((intptr_t)icv->stk_value)==0?"false":"true");
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD\tCONST\t%i\n",idx_instruction,(int)((intptr_t)icv->stk_value));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i\n",idx_instruction,ByteCodeToStr(instruction->byte_code),(int)((intptr_t)icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD\tCONST\t%f\n",idx_instruction,*((float *)&icv->stk_value));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%f\n",idx_instruction,ByteCodeToStr(instruction->byte_code),*((float *)&icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD\tCONST\t\"%s\"\n",idx_instruction,((const char *)icv->stk_value));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\"%s\"\n",idx_instruction,ByteCodeToStr(instruction->byte_code),((const char *)icv->stk_value));
 					break;
 				default:
 					THROW_RUNTIME_ERROR("internal error: no literal defined");
 				}
 				break;
 			case BYTE_CODE_LOAD_TYPE_FIND:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s   %s%s%s%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
 					,pre
@@ -202,7 +202,7 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE_VARIABLE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s   %s%s%s%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
 					,pre
@@ -212,7 +212,7 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE_FUNCTION:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s   %s%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
 					,object_access
@@ -223,7 +223,7 @@ namespace zetscript{
 			case BYTE_CODE_JT:
 			case BYTE_CODE_JMP:
 			case BYTE_CODE_JE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%03i\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%03i\n"
 						,idx_instruction
 						,ByteCodeToStr(instruction->byte_code)
 						,(int)instruction->value_op2

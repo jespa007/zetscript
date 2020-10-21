@@ -672,10 +672,6 @@ namespace zetscript{
 
 						IGNORE_BLANKS(test_s,eval_data,aux_p,line);
 
-						/*if((keyword_type=is_keyword(aux_p))!=KEYWORD_UNKNOWN){ // unexpected key word... programmer forgot ;
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,last_line_ok ,"Expected ';'");
-						}*/
-
 						// check valid access punctuator...
 						if(is_access_punctuator(test_s) || symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
 

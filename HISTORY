@@ -5,7 +5,6 @@ Date: XX-09-2020
 
 
 > #165 try eval expressions as constant 
-> #139 Implement const operator 
 > #176 Add shared version 
 > #174 eval constant values and optimize expressions 
 
@@ -75,7 +74,7 @@ Date: XX-09-2020
 #120 Put all common function used by user in zs namespace and the rest in zs::core
 #121 CEval,CScriptClassFactory and CZetScript as instanceable
 #122 Restore CScriptClassFactory
-> #124 Implement Number helper class
+> #124 Implement Integer helper class
 > #125 Implement String helper class
 #126 Save pure c function instead of std::function for speed improvement
 #128 Implement register_c_function_as_member 
@@ -89,6 +88,7 @@ Date: XX-09-2020
 #136 Clear unusued scopes
 #137 Callback function support
 #138 remove all std::vector and std::string access on VM
+> #139 Implement const operator
 > #140 Implement Vector methods  
 #141 limit n params only for c functions 
 #142 Try to optimize bind function member 
@@ -120,7 +120,7 @@ Date: XX-09-2020
 #173 Manage this context automatically on anonymouse function created on class 
 #175 Arguments as E/S 
 > #177 Fix set/restore state 
-> #179 Bug if-else fails {max scope reached} 
+#179 Bug if-else fails {max scope reached} 
 #180 Return vector or dictionary not deref its user properties 
 > #181 Implement var args 
 > #182 Make ScriptVarStringr iterable like Vector 
@@ -145,6 +145,9 @@ Date: XX-09-2020
 > #204 Implement indexs as ScriptObjectVector in ScriptObject 
 #205 desglosse BYTE_LOAD to BYTE_LOAD_XXXX 
 #206 Override global functions 
+> #207 ScriptObjectString: Implement operator [] 
+> #208 Implement Float helper class
+> #209 Implement Boolean helper class  
 
 Other: 
 
