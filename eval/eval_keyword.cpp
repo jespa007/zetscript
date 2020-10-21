@@ -675,7 +675,6 @@ namespace zetscript{
 
 						else_end_jmp.push_back(ei_aux);
 
-
 						aux_p += strlen(eval_info_keywords[key_w].str);
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);

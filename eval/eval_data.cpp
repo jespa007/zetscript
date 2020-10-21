@@ -82,8 +82,12 @@ namespace zetscript{
 			OPERATOR_ASSIGN_SHIFT_RIGHT, 							// >>=
 			OPERATOR_ARITHMETIC_ASSIGN_LAST,
 
-			// LOGIC
-			OPERATOR_LOGIC_AND=OPERATOR_ARITHMETIC_ASSIGN_LAST,		// &&
+			// TERNARY...
+			OPERATOR_TERNARY_IF=OPERATOR_ARITHMETIC_ASSIGN_LAST,	// ?
+			OPERATOR_TERNARY_ELSE, 									// :
+
+			// LOGIC...
+			OPERATOR_LOGIC_AND,										// &&
 			OPERATOR_LOGIC_OR, 										// ||
 
 			// RELATIONAL
@@ -108,8 +112,6 @@ namespace zetscript{
 
 			OPERATOR_INSTANCEOF, 									// instanceof
 
-			OPERATOR_TERNARY_IF, 									// ?
-			OPERATOR_TERNARY_ELSE, 									// :
 			OPERATOR_MAX
 		}Operator;
 
@@ -166,13 +168,19 @@ namespace zetscript{
 			std::string 					value; // token value content
 			int 							line;
 			std::vector<EvalInstruction *> 	instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
-
+			TokenNode						*aux_node; // used for ternary else
 
 			TokenNode(){
 				line=-1;
 				token_type=TokenType::TOKEN_TYPE_UNKNOWN;
 				operator_type=Operator::OPERATOR_UNKNOWN;
 				pre_operator=PreOperator::PRE_OPERATOR_UNKNOWN;
+				aux_node=NULL;
+			}
+			~TokenNode(){
+				if(aux_node != NULL){
+					delete aux_node;
+				}
 			}
 		};
 
@@ -288,9 +296,9 @@ namespace zetscript{
 		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PreOperator pre_operator, PrePostSelfOperation pre_self_operation);
 
 
-		bool	is_operator_ternary_if(const char *s)			{return ((*s=='?'));}
-		bool 	is_operator_ternary_else(const char *s)		{return ((*s==':'));}
-		bool 	is_operator_add(const char *s)					{return	(*s=='+'); }// && (*(s+1)!='+') && (*(s+1)!='='));}
+		bool	is_operator_ternary_if(const char *s)			{return *s=='?';}
+		bool 	is_operator_ternary_else(const char *s)		{return *s==':';}
+		bool 	is_operator_add(const char *s)					{return	*s=='+'; }// && (*(s+1)!='+') && (*(s+1)!='='));}
 		bool 	is_operator_sub(const char *s)				{return	(*s=='-');}// && (*(s+1)!='-') && (*(s+1)!='='));}
 		bool 	is_operator_mul(const char *s)				{return ((*s=='*') && (*(s+1)!='='));}
 		bool 	is_operator_div(const char *s)				{return ((*s=='/') && (*(s+1)!='='));}
@@ -426,6 +434,21 @@ namespace zetscript{
 			return PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN;
 		}
 
+		bool is_special_char(char *aux){
+			return *aux == 0  || // carry end
+			*aux == ' '  || // space
+			*aux == '\t'  || // tab
+			*aux=='.' ||
+		    *aux=='}' ||
+		    *aux=='{' ||
+		    *aux=='[' ||
+		    *aux==']' ||
+			*aux == '\n' || // carry return
+			*aux == '\r' || // compatible windows format
+			*aux == ':' ||  // mostly after case/default
+			*aux == ';'; // continue/break
+		}
+
 		Keyword is_keyword(const char *c){
 			// PRE: The first char must be starting symbol.
 			char *str=(char *)c;
@@ -436,18 +459,10 @@ namespace zetscript{
 					size_t size = strlen(eval_info_keywords[i].str);
 					char *aux = str+size;
 					if((strncmp(str,eval_info_keywords[i].str,size)==0) && (
-							*aux == 0  || // carry end
-							*aux == ' '  || // space
-							*aux == '\t'  || // tab
-							*aux == '('  || // ( // mostly if,for,while,switch
-							*aux == '{'  || // ( // mostly else,
-							*aux == '\n' || // carry return
-							*aux == '\r' || // compatible windows format
-							*aux == ':' ||  // mostly after case/default
-							*aux == ';' || // continue/break
+							is_special_char(aux) ||
 
 						   is_comment_block_start(aux)) //start block comment
-						   ){
+					){
 						return eval_info_keywords[i].id;
 					}
 				}
@@ -480,11 +495,8 @@ namespace zetscript{
 			return is_operator(s)!=Operator::OPERATOR_UNKNOWN
 				   || is_pre_post_self_operation(s)!=PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 				   || is_separator(s)!=Separator::SEPARATOR_UNKNOWN
-				   || *s=='.' // to separate access identifiers.
-				   || *s==' '
-				   || *s==0
-				   || *s=='\r' // compatible windows format
-				   || *s=='\n'
+				   || is_keyword(s)!=Keyword::KEYWORD_UNKNOWN
+				   || is_special_char(s)
 				   || (*s=='\"' && pre!='\\');
 		}
 
