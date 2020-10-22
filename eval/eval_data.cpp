@@ -672,7 +672,7 @@ namespace zetscript{
 
 				aux_p++;
 
-			}while(!end && !is_end_symbol_token(aux_p) && !is_special_char(aux_p));
+			}while(!end && !((is_end_symbol_token(aux_p) || (is_special_char(aux_p))) && *aux_p != '.'));
 
 			// check and eval token ?
 			value = number_part[0]+number_part[1]+number_part[2];
