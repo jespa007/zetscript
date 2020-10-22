@@ -431,7 +431,7 @@ namespace zetscript{
 		void link_breaks(EvalData *eval_data){
 			// capture breaks and link jmp positions...
 			if(eval_data->break_jmp_instructions.size() > 0){ // capture break_jmp_instructions...
-				unsigned idx_instruction = eval_data->current_function->instructions.size();
+				size_t idx_instruction = eval_data->current_function->instructions.size();
 				for(unsigned i=0; i < eval_data->break_jmp_instructions.size(); i++){
 					eval_data->break_jmp_instructions[i]->vm_instruction.value_op2=idx_instruction;
 				}
@@ -456,7 +456,7 @@ namespace zetscript{
 			char *end_expr;
 			std::string start_symbol;
 			Keyword key_w;
-			unsigned int idx_instruction_conditional_while;
+			int idx_instruction_conditional_while;
 			EvalInstruction *ei_jnt; // conditional to end block
 
 			// check for keyword ...
@@ -474,7 +474,7 @@ namespace zetscript{
 				}
 
 				// save current instruction to use later...
-				idx_instruction_conditional_while=eval_data->current_function->instructions.size();
+				idx_instruction_conditional_while=(int)(eval_data->current_function->instructions.size());
 
 				end_expr = eval_expression(
 						eval_data
@@ -529,8 +529,8 @@ namespace zetscript{
 			char *end_expr;
 			std::string start_symbol;
 			Keyword key_w;
-			unsigned int idx_do_while_start;
-			unsigned int idx_do_while_conditional;
+			int idx_do_while_start;
+			int idx_do_while_conditional;
 
 
 			// check for keyword ...
@@ -545,7 +545,7 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				// save current instruction to use later...
-				idx_do_while_start=eval_data->current_function->instructions.size();
+				idx_do_while_start=(int)(eval_data->current_function->instructions.size());
 
 
 				if(*aux_p != '{'){
@@ -575,7 +575,7 @@ namespace zetscript{
 
 				if(*aux_p == '('){
 
-					idx_do_while_conditional=eval_data->current_function->instructions.size();
+					idx_do_while_conditional=(int)(eval_data->current_function->instructions.size());
 
 					if((end_expr = eval_expression(
 							eval_data
@@ -734,7 +734,7 @@ namespace zetscript{
 
 				if(*aux_p == '('){ // ready ...
 
-					unsigned idx_instruction_start_for=eval_data->current_function->instructions.size();
+					int idx_instruction_start_for=(int)(eval_data->current_function->instructions.size());
 
 					// save scope pointer ...
 					Scope *new_scope =eval_new_scope(eval_data,scope_info); // push current scope
@@ -791,7 +791,7 @@ namespace zetscript{
 
 							if(*end_p != ';'){// there's some condition if not, then is like for(X;true;X)
 
-								idx_instruction_for_start=eval_data->current_function->instructions.size();
+								idx_instruction_for_start=(int)(eval_data->current_function->instructions.size());
 
 								aux_p = eval_expression(
 										eval_data
@@ -858,7 +858,7 @@ namespace zetscript{
 					);
 
 					// catch all continues and set all jmps after processing block but before post operation...
-					link_continues(eval_data,eval_data->current_function->instructions.size());
+					link_continues(eval_data,(int)(eval_data->current_function->instructions.size()));
 
 					// insert post operations...
 					eval_data->current_function->instructions.insert(
@@ -893,7 +893,7 @@ namespace zetscript{
 			Scope *scope_case=NULL;
 			std::string val;
 			Keyword key_w;//,key_w2;
-			unsigned idx_start_switch;
+			int idx_start_switch;
 			std::vector<EvalInstruction *> 	ei_cases; // stores all conditional instructions at begin
 			std::vector<EvalInstruction *>  ei_break_jmps; // breaks or if condition not satisfies nothing (there's no default)
 
@@ -924,7 +924,7 @@ namespace zetscript{
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-							idx_start_switch = eval_data->current_function->instructions.size();
+							idx_start_switch = (int)(eval_data->current_function->instructions.size());
 							int n_default=0;
 
 							while(*aux_p != '}' && *aux_p != 0){
@@ -936,7 +936,7 @@ namespace zetscript{
 
 									TokenNode token_node;
 									PreOperator pre_operator=PreOperator::PRE_OPERATOR_UNKNOWN;
-									int idx_current_instruction=eval_data->current_function->instructions.size();
+									int idx_current_instruction=(int)(eval_data->current_function->instructions.size());
 
 									// ignore case
 									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
@@ -1021,7 +1021,7 @@ namespace zetscript{
 
 							}
 
-							unsigned idx_current_instruction=eval_data->current_function->instructions.size();
+							int idx_current_instruction=(int)(eval_data->current_function->instructions.size());
 
 							if(*aux_p != '}'){
 								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '}' switch");
@@ -1040,7 +1040,7 @@ namespace zetscript{
 
 
 							// update all jmp acording number of cases found...
-							inc_jmp_codes(eval_data, idx_start_switch, idx_current_instruction, ei_cases.size());
+							inc_jmp_codes(eval_data, idx_start_switch, idx_current_instruction, (int)(ei_cases.size()));
 
 
 
@@ -1208,7 +1208,7 @@ namespace zetscript{
 
 							// let's fun evalute, an expression throught its op codes...
 							EvalInstruction **it=&constant_instructions[0];
-							unsigned size=constant_instructions.size();
+							size_t size=constant_instructions.size();
 							for(unsigned i=0; i < size; i++,it++){
 								Instruction *instruction=&(*it)->vm_instruction;
 								if(instruction->byte_code == BYTE_CODE_LOAD_TYPE_CONSTANT){

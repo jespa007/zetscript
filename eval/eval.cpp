@@ -172,7 +172,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("idx_end_instruction out of bounds ");
 			}
 			EvalInstruction **it=&eval_data->current_function->instructions[idx_start_instruction];
-			unsigned size = eval_data->current_function->instructions.size();
+			size_t size = eval_data->current_function->instructions.size();
 
 			for(unsigned i=idx_start_instruction; i < size; i++,it++){
 				switch((*it)->vm_instruction.byte_code){
@@ -196,7 +196,7 @@ namespace zetscript{
 							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(intptr_t)scope)
 					);
 
-					inc_jmp_codes(eval_data,idx_instruction_start,eval_data->current_function->instructions.size(),1);
+					inc_jmp_codes(eval_data,idx_instruction_start,(int)(eval_data->current_function->instructions.size()),1);
 
 					// and finally insert pop scope
 					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE,0));
@@ -217,7 +217,7 @@ namespace zetscript{
 			// check for keyword ...
 			if(*aux_p == '{'){
 
-				unsigned idx_instruction_start_block=eval_data->current_function->instructions.size();
+				int idx_instruction_start_block=(int)(eval_data->current_function->instructions.size());
 
 				aux_p++;
 

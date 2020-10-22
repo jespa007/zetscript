@@ -5,15 +5,6 @@
 namespace zetscript{
 	namespace zs_strutils{
 
-		/*enum{
-			MAX_STRING_BUFFERS=256,
-			MAX_LENGTH_BUFFER=512,
-		};*/
-		//char m_buffer[MAX_STRING_BUFFERS][MAX_LENGTH_BUFFER]={{0}};
-		//char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
-		//unsigned char m_index_buffer=0;
-		//char  _sformat_buffer[4096] = { 0 };
-
 		std::string  format(const  char  *input_text, ...){
 			char  _sformat_buffer[4096] = { 0 };
 			va_list  ap;
@@ -25,21 +16,26 @@ namespace zetscript{
 		}
 
 		int *  parse_int(const std::string & val){
-
 			int *n=NULL;
 			NumberType number_type = is_number(val);
 			int numberValue=0;
 			if(number_type == NumberType::NUMBER_TYPE_INT){
-				numberValue=strtol(val.c_str(), NULL, 10);
+				numberValue=strtol (val.c_str(), NULL, 10);
 			}else if(number_type == NumberType::NUMBER_TYPE_HEXA){
-				numberValue=strtol(val.c_str(), NULL, 16);
+				numberValue=strtol (val.c_str(), NULL, 16);
 			}else if(is_binary(val)){
 				std::string binary = val.substr(0,val.size()-1);
-				numberValue=strtol(binary.c_str(), NULL, 2);
+				numberValue=strtol (binary.c_str(), NULL, 2);
 			}
 			else{
 				return NULL;
 			}
+
+		   /*if ((numberValue == LONG_MIN || numberValue == LONG_MAX) && errno == ERANGE){
+			  printf("Value out of range.\n");
+		   }*/
+
+
 
 			n=new int;
 			*n = numberValue;

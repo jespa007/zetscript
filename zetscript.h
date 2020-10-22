@@ -89,7 +89,6 @@
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"
 #include "script/ScriptObjectVector.h"
-#include "script/ScriptObjectFunction.h"
 #include "script/ScriptClass.h"
 #include "script/ScriptFunction.h"
 #include "script/ScriptFunctionFactory.h"
@@ -179,7 +178,7 @@ namespace zetscript{
 		ConstantValue * getRegisteredConstantValue(const std::string & const_name);
 		ConstantValue *	registerConstantValue(const std::string & const_name, ConstantValue constant_value);
 		ConstantValue * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
-		ConstantValue * registerConstantValue(const std::string & const_name, int  value);
+		ConstantValue * registerConstantValue(const std::string & const_name, intptr_t  value);
 		ConstantValue * registerConstantValue(const std::string & const_name, float  value);
 
 

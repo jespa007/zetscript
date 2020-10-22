@@ -184,13 +184,13 @@ namespace zetscript{
 						byte_code=BYTE_CODE_LOAD_TYPE_UNDEFINED;
 						obj=NULL;// ScriptObject::UndefinedSymbol;
 				}else if((const_obj=zs_strutils::parse_int(str_number_value))!=NULL){ // int literal
-					int value = *((int *)const_obj);
+					intptr_t value = *((intptr_t *)const_obj);
 					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
 						value=-value;
 						str_number_value="-"+str_number_value;
 					}
 
-					delete (int *)const_obj;
+					delete (intptr_t *)const_obj;
 					//load_type=LOAD_TYPE_CONSTANT;
 					obj=eval_data->zs->registerConstantValue(str_number_value,value);
 					is_constant_number=true;
@@ -403,7 +403,7 @@ namespace zetscript{
 			char *aux_p=(char *)s;
 			std::vector<AssignTokenInformation> assing_tokens;
 			int idx_start=0;
-			int idx_end=expression_tokens->size()-1;
+			int idx_end=(int)(expression_tokens->size()-1);
 			std::vector<std::vector<EvalInstruction *>> assign_instructions_post_expression;
 
 
@@ -428,7 +428,7 @@ namespace zetscript{
 				TokenNode * token_node_symbol = &expression_tokens->at(i);
 				TokenNode * token_node_operator = &expression_tokens->at(i+1);
 				Operator operator_type=token_node_operator->operator_type;
-				int end_idx=expression_tokens->size()-1;
+				int end_idx=(int)(expression_tokens->size()-1);
 
 				// should be assign operator...
 				if(!(
@@ -449,7 +449,7 @@ namespace zetscript{
 
 
 				// load variable and accessors...
-				for(int i=0;i<token_node_symbol->instructions.size();i++){
+				for(unsigned i=0;i<token_node_symbol->instructions.size();i++){
 					EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[i];
 					if(ei_load_assign_instruction->vm_instruction.byte_code ==  BYTE_CODE_CALL){
 						THROW_SCRIPT_ERROR(
@@ -545,7 +545,7 @@ namespace zetscript{
 			//--------------------------------------------------------------
 
 			// ... finally save store operators
-			for(int i=assign_instructions_post_expression.size()-1; i >=0 ;i--){
+			for(int i=(int)(assign_instructions_post_expression.size()-1); i >=0 ;i--){
 
 				// insert assign instruction...
 				for(unsigned j=0; j < assign_instructions_post_expression[i].size() ;j++){
@@ -600,7 +600,7 @@ namespace zetscript{
 			start_expression_str=aux_p;
 			start_expression_line=line;
 
-			int idx_instruction_start_expression=eval_data->current_function->instructions.size();
+			int idx_instruction_start_expression=(int)(eval_data->current_function->instructions.size());
 
 			if(is_end_expression(aux_p) && *aux_p != ';'){
 				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
@@ -940,7 +940,7 @@ namespace zetscript{
 								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
 							}
 
-							unsigned last_instruction=symbol_token_node.instructions.size()-1;
+							unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
 
 							// pre/post operator...
 							switch(pre_self_operation_type){

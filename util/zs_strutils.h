@@ -28,9 +28,9 @@ namespace zetscript{
 			NUMBER_TYPE_DOUBLE
 		}NumberType;
 
-		 bool  * parse_bool(const std::string & );
-		 int   * parse_int(const std::string & );
-		 float * parse_float(const std::string & );
+		 bool  		* parse_bool(const std::string & );
+		 int  		* parse_int(const std::string & );
+		 float 		* parse_float(const std::string & );
 
 
 		 std::string int_to_str(int number);

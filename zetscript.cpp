@@ -128,7 +128,7 @@ namespace zetscript{
 		return registerConstantValue(const_name,{obj,NULL,properties});
 	}
 
-	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, int _value){
+	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, intptr_t _value){
 		intptr_t value = _value;
 		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
 		StackElement *stk;

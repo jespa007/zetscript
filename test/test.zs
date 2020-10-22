@@ -1,4 +1,4 @@
-class Vector2{
+/*class Vector2{
 
 	constructor(_x,_y){
 		if(_x==undefined){
@@ -28,5 +28,7 @@ class Vector2{
 
 
 new Vector2()
-+new Vector2()
++new Vector2()*/
+
+2252400000
 

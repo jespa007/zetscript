@@ -212,7 +212,6 @@ ELSE()
 		script/ScriptObject.cpp
 		script/ScriptObjectString.cpp
 		script/ScriptObjectVector.cpp
-		script/ScriptObjectFunction.cpp
 		script/ScriptClass.cpp
 		script/ScriptFunction.cpp
 		script/ScriptFunctionFactory.cpp
