@@ -252,8 +252,8 @@ namespace zetscript{
 		// byte code executing starts here. Later script function can call c++ function, but once in c++ function is not possible by now call script function again.
 		try{
 			info=callFunctionScript(
-				calling_function,
 				this_object,
+				calling_function,
 				vm_stk_current,
 				n_stk_params);
 		}catch(std::exception & ex){

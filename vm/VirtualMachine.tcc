@@ -141,8 +141,7 @@ namespace zetscript{
 	}
 
 	inline bool VirtualMachine::tryPerformMetamethod(
-		ScriptObject *calling_object
-		,ScriptFunction *calling_function
+		 ScriptFunction *calling_function
 		,Instruction *instruction
 		,const char *__OVERR_OP__
 		,ByteCodeMetamethod __METAMETHOD__
@@ -154,6 +153,7 @@ namespace zetscript{
 		int idx_offset_function_member_start=0;
 		ScriptObject *script_var_object = NULL;
 		ScriptFunction * ptr_function_found=NULL;
+		ScriptObject *calling_object=NULL; // TODO: seach calling object and both stk op1/op2 shoould be same type
 
 		ScriptObject *one_param = NULL;
 		int n_metam_args=((__METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT\
@@ -235,8 +235,8 @@ namespace zetscript{
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
 		StackElement ret_obj=callFunctionScript(
-				ptr_function_found
-				,script_var_object
+				script_var_object
+				,ptr_function_found
 				,mm_test_startArg+idx_offset_function_member_start
 				//,vm_str_current
 				,n_metam_args);

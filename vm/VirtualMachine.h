@@ -144,8 +144,8 @@ namespace zetscript{
 
 
 		StackElement  callFunctionScript(
-				ScriptFunction 	*	info_function,
 				ScriptObject 		* 	this_object,
+				ScriptFunction 	*	info_function,
 				StackElement 	* 	_stk_start_args=NULL,
 				//std::string 		  		  * _ptrStartStr=NULL,
 				unsigned char 		n_args=0,
@@ -189,8 +189,7 @@ namespace zetscript{
 		inline void popVmScope(bool check_empty_shared_pointers=true);
 
 		inline bool tryPerformMetamethod(
-			ScriptObject *calling_object
-			,ScriptFunction *info_function
+			 ScriptFunction *info_function
 			,Instruction *instruction
 			,const char *op_code_str
 			,ByteCodeMetamethod op_code_methamethod
