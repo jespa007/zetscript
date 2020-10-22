@@ -131,7 +131,7 @@ Date: XX-09-2020
 #187 Implement Console helper class
 #190 eval_expression operator fails
 #192 Fix multiassigment 
-> #193 Check fix ternari
+#193 Check fix ternari
 #194 Detect literal or assigments within literals  
 #195 Change ScriptVar by ScriptObject and remove ScriptVarDictionnary
 > #196 Do not extend property when it access 

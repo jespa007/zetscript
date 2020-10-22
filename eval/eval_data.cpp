@@ -168,19 +168,12 @@ namespace zetscript{
 			std::string 					value; // token value content
 			int 							line;
 			std::vector<EvalInstruction *> 	instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
-			TokenNode						*aux_node; // used for ternary else
 
 			TokenNode(){
 				line=-1;
 				token_type=TokenType::TOKEN_TYPE_UNKNOWN;
 				operator_type=Operator::OPERATOR_UNKNOWN;
 				pre_operator=PreOperator::PRE_OPERATOR_UNKNOWN;
-				aux_node=NULL;
-			}
-			~TokenNode(){
-				if(aux_node != NULL){
-					delete aux_node;
-				}
 			}
 		};
 

@@ -389,17 +389,23 @@ namespace zetscript{
 
 		}
 
-		void eval_operators(
+		char * eval_operators(
 				EvalData *eval_data
-				, std::vector<TokenNode> * expression_tokens
+				,const char *s
+				, int & line
+				, Scope *scope_info
 				, std::vector<EvalInstruction *> *instructions
+				, int level
+				, std::vector<TokenNode> * expression_tokens
+
 			){
 
+			char *aux_p=(char *)s;
 			std::vector<AssignTokenInformation> assing_tokens;
 			int idx_start=0;
 			int idx_end=expression_tokens->size()-1;
 			std::vector<std::vector<EvalInstruction *>> assign_instructions_post_expression;
-			TokenNode * token_ternary_if_else=NULL;
+
 
 			for(int i=idx_end; i >= 0; i--){
 				Operator token_operator = expression_tokens->at(i).operator_type;
@@ -479,14 +485,6 @@ namespace zetscript{
 
 			//--------------------------------------------------------------
 
-			// process all nodes except last one that is ternary
-			if(expression_tokens->at(idx_end).operator_type == Operator::OPERATOR_TERNARY_IF){
-				token_ternary_if_else=&expression_tokens->at(idx_end);
-				idx_end=idx_end-1;
-
-			}
-
-			// eval expression ...
 			eval_operators_expression(
 					 eval_data
 					, expression_tokens
@@ -495,33 +493,49 @@ namespace zetscript{
 					, idx_end
 			);
 
-			if(token_ternary_if_else!=NULL){ // process expressions...
-				EvalInstruction *node_if=NULL,*node_else=NULL;
-				instructions->push_back(node_if=new EvalInstruction(BYTE_CODE_JNT));
-				instructions->insert(
-						instructions->end()
-						,token_ternary_if_else->instructions.begin()
-						,token_ternary_if_else->instructions.end()
-						);
+			if(*aux_p == '?'){ // ternary
+				EvalInstruction *ei_ternary_if_jnt=NULL;
+				EvalInstruction *ei_ternary_else_jmp=NULL;
 
-				node_if->vm_instruction.value_op2=instructions->size();
+				// insert JNT
+				instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
 
-				instructions->push_back(node_else=new EvalInstruction(BYTE_CODE_JMP));
+				aux_p=eval_expression(
+						eval_data
+						,aux_p+1
+						, line
+						, scope_info
+						, instructions
+						,std::vector<char>{}
+						,level+1);
 
-				instructions->insert(
-						instructions->end()
-						,token_ternary_if_else->aux_node->instructions.begin()
-						,token_ternary_if_else->aux_node->instructions.end()
-						);
+				if(*aux_p != ':'){
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
+				}
 
-				node_else->vm_instruction.value_op2=instructions->size();
+				instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
+
+				ei_ternary_if_jnt->vm_instruction.value_op2=instructions->size();
+
+				aux_p=eval_expression(
+					eval_data
+					,aux_p+1
+					, line
+					, scope_info
+					, instructions
+					,std::vector<char>{}
+					,level+1
+				);
+
+
+				ei_ternary_else_jmp->vm_instruction.value_op2=instructions->size()+(level>=1?2:0); // adds +2
 
 			}
 
 
 			//--------------------------------------------------------------
 
-
+			// ... finally save store operators
 			for(int i=assign_instructions_post_expression.size()-1; i >=0 ;i--){
 
 				// insert assign instruction...
@@ -529,6 +543,8 @@ namespace zetscript{
 					instructions->push_back(assign_instructions_post_expression[i][j]);
 				}
 			}
+
+			return aux_p;
 		}
 
 		bool is_end_expression(const char *s){
@@ -576,14 +592,6 @@ namespace zetscript{
 
 			if(is_end_expression(aux_p) && *aux_p != ';'){
 				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
-			}
-
-			if(level == 0){ // set instruction as start statment...
-				eval_data->current_function->instructions.insert(
-						eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
-						new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
-				);
-				//eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
 			}
 
 			if(!is_end_expression_or_keyword(aux_p)){
@@ -723,8 +731,6 @@ namespace zetscript{
 						// check valid access punctuator...
 						if(is_access_punctuator(test_s) || symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
 
-							aux_p=test_s;
-
 							char n_params=0;
 
 							//is_first_access=true;
@@ -749,6 +755,9 @@ namespace zetscript{
 
 							// eval accessor element (supose that was a preinsert a load instruction for identifier )...
 							if(is_access_punctuator(aux_p)){
+
+								aux_p=test_s;
+
 								do{
 									ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 									std::string accessor_value="";
@@ -961,18 +970,16 @@ namespace zetscript{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					operator_type=is_operator(aux_p);
 
-					if(is_end_expression_or_keyword(aux_p) || ( new_line_break && operator_type==Operator::OPERATOR_UNKNOWN)){ // if not operator and carry return found is behaves as end expression
+					if(	is_end_expression_or_keyword(aux_p)
+					|| operator_type==Operator::OPERATOR_TERNARY_IF
+					|| operator_type==Operator::OPERATOR_TERNARY_ELSE
+					|| ( new_line_break && operator_type==Operator::OPERATOR_UNKNOWN)){ // if not operator and carry return found is behaves as end expression
 						break;
 					}
 
 					if(operator_type==Operator::OPERATOR_UNKNOWN){
 						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected operator");
 					}
-
-					if(operator_type==Operator::OPERATOR_TERNARY_ELSE){ // it will processed on the parent expression
-						break;
-					}
-
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_operators[operator_type].str),line);
 
@@ -983,45 +990,7 @@ namespace zetscript{
 					// push operator token
 					expression_tokens.push_back(operator_token_node);
 
-					if(operator_type == Operator::OPERATOR_TERNARY_IF){
-						TokenNode *token_ternary_if_else=&expression_tokens[expression_tokens.size()-1];
-						token_ternary_if_else->aux_node = new TokenNode();
-						//expression_tokens.push_back(operator_token_node);
 
-						aux_p=eval_expression(
-								eval_data
-								,aux_p
-								, line
-								, scope_info
-								, &token_ternary_if_else->instructions
-								,std::vector<char>{}
-								,level+1);
-
-						if(*aux_p != ':'){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
-						}
-
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-
-						token_ternary_if_else->aux_node->line=line;
-						token_ternary_if_else->aux_node->operator_type=Operator::OPERATOR_TERNARY_ELSE;
-						token_ternary_if_else->aux_node->token_type=TokenType::TOKEN_TYPE_OPERATOR;
-
-
-						aux_p=eval_expression(
-							eval_data
-							,aux_p
-							, line
-							, scope_info
-							, &token_ternary_if_else->aux_node->instructions
-							,std::vector<char>{}
-							,level+1
-						);
-
-						break; // ternary ends expression
-
-
-					}
 				}
 			}
 
@@ -1053,13 +1022,28 @@ namespace zetscript{
 			}
 
 
+			// there's an expression
 			if(expression_tokens.size()>0){
 
-				eval_operators(
+				if(level == 0){ // set instruction as start statment...
+					eval_data->current_function->instructions.insert(
+							eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
+							new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
+					);
+					//eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
+				}
+
+				aux_p=eval_operators(
 					eval_data
-					,&expression_tokens
+					,aux_p
+					,line
+					,scope_info
 					,instructions
+					,level
+					,&expression_tokens
+
 				);
+
 			}
 
 			// last character is a separator so it return increments by 1
