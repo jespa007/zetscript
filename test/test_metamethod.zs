@@ -21,11 +21,12 @@ class Vector2{
 		return v3;
 	}
 	
-	_toString(){ // a way to have an output string
-		return "("+this.x","+this.y+")";
+	_toString(){ // a way to have a custom string output
+		return "("+this.x+","+this.y+")";
 	}
 };
 
 
-print(new Vector2(0,2)+new Vector2(1,0)+new Vector2());
+print(new Vector2(0,2)+new Vector2(1,0)+new Vector2()); // it prints each new vector
+print((new Vector2(0,2)+new Vector2(1,0)+new Vector2())); // it sums and then it prints*/
 

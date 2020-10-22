@@ -439,17 +439,26 @@ namespace zetscript{
 									&&
 						(operator_type < OPERATOR_ARITHMETIC_ASSIGN_LAST)
 					)))){ // ... save all assignables from operator split
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,token_node_operator->line,"Invalid left-hand side in assignment");
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_info_operators[operator_type].str);
 				}
 
 				// should be identifier...
 				if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,token_node_symbol->line,"Invalid left-hand side in assignment");
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
 				}
 
 
-				// load variable...
-				instructions->push_back(token_node_symbol->instructions[0]);
+				// load variable and accessors...
+				for(int i=0;i<token_node_symbol->instructions.size();i++){
+					EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[i];
+					if(ei_load_assign_instruction->vm_instruction.byte_code ==  BYTE_CODE_CALL){
+						THROW_SCRIPT_ERROR(
+								eval_data->current_parsing_file
+								,ei_load_assign_instruction->instruction_source_info.line
+								,"Calling a function in an assignment is not allowed");
+					}
+					instructions->push_back(token_node_symbol->instructions[i]);
+				}
 
 				assign_instructions_post_expression.push_back({});
 
@@ -553,7 +562,7 @@ namespace zetscript{
 
 		bool    is_end_expression_or_keyword(const char * s){
 			Keyword op=is_keyword(s);
-			return is_end_expression(s) || !(op==Keyword::KEYWORD_UNKNOWN || op==Keyword::KEYWORD_NEW);
+			return is_end_expression(s) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN) ;
 		}
 
 		char * eval_expression(
@@ -583,6 +592,9 @@ namespace zetscript{
 			int instruction_identifier=ZS_IDX_UNDEFINED;
 			char *aux_p=NULL,*test_s=NULL;
 			bool new_line_break=false;
+			char *test_ignore_blanks=NULL,*test_char_carry_return=NULL;
+
+
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 			start_expression_str=aux_p;
@@ -683,7 +695,7 @@ namespace zetscript{
 								,level
 							);
 
-							symbol_token_node.token_type = TokenType::TOKEN_TYPE_DICTIONARY;
+							symbol_token_node.token_type = TokenType::TOKEN_TYPE_OBJECT;
 
 						}else if(keyword_type == Keyword::KEYWORD_NEW){
 
@@ -955,25 +967,22 @@ namespace zetscript{
 					expression_tokens.push_back(symbol_token_node);
 
 					new_line_break=false;
-					// cases that can ending and expression
-					if(    *aux_p == '\n'
-						|| *aux_p == ' '
-						|| *aux_p == '\r' // compatible windows format
-						|| *aux_p == '\t'
-						|| is_comment_single_line(aux_p)
-						|| is_comment_block_start(aux_p)){
-						if(strchr(aux_p,'\n')!=NULL){ // new line is like ';'
-							new_line_break=true;
-						}
+					IGNORE_BLANKS(test_ignore_blanks,eval_data,aux_p,line);
 
+					if((test_char_carry_return=strchr(aux_p,'\n'))!=NULL){ // new line is like ';'
+						new_line_break=test_char_carry_return<test_ignore_blanks;
 					}
+
+
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					operator_type=is_operator(aux_p);
 
-					if(	is_end_expression_or_keyword(aux_p)
+					keyword_type=is_keyword(aux_p);
+
+					if(	is_end_expression(aux_p)
 					|| operator_type==Operator::OPERATOR_TERNARY_IF
 					|| operator_type==Operator::OPERATOR_TERNARY_ELSE
-					|| ( new_line_break && operator_type==Operator::OPERATOR_UNKNOWN)){ // if not operator and carry return found is behaves as end expression
+					|| ( new_line_break && (operator_type==Operator::OPERATOR_UNKNOWN /*&& keyword_type<Keyword::KEYWORDS_WITHIN_EXPRESSIONS*/))){ // if not operator and carry return found is behaves as end expression
 						break;
 					}
 

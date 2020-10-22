@@ -148,6 +148,9 @@ Date: XX-09-2020
 > #207 ScriptObjectString: Implement operator [] 
 > #208 Implement Float helper class
 > #209 Implement Boolean helper class  
+> #210 Fix check keyword delete
+> #211 Fix check directive import 
+> #212 Fix accessors betwen assigns 
 
 Other: 
 

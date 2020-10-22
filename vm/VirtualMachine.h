@@ -188,7 +188,7 @@ namespace zetscript{
 
 		inline void popVmScope(bool check_empty_shared_pointers=true);
 
-		inline bool applyMetamethod(
+		inline bool tryPerformMetamethod(
 			ScriptObject *calling_object
 			,ScriptFunction *info_function
 			,Instruction *instruction

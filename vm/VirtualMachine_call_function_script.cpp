@@ -20,7 +20,7 @@
 			PUSH_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
 	}\
 	else{\
-		if(!applyMetamethod(\
+		if(!tryPerformMetamethod(\
 						 calling_object\
 						,calling_function\
 						,instruction\
@@ -55,7 +55,7 @@
 			PUSH_FLOAT(f_aux_value1 __C_OP__ f_aux_value2);\
 	}\
 	else{\
-		if(!applyMetamethod(\
+		if(!tryPerformMetamethod(\
 						calling_object\
 						,calling_function\
 						,instruction\
@@ -73,39 +73,49 @@
 {\
 	unsigned short properties = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){\
-			PUSH_BOOLEAN(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
+		PUSH_BOOLEAN(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
 	}\
 	else if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}\
 	else if(properties == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){\
-			if (STK_VALUE_IS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-				COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-				PUSH_BOOLEAN(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ f_aux_value2);\
-			}else{\
-				COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-				PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
-			}\
+		if (STK_VALUE_IS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
+			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+			PUSH_BOOLEAN(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ f_aux_value2);\
+		}else{\
+			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+			PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
+		}\
 	}\
 	else if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){\
-			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-			PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
+		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+		PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
 	}\
-	else if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){\
+	else if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){\
 		PUSH_BOOLEAN(ZS_STRCMP(STK_VALUE_TO_STRING(stk_result_op1), __C_OP__ ,STK_VALUE_TO_STRING(stk_result_op2)));\
-	}else{\
-		if(!applyMetamethod(\
-					 calling_object\
-					,calling_function\
-					,instruction\
-					,STR(__C_OP__)\
-					, __METAMETHOD__\
-					,stk_result_op1\
-					,stk_result_op2\
-		)){\
-			THROW_RUNTIME_ERROR("cannot perform operation '%c'",STR(__C_OP__));\
+	}else if((properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED) | (properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL)){\
+		switch(stk_result_op1->properties|stk_result_op2->properties){\
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:\
+				PUSH_BOOLEAN(true);\
+				break;\
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL: \
+				PUSH_BOOLEAN(true);\
+				break;\
+			default: \
+				PUSH_BOOLEAN(false);\
+				break;\
 		}\
+	}else{\
+		tryPerformMetamethod(\
+			 calling_object\
+			,calling_function\
+			,instruction\
+			,STR(__C_OP__)\
+			, __METAMETHOD__\
+			,stk_result_op1\
+			,stk_result_op2\
+		);\
 	}\
 }
 
@@ -125,7 +135,7 @@
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){\
 		PUSH_INTEGER(STK_VALUE_TO_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_INT(stk_result_op2));\
 	}else{\
-		if(!applyMetamethod(\
+		if(!tryPerformMetamethod(\
 						 calling_object\
 						,calling_function\
 						,instruction\
@@ -440,7 +450,11 @@ namespace zetscript{
 
 						if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT)!= MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT)
 						{
-							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot read property \"%s\" of %s",SFI_GET_SYMBOL_NAME(calling_function,instruction),stk_result_op1->typeStr());
+							THROW_SCRIPT_ERROR(
+									SFI_GET_FILE_LINE(calling_function,instruction)
+									,"Cannot read property \"%s\" of %s"
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+									,stk_result_op1->toString());
 						}
 
 						calling_object = (ScriptObject  *)stk_result_op1->var_ref;
@@ -657,9 +671,6 @@ namespace zetscript{
 						if(vec_obj==NULL){
 							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected std::vector object");
 						}
-
-
-
 					}else if(operator_type==BYTE_CODE_PUSH_OBJECT_ELEMENT){
 
 						POP_TWO; // first must be a string that describes variable name and the other the variable itself ...
@@ -711,7 +722,7 @@ namespace zetscript{
 						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
 
 							if(((ScriptObject *)stk_dst->var_ref)->itHasSetMetamethod()){
-								if(!applyMetamethod(
+								if(!tryPerformMetamethod(
 										calling_object
 										,calling_function
 										,instruction
@@ -892,7 +903,7 @@ namespace zetscript{
 				if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN){ // operation will result as integer.
 					PUSH_BOOLEAN((!((bool)(stk_result_op1->stk_value))));
 				}else{
-					if(!applyMetamethod(
+					if(!tryPerformMetamethod(
 							calling_object
 							,calling_function
 							,instruction
@@ -913,7 +924,7 @@ namespace zetscript{
 					COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
 					PUSH_FLOAT(-f_aux_value1);
 				}else{ // try metamethod ...
-					if(!applyMetamethod(
+					if(!tryPerformMetamethod(
 							 calling_object
 							,calling_function
 							,instruction
@@ -951,7 +962,7 @@ namespace zetscript{
 						*vm_stk_current++=performAddString(stk_result_op1,stk_result_op2);
 					}else{ // try metamethod ...
 
-						if(!applyMetamethod(
+						if(!tryPerformMetamethod(
 								 calling_object
 								,calling_function
 								,instruction
@@ -990,7 +1001,7 @@ namespace zetscript{
 						*vm_stk_current++=performSubString(stk_result_op1,stk_result_op2);
 					}else{ // try metamethod ...
 
-						if(!applyMetamethod(
+						if(!tryPerformMetamethod(
 								 calling_object
 								,calling_function
 								,instruction

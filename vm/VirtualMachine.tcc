@@ -140,7 +140,7 @@ namespace zetscript{
 
 	}
 
-	inline bool VirtualMachine::applyMetamethod(
+	inline bool VirtualMachine::tryPerformMetamethod(
 		ScriptObject *calling_object
 		,ScriptFunction *calling_function
 		,Instruction *instruction

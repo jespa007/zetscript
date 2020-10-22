@@ -25,10 +25,14 @@ namespace zetscript{
 			KEYWORD_RETURN,
 			KEYWORD_FUNCTION,
 			KEYWORD_CLASS,
-			KEYWORD_THIS,
-			KEYWORD_NEW,
 			KEYWORD_DELETE,
+			KEYWORDS_WITHIN_EXPRESSIONS,
+			//-------------------
+			// Put keyword within expressions here!...
+			KEYWORD_THIS=KEYWORDS_WITHIN_EXPRESSIONS,
+			KEYWORD_NEW,
 			KEYWORD_REF,
+			KEYWORD_VARIABLE_ARGS,
 			KEYWORD_MAX
 		}Keyword;
 
@@ -47,7 +51,7 @@ namespace zetscript{
 			TOKEN_TYPE_OPERATOR, // +,-,%, ...
 			TOKEN_TYPE_SUBEXPRESSION,
 			TOKEN_TYPE_VECTOR,
-			TOKEN_TYPE_DICTIONARY,
+			TOKEN_TYPE_OBJECT,
 			TOKEN_TYPE_FUNCTION_OBJECT,
 			TOKEN_TYPE_NEW_OBJECT, // =new ob(); | op (new obj()) op
 			TOKEN_TYPE_MAX
@@ -432,10 +436,12 @@ namespace zetscript{
 			*aux == ' '  || // space
 			*aux == '\t'  || // tab
 			*aux=='.' ||
-		    *aux=='}' ||
+		    *aux=='(' ||
+			*aux==')' ||
 		    *aux=='{' ||
+			*aux=='}' ||
 		    *aux=='[' ||
-		    *aux==']' ||
+			*aux==']' ||
 			*aux == '\n' || // carry return
 			*aux == '\r' || // compatible windows format
 			*aux == ':' ||  // mostly after case/default
@@ -662,13 +668,11 @@ namespace zetscript{
 					number_part[current_part]+=*aux_p; // save conflicting character
 					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 				}
-
 				is01s&=(('0'==*aux_p) || ('1'==*aux_p));
 
 				aux_p++;
 
-				//if(evalSpecialPunctuator(aux)==Operator::FIELD_OPERATOR);
-			}while(!end && !( is_end_symbol_token(aux_p)&&!(*aux_p=='.')));
+			}while(!end && !is_end_symbol_token(aux_p) && !is_special_char(aux_p));
 
 			// check and eval token ?
 			value = number_part[0]+number_part[1]+number_part[2];
@@ -800,6 +804,7 @@ namespace zetscript{
 			eval_info_keywords[KEYWORD_DELETE] = {KEYWORD_DELETE,"delete",eval_keyword_delete};
 			eval_info_keywords[KEYWORD_IN] = {KEYWORD_IN,"in",NULL};
 			eval_info_keywords[KEYWORD_REF] = {KEYWORD_REF,"ref",NULL};
+			eval_info_keywords[KEYWORD_VARIABLE_ARGS] = {KEYWORD_VARIABLE_ARGS,"...",NULL};
 
 			// DIRECTIVES
 			eval_info_directives[DIRECTIVE_UNKNOWN]={DIRECTIVE_UNKNOWN, NULL};

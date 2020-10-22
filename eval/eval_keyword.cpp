@@ -54,22 +54,22 @@ namespace zetscript{
 			// check for keyword ...
 			key_w = is_keyword(aux_p);
 
-			if(key_w != Keyword::KEYWORD_UNKNOWN){
-				if(key_w == Keyword::KEYWORD_DELETE){
 
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+			if(key_w == Keyword::KEYWORD_DELETE){
 
-					aux_p=get_identifier_token(
-							eval_data
-							,aux_p
-							,line
-							,symbol_value
-					);
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
 
-					 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-					return aux_p;
-				}
+				aux_p=get_identifier_token(
+						eval_data
+						,aux_p
+						,line
+						,symbol_value
+				);
+
+				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				return aux_p;
 			}
+
 			return NULL;
 		}
 
@@ -1343,9 +1343,6 @@ namespace zetscript{
 					break;
 				case KEYWORD_CLASS:
 					return  eval_keyword_class(eval_data,s,line,scope_info);
-					break;
-				case KEYWORD_NEW: // ignore new because is processed on expression
-					//return  eval_object_new(eval_data,s,line,scope_info,&eval_data->current_function->instructions);
 					break;
 				default:
 					if(eval_info_keywords[keyw].eval_fun != NULL){

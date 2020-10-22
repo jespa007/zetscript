@@ -76,32 +76,6 @@ namespace zetscript{
 		return NULL;
 	}
 
-	std::string ScriptFunction::formatInstructionLoadType(ScriptFunction *function,Instruction *instruction){
-
-		 char print_aux_load_value[512] = {0};
-
-
-
-		 //Instruction * instruction =&list_statements[current_instruction];
-		 //ConstantValue *icv;
-
-		 /*if(instruction->byte_code != BYTE_CODE_LOAD){
-			 return "ERROR";
-		 }*/
-
-
-
-
-		 switch(instruction->byte_code){
-
-
-			default:
-
-				break;
-		}
-		return print_aux_load_value;
-	 }
-
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
 
 		// PRE: it should printed after compile and updateReferences.
@@ -392,7 +366,7 @@ namespace zetscript{
 
 			//script_function_factory->setScriptFunction(idx_script_function,sf);
 			//symbol_found->ref_ptr=(intptr_t)sf;
-			symbol_found->n_params=params.size();
+			symbol_found->n_params=(char)params.size();
 
 			symbol=symbol_found;
 		}
@@ -419,7 +393,7 @@ namespace zetscript{
 			if(scope_block == MAIN_SCOPE(this)) {
 				// set global stk var...
 				zs->getVirtualMachine()->setStackElement(
-					idx_position
+					(int)idx_position
 					,{
 						NULL
 						,(void *)symbol->ref_ptr

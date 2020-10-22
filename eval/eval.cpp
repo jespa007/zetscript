@@ -263,9 +263,11 @@ namespace zetscript{
 					return aux;
 				}
 
+				keyw=is_keyword(aux);
+
 				if(*aux == '}'){ // ending block trivial cases...
 					return aux;
-				}else if((keyw=is_keyword(aux)) != Keyword::KEYWORD_UNKNOWN){ // it cuts current expression to link breaks...
+				}else if(keyw != Keyword::KEYWORD_UNKNOWN && keyw < KEYWORDS_WITHIN_EXPRESSIONS){ // it cuts current expression to link breaks...
 
 					if(((keyw == Keyword::KEYWORD_BREAK) || (keyw == Keyword::KEYWORD_CASE)) && return_on_break_or_case){
 						return aux;
