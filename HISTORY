@@ -129,6 +129,7 @@ Date: XX-09-2020
 #185 parser char as integer
 > #186 Implement StriptVarString methods
 #187 Implement Console helper class
+> #189 give call stacktrace from exception 
 #190 eval_expression operator fails
 #192 Fix multiassigment 
 #193 Check fix ternari
@@ -152,6 +153,7 @@ Date: XX-09-2020
 > #211 Fix check directive import 
 #212 Fix accessors betwen assigns 
 > #213 Do operations as intptr_t instead of int * to give max capacity  (think about it)
+> #214 Avoid memory leaks on exceptions 
 
 Other: 
 
