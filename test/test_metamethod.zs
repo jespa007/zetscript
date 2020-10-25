@@ -16,18 +16,21 @@ class Vector2{
 	// defines _add metamethod...
 	_add(v1,v2){
 		var v3=new Vector2();
-		print("v1:"+v1)
 		v3.x=v1.x + v2.x;
 		v3.y=v1.y + v2.y;
 		return v3;
 	}
 	
-	_toString(){ // a way to have a custom string output
+	toString(){ // a way to have a custom string output
 		return "("+this.x+","+this.y+")";
 	}
 };
 
+//var v=new Vector2(0,2)+new Vector2(0,2);//+new Vector2()
+//var v=new Vector2(0,2)+new Vector2(0,2)
+var v=new Vector2();
+print(""+(v).toString())
 
-print(new Vector2(0,2)+new Vector2(1,0)+new Vector2()); // it prints each new vector
-print((new Vector2(0,2)+new Vector2(1,0)+new Vector2())); // it sums and then it prints*/
+//print(new Vector2(0,2)); // it prints each new vector
+//print((new Vector2(0,2)+new Vector2(1,0)+new Vector2())); // it sums and then it prints*/
 

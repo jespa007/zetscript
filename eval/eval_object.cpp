@@ -18,20 +18,20 @@ namespace zetscript{
 			EvalInstruction *eval_instruction;
 			std::vector<EvalInstruction *> 	* instructions=&token_node->instructions;
 			char *aux_p = (char *)s;
-			unsigned short scope=0; // global by default ...
+			unsigned short instruction_properties=0; // global by default ...
 
 			if(scope_info->scope_parent!=NULL){// is within function ?
-				scope=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
+				instruction_properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
 				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN){ // is within function member ?
-					scope=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
+					instruction_properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 				}
 			}
 
 			instructions->push_back(eval_instruction=new EvalInstruction(
-					scope & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS?BYTE_CODE_LOAD_TYPE_VARIABLE:BYTE_CODE_LOAD_TYPE_FUNCTION
+					instruction_properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS?BYTE_CODE_LOAD_TYPE_VARIABLE:BYTE_CODE_LOAD_TYPE_FUNCTION
 					,ZS_IDX_UNDEFINED
 					,ZS_IDX_UNDEFINED
-					,scope
+					,instruction_properties
 			));
 
 			aux_p=eval_keyword_function(
@@ -43,16 +43,20 @@ namespace zetscript{
 				,&token_node->value
 			);
 
-			eval_instruction->link_symbol_first_access=LinkSymbolFirstAccess(
+			eval_instruction->symbol.name=token_node->value;
+			eval_instruction->symbol.scope=scope_info;
+
+			/*eval_instruction->link_symbol_first_access=LinkSymbolFirstAccess(
 					eval_data->current_function->script_function->idx_script_function
 					,scope_info
 					,token_node->value
-			);
+			);*/
 
 			eval_instruction->instruction_source_info= InstructionSourceInfo(
 				eval_data->current_parsing_file
 				,line
-				,get_compiled_symbol(eval_data,token_node->value)
+				,get_compiled_symbol(eval_data,token_node->value
+				)
 			);
 
 

@@ -6,6 +6,7 @@
 #pragma once
 
 #define NO_PARAMS_SYMBOL_ONLY			-1
+#define ANY_PARAMS_SYMBOL_ONLY			-2
 #define SYMBOL_VALUE_THIS				"this"
 #define SYMBOL_VALUE_SUPER				"super"
 

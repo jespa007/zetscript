@@ -161,7 +161,7 @@ namespace zetscript{
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_NEG\
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_SET\
 						   )? 1:2);
-		StackElement *stk_args = vm_stk_current+(n_stk_args-1); // because it did a pop
+		StackElement *stk_args = vm_stk_current; // because it did a pop
 		//if((zs_int)instruction->value_op2 == ZS_IDX_UNDEFINED){ /* search for first time , else the function is stored in value_op2 */
 		ScriptClass *script_class_aux=NULL;
 
@@ -252,10 +252,6 @@ namespace zetscript{
 				,stk_args
 				,n_stk_args);
 
-		/* restore ptrCurretOp... */
-		//vm_stk_current=mm_test_startArg-n_metam_args;
-		/* if function is C must register pointer ! */
-
 		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){ //
 
 			((ScriptObject *)(ret_obj.var_ref))->initSharedPtr();
@@ -264,6 +260,10 @@ namespace zetscript{
 				((ScriptObject *)(ret_obj.var_ref))->setDelete_C_ObjectOnDestroy(true);
 			}
 		}
+
+		// reset stack...
+		vm_stk_current=stk_args;
+
 		if(__METAMETHOD__ != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
 			*vm_stk_current++ = ret_obj;
 		}
@@ -572,7 +572,7 @@ namespace zetscript{
 				stk_src_item=(StackElement *)stk_src_item->var_ref;
 			}
 
-			switch(GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
+			switch(GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
 				*(*str_dst_it)="undefined";
 				break;

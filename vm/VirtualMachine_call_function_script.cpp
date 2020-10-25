@@ -1,7 +1,7 @@
 
 #define PROCESS_MOD_OPERATION \
 { \
-	unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	unsigned short properties = GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){\
 			PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) % STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}\
@@ -33,7 +33,7 @@
 
 #define PROCESS_ARITHMETIC_OPERATION(__C_OP__, __METAMETHOD__)\
 {\
-	unsigned short properties = GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	unsigned short properties = GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){\
 			PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}\
@@ -65,8 +65,8 @@
 
 #define PROCESS_COMPARE_OPERATION(__C_OP__, __METAMETHOD__)\
 {\
-	unsigned short properties = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
-	if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){\
+	unsigned short properties = GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){\
 		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}\
 	else if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL){\
@@ -81,19 +81,21 @@
 			PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		}\
 	}\
-	else if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){\
+	else if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){\
 		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
 		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
 		PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
 	}\
 	else if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){\
 		PUSH_BOOLEAN(ZS_STRCMP(STK_VALUE_TO_STRING(stk_result_op1), __C_OP__ ,STK_VALUE_TO_STRING(stk_result_op2)));\
-	}else if((properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED) | (properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL)){\
-		if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED){\
-			PUSH_BOOLEAN(true);\
-		}else if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL){\
-			PUSH_BOOLEAN(true);\
-		}else{\
+	}else if((properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL))\
+			&& (__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
+			){\
+		if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED){\
+			PUSH_BOOLEAN(true  __C_OP__  true);\
+		}else if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL){\
+			PUSH_BOOLEAN(true  __C_OP__  true);\
+		}else if (STK_VALUE_IS_UNDEFINED(stk_result_op1)){\
 			PUSH_BOOLEAN(false);\
 		}\
 	}else{\
@@ -110,7 +112,7 @@
 
 #define PROCESS_LOGIC_OPERATION(__C_OP__)\
 {\
-	unsigned short properties = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	unsigned short properties = GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
@@ -120,7 +122,7 @@
 
 #define PROCESS_BINARY_OPERATION(__C_OP__, __METAMETHOD__)\
 {\
-	unsigned short properties = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	unsigned short properties = GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){\
 		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else{\
@@ -141,7 +143,7 @@
 	if(stk_var->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){\
 		ref=(void **)((stk_var)->var_ref);\
 	}\
-	switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES((stk_var)->properties)){\
+	switch(GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
 	case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:\
 			(*((zs_int *)(ref)))__OPERATOR__;\
 			break;\
@@ -533,7 +535,7 @@ namespace zetscript{
 							PERFORM_PRE_POST_OPERATOR(stk_var,++);
 							continue;
 					case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
-							switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_var->properties)){
+							switch(GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_var->properties)){
 							case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
 								if(stk_var->properties& MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){
 									vm_stk_current->stk_value=(void *)(-(*((zs_int *)stk_var->var_ref)));
@@ -587,7 +589,7 @@ namespace zetscript{
 
 				// ok in case is C we must udpate stk_value becaus it can be updated from C++. (only primitives)
 				if(stk_var->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){
-					switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_var->properties)){
+					switch(GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_var->properties)){
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
 						memcpy(&((vm_stk_current-1)->stk_value),stk_var->var_ref,sizeof(zs_int));
 						break;
@@ -740,12 +742,12 @@ namespace zetscript{
 							}
 							if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){
 								if(!STK_VALUE_IS_FLOAT_OR_INT(stk_src) && STK_VALUE_IS_FLOAT_OR_INT(stk_dst)){
-									if(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties) != GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_dst->properties)
+									if(GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_src->properties) != GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties)
 									){
 										THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 									}else{
 										if(
-											(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties) == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT)
+											(stk_src->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT)
 										){
 											THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.");
 										}
@@ -803,7 +805,7 @@ namespace zetscript{
 									sharePointer(script_var->ptr_shared_pointer_node);
 								}
 							}else{
-								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"(internal) cannot determine var type %i",GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_src->properties));
+								THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"(internal) cannot determine var type %s",stk_src->toString());
 							}
 							if(copy_aux!=NULL)stk_dst->properties|=MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
 						}
@@ -919,7 +921,7 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					unsigned short mask_and_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
+					unsigned short mask_and_properties =GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
 					if(mask_and_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){ // fast operation
 						PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) + STK_VALUE_TO_ZS_INT(stk_result_op2));
 					}else if(mask_and_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
@@ -955,7 +957,7 @@ namespace zetscript{
 						POP_TWO;
 					}
 
-					unsigned short mask_and_properties =GET_INS_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
+					unsigned short mask_and_properties =GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
 					if(mask_and_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){ // fast operation
 						PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) - STK_VALUE_TO_ZS_INT(stk_result_op2));
 					}else if(mask_and_properties== MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
@@ -1140,10 +1142,6 @@ namespace zetscript{
 						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal error ScriptFunction null");
 					}
 
-					/*if(sf->params->count != n_args){
-						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"internal args doen't match sf->args");
-					}*/
-
 					// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
 					if(sf->function_should_be_deduced_at_runtime){
 
@@ -1203,7 +1201,8 @@ namespace zetscript{
 							}
 						}
 
-						// ... we must set the rest of parameters as undefined in case user put less params as original function ...
+						// ... we must set the rest of parameters as undefined in case user put less params. If params exceds the number of accepted params in function,
+						// will be ignored always.
 						for(unsigned i = n_args; i < sf->params->count; i++){
 							PUSH_UNDEFINED;
 							n_args++;

@@ -1,3 +1,10 @@
+/*class Vector2{toString(){return "mierda"}}
+var v=new Vector2()
+(v).toString()*/
+(
+	v
+).toString()
+
 /*function f(a){
 	//a=0;
 	
@@ -40,5 +47,5 @@ f(1.0);*/
 new Vector2()
 +new Vector2()*/
 
-print(2252400000);
+//print(2252400000);
 

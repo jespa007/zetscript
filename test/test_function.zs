@@ -1,111 +1,14 @@
-/*function fun(){}
-
-fun();*/
-
-/*function p(a){
-	print("a"+a);
-}*/
-
-//var a=function(){ print("hello world");};
-//a();
-
-//print("dadas");
-
-function a(a,b,c,d,e,f,g,h,i,j){
-	print(a+b+c+d+e+f+g+h+i+j);
-}
-
-var b=a;
-//b("hello world! 1");
-b("ds",0,1,2,3,4,5,6,7);
-/*
-var v=[
-	function(){ return "hello_word";}
-	,function(c,d,e,f){ return "hello_word"+b;} // <-- it takes function and tries to add into string...
-	//,function(c){ return 100+a;}
-];
-
-for(var i=0; i < v.length; i++){
-	print("v["+i+"]="+v[i](i));
-}*/
-
-/*var v=[
-	function(){print("dadas");}
-	,function(){print(10);}
-];
-v[0]();
-v[1]();*/
-//var a=function(){};
-//a();
-
-//IO.clock();
-
-/*function p(f){
-	f();
-}
-
-p(function(){return 0;},2+3*4);*/
-
-/*
-
-
-class  A{
-	var fun;
-	var a;
-	function A(){
-		
-		var obj=this;
-		
-		//this=30;
-		
-		obj.a=20;
-		
-		print("a:"+this.a);
-		
-		//this.a=10;
-		//print ("g:"+this.a);
-		this.fun=(function(obj1){ print ("g:"+obj1.a);});
+function add(a,b,c){
+	print("a:"+a+" b:"+b+" c:"+c+" c==undefined"+(c==undefined))
+	var d=a+b;
+	if(c!=undefined){
+		d+=c;
 	}
-	
-	function print2(){
-		this.fun(this);
-	}
-};
-
-
-class B:A
-{
-	//var a;
-	
-	function B(){
-		super();
-		//this.a=20;
-	}
-};*/
-
-/*
-function add(
-		a
-		,b
-		,c){
-	return a+b+c;
+	return d;
 }
-
-function add(a,b){
-	return a+b;
-}
-
 
 var add_function_obj=add;
 
-if(add_function_obj(30,40)<add_function_obj(10,0)){
-	print("lower");
-}else{
-	print("higher");
-}*/
-/*
+print("fun1:"+add_function_obj(30,40)+ " fun2:"+add_function_obj(5,60,5));
 
-var d=new B();
 
-d.print2();
-*/

@@ -77,7 +77,7 @@ namespace zetscript{
 	//-----------------------------
 	#pragma pack(push, 1)
 
-	struct LinkSymbolFirstAccess{
+	/*struct LinkSymbolFirstAccess{
 
 		short idx_script_function;
 		Scope *scope;
@@ -103,7 +103,7 @@ namespace zetscript{
 			value=_value;
 			n_params=_n_params;
 		}
-	};
+	};*/
 
 	//-------------------------------------------------------
 

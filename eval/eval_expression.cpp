@@ -94,23 +94,17 @@ namespace zetscript{
 				, PrePostSelfOperation pre_self_operation
 		){
 			// PRE:
-			//unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
-			//LoadType load_type=LOAD_TYPE_NOT_DEFINED;
 			bool is_constant_number=false, is_constant_boolean=false;
 			EvalInstruction *instruction=NULL;
 			ByteCode byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
 			token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
-
-
-			//unsigned int scope_type=0;
-			void *obj=NULL,*get_obj=NULL,*const_obj=NULL;
+			intptr_t obj=ZS_IDX_UNDEFINED;
+			void *get_obj=NULL,*const_obj=NULL;
 			char *aux=(char *)start_word;
 			std::string str_value="";
 			 bool error=false;
-			 //token_node->token_type = TokenType::TOKEN_TYPE_UNKNOWN;
 			 bool is_constant_string=false;
 			 unsigned short instruction_properties=0;
-			 bool is_is_symbol_super_method=false;
 			 token_node->token_type = TokenType::TOKEN_TYPE_UNKNOWN;
 
 			 if((aux=parse_literal_number(
@@ -118,18 +112,85 @@ namespace zetscript{
 					 ,start_word
 					 ,line
 					 ,str_value
-			))==NULL){ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
+			))!=NULL){ // int/bool/float, etc
+				if((const_obj=zs_strutils::parse_int(str_value))!=NULL){ // int literal
+					zs_int value = *((zs_int *)const_obj);
+					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
+						value=-value;
+						str_value="-"+str_value;
+					}
+
+					delete (zs_int *)const_obj;
+					obj=(zs_int)eval_data->zs->registerConstantValue(str_value,value);
+					is_constant_number=true;
+				}else if((const_obj=zs_strutils::parse_float(str_value))!=NULL){ // float literal
+					float value = *((float *)const_obj);
+
+					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
+						value=-value;
+						str_value="-"+str_value;
+					}
+
+					delete (float *)const_obj;
+					void *value_ptr;
+					memcpy(&value_ptr,&value,sizeof(float));
+
+					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
+						obj = (zs_int)get_obj;
+					}else{
+						obj=(zs_int)eval_data->zs->registerConstantValue(str_value,value_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT);
+					}
+					is_constant_number=true;
+				}
+				else if((const_obj=zs_strutils::parse_bool(str_value))!=NULL){ // bool literal
+
+					bool value = *((bool *)const_obj);
+					if(pre_operator==PreOperator::PRE_OPERATOR_NOT){
+						value=!value;
+						str_value="!"+str_value;
+					}
+
+					delete (bool *)const_obj;
+
+					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
+						obj = (zs_int)get_obj;
+					}else{
+						obj=(zs_int)eval_data->zs->registerConstantValue(str_value,(void *)value,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL);
+					}
+					is_constant_boolean=true;
+				}else{
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unable to parse literal \"%s\"",str_value.c_str());
+				}
+
+			}else{ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
 
 				 aux=(char *)start_word;
 				 // try eval identifier, boolean, std::string ...
-
 				char pre=0;
 				if(*aux=='\"'){
-					is_constant_string = true;
+
 					do{
 						aux++;
 					}while(!((*aux=='\"' && *(aux-1)!= '\\')|| *aux==0 || *aux=='\n'));
-				}else{ // identifier
+
+					if(*aux!='\"'){
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Constant string not ends with '\"'");
+					}
+
+					if((start_word+1)<aux){ // copy string without double quotes...
+						 zs_strutils::copy_from_ptr_diff(str_value,start_word+1,aux);
+					}
+					aux++;
+					std::string key_value="\""+str_value+"\"";
+
+					if((get_obj = eval_data->zs->getRegisteredConstantValue(key_value))!=NULL){
+						obj = (zs_int)get_obj;
+					}else{
+						ScriptObjectString *s=new ScriptObjectString(eval_data->zs,str_value);
+						obj=(zs_int)eval_data->zs->registerConstantValue(key_value,s);
+					 }
+
+				}else{ // is speacial word or identifier
 					bool end=false;
 					while(!end){
 						pre=*aux;
@@ -139,130 +200,43 @@ namespace zetscript{
 							end=true;
 						}
 					}
-				}
 
-				// verify constant string well format
-				if(is_constant_string && *aux!='\"'){
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Constant string not ends with '\"'");
-				}
-
-				if(*aux=='\"'){ // register constant string
-
-					 if((start_word+1)<aux){ // copy string without double quotes...
-						 zs_strutils::copy_from_ptr_diff(str_value,start_word+1,aux);
-					 }
-					 aux++;
-
-					 //type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
-
-					 std::string key_value="\""+str_value+"\"";
-
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(key_value))!=NULL){
-						obj = get_obj;
-					}else{
-						ScriptObjectString *s=new ScriptObjectString(eval_data->zs,str_value);
-						obj=eval_data->zs->registerConstantValue(key_value,s);
-					 }
-				}
-				 // add load std::string constant
-				// compile constant ...
-			 }
-
-			 std::string str_number_value=str_value,str_boolean_value=str_value;
-
-			 if(!is_constant_string){
-				 // try parse value...
-				if(str_value=="null"){ // null literal
-					//type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL;
-					byte_code=BYTE_CODE_LOAD_TYPE_NULL;
-					obj=NULL;//ScriptObject::NullSymbol;
-
-				}else if(str_value=="undefined"){ // undefined literal
-						//type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
+					if(str_value=="null"){ // null literal
+						byte_code=BYTE_CODE_LOAD_TYPE_NULL;
+					}else if(str_value=="undefined"){ // undefined literal
 						byte_code=BYTE_CODE_LOAD_TYPE_UNDEFINED;
-						obj=NULL;// ScriptObject::UndefinedSymbol;
-				}else if((const_obj=zs_strutils::parse_int(str_number_value))!=NULL){ // int literal
-					zs_int value = *((zs_int *)const_obj);
-					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
-						value=-value;
-						str_number_value="-"+str_number_value;
-					}
+					}else{ // it should be an identifier token  ...
+						token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
+						byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
 
-					delete (zs_int *)const_obj;
-					//load_type=LOAD_TYPE_CONSTANT;
-					obj=eval_data->zs->registerConstantValue(str_number_value,value);
-					is_constant_number=true;
-				}
-				else if((const_obj=zs_strutils::parse_float(str_number_value))!=NULL){ // float literal
-					float value = *((float *)const_obj);
+						if(str_value == SYMBOL_VALUE_THIS || str_value == SYMBOL_VALUE_SUPER){
 
-					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
-						value=-value;
-						str_number_value="-"+str_number_value;
-					}
+							if(str_value == SYMBOL_VALUE_SUPER){
+								char *test=aux;
+								IGNORE_BLANKS(test,eval_data,aux,line);
+								if(*test != '('){
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"\"super\" only allowed as function");
+								}
+							}
 
-					delete (float *)const_obj;
-					void *value_ptr;
-					memcpy(&value_ptr,&value,sizeof(float));
+							instruction_properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 
-					//type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
-					//load_type=LOAD_TYPE_CONSTANT;
+						}else if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value)) != NULL){  // check if symbol is constant ...
+							byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
+							obj=(zs_int)get_obj;
+						}else{
+							// should be an identifier and should be find after eval function or at runtime...
+							byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_FIND;
 
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_number_value))!=NULL){
-						obj = get_obj;
-					}else{
-						obj=eval_data->zs->registerConstantValue(str_number_value,value_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT);
-					}
-					is_constant_number=true;
-				}
-				else if((const_obj=zs_strutils::parse_bool(str_boolean_value))!=NULL){ // bool literal
-
-					bool value = *((bool *)const_obj);
-					if(pre_operator==PreOperator::PRE_OPERATOR_NOT){
-						value=!value;
-						str_boolean_value="!"+str_boolean_value;
-					}
-
-					delete (bool *)const_obj;
-
-					//type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL;
-					//load_type=LOAD_TYPE_CONSTANT;
-
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_boolean_value))!=NULL){
-						obj = get_obj;
-					}else{
-						obj=eval_data->zs->registerConstantValue(str_boolean_value,(void *)value,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL);
-					}
-					is_constant_boolean=true;
-				}else{ // it should be an identifier token  ...
-					token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
-					byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
-
-					if(str_value == SYMBOL_VALUE_THIS || str_value == SYMBOL_VALUE_SUPER){
-						if(str_value == SYMBOL_VALUE_SUPER){
-							is_is_symbol_super_method=true;
+							check_identifier_name_expression_ok(
+								eval_data
+								,str_value
+								,line
+							);
 						}
-
-						instruction_properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
-
-					}else if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value)) != NULL){  // check if symbol is constant ...
-						byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
-						obj=get_obj;
-						//load_type=LOAD_TYPE_CONSTANT;
-					}else{
-						// should be an identifier and should be find after eval function or at runtime...
-
-						byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_FIND;
-
-						check_identifier_name_expression_ok(
-							eval_data
-							,str_value
-							,line
-						);
 					}
 				}
 			 }
-
 			 // check pre self operation (only allowed on indentifiers...
 			 if(
 					 pre_self_operation != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
@@ -297,13 +271,9 @@ namespace zetscript{
 				instruction=new EvalInstruction(
 						byte_code
 						,ZS_IDX_UNDEFINED
-						,(zs_int)obj
+						,obj
 						,instruction_properties
 			));
-
-			if(is_is_symbol_super_method){
-				instruction->is_symbol_super_method=true;
-			}
 
 			return aux;
 			// POST: token as literal or identifier
@@ -334,7 +304,6 @@ namespace zetscript{
 
 				return;
 			}
-
 
 			// get the most preference operator (see eval_data::Operator)...
 			for(int i=idx_end; i >= idx_start; i--){
@@ -372,12 +341,10 @@ namespace zetscript{
 				,idx_end
 			);
 
-
-				// push operator byte code...
+			// push operator byte code...
 			instructions->push_back(instruction=new EvalInstruction(
 					convert_operator_to_byte_code(split_node->operator_type))
 			);
-
 
 			instruction->instruction_source_info= InstructionSourceInfo(
 					eval_data->current_parsing_file
@@ -416,7 +383,6 @@ namespace zetscript{
 						idx_start=i+1;
 						break;
 				}
-
 			}
 
 			//--------------------------------------------------------------
@@ -534,12 +500,9 @@ namespace zetscript{
 					,level+1
 				);
 
-
 				ei_ternary_else_jmp->vm_instruction.value_op2=instructions->size()+(level>=1?2:0); // adds +2
 
 			}
-
-
 			//--------------------------------------------------------------
 
 			// ... finally save store operators
@@ -722,6 +685,7 @@ namespace zetscript{
 						}
 						else { // symbol
 							symbol_token_node.pre_operator=pre_operator;
+
 							last_accessor_line=line;
 							aux_p = eval_symbol(eval_data
 									,aux_p
@@ -732,233 +696,200 @@ namespace zetscript{
 							);
 
 							last_accessor_value=symbol_token_node.value;
+
+							if(symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
+								symbol_token_node.instructions[0]->symbol.scope=scope_info;
+								symbol_token_node.instructions[0]->symbol.name=symbol_token_node.value;
+
+								// add info to add as symbol value ...
+								symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
+									eval_data->current_parsing_file
+									,line
+									,get_compiled_symbol(eval_data,symbol_token_node.value)
+								);
+							}
 						}
+					}
 
-						last_line_ok=line;
+					last_line_ok=line;
 
-						IGNORE_BLANKS(test_s,eval_data,aux_p,line);
+					IGNORE_BLANKS(test_s,eval_data,aux_p,line);
 
-						// check valid access punctuator...
-						if(is_access_punctuator(test_s) || symbol_token_node.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
+					// eval accessor element (supose that was a preinsert a load instruction for identifier )...
+					if(is_access_punctuator(aux_p)){
 
-							char n_params=0;
+						aux_p=test_s;
+						char n_params=0;
+						bool first_access=true;
 
-							//is_first_access=true;
-							LinkSymbolFirstAccess *link_symbol_first_access=NULL;
+						do{
+							ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
+							std::string accessor_value="";
+							bool this_symbol_access=false;
+							bool vector_access=false;
+							EvalInstruction *instruction_token=NULL;
 
-							// add info to solve symbols first access (we need to put here because we have to know n params if function related)
-							symbol_token_node.instructions[0]->link_symbol_first_access=LinkSymbolFirstAccess(
-									eval_data->current_function->script_function->idx_script_function
-									,scope_info
-									,symbol_token_node.value
-									,NO_PARAMS_SYMBOL_ONLY // only if first access is a function...
-							);
+							aux_p=test_s;
 
-							link_symbol_first_access=&symbol_token_node.instructions[0]->link_symbol_first_access;
+							switch(*aux_p){
+							case '(': // is a function call
 
-							// add info to add as symbol value ...
-							symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
-								eval_data->current_parsing_file
-								,line
-								,get_compiled_symbol(eval_data,symbol_token_node.value)
-							);
+								n_params=0;
+								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-							// eval accessor element (supose that was a preinsert a load instruction for identifier )...
-							if(is_access_punctuator(aux_p)){
-
-								aux_p=test_s;
-
-								do{
-									ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
-									std::string accessor_value="";
-									bool this_symbol_access=false;
-									bool vector_access=false;
-									EvalInstruction *instruction_token=NULL;
-
-									aux_p=test_s;
-
-									switch(*aux_p){
-									case '(': // is a function call
-
-										n_params=0;
-
-										if(link_symbol_first_access !=NULL){
-											link_symbol_first_access->n_params=0;
+								while(*aux_p != ')'){
+									// check if ref identifier...
+									if(n_params>0){
+										if(*aux_p != ','){
+											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ','");
 										}
 
-										IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-
-										while(*aux_p != ')'){
-											//do{
-												// check if ref identifier...
-											if(n_params>0){
-												if(*aux_p != ','){
-													THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ','");
-												}
-
-												aux_p++;
-											}
-
-											aux_p = eval_expression(
-													eval_data
-													,aux_p
-													,line
-													,scope_info
-													,&symbol_token_node.instructions
-													,std::vector<char>{}
-													,level+1
-											);
-
-											if(link_symbol_first_access != NULL){
-												link_symbol_first_access->n_params++;
-											}
-											n_params++;
-										}
-
-										byte_code=ByteCode::BYTE_CODE_CALL;
 										aux_p++;
-										break;
-									case '[': // std::vector access
-										aux_p = eval_expression(
-												eval_data
-												,aux_p+1
-												,line
-												,scope_info
-												,&symbol_token_node.instructions
-												,std::vector<char>{}
-												,level+1
-										);
-
-										if(*aux_p != ']'){
-											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
-										}
-										aux_p++;
-										vector_access=true;
-										byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
-										break;
-									case '.': // member access
-										IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-										accessor_value="";
-										last_accessor_line=line;
-										while(!is_end_symbol_token(aux_p)){ // get name...
-											accessor_value += (*aux_p++);
-										}
-
-										check_identifier_name_expression_ok(eval_data,accessor_value,line);
-
-										if(accessor_value == SYMBOL_VALUE_THIS){
-											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"this cannot allowed as member name");
-										}
-
-										if(link_symbol_first_access !=NULL){ // check first symbol at first...
-											if(symbol_token_node.value == SYMBOL_VALUE_THIS){ // if first symbol was this then the symbol
-
-												instruction_token= symbol_token_node.instructions[0];// get the first instruction....
-												// replace symbol
-												//instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
-												instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
-
-												// override symbol "this" by symbol to search (in properties already has access scope)...
-												symbol_token_node.instructions[0]->instruction_source_info.str_symbol =get_compiled_symbol(eval_data,accessor_value);
-											}
-										}
-
-										byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
-										break;
 									}
 
-									if(instruction_token==NULL){
-										instruction_token=new EvalInstruction(byte_code);
-										symbol_token_node.instructions.push_back(instruction_token);
+									aux_p = eval_expression(
+											eval_data
+											,aux_p
+											,line
+											,scope_info
+											,&symbol_token_node.instructions
+											,std::vector<char>{}
+											,level+1
+									);
+									n_params++;
+								}
+								byte_code=ByteCode::BYTE_CODE_CALL;
+								aux_p++;
+								break;
+							case '[': // std::vector access
+								aux_p = eval_expression(
+										eval_data
+										,aux_p+1
+										,line
+										,scope_info
+										,&symbol_token_node.instructions
+										,std::vector<char>{}
+										,level+1
+								);
 
-										// generate source info in case accessor load...
-										if(byte_code==ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE){
+								if(*aux_p != ']'){
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
+								}
+								aux_p++;
+								vector_access=true;
+								byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
+								break;
+							case '.': // member access
+								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+								accessor_value="";
+								last_accessor_line=line;
+								while(!is_end_symbol_token(aux_p)){ // get name...
+									accessor_value += (*aux_p++);
+								}
 
-											// mark as accessor
-											//instruction_token->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+								check_identifier_name_expression_ok(eval_data,accessor_value,line);
 
-											if(vector_access){
-												instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
-											}else{
-												instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
-											}
+								if(accessor_value == SYMBOL_VALUE_THIS){
+									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"\"this\" is not allowed as member name");
+								}
 
-											instruction_token->instruction_source_info= InstructionSourceInfo(
-												eval_data->current_parsing_file
-												,line
-												,get_compiled_symbol(eval_data,accessor_value)
-											);
-										}
+								if(first_access){ // check first symbol at first...
+									if(symbol_token_node.value == SYMBOL_VALUE_THIS){
+										instruction_token=symbol_token_node.instructions[0];
+										instruction_token->symbol.name=accessor_value;
+									}
+								}
 
-										if(byte_code == ByteCode::BYTE_CODE_CALL){
-											// save total parameters on this call
-											instruction_token->vm_instruction.value_op1=n_params;
+								byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
+								break;
+							}
 
-											// also insert source file/line/symbol info to get info of this call...
-											instruction_token->instruction_source_info= InstructionSourceInfo(
-												eval_data->current_parsing_file
-												,last_accessor_line
-												,get_compiled_symbol(eval_data,last_accessor_value)
-											);
-										}
+							if(instruction_token==NULL){
+								instruction_token=new EvalInstruction(byte_code);
+								symbol_token_node.instructions.push_back(instruction_token);
+
+								// generate source info in case accessor load...
+								if(byte_code==ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE){
+									// mark as accessor
+									if(vector_access){
+										instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
+									}else{
+										instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
 									}
 
+									instruction_token->instruction_source_info= InstructionSourceInfo(
+										eval_data->current_parsing_file
+										,line
+										,get_compiled_symbol(eval_data,accessor_value)
+									);
+								}
 
-									//is_first_access=false; // not first access anymore...
-									link_symbol_first_access=NULL;
-									last_accessor_value=accessor_value;
+								if(byte_code == ByteCode::BYTE_CODE_CALL){
+									// save total parameters on this call
+									instruction_token->vm_instruction.value_op1=n_params;
 
-									test_s=aux_p;
-
-								}while(is_access_punctuator(aux_p));
-							}else{
-								if(symbol_token_node.value==SYMBOL_VALUE_THIS){
-									if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
-										THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
-									}
-
-									symbol_token_node.instructions[0]->instruction_source_info= InstructionSourceInfo(
+									// also insert source file/line/symbol info to get info of this call...
+									instruction_token->instruction_source_info= InstructionSourceInfo(
 										eval_data->current_parsing_file
 										,last_accessor_line
-										,get_compiled_symbol(eval_data,SYMBOL_VALUE_THIS)
+										,get_compiled_symbol(eval_data,last_accessor_value)
 									);
-
-									//symbol_token_node.instructions[0]->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
-									symbol_token_node.instructions[0]->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
-									symbol_token_node.instructions[0]->vm_instruction.properties=0;
 								}
 							}
+							// not first access anymore...
+							first_access=false;
+							last_accessor_value=accessor_value;
 
-							if((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-								aux_p+=strlen(eval_info_pre_post_self_operations[post_self_operation_type].str);
+							test_s=aux_p;
+
+						}while(is_access_punctuator(aux_p));
+					}else{
+
+						if(symbol_token_node.value==SYMBOL_VALUE_THIS){
+							if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
+								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
 							}
 
-							if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
-							&& post_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
-							}
+							symbol_token_node.instructions[0]->instruction_source_info= InstructionSourceInfo(
+								eval_data->current_parsing_file
+								,last_accessor_line
+								,get_compiled_symbol(eval_data,SYMBOL_VALUE_THIS)
+							);
 
-							unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
-
-							// pre/post operator...
-							switch(pre_self_operation_type){
-							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-								symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_INC;
-								break;
-							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
-								symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_DEC;
-								break;
-							}
-
-							switch(post_self_operation_type){
-							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-								symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_INC;
-								break;
-							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
-								symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_DEC;
-								break;
-							}
+							//symbol_token_node.instructions[0]->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
+							symbol_token_node.instructions[0]->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
+							symbol_token_node.instructions[0]->vm_instruction.properties=0;
 						}
+					}
+
+					if((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
+						aux_p+=strlen(eval_info_pre_post_self_operations[post_self_operation_type].str);
+					}
+
+					if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
+					&& post_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
+					}
+
+					unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
+
+					// pre/post operator...
+					switch(pre_self_operation_type){
+					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
+						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_INC;
+						break;
+					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
+						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_DEC;
+						break;
+					}
+
+					switch(post_self_operation_type){
+					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
+						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_INC;
+						break;
+					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
+						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_DEC;
+						break;
 					}
 
 					// push symbol
@@ -970,7 +901,6 @@ namespace zetscript{
 					if((test_char_carry_return=strchr(aux_p,'\n'))!=NULL){ // new line is like ';'
 						new_line_break=test_char_carry_return<test_ignore_blanks;
 					}
-
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					operator_type=is_operator(aux_p);
@@ -996,8 +926,6 @@ namespace zetscript{
 
 					// push operator token
 					expression_tokens.push_back(operator_token_node);
-
-
 				}
 			}
 
@@ -1028,7 +956,6 @@ namespace zetscript{
 				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unexpected end of file");
 			}
 
-
 			// there's an expression
 			if(expression_tokens.size()>0){
 
@@ -1037,7 +964,6 @@ namespace zetscript{
 							eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
 							new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
 					);
-					//eval_data->current_function->instructions[idx_instruction_start_expression]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_START_EXPRESSION;
 				}
 
 				aux_p=eval_operators(
@@ -1050,9 +976,7 @@ namespace zetscript{
 					,&expression_tokens
 
 				);
-
 			}
-
 			// last character is a separator so it return increments by 1
 			return aux_p;
 		}

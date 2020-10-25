@@ -108,7 +108,6 @@ namespace zetscript{
 		}
 
 		InstructionSourceInfo(const char * _file, short _line,std::string *_str_symbol){
-
 			file=_file;
 			line=_line;
 			str_symbol=_str_symbol;

@@ -149,9 +149,8 @@ namespace zetscript{
 
 		struct EvalInstruction{
 			Instruction 					vm_instruction;
-			LinkSymbolFirstAccess			link_symbol_first_access;
+			Symbol							symbol;
 			InstructionSourceInfo 			instruction_source_info;
-			bool 							is_symbol_super_method;
 
 			EvalInstruction(
 				ByteCode _byte_code
@@ -159,7 +158,6 @@ namespace zetscript{
 				,zs_int _index_op2=ZS_IDX_UNDEFINED
 				,unsigned short _properties=0
 			 ){
-				is_symbol_super_method=false;
 				vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);
 			}
 		};

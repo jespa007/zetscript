@@ -96,7 +96,7 @@ namespace zetscript{
 				}
 				if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){ // for C function symbols
 					ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-					if(((int)n_params==sf->params->count)
+					if((((int)n_params==sf->params->count) || (n_params==ANY_PARAMS_SYMBOL_ONLY))
 					 ){
 						return symbol;
 					}
