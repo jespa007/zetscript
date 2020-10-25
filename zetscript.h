@@ -57,6 +57,7 @@
 #include "memmgr.h"
 #endif
 
+#include "common.h"
 
 // utils
 #include "util/zs_strutils.h"
@@ -67,7 +68,7 @@
 #include "util/zs_vector.h"
 #include "util/zs_map.h"
 
-#include "common.h"
+
 #include "ByteCode.h"
 #include "Instruction.h"
 #include "StackElement.h"
@@ -129,7 +130,7 @@ namespace zetscript{
 	extern const char * k_str_const_bool_type_ptr;		//	typeid(bool *).name()
 	extern const char * k_str_int_type;					//	typeid(int).name()
 	extern const char * k_str_unsigned_int_type;		//	typeid(unsigned int).name()
-	extern const char *	k_str_intptr_t_type;			//	typeid(intptr_t).name()
+	extern const char *	k_str_zs_int_type;			//	typeid(zs_int).name()
 
 	extern const char * k_str_float_type;				//	typeid(int).name()
 	extern const char * k_str_bool_type;				//	typeid(bool).name()
@@ -178,9 +179,9 @@ namespace zetscript{
 		ConstantValue * getRegisteredConstantValue(const std::string & const_name);
 		ConstantValue *	registerConstantValue(const std::string & const_name, ConstantValue constant_value);
 		ConstantValue * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
-		ConstantValue * registerConstantValue(const std::string & const_name, intptr_t  value);
+		ConstantValue * registerConstantValue(const std::string & const_name, zs_int  value);
 		ConstantValue * registerConstantValue(const std::string & const_name, float  value);
-
+		ConstantValue * registerConstantValue(const std::string & const_name, ScriptObjectString  *str);
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
@@ -265,8 +266,8 @@ namespace zetscript{
 
 		//cpp binding
 		// Helpers...
-		inline StackElement convertVarToStackElement(intptr_t var_ptr, int idx_builtin_type);
-		inline bool convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, intptr_t *result, std::string & error);
+		inline StackElement convertVarToStackElement(zs_int var_ptr, int idx_builtin_type);
+		inline bool convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, zs_int *result, std::string & error);
 
 		template<typename T>
 		static ScriptObjectVector * convertStdVectorToScriptObjectVector(const std::vector<T> & v,ZetScript *zs_instance){
@@ -274,8 +275,8 @@ namespace zetscript{
 
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->newSlot();
-				//intptr_t uvar = (intptr_t)(v[i]);
-				*stk = zs_instance->convertVarToStackElement((intptr_t)(v[i]),zs_instance->script_class_factory->getIdxClassFromItsNativeType(typeid(T).name()));
+				//zs_int uvar = (zs_int)(v[i]);
+				*stk = zs_instance->convertVarToStackElement((zs_int)(v[i]),zs_instance->script_class_factory->getIdxClassFromItsNativeType(typeid(T).name()));
 			}
 
 			return vsv;

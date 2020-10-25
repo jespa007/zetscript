@@ -45,50 +45,50 @@ namespace zetscript{
 				if(is_void){
 					switch(n_args){
 					case 0:
-						delete ((std::function<void(intptr_t)> *)function_ptr);
+						delete ((std::function<void(zs_int)> *)function_ptr);
 						break;
 					case 1:
-						delete ((std::function<void(intptr_t,intptr_t)> *)function_ptr);
+						delete ((std::function<void(zs_int,zs_int)> *)function_ptr);
 						break;
 					case 2:
-						delete ((std::function<void(intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						delete ((std::function<void(zs_int,zs_int,zs_int)> *)function_ptr);
 						break;
 					case 3:
-						delete ((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						delete ((std::function<void(zs_int,zs_int,zs_int,zs_int)> *)function_ptr);
 						break;
 					case 4:
-						delete ((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						delete ((std::function<void(zs_int,zs_int,zs_int,zs_int,zs_int)> *)function_ptr);
 						break;
 					case 5:
-						delete ((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						delete ((std::function<void(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)function_ptr);
 						break;
 					case 6:
-						delete ((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+						delete ((std::function<void(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)function_ptr);
 						break;
 					}
 				}
 				else{
 					switch(n_args){
 						case 0:
-							delete ((std::function<intptr_t(intptr_t)> *)function_ptr);
+							delete ((std::function<zs_int(zs_int)> *)function_ptr);
 							break;
 						case 1:
-							delete ((std::function<intptr_t(intptr_t,intptr_t)> *)function_ptr);
+							delete ((std::function<zs_int(zs_int,zs_int)> *)function_ptr);
 							break;
 						case 2:
-							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							delete ((std::function<zs_int(zs_int,zs_int,zs_int)> *)function_ptr);
 							break;
 						case 3:
-							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							delete ((std::function<zs_int(zs_int,zs_int,zs_int,zs_int)> *)function_ptr);
 							break;
 						case 4:
-							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							delete ((std::function<zs_int(zs_int,zs_int,zs_int,zs_int,zs_int)> *)function_ptr);
 							break;
 						case 5:
-							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							delete ((std::function<zs_int(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)function_ptr);
 							break;
 						case 6:
-							delete ((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)function_ptr);
+							delete ((std::function<zs_int(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)function_ptr);
 							break;
 						}
 				}

@@ -15,17 +15,17 @@ namespace zetscript{
 			return std::string(_sformat_buffer);
 		}
 
-		int *  parse_int(const std::string & val){
-			int *n=NULL;
+		zs_int *  parse_int(const std::string & val){
+			zs_int *n=NULL;
 			NumberType number_type = is_number(val);
-			int numberValue=0;
+			zs_int value=0;
 			if(number_type == NumberType::NUMBER_TYPE_INT){
-				numberValue=strtol (val.c_str(), NULL, 10);
+				value=strtoll (val.c_str(), NULL, 10);
 			}else if(number_type == NumberType::NUMBER_TYPE_HEXA){
-				numberValue=strtol (val.c_str(), NULL, 16);
+				value=strtoll (val.c_str(), NULL, 16);
 			}else if(is_binary(val)){
 				std::string binary = val.substr(0,val.size()-1);
-				numberValue=strtol (binary.c_str(), NULL, 2);
+				value=strtoll (binary.c_str(), NULL, 2);
 			}
 			else{
 				return NULL;
@@ -37,8 +37,8 @@ namespace zetscript{
 
 
 
-			n=new int;
-			*n = numberValue;
+			n=new zs_int;
+			*n = value;
 
 
 			// TODO: develop exception handler.
@@ -81,11 +81,11 @@ namespace zetscript{
 			return n;
 		}
 
-		std::string int_to_str(int number){
+		std::string int_to_str(zs_int number){
 
-			char int_str[100];
+			char int_str[1000000];
 
-			sprintf(int_str,"%i",number);
+			sprintf(int_str,"%llu",number);
 
 		   return std::string(int_str);
 		}

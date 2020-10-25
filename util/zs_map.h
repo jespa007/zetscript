@@ -4,7 +4,7 @@ namespace zetscript{
 
 	struct zs_map_node{
 		char  *key;
-		intptr_t val;
+		zs_int val;
 		zs_map_node *next;
 		zs_map_node *previous;
 	};
@@ -17,8 +17,8 @@ namespace zetscript{
 		zs_map();
 
 		bool		exist(const char * key);
-		void 		set(const char * key,intptr_t val);
-		intptr_t 	get(const char * key, bool & exists);
+		void 		set(const char * key,zs_int val);
+		zs_int 	get(const char * key, bool & exists);
 		void  		erase(const char * key);
 
 		~zs_map();

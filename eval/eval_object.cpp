@@ -124,7 +124,7 @@ namespace zetscript{
 				instructions->push_back(
 						new EvalInstruction(ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT
 						,ZS_IDX_UNDEFINED
-						,(intptr_t)constant_value
+						,(zs_int)constant_value
 				));
 
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);

@@ -14,7 +14,7 @@ namespace zetscript{
 	const char * k_str_const_bool_type_ptr=typeid(const bool *).name();
 	const char * k_str_int_type=typeid(int).name();
 	const char * k_str_unsigned_int_type=typeid(unsigned int).name();
-	const char * k_str_intptr_t_type=typeid(intptr_t).name();
+	const char * k_str_zs_int_type=typeid(zs_int).name();
 	const char * k_str_float_type=typeid(float).name();
 	const char * k_str_bool_type=typeid(bool).name();
 	const char * k_str_stack_element_type=typeid(StackElement).name();
@@ -128,27 +128,46 @@ namespace zetscript{
 		return registerConstantValue(const_name,{obj,NULL,properties});
 	}
 
-	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, intptr_t _value){
-		intptr_t value = _value;
-		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
+	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, ScriptObjectString * _value){
+
+		unsigned short properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
 		StackElement *stk;
 
 		if((stk = getRegisteredConstantValue(const_name))!=NULL){
 			return stk;
 		}
-		return registerConstantValue(const_name,(void *)value,type);
+
+
+		stk=registerConstantValue(const_name,(void *)_value,properties);
+		// swap values stk_ref/stk_value
+		stk->var_ref=(void *)_value;
+		stk->stk_value=(char *)_value->str_value.c_str();
+
+		return stk;
+
+	}
+
+	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, zs_int _value){
+		zs_int value = _value;
+		unsigned short properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT;
+		StackElement *stk;
+
+		if((stk = getRegisteredConstantValue(const_name))!=NULL){
+			return stk;
+		}
+		return registerConstantValue(const_name,(void *)value,properties);
 	}
 
 	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, float _value){
-		intptr_t value;// = _value;
+		zs_int value;// = _value;
 		*((float *)&value)=_value;
-		unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
+		unsigned short properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
 		StackElement *stk;
 
 		if((stk = getRegisteredConstantValue(const_name))!=NULL){
 			return stk;
 		}
-		return registerConstantValue(const_name,(void *)value,type);
+		return registerConstantValue(const_name,(void *)value,properties);
 	}
 
 	// CONSTANT MANAGEMENT
@@ -182,9 +201,9 @@ namespace zetscript{
 
 		if(se != NULL){
 
-			if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
+			if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){
 
-				eval_int=(int)((intptr_t)se->stk_value);
+				eval_int=(int)((zs_int)se->stk_value);
 				return &eval_int;
 			}
 			else{
@@ -203,8 +222,8 @@ namespace zetscript{
 
 		if(se != NULL){
 
-			if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN){
-				eval_bool=(bool)((intptr_t)se->stk_value);
+			if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL){
+				eval_bool=(bool)((zs_int)se->stk_value);
 				return &eval_bool;
 
 			}else{
@@ -335,8 +354,8 @@ namespace zetscript{
 			switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(icv->properties)){
 			default:
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 				break;
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:

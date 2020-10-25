@@ -1065,18 +1065,18 @@ namespace zetscript{
 			float result_op=0;
 			ConstantValue *stk_int_calc_result=NULL;
 
-			if(stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
-				result_op=((intptr_t)stk_op1->stk_value);
+			if(stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){
+				result_op=((zs_int)stk_op1->stk_value);
 			}else if(stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
 				result_op=*((float *)(&stk_op1->stk_value));
 			}else{
 				THROW_SCRIPT_ERROR(file,line,"Constant operations should be number");
 			}
 
-			if(stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
-				op2=((intptr_t)stk_op2->stk_value);
+			if(stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){
+				op2=((zs_int)stk_op2->stk_value);
 			}else if(stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
-				op2=*(float *)((intptr_t)stk_op2->stk_value);
+				op2=*(float *)((zs_int)stk_op2->stk_value);
 			}else{
 				THROW_SCRIPT_ERROR(file,line,"Constant operations should be number");
 			}
@@ -1111,8 +1111,8 @@ namespace zetscript{
 				break;
 			}
 
-			if((stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER) && (stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER)){
-				*stk_int_calc_result={(void *)((intptr_t)result_op),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER};
+			if((stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT) && (stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT)){
+				*stk_int_calc_result={(void *)((zs_int)result_op),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT};
 			} // float
 			if((stk_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT) || (stk_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT)){
 				memcpy(&stk_int_calc_result->stk_value,&result_op,sizeof(float));
@@ -1203,8 +1203,8 @@ namespace zetscript{
 						if(is_constant){ // resolve constant_expression
 
 							ConstantValue *stk_op1,*stk_op2,*stk_int_calc_result;
-							std::vector<intptr_t> stack; // constant/vectors or dictionaries...
-							std::vector<intptr_t> inter_calc_stack; // constant/vectors or dictionaries...
+							std::vector<zs_int> stack; // constant/vectors or dictionaries...
+							std::vector<zs_int> inter_calc_stack; // constant/vectors or dictionaries...
 
 							// let's fun evalute, an expression throught its op codes...
 							EvalInstruction **it=&constant_instructions[0];
@@ -1232,8 +1232,8 @@ namespace zetscript{
 											,stk_op2
 											);
 
-									stack.push_back((intptr_t)stk_int_calc_result);
-									inter_calc_stack.push_back((intptr_t)stk_int_calc_result);
+									stack.push_back((zs_int)stk_int_calc_result);
+									inter_calc_stack.push_back((zs_int)stk_int_calc_result);
 								}
 							}
 
@@ -1243,8 +1243,8 @@ namespace zetscript{
 
 							stk_int_calc_result = (ConstantValue *)stack[0];
 
-							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER){
-								printf("constant %i\n",(int)((intptr_t)stk_int_calc_result->stk_value));
+							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){
+								printf("constant %i\n",(int)((zs_int)stk_int_calc_result->stk_value));
 							}
 
 							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){

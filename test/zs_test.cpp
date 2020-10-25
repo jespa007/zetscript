@@ -270,7 +270,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
     // Make sure maxUlps is non-negative and small enough that the
     // default NAN won't compare as equal to anything.
     /*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
-    //intptr_t aInt = *(int*)&A;
+    //zs_int aInt = *(int*)&A;
     int aInt;
     memcpy(&aInt,&A,sizeof(int));
     // Make aInt lexicographically ordered as a twos-complement int

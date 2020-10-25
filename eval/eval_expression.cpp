@@ -94,7 +94,7 @@ namespace zetscript{
 				, PrePostSelfOperation pre_self_operation
 		){
 			// PRE:
-			unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT;
+			//unsigned short type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
 			//LoadType load_type=LOAD_TYPE_NOT_DEFINED;
 			bool is_constant_number=false, is_constant_boolean=false;
 			EvalInstruction *instruction=NULL;
@@ -153,7 +153,7 @@ namespace zetscript{
 					 }
 					 aux++;
 
-					 type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
+					 //type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
 
 					 std::string key_value="\""+str_value+"\"";
 
@@ -161,9 +161,7 @@ namespace zetscript{
 						obj = get_obj;
 					}else{
 						ScriptObjectString *s=new ScriptObjectString(eval_data->zs,str_value);
-						obj=eval_data->zs->registerConstantValue(key_value,NULL,type);
-						((StackElement *)obj)->stk_value=((void *)(s->str_value.c_str()));
-						((StackElement *)obj)->var_ref=s;
+						obj=eval_data->zs->registerConstantValue(key_value,s);
 					 }
 				}
 				 // add load std::string constant
@@ -175,22 +173,22 @@ namespace zetscript{
 			 if(!is_constant_string){
 				 // try parse value...
 				if(str_value=="null"){ // null literal
-					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL;
+					//type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL;
 					byte_code=BYTE_CODE_LOAD_TYPE_NULL;
 					obj=NULL;//ScriptObject::NullSymbol;
 
 				}else if(str_value=="undefined"){ // undefined literal
-						type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
+						//type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
 						byte_code=BYTE_CODE_LOAD_TYPE_UNDEFINED;
 						obj=NULL;// ScriptObject::UndefinedSymbol;
 				}else if((const_obj=zs_strutils::parse_int(str_number_value))!=NULL){ // int literal
-					intptr_t value = *((intptr_t *)const_obj);
+					zs_int value = *((zs_int *)const_obj);
 					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
 						value=-value;
 						str_number_value="-"+str_number_value;
 					}
 
-					delete (intptr_t *)const_obj;
+					delete (zs_int *)const_obj;
 					//load_type=LOAD_TYPE_CONSTANT;
 					obj=eval_data->zs->registerConstantValue(str_number_value,value);
 					is_constant_number=true;
@@ -207,13 +205,13 @@ namespace zetscript{
 					void *value_ptr;
 					memcpy(&value_ptr,&value,sizeof(float));
 
-					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
+					//type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
 					//load_type=LOAD_TYPE_CONSTANT;
 
 					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_number_value))!=NULL){
 						obj = get_obj;
 					}else{
-						obj=eval_data->zs->registerConstantValue(str_number_value,value_ptr,type);
+						obj=eval_data->zs->registerConstantValue(str_number_value,value_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT);
 					}
 					is_constant_number=true;
 				}
@@ -227,13 +225,13 @@ namespace zetscript{
 
 					delete (bool *)const_obj;
 
-					type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN;
+					//type=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL;
 					//load_type=LOAD_TYPE_CONSTANT;
 
 					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_boolean_value))!=NULL){
 						obj = get_obj;
 					}else{
-						obj=eval_data->zs->registerConstantValue(str_boolean_value,(void *)value,type);
+						obj=eval_data->zs->registerConstantValue(str_boolean_value,(void *)value,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL);
 					}
 					is_constant_boolean=true;
 				}else{ // it should be an identifier token  ...
@@ -299,7 +297,7 @@ namespace zetscript{
 				instruction=new EvalInstruction(
 						byte_code
 						,ZS_IDX_UNDEFINED
-						,(intptr_t)obj
+						,(zs_int)obj
 						,instruction_properties
 			));
 

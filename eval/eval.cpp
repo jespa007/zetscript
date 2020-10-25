@@ -154,7 +154,7 @@ namespace zetscript{
 
 		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function){
 			Scope *new_scope = NEW_SCOPE(eval_data,scope_parent);
-			scope_parent->registered_scopes->push_back((intptr_t)new_scope);
+			scope_parent->registered_scopes->push_back((zs_int)new_scope);
 			new_scope->is_scope_function=is_function;
 			if(is_function){
 				new_scope->tmp_idx_instruction_push_scope=0;
@@ -193,7 +193,7 @@ namespace zetscript{
 				if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 					eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()+scope->tmp_idx_instruction_push_scope
-							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(intptr_t)scope)
+							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
 					);
 
 					inc_jmp_codes(eval_data,idx_instruction_start,(int)(eval_data->current_function->instructions.size()),1);

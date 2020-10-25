@@ -156,7 +156,7 @@ namespace zetscript{
 			EvalInstruction(
 				ByteCode _byte_code
 				,unsigned char _index_op1=ZS_IDX_UNDEFINED
-				,intptr_t _index_op2=ZS_IDX_UNDEFINED
+				,zs_int _index_op2=ZS_IDX_UNDEFINED
 				,unsigned short _properties=0
 			 ){
 				is_symbol_super_method=false;

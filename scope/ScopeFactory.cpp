@@ -24,7 +24,7 @@ namespace zetscript{
 		}
 
 		Scope * scope_node = new Scope(this->zs,scope_parent,is_c_node);
-		scopes->push_back((intptr_t)scope_node);
+		scopes->push_back((zs_int)scope_node);
 		return scope_node;
 	}
 

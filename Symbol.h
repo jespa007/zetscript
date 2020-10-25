@@ -30,7 +30,7 @@ namespace zetscript{
 		unsigned short properties; // symbol properties using SymbolProperty bits
 
 		std::string name; 	// symbol name
-		intptr_t ref_ptr; 	// pointer ref just in case is C var/function
+		zs_int ref_ptr; 	// pointer ref just in case is C var/function
 		std::string str_native_type; // In case is C, we need to know its type ...
 
 		char n_params; // max params in case of function

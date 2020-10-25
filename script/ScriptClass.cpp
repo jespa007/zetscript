@@ -43,7 +43,7 @@ namespace zetscript{
 		, short line
 		,const std::string & symbol_name
 		,const std::string & str_native_type
-		,intptr_t ref_ptr
+		,zs_int ref_ptr
 		, unsigned short properties
 	){
 	if(getSymbol(symbol_name)!=NULL){
@@ -63,8 +63,8 @@ namespace zetscript{
 		symbol->str_native_type = str_native_type;
 		symbol->properties=properties | SYMBOL_PROPERTY_C_OBJECT_REF;
 
-		symbol_members->push_back((intptr_t)symbol);
-		symbol_members_built_in->push_back((intptr_t)symbol);
+		symbol_members->push_back((zs_int)symbol);
+		symbol_members_built_in->push_back((zs_int)symbol);
 		return symbol;
 
 	}
@@ -113,7 +113,7 @@ namespace zetscript{
 		, const std::string & function_name
 		, std::vector<FunctionParam> params
 		, int idx_return_type
-		,intptr_t ref_ptr
+		,zs_int ref_ptr
 		, unsigned short properties
 	){
 
@@ -161,7 +161,7 @@ namespace zetscript{
 		}
 
 		// register
-		symbol_members->push_back((intptr_t)function_symbol);
+		symbol_members->push_back((zs_int)function_symbol);
 
 		// constructor...
 		if(function_name == FUNCTION_MEMBER_CONSTRUCTOR_NAME){
@@ -173,7 +173,8 @@ namespace zetscript{
 				if(ZS_STRCMP(ByteCodeMetamethodToStr((ByteCodeMetamethod)i),==,function_name.c_str())){
 					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
 					*stk_element = {0,(void *)function_symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
-					metamethod_operator[i]->push_back((intptr_t)stk_element);
+					metamethod_operator[i]->push_back((zs_int)stk_element);
+					std::string class_name = script_class_factory->getScriptClass(this->idx_class)->symbol.name;
 
 					ZS_PRINT_DEBUG("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());
 					break;

@@ -187,7 +187,7 @@ namespace zetscript{
 					StackElement *ptr_ale =&vm_stack[v];
 					ScriptObject *var = NULL;
 
-					if(ptr_ale->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+					if(ptr_ale->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 						var =((ScriptObject *)(ptr_ale->var_ref));
 						if(var){
 							if(var->ptr_shared_pointer_node != NULL){
@@ -296,14 +296,14 @@ namespace zetscript{
 				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk->properties)){
 				default:
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 					delete (ScriptObjectString *)stk->var_ref;
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
 					delete (ScriptObject *)stk->var_ref;
 					break;
 

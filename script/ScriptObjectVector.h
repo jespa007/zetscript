@@ -35,21 +35,21 @@ namespace zetscript{
 								memcpy(&aux_flt, &sv.stk_value, sizeof(float));
 								v_out.push_back(aux_flt);
 							}else if(ZS_STRCMP(dst_convert_type, ==,typeid(int).name())){
-								v_out.push_back((intptr_t)sv.stk_value);
+								v_out.push_back((zs_int)sv.stk_value);
 							}else{
 								THROW_RUNTIME_ERROR("Error trying to cast element on std::vector<float>");
 								return v_out;
 							}
 							break;
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
 						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
 							THROW_RUNTIME_ERROR("type not implemented yet");
 							return v_out;
 							break;
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
+						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
 							if(ZS_STRCMP(dst_convert_type, ==,typeid(int).name()) || ZS_STRCMP(dst_convert_type, ==,typeid(float).name())){// typeid(int).name()) || ){
-								v_out.push_back((intptr_t)sv.stk_value);
+								v_out.push_back((zs_int)sv.stk_value);
 							}else{
 								THROW_RUNTIME_ERROR("Error trying to cast element on std::vector<int>");
 								return v_out;

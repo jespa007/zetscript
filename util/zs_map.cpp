@@ -45,7 +45,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	void zs_map::set(const char * key,intptr_t val){
+	void zs_map::set(const char * key,zs_int val){
 
 		zs_map_node *node = NULL;
 
@@ -72,7 +72,7 @@ namespace zetscript{
 		node->val = val;
 	}
 
-	intptr_t 	zs_map::get(const char * key, bool & exists){
+	zs_int 	zs_map::get(const char * key, bool & exists){
 		zs_map_node * node=lookup_node(key);
 		exists=false;
 

@@ -2,7 +2,7 @@
 
 namespace zetscript{
 
-	intptr_t SystemBuiltIn::clock(){
+	zs_int SystemBuiltIn::clock(){
 		return std::clock()*(1000.0f/CLOCKS_PER_SEC);
 	}
 

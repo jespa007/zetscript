@@ -51,7 +51,7 @@ namespace zetscript{
 		if(scope_parent != NULL){
 			for(unsigned i=0;i < registered_scopes->count; i++){
 				Scope *current_scope=(Scope *)registered_scopes->items[i];
-				scope_parent->registered_scopes->push_back((intptr_t)current_scope);
+				scope_parent->registered_scopes->push_back((zs_int)current_scope);
 				current_scope->scope_parent = scope_parent;
 			}
 
@@ -78,7 +78,7 @@ namespace zetscript{
 			n_registered_symbols_as_variables++;
 		}
 
-		registered_symbols->push_back((intptr_t)irv);
+		registered_symbols->push_back((zs_int)irv);
 		return irv;
 	}
 

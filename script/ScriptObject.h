@@ -116,7 +116,7 @@ class ScriptClass;
 		void * c_object;
 		zs_vector			*	stk_properties; // vector of stack elements
 		zs_map				*	map_property_keys; // to search faster each property by its name
-		int lenght_user_properties;
+		zs_int lenght_user_properties;
 		int idx_start_user_properties;
 
 

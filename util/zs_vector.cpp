@@ -7,8 +7,8 @@ namespace zetscript{
 	bool	zs_vector::push_back_slot(){
 		if (this->_size == 0) {
 			this->_size = 10;
-			this->items = (intptr_t *)malloc(sizeof(intptr_t) * this->_size);
-			memset(this->items, '\0', sizeof(intptr_t) * this->_size);
+			this->items = (zs_int *)malloc(sizeof(zs_int) * this->_size);
+			memset(this->items, '\0', sizeof(zs_int) * this->_size);
 		}
 		// condition to increase this->items:
 		// last slot exhausted
@@ -18,7 +18,7 @@ namespace zetscript{
 				return false;
 			}
 			this->_size += 10;
-			this->items =(intptr_t *) realloc(this->items, sizeof(intptr_t) * this->_size);
+			this->items =(zs_int *) realloc(this->items, sizeof(zs_int) * this->_size);
 		}
 
 		this->count++;
@@ -31,7 +31,7 @@ namespace zetscript{
 		_size=0;
 	}
 
-	void zs_vector::set(uint16_t idx, intptr_t e){
+	void zs_vector::set(uint16_t idx, zs_int e){
 		if (idx >= this->count) {
 			THROW_RUNTIME_ERROR("idx out of bounds");
 			return;
@@ -39,7 +39,7 @@ namespace zetscript{
 		this->items[idx] = e;
 	}
 
-	intptr_t zs_vector::get(uint16_t  idx){
+	zs_int zs_vector::get(uint16_t  idx){
 		if (idx >= this->count) {
 			THROW_RUNTIME_ERROR("idx out of bounds");
 			return 0;
@@ -64,8 +64,8 @@ namespace zetscript{
 		this->count--;
 	}
 
-	intptr_t zs_vector::pop_back(){
-		intptr_t item=0;
+	zs_int zs_vector::pop_back(){
+		zs_int item=0;
 		if (this->count==0) {
 			THROW_RUNTIME_ERROR("no elements");
 			return 0;
@@ -77,7 +77,7 @@ namespace zetscript{
 		return item;
 	}
 
-	bool zs_vector::push_back(intptr_t e){
+	bool zs_vector::push_back(zs_int e){
 		if(push_back_slot()){
 			this->items[this->count-1] = e; // add element to end list...
 			return true;
@@ -93,7 +93,7 @@ namespace zetscript{
 		}
 	}
 
-	void 		zs_vector::insert(uint16_t  idx, intptr_t e){
+	void 		zs_vector::insert(uint16_t  idx, zs_int e){
 		if(idx > (this->count+1)){
 			THROW_RUNTIME_ERROR("idx should be 0 to %i",this->count+1);
 			return;

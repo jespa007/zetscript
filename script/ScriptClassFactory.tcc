@@ -38,7 +38,7 @@ namespace zetscript{
 				,registered_line
 				,var_name
 				,var_type
-				,(intptr_t)var_ptr
+				,(zs_int)var_ptr
 				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF)) != NULL
 		){
 			ZS_PRINT_DEBUG("Registered variable name: %s",var_name.c_str());
@@ -55,7 +55,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> arg;
 		std::vector<FunctionParam> arg_info;
-		intptr_t ref_ptr=0;
+		zs_int ref_ptr=0;
 
 		if(!script_function_factory->checkCanregisterNativeFunction(function_name)){
 			THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name);
@@ -101,7 +101,7 @@ namespace zetscript{
 			arg_info.push_back({idx_type,arg[i]});
 		}
 
-		ref_ptr=(intptr_t)function_ptr;
+		ref_ptr=(zs_int)function_ptr;
 
 		// Init struct...
 		main_function->registerLocalFunction(
@@ -171,7 +171,7 @@ namespace zetscript{
 
 		irc->c_constructor = NULL;
 		irc->c_destructor = NULL;
-		script_classes->push_back((intptr_t)irc);
+		script_classes->push_back((zs_int)irc);
 
 		irc->idx_class=(ClassTypeIdx)(script_classes->count-1);
 		ZS_PRINT_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
@@ -276,7 +276,7 @@ namespace zetscript{
 		this_class->idx_base_classes->push_back(idx_base_class);
 
 		// add conversion type for this class
-		conversion_types[this_class->idx_class][idx_base_class]=[](intptr_t entry){ return (intptr_t)(B *)((C *)entry);};
+		conversion_types[this_class->idx_class][idx_base_class]=[](zs_int entry){ return (zs_int)(B *)((C *)entry);};
 
 
 		if(register_c_base_symbols){ // by default is disabled. User has to re-register! --> increases time and binary!!!
@@ -362,7 +362,7 @@ namespace zetscript{
 		std::string return_type;
 		//std::vector<std::string> params;
 		std::string str_class_name_ptr = typeid( C *).name();
-		intptr_t ref_ptr=offsetOf<C>(var_pointer);
+		zs_int ref_ptr=offsetOf<C>(var_pointer);
 
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
@@ -429,7 +429,7 @@ namespace zetscript{
 				,registered_line
 				,var_name
 				,var_type
-				,(intptr_t)var_pointer
+				,(zs_int)var_pointer
 				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF | SYMBOL_PROPERTY_CONST
 		);
 	}
@@ -450,7 +450,7 @@ namespace zetscript{
 		std::vector<std::string> arg;
 		std::vector<FunctionParam> arg_info;
 		int idx_return_type=-1;
-		intptr_t ref_ptr=0;
+		zs_int ref_ptr=0;
 		std::string str_class_name_ptr = typeid( C *).name();
 
 		if(!script_function_factory->checkCanregisterNativeFunction(function_name)){
@@ -486,7 +486,7 @@ namespace zetscript{
 			arg_info.push_back({idx_type,arg[i]});
 		}
 
-		ref_ptr=((intptr_t)function_proxy_factory->newProxyMemberFunction<C>(arg.size(),function_type));
+		ref_ptr=((zs_int)function_proxy_factory->newProxyMemberFunction<C>(arg.size(),function_type));
 
 		// register member function...
 		Symbol *symbol = sc->registerMemberFunction(
@@ -505,7 +505,7 @@ namespace zetscript{
 			StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
 			*stk_element = {0,(ScriptFunction *)symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
 
-			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->push_back((intptr_t)stk_element);
+			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->push_back((zs_int)stk_element);
 			ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 		}
 	}
@@ -526,7 +526,7 @@ namespace zetscript{
 		std::vector<std::string> arg;
 		std::vector<FunctionParam> arg_info;
 		int idx_return_type=-1;
-		intptr_t ref_ptr=0;
+		zs_int ref_ptr=0;
 		std::string str_class_name_ptr = typeid( C *).name();
 		std::string function_class_name = zs_rtti::demangle(typeid(C).name())+"::"+function_name;
 
@@ -568,7 +568,7 @@ namespace zetscript{
 			arg_info.push_back({idx_type,arg[i]});
 		}
 
-		ref_ptr=(intptr_t)function_ptr;
+		ref_ptr=(zs_int)function_ptr;
 
 		// register member function...
 		Symbol * symbol_sf = c_class->registerMemberFunction(
@@ -580,7 +580,7 @@ namespace zetscript{
 				, ref_ptr
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF
 		);
-		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(T).name()).c_str(), function_name);
+		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 
 		// check whether is static metamethod...
 		if(ZS_STRCMP(ByteCodeMetamethodToStr(BYTE_CODE_METAMETHOD_SET),!=,function_name)){
@@ -616,9 +616,9 @@ namespace zetscript{
 					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
 					*stk_element = {0,(void *)symbol_sf->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
 
-					c_class->metamethod_operator[i]->push_back((intptr_t)stk_element);
+					c_class->metamethod_operator[i]->push_back((zs_int)stk_element);
 
-					ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(T).name()).c_str(), function_name);
+					ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 					break;
 				}
 			}
@@ -646,7 +646,7 @@ namespace zetscript{
 		std::vector<std::string> arg;
 		std::vector<FunctionParam> arg_info;
 		int idx_return_type=-1;
-		intptr_t ref_ptr=0;
+		zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 
 		// 1. check all parameters ok.
@@ -691,7 +691,7 @@ namespace zetscript{
 			arg_info.push_back({idx_type,arg[i]});
 		}
 
-		ref_ptr=(intptr_t)function_type;
+		ref_ptr=(zs_int)function_type;
 
 		// register member function...
 		c_class->registerMemberFunction(
@@ -703,6 +703,6 @@ namespace zetscript{
 				, ref_ptr
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
 		);
-		ZS_PRINT_DEBUG("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str());
+		ZS_PRINT_DEBUG("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str(),function_name);
 	}
 }

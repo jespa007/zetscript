@@ -7,7 +7,7 @@ namespace zetscript{
 	class SystemBuiltIn{
 	public:
 		// clock
-		static intptr_t clock();
+		static zs_int clock();
 		static void print(ScriptObjectString *str, ScriptObjectVector *args);
 	};
 

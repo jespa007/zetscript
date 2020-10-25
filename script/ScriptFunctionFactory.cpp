@@ -23,7 +23,7 @@ namespace zetscript{
 			, const std::string & function_name
 			, std::vector<FunctionParam> args
 			, int idx_return_type
-			, intptr_t ref_native_function_ptr
+			, zs_int ref_native_function_ptr
 			, unsigned short properties
 		){
 
@@ -64,8 +64,8 @@ namespace zetscript{
 				,ref_native_function_ptr
 		);
 
-		symbol->ref_ptr = (intptr_t)script_function;		  // ptr function
-		script_functions->push_back((intptr_t)script_function);
+		symbol->ref_ptr = (zs_int)script_function;		  // ptr function
+		script_functions->push_back((zs_int)script_function);
 		return symbol;
 	}
 
@@ -74,7 +74,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("script function idx node out of bound");
 		}
 
-		script_functions->items[idx]=(intptr_t)sf;
+		script_functions->items[idx]=(zs_int)sf;
 	}
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){

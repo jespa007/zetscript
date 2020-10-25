@@ -16,6 +16,7 @@ class Vector2{
 	// defines _add metamethod...
 	_add(v1,v2){
 		var v3=new Vector2();
+		print("v1:"+v1)
 		v3.x=v1.x + v2.x;
 		v3.y=v1.y + v2.y;
 		return v3;

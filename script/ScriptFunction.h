@@ -22,7 +22,7 @@ namespace zetscript{
 		ClassTypeIdx	idx_class; 		// which class belongs to...
 		short 			idx_script_function;		// idx_script_function from factory
 		int 			idx_return_type; 			// idx return type
-		intptr_t 		ref_native_function_ptr;
+		zs_int 		ref_native_function_ptr;
 		bool 			function_should_be_deduced_at_runtime; // look-up for solve function on vm
 		zs_vector 	* 	params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
 
@@ -41,7 +41,7 @@ namespace zetscript{
 				, std::vector<FunctionParam> _params
 				,int  idx_return_type
 				, Symbol *symbol
-				, intptr_t _ref_native_function_ptr
+				, zs_int _ref_native_function_ptr
 		);
 
 		//-----------
@@ -75,7 +75,7 @@ namespace zetscript{
 				, short line
 				, const std::string & symbol_name
 				, const std::string & str_native_type=""
-				, intptr_t ref_ptr=0
+				, zs_int ref_ptr=0
 				, unsigned short properties=0
 		);
 
@@ -92,7 +92,7 @@ namespace zetscript{
 				, const std::string & function_name
 				, std::vector<FunctionParam> args={}
 				, int idx_return_type=ZS_IDX_UNDEFINED
-				, intptr_t ref_ptr=0
+				, zs_int ref_ptr=0
 				, unsigned short properties=0
 		);
 

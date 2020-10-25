@@ -1,3 +1,13 @@
+/*function f(a){
+	//a=0;
+	
+	print("1 "+a);
+}
+
+f(1.0);*/
+
+
+
 /*class Vector2{
 
 	constructor(_x,_y){
@@ -30,5 +40,5 @@
 new Vector2()
 +new Vector2()*/
 
-2252400000.0
+print(2252400000);
 

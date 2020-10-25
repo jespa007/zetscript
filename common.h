@@ -11,7 +11,7 @@
 
 
 #define ZS_IDX_UNDEFINED 							-1
-//#define ZS_FUNCTION_NOT_FOUND_IDX	 				-2
+
 
 
 #define MAX_NATIVE_FUNCTION_ARGS						 6
@@ -33,28 +33,12 @@
 
 namespace zetscript{
 
-	//typedef CASTNode *PASTNode;
-	class ScriptFunction;
 	class Scope;
-	class ScriptClass;
 	class ScriptObject;
-	struct Symbol;
-
-	//struct ScopeBlockVars;
+	class ScriptClass;
+	class ScriptFunction;
 	typedef unsigned char 									ClassTypeIdx;
-
-	/*typedef enum
-		:unsigned char {
-
-		LOAD_TYPE_NOT_DEFINED = 0,
-		LOAD_TYPE_NULL,
-		LOAD_TYPE_UNDEFINED,
-		//LOAD_TYPE_CONSTANT,
-		LOAD_TYPE_VARIABLE,
-		LOAD_TYPE_ARGUMENT,
-		LOAD_TYPE_FUNCTION,
-	}LoadType;*/
-
+	typedef intptr_t zs_int;
 
 	typedef enum:ClassTypeIdx{
 
@@ -63,16 +47,15 @@ namespace zetscript{
 
 		// built in C types...
 		IDX_BUILTIN_TYPE_VOID_C,
-		IDX_BUILTIN_TYPE_INT_PTR_C,
-		IDX_BUILTIN_TYPE_FLOAT_PTR_C,
+
+		IDX_BUILTIN_TYPE_ZS_INT_C,
+		IDX_BUILTIN_TYPE_ZS_INT_PTR_C,
 		IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C,
 		IDX_BUILTIN_TYPE_STRING_PTR_C,
-		IDX_BUILTIN_TYPE_BOOL_PTR_C,
-		IDX_BUILTIN_TYPE_INT_C,
-		IDX_BUILTIN_TYPE_UNSIGNED_INT_C,
-		IDX_BUILTIN_TYPE_INTPTR_T_C,
-		IDX_BUILTIN_TYPE_FLOAT_C,
 		IDX_BUILTIN_TYPE_BOOL_C,
+		IDX_BUILTIN_TYPE_BOOL_PTR_C,
+		IDX_BUILTIN_TYPE_FLOAT_C,
+		IDX_BUILTIN_TYPE_FLOAT_PTR_C,
 
 		// built in classes...
 		IDX_BUILTIN_TYPE_STACK_ELEMENT,
@@ -85,16 +68,9 @@ namespace zetscript{
 	}IdxBuiltInType;
 
 
-	/*typedef enum
-		:unsigned char{
-		 SCOPE_PROPERTY_BREAK		=0x1 << 0
-		,SCOPE_PROPERTY_CONTINUE	=0x1 << 1
-		,SCOPE_PROPERTY_FOR_IN		=0x1 << 2
-	}ScopeProperty;*/
-
 	typedef void  (* PrintFunctionCallback)(const char *filename, int line, const  char  *string_text);
 
-	typedef intptr_t (*ConversionType)(intptr_t);
+	typedef zs_int (*ConversionType)(zs_int);
 	//-----------------------------
 
 

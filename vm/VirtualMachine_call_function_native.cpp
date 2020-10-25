@@ -1,68 +1,68 @@
 // STATIC REFERENCES
 #define PTR_FUNCTION_VOID_PARAM0(f) ((void (*)())(f))
-#define PTR_FUNCTION_VOID_PARAM1(f) ((void (*)(intptr_t))(f))
-#define PTR_FUNCTION_VOID_PARAM2(f) ((void (*)(intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_VOID_PARAM3(f) ((void (*)(intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_VOID_PARAM4(f) ((void (*)(intptr_t,intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_VOID_PARAM5(f) ((void (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_VOID_PARAM6(f) ((void (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+#define PTR_FUNCTION_VOID_PARAM1(f) ((void (*)(zs_int))(f))
+#define PTR_FUNCTION_VOID_PARAM2(f) ((void (*)(zs_int,zs_int))(f))
+#define PTR_FUNCTION_VOID_PARAM3(f) ((void (*)(zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_VOID_PARAM4(f) ((void (*)(zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_VOID_PARAM5(f) ((void (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_VOID_PARAM6(f) ((void (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
-#define PTR_FUNCTION_RET_PARAM0(f) ((intptr_t (*)())(f))
-#define PTR_FUNCTION_RET_PARAM1(f) ((intptr_t (*)(intptr_t))(f))
-#define PTR_FUNCTION_RET_PARAM2(f) ((intptr_t (*)(intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_PARAM3(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_PARAM4(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_PARAM5(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_PARAM6(f) ((intptr_t (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+#define PTR_FUNCTION_RET_PARAM0(f) ((zs_int (*)())(f))
+#define PTR_FUNCTION_RET_PARAM1(f) ((zs_int (*)(zs_int))(f))
+#define PTR_FUNCTION_RET_PARAM2(f) ((zs_int (*)(zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_PARAM3(f) ((zs_int (*)(zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_PARAM4(f) ((zs_int (*)(zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_PARAM5(f) ((zs_int (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_PARAM6(f) ((zs_int (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 #define PTR_FUNCTION_RET_FLOAT_PARAM0(f) ((float (*)())(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM1(f) ((float (*)(intptr_t))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM2(f) ((float (*)(intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM3(f) ((float (*)(intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM4(f) ((float (*)(intptr_t,intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM5(f) ((float (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM6(f) ((float (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM1(f) ((float (*)(zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM2(f) ((float (*)(zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM3(f) ((float (*)(zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM4(f) ((float (*)(zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM5(f) ((float (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM6(f) ((float (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 #define PTR_FUNCTION_RET_BOOL_PARAM0(f) ((bool (*)())(f))
-#define PTR_FUNCTION_RET_BOOL_PARAM1(f) ((bool (*)(intptr_t))(f))
-#define PTR_FUNCTION_RET_BOOL_PARAM2(f) ((bool (*)(intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_BOOL_PARAM3(f) ((bool (*)(intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_BOOL_PARAM4(f)	((bool (*)(intptr_t,intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_BOOL_PARAM5(f) ((bool (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
-#define PTR_FUNCTION_RET_BOOL_PARAM6(f) ((bool (*)(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t))(f))
+#define PTR_FUNCTION_RET_BOOL_PARAM1(f) ((bool (*)(zs_int))(f))
+#define PTR_FUNCTION_RET_BOOL_PARAM2(f) ((bool (*)(zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_BOOL_PARAM3(f) ((bool (*)(zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_BOOL_PARAM4(f)	((bool (*)(zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_BOOL_PARAM5(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_BOOL_PARAM6(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 // MEMBER REFERENCES
-#define PTR_FUNCTION_MEMBER_VOID_PARAM0(f) (*((std::function<void(intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_VOID_PARAM1(f) (*((std::function<void(intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_VOID_PARAM2(f) (*((std::function<void(intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_VOID_PARAM3(f) (*((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_VOID_PARAM4(f) (*((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_VOID_PARAM5(f) (*((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_VOID_PARAM6(f) (*((std::function<void(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM0(f) (*((std::function<void(zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM1(f) (*((std::function<void(zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM2(f) (*((std::function<void(zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM3(f) (*((std::function<void(zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM4(f) (*((std::function<void(zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM5(f) (*((std::function<void(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_VOID_PARAM6(f) (*((std::function<void(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
 
-#define PTR_FUNCTION_MEMBER_RET_PARAM0(f) (*((std::function<intptr_t(intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_PARAM1(f) (*((std::function<intptr_t(intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_PARAM2(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_PARAM3(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_PARAM4(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_PARAM5(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_PARAM6(f) (*((std::function<intptr_t(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM0(f) (*((std::function<zs_int(zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM1(f) (*((std::function<zs_int(zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM2(f) (*((std::function<zs_int(zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM3(f) (*((std::function<zs_int(zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM4(f) (*((std::function<zs_int(zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM5(f) (*((std::function<zs_int(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_PARAM6(f) (*((std::function<zs_int(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
 
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM0(f) (*((std::function<float(intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM1(f) (*((std::function<float(intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM2(f) (*((std::function<float(intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM3(f) (*((std::function<float(intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM4(f) (*((std::function<float(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM5(f) (*((std::function<float(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM6(f) (*((std::function<float(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM0(f) (*((std::function<float(zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM1(f) (*((std::function<float(zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM2(f) (*((std::function<float(zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM3(f) (*((std::function<float(zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM4(f) (*((std::function<float(zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM5(f) (*((std::function<float(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM6(f) (*((std::function<float(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
 
-#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM0(f) (*((std::function<bool(intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM1(f) (*((std::function<bool(intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM2(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM3(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM4(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM5(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM6(f) (*((std::function<bool(intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t,intptr_t)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM0(f) (*((std::function<bool(zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM1(f) (*((std::function<bool(zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM2(f) (*((std::function<bool(zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM3(f) (*((std::function<bool(zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM4(f) (*((std::function<bool(zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM5(f) (*((std::function<bool(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM6(f) (*((std::function<bool(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
 
 namespace zetscript{
 
@@ -74,7 +74,7 @@ namespace zetscript{
 			ScriptObject  * this_object
 			){
 
-		intptr_t  fun_ptr = calling_function->ref_native_function_ptr;
+		zs_int  fun_ptr = calling_function->ref_native_function_ptr;
 
 		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_C_STATIC_REF) == 0){ // is function member  ...
 			if(this_object!= NULL){
@@ -85,14 +85,14 @@ namespace zetscript{
 			}
 		}
 
-		intptr_t converted_param[MAX_NATIVE_FUNCTION_ARGS];
+		zs_int converted_param[MAX_NATIVE_FUNCTION_ARGS];
 		float 	 float_converted_param[MAX_NATIVE_FUNCTION_ARGS];
-		intptr_t result=0;
+		zs_int result=0;
 		StackElement *stk_arg_current;
 		current_call_c_function = calling_function;
 		bool static_ref=calling_function->symbol.properties&SYMBOL_PROPERTY_C_STATIC_REF;
 		int this_param=0;
-		intptr_t param_this_object=0;
+		zs_int param_this_object=0;
 
 		if(static_ref==false){
 			this_param=1;
@@ -102,9 +102,9 @@ namespace zetscript{
 			}
 
 			if(this_object->idx_class>=IDX_BUILTIN_TYPE_MAX){
-				param_this_object=(intptr_t)this_object->getNativeObject(); // pass c object
+				param_this_object=(zs_int)this_object->getNativeObject(); // pass c object
 			}else{ // pass script var
-				param_this_object=(intptr_t)this_object; // pass c object
+				param_this_object=(zs_int)this_object; // pass c object
 			}
 		}
 
@@ -137,7 +137,7 @@ namespace zetscript{
 			if(!zs->convertStackElementToVar(
 					stk_arg_current
 					,function_param->idx_type
-					,(intptr_t *)&converted_param[i]
+					,(zs_int *)&converted_param[i]
 					,error_str
 			)){
 				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function \"%s\", param %i: %s. Native function \"%s\" that was found for first time it has different argument types now.",
@@ -151,7 +151,7 @@ namespace zetscript{
 			if(function_param->idx_type == IDX_BUILTIN_TYPE_FLOAT_PTR_C){
 				float *ptr=&float_converted_param[i];
 				*ptr = *((float *)&converted_param[i]);
-				converted_param[i]=(intptr_t)ptr;
+				converted_param[i]=(zs_int)ptr;
 
 			}
 

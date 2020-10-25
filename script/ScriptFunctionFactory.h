@@ -35,7 +35,7 @@ namespace zetscript{
 				, const std::string & function_name
 				, std::vector<FunctionParam> args
 				, int idx_return_type=ZS_IDX_UNDEFINED
-				, intptr_t ref_native_function_ptr=0
+				, zs_int ref_native_function_ptr=0
 				, unsigned short properties=0
 			);
 

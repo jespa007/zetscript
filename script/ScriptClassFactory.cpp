@@ -43,8 +43,8 @@ namespace zetscript{
 		fflush(stdout);
 	}
 
-	void  print(int s){
-		printf("print integer test: %i\n",s);
+	void  print(zs_int s){
+		printf("print integer test: %llu\n",s);
 		fflush(stdout);
 	}
 
@@ -77,16 +77,15 @@ namespace zetscript{
 
 		// REGISTER BUILT IN C TYPES
 		REGISTER_BUILT_IN_TYPE(void,IDX_BUILTIN_TYPE_VOID_C);
-		REGISTER_BUILT_IN_TYPE(int *,IDX_BUILTIN_TYPE_INT_PTR_C);
-		REGISTER_BUILT_IN_TYPE(float *,IDX_BUILTIN_TYPE_FLOAT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(zs_int,IDX_BUILTIN_TYPE_ZS_INT_C);
+		REGISTER_BUILT_IN_TYPE(zs_int *,IDX_BUILTIN_TYPE_ZS_INT_PTR_C);
 		REGISTER_BUILT_IN_TYPE(const char *,IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C);
 		REGISTER_BUILT_IN_TYPE(std::string *,IDX_BUILTIN_TYPE_STRING_PTR_C);
-		REGISTER_BUILT_IN_TYPE(bool *,IDX_BUILTIN_TYPE_BOOL_PTR_C);
-		REGISTER_BUILT_IN_TYPE(int,IDX_BUILTIN_TYPE_INT_C);
-		REGISTER_BUILT_IN_TYPE(unsigned int,IDX_BUILTIN_TYPE_UNSIGNED_INT_C);
-		REGISTER_BUILT_IN_TYPE(intptr_t,IDX_BUILTIN_TYPE_INTPTR_T_C);
-		REGISTER_BUILT_IN_TYPE(float,IDX_BUILTIN_TYPE_FLOAT_C);
 		REGISTER_BUILT_IN_TYPE(bool,IDX_BUILTIN_TYPE_BOOL_C);
+		REGISTER_BUILT_IN_TYPE(bool *,IDX_BUILTIN_TYPE_BOOL_PTR_C);
+		REGISTER_BUILT_IN_TYPE(float,IDX_BUILTIN_TYPE_FLOAT_C);
+		REGISTER_BUILT_IN_TYPE(float *,IDX_BUILTIN_TYPE_FLOAT_PTR_C);
+
 
 		// REGISTER BUILT IN CLASS TYPES
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
@@ -114,7 +113,7 @@ namespace zetscript{
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 
 		ZS_REGISTER_GLOBAL_FUNCTION(this,"print",static_cast<void (*)(const char *)>(print));
-		ZS_REGISTER_GLOBAL_FUNCTION(this,"print",static_cast<void (*)(int)>(print));
+		ZS_REGISTER_GLOBAL_FUNCTION(this,"print",static_cast<void (*)(zs_int)>(print));
 
 
 		//registerNativeGlobalFunction("error",internalPrintError);
@@ -202,7 +201,7 @@ namespace zetscript{
 			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
 			sci->symbol=*symbol;
 
-			script_classes->push_back((intptr_t)sci);
+			script_classes->push_back((zs_int)sci);
 
 			if(base_class_name != ""){
 
@@ -223,8 +222,8 @@ namespace zetscript{
 					Symbol *symbol=(Symbol *)base_class->symbol_members->items[i];
 					Symbol *new_symbol=new Symbol();
 					*new_symbol = *symbol;
-					sci->symbol_members->push_back((intptr_t)new_symbol);
-					sci->symbol_members_built_in->push_back((intptr_t)new_symbol);
+					sci->symbol_members->push_back((zs_int)new_symbol);
+					sci->symbol_members_built_in->push_back((zs_int)new_symbol);
 				}
 
 				// set idx starting member
@@ -313,7 +312,7 @@ namespace zetscript{
 			 switch(rc->idx_class){
 
 			 case IDX_BUILTIN_TYPE_VOID_C:
-			 case IDX_BUILTIN_TYPE_INT_PTR_C:
+			 case IDX_BUILTIN_TYPE_ZS_INT_PTR_C:
 			 case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
 			 case IDX_BUILTIN_TYPE_STRING_PTR_C:
 			 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
@@ -346,7 +345,7 @@ namespace zetscript{
 		return ZS_INVALID_CLASS;
 	}
 
-	intptr_t ScriptClassFactory::doCast(intptr_t obj, ClassTypeIdx idx_class_src, ClassTypeIdx idx_class_dst){//c_class->idx_class,idx_return_type){
+	zs_int ScriptClassFactory::doCast(zs_int obj, ClassTypeIdx idx_class_src, ClassTypeIdx idx_class_dst){//c_class->idx_class,idx_return_type){
 
 		ScriptClass *class_src = getScriptClass(idx_class_src);
 		ScriptClass *class_dst = getScriptClass(idx_class_dst);

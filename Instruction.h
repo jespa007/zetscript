@@ -70,7 +70,7 @@ namespace zetscript{
 
 		ByteCode byte_code;
 		unsigned char value_op1;
-		intptr_t value_op2;
+		zs_int value_op2;
 		unsigned short properties;
 
 		Instruction(){
@@ -82,7 +82,7 @@ namespace zetscript{
 
 		Instruction(ByteCode _byte_code
 		 ,unsigned char _value_op1=ZS_IDX_UNDEFINED
-		 ,intptr_t _value_op2=ZS_IDX_UNDEFINED
+		 ,zs_int _value_op2=ZS_IDX_UNDEFINED
 		 ,unsigned short _properties=0
 		 ){
 			byte_code=_byte_code;

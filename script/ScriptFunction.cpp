@@ -11,7 +11,7 @@ namespace zetscript{
 			, std::vector<FunctionParam> _params
 			,int _idx_return_type
 			,Symbol *_symbol
-			, intptr_t _ref_native_function_ptr
+			, zs_int _ref_native_function_ptr
 		) {
 		// function data...
 		idx_class=_idx_class;
@@ -149,11 +149,11 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:
 				icv=(ConstantValue *)instruction->value_op2;
 				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,ByteCodeToStr(instruction->byte_code),(int)((intptr_t)icv->stk_value)==0?"false":"true");
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,ByteCodeToStr(instruction->byte_code),(int)((zs_int)icv->stk_value)==0?"false":"true");
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i\n",idx_instruction,ByteCodeToStr(instruction->byte_code),(int)((intptr_t)icv->stk_value));
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i\n",idx_instruction,ByteCodeToStr(instruction->byte_code),(int)((zs_int)icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%f\n",idx_instruction,ByteCodeToStr(instruction->byte_code),*((float *)&icv->stk_value));
@@ -289,7 +289,7 @@ namespace zetscript{
 			, short line
 			, const std::string & symbol_name
 			, const std::string & str_native_type
-			, intptr_t ref_ptr
+			, zs_int ref_ptr
 			, unsigned short properties
 	){
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
@@ -313,7 +313,7 @@ namespace zetscript{
 			zs->getVirtualMachine()->setStackElement(idx_position,convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr));
 		}
 
-		registered_symbols->push_back((intptr_t)symbol);
+		registered_symbols->push_back((zs_int)symbol);
 
 		return symbol;
 	}
@@ -325,7 +325,7 @@ namespace zetscript{
 			, const std::string & function_name
 			, std::vector<FunctionParam> params
 			, int idx_return_type
-			,intptr_t ref_ptr
+			,zs_int ref_ptr
 			, unsigned short properties
 	){
 		Symbol *symbol_found=NULL,*symbol=NULL;
@@ -365,7 +365,7 @@ namespace zetscript{
 			);*/
 
 			//script_function_factory->setScriptFunction(idx_script_function,sf);
-			//symbol_found->ref_ptr=(intptr_t)sf;
+			//symbol_found->ref_ptr=(zs_int)sf;
 			symbol_found->n_params=(char)params.size();
 
 			symbol=symbol_found;
@@ -414,7 +414,7 @@ namespace zetscript{
 				}
 			}
 
-			registered_symbols->push_back((intptr_t)symbol);
+			registered_symbols->push_back((zs_int)symbol);
 		}
 
 		return symbol;
@@ -457,7 +457,7 @@ namespace zetscript{
 		for(unsigned i = 0; i < _params.size(); i++){
 			FunctionParam *script_param = new FunctionParam();
 			*script_param=_params[i];
-			params->push_back((intptr_t)script_param);
+			params->push_back((zs_int)script_param);
 		}
 	}
 

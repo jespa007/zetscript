@@ -1,6 +1,6 @@
 
-#define METAMETHOD_2_ARGS 2
-#define METAMETHOD_1_ARGS 1
+//#define METAMETHOD_2_ARGS 2
+//#define METAMETHOD_1_ARGS 1
 
 // general
 #define PRINT_DUAL_ERROR_OP(c)\
@@ -112,7 +112,7 @@ namespace zetscript{
 				ScriptObject *var = NULL;
 				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_local_var->properties)){
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
 					var =((ScriptObject *)(stk_local_var->var_ref));
 					if(var){
 						if(var->ptr_shared_pointer_node != NULL){
@@ -140,7 +140,7 @@ namespace zetscript{
 
 	}
 
-	inline bool VirtualMachine::tryPerformMetamethod(
+	inline void VirtualMachine::applyMetamethod(
 		 ScriptFunction *calling_function
 		,Instruction *instruction
 		,const char *__OVERR_OP__
@@ -150,102 +150,113 @@ namespace zetscript{
 	
 	) {
 
-		int idx_offset_function_member_start=0;
-		ScriptObject *script_var_object = NULL;
+		//int idx_offset_function_member_start=0;
+		ScriptObject *so1 = NULL;
+		ScriptObject *so2 = NULL;
 		ScriptFunction * ptr_function_found=NULL;
 		ScriptObject *calling_object=NULL; // TODO: seach calling object and both stk op1/op2 shoould be same type
 
 		ScriptObject *one_param = NULL;
-		int n_metam_args=((__METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT\
+		int n_stk_args=((__METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT\
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_NEG\
 						|| __METAMETHOD__ == BYTE_CODE_METAMETHOD_SET\
-						   )? METAMETHOD_1_ARGS:METAMETHOD_2_ARGS);
-		StackElement *mm_test_startArg = vm_stk_current+n_metam_args;
-		if((intptr_t)instruction->value_op2 == ZS_IDX_UNDEFINED){ /* search for first time , else the function is stored in value_op2 */
-			ScriptClass *script_class_aux=NULL;
+						   )? 1:2);
+		StackElement *stk_args = vm_stk_current+(n_stk_args-1); // because it did a pop
+		//if((zs_int)instruction->value_op2 == ZS_IDX_UNDEFINED){ /* search for first time , else the function is stored in value_op2 */
+		ScriptClass *script_class_aux=NULL;
 
-			const char * symbol_to_find;
-			ptr_function_found=NULL;
+		const char * symbol_to_find;
+		ptr_function_found=NULL;
+		bool chk_ok=false;
 
 
-			if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT))){
-				script_var_object = (ScriptObject *)(stk_result_op1->var_ref);
-				if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) == (MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
-					script_var_object = (ScriptObject *)(((StackElement *)script_var_object))->var_ref;
-				}
-				if(__METAMETHOD__ == BYTE_CODE_METAMETHOD_SET){
-					idx_offset_function_member_start=1;
-					one_param = (ScriptObject *)(stk_result_op2->var_ref);
-					if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) == (MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
-						one_param = (ScriptObject *)(((StackElement *)one_param))->var_ref;
-					}
-				}
-			}else if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT)) && (n_metam_args==METAMETHOD_2_ARGS)){\
-				script_var_object = (ScriptObject *)(stk_result_op2->var_ref);
-				if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) == (MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
-					script_var_object = (ScriptObject *)(((StackElement *)script_var_object))->var_ref;
-				}
-			}else{
-
-				std::string var_type1=stk_result_op1->toString(),
-						var_type2="";
-
-				if(n_metam_args==METAMETHOD_1_ARGS){ /* 1 arg*/
-					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
-							STR(__OVERR_OP),
-							var_type1.c_str()
-							);
-				}else{ /* 2 args*/
-					var_type2=stk_result_op2->toString();
-					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
-							var_type1.c_str(),
-							__OVERR_OP__,
-							var_type2.c_str());
-				}
-
-				return false;
+		if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT))){
+			so1 = (ScriptObject *)(stk_result_op1->var_ref);
+			if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
+				so1 = (ScriptObject *)(((StackElement *)so1))->var_ref;
 			}
-
-			script_class_aux=GET_SCRIPT_CLASS(this,script_var_object->idx_class);
-			zs_vector *stk_elements=script_class_aux->metamethod_operator[__METAMETHOD__];
-			StackElement *stk_args=(mm_test_startArg-n_metam_args+idx_offset_function_member_start);
-			unsigned n_stk_args=n_metam_args;
-
-			symbol_to_find=ByteCodeMetamethodToStr(__METAMETHOD__);
-
-			if((ptr_function_found = findFunction(
-					 calling_object
-					,calling_function
-					,instruction
-					,false
-					,(void *)stk_elements->items
-					,stk_elements->count
-					,symbol_to_find
-					,stk_args
-					,n_stk_args
-					,stk_result_op1
-					,stk_result_op2
-					,__OVERR_OP__))==NULL)
-			{
-					return false;
-			}
-		}else{
-			ptr_function_found = (ScriptFunction *)instruction->value_op2;
 		}
+
+		if(stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+			so2 = (ScriptObject *)(stk_result_op2->var_ref);
+			if(stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+				so2 = (ScriptObject *)(((StackElement *)so2))->var_ref;
+			}
+		}
+
+		if(so1 != NULL && n_stk_args == 1){
+			chk_ok = true;
+		}else if(so2 != NULL && n_stk_args == 2){
+			chk_ok= so1->idx_class == so2->idx_class;
+		}
+
+
+		if(chk_ok == false){
+			std::string var_type1=stk_result_op1->toString(),
+					var_type2="";
+
+			if(n_stk_args==1){ /* 1 arg*/
+				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
+						STR(__OVERR_OP),
+						var_type1.c_str()
+						);
+			}else{ /* 2 args*/
+				var_type2=stk_result_op2->toString();
+				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
+						var_type1.c_str(),
+						__OVERR_OP__,
+						var_type2.c_str());
+			}
+		}
+
+		if(n_stk_args == 1){
+			if(__METAMETHOD__ == BYTE_CODE_METAMETHOD_SET){
+				//idx_offset_function_member_start=1;
+				one_param = (ScriptObject *)(stk_result_op2->var_ref);
+				if(stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+					one_param = (ScriptObject *)(((StackElement *)one_param))->var_ref;
+				}
+			}
+		}
+
+		script_class_aux=GET_SCRIPT_CLASS(this,so1->idx_class);
+		zs_vector *stk_elements=script_class_aux->metamethod_operator[__METAMETHOD__];
+		//StackElement *stk_args=mm_test_startArg;//(mm_test_startArg-n_metam_args;//+idx_offset_function_member_start);
+		//unsigned n_stk_args=n_metam_args;
+
+		symbol_to_find=ByteCodeMetamethodToStr(__METAMETHOD__);
+
+		ptr_function_found = findFunction(
+			 calling_object
+			,calling_function
+			,instruction
+			,false
+			,(void *)stk_elements->items
+			,stk_elements->count
+			,symbol_to_find
+			,stk_args
+			,n_stk_args
+			,stk_result_op1
+			,stk_result_op2
+			,__OVERR_OP__
+		);
+
+		/*}else{
+			ptr_function_found = (ScriptFunction *)instruction->value_op2;
+		}*/
 		/* by default virtual machine gets main object class in order to run functions ... */
 		bool error = false;
 		StackElement ret_obj=callFunctionScript(
-				script_var_object
+				NULL // it has not related with any calling function
 				,ptr_function_found
-				,mm_test_startArg+idx_offset_function_member_start
-				//,vm_str_current
-				,n_metam_args);
+				,stk_args
+				,n_stk_args);
 
 		/* restore ptrCurretOp... */
-		vm_stk_current=mm_test_startArg-n_metam_args;
+		//vm_stk_current=mm_test_startArg-n_metam_args;
 		/* if function is C must register pointer ! */
 
-		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){ //
 
 			((ScriptObject *)(ret_obj.var_ref))->initSharedPtr();
 
@@ -257,7 +268,7 @@ namespace zetscript{
 			*vm_stk_current++ = ret_obj;
 		}
 
-		return true;
+
 	}
 
 	inline ScriptFunction * VirtualMachine::findFunction(
@@ -320,25 +331,21 @@ namespace zetscript{
 									aux_string="unknow";
 									all_check=false;
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-									idx_type=IDX_BUILTIN_TYPE_INT_PTR_C;
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+									idx_type=IDX_BUILTIN_TYPE_ZS_INT_PTR_C;
 									all_check=
-											arg_idx_type==IDX_BUILTIN_TYPE_INT_PTR_C
-										  ||arg_idx_type==IDX_BUILTIN_TYPE_INT_C
-										  ||arg_idx_type==IDX_BUILTIN_TYPE_UNSIGNED_INT_C
-										  ||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C
-										  ||arg_idx_type==IDX_BUILTIN_TYPE_INTPTR_T_C;
+											arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_PTR_C
+										  ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C
+										  ||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C;
 									break;
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 									idx_type=IDX_BUILTIN_TYPE_FLOAT_PTR_C;
 									all_check=arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C
 											||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_C
-											||arg_idx_type==IDX_BUILTIN_TYPE_UNSIGNED_INT_C
-											||arg_idx_type==IDX_BUILTIN_TYPE_INT_PTR_C
-										    ||arg_idx_type==IDX_BUILTIN_TYPE_INT_C
-											||arg_idx_type==IDX_BUILTIN_TYPE_INTPTR_T_C;
+											||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_PTR_C
+										    ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C;
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
 									idx_type=IDX_BUILTIN_TYPE_BOOL_PTR_C;
 									all_check=
 											arg_idx_type==IDX_BUILTIN_TYPE_BOOL_PTR_C
@@ -358,8 +365,8 @@ namespace zetscript{
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
 									all_check=false;
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT:
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
+								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 									var_object=((ScriptObject *)current_arg->var_ref);
 									aux_string=var_object->getNativePointerClassName();
 
@@ -385,156 +392,150 @@ namespace zetscript{
 					}
 
 					if(all_check){ /* we found the right function (set it up!) ... */
-						//call_instruction->value_op2 = (intptr_t)irfs;
 						ptr_function_found = irfs;
 					}
 				}else{ /* type script function  ... */
-					//call_instruction->value_op2=(intptr_t)irfs;
 					ptr_function_found = irfs;
 				}
 			}
 		}
 
 		if(ptr_function_found == NULL){
-			/*if(is_constructor && n_args == 0){ // default constructor not found --> set as not found...
-				instruction->properties = MSK_INSTRUCTION_PROPERTY_IGNORE_FUNCTION_CALL;//value_op2 = ZS_FUNCTION_NOT_FOUND_IDX;
+			int n_candidates=0;
+			std::string str_candidates="";
+			std::string args_str = "";
+			/* get arguments... */
+
+			for( unsigned k = 0; k < n_args;k++){
+				StackElement *current_arg=&stk_arg[k];
+				if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+					current_arg = (StackElement *)current_arg->var_ref;
+				}
+
+				if(k>0){
+					args_str+=",";
+				}
+				unsigned short var_type = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(current_arg->properties);
+
+				switch(var_type){
+
+				default:
+					aux_string="unknow";
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+					aux_string=k_str_int_type;
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+					aux_string=k_str_float_type;
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
+					aux_string=k_str_bool_type;
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+					aux_string=k_str_string_type_ptr;
+					if(current_arg->var_ref==0){ /* is constant char */
+						aux_string=	k_str_const_char_type_ptr;
+					}
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
+					aux_string="NULL";
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
+					aux_string="undefined";
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+					aux_string = ((ScriptObject *)current_arg->var_ref)->getNativePointerClassName();
+					break;
+				}
+				args_str+=zs_rtti::demangle(aux_string);
+
+				if(var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT
+				||var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT
+				||var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL
+				){
+					args_str+=" [*] ";
+				}
 			}
-			else{*/ // return error elaborate a error message...
-				int n_candidates=0;
-				std::string str_candidates="";
-				std::string args_str = "";
-				/* get arguments... */
 
-				for( unsigned k = 0; k < n_args;k++){
-					StackElement *current_arg=&stk_arg[k];
-					if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
-						current_arg = (StackElement *)current_arg->var_ref;
-					}
-
-					if(k>0){
-						args_str+=",";
-					}
-					unsigned short var_type = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(current_arg->properties);
-
-					switch(var_type){
-
-					default:
-						aux_string="unknow";
-						break;
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-						aux_string=k_str_int_type;
-						break;
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-						aux_string=k_str_float_type;
-						break;
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
-						aux_string=k_str_bool_type;
-						break;
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-						aux_string=k_str_string_type_ptr;
-						if(current_arg->var_ref==0){ /* is constant char */
-							aux_string=	k_str_const_char_type_ptr;
-						}
-						break;
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
-						aux_string="NULL";
-						break;
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
-						aux_string="undefined";
-						break;
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT:
-					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-						aux_string = ((ScriptObject *)current_arg->var_ref)->getNativePointerClassName();
-						break;
-					}
-					args_str+=zs_rtti::demangle(aux_string);
-
-					if(var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER
-					||var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT
-					||var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN
-					){
-						args_str+=" [*] ";
-					}
+			for(int i = stk_elements_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
+				StackElement *stk_element=NULL;
+				if(stk_element_are_ptr){
+					stk_element=((StackElement **)stk_elements_ptr)[i];//(StackElement *)list_symbols->items[i];
+				}else{
+					stk_element=&((StackElement *)stk_elements_ptr)[i];
+				}
+				if((stk_element->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)== 0){
+					continue;
 				}
 
-				for(int i = stk_elements_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-					StackElement *stk_element=NULL;
-					if(stk_element_are_ptr){
-						stk_element=((StackElement **)stk_elements_ptr)[i];//(StackElement *)list_symbols->items[i];
-					}else{
-						stk_element=&((StackElement *)stk_elements_ptr)[i];
+				ScriptFunction *irfs = (ScriptFunction *)stk_element->var_ref;
+
+
+				if(metamethod_str != NULL || (irfs->symbol.name == symbol_to_find)){
+
+					if(n_candidates == 0){
+						str_candidates+="\tPossible candidates are:\n\n";
 					}
-					if((stk_element->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)== 0){
-						continue;
-					}
+					str_candidates+="\t\t-"+(calling_object==NULL?""
+							:calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::")
+							:"")+irfs->symbol.name+"(";
 
-					ScriptFunction *irfs = (ScriptFunction *)stk_element->var_ref;
-
-
-					if(metamethod_str != NULL || (irfs->symbol.name == symbol_to_find)){
-
-						if(n_candidates == 0){
-							str_candidates+="\tPossible candidates are:\n\n";
+					for(unsigned a = 0; a < irfs->params->count; a++){
+						if(a>0){
+							str_candidates+=",";
 						}
-						str_candidates+="\t\t-"+(calling_object==NULL?""
-								:calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::")
-								:"")+irfs->symbol.name+"(";
 
-						for(unsigned a = 0; a < irfs->params->count; a++){
-							if(a>0){
-								str_candidates+=",";
-							}
-
-							if(irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
-								str_candidates+=zs_rtti::demangle(
-										GET_IDX_2_CLASS_C_STR(this,((FunctionParam *)irfs->params->items[a])->idx_type
-								));
-							}else{ /* typic var ... */
-								str_candidates+="arg"+zs_strutils::int_to_str(a+1);
-							}
+						if(irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+							str_candidates+=zs_rtti::demangle(
+									GET_IDX_2_CLASS_C_STR(this,((FunctionParam *)irfs->params->items[a])->idx_type
+							));
+						}else{ /* typic var ... */
+							str_candidates+="arg"+zs_strutils::int_to_str(a+1);
 						}
-						str_candidates+=");\n";
-						n_candidates++;
 					}
+					str_candidates+=");\n";
+					n_candidates++;
 				}
+			}
 
-				if(n_candidates == 0){
-					if(metamethod_str != NULL){
-						if(n_args==2){
-							PRINT_DUAL_ERROR_OP(metamethod_str);
+			if(n_candidates == 0){
+				if(metamethod_str != NULL){
+					if(n_args==2){
+						PRINT_DUAL_ERROR_OP(metamethod_str);
 
-						}else{
-							PRINT_ERROR_OP(metamethod_str);
-
-						}
 					}else{
-						
-						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot find %s \"%s%s(%s)\".\n\n",
-								is_constructor ? "constructor":"function",
-								calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-										calling_function->getInstructionSymbolName(instruction),
-								args_str.c_str()
-						);
+						PRINT_ERROR_OP(metamethod_str);
+
 					}
-				}
-				else{
-					if(metamethod_str!=NULL){
-						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
-													metamethod_str,
-													calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-													"unknown TODOOOOOO",//((ScriptFunction *)global_symbols->items[0])->symbol.name.c_str(),
-													args_str.c_str(),
-													str_candidates.c_str());
-					}else{
-						THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+				}else{
+
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot find %s \"%s%s(%s)\".\n\n",
 							is_constructor ? "constructor":"function",
 							calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 									calling_function->getInstructionSymbolName(instruction),
-							args_str.c_str(),
-							str_candidates.c_str());
-					}
+							args_str.c_str()
+					);
 				}
-			/*}*/
+			}
+			else{
+				if(metamethod_str!=NULL){
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
+												metamethod_str,
+												calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+												"unknown TODOOOOOO",//((ScriptFunction *)global_symbols->items[0])->symbol.name.c_str(),
+												args_str.c_str(),
+												str_candidates.c_str());
+				}else{
+					THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Cannot match %s \"%s%s(%s)\" .\n\n%s",
+						is_constructor ? "constructor":"function",
+						calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+								calling_function->getInstructionSymbolName(instruction),
+						args_str.c_str(),
+						str_candidates.c_str());
+				}
+			}
+
 		}
 
 		return ptr_function_found;
@@ -545,7 +546,7 @@ namespace zetscript{
 
 		//std::string *str;
 		ScriptObjectString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT};
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
 		script_var_string->initSharedPtr();
 
 		std::string str1;
@@ -578,13 +579,13 @@ namespace zetscript{
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
 				*(*str_dst_it)="null";
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
-				*(*str_dst_it)=zs_strutils::int_to_str((intptr_t)(stk_src_item)->stk_value);
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+				*(*str_dst_it)=zs_strutils::int_to_str((zs_int)(stk_src_item)->stk_value);
 				break;
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 				*(*str_dst_it)=zs_strutils::float_to_str(*((float *)&((stk_src_item)->stk_value)));
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
 				*(*str_dst_it)=(stk_src_item)->stk_value == 0?"false":"true";
 				break;
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
@@ -594,7 +595,7 @@ namespace zetscript{
 				*(*str_dst_it)="function";
 				break;
 			default:
-				if(stk_src_item->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+				if(stk_src_item->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 					*(*str_dst_it)=((ScriptObject *)(stk_src_item)->var_ref)->toString();
 				}
 				else{
@@ -624,7 +625,7 @@ namespace zetscript{
 
 		//std::string *str;
 		ScriptObjectString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT};
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
 		script_var_string->initSharedPtr();
 
 

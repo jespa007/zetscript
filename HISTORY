@@ -152,7 +152,7 @@ Date: XX-09-2020
 > #210 Fix check keyword delete
 > #211 Fix check directive import 
 #212 Fix accessors betwen assigns 
-> #213 Do operations as intptr_t instead of int * to give max capacity  (think about it)
+#213 Replace int by intptr
 > #214 Avoid memory leaks on exceptions 
 
 Other: 

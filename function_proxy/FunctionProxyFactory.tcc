@@ -30,10 +30,10 @@ namespace zetscript{
 		switch(nargs){
 		case 0:
 			fun_ptr=(void *)(new std::function<void (
-				intptr_t
+				zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
+					zs_int obj
 				){
 					(((_C *)obj)->* ((void (_T    ::*)())ptr_member_fun)) (
 					);
@@ -42,15 +42,15 @@ namespace zetscript{
 			break;
 		case 1:
 			fun_ptr=(void *)(new std::function<void (
-				intptr_t
-				,intptr_t
+				zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
+					zs_int obj
+					,zs_int param1
 				){
 					(((_C *)obj)->* ((void (_T    ::*)(
-							intptr_t
+							zs_int
 					))ptr_member_fun)) (
 						param1
 					);
@@ -59,18 +59,18 @@ namespace zetscript{
 			break;
 		case 2:
 			fun_ptr=(void *)(new std::function<void (
-				intptr_t
-				,intptr_t
-				,intptr_t
+				zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					, intptr_t param2
+					zs_int obj
+					,zs_int param1
+					, zs_int param2
 				){
 					(((_C *)obj)->* ((void (_T    ::*)(
-						 intptr_t
-						,intptr_t
+						 zs_int
+						,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2
@@ -80,21 +80,21 @@ namespace zetscript{
 			break;
 		case 3:
 			fun_ptr=(void *)(new std::function<void (
-				intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
+				zs_int
+				,zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					, intptr_t param2
-					, intptr_t param3
+					zs_int obj
+					,zs_int param1
+					, zs_int param2
+					, zs_int param3
 				){
 					(((_C *)obj)->* ((void (_T    ::*)(
-							intptr_t
-							,intptr_t
-							,intptr_t
+							zs_int
+							,zs_int
+							,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2
@@ -105,24 +105,24 @@ namespace zetscript{
 			break;
 		case 4:
 			fun_ptr=(void *)(new std::function<void (
-				intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
+				zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					, intptr_t param2
-					, intptr_t param3
-					, intptr_t param4
+					zs_int obj
+					,zs_int param1
+					, zs_int param2
+					, zs_int param3
+					, zs_int param4
 				){
 					(((_C *)obj)->* ((void (_T    ::*)(
-						intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
+						zs_int
+						,zs_int
+						,zs_int
+						,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2
@@ -134,27 +134,27 @@ namespace zetscript{
 			break;
 		case 5:
 			fun_ptr=(void *)(new std::function<void (
-				intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
+				zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					,intptr_t param2
-					,intptr_t param3
-					,intptr_t param4
-					,intptr_t param5
+					zs_int obj
+					,zs_int param1
+					,zs_int param2
+					,zs_int param3
+					,zs_int param4
+					,zs_int param5
 				){
 					(((_C *)obj)->* ((void (_T    ::*)(
-						intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
+						zs_int
+						,zs_int
+						,zs_int
+						,zs_int
+						,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2
@@ -167,30 +167,30 @@ namespace zetscript{
 			break;
 		case 6:
 			fun_ptr=(void *)(new std::function<void (
-				intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
+				zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					, intptr_t param2
-					, intptr_t param3
-					, intptr_t param4
-					, intptr_t param5
-					, intptr_t param6
+					zs_int obj
+					,zs_int param1
+					, zs_int param2
+					, zs_int param3
+					, zs_int param4
+					, zs_int param5
+					, zs_int param6
 				){
 					(((_C *)obj)->* ((void (_T    ::*)(
-						intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
+						zs_int
+						,zs_int
+						,zs_int
+						,zs_int
+						,zs_int
+						,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2
@@ -235,28 +235,28 @@ namespace zetscript{
 
 		switch(nargs){
 		case 0:
-			fun_ptr=(void *)(new std::function<intptr_t (
-				intptr_t
+			fun_ptr=(void *)(new std::function<zs_int (
+				zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
+					zs_int obj
 				){
-					return (((_C *)obj)->* ((intptr_t (_T    ::*)())ptr_member_fun)) (
+					return (((_C *)obj)->* ((zs_int (_T    ::*)())ptr_member_fun)) (
 					);
 				}
 			));
 			break;
 		case 1:
-			fun_ptr=(void *)(new std::function<intptr_t (
-				intptr_t
-				,intptr_t
+			fun_ptr=(void *)(new std::function<zs_int (
+				zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
+					zs_int obj
+					,zs_int param1
 				){
-				return  (((_C *)obj)->* ((intptr_t (_T    ::*)(
-							intptr_t
+				return  (((_C *)obj)->* ((zs_int (_T    ::*)(
+							zs_int
 					))ptr_member_fun)) (
 						param1
 					);
@@ -264,19 +264,19 @@ namespace zetscript{
 			));
 			break;
 		case 2:
-			fun_ptr=(void *)(new std::function<intptr_t (
-				intptr_t
-				,intptr_t
-				,intptr_t
+			fun_ptr=(void *)(new std::function<zs_int (
+				zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					, intptr_t param2
+					zs_int obj
+					,zs_int param1
+					, zs_int param2
 				){
-				return  (((_C *)obj)->* ((intptr_t (_T    ::*)(
-						 intptr_t
-						,intptr_t
+				return  (((_C *)obj)->* ((zs_int (_T    ::*)(
+						 zs_int
+						,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2
@@ -285,22 +285,22 @@ namespace zetscript{
 			));
 			break;
 		case 3:
-			fun_ptr=(void *)(new std::function<intptr_t (
-				intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
+			fun_ptr=(void *)(new std::function<zs_int (
+				zs_int
+				,zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					, intptr_t param2
-					, intptr_t param3
+					zs_int obj
+					,zs_int param1
+					, zs_int param2
+					, zs_int param3
 				){
-				return  (((_C *)obj)->* ((intptr_t (_T    ::*)(
-							intptr_t
-							,intptr_t
-							,intptr_t
+				return  (((_C *)obj)->* ((zs_int (_T    ::*)(
+							zs_int
+							,zs_int
+							,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2
@@ -310,25 +310,25 @@ namespace zetscript{
 			));
 			break;
 		case 4:
-			fun_ptr=(void *)(new std::function<intptr_t (
-				intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
+			fun_ptr=(void *)(new std::function<zs_int (
+				zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					, intptr_t param2
-					, intptr_t param3
-					, intptr_t param4
+					zs_int obj
+					,zs_int param1
+					, zs_int param2
+					, zs_int param3
+					, zs_int param4
 				){
-				return (((_C *)obj)->* ((intptr_t (_T    ::*)(
-						intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
+				return (((_C *)obj)->* ((zs_int (_T    ::*)(
+						zs_int
+						,zs_int
+						,zs_int
+						,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2
@@ -339,28 +339,28 @@ namespace zetscript{
 			));
 			break;
 		case 5:
-			fun_ptr=(void *)(new std::function<intptr_t (
-				intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
+			fun_ptr=(void *)(new std::function<zs_int (
+				zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					,intptr_t param2
-					,intptr_t param3
-					,intptr_t param4
-					,intptr_t param5
+					zs_int obj
+					,zs_int param1
+					,zs_int param2
+					,zs_int param3
+					,zs_int param4
+					,zs_int param5
 				){
-				return (((_C *)obj)->* ((intptr_t (_T    ::*)(
-						intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
+				return (((_C *)obj)->* ((zs_int (_T    ::*)(
+						zs_int
+						,zs_int
+						,zs_int
+						,zs_int
+						,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2
@@ -372,31 +372,31 @@ namespace zetscript{
 			));
 			break;
 		case 6:
-			fun_ptr=(void *)(new std::function<intptr_t (
-				intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
-				,intptr_t
+			fun_ptr=(void *)(new std::function<zs_int (
+				zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
+				,zs_int
 			)> (
 				[ptr_member_fun](
-					intptr_t obj
-					,intptr_t param1
-					, intptr_t param2
-					, intptr_t param3
-					, intptr_t param4
-					, intptr_t param5
-					, intptr_t param6
+					zs_int obj
+					,zs_int param1
+					, zs_int param2
+					, zs_int param3
+					, zs_int param4
+					, zs_int param5
+					, zs_int param6
 				){
-				return (((_C *)obj)->* ((intptr_t (_T    ::*)(
-						intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
-						,intptr_t
+				return (((_C *)obj)->* ((zs_int (_T    ::*)(
+						zs_int
+						,zs_int
+						,zs_int
+						,zs_int
+						,zs_int
+						,zs_int
 					))ptr_member_fun)) (
 						param1
 						,param2

@@ -43,7 +43,7 @@ namespace zetscript{
 				, short line
 				,const std::string & var_name
 				,const std::string & str_native_type
-				,intptr_t ref_ptr // it should pass reference always because is built-in
+				,zs_int ref_ptr // it should pass reference always because is built-in
 				, unsigned short properties
 		);
 
@@ -57,7 +57,7 @@ namespace zetscript{
 				,const std::string & function_name
 				, std::vector<FunctionParam> args={}
 				, int idx_return_type=ZS_IDX_UNDEFINED
-				,intptr_t ref_ptr=0
+				,zs_int ref_ptr=0
 				, unsigned short properties=0
 		);
 

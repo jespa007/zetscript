@@ -17,7 +17,7 @@ namespace zetscript{
 		// add extra symbol this itself if is a class typedef by user...
 		//if(registered_class_info->idx_class >=IDX_BUILTIN_TYPE_MAX){ // put as read only and cannot assign
 		this_variable.var_ref=this;
-		this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT;
+		this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
 		//}
 
 		// Register c vars...
@@ -44,7 +44,7 @@ namespace zetscript{
 				if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 				{
 					// we know the type object so we assign the pointer ...
-					void *ptr_variable=(void *)((intptr_t)this->c_object + symbol->ref_ptr);
+					void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
 
 					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
 				}else{
@@ -59,7 +59,7 @@ namespace zetscript{
 		);
 
 		se->var_ref=&lenght_user_properties;
-		se->properties=(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY);
+		se->properties=(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY);
 
 		// start property idx starts  from last built-in property...
 		idx_start_user_properties=stk_properties->count;
@@ -177,7 +177,7 @@ namespace zetscript{
 	StackElement *ScriptObject::newSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk={NULL,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
-		stk_properties->push_back((intptr_t)stk);
+		stk_properties->push_back((zs_int)stk);
 		lenght_user_properties=(int)stk_properties->count-idx_start_user_properties;
 		return stk;
 	}
@@ -259,7 +259,7 @@ namespace zetscript{
 			si = *sv;
 
 			// update n_refs +1
-			if(sv->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+			if(sv->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 				virtual_machine->sharePointer(((ScriptObject *)(sv->var_ref))->ptr_shared_pointer_node);
 			}
 
@@ -296,7 +296,7 @@ namespace zetscript{
 	StackElement * ScriptObject::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
 		bool exists;
-		intptr_t idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
+		zs_int idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
 		if(exists){
 			if(idx!=NULL){
 				*idx=idx_stk_element;
@@ -333,8 +333,8 @@ namespace zetscript{
 
 		switch(var_type){
 
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOLEAN:
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_INTEGER:
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
@@ -352,7 +352,7 @@ namespace zetscript{
 				break;
 			default: // properties ...
 
-				if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_OBJECT){
+				if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 					if(((si->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)
 						&& (si->var_ref != this) // ensure that property don't holds its same var.
 						&& (si->var_ref != 0)
@@ -402,7 +402,7 @@ namespace zetscript{
 
 	void ScriptObject::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
 		bool exists=false;
-		intptr_t idx_property = map_property_keys->get(property_name.c_str(),exists);
+		zs_int idx_property = map_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
 			THROW_RUNTIME_ERROR("Property %s not exist",property_name.c_str());
 		}
