@@ -56,8 +56,12 @@ namespace zetscript{
 		}
 		else{ // dettach and attach next...
 			// [1]<->[2]<-> ...[P]<->[C]<->[N]...[M-1]<->[M]
+			//InfoSharedPointerNode *aux_node=_node;
 			if(_node == list->first){
 				list->first=_node->next;
+			}
+			else if(_node == list->last){
+				list->last=_node->previous;
 			}
 			_node->previous->next=_node->next;
 			_node->next->previous=_node->previous;

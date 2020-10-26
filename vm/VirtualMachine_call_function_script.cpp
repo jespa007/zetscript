@@ -690,7 +690,10 @@ namespace zetscript{
 					else{ // pop two parameters nothing ...
 						POP_TWO; // op1:dst / op2:src
 
-						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {// == ScriptObject::VAR_TYPE::OBJECT){
+
+						stk_dst=stk_result_op1;
+
+						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {
 							stk_dst=(StackElement *)stk_result_op1->var_ref; // stk_value is expect to contents a stack variable
 						}else{
 							THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Expected l-value on assignment ('=')");
