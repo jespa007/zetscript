@@ -370,9 +370,8 @@ namespace zetscript{
 				EvalInstruction *instruction = eval_data->current_function->instructions[i];
 
 				if(		   ((	instruction->vm_instruction.properties & (MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR)) == 0)
-					    && (	instruction->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_FIND
-						|| (	instruction->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE && instruction->vm_instruction.value_op2 == ZS_IDX_UNDEFINED)
-				)) { // try to solve symbol...
+					    && ((	instruction->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_FIND) || (	instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS ))
+				) { // try to solve symbol...
 
 					std::string *symbol_to_find=&instruction->symbol.name;
 

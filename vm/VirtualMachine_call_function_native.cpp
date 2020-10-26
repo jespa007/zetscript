@@ -157,8 +157,6 @@ namespace zetscript{
 
 		}
 
-		ZS_PRINT_DEBUG("pre_call %i",n_args);
-
 		if(calling_function->idx_return_type == IDX_BUILTIN_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){

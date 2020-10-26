@@ -22,13 +22,13 @@ class Vector2{
 	}
 	
 	toString(){ // a way to have a custom string output
-		return "("+this.x+","+this.y+")";
+		//return "("+this.x+","+this.y+")";
 	}
 };
 
-//var v=new Vector2(0,2)+new Vector2(0,2);//+new Vector2()
+var v=(new Vector2(0,2)+new Vector2(0,2));//+new Vector2()
 //var v=new Vector2(0,2)+new Vector2(0,2)
-var v=new Vector2();
+//var v=new Vector2();
 print(""+(v).toString())
 
 //print(new Vector2(0,2)); // it prints each new vector

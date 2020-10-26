@@ -279,7 +279,6 @@ namespace zetscript{
 			// POST: token as literal or identifier
 		}
 
-
 		// eval operator expression only evaluates expression with normal operators (+,-,>>,<<,etc) respecting always its preference. Assign operators (=,+=,-=,etc) should be extracted
 		void eval_operators_expression(
 				  EvalData *eval_data
@@ -301,7 +300,6 @@ namespace zetscript{
 					, expression_tokens->at(idx_start).instructions.begin()
 					, expression_tokens->at(idx_start).instructions.end()
 				);
-
 				return;
 			}
 
@@ -351,7 +349,6 @@ namespace zetscript{
 					,split_node->line
 					,NULL
 			);
-
 		}
 
 		char * eval_operators(
@@ -370,7 +367,6 @@ namespace zetscript{
 			int idx_start=0;
 			int idx_end=(int)(expression_tokens->size()-1);
 			std::vector<std::vector<EvalInstruction *>> assign_instructions_post_expression;
-
 
 			for(int i=idx_end; i >= 0; i--){
 				Operator token_operator = expression_tokens->at(i).operator_type;
@@ -411,7 +407,6 @@ namespace zetscript{
 					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
 				}
 
-
 				// load variable and accessors...
 				for(unsigned i=0;i<token_node_symbol->instructions.size();i++){
 					EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[i];
@@ -433,14 +428,11 @@ namespace zetscript{
 							convert_operator_to_byte_code(operator_type)
 					));
 
-
-
 					instruction->instruction_source_info= InstructionSourceInfo(
 							eval_data->current_parsing_file
 							,token_node_operator->line
 							,NULL
 					);
-
 					// set pops one to do the operation but keeps the variable to store on the top of stack
 					instruction->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_POP_ONE;
 				}
@@ -455,15 +447,13 @@ namespace zetscript{
 						,NULL
 				);
 			}
-
 			//--------------------------------------------------------------
-
 			eval_operators_expression(
-					 eval_data
-					, expression_tokens
-					, instructions
-					, idx_start
-					, idx_end
+				 eval_data
+				, expression_tokens
+				, instructions
+				, idx_start
+				, idx_end
 			);
 
 			if(*aux_p == '?'){ // ternary
@@ -513,7 +503,6 @@ namespace zetscript{
 					instructions->push_back(assign_instructions_post_expression[i][j]);
 				}
 			}
-
 			return aux_p;
 		}
 
@@ -555,7 +544,6 @@ namespace zetscript{
 			bool new_line_break=false;
 			char *test_ignore_blanks=NULL,*test_char_carry_return=NULL;
 
-
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 			start_expression_str=aux_p;
@@ -571,8 +559,8 @@ namespace zetscript{
 
 				for(;;){ // it eats identifier/constant operator, etc
 
-					TokenNode 	symbol_token_node
-								,operator_token_node;
+					TokenNode 	symbol_token_node,operator_token_node;
+
 					keyword_type=Keyword::KEYWORD_UNKNOWN;
 
 					if((pre_self_operation_type=is_pre_post_self_operation(aux_p)) != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
@@ -588,7 +576,6 @@ namespace zetscript{
 								break;
 						}
 					}else{
-
 						// check pre operator (-,+,!)...
 						switch(pre_operator=is_pre_operator(aux_p)){
 							default:
@@ -743,7 +730,6 @@ namespace zetscript{
 										if(*aux_p != ','){
 											THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ','");
 										}
-
 										aux_p++;
 									}
 
@@ -775,6 +761,7 @@ namespace zetscript{
 								if(*aux_p != ']'){
 									THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
 								}
+
 								aux_p++;
 								vector_access=true;
 								byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
@@ -795,8 +782,17 @@ namespace zetscript{
 
 								if(first_access){ // check first symbol at first...
 									if(symbol_token_node.value == SYMBOL_VALUE_THIS){
+
+										// set symbol name
 										instruction_token=symbol_token_node.instructions[0];
 										instruction_token->symbol.name=accessor_value;
+
+										// set variable accessor instead of "this"
+										instruction_token->instruction_source_info= InstructionSourceInfo(
+											eval_data->current_parsing_file
+											,line
+											,get_compiled_symbol(eval_data,accessor_value)
+										);
 									}
 								}
 
@@ -856,7 +852,6 @@ namespace zetscript{
 								,get_compiled_symbol(eval_data,SYMBOL_VALUE_THIS)
 							);
 
-							//symbol_token_node.instructions[0]->vm_instruction.value_op1=LoadType::LOAD_TYPE_VARIABLE;
 							symbol_token_node.instructions[0]->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
 							symbol_token_node.instructions[0]->vm_instruction.properties=0;
 						}
@@ -910,7 +905,7 @@ namespace zetscript{
 					if(	is_end_expression(aux_p)
 					|| operator_type==Operator::OPERATOR_TERNARY_IF
 					|| operator_type==Operator::OPERATOR_TERNARY_ELSE
-					|| ( new_line_break && (operator_type==Operator::OPERATOR_UNKNOWN /*&& keyword_type<Keyword::KEYWORDS_WITHIN_EXPRESSIONS*/))){ // if not operator and carry return found is behaves as end expression
+					|| ( new_line_break && (operator_type==Operator::OPERATOR_UNKNOWN ))){ // if not operator and carry return found is behaves as end expression
 						break;
 					}
 

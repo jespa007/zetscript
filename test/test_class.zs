@@ -31,6 +31,11 @@ class TestExtended extends Test{
 		};
 	}
 	
+	function0(a){
+		this.a+=10; 	
+		print("TestExtended::function0, this.a:"+this.a);
+	}
+	
 	function2(a){
 		super(a+10); 		// it calls Test::function1(2)
 		this.a+=5; 	
