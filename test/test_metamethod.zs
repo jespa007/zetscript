@@ -22,7 +22,7 @@ class Vector2{
 	}
 	
 	toString(){ // a way to have a custom string output
-		//return "("+this.x+","+this.y+")";
+		return "("+this.x+","+this.y+")";
 	}
 };
 
