@@ -21,7 +21,7 @@ class Vector2{
 		return v3;
 	}
 	
-	toString(){ // a way to have a custom string output
+	_toString(){ // a way to have a custom string output
 		return "("+this.x+","+this.y+")";
 	}
 };
