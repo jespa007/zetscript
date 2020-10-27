@@ -58,22 +58,18 @@ namespace zetscript{
 		main_function=NULL;
 		main_object=NULL;
 		script_classes=new zs_vector;
+
+		main_object=registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
+		MAIN_SCOPE(this)->script_class=main_object;
+
+		Symbol *symbol_main_function=main_object->registerMemberFunction(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
+		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
+
 	}
 
 	void ScriptClassFactory::init(){
+		// VM has to be initialized
 
-		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
-		// REGISTER BUILT IN SCRIPT TYPES
-		// MAIN CLASS (0)
-		main_object=registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
-
-		// init main scope...
-		MAIN_SCOPE(this)->script_class=main_object;
-
-		/*if(main_object->symbol.scope!=MAIN_SCOPE(this)){
-			THROW_RUNTIME_ERROR("Error initializing global scope");
-			return;
-		}*/
 
 		// REGISTER BUILT IN C TYPES
 		REGISTER_BUILT_IN_TYPE(void,IDX_BUILTIN_TYPE_VOID_C);
@@ -109,14 +105,11 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------------------------------
 		// Let's register functions,...
 		// register c function's
-		Symbol *symbol_main_function=main_object->registerMemberFunction(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
-		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
-
-		ZS_REGISTER_GLOBAL_FUNCTION(this,"print",static_cast<void (*)(const char *)>(print));
-		ZS_REGISTER_GLOBAL_FUNCTION(this,"print",static_cast<void (*)(zs_int)>(print));
 
 
-		//registerNativeGlobalFunction("error",internalPrintError);
+		ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(const char *)>(print));
+		ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(zs_int)>(print));
+
 
 		//ZS_REGISTER_FUNCTION_MEMBER(this->zs,ScriptObjectVector,"size",&ScriptObjectVector::size);
 
@@ -128,7 +121,7 @@ namespace zetscript{
 		// String
 		registerNativeSingletonClass<StringBuiltIn>("StringBuiltIn");
 		registerNativeMemberFunctionStatic<StringBuiltIn>("format",StringBuiltIn::format);
-		ZS_REGISTER_GLOBAL_VARIABLE(zs,"String",&string_built_in);
+		ZS_REGISTER_VARIABLE(zs,"String",&string_built_in);
 
 		// Math
 		registerNativeSingletonClass<MathBuiltIn>("MathBuiltIn");
@@ -138,14 +131,21 @@ namespace zetscript{
 		registerNativeMemberFunctionStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
 		registerNativeMemberFunctionStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
 		registerNativeMemberFunctionStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
-		ZS_REGISTER_GLOBAL_VARIABLE(zs,"Math",&math_built_in);
+		ZS_REGISTER_VARIABLE(zs,"Math",&math_built_in);
 
 		// System
 		registerNativeSingletonClass<SystemBuiltIn>("SystemBuiltIn");
 		registerNativeMemberFunctionStatic<SystemBuiltIn>("clock",SystemBuiltIn::clock);
 		registerNativeMemberFunctionStatic<SystemBuiltIn>("print",SystemBuiltIn::print);
-		ZS_REGISTER_GLOBAL_VARIABLE(zs,"System",&system_built_in);
+		registerNativeMemberFunctionStatic<SystemBuiltIn>("eval",SystemBuiltIn::eval);
+		ZS_REGISTER_VARIABLE(zs,"System",&system_built_in);
+
+		// Custom user function or classes
+		zs->eval("function test_function(){ print(\"hola\")}");
+		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()");
 	}
+
+
 
 	void ScriptClassFactory::registerNativeBaseSymbols(bool _register){
 		register_c_base_symbols = _register;

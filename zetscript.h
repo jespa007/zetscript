@@ -104,14 +104,14 @@
 #define ZETSCRIPT_PATCH_VERSION 0
 
 
-#define ZS_CLASS_INHERITS_FROM(zs,C,B)							(zs)->nativeClassInheritsFrom<C,B>()
-#define ZS_REGISTER_GLOBAL_FUNCTION(zs,text,s) 					(zs)->registerNativeGlobalFunction(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_GLOBAL_VARIABLE(zs,text,s) 					(zs)->registerNativeGlobalVariable(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_CLASS(zs,class_type,s) 						(zs)->registerNativeClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)			(zs)->registerNativeSingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->registerNativeVariableMember<class_type>(s,v)
-#define ZS_REGISTER_FUNCTION_MEMBER_STATIC(zs,class_type,s,f)	(zs)->registerNativeMemberFunctionStatic<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->registerNativeMemberFunction<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_CLASS_INHERITS_FROM(zs,C,B)							(zs)->classInheritsFrom<C,B>()
+#define ZS_REGISTER_FUNCTION(zs,text,s) 					(zs)->registerFunction(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_VARIABLE(zs,text,s) 					(zs)->registerVariable(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_CLASS(zs,class_type,s) 						(zs)->registerClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)			(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_VARIABLE_MEMBER(zs,class_type,s,v)			(zs)->registerVariableMember<class_type>(s,v)
+#define ZS_REGISTER_FUNCTION_MEMBER_STATIC(zs,class_type,s,f)	(zs)->registerMemberFunctionStatic<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_REGISTER_FUNCTION_MEMBER(zs,class_type,s,f)			(zs)->registerMemberFunction<class_type>(s,f,__FILE__, __LINE__)
 #define ZS_REGISTER_CONSTANT_INT(zs,constant_name,v)			(zs)->registerConstantIntValue(constant_name,v)
 
 
@@ -201,7 +201,7 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		template <typename V>
-		 void registerNativeGlobalVariable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
+		 void registerVariable(const std::string & var_str,V var_ptr, const char *registered_file="",int registered_line=-1){
 			 script_class_factory->registerNativeGlobalVariable(var_str,var_ptr, registered_file, registered_line);
 		 }
 
@@ -209,7 +209,7 @@ namespace zetscript{
 		 * Register C function
 		 */
 		template <typename F>
-		void registerLocalFunction( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
+		void registerFunction( const char * function_name,F function_ptr, const char *registered_file="",int registered_line=-1){
 			script_class_factory->registerNativeGlobalFunction( function_name,function_ptr, registered_file,registered_line);
 		}
 
@@ -234,16 +234,15 @@ namespace zetscript{
 			script_class_factory->nativeClassInheritsFrom<C,B>();
 		}
 
-		void	registerNativeBaseSymbols(bool r){
+		void	registerBaseSymbols(bool r){
 			script_class_factory->registerNativeBaseSymbols(r);
 		}
-
 
 		/**
 		 * Register Function Member Class
 		 */
 		template < typename C, typename R, class T, typename..._A>
-		void registerNativeMemberFunction(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 ){
+		void registerMemberFunction(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",int registered_line=-1 ){
 			script_class_factory->registerNativeMemberFunction<C>(function_name,function_type, registered_file,registered_line );
 		}
 
@@ -253,14 +252,13 @@ namespace zetscript{
 		template <typename C,typename F>
 		void registerMemberFunctionStatic(const char *function_name,F fun, const char *registered_file="",int registered_line=-1){
 			script_class_factory->registerNativeMemberFunctionStatic<C>(function_name,fun, registered_file, registered_line);
-
 		}
 
 		/**
 		 * Register C Member var
 		 */
 		template <typename C, typename R,typename T>
-		void registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
+		void registerVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file="",int registered_line=-1){
 			script_class_factory->registerNativeVariableMember<C>(var_name,var_pointer,registered_file,registered_line);
 		}
 
@@ -372,8 +370,6 @@ namespace zetscript{
 		auto bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type;
 
-
-
 		//--------------------------------------------------------------------------------------------------------------------
 		//
 		// 6 PARAMS
@@ -387,8 +383,6 @@ namespace zetscript{
 		template <typename R,typename T, typename... ArgTypes>
 		auto bindScriptFunctionBuilder(void **f,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type;
-
-
 
 		//
 		//

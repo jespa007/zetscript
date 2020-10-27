@@ -247,6 +247,12 @@ IF ( "${FCOMPILE}" STREQUAL "ON")
 		${PROJECT_SOURCE_DIR}/test/test_script_call.cpp
 	)	
 	target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
+	
+	# zs_test
+	add_executable(zs_test${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
+	)	
+	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})	
 ELSE()
 
 	SET(

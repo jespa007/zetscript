@@ -1,4 +1,4 @@
-var dictionary={ // structure
+var object={ // structure
 	i: 10,
 	f: 0.5,
 	s: "a string",
@@ -8,9 +8,9 @@ var dictionary={ // structure
 
 
 // add property test
-dictionary.k=false;
+object.k=false;
 
-print("dictionary.k:"+dictionary.k);
+print("dictionary.k:"+object.k);
 
 /*for(var k in dictionary){
 	

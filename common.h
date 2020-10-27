@@ -130,6 +130,7 @@ namespace zetscript{
 		std::string arg_name; //arg c++ type or arg name
 		int line;
 		bool by_ref;
+		bool variable_args;
 	}FunctionParam;
 
 	#pragma pack(pop)

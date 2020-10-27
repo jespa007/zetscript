@@ -29,7 +29,7 @@ int main(){
 
 	try{
 
-		zs->registerLocalFunction("test_callback",test_callback);
+		zs->registerFunction("test_callback",test_callback);
 
 		zs->eval(
 			"class Test{"

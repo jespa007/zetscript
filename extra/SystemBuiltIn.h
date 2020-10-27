@@ -9,6 +9,7 @@ namespace zetscript{
 		// clock
 		static zs_int clock();
 		static void print(ScriptObjectString *str, ScriptObjectVector *args);
+		static void eval(ScriptObjectString *str, ScriptObjectVector *args);
 	};
 
 }

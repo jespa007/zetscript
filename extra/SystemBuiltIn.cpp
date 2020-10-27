@@ -11,5 +11,11 @@ namespace zetscript{
 		printf("not implemented");
 		delete str_out;
 	}
+
+	void SystemBuiltIn::eval(ScriptObjectString *str, ScriptObjectVector *args){
+		ScriptObjectString *str_out=StringBuiltIn::format(str,args);
+		printf("not implemented");
+		delete str_out;
+	}
 }
 

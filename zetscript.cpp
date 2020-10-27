@@ -33,8 +33,11 @@ namespace zetscript{
 		virtual_machine = new VirtualMachine(this);
 		script_class_factory = new ScriptClassFactory(this);
 
-		script_class_factory->init();
 		virtual_machine->init();
+		script_class_factory->init();
+
+
+
 
 		eval_int=0;
 		eval_float=0;

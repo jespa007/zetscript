@@ -141,7 +141,7 @@ namespace zetscript{
 
 						// 1st. check whether eval a keyword...
 						key_w = is_keyword(aux_p);
-						if(key_w == Keyword::KEYWORD_UNKNOWN){ // only expects function name
+						if(key_w == Keyword::KEYWORD_UNKNOWN){
 								aux_p = eval_keyword_function(
 										eval_data
 										,aux_p
@@ -150,19 +150,19 @@ namespace zetscript{
 
 								);
 						}else{
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"unexpected keyword \"%s\"",eval_info_keywords[key_w].str);
+							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"unexpected keyword \"%s\" in class declaration \"%s\"",eval_info_keywords[key_w].str,class_name.c_str());
 						}
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					}
 
 					if(*aux_p != '}'){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,class_line ,"class \"%s\" declared is not closed ",class_name.c_str());
+						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration \"%s\"",class_name.c_str());
 					}
 
 					return aux_p+1;
 
 				}else{
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' after declare class \"%s\"",class_name.c_str());
+					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{' to start class declaration\"%s\"",class_name.c_str());
 				}
 			}
 
@@ -287,9 +287,12 @@ namespace zetscript{
 				aux_p++;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
+				bool variable_args=false;
+
 				// grab words separated by ,
-				while(*aux_p != 0 && *aux_p != ')'){
+				while(*aux_p != 0 && *aux_p != ')' && !variable_args){
 					arg_info.by_ref=false;
+					arg_info.variable_args=false;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					if(args.size()>0){
 						if(*aux_p != ','){
@@ -308,7 +311,11 @@ namespace zetscript{
 					if(is_keyword(aux_p)==KEYWORD_REF){
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
 						arg_info.by_ref =true;
+					}else if(is_keyword(aux_p)==KEYWORD_VARIABLE_ARGS){
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
+						variable_args=arg_info.variable_args =true;
 					}
+
 
 
 					//int m_start_arg=line;
