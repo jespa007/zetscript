@@ -136,7 +136,7 @@ Date: XX-09-2020
 #193 Check fix ternari
 #194 Detect literal or assigments within literals  
 #195 Change ScriptVar by ScriptObject and remove ScriptVarDictionnary
-> #196 Do not extend property when it access 
+#196 Do not extend property when it access 
 > #197 Avoid vector to add properties through string 
 > #198 Avoid string to add properties through string 
 > #199 Check fix instanceof 
@@ -154,9 +154,12 @@ Date: XX-09-2020
 > #211 Fix check directive import 
 #212 Fix accessors betwen assigns 
 #213 Replace int by intptr
-> #214 Avoid memory leaks on exceptions 
+> #214 Avoid memory leaks on exceptions !!!!!
 #216 Accept .,() and [] as operator 
 > #217 div/mod issues 
+> #218 Encapsulate std::string in ScriptObjectString 
+> #219 Create iterator 
+> #220 Set information for non-existant properties in store instruction 
 
 Other: 
 
