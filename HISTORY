@@ -120,7 +120,7 @@ Date: XX-09-2020
 #172 get rid super scope
 #173 Manage this context automatically on anonymouse function created on class 
 #175 Arguments as E/S 
-> #177 Fix set/restore state 
+> #177 Implement saveState
 #179 Bug if-else fails {max scope reached} 
 #180 Return vector or dictionary not deref its user properties 
 > #181 Implement var args 
