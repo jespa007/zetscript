@@ -52,8 +52,9 @@ class ScriptClass;
 
 		StackElement * addProperty(
 				const std::string & symbol_value
-				, const ScriptFunction *info_function
-				, Instruction *src_instruction
+				//, const ScriptFunction *info_function
+				//, Instruction *src_instruction
+				,std::string & error
 				,StackElement * stk_element = NULL
 				,int * idx_stk_element = NULL
 

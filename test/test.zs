@@ -1,6 +1,12 @@
+vxcvxc
+
+for(var i=0; i< 10; i++){
+	dsdas+dasdas
+}
+
 //test_function();
-System.eval("function test_function{0}(){ print(\"hola\")}",1)
-test_function1()
+//System.eval("function test_function{0}(){ print(\"hola\")}",1)
+//test_function1()
 
 /*class Vector2{toString(){return "mierda"}}
 var v=new Vector2()

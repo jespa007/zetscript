@@ -74,7 +74,7 @@ namespace zetscript{
 			Keyword keyw;
 
 			if(*aux_p != '{'){ // go for final ...
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '{'");
+				EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '{'");
 			}
 
 			// declare dictionary ...
@@ -91,7 +91,7 @@ namespace zetscript{
 				// expression expected ...
 				if(v_elements > 0){
 					if(*aux_p != ','){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ',' for dictionary property");
+						EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ',' for dictionary property");
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -100,7 +100,7 @@ namespace zetscript{
 				lineSymbol = line;
 
 				if((keyw=eval::is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: \"%s\" keyword is not allowed as property name",eval::eval_info_keywords[keyw].str);
+					EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: \"%s\" keyword is not allowed as property name",eval::eval_info_keywords[keyw].str);
 				}
 
 				aux_p=get_identifier_token(
@@ -111,7 +111,7 @@ namespace zetscript{
 				);
 
 				if(zs_strutils::is_empty(symbol_value)){
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected property name");
+					EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: expected property name");
 				}
 
 				 key_value="\""+symbol_value+"\"";
@@ -134,7 +134,7 @@ namespace zetscript{
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				 if(*aux_p != ':'){ // expected : ...
-					 THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ':' after property name");
+					 EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ':' after property name");
 				 }
 
 				 aux_p++;
@@ -157,7 +157,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != '}'){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ending '}'");
+				EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ending '}'");
 			}
 
 			return aux_p+1;
@@ -169,7 +169,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 			if(*aux_p != '['){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"vector: expected '['");
+				EVAL_ERROR(eval_data->current_parsing_file,line,"vector: expected '['");
 			}
 
 			// declare vector ...
@@ -185,7 +185,7 @@ namespace zetscript{
 				// expression expected ...
 				if(v_elements > 0){
 					if(*aux_p != ','){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"vector: expected ',' before element");
+						EVAL_ERROR(eval_data->current_parsing_file,line,"vector: expected ',' before element");
 					}
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 				}
@@ -205,7 +205,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != ']'){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"vector: expected ending ']'");
+				EVAL_ERROR(eval_data->current_parsing_file,line,"vector: expected ending ']'");
 			}
 
 			return aux_p+1;
@@ -242,7 +242,7 @@ namespace zetscript{
 					sc=GET_SCRIPT_CLASS(eval_data,symbol_value);
 
 					if(sc==NULL){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"class '%s' not defined",symbol_value.c_str());
+						EVAL_ERROR(eval_data->current_parsing_file,line,"class '%s' not defined",symbol_value.c_str());
 					}
 
 					instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW));
@@ -274,7 +274,7 @@ namespace zetscript{
 
 
 					 if(*aux_p != '('){
-						 THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_info_keywords[key_w].str);
+						 EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_info_keywords[key_w].str);
 					 }
 
 					 n_args=0;
@@ -298,11 +298,10 @@ namespace zetscript{
 						  }
 
 						/*if(*aux_p != ',' && *aux_p != ')'){
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Expected ',' or ')'");
+							EVAL_ERROR(eval_data->current_parsing_file,line ,"Expected ',' or ')'");
 						}*/
 
 					 }while(*aux_p != ')');
-
 
 					 // if constructor function found insert call function...
 					 if(constructor_function != NULL){

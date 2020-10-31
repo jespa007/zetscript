@@ -142,7 +142,7 @@ namespace zetscript{
 
 		// Custom user function or classes
 		zs->eval("function test_function(){ print(\"hola\")}");
-		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()");
+		//zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()");
 	}
 
 

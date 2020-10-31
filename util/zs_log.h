@@ -1,5 +1,6 @@
 #pragma once
 
+
 //#define zs_print_error_cr(s, ...) 	ZetScript::log::print(__FILE__,__LINE__,ZetScript::zs_strutils::ZS_LOG_LEVEL_ERROR	, true,s, ##__VA_ARGS__)
 #define ZS_PRINT_WARNING(s, ...)   	zetscript::zs_log::print(__FILE__,__LINE__,zetscript::zs_log::ZS_LOG_LEVEL_WARNING	, true,s, ##__VA_ARGS__)
 #define ZS_PRINT_INFO(s, ...)   		zetscript::zs_log::print(__FILE__,__LINE__,zetscript::zs_log::ZS_LOG_LEVEL_INFO	, true,s, ##__VA_ARGS__)

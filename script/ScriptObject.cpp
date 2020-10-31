@@ -216,10 +216,12 @@ namespace zetscript{
 
 	StackElement * ScriptObject::addProperty(
 			const std::string & symbol_value
-			, const ScriptFunction *info_function
-			,Instruction *src_instruction
+			,std::string & error
+			//, const ScriptFunction *info_function
+			//,Instruction *src_instruction
 			,StackElement * sv
 			,int * idx_stk_element
+
 		){
 		StackElement si;
 		bool error_symbol=false;
@@ -248,11 +250,13 @@ namespace zetscript{
 		}
 
 		if(error_symbol){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function, src_instruction),"invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
+			error=zs_strutils::format("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
+			return NULL;
 		}
 
 		if(map_property_keys->exist(symbol_value.c_str())){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(info_function, src_instruction),"\"%s\" symbol already exists",symbol_value.c_str());
+			error=zs_strutils::format("\"%s\" symbol already exists",symbol_value.c_str());
+			return NULL;
 		}
 
 		if(sv != NULL){

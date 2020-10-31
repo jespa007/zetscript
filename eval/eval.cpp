@@ -137,17 +137,20 @@ namespace zetscript{
 		void eval(ZetScript *zs,const char * str, const char *  _filename, int _line){
 			EvalData *eval_data=new EvalData(zs);
 			int line =_line;
+			bool error;
+			std::string error_str;
 			eval_data->current_parsing_file=_filename;
-			char *end_char = NULL;
-
 			push_function(eval_data,MAIN_FUNCTION(eval_data));
-			end_char=eval_recursive(eval_data,str,line,MAIN_SCOPE(eval_data));
+			eval_recursive(eval_data,str,line,MAIN_SCOPE(eval_data));
 			pop_function(eval_data);
+
+			error=eval_data->error;
+			error_str=eval_data->error_str;
 
 			delete eval_data;
 
-			if(*end_char != 0){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Unexpected \'%c\' ",*end_char);
+			if(error){
+				THROW_EXCEPTION(error_str);
 			}
 
 		}
@@ -231,7 +234,7 @@ namespace zetscript{
 				)) != NULL){
 
 					if(*aux_p != '}'){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected '}' ");
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '}' ");
 					}
 
 					eval_check_scope(eval_data,new_scope_info,idx_instruction_start_block);
@@ -291,7 +294,7 @@ namespace zetscript{
 							aux += strlen(eval_info_directives[directive].str);
 							IGNORE_BLANKS(aux,eval_data,aux,line);
 							if(*aux != '\"'){
-								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected starting \" directive");
+								EVAL_ERROR(eval_data->current_parsing_file,line,"expected starting \" directive");
 							}
 							aux++;
 							start_var=aux;
@@ -299,7 +302,7 @@ namespace zetscript{
 							while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
 
 							if(*aux != '\"'){
-								THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"expected end \" directive");
+								EVAL_ERROR(eval_data->current_parsing_file,line,"expected end \" directive");
 							}
 
 							end_var=aux;
@@ -314,7 +317,7 @@ namespace zetscript{
 							aux++;// advance ..
 							break;
 						default:
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"directive \"%s\" not supported",eval_info_directives[directive].str);
+							EVAL_ERROR(eval_data->current_parsing_file,line,"directive \"%s\" not supported",eval_info_directives[directive].str);
 							break;
 						}
 
@@ -341,6 +344,10 @@ namespace zetscript{
 					);
 				}
 
+				if(end_expr == NULL){
+					return NULL;
+				}
+
 				aux=end_expr;
 				IGNORE_BLANKS(aux,eval_data,aux, line);
 			}
@@ -351,12 +358,15 @@ namespace zetscript{
 			eval_data->functions.push_back(eval_data->current_function=new EvalFunction(script_function));
 		}
 
-		void pop_function(EvalData *eval_data){
+		int pop_function(EvalData *eval_data){
 
 			ScriptFunction *sf = eval_data->current_function->script_function;
 			ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
-			sf->instructions=NULL;
+			if(sf->instructions != NULL){
+				free(sf->instructions);
+				sf->instructions=NULL;
+			}
 
 			// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
 			size_t size = (eval_data->current_function->instructions.size() + 1) * sizeof(Instruction);
@@ -396,8 +406,7 @@ namespace zetscript{
 
 							// ok get the super function...
 							if(symbol_sf_foundf == NULL){
-								THROW_SCRIPT_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find parent function %s::%s",sf->symbol.name.c_str(),symbol_to_find->c_str());
-								return;
+								EVAL_ERROR(instruction->instruction_source_info.file,instruction->instruction_source_info.line,"Cannot find parent function %s::%s",sf->symbol.name.c_str(),symbol_to_find->c_str());
 							}
 							//instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
 							instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
@@ -467,6 +476,8 @@ namespace zetscript{
 			if(eval_data->functions.size() > 0){
 				eval_data->current_function = eval_data->functions.at(eval_data->functions.size()-1);
 			}
+
+			return TRUE;
 		}
 	}
 }

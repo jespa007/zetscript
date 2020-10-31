@@ -75,6 +75,7 @@ namespace zetscript{
 			){
 
 		zs_int  fun_ptr = calling_function->ref_native_function_ptr;
+		StackElement stk_result={0,0,BIT_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
 		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_C_STATIC_REF) == 0){ // is function member  ...
 			if(this_object!= NULL){
@@ -98,7 +99,7 @@ namespace zetscript{
 			this_param=1;
 
 			if(this_object==NULL){
-				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Internal error: Cannot set parameter as this object due this object is NULL");
+				VM_ERROR_AND_RET(SFI_GET_FILE_LINE(calling_function,instruction),"Internal error: Cannot set parameter as this object due this object is NULL");
 			}
 
 			if(this_object->idx_class>=IDX_BUILTIN_TYPE_MAX){
@@ -109,23 +110,23 @@ namespace zetscript{
 		}
 
 		if(n_args>MAX_NATIVE_FUNCTION_ARGS){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
+			VM_ERROR_AND_RET(SFI_GET_FILE_LINE(calling_function,instruction),"Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
 		}
 
 		if((calling_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function is not registered as C");
+			VM_ERROR_AND_RET(SFI_GET_FILE_LINE(calling_function,instruction),"Function is not registered as C");
 		}
 
 		if(fun_ptr==0){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Null function");
+			VM_ERROR_AND_RET(SFI_GET_FILE_LINE(calling_function,instruction),"Null function");
 		}
 
 		if((char)calling_function->params->count != (n_args-this_param)){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"C argument VS scrip argument doestn't match sizes");
+			VM_ERROR_AND_RET(SFI_GET_FILE_LINE(calling_function,instruction),"C argument VS scrip argument doestn't match sizes");
 		}
 
 		if(calling_function->params->count > MAX_NATIVE_FUNCTION_ARGS){
-			THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->params->count,MAX_NATIVE_FUNCTION_ARGS);
+			VM_ERROR_AND_RET(SFI_GET_FILE_LINE(calling_function,instruction),"Reached max param for C function (Current: %i Max Allowed: %i)",calling_function->params->count,MAX_NATIVE_FUNCTION_ARGS);
 		}
 
 		// convert parameters script to c...
@@ -140,7 +141,7 @@ namespace zetscript{
 					,(zs_int *)&converted_param[i]
 					,error_str
 			)){
-				THROW_SCRIPT_ERROR(SFI_GET_FILE_LINE(calling_function,instruction),"Function \"%s\", param %i: %s. Native function \"%s\" that was found for first time it has different argument types now.",
+				VM_ERROR_AND_RET(SFI_GET_FILE_LINE(calling_function,instruction),"Function \"%s\", param %i: %s. Native function \"%s\" that was found for first time it has different argument types now.",
 																calling_function->symbol.name.c_str(),
 																i,
 																error_str.c_str(),

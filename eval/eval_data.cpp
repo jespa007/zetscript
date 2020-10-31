@@ -1,5 +1,7 @@
 
-#define IGNORE_BLANKS(aux_p,eval_data,s,line) aux_p=zetscript::eval::ignore_blanks(eval_data,(s),line);
+#define IGNORE_BLANKS(aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval::ignore_blanks(eval_data,(s),line))==NULL) return 0
+#define RESULT_LITERAL_VALUE 					(number_part[0]+number_part[1]+number_part[2]).c_str()
+#define EVAL_ERROR(file,line,s,...)				eval_data->error=true;eval_data->error_str=zetscript::zs_strutils::format("[%s:%i] %s",file,line,s, ##__VA_ARGS__);return 0;
 
 namespace zetscript{
 	namespace eval{
@@ -291,45 +293,45 @@ namespace zetscript{
 		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PreOperator pre_operator, PrePostSelfOperation pre_self_operation);
 
 
-		bool	is_operator_ternary_if(const char *s)			{return *s=='?';}
-		bool 	is_operator_ternary_else(const char *s)		{return *s==':';}
-		bool 	is_operator_add(const char *s)					{return	*s=='+'; }// && (*(s+1)!='+') && (*(s+1)!='='));}
-		bool 	is_operator_sub(const char *s)				{return	(*s=='-');}// && (*(s+1)!='-') && (*(s+1)!='='));}
-		bool 	is_operator_mul(const char *s)				{return ((*s=='*') && (*(s+1)!='='));}
-		bool 	is_operator_div(const char *s)				{return ((*s=='/') && (*(s+1)!='='));}
-		bool 	is_operator_mod(const char *s)				{return ((*s=='%') && (*(s+1)!='='));}
-		bool 	is_operator_assign(const char *s)				{return	((*s=='=') && (*(s+1)!='='));}
-		bool 	is_operator_assign_add(const char *s)			{return ((*s=='+') && (*(s+1)=='='));}
-		bool 	is_operator_assign_sub(const char *s)			{return ((*s=='-') && (*(s+1)=='='));}
-		bool 	is_operator_assign_mul(const char *s)			{return ((*s=='*') && (*(s+1)=='='));}
-		bool 	is_operator_assign_div(const char *s)			{return ((*s=='/') && (*(s+1)=='='));}
-		bool 	is_operator_assign_mod(const char *s)			{return ((*s=='%') && (*(s+1)=='='));}
-		bool 	is_operator_assign_xor(const char *s)			{return ((*s=='^') && (*(s+1)=='='));}		// ^=
-		bool 	is_operator_assign_binary_and(const char *s)	{return ((*s=='&') && (*(s+1)=='='));}		// &=
-		bool 	is_operator_assign_binary_or(const char *s)		{return ((*s=='|') && (*(s+1)=='='));}  	// |=
-		bool 	is_operator_assign_shift_left(const char *s)	{return ((*s=='<') && (*(s+1)=='<')&& (*(s+2)=='='));} 	// <<=
-		bool 	is_operator_assign_shift_right(const char *s)	{return ((*s=='>') && (*(s+1)=='>')&& (*(s+2)=='='));} 	// >>=
-		bool 	is_operator_xor(const char *s)				{return ((*s=='^') && (*(s+1)!='='));}
-		bool 	is_operator_binari_and(const char *s)			{return ((*s=='&') && (*(s+1)!='&') && (*(s+1)!='='));}
-		bool 	is_operator_binari_or(const char *s)			{return ((*s=='|') && (*(s+1)!='|') && (*(s+1)!='='));}
-		bool 	is_operator_shift_left(const char *s)			{return ((*s=='<') && (*(s+1)=='<') && (*(s+2)!='='));}
-		bool 	is_operator_shift_right(const char *s)			{return	((*s=='>') && (*(s+1)=='>') && (*(s+2)!='='));}
-		bool 	is_operator_logic_and(const char *s)			{return ((*s=='&') && (*(s+1)=='&'));}
-		bool 	is_operator_logic_or(const char *s)			{return ((*s=='|') && (*(s+1)=='|'));}
-		bool 	is_operator_logic_equal(const char *s) 		{return ((*s=='=') && (*(s+1)=='='));}
-		bool 	is_operator_logic_not_equal(const char *s)		{return ((*s=='!') && (*(s+1)=='='));}
-		bool 	is_operator_logic_gt(const char *s)			{return ((*s=='>') && (*(s+1)!='>'));}
-		bool 	is_operator_logic_lt(const char *s)			{return ((*s=='<') && (*(s+1)!='<'));}
-		bool 	is_operator_logic_gte(const char *s)			{return ((*s=='>') && (*(s+1)=='='));}
-		bool 	is_operator_logic_lte(const char *s)			{return ((*s=='<') && (*(s+1)=='='));}
-		bool 	is_operator_logic_not(const char *s)			{return ((*s=='!') && (*(s+1)!='='));}
+		bool	is_operator_ternary_if(const char *s)				{return *s=='?';}
+		bool 	is_operator_ternary_else(const char *s)				{return *s==':';}
+		bool 	is_operator_add(const char *s)						{return	*s=='+'; }// && (*(s+1)!='+') && (*(s+1)!='='));}
+		bool 	is_operator_sub(const char *s)						{return	(*s=='-');}// && (*(s+1)!='-') && (*(s+1)!='='));}
+		bool 	is_operator_mul(const char *s)						{return ((*s=='*') && (*(s+1)!='='));}
+		bool 	is_operator_div(const char *s)						{return ((*s=='/') && (*(s+1)!='='));}
+		bool 	is_operator_mod(const char *s)						{return ((*s=='%') && (*(s+1)!='='));}
+		bool 	is_operator_assign(const char *s)					{return	((*s=='=') && (*(s+1)!='='));}
+		bool 	is_operator_assign_add(const char *s)				{return ((*s=='+') && (*(s+1)=='='));}
+		bool 	is_operator_assign_sub(const char *s)				{return ((*s=='-') && (*(s+1)=='='));}
+		bool 	is_operator_assign_mul(const char *s)				{return ((*s=='*') && (*(s+1)=='='));}
+		bool 	is_operator_assign_div(const char *s)				{return ((*s=='/') && (*(s+1)=='='));}
+		bool 	is_operator_assign_mod(const char *s)				{return ((*s=='%') && (*(s+1)=='='));}
+		bool 	is_operator_assign_xor(const char *s)				{return ((*s=='^') && (*(s+1)=='='));}		// ^=
+		bool 	is_operator_assign_binary_and(const char *s)		{return ((*s=='&') && (*(s+1)=='='));}		// &=
+		bool 	is_operator_assign_binary_or(const char *s)			{return ((*s=='|') && (*(s+1)=='='));}  	// |=
+		bool 	is_operator_assign_shift_left(const char *s)		{return ((*s=='<') && (*(s+1)=='<')&& (*(s+2)=='='));} 	// <<=
+		bool 	is_operator_assign_shift_right(const char *s)		{return ((*s=='>') && (*(s+1)=='>')&& (*(s+2)=='='));} 	// >>=
+		bool 	is_operator_xor(const char *s)						{return ((*s=='^') && (*(s+1)!='='));}
+		bool 	is_operator_binari_and(const char *s)				{return ((*s=='&') && (*(s+1)!='&') && (*(s+1)!='='));}
+		bool 	is_operator_binari_or(const char *s)				{return ((*s=='|') && (*(s+1)!='|') && (*(s+1)!='='));}
+		bool 	is_operator_shift_left(const char *s)				{return ((*s=='<') && (*(s+1)=='<') && (*(s+2)!='='));}
+		bool 	is_operator_shift_right(const char *s)				{return	((*s=='>') && (*(s+1)=='>') && (*(s+2)!='='));}
+		bool 	is_operator_logic_and(const char *s)				{return ((*s=='&') && (*(s+1)=='&'));}
+		bool 	is_operator_logic_or(const char *s)					{return ((*s=='|') && (*(s+1)=='|'));}
+		bool 	is_operator_logic_equal(const char *s) 				{return ((*s=='=') && (*(s+1)=='='));}
+		bool 	is_operator_logic_not_equal(const char *s)			{return ((*s=='!') && (*(s+1)=='='));}
+		bool 	is_operator_logic_gt(const char *s)					{return ((*s=='>') && (*(s+1)!='>'));}
+		bool 	is_operator_logic_lt(const char *s)					{return ((*s=='<') && (*(s+1)!='<'));}
+		bool 	is_operator_logic_gte(const char *s)				{return ((*s=='>') && (*(s+1)=='='));}
+		bool 	is_operator_logic_lte(const char *s)				{return ((*s=='<') && (*(s+1)=='='));}
+		bool 	is_operator_logic_not(const char *s)				{return ((*s=='!') && (*(s+1)!='='));}
 		bool 	is_pre_post_self_operation_inc(const char *s)		{return ((*s=='+') && (*(s+1)=='+'));}
 		bool 	is_pre_post_self_operation_dec(const char *s)		{return ((*s=='-') && (*(s+1)=='-'));}
-		bool 	is_pre_post_self_operation_invalid(const char *s)		{return ((*s=='-') && (*(s+1)=='+')) || ((*s=='+') && (*(s+1)=='-'));}
-		bool 	is_comment_single_line(char *s)					{return	((*s=='/') && (*(s+1)=='/'));}
-		bool 	is_comment_block_start(char *s)					{return ((*s=='/') && (*(s+1)=='*'));}
+		bool 	is_pre_post_self_operation_invalid(const char *s)	{return ((*s=='-') && (*(s+1)=='+')) || ((*s=='+') && (*(s+1)=='-'));}
+		bool 	is_comment_single_line(char *s)						{return	((*s=='/') && (*(s+1)=='/'));}
+		bool 	is_comment_block_start(char *s)						{return ((*s=='/') && (*(s+1)=='*'));}
 		bool 	is_comment_block_end(char *s)						{return ((*s=='*') && (*(s+1)=='/'));}
-		bool 	is_operator_instanceof(const char *s)			{return strncmp("instanceof",s,10) == 0;}
+		bool 	is_operator_instanceof(const char *s)				{return strncmp("instanceof",s,10) == 0;}
 		Keyword is_keyword(const char *c);
 
 		char *advance_to_end_block_comment(char *aux_p, int &line){
@@ -372,7 +374,7 @@ namespace zetscript{
 
 					end=false;
 				}else if( is_comment_block_end(aux_p)){
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Unexpected end comment block");
+					EVAL_ERROR(eval_data->current_parsing_file,line," Unexpected end comment block");
 				}
 				// make compatible windows format...
 				if(*aux_p == '\r'){
@@ -497,13 +499,13 @@ namespace zetscript{
 				   || (*s=='\"' && pre!='\\');
 		}
 
-		void  check_identifier_name_expression_ok(EvalData *eval_data,const std::string & symbol, int line){
+		int  check_identifier_name_expression_ok(EvalData *eval_data,const std::string & symbol, int line){
 
 			char *aux_p = (char *)symbol.c_str();
 			Keyword kw;
 
 			if((kw=is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Unexpected \"%s\" keyword", aux_p);
+				EVAL_ERROR(eval_data->current_parsing_file,line," Unexpected \"%s\" keyword", aux_p);
 			}
 
 			// avoid special literal words
@@ -512,7 +514,7 @@ namespace zetscript{
 				|| symbol=="undefined"
 				|| symbol == "null"
 			){
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," Unexpected \"%s\"", aux_p);
+				EVAL_ERROR(eval_data->current_parsing_file,line," Unexpected \"%s\"", aux_p);
 			}
 
 			// the rest is checked here...
@@ -531,11 +533,11 @@ namespace zetscript{
 					aux_p++;
 				}
 			}else{
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line," expected symbol");
+				EVAL_ERROR(eval_data->current_parsing_file,line," expected symbol");
 			}
-		}
 
-#define RESULT_LITERAL_VALUE 	(number_part[0]+number_part[1]+number_part[2]).c_str()
+			return TRUE;
+		}
 
 		char * parse_literal_number(EvalData *eval_data,const char *c, int & line, std::string & value){
 			// PRE: a std::string given...
@@ -558,7 +560,7 @@ namespace zetscript{
 					aux_p++;
 					switch(*aux_p){
 					default:
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"unknown special char \\%c",*aux_p);
+						EVAL_ERROR(eval_data->current_parsing_file,line ,"unknown special char \\%c",*aux_p);
 						break;
 					case 'n':
 						i_char='\n';
@@ -574,12 +576,12 @@ namespace zetscript{
 				}else if(*aux_p != '\''){
 
 					if(*aux_p==0){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unterminated char \'");
+						EVAL_ERROR(eval_data->current_parsing_file,line ,"Unterminated char \'");
 					}
 
 					i_char=*aux_p;
 				}else{
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"empty character constant");
+					EVAL_ERROR(eval_data->current_parsing_file,line ,"empty character constant");
 				}
 
 				aux_p++;
@@ -587,9 +589,9 @@ namespace zetscript{
 					while(*aux_p!=0 && *aux_p!='\n' && *aux_p!='\'' ) aux_p++;
 
 					if(*aux_p == '\''){
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"multi-character character constant");
+						EVAL_ERROR(eval_data->current_parsing_file,line ,"multi-character character constant");
 					}else{
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Unterminated char \'");
+						EVAL_ERROR(eval_data->current_parsing_file,line ,"Unterminated char \'");
 					}
 				}
 
@@ -628,19 +630,19 @@ namespace zetscript{
 						}
 						else{ // error
 							number_part[current_part]+=*aux_p; // save conflicting character
-							THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+							EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 						}
 					}
 					else{ // error
 						number_part[current_part]+=*aux_p; // save conflicting character
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 				}
 				else if(*aux_p == '.'){ // fraccional part ?
 
 					if(isHexa){ // error
 						number_part[current_part]+=*aux_p; // save conflicting character
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 
 					if(current_part==0){
@@ -649,14 +651,14 @@ namespace zetscript{
 					}
 					else{ // error
 						number_part[current_part]+=*aux_p; // save conflicting character
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 				}
 
 				else if(*aux_p == 'b'){ // is end binary format?
 					if(!is01s || (current_part != 0)){
 						number_part[current_part]+=*aux_p; // save conflicting character
-						THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 
 					number_part[current_part]+=*aux_p;
@@ -664,7 +666,7 @@ namespace zetscript{
 				}
 				else{
 					number_part[current_part]+=*aux_p; // save conflicting character
-					THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+					EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 				}
 				is01s&=(('0'==*aux_p) || ('1'==*aux_p));
 
@@ -705,7 +707,7 @@ namespace zetscript{
 
 					return aux_p;
 			}else{
-				THROW_SCRIPT_ERROR(eval_data->current_parsing_file,line,"Expected symbol", *aux_p);
+				EVAL_ERROR(eval_data->current_parsing_file,line,"Expected symbol", *aux_p);
 			}
 			return NULL;
 		}

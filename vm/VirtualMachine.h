@@ -15,6 +15,10 @@ namespace zetscript{
 	#define NO_PARAMS std::vector<StackElement>{}
 	#define ZS_VM_FUNCTION_TYPE std::function<ScriptObject * (const std::vector<ScriptObject *> & param)>
 
+	#define VM_ERROR(script_def,s,...)				error=true;error_str=zetscript::zs_strutils::format(script_def,"[%s:%i] %s",s, ##__VA_ARGS__);
+	#define VM_ERROR_AND_RET(script_def,s,...)		error=true;error_str=zetscript::zs_strutils::format(script_def,"[%s:%i] %s",s, ##__VA_ARGS__);return stk_result;
+
+
 	class ScriptFunction;
 	class ZetScript;
 	class  VirtualMachine{
@@ -96,36 +100,20 @@ namespace zetscript{
 		};
 
 		//char				str_aux[8192];
-		float 				f_aux_value1,f_aux_value2;
-		std::string 		error_str;
-		// std::string 		aux_string,symbol_to_find,error_str;
-		 //VM_Foreach 		vm_foreach[VM_FOREACH_MAX];
-		 //VM_Foreach 		*vm_foreach_current;
-
-
-
-		 //std::string		aux_string_param[MAX_NATIVE_FUNCTION_ARGS]; // for std::string params...
-
-		 VM_Scope		*vm_current_scope;
-		 VM_Scope		vm_scope[VM_SCOPE_MAX];
-		 VM_Scope		*vm_scope_max;
-
-
-		//std::string			vm_str[VM_MAX_AUX_STRINGS]; // aux values for std::string ...
-		//std::string			*vm_str_last;
-		//std::string			*vm_str_current;
+		 float 				f_aux_value1,f_aux_value2;
+		 bool				error;
+		 std::string 		error_str;
+		 std::string 		error_callstack_str;
+		 VM_Scope			*vm_current_scope;
+		 VM_Scope			vm_scope[VM_SCOPE_MAX];
+		 VM_Scope			*vm_scope_max;
 
 		 StackElement     	vm_stack[VM_STACK_LOCAL_VAR_MAX];
-		// int n_globals;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
-		 //zs_vector *stk_globals;
 		StackElement *vm_stk_current;
-
-
 		ScriptFunction  *main_function_object;
 		ScriptClass *main_class_object;
-
 
 		int idx_current_call;
 		int idx_last_statment;
