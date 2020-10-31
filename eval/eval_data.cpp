@@ -1,7 +1,11 @@
 
+
+
 #define IGNORE_BLANKS(aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval::ignore_blanks(eval_data,(s),line))==NULL) return 0
 #define RESULT_LITERAL_VALUE 					(number_part[0]+number_part[1]+number_part[2]).c_str()
-#define EVAL_ERROR(file,line,s,...)				eval_data->error=true;eval_data->error_str=zetscript::zs_strutils::format("[%s:%i] %s",file,line,s, ##__VA_ARGS__);return 0;
+#define EVAL_ERROR(file,line,s,...)				eval_data->error=true;\
+												eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+												return 0;
 
 namespace zetscript{
 	namespace eval{

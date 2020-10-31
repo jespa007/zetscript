@@ -15,9 +15,9 @@ namespace zetscript{
 	#define NO_PARAMS std::vector<StackElement>{}
 	#define ZS_VM_FUNCTION_TYPE std::function<ScriptObject * (const std::vector<ScriptObject *> & param)>
 
-	#define VM_ERROR(script_def,s,...)				error=true;error_str=zetscript::zs_strutils::format(script_def,"[%s:%i] %s",s, ##__VA_ARGS__);
-	#define VM_ERROR_AND_RET(script_def,s,...)		error=true;error_str=zetscript::zs_strutils::format(script_def,"[%s:%i] %s",s, ##__VA_ARGS__);return stk_result;
-
+	#define VM_ERROR(s,...)				error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
+	#define VM_ERROR_AND_RET(s,...)		error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return stk_result;
+	#define VM_STOP_EXECUTE(s,...)		error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
 
 	class ScriptFunction;
 	class ZetScript;
@@ -62,7 +62,6 @@ namespace zetscript{
 		StackElement *getLastStackValue();
 		StackElement * getStackElement(unsigned int idx_glb_element);
 
-		void cancelExecution();
 		void setError(const char *str);
 
 		~VirtualMachine();
@@ -122,13 +121,7 @@ namespace zetscript{
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;
 
-
-		//float f_return_value;
-		//std::string s_return_value;
 		StackElement stk_aux;
-
-		bool cancel_execution;
-		const char *custom_error;
 
 
 		StackElement  callFunctionScript(

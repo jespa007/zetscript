@@ -32,38 +32,27 @@ namespace zetscript{
 		}
 
 		idx_current_call=0;
-		//------------------
-
-		//f_return_value=0;
-		//s_return_value="unknow";
-
-		cancel_execution=false;
-
 		vm_stk_current=NULL;
 		vm_current_scope = vm_scope;
 
 		f_aux_value1=0;
 		f_aux_value2=0;
 
-		custom_error = "unknow_error";
-
 		idx_last_statment=0;
-
-		//vm_str_last=&vm_str[VM_MAX_AUX_STRINGS-1]; // aux values for std::string ...
-		//vm_str_current=NULL;
 
 		vm_scope_max = &vm_scope[VM_SCOPE_MAX-1];
 
 		main_function_object = NULL;
 		main_class_object=NULL;
 
-		//vm_foreach_current=NULL;
 		current_call_c_function = NULL;
 		zs=_zs;
 
 		script_function_factory=NULL;
 		script_class_factory=NULL;
 		scope_factory=NULL;
+		error=false;
+		error_str="";
 	}
 
 	#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
@@ -161,14 +150,8 @@ namespace zetscript{
 	}
 
 	void VirtualMachine::setError(const char *str){
-		//writeError("custom_user",-1,str);
-		custom_error = str;
-		cancel_execution = true;
-	}
-
-	void VirtualMachine::cancelExecution(){
-		custom_error=NULL;
-		cancel_execution = true;
+		error = true;
+		error_str=str;
 	}
 
 	void VirtualMachine::clearGlobalVars(){
@@ -224,16 +207,10 @@ namespace zetscript{
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		StackElement info={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
-		if(calling_function==NULL){
-			throw "calling function NULL";
-		}
-
 		if(idx_current_call==0){ // set stack and Init vars for first call...
 
-			if(main_function_object->instructions == NULL){ // no statments
-				throw "instructions NULL";
-			}
-			cancel_execution=false;
+			error=false;
+			error_str="";
 
 			vm_stk_current=vm_stack;
 
@@ -250,17 +227,17 @@ namespace zetscript{
 		}
 
 		// byte code executing starts here. Later script function can call c++ function, but once in c++ function is not possible by now call script function again.
-		try{
-			info=callFunctionScript(
-				this_object,
-				calling_function,
-				vm_stk_current,
-				n_stk_params);
-		}catch(std::exception & ex){
+
+		info=callFunctionScript(
+			this_object,
+			calling_function,
+			vm_stk_current,
+			n_stk_params);
+
+		if(error){
 			// it was error so reset stack and stop execution ? ...
 			doStackDump();
-
-			throw std::runtime_error(ex.what());
+			throw std::runtime_error(error_str);
 		}
 
 		return info;
@@ -310,8 +287,6 @@ namespace zetscript{
 				}
 			}
 		}
-
-		//destroyCache();
 	}
 }
 
