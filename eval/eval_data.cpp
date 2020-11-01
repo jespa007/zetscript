@@ -7,6 +7,10 @@
 												eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 												return 0;
 
+#define EVAL_EXPRESSION_ERROR(file,line,s,...)		eval_data->error=true;\
+													eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+													goto error_expression;\
+
 namespace zetscript{
 	namespace eval{
 

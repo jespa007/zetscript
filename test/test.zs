@@ -1,10 +1,10 @@
-vxcvxc
+/*vxcvxc
 
 for(var i=0; i< 10; i++){
 	dsdas+dasdas
-}
+}*/
 
-//test_function();
+test_function();
 //System.eval("function test_function{0}(){ print(\"hola\")}",1)
 //test_function1()
 

@@ -572,7 +572,7 @@ namespace zetscript{
 								aux_p+=strlen(eval_info_pre_post_self_operations[pre_self_operation_type].str);
 								break;
 							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID:
-								EVAL_ERROR(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
+								EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
 								break;
 						}
 					}else{
@@ -595,7 +595,7 @@ namespace zetscript{
 					if(*aux_p=='('){ // inner expression (priority)
 
 						if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-							EVAL_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
+							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
 						}
 
 						aux_p=eval_expression(
@@ -608,7 +608,7 @@ namespace zetscript{
 								,level+1);
 
 						if(*aux_p != ')'){
-							EVAL_ERROR(eval_data->current_parsing_file,line ,"Expected ')'");
+							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected ')'");
 						}
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -728,7 +728,7 @@ namespace zetscript{
 									// check if ref identifier...
 									if(n_params>0){
 										if(*aux_p != ','){
-											EVAL_ERROR(eval_data->current_parsing_file,line ,"Expected ','");
+											EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected ','");
 										}
 										aux_p++;
 									}
@@ -759,7 +759,7 @@ namespace zetscript{
 								);
 
 								if(*aux_p != ']'){
-									EVAL_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
+									EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
 								}
 
 								aux_p++;
@@ -777,7 +777,7 @@ namespace zetscript{
 								check_identifier_name_expression_ok(eval_data,accessor_value,line);
 
 								if(accessor_value == SYMBOL_VALUE_THIS){
-									EVAL_ERROR(eval_data->current_parsing_file,line ,"\"this\" is not allowed as member name");
+									EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"\"this\" is not allowed as member name");
 								}
 
 								if(first_access){ // check first symbol at first...
@@ -863,7 +863,7 @@ namespace zetscript{
 
 					if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 					&& post_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
+						EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
 					}
 
 					unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
@@ -910,7 +910,7 @@ namespace zetscript{
 					}
 
 					if(operator_type==Operator::OPERATOR_UNKNOWN){
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Expected operator");
+						EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected operator");
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_operators[operator_type].str),line);
@@ -943,12 +943,12 @@ namespace zetscript{
 
 				if(found == false){
 					size_t len=aux_p-start_expression_str;
-					EVAL_ERROR(eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
+					EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
 				}
 			}
 
 			if(aux_p==0){
-				EVAL_ERROR(eval_data->current_parsing_file,line ,"Unexpected end of file");
+				EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Unexpected end of file");
 			}
 
 			// there's an expression
@@ -972,8 +972,20 @@ namespace zetscript{
 
 				);
 			}
+
 			// last character is a separator so it return increments by 1
 			return aux_p;
+
+error_expression:
+
+			for(unsigned kk=0;kk<expression_tokens.size();kk++){
+				for(unsigned jj=0;jj<expression_tokens[kk].instructions.size();jj++){
+					delete expression_tokens[kk].instructions[jj];
+				}
+			}
+
+			return NULL;
+
 		}
 	}
 }
