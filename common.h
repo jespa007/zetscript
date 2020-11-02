@@ -6,7 +6,7 @@
 
 
 #ifdef __DEBUG__ // incoment __ZETSCRIPT_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
-#define __ZETSCRIPT_VERBOSE_MESSAGE__
+//#define __ZETSCRIPT_VERBOSE_MESSAGE__
 #endif
 
 
@@ -29,6 +29,10 @@
 #define INSTANCE_SCRIPT_VARIABLE_BY_IDX											((this->zs))->instanceScriptObjectiableByIdx
 #define GET_METAMETHOD(m)														((this->zs))->getMetamethod(m)
 #define IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,idx_class,idx_class_instance)	((this->script_class_factory))->isClassInheritsFrom(idx_class,idx_class_instance)
+
+#ifndef TRUE
+#define TRUE 1
+#endif
 
 
 namespace zetscript{

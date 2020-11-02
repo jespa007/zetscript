@@ -79,10 +79,10 @@ namespace zetscript{
 		}
 
 		std::string * get_compiled_symbol(EvalData *eval_data,const std::string & s){
-			if(eval_data->compiled_symbol_name.count(s)==0){
-				eval_data->compiled_symbol_name[s]=new std::string (s);
+			if(compiled_symbol_name->count(s)==0){
+				(*compiled_symbol_name)[s]=new std::string (s);
 			}
-			return eval_data->compiled_symbol_name[s];
+			return (*compiled_symbol_name)[s];
 		}
 
 		// to std::string utils ...

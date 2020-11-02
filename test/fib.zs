@@ -1,5 +1,5 @@
-// mingw gcc best timing 1220ms - 1250ms
-// vc++      best timing 1587ms - 1650ms
+// mingw gcc best timing 1153ms - 1192ms
+// vc++      best timing 1447ms - 1460ms
 function fibR(n)
 {
     if (n < 2) {

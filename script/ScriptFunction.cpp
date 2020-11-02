@@ -470,14 +470,6 @@ namespace zetscript{
 			delete (FunctionParam *)params->items[i];
 		}
 
-		// delete all symbols...
-		for(auto it=this->instruction_source_info.begin();it!=this->instruction_source_info.end();it++){
-			if(it->second.str_symbol!=NULL){
-				delete it->second.str_symbol;
-			}
-		}
-
-
 		// delete arg info variables...
 		if(instructions != NULL){
 			free(instructions);

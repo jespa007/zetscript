@@ -405,6 +405,10 @@ namespace zetscript{
 		std::function<F> * bindScriptFunction(ScriptFunction *sf, ScriptObject *calling_object=NULL);
 
 
+		//-----------------------------------------------------------------------------------------------------------------------
+		void saveState();
+
+
 		 ~ZetScript();
 
 	private:

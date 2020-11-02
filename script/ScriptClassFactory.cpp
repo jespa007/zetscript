@@ -141,8 +141,12 @@ namespace zetscript{
 		ZS_REGISTER_VARIABLE(zs,"System",&system_built_in);
 
 		// Custom user function or classes
-		zs->eval("function test_function(){ print(\"hola\")}");
-		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()");
+		zs->eval("function test_function(){ print(\"hola\")}",false);
+		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()",false);
+
+		zs->saveState();
+		//zs->eval("print(\"hola1\");test_function()\nvar i=0;",false);
+		//zs->eval("print(\"hola2\");test_function()\ni=1;",false);
 	}
 
 

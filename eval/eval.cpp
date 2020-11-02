@@ -461,9 +461,8 @@ namespace zetscript{
 				InstructionSourceInfo instruction_info=instruction->instruction_source_info;
 
 				// Save str_symbol that was created on eval process, and is destroyed when eval finish.
-				if(instruction->instruction_source_info.str_symbol != NULL){
-					instruction_info.str_symbol=new std::string(*instruction->instruction_source_info.str_symbol);
-				}
+				instruction_info.str_symbol=instruction->instruction_source_info.str_symbol;
+
 
 				eval_data->current_function->script_function->instruction_source_info[i]=instruction_info;
 			}

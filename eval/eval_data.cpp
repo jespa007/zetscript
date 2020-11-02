@@ -1,6 +1,5 @@
 
 
-
 #define IGNORE_BLANKS(aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval::ignore_blanks(eval_data,(s),line))==NULL) return 0
 #define RESULT_LITERAL_VALUE 					(number_part[0]+number_part[1]+number_part[2]).c_str()
 #define EVAL_ERROR(file,line,s,...)				eval_data->error=true;\
@@ -257,7 +256,6 @@ namespace zetscript{
 			std::vector<EvalInstruction *>			break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
 			std::vector<EvalInstruction *>			continue_jmp_instructions; // number of continue_jmp_instructions collected (should managed only on loops)
 			const char 						* 		current_parsing_file;
-			std::map<std::string,std::string *>	 	compiled_symbol_name;
 			bool							  		error;
 			std::string								error_str;
 
@@ -271,11 +269,6 @@ namespace zetscript{
 				error=false;
 				error_str="";
 			}
-			~EvalData(){
-				for(auto it=compiled_symbol_name.begin();it!=compiled_symbol_name.end() ;it++){
-					delete it->second;
-				}
-			}
 		};
 
 		EvalOperator eval_info_operators[OPERATOR_MAX];
@@ -285,7 +278,9 @@ namespace zetscript{
 		EvalKeyword eval_info_keywords[KEYWORD_MAX];
 		EvalDirective eval_info_directives[DIRECTIVE_MAX];
 
+
 		bool g_init_eval=false;
+		std::map<std::string,std::string *>	 	*compiled_symbol_name=NULL;
 
 		char * 	eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * 	eval_keyword_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool check_anonymous_function=false, std::string * function_name_result=NULL);
@@ -502,7 +497,6 @@ namespace zetscript{
 			return is_operator(s)!=Operator::OPERATOR_UNKNOWN
 				   || is_pre_post_self_operation(s)!=PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 				   || is_separator(s)!=Separator::SEPARATOR_UNKNOWN
-				   || is_keyword(s)!=Keyword::KEYWORD_UNKNOWN
 				   || is_special_char(s)
 				   || (*s=='\"' && pre!='\\');
 		}
@@ -547,19 +541,25 @@ namespace zetscript{
 			return TRUE;
 		}
 
-		char * parse_literal_number(EvalData *eval_data,const char *c, int & line, std::string & value){
+		char * parse_literal_number(EvalData *eval_data,const char *s, int & line, std::string & value){
 			// PRE: a std::string given...
 			char *aux_p = NULL;
-			IGNORE_BLANKS(aux_p,eval_data,c,line);
-
 			bool end=false;
 			int current_part=0;
 			std::string number_part[3];
 			//value="";
+			bool isHexa=false;
 			bool is01s=true;
 			//bool isInt=true;
 			bool isChar=false;
-			bool isHexa=(*aux_p == 'x' || *aux_p == 'X') || ((*aux_p == '0' && *(aux_p+1) == 'X') || (*aux_p == '0' && *(aux_p+1) == 'x'));
+
+			IGNORE_BLANKS(aux_p,eval_data,s,line);
+
+			isHexa=(*aux_p == 'x' || *aux_p == 'X') || ((*aux_p == '0' && *(aux_p+1) == 'X') || (*aux_p == '0' && *(aux_p+1) == 'x'));
+
+			if(is_keyword(s)){
+				 return NULL;
+			}
 
 			if(*aux_p == '\''){ // is char
 				int i_char=0;
@@ -685,9 +685,10 @@ namespace zetscript{
 			// check and eval token ?
 			value = number_part[0]+number_part[1]+number_part[2];
 
-			if( is_end_symbol_token(aux_p)){
-				return aux_p;
+			if( is_end_symbol_token(aux_p) || is_keyword(s)){
+				 return aux_p;
 			}
+
 			return NULL;
 			// POST: detects integer/binary/fractional/hexa
 		}
@@ -721,7 +722,7 @@ namespace zetscript{
 		}
 
 		// PROTOTYPES
-		void init_eval(){
+		void init(){
 
 			if(g_init_eval) return;
 
@@ -818,7 +819,22 @@ namespace zetscript{
 			eval_info_directives[DIRECTIVE_UNKNOWN]={DIRECTIVE_UNKNOWN, NULL};
 			eval_info_directives[DIRECTIVE_INCLUDE]={DIRECTIVE_INCLUDE, "import"};
 
+			compiled_symbol_name=new std::map<std::string,std::string *>;
+
 			g_init_eval=true;
+		}
+
+		void deinit(){
+			if(g_init_eval){
+
+				for(std::map<std::string,std::string *>::iterator it=compiled_symbol_name->begin();it!=compiled_symbol_name->end(); it++){
+					delete it->second;
+				}
+
+				delete compiled_symbol_name;
+				compiled_symbol_name=NULL;
+
+			}
 		}
 
 

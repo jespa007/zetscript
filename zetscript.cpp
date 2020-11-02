@@ -19,13 +19,16 @@ namespace zetscript{
 	const char * k_str_bool_type=typeid(bool).name();
 	const char * k_str_stack_element_type=typeid(StackElement).name();
 
-	namespace eval{
-		void init_eval();
+
+	namespace eval {
+		void init();
+		void deinit();
 	}
+
 
 	ZetScript::ZetScript(){
 
-		eval::init_eval();
+		eval::init();
 		scope_factory = new ScopeFactory(this);
 		function_proxy_factory = new FunctionProxyFactory();
 		script_function_factory= new ScriptFunctionFactory(this);
@@ -35,9 +38,6 @@ namespace zetscript{
 
 		virtual_machine->init();
 		script_class_factory->init();
-
-
-
 
 		eval_int=0;
 		eval_float=0;
@@ -332,10 +332,13 @@ namespace zetscript{
 		if(buf_tmp!=NULL){
 			free(buf_tmp);
 		}
-
 	}
 
 	void ZetScript::getScriptObject(const std::string &function_access,ScriptObject **calling_obj,ScriptFunction **fun_obj ){
+
+	}
+
+	void ZetScript::saveState(){
 
 	}
 
@@ -368,6 +371,8 @@ namespace zetscript{
 			delete icv;
 		}
 		constant_values.clear();
+
+		eval::deinit();
 
 
 	}
