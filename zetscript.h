@@ -187,12 +187,8 @@ namespace zetscript{
 		bool isFilenameAlreadyParsed(const std::string & filename);
 		const char * getParsedFilenameFromIdx(unsigned idx);
 
-		//-----------------------------------------------
 
-		/**
-		* clear: clear compile information.
-		*/
-		void clear();
+		//-----------------------------------------------
 
 		void 						setPrintOutCallback(void (*)(const char *));
 
@@ -406,6 +402,10 @@ namespace zetscript{
 
 
 		//-----------------------------------------------------------------------------------------------------------------------
+		/**
+		* clear: clear compile information.
+		*/
+		void clear();
 		void saveState();
 
 
@@ -431,13 +431,11 @@ namespace zetscript{
 		ScriptFunctionFactory *script_function_factory;
 		ScriptClassFactory *script_class_factory;
 
-		//ZetScript 		*zs;
-
 		float eval_float;
 		int eval_int;
 		bool eval_bool;
 		std::string eval_string;
-
+		int idx_current_global_variable_checkpoint;
 
 		//===================================================================================================
 		//
@@ -453,6 +451,10 @@ namespace zetscript{
 		static 									void  print(const char *s);
 
 		static 									void (* print_out_callback)(const char *);
+
+		void setClearGlobalVariablesCheckpoint();
+		void clearGlobalVariables(int _idx_start=ZS_IDX_UNDEFINED);
+
 
 	};
 

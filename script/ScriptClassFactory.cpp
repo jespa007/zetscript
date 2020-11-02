@@ -65,6 +65,8 @@ namespace zetscript{
 		Symbol *symbol_main_function=main_object->registerMemberFunction(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 
+		idx_clear_checkpoint=1; // by default restore till main class.
+
 	}
 
 	void ScriptClassFactory::init(){
@@ -155,21 +157,24 @@ namespace zetscript{
 		register_c_base_symbols = _register;
 	}
 
-	void ScriptClassFactory::clear(){
+	void ScriptClassFactory::clear(int _idx_start){
+		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
-		bool end=false;
-		for(int v=script_classes->count-1;
-				v>=1; // avoid main class
-				v--){
-
+		for(
+			int v=idx_start;
+			v < script_classes->count; // avoid main class
+			v++
+		){
 			ScriptClass * sc = (ScriptClass *)script_classes->get(v);
 			if((sc->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){ //script class
 				delete sc;
 				script_classes->pop_back();
-			}else{
-				break;
 			}
 		}
+	}
+
+	void ScriptClassFactory::setClearCheckpoint(){
+		idx_clear_checkpoint = script_classes->count-1;
 	}
 
 	ScriptClass * ScriptClassFactory::registerClass(

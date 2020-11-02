@@ -484,10 +484,17 @@ namespace zetscript{
 
 						// not exist ... add
 						if(stk_var == NULL){
-							if((stk_var=calling_object->addProperty(symbol_access_str, error_str,NULL,&idx_stk_element))==NULL){
+
+							vm_stk_current->stk_value=(void *)symbol_access_str;
+							vm_stk_current->var_ref=calling_object;
+							vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
+							vm_stk_current++;
+							continue;
+
+							/*if((stk_var=calling_object->addProperty(symbol_access_str, error_str,NULL,&idx_stk_element))==NULL){
 								VM_STOP_EXECUTE(error_str.c_str());
 								return stk_result;
-							}
+							}*/
 
 						}
 
@@ -697,9 +704,21 @@ namespace zetscript{
 
 						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {
 							stk_dst=(StackElement *)stk_result_op1->var_ref; // stk_value is expect to contents a stack variable
+						}else if(		(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED)
+								&&  stk_result_op1->stk_value != NULL
+								&&  stk_result_op1->var_ref != NULL
+						) {
+
+							ScriptObject *script_object=(ScriptObject *)stk_result_op1->var_ref;
+							if((stk_var=script_object->addProperty((const char *)stk_result_op1->stk_value, error_str))==NULL){
+								VM_STOP_EXECUTE(error_str.c_str());
+							}
+
+
 						}else{
 							VM_STOP_EXECUTE("Expected l-value on assignment ('=')");
 						}
+
 
 						stk_src=stk_result_op2; // store ptr instruction2 op as src_var_value
 
@@ -1392,19 +1411,16 @@ namespace zetscript{
 
 		//=========================
 		// POP STACK
-		if(calling_function->idx_script_function == IDX_SCRIPT_FUNCTION_MAIN){ // if main function only remove empty shared pointers but preserve global variables!)
-			removeEmptySharedPointers();
-		}
-		else{ // else any other script function pop all scopes...
+		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){ // if main function only remove empty shared pointers but preserve global variables!)
 			// pop all scopes
 			while(vm_scope_start<(vm_current_scope)){
 				popVmScope(false); // do not check removeEmptySharedPointers to have better performance
 			}
-
-			removeEmptySharedPointers();
 		}
 
-		idx_current_call--;
+		removeEmptySharedPointers(idx_current_call--);
+
+
 		// POP STACK
 		//=========================
 		return stk_result;

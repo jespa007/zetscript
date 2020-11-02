@@ -1,0 +1,5 @@
+namespace zetscript{
+	class State{
+
+	};
+}

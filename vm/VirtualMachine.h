@@ -36,6 +36,8 @@ namespace zetscript{
 
 		void init();
 
+		StackElement *getVmStackPtr(){return vm_stack;}
+
 		/*inline float *setFloatReturnValue(float f){
 			f_return_value = f;
 			return &f_return_value;
@@ -45,10 +47,9 @@ namespace zetscript{
 			s_return_value = s;
 			return &s_return_value;
 		}*/
+		inline void  removeEmptySharedPointers(int idx_stack);
 
 		void addGlobalVar(const StackElement & stk);
-
-		void clearGlobalVars();
 
 		StackElement execute(
 			 ScriptFunction *	script_function
@@ -146,7 +147,7 @@ namespace zetscript{
 		 */
 
 		//const char * toString(StackElement * index);
-		inline void  removeEmptySharedPointers();
+
 		inline void insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		inline void deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)

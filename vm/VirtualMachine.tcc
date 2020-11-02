@@ -4,6 +4,8 @@
 
 // general
 
+#define IDX_CALL_STACK_MAIN 1
+
 #define PRINT_DUAL_ERROR_OP(c)\
 std::string var_type1=stk_result_op1->toString(),\
 	   var_type2=stk_result_op2->toString();\
@@ -73,8 +75,13 @@ namespace zetscript{
 	}
 
 
-	inline void VirtualMachine::removeEmptySharedPointers(){
-		InfoSharedList *list=&zero_shares[this->idx_current_call];
+	inline void VirtualMachine::removeEmptySharedPointers(int idx_call_stack){
+
+		if(idx_call_stack<=0){
+			return;
+		}
+
+		InfoSharedList *list=&zero_shares[idx_call_stack];
 		InfoSharedPointerNode *next_node=NULL,*current=list->first;
 
 
@@ -135,7 +142,7 @@ namespace zetscript{
 			
 			// remove deferred shared pointers except for return value...
 			if(check_empty_shared_pointers){
-				removeEmptySharedPointers();
+				removeEmptySharedPointers(this->idx_current_call);
 			}
 
 			// pop current var

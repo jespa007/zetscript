@@ -9,18 +9,13 @@
 //#define __ZETSCRIPT_VERBOSE_MESSAGE__
 #endif
 
+#define ZS_IDX_UNDEFINED 						-1
+#define MAX_NATIVE_FUNCTION_ARGS				6
 
-#define ZS_IDX_UNDEFINED 							-1
-
-
-
-#define MAX_NATIVE_FUNCTION_ARGS						 6
-
-#define DEFAULT_NO_FILENAME				"no_file"
-#define FUNCTION_MEMBER_CONSTRUCTOR_NAME "constructor"
+#define DEFAULT_NO_FILENAME						"no_file"
+#define FUNCTION_MEMBER_CONSTRUCTOR_NAME 		"constructor"
 
 // HELPER FUNCTIONSs
-
 #define REGISTER_NATIVE_BASE_SYMBOLS(script_class_factory,o)		   			(zs)->registerNativeBaseSymbols(o))
 
 // if 0 is in main <> 0, else.

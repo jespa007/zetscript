@@ -5,7 +5,7 @@
 #pragma once
 
 
-
+#define IDX_SCRIPT_CLASS_MAIN							0
 #define NEW_CLASS_VAR_BY_IDX(data,idx)					((data->script_class_factory)->instanceScriptObjectiableByIdx(idx))
 #define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_class_factory)->getScriptClass(idx_or_name))
 #define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_class_factory)->getScriptClassName(idx))
@@ -47,8 +47,7 @@ namespace zetscript{
 
 		bool 							isClassRegistered(const std::string & v);
 
-		zs_int						doCast(zs_int obj, ClassTypeIdx idx_class_src, ClassTypeIdx idx_class_dst);
-		void 							clear();
+		zs_int							doCast(zs_int obj, ClassTypeIdx idx_class_src, ClassTypeIdx idx_class_dst);
 		inline ScriptClass * 			getMainObject() { return main_object;}
 		inline ScriptFunction * 		getMainFunction() { return main_function;}
 
@@ -167,6 +166,8 @@ namespace zetscript{
 				,int registered_line=-1
 		);
 
+		void 	clear(int _idx_start=ZS_IDX_UNDEFINED);
+		void 	setClearCheckpoint();
 
 
 		~ScriptClassFactory();
@@ -199,6 +200,7 @@ namespace zetscript{
 		MathBuiltIn math_built_in;
 		SystemBuiltIn 	system_built_in;
 		StringBuiltIn 	string_built_in;
+		int 			idx_clear_checkpoint;
 
 
 		PrimitiveType *					getPrimitiveTypeFromStr(const std::string & str);

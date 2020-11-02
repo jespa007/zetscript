@@ -6,6 +6,7 @@ namespace zetscript{
 		zs = _zs;
 		scope_factory = _zs->getScopeFactory();
 		script_functions = new zs_vector();
+		idx_clear_checkpoint = 1; // by default MAIN function
 	}
 
 	zs_vector 	*ScriptFunctionFactory::getScriptFunctions(){
@@ -101,10 +102,15 @@ namespace zetscript{
 		return true;
 	}
 
-	void ScriptFunctionFactory::clear(){
-		for(int v=script_functions->count-1;
-				v >= 1; // avoid delete main function
-				v--){
+	void ScriptFunctionFactory::clear(int _idx_start){
+
+		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
+
+		for(
+			int v=idx_start;
+			v < script_functions->count; // avoid delete main function
+			v++
+		){
 
 			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[v];
 			if((info_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) //
@@ -112,10 +118,12 @@ namespace zetscript{
 				script_functions->pop_back();
 				delete info_function;
 			}
-			else{
-				break;
-			}
+
 		}
+	}
+
+	void ScriptFunctionFactory::setClearCheckpoint(){
+		idx_clear_checkpoint = script_functions->count-1;
 	}
 
 	ScriptFunctionFactory::~ScriptFunctionFactory(){

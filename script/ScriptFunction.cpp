@@ -309,7 +309,7 @@ namespace zetscript{
 		symbol->idx_position = idx_position;
 
 
-		if(scope_block == MAIN_SCOPE(this) && ((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)) { // is variable C set its pointer at stack...
+		if(scope_block == MAIN_SCOPE(this) && ((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)) { // is global var ...
 			zs->getVirtualMachine()->setStackElement(idx_position,convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr));
 		}
 
@@ -390,7 +390,7 @@ namespace zetscript{
 
 			symbol->idx_position=idx_position;
 
-			if(scope_block == MAIN_SCOPE(this)) {
+			if(scope_block == MAIN_SCOPE(this)) { // global function
 				// set global stk var...
 				zs->getVirtualMachine()->setStackElement(
 					(int)idx_position

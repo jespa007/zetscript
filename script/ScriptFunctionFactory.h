@@ -44,7 +44,8 @@ namespace zetscript{
 			 ScriptFunction 			* 	getScriptFunction(int idx);
 			 void	setScriptFunction(short idx, ScriptFunction *sf);
 
-			void clear();
+			void clear(int _idx_start = ZS_IDX_UNDEFINED);
+			void setClearCheckpoint();
 
 			~ScriptFunctionFactory();
 
@@ -52,6 +53,7 @@ namespace zetscript{
 			ZetScript 						* 	zs;
 			ScopeFactory 					* 	scope_factory;
 			zs_vector 						*   script_functions;
+			int idx_clear_checkpoint;
 	};
 
 };

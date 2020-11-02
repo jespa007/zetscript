@@ -15,7 +15,7 @@ namespace zetscript{
 			popVmScope(false);
 		}
 
-		removeEmptySharedPointers();
+		removeEmptySharedPointers(IDX_CALL_STACK_MAIN);
 		idx_current_call=0;
 	}
 
@@ -152,49 +152,6 @@ namespace zetscript{
 	void VirtualMachine::setError(const char *str){
 		error = true;
 		error_str=str;
-	}
-
-	void VirtualMachine::clearGlobalVars(){
-
-		// remove all shared 0 pointers
-		if(main_function_object->registered_symbols->count > 0){
-			// set global top stack element
-			StackElement *vm_stk_element=&vm_stack[main_function_object->registered_symbols->count-1];
-
-			for (int v = main_function_object->registered_symbols->count-1
-						 ;v>=0
-						 ;v--) {
-				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
-				if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
-
-					StackElement *ptr_ale =&vm_stack[v];
-					ScriptObject *var = NULL;
-
-					if(ptr_ale->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
-						var =((ScriptObject *)(ptr_ale->var_ref));
-						if(var){
-							if(var->ptr_shared_pointer_node != NULL){
-								var->unrefSharedPtr();
-							}
-						}
-					}
-
-					main_function_object->registered_symbols->pop_back();
-
-					// clear global function/variable
-					*vm_stk_element--={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
-				}
-				else{
-					break;
-				}
-			}
-		}
-
-		removeEmptySharedPointers();
-
-		memset(&zero_shares,0,sizeof(zero_shares));
-		memset(&shared_vars,0,sizeof(shared_vars));
-		idx_current_call=0;
 	}
 
 	StackElement  VirtualMachine::execute(

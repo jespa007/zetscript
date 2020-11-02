@@ -43,6 +43,7 @@ namespace zetscript{
 		eval_float=0;
 		eval_string="";
 		eval_bool = false;
+		idx_current_global_variable_checkpoint=0;
 	}
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
@@ -186,16 +187,6 @@ namespace zetscript{
 
 	void (* ZetScript::print_out_callback)(const char *) = NULL;
 
-	void ZetScript::clear(){
-
-		virtual_machine->clearGlobalVars();
-
-		// clear all script artifacts excepts C ones and global/main function/scope...
-		scope_factory->clear();
-		script_function_factory->clear();
-		script_class_factory->clear();
-	}
-
 	int * ZetScript::evalIntValue(const std::string & str_to_eval){
 
 		eval(str_to_eval.c_str());
@@ -338,13 +329,70 @@ namespace zetscript{
 
 	}
 
+	void ZetScript::clearGlobalVariables(int _idx_start){
+
+		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start;
+		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
+
+		// remove all shared 0 pointers
+		if(main_function_object->registered_symbols->count > 0){
+			// set global top stack element
+			StackElement *vm_stk_element=&virtual_machine->getVmStackPtr()[idx_current_global_variable_checkpoint];
+
+			for (
+					int v = idx_start;
+					v < main_function_object->registered_symbols->count;
+					v++) {
+				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
+				if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+
+					//StackElement *ptr_ale =&this->virtual_machine->vm_stack[v];
+					ScriptObject *var = NULL;
+
+					if(vm_stk_element->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+						var =((ScriptObject *)(vm_stk_element->var_ref));
+						if(var){
+							if(var->ptr_shared_pointer_node != NULL){
+								var->unrefSharedPtr();
+							}
+						}
+					}
+
+					main_function_object->registered_symbols->pop_back();
+
+					// clear global function/variable
+					*vm_stk_element++={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+				}
+			}
+		}
+
+		this->virtual_machine->removeEmptySharedPointers(IDX_CALL_STACK_MAIN);
+	}
+
+	void ZetScript::setClearGlobalVariablesCheckpoint(){
+		idx_current_global_variable_checkpoint=this->script_class_factory->getMainFunction()->registered_symbols->count-1;
+	}
+
+
+	void ZetScript::clear(){
+
+		clearGlobalVariables();
+
+		scope_factory->clear();
+		script_function_factory->clear();
+		script_class_factory->clear();
+	}
+
 	void ZetScript::saveState(){
 
 	}
 
 	ZetScript::~ZetScript(){
 
-		virtual_machine->clearGlobalVars();
+		clearGlobalVariables(0);
+		scope_factory->clear(IDX_SCRIPT_SCOPE_MAIN+1);
+		script_function_factory->clear(IDX_SCRIPT_FUNCTION_MAIN+1);
+		script_class_factory->clear(IDX_SCRIPT_CLASS_MAIN+1);
 
 		// clear objects...
 		delete virtual_machine;

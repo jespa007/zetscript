@@ -7,11 +7,12 @@ Date: XX-09-2020
 > #165 try eval expressions as constant 
 > #176 Add shared version 
 > #174 eval constant values and optimize expressions 
-> #215 Implement typeof operator 
+> #215 Implement typeof operator
+> #221 Implement backup/restore state  
 
 //----------------------------------------------------------
 Version: 2.0.0
-Date: XX-09-2020
+Date: XX-12-2020
 
  
 #64 Implement "include" preprocessor feature 
@@ -120,7 +121,7 @@ Date: XX-09-2020
 #172 get rid super scope
 #173 Manage this context automatically on anonymouse function created on class 
 #175 Arguments as E/S 
-> #177 Implement saveState
+> #177 Implement saveCurrentState
 #179 Bug if-else fails {max scope reached} 
 #180 Return vector or dictionary not deref its user properties 
 > #181 Implement var args 
