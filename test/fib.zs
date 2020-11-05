@@ -9,5 +9,5 @@ function fibR(n)
 }
 
 var start=System.clock();
-print("fib: " + fibR(34) +" time:"+(System.clock()-start)+"ms\n");
+System.print("fib: {0} time: {1} ms", fibR(34),System.clock()-start);
 
