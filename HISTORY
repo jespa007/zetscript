@@ -138,10 +138,9 @@ Date: XX-12-2020
 #194 Detect literal or assigments within literals  
 #195 Change ScriptVar by ScriptObject and remove ScriptVarDictionnary
 #196 Do not extend property when it access 
-> #197 Avoid vector to add properties through string 
-> #198 Avoid string to add properties through string 
+> #197 Avoid vector/string objects to add properties through string 
 > #199 Check fix instanceof 
-> #200 Fix ambiguos length variable 
+> #200 length variable only avaiable in vector and string objects
 > #201 System.print: convert any stackelement in string if argument itself is not string var  
 > #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
 > #203 ScriptObject: Implement concatenate operator (+) feature
