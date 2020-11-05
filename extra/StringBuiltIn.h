@@ -7,7 +7,7 @@ namespace zetscript{
 	class ScriptObjectVector;
 	class StringBuiltIn{
 	public:
-		static ScriptObjectString * format(ScriptObjectString *str, ScriptObjectVector *args);
+		static ScriptObjectString * format(StackElement *str, StackElement *args);
 	};
 
 }

@@ -121,9 +121,11 @@ namespace zetscript{
 					sc=GET_SCRIPT_CLASS(this,sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
 					if(sc->isNativeClass()){ // we found the native script class!
 						c_scriptclass_info=sc;
-						created_object = (*sc->c_constructor)();
-						was_created_by_constructor=true;
-						c_object = created_object;
+						if(sc->c_constructor!=NULL){ // if not null is class, else is singleton or static class
+							created_object = (*sc->c_constructor)();
+							was_created_by_constructor=true;
+							c_object = created_object;
+						}
 					}
 				}
 

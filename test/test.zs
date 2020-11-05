@@ -11,7 +11,15 @@ test_callback(function(a,b,c){
 	return "result a:\"+a+\"b:\"+b+\"c:\"+c;"
 });*/
 
-!(10>0)&&(10>0);
+//!(10>0)&&(10>0);
+
+class A{
+	print(){}
+}
+
+var a=new A();
+
+a.hjhkj();
 
 
 /*vxcvxc

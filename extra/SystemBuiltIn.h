@@ -8,8 +8,10 @@ namespace zetscript{
 	public:
 		// clock
 		static zs_int clock();
-		static void print(ScriptObjectString *str, ScriptObjectVector *args);
-		static void eval(ScriptObjectString *str, ScriptObjectVector *args);
+		static void println(StackElement *str, StackElement *args);
+		static void print(StackElement *str, StackElement *args);
+		static void eval(StackElement *str, StackElement *args);
+		static void makeReadOnly(StackElement *stk);
 	};
 
 }

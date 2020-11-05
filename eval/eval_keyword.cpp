@@ -293,12 +293,12 @@ namespace zetscript{
 				aux_p++;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				bool variable_args=false;
+				bool var_args=false;
 
 				// grab words separated by ,
-				while(*aux_p != 0 && *aux_p != ')' && !variable_args){
+				while(*aux_p != 0 && *aux_p != ')' && !var_args){
 					arg_info.by_ref=false;
-					arg_info.variable_args=false;
+					arg_info.var_args=false;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					if(args.size()>0){
 						if(*aux_p != ','){
@@ -314,12 +314,12 @@ namespace zetscript{
 					// capture line where argument is...
 					arg_info.line=line;
 
-					if(is_keyword(aux_p)==KEYWORD_REF){
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
+					if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// is_keyword(aux_p)==KEYWORD_REF){
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
 						arg_info.by_ref =true;
 					}else if(is_keyword(aux_p)==KEYWORD_VARIABLE_ARGS){
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
-						variable_args=arg_info.variable_args =true;
+						var_args=arg_info.var_args =true;
 					}
 
 

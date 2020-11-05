@@ -1145,7 +1145,7 @@ namespace zetscript{
 					}
 
 					if((stk_function_ref->properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION))==0){
-						VM_STOP_EXECUTE("%s is not function",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+						VM_STOP_EXECUTE("%s is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 					}
 
 					sf=(ScriptFunction *)stk_function_ref->var_ref;
@@ -1196,16 +1196,32 @@ namespace zetscript{
 						// we pass everything by copy (TODO implement ref)
 						if(n_args > 0){
 							StackElement *stk_arg=stk_start_arg_call;
+							ScriptObjectVector *var_args=NULL;
 							zs_int *function_param=&sf->params->items[0];
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
 							for(unsigned i = 0; i < (unsigned)effective_args; i++){
-								if(((FunctionParam *)(*function_param))->by_ref == false){ // copy
+								if(((FunctionParam *)(*function_param))->var_args == true && var_args==NULL){ // enter var args
+									var_args=new ScriptObjectVector(this->zs);
+									var_args->initSharedPtr();
+									stk_arg->stk_value=0;
+									stk_arg->var_ref=(void *)var_args;
+									stk_arg->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
+								}
+								else if(((FunctionParam *)(*function_param))->by_ref == false){ // copy
 									unsigned short properties = stk_arg->properties;
 									if(properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 										*stk_arg=*((StackElement *)stk_arg->var_ref);
 									}else if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){ // remove
-										VM_STOP_EXECUTE("TDOOO create strings by copy");
+										ScriptObjectString *sc=new ScriptObjectString(this->zs);
+										sc->initSharedPtr();
+										stk_arg->stk_value=(void *)sc->str_value.c_str();
+										stk_arg->var_ref=(void *)sc;
+										stk_arg->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
 									}
+								}
+
+								if(var_args!=NULL){
+									var_args->push(stk_arg);
 								}
 
 								stk_arg++;

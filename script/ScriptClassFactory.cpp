@@ -139,10 +139,23 @@ namespace zetscript{
 		registerNativeSingletonClass<SystemBuiltIn>("SystemBuiltIn");
 		registerNativeMemberFunctionStatic<SystemBuiltIn>("clock",SystemBuiltIn::clock);
 		registerNativeMemberFunctionStatic<SystemBuiltIn>("print",SystemBuiltIn::print);
+		registerNativeMemberFunctionStatic<SystemBuiltIn>("println",SystemBuiltIn::println);
 		registerNativeMemberFunctionStatic<SystemBuiltIn>("eval",SystemBuiltIn::eval);
-		ZS_REGISTER_VARIABLE(zs,"System",&system_built_in);
+		registerNativeMemberFunctionStatic<SystemBuiltIn>("makeReadOnly",SystemBuiltIn::makeReadOnly);
+		//ZS_REGISTER_VARIABLE(zs,"System",&system_built_in);
 
 		// Custom user function or classes
+		zs->eval("class SystemBuiltinExtra extends SystemBuiltIn{\n"
+				"	print(s,...args){"
+				"		super(s,args);"
+				"	}"
+				"	println(s,...args){"
+				"		super(s,args);"
+				"	}"
+				"}"
+				"var System= new SystemBuiltinExtra();"
+				"System.makeReadOnly(System)");
+
 	/*	zs->eval("function test_function(){ print(\"hola\")}",false);
 		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()",false);*/
 
